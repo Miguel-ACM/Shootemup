@@ -4,16 +4,16 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.EventSystems;
 
-public abstract class APauseElement : MonoBehaviour, IPointerEnterHandler
+public abstract class AMenuElement : MonoBehaviour, IPointerEnterHandler
 {
-    protected PauseMenu pauseMenu;
+    protected Menu menu;
     protected TextMeshProUGUI textElement;
     protected Image backgroundImage;
     protected RectTransform rectTransform;
 
     protected virtual void Start()
     {
-        pauseMenu = GetComponentInParent<PauseMenu>();
+        menu = GetComponentInParent<Menu>();
         textElement = GetComponentInChildren<TextMeshProUGUI>();
         backgroundImage = GetComponent<Image>();
         rectTransform = GetComponent<RectTransform>();
@@ -23,7 +23,7 @@ public abstract class APauseElement : MonoBehaviour, IPointerEnterHandler
 
     protected virtual void LateUpdate()
     {
-        if (pauseMenu.CurrentElement == this)
+        if (menu.CurrentElement == this)
         {
             SetSelectedState();
         }
@@ -51,7 +51,7 @@ public abstract class APauseElement : MonoBehaviour, IPointerEnterHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
         Debug.Log("OnPointerEnter");
-        pauseMenu.setCurrentElement(this);
+        menu.setCurrentElement(this);
         SetSelectedState();
     }
 }

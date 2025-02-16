@@ -1,13 +1,14 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class PauseMenu : MonoBehaviour
+public class Menu : MonoBehaviour
 {
-    private APauseElement[] menuElements;
+    private AMenuElement[] menuElements;
     private int currentIndex = 0;
-    public APauseElement CurrentElement { get; private set; }
+    public AMenuElement CurrentElement { get; private set; }
     
     private Inputs input;
     private Vector2 move;
@@ -16,11 +17,13 @@ public class PauseMenu : MonoBehaviour
     private bool menuOpen = false;
     private CanvasGroup canvasGroup;
 
+    [SerializeField] private bool alwaysOpen = false;
+
 
     void Awake()
     {
         input = new Inputs();
-        menuElements = GetComponentsInChildren<APauseElement>();
+        menuElements = GetComponentsInChildren<AMenuElement>();
         panel = transform.parent.GetComponent<Image>();
         panel.color = Color.clear;
         
@@ -35,15 +38,19 @@ public class PauseMenu : MonoBehaviour
         {
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
-        setMenuOpen(false);
         
-        input.PlayerControls.Start.performed += ctx => setMenuOpen(!menuOpen);
+        if (!alwaysOpen) {
+            input.PlayerControls.Start.performed += ctx => setMenuOpen(!menuOpen);
+            setMenuOpen(false);
+        } else {
+            setMenuOpen(true);
+        }
 
         input.PlayerControls.Move.performed += ctx => move = ctx.ReadValue<Vector2>();
         input.PlayerControls.Move.canceled += ctx => { move = Vector2.zero; inputProcessed = false; };
         
         input.PlayerControls.Accept.performed += OnAccept;
-        input.Enable();
+        input.PlayerControls.Enable();
     }
 
     void Update()
@@ -67,7 +74,7 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
-    public void setCurrentElement(APauseElement element)
+    public void setCurrentElement(AMenuElement element)
     {
         Debug.Log(element);
         CurrentElement = element;
