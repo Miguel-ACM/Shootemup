@@ -18,6 +18,9 @@ public abstract class AEnemyBullet : MonoBehaviour
 
     void Update()
     {
+        float[] limits = Camera.getLimits();
+        if (rigidBody.position.x > limits[3] + 1f || rigidBody.position.x < limits[2] - 1f)
+            Destroy(gameObject);
         Move();
     }
 

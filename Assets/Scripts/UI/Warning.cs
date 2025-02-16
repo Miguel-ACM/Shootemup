@@ -11,6 +11,7 @@ public class Warning : MonoBehaviour
     private TextMeshProUGUI texttop;
     private Image linetop;
     private Image linebottom;
+    [SerializeField] private float moveSpeed = 100;
     [SerializeField] AnimationCurve curve;
     float t = 0;
     private bool blinking = false;

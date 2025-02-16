@@ -203,10 +203,16 @@ public class Shipcontroller : MonoBehaviour
         isStopingPrimary = true;
     }*/
 
+    public void AddPassiveWeapon(string weaponName)
+    {
+        GameObject c = Instantiate(Resources.Load<GameObject>("Weapons/" + weaponName),
+                new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z - 1), Quaternion.identity);
+        c.transform.SetParent(transform);
+        c.GetComponent<AWeapon>().SetWeaponInput(AWeapon.WeaponInput.both);
+    }
 
     public void AddWeaponSecondary(string weaponName)
     {
-        Debug.Log("ADDWEAPON");
         GameObject c = Instantiate(Resources.Load<GameObject>("Weapons/" + weaponName),
                 new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z - 1), Quaternion.identity);
         c.transform.SetParent(transform);
@@ -404,7 +410,6 @@ public class Shipcontroller : MonoBehaviour
         {
             weapon.updateSpawnPoints();
         }
-        //getSpawnPoints();
     }
 
 }

@@ -80,6 +80,24 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Start"",
+                    ""type"": ""Button"",
+                    ""id"": ""2427fd48-6a14-4f31-964a-5fb373db3206"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Accept"",
+                    ""type"": ""Button"",
+                    ""id"": ""c628de82-5825-4a00-b1f6-12ddb29b6846"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -302,6 +320,61 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
                     ""action"": ""ActiveLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8acabc22-a853-4ce1-9914-b092d0c72496"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Start"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ccec3ad4-4e12-4729-bf48-27cc2a34a1b9"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Start"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1bd52ce9-151d-4991-afee-7388c3d460a9"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Accept"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""80bf646b-cae7-40a7-a66b-f19d1c8a5aca"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Accept"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6c922fc5-a2b3-4103-a818-1e21e47d07ad"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Accept"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -338,6 +411,8 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
         m_PlayerControls_Focus = m_PlayerControls.FindAction("Focus", throwIfNotFound: true);
         m_PlayerControls_ActiveRight = m_PlayerControls.FindAction("ActiveRight", throwIfNotFound: true);
         m_PlayerControls_ActiveLeft = m_PlayerControls.FindAction("ActiveLeft", throwIfNotFound: true);
+        m_PlayerControls_Start = m_PlayerControls.FindAction("Start", throwIfNotFound: true);
+        m_PlayerControls_Accept = m_PlayerControls.FindAction("Accept", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -403,6 +478,8 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerControls_Focus;
     private readonly InputAction m_PlayerControls_ActiveRight;
     private readonly InputAction m_PlayerControls_ActiveLeft;
+    private readonly InputAction m_PlayerControls_Start;
+    private readonly InputAction m_PlayerControls_Accept;
     public struct PlayerControlsActions
     {
         private @Inputs m_Wrapper;
@@ -413,6 +490,8 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
         public InputAction @Focus => m_Wrapper.m_PlayerControls_Focus;
         public InputAction @ActiveRight => m_Wrapper.m_PlayerControls_ActiveRight;
         public InputAction @ActiveLeft => m_Wrapper.m_PlayerControls_ActiveLeft;
+        public InputAction @Start => m_Wrapper.m_PlayerControls_Start;
+        public InputAction @Accept => m_Wrapper.m_PlayerControls_Accept;
         public InputActionMap Get() { return m_Wrapper.m_PlayerControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -440,6 +519,12 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
                 @ActiveLeft.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnActiveLeft;
                 @ActiveLeft.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnActiveLeft;
                 @ActiveLeft.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnActiveLeft;
+                @Start.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnStart;
+                @Start.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnStart;
+                @Start.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnStart;
+                @Accept.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnAccept;
+                @Accept.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnAccept;
+                @Accept.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnAccept;
             }
             m_Wrapper.m_PlayerControlsActionsCallbackInterface = instance;
             if (instance != null)
@@ -462,6 +547,12 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
                 @ActiveLeft.started += instance.OnActiveLeft;
                 @ActiveLeft.performed += instance.OnActiveLeft;
                 @ActiveLeft.canceled += instance.OnActiveLeft;
+                @Start.started += instance.OnStart;
+                @Start.performed += instance.OnStart;
+                @Start.canceled += instance.OnStart;
+                @Accept.started += instance.OnAccept;
+                @Accept.performed += instance.OnAccept;
+                @Accept.canceled += instance.OnAccept;
             }
         }
     }
@@ -483,5 +574,7 @@ public partial class @Inputs : IInputActionCollection2, IDisposable
         void OnFocus(InputAction.CallbackContext context);
         void OnActiveRight(InputAction.CallbackContext context);
         void OnActiveLeft(InputAction.CallbackContext context);
+        void OnStart(InputAction.CallbackContext context);
+        void OnAccept(InputAction.CallbackContext context);
     }
 }

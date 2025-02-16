@@ -12,7 +12,7 @@ public class Boss : AEnemy
         base.Start();
         isBoss = true;
         size = 3.5f;
-        healthBarGO = GameObject.Find("UI/BossHealth");
+        healthBarGO = GameObject.Find("UI/ItemsRight/BossHealth");
         healthBar = healthBarGO.GetComponent<ResourceBar>();
         healthBar.SetMax(health);
         healthBarGO.SetActive(true);

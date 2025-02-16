@@ -27,7 +27,8 @@ public abstract class AItem : MonoBehaviour
         passive,
         active,
         partner,
-        weapon
+        weapon,
+        passiveWeapon,
     }
 
     protected void Start()
@@ -139,7 +140,7 @@ public abstract class AItem : MonoBehaviour
         {
             waveOrchestrer.NotifyItemPicked(gameObject);
         }
-        if (type == ItemType.passive || type == ItemType.partner || type == ItemType.weapon)
+        if (type == ItemType.passive || type == ItemType.partner || type == ItemType.weapon || type == ItemType.passiveWeapon)
             Destroy(gameObject);
         else if (type == ItemType.active)
             Invisibilize();

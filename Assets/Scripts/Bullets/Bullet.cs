@@ -62,9 +62,9 @@ public class Bullet : ABullet
             Score.IncreaseScore(Mathf.RoundToInt(damage));
             en.damage(damage);
             Destroy(gameObject);
+            Debug.Log("Enemy hit");
         }        
     }
-
 
     void OnBecameInvisible()
     {

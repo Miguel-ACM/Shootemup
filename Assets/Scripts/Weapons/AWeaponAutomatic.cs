@@ -38,6 +38,13 @@ public abstract class AWeaponAutomatic : AWeapon
                 return;
             }
         }
+        else
+        {
+            if ((isStopingPrimary && isStopingSecondary) || GameRules.playerDisabled)
+            {
+                CancelInvoke("Shoot");
+            }
+        }
     }
 
 }

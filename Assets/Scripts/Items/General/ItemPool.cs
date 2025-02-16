@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class ItemPool
 {
-    private static List<string> common = new List<string> {"RabbitsFoot", "BlankBullet", "TwerpItem", "Magnet"};
+    private static List<string> common = new List<string> {"RabbitsFoot", "BlankBullet", "TwerpItem", "Magnet", "AK45Item"};
     private static List<string> rare = new List<string> { "Caffeine", "ProteinSupplement", "AMoonItem", "BabyYouItem", "ElectricityItem" };
     private static List<string> epic = new List<string> { "AnotherArm", "AngryMoonItem"};
     private static List<string> legendary = new List<string> { "Telekinesis", "ThreeMoonsItem" };
@@ -87,13 +87,24 @@ public static class ItemPool
     {
         float randomNumber = Random.Range(0f, 1f) + GameRules.luck;
         pool = "legendary";
-        if (randomNumber < 0.52f)
+        if (randomNumber < 0.52f) {
+            pool = "common";
+        } else if (randomNumber < 0.82f) {
+            pool = "rare";
+        } else if (randomNumber < 0.96f) {
+            pool = "epic";
+        }
+        pool = "legendary";
+
+        if (randomNumber < 0.22f)
         {
             pool = "common";
-        } else if (randomNumber < 0.82f)
+        }
+        else if (randomNumber < 0.52f)
         {
             pool = "rare";
-        } else if (randomNumber < 0.96f)
+        }
+        else if (randomNumber < 0.76f)
         {
             pool = "epic";
         }

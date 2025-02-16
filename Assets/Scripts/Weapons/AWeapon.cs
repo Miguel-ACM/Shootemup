@@ -110,7 +110,6 @@ public abstract class AWeapon : MonoBehaviour
     }
     void PrimaryReleased(InputAction.CallbackContext ctx)
     {
-        Debug.Log("Os Stpòmg `ro,mary");
         isStopingPrimary = true;
     }
 

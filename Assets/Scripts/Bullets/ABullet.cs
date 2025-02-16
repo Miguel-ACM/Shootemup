@@ -19,5 +19,8 @@ public class ABullet : MonoBehaviour
             transform.localScale = new Vector3(size, size, size);
         }
         followness = Utils.GetValueOrDefault<string, float>(properties, "followness", 0f);
+        float directionX = Utils.GetValueOrDefault<string, float>(properties, "directionX", 0f);
+        float directionY = Utils.GetValueOrDefault<string, float>(properties, "directionY", 1f);
+        direction = new Vector3(directionX, directionY, -10f);
     }
 }
