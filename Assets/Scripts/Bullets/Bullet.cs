@@ -42,13 +42,13 @@ public class Bullet : ABullet
             }
 
         }
-        rigidBody.velocity = transform.up.normalized * speed;
+        rigidBody.linearVelocity = transform.up.normalized * speed;
     }
 
     
     void Move()
     {
-        rigidBody.velocity = direction.normalized * speed;//new Vector3(direction.x * speed, direction.y * speed, direction.z);
+        rigidBody.linearVelocity = direction.normalized * speed;//new Vector3(direction.x * speed, direction.y * speed, direction.z);
         transform.rotation = Quaternion.LookRotation(Vector3.forward, direction);
     }
 
@@ -60,6 +60,7 @@ public class Bullet : ABullet
             AEnemy en = collision.gameObject.GetComponent<AEnemy>(); //collision.transform.position
             //Instantiate(Resources.Load<GameObject>("Particles/HitSpark"), collision.transform.position, Quaternion.identity);
             Score.IncreaseScore(Mathf.RoundToInt(damage));
+            en.HitAt(collision.ClosestPoint(transform.position),rigidBody!=null ? rigidBody.linearVelocity : (Vector2)transform.up);
             en.damage(damage);
             Destroy(gameObject);
             Debug.Log("Enemy hit");

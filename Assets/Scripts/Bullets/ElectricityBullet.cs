@@ -23,10 +23,13 @@ public class ElectricityBullet : ABullet
 
             List<Rigidbody2D> hitEnemies;
             List<Vector2> path = GetPoints(transform.position, out hitEnemies);
-            lineDrawer.DrawLine(path.ToArray(), transform.position.z, 0.02f);
+            lineDrawer.DrawLine(path.ToArray(), transform.position.z, .09f,true);
             foreach (Rigidbody2D rb in hitEnemies)
             {
-                rb.gameObject.GetComponent<AEnemy>().damage(damage);
+                var enemy=rb.gameObject.GetComponent<AEnemy>();
+                int point=path.IndexOf((Vector2)rb.transform.position);
+                Vector2 incoming=point>0 ? path[point]-path[point-1] : Vector2.up;
+                enemy.HitAt(rb.transform.position,incoming);enemy.damage(damage);
             }
             shoot = true;
             Invoke("Delete", 0.1f);
@@ -101,4 +104,5 @@ public class ElectricityBullet : ABullet
     {
         Destroy(gameObject);
     }
+    void OnDestroy(){if(lineDrawerObject!=null)Destroy(lineDrawerObject);}
 }

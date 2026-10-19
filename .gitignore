@@ -70,3 +70,14 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Local migration safety copies and generated editor solutions
+/MigrationBackup/
+*.slnx
+*.blend1
+
+# Raw capture sequences and local editor automation triggers
+/ArtSource/PSXPreview/frames/
+/ArtSource/PSXPreview/WarningMotion_*.png
+/ArtSource/**/*.request
+/ArtSource/**/*.pending

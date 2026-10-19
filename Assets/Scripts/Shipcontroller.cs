@@ -326,6 +326,7 @@ public class Shipcontroller : MonoBehaviour
 
     void GetDamaged(float damage)
     {
+        PSXImpactEffects.Burst(transform.position,new Color(.15f,.65f,1));
         SoundManager.PlaySound("hurt1", 0.2f);
         health -= damage;
         float moveQuantity = Mathf.Clamp(damage * 1, 0, 20);

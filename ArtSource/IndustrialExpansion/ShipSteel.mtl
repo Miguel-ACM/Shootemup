@@ -1,0 +1,3 @@
+newmtl ShipSteel
+Kd 1 1 1
+map_Kd ../../Assets/Art/PlayerShip/GR07_Atlas.png

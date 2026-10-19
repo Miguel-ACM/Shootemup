@@ -2,25 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AngledShootout : AShooter
+public class AngledShootoutGaps : AShooter
 {
-
     public float initialShot = 1.5f;
     public float shootEach = 1.5f;
     public float shotSpeed = 3f;
     public float shotDamage = 3f;
-    protected GameObject player;
+    public bool disabled = true;
     public GameObject bullet;
     private float mainAngle = 0f;
     [SerializeField] private int numBullets = 30;
-    [SerializeField] private float switchAngle = 3f;
 
-
-    new public void Start()
-    {
-        player = GameObject.FindGameObjectWithTag("Player");
-    }
-    // Start is called before the first frame update
 
     protected override IEnumerator Shoot()
     {
@@ -28,18 +20,18 @@ public class AngledShootout : AShooter
         {
             for (int i = 0; i < numBullets; i++)
             {
+                float angle = 60 / (numBullets - 1) * i + mainAngle;
                 AEnemyBullet createdBullet = Instantiate(bullet, transform.position, transform.rotation).GetComponent<AEnemyBullet>();
-                createdBullet.setProperties(new Dictionary<string, float> { { "damage", shotDamage * GameRules.enemyDamage }, { "angle", 360 / numBullets * i + mainAngle }, { "speed", shotSpeed * GameRules.enemyBulletSpeed } });
+                createdBullet.setProperties(new Dictionary<string, float> { { "damage", shotDamage * GameRules.enemyDamage }, { "angle", angle }, { "speed", shotSpeed * GameRules.enemyBulletSpeed } });
+                createdBullet = Instantiate(bullet, transform.position, transform.rotation).GetComponent<AEnemyBullet>();
+                createdBullet.setProperties(new Dictionary<string, float> { { "damage", shotDamage * GameRules.enemyDamage }, { "angle", angle + 120 }, { "speed", shotSpeed * GameRules.enemyBulletSpeed } });
+                createdBullet = Instantiate(bullet, transform.position, transform.rotation).GetComponent<AEnemyBullet>();
+                createdBullet.setProperties(new Dictionary<string, float> { { "damage", shotDamage * GameRules.enemyDamage }, { "angle", angle + 240 }, { "speed", shotSpeed * GameRules.enemyBulletSpeed } });
             }
-            if (transform.position.x < 0)
-            {
-                mainAngle += switchAngle;
-            }
-            else
-            {
-                mainAngle -= switchAngle;
-            }
+            mainAngle += 60;
             yield return new WaitForSeconds(shootEach / GameRules.enemyShootSpeed);
         }
     }
+
+
 }

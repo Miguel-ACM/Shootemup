@@ -11,6 +11,10 @@ public abstract class AItem : MonoBehaviour
     protected float lerpTime = 1.5f;
     float elapsedTime = 0;
     bool moving = false;
+    bool attracting, collected;
+    float attractionSpeed;
+    public bool IsAttracting => attracting;
+    public bool IsDismissing { get; private set; }
     Vector3 lerpPosition;
     Vector3 startPosition;
     private AnimationCurve curve = new AnimationCurve();
@@ -41,6 +45,7 @@ public abstract class AItem : MonoBehaviour
         sgo = GameObject.FindGameObjectWithTag("Player");
         s = sgo.GetComponent<Shipcontroller>();
         UpdateColor();
+        if(ps!=null)ps.Stop(false,ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
 
@@ -68,6 +73,17 @@ public abstract class AItem : MonoBehaviour
     // Update is called once per frame
     protected void Update()
     {
+        if(collected || sgo==null)return;
+        if(attracting)
+        {
+            attractionSpeed=Mathf.MoveTowards(attractionSpeed,25,40*Time.deltaTime);
+            var target=sgo.transform.position;target.z=transform.position.z;
+            transform.position=Vector3.MoveTowards(transform.position,target,attractionSpeed*Time.deltaTime);
+            if(Vector2.Distance(transform.position,target)<.5f)Collect();
+            return;
+        }
+        if(!moving && Vector2.Distance(transform.position,sgo.transform.position)<=3*GameRules.pickDistance)
+            TryAttract();
         if (moving)
         {
             elapsedTime += Time.deltaTime;
@@ -82,17 +98,26 @@ public abstract class AItem : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!moving)
-        {
-            OnPickup();
-            s.PickUpItem(this);
-        }
+        if (!moving && !collected && collision.CompareTag("Player"))TryAttract();
     }
 
+
+    void TryAttract()
+    {
+        if(waveOrchestrer!=null && !waveOrchestrer.TryClaimItem(this))return;
+        attracting=true;attractionSpeed=5;
+    }
+    void Collect()
+    {
+        if(collected)return;collected=true;
+        PSXImpactEffects.Burst(transform.position,GetRarityColor(rarity),true);
+        OnPickup();s.PickUpItem(this);
+    }
 
     private void setRarityColor(Color c)
     {
         //ParticleSystem.MainModule settings = ps.main;
+        if(ps==null)return;
         var main = ps.main;
         main.startColor = c;
     }
@@ -105,11 +130,11 @@ public abstract class AItem : MonoBehaviour
         switch (r)
         {
             case "legendary":
-                return new Color(1, 0.902f, 0);
+                return new Color(.83f,.66f,.34f);
             case "epic":
-                return new Color(0.651f, 0, 1);
+                return new Color(.53f,.65f,.69f);
             case "rare":
-                return new Color(0.071f, 0.69f, 1);
+                return new Color(.51f,.68f,.61f);
             case "common":
                 return new Color(0.857f, 0.857f, 0.857f);
             default:
@@ -132,6 +157,16 @@ public abstract class AItem : MonoBehaviour
         waveOrchestrer = w;
     }
 
+    public void Dismiss()
+    {
+        if(collected)return;
+        collected=true;IsDismissing=true;
+        foreach(var collider in GetComponents<Collider2D>())collider.enabled=false;
+        var body=GetComponent<Rigidbody2D>();if(body!=null)body.simulated=false;
+        var visual=GetComponent<PSXObjectVisual>();
+        if(visual!=null)visual.Dismiss();else Destroy(gameObject,.48f);
+    }
+
     public abstract void OnBegin();
 
     public virtual void OnPickup()
@@ -148,6 +183,8 @@ public abstract class AItem : MonoBehaviour
 
     private void Invisibilize()
     {
+        var visual = GetComponent<PSXObjectVisual>();
+        if (visual != null) visual.Hide();
         Destroy(ps);
         Destroy(GetComponent<SpriteRenderer>());
         transform.parent = sgo.transform;

@@ -1,0 +1,13 @@
+{
+  "name": "GR07_IndustrialInterceptor",
+  "triangles": 236,
+  "vertices": 164,
+  "materials": 1,
+  "texture_size": [
+    256,
+    256
+  ],
+  "uv_layers": 1,
+  "degenerate_uv_triangles": 0,
+  "fbx": "C:\\Users\\Miguel\\Shootemup\\Assets\\Art\\PlayerShip\\GR07_Interceptor.fbx"
+}

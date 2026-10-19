@@ -1,0 +1,16 @@
+{
+    "success": true,
+    "error": "",
+    "triangles": 236,
+    "vertices": 452,
+    "uvCount": 452,
+    "textureWidth": 256,
+    "textureHeight": 256,
+    "materialCount": 1,
+    "visualInstances": 1,
+    "shader": "Shootemup/PSX Industrial Ship",
+    "scene": "Assets/Scenes/L1.unity",
+    "player": "Ship",
+    "colliderPreserved": true,
+    "rigidbodyPreserved": true
+}

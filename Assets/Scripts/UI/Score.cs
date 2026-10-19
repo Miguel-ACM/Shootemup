@@ -4,6 +4,8 @@ using UnityEngine;
 using TMPro;
 public class Score : MonoBehaviour
 {
+    public static int CurrentScore => score;
+    public static int CurrentMultiplier => multiplier;
     static string fmt = "000000000.##";
     static int score = 0;
     static int multiplier = 1;
@@ -25,7 +27,7 @@ public class Score : MonoBehaviour
         {
             scoreThisMult += quantity;
         }
-        tm.SetText(score.ToString(fmt));
+        if (tm != null) tm.SetText(score.ToString(fmt));
     }
 
     public static float GetPercentageNextMultiplier()

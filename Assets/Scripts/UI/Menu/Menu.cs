@@ -84,7 +84,7 @@ public class Menu : MonoBehaviour
     public void setMenuOpen(bool open)
     {
         menuOpen = open;
-        panel.color = menuOpen ? new Color(0, 0, 0, 0.4f) : Color.clear;
+        panel.color = menuOpen ? new Color(.035f,.045f,.045f,.91f) : Color.clear;
         if (menuOpen) {
             CurrentElement = menuElements[0];
             currentIndex = 0;

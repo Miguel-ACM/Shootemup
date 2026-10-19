@@ -24,7 +24,8 @@ public class AngryMoon : BlockerOrbital
             Vector3 positionOther = other.transform.position;
             positionOther.z = this.transform.position.z;
             lineDrawer.DrawLine(new Vector3[] { this.transform.position, positionOther }, 0.1f);
-            other.GetComponent<EnemyBullet>().OnTrigger();
+            other.GetComponent<AEnemyBullet>().OnTrigger();
         }
     }
+    void OnDestroy(){if(lineDrawerObject!=null)Destroy(lineDrawerObject);}
 }

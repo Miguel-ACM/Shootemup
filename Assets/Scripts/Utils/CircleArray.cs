@@ -60,34 +60,14 @@ public class CircularArray<T>
 
     public void ChangeSize(int newSize, T defaultValue)
     {
-        T[] newElements = new T[newSize];
-        int sizeDifference = newSize - this.maxLength;
-        int copyFrom;
-        if (sizeDifference > 0)
-        {
-            copyFrom = (this.head + 1) % this.maxLength;
-        }
-        else
-        {
-            copyFrom = (this.head - sizeDifference + 1) % this.maxLength;
-        }
-        int i = 0;
-
-        while (copyFrom != this.head)
-        {
-            newElements[i] = this.elements[copyFrom];
-            copyFrom = (copyFrom + 1) % this.maxLength;
-            i++;
-        }
-        newElements[i] = this.elements[copyFrom];
-        this.head = i;
-        this.elements = newElements;
-        this.maxLength = newSize;
-        while (sizeDifference > 0)
-        {
-            this.elements[i + sizeDifference] = defaultValue;
-            sizeDifference--;
-        }
+        if(newSize<1)throw new ArgumentOutOfRangeException(nameof(newSize));
+        var resized=new T[newSize];
+        for(int i=0;i<newSize;i++)resized[i]=defaultValue;
+        // Copy newest-to-oldest, including the initial head=-1 state. The previous
+        // sentinel loop could never reach -1 when two followers spawned before movement.
+        int keep=Math.Min(maxLength,newSize);
+        for(int age=0;age<keep;age++)resized[newSize-1-age]=elements[mod(head-age,maxLength)];
+        elements=resized;maxLength=newSize;head=newSize-1;
     }
 
     public override string ToString()

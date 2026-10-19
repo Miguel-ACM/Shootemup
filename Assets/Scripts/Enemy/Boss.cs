@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class Boss : AEnemy
 {
+    float initialHealth;
+    public float HealthFraction => health / Mathf.Max(1, initialHealth);
     [SerializeField] private ResourceBar healthBar;
     private GameObject healthBarGO;
 
     new public void Start()
     {
         base.Start();
+        initialHealth=health;
         isBoss = true;
         size = 3.5f;
         healthBarGO = GameObject.Find("UI/ItemsRight/BossHealth");

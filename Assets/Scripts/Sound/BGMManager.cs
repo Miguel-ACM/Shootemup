@@ -81,6 +81,13 @@ public class BGMManager : MonoBehaviour
         audioSource.pitch = pitch;
     }
 
+    public static void ChangeMood(int semitones)
+{
+    // Convert semitones to pitch multiplier
+    float pitchMultiplier = Mathf.Pow(2f, semitones / 12f);
+
+    audioSource.pitch = pitchMultiplier;
+}
     public static void RestartSong()
     {
         audioSource.Stop();

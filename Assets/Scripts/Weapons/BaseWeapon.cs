@@ -17,9 +17,13 @@ public class BaseWeapon : AWeaponAutomatic
         base.Shoot();
 
         SoundManager.PlaySound("shot1", 0.1f);
+        var effects = GetComponent<PSXShipEffects>();
+        if (effects != null) effects.Shot();
         for (int i = 0; i < GameRules.playerShootNumber; i++)
         {
-            ABullet b = Instantiate(bullet, spawnPoints[i] + transform.position, Quaternion.identity).GetComponent<ABullet>();
+            Vector3 spawn = effects != null && GameRules.playerShootNumber == 2
+                ? effects.MuzzlePosition(i) : spawnPoints[i] + transform.position;
+            ABullet b = Instantiate(bullet, spawn, Quaternion.identity).GetComponent<ABullet>();
             b.setProperties(new Dictionary<string, float> { { "speed", GameRules.playerShootTravelSpeed }, { "damage", GameRules.playerShootDamage }, { "size", GameRules.playerShootSize }, { "followness", GameRules.playerShootFollowness } });
         }
     }

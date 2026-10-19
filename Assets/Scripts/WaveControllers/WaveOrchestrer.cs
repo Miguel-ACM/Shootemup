@@ -25,6 +25,7 @@ public class WaveOrchestrer : MonoBehaviour
 
     List<GameObject> items = new List<GameObject>();
     bool isShopUp = false;
+    GameObject claimedItem;
     int currShowing = -1;
 
 
@@ -130,7 +131,7 @@ public class WaveOrchestrer : MonoBehaviour
         {
             
             StartCoroutine(BGMManager.FadeOutSong(2.9f));
-            SoundManager.PlaySound("bossWarning", 0.24f);
+            SoundManager.PlaySound("bossWarning", 0.18f);
             warning.blink();
             Invoke("SpawnBoss", 3f);
             
@@ -191,6 +192,22 @@ public class WaveOrchestrer : MonoBehaviour
     }
 
 
+    // Claim the closest eligible option once; rewards are applied only on arrival.
+    public bool TryClaimItem(AItem candidate)
+    {
+        if(!isShopUp || !items.Contains(candidate.gameObject))return false;
+        if(claimedItem!=null)return claimedItem==candidate.gameObject;
+        GameObject nearest=null;float distance=float.PositiveInfinity;
+        foreach(var item in items)
+        {
+            if(item==null)continue;
+            float d=Vector2.SqrMagnitude(item.transform.position-ship.transform.position);
+            if(d<distance){distance=d;nearest=item;}
+        }
+        if(nearest!=candidate.gameObject)return false;
+        claimedItem=nearest;return true;
+    }
+
     public void NotifyItemPicked(GameObject item)
     {
 
@@ -200,12 +217,17 @@ public class WaveOrchestrer : MonoBehaviour
             {
                 try
                 {
-                    Destroy(i);
+                    if(i!=null)
+                    {
+                        var option=i.GetComponent<AItem>();
+                        if(option!=null)option.Dismiss();else Destroy(i);
+                    }
                 }
                 catch { }
             }
         }
         items.Clear();
+        claimedItem=null;
         isShopUp = false;
         dialog.Hide();
 
@@ -238,7 +260,7 @@ public class WaveOrchestrer : MonoBehaviour
     public void NotifyBossPhaseChange(int phase)
     {
         SoundManager.PlaySound("enemyExplosion1", 0.12f);
-        BGMManager.ChangePitch(1.1f);
+        BGMManager.ChangeMood(2);
         //BGMManager.RestartSong();
     }
 }

@@ -1,130 +1,64 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
+/// <summary>Centred screen-space item card; fading never depends on world position.</summary>
 public class Dialog : MonoBehaviour
 {
-    private TextMeshProUGUI title;
-    private TextMeshProUGUI flavour;
-    private TextMeshProUGUI description;
-    [SerializeField] private AnimationCurve appearCurve = new AnimationCurve(new Keyframe[] { new Keyframe(0, 0), new Keyframe(1, 1, 0, 1) });
-    [SerializeField] private AnimationCurve disappearCurve = new AnimationCurve(new Keyframe[] { new Keyframe(0, 1, 0, 1), new Keyframe(1, 0) });
-    bool isUp = false;
-    bool isMoving = false;
-    float movingTime = 0f;
-    float totalMovingTime = 0.5f;
-    List<string[]> actionQueue = new List<string[]>();
-    private Vector3 up;
-    private Vector3 down;
+    public TMP_FontAsset font;
+    Canvas canvas;
+    CanvasGroup group;
+    RectTransform panel;
+    TextMeshProUGUI title,flavour,description;
+    Image accent;
+    GameObject overlay;
+    float target;
+    public bool IsVisible => group!=null && group.alpha>.001f;
+    public RectTransform Panel => panel;
 
-    public void Start()
+    public void Start(){Build();}
+    void Build()
     {
-        up = transform.position;
-        down = new Vector3(transform.position.x, -transform.position.y, transform.position.z);
-        transform.position = down;
-        TextMeshProUGUI[] texts = GetComponentsInChildren<TextMeshProUGUI>();
-        title = texts[0];
-        flavour = texts[1];
-        description = texts[2];
+        if(overlay!=null)return;
+        var original=GetComponentsInChildren<TextMeshProUGUI>(true);
+        if(font==null && original.Length>0)font=original[0].font;
+        foreach(var graphic in GetComponentsInChildren<Graphic>(true))graphic.enabled=false;
+        overlay=new GameObject("Item description overlay",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler),typeof(CanvasGroup));
+        canvas=overlay.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=60;
+        var scaler=overlay.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);scaler.matchWidthOrHeight=1;
+        group=overlay.GetComponent<CanvasGroup>();group.alpha=0;group.interactable=false;group.blocksRaycasts=false;
+        panel=Block(overlay.transform,"Item card",new Color(.045f,.06f,.065f,.97f));
+        panel.anchorMin=panel.anchorMax=new Vector2(.5f,0);panel.pivot=new Vector2(.5f,0);panel.anchoredPosition=new Vector2(0,22);panel.sizeDelta=new Vector2(377,160);
+        var edge=Block(panel,"Top accent",new Color(.73f,.62f,.39f));edge.anchorMin=new Vector2(0,1);edge.anchorMax=Vector2.one;edge.pivot=new Vector2(.5f,1);edge.sizeDelta=new Vector2(-2,2);edge.anchoredPosition=Vector2.zero;accent=edge.GetComponent<Image>();
+        title=Text("Name",12,12,15,TextAlignmentOptions.Center,new Color(.88f,.9f,.84f));
+        flavour=Text("Flavour",12,40,10,TextAlignmentOptions.Center,new Color(.49f,.56f,.55f));
+        description=Text("Description",18,70,12,TextAlignmentOptions.TopLeft,new Color(.77f,.81f,.77f));
+        var rect=description.rectTransform;rect.sizeDelta=new Vector2(-36,80);
+        canvas.enabled=false;
     }
-
-    public void Update()
+    void Update()
     {
-        if (isMoving)
-        {
-            if (movingTime < totalMovingTime)
-            {
-                movingTime += Time.deltaTime;
-                if (isUp)
-                {
-                    transform.position = Vector3.Lerp(down, up, disappearCurve.Evaluate(movingTime / totalMovingTime));
-                }
-                else
-                {
-                    transform.position = Vector3.Lerp(down, up, appearCurve.Evaluate(movingTime / totalMovingTime));
-                }
-            }
-            else
-            {
-                if (isUp)
-                    transform.position = down;
-                else
-                    transform.position = up;
-                isMoving = false;
-                isUp = !isUp;
-            }
-        }
-        if (!isMoving)
-        {
-            if (actionQueue.Count > 0)
-            {
-                string[] action = actionQueue[0];
-                actionQueue.RemoveAt(0);
-                if ((action[0] == "up" && !isUp) || (action[0] == "down" && isUp))
-                {
-                    isMoving = true;
-                    movingTime = 0f;
-                } else if (action[0] == "forceUp") {
-                    isMoving = true;
-                    movingTime = 0f;
-                    isUp = false;
-                }
-                
-                else if (action[0] == "setText")
-                {
-                    title.SetText(action[1]);
-                    flavour.SetText(action[2]);
-                    description.SetText(action[3]);
-                    title.color = AItem.GetRarityColor(action[4]);                    
-                }
-            }
-        }
+        if(group==null)return;
+        group.alpha=Mathf.MoveTowards(group.alpha,target,Time.unscaledDeltaTime/ .14f);
+        canvas.enabled=target>0 || group.alpha>0;
+        float width=Mathf.Min(377,Screen.width*720f/Mathf.Max(1,Screen.height)-24);
+        panel.sizeDelta=new Vector2(Mathf.Max(180,width),160);
     }
-
-    /*public void ShowItemDesc(string _title, string _flavour, string _description)
+    public void ShowItemDesc(string name,string detail,string effect,string rarity)
     {
-        bool hasDown = false;
-        bool hasUp = false;
-        bool subText = false;
-        for (int i = 0; i < actionQueue.Count; i++ )
-        {
-            if (actionQueue[i][0] == "down")
-                hasDown = true;
-            if (actionQueue[i][0] == "up" && hasDown)
-                hasUp = true;
-            if (actionQueue[i][0] == "setText")
-            {
-                actionQueue[i] = new string[] { "setText", _title, _flavour, _description };
-                subText = true;
-            }
-        }
-
-        if (!hasDown)
-            actionQueue.Add(new string[] { "down" });
-        if (!subText)
-            actionQueue.Add(new string[] { "setText", _title, _flavour, _description });
-        if (!hasUp)
-            actionQueue.Add(new string[] { "up" });
-    }*/
-    public void ShowItemDesc(string _title, string _flavour, string _description, string _rarity)
-    {
-        CancelAll();
-        actionQueue.Add(new string[] { "setText", _title, _flavour, _description, _rarity });
-        actionQueue.Add(new string[] { "forceUp" });
+        Build();title.text=name;flavour.text=detail;description.text=effect;
+        accent.color=AItem.GetRarityColor(rarity);target=1;canvas.enabled=true;
     }
-
-    private void CancelAll()
+    public void Hide(){target=0;}
+    void OnDestroy(){if(overlay!=null)Destroy(overlay);}
+    RectTransform Block(Transform parent,string name,Color color)
     {
-        isMoving = false;
-        actionQueue.Clear();
+        var go=new GameObject(name,typeof(RectTransform),typeof(CanvasRenderer),typeof(Image));go.transform.SetParent(parent,false);var image=go.GetComponent<Image>();image.color=color;image.raycastTarget=false;return go.GetComponent<RectTransform>();
     }
-
-    public void Hide()
+    TextMeshProUGUI Text(string name,float inset,float y,float size,TextAlignmentOptions alignment,Color color)
     {
-        if (isUp || (!isUp && isMoving))
-        {
-            actionQueue.Add(new string[] { "down" });
-        }
+        var go=new GameObject(name,typeof(RectTransform),typeof(CanvasRenderer),typeof(TextMeshProUGUI));go.transform.SetParent(panel,false);
+        var text=go.GetComponent<TextMeshProUGUI>();text.font=font;text.fontSize=size;text.color=color;text.alignment=alignment;text.raycastTarget=false;text.textWrappingMode=TextWrappingModes.Normal;
+        var rect=go.GetComponent<RectTransform>();rect.anchorMin=new Vector2(0,1);rect.anchorMax=Vector2.one;rect.pivot=new Vector2(.5f,1);rect.anchoredPosition=new Vector2(0,-y);rect.sizeDelta=new Vector2(-inset*2,25);return text;
     }
 }

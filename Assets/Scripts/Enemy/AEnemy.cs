@@ -136,8 +136,20 @@ public abstract class AEnemy : MonoBehaviour
         isBlinking = false;
     }
 
+    float nextImpact;
+    bool impactProvided;
+    public void HitAt(Vector3 point,Vector2 incoming=default)
+    {
+        impactProvided=true;
+        if(Time.time<nextImpact)return;
+        nextImpact=Time.time+.025f;
+        PSXImpactEffects.Burst(point,new Color(1,.68f,.30f),false,incoming.sqrMagnitude>.001f ? incoming : Vector2.up);
+    }
+
     public virtual void damage(float damage)
     {
+        if(!impactProvided)HitAt(transform.position);
+        impactProvided=false;
         health = health - damage * GameRules.enemyDamageReceived;
         blinkTimeout = Time.time + blinkSeconds;
         if (!isBlinking)

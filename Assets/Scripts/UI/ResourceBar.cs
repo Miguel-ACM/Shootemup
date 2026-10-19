@@ -13,13 +13,18 @@ public class ResourceBar : MonoBehaviour
 
     private void Awake()
     {
-        images = gameObject.GetComponentsInChildren<Image>();
+        Initialize();
         foreach (Image image in images)
         {
             image.enabled = visible;
         }
 
-        slider = GetComponent<Slider>();
+    }
+
+    void Initialize()
+    {
+        if (slider == null) slider = GetComponent<Slider>();
+        if (images == null) images = GetComponentsInChildren<Image>(true);
     }
 
     public void SetMax(float res)
@@ -29,11 +34,13 @@ public class ResourceBar : MonoBehaviour
 
     public void Set(float res)
     {
+        Initialize();
         slider.value = Mathf.Clamp(res / maxResource, 0, maxResource);
     }
 
     public void SetVisible(bool visible)
     {
+        Initialize();
         this.visible = visible;
         foreach (Image image in images)
         {
