@@ -47,14 +47,17 @@ public static class PSXImpactEffects
         }
     }
 
-    /// <summary>Growing fire spheres sized to the destroyed object; large hulls get a longer chain of blasts.</summary>
+    /// <summary>Growing fire spheres scaled to the destroyed object: sphere size, sphere count, spread
+    /// and chain length all grow with the hull, so a gunboat or the boss goes up in a long, wide blast.</summary>
     public static void Explosion(Vector3 position,float size)
     {
         ExplosionCount++;
         size=Mathf.Max(.6f,size);
-        if(size<2.5f)PSXFireballs.Spawn(position,size*1.1f,4,size*.35f,.12f);
-        else PSXFireballs.Spawn(position,size*.55f,Mathf.Clamp(Mathf.RoundToInt(size*1.5f),6,14),size*.42f,.7f);
-        Burst(position,new Color(1,.68f,.30f));
+        float sphere=.6f+size*.75f;
+        int count=Mathf.Clamp(3+Mathf.RoundToInt(size*2),4,18);
+        PSXFireballs.Spawn(position,sphere,count,size*.45f,Mathf.Clamp(size*.15f,.1f,1.1f));
+        int sparks=Mathf.Clamp(Mathf.RoundToInt(size),1,6);
+        for(int i=0;i<sparks;i++)Burst(position+(Vector3)(Random.insideUnitCircle*size*.4f),new Color(1,.68f,.30f));
     }
 
     public static void Explosion(GameObject source)
