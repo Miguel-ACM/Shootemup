@@ -82,7 +82,8 @@ public abstract class AItem : MonoBehaviour
             if(Vector2.Distance(transform.position,target)<.5f)Collect();
             return;
         }
-        if(!moving && Vector2.Distance(transform.position,sgo.transform.position)<=3*GameRules.pickDistance)
+        // Items use a fixed, short attraction range: the Magnet (GameRules.pickDistance) only affects pickups.
+        if(!moving && Vector2.Distance(transform.position,sgo.transform.position)<=ItemAttractRange)
             TryAttract();
         if (moving)
         {
@@ -101,6 +102,8 @@ public abstract class AItem : MonoBehaviour
         if (!moving && !collected && collision.CompareTag("Player"))TryAttract();
     }
 
+
+    const float ItemAttractRange=1.5f;
 
     void TryAttract()
     {
