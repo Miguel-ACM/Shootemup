@@ -110,7 +110,7 @@ public abstract class AItem : MonoBehaviour
     void Collect()
     {
         if(collected)return;collected=true;
-        PSXImpactEffects.Burst(transform.position,GetRarityColor(rarity),true);
+        PSXImpactEffects.ItemGet(transform.position,GetRarityColor(rarity));
         OnPickup();s.PickUpItem(this);
     }
 

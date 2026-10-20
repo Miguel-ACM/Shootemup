@@ -86,6 +86,24 @@ public static class PSXImpactEffects
         }
     }
 
+    /// <summary>Collecting an item: the usual pickup burst plus a fountain of sparkles in its rarity
+    /// colour that float up and fade, with a few white glints among them.</summary>
+    public static void ItemGet(Vector3 position,Color color)
+    {
+        Burst(position,color,true);
+        for(int i=0;i<26;i++)
+        {
+            var e=new ParticleSystem.EmitParams();
+            e.position=position+new Vector3(Random.Range(-.3f,.3f),Random.Range(-.2f,.2f),-.3f);
+            e.velocity=new Vector3(Random.Range(-.9f,.9f),Random.Range(1.4f,3.4f),0);
+            e.startColor=i%5==0 ? Color.white : Color.Lerp(color,Color.white,Random.Range(0f,.4f));
+            e.startSize3D=Vector3.one*Random.Range(.05f,.1f);
+            e.rotation3D=new Vector3(0,0,45);
+            e.startLifetime=Random.Range(.45f,.85f);
+            buffer.Emit(e,1);
+        }
+    }
+
     /// <summary>A bullet popping out of existence: one quick ring and a few short sparks in its colour.</summary>
     public static void Vanish(Vector3 position,Color color,float scale)
     {
