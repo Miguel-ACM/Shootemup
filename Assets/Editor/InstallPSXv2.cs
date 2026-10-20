@@ -259,6 +259,10 @@ public static class InstallPSXv2
             "\"{0}\":{{\"hitboxCenterError\":{1:0.0000},\"hitboxRadius\":{2:0.0000},\"colliderRadius\":{3:0.0000},\"noseUp\":{4},\"shipLength\":{5:0.00},\"partRenderers\":{6}}},",
             Path.GetFileNameWithoutExtension(path),Vector2.Distance((Vector2)disc.center,colliderCenter),disc.extents.x,colliderRadius,
             (hull.max.y-ship.position.y>ship.position.y-hull.min.y).ToString().ToLowerInvariant(),hull.size.y,parts.Length);
+        // Miguel removed the hexagon hitbox markers on purpose (2026-10-20): they are only used above to
+        // verify the hitbox placement, then deleted. The yellow cockpit glow on the hull marks the hitbox.
+        UnityEngine.Object.DestroyImmediate(hitbox.gameObject);
+        visual.Configure(ship.GetComponent<SpriteRenderer>(),holder,parts,rotation,new Renderer[0]);
         EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);
     }
 
