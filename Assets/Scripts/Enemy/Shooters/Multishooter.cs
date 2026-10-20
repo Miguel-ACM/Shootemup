@@ -47,6 +47,22 @@ public class Multishooter : AShooter
         return prohibited;
     }
 
+    // Picks a random allowed phase other than the current one. Retrying at random until one
+    // fits never ends when there is only one phase or every other one is prohibited, which
+    // froze the game; in that case the current phase simply repeats.
+    private int PickNextPhase(int curr)
+    {
+        List<int> allowed = new List<int>();
+        for (int i = 0; i < shooters.Length; i++)
+        {
+            if (i != curr && !inProhibited(i, curr))
+                allowed.Add(i);
+        }
+        if (allowed.Count == 0)
+            return curr;
+        return allowed[Random.Range(0, allowed.Count)];
+    }
+
     protected override IEnumerator Shoot()
     {
         if (fixedFirstPhase)
@@ -68,11 +84,7 @@ public class Multishooter : AShooter
             float minmaxtime = Random.Range(minmaxTimes[curPhase].min, minmaxTimes[curPhase].max);
             yield return new WaitForSeconds(minmaxtime);
             
-            nextPhase = Random.Range(0, shooters.Length);
-            while (nextPhase == curPhase || inProhibited(nextPhase, curPhase))
-            {
-                nextPhase = Random.Range(0, shooters.Length);
-            }
+            nextPhase = PickNextPhase(curPhase);
 
             foreach (AShooter shooter in shooters[curPhase].shooters)
             {
