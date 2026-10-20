@@ -21,7 +21,8 @@ public class BlankBullet : AActiveItem
             {
                 if (Vector2.Distance(enemyBullets[i].transform.position, pos) < 5f)
                 {
-                    Destroy(enemyBullets[i]);
+                    var round = enemyBullets[i].GetComponent<AEnemyBullet>();
+                    if (round != null) round.Vanish(); else Destroy(enemyBullets[i]);
                 }
             }
         }

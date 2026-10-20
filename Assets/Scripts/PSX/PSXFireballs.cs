@@ -43,10 +43,10 @@ public sealed class PSXFireballs : MonoBehaviour
 
     /// <summary>Flat expanding shockwave ring (e.g. the blank bullet clearing radius) with the same
     /// scrolling skin, tinted, reaching radius over life seconds while dithering away.</summary>
-    public static void Shockwave(Vector3 position,float radius,float life,Color tint)
+    public static void Shockwave(Vector3 position,float radius,float life,Color tint,int rings=2)
     {
         if(!Ready())return;
-        for(int i=0;i<2;i++)
+        for(int i=0;i<rings;i++)
         {
             var ball=instance.Add(position,radius*(i==0 ? 1 : .8f),i*.08f,life);
             ball.isRing=true;ball.tint=tint;ball.spin=0;ball.drift=Vector3.zero;

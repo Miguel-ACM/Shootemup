@@ -86,6 +86,21 @@ public static class PSXImpactEffects
         }
     }
 
+    /// <summary>A bullet popping out of existence: one quick ring and a few short sparks in its colour.</summary>
+    public static void Vanish(Vector3 position,Color color,float scale)
+    {
+        PSXFireballs.Shockwave(position,.12f+.12f*Mathf.Clamp(scale,.5f,2f),.14f,color,1);
+        if(buffer==null)buffer=Create(null,"PSX shared impacts",512);
+        for(int i=0;i<3;i++)
+        {
+            float angle=i*Mathf.PI*2/3+Random.Range(-.3f,.3f);
+            var e=new ParticleSystem.EmitParams();e.position=position+Vector3.back*.3f;
+            e.velocity=new Vector3(Mathf.Cos(angle),Mathf.Sin(angle),0)*Random.Range(.6f,1.3f);
+            e.startColor=Color.Lerp(color,Color.white,.4f);e.startSize3D=Vector3.one*.03f;e.startLifetime=Random.Range(.08f,.14f);
+            buffer.Emit(e,1);
+        }
+    }
+
     public static Color PickupColor(Component pickup)
     {
         string kind=pickup.GetType().Name.ToLowerInvariant();

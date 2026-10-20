@@ -62,8 +62,32 @@ public abstract class AEnemyBullet : MonoBehaviour
     {
         if (dieOnTrigger)
         {
-            Destroy(gameObject);
+            Vanish();
         }
+    }
+
+    /// <summary>Removes the round with a short pop (a small ring and sparks in its colour) instead of
+    /// letting it blink out; used on hits and when a blank bullet erases it.</summary>
+    public void Vanish()
+    {
+        var sprite = GetComponent<SpriteRenderer>();
+        Color tint = sprite != null && sprite.sprite != null ? Average(sprite) : new Color(1f, .6f, .25f);
+        PSXImpactEffects.Vanish(transform.position, tint, transform.lossyScale.x);
+        Destroy(gameObject);
+    }
+
+    static readonly Dictionary<Sprite, Color> averages = new Dictionary<Sprite, Color>();
+    static Color Average(SpriteRenderer renderer)
+    {
+        if (averages.TryGetValue(renderer.sprite, out var cached)) return cached;
+        Color sum = Color.black; int count = 0;
+        var texture = renderer.sprite.texture;
+        if (texture.isReadable)
+            foreach (var c in texture.GetPixels()) if (c.a > .5f) { sum += c; count++; }
+        var result = count > 0 ? sum / count : new Color(1f, .6f, .25f);
+        result.a = 1;
+        averages[renderer.sprite] = result;
+        return result;
     }
 
     void OnBecameInvisible()
