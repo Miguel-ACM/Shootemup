@@ -5,9 +5,8 @@ using UnityEngine.Rendering;
 /// <summary>
 /// Level 1 background: a tiled, muted grass texture with Blender-built puddles, bushes and trees
 /// on it, and soft sprite clouds drifting above with faint shadows on the ground. Everything
-/// scrolls down and is recycled to the top with a new random position. Parallax follows the
-/// player: moving right shifts the field left (clouds twice as much), climbing speeds the scroll
-/// up and backing down slows it.
+/// scrolls down and is recycled to the top with a new random position. Moving right shifts the
+/// field left (clouds twice as much).
 /// </summary>
 public sealed class PSXGrassField : MonoBehaviour
 {
@@ -18,10 +17,7 @@ public sealed class PSXGrassField : MonoBehaviour
     public float grassTile=10;
     /// <summary>World units the ground shifts left per unit the player is right of centre (clouds shift double).</summary>
     [Range(0,.5f)] public float sideParallax=.12f;
-    /// <summary>Scroll gain per unit/s of player vertical speed: faster when climbing, slower when backing off.</summary>
-    [Range(0,.5f)] public float climbParallax=.2f;
     Transform player;
-    float lastPlayerY,climb;
     const float GroundHeight=10,GroundWidth=13,Top=16,Bottom=-16,HalfWidth=5.6f;
     const float GroundZ=90,CloudZ=60;
     readonly List<Piece> pieces=new List<Piece>();
@@ -98,19 +94,12 @@ public sealed class PSXGrassField : MonoBehaviour
 
     void Update()
     {
-        if(player==null){var go=GameObject.FindGameObjectWithTag("Player");if(go!=null){player=go.transform;lastPlayerY=player.position.y;}}
-        float side=0,gain=1;
-        if(player!=null && Time.deltaTime>0)
-        {
-            side=-player.position.x*sideParallax;
-            float vy=(player.position.y-lastPlayerY)/Time.deltaTime;lastPlayerY=player.position.y;
-            climb=Mathf.Lerp(climb,vy,1-Mathf.Exp(-6*Time.deltaTime));
-            gain=Mathf.Clamp(1+climb*climbParallax,.35f,2.2f);
-        }
+        if(player==null){var go=GameObject.FindGameObjectWithTag("Player");if(go!=null)player=go.transform;}
+        float side=player!=null ? -player.position.x*sideParallax : 0;
         foreach(var piece in pieces)
         {
             var p=piece.transform.localPosition;
-            p.y-=scrollSpeed*piece.speed*gain*Time.deltaTime;
+            p.y-=scrollSpeed*piece.speed*Time.deltaTime;
             if(piece.isGround){if(p.y<-25)p.y+=4*GroundHeight;}
             else if(p.y<Bottom)
             {
