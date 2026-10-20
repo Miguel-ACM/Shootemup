@@ -2,7 +2,7 @@ public class AK45Item : APassiveWeaponItem
 {
     private void Awake()
     {
-        weaponeName = "AK45Weapon";
+        weaponName = "AK45Weapon";
         SetData("AK45", "45 degrees of fun", "A passive 45 degree gun.", AItem.ItemType.passiveWeapon);
     }
 

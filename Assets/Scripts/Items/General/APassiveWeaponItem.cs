@@ -5,12 +5,12 @@ using UnityEngine;
 public abstract class APassiveWeaponItem : AItem
 {
 
-    public string weaponeName;
+    public string weaponName;
 
     public override void OnPickup()
     {
         base.OnPickup();
-        s.AddPassiveWeapon(weaponeName);
+        s.AddPassiveWeapon(weaponName);
     }
 
 

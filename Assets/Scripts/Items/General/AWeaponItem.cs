@@ -5,13 +5,13 @@ using UnityEngine;
 public abstract class AWeaponItem : AItem
 {
 
-    public string weaponeName;
+    public string weaponName;
 
     public override void OnPickup()
     {
         //s.AddWeaponSecondary(this);
         base.OnPickup();
-        s.AddWeaponSecondary(weaponeName);
+        s.AddWeaponSecondary(weaponName);
     }
 
 
