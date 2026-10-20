@@ -22,7 +22,7 @@ public sealed class PSXFireballs : MonoBehaviour
     {
         public Transform transform;public MeshRenderer renderer;
         public float start,life,size;public Vector3 axis,drift;public float spin;
-        public bool isRing;public Color tint;public MeshFilter filter;
+        public bool isRing;public Color tint;public MeshFilter filter;public float expand=1;
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -43,13 +43,15 @@ public sealed class PSXFireballs : MonoBehaviour
 
     /// <summary>Flat expanding shockwave ring (e.g. the blank bullet clearing radius) with the same
     /// scrolling skin, tinted, reaching radius over life seconds while dithering away.</summary>
-    public static void Shockwave(Vector3 position,float radius,float life,Color tint,int rings=2)
+    /// <param name="expand">Fraction of life spent expanding; the ring then holds its radius (with a slight
+    /// pulse) and fades only near the end, so a long-lived ring can show a lasting effect area.</param>
+    public static void Shockwave(Vector3 position,float radius,float life,Color tint,int rings=2,float expand=1)
     {
         if(!Ready())return;
         for(int i=0;i<rings;i++)
         {
             var ball=instance.Add(position,radius*(i==0 ? 1 : .8f),i*.08f,life);
-            ball.isRing=true;ball.tint=tint;ball.spin=0;ball.drift=Vector3.zero;
+            ball.isRing=true;ball.tint=tint;ball.spin=0;ball.drift=Vector3.zero;ball.expand=Mathf.Clamp(expand,.05f,1);
             ball.filter.sharedMesh=Ring();ball.transform.rotation=Quaternion.identity;
         }
     }
@@ -101,8 +103,12 @@ public sealed class PSXFireballs : MonoBehaviour
             float grow=1-Mathf.Pow(1-stepped,3);
             if(ball.isRing)
             {
-                ball.transform.localScale=Vector3.one*ball.size*(.1f+.9f*grow);
-                properties.SetColor(ColorId,ball.tint*(1.6f-stepped));properties.SetFloat(FadeId,Mathf.Clamp01((stepped-.35f)/.65f));
+                float reach=Mathf.Clamp01(stepped/ball.expand),ease=1-Mathf.Pow(1-reach,3);
+                float pulse=reach>=1 ? 1+.03f*Mathf.Sin(Time.time*12) : 1;
+                ball.transform.localScale=Vector3.one*ball.size*(.1f+.9f*ease)*pulse;
+                // Short rings fade as they grow; held rings stay bright and fade over the last quarter.
+                float fadeStart=ball.expand>=1 ? .35f : .75f;
+                properties.SetColor(ColorId,ball.tint*(ball.expand>=1 ? 1.6f-stepped : 1.2f));properties.SetFloat(FadeId,Mathf.Clamp01((stepped-fadeStart)/(1-fadeStart)));
                 ball.renderer.SetPropertyBlock(properties);
                 continue;
             }

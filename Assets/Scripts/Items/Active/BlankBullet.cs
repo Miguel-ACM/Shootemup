@@ -45,7 +45,8 @@ public class BlankBullet : AActiveItem
 
         // The old lit-sprite ripple rendered nothing under the 2D renderer; show the 5-unit
         // clearing radius as a PSX shockwave ring instead.
-        PSXFireballs.Shockwave(transform.position, 5f, .45f, new Color(.55f, .8f, 1f));
+        // The ring lasts exactly as long as bullets are being erased (the cooldown window).
+        PSXFireballs.Shockwave(transform.position, 5f, cd, new Color(.3f, .95f, .75f), 2, .2f);   // blue-green
         SoundManager.PlaySound("blankbullet", 0.15f);
         lastCD = 0;
         return mana - cost;
