@@ -67,6 +67,25 @@ public static class PSXImpactEffects
         Explosion(collider!=null ? collider.bounds.center : source.transform.position,size);
     }
 
+    /// <summary>Small forward cone of hot sparks from a gun muzzle (shares the impact buffer).</summary>
+    public static void Muzzle(Vector3 position,Vector2 direction)
+    {
+        if(buffer==null)buffer=Create(null,"PSX shared impacts",512);
+        float baseAngle=Mathf.Atan2(direction.y,direction.x);
+        for(int i=0;i<4;i++)
+        {
+            float angle=baseAngle+Random.Range(-.35f,.35f);
+            var e=new ParticleSystem.EmitParams();e.position=position+Vector3.back*.3f;
+            e.velocity=new Vector3(Mathf.Cos(angle),Mathf.Sin(angle),0)*Random.Range(2.5f,5f);
+            e.startColor=i==0 ? new Color(1,.97f,.85f) : new Color(1,.8f,.45f);
+            float size=Random.Range(.04f,.07f);
+            e.startSize3D=new Vector3(size,size*2.6f,size);
+            e.rotation3D=new Vector3(0,0,90-angle*Mathf.Rad2Deg);
+            e.startLifetime=Random.Range(.08f,.16f);
+            buffer.Emit(e,1);
+        }
+    }
+
     public static Color PickupColor(Component pickup)
     {
         string kind=pickup.GetType().Name.ToLowerInvariant();

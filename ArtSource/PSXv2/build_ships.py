@@ -508,7 +508,7 @@ def rotor():
 
 @themed(ENEMY_THEME)
 def gunboat():
-    """Enemy_2 'Gunboat': teal twin-hull catamaran with bridge; turret sweeps and fires, engines flicker."""
+    """Enemy_2 'Gunboat': twin-hull catamaran with bridge; engines flicker, the turret spins while firing (in game)."""
     L = 60
     r = root("PSXv2_Enemy_2_Gunboat", L)
 
@@ -534,12 +534,11 @@ def gunboat():
         b.ngon(0, 0.18, 0.26, 8, 0.62, 0.78, "steel", "dark", rot=math.pi / 8, taper=0.6)
         b.ngon(0, 0.18, 0.08, 6, 0.78, 0.82, "g_red", "g_red")
     tu = part("Gunboat_Turret", r, (0, 0.10, 0.50), turret)
-    for x, at in ((0.16, 0.20), (-0.16, 0.45)):
-        g = part(f"Gunboat_Barrel_{'R' if x > 0 else 'L'}", tu, (x, -0.15, 0.52),
+    for x in (0.16, -0.16):
+        part(f"Gunboat_Barrel_{'R' if x > 0 else 'L'}", tu, (x, -0.15, 0.52),
                  lambda b, x=x: (b.tube((x, -0.10, 0.52), (x, -1.15, 0.52), 0.06, 6, "dark", cap1="black"),
                                  b.tube((x, -1.0, 0.52), (x, -1.2, 0.52), 0.085, 6, "steel", cap1="black")))
-        animate(g, L, recoil(at, dist=0.22))
-    animate(tu, L, lambda t, i: {"rotation": (0, 0, 0.45 * math.sin(TAU * t))})
+    # Turret and barrels are driven in game by PSXShooterVisual (Biggie fires circular spreads).
     return r
 
 
@@ -585,7 +584,7 @@ def warden():
             b.tube((4.75 * s, -1.0, 0.75), (4.75 * s, 2.9, 0.75), 0.14, 6, "ribs", cap0="dark", cap1="dark")
             b.tube((4.45 * s, -0.6, 0.72), (4.45 * s, 2.6, 0.72), 0.10, 6, "ribs", cap0="dark", cap1="dark")
             b.tube((3.0 * s, 2.7, 0.95), (1.8 * s, 3.6, 0.95), 0.12, 6, "ribs", cap0="dark", cap1="dark")
-            b.box(2.0 * s, -2.05, 0.55, 0.6, 0.5, 0.85, "dark", "steel", inset=0.06, rise=0.02, cap="g_red", taper=0.85)
+            b.box(2.0 * s, -2.05, 0.55, 0.6, 0.5, 0.85, "dark", "steel", inset=0.06, rise=0.02, cap="vent", taper=0.85)
             b.box(4.3 * s, 3.85, 1.0, 0.9, 0.5, 1.1, "steel", "dark", inset=0.1, rise=0.03, cap="vent", taper=0.85)
         # engine block and nozzles
         b.box(0, 3.7, 3.4, 1.1, 0.6, 1.25, "dark", "dark", taper=0.88, inset=0.1, rise=0.02, cap="grating")
@@ -607,28 +606,32 @@ def warden():
         b.box(x * s, y, 0.18, 0.18, 0.82, 0.95, "g_yellow", "g_yellow")
         for s in (1, -1) for x, y in ((5.55, 1.75), (4.3, 4.35), (1.3, -2.45), (0.55, 3.5))])
     animate(lamps, L, blink)
-    for s, side, at in ((1, "R", 0.15), (-1, "L", 0.65)):
+    # Shooting parts are driven in game by PSXShooterVisual from the boss's real shooters:
+    # the drums carry the circular spreads (spin while spraying), the forward turrets carry the
+    # aimed bursts (track the player). They have no baked animation.
+    for s, side in ((1, "R"), (-1, "L")):
         cx, cy = 3.6 * s, 1.2
 
         def drum(b, cx=cx, cy=cy):
             b.ngon(cx, cy, 1.3, 8, 1.05, 1.5, "purple", "dark", rot=math.pi / 8, taper=0.82, inset=0.14, rise=0.05, cap="deep")
-            b.ngon(cx, cy + 0.15, 0.62, 6, 1.55, 1.85, "steel", "black", taper=0.7, inset=0.1, rise=0.04, cap="g_magenta")
-            b.box(cx, cy - 0.85, 1.05, 0.7, 1.2, 1.62, "steel", "dark", taper=0.85, inset=0.06, rise=0.02, cap="vent")
-        tu = part(f"Warden_Turret_{side}", r, (cx, cy, 1.1), drum, cell=1.0)
-        animate(tu, L, lambda t, i, s=s: {"rotation": (0, 0, 0.30 * s * math.sin(TAU * t))})
+            b.ngon(cx, cy, 0.62, 8, 1.55, 1.85, "steel", "black", rot=math.pi / 8, taper=0.7, inset=0.1, rise=0.04, cap="g_magenta")
+            for k in range(8):
+                a = k * TAU / 8
+                d = Vector((math.cos(a), math.sin(a), 0))
+                b.tube((cx + d.x * 0.95, cy + d.y * 0.95, 1.4), (cx + d.x * 1.55, cy + d.y * 1.55, 1.4), 0.11, 6, "dark", cap1="black")
+        part(f"Warden_Drum_{side}", r, (cx, cy, 1.1), drum, cell=1.0)
 
-        def guns(b, cx=cx, cy=cy):
-            for dx in (-0.3, 0.3):
-                b.tube((cx + dx, cy - 1.1, 1.42), (cx + dx, cy - 3.0, 1.42), 0.15, 8, "dark", cap1="black")
-                b.tube((cx + dx, cy - 2.75, 1.42), (cx + dx, cy - 3.15, 1.42), 0.21, 8, "steel", cap0="dark", cap1="black")
-        g = part(f"Warden_Guns_{side}", tu, (cx, cy - 1.2, 1.42), guns)
-        animate(g, L, recoil(at, width=0.04, dist=0.45))
-        for k, (px, py) in enumerate(((5.0, 0.6), (2.3, -1.75))):
-            def pd(b, px=px * s, py=py):
-                b.ngon(px, py, 0.32, 6, 0.95, 1.2, "steel", "dark", taper=0.7)
-                b.tube((px, py, 1.12), (px, py - 0.65, 1.12), 0.05, 4, "dark", cap1="black")
-            pdo = part(f"Warden_PD_{side}{k}", r, (px * s, py, 1.0), pd)
-            animate(pdo, L, spin(s * (k + 1)))
+        ax, ay = 1.64 * s, -0.57
+
+        def aim(b, ax=ax, ay=ay):
+            b.ngon(ax, ay, 0.42, 6, 1.0, 1.32, "steel", "dark", rot=math.pi / 6, taper=0.75, inset=0.06, rise=0.02, cap="dark")
+            b.box(ax, ay - 0.28, 0.5, 0.42, 1.12, 1.42, "purple", "dark", taper=0.8)
+            for dx in (-0.12, 0.12):
+                b.tube((ax + dx, ay - 0.3, 1.3), (ax + dx, ay - 1.25, 1.3), 0.07, 6, "dark", cap1="black")
+        part(f"Warden_Aim_{side}", r, (ax, ay, 1.1), aim)
+        for px, py in ((5.0, 0.6), (2.3, -1.75)):
+            part(f"Warden_Sensor_{side}{int(px)}", r, (px * s, py, 1.0),
+                 lambda b, px=px * s, py=py: b.ngon(px, py, 0.3, 6, 0.95, 1.15, "steel", "dark", taper=0.6))
     plumes = part("Warden_Plumes", r, (0, 4.55, 0.9),
                   lambda b: [b.box(x, 4.75, 0.42, 0.4, 0.75, 1.05, "g_magenta", "g_magenta", taper=0.6) for x in (-1.2, -0.4, 0.4, 1.2)])
     animate(plumes, L, flicker)

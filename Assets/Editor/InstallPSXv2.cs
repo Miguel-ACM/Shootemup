@@ -285,9 +285,40 @@ public static class InstallPSXv2
         visual.model=holder;visual.modelRenderer=hull;visual.modelRenderers=renderers;visual.sourceSprite=spriteSource;visual.spin=false;visual.accent=Color.white;
         foreach(var relay in root.GetComponentsInChildren<PSXVisibilityRelay>(true))UnityEngine.Object.DestroyImmediate(relay);
         hull.gameObject.AddComponent<PSXVisibilityRelay>().target=root;
+        WireShooters(root,model.transform);
         int tris=renderers.Sum(r=>r.GetComponent<MeshFilter>().sharedMesh.triangles.Length/3);
         report.AppendFormat(CultureInfo.InvariantCulture,"{{\"prefab\":\"{0}\",\"model\":\"{1}\",\"triangles\":{2},\"parts\":{3},\"clip\":\"{4}\",\"clipSeconds\":{5:0.00},\"fit\":{6:0.000},\"collider\":\"{7}\"}}",
             root.name,modelName,tris,renderers.Length,clip!=null ? clip.name : "",clip!=null ? clip.length : 0,fit,size);
+    }
+
+    /// <summary>Links model parts to the shooters they represent: aimed shooters drive turrets that
+    /// track the player, circular spreads drive parts that spin while firing, and every real shot
+    /// sparks from the part (see PSXShooterVisual). Reach is the muzzle distance in model units.</summary>
+    static void WireShooters(GameObject root,Transform model)
+    {
+        foreach(var old in model.GetComponentsInChildren<PSXShooterVisual>(true))UnityEngine.Object.DestroyImmediate(old);
+        Transform Part(string name)=>model.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name==name);
+        Transform[] Shooters(string prefix,float side)=>root.GetComponentsInChildren<AShooter>(true)
+            .Where(s=>s.name.StartsWith(prefix) && Mathf.Sign(s.transform.localPosition.x)==side).Select(s=>s.transform).ToArray();
+        void Add(string part,PSXShooterVisual.Mode mode,float reach,params Transform[] sources)
+        {
+            var t=Part(part);if(t==null)throw new InvalidOperationException(root.name+": missing part "+part);
+            var visual=t.gameObject.AddComponent<PSXShooterVisual>();
+            visual.mode=mode;visual.reach=reach*Mathf.Abs(t.lossyScale.x);visual.sources=sources;
+        }
+        switch(root.name)
+        {
+            case "enemy1":Add("Dart_Eye",PSXShooterVisual.Mode.Fixed,.1f,root.transform);break;
+            case "waver":Add("Rotor_Hub",PSXShooterVisual.Mode.Fixed,.25f,root.transform);break;
+            case "Biggie":Add("Gunboat_Turret",PSXShooterVisual.Mode.Spin,1.2f,root.transform);break;
+            case "stage1boss":
+                foreach(var (side,name) in new[]{(1f,"R"),(-1f,"L")})
+                {
+                    Add("Warden_Drum_"+name,PSXShooterVisual.Mode.Spin,1.55f,Shooters("Circular",side));
+                    Add("Warden_Aim_"+name,PSXShooterVisual.Mode.Aim,1.25f,Shooters("Focusing",side).Concat(Shooters("DeFocusing",side)).Concat(Shooters("smallShooter",side)).ToArray());
+                }
+                break;
+        }
     }
 
     static Vector2 ColliderSize(GameObject go)
@@ -377,8 +408,14 @@ public static class InstallPSXv2
     static void Stage(string resource,Vector3 position)
     {
         var go=UnityEngine.Object.Instantiate(Resources.Load<GameObject>(resource),position,Quaternion.identity);
+        // Inert except for its shooters, which fire so the turret visuals can be checked.
         foreach(var behaviour in go.GetComponentsInChildren<MonoBehaviour>(true))
-            if(!(behaviour is PSXObjectVisual) && !(behaviour is PSXVisibilityRelay))behaviour.enabled=false;
+            if(!(behaviour is PSXObjectVisual) && !(behaviour is PSXVisibilityRelay) && !(behaviour is PSXShooterVisual) && !(behaviour is AShooter))behaviour.enabled=false;
+        foreach(var shooter in go.GetComponentsInChildren<AShooter>(true))
+        {
+            if(shooter is Multishooter || shooter is Multiphase){shooter.enabled=false;continue;}
+            shooter.activation=AShooter.ShootTrigger.onTrigger;shooter.Trigger();
+        }
         foreach(var collider in go.GetComponentsInChildren<Collider2D>(true))collider.enabled=false;
         foreach(var body in go.GetComponentsInChildren<Rigidbody2D>(true))body.simulated=false;
     }
@@ -392,7 +429,7 @@ public static class InstallPSXv2
             float start=SessionState.GetFloat(StartKey,0);
             if(start<=0){SessionState.SetFloat(StartKey,(float)now);return;}
             int shot=SessionState.GetInt("PSXv2CaptureShot",0);
-            if(now-start>=5.6f && !SessionState.GetBool("PSXv2Staged",false))
+            if(now-start>=2.5f && !SessionState.GetBool("PSXv2Staged",false))
             {
                 // Inert boss + gunboat to check in-game scale and animation, plus test explosions.
                 SessionState.SetBool("PSXv2Staged",true);
@@ -401,6 +438,7 @@ public static class InstallPSXv2
                 Stage("Enemy/Biggie",new Vector3(cam.x+2.4f,cam.y-.5f,0));
                 PSXImpactEffects.Explosion(new Vector3(cam.x-2.4f,cam.y+.6f,0),1f);
                 PSXImpactEffects.Explosion(new Vector3(cam.x-1.2f,cam.y-2.6f,0),4f);
+                PSXFireballs.Shockwave(new Vector3(cam.x,cam.y-5,0),5,.45f,new Color(.55f,.8f,1f));
             }
             if(now-start<6+shot*.2f)return;
             var presentation=UnityEngine.Camera.main!=null ? UnityEngine.Camera.main.GetComponent<PSXPresentation>() : null;
