@@ -47,8 +47,6 @@ public class Shipcontroller : MonoBehaviour
 
     Vector3 lastPosition = Vector3.zero;
 
-    AWeapon[] weapons;
-
     List<ACompanion> companions = new List<ACompanion>();
     Dictionary<string, int> numCompanionsPerType = new Dictionary<string, int>(){
             {"sides", 0},
@@ -61,7 +59,6 @@ public class Shipcontroller : MonoBehaviour
     Vector2 move;
 
     void Awake(){
-        weapons = GetComponents<AWeapon>();
         input = new Inputs();
         healthBar.SetMax(maxHealth);
         healthBar.Set(health);
@@ -408,7 +405,8 @@ public class Shipcontroller : MonoBehaviour
 
     public void updateBulletSpawnPoints()
     {
-        foreach (AWeapon weapon in weapons)
+        // Picked-up weapons are spawned as children after Awake, so look them up every time.
+        foreach (AWeapon weapon in GetComponentsInChildren<AWeapon>())
         {
             weapon.updateSpawnPoints();
         }
