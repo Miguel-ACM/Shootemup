@@ -71,7 +71,8 @@ public static class InstallPSXv2
         var core=Mat(Folder+"PSXv2 Hitbox Core.mat","Shootemup/PSXv2 Hitbox");core.SetColor("_Color",Color.white);
         var ring=Mat(Folder+"PSXv2 Hitbox Ring.mat","Shootemup/PSXv2 Hitbox");ring.SetColor("_Color",new Color(1,.12f,.35f));
         Directory.CreateDirectory("Assets/Resources/Effects");
-        Flipbook("PSXv2Spark","Spark_4x16",true);Flipbook("PSXv2Explosion","Explosion_8x32",false);Flipbook("PSXv2ExplosionBig","ExplosionBig_8x64",false);
+        var fire=Mat("Assets/Resources/Effects/PSXv2Fireball.mat","Shootemup/PSXv2 Fireball");
+        fire.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"FX/Fireball_64.png");
         // Full PSX presentation by default: the shared composite now dithers visibly.
         var screen=AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/PSXPass/PSX screen composite.mat");
         if(screen!=null){screen.SetFloat("_Dither",.55f);screen.SetFloat("_Vignette",.12f);EditorUtility.SetDirty(screen);}
@@ -84,7 +85,9 @@ public static class InstallPSXv2
             var (prefab,model)=Enemies[i];if(i>0)report.Append(',');
             Edit("Assets/Resources/Enemy/"+prefab+".prefab",go=>InstallEnemy(go,model,rotation,steel,report));
         }
-        report.Append("]}");
+        report.Append("],");
+        InstallItems(rotation,steel,report);
+        report.Append("}");
         AssetDatabase.SaveAssets();
         File.WriteAllText(ReportPath,report.ToString());Debug.Log("PSXv2 installed: "+report);
         // Play the showcase (autopilot + sample fleet) and capture a few frames.
@@ -104,14 +107,15 @@ public static class InstallPSXv2
             var importer=(TextureImporter)AssetImporter.GetAtPath(path);
             importer.textureType=TextureImporterType.Default;importer.filterMode=FilterMode.Point;importer.mipmapEnabled=false;
             importer.textureCompression=TextureImporterCompression.Uncompressed;importer.wrapMode=TextureWrapMode.Clamp;
-            importer.npotScale=TextureImporterNPOTScale.None;importer.alphaIsTransparency=path.Contains("/FX/");
+            importer.npotScale=TextureImporterNPOTScale.None;importer.alphaIsTransparency=false;
+            if(path.Contains("/FX/"))importer.wrapMode=TextureWrapMode.Repeat;   // fireball skin scrolls
             importer.SaveAndReimport();
         }
     }
 
     static void ConfigureModels(StringBuilder report)
     {
-        foreach(var name in new[]{"PSXv2_Player"}.Concat(Enemies.Select(e=>e.model)))
+        foreach(var name in new[]{"PSXv2_Player","PSXv2_Items"}.Concat(Enemies.Select(e=>e.model)))
         {
             var importer=(ModelImporter)AssetImporter.GetAtPath(Folder+name+".fbx");
             importer.globalScale=1;importer.useFileScale=true;importer.bakeAxisConversion=false;
@@ -119,7 +123,7 @@ public static class InstallPSXv2
             importer.importNormals=ModelImporterNormals.Import;importer.importTangents=ModelImporterTangents.None;
             importer.weldVertices=false;importer.meshCompression=ModelImporterMeshCompression.Off;
             importer.materialImportMode=ModelImporterMaterialImportMode.None;importer.importBlendShapes=false;
-            bool animated=name!="PSXv2_Player";
+            bool animated=name.Contains("Enemy");
             importer.importAnimation=animated;
             importer.animationType=animated ? ModelImporterAnimationType.Legacy : ModelImporterAnimationType.None;
             importer.SaveAndReimport();
@@ -140,12 +144,6 @@ public static class InstallPSXv2
         material.shader=s;EditorUtility.SetDirty(material);return material;
     }
 
-    static void Flipbook(string name,string texture,bool additive)
-    {
-        var material=Mat("Assets/Resources/Effects/"+name+".mat","Shootemup/PSXv2 Flipbook");
-        material.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"FX/"+texture+".png");
-        material.SetFloat("_Additive",additive ? 1 : 0);
-    }
 
     // ------------------------------------------------------------------ orientation
     /// <summary>Finds where Blender's +Y (nose) and +Z (toward camera) land after FBX import, using
@@ -221,8 +219,8 @@ public static class InstallPSXv2
         var effects=ship.GetComponent<PSXShipEffects>();
         if(effects!=null)
         {
-            // Burners at Blender (+-0.26, -0.61), expressed in Ship local space.
-            effects.exhaustOffset=new Vector2(.26f,-.61f)*unitScale/Mathf.Abs(ship.lossyScale.x);
+            // Nacelle burners at Blender (+-0.34, -0.88), expressed in Ship local space.
+            effects.exhaustOffset=new Vector2(.34f,-.88f)*unitScale/Mathf.Abs(ship.lossyScale.x);
             EditorUtility.SetDirty(effects);
         }
         EditorUtility.SetDirty(visual);
@@ -259,8 +257,10 @@ public static class InstallPSXv2
         }
         SetLayer(holder,root.layer);
         // Fit to the unchanged gameplay collider, as the previous installer did.
-        var size=ColliderSize(root);var bounds=Bounds(renderers);
-        float fit=Mathf.Min(size.x/Mathf.Max(bounds.size.x,.01f),size.y/Mathf.Max(bounds.size.y,.01f));
+        // Collider sizes are root-local; renderer bounds are world, so divide out the root scale
+        // (stage1boss is scaled 0.5, which previously drew the boss at twice its hull size).
+        var size=ColliderSize(root);var bounds=Bounds(renderers);var rootScale=root.transform.lossyScale;
+        float fit=Mathf.Min(size.x*Mathf.Abs(rootScale.x)/Mathf.Max(bounds.size.x,.01f),size.y*Mathf.Abs(rootScale.y)/Mathf.Max(bounds.size.y,.01f));
         holder.localScale=Vector3.one*fit;
         var hull=renderers.OrderByDescending(r=>r.bounds.size.sqrMagnitude).First();
         var animation=model.GetComponent<Animation>();if(animation==null)animation=model.AddComponent<Animation>();
@@ -294,7 +294,81 @@ public static class InstallPSXv2
     static void Edit(string path,Action<GameObject> edit)
     {var go=PrefabUtility.LoadPrefabContents(path);try{edit(go);PrefabUtility.SaveAsPrefabAsset(go,path);}finally{PrefabUtility.UnloadPrefabContents(go);}}
 
+    // ------------------------------------------------------------------ items
+    /// <summary>Bakes each Item_* mesh of PSXv2_Items.fbx into game orientation (upright, facing the
+    /// camera, centred) as Assets/Art/PSXv2/Items/*.asset, then swaps them into the pickups, the shop
+    /// item (per-kind mesh list), and the four companions, which spin them through PSXObjectVisual.</summary>
+    static void InstallItems(Quaternion rotation,Material steel,StringBuilder report)
+    {
+        Directory.CreateDirectory(Folder+"Items");AssetDatabase.Refresh();
+        var asset=AssetDatabase.LoadAssetAtPath<GameObject>(Folder+"PSXv2_Items.fbx");
+        var temp=UnityEngine.Object.Instantiate(asset);temp.transform.position=Vector3.zero;
+        var meshes=new Mesh[IndustrialMeshFactory.ItemKinds.Length];
+        try
+        {
+            for(int i=0;i<meshes.Length;i++)
+            {
+                string kind=IndustrialMeshFactory.ItemKinds[i];
+                var source=temp.GetComponentsInChildren<MeshFilter>(true).Single(m=>m.name=="Item_"+kind);
+                var matrix=Matrix4x4.Rotate(rotation)*source.transform.localToWorldMatrix;
+                var mesh=UnityEngine.Object.Instantiate(source.sharedMesh);
+                var vertices=mesh.vertices.Select(v=>matrix.MultiplyPoint3x4(v)).ToArray();
+                var normals=mesh.normals.Select(n=>matrix.MultiplyVector(n).normalized).ToArray();
+                var center=new Bounds(vertices[0],Vector3.zero);foreach(var v in vertices)center.Encapsulate(v);
+                for(int k=0;k<vertices.Length;k++)vertices[k]-=center.center;
+                mesh.vertices=vertices;mesh.normals=normals;mesh.RecalculateBounds();mesh.name="PSXv2 "+kind;
+                meshes[i]=SaveMesh(mesh,Folder+"Items/"+kind+".asset");
+            }
+        }
+        finally{UnityEngine.Object.DestroyImmediate(temp);}
+        string[] pickups={"life","mana","money"};
+        for(int i=0;i<3;i++){int index=i;Edit("Assets/Resources/Pickables/"+pickups[i]+".prefab",go=>ItemVisual(go,meshes[index],steel,Vector2.one*.55f));}
+        Edit("Assets/Resources/Items/Item.prefab",go=>{var visual=ItemVisual(go,meshes[4],steel,Vector2.one*.85f);visual.itemMeshes=meshes;});
+        string[] companions={"AMoon","AngryMoon","BabyYou","Twerp"};int[] kinds={10,14,11,5};
+        for(int i=0;i<companions.Length;i++)
+        {
+            int index=i;Edit("Assets/Resources/Companions/"+companions[i]+".prefab",go=>
+            {
+                var size=ColliderSize(go);
+                if(index>=2)size=Vector2.one*(index==2 ? 1.6f : .65f);   // tiny follower colliders are not a readable size
+                ItemVisual(go,meshes[kinds[index]],steel,size);
+            });
+        }
+        report.Append("\"items\":["+string.Join(",",meshes.Select(m=>"{\"kind\":\""+m.name+"\",\"triangles\":"+m.triangles.Length/3+"}"))+"]");
+    }
+
+    static Mesh SaveMesh(Mesh mesh,string path)
+    {
+        var existing=AssetDatabase.LoadAssetAtPath<Mesh>(path);
+        if(existing==null){AssetDatabase.CreateAsset(mesh,path);return mesh;}
+        // Update through Mesh APIs so renderers pick up the new buffers.
+        existing.Clear();existing.name=mesh.name;existing.SetVertices(mesh.vertices);existing.SetNormals(mesh.normals);
+        existing.SetUVs(0,mesh.uv);existing.SetColors(mesh.colors);existing.SetTriangles(mesh.triangles,0);
+        existing.RecalculateBounds();UnityEngine.Object.DestroyImmediate(mesh);EditorUtility.SetDirty(existing);return existing;
+    }
+
+    static PSXObjectVisual ItemVisual(GameObject root,Mesh mesh,Material material,Vector2 size)
+    {
+        var visual=root.GetComponent<PSXObjectVisual>();
+        var model=root.transform.Find("Industrial model");
+        if(visual==null || model==null)throw new InvalidOperationException(root.name+" has no industrial item visual to replace");
+        model.GetComponent<MeshFilter>().sharedMesh=mesh;
+        model.GetComponent<MeshRenderer>().sharedMaterial=material;
+        float scale=Mathf.Min(size.x/Mathf.Max(mesh.bounds.size.x,.01f),size.y/Mathf.Max(mesh.bounds.size.y,.01f));
+        model.localScale=Vector3.one*scale;
+        return visual;
+    }
+
     // ------------------------------------------------------------------ capture
+    static void Stage(string resource,Vector3 position)
+    {
+        var go=UnityEngine.Object.Instantiate(Resources.Load<GameObject>(resource),position,Quaternion.identity);
+        foreach(var behaviour in go.GetComponentsInChildren<MonoBehaviour>(true))
+            if(!(behaviour is PSXObjectVisual) && !(behaviour is PSXVisibilityRelay))behaviour.enabled=false;
+        foreach(var collider in go.GetComponentsInChildren<Collider2D>(true))collider.enabled=false;
+        foreach(var body in go.GetComponentsInChildren<Rigidbody2D>(true))body.simulated=false;
+    }
+
     static void Capture(int stage)
     {
         if(stage==1)
@@ -304,7 +378,17 @@ public static class InstallPSXv2
             float start=SessionState.GetFloat(StartKey,0);
             if(start<=0){SessionState.SetFloat(StartKey,(float)now);return;}
             int shot=SessionState.GetInt("PSXv2CaptureShot",0);
-            if(now-start<6+shot*.35f)return;
+            if(now-start>=5.6f && !SessionState.GetBool("PSXv2Staged",false))
+            {
+                // Inert boss + gunboat to check in-game scale and animation, plus test explosions.
+                SessionState.SetBool("PSXv2Staged",true);
+                var cam=UnityEngine.Camera.main.transform.position;
+                Stage("Enemy/Bosses/stage1boss",new Vector3(cam.x,cam.y+4.2f,0));
+                Stage("Enemy/Biggie",new Vector3(cam.x+2.4f,cam.y-.5f,0));
+                PSXImpactEffects.Explosion(new Vector3(cam.x-2.4f,cam.y+.6f,0),1f);
+                PSXImpactEffects.Explosion(new Vector3(cam.x-1.2f,cam.y-2.6f,0),4f);
+            }
+            if(now-start<6+shot*.2f)return;
             var presentation=UnityEngine.Camera.main!=null ? UnityEngine.Camera.main.GetComponent<PSXPresentation>() : null;
             if(presentation!=null && presentation.SceneTexture!=null)
             {
@@ -319,7 +403,7 @@ public static class InstallPSXv2
                     ",\"presentations\":"+UnityEngine.Object.FindObjectsByType<PSXPresentation>(FindObjectsSortMode.None).Length+",\"renderHeight\":"+presentation.renderHeight+",\"explosions\":"+PSXImpactEffects.ExplosionCount+",\"bursts\":"+PSXImpactEffects.BurstCount+"}");
             }
             shot++;SessionState.SetInt("PSXv2CaptureShot",shot);
-            if(shot>=4){SessionState.SetInt("PSXv2CaptureShot",0);SessionState.SetInt(StageKey,2);EditorApplication.isPlaying=false;}
+            if(shot>=4){SessionState.SetInt("PSXv2CaptureShot",0);SessionState.SetBool("PSXv2Staged",false);SessionState.SetInt(StageKey,2);EditorApplication.isPlaying=false;}
             return;
         }
         if(stage==2 && !EditorApplication.isPlayingOrWillChangePlaymode)

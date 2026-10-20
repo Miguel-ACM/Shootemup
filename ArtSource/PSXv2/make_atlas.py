@@ -94,7 +94,74 @@ def atlas():
     fill(img, *P(5, 2), glow((220, 255, 200), (30, 200, 60)))   # 5 green
     fill(img, *P(6, 2), glow((255, 255, 220), (230, 200, 40)))  # 6 yellow lamp
     fill(img, *P(7, 2), lambda x, y: (255, 30, 90))             # 7 hitbox ring
+    # Row 3: item materials.
+    fill(img, *P(0, 3), lambda x, y: shade((236, 186, 40), 1.25 if x + y < 9 else 0.8 if x + y > 24 else 1.0))  # 0 gold
+    fill(img, *P(1, 3), lambda x, y: shade((236, 232, 222), 1.05 if y < 4 else 0.85 if y > 12 else 1.0))       # 1 ceramic
+    fill(img, *P(2, 3), lambda x, y: (120, 72, 36) if (x * 3 + y * 5) % 11 == 0 else (66, 36, 18))             # 2 coffee
+    fill(img, *P(3, 3), lambda x, y: shade((226, 170, 128), 1.1 if y < 5 else 0.9 if y > 11 else 1.0))         # 3 skin
+    fill(img, *P(4, 3), moon)                                                                                     # 4 moon
+    plate(img, *P(5, 3), (60, 150, 64))                                                                           # 5 green
+    fill(img, *P(6, 3), lambda x, y: shade((40, 96, 230), 1.25 if x < 3 else 0.85 if x > 12 else 1.0))         # 6 blue plastic
+    fill(img, *P(7, 3), lambda x, y: (70, 72, 80) if x + y in (4, 5) else (28, 28, 32))                        # 7 black plastic
+    # Row 4: item decals.
+    fill(img, *P(0, 4), lambda x, y: (220, 30, 30) if (6 <= x <= 9 and 2 <= y <= 13) or (2 <= x <= 13 and 6 <= y <= 9) else (240, 238, 232))  # 0 med cross
+    fill(img, *P(1, 4), bolt)                                                                                     # 1 battery bolt
+    fill(img, *P(2, 4), coin)                                                                                     # 2 coin face
+    fill(img, *P(3, 4), letter_p)                                                                                 # 3 protein label
+    fill(img, *P(4, 4), lambda x, y: (250, 220, 40) if bolt_mask(x, y) else (34, 30, 10))                       # 4 bolt on black
+    fill(img, *P(5, 4), lambda x, y: shade((200, 30, 30), 1.2 if y < 5 else 0.85 if y > 11 else 1.0))          # 5 magnet red
+    fill(img, *P(6, 4), lambda x, y: shade((210, 216, 226), 1.25 - abs(x - 5) / 14))                           # 6 chrome
+    fill(img, *P(7, 4), lambda x, y: shade((196, 150, 60), 1.2 if x < 4 else 0.85 if x > 12 else 1.0))         # 7 brass
+    # Row 5: boss / hull detail.
+    plate(img, *P(0, 5), (90, 34, 120))                                                                           # 0 deep purple
+    fill(img, *P(1, 5), lambda x, y: (255, 220, 120) if x % 4 == 1 and y % 5 == 2 else (24, 26, 34))          # 1 lit windows
+    fill(img, *P(2, 5), lambda x, y: (230, 230, 230) if digit07(x, y) else (60, 64, 72))                        # 2 hull number
+    fill(img, *P(3, 5), lambda x, y: (220, 30, 30) if ((x + y) // 4) % 2 == 0 else (236, 236, 236))           # 3 red caution
+    plate(img, *P(4, 5), (90, 84, 80), grime=0.5)                                                                 # 4 scorched steel
+    fill(img, *P(5, 5), lambda x, y: (20, 20, 24) if x % 3 == 0 or y % 3 == 0 else (96, 100, 108))            # 5 grating
+    fill(img, *P(6, 5), lambda x, y: (40, 230, 255) if 3 <= y <= 4 or y == 8 or (y == 11 and x < 9) else (8, 30, 40))  # 6 screen
+    plate(img, *P(7, 5), (230, 230, 236))                                                                         # 7 bright white armour
     return img
+
+
+def bolt_mask(x, y):
+    pts = {(9, 1), (8, 2), (8, 3), (7, 4), (7, 5), (6, 6), (6, 7), (7, 7), (8, 7), (9, 7), (9, 8), (8, 9), (8, 10), (7, 11), (7, 12), (6, 13), (6, 14)}
+    return (x, y) in pts or (x - 1, y) in pts
+
+
+def bolt(x, y):
+    return (250, 220, 40) if bolt_mask(x, y) else shade((40, 96, 230), 1.2 if x < 3 else 1.0)
+
+
+def coin(x, y):
+    d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** .5
+    s = {(9, 4), (8, 4), (7, 4), (6, 5), (6, 6), (7, 7), (8, 7), (9, 8), (9, 9), (8, 10), (7, 10), (6, 10)}
+    if (x, y) in s or (x == 7 and 3 <= y <= 11):
+        return (110, 70, 10)
+    return (176, 128, 20) if d > 6.5 else (250, 206, 60) if x + y < 12 else (230, 180, 40)
+
+
+def letter_p(x, y):
+    if (x in (5, 6) and 3 <= y <= 12) or (y in (3, 7) and 5 <= x <= 10) or (x == 10 and 3 <= y <= 7):
+        return (30, 70, 220)
+    return (236, 228, 200)
+
+
+def moon(x, y):
+    base = 150 + ((x * 7 + y * 13) % 5) * 4
+    for cx, cy, r in ((4, 4, 2.5), (11, 9, 3), (5, 12, 2)):
+        d = ((x - cx) ** 2 + (y - cy) ** 2) ** .5
+        if d < r - 0.8:
+            base = 104 if y < cy else 124
+        elif d < r + 0.3:
+            base = 186 if y > cy else 112
+    return (base, base, base + 4)
+
+
+def digit07(x, y):
+    zero = (2 <= x <= 6 and y in (3, 12)) or (x in (2, 6) and 3 <= y <= 12)
+    seven = (9 <= x <= 13 and y == 3) or (x == 13 - (y - 3) // 3 and 3 <= y <= 12)
+    return zero or seven
 
 
 def flipbook(name, frames, size, draw):
@@ -186,14 +253,29 @@ def smoke(img, t, s):
                 img.putpixel((x, y), q5((g, g, g + 6)) + (255,))
 
 
+def fireball():
+    """Tileable 64px fire skin for the PSX sphere explosions: posterised hot blobs on red, wrapping in both axes.
+    The shader scrolls it across slowly rotating spheres, like 32-bit era explosions."""
+    import math as m
+    s = 64
+    img = Image.new("RGB", (s, s))
+    blobs = [(rng.uniform(0, s), rng.uniform(0, s), rng.uniform(5, 13)) for _ in range(22)]
+    for y in range(s):
+        for x in range(s):
+            v = 0.0
+            for bx, by, r in blobs:
+                dx = min(abs(x - bx), s - abs(x - bx)); dy = min(abs(y - by), s - abs(y - by))
+                v += max(0.0, 1 - (dx * dx + dy * dy) ** .5 / r)
+            v += 0.15 * m.sin(x * 2 * m.pi / 32) * m.sin(y * 2 * m.pi / 16)
+            v += (bayer(x, y) - 0.5) * 0.35
+            col = (255, 250, 210) if v > 1.25 else (255, 214, 70) if v > 0.9 else (246, 120, 24) if v > 0.55 else (176, 38, 16) if v > 0.25 else (70, 14, 10)
+            img.putpixel((x, y), q5(col))
+    return img
+
+
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     FX.mkdir(parents=True, exist_ok=True)
     atlas().save(OUT / "PSXv2_Atlas.png")
-    flipbook("Explosion_8x32", 8, 32, explosion)
-    flipbook("ExplosionBig_8x64", 8, 64, explosion)
-    flipbook("Spark_4x16", 4, 16, spark)
-    flipbook("MuzzleFlash_3x16", 3, 16, muzzle)
-    flipbook("HitboxPulse_4x32", 4, 32, hitbox_glow)
-    flipbook("Smoke_6x16", 6, 16, smoke)
+    fireball().save(FX / "Fireball_64.png")
     print("ok")

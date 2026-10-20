@@ -65,6 +65,9 @@ def main():
     pf.alpha_composite(Image.open(R / "Playfield.png").convert("RGBA"))
     pf = psx(bullets(pf))
     pf.resize((180 * 3, 320 * 3), Image.NEAREST).save(HERE / "PSXv2_Playfield.png")
+    it = floor(192, 96)
+    it.alpha_composite(Image.open(R / "Items.png").convert("RGBA"))
+    psx(it).resize((192 * 4, 96 * 4), Image.NEAREST).save(HERE / "PSXv2_Items.png")
     # Enemy animation GIF, 8 s on twos (the GIF wrap is not seamless for every loop length).
     loops = {"PSXv2_Enemy_0_Dart": 24, "PSXv2_Enemy_1_Rotor": 48, "PSXv2_Enemy_2_Gunboat": 60, "PSXv2_Enemy_3_Warden": 90}
     gif = []

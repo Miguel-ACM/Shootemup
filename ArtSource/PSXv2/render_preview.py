@@ -84,7 +84,7 @@ def shot(cam, name, center, size, res, tilt=0.0):
 cam = setup()
 sc.frame_set(0)
 names = ["PSXv2_Player", "PSXv2_Enemy_0_Dart", "PSXv2_Enemy_1_Rotor", "PSXv2_Enemy_2_Gunboat", "PSXv2_Enemy_3_Warden"]
-sizes = {"PSXv2_Player": 2.2, "PSXv2_Enemy_0_Dart": 1.6, "PSXv2_Enemy_1_Rotor": 1.6, "PSXv2_Enemy_2_Gunboat": 4.4, "PSXv2_Enemy_3_Warden": 13.5}
+sizes = {"PSXv2_Player": 2.6, "PSXv2_Enemy_0_Dart": 1.6, "PSXv2_Enemy_1_Rotor": 1.6, "PSXv2_Enemy_2_Gunboat": 4.4, "PSXv2_Enemy_3_Warden": 13.5}
 for n in names:
     ob = bpy.data.objects[n]
     c = ob.location.copy()
@@ -97,7 +97,7 @@ layout = {"PSXv2_Player": (0, -6.0), "PSXv2_Enemy_0_Dart": (-2.5, 0.5), "PSXv2_E
 saved = {n: bpy.data.objects[n].location.copy() for n in names}
 for n, (x, y) in layout.items():
     bpy.data.objects[n].location = (x, y, 0)
-bpy.data.objects["PSXv2_Enemy_3_Warden"].scale = (0.7, 0.7, 0.7)  # boss prefab is fitted to its collider in-game
+bpy.data.objects["PSXv2_Enemy_3_Warden"].scale = (0.5, 0.5, 0.5)  # stage1boss root scale: in-game size = collider
 cam.data.sensor_fit = "VERTICAL"
 shot(cam, "Playfield", (0, 0, 0), 17.7, (180, 320))
 cam.data.sensor_fit = "AUTO"
@@ -112,4 +112,16 @@ for n in names[1:]:
         sc.frame_set(fr)
         shot(cam, f"anim/{n}_{fr:03d}", c, sizes[n] * 1.1, (96, 96))
 sc.frame_set(0)
+# Item catalogue: all 17 equipment models in a grid, slightly turned to show their depth.
+items = [o for o in bpy.data.objects if o.name.startswith("Item_")]
+home = {o.name: (o.parent, o.matrix_world.copy()) for o in items}
+for k, o in enumerate(items):
+    o.parent = None
+    o.location = (8 + (k % 6) * 1.4, -20 - (k // 6) * 1.4, 0)
+    o.rotation_euler = (math.radians(-20), math.radians(25), 0)
+cam.data.sensor_fit = "AUTO"
+shot(cam, "Items", (8 + 2.5 * 1.4, -20 - 1.4, 0), 8.6, (192, 96))
+for o in items:
+    o.parent = home[o.name][0]
+    o.matrix_world = home[o.name][1]
 print("rendered")

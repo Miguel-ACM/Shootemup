@@ -1,25 +1,10 @@
 fileFormatVersion: 2
-guid: 081927d7101c5514f88cba241f35f50c
+guid: e6e4dac1c86537d468d6f76773b43271
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1012862817306503317
-    second: Explosion_8x32_0
-  - first:
-      213: -8499293752444087195
-    second: Explosion_8x32_1
-  - first:
-      213: 2132416330165090893
-    second: Explosion_8x32_2
-  - first:
-      213: -7742672599985573729
-    second: Explosion_8x32_3
-  - first:
-      213: -1991988847598619728
-    second: Explosion_8x32_4
-  - first:
-      213: 827770978587771592
-    second: Explosion_8x32_5
+      213: -1857129473946531148
+    second: Fireball_64_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -55,9 +40,9 @@ TextureImporter:
     filterMode: 0
     aniso: 1
     mipBias: 0
-    wrapU: 1
-    wrapV: 1
-    wrapW: 1
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -70,7 +55,7 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
-  alphaIsTransparency: 1
+  alphaIsTransparency: 0
   spriteTessellationMethod: 0
   spriteTessellationDetail: -1
   spriteGeometrySubdivision: -1
@@ -143,123 +128,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Explosion_8x32_0
+      name: Fireball_64_0
       rect:
         serializedVersion: 2
-        x: 12
-        y: 11
-        width: 9
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b679e3052a691f1f0800000000000000
-      internalID: -1012862817306503317
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Explosion_8x32_1
-      rect:
-        serializedVersion: 2
-        x: 40
-        y: 8
-        width: 15
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5649fd30d517c0a80800000000000000
-      internalID: -8499293752444087195
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Explosion_8x32_2
-      rect:
-        serializedVersion: 2
-        x: 70
-        y: 6
-        width: 19
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d4a7bb0ba5dd79d10800000000000000
-      internalID: 2132416330165090893
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Explosion_8x32_3
-      rect:
-        serializedVersion: 2
-        x: 100
-        y: 5
-        width: 25
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f90b5b1fa408c8490800000000000000
-      internalID: -7742672599985573729
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Explosion_8x32_4
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 3
-        width: 32
-        height: 29
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0b3385672b80b54e0800000000000000
-      internalID: -1991988847598619728
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Explosion_8x32_5
-      rect:
-        serializedVersion: 2
-        x: 159
+        x: 0
         y: 0
-        width: 65
-        height: 32
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -268,8 +143,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8c20a1eb155dc7b00800000000000000
-      internalID: 827770978587771592
+      spriteID: 4ba428b35962a36e0800000000000000
+      internalID: -1857129473946531148
       vertices: []
       indices: 
       edges: []
@@ -288,12 +163,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Explosion_8x32_0: -1012862817306503317
-      Explosion_8x32_1: -8499293752444087195
-      Explosion_8x32_2: 2132416330165090893
-      Explosion_8x32_3: -7742672599985573729
-      Explosion_8x32_4: -1991988847598619728
-      Explosion_8x32_5: 827770978587771592
+      Fireball_64_0: -1857129473946531148
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

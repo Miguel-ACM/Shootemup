@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PSXv2ExplosionBig
-  m_Shader: {fileID: 4800000, guid: 8311cbe7cada08e48a3f44a6f42120c4, type: 3}
+  m_Name: PSXv2Fireball
+  m_Shader: {fileID: 4800000, guid: 909f79b959b3e5c428d448a62a0ea3c6, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -24,12 +24,14 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 1cf9c3f6c518ab3458bc1c1668acc87b, type: 3}
+        m_Texture: {fileID: 2800000, guid: e6e4dac1c86537d468d6f76773b43271, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Additive: 0
-    m_Colors: []
+    - _Fade: 0
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Scroll: {r: 0.35, g: 0.9, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
