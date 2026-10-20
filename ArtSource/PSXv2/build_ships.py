@@ -356,7 +356,12 @@ def player_geometry(b, hitbox=False):
           "lightgrey", "dark", inset=0.02, rise=0.015, cap="dark", taper=0.92)
     # Tall vertical wing blades, curved at the top and bottom ends.
     b.sym(R([(0.5, 8), (2, 4.5), (3.5, 4), (3.8, 12), (3.8, 26), (3.5, 30), (2, 30), (0.5, 26)]), 0.0, 0.3,
-          "lightgrey", "dark", inset=0.02, rise=0.02, cap="dark", taper=0.75)    # Elongated glowing core collar (orange) around the hitbox.
+          "lightgrey", "dark", inset=0.02, rise=0.02, cap="dark", taper=0.75)    # Two small thrusters in the gaps between the wing blades and the body, pointing backward.
+    for px in (5.6, 27.4):
+        x = ref(px, 0)[0]
+        b.tube((x, ref(0, 28.5)[1], 0.17), (x, ref(0, 19.5)[1], 0.17), 0.05, 6, "grey", cap0="g_orange", cap1="dark")
+        b.tube((x, ref(0, 29.3)[1], 0.17), (x, ref(0, 28.5)[1], 0.17), 0.062, 6, "dark", cap0="g_orange")
+    # Elongated glowing core collar (orange) around the hitbox.
     b.prism(R([(16.5, 9.5), (19.5, 12), (19.5, 17), (16.5, 19.5), (13.5, 17), (13.5, 12)]), 0.22, CORE_Z,
             "g_orange", "g_orange", taper=0.9)
     if hitbox:

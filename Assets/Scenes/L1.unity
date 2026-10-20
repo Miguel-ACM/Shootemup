@@ -119,38 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &72341308
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 72341309}
-  m_Layer: 7
-  m_Name: PSXv2 Player Visual
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &72341309
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 72341308}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.49999997, y: 0.49999997, z: 0.49999997}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 4664587474153543775}
-  m_Father: {fileID: 615934622}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &160302978
 GameObject:
   m_ObjectHideFlags: 0
@@ -312,39 +280,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &247750165
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 247750166}
-  m_Layer: 7
-  m_Name: PSXv2 Hitbox
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &247750166
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 247750165}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.49999997, y: 0.49999997, z: 0.49999997}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 6271975093455253597}
-  - {fileID: 6056872805937216267}
-  m_Father: {fileID: 615934622}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &305093057
 GameObject:
   m_ObjectHideFlags: 0
@@ -1059,8 +994,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1136376501}
-  - {fileID: 72341309}
-  - {fileID: 247750166}
+  - {fileID: 720424479}
+  - {fileID: 1848751468}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &615934623
@@ -1144,16 +1079,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PSXShipVisual
   sourceSprite: {fileID: 615934621}
-  model: {fileID: 72341309}
-  modelRenderer: {fileID: 5832404832991273776}
+  model: {fileID: 720424479}
+  modelRenderer: {fileID: 8633642094945881597}
   bankDegrees: 12
   customOrientation: 1
   baseRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
   partRenderers:
-  - {fileID: 5832404832991273776}
+  - {fileID: 8633642094945881597}
   hitboxRenderers:
-  - {fileID: 917441644418222081}
-  - {fileID: 5045826134523379810}
+  - {fileID: 3142226823427811020}
+  - {fileID: 7000395748442025647}
 --- !u!114 &615934630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1168,7 +1103,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PSXShipEffects
   flameMesh: {fileID: 4300000, guid: 193fcde1610beda48b5548b95d26ce21, type: 2}
   exhaustMaterial: {fileID: 2100000, guid: 6a11d8fd6132a2e48b49d1fb21b8dc67, type: 2}
-  exhaustOffset: {x: 0.029999997, y: -0.114999995}
+  exhaustOffset: {x: 0.19249998, y: -0.17999999}
+  exhaustScale: 0.4
 --- !u!60 &615934631
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -1222,6 +1158,38 @@ PolygonCollider2D:
       - {x: 0.034641024, y: -0.01999999}
       - {x: 0.034641016, y: 0.020000001}
   m_UseDelaunayMesh: 1
+--- !u!1 &720424478
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 720424479}
+  m_Layer: 7
+  m_Name: PSXv2 Player Visual
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &720424479
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720424478}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.49999997, y: 0.49999997, z: 0.49999997}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7465832810377655954}
+  m_Father: {fileID: 615934622}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &744264534
 GameObject:
   m_ObjectHideFlags: 0
@@ -2673,73 +2641,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1236976171}
   m_CullTransparentMesh: 1
---- !u!1 &1264219604
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1264219606}
-  - component: {fileID: 1264219605}
-  m_Layer: 0
-  m_Name: PSX Grass Field
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1264219605
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1264219604}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61d1253d985ca4b4993dda990b199b2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PSXGrassField
-  puddles:
-  - {fileID: 4300000, guid: 1403fcd85d855d244acd9bd59807f659, type: 2}
-  - {fileID: 4300000, guid: ea8ce0ce0f0f85643876ad0e8284041f, type: 2}
-  - {fileID: 4300000, guid: 40e9d4ad6277ebe44ba5fa71dddc157d, type: 2}
-  - {fileID: 4300000, guid: ba3a6fa7b4266e145a5ccc0509fcc37d, type: 2}
-  - {fileID: 4300000, guid: 19ac1d606b12e8f41ac9be33f6a19f2a, type: 2}
-  rocks:
-  - {fileID: 4300000, guid: aecc7eb89b6bdf943854b648603f6743, type: 2}
-  - {fileID: 4300000, guid: 3cd28a698cdee774cb4432b9bc06f130, type: 2}
-  - {fileID: 4300000, guid: fa8eceb23d6894544840e6208ee04d21, type: 2}
-  bushes:
-  - {fileID: 4300000, guid: 61f412ea3dde4db4da76bb4b39f5c1d7, type: 2}
-  - {fileID: 4300000, guid: 11282dbb5d555544a845f6de0cd09300, type: 2}
-  trees:
-  - {fileID: 4300000, guid: 89f893be5560f874699caddf3b0f8cc3, type: 2}
-  - {fileID: 4300000, guid: 65fd47156a0e5a24eb6a1e1ecf8022ee, type: 2}
-  - {fileID: 4300000, guid: fdb731faf68d29d4e83e9de415fd42d3, type: 2}
-  material: {fileID: 2100000, guid: 4f5e296a3bc587143ab087692bad28e9, type: 2}
-  groundMaterial: {fileID: 2100000, guid: c454ecf27010e3848994de90428423a7, type: 2}
-  cloudMaterial: {fileID: 2100000, guid: d3df6aebc165d4a468999dd5a24e9c2e, type: 2}
-  scrollSpeed: 2.2
-  grassTile: 10
-  sideParallax: 0.12
---- !u!4 &1264219606
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1264219604}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1279982547
 GameObject:
   m_ObjectHideFlags: 0
@@ -4608,6 +4509,39 @@ MonoBehaviour:
           rid: -2
         m_Provider2DCache:
           rid: -2
+--- !u!1 &1848751467
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1848751468}
+  m_Layer: 7
+  m_Name: PSXv2 Hitbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1848751468
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1848751467}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.49999997, y: 0.49999997, z: 0.49999997}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8082429611152236176}
+  - {fileID: 8299662752196122054}
+  m_Father: {fileID: 615934622}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1880399419
 GameObject:
   m_ObjectHideFlags: 0
@@ -4643,6 +4577,73 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1902410587
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1902410589}
+  - component: {fileID: 1902410588}
+  m_Layer: 0
+  m_Name: PSX Grass Field
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1902410588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902410587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61d1253d985ca4b4993dda990b199b2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PSXGrassField
+  puddles:
+  - {fileID: 4300000, guid: 1403fcd85d855d244acd9bd59807f659, type: 2}
+  - {fileID: 4300000, guid: ea8ce0ce0f0f85643876ad0e8284041f, type: 2}
+  - {fileID: 4300000, guid: 40e9d4ad6277ebe44ba5fa71dddc157d, type: 2}
+  - {fileID: 4300000, guid: ba3a6fa7b4266e145a5ccc0509fcc37d, type: 2}
+  - {fileID: 4300000, guid: 19ac1d606b12e8f41ac9be33f6a19f2a, type: 2}
+  rocks:
+  - {fileID: 4300000, guid: aecc7eb89b6bdf943854b648603f6743, type: 2}
+  - {fileID: 4300000, guid: 3cd28a698cdee774cb4432b9bc06f130, type: 2}
+  - {fileID: 4300000, guid: fa8eceb23d6894544840e6208ee04d21, type: 2}
+  bushes:
+  - {fileID: 4300000, guid: 61f412ea3dde4db4da76bb4b39f5c1d7, type: 2}
+  - {fileID: 4300000, guid: 11282dbb5d555544a845f6de0cd09300, type: 2}
+  trees:
+  - {fileID: 4300000, guid: 89f893be5560f874699caddf3b0f8cc3, type: 2}
+  - {fileID: 4300000, guid: 65fd47156a0e5a24eb6a1e1ecf8022ee, type: 2}
+  - {fileID: 4300000, guid: fdb731faf68d29d4e83e9de415fd42d3, type: 2}
+  material: {fileID: 2100000, guid: 4f5e296a3bc587143ab087692bad28e9, type: 2}
+  groundMaterial: {fileID: 2100000, guid: c454ecf27010e3848994de90428423a7, type: 2}
+  cloudMaterial: {fileID: 2100000, guid: d3df6aebc165d4a468999dd5a24e9c2e, type: 2}
+  scrollSpeed: 2.2
+  grassTile: 10
+  sideParallax: 0.12
+--- !u!4 &1902410589
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902410587}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1988969038
 GameObject:
   m_ObjectHideFlags: 0
@@ -5335,13 +5336,39 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 50, y: -1}
   m_UseGraphicAlpha: 1
---- !u!23 &917441644418222081
+--- !u!1 &521410485039393091
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8082429611152236176}
+  - component: {fileID: 4097655519100975321}
+  - component: {fileID: 3142226823427811020}
+  m_Layer: 7
+  m_Name: PSXv2_Player_HitboxCore
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!33 &1890804347068939996
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3660897514513917439}
+  m_Mesh: {fileID: 1824874527620787558, guid: 268980a4a16103c4e84c78fdff94b669, type: 3}
+--- !u!23 &3142226823427811020
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2313841851301578638}
+  m_GameObject: {fileID: 521410485039393091}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -5384,7 +5411,7 @@ MeshRenderer:
   m_SortingOrder: 61
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &1580226984776747826
+--- !u!1 &3660897514513917439
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5392,9 +5419,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6056872805937216267}
-  - component: {fileID: 4403810685736341521}
-  - component: {fileID: 5045826134523379810}
+  - component: {fileID: 8299662752196122054}
+  - component: {fileID: 1890804347068939996}
+  - component: {fileID: 7000395748442025647}
   m_Layer: 7
   m_Name: PSXv2_Player_HitboxRing
   m_TagString: Untagged
@@ -5402,62 +5429,29 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!33 &2305224046985483796
+--- !u!33 &4097655519100975321
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2313841851301578638}
+  m_GameObject: {fileID: 521410485039393091}
   m_Mesh: {fileID: 4227435351386918214, guid: 268980a4a16103c4e84c78fdff94b669, type: 3}
---- !u!1 &2313841851301578638
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6271975093455253597}
-  - component: {fileID: 2305224046985483796}
-  - component: {fileID: 917441644418222081}
-  m_Layer: 7
-  m_Name: PSXv2_Player_HitboxCore
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!33 &4403810685736341521
+--- !u!33 &5779293664967342391
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1580226984776747826}
-  m_Mesh: {fileID: 1824874527620787558, guid: 268980a4a16103c4e84c78fdff94b669, type: 3}
---- !u!4 &4664587474153543775
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5471910086254838501}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 72341309}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &5045826134523379810
+  m_GameObject: {fileID: 7840810718004014120}
+  m_Mesh: {fileID: -6898531397363877453, guid: 268980a4a16103c4e84c78fdff94b669, type: 3}
+--- !u!23 &7000395748442025647
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1580226984776747826}
+  m_GameObject: {fileID: 3660897514513917439}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -5500,7 +5494,22 @@ MeshRenderer:
   m_SortingOrder: 60
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &5471910086254838501
+--- !u!4 &7465832810377655954
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7840810718004014120}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 720424479}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7840810718004014120
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5508,9 +5517,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4664587474153543775}
-  - component: {fileID: 8580529381257484282}
-  - component: {fileID: 5832404832991273776}
+  - component: {fileID: 7465832810377655954}
+  - component: {fileID: 5779293664967342391}
+  - component: {fileID: 8633642094945881597}
   m_Layer: 7
   m_Name: PSXv2_Player
   m_TagString: Untagged
@@ -5518,13 +5527,43 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!23 &5832404832991273776
+--- !u!4 &8082429611152236176
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 521410485039393091}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1848751468}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &8299662752196122054
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3660897514513917439}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1848751468}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &8633642094945881597
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5471910086254838501}
+  m_GameObject: {fileID: 7840810718004014120}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -5567,44 +5606,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!4 &6056872805937216267
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1580226984776747826}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 247750166}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &6271975093455253597
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2313841851301578638}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 247750166}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &8580529381257484282
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5471910086254838501}
-  m_Mesh: {fileID: -6898531397363877453, guid: 268980a4a16103c4e84c78fdff94b669, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -5616,4 +5617,4 @@ SceneRoots:
   - {fileID: 1776723962}
   - {fileID: 305093059}
   - {fileID: 1340845851}
-  - {fileID: 1264219606}
+  - {fileID: 1902410589}

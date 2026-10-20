@@ -7,6 +7,8 @@ public sealed class PSXShipEffects : MonoBehaviour
     public Material exhaustMaterial;
     /// <summary>Burner position in Ship local space (mirrored on X). The installer matches it to the visual.</summary>
     public Vector2 exhaustOffset=new Vector2(.2016f,-.245f);
+    /// <summary>Flame size multiplier, so small ships get proportionate plumes.</summary>
+    public float exhaustScale=1f;
     Transform[] flames;
     MeshRenderer[] renderers;
     SpriteRenderer source;
@@ -47,7 +49,7 @@ public sealed class PSXShipEffects : MonoBehaviour
         for(int i=0;i<2;i++)
         {
             float pulse=.82f+.23f*Mathf.Sin(tick*2.39f+i*1.7f)+Mathf.Min(speed*.025f,.25f);
-            flames[i].localScale=new Vector3(1f,pulse,1f);
+            flames[i].localScale=new Vector3(exhaustScale,pulse*exhaustScale,1f);
             properties.SetColor("_Tint",new Color(1,1,1,source==null ? 1 : source.color.a));
             renderers[i].SetPropertyBlock(properties);renderers[i].enabled=!GameRules.playerDisabled;
             muzzleRenderers[i].enabled=Time.time<muzzleUntil && !GameRules.playerDisabled;

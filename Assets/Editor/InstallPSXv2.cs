@@ -223,8 +223,10 @@ public static class InstallPSXv2
         var effects=ship.GetComponent<PSXShipEffects>();
         if(effects!=null)
         {
-            // Twin burners at the tail (Blender +-0.06, -0.23), expressed in Ship local space.
-            effects.exhaustOffset=new Vector2(.06f,-.23f)*unitScale/Mathf.Abs(ship.lossyScale.x);
+            // Thruster nozzles between the wing blades and the body (Blender +-0.385, -0.36), in Ship local space,
+            // with plumes scaled down to the small ship.
+            effects.exhaustOffset=new Vector2(.385f,-.36f)*unitScale/Mathf.Abs(ship.lossyScale.x);
+            effects.exhaustScale=.4f;
             EditorUtility.SetDirty(effects);
         }
         EditorUtility.SetDirty(visual);
