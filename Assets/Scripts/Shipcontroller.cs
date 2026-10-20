@@ -33,7 +33,7 @@ public class Shipcontroller : MonoBehaviour
     public float slowMultiplier = 0.5f;
     private float speedMultiplier = 1f;
 
-    CircleCollider2D circleCollider;
+    Collider2D circleCollider;   // hexagonal PolygonCollider2D since the PSXv2 hitbox
     new SpriteRenderer renderer;
 
     float hitSoundTimeInterval = 0.001f;
@@ -148,7 +148,7 @@ public class Shipcontroller : MonoBehaviour
     void Start()
     {
         limits = Camera.getLimits();
-        circleCollider = GetComponent<CircleCollider2D>();
+        circleCollider = GetComponent<Collider2D>();
         renderer = GetComponent<SpriteRenderer>();
         //bigCollision = GameObject.GetComponent<PollygonCollider2D();
 

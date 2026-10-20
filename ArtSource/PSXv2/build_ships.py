@@ -7,7 +7,7 @@ Assets/Art/PSXv2.
 Conventions (top-down shmup): +Y is forward/up-screen, +Z points toward the camera.
 1 Blender unit = 1 Unity world unit at gameplay scale.
 Player: origin = Ship transform origin. The cockpit core disc is centred on the
-CircleCollider2D (offset 0,0.08 local * scale 2 = 0,0.16 world, radius 0.0576*2 = 0.115).
+hexagonal PolygonCollider2D (centre 0,0.08 local * Ship scale 2 = 0,0.16 world, circumradius 0.08).
 Enemies face -Y (down the screen). Items stand upright (+Y) and face the camera (+Z);
 they are closed meshes because they spin in game.
 """
@@ -66,7 +66,8 @@ def themed(theme):
         return run
     return wrap
 HITBOX_CENTER = (0.0, 0.16)
-HITBOX_RADIUS = 0.115
+HITBOX_RADIUS = 0.08   # hexagon circumradius (pointy top), matches the PolygonCollider2D the installer builds
+HEX = math.pi / 2
 TAU = 2 * math.pi
 
 
@@ -343,7 +344,7 @@ def player_geometry(b, hitbox=False):
     for x in (0.227, -0.227):
         b.tube((x, 0.90, 0.16), (x, 1.12, 0.16), 0.035, 6, "dark", cap1="black")
     # Cockpit collar around the hitbox core plus a glass canopy behind it.
-    b.ngon(*HITBOX_CENTER, HITBOX_RADIUS + 0.075, 8, 0.30, 0.40, "black", "dark", rot=math.pi / 8, taper=0.85)
+    b.ngon(*HITBOX_CENTER, HITBOX_RADIUS + 0.08, 6, 0.30, 0.40, "black", "dark", rot=HEX, taper=0.85)
     b.prism([(0, -0.02), (0.09, -0.12), (0.07, -0.34), (-0.07, -0.34), (-0.09, -0.12)], 0.30, 0.38, "glass", "black", taper=0.6)
     # Swept wings: white lower blade, blue armour plate, hazard root, red tip fins.
     b.sym([(0.20, 0.30), (0.86, -0.36), (0.90, -0.62), (0.62, -0.58), (0.20, -0.46)], 0.04, 0.13, "white", "dark", taper=0.9,
@@ -361,7 +362,7 @@ def player_geometry(b, hitbox=False):
         b.tube((x, -0.28, 0.20), (x, 0.08, 0.20), 0.05, 6, "steel", cap0="dark")
         b.tube((x, 0.08, 0.20), (x, 0.18, 0.20), 0.05, 6, "red", r1=0.0)
     if hitbox:
-        b.ngon(*HITBOX_CENTER, HITBOX_RADIUS, 12, 0.40, 0.44, "g_white", "g_white")
+        b.ngon(*HITBOX_CENTER, HITBOX_RADIUS, 6, 0.40, 0.44, "g_white", "g_white", rot=HEX)
 
 
 @themed(PLAYER_THEME)
@@ -370,13 +371,13 @@ def player():
     player_geometry(b)
     ship = b.finish("PSXv2_Player")
     ship.data.materials.append(material("PSXv2_Steel"))
-    # Hitbox core: separate, exact collider radius. Ring = thin magenta halo just outside it.
+    # Hitbox core: separate hexagon, exactly the collider. Ring = thin yellow hexagon just outside it.
     c = Builder()
-    c.ngon(*HITBOX_CENTER, HITBOX_RADIUS, 12, 0.40, 0.44, "g_white", "g_white")
+    c.ngon(*HITBOX_CENTER, HITBOX_RADIUS, 6, 0.40, 0.44, "g_white", "g_white", rot=HEX)
     core = c.finish("PSXv2_Player_HitboxCore")
     core.data.materials.append(material("PSXv2_HitboxCore", color=(1, 1, 1)))
     r = Builder()
-    r.ring(*HITBOX_CENTER, HITBOX_RADIUS + 0.035, HITBOX_RADIUS + 0.008, 12, 0.40, 0.43, "g_ring", "g_ring")
+    r.ring(*HITBOX_CENTER, HITBOX_RADIUS + 0.035, HITBOX_RADIUS + 0.01, 6, 0.40, 0.43, "g_ring", "g_ring", rot=HEX)
     ring = r.finish("PSXv2_Player_HitboxRing")
     ring.data.materials.append(material("PSXv2_HitboxRing", color=(1, 0.82, 0.1)))
     core.parent = ship

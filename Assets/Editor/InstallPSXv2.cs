@@ -30,8 +30,8 @@ public static class InstallPSXv2
         ("enemy1","PSXv2_Enemy_0_Dart"),("waver","PSXv2_Enemy_1_Rotor"),
         ("Biggie","PSXv2_Enemy_2_Gunboat"),("Bosses/stage1boss","PSXv2_Enemy_3_Warden"),
     };
-    // Blender-space facts from build_ships.py: hitbox disc radius and centre (= CircleCollider2D in world units).
-    const float HitboxRadius=.115f;
+    // Blender-space facts from build_ships.py: hexagon hitbox circumradius (pointy top) and centre, in world units.
+    const float HitboxRadius=.08f;
     static readonly Vector2 HitboxCenter=new Vector2(0,.16f);
     static bool busy;
 
@@ -165,7 +165,7 @@ public static class InstallPSXv2
             up[yAxis]=Mathf.Sign(hull.center[yAxis]);toCamera[zAxis]=Mathf.Sign(hull.center[zAxis]);
             // Unity: nose +Y, top toward the camera which looks along +Z, i.e. -Z.
             rotation=Quaternion.LookRotation(Vector3.back,Vector3.up)*Quaternion.Inverse(Quaternion.LookRotation(toCamera,up));
-            scale=2*HitboxRadius/disc.size[xAxis];
+            scale=2*HitboxRadius*Mathf.Cos(Mathf.PI/6)/disc.size[xAxis];   // flat-to-flat width of the hexagon
             report.AppendFormat(CultureInfo.InvariantCulture,"\"axes\":{{\"x\":{0},\"y\":{1},\"z\":{2},\"ySign\":{3},\"zSign\":{4}}},\"unitScale\":{5},\"rotation\":\"{6}\",",
                 xAxis,yAxis,zAxis,up[yAxis],toCamera[zAxis],scale,rotation.eulerAngles);
         }
@@ -225,17 +225,31 @@ public static class InstallPSXv2
         }
         EditorUtility.SetDirty(visual);
 
-        // Verify the drawn hitbox against the collider.
-        var collider=ship.GetComponent<CircleCollider2D>();
+        // Hexagonal hitbox collider, exactly under the drawn core (replaces the old circle).
+        var hexagon=HexCollider(ship);
         var disc=markers.First(m=>m.name.Contains("Core")).bounds;
-        Vector2 colliderCenter=ship.TransformPoint(collider.offset);
-        float colliderRadius=collider.radius*Mathf.Abs(ship.lossyScale.x);
+        Vector2 colliderCenter=hexagon.bounds.center;
+        float colliderRadius=hexagon.bounds.extents.y;
         var hull=Bounds(parts);
         report.AppendFormat(CultureInfo.InvariantCulture,
             "\"{0}\":{{\"hitboxCenterError\":{1:0.0000},\"hitboxRadius\":{2:0.0000},\"colliderRadius\":{3:0.0000},\"noseUp\":{4},\"shipLength\":{5:0.00},\"partRenderers\":{6}}},",
             Path.GetFileNameWithoutExtension(path),Vector2.Distance((Vector2)disc.center,colliderCenter),disc.extents.x,colliderRadius,
             (hull.max.y-ship.position.y>ship.position.y-hull.min.y).ToString().ToLowerInvariant(),hull.size.y,parts.Length);
         EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);
+    }
+
+    static PolygonCollider2D HexCollider(Transform ship)
+    {
+        bool trigger=true;
+        var circle=ship.GetComponent<CircleCollider2D>();
+        if(circle!=null){trigger=circle.isTrigger;UnityEngine.Object.DestroyImmediate(circle);}
+        var polygon=ship.GetComponent<PolygonCollider2D>();if(polygon==null)polygon=ship.gameObject.AddComponent<PolygonCollider2D>();
+        float scale=Mathf.Abs(ship.lossyScale.x);
+        var points=new Vector2[6];
+        for(int i=0;i<6;i++){float a=Mathf.PI/2+i*Mathf.PI/3;points[i]=new Vector2(Mathf.Cos(a),Mathf.Sin(a))*HitboxRadius/scale;}
+        polygon.offset=HitboxCenter/scale;polygon.pathCount=1;polygon.SetPath(0,points);polygon.isTrigger=trigger;
+        Physics2D.SyncTransforms();
+        return polygon;
     }
 
     // ------------------------------------------------------------------ enemies

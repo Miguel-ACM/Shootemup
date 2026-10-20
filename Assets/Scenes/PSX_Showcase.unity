@@ -119,6 +119,39 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &7407925
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7407926}
+  m_Layer: 7
+  m_Name: PSXv2 Hitbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7407926
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7407925}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.49999997, y: 0.49999997, z: 0.49999997}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3785266992079433120}
+  - {fileID: 4000082547567814390}
+  m_Father: {fileID: 615934622}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &160302978
 GameObject:
   m_ObjectHideFlags: 0
@@ -956,11 +989,11 @@ GameObject:
   - component: {fileID: 615934622}
   - component: {fileID: 615934621}
   - component: {fileID: 615934623}
-  - component: {fileID: 615934625}
   - component: {fileID: 615934627}
   - component: {fileID: 615934628}
   - component: {fileID: 615934629}
   - component: {fileID: 615934630}
+  - component: {fileID: 615934631}
   m_Layer: 7
   m_Name: Ship
   m_TagString: Player
@@ -1042,8 +1075,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1136376501}
-  - {fileID: 812122554}
-  - {fileID: 947101180}
+  - {fileID: 1163114482}
+  - {fileID: 7407926}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &615934623
@@ -1069,42 +1102,6 @@ MonoBehaviour:
   isShootingPrimary: 0
   isStopingPrimary: 1
   slowMultiplier: 0.5
---- !u!58 &615934625
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 615934620}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0.000000007450581, y: 0.08}
-  m_Radius: 0.057631195
 --- !u!50 &615934627
 Rigidbody2D:
   serializedVersion: 5
@@ -1163,16 +1160,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PSXShipVisual
   sourceSprite: {fileID: 615934621}
-  model: {fileID: 812122554}
-  modelRenderer: {fileID: 1385540078082827650}
+  model: {fileID: 1163114482}
+  modelRenderer: {fileID: 3710311954522308301}
   bankDegrees: 12
   customOrientation: 1
   baseRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
   partRenderers:
-  - {fileID: 1385540078082827650}
+  - {fileID: 3710311954522308301}
   hitboxRenderers:
-  - {fileID: 5724594404932718259}
-  - {fileID: 417937794881603280}
+  - {fileID: 8013619023586153980}
+  - {fileID: 2705274115144457631}
 --- !u!114 &615934630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1187,7 +1184,60 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PSXShipEffects
   flameMesh: {fileID: 4300000, guid: 193fcde1610beda48b5548b95d26ce21, type: 2}
   exhaustMaterial: {fileID: 2100000, guid: 6a11d8fd6132a2e48b49d1fb21b8dc67, type: 2}
-  exhaustOffset: {x: 0.17, y: -0.44}
+  exhaustOffset: {x: 0.16999999, y: -0.43999997}
+--- !u!60 &615934631
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 615934620}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0.08}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.46875, y: 0.84375}
+    newSize: {x: 4, y: 4}
+    adaptiveTilingThreshold: 0.495
+    drawMode: 0
+    adaptiveTiling: 1
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -0.0000000017484555, y: 0.04}
+      - {x: -0.034641016, y: 0.020000001}
+      - {x: -0.03464101, y: -0.020000007}
+      - {x: 4.769952e-10, y: -0.04}
+      - {x: 0.034641024, y: -0.01999999}
+      - {x: 0.034641016, y: 0.020000001}
+  m_UseDelaunayMesh: 1
 --- !u!1 &744264534
 GameObject:
   m_ObjectHideFlags: 0
@@ -1414,38 +1464,6 @@ MonoBehaviour:
   blendDistance: 0
   weight: 1
   sharedProfile: {fileID: 11400000, guid: d27e62c3f06f4494f8bb914fb22f5dba, type: 2}
---- !u!1 &812122553
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 812122554}
-  m_Layer: 7
-  m_Name: PSXv2 Player Visual
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &812122554
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 812122553}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 248051475113991917}
-  m_Father: {fileID: 615934622}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &822493431
 GameObject:
   m_ObjectHideFlags: 0
@@ -1989,39 +2007,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 939646445}
   m_CullTransparentMesh: 1
---- !u!1 &947101179
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 947101180}
-  m_Layer: 7
-  m_Name: PSXv2 Hitbox
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &947101180
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 947101179}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1495256694538221295}
-  - {fileID: 1712746296195595705}
-  m_Father: {fileID: 615934622}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1001471615
 GameObject:
   m_ObjectHideFlags: 0
@@ -2399,6 +2384,38 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8545162521019214112, guid: 01f17b532afaf524e8372f4a4b6d4079, type: 3}
   m_PrefabInstance: {fileID: 1136376499}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1163114481
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1163114482}
+  m_Layer: 7
+  m_Name: PSXv2 Player Visual
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1163114482
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1163114481}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.49999997, y: 0.49999997, z: 0.49999997}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2537358153967732130}
+  m_Father: {fileID: 615934622}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1171878877
 GameObject:
   m_ObjectHideFlags: 0
@@ -5299,28 +5316,36 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 50, y: -1}
   m_UseGraphicAlpha: 1
---- !u!4 &248051475113991917
+--- !u!33 &1484316892326726151
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2917577609342639896}
+  m_Mesh: {fileID: -6898531397363877453, guid: 268980a4a16103c4e84c78fdff94b669, type: 3}
+--- !u!4 &2537358153967732130
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 592945919228249175}
+  m_GameObject: {fileID: 2917577609342639896}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 812122554}
+  m_Father: {fileID: 1163114482}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &417937794881603280
+--- !u!23 &2705274115144457631
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6207270932774129024}
+  m_GameObject: {fileID: 8530776786936682191}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -5363,7 +5388,7 @@ MeshRenderer:
   m_SortingOrder: 60
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &592945919228249175
+--- !u!1 &2917577609342639896
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5371,9 +5396,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 248051475113991917}
-  - component: {fileID: 3809651753446625608}
-  - component: {fileID: 1385540078082827650}
+  - component: {fileID: 2537358153967732130}
+  - component: {fileID: 1484316892326726151}
+  - component: {fileID: 3710311954522308301}
   m_Layer: 7
   m_Name: PSXv2_Player
   m_TagString: Untagged
@@ -5381,13 +5406,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!23 &1385540078082827650
+--- !u!23 &3710311954522308301
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 592945919228249175}
+  m_GameObject: {fileID: 2917577609342639896}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -5430,51 +5455,69 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!4 &1495256694538221295
+--- !u!4 &3785266992079433120
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7194178183087096124}
+  m_GameObject: {fileID: 4868702068444748403}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 947101180}
+  m_Father: {fileID: 7407926}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &1712746296195595705
+--- !u!4 &4000082547567814390
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6207270932774129024}
+  m_GameObject: {fileID: 8530776786936682191}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 947101180}
+  m_Father: {fileID: 7407926}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3809651753446625608
+--- !u!1 &4868702068444748403
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3785266992079433120}
+  - component: {fileID: 8966875032875338729}
+  - component: {fileID: 8013619023586153980}
+  m_Layer: 7
+  m_Name: PSXv2_Player_HitboxCore
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!33 &6813957401700126188
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 592945919228249175}
-  m_Mesh: {fileID: -6898531397363877453, guid: 268980a4a16103c4e84c78fdff94b669, type: 3}
---- !u!23 &5724594404932718259
+  m_GameObject: {fileID: 8530776786936682191}
+  m_Mesh: {fileID: 1824874527620787558, guid: 268980a4a16103c4e84c78fdff94b669, type: 3}
+--- !u!23 &8013619023586153980
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7194178183087096124}
+  m_GameObject: {fileID: 4868702068444748403}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -5517,7 +5560,7 @@ MeshRenderer:
   m_SortingOrder: 61
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &6207270932774129024
+--- !u!1 &8530776786936682191
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5525,9 +5568,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1712746296195595705}
-  - component: {fileID: 9139996530183542435}
-  - component: {fileID: 417937794881603280}
+  - component: {fileID: 4000082547567814390}
+  - component: {fileID: 6813957401700126188}
+  - component: {fileID: 2705274115144457631}
   m_Layer: 7
   m_Name: PSXv2_Player_HitboxRing
   m_TagString: Untagged
@@ -5535,40 +5578,14 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!33 &6644917324770234534
+--- !u!33 &8966875032875338729
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7194178183087096124}
+  m_GameObject: {fileID: 4868702068444748403}
   m_Mesh: {fileID: 4227435351386918214, guid: 268980a4a16103c4e84c78fdff94b669, type: 3}
---- !u!1 &7194178183087096124
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1495256694538221295}
-  - component: {fileID: 6644917324770234534}
-  - component: {fileID: 5724594404932718259}
-  m_Layer: 7
-  m_Name: PSXv2_Player_HitboxCore
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!33 &9139996530183542435
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6207270932774129024}
-  m_Mesh: {fileID: 1824874527620787558, guid: 268980a4a16103c4e84c78fdff94b669, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
