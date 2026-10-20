@@ -4,11 +4,30 @@ using UnityEngine;
 
 public static class ItemPool
 {
-    private static List<string> common = new List<string> {"RabbitsFoot", "BlankBullet", "TwerpItem", "Magnet", "AK45Item"};
-    private static List<string> rare = new List<string> { "Caffeine", "ProteinSupplement", "AMoonItem", "BabyYouItem", "ElectricityItem" };
-    private static List<string> epic = new List<string> { "AnotherArm", "AngryMoonItem"};
-    private static List<string> legendary = new List<string> { "Telekinesis", "ThreeMoonsItem" };
+    private static readonly string[] allCommon = { "RabbitsFoot", "BlankBullet", "TwerpItem", "Magnet", "AK45Item" };
+    private static readonly string[] allRare = { "Caffeine", "ProteinSupplement", "AMoonItem", "BabyYouItem", "ElectricityItem" };
+    private static readonly string[] allEpic = { "AnotherArm", "AngryMoonItem" };
+    private static readonly string[] allLegendary = { "Telekinesis", "ThreeMoonsItem" };
+
+    // Items are removed from these as they are offered, so they are refilled at the start of each run.
+    private static List<string> common;
+    private static List<string> rare;
+    private static List<string> epic;
+    private static List<string> legendary;
     private static List<string> defaultPool = new List<string> { "TwerpItem", "AMoonItem", "BabyYouItem" };
+
+    static ItemPool()
+    {
+        ResetRun();
+    }
+
+    public static void ResetRun()
+    {
+        common = new List<string>(allCommon);
+        rare = new List<string>(allRare);
+        epic = new List<string>(allEpic);
+        legendary = new List<string>(allLegendary);
+    }
 
     private static string LowerPool(string pool)
     {

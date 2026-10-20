@@ -18,6 +18,13 @@ public class Score : MonoBehaviour
     static AnimationCurve increaseSizeCurve;
     static float timeScoreDown = 2f;
 
+    public static void ResetRun()
+    {
+        score = 0;
+        multiplier = 1;
+        scoreThisMult = 0;
+        timeSinceNoScoreUp = 0f;
+    }
 
     public static void IncreaseScore(int quantity)
     {

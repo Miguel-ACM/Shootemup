@@ -20,6 +20,7 @@ public class NewGame : AMenuElement {
 
     private IEnumerator WaitForSecond() {
         yield return new WaitForSeconds(3f);
+        GameRules.StartNewRun();
         UnityEngine.SceneManagement.SceneManager.LoadScene("L1");
     }
 }
