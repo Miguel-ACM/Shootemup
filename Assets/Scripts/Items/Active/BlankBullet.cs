@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 public class BlankBullet : AActiveItem
 {
-
     Vector3 pos;
 
     protected override void Start()
@@ -50,5 +49,4 @@ public class BlankBullet : AActiveItem
         lastCD = 0;
         return mana - cost;
     }
-
 }

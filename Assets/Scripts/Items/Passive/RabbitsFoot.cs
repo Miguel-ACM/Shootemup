@@ -1,6 +1,5 @@
 public class RabbitsFoot : AItem
 {
-
     private void Awake()
     {
         SetData("Rabbit's Foot", "Why would you take this?", "Increase your luck.", AItem.ItemType.passive);
@@ -16,6 +15,4 @@ public class RabbitsFoot : AItem
         GameRules.luck += 0.2f;
         base.OnPickup();
     }
-
-
 }

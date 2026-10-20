@@ -1,6 +1,5 @@
 public class Caffeine : AItem
 {
-
     private void Awake()
     {
         SetData("Caffeine", "Everything feels faster now!", "Increases shoot speed, shoot travel speed and move speed.", AItem.ItemType.passive);
@@ -18,6 +17,4 @@ public class Caffeine : AItem
         GameRules.playerMoveSpeed += 4f;
         base.OnPickup();
     }
-
-
 }

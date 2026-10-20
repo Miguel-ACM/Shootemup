@@ -15,12 +15,6 @@ public class ACompanion : MonoBehaviour
     protected CompanionType type;
     protected bool blocksBullets = false;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
     void OnTriggerEnter2D(Collider2D other)
     {
         if (blocksBullets && other.tag == "EnemyBullet")
@@ -30,15 +24,8 @@ public class ACompanion : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public CompanionType GetCompanionType()
     {
         return type;
     }
-
 }

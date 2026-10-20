@@ -1,6 +1,5 @@
 public class Magnet : AItem
 {
-
     private void Awake()
     {
         SetData("Magnet", "How does it work, right? HAHA", "Dramatically increases pick up range.", AItem.ItemType.passive);
@@ -16,6 +15,4 @@ public class Magnet : AItem
         GameRules.pickDistance += 2f;
         base.OnPickup();
     }
-
-
 }

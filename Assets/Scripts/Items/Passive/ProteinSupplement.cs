@@ -1,6 +1,5 @@
 public class ProteinSupplement : AItem
 {
-
     private void Awake()
     {
         SetData("Protein Supplement", "Faster gains", "Increased bullet size and damage.", AItem.ItemType.passive);
@@ -17,6 +16,4 @@ public class ProteinSupplement : AItem
         GameRules.playerShootDamage += 1;
         base.OnPickup();
     }
-
-
 }

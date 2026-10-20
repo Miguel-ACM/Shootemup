@@ -1,10 +1,5 @@
 public class AngryMoonItem : ACompanionItem
 {
-
-    public AngryMoonItem()
-    {
-    }
-
     private void Awake()
     {
         companionName = "AngryMoon";
@@ -12,9 +7,4 @@ public class AngryMoonItem : ACompanionItem
     }
 
     public override void OnBegin() { }
-
-    public override void OnPickup()
-    {
-        base.OnPickup();
-    }
 }

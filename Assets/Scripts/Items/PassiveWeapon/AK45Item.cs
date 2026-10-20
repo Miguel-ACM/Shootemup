@@ -1,11 +1,5 @@
 public class AK45Item : APassiveWeaponItem
 {
-
-    public AK45Item()
-    {
-    }
-
-
     private void Awake()
     {
         weaponeName = "AK45Weapon";
@@ -13,9 +7,4 @@ public class AK45Item : APassiveWeaponItem
     }
 
     public override void OnBegin() { }
-
-    public override void OnPickup()
-    {
-        base.OnPickup();
-    }
 }

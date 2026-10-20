@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Multishooter : AShooter
 {
-
     [System.Serializable]
     private class shooterList
     {
@@ -31,9 +30,6 @@ public class Multishooter : AShooter
     [SerializeField] private bool fixedFirstPhase;
     private int curPhase = -1;
 
-    void Update()
-    {
-    }
     // Start is called before the first frame update
 
     private bool inProhibited(int next, int curr)
@@ -106,6 +102,4 @@ public class Multishooter : AShooter
         }
         base.Stop();
     }
-
-
 }

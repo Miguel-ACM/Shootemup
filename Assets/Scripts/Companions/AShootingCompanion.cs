@@ -17,18 +17,6 @@ public class AShootingCompanion : ACompanion
     [SerializeField] private float shootSize = 2f;
     [SerializeField] private float shootFollowness = 0;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     void Awake()
     {
         input = new Inputs();

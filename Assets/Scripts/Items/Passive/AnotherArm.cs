@@ -1,6 +1,5 @@
 public class AnotherArm : AItem
 {
-
     private void Awake()
     {
         SetData("Another arm", "It might be useful?", "One more bullet per shot.", AItem.ItemType.passive);
@@ -17,6 +16,4 @@ public class AnotherArm : AItem
         s.updateBulletSpawnPoints();
         base.OnPickup();
     }
-
-
 }

@@ -1,10 +1,5 @@
 public class AMoonItem : ACompanionItem
 {
-
-    public AMoonItem()
-    {
-    }
-
     private void Awake()
     {
         companionName = "AMoon";
@@ -12,9 +7,4 @@ public class AMoonItem : ACompanionItem
     }
 
     public override void OnBegin() { }
-
-    public override void OnPickup()
-    {
-        base.OnPickup();
-    }
 }

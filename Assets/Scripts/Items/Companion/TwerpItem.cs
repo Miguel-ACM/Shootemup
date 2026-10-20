@@ -1,10 +1,5 @@
 public class TwerpItem : ACompanionItem
 {
-
-    public TwerpItem()
-    {
-    }
-
     private void Awake()
     {
         companionName = "Twerp";
@@ -12,9 +7,4 @@ public class TwerpItem : ACompanionItem
     }
 
     public override void OnBegin() { }
-
-    public override void OnPickup()
-    {
-        base.OnPickup();
-    }
 }

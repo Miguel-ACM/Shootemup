@@ -1,10 +1,5 @@
 public class ElectricityItem : AWeaponItem
 {
-
-    public ElectricityItem()
-    {
-    }
-
     private void Awake()
     {
         weaponeName = "ElectricityWeapon";
@@ -12,9 +7,4 @@ public class ElectricityItem : AWeaponItem
     }
 
     public override void OnBegin() { }
-
-    public override void OnPickup()
-    {
-        base.OnPickup();
-    }
 }

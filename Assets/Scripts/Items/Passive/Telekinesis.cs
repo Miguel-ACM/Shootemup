@@ -1,6 +1,5 @@
 public class Telekinesis : AItem
 {
-
     private void Awake()
     {
         SetData("Telekinesis", "The spoon is acting wonky", "Your shots chases your enemies (to an extent).", AItem.ItemType.passive);
@@ -16,6 +15,4 @@ public class Telekinesis : AItem
         GameRules.playerShootFollowness += 1f;
         base.OnPickup();
     }
-
-
 }

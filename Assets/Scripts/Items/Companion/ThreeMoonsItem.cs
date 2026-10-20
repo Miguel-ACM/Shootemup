@@ -1,10 +1,5 @@
 public class ThreeMoonsItem : ACompanionItem
 {
-
-    public ThreeMoonsItem()
-    {
-    }
-
     private void Awake()
     {
         companionName = "AMoon";
