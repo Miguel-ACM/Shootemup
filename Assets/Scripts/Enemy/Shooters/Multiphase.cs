@@ -26,11 +26,11 @@ public class Multiphase : AShooter
         base.Start();
         maxHealth = enemy.health;
         activation = ShootTrigger.onArrive;
+        curShooter = phases[0];
     }
 
     void Update()
     {
-        curShooter = phases[0];
         if (start)
         {
             foreach (AShooter shoot in curShooter.shooters)
@@ -42,7 +42,8 @@ public class Multiphase : AShooter
             start = false;
         }
         
-        if (currPhase < life.Length && enemy.health < maxHealth * life[currPhase] )
+        // A phase threshold without a following phase in the inspector is ignored.
+        if (currPhase < life.Length && currPhase + 1 < phases.Length && enemy.health < maxHealth * life[currPhase] )
         {
             if (!changinPhase)
             {
