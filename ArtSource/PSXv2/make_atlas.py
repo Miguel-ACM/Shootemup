@@ -348,25 +348,34 @@ def grass_texture():
     return img
 
 
+CLOUD_SHAPES = [
+    # (puffs (x, y, radius) in a 64x32 cell, vertical squash, threshold): cumulus, small puff,
+    # thin stratus streaks, big lumpy cloud.
+    ([(x, 21, 5.5) for x in range(12, 54, 5)] + [(22, 14, 7), (33, 11, 8.5), (44, 15, 6)], 1.3, .55),
+    ([(24, 19, 6), (32, 15, 8), (40, 19, 6), (30, 21, 5)], 1.3, .55),
+    ([(x, 14 + (x % 3), 4) for x in range(6, 60, 4)] + [(x, 22, 3.5) for x in range(14, 50, 5)], 2.4, .5),
+    ([(x, 22, 6) for x in range(9, 57, 6)] + [(16, 15, 7), (27, 10, 8), (39, 12, 9), (50, 16, 6.5)], 1.2, .6),
+]
+
+
 def cloud_texture():
-    """64x32 soft cloud sprite: one merged metaball body with a noisy rim, white on top shading to
-    grey underneath, and alpha that falls off in ordered-dither steps (PS1-style transparency)."""
+    """64x128 atlas of four cloud sprites (one per 32px row): merged metaball bodies with a noisy
+    rim, white on top shading to grey underneath, and alpha that falls off in ordered-dither steps
+    (PS1-style transparency)."""
     import math as m
     w, h = 64, 32
-    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    r = random.Random(4)
-    # Cumulus profile: a flat base row with three domes on top.
-    puffs = [(x, 21, 5.5) for x in range(12, 54, 5)] + [(22, 14, 7), (33, 11, 8.5), (44, 15, 6)]
+    img = Image.new("RGBA", (w, h * len(CLOUD_SHAPES)), (0, 0, 0, 0))
     edge = periodic_noise(64, 8, 5)
-    for y in range(h):
-        for x in range(w):
-            f = sum(m.exp(-((x - px) ** 2 + ((y - py) * 1.3) ** 2) / (pr * pr)) for px, py, pr in puffs)
-            f += (edge[y * 2 % 64][x] - .5) * .3
-            a = max(0.0, min(1.0, (f - .55) / .45))
-            if a <= 0 or bayer(x, y) > a * 1.6:
-                continue
-            g = int(238 - (y / h) * 46 - (1 - a) * 24)
-            img.putpixel((x, y), q5((g, g + 2, g + 6)) + (int(210 * min(1, a * 1.4)),))
+    for row, (puffs, squash, threshold) in enumerate(CLOUD_SHAPES):
+        for y in range(h):
+            for x in range(w):
+                f = sum(m.exp(-((x - px) ** 2 + ((y - py) * squash) ** 2) / (pr * pr)) for px, py, pr in puffs)
+                f += (edge[(y * 2 + row * 16) % 64][x] - .5) * .3
+                a = max(0.0, min(1.0, (f - threshold) / .45))
+                if a <= 0 or bayer(x, y) > a * 1.6:
+                    continue
+                g = int(238 - (y / h) * 46 - (1 - a) * 24)
+                img.putpixel((x, row * h + y), q5((g, g + 2, g + 6)) + (int(210 * min(1, a * 1.4)),))
     return img
 
 if __name__ == "__main__":
@@ -376,5 +385,5 @@ if __name__ == "__main__":
     fireball().save(FX / "Fireball_64.png")
     (OUT / "Field").mkdir(exist_ok=True)
     grass_texture().save(OUT / "Field" / "Grass_256.png")
-    cloud_texture().save(OUT / "Field" / "Cloud_64x32.png")
+    cloud_texture().save(OUT / "Field" / "Clouds_64x128.png")
     print("ok")

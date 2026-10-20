@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: bd0858b5426c7794fb06ca9b1c450789
+guid: 1a6cad3d8d07c0d4e9b2b6b2a1a229da
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5209802057159472929
-    second: Cloud_64x32_0
+      213: -2525805671113765141
+    second: Clouds_64x128_0
+  - first:
+      213: -4724553967420237614
+    second: Clouds_64x128_1
+  - first:
+      213: -2831510803462577248
+    second: Clouds_64x128_2
+  - first:
+      213: 7350067558190244088
+    second: Clouds_64x128_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -128,11 +137,11 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Cloud_64x32_0
+      name: Clouds_64x128_0
       rect:
         serializedVersion: 2
         x: 7
-        y: 5
+        y: 101
         width: 51
         height: 21
       alignment: 0
@@ -143,8 +152,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fd809e8b1a013b7b0800000000000000
-      internalID: -5209802057159472929
+      spriteID: beec899df1982fcd0800000000000000
+      internalID: -2525805671113765141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Clouds_64x128_1
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 70
+        width: 27
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d811c9c2330f6eb0800000000000000
+      internalID: -4724553967420237614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Clouds_64x128_2
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 39
+        width: 60
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a3aeed1de374b8d0800000000000000
+      internalID: -2831510803462577248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Clouds_64x128_3
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 4
+        width: 54
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f06d09708fa00660800000000000000
+      internalID: 7350067558190244088
       vertices: []
       indices: 
       edges: []
@@ -163,7 +238,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Cloud_64x32_0: -5209802057159472929
+      Clouds_64x128_0: -2525805671113765141
+      Clouds_64x128_1: -4724553967420237614
+      Clouds_64x128_2: -2831510803462577248
+      Clouds_64x128_3: 7350067558190244088
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

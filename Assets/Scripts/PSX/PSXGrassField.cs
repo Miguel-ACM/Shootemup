@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 
 /// <summary>
 /// Level 1 background: a tiled, muted grass texture with Blender-built ponds, rocks, bushes and
-/// trees on it, and soft sprite clouds drifting above with faint shadows on the ground. Everything
+/// trees on it, and varied soft sprite clouds drifting above with faint shadows on the ground. Everything
 /// scrolls down and is recycled to the top with a new random position; nothing solid is ever
 /// placed on water. Moving right shifts the field left (clouds twice as much).
 /// </summary>
@@ -22,7 +22,7 @@ public sealed class PSXGrassField : MonoBehaviour
     const float GroundZ=90,CloudZ=60;
     readonly List<Piece> pieces=new List<Piece>();
     readonly System.Random random=new System.Random(7);
-    MaterialPropertyBlock shadowTint;
+    const int CloudShapes=4;
 
     enum Kind { Ground, Water, Solid, Tree, Cloud }
     sealed class Piece { public Transform transform; public float speed,baseX,radius; public Kind kind; public Transform shadow; }
@@ -38,16 +38,22 @@ public sealed class PSXGrassField : MonoBehaviour
         Scatter("Tree",trees,16,GroundZ-.2f,-44,Kind.Tree);
         if(cloudMaterial!=null)
         {
-            shadowTint=new MaterialPropertyBlock();shadowTint.SetColor("_Tint",new Color(0,0,0,.22f));
-            var cloud=Quad(3.2f,1.6f,false);
-            for(int i=0;i<4;i++)
+            // Four shapes stacked in the cloud atlas (cumulus, small puff, stratus streaks, big lumpy).
+            var shapes=new Mesh[CloudShapes];for(int s=0;s<CloudShapes;s++)shapes[s]=Quad(3.2f,1.6f,false,s);
+            for(int i=0;i<7;i++)
             {
-                float scale=Range(.8f,1.4f);
-                var piece=Add("Cloud",cloud,cloudMaterial,new Vector3(Range(-HalfWidth,HalfWidth),Range(Bottom,Top),CloudZ),0,1.6f,-20);
-                piece.kind=Kind.Cloud;piece.transform.localScale=Vector3.one*scale;
+                int shape=random.Next(CloudShapes);
+                float scale=Range(.6f,1.7f),alpha=Range(.55f,.95f);
+                var piece=Add("Cloud",shapes[shape],cloudMaterial,new Vector3(Range(-HalfWidth,HalfWidth),Range(Bottom,Top),CloudZ-i*.5f),0,Range(1.3f,2f),-20);
+                piece.kind=Kind.Cloud;
+                // Random mirroring and a wider stretch for streaks keep repeats from reading as copies.
+                var size=new Vector3(scale*(random.NextDouble()<.5 ? -1 : 1)*(shape==2 ? 1.4f : 1),scale,1);
+                piece.transform.localScale=size;
+                var tint=new MaterialPropertyBlock();tint.SetColor("_Tint",new Color(1,1,1,alpha));piece.transform.GetComponent<MeshRenderer>().SetPropertyBlock(tint);
                 // The shadow lies on the ground below and behind the cloud, as if lit from the upper left.
-                var shadow=Add("Cloud shadow",cloud,cloudMaterial,Vector3.zero,0,0,-48);
-                shadow.transform.localScale=Vector3.one*scale;shadow.transform.GetComponent<MeshRenderer>().SetPropertyBlock(shadowTint);
+                var shadow=Add("Cloud shadow",shapes[shape],cloudMaterial,Vector3.zero,0,0,-48);
+                shadow.transform.localScale=size;
+                var shade=new MaterialPropertyBlock();shade.SetColor("_Tint",new Color(0,0,0,.22f*alpha));shadow.transform.GetComponent<MeshRenderer>().SetPropertyBlock(shade);
                 pieces.Remove(shadow);piece.shadow=shadow.transform;
             }
         }
@@ -95,13 +101,13 @@ public sealed class PSXGrassField : MonoBehaviour
         return false;
     }
 
-    /// <summary>Camera-facing quad; tiled UVs for the ground, 0..1 for sprites.</summary>
-    Mesh Quad(float width,float height,bool tiled)
+    /// <summary>Camera-facing quad; tiled UVs for the ground, or one row of the cloud atlas.</summary>
+    Mesh Quad(float width,float height,bool tiled,int row=0)
     {
-        float u=tiled ? width/grassTile : 1,v=tiled ? height/grassTile : 1;
-        var mesh=new Mesh{name=tiled ? "Grass ground quad" : "Sprite quad"};
+        float u=tiled ? width/grassTile : 1,v=tiled ? height/grassTile : 1f/CloudShapes,v0=tiled ? 0 : 1-(row+1f)/CloudShapes;
+        var mesh=new Mesh{name=tiled ? "Grass ground quad" : "Cloud quad "+row};
         mesh.vertices=new[]{new Vector3(-width/2,-height/2),new Vector3(width/2,-height/2),new Vector3(width/2,height/2),new Vector3(-width/2,height/2)};
-        mesh.uv=new[]{Vector2.zero,new Vector2(u,0),new Vector2(u,v),new Vector2(0,v)};
+        mesh.uv=new[]{new Vector2(0,v0),new Vector2(u,v0),new Vector2(u,v0+v),new Vector2(0,v0+v)};
         mesh.colors=new[]{Color.white,Color.white,Color.white,Color.white};
         mesh.normals=new[]{Vector3.back,Vector3.back,Vector3.back,Vector3.back};
         mesh.triangles=new[]{0,2,1,0,3,2};

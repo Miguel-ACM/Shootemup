@@ -406,7 +406,7 @@ public static class InstallPSXv2
         grass.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"Field/Grass_256.png");
         grass.SetFloat("_GlowRow",0);grass.SetFloat("_Dither",0);grass.SetFloat("_VertexSnap",1);
         var cloudMaterial=Mat(Folder+"Field/PSXv2 Cloud.mat","Shootemup/PSXv2 Sprite");
-        cloudMaterial.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"Field/Cloud_64x32.png");
+        cloudMaterial.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"Field/Clouds_64x128.png");
         var scene=EditorSceneManager.OpenScene("Assets/Scenes/L1.unity",OpenSceneMode.Single);
         var roots=scene.GetRootGameObjects();
         foreach(var industrial in roots.SelectMany(r=>r.GetComponentsInChildren<PSXIndustrialField>(true))){industrial.steelMaterial=null;EditorUtility.SetDirty(industrial);}
