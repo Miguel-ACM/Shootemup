@@ -27,8 +27,8 @@ public class ConflictGroup
 
     public static bool isConflict(cg c1, cg c2)
     {
-        // AÒadir aquÌ las reglas especiales de conflictos.
-        // Por defecto hay conflicto solo si los dos grupos son iguales, pero habr· reglas especiales
+        // A√±adir aqu√≠ las reglas especiales de conflictos.
+        // Por defecto hay conflicto solo si los dos grupos son iguales, pero habr√° reglas especiales
         return c1 == c2;
     }
 
