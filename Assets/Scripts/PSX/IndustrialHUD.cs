@@ -27,7 +27,10 @@ public sealed class IndustrialHUD : MonoBehaviour
         var camera=UnityEngine.Camera.main;
         float viewBottom=camera.transform.position.y-camera.orthographicSize;
         float viewHeight=camera.orthographicSize*2;
-        bottomLimit=viewBottom+1.75f;
+        // Let the cockpit (the hitbox) come right down to the bottom edge: its lowest point may
+        // touch the screen border while the rest of the hull dips off screen.
+        var hitbox=player.GetComponent<Collider2D>();
+        bottomLimit=hitbox!=null ? viewBottom+(player.transform.position.y-hitbox.bounds.min.y) : viewBottom+1.75f;
         topLimit=viewBottom+viewHeight-.65f;
         var root=new GameObject("Industrial instruments",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler));root.transform.SetParent(transform,false);
         root.GetComponent<Canvas>().renderMode=RenderMode.ScreenSpaceOverlay;root.GetComponent<Canvas>().sortingOrder=5;
