@@ -18,14 +18,14 @@ public class Bullet : ABullet
     {
         if (followness != 0)
         {
-            GameObject e = Utils.FindClosestWithTag(transform.position, "Enemy", out float distance);
+            GameObject e = Utils.FindClosestWithTag(transform.position, "Enemy", out float sqrDistance);
             if (e != null)
             {
                 int factor = 1;
                 if (followness < 0)
                     factor = -1;
 
-                if (distance < Mathf.Abs(followness) * 10)
+                if (sqrDistance < Mathf.Abs(followness) * 10)
                 {
                     Vector3 d = (e.transform.position - transform.position).normalized;
                     //d.x = Mathf.Cos(d.x);

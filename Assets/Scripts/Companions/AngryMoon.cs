@@ -4,7 +4,7 @@ public class AngryMoon : BlockerOrbital
 {
 
     private float shootSpeed = 4f;
-    private float shootDistance = 16f;
+    private float shootDistance = 4f;
     private GameObject lineDrawerObject;
     private LineDrawer lineDrawer;
 
@@ -17,9 +17,8 @@ public class AngryMoon : BlockerOrbital
 
     private void Shoot()
     {
-        float distance;
-        GameObject other = Utils.FindClosestWithTag(this.transform.position, "EnemyBullet", out distance);
-        if (distance < shootDistance)
+        GameObject other = Utils.FindClosestWithTag(this.transform.position, "EnemyBullet", out float sqrDistance);
+        if (sqrDistance < shootDistance * shootDistance)
         {
             Vector3 positionOther = other.transform.position;
             positionOther.z = this.transform.position.z;

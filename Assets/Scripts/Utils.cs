@@ -53,22 +53,23 @@ public static class Utils
         return new Wave(newCost, duration, 1, 0, units);
     }
 
-    public static GameObject FindClosestWithTag(Vector2 position, string tag, out float distance)
+    // sqrDistance is the squared distance to the closest object: compare it with a squared range.
+    public static GameObject FindClosestWithTag(Vector2 position, string tag, out float sqrDistance)
     {
         GameObject[] gos;
         gos = GameObject.FindGameObjectsWithTag(tag);
         GameObject closest = null;
-        distance = Mathf.Infinity;
+        sqrDistance = Mathf.Infinity;
         Vector2 othergo;
         foreach (GameObject go in gos)
         {
             othergo = go.transform.position;
             Vector2 diff = othergo - position;
             float curDistance = diff.sqrMagnitude;
-            if (curDistance < distance)
+            if (curDistance < sqrDistance)
             {
                 closest = go;
-                distance = curDistance;
+                sqrDistance = curDistance;
             }
         }
         return closest;
