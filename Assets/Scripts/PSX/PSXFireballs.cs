@@ -10,7 +10,7 @@ public sealed class PSXFireballs : MonoBehaviour
 {
     const int PoolLimit=96;
     static PSXFireballs instance;
-    static Mesh sphere;
+    static Mesh sphere,ring;
     Material material;
     readonly List<Ball> active=new List<Ball>();
     readonly Stack<Ball> pool=new Stack<Ball>();
@@ -22,6 +22,7 @@ public sealed class PSXFireballs : MonoBehaviour
     {
         public Transform transform;public MeshRenderer renderer;
         public float start,life,size;public Vector3 axis,drift;public float spin;
+        public bool isRing;public Color tint;public MeshFilter filter;
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -30,13 +31,7 @@ public sealed class PSXFireballs : MonoBehaviour
     /// <summary>A burst of count spheres spread over radius, the largest about size across.</summary>
     public static void Spawn(Vector3 position,float size,int count,float radius,float stagger)
     {
-        if(instance==null)
-        {
-            var material=Resources.Load<Material>("Effects/PSXv2Fireball");
-            if(material==null)return;
-            instance=new GameObject("PSXv2 fireballs").AddComponent<PSXFireballs>();
-            instance.material=material;instance.properties=new MaterialPropertyBlock();
-        }
+        if(!Ready())return;
         for(int i=0;i<count;i++)
         {
             if(instance.active.Count>=PoolLimit)return;
@@ -46,25 +41,50 @@ public sealed class PSXFireballs : MonoBehaviour
         }
     }
 
-    void Add(Vector3 position,float size,float delay,float life)
+    /// <summary>Flat expanding shockwave ring (e.g. the blank bullet clearing radius) with the same
+    /// scrolling skin, tinted, reaching radius over life seconds while dithering away.</summary>
+    public static void Shockwave(Vector3 position,float radius,float life,Color tint)
+    {
+        if(!Ready())return;
+        for(int i=0;i<2;i++)
+        {
+            var ball=instance.Add(position,radius*(i==0 ? 1 : .8f),i*.08f,life);
+            ball.isRing=true;ball.tint=tint;ball.spin=0;ball.drift=Vector3.zero;
+            ball.filter.sharedMesh=Ring();ball.transform.rotation=Quaternion.identity;
+        }
+    }
+
+    static bool Ready()
+    {
+        if(instance!=null)return true;
+        var material=Resources.Load<Material>("Effects/PSXv2Fireball");
+        if(material==null)return false;
+        instance=new GameObject("PSXv2 fireballs").AddComponent<PSXFireballs>();
+        instance.material=material;instance.properties=new MaterialPropertyBlock();
+        return true;
+    }
+
+    Ball Add(Vector3 position,float size,float delay,float life)
     {
         var ball=pool.Count>0 ? pool.Pop() : Create();
+        ball.isRing=false;ball.filter.sharedMesh=Sphere();
         ball.transform.position=position+Vector3.back*.5f;
         ball.start=Time.time+delay;ball.life=life;ball.size=size;
         ball.axis=Random.onUnitSphere;ball.spin=Random.Range(-220f,220f);
         ball.drift=(Vector3)(Random.insideUnitCircle*.4f);
         ball.transform.localScale=Vector3.zero;ball.renderer.enabled=false;
         active.Add(ball);Spawned++;
+        return ball;
     }
 
     Ball Create()
     {
         var go=new GameObject("Fireball");go.transform.SetParent(transform,false);
-        go.AddComponent<MeshFilter>().sharedMesh=Sphere();
+        var filter=go.AddComponent<MeshFilter>();filter.sharedMesh=Sphere();
         var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=material;
         renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;
         renderer.sortingLayerName="Bullet";renderer.sortingOrder=32;
-        return new Ball{transform=go.transform,renderer=renderer};
+        return new Ball{transform=go.transform,renderer=renderer,filter=filter};
     }
 
     void Update()
@@ -79,6 +99,13 @@ public sealed class PSXFireballs : MonoBehaviour
             // Fast ease-out growth, stepped at 30 Hz for the PS1 cadence.
             float stepped=Mathf.Floor(age*ball.life*30)/(ball.life*30);
             float grow=1-Mathf.Pow(1-stepped,3);
+            if(ball.isRing)
+            {
+                ball.transform.localScale=Vector3.one*ball.size*(.1f+.9f*grow);
+                properties.SetColor(ColorId,ball.tint*(1.6f-stepped));properties.SetFloat(FadeId,Mathf.Clamp01((stepped-.35f)/.65f));
+                ball.renderer.SetPropertyBlock(properties);
+                continue;
+            }
             ball.transform.localScale=Vector3.one*ball.size*(.2f+.8f*grow);
             ball.transform.rotation=Quaternion.AngleAxis(ball.spin*stepped*ball.life,ball.axis);
             ball.transform.position+=ball.drift*Time.deltaTime;
@@ -93,6 +120,23 @@ public sealed class PSXFireballs : MonoBehaviour
         if(t<.12f)return Color.Lerp(new Color(2.2f,2.2f,2f),new Color(1.6f,1.4f,.8f),t/.12f);
         if(t<.45f)return Color.Lerp(new Color(1.6f,1.4f,.8f),new Color(1.3f,.75f,.3f),(t-.12f)/.33f);
         return Color.Lerp(new Color(1.3f,.75f,.3f),new Color(.55f,.12f,.08f),(t-.45f)/.55f);
+    }
+
+    /// <summary>Flat 24-segment annulus of unit outer radius facing the camera.</summary>
+    static Mesh Ring()
+    {
+        if(ring!=null)return ring;
+        const int seg=24;
+        var vertices=new List<Vector3>();var uvs=new List<Vector2>();var tris=new List<int>();
+        for(int i=0;i<=seg;i++)
+        {
+            float a=2*Mathf.PI*i/seg;var d=new Vector3(Mathf.Cos(a),Mathf.Sin(a),0);
+            vertices.Add(d*.82f);vertices.Add(d);uvs.Add(new Vector2((float)i/seg*4,0));uvs.Add(new Vector2((float)i/seg*4,.35f));
+        }
+        for(int i=0;i<seg;i++){int a=i*2;tris.AddRange(new[]{a,a+2,a+1,a+1,a+2,a+3});}
+        ring=new Mesh{name="PSXv2 shockwave ring"};
+        ring.SetVertices(vertices);ring.SetUVs(0,uvs);ring.SetTriangles(tris,0);ring.RecalculateNormals();ring.RecalculateBounds();
+        return ring;
     }
 
     /// <summary>10 x 6 UV sphere: few enough faces for visible PS1 facets.</summary>

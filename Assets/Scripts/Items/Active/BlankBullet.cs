@@ -4,7 +4,6 @@ public class BlankBullet : AActiveItem
 {
 
     Vector3 pos;
-    GameObject ps;
 
     new void Start()
     {
@@ -44,22 +43,12 @@ public class BlankBullet : AActiveItem
         pos = transform.position;
         
 
-        GameObject ps = (GameObject) Instantiate(Resources.Load("Particles/Ripple"), transform.position, Quaternion.identity);
-        ps.transform.localScale = new Vector3(1, 1, 1);
+        // The old lit-sprite ripple rendered nothing under the 2D renderer; show the 5-unit
+        // clearing radius as a PSX shockwave ring instead.
+        PSXFireballs.Shockwave(transform.position, 5f, .45f, new Color(.55f, .8f, 1f));
         SoundManager.PlaySound("blankbullet", 0.15f);
-        // var main = ps.GetComponent<ParticleSystem>().main;
-        //main.scalingMode = ParticleSystemScalingMode.Hierarchy;
-        ps.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-        StartCoroutine("DeleteParticle");
         lastCD = 0;
         return mana - cost;
-    }
-
-    IEnumerator DeleteParticle()
-    {
-        yield return new WaitForSeconds(2);
-
-        Destroy(ps);
     }
 
 }
