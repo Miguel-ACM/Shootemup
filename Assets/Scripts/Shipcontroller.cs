@@ -173,8 +173,10 @@ public class Shipcontroller : MonoBehaviour
             float m = 0;
             m = activeRight.OnPress(mana);
             if (m > -1)
+            {
                 mana = m;
                 manaBar.Set(mana);
+            }
         }
     }
 
