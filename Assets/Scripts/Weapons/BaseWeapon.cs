@@ -14,7 +14,8 @@ public class BaseWeapon : AWeaponAutomatic
 
     public override void Shoot()
     {
-        base.Shoot();
+        if (!KeepFiring())
+            return;
 
         SoundManager.PlaySound("shot1", 0.1f);
         var effects = GetComponent<PSXShipEffects>();

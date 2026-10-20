@@ -11,7 +11,8 @@ public class Electricity : AWeaponAutomatic
 
     public override void Shoot()
     {
-        base.Shoot();
+        if (!KeepFiring())
+            return;
 
         SoundManager.PlaySound("shot1", 0.1f);
         for (int i = 0; i < GameRules.playerShootNumber; i++)

@@ -20,13 +20,21 @@ public abstract class AWeaponAutomatic : AWeapon
     
     public virtual void Shoot()
     {
+        KeepFiring();
+    }
+
+    // Returns false, and stops the repeating Shoot, once the weapon's button is released.
+    // Subclasses must check it before firing: a return inside base.Shoot() only leaves the
+    // base method, which used to let one extra volley out after every release.
+    protected bool KeepFiring()
+    {
         if (weaponInput == WeaponInput.primary)
         {
             if (isStopingPrimary || GameRules.playerDisabled)
             {
                 CancelInvoke("Shoot");
                 isShootingPrimary = false;
-                return;
+                return false;
             }
         }
         else if (weaponInput == WeaponInput.secondary)
@@ -35,7 +43,7 @@ public abstract class AWeaponAutomatic : AWeapon
             {
                 CancelInvoke("Shoot");
                 isShootingSecondary = false;
-                return;
+                return false;
             }
         }
         else
@@ -47,9 +55,10 @@ public abstract class AWeaponAutomatic : AWeapon
                 // later press: the AK45 stopped after the first release (e.g. around a shop pickup).
                 isShootingPrimary = false;
                 isShootingSecondary = false;
-                return;
+                return false;
             }
         }
+        return true;
     }
 
 }
