@@ -31,6 +31,7 @@ Material:
     m_Floats:
     - _Affine: 1
     - _Dither: 0
+    - _GlowRow: 1
     - _LightBands: 3
     - _VertexSnap: 1
     m_Colors:

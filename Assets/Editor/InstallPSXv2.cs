@@ -21,6 +21,7 @@ public static class InstallPSXv2
     const string Folder="Assets/Art/PSXv2/";
     const string Request="ArtSource/PSXv2/install.request";
     const string CaptureRequest="ArtSource/PSXv2/capture.request";
+    const string CaptureScene="Assets/Scenes/L1.unity";   // level 1 shows the grass field and real waves
     const string ReportPath="ArtSource/PSXv2/InstallReport.json";
     const string CaptureFolder="ArtSource/PSXv2/UnityCapture";
     const string StageKey="PSXv2CaptureStage",StartKey="PSXv2CaptureStart";
@@ -45,7 +46,7 @@ public static class InstallPSXv2
         if(File.Exists(CaptureRequest) && !EditorApplication.isPlayingOrWillChangePlaymode)
         {
             File.Delete(CaptureRequest);Directory.CreateDirectory(CaptureFolder);
-            EditorSceneManager.OpenScene("Assets/Scenes/PSX_Showcase.unity");
+            EditorSceneManager.OpenScene(CaptureScene);
             SessionState.SetInt(StageKey,1);SessionState.SetFloat(StartKey,0);EditorApplication.isPlaying=true;return;
         }
         if(!File.Exists(Request) || EditorApplication.isPlayingOrWillChangePlaymode)return;
@@ -75,10 +76,11 @@ public static class InstallPSXv2
         fire.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"FX/Fireball_64.png");
         // Full PSX presentation by default, kept light: PS1 half-step dither, mild softness, no vignette.
         var screen=AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/PSXPass/PSX screen composite.mat");
-        if(screen!=null){screen.SetFloat("_Dither",1);screen.SetFloat("_Soften",.18f);screen.SetFloat("_Vignette",0);EditorUtility.SetDirty(screen);}
+        if(screen!=null){screen.SetFloat("_Dither",.5f);screen.SetFloat("_Soften",.1f);screen.SetFloat("_Vignette",0);EditorUtility.SetDirty(screen);}
 
         Orientation(out var rotation,out float scale,report);
         foreach(var path in Scenes)InstallPlayer(path,rotation,scale,steel,core,ring,report);
+        InstallField(rotation,steel,report);
         report.Append("\"enemies\":[");
         for(int i=0;i<Enemies.Length;i++)
         {
@@ -92,7 +94,7 @@ public static class InstallPSXv2
         File.WriteAllText(ReportPath,report.ToString());Debug.Log("PSXv2 installed: "+report);
         // Play the showcase (autopilot + sample fleet) and capture a few frames.
         Directory.CreateDirectory(CaptureFolder);
-        EditorSceneManager.OpenScene("Assets/Scenes/PSX_Showcase.unity");
+        EditorSceneManager.OpenScene(CaptureScene);
         SessionState.SetInt(StageKey,1);SessionState.SetFloat(StartKey,0);
         EditorApplication.isPlaying=true;
     }
@@ -102,20 +104,22 @@ public static class InstallPSXv2
     {
         var paths=new List<string>{Folder+"PSXv2_Atlas.png"};
         paths.AddRange(Directory.GetFiles(Folder+"FX","*.png").Select(p=>p.Replace('\\','/')));
+        paths.AddRange(Directory.GetFiles(Folder+"Field","*.png").Select(p=>p.Replace('\\','/')));
         foreach(var path in paths)
         {
             var importer=(TextureImporter)AssetImporter.GetAtPath(path);
             importer.textureType=TextureImporterType.Default;importer.filterMode=FilterMode.Point;importer.mipmapEnabled=false;
             importer.textureCompression=TextureImporterCompression.Uncompressed;importer.wrapMode=TextureWrapMode.Clamp;
             importer.npotScale=TextureImporterNPOTScale.None;importer.alphaIsTransparency=false;
-            if(path.Contains("/FX/"))importer.wrapMode=TextureWrapMode.Repeat;   // fireball skin scrolls
+            if(path.Contains("/FX/") || path.Contains("Grass"))importer.wrapMode=TextureWrapMode.Repeat;   // fireball skin scrolls, grass tiles
+            if(path.Contains("Cloud"))importer.alphaIsTransparency=true;
             importer.SaveAndReimport();
         }
     }
 
     static void ConfigureModels(StringBuilder report)
     {
-        foreach(var name in new[]{"PSXv2_Player","PSXv2_Items"}.Concat(Enemies.Select(e=>e.model)))
+        foreach(var name in new[]{"PSXv2_Player","PSXv2_Items","PSXv2_Field"}.Concat(Enemies.Select(e=>e.model)))
         {
             var importer=(ModelImporter)AssetImporter.GetAtPath(Folder+name+".fbx");
             importer.globalScale=1;importer.useFileScale=true;importer.bakeAxisConversion=false;
@@ -345,27 +349,7 @@ public static class InstallPSXv2
     /// item (per-kind mesh list), and the four companions, which spin them through PSXObjectVisual.</summary>
     static void InstallItems(Quaternion rotation,Material steel,StringBuilder report)
     {
-        Directory.CreateDirectory(Folder+"Items");AssetDatabase.Refresh();
-        var asset=AssetDatabase.LoadAssetAtPath<GameObject>(Folder+"PSXv2_Items.fbx");
-        var temp=UnityEngine.Object.Instantiate(asset);temp.transform.position=Vector3.zero;
-        var meshes=new Mesh[IndustrialMeshFactory.ItemKinds.Length];
-        try
-        {
-            for(int i=0;i<meshes.Length;i++)
-            {
-                string kind=IndustrialMeshFactory.ItemKinds[i];
-                var source=temp.GetComponentsInChildren<MeshFilter>(true).Single(m=>m.name=="Item_"+kind);
-                var matrix=Matrix4x4.Rotate(rotation)*source.transform.localToWorldMatrix;
-                var mesh=UnityEngine.Object.Instantiate(source.sharedMesh);
-                var vertices=mesh.vertices.Select(v=>matrix.MultiplyPoint3x4(v)).ToArray();
-                var normals=mesh.normals.Select(n=>matrix.MultiplyVector(n).normalized).ToArray();
-                var center=new Bounds(vertices[0],Vector3.zero);foreach(var v in vertices)center.Encapsulate(v);
-                for(int k=0;k<vertices.Length;k++)vertices[k]-=center.center;
-                mesh.vertices=vertices;mesh.normals=normals;mesh.RecalculateBounds();mesh.name="PSXv2 "+kind;
-                meshes[i]=SaveMesh(mesh,Folder+"Items/"+kind+".asset");
-            }
-        }
-        finally{UnityEngine.Object.DestroyImmediate(temp);}
+        var meshes=Bake("PSXv2_Items","Items",IndustrialMeshFactory.ItemKinds.Select(k=>"Item_"+k).ToArray(),rotation);
         string[] pickups={"life","mana","money"};
         for(int i=0;i<3;i++){int index=i;Edit("Assets/Resources/Pickables/"+pickups[i]+".prefab",go=>ItemVisual(go,meshes[index],steel,Vector2.one*.55f));}
         Edit("Assets/Resources/Items/Item.prefab",go=>{var visual=ItemVisual(go,meshes[4],steel,Vector2.one*.85f);visual.itemMeshes=meshes;});
@@ -380,6 +364,56 @@ public static class InstallPSXv2
             });
         }
         report.Append("\"items\":["+string.Join(",",meshes.Select(m=>"{\"kind\":\""+m.name+"\",\"triangles\":"+m.triangles.Length/3+"}"))+"]");
+    }
+
+    /// <summary>Bakes named meshes of an FBX into game orientation (axis correction applied, centred)
+    /// as Folder/subfolder/*.asset, in the order given.</summary>
+    static Mesh[] Bake(string fbx,string subfolder,string[] names,Quaternion rotation)
+    {
+        Directory.CreateDirectory(Folder+subfolder);AssetDatabase.Refresh();
+        var temp=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Folder+fbx+".fbx"));temp.transform.position=Vector3.zero;
+        try
+        {
+            return names.Select(name=>
+            {
+                var source=temp.GetComponentsInChildren<MeshFilter>(true).Single(m=>m.name==name);
+                var matrix=Matrix4x4.Rotate(rotation)*source.transform.localToWorldMatrix;
+                var mesh=UnityEngine.Object.Instantiate(source.sharedMesh);
+                var vertices=mesh.vertices.Select(v=>matrix.MultiplyPoint3x4(v)).ToArray();
+                var normals=mesh.normals.Select(n=>matrix.MultiplyVector(n).normalized).ToArray();
+                var center=new Bounds(vertices[0],Vector3.zero);foreach(var v in vertices)center.Encapsulate(v);
+                for(int k=0;k<vertices.Length;k++)vertices[k]-=center.center;
+                mesh.vertices=vertices;mesh.normals=normals;mesh.RecalculateBounds();mesh.name="PSXv2 "+name.Substring(name.IndexOf('_')+1);
+                return SaveMesh(mesh,Folder+subfolder+"/"+name.Substring(name.IndexOf('_')+1)+".asset");
+            }).ToArray();
+        }
+        finally{UnityEngine.Object.DestroyImmediate(temp);}
+    }
+
+    // ------------------------------------------------------------------ level 1 field
+    /// <summary>Level 1 only: a grass field (PSXGrassField: tiled grass, model puddles/bushes/trees,
+    /// sprite clouds) replaces the industrial shaft. The
+    /// PSXIndustrialField object stays because it also sets up the PSX presentation; clearing its
+    /// steel material makes it skip building the shaft geometry.</summary>
+    static void InstallField(Quaternion rotation,Material steel,StringBuilder report)
+    {
+        string[] Names(string kind,int count)=>Enumerable.Range(0,count).Select(i=>"Field_"+kind+i).ToArray();
+        var puddles=Bake("PSXv2_Field","Field",Names("Puddle",3),rotation);
+        var bushes=Bake("PSXv2_Field","Field",Names("Bush",2),rotation);
+        var trees=Bake("PSXv2_Field","Field",Names("Tree",3),rotation);
+        var grass=Mat(Folder+"Field/PSXv2 Grass.mat","Shootemup/PSXv2 Lit");
+        grass.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"Field/Grass_256.png");
+        grass.SetFloat("_GlowRow",0);grass.SetFloat("_Dither",0);grass.SetFloat("_VertexSnap",1);
+        var cloudMaterial=Mat(Folder+"Field/PSXv2 Cloud.mat","Shootemup/PSXv2 Sprite");
+        cloudMaterial.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"Field/Cloud_64x32.png");
+        var scene=EditorSceneManager.OpenScene("Assets/Scenes/L1.unity",OpenSceneMode.Single);
+        var roots=scene.GetRootGameObjects();
+        foreach(var industrial in roots.SelectMany(r=>r.GetComponentsInChildren<PSXIndustrialField>(true))){industrial.steelMaterial=null;EditorUtility.SetDirty(industrial);}
+        foreach(var old in roots.Where(r=>r.name=="PSX Grass Field"))UnityEngine.Object.DestroyImmediate(old);
+        var field=new GameObject("PSX Grass Field").AddComponent<PSXGrassField>();
+        field.puddles=puddles;field.bushes=bushes;field.trees=trees;field.material=steel;field.groundMaterial=grass;field.cloudMaterial=cloudMaterial;
+        EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);
+        report.Append("\"field\":{\"pieces\":"+(puddles.Length+bushes.Length+trees.Length)+"},");
     }
 
     static Mesh SaveMesh(Mesh mesh,string path)

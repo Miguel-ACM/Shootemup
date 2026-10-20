@@ -18,6 +18,7 @@ Shader "Shootemup/PSXv2 Lit"
         _Affine ("Affine warp", Range(0,1)) = 1
         _Dither ("Dither", Range(0,1)) = 0
         _LightBands ("Light bands", Float) = 3
+        _GlowRow ("Atlas glow row (off for tiled textures)", Range(0,1)) = 1
     }
     SubShader
     {
@@ -37,7 +38,7 @@ Shader "Shootemup/PSXv2 Lit"
             float4 _PSXSnapResolution;
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST, _Tint, _SnapResolution;
-                float _VertexSnap, _Affine, _Dither, _LightBands;
+                float _VertexSnap, _Affine, _Dither, _LightBands, _GlowRow;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; float4 color:COLOR; };
             struct Varyings
@@ -70,7 +71,7 @@ Shader "Shootemup/PSXv2 Lit"
             {
                 float2 uv = lerp(i.uvPersp, i.uvw.xy / i.uvw.z, _Affine);
                 half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
-                float glow = step(0.625, i.uvPersp.y) * step(i.uvPersp.y, 0.75);
+                float glow = step(0.625, i.uvPersp.y) * step(i.uvPersp.y, 0.75) * _GlowRow;
                 c.rgb *= lerp(i.light * i.ao * 1.15, 1.0, glow);
                 c *= _Tint;
                 uint2 p = (uint2)i.positionCS.xy & 3;

@@ -130,7 +130,30 @@ def atlas():
     plate(img, *P(5, 6), (150, 154, 160))                                                                         # 5 light grey plate
     fill(img, *P(6, 6), lambda x, y: (200, 200, 200) if x % 4 == 1 and y % 5 == 2 else (30, 31, 34))        # 6 grey windows
     fill(img, *P(7, 6), lambda x, y: (250, 210, 40) if 6 <= y <= 9 else (36, 36, 40))                         # 7 yellow stripe on black
+    # Row 7: level 1 grass field (seamless, no borders, so ground cells tile).
+    fill(img, *P(0, 7), lambda x, y: grass(x, y, 0))                                                              # 0 grass
+    fill(img, *P(1, 7), lambda x, y: (236, 226, 120) if (x, y) in ((3, 4), (11, 9), (6, 13)) else (230, 120, 170) if (x, y) in ((12, 2), (2, 10)) else grass(x, y, 3))  # 1 grass + flowers
+    fill(img, *P(2, 7), lambda x, y: shade(grass(x, y, 7), 0.86 if (x * 5 + y * 3) % 7 < 3 else 0.95))      # 2 dark tufts
+    fill(img, *P(3, 7), lambda x, y: shade((118, 92, 60), 0.8 + 0.25 * (((x * 7 + y * 11) % 5) / 4)))      # 3 dirt
+    fill(img, *P(4, 7), lambda x, y: leaf(x, y, (98, 124, 72)))                                                  # 4 leaves (muted)
+    fill(img, *P(5, 7), lambda x, y: leaf(x, y, (62, 84, 54)))                                                   # 5 dark leaves (muted)
+    fill(img, *P(6, 7), lambda x, y: shade((96, 66, 40), 0.75 if x % 4 == 1 else 1.0 + 0.1 * (y % 3 == 0)))  # 6 bark
+    fill(img, *P(7, 7), lambda x, y: (190, 220, 240) if (x + 2 * y) % 13 == 0 else shade((70, 110, 150), 0.9 + 0.2 * (y / 15)))  # 7 puddle water
     return img
+
+
+def grass(x, y, seed):
+    """Seamless mottled grass: two greens plus short light blades."""
+    v = ((x * 13 + y * 7 + seed * 5) % 11) / 10
+    base = (78 + int(v * 18), 132 + int(v * 26), 52 + int(v * 10))
+    if (x + seed) % 5 == 0 and (y * 3 + seed) % 7 < 2:
+        return (132, 186, 84)
+    return base
+
+
+def leaf(x, y, c):
+    k = 1.25 if (x + y) % 6 == 0 else 0.7 if (x * 3 + y) % 7 == 0 else 1.0
+    return shade(c, k)
 
 
 def bolt_mask(x, y):
@@ -282,9 +305,76 @@ def fireball():
     return img
 
 
+def periodic_noise(size, cells, seed):
+    """Tileable value noise: a cells x cells random lattice, wrapped, smoothly interpolated."""
+    r = random.Random(seed)
+    lattice = [[r.random() for _ in range(cells)] for _ in range(cells)]
+    step = size / cells
+    out = []
+    for y in range(size):
+        row = []
+        for x in range(size):
+            gx, gy = x / step, y / step
+            x0, y0 = int(gx) % cells, int(gy) % cells
+            x1, y1 = (x0 + 1) % cells, (y0 + 1) % cells
+            tx, ty = gx - int(gx), gy - int(gy)
+            tx, ty = tx * tx * (3 - 2 * tx), ty * ty * (3 - 2 * ty)
+            a = lattice[y0][x0] * (1 - tx) + lattice[y0][x1] * tx
+            b = lattice[y1][x0] * (1 - tx) + lattice[y1][x1] * tx
+            row.append(a * (1 - ty) + b * ty)
+        out.append(row)
+    return out
+
+
+def grass_texture():
+    """256px seamless ground for level 1 (one repeat per 10 world units): muted olive greens from layered noise, darker clumps,
+    dry patches and short light blade flecks, quantised to a small palette like a PS1 texture."""
+    s = 256
+    big, mid, fine = periodic_noise(s, 7, 1), periodic_noise(s, 16, 2), periodic_noise(s, 64, 3)
+    palette = [(58, 70, 48), (70, 84, 56), (82, 96, 63), (94, 106, 70), (108, 116, 78), (124, 126, 88)]
+    img = Image.new("RGB", (s, s))
+    blades = random.Random(9)
+    for y in range(s):
+        for x in range(s):
+            v = big[y][x] * .5 + mid[y][x] * .3 + fine[y][x] * .2
+            v += (bayer(x, y) - .5) * .08
+            k = max(0, min(len(palette) - 1, int(v * len(palette) * 1.15 - .4)))
+            img.putpixel((x, y), q5(palette[k]))
+    for _ in range(1680):
+        x, y = blades.randrange(s), blades.randrange(s)
+        light = palette[min(len(palette) - 1, 4 + blades.randrange(2))]
+        for d in range(blades.choice((1, 2))):
+            img.putpixel((x, (y - d) % s), q5(light))
+    return img
+
+
+def cloud_texture():
+    """64x32 soft cloud sprite: one merged metaball body with a noisy rim, white on top shading to
+    grey underneath, and alpha that falls off in ordered-dither steps (PS1-style transparency)."""
+    import math as m
+    w, h = 64, 32
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    r = random.Random(4)
+    # Cumulus profile: a flat base row with three domes on top.
+    puffs = [(x, 21, 5.5) for x in range(12, 54, 5)] + [(22, 14, 7), (33, 11, 8.5), (44, 15, 6)]
+    edge = periodic_noise(64, 8, 5)
+    for y in range(h):
+        for x in range(w):
+            f = sum(m.exp(-((x - px) ** 2 + ((y - py) * 1.3) ** 2) / (pr * pr)) for px, py, pr in puffs)
+            f += (edge[y * 2 % 64][x] - .5) * .3
+            a = max(0.0, min(1.0, (f - .55) / .45))
+            if a <= 0 or bayer(x, y) > a * 1.6:
+                continue
+            g = int(238 - (y / h) * 46 - (1 - a) * 24)
+            img.putpixel((x, y), q5((g, g + 2, g + 6)) + (int(210 * min(1, a * 1.4)),))
+    return img
+
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     FX.mkdir(parents=True, exist_ok=True)
     atlas().save(OUT / "PSXv2_Atlas.png")
     fireball().save(FX / "Fireball_64.png")
+    (OUT / "Field").mkdir(exist_ok=True)
+    grass_texture().save(OUT / "Field" / "Grass_256.png")
+    cloud_texture().save(OUT / "Field" / "Cloud_64x32.png")
     print("ok")

@@ -36,6 +36,8 @@ TILES = {
     "grating": (5, 5), "screen": (6, 5), "white": (7, 5),
     "blackarmour": (0, 6), "yellow": (1, 6), "greyhazard": (2, 6), "greyglass": (3, 6), "grey": (4, 6),
     "lightgrey": (5, 6), "greywindows": (6, 6), "yellowstripe": (7, 6),
+    "grass": (0, 7), "flowers": (1, 7), "tufts": (2, 7), "dirt": (3, 7), "leaves": (4, 7), "darkleaves": (5, 7),
+    "bark": (6, 7), "water": (7, 7),
 }
 # One colour per model (Miguel, 2026-10-20): every enemy in a shared grey with white glows;
 # the player black with yellow details. Tiles are remapped while a theme is active.
@@ -870,5 +872,6 @@ def main():
     return report
 
 
-result = main()
-print(result)
+if not globals().get("PSXV2_LIBRARY"):   # build_field.py loads this file only for its helpers
+    result = main()
+    print(result)
