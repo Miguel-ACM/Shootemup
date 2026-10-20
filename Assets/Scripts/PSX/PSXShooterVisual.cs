@@ -29,7 +29,9 @@ public sealed class PSXShooterVisual : MonoBehaviour
     void OnEnable(){active.Add(this);}
     void OnDisable(){active.Remove(this);}
 
-    public static void NotifyShot(Vector3 position,Vector3 direction)
+    /// <summary>Reacts to a bullet spawned at position; returns the world z just in front of the firing
+    /// part (the camera looks along +z), or null when no visual represents that shooter.</summary>
+    public static float? NotifyShot(Vector3 position,Vector3 direction)
     {
         PSXShooterVisual best=null;float bestDistance=.2f;
         foreach(var visual in active)
@@ -40,7 +42,17 @@ public sealed class PSXShooterVisual : MonoBehaviour
                     float d=Vector2.Distance(source.position,position);
                     if(d<bestDistance){bestDistance=d;best=visual;}
                 }
-        if(best!=null)best.Shot(direction);
+        if(best==null)return null;
+        best.Shot(direction);
+        return best.FrontZ()-.02f;
+    }
+
+    // Closest-to-camera depth of this part (it and its children, e.g. turret barrels).
+    float FrontZ()
+    {
+        float z=transform.position.z;
+        foreach(var r in GetComponentsInChildren<Renderer>())z=Mathf.Min(z,r.bounds.min.z);
+        return z;
     }
 
     void Shot(Vector3 direction)

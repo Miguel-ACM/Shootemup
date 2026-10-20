@@ -43,8 +43,14 @@ public abstract class AEnemyBullet : MonoBehaviour
             direction = Utils.GetVelocityBetweenVectors(transform.position, player_pos);
         }
         speed = Utils.GetValueOrDefault(stats, "speed", 1f);
-        // Let the model part representing this shooter turn/kick and throw muzzle sparks.
-        PSXShooterVisual.NotifyShot(transform.position, direction);
+        // Let the model part representing this shooter turn/kick and throw muzzle sparks, and start
+        // the round at that part's depth so raised hull layers don't hide it as it leaves the gun.
+        float? muzzleZ = PSXShooterVisual.NotifyShot(transform.position, direction);
+        if (muzzleZ.HasValue)
+        {
+            Vector3 p = transform.position;
+            transform.position = new Vector3(p.x, p.y, muzzleZ.Value);
+        }
     }
 
     public float getDamage()
