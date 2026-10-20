@@ -331,25 +331,36 @@ def material(name, color=None):
 
 
 # --------------------------------------------------------------------------- player
-CORE_Z = 0.32   # height of the hitbox core/ring above the hull
+CORE_Z = 0.30   # height of the hitbox core/ring above the hull
+PX = 0.035      # world units per pixel of Miguel's 34x34 reference sprite
+
+
+def ref(px, py):
+    """Reference sprite pixel -> world: its core centre (16.5, 14.5) sits on the hitbox, y up."""
+    return ((px - 16.5) * PX, HITBOX_CENTER[1] - (py - 14.5) * PX)
 
 
 def player_geometry(b, hitbox=False):
-    """GR-X, simplified: lofted fuselage, split Ikaruga-style gun prongs (bullets spawn at x +-0.227,
-    y 0.6), one-layer delta wings with yellow tips, two round engines and the hexagonal cockpit
-    collar around the hitbox. Nose +Y, ~1.45 long."""
-    b.prism([(0, 0.55), (0.13, 0.38), (0.17, 0.05), (0.15, -0.42), (0.08, -0.58), (-0.08, -0.58),
-             (-0.15, -0.42), (-0.17, 0.05), (-0.13, 0.38)], 0.0, 0.24, "white", "steel", inset=0.03, rise=0.02, cap="hull", taper=0.74)
-    b.sym([(0.17, -0.05), (0.27, 0.0), (0.28, 0.66), (0.23, 0.86), (0.18, 0.72)], 0.04, 0.22, "white", "dark", taper=0.72)
-    b.sym([(0.205, 0.15), (0.255, 0.17), (0.26, 0.6), (0.21, 0.6)], 0.21, 0.24, "blue", "black")
-    b.sym([(0.17, 0.2), (0.62, -0.28), (0.64, -0.46), (0.17, -0.36)], 0.03, 0.11, "white", "dark", taper=0.9,
-          inset=0.025, rise=0.01, cap="hull")
-    b.sym([(0.56, -0.22), (0.64, -0.28), (0.64, -0.46), (0.58, -0.44)], 0.11, 0.13, "red", "black")
-    for x in (0.27, -0.27):
-        b.tube((x, -0.66, 0.12), (x, -0.10, 0.12), 0.10, 8, "steel", cap0="g_cyan", cap1="vent")
-    b.ngon(*HITBOX_CENTER, HITBOX_RADIUS + 0.08, 6, 0.24, CORE_Z, "black", "dark", rot=HEX, taper=0.85)
+    """Player ship after Miguel's 34x34 reference: a compact black TIE-style body with three spikes
+    on top (the outer two over the bullet spawn points at x +-0.227), short struts out to two tall
+    vertical wing blades, a short tail, thin grey edge highlights, and an elongated glowing
+    yellow-orange hex core around the hexagonal hitbox. About 1.2 wide and 0.95 tall."""
+    R = lambda pts: [ref(x, y) for x, y in pts]
+    # Central body with an inset top: the outer rim reads as a thin grey highlight.
+    b.prism(R([(9, 9.5), (24, 9.5), (26, 12), (26, 19), (22, 21.5), (19, 25.5), (14, 25.5), (11, 21.5), (7, 19), (7, 12)]),
+            0.0, 0.22, "lightgrey", "dark", inset=0.025, rise=0.02, cap="dark", taper=0.85)
+    # Centre spike above the core.
+    b.prism(R([(14.5, 9.6), (16.5, 5), (18.5, 9.6)]), 0.04, 0.2, "dark", "lightgrey", taper=0.6)
+    # Bat-wing panels: from the side spike tip (over the bullet spawn point) down to the blade.
+    b.sym(R([(3.8, 11), (11, 3), (13, 9.6), (9, 12), (7.5, 19.5), (3.8, 21)]), 0.02, 0.16,
+          "lightgrey", "dark", inset=0.02, rise=0.015, cap="dark", taper=0.92)
+    # Tall vertical wing blades, curved at the top and bottom ends.
+    b.sym(R([(0.5, 8), (2, 4.5), (3.5, 4), (3.8, 12), (3.8, 26), (3.5, 30), (2, 30), (0.5, 26)]), 0.0, 0.3,
+          "lightgrey", "dark", inset=0.02, rise=0.02, cap="dark", taper=0.75)    # Elongated glowing core collar (orange) around the hitbox.
+    b.prism(R([(16.5, 9.5), (19.5, 12), (19.5, 17), (16.5, 19.5), (13.5, 17), (13.5, 12)]), 0.22, CORE_Z,
+            "g_orange", "g_orange", taper=0.9)
     if hitbox:
-        b.ngon(*HITBOX_CENTER, HITBOX_RADIUS, 6, CORE_Z, CORE_Z + 0.04, "g_white", "g_white", rot=HEX)
+        b.ngon(*HITBOX_CENTER, HITBOX_RADIUS, 6, CORE_Z, CORE_Z + 0.04, "g_yellow", "g_yellow", rot=HEX)
 
 @themed(PLAYER_THEME)
 def player():
@@ -361,11 +372,11 @@ def player():
     c = Builder()
     c.ngon(*HITBOX_CENTER, HITBOX_RADIUS, 6, CORE_Z, CORE_Z + 0.04, "g_white", "g_white", rot=HEX)
     core = c.finish("PSXv2_Player_HitboxCore")
-    core.data.materials.append(material("PSXv2_HitboxCore", color=(1, 1, 1)))
+    core.data.materials.append(material("PSXv2_HitboxCore", color=(1, 0.86, 0.25)))
     r = Builder()
     r.ring(*HITBOX_CENTER, HITBOX_RADIUS + 0.035, HITBOX_RADIUS + 0.01, 6, CORE_Z, CORE_Z + 0.03, "g_ring", "g_ring", rot=HEX)
     ring = r.finish("PSXv2_Player_HitboxRing")
-    ring.data.materials.append(material("PSXv2_HitboxRing", color=(1, 0.82, 0.1)))
+    ring.data.materials.append(material("PSXv2_HitboxRing", color=(0.6, 0.25, 0.02)))
     core.parent = ship
     ring.parent = ship
     return [ship, core, ring]

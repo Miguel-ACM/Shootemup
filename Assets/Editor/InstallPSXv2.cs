@@ -69,8 +69,8 @@ public static class InstallPSXv2
         var steel=Mat(Folder+"PSXv2 Steel.mat","Shootemup/PSXv2 Lit");
         steel.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"PSXv2_Atlas.png");
         steel.SetFloat("_VertexSnap",1);steel.SetFloat("_Affine",1);steel.SetFloat("_Dither",0);
-        var core=Mat(Folder+"PSXv2 Hitbox Core.mat","Shootemup/PSXv2 Hitbox");core.SetColor("_Color",Color.white);
-        var ring=Mat(Folder+"PSXv2 Hitbox Ring.mat","Shootemup/PSXv2 Hitbox");ring.SetColor("_Color",new Color(1,.82f,.1f));   // yellow detail on the black ship
+        var core=Mat(Folder+"PSXv2 Hitbox Core.mat","Shootemup/PSXv2 Hitbox");core.SetColor("_Color",new Color(1,.86f,.25f));   // bright yellow core
+        var ring=Mat(Folder+"PSXv2 Hitbox Ring.mat","Shootemup/PSXv2 Hitbox");ring.SetColor("_Color",new Color(.6f,.25f,.02f));   // dark orange outline inside the orange glow
         Directory.CreateDirectory("Assets/Resources/Effects");
         var fire=Mat("Assets/Resources/Effects/PSXv2Fireball.mat","Shootemup/PSXv2 Fireball");
         fire.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"FX/Fireball_64.png");
@@ -223,8 +223,8 @@ public static class InstallPSXv2
         var effects=ship.GetComponent<PSXShipEffects>();
         if(effects!=null)
         {
-            // Engine burners at Blender (+-0.27, -0.66), expressed in Ship local space.
-            effects.exhaustOffset=new Vector2(.27f,-.66f)*unitScale/Mathf.Abs(ship.lossyScale.x);
+            // Twin burners at the tail (Blender +-0.06, -0.23), expressed in Ship local space.
+            effects.exhaustOffset=new Vector2(.06f,-.23f)*unitScale/Mathf.Abs(ship.lossyScale.x);
             EditorUtility.SetDirty(effects);
         }
         EditorUtility.SetDirty(visual);

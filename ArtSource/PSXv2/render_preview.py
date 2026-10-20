@@ -84,7 +84,7 @@ def shot(cam, name, center, size, res, tilt=0.0):
 cam = setup()
 sc.frame_set(0)
 names = ["PSXv2_Player", "PSXv2_Enemy_0_Dart", "PSXv2_Enemy_1_Rotor", "PSXv2_Enemy_2_Gunboat", "PSXv2_Enemy_3_Warden"]
-sizes = {"PSXv2_Player": 2.6, "PSXv2_Enemy_0_Dart": 1.6, "PSXv2_Enemy_1_Rotor": 1.6, "PSXv2_Enemy_2_Gunboat": 4.4, "PSXv2_Enemy_3_Warden": 13.5}
+sizes = {"PSXv2_Player": 1.6, "PSXv2_Enemy_0_Dart": 1.6, "PSXv2_Enemy_1_Rotor": 1.6, "PSXv2_Enemy_2_Gunboat": 4.4, "PSXv2_Enemy_3_Warden": 13.5}
 for n in names:
     ob = bpy.data.objects[n]
     c = ob.location.copy()
