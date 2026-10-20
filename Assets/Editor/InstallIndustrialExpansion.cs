@@ -86,7 +86,7 @@ public static class InstallIndustrialExpansion
         {
             int index=i;string path="Assets/Resources/Bullets/"+bulletNames[i]+".prefab";
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(path);var size=ColliderSize(prefab);
-            float height=i<2 ? .29f : Mathf.Max(size.x,size.y)*1.45f;
+            float height=i<2 ? .46f : Mathf.Max(size.x,size.y)*(i==2 ? 1.89f : 1.45f);   // allied rounds and small enemy rounds enlarged
             var sprite=SpriteTexture(bulletNames[i],i,height);
             Edit(path,go=>
             {
