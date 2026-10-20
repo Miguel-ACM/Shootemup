@@ -8,7 +8,7 @@ public sealed class PSXPresentation : MonoBehaviour
 {
     /// <summary>Minimum internal lines. The real height is the screen divided by the largest whole
     /// factor that keeps at least this many lines, so the upscale uses even, whole pixels.</summary>
-    [Range(180,480)] public int renderHeight=360;
+    [Range(180,720)] public int renderHeight=480;
     public bool filterEnabled=true;
     UnityEngine.Camera source,output;
     RenderTexture pixels,previousTarget;
