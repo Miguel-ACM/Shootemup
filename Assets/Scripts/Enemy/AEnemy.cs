@@ -102,7 +102,7 @@ public abstract class AEnemy : MonoBehaviour
 
     protected virtual void Die()
     {
-        SoundManager.PlaySound("enemyExplosion1", 0.04f);
+        // The explosion plays its own sound for every fireball it spawns.
         PSXImpactEffects.Explosion(gameObject);
         Score.IncreaseScore(scoreOnKill);
         DropItems();

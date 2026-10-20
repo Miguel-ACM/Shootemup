@@ -15,6 +15,7 @@ public sealed class PSXFireballs : MonoBehaviour
     readonly List<Ball> active=new List<Ball>();
     readonly Stack<Ball> pool=new Stack<Ball>();
     MaterialPropertyBlock properties;
+    static readonly float[] Pitch={.82f,1.18f};
     static readonly int ColorId=Shader.PropertyToID("_Color"),FadeId=Shader.PropertyToID("_Fade");
     public static int Spawned { get; private set; }
 
@@ -22,7 +23,7 @@ public sealed class PSXFireballs : MonoBehaviour
     {
         public Transform transform;public MeshRenderer renderer;
         public float start,life,size;public Vector3 axis,drift;public float spin;
-        public bool isRing;public Color tint;public MeshFilter filter;public float expand=1;
+        public bool isRing;public Color tint;public MeshFilter filter;public float expand=1;public bool sounded;
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -69,7 +70,7 @@ public sealed class PSXFireballs : MonoBehaviour
     Ball Add(Vector3 position,float size,float delay,float life)
     {
         var ball=pool.Count>0 ? pool.Pop() : Create();
-        ball.isRing=false;ball.filter.sharedMesh=Sphere();
+        ball.isRing=false;ball.sounded=false;ball.filter.sharedMesh=Sphere();
         ball.transform.position=position+Vector3.back*.5f;
         ball.start=Time.time+delay;ball.life=life;ball.size=size;
         ball.axis=Random.onUnitSphere;ball.spin=Random.Range(-220f,220f);
@@ -98,6 +99,8 @@ public sealed class PSXFireballs : MonoBehaviour
             if(age<0)continue;
             if(age>=1){ball.renderer.enabled=false;active.RemoveAt(i);pool.Push(ball);continue;}
             ball.renderer.enabled=true;
+            // Every fireball that pops in gets its own bang, louder for bigger ones.
+            if(!ball.isRing && !ball.sounded){ball.sounded=true;SoundManager.PlaySoundRandomPitch("enemyExplosion1",Mathf.Clamp(.02f+ball.size*.006f,.02f,.06f),Pitch);}
             // Fast ease-out growth, stepped at 30 Hz for the PS1 cadence.
             float stepped=Mathf.Floor(age*ball.life*30)/(ball.life*30);
             float grow=1-Mathf.Pow(1-stepped,3);
