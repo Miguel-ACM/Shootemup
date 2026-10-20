@@ -42,7 +42,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         score=TextAt(frame.transform,"000000000",12,12,11,Steel);
         chain=TextAt(frame.transform,"",333,12,10,Amber);
         chainCells=Cells(frame.transform,333,28,6,7,Amber);
-        sidePanel=Panel(frame.transform,"Side instruments",Dark);Place(sidePanel,-44,410,40,268);
+        sidePanel=Panel(frame.transform,"Side instruments",Color.clear);   // no box behind the life/energy barsPlace(sidePanel,-44,410,40,268);
         Rule(sidePanel,3,3,34,Steel);
         Place(Panel(sidePanel,"Health cross",Steel),7,16,11,3);
         Place(Panel(sidePanel,"Health cross stem",Steel),11,12,3,11);
