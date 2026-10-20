@@ -43,6 +43,11 @@ public abstract class AWeaponAutomatic : AWeapon
             if ((isStopingPrimary && isStopingSecondary) || GameRules.playerDisabled)
             {
                 CancelInvoke("Shoot");
+                // Passive weapons (both inputs) must clear these too, or PrimaryPressed ignores every
+                // later press: the AK45 stopped after the first release (e.g. around a shop pickup).
+                isShootingPrimary = false;
+                isShootingSecondary = false;
+                return;
             }
         }
     }
