@@ -73,9 +73,9 @@ public static class InstallPSXv2
         Directory.CreateDirectory("Assets/Resources/Effects");
         var fire=Mat("Assets/Resources/Effects/PSXv2Fireball.mat","Shootemup/PSXv2 Fireball");
         fire.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"FX/Fireball_64.png");
-        // Full PSX presentation by default: the shared composite now dithers visibly.
+        // Full PSX presentation by default, kept light: PS1 half-step dither, mild softness, no vignette.
         var screen=AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/PSXPass/PSX screen composite.mat");
-        if(screen!=null){screen.SetFloat("_Dither",.55f);screen.SetFloat("_Vignette",.12f);EditorUtility.SetDirty(screen);}
+        if(screen!=null){screen.SetFloat("_Dither",1);screen.SetFloat("_Soften",.18f);screen.SetFloat("_Vignette",0);EditorUtility.SetDirty(screen);}
 
         Orientation(out var rotation,out float scale,report);
         foreach(var path in Scenes)InstallPlayer(path,rotation,scale,steel,core,ring,report);

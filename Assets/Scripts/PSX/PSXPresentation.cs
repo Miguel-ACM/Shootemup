@@ -3,10 +3,12 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 
-/// <summary>Point-scaled low-resolution scene, ordered dithering and 15-bit colour.</summary>
+/// <summary>Integer-scaled low-resolution scene with PS1-style dithering and 15-bit colour.</summary>
 public sealed class PSXPresentation : MonoBehaviour
 {
-    [Range(180,480)] public int renderHeight=320;
+    /// <summary>Minimum internal lines. The real height is the screen divided by the largest whole
+    /// factor that keeps at least this many lines, so the upscale uses even, whole pixels.</summary>
+    [Range(180,480)] public int renderHeight=360;
     public bool filterEnabled=true;
     UnityEngine.Camera source,output;
     RenderTexture pixels,previousTarget;
@@ -50,8 +52,8 @@ public sealed class PSXPresentation : MonoBehaviour
         width=Screen.width;height=Screen.height;
         source.targetTexture=null;
         if(pixels!=null){pixels.Release();Destroy(pixels);}
-        int h=filterEnabled ? renderHeight : height;
-        int w=Mathf.Max(1,Mathf.RoundToInt(h*(float)width/height));
+        int factor=filterEnabled ? Mathf.Max(1,height/renderHeight) : 1;
+        int h=Mathf.Max(1,height/factor),w=Mathf.Max(1,width/factor);
         pixels=new RenderTexture(w,h,24,RenderTextureFormat.ARGB32) {filterMode=FilterMode.Point,name="PSX world pixels",antiAliasing=1};
         pixels.Create();source.targetTexture=pixels;image.texture=pixels;
         image.material=filterEnabled ? composite : null;
