@@ -35,7 +35,7 @@ public class ResourceBar : MonoBehaviour
     public void Set(float res)
     {
         Initialize();
-        slider.value = Mathf.Clamp(res / maxResource, 0, maxResource);
+        slider.value = Mathf.Clamp01(res / maxResource);
     }
 
     public void SetVisible(bool visible)
