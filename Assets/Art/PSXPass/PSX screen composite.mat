@@ -30,8 +30,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _ColorSteps: 31
-    - _Dither: 0.08
-    - _Vignette: 0
+    - _Dither: 0.55
+    - _Vignette: 0.12
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

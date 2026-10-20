@@ -314,6 +314,7 @@ public class Shipcontroller : MonoBehaviour
     void Die()
     {
         SoundManager.PlaySound("playerDead", 0.5f);
+        PSXImpactEffects.Explosion(transform.position, 1.6f);
         BGMManager.StopBGM();
         circleCollider.enabled = false;
         Color tmp = renderer.color;

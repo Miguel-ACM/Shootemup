@@ -7,7 +7,7 @@ using UnityEngine.Rendering.Universal;
 public sealed class PSXPresentation : MonoBehaviour
 {
     [Range(180,480)] public int renderHeight=320;
-    public bool filterEnabled=false;
+    public bool filterEnabled=true;
     UnityEngine.Camera source,output;
     RenderTexture pixels,previousTarget;
     Canvas canvas;
@@ -55,6 +55,8 @@ public sealed class PSXPresentation : MonoBehaviour
         pixels=new RenderTexture(w,h,24,RenderTextureFormat.ARGB32) {filterMode=FilterMode.Point,name="PSX world pixels",antiAliasing=1};
         pixels.Create();source.targetTexture=pixels;image.texture=pixels;
         image.material=filterEnabled ? composite : null;
+        // PSXv2Lit snaps vertices to this pixel grid (PS1-style jitter at the internal resolution).
+        Shader.SetGlobalVector("_PSXSnapResolution",new Vector4(w,h,0,0));
     }
 
     void Update()

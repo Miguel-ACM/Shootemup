@@ -5,6 +5,8 @@ public sealed class PSXShipEffects : MonoBehaviour
 {
     public Mesh flameMesh;
     public Material exhaustMaterial;
+    /// <summary>Burner position in Ship local space (mirrored on X). The installer matches it to the visual.</summary>
+    public Vector2 exhaustOffset=new Vector2(.2016f,-.245f);
     Transform[] flames;
     MeshRenderer[] renderers;
     SpriteRenderer source;
@@ -24,7 +26,7 @@ public sealed class PSXShipEffects : MonoBehaviour
         for(int i=0;i<2;i++)
         {
             var flame=new GameObject(i==0 ? "Port exhaust" : "Starboard exhaust");flame.transform.SetParent(transform,false);
-            flame.transform.localPosition=new Vector3(i==0 ? -.2016f : .2016f,-.245f,-.08f);
+            flame.transform.localPosition=new Vector3(i==0 ? -exhaustOffset.x : exhaustOffset.x,exhaustOffset.y,-.08f);
             flame.AddComponent<MeshFilter>().sharedMesh=flameMesh;var renderer=flame.AddComponent<MeshRenderer>();renderer.sharedMaterial=exhaustMaterial;
             renderer.sortingLayerName="Player";renderer.sortingOrder=1;renderer.shadowCastingMode=ShadowCastingMode.Off;
             flames[i]=flame.transform;renderers[i]=renderer;

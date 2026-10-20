@@ -103,6 +103,7 @@ public abstract class AEnemy : MonoBehaviour
     protected virtual void Die()
     {
         SoundManager.PlaySound("enemyExplosion1", 0.04f);
+        PSXImpactEffects.Explosion(gameObject);
         Score.IncreaseScore(scoreOnKill);
         DropItems();
         if (orchestrer != null)

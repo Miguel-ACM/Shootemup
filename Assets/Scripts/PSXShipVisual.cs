@@ -9,6 +9,11 @@ public sealed class PSXShipVisual : MonoBehaviour
     [SerializeField] Transform model;
     [SerializeField] MeshRenderer modelRenderer;
     [SerializeField] float bankDegrees = 12f;
+    // PSXv2: orientation from the FBX axis check, extra part renderers and a non-banking hitbox.
+    [SerializeField] bool customOrientation;
+    [SerializeField] Quaternion baseRotation = Quaternion.identity;
+    [SerializeField] MeshRenderer[] partRenderers;
+    [SerializeField] Renderer[] hitboxRenderers;
     MaterialPropertyBlock properties;
     Vector3 previousPosition;
     float bank;
@@ -20,6 +25,15 @@ public sealed class PSXShipVisual : MonoBehaviour
         model = visual;
         modelRenderer = meshRenderer;
         Apply();
+    }
+
+    public void Configure(SpriteRenderer sprite, Transform visual, MeshRenderer[] parts, Quaternion orientation, Renderer[] hitbox)
+    {
+        customOrientation = true;
+        baseRotation = orientation;
+        partRenderers = parts;
+        hitboxRenderers = hitbox;
+        Configure(sprite, visual, parts.Length > 0 ? parts[0] : null);
     }
 
     void OnEnable()
@@ -38,9 +52,11 @@ public sealed class PSXShipVisual : MonoBehaviour
             bank = Mathf.Lerp(bank, target, 1f - Mathf.Exp(-12f * Time.deltaTime));
         }
         previousPosition = transform.position;
-        // Face the imported nose toward +Y while keeping the dorsal side toward -Z.
-        model.localRotation = Quaternion.Euler(-75f, 0f, 0f)
-            * Quaternion.Euler(0f, 180f, 0f) * Quaternion.AngleAxis(bank, Vector3.forward);
+        // Bank around the nose (+Y in Ship space) so the hitbox, a sibling, never shifts.
+        model.localRotation = customOrientation
+            ? Quaternion.AngleAxis(bank, Vector3.up) * baseRotation
+            // Face the imported nose toward +Y while keeping the dorsal side toward -Z.
+            : Quaternion.Euler(-75f, 0f, 0f) * Quaternion.Euler(0f, 180f, 0f) * Quaternion.AngleAxis(bank, Vector3.forward);
         Apply();
     }
 
@@ -55,5 +71,18 @@ public sealed class PSXShipVisual : MonoBehaviour
         properties.SetColor(Tint, sourceSprite.color);
         modelRenderer.SetPropertyBlock(properties);
         modelRenderer.enabled = sourceSprite.color.a > 0.001f;
+        if (partRenderers != null)
+            foreach (var part in partRenderers)
+            {
+                if (part == null || part == modelRenderer) continue;
+                part.sortingLayerID = modelRenderer.sortingLayerID;
+                part.sortingOrder = modelRenderer.sortingOrder;
+                part.SetPropertyBlock(properties);
+                part.enabled = modelRenderer.enabled;
+            }
+        // The hitbox stays fully visible through invulnerability blinking; it only hides on death.
+        if (hitboxRenderers != null)
+            foreach (var marker in hitboxRenderers)
+                if (marker != null) marker.enabled = sourceSprite.color.a > 0.001f && !GameRules.playerDisabled;
     }
 }

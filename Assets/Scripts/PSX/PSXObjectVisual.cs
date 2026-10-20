@@ -7,6 +7,8 @@ public sealed class PSXObjectVisual : MonoBehaviour
     public Mesh[] itemMeshes;
     public Transform model;
     public MeshRenderer modelRenderer;
+    /// <summary>All renderers of a multi-part (animated) model; empty for single meshes.</summary>
+    public MeshRenderer[] modelRenderers;
     public SpriteRenderer sourceSprite;
     public bool spin;
     public bool chooseItem;
@@ -38,6 +40,14 @@ public sealed class PSXObjectVisual : MonoBehaviour
             model.GetComponent<MeshFilter>().sharedMesh=itemMeshes[Mathf.Max(0,index)];
         }
         if(sourceSprite!=null)sourceSprite.enabled=false;
+        // Desynchronise the looping part animation so a wave does not move in lockstep.
+        var animation=model.GetComponentInChildren<Animation>();
+        if(animation!=null && animation.clip!=null)
+        {
+            animation.Play();
+            var state=animation[animation.clip.name];
+            state.wrapMode=WrapMode.Loop;state.time=UnityEngine.Random.Range(0f,state.length);
+        }
         item=GetComponent<AItem>();pickup=GetComponent<APickable>();
         companion=GetComponent<ACompanion>()!=null;
         if(spin && (item!=null || pickup!=null))
@@ -87,5 +97,6 @@ public sealed class PSXObjectVisual : MonoBehaviour
         if(properties==null)properties=new MaterialPropertyBlock();
         Color tint=accent;tint.a=(sourceSprite!=null ? sourceSprite.color.a : 1)*fadeOut;
         properties.SetColor("_Tint",tint);modelRenderer.SetPropertyBlock(properties);
+        if(modelRenderers!=null)foreach(var part in modelRenderers)if(part!=null && part!=modelRenderer)part.SetPropertyBlock(properties);
     }
 }
