@@ -20,7 +20,7 @@ public static class InstallPSXv2
 {
     const string Folder="Assets/Art/PSXv2/";
     const string Request="ArtSource/PSXv2/install.request";
-    const string CaptureRequest="ArtSource/PSXv2/capture.request";
+    const string CaptureRequest="ArtSource/PSXv2/capture.request",CancelRequest="ArtSource/PSXv2/capture.cancel",DiscardOk="ArtSource/PSXv2/discard-unsaved.ok";
     const string CaptureScene="Assets/Scenes/L1.unity";   // level 1 shows the grass field and real waves
     const string ReportPath="ArtSource/PSXv2/InstallReport.json";
     const string CaptureFolder="ArtSource/PSXv2/UnityCapture";
@@ -41,8 +41,11 @@ public static class InstallPSXv2
     static void Tick()
     {
         if(busy || EditorApplication.isCompiling || EditorApplication.isUpdating)return;
+        // capture.cancel disarms a pending capture so it never interrupts someone else's Play session.
+        if(File.Exists(CancelRequest)){File.Delete(CancelRequest);SessionState.SetInt(StageKey,0);SessionState.SetBool("PSXv2Staged",false);return;}
         int stage=SessionState.GetInt(StageKey,0);
         if(stage>0){busy=true;try{Capture(stage);}catch(Exception e){Fail(e);SessionState.SetInt(StageKey,0);}finally{busy=false;}return;}
+        if((File.Exists(CaptureRequest) || File.Exists(Request)) && !EditorApplication.isPlayingOrWillChangePlaymode && UnsavedWork())return;
         if(File.Exists(CaptureRequest) && !EditorApplication.isPlayingOrWillChangePlaymode)
         {
             File.Delete(CaptureRequest);Directory.CreateDirectory(CaptureFolder);
@@ -54,6 +57,21 @@ public static class InstallPSXv2
         try{File.Delete(Request);Install();}
         catch(Exception e){Fail(e);}
         finally{busy=false;}
+    }
+
+    /// <summary>Never open scenes over someone's unsaved edits: report and wait instead.</summary>
+    static bool UnsavedWork()
+    {
+        // One-shot override, only after the owner confirmed the open scene holds none of their work.
+        if(File.Exists(DiscardOk)){File.Delete(DiscardOk);return false;}
+        for(int i=0;i<EditorSceneManager.sceneCount;i++)
+        {
+            var scene=EditorSceneManager.GetSceneAt(i);
+            if(!scene.isDirty)continue;
+            File.WriteAllText("ArtSource/PSXv2/InstallError.txt","Waiting: "+scene.path+" has unsaved changes in the editor.");
+            return true;
+        }
+        return false;
     }
 
     static void Fail(Exception e){File.WriteAllText("ArtSource/PSXv2/InstallError.txt",e.ToString());Debug.LogException(e);}
