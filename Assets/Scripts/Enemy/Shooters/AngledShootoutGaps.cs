@@ -20,7 +20,7 @@ public class AngledShootoutGaps : AShooter
         {
             for (int i = 0; i < numBullets; i++)
             {
-                float angle = 60 / (numBullets - 1) * i + mainAngle;
+                float angle = 60f / (numBullets - 1) * i + mainAngle;
                 AEnemyBullet createdBullet = Instantiate(bullet, transform.position, transform.rotation).GetComponent<AEnemyBullet>();
                 createdBullet.setProperties(new Dictionary<string, float> { { "damage", shotDamage * GameRules.enemyDamage }, { "angle", angle }, { "speed", shotSpeed * GameRules.enemyBulletSpeed } });
                 createdBullet = Instantiate(bullet, transform.position, transform.rotation).GetComponent<AEnemyBullet>();

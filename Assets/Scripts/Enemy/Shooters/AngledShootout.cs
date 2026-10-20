@@ -30,7 +30,7 @@ public class AngledShootout : AShooter
             for (int i = 0; i < numBullets; i++)
             {
                 AEnemyBullet createdBullet = Instantiate(bullet, transform.position, transform.rotation).GetComponent<AEnemyBullet>();
-                createdBullet.setProperties(new Dictionary<string, float> { { "damage", shotDamage * GameRules.enemyDamage }, { "angle", 360 / numBullets * i + mainAngle }, { "speed", shotSpeed * GameRules.enemyBulletSpeed } });
+                createdBullet.setProperties(new Dictionary<string, float> { { "damage", shotDamage * GameRules.enemyDamage }, { "angle", 360f / numBullets * i + mainAngle }, { "speed", shotSpeed * GameRules.enemyBulletSpeed } });
             }
             if (transform.position.x < 0)
             {
