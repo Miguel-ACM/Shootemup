@@ -764,14 +764,16 @@ def item_arm(b):     # an extra arm: sleeve, upper arm, forearm and an open hand
     b.xform(m, rot_z(-40, (0.36, 0.30, 0)))
 
 
-def item_angrymoon(b):  # moon with slanted brows, red eyes and a frown
+def item_angrymoon(b):  # moon with a scowl: brows in a V (inner ends low), red eyes, gritted mouth
     b.sphere((0, 0, 0), 0.46, "moon", seg=10, rings=7)
     for s in (1, -1):
         m = b.mark()
-        b.box(0.16 * s, 0.15, 0.20, 0.05, 0.38, 0.47, "black", "black")
-        b.xform(m, rot_z(-22 * s, (0.16 * s, 0.15, 0)))
-        b.box(0.15 * s, 0.05, 0.07, 0.06, 0.40, 0.47, "g_red", "g_red")
-    b.box(0, -0.2, 0.26, 0.05, 0.36, 0.45, "black", "black")
+        b.box(0.15 * s, 0.16, 0.22, 0.055, 0.37, 0.48, "black", "black")
+        b.xform(m, rot_z(28 * s, (0.15 * s, 0.16, 0)))
+        b.box(0.14 * s, 0.04, 0.08, 0.06, 0.40, 0.47, "g_red", "g_red")
+    b.box(0, -0.2, 0.28, 0.07, 0.35, 0.45, "black", "black")
+    for x in (-0.07, 0.0, 0.07):
+        b.box(x, -0.2, 0.025, 0.07, 0.36, 0.455, "ceramic", "ceramic")
 
 
 def item_telekinesis(b):  # bent spoon
