@@ -5,6 +5,8 @@ using UnityEngine;
 public class Bullet : ABullet
 {
     Rigidbody2D rigidBody;
+    // Shared by all bullets so the scene is searched once, not on every trigger contact.
+    static Shipcontroller player;
 
     void Start()
     {
@@ -54,9 +56,10 @@ public class Bullet : ABullet
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        Shipcontroller sc = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
-        if (collision.gameObject.tag == "Enemy") {
-            sc.PlayHitSound("hit1");
+        if (collision.CompareTag("Enemy")) {
+            if (player == null)
+                player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
+            player.PlayHitSound("hit1");
             AEnemy en = collision.gameObject.GetComponent<AEnemy>(); //collision.transform.position
             //Instantiate(Resources.Load<GameObject>("Particles/HitSpark"), collision.transform.position, Quaternion.identity);
             Score.IncreaseScore(Mathf.RoundToInt(damage));
