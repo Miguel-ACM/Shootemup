@@ -17,6 +17,8 @@ public sealed class PSXGrassField : MonoBehaviour
     public float grassTile=10;
     /// <summary>World units the ground shifts left per unit the player is right of centre (clouds shift double).</summary>
     [Range(0,.5f)] public float sideParallax=.12f;
+    /// <summary>Dims the whole field so bullets, ships and pickups stand out against it.</summary>
+    [Range(.2f,1)] public float brightness=.62f;
     Transform player;
     const float GroundHeight=10,GroundWidth=13,Top=16,Bottom=-16,HalfWidth=5.6f;
     const float GroundZ=90,CloudZ=60;
@@ -49,7 +51,8 @@ public sealed class PSXGrassField : MonoBehaviour
                 // Random mirroring and a wider stretch for streaks keep repeats from reading as copies.
                 var size=new Vector3(scale*(random.NextDouble()<.5 ? -1 : 1)*(shape==2 ? 1.4f : 1),scale,1);
                 piece.transform.localScale=size;
-                var tint=new MaterialPropertyBlock();tint.SetColor("_Tint",new Color(1,1,1,alpha));piece.transform.GetComponent<MeshRenderer>().SetPropertyBlock(tint);
+                float light=Mathf.Lerp(brightness,1,.6f);
+                var tint=new MaterialPropertyBlock();tint.SetColor("_Tint",new Color(light,light,light,alpha));piece.transform.GetComponent<MeshRenderer>().SetPropertyBlock(tint);
                 // The shadow lies on the ground below and behind the cloud, as if lit from the upper left.
                 var shadow=Add("Cloud shadow",shapes[shape],cloudMaterial,Vector3.zero,0,0,-48);
                 shadow.transform.localScale=size;
@@ -123,6 +126,7 @@ public sealed class PSXGrassField : MonoBehaviour
         var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=mat;
         renderer.sortingLayerName="Background";renderer.sortingOrder=order;
         renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;
+        if(mat!=cloudMaterial){var dim=new MaterialPropertyBlock();dim.SetColor("_Tint",new Color(brightness,brightness,brightness,1));renderer.SetPropertyBlock(dim);}
         var piece=new Piece{transform=go.transform,speed=speed,baseX=position.x};
         pieces.Add(piece);return piece;
     }
