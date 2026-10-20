@@ -27,7 +27,6 @@ public class OrbitPlayer : AMover
 
     public override void Move()
     {
-        //Debug.Log(index);
         float rotationPer = Mathf.PI * 2 * (((Time.time % GameRules.orbitTime / GameRules.orbitTime) + this.offset));//((Time.time % GameRules.orbitTime / GameRules.orbitTime + this.offset) % 1);
 
         Vector2 pos = s.transform.position;

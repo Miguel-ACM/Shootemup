@@ -33,8 +33,6 @@ public class SideCoverController : MonoBehaviour
         if (Screen.height != latestHeight || Screen.width != latestWidth)
         {
             float currentAspect = (float)Screen.width / Screen.height;
-            Debug.Log("w " + Screen.width + " " + Screen.height);
-            Debug.Log(currentAspect);
 
             if (currentAspect > 0.5625)  // 16:9 aspect ratio
             {
@@ -46,7 +44,6 @@ public class SideCoverController : MonoBehaviour
                 Vector2 parentSize = ((transform.GetComponentInParent<Canvas>()).transform as RectTransform).sizeDelta;
                 Vector2 newSize = new Vector2((parentSize[0] - parentSize[1] * 9 / 16) / 2, parentSize[1]);
                 float sidePadding = newSize.x;
-                Debug.Log(sidePadding.ToString());
 
                 itemsLeftTransform.anchoredPosition = new Vector2(sidePadding + itemsLeftTransform.anchoredPosition.x, itemsLeftTransform.anchoredPosition.y);
                 itemsRightTransform.anchoredPosition = new Vector2(-sidePadding + itemsRightTransform.anchoredPosition.x, itemsRightTransform.anchoredPosition.y);

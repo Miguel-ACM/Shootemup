@@ -50,7 +50,6 @@ public abstract class AMenuElement : MonoBehaviour, IPointerEnterHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("OnPointerEnter");
         menu.setCurrentElement(this);
         SetSelectedState();
     }

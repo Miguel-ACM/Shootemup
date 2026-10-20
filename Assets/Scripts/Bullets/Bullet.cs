@@ -63,7 +63,6 @@ public class Bullet : ABullet
             en.HitAt(collision.ClosestPoint(transform.position),rigidBody!=null ? rigidBody.linearVelocity : (Vector2)transform.up);
             en.damage(damage);
             Destroy(gameObject);
-            Debug.Log("Enemy hit");
         }        
     }
 

@@ -35,7 +35,6 @@ public class CircularArray<T>
             throw new IndexOutOfRangeException("Index out of bounds");
         }
         int realIndex = mod((this.head - index), this.maxLength);
-        //Debug.Log(realIndex.ToString() + "  " + this.head.ToString() + "  " + index.ToString());
         return elements[realIndex];
     }
 

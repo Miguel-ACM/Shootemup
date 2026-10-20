@@ -9,7 +9,6 @@ public class DamagePopup : MonoBehaviour
 
     public static DamagePopup Create(Vector3 position, float damage)
     {
-        Debug.Log(GameAssets.i.DamageText);
         Transform damagePopupTransform = Instantiate(GameAssets.i.DamageText, position, Quaternion.identity);
         DamagePopup damagePopup = damagePopupTransform.GetComponent<DamagePopup>();
         damagePopup.Setup(damage);

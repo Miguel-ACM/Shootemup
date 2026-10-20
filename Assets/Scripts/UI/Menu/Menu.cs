@@ -76,7 +76,6 @@ public class Menu : MonoBehaviour
 
     public void setCurrentElement(AMenuElement element)
     {
-        Debug.Log(element);
         CurrentElement = element;
         currentIndex = Array.IndexOf(menuElements, element);
     }

@@ -66,7 +66,6 @@ public abstract class AWeapon : MonoBehaviour
 
     void PrimaryPressed(InputAction.CallbackContext ctx)
     {
-        Debug.Log("Primary Pressed");
         isStopingPrimary = false;
         isStopingSecondary = true;
         //isShootingSecondary = false;
@@ -98,7 +97,6 @@ public abstract class AWeapon : MonoBehaviour
                 return;
             }
         }
-        Debug.Log(pressedPrimary.ToString() + " " + isStopingPrimary.ToString());
         if (isShootingPrimary && pressedPrimary ||isShootingSecondary && !pressedPrimary || IsInvoking("Shoot") || pressedPrimary && weaponInput == WeaponInput.secondary || !pressedPrimary && weaponInput == WeaponInput.primary)
         {
             return;
