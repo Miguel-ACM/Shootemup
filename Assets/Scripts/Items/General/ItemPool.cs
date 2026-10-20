@@ -106,14 +106,6 @@ public static class ItemPool
     {
         float randomNumber = Random.Range(0f, 1f) + GameRules.luck;
         pool = "legendary";
-        if (randomNumber < 0.52f) {
-            pool = "common";
-        } else if (randomNumber < 0.82f) {
-            pool = "rare";
-        } else if (randomNumber < 0.96f) {
-            pool = "epic";
-        }
-        pool = "legendary";
 
         if (randomNumber < 0.22f)
         {
@@ -130,9 +122,6 @@ public static class ItemPool
         string itemString = GetItemStringFromPool(pool, out string actualPool);
         pool = actualPool;
         return itemString;
-        //GameObject item = Resources.Load<GameObject>("Items/" + itemString);
-        //return item;
-
     }
 
 
