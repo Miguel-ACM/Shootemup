@@ -286,7 +286,10 @@ public class Shipcontroller : MonoBehaviour
         tmp.a = 0.3f;
         renderer.color = tmp;
         bool inv = false;
-        for (float i = 0; i < invulnerabilitySeconds; i += invulnerabilityDeltaTime)
+        // Count real time: WaitForSeconds(0.01f) waits a whole frame, so adding 0.01 per loop
+        // made invulnerability last longer the higher the frame time.
+        float invulnerableUntil = Time.time + invulnerabilitySeconds;
+        while (Time.time < invulnerableUntil)
         {
             // Alternate between 0 and 1 scale to simulate flashing
             if (inv)
