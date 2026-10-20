@@ -398,7 +398,8 @@ public static class InstallPSXv2
     static void InstallField(Quaternion rotation,Material steel,StringBuilder report)
     {
         string[] Names(string kind,int count)=>Enumerable.Range(0,count).Select(i=>"Field_"+kind+i).ToArray();
-        var puddles=Bake("PSXv2_Field","Field",Names("Puddle",3),rotation);
+        var puddles=Bake("PSXv2_Field","Field",Names("Puddle",5),rotation);
+        var rocks=Bake("PSXv2_Field","Field",Names("Rock",3),rotation);
         var bushes=Bake("PSXv2_Field","Field",Names("Bush",2),rotation);
         var trees=Bake("PSXv2_Field","Field",Names("Tree",3),rotation);
         var grass=Mat(Folder+"Field/PSXv2 Grass.mat","Shootemup/PSXv2 Lit");
@@ -411,9 +412,9 @@ public static class InstallPSXv2
         foreach(var industrial in roots.SelectMany(r=>r.GetComponentsInChildren<PSXIndustrialField>(true))){industrial.steelMaterial=null;EditorUtility.SetDirty(industrial);}
         foreach(var old in roots.Where(r=>r.name=="PSX Grass Field"))UnityEngine.Object.DestroyImmediate(old);
         var field=new GameObject("PSX Grass Field").AddComponent<PSXGrassField>();
-        field.puddles=puddles;field.bushes=bushes;field.trees=trees;field.material=steel;field.groundMaterial=grass;field.cloudMaterial=cloudMaterial;
+        field.puddles=puddles;field.rocks=rocks;field.bushes=bushes;field.trees=trees;field.material=steel;field.groundMaterial=grass;field.cloudMaterial=cloudMaterial;
         EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);
-        report.Append("\"field\":{\"pieces\":"+(puddles.Length+bushes.Length+trees.Length)+"},");
+        report.Append("\"field\":{\"pieces\":"+(puddles.Length+rocks.Length+bushes.Length+trees.Length)+"},");
     }
 
     static Mesh SaveMesh(Mesh mesh,string path)

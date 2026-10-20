@@ -3,14 +3,14 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// Level 1 background: a tiled, muted grass texture with Blender-built puddles, bushes and trees
-/// on it, and soft sprite clouds drifting above with faint shadows on the ground. Everything
-/// scrolls down and is recycled to the top with a new random position. Moving right shifts the
-/// field left (clouds twice as much).
+/// Level 1 background: a tiled, muted grass texture with Blender-built ponds, rocks, bushes and
+/// trees on it, and soft sprite clouds drifting above with faint shadows on the ground. Everything
+/// scrolls down and is recycled to the top with a new random position; nothing solid is ever
+/// placed on water. Moving right shifts the field left (clouds twice as much).
 /// </summary>
 public sealed class PSXGrassField : MonoBehaviour
 {
-    public Mesh[] puddles,bushes,trees;
+    public Mesh[] puddles,rocks,bushes,trees;
     public Material material,groundMaterial,cloudMaterial;
     [Range(0.2f,3f)] public float scrollSpeed=2.2f;
     /// <summary>World units covered by one repeat of the grass texture.</summary>
@@ -24,16 +24,18 @@ public sealed class PSXGrassField : MonoBehaviour
     readonly System.Random random=new System.Random(7);
     MaterialPropertyBlock shadowTint;
 
-    sealed class Piece { public Transform transform; public float speed; public bool isGround,isTree; public float baseX; public Transform shadow; }
+    enum Kind { Ground, Water, Solid, Tree, Cloud }
+    sealed class Piece { public Transform transform; public float speed,baseX,radius; public Kind kind; public Transform shadow; }
 
     void Start()
     {
         if(material==null || groundMaterial==null)return;
         var ground=Quad(GroundWidth,GroundHeight,true);
-        for(int i=0;i<4;i++)Add("Grass ground",ground,groundMaterial,new Vector3(0,-15+i*GroundHeight,GroundZ),0,1,-50).isGround=true;
-        Scatter("Puddle",puddles,5,GroundZ-.05f,-49,false);
-        Scatter("Bush",bushes,8,GroundZ-.1f,-46,false);
-        Scatter("Tree",trees,9,GroundZ-.2f,-44,true);
+        for(int i=0;i<4;i++)Add("Grass ground",ground,groundMaterial,new Vector3(0,-15+i*GroundHeight,GroundZ),0,1,-50).kind=Kind.Ground;
+        Scatter("Pond",puddles,8,GroundZ-.05f,-49,Kind.Water);
+        Scatter("Rock",rocks,7,GroundZ-.1f,-47,Kind.Solid);
+        Scatter("Bush",bushes,10,GroundZ-.1f,-46,Kind.Solid);
+        Scatter("Tree",trees,16,GroundZ-.2f,-44,Kind.Tree);
         if(cloudMaterial!=null)
         {
             shadowTint=new MaterialPropertyBlock();shadowTint.SetColor("_Tint",new Color(0,0,0,.22f));
@@ -42,7 +44,7 @@ public sealed class PSXGrassField : MonoBehaviour
             {
                 float scale=Range(.8f,1.4f);
                 var piece=Add("Cloud",cloud,cloudMaterial,new Vector3(Range(-HalfWidth,HalfWidth),Range(Bottom,Top),CloudZ),0,1.6f,-20);
-                piece.transform.localScale=Vector3.one*scale;
+                piece.kind=Kind.Cloud;piece.transform.localScale=Vector3.one*scale;
                 // The shadow lies on the ground below and behind the cloud, as if lit from the upper left.
                 var shadow=Add("Cloud shadow",cloud,cloudMaterial,Vector3.zero,0,0,-48);
                 shadow.transform.localScale=Vector3.one*scale;shadow.transform.GetComponent<MeshRenderer>().SetPropertyBlock(shadowTint);
@@ -53,18 +55,45 @@ public sealed class PSXGrassField : MonoBehaviour
 
     float Range(float lo,float hi)=>Mathf.Lerp(lo,hi,(float)random.NextDouble());
 
-    void Scatter(string name,Mesh[] meshes,int count,float z,int order,bool isTree)
+    void Scatter(string name,Mesh[] meshes,int count,float z,int order,Kind kind)
     {
         if(meshes==null || meshes.Length==0)return;
         for(int i=0;i<count;i++)
         {
-            var piece=Add(name,meshes[i%meshes.Length],material,new Vector3(0,Range(Bottom,Top),z),Range(0,360),1,order);
-            piece.isTree=isTree;piece.baseX=isTree ? Edge() : Range(-HalfWidth,HalfWidth);
+            var mesh=meshes[i%meshes.Length];
+            var piece=Add(name,mesh,material,new Vector3(0,0,z),Range(0,360),1,order);
+            piece.kind=kind;piece.radius=Mathf.Max(mesh.bounds.extents.x,mesh.bounds.extents.y)*.9f;
+            Place(piece,Bottom,Top);
         }
     }
 
-    // Trees favour the playfield edges so the centre lane stays readable.
-    float Edge()=>(random.NextDouble()<.5 ? -1 : 1)*Range(1.8f,HalfWidth);
+    /// <summary>Random spot in the y band that keeps water and solid pieces apart; trees favour the
+    /// playfield edges so the centre lane stays readable.</summary>
+    void Place(Piece piece,float yMin,float yMax)
+    {
+        var p=piece.transform.localPosition;
+        for(int attempt=0;attempt<16;attempt++)
+        {
+            p.y=Range(yMin,yMax);
+            piece.baseX=piece.kind==Kind.Tree ? (random.NextDouble()<.5 ? -1 : 1)*Range(1.8f,HalfWidth) : Range(-HalfWidth,HalfWidth);
+            if(!OnWater(piece,piece.baseX,p.y))break;
+        }
+        piece.transform.localPosition=new Vector3(piece.baseX,p.y,p.z);
+    }
+
+    bool OnWater(Piece piece,float x,float y)
+    {
+        if(piece.kind==Kind.Cloud || piece.kind==Kind.Ground)return false;
+        foreach(var other in pieces)
+        {
+            if(other==piece || other.kind==Kind.Ground || other.kind==Kind.Cloud)continue;
+            // Water must not touch anything solid, and solid things must not touch water.
+            if((piece.kind==Kind.Water)==(other.kind==Kind.Water))continue;
+            var o=other.transform.localPosition;
+            if(new Vector2(x-other.baseX,y-o.y).magnitude<piece.radius+other.radius+.15f)return true;
+        }
+        return false;
+    }
 
     /// <summary>Camera-facing quad; tiled UVs for the ground, 0..1 for sprites.</summary>
     Mesh Quad(float width,float height,bool tiled)
@@ -100,12 +129,14 @@ public sealed class PSXGrassField : MonoBehaviour
         {
             var p=piece.transform.localPosition;
             p.y-=scrollSpeed*piece.speed*Time.deltaTime;
-            if(piece.isGround){if(p.y<-25)p.y+=4*GroundHeight;}
+            if(piece.kind==Kind.Ground){if(p.y<-25)p.y+=4*GroundHeight;}
             else if(p.y<Bottom)
             {
-                p.y+=Top-Bottom;
-                piece.baseX=piece.isTree ? Edge() : Range(-HalfWidth,HalfWidth);
+                piece.transform.localPosition=p;
+                // Re-enter just above the top, in a short band so recycled pieces stay spread out.
+                Place(piece,p.y+(Top-Bottom),p.y+(Top-Bottom)+2);
                 if(piece.shadow==null)piece.transform.localRotation=Quaternion.Euler(0,0,Range(0,360));
+                p=piece.transform.localPosition;
             }
             p.x=piece.baseX+side*(piece.shadow!=null ? 2 : 1);
             piece.transform.localPosition=p;

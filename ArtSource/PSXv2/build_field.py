@@ -1,5 +1,5 @@
 """Level 1 grass field kit (Blender). Loads build_ships.py for its Builder/material helpers, then
-builds puddles, trees and bushes into
+builds puddles and ponds, rocks, trees and bushes into
 Assets/Art/PSXv2/PSXv2_Field.fbx (one object per piece, named Field_*). PSXGrassField scrolls
 and recycles them in game. Same conventions: 1 unit = 1 world unit, +Z toward the camera.
 """
@@ -54,6 +54,17 @@ def bush(b, size):
                  seg=6, rings=4, scale=(1, 1, .7))
 
 
+def rock(b, size):
+    """Lumpy grey boulder: a squashed, jittered low-poly sphere plus a smaller stone beside it."""
+    m = b.mark()
+    b.sphere((0, 0, size * .3), size * .5, "grey", seg=6, rings=4, scale=(1, .8, .6))
+    b.bm.verts.ensure_lookup_table()
+    for v in b.bm.verts[m:]:
+        v.co.x += rng.uniform(-.08, .08) * size
+        v.co.y += rng.uniform(-.08, .08) * size
+    b.sphere((size * .55, -size * .2, size * .12), size * .2, "lightgrey", seg=5, rings=3, scale=(1, .9, .6))
+
+
 def cloud(b, size):
     """Small flat cumulus puff cluster (white, softly shaded by the ceramic tile)."""
     for k in range(rng.choice((3, 4, 5))):
@@ -68,7 +79,8 @@ def build():
     root = bpy.data.objects.new("PSXv2_Field", None)
     bpy.context.scene.collection.objects.link(root)
     # The ground is a tiled grass texture and clouds are sprites (PSXGrassField builds both).
-    pieces = [(f"Field_Puddle{i}", lambda b, s=s: puddle(b, s)) for i, s in enumerate((0.55, 0.8, 1.1))]
+    pieces = [(f"Field_Puddle{i}", lambda b, s=s: puddle(b, s)) for i, s in enumerate((0.55, 0.8, 1.1, 1.5, 2.0))]
+    pieces += [(f"Field_Rock{i}", lambda b, s=s: rock(b, s)) for i, s in enumerate((0.35, 0.55, 0.8))]
     pieces += [(f"Field_Tree{i}", lambda b, s=s, d=d: tree(b, s, d)) for i, (s, d) in enumerate(((1.3, False), (1.7, True), (2.2, False)))]
     pieces += [(f"Field_Bush{i}", lambda b, s=s: bush(b, s)) for i, s in enumerate((0.6, 0.9))]
     report = {}
