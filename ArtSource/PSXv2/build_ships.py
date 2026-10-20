@@ -34,7 +34,37 @@ TILES = {
     "magnet": (5, 4), "chrome": (6, 4), "brass": (7, 4),
     "deep": (0, 5), "windows": (1, 5), "number": (2, 5), "caution": (3, 5), "scorch": (4, 5),
     "grating": (5, 5), "screen": (6, 5), "white": (7, 5),
+    "blackarmour": (0, 6), "yellow": (1, 6), "greyhazard": (2, 6), "greyglass": (3, 6), "grey": (4, 6),
+    "lightgrey": (5, 6), "greywindows": (6, 6), "yellowstripe": (7, 6),
 }
+# One colour per model (Miguel, 2026-10-20): every enemy in a shared grey with white glows;
+# the player black with yellow details. Tiles are remapped while a theme is active.
+ENEMY_THEME = {
+    "red": "grey", "orange": "grey", "teal": "grey", "purple": "grey", "deep": "dark", "blue": "grey",
+    "rust": "dark", "caution": "greyhazard", "hazard": "greyhazard", "glass": "greyglass",
+    "windows": "greywindows", "screen": "dark", "number": "number", "white": "lightgrey", "hull": "lightgrey",
+    "g_red": "g_white", "g_orange": "g_white", "g_magenta": "g_white", "g_cyan": "g_white",
+    "g_yellow": "g_white", "g_green": "g_white",
+}
+PLAYER_THEME = {
+    "white": "blackarmour", "hull": "blackarmour", "steel": "dark", "blue": "yellow", "red": "yellow",
+    "glass": "greyglass", "g_cyan": "g_yellow", "g_ring": "g_yellow",
+}
+THEME = {}
+
+
+def themed(theme):
+    """Decorator: build everything inside fn with the tile remap active."""
+    def wrap(fn):
+        def run(*a, **k):
+            global THEME
+            previous, THEME = THEME, theme
+            try:
+                return fn(*a, **k)
+            finally:
+                THEME = previous
+        return run
+    return wrap
 HITBOX_CENTER = (0.0, 0.16)
 HITBOX_RADIUS = 0.115
 TAU = 2 * math.pi
@@ -52,7 +82,7 @@ class Builder:
         self.closed = closed
 
     def _tag(self, face, tile, uvs=None):
-        face[self.layer] = self.names.index(tile)
+        face[self.layer] = self.names.index(THEME.get(tile, tile))
         if uvs is not None:
             self.fixed.append(uvs)
             face[self.fix] = len(self.fixed)
@@ -334,6 +364,7 @@ def player_geometry(b, hitbox=False):
         b.ngon(*HITBOX_CENTER, HITBOX_RADIUS, 12, 0.40, 0.44, "g_white", "g_white")
 
 
+@themed(PLAYER_THEME)
 def player():
     b = Builder()
     player_geometry(b)
@@ -347,7 +378,7 @@ def player():
     r = Builder()
     r.ring(*HITBOX_CENTER, HITBOX_RADIUS + 0.035, HITBOX_RADIUS + 0.008, 12, 0.40, 0.43, "g_ring", "g_ring")
     ring = r.finish("PSXv2_Player_HitboxRing")
-    ring.data.materials.append(material("PSXv2_HitboxRing", color=(1, 0.12, 0.35)))
+    ring.data.materials.append(material("PSXv2_HitboxRing", color=(1, 0.82, 0.1)))
     core.parent = ship
     ring.parent = ship
     return [ship, core, ring]
@@ -422,6 +453,7 @@ def spin(turns):
 
 
 # --------------------------------------------------------------------------- enemies
+@themed(ENEMY_THEME)
 def interceptor():
     """Enemy_0 'Dart': red arrowhead with canopy and wing missiles; banks, eye blinks, thruster flickers."""
     L = 24
@@ -446,6 +478,7 @@ def interceptor():
     return r
 
 
+@themed(ENEMY_THEME)
 def rotor():
     """Enemy_1 'Rotor': hex ring + lamp pods spin, the domed hub counter-rotates and pulses."""
     L = 48
@@ -472,6 +505,7 @@ def rotor():
     return r
 
 
+@themed(ENEMY_THEME)
 def gunboat():
     """Enemy_2 'Gunboat': teal twin-hull catamaran with bridge; turret sweeps and fires, engines flicker."""
     L = 60
@@ -514,6 +548,7 @@ WARDEN_HULL = [(0.0, -3.6), (1.2, -2.6), (3.0, -2.1), (4.6, -2.2), (5.6, -1.3), 
                (-3.0, -2.1), (-1.2, -2.6)]
 
 
+@themed(ENEMY_THEME)
 def warden():
     """Enemy_3 'Freight Warden' boss: layered purple carrier with a stepped white spine, bridge
     tower and radar, two drum turrets with twin cannons, four point-defence turrets, pipe runs,
@@ -634,7 +669,7 @@ def item_rabbit(b):  # white rabbit paw with toes and a gold cap
             -0.16, 0.16, "ceramic", "ceramic", taper=0.8)
     for x, y in ((-0.13, -0.36), (0, -0.42), (0.13, -0.36)):
         b.sphere((x, y, 0.02), 0.09, "ceramic", seg=6, rings=4)
-    b.tube((0, 0.40, 0), (0, 0.58, 0), 0.13, 8, "gold", cap0="brass", cap1="brass")
+    b.tube((0, 0.40, 0), (0, 0.58, 0), 0.13, 8, "chrome", cap0="steel", cap1="steel")
 
 
 def item_blank(b):   # brass cartridge with a crimped (blank) tip
@@ -654,7 +689,7 @@ def item_twerp(b):   # little helper robot
     for x in (-0.36, 0.36):
         b.box(x, -0.12, 0.12, 0.30, -0.08, 0.08, "dark", "dark")
     b.tube((0, 0.43, 0), (0, 0.6, 0), 0.02, 4, "chrome")
-    b.sphere((0, 0.62, 0), 0.05, "g_red", seg=6, rings=4)
+    b.sphere((0, 0.62, 0), 0.05, "g_cyan", seg=6, rings=4)
 
 
 def item_magnet(b):  # red horseshoe magnet with chrome poles
@@ -701,7 +736,7 @@ def item_moon(b):
 
 def item_babyyou(b):  # a miniature of the player ship, standing up and facing the camera
     m = b.mark()
-    player_geometry(b, hitbox=True)
+    themed(PLAYER_THEME)(player_geometry)(b, hitbox=True)
     b.xform(m, scl(0.5, 0.5, 0.5))
 
 
@@ -711,7 +746,7 @@ def item_electricity(b):  # glowing lightning bolt
 
 
 def item_arm(b):     # an extra arm: sleeve, upper arm, forearm and an open hand
-    b.tube((-0.44, 0.34, 0), (-0.32, 0.22, 0), 0.13, 8, "blue", cap0="blue", cap1="blue")
+    b.tube((-0.44, 0.34, 0), (-0.32, 0.22, 0), 0.13, 8, "dark", cap0="dark", cap1="dark")
     b.tube((-0.32, 0.22, 0), (0.0, -0.08, 0), 0.10, 8, "skin")
     b.sphere((0.0, -0.08, 0), 0.10, "skin", seg=8, rings=4)
     b.tube((0.0, -0.08, 0), (0.30, 0.20, 0), 0.09, 8, "skin")

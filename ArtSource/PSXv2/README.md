@@ -26,16 +26,24 @@ The old GR-07 player visual is kept in both scenes, but disabled. Do not run the
 - Shaders in `Assets/Shaders`: `PSXv2Lit` (vertex snap to the low-res grid, affine UVs, banded light, fullbright glow row), `PSXv2Hitbox` (unlit, always on top) and `PSXv2Fireball`.
 - `ArtSource/PSXv2`: the generator scripts, OBJ copies and the previews (`PSXv2_Catalog.png`, `PSXv2_Items.png`, `PSXv2_EnemyAnim.gif`, `PSXv2_Playfield.png`).
 
+## Palette
+Each model has one main colour plus at most a small accent. While a model is built, `build_ships.py` remaps tiles through a theme:
+- **Enemies** (`ENEMY_THEME`): all enemies, the boss included, share one grey with white glows.
+- **Player** (`PLAYER_THEME`): black armour with yellow details and yellow burners. The hitbox core is white with a yellow ring.
+- **Items:** one hue plus neutrals each, for example the red medkit with a white cross, the blue battery with a white bolt and the white mug with coffee.
+
+Atlas row 6 holds the theme tiles (black armour, yellow paint, grey hazard and glass, grey plates and windows).
+
 ## Modelling
 Parts are lofted rather than straight extrusions: tops taper, so the sides slope and catch the banded light. Raised inset panels, round tubes (nacelles, barrels, pipes) and UV spheres add volume. Large hull tops are cut into a plate grid (0.6 units for the gunboat, 1.0 for the boss), so the 16 px tiles repeat instead of stretching. PS1 games also subdivided large polygons.
 
 | Model | Role | Look | Tris |
 |---|---|---|---|
-| PSXv2_Player | player | GR-X: split Ikaruga-style gun prongs (bullets spawn from them), raised cockpit collar around the hitbox, swept two-layer white/blue wings with red fins, round engine nacelles, missile pods | 541 |
-| Dart | enemy1 | red arrowhead with canopy, hazard stripes and wing missiles | 146 |
-| Rotor | waver | orange hex ring with a hole, domed glowing hub, 3 lamp pods | 182 |
-| Gunboat | Biggie | teal twin hull, bridge with lit windows, domed turret with round barrels, deck pipes | 418 |
-| Warden | stage1boss | layered purple carrier: steel deck, stepped white spine with hull number, bridge tower with windows, screen and radar, two drum turrets with twin cannons, four point-defence turrets, pipe runs, caution armour, engine block with four nozzles | 2010 |
+| PSXv2_Player | player | GR-X: black with yellow details; split Ikaruga-style gun prongs (bullets spawn from them), raised cockpit collar around the hitbox, swept two-layer wings with fins, round engine nacelles, missile pods | 541 |
+| Dart | enemy1 | arrowhead with canopy, hazard stripes and wing missiles | 146 |
+| Rotor | waver | hex ring with a hole, domed glowing hub, 3 lamp pods | 182 |
+| Gunboat | Biggie | twin hull, bridge with lit windows, domed turret with round barrels, deck pipes | 418 |
+| Warden | stage1boss | layered grey carrier: steel deck, stepped white spine with hull number, bridge tower with windows, screen and radar, two drum turrets with twin cannons, four point-defence turrets, pipe runs, caution armour, engine block with four nozzles | 2010 |
 
 The boss is now fitted to its collider in world space. Its prefab root is scaled 0.5, which previously drew it at twice its hull size.
 
@@ -62,7 +70,7 @@ The items are: medical kit, battery, coin, rabbit paw, blank cartridge, helper r
 - **Explosions** (`PSXFireballs`): several low-poly spheres with a scrolling fire skin. They pop in staggered, grow with a stepped ease-out, spin, and cool from white-hot to yellow, orange and deep red, then dissolve with ordered dither. Blending is additive (PS1 semi-transparency B+F). Small enemies get 4 spheres; large hulls get 6–14 spread over 0.7 s.
 
 ## Player hitbox
-`PSXv2_Player_HitboxCore` is a white 12-gon whose radius is exactly the collider's (0.115 world units). It is centred at (0, 0.16), which matches the CircleCollider2D offset (0, 0.08) × Ship scale 2. A thin magenta ring sits just outside it.
+`PSXv2_Player_HitboxCore` is a white 12-gon whose radius is exactly the collider's (0.115 world units). It is centred at (0, 0.16), which matches the CircleCollider2D offset (0, 0.08) × Ship scale 2. A thin yellow ring sits just outside it.
 In Unity both live in a sibling `PSXv2 Hitbox` that does not bank with the ship. They render unlit, always on top, above the bullets, and stay visible through invulnerability blinking.
 
 ## Conventions

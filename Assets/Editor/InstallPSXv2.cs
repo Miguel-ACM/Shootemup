@@ -69,7 +69,7 @@ public static class InstallPSXv2
         steel.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"PSXv2_Atlas.png");
         steel.SetFloat("_VertexSnap",1);steel.SetFloat("_Affine",1);steel.SetFloat("_Dither",0);
         var core=Mat(Folder+"PSXv2 Hitbox Core.mat","Shootemup/PSXv2 Hitbox");core.SetColor("_Color",Color.white);
-        var ring=Mat(Folder+"PSXv2 Hitbox Ring.mat","Shootemup/PSXv2 Hitbox");ring.SetColor("_Color",new Color(1,.12f,.35f));
+        var ring=Mat(Folder+"PSXv2 Hitbox Ring.mat","Shootemup/PSXv2 Hitbox");ring.SetColor("_Color",new Color(1,.82f,.1f));   // yellow detail on the black ship
         Directory.CreateDirectory("Assets/Resources/Effects");
         var fire=Mat("Assets/Resources/Effects/PSXv2Fireball.mat","Shootemup/PSXv2 Fireball");
         fire.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"FX/Fireball_64.png");

@@ -121,6 +121,15 @@ def atlas():
     fill(img, *P(5, 5), lambda x, y: (20, 20, 24) if x % 3 == 0 or y % 3 == 0 else (96, 100, 108))            # 5 grating
     fill(img, *P(6, 5), lambda x, y: (40, 230, 255) if 3 <= y <= 4 or y == 8 or (y == 11 and x < 9) else (8, 30, 40))  # 6 screen
     plate(img, *P(7, 5), (230, 230, 236))                                                                         # 7 bright white armour
+    # Row 6: single-colour themes (enemies: grey only; player: black with yellow).
+    plate(img, *P(0, 6), (44, 44, 48))                                                                            # 0 black armour
+    plate(img, *P(1, 6), (236, 190, 24))                                                                          # 1 yellow paint
+    fill(img, *P(2, 6), lambda x, y: (176, 178, 182) if ((x + y) // 4) % 2 == 0 else (52, 54, 58))           # 2 grey hazard
+    fill(img, *P(3, 6), lambda x, y: (190, 200, 210) if x + y in (5, 6, 19) else (40, 42, 46))               # 3 grey glass
+    plate(img, *P(4, 6), (104, 108, 114))                                                                         # 4 mid grey plate
+    plate(img, *P(5, 6), (150, 154, 160))                                                                         # 5 light grey plate
+    fill(img, *P(6, 6), lambda x, y: (200, 200, 200) if x % 4 == 1 and y % 5 == 2 else (30, 31, 34))        # 6 grey windows
+    fill(img, *P(7, 6), lambda x, y: (250, 210, 40) if 6 <= y <= 9 else (36, 36, 40))                         # 7 yellow stripe on black
     return img
 
 
@@ -130,7 +139,7 @@ def bolt_mask(x, y):
 
 
 def bolt(x, y):
-    return (250, 220, 40) if bolt_mask(x, y) else shade((40, 96, 230), 1.2 if x < 3 else 1.0)
+    return (240, 244, 255) if bolt_mask(x, y) else shade((40, 96, 230), 1.2 if x < 3 else 1.0)
 
 
 def coin(x, y):
