@@ -117,7 +117,8 @@ public class WaveOrchestrer : MonoBehaviour
 
     void GenerateWave()
     {
-        
+        if (currentWaveNumber >= waves.Length)
+            return;
         string currWaveType = waves[currentWaveNumber];
         if (currWaveType == "shop")
         {
@@ -129,7 +130,8 @@ public class WaveOrchestrer : MonoBehaviour
         }
         else if (currWaveType == "boss")
         {
-            
+            // Hold the wave timer while the boss is up; the next wave starts when it dies.
+            isWaveComingOut = false;
             StartCoroutine(BGMManager.FadeOutSong(2.9f));
             SoundManager.PlaySound("bossWarning", 0.18f);
             warning.blink();
@@ -242,6 +244,7 @@ public class WaveOrchestrer : MonoBehaviour
             EraseAllBullets();
             BGMManager.SetLoop(false);
             StartCoroutine(BGMManager.FadeOutSongAndPlay(1.4f, "stageComplete", pitch: 1.0f));
+            GenerateWave();
         }
         else if (currentWaveNumber == waveNumber)
         {
