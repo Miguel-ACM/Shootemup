@@ -374,7 +374,7 @@ public class Shipcontroller : MonoBehaviour
             SoundManager.PlaySoundRandomPitch(sound, 0.05f, new float[] { 0.8f, 1.2f });
             // write down when we will be finished:
 
-            nextHitTime = nextHitTime + hitSoundTimeInterval;
+            nextHitTime = Time.time + hitSoundTimeInterval;
         }
     }
 
