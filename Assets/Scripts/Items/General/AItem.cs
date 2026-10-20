@@ -111,6 +111,10 @@ public abstract class AItem : MonoBehaviour
     {
         if(collected)return;collected=true;
         PSXImpactEffects.ItemGet(transform.position,GetRarityColor(rarity));
+        // Show the collected item in the side panel next to the playfield.
+        var visual=GetComponent<PSXObjectVisual>();
+        if(visual!=null && visual.model!=null && visual.modelRenderer!=null)
+            PSXInventoryDisplay.Add(visual.model.GetComponent<MeshFilter>()?.sharedMesh,visual.modelRenderer.sharedMaterial);
         OnPickup();s.PickUpItem(this);
     }
 
