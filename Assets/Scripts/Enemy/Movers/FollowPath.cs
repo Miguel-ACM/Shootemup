@@ -14,7 +14,7 @@ public class FollowPath : AMover
     Transform moveTarget;
 
 
-    new void Start()
+    protected override void Start()
     {
         base.Start();
         GameObject path = Instantiate(Resources.Load<GameObject>("Paths/" + pathName));

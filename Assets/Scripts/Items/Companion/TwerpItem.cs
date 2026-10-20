@@ -4,10 +4,6 @@ public class TwerpItem : ACompanionItem
     public TwerpItem()
     {
     }
-    new void Start()
-    {
-        base.Start();
-    }
 
     private void Awake()
     {

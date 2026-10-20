@@ -4,10 +4,6 @@ public class AMoonItem : ACompanionItem
     public AMoonItem()
     {
     }
-    new void Start()
-    {
-        base.Start();
-    }
 
     private void Awake()
     {

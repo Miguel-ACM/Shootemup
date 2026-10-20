@@ -5,14 +5,14 @@ public class BlankBullet : AActiveItem
 
     Vector3 pos;
 
-    new void Start()
+    protected override void Start()
     {
         base.Start();
         SetCost(20f);
         SetCD(2f);
     }
 
-    protected new void Update()
+    protected override void Update()
     {
         base.Update();
         if (lastCD < cd)

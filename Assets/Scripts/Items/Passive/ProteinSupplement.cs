@@ -1,9 +1,5 @@
 public class ProteinSupplement : AItem
 {
-    new void Start()
-    {
-        base.Start();
-    }
 
     private void Awake()
     {

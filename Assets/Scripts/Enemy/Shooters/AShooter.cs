@@ -17,7 +17,7 @@ public abstract class AShooter : MonoBehaviour
     public ShootTrigger activation = ShootTrigger.None;
 
 
-    public void Start()
+    protected virtual void Start()
     {
         mover = GetComponent<AMover>();
         enemy = GetComponent<AEnemy>();

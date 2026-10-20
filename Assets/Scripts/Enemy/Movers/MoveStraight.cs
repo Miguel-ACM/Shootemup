@@ -9,7 +9,7 @@ public class MoveStraight : AMover
     public float speed = -1f;
 
 
-    new void Start()
+    protected override void Start()
     {
         base.Start();
         limits = Camera.getLimits();

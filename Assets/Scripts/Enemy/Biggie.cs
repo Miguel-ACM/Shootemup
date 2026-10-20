@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Biggie : AEnemy
 {
-    new public void Start()
+    protected override void Start()
     {
         size =  1.1f;
         base.Start();

@@ -4,10 +4,6 @@ public class ThreeMoonsItem : ACompanionItem
     public ThreeMoonsItem()
     {
     }
-    new void Start()
-    {
-        base.Start();
-    }
 
     private void Awake()
     {

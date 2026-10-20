@@ -1,10 +1,5 @@
 public class Caffeine : AItem
 {
-    new void Start()
-    {
-        base.Start();
-        //GoToPosition(new Vector3(0, 0, transform.position.z));
-    }
 
     private void Awake()
     {

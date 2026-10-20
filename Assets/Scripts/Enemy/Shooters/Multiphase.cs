@@ -21,7 +21,7 @@ public class Multiphase : AShooter
     private bool changinPhase = false;
 
 
-    new public void Start()
+    protected override void Start()
     {
         base.Start();
         maxHealth = enemy.health;

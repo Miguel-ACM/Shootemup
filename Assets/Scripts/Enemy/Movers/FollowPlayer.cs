@@ -7,7 +7,7 @@ public class FollowPlayer : AMover
     public int index;
     Shipcontroller s;
 
-    new void Start()
+    protected override void Start()
     {
         base.Start();
         s = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();

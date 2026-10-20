@@ -1,9 +1,5 @@
 public class Telekinesis : AItem
 {
-    new void Start()
-    {
-        base.Start();
-    }
 
     private void Awake()
     {

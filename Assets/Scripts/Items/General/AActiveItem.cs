@@ -15,7 +15,7 @@ public abstract class AActiveItem : AItem
         base.OnPickup();
     }
 
-    protected new void Update()
+    protected override void Update()
     {
         base.Update();
         lastCD += Time.deltaTime;

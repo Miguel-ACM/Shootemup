@@ -9,7 +9,7 @@ public class Boss : AEnemy
     [SerializeField] private ResourceBar healthBar;
     private GameObject healthBarGO;
 
-    new public void Start()
+    protected override void Start()
     {
         base.Start();
         initialHealth=health;

@@ -9,7 +9,7 @@ public abstract class AMover : MonoBehaviour
     protected AShooter shooter;
     protected bool movementEnabled = true;
     // Start is called before the first frame update
-    protected void Start()
+    protected virtual void Start()
     {
         rigidBody = GetComponent<Rigidbody2D>();
         shooter = GetComponent<AShooter>();

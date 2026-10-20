@@ -1,9 +1,5 @@
 public class AnotherArm : AItem
 {
-    new void Start()
-    {
-        base.Start();
-    }
 
     private void Awake()
     {

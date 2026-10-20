@@ -5,10 +5,6 @@ public class AK45Item : APassiveWeaponItem
     {
     }
 
-    new void Start()
-    {
-        base.Start();
-    }
 
     private void Awake()
     {

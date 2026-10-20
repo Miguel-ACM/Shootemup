@@ -17,7 +17,7 @@ public class BossMove : AMover
     [SerializeField] private AMover nextMover;
 
 
-    new void Start()
+    protected override void Start()
     {
         base.Start();
         nextMover.SetMove(false);

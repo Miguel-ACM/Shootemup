@@ -8,7 +8,7 @@ public class OrbitPlayer : AMover
     private float offset;
     Shipcontroller s;
 
-    new void Start()
+    protected override void Start()
     {
         base.Start();
         s = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();

@@ -17,7 +17,7 @@ public class DriftDown : AMover
     [SerializeField] private float timeUntilOut = 10f;
 
 
-    new void Start()
+    protected override void Start()
     {
         base.Start();
         limits = Camera.getLimits();

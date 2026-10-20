@@ -16,8 +16,9 @@ public class AngledShootout : AShooter
     [SerializeField] private float switchAngle = 3f;
 
 
-    new public void Start()
+    protected override void Start()
     {
+        base.Start();
         player = GameObject.FindGameObjectWithTag("Player");
     }
     // Start is called before the first frame update

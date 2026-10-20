@@ -4,10 +4,6 @@ public class AngryMoonItem : ACompanionItem
     public AngryMoonItem()
     {
     }
-    new void Start()
-    {
-        base.Start();
-    }
 
     private void Awake()
     {

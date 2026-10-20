@@ -4,10 +4,6 @@ public class BabyYouItem : ACompanionItem
     public BabyYouItem()
     {
     }
-    new void Start()
-    {
-        base.Start();
-    }
 
     private void Awake()
     {

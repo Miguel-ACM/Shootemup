@@ -35,7 +35,7 @@ public abstract class AItem : MonoBehaviour
         passiveWeapon,
     }
 
-    protected void Start()
+    protected virtual void Start()
     {
         ps = GetComponent<ParticleSystem>();
         curve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
@@ -71,7 +71,7 @@ public abstract class AItem : MonoBehaviour
     }
 
     // Update is called once per frame
-    protected void Update()
+    protected virtual void Update()
     {
         if(collected || sgo==null)return;
         if(attracting)

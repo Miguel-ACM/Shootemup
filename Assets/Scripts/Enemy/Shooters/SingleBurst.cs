@@ -17,8 +17,9 @@ public class SingleBurst : AShooter
     [SerializeField] private float bulletSpread = 10f;
 
 
-    new public void Start()
+    protected override void Start()
     {
+        base.Start();
         player = GameObject.FindGameObjectWithTag("Player");
     }
     // Start is called before the first frame update
@@ -47,7 +48,7 @@ public class SingleBurst : AShooter
         // Code to execute after the delay
     }
 
-    new public void Stop()
+    public override void Stop()
     {
         numCurShot = 0;
         base.Stop();
