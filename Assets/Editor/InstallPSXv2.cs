@@ -223,8 +223,8 @@ public static class InstallPSXv2
         var effects=ship.GetComponent<PSXShipEffects>();
         if(effects!=null)
         {
-            // Nacelle burners at Blender (+-0.34, -0.88), expressed in Ship local space.
-            effects.exhaustOffset=new Vector2(.34f,-.88f)*unitScale/Mathf.Abs(ship.lossyScale.x);
+            // Engine burners at Blender (+-0.27, -0.66), expressed in Ship local space.
+            effects.exhaustOffset=new Vector2(.27f,-.66f)*unitScale/Mathf.Abs(ship.lossyScale.x);
             EditorUtility.SetDirty(effects);
         }
         EditorUtility.SetDirty(visual);

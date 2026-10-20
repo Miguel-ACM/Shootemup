@@ -331,41 +331,25 @@ def material(name, color=None):
 
 
 # --------------------------------------------------------------------------- player
-def player_geometry(b, hitbox=False):
-    """GR-X 'Valkyrie': split Ikaruga-style gun prongs, raised cockpit collar, swept two-layer
-    wings with red fins, round engine nacelles and missile pods. Nose +Y, ~2.0 long."""
-    # Central fuselage, lofted, white armour with a raised spine panel.
-    b.prism([(0, 0.78), (0.17, 0.56), (0.23, 0.10), (0.21, -0.55), (0.11, -0.78), (-0.11, -0.78),
-             (-0.21, -0.55), (-0.23, 0.10), (-0.17, 0.56)], 0.0, 0.30, "white", "steel", inset=0.04, rise=0.03, cap="hull", taper=0.74)
-    b.prism([(0, -0.05), (0.07, -0.25), (0.06, -0.70), (-0.06, -0.70), (-0.07, -0.25)], 0.30, 0.40, "blue", "black", taper=0.7)
-    b.box(0, -0.50, 0.03, 0.30, 0.40, 0.56, "red", "red", taper=0.6)                       # dorsal fin
-    # Split gun prongs (bullets spawn at x +-0.227, y 0.6).
-    b.sym([(0.16, -0.05), (0.29, 0.00), (0.31, 0.86), (0.25, 1.15), (0.18, 0.95)], 0.04, 0.26, "white", "dark", taper=0.72,
-          inset=0.02, rise=0.01, cap="hull")
-    b.sym([(0.21, 0.20), (0.27, 0.22), (0.28, 0.80), (0.22, 0.80)], 0.25, 0.29, "blue", "black")
-    for x in (0.227, -0.227):
-        b.tube((x, 0.90, 0.16), (x, 1.12, 0.16), 0.035, 6, "dark", cap1="black")
-    # Cockpit collar around the hitbox core plus a glass canopy behind it.
-    b.ngon(*HITBOX_CENTER, HITBOX_RADIUS + 0.08, 6, 0.30, 0.40, "black", "dark", rot=HEX, taper=0.85)
-    b.prism([(0, -0.02), (0.09, -0.12), (0.07, -0.34), (-0.07, -0.34), (-0.09, -0.12)], 0.30, 0.38, "glass", "black", taper=0.6)
-    # Swept wings: white lower blade, blue armour plate, hazard root, red tip fins.
-    b.sym([(0.20, 0.30), (0.86, -0.36), (0.90, -0.62), (0.62, -0.58), (0.20, -0.46)], 0.04, 0.13, "white", "dark", taper=0.9,
-          inset=0.03, rise=0.01, cap="hull")
-    b.sym([(0.26, 0.14), (0.64, -0.26), (0.62, -0.46), (0.26, -0.38)], 0.13, 0.20, "blue", "black", taper=0.85)
-    b.sym([(0.22, -0.10), (0.34, -0.16), (0.34, -0.30), (0.22, -0.26)], 0.13, 0.17, "hazard", "black")
-    b.sym([(0.84, -0.30), (0.90, -0.34), (0.92, -0.64), (0.86, -0.62)], 0.04, 0.42, "red", "dark", taper=0.55)
-    # Engine nacelles: round tubes with intakes and cyan burners.
-    for x in (0.34, -0.34):
-        b.tube((x, -0.88, 0.15), (x, -0.12, 0.15), 0.13, 8, "steel", cap0="g_cyan", cap1="vent")
-        b.tube((x, -0.12, 0.15), (x, 0.02, 0.15), 0.13, 8, "dark", cap1="vent", r1=0.09)
-        b.box(x, -0.50, 0.05, 0.44, 0.27, 0.30, "hazard", "black")
-    # Shoulder missile pods with red warheads.
-    for x in (0.55, -0.55):
-        b.tube((x, -0.28, 0.20), (x, 0.08, 0.20), 0.05, 6, "steel", cap0="dark")
-        b.tube((x, 0.08, 0.20), (x, 0.18, 0.20), 0.05, 6, "red", r1=0.0)
-    if hitbox:
-        b.ngon(*HITBOX_CENTER, HITBOX_RADIUS, 6, 0.40, 0.44, "g_white", "g_white", rot=HEX)
+CORE_Z = 0.32   # height of the hitbox core/ring above the hull
 
+
+def player_geometry(b, hitbox=False):
+    """GR-X, simplified: lofted fuselage, split Ikaruga-style gun prongs (bullets spawn at x +-0.227,
+    y 0.6), one-layer delta wings with yellow tips, two round engines and the hexagonal cockpit
+    collar around the hitbox. Nose +Y, ~1.45 long."""
+    b.prism([(0, 0.55), (0.13, 0.38), (0.17, 0.05), (0.15, -0.42), (0.08, -0.58), (-0.08, -0.58),
+             (-0.15, -0.42), (-0.17, 0.05), (-0.13, 0.38)], 0.0, 0.24, "white", "steel", inset=0.03, rise=0.02, cap="hull", taper=0.74)
+    b.sym([(0.17, -0.05), (0.27, 0.0), (0.28, 0.66), (0.23, 0.86), (0.18, 0.72)], 0.04, 0.22, "white", "dark", taper=0.72)
+    b.sym([(0.205, 0.15), (0.255, 0.17), (0.26, 0.6), (0.21, 0.6)], 0.21, 0.24, "blue", "black")
+    b.sym([(0.17, 0.2), (0.62, -0.28), (0.64, -0.46), (0.17, -0.36)], 0.03, 0.11, "white", "dark", taper=0.9,
+          inset=0.025, rise=0.01, cap="hull")
+    b.sym([(0.56, -0.22), (0.64, -0.28), (0.64, -0.46), (0.58, -0.44)], 0.11, 0.13, "red", "black")
+    for x in (0.27, -0.27):
+        b.tube((x, -0.66, 0.12), (x, -0.10, 0.12), 0.10, 8, "steel", cap0="g_cyan", cap1="vent")
+    b.ngon(*HITBOX_CENTER, HITBOX_RADIUS + 0.08, 6, 0.24, CORE_Z, "black", "dark", rot=HEX, taper=0.85)
+    if hitbox:
+        b.ngon(*HITBOX_CENTER, HITBOX_RADIUS, 6, CORE_Z, CORE_Z + 0.04, "g_white", "g_white", rot=HEX)
 
 @themed(PLAYER_THEME)
 def player():
@@ -375,11 +359,11 @@ def player():
     ship.data.materials.append(material("PSXv2_Steel"))
     # Hitbox core: separate hexagon, exactly the collider. Ring = thin yellow hexagon just outside it.
     c = Builder()
-    c.ngon(*HITBOX_CENTER, HITBOX_RADIUS, 6, 0.40, 0.44, "g_white", "g_white", rot=HEX)
+    c.ngon(*HITBOX_CENTER, HITBOX_RADIUS, 6, CORE_Z, CORE_Z + 0.04, "g_white", "g_white", rot=HEX)
     core = c.finish("PSXv2_Player_HitboxCore")
     core.data.materials.append(material("PSXv2_HitboxCore", color=(1, 1, 1)))
     r = Builder()
-    r.ring(*HITBOX_CENTER, HITBOX_RADIUS + 0.035, HITBOX_RADIUS + 0.01, 6, 0.40, 0.43, "g_ring", "g_ring", rot=HEX)
+    r.ring(*HITBOX_CENTER, HITBOX_RADIUS + 0.035, HITBOX_RADIUS + 0.01, 6, CORE_Z, CORE_Z + 0.03, "g_ring", "g_ring", rot=HEX)
     ring = r.finish("PSXv2_Player_HitboxRing")
     ring.data.materials.append(material("PSXv2_HitboxRing", color=(1, 0.82, 0.1)))
     core.parent = ship
