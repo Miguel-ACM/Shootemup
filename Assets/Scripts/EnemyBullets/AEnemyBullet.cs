@@ -18,8 +18,8 @@ public abstract class AEnemyBullet : MonoBehaviour
 
     void Update()
     {
-        float[] limits = Camera.getLimits();
-        if (rigidBody.position.x > limits[3] + 1f || rigidBody.position.x < limits[2] - 1f)
+        // Read the limits directly: getLimits() allocates a new array, once per bullet per frame here.
+        if (rigidBody.position.x > Camera.RightLimit + 1f || rigidBody.position.x < Camera.LeftLimit - 1f)
             Destroy(gameObject);
         Move();
     }
