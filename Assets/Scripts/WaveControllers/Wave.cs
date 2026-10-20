@@ -63,7 +63,8 @@ public class Wave : ICloneable
             newCost += waves[i].cost;
         }
 
-        newUnits.OrderBy(x => x.time);
+        // The orchestrator spawns units in list order, so they must be sorted by spawn time.
+        newUnits = newUnits.OrderBy(x => x.time).ToList();
 
         return new Wave(newCost, duration, 0, 0, newUnits);
     }

@@ -48,7 +48,7 @@ public static class Utils
             newCost += waves[i].cost;
         }
 
-        units.OrderBy(x => x.time);
+        units = units.OrderBy(x => x.time).ToList();
 
         return new Wave(newCost, duration, 1, 0, units);
     }
