@@ -332,9 +332,10 @@ public class Shipcontroller : MonoBehaviour
         PSXImpactEffects.Burst(transform.position,new Color(.15f,.65f,1));
         SoundManager.PlaySound("hurt1", 0.2f);
         health -= damage;
-        float moveQuantity = Mathf.Clamp(damage * 1, 0, 20);
-        float roughness = Mathf.Clamp(damage * 0.5f, 0, 10);
-        CameraShaker.Instance.ShakeOnce(moveQuantity, roughness, 0.2f, 1f);
+        // Kept small: a short nudge that reads as an impact without throwing the playfield around.
+        float moveQuantity = Mathf.Clamp(damage * 0.3f, 0, 4);
+        float roughness = Mathf.Clamp(damage * 0.25f, 0, 3);
+        CameraShaker.Instance.ShakeOnce(moveQuantity, roughness, 0.1f, 0.5f);
         healthBar.Set(health);
         invulnerable = true;
         Score.MultiplierDown();
