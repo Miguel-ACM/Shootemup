@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// <summary>Three-second warning clipped to the portrait playfield: tightly stacked rows slide in
-/// from alternating sides in a quick top-to-bottom cascade and keep travelling (no wrap, so the
-/// text never jumps back), over a dim wash that fades in and out.</summary>
+/// <summary>Three-second warning clipped to the portrait playfield: a dozen large rows slide in from
+/// random sides at random speeds and delays (re-rolled on every warning) and keep travelling, so
+/// the text never jumps back, over a dim wash that fades in and out.</summary>
 public class Warning : MonoBehaviour
 {
     public TMP_FontAsset font;
@@ -13,10 +13,11 @@ public class Warning : MonoBehaviour
     CanvasGroup group;
     RectTransform field;
     // Rows sit one line apart (nearly touching) and fill the 720-unit playfield.
-    const float RowPitch=26;
-    readonly RectTransform[] rows=new RectTransform[28];
-    readonly float[] widths=new float[28];
-    const float Speed=170,Cascade=.03f,FadeIn=.35f,FadeOut=.45f,Duration=3;
+    const int RowCount=12;
+    const float RowPitch=60,FadeIn=.25f,FadeOut=.35f,Duration=3;
+    readonly RectTransform[] rows=new RectTransform[RowCount];
+    readonly float[] widths=new float[RowCount],speeds=new float[RowCount],delays=new float[RowCount],lead=new float[RowCount];
+    readonly bool[] leftward=new bool[RowCount];
     float elapsed;
     bool showing;
     public bool IsVisible=>showing;
@@ -40,21 +41,30 @@ public class Warning : MonoBehaviour
         {
             var row=new GameObject("Crossing warning "+i,typeof(RectTransform),typeof(CanvasRenderer),typeof(TextMeshProUGUI));row.transform.SetParent(field,false);
             var text=row.GetComponent<TextMeshProUGUI>();text.font=font;text.text=string.Concat(System.Linq.Enumerable.Repeat("WARNING   ",12));
-            text.fontSize=22;text.fontStyle=FontStyles.Normal;text.textWrappingMode=TextWrappingModes.NoWrap;
+            text.fontSize=42;text.fontStyle=FontStyles.Normal;text.textWrappingMode=TextWrappingModes.NoWrap;
             text.alignment=TextAlignmentOptions.MidlineLeft;text.color=i%2==0 ? new Color(.86f,.56f,.48f) : new Color(.56f,.34f,.30f);text.raycastTarget=false;
             rows[i]=row.GetComponent<RectTransform>();rows[i].anchorMin=rows[i].anchorMax=new Vector2(.5f,.5f);rows[i].pivot=new Vector2(0,.5f);rows[i].sizeDelta=new Vector2(3000,RowPitch);
             widths[i]=text.GetPreferredValues(text.text).x;
         }
         canvas.enabled=false;
     }
-    public void blink(){Build();elapsed=0;showing=true;group.alpha=0;canvas.enabled=true;AnimateRows();}
+    public void blink()
+    {
+        Build();elapsed=0;showing=true;group.alpha=0;canvas.enabled=true;
+        for(int i=0;i<rows.Length;i++)
+        {
+            leftward[i]=Random.value<.5f;speeds[i]=Random.Range(330f,560f);
+            delays[i]=Random.Range(0f,.4f);lead[i]=Random.Range(0f,160f);
+        }
+        AnimateRows();
+    }
     void AnimateRows()
     {
         for(int i=0;i<rows.Length;i++)
         {
             // Left-moving rows enter at the right edge, right-moving rows at the left edge.
-            float t=Mathf.Max(0,elapsed-i*Cascade);
-            float x=i%2==0 ? 203-t*Speed : -203-widths[i]+t*Speed;
+            float travel=Mathf.Max(0,elapsed-delays[i])*speeds[i]+lead[i];
+            float x=leftward[i] ? 203-travel : -203-widths[i]+travel;
             rows[i].anchoredPosition=new Vector2(x,(rows.Length-1)*RowPitch*.5f-i*RowPitch);
         }
     }
