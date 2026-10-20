@@ -177,4 +177,14 @@ public abstract class AWeapon : MonoBehaviour
         }*/
 
     }
+
+    // Inputs instances stay enabled after their scene unloads, and their callbacks then run
+    // against this destroyed object, so release it with the object.
+    void OnDestroy()
+    {
+        if (input == null)
+            return;
+        input.Disable();
+        input.Dispose();
+    }
 }
