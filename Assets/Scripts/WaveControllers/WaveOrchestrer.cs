@@ -17,6 +17,8 @@ public class WaveOrchestrer : MonoBehaviour
     WaveUnit currentUnit;
     //float waveStartTime = 0;
     float waveTime = 0f;
+    float clearTime = 0f;
+    const float ClearBreather = 0.65f;
     bool stopingWave = false;
     GameObject ship;
     Dialog dialog;
@@ -45,7 +47,7 @@ public class WaveOrchestrer : MonoBehaviour
         if (isWaveComingOut)
         {
             waveTime += Time.deltaTime;
-            while (currentUnit != null && waveTime > currentUnit.time)
+            while (currentUnit != null && waveTime >= currentUnit.time)
             {
                 GameObject enemy = currentUnit.GetUnit();
                 Vector3 pos = new Vector3(currentUnit.position.x * limits[3], currentUnit.position.y * limits[0], 1);
@@ -53,7 +55,10 @@ public class WaveOrchestrer : MonoBehaviour
                 enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
                 currentUnit = currentWave.getNext();
             }
-            if (waveTime > currentWave.duration)
+            // Never skip a scheduled reinforcement, but avoid waiting on an empty field.
+            bool cleared = currentUnit == null && currentWaveKilledEnemies >= currentWaveEnemies;
+            clearTime = cleared ? clearTime + Time.deltaTime : 0f;
+            if (currentUnit == null && (waveTime >= currentWave.duration || clearTime >= ClearBreather))
             {
 
                 if (stopingWave)
@@ -62,7 +67,9 @@ public class WaveOrchestrer : MonoBehaviour
                     stopingWave = false;
                 } else
                 {
+                    float overflow = Mathf.Max(0f, waveTime - currentWave.duration);
                     GenerateWave();
+                    waveTime = overflow;
                 }
             }
         }
@@ -118,7 +125,10 @@ public class WaveOrchestrer : MonoBehaviour
     void GenerateWave()
     {
         if (currentWaveNumber >= waves.Length)
+        {
+            isWaveComingOut = false;
             return;
+        }
         string currWaveType = waves[currentWaveNumber];
         if (currWaveType == "shop")
         {
@@ -146,6 +156,7 @@ public class WaveOrchestrer : MonoBehaviour
             currentWaveEnemies = currentWave.units.Count;
             currentWaveKilledEnemies = 0;
             waveTime = 0;
+            clearTime = 0;
             currentUnit = currentWave.getNext();
         }
         currentWaveNumber += 1;
@@ -249,14 +260,6 @@ public class WaveOrchestrer : MonoBehaviour
         else if (currentWaveNumber == waveNumber)
         {
             currentWaveKilledEnemies += 1;
-            if (currentWaveKilledEnemies == currentWaveEnemies)
-            {
-                //Early wave termination when all enemies are killed
-                if (waveTime + 1.5f < currentWave.duration)
-                {
-                    waveTime = currentWave.duration - 1.5f;
-                }
-            }
         }
     }
 

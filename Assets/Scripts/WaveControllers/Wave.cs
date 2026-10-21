@@ -47,7 +47,9 @@ public class Wave : ICloneable
         float addedTime = 0;
         for (int i = 0; i < waves.Count; i++)
         {
-            if (i > 0) addedTime = rng.Next(0, 9) * 0.5f;
+            // Feed supporting formations in steadily, rather than piling them up at
+            // zero or leaving a random four-second hole between entrances.
+            if (i > 0) addedTime += 0.9f + (float)rng.NextDouble() * 0.5f;
             foreach (WaveUnit u in waves[i].units)
             {
                 WaveUnit newUnit = (WaveUnit)u.Clone();

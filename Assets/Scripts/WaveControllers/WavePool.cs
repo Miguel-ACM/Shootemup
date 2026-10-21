@@ -125,35 +125,36 @@ public class WavePool : MonoBehaviour
 
     Wave _getWave(int capacity)
     {
-        int rndValue = rnd.Next(0, wavePool.Count);
-        List<int> used = new List<int>();
-        List<ConflictGroup.cg> cg = new List<ConflictGroup.cg>();
-        List<Wave> gotWaves = new List<Wave>();
-        Wave currWave;
-        int numTries;
-
+        var used = new List<int>();
+        var groups = new List<ConflictGroup.cg>();
+        var selected = new List<Wave>();
         while (capacity > 0)
         {
-            numTries = 0;
-            currWave = wavePool[rndValue];
-            while (used.Contains(rndValue) || currWave.cost > capacity || ConflictGroup.isConflict(currWave.cg, cg))
+            var eligible = new List<int>();
+            int totalWeight = 0;
+            for (int i = 0; i < wavePool.Count; i++)
             {
-                if (numTries > 1000)
-                {
-                    throw new Exception("Over 1000 tries to get random Wave failed. You may not be able to fit all requirements");
-                }
-                rndValue = rnd.Next(0, wavePool.Count);
-                currWave = (Wave) wavePool[rndValue].Clone();
-                numTries += 1;
-
+                var candidate = wavePool[i];
+                if (used.Contains(i) || candidate.cost > capacity || ConflictGroup.isConflict(candidate.cg, groups)) continue;
+                eligible.Add(i);
+                totalWeight += Mathf.Max(1, candidate.weight);
             }
-
-            cg.Add(currWave.cg);
-            gotWaves.Add(currWave);
-            used.Add(rndValue);
-            capacity -= currWave.cost;
+            // Some conflict combinations cannot spend the entire budget. Keep the
+            // formations already selected instead of retrying until the stage crashes.
+            if (eligible.Count == 0) break;
+            int roll = rnd.Next(totalWeight);
+            int chosen = eligible[eligible.Count - 1];
+            foreach (int index in eligible)
+            {
+                roll -= Mathf.Max(1, wavePool[index].weight);
+                if (roll < 0) { chosen = index; break; }
+            }
+            var formation = wavePool[chosen];
+            used.Add(chosen);
+            groups.Add(formation.cg);
+            selected.Add(formation);
+            capacity -= formation.cost;
         }
-
-        return Wave.CombineWaves(gotWaves);
+        return Wave.CombineWaves(selected);
     }
 }
