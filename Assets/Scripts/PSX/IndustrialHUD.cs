@@ -42,7 +42,11 @@ public sealed class IndustrialHUD : MonoBehaviour
         score=TextAt(frame.transform,"000000000",12,12,11,Steel);
         chain=TextAt(frame.transform,"",333,12,10,Amber);
         chainCells=Cells(frame.transform,333,28,6,7,Amber);
-        sidePanel=Panel(frame.transform,"Side instruments",Color.clear);   // no box behind the life/energy barsPlace(sidePanel,-44,410,40,268);
+        sidePanel=Panel(frame.transform,"Side instruments",Color.clear); // no box behind the life/energy bars
+        sidePanel.anchorMin=sidePanel.anchorMax=Vector2.zero;
+        sidePanel.pivot=Vector2.zero;
+        sidePanel.sizeDelta=new Vector2(40,248);
+        sidePanel.anchoredPosition=new Vector2(-44,6);
         Rule(sidePanel,3,3,34,Steel);
         Place(Panel(sidePanel,"Health cross",Steel),7,16,11,3);
         Place(Panel(sidePanel,"Health cross stem",Steel),11,12,3,11);
@@ -55,7 +59,7 @@ public sealed class IndustrialHUD : MonoBehaviour
 
     void LateUpdate()
     {
-        if(sidePanel!=null)sidePanel.anchoredPosition=new Vector2((float)Screen.width/Screen.height>.72f ? -44 : 6,-410);
+        if(sidePanel!=null)sidePanel.anchoredPosition=new Vector2((float)Screen.width/Screen.height>.72f ? -44 : 6,6);
         if(player==null || !player.enabled)return;
         var position=player.transform.position;position.y=Mathf.Clamp(position.y,bottomLimit,topLimit);player.transform.position=position;
     }
