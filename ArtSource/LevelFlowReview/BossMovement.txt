@@ -1,0 +1,1 @@
+PASS: boss prefab has one movement controller; continuous position and velocity at entrance; bounded figure eight; 40-second samples at 30/60/144 FPS; preserved depth; 100 loop-closure checks.

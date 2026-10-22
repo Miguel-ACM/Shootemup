@@ -383,52 +383,6 @@ MonoBehaviour:
   numBullets: 5
   bullet: {fileID: 7204035350261317787, guid: 2118d5e311991b642b0b730e42ed13ba, type: 3}
   bulletSpread: 10
---- !u!1 &1355573554041428837
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1355573554041428839}
-  - component: {fileID: 1355573554041428838}
-  m_Layer: 8
-  m_Name: MoverFollowPath
-  m_TagString: Enemy
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1355573554041428839
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1355573554041428837}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1355573554226552560}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1355573554041428838
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1355573554041428837}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5383c48d04c65704697990ca41706d11, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pathName: infinite
-  speed: 0.75
 --- !u!1 &1355573554115464520
 GameObject:
   m_ObjectHideFlags: 0
@@ -526,7 +480,6 @@ Transform:
   - {fileID: 1355573553835324917}
   - {fileID: 1355573554901818091}
   - {fileID: 1355573555063013761}
-  - {fileID: 1355573554041428839}
   - {fileID: 4248168859258093467}
   - {fileID: 7594330152602481831}
   - {fileID: 8972590081373261876}
@@ -649,13 +602,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3343f6e2771edcb4cb9d4433cc67bae8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  limits: []
-  direction: {x: 0, y: -1, z: 0}
-  speed: -1
   lerpTime: 1.2
   lerpPosition: {x: 0, y: 4.92, z: 1}
-  timeUntilOut: -1
-  nextMover: {fileID: 1355573554041428838}
+  horizontalAmplitude: 1.2
+  verticalAmplitude: 1
+  cycleDuration: 12
+  loopEaseTime: 1
 --- !u!50 &1355573554226552567
 Rigidbody2D:
   serializedVersion: 5
