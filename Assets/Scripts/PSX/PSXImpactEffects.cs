@@ -62,6 +62,7 @@ public static class PSXImpactEffects
 
     public static void Explosion(GameObject source)
     {
+        PSXPolygonDebris.Spawn(source);
         var collider=source.GetComponent<Collider2D>();
         float size=collider!=null ? Mathf.Max(collider.bounds.size.x,collider.bounds.size.y) : 1;
         Explosion(collider!=null ? collider.bounds.center : source.transform.position,size);

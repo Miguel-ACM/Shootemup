@@ -5,6 +5,7 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class PSXShipVisual : MonoBehaviour
 {
+    public Transform Model => model;
     [SerializeField] SpriteRenderer sourceSprite;
     [SerializeField] Transform model;
     [SerializeField] MeshRenderer modelRenderer;
