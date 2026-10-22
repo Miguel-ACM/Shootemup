@@ -28,18 +28,24 @@ public sealed class CloudTransition : MonoBehaviour
         canvas.sortingOrder = 32760;
         var scaler = gameObject.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920,1080);
-        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+        scaler.referenceResolution = new Vector2(1280,720);
+        scaler.matchWidthOrHeight = 1;
         gameObject.AddComponent<GraphicRaycaster>();
-        banks = new RectTransform[3];
+        // Match the HUD's 405-wide viewport, leaving the side instruments visible.
+        var viewport=new GameObject("Cloud playfield mask",typeof(RectTransform),typeof(RectMask2D));
+        viewport.transform.SetParent(transform,false);
+        var clip=viewport.GetComponent<RectTransform>();
+        clip.anchorMin=new Vector2(.5f,0);clip.anchorMax=new Vector2(.5f,1);
+        clip.sizeDelta=new Vector2(405,0);
+        banks = new RectTransform[4];
         for (int i=0;i<banks.Length;i++)
         {
             var go = new GameObject("Cloud bank " + i, typeof(RectTransform), typeof(CanvasRenderer), typeof(CloudCurtainGraphic));
-            go.transform.SetParent(transform,false);
+            go.transform.SetParent(clip,false);
             banks[i] = go.GetComponent<RectTransform>();
-            banks[i].sizeDelta = new Vector2(5000,3200);
+            banks[i].sizeDelta = new Vector2(650,1200);
             var graphic=go.GetComponent<CloudCurtainGraphic>();
-            graphic.color = i==0 ? new Color(.78f,.85f,.90f) : i==1 ? new Color(.92f,.96f,.98f) : Color.white;
+            graphic.color = Color.Lerp(new Color(.67f,.77f,.84f),Color.white,i/3f);
             graphic.phase=i*1.7f;
         }
         canvas.enabled=false;
@@ -78,7 +84,7 @@ public sealed class CloudTransition : MonoBehaviour
         }
         // Give new scene objects a frame to initialise while the screen is completely white.
         yield return null;
-        yield return new WaitForSecondsRealtime(.18f);
+        yield return new WaitForSecondsRealtime(.3f);
         if(SceneManager.GetActiveScene().name=="L1")
         {
             // The title is an overlay on live gameplay, including while the clouds uncover it.
@@ -93,19 +99,19 @@ public sealed class CloudTransition : MonoBehaviour
 
     IEnumerator Move(bool cover)
     {
-        const float duration=1.15f;
+        const float duration=2.4f;
         for(float elapsed=0;elapsed<duration;elapsed+=Time.unscaledDeltaTime)
         {
             float t=elapsed/duration;
             for(int i=0;i<banks.Length;i++)
             {
-                float p=Mathf.SmoothStep(0,1,Mathf.Clamp01((t-i*.055f)/.88f));
-                banks[i].anchoredPosition=new Vector2(Mathf.Sin(t*3+i)*22,
-                    cover ? Mathf.Lerp(2900,0,p) : Mathf.Lerp(0,-2900,p));
+                float p=Mathf.SmoothStep(0,1,Mathf.Clamp01((t-i*.065f)/.805f));
+                banks[i].anchoredPosition=new Vector2(Mathf.Sin(t*Mathf.PI*2+i)*14,
+                    cover ? Mathf.Lerp(1120,0,p) : Mathf.Lerp(0,-1120,p));
             }
             yield return null;
         }
-        foreach(var bank in banks)bank.anchoredPosition=new Vector2(0,cover ? 0 : -2900);
+        foreach(var bank in banks)bank.anchoredPosition=new Vector2(0,cover ? 0 : -1120);
     }
 
     void OnDestroy()
@@ -123,13 +129,17 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
     {
         vh.Clear();
         var r=rectTransform.rect;
-        Quad(vh,new Vector2(r.xMin,r.yMin+230),new Vector2(r.xMax,r.yMax-230));
-        for(int i=0;i<19;i++)
+        Quad(vh,new Vector2(r.xMin,r.yMin+80),new Vector2(r.xMax,r.yMax-80));
+        for(int i=0;i<12;i++)
         {
-            float x=Mathf.Lerp(r.xMin,r.xMax,i/18f);
-            float radius=210+Mathf.Sin(i*2.7f+phase)*65;
-            Circle(vh,new Vector2(x,r.yMin+250),radius);
-            Circle(vh,new Vector2(x,r.yMax-250),radius);
+            float x=Mathf.Lerp(r.xMin,r.xMax,i/11f);
+            float radius=66+Mathf.Sin(i*2.7f+phase)*22;
+            float billow=Mathf.Sin(i*1.9f+phase)*20;
+            Circle(vh,new Vector2(x,r.yMin+92+billow),radius);
+            Circle(vh,new Vector2(x+18,r.yMax-92+billow),radius*1.08f);
+            // Smaller overlapping tufts break up the large scallops into soft billows.
+            Circle(vh,new Vector2(x+26,r.yMin+69+billow),radius*.57f);
+            Circle(vh,new Vector2(x-16,r.yMax-69+billow),radius*.57f);
         }
     }
     void Quad(VertexHelper vh,Vector2 lo,Vector2 hi)
