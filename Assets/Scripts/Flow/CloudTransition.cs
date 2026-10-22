@@ -47,6 +47,7 @@ public sealed class CloudTransition : MonoBehaviour
 
     void SceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if(scene.name=="L1") LevelEnvironment.Apply();
         // Supersede the old world-space clouds, which were behind the PSX output canvas.
         foreach(var spawner in FindObjectsByType<CloudSpawner>(FindObjectsSortMode.None)) spawner.enabled=false;
     }
@@ -146,4 +147,3 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
         }
     }
 }
-

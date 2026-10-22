@@ -20,7 +20,7 @@ public sealed class LevelReveal : MonoBehaviour
         var heading=Label("STAGE "+LevelRun.Stage.ToString("00"),24,new Vector2(0,96),new Color(.65f,.86f,.95f));
         var title=Label(LevelRun.CurrentName.ToUpperInvariant(),84,new Vector2(0,22),Color.white);
         title.characterSpacing=16;
-        Label("—   INTO THE UNKNOWN   —",19,new Vector2(0,-58),new Color(.85f,.91f,.96f));
+        Label(LevelRun.Description(LevelRun.Current),19,new Vector2(0,-58),new Color(.85f,.91f,.96f));
         var root=GetComponent<RectTransform>();
         for(float t=0;t<3.7f;t+=Time.unscaledDeltaTime)
         {
