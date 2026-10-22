@@ -18,6 +18,7 @@ public sealed class PSXShipVisual : MonoBehaviour
     Vector3 previousPosition;
     float bank;
     static readonly int Tint = Shader.PropertyToID("_Tint");
+    static readonly int PlayerDepth = Shader.PropertyToID("_PlayerDepth");
 
     public void Configure(SpriteRenderer sprite, Transform visual, MeshRenderer meshRenderer)
     {
@@ -64,11 +65,14 @@ public sealed class PSXShipVisual : MonoBehaviour
     {
         if (sourceSprite == null || modelRenderer == null) return;
         sourceSprite.enabled = false;
+        // Companions use the Player layer at order 0. Draw every player part after them.
+        sourceSprite.sortingOrder = Mathf.Max(1, sourceSprite.sortingOrder);
         modelRenderer.sortingLayerID = sourceSprite.sortingLayerID;
         modelRenderer.sortingOrder = sourceSprite.sortingOrder;
         if (properties == null) properties = new MaterialPropertyBlock();
         modelRenderer.GetPropertyBlock(properties);
         properties.SetColor(Tint, sourceSprite.color);
+        properties.SetFloat(PlayerDepth, 1f);
         modelRenderer.SetPropertyBlock(properties);
         modelRenderer.enabled = sourceSprite.color.a > 0.001f;
         if (partRenderers != null)

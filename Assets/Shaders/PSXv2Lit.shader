@@ -13,6 +13,7 @@ Shader "Shootemup/PSXv2 Lit"
     {
         _MainTex ("Atlas (Point filtered)", 2D) = "white" {}
         _Tint ("Damage flash tint", Color) = (1,1,1,1)
+        [HideInInspector] _PlayerDepth ("Player foreground depth", Float) = 0
         _SnapResolution ("Fallback virtual resolution", Vector) = (569,320,0,0)
         _VertexSnap ("Vertex snap", Range(0,1)) = 1
         _Affine ("Affine warp", Range(0,1)) = 1
@@ -39,6 +40,7 @@ Shader "Shootemup/PSXv2 Lit"
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST, _Tint, _SnapResolution;
                 float _VertexSnap, _Affine, _Dither, _LightBands, _GlowRow;
+                float _PlayerDepth;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; float4 color:COLOR; };
             struct Varyings
@@ -57,6 +59,10 @@ Shader "Shootemup/PSXv2 Lit"
                 res = max(res * 0.5, 1.0);
                 float2 ndc = cs.xy / cs.w;
                 cs.xy = lerp(ndc, floor(ndc * res + 0.5) / res, _VertexSnap) * cs.w;
+                // Reserve the nearest depth band for the player, retaining depth between its parts.
+                // Sorting order alone cannot beat another ship's depth writes.
+                if (_PlayerDepth > 0.5)
+                    cs.z = lerp(UNITY_NEAR_CLIP_VALUE * cs.w, cs.z, 0.001);
                 o.positionCS = cs;
                 float2 uv = TRANSFORM_TEX(i.uv, _MainTex);
                 o.uvw = float3(uv * cs.w, cs.w);
