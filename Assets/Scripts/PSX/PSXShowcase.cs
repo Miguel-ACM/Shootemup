@@ -100,7 +100,7 @@ public sealed class PSXShowcase : MonoBehaviour
             yield return new WaitForSecondsRealtime(1f/12f);
         }
         var presentation=UnityEngine.Camera.main.GetComponent<PSXPresentation>();
-        int count=FindObjectsByType<Bullet>(FindObjectsSortMode.None).Length;
+        int count=FindObjectsByType<Bullet>().Length;
         var report="{\"scene\":\"PSX_Showcase\",\"shipTriangles\":236,\"bulletTriangles\":2,\"activeProjectiles\":"+count+",\"thrusters\":2,\"virtualHeight\":"+presentation.SceneTexture.height+",\"filterEnabled\":"+presentation.filterEnabled.ToString().ToLowerInvariant()+",\"capturedFrames\":30}";
         File.WriteAllText(folder+"/PreviewReport.json",report);Debug.Log("PSX showcase capture complete: "+report);
 #else

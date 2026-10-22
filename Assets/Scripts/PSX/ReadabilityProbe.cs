@@ -9,8 +9,8 @@ public sealed class ReadabilityProbe : MonoBehaviour
     IEnumerator Start()
     {
         yield return new WaitForSecondsRealtime(.6f);Time.timeScale=1;
-        foreach(var orchestrer in FindObjectsByType<WaveOrchestrer>(FindObjectsSortMode.None)){orchestrer.StopAllCoroutines();orchestrer.CancelInvoke();orchestrer.enabled=false;}
-        foreach(var item in FindObjectsByType<AItem>(FindObjectsSortMode.None))Destroy(item.gameObject);
+        foreach(var orchestrer in FindObjectsByType<WaveOrchestrer>()){orchestrer.StopAllCoroutines();orchestrer.CancelInvoke();orchestrer.enabled=false;}
+        foreach(var item in FindObjectsByType<AItem>())Destroy(item.gameObject);
         var player=GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();player.enabled=false;player.transform.position=new Vector3(0,-3.4f,20);
         var boss=Instantiate(Resources.Load<GameObject>("Enemy/Bosses/stage1boss"),new Vector3(0,4.6f,1),Quaternion.identity);
         foreach(var script in boss.GetComponentsInChildren<MonoBehaviour>())if(!(script is PSXObjectVisual) && !(script is PSXVisibilityRelay))script.enabled=false;
@@ -22,7 +22,7 @@ public sealed class ReadabilityProbe : MonoBehaviour
             var go=Instantiate(Resources.Load<GameObject>("Pickables/"+pickups[i]),new Vector3(-2+i*2,-.7f,1),Quaternion.identity);go.GetComponent<APickable>().enabled=false;go.GetComponent<Rigidbody2D>().simulated=false;go.transform.localScale=Vector3.one*1.5f;
         }
         MakeItem<Caffeine>(new Vector3(2,1.3f,1));MakeItem<AMoonItem>(new Vector3(-2,1.3f,1));
-        var dialog=FindFirstObjectByType<Dialog>();var warning=FindFirstObjectByType<Warning>();
+        var dialog=FindAnyObjectByType<Dialog>();var warning=FindAnyObjectByType<Warning>();
         yield return new WaitForSecondsRealtime(.3f);
         dialog.ShowItemDesc("Caffeine","Everything feels faster now!","Increases firing speed, bullet speed and movement speed.","rare");
         yield return new WaitForSecondsRealtime(.3f);yield return new WaitForEndOfFrame();
@@ -41,11 +41,11 @@ public sealed class ReadabilityProbe : MonoBehaviour
             yield return new WaitForSecondsRealtime(.05f);yield return new WaitForEndOfFrame();Capture("WarningMotion_"+frame.ToString("00")+".png");
         }
         yield return new WaitForSecondsRealtime(2.6f);bool warningClears=!warning.IsVisible;
-        foreach(var item in FindObjectsByType<AItem>(FindObjectsSortMode.None))Destroy(item.gameObject);
+        foreach(var item in FindObjectsByType<AItem>())Destroy(item.gameObject);
         yield return null;
         var selected=MakeItem<Caffeine>(player.transform.position+new Vector3(1.8f,1,0));selected.rarity="legendary";
         var other=MakeItem<AMoonItem>(player.transform.position+new Vector3(-2.8f,1,0));
-        var waves=FindFirstObjectByType<WaveOrchestrer>();
+        var waves=FindAnyObjectByType<WaveOrchestrer>();
         var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
         typeof(WaveOrchestrer).GetField("items",flags).SetValue(waves,new System.Collections.Generic.List<GameObject>{selected.gameObject,other.gameObject});
         typeof(WaveOrchestrer).GetField("isShopUp",flags).SetValue(waves,true);

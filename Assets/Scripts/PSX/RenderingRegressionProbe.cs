@@ -16,9 +16,9 @@ public sealed class RenderingRegressionProbe : MonoBehaviour
         history.Push(11);history.Push(12);history.ChangeSize(2,0);
         checks["followerHistoryResizesBeforeAndAfterMovement"]=initialHistory && history.Get(0)==12 && history.Get(1)==11;
         yield return new WaitForSecondsRealtime(.6f);Time.timeScale=1;
-        var waves=FindFirstObjectByType<WaveOrchestrer>();waves.enabled=false;waves.CancelInvoke();waves.StopAllCoroutines();
-        foreach(var enemy in FindObjectsByType<AEnemy>(FindObjectsSortMode.None))Destroy(enemy.gameObject);
-        foreach(var item in FindObjectsByType<AItem>(FindObjectsSortMode.None))Destroy(item.gameObject);
+        var waves=FindAnyObjectByType<WaveOrchestrer>();waves.enabled=false;waves.CancelInvoke();waves.StopAllCoroutines();
+        foreach(var enemy in FindObjectsByType<AEnemy>())Destroy(enemy.gameObject);
+        foreach(var item in FindObjectsByType<AItem>())Destroy(item.gameObject);
         var player=GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();player.enabled=false;player.transform.position=new Vector3(0,-5,20);
         var boss=Instantiate(Resources.Load<GameObject>("Enemy/Bosses/stage1boss"),new Vector3(0,4.5f,1),Quaternion.identity);
         foreach(var script in boss.GetComponentsInChildren<MonoBehaviour>())if(!(script is PSXObjectVisual) && !(script is PSXVisibilityRelay))script.enabled=false;
@@ -26,7 +26,7 @@ public sealed class RenderingRegressionProbe : MonoBehaviour
         foreach(var collider in boss.GetComponentsInChildren<Collider2D>())collider.enabled=false;
         player.AddCompanion("BabyYou");player.AddCompanion("Twerp");
         yield return null;
-        foreach(var companion in FindObjectsByType<ACompanion>(FindObjectsSortMode.None))
+        foreach(var companion in FindObjectsByType<ACompanion>())
         {
             foreach(var mover in companion.GetComponents<AMover>())mover.enabled=false;
             bool baby=companion.name.StartsWith("Baby");companion.transform.position=new Vector3(baby ? -1.3f : 1.3f,-3.3f,19);
@@ -41,7 +41,7 @@ public sealed class RenderingRegressionProbe : MonoBehaviour
         checks["cameraRetreatSurvivesShaker"]=camera.transform.position.z< -30;
         checks["bossFullyInsideDepthRange"]=VisibleBounds(camera,boss.GetComponent<PSXObjectVisual>().modelRenderer);
         checks["playerRendered"]=VisibleBounds(camera,player.GetComponentInChildren<MeshRenderer>());
-        foreach(var companion in FindObjectsByType<ACompanion>(FindObjectsSortMode.None))
+        foreach(var companion in FindObjectsByType<ACompanion>())
         {
             var renderer=companion.GetComponent<PSXObjectVisual>().modelRenderer;
             checks[companion.name.StartsWith("Baby") ? "babyYouReadable" : "twerpReadable"]=VisibleBounds(camera,renderer) && renderer.bounds.size.x>.35f;
@@ -64,7 +64,7 @@ public sealed class RenderingRegressionProbe : MonoBehaviour
         float health=target.GetComponent<AEnemy>().health;
         yield return null;yield return new WaitForEndOfFrame();
         bool electricity=false;
-        foreach(var drawer in FindObjectsByType<LineDrawer>(FindObjectsSortMode.None))if(drawer.GetComponent<LineRenderer>().positionCount>2 && drawer.GetComponent<LineRenderer>().isVisible)electricity=true;
+        foreach(var drawer in FindObjectsByType<LineDrawer>())if(drawer.GetComponent<LineRenderer>().positionCount>2 && drawer.GetComponent<LineRenderer>().isVisible)electricity=true;
         checks["electricityVisibleAndDealsDamage"]=electricity && target.GetComponent<AEnemy>().health<health;
         Capture("RenderFix_Electricity.png");
         yield return new WaitForSecondsRealtime(.6f);

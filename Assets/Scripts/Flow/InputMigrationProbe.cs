@@ -78,7 +78,7 @@ public sealed class InputMigrationProbe : MonoBehaviour
         InputSystem.QueueStateEvent(gamepad,new GamepadState());yield return new WaitForSecondsRealtime(.06f);
         Check(ship.transform.position.x<x-.5f,"Gamepad movement failed");
         InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Z));yield return new WaitForSecondsRealtime(.18f);
-        Check(FindObjectsByType<ABullet>(FindObjectsSortMode.None).Length>0,"Primary fire failed");
+        Check(FindObjectsByType<ABullet>().Length>0,"Primary fire failed");
         InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return new WaitForSecondsRealtime(.06f);
         InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Escape));yield return new WaitForSecondsRealtime(.06f);
         InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return new WaitForSecondsRealtime(.06f);
@@ -103,7 +103,7 @@ public sealed class InputMigrationProbe : MonoBehaviour
         InputSystem.QueueStateEvent(keyboard,new KeyboardState());
         until=Time.realtimeSinceStartup+12;
         while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
-        Check(Time.timeScale==1 && FindObjectsByType<Shipcontroller>(FindObjectsSortMode.None).Length==1,"Input during transition duplicated or paused the run");
+        Check(Time.timeScale==1 && FindObjectsByType<Shipcontroller>().Length==1,"Input during transition duplicated or paused the run");
         Check(errors.Count==0,"Runtime errors: "+string.Join("; ",errors));
     }
     static void Check(bool condition,string message){if(!condition)throw new Exception(message);}

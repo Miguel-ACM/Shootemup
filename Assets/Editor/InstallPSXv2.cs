@@ -511,7 +511,7 @@ public static class InstallPSXv2
                 RenderTexture.active=active;RenderTexture.ReleaseTemporary(target);
                 File.WriteAllBytes(CaptureFolder+"/frame_"+shot+".png",image.EncodeToPNG());UnityEngine.Object.DestroyImmediate(image);
                 if(shot==0)File.WriteAllText(CaptureFolder+"/capture.json","{\"width\":"+scene.width+",\"height\":"+scene.height+",\"filterEnabled\":"+presentation.filterEnabled.ToString().ToLowerInvariant()+
-                    ",\"presentations\":"+UnityEngine.Object.FindObjectsByType<PSXPresentation>(FindObjectsSortMode.None).Length+",\"renderHeight\":"+presentation.renderHeight+",\"explosions\":"+PSXImpactEffects.ExplosionCount+",\"bursts\":"+PSXImpactEffects.BurstCount+"}");
+                    ",\"presentations\":"+UnityEngine.Object.FindObjectsByType<PSXPresentation>().Length+",\"renderHeight\":"+presentation.renderHeight+",\"explosions\":"+PSXImpactEffects.ExplosionCount+",\"bursts\":"+PSXImpactEffects.BurstCount+"}");
             }
             shot++;SessionState.SetInt("PSXv2CaptureShot",shot);
             if(shot>=4){SessionState.SetInt("PSXv2CaptureShot",0);SessionState.SetBool("PSXv2Staged",false);SessionState.SetInt(StageKey,2);EditorApplication.isPlaying=false;}

@@ -27,7 +27,7 @@ public sealed class IndustrialRuntimeProbe : MonoBehaviour
         var bulletPrefab=Resources.Load<GameObject>("Bullets/PlayerBullet");
         bool spriteBullets=bulletPrefab.GetComponent<SpriteRenderer>()!=null && bulletPrefab.GetComponent<MeshRenderer>()==null && bulletPrefab.GetComponent<PSXProjectileEffects>()==null;
         bool enemyMesh=enemy!=null && enemy.GetComponent<PSXObjectVisual>()!=null;
-        bool hud=FindFirstObjectByType<IndustrialHUD>()!=null;
+        bool hud=FindAnyObjectByType<IndustrialHUD>()!=null;
         yield return new WaitForEndOfFrame();
         var image=ScreenCapture.CaptureScreenshotAsTexture();File.WriteAllBytes("ArtSource/PSXPreview/L1_Playtest.png",image.EncodeToPNG());Destroy(image);
         string report="{\"scene\":\"L1\",\"healingPickup\":"+B(healing)+",\"reactorPickup\":"+B(charging)+",\"scorePickup\":"+B(scoring)+",\"itemRotates\":"+B(spinning)+",\"itemTypeMapped\":"+B(itemMapped)+",\"activeItemHides\":"+B(activeHidden)+",\"spriteBullets\":"+B(spriteBullets)+",\"enemyMesh\":"+B(enemyMesh)+",\"liveHUD\":"+B(hud)+"}";

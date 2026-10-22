@@ -34,7 +34,7 @@ public class Shipcontroller : MonoBehaviour
     private float speedMultiplier = 1f;
 
     Collider2D circleCollider;   // hexagonal PolygonCollider2D since the PSXv2 hitbox
-    new SpriteRenderer renderer;
+    SpriteRenderer renderer;
 
     float hitSoundTimeInterval = 0.001f;
     float nextHitTime = 0f;

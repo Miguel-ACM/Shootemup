@@ -23,7 +23,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     {
         player=GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
         // The legacy side-cover script accumulates offsets when the Game view resizes.
-        foreach(var cover in FindObjectsByType<SideCoverController>(FindObjectsSortMode.None))cover.enabled=false;
+        foreach(var cover in FindObjectsByType<SideCoverController>())cover.enabled=false;
         var legacyUI=GameObject.Find("UI");
         if(legacyUI!=null)foreach(var child in legacyUI.GetComponentsInChildren<Transform>(true))
             if(child.name=="CoverLeft" || child.name=="CoverRight")child.gameObject.SetActive(false);
@@ -91,7 +91,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         if(player==null || Time.unscaledTime<nextUpdate)return;nextUpdate=Time.unscaledTime+.1f;
         score.text=Score.CurrentScore.ToString("000000000");chain.text=Score.CurrentMultiplier>1 ? "x"+Score.CurrentMultiplier : "";
         Fill(chainCells,Score.GetPercentageNextMultiplier(),Amber);
-        if(Time.unscaledTime>nextScan){nextScan=Time.unscaledTime+1;boss=FindFirstObjectByType<Boss>();}
+        if(Time.unscaledTime>nextScan){nextScan=Time.unscaledTime+1;boss=FindAnyObjectByType<Boss>();}
         bossPanel.gameObject.SetActive(boss!=null);
         if(boss!=null)Fill(bossCells,boss.HealthFraction,Amber);
     }

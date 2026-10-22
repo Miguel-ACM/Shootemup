@@ -26,7 +26,7 @@ public abstract class AEnemy : MonoBehaviour
 
 
     bool isBlinking = false;
-    new SpriteRenderer renderer;
+    SpriteRenderer renderer;
     float blinkSeconds = 0.12f;
     float blinkTimeout = 0f;
     float blinkInterval = 0.03f;

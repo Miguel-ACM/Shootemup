@@ -272,7 +272,7 @@ public class WaveOrchestrer : MonoBehaviour
     {
         // Let the boss explosion settle, then provide a safe space to steer.
         yield return new WaitForSeconds(.65f);
-        foreach(var enemy in FindObjectsByType<AEnemy>(FindObjectsSortMode.None))Destroy(enemy.gameObject);
+        foreach(var enemy in FindObjectsByType<AEnemy>())Destroy(enemy.gameObject);
         EraseAllBullets();
         GameRules.playerDisabled=true; // Movement remains available; firing is held during the choice.
         routeChoice=LevelChoice.Open(ship.transform,TravelToLevel);
@@ -288,10 +288,10 @@ public class WaveOrchestrer : MonoBehaviour
             routeChoice=null;
             LevelRun.Advance(next);
             LevelEnvironment.Apply();
-            foreach(var enemy in FindObjectsByType<AEnemy>(FindObjectsSortMode.None))Destroy(enemy.gameObject);
+            foreach(var enemy in FindObjectsByType<AEnemy>())Destroy(enemy.gameObject);
             EraseAllBullets();
-            foreach(var bullet in FindObjectsByType<ABullet>(FindObjectsSortMode.None))Destroy(bullet.gameObject);
-            foreach(var pickup in FindObjectsByType<APickable>(FindObjectsSortMode.None))Destroy(pickup.gameObject);
+            foreach(var bullet in FindObjectsByType<ABullet>())Destroy(bullet.gameObject);
+            foreach(var pickup in FindObjectsByType<APickable>())Destroy(pickup.gameObject);
             foreach(var item in items)if(item!=null)Destroy(item);
             items.Clear();claimedItem=null;isShopUp=false;currShowing=-1;dialog.Hide();
             currentWaveNumber=0;currentWaveEnemies=0;currentWaveKilledEnemies=0;

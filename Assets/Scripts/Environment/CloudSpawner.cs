@@ -6,7 +6,6 @@ public class CloudSpawner : MonoBehaviour
     [SerializeField] private float duration = 2f;
     [SerializeField] private float delay = 0.25f;
     [SerializeField] private float horizontalSwayAmount = 1f;
-    [SerializeField] private float horizontalOffsetRange = 3f;
     [SerializeField] private int cloudCount = 6;
     [SerializeField] private bool reverse = false;
     [SerializeField] private bool onSpawn = true;

@@ -86,11 +86,6 @@ public class Score : MonoBehaviour
 
     private static void SetMultiplier(int new_mult)
     {
-        bool disp_animation = false;
-        if (multiplier < new_mult)
-        {
-            disp_animation = true;
-        }
         multiplier = new_mult;
         if (multiplier > 1)
         {
