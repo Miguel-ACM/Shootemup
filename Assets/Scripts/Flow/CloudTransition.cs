@@ -78,6 +78,7 @@ public sealed class CloudTransition : MonoBehaviour
         // Give new scene objects a frame to initialise while the screen is completely white.
         yield return null;
         yield return new WaitForSecondsRealtime(.18f);
+        if(SceneManager.GetActiveScene().name=="L1") LevelReveal.Show();
         yield return Move(false);
         canvas.enabled=false;
         busy=false;
@@ -145,3 +146,4 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
         }
     }
 }
+

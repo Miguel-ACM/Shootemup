@@ -82,7 +82,7 @@ public class Menu : MonoBehaviour
 
     public void setMenuOpen(bool open)
     {
-        if (CloudTransition.Busy) return;
+        if (CloudTransition.Busy && open) return;
         menuOpen = open;
         panel.color = menuOpen ? new Color(.035f,.045f,.045f,.91f) : Color.clear;
         if (menuOpen) {
@@ -90,7 +90,7 @@ public class Menu : MonoBehaviour
             currentIndex = 0;
             Time.timeScale = 0f;
         } else {
-            Time.timeScale = 1;
+            if (!CloudTransition.Busy) Time.timeScale = 1;
         }
         canvasGroup.alpha = menuOpen ? 1 : 0;
         canvasGroup.interactable = menuOpen;
@@ -114,4 +114,5 @@ public class Menu : MonoBehaviour
         input.Dispose();
     }
 }
+
 
