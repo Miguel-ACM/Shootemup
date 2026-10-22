@@ -90,6 +90,11 @@ public sealed class LevelEnvironment : MonoBehaviour
             }
             Color tint=level==LevelId.Snow ? new Color(.74f,.85f,.89f,.22f) : level==LevelId.City ? new Color(.36f,.46f,.52f,.09f) : new Color(.26f,.40f,.43f,.12f);
             AddAtmosphere("Low drifting haze",0,44,tint,1.9f,level==LevelId.Snow ? .55f : .20f);
+            if(level==LevelId.Snow)
+            {
+                AddAtmosphere("Snowdust over the drifts",3,42,new Color(.83f,.90f,.92f,.38f),1.5f,1.1f);
+                AddAtmosphere("Near windblown powder",3,35,new Color(.89f,.94f,.95f,.21f),2.5f,1.8f);
+            }
             if(level==LevelId.City)BuildTraffic();
         }
         if(level==LevelId.Snow || level==LevelId.Thunder)BuildWeather();
@@ -150,7 +155,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     void BuildWeather()
     {
         bool snow=level==LevelId.Snow;
-        flakes=new Flake[snow ? 1000 : 1150];weatherVertices=new Vector3[flakes.Length*4];
+        flakes=new Flake[snow ? 1600 : 1150];weatherVertices=new Vector3[flakes.Length*4];
         var colors=new Color[weatherVertices.Length];var triangles=new int[flakes.Length*6];
         for(int i=0;i<flakes.Length;i++)
         {

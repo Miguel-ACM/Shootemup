@@ -68,57 +68,45 @@ def fir(b,x,y,scale,rng):
         b.cone(x,y,z,r,1.03*scale,(.12,.23,.24),12)
         b.cone(x,y,z+.24*scale,r*.92,1.02*scale,(.77,.86,.87),12)
 
-def river(y): return 1.7*math.sin(y*math.tau*2/PERIOD)+.35*math.sin(y*math.tau*4/PERIOD+.5)
-def river_width(y): return 1.3+.17*math.sin(y*math.tau*2/PERIOD+.3)
+def snow_height(x,y):
+    return .22+.12*math.sin(y*math.tau*2/PERIOD+x*.18)+.055*math.cos(y*math.tau*4/PERIOD-x*.38)
 
-# SNOW: a continuous frozen river, raised banks, grouped fir forest and one timber bridge.
+# SNOW: an unbroken snowfield with wind-carved drifts and partly buried forest margins.
 for section in range(4):
     rng=random.Random(1300+section);origin=section*20
     ground=Builder('SnowGround'+str(section));detail=Builder('SnowDetail'+str(section));near=Builder('SnowNear'+str(section))
     for row in range(40):
         y0=-10+row*.5;y1=y0+.5;g0=origin+y0;g1=origin+y1
-        def edges(y):
-            c=river(y);r=river_width(y)
-            return [-11,-7.7,c-r-1.0,c-r-.28,c-r,c+r,c+r+.28,c+r+1.0,7.7,11]
-        a=edges(g0);b=edges(g1)
-        heights=[.28,.38,.20,.14,.02,.02,.14,.20,.38,.28]
-        for i in range(len(a)-1):
-            color=(.35,.57,.65) if i==4 else (.63,.74,.78) if i in [3,5] else (.72,.81,.82)
-            if i!=4:color=tuple(v*(.98+.02*math.sin(g0*math.tau*4/PERIOD+i)) for v in color)
-            ground.strip((a[i],a[i+1]),(b[i],b[i+1]),y0,y1,(heights[i],heights[i+1]),(heights[i],heights[i+1]),color)
-        # Long, soft glacial streaks follow the river instead of random circular bumps.
-        for side in [-1,1]:
-            x0=river(g0)+side*river_width(g0)*.66;x1=river(g1)+side*river_width(g1)*.66
-            ground.strip((x0-.02,x0+.02),(x1-.02,x1+.02),y0,y1,(.027,.027),(.027,.027),(.49,.70,.75))
-    for j in range(8):
-        y=rng.uniform(-9.5,9.5);x=river(origin+y)+rng.uniform(-.6,.6)
-        ground.line([(x-.34,y-.5),(x-.08,y-.1),(x+.1,y+.1),(x+.42,y+.38)],.018,(.23,.44,.53),.035)
+        for col in range(16):
+            x0=-11+col*22/16;x1=x0+22/16
+            h00=snow_height(x0,g0);h01=snow_height(x1,g0)
+            h10=snow_height(x0,g1);h11=snow_height(x1,g1)
+            shade=.96+.025*math.sin(g0*math.tau*2/PERIOD+x0*.32)
+            c=tuple(v*shade for v in (.80,.85,.86))
+            ground.strip((x0,x1),(x0,x1),y0,y1,(h00,h01),(h10,h11),c)
+    # Broad, shallow snow crests: quiet central terrain with no river, ice or bridge.
+    for j in range(5):
+        y=-8+j*3.6+rng.uniform(-.35,.35);x=rng.uniform(-5,5)
+        z=snow_height(x,origin+y)+.015
+        ground.face([(x-2.8,y-.35,z),(x-.4,y+.12,z+.045),(x+2.8,y+.4,z),(x+.3,y-.12,z)],(.76,.82,.84))
+        ground.line([(x-2.6,y-.36),(x-.4,y+.1),(x+2.7,y+.39)],.065,(.85,.89,.89),z+.05)
     for side in [-1,1]:
-        for cluster in range(6):
-            y=-8.5+cluster*3.1+rng.uniform(-.25,.25)
-            shore=river(origin+y)+side*(river_width(origin+y)+1.55)
-            for j in range(3):
-                x=shore+side*rng.uniform(.1,2.6);yy=y+rng.uniform(-.55,.55)
-                fir(detail,x,yy,rng.uniform(.65,1.15),rng)
-            # Faceted snow ridges have a coherent silhouette at the outside edge.
-            x=side*rng.uniform(7.1,8.8)
-            near.cone(x,y,.2,rng.uniform(1.0,1.6),rng.uniform(.5,1.1),(.66,.77,.79),7)
-            fir(near,x-side*.4,y+.25,rng.uniform(1.1,1.6),rng)
-    if section==2:
-        y=-1.5;c=river(origin+y);width=river_width(origin+y)*2+1.5
-        detail.box(c,y,.35,width,1.15,.18,(.29,.30,.27))
-        for j in range(15): detail.box(c-width/2+(j+.5)*width/15,y,.47,width/15-.025,1.1,.08,(.51,.50,.40))
-        for sy in [-1,1]:
-            detail.box(c,y+sy*.57,.78,width,.09,.1,(.35,.37,.34))
-            for x in [c-width/2,c,c+width/2]:detail.box(x,y+sy*.57,.63,.08,.08,.65,(.36,.38,.34))
-    if section in [0,3]:
-        y=1.5;x=river(origin+y)-river_width(origin+y)-2.2
-        detail.box(x,y,.5,1.25,1.5,.8,(.29,.33,.34))
-        detail.box(x,y,1,1.45,1.7,.2,(.83,.87,.86))
-        detail.box(x,y-.76,.65,.25,.025,.26,(.83,.65,.28))
-        detail.cylinder(x+.4,y+.4,1.1,.10,.6,(.23,.27,.28))
+        for cluster in range(5):
+            y=-8+cluster*3.6+rng.uniform(-.3,.3)
+            for j in range(2):
+                x=side*rng.uniform(3.8,7.8);yy=y+rng.uniform(-.65,.65)
+                fir(detail,x,yy,rng.uniform(.55,.95),rng)
+                # Smooth snow caps cover roots and soften each stand of trees.
+                detail.cone(x-.1,yy-.1,.25,.7,.25,(.80,.86,.87),10)
+            x=side*rng.uniform(7.8,9.5)
+            near.cone(x,y,.25,rng.uniform(1.2,1.8),rng.uniform(.35,.7),(.76,.83,.85),9)
+            if cluster%2==section%2:fir(near,x,y+.2,rng.uniform(.9,1.3),rng)
+    if section==1:
+        # One low, snow-buried shelter gives scale without breaking the open snowfield.
+        detail.box(-6.2,2,.38,1.3,1.6,.6,(.29,.34,.35))
+        detail.box(-6.2,2,.78,1.55,1.85,.28,(.83,.88,.89))
+        detail.cylinder(-5.8,2.4,.92,.09,.4,(.25,.30,.31))
     ground.finish((section*24,0,0));detail.finish((section*24,0,0));near.finish((section*24,0,0))
-
 # TUNNEL: recessed deck plates, cable trenches, structural ribs, valves, conduits and overhead gantries.
 for section in range(4):
     rng=random.Random(2300+section)

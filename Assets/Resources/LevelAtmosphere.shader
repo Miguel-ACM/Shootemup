@@ -3,7 +3,7 @@ Shader "Shootemup/Level Atmosphere"
     Properties
     {
         _Tint("Atmosphere tint",Color)=(.4,.5,.6,.2)
-        _Kind("0 mist, 1 deep storm, 2 near storm",Float)=0
+        _Kind("0 mist, 1 deep storm, 2 near storm, 3 snowdust",Float)=0
         _Flash("Lightning",Range(0,1))=0
         _Drift("Cloud travel",Vector)=(0,0,0,0)
     }
@@ -36,6 +36,14 @@ Shader "Shootemup/Level Atmosphere"
             half4 Frag(Output i):SV_Target
             {
                 float2 p=i.local*float2(.22,.18)+_Drift.xy;
+                if(_Kind>2.5)
+                {
+                    float2 wind=i.local*float2(.12,.72)+_Drift.xy*float2(2.6,1.3);
+                    float powder=Clouds(wind);
+                    float wisps=Noise(wind*float2(.7,3.8)+9.1);
+                    float density=smoothstep(.38,.75,powder)*(.42+.58*wisps);
+                    return half4(_Tint.rgb,density*_Tint.a);
+                }
                 if(_Kind<.5)
                 {
                     float mist=Clouds(p*float2(.5,2.4));
