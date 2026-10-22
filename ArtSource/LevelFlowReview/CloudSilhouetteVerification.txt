@@ -1,0 +1,4 @@
+PASS: cloud backing follows the dense interior of each fixed sprite silhouette instead of a rectangle.
+Unity 6000.6.2f1 isolated rendering check: all four variants' backing seams cover the 405-wide viewport plus sway margin, with a minimum covered half-height of 410 reference pixels (viewport half-height 360). The sampled sprite alpha threshold is 250 because the downsampled sprite's solid interior is mostly alpha 253.
+Six outgoing positions rendered: 0, -200, -400, -600, -800, -960. Fully covered frame is opaque at every pixel; final frame has zero cloud alpha at every pixel. Exit400 and Exit600 were visually inspected for exposed rectangular backing.
+Cloud carriers now travel to +/-960 so their larger, safely overlapping scalloped edges leave the viewport before the canvas is disabled. Continuous billow flow and transition durations are preserved.

@@ -10,6 +10,7 @@ public sealed class CloudTransition : MonoBehaviour
     static CloudTransition instance;
     public static bool Busy => instance != null && instance.busy;
     public const float RevealSeconds=3.2f;
+    const float OffscreenY=960;
     bool busy;
     RectTransform[] banks;
     CloudCurtainGraphic[] billows;
@@ -48,7 +49,7 @@ public sealed class CloudTransition : MonoBehaviour
             var go = new GameObject("Cloud bank " + i, typeof(RectTransform), typeof(CanvasRenderer), typeof(CloudCurtainGraphic));
             go.transform.SetParent(clip,false);
             banks[i] = go.GetComponent<RectTransform>();
-            banks[i].sizeDelta = new Vector2(650,900);
+            banks[i].sizeDelta = new Vector2(650,1100);
             var graphic=go.GetComponent<CloudCurtainGraphic>();
             billows[i]=graphic;
             graphic.color = Color.Lerp(new Color(.88f,.92f,.95f),Color.white,i/3f);
@@ -82,7 +83,7 @@ public sealed class CloudTransition : MonoBehaviour
         flowStartedAt=Time.unscaledTime;
         // Clouds are an overlay: simulation and controls keep running throughout both legs.
         Time.timeScale=1;
-        foreach(var bank in banks)bank.anchoredPosition=new Vector2(0,820);
+        foreach(var bank in banks)bank.anchoredPosition=new Vector2(0,OffscreenY);
         canvas.enabled=true;
         var previousPriority=Application.backgroundLoadingPriority;
         Application.backgroundLoadingPriority=ThreadPriority.Low;
@@ -150,12 +151,12 @@ public sealed class CloudTransition : MonoBehaviour
                 float p=cover ? Mathf.SmoothStep(0,1,local) : local*(.72f+.28f*local);
                 float x=Mathf.Sin(t*Mathf.PI*2+i)*12*Mathf.Sin(t*Mathf.PI);
                 banks[i].anchoredPosition=new Vector2(Mathf.Round(x/2)*2,
-                    Mathf.Round((cover ? Mathf.Lerp(820,0,p) : Mathf.Lerp(0,-820,p))/2)*2);
+                    Mathf.Round((cover ? Mathf.Lerp(OffscreenY,0,p) : Mathf.Lerp(0,-OffscreenY,p))/2)*2);
             }
             yield return null;
         }
         // Every textured edge is below the viewport before the canvas switches off.
-        foreach(var bank in banks)bank.anchoredPosition=new Vector2(0,cover ? 0 : -820);
+        foreach(var bank in banks)bank.anchoredPosition=new Vector2(0,cover ? 0 : -OffscreenY);
     }
 
     void OnDestroy()
@@ -171,6 +172,14 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
     Texture2D texture;
     Vector2 white;
     int variant;
+    const int BackingColumns=325;
+    readonly float[] backingTop=new float[BackingColumns];
+    readonly float[] backingBottom=new float[BackingColumns];
+    struct EdgeSprite
+    {
+        public Vector2 lo,hi,uv0,uv1;
+    }
+    readonly EdgeSprite[] edges=new EdgeSprite[8];
     public float FlowDistance { get; private set; }
     public override Texture mainTexture => texture!=null ? texture : base.mainTexture;
 
@@ -184,7 +193,61 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
             if(p.a==255 && brightness>best)
             {best=brightness;white=new Vector2((i%texture.width+.5f)/texture.width,(i/texture.width+.5f)/texture.height);}
         }
+        for(int edge=0;edge<2;edge++)
+        for(int col=0;col<4;col++)
+        {
+            int row=edge*8;
+            float seed=row*17.13f+col*7.71f+variant*11.37f;
+            float x=-330+col*220+Mathf.Sin(seed)*65;
+            float width=350+Mathf.Sin(seed*1.9f)*65;
+            float y=edge==0 ? -450 : 450;
+            bool mirror=(row+col+variant)%2==0;
+            edges[edge*4+col]=new EdgeSprite {
+                lo=new Vector2(x-width/2,y-95),hi=new Vector2(x+width/2,y+95),
+                uv0=new Vector2(mirror ? 1 : 0,edge==0 ? 1 : 0),
+                uv1=new Vector2(mirror ? 0 : 1,edge==0 ? 0 : 1)
+            };
+        }
+        // Join the backing INSIDE opaque sprite pixels. A rectangular backing exposed its
+        // straight edge through the transparent valleys between the rounded cloud tops.
+        for(int column=0;column<BackingColumns;column++)
+        {
+            float x=-325+column*2;
+            backingTop[column]=FindBackingSeam(pixels,x,1);
+            backingBottom[column]=FindBackingSeam(pixels,x,-1);
+        }
         SetMaterialDirty();SetVerticesDirty();
+    }
+
+    float FindBackingSeam(Color32[] pixels,float x,int side)
+    {
+        int solidRun=0;
+        for(float distance=544;distance>=356;distance-=2)
+        {
+            bool solid=true;
+            // Include the full strip width, so its corners cannot protrude into a valley.
+            for(int sample=0;sample<=4 && solid;sample++)
+            {
+                bool covered=false;
+                float sx=x+sample*.5f,y=distance*side;
+                for(int i=side>0 ? 4 : 0;i<(side>0 ? 8 : 4);i++)
+                {
+                    var sprite=edges[i];
+                    if(sx<sprite.lo.x || sx>sprite.hi.x || y<sprite.lo.y || y>sprite.hi.y)continue;
+                    float u=Mathf.Lerp(sprite.uv0.x,sprite.uv1.x,Mathf.InverseLerp(sprite.lo.x,sprite.hi.x,sx));
+                    float v=Mathf.Lerp(sprite.uv0.y,sprite.uv1.y,Mathf.InverseLerp(sprite.lo.y,sprite.hi.y,y));
+                    int px=Mathf.Clamp((int)(u*texture.width),0,texture.width-1);
+                    int py=Mathf.Clamp((int)(v*texture.height),0,texture.height-1);
+                    // The downsampled sprite's solid interior is mostly alpha 253.
+                    if(pixels[py*texture.width+px].a>=250){covered=true;break;}
+                }
+                solid=covered;
+            }
+            solidRun=solid ? solidRun+1 : 0;
+            if(solidRun==6)return (distance+4)*side;
+        }
+        // Outside the playfield, a strip may miss the sprites entirely; omit its backing.
+        return 0;
     }
 
     public void SetFlow(float distance)
@@ -198,25 +261,15 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
     {
         vh.Clear();
         if(texture==null)return;
-        Quad(vh,new Vector2(-325,-375),new Vector2(325,375),white,white);
-        // Fixed edge sprites preserve the scalloped silhouette of the incoming/outgoing carrier.
-        for(int row=0;row<=8;row+=8)
+        for(int column=0;column<BackingColumns;column++)
         {
-            float y=Mathf.Lerp(-355,355,row/8f);
-            for(int col=0;col<4;col++)
-            {
-                float seed=row*17.13f+col*7.71f+variant*11.37f;
-                float x=-330+col*220+Mathf.Sin(seed)*65;
-                bool edge=row==0 || row==8;
-                float width=350+Mathf.Sin(seed*1.9f)*65;
-                float height=edge ? 190 : 195+Mathf.Cos(seed*.7f)*30;
-                float cy=y+(edge ? 0 : Mathf.Sin(seed*1.3f)*18);
-                bool mirror=(row+col+variant)%2==0;
-                // Both exposed edges carry rounded billows; the lower row faces downwards.
-                Vector2 uv0=new Vector2(mirror ? 1 : 0,row==0 ? 1 : 0);
-                Vector2 uv1=new Vector2(mirror ? 0 : 1,row==0 ? 0 : 1);
-                Quad(vh,new Vector2(x-width/2,cy-height/2),new Vector2(x+width/2,cy+height/2),uv0,uv1);
-            }
+            float x=-325+column*2;
+            Quad(vh,new Vector2(x,backingBottom[column]),new Vector2(x+2,backingTop[column]),white,white);
+        }
+        // Fixed edge sprites preserve the scalloped silhouette of the incoming/outgoing carrier.
+        foreach(var sprite in edges)
+        {
+            Quad(vh,sprite.lo,sprite.hi,sprite.uv0,sprite.uv1);
         }
         // Recycle well outside the visible area, so the interior reads as a continuous fly-through.
         for(int row=0;row<14;row++)
