@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.EventSystems;
 
-public abstract class AMenuElement : MonoBehaviour, IPointerEnterHandler
+public abstract class AMenuElement : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler
 {
     protected Menu menu;
     protected TextMeshProUGUI textElement;
@@ -52,5 +52,10 @@ public abstract class AMenuElement : MonoBehaviour, IPointerEnterHandler
     {
         menu.setCurrentElement(this);
         SetSelectedState();
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if(eventData.button==PointerEventData.InputButton.Left)menu.TryAccept(this);
     }
 }

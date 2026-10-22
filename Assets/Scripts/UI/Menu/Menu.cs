@@ -99,10 +99,14 @@ public class Menu : MonoBehaviour
 
     void OnAccept(InputAction.CallbackContext context)
     {
-        if (menuOpen && !CloudTransition.Busy && CurrentElement != null)
-        {
-            CurrentElement.OnAccept();
-        }
+        TryAccept(CurrentElement);
+    }
+
+    public void TryAccept(AMenuElement element)
+    {
+        if(!menuOpen || CloudTransition.Busy || element==null || Array.IndexOf(menuElements,element)<0)return;
+        setCurrentElement(element);
+        element.OnAccept();
     }
 
     // Inputs instances stay enabled after their scene unloads, and their callbacks then run

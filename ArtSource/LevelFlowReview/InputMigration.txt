@@ -1,0 +1,1 @@
+PASS: Input System only compile flags; all three scenes migrated; keyboard/gamepad menu navigation; gamepad accept; keyboard pause and movement; primary fire; mouse hover/click on main and pause menus; cloud input blocking; fresh scene input cleanup.

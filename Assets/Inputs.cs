@@ -440,12 +440,12 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""6c922fc5-a2b3-4103-a818-1e21e47d07ad"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""id"": ""b8466ae8-26ab-451f-adaa-879208bee9cf"",
+                    ""path"": ""<Gamepad>/dpad"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Accept"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
