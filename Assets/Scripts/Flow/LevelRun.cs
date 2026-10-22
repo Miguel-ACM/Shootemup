@@ -10,6 +10,13 @@ public static class LevelRun
     public static void StartRandom() { Reset((LevelId)Random.Range(0,System.Enum.GetValues(typeof(LevelId)).Length)); }
     public static void Reset(LevelId first = LevelId.Fields) { Current=first;Stage=1; }
     public static void Advance(LevelId next) { Current=next;Stage++; }
+    public static void GetChoices(out LevelId left,out LevelId right)
+    {
+        var options=new System.Collections.Generic.List<LevelId>();
+        foreach(LevelId level in System.Enum.GetValues(typeof(LevelId)))if(level!=Current)options.Add(level);
+        int first=Random.Range(0,options.Count);left=options[first];options.RemoveAt(first);
+        right=options[Random.Range(0,options.Count)];
+    }
     public static Color Accent(LevelId level)
     {
         switch(level)

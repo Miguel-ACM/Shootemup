@@ -40,7 +40,7 @@ public class Menu : MonoBehaviour
         }
         
         if (!alwaysOpen) {
-            input.PlayerControls.Start.performed += ctx => setMenuOpen(!menuOpen);
+            input.PlayerControls.Start.performed += ctx => { if(!CloudTransition.Busy)setMenuOpen(!menuOpen); };
             setMenuOpen(false);
         } else {
             setMenuOpen(true);
@@ -82,13 +82,12 @@ public class Menu : MonoBehaviour
 
     public void setMenuOpen(bool open)
     {
-        if (CloudTransition.Busy && open) return;
         menuOpen = open;
         panel.color = menuOpen ? new Color(.035f,.045f,.045f,.91f) : Color.clear;
         if (menuOpen) {
             CurrentElement = menuElements[0];
             currentIndex = 0;
-            Time.timeScale = 0f;
+            if (!CloudTransition.Busy) Time.timeScale = 0f;
         } else {
             if (!CloudTransition.Busy) Time.timeScale = 1;
         }
@@ -114,5 +113,3 @@ public class Menu : MonoBehaviour
         input.Dispose();
     }
 }
-
-

@@ -29,6 +29,8 @@ public class WaveOrchestrer : MonoBehaviour
     bool isShopUp = false;
     GameObject claimedItem;
     int currShowing = -1;
+    bool choosingRoute;
+    LevelChoice routeChoice;
 
 
     // Start is called before the first frame update
@@ -251,16 +253,53 @@ public class WaveOrchestrer : MonoBehaviour
     {
         if (isBoss)
         {
+            if(choosingRoute || GameRules.playerDisabled)return;
+            choosingRoute=true;
+            isWaveComingOut=false;
             Camera.WhiteScreenJitter(0.5f);
             EraseAllBullets();
             BGMManager.SetLoop(false);
             StartCoroutine(BGMManager.FadeOutSongAndPlay(1.4f, "stageComplete", pitch: 1.0f));
-            GenerateWave();
+            StartCoroutine(ChooseNextRoute());
         }
         else if (currentWaveNumber == waveNumber)
         {
             currentWaveKilledEnemies += 1;
         }
+    }
+
+    IEnumerator ChooseNextRoute()
+    {
+        // Let the boss explosion settle, then provide a safe space to steer.
+        yield return new WaitForSeconds(.65f);
+        foreach(var enemy in FindObjectsByType<AEnemy>(FindObjectsSortMode.None))Destroy(enemy.gameObject);
+        EraseAllBullets();
+        GameRules.playerDisabled=true; // Movement remains available; firing is held during the choice.
+        routeChoice=LevelChoice.Open(ship.transform,TravelToLevel);
+    }
+
+    void TravelToLevel(LevelId next)
+    {
+        CloudTransition.Change(()=>
+        {
+            StopAllCoroutines();CancelInvoke();
+            if(routeChoice!=null)Destroy(routeChoice.gameObject);
+            routeChoice=null;
+            LevelRun.Advance(next);
+            LevelEnvironment.Apply();
+            foreach(var enemy in FindObjectsByType<AEnemy>(FindObjectsSortMode.None))Destroy(enemy.gameObject);
+            EraseAllBullets();
+            foreach(var bullet in FindObjectsByType<ABullet>(FindObjectsSortMode.None))Destroy(bullet.gameObject);
+            foreach(var pickup in FindObjectsByType<APickable>(FindObjectsSortMode.None))Destroy(pickup.gameObject);
+            foreach(var item in items)if(item!=null)Destroy(item);
+            items.Clear();claimedItem=null;isShopUp=false;currShowing=-1;dialog.Hide();
+            ship.transform.position=new Vector3(0,-4,ship.transform.position.z);
+            currentWaveNumber=0;currentWaveEnemies=0;currentWaveKilledEnemies=0;
+            waveTime=clearTime=0;currentUnit=null;currentWave=null;stopingWave=false;
+            choosingRoute=false;GameRules.playerDisabled=false;
+            BGMManager.SetLoop(true);BGMManager.PlayBGM("greenlandsOST");
+            BeginWaves();
+        });
     }
 
     public void NotifyBossPhaseChange(int phase)

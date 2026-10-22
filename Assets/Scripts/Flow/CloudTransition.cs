@@ -34,7 +34,7 @@ public sealed class CloudTransition : MonoBehaviour
         banks = new RectTransform[3];
         for (int i=0;i<banks.Length;i++)
         {
-            var go = new GameObject("Cloud bank " + i, typeof(RectTransform), typeof(CloudCurtainGraphic));
+            var go = new GameObject("Cloud bank " + i, typeof(RectTransform), typeof(CanvasRenderer), typeof(CloudCurtainGraphic));
             go.transform.SetParent(transform,false);
             banks[i] = go.GetComponent<RectTransform>();
             banks[i].sizeDelta = new Vector2(5000,3200);

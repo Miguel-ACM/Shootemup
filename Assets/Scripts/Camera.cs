@@ -30,6 +30,8 @@ public class Camera : MonoBehaviour
     {
         if (overlayWhite)
         {
+            // Some PSX scenes use the compositor without the legacy flash image.
+            if(whiteOverlay==null || whiteScreenJitter==null){overlayWhite=false;return;}
             whiteScreenOverlayT += Time.deltaTime;
             float a = whiteScreenJitter.Evaluate(whiteScreenOverlayT / whiteScreenOverlayDuration);
             if (whiteScreenOverlayT > whiteScreenOverlayDuration)

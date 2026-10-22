@@ -43,7 +43,9 @@ class Builder:
         for face,c in zip(self.f,self.c):
             base=len(vertices)//3
             for index in face:
-                x,y,z=self.v[index];vertices += [x,y,-z];outcolors += [*c,1]
+                x,y,z=self.v[index]
+                projection = (.22,.42) if self.name.startswith('City') else (.12,.22)
+                vertices += [x+z*projection[0],y+z*projection[1],-z];outcolors += [*c,1]
             for j in range(1,len(face)-1):triangles += [base,base+j+1,base+j]
         meshes.append(dict(name=self.name,vertices=vertices,triangles=triangles,colors=outcolors))
         return obj
@@ -56,7 +58,7 @@ for variant in range(3):
         for y in [-7.6,-2.6,2.6,7.6]:
             w=rng.uniform(1.7,2.65);d=rng.uniform(2.7,3.8);h=rng.uniform(1,4.4)
             c=rng.choice([(.24,.29,.34),(.30,.25,.23),(.35,.36,.33),(.2,.26,.30)])
-            b.box(x,y,h/2,w,d,h,c);b.box(x,y,h+.09,w+.08,d+.08,.18,(.42,.45,.45))
+            b.box(x,y,h/2,w,d,h,c);b.box(x,y,h+.09,w+.08,d+.08,.18,tuple(min(1,v+.13) for v in c))
             b.box(x,y,h+.3,w*.5,d*.4,.42,(.20,.24,.26))
             if h>3.5:b.cone(x,y,h+.5,.06,1.2,(.52,.59,.61),4)
             for sy in [-1,1]:
@@ -83,13 +85,13 @@ b.finish((0,25,0))
 b=Builder('SnowSection');b.box(0,0,-.4,16,20,.8,(.66,.77,.81))
 for i in range(45):
     x=rng.uniform(-8,8);y=rng.uniform(-10,10)
-    b.ellipsoid(x,y,0,rng.uniform(.25,1.1),rng.uniform(.3,1.3),rng.uniform(.1,.35),(.76,.86,.9))
+    b.ellipsoid(x,y,0,rng.uniform(.25,1.1),rng.uniform(.3,1.3),rng.uniform(.1,.35),(.88,.94,.96))
 for side in [-1,1]:
     for j in range(12):
         x=side*rng.uniform(3.6,7.8);y=rng.uniform(-10,10)
         b.box(x,y,.3,.15,.15,.7,(.3,.33,.32))
         for k in range(3):
-            b.cone(x,y,.35+k*.4,.65-k*.12,.95,(.16,.28,.29));b.cone(x,y,.58+k*.4,.48-k*.1,.73,(.82,.89,.9))
+            b.cone(x,y,.35+k*.4,.65-k*.12,.95,(.16,.28,.29));b.cone(x,y,.63+k*.4,.55-k*.1,1.0,(.82,.89,.9))
 b.finish((19,25,0))
 b=Builder('StormCloud')
 for i in range(17):b.ellipsoid(rng.uniform(-2.7,2.7),rng.uniform(-1,1),rng.uniform(0,.5),rng.uniform(.9,1.6),rng.uniform(.65,1.2),rng.uniform(.4,.8),(.12,.16,.21))

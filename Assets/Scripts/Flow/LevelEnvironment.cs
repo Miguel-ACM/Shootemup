@@ -26,6 +26,9 @@ public sealed class LevelEnvironment : MonoBehaviour
     LineRenderer bolt;
     System.Random random;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetRuntime() { kit=null;active=null; }
+
     public static void Apply()
     {
         if(active!=null)
@@ -77,7 +80,11 @@ public sealed class LevelEnvironment : MonoBehaviour
                 var backdrop=Quad("Storm abyss",16,20,new Color(.045f,.065f,.095f));
                 sections.Add(Add(backdrop,new Vector3(0,(i-1)*20,94),-45));
             }
-            else sections.Add(Add(kit[name],new Vector3(0,(i-1)*20,88),-40));
+            else
+            {
+                var section=Add(kit[name],new Vector3(0,(i-1)*20,88),-40);
+                section.localScale=new Vector3(.65f,1,1);sections.Add(section);
+            }
         }
         if(level==LevelId.Snow || level==LevelId.Thunder)BuildWeather();
         if(level==LevelId.Thunder)
