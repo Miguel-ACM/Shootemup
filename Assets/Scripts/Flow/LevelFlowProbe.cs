@@ -49,7 +49,13 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Capture("01-menu");
         FindAnyObjectByType<NewGame>().OnAccept();
         Check(CloudTransition.Busy,"New game bypassed the clouds");
-        yield return new WaitForSecondsRealtime(1.1f);Capture("02-white-cover");
+        yield return new WaitForSecondsRealtime(1.1f);Capture("02-cloud-billows");
+        Check(CloudTransition.Busy && SceneManager.GetActiveScene().name=="Title","Cloud cover completed too quickly");
+        var cloud=FindAnyObjectByType<CloudTransition>();
+        var clip=cloud.GetComponentInChildren<UnityEngine.UI.RectMask2D>();
+        Check(clip!=null && Mathf.Approximately(clip.rectTransform.rect.width,405),"Clouds are not clipped to the playfield");
+        Check(cloud.GetComponentsInChildren<CloudCurtainGraphic>().Length==4,"Cloud layers missing");
+        yield return new WaitForSecondsRealtime(1.32f);Capture("02-white-cover");
         float until=Time.realtimeSinceStartup+12;
         while(FindAnyObjectByType<LevelReveal>()==null && Time.realtimeSinceStartup<until)yield return null;
         yield return null;
@@ -80,7 +86,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
         foreach(LevelId level in Enum.GetValues(typeof(LevelId)))
         {
             CloudTransition.Change(()=>{LevelRun.Advance(level);LevelEnvironment.Apply();});
-            yield return new WaitForSecondsRealtime(1.5f);Capture("03-reveal-"+level);
+            yield return new WaitForSecondsRealtime(3.7f);Capture("03-reveal-"+level);
             until=Time.realtimeSinceStartup+10;
             while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
             Check(!CloudTransition.Busy,"Environment transition stalled");
@@ -99,10 +105,17 @@ public sealed class LevelFlowProbe : MonoBehaviour
         var boss=FindAnyObjectByType<Boss>();Check(boss!=null,"Boss did not spawn");boss.damage(100000);
         yield return new WaitForSeconds(1);
         var choice=FindAnyObjectByType<LevelChoice>();Check(choice!=null && LevelChoice.Active,"Boss death did not open the route picker");
+        var choiceLabels=choice.GetComponentsInChildren<TMPro.TextMeshProUGUI>();
+        Check(choiceLabels.Length==2,"Route picker contains more than the level names");
+        foreach(var label in choiceLabels)
+            Check(label.font==FindAnyObjectByType<Dialog>().font && (label.text==choice.Left.ToString().ToUpperInvariant() || label.text==choice.Right.ToString().ToUpperInvariant()),"Route picker name or font is wrong");
         Check(choice.Left!=choice.Right && choice.Left!=LevelRun.Current && choice.Right!=LevelRun.Current,"Invalid boss route pair");
         yield return new WaitForSeconds(.7f);Check(choice.Charge.Progress==0,"Centre charged a choice");Capture("05-neutral-choice");
         ship.transform.position=new Vector3(-3,-4,ship.transform.position.z);
         yield return new WaitForSeconds(.5f);Check(choice.Charge.Progress>.1f,"Left hold did not charge");
+        var fill=((RectTransform[])Get(choice,"fills"))[0];
+        Check(fill.anchorMin==new Vector2(.5f,0) && fill.pivot==new Vector2(.5f,0) && Mathf.Approximately(fill.sizeDelta.x,202.5f),"Route fill does not rise from the bottom at full half width");
+        Check(fill.sizeDelta.y/720<choice.Charge.Progress*.8f,"Route fill is not easing in");
         float paused=choice.Charge.Progress;Time.timeScale=0;
         yield return new WaitForSecondsRealtime(.5f);Check(Mathf.Abs(choice.Charge.Progress-paused)<.001f,"Paused choice kept charging");Time.timeScale=1;
         ship.transform.position=new Vector3(0,-4,ship.transform.position.z);
