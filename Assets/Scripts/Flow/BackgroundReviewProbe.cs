@@ -10,6 +10,7 @@ using UnityEngine;
 /// <summary>Checks parallax sign, depth, coverage and recycling, and records actual rendered motion.</summary>
 public sealed class BackgroundReviewProbe : MonoBehaviour
 {
+    public string OnlyLevel;
     const string Folder="BackgroundReview";
     readonly List<string> errors=new List<string>();
     readonly List<string> results=new List<string>();
@@ -33,7 +34,7 @@ public sealed class BackgroundReviewProbe : MonoBehaviour
             if(!more)break;
             yield return current;
         }
-        Finish("PASS: all five backgrounds follow ship X in the Fields direction; layered foreground response; edge overscan; continuous 80-unit section wrap; no scenery colliders; live geometry and shaders; rendered horizontal sweep for every level. Captured "+written+" frames.\n"+string.Join("\n",results),errors.Count==0 ? 0 : 1);
+        Finish("PASS: "+(string.IsNullOrEmpty(OnlyLevel) ? "all five backgrounds" : OnlyLevel)+" follow ship X in the Fields direction; layered foreground response; edge overscan; continuous 80-unit section wrap; no scenery colliders; live geometry and shaders; rendered horizontal sweep. Captured "+written+" frames.\n"+string.Join("\n",results),errors.Count==0 ? 0 : 1);
     }
     IEnumerator Run()
     {
@@ -52,6 +53,7 @@ public sealed class BackgroundReviewProbe : MonoBehaviour
         GameRules.playerDisabled=true;
         foreach(LevelId level in Enum.GetValues(typeof(LevelId)))
         {
+            if(!string.IsNullOrEmpty(OnlyLevel) && level.ToString()!=OnlyLevel)continue;
             CloudTransition.Change(()=>{LevelRun.Advance(level);LevelEnvironment.Apply();});
             deadline=Time.realtimeSinceStartup+15;
             while(CloudTransition.Busy && Time.realtimeSinceStartup<deadline)yield return null;
@@ -142,7 +144,7 @@ public sealed class BackgroundReviewProbe : MonoBehaviour
         }
         while(captures.Count>0)yield return null;
         Check(errors.Count==0,"Runtime render errors: "+string.Join("; ",errors));
-        Check(written>=615,"Render capture did not produce the complete motion sequence");
+        Check(written>=(string.IsNullOrEmpty(OnlyLevel) ? 615 : 123),"Render capture did not produce the complete motion sequence");
     }
     static T Get<T>(object target,string name)=>(T)target.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).GetValue(target);
     static void Check(bool condition,string message){if(!condition)throw new Exception(message);}

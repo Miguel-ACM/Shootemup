@@ -62,19 +62,41 @@ class Builder:
         return obj
 
 def fir(b,x,y,scale,rng):
-    b.box(x,y,.4*scale,.13*scale,.13*scale,.8*scale,(.24,.25,.23))
-    for k in range(3):
-        z=(.4+k*.43)*scale;r=(.73-k*.15)*scale
-        b.cone(x,y,z,r,1.03*scale,(.12,.23,.24),12)
-        b.cone(x,y,z+.24*scale,r*.92,1.02*scale,(.77,.86,.87),12)
-
+    # Tall, broken branch whorls: jagged conifer silhouettes rather than stacked round cones.
+    yaw=rng.uniform(0,math.tau);lean=rng.uniform(-.10,.10)*scale
+    b.cylinder(x,y,.22*scale,.085*scale,1.1*scale,(.24,.23,.20),5)
+    b.face([(x-.7*scale,y-.15*scale,.24),(x+.35*scale,y-.4*scale,.24),(x+1.0*scale,y+1.2*scale,.24),(x+.1*scale,y+1.5*scale,.24)],(.69,.76,.78))
+    for tier in range(4):
+        radius=(.93-tier*.19)*scale*rng.uniform(.92,1.08)
+        z=(.62+tier*.71)*scale
+        cx=x+lean*tier/3;cy=y
+        peak=(cx,cy,z+1.03*scale)
+        ring=[]
+        for k in range(10):
+            a=yaw+k*math.tau/10+tier*.27
+            r=radius*(rng.uniform(.91,1.08) if k%2==0 else rng.uniform(.69,.79))
+            ring.append((cx+math.cos(a)*r,cy+math.sin(a)*r,z+(0 if k%2==0 else .12*scale)))
+        for k in range(10):
+            a=ring[k];d=ring[(k+1)%10]
+            light=.82+.18*(math.cos(yaw+k*math.tau/10-1)*.5+.5)
+            b.face([a,d,peak],tuple(v*light for v in (.18,.30,.26)))
+            # Uneven snow blankets sit directly on the branch planes; exposed tips remain green.
+            cover=rng.uniform(.50,.73)
+            aa=tuple(peak[j]+(a[j]-peak[j])*cover for j in range(3))
+            dd=tuple(peak[j]+(d[j]-peak[j])*cover for j in range(3))
+            snow_peak=(peak[0],peak[1],peak[2]+.018*scale)
+            aa=(aa[0],aa[1],aa[2]+.018*scale);dd=(dd[0],dd[1],dd[2]+.018*scale)
+            snow=(.84,.88,.88) if k%3 else (.67,.77,.80)
+            b.face([aa,dd,snow_peak],tuple(v*light for v in snow))
+    # A single pointed leader makes each crown read as a fir at the game's small render size.
+    b.cone(x+lean,y,3.35*scale,.19*scale,.58*scale,(.68,.79,.80),5)
 def snow_height(x,y):
     return .22+.12*math.sin(y*math.tau*2/PERIOD+x*.18)+.055*math.cos(y*math.tau*4/PERIOD-x*.38)
 
 # SNOW: an unbroken snowfield with wind-carved drifts and partly buried forest margins.
 for section in range(4):
     rng=random.Random(1300+section);origin=section*20
-    ground=Builder('SnowGround'+str(section));detail=Builder('SnowDetail'+str(section));near=Builder('SnowNear'+str(section))
+    ground=Builder('SnowGround'+str(section));detail=Builder('SnowDetail'+str(section),(.12,.55));near=Builder('SnowNear'+str(section),(.12,.55))
     for row in range(40):
         y0=-10+row*.5;y1=y0+.5;g0=origin+y0;g1=origin+y1
         for col in range(16):
@@ -96,8 +118,7 @@ for section in range(4):
             for j in range(2):
                 x=side*rng.uniform(3.8,7.8);yy=y+rng.uniform(-.65,.65)
                 fir(detail,x,yy,rng.uniform(.55,.95),rng)
-                # Smooth snow caps cover roots and soften each stand of trees.
-                detail.cone(x-.1,yy-.1,.25,.7,.25,(.80,.86,.87),10)
+
             x=side*rng.uniform(7.8,9.5)
             near.cone(x,y,.25,rng.uniform(1.2,1.8),rng.uniform(.35,.7),(.76,.83,.85),9)
             if cluster%2==section%2:fir(near,x,y+.2,rng.uniform(.9,1.3),rng)

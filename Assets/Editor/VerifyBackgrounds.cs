@@ -14,11 +14,15 @@ public static class VerifyBackgrounds
         {
             if(state!=PlayModeStateChange.EnteredPlayMode || !SessionState.GetBool(Key,false))return;
             SessionState.SetBool(Key,false);
-            var go=new GameObject("Background motion review");UnityEngine.Object.DontDestroyOnLoad(go);go.AddComponent<BackgroundReviewProbe>();
+            var go=new GameObject("Background motion review");UnityEngine.Object.DontDestroyOnLoad(go);
+            go.AddComponent<BackgroundReviewProbe>().OnlyLevel=SessionState.GetString("BackgroundReviewOnlyLevel","");
         };
     }
-    public static void Run()
+    public static void Run()=>Begin("");
+    public static void RunSnow()=>Begin("Snow");
+    static void Begin(string onlyLevel)
     {
+        SessionState.SetString("BackgroundReviewOnlyLevel",onlyLevel);
         Directory.CreateDirectory("BackgroundReview");
         if(File.Exists("BackgroundReview/Verification.txt"))File.Delete("BackgroundReview/Verification.txt");
         var atmosphere=Resources.Load<Shader>("LevelAtmosphere");

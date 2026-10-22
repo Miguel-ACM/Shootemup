@@ -1,0 +1,3 @@
+PASS: Snow follow ship X in the Fields direction; layered foreground response; edge overscan; continuous 80-unit section wrap; no scenery colliders; live geometry and shaders; rendered horizontal sweep. Captured 123 frames.
+Snow: downward travel 4,40 units/sec.
+Snow: left/centre/right parallax, full-width coverage and 120 motion frames checked.
