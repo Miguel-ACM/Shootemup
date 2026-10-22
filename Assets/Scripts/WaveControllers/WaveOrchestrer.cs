@@ -280,6 +280,7 @@ public class WaveOrchestrer : MonoBehaviour
 
     void TravelToLevel(LevelId next)
     {
+        GameRules.playerDisabled=false;
         CloudTransition.Change(()=>
         {
             StopAllCoroutines();CancelInvoke();
@@ -293,7 +294,6 @@ public class WaveOrchestrer : MonoBehaviour
             foreach(var pickup in FindObjectsByType<APickable>(FindObjectsSortMode.None))Destroy(pickup.gameObject);
             foreach(var item in items)if(item!=null)Destroy(item);
             items.Clear();claimedItem=null;isShopUp=false;currShowing=-1;dialog.Hide();
-            ship.transform.position=new Vector3(0,-4,ship.transform.position.z);
             currentWaveNumber=0;currentWaveEnemies=0;currentWaveKilledEnemies=0;
             waveTime=clearTime=0;currentUnit=null;currentWave=null;stopingWave=false;
             choosingRoute=false;GameRules.playerDisabled=false;

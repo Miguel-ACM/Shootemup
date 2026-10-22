@@ -43,6 +43,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
     }
     IEnumerator Run()
     {
+        UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior=UnityEngine.InputSystem.InputSettings.BackgroundBehavior.IgnoreFocus;
         Directory.CreateDirectory(Images);
         yield return null;
         Check(SceneManager.GetActiveScene().name=="Title" && Time.timeScale==0,"Play did not begin at the paused main menu");
@@ -61,6 +62,11 @@ public sealed class LevelFlowProbe : MonoBehaviour
         yield return null;
         var reveal=FindAnyObjectByType<LevelReveal>();
         Check(reveal!=null && Time.timeScale==1,"Level title paused gameplay");
+        var instruments=FindAnyObjectByType<IndustrialHUD>();
+        Check(instruments!=null && !instruments.EntranceComplete,"HUD skipped its first entrance");
+        Check(((CanvasGroup)Get(instruments,"sideGroup")).alpha>0,"HUD casing did not fade in");
+        Check(LitCells(instruments,"healthCells")==0 && LitCells(instruments,"manaCells")==0,"HUD filled before its casing entered");
+        Capture("02-hud-casing");
         var labels=reveal.GetComponentsInChildren<TMPro.TextMeshProUGUI>();
         Check(labels.Length==2,"Level title contains extra text");
         Check(Array.Exists(labels,l=>l.text=="Level "+LevelRun.Stage),"Missing small Level x eyebrow");
@@ -76,6 +82,12 @@ public sealed class LevelFlowProbe : MonoBehaviour
         UnityEngine.InputSystem.InputSystem.RemoveDevice(keyboard);
         Check(liveShip.transform.position.x>beforeX+.4f,"Ship cannot move during the title/cloud reveal");
         Check(!Mathf.Approximately((float)Get(liveBackground,"travel"),beforeTravel),"Background stopped during the title");
+        yield return new WaitForSeconds(.65f);
+        Check(LitCells(instruments,"healthCells")>0 && LitCells(instruments,"healthCells")<24 && LitCells(instruments,"manaCells")==0,"Health did not charge segment by segment before energy");
+        Capture("02-hud-health-charging");
+        yield return new WaitForSeconds(.8f);
+        Check(LitCells(instruments,"healthCells")==24 && LitCells(instruments,"manaCells")>0 && LitCells(instruments,"manaCells")<24,"Energy did not charge after health");
+        Capture("02-hud-energy-charging");
         while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
         Check(!CloudTransition.Busy && Time.timeScale==1,"Menu-to-game transition stalled");
         yield return new WaitForSecondsRealtime(.1f);Capture("02-live-title");
@@ -85,11 +97,23 @@ public sealed class LevelFlowProbe : MonoBehaviour
         yield return new WaitForSecondsRealtime(1.2f);
         foreach(LevelId level in Enum.GetValues(typeof(LevelId)))
         {
+            var movingBackground=(MonoBehaviour)FindAnyObjectByType<LevelEnvironment>() ?? FindAnyObjectByType<PSXGrassField>();
+            float coverTravel=(float)Get(movingBackground,"travel");
+            float shipX=ship.transform.position.x;
+            keyboard=UnityEngine.InputSystem.InputSystem.AddDevice<UnityEngine.InputSystem.Keyboard>();
+            UnityEngine.InputSystem.InputSystem.QueueStateEvent(keyboard,new UnityEngine.InputSystem.LowLevel.KeyboardState(UnityEngine.InputSystem.Key.LeftArrow));
             CloudTransition.Change(()=>{LevelRun.Advance(level);LevelEnvironment.Apply();});
-            yield return new WaitForSecondsRealtime(3.7f);Capture("03-reveal-"+level);
+            yield return new WaitForSecondsRealtime(.3f);
+            Check(Time.timeScale==1 && !Mathf.Approximately((float)Get(movingBackground,"travel"),coverTravel),"Cloud cover stopped gameplay");
+            Check(ship.transform.position.x<shipX-.3f,"Cloud cover stopped ship controls");
+            UnityEngine.InputSystem.InputSystem.QueueStateEvent(keyboard,new UnityEngine.InputSystem.LowLevel.KeyboardState());
+            yield return null;UnityEngine.InputSystem.InputSystem.RemoveDevice(keyboard);
+            ship.transform.position=new Vector3(0,ship.transform.position.y,ship.transform.position.z);
+            yield return new WaitForSecondsRealtime(3.9f);Capture("03-reveal-"+level);
             until=Time.realtimeSinceStartup+10;
             while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
             Check(!CloudTransition.Busy,"Environment transition stalled");
+            Check(instruments==FindAnyObjectByType<IndustrialHUD>() && instruments.EntranceComplete,"HUD entrance replayed between levels");
             if(level==LevelId.Thunder)
             {yield return new WaitForSeconds(1.7f);Capture("04-thunder-lightning");}
             yield return new WaitForSecondsRealtime(2.5f);Capture("04-environment-"+level);
@@ -160,6 +184,10 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Check(errors.Count==0,"Unity reported runtime errors: "+string.Join("\n",errors));
     }
     static void Check(bool condition,string message){if(!condition)throw new Exception(message);}
+    static int LitCells(IndustrialHUD hud,string field)
+    {
+        int count=0;foreach(var cell in (UnityEngine.UI.Image[])Get(hud,field))if(cell.color.r>.3f)count++;return count;
+    }
     static object Get(object target,string name)=>target.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).GetValue(target);
     static void Field(object target,string name,object value)=>target.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).SetValue(target,value);
     static void Call(object target,string name)=>target.GetType().GetMethod(name,BindingFlags.Instance|BindingFlags.NonPublic).Invoke(target,null);

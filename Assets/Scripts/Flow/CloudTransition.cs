@@ -73,7 +73,8 @@ public sealed class CloudTransition : MonoBehaviour
     IEnumerator Travel(string scene, Action covered)
     {
         busy=true;
-        Time.timeScale=0;
+        // Clouds are an overlay: simulation and controls keep running throughout both legs.
+        Time.timeScale=1;
         canvas.enabled=true;
         yield return Move(true);
         covered?.Invoke();
