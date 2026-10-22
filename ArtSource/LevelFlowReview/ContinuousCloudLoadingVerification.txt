@@ -1,0 +1,6 @@
+PASS: live ship/background movement during title and cloud reveal; two-label title with the game font and Level x eyebrow; main menu; random starts and unique route pairs (1000 trials); neutral/switch/frame-rate charge checks; five environments; cloud cover/reveal; actual boss death; both spatial route selections; pause; player/stats/equipment preservation; next-stage waves; return to menu and new-run reset.
+Slow-load stress run: a 3500 ms sleep was injected only into the disposable verification copy before its background JSON parse; the project source contains no simulated delay. With -verifySlowScenery, the opaque carriers remained stationary while billow flow advanced at least 20 reference pixels over 0.5 seconds. Full gameplay, route choices, pause, title, controls, and state-preservation checks passed.
+
+Normal-speed verification (no artificial delay):
+PASS: live ship/background movement during title and cloud reveal; two-label title with the game font and Level x eyebrow; main menu; random starts and unique route pairs (1000 trials); neutral/switch/frame-rate charge checks; five environments; cloud cover/reveal; actual boss death; both spatial route selections; pause; player/stats/equipment preservation; next-stage waves; return to menu and new-run reset.
+

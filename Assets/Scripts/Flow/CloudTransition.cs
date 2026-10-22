@@ -12,6 +12,8 @@ public sealed class CloudTransition : MonoBehaviour
     public const float RevealSeconds=3.2f;
     bool busy;
     RectTransform[] banks;
+    CloudCurtainGraphic[] billows;
+    float flowStartedAt;
     Canvas canvas;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -39,6 +41,7 @@ public sealed class CloudTransition : MonoBehaviour
         clip.anchorMin=new Vector2(.5f,0);clip.anchorMax=new Vector2(.5f,1);
         clip.sizeDelta=new Vector2(405,0);
         banks = new RectTransform[4];
+        billows = new CloudCurtainGraphic[4];
         var artwork=Resources.Load<Texture2D>("CloudBillow");
         for (int i=0;i<banks.Length;i++)
         {
@@ -47,6 +50,7 @@ public sealed class CloudTransition : MonoBehaviour
             banks[i] = go.GetComponent<RectTransform>();
             banks[i].sizeDelta = new Vector2(650,900);
             var graphic=go.GetComponent<CloudCurtainGraphic>();
+            billows[i]=graphic;
             graphic.color = Color.Lerp(new Color(.88f,.92f,.95f),Color.white,i/3f);
             graphic.Configure(artwork,i);
         }
@@ -75,29 +79,61 @@ public sealed class CloudTransition : MonoBehaviour
     IEnumerator Travel(string scene, Action covered)
     {
         busy=true;
+        flowStartedAt=Time.unscaledTime;
         // Clouds are an overlay: simulation and controls keep running throughout both legs.
         Time.timeScale=1;
+        foreach(var bank in banks)bank.anchoredPosition=new Vector2(0,820);
         canvas.enabled=true;
-        yield return Move(true);
-        covered?.Invoke();
-        if(scene!=null)
+        var previousPriority=Application.backgroundLoadingPriority;
+        Application.backgroundLoadingPriority=ThreadPriority.Low;
+        try
         {
-            var load=SceneManager.LoadSceneAsync(scene);
-            while(!load.isDone) yield return null;
+            var preparing=StartCoroutine(LevelEnvironment.Prepare());
+            AsyncOperation load=null;
+            var preloading=scene!=null ? StartCoroutine(PreloadScene(scene,operation=>load=operation)) : null;
+            yield return Move(true);
+            yield return preparing;
+            if(preloading!=null)yield return preloading;
+            covered?.Invoke();
+            if(load!=null)
+            {
+                load.allowSceneActivation=true;
+                while(!load.isDone)yield return null;
+            }
+            // Start new scene components behind the moving cloud bank; no timed loading hold.
+            yield return null;
+            if(SceneManager.GetActiveScene().name=="L1")
+            {
+                Time.timeScale=1;
+                LevelReveal.Show();
+            }
+            yield return Move(false);
         }
-        // Give new scene objects a frame to initialise while the screen is completely white.
-        yield return null;
-        yield return new WaitForSecondsRealtime(.3f);
-        if(SceneManager.GetActiveScene().name=="L1")
+        finally
         {
-            // The title is an overlay on live gameplay, including while the clouds uncover it.
-            Time.timeScale=1;
-            LevelReveal.Show();
+            Application.backgroundLoadingPriority=previousPriority;
+            canvas.enabled=false;
+            busy=false;
+            Time.timeScale=SceneManager.GetActiveScene().name=="Title" ? 0 : 1;
         }
-        yield return Move(false);
-        canvas.enabled=false;
-        busy=false;
-        Time.timeScale=SceneManager.GetActiveScene().name=="Title" ? 0 : 1;
+    }
+
+    IEnumerator PreloadScene(string scene,Action<AsyncOperation> started)
+    {
+        // A parked scene blocks Unity's async queue, so finish the scenery asset request first.
+        while(!LevelEnvironment.SourceReady)yield return null;
+        var load=SceneManager.LoadSceneAsync(scene);
+        load.allowSceneActivation=false;
+        started(load);
+        while(load.progress<.9f)yield return null;
+    }
+
+    void Update()
+    {
+        if(!busy)return;
+        // Texture billows keep travelling even when the opaque carrier must wait for activation.
+        float distance=(Time.unscaledTime-flowStartedAt)*52;
+        foreach(var graphic in billows)graphic.SetFlow(distance);
     }
 
     IEnumerator Move(bool cover)
@@ -135,6 +171,7 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
     Texture2D texture;
     Vector2 white;
     int variant;
+    public float FlowDistance { get; private set; }
     public override Texture mainTexture => texture!=null ? texture : base.mainTexture;
 
     public void Configure(Texture2D artwork,int index)
@@ -150,12 +187,20 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
         SetMaterialDirty();SetVerticesDirty();
     }
 
+    public void SetFlow(float distance)
+    {
+        float snapped=Mathf.Floor(distance/2)*2;
+        if(snapped==FlowDistance)return;
+        FlowDistance=snapped;SetVerticesDirty();
+    }
+
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         vh.Clear();
         if(texture==null)return;
         Quad(vh,new Vector2(-325,-375),new Vector2(325,375),white,white);
-        for(int row=0;row<9;row++)
+        // Fixed edge sprites preserve the scalloped silhouette of the incoming/outgoing carrier.
+        for(int row=0;row<=8;row+=8)
         {
             float y=Mathf.Lerp(-355,355,row/8f);
             for(int col=0;col<4;col++)
@@ -173,12 +218,38 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
                 Quad(vh,new Vector2(x-width/2,cy-height/2),new Vector2(x+width/2,cy+height/2),uv0,uv1);
             }
         }
+        // Recycle well outside the visible area, so the interior reads as a continuous fly-through.
+        for(int row=0;row<14;row++)
+        {
+            float y=Mathf.Repeat(row*(1240f/14)-FlowDistance,1240)-620;
+            for(int col=0;col<4;col++)
+            {
+                float seed=row*17.13f+col*7.71f+variant*11.37f;
+                float x=-330+col*220+Mathf.Sin(seed)*65;
+                float width=350+Mathf.Sin(seed*1.9f)*65;
+                float height=195+Mathf.Cos(seed*.7f)*30;
+                bool mirror=(row+col+variant)%2==0;
+                Quad(vh,new Vector2(x-width/2,y-height/2),new Vector2(x+width/2,y+height/2),
+                    new Vector2(mirror ? 1 : 0,0),new Vector2(mirror ? 0 : 1,1),true);
+            }
+        }
     }
-    void Quad(VertexHelper vh,Vector2 lo,Vector2 hi,Vector2 uv0,Vector2 uv1)
+    void Quad(VertexHelper vh,Vector2 lo,Vector2 hi,Vector2 uv0,Vector2 uv1,bool stream=false)
     {
+        Color bottom=color,top=color;
+        if(stream)
+        {
+            if(hi.y<=-450 || lo.y>=450)return;
+            float from=lo.y,to=hi.y,v0=uv0.y,v1=uv1.y;
+            lo.y=Mathf.Max(-450,lo.y);hi.y=Mathf.Min(450,hi.y);
+            uv0.y=Mathf.Lerp(v0,v1,Mathf.InverseLerp(from,to,lo.y));
+            uv1.y=Mathf.Lerp(v0,v1,Mathf.InverseLerp(from,to,hi.y));
+            bottom.a*=Mathf.InverseLerp(450,290,Mathf.Abs(lo.y));
+            top.a*=Mathf.InverseLerp(450,290,Mathf.Abs(hi.y));
+        }
         int k=vh.currentVertCount;
-        vh.AddVert(new Vector3(lo.x,lo.y),color,uv0);vh.AddVert(new Vector3(lo.x,hi.y),color,new Vector2(uv0.x,uv1.y));
-        vh.AddVert(new Vector3(hi.x,hi.y),color,uv1);vh.AddVert(new Vector3(hi.x,lo.y),color,new Vector2(uv1.x,uv0.y));
+        vh.AddVert(new Vector3(lo.x,lo.y),bottom,uv0);vh.AddVert(new Vector3(lo.x,hi.y),top,new Vector2(uv0.x,uv1.y));
+        vh.AddVert(new Vector3(hi.x,hi.y),top,uv1);vh.AddVert(new Vector3(hi.x,lo.y),bottom,new Vector2(uv1.x,uv0.y));
         vh.AddTriangle(k,k+1,k+2);vh.AddTriangle(k,k+2,k+3);
     }
 }

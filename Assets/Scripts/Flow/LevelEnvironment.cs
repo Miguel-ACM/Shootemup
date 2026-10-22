@@ -1,5 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -13,6 +16,8 @@ public sealed class LevelEnvironment : MonoBehaviour
     struct Flake { public Vector2 position;public float speed,size,phase,depth; }
     const float SectionLength=20,LoopLength=80;
     static Dictionary<string,Mesh> kit;
+    static bool preparing,sourceReady;
+    public static bool SourceReady => sourceReady || kit!=null;
     static LevelEnvironment active;
     [Range(0,.5f)] public float sideParallax=.12f;
     public float HorizontalOffset { get; private set; }
@@ -34,7 +39,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     System.Random random;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetRuntime() { kit=null;active=null; }
+    static void ResetRuntime() { kit=null;active=null;preparing=sourceReady=false; }
 
     public static void Apply()
     {
@@ -55,19 +60,60 @@ public sealed class LevelEnvironment : MonoBehaviour
     static void LoadKit()
     {
         if(kit!=null)return;
-        kit=new Dictionary<string,Mesh>();
         var data=JsonUtility.FromJson<Kit>(Resources.Load<TextAsset>("LevelKit").text);
-        foreach(var item in data.meshes)
+        var loaded=new Dictionary<string,Mesh>();
+        foreach(var item in data.meshes)loaded.Add(item.name,CreateMesh(item));
+        kit=loaded;
+    }
+
+    /// <summary>Prepare the scenery during cloud cover, before scene activation needs the meshes.</summary>
+    public static IEnumerator Prepare()
+    {
+        if(kit!=null)yield break;
+        if(preparing)
         {
-            int count=item.vertices.Length/3;var vertices=new Vector3[count];var colors=new Color[count];
-            for(int i=0;i<count;i++)
-            {
-                vertices[i]=new Vector3(item.vertices[i*3],item.vertices[i*3+1],item.vertices[i*3+2]);
-                colors[i]=new Color(item.colors[i*4],item.colors[i*4+1],item.colors[i*4+2],item.colors[i*4+3]);
-            }
-            var mesh=new Mesh{name=item.name,indexFormat=IndexFormat.UInt32};
-            mesh.vertices=vertices;mesh.colors=colors;mesh.triangles=item.triangles;mesh.RecalculateBounds();kit.Add(item.name,mesh);
+            while(preparing && kit==null)yield return null;
+            yield break;
         }
+        preparing=true;
+        var loaded=new Dictionary<string,Mesh>();
+        try
+        {
+            var request=Resources.LoadAsync<TextAsset>("LevelKit");
+            yield return request;
+            string json=((TextAsset)request.asset).text;
+            // Finish the resource request before parking a scene load at allowSceneActivation=false.
+            sourceReady=true;
+            // Unity permits JsonUtility.FromJson(string) on a worker; native Mesh APIs stay on main.
+            var parsing=Task.Run(()=>JsonUtility.FromJson<Kit>(json));
+            while(!parsing.IsCompleted)yield return null;
+            var budget=Stopwatch.StartNew();
+            foreach(var item in parsing.GetAwaiter().GetResult().meshes)
+            {
+                // A direct scene entry can have populated the synchronous fallback in the meantime.
+                if(kit!=null)yield break;
+                loaded.Add(item.name,CreateMesh(item));
+                if(budget.ElapsedMilliseconds>=3){yield return null;budget.Restart();}
+            }
+            kit=loaded;
+        }
+        finally
+        {
+            if(kit!=loaded)foreach(var mesh in loaded.Values)Destroy(mesh);
+            preparing=false;
+        }
+    }
+
+    static Mesh CreateMesh(MeshData item)
+    {
+        int count=item.vertices.Length/3;var vertices=new Vector3[count];var colors=new Color[count];
+        for(int i=0;i<count;i++)
+        {
+            vertices[i]=new Vector3(item.vertices[i*3],item.vertices[i*3+1],item.vertices[i*3+2]);
+            colors[i]=new Color(item.colors[i*4],item.colors[i*4+1],item.colors[i*4+2],item.colors[i*4+3]);
+        }
+        var mesh=new Mesh{name=item.name,indexFormat=IndexFormat.UInt32};
+        mesh.vertices=vertices;mesh.colors=colors;mesh.triangles=item.triangles;mesh.RecalculateBounds();return mesh;
     }
 
     void Build()

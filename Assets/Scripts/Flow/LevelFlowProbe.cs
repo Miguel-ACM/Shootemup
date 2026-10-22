@@ -47,6 +47,9 @@ public sealed class LevelFlowProbe : MonoBehaviour
     IEnumerator Run()
     {
         UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior=UnityEngine.InputSystem.InputSettings.BackgroundBehavior.IgnoreFocus;
+        UnityEngine.InputSystem.InputSystem.settings.editorInputBehaviorInPlayMode=UnityEngine.InputSystem.InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+        foreach(var device in new List<UnityEngine.InputSystem.InputDevice>(UnityEngine.InputSystem.InputSystem.devices))
+            UnityEngine.InputSystem.InputSystem.DisableDevice(device);
         Directory.CreateDirectory(Images);
         Directory.CreateDirectory(Images+"/CloudMotion");
         yield return null;
@@ -62,17 +65,34 @@ public sealed class LevelFlowProbe : MonoBehaviour
         var clip=cloud.GetComponentInChildren<UnityEngine.UI.RectMask2D>();
         Check(clip!=null && Mathf.Approximately(clip.rectTransform.rect.width,405),"Clouds are not clipped to the playfield");
         Check(cloud.GetComponentsInChildren<CloudCurtainGraphic>().Length==4,"Cloud layers missing");
+        var flowing=cloud.GetComponentsInChildren<CloudCurtainGraphic>();
+        float coverFlow=flowing[0].FlowDistance;
         var artwork=Resources.Load<Texture2D>("CloudBillow");
         Check(artwork!=null && artwork.filterMode==FilterMode.Point && artwork.width<=128,"Cloud artwork is not a point-filtered PSX sprite");
         bool transparent=false,opaque=false;
         foreach(var pixel in artwork.GetPixels32()){transparent|=pixel.a==0;opaque|=pixel.a==255;}
         Check(transparent && opaque,"Cloud sprite lost its transparent silhouette or opaque billows");
         yield return new WaitForSecondsRealtime(1.32f);Capture("02-white-cover");
+        Check(flowing[0].FlowDistance>coverFlow+40,"Cloud billows stopped during cover/loading");
+        if(Array.IndexOf(Environment.GetCommandLineArgs(),"-verifySlowScenery")>=0)
+        {
+            // The disposable verification project delays its background parse to simulate slow I/O.
+            yield return new WaitForSecondsRealtime(.12f);
+            var loadingBanks=(RectTransform[])Get(cloud,"banks");
+            var parked=loadingBanks[0].anchoredPosition;float flow=flowing[0].FlowDistance;
+            Capture("02-loading-flow-before");
+            yield return new WaitForSecondsRealtime(.5f);
+            Check(loadingBanks[0].anchoredPosition==parked && parked.y==0,"Slow-load fixture did not hold at opaque cover");
+            Check(flowing[0].FlowDistance>=flow+20,"Cloud texture stopped while waiting for the next scene");
+            Capture("02-loading-flow-after");
+        }
         float until=Time.realtimeSinceStartup+12;
         while(FindAnyObjectByType<LevelReveal>()==null && Time.realtimeSinceStartup<until)yield return null;
         yield return null;
         var reveal=FindAnyObjectByType<LevelReveal>();
         Check(reveal!=null && Time.timeScale==1,"Level title paused gameplay");
+        var prepared=typeof(LevelEnvironment).GetField("kit",BindingFlags.Static|BindingFlags.NonPublic).GetValue(null) as System.Collections.IDictionary;
+        Check(prepared!=null && prepared.Count==38,"Scenery was not prepared before scene reveal");
         var instruments=FindAnyObjectByType<IndustrialHUD>();
         Check(instruments!=null && !instruments.EntranceComplete,"HUD skipped its first entrance");
         Check(((CanvasGroup)Get(instruments,"sideGroup")).alpha>0,"HUD casing did not fade in");
@@ -90,15 +110,14 @@ public sealed class LevelFlowProbe : MonoBehaviour
         yield return new WaitForSecondsRealtime(.3f);
         UnityEngine.InputSystem.InputSystem.QueueStateEvent(keyboard,new UnityEngine.InputSystem.LowLevel.KeyboardState());
         yield return null;
-        UnityEngine.InputSystem.InputSystem.RemoveDevice(keyboard);
         Check(liveShip.transform.position.x>beforeX+.4f,"Ship cannot move during the title/cloud reveal");
         Check(!Mathf.Approximately((float)Get(liveBackground,"travel"),beforeTravel),"Background stopped during the title");
         var banks=(RectTransform[])Get(cloud,"banks");
         Check(banks[3].anchoredPosition.y<banks[0].anchoredPosition.y,"Cloud exit did not peel away the front layer first");
-        yield return new WaitForSeconds(.65f);
+        while((float)Get(instruments,"entranceAge")<1.15f)yield return null;
         Check(LitCells(instruments,"healthCells")>0 && LitCells(instruments,"healthCells")<24 && LitCells(instruments,"manaCells")==0,"Health did not charge segment by segment before energy");
         Capture("02-hud-health-charging");
-        yield return new WaitForSeconds(.8f);
+        while((float)Get(instruments,"entranceAge")<2.1f)yield return null;
         Check(LitCells(instruments,"healthCells")==24 && LitCells(instruments,"manaCells")>0 && LitCells(instruments,"manaCells")<24,"Energy did not charge after health");
         Capture("02-hud-energy-charging");
         while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
@@ -115,14 +134,13 @@ public sealed class LevelFlowProbe : MonoBehaviour
             var movingBackground=(MonoBehaviour)FindAnyObjectByType<LevelEnvironment>() ?? FindAnyObjectByType<PSXGrassField>();
             float coverTravel=(float)Get(movingBackground,"travel");
             float shipX=ship.transform.position.x;
-            keyboard=UnityEngine.InputSystem.InputSystem.AddDevice<UnityEngine.InputSystem.Keyboard>();
             UnityEngine.InputSystem.InputSystem.QueueStateEvent(keyboard,new UnityEngine.InputSystem.LowLevel.KeyboardState(UnityEngine.InputSystem.Key.LeftArrow));
             CloudTransition.Change(()=>{LevelRun.Advance(level);LevelEnvironment.Apply();});
             yield return new WaitForSecondsRealtime(.3f);
             Check(Time.timeScale==1 && !Mathf.Approximately((float)Get(movingBackground,"travel"),coverTravel),"Cloud cover stopped gameplay");
-            Check(ship.transform.position.x<shipX-.3f,"Cloud cover stopped ship controls");
+            Check(ship.transform.position.x<shipX-.3f,"Cloud cover stopped ship controls: "+level+", x="+shipX+" -> "+ship.transform.position.x+", input="+Get(ship,"move")+", enabled="+ship.enabled+", speed="+GameRules.playerMoveSpeed);
             UnityEngine.InputSystem.InputSystem.QueueStateEvent(keyboard,new UnityEngine.InputSystem.LowLevel.KeyboardState());
-            yield return null;UnityEngine.InputSystem.InputSystem.RemoveDevice(keyboard);
+            yield return null;
             ship.transform.position=new Vector3(0,ship.transform.position.y,ship.transform.position.z);
             yield return new WaitForSecondsRealtime(3.9f);Capture("03-reveal-"+level);
             until=Time.realtimeSinceStartup+10;
@@ -196,6 +214,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
         until=Time.realtimeSinceStartup+10;
         while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
         Check(LevelRun.Stage==1 && GameRules.playerShootDamage==2 && !GameRules.playerDisabled,"New run retained previous run state");
+        UnityEngine.InputSystem.InputSystem.RemoveDevice(keyboard);
         Check(errors.Count==0,"Unity reported runtime errors: "+string.Join("\n",errors));
     }
     static void Check(bool condition,string message){if(!condition)throw new Exception(message);}
