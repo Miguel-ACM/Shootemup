@@ -31,10 +31,11 @@ public sealed class LevelReveal : MonoBehaviour
         content=body.GetComponent<RectTransform>();content.sizeDelta=new Vector2(405,120);
         Label("Level "+LevelRun.Stage,11,new Vector2(0,40),new Color(.73f,.77f,.72f));
         Label(LevelRun.CurrentName.ToUpperInvariant(),40,new Vector2(0,-3),new Color(.9f,.92f,.87f));
-        for(float t=0;t<3.7f;t+=Time.deltaTime)
+        float duration=CloudTransition.RevealSeconds+1.3f;
+        for(float t=0;t<duration;t+=Time.deltaTime)
         {
             float enter=Mathf.SmoothStep(0,1,t/.7f);
-            float leave=Mathf.SmoothStep(0,1,(t-2.6f)/1.1f);
+            float leave=Mathf.SmoothStep(0,1,(t-(duration-1.1f))/1.1f);
             group.alpha=enter*(1-leave);
             content.anchoredPosition=new Vector2(0,Mathf.Round(Mathf.Lerp(-12,0,enter)+leave*12));
             yield return null;

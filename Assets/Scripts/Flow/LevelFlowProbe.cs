@@ -14,6 +14,9 @@ public sealed class LevelFlowProbe : MonoBehaviour
     const string Images="FlowReview/Captures";
     readonly List<string> errors=new List<string>();
     readonly Queue<string> captures=new Queue<string>();
+    bool recordingClouds;
+    float nextCloudCapture;
+    int cloudFrames;
     void Awake(){Application.runInBackground=true;Application.logMessageReceived+=Log;}
     void Log(string message,string trace,LogType type)
     {
@@ -45,10 +48,13 @@ public sealed class LevelFlowProbe : MonoBehaviour
     {
         UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior=UnityEngine.InputSystem.InputSettings.BackgroundBehavior.IgnoreFocus;
         Directory.CreateDirectory(Images);
+        Directory.CreateDirectory(Images+"/CloudMotion");
         yield return null;
         Check(SceneManager.GetActiveScene().name=="Title" && Time.timeScale==0,"Play did not begin at the paused main menu");
         Capture("01-menu");
+        recordingClouds=true;
         FindAnyObjectByType<NewGame>().OnAccept();
+        LevelRun.Reset(LevelId.Fields); // A dark valley makes the cloud edge readable in the recording.
         Check(CloudTransition.Busy,"New game bypassed the clouds");
         yield return new WaitForSecondsRealtime(1.1f);Capture("02-cloud-billows");
         Check(CloudTransition.Busy && SceneManager.GetActiveScene().name=="Title","Cloud cover completed too quickly");
@@ -56,6 +62,11 @@ public sealed class LevelFlowProbe : MonoBehaviour
         var clip=cloud.GetComponentInChildren<UnityEngine.UI.RectMask2D>();
         Check(clip!=null && Mathf.Approximately(clip.rectTransform.rect.width,405),"Clouds are not clipped to the playfield");
         Check(cloud.GetComponentsInChildren<CloudCurtainGraphic>().Length==4,"Cloud layers missing");
+        var artwork=Resources.Load<Texture2D>("CloudBillow");
+        Check(artwork!=null && artwork.filterMode==FilterMode.Point && artwork.width<=128,"Cloud artwork is not a point-filtered PSX sprite");
+        bool transparent=false,opaque=false;
+        foreach(var pixel in artwork.GetPixels32()){transparent|=pixel.a==0;opaque|=pixel.a==255;}
+        Check(transparent && opaque,"Cloud sprite lost its transparent silhouette or opaque billows");
         yield return new WaitForSecondsRealtime(1.32f);Capture("02-white-cover");
         float until=Time.realtimeSinceStartup+12;
         while(FindAnyObjectByType<LevelReveal>()==null && Time.realtimeSinceStartup<until)yield return null;
@@ -82,6 +93,8 @@ public sealed class LevelFlowProbe : MonoBehaviour
         UnityEngine.InputSystem.InputSystem.RemoveDevice(keyboard);
         Check(liveShip.transform.position.x>beforeX+.4f,"Ship cannot move during the title/cloud reveal");
         Check(!Mathf.Approximately((float)Get(liveBackground,"travel"),beforeTravel),"Background stopped during the title");
+        var banks=(RectTransform[])Get(cloud,"banks");
+        Check(banks[3].anchoredPosition.y<banks[0].anchoredPosition.y,"Cloud exit did not peel away the front layer first");
         yield return new WaitForSeconds(.65f);
         Check(LitCells(instruments,"healthCells")>0 && LitCells(instruments,"healthCells")<24 && LitCells(instruments,"manaCells")==0,"Health did not charge segment by segment before energy");
         Capture("02-hud-health-charging");
@@ -89,6 +102,8 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Check(LitCells(instruments,"healthCells")==24 && LitCells(instruments,"manaCells")>0 && LitCells(instruments,"manaCells")<24,"Energy did not charge after health");
         Capture("02-hud-energy-charging");
         while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
+        recordingClouds=false;
+        foreach(var bank in banks)Check(bank.anchoredPosition.y+450<-360,"Cloud canvas disappeared before its last edge left the screen");
         Check(!CloudTransition.Busy && Time.timeScale==1,"Menu-to-game transition stalled");
         yield return new WaitForSecondsRealtime(.1f);Capture("02-live-title");
         Check(SceneManager.GetActiveScene().name=="L1","New game did not load gameplay");
@@ -197,9 +212,20 @@ public sealed class LevelFlowProbe : MonoBehaviour
         while(true)
         {
             yield return new WaitForEndOfFrame();
-            if(captures.Count==0)continue;
+            bool record=recordingClouds && Time.unscaledTime>=nextCloudCapture;
+            if(captures.Count==0 && !record)continue;
             var image=ScreenCapture.CaptureScreenshotAsTexture();
-            if(image!=null){File.WriteAllBytes(Path.Combine(Images,captures.Dequeue()+".png"),image.EncodeToPNG());Destroy(image);}
+            if(image!=null)
+            {
+                var bytes=image.EncodeToPNG();
+                if(captures.Count>0)File.WriteAllBytes(Path.Combine(Images,captures.Dequeue()+".png"),bytes);
+                if(record)
+                {
+                    File.WriteAllBytes(Images+"/CloudMotion/"+(cloudFrames++).ToString("000")+".png",bytes);
+                    nextCloudCapture=Time.unscaledTime+.05f;
+                }
+                Destroy(image);
+            }
         }
     }
     void OnDestroy(){Application.logMessageReceived-=Log;}

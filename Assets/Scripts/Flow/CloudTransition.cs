@@ -9,6 +9,7 @@ public sealed class CloudTransition : MonoBehaviour
 {
     static CloudTransition instance;
     public static bool Busy => instance != null && instance.busy;
+    public const float RevealSeconds=3.2f;
     bool busy;
     RectTransform[] banks;
     Canvas canvas;
@@ -38,15 +39,16 @@ public sealed class CloudTransition : MonoBehaviour
         clip.anchorMin=new Vector2(.5f,0);clip.anchorMax=new Vector2(.5f,1);
         clip.sizeDelta=new Vector2(405,0);
         banks = new RectTransform[4];
+        var artwork=Resources.Load<Texture2D>("CloudBillow");
         for (int i=0;i<banks.Length;i++)
         {
             var go = new GameObject("Cloud bank " + i, typeof(RectTransform), typeof(CanvasRenderer), typeof(CloudCurtainGraphic));
             go.transform.SetParent(clip,false);
             banks[i] = go.GetComponent<RectTransform>();
-            banks[i].sizeDelta = new Vector2(650,1200);
+            banks[i].sizeDelta = new Vector2(650,900);
             var graphic=go.GetComponent<CloudCurtainGraphic>();
-            graphic.color = Color.Lerp(new Color(.67f,.77f,.84f),Color.white,i/3f);
-            graphic.phase=i*1.7f;
+            graphic.color = Color.Lerp(new Color(.88f,.92f,.95f),Color.white,i/3f);
+            graphic.Configure(artwork,i);
         }
         canvas.enabled=false;
     }
@@ -100,19 +102,24 @@ public sealed class CloudTransition : MonoBehaviour
 
     IEnumerator Move(bool cover)
     {
-        const float duration=2.4f;
+        float duration=cover ? 2.4f : RevealSeconds;
         for(float elapsed=0;elapsed<duration;elapsed+=Time.unscaledDeltaTime)
         {
             float t=elapsed/duration;
             for(int i=0;i<banks.Length;i++)
             {
-                float p=Mathf.SmoothStep(0,1,Mathf.Clamp01((t-i*.065f)/.805f));
-                banks[i].anchoredPosition=new Vector2(Mathf.Sin(t*Mathf.PI*2+i)*14,
-                    cover ? Mathf.Lerp(1120,0,p) : Mathf.Lerp(0,-1120,p));
+                // The front bank leaves first, exposing the shaded banks behind it in succession.
+                int order=cover ? i : banks.Length-1-i;
+                float local=Mathf.Clamp01((t-order*.045f)/.865f);
+                float p=cover ? Mathf.SmoothStep(0,1,local) : local*(.72f+.28f*local);
+                float x=Mathf.Sin(t*Mathf.PI*2+i)*12*Mathf.Sin(t*Mathf.PI);
+                banks[i].anchoredPosition=new Vector2(Mathf.Round(x/2)*2,
+                    Mathf.Round((cover ? Mathf.Lerp(820,0,p) : Mathf.Lerp(0,-820,p))/2)*2);
             }
             yield return null;
         }
-        foreach(var bank in banks)bank.anchoredPosition=new Vector2(0,cover ? 0 : -1120);
+        // Every textured edge is below the viewport before the canvas switches off.
+        foreach(var bank in banks)bank.anchoredPosition=new Vector2(0,cover ? 0 : -820);
     }
 
     void OnDestroy()
@@ -122,44 +129,56 @@ public sealed class CloudTransition : MonoBehaviour
     }
 }
 
-/// <summary>Solid body and overlapping circular lobes: no transparent seam can expose a scene load.</summary>
+/// <summary>Overlapping PSX cloud sprites over an opaque backing; textured edges hide the handoff.</summary>
 public sealed class CloudCurtainGraphic : MaskableGraphic
 {
-    public float phase;
+    Texture2D texture;
+    Vector2 white;
+    int variant;
+    public override Texture mainTexture => texture!=null ? texture : base.mainTexture;
+
+    public void Configure(Texture2D artwork,int index)
+    {
+        texture=artwork;variant=index;
+        var pixels=texture.GetPixels32();int best=-1;
+        for(int i=0;i<pixels.Length;i++)
+        {
+            var p=pixels[i];int brightness=p.r+p.g+p.b;
+            if(p.a==255 && brightness>best)
+            {best=brightness;white=new Vector2((i%texture.width+.5f)/texture.width,(i/texture.width+.5f)/texture.height);}
+        }
+        SetMaterialDirty();SetVerticesDirty();
+    }
+
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         vh.Clear();
-        var r=rectTransform.rect;
-        Quad(vh,new Vector2(r.xMin,r.yMin+80),new Vector2(r.xMax,r.yMax-80));
-        for(int i=0;i<12;i++)
+        if(texture==null)return;
+        Quad(vh,new Vector2(-325,-375),new Vector2(325,375),white,white);
+        for(int row=0;row<9;row++)
         {
-            float x=Mathf.Lerp(r.xMin,r.xMax,i/11f);
-            float radius=66+Mathf.Sin(i*2.7f+phase)*22;
-            float billow=Mathf.Sin(i*1.9f+phase)*20;
-            Circle(vh,new Vector2(x,r.yMin+92+billow),radius);
-            Circle(vh,new Vector2(x+18,r.yMax-92+billow),radius*1.08f);
-            // Smaller overlapping tufts break up the large scallops into soft billows.
-            Circle(vh,new Vector2(x+26,r.yMin+69+billow),radius*.57f);
-            Circle(vh,new Vector2(x-16,r.yMax-69+billow),radius*.57f);
+            float y=Mathf.Lerp(-355,355,row/8f);
+            for(int col=0;col<4;col++)
+            {
+                float seed=row*17.13f+col*7.71f+variant*11.37f;
+                float x=-330+col*220+Mathf.Sin(seed)*65;
+                bool edge=row==0 || row==8;
+                float width=350+Mathf.Sin(seed*1.9f)*65;
+                float height=edge ? 190 : 195+Mathf.Cos(seed*.7f)*30;
+                float cy=y+(edge ? 0 : Mathf.Sin(seed*1.3f)*18);
+                bool mirror=(row+col+variant)%2==0;
+                // Both exposed edges carry rounded billows; the lower row faces downwards.
+                Vector2 uv0=new Vector2(mirror ? 1 : 0,row==0 ? 1 : 0);
+                Vector2 uv1=new Vector2(mirror ? 0 : 1,row==0 ? 0 : 1);
+                Quad(vh,new Vector2(x-width/2,cy-height/2),new Vector2(x+width/2,cy+height/2),uv0,uv1);
+            }
         }
     }
-    void Quad(VertexHelper vh,Vector2 lo,Vector2 hi)
+    void Quad(VertexHelper vh,Vector2 lo,Vector2 hi,Vector2 uv0,Vector2 uv1)
     {
         int k=vh.currentVertCount;
-        vh.AddVert(new Vector3(lo.x,lo.y),color,Vector2.zero);vh.AddVert(new Vector3(lo.x,hi.y),color,Vector2.zero);
-        vh.AddVert(new Vector3(hi.x,hi.y),color,Vector2.zero);vh.AddVert(new Vector3(hi.x,lo.y),color,Vector2.zero);
+        vh.AddVert(new Vector3(lo.x,lo.y),color,uv0);vh.AddVert(new Vector3(lo.x,hi.y),color,new Vector2(uv0.x,uv1.y));
+        vh.AddVert(new Vector3(hi.x,hi.y),color,uv1);vh.AddVert(new Vector3(hi.x,lo.y),color,new Vector2(uv1.x,uv0.y));
         vh.AddTriangle(k,k+1,k+2);vh.AddTriangle(k,k+2,k+3);
-    }
-    void Circle(VertexHelper vh,Vector2 center,float radius)
-    {
-        int k=vh.currentVertCount;
-        vh.AddVert(center,color,Vector2.zero);
-        const int segments=40;
-        for(int j=0;j<=segments;j++)
-        {
-            float a=j*Mathf.PI*2/segments;
-            vh.AddVert(center+new Vector2(Mathf.Cos(a),Mathf.Sin(a))*radius,color,Vector2.zero);
-            if(j>0)vh.AddTriangle(k,k+j,k+j+1);
-        }
     }
 }
