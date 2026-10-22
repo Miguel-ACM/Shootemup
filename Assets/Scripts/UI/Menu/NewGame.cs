@@ -9,6 +9,7 @@ public class NewGame : AMenuElement
         starting = true;
         GameRules.StartNewRun();
         LevelRun.StartRandom();
+        BGMManager.PlayLevelMusic(LevelRun.Current);
         
         CloudTransition.Load("L1");
     }

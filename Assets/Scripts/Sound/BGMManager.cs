@@ -1,38 +1,58 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BGMManager : MonoBehaviour
 {
-    public static AudioClip greenlandsOST, stage1bossOST, stageCompleteOST;
+    static readonly Dictionary<string, AudioClip> tracks = new Dictionary<string, AudioClip>();
     static AudioSource audioSource;
-    // Start is called before the first frame update
+    void Awake()
+    {
+        var sceneSource = GetComponent<AudioSource>();
+        sceneSource.playOnAwake = false;
+        sceneSource.Stop();
+        if (audioSource == null)
+        {
+            // Keep the selected track playing through the cloud curtain and scene load.
+            var music = new GameObject("Persistent level music");
+            DontDestroyOnLoad(music);
+            audioSource = music.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 0;
+            audioSource.priority = 1;
+        }
+    }
+
     void Start()
     {
-        audioSource = GetComponent<AudioSource>();
-       
-        greenlandsOST = Resources.Load<AudioClip>("Music/greenlandsOST");
-        stage1bossOST = Resources.Load<AudioClip>("Music/stage1bossOST");
-        stageCompleteOST = Resources.Load<AudioClip>("Music/stageComplete");
-        PlayBGM("greenlandsOST");
+        if (SceneManager.GetActiveScene().name == "Title") StopBGM();
+        else if (!audioSource.isPlaying) PlayLevelMusic(LevelRun.Current);
+    }
+
+    public static void PlayLevelMusic(LevelId level)
+    {
+        PlayBGM(level.ToString().ToLowerInvariant());
     }
 
     public static void PlayBGM(string bgm)
     {
-        switch (bgm)
+        if (audioSource == null) return;
+        if (!tracks.TryGetValue(bgm, out var clip) || clip == null)
         {
-            case "greenlandsOST":
-                audioSource.clip = greenlandsOST;
-                break;
-            case "stage1bossOST":
-                audioSource.clip = stage1bossOST;
-                break;
-            case "stageComplete":
-                audioSource.clip = stageCompleteOST;
-                break;
+            clip = Resources.Load<AudioClip>("Music/" + bgm);
+            if (clip == null)
+            {
+                Debug.LogWarning("Missing music track: Music/" + bgm);
+                return;
+            }
+            tracks[bgm] = clip;
         }
-        audioSource.volume = 0.1f;
         audioSource.Stop();
+        audioSource.clip = clip;
+        audioSource.volume = 0.1f;
+        audioSource.pitch = 1f;
+        audioSource.loop = bgm != "stageComplete";
         audioSource.Play();
     }
 
@@ -58,6 +78,7 @@ public class BGMManager : MonoBehaviour
             audioSource.volume = Mathf.Lerp(start, 0, currentTime / duration);
             yield return null;
         }
+        audioSource.Stop();
         yield break;
     }
 

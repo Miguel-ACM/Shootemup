@@ -117,7 +117,7 @@ public class WaveOrchestrer : MonoBehaviour
     private void SpawnBoss()
     {
         // Camera.WhiteScreenJitter(0.5f);
-        BGMManager.PlayBGM("stage1bossOST");
+        BGMManager.PlayBGM("boss");
         GameObject bossGO = Instantiate(boss);
         bossGO.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
         bossGO.transform.position = new Vector3(0f, 11.52f, 1f);
@@ -258,8 +258,7 @@ public class WaveOrchestrer : MonoBehaviour
             isWaveComingOut=false;
             Camera.WhiteScreenJitter(0.5f);
             EraseAllBullets();
-            BGMManager.SetLoop(false);
-            StartCoroutine(BGMManager.FadeOutSongAndPlay(1.4f, "stageComplete", pitch: 1.0f));
+            StartCoroutine(BGMManager.FadeOutSong(1.4f));
             StartCoroutine(ChooseNextRoute());
         }
         else if (currentWaveNumber == waveNumber)
@@ -280,6 +279,7 @@ public class WaveOrchestrer : MonoBehaviour
 
     void TravelToLevel(LevelId next)
     {
+        BGMManager.PlayLevelMusic(next);
         GameRules.playerDisabled=false;
         CloudTransition.Change(()=>
         {
@@ -297,7 +297,6 @@ public class WaveOrchestrer : MonoBehaviour
             currentWaveNumber=0;currentWaveEnemies=0;currentWaveKilledEnemies=0;
             waveTime=clearTime=0;currentUnit=null;currentWave=null;stopingWave=false;
             choosingRoute=false;GameRules.playerDisabled=false;
-            BGMManager.SetLoop(true);BGMManager.PlayBGM("greenlandsOST");
             BeginWaves();
         });
     }
