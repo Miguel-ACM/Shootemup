@@ -11,6 +11,9 @@ public sealed class IndustrialHUD : MonoBehaviour
     Image[] healthCells,manaCells,chainCells,bossCells;
     RectTransform bossPanel;
     RectTransform sidePanel;
+    CanvasGroup sideGroup;
+    float entranceAge;
+    public bool EntranceComplete => entranceAge>=2.65f;
     Boss boss;
     float nextScan,nextUpdate;
     float bottomLimit,topLimit;
@@ -42,41 +45,59 @@ public sealed class IndustrialHUD : MonoBehaviour
         score=TextAt(frame.transform,"000000000",12,12,11,Steel);
         chain=TextAt(frame.transform,"",333,12,10,Amber);
         chainCells=Cells(frame.transform,333,28,6,7,Amber);
-        sidePanel=Panel(frame.transform,"Side instruments",Color.clear); // no box behind the life/energy bars
+        sidePanel=Panel(frame.transform,"Side instruments",Dark);
+        sideGroup=sidePanel.gameObject.AddComponent<CanvasGroup>();sideGroup.alpha=0;
         sidePanel.anchorMin=sidePanel.anchorMax=Vector2.zero;
         sidePanel.pivot=Vector2.zero;
         sidePanel.sizeDelta=new Vector2(40,248);
         sidePanel.anchoredPosition=new Vector2(-44,6);
+        Place(Panel(sidePanel,"Left casing",new Color(.21f,.27f,.27f)),1,3,1,242);
+        Place(Panel(sidePanel,"Right casing",new Color(.21f,.27f,.27f)),38,3,1,242);
+        Rule(sidePanel,3,245,34,new Color(.21f,.27f,.27f));
         Rule(sidePanel,3,3,34,Steel);
         Place(Panel(sidePanel,"Health cross",Steel),7,16,11,3);
         Place(Panel(sidePanel,"Health cross stem",Steel),11,12,3,11);
         Place(Panel(sidePanel,"Reactor indicator",Cyan),25,13,7,8);
         healthCells=VerticalCells(sidePanel,8,34,24,10,7,Steel);
         manaCells=VerticalCells(sidePanel,25,34,24,7,7,Cyan);
+        Fill(healthCells,0,Steel);Fill(manaCells,0,Cyan);
         bossPanel=Panel(frame.transform,"Boss hull",Dark);Place(bossPanel,12,43,380,13);
         bossCells=Cells(bossPanel,5,4,32,9,Amber);bossPanel.gameObject.SetActive(false);
     }
 
     void LateUpdate()
     {
-        if(sidePanel!=null)sidePanel.anchoredPosition=new Vector2((float)Screen.width/Screen.height>.72f ? -44 : 6,6);
+        if(sidePanel!=null)
+        {
+            float enter=Mathf.SmoothStep(0,1,entranceAge/.65f);
+            sideGroup.alpha=enter;
+            sidePanel.anchoredPosition=new Vector2((float)Screen.width/Screen.height>.72f ? -44 : 6,Mathf.Lerp(-30,6,enter));
+        }
         if(player==null || !player.enabled)return;
         var position=player.transform.position;position.y=Mathf.Clamp(position.y,bottomLimit,topLimit);player.transform.position=position;
     }
 
     void Update()
     {
+        if(player!=null)
+        {
+            entranceAge+=Time.deltaTime;
+            // Charge the instruments one segment at a time, without changing the player's resources.
+            int healthLimit=Mathf.FloorToInt(Mathf.Clamp01((entranceAge-.75f)/.84f)*24);
+            int energyLimit=Mathf.FloorToInt(Mathf.Clamp01((entranceAge-1.72f)/.84f)*24);
+            Fill(healthCells,player.health/Mathf.Max(1,player.maxHealth),Steel,healthLimit);
+            Fill(manaCells,player.mana/Mathf.Max(1,player.maxMana),Cyan,energyLimit);
+        }
         if(player==null || Time.unscaledTime<nextUpdate)return;nextUpdate=Time.unscaledTime+.1f;
         score.text=Score.CurrentScore.ToString("000000000");chain.text=Score.CurrentMultiplier>1 ? "x"+Score.CurrentMultiplier : "";
-        Fill(healthCells,player.health/Mathf.Max(1,player.maxHealth),Steel);Fill(manaCells,player.mana/Mathf.Max(1,player.maxMana),Cyan);
         Fill(chainCells,Score.GetPercentageNextMultiplier(),Amber);
         if(Time.unscaledTime>nextScan){nextScan=Time.unscaledTime+1;boss=FindFirstObjectByType<Boss>();}
         bossPanel.gameObject.SetActive(boss!=null);
         if(boss!=null)Fill(bossCells,boss.HealthFraction,Amber);
     }
 
-    static void Fill(Image[] cells,float value,Color color)
-    {int count=Mathf.CeilToInt(Mathf.Clamp01(value)*cells.Length);for(int i=0;i<cells.Length;i++)cells[i].color=i<count ? color : new Color(.18f,.22f,.21f);}
+    static void Fill(Image[] cells,float value,Color color,int limit=int.MaxValue)
+    {int count=Mathf.Min(limit,Mathf.CeilToInt(Mathf.Clamp01(value)*cells.Length));for(int i=0;i<cells.Length;i++)cells[i].color=i<count ? color : new Color(.18f,.22f,.21f);}
 
     Image[] Cells(Transform parent,float x,float y,int count,float width,Color color)
     {
