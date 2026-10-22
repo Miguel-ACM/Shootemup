@@ -82,6 +82,7 @@ public class Menu : MonoBehaviour
 
     public void setMenuOpen(bool open)
     {
+        if (CloudTransition.Busy) return;
         menuOpen = open;
         panel.color = menuOpen ? new Color(.035f,.045f,.045f,.91f) : Color.clear;
         if (menuOpen) {
@@ -99,7 +100,7 @@ public class Menu : MonoBehaviour
 
     void OnAccept(InputAction.CallbackContext context)
     {
-        if (menuOpen && CurrentElement != null)
+        if (menuOpen && !CloudTransition.Busy && CurrentElement != null)
         {
             CurrentElement.OnAccept();
         }
@@ -113,3 +114,4 @@ public class Menu : MonoBehaviour
         input.Dispose();
     }
 }
+

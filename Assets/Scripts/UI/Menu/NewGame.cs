@@ -8,7 +8,8 @@ public class NewGame : AMenuElement
         if (starting) return;
         starting = true;
         GameRules.StartNewRun();
-        Time.timeScale = 1f;
-        UnityEngine.SceneManagement.SceneManager.LoadScene("L1");
+        
+        CloudTransition.Load("L1");
     }
 }
+
