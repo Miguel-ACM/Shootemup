@@ -38,7 +38,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
             if(!more)break;
             yield return current;
         }
-        File.WriteAllText(Output,"PASS: main menu; random starts and unique route pairs (1000 trials); neutral/switch/frame-rate charge checks; five environments; cloud cover/reveal; actual boss death; both spatial route selections; pause; player/stats/equipment preservation; next-stage waves; return to menu and new-run reset.\n"+string.Join("\n",errors));
+        File.WriteAllText(Output,"PASS: live ship/background movement during title and cloud reveal; two-label title with the game font and Level x eyebrow; main menu; random starts and unique route pairs (1000 trials); neutral/switch/frame-rate charge checks; five environments; cloud cover/reveal; actual boss death; both spatial route selections; pause; player/stats/equipment preservation; next-stage waves; return to menu and new-run reset.\n"+string.Join("\n",errors));
         UnityEditor.EditorApplication.Exit(errors.Count==0 ? 0 : 1);
     }
     IEnumerator Run()
@@ -51,8 +51,28 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Check(CloudTransition.Busy,"New game bypassed the clouds");
         yield return new WaitForSecondsRealtime(1.1f);Capture("02-white-cover");
         float until=Time.realtimeSinceStartup+12;
+        while(FindAnyObjectByType<LevelReveal>()==null && Time.realtimeSinceStartup<until)yield return null;
+        yield return null;
+        var reveal=FindAnyObjectByType<LevelReveal>();
+        Check(reveal!=null && Time.timeScale==1,"Level title paused gameplay");
+        var labels=reveal.GetComponentsInChildren<TMPro.TextMeshProUGUI>();
+        Check(labels.Length==2,"Level title contains extra text");
+        Check(Array.Exists(labels,l=>l.text=="Level "+LevelRun.Stage),"Missing small Level x eyebrow");
+        foreach(var label in labels)Check(label.font==FindAnyObjectByType<Dialog>().font,"Level title uses a different font from the game");
+        var liveShip=FindAnyObjectByType<Shipcontroller>();float beforeX=liveShip.transform.position.x;
+        var liveBackground=(MonoBehaviour)FindAnyObjectByType<LevelEnvironment>() ?? FindAnyObjectByType<PSXGrassField>();
+        float beforeTravel=(float)Get(liveBackground,"travel");
+        var keyboard=UnityEngine.InputSystem.InputSystem.AddDevice<UnityEngine.InputSystem.Keyboard>();
+        UnityEngine.InputSystem.InputSystem.QueueStateEvent(keyboard,new UnityEngine.InputSystem.LowLevel.KeyboardState(UnityEngine.InputSystem.Key.RightArrow));
+        yield return new WaitForSecondsRealtime(.3f);
+        UnityEngine.InputSystem.InputSystem.QueueStateEvent(keyboard,new UnityEngine.InputSystem.LowLevel.KeyboardState());
+        yield return null;
+        UnityEngine.InputSystem.InputSystem.RemoveDevice(keyboard);
+        Check(liveShip.transform.position.x>beforeX+.4f,"Ship cannot move during the title/cloud reveal");
+        Check(!Mathf.Approximately((float)Get(liveBackground,"travel"),beforeTravel),"Background stopped during the title");
         while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
         Check(!CloudTransition.Busy && Time.timeScale==1,"Menu-to-game transition stalled");
+        yield return new WaitForSecondsRealtime(.1f);Capture("02-live-title");
         Check(SceneManager.GetActiveScene().name=="L1","New game did not load gameplay");
         var ship=FindAnyObjectByType<Shipcontroller>();Check(ship!=null,"Player missing");
         var weapon=ship.GetComponentInChildren<AWeapon>();

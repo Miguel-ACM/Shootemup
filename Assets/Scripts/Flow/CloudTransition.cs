@@ -79,7 +79,12 @@ public sealed class CloudTransition : MonoBehaviour
         // Give new scene objects a frame to initialise while the screen is completely white.
         yield return null;
         yield return new WaitForSecondsRealtime(.18f);
-        if(SceneManager.GetActiveScene().name=="L1") LevelReveal.Show();
+        if(SceneManager.GetActiveScene().name=="L1")
+        {
+            // The title is an overlay on live gameplay, including while the clouds uncover it.
+            Time.timeScale=1;
+            LevelReveal.Show();
+        }
         yield return Move(false);
         canvas.enabled=false;
         busy=false;

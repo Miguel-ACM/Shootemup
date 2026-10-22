@@ -1,0 +1,2 @@
+PASS: Time.timeScale=1 during title and cloud reveal; queued keyboard input moves ship; background travel advances; exactly two text labels; Level x eyebrow; font matches the existing game font.
+PASS: main menu; random starts and unique route pairs (1000 trials); neutral/switch/frame-rate charge checks; five environments; cloud cover/reveal; actual boss death; both spatial route selections; pause; player/stats/equipment preservation; next-stage waves; return to menu and new-run reset.
