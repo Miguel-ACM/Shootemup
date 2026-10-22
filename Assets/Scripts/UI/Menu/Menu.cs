@@ -99,7 +99,7 @@ public class Menu : MonoBehaviour
 
     void OnAccept(InputAction.CallbackContext context)
     {
-        if (CurrentElement != null)
+        if (menuOpen && CurrentElement != null)
         {
             CurrentElement.OnAccept();
         }
