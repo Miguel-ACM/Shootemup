@@ -88,7 +88,7 @@ public sealed class LevelEnvironment : MonoBehaviour
                 var near=Add(kit[level+"Near"+i],transform,new Vector3(0,(i-1)*SectionLength,76),-25);
                 near.localScale=new Vector3(.8f,1,1);foreground.Add(near);
             }
-            Color tint=level==LevelId.Snow ? new Color(.74f,.85f,.89f,.22f) : level==LevelId.City ? new Color(.36f,.46f,.52f,.09f) : new Color(.26f,.40f,.43f,.12f);
+            Color tint=level==LevelId.Snow ? new Color(.74f,.85f,.89f,.22f) : level==LevelId.City ? new Color(.24f,.30f,.34f,.19f) : new Color(.26f,.40f,.43f,.12f);
             AddAtmosphere("Low drifting haze",0,44,tint,1.9f,level==LevelId.Snow ? .55f : .20f);
             if(level==LevelId.Snow)
             {
@@ -125,12 +125,14 @@ public sealed class LevelEnvironment : MonoBehaviour
 
     void BuildTraffic()
     {
-        for(int i=0;i<18;i++)
+        for(int i=0;i<8;i++)
         {
-            float lane=(i%3-1)*6.8f+(i%2==0 ? -.22f : .22f);
+            // Match the authored avenue centres after the district's .8 horizontal scale.
+            float avenue=i<4 ? 0 : i<6 ? -6.8f : 6.8f;
+            float lane=avenue+(i%2==0 ? -.42f : .42f);
             var car=Add(kit[i%3==0 ? "CityTaxi" : "CitySedan"],transform,new Vector3(lane,Range(-20,40),88),-34);
-            bool oncoming=i%2==0;car.localRotation=Quaternion.Euler(0,0,oncoming ? 180 : 0);car.localScale=new Vector3(.8f,1,1);
-            traffic.Add(new Traffic{transform=car,x=lane,y=car.localPosition.y,speed=oncoming ? 3.1f : 6.2f});
+            bool oncoming=i%2==0;car.localRotation=Quaternion.Euler(0,0,oncoming ? 0 : 180);car.localScale=new Vector3(.8f,1,1);
+            traffic.Add(new Traffic{transform=car,x=lane,y=car.localPosition.y,speed=oncoming ? 6.2f : 3.1f});
         }
     }
 

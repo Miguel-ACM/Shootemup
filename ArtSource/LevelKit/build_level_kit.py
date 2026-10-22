@@ -146,68 +146,79 @@ for section in range(4):
             near.box(side*2.9,y,2.88,.7,.12,.06,(.65,.49,.20))
     ground.finish((section*24,28,0));detail.finish((section*24,28,0));near.finish((section*24,28,0))
 
-# CITY: Manhattan-like blocks, brick infill, setbacks, fire escapes, water tanks and rooftop plant.
+# CITY: a legible avenue grid with restrained, varied New York blocks below the flight lane.
 for section in range(4):
     rng=random.Random(3300+section)
-    ground=Builder('CityGround'+str(section),(.22,.42));detail=Builder('CityDetail'+str(section),(.22,.42));near=Builder('CityNear'+str(section),(.22,.42))
-    ground.box(0,0,-.25,22,20,.5,(.085,.115,.14))
+    ground=Builder('CityGround'+str(section),(.14,.24));detail=Builder('CityDetail'+str(section),(.14,.24));near=Builder('CityNear'+str(section),(.14,.24))
+    ground.box(0,0,-.25,22,20,.5,(.075,.095,.108))
+    # Three continuous avenues meet one cross street per section. Markings stop at junctions.
     for x in [-8.5,0,8.5]:
-        for lane in [-.11,.11]:ground.box(x+lane,0,.015,.035,20,.02,(.57,.46,.25))
-        for y in range(-9,10,2):ground.box(x+.53,y,.025,.04,.8,.02,(.54,.59,.54))
-    for y in [0]:
-        ground.box(0,y,.02,22,2.1,.03,(.10,.14,.16))
-        for x in [-8.5,0,8.5]:
-            for k in range(7):ground.box(x-1.0+k*.33,y+.84,.045,.15,.48,.025,(.64,.67,.60))
-    for col,x in enumerate([-7.0,-4.45,-1.9,1.9,4.45,7.0]):
-        for row,y in enumerate([-7.4,-3.3,3.3,7.4]):
-            w=rng.uniform(1.7,2.25);d=rng.uniform(2.3,3.2);h=rng.uniform(1.2,4.0)
-            if col in [2,3] and row==(section%4): h=5.3
-            c=rng.choice([(.30,.27,.24),(.32,.36,.36),(.21,.29,.34),(.37,.31,.28),(.26,.31,.33)])
-            ground.box(x,y,.05,w+.3,d+.3,.12,(.34,.37,.34))
-            # Cast silhouette under each tower, in the same projection as the raised architecture.
-            ground.face([(x-w/2,y-d/2,.12),(x+w/2,y-d/2,.12),(x+w/2-h*.25,y-d/2-h*.38,.12),(x-w/2-h*.25,y-d/2-h*.38,.12)],(.035,.065,.085))
-            detail.box(x,y,h/2,w,d,h,c)
-            detail.box(x,y,h+.055,w+.1,d+.1,.11,tuple(v+.10 for v in c))
-            detail.box(x,y,h+.12,w-.16,d-.16,.05,(.19,.25,.27))
-            roof=h+.15
-            if h>4:
-                for step in range(3):
-                    ww=w*(.80-step*.18);dd=d*(.82-step*.18)
-                    detail.box(x,y,roof+.25,ww,dd,.5,tuple(v+.06 for v in c));roof+=.5
-                detail.cone(x,y,roof,.11,1.2,(.55,.61,.60),5)
-            else:
-                for n in range(2):
-                    detail.box(x+(n-.5)*w*.36,y+.25,roof+.13,w*.25,.45,.26,(.36,.42,.42))
-                    for k in range(3):detail.box(x+(n-.5)*w*.36,y+.1+k*.13,roof+.27,w*.20,.025,.012,(.14,.22,.25))
-                if rng.random()<.55:
-                    tx=x+w*.22;ty=y-d*.18
-                    for sx in [-1,1]:
-                        for sy in [-1,1]:detail.box(tx+sx*.18,ty+sy*.18,roof+.2,.035,.035,.4,(.24,.30,.30))
-                    detail.cylinder(tx,ty,roof+.38,.28,.55,(.36,.31,.25))
-                    detail.cone(tx,ty,roof+.93,.31,.20,(.22,.29,.29),8)
-            # Window rows are quads, not thousands of tiny cubes.
-            for floor in range(1,int(h/.42)):
-                z=floor*.42
-                for wx in [-.58,0,.58]:
-                    light=rng.choice([(.60,.56,.35),(.14,.24,.30),(.19,.32,.38),(.12,.20,.26)])
-                    xx=x+wx*w/2
-                    for sy in [-1,1]:
-                        yy=y+sy*(d/2+.003)
-                        detail.face([(xx-.12,yy,z-.1),(xx+.12,yy,z-.1),(xx+.12,yy,z+.1),(xx-.12,yy,z+.1)],light)
-                if floor%2==0:
-                    detail.box(x-w/2-.06,y-d*.2,z,.12,d*.34,.04,(.14,.20,.22))
-            detail.box(x,y-d/2-.02,.32,.33,.045,.5,(.15,.22,.24))
-            if (row+col+section)%5==0:detail.box(x,y-d/2-.1,.73,w*.7,.4,.09,(.24,.37,.38))
-    # Near rooftop silhouettes frame the flight lane without filling the centre.
+        ground.box(x,0,.01,2.6,20,.02,(.085,.105,.116))
+        for y0,y1 in [(-10,-1.7),(1.7,10)]:
+            for lane in [-.065,.065]:ground.box(x+lane,(y0+y1)/2,.028,.025,y1-y0,.015,(.30,.28,.19))
+            for y in [-8,-5,-2.5,2.5,5,8]:
+                if y0<y<y1:
+                    for sx in [-1,1]:ground.box(x+sx*.75,y,.03,.025,.5,.012,(.29,.32,.31))
+    ground.box(0,0,.018,22,2.6,.024,(.085,.105,.116))
+    for avenue in [-8.5,0,8.5]:
+        for side in [-1,1]:
+            for k in range(6):
+                ground.box(avenue-.95+k*.38,side*1.45,.04,.19,.42,.018,(.35,.38,.36))
     for side in [-1,1]:
-        for y in [-6.5,6.5]:
-            near.box(side*9.0,y,3.8,2.0,3.2,1.0,(.16,.23,.27))
-            near.cylinder(side*8.7,y,4.4,.45,.9,(.31,.28,.23))
-            near.cone(side*8.7,y,5.3,.49,.35,(.19,.26,.29),8)
+        for row,y in enumerate([-5.35,5.35]):
+            # Connected sidewalk islands follow each block, leaving cross streets completely clear.
+            ground.box(side*4.25,y,.055,5.9,7.5,.11,(.20,.235,.24))
+            for col in range(2):
+                x=side*(2.8+col*3.0)
+                style=(section+row*2+col+(side>0))%4
+                w=2.35;d=6.0;h=[1.25,2.1,3.0,2.6][style]+rng.uniform(-.12,.12)
+                c=[(.22,.205,.195),(.195,.225,.235),(.20,.235,.25),(.235,.23,.21)][style]
+                if style==0:
+                    # Low brick warehouses: broad quiet roofs and a single clerestory band.
+                    detail.box(x,y,h/2,w,d,h,c)
+                    detail.box(x,y,h+.06,w+.08,d+.08,.12,(.25,.27,.27))
+                    detail.box(x,y,h+.14,w-.18,d-.18,.035,(.16,.19,.20))
+                    detail.box(x,y+1.3,h+.22,1.5,.6,.17,(.215,.25,.26))
+                elif style==1:
+                    # Courtyard apartments: a long wing with a short return, open to the street.
+                    detail.box(x-side*.4,y,h/2,w*.64,d,h,c)
+                    detail.box(x+side*.55,y+2,h/2,w*.5,2,h,c)
+                    detail.box(x-side*.4,y,h+.05,w*.69,d+.08,.1,(.255,.28,.28))
+                    detail.box(x+side*.55,y+2,h+.05,w*.54,2.08,.1,(.255,.28,.28))
+                elif style==2:
+                    # Art Deco setbacks change the skyline without filling the avenue with shadows.
+                    detail.box(x,y,h*.36,w,d,h*.72,c)
+                    detail.box(x,y,h*.82,w*.76,d*.78,h*.28,(.235,.265,.275))
+                    detail.box(x,y,h+.16,w*.48,d*.53,.32,(.255,.28,.29))
+                    if row==section%2:
+                        detail.box(x,y,h+.55,.065,.065,.65,(.30,.33,.33))
+                else:
+                    # Brownstone rows: staggered three-part roofs with subtle brick variation.
+                    for unit in range(3):
+                        yy=y+(unit-1)*1.96;hh=h+(unit%2)*.3
+                        cc=tuple(v*(.94+unit*.035) for v in c)
+                        detail.box(x,yy,hh/2,w,1.9,hh,cc)
+                        detail.box(x,yy,hh+.06,w+.06,1.94,.12,(.27,.275,.26))
+                # A few dark window bands replace the former sparkling high-contrast window grid.
+                front=y-d/2-.006
+                for floor in range(1,max(2,int(h/.65))):
+                    z=floor*.6
+                    for xx in [-.65,0,.65]:
+                        detail.face([(x+xx-.13,front,z-.10),(x+xx+.13,front,z-.10),(x+xx+.13,front,z+.10),(x+xx-.13,front,z+.10)],(.125,.17,.19))
+                if style==0 and col==section%2:
+                    # Sparse water towers keep the city's identity without rooftop clutter everywhere.
+                    tx=x+.45;ty=y+.7
+                    for sx in [-1,1]:
+                        for sy in [-1,1]:detail.box(tx+sx*.18,ty+sy*.18,h+.3,.035,.035,.55,(.17,.20,.20))
+                    detail.cylinder(tx,ty,h+.5,.3,.55,(.255,.235,.20))
+                    detail.cone(tx,ty,h+1.05,.33,.20,(.18,.22,.23),8)
+    # Distant edge masses give extra parallax; the central avenue stays open.
+    for side in [-1,1]:
+        near.box(side*9.8,4.8,1.7,1.6,5.8,3.4,(.15,.19,.21))
+        near.box(side*9.8,4.8,3.45,1.68,5.88,.1,(.21,.24,.25))
     ground.finish((section*24,56,0));detail.finish((section*24,56,0));near.finish((section*24,56,0))
-
 # Instanced moving road traffic.
-for name,c in [('CityTaxi',(.71,.52,.16)),('CitySedan',(.24,.36,.43))]:
+for name,c in [('CityTaxi',(.36,.30,.16)),('CitySedan',(.16,.23,.27))]:
     b=Builder(name,(.22,.42));b.box(0,0,.12,.28,.65,.20,c);b.box(0,.02,.25,.24,.31,.17,c)
     b.box(0,-.10,.34,.21,.07,.015,(.14,.25,.30));b.box(0,.14,.34,.21,.07,.015,(.14,.25,.30))
     for side in [-1,1]:b.box(side*.1,-.3,.2,.04,.025,.035,(.76,.78,.58))
