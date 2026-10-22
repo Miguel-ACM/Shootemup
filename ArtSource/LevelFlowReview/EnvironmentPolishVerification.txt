@@ -1,0 +1,10 @@
+PASS: all five backgrounds follow ship X in the Fields direction; layered foreground response; edge overscan; continuous 80-unit section wrap; no scenery colliders; live geometry and shaders; rendered horizontal sweep for every level. Captured 615 frames.
+Fields: left/centre/right parallax, full-width coverage and 120 motion frames checked.
+Tunnel: downward travel 10,20 units/sec.
+Tunnel: left/centre/right parallax, full-width coverage and 120 motion frames checked.
+Snow: downward travel 4,40 units/sec.
+Snow: left/centre/right parallax, full-width coverage and 120 motion frames checked.
+Thunder: left/centre/right parallax, full-width coverage and 120 motion frames checked.
+City: downward travel 4,40 units/sec.
+City: left/centre/right parallax, full-width coverage and 120 motion frames checked.
+Additional checks: snow terrain contains no river/dark channel; 1600 snowflakes and two snowdust layers; eight city vehicles aligned with the authored avenues and facing the correct lane direction; tunnel deck average colour below 0.12; tunnel travel 10.2 units/sec. Blender kit reduced City geometry from 32110 to 7194 triangles and Tunnel from 23104 to 12504 triangles.

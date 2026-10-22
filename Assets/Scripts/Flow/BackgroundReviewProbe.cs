@@ -60,6 +60,39 @@ public sealed class BackgroundReviewProbe : MonoBehaviour
             var field=FindAnyObjectByType<PSXGrassField>(FindObjectsInactive.Include);
             float parallax=field.sideParallax;
             var environment=FindAnyObjectByType<LevelEnvironment>();
+            if(environment!=null && level!=LevelId.Thunder)
+            {
+                float before=Get<float>(environment,"travel"),start=Time.time;
+                yield return new WaitForSeconds(.3f);
+                float speed=Mathf.Repeat(Get<float>(environment,"travel")-before,80)/(Time.time-start);
+                Check(Mathf.Abs(speed-(level==LevelId.Tunnel ? 10.2f : 4.4f))<.15f,"Incorrect scenery scroll speed: "+level+" "+speed);
+                results.Add(level+": downward travel "+speed.ToString("F2")+" units/sec.");
+                if(level==LevelId.Snow)
+                {
+                    Check(Get<Array>(environment,"flakes").Length==1600,"Snowfall density was not increased");
+                    var powders=environment.GetComponentsInChildren<MeshRenderer>().Where(r=>r.sharedMaterial.HasProperty("_Kind") && r.sharedMaterial.GetFloat("_Kind")==3).ToArray();
+                    Check(powders.Length==2,"Snowdust layers missing");
+                    var snow=environment.GetComponentsInChildren<MeshFilter>().First(f=>f.sharedMesh.name=="SnowGround0");
+                    Check(snow.sharedMesh.colors.All(c=>c.r>.7f && c.g>.7f),"Snow terrain contains a river or dark channel");
+                }
+                if(level==LevelId.City)
+                {
+                    var cars=environment.GetComponentsInChildren<Transform>().Where(t=>t.name=="CityTaxi" || t.name=="CitySedan").ToArray();
+                    Check(cars.Length==8,"City traffic is too dense");
+                    foreach(var car in cars)
+                    {
+                        float lane=car.localPosition.x-environment.HorizontalOffset;
+                        Check(new[]{-6.8f,0,6.8f}.Any(avenue=>Mathf.Abs(Mathf.Abs(lane-avenue)-.42f)<.001f),"Traffic is not on an avenue");
+                        float centre=new[]{-6.8f,0,6.8f}.OrderBy(avenue=>Mathf.Abs(lane-avenue)).First();
+                        Check(Mathf.Abs(Mathf.DeltaAngle(car.localEulerAngles.z,lane<centre ? 0 : 180))<.01f,"Traffic faces the wrong direction in its lane");
+                    }
+                }
+                if(level==LevelId.Tunnel)
+                {
+                    var deck=environment.GetComponentsInChildren<MeshFilter>().First(f=>f.sharedMesh.name=="TunnelGround0");
+                    Check(deck.sharedMesh.colors.Average(c=>(c.r+c.g+c.b)/3)<.12f,"Tunnel deck remains too bright");
+                }
+            }
             foreach(float x in new[]{-Camera.RightLimit,0f,Camera.RightLimit})
             {
                 ship.transform.position=new Vector3(x,-4,20);yield return null;yield return null;

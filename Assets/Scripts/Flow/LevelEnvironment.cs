@@ -88,7 +88,7 @@ public sealed class LevelEnvironment : MonoBehaviour
                 var near=Add(kit[level+"Near"+i],transform,new Vector3(0,(i-1)*SectionLength,76),-25);
                 near.localScale=new Vector3(.8f,1,1);foreground.Add(near);
             }
-            Color tint=level==LevelId.Snow ? new Color(.74f,.85f,.89f,.22f) : level==LevelId.City ? new Color(.24f,.30f,.34f,.19f) : new Color(.26f,.40f,.43f,.12f);
+            Color tint=level==LevelId.Snow ? new Color(.74f,.85f,.89f,.22f) : level==LevelId.City ? new Color(.24f,.30f,.34f,.19f) : new Color(.10f,.16f,.19f,.10f);
             AddAtmosphere("Low drifting haze",0,44,tint,1.9f,level==LevelId.Snow ? .55f : .20f);
             if(level==LevelId.Snow)
             {
@@ -175,7 +175,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     void Update()
     {
         float dt=Time.deltaTime;clock+=dt;
-        travel=Mathf.Repeat(travel+dt*(level==LevelId.Tunnel ? 5.4f : 4.4f),LoopLength);
+        travel=Mathf.Repeat(travel+dt*(level==LevelId.Tunnel ? 10.2f : 4.4f),LoopLength);
         for(int i=0;i<sections.Count;i++)
         {
             float y=SectionY(i,travel);

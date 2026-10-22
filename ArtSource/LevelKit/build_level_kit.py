@@ -107,45 +107,67 @@ for section in range(4):
         detail.box(-6.2,2,.78,1.55,1.85,.28,(.83,.88,.89))
         detail.cylinder(-5.8,2.4,.92,.09,.4,(.25,.30,.31))
     ground.finish((section*24,0,0));detail.finish((section*24,0,0));near.finish((section*24,0,0))
-# TUNNEL: recessed deck plates, cable trenches, structural ribs, valves, conduits and overhead gantries.
+# TUNNEL: dim service galleries, alternating drainage, plant bays and restrained structural ribs.
 for section in range(4):
     rng=random.Random(2300+section)
     ground=Builder('TunnelGround'+str(section));detail=Builder('TunnelDetail'+str(section));near=Builder('TunnelNear'+str(section))
-    ground.box(0,0,-.24,22,20,.48,(.13,.17,.19))
+    ground.box(0,0,-.24,22,20,.48,(.043,.060,.069))
     for row in range(8):
         y=-8.75+row*2.5
-        for x in [-2.5,0,2.5]:
-            ground.box(x,y,.025,2.43,2.42,.05,(.19,.24,.26) if (row+section)%3 else (.21,.26,.27))
-            for sx in [-1,1]:
-                for sy in [-1,1]: ground.box(x+sx*1.08,y+sy*1.05,.059,.05,.05,.025,(.37,.42,.40))
+        for col,x in enumerate([-2.5,0,2.5]):
+            c=(.075,.100,.109) if (row+section+col)%3 else (.087,.112,.120)
+            ground.box(x,y,.025,2.43,2.42,.05,c)
+            if section in [1,3] and col==1 and row%3==1:
+                ground.box(x,y,.065,1.35,1.7,.06,(.035,.053,.063))
+                for k in range(6):ground.box(x,y-.65+k*.25,.105,1.23,.055,.025,(.115,.145,.150))
+            elif (row+col)%3==0:
+                ground.box(x,y,.065,.8,.85,.06,(.065,.088,.099))
+                ground.box(x,y-.28,.105,.3,.045,.025,(.16,.18,.17))
         for side in [-1,1]:
-            ground.box(side*3.9,y,.045,.47,2.42,.08,(.055,.095,.11))
-            for j in range(11):ground.box(side*3.9,y-1.1+j*.22,.1,.43,.06,.035,(.29,.36,.37))
+            ground.box(side*3.9,y,.045,.47,2.42,.08,(.025,.040,.049))
+            for j in range(6):ground.box(side*3.9,y-1+j*.4,.1,.43,.055,.025,(.10,.14,.15))
     for side in [-1,1]:
-        detail.box(side*6.9,0,.5,5.2,20,1.5,(.19,.25,.27))
-        for x,r,c in [(4.65,.12,(.42,.48,.44)),(5.05,.18,(.30,.38,.38)),(6.2,.28,(.36,.41,.39)),(8.25,.20,(.43,.35,.23))]:
-            detail.cylinder(side*x,-10,1.4,r,20,c,8,'y')
-        for j in range(5):
-            y=-8+j*4
-            detail.box(side*6.45,y,1.4,4.6,.2,.3,(.34,.40,.40))
-            detail.box(side*4.5,y+.4,1.35,.18,.85,.12,(.42,.78,.81))
-            detail.box(side*6.1,y+1.1,1.42,1.8,1.0,.1,(.07,.12,.14))
-            for k in range(6):detail.box(side*6.1,y+.7+k*.15,1.52,1.65,.05,.06,(.32,.41,.42))
-            # Warm hazard stripes frame the work bays, with room left for enemy readability.
-            for k in range(4):detail.box(side*(4.25+k*.19),y-.33,1.12,.12,.14,.025,(.64,.46,.17))
-        y=-3+section*1.1
-        detail.cylinder(side*5.05,y,1.55,.32,.11,(.63,.25,.17))
-        detail.box(side*5.05,y,1.7,.46,.065,.06,(.29,.35,.35))
-        detail.box(side*5.05,y,1.7,.065,.46,.06,(.29,.35,.35))
-        near.box(side*7.8,0,2.4,1.2,20,.65,(.11,.17,.20))
-    for y in [-5,5]:
-        near.box(0,y,2.65,15.5,.28,.4,(.25,.33,.35))
-        near.box(0,y+.01,2.89,4,.06,.045,(.44,.53,.51))
+        detail.box(side*6.9,0,.5,5.2,20,1.5,(.07,.10,.12))
+        pipes=[(4.65,.12,(.17,.21,.20)),(5.15,.22,(.11,.16,.17))]
+        if section in [0,2]:pipes += [(6.4,.38,(.14,.18,.18)),(8.25,.20,(.19,.16,.11))]
+        else:pipes += [(7.2,.16,(.12,.17,.18)),(7.65,.16,(.12,.17,.18))]
+        for x,r,c in pipes:detail.cylinder(side*x,-10,1.4,r,20,c,8,'y')
+        for j in range(4):
+            y=-7.5+j*5
+            detail.box(side*6.45,y,1.4,4.6,.18,.25,(.13,.18,.19))
+            # Pools of subdued light alternate sides; no luminous strip fills the flight lane.
+            if (j+section+(side>0))%3==0:
+                detail.box(side*4.5,y+.4,1.35,.12,.6,.09,(.25,.39,.39))
+                detail.box(side*4.5,y+.4,1.31,.24,.8,.08,(.08,.13,.14))
+            if section==0 or (section==2 and j%2==0):
+                detail.box(side*6.1,y+1.15,1.42,1.9,1.3,.1,(.028,.047,.059))
+                for k in range(5):detail.box(side*6.1,y+.7+k*.22,1.52,1.7,.05,.06,(.12,.17,.18))
+            elif section==1:
+                # Raised equipment lockers with different silhouettes and recessed access panels.
+                detail.box(side*6.1,y+1.2,1.75,1.5,1.55,.65,(.105,.145,.16))
+                detail.box(side*6.1,y+1.2,2.1,1.22,1.3,.05,(.055,.085,.10))
+                detail.box(side*6.1,y+.75,2.14,.4,.08,.04,(.23,.20,.12))
+            else:
+                # Large fan housings break up the cable galleries in the fourth district.
+                detail.box(side*6.2,y+1.1,1.65,2.1,1.8,.5,(.09,.13,.15))
+                detail.cylinder(side*6.2,y+1.1,1.92,.67,.1,(.035,.060,.075),12)
+                for angle in [0,math.pi/2,math.pi,math.pi*1.5]:
+                    xx=side*6.2+math.cos(angle)*.25;yy=y+1.1+math.sin(angle)*.25
+                    detail.box(xx,yy,2.05,.18,.5,.035,(.14,.18,.18))
+            if j==section%4:
+                for k in range(3):detail.box(side*(4.25+k*.22),y-.35,1.12,.13,.12,.025,(.28,.23,.12))
+        if section%2==0:
+            y=-3+section*1.1
+            detail.cylinder(side*5.15,y,1.65,.32,.11,(.28,.13,.10))
+            detail.box(side*5.15,y,1.8,.46,.065,.06,(.15,.19,.19))
+            detail.box(side*5.15,y,1.8,.065,.46,.06,(.15,.19,.19))
+        near.box(side*7.8,0,2.4,1.2,20,.65,(.045,.075,.095))
+    for y in ([-5,5] if section%2==0 else [0]):
+        near.box(0,y,2.65,15.5,.19,.25,(.115,.16,.18))
         for side in [-1,1]:
-            near.box(side*4.6,y,2.8,.22,.8,.3,(.36,.44,.43))
-            near.box(side*2.9,y,2.88,.7,.12,.06,(.65,.49,.20))
+            near.box(side*4.6,y,2.8,.22,.8,.3,(.17,.21,.21))
+            near.box(side*3.7,y,2.82,.32,.09,.04,(.27,.23,.13))
     ground.finish((section*24,28,0));detail.finish((section*24,28,0));near.finish((section*24,28,0))
-
 # CITY: a legible avenue grid with restrained, varied New York blocks below the flight lane.
 for section in range(4):
     rng=random.Random(3300+section)
