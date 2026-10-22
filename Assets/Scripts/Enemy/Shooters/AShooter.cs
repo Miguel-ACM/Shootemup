@@ -16,6 +16,41 @@ public abstract class AShooter : MonoBehaviour
     }
     public ShootTrigger activation = ShootTrigger.None;
 
+    private bool movementFiringAllowed = true;
+    private Coroutine firingRoutine;
+    public Vector3? MovementAimPoint { get; set; }
+
+    public void SetMovementFiringAllowed(bool allowed) { movementFiringAllowed = allowed; }
+
+    protected Vector3 AimPosition(Transform target)
+    {
+        return MovementAimPoint ?? (target != null ? target.position : transform.position + Vector3.down);
+    }
+
+    private void BeginShooting()
+    {
+        if (firingRoutine == null && isActiveAndEnabled) firingRoutine = StartCoroutine(GatedShoot());
+    }
+
+    private IEnumerator GatedShoot()
+    {
+        IEnumerator sequence = Shoot();
+        try
+        {
+            while (true)
+            {
+                while (!movementFiringAllowed) yield return null;
+                if (!sequence.MoveNext()) break;
+                yield return sequence.Current;
+            }
+        }
+        finally
+        {
+            (sequence as System.IDisposable)?.Dispose();
+            firingRoutine = null;
+        }
+    }
+
 
     protected virtual void Start()
     {
@@ -30,13 +65,14 @@ public abstract class AShooter : MonoBehaviour
     {
         if (activation == ShootTrigger.onArrive)
         {
-            StartCoroutine("Shoot");
+            BeginShooting();
         }
     }
 
     public virtual void Stop()
     {
-        StopCoroutine("Shoot");
+        if (firingRoutine != null) StopCoroutine(firingRoutine);
+        firingRoutine = null;
     }
 
     public virtual void OnLeave()
@@ -48,7 +84,7 @@ public abstract class AShooter : MonoBehaviour
     {
         if (activation == ShootTrigger.onTrigger)
         {
-            StartCoroutine("Shoot");
+            BeginShooting();
         }
     }
 
@@ -56,7 +92,7 @@ public abstract class AShooter : MonoBehaviour
     {
         if (activation == ShootTrigger.onVisible)
         {
-            StartCoroutine("Shoot");
+            BeginShooting();
         }
     }
 }

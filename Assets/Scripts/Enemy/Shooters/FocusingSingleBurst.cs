@@ -33,7 +33,7 @@ public class FocusingSingleBurst : AShooter
         float bulletSpreadDistance = bulletSpread[0] - bulletSpread[1];
         while (true)
         {
-            Vector3 playerPos = player.transform.position;
+            Vector3 playerPos = AimPosition(player != null ? player.transform : null);
             float angle = Utils.GetAngleBetweenVectors(transform.position, playerPos);
 
             AEnemyBullet createdBullet = Instantiate(bullet, transform.position, transform.rotation).GetComponent<AEnemyBullet>();

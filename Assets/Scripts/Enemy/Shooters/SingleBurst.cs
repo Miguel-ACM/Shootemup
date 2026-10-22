@@ -29,7 +29,7 @@ public class SingleBurst : AShooter
         yield return new WaitForSeconds(initialShot);
         while (true)
         {
-            Vector3 playerPos = player.transform.position;
+            Vector3 playerPos = AimPosition(player != null ? player.transform : null);
             float angle = Utils.GetAngleBetweenVectors(transform.position, playerPos);
 
             AEnemyBullet createdBullet = Instantiate(bullet, transform.position, transform.rotation).GetComponent<AEnemyBullet>();
