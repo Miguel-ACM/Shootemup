@@ -1,0 +1,6 @@
+PASS: all five backgrounds follow ship X in the Fields direction; layered foreground response; edge overscan; continuous 80-unit section wrap; no scenery colliders; live geometry and shaders; rendered horizontal sweep for every level. Captured 615 frames.
+Fields: left/centre/right parallax, full-width coverage and 120 motion frames checked.
+Tunnel: left/centre/right parallax, full-width coverage and 120 motion frames checked.
+Snow: left/centre/right parallax, full-width coverage and 120 motion frames checked.
+Thunder: left/centre/right parallax, full-width coverage and 120 motion frames checked.
+City: left/centre/right parallax, full-width coverage and 120 motion frames checked.
