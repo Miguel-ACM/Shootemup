@@ -20,6 +20,7 @@ public static class VerifyBackgrounds
     }
     public static void Run()=>Begin("");
     public static void RunSnow()=>Begin("Snow");
+    public static void RunCity()=>Begin("City");
     static void Begin(string onlyLevel)
     {
         SessionState.SetString("BackgroundReviewOnlyLevel",onlyLevel);

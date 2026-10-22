@@ -9,7 +9,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     [Serializable] sealed class Kit { public MeshData[] meshes; }
     [Serializable] sealed class MeshData { public string name;public float[] vertices,colors;public int[] triangles; }
     sealed class Atmosphere { public Transform transform;public Material material;public float parallax,speed; }
-    sealed class Traffic { public Transform transform;public float x,y,speed; }
+    sealed class Traffic { public Transform transform;public float x,y,speed,direction;public bool horizontal; }
     struct Flake { public Vector2 position;public float speed,size,phase,depth; }
     const float SectionLength=20,LoopLength=80;
     static Dictionary<string,Mesh> kit;
@@ -74,6 +74,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     {
         LoadKit();random=new System.Random(810+(int)level);
         material=new Material(Resources.Load<Shader>("LevelScenery"));
+        if(level==LevelId.City)material.SetFloat("_Haze",.38f);
         var go=GameObject.FindGameObjectWithTag("Player");if(go!=null)player=go.transform;
         if(level==LevelId.Thunder)BuildStorm();
         else
@@ -88,14 +89,18 @@ public sealed class LevelEnvironment : MonoBehaviour
                 var near=Add(kit[level+"Near"+i],transform,new Vector3(0,(i-1)*SectionLength,76),-25);
                 near.localScale=new Vector3(.8f,1,1);foreground.Add(near);
             }
-            Color tint=level==LevelId.Snow ? new Color(.74f,.85f,.89f,.22f) : level==LevelId.City ? new Color(.24f,.30f,.34f,.19f) : new Color(.10f,.16f,.19f,.10f);
+            Color tint=level==LevelId.Snow ? new Color(.74f,.85f,.89f,.22f) : level==LevelId.City ? new Color(.46f,.54f,.59f,.16f) : new Color(.10f,.16f,.19f,.10f);
             AddAtmosphere("Low drifting haze",0,44,tint,1.9f,level==LevelId.Snow ? .55f : .20f);
             if(level==LevelId.Snow)
             {
                 AddAtmosphere("Snowdust over the drifts",3,42,new Color(.83f,.90f,.92f,.38f),1.5f,1.1f);
                 AddAtmosphere("Near windblown powder",3,35,new Color(.89f,.94f,.95f,.21f),2.5f,1.8f);
             }
-            if(level==LevelId.City)BuildTraffic();
+            if(level==LevelId.City)
+            {
+                AddAtmosphere("Wisps above the distant city",0,35,new Color(.75f,.80f,.83f,.20f),2.6f,.32f);
+                BuildTraffic();
+            }
         }
         if(level==LevelId.Snow || level==LevelId.Thunder)BuildWeather();
         ApplyParallax();
@@ -125,14 +130,17 @@ public sealed class LevelEnvironment : MonoBehaviour
 
     void BuildTraffic()
     {
-        for(int i=0;i<8;i++)
+        for(int i=0;i<12;i++)
         {
-            // Match the authored avenue centres after the district's .8 horizontal scale.
-            float avenue=i<4 ? 0 : i<6 ? -6.8f : 6.8f;
-            float lane=avenue+(i%2==0 ? -.42f : .42f);
-            var car=Add(kit[i%3==0 ? "CityTaxi" : "CitySedan"],transform,new Vector3(lane,Range(-20,40),88),-34);
-            bool oncoming=i%2==0;car.localRotation=Quaternion.Euler(0,0,oncoming ? 0 : 180);car.localScale=new Vector3(.8f,1,1);
-            traffic.Add(new Traffic{transform=car,x=lane,y=car.localPosition.y,speed=oncoming ? 6.2f : 3.1f});
+            bool horizontal=i>=8;
+            float direction=i%2==0 ? -1 : 1;
+            // Avenue pitch 2.6 is scaled by .8; cross streets repeat every 2.5 units.
+            float x=horizontal ? Range(-8,8) : (i%5-2)*2.08f+direction*.08f;
+            float y=horizontal ? ((i-8)*5+2)*2.5f-direction*.07f : Range(-20,40);
+            var car=Add(kit[i%3==0 ? "CityTaxi" : "CitySedan"],transform,new Vector3(x,y,88),-34);
+            float angle=horizontal ? (direction>0 ? 90 : 270) : direction<0 ? 0 : 180;
+            car.localRotation=Quaternion.Euler(0,0,angle);car.localScale=new Vector3(.18f,.23f,.23f);
+            traffic.Add(new Traffic{transform=car,x=x,y=y,speed=Range(.45f,.75f),direction=direction,horizontal=horizontal});
         }
     }
 
@@ -175,7 +183,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     void Update()
     {
         float dt=Time.deltaTime;clock+=dt;
-        travel=Mathf.Repeat(travel+dt*(level==LevelId.Tunnel ? 10.2f : 4.4f),LoopLength);
+        travel=Mathf.Repeat(travel+dt*(level==LevelId.Tunnel ? 10.2f : level==LevelId.City ? 1.8f : 4.4f),LoopLength);
         for(int i=0;i<sections.Count;i++)
         {
             float y=SectionY(i,travel);
@@ -184,8 +192,10 @@ public sealed class LevelEnvironment : MonoBehaviour
         }
         foreach(var car in traffic)
         {
-            car.y=Mathf.Repeat(car.y-dt*car.speed+22,64)-22;
-            car.transform.localPosition=new Vector3(car.x+HorizontalOffset,car.y,88);
+            if(car.horizontal)car.x=Mathf.Repeat(car.x+dt*car.speed*car.direction+11,22)-11;
+            else car.y=Mathf.Repeat(car.y+dt*car.speed*car.direction+30,LoopLength)-30;
+            float y=Mathf.Repeat(car.y-travel+30,LoopLength)-30;
+            car.transform.localPosition=new Vector3(car.x+HorizontalOffset,y,88);
         }
         if(flakes!=null)UpdateWeather(dt);
         if(level==LevelId.Thunder)UpdateStorm(dt);

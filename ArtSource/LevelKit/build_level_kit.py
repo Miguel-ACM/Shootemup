@@ -189,76 +189,87 @@ for section in range(4):
             near.box(side*4.6,y,2.8,.22,.8,.3,(.17,.21,.21))
             near.box(side*3.7,y,2.82,.32,.09,.04,(.27,.23,.13))
     ground.finish((section*24,28,0));detail.finish((section*24,28,0));near.finish((section*24,28,0))
-# CITY: a legible avenue grid with restrained, varied New York blocks below the flight lane.
+# CITY: a city grid seen from high above, with many small blocks visible at the same time.
 for section in range(4):
     rng=random.Random(3300+section)
     ground=Builder('CityGround'+str(section),(.14,.24));detail=Builder('CityDetail'+str(section),(.14,.24));near=Builder('CityNear'+str(section),(.14,.24))
-    ground.box(0,0,-.25,22,20,.5,(.075,.095,.108))
-    # Three continuous avenues meet one cross street per section. Markings stop at junctions.
-    for x in [-8.5,0,8.5]:
-        ground.box(x,0,.01,2.6,20,.02,(.085,.105,.116))
-        for y0,y1 in [(-10,-1.7),(1.7,10)]:
-            for lane in [-.065,.065]:ground.box(x+lane,(y0+y1)/2,.028,.025,y1-y0,.015,(.30,.28,.19))
-            for y in [-8,-5,-2.5,2.5,5,8]:
-                if y0<y<y1:
-                    for sx in [-1,1]:ground.box(x+sx*.75,y,.03,.025,.5,.012,(.29,.32,.31))
-    ground.box(0,0,.018,22,2.6,.024,(.085,.105,.116))
-    for avenue in [-8.5,0,8.5]:
-        for side in [-1,1]:
-            for k in range(6):
-                ground.box(avenue-.95+k*.38,side*1.45,.04,.19,.42,.018,(.35,.38,.36))
-    for side in [-1,1]:
-        for row,y in enumerate([-5.35,5.35]):
-            # Connected sidewalk islands follow each block, leaving cross streets completely clear.
-            ground.box(side*4.25,y,.055,5.9,7.5,.11,(.20,.235,.24))
-            for col in range(2):
-                x=side*(2.8+col*3.0)
-                style=(section+row*2+col+(side>0))%4
-                w=2.35;d=6.0;h=[1.25,2.1,3.0,2.6][style]+rng.uniform(-.12,.12)
-                c=[(.22,.205,.195),(.195,.225,.235),(.20,.235,.25),(.235,.23,.21)][style]
+    ground.box(0,0,-.1,22,20,.2,(.145,.18,.205))
+    avenues=[k*2.6 for k in range(-4,5)]
+    crossings=[-10+k*2.5 for k in range(9)]
+    # The section length is exactly eight street pitches, including half a road at each seam.
+    for col,x in enumerate(avenues):
+        width=.52 if col%2==0 else .4
+        ground.box(x,0,.012,width,20,.024,(.135,.17,.195))
+        for row in range(8):
+            yy=-8.75+row*2.5
+            for lane in [-.035,.035]:ground.box(x+lane,yy,.028,.012,1.75,.01,(.30,.29,.235))
+    for row,y in enumerate(crossings):
+        half_width=.3 if row%4==0 else .2
+        y0=max(-10,y-half_width);y1=min(10,y+half_width)
+        ground.box(0,(y0+y1)/2,.016,22,y1-y0,.025,(.14,.175,.20))
+        # Small crossing marks occur only on the broader junctions, well below the flight layer.
+        if row%4==0:
+            for x in avenues:
+                for side in [-1,1]:
+                    for k in range(3):ground.box(x-.14+k*.14,y+side*.35,.035,.06,.12,.012,(.31,.34,.335))
+    palette=[(.255,.27,.275),(.275,.265,.245),(.225,.255,.275),(.29,.285,.265),(.24,.265,.27)]
+    for col in range(8):
+        x=-9.1+col*2.6
+        for row in range(8):
+            y=-8.75+row*2.5
+            ground.box(x,y,.035,2.04,1.93,.07,(.20,.235,.25))
+            park=section==1 and col==5 and row==4
+            if park:
+                ground.box(x,y,.085,1.82,1.7,.04,(.20,.285,.245))
+                ground.box(x,y,.115,.11,1.7,.015,(.30,.315,.29))
+                for j in range(5):
+                    xx=x+(-.5 if j%2 else .5);yy=y+(j//2-1)*.48
+                    detail.cone(xx,yy,.12,.16,.15,(.19,.265,.23),6)
+                continue
+            # Four separate small lots per block, with narrow alleys between the buildings.
+            for lot in range(4):
+                xx=x+(-.49 if lot%2==0 else .49)+rng.uniform(-.035,.035)
+                yy=y+(-.46 if lot<2 else .46)+rng.uniform(-.035,.035)
+                w=rng.uniform(.63,.85);d=rng.uniform(.66,.84);h=rng.uniform(.19,.48)
+                style=(col*3+row+lot+section)%5;c=palette[(style+section)%len(palette)]
                 if style==0:
-                    # Low brick warehouses: broad quiet roofs and a single clerestory band.
-                    detail.box(x,y,h/2,w,d,h,c)
-                    detail.box(x,y,h+.06,w+.08,d+.08,.12,(.25,.27,.27))
-                    detail.box(x,y,h+.14,w-.18,d-.18,.035,(.16,.19,.20))
-                    detail.box(x,y+1.3,h+.22,1.5,.6,.17,(.215,.25,.26))
+                    # Broad warehouse roofs, with a single low clerestory.
+                    detail.box(xx,yy,h/2,w,d,h,c)
+                    detail.box(xx,yy,h+.018,w+.025,d+.025,.036,tuple(v+.025 for v in c))
+                    detail.box(xx,yy,h+.055,w*.62,d*.23,.055,(.25,.28,.29))
                 elif style==1:
-                    # Courtyard apartments: a long wing with a short return, open to the street.
-                    detail.box(x-side*.4,y,h/2,w*.64,d,h,c)
-                    detail.box(x+side*.55,y+2,h/2,w*.5,2,h,c)
-                    detail.box(x-side*.4,y,h+.05,w*.69,d+.08,.1,(.255,.28,.28))
-                    detail.box(x+side*.55,y+2,h+.05,w*.54,2.08,.1,(.255,.28,.28))
+                    # L-shaped apartment blocks leave visible interior courtyards.
+                    detail.box(xx-w*.18,yy,h/2,w*.64,d,h,c)
+                    detail.box(xx+w*.28,yy+d*.28,h/2,w*.44,d*.44,h,c)
+                    detail.box(xx-w*.18,yy,h+.02,w*.66,d+.02,.04,tuple(v+.025 for v in c))
                 elif style==2:
-                    # Art Deco setbacks change the skyline without filling the avenue with shadows.
-                    detail.box(x,y,h*.36,w,d,h*.72,c)
-                    detail.box(x,y,h*.82,w*.76,d*.78,h*.28,(.235,.265,.275))
-                    detail.box(x,y,h+.16,w*.48,d*.53,.32,(.255,.28,.29))
-                    if row==section%2:
-                        detail.box(x,y,h+.55,.065,.065,.65,(.30,.33,.33))
+                    # A taller stepped tower is still a tiny object from this altitude.
+                    h*=1.55
+                    detail.box(xx,yy,h*.33,w,d,h*.66,c)
+                    detail.box(xx,yy,h*.80,w*.7,d*.72,h*.28,tuple(v+.025 for v in c))
+                    detail.box(xx,yy,h+.035,w*.46,d*.48,.07,tuple(v+.045 for v in c))
+                    if (col+row+section)%7==0:detail.box(xx,yy,h+.16,.025,.025,.25,(.31,.335,.345))
+                elif style==3:
+                    # Paired brick row houses with staggered rooflines.
+                    for unit in [-1,1]:
+                        hh=h+(unit+1)*.035
+                        detail.box(xx+unit*w*.25,yy,hh/2,w*.47,d,hh,c)
+                        detail.box(xx+unit*w*.25,yy,hh+.016,w*.48,d+.015,.032,tuple(v+.025 for v in c))
                 else:
-                    # Brownstone rows: staggered three-part roofs with subtle brick variation.
-                    for unit in range(3):
-                        yy=y+(unit-1)*1.96;hh=h+(unit%2)*.3
-                        cc=tuple(v*(.94+unit*.035) for v in c)
-                        detail.box(x,yy,hh/2,w,1.9,hh,cc)
-                        detail.box(x,yy,hh+.06,w+.06,1.94,.12,(.27,.275,.26))
-                # A few dark window bands replace the former sparkling high-contrast window grid.
-                front=y-d/2-.006
-                for floor in range(1,max(2,int(h/.65))):
-                    z=floor*.6
-                    for xx in [-.65,0,.65]:
-                        detail.face([(x+xx-.13,front,z-.10),(x+xx+.13,front,z-.10),(x+xx+.13,front,z+.10),(x+xx-.13,front,z+.10)],(.125,.17,.19))
-                if style==0 and col==section%2:
-                    # Sparse water towers keep the city's identity without rooftop clutter everywhere.
-                    tx=x+.45;ty=y+.7
-                    for sx in [-1,1]:
-                        for sy in [-1,1]:detail.box(tx+sx*.18,ty+sy*.18,h+.3,.035,.035,.55,(.17,.20,.20))
-                    detail.cylinder(tx,ty,h+.5,.3,.55,(.255,.235,.20))
-                    detail.cone(tx,ty,h+1.05,.33,.20,(.18,.22,.23),8)
-    # Distant edge masses give extra parallax; the central avenue stays open.
+                    detail.box(xx,yy,h/2,w,d,h,c)
+                    detail.box(xx,yy,h+.018,w*.86,d*.86,.035,(.205,.24,.265))
+                    if (row+lot)%4==0:
+                        detail.cylinder(xx+w*.2,yy-d*.18,h+.07,.075,.11,(.27,.255,.225),6)
+                        detail.cone(xx+w*.2,yy-d*.18,h+.18,.085,.045,(.225,.26,.27),6)
+                # One subdued facade band suggests floors without glittering window grids.
+                if h>.32:
+                    z=h*.48;front=yy-d/2-.002
+                    detail.face([(xx-w*.3,front,z-.025),(xx+w*.3,front,z-.025),(xx+w*.3,front,z+.025),(xx-w*.3,front,z+.025)],(.18,.22,.245))
+    # Small edge rooftops provide a second depth response, never a close-up canyon wall.
     for side in [-1,1]:
-        near.box(side*9.8,4.8,1.7,1.6,5.8,3.4,(.15,.19,.21))
-        near.box(side*9.8,4.8,3.45,1.68,5.88,.1,(.21,.24,.25))
+        for y in [-6.2,3.8]:
+            near.box(side*9.7,y,.3,.7,.8,.6,(.23,.26,.28))
+            near.box(side*9.7,y,.62,.55,.63,.04,(.275,.295,.305))
     ground.finish((section*24,56,0));detail.finish((section*24,56,0));near.finish((section*24,56,0))
 # Instanced moving road traffic.
 for name,c in [('CityTaxi',(.36,.30,.16)),('CitySedan',(.16,.23,.27))]:

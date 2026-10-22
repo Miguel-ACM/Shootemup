@@ -1,0 +1,4 @@
+PASS: City follow ship X in the Fields direction; layered foreground response; edge overscan; continuous 80-unit section wrap; no scenery colliders; live geometry and shaders; rendered horizontal sweep. Captured 123 frames.
+City: downward travel 1,80 units/sec.
+City: left/centre/right parallax, full-width coverage and 120 motion frames checked.
+Visual review: multiple avenues and eight cross-street intervals per 20-unit district; many small varied rooftops visible simultaneously; tiny traffic in both directions; city-only aerial haze and higher wisps; ground travel reduced to 1.8 units/sec. Runtime checks passed for avenue and cross-street alignment, correct traffic direction, distant vehicle scale, haze, screen coverage, lateral parallax, and section recycling.

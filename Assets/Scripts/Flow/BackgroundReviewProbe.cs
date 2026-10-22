@@ -67,7 +67,7 @@ public sealed class BackgroundReviewProbe : MonoBehaviour
                 float before=Get<float>(environment,"travel"),start=Time.time;
                 yield return new WaitForSeconds(.3f);
                 float speed=Mathf.Repeat(Get<float>(environment,"travel")-before,80)/(Time.time-start);
-                Check(Mathf.Abs(speed-(level==LevelId.Tunnel ? 10.2f : 4.4f))<.15f,"Incorrect scenery scroll speed: "+level+" "+speed);
+                Check(Mathf.Abs(speed-(level==LevelId.Tunnel ? 10.2f : level==LevelId.City ? 1.8f : 4.4f))<.15f,"Incorrect scenery scroll speed: "+level+" "+speed);
                 results.Add(level+": downward travel "+speed.ToString("F2")+" units/sec.");
                 if(level==LevelId.Snow)
                 {
@@ -80,13 +80,25 @@ public sealed class BackgroundReviewProbe : MonoBehaviour
                 if(level==LevelId.City)
                 {
                     var cars=environment.GetComponentsInChildren<Transform>().Where(t=>t.name=="CityTaxi" || t.name=="CitySedan").ToArray();
-                    Check(cars.Length==8,"City traffic is too dense");
+                    Check(cars.Length==12,"City traffic routes missing");
+                    Check(environment.GetComponentsInChildren<MeshRenderer>().Any(r=>r.sharedMaterial.HasProperty("_Haze") && r.sharedMaterial.GetFloat("_Haze")>.3f),"City lacks aerial distance haze");
                     foreach(var car in cars)
                     {
-                        float lane=car.localPosition.x-environment.HorizontalOffset;
-                        Check(new[]{-6.8f,0,6.8f}.Any(avenue=>Mathf.Abs(Mathf.Abs(lane-avenue)-.42f)<.001f),"Traffic is not on an avenue");
-                        float centre=new[]{-6.8f,0,6.8f}.OrderBy(avenue=>Mathf.Abs(lane-avenue)).First();
-                        Check(Mathf.Abs(Mathf.DeltaAngle(car.localEulerAngles.z,lane<centre ? 0 : 180))<.01f,"Traffic faces the wrong direction in its lane");
+                        Check(car.GetComponent<MeshRenderer>().bounds.size.magnitude<.23f,"City vehicle is still drawn at close-up scale");
+                        float angle=car.localEulerAngles.z;
+                        bool horizontal=Mathf.Abs(Mathf.DeltaAngle(angle,90))<.01f || Mathf.Abs(Mathf.DeltaAngle(angle,270))<.01f;
+                        if(horizontal)
+                        {
+                            float lane=Mathf.Repeat(car.localPosition.y+Get<float>(environment,"travel")+1.25f,2.5f)-1.25f;
+                            Check(Mathf.Abs(lane-(angle<180 ? -.07f : .07f))<.005f,"Traffic does not follow its cross street");
+                        }
+                        else
+                        {
+                            float lane=car.localPosition.x-environment.HorizontalOffset;
+                            float centre=new[]{-4.16f,-2.08f,0,2.08f,4.16f}.OrderBy(avenue=>Mathf.Abs(lane-avenue)).First();
+                            Check(Mathf.Abs(Mathf.Abs(lane-centre)-.08f)<.001f,"Traffic is not on an avenue");
+                            Check(Mathf.Abs(Mathf.DeltaAngle(angle,lane<centre ? 0 : 180))<.01f,"Traffic faces the wrong direction in its lane");
+                        }
                     }
                 }
                 if(level==LevelId.Tunnel)
