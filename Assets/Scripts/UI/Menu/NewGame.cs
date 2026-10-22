@@ -8,6 +8,7 @@ public class NewGame : AMenuElement
         if (starting) return;
         starting = true;
         GameRules.StartNewRun();
+        LevelRun.StartRandom();
         
         CloudTransition.Load("L1");
     }

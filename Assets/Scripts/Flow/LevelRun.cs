@@ -7,6 +7,7 @@ public static class LevelRun
     public static LevelId Current { get; private set; } = LevelId.Fields;
     public static string CurrentName => Current.ToString();
     public static int Stage { get; private set; } = 1;
+    public static void StartRandom() { Reset((LevelId)Random.Range(0,System.Enum.GetValues(typeof(LevelId)).Length)); }
     public static void Reset(LevelId first = LevelId.Fields) { Current=first;Stage=1; }
     public static void Advance(LevelId next) { Current=next;Stage++; }
     public static Color Accent(LevelId level)
