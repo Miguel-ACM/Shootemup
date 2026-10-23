@@ -29,6 +29,12 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Use the established projectile art style. Miguel preferred the older bullets to the initial expansion's plain discs.
 - Thrusters are separate animated effects like the player's, never baked into hull geometry. Exceptions such as the spinning tunnel saw have no thrusters.
 - Iterate models and rendered views. There is no hurry; visual inspection and quality matter.
+- Bring the whole HUD on gradually with an irregular fluorescent-light startup flicker, then leave it steady and readable.
+- Keep player rounds readable without glaring white columns. The latest feedback is that they are too bright.
+- Choreograph firing as well as movement: shared accents, deliberate rests and coordinated releases within each wave.
+- Remove the segmented laser completely. Thunder drones must not make arbitrary laser links between ships. Beams need visible charge, continuous energy, an attached emitter, a smooth release and appropriate sound.
+- Preserve the snake enemy's flowing character; Miguel likes it.
+- Use the existing Sound Lab/Frontlines sample workflow for new effects. Preserve saved user selections and distinguish technical audio checks from subjective listening.
 - Improve the city's architectural models and variation between runs.
 
 ## District and boss identities
