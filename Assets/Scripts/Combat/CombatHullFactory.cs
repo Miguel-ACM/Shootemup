@@ -44,6 +44,7 @@ public static partial class IndustrialMeshFactory
         float width=slim ? .48f : heavy ? 1.12f : .72f;
         float length=slim ? 1.55f : heavy ? 1.12f : 1.0f;
         int armor=kind==6 || kind==7 || kind==8 || kind==16 || kind==17 || kind==21 || kind==26 ? 1 : kind==9 || kind==10 || kind==11 || kind==18 || kind==22 || kind==27 ? 7 : kind>=12 && kind<=15 || kind==28 ? 12 : 0;
+        if(kind==27){BuildStormReactorAirframe(b);return combatHulls[kind]=b.Finish("StormReactorAirframe");}
         if(kind==4){BuildMaintenanceAirframe(b);return combatHulls[kind]=b.Finish("MaintenanceAirframe");}
         if(kind==3){BuildWallTurretAirframe(b);return combatHulls[kind]=b.Finish("WallTurretAirframe");}
         if(kind==0){BuildScoutAirframe(b);return combatHulls[kind]=b.Finish("ScoutAirframe");}
