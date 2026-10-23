@@ -6,6 +6,17 @@ public static class CombatVisuals
 {
     static Sprite disc;
     static Material lineMaterial;
+    static readonly Dictionary<string,Sprite> projectiles=new Dictionary<string,Sprite>();
+    public static Material ProjectileMaterial=>Resources.Load<GameObject>("Bullets/EnemyBulletSmall").GetComponent<SpriteRenderer>().sharedMaterial;
+    public static Sprite Projectile(bool friendly=false,bool large=false)
+    {
+        string name=friendly ? "PlayerBullet" : large ? "EnemyBulletBig" : "EnemyBulletSmall";
+        if(projectiles.TryGetValue(name,out var sprite))return sprite;
+        var source=Resources.Load<GameObject>("Bullets/"+name).GetComponent<SpriteRenderer>().sprite;
+        // Preserve authored pixels while giving every runtime round a unit-sized footprint.
+        sprite=Sprite.Create(source.texture,source.rect,new Vector2(.5f,.5f),Mathf.Max(source.rect.width,source.rect.height));
+        sprite.name=name+" normalized";return projectiles[name]=sprite;
+    }
     public static Sprite Disc
     {
         get
@@ -24,7 +35,7 @@ public static class CombatVisuals
     }
     public static LineRenderer Line(Transform parent, Color color, float width)
     {
-        if(lineMaterial==null) lineMaterial=new Material(Shader.Find("Sprites/Default"));
+        if(lineMaterial==null) lineMaterial=ProjectileMaterial;
         var go=new GameObject("Attack tell");go.transform.SetParent(parent,false);
         var l=go.AddComponent<LineRenderer>();l.sharedMaterial=lineMaterial;l.positionCount=2;
         l.startColor=l.endColor=color;l.startWidth=l.endWidth=width;

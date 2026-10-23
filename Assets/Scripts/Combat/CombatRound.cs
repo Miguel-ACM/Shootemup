@@ -27,13 +27,13 @@ public abstract class CombatRound : AEnemyBullet
             var go=new GameObject(typeof(T).Name);go.SetActive(false);go.tag="EnemyBullet";
             go.layer=LayerMask.NameToLayer("Bullet");
             var rb=go.AddComponent<Rigidbody2D>();rb.gravityScale=0;rb.bodyType=RigidbodyType2D.Kinematic;
-            var sr=go.AddComponent<SpriteRenderer>();sr.sprite=CombatVisuals.Disc;sr.sortingOrder=15;
+            var sr=go.AddComponent<SpriteRenderer>();sr.sprite=CombatVisuals.Projectile();sr.sharedMaterial=CombatVisuals.ProjectileMaterial;sr.sortingOrder=15;
             sr.sortingLayerName="Bullet";
             var collider=go.AddComponent<CircleCollider2D>();collider.isTrigger=true;collider.radius=.44f;
             shot=go.AddComponent<T>();shot.body=rb;shot.visual=sr;
         }
         shot.transform.SetPositionAndRotation(new Vector3(p.x,p.y,-.5f),Quaternion.identity);
-        shot.transform.localScale=Vector3.one*radius*2;shot.visual.color=new Color(1,.35f,.22f);
+        shot.transform.localScale=Vector3.one*radius*2;shot.visual.sprite=CombatVisuals.Projectile(false,radius>=.25f);shot.visual.color=Color.white;
         shot.visual.enabled=true;shot.GetComponent<Collider2D>().enabled=true;
         shot.origin=shot.transform.position;shot.heading=direction.sqrMagnitude>.001f ? direction.normalized : Vector2.down;
         shot.speed=velocity*GameRules.enemyBulletSpeed;shot.damage=8*GameRules.enemyDamage;
