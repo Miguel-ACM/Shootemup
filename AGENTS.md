@@ -22,6 +22,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Player fire must remain clearly visible at actual gameplay resolution: bright cores, sufficient pixel width and distinction from hostile fire.
 - Bullets must render above the player hull so incoming fire remains visible and avoidable.
 - Keep momentum between combat phrases. Compare changes with the existing game; do not quietly make it much easier.
+- Keep first-level time to kill reasonable with the unmodified base weapon. Check actual projectile hits against moving Plains enemies as well as sustained damage; preserve challenge through patterns instead of excessive health.
 - Give every enemy a recognizable silhouette and role. Recolors or minor variations of one generic hull are insufficient.
 - Snow designs need particular care. A round boss must look like a designed spacecraft, not a plate covered with buttons.
 - Use the established projectile art style. Miguel preferred the older bullets to the initial expansion's plain discs.
