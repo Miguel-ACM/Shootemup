@@ -6,6 +6,7 @@ public static partial class IndustrialMeshFactory
     static readonly Dictionary<int,Mesh> combatHulls=new Dictionary<int,Mesh>();
     public static Vector3[] CombatEngineSockets(int kind)
     {
+        if(kind==3)return new[]{new Vector3(-.53f,.76f,0),new Vector3(.53f,.76f,0)};
         if(kind==27)return new[]{new Vector3(-.56f,.93f,0),new Vector3(.56f,.93f,0)};
         if(kind==0)return new[]{new Vector3(0,0.77f,0)};
         if(kind==1)return new[]{new Vector3(-0.64f,0.93f,0),new Vector3(0.64f,0.93f,0)};
@@ -41,6 +42,7 @@ public static partial class IndustrialMeshFactory
         float width=slim ? .48f : heavy ? 1.12f : .72f;
         float length=slim ? 1.55f : heavy ? 1.12f : 1.0f;
         int armor=kind==6 || kind==7 || kind==8 || kind==16 || kind==17 || kind==21 || kind==26 ? 1 : kind==9 || kind==10 || kind==11 || kind==18 || kind==22 || kind==27 ? 7 : kind>=12 && kind<=15 || kind==28 ? 12 : 0;
+        if(kind==3){BuildWallTurretAirframe(b);return combatHulls[kind]=b.Finish("WallTurretAirframe");}
         if(kind==0){BuildScoutAirframe(b);return combatHulls[kind]=b.Finish("ScoutAirframe");}
         if(kind==1){BuildPatrolAirframe(b);return combatHulls[kind]=b.Finish("PatrolAirframe");}
         if(kind==2){BuildBomberAirframe(b);return combatHulls[kind]=b.Finish("BomberAirframe");}
