@@ -24,7 +24,7 @@ public abstract class DistrictEnemy : AEnemy
         enemy.size=enemy.hullScale;go.GetComponent<CircleCollider2D>().radius=enemy.hullScale*.8f;
         var model=new GameObject("Armored hull");model.transform.SetParent(go.transform,false);model.transform.localScale=Vector3.one*enemy.hullScale;
         model.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(enemy.hull);
-        var renderer=model.AddComponent<MeshRenderer>();renderer.sharedMaterial=Resources.Load<Material>("CombatFleet");renderer.sortingLayerName="Enemy";
+        var renderer=model.AddComponent<MeshRenderer>();renderer.sharedMaterial=CombatMaterials.Fleet;renderer.sortingLayerName="Enemy";
         enemy.Hull=model.transform;go.AddComponent<CombatHullVisual>().model=model.transform;
         var exhaust=go.AddComponent<EnemyThrusters>();exhaust.visualRoot=model.transform;
         float socket=enemy.hull==22 ? .375f : enemy.hull==2 || enemy.hull==5 || enemy.hull==7 || enemy.hull==8 || enemy.hull==14 || enemy.hull>=20 ? .874f : .562f;

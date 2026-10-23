@@ -54,7 +54,7 @@ public sealed class PSXObjectVisual : MonoBehaviour
             else
             {
                 model.GetComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.ExpansionItem(kind);
-                modelRenderer.sharedMaterial=Resources.Load<Material>("CombatFleet");
+                modelRenderer.sharedMaterial=CombatMaterials.Fleet;
             }
         }
         if(sourceSprite!=null)sourceSprite.enabled=false;
