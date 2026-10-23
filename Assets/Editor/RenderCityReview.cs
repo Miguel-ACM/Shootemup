@@ -20,7 +20,7 @@ public static class RenderCityReview
     static void Tick()
     {
         if(EditorApplication.isCompiling || EditorApplication.isUpdating || EditorApplication.isPlayingOrWillChangePlaymode || !File.Exists(Request))return;
-        File.Delete(Request);
+        try{File.Delete(Request);}catch(IOException){return;}
         var ground=new Dictionary<int,Mesh>();
         Material material=null;
         try
