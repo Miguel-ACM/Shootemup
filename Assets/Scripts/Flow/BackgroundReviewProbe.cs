@@ -54,7 +54,7 @@ public sealed class BackgroundReviewProbe : MonoBehaviour
         foreach(LevelId level in Enum.GetValues(typeof(LevelId)))
         {
             if(!string.IsNullOrEmpty(OnlyLevel) && level.ToString()!=OnlyLevel)continue;
-            CloudTransition.Change(()=>{LevelRun.Advance(level);LevelEnvironment.Apply();});
+            CloudTransition.Change(()=>{LevelRun.Reset(level);LevelEnvironment.Apply();});
             deadline=Time.realtimeSinceStartup+15;
             while(CloudTransition.Busy && Time.realtimeSinceStartup<deadline)yield return null;
             Check(!CloudTransition.Busy,"Transition stalled: "+level);

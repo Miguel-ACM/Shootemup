@@ -30,6 +30,8 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 ## District and boss identities
 
+- Runs start in Plains, then choose Snow or City, then Thunder or Tunnel. Beating either final district loops directly back to harder Plains while retaining the run's equipment and score.
+
 - Snow: many large shells that explode into smaller bullets; a very round boss with several patterns and a harder second phase.
 - Thunder: beams and quick aimed fire; a slim boss with side-emitting lasers, then 6–8 alternating sweeping beams plus a barrage in phase two.
 - City: busy formations of small fast enemies. The boss is a fast/heavy duo with separate health summed in one bar and tracking attacks. The first death drops nothing; the survivor becomes aggressive and heals half its missing health.

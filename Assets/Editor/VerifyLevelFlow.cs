@@ -42,14 +42,7 @@ public static class VerifyLevelFlow
                 while(!charge.Complete){charge.Step(1,1/fps);elapsed+=1/fps;}
                 Check(elapsed>=2.59f && elapsed<2.7f,"Hold duration varies with frame rate");
             }
-            var seen=new System.Collections.Generic.HashSet<LevelId>();
-            for(int i=0;i<1000;i++)
-            {
-                LevelRun.StartRandom();seen.Add(LevelRun.Current);
-                LevelRun.GetChoices(out var left,out var right);
-                Check(left!=right && left!=LevelRun.Current && right!=LevelRun.Current,"Duplicate or current route offered");
-            }
-            Check(seen.Count==5,"Random starts did not cover all five levels");
+            VerifyRunProgression.Run();
             Check(EditorBuildSettings.scenes[0].path=="Assets/Scenes/Title.unity","Build does not start at the menu");
             Check(Resources.Load<TextAsset>("LevelKit")!=null && Resources.Load<Shader>("LevelScenery")!=null,"Missing environment resources");
             Check(!ShaderUtil.ShaderHasError(Resources.Load<Shader>("LevelScenery")),"Environment shader failed compilation");

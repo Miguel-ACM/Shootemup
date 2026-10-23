@@ -8,7 +8,7 @@ public class NewGame : AMenuElement
         if (starting) return;
         starting = true;
         GameRules.StartNewRun();
-        LevelRun.StartRandom();
+        LevelRun.Reset();
         BGMManager.PlayLevelMusic(LevelRun.Current);
         
         CloudTransition.Load("L1");

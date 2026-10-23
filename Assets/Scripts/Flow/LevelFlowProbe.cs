@@ -41,7 +41,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
             if(!more)break;
             yield return current;
         }
-        File.WriteAllText(Output,"PASS: gameplay preloaded without activating the paused menu; same preload reused on new game; all offered environments prepared invisibly and reused, unused routes released; live ship/background movement during title and cloud reveal; two-label title with the game font and Level x eyebrow; main menu; random starts and unique route pairs (1000 trials); neutral/switch/frame-rate charge checks; five environments; cloud cover/reveal; actual boss death; both spatial route selections; pause; player/stats/equipment preservation; next-stage waves; return to menu and new-run reset.\n"+string.Join("\n",errors));
+        File.WriteAllText(Output,"PASS: gameplay preloaded without activating the paused menu; same preload reused on new game; all offered environments prepared invisibly and reused, unused routes released; live ship/background movement during title and cloud reveal; two-label title with the game font and Level x eyebrow; main menu; ordered routes and harder loops (400 loop trials); neutral/switch/frame-rate charge checks; five environments; cloud cover/reveal; actual boss death; both spatial route selections; pause; player/stats/equipment preservation; next-stage waves; return to menu and new-run reset.\n"+string.Join("\n",errors));
         UnityEditor.EditorApplication.Exit(errors.Count==0 ? 0 : 1);
     }
     IEnumerator Run()
@@ -161,7 +161,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
             float coverTravel=(float)Get(movingBackground,"travel");
             float shipX=ship.transform.position.x;
             UnityEngine.InputSystem.InputSystem.QueueStateEvent(keyboard,new UnityEngine.InputSystem.LowLevel.KeyboardState(UnityEngine.InputSystem.Key.LeftArrow));
-            CloudTransition.Change(()=>{LevelRun.Advance(level);LevelEnvironment.Apply();});
+            CloudTransition.Change(()=>{LevelRun.Reset(level);LevelEnvironment.Apply();});
             yield return new WaitForSecondsRealtime(.3f);
             Check(Time.timeScale==1 && !Mathf.Approximately((float)Get(movingBackground,"travel"),coverTravel),"Cloud cover stopped gameplay");
             Check(ship.transform.position.x<shipX-.3f,"Cloud cover stopped ship controls: "+level+", x="+shipX+" -> "+ship.transform.position.x+", input="+Get(ship,"move")+", enabled="+ship.enabled+", speed="+GameRules.playerMoveSpeed);
@@ -182,6 +182,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
             yield return new WaitForSecondsRealtime(2.5f);Capture("04-environment-"+level);
             Check(level==LevelId.Fields ? FindAnyObjectByType<PSXGrassField>()!=null : FindAnyObjectByType<LevelEnvironment>()!=null,"Environment missing: "+level);
         }
+        LevelRun.Reset();LevelEnvironment.Apply();
         var waves=FindAnyObjectByType<WaveOrchestrer>();
         // Skip the opening shops only in this probe, so an actual instantiated boss exercises the death hook.
         foreach(var item in FindObjectsByType<AItem>())Destroy(item.gameObject);
@@ -189,7 +190,8 @@ public sealed class LevelFlowProbe : MonoBehaviour
         ship.health=73;GameRules.playerShootDamage=9;
         ship.transform.position=new Vector3(0,-4,ship.transform.position.z);
         Call(waves,"SpawnBoss");yield return new WaitForSeconds(.2f);
-        var boss=FindAnyObjectByType<Boss>();Check(boss!=null,"Boss did not spawn");boss.damage(100000);
+        Check(FindAnyObjectByType<DistrictBoss>()!=null,"Boss did not spawn");
+        foreach(var boss in FindObjectsByType<DistrictBoss>())boss.damage(100000);
         yield return new WaitForSeconds(1);
         var choice=FindAnyObjectByType<LevelChoice>();Check(choice!=null && LevelChoice.Active,"Boss death did not open the route picker");
         var choiceLabels=choice.GetComponentsInChildren<TMPro.TextMeshProUGUI>();
@@ -223,7 +225,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Check((int)Get(waves,"currentWaveNumber")==1,"Next stage waves did not restart");
         foreach(var item in FindObjectsByType<AItem>())Destroy(item.gameObject);
         Field(waves,"isShopUp",false);
-        Call(waves,"SpawnBoss");yield return new WaitForSeconds(.2f);FindAnyObjectByType<Boss>().damage(100000);
+        Call(waves,"SpawnBoss");yield return new WaitForSeconds(.2f);foreach(var boss in FindObjectsByType<DistrictBoss>())boss.damage(100000);
         yield return new WaitForSeconds(1.1f);
         choice=FindAnyObjectByType<LevelChoice>();Check(choice!=null,"Second boss did not open another choice");
         expected=choice.Right;stage=LevelRun.Stage;
@@ -235,6 +237,15 @@ public sealed class LevelFlowProbe : MonoBehaviour
         until=Time.realtimeSinceStartup+10;
         while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
         Check(LevelRun.Current==expected && LevelRun.Stage==stage+1,"Right route selected the wrong level");
+        Call(waves,"SpawnBoss");yield return new WaitForSeconds(.2f);
+        foreach(var boss in FindObjectsByType<DistrictBoss>())boss.damage(100000);
+        yield return new WaitForSeconds(1.1f);
+        Check(!LevelChoice.Active && FindAnyObjectByType<LevelChoice>()==null,"Final boss opened a redundant choice");
+        until=Time.realtimeSinceStartup+12;
+        while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
+        Check(LevelRun.Current==LevelId.Fields && LevelRun.Stage==4 && LevelRun.Loop==2,"Final boss did not loop to harder Plains");
+        Check(ship==FindAnyObjectByType<Shipcontroller>() && weapon==ship.GetComponentInChildren<AWeapon>() && GameRules.playerShootDamage==9,"Loop discarded equipment or upgrades");
+        Check(!GameRules.playerDisabled && !LevelChoice.Active,"Loop left controls disabled");
         CloudTransition.PrepareRoutes(LevelId.Snow,LevelId.Thunder);
         CloudTransition.Load("Title");
         Check(!(bool)Get(transition,"routesPreparing"),"Returning to the menu left route preparation running");
@@ -245,7 +256,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
         FindAnyObjectByType<NewGame>().OnAccept();
         until=Time.realtimeSinceStartup+10;
         while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
-        Check(LevelRun.Stage==1 && GameRules.playerShootDamage==2 && !GameRules.playerDisabled,"New run retained previous run state");
+        Check(LevelRun.Current==LevelId.Fields && LevelRun.Loop==1 && LevelRun.Stage==1 && GameRules.playerShootDamage==2 && !GameRules.playerDisabled,"New run retained previous run state");
         UnityEngine.InputSystem.InputSystem.RemoveDevice(keyboard);
         Check(errors.Count==0,"Unity reported runtime errors: "+string.Join("\n",errors));
     }
