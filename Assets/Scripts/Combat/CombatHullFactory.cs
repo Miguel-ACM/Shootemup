@@ -31,7 +31,7 @@ public static partial class IndustrialMeshFactory
         if(kind==23)return new[]{new Vector3(-1.04f,0.72f,0),new Vector3(1.04f,0.72f,0)};
         if(kind==24)return new[]{new Vector3(-0.85f,0.67f,0),new Vector3(0.85f,0.67f,0)};
         if(kind==25)return new[]{new Vector3(-0.93f,0.86f,0),new Vector3(0.93f,0.86f,0)};
-        if(kind==26)return new[]{new Vector3(-0.48f,1.1f,0),new Vector3(0.48f,1.1f,0)};
+        if(kind==26)return new[]{new Vector3(-0.66f,.7f,0),new Vector3(0.66f,.7f,0)};
         if(kind==28)return new[]{new Vector3(-1.05f,1.04f,0),new Vector3(1.05f,1.04f,0)};
         float x=kind==22 ? .375f : kind==2 || kind==5 || kind==7 || kind==8 || kind==14 || kind==16 || kind>=20 ? .874f : .562f;
         return new[]{new Vector3(-x,.93f,0),new Vector3(x,.93f,0)};
