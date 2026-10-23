@@ -100,6 +100,13 @@ public abstract class AEnemy : MonoBehaviour
         }
     }
 
+    public void Depart()
+    {
+        if(dying)return;dying=true;
+        if(orchestrer!=null)orchestrer.NotifyEnemyKilled(orchesterWaveNumber,isBoss:isBoss);
+        Destroy(gameObject);
+    }
+
     protected virtual void Die()
     {
         // The explosion plays its own sound for every fireball it spawns.
@@ -165,7 +172,7 @@ public abstract class AEnemy : MonoBehaviour
         }
     }
 
-    void OnBecameInvisible()
+    protected virtual void OnBecameInvisible()
     {
         if (!dying)
         {
@@ -177,7 +184,7 @@ public abstract class AEnemy : MonoBehaviour
 
     public void NotifyBossPhaseChange(int phase)
     {
-        orchestrer.NotifyBossPhaseChange(phase);
+        if(orchestrer!=null)orchestrer.NotifyBossPhaseChange(phase);
     }
 
 
