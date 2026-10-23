@@ -24,14 +24,14 @@ public static class SnowChoreography
                 d.Train("ColdWeatherFighter",Spiral,.3f,s,6+n,.38f,5.8f);
                 d.Train("ColdWeatherFighter",Crosswind,2.2f,-s,3,.35f,4.6f);break;
             case 2: // A diagonal echelon of siege ships drifts through a petal.
-                d.Rank("SiegeGunship",Crosswind,0,s,3,.10f,5.8f,1.7f);
+                d.Rank("SiegeGunship",Crosswind,0,s,3,.16f,5.8f,1.7f);
                 d.Train("ColdWeatherFighter",Petal,1.15f,-s,6+n,.33f,4.9f);break;
             case 3: // The two halves of a snowflake unfurl on alternating beats.
                 d.Train("ColdWeatherFighter",Spiral,0,s,5+n,.38f,5.7f);
                 d.Train("ColdWeatherFighter",Spiral,1.05f,-s,5+n,.38f,5.7f);
                 d.Solo("AvalancheBomber",Drift,.8f,s,.12f,5.6f,1.55f);break;
             case 4: // Three heavy arcs fan outward while a low wind races past.
-                d.Rank("AvalancheBomber",Drift,0,s,3,.30f,5.9f,1.7f);
+                for(int i=0;i<3;i++)d.Solo("AvalancheBomber",Drift,i*.32f,s,(i-1)*.40f,5.9f,1.7f);
                 d.Train("ColdWeatherFighter",Crosswind,1.1f,-s,7+n,.30f,4.6f,lane:-.10f);break;
             case 5: // Shields change sides; fighters trace the gap between them.
                 d.Solo("ShieldTransport",Drift,0,s,-.20f,5.6f,1.8f);
