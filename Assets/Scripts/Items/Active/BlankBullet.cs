@@ -22,7 +22,7 @@ public class BlankBullet : AActiveItem
                 if (Vector2.Distance(enemyBullets[i].transform.position, pos) < 5f)
                 {
                     var round = enemyBullets[i].GetComponent<AEnemyBullet>();
-                    if(round is PulseLaser || round is SegmentedBeam)continue;
+                    if(round is PulseLaser)continue;
                     if(CombatUpgrades.Current!=null)CombatUpgrades.Current.Block();
                     if (round != null) round.Vanish(); else Destroy(enemyBullets[i]);
                 }

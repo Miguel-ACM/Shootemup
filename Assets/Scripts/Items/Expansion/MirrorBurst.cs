@@ -10,7 +10,7 @@ public sealed class MirrorBurst : AActiveItem
         foreach(var shot in FindObjectsByType<AEnemyBullet>(FindObjectsSortMode.None))
         {
             if(converted>=18)break;
-            if(shot is PulseLaser || shot is SegmentedBeam || Vector2.Distance(shot.transform.position,s.transform.position)>5)continue;
+            if(shot is PulseLaser || Vector2.Distance(shot.transform.position,s.transform.position)>5)continue;
             PlayerRound.Spawn(shot.transform.position,Vector2.up,GameRules.playerShootDamage*2,9,PlayerDelivery.Missile,1);
             shot.Vanish();CombatUpgrades.Current?.Block();converted++;
         }

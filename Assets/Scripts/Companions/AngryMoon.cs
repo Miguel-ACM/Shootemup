@@ -24,7 +24,7 @@ public class AngryMoon : BlockerOrbital
             positionOther.z = this.transform.position.z;
             lineDrawer.DrawLine(new Vector3[] { this.transform.position, positionOther }, 0.1f);
             var bullet=other.GetComponent<AEnemyBullet>();
-            if(bullet is PulseLaser || bullet is SegmentedBeam)return;
+            if(bullet is PulseLaser)return;
             if(CombatUpgrades.Current!=null)CombatUpgrades.Current.Block();
             bullet.OnTrigger();
         }

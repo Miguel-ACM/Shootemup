@@ -20,7 +20,7 @@ public sealed class GravityField : MonoBehaviour
         age+=Time.deltaTime;CombatVisuals.Ring(ring,transform.position,2.8f);
         foreach(var shot in new System.Collections.Generic.List<CombatRound>(CombatRound.Live))
         {
-            if(shot==null || shot is PulseLaser || shot is SegmentedBeam || Vector2.Distance(shot.transform.position,transform.position)>2.8f)continue;
+            if(shot==null || shot is PulseLaser || Vector2.Distance(shot.transform.position,transform.position)>2.8f)continue;
             shot.transform.position=Vector3.MoveTowards(shot.transform.position,transform.position,Time.deltaTime*6);
             if(Vector2.Distance(shot.transform.position,transform.position)<.5f || age>2.4f){CombatUpgrades.Current?.Block();shot.Vanish();}
         }
