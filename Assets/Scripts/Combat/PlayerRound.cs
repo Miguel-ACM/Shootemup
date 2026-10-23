@@ -23,7 +23,7 @@ public sealed class PlayerRound : ABullet
         var rb=go.AddComponent<Rigidbody2D>();rb.bodyType=RigidbodyType2D.Kinematic;rb.gravityScale=0;
         var collider=go.AddComponent<CapsuleCollider2D>();collider.isTrigger=true;collider.direction=CapsuleDirection2D.Vertical;
         var sr=go.AddComponent<SpriteRenderer>();sr.sprite=PlayerProjectileArt.For(mode);sr.sharedMaterial=CombatVisuals.ProjectileMaterial;sr.sortingLayerName="Bullet";sr.sortingOrder=16;
-        sr.color=mode==PlayerDelivery.Flame ? new Color(1,.65f,.2f) : Color.white;
+        sr.color=Color.white;
         var b=go.AddComponent<PlayerRound>();b.visual=sr;b.damage=damage;b.speed=speed;b.delivery=mode;b.generation=generation;
         b.origin=p;b.heading=d.normalized;b.pierces=mode==PlayerDelivery.Needle ? 1 : 0;
         Vector2 span=mode==PlayerDelivery.Needle ? new Vector2(.2f,.88f) : mode==PlayerDelivery.Shell ? Vector2.one*.44f :
@@ -56,7 +56,7 @@ public sealed class PlayerRound : ABullet
         transform.position+=(Vector3)heading*speed*brake*Time.deltaTime;
         transform.rotation=Quaternion.FromToRotation(Vector3.up,heading);
         if(delivery==PlayerDelivery.Disc)transform.Rotate(0,0,age*540);
-        if(delivery==PlayerDelivery.Flame){visual.color=Color.Lerp(Color.yellow,new Color(1,.25f,.1f,.1f),age/.55f);if(age>.55f)Destroy(gameObject);}
+        if(delivery==PlayerDelivery.Flame){visual.color=new Color(1,1,1,1-Mathf.Clamp01(age/.55f));if(age>.55f)Destroy(gameObject);}
         if(delivery==PlayerDelivery.Shell && age>1.05f)Detonate();
         if(generation==0 && CombatUpgrades.Current!=null && CombatUpgrades.Current.ProximityReady && age>.1f)
         {

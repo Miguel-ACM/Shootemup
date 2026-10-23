@@ -11,6 +11,7 @@ public static partial class PlayerProjectileArt
     {
         if(delivery==PlayerDelivery.Shell)return Shell();
         if(delivery==PlayerDelivery.Disc)return Disc();
+        if(delivery==PlayerDelivery.Flame)return Flame();
         return CombatVisuals.Projectile(true);
     }
     static Sprite Make(string name,int width,int height,Func<int,int,Color> pixel)
