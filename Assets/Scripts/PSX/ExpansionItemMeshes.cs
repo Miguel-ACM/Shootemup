@@ -23,6 +23,28 @@ public static partial class IndustrialMeshFactory
         }
         else if(kind=="BallBearing")
         {b.Drum(Vector3.zero,.32f,.12f,6,16);b.Drum(new Vector3(0,0,-.09f),.25f,.08f,11,16);for(int i=0;i<8;i++){float a=i*Mathf.PI/4;b.Ball(new Vector3(Mathf.Cos(a)*.22f,Mathf.Sin(a)*.22f,-.16f),Vector3.one*.085f,1);}}
+        else if(kind=="GravityWell" || kind=="MirrorBurst" || kind=="BlankBullet")
+        {
+            b.Drum(Vector3.zero,.33f,.18f,11,8,6);
+            b.Drum(new Vector3(0,0,-.13f),.26f,.09f,kind=="BlankBullet" ? 3 : 7,8);
+            if(kind=="GravityWell")
+            {
+                b.Drum(new Vector3(0,0,-.2f),.17f,.07f,9,12);
+                b.Drum(new Vector3(0,0,-.25f),.105f,.06f,11,12);
+                foreach(int s in new[]{-1,1})b.Box(new Vector3(s*.38f,0,-.08f),new Vector3(.15f,.37f,.17f),6);
+            }
+            else if(kind=="MirrorBurst")
+                for(int i=0;i<6;i++)
+                {
+                    float a=i*Mathf.PI/3;var p=new Vector2(Mathf.Cos(a),Mathf.Sin(a));var q=new Vector2(-p.y,p.x);
+                    b.Prism(new[]{p*.22f-q*.08f,p*.48f,p*.22f+q*.08f},.12f,9,Vector3.back*.23f,6);
+                }
+            else
+            {
+                b.Box(new Vector3(0,.37f,0),new Vector3(.2f,.16f,.2f),6);
+                b.Box(new Vector3(0,0,-.23f),new Vector3(.12f,.28f,.05f),10);
+            }
+        }
         else if(kind.EndsWith("Item"))
         {
             bool beam=kind=="BeamEmitterItem",shell=kind=="BurstLauncherItem",disc=kind=="DiscThrowerItem",flame=kind=="FlameProjectorItem";
@@ -30,12 +52,14 @@ public static partial class IndustrialMeshFactory
             if(disc){b.Drum(Vector3.zero,.35f,.14f,6,12);b.Drum(new Vector3(0,0,-.1f),.15f,.08f,9,12);}
             else
             {
-                int count=kind=="ScatterCannonItem" ? 3 : kind=="SwarmRackItem" ? 2 : 1;
+                int count=kind=="ScatterCannonItem" ? 3 : kind=="SwarmRackItem" || kind=="RailDriverItem" ? 2 : 1;
                 for(int i=0;i<count;i++)
                 {
                     float x=(i-(count-1)*.5f)*.2f;
                     b.Box(new Vector3(x,.27f,0),new Vector3(shell ? .3f : .13f,.65f,.18f),11,6);
                     b.Box(new Vector3(x,.56f,0),new Vector3(shell ? .36f : .19f,.12f,.24f),beam ? 9 : flame ? 3 : 6);
+                    if(kind=="RailDriverItem")for(int coil=0;coil<4;coil++)b.Box(new Vector3(x,.12f+coil*.13f,-.13f),new Vector3(.16f,.055f,.06f),9);
+                    if(kind=="SwarmRackItem")for(int rocket=0;rocket<3;rocket++)b.Drum(new Vector3(x,-.13f+rocket*.19f,-.22f),.075f,.13f,3,6);
                 }
             }
             b.Box(new Vector3(0,-.17f,-.2f),new Vector3(.24f,.16f,.05f),beam ? 9 : 3);
