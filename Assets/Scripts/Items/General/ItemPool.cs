@@ -5,7 +5,7 @@ using UnityEngine;
 public static class ItemPool
 {
     private static readonly string[] allCommon = { "RabbitsFoot", "BlankBullet", "TwerpItem", "Magnet", "AK45Item" };
-    private static readonly string[] allRare = { "Caffeine", "ProteinSupplement", "AMoonItem", "BabyYouItem", "ElectricityItem" };
+    private static readonly string[] allRare = { "SplitterCore", "Caffeine", "ProteinSupplement", "AMoonItem", "BabyYouItem", "ElectricityItem" };
     private static readonly string[] allEpic = { "AnotherArm", "AngryMoonItem" };
     private static readonly string[] allLegendary = { "Telekinesis", "ThreeMoonsItem" };
 
