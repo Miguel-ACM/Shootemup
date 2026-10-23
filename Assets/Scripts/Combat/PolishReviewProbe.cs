@@ -70,6 +70,37 @@ public sealed class PolishReviewProbe : MonoBehaviour
         foreach(var m in e.GetComponents<PatternMover>())m.enabled=false;
         return e;
     }
+    IEnumerator RepeatedLanceScore()
+    {
+        float savedSpeed=GameRules.enemySpeed;
+        foreach(bool fast in new[]{false,true})
+        {
+            LevelRun.Reset(LevelId.Thunder);
+            if(fast)for(int loop=0;loop<8;loop++)
+            {LevelRun.Advance(LevelId.Fields);LevelRun.Advance(LevelId.Snow);LevelRun.Advance(LevelId.Thunder);}
+            GameRules.enemySpeed=fast ? 1.2f : 1;
+            float tempo=GameRules.enemySpeed*LevelRun.EnemyTempoScale;
+            var score=ThunderChoreography.Create(6).units.First(x=>x.enemy=="ArcLancer").fireTimes;
+            var lancer=Station(typeof(ArcLancer),new Vector3(-1.5f,5,1));yield return null;lancer.enabled=false;
+            lancer.gameObject.AddComponent<FormationFlight>().enabled=false;
+            typeof(ArcLancer).GetMethod("Attack",Hidden).Invoke(lancer,null);
+            var first=FindObjectsByType<PulseLaser>().Single();var heading=first.Heading;
+            string directory=BeginClip(fast ? "ScoredLanceFastLoop" : "ScoredLanceFirstLoop");
+            float angularTravel=0;
+            while(Time.time-started<(score[1]-score[0])/tempo)
+            {
+                angularTravel=Mathf.Max(angularTravel,Vector2.Angle(heading,first.Heading));
+                yield return Capture(directory);yield return null;
+            }
+            Check(!first.IsAttachedTo(lancer.Hull),"lance finishes cooling before the next authored beat at tempo "+tempo.ToString("F2"));
+            Check(angularTravel>15 && angularTravel<22,"lance preserves its sweep arc at tempo "+tempo.ToString("F2"));
+            typeof(ArcLancer).GetMethod("Attack",Hidden).Invoke(lancer,null);
+            var second=FindObjectsByType<PulseLaser>().Single();
+            Check(second.IsAttachedTo(lancer.Hull) && second.Charge<.1f,"the next scored lance actually launches at tempo "+tempo.ToString("F2"));
+            yield return new WaitForSeconds(1.85f/tempo);Clear();yield return null;
+        }
+        GameRules.enemySpeed=savedSpeed;LevelRun.Reset(LevelId.Thunder);
+    }
     IEnumerator Run()
     {
         GameRules.StartNewRun();LevelRun.Reset();Time.timeScale=1;
@@ -124,6 +155,7 @@ public sealed class PolishReviewProbe : MonoBehaviour
         Check(peakLoops==7,"seven boss emitters each sustain a beam with bounded overlapping audio");
         Clear();yield return null;
 
+        yield return RepeatedLanceScore();
         var loadout=ship.GetComponent<ShipLoadout>();loadout.EquipWeapon("BeamEmitter",0);yield return null;
         InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Z));
         directory=BeginClip("PlayerBeam");while(Time.time-started<3.4f){yield return Capture(directory);yield return null;}
