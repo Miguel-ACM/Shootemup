@@ -8,7 +8,7 @@ public static partial class IndustrialMeshFactory
         BevelArmor(b,new[]{V(-.49f,.83f),V(.49f,.83f),V(.73f,.27f),V(.57f,-.34f),V(-.57f,-.34f),V(-.73f,.27f)},.43f,4);
         foreach(int s in new[]{-1,1})
         {
-            b.Ball(new Vector3(s*.72f,.02f,-.13f),new Vector3(.39f,.57f,.25f),1);
+            b.Ball(new Vector3(s*.72f,.02f,-.13f),new Vector3(.39f,.57f,.25f),15);
             BevelArmor(b,new[]{V(s*.55f,-.05f),V(s*.88f,-.05f),V(s*.91f,-.38f),V(s*.62f,-.55f)},.12f,4,-.32f);
             Motor(b,s*.66f,.45f,.29f,.5f,4);
             Inlet(b,s*.76f,.09f,.23f,.32f,-.37f,1);
