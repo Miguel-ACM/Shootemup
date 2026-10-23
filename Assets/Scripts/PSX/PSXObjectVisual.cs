@@ -50,7 +50,12 @@ public sealed class PSXObjectVisual : MonoBehaviour
             var item=GetComponent<AItem>();
             string kind=item!=null ? item.GetType().Name : "money";
             int index=Array.IndexOf(IndustrialMeshFactory.ItemKinds,kind);
-            model.GetComponent<MeshFilter>().sharedMesh=itemMeshes[Mathf.Max(0,index)];
+            if(index>=0)model.GetComponent<MeshFilter>().sharedMesh=itemMeshes[index];
+            else
+            {
+                model.GetComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.ExpansionItem(kind);
+                modelRenderer.sharedMaterial=Resources.Load<Material>("CombatFleet");
+            }
         }
         if(sourceSprite!=null)sourceSprite.enabled=false;
         // Desynchronise the looping part animation so a wave does not move in lockstep.
