@@ -15,40 +15,63 @@ public static class CityChoreography
         var d=new WaveDance(budget){Handoff=3.25f};float s=d.Side;int n=d.Extra;
         switch(d.Phrase)
         {
-            case 0: // Rush-hour lanes overtake each other at different speeds.
-                d.Train("AttackDrone",Overtake,0,s,6+n,.23f,4.0f,lane:-.16f);
-                d.Train("CourierDiver",Overtake,.6f,s,7+n,.17f,3.05f,lane:.16f);
-                d.Train("CourierDiver",Flyby,1.65f,-s,4,.18f,2.8f);break;
-            case 1: // Interchange traffic is cut by a low express stream.
-                d.Train("AttackDrone",Interchange,0,s,6+n,.22f,4.2f);
-                d.Train("CourierDiver",Flyby,.9f,-s,8+n,.17f,2.8f,lane:-.12f);
-                d.Solo("PursuitFighter",Slingshot,.35f,-s,0,4.3f,1.5f);break;
-            case 2: // Mirrored slingshots peel up as fresh couriers dive through.
-                d.Train("CourierDiver",Slingshot,0,s,6+n,.19f,3.45f);
-                d.Train("CourierDiver",Slingshot,.65f,-s,6+n,.19f,3.45f);
-                d.Train("AttackDrone",Overtake,1.45f,s,4,.22f,3.8f);break;
-            case 3: // A command ship circulates; two express lanes exchange sides.
-                d.Solo("CommandGunship",Interchange,0,s,.08f,5.0f,1.5f);
-                d.Train("CourierDiver",Flyby,.1f,s,6+n,.17f,2.7f,lane:-.12f);
-                d.Train("CourierDiver",Flyby,1.15f,-s,6+n,.17f,2.7f,lane:.10f);break;
-            case 4: // Parallel ranks fan through a fast vertical interchange.
-                d.Rank("AttackDrone",Overtake,0,s,4,.25f,3.8f);
-                d.Rank("CourierDiver",Overtake,.8f,-s,4,.25f,3.0f);
-                d.Train("CourierDiver",Slingshot,1.15f,s,7+n,.18f,3.4f);break;
-            case 5: // Pursuit leaders pull two interleaving packs around the blocks.
-                d.Solo("PursuitFighter",Slingshot,0,s,0,4.4f,1.5f);
-                d.Solo("PursuitFighter",Slingshot,.55f,-s,0,4.4f,1.5f);
-                d.Train("AttackDrone",Interchange,.45f,s,5+n,.23f,4.1f,lane:.06f);
-                d.Train("CourierDiver",Interchange,1.45f,-s,5+n,.18f,3.6f,lane:-.10f);break;
-            case 6: // Three cross-streets fire in ripples, with deliberate vertical gaps.
-                d.Train("CourierDiver",Flyby,0,s,6+n,.17f,2.8f,lane:.13f);
-                d.Train("AttackDrone",Flyby,.85f,-s,5+n,.22f,3.3f,lane:-.02f);
-                d.Train("CourierDiver",Flyby,1.65f,s,6+n,.17f,2.8f,lane:-.18f);break;
-            default: // A command loop is overtaken by a cascade of paired divers.
-                d.Solo("CommandGunship",Interchange,0,-s,.08f,5.0f,1.45f);
-                d.Train("AttackDrone",Slingshot,.25f,s,5+n,.23f,3.9f);
-                d.Train("CourierDiver",Overtake,1.0f,-s,6+n,.18f,3.0f,lane:.16f);
-                d.Train("CourierDiver",Overtake,1.3f,s,6+n,.18f,3.0f,lane:-.16f);break;
+            case 0: // A fast courier lane overtakes the drone lane on a two-note downbeat.
+                d.OnBeats(1.70f,2.85f);
+                d.Train("AttackDrone",Overtake,0,s,6+n,.23f,4.0f,lane:-.20f);
+                d.OnBeats(2.15f,2.55f);
+                d.Train("CourierDiver",Overtake,.50f,s,7+n,.17f,3.05f,lane:.20f);
+                d.OnBeats(3.50f,3.90f);
+                d.Rank("CourierDiver",Flyby,1.65f,-s,3,.08f,2.85f);break;
+            case 1: // The interchange winds up, then one express stream cuts its lower lane.
+                d.OnBeats(2.10f,3.20f);
+                d.Train("AttackDrone",Interchange,0,s,6+n,.23f,4.3f,lane:.04f);
+                d.OnBeats(2.65f,3.05f,3.65f);
+                d.Train("CourierDiver",Flyby,.85f,-s,7+n,.18f,2.9f,lane:-.15f);
+                d.OnBeats(1.30f);
+                d.Solo("PursuitFighter",Slingshot,.05f,-s,0,4.3f);break;
+            case 2: // Two symmetrical slingshot packs rise together around a diving arrow.
+                d.OnBeats(1.80f,2.30f);
+                d.Train("CourierDiver",Slingshot,0,s,6+n,.19f,3.55f,depth:.045f);
+                d.Train("CourierDiver",Slingshot,0,-s,6+n,.19f,3.55f,depth:-.045f);
+                d.OnBeats(3.05f,3.65f,4.25f);
+                d.Wedge("AttackDrone",Overtake,1.25f,s,2,.20f,.055f,3.9f);break;
+            case 3: // A command ship conducts alternating express lanes, each firing as one.
+                d.OnBeats(1.45f,3.15f);
+                d.Solo("CommandGunship",Interchange,0,s,.08f,5.0f);
+                d.OnBeats(1.95f,2.35f);
+                d.Train("CourierDiver",Flyby,0,s,6+n,.18f,2.85f,lane:-.13f);
+                d.OnBeats(3.05f,3.45f);
+                d.Train("CourierDiver",Flyby,1.10f,-s,6+n,.18f,2.85f,lane:.11f);break;
+            case 4: // Two staggered arrows dive through, followed by a sharp upward peel.
+                d.OnBeats(1.40f,2.45f);
+                d.Wedge("AttackDrone",Overtake,0,s,2,.21f,.055f,3.9f);
+                d.OnBeats(2.05f,2.50f);
+                d.Wedge("CourierDiver",Overtake,.70f,-s,2,.21f,.055f,3.15f);
+                d.OnBeats(3.10f,3.55f,4.00f);
+                d.Train("CourierDiver",Slingshot,1.20f,s,6+n,.19f,3.55f);break;
+            case 5: // Pursuit leaders turn in synchrony; their two packs answer after the lasers.
+                d.OnBeats(1.30f);
+                d.Solo("PursuitFighter",Slingshot,0,s,-.10f,4.5f);
+                d.Solo("PursuitFighter",Slingshot,0,-s,-.10f,4.5f);
+                d.OnBeats(2.75f,3.85f);
+                d.Train("AttackDrone",Interchange,.45f,s,5+n,.23f,4.2f,lane:.09f);
+                d.OnBeats(3.25f,3.70f,4.20f);
+                d.Train("CourierDiver",Interchange,1.1f,-s,6+n,.19f,3.8f,lane:-.13f);break;
+            case 6: // Three cross-streets trade tightly spaced volleys on a regular traffic rhythm.
+                d.OnBeats(1.80f,2.20f);
+                d.Train("CourierDiver",Flyby,0,s,6+n,.18f,2.9f,lane:.16f);
+                d.OnBeats(2.65f,3.55f);
+                d.Train("AttackDrone",Flyby,.85f,-s,5+n,.23f,3.4f,lane:0);
+                d.OnBeats(3.50f,3.90f);
+                d.Train("CourierDiver",Flyby,1.70f,s,6+n,.18f,2.9f,lane:-.16f);break;
+            default: // Couriers pass the command ship in matched pairs, then a diamond rises out.
+                d.OnBeats(1.45f,3.15f);
+                d.Solo("CommandGunship",Interchange,0,-s,.08f,5.0f);
+                d.OnBeats(2.10f,2.55f);
+                d.Train("CourierDiver",Overtake,.45f,-s,6+n,.18f,3.1f,lane:.19f);
+                d.Train("CourierDiver",Overtake,.45f,s,6+n,.18f,3.1f,lane:.19f);
+                d.OnBeats(3.70f,4.45f);
+                d.Diamond("AttackDrone",Slingshot,1.65f,s,.22f,.065f,4.0f);break;
         }
         return d.Build();
     }
