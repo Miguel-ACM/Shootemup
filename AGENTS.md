@@ -16,6 +16,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 ## Combat should look like a dance
 
 - Shoot-em-up waves need authored choreography: coherent formations, mirrored paths, purposeful timing, coordinated volleys, entrances and exits.
+- Give each district its own routes and a broad set of flowing compositions. Do not copy the same wave patterns between levels with different enemy names; favor continuous curves, linked formations, interweaving passes and smooth handoffs.
 - Avoid slow stop-and-wait encounters, arbitrary collections of independently wandering enemies, or filling time by adding random enemies.
 - Speed up slow enemies themselves; removing inter-wave delays alone does not fix pacing.
 - Shops and reward decisions must be infrequent enough to preserve sustained combat stretches.
