@@ -9,6 +9,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Prefer clear shapes, animation, sound, key/button sprites and visual feedback over instructions and labels.
 - Do not fill combat or equipment selection with explanatory text. Show only information that helps an immediate decision.
 - Keep equipment outside combat: compact stylized weapon octagons at bottom left/right, with smaller active octagons touching the upper outer corner of each weapon octagon.
+- Keep score, multiplier (including its progress indicator), and enemy/boss health outside the main combat area too. Use the side margins without overlapping equipment or the collected-item column.
 - Show actual 3D equipment models, including a deliberately modeled base gun. Keep the whole loadout display small.
 - Select the replacement weapon/active using its own fire/active control before collecting an item. Show a small selection indicator over the ship.
 

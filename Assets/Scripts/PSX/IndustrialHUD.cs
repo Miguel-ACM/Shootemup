@@ -10,6 +10,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     Text score,chain;
     Image[] healthCells,manaCells,chainCells,bossCells;
     RectTransform bossPanel;
+    RectTransform scorePanel;
     RectTransform sidePanel;
     CanvasGroup sideGroup;
     float entranceAge;
@@ -43,9 +44,12 @@ public sealed class IndustrialHUD : MonoBehaviour
         var right=Panel(root.transform,"Right playfield mask",Color.black);right.anchorMin=new Vector2(.5f,0);right.anchorMax=Vector2.one;right.offsetMin=new Vector2(202.5f,0);right.offsetMax=Vector2.zero;
         var frame=new GameObject("405 x 720 playfield",typeof(RectTransform));frame.transform.SetParent(root.transform,false);
         var rect=frame.GetComponent<RectTransform>();rect.anchorMin=rect.anchorMax=new Vector2(.5f,.5f);rect.sizeDelta=new Vector2(405,720);
-        score=TextAt(frame.transform,"000000000",12,12,11,Steel);
-        chain=TextAt(frame.transform,"",333,12,10,Amber);
-        chainCells=Cells(frame.transform,333,28,6,7,Amber);
+        scorePanel=Panel(frame.transform,"Score and multiplier",Dark);Place(scorePanel,-144,12,132,64);
+        Rule(scorePanel,8,3,116,new Color(.21f,.27f,.27f));
+        Rule(scorePanel,8,61,116,new Color(.21f,.27f,.27f));
+        score=TextAt(scorePanel,"000000000",12,10,12,Steel);score.rectTransform.sizeDelta=new Vector2(108,20);
+        chain=TextAt(scorePanel,"x1",12,35,12,Amber);chain.rectTransform.sizeDelta=new Vector2(30,20);
+        chainCells=Cells(scorePanel,46,43,6,10,Amber);
         sidePanel=Panel(frame.transform,"Side instruments",Dark);
         sideGroup=sidePanel.gameObject.AddComponent<CanvasGroup>();sideGroup.alpha=0;
         sidePanel.anchorMin=sidePanel.anchorMax=Vector2.zero;
@@ -62,12 +66,25 @@ public sealed class IndustrialHUD : MonoBehaviour
         healthCells=VerticalCells(sidePanel,8,34,24,10,7,Steel);
         manaCells=VerticalCells(sidePanel,25,34,24,7,7,Cyan);
         Fill(healthCells,0,Steel);Fill(manaCells,0,Cyan);
-        bossPanel=Panel(frame.transform,"Boss hull",Dark);Place(bossPanel,12,43,380,13);
-        bossCells=Cells(bossPanel,5,4,32,9,Amber);bossPanel.gameObject.SetActive(false);
+        // The inventory occupies the first 40 pixels of the right margin.
+        bossPanel=Panel(frame.transform,"Boss hull",Dark);Place(bossPanel,455,12,28,248);
+        Place(Panel(bossPanel,"Left casing",new Color(.21f,.27f,.27f)),1,3,1,242);
+        Place(Panel(bossPanel,"Right casing",new Color(.21f,.27f,.27f)),26,3,1,242);
+        Rule(bossPanel,6,8,16,Amber);Rule(bossPanel,6,244,16,new Color(.21f,.27f,.27f));
+        bossCells=VerticalCells(bossPanel,7,17,32,14,5,Amber);bossPanel.gameObject.SetActive(false);
     }
 
     void LateUpdate()
     {
+        // Compress into narrow side margins; never push an instrument into combat.
+        float margin=Mathf.Max(0,(Screen.width*720f/Mathf.Max(1,Screen.height)-405)*.5f);
+        if(scorePanel!=null)
+        {
+            float scale=Mathf.Min(1,Mathf.Max(0,margin-12)/132);
+            scorePanel.localScale=Vector3.one*scale;
+            scorePanel.anchoredPosition=new Vector2(-12-132*scale,-12);
+        }
+        if(bossPanel!=null)bossPanel.localScale=Vector3.one*Mathf.Min(1,Mathf.Max(0,margin-58)/28);
         if(sidePanel!=null)
         {
             float enter=Mathf.SmoothStep(0,1,entranceAge/.65f);
@@ -90,7 +107,7 @@ public sealed class IndustrialHUD : MonoBehaviour
             Fill(manaCells,player.mana/Mathf.Max(1,player.maxMana),Cyan,energyLimit);
         }
         if(player==null || Time.unscaledTime<nextUpdate)return;nextUpdate=Time.unscaledTime+.1f;
-        score.text=Score.CurrentScore.ToString("000000000");chain.text=Score.CurrentMultiplier>1 ? "x"+Score.CurrentMultiplier : "";
+        score.text=Score.CurrentScore.ToString("000000000");chain.text="x"+Score.CurrentMultiplier;
         Fill(chainCells,Score.GetPercentageNextMultiplier(),Amber);
         if(Time.unscaledTime>nextScan)
         {
