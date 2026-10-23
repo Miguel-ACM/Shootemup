@@ -44,12 +44,12 @@ public static class RenderFleetReview
     static void Sheet(string path,int[] kinds,Vector3 angle,int columns,int cellPixels=320,float cellWorld=3.8f,bool gameplayScale=false)
     {
         var scene=EditorSceneManager.NewPreviewScene();
-        RenderTexture target=null;Texture2D pixels=null;
+        RenderTexture target=null;Texture2D pixels=null;UnityEngine.Camera camera=null;
         try
         {
             int rows=Mathf.CeilToInt(kinds.Length/(float)columns);
             var cameraObject=new GameObject("Fleet studio camera");SceneManager.MoveGameObjectToScene(cameraObject,scene);
-            var camera=cameraObject.AddComponent<UnityEngine.Camera>();camera.scene=scene;
+            camera=cameraObject.AddComponent<UnityEngine.Camera>();camera.scene=scene;
             camera.transform.position=new Vector3(0,0,-20);camera.orthographic=true;
             camera.orthographicSize=rows*cellWorld*.5f;camera.aspect=columns/(float)rows;
             camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.025f,.035f,.045f);
@@ -76,6 +76,8 @@ public static class RenderFleetReview
         }
         finally
         {
+            if(camera!=null)camera.targetTexture=null;
+            if(RenderTexture.active==target)RenderTexture.active=null;
             if(pixels!=null)UnityEngine.Object.DestroyImmediate(pixels);
             if(target!=null){target.Release();UnityEngine.Object.DestroyImmediate(target);}
             EditorSceneManager.ClosePreviewScene(scene);
