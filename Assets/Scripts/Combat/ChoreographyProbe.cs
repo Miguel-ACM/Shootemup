@@ -171,9 +171,13 @@ public sealed class ChoreographyProbe : MonoBehaviour
     IEnumerator Run()
     {
         GameRules.StartNewRun();InspectCompositions();LevelRun.Reset();Time.timeScale=1;
-        if(SceneManager.GetActiveScene().name!="L1")yield return SceneManager.LoadSceneAsync("L1");
+        // This probe can follow weapon/active reviews in the same Play session.
+        // Reset globals and recreate the pilot so those equipped items cannot leak in.
+        yield return SceneManager.LoadSceneAsync("L1");
         yield return new WaitForSecondsRealtime(1.2f);Time.timeScale=1;
         ship=FindAnyObjectByType<Shipcontroller>();ship.health=ship.maxHealth=10000;
+        var weapons=ship.GetComponentsInChildren<AWeapon>();
+        Check(weapons.Length==1 && weapons[0] is BaseWeapon,"fresh choreography review uses only the stock BaseWeapon");
         flow=FindAnyObjectByType<WaveOrchestrer>();keyboard=InputSystem.AddDevice<Keyboard>();
         flow.enabled=false;flow.CancelInvoke();flow.StopAllCoroutines();Clear();yield return null;
         InspectScores();Clear();yield return null;
