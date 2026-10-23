@@ -25,7 +25,7 @@ public sealed class LoadoutHUD : MonoBehaviour
     void Start()
     {
         loadout=GetComponent<ShipLoadout>();font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        var root=new GameObject("Octagonal loadout instruments",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler));root.transform.SetParent(transform,false);
+        var root=new GameObject("Octagonal loadout instruments",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler));
         canvas=root.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=9;
         var scaler=root.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);scaler.matchWidthOrHeight=1;
         BuildStudio();
@@ -137,5 +137,5 @@ public sealed class LoadoutHUD : MonoBehaviour
         var rect=(RectTransform)go.transform;rect.sizeDelta=new Vector2(32,24);rect.anchoredPosition=at;
         return Label(rect,"",12,new Vector2(0,1),new Vector2(32,24),new Color(.04f,.09f,.1f));
     }
-    void OnDestroy(){if(studio!=null)Destroy(studio.gameObject);if(texture!=null){texture.Release();Destroy(texture);}}
+    void OnDestroy(){if(canvas!=null)Destroy(canvas.gameObject);if(studio!=null)Destroy(studio.gameObject);if(texture!=null){texture.Release();Destroy(texture);}}
 }
