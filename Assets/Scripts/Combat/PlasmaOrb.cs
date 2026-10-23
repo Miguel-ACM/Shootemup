@@ -7,7 +7,7 @@ public sealed class PlasmaOrb : CombatRound
     {
         // The Bullet layer intentionally ignores itself. Destructible shells must accept player rounds.
         gameObject.layer=0;
-        health=12;visual.color=new Color(.55f,.9f,1);
+        health=12;visual.sprite=CombatVisuals.Projectile(false,true,true);visual.color=Color.white;
         if(outline==null)outline=CombatVisuals.Line(transform,Color.white,.05f);
         CombatVisuals.Ring(outline,transform.position,transform.localScale.x*.6f);
     }

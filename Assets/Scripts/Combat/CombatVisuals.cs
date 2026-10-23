@@ -8,9 +8,9 @@ public static class CombatVisuals
     static Material lineMaterial;
     static readonly Dictionary<string,Sprite> projectiles=new Dictionary<string,Sprite>();
     public static Material ProjectileMaterial=>Resources.Load<GameObject>("Bullets/EnemyBulletSmall").GetComponent<SpriteRenderer>().sharedMaterial;
-    public static Sprite Projectile(bool friendly=false,bool large=false)
+    public static Sprite Projectile(bool friendly=false,bool large=false,bool energy=false)
     {
-        string name=friendly ? "PlayerBullet" : large ? "EnemyBulletBig" : "EnemyBulletSmall";
+        string name=friendly ? "PlayerBullet" : energy ? "EnemyBulletMedium" : large ? "EnemyBulletBig" : "EnemyBulletSmall";
         if(projectiles.TryGetValue(name,out var sprite))return sprite;
         var source=Resources.Load<GameObject>("Bullets/"+name).GetComponent<SpriteRenderer>().sprite;
         // Preserve authored pixels while giving every runtime round a unit-sized footprint.
