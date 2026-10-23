@@ -26,8 +26,8 @@ public sealed class PlayerRound : ABullet
         sr.color=mode==PlayerDelivery.Flame ? new Color(1,.65f,.2f) : Color.white;
         var b=go.AddComponent<PlayerRound>();b.visual=sr;b.damage=damage;b.speed=speed;b.delivery=mode;b.generation=generation;
         b.origin=p;b.heading=d.normalized;b.pierces=mode==PlayerDelivery.Needle ? 1 : 0;
-        Vector2 span=mode==PlayerDelivery.Needle ? new Vector2(.16f,.88f) : mode==PlayerDelivery.Shell ? Vector2.one*.44f :
-            mode==PlayerDelivery.Disc ? Vector2.one*.4f : mode==PlayerDelivery.Flame ? new Vector2(.26f,.5f) : new Vector2(.19f,.62f);
+        Vector2 span=mode==PlayerDelivery.Needle ? new Vector2(.2f,.88f) : mode==PlayerDelivery.Shell ? Vector2.one*.44f :
+            mode==PlayerDelivery.Disc ? Vector2.one*.4f : mode==PlayerDelivery.Flame ? new Vector2(.26f,.5f) : new Vector2(.24f,.62f);
         var bounds=sr.sprite.bounds.size;float size=Mathf.Sqrt(GameRules.playerShootSize)*(generation>0 ? .85f : 1);
         go.transform.localScale=new Vector3(span.x/Mathf.Max(.01f,bounds.x),span.y/Mathf.Max(.01f,bounds.y),1)*size;
         collider.size=new Vector2(bounds.x*.65f,bounds.y*.78f);

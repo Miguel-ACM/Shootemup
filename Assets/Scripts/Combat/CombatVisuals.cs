@@ -10,6 +10,7 @@ public static class CombatVisuals
     public static Material ProjectileMaterial=>Resources.Load<GameObject>("Bullets/EnemyBulletSmall").GetComponent<SpriteRenderer>().sharedMaterial;
     public static Sprite Projectile(bool friendly=false,bool large=false,bool energy=false)
     {
+        if(friendly)return PlayerTracer();
         if(!friendly && large)return ChargedRound(energy);
         string name=friendly ? "PlayerBullet" : energy ? "EnemyBulletMedium" : large ? "EnemyBulletBig" : "EnemyBulletSmall";
         if(projectiles.TryGetValue(name,out var sprite))return sprite;
@@ -17,6 +18,22 @@ public static class CombatVisuals
         // Preserve authored pixels while giving every runtime round a unit-sized footprint.
         sprite=Sprite.Create(source.texture,source.rect,new Vector2(.5f,.5f),Mathf.Max(source.rect.width,source.rect.height));
         sprite.name=name+" normalized";return projectiles[name]=sprite;
+    }
+    static Sprite PlayerTracer()
+    {
+        const string key="white-core player tracer";
+        if(projectiles.TryGetValue(key,out var cached))return cached;
+        const int width=12,height=48;
+        var texture=new Texture2D(width,height,TextureFormat.RGBA32,false){filterMode=FilterMode.Point,wrapMode=TextureWrapMode.Clamp,name=key};
+        var pixels=new Color[width*height];
+        for(int y=0;y<height;y++)for(int x=0;x<width;x++)
+        {
+            float dx=Mathf.Abs(x-5.5f),edge=y>43 ? 5.5f-(y-43)*.65f : y<5 ? 3.5f+y*.4f : 5.5f;
+            pixels[y*width+x]=dx>edge ? Color.clear : dx>edge-1.2f ? new Color(.025f,.14f,.32f) : dx>2.5f ? new Color(.15f,.72f,1) : Color.white;
+        }
+        texture.SetPixels(pixels);texture.Apply();
+        var sprite=Sprite.Create(texture,new Rect(0,0,width,height),new Vector2(.5f,.5f),height);sprite.name=key;
+        return projectiles[key]=sprite;
     }
     static Sprite ChargedRound(bool energy)
     {
