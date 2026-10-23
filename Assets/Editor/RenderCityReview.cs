@@ -89,12 +89,13 @@ public static class RenderCityReview
             var renderer=blocks.AddComponent<MeshRenderer>();renderer.sharedMaterial=material;renderer.sortingLayerName="Background";renderer.sortingOrder=-40;
             if(fleet)
             {
+                var kinds=new[]{12,13,14,15,13};var sizes=new[]{.45f,.38f,.8f,.34f,.38f};
                 for(int i=0;i<5;i++)
                 {
                     var ship=new GameObject("City silhouette "+i);SceneManager.MoveGameObjectToScene(ship,scene);
                     ship.transform.position=new Vector3(x+(i%2==0 ? -2.1f : 2.1f),5.4f-i*2.6f,-8);
-                    ship.transform.localScale=Vector3.one*(i==2 ? .8f : .45f);
-                    ship.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(i==2 ? 14 : i%2==0 ? 12 : 15);
+                    ship.transform.localScale=Vector3.one*sizes[i];
+                    ship.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(kinds[i]);
                     var hull=ship.AddComponent<MeshRenderer>();hull.sharedMaterial=CombatMaterials.Fleet;hull.sortingOrder=10;
                 }
             }
