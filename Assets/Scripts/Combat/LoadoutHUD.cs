@@ -41,11 +41,11 @@ public sealed class LoadoutHUD : MonoBehaviour
             picture.GetComponent<RectTransform>().sizeDelta=Vector2.one*(active ? 52 : 84);
             picture.GetComponent<RectTransform>().anchoredPosition=new Vector2(0,active ? 2 : 7);
             keys[i]=Key(p,active ? new Vector2(0,-32) : new Vector2(0,-55));
-            names[i]=Label(p,"EMPTY",active ? 9 : 10,new Vector2(0,active ? -59 : -84),new Vector2(active ? 114 : 170,30),Steel);
+            names[i]=Label(p,"EMPTY",active ? 9 : 10,new Vector2(0,active ? 62 : -84),new Vector2(active ? 114 : 170,30),Steel);
             states[i]=Label(p,"",8,new Vector2(0,active ? 44 : 43),new Vector2(100,12),Cyan);
             if(!active)
             {
-                Label(p,i==0 ? "01 / PRIMARY" : "02 / SECONDARY",8,new Vector2(0,78),new Vector2(150,12),Steel);
+                Label(p,i==0 ? "01 / PRIMARY" : "02 / SECONDARY",8,new Vector2(0,74),new Vector2(150,12),Steel);
                 for(int s=-1;s<=1;s+=2)Plate(p,"Fastener",4,Steel).anchoredPosition=new Vector2(s*49,0);
             }
         }
@@ -54,7 +54,8 @@ public sealed class LoadoutHUD : MonoBehaviour
     }
     void BuildStudio()
     {
-        studio=new GameObject("Loadout model studio").transform;studio.SetParent(transform,false);studio.position=new Vector3(650,0,0);
+        // Keep camera and mesh units independent of the player root's gameplay scale.
+        studio=new GameObject("Loadout model studio").transform;studio.position=new Vector3(650,0,0);
         texture=new RenderTexture(512,128,16,RenderTextureFormat.ARGB32){name="Loadout equipment portraits",filterMode=FilterMode.Point};
         var go=new GameObject("Loadout portrait camera");go.transform.SetParent(studio,false);go.transform.localPosition=new Vector3(0,0,-10);
         var camera=go.AddComponent<UnityEngine.Camera>();camera.orthographic=true;camera.orthographicSize=.65f;camera.aspect=4;camera.nearClipPlane=.1f;camera.farClipPlane=20;
@@ -91,7 +92,8 @@ public sealed class LoadoutHUD : MonoBehaviour
         bool show=CombatDecision.Active && loadout.LastSelectedSlot>=0;badge.gameObject.SetActive(show);
         if(show)
         {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)canvas.transform,UnityEngine.Camera.main.WorldToScreenPoint(transform.position),null,out var point);
+            var viewport=UnityEngine.Camera.main.WorldToViewportPoint(transform.position);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)canvas.transform,new Vector2(viewport.x*Screen.width,viewport.y*Screen.height),null,out var point);
             badge.anchoredPosition=point+new Vector2(0,42);badgeKey.text=inputs[loadout.LastSelectedSlot];
         }
     }
@@ -135,5 +137,5 @@ public sealed class LoadoutHUD : MonoBehaviour
         var rect=(RectTransform)go.transform;rect.sizeDelta=new Vector2(32,24);rect.anchoredPosition=at;
         return Label(rect,"",12,new Vector2(0,1),new Vector2(32,24),new Color(.04f,.09f,.1f));
     }
-    void OnDestroy(){if(texture!=null){texture.Release();Destroy(texture);}}
+    void OnDestroy(){if(studio!=null)Destroy(studio.gameObject);if(texture!=null){texture.Release();Destroy(texture);}}
 }
