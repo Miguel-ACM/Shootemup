@@ -14,6 +14,7 @@ public abstract class AItem : MonoBehaviour
     bool attracting, collected;
     float attractionSpeed;
     public bool IsAttracting => attracting;
+    public bool Collected=>collected;
     public int ReplacementSlot {get;private set;}
     public ItemType Kind=>type;
     public bool IsDismissing { get; private set; }
@@ -47,6 +48,7 @@ public abstract class AItem : MonoBehaviour
         sgo = GameObject.FindGameObjectWithTag("Player");
         s = sgo.GetComponent<Shipcontroller>();
         UpdateColor();
+        if(GetComponent<ItemRarityHalo>()==null)gameObject.AddComponent<ItemRarityHalo>();
         if(ps!=null)ps.Stop(false,ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
@@ -143,11 +145,11 @@ public abstract class AItem : MonoBehaviour
         switch (r)
         {
             case "legendary":
-                return new Color(.83f,.66f,.34f);
+                return new Color(1f,.74f,.12f);
             case "epic":
-                return new Color(.53f,.65f,.69f);
+                return new Color(.85f,.36f,1f);
             case "rare":
-                return new Color(.51f,.68f,.61f);
+                return new Color(.25f,.75f,1f);
             case "common":
                 return new Color(0.857f, 0.857f, 0.857f);
             default:
@@ -184,6 +186,7 @@ public abstract class AItem : MonoBehaviour
 
     public virtual void OnPickup()
     {
+        collected=true;
         if (waveOrchestrer != null)
         {
             waveOrchestrer.NotifyItemPicked(gameObject);
