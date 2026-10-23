@@ -41,7 +41,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
             if(!more)break;
             yield return current;
         }
-        File.WriteAllText(Output,"PASS: live ship/background movement during title and cloud reveal; two-label title with the game font and Level x eyebrow; main menu; random starts and unique route pairs (1000 trials); neutral/switch/frame-rate charge checks; five environments; cloud cover/reveal; actual boss death; both spatial route selections; pause; player/stats/equipment preservation; next-stage waves; return to menu and new-run reset.\n"+string.Join("\n",errors));
+        File.WriteAllText(Output,"PASS: gameplay preloaded without activating the paused menu; same preload reused on new game; all offered environments prepared invisibly and reused, unused routes released; live ship/background movement during title and cloud reveal; two-label title with the game font and Level x eyebrow; main menu; random starts and unique route pairs (1000 trials); neutral/switch/frame-rate charge checks; five environments; cloud cover/reveal; actual boss death; both spatial route selections; pause; player/stats/equipment preservation; next-stage waves; return to menu and new-run reset.\n"+string.Join("\n",errors));
         UnityEditor.EditorApplication.Exit(errors.Count==0 ? 0 : 1);
     }
     IEnumerator Run()
@@ -54,9 +54,21 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Directory.CreateDirectory(Images+"/CloudMotion");
         yield return null;
         Check(SceneManager.GetActiveScene().name=="Title" && Time.timeScale==0,"Play did not begin at the paused main menu");
+        var transition=FindAnyObjectByType<CloudTransition>();
+        float preloadDeadline=Time.realtimeSinceStartup+30;
+        while((Get(transition,"preparedLoad") as AsyncOperation)?.progress<.9f || Get(transition,"preparedLoad")==null)
+        {
+            Check(Time.realtimeSinceStartup<preloadDeadline,"Gameplay was not preloaded while idling at the menu");
+            yield return null;
+        }
+        var menuLoad=(AsyncOperation)Get(transition,"preparedLoad");
+        Debug.Log("Preload verification: gameplay ready at paused menu");
+        Check(!menuLoad.allowSceneActivation && !CloudTransition.Busy && Time.timeScale==0 && SceneManager.GetActiveScene().name=="Title",
+            "Speculative gameplay preload activated the scene or disturbed the paused menu");
         Capture("01-menu");
         recordingClouds=true;
         FindAnyObjectByType<NewGame>().OnAccept();
+        Check(ReferenceEquals(menuLoad,Get(transition,"preparedLoad")),"New game discarded the preloaded gameplay operation");
         LevelRun.Reset(LevelId.Fields); // A dark valley makes the cloud edge readable in the recording.
         Check(CloudTransition.Busy,"New game bypassed the clouds");
         yield return new WaitForSecondsRealtime(1.1f);Capture("02-cloud-billows");
@@ -126,11 +138,25 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Check(!CloudTransition.Busy && Time.timeScale==1,"Menu-to-game transition stalled");
         yield return new WaitForSecondsRealtime(.1f);Capture("02-live-title");
         Check(SceneManager.GetActiveScene().name=="L1","New game did not load gameplay");
+        Debug.Log("Preload verification: reused gameplay preload");
         var ship=FindAnyObjectByType<Shipcontroller>();Check(ship!=null,"Player missing");
         var weapon=ship.GetComponentInChildren<AWeapon>();
         yield return new WaitForSecondsRealtime(1.2f);
         foreach(LevelId level in Enum.GetValues(typeof(LevelId)))
         {
+            // Time cold construction steps, including nested resource/worker waits.
+            yield return MeasurePreparation(level);
+            // Prepare exactly as the route selector does, and verify the built object is reused.
+            CloudTransition.PrepareRoutes(level,LevelId.Fields);
+            while((bool)Get(transition,"routesPreparing"))yield return null;
+            var warmedMusic=(AudioClip[])Get(transition,"routeMusic");
+            foreach(var routeClip in warmedMusic)
+                Check(routeClip!=null && routeClip.loadInBackground && routeClip.loadState==AudioDataLoadState.Loaded,"Offered route music was not loaded in the background before the transition");
+            var routeCache=(Dictionary<LevelId,LevelEnvironment>)typeof(LevelEnvironment)
+                .GetField("preparedRoutes",BindingFlags.Static|BindingFlags.NonPublic).GetValue(null);
+            routeCache.TryGetValue(level,out var preparedRoute);
+            if(level!=LevelId.Fields)
+                Check(preparedRoute!=null && !preparedRoute.gameObject.activeSelf,"Offered route was not prepared invisibly");
             var movingBackground=(MonoBehaviour)FindAnyObjectByType<LevelEnvironment>() ?? FindAnyObjectByType<PSXGrassField>();
             float coverTravel=(float)Get(movingBackground,"travel");
             float shipX=ship.transform.position.x;
@@ -146,6 +172,10 @@ public sealed class LevelFlowProbe : MonoBehaviour
             until=Time.realtimeSinceStartup+10;
             while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
             Check(!CloudTransition.Busy,"Environment transition stalled");
+            if(level!=LevelId.Fields)
+                Check(preparedRoute==FindAnyObjectByType<LevelEnvironment>(),"Level change rebuilt an already prepared route");
+            Check(routeCache.Count==0,"Level change retained unused prepared routes");
+            Debug.Log("Preload verification: reused prepared route "+level);
             Check(instruments==FindAnyObjectByType<IndustrialHUD>() && instruments.EntranceComplete,"HUD entrance replayed between levels");
             if(level==LevelId.Thunder)
             {yield return new WaitForSeconds(1.7f);Capture("04-thunder-lightning");}
@@ -205,7 +235,9 @@ public sealed class LevelFlowProbe : MonoBehaviour
         until=Time.realtimeSinceStartup+10;
         while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
         Check(LevelRun.Current==expected && LevelRun.Stage==stage+1,"Right route selected the wrong level");
+        CloudTransition.PrepareRoutes(LevelId.Snow,LevelId.Thunder);
         CloudTransition.Load("Title");
+        Check(!(bool)Get(transition,"routesPreparing"),"Returning to the menu left route preparation running");
         until=Time.realtimeSinceStartup+10;
         while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
         Check(SceneManager.GetActiveScene().name=="Title" && Time.timeScale==0,"Return to menu failed");
@@ -218,6 +250,27 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Check(errors.Count==0,"Unity reported runtime errors: "+string.Join("\n",errors));
     }
     static void Check(bool condition,string message){if(!condition)throw new Exception(message);}
+    IEnumerator MeasurePreparation(LevelId level)
+    {
+        var stack=new Stack<IEnumerator>();stack.Push(LevelEnvironment.PrepareRoute(level));
+        int frames=0;double longest=0;
+        try
+        {
+            while(stack.Count>0)
+            {
+                var step=stack.Peek();var watch=System.Diagnostics.Stopwatch.StartNew();
+                bool more=step.MoveNext();watch.Stop();
+                longest=Math.Max(longest,watch.Elapsed.TotalMilliseconds);
+                Check(watch.Elapsed.TotalMilliseconds<100,"Route preparation blocked the main thread for "+watch.Elapsed.TotalMilliseconds+"ms: "+level);
+                if(!more){(stack.Pop() as IDisposable)?.Dispose();continue;}
+                if(step.Current is IEnumerator nested){stack.Push(nested);continue;}
+                frames++;yield return step.Current;
+            }
+            if(level!=LevelId.Fields)Check(frames>=4,"Environment was built without yielding frames: "+level);
+            Debug.Log("Preparation timing: "+level+", "+frames+" yields, longest main-thread step "+longest.ToString("F2")+"ms");
+        }
+        finally { while(stack.Count>0)(stack.Pop() as IDisposable)?.Dispose(); }
+    }
     static int LitCells(IndustrialHUD hud,string field)
     {
         int count=0;foreach(var cell in (UnityEngine.UI.Image[])Get(hud,field))if(cell.color.r>.3f)count++;return count;

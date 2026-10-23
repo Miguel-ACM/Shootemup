@@ -28,6 +28,7 @@ public sealed class LevelChoice : MonoBehaviour
         var choice=new GameObject("Choose the next route").AddComponent<LevelChoice>();
         choice.player=player;choice.picked=picked;
         LevelRun.GetChoices(out var left,out var right);choice.Left=left;choice.Right=right;
+        CloudTransition.PrepareRoutes(left,right);
         choice.Build();Active=true;return choice;
     }
 

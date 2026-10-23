@@ -19,6 +19,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     static bool preparing,sourceReady;
     public static bool SourceReady => sourceReady || kit!=null;
     static LevelEnvironment active;
+    static readonly Dictionary<LevelId,LevelEnvironment> preparedRoutes=new Dictionary<LevelId,LevelEnvironment>();
     [Range(0,.5f)] public float sideParallax=.12f;
     public float HorizontalOffset { get; private set; }
     Material material;
@@ -35,14 +36,41 @@ public sealed class LevelEnvironment : MonoBehaviour
     LevelId level;
     float travel,clock,stormAt,flash;
     AudioSource thunder;
+    AudioSource rainAudio;
+    Transform stormAudioRoot;
+    bool stormAudioReleased;
+    const float StormFadeSeconds=3.5f;
     readonly LineRenderer[] bolts=new LineRenderer[3];
     System.Random random;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetRuntime() { kit=null;active=null;preparing=sourceReady=false; }
+    static void ResetRuntime() { kit=null;active=null;preparing=sourceReady=false;preparedRoutes.Clear(); }
+
+    /// <summary>Build an offered route while the player is still flying in the current level.</summary>
+    public static IEnumerator PrepareRoute(LevelId next)
+    {
+        if(next==LevelId.Fields)yield break; // The valley is already present in the gameplay scene.
+        if(preparedRoutes.TryGetValue(next,out var ready) && ready!=null)yield break;
+        yield return Prepare();
+        var root=new GameObject(next+" prepared environment");
+        root.SetActive(false);
+        var environment=root.AddComponent<LevelEnvironment>();
+        environment.level=next;
+        bool complete=false;
+        try
+        {
+            var steps=environment.BuildSteps(true);
+            while(steps.MoveNext())yield return steps.Current;
+            // Only fully built routes may be activated. Cancellation discards partial builds.
+            preparedRoutes[next]=environment;
+            complete=true;
+        }
+        finally { if(!complete && root!=null)Destroy(root); }
+    }
 
     public static void Apply()
     {
+        FadeOutStorm();
         if(active!=null){active.gameObject.SetActive(false);Destroy(active.gameObject);}
         float parallax=.12f;
         foreach(var field in FindObjectsByType<PSXGrassField>(FindObjectsInactive.Include))
@@ -52,9 +80,37 @@ public sealed class LevelEnvironment : MonoBehaviour
         }
         // Retain the existing camera/compositor setup without its old disconnected scenery.
         foreach(var industrial in FindObjectsByType<PSXIndustrialField>())industrial.steelMaterial=null;
-        if(LevelRun.Current==LevelId.Fields)return;
-        active=new GameObject(LevelRun.CurrentName+" environment").AddComponent<LevelEnvironment>();
-        active.level=LevelRun.Current;active.sideParallax=parallax;active.Build();
+        if(LevelRun.Current!=LevelId.Fields)
+        {
+            if(preparedRoutes.TryGetValue(LevelRun.Current,out var ready) && ready!=null)
+                active=ready;
+            else
+            {
+                active=new GameObject(LevelRun.CurrentName+" environment").AddComponent<LevelEnvironment>();
+                active.level=LevelRun.Current;active.Build();
+            }
+            active.sideParallax=parallax;
+            active.gameObject.name=LevelRun.CurrentName+" environment";
+            active.gameObject.SetActive(true);
+            active.ApplyParallax();
+            foreach(var sound in active.GetComponentsInChildren<AudioSource>())
+                if(sound.loop && !sound.isPlaying)sound.Play();
+        }
+        foreach(var route in preparedRoutes.Values)
+            if(route!=null && route!=active)Destroy(route.gameObject);
+        preparedRoutes.Clear();
+    }
+
+    public static void FadeOutStorm()
+    {
+        if(active==null || active.stormAudioRoot==null || active.stormAudioReleased)return;
+        active.stormAudioReleased=true;
+        // Let the existing rain and thunder trail off after their scenery has gone away.
+        var audioRoot=active.stormAudioRoot.gameObject;
+        audioRoot.transform.SetParent(null,true);
+        DontDestroyOnLoad(audioRoot);
+        CloudTransition.FadeOutAudio(audioRoot,active.ownedAudio.ToArray(),StormFadeSeconds);
+        active.ownedAudio.Clear(); // The fading audio now owns these clips.
     }
 
     static void LoadKit()
@@ -66,7 +122,7 @@ public sealed class LevelEnvironment : MonoBehaviour
         kit=loaded;
     }
 
-    /// <summary>Prepare the scenery during cloud cover, before scene activation needs the meshes.</summary>
+    /// <summary>Prepare shared scenery in the background before scene activation needs the meshes.</summary>
     public static IEnumerator Prepare()
     {
         if(kit!=null)yield break;
@@ -118,11 +174,22 @@ public sealed class LevelEnvironment : MonoBehaviour
 
     void Build()
     {
+        var steps=BuildSteps(false);
+        while(steps.MoveNext()) { }
+    }
+
+    IEnumerator BuildSteps(bool background)
+    {
         LoadKit();random=new System.Random(810+(int)level);
         material=new Material(Resources.Load<Shader>("LevelScenery"));
         if(level==LevelId.City)material.SetFloat("_Haze",.38f);
         var go=GameObject.FindGameObjectWithTag("Player");if(go!=null)player=go.transform;
-        if(level==LevelId.Thunder)BuildStorm();
+        yield return null;
+        if(level==LevelId.Thunder)
+        {
+            var storm=BuildStormSteps(background);
+            while(storm.MoveNext())yield return storm.Current;
+        }
         else
         {
             for(int i=0;i<4;i++)
@@ -134,6 +201,7 @@ public sealed class LevelEnvironment : MonoBehaviour
                 Add(kit[level+"Detail"+i],section,Vector3.zero,-40);sections.Add(section);
                 var near=Add(kit[level+"Near"+i],transform,new Vector3(0,(i-1)*SectionLength,76),-25);
                 near.localScale=new Vector3(.8f,1,1);foreground.Add(near);
+                yield return null;
             }
             Color tint=level==LevelId.Snow ? new Color(.74f,.85f,.89f,.22f) : level==LevelId.City ? new Color(.46f,.54f,.59f,.16f) : new Color(.10f,.16f,.19f,.10f);
             AddAtmosphere("Low drifting haze",0,44,tint,1.9f,level==LevelId.Snow ? .55f : .20f);
@@ -141,14 +209,20 @@ public sealed class LevelEnvironment : MonoBehaviour
             {
                 AddAtmosphere("Snowdust over the drifts",3,42,new Color(.83f,.90f,.92f,.38f),1.5f,1.1f);
                 AddAtmosphere("Near windblown powder",3,35,new Color(.89f,.94f,.95f,.21f),2.5f,1.8f);
+                yield return null;
             }
             if(level==LevelId.City)
             {
                 AddAtmosphere("Wisps above the distant city",0,35,new Color(.75f,.80f,.83f,.20f),2.6f,.32f);
-                BuildTraffic();
+                var cars=BuildTrafficSteps();
+                while(cars.MoveNext())yield return cars.Current;
             }
         }
-        if(level==LevelId.Snow || level==LevelId.Thunder)BuildWeather();
+        if(level==LevelId.Snow || level==LevelId.Thunder)
+        {
+            var precipitation=BuildWeatherSteps();
+            while(precipitation.MoveNext())yield return precipitation.Current;
+        }
         ApplyParallax();
     }
 
@@ -174,7 +248,7 @@ public sealed class LevelEnvironment : MonoBehaviour
         atmosphere.Add(new Atmosphere{transform=plane,material=mat,parallax=parallax,speed=speed});
     }
 
-    void BuildTraffic()
+    IEnumerator BuildTrafficSteps()
     {
         for(int i=0;i<12;i++)
         {
@@ -187,10 +261,11 @@ public sealed class LevelEnvironment : MonoBehaviour
             float angle=horizontal ? (direction>0 ? 90 : 270) : direction<0 ? 0 : 180;
             car.localRotation=Quaternion.Euler(0,0,angle);car.localScale=new Vector3(.18f,.23f,.23f);
             traffic.Add(new Traffic{transform=car,x=x,y=y,speed=Range(.45f,.75f),direction=direction,horizontal=horizontal});
+            yield return null;
         }
     }
 
-    void BuildStorm()
+    IEnumerator BuildStormSteps(bool background)
     {
         AddAtmosphere("Deep rolling thunderheads",1,102,new Color(.19f,.24f,.29f,1),.65f,.34f);
         AddAtmosphere("Low torn storm clouds",2,63,new Color(.14f,.19f,.24f,.88f),1.65f,.67f);
@@ -202,13 +277,29 @@ public sealed class LevelEnvironment : MonoBehaviour
             var bolt=go.AddComponent<LineRenderer>();bolt.useWorldSpace=false;bolt.sharedMaterial=material;
             bolt.startColor=bolt.endColor=new Color(.73f,.85f,1);bolt.startWidth=i==0 ? .065f : .035f;bolt.endWidth=.008f;
             bolt.sortingLayerName="Background";bolt.sortingOrder=-11;bolt.enabled=false;bolts[i]=bolt;
+            yield return null;
         }
-        thunder=gameObject.AddComponent<AudioSource>();thunder.volume=.24f;thunder.clip=CreateNoise(false);stormAt=1.7f;
-        var rain=new GameObject("Continuous rain");rain.transform.SetParent(transform,false);
-        var sound=rain.AddComponent<AudioSource>();sound.clip=CreateNoise(true);sound.loop=true;sound.volume=.035f;sound.Play();
+        stormAudioRoot=new GameObject("Storm ambience").transform;stormAudioRoot.SetParent(transform,false);
+        thunder=stormAudioRoot.gameObject.AddComponent<AudioSource>();
+        thunder.playOnAwake=false;thunder.volume=0;stormAt=1.7f;
+        if(background)
+        {
+            var noise=CreateNoiseAsync(false,clip=>thunder.clip=clip);
+            while(noise.MoveNext())yield return noise.Current;
+        }
+        else thunder.clip=CreateNoise(false);
+        var rain=new GameObject("Continuous rain");rain.transform.SetParent(stormAudioRoot,false);
+        var sound=rain.AddComponent<AudioSource>();sound.playOnAwake=false;sound.loop=true;sound.volume=0;
+        rainAudio=sound;
+        if(background)
+        {
+            var noise=CreateNoiseAsync(true,clip=>sound.clip=clip);
+            while(noise.MoveNext())yield return noise.Current;
+        }
+        else sound.clip=CreateNoise(true);
     }
 
-    void BuildWeather()
+    IEnumerator BuildWeatherSteps()
     {
         bool snow=level==LevelId.Snow;
         flakes=new Flake[snow ? 1600 : 1150];weatherVertices=new Vector3[flakes.Length*4];
@@ -220,7 +311,9 @@ public sealed class LevelEnvironment : MonoBehaviour
             int k=i*4,t=i*6;triangles[t]=k;triangles[t+1]=k+2;triangles[t+2]=k+1;triangles[t+3]=k;triangles[t+4]=k+3;triangles[t+5]=k+2;
             var color=snow ? new Color(.85f,.93f,.96f,Range(.38f,.85f)) : new Color(.52f,.66f,.81f,Range(.13f,.40f));
             for(int j=0;j<4;j++)colors[k+j]=color;
+            if((i+1)%128==0)yield return null;
         }
+        yield return null;
         weather=new Mesh{name=level+" precipitation"};weather.MarkDynamic();weather.vertices=weatherVertices;weather.colors=colors;weather.triangles=triangles;
         weather.bounds=new Bounds(Vector3.zero,new Vector3(32,42,2));ownedMeshes.Add(weather);
         weatherTransform=Add(weather,transform,new Vector3(0,0,32),-5);UpdateWeather(0);
@@ -269,9 +362,16 @@ public sealed class LevelEnvironment : MonoBehaviour
 
     void UpdateStorm(float dt)
     {
+        if(!stormAudioReleased)
+        {
+            float volume=Mathf.SmoothStep(0,1,Mathf.Clamp01(clock/StormFadeSeconds));
+            thunder.volume=.24f*volume;
+            rainAudio.volume=.035f*volume;
+        }
         if(clock>=stormAt)
         {
-            stormAt=clock+Range(3.4f,6.7f);flash=1;thunder.pitch=Range(.8f,1.1f);thunder.PlayDelayed(.2f);
+            stormAt=clock+Range(3.4f,6.7f);flash=1;
+            if(!stormAudioReleased){thunder.pitch=Range(.8f,1.1f);thunder.PlayDelayed(.2f);}
             float x=Range(-3.8f,3.8f);var main=new Vector3[10];
             for(int i=0;i<main.Length;i++){x+=Range(-.6f,.6f);main[i]=new Vector3(x,13-i*2.7f,47);}
             bolts[0].positionCount=main.Length;bolts[0].SetPositions(main);
@@ -309,14 +409,36 @@ public sealed class LevelEnvironment : MonoBehaviour
 
     AudioClip CreateNoise(bool rain)
     {
+        return CreateNoiseClip(rain,GenerateNoise(rain,random.Next()));
+    }
+
+    IEnumerator CreateNoiseAsync(bool rain,Action<AudioClip> ready)
+    {
+        int seed=random.Next();
+        var task=Task.Run(()=>GenerateNoise(rain,seed));
+        while(!task.IsCompleted)yield return null;
+        ready(CreateNoiseClip(rain,task.GetAwaiter().GetResult()));
+    }
+
+    // Pure managed work: no Unity objects or native audio calls on the worker thread.
+    static float[] GenerateNoise(bool rain,int seed)
+    {
         const int rate=22050;var samples=new float[rate*4];float low=0;
+        var noiseRandom=new System.Random(seed);
         for(int i=0;i<samples.Length;i++)
         {
-            float t=i/(float)rate;float noise=Range(-1,1);low=Mathf.Lerp(low,noise,rain ? .12f : .035f);
-            float seam=Mathf.Min(1,Mathf.Min(t,4-t)*20);
-            samples[i]=rain ? (noise*.14f+low*.35f)*seam : (low*.85f+Mathf.Sin(t*62)*.05f)*Mathf.Exp(-t*1.2f)*Mathf.Clamp01(t*35);
+            float t=i/(float)rate;float noise=(float)noiseRandom.NextDouble()*2-1;
+            low+=(noise-low)*(rain ? .12f : .035f);
+            float seam=Math.Min(1,Math.Min(t,4-t)*20);
+            samples[i]=rain ? (noise*.14f+low*.35f)*seam :
+                (low*.85f+(float)Math.Sin(t*62)*.05f)*(float)Math.Exp(-t*1.2f)*Math.Min(1,t*35);
         }
-        var clip=AudioClip.Create(rain ? "Rain wash" : "Storm rumble",samples.Length,1,rate,false);
+        return samples;
+    }
+
+    AudioClip CreateNoiseClip(bool rain,float[] samples)
+    {
+        var clip=AudioClip.Create(rain ? "Rain wash" : "Storm rumble",samples.Length,1,22050,false);
         clip.SetData(samples,0);ownedAudio.Add(clip);return clip;
     }
     float Range(float lo,float hi)=>Mathf.Lerp(lo,hi,(float)random.NextDouble());

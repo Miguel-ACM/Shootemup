@@ -1,0 +1,11 @@
+{
+  "triangles": 515,
+  "width": 1.1200000047683716,
+  "height": 0.9449999928474426,
+  "hitboxCenter": [
+    0.0,
+    0.16
+  ],
+  "hitboxRadius": 0.08,
+  "uvs": true
+}

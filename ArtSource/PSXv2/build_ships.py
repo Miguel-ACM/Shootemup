@@ -361,6 +361,36 @@ def player_geometry(b, hitbox=False):
         x = ref(px, 0)[0]
         b.tube((x, ref(0, 28.5)[1], 0.17), (x, ref(0, 19.5)[1], 0.17), 0.05, 6, "grey", cap0="g_orange", cap1="dark")
         b.tube((x, ref(0, 29.3)[1], 0.17), (x, ref(0, 28.5)[1], 0.17), 0.062, 6, "dark", cap0="g_orange")
+    # Raised cheek armour separates the cockpit from the wing struts. The inset
+    # black panels leave a narrow machined rim visible at gameplay resolution.
+    b.sym(R([(9, 12.5), (12.5, 11), (12.5, 18), (14, 21), (10, 20), (8.5, 17)]),
+          0.2, 0.275, "grey", "dark", inset=0.012, rise=0.015, cap="blackarmour", taper=0.88)
+    b.sym(R([(8.9, 12.5), (11, 11.7), (11, 12.6), (8.9, 13.4)]),
+          0.28, 0.29, "yellow", "dark")
+    # Segmented spars and short yellow ID bands break up the broad wing blades.
+    for py in (10, 17, 24):
+        for px in (2.2, 30.8):
+            x, y = ref(px, py)
+            b.box(x, y, 0.07, 0.027, 0.30, 0.335, "grey", "dark", taper=0.8)
+    for px in (2.2, 30.8):
+        x, y = ref(px, 7.5)
+        b.box(x, y, 0.045, 0.075, 0.29, 0.32, "yellowstripe", "dark")
+    # Real hexagonal barrels sit on the two existing firing prongs.
+    for px in (10, 23):
+        x = ref(px, 0)[0]
+        b.tube((x, ref(0, 9)[1], 0.215), (x, ref(0, 3.5)[1], 0.215),
+               0.029, 6, "grey", cap0="dark", cap1="black", r1=0.022)
+        x, y = ref(px, 8)
+        b.box(x, y, 0.073, 0.055, 0.215, 0.265, "yellow", "dark", taper=0.8)
+    # Rear radiator louvers, a tapered keel, and engine cowls give the tail depth.
+    for py in (21.7, 23.0, 24.3):
+        x, y = ref(16.5, py)
+        b.box(x, y, 0.18 - (py - 21.7) * 0.025, 0.023, 0.235, 0.265, "grey", "black")
+    b.prism(R([(14.5, 25), (18.5, 25), (17.5, 28), (15.5, 28)]),
+            0.05, 0.2, "blackarmour", "grey", taper=0.7)
+    for px in (5.6, 27.4):
+        x, y = ref(px, 23)
+        b.box(x, y, 0.095, 0.13, 0.195, 0.26, "vent", "dark", taper=0.75)
     # Elongated glowing yellow core around the hitbox (it is the hitbox marker now).
     b.prism(R([(16.5, 9.5), (19.5, 12), (19.5, 17), (16.5, 19.5), (13.5, 17), (13.5, 12)]), 0.22, CORE_Z,
             "g_yellow", "g_yellow", taper=0.9)

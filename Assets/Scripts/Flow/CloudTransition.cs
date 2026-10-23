@@ -16,6 +16,11 @@ public sealed class CloudTransition : MonoBehaviour
     CloudCurtainGraphic[] billows;
     float flowStartedAt;
     Canvas canvas;
+    Coroutine scenePreparation, routePreparation;
+    string preparedScene;
+    AsyncOperation preparedLoad;
+    readonly AudioClip[] routeMusic=new AudioClip[2];
+    bool scenePreparing, routesPreparing;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Install()
@@ -63,18 +68,92 @@ public sealed class CloudTransition : MonoBehaviour
         if(scene.name=="L1") LevelEnvironment.Apply();
         // Supersede the old world-space clouds, which were behind the PSX output canvas.
         foreach(var spawner in FindObjectsByType<CloudSpawner>()) spawner.enabled=false;
+        // The menu is already usable: spend idle time preparing gameplay, even while paused.
+        if(scene.name=="Title" && !busy)PrepareGameplay();
+        else if(scene.name=="L1" && !busy)StartCoroutine(LevelEnvironment.Prepare());
+    }
+
+    void PrepareGameplay()
+    {
+        if(scenePreparation==null)scenePreparation=StartCoroutine(PreloadScene("L1"));
+    }
+
+    public static void PrepareRoutes(LevelId left,LevelId right)
+    {
+        if(instance.routePreparation!=null)instance.StopCoroutine(instance.routePreparation);
+        instance.routePreparation=instance.StartCoroutine(instance.WarmRoutes(left,right));
+    }
+
+    IEnumerator WarmRoutes(LevelId left,LevelId right)
+    {
+        routesPreparing=true;
+        try
+        {
+            yield return LevelEnvironment.Prepare();
+            // Scene objects stay on the main thread, but each build yields in small batches.
+            yield return LevelEnvironment.PrepareRoute(left);
+            yield return WarmRouteMusic(left,0);
+            yield return null;
+            yield return LevelEnvironment.PrepareRoute(right);
+            yield return WarmRouteMusic(right,1);
+        }
+        finally { routesPreparing=false; }
+    }
+
+    IEnumerator WarmRouteMusic(LevelId level,int index)
+    {
+        var request=Resources.LoadAsync<AudioClip>("Music/"+level.ToString().ToLowerInvariant());
+        yield return request;
+        var clip=request.asset as AudioClip;
+        routeMusic[index]=clip; // Keep the loaded clip alive until the route's music source owns it.
+        if(clip==null)yield break;
+        if(clip.loadState==AudioDataLoadState.Unloaded)clip.LoadAudioData();
+        while(clip.loadState==AudioDataLoadState.Loading)yield return null;
     }
 
     public static void Load(string scene, Action covered = null)
     {
         if (Busy) return;
+        LevelEnvironment.FadeOutStorm();
+        // Leaving gameplay supersedes route preparation; do not leave resource requests behind
+        // a newly parked scene load, or build scenery into the menu after its level unloads.
+        if(instance.routePreparation!=null)instance.StopCoroutine(instance.routePreparation);
+        instance.routePreparation=null;instance.routesPreparing=false;
         instance.StartCoroutine(instance.Travel(scene,covered));
     }
 
     public static void Change(Action covered)
     {
         if (Busy) return;
+        LevelEnvironment.FadeOutStorm();
         instance.StartCoroutine(instance.Travel(null,covered));
+    }
+
+    public static void FadeOutAudio(GameObject root,AudioClip[] clips,float seconds)
+    {
+        instance.StartCoroutine(instance.FadeAudio(root,clips,seconds));
+    }
+
+    IEnumerator FadeAudio(GameObject root,AudioClip[] clips,float seconds)
+    {
+        var sources=root.GetComponentsInChildren<AudioSource>();
+        var volumes=new float[sources.Length];
+        for(int i=0;i<sources.Length;i++)volumes[i]=sources[i].volume;
+        try
+        {
+            for(float elapsed=0;elapsed<seconds;elapsed+=Time.unscaledDeltaTime)
+            {
+                float gain=1-Mathf.SmoothStep(0,1,elapsed/seconds);
+                for(int i=0;i<sources.Length;i++)
+                    if(sources[i]!=null)sources[i].volume=volumes[i]*gain;
+                yield return null;
+            }
+        }
+        finally
+        {
+            if(root!=null)Destroy(root);
+            foreach(var clip in clips)if(clip!=null)Destroy(clip);
+        }
     }
 
     IEnumerator Travel(string scene, Action covered)
@@ -90,14 +169,27 @@ public sealed class CloudTransition : MonoBehaviour
         try
         {
             var preparing=StartCoroutine(LevelEnvironment.Prepare());
-            AsyncOperation load=null;
-            var preloading=scene!=null ? StartCoroutine(PreloadScene(scene,operation=>load=operation)) : null;
+            if(scene!=null && scenePreparation==null)
+                scenePreparation=StartCoroutine(PreloadScene(scene));
             yield return Move(true);
             yield return preparing;
-            if(preloading!=null)yield return preloading;
-            covered?.Invoke();
-            if(load!=null)
+            if(scene!=null)
             {
+                while(scenePreparing)yield return null;
+                // A speculative load cannot be cancelled. Drain it under cover if the target changed.
+                if(preparedScene!=scene)
+                {
+                    preparedLoad.allowSceneActivation=true;
+                    while(!preparedLoad.isDone)yield return null;
+                    yield return PreloadScene(scene);
+                }
+            }
+            else while(routesPreparing)yield return null;
+            covered?.Invoke();
+            if(scene!=null && preparedLoad!=null)
+            {
+                var load=preparedLoad;
+                preparedLoad=null;preparedScene=null;scenePreparation=null;
                 load.allowSceneActivation=true;
                 while(!load.isDone)yield return null;
             }
@@ -116,17 +208,24 @@ public sealed class CloudTransition : MonoBehaviour
             canvas.enabled=false;
             busy=false;
             Time.timeScale=SceneManager.GetActiveScene().name=="Title" ? 0 : 1;
+            if(SceneManager.GetActiveScene().name=="Title")PrepareGameplay();
         }
     }
 
-    IEnumerator PreloadScene(string scene,Action<AsyncOperation> started)
+    IEnumerator PreloadScene(string scene)
     {
-        // A parked scene blocks Unity's async queue, so finish the scenery asset request first.
-        while(!LevelEnvironment.SourceReady)yield return null;
-        var load=SceneManager.LoadSceneAsync(scene);
-        load.allowSceneActivation=false;
-        started(load);
-        while(load.progress<.9f)yield return null;
+        scenePreparing=true;
+        try
+        {
+            // A parked scene blocks Unity's async queue. Finish shared asset preparation first.
+            yield return LevelEnvironment.Prepare();
+            var load=SceneManager.LoadSceneAsync(scene);
+            load.allowSceneActivation=false;
+            load.priority=-1;
+            preparedScene=scene;preparedLoad=load;
+            while(load.progress<.9f)yield return null;
+        }
+        finally { scenePreparing=false; }
     }
 
     void Update()

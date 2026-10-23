@@ -4550,7 +4550,7 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 4f5e296a3bc587143ab087692bad28e9, type: 2}
   groundMaterial: {fileID: 2100000, guid: c454ecf27010e3848994de90428423a7, type: 2}
   cloudMaterial: {fileID: 2100000, guid: d3df6aebc165d4a468999dd5a24e9c2e, type: 2}
-  scrollSpeed: 2.2
+  scrollSpeed: 4.4
   grassTile: 10
   sideParallax: 0.12
   brightness: 0.62

@@ -19,6 +19,12 @@ public static class InstallIndustrialExpansion
     static InstallIndustrialExpansion(){EditorApplication.update+=Check;}
     static void Check()
     {
+        const string bulletRequest="Temp/refine-player-bullet.request";
+        if(File.Exists(bulletRequest) && !EditorApplication.isCompiling && !EditorApplication.isUpdating && !EditorApplication.isPlayingOrWillChangePlaymode)
+        {
+            File.Delete(bulletRequest);
+            RefinePlayerBullet();
+        }
         if(installing || !File.Exists(Request) || EditorApplication.isCompiling || EditorApplication.isUpdating)return;
         if(EditorApplication.isPlayingOrWillChangePlaymode){EditorApplication.isPlaying=false;return;}
         installing=true;
@@ -86,7 +92,7 @@ public static class InstallIndustrialExpansion
         {
             int index=i;string path="Assets/Resources/Bullets/"+bulletNames[i]+".prefab";
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(path);var size=ColliderSize(prefab);
-            float height=i<2 ? .46f : Mathf.Max(size.x,size.y)*(i==2 ? 1.89f : i==3 ? 5.43f : i==4 ? 4.35f : 1.45f);   // enlarged visuals (colliders unchanged)
+            float height=i==0 ? .32f : i==1 ? .46f : Mathf.Max(size.x,size.y)*(i==2 ? 1.89f : i==3 ? 5.43f : i==4 ? 4.35f : 1.45f);   // enlarged enemy visuals (colliders unchanged)
             var sprite=SpriteTexture(bulletNames[i],i,height);
             Edit(path,go=>
             {
@@ -266,9 +272,23 @@ public static class InstallIndustrialExpansion
         File.WriteAllText("ArtSource/IndustrialExpansion/"+name+".obj",obj.ToString());return asset;
     }
 
+    [MenuItem("Tools/PSX Player/Refine player bullet")]
+    public static void RefinePlayerBullet()
+    {
+        var sprite=SpriteTexture("PlayerBullet",0,.32f);
+        Edit("Assets/Resources/Bullets/PlayerBullet.prefab",go=>
+        {
+            var renderer=go.GetComponent<SpriteRenderer>();
+            renderer.sprite=sprite;
+            renderer.color=Color.white;
+        });
+        AssetDatabase.SaveAssets();
+        File.WriteAllText("Temp/PlayerBulletRefinement.txt","PASS: rounded cyan capsule, .32 world-unit sprite height, translucent shell and core; collider and weapon properties unchanged.");
+    }
+
     static Sprite SpriteTexture(string name,int kind,float height)
     {
-        int w=kind<2 ? 8 : kind==5 ? 32 : 12,h=kind<2 ? 16 : w;
+        int w=kind==0 ? 24 : kind==1 ? 8 : kind==5 ? 32 : 12,h=kind==0 ? 48 : kind==1 ? 16 : w;
         var texture=new Texture2D(w,h,TextureFormat.RGBA32,false);var pixels=new Color[w*h];
         Color edge=new Color(.15f,.13f,.10f), shell=new Color(.92f,.43f,.20f), core=new Color(1,.92f,.71f);
         if(kind<2){edge=new Color(.025f,.10f,.24f);shell=new Color(.12f,.42f,1f);core=new Color(.48f,.82f,1f);}
@@ -277,7 +297,18 @@ public static class InstallIndustrialExpansion
         {
             float nx=(x+.5f-w*.5f)/(w*.5f),ny=(y+.5f-h*.5f)/(h*.5f);float d=Mathf.Sqrt(nx*nx+ny*ny);
             Color color=Color.clear;
-            if(kind<2){if(Mathf.Abs(nx)<.5f && y>1 && y<h-1)color=Mathf.Abs(nx)<.25f && y>4 ? core : shell;}
+            if(kind==0)
+            {
+                // Signed distance to a capsule gives the nose a true round cap, with a soft edge.
+                float px=x+.5f-w*.5f,py=y+.5f;
+                float cap=Mathf.Max(12-py,py-36,0);
+                float distance=Mathf.Sqrt(px*px+cap*cap);
+                float coverage=1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(5.1f,6.4f,distance));
+                float highlight=1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(0,5.8f,Mathf.Abs(px+1.1f)));
+                color=Color.Lerp(new Color(.12f,.48f,.92f,.52f),new Color(.68f,.94f,1,.78f),highlight);
+                color.a*=coverage*Mathf.Lerp(.65f,1,Mathf.SmoothStep(0,1,Mathf.InverseLerp(5,19,py)));
+            }
+            else if(kind==1){if(Mathf.Abs(nx)<.5f && y>1 && y<h-1)color=Mathf.Abs(nx)<.25f && y>4 ? core : shell;}
             else if(kind==5){if(d>.73f && d<.96f)color=d>.87f ? edge : shell;}
             else
             {
