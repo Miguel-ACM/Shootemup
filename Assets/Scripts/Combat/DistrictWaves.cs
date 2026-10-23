@@ -52,20 +52,7 @@ public static class DistrictWaves
                 else
                 {Flight("ArmoredCarrier",0,FlightPhrase.Battery,1,0,7,2.2f);Train("MaintenanceDrone",1.5f,FlightPhrase.Crossing,side,4,.28f,5.5f,1.3f);}
                 break;
-            case LevelId.Snow:
-                if(phrase%2==0)
-                {
-                    Flight(phrase==0 ? "ShieldTransport" : "AvalancheBomber",0,FlightPhrase.Battery,1,0,7,2.1f);
-                    Train("ColdWeatherFighter",.5f,FlightPhrase.Crossing,side,4+extra,.32f,6.2f,1.4f);
-                    Train("ColdWeatherFighter",.5f,FlightPhrase.Crossing,-side,4+extra,.32f,6.2f,1.4f,.13f);
-                }
-                else
-                {
-                    Flight("SiegeGunship",0,FlightPhrase.Battery,1,-.55f,7,1.8f);
-                    Flight("AvalancheBomber",.85f,FlightPhrase.Battery,1,.55f,7,2.2f);
-                    Train("ColdWeatherFighter",1.2f,FlightPhrase.Ribbon,side,5+extra,.24f,5.6f,1.3f);
-                }
-                break;
+            case LevelId.Snow:return SnowChoreography.Create(budget);
             case LevelId.Thunder:
                 if(phrase==0)
                 {
