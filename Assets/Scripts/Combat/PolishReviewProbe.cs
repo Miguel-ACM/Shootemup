@@ -152,6 +152,21 @@ public sealed class PolishReviewProbe : MonoBehaviour
                 loadout.Weapons[0].StopFiring();InputSystem.QueueStateEvent(keyboard,new KeyboardState());Clear();yield return null;
             }
         }
+        LevelRun.Reset(LevelId.Snow);LevelEnvironment.Apply();
+        foreach(var type in new[]{typeof(AvalancheBomber),typeof(ThunderLanceBoss)})
+        {
+            var victim=Station(type,new Vector3(0,3,1));yield return null;victim.enabled=false;
+            directory=BeginClip("Breakup"+type.Name);bool broken=false,seen=false;
+            while(Time.time-started<2.2f)
+            {
+                if(!broken && Time.time-started>.25f)
+                {PSXImpactEffects.Explosion(victim.gameObject);Destroy(victim.gameObject);broken=true;}
+                seen|=FindObjectsByType<PSXPolygonDebris>().Length>0;
+                yield return Capture(directory);yield return null;
+            }
+            Check(seen && FindObjectsByType<PSXPolygonDebris>().Length==0,type.Name+" creates independent hull debris and cleans it up");
+            Clear();yield return null;
+        }
         Check(errors.Count==0,"all combined visual phases ran without runtime exceptions");
     }
 }
