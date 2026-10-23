@@ -40,8 +40,9 @@ public abstract class DistrictEnemy : AEnemy
         if(unit.phrase==FlightPhrase.None)return;
         if(movement!=null){movement.enabled=false;Destroy(movement);}
         var flight=gameObject.AddComponent<FormationFlight>();flight.phrase=unit.phrase;flight.side=unit.side;flight.lane=unit.lane;
-        flight.duration=unit.flightDuration;flight.fireEvery=unit.fireEvery;movement=flight;
-        var p=FormationFlight.Sample(unit.phrase,0,unit.side,unit.lane);
+        flight.duration=unit.flightDuration;flight.fireEvery=unit.fireEvery;flight.curve=unit.curve;
+        flight.syncFire=unit.syncFire;flight.firePhase=unit.firePhase;movement=flight;
+        var p=flight.PositionAt(0);
         transform.position=new Vector3(p.x*Camera.RightLimit,Mathf.LerpUnclamped(Camera.DownLimit,Camera.UpLimit,p.y),transform.position.z);
     }
     public void Escort(Transform leader)

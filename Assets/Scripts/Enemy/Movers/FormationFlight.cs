@@ -1,21 +1,33 @@
 using UnityEngine;
 
-public enum FlightPhrase { None, Ribbon, Crossing, Chevron, Orbit, Battery, Dive }
+public enum FlightPhrase { None, Ribbon, Crossing, Chevron, Orbit, Battery, Dive, Flow }
 
 // Every member follows one authored phrase. Delayed launches make a train;
 // mirrored launches make a partner. No per-enemy destination randomization.
 public sealed class FormationFlight : PatternMover
 {
     public FlightPhrase phrase;
+    public FlightCurve curve;
+    public bool syncFire;
+    public float firePhase;
     public float side=1,lane,duration=6,fireEvery=.8f;
     float clock;
     float[] distances;
     int lastBeat=-1;
+    float nextSharedBeat=-1;
     public Vector2 Tangent {get;private set;}=Vector2.down;
     public float Progress=>clock/Mathf.Max(.1f,duration);
     public bool TakeFireBeat()
     {
         if(clock<1.15f || Progress>.82f)return false;
+        if(syncFire)
+        {
+            float interval=Mathf.Max(.35f,fireEvery);
+            if(nextSharedBeat<0)nextSharedBeat=Mathf.Ceil((1.15f+firePhase)/interval)*interval-firePhase;
+            if(clock<nextSharedBeat)return false;
+            nextSharedBeat=(Mathf.Floor((clock+firePhase)/interval)+1)*interval-firePhase;
+            return true;
+        }
         int beat=Mathf.FloorToInt((clock-1.15f)/Mathf.Max(.35f,fireEvery));
         if(beat==lastBeat)return false;lastBeat=beat;return true;
     }
@@ -24,25 +36,26 @@ public sealed class FormationFlight : PatternMover
         if(GameRules.playerDisabled)return;
         clock+=dt;float t=Progress;
         if(t>=1){GetComponent<AEnemy>().Depart();return;}
-        var p=Sample(phrase,TravelParameter(t),side,lane);
+        var p=PositionAt(TravelParameter(t));
         var next=new Vector3(p.x*Camera.RightLimit,Mathf.LerpUnclamped(Camera.DownLimit,Camera.UpLimit,p.y),origin.z);
         Vector2 delta=next-transform.position;if(delta.sqrMagnitude>.0001f)Tangent=delta.normalized;
         transform.position=next;SetFiring(t>.12f && t<.82f);
     }
+    public Vector2 PositionAt(float t)=>curve!=null ? curve.Sample(t,side,lane) : Sample(phrase,t,side,lane);
     float TravelParameter(float progress)
     {
-        if(phrase!=FlightPhrase.Ribbon && phrase!=FlightPhrase.Crossing && phrase!=FlightPhrase.Dive)return progress;
+        if(curve==null && phrase!=FlightPhrase.Ribbon && phrase!=FlightPhrase.Crossing && phrase!=FlightPhrase.Dive)return progress;
         if(distances==null)
         {
-            distances=new float[65];var previous=Sample(phrase,0,side,lane);
+            distances=new float[129];var previous=PositionAt(0);
             for(int i=1;i<distances.Length;i++)
             {
-                var next=Sample(phrase,i/64f,side,lane);var delta=next-previous;
+                var next=PositionAt(i/128f);var delta=next-previous;
                 distances[i]=distances[i-1]+Vector2.Scale(delta,new Vector2(Camera.RightLimit,Camera.UpLimit-Camera.DownLimit)).magnitude;previous=next;
             }
         }
-        float target=progress*distances[64];
-        for(int i=1;i<distances.Length;i++)if(target<=distances[i])return (i-1+Mathf.InverseLerp(distances[i-1],distances[i],target))/64f;
+        float target=progress*distances[128];
+        for(int i=1;i<distances.Length;i++)if(target<=distances[i])return (i-1+Mathf.InverseLerp(distances[i-1],distances[i],target))/128f;
         return 1;
     }
     static Vector2 Bezier(Vector2 a,Vector2 b,Vector2 c,Vector2 d,float t)
