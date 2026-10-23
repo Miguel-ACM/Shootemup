@@ -3,9 +3,9 @@ using UnityEngine;
 public static class SnowChoreography
 {
     public static readonly FlightCurve Spiral=new FlightCurve("Snow / Unwinding spiral",Vector2.right,0,
-        -.70f,1.18f, -.78f,.88f, -.76f,.66f, -.60f,.48f, -.43f,.57f, -.42f,.78f, -.55f,.93f, -.69f,.86f, -.70f,1.18f);
+        -.70f,1.18f, -.78f,.88f, -.76f,.66f, -.60f,.48f, -.43f,.57f, -.42f,.78f, -.42f,1.18f);
     public static readonly FlightCurve Petal=new FlightCurve("Snow / Falling petal",Vector2.right,0,
-        .58f,1.18f, .69f,.98f, .79f,.72f, .68f,.48f, .46f,.41f, .44f,.58f, .58f,.85f, .74f,1.18f);
+        .58f,1.12f, .69f,.98f, .79f,.72f, .68f,.48f, .52f,.36f, .62f,.26f, .86f,.25f, 1.32f,.42f);
     public static readonly FlightCurve Crosswind=new FlightCurve("Snow / Crosswind",Vector2.up,0,
         -1.32f,.93f, -.70f,.78f, 0,.89f, .65f,.66f, .30f,.46f, -.50f,.50f, -1.32f,.38f);
     public static readonly FlightCurve Drift=new FlightCurve("Snow / Siege arc",Vector2.right,0,
@@ -51,7 +51,7 @@ public static class SnowChoreography
                 }
                 d.OnBeats(2.80f,4.60f);
                 d.Train("ColdWeatherFighter",Crosswind,.85f,-s,6+n,.32f,4.7f,lane:-.23f);break;
-            case 5: // A low crosswind passes beneath the shield arch; a late petal rises outside it.
+            case 5: // A low crosswind passes beneath the shield arch; a late petal peels outside it.
                 d.OnBeats(1.90f,3.50f);
                 d.Rank("ShieldTransport",Drift,0,s,2,.62f,5.7f);
                 d.OnBeats(2.65f,4.30f);
