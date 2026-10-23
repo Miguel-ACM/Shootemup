@@ -15,6 +15,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     float entranceAge;
     public bool EntranceComplete => entranceAge>=2.65f;
     Boss boss;
+    DistrictBoss districtBoss;
     float nextScan,nextUpdate;
     float bottomLimit,topLimit;
     static readonly Color Steel=new Color(.73f,.77f,.72f), Amber=new Color(.83f,.62f,.30f), Cyan=new Color(.48f,.70f,.72f), Dark=new Color(.07f,.09f,.09f,.94f);
@@ -91,8 +92,13 @@ public sealed class IndustrialHUD : MonoBehaviour
         if(player==null || Time.unscaledTime<nextUpdate)return;nextUpdate=Time.unscaledTime+.1f;
         score.text=Score.CurrentScore.ToString("000000000");chain.text=Score.CurrentMultiplier>1 ? "x"+Score.CurrentMultiplier : "";
         Fill(chainCells,Score.GetPercentageNextMultiplier(),Amber);
-        if(Time.unscaledTime>nextScan){nextScan=Time.unscaledTime+1;boss=FindAnyObjectByType<Boss>();}
-        bossPanel.gameObject.SetActive(boss!=null);
+        if(Time.unscaledTime>nextScan)
+        {
+            nextScan=Time.unscaledTime+.25f;boss=FindAnyObjectByType<Boss>();districtBoss=null;
+            foreach(var candidate in FindObjectsByType<DistrictBoss>())if(candidate.UsesHealthBar){districtBoss=candidate;break;}
+        }
+        bossPanel.gameObject.SetActive(boss!=null || districtBoss!=null);
+        if(districtBoss!=null)Fill(bossCells,districtBoss.DisplayFraction,Amber);
         if(boss!=null)Fill(bossCells,boss.HealthFraction,Amber);
     }
 

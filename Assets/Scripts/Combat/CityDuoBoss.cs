@@ -6,6 +6,7 @@ public sealed class CityDuoBoss : DistrictBoss
     public CityDuoBoss partner;
     bool enraged;
     float combinedMaximum;
+    public override float DisplayFraction=>(Mathf.Max(0,health)+(partner!=null ? Mathf.Max(0,partner.health) : 0))/Mathf.Max(1,combinedMaximum);
     protected override void Configure(){hull=12;hullScale=.8f;health=800;attackInterval=1.8f;}
     protected override void Start()
     {

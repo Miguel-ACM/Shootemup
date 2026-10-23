@@ -3,6 +3,7 @@ using UnityEngine;
 public sealed class TunnelSawBoss : DistrictBoss
 {
     public bool miniature;
+    public override bool UsesHealthBar=>!miniature;
     Vector2 velocity=new Vector2(1,.72f).normalized;
     float haltUntil, nextImpact;
     bool entered;

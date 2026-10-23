@@ -5,12 +5,14 @@ public abstract class DistrictBoss : DistrictEnemy
     protected bool phaseTwo;
     protected ResourceBar bar;
     protected Vector3 station;
+    public virtual bool UsesHealthBar=>true;
+    public virtual float DisplayFraction=>HealthFraction;
     public float HealthFraction=>health/Mathf.Max(1,initialHealth);
     protected override void Start()
     {
         base.Start();initialHealth=health;isBoss=true;scoreOnKill=1600;
         lifeDropChance=manaDropChance=moneyDropChance=1;minmaxLife=new[]{4,6};minmaxMana=new[]{6,9};minmaxMoney=new[]{10,15};
-        var ui=GameObject.Find("UI/ItemsRight/BossHealth");if(ui!=null){bar=ui.GetComponent<ResourceBar>();bar.SetMax(health);bar.SetVisible(true);}
+        var ui=GameObject.Find("UI/ItemsRight/BossHealth");if(ui!=null && UsesHealthBar){bar=ui.GetComponent<ResourceBar>();bar.SetMax(health);bar.SetVisible(true);}
         station=new Vector3(0,Camera.UpLimit-2.3f,1);
     }
     protected override void Update()
