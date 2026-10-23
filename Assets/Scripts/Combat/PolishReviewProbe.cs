@@ -13,6 +13,7 @@ using System.Reflection;
 // One combined visual/audio review followed by all forty waves and stock-gun TTK.
 public sealed class PolishReviewProbe : MonoBehaviour
 {
+    public bool TitleAfterVisuals;
     const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic;
     readonly List<string> checks=new List<string>(),errors=new List<string>();
     Shipcontroller ship;WaveOrchestrer flow;Keyboard keyboard;
@@ -38,6 +39,7 @@ public sealed class PolishReviewProbe : MonoBehaviour
         Directory.CreateDirectory("ArtSource/CombatReview/Polish");
         File.WriteAllText("ArtSource/CombatReview/Polish/Verification.txt",result);
         if(errors.Count>0)File.WriteAllText("Temp/CombatResult.txt",result);
+        else if(TitleAfterVisuals)new GameObject("Natural title startup after polish").AddComponent<TitleHudStartupProbe>();
         else {LevelRun.Reset();new GameObject("Full choreography after polish").AddComponent<ChoreographyProbe>();}
     }
     void Check(bool ok,string text){if(!ok)throw new Exception(text);checks.Add("PASS "+text);}
@@ -162,14 +164,27 @@ public sealed class PolishReviewProbe : MonoBehaviour
         Clear();yield return null;
 
         yield return RepeatedLanceScore();
-        foreach(var type in new[]{typeof(SiegeGunship),typeof(StormReactor)})
+        foreach(var type in new[]{typeof(SiegeGunship),typeof(StormReactor),typeof(SnowSiegeCraft),typeof(FieldsHeavyWing),
+            typeof(TunnelDefensePlatform),typeof(CityCommandCarrier),typeof(PatrolGunship),typeof(WallTurret),typeof(RelayDrone)})
         {
-            LevelRun.Reset(type==typeof(SiegeGunship) ? LevelId.Snow : LevelId.Thunder);LevelEnvironment.Apply();
+            var level=type==typeof(SiegeGunship) || type==typeof(SnowSiegeCraft) ? LevelId.Snow :
+                type==typeof(FieldsHeavyWing) || type==typeof(PatrolGunship) ? LevelId.Fields :
+                type==typeof(TunnelDefensePlatform) || type==typeof(WallTurret) ? LevelId.Tunnel :
+                type==typeof(CityCommandCarrier) ? LevelId.City : LevelId.Thunder;
+            LevelRun.Reset(level);LevelEnvironment.Apply();
             var platform=Station(type,new Vector3(0,5,1));yield return null;platform.enabled=false;
             typeof(DistrictEnemy).GetField("volley",Hidden).SetValue(platform,1);
             type.GetMethod("Attack",Hidden).Invoke(platform,null);
-            directory=BeginClip("ModelAttack"+type.Name);
-            while(Time.time-started<3.2f){yield return Capture(directory);yield return null;}
+            directory=BeginClip("ModelAttack"+type.Name);bool second=false;
+            while(Time.time-started<3.2f)
+            {
+                if(!second && Time.time-started>1.6f)
+                {
+                    second=true;typeof(DistrictEnemy).GetField("volley",Hidden).SetValue(platform,2);
+                    type.GetMethod("Attack",Hidden).Invoke(platform,null);
+                }
+                yield return Capture(directory);yield return null;
+            }
             Clear();yield return null;
         }
         var loadout=ship.GetComponent<ShipLoadout>();loadout.EquipWeapon("BeamEmitter",0);yield return null;
