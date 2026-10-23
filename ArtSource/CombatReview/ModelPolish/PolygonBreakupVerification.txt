@@ -1,0 +1,8 @@
+PASS Enemy/enemy1: 146 textured faces, 3 model parts; pose, motion, blink, collision, grouped disappearance and cleanup checks (88 faces at 80% lifetime).
+PASS Enemy/waver: 182 textured faces, 2 model parts; pose, motion, blink, collision, grouped disappearance and cleanup checks (90 faces at 80% lifetime).
+PASS Enemy/Biggie: 418 textured faces, 6 model parts; pose, motion, blink, collision, grouped disappearance and cleanup checks (199 faces at 80% lifetime).
+PASS Enemy/Bosses/stage1boss: 2126 textured faces, 13 model parts; pose, motion, blink, collision, grouped disappearance and cleanup checks (876 faces at 80% lifetime).
+PASS ScoutInterceptor: 303 hull faces, exhaust excluded, rotated pose retained, correct boss budget, motion and cleanup.
+PASS AvalancheBomber: 893 hull faces, exhaust excluded, rotated pose retained, correct boss budget, motion and cleanup.
+PASS TunnelSawBoss: 1264 hull faces, exhaust excluded, rotated pose retained, correct boss budget, motion and cleanup.
+PASS ThunderLanceBoss: 843 hull faces, exhaust excluded, rotated pose retained, correct boss budget, motion and cleanup.
