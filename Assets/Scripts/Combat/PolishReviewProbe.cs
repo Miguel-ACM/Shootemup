@@ -156,6 +156,16 @@ public sealed class PolishReviewProbe : MonoBehaviour
         Clear();yield return null;
 
         yield return RepeatedLanceScore();
+        foreach(var type in new[]{typeof(SiegeGunship),typeof(StormReactor)})
+        {
+            LevelRun.Reset(type==typeof(SiegeGunship) ? LevelId.Snow : LevelId.Thunder);LevelEnvironment.Apply();
+            var platform=Station(type,new Vector3(0,5,1));yield return null;platform.enabled=false;
+            typeof(DistrictEnemy).GetField("volley",Hidden).SetValue(platform,1);
+            type.GetMethod("Attack",Hidden).Invoke(platform,null);
+            directory=BeginClip("ModelAttack"+type.Name);
+            while(Time.time-started<3.2f){yield return Capture(directory);yield return null;}
+            Clear();yield return null;
+        }
         var loadout=ship.GetComponent<ShipLoadout>();loadout.EquipWeapon("BeamEmitter",0);yield return null;
         InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Z));
         directory=BeginClip("PlayerBeam");while(Time.time-started<3.4f){yield return Capture(directory);yield return null;}
