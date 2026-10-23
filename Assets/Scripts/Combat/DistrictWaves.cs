@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public static class DistrictWaves
 {
     // Explicit types keep runtime factories safe under managed code stripping.
-    public static readonly Type[] EnemyTypes={typeof(ScoutInterceptor),typeof(PatrolGunship),typeof(HeavyBomber),typeof(WallTurret),typeof(MaintenanceDrone),typeof(ArmoredCarrier),typeof(ColdWeatherFighter),typeof(SiegeGunship),typeof(ShieldTransport),typeof(BeamDrone),typeof(RelayDrone),typeof(StormSkimmer),typeof(PursuitFighter),typeof(AttackDrone),typeof(CommandGunship),typeof(CourierDiver),typeof(AvalancheBomber),typeof(ArcLancer)};
+    public static readonly Type[] EnemyTypes={typeof(ScoutInterceptor),typeof(PatrolGunship),typeof(HeavyBomber),typeof(WallTurret),typeof(MaintenanceDrone),typeof(ArmoredCarrier),typeof(ColdWeatherFighter),typeof(SiegeGunship),typeof(ShieldTransport),typeof(BeamDrone),typeof(RelayDrone),typeof(StormSkimmer),typeof(PursuitFighter),typeof(AttackDrone),typeof(CommandGunship),typeof(CourierDiver),typeof(AvalancheBomber),typeof(ArcLancer),typeof(FieldsHeavyWing),typeof(TunnelDefensePlatform),typeof(SnowSiegeCraft),typeof(StormReactor),typeof(CityCommandCarrier)};
     public static Type EnemyType(string name)=>Array.Find(EnemyTypes,t=>t.Name==name);
     public static Type BossType
     {
@@ -21,7 +21,12 @@ public static class DistrictWaves
             }
         }
     }
-    public static string[] Sequence()=>new[]{"2","3","reward","4","4","shop","5","6","reward","boss"};
+    public static string[] Sequence()=>new[]{"2","3","reward","4","miniboss","shop","5","6","reward","boss"};
+    public static Wave Miniboss()
+    {
+        string[] types={"FieldsHeavyWing","TunnelDefensePlatform","SnowSiegeCraft","StormReactor","CityCommandCarrier"};
+        return new Wave(6,35,1,ConflictGroup.cg.center,new List<WaveUnit>{new WaveUnit(types[(int)LevelRun.Current],0,new Vector3(0,1.2f))});
+    }
     public static Wave Create(int budget)
     {
         var units=new List<WaveUnit>();int pattern=UnityEngine.Random.Range(0,4);

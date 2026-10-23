@@ -100,6 +100,7 @@ public class WavePool : MonoBehaviour
 
     public Wave getWave(string mode)
     {
+        if(mode=="miniboss")return DistrictWaves.Miniboss();
         Wave w = null;
         bool isInt = int.TryParse(mode, out int value);
         if (isInt)
