@@ -12,6 +12,7 @@ public abstract class PatternMover : AMover
     private AShooter[] controlledShooters;
     private bool initialized, arrived, leaving;
 
+    public Vector3? LockedAim {get;private set;}
     public bool IsLeaving => leaving;
     public bool CanFire { get; private set; }
     public Vector3 Destination { get; protected set; }
@@ -100,6 +101,7 @@ public abstract class PatternMover : AMover
 
     protected void LockAim(Vector3? point)
     {
+        LockedAim=point;
         foreach (var weapon in controlledShooters)
             if (weapon != null) weapon.MovementAimPoint = point;
     }

@@ -36,7 +36,7 @@ public abstract class CombatRound : AEnemyBullet
         shot.transform.localScale=Vector3.one*radius*2;shot.visual.sprite=CombatVisuals.Projectile(false,radius>=.25f);shot.visual.color=Color.white;
         shot.visual.enabled=true;shot.GetComponent<Collider2D>().enabled=true;
         shot.origin=shot.transform.position;shot.heading=direction.sqrMagnitude>.001f ? direction.normalized : Vector2.down;
-        shot.speed=velocity*GameRules.enemyBulletSpeed;shot.damage=8*GameRules.enemyDamage;
+        shot.speed=velocity*GameRules.enemyBulletSpeed;shot.damage=10*GameRules.enemyDamage;
         shot.age=0;shot.generation=0;shot.lifetime=9;shot.ended=false;
         shot.gameObject.SetActive(true);Live.Add(shot);shot.Initialize();return shot;
     }

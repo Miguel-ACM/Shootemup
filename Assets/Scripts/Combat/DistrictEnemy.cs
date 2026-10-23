@@ -20,7 +20,8 @@ public abstract class DistrictEnemy : AEnemy
         var rb=go.AddComponent<Rigidbody2D>();rb.gravityScale=0;rb.bodyType=RigidbodyType2D.Kinematic;
         go.AddComponent<CircleCollider2D>().isTrigger=true;
         var enemy=(DistrictEnemy)go.AddComponent(type);enemy.Configure();
-        enemy.health*=GameRules.enemyHealth*(1+Mathf.Min(8,LevelRun.Stage-1)*.15f);
+        enemy.health*=GameRules.enemyHealth*(1+Mathf.Min(8,LevelRun.Stage-1)*.22f);
+        if(!(enemy is DistrictBoss)){enemy.health*=1.35f;enemy.attackInterval*=.78f;}
         enemy.size=enemy.hullScale;go.GetComponent<CircleCollider2D>().radius=enemy.hullScale*.8f;
         var model=new GameObject("Armored hull");model.transform.SetParent(go.transform,false);model.transform.localScale=Vector3.one*enemy.hullScale;
         model.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(enemy.hull);
@@ -47,7 +48,7 @@ public abstract class DistrictEnemy : AEnemy
         if(player!=null && Vector2.Distance(player.position,transform.position)<2)return;
         if(age>=nextAttack){volley++;Attack();nextAttack=age+attackInterval/Mathf.Max(.5f,GameRules.enemyShootSpeed);}
     }
-    protected Vector2 Aim => CombatVisuals.Aim(transform.position);
+    protected Vector2 Aim => movement!=null && movement.LockedAim.HasValue ? ((Vector2)(movement.LockedAim.Value-transform.position)).normalized : CombatVisuals.Aim(transform.position);
     protected void Fan<T>(int count,float spread,float velocity,float radius=.14f) where T:CombatRound
     {
         for(int i=0;i<count;i++)CombatRound.Launch<T>(transform.position,CombatVisuals.Rotate(Aim,(i-(count-1)*.5f)*spread),velocity,radius);
