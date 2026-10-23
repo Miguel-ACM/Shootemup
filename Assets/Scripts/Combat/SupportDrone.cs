@@ -9,7 +9,7 @@ public sealed class SupportDrone : MonoBehaviour
         var go=new GameObject("Linked support drone");model=go.transform;model.SetParent(transform,false);model.localScale=Vector3.one*.22f;
         go.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(4);
         var r=go.AddComponent<MeshRenderer>();r.sharedMaterial=CombatMaterials.Fleet;r.sortingLayerName="Player";
-        var exhaust=go.AddComponent<EnemyThrusters>();exhaust.sockets=new[]{new Vector3(-.56f,.93f,0),new Vector3(.56f,.93f,0)};
+        var exhaust=go.AddComponent<EnemyThrusters>();exhaust.sockets=IndustrialMeshFactory.CombatEngineSockets(4);
     }
     void Update()
     {
