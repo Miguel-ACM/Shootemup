@@ -1,0 +1,35 @@
+PASS
+PASS: 112 full-screen frames; dark start, 5 visible dropouts, gradual warming, all active instruments steady. Portraits share their plate alpha.
+PASS continuous beam shader is included and compiles
+PASS beam charge imports with audible duration
+PASS beam ignite imports with audible duration
+PASS beam sustain imports with audible duration
+PASS beam release imports with audible duration
+PASS laser sustains real source audio during active fire (peak 0,09532)
+PASS pooled laser cleanup stops sustained audio
+PASS warning beam cannot damage the player
+PASS energized beam damages on its visible centerline
+PASS explicit beam cancellation stops its sound
+PASS seven boss emitters each sustain a beam with bounded overlapping audio
+PASS lance finishes cooling before the next authored beat at tempo 1,00
+PASS lance preserves its sweep arc at tempo 1,00
+PASS release audio fades before pooling at tempo 1,00
+PASS the next scored lance actually launches at tempo 1,00
+PASS lance finishes cooling before the next authored beat at tempo 1,80
+PASS lance preserves its sweep arc at tempo 1,80
+PASS release audio fades before pooling at tempo 1,80
+PASS the next scored lance actually launches at tempo 1,80
+PASS stopping the player beam removes its audio and visual cycle
+PASS NeedleCannon produces visible projectiles on Snow
+PASS BurstLauncher produces visible projectiles on Snow
+PASS DiscThrower produces visible projectiles on Snow
+PASS FlameProjector produces visible projectiles on Snow
+PASS SwarmRack produces visible projectiles on Snow
+PASS NeedleCannon produces visible projectiles on Thunder
+PASS BurstLauncher produces visible projectiles on Thunder
+PASS DiscThrower produces visible projectiles on Thunder
+PASS FlameProjector produces visible projectiles on Thunder
+PASS SwarmRack produces visible projectiles on Thunder
+PASS AvalancheBomber creates independent hull debris and cleans it up
+PASS ThunderLanceBoss creates independent hull debris and cleans it up
+PASS all combined visual phases ran without runtime exceptions

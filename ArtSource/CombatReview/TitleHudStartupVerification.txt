@@ -1,0 +1,12 @@
+PASS
+PASS previous transition has finished
+PASS real Title menu is ready
+PASS NewGame.OnAccept starts the real cloud transition
+PASS Title activates L1 and the clouds clear
+PASS HUD begins dark in its first real activation frame
+PASS equipment portraits begin dark when their real panels are created
+PASS instruments visibly warm and flicker through the cloud reveal (4 dropouts)
+PASS all active instruments settle at full visibility
+PASS all four equipment panels retain their rendered portrait texture
+PASS actual starter cannon has its 3D portrait after Title startup
+PASS captured 109 full-screen frames of the natural title, clouds, startup and steady HUD
