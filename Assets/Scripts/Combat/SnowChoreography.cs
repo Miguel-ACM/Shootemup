@@ -15,38 +15,63 @@ public static class SnowChoreography
         var d=new WaveDance(budget){Handoff=4.4f};float s=d.Side;int n=d.Extra;
         switch(d.Phrase)
         {
-            case 0: // Petals open around a shell-throwing center.
-                d.Solo("AvalancheBomber",Drift,0,s,0,5.8f,1.5f);
-                d.Train("ColdWeatherFighter",Petal,.15f,s,4+n,.40f,5.0f);
-                d.Train("ColdWeatherFighter",Petal,.65f,-s,4+n,.40f,5.0f);break;
-            case 1: // One spiral coils around a mobile shield; a crosswind breaks it open.
-                d.Solo("ShieldTransport",Drift,0,-s,-.15f,5.8f,1.8f);
-                d.Train("ColdWeatherFighter",Spiral,.3f,s,6+n,.38f,5.8f);
-                d.Train("ColdWeatherFighter",Crosswind,2.2f,-s,3,.35f,4.6f);break;
-            case 2: // A diagonal echelon of siege ships drifts through a petal.
-                d.Rank("SiegeGunship",Crosswind,0,s,3,.16f,5.8f,1.7f);
-                d.Train("ColdWeatherFighter",Petal,1.15f,-s,6+n,.33f,4.9f);break;
-            case 3: // The two halves of a snowflake unfurl on alternating beats.
-                d.Train("ColdWeatherFighter",Spiral,0,s,5+n,.38f,5.7f);
-                d.Train("ColdWeatherFighter",Spiral,1.05f,-s,5+n,.38f,5.7f);
-                d.Solo("AvalancheBomber",Drift,.8f,s,.12f,5.6f,1.55f);break;
-            case 4: // Three heavy arcs fan outward while a low wind races past.
-                for(int i=0;i<3;i++)d.Solo("AvalancheBomber",Drift,i*.32f,s,(i-1)*.40f,5.9f,1.7f);
-                d.Train("ColdWeatherFighter",Crosswind,1.1f,-s,7+n,.30f,4.6f,lane:-.10f);break;
-            case 5: // Shields change sides; fighters trace the gap between them.
-                d.Solo("ShieldTransport",Drift,0,s,-.20f,5.6f,1.8f);
-                d.Solo("ShieldTransport",Drift,1.0f,-s,-.20f,5.6f,1.8f);
-                d.Train("ColdWeatherFighter",Petal,.55f,s,5+n,.35f,4.8f);
-                d.Train("ColdWeatherFighter",Crosswind,2.05f,-s,4,.30f,4.6f);break;
-            case 6: // A petal opens on each side of a spiralling gunship.
-                d.Solo("SiegeGunship",Spiral,0,s,0,6.2f,1.65f);
-                d.Rank("ColdWeatherFighter",Petal,.4f,s,3,.22f,4.9f);
-                d.Rank("ColdWeatherFighter",Petal,1.5f,-s,3,.22f,4.9f);
-                d.Solo("AvalancheBomber",Drift,1.8f,-s,0,5.5f,1.6f);break;
-            default: // Broad alternating winds close the passage.
-                d.Train("ColdWeatherFighter",Crosswind,0,s,6+n,.30f,4.7f,lane:.04f,together:true);
-                d.Train("ColdWeatherFighter",Crosswind,1.0f,-s,6+n,.30f,4.7f,lane:-.12f,together:true);
-                d.Solo("SiegeGunship",Drift,1.0f,s,0,5.7f,1.6f);break;
+            case 0: // Mirrored petals bloom together; escort fire clears before the shells.
+                d.OnBeats(2.65f,4.05f);
+                d.Solo("AvalancheBomber",Drift,0,s,0,5.8f);
+                d.OnBeats(1.90f,3.35f);
+                d.Train("ColdWeatherFighter",Petal,0,s,4+n,.38f,5.0f);
+                d.Train("ColdWeatherFighter",Petal,0,-s,4+n,.38f,5.0f);break;
+            case 1: // A shield leads a single coil; a clear crosswind answers the coil.
+                d.OnBeats(2.80f,4.30f);
+                d.Solo("ShieldTransport",Drift,0,-s,-.25f,5.8f);
+                d.OnBeats(2.10f,3.60f);
+                d.Train("ColdWeatherFighter",Spiral,.15f,s,6+n,.36f,5.8f);
+                d.OnBeats(4.95f,5.55f);
+                d.Rank("ColdWeatherFighter",Crosswind,2.45f,-s,3,.09f,4.6f);break;
+            case 2: // A spacious siege echelon fires a rolling salvo, then the escorts reply.
+                for(int i=0;i<3;i++)
+                {
+                    d.OnBeats(1.70f+i*.24f,3.30f+i*.24f);
+                    d.Solo("SiegeGunship",Crosswind,0,s,(i-1)*.18f,5.8f);
+                }
+                d.OnBeats(2.70f,4.45f);
+                d.Train("ColdWeatherFighter",Petal,.55f,-s,6+n,.34f,5.0f);break;
+            case 3: // Snowflake arms turn in unison and fire on opposite halves of the beat.
+                d.OnBeats(2.20f,3.65f);
+                d.Train("ColdWeatherFighter",Spiral,0,s,5+n,.38f,5.7f,lane:-.12f);
+                d.OnBeats(2.85f,4.30f);
+                d.Train("ColdWeatherFighter",Spiral,0,-s,5+n,.38f,5.7f,lane:-.12f);
+                d.OnBeats(3.20f,4.85f);
+                d.Solo("AvalancheBomber",Drift,.8f,s,0,5.6f);break;
+            case 4: // A wide bomber crown launches one rolling cascade, then a second.
+                for(int i=0;i<3;i++)
+                {
+                    d.OnBeats(1.85f+i*.22f,3.55f+i*.22f);
+                    d.Solo("AvalancheBomber",Drift,0,s,(i-1)*.43f,5.9f,depth:Mathf.Abs(i-1)*.045f);
+                }
+                d.OnBeats(2.80f,4.60f);
+                d.Train("ColdWeatherFighter",Crosswind,.85f,-s,6+n,.32f,4.7f,lane:-.13f);break;
+            case 5: // Two shields form a moving arch; a fighter diamond slips beneath.
+                d.OnBeats(1.90f,3.50f);
+                d.Solo("ShieldTransport",Drift,0,s,-.32f,5.7f);
+                d.Solo("ShieldTransport",Drift,0,-s,-.32f,5.7f);
+                d.OnBeats(2.65f,4.30f);
+                d.Diamond("ColdWeatherFighter",Petal,.65f,s,.22f,.08f,5.0f);
+                d.OnBeats(4.95f,5.55f);
+                d.Rank("ColdWeatherFighter",Crosswind,2.15f,-s,3,.09f,4.7f);break;
+            case 6: // A heavy spiral makes room for two petals, with a full beat between roles.
+                d.OnBeats(1.75f,3.25f,4.75f);
+                d.Solo("SiegeGunship",Spiral,0,s,0,6.2f);
+                d.OnBeats(2.50f,4.00f);
+                d.Train("ColdWeatherFighter",Petal,.25f,s,4+n,.38f,5.0f,lane:.12f);
+                d.Train("ColdWeatherFighter",Petal,.25f,-s,4+n,.38f,5.0f,lane:.12f);break;
+            default: // Two broad winds trade ordered salvos while a gunship turns upward.
+                d.OnBeats(2.05f,3.40f);
+                d.Train("ColdWeatherFighter",Crosswind,0,s,5+n,.32f,4.9f,lane:.045f);
+                d.OnBeats(2.70f,4.05f);
+                d.Train("ColdWeatherFighter",Crosswind,.55f,-s,5+n,.32f,4.9f,lane:-.14f);
+                d.OnBeats(3.05f,4.75f);
+                d.Solo("SiegeGunship",Drift,.9f,s,0,5.8f);break;
         }
         return d.Build();
     }
