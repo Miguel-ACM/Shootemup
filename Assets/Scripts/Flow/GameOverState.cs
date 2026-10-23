@@ -18,13 +18,15 @@ public sealed class GameOverState : MonoBehaviour
         CombatDecision.End();GameRules.playerDisabled=true;
         foreach(var wave in FindObjectsByType<WaveOrchestrer>()){wave.CancelInvoke();wave.StopAllCoroutines();wave.enabled=false;}
         foreach(var weapon in FindObjectsByType<AWeapon>())weapon.StopFiring();
+        foreach(var reveal in FindObjectsByType<LevelReveal>())Destroy(reveal.gameObject);
+        foreach(var choice in FindObjectsByType<LevelChoice>())Destroy(choice.gameObject);
         foreach(var shop in FindObjectsByType<DecisionShop>())shop.Abort();
         var dialog=FindAnyObjectByType<Dialog>();if(dialog!=null)dialog.Hide();
         instance.Build(dialog!=null ? dialog.font : null);
     }
     void Build(TMP_FontAsset font)
     {
-        var canvas=gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=100;
+        var canvas=gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=32010;
         var scaler=gameObject.AddComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);scaler.matchWidthOrHeight=1;
         group=gameObject.AddComponent<CanvasGroup>();group.alpha=0;group.blocksRaycasts=false;
         var panel=new GameObject("Dark playfield",typeof(RectTransform),typeof(Image));panel.transform.SetParent(transform,false);

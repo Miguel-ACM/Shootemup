@@ -10,6 +10,7 @@ public sealed class LevelReveal : MonoBehaviour
 
     public static void Show()
     {
+        if(GameOverState.Active)return;
         new GameObject("Level reveal title").AddComponent<LevelReveal>();
     }
 

@@ -198,6 +198,7 @@ public class WaveOrchestrer : MonoBehaviour
         CombatDecision.End();
         CloudTransition.Change(()=>
         {
+            if(GameOverState.Active)return;
             StopAllCoroutines();CancelInvoke();
             if(routeChoice!=null)Destroy(routeChoice.gameObject);
             routeChoice=null;
