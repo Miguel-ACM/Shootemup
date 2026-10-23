@@ -45,7 +45,6 @@ public sealed class LoadoutHUD : MonoBehaviour
             states[i]=Label(p,"",8,new Vector2(0,active ? 44 : 43),new Vector2(100,12),Cyan);
             if(!active)
             {
-                Label(p,i==0 ? "01 / PRIMARY" : "02 / SECONDARY",8,new Vector2(0,74),new Vector2(150,12),Steel);
                 for(int s=-1;s<=1;s+=2)Plate(p,"Fastener",4,Steel).anchoredPosition=new Vector2(s*49,0);
             }
         }
@@ -73,7 +72,7 @@ public sealed class LoadoutHUD : MonoBehaviour
         {
             bool active=i>=2;int side=i%2==0 ? -1 : 1;
             panels[i].localScale=Vector3.one*scale;
-            panels[i].anchoredPosition=new Vector2(side*(202.5f+(active ? 166 : 112)*scale),(active ? 252 : 116)*scale);
+            panels[i].anchoredPosition=new Vector2(side*(202.5f+(active ? 166 : 112)*scale),(active ? 220 : 116)*scale);
             string type=active ? (loadout.Actives[i-2]!=null ? loadout.Actives[i-2].GetType().Name : "") : (loadout.Weapons[i]!=null ? loadout.Weapons[i].GetType().Name : "");
             if(displayed[i]!=type)SetModel(i,type);
             keys[i].text=inputs[i];
