@@ -61,21 +61,19 @@ public sealed class DecisionShop : MonoBehaviour
         for(int i=0;i<items.Count;i++)
         {
             if(items[i]==null)continue;
-            float x=Mathf.Abs(player.transform.position.x-items[i].transform.position.x);
+            float x=Vector2.Distance(player.transform.position,items[i].transform.position);
             if(x<d){d=x;nearest=i;}
-            labels[i].text=items[i].GetData()[0]+"\n"+items[i].rarity.ToUpperInvariant()+
-                (paid ? "  -"+prices[items[i]]+(scoreShop ? " pts" : "x") : "  Choose one");
+            labels[i].text=items[i].GetData()[0]+(paid ? "\n"+prices[items[i]]+(scoreShop ? " pts" : "x") : "");
             labels[i].color=Affordable(prices[items[i]]) ? AItem.GetRarityColor(items[i].rarity) : new Color(1,.35f,.3f);
         }
-        if(player.transform.position.y>0 && nearest>=0)
+        if(d<1.8f && nearest>=0)
         {
             if(preview!=nearest){preview=nearest;var data=items[nearest].GetData();dialog.ShowItemDesc(data[0],data[1],data[2],items[nearest].rarity);}
         }
         else {preview=-1;dialog.Hide();}
         bool atBottom=player.transform.position.y<Camera.DownLimit+.8f;
         skipCharge=atBottom && age>2 && claimed==null ? skipCharge+Time.deltaTime : 0;
-        instructions.text=(paid ? (scoreShop ? "SCORE SHOP  |  "+Score.CurrentScore+" pts" : "MULTIPLIER SHOP  |  x"+Score.CurrentMultiplier) : "REWARD  |  choose one")+
-            "\nHold at the bottom to skip"+(skipCharge>0 ? "  "+Mathf.CeilToInt(Mathf.Max(0,1.5f-skipCharge))+"s" : "");
+        instructions.text=skipCharge>0 ? "SKIP  "+Mathf.CeilToInt(Mathf.Max(0,1.5f-skipCharge)) : paid ? (scoreShop ? Score.CurrentScore+" pts" : "x"+Score.CurrentMultiplier) : "";
         if(skipCharge>=1.5f)Close();
     }
     bool Affordable(int price)=>scoreShop ? Score.CurrentScore>=price : Score.CurrentMultiplier>price;
