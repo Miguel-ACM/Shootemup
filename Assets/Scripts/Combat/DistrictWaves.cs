@@ -43,16 +43,7 @@ public static class DistrictWaves
         {for(int i=0;i<count;i++)Flight(type,at,FlightPhrase.Chevron,side,(i-(count-1)*.5f)*spacing,duration,beat);}
         switch(LevelRun.Current)
         {
-            case LevelId.Fields:
-                if(phrase==0)
-                {Train("ScoutInterceptor",0,FlightPhrase.Ribbon,side,6+extra);Train("ScoutInterceptor",1.5f,FlightPhrase.Ribbon,-side,6+extra);}
-                else if(phrase==1)
-                {Row("ScoutInterceptor",0,5,.32f);Flight("PatrolGunship",1.8f,FlightPhrase.Battery,1,0,6,1.5f);}
-                else if(phrase==2)
-                {Train("ScoutInterceptor",0,FlightPhrase.Crossing,side,5+extra);Train("ScoutInterceptor",0,FlightPhrase.Crossing,-side,5+extra,lane:.12f);}
-                else
-                {Flight("HeavyBomber",0,FlightPhrase.Ribbon,side,.1f,7,1.8f);Flight("HeavyBomber",.8f,FlightPhrase.Ribbon,-side,-.04f,7,1.8f);Row("ScoutInterceptor",1.7f,4,.4f,5.5f);}
-                break;
+            case LevelId.Fields:return PlainsChoreography.Create(budget);
             case LevelId.Tunnel:
                 Flight("WallTurret",0,FlightPhrase.Battery,1,-.83f,7,1.5f);
                 Flight("WallTurret",.75f,FlightPhrase.Battery,1,.83f,7,1.5f);
