@@ -3,6 +3,18 @@ using UnityEngine;
 public sealed class RelayDrone : DistrictEnemy
 {
     protected override void Configure(){hull=10;health=32;hullScale=.55f;attackInterval=2.7f;Mover<AlternatingAdvance>();}
+    protected override void Start()
+    {
+        foreach(var other in FindObjectsByType<RelayDrone>(FindObjectsSortMode.None))
+            if(other!=this && other.partner==null)
+            {
+                partner=other;other.partner=this;
+                var first=GetEntityId().CompareTo(other.GetEntityId())<0;
+                GetComponent<AlternatingAdvance>().SetPartner(other.GetComponent<AlternatingAdvance>(),first);
+                other.GetComponent<AlternatingAdvance>().SetPartner(GetComponent<AlternatingAdvance>(),!first);break;
+            }
+        base.Start();
+    }
     protected override void Attack(){FireLink();}
 
     RelayDrone partner; PulseLaser link;
