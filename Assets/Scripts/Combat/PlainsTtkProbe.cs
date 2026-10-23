@@ -13,6 +13,7 @@ using System.IO;
 // not a human playthrough: no upgrades, pickups or damage to the test pilot.
 public sealed class PlainsTtkProbe : MonoBehaviour
 {
+    public bool FormationsOnly;
     readonly List<string> results=new List<string>(), errors=new List<string>();
     Shipcontroller ship;BaseWeapon weapon;Keyboard keyboard;
     float pilotY;
@@ -39,7 +40,7 @@ public sealed class PlainsTtkProbe : MonoBehaviour
         if(weapon!=null)weapon.StopFiring();
         if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
         string report=(errors.Count==0 ? "PASS" : "FAIL")+"\n"+string.Join("\n",results)+"\n"+string.Join("\n",errors);
-        File.WriteAllText("ArtSource/CombatReview/PlainsTtkVerification.txt",report);File.WriteAllText("Temp/CombatResult.txt",report);
+        File.WriteAllText("ArtSource/CombatReview/"+(FormationsOnly ? "PlainsFormationTtkVerification.txt" : "PlainsTtkVerification.txt"),report);File.WriteAllText("Temp/CombatResult.txt",report);
     }
     void Check(bool pass,string message){if(!pass)throw new Exception(message);results.Add("PASS "+message);}
     void Fire(bool pressed){InputSystem.QueueStateEvent(keyboard,new KeyboardState(pressed ? new[]{Key.Z} : Array.Empty<Key>()));}
@@ -63,23 +64,27 @@ public sealed class PlainsTtkProbe : MonoBehaviour
         Check(GameRules.playerShootDamage==2 && GameRules.playerShootNumber==2 && GameRules.playerShootSpeed==10,"stock gun: 2 x 2 damage x 10 volleys/sec = 40 nominal DPS");
         pilotY=Camera.DownLimit+1.6f;
         results.Add("TTK is from first hit to death, excluding projectile travel; tracking is capped at the player's normal speed. Departures never count as kills.");
-        yield return Target(typeof(ScoutInterceptor),"stationary scout",true,null,1);
-        yield return Target(typeof(PatrolGunship),"stationary gunship",true,null,1.6f);
-        yield return Target(typeof(HeavyBomber),"stationary bomber",true,null,2.4f);
+        if(!FormationsOnly)
+        {
+            yield return Target(typeof(ScoutInterceptor),"stationary scout",true,null,1);
+            yield return Target(typeof(PatrolGunship),"stationary gunship",true,null,1.6f);
+            yield return Target(typeof(HeavyBomber),"stationary bomber",true,null,2.4f);
+        }
         // Every distinct authored Plains enemy/path combination, including the mirrored crossing.
         var seen=new HashSet<string>();
-        for(int budget=2;budget<=5;budget++)
+        for(int budget=2;budget<=9;budget++)
             foreach(var unit in DistrictWaves.Create(budget).units)
             {
-                string key=unit.enemy+"/"+unit.phrase;
+                string key=unit.enemy+"/"+(unit.curve!=null ? unit.curve.Name : unit.phrase.ToString());
                 if(!seen.Add(key))continue;
                 yield return Target(DistrictWaves.EnemyType(unit.enemy),key,false,unit,unit.flightDuration);
-                if(unit.phrase==FlightPhrase.Crossing)
+                if(budget==2 || unit.phrase==FlightPhrase.Crossing)
                 {
                     var mirror=(WaveUnit)unit.Clone();mirror.side=-mirror.side;
                     yield return Target(DistrictWaves.EnemyType(unit.enemy),key+" mirrored",false,mirror,mirror.flightDuration);
                 }
             }
+        if(FormationsOnly)yield break;
         yield return Target(typeof(FieldsHeavyWing),"moving armored miniboss",false,null,14);
         yield return Target(typeof(FieldsBomberBoss),"stationary boss",true,null,39);
         yield return Target(typeof(FieldsBomberBoss),"moving boss, 2 seconds disengaged every 8 seconds",false,null,55,true);

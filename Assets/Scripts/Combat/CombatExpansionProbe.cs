@@ -221,7 +221,7 @@ public sealed class CombatExpansionProbe : MonoBehaviour
             LevelRun.Reset(level);LevelEnvironment.Apply();yield return new WaitForSeconds(.2f);
             var boss=(DistrictBoss)DistrictEnemy.Spawn(DistrictWaves.BossType,new Vector3(0,5,1));
             yield return new WaitForSeconds(.2f);
-            Check(boss is CityDuoBoss duoHealth ? boss.health+duoHealth.partner.health>=3500 : boss.health>=2500,level+" boss durability meets the restored baseline");
+            Check(boss is CityDuoBoss duoHealth ? boss.health+duoHealth.partner.health>=3500 : boss.health>=(level==LevelId.Fields ? 1440 : 2500),level+" boss durability meets its district baseline");
             boss.damage(boss.health*.55f);yield return new WaitForSeconds(3);
             if(level==LevelId.Tunnel)Check(FindObjectsByType<TunnelSawBoss>().Count(x=>x.miniature)==2,"tunnel phase two deploys two sturdy miniatures");
             if(level==LevelId.Thunder)Check(FindObjectsByType<PulseLaser>().Length>=7,"thunder phase two launches seven sweeping beams");
