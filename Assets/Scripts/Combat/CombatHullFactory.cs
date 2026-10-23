@@ -21,8 +21,8 @@ public static partial class IndustrialMeshFactory
         if(kind==13)return new[]{new Vector3(-0.32f,0.63f,0),new Vector3(0.32f,0.63f,0)};
         if(kind==14)return new[]{new Vector3(-1.02f,0.81f,0),new Vector3(1.02f,0.81f,0)};
         if(kind==15)return new[]{new Vector3(-0.2f,0.86f,0),new Vector3(0.2f,0.86f,0)};
-        if(kind==16)return new[]{new Vector3(-0.88f,0.86f,0),new Vector3(0.88f,0.86f,0)};
-        if(kind==17)return new[]{new Vector3(-0.42f,0.91f,0),new Vector3(0.42f,0.91f,0)};
+        if(kind==16 || kind==17)return new[]{new Vector3(-0.88f,0.86f,0),new Vector3(0.88f,0.86f,0)};
+        if(kind==18)return new[]{new Vector3(-0.42f,0.91f,0),new Vector3(0.42f,0.91f,0)};
         if(kind==21)return new[]{new Vector3(-0.74f,1.05f,0),new Vector3(0.74f,1.05f,0)};
         if(kind==22)return new[]{new Vector3(-0.29f,1.16f,0),new Vector3(0.29f,1.16f,0)};
         if(kind==23)return new[]{new Vector3(-1.04f,0.72f,0),new Vector3(1.04f,0.72f,0)};
@@ -40,7 +40,7 @@ public static partial class IndustrialMeshFactory
         bool round=kind==21 || kind==20;bool slim=kind==22;
         float width=slim ? .48f : heavy ? 1.12f : .72f;
         float length=slim ? 1.55f : heavy ? 1.12f : 1.0f;
-        int armor=kind==6 || kind==7 || kind==8 || kind==16 || kind==21 || kind==26 ? 1 : kind==9 || kind==10 || kind==11 || kind==17 || kind==22 || kind==27 ? 7 : kind>=12 && kind<=15 || kind==28 ? 12 : 0;
+        int armor=kind==6 || kind==7 || kind==8 || kind==16 || kind==17 || kind==21 || kind==26 ? 1 : kind==9 || kind==10 || kind==11 || kind==18 || kind==22 || kind==27 ? 7 : kind>=12 && kind<=15 || kind==28 ? 12 : 0;
         if(kind==0){BuildScoutAirframe(b);return combatHulls[kind]=b.Finish("ScoutAirframe");}
         if(kind==1){BuildPatrolAirframe(b);return combatHulls[kind]=b.Finish("PatrolAirframe");}
         if(kind==2){BuildBomberAirframe(b);return combatHulls[kind]=b.Finish("BomberAirframe");}
@@ -55,8 +55,8 @@ public static partial class IndustrialMeshFactory
         if(kind==13){BuildAttackDroneAirframe(b);return combatHulls[kind]=b.Finish("AttackDroneAirframe");}
         if(kind==14){BuildCommandAirframe(b);return combatHulls[kind]=b.Finish("CommandAirframe");}
         if(kind==15){BuildCourierAirframe(b);return combatHulls[kind]=b.Finish("CourierAirframe");}
-        if(kind==16){BuildAvalancheAirframe(b);return combatHulls[kind]=b.Finish("AvalancheAirframe");}
-        if(kind==17){BuildArcLancerAirframe(b);return combatHulls[kind]=b.Finish("ArcLancerAirframe");}
+        if(kind==16 || kind==17){BuildAvalancheAirframe(b);return combatHulls[kind]=b.Finish("AvalancheAirframe");}
+        if(kind==18){BuildArcLancerAirframe(b);return combatHulls[kind]=b.Finish("ArcLancerAirframe");}
         if(kind==21){BuildSnowCitadelAirframe(b);return combatHulls[kind]=b.Finish("SnowCitadelAirframe");}
         if(kind==22){BuildThunderNeedleAirframe(b);return combatHulls[kind]=b.Finish("ThunderNeedleAirframe");}
         if(kind==23){BuildFieldsFortressAirframe(b);return combatHulls[kind]=b.Finish("FieldsFortressAirframe");}
