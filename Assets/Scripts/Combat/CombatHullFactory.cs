@@ -25,6 +25,7 @@ public static partial class IndustrialMeshFactory
         if(kind==21)return new[]{new Vector3(-0.74f,1.05f,0),new Vector3(0.74f,1.05f,0)};
         if(kind==22)return new[]{new Vector3(-0.29f,1.16f,0),new Vector3(0.29f,1.16f,0)};
         if(kind==23)return new[]{new Vector3(-1.04f,0.72f,0),new Vector3(1.04f,0.72f,0)};
+        if(kind==24)return new[]{new Vector3(-0.85f,0.67f,0),new Vector3(0.85f,0.67f,0)};
         float x=kind==22 ? .375f : kind==2 || kind==5 || kind==7 || kind==8 || kind==14 || kind==16 || kind>=20 ? .874f : .562f;
         return new[]{new Vector3(-x,.93f,0),new Vector3(x,.93f,0)};
     }
@@ -55,6 +56,7 @@ public static partial class IndustrialMeshFactory
         if(kind==21){BuildSnowCitadelAirframe(b);return combatHulls[kind]=b.Finish("SnowCitadelAirframe");}
         if(kind==22){BuildThunderNeedleAirframe(b);return combatHulls[kind]=b.Finish("ThunderNeedleAirframe");}
         if(kind==23){BuildFieldsFortressAirframe(b);return combatHulls[kind]=b.Finish("FieldsFortressAirframe");}
+        if(kind==24){BuildHeavyWingAirframe(b);return combatHulls[kind]=b.Finish("HeavyWingAirframe");}
         if(BuildRoleHull(b,kind,armor))return combatHulls[kind]=b.Finish("District hull "+kind);
         if(round)
         {
