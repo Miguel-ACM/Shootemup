@@ -80,7 +80,7 @@ public sealed class CombatExpansionProbe : MonoBehaviour
         yield return new WaitForSeconds(.2f);yield return new WaitForEndOfFrame();
         var previous=RenderTexture.active;RenderTexture.active=texture;
         var image=new Texture2D(texture.width,texture.height,TextureFormat.RGB24,false);image.ReadPixels(new Rect(0,0,texture.width,texture.height),0,0);image.Apply();RenderTexture.active=previous;
-        File.WriteAllBytes("ArtSource/CombatReview/FleetModels.png",image.EncodeToPNG());Destroy(image);Destroy(studio);texture.Release();Destroy(texture);
+        File.WriteAllBytes("ArtSource/CombatReview/FleetModels.png",image.EncodeToPNG());Destroy(image);camera.targetTexture=null;Destroy(studio);texture.Release();Destroy(texture);
     }
     void Press(params Key[] keys){InputSystem.QueueStateEvent(keyboard,new KeyboardState(keys));InputSystem.Update();}
     IEnumerator Choreography()
