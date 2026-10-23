@@ -2,36 +2,12 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class RelayDrone : DistrictEnemy
 {
-    protected override void Configure(){hull=10;health=32;hullScale=.55f;attackInterval=2.7f;Mover<AlternatingAdvance>();}
-    protected override void Start()
+    protected override void Configure(){hull=10;health=32;hullScale=.55f;attackInterval=2.7f;Mover<StrafeAndBrake>();}
+    protected override void Attack()
     {
-        foreach(var other in FindObjectsByType<RelayDrone>())
-            if(other!=this && other.partner==null)
-            {
-                partner=other;other.partner=this;
-                var first=GetEntityId().CompareTo(other.GetEntityId())<0;
-                var mine=GetComponent<AlternatingAdvance>();var theirs=other.GetComponent<AlternatingAdvance>();
-                if(mine!=null && theirs!=null){mine.SetPartner(theirs,first);theirs.SetPartner(mine,!first);}break;
-            }
-        base.Start();
+        // Capacitor fighters strike on the formation's shared accent; no ship-to-ship tethers.
+        Vector2 aim=Aim;
+        for(int i=-1;i<=1;i++)
+            CombatRound.Launch<NeedleRound>(transform.position,CombatVisuals.Rotate(aim,i*7),6.8f-Mathf.Abs(i)*.45f,.13f);
     }
-    protected override void Attack(){FireLink();}
-
-    RelayDrone partner; PulseLaser link;
-    void FireLink()
-    {
-        if(partner==null)foreach(var other in FindObjectsByType<RelayDrone>())if(other!=this){partner=other;break;}
-        if(partner==null || partner.transform.position.y<1 || transform.position.y<1)return;
-        if(GetEntityId().CompareTo(partner.GetEntityId())>0)return;
-        var d=partner.transform.position-transform.position;
-        link=CombatRound.Launch<PulseLaser>(transform.position,d.normalized,0);
-        if(link!=null){link.length=d.magnitude;link.warning=.6f;link.activeTime=.6f;}
-    }
-    protected override void Update()
-    {
-        base.Update();
-        if(age>8.5f){Depart();return;}
-        if(link!=null && link.gameObject.activeSelf && (partner==null || movement==null || !movement.CanFire || partner.movement==null || !partner.movement.CanFire))link.Vanish();
-    }
-    void OnDestroy(){if(link!=null && link.gameObject.activeSelf)link.Vanish();}
 }
