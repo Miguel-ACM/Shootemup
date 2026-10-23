@@ -32,7 +32,7 @@ public sealed class GameOverState : MonoBehaviour
         panel.GetComponent<Image>().color=new Color(.012f,.018f,.025f,.92f);
         var title=new GameObject("GAME OVER",typeof(RectTransform),typeof(TextMeshProUGUI));title.transform.SetParent(rect,false);
         var text=title.GetComponent<TextMeshProUGUI>();if(font!=null)text.font=font;
-        text.text="GAME\nOVER";text.fontSize=100;text.fontStyle=FontStyles.Bold;text.alignment=TextAlignmentOptions.Center;
+        text.text="GAME\nOVER";text.fontSize=100;text.enableAutoSizing=true;text.fontSizeMin=68;text.fontSizeMax=100;text.textWrappingMode=TextWrappingModes.NoWrap;text.fontStyle=FontStyles.Bold;text.alignment=TextAlignmentOptions.Center;
         text.color=new Color(1,.75f,.38f);text.lineSpacing=-12;text.raycastTarget=false;
         lettering=text.rectTransform;lettering.sizeDelta=new Vector2(380,280);lettering.anchoredPosition=new Vector2(0,20);
     }
