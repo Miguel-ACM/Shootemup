@@ -15,11 +15,12 @@ public static class VerifyCombatExpansion
         {
             if(state==PlayModeStateChange.EnteredPlayMode && SessionState.GetBool(Key,false))
             {
-                if(SessionState.GetBool(Key+"Choreography",false))new GameObject("District choreography verification").AddComponent<ChoreographyProbe>().SnowOnly=SessionState.GetBool(Key+"SnowDance",false);
+                if(SessionState.GetBool(Key+"Polish",false))new GameObject("Combined visual and sound polish review").AddComponent<PolishReviewProbe>();
+                else if(SessionState.GetBool(Key+"Choreography",false))new GameObject("District choreography verification").AddComponent<ChoreographyProbe>().SnowOnly=SessionState.GetBool(Key+"SnowDance",false);
                 else if(SessionState.GetBool(Key+"Ttk",false))new GameObject("Plains base gun verification").AddComponent<PlainsTtkProbe>();
                 else if(SessionState.GetBool(Key+"Feedback",false))new GameObject("Decision feedback verification").AddComponent<DecisionFeedbackProbe>();
                 else {var probe=new GameObject("Combat expansion verification").AddComponent<CombatExpansionProbe>();probe.FlowOnly=SessionState.GetBool(Key+"Flow",false);}
-                deadline=EditorApplication.timeSinceStartup+(SessionState.GetBool(Key+"Choreography",false) ? 360 : 240);
+                deadline=EditorApplication.timeSinceStartup+(SessionState.GetBool(Key+"Polish",false) ? 480 : SessionState.GetBool(Key+"Choreography",false) ? 360 : 240);
             }
         };
     }
@@ -31,6 +32,7 @@ public static class VerifyCombatExpansion
             string mode;
             try{mode=File.ReadAllText(Request);File.Delete(Request);}catch(IOException){return;}
             SessionState.SetBool(Key+"Feedback",mode.Trim()=="feedback");
+            SessionState.SetBool(Key+"Polish",mode.Trim()=="polish");
             SessionState.SetBool(Key+"Ttk",mode.Trim()=="ttk");
             SessionState.SetBool(Key+"Choreography",mode.Trim()=="choreography" || mode.Trim()=="snow-choreography");
             SessionState.SetBool(Key+"SnowDance",mode.Trim()=="snow-choreography");
