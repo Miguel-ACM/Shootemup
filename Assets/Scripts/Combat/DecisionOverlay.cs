@@ -13,8 +13,8 @@ public sealed class DecisionOverlay : MonoBehaviour
     public void Add(AItem item)
     {
         var plate=Plate("Offer label",new Vector2(88,60));
-        var name=Text(plate,"",12);name.rectTransform.sizeDelta=new Vector2(82,32);name.rectTransform.anchoredPosition=new Vector2(0,10);
-        var price=Text(plate,"",15);price.rectTransform.sizeDelta=new Vector2(82,20);price.rectTransform.anchoredPosition=new Vector2(0,-17);
+        var name=Text(plate,"",10);name.enableAutoSizing=true;name.fontSizeMin=8;name.fontSizeMax=10;name.rectTransform.sizeDelta=new Vector2(82,32);name.rectTransform.anchoredPosition=new Vector2(0,10);
+        var price=Text(plate,"",11);price.enableAutoSizing=true;price.fontSizeMin=8;price.fontSizeMax=11;price.textWrappingMode=TextWrappingModes.NoWrap;price.rectTransform.sizeDelta=new Vector2(82,20);price.rectTransform.anchoredPosition=new Vector2(0,-17);
         var stripe=Plate("Rarity edge",new Vector2(88,2),plate);stripe.anchoredPosition=new Vector2(0,29);stripe.GetComponent<Image>().color=AItem.GetRarityColor(item.rarity);
         offers.Add((item,plate,name,price));
     }
