@@ -23,9 +23,11 @@ def render(source,label):
         lines += ["file '"+path.as_posix()+"'",f'duration {max(.001,duration):.6f}']
     lines += ["file '"+frames[-1].as_posix()+"'"]
     manifest.write_text('\n'.join(lines)+'\n')
+    clip=OUT/(label+'.mp4');pending_clip=OUT/(label+'.pending.mp4')
     subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-safe','0','-i',str(manifest),
         '-vf','crop=min(iw\\,trunc(ih*1.1/2)*2):ih:(iw-ow)/2:0,scale=-2:720',
-        '-fps_mode','vfr','-c:v','libx264','-crf','20','-pix_fmt','yuv420p','-movflags','+faststart',str(OUT/(label+'.mp4'))],check=True)
+        '-fps_mode','vfr','-c:v','libx264','-crf','20','-pix_fmt','yuv420p','-movflags','+faststart',str(pending_clip)],check=True)
+    pending_clip.replace(clip)
     if label=='HudStartup':
         desired=[0,.35,.55,.82,1.18,1.65,2.2,3.4]
     else:desired=[times[-1]*f for f in [.02,.20,.39,.53,.72,.93]]
@@ -38,7 +40,9 @@ def render(source,label):
         image=image.crop(((w-span)/2,0,(w+span)/2,h)).resize((396,360))
         x=(j%columns)*396;y=40+(j//columns)*388
         draw.text((x+8,y+4),f'{times[index]:.2f}s',font=FONT,fill=(153,201,213));canvas.paste(image,(x,y+28))
-    canvas.save(OUT/(label+'.jpg'),quality=91)
+    pending_image=OUT/(label+'.pending.jpg')
+    canvas.save(pending_image,quality=91)
+    pending_image.replace(OUT/(label+'.jpg'))
     print(label,len(frames),'frames',f'{times[-1]:.2f}s')
 
 render(ROOT/'Temp/HudStartupReview','HudStartup')
