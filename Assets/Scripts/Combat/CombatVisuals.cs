@@ -21,15 +21,21 @@ public static class CombatVisuals
     }
     static Sprite PlayerTracer()
     {
-        const string key="white-core player tracer";
+        const string key="cerulean pulse round";
         if(projectiles.TryGetValue(key,out var cached))return cached;
-        const int width=12,height=48;
+        const int width=16,height=32;
         var texture=new Texture2D(width,height,TextureFormat.RGBA32,false){filterMode=FilterMode.Point,wrapMode=TextureWrapMode.Clamp,name=key};
         var pixels=new Color[width*height];
         for(int y=0;y<height;y++)for(int x=0;x<width;x++)
         {
-            float dx=Mathf.Abs(x-5.5f),edge=y>43 ? 5.5f-(y-43)*.65f : y<5 ? 3.5f+y*.4f : 5.5f;
-            pixels[y*width+x]=dx>edge ? Color.clear : dx>edge-1.2f ? new Color(.025f,.14f,.32f) : dx>2.5f ? new Color(.15f,.72f,1) : Color.white;
+            float dx=Mathf.Abs(x-7.5f),dy=Mathf.Abs((y-17f)/2.2f);
+            float radius=Mathf.Sqrt(dx*dx+dy*dy);
+            // An opaque ink rim and cool body carry readability; only the small nose catches light.
+            Color c=radius>7.1f ? Color.clear : radius>5.6f ? new Color(.035f,.16f,.24f) :
+                radius>3.9f ? new Color(.12f,.54f,.72f) : new Color(.38f,.78f,.87f);
+            if(radius<3.6f && y>20 && x<8)c=new Color(.68f,.91f,.94f);
+            if(y<9 && c.a>0)c=Color.Lerp(new Color(.04f,.24f,.39f),c,y/9f);
+            pixels[y*width+x]=c;
         }
         texture.SetPixels(pixels);texture.Apply();
         var sprite=Sprite.Create(texture,new Rect(0,0,width,height),new Vector2(.5f,.5f),height);sprite.name=key;
