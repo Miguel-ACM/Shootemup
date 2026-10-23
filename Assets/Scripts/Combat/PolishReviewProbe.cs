@@ -139,6 +139,19 @@ public sealed class PolishReviewProbe : MonoBehaviour
             while(Time.time-started<2.3f){yield return Capture(directory);yield return null;}
             InputSystem.QueueStateEvent(keyboard,new KeyboardState());loadout.Weapons[0].StopFiring();Clear();yield return null;
         }
+        foreach(var level in new[]{LevelId.Snow,LevelId.Thunder})
+        {
+            LevelRun.Reset(level);LevelEnvironment.Apply();
+            foreach(string weapon in new[]{"NeedleCannon","BurstLauncher","DiscThrower","FlameProjector","SwarmRack"})
+            {
+                loadout.EquipWeapon(weapon,0);yield return null;
+                InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Z));
+                directory=BeginClip("Weapon"+weapon+level);
+                while(Time.time-started<2.7f){yield return Capture(directory);yield return null;}
+                Check(PlayerRound.LiveCount>0,weapon+" produces visible projectiles on "+level);
+                loadout.Weapons[0].StopFiring();InputSystem.QueueStateEvent(keyboard,new KeyboardState());Clear();yield return null;
+            }
+        }
         Check(errors.Count==0,"all combined visual phases ran without runtime exceptions");
     }
 }
