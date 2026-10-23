@@ -106,7 +106,7 @@ public static class VerifyPolygonBreakup
             exhaust.AddComponent<MeshRenderer>().sharedMaterial = CombatMaterials.Fleet;
             var block = new MaterialPropertyBlock(); block.SetColor("_Tint", new Color(.8f, .9f, 1, .15f));
             source.Hull.GetComponent<MeshRenderer>().SetPropertyBlock(block);
-            debris = PSXPolygonDebris.Spawn(source);
+            debris = PSXPolygonDebris.Spawn(source.gameObject);
             Check(debris != null, type.Name + " generated no district hull debris");
             var meshes = debris.GetComponentsInChildren<MeshFilter>();
             Check(meshes.Length == 1, type.Name + " fractured animated exhaust as solid wreckage");
