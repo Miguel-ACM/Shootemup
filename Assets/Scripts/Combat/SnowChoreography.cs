@@ -19,8 +19,8 @@ public static class SnowChoreography
                 d.OnBeats(2.65f,4.05f);
                 d.Solo("AvalancheBomber",Drift,0,s,0,5.8f);
                 d.OnBeats(1.90f,3.35f);
-                d.Train("ColdWeatherFighter",Petal,0,s,4+n,.38f,5.0f,depth:.075f);
-                d.Train("ColdWeatherFighter",Petal,0,-s,4+n,.38f,5.0f,depth:-.075f);break;
+                d.Train("ColdWeatherFighter",Petal,0,s,4+n,.38f,5.0f);
+                d.Train("ColdWeatherFighter",Petal,0,-s,4+n,.38f,5.0f);break;
             case 1: // A shield leads a single coil; a clear crosswind answers the coil.
                 d.OnBeats(2.80f,4.30f);
                 d.Solo("ShieldTransport",Drift,0,-s,-.25f,5.8f);
@@ -38,9 +38,9 @@ public static class SnowChoreography
                 d.Train("ColdWeatherFighter",Petal,.55f,-s,6+n,.34f,5.0f);break;
             case 3: // Snowflake arms turn in unison and fire on opposite halves of the beat.
                 d.OnBeats(2.20f,3.65f);
-                d.Train("ColdWeatherFighter",Spiral,0,s,5+n,.43f,5.7f,depth:.04f);
+                d.Train("ColdWeatherFighter",Spiral,0,s,5+n,.43f,5.7f);
                 d.OnBeats(2.85f,4.30f);
-                d.Train("ColdWeatherFighter",Spiral,0,-s,5+n,.43f,5.7f,depth:-.04f);
+                d.Train("ColdWeatherFighter",Spiral,0,-s,5+n,.43f,5.7f);
                 d.OnBeats(3.20f,4.85f);
                 d.Solo("AvalancheBomber",Drift,.8f,s,0,5.6f);break;
             case 4: // A wide bomber crown launches one rolling cascade, then a second.
