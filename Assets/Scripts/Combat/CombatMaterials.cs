@@ -11,7 +11,7 @@ public static class CombatMaterials
         {
             if(fleet!=null)return fleet;
             fleet=new Material(Resources.Load<Material>("CombatFleet")){name="Painted district armor"};
-            var palette=new[]{new Color(.24f,.35f,.4f),new Color(.78f,.83f,.79f),new Color(.35f,.43f,.3f),new Color(.95f,.38f,.12f),new Color(.32f,.48f,.55f),new Color(.54f,.18f,.16f),new Color(.53f,.61f,.62f),new Color(.26f,.23f,.39f),new Color(.2f,.36f,.4f),new Color(.16f,.83f,.91f),new Color(1,.77f,.27f),new Color(.055f,.09f,.12f),new Color(.62f,.25f,.19f),new Color(.82f,.64f,.26f),new Color(.53f,.61f,.55f),new Color(.8f,.84f,.83f)};
+            var palette=new[]{new Color(.24f,.35f,.4f),new Color(.78f,.83f,.79f),new Color(.35f,.43f,.3f),new Color(.95f,.38f,.12f),new Color(.32f,.48f,.55f),new Color(.54f,.18f,.16f),new Color(.53f,.61f,.62f),new Color(.34f,.31f,.48f),new Color(.2f,.36f,.4f),new Color(.16f,.83f,.91f),new Color(1,.77f,.27f),new Color(.055f,.09f,.12f),new Color(.62f,.25f,.19f),new Color(.82f,.64f,.26f),new Color(.53f,.61f,.55f),new Color(.8f,.84f,.83f)};
             var texture=new Texture2D(256,256,TextureFormat.RGBA32,false){filterMode=FilterMode.Point,wrapMode=TextureWrapMode.Clamp,name="Fleet painted trim atlas"};
             var pixels=new Color[256*256];
             for(int tile=0;tile<16;tile++)for(int y=0;y<64;y++)for(int x=0;x<64;x++)
