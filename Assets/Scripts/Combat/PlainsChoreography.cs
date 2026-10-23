@@ -12,36 +12,55 @@ public static class PlainsChoreography
         -.65f,1.18f, -.55f,.86f, .36f,.72f, .58f,.50f, -.38f,.38f, -.55f,.18f, -.3f,-.18f);
     public static Wave Create(int budget)
     {
-        var d=new WaveDance(budget);float s=d.Side;int n=d.Extra;
+        var d=new WaveDance(budget){Handoff=4.2f};float s=d.Side;int n=d.Extra;
         switch(d.Phrase)
         {
-            case 0: // Two ribbons answer each other across the valley.
-                d.Train("ScoutInterceptor",Swoop,0,s,5+n,seconds:4.4f);
-                d.Train("ScoutInterceptor",Swoop,1.3f,-s,5+n,seconds:4.4f,lane:-.12f);break;
-            case 1: // A broad fan opens, then a bomber cuts underneath it.
-                d.Rank("ScoutInterceptor",Fan,0,s,5,.20f,4.8f);
-                d.Solo("HeavyBomber",Swoop,1.6f,-s,-.10f,5.3f,1.5f);break;
-            case 2: // A looping train is answered by a faster cross-screen pass.
-                d.Train("ScoutInterceptor",Loop,0,s,6+n,.4f,5.6f);
-                d.Train("ScoutInterceptor",Swoop,1.9f,-s,4,.4f,4.2f,lane:-.16f);break;
-            case 3: // Bombers weave above a descending escort stream.
-                d.Solo("HeavyBomber",Swoop,0,s,.03f,5.4f,1.5f);
-                d.Solo("HeavyBomber",Swoop,.8f,-s,-.10f,5.4f,1.5f);
-                d.Train("ScoutInterceptor",Stream,1.25f,s,5+n,.38f,4.9f);break;
-            case 4: // Two fans peel away from a mobile gunship.
-                d.Rank("ScoutInterceptor",Fan,0,s,4,.24f,4.6f);
-                d.Rank("ScoutInterceptor",Fan,1.5f,-s,3,.27f,4.6f);
-                d.Solo("PatrolGunship",Loop,.6f,s,.05f,6.2f,1.35f);break;
-            case 5: // Offset figure eights interlace without merging their leaders.
-                d.Train("ScoutInterceptor",Loop,0,s,5+n,.42f,5.5f,lane:-.10f);
-                d.Train("ScoutInterceptor",Loop,.9f,-s,5+n,.42f,5.5f,lane:.10f);break;
-            case 6: // Three gunships bank as one; fighters ripple through their wake.
-                d.Rank("PatrolGunship",Swoop,0,s,3,.11f,5.5f,1.35f);
-                d.Train("ScoutInterceptor",Stream,1.5f,-s,6+n,.38f,4.7f);break;
-            default: // A low stream hands the screen back to a climbing fan.
+            case 0: // Two complete ribbons cross on separate levels, then answer.
+                d.OnBeats(2.15f,2.80f,3.45f);
+                d.Train("ScoutInterceptor",Swoop,0,s,5+n,.38f,4.6f,lane:.045f);
+                d.OnBeats(2.50f,3.15f,3.80f);
+                d.Train("ScoutInterceptor",Swoop,.40f,-s,5+n,.38f,4.6f,lane:-.11f);break;
+            case 1: // A five-ship arrow opens into a fan; the bomber answers its guns.
+                d.OnBeats(1.45f,2.05f,3.45f);
+                d.Wedge("ScoutInterceptor",Fan,0,s,2,.205f,.065f,4.8f);
+                d.OnBeats(2.75f,4.15f);
+                d.Solo("HeavyBomber",Swoop,.55f,-s,-.12f,5.4f);
+                d.OnBeats(3.45f,4.05f);
+                d.Rank("ScoutInterceptor",Swoop,1.55f,-s,3,.085f,4.5f);break;
+            case 2: // Two diamonds rotate through the eight, separated by half a turn.
+                d.OnBeats(1.65f,2.35f,3.05f);
+                d.Diamond("ScoutInterceptor",Loop,0,s,.23f,.075f,5.6f);
+                d.OnBeats(3.45f,4.15f,4.85f);
+                d.Diamond("ScoutInterceptor",Loop,1.75f,s,.23f,.075f,5.6f);break;
+            case 3: // A bomber pair banks together; a narrow escort stream pulls below.
+                d.OnBeats(1.80f,3.20f);
+                d.Rank("HeavyBomber",Swoop,0,s,2,.16f,5.4f);
+                d.OnBeats(2.55f,3.90f,4.50f);
+                d.Train("ScoutInterceptor",Stream,.65f,-s,6+n,.38f,4.9f,lane:.08f);break;
+            case 4: // One fan opens and the next folds through its empty center.
+                d.OnBeats(1.45f,2.05f);
+                d.Rank("ScoutInterceptor",Fan,0,s,4,.26f,4.6f);
+                d.OnBeats(3.05f,3.70f,4.35f);
+                d.Wedge("ScoutInterceptor",Fan,1.55f,-s,2,.19f,.06f,4.7f);
+                d.OnBeats(2.55f,4.90f);
+                d.Solo("PatrolGunship",Loop,.45f,s,.04f,6.1f);break;
+            case 5: // A single figure-eight procession fires two clean ripples.
+                d.OnBeats(2.65f,3.35f,4.05f);
+                d.Train("ScoutInterceptor",Loop,0,s,7+n,.38f,5.5f,lane:-.08f);
+                d.OnBeats(4.65f,5.25f);
+                d.Rank("ScoutInterceptor",Swoop,2.15f,-s,3,.095f,4.4f);break;
+            case 6: // Three gunships draw a broad staff; the escort arrow dives through it.
+                d.OnBeats(1.75f,3.15f,4.20f);
+                d.Rank("PatrolGunship",Swoop,0,s,3,.125f,5.5f);
+                d.OnBeats(2.45f,3.80f,4.45f);
+                d.Wedge("ScoutInterceptor",Stream,.75f,-s,2,.22f,.07f,4.9f);break;
+            default: // The descending stream releases into a wide upward fan.
+                d.OnBeats(2.35f,3.00f);
                 d.Train("ScoutInterceptor",Stream,0,s,6+n,.38f,4.9f);
-                d.Rank("ScoutInterceptor",Fan,2,s,5,.20f,4.5f);
-                d.Solo("HeavyBomber",Swoop,1.25f,-s,.06f,5.2f,1.5f);break;
+                d.OnBeats(3.65f,4.30f,4.95f);
+                d.Wedge("ScoutInterceptor",Fan,1.9f,-s,2,.20f,.06f,4.7f);
+                d.OnBeats(2.75f,4.10f);
+                d.Solo("HeavyBomber",Swoop,.65f,-s,.075f,5.3f);break;
         }
         return d.Build();
     }
