@@ -1,0 +1,6 @@
+PASS
+PASS levels begin with combat
+PASS hostile bullets survive a real combat-wave transition
+PASS real orchestration advances through at least five phrases in 25 seconds
+PASS no shop interrupts the first 25 seconds of combat
+Observed peak concurrent enemies: 17; peak hostile rounds: 102. Player fires the base weapon and sweeps laterally.

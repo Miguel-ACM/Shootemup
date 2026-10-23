@@ -1,0 +1,127 @@
+PASS
+PASS levels begin with combat
+PASS one shop interrupts each district
+PASS six combat phrases precede the first reward
+PASS base player fire has a visible world-space width
+PASS tunnel saw has no thrusters
+PASS tunnel saw spins at least twice per second
+PASS damaging the saw produces no bullets
+PASS a saw wall bounce emits a dense mixed-size burst
+PASS saw reaches the actual bottom-right arena corner
+PASS octagonal loadout HUD is installed
+PASS equipment instrument stays outside combat area
+PASS equipment instrument stays outside combat area
+PASS equipment instrument stays outside combat area
+PASS equipment instrument stays outside combat area
+PASS hostile rounds preserve authored projectile artwork
+PASS ScoutInterceptor spawns with a detailed hull
+PASS ScoutInterceptor has independent thrusters
+PASS PatrolGunship spawns with a detailed hull
+PASS PatrolGunship has independent thrusters
+PASS HeavyBomber spawns with a detailed hull
+PASS HeavyBomber has independent thrusters
+PASS WallTurret spawns with a detailed hull
+PASS WallTurret has independent thrusters
+PASS MaintenanceDrone spawns with a detailed hull
+PASS MaintenanceDrone has independent thrusters
+PASS ArmoredCarrier spawns with a detailed hull
+PASS ArmoredCarrier has independent thrusters
+PASS ColdWeatherFighter spawns with a detailed hull
+PASS ColdWeatherFighter has independent thrusters
+PASS SiegeGunship spawns with a detailed hull
+PASS SiegeGunship has independent thrusters
+PASS ShieldTransport spawns with a detailed hull
+PASS ShieldTransport has independent thrusters
+PASS BeamDrone spawns with a detailed hull
+PASS BeamDrone has independent thrusters
+PASS RelayDrone spawns with a detailed hull
+PASS RelayDrone has independent thrusters
+PASS StormSkimmer spawns with a detailed hull
+PASS StormSkimmer has independent thrusters
+PASS PursuitFighter spawns with a detailed hull
+PASS PursuitFighter has independent thrusters
+PASS AttackDrone spawns with a detailed hull
+PASS AttackDrone has independent thrusters
+PASS CommandGunship spawns with a detailed hull
+PASS CommandGunship has independent thrusters
+PASS CourierDiver spawns with a detailed hull
+PASS CourierDiver has independent thrusters
+PASS AvalancheBomber spawns with a detailed hull
+PASS AvalancheBomber has independent thrusters
+PASS ArcLancer spawns with a detailed hull
+PASS ArcLancer has independent thrusters
+PASS FieldsHeavyWing spawns with a detailed hull
+PASS FieldsHeavyWing has independent thrusters
+PASS TunnelDefensePlatform spawns with a detailed hull
+PASS TunnelDefensePlatform has independent thrusters
+PASS SnowSiegeCraft spawns with a detailed hull
+PASS SnowSiegeCraft has independent thrusters
+PASS StormReactor spawns with a detailed hull
+PASS StormReactor has independent thrusters
+PASS CityCommandCarrier spawns with a detailed hull
+PASS CityCommandCarrier has independent thrusters
+PASS armored carrier deploys two escorts
+PASS cleared burst shell suppresses fragments
+PASS live burst shell emits its delayed pattern
+PASS tunnel bolt reflects from the marked boundary
+PASS player fire destroys plasma orbs through real physics
+PASS suspended shots hold still before accelerating
+PASS suspended shots resume their original trajectory
+PASS guided missiles stop tracking after committing
+PASS scatter carriers release exactly three lateral pairs
+PASS returning discs curve back toward their launch point
+PASS mines do not arm underneath the player
+PASS mines arm once the player has a safe separation
+PASS laser warning is harmless
+PASS locked laser deals damage while active
+PASS Fields boss durability meets the restored baseline
+PASS Tunnel boss durability meets the restored baseline
+PASS tunnel phase two deploys two sturdy miniatures
+PASS Snow boss durability meets the restored baseline
+PASS Thunder boss durability meets the restored baseline
+PASS thunder phase two launches seven sweeping beams
+PASS City boss durability meets the restored baseline
+PASS city survivor heals half its missing health
+PASS first city boss kill drops nothing
+PASS NeedleCannon replaces the primary slot without stacking
+PASS BurstLauncher replaces the primary slot without stacking
+PASS BeamEmitter replaces the primary slot without stacking
+PASS DiscThrower replaces the primary slot without stacking
+PASS SwarmRack replaces the primary slot without stacking
+PASS ScatterCannon replaces the primary slot without stacking
+PASS FlameProjector replaces the primary slot without stacking
+PASS RailDriver replaces the primary slot without stacking
+PASS ElectricityWeapon replaces the primary slot without stacking
+PASS secondary fire input selects the replacement slot during decisions
+PASS left active input selects the left slot during decisions
+PASS Lighter applies damage over time after direct fire
+PASS hostile projectile stress remains capped at 280
+PASS friendly secondary-effect stress remains capped at 180
+PASS reward count is two by default with rare third and fourth choices
+PASS luck increases the chance of extra reward choices
+PASS city seeds produce different building layouts
+PASS scoreShop freezes multiplier decay
+PASS scoreShop has the expected option count
+PASS scoreShop offers a large health kit at low health
+PASS passing one unit away does not claim scoreShop item
+PASS scoreShop purchase applies healing exactly once
+PASS scoreShop spends only its own currency
+PASS multiplierShop freezes multiplier decay
+PASS multiplierShop has the expected option count
+PASS multiplierShop offers a large health kit at low health
+PASS passing one unit away does not claim multiplierShop item
+PASS multiplierShop purchase applies healing exactly once
+PASS multiplierShop spends only its own currency
+PASS reward freezes multiplier decay
+PASS reward has the expected option count
+PASS holding at the bottom skips the decision
+PASS decision freeze releases after leaving the shop
+PASS BlankBullet spends energy on successful use
+PASS BlankBullet respects its cooldown
+PASS Overdrive spends energy on successful use
+PASS Overdrive respects its cooldown
+PASS GravityWell spends energy on successful use
+PASS GravityWell respects its cooldown
+PASS MirrorBurst spends energy on successful use
+PASS MirrorBurst respects its cooldown
+Batch covered 23 enemies/minibosses, 5 bosses, projectile lifecycles, nine weapon slots, upgrade interactions, both shop currencies and close pickup controls.
