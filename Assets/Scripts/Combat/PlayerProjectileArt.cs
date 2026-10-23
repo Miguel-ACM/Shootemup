@@ -13,6 +13,7 @@ public static partial class PlayerProjectileArt
         if(delivery==PlayerDelivery.Disc)return Disc();
         if(delivery==PlayerDelivery.Flame)return Flame();
         if(delivery==PlayerDelivery.Needle)return Needle();
+        if(delivery==PlayerDelivery.Missile)return Missile();
         return CombatVisuals.Projectile(true);
     }
     static Sprite Make(string name,int width,int height,Func<int,int,Color> pixel)
