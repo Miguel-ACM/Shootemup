@@ -10,11 +10,18 @@ public static class CityDistrictGeometry
         readonly List<Vector3> vertices=new List<Vector3>();
         readonly List<Color> colors=new List<Color>();
         readonly List<int> triangles=new List<int>();
+        Vector2 blockCenter;
+        bool quarterTurn;
+        public void OrientBlock(float x,float y,bool turn){blockCenter=new Vector2(x,y);quarterTurn=turn;}
         void Face(Color c,params Vector3[] points)
         {
             c.a=1; // Facade shading changes light, never the solidity of a building.
             int first=vertices.Count;
-            foreach(var p in points){vertices.Add(new Vector3(p.x+p.z*.14f,p.y+p.z*.24f,-p.z));colors.Add(c);}
+            foreach(var p in points)
+            {
+                var q=quarterTurn ? new Vector3(blockCenter.x-(p.y-blockCenter.y),blockCenter.y+(p.x-blockCenter.x),p.z) : p;
+                vertices.Add(new Vector3(q.x+q.z*.14f,q.y+q.z*.24f,-q.z));colors.Add(c);
+            }
             for(int i=1;i<points.Length-1;i++){triangles.Add(first);triangles.Add(first+i);triangles.Add(first+i+1);}
         }
         public void Box(float x,float y,float z,float w,float d,float h,Color c)
@@ -74,6 +81,7 @@ public static class CityDistrictGeometry
         for(int row=0;row<8;row++)for(int column=0;column<8;column++)
         {
             float x=-9.1f+column*2.6f,y=-8.75f+row*2.5f;
+            b.OrientBlock(x,y,false);
             // Coarse zones make neighborhoods, not a different random building in every cell.
             int zoneHash=BlockHash(seed,column/2,(section*8+row)/2),zone=zoneHash%4;
             bool landmark=column%2==((zoneHash>>3)&1) && row%2==((zoneHash>>4)&1);
@@ -98,6 +106,9 @@ public static class CityDistrictGeometry
                 }
                 continue;
             }
+            // Adjacent blocks share an axis, while independent zone bits vary it between neighborhoods.
+            // Streets and paving retain their section-safe grid; only the architecture turns.
+            b.OrientBlock(x,y,((zoneHash>>11)&1)!=0);
             int lots=landmark || zone==3 ? 1 : zone==0 && use>65 ? 4 : 2;
             var districtColor=zone==3 ? C(.26f,.31f,.30f) : zone==2 ? C(.27f,.31f,.34f) : zone==1 ? C(.34f,.345f,.31f) : C(.29f,.32f,.32f);
             for(int lot=0;lot<lots;lot++)
