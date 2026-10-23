@@ -7,17 +7,20 @@ public static partial class IndustrialMeshFactory
     public static Mesh CombatHull(int kind)
     {
         if(combatHulls.TryGetValue(kind,out var cached))return cached;
-        var b=new Builder();bool heavy=kind==2 || kind==5 || kind==7 || kind==8 || kind==14 || kind>=20;
+        var b=new Builder();bool heavy=kind==2 || kind==5 || kind==7 || kind==8 || kind==14 || kind==16 || kind>=20;
         bool round=kind==21 || kind==20;bool slim=kind==22;
         float width=slim ? .48f : heavy ? 1.12f : .72f;
         float length=slim ? 1.55f : heavy ? 1.12f : 1.0f;
-        int armor=kind/3==2 ? 1 : kind/3==3 ? 7 : 0;
+        int armor=kind==6 || kind==7 || kind==8 || kind==16 || kind==21 || kind==26 ? 1 : kind==9 || kind==10 || kind==11 || kind==17 || kind==22 || kind==27 ? 7 : kind>=12 && kind<=15 || kind==28 ? 12 : 0;
         if(round)
         {
             b.Drum(Vector3.zero,1.15f,.38f,armor,16,6);
             b.Drum(new Vector3(0,0,-.23f),.95f,.14f,6,16);
             b.Drum(new Vector3(0,0,-.35f),.73f,.2f,armor,12);
+            b.Ball(new Vector3(0,0,-.37f),new Vector3(.68f,.68f,.28f),armor);
             b.Drum(new Vector3(0,0,-.49f),.31f,.12f,9,12);
+            b.Drum(new Vector3(0,0,-.66f),.17f,.08f,11,8);
+            b.Drum(new Vector3(0,0,-.72f),.11f,.04f,kind==20 ? 3 : 9,8);
             for(int i=0;i<16;i++)
             {
                 float a=i*Mathf.PI/8;var p=new Vector3(Mathf.Cos(a),Mathf.Sin(a),0);
@@ -29,6 +32,12 @@ public static partial class IndustrialMeshFactory
                     b.Drum(p*.94f+Vector3.back*.4f,.08f,.08f,10,6);
                 }
             }
+            if(kind==21)for(int i=0;i<8;i++)
+            {
+                float a=i*Mathf.PI/4;var p=new Vector3(Mathf.Cos(a),Mathf.Sin(a),0)*.63f;
+                b.Box(p+Vector3.back*.57f,new Vector3(.17f,.23f,.14f),4,6);
+                b.Drum(p+Vector3.back*.67f,.055f,.09f,10,8);
+            }
         }
         else
         {
@@ -38,7 +47,7 @@ public static partial class IndustrialMeshFactory
             b.Prism(new[]{new Vector2(-.16f,.28f),new Vector2(.16f,.28f),new Vector2(.12f,-.12f),new Vector2(0,-.28f),new Vector2(-.12f,-.12f)},.14f,9,new Vector3(0,-length*.18f,-.37f),6);
             foreach(int side in new[]{-1,1})
             {
-                float wing=kind%3==0 ? 1.6f : kind%3==1 ? 1.15f : 1.35f;
+                float wing=kind==15 ? .88f : kind==12 ? 1.8f : kind%3==0 ? 1.6f : kind%3==1 ? 1.15f : 1.35f;
                 b.Prism(new[]{new Vector2(side*width*.35f,.55f),new Vector2(side*width*wing,.35f),new Vector2(side*width*(wing-.12f),-.18f),new Vector2(side*width*.4f,-.58f)},.16f,armor,Vector3.zero,6);
                 b.Box(new Vector3(side*width*.78f,.38f,-.08f),new Vector3(.32f,.90f,.42f),6,11);
                 b.Box(new Vector3(side*width*.78f,.46f,-.32f),new Vector3(.24f,.60f,.08f),armor);
@@ -49,6 +58,33 @@ public static partial class IndustrialMeshFactory
                 b.Box(new Vector3(side*width*1.04f,.13f,-.12f),new Vector3(.11f,.22f,.05f),3);
                 if(heavy)for(int j=0;j<3;j++)b.Drum(new Vector3(side*.66f,-.45f+j*.35f,-.3f),.16f,.16f,6,8);
                 if(kind/3==3 || slim)for(int j=0;j<3;j++)b.Drum(new Vector3(side*width,.2f-j*.24f,-.28f),.15f,.12f,9,8);
+                // Large silhouette features distinguish roles before their paint or weapon tells.
+                if(kind==2 || kind==5 || kind==16 || kind==23)
+                {
+                    b.Box(new Vector3(side*width*.44f,.12f,-.47f),new Vector3(.25f,.8f,.19f),11);
+                    for(int rack=0;rack<3;rack++)b.Drum(new Vector3(side*width*.44f,.35f-rack*.24f,-.59f),.105f,.16f,kind==16 ? 4 : 3,8,6);
+                }
+                if(kind==3 || kind==7 || kind==25 || kind==26)
+                {
+                    b.Box(new Vector3(side*.36f,-.5f,-.4f),new Vector3(.22f,1.3f,.26f),6,11);
+                    b.Box(new Vector3(side*.36f,-1.13f,-.43f),new Vector3(.29f,.18f,.3f),11,3);
+                }
+                if(kind==4 || kind==10)
+                {
+                    b.Box(new Vector3(side*.87f,0,-.05f),new Vector3(.9f,.16f,.16f),6);
+                    b.Drum(new Vector3(side*1.25f,0,-.1f),.26f,.15f,11,12,6);
+                    b.Drum(new Vector3(side*1.25f,0,-.2f),.18f,.11f,9,12);
+                }
+                if(kind==8 || kind==14 || kind==28)
+                {
+                    b.Prism(new[]{new Vector2(side*.75f,.7f),new Vector2(side*1.4f,.5f),new Vector2(side*1.3f,-.65f),new Vector2(side*.77f,-.8f)},.23f,armor,new Vector3(0,0,-.27f),6);
+                    b.Box(new Vector3(side*1.1f,-.05f,-.44f),new Vector3(.08f,.75f,.06f),kind==8 ? 9 : 10);
+                }
+                if(slim || kind==17)
+                {
+                    b.Prism(new[]{new Vector2(side*.5f,.4f),new Vector2(side*.79f,-.95f),new Vector2(side*.48f,-1.65f),new Vector2(side*.32f,-.4f)},.2f,7,new Vector3(0,0,-.3f),6);
+                    for(int coil=0;coil<5;coil++)b.Box(new Vector3(side*.53f,-.35f-coil*.19f,-.45f),new Vector3(.18f,.07f,.1f),9);
+                }
             }
             b.Box(new Vector3(0,length*.59f,-.33f),new Vector3(.09f,.4f,.13f),11);
             for(int side=-1;side<=1;side+=2)for(int j=0;j<3;j++)
