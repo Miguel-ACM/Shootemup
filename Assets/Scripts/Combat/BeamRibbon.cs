@@ -12,7 +12,7 @@ public sealed class BeamRibbon : MonoBehaviour
     {
         hot=friendly ? new Color(.25f,.79f,.76f) : new Color(1,.43f,.12f);
         cool=friendly ? new Color(.12f,.54f,.62f) : new Color(.9f,.22f,.07f);
-        if(energy==null)energy=new Material(Shader.Find("Shootemup/Continuous Beam")){name="Continuous plasma"};
+        if(energy==null)energy=new Material(Resources.Load<Shader>("ContinuousBeam")){name="Continuous plasma"};
         sheath=CombatVisuals.Line(transform,cool,.5f);sheath.sharedMaterial=energy;sheath.sortingOrder=19;
         body=CombatVisuals.Line(transform,hot,.2f);body.sharedMaterial=energy;body.sortingOrder=21;
         tell=CombatVisuals.Line(transform,hot,.035f);tell.sortingOrder=20;
@@ -54,3 +54,4 @@ public sealed class BeamRibbon : MonoBehaviour
         intake.startColor=intake.endColor=new Color(hot.r,hot.g,hot.b,charging ? Mathf.Sin(charge*Mathf.PI)*.5f : power*.16f);
     }
 }
+
