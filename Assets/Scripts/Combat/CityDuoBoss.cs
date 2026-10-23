@@ -10,7 +10,11 @@ public sealed class CityDuoBoss : DistrictBoss
     protected override void Configure(){hull=12;hullScale=.8f;health=1500;attackInterval=1.1f;}
     protected override void Start()
     {
-        if(heavy){hull=14;Hull.GetComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(14);Hull.localScale=Vector3.one*1.15f;attackInterval=1.7f;}
+        if(heavy)
+        {
+            hull=14;hullScale=1.15f;size=hullScale;Hull.GetComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(14);Hull.localScale=Vector3.one*hullScale;
+            GetComponent<CircleCollider2D>().radius=hullScale*.8f;GetComponent<EnemyThrusters>().sockets=IndustrialMeshFactory.CombatEngineSockets(14);attackInterval=1.7f;
+        }
         base.Start();
         if(partner==null && !heavy)
         {
