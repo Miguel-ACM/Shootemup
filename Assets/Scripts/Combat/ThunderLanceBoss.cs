@@ -3,12 +3,17 @@ using UnityEngine;
 public sealed class ThunderLanceBoss : DistrictBoss
 {
     float nextBarrage;
-    protected override void Configure(){hull=22;hullScale=1.25f;health=1250;attackInterval=3.2f;}
+    protected override void Configure(){hull=22;hullScale=1.25f;health=2800;attackInterval=2.4f;}
     protected override void MoveBoss(float dt)
     {
         station.x=phaseTwo ? 0 : Mathf.Sin(age*.7f)*2.1f;base.MoveBoss(dt);
         if(phaseTwo && age>nextBarrage && transform.position.y<Camera.UpLimit-1)
-        {nextBarrage=age+.85f;Fan<NeedleRound>(3,10,6);}
+        {nextBarrage=age+.46f;Fan<NeedleRound>(5,9,6.5f);}
+    }
+    protected override float PressureInterval=>.62f;
+    protected override void PressureAttack()
+    {
+        if(!phaseTwo)Fan<NeedleRound>(5,12,6);
     }
     protected override void Attack()
     {
