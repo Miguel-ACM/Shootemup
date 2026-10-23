@@ -13,7 +13,7 @@ public sealed class DecisionOverlay : MonoBehaviour
     public void Add(AItem item)
     {
         var plate=Plate("Offer label",new Vector2(88,60));
-        var name=Text(plate,"",10);name.enableAutoSizing=true;name.fontSizeMin=8;name.fontSizeMax=10;name.rectTransform.sizeDelta=new Vector2(82,32);name.rectTransform.anchoredPosition=new Vector2(0,10);
+        var name=Text(plate,"",10);name.enableAutoSizing=true;name.fontSizeMin=7;name.fontSizeMax=10;name.rectTransform.sizeDelta=new Vector2(82,32);name.rectTransform.anchoredPosition=new Vector2(0,10);
         var price=Text(plate,"",11);price.enableAutoSizing=true;price.fontSizeMin=8;price.fontSizeMax=11;price.textWrappingMode=TextWrappingModes.NoWrap;price.rectTransform.sizeDelta=new Vector2(82,20);price.rectTransform.anchoredPosition=new Vector2(0,-17);
         var stripe=Plate("Rarity edge",new Vector2(88,2),plate);stripe.anchoredPosition=new Vector2(0,29);stripe.GetComponent<Image>().color=AItem.GetRarityColor(item.rarity);
         offers.Add((item,plate,name,price));
@@ -21,7 +21,7 @@ public sealed class DecisionOverlay : MonoBehaviour
     public void SetOffer(int index,string price,bool affordable)
     {
         var offer=offers[index];if(offer.item==null)return;
-        offer.name.text=offer.item.GetData()[0];offer.price.text=price;
+        offer.name.text=System.Text.RegularExpressions.Regex.Replace(offer.item.GetData()[0],@"\S+","<nobr>$0</nobr>");offer.price.text=price;
         offer.price.color=affordable ? new Color(1,.78f,.4f) : new Color(1,.36f,.3f);
     }
     void LateUpdate()
