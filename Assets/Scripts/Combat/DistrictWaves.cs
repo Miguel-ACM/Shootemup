@@ -38,7 +38,7 @@ public static class DistrictWaves
             units.Add(new WaveUnit(type,at,new Vector3(lane,1.12f)){phrase=path,side=mirror,lane=lane,flightDuration=duration*.76f,fireEvery=beat*.82f});
         }
         void Train(string type,float at,FlightPhrase path,float mirror,int count,float interval=.22f,float duration=5.8f,float beat=1.15f,float lane=0)
-        {for(int i=0;i<count;i++)Flight(type,at+i*interval,path,mirror,lane,duration,beat);}
+        {if(type=="ScoutInterceptor")interval=Mathf.Max(interval,.38f);for(int i=0;i<count;i++)Flight(type,at+i*interval,path,mirror,lane,duration,beat);}
         void Row(string type,float at,int count,float spacing,float duration=6.2f,float beat=1.4f)
         {for(int i=0;i<count;i++)Flight(type,at,FlightPhrase.Chevron,side,(i-(count-1)*.5f)*spacing,duration,beat);}
         switch(LevelRun.Current)

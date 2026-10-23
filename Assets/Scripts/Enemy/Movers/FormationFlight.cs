@@ -9,6 +9,7 @@ public sealed class FormationFlight : PatternMover
     public FlightPhrase phrase;
     public float side=1,lane,duration=6,fireEvery=.8f;
     float clock;
+    float[] distances;
     int lastBeat=-1;
     public Vector2 Tangent {get;private set;}=Vector2.down;
     public float Progress=>clock/Mathf.Max(.1f,duration);
@@ -23,10 +24,26 @@ public sealed class FormationFlight : PatternMover
         if(GameRules.playerDisabled)return;
         clock+=dt;float t=Progress;
         if(t>=1){GetComponent<AEnemy>().Depart();return;}
-        var p=Sample(phrase,t,side,lane);
+        var p=Sample(phrase,TravelParameter(t),side,lane);
         var next=new Vector3(p.x*Camera.RightLimit,Mathf.LerpUnclamped(Camera.DownLimit,Camera.UpLimit,p.y),origin.z);
         Vector2 delta=next-transform.position;if(delta.sqrMagnitude>.0001f)Tangent=delta.normalized;
         transform.position=next;SetFiring(t>.12f && t<.82f);
+    }
+    float TravelParameter(float progress)
+    {
+        if(phrase!=FlightPhrase.Ribbon && phrase!=FlightPhrase.Crossing && phrase!=FlightPhrase.Dive)return progress;
+        if(distances==null)
+        {
+            distances=new float[65];var previous=Sample(phrase,0,side,lane);
+            for(int i=1;i<distances.Length;i++)
+            {
+                var next=Sample(phrase,i/64f,side,lane);var delta=next-previous;
+                distances[i]=distances[i-1]+Vector2.Scale(delta,new Vector2(Camera.RightLimit,Camera.UpLimit-Camera.DownLimit)).magnitude;previous=next;
+            }
+        }
+        float target=progress*distances[64];
+        for(int i=1;i<distances.Length;i++)if(target<=distances[i])return (i-1+Mathf.InverseLerp(distances[i-1],distances[i],target))/64f;
+        return 1;
     }
     static Vector2 Bezier(Vector2 a,Vector2 b,Vector2 c,Vector2 d,float t)
     {float u=1-t;return u*u*u*a+3*u*u*t*b+3*u*t*t*c+t*t*t*d;}
