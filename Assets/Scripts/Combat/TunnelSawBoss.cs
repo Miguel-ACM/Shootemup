@@ -52,7 +52,7 @@ public sealed class TunnelSawBoss : DistrictBoss
         foreach(int side in new[]{-1,1})
         {
             var child=(TunnelSawBoss)Spawn(typeof(TunnelSawBoss),transform.position+Vector3.right*side*1.6f);
-            child.miniature=true;child.health=480*GameRules.enemyHealth;child.hullScale=.65f;child.Hull.localScale=Vector3.one*.65f;
+            child.miniature=true;child.health=480*GameRules.enemyHealth*LevelRun.EnemyHealthScale;child.hullScale=.65f;child.Hull.localScale=Vector3.one*.65f;
             child.GetComponent<CircleCollider2D>().radius=.6f;child.entered=true;child.velocity=new Vector2(side,.6f).normalized;
         }
     }

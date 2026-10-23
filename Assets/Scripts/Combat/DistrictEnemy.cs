@@ -20,7 +20,7 @@ public abstract class DistrictEnemy : AEnemy
         var rb=go.AddComponent<Rigidbody2D>();rb.gravityScale=0;rb.bodyType=RigidbodyType2D.Kinematic;
         go.AddComponent<CircleCollider2D>().isTrigger=true;
         var enemy=(DistrictEnemy)go.AddComponent(type);enemy.Configure();
-        enemy.health*=GameRules.enemyHealth*(1+Mathf.Min(8,LevelRun.Stage-1)*.22f);
+        enemy.health*=GameRules.enemyHealth*LevelRun.EnemyHealthScale;
         if(!(enemy is DistrictBoss)){enemy.health*=1.35f;enemy.attackInterval*=.78f;}
         enemy.size=enemy.hullScale;go.GetComponent<CircleCollider2D>().radius=enemy.hullScale*.8f;
         var model=new GameObject("Armored hull");model.transform.SetParent(go.transform,false);model.transform.localScale=Vector3.one*enemy.hullScale;
@@ -52,7 +52,7 @@ public abstract class DistrictEnemy : AEnemy
     protected T Mover<T>() where T:PatternMover { var m=gameObject.AddComponent<T>();movement=m;return m; }
     protected virtual void Update()
     {
-        age+=Time.deltaTime;
+        age+=Time.deltaTime*LevelRun.EnemyTempoScale;
         if(age>28 || transform.position.y<Camera.DownLimit-2){Depart();return;}
         if(GameRules.playerDisabled || transform.position.y>Camera.UpLimit-.5f || transform.position.y<Camera.DownLimit+1)return;
         if(movement!=null && !movement.CanFire)return;

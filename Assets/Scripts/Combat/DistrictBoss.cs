@@ -19,9 +19,9 @@ public abstract class DistrictBoss : DistrictEnemy
     protected override void Update()
     {
         if(GameRules.playerDisabled)return;
-        age+=Time.deltaTime;
+        age+=Time.deltaTime*LevelRun.EnemyTempoScale;
         if(!phaseTwo && HealthFraction<=.5f){phaseTwo=true;NotifyBossPhaseChange(2);OnPhaseTwo();}
-        MoveBoss(Time.deltaTime);
+        MoveBoss(Time.deltaTime*LevelRun.EnemyTempoScale);
         if(transform.position.y<Camera.UpLimit-1 && age>=nextAttack)
         {
             volley++;Attack();nextAttack=age+attackInterval*(phaseTwo ? .72f : 1)/Mathf.Max(.5f,GameRules.enemyShootSpeed);

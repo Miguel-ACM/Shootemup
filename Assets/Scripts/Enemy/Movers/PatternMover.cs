@@ -51,7 +51,7 @@ public abstract class PatternMover : AMover
     {
         Initialize();
         if (!movementEnabled || !enabled || deltaTime <= 0 || !float.IsFinite(deltaTime)) return;
-        float dt = deltaTime * Mathf.Max(0, GameRules.enemySpeed);
+        float dt = deltaTime * Mathf.Max(0, GameRules.enemySpeed) * LevelRun.EnemyTempoScale;
         if (dt <= 0) return;
         age += dt;
         if (age >= maximumLifetime) Leave();

@@ -1,0 +1,8 @@
+PASS - 2026-10-23
+Ordered progression: Plains -> Snow/City -> Thunder/Tunnel -> Plains.
+Executed VerifyRunProgression against the production LevelRun source outside Play mode with minimal Unity Color/Mathf/Random shims.
+All four branch paths completed 100 loops each (400 loops / 1200 district transitions).
+Checks: serialized IDs unchanged; correct route pairs; invalid routes rejected without mutation; seed preserved; health keeps increasing; loop tempo and projectile speed increase within caps; new run resets to Plains and baseline difficulty.
+Second-loop Plains: 1.66x base health, 1.08x movement/attack clock, 1.06x hostile projectile speed.
+Compiled runtime and editor assemblies using Unity 6000.6.2f1's Roslyn compiler and project response files, output isolated under Temp/RouteCompile. Both exited 0; runtime has existing obsolete API/unused-field warnings.
+Live boss-to-Plains transition and side-margin HUD visual inspection remain queued for the next combined playtest. No new Play session was started for this change.
