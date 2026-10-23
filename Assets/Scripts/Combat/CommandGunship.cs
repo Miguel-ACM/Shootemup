@@ -7,7 +7,8 @@ public sealed class CommandGunship : DistrictEnemy
 
     protected override void Start()
     {
-        base.Start();foreach(int side in new[]{-1,1})
+        base.Start();if(movement is FormationFlight)return;
+        foreach(int side in new[]{-1,1})
         {
             var e=Spawn(typeof(ScoutInterceptor),transform.position+Vector3.right*side*1.4f);
             e.Escort(transform);
