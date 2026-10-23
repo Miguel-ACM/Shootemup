@@ -1,6 +1,8 @@
 # Shootemup — combat and upgrade ideas
 
-**Design catalogue · Revised 22 October 2026**
+**Design catalogue · Revised 23 October 2026**
+
+Current player direction is recorded in [AGENTS.md](../AGENTS.md). The implemented waves now use district-specific curves and shared firing scores; the stationary movement examples below are optional encounter ideas. The segmented beam and links between Thunder drones were removed at Miguel's request. Player projectiles use a restrained cool palette; hostile beams use warm energy with charge, sustained sound and cooling. City attack drones now fire fast coordinated fans instead of Snow-style burst shells.
 
 The game is a spaceship shooter with a relaxed attitude and room for strange upgrades. The fleet, environments and weapons should feel like they share a world. Humor can come from a coffee mug, an extra arm or an angry moon turning out to be useful. Most enemies can simply be interesting enemy ships.
 
@@ -29,7 +31,6 @@ Keep projectile shapes simple enough to recognize in a busy fight. Their movemen
 | **Helix pair** | Two small rounds spiral around a shared forward path. | A rhythmic obstacle with periodic openings. Keep formations sparse enough to read the spiral. |
 | **Plasma orb** | A large slow projectile that player fire can destroy. | Lets the player shoot a passage open. Give it a different outline and impact response from ordinary bullets. |
 | **Proximity mine** | Drifts to a marked position, arms, then bursts after a fuse or when approached. | Controls a small area. Clearly show its trigger radius and arming delay; never arm directly on the player. |
-| **Segmented beam** | Short beam sections activate in an announced sequence. | A timing challenge for crossing between pulses. Use a broken warning outline and solid active core. |
 
 **Player versions:** needles can pierce; burst shells detonate on impact or at their fuse point; lasers reward holding a line on a target; returning discs get another chance to hit on the way back. Each weapon needs a useful default behavior before any upgrades.
 
@@ -68,7 +69,7 @@ Use environment-specific silhouettes and equipment: open wings over the valley, 
 | Enemy | Movement and attack | Role / response |
 |---|---|---|
 | **Beam drone** | Relocates between upper-screen positions; stops to aim and fire a pulse laser. | A clean bait-and-dodge enemy. Charge coils show when its aim locks. |
-| **Relay pair** | Two drones establish a short damaging energy link. One moves at a time; the link shuts off during movement. | Destroy either drone to break the formation. Keep the link in the upper playfield. |
+| **Capacitor fighter** | Mirrored crescent formations trade short aimed needle fans on shared accents. | Fast precision pressure between the beam craft's charge and release; no links between ships. |
 | **Storm skimmer** | A light ship drifts laterally and launches short-guidance missiles. Small stabilizer fins move as it corrects course. | Soft homing pressure between beam cycles. Missiles visibly stop tracking. |
 
 ### City — maneuverability and coordinated fire
@@ -76,7 +77,7 @@ Use environment-specific silhouettes and equipment: open wings over the valley, 
 | Enemy | Movement and attack | Role / response |
 |---|---|---|
 | **Pursuit fighter** | Tracks the player horizontally from the top, then locks a narrow laser line. | The strongest version of the top tracker. Tracking stops before the firing commitment. |
-| **Attack drone** | Darts between available upper-screen slots and launches a burst shell during each pause. | A freely repositioning target. Thrusters announce departure; movement follows a visible path. |
+| **Attack drone** | Fast traffic formations fire coordinated five-shot fans of small quick rounds. | Read the shared firing beat and cross the lanes between replies; delayed explosive shells remain a Snow signature. |
 | **Command gunship** | Holds a position behind two escorts, firing returning discs while the escorts recover. | A formation anchor. Destroying it cancels the escorts' next coordinated volley. |
 
 **Possible minibosses:** a twin-engine heavy bomber in Fields; a tunnel defense platform with opening gun bays; a low, wide siege craft in Snow; a storm reactor ship with relay drones; and an armored command carrier above City. Build each around two familiar district mechanics and a readable vulnerability phase.
