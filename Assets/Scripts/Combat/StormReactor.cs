@@ -3,7 +3,12 @@ using UnityEngine;
 public sealed class StormReactor : DistrictEnemy
 {
     protected override void Configure(){hull=27;health=260;hullScale=1.1f;attackInterval=2.1f;Mover<TopTracker>();}
-    protected override void Attack(){if(volley%2==0){Fan<GuidedMissile>(3,24,4.5f);}else{CombatRound.Launch<PulseLaser>(transform.position,Aim,0);}}
+    protected override void Attack()
+    {
+        if(volley%2==0){Fan<GuidedMissile>(3,24,4.5f);return;}
+        var laser=CombatRound.Launch<PulseLaser>(transform.position,Aim,0);
+        if(laser!=null)laser.Bind(Hull,new Vector3(0,-.35f,-.4f));
+    }
     // The bays are exposed during firing and reload; armor still accepts every weapon.
     public override void damage(float amount){base.damage(amount*(movement!=null && !movement.CanFire ? .75f : 1.2f));}
 }
