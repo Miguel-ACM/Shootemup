@@ -10,8 +10,8 @@ public sealed class RelayDrone : DistrictEnemy
             {
                 partner=other;other.partner=this;
                 var first=GetEntityId().CompareTo(other.GetEntityId())<0;
-                GetComponent<AlternatingAdvance>().SetPartner(other.GetComponent<AlternatingAdvance>(),first);
-                other.GetComponent<AlternatingAdvance>().SetPartner(GetComponent<AlternatingAdvance>(),!first);break;
+                var mine=GetComponent<AlternatingAdvance>();var theirs=other.GetComponent<AlternatingAdvance>();
+                if(mine!=null && theirs!=null){mine.SetPartner(theirs,first);theirs.SetPartner(mine,!first);}break;
             }
         base.Start();
     }
@@ -31,7 +31,7 @@ public sealed class RelayDrone : DistrictEnemy
     {
         base.Update();
         if(age>8.5f){Depart();return;}
-        if(link!=null && link.gameObject.activeSelf && (partner==null || !movement.CanFire || !partner.GetComponent<PatternMover>().CanFire))link.Vanish();
+        if(link!=null && link.gameObject.activeSelf && (partner==null || movement==null || !movement.CanFire || partner.movement==null || !partner.movement.CanFire))link.Vanish();
     }
     void OnDestroy(){if(link!=null && link.gameObject.activeSelf)link.Vanish();}
 }

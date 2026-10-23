@@ -53,19 +53,7 @@ public static class DistrictWaves
                 {Flight("ArmoredCarrier",0,FlightPhrase.Battery,1,0,7,2.2f);Train("MaintenanceDrone",1.5f,FlightPhrase.Crossing,side,4,.28f,5.5f,1.3f);}
                 break;
             case LevelId.Snow:return SnowChoreography.Create(budget);
-            case LevelId.Thunder:
-                if(phrase==0)
-                {
-                    units.Add(new WaveUnit("RelayDrone",0,new Vector3(-.55f,1.12f)));
-                    units.Add(new WaveUnit("RelayDrone",0,new Vector3(.55f,1.12f)));
-                }
-                else
-                {
-                    Flight(phrase==3 ? "ArcLancer" : "BeamDrone",0,FlightPhrase.Battery,1,-.6f,6.7f,2.6f);
-                    Flight("BeamDrone",1.3f,FlightPhrase.Battery,1,.6f,6.7f,2.6f);
-                }
-                Train("StormSkimmer",.9f,FlightPhrase.Ribbon,side,5+extra,.26f,5.8f,1.5f);
-                break;
+            case LevelId.Thunder:return ThunderChoreography.Create(budget);
             case LevelId.City:
                 if(phrase%2==0)
                 {
