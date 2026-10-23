@@ -21,7 +21,7 @@ public static class DistrictWaves
             }
         }
     }
-    public static string[] Sequence()=>new[]{"2","3","reward","4","miniboss","shop","5","6","reward","boss"};
+    public static string[] Sequence()=>new[]{"2","3","reward","4","scoreShop","4","miniboss","multiplierShop","5","6","reward","boss"};
     public static Wave Miniboss()
     {
         string[] types={"FieldsHeavyWing","TunnelDefensePlatform","SnowSiegeCraft","StormReactor","CityCommandCarrier"};

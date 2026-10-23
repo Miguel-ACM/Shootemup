@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public sealed class DecisionShop : MonoBehaviour
 {
     public bool paid;
+    public bool scoreShop;
     Shipcontroller player;
     WaveOrchestrer owner;
     Action done;
@@ -23,9 +24,9 @@ public sealed class DecisionShop : MonoBehaviour
         float chance=Mathf.Clamp(.08f+Mathf.Max(0,luck)*.35f,.08f,.4f);
         return roll<chance*.15f ? 4 : roll<chance ? 3 : 2;
     }
-    public void Open(WaveOrchestrer orchestrer,Shipcontroller ship,bool isPaid,Action completed)
+    public void Open(WaveOrchestrer orchestrer,Shipcontroller ship,string kind,Action completed)
     {
-        owner=orchestrer;player=ship;paid=isPaid;done=completed;
+        owner=orchestrer;player=ship;paid=kind!="reward";scoreShop=kind=="scoreShop";done=completed;
         CombatDecision.Begin();player.GetComponent<ShipLoadout>().ResetSelection();
         foreach(var weapon in player.GetComponentsInChildren<AWeapon>())weapon.StopFiring();
         dialog=GameObject.FindGameObjectWithTag("Dialog").GetComponent<Dialog>();
@@ -34,11 +35,14 @@ public sealed class DecisionShop : MonoBehaviour
         for(int i=0;i<count;i++)
         {
             string rarity="common";
-            string kind=healthKit && i==count-1 ? "LargeHealthKit" : ItemPool.GetItem(out rarity);
+            string itemKind=healthKit && i==count-1 ? "LargeHealthKit" : ItemPool.GetItem(out rarity);
             var go=Instantiate(Resources.Load<GameObject>("Items/Item"),new Vector3(Mathf.Lerp(Camera.LeftLimit+1,Camera.RightLimit-1,count==1 ? .5f : i/(float)(count-1)),Camera.UpLimit+3,1),Quaternion.identity);
-            var item=(AItem)go.AddComponent(Type.GetType(kind));item.SetRarity(rarity);item.Register(owner);
+            var item=(AItem)go.AddComponent(Type.GetType(itemKind));item.SetRarity(rarity);item.Register(owner);
             item.GoToPosition(new Vector3(go.transform.position.x,Camera.UpLimit*.5f,1));items.Add(item);
-            int price=paid ? (rarity=="epic" || rarity=="legendary" ? 2 : 1) : 0;prices[item]=price;
+            int tier=rarity=="legendary" ? 3 : rarity=="epic" ? 2 : rarity=="rare" ? 1 : 0;
+            int price=!paid ? 0 : scoreShop ? new[]{1200,2400,4200,6400}[tier] : tier==3 ? 3 : tier==2 ? 2 : 1;
+            if(healthKit && i==count-1)price=scoreShop ? 900 : 1;
+            prices[item]=price;
             labels.Add(Label(go.transform,"",new Vector3(0,1.1f,-3),1.9f,3));
         }
         instructions=Label(transform,"",new Vector3(0,Camera.DownLimit+1.4f,-4),2.1f,8);
@@ -59,8 +63,9 @@ public sealed class DecisionShop : MonoBehaviour
             if(items[i]==null)continue;
             float x=Mathf.Abs(player.transform.position.x-items[i].transform.position.x);
             if(x<d){d=x;nearest=i;}
-            labels[i].text=items[i].GetData()[0]+(paid ? "\nCost: -"+prices[items[i]]+"x" : "\nChoose one");
-            labels[i].color=Score.CurrentMultiplier>prices[items[i]] ? new Color(.8f,1,.9f) : new Color(1,.55f,.4f);
+            labels[i].text=items[i].GetData()[0]+"\n"+items[i].rarity.ToUpperInvariant()+
+                (paid ? "  -"+prices[items[i]]+(scoreShop ? " pts" : "x") : "  Choose one");
+            labels[i].color=Affordable(prices[items[i]]) ? AItem.GetRarityColor(items[i].rarity) : new Color(1,.35f,.3f);
         }
         if(player.transform.position.y>0 && nearest>=0)
         {
@@ -69,10 +74,12 @@ public sealed class DecisionShop : MonoBehaviour
         else {preview=-1;dialog.Hide();}
         bool atBottom=player.transform.position.y<Camera.DownLimit+.8f;
         skipCharge=atBottom && age>2 && claimed==null ? skipCharge+Time.deltaTime : 0;
-        instructions.text=(paid ? "SHOP  |  multiplier frozen at x"+Score.CurrentMultiplier : "REWARD  |  choose one")+
+        instructions.text=(paid ? (scoreShop ? "SCORE SHOP  |  "+Score.CurrentScore+" pts" : "MULTIPLIER SHOP  |  x"+Score.CurrentMultiplier) : "REWARD  |  choose one")+
             "\nHold at the bottom to skip"+(skipCharge>0 ? "  "+Mathf.CeilToInt(Mathf.Max(0,1.5f-skipCharge))+"s" : "");
         if(skipCharge>=1.5f)Close();
     }
+    bool Affordable(int price)=>scoreShop ? Score.CurrentScore>=price : Score.CurrentMultiplier>price;
+    bool Pay(int price)=>scoreShop ? Score.TrySpendScore(price) : Score.TrySpendMultiplier(price);
     public bool TryClaim(AItem item)
     {
         if(closed || !items.Contains(item))return false;
@@ -83,7 +90,7 @@ public sealed class DecisionShop : MonoBehaviour
             if(option==null)continue;float distance=Vector2.SqrMagnitude(option.transform.position-player.transform.position);
             if(distance<d){d=distance;nearest=option;}
         }
-        if(nearest!=item || !Score.TrySpendMultiplier(prices[item]))return false;
+        if(nearest!=item || !Pay(prices[item]))return false;
         claimed=item;return true;
     }
     public void Picked(GameObject selected)

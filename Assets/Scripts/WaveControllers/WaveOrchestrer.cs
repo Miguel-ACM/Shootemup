@@ -104,13 +104,13 @@ public class WaveOrchestrer : MonoBehaviour
             return;
         }
         string currWaveType = waves[currentWaveNumber];
-        if (currWaveType == "shop" || currWaveType == "reward")
+        if (currWaveType == "scoreShop" || currWaveType == "multiplierShop" || currWaveType == "reward")
         {
             EraseAllBullets();
             isWaveComingOut = false;
             isShopUp = true;
             currShowing = -1;
-            OpenDecision(currWaveType=="shop");
+            OpenDecision(currWaveType);
         }
         else if (currWaveType == "boss")
         {
@@ -141,11 +141,11 @@ public class WaveOrchestrer : MonoBehaviour
     }
 
     DecisionShop decision;
-    void OpenDecision(bool paid)
+    void OpenDecision(string kind)
     {
         foreach(var enemy in new List<AEnemy>(AEnemy.Live))if(enemy!=null)Destroy(enemy.gameObject);
         decision=gameObject.AddComponent<DecisionShop>();
-        decision.Open(this,ship.GetComponent<Shipcontroller>(),paid,()=>{isShopUp=false;GenerateWave();});
+        decision.Open(this,ship.GetComponent<Shipcontroller>(),kind,()=>{isShopUp=false;GenerateWave();});
     }
 
     private void EraseAllBullets()

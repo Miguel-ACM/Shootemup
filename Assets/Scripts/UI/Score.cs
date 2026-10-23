@@ -42,6 +42,11 @@ public class Score : MonoBehaviour
         return scoreThisMult / multUpThresholds[multiplier - 1];
     }
 
+    public static bool TrySpendScore(int cost)
+    {
+        if(cost<0 || score<cost)return false;
+        score-=cost;if(tm!=null)tm.SetText(score.ToString(fmt));return true;
+    }
     public static bool TrySpendMultiplier(int cost)
     {
         if(cost<0 || multiplier-cost<1)return false;
