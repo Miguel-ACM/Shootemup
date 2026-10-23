@@ -12,7 +12,6 @@ public sealed class DecisionShop : MonoBehaviour
     Action done;
     readonly List<AItem> items=new List<AItem>();
     readonly Dictionary<AItem,int> prices=new Dictionary<AItem,int>();
-    readonly List<TextMeshPro> labels=new List<TextMeshPro>();
     AItem claimed;
     DecisionOverlay overlay;
     public float SkipProgress=>skipCharge/1.5f;
@@ -31,6 +30,7 @@ public sealed class DecisionShop : MonoBehaviour
         CombatDecision.Begin();player.GetComponent<ShipLoadout>().ResetSelection();
         foreach(var weapon in player.GetComponentsInChildren<AWeapon>())weapon.StopFiring();
         dialog=GameObject.FindGameObjectWithTag("Dialog").GetComponent<Dialog>();
+        overlay=new GameObject("Shop decision overlay",typeof(RectTransform)).AddComponent<DecisionOverlay>();overlay.Build(dialog.font);
         int count=paid ? (UnityEngine.Random.value<.35f ? 4 : 3) : RewardCount(GameRules.luck,UnityEngine.Random.value);
         bool healthKit=paid && player.health<player.maxHealth*.45f;
         for(int i=0;i<count;i++)
@@ -44,15 +44,8 @@ public sealed class DecisionShop : MonoBehaviour
             int price=!paid ? 0 : scoreShop ? new[]{1200,2400,4200,6400}[tier] : tier==3 ? 3 : tier==2 ? 2 : 1;
             if(healthKit && i==count-1)price=scoreShop ? 900 : 1;
             prices[item]=price;
-            labels.Add(Label(go.transform,"",new Vector3(0,1.1f,-3),1.9f,3));
+            overlay.Add(item);
         }
-        overlay=new GameObject("Shop decision overlay",typeof(RectTransform)).AddComponent<DecisionOverlay>();overlay.Build(dialog.font);
-    }
-    static TextMeshPro Label(Transform parent,string text,Vector3 p,float size,float width)
-    {
-        var go=new GameObject("Decision label");go.transform.SetParent(parent,false);go.transform.localPosition=p;
-        var t=go.AddComponent<TextMeshPro>();t.text=text;t.fontSize=size;t.alignment=TextAlignmentOptions.Center;t.rectTransform.sizeDelta=new Vector2(width,2);
-        t.GetComponent<MeshRenderer>().sortingLayerName="Above UI";return t;
     }
     void Update()
     {
@@ -64,8 +57,7 @@ public sealed class DecisionShop : MonoBehaviour
             if(items[i]==null)continue;
             float x=Vector2.Distance(player.transform.position,items[i].transform.position);
             if(x<d){d=x;nearest=i;}
-            labels[i].text=items[i].GetData()[0]+(paid ? "\n"+prices[items[i]]+(scoreShop ? " pts" : "x") : "");
-            labels[i].color=Affordable(prices[items[i]]) ? AItem.GetRarityColor(items[i].rarity) : new Color(1,.35f,.3f);
+            overlay.SetOffer(i,paid ? prices[items[i]]+(scoreShop ? " pts" : "x") : "",!paid || Affordable(prices[items[i]]));
         }
         if(d<1.8f && nearest>=0)
         {
@@ -105,7 +97,6 @@ public sealed class DecisionShop : MonoBehaviour
     {
         if(closed)return;closed=true;
         foreach(var item in items)if(item!=null && item.gameObject!=selected)item.Dismiss();
-        foreach(var label in labels)if(label!=null)Destroy(label.gameObject);
         if(overlay!=null)Destroy(overlay.gameObject);if(dialog!=null)dialog.Hide();
         CombatDecision.End();done?.Invoke();Destroy(this);
     }

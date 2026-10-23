@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 // Decision text is composited after the pixel filter.
 public sealed class DecisionOverlay : MonoBehaviour
@@ -8,6 +9,33 @@ public sealed class DecisionOverlay : MonoBehaviour
     RectTransform skip;
     Image skipFill;
     TMP_FontAsset font;
+    readonly List<(AItem item,RectTransform plate,TextMeshProUGUI name,TextMeshProUGUI price)> offers=new List<(AItem,RectTransform,TextMeshProUGUI,TextMeshProUGUI)>();
+    public void Add(AItem item)
+    {
+        var plate=Plate("Offer label",new Vector2(88,60));
+        var name=Text(plate,"",12);name.rectTransform.sizeDelta=new Vector2(82,32);name.rectTransform.anchoredPosition=new Vector2(0,10);
+        var price=Text(plate,"",15);price.rectTransform.sizeDelta=new Vector2(82,20);price.rectTransform.anchoredPosition=new Vector2(0,-17);
+        var stripe=Plate("Rarity edge",new Vector2(88,2),plate);stripe.anchoredPosition=new Vector2(0,29);stripe.GetComponent<Image>().color=AItem.GetRarityColor(item.rarity);
+        offers.Add((item,plate,name,price));
+    }
+    public void SetOffer(int index,string price,bool affordable)
+    {
+        var offer=offers[index];if(offer.item==null)return;
+        offer.name.text=offer.item.GetData()[0];offer.price.text=price;
+        offer.price.color=affordable ? new Color(1,.78f,.4f) : new Color(1,.36f,.3f);
+    }
+    void LateUpdate()
+    {
+        var camera=UnityEngine.Camera.main;if(camera==null)return;
+        foreach(var offer in offers)
+        {
+            bool show=offer.item!=null && !offer.item.Collected && !offer.item.IsDismissing;
+            offer.plate.gameObject.SetActive(show);if(!show)continue;
+            var viewport=camera.WorldToViewportPoint(offer.item.transform.position);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform,new Vector2(viewport.x*Screen.width,viewport.y*Screen.height),null,out var point);
+            offer.plate.anchoredPosition=new Vector2(Mathf.Clamp(point.x,-156,156),Mathf.Clamp(point.y+54,-300,320));
+        }
+    }
     public void Build(TMP_FontAsset face)
     {
         font=face;
