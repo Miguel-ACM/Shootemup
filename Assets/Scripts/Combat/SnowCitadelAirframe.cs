@@ -8,7 +8,7 @@ public static partial class IndustrialMeshFactory
         b.Ball(new Vector3(0,0,.02f),new Vector3(1.31f,1.28f,.48f),4);
         Ring(b,new Vector3(0,0,-.04f),1.18f,1.35f,.16f,11,32);
         for(int i=0;i<6;i++)ArcPlate(b,.83f,1.3f,i*60+4,i*60+56,-.2f,.18f,1);
-        b.Ball(new Vector3(0,.04f,-.18f),new Vector3(.94f,.9f,.42f),1);
+        b.Ball(new Vector3(0,.04f,-.18f),new Vector3(.94f,.9f,.42f),15);
         // Broad overlapping facets establish the dome; only three openings break its skin.
         BevelArmor(b,new[]{V(-.38f,.65f),V(.38f,.65f),V(.48f,.09f),V(.32f,-.35f),V(-.32f,-.35f),V(-.48f,.09f)},.24f,4,-.5f);
         Glass(b,0,-.34f,.83f,.31f,-.64f);
