@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class ItemPool
 {
-    private static readonly string[] allCommon = { "BallBearing", "ReserveCell", "SalvageConverter", "FocusingLens", "ReboundCoil", "RabbitsFoot", "BlankBullet", "TwerpItem", "Magnet", "AK45Item" };
+    private static readonly string[] allCommon = { "ScatterCannonItem", "BallBearing", "ReserveCell", "SalvageConverter", "FocusingLens", "ReboundCoil", "RabbitsFoot", "BlankBullet", "TwerpItem", "Magnet", "AK45Item" };
     private static readonly string[] allRare = { "SwarmRackItem", "DiscThrowerItem", "BurstLauncherItem", "NeedleCannonItem", "Lighter", "ReturnModule", "DroneLink", "RecoveryCoil", "Capacitor", "ProximityFuse", "SplitterCore", "Caffeine", "ProteinSupplement", "AMoonItem", "BabyYouItem", "ElectricityItem" };
     private static readonly string[] allEpic = { "ChainReactor", "SpareBattery", "AnotherArm", "AngryMoonItem" };
     private static readonly string[] allLegendary = { "Telekinesis", "ThreeMoonsItem" };
