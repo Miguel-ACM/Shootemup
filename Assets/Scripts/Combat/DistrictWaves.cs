@@ -30,17 +30,6 @@ public static class DistrictWaves
     }
     public static Wave Create(int budget)
     {
-        var units=new List<WaveUnit>();int phrase=budget%4;
-        float side=UnityEngine.Random.value<.5f ? -1 : 1;
-        int extra=Mathf.Min(2,LevelRun.Stage-1);
-        void Flight(string type,float at,FlightPhrase path,float mirror,float lane=0,float duration=6,float beat=1.2f)
-        {
-            units.Add(new WaveUnit(type,at,new Vector3(lane,1.12f)){phrase=path,side=mirror,lane=lane,flightDuration=duration*.76f,fireEvery=beat*.82f});
-        }
-        void Train(string type,float at,FlightPhrase path,float mirror,int count,float interval=.22f,float duration=5.8f,float beat=1.15f,float lane=0)
-        {if(type=="ScoutInterceptor")interval=Mathf.Max(interval,.38f);for(int i=0;i<count;i++)Flight(type,at+i*interval,path,mirror,lane,duration,beat);}
-        void Row(string type,float at,int count,float spacing,float duration=6.2f,float beat=1.4f)
-        {for(int i=0;i<count;i++)Flight(type,at,FlightPhrase.Chevron,side,(i-(count-1)*.5f)*spacing,duration,beat);}
         switch(LevelRun.Current)
         {
             case LevelId.Fields:return PlainsChoreography.Create(budget);
@@ -49,7 +38,6 @@ public static class DistrictWaves
             case LevelId.Thunder:return ThunderChoreography.Create(budget);
             case LevelId.City:return CityChoreography.Create(budget);
         }
-        units.Sort((a,b)=>a.time.CompareTo(b.time));
-        return new Wave(budget,LevelRun.Current==LevelId.City ? 3.4f : 4.4f,1,ConflictGroup.cg.center,units);
+        throw new System.ArgumentOutOfRangeException(nameof(LevelRun.Current));
     }
 }

@@ -7,7 +7,7 @@ public enum FlightPhrase { None, Ribbon, Crossing, Chevron, Orbit, Battery, Dive
 public sealed class FormationFlight : PatternMover
 {
     public FlightPhrase phrase;
-    public FlightCurve curve;
+    [System.NonSerialized] public FlightCurve curve;
     public bool syncFire;
     public float firePhase;
     public float side=1,lane,duration=6,fireEvery=.8f;
