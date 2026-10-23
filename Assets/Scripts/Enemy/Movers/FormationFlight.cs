@@ -67,10 +67,12 @@ public sealed class FormationFlight : PatternMover
         if(curve==null && phrase!=FlightPhrase.Ribbon && phrase!=FlightPhrase.Crossing && phrase!=FlightPhrase.Dive)return progress;
         if(distances==null)
         {
-            distances=new float[129];var previous=PositionAt(0);
+            // All members travel the leader's centerline parameter. Measuring
+            // offset lanes independently makes a diamond shear apart on a bend.
+            distances=new float[129];var previous=TravelCenter(0);
             for(int i=1;i<distances.Length;i++)
             {
-                var next=PositionAt(i/128f);var delta=next-previous;
+                var next=TravelCenter(i/128f);var delta=next-previous;
                 distances[i]=distances[i-1]+Vector2.Scale(delta,new Vector2(Camera.RightLimit,Camera.UpLimit-Camera.DownLimit)).magnitude;previous=next;
             }
         }
@@ -78,6 +80,7 @@ public sealed class FormationFlight : PatternMover
         for(int i=1;i<distances.Length;i++)if(target<=distances[i])return (i-1+Mathf.InverseLerp(distances[i-1],distances[i],target))/128f;
         return 1;
     }
+    Vector2 TravelCenter(float t)=>curve!=null ? curve.Sample(t,side) : PositionAt(t);
     static Vector2 Bezier(Vector2 a,Vector2 b,Vector2 c,Vector2 d,float t)
     {float u=1-t;return u*u*u*a+3*u*u*t*b+3*u*t*t*c+t*t*t*d;}
     public static Vector2 Sample(FlightPhrase phrase,float t,float side,float lane)
