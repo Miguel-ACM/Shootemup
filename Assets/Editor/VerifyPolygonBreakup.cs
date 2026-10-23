@@ -72,6 +72,8 @@ public static class VerifyPolygonBreakup
                 Check(allocated.All(mesh => mesh == null), "Debris leaked generated meshes");
                 report.AppendLine("PASS " + path + ": " + faces + " textured faces, " + originals.Length + " model parts; pose, motion, blink, collision, grouped disappearance and cleanup checks (" + remaining + " faces at 80% lifetime).");
             }
+            foreach (var type in new[] { typeof(ScoutInterceptor), typeof(AvalancheBomber), typeof(TunnelSawBoss), typeof(ThunderLanceBoss) })
+                VerifyDistrictHull(type, report);
             Directory.CreateDirectory("Temp");
             File.WriteAllText("Temp/PolygonBreakupVerification.txt", report.ToString());
             Debug.Log(report.ToString());
@@ -82,6 +84,57 @@ public static class VerifyPolygonBreakup
             Debug.LogException(exception);
             File.WriteAllText("Temp/PolygonBreakupVerification.txt", "FAIL " + exception);
             if (Application.isBatchMode) EditorApplication.Exit(1);
+        }
+    }
+
+    static void VerifyDistrictHull(Type type, System.Text.StringBuilder report)
+    {
+        var source = DistrictEnemy.Spawn(type, new Vector3(2, 3, 7));
+        PSXPolygonDebris debris = null;
+        Mesh exhaustMesh = null;
+        try
+        {
+            source.transform.rotation = Quaternion.Euler(0, 0, 23);
+            source.Hull.localRotation = Quaternion.Euler(12, 9, -17);
+            var hull = source.Hull.GetComponent<MeshFilter>();
+            int faces = hull.sharedMesh.triangles.Length / 3;
+            // A rendered child deliberately simulates the animated exhaust hierarchy.
+            // It must never be included in the rigid hull breakup.
+            var exhaust = new GameObject("Probe animated exhaust");
+            exhaust.transform.SetParent(source.Hull, false);
+            exhaust.AddComponent<MeshFilter>().sharedMesh = exhaustMesh = IndustrialMeshFactory.CreateFlame();
+            exhaust.AddComponent<MeshRenderer>().sharedMaterial = CombatMaterials.Fleet;
+            var block = new MaterialPropertyBlock(); block.SetColor("_Tint", new Color(.8f, .9f, 1, .15f));
+            source.Hull.GetComponent<MeshRenderer>().SetPropertyBlock(block);
+            debris = PSXPolygonDebris.Spawn(source);
+            Check(debris != null, type.Name + " generated no district hull debris");
+            var meshes = debris.GetComponentsInChildren<MeshFilter>();
+            Check(meshes.Length == 1, type.Name + " fractured animated exhaust as solid wreckage");
+            Check(meshes[0].sharedMesh.triangles.Length / 6 == faces, type.Name + " lost hull faces or included exhaust faces");
+            meshes[0].GetComponent<MeshRenderer>().GetPropertyBlock(block);
+            Check(block.GetColor("_Tint").a == 1, type.Name + " inherited an invisible damage blink");
+            float lifetime = (float)typeof(PSXPolygonDebris).GetField("lifetime", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(debris);
+            Check(Mathf.Approximately(lifetime, source is DistrictBoss ? 1.65f : .95f), type.Name + " uses the wrong boss debris budget");
+            var before = meshes[0].sharedMesh.vertices;
+            var advance = typeof(PSXPolygonDebris).GetMethod("Advance", BindingFlags.NonPublic | BindingFlags.Instance);
+            advance.Invoke(debris, new object[] { 0f });
+            Check(meshes[0].sharedMesh.vertices.Zip(before, (a, b) => Vector3.Distance(a, b)).All(d => d < .0001f), type.Name + " lost its rotated hull pose");
+            advance.Invoke(debris, new object[] { .4f });
+            Check(meshes[0].sharedMesh.vertices.Zip(before, (a, b) => Vector3.Distance(a, b)).Max() > .25f, type.Name + " did not break apart");
+            advance.Invoke(debris, new object[] { lifetime });
+            Check(VisibleFaces(meshes) == 0, type.Name + " did not clear its debris");
+            var allocated = meshes[0].sharedMesh;
+            Object.DestroyImmediate(source.gameObject); source = null;
+            Check(meshes[0] != null, type.Name + " debris was parented to the destroyed hull");
+            Object.DestroyImmediate(debris.gameObject); debris = null;
+            Check(allocated == null, type.Name + " leaked its generated debris mesh");
+            report.AppendLine("PASS " + type.Name + ": " + faces + " hull faces, exhaust excluded, rotated pose retained, correct boss budget, motion and cleanup.");
+        }
+        finally
+        {
+            if(source != null) Object.DestroyImmediate(source.gameObject);
+            if(debris != null) Object.DestroyImmediate(debris.gameObject);
+            if(exhaustMesh != null) Object.DestroyImmediate(exhaustMesh);
         }
     }
 

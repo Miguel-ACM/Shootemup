@@ -33,11 +33,12 @@ public sealed class PSXPolygonDebris : MonoBehaviour
 
     public static PSXPolygonDebris Spawn(GameObject source)
     {
+        var district = source.GetComponent<DistrictEnemy>();
         var visual = source.GetComponent<PSXObjectVisual>();
         var ship = source.GetComponent<PSXShipVisual>();
-        Transform model = visual != null ? visual.model : ship != null ? ship.Model : null;
+        Transform model = district != null ? district.Hull : visual != null ? visual.model : ship != null ? ship.Model : null;
         if (model == null) return null;
-        bool isBoss = source.GetComponent<Boss>() != null;
+        bool isBoss = source.GetComponent<Boss>() != null || source.GetComponent<DistrictBoss>() != null;
         // Keep a busy wave bounded, reserving the longest-lived breakup for the boss.
         active.RemoveAll(effect => effect == null);
         if (active.Count >= MaxBursts)
@@ -54,7 +55,12 @@ public sealed class PSXPolygonDebris : MonoBehaviour
         effect.boss = isBoss;
         effect.started = Time.time;
         effect.lifetime = isBoss ? 1.65f : .95f;
-        var renderers = model.GetComponentsInChildren<MeshRenderer>();
+        // District hulls are a single mesh. Their children are animated exhaust, which
+        // must extinguish with the craft rather than become solid shards in the blast.
+        var hullRenderer = district != null ? model.GetComponent<MeshRenderer>() : null;
+        var renderers = district != null
+            ? hullRenderer != null ? new[] { hullRenderer } : System.Array.Empty<MeshRenderer>()
+            : model.GetComponentsInChildren<MeshRenderer>();
         Bounds bounds = new Bounds(model.position, Vector3.zero);
         foreach (var renderer in renderers) bounds.Encapsulate(renderer.bounds);
         // Larger cells keep neighbouring polygons attached as a few readable hull chunks.
