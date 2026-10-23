@@ -1,0 +1,42 @@
+PASS
+PASS fresh run uses only the stock BaseWeapon
+PASS stock gun: 2 x 2 damage x 10 volleys/sec = 40 nominal DPS
+TTK is from first hit to death, excluding projectile travel; tracking is capped at the player's normal speed. Departures never count as kills.
+PASS stationary scout killed rather than leaving the screen
+MEASURE stationary scout: 17,55 HP, 0,40s first-hit-to-kill, 1,17s from firing start.
+PASS stationary scout stays within 1,00s
+PASS stationary gunship killed rather than leaving the screen
+MEASURE stationary gunship: 47,25 HP, 1,10s first-hit-to-kill, 1,86s from firing start.
+PASS stationary gunship stays within 1,60s
+PASS stationary bomber killed rather than leaving the screen
+MEASURE stationary bomber: 74,25 HP, 1,78s first-hit-to-kill, 2,53s from firing start.
+PASS stationary bomber stays within 2,40s
+PASS ScoutInterceptor/Crossing killed rather than leaving the screen
+MEASURE ScoutInterceptor/Crossing: 17,55 HP, 1,48s first-hit-to-kill, 2,85s from firing start.
+PASS ScoutInterceptor/Crossing stays within 4,41s
+PASS ScoutInterceptor/Crossing mirrored killed rather than leaving the screen
+MEASURE ScoutInterceptor/Crossing mirrored: 17,55 HP, 1,48s first-hit-to-kill, 2,85s from firing start.
+PASS ScoutInterceptor/Crossing mirrored stays within 4,41s
+PASS HeavyBomber/Ribbon killed rather than leaving the screen
+MEASURE HeavyBomber/Ribbon: 74,25 HP, 1,62s first-hit-to-kill, 2,55s from firing start.
+PASS HeavyBomber/Ribbon stays within 5,32s
+PASS ScoutInterceptor/Chevron killed rather than leaving the screen
+MEASURE ScoutInterceptor/Chevron: 17,55 HP, 0,86s first-hit-to-kill, 1,49s from firing start.
+PASS ScoutInterceptor/Chevron stays within 4,18s
+PASS ScoutInterceptor/Ribbon killed rather than leaving the screen
+MEASURE ScoutInterceptor/Ribbon: 17,55 HP, 0,46s first-hit-to-kill, 1,29s from firing start.
+PASS ScoutInterceptor/Ribbon stays within 4,41s
+PASS PatrolGunship/Battery killed rather than leaving the screen
+MEASURE PatrolGunship/Battery: 47,25 HP, 1,56s first-hit-to-kill, 2,25s from firing start.
+PASS PatrolGunship/Battery stays within 4,56s
+PASS moving armored miniboss killed rather than leaving the screen
+MEASURE moving armored miniboss: 351,00 HP, 9,88s first-hit-to-kill, 10,63s from firing start.
+PASS moving armored miniboss stays within 14,00s
+PASS stationary boss killed rather than leaving the screen
+MEASURE stationary boss: 1440,00 HP, 35,88s first-hit-to-kill, 36,61s from firing start.
+PASS stationary boss stays within 39,00s
+PASS moving boss, 2 seconds disengaged every 8 seconds killed rather than leaving the screen
+MEASURE moving boss, 2 seconds disengaged every 8 seconds: 1440,00 HP, 45,48s first-hit-to-kill, 46,19s from firing start.
+PASS moving boss, 2 seconds disengaged every 8 seconds stays within 55,00s
+PASS moving boss reaches its harder second phase before death
+PASS second-loop Plains retains increased boss health and enemy tempo
