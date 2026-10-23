@@ -2,10 +2,14 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class SnowSiegeBoss : DistrictBoss
 {
-    protected override void Configure(){hull=21;hullScale=1.6f;health=1500;attackInterval=2.1f;}
+    protected override void Configure(){hull=21;hullScale=1.6f;health=3200;attackInterval=1.7f;}
     protected override void MoveBoss(float dt)
     {
         station.x=Mathf.Sin(age*.45f)*1.8f;base.MoveBoss(dt);GetComponent<CombatHullVisual>().spin=12;
+    }
+    protected override void PressureAttack()
+    {
+        Radial<SimpleRound>(phaseTwo ? 30 : 22,phaseTwo ? 3.8f : 3.1f,.105f,age*19);
     }
     protected override void Attack()
     {
