@@ -77,7 +77,7 @@ public static class CityDistrictGeometry
                 float w=lots==1 ? R(1.3f,1.65f) : R(.69f,.86f),d=lots<4 ? R(1.35f,1.7f) : R(.68f,.84f);
                 float h=district==2 ? R(.85f,1.5f) : district==0 ? R(.2f,.5f) : R(.4f,.85f);
                 var facade=Color.Lerp(C(.23f,.29f,.32f),C(.4f,.36f,.3f),(float)rng.NextDouble());
-                int style=rng.Next(7);
+                int style=rng.Next(9);
                 if(style==0) // Stepped office tower with a recessed crown.
                 {
                     b.Box(xx,yy,.09f,w,d,h*.58f,facade);b.Box(xx,yy,.09f+h*.58f,w*.78f,d*.8f,h*.28f,glass);
@@ -98,25 +98,41 @@ public static class CityDistrictGeometry
                     h*=.55f;b.Box(xx,yy,.09f,w,d,h,facade);
                     for(int j=0;j<3;j++)b.Box(xx+(j-1)*w*.24f,yy,.09f+h,w*.13f,d*.7f,.045f,glass);
                 }
+                else if(style==7) // Communications tower: tiered antenna on a small service building.
+                {
+                    h*=.55f;b.Box(xx,yy,.09f,w,d,h,facade);
+                    b.Cylinder(xx,yy,.1f+h,Mathf.Min(w,d)*.3f,.12f,trim,8);
+                    b.Cylinder(xx,yy,.22f+h,.035f,.64f,trim,6);
+                    for(int dish=0;dish<3;dish++)b.Box(xx,yy,.35f+h+dish*.16f,w*.52f,.045f,.04f,glass);
+                }
+                else if(style==8) // Solar-covered factory sheds.
+                {
+                    h*=.5f;b.Box(xx,yy,.09f,w,d,h,facade);
+                    for(int solar=0;solar<4;solar++)b.Box(xx+(solar-1.5f)*w*.2f,yy,.1f+h,w*.16f,d*.75f,.06f,glass);
+                }
                 else b.Box(xx,yy,.09f,w,d,h,facade);
-                if(style!=1 && style!=2 && style!=3)
+                if(style!=1 && style!=2 && style!=3 && style!=7 && style!=8)
                 {
                     // Parapets, lift housing, HVAC banks and service piping on each roof.
-                    b.Box(xx,yy,.09f+h,w*.94f,d*.94f,.025f,roof);
+                    // A stepped tower's crown must not get a floating full-width roof.
+                    float rw=style==0 ? w*.55f : w,rd=style==0 ? d*.6f : d;
+                    b.Box(xx,yy,.09f+h,rw*.94f,rd*.94f,.025f,roof);
                     foreach(int side in new[]{-1,1})
-                    {b.Box(xx+side*w*.46f,yy,.11f+h,.035f,d,.045f,trim);b.Box(xx,yy+side*d*.46f,.11f+h,w,.035f,.045f,trim);}
-                    b.Box(xx-w*.18f,yy+d*.16f,.12f+h,w*.28f,d*.3f,.09f,trim);
+                    {b.Box(xx+side*rw*.46f,yy,.11f+h,.035f,rd,.045f,trim);b.Box(xx,yy+side*rd*.46f,.11f+h,rw,.035f,.045f,trim);}
+                    b.Box(xx-rw*.18f,yy+rd*.16f,.12f+h,rw*.28f,rd*.3f,.09f,trim);
                     for(int j=0;j<2;j++)
-                    {b.Box(xx+w*.23f,yy+(j-.5f)*d*.25f,.12f+h,w*.18f,d*.17f,.06f,trim);b.Cylinder(xx+w*.23f,yy+(j-.5f)*d*.25f,.18f+h,.035f,.012f,roof,8);}
-                    b.Box(xx,yy,.12f+h,.025f,d*.55f,.025f,trim);
+                    {b.Box(xx+rw*.23f,yy+(j-.5f)*rd*.25f,.12f+h,rw*.18f,rd*.17f,.06f,trim);b.Cylinder(xx+rw*.23f,yy+(j-.5f)*rd*.25f,.18f+h,.035f,.012f,roof,8);}
+                    b.Box(xx,yy,.12f+h,.025f,rd*.55f,.025f,trim);
                     if(rng.NextDouble()<.18)b.Cylinder(xx,yy,.13f+h,.025f,.28f,trim,6);
                 }
                 // Window rows and vertical facade mullions are geometry, not random speckles.
                 if(style!=1 && style!=2 && style!=3)
                 for(float floor=.18f;floor<h;floor+=.16f)
                 {
-                    b.Box(xx,yy-d*.505f,.09f+floor,w*.82f,.012f,.055f,glass);
-                    b.Box(xx+w*.505f,yy,.09f+floor,.012f,d*.82f,.055f,glass);
+                    float fw=style==0 ? floor>h*.86f ? w*.55f : floor>h*.58f ? w*.78f : w : w;
+                    float fd=style==0 ? floor>h*.86f ? d*.6f : floor>h*.58f ? d*.8f : d : d;
+                    b.Box(xx,yy-fd*.505f,.09f+floor,fw*.82f,.012f,.055f,glass);
+                    b.Box(xx+fw*.505f,yy,.09f+floor,.012f,fd*.82f,.055f,glass);
                 }
                 if(use==2 && lots==1) // Rooftop landing pad landmark.
                 {
