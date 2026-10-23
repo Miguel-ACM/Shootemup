@@ -45,10 +45,14 @@ public sealed class ChoreographyProbe : MonoBehaviour
     }
     void Check(bool condition,string message){if(!condition)throw new Exception(message);checks.Add("PASS "+message);}
     static bool Outside(Vector2 p)=>Mathf.Abs(p.x)>1.08f || p.y>1.07f || p.y<-.07f;
-    static string Signature(Wave wave)=>string.Join(";",wave.units.Select(x=>$"{x.enemy}:{x.curve.Name}:{x.time:F2}:{x.lane:F2}:{x.flightDuration:F2}"));
+    static string Signature(Wave wave)=>string.Join(";",wave.units.Select(x=>$"{x.enemy}:{x.curve.Name}:{x.time:F2}:{x.lane:F2}:{x.formationDepth:F2}:{x.flightDuration:F2}:{string.Join(",",x.fireTimes??Array.Empty<float>())}"));
     void InspectCompositions()
     {
         var owners=new Dictionary<FlightCurve,LevelId>();
+        var sampleObject=new GameObject("Formation geometry audit");
+        var sample=sampleObject.AddComponent<FormationFlight>();sample.enabled=false;
+        try
+        {
         foreach(LevelId level in Enum.GetValues(typeof(LevelId)))
         {
             LevelRun.Reset(level);var recipes=new HashSet<string>();var routes=new HashSet<FlightCurve>();
@@ -64,13 +68,15 @@ public sealed class ChoreographyProbe : MonoBehaviour
                     previous=unit.time;routes.Add(unit.curve);
                     if(owners.TryGetValue(unit.curve,out var owner) && owner!=level)throw new Exception("Shared route between districts");
                     owners[unit.curve]=level;
-                    if(!Outside(unit.curve.Sample(0,unit.side,unit.lane)) || !Outside(unit.curve.Sample(1,unit.side,unit.lane)))throw new Exception(unit.curve.Name+" appears or disappears inside combat");
+                    sample.curve=unit.curve;sample.side=unit.side;sample.lane=unit.lane;sample.formationDepth=unit.formationDepth;
+                    if(!Outside(sample.PositionAt(0)) || !Outside(sample.PositionAt(1)))throw new Exception(unit.curve.Name+" appears or disappears inside combat");
                     var copy=(WaveUnit)unit.Clone();
-                    if(copy.curve!=unit.curve || copy.firePhase!=unit.firePhase || copy.syncFire!=unit.syncFire)throw new Exception("Cloning loses choreography");
-                    float length=0;var p=unit.curve.Sample(0,unit.side,unit.lane);int visible=0;
+                    if(copy.curve!=unit.curve || copy.firePhase!=unit.firePhase || copy.syncFire!=unit.syncFire || copy.formationDepth!=unit.formationDepth || copy.fireTimes==null || !copy.fireTimes.SequenceEqual(unit.fireTimes))throw new Exception("Cloning loses choreography");
+                    if(unit.fireTimes==null || unit.fireTimes.Length==0 || unit.fireTimes.Any(t=>!float.IsFinite(t)) || !unit.fireTimes.SequenceEqual(unit.fireTimes.OrderBy(t=>t)))throw new Exception("Missing or unordered phrase score");
+                    float length=0;var p=sample.PositionAt(0);int visible=0;
                     for(int i=1;i<=256;i++)
                     {
-                        var next=unit.curve.Sample(i/256f,unit.side,unit.lane);
+                        var next=sample.PositionAt(i/256f);
                         if(!float.IsFinite(next.x) || !float.IsFinite(next.y))throw new Exception("Non-finite route");
                         length+=Vector2.Scale(next-p,new Vector2(Camera.RightLimit,Camera.UpLimit-Camera.DownLimit)).magnitude;
                         if(Mathf.Abs(next.x)<1 && next.y>.15f && next.y<1)visible++;
@@ -82,9 +88,76 @@ public sealed class ChoreographyProbe : MonoBehaviour
             Check(recipes.Count==8 && routes.Count==4,level+": eight different compositions and four exclusive continuous routes");
             for(int budget=3;budget<=20;budget++)
                 if(Signature(DistrictWaves.Create(budget))==Signature(DistrictWaves.Create(budget-1)))throw new Exception("Consecutive repeated composition");
-            checks.Add("PASS "+level+": offscreen entry/exit, visible attack time, mobile pace, ordered reinforcements, cloned timing and no adjacent repeats");
+            checks.Add("PASS "+level+": actual formation depth, offscreen entry/exit, visible attack time, mobile pace, ordered scores, cloned timing and no adjacent repeats");
         }
         Check(owners.Count==20,"all twenty routes belong to exactly one district");
+        }
+        finally{Destroy(sampleObject);}
+    }
+    FormationFlight ScheduledMember(float at,float[] beats,FlightCurve route=null,float lane=0,float depth=0)
+    {
+        var enemy=DistrictEnemy.Spawn(typeof(ScoutInterceptor),Vector3.zero);enemy.enabled=false;
+        enemy.FlyPhrase(new WaveUnit("ScoutInterceptor",at,Vector3.zero){phrase=FlightPhrase.Flow,curve=route??PlainsChoreography.Swoop,
+            flightDuration=6,firePhase=at,fireTimes=beats,lane=lane,formationDepth=depth});
+        var flight=enemy.GetComponent<FormationFlight>();flight.enabled=false;return flight;
+    }
+    static void StepManually(FormationFlight flight,float seconds)
+    {flight.enabled=true;flight.Step(seconds);}
+    void InspectScores()
+    {
+        float[] accents={2f,2.6f,3.2f};float[] launches={0,.4f};
+        foreach(bool faster in new[]{false,true})
+        {
+            LevelRun.Reset();
+            if(faster){LevelRun.Advance(LevelId.Snow);LevelRun.Advance(LevelId.Thunder);LevelRun.Advance(LevelId.Fields);}
+            float tempo=GameRules.enemySpeed*LevelRun.EnemyTempoScale;
+            var members=launches.Select(at=>ScheduledMember(at,accents)).ToArray();
+            var observed=new[]{new List<float>(),new List<float>()};
+            for(int tick=1;tick<=180;tick++)
+            {
+                float phraseTime=tick*.02f;
+                for(int i=0;i<members.Length;i++)
+                {
+                    if(phraseTime<=launches[i]+.0001f)continue;
+                    StepManually(members[i],.02f/tempo);
+                    if(members[i].CanFire && members[i].TakeFireBeat())observed[i].Add(phraseTime);
+                    if(members[i].TakeFireBeat())throw new Exception("A scored ship fires twice on one accent");
+                }
+            }
+            for(int i=0;i<members.Length;i++)
+            {
+                Check(observed[i].Count==accents.Length,(faster ? "loop" : "first pass")+": staggered member "+i+" fires exactly the three scored accents, with silence between them");
+                for(int j=0;j<accents.Length;j++)
+                    if(Mathf.Abs(observed[i][j]-accents[j])>.025f)throw new Exception("A phrase accent drifted from its authored time");
+            }
+            Check(observed[0].Zip(observed[1],(a,b)=>Mathf.Abs(a-b)).All(delta=>delta<.025f),"staggered members remain synchronized at tempo "+tempo.ToString("F2"));
+            foreach(var member in members)Destroy(member.gameObject);
+        }
+        LevelRun.Reset();
+        var late=ScheduledMember(0,accents);StepManually(late,2.25f);
+        Check(!late.TakeFireBeat(),"a missed or offscreen accent expires instead of becoming a late catch-up volley");
+        StepManually(late,.351f);
+        Check(late.TakeFireBeat() && !late.TakeFireBeat(),"an expired accent does not suppress or duplicate the following beat");Destroy(late.gameObject);
+        foreach(var route in new[]{PlainsChoreography.Fan,PlainsChoreography.Loop,SnowChoreography.Petal,TunnelChoreography.Helix})
+        {
+            var left=ScheduledMember(0,accents,route,-.24f,-.07f);var right=ScheduledMember(0,accents,route,.24f,.07f);
+            StepManually(left,2);StepManually(right,2);
+            float parameter=(float)typeof(FormationFlight).GetMethod("TravelParameter",Hidden).Invoke(left,new object[]{2f/6});
+            Vector2 expected=Vector2.Scale(right.PositionAt(parameter)-left.PositionAt(parameter),new Vector2(Camera.RightLimit,Camera.UpLimit-Camera.DownLimit));
+            Vector2 actual=right.transform.position-left.transform.position;
+            Check(Vector2.Distance(expected,actual)<.001f,route.Name+": members retain their formation geometry through the same turn parameter");
+            Destroy(left.gameObject);Destroy(right.gameObject);
+        }
+        LevelRun.Reset(LevelId.Thunder);var initial=DistrictWaves.Create(5);
+        LevelRun.Advance(LevelId.Fields);LevelRun.Advance(LevelId.Snow);LevelRun.Advance(LevelId.Thunder);
+        var accelerated=DistrictWaves.Create(5);float speed=LevelRun.EnemyTempoScale;
+        Check(initial.units.Count==accelerated.units.Count && Mathf.Abs(initial.duration-accelerated.duration*speed)<.001f,"harder-loop handoff scales with flight tempo without changing the composition");
+        for(int i=0;i<initial.units.Count;i++)
+        {
+            var before=initial.units[i];var after=accelerated.units[i];
+            if(Mathf.Abs(before.time-after.time*speed)>.001f || before.firePhase!=after.firePhase || !before.fireTimes.SequenceEqual(after.fireTimes))throw new Exception("Loop tempo breaks authored launch/attack alignment");
+        }
+        Check(true,"harder-loop launches, movement and attack scores share the same tempo");LevelRun.Reset();
     }
     void Clear()
     {
@@ -97,26 +170,13 @@ public sealed class ChoreographyProbe : MonoBehaviour
     static int WaveNumber(WaveOrchestrer target)=>(int)typeof(WaveOrchestrer).GetField("currentWaveNumber",Hidden).GetValue(target);
     IEnumerator Run()
     {
-        InspectCompositions();GameRules.StartNewRun();LevelRun.Reset();Time.timeScale=1;
+        GameRules.StartNewRun();InspectCompositions();LevelRun.Reset();Time.timeScale=1;
         if(SceneManager.GetActiveScene().name!="L1")yield return SceneManager.LoadSceneAsync("L1");
         yield return new WaitForSecondsRealtime(1.2f);Time.timeScale=1;
         ship=FindAnyObjectByType<Shipcontroller>();ship.health=ship.maxHealth=10000;
         flow=FindAnyObjectByType<WaveOrchestrer>();keyboard=InputSystem.AddDevice<Keyboard>();
         flow.enabled=false;flow.CancelInvoke();flow.StopAllCoroutines();Clear();yield return null;
-        // Verify the shared volley timeline with two staggered members of a real formation.
-        var pair=new List<FormationFlight>();
-        foreach(float at in new[]{0f,.4f})
-        {
-            var enemy=DistrictEnemy.Spawn(typeof(ScoutInterceptor),Vector3.zero);
-            enemy.FlyPhrase(new WaveUnit("ScoutInterceptor",at,Vector3.zero){phrase=FlightPhrase.Flow,curve=PlainsChoreography.Swoop,flightDuration=6,syncFire=true,firePhase=at,fireEvery=1.2f});
-            var flight=enemy.GetComponent<FormationFlight>();flight.enabled=false;pair.Add(flight);
-        }
-        var clock=typeof(FormationFlight).GetField("clock",Hidden);
-        clock.SetValue(pair[0],2.3f);clock.SetValue(pair[1],1.9f);
-        // Consume each member's earlier beats, then compare the next common wave beat.
-        pair[0].TakeFireBeat();pair[1].TakeFireBeat();
-        clock.SetValue(pair[0],2.4f);clock.SetValue(pair[1],2.0f);
-        Check(pair[0].TakeFireBeat() && pair[1].TakeFireBeat(),"staggered formation members fire on the same shared wave beat");Clear();yield return null;
+        InspectScores();Clear();yield return null;
         foreach(var level in SnowOnly ? new[]{LevelId.Snow} : new[]{LevelId.Fields,LevelId.Snow,LevelId.Thunder,LevelId.Tunnel,LevelId.City})yield return PlayDistrict(level);
     }
     IEnumerator PlayDistrict(LevelId level)
