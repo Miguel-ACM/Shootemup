@@ -180,7 +180,7 @@ public sealed class LevelEnvironment : MonoBehaviour
 
     IEnumerator BuildSteps(bool background)
     {
-        LoadKit();random=new System.Random(810+(int)level);
+        LoadKit();random=new System.Random(LevelRun.Seed+810+(int)level);
         material=new Material(Resources.Load<Shader>("LevelScenery"));
         if(level==LevelId.City)material.SetFloat("_Haze",.38f);
         var go=GameObject.FindGameObjectWithTag("Player");if(go!=null)player=go.transform;
@@ -198,7 +198,12 @@ public sealed class LevelEnvironment : MonoBehaviour
                 var section=new GameObject(level+" district "+i).transform;section.SetParent(transform,false);
                 section.localPosition=new Vector3(0,(i-1)*SectionLength,90);section.localScale=new Vector3(.8f,1,1);
                 Add(kit[level+"Ground"+i],section,Vector3.zero,-50);
-                Add(kit[level+"Detail"+i],section,Vector3.zero,-40);sections.Add(section);
+                if(level==LevelId.City)
+                {
+                    var buildings=CityDistrictGeometry.Build(LevelRun.Seed,i);ownedMeshes.Add(buildings);Add(buildings,section,Vector3.zero,-40);
+                }
+                else Add(kit[level+"Detail"+i],section,Vector3.zero,-40);
+                sections.Add(section);
                 var near=Add(kit[level+"Near"+i],transform,new Vector3(0,(i-1)*SectionLength,76),-25);
                 near.localScale=new Vector3(.8f,1,1);foreground.Add(near);
                 yield return null;
@@ -250,13 +255,13 @@ public sealed class LevelEnvironment : MonoBehaviour
 
     IEnumerator BuildTrafficSteps()
     {
-        for(int i=0;i<12;i++)
+        for(int i=0;i<24;i++)
         {
-            bool horizontal=i>=8;
+            bool horizontal=i>=16;
             float direction=i%2==0 ? -1 : 1;
             // Avenue pitch 2.6 is scaled by .8; cross streets repeat every 2.5 units.
             float x=horizontal ? Range(-8,8) : (i%5-2)*2.08f+direction*.08f;
-            float y=horizontal ? ((i-8)*5+2)*2.5f-direction*.07f : Range(-20,40);
+            float y=horizontal ? ((i-16)*3+2)*2.5f-direction*.07f : Range(-20,40);
             var car=Add(kit[i%3==0 ? "CityTaxi" : "CitySedan"],transform,new Vector3(x,y,88),-34);
             float angle=horizontal ? (direction>0 ? 90 : 270) : direction<0 ? 0 : 180;
             car.localRotation=Quaternion.Euler(0,0,angle);car.localScale=new Vector3(.18f,.23f,.23f);

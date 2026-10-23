@@ -6,9 +6,10 @@ public static class LevelRun
 {
     public static LevelId Current { get; private set; } = LevelId.Fields;
     public static string CurrentName => Current.ToString();
+    public static int Seed {get;private set;}=17381;
     public static int Stage { get; private set; } = 1;
     public static void StartRandom() { Reset((LevelId)Random.Range(0,System.Enum.GetValues(typeof(LevelId)).Length)); }
-    public static void Reset(LevelId first = LevelId.Fields) { Current=first;Stage=1; }
+    public static void Reset(LevelId first = LevelId.Fields) { Current=first;Stage=1;Seed=Random.Range(1,10000000); }
     public static void Advance(LevelId next) { Current=next;Stage++; }
     public static void GetChoices(out LevelId left,out LevelId right)
     {
