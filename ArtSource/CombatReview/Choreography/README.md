@@ -1,19 +1,15 @@
 # District choreography review
 
-Forty compositions, eight per district, using twenty district-exclusive routes. Catmull-Rom curves keep headings continuous; arc-length timing keeps enemies moving through bends. Mirrored trains, parallel ranks, staggered arrivals and shared firing beats compose the routes. Subsequent passages change order and entrance side without immediately repeating a composition.
+Each district has eight authored compositions using four continuous routes exclusive to that district. Movement and firing share a phrase clock: staggered arrivals answer the same accents instead of firing independently. Formation offsets use the leader's arc-length progress so groups keep their shape through turns.
 
-| District | Movement identity | Normal handoff |
-| --- | --- | --- |
-| Plains | Answering swoops, opening fans, figure eights, descending river streams | 4.2 s |
-| Snow | Unwinding spirals, petals, crosswinds, moving siege arcs | 4.4 s |
-| Thunder | Diagonal strikes, hooked returns, beam pendulums, paired relay shuttles | 4.0 s |
-| Tunnel | Wall banks, rebound chains, descending helices, sliding gates | 4.1 s |
-| City | Overtaking lanes, slingshots, interchanges, express cross-traffic | 3.25 s |
+- Plains: swoops, opening fans, figure eights and river streams.
+- Snow: mirrored falling petals, unwinding coils, crosswind artillery and siege arcs.
+- Thunder: lightning diagonals, hooked diamonds, beam pendulums and capacitor crescents, with room between laser strikes and answering escorts.
+- Tunnel: layered coils, wall-following groups and coordinated rebounds.
+- City: fast traffic streams, overtakes and compact drone volleys.
 
-The videos and contact sheets show the actual Unity scene, captured at six frames per second. Each video covers eight waves through the real wave director. The first four waves show complete formations without player fire; the last four use the unmodified base gun and a scripted lateral sweep. The test pilot has extra health so the entire sequence can be inspected. This checks composition, flow and projectile behavior; it is not a human difficulty playthrough.
+The first four waves in each video expose complete formations. The following four include moving, unmodified base-gun fire. The pilot has test-only inflated health so the capture can continue through every composition.
 
-The initial review found overlapping Snow siege hulls and merged bomber volleys. The final Snow capture widens the siege rank and staggers the three bombers by 0.32 seconds, with wider lanes. Each district has its own implementation commit; the Snow refinement is separate.
+`../ChoreographyVerification.txt` records the complete forty-composition run, timing/geometry checks and higher-loop synchronization. `../PlainsFormationTtkVerification.txt` measures real kills with the stock gun at normal player tracking speed; leaving the screen never counts as a kill. A subsequent Snow-only refinement is recorded separately in `../SnowChoreographyRefinement.txt` when present.
 
-Results are in `../ChoreographyVerification.txt`, `../SnowChoreographyRefinement.txt`, and `../PlainsFormationTtkVerification.txt`. The separate stock-gun benchmark uses real projectile collisions, no upgrades, and tracking capped at normal player speed. All new Plains enemy/route combinations die before departing; measured first-hit-to-kill times range from 0.40 to 2.00 seconds.
-
-To repeat a combined review while Unity is idle, write `choreography` to `Temp/verify-combat.request` after compilation completes. It runs all forty compositions and then the Plains firing benchmark in one play session, and restores edit mode. `snow-choreography` repeats only Snow plus the composition checks. Run `python Tools/render_choreography_review.py` to encode the generated frames; pass a district name such as `Snow` to replace an existing review video and sheets. The renderer needs Pillow and ffmpeg. It only reads the verification's generated frames under `Temp/ChoreographyReview`.
+To regenerate after a successful review run: `python Tools/render_choreography_review.py Fields Snow Thunder Tunnel City`. Existing clips are skipped unless their district is named. Completed media replace earlier review files atomically so an open viewer cannot leave a half-written result.

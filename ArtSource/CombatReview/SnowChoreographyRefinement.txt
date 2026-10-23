@@ -1,17 +1,31 @@
 PASS
 PASS Fields: eight different compositions and four exclusive continuous routes
-PASS Fields: offscreen entry/exit, visible attack time, mobile pace, ordered reinforcements, cloned timing and no adjacent repeats
+PASS Fields: actual formation depth, offscreen entry/exit, visible attack time, mobile pace, ordered scores, cloned timing and no adjacent repeats
 PASS Tunnel: eight different compositions and four exclusive continuous routes
-PASS Tunnel: offscreen entry/exit, visible attack time, mobile pace, ordered reinforcements, cloned timing and no adjacent repeats
+PASS Tunnel: actual formation depth, offscreen entry/exit, visible attack time, mobile pace, ordered scores, cloned timing and no adjacent repeats
 PASS Snow: eight different compositions and four exclusive continuous routes
-PASS Snow: offscreen entry/exit, visible attack time, mobile pace, ordered reinforcements, cloned timing and no adjacent repeats
+PASS Snow: actual formation depth, offscreen entry/exit, visible attack time, mobile pace, ordered scores, cloned timing and no adjacent repeats
 PASS Thunder: eight different compositions and four exclusive continuous routes
-PASS Thunder: offscreen entry/exit, visible attack time, mobile pace, ordered reinforcements, cloned timing and no adjacent repeats
+PASS Thunder: actual formation depth, offscreen entry/exit, visible attack time, mobile pace, ordered scores, cloned timing and no adjacent repeats
 PASS City: eight different compositions and four exclusive continuous routes
-PASS City: offscreen entry/exit, visible attack time, mobile pace, ordered reinforcements, cloned timing and no adjacent repeats
+PASS City: actual formation depth, offscreen entry/exit, visible attack time, mobile pace, ordered scores, cloned timing and no adjacent repeats
 PASS all twenty routes belong to exactly one district
-PASS staggered formation members fire on the same shared wave beat
+PASS fresh choreography review uses only the stock BaseWeapon
+PASS first pass: staggered member 0 fires exactly the three scored accents, with silence between them
+PASS first pass: staggered member 1 fires exactly the three scored accents, with silence between them
+PASS staggered members remain synchronized at tempo 1,00
+PASS loop: staggered member 0 fires exactly the three scored accents, with silence between them
+PASS loop: staggered member 1 fires exactly the three scored accents, with silence between them
+PASS staggered members remain synchronized at tempo 1,08
+PASS a missed or offscreen accent expires instead of becoming a late catch-up volley
+PASS an expired accent does not suppress or duplicate the following beat
+PASS Plains / Opening fan: members retain their formation geometry through the same turn parameter
+PASS Plains / Figure eight: members retain their formation geometry through the same turn parameter
+PASS Snow / Falling petal: members retain their formation geometry through the same turn parameter
+PASS Tunnel / Descending helix: members retain their formation geometry through the same turn parameter
+PASS harder-loop handoff scales with flight tempo without changing the composition
+PASS harder-loop launches, movement and attack scores share the same tempo
 PASS Snow: all eight compositions and all four routes exercised through the real wave director
 PASS Snow: active formations stay within the encounter budget
 PASS Snow: no unexpected decision interrupts the eight-wave combat passage
-Snow observed peaks: 18 enemies, 243 hostile rounds; handoffs 1:0.00, 2:4.40, 3:8.80, 4:13.21, 5:17.61, 6:22.03, 7:26.43, 8:30.83
+Snow observed peaks: 20 enemies, 192 hostile rounds; handoffs 1:0.00, 2:4.40, 3:8.80, 4:13.21, 5:17.61, 6:22.02, 7:26.43, 8:30.83
