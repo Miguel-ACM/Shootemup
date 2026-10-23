@@ -225,7 +225,9 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Check(ship==FindAnyObjectByType<Shipcontroller>() && ship.health==73 && GameRules.playerShootDamage==9,"Stage change lost player state: health="+ship.health+", damage="+GameRules.playerShootDamage);
         Check(weapon==ship.GetComponentInChildren<AWeapon>(),"Stage change lost equipment");
         Check(!LevelChoice.Active && !GameRules.playerDisabled && Time.timeScale==1,"Stage change left choice or player disabled");
-        Check((int)Get(waves,"currentWaveNumber")==1,"Next stage waves did not restart");
+        Check((int)Get(waves,"currentWaveNumber")==0 && AEnemy.Live.Count==0,"Next stage spawned enemies before the cloud opening finished");
+        yield return new WaitForSeconds(WaveOrchestrer.OpeningBreather+.1f);
+        Check((int)Get(waves,"currentWaveNumber")==1,"Next stage waves did not restart after the opening breather");
         foreach(var item in FindObjectsByType<AItem>())Destroy(item.gameObject);
         Field(waves,"isShopUp",false);
         Call(waves,"SpawnBoss");yield return new WaitForSeconds(.2f);foreach(var boss in FindObjectsByType<DistrictBoss>())boss.damage(100000);

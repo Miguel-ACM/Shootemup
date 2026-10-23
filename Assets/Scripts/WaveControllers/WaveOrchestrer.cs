@@ -31,6 +31,9 @@ public class WaveOrchestrer : MonoBehaviour
     int currShowing = -1;
     bool choosingRoute;
     LevelChoice routeChoice;
+    public const float OpeningBreather = .8f;
+    bool openingWavePending;
+    float openingStartsAt;
 
 
     // Start is called before the first frame update
@@ -48,6 +51,17 @@ public class WaveOrchestrer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(openingWavePending)
+        {
+            // Keep the first phrase clock at zero until the whole arena is visible.
+            // This also covers route changes and the loop back to Plains.
+            if(CloudTransition.Busy){openingStartsAt=-1;return;}
+            if(GameRules.playerDisabled)return;
+            if(openingStartsAt<0)openingStartsAt=Time.time+OpeningBreather;
+            if(Time.time<openingStartsAt)return;
+            openingWavePending=false;
+            GenerateWave();
+        }
         if (isWaveComingOut)
         {
             waveTime += Time.deltaTime;
@@ -84,7 +98,13 @@ public class WaveOrchestrer : MonoBehaviour
 
     public void BeginWaves()
     {
-        GenerateWave();
+        if(currentWaveNumber==0)
+        {
+            isWaveComingOut=false;
+            openingWavePending=true;
+            openingStartsAt=-1;
+        }
+        else GenerateWave();
     }
 
     private void SpawnBoss()

@@ -62,11 +62,18 @@ public sealed class TitleHudStartupProbe : MonoBehaviour
         float started=Time.realtimeSinceStartup;
         yield return new WaitForEndOfFrame();Capture(started);newGame.OnAccept();
         Check(CloudTransition.Busy,"NewGame.OnAccept starts the real cloud transition");
-        IndustrialHUD hud=null;LoadoutHUD equipment=null;float settledAt=-1;
+        IndustrialHUD hud=null;LoadoutHUD equipment=null;float settledAt=-1,clearAt=-1,firstEnemyAt=-1;
         while(Time.realtimeSinceStartup-started<20)
         {
             yield return new WaitForEndOfFrame();
             hud=FindAnyObjectByType<IndustrialHUD>();equipment=FindAnyObjectByType<LoadoutHUD>();
+            if(SceneManager.GetActiveScene().name=="L1")
+            {
+                bool enemies=AEnemy.Live.Count>0,bullets=FindObjectsByType<AEnemyBullet>().Length>0;
+                if(CloudTransition.Busy && (enemies || bullets))throw new Exception("opening enemies or hostile fire appeared behind the cloud curtain");
+                if(!CloudTransition.Busy && clearAt<0)clearAt=Time.time;
+                if(enemies && firstEnemyAt<0)firstEnemyAt=Time.time;
+            }
             if(hud!=null)
             {
                 var group=(CanvasGroup)Side.GetValue(hud);
@@ -88,10 +95,12 @@ public sealed class TitleHudStartupProbe : MonoBehaviour
             if(hud!=null && hud.EntranceComplete && !CloudTransition.Busy)
             {
                 if(settledAt<0)settledAt=Time.realtimeSinceStartup;
-                if(Time.realtimeSinceStartup-settledAt>.8f)break;
+                if(Time.realtimeSinceStartup-settledAt>1.2f && firstEnemyAt>=0)break;
             }
         }
         Check(SceneManager.GetActiveScene().name=="L1" && !CloudTransition.Busy,"Title activates L1 and the clouds clear");
+        Check(clearAt>=0 && firstEnemyAt-clearAt>=WaveOrchestrer.OpeningBreather-.05f && firstEnemyAt-clearAt<WaveOrchestrer.OpeningBreather+.2f,
+            "opening enemies wait for the clouds plus a short breather ("+(firstEnemyAt-clearAt).ToString("F2",CultureInfo.InvariantCulture)+"s)");
         Check(firstHudAge>=0 && firstHudAge<.20f && firstHealth<=.15f,"HUD begins dark in its first real activation frame");
         Check(firstWeapon>=0 && firstWeapon<=.15f,"equipment portraits begin dark when their real panels are created");
         Check(partial && partialThroughClouds && dropouts>=2,"instruments visibly warm and flicker through the cloud reveal ("+dropouts+" dropouts)");
