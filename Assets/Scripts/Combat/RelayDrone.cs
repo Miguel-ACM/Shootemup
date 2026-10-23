@@ -29,7 +29,9 @@ public sealed class RelayDrone : DistrictEnemy
     }
     protected override void Update()
     {
-        base.Update();if(link!=null && link.gameObject.activeSelf && (partner==null || !movement.CanFire || !partner.GetComponent<PatternMover>().CanFire))link.Vanish();
+        base.Update();
+        if(age>8.5f){Depart();return;}
+        if(link!=null && link.gameObject.activeSelf && (partner==null || !movement.CanFire || !partner.GetComponent<PatternMover>().CanFire))link.Vanish();
     }
     void OnDestroy(){if(link!=null && link.gameObject.activeSelf)link.Vanish();}
 }
