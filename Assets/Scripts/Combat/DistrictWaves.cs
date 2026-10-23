@@ -21,7 +21,8 @@ public static class DistrictWaves
             }
         }
     }
-    public static string[] Sequence()=>new[]{"2","3","4","reward","5","6","7","scoreShop","8","9","miniboss","multiplierShop","10","11","12","boss"};
+    public static string[] Sequence()=>new[]{"2","3","4","5","6","7","reward","8","9","10","11","12",
+        LevelRun.Stage%2==1 ? "scoreShop" : "multiplierShop","13","14","15","miniboss","16","17","18","19","20","boss"};
     public static Wave Miniboss()
     {
         string[] types={"FieldsHeavyWing","TunnelDefensePlatform","SnowSiegeCraft","StormReactor","CityCommandCarrier"};
@@ -34,7 +35,7 @@ public static class DistrictWaves
         int extra=Mathf.Min(2,LevelRun.Stage-1);
         void Flight(string type,float at,FlightPhrase path,float mirror,float lane=0,float duration=6,float beat=1.2f)
         {
-            units.Add(new WaveUnit(type,at,new Vector3(lane,1.12f)){phrase=path,side=mirror,lane=lane,flightDuration=duration,fireEvery=beat});
+            units.Add(new WaveUnit(type,at,new Vector3(lane,1.12f)){phrase=path,side=mirror,lane=lane,flightDuration=duration*.76f,fireEvery=beat*.82f});
         }
         void Train(string type,float at,FlightPhrase path,float mirror,int count,float interval=.22f,float duration=5.8f,float beat=1.15f,float lane=0)
         {for(int i=0;i<count;i++)Flight(type,at+i*interval,path,mirror,lane,duration,beat);}
@@ -103,6 +104,6 @@ public static class DistrictWaves
                 break;
         }
         units.Sort((a,b)=>a.time.CompareTo(b.time));
-        return new Wave(budget,LevelRun.Current==LevelId.City ? 4.6f : 5.8f,1,ConflictGroup.cg.center,units);
+        return new Wave(budget,LevelRun.Current==LevelId.City ? 3.4f : 4.4f,1,ConflictGroup.cg.center,units);
     }
 }
