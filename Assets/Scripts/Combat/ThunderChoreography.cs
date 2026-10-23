@@ -41,11 +41,11 @@ public static class ThunderChoreography
                 d.OnBeats(1.45f);
                 d.Solo("ArcLancer",Pendulum,.50f,s,0,5.3f);break;
             case 4: // One sweeping lance conducts two low, level flights.
-                d.OnBeats(1.45f,3.15f);
+                d.OnBeats(1.45f,3.35f);
                 d.Solo("ArcLancer",Pendulum,0,s,0,5.5f);
                 d.OnBeats(3.20f,3.65f);
                 d.Rank("StormSkimmer",Slash,.65f,s,3,.10f,4.0f);
-                d.OnBeats(4.95f,5.55f);
+                d.OnBeats(5.10f,5.55f);
                 d.Rank("StormSkimmer",Slash,2.35f,-s,3,.10f,4.0f);break;
             case 5: // A capacitor crescent folds around a broad hook, trading short bursts.
                 d.OnBeats(1.45f,2.05f,3.55f,4.15f);
