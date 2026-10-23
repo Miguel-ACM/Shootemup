@@ -5,6 +5,7 @@ public abstract class DistrictBoss : DistrictEnemy
     protected bool phaseTwo;
     protected ResourceBar bar;
     protected Vector3 station;
+    float nextPressure;
     public virtual bool UsesHealthBar=>true;
     public virtual float DisplayFraction=>HealthFraction;
     public float HealthFraction=>health/Mathf.Max(1,initialHealth);
@@ -23,11 +24,17 @@ public abstract class DistrictBoss : DistrictEnemy
         MoveBoss(Time.deltaTime);
         if(transform.position.y<Camera.UpLimit-1 && age>=nextAttack)
         {
-            volley++;Attack();nextAttack=age+attackInterval*(phaseTwo ? .72f : 1);
+            volley++;Attack();nextAttack=age+attackInterval*(phaseTwo ? .72f : 1)/Mathf.Max(.5f,GameRules.enemyShootSpeed);
+        }
+        if(transform.position.y<Camera.UpLimit-1 && age>=nextPressure)
+        {
+            PressureAttack();nextPressure=age+PressureInterval/Mathf.Max(.5f,GameRules.enemyShootSpeed);
         }
         UpdateBar();
     }
     protected virtual void MoveBoss(float dt){transform.position=Vector3.MoveTowards(transform.position,station,dt*2);}
+    protected virtual float PressureInterval=>phaseTwo ? .55f : .85f;
+    protected virtual void PressureAttack(){}
     protected virtual void OnPhaseTwo(){}
     protected virtual void UpdateBar(){if(bar!=null)bar.Set(health);}
     protected override void Die(){if(bar!=null)bar.SetVisible(false);base.Die();}
