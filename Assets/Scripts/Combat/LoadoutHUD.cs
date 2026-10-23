@@ -33,6 +33,7 @@ public sealed class LoadoutHUD : MonoBehaviour
         {
             bool active=i>=2;float size=active ? 74 : 124;
             var p=Plate(root.transform,(active ? "Active " : "Weapon ")+(i%2+1),size,new Color(.035f,.055f,.065f,.98f));panels[i]=p;
+            FluorescentStartup.Attach(p.gameObject,.16f+(i%2)*.1f+(active ? .08f : 0));
             p.anchorMin=p.anchorMax=new Vector2(.5f,0);
             rims[i]=Plate(p,"Machined rim",size-4,Steel,2).GetComponent<OctagonGraphic>();
             Plate(p,"Inset seam",size-13,new Color(.19f,.27f,.29f),1);

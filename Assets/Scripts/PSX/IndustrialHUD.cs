@@ -14,7 +14,8 @@ public sealed class IndustrialHUD : MonoBehaviour
     RectTransform sidePanel;
     CanvasGroup sideGroup;
     float entranceAge;
-    public bool EntranceComplete => entranceAge>=2.65f;
+    public float EntranceAge => entranceAge;
+    public bool EntranceComplete => entranceAge>=FluorescentStartup.CompleteAt;
     Boss boss;
     DistrictBoss districtBoss;
     float nextScan,nextUpdate;
@@ -45,13 +46,14 @@ public sealed class IndustrialHUD : MonoBehaviour
         var frame=new GameObject("405 x 720 playfield",typeof(RectTransform));frame.transform.SetParent(root.transform,false);
         var rect=frame.GetComponent<RectTransform>();rect.anchorMin=rect.anchorMax=new Vector2(.5f,.5f);rect.sizeDelta=new Vector2(405,720);
         scorePanel=Panel(frame.transform,"Score and multiplier",Dark);Place(scorePanel,-144,12,132,64);
+        FluorescentStartup.Attach(scorePanel.gameObject,.1f);
         Rule(scorePanel,8,3,116,new Color(.21f,.27f,.27f));
         Rule(scorePanel,8,61,116,new Color(.21f,.27f,.27f));
         score=TextAt(scorePanel,"000000000",12,10,12,Steel);score.rectTransform.sizeDelta=new Vector2(108,20);
         chain=TextAt(scorePanel,"x1",12,35,12,Amber);chain.rectTransform.sizeDelta=new Vector2(30,20);
         chainCells=Cells(scorePanel,46,43,6,10,Amber);
         sidePanel=Panel(frame.transform,"Side instruments",Dark);
-        sideGroup=sidePanel.gameObject.AddComponent<CanvasGroup>();sideGroup.alpha=0;
+        sideGroup=FluorescentStartup.Attach(sidePanel.gameObject);
         sidePanel.anchorMin=sidePanel.anchorMax=Vector2.zero;
         sidePanel.pivot=Vector2.zero;
         sidePanel.sizeDelta=new Vector2(40,248);
@@ -68,6 +70,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         Fill(healthCells,0,Steel);Fill(manaCells,0,Cyan);
         // The inventory occupies the first 40 pixels of the right margin.
         bossPanel=Panel(frame.transform,"Boss hull",Dark);Place(bossPanel,455,12,28,248);
+        FluorescentStartup.Attach(bossPanel.gameObject,.18f);
         Place(Panel(bossPanel,"Left casing",new Color(.21f,.27f,.27f)),1,3,1,242);
         Place(Panel(bossPanel,"Right casing",new Color(.21f,.27f,.27f)),26,3,1,242);
         Rule(bossPanel,6,8,16,Amber);Rule(bossPanel,6,244,16,new Color(.21f,.27f,.27f));
@@ -87,9 +90,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         if(bossPanel!=null)bossPanel.localScale=Vector3.one*Mathf.Min(1,Mathf.Max(0,margin-58)/28);
         if(sidePanel!=null)
         {
-            float enter=Mathf.SmoothStep(0,1,entranceAge/.65f);
-            sideGroup.alpha=enter;
-            sidePanel.anchoredPosition=new Vector2((float)Screen.width/Screen.height>.72f ? -44 : 6,Mathf.Lerp(-30,6,enter));
+            sidePanel.anchoredPosition=new Vector2((float)Screen.width/Screen.height>.72f ? -44 : 6,6);
         }
         if(player==null || !player.enabled)return;
         var position=player.transform.position;position.y=Mathf.Clamp(position.y,bottomLimit,topLimit);player.transform.position=position;
@@ -99,7 +100,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     {
         if(player!=null)
         {
-            entranceAge+=Time.deltaTime;
+            entranceAge+=Time.unscaledDeltaTime;
             // Charge the instruments one segment at a time, without changing the player's resources.
             int healthLimit=Mathf.FloorToInt(Mathf.Clamp01((entranceAge-.75f)/.84f)*24);
             int energyLimit=Mathf.FloorToInt(Mathf.Clamp01((entranceAge-1.72f)/.84f)*24);

@@ -46,6 +46,7 @@ public sealed class PSXInventoryDisplay : MonoBehaviour
         var ui=new GameObject("Inventory panel",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler));ui.transform.SetParent(transform,false);
         var canvas=ui.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=6;
         var scaler=ui.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);scaler.matchWidthOrHeight=1;
+        FluorescentStartup.Attach(ui,.28f);
         var image=new GameObject("Collected items",typeof(RectTransform),typeof(CanvasRenderer),typeof(RawImage));image.transform.SetParent(ui.transform,false);
         panel=image.GetComponent<RawImage>();panel.texture=texture;panel.raycastTarget=false;
         var rect=image.GetComponent<RectTransform>();rect.anchorMin=rect.anchorMax=new Vector2(.5f,.5f);
