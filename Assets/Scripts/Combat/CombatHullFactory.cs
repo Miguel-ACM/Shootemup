@@ -21,9 +21,9 @@ public static partial class IndustrialMeshFactory
         if(kind==10)return new[]{new Vector3(-0.42f,0.84f,0),new Vector3(0.42f,0.84f,0)};
         if(kind==11)return new[]{new Vector3(-0.42f,0.73f,0),new Vector3(0.42f,0.73f,0)};
         if(kind==12)return new[]{new Vector3(-0.43f,0.91f,0),new Vector3(0.43f,0.91f,0)};
-        if(kind==13)return new[]{new Vector3(-0.32f,0.63f,0),new Vector3(0.32f,0.63f,0)};
+        if(kind==13)return new[]{new Vector3(0,0.63f,0)};
         if(kind==14)return new[]{new Vector3(-1.02f,0.81f,0),new Vector3(1.02f,0.81f,0)};
-        if(kind==15)return new[]{new Vector3(-0.2f,0.86f,0),new Vector3(0.2f,0.86f,0)};
+        if(kind==15)return new[]{new Vector3(0,0.86f,0)};
         if(kind==16 || kind==17)return new[]{new Vector3(-0.88f,0.86f,0),new Vector3(0.88f,0.86f,0)};
         if(kind==18)return new[]{new Vector3(-0.42f,0.91f,0),new Vector3(0.42f,0.91f,0)};
         if(kind==21)return new[]{new Vector3(-0.74f,1.05f,0),new Vector3(0.74f,1.05f,0)};
