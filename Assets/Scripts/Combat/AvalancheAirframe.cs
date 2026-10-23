@@ -8,7 +8,7 @@ public static partial class IndustrialMeshFactory
         foreach(int s in new[]{-1,1})
         {
             // Two pressure vessels read as the payload, with recessed warm shell ports.
-            b.Ball(new Vector3(s*.69f,-.17f,-.2f),new Vector3(.45f,.63f,.31f),1);
+            b.Ball(new Vector3(s*.69f,-.17f,-.2f),new Vector3(.45f,.63f,.31f),15);
             Ring(b,new Vector3(s*.69f,-.37f,-.44f),.16f,.28f,.09f,6,12);
             b.Drum(new Vector3(s*.69f,-.37f,-.48f),.16f,.03f,11,12);
             b.Drum(new Vector3(s*.69f,-.37f,-.5f),.09f,.025f,10,8);
