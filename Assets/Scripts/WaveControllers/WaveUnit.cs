@@ -8,6 +8,8 @@ public class WaveUnit : ICloneable
     public float time;
     public string enemy;
     public Vector3 position;
+    public FlightPhrase phrase;
+    public float side=1,lane,flightDuration=6,fireEvery=.8f;
 
     public WaveUnit(string _enemy, float _time, Vector3 _position)
     {
@@ -18,7 +20,7 @@ public class WaveUnit : ICloneable
 
     public object Clone()
     {
-        return new WaveUnit(enemy, time, new Vector3(position.x, position.y));
+        return new WaveUnit(enemy,time,position){phrase=phrase,side=side,lane=lane,flightDuration=flightDuration,fireEvery=fireEvery};
     }
 
     override public string ToString()

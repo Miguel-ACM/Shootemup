@@ -35,6 +35,15 @@ public abstract class DistrictEnemy : AEnemy
         enemy.scoreOnKill=40;enemy.moneyDropChance=.8f;go.SetActive(true);return enemy;
     }
     protected override void Start(){base.Start();var p=GameObject.FindGameObjectWithTag("Player");player=p!=null ? p.transform : null;}
+    public void FlyPhrase(WaveUnit unit)
+    {
+        if(unit.phrase==FlightPhrase.None)return;
+        if(movement!=null){movement.enabled=false;Destroy(movement);}
+        var flight=gameObject.AddComponent<FormationFlight>();flight.phrase=unit.phrase;flight.side=unit.side;flight.lane=unit.lane;
+        flight.duration=unit.flightDuration;flight.fireEvery=unit.fireEvery;movement=flight;
+        var p=FormationFlight.Sample(unit.phrase,0,unit.side,unit.lane);
+        transform.position=new Vector3(p.x*Camera.RightLimit,Mathf.LerpUnclamped(Camera.DownLimit,Camera.UpLimit,p.y),transform.position.z);
+    }
     public void Escort(Transform leader)
     {
         if(movement!=null){movement.enabled=false;Destroy(movement);}
@@ -48,7 +57,11 @@ public abstract class DistrictEnemy : AEnemy
         if(GameRules.playerDisabled || transform.position.y>Camera.UpLimit-.5f || transform.position.y<Camera.DownLimit+1)return;
         if(movement!=null && !movement.CanFire)return;
         if(player!=null && Vector2.Distance(player.position,transform.position)<2)return;
-        if(age>=nextAttack){volley++;Attack();nextAttack=age+attackInterval/Mathf.Max(.5f,GameRules.enemyShootSpeed);}
+        if(movement is FormationFlight flight)
+        {
+            if(flight.TakeFireBeat()){volley++;Attack();}
+        }
+        else if(age>=nextAttack){volley++;Attack();nextAttack=age+attackInterval/Mathf.Max(.5f,GameRules.enemyShootSpeed);}
     }
     protected Vector2 Aim => movement!=null && movement.LockedAim.HasValue ? ((Vector2)(movement.LockedAim.Value-transform.position)).normalized : CombatVisuals.Aim(transform.position);
     protected void Fan<T>(int count,float spread,float velocity,float radius=.14f) where T:CombatRound

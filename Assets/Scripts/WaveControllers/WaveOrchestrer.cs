@@ -56,6 +56,7 @@ public class WaveOrchestrer : MonoBehaviour
                 Vector3 pos = new Vector3(currentUnit.position.x * limits[3], currentUnit.position.y * limits[0], 1);
                 var type=DistrictWaves.EnemyType(currentUnit.enemy);
                 GameObject enemy=type!=null ? DistrictEnemy.Spawn(type,pos).gameObject : Instantiate(currentUnit.GetUnit(),pos,Quaternion.identity);
+                if(type!=null)enemy.GetComponent<DistrictEnemy>().FlyPhrase(currentUnit);
                 enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
                 currentUnit = currentWave.getNext();
             }
