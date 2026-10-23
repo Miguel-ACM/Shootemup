@@ -6,6 +6,7 @@ public static partial class IndustrialMeshFactory
     static readonly Dictionary<int,Mesh> combatHulls=new Dictionary<int,Mesh>();
     public static Vector3[] CombatEngineSockets(int kind)
     {
+        if(kind==20)return System.Array.Empty<Vector3>();
         if(kind==4)return new[]{new Vector3(0,.88f,0)};
         if(kind==3)return new[]{new Vector3(-.53f,.76f,0),new Vector3(.53f,.76f,0)};
         if(kind==27)return new[]{new Vector3(-.56f,.93f,0),new Vector3(.56f,.93f,0)};
@@ -81,7 +82,7 @@ public static partial class IndustrialMeshFactory
             for(int i=0;i<16;i++)
             {
                 float a=i*Mathf.PI/8;var p=new Vector3(Mathf.Cos(a),Mathf.Sin(a),0);
-                if(kind==20)
+        if(kind==20){BuildTunnelSawAirframe(b);return combatHulls[kind]=b.Finish("TunnelSawAirframe");}
                     b.Prism(new[]{(Vector2)(p*1.05f),(Vector2)(Quaternion.Euler(0,0,14)*p*1.05f),(Vector2)(Quaternion.Euler(0,0,8)*p*1.43f)},.18f,3,Vector3.zero,11);
                 else
                 {
