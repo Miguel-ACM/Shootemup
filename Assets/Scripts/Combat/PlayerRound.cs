@@ -22,7 +22,7 @@ public sealed class PlayerRound : ABullet
         var go=new GameObject("Friendly "+mode);go.tag="PlayerBullet";go.layer=3;go.transform.position=new Vector3(p.x,p.y,-1);
         var rb=go.AddComponent<Rigidbody2D>();rb.bodyType=RigidbodyType2D.Kinematic;rb.gravityScale=0;
         var collider=go.AddComponent<CapsuleCollider2D>();collider.isTrigger=true;collider.direction=CapsuleDirection2D.Vertical;
-        var sr=go.AddComponent<SpriteRenderer>();sr.sprite=mode==PlayerDelivery.Shell || mode==PlayerDelivery.Disc ? CombatVisuals.Projectile(false,true,true) : CombatVisuals.Projectile(true);sr.sharedMaterial=CombatVisuals.ProjectileMaterial;sr.sortingLayerName="Bullet";sr.sortingOrder=16;
+        var sr=go.AddComponent<SpriteRenderer>();sr.sprite=mode==PlayerDelivery.Disc ? CombatVisuals.Projectile(false,true,true) : PlayerProjectileArt.For(mode);sr.sharedMaterial=CombatVisuals.ProjectileMaterial;sr.sortingLayerName="Bullet";sr.sortingOrder=16;
         sr.color=mode==PlayerDelivery.Flame ? new Color(1,.65f,.2f) : Color.white;
         var b=go.AddComponent<PlayerRound>();b.visual=sr;b.damage=damage;b.speed=speed;b.delivery=mode;b.generation=generation;
         b.origin=p;b.heading=d.normalized;b.pierces=mode==PlayerDelivery.Needle ? 1 : 0;
