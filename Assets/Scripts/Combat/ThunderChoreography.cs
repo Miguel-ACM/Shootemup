@@ -17,14 +17,14 @@ public static class ThunderChoreography
         {
             case 0: // Capacitor wings descend together, then a diagonal squad cuts across.
                 d.OnBeats(1.55f,2.15f,3.65f);
-                d.Solo("RelayDrone",Relay,0,s,-.18f,5.2f);
-                d.Solo("RelayDrone",Relay,0,-s,-.18f,5.2f);
+                d.Solo("RelayDrone",Relay,0,s,-.18f,5.2f,depth:.07f);
+                d.Solo("RelayDrone",Relay,0,-s,-.18f,5.2f,depth:-.07f);
                 d.OnBeats(2.85f,3.35f,4.45f);
                 d.Train("StormSkimmer",Slash,.55f,s,6+n,.28f,4.0f);break;
             case 1: // A two-beam sweep is the focal strike; the hooks fire after it releases.
                 d.OnBeats(1.45f);
                 d.Rank("BeamDrone",Pendulum,0,s,2,.48f,5.4f);
-                d.OnBeats(3.00f,3.60f,4.25f);
+                d.OnBeats(3.15f,3.70f,4.35f);
                 d.Train("StormSkimmer",Sickle,.45f,-s,6+n,.30f,4.4f);break;
             case 2: // Two electric diagonals cross as a call and response, without beam clutter.
                 d.OnBeats(2.00f,2.65f);
@@ -36,16 +36,16 @@ public static class ThunderChoreography
             case 3: // Hooking diamonds open the sides; a central lance takes the following beat.
                 d.OnBeats(1.55f,2.20f);
                 d.Diamond("StormSkimmer",Sickle,0,s,.20f,.07f,4.3f);
-                d.OnBeats(3.10f,3.75f);
+                d.OnBeats(3.30f,3.95f);
                 d.Diamond("StormSkimmer",Sickle,1.5f,-s,.20f,.07f,4.3f);
-                d.OnBeats(2.55f);
+                d.OnBeats(1.45f);
                 d.Solo("ArcLancer",Pendulum,.50f,s,0,5.3f);break;
             case 4: // One sweeping lance conducts two low, level flights.
-                d.OnBeats(1.45f,3.85f);
+                d.OnBeats(1.45f,3.15f);
                 d.Solo("ArcLancer",Pendulum,0,s,0,5.5f);
-                d.OnBeats(2.65f,3.20f);
+                d.OnBeats(3.20f,3.65f);
                 d.Rank("StormSkimmer",Slash,.65f,s,3,.10f,4.0f);
-                d.OnBeats(4.55f,5.15f);
+                d.OnBeats(4.95f,5.55f);
                 d.Rank("StormSkimmer",Slash,2.35f,-s,3,.10f,4.0f);break;
             case 5: // A capacitor crescent folds around a broad hook, trading short bursts.
                 d.OnBeats(1.45f,2.05f,3.55f,4.15f);
@@ -63,8 +63,11 @@ public static class ThunderChoreography
                 d.OnBeats(1.50f);
                 d.Solo("ArcLancer",Sickle,0,s,0,5.2f);
                 d.OnBeats(2.70f,3.30f,4.45f);
-                d.Rank("RelayDrone",Relay,.55f,s,2,.38f,5.1f);
-                d.Rank("RelayDrone",Relay,.55f,-s,2,.38f,5.1f);
+                foreach(float wing in new[]{-.19f,.19f})
+                {
+                    d.Solo("RelayDrone",Relay,.55f,s,wing,5.1f,depth:.08f);
+                    d.Solo("RelayDrone",Relay,.55f,-s,wing,5.1f,depth:-.08f);
+                }
                 d.OnBeats(3.95f,4.60f);
                 d.Rank("StormSkimmer",Slash,1.65f,s,3,.11f,4.0f);break;
         }
