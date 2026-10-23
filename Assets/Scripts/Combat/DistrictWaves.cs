@@ -47,20 +47,7 @@ public static class DistrictWaves
             case LevelId.Tunnel:return TunnelChoreography.Create(budget);
             case LevelId.Snow:return SnowChoreography.Create(budget);
             case LevelId.Thunder:return ThunderChoreography.Create(budget);
-            case LevelId.City:
-                if(phrase%2==0)
-                {
-                    Train("CourierDiver",0,FlightPhrase.Dive,side,7+extra,.16f,3.7f,1.1f);
-                    Train("CourierDiver",.65f,FlightPhrase.Dive,-side,7+extra,.16f,3.7f,1.1f);
-                    Train("AttackDrone",1.9f,FlightPhrase.Ribbon,side,5,.2f,4.6f,1.25f);
-                }
-                else
-                {
-                    Flight(phrase==1 ? "PursuitFighter" : "CommandGunship",0,FlightPhrase.Battery,1,0,6.2f,2.4f);
-                    Train("AttackDrone",0,FlightPhrase.Orbit,side,5+extra,.24f,5.3f,1.3f);
-                    Train("CourierDiver",2.1f,FlightPhrase.Crossing,-side,6,.16f,3.9f,1.1f);
-                }
-                break;
+            case LevelId.City:return CityChoreography.Create(budget);
         }
         units.Sort((a,b)=>a.time.CompareTo(b.time));
         return new Wave(budget,LevelRun.Current==LevelId.City ? 3.4f : 4.4f,1,ConflictGroup.cg.center,units);
