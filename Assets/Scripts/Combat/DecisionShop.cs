@@ -14,7 +14,8 @@ public sealed class DecisionShop : MonoBehaviour
     readonly Dictionary<AItem,int> prices=new Dictionary<AItem,int>();
     readonly List<TextMeshPro> labels=new List<TextMeshPro>();
     AItem claimed;
-    TextMeshPro instructions;
+    DecisionOverlay overlay;
+    public float SkipProgress=>skipCharge/1.5f;
     Dialog dialog;
     int preview=-1;
     float age,skipCharge;
@@ -45,7 +46,7 @@ public sealed class DecisionShop : MonoBehaviour
             prices[item]=price;
             labels.Add(Label(go.transform,"",new Vector3(0,1.1f,-3),1.9f,3));
         }
-        instructions=Label(transform,"",new Vector3(0,Camera.DownLimit+1.4f,-4),2.1f,8);
+        overlay=new GameObject("Shop decision overlay",typeof(RectTransform)).AddComponent<DecisionOverlay>();overlay.Build(dialog.font);
     }
     static TextMeshPro Label(Transform parent,string text,Vector3 p,float size,float width)
     {
@@ -71,9 +72,12 @@ public sealed class DecisionShop : MonoBehaviour
             if(preview!=nearest){preview=nearest;var data=items[nearest].GetData();dialog.ShowItemDesc(data[0],data[1],data[2],items[nearest].rarity);}
         }
         else {preview=-1;dialog.Hide();}
-        bool atBottom=player.transform.position.y<Camera.DownLimit+.8f;
+        var camera=UnityEngine.Camera.main;
+        var hitbox=player.GetComponent<Collider2D>();
+        float bottom=hitbox!=null ? hitbox.bounds.min.y : player.transform.position.y;
+        bool atBottom=bottom<=camera.transform.position.y-camera.orthographicSize+.45f;
         skipCharge=atBottom && age>2 && claimed==null ? skipCharge+Time.deltaTime : 0;
-        instructions.text=skipCharge>0 ? "SKIP  "+Mathf.CeilToInt(Mathf.Max(0,1.5f-skipCharge)) : paid ? (scoreShop ? Score.CurrentScore+" pts" : "x"+Score.CurrentMultiplier) : "";
+        overlay.SetSkip(SkipProgress);
         if(skipCharge>=1.5f)Close();
     }
     bool Affordable(int price)=>scoreShop ? Score.CurrentScore>=price : Score.CurrentMultiplier>price;
@@ -102,8 +106,8 @@ public sealed class DecisionShop : MonoBehaviour
         if(closed)return;closed=true;
         foreach(var item in items)if(item!=null && item.gameObject!=selected)item.Dismiss();
         foreach(var label in labels)if(label!=null)Destroy(label.gameObject);
-        if(instructions!=null)Destroy(instructions.gameObject);if(dialog!=null)dialog.Hide();
+        if(overlay!=null)Destroy(overlay.gameObject);if(dialog!=null)dialog.Hide();
         CombatDecision.End();done?.Invoke();Destroy(this);
     }
-    void OnDestroy(){if(!closed){CombatDecision.End();foreach(var item in items)if(item!=null)Destroy(item.gameObject);if(instructions!=null)Destroy(instructions.gameObject);}}
+    void OnDestroy(){if(!closed){CombatDecision.End();foreach(var item in items)if(item!=null)Destroy(item.gameObject);if(overlay!=null)Destroy(overlay.gameObject);}}
 }
