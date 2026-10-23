@@ -12,6 +12,7 @@ public static class CityDistrictGeometry
         readonly List<int> triangles=new List<int>();
         void Face(Color c,params Vector3[] points)
         {
+            c.a=1; // Facade shading changes light, never the solidity of a building.
             int first=vertices.Count;
             foreach(var p in points){vertices.Add(new Vector3(p.x+p.z*.14f,p.y+p.z*.24f,-p.z));colors.Add(c);}
             for(int i=1;i<points.Length-1;i++){triangles.Add(first);triangles.Add(first+i);triangles.Add(first+i+1);}
@@ -35,109 +36,139 @@ public static class CityDistrictGeometry
                 Face(c,new Vector3(x,y,z+h),p+Vector3.forward*h,q+Vector3.forward*h);
             }
         }
+        public void Chamfer(float x,float y,float z,float w,float d,float h,Color c)
+        {
+            float cut=Mathf.Min(w,d)*.18f;
+            var ring=new[]{new Vector2(-w/2+cut,-d/2),new Vector2(w/2-cut,-d/2),new Vector2(w/2,-d/2+cut),new Vector2(w/2,d/2-cut),
+                new Vector2(w/2-cut,d/2),new Vector2(-w/2+cut,d/2),new Vector2(-w/2,d/2-cut),new Vector2(-w/2,-d/2+cut)};
+            var top=new Vector3[ring.Length];
+            for(int i=0;i<ring.Length;i++)
+            {
+                var a=new Vector3(x+ring[i].x,y+ring[i].y,z);var q=ring[(i+1)%ring.Length];var b=new Vector3(x+q.x,y+q.y,z);
+                Face(c*(i<3 ? .66f : .83f),a,b,b+Vector3.forward*h,a+Vector3.forward*h);top[i]=a+Vector3.forward*h;
+            }
+            Face(c,top);
+        }
+        public void Ridge(float x,float y,float z,float w,float d,float rise,Color c)
+        {
+            var a=new Vector3(x-w/2,y-d/2,z);var q=new Vector3(x+w/2,y-d/2,z);
+            var r=new Vector3(x+w/2,y+d/2,z);var s=new Vector3(x-w/2,y+d/2,z);
+            var front=new Vector3(x,y-d/2,z+rise);var back=new Vector3(x,y+d/2,z+rise);
+            Face(c*.72f,a,q,front);Face(c*.86f,s,a,front,back);Face(c,q,r,back,front);Face(c*.7f,r,s,back);
+        }
         public Mesh Finish(string name)
         {
             var mesh=new Mesh{name=name,indexFormat=IndexFormat.UInt32};mesh.SetVertices(vertices);mesh.SetColors(colors);mesh.SetTriangles(triangles,0);mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
         }
     }
     static Color C(float r,float g,float b)=>new Color(r,g,b,1);
+    static int BlockHash(int seed,int x,int y)
+    {
+        unchecked{uint h=(uint)seed^(uint)x*374761393u^(uint)y*668265263u;h=(h^(h>>13))*1274126177u;return (int)((h^(h>>16))&0x7fffffff);}
+    }
     public static Mesh Build(int seed,int section)
     {
         var rng=new System.Random(seed+section*7919);var b=new Builder();
         float R(float a,float z)=>(float)(a+(z-a)*rng.NextDouble());
-        var roof=C(.28f,.32f,.34f);var trim=C(.39f,.43f,.44f);var glass=C(.14f,.27f,.32f);
+        var roof=C(.235f,.28f,.30f);var glass=C(.15f,.235f,.27f);
         for(int row=0;row<8;row++)for(int column=0;column<8;column++)
         {
             float x=-9.1f+column*2.6f,y=-8.75f+row*2.5f;
-            int district=(column/2+section)%4;int use=rng.Next(12);
-            b.Box(x,y,.02f,2.12f,2.04f,.06f,C(.27f,.29f,.29f));
-            if(use==0) // A planted square creates breathing room between dense blocks.
+            // Coarse zones make neighborhoods, not a different random building in every cell.
+            int zoneHash=BlockHash(seed,column/2,(section*8+row)/2),zone=zoneHash%4;
+            bool landmark=column%2==((zoneHash>>3)&1) && row%2==((zoneHash>>4)&1);
+            int use=rng.Next(100);
+            var paving=C(.235f,.27f,.28f);b.Box(x,y,.02f,2.05f,1.98f,.06f,paving);
+            if(use<12 && !landmark)
             {
-                b.Box(x,y,.09f,1.8f,1.7f,.02f,C(.19f,.28f,.23f));
-                b.Box(x,y,.12f,.22f,1.8f,.015f,trim);b.Box(x,y,.12f,1.8f,.22f,.015f,trim);
-                for(int t=0;t<6;t++)b.Cylinder(x+R(-.75f,.75f),y+R(-.7f,.7f),.13f,.13f,R(.12f,.25f),C(.17f,.25f,.21f),7);
+                b.Box(x,y,.09f,1.82f,1.73f,.02f,C(.19f,.265f,.23f));
+                b.Box(x+.24f,y,.12f,.18f,1.75f,.015f,paving);
+                b.Box(x,y-.22f,.12f,1.8f,.17f,.015f,paving);
+                for(int t=0;t<5;t++)b.Cylinder(x+R(-.72f,.72f),y+R(-.65f,.65f),.13f,R(.14f,.24f),R(.16f,.32f),C(.17f,.245f,.21f),7);
                 continue;
             }
-            if(use==1) // Parking lot, marked bays and varied parked vehicles.
+            if(use<19 && !landmark)
             {
-                b.Box(x,y,.09f,1.85f,1.8f,.02f,C(.15f,.19f,.22f));
-                for(int lot=0;lot<7;lot++)for(int side=-1;side<=1;side+=2)
+                b.Box(x,y,.09f,1.85f,1.8f,.02f,C(.18f,.215f,.235f));
+                for(int lot=0;lot<5;lot++)for(int side=-1;side<=1;side+=2)
                 {
-                    float xx=x-.76f+lot*.25f,yy=y+side*.52f;
-                    b.Box(xx,yy,.115f,.018f,.5f,.005f,C(.49f,.49f,.42f));
-                    if(rng.NextDouble()<.65)b.Box(xx+.1f,yy,.13f,.12f,.3f,.08f,rng.NextDouble()<.2 ? C(.45f,.34f,.16f) : glass);
+                    float xx=x-.72f+lot*.35f,yy=y+side*.52f;
+                    b.Box(xx,yy,.115f,.018f,.43f,.005f,C(.32f,.34f,.31f));
+                    if(rng.NextDouble()<.6)b.Box(xx+.13f,yy,.13f,.14f,.29f,.07f,rng.NextDouble()<.2 ? C(.35f,.31f,.21f) : glass);
                 }
                 continue;
             }
-            int lots=use==2 || district==2 ? 1 : use==3 ? 2 : 4;
+            int lots=landmark || zone==3 ? 1 : zone==0 && use>65 ? 4 : 2;
+            var districtColor=zone==3 ? C(.26f,.31f,.30f) : zone==2 ? C(.27f,.31f,.34f) : zone==1 ? C(.34f,.345f,.31f) : C(.29f,.32f,.32f);
             for(int lot=0;lot<lots;lot++)
             {
                 float xx=x+(lots==1 ? 0 : (lot%2==0 ? -.5f : .5f));
                 float yy=y+(lots<4 ? 0 : (lot<2 ? -.46f : .46f));
-                float w=lots==1 ? R(1.3f,1.65f) : R(.69f,.86f),d=lots<4 ? R(1.35f,1.7f) : R(.68f,.84f);
-                float h=district==2 ? R(.85f,1.5f) : district==0 ? R(.2f,.5f) : R(.4f,.85f);
-                var facade=Color.Lerp(C(.23f,.29f,.32f),C(.4f,.36f,.3f),(float)rng.NextDouble());
-                int style=rng.Next(9);
-                if(style==0) // Stepped office tower with a recessed crown.
+                float w=lots==1 ? R(1.4f,1.76f) : R(.70f,.86f),d=lots<4 ? R(1.35f,1.72f) : R(.68f,.84f);
+                float h=zone==2 && landmark ? R(1.9f,2.65f) : zone==1 && landmark ? R(.9f,1.35f) : zone==0 ? R(.26f,.58f) : R(.42f,.84f);
+                var facade=Color.Lerp(districtColor,roof,R(.05f,.25f));
+                var trim=Color.Lerp(facade,C(.43f,.46f,.45f),.22f);
+                int style=zone==3 ? (use%2==0 ? 4 : 8) : zone==2 && landmark ? (zoneHash%2==0 ? 0 : 9) :
+                    zone==1 && landmark ? (zoneHash%2==0 ? 3 : 2) : zone==0 ? (use%3==0 ? 1 : 5) : (use%3==0 ? 0 : 6);
+                // A ground-level shadow reinforces the rare tall shapes without bright outlines.
+                if(h>1)b.Box(xx+.13f,yy+.24f,.085f,w+.1f,d+.18f,.003f,C(.16f,.20f,.22f));
+                if(style==0)
                 {
-                    b.Box(xx,yy,.09f,w,d,h*.58f,facade);b.Box(xx,yy,.09f+h*.58f,w*.78f,d*.8f,h*.28f,glass);
-                    b.Box(xx,yy,.09f+h*.86f,w*.55f,d*.6f,h*.14f,facade);
+                    b.Box(xx,yy,.09f,w,d,h*.50f,facade);
+                    b.Box(xx-w*.07f,yy+d*.06f,.09f+h*.50f,w*.78f,d*.78f,h*.29f,Color.Lerp(facade,glass,.35f));
+                    b.Chamfer(xx-w*.07f,yy+d*.06f,.09f+h*.79f,w*.52f,d*.57f,h*.21f,facade);
                 }
-                else if(style==1) // L-shaped perimeter block.
+                else if(style==1)
                 {b.Box(xx-w*.23f,yy,.09f,w*.54f,d,h,facade);b.Box(xx+w*.2f,yy-d*.3f,.09f,w*.45f,d*.4f,h*.72f,facade);}
-                else if(style==2 && lots==1) // Courtyard with an inner garden.
+                else if(style==2)
                 {
                     b.Box(xx-w*.4f,yy,.09f,w*.2f,d,h,facade);b.Box(xx+w*.4f,yy,.09f,w*.2f,d,h,facade);
                     b.Box(xx,yy-d*.4f,.09f,w*.6f,d*.2f,h,facade);b.Box(xx,yy+d*.4f,.09f,w*.6f,d*.2f,h,facade);
                     b.Box(xx,yy,.1f,w*.52f,d*.5f,.01f,C(.16f,.25f,.21f));
                 }
-                else if(style==3) // Round apartment tower on a square podium.
-                {b.Box(xx,yy,.09f,w,d,.12f,roof);b.Cylinder(xx,yy,.21f,Mathf.Min(w,d)*.44f,h,facade,12);h+=.12f;}
-                else if(style==4) // Warehouse with raised skylights.
+                else if(style==3) // A civic rotunda surrounded by a quiet low podium.
                 {
-                    h*=.55f;b.Box(xx,yy,.09f,w,d,h,facade);
-                    for(int j=0;j<3;j++)b.Box(xx+(j-1)*w*.24f,yy,.09f+h,w*.13f,d*.7f,.045f,glass);
+                    b.Box(xx,yy,.09f,w,d,.18f,roof);
+                    b.Cylinder(xx,yy,.27f,Mathf.Min(w,d)*.44f,h*.68f,facade,12);
+                    b.Cylinder(xx,yy,.27f+h*.68f,Mathf.Min(w,d)*.32f,h*.20f,trim,12);
                 }
-                else if(style==7) // Communications tower: tiered antenna on a small service building.
+                else if(style==4) // Industrial halls use broad pitched roof bays.
                 {
-                    h*=.55f;b.Box(xx,yy,.09f,w,d,h,facade);
-                    b.Cylinder(xx,yy,.1f+h,Mathf.Min(w,d)*.3f,.12f,trim,8);
-                    b.Cylinder(xx,yy,.22f+h,.035f,.64f,trim,6);
-                    for(int dish=0;dish<3;dish++)b.Box(xx,yy,.35f+h+dish*.16f,w*.52f,.045f,.04f,glass);
+                    h*=.65f;b.Box(xx,yy,.09f,w,d,h,facade);
+                    for(int j=0;j<2;j++)b.Ridge(xx+(j-.5f)*w*.5f,yy,.09f+h,w*.49f,d,.16f,roof);
                 }
-                else if(style==8) // Solar-covered factory sheds.
+                else if(style==8)
                 {
-                    h*=.5f;b.Box(xx,yy,.09f,w,d,h,facade);
-                    for(int solar=0;solar<4;solar++)b.Box(xx+(solar-1.5f)*w*.2f,yy,.1f+h,w*.16f,d*.75f,.06f,glass);
+                    h*=.65f;b.Box(xx,yy,.09f,w,d,h,facade);
+                    for(int solar=0;solar<2;solar++)b.Box(xx+(solar-.5f)*w*.35f,yy,.1f+h,w*.25f,d*.66f,.055f,Color.Lerp(roof,glass,.65f));
                 }
+                else if(style==9)
+                {
+                    b.Chamfer(xx,yy,.09f,w,d,h*.22f,facade);
+                    b.Chamfer(xx,yy,.09f+h*.22f,w*.74f,d*.76f,h*.68f,Color.Lerp(facade,glass,.30f));
+                    b.Chamfer(xx,yy,.09f+h*.90f,w*.57f,d*.58f,h*.10f,facade);
+                }
+                else if(style==5)
+                {b.Box(xx,yy,.09f,w,d,h,facade);b.Ridge(xx,yy,.09f+h,w,d,.12f,roof);}
                 else b.Box(xx,yy,.09f,w,d,h,facade);
-                if(style!=1 && style!=2 && style!=3 && style!=7 && style!=8)
+                if(style==0 || style==6 || style==9)
                 {
-                    // Parapets, lift housing, HVAC banks and service piping on each roof.
-                    // A stepped tower's crown must not get a floating full-width roof.
-                    float rw=style==0 ? w*.55f : w,rd=style==0 ? d*.6f : d;
-                    b.Box(xx,yy,.09f+h,rw*.94f,rd*.94f,.025f,roof);
-                    foreach(int side in new[]{-1,1})
-                    {b.Box(xx+side*rw*.46f,yy,.11f+h,.035f,rd,.045f,trim);b.Box(xx,yy+side*rd*.46f,.11f+h,rw,.035f,.045f,trim);}
-                    b.Box(xx-rw*.18f,yy+rd*.16f,.12f+h,rw*.28f,rd*.3f,.09f,trim);
-                    for(int j=0;j<2;j++)
-                    {b.Box(xx+rw*.23f,yy+(j-.5f)*rd*.25f,.12f+h,rw*.18f,rd*.17f,.06f,trim);b.Cylinder(xx+rw*.23f,yy+(j-.5f)*rd*.25f,.18f+h,.035f,.012f,roof,8);}
-                    b.Box(xx,yy,.12f+h,.025f,rd*.55f,.025f,trim);
-                    if(rng.NextDouble()<.18)b.Cylinder(xx,yy,.13f+h,.025f,.28f,trim,6);
+                    float rw=style==0 ? w*.52f : style==9 ? w*.57f : w,rd=style==0 ? d*.57f : style==9 ? d*.58f : d;
+                    float rx=xx-(style==0 ? w*.07f : 0),ry=yy+(style==0 ? d*.06f : 0);
+                    if(style!=9)b.Box(rx,ry,.09f+h,rw*.94f,rd*.94f,.025f,roof);
+                    // A single service feature on selected roofs; large surfaces do the visual work.
+                    if(use%3==0)b.Box(rx-rw*.13f,ry+rd*.14f,.12f+h,rw*.27f,rd*.30f,.10f,trim);
+                    else if(landmark && use%3==1)
+                    {b.Cylinder(rx,ry,.12f+h,.035f,.40f,trim,6);b.Box(rx,ry,.42f+h,.25f,.035f,.025f,trim);}
+                    if(landmark && style==0)b.Box(rx,ry+rd*.47f,.11f+h,rw,.03f,.035f,trim);
                 }
-                // Window rows and vertical facade mullions are geometry, not random speckles.
-                if(style!=1 && style!=2 && style!=3)
-                for(float floor=.18f;floor<h;floor+=.16f)
+                if(style==0 || style==6)
+                for(float floor=.25f;floor<h;floor+=.31f)
                 {
-                    float fw=style==0 ? floor>h*.86f ? w*.55f : floor>h*.58f ? w*.78f : w : w;
-                    float fd=style==0 ? floor>h*.86f ? d*.6f : floor>h*.58f ? d*.8f : d : d;
-                    b.Box(xx,yy-fd*.505f,.09f+floor,fw*.82f,.012f,.055f,glass);
-                    b.Box(xx+fw*.505f,yy,.09f+floor,.012f,fd*.82f,.055f,glass);
-                }
-                if(use==2 && lots==1) // Rooftop landing pad landmark.
-                {
-                    b.Cylinder(xx,yy,.15f+h,.38f,.01f,C(.2f,.25f,.26f),16);
-                    b.Box(xx-.1f,yy,.17f+h,.035f,.26f,.006f,trim);b.Box(xx+.1f,yy,.17f+h,.035f,.26f,.006f,trim);b.Box(xx,yy,.17f+h,.2f,.035f,.006f,trim);
+                    float fw=style==0 ? floor>h*.79f ? w*.52f : floor>h*.50f ? w*.78f : w : w;
+                    float fd=style==0 ? floor>h*.79f ? d*.57f : floor>h*.50f ? d*.78f : d : d;
+                    float shift=style==0 && floor>h*.5f ? 1 : 0;
+                    b.Box(xx-w*.07f*shift,yy+d*.06f*shift-fd*.505f,.09f+floor,fw*.70f,.012f,.045f,Color.Lerp(facade,glass,.55f));
                 }
             }
         }
