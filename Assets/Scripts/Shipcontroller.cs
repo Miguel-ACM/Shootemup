@@ -60,6 +60,8 @@ public class Shipcontroller : MonoBehaviour
 
     void Awake(){
         input = new Inputs();
+        gameObject.AddComponent<ShipLoadout>();
+        gameObject.AddComponent<CombatUpgrades>();
         healthBar.SetMax(maxHealth);
         healthBar.Set(health);
 
@@ -72,8 +74,8 @@ public class Shipcontroller : MonoBehaviour
         input.PlayerControls.ActiveRight.started += ActiveRightPressed;
         input.PlayerControls.ActiveRight.canceled += ActiveRightReleased;
 
-        //input.PlayerControls.ActiveLeft.started += ActiveLeftPressed;
-        //input.PlayerControls.ActiveLeft.canceled += ActiveLeftReleased;
+        input.PlayerControls.ActiveLeft.started += ActiveLeftPressed;
+        input.PlayerControls.ActiveLeft.canceled += ActiveLeftReleased;
 
         input.PlayerControls.Focus.started += FocusPressed;// = ctx.ReadValue<float>() * slowMultiplier;
         input.PlayerControls.Focus.canceled += FocusReleased;
@@ -165,13 +167,14 @@ public class Shipcontroller : MonoBehaviour
 
     void ActiveRightPressed(InputAction.CallbackContext ctx)
     {
+        if(GameRules.playerDisabled)return;
         isActiveRightPressed = true;
         
 
         if (activeRight != null)
         {
             float m = 0;
-            m = activeRight.OnPress(mana);
+            m = UseActive(activeRight);
             if (m > -1)
             {
                 mana = m;
@@ -179,6 +182,23 @@ public class Shipcontroller : MonoBehaviour
             }
         }
     }
+
+
+    float UseActive(AActiveItem active)
+    {
+        var upgrades=GetComponent<CombatUpgrades>();float stored=upgrades!=null ? upgrades.Reserve : 0;
+        float result=active.OnPress(mana+stored);
+        if(result>=0 && upgrades!=null)upgrades.SpendReserve();
+        return result>=0 ? Mathf.Min(maxMana,result) : result;
+    }
+    void ActiveLeftPressed(InputAction.CallbackContext ctx)
+    {
+        if(GameRules.playerDisabled)return;
+        isActiveLeftPressed=true;
+        if(activeLeft!=null){float result=UseActive(activeLeft);if(result>=0){mana=result;manaBar.Set(mana);}}
+    }
+    void ActiveLeftReleased(InputAction.CallbackContext ctx){isActiveLeftPressed=false;if(activeLeft!=null)activeLeft.OnRelease(mana);}
+    public void ReceiveHazardDamage(float amount){if(!invulnerable && health>0 && !GameRules.playerDisabled)GetDamaged(amount);}
 
     void ActiveRightReleased(InputAction.CallbackContext ctx)
     {
@@ -230,9 +250,9 @@ public class Shipcontroller : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (activeRight != null && isActiveRightPressed)
+        if (!GameRules.playerDisabled && activeRight != null && isActiveRightPressed)
             activeRight.OnHold(mana);
-        if (activeLeft != null && isActiveLeftPressed)
+        if (!GameRules.playerDisabled && activeLeft != null && isActiveLeftPressed)
             activeLeft.OnHold(mana);
 
         
@@ -404,6 +424,8 @@ public class Shipcontroller : MonoBehaviour
 
     public void HealManaFlat(float heal)
     {
+        var upgrades=GetComponent<CombatUpgrades>();
+        if(upgrades!=null)upgrades.StoreOverflow(Mathf.Max(0,mana+heal*GameRules.manaHealMultiplier-maxMana));
         mana = Mathf.Clamp(mana + heal * GameRules.manaHealMultiplier, 0, maxMana);
         manaBar.Set(mana);
     }

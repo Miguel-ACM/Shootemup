@@ -11,7 +11,7 @@ public abstract class AWeaponItem : AItem
     {
         //s.AddWeaponSecondary(this);
         base.OnPickup();
-        s.AddWeaponSecondary(weaponName);
+        s.GetComponent<ShipLoadout>().EquipWeapon(weaponName,ReplacementSlot);
     }
 
 

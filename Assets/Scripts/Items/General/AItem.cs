@@ -14,6 +14,8 @@ public abstract class AItem : MonoBehaviour
     bool attracting, collected;
     float attractionSpeed;
     public bool IsAttracting => attracting;
+    public int ReplacementSlot {get;private set;}
+    public ItemType Kind=>type;
     public bool IsDismissing { get; private set; }
     Vector3 lerpPosition;
     Vector3 startPosition;
@@ -107,6 +109,9 @@ public abstract class AItem : MonoBehaviour
 
     void TryAttract()
     {
+        var loadout=sgo.GetComponent<ShipLoadout>();
+        ReplacementSlot=loadout!=null ? loadout.SlotFor(this) : 1;
+        if(ReplacementSlot<0)return;
         if(waveOrchestrer!=null && !waveOrchestrer.TryClaimItem(this))return;
         attracting=true;attractionSpeed=5;
     }

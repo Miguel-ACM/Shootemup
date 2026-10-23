@@ -28,6 +28,8 @@ public abstract class AWeapon : MonoBehaviour
     public bool stillShooting = false;
 
     protected WeaponInput weaponInput;
+    public WeaponInput Slot=>weaponInput;
+    public void StopFiring(){CancelInvoke();StopAllCoroutines();isShootingPrimary=isShootingSecondary=false;isStopingPrimary=isStopingSecondary=true;}
     protected WeaponType weaponType;
     protected float shootSpeedModifier = 1f;
 
@@ -66,6 +68,7 @@ public abstract class AWeapon : MonoBehaviour
 
     void PrimaryPressed(InputAction.CallbackContext ctx)
     {
+        if(!isActiveAndEnabled)return;
         isStopingPrimary = false;
         isStopingSecondary = true;
         //isShootingSecondary = false;
@@ -78,6 +81,7 @@ public abstract class AWeapon : MonoBehaviour
 
     void SecondaryPressed(InputAction.CallbackContext ctx)
     {
+        if(!isActiveAndEnabled)return;
         isStopingSecondary = false;
         isStopingPrimary = true;
         //isShootingPrimary = false;

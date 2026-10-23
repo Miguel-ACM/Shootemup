@@ -11,7 +11,7 @@ public abstract class AActiveItem : AItem
 
     public override void OnPickup()
     {
-        s.AddActiveRight(this);
+        s.GetComponent<ShipLoadout>().EquipActive(this,ReplacementSlot);
         base.OnPickup();
     }
 
