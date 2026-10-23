@@ -21,14 +21,16 @@ public sealed class PlayerRound : ABullet
         if(LiveCount>=180)return null;
         var go=new GameObject("Friendly "+mode);go.tag="PlayerBullet";go.layer=3;go.transform.position=new Vector3(p.x,p.y,-1);
         var rb=go.AddComponent<Rigidbody2D>();rb.bodyType=RigidbodyType2D.Kinematic;rb.gravityScale=0;
-        go.AddComponent<CircleCollider2D>().isTrigger=true;
-        var sr=go.AddComponent<SpriteRenderer>();sr.sprite=CombatVisuals.Projectile(true);sr.sharedMaterial=CombatVisuals.ProjectileMaterial;sr.sortingLayerName="Bullet";sr.sortingOrder=16;
+        var collider=go.AddComponent<CapsuleCollider2D>();collider.isTrigger=true;collider.direction=CapsuleDirection2D.Vertical;
+        var sr=go.AddComponent<SpriteRenderer>();sr.sprite=mode==PlayerDelivery.Shell || mode==PlayerDelivery.Disc ? CombatVisuals.Projectile(false,true,true) : CombatVisuals.Projectile(true);sr.sharedMaterial=CombatVisuals.ProjectileMaterial;sr.sortingLayerName="Bullet";sr.sortingOrder=16;
         sr.color=mode==PlayerDelivery.Flame ? new Color(1,.65f,.2f) : Color.white;
         var b=go.AddComponent<PlayerRound>();b.visual=sr;b.damage=damage;b.speed=speed;b.delivery=mode;b.generation=generation;
         b.origin=p;b.heading=d.normalized;b.pierces=mode==PlayerDelivery.Needle ? 1 : 0;
-        float radius=mode==PlayerDelivery.Shell ? .22f : mode==PlayerDelivery.Disc ? .2f : .11f;
-        go.transform.localScale=Vector3.one*radius*2*Mathf.Sqrt(GameRules.playerShootSize);
-        if(mode==PlayerDelivery.Needle)go.transform.localScale=Vector3.Scale(go.transform.localScale,new Vector3(.6f,2.6f,1));
+        Vector2 span=mode==PlayerDelivery.Needle ? new Vector2(.16f,.88f) : mode==PlayerDelivery.Shell ? Vector2.one*.44f :
+            mode==PlayerDelivery.Disc ? Vector2.one*.4f : mode==PlayerDelivery.Flame ? new Vector2(.26f,.5f) : new Vector2(.19f,.62f);
+        var bounds=sr.sprite.bounds.size;float size=Mathf.Sqrt(GameRules.playerShootSize)*(generation>0 ? .85f : 1);
+        go.transform.localScale=new Vector3(span.x/Mathf.Max(.01f,bounds.x),span.y/Mathf.Max(.01f,bounds.y),1)*size;
+        collider.size=new Vector2(bounds.x*.65f,bounds.y*.78f);
         b.returns=generation==0 && CombatUpgrades.Current!=null && CombatUpgrades.Current.ReturnThisVolley;
         return b;
     }
