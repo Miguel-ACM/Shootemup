@@ -5,7 +5,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
     protected override void Configure(){hull=21;hullScale=1.6f;health=3200;attackInterval=1.7f;}
     protected override void MoveBoss(float dt)
     {
-        station.x=Mathf.Sin(age*.45f)*1.8f;base.MoveBoss(dt);GetComponent<CombatHullVisual>().spin=12;
+        station.x=Mathf.Sin(age*.45f)*1.8f;base.MoveBoss(dt);
     }
     protected override void PressureAttack()
     {
