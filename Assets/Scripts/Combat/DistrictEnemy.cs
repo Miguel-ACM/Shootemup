@@ -70,5 +70,14 @@ public abstract class DistrictEnemy : AEnemy
     {
         for(int i=0;i<count;i++)CombatRound.Launch<T>(transform.position,CombatVisuals.Rotate(Aim,(i-(count-1)*.5f)*spread),velocity,radius);
     }
+    protected void FanFrom<T>(int count,float spread,float velocity,float radius,params Vector3[] ports) where T:CombatRound
+    {
+        Vector2 aim=Aim;
+        for(int i=0;i<count;i++)
+        {
+            int port=count==1 ? (volley+ports.Length-1)%ports.Length : Mathf.RoundToInt(i*(ports.Length-1f)/(count-1));
+            CombatRound.Launch<T>(Hull.TransformPoint(ports[port]),CombatVisuals.Rotate(aim,(i-(count-1)*.5f)*spread),velocity,radius);
+        }
+    }
     protected override void OnBecameInvisible() { }
 }
