@@ -5,6 +5,7 @@ using UnityEngine;
 public sealed class BeamRibbon : MonoBehaviour
 {
     static Material energy;
+    static Sprite emitterGlow;
     LineRenderer body, sheath, tell, collar, intake;
     SpriteRenderer mouth;
     Color hot, cool;
@@ -19,7 +20,7 @@ public sealed class BeamRibbon : MonoBehaviour
         collar=CombatVisuals.Line(transform,hot,.035f);collar.sortingOrder=22;
         intake=CombatVisuals.Line(transform,hot,.025f);intake.sortingOrder=22;
         var go=new GameObject("Emitter plasma");go.transform.SetParent(transform,false);
-        mouth=go.AddComponent<SpriteRenderer>();mouth.sprite=CombatVisuals.Projectile(false,true,true);
+        mouth=go.AddComponent<SpriteRenderer>();mouth.sprite=EmitterGlow();
         mouth.sharedMaterial=CombatVisuals.ProjectileMaterial;mouth.sortingLayerName="Bullet";mouth.sortingOrder=23;
     }
     public void Draw(Vector3 p,Vector2 direction,float length,float width,float charge,float power,float release=0)
@@ -45,13 +46,33 @@ public sealed class BeamRibbon : MonoBehaviour
         sheath.startColor=sheath.endColor=new Color(cool.r,cool.g,cool.b,power*.18f);
         float heat=charging ? charge*.65f : power;
         mouth.enabled=heat>.015f;
-        mouth.transform.position=p;mouth.transform.localScale=Vector3.one*(.10f+width*heat*2.1f);
-        mouth.color=new Color(hot.r,Mathf.Lerp(hot.g,.85f,heat),Mathf.Lerp(hot.b,.62f,heat),heat*.85f);
+        mouth.transform.position=p;mouth.transform.localScale=Vector3.one*Mathf.Min(.36f,.08f+width*heat*.95f);
+        mouth.color=new Color(hot.r,Mathf.Lerp(hot.g,.72f,heat),Mathf.Lerp(hot.b,.38f,heat),heat*.9f);
         collar.enabled=intake.enabled=heat>.01f;
-        CombatVisuals.Ring(collar,p,.08f+width*.7f*heat);
+        CombatVisuals.Ring(collar,p,.05f+width*.45f*heat);
         collar.startColor=collar.endColor=new Color(hot.r,hot.g,hot.b,heat*.7f);
         CombatVisuals.Ring(intake,p,charging ? Mathf.Lerp(.42f,.12f,charge) : .12f+width*.8f);
         intake.startColor=intake.endColor=new Color(hot.r,hot.g,hot.b,charging ? Mathf.Sin(charge*Mathf.PI)*.5f : power*.16f);
     }
+    static Sprite EmitterGlow()
+    {
+        if(emitterGlow!=null)return emitterGlow;
+        // Neutral light takes the beam's tint; an ordnance sprite made hostile muzzles cyan.
+        const int size=32;
+        var texture=new Texture2D(size,size,TextureFormat.RGBA32,false)
+            {name="Beam emitter light",filterMode=FilterMode.Bilinear,wrapMode=TextureWrapMode.Clamp};
+        var pixels=new Color[size*size];
+        for(int y=0;y<size;y++)for(int x=0;x<size;x++)
+        {
+            float radius=new Vector2(x-15.5f,y-15.5f).magnitude/15.5f;
+            float alpha=Mathf.Pow(Mathf.Clamp01(1-radius),1.3f);
+            pixels[y*size+x]=new Color(1,1,1,alpha);
+        }
+        texture.SetPixels(pixels);texture.Apply();
+        emitterGlow=Sprite.Create(texture,new Rect(0,0,size,size),new Vector2(.5f,.5f),size);
+        emitterGlow.name="Compact beam emitter";
+        return emitterGlow;
+    }
+
 }
 
