@@ -40,7 +40,7 @@ public class Menu : MonoBehaviour
         }
         
         if (!alwaysOpen) {
-            input.PlayerControls.Start.performed += ctx => { if(!CloudTransition.Busy)setMenuOpen(!menuOpen); };
+            input.PlayerControls.Start.performed += ctx => { if(!CloudTransition.Busy && !GameOverState.Active)setMenuOpen(!menuOpen); };
             setMenuOpen(false);
         } else {
             setMenuOpen(true);

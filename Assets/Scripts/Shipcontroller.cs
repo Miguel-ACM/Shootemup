@@ -335,6 +335,7 @@ public class Shipcontroller : MonoBehaviour
 
     void Die()
     {
+        StopAllCoroutines();
         SoundManager.PlaySound("playerDead", 0.5f);
         PSXPolygonDebris.Spawn(gameObject);
         PSXImpactEffects.Explosion(transform.position, 1.6f);
@@ -345,11 +346,14 @@ public class Shipcontroller : MonoBehaviour
         renderer.color = tmp;
         GameRules.playerMoveSpeed = 0;
         GameRules.playerDisabled = true;
+        var visual=GetComponent<PSXObjectVisual>();if(visual!=null)visual.Hide();
+        GameOverState.Show();
 
     }
 
     void GetDamaged(float damage)
     {
+        if(health<=0 || GameOverState.Active)return;
         PSXImpactEffects.Burst(transform.position,new Color(.15f,.65f,1));
         SoundManager.PlaySound("hurt1", 0.2f);
         health -= damage;

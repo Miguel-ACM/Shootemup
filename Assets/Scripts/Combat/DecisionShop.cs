@@ -56,7 +56,7 @@ public sealed class DecisionShop : MonoBehaviour
     void Update()
     {
         if(closed || player==null)return;age+=Time.deltaTime;
-        if(player.health<=0){Close();return;}
+        if(player.health<=0){Abort();return;}
         int nearest=-1;float d=99;
         for(int i=0;i<items.Count;i++)
         {
@@ -96,6 +96,7 @@ public sealed class DecisionShop : MonoBehaviour
         if(claimed==null || claimed.gameObject!=selected)return;
         Close(selected);
     }
+    public void Abort(){done=null;Close();}
     void Close(GameObject selected=null)
     {
         if(closed)return;closed=true;
