@@ -78,6 +78,7 @@ public class GameRules : MonoBehaviour
     // Resets everything a run accumulates: player stats, score and the shop's item pools.
     public static void StartNewRun()
     {
+        CombatDecision.End();
         ResetRun();
         Score.ResetRun();
         ItemPool.ResetRun();

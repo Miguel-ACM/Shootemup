@@ -40,6 +40,8 @@ public class WaveOrchestrer : MonoBehaviour
         limits = Camera.getLimits();
         ship = GameObject.FindGameObjectWithTag("Player");
         wavePool = GetComponent<WavePool>();
+        waves=DistrictWaves.Sequence();
+        if(GetComponent<TunnelReflectors>()==null)gameObject.AddComponent<TunnelReflectors>();
         BeginWaves();
     }
 
@@ -51,16 +53,18 @@ public class WaveOrchestrer : MonoBehaviour
             waveTime += Time.deltaTime;
             while (currentUnit != null && waveTime >= currentUnit.time)
             {
-                GameObject enemy = currentUnit.GetUnit();
                 Vector3 pos = new Vector3(currentUnit.position.x * limits[3], currentUnit.position.y * limits[0], 1);
-                enemy = Instantiate(enemy, pos, Quaternion.identity);
+                var type=DistrictWaves.EnemyType(currentUnit.enemy);
+                GameObject enemy=type!=null ? DistrictEnemy.Spawn(type,pos).gameObject : Instantiate(currentUnit.GetUnit(),pos,Quaternion.identity);
                 enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
                 currentUnit = currentWave.getNext();
             }
             // Never skip a scheduled reinforcement, but avoid waiting on an empty field.
-            bool cleared = currentUnit == null && currentWaveKilledEnemies >= currentWaveEnemies;
+            if(currentUnit==null && waveTime>=currentWave.duration)
+                foreach(var enemy in new List<AEnemy>(AEnemy.Live))if(enemy!=null)enemy.Depart();
+            bool cleared = currentUnit == null && AEnemy.Live.Count==0 && CombatRound.Live.Count==0;
             clearTime = cleared ? clearTime + Time.deltaTime : 0f;
-            if (currentUnit == null && (waveTime >= currentWave.duration || clearTime >= ClearBreather))
+            if (currentUnit == null && (clearTime >= ClearBreather))
             {
 
                 if (stopingWave)
@@ -75,38 +79,6 @@ public class WaveOrchestrer : MonoBehaviour
                 }
             }
         }
-        if (isShopUp)
-        {
-            int nearest = 0;
-            float distance = Mathf.Infinity;
-            for (int i = 0; i < items.Count; i++)
-            {
-                GameObject item = items[i];
-                Vector3 playerDistance = item.transform.position - ship.transform.position;
-                float xDistance = Mathf.Abs(playerDistance.x);
-                if (ship.transform.position.y > limits[0]*0.1f && distance > xDistance)
-                {
-                    distance = xDistance;
-                    nearest = i;
-                }
-                
-            }
-            if (ship.transform.position.y >= limits[0] * 0.1f)
-            {
-                if (currShowing != nearest)
-                {
-                    AItem itemScript = items[nearest].GetComponent<AItem>();
-                    string[] data = itemScript.GetData();
-                    dialog.ShowItemDesc(data[0], data[1], data[2], itemScript.rarity);
-                    currShowing = nearest;
-                }
-            }
-            else
-            {
-                currShowing = -1;
-                dialog.Hide();
-            }
-        }
     }
 
     public void BeginWaves()
@@ -118,7 +90,7 @@ public class WaveOrchestrer : MonoBehaviour
     {
         // Camera.WhiteScreenJitter(0.5f);
         BGMManager.PlayBGM("boss");
-        GameObject bossGO = Instantiate(boss);
+        GameObject bossGO = DistrictEnemy.Spawn(DistrictWaves.BossType,new Vector3(0,Camera.UpLimit+3,1)).gameObject;
         bossGO.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
         bossGO.transform.position = new Vector3(0f, 11.52f, 1f);
         EraseAllBullets();
@@ -132,20 +104,20 @@ public class WaveOrchestrer : MonoBehaviour
             return;
         }
         string currWaveType = waves[currentWaveNumber];
-        if (currWaveType == "shop")
+        if (currWaveType == "shop" || currWaveType == "reward")
         {
             EraseAllBullets();
             isWaveComingOut = false;
             isShopUp = true;
             currShowing = -1;
-            GenerateShop();
+            OpenDecision(currWaveType=="shop");
         }
         else if (currWaveType == "boss")
         {
             // Hold the wave timer while the boss is up; the next wave starts when it dies.
             isWaveComingOut = false;
             StartCoroutine(BGMManager.FadeOutSong(2.9f));
-            SoundManager.PlaySound("bossWarning", 0.18f);
+            SoundManager.PlayCue("bossWarning");
             warning.blink();
             Invoke("SpawnBoss", 3f);
             
@@ -168,34 +140,13 @@ public class WaveOrchestrer : MonoBehaviour
         }
     }
 
-    void GenerateShop()
+    DecisionShop decision;
+    void OpenDecision(bool paid)
     {
-        Vector3[] spawnPoints;
-        if (GameRules.numShopItems == 1)
-            spawnPoints = new Vector3[] { new Vector3(0f, 1.4f) };
-        else if (GameRules.numShopItems == 2)
-            spawnPoints = new Vector3[] { new Vector3(-0.5f, 1.3f), new Vector3(0.5f, 1.3f) };
-        else if (GameRules.numShopItems == 3)
-            spawnPoints = new Vector3[] { new Vector3(-0.65f, 1.3f), new Vector3(0.65f, 1.3f), new Vector3(0f, 1.4f) };
-        else
-            spawnPoints = new Vector3[] { new Vector3(-0.75f, 1.3f), new Vector3(0.75f, 1.3f), new Vector3(0.25f, 1.4f), new Vector3(-0.25f, 1.4f) };
-
-        for (int i = 0; i < spawnPoints.Length; i++)
-        {
-            // GameObject itemObject = ItemPool.GetItem(out string rarity);
-            string itemString = ItemPool.GetItem(out string rarity);
-            GameObject itemObject = Instantiate(Resources.Load<GameObject>("Items/Item"), new Vector3(spawnPoints[i].x * limits[3], spawnPoints[i].y * limits[0], 1), Quaternion.identity);
-            Type type = Type.GetType(itemString);
-            AItem item = (AItem) itemObject.AddComponent(type);//itemObject.GetComponent<type>();
-            items.Add(itemObject);
-            item.SetRarity(rarity);
-            item.Register(this);
-            item.GoToPosition(new Vector3(itemObject.transform.position.x, (spawnPoints[i].y - 0.5f) * limits[0], itemObject.transform.position.z));
-            
-            //spawnPoints[i] = new Vector3(currentSpread, -Mathf.Abs(currentSpread * spreadInclination) + spreadOffset, 0);
-        }
+        foreach(var enemy in new List<AEnemy>(AEnemy.Live))if(enemy!=null)Destroy(enemy.gameObject);
+        decision=gameObject.AddComponent<DecisionShop>();
+        decision.Open(this,ship.GetComponent<Shipcontroller>(),paid,()=>{isShopUp=false;GenerateWave();});
     }
-
 
     private void EraseAllBullets()
     {
@@ -208,46 +159,8 @@ public class WaveOrchestrer : MonoBehaviour
 
 
     // Claim the closest eligible option once; rewards are applied only on arrival.
-    public bool TryClaimItem(AItem candidate)
-    {
-        if(!isShopUp || !items.Contains(candidate.gameObject))return false;
-        if(claimedItem!=null)return claimedItem==candidate.gameObject;
-        GameObject nearest=null;float distance=float.PositiveInfinity;
-        foreach(var item in items)
-        {
-            if(item==null)continue;
-            float d=Vector2.SqrMagnitude(item.transform.position-ship.transform.position);
-            if(d<distance){distance=d;nearest=item;}
-        }
-        if(nearest!=candidate.gameObject)return false;
-        claimedItem=nearest;return true;
-    }
-
-    public void NotifyItemPicked(GameObject item)
-    {
-
-        foreach (GameObject i in items)
-        {
-            if (i != item)
-            {
-                try
-                {
-                    if(i!=null)
-                    {
-                        var option=i.GetComponent<AItem>();
-                        if(option!=null)option.Dismiss();else Destroy(i);
-                    }
-                }
-                catch { }
-            }
-        }
-        items.Clear();
-        claimedItem=null;
-        isShopUp = false;
-        dialog.Hide();
-
-        GenerateWave();
-    }
+    public bool TryClaimItem(AItem candidate)=>decision!=null && decision.TryClaim(candidate);
+    public void NotifyItemPicked(GameObject item){if(decision!=null)decision.Picked(item);}
 
     public void NotifyEnemyKilled(int waveNumber, bool isBoss = false)
     {
@@ -273,14 +186,14 @@ public class WaveOrchestrer : MonoBehaviour
         yield return new WaitForSeconds(.65f);
         foreach(var enemy in FindObjectsByType<AEnemy>())Destroy(enemy.gameObject);
         EraseAllBullets();
-        GameRules.playerDisabled=true; // Movement remains available; firing is held during the choice.
+        CombatDecision.Begin(); // Freeze multiplier and fire while steering to the next route.
         routeChoice=LevelChoice.Open(ship.transform,TravelToLevel);
     }
 
     void TravelToLevel(LevelId next)
     {
         BGMManager.PlayLevelMusic(next);
-        GameRules.playerDisabled=false;
+        CombatDecision.End();
         CloudTransition.Change(()=>
         {
             StopAllCoroutines();CancelInvoke();
@@ -296,14 +209,16 @@ public class WaveOrchestrer : MonoBehaviour
             items.Clear();claimedItem=null;isShopUp=false;currShowing=-1;dialog.Hide();
             currentWaveNumber=0;currentWaveEnemies=0;currentWaveKilledEnemies=0;
             waveTime=clearTime=0;currentUnit=null;currentWave=null;stopingWave=false;
-            choosingRoute=false;GameRules.playerDisabled=false;
-            BeginWaves();
+            choosingRoute=false;CombatDecision.End();
+            waves=DistrictWaves.Sequence();
+        if(GetComponent<TunnelReflectors>()==null)gameObject.AddComponent<TunnelReflectors>();
+        BeginWaves();
         });
     }
 
     public void NotifyBossPhaseChange(int phase)
     {
-        SoundManager.PlaySound("enemyExplosion1", 0.12f);
+        SoundManager.PlayCue("enemyExplosion1");
         BGMManager.ChangeMood(2);
         //BGMManager.RestartSong();
     }

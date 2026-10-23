@@ -104,7 +104,7 @@ public class WavePool : MonoBehaviour
         bool isInt = int.TryParse(mode, out int value);
         if (isInt)
         {
-            return w = _getWave(value);
+            return DistrictWaves.Create(value);
         }
         else { 
         switch (mode)

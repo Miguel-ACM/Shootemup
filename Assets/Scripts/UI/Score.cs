@@ -42,8 +42,16 @@ public class Score : MonoBehaviour
         return scoreThisMult / multUpThresholds[multiplier - 1];
     }
 
+    public static bool TrySpendMultiplier(int cost)
+    {
+        if(cost<0 || multiplier-cost<1)return false;
+        if(cost==0)return true;
+        SetMultiplier(multiplier-cost);scoreThisMult=0;timeSinceNoScoreUp=0;return true;
+    }
+
     void Update()
     {
+        if(CombatDecision.Active)return;
         if (scoreThisMult >= multUpThresholds[multiplier - 1] && multiplier < 8)
         {
             SetMultiplier(multiplier + 1);
@@ -87,6 +95,7 @@ public class Score : MonoBehaviour
     private static void SetMultiplier(int new_mult)
     {
         multiplier = new_mult;
+        if(multiplierText==null)return;
         if (multiplier > 1)
         {
             multiplierText.SetText("x" + multiplier.ToString());
