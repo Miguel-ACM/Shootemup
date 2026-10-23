@@ -108,8 +108,8 @@ public static class CityDistrictGeometry
                 float h=zone==2 && landmark ? R(1.9f,2.65f) : zone==1 && landmark ? R(.9f,1.35f) : zone==0 ? R(.26f,.58f) : R(.42f,.84f);
                 var facade=Color.Lerp(districtColor,roof,R(.05f,.25f));
                 var trim=Color.Lerp(facade,C(.43f,.46f,.45f),.22f);
-                int style=zone==3 ? (use%2==0 ? 4 : 8) : zone==2 && landmark ? (zoneHash%2==0 ? 0 : 9) :
-                    zone==1 && landmark ? (zoneHash%2==0 ? 3 : 2) : zone==0 ? (use%3==0 ? 1 : 5) : (use%3==0 ? 0 : 6);
+                int style=zone==3 ? (use%2==0 ? 4 : 8) : zone==2 && landmark ? (((zoneHash>>7)&1)==0 ? 0 : 9) :
+                    zone==1 && landmark ? (((zoneHash>>7)&1)==0 ? 3 : 2) : zone==0 ? (use%3==0 ? 1 : 5) : (use%3==0 ? 0 : 6);
                 // A ground-level shadow reinforces the rare tall shapes without bright outlines.
                 if(h>1)b.Box(xx+.13f,yy+.24f,.085f,w+.1f,d+.18f,.003f,C(.16f,.20f,.22f));
                 if(style==0)
