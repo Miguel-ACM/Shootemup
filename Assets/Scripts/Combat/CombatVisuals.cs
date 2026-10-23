@@ -28,7 +28,7 @@ public static class CombatVisuals
         var go=new GameObject("Attack tell");go.transform.SetParent(parent,false);
         var l=go.AddComponent<LineRenderer>();l.sharedMaterial=lineMaterial;l.positionCount=2;
         l.startColor=l.endColor=color;l.startWidth=l.endWidth=width;
-        l.sortingLayerName="EnemyBullets";l.sortingOrder=20;l.numCapVertices=2;return l;
+        l.sortingLayerName="Bullet";l.sortingOrder=20;l.numCapVertices=2;return l;
     }
     public static void Ring(LineRenderer l, Vector3 p, float radius)
     {

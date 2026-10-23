@@ -13,7 +13,7 @@ public sealed class PlayerRound : ABullet
     float age;
     Vector3 origin;
     Vector2 heading;
-    bool detonated, returning;
+    bool detonated, returning, rebounded;
     readonly HashSet<AEnemy> hit=new HashSet<AEnemy>();
     SpriteRenderer visual;
     public static PlayerRound Spawn(Vector3 p,Vector2 d,float damage,float speed,PlayerDelivery mode=PlayerDelivery.Pulse,int generation=0)
@@ -70,8 +70,9 @@ public sealed class PlayerRound : ABullet
         enemy.HitAt(collision.ClosestPoint(transform.position),heading);enemy.damage(dealt);Score.IncreaseScore(Mathf.RoundToInt(dealt));
         if(delivery==PlayerDelivery.Shell){Detonate();return;}
         if(pierces-->0 || delivery==PlayerDelivery.Disc)return;
-        if(CombatUpgrades.Current!=null && CombatUpgrades.Current.TryRebound())
+        if(!rebounded && CombatUpgrades.Current!=null && CombatUpgrades.Current.TryRebound())
         {
+            rebounded=true;
             var next=CombatUpgrades.Nearest(transform.position,hit,5);
             if(next!=null){heading=((Vector2)(next.transform.position-transform.position)).normalized;damage*=.75f;generation=1;return;}
         }

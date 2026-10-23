@@ -29,7 +29,7 @@ public abstract class AWeapon : MonoBehaviour
 
     protected WeaponInput weaponInput;
     public WeaponInput Slot=>weaponInput;
-    public void StopFiring(){CancelInvoke();StopAllCoroutines();isShootingPrimary=isShootingSecondary=false;isStopingPrimary=isStopingSecondary=true;}
+    public virtual void StopFiring(){CancelInvoke();StopAllCoroutines();isShootingPrimary=isShootingSecondary=false;isStopingPrimary=isStopingSecondary=true;}
     protected WeaponType weaponType;
     protected float shootSpeedModifier = 1f;
 

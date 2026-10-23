@@ -25,11 +25,11 @@ public abstract class CombatRound : AEnemyBullet
         if(shot==null)
         {
             var go=new GameObject(typeof(T).Name);go.SetActive(false);go.tag="EnemyBullet";
-            go.layer=LayerMask.NameToLayer("EnemyBullet")>=0 ? LayerMask.NameToLayer("EnemyBullet") : 0;
+            go.layer=LayerMask.NameToLayer("Bullet");
             var rb=go.AddComponent<Rigidbody2D>();rb.gravityScale=0;rb.bodyType=RigidbodyType2D.Kinematic;
             var sr=go.AddComponent<SpriteRenderer>();sr.sprite=CombatVisuals.Disc;sr.sortingOrder=15;
-            sr.sortingLayerName="EnemyBullets";
-            go.AddComponent<CircleCollider2D>().isTrigger=true;
+            sr.sortingLayerName="Bullet";
+            var collider=go.AddComponent<CircleCollider2D>();collider.isTrigger=true;collider.radius=.44f;
             shot=go.AddComponent<T>();shot.body=rb;shot.visual=sr;
         }
         shot.transform.SetPositionAndRotation(new Vector3(p.x,p.y,-.5f),Quaternion.identity);

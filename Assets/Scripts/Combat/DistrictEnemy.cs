@@ -32,6 +32,11 @@ public abstract class DistrictEnemy : AEnemy
         enemy.scoreOnKill=40;enemy.moneyDropChance=.8f;go.SetActive(true);return enemy;
     }
     protected override void Start(){base.Start();var p=GameObject.FindGameObjectWithTag("Player");player=p!=null ? p.transform : null;}
+    public void Escort(Transform leader)
+    {
+        if(movement!=null){movement.enabled=false;Destroy(movement);}
+        var escort=gameObject.AddComponent<EscortOrbit>();escort.SetAnchor(leader);movement=escort;
+    }
     protected T Mover<T>() where T:PatternMover { var m=gameObject.AddComponent<T>();movement=m;return m; }
     protected virtual void Update()
     {

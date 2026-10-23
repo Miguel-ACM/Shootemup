@@ -12,7 +12,7 @@ public sealed class ArmoredCarrier : DistrictEnemy
         foreach(int side in new[]{-1,1})
         {
             var e=Spawn(typeof(ScoutInterceptor),transform.position+Vector3.right*side*1.4f);
-            Destroy(e.GetComponent<PatternMover>());e.gameObject.AddComponent<EscortOrbit>().SetAnchor(transform);
+            e.Escort(transform);
         }
     }
 }

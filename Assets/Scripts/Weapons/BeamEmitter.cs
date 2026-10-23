@@ -7,6 +7,11 @@ public sealed class BeamEmitter : AWeaponAutomatic
     LineRenderer[] beams;
     void Awake(){shootSpeedModifier=.12f;}
     public override void Shoot(){if(!KeepFiring() || busy)return;StartCoroutine(Fire());}
+    public override void StopFiring()
+    {
+        base.StopFiring();busy=false;
+        if(beams!=null)foreach(var b in beams)if(b!=null)Destroy(b.gameObject);beams=null;
+    }
     IEnumerator Fire()
     {
         busy=true;

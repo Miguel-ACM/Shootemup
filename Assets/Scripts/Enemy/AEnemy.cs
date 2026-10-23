@@ -160,6 +160,7 @@ public abstract class AEnemy : MonoBehaviour
 
     public virtual void damage(float damage)
     {
+        if(dying || health<=0)return;
         if(!impactProvided)HitAt(transform.position);
         impactProvided=false;
         health = health - damage * GameRules.enemyDamageReceived;
