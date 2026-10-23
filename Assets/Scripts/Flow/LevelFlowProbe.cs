@@ -107,8 +107,11 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Check(prepared!=null && prepared.Count==38,"Scenery was not prepared before scene reveal");
         var instruments=FindAnyObjectByType<IndustrialHUD>();
         Check(instruments!=null && !instruments.EntranceComplete,"HUD skipped its first entrance");
-        Check(((CanvasGroup)Get(instruments,"sideGroup")).alpha>0,"HUD casing did not fade in");
+        Check(instruments.GetComponentsInChildren<FluorescentStartup>(true).Length>=3,"Score, resources and boss instruments are missing their shared power-on");
         Check(LitCells(instruments,"healthCells")==0 && LitCells(instruments,"manaCells")==0,"HUD filled before its casing entered");
+        while(instruments.EntranceAge<.24f)yield return null;
+        float initialPower=((CanvasGroup)Get(instruments,"sideGroup")).alpha;
+        Check(initialPower>0 && initialPower<1,"HUD missed its dim initial fluorescent strike");
         Capture("02-hud-casing");
         var labels=reveal.GetComponentsInChildren<TMPro.TextMeshProUGUI>();
         Check(labels.Length==2,"Level title contains extra text");
