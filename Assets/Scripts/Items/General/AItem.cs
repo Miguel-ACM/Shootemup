@@ -105,10 +105,11 @@ public abstract class AItem : MonoBehaviour
     }
 
 
-    const float ItemAttractRange=1.5f;
+    public const float ItemAttractRange=.55f;
 
     void TryAttract()
     {
+        if(sgo==null || Vector2.Distance(transform.position,sgo.transform.position)>ItemAttractRange)return;
         var loadout=sgo.GetComponent<ShipLoadout>();
         ReplacementSlot=loadout!=null ? loadout.SlotFor(this) : 1;
         if(ReplacementSlot<0)return;
