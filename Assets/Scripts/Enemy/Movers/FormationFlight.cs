@@ -10,15 +10,30 @@ public sealed class FormationFlight : PatternMover
     [System.NonSerialized] public FlightCurve curve;
     public bool syncFire;
     public float firePhase;
+    [System.NonSerialized] public float[] fireTimes;
+    public float formationDepth;
     public float side=1,lane,duration=6,fireEvery=.8f;
     float clock;
     float[] distances;
     int lastBeat=-1;
     float nextSharedBeat=-1;
+    int nextStrike;
     public Vector2 Tangent {get;private set;}=Vector2.down;
     public float Progress=>clock/Mathf.Max(.1f,duration);
     public bool TakeFireBeat()
     {
+        if(fireTimes!=null)
+        {
+            // The score belongs to the whole phrase. A late or offscreen member
+            // misses an accent instead of firing its own delayed catch-up volley.
+            float phraseTime=clock+firePhase;
+            while(nextStrike<fireTimes.Length && fireTimes[nextStrike]<=phraseTime)
+            {
+                float scheduled=fireTimes[nextStrike++];
+                if(phraseTime-scheduled<.16f && clock>.55f && Progress<.82f)return true;
+            }
+            return false;
+        }
         if(clock<1.15f || Progress>.82f)return false;
         if(syncFire)
         {
@@ -41,7 +56,12 @@ public sealed class FormationFlight : PatternMover
         Vector2 delta=next-transform.position;if(delta.sqrMagnitude>.0001f)Tangent=delta.normalized;
         transform.position=next;SetFiring(t>.12f && t<.82f);
     }
-    public Vector2 PositionAt(float t)=>curve!=null ? curve.Sample(t,side,lane) : Sample(phrase,t,side,lane);
+    public Vector2 PositionAt(float t)
+    {
+        Vector2 position=curve!=null ? curve.Sample(t,side,lane) : Sample(phrase,t,side,lane);
+        position.y+=formationDepth*Mathf.Sin(Mathf.PI*Mathf.Clamp01(t));
+        return position;
+    }
     float TravelParameter(float progress)
     {
         if(curve==null && phrase!=FlightPhrase.Ribbon && phrase!=FlightPhrase.Crossing && phrase!=FlightPhrase.Dive)return progress;
