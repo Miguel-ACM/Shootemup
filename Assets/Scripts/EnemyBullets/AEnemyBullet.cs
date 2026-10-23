@@ -16,7 +16,7 @@ public abstract class AEnemyBullet : MonoBehaviour
         rigidBody = GetComponent<Rigidbody2D>();
     }
 
-    void Update()
+    protected virtual void Update()
     {
         // Read the limits directly: getLimits() allocates a new array, once per bullet per frame here.
         if (rigidBody.position.x > Camera.RightLimit + 1f || rigidBody.position.x < Camera.LeftLimit - 1f)
@@ -68,7 +68,7 @@ public abstract class AEnemyBullet : MonoBehaviour
 
     /// <summary>Removes the round with a short pop (a small ring and sparks in its colour) instead of
     /// letting it blink out; used on hits and when a blank bullet erases it.</summary>
-    public void Vanish()
+    public virtual void Vanish()
     {
         var sprite = GetComponent<SpriteRenderer>();
         Color tint = sprite != null && sprite.sprite != null ? Average(sprite) : new Color(1f, .6f, .25f);
@@ -90,7 +90,7 @@ public abstract class AEnemyBullet : MonoBehaviour
         return result;
     }
 
-    void OnBecameInvisible()
+    protected virtual void OnBecameInvisible()
     {
         Destroy(gameObject);
     }
