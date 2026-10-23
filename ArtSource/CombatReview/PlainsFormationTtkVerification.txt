@@ -1,0 +1,28 @@
+PASS
+PASS fresh run uses only the stock BaseWeapon
+PASS stock gun: 2 x 2 damage x 10 volleys/sec = 40 nominal DPS
+TTK is from first hit to death, excluding projectile travel; tracking is capped at the player's normal speed. Departures never count as kills.
+PASS ScoutInterceptor/Plains / Swoop killed rather than leaving the screen
+MEASURE ScoutInterceptor/Plains / Swoop: 17,55 HP, 0,40s first-hit-to-kill, 1,19s from firing start.
+PASS ScoutInterceptor/Plains / Swoop stays within 4,40s
+PASS ScoutInterceptor/Plains / Swoop mirrored killed rather than leaving the screen
+MEASURE ScoutInterceptor/Plains / Swoop mirrored: 17,55 HP, 0,40s first-hit-to-kill, 1,19s from firing start.
+PASS ScoutInterceptor/Plains / Swoop mirrored stays within 4,40s
+PASS ScoutInterceptor/Plains / Opening fan killed rather than leaving the screen
+MEASURE ScoutInterceptor/Plains / Opening fan: 17,55 HP, 0,46s first-hit-to-kill, 1,45s from firing start.
+PASS ScoutInterceptor/Plains / Opening fan stays within 4,80s
+PASS HeavyBomber/Plains / Swoop killed rather than leaving the screen
+MEASURE HeavyBomber/Plains / Swoop: 74,25 HP, 1,56s first-hit-to-kill, 2,29s from firing start.
+PASS HeavyBomber/Plains / Swoop stays within 5,30s
+PASS ScoutInterceptor/Plains / Figure eight killed rather than leaving the screen
+MEASURE ScoutInterceptor/Plains / Figure eight: 17,55 HP, 0,54s first-hit-to-kill, 1,27s from firing start.
+PASS ScoutInterceptor/Plains / Figure eight stays within 5,60s
+PASS ScoutInterceptor/Plains / River stream killed rather than leaving the screen
+MEASURE ScoutInterceptor/Plains / River stream: 17,55 HP, 2,00s first-hit-to-kill, 2,79s from firing start.
+PASS ScoutInterceptor/Plains / River stream stays within 4,90s
+PASS PatrolGunship/Plains / Figure eight killed rather than leaving the screen
+MEASURE PatrolGunship/Plains / Figure eight: 47,25 HP, 1,04s first-hit-to-kill, 1,79s from firing start.
+PASS PatrolGunship/Plains / Figure eight stays within 6,20s
+PASS PatrolGunship/Plains / Swoop killed rather than leaving the screen
+MEASURE PatrolGunship/Plains / Swoop: 47,25 HP, 1,04s first-hit-to-kill, 1,79s from firing start.
+PASS PatrolGunship/Plains / Swoop stays within 5,50s

@@ -1,0 +1,17 @@
+PASS
+PASS Fields: eight different compositions and four exclusive continuous routes
+PASS Fields: offscreen entry/exit, visible attack time, mobile pace, ordered reinforcements, cloned timing and no adjacent repeats
+PASS Tunnel: eight different compositions and four exclusive continuous routes
+PASS Tunnel: offscreen entry/exit, visible attack time, mobile pace, ordered reinforcements, cloned timing and no adjacent repeats
+PASS Snow: eight different compositions and four exclusive continuous routes
+PASS Snow: offscreen entry/exit, visible attack time, mobile pace, ordered reinforcements, cloned timing and no adjacent repeats
+PASS Thunder: eight different compositions and four exclusive continuous routes
+PASS Thunder: offscreen entry/exit, visible attack time, mobile pace, ordered reinforcements, cloned timing and no adjacent repeats
+PASS City: eight different compositions and four exclusive continuous routes
+PASS City: offscreen entry/exit, visible attack time, mobile pace, ordered reinforcements, cloned timing and no adjacent repeats
+PASS all twenty routes belong to exactly one district
+PASS staggered formation members fire on the same shared wave beat
+PASS Snow: all eight compositions and all four routes exercised through the real wave director
+PASS Snow: active formations stay within the encounter budget
+PASS Snow: no unexpected decision interrupts the eight-wave combat passage
+Snow observed peaks: 18 enemies, 243 hostile rounds; handoffs 1:0.00, 2:4.40, 3:8.80, 4:13.21, 5:17.61, 6:22.03, 7:26.43, 8:30.83
