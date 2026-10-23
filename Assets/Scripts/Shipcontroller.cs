@@ -167,7 +167,7 @@ public class Shipcontroller : MonoBehaviour
 
     void ActiveRightPressed(InputAction.CallbackContext ctx)
     {
-        if(GameRules.playerDisabled)return;
+        if(GameRules.playerDisabled || GetComponent<ShipLoadout>().ConsumedInputThisFrame)return;
         isActiveRightPressed = true;
         
 
@@ -193,7 +193,7 @@ public class Shipcontroller : MonoBehaviour
     }
     void ActiveLeftPressed(InputAction.CallbackContext ctx)
     {
-        if(GameRules.playerDisabled)return;
+        if(GameRules.playerDisabled || GetComponent<ShipLoadout>().ConsumedInputThisFrame)return;
         isActiveLeftPressed=true;
         if(activeLeft!=null){float result=UseActive(activeLeft);if(result>=0){mana=result;manaBar.Set(mana);}}
     }

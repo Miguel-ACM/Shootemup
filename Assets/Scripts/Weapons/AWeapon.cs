@@ -68,7 +68,7 @@ public abstract class AWeapon : MonoBehaviour
 
     void PrimaryPressed(InputAction.CallbackContext ctx)
     {
-        if(!isActiveAndEnabled)return;
+        if(!isActiveAndEnabled || (GetComponentInParent<ShipLoadout>()?.ConsumedInputThisFrame ?? false))return;
         isStopingPrimary = false;
         isStopingSecondary = true;
         //isShootingSecondary = false;
@@ -81,7 +81,7 @@ public abstract class AWeapon : MonoBehaviour
 
     void SecondaryPressed(InputAction.CallbackContext ctx)
     {
-        if(!isActiveAndEnabled)return;
+        if(!isActiveAndEnabled || (GetComponentInParent<ShipLoadout>()?.ConsumedInputThisFrame ?? false))return;
         isStopingSecondary = false;
         isStopingPrimary = true;
         //isShootingPrimary = false;

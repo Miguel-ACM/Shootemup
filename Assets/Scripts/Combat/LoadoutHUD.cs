@@ -18,7 +18,7 @@ public sealed class LoadoutHUD : MonoBehaviour
     Transform[] models=new Transform[4];
     string[] displayed=new string[4];
     RectTransform badge;
-    Text badgeKey;
+    Text[] badgeKeys=new Text[2];
     static Sprite keycap;
     static readonly Color Amber=new Color(1,.71f,.29f),Cyan=new Color(.4f,.82f,.86f),Steel=new Color(.48f,.59f,.61f);
     public RectTransform[] Panels=>panels;
@@ -48,8 +48,8 @@ public sealed class LoadoutHUD : MonoBehaviour
                 for(int s=-1;s<=1;s+=2)Plate(p,"Fastener",4,Steel).anchoredPosition=new Vector2(s*49,0);
             }
         }
-        badge=Plate(root.transform,"Replacement key above ship",26,new Color(.035f,.055f,.065f,.95f));
-        badgeKey=Key(badge,Vector2.zero);badge.localScale=Vector3.one*.7f;badge.gameObject.SetActive(false);
+        badge=new GameObject("Replacement controls above ship",typeof(RectTransform)).GetComponent<RectTransform>();badge.SetParent(root.transform,false);badge.sizeDelta=new Vector2(80,32);
+        badgeKeys[0]=Key(badge,new Vector2(-22,0));badgeKeys[1]=Key(badge,new Vector2(22,0));badge.gameObject.SetActive(false);
     }
     void BuildStudio()
     {
@@ -78,8 +78,8 @@ public sealed class LoadoutHUD : MonoBehaviour
             string type=active ? (loadout.Actives[i-2]!=null ? loadout.Actives[i-2].GetType().Name : "") : (loadout.Weapons[i]!=null ? loadout.Weapons[i].GetType().Name : "");
             if(displayed[i]!=type)SetModel(i,type);
             keys[i].text=inputs[i];
-            bool selected=CombatDecision.Active && (active ? loadout.SelectedActive==i-2 : loadout.SelectedWeapon==i);
-            rims[i].color=selected ? Amber : active ? Cyan*.8f : Steel;
+            bool selected=loadout.HoveredItem!=null && active==(loadout.HoveredItem is AActiveItem);
+            rims[i].color=selected ? Color.Lerp(Steel,Amber,.5f+.5f*Mathf.Sin(Time.unscaledTime*12)) : active ? Cyan*.8f : Steel;
             names[i].enabled=false;
             states[i].text="";
             if(active && !selected && loadout.Actives[i-2]!=null)
@@ -90,12 +90,13 @@ public sealed class LoadoutHUD : MonoBehaviour
             }
             if(models[i]!=null)models[i].localRotation=Quaternion.Euler(-16,Mathf.Sin(Time.unscaledTime*.65f+i)*24, i<2 ? -30 : 0);
         }
-        bool show=CombatDecision.Active && loadout.LastSelectedSlot>=0;badge.gameObject.SetActive(show);
+        bool show=loadout.HoveredItem!=null;badge.gameObject.SetActive(show);
         if(show)
         {
             var viewport=UnityEngine.Camera.main.WorldToViewportPoint(transform.position);
             RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)canvas.transform,new Vector2(viewport.x*Screen.width,viewport.y*Screen.height),null,out var point);
-            badge.anchoredPosition=point+new Vector2(0,42);badgeKey.text=inputs[loadout.LastSelectedSlot];
+            badge.anchoredPosition=point+new Vector2(0,42);int offset=loadout.HoveredItem is AActiveItem ? 2 : 0;
+            badgeKeys[0].text=inputs[offset];badgeKeys[1].text=inputs[offset+1];
         }
     }
     void SetModel(int slot,string type)

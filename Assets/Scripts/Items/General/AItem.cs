@@ -4,6 +4,11 @@ using UnityEngine;
 
 public abstract class AItem : MonoBehaviour
 {
+    public static readonly HashSet<AItem> Available=new HashSet<AItem>();
+    void OnEnable(){Available.Add(this);}
+    void OnDisable(){Available.Remove(this);}
+    public bool CanPick(Shipcontroller ship)=>ship!=null && ship.health>0 && !GameOverState.Active && !moving && !collected && !attracting &&
+        Vector2.Distance(transform.position,ship.transform.position)<=ItemAttractRange;
     // Start is called before the first frame update
     protected string itemName;
     protected string flavour;
@@ -111,12 +116,20 @@ public abstract class AItem : MonoBehaviour
 
     void TryAttract()
     {
-        if(sgo==null || Vector2.Distance(transform.position,sgo.transform.position)>ItemAttractRange)return;
+        if(!CanPick(s))return;
         var loadout=sgo.GetComponent<ShipLoadout>();
-        ReplacementSlot=loadout!=null ? loadout.SlotFor(this) : 1;
-        if(ReplacementSlot<0)return;
+        int slot=loadout!=null ? loadout.SlotFor(this) : 1;
+        if(slot<0)return;
         if(waveOrchestrer!=null && !waveOrchestrer.TryClaimItem(this))return;
-        attracting=true;attractionSpeed=5;
+        ReplacementSlot=slot;attracting=true;attractionSpeed=5;
+    }
+    public bool TryPick(int slot)
+    {
+        if(!CanPick(s) || slot<0 || slot>1)return false;
+        var loadout=s.GetComponent<ShipLoadout>();
+        if(loadout==null || loadout.SlotFor(this)>=0 || (!(this is AWeaponItem) && !(this is AActiveItem)))return false;
+        if(waveOrchestrer!=null && !waveOrchestrer.TryClaimItem(this))return false;
+        ReplacementSlot=slot;Collect();return true;
     }
     void Collect()
     {

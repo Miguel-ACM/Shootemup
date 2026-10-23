@@ -5,19 +5,19 @@ using System;
 public sealed class ShipLoadout : MonoBehaviour
 {
     Inputs input;
-    public int SelectedWeapon {get;private set;}=-1;
-    public int SelectedActive {get;private set;}=-1;
+    public AItem HoveredItem {get;private set;}
+    int pickedFrame=-1;
+    public bool ConsumedInputThisFrame=>pickedFrame==Time.frameCount;
     public readonly AWeapon[] Weapons=new AWeapon[2];
     public readonly AActiveItem[] Actives=new AActiveItem[2];
-    public int LastSelectedSlot {get;private set;}=-1;
     static readonly Type[] weaponTypes={typeof(NeedleCannon),typeof(BurstLauncher),typeof(BeamEmitter),typeof(DiscThrower),typeof(SwarmRack),typeof(ScatterCannon),typeof(FlameProjector),typeof(RailDriver)};
     void Awake()
     {
         input=new Inputs();
-        input.PlayerControls.FirePrimary.started+=_=>SelectWeapon(0);
-        input.PlayerControls.FireSecondary.started+=_=>SelectWeapon(1);
-        input.PlayerControls.ActiveLeft.started+=_=>SelectActive(0);
-        input.PlayerControls.ActiveRight.started+=_=>SelectActive(1);
+        input.PlayerControls.FirePrimary.started+=_=>Choose(false,0);
+        input.PlayerControls.FireSecondary.started+=_=>Choose(false,1);
+        input.PlayerControls.ActiveLeft.started+=_=>Choose(true,0);
+        input.PlayerControls.ActiveRight.started+=_=>Choose(true,1);
         input.Enable();
     }
     void Start()
@@ -25,13 +25,32 @@ public sealed class ShipLoadout : MonoBehaviour
         foreach(var w in GetComponentsInChildren<AWeapon>())if(w.Slot!=AWeapon.WeaponInput.both)Weapons[w.Slot==AWeapon.WeaponInput.primary ? 0 : 1]=w;
         gameObject.AddComponent<LoadoutHUD>();
     }
-    public void ResetSelection(){SelectedWeapon=SelectedActive=LastSelectedSlot=-1;}
-    void SelectWeapon(int slot){SelectedWeapon=slot;LastSelectedSlot=slot;}
-    void SelectActive(int slot){SelectedActive=slot;LastSelectedSlot=slot+2;}
+    public void ResetSelection(){HoveredItem=null;}
+    void Update(){RefreshHover();}
+    void RefreshHover()
+    {
+        HoveredItem=null;
+        var ship=GetComponent<Shipcontroller>();
+        if(ship.health<=0 || GameOverState.Active || Time.timeScale==0)return;
+        float closest=float.MaxValue;
+        foreach(var item in AItem.Available)
+        {
+            if(item==null || !item.CanPick(ship) || SlotFor(item)>=0)continue;
+            float distance=Vector2.SqrMagnitude(item.transform.position-transform.position);
+            if(distance<closest){closest=distance;HoveredItem=item;}
+        }
+    }
+    void Choose(bool active,int slot)
+    {
+        RefreshHover();
+        if(HoveredItem==null || active!=(HoveredItem is AActiveItem))return;
+        var item=HoveredItem;pickedFrame=Time.frameCount;
+        if(item.TryPick(slot))HoveredItem=null;else pickedFrame=-1;
+    }
     public int SlotFor(AItem item)
     {
-        if(item is AWeaponItem)return SelectedWeapon>=0 ? SelectedWeapon : Weapons[0]==null ? 0 : Weapons[1]==null ? 1 : -1;
-        if(item is AActiveItem)return SelectedActive>=0 ? SelectedActive : Actives[0]==null ? 0 : Actives[1]==null ? 1 : -1;
+        if(item is AWeaponItem)return Weapons[0]==null ? 0 : Weapons[1]==null ? 1 : -1;
+        if(item is AActiveItem)return Actives[0]==null ? 0 : Actives[1]==null ? 1 : -1;
         return 0;
     }
     public void EquipWeapon(string name,int slot)

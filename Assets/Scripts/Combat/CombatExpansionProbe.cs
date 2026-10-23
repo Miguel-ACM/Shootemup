@@ -254,8 +254,8 @@ public sealed class CombatExpansionProbe : MonoBehaviour
         }
         yield return null;yield return Capture("LoadoutHUD");
         CombatDecision.Begin();Press(Key.X);yield return null;Press();
-        Check(loadout.SelectedWeapon==1,"secondary fire input selects the replacement slot during decisions");yield return Capture("ReplacementHUD");
-        Press(Key.A);yield return null;Press();Check(loadout.SelectedActive==0,"left active input selects the left slot during decisions");CombatDecision.End();
+        Check(loadout.HoveredItem==null,"fire away from an item does not preselect a replacement");yield return Capture("ReplacementHUD");
+        Press(Key.A);yield return null;Press();Check(loadout.HoveredItem==null,"active away from an item does not preselect a replacement");CombatDecision.End();
         var upgrades=ship.GetComponent<CombatUpgrades>();
         foreach(UpgradeKind kind in Enum.GetValues(typeof(UpgradeKind)))upgrades.Add(kind);
         var target=DistrictEnemy.Spawn(typeof(ShieldTransport),new Vector3(0,3,1));yield return null;
