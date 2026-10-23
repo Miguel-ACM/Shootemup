@@ -20,7 +20,7 @@ public sealed class LaserSound : MonoBehaviour
             releaseClip=Resources.Load<AudioClip>("Sounds/Beam/release");
         }
         if(transient!=null)return;
-        var manager=FindFirstObjectByType<SoundManager>();
+        var manager=FindAnyObjectByType<SoundManager>();
         var routed=manager!=null ? manager.GetComponent<AudioSource>() : null;
         transient=gameObject.AddComponent<AudioSource>();bed=gameObject.AddComponent<AudioSource>();
         foreach(var source in new[]{transient,bed})
@@ -51,7 +51,7 @@ public sealed class LaserSound : MonoBehaviour
             }
             if(sustainClip!=null)
             {
-                bed.pitch=friendly ? 1.12f : 1;bed.time=((Mathf.Abs(GetInstanceID())%7)*.071f)%sustainClip.length;
+                bed.pitch=friendly ? 1.12f : 1;bed.time=(((GetEntityId().GetHashCode()&0x7fffffff)%7)*.071f)%sustainClip.length;
                 bed.Play();counted=true;sustaining++;
             }
         }
