@@ -86,14 +86,20 @@ public sealed class PolishReviewProbe : MonoBehaviour
             typeof(ArcLancer).GetMethod("Attack",Hidden).Invoke(lancer,null);
             var first=FindObjectsByType<PulseLaser>().Single();var heading=first.Heading;
             string directory=BeginClip(fast ? "ScoredLanceFastLoop" : "ScoredLanceFirstLoop");
-            float angularTravel=0;
+            float angularTravel=0,quietestRelease=1;bool observedCooling=false;
             while(Time.time-started<(score[1]-score[0])/tempo)
             {
                 angularTravel=Mathf.Max(angularTravel,Vector2.Angle(heading,first.Heading));
+                if(!first.IsFiring && first.Charge>=1 && first.Power>0)
+                {
+                    observedCooling=true;
+                    quietestRelease=Mathf.Min(quietestRelease,first.GetComponents<AudioSource>().Single(source=>!source.loop).volume);
+                }
                 yield return Capture(directory);yield return null;
             }
             Check(!first.IsAttachedTo(lancer.Hull),"lance finishes cooling before the next authored beat at tempo "+tempo.ToString("F2"));
             Check(angularTravel>15 && angularTravel<22,"lance preserves its sweep arc at tempo "+tempo.ToString("F2"));
+            Check(observedCooling && quietestRelease<.02f,"release audio fades before pooling at tempo "+tempo.ToString("F2"));
             typeof(ArcLancer).GetMethod("Attack",Hidden).Invoke(lancer,null);
             var second=FindObjectsByType<PulseLaser>().Single();
             Check(second.IsAttachedTo(lancer.Hull) && second.Charge<.1f,"the next scored lance actually launches at tempo "+tempo.ToString("F2"));

@@ -61,6 +61,9 @@ public sealed class LaserSound : MonoBehaviour
             if(Time.time-lastRelease>.075f)
             {lastRelease=Time.time;transient.pitch=1;transient.volume=.14f;transient.PlayOneShot(releaseClip);}
         }
+        // The emitter can cool faster on later loops. Fade the release with that
+        // same envelope so pooling never cuts an audible sample in mid-waveform.
+        if(cooling)transient.volume=.14f*Mathf.Clamp01(power/.4f);
         bed.volume=(friendly ? .11f : .15f)*Mathf.Clamp01(power)/Mathf.Sqrt(Mathf.Max(1,sustaining));
         if(cooling && power<=.005f)StopBed();
     }
