@@ -56,7 +56,7 @@ public sealed class TitleHudStartupProbe : MonoBehaviour
         var newGame=FindAnyObjectByType<NewGame>();
         Check(newGame!=null && SceneManager.GetActiveScene().name=="Title","real Title menu is ready");
         float started=Time.realtimeSinceStartup;
-        yield return Capture(started);newGame.OnAccept();
+        yield return new WaitForEndOfFrame();Capture(started);newGame.OnAccept();
         Check(CloudTransition.Busy,"NewGame.OnAccept starts the real cloud transition");
         IndustrialHUD hud=null;LoadoutHUD equipment=null;float settledAt=-1;
         while(Time.realtimeSinceStartup-started<20)
@@ -80,7 +80,7 @@ public sealed class TitleHudStartupProbe : MonoBehaviour
                 if(equipment!=null && equipment.Panels[0]!=null && firstWeapon<0)
                     firstWeapon=equipment.Panels[0].GetComponent<CanvasGroup>().alpha;
             }
-            if(Time.realtimeSinceStartup-started>=nextFrame)yield return Capture(started);
+            if(Time.realtimeSinceStartup-started>=nextFrame)Capture(started);
             if(hud!=null && hud.EntranceComplete && !CloudTransition.Busy)
             {
                 if(settledAt<0)settledAt=Time.realtimeSinceStartup;
@@ -98,9 +98,8 @@ public sealed class TitleHudStartupProbe : MonoBehaviour
         Check(cannon!=null && cannon.GetComponent<MeshFilter>()?.sharedMesh!=null,"actual starter cannon has its 3D portrait after Title startup");
         Check(frames>=90,"captured "+frames+" full-screen frames of the natural title, clouds, startup and steady HUD");
     }
-    IEnumerator Capture(float started)
+    void Capture(float started)
     {
-        yield return new WaitForEndOfFrame();
         var image=ScreenCapture.CaptureScreenshotAsTexture();
         File.WriteAllBytes(Folder+"/"+frames.ToString("0000")+".jpg",image.EncodeToJPG(86));Destroy(image);
         var hud=FindAnyObjectByType<IndustrialHUD>();var equipment=FindAnyObjectByType<LoadoutHUD>();
