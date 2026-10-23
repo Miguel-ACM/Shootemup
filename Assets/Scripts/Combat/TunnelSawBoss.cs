@@ -5,12 +5,16 @@ public sealed class TunnelSawBoss : DistrictBoss
     public bool miniature;
     public override bool UsesHealthBar=>!miniature;
     Vector2 velocity=new Vector2(1,.72f).normalized;
-    float haltUntil, nextImpact;
+    float haltUntil;
+    Rect arena;
+    float Radius=>Hull.GetComponent<MeshFilter>().sharedMesh.bounds.extents.x*Hull.localScale.x;
     bool entered;
     protected override void Configure(){hull=20;hullScale=1.25f;health=2800;attackInterval=1.6f;}
     protected override void Start()
     {
-        base.Start();GetComponent<CombatHullVisual>().spin=110;
+        base.Start();GetComponent<CombatHullVisual>().spin=miniature ? 900 : 720;
+        var camera=UnityEngine.Camera.main;float h=camera.orthographicSize;
+        arena=new Rect(camera.transform.position.x-h*405f/720f,camera.transform.position.y-h,h*810f/720f,h*2);
         if(miniature){isBoss=false;bar=null;lifeDropChance=manaDropChance=moneyDropChance=0;scoreOnKill=100;}
     }
     protected override void MoveBoss(float dt)
@@ -18,27 +22,29 @@ public sealed class TunnelSawBoss : DistrictBoss
         if(!entered)
         {
             transform.position=Vector3.MoveTowards(transform.position,new Vector3(0,Camera.UpLimit-2,1),dt*3);
-            if(transform.position.y<Camera.UpLimit-1.9f)entered=true;
+            if(transform.position.y<Camera.UpLimit-1.9f)
+            {
+                entered=true;
+                velocity=new Vector2(arena.xMax-Radius-transform.position.x,arena.yMin+Radius-transform.position.y).normalized;
+            }
             return;
         }
         if(age<haltUntil)return;
         float speed=(2.0f+(1-HealthFraction)*3)*(phaseTwo ? 1.25f : 1)*(miniature ? 1.15f : 1);
-        var p=transform.position+(Vector3)velocity*speed*dt;float r=miniature ? .75f : 1.45f;
+        var p=transform.position+(Vector3)velocity*speed*dt;float r=Radius;
         bool bounce=false;
-        if((p.x<Camera.LeftLimit+r && velocity.x<0)||(p.x>Camera.RightLimit-r && velocity.x>0)){velocity.x=-velocity.x;bounce=true;}
-        if((p.y<Camera.DownLimit+r+1 && velocity.y<0)||(p.y>Camera.UpLimit-r && velocity.y>0)){velocity.y=-velocity.y;bounce=true;}
-        p.x=Mathf.Clamp(p.x,Camera.LeftLimit+r,Camera.RightLimit-r);p.y=Mathf.Clamp(p.y,Camera.DownLimit+r+1,Camera.UpLimit-r);transform.position=p;
+        if((p.x<arena.xMin+r && velocity.x<0)||(p.x>arena.xMax-r && velocity.x>0)){velocity.x=-velocity.x;bounce=true;}
+        if((p.y<arena.yMin+r && velocity.y<0)||(p.y>arena.yMax-r && velocity.y>0)){velocity.y=-velocity.y;bounce=true;}
+        p.x=Mathf.Clamp(p.x,arena.xMin+r,arena.xMax-r);p.y=Mathf.Clamp(p.y,arena.yMin+r,arena.yMax-r);transform.position=p;
         if(bounce)ImpactBurst();
         if(player!=null && Vector2.Distance(player.position,p)<r)player.SendMessage("ReceiveHazardDamage",14f,SendMessageOptions.DontRequireReceiver);
     }
     void ImpactBurst()
     {
-        if(age<nextImpact)return;nextImpact=age+.65f;
-        Radial<SimpleRound>(miniature ? 10 : 18,4.5f,.12f,age*20);
-        Radial<RicochetBolt>(miniature ? 6 : 10,2.2f,.28f,age*20+20);
+        Radial<SimpleRound>(miniature ? 24 : phaseTwo ? 64 : 48,5.2f,.11f,age*20);
+        Radial<RicochetBolt>(miniature ? 12 : 24,2.3f,.23f,age*20+7);
     }
-    public override void damage(float amount){base.damage(amount);if(health>0 && entered)ImpactBurst();}
-    protected override void Attack(){if(age>=haltUntil)Fan<RicochetBolt>(miniature ? 2 : 3,28,4);}
+    protected override void Attack(){} // Only physical wall impacts emit projectiles.
     protected override void OnPhaseTwo()
     {
         if(miniature)return;haltUntil=age+2.2f;

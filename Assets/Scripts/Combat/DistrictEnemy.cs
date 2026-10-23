@@ -27,9 +27,11 @@ public abstract class DistrictEnemy : AEnemy
         model.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(enemy.hull);
         var renderer=model.AddComponent<MeshRenderer>();renderer.sharedMaterial=CombatMaterials.Fleet;renderer.sortingLayerName="Enemy";
         enemy.Hull=model.transform;go.AddComponent<CombatHullVisual>().model=model.transform;
-        var exhaust=go.AddComponent<EnemyThrusters>();exhaust.visualRoot=model.transform;
-        float socket=enemy.hull==22 ? .375f : enemy.hull==2 || enemy.hull==5 || enemy.hull==7 || enemy.hull==8 || enemy.hull==14 || enemy.hull>=20 ? .874f : .562f;
-        exhaust.sockets=new[]{new Vector3(-socket,.93f,0),new Vector3(socket,.93f,0)};
+        if(!(enemy is TunnelSawBoss))
+        {
+            var exhaust=go.AddComponent<EnemyThrusters>();exhaust.visualRoot=model.transform;
+            exhaust.sockets=IndustrialMeshFactory.CombatEngineSockets(enemy.hull);
+        }
         enemy.scoreOnKill=40;enemy.moneyDropChance=.8f;go.SetActive(true);return enemy;
     }
     protected override void Start(){base.Start();var p=GameObject.FindGameObjectWithTag("Player");player=p!=null ? p.transform : null;}

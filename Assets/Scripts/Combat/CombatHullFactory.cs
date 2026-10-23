@@ -4,6 +4,11 @@ using System.Collections.Generic;
 public static partial class IndustrialMeshFactory
 {
     static readonly Dictionary<int,Mesh> combatHulls=new Dictionary<int,Mesh>();
+    public static Vector3[] CombatEngineSockets(int kind)
+    {
+        float x=kind==22 ? .375f : kind==2 || kind==5 || kind==7 || kind==8 || kind==14 || kind==16 || kind>=20 ? .874f : .562f;
+        return new[]{new Vector3(-x,.93f,0),new Vector3(x,.93f,0)};
+    }
     public static Mesh CombatHull(int kind)
     {
         if(combatHulls.TryGetValue(kind,out var cached))return cached;
