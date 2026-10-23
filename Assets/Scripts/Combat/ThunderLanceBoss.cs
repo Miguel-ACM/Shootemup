@@ -22,7 +22,7 @@ public sealed class ThunderLanceBoss : DistrictBoss
             if(volley%2==0)
             {
                 var laser=CombatRound.Launch<PulseLaser>(transform.position,Aim,0);
-                if(laser!=null){laser.sideShots=true;laser.activeTime=1.7f;laser.warning=1.1f;}
+                if(laser!=null){laser.Bind(Hull,new Vector3(0,-1.98f,-.2f));laser.sideShots=true;laser.activeTime=1.7f;laser.warning=1.1f;}
             }
             else Fan<NeedleRound>(5,7,7);
         }
@@ -33,7 +33,11 @@ public sealed class ThunderLanceBoss : DistrictBoss
             for(int i=0;i<7;i++)
             {
                 var beam=CombatRound.Launch<PulseLaser>(transform.position,CombatVisuals.Rotate(Vector2.down,(i-3)*18-sign*18),0);
-                if(beam!=null){beam.warning=1.25f;beam.activeTime=3.6f;beam.width=.17f;beam.sweep=sign*10;}
+                if(beam!=null)
+                {
+                    var socket=i==3 ? new Vector3(0,-1.98f,-.2f) : new Vector3(i<3 ? -.71f : .71f,.435f-(i<3 ? i : 6-i)*.47f,-.3f);
+                    beam.Bind(Hull,socket);beam.warning=1.25f;beam.activeTime=3.6f;beam.width=.17f;beam.sweep=sign*10;
+                }
             }
         }
     }
