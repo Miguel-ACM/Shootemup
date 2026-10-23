@@ -11,7 +11,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Keep equipment outside combat: compact stylized weapon octagons at bottom left/right, with smaller active octagons touching the upper outer corner of each weapon octagon.
 - Keep score, multiplier (including its progress indicator), and enemy/boss health outside the main combat area too. Use the side margins without overlapping equipment or the collected-item column.
 - Show actual 3D equipment models, including a deliberately modeled base gun. Keep the whole loadout display small.
-- Select the replacement weapon/active using its own fire/active control before collecting an item. Show a small selection indicator over the ship.
+- Choose replacements while hovering over the item, never in advance. Show both key/button sprites only when both corresponding slots are occupied; blink those equipment octagons. Pressing a control immediately picks up the item and replaces that slot. Fill empty slots automatically.
 
 ## Combat should look like a dance
 
@@ -20,6 +20,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Speed up slow enemies themselves; removing inter-wave delays alone does not fix pacing.
 - Shops and reward decisions must be infrequent enough to preserve sustained combat stretches.
 - Player fire must remain clearly visible at actual gameplay resolution: bright cores, sufficient pixel width and distinction from hostile fire.
+- Bullets must render above the player hull so incoming fire remains visible and avoidable.
 - Keep momentum between combat phrases. Compare changes with the existing game; do not quietly make it much easier.
 - Give every enemy a recognizable silhouette and role. Recolors or minor variations of one generic hull are insufficient.
 - Snow designs need particular care. A round boss must look like a designed spacecraft, not a plate covered with buttons.
@@ -46,6 +47,8 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Shops offer three or four items, can include a large health kit when health is low, and can be skipped by staying at the very bottom.
 - Require close contact to collect decision items so passing nearby cannot cause accidental purchases or replacements.
 - Make rarity effects noticeable and distinct.
+- Shop names and prices need opaque black backgrounds and must stay readable with the filter. The bottom skip zone must be reachable at the visible screen edge, with a minimal hold indicator.
+- Death shows huge GAME OVER letters, then returns to the title.
 
 ## Workflow
 
