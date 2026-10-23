@@ -67,7 +67,7 @@ public sealed class CombatExpansionProbe : MonoBehaviour
         var camera=go.AddComponent<UnityEngine.Camera>();camera.orthographic=true;camera.orthographicSize=7.2f;camera.aspect=1.2f;
         camera.backgroundColor=new Color(.025f,.04f,.05f);camera.clearFlags=CameraClearFlags.SolidColor;
         var texture=new RenderTexture(1536,1280,24);camera.targetTexture=texture;camera.farClipPlane=30;
-        var kinds=new[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,20,21,22,23,24,25,26,27,28};
+        var kinds=new[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,20,21,22,23,24,25,26,27,28};
         for(int i=0;i<kinds.Length;i++)
         {
             var model=new GameObject("Hull "+kinds[i]);model.transform.SetParent(studio.transform,false);
