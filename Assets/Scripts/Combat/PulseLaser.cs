@@ -3,23 +3,27 @@ using UnityEngine;
 public class PulseLaser : CombatRound
 {
     BeamRibbon ribbon;
+    LaserSound sound;
     Transform emitter;
     Vector3 muzzle;
     bool attached;
+    bool startedSound;
     public float warning=.9f, activeTime=.65f, length=22, width=.25f, sweep;
     public bool sideShots;
     float nextSide;
     const float Cooldown=.22f;
     public float Charge=>Mathf.Clamp01(age/Mathf.Max(.01f,warning));
     public bool IsFiring=>Active;
+    public bool IsAttachedTo(Transform source)=>attached && emitter==source && isActiveAndEnabled;
     public float Power=>Active ? Mathf.Min(Mathf.Clamp01((age-warning)/.07f),Mathf.Lerp(.4f,1,Mathf.Clamp01((warning+activeTime-age)/.09f))) :
         age>=warning+activeTime ? Mathf.Pow(Mathf.Clamp01(1-(age-warning-activeTime)/Cooldown),2)*.4f : 0;
     protected override void Initialize()
     {
         warning=.9f;activeTime=.65f;length=22;width=.25f;sweep=0;sideShots=false;nextSide=0;
-        emitter=null;attached=false;transform.localScale=Vector3.one;
+        emitter=null;attached=false;startedSound=false;transform.localScale=Vector3.one;
         visual.enabled=false;GetComponent<Collider2D>().enabled=false;
         if(ribbon==null){ribbon=gameObject.AddComponent<BeamRibbon>();ribbon.Build();}
+        if(sound==null)sound=gameObject.AddComponent<LaserSound>();
         ribbon.Draw(transform.position,heading,length,width,0,0);lifetime=12;
     }
     public PulseLaser Bind(Transform source,Vector3 localMuzzle)
@@ -31,6 +35,7 @@ public class PulseLaser : CombatRound
     protected virtual bool Active=>age>=warning && age<warning+activeTime;
     protected override void Tick(float dt)
     {
+        if(!startedSound){startedSound=true;sound.Charge(warning);}
         if(attached)
         {
             if(emitter==null || !emitter.gameObject.activeInHierarchy)
@@ -40,6 +45,7 @@ public class PulseLaser : CombatRound
         if(age>warning+activeTime+Cooldown){Release();return;}
         if(Active)heading=CombatVisuals.Rotate(heading,sweep*dt);
         float power=Power;
+        sound.Drive(power,Active);
         ribbon.Draw(transform.position,heading,length,width,Charge,power,Mathf.Max(0,age-warning-activeTime)/Cooldown);
         var player=GameObject.FindGameObjectWithTag("Player");
         if(Active && power>.15f && player!=null)

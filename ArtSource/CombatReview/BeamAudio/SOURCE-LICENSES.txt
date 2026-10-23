@@ -1,0 +1,32 @@
+Frontlines SFX source records — 1 October 2026
+
+Generated files: StableAudio/*.mp3
+Combat generation pass (6 October 2026): StableAudio/Combat/*.mp3.
+Twelve originals generated with Stable Audio 3 through the user's logged-in hosted service.
+Prompts, sessions, seeds and source hashes: combat-manifest.json.
+Generated using the user's logged-in free Stable Audio hosted service and Stable Audio 3.
+These files are original generated outputs, not CC0 bank recordings.
+Stability's usage guidance permits generated sound effects embedded in video games,
+including on the free plan, subject to its applicable terms and acceptable-use policy.
+https://kb.stability.ai/knowledge-base/stable-audio-commerical-and-usage-licensing
+https://stableaudio.com/terms
+Prompts and source URLs: manifest.json. Preserve these records when redistributing the game.
+
+Kenney/*.wav
+Author: Kenney Vleugels (Kenney.nl)
+Collection: 51 UI sound effects (buttons, switches and clicks).
+License selected: Creative Commons Zero 1.0 Universal (CC0).
+https://opengameart.org/content/51-ui-sound-effects-buttons-switches-and-clicks
+https://creativecommons.org/publicdomain/zero/1.0/
+Original supplied readme: Kenney/README.txt.
+Credit is appreciated but not mandatory.
+
+Fantozzi/*.flac
+Author: Fantozzi; individual game-ready steps sliced and submitted by qubodup.
+Collection: Fantozzi's Footsteps (Grass/Sand & Stone).
+License selected: Creative Commons Zero 1.0 Universal (CC0).
+https://opengameart.org/content/fantozzis-footsteps-grasssand-stone
+https://www.freesound.org/people/Fantozzi/packs/10338/
+https://creativecommons.org/publicdomain/zero/1.0/
+
+The processed runtime effects remain subject to the licenses of their source layers.
