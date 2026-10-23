@@ -3,7 +3,7 @@ using UnityEngine;
 public static class TunnelChoreography
 {
     public static readonly FlightCurve Wall=new FlightCurve("Tunnel / Wall bank",Vector2.right,0,
-        -.82f,1.18f, -.88f,.86f, -.88f,.54f, -.65f,.39f, -.40f,.48f, -.48f,.70f, -.56f,1.18f);
+        -.78f,1.18f, -.80f,.86f, -.80f,.54f, -.61f,.39f, -.36f,.48f, -.44f,.70f, -.52f,1.18f);
     public static readonly FlightCurve Rebound=new FlightCurve("Tunnel / Rebound chain",Vector2.up,0,
         -1.32f,.95f, -.62f,.87f, .72f,.72f, .86f,.58f, .42f,.48f, -.72f,.36f, -.79f,.24f, .20f,.20f, 1.32f,.10f);
     public static readonly FlightCurve Helix=new FlightCurve("Tunnel / Descending helix",Vector2.right,0,
@@ -15,38 +15,60 @@ public static class TunnelChoreography
         var d=new WaveDance(budget){Handoff=4.1f};float s=d.Side;int n=d.Extra;
         switch(d.Phrase)
         {
-            case 0: // Wall batteries bank inward as a helix threads the shaft.
-                d.Solo("WallTurret",Wall,0,s,0,5.6f,1.25f,true);
-                d.Solo("WallTurret",Wall,.65f,-s,0,5.6f,1.25f,true);
-                d.Train("MaintenanceDrone",Helix,.25f,s,6+n,.29f,4.7f);break;
-            case 1: // Two rebound chains trade walls at different heights.
-                d.Train("MaintenanceDrone",Rebound,0,s,5+n,.29f,4.8f,lane:.05f);
-                d.Train("MaintenanceDrone",Rebound,.9f,-s,5+n,.29f,4.8f,lane:.14f);
-                d.Solo("WallTurret",Wall,1.35f,s,0,5.4f,1.3f);break;
-            case 2: // Carrier and escorts slide aside, then a chain pours through.
-                d.Solo("ArmoredCarrier",Gate,0,s,0,5.7f,1.9f);
-                d.Train("MaintenanceDrone",Helix,.75f,-s,7+n,.28f,4.7f);
-                d.Solo("WallTurret",Wall,1.1f,-s,0,5.4f,1.3f);break;
-            case 3: // Staggered wall banks turn into a braided descent.
-                d.Train("MaintenanceDrone",Wall,0,s,5+n,.31f,4.6f,lane:.10f,together:true);
-                d.Train("MaintenanceDrone",Wall,.6f,-s,5+n,.31f,4.6f,lane:.10f,together:true);
-                d.Train("MaintenanceDrone",Helix,1.9f,s,4,.28f,4.5f);break;
-            case 4: // Sliding turrets form a gate while drones ricochet beneath.
-                d.Solo("WallTurret",Gate,0,s,-.12f,5.4f,1.25f,true);
-                d.Solo("WallTurret",Gate,.7f,-s,-.12f,5.4f,1.25f,true);
-                d.Train("MaintenanceDrone",Rebound,.65f,s,7+n,.29f,4.8f,lane:.07f);break;
-            case 5: // The double helix descends past a banking carrier.
-                d.Train("MaintenanceDrone",Helix,0,s,5+n,.30f,4.6f,lane:-.08f);
-                d.Train("MaintenanceDrone",Helix,.75f,-s,5+n,.30f,4.6f,lane:.08f);
-                d.Solo("ArmoredCarrier",Gate,1.1f,-s,0,5.8f,1.8f);break;
-            case 6: // An alternating wall battery hands off to a fast rebound.
-                for(int i=0;i<4;i++)d.Solo("WallTurret",Wall,i*.45f,i%2==0 ? s : -s,0,5.2f,1.3f,true);
-                d.Train("MaintenanceDrone",Rebound,1.4f,-s,6+n,.27f,4.5f,lane:.06f);break;
-            default: // A carrier leads two curved ranks through the shaft.
-                d.Solo("ArmoredCarrier",Gate,0,s,0,5.6f,1.8f);
-                d.Rank("MaintenanceDrone",Helix,.6f,s,3,.23f,4.7f);
-                d.Rank("MaintenanceDrone",Helix,1.45f,-s,3,.23f,4.7f);
-                d.Train("MaintenanceDrone",Wall,1.8f,s,4+n,.29f,4.5f,lane:.1f);break;
+            case 0: // Mirrored wall batteries close in together; the snake threads between salvos.
+                d.OnBeats(1.55f,3.10f,4.35f);
+                d.Solo("WallTurret",Wall,0,s,0,5.6f);
+                d.Solo("WallTurret",Wall,0,-s,0,5.6f);
+                d.OnBeats(2.35f,3.85f);
+                d.Train("MaintenanceDrone",Helix,.25f,s,6+n,.30f,4.8f);break;
+            case 1: // Two low rebound chains exchange walls and alternate their helix volleys.
+                d.OnBeats(2.15f,3.45f);
+                d.Train("MaintenanceDrone",Rebound,0,s,5+n,.30f,4.9f,lane:.09f);
+                d.OnBeats(2.80f,4.10f);
+                d.Train("MaintenanceDrone",Rebound,.55f,-s,5+n,.30f,4.9f,lane:.20f);
+                d.OnBeats(3.15f,4.75f);
+                d.Solo("WallTurret",Wall,1.0f,s,0,5.4f);break;
+            case 2: // A carrier and flanking drones form one moving gate before the shaft opens.
+                d.OnBeats(1.65f,3.25f);
+                d.Solo("ArmoredCarrier",Gate,0,s,0,5.7f);
+                d.OnBeats(2.40f,4.00f);
+                d.Solo("MaintenanceDrone",Gate,0,s,-.30f,5.7f);
+                d.Solo("MaintenanceDrone",Gate,0,s,.30f,5.7f);
+                d.OnBeats(3.65f,4.30f,4.95f);
+                d.Train("MaintenanceDrone",Helix,1.45f,-s,6+n,.29f,4.7f);break;
+            case 3: // Twin wall columns fold inward in unison, followed by a clean middle descent.
+                d.OnBeats(2.00f,2.65f);
+                d.Train("MaintenanceDrone",Wall,0,s,5+n,.32f,4.7f,lane:.08f);
+                d.Train("MaintenanceDrone",Wall,0,-s,5+n,.32f,4.7f,lane:.08f);
+                d.OnBeats(3.65f,4.30f,4.95f);
+                d.Wedge("MaintenanceDrone",Helix,1.85f,s,1,.23f,.075f,4.8f);break;
+            case 4: // A wide two-turret gate slides together above a rebounding procession.
+                d.OnBeats(1.45f,3.05f,4.25f);
+                d.Rank("WallTurret",Gate,0,s,2,.55f,5.5f);
+                d.OnBeats(2.25f,3.75f,4.85f);
+                d.Train("MaintenanceDrone",Rebound,.50f,-s,7+n,.30f,4.9f,lane:.11f);break;
+            case 5: // Two helical strands share a clock with vertical clearance at each crossing.
+                d.OnBeats(2.05f,3.35f);
+                d.Train("MaintenanceDrone",Helix,0,s,5+n,.31f,4.8f,lane:-.06f,depth:.065f);
+                d.OnBeats(2.70f,4.00f);
+                d.Train("MaintenanceDrone",Helix,0,-s,5+n,.31f,4.8f,lane:-.06f,depth:-.065f);
+                d.OnBeats(3.05f,4.70f);
+                d.Solo("ArmoredCarrier",Gate,.85f,-s,0,5.8f);break;
+            case 6: // A left-right wall battery fires a measured four-note phrase.
+                for(int i=0;i<4;i++)
+                {
+                    d.OnBeats(1.55f+i*.35f,3.20f+i*.35f);
+                    d.Solo("WallTurret",Wall,i*.40f,i%2==0 ? s : -s,0,5.3f);
+                }
+                d.OnBeats(3.00f,4.45f,5.05f);
+                d.Train("MaintenanceDrone",Rebound,1.15f,-s,6+n,.30f,4.8f,lane:.08f);break;
+            default: // A carrier moves across the opening; two diamonds spiral through its wake.
+                d.OnBeats(1.55f,3.15f);
+                d.Solo("ArmoredCarrier",Gate,0,s,0,5.7f);
+                d.OnBeats(2.35f,3.70f);
+                d.Diamond("MaintenanceDrone",Helix,.65f,s,.22f,.075f,4.9f);
+                d.OnBeats(3.00f,4.35f,5.00f);
+                d.Diamond("MaintenanceDrone",Helix,1.30f,-s,.22f,.075f,4.9f);break;
         }
         return d.Build();
     }

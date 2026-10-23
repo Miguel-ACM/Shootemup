@@ -25,10 +25,10 @@ public sealed class WaveDance
         units.Add(new WaveUnit(enemy,at,Vector3.zero){phrase=FlightPhrase.Flow,curve=route,side=side,lane=lane,
             flightDuration=seconds,fireEvery=beat,syncFire=together,firePhase=at,fireTimes=strikes,formationDepth=depth});
     }
-    public void Train(string enemy,FlightCurve route,float at,float side,int count,float spacing=.3f,float seconds=4.8f,float lane=0,float beat=1.1f,bool together=false)
+    public void Train(string enemy,FlightCurve route,float at,float side,int count,float spacing=.3f,float seconds=4.8f,float lane=0,float beat=1.1f,bool together=false,float depth=0)
     {
         if(enemy=="ScoutInterceptor")spacing=Mathf.Max(.38f,spacing);
-        for(int i=0;i<count;i++)Solo(enemy,route,at+i*spacing,side,lane,seconds,beat,together);
+        for(int i=0;i<count;i++)Solo(enemy,route,at+i*spacing,side,lane,seconds,beat,together,depth);
     }
     public void Rank(string enemy,FlightCurve route,float at,float side,int count,float width=.25f,float seconds=4.8f,float beat=1.2f)
     {
