@@ -7,7 +7,7 @@ public sealed class TunnelSawBoss : DistrictBoss
     Vector2 velocity=new Vector2(1,.72f).normalized;
     float haltUntil, nextImpact;
     bool entered;
-    protected override void Configure(){hull=20;hullScale=1.25f;health=1250;attackInterval=2.8f;}
+    protected override void Configure(){hull=20;hullScale=1.25f;health=2800;attackInterval=1.6f;}
     protected override void Start()
     {
         base.Start();GetComponent<CombatHullVisual>().spin=110;
@@ -34,8 +34,8 @@ public sealed class TunnelSawBoss : DistrictBoss
     void ImpactBurst()
     {
         if(age<nextImpact)return;nextImpact=age+.65f;
-        Radial<SimpleRound>(miniature ? 6 : 10,4.5f,.12f,age*20);
-        Radial<RicochetBolt>(miniature ? 4 : 6,2.2f,.28f,age*20+20);
+        Radial<SimpleRound>(miniature ? 10 : 18,4.5f,.12f,age*20);
+        Radial<RicochetBolt>(miniature ? 6 : 10,2.2f,.28f,age*20+20);
     }
     public override void damage(float amount){base.damage(amount);if(health>0 && entered)ImpactBurst();}
     protected override void Attack(){if(age>=haltUntil)Fan<RicochetBolt>(miniature ? 2 : 3,28,4);}
@@ -46,7 +46,7 @@ public sealed class TunnelSawBoss : DistrictBoss
         foreach(int side in new[]{-1,1})
         {
             var child=(TunnelSawBoss)Spawn(typeof(TunnelSawBoss),transform.position+Vector3.right*side*1.6f);
-            child.miniature=true;child.health=240*GameRules.enemyHealth;child.hullScale=.65f;child.Hull.localScale=Vector3.one*.65f;
+            child.miniature=true;child.health=480*GameRules.enemyHealth;child.hullScale=.65f;child.Hull.localScale=Vector3.one*.65f;
             child.GetComponent<CircleCollider2D>().radius=.6f;child.entered=true;child.velocity=new Vector2(side,.6f).normalized;
         }
     }
