@@ -6,6 +6,7 @@ public static partial class IndustrialMeshFactory
     static readonly Dictionary<int,Mesh> combatHulls=new Dictionary<int,Mesh>();
     public static Vector3[] CombatEngineSockets(int kind)
     {
+        if(kind==0)return new[]{new Vector3(-0.55f,0.78f,0),new Vector3(0.55f,0.78f,0)};
         float x=kind==22 ? .375f : kind==2 || kind==5 || kind==7 || kind==8 || kind==14 || kind==16 || kind>=20 ? .874f : .562f;
         return new[]{new Vector3(-x,.93f,0),new Vector3(x,.93f,0)};
     }
@@ -17,6 +18,7 @@ public static partial class IndustrialMeshFactory
         float width=slim ? .48f : heavy ? 1.12f : .72f;
         float length=slim ? 1.55f : heavy ? 1.12f : 1.0f;
         int armor=kind==6 || kind==7 || kind==8 || kind==16 || kind==21 || kind==26 ? 1 : kind==9 || kind==10 || kind==11 || kind==17 || kind==22 || kind==27 ? 7 : kind>=12 && kind<=15 || kind==28 ? 12 : 0;
+        if(kind==0){BuildScoutAirframe(b);return combatHulls[kind]=b.Finish("ScoutAirframe");}
         if(BuildRoleHull(b,kind,armor))return combatHulls[kind]=b.Finish("District hull "+kind);
         if(round)
         {
