@@ -28,12 +28,13 @@ public class Dialog : MonoBehaviour
         var scaler=overlay.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);scaler.matchWidthOrHeight=1;
         group=overlay.GetComponent<CanvasGroup>();group.alpha=0;group.interactable=false;group.blocksRaycasts=false;
         panel=Block(overlay.transform,"Item card",new Color(.045f,.06f,.065f,.97f));
-        panel.anchorMin=panel.anchorMax=new Vector2(.5f,0);panel.pivot=new Vector2(.5f,0);panel.anchoredPosition=new Vector2(0,22);panel.sizeDelta=new Vector2(377,160);
+        panel.anchorMin=panel.anchorMax=new Vector2(.5f,0);panel.pivot=new Vector2(.5f,0);panel.anchoredPosition=new Vector2(0,22);panel.sizeDelta=new Vector2(340,100);
         var edge=Block(panel,"Top accent",new Color(.73f,.62f,.39f));edge.anchorMin=new Vector2(0,1);edge.anchorMax=Vector2.one;edge.pivot=new Vector2(.5f,1);edge.sizeDelta=new Vector2(-2,2);edge.anchoredPosition=Vector2.zero;accent=edge.GetComponent<Image>();
         title=Text("Name",12,12,15,TextAlignmentOptions.Center,new Color(.88f,.9f,.84f));
         flavour=Text("Flavour",12,40,10,TextAlignmentOptions.Center,new Color(.49f,.56f,.55f));
-        description=Text("Description",18,70,12,TextAlignmentOptions.TopLeft,new Color(.77f,.81f,.77f));
-        var rect=description.rectTransform;rect.sizeDelta=new Vector2(-36,80);
+        flavour.enabled=false;
+        description=Text("Description",18,40,12,TextAlignmentOptions.TopLeft,new Color(.77f,.81f,.77f));
+        var rect=description.rectTransform;rect.sizeDelta=new Vector2(-36,52);
         canvas.enabled=false;
     }
     void Update()
@@ -41,8 +42,8 @@ public class Dialog : MonoBehaviour
         if(group==null)return;
         group.alpha=Mathf.MoveTowards(group.alpha,target,Time.unscaledDeltaTime/ .14f);
         canvas.enabled=target>0 || group.alpha>0;
-        float width=Mathf.Min(377,Screen.width*720f/Mathf.Max(1,Screen.height)-24);
-        panel.sizeDelta=new Vector2(Mathf.Max(180,width),160);
+        float width=Mathf.Min(340,Screen.width*720f/Mathf.Max(1,Screen.height)-24);
+        panel.sizeDelta=new Vector2(Mathf.Max(180,width),100);
     }
     public void ShowItemDesc(string name,string detail,string effect,string rarity)
     {
