@@ -7,15 +7,15 @@ public sealed class CityDuoBoss : DistrictBoss
     bool enraged;
     float combinedMaximum;
     public override float DisplayFraction=>(Mathf.Max(0,health)+(partner!=null ? Mathf.Max(0,partner.health) : 0))/Mathf.Max(1,combinedMaximum);
-    protected override void Configure(){hull=12;hullScale=.8f;health=800;attackInterval=1.8f;}
+    protected override void Configure(){hull=12;hullScale=.8f;health=1500;attackInterval=1.1f;}
     protected override void Start()
     {
-        if(heavy){hull=14;Hull.GetComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(14);Hull.localScale=Vector3.one*1.15f;attackInterval=2.6f;}
+        if(heavy){hull=14;Hull.GetComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(14);Hull.localScale=Vector3.one*1.15f;attackInterval=1.7f;}
         base.Start();
         if(partner==null && !heavy)
         {
             partner=(CityDuoBoss)Spawn(typeof(CityDuoBoss),new Vector3(2,Camera.UpLimit+2,1));
-            partner.heavy=true;partner.health=1100*GameRules.enemyHealth*(1+Mathf.Min(8,LevelRun.Stage-1)*.15f);partner.partner=this;
+            partner.heavy=true;partner.health=2100*GameRules.enemyHealth*(1+Mathf.Min(8,LevelRun.Stage-1)*.22f);partner.partner=this;
         }
         combinedMaximum=health+(partner!=null ? partner.health : 0);
         if(bar!=null)bar.SetMax(combinedMaximum);
@@ -26,6 +26,12 @@ public sealed class CityDuoBoss : DistrictBoss
         station.x=Mathf.Sin(age*pace+(heavy ? Mathf.PI : 0))*(heavy ? 2.1f : 3.2f);
         station.y=Camera.UpLimit-(heavy ? 2 : 3.5f);
         transform.position=Vector3.MoveTowards(transform.position,station,dt*(heavy ? 2 : 5)*(enraged ? 1.4f : 1));
+    }
+    protected override float PressureInterval=>enraged ? .3f : .65f;
+    protected override void PressureAttack()
+    {
+        if(heavy)Radial<SimpleRound>(enraged ? 24 : 16,3.5f,.11f,age*28);
+        else Fan<NeedleRound>(enraged ? 5 : 3,12,6.5f);
     }
     protected override void Attack()
     {
