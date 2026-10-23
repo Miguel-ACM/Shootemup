@@ -71,5 +71,5 @@ public sealed class ShipLoadout : MonoBehaviour
             Mark(SelectedActive==0)+"A/LT "+A(0)+"</color>   "+Mark(SelectedActive==1)+"S/RT "+A(1)+"</color>";
         if(CombatDecision.Active)label.text+="\nPress a slot before collecting to replace it";
     }
-    void OnDestroy(){input.Dispose();}
+    void OnDestroy(){input.Disable();input.Dispose();}
 }
