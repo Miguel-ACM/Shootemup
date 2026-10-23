@@ -16,7 +16,9 @@ for name in ['Fields','Snow','Thunder','Tunnel','City']:
     if clip.exists() and name not in sys.argv[1:]:continue
     frames=sorted(source.glob('*.jpg'))
     if not frames:continue
-    subprocess.run([ffmpeg,'-hide_banner','-loglevel','error','-y','-framerate','6','-i',str(source/'%04d.jpg'),'-vf','crop=trunc(iw*0.56/2)*2:ih:trunc(iw*0.22/2)*2:0,scale=-2:720','-c:v','libx264','-crf','22','-pix_fmt','yuv420p','-movflags','+faststart',str(clip)],check=True)
+    pending_clip=clip.with_name(clip.stem+'.pending.mp4')
+    subprocess.run([ffmpeg,'-hide_banner','-loglevel','error','-y','-framerate','6','-i',str(source/'%04d.jpg'),'-vf','crop=trunc(iw*0.56/2)*2:ih:trunc(iw*0.22/2)*2:0,scale=-2:720','-c:v','libx264','-crf','22','-pix_fmt','yuv420p','-movflags','+faststart',str(pending_clip)],check=True)
+    pending_clip.replace(clip)
     starts=[float(line.split(':')[1]) for line in (source/'timing.txt').read_text().splitlines()]
     for group in range(2):
         canvas=Image.new('RGB',(1200,4*555+44),(12,18,25));draw=ImageDraw.Draw(canvas)
