@@ -7,7 +7,7 @@ public static partial class IndustrialMeshFactory
     public static Vector3[] CombatEngineSockets(int kind)
     {
         if(kind==27)return new[]{new Vector3(-.56f,.93f,0),new Vector3(.56f,.93f,0)};
-        if(kind==0)return new[]{new Vector3(-0.55f,0.78f,0),new Vector3(0.55f,0.78f,0)};
+        if(kind==0)return new[]{new Vector3(0,0.77f,0)};
         if(kind==1)return new[]{new Vector3(-0.64f,0.93f,0),new Vector3(0.64f,0.93f,0)};
         if(kind==2)return new[]{new Vector3(-0.95f,0.82f,0),new Vector3(0.95f,0.82f,0)};
         if(kind==5)return new[]{new Vector3(-0.87f,1.18f,0),new Vector3(0.87f,1.18f,0)};
