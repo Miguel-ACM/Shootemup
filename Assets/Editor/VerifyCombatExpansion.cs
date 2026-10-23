@@ -14,7 +14,11 @@ public static class VerifyCombatExpansion
         EditorApplication.playModeStateChanged+=state=>
         {
             if(state==PlayModeStateChange.EnteredPlayMode && SessionState.GetBool(Key,false))
-            {var probe=new GameObject("Combat expansion verification").AddComponent<CombatExpansionProbe>();probe.FlowOnly=SessionState.GetBool(Key+"Flow",false);deadline=EditorApplication.timeSinceStartup+240;}
+            {
+                if(SessionState.GetBool(Key+"Feedback",false))new GameObject("Decision feedback verification").AddComponent<DecisionFeedbackProbe>();
+                else {var probe=new GameObject("Combat expansion verification").AddComponent<CombatExpansionProbe>();probe.FlowOnly=SessionState.GetBool(Key+"Flow",false);}
+                deadline=EditorApplication.timeSinceStartup+240;
+            }
         };
     }
     static void Tick()
@@ -24,6 +28,7 @@ public static class VerifyCombatExpansion
         {
             string mode;
             try{mode=File.ReadAllText(Request);File.Delete(Request);}catch(IOException){return;}
+            SessionState.SetBool(Key+"Feedback",mode.Trim()=="feedback");
             SessionState.SetBool(Key+"Flow",mode.Trim()=="flow");Directory.CreateDirectory("ArtSource/CombatReview");
             if(File.Exists("Temp/CombatResult.txt"))File.Delete("Temp/CombatResult.txt");
             SessionState.SetBool(Key,true);EditorApplication.isPlaying=true;
