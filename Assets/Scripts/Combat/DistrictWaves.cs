@@ -44,14 +44,7 @@ public static class DistrictWaves
         switch(LevelRun.Current)
         {
             case LevelId.Fields:return PlainsChoreography.Create(budget);
-            case LevelId.Tunnel:
-                Flight("WallTurret",0,FlightPhrase.Battery,1,-.83f,7,1.5f);
-                Flight("WallTurret",.75f,FlightPhrase.Battery,1,.83f,7,1.5f);
-                if(phrase%2==0)
-                {Train("MaintenanceDrone",.8f,FlightPhrase.Orbit,side,4+extra,.33f,6.1f,1.5f);}
-                else
-                {Flight("ArmoredCarrier",0,FlightPhrase.Battery,1,0,7,2.2f);Train("MaintenanceDrone",1.5f,FlightPhrase.Crossing,side,4,.28f,5.5f,1.3f);}
-                break;
+            case LevelId.Tunnel:return TunnelChoreography.Create(budget);
             case LevelId.Snow:return SnowChoreography.Create(budget);
             case LevelId.Thunder:return ThunderChoreography.Create(budget);
             case LevelId.City:
