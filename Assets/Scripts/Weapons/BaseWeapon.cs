@@ -29,7 +29,13 @@ public class BaseWeapon : AWeaponAutomatic
             if(b!=null && bullet!=null)
             {
                 var source=bullet.GetComponent<SpriteRenderer>();
-                if(source!=null)b.GetComponent<SpriteRenderer>().sprite=source.sprite;
+                if(source!=null && source.sprite!=null)
+                {
+                    var renderer=b.GetComponent<SpriteRenderer>();renderer.sprite=source.sprite;renderer.color=Color.white;
+                    float span=Mathf.Max(source.sprite.bounds.size.x,source.sprite.bounds.size.y);
+                    b.transform.localScale=Vector3.one*(.28f*Mathf.Sqrt(GameRules.playerShootSize)/Mathf.Max(.01f,span));
+                    b.GetComponent<CircleCollider2D>().radius=span*.3f;
+                }
             }
         }
     }
