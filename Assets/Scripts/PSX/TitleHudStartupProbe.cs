@@ -51,7 +51,11 @@ public sealed class TitleHudStartupProbe : MonoBehaviour
         float deadline=Time.realtimeSinceStartup+20;
         while(CloudTransition.Busy && Time.realtimeSinceStartup<deadline)yield return null;
         Check(!CloudTransition.Busy,"previous transition has finished");
-        if(SceneManager.GetActiveScene().name!="Title")yield return SceneManager.LoadSceneAsync("Title");
+        if(SceneManager.GetActiveScene().name!="Title")
+        {
+            CloudTransition.Load("Title");
+            while(CloudTransition.Busy)yield return null;
+        }
         yield return null;yield return null;
         var newGame=FindAnyObjectByType<NewGame>();
         Check(newGame!=null && SceneManager.GetActiveScene().name=="Title","real Title menu is ready");

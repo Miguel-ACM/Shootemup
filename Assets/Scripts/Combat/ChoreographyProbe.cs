@@ -173,7 +173,11 @@ public sealed class ChoreographyProbe : MonoBehaviour
         GameRules.StartNewRun();InspectCompositions();LevelRun.Reset();Time.timeScale=1;
         // This probe can follow weapon/active reviews in the same Play session.
         // Reset globals and recreate the pilot so those equipped items cannot leak in.
-        yield return SceneManager.LoadSceneAsync("L1");
+        // Consume the title's parked preload through the real transition; a direct
+        // asynchronous reload would queue forever behind allowSceneActivation=false.
+        while(CloudTransition.Busy)yield return null;
+        CloudTransition.Load("L1");
+        while(CloudTransition.Busy)yield return null;
         yield return new WaitForSecondsRealtime(1.2f);Time.timeScale=1;
         ship=FindAnyObjectByType<Shipcontroller>();ship.health=ship.maxHealth=10000;
         var weapons=ship.GetComponentsInChildren<AWeapon>();
