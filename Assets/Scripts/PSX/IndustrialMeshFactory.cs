@@ -30,7 +30,33 @@ public static partial class IndustrialMeshFactory
                 Vector2 q=coordinates[i]-lo, span=hi-lo;
                 uv.Add(new Vector2((tile%4*64+4+55*q.x/Mathf.Max(span.x,0.0001f))/256f,(tile/4*64+4+55*q.y/Mathf.Max(span.y,0.0001f))/256f));
             }
-            for (int i=1;i<points.Length-1;i++) { indices.Add(start); indices.Add(start+i); indices.Add(start+i+1); }
+            // Ear clipping preserves the cutouts of swept wings and forked hulls.
+            // A triangle fan fills across concave outlines and destroys their silhouette.
+            float Cross(Vector2 a,Vector2 b)=>a.x*b.y-a.y*b.x;
+            float area=0;for(int i=0;i<coordinates.Length;i++)area+=Cross(coordinates[i],coordinates[(i+1)%coordinates.Length]);
+            float winding=area>=0 ? 1 : -1;
+            var remaining=new List<int>();for(int i=0;i<points.Length;i++)remaining.Add(i);
+            while(remaining.Count>3)
+            {
+                bool clipped=false;
+                for(int i=0;i<remaining.Count;i++)
+                {
+                    int a=remaining[(i+remaining.Count-1)%remaining.Count],b=remaining[i],c=remaining[(i+1)%remaining.Count];
+                    var pa=coordinates[a];var pb=coordinates[b];var pc=coordinates[c];
+                    if(Cross(pb-pa,pc-pb)*winding<=.0000001f)continue;
+                    bool occupied=false;
+                    foreach(int candidate in remaining)
+                    {
+                        if(candidate==a || candidate==b || candidate==c)continue;
+                        var p=coordinates[candidate];
+                        if(Cross(pb-pa,p-pa)*winding>=-.0000001f && Cross(pc-pb,p-pb)*winding>=-.0000001f && Cross(pa-pc,p-pc)*winding>=-.0000001f){occupied=true;break;}
+                    }
+                    if(occupied)continue;
+                    indices.Add(start+a);indices.Add(start+b);indices.Add(start+c);remaining.RemoveAt(i);clipped=true;break;
+                }
+                if(!clipped)break; // Degenerate faces have no valid area to fill.
+            }
+            if(remaining.Count==3){foreach(int i in remaining)indices.Add(start+i);}
         }
 
         public void Box(Vector3 center, Vector3 size, int front, int side=6)
