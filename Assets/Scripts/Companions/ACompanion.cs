@@ -20,6 +20,8 @@ public class ACompanion : MonoBehaviour
         if (blocksBullets && other.tag == "EnemyBullet")
         {
             AEnemyBullet bullet = other.GetComponent<AEnemyBullet>();
+            if(bullet is PulseLaser || bullet is SegmentedBeam)return;
+            if(CombatUpgrades.Current!=null)CombatUpgrades.Current.Block();
             bullet.OnTrigger();
         }
     }

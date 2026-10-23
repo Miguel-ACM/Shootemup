@@ -43,7 +43,7 @@ public class AShootingCompanion : ACompanion
 
     void shootPrimary()
     {
-        if (isStopingPrimary || isShootingDisabled)
+        if (isStopingPrimary || isShootingDisabled || GameRules.playerDisabled)
         {
             isShootingPrimary = false;
             CancelInvoke("shootPrimary");
@@ -54,10 +54,10 @@ public class AShootingCompanion : ACompanion
         for (int i = 0; i < spawnPoints.Length; i++)
         {
             Bullet b = Instantiate(bullet, spawnPoints[i] + transform.position, Quaternion.identity).GetComponent<Bullet>();
-            b.setProperties(new Dictionary<string, float> { { "speed", shootTravelSpeed }, { "damage", shootDamage }, { "size", shootSize }, { "followness", shootFollowness } });
+            b.setProperties(new Dictionary<string, float> { { "companion", 1f }, { "speed", shootTravelSpeed }, { "damage", shootDamage }, { "size", shootSize }, { "followness", shootFollowness } });
         }
         //Bullet b = Instantiate(bulletPrimary, spawnPoints[currBulletOutIdx] + transform.position, Quaternion.identity).GetComponent<Bullet>();
-        //b.setProperties(new Dictionary<string, float> { { "speed", shootTravelSpeed }, { "damage", shootDamage }, { "size", shootSize }, { "followness", shootFollowness } });
+        //b.setProperties(new Dictionary<string, float> { { "companion", 1f }, { "speed", shootTravelSpeed }, { "damage", shootDamage }, { "size", shootSize }, { "followness", shootFollowness } });
         //NextShootIdx();
     }
 

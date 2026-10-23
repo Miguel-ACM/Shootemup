@@ -29,7 +29,7 @@ public class ElectricityBullet : ABullet
                 var enemy=rb.gameObject.GetComponent<AEnemy>();
                 int point=path.IndexOf((Vector2)rb.transform.position);
                 Vector2 incoming=point>0 ? path[point]-path[point-1] : Vector2.up;
-                enemy.HitAt(rb.transform.position,incoming);enemy.damage(damage);
+                enemy.HitAt(rb.transform.position,incoming);enemy.damage(CombatUpgrades.Current!=null ? CombatUpgrades.Current.DirectHit(enemy,damage) : damage);
             }
             shoot = true;
             Invoke("Delete", 0.1f);

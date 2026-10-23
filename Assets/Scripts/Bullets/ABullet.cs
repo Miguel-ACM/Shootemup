@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ABullet : MonoBehaviour
 {
+    public bool companionShot;
     public float speed = 0.00002f;
     public Vector3 direction = new Vector3(0f,1f,-10f);
     public float damage = 1f;
@@ -11,6 +12,7 @@ public class ABullet : MonoBehaviour
     public float followness = 0.01f;
 
     public void setProperties(Dictionary<string, float> properties){
+        companionShot=Utils.GetValueOrDefault(properties,"companion",0f)>0;
         speed = Utils.GetValueOrDefault<string, float>(properties, "speed", 0.00002f);
         damage = Utils.GetValueOrDefault<string, float>(properties, "damage", 1f);
         size = Utils.GetValueOrDefault<string, float>(properties, "size", 1f);

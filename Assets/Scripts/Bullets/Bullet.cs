@@ -64,7 +64,13 @@ public class Bullet : ABullet
             //Instantiate(Resources.Load<GameObject>("Particles/HitSpark"), collision.transform.position, Quaternion.identity);
             Score.IncreaseScore(Mathf.RoundToInt(damage));
             en.HitAt(collision.ClosestPoint(transform.position),rigidBody!=null ? rigidBody.linearVelocity : (Vector2)transform.up);
-            en.damage(damage);
+            float dealt=CombatUpgrades.Current!=null ? CombatUpgrades.Current.DirectHit(en,damage,0,companionShot) : damage;
+            en.damage(dealt);
+            if(CombatUpgrades.Current!=null && CombatUpgrades.Current.TryRebound())
+            {
+                var next=CombatUpgrades.Nearest(transform.position,new HashSet<AEnemy>{en},5);
+                if(next!=null)PlayerRound.Spawn(transform.position,(next.transform.position-transform.position).normalized,dealt*.7f,speed,PlayerDelivery.Missile,1);
+            }
             Destroy(gameObject);
         }        
     }

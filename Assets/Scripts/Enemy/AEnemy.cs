@@ -5,6 +5,9 @@ using System.Collections;
 public abstract class AEnemy : MonoBehaviour
 {
 
+    public static readonly HashSet<AEnemy> Live = new HashSet<AEnemy>();
+    protected virtual void OnEnable(){Live.Add(this);}
+    protected virtual void OnDisable(){Live.Remove(this);}
     public float health = 20f;
 
     bool dying = false;
@@ -110,6 +113,7 @@ public abstract class AEnemy : MonoBehaviour
     protected virtual void Die()
     {
         // The explosion plays its own sound for every fireball it spawns.
+        if(CombatUpgrades.Current!=null)CombatUpgrades.Current.Killed(this);
         PSXImpactEffects.Explosion(gameObject);
         Score.IncreaseScore(scoreOnKill);
         DropItems();

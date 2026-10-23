@@ -43,7 +43,7 @@ public class BabyYou : ACompanion
 
     void shootPrimary()
     {
-        if (isStopingPrimary || isShootingDisabled)
+        if (isStopingPrimary || isShootingDisabled || GameRules.playerDisabled)
         {
             isShootingPrimary = false;
             CancelInvoke("shootPrimary");
@@ -54,7 +54,7 @@ public class BabyYou : ACompanion
         for (int i = 0; i < spawnPoints.Length; i++)
         {
             Bullet b = Instantiate(bullet, spawnPoints[i] + transform.position, Quaternion.identity).GetComponent<Bullet>();
-            b.setProperties(new Dictionary<string, float> { { "speed", GameRules.playerShootTravelSpeed }, { "damage", GameRules.playerShootDamage * 0.5f}, { "size", GameRules.playerShootSize * 0.75f }, { "followness", GameRules.playerShootFollowness } });
+            b.setProperties(new Dictionary<string, float> { { "companion", 1f }, { "speed", GameRules.playerShootTravelSpeed }, { "damage", GameRules.playerShootDamage * 0.5f}, { "size", GameRules.playerShootSize * 0.75f }, { "followness", GameRules.playerShootFollowness } });
         }
     }
 

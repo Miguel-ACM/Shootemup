@@ -23,7 +23,10 @@ public class AngryMoon : BlockerOrbital
             Vector3 positionOther = other.transform.position;
             positionOther.z = this.transform.position.z;
             lineDrawer.DrawLine(new Vector3[] { this.transform.position, positionOther }, 0.1f);
-            other.GetComponent<AEnemyBullet>().OnTrigger();
+            var bullet=other.GetComponent<AEnemyBullet>();
+            if(bullet is PulseLaser || bullet is SegmentedBeam)return;
+            if(CombatUpgrades.Current!=null)CombatUpgrades.Current.Block();
+            bullet.OnTrigger();
         }
     }
     void OnDestroy(){if(lineDrawerObject!=null)Destroy(lineDrawerObject);}
