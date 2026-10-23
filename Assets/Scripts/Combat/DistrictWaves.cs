@@ -21,7 +21,7 @@ public static class DistrictWaves
             }
         }
     }
-    public static string[] Sequence()=>new[]{"2","3","reward","4","scoreShop","4","miniboss","multiplierShop","5","6","reward","boss"};
+    public static string[] Sequence()=>new[]{"2","3","4","reward","5","6","7","scoreShop","8","9","miniboss","multiplierShop","10","11","12","boss"};
     public static Wave Miniboss()
     {
         string[] types={"FieldsHeavyWing","TunnelDefensePlatform","SnowSiegeCraft","StormReactor","CityCommandCarrier"};
@@ -29,43 +29,80 @@ public static class DistrictWaves
     }
     public static Wave Create(int budget)
     {
-        var units=new List<WaveUnit>();int pattern=UnityEngine.Random.Range(0,4);
+        var units=new List<WaveUnit>();int phrase=budget%4;
         float side=UnityEngine.Random.value<.5f ? -1 : 1;
-        int support=Mathf.Clamp(2+budget/2+Mathf.Min(3,LevelRun.Stage-1),3,7);
-        void Add(string type,float time,float x,float y=1.15f)=>units.Add(new WaveUnit(type,time,new Vector3(x,y)));
+        int extra=Mathf.Min(2,LevelRun.Stage-1);
+        void Flight(string type,float at,FlightPhrase path,float mirror,float lane=0,float duration=6,float beat=1.2f)
+        {
+            units.Add(new WaveUnit(type,at,new Vector3(lane,1.12f)){phrase=path,side=mirror,lane=lane,flightDuration=duration,fireEvery=beat});
+        }
+        void Train(string type,float at,FlightPhrase path,float mirror,int count,float interval=.22f,float duration=5.8f,float beat=1.15f,float lane=0)
+        {for(int i=0;i<count;i++)Flight(type,at+i*interval,path,mirror,lane,duration,beat);}
+        void Row(string type,float at,int count,float spacing,float duration=6.2f,float beat=1.4f)
+        {for(int i=0;i<count;i++)Flight(type,at,FlightPhrase.Chevron,side,(i-(count-1)*.5f)*spacing,duration,beat);}
         switch(LevelRun.Current)
         {
             case LevelId.Fields:
-                Add(pattern==0 ? "PatrolGunship" : pattern==1 ? "HeavyBomber" : "ScoutInterceptor",0,side*.4f);
-                for(int i=0;i<support+1;i++)Add("ScoutInterceptor",1+i*.55f,-side*.55f);
-                if(pattern==3)Add("HeavyBomber",6,side*.5f);
+                if(phrase==0)
+                {Train("ScoutInterceptor",0,FlightPhrase.Ribbon,side,6+extra);Train("ScoutInterceptor",1.5f,FlightPhrase.Ribbon,-side,6+extra);}
+                else if(phrase==1)
+                {Row("ScoutInterceptor",0,5,.32f);Flight("PatrolGunship",1.8f,FlightPhrase.Battery,1,0,6,1.5f);}
+                else if(phrase==2)
+                {Train("ScoutInterceptor",0,FlightPhrase.Crossing,side,5+extra);Train("ScoutInterceptor",0,FlightPhrase.Crossing,-side,5+extra,lane:.12f);}
+                else
+                {Flight("HeavyBomber",0,FlightPhrase.Ribbon,side,.1f,7,1.8f);Flight("HeavyBomber",.8f,FlightPhrase.Ribbon,-side,-.04f,7,1.8f);Row("ScoutInterceptor",1.7f,4,.4f,5.5f);}
                 break;
             case LevelId.Tunnel:
-                Add(pattern==0 ? "ArmoredCarrier" : "WallTurret",0,side*.82f);
-                Add("MaintenanceDrone",2,-side*.4f);
-                if(pattern==2)Add("WallTurret",4,-side*.82f);
-                if(pattern==3)Add("ArmoredCarrier",4,0);
-                for(int i=0;i<support;i++)Add(i%2==0 ? "MaintenanceDrone" : "WallTurret",5+i*1.05f,(i%2==0 ? -.7f : .7f));
+                Flight("WallTurret",0,FlightPhrase.Battery,1,-.83f,7,1.5f);
+                Flight("WallTurret",.75f,FlightPhrase.Battery,1,.83f,7,1.5f);
+                if(phrase%2==0)
+                {Train("MaintenanceDrone",.8f,FlightPhrase.Orbit,side,4+extra,.33f,6.1f,1.5f);}
+                else
+                {Flight("ArmoredCarrier",0,FlightPhrase.Battery,1,0,7,2.2f);Train("MaintenanceDrone",1.5f,FlightPhrase.Crossing,side,4,.28f,5.5f,1.3f);}
                 break;
             case LevelId.Snow:
-                Add(pattern==0 ? "ShieldTransport" : "AvalancheBomber",0,side*.42f);
-                Add(pattern==2 ? "AvalancheBomber" : "SiegeGunship",3,-side*.45f);
-                for(int i=0;i<Mathf.Min(4,support);i++)
-                {Add("ColdWeatherFighter",5+i*1.3f,-.5f);Add("ColdWeatherFighter",5.65f+i*1.3f,.5f);}
+                if(phrase%2==0)
+                {
+                    Flight(phrase==0 ? "ShieldTransport" : "AvalancheBomber",0,FlightPhrase.Battery,1,0,7,2.1f);
+                    Train("ColdWeatherFighter",.5f,FlightPhrase.Crossing,side,4+extra,.32f,6.2f,1.4f);
+                    Train("ColdWeatherFighter",.5f,FlightPhrase.Crossing,-side,4+extra,.32f,6.2f,1.4f,.13f);
+                }
+                else
+                {
+                    Flight("SiegeGunship",0,FlightPhrase.Battery,1,-.55f,7,1.8f);
+                    Flight("AvalancheBomber",.85f,FlightPhrase.Battery,1,.55f,7,2.2f);
+                    Train("ColdWeatherFighter",1.2f,FlightPhrase.Ribbon,side,5+extra,.24f,5.6f,1.3f);
+                }
                 break;
             case LevelId.Thunder:
-                if(pattern==0){Add("RelayDrone",0,-.5f);Add("RelayDrone",0,.5f);Add("BeamDrone",4,0);}
-                else {Add(pattern==3 ? "ArcLancer" : "BeamDrone",0,side*.5f);Add("StormSkimmer",3,-side*.5f);}
-                for(int i=0;i<support;i++)Add(i%3==0 ? "ArcLancer" : "StormSkimmer",4+i*1.2f,(i%2==0 ? -.6f : .6f));
+                if(phrase==0)
+                {
+                    units.Add(new WaveUnit("RelayDrone",0,new Vector3(-.55f,1.12f)));
+                    units.Add(new WaveUnit("RelayDrone",0,new Vector3(.55f,1.12f)));
+                }
+                else
+                {
+                    Flight(phrase==3 ? "ArcLancer" : "BeamDrone",0,FlightPhrase.Battery,1,-.6f,6.7f,2.6f);
+                    Flight("BeamDrone",1.3f,FlightPhrase.Battery,1,.6f,6.7f,2.6f);
+                }
+                Train("StormSkimmer",.9f,FlightPhrase.Ribbon,side,5+extra,.26f,5.8f,1.5f);
                 break;
             case LevelId.City:
-                Add(pattern==0 ? "CommandGunship" : "PursuitFighter",0,side*.45f);
-                for(int i=0;i<support+6;i++)Add(i%3==0 ? "AttackDrone" : "CourierDiver",1+i*.55f,(i%2==0 ? -1 : 1)*.6f);
-                Add("PursuitFighter",5,-side*.5f);
-                Add(pattern==2 ? "CommandGunship" : "AttackDrone",8,side*.4f);
+                if(phrase%2==0)
+                {
+                    Train("CourierDiver",0,FlightPhrase.Dive,side,7+extra,.16f,3.7f,1.1f);
+                    Train("CourierDiver",.65f,FlightPhrase.Dive,-side,7+extra,.16f,3.7f,1.1f);
+                    Train("AttackDrone",1.9f,FlightPhrase.Ribbon,side,5,.2f,4.6f,1.25f);
+                }
+                else
+                {
+                    Flight(phrase==1 ? "PursuitFighter" : "CommandGunship",0,FlightPhrase.Battery,1,0,6.2f,2.4f);
+                    Train("AttackDrone",0,FlightPhrase.Orbit,side,5+extra,.24f,5.3f,1.3f);
+                    Train("CourierDiver",2.1f,FlightPhrase.Crossing,-side,6,.16f,3.9f,1.1f);
+                }
                 break;
         }
         units.Sort((a,b)=>a.time.CompareTo(b.time));
-        return new Wave(budget,18,1,ConflictGroup.cg.center,units);
+        return new Wave(budget,LevelRun.Current==LevelId.City ? 4.6f : 5.8f,1,ConflictGroup.cg.center,units);
     }
 }
