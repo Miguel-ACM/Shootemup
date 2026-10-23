@@ -10,6 +10,7 @@ public static partial class PlayerProjectileArt
     public static Sprite For(PlayerDelivery delivery)
     {
         if(delivery==PlayerDelivery.Shell)return Shell();
+        if(delivery==PlayerDelivery.Disc)return Disc();
         return CombatVisuals.Projectile(true);
     }
     static Sprite Make(string name,int width,int height,Func<int,int,Color> pixel)
