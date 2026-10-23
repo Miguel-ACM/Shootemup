@@ -1,0 +1,34 @@
+PASS
+PASS projectile overlay shader compiles
+PASS no replacement prompt away from an item
+PASS previous fire press does not collect a full-loadout weapon
+PASS active control cannot replace a weapon
+PASS secondary control immediately picks and replaces only the secondary weapon
+PASS replacement prompts disappear after collection
+PASS empty weapon slot collects without a choice
+PASS empty secondary slot is filled automatically
+PASS occupied active slots show their own hover choice
+PASS active press immediately replaces only the selected active
+PASS replacement press does not activate the purchased item
+PASS shop labels bypass the world filter
+PASS shop labels have opaque backgrounds
+PASS long item names fit without splitting a word
+PASS holding at the reachable visible bottom charges skip
+PASS leaving the bottom cancels skip
+PASS bottom hold skips the shop and releases the decision
+PASS skipping spends no currency
+PASS shop labels bypass the world filter
+PASS shop labels have opaque backgrounds
+PASS long item names fit without splitting a word
+PASS holding at the reachable visible bottom charges skip
+PASS leaving the bottom cancels skip
+PASS bottom hold skips the shop and releases the decision
+PASS skipping spends no currency
+PASS final boss returns without a redundant route choice
+PASS final boss loops to harder Plains
+PASS loop preserves equipment and score including the boss award
+PASS death enters a single game-over state and stops combat
+PASS game over cannot duplicate
+PASS game over dismisses any level-intro title
+PASS game over returns to the title
+PASS new game after death restores controls and fresh progression
