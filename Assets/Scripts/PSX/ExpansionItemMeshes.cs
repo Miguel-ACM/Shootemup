@@ -7,7 +7,22 @@ public static partial class IndustrialMeshFactory
     {
         if(expansionItems.TryGetValue(kind,out var mesh))return mesh;
         var b=new Builder();
-        if(kind=="LargeHealthKit")
+        if(kind=="BaseWeaponItem")
+        {
+            // The starter is a paired ship-mounted autocannon, not a generic equipment icon.
+            b.Prism(new[]{new Vector2(-.27f,-.34f),new Vector2(.27f,-.34f),new Vector2(.33f,.08f),new Vector2(.2f,.27f),new Vector2(-.2f,.27f),new Vector2(-.33f,.08f)},.25f,0,Vector3.zero,6);
+            foreach(int side in new[]{-1,1})
+            {
+                b.Box(new Vector3(side*.19f,.3f,-.03f),new Vector3(.15f,.65f,.18f),11,6);
+                b.Box(new Vector3(side*.19f,.61f,-.03f),new Vector3(.2f,.13f,.23f),6);
+                b.Box(new Vector3(side*.19f,.68f,-.03f),new Vector3(.09f,.03f,.1f),11);
+                for(int fin=0;fin<4;fin++)b.Box(new Vector3(side*.19f,.15f+fin*.1f,-.15f),new Vector3(.18f,.045f,.05f),6);
+                b.Box(new Vector3(side*.31f,-.18f,-.02f),new Vector3(.16f,.33f,.25f),3);
+            }
+            b.Box(new Vector3(0,-.06f,-.18f),new Vector3(.13f,.29f,.08f),9);
+            b.Box(new Vector3(0,-.32f,-.03f),new Vector3(.24f,.14f,.3f),6);
+        }
+        else if(kind=="LargeHealthKit")
         {
             b.Box(Vector3.zero,new Vector3(.65f,.48f,.26f),1,6);
             b.Box(new Vector3(0,0,-.16f),new Vector3(.33f,.1f,.04f),3);
