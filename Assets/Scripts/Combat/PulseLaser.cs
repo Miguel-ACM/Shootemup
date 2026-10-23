@@ -10,7 +10,8 @@ public class PulseLaser : CombatRound
     bool startedSound;
     public float warning=.9f, activeTime=.65f, length=22, width=.25f, sweep;
     public bool sideShots;
-    float nextSide;
+    float nextSide,clockRate=1;
+    protected override float ClockRate=>clockRate;
     const float Cooldown=.22f;
     public float Charge=>Mathf.Clamp01(age/Mathf.Max(.01f,warning));
     public bool IsFiring=>Active;
@@ -20,7 +21,7 @@ public class PulseLaser : CombatRound
     protected override void Initialize()
     {
         warning=.9f;activeTime=.65f;length=22;width=.25f;sweep=0;sideShots=false;nextSide=0;
-        emitter=null;attached=false;startedSound=false;transform.localScale=Vector3.one;
+        emitter=null;attached=false;startedSound=false;clockRate=1;transform.localScale=Vector3.one;
         visual.enabled=false;GetComponent<Collider2D>().enabled=false;
         if(ribbon==null){ribbon=gameObject.AddComponent<BeamRibbon>();ribbon.Build();}
         if(sound==null)sound=gameObject.AddComponent<LaserSound>();
@@ -29,13 +30,18 @@ public class PulseLaser : CombatRound
     public PulseLaser Bind(Transform source,Vector3 localMuzzle)
     {
         emitter=source;muzzle=localMuzzle;attached=source!=null;
-        if(attached)transform.position=source.TransformPoint(localMuzzle);
+        if(attached)
+        {
+            transform.position=source.TransformPoint(localMuzzle);
+            // The beam is part of its emitter's phrase, including charge, sweep and release.
+            clockRate=Mathf.Max(.01f,LevelRun.EnemyTempoScale*(source.GetComponentInParent<FormationFlight>()!=null ? GameRules.enemySpeed : 1));
+        }
         return this;
     }
     protected virtual bool Active=>age>=warning && age<warning+activeTime;
     protected override void Tick(float dt)
     {
-        if(!startedSound){startedSound=true;sound.Charge(warning);}
+        if(!startedSound){startedSound=true;sound.Charge(warning/clockRate);}
         if(attached)
         {
             if(emitter==null || !emitter.gameObject.activeInHierarchy)

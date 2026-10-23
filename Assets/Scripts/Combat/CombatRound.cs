@@ -42,13 +42,15 @@ public abstract class CombatRound : AEnemyBullet
     }
     protected override void Start() { }
     protected virtual void Initialize() { }
+    protected virtual float ClockRate=>1;
     protected override void Update()
     {
         if(ended)return;
-        age+=Time.deltaTime;
+        float dt=Time.deltaTime*ClockRate;
+        age+=dt;
         if(age>lifetime || transform.position.y<Camera.DownLimit-2 || transform.position.y>Camera.UpLimit+5 ||
             transform.position.x<Camera.LeftLimit-3 || transform.position.x>Camera.RightLimit+3){Release();return;}
-        Tick(Time.deltaTime);
+        Tick(dt);
     }
     protected virtual void Tick(float dt) { transform.position+=(Vector3)heading*speed*dt;Orient(); }
     protected void Orient() { if(heading.sqrMagnitude>.001f)transform.rotation=Quaternion.FromToRotation(Vector3.up,heading); }
