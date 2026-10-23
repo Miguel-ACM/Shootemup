@@ -4,21 +4,24 @@ public static partial class IndustrialMeshFactory
     static void BuildSnowCitadelAirframe(Builder b)
     {
 
-        // Lenticular armored saucer: a continuous pressure hull and eight broad armor petals.
-        b.Drum(Vector3.zero,1.34f,.26f,11,32,6);
-        b.Drum(new Vector3(0,0,-.19f),1.27f,.2f,4,32,6);
-        for(int i=0;i<8;i++)ArcPlate(b,.58f,1.22f,i*45+2,i*45+43,-.35f,.19f,1);
-        b.Drum(new Vector3(0,0,-.39f),.65f,.2f,6,16);
-        b.Drum(new Vector3(0,0,-.52f),.56f,.15f,1,16);
-        Glass(b,0,-.23f,.82f,.28f,-.63f);
-        b.Box(new Vector3(0,.18f,-.63f),new Vector3(.46f,.32f,.1f),4);
-        for(int slit=0;slit<4;slit++)b.Box(new Vector3((slit-1.5f)*.1f,.18f,-.7f),new Vector3(.045f,.23f,.03f),11);
+        // A round pressure hull with a domed bridge and a recessed equatorial belt.
+        b.Ball(new Vector3(0,0,.02f),new Vector3(1.31f,1.28f,.48f),4);
+        Ring(b,new Vector3(0,0,-.04f),1.18f,1.35f,.16f,11,32);
+        for(int i=0;i<6;i++)ArcPlate(b,.83f,1.3f,i*60+4,i*60+56,-.2f,.18f,1);
+        b.Ball(new Vector3(0,.04f,-.18f),new Vector3(.94f,.9f,.42f),1);
+        // Broad overlapping facets establish the dome; only three openings break its skin.
+        BevelArmor(b,new[]{V(-.38f,.65f),V(.38f,.65f),V(.48f,.09f),V(.32f,-.35f),V(-.32f,-.35f),V(-.48f,.09f)},.24f,4,-.5f);
+        Glass(b,0,-.34f,.83f,.31f,-.64f);
+        Inlet(b,0,.28f,.43f,.32f,-.67f,1);
         foreach(int s in new[]{-1,1})
         {
             Motor(b,s*.74f,.78f,.33f,.54f,1);
-            Armor(b,new[]{V(s*.8f,-.76f),V(s*1.08f,-.65f),V(s*.95f,-1.18f),V(s*.62f,-1.22f)},.2f,4,-.18f);
-            Barrel(b,s*.72f,-.95f,.45f,.2f,-.32f);
+            BevelArmor(b,new[]{V(s*.58f,-.44f),V(s*1.04f,-.54f),V(s*.92f,-1.05f),V(s*.57f,-1.18f),V(s*.45f,-.78f)},.28f,1,-.3f);
+            Inlet(b,s*.73f,-.76f,.3f,.37f,-.47f,4);
+            Barrel(b,s*.72f,-1.05f,.31f,.19f,-.25f);
+            ArcPlate(b,1.13f,1.17f,s<0 ? 145 : 25,s<0 ? 166 : 46,-.31f,.035f,9);
         }
-        Barrel(b,0,-1.17f,.3f,.29f,-.13f);
+        BevelArmor(b,new[]{V(-.21f,-.81f),V(.21f,-.81f),V(.3f,-1.16f),V(.18f,-1.32f),V(-.18f,-1.32f),V(-.3f,-1.16f)},.27f,4,-.16f);
+        Barrel(b,0,-1.26f,.24f,.25f,-.18f);
     }
 }
