@@ -60,12 +60,14 @@ public class WaveOrchestrer : MonoBehaviour
                 enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
                 currentUnit = currentWave.getNext();
             }
-            // Never skip a scheduled reinforcement, but avoid waiting on an empty field.
-            if(currentUnit==null && waveTime>=currentWave.duration)
-                foreach(var enemy in new List<AEnemy>(AEnemy.Live))if(enemy!=null)enemy.Depart();
-            bool cleared = currentUnit == null && AEnemy.Live.Count==0 && CombatRound.Live.Count==0;
-            clearTime = cleared ? clearTime + Time.deltaTime : 0f;
-            if (currentUnit == null && (clearTime >= ClearBreather))
+            // Consecutive phrases overlap their exits: old bullets are part of the rhythm.
+            // Decisions and bosses wait for enemies to finish, then explicitly clear hazards.
+            string next=currentWaveNumber<waves.Length ? waves[currentWaveNumber] : "";
+            bool nextCombat=int.TryParse(next,out _) || next=="miniboss";
+            bool empty=currentUnit==null && AEnemy.Live.Count==0;
+            clearTime=empty ? clearTime+Time.deltaTime : 0;
+            bool phraseComplete=currentUnit==null && waveTime>=currentWave.duration && AEnemy.Live.Count<22;
+            if (currentUnit == null && ((nextCombat && phraseComplete) || clearTime>=.12f))
             {
 
                 if (stopingWave)
@@ -74,9 +76,7 @@ public class WaveOrchestrer : MonoBehaviour
                     stopingWave = false;
                 } else
                 {
-                    float overflow = Mathf.Max(0f, waveTime - currentWave.duration);
                     GenerateWave();
-                    waveTime = overflow;
                 }
             }
         }
