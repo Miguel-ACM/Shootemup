@@ -48,8 +48,8 @@ public sealed class LoadoutHUD : MonoBehaviour
                 for(int s=-1;s<=1;s+=2)Plate(p,"Fastener",4,Steel).anchoredPosition=new Vector2(s*49,0);
             }
         }
-        badge=Plate(root.transform,"Replacement key above ship",34,new Color(.035f,.055f,.065f,.95f));
-        badgeKey=Key(badge,Vector2.zero);badge.gameObject.SetActive(false);
+        badge=Plate(root.transform,"Replacement key above ship",26,new Color(.035f,.055f,.065f,.95f));
+        badgeKey=Key(badge,Vector2.zero);badge.localScale=Vector3.one*.7f;badge.gameObject.SetActive(false);
     }
     void BuildStudio()
     {
@@ -67,23 +67,25 @@ public sealed class LoadoutHUD : MonoBehaviour
         bool pad=Gamepad.current!=null && (Keyboard.current==null || Gamepad.current.lastUpdateTime>Keyboard.current.lastUpdateTime);
         string[] inputs=pad ? new[]{"RB","LB","LT","RT"} : new[]{"Z","X","A","S"};
         float room=Mathf.Max(0,(Screen.width*720f/Screen.height-405)*.5f);
-        float scale=Mathf.Min(1,room/230f);
+        float scale=Mathf.Min(.64f,Mathf.Max(0,room-52)/175f);
         for(int i=0;i<4;i++)
         {
             bool active=i>=2;int side=i%2==0 ? -1 : 1;
             panels[i].localScale=Vector3.one*scale;
-            panels[i].anchoredPosition=new Vector2(side*(202.5f+(active ? 166 : 112)*scale),(active ? 220 : 116)*scale);
+            // Matching 45-degree chamfers meet along a shared edge, without a floating gap.
+            float join=.77f*(124+74)*.5f;
+            panels[i].anchoredPosition=new Vector2(side*(202.5f+52+(62+(active ? join : 0))*scale),(90+(active ? join : 0))*scale);
             string type=active ? (loadout.Actives[i-2]!=null ? loadout.Actives[i-2].GetType().Name : "") : (loadout.Weapons[i]!=null ? loadout.Weapons[i].GetType().Name : "");
             if(displayed[i]!=type)SetModel(i,type);
             keys[i].text=inputs[i];
             bool selected=CombatDecision.Active && (active ? loadout.SelectedActive==i-2 : loadout.SelectedWeapon==i);
             rims[i].color=selected ? Amber : active ? Cyan*.8f : Steel;
-            names[i].color=selected ? Amber : Steel;
-            states[i].text=selected ? "REPLACE" : "";
+            names[i].enabled=false;
+            states[i].text="";
             if(active && !selected && loadout.Actives[i-2]!=null)
             {
                 var item=loadout.Actives[i-2];float remaining=Mathf.Max(0,item.cd-item.lastCD);
-                states[i].text=remaining>.05f ? remaining.ToString("0.0")+"s" : "READY";
+                states[i].text=remaining>.05f ? Mathf.CeilToInt(remaining).ToString() : "";
                 states[i].color=remaining>.05f ? Steel : Cyan;
             }
             if(models[i]!=null)models[i].localRotation=Quaternion.Euler(-16,Mathf.Sin(Time.unscaledTime*.65f+i)*24, i<2 ? -30 : 0);
