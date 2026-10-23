@@ -16,7 +16,7 @@ public sealed class CombatUpgrades : MonoBehaviour
     public float Charge=>capacitor;
     public float SalvageProgress=>coins/5f;
     public float Reserve=>reserve;
-    void Awake(){Current=this;ship=GetComponent<Shipcontroller>();inputs=new Inputs();inputs.Enable();}
+    void Awake(){gameObject.AddComponent<UpgradeMeters>();Current=this;ship=GetComponent<Shipcontroller>();inputs=new Inputs();inputs.Enable();}
     void OnDestroy(){if(Current==this)Current=null;inputs.Dispose();}
     public int Count(UpgradeKind kind)=>stacks.TryGetValue(kind,out int n) ? n : 0;
     public void Add(UpgradeKind kind)
