@@ -3,5 +3,6 @@ using UnityEngine;
 public sealed class AttackDrone : DistrictEnemy
 {
     protected override void Configure(){hull=13;health=14;hullScale=.38f;attackInterval=1.7f;Mover<FreeReposition>();}
-    protected override void Attack(){Fan<BurstShell>(1,0,4,.28f);}
+    // A crisp five-shot accent keeps City fast; delayed fragmentation belongs to Snow.
+    protected override void Attack(){Fan<SimpleRound>(5,8,6.6f,.105f);}
 }
