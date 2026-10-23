@@ -16,6 +16,9 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 - Shoot-em-up waves need authored choreography: coherent formations, mirrored paths, purposeful timing, coordinated volleys, entrances and exits.
 - Avoid slow stop-and-wait encounters, arbitrary collections of independently wandering enemies, or filling time by adding random enemies.
+- Speed up slow enemies themselves; removing inter-wave delays alone does not fix pacing.
+- Shops and reward decisions must be infrequent enough to preserve sustained combat stretches.
+- Player fire must remain clearly visible at actual gameplay resolution: bright cores, sufficient pixel width and distinction from hostile fire.
 - Keep momentum between combat phrases. Compare changes with the existing game; do not quietly make it much easier.
 - Give every enemy a recognizable silhouette and role. Recolors or minor variations of one generic hull are insufficient.
 - Snow designs need particular care. A round boss must look like a designed spacecraft, not a plate covered with buttons.
