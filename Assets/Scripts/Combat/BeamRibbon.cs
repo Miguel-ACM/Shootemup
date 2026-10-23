@@ -32,8 +32,8 @@ public sealed class BeamRibbon : MonoBehaviour
         if(charging)
         {
             tell.SetPosition(0,p);tell.SetPosition(1,end);
-            tell.startColor=tell.endColor=new Color(hot.r,hot.g,hot.b,.32f+charge*.35f);
-            tell.startWidth=tell.endWidth=.025f+charge*.012f;
+            tell.startColor=tell.endColor=new Color(hot.r,hot.g,hot.b,.46f+charge*.30f);
+            tell.startWidth=tell.endWidth=.060f+charge*.015f;
         }
         body.enabled=sheath.enabled=power>.003f;
         float extent=charging ? 0 : Mathf.Clamp01(power*8+release)*length;

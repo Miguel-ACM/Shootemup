@@ -12,7 +12,7 @@ public class PulseLaser : CombatRound
     const float Cooldown=.22f;
     public float Charge=>Mathf.Clamp01(age/Mathf.Max(.01f,warning));
     public bool IsFiring=>Active;
-    public float Power=>Active ? Mathf.Min(Mathf.Clamp01((age-warning)/.07f),Mathf.Clamp01((warning+activeTime-age)/.09f)) :
+    public float Power=>Active ? Mathf.Min(Mathf.Clamp01((age-warning)/.07f),Mathf.Lerp(.4f,1,Mathf.Clamp01((warning+activeTime-age)/.09f))) :
         age>=warning+activeTime ? Mathf.Pow(Mathf.Clamp01(1-(age-warning-activeTime)/Cooldown),2)*.4f : 0;
     protected override void Initialize()
     {
