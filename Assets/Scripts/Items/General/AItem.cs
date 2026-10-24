@@ -142,6 +142,13 @@ public abstract class AItem : MonoBehaviour
         OnPickup();s.PickUpItem(this);
     }
 
+    // Debug grants use the same effects and inventory feedback without a world pickup.
+    public void GrantTo(Shipcontroller ship,int slot=0)
+    {
+        s=ship;sgo=ship.gameObject;ReplacementSlot=Mathf.Clamp(slot,0,1);
+        Collect();
+    }
+
     private void setRarityColor(Color c)
     {
         //ParticleSystem.MainModule settings = ps.main;

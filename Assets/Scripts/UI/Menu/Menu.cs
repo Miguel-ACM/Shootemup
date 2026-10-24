@@ -16,6 +16,8 @@ public class Menu : MonoBehaviour
     private bool inputProcessed = false;
     private bool menuOpen = false;
     private CanvasGroup canvasGroup;
+    public bool Suspended { get; set; }
+    public void RefreshElements() => menuElements = GetComponentsInChildren<AMenuElement>();
 
     [SerializeField] private bool alwaysOpen = false;
 
@@ -55,7 +57,7 @@ public class Menu : MonoBehaviour
 
     void Update()
     {
-        if (menuOpen) {
+        if (menuOpen && !Suspended) {
             if (move.y != 0 && !inputProcessed) {
                 if (move.y > 0) {
                     currentIndex--;
@@ -104,7 +106,7 @@ public class Menu : MonoBehaviour
 
     public void TryAccept(AMenuElement element)
     {
-        if(!menuOpen || CloudTransition.Busy || element==null || Array.IndexOf(menuElements,element)<0)return;
+        if(!menuOpen || Suspended || CloudTransition.Busy || element==null || Array.IndexOf(menuElements,element)<0)return;
         setCurrentElement(element);
         element.OnAccept();
     }
