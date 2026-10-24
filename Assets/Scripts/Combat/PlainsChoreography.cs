@@ -7,7 +7,7 @@ public static class PlainsChoreography
     public static readonly FlightCurve Loop=new FlightCurve("Plains / Figure eight",Vector2.right,0,
         -.68f,1.18f, -.64f,.81f, -.20f,.55f, .47f,.64f, .32f,.88f, -.22f,.93f, -.35f,.72f, .12f,.51f, .65f,.64f, .85f,1.18f);
     public static readonly FlightCurve Fan=new FlightCurve("Plains / Opening fan",Vector2.right,1.1f,
-        0,1.18f, -.13f,.88f, -.18f,.65f, 0,.49f, .18f,.65f, .13f,.88f, 0,1.18f);
+        0,1.18f, -.40f,1.0f, -.52f,.74f, -.32f,.53f, 0,.48f, .32f,.53f, .52f,.74f, .40f,1.0f, 0,1.18f);
     public static readonly FlightCurve Stream=new FlightCurve("Plains / River stream",Vector2.right,0,
         -.65f,1.18f, -.55f,.86f, .36f,.72f, .58f,.50f, -.38f,.38f, -.55f,.18f, -.3f,-.18f);
     public static Wave Create(int budget)
