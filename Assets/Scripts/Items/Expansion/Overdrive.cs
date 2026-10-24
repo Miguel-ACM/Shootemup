@@ -2,7 +2,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class Overdrive : AActiveItem
 {
-    void Awake(){SetData("Overdrive","Active","For six seconds, double projectile damage. Costs 30 energy.",ItemType.active);cost=30;cd=10;}
+    void Awake(){SetData("Overdrive","Active","Double damage for 6 seconds. 30 energy.",ItemType.active);cost=30;cd=10;}
     public override float OnPress(float mana)
     {
         float valid=CheckValidPress(mana);if(valid<0)return valid;
