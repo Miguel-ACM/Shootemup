@@ -117,7 +117,7 @@ public sealed class WaveWatcherReview : MonoBehaviour
             Check(watcher.GetComponentsInChildren<Button>().Count(x=>int.TryParse(x.name,out _))==19,level+" exposes every authored wave from 2 through 20");
             for(int wave=WaveWatcher.FirstWave;wave<=WaveWatcher.LastWave;wave++)
             {Button(wave.ToString()).onClick.Invoke();yield return null;Check(watcher.Encounter==wave,level+" wave "+wave+" selectable");}
-            watcher.SelectEncounter(2);yield return Clip(level+"Wave",8);
+            watcher.SelectEncounter(2);yield return Clip(level+"Wave",DistrictWaves.Create(2).duration+.2f);
             Check(watcher.Spawned==DistrictWaves.Create(2).units.Count,level+" uses the full real wave recipe and spawn timing");
             watcher.SelectEncounter(WaveWatcher.Miniboss);yield return Clip(level+"Mini",9);
             watcher.SelectEncounter(WaveWatcher.BossTwo);yield return Clip(level+"BossTwo",12);

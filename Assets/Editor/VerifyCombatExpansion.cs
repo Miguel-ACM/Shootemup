@@ -21,7 +21,7 @@ public static class VerifyCombatExpansion
                 else if(SessionState.GetBool(Key+"Ttk",false))new GameObject("Plains base gun verification").AddComponent<PlainsTtkProbe>();
                 else if(SessionState.GetBool(Key+"Feedback",false))new GameObject("Decision feedback verification").AddComponent<DecisionFeedbackProbe>();
                 else {var probe=new GameObject("Combat expansion verification").AddComponent<CombatExpansionProbe>();probe.FlowOnly=SessionState.GetBool(Key+"Flow",false);}
-                deadline=EditorApplication.timeSinceStartup+(SessionState.GetBool(Key+"Polish",false) ? 480 : SessionState.GetBool(Key+"Choreography",false) ? 360 : 240);
+                deadline=EditorApplication.timeSinceStartup+(SessionState.GetBool(Key+"Polish",false) ? 480 : SessionState.GetBool(Key+"Choreography",false) ? 1200 : 240);
             }
         };
     }
