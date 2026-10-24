@@ -2,7 +2,7 @@ public class AnotherArm : AItem
 {
     private void Awake()
     {
-        SetData("Another arm", "It might be useful?", "One more bullet per shot.", AItem.ItemType.passive);
+        SetData("Another arm", "It might be useful?", "+1 bullet per shot.", AItem.ItemType.passive);
     }
 
     public override void OnBegin()
