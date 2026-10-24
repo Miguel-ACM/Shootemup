@@ -17,6 +17,6 @@ public sealed class ProximityMine : CombatRound
         bool armed=age>=1.4f && (GetComponent<Collider2D>().enabled || distance>1.5f);
         GetComponent<Collider2D>().enabled=armed;
         visual.color=armed ? Color.Lerp(Color.red,Color.yellow,Mathf.PingPong(age*4,1)) : Color.gray;
-        if(armed && (age>4.5f || distance<1.1f)){Ring(10,3.2f);Release();}
+        if(armed && (age>4.5f || distance<1.1f) && Ring(10,3.2f))Release();
     }
 }

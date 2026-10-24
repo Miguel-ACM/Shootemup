@@ -46,6 +46,6 @@ public sealed class BurstShell : CombatRound
         float charge=Mathf.Clamp01((age-stop)/.8f);
         visual.color=Color.white;
         if(age>=stop && age>=nextSpark){Spark(charge);nextSpark=age+Mathf.Lerp(.10f,.035f,charge);}
-        if(age>=stop+.8f){Ring(12,3.6f,.14f,Vector2.SignedAngle(Vector2.down,heading));Release();}
+        if(age>=stop+.8f && Ring(12,3.6f,.14f,Vector2.SignedAngle(Vector2.down,heading)))Release();
     }
 }

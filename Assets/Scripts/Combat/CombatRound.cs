@@ -63,16 +63,17 @@ public abstract class CombatRound : AEnemyBullet
     public override void Vanish() { if(!ended)PSXImpactEffects.Vanish(transform.position,visual.color,.25f);Release(); }
     protected override void OnBecameInvisible() { } // Lifetime and arena bounds also cover offscreen spawns.
     void OnDisable() { Live.Remove(this); }
-    protected void Ring(int count,float velocity,float radius=.13f,float phase=0)
+    protected bool Ring(int count,float velocity,float radius=.13f,float phase=0)
     {
-        if(generation>0)return;
-        // One broad escape sector, even when several shells burst together.
+        if(generation>0 || count<1 || Live.Count+count>Limit)return false;
+        // Commit the entire ring together. A charged shell waits for capacity
+        // instead of losing whichever angles happened to be emitted last.
         for(int i=0;i<count;i++)
         {
-            if(i==0 || i==1)continue;
             var s=Launch<SimpleRound>(transform.position,CombatVisuals.Rotate(Vector2.down,phase+i*360f/count),velocity,radius);
             if(s!=null)s.generation=1;
         }
+        return true;
     }
 }
 public sealed class SimpleRound : CombatRound { }
