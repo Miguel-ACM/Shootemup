@@ -1,0 +1,91 @@
+PASS
+PASS all district compositions retain geometry, mirrored curves and synchronized firing at both loop tempos
+PASS opening scout needs three paired stock-gun hits, down from five
+PASS Fields movement and wave launches share the slower timeline
+PASS Fields reviewed real moving formation and coordinated volleys
+PASS Snow movement and wave launches share the slower timeline
+PASS Snow reviewed real moving formation and coordinated volleys
+PASS City movement and wave launches share the slower timeline
+PASS City reviewed real moving formation and coordinated volleys
+PASS Thunder movement and wave launches share the slower timeline
+PASS Thunder reviewed real moving formation and coordinated volleys
+PASS Tunnel movement and wave launches share the slower timeline
+PASS Tunnel reviewed real moving formation and coordinated volleys
+PASS Plains boss uses a hull polygon instead of its small circle
+PASS outer wing receives real collision hits
+PASS empty space beside the boss nose remains clear
+BossPhaseOne: 70 moving frames; peak 82 bullets.
+BossPhaseTwo: 70 moving frames; peak 176 bullets.
+PASS first boss uses its weathered panel texture
+PASS FieldsHeavyWing has a sturdy hull and substantial four-volley output: 30
+FieldsHeavyWing: 15 moving frames; peak 30 bullets.
+PASS SnowSiegeCraft has a sturdy hull and substantial four-volley output: 32
+SnowSiegeCraft: 15 moving frames; peak 32 bullets.
+PASS CityCommandCarrier has a sturdy hull and substantial four-volley output: 36
+CityCommandCarrier: 15 moving frames; peak 36 bullets.
+PASS StormReactor has a sturdy hull and substantial four-volley output: 28
+StormReactor: 15 moving frames; peak 28 bullets.
+PASS TunnelDefensePlatform has a sturdy hull and substantial four-volley output: 38
+TunnelDefensePlatform: 15 moving frames; peak 38 bullets.
+PASS travelling shells have no ignition warning
+PASS stopped shell warns with particles
+PASS shell has no closing countdown circle
+ShellIgnition: 4 moving frames; peak 3 bullets.
+PASS long-range shell remains alive until its own fuse
+PASS long shell travels over twice as far before bursting
+DeepShellIgnition: 5 moving frames; peak 21 bullets.
+PASS bottom corners do not charge the small centre skip zone
+PASS visible bottom-centre zone charges skip
+PASS skip fills bottom to top across its compact zone
+PASS holding in the zone skips without buying
+PASS stock-gun collision benchmark completed
+PASS
+PASS fresh run uses only the stock BaseWeapon
+PASS stock gun: 2 x 2 damage x 10 volleys/sec = 40 nominal DPS
+TTK is from first hit to death, excluding projectile travel; tracking is capped at the player's normal speed. Departures never count as kills.
+PASS stationary scout killed rather than leaving the screen
+MEASURE stationary scout: 10,92 HP, 0,20s first-hit-to-kill, 0,97s from firing start.
+PASS stationary scout stays within 1,00s
+PASS stationary gunship killed rather than leaving the screen
+MEASURE stationary gunship: 29,40 HP, 0,68s first-hit-to-kill, 1,45s from firing start.
+PASS stationary gunship stays within 1,60s
+PASS stationary bomber killed rather than leaving the screen
+MEASURE stationary bomber: 108,00 HP, 2,58s first-hit-to-kill, 3,35s from firing start.
+PASS stationary bomber stays within 3,50s
+PASS ScoutInterceptor/Plains / Swoop killed rather than leaving the screen
+MEASURE ScoutInterceptor/Plains / Swoop: 10,92 HP, 0,32s first-hit-to-kill, 1,40s from firing start.
+PASS ScoutInterceptor/Plains / Swoop stays within 4,60s
+PASS ScoutInterceptor/Plains / Swoop mirrored killed rather than leaving the screen
+MEASURE ScoutInterceptor/Plains / Swoop mirrored: 10,92 HP, 0,34s first-hit-to-kill, 1,40s from firing start.
+PASS ScoutInterceptor/Plains / Swoop mirrored stays within 4,60s
+PASS ScoutInterceptor/Plains / Opening fan killed rather than leaving the screen
+MEASURE ScoutInterceptor/Plains / Opening fan: 10,92 HP, 0,22s first-hit-to-kill, 1,11s from firing start.
+PASS ScoutInterceptor/Plains / Opening fan stays within 4,80s
+PASS HeavyBomber/Plains / Swoop killed rather than leaving the screen
+MEASURE HeavyBomber/Plains / Swoop: 108,00 HP, 2,52s first-hit-to-kill, 3,45s from firing start.
+PASS HeavyBomber/Plains / Swoop stays within 5,40s
+PASS ScoutInterceptor/Plains / Figure eight killed rather than leaving the screen
+MEASURE ScoutInterceptor/Plains / Figure eight: 10,92 HP, 0,14s first-hit-to-kill, 0,95s from firing start.
+PASS ScoutInterceptor/Plains / Figure eight stays within 5,60s
+PASS ScoutInterceptor/Plains / River stream killed rather than leaving the screen
+MEASURE ScoutInterceptor/Plains / River stream: 10,92 HP, 0,14s first-hit-to-kill, 1,00s from firing start.
+PASS ScoutInterceptor/Plains / River stream stays within 4,90s
+PASS PatrolGunship/Plains / Figure eight killed rather than leaving the screen
+MEASURE PatrolGunship/Plains / Figure eight: 29,40 HP, 0,52s first-hit-to-kill, 1,35s from firing start.
+PASS PatrolGunship/Plains / Figure eight stays within 6,10s
+PASS PatrolGunship/Plains / Swoop killed rather than leaving the screen
+MEASURE PatrolGunship/Plains / Swoop: 29,40 HP, 0,76s first-hit-to-kill, 1,87s from firing start.
+PASS PatrolGunship/Plains / Swoop stays within 5,50s
+PASS moving armored miniboss killed rather than leaving the screen
+MEASURE moving armored miniboss: 648,00 HP, 18,08s first-hit-to-kill, 18,83s from firing start.
+PASS moving armored miniboss stays within 24,00s
+PASS stationary boss killed rather than leaving the screen
+MEASURE stationary boss: 1440,00 HP, 35,88s first-hit-to-kill, 36,58s from firing start.
+PASS stationary boss stays within 39,00s
+PASS moving boss, 2 seconds disengaged every 8 seconds killed rather than leaving the screen
+MEASURE moving boss, 2 seconds disengaged every 8 seconds: 1440,00 HP, 45,90s first-hit-to-kill, 46,60s from firing start.
+PASS moving boss, 2 seconds disengaged every 8 seconds stays within 55,00s
+PASS moving boss reaches its harder second phase before death
+PASS second-loop Plains retains increased boss health and enemy tempo
+
+PASS moving Plains targets and boss pass stock-gun benchmark
