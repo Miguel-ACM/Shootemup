@@ -3,15 +3,21 @@ public sealed class BurstShell : CombatRound
 {
     ParticleSystem ignition;
     float nextSpark;
-    static int flights;
     float cruise,brake;
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetFlights(){flights=0;}
+    public float TravelDistance {get;private set;}
     protected override void Initialize()
     {
         visual.color=Color.white;nextSpark=0;if(ignition!=null){ignition.Clear();ignition.Play();}
-        // Every third shell carries its payload deep into the arena.
-        bool longFlight=flights++%3==2;cruise=longFlight ? 1.8f : .65f;brake=longFlight ? .85f : .6f;
+        SetTravelDistance(3.8f);
+    }
+    public BurstShell SetTravelDistance(float distance)
+    {
+        TravelDistance=Mathf.Max(.1f,distance);
+        float brakingDistance=Mathf.Min(TravelDistance*.35f,1.5f);
+        float velocity=Mathf.Max(.1f,speed);
+        cruise=(TravelDistance-brakingDistance)/velocity;brake=2*brakingDistance/velocity;
+        lifetime=Mathf.Max(9,cruise+brake+3);
+        return this;
     }
     float DistanceAt(float t)
     {

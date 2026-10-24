@@ -24,7 +24,7 @@ public sealed class FieldsBomberBoss : DistrictBoss
     }
     static readonly Vector3[] bays={new Vector3(-1.19f,-.24f,-.51f),new Vector3(-.97f,-.36f,-.51f),new Vector3(-.75f,-.48f,-.51f),
         new Vector3(.75f,-.48f,-.51f),new Vector3(.97f,-.36f,-.51f),new Vector3(1.19f,-.24f,-.51f)};
-    protected override void Configure(){hull=23;hullScale=1.4f;health=1440;attackInterval=1.25f;}
+    protected override void Configure(){hull=23;hullScale=1.4f;health=1440;attackInterval=1.25f;shellTravelDistance=4.6f;}
     protected override void MoveBoss(float dt){station.x=Mathf.Sin(age*.5f)*2;base.MoveBoss(dt);}
     protected override float PressureInterval=>phaseTwo ? .95f : 1.45f;
     protected override void PressureAttack()

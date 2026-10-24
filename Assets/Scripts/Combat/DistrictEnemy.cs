@@ -9,6 +9,7 @@ public abstract class DistrictEnemy : AEnemy
     protected int volley;
     public float hullScale=.7f;
     public int hull;
+    [Min(.1f)] public float shellTravelDistance=3.8f;
     protected float attackInterval=2;
     public Transform Hull {get;private set;}
     protected abstract void Configure();
@@ -67,9 +68,15 @@ public abstract class DistrictEnemy : AEnemy
         else if(age>=nextAttack){volley++;Attack();nextAttack=age+attackInterval/Mathf.Max(.5f,GameRules.enemyShootSpeed);}
     }
     protected Vector2 Aim => movement!=null && movement.LockedAim.HasValue ? ((Vector2)(movement.LockedAim.Value-transform.position)).normalized : CombatVisuals.Aim(transform.position);
+    protected T Fire<T>(Vector3 position,Vector2 direction,float velocity,float radius) where T:CombatRound
+    {
+        var shot=CombatRound.Launch<T>(position,direction,velocity,radius);
+        if(shot is BurstShell shell)shell.SetTravelDistance(shellTravelDistance);
+        return shot;
+    }
     protected void Fan<T>(int count,float spread,float velocity,float radius=.14f) where T:CombatRound
     {
-        for(int i=0;i<count;i++)CombatRound.Launch<T>(transform.position,CombatVisuals.Rotate(Aim,(i-(count-1)*.5f)*spread),velocity,radius);
+        for(int i=0;i<count;i++)Fire<T>(transform.position,CombatVisuals.Rotate(Aim,(i-(count-1)*.5f)*spread),velocity,radius);
     }
     protected void FanFrom<T>(int count,float spread,float velocity,float radius,params Vector3[] ports) where T:CombatRound
     {
@@ -77,7 +84,7 @@ public abstract class DistrictEnemy : AEnemy
         for(int i=0;i<count;i++)
         {
             int port=count==1 ? (volley+ports.Length-1)%ports.Length : Mathf.RoundToInt(i*(ports.Length-1f)/(count-1));
-            CombatRound.Launch<T>(Hull.TransformPoint(ports[port]),CombatVisuals.Rotate(aim,(i-(count-1)*.5f)*spread),velocity,radius);
+            Fire<T>(Hull.TransformPoint(ports[port]),CombatVisuals.Rotate(aim,(i-(count-1)*.5f)*spread),velocity,radius);
         }
     }
     protected override void OnBecameInvisible() { }

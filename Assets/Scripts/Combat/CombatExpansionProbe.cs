@@ -186,7 +186,7 @@ public sealed class CombatExpansionProbe : MonoBehaviour
         var shell=CombatRound.Launch<BurstShell>(new Vector3(0,5),Vector2.down,3,.4f);
         yield return new WaitForSeconds(1.5f);shell.Vanish();int clearedCount=CombatRound.Live.Count;
         yield return new WaitForSeconds(.8f);Check(clearedCount==0 && CombatRound.Live.Count==0,"cleared burst shell suppresses fragments");
-        shell=CombatRound.Launch<BurstShell>(new Vector3(0,5),Vector2.down,3,.4f);
+        shell=CombatRound.Launch<BurstShell>(new Vector3(0,5),Vector2.down,3,.4f).SetTravelDistance(2.85f);
         yield return new WaitForSeconds(2.2f);Check(CombatRound.Live.Count>=8,"live burst shell emits its delayed pattern");
         Clear();yield return null;
         var ricochet=CombatRound.Launch<RicochetBolt>(new Vector3(Camera.RightLimit-.3f,3),Vector2.right,4);

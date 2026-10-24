@@ -40,6 +40,6 @@ public abstract class DistrictBoss : DistrictEnemy
     protected override void Die(){if(bar!=null)bar.SetVisible(false);base.Die();}
     protected void Radial<T>(int count,float speed,float radius,float offset=0) where T:CombatRound
     {
-        for(int i=0;i<count;i++)CombatRound.Launch<T>(transform.position,CombatVisuals.Rotate(Vector2.down,i*360f/count+offset),speed,radius);
+        for(int i=0;i<count;i++)Fire<T>(transform.position,CombatVisuals.Rotate(Vector2.down,i*360f/count+offset),speed,radius);
     }
 }

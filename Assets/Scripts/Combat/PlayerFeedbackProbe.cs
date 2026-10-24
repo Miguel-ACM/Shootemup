@@ -120,8 +120,8 @@ public sealed class PlayerFeedbackProbe : MonoBehaviour
         for(int i=0;i<3;i++)
         {
             var shell=CombatRound.Launch<BurstShell>(new Vector3(-1+i,Camera.UpLimit-2,-.5f),Vector2.down,3,.4f);
-            float cruise=(float)typeof(BurstShell).GetField("cruise",Hidden).GetValue(shell);
-            if(cruise>1)far=shell;else near=shell;
+            shell.SetTravelDistance(i==2 ? 6.675f : 2.85f);
+            if(i==2)far=shell;else near=shell;
         }
         yield return new WaitForSeconds(.6f);
         Check(near.GetComponentInChildren<ParticleSystem>()==null || near.GetComponentInChildren<ParticleSystem>().particleCount==0,"travelling shells have no ignition warning");
