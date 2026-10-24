@@ -2,7 +2,7 @@ public class RabbitsFoot : AItem
 {
     private void Awake()
     {
-        SetData("Rabbit's Foot", "Why would you take this?", "Increase your luck.", AItem.ItemType.passive);
+        SetData("Rabbit's Foot", "Why would you take this?", "More luck.", AItem.ItemType.passive);
     }
 
     public override void OnBegin()
