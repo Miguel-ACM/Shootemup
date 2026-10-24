@@ -29,7 +29,7 @@ public static class FlightSmoothnessAudit
             return At(1);
         }
     }
-    struct Measures {public float SpeedError,Jerk;}
+    struct Measures {public float SpeedError,Jerk,Turn;}
     static Vector2 World(Vector2 p)=>Vector2.Scale(p,new Vector2(Camera.RightLimit,Camera.UpLimit-Camera.DownLimit));
     static Measures Measure(Func<float,Vector2> position,float length,float duration,int fps)
     {
@@ -39,6 +39,7 @@ public static class FlightSmoothnessAudit
         {
             var next=position(i/(float)frames);var v=(next-p)/dt;
             result.SpeedError=Mathf.Max(result.SpeedError,Mathf.Abs(v.magnitude/expected-1));
+            if(i>1)result.Turn=Mathf.Max(result.Turn,Vector2.Angle(v,velocity)/dt);
             var a=(v-velocity)/dt;if(i>2)result.Jerk=Mathf.Max(result.Jerk,(a-acceleration).magnitude/dt);
             p=next;velocity=v;acceleration=a;
         }
@@ -58,9 +59,10 @@ public static class FlightSmoothnessAudit
                 var b=Measure(p=>World(route.Sample(route.TravelParameter(p))),route.Length,seconds,fps);
                 if(fps==60){legacy=a;current=b;before+=a.Jerk;after+=b.Jerk;}
                 worst=Mathf.Max(worst,b.SpeedError);
+                if(b.Turn>600)throw new Exception(route.Name+" still whips through its turn at "+b.Turn+" degrees/s");
                 if(b.SpeedError>.06f)throw new Exception(route.Name+" still surges at "+fps+"fps: "+b.SpeedError);
             }
-            report.Add($"PASS {route.Name}: peak frame jerk {legacy.Jerk:F1} → {current.Jerk:F1}; 30/60/144 FPS constant-distance checks.");
+            report.Add($"PASS {route.Name}: peak frame jerk {legacy.Jerk:F1} → {current.Jerk:F1}; turn {current.Turn:F1} degrees/s; 30/60/144 FPS constant-distance checks.");
         }
         if(after>=before*.85f)throw new Exception("Curves have not sufficiently reduced abrupt acceleration changes");
         report.Add($"PASS {done.Count} routes: aggregate peak frame jerk reduced {(1-after/before)*100:F1}%; largest frame speed error {worst*100:F2}% at 30/60/144 FPS.");
