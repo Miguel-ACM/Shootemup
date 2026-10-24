@@ -2,7 +2,7 @@ public class Caffeine : AItem
 {
     private void Awake()
     {
-        SetData("Caffeine", "Everything feels faster now!", "Increases shoot speed, shoot travel speed and move speed.", AItem.ItemType.passive);
+        SetData("Caffeine", "Everything feels faster now!", "Faster movement, firing and bullets.", AItem.ItemType.passive);
     }
 
     public override void OnBegin()
