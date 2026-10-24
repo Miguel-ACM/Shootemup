@@ -30,14 +30,16 @@ public sealed class PSXObjectVisual : MonoBehaviour
     bool faceMotion;
     float heading;
     Vector3 lastPosition;
+    bool enemyFlight;
+    readonly EnemyFlightAttitude attitude=new EnemyFlightAttitude();
 
     float Heading()
     {
         if(!faceMotion || Time.deltaTime<=0)return heading;
         var velocity=(Vector2)(transform.position-lastPosition)/Time.deltaTime;lastPosition=transform.position;
         if(velocity.sqrMagnitude>.01f)
-            heading=Vector2.SignedAngle(Vector2.down,velocity);   // instant, no visible turning
-        return Mathf.Round(heading/5)*5;   // stepped, PS1 style
+            heading=Vector2.SignedAngle(Vector2.down,velocity);   // desired nose direction; attitude eases the visible turn
+        return heading;
     }
 
     void Start()
@@ -68,6 +70,7 @@ public sealed class PSXObjectVisual : MonoBehaviour
         }
         item=GetComponent<AItem>();pickup=GetComponent<APickable>();
         companion=GetComponent<ACompanion>()!=null;
+        enemyFlight=GetComponent<AEnemy>()!=null;
         faceMotion=GetComponent<MoveStraight>()!=null;lastPosition=transform.position;
         if(spin && (item!=null || pickup!=null))
         {
@@ -111,7 +114,8 @@ public sealed class PSXObjectVisual : MonoBehaviour
                 e.startColor=new Color(color.r,color.g,color.b,.85f);e.startSize=radius*.5f;e.startLifetime=.5f;motes.Emit(e,1);
             }
         }
-        model.localRotation=companion ? Quaternion.Euler(-18,18*Mathf.Sin(t*1.3f),6*Mathf.Sin(t)) : spin ? Quaternion.Euler(-18, t*52, 10)
+        model.localRotation=enemyFlight ? attitude.Step(transform.position,Heading(),.35f,Time.deltaTime)
+            : companion ? Quaternion.Euler(-18,18*Mathf.Sin(t*1.3f),6*Mathf.Sin(t)) : spin ? Quaternion.Euler(-18, t*52, 10)
             : Quaternion.AngleAxis(Heading(),Vector3.forward)*Quaternion.Euler(7*Mathf.Sin(t),9*Mathf.Sin(t*.7f),0);
         model.localPosition=home+(spin ? Vector3.up*Mathf.Sin(t*2)*.055f : Vector3.zero)+(dismissing ? Vector3.up*dismissTime*.65f : Vector3.zero);
         if(properties==null)properties=new MaterialPropertyBlock();

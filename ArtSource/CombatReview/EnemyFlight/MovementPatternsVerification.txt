@@ -1,0 +1,1 @@
+PASS: 58068 checks; all ten patterns at 30/60/144 FPS; continuous positions, preserved depth, pause, lifetime exits, locked aim/dive, reservations, leader loss, alternating partners, formation loss and shooter gating.
