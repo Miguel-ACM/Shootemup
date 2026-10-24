@@ -14,6 +14,8 @@ public class WaveUnit : ICloneable
     public float firePhase;
     public float[] fireTimes;
     public float formationDepth;
+    public bool fixedDepth;
+    public string part;
     public float side=1,lane,flightDuration=6,fireEvery=.8f;
 
     public WaveUnit(string _enemy, float _time, Vector3 _position)
@@ -25,7 +27,7 @@ public class WaveUnit : ICloneable
 
     public object Clone()
     {
-        return new WaveUnit(enemy,time,position){phrase=phrase,curve=curve,syncFire=syncFire,firePhase=firePhase,fireTimes=fireTimes,formationDepth=formationDepth,side=side,lane=lane,flightDuration=flightDuration,fireEvery=fireEvery};
+        return new WaveUnit(enemy,time,position){phrase=phrase,curve=curve,syncFire=syncFire,firePhase=firePhase,fireTimes=fireTimes,formationDepth=formationDepth,fixedDepth=fixedDepth,part=part,side=side,lane=lane,flightDuration=flightDuration,fireEvery=fireEvery};
     }
 
     override public string ToString()

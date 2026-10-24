@@ -12,6 +12,7 @@ public sealed class FormationFlight : PatternMover
     public float firePhase;
     [System.NonSerialized] public float[] fireTimes;
     public float formationDepth;
+    public bool fixedDepth;
     public float side=1,lane,duration=6,fireEvery=.8f;
     float clock;
     float[] distances;
@@ -59,11 +60,12 @@ public sealed class FormationFlight : PatternMover
     public Vector2 PositionAt(float t)
     {
         Vector2 position=curve!=null ? curve.Sample(t,side,lane) : Sample(phrase,t,side,lane);
-        position.y+=formationDepth*Mathf.Sin(Mathf.PI*Mathf.Clamp01(t));
+        position.y+=formationDepth*(fixedDepth ? 1 : Mathf.Sin(Mathf.PI*Mathf.Clamp01(t)));
         return position;
     }
     float TravelParameter(float progress)
     {
+        if(curve!=null)return curve.TravelParameter(progress);
         if(curve==null && phrase!=FlightPhrase.Ribbon && phrase!=FlightPhrase.Crossing && phrase!=FlightPhrase.Dive)return progress;
         if(distances==null)
         {
