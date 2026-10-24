@@ -5,7 +5,7 @@ public static class ThunderChoreography
     public static readonly FlightCurve Slash=new FlightCurve("Thunder / Lightning slash",Vector2.up,0,
         -1.32f,.98f, -.72f,.88f, -.10f,.69f, .54f,.43f, .86f,.38f, 1.32f,.52f);
     public static readonly FlightCurve Sickle=new FlightCurve("Thunder / Hook strike",Vector2.right,0,
-        -.1875f,1.18f, .075f,.89f, .4725f,.64f, .60f,.38f, .3375f,.32f, .0675f,.51f, .1875f,.76f, .525f,1.18f);
+        -.50f,1.18f, 0,.95f, .48f,.73f, .64f,.51f, .40f,.40f, -.02f,.42f, -.26f,.61f, -.14f,.88f, .30f,1.18f);
     public static readonly FlightCurve Pendulum=new FlightCurve("Thunder / Beam pendulum",Vector2.right,0,
         -.60f,1.18f, -.58f,.85f, .15f,.75f, .62f,.86f, .43f,.95f, -.25f,.82f, -.65f,.71f, -.72f,1.18f);
     public static readonly FlightCurve Relay=new FlightCurve("Thunder / Capacitor crescent",Vector2.right,0,
