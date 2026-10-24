@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -62,6 +63,7 @@ public sealed class PlayerFeedbackProbe : MonoBehaviour
     IEnumerator Run()
     {
         GameRules.StartNewRun();LevelRun.Reset();Time.timeScale=1;
+        if(SceneManager.GetActiveScene().name!="L1")yield return SceneManager.LoadSceneAsync("L1");
         yield return new WaitForSeconds(2);
         ship=FindAnyObjectByType<Shipcontroller>();ship.health=ship.maxHealth=10000;
         flow=FindAnyObjectByType<WaveOrchestrer>();flow.enabled=false;flow.CancelInvoke();flow.StopAllCoroutines();
