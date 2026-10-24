@@ -4,7 +4,7 @@ Attach one concrete mover from `Assets/Scripts/Enemy/Movers` to an enemy root, r
 
 | File / component | Setup |
 |---|---|
-| `TopTracker.cs` | Set the top offset, tracking time, lock warning, firing time and recovery. It follows player X, then freezes both its position and the aim of `SingleBurst` / `FocusingSingleBurst`. |
+| `TopTracker.cs` | Set the top offset, tracking time, lock warning, firing time and recovery. It accelerates toward player X and brakes before locking its attack. District hull size tunes speed, acceleration and braking: pursuit fighters respond quickly, heavy gunships carry more momentum. Other prefabs use the Inspector acceleration and deceleration. Aim stays committed through `SingleBurst` / `FocusingSingleBurst`. |
 | `Zigzag.cs` | Set width, depth per turn, first direction and turns per firing window. Stagger spawn times and alternate first direction for crossing columns. |
 | `Slalom.cs` | Set amplitude, period, phase offset and descent ratio. Phase offsets let paired ships travel in opposing parts of the curve without teleporting at spawn. Firing opens near the outer turns. |
 | `FreeReposition.cs` | Set a world-space destination rectangle, spacing, player clearance, preview delay, hold duration and maximum moves. Active instances reserve destinations and travel corridors. `Destination` exposes the preview point for future effects. |

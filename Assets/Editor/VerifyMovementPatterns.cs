@@ -85,7 +85,7 @@ public static class VerifyMovementPatterns
         Vector3 lockedPosition = go.transform.position;
         player.position += Vector3.right * 3;
         Tick(mover, .7f);
-        Check(go.transform.position == lockedPosition && probe.MovementAimPoint == lockedAim, "Tracker followed player during lock/fire");
+        Check(Vector3.Distance(go.transform.position, lockedPosition) < .04f && probe.MovementAimPoint == lockedAim, "Tracker followed player during lock/fire");
         Check(mover.CanFire, "Tracker never opened its firing window");
         Tick(mover, 2);
         Check(!mover.CanFire, "Tracker fired through recovery");
@@ -207,7 +207,7 @@ public static class VerifyMovementPatterns
         return go;
     }
     private static void Tick(PatternMover mover, float seconds)
-    { for (int i = 0; i < Mathf.CeilToInt(seconds * 60); i++) mover.Step(1f / 60); }
+    { for (int i = 0; i < Mathf.CeilToInt(seconds * 60); i++) mover.Step(1f / (60 * PatternMover.FlightTempo * LevelRun.EnemyTempoScale)); }
     private static void Set(object target, string field, object value)
     { target.GetType().GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value); }
     private static void Check(bool condition, string message)
