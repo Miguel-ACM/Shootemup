@@ -3,7 +3,7 @@ using UnityEngine;
 public static class TunnelChoreography
 {
     public static readonly FlightCurve Wall=new FlightCurve("Tunnel / Wall bank",Vector2.right,0,
-        -.78f,1.18f, -.80f,.86f, -.80f,.54f, -.61f,.39f, -.36f,.48f, -.44f,.70f, -.52f,1.18f);
+        -.78f,1.18f, -.82f,.92f, -.74f,.68f, -.48f,.54f, -.13f,.58f, .06f,.78f, .02f,1.18f);
     public static readonly FlightCurve Rebound=new FlightCurve("Tunnel / Rebound chain",Vector2.up,0,
         -1.32f,.95f, -.62f,.87f, .72f,.72f, .86f,.58f, .42f,.48f, -.72f,.36f, -.79f,.24f, .20f,.20f, 1.32f,.10f);
     public static readonly FlightCurve Helix=new FlightCurve("Tunnel / Descending helix",Vector2.right,0,
