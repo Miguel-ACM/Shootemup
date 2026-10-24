@@ -11,7 +11,7 @@ public sealed class FieldsBomberBoss : DistrictBoss
     readonly Vector2[] collisionPoints=new Vector2[outline.Length];
     protected override void Start()
     {
-        base.Start();GetComponent<CircleCollider2D>().enabled=false;
+        base.Start();var oldCollider=GetComponent<CircleCollider2D>();oldCollider.enabled=false;Destroy(oldCollider);
         hullCollider=gameObject.AddComponent<PolygonCollider2D>();hullCollider.isTrigger=true;
         UpdateHitbox();
     }
