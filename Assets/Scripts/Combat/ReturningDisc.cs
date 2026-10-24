@@ -2,7 +2,7 @@ using UnityEngine;
 public sealed class ReturningDisc : CombatRound
 {
     Vector2 initial;
-    protected override void Initialize(){initial=heading;visual.color=new Color(1,.35f,.85f);lifetime=6;}
+    protected override void Initialize(){initial=heading;lifetime=6;}
     protected override void Tick(float dt)
     {
         if(age>1.4f)

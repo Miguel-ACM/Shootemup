@@ -2,7 +2,7 @@ using UnityEngine;
 public sealed class ScatterCarrier : CombatRound
 {
     int releases;
-    protected override void Initialize(){releases=0;visual.color=new Color(1,.7f,.3f);}
+    protected override void Initialize(){releases=0;}
     protected override void Tick(float dt)
     {
         base.Tick(dt);

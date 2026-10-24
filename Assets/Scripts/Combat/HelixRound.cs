@@ -2,7 +2,7 @@ using UnityEngine;
 public sealed class HelixRound : CombatRound
 {
     public float phase;
-    protected override void Initialize(){phase=0;visual.color=new Color(1,.5f,.65f);}
+    protected override void Initialize(){phase=0;}
     protected override void Tick(float dt)
     {
         var side=new Vector2(-heading.y,heading.x);

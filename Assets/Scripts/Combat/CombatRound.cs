@@ -16,6 +16,7 @@ public abstract class CombatRound : AEnemyBullet
     protected bool ended;
     public int generation;
     public Vector2 Heading => heading;
+    public Color Accent=>HostileProjectileArt.Accent(GetType());
     public static T Launch<T>(Vector3 p,Vector2 direction,float velocity=4,float radius=.18f) where T:CombatRound
     {
         if(Live.Count>=Limit) return null;
@@ -33,12 +34,12 @@ public abstract class CombatRound : AEnemyBullet
             shot=go.AddComponent<T>();shot.body=rb;shot.visual=sr;
         }
         shot.transform.SetPositionAndRotation(new Vector3(p.x,p.y,-.5f),Quaternion.identity);
-        shot.transform.localScale=Vector3.one*radius*2;shot.visual.sprite=CombatVisuals.Projectile(false,radius>=.25f);shot.visual.color=Color.white;
+        shot.transform.localScale=Vector3.one*radius*2;shot.visual.sprite=HostileProjectileArt.Sprite(typeof(T),radius>=.25f);shot.visual.color=Color.white;
         shot.visual.enabled=true;shot.GetComponent<Collider2D>().enabled=true;
         shot.origin=shot.transform.position;shot.heading=direction.sqrMagnitude>.001f ? direction.normalized : Vector2.down;
         shot.speed=velocity*GameRules.enemyBulletSpeed*LevelRun.EnemyShotSpeedScale;shot.damage=10*GameRules.enemyDamage;
         shot.age=0;shot.generation=0;shot.lifetime=9;shot.ended=false;
-        shot.gameObject.SetActive(true);Live.Add(shot);shot.Initialize();return shot;
+        shot.enabled=true;shot.gameObject.SetActive(true);Live.Add(shot);shot.Initialize();return shot;
     }
     protected override void Start() { }
     protected virtual void Initialize() { }
@@ -60,7 +61,7 @@ public abstract class CombatRound : AEnemyBullet
         if(!pools.TryGetValue(GetType(),out var pool))pools[GetType()]=pool=new Stack<CombatRound>();
         if(pool.Count<48)pool.Push(this);else Destroy(gameObject);
     }
-    public override void Vanish() { if(!ended)PSXImpactEffects.Vanish(transform.position,visual.color,.25f);Release(); }
+    public override void Vanish() { if(!ended)PSXImpactEffects.Vanish(transform.position,Accent,.25f);Release(); }
     protected override void OnBecameInvisible() { } // Lifetime and arena bounds also cover offscreen spawns.
     void OnDisable() { Live.Remove(this); }
     protected bool Ring(int count,float velocity,float radius=.13f,float phase=0)

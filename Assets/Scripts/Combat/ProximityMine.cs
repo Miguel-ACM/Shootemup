@@ -16,7 +16,7 @@ public sealed class ProximityMine : CombatRound
         // The mine cannot arm beneath a player; retreating gives it an arming opportunity.
         bool armed=age>=1.4f && (GetComponent<Collider2D>().enabled || distance>1.5f);
         GetComponent<Collider2D>().enabled=armed;
-        visual.color=armed ? Color.Lerp(Color.red,Color.yellow,Mathf.PingPong(age*4,1)) : Color.gray;
+        visual.color=armed ? Color.Lerp(new Color(.65f,.65f,.65f),Color.white,.65f+.35f*Mathf.Sin(age*8)) : Color.gray;
         if(armed && (age>4.5f || distance<1.1f) && Ring(10,3.2f))Release();
     }
 }
