@@ -2,7 +2,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class MirrorBurst : AActiveItem
 {
-    void Awake(){SetData("Mirror Burst","Active","Convert up to 18 nearby rounds into friendly seeking shots. Costs 35 energy. Clears payloads safely.",ItemType.active);cost=35;cd=8;}
+    void Awake(){SetData("Mirror Burst","Active","Turn 18 bullets into homing shots. 35 energy.",ItemType.active);cost=35;cd=8;}
     public override float OnPress(float mana)
     {
         float valid=CheckValidPress(mana);if(valid<0)return valid;
