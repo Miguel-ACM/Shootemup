@@ -44,14 +44,14 @@ public sealed class DecisionOverlay : MonoBehaviour
         var scaler=gameObject.AddComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);scaler.matchWidthOrHeight=1;
         skip=Plate("Bottom skip",new Vector2(SkipWidth,SkipHeight));skip.anchorMin=skip.anchorMax=new Vector2(.5f,0);skip.anchoredPosition=new Vector2(0,SkipHeight*.5f);
         var fill=Plate("Bottom-up skip charge",new Vector2(SkipWidth,0),skip);fill.anchorMin=fill.anchorMax=new Vector2(.5f,0);fill.pivot=new Vector2(.5f,0);
-        skipFill=fill.GetComponent<Image>();skipFill.color=new Color(.85f,.52f,.17f,.55f);
+        skipFill=fill.GetComponent<Image>();skipFill.color=new Color(.85f,.52f,.17f,.37f);
         var edge=Plate("Leading edge",new Vector2(SkipWidth,1.5f),fill);edge.anchorMin=edge.anchorMax=new Vector2(.5f,1);edge.GetComponent<Image>().color=new Color(1,.72f,.32f);
         Text(skip,"SKIP",12);
     }
     public void SetSkip(float progress)
     {
         skipFill.rectTransform.sizeDelta=new Vector2(SkipWidth,SkipHeight*Mathf.SmoothStep(0,1,Mathf.Clamp01(progress)));
-        skip.GetComponent<Image>().color=progress>0 ? new Color(.04f,.06f,.075f,1) : Color.black;
+        skip.GetComponent<Image>().color=new Color(.025f,.045f,.07f,.45f);
     }
     RectTransform Plate(string title,Vector2 size,Transform parent=null)
     {
