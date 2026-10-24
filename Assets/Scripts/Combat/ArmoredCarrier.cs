@@ -2,8 +2,8 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class ArmoredCarrier : DistrictEnemy
 {
-    protected override void Configure(){hull=5;health=100;hullScale=.9f;attackInterval=3;Mover<DriftDownPattern>();}
-    protected override void Attack(){Fan<ProximityMine>(2,70,2.8f,.25f);}
+    protected override void Configure(){hull=5;health=130;hullScale=.9f;attackInterval=1.25f;Mover<DriftDownPattern>();}
+    protected override void Attack(){Fan<ProximityMine>(3,50,2.8f,.25f);Fan<NeedleRound>(9,12,4.5f);}
 
     public override void damage(float amount){base.damage(amount*(age%3<1 ? 1 : .65f));}
     protected override void Start(){base.Start();SpawnEscorts();}
