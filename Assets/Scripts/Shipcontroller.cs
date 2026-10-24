@@ -6,6 +6,7 @@ using EZCameraShake;
 
 public class Shipcontroller : MonoBehaviour
 {
+    public bool ObserverMode {get;set;}
     public GameObject bulletPrimary;
 
     [SerializeField] private ResourceBar healthBar;
@@ -353,7 +354,7 @@ public class Shipcontroller : MonoBehaviour
 
     void GetDamaged(float damage)
     {
-        if(health<=0 || GameOverState.Active)return;
+        if(ObserverMode || health<=0 || GameOverState.Active)return;
         PSXImpactEffects.Burst(transform.position,new Color(.15f,.65f,1));
         SoundManager.PlaySound("hurt1", 0.2f);
         health -= damage;
