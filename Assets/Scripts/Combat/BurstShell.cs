@@ -21,16 +21,16 @@ public sealed class BurstShell : CombatRound
     void Spark(float charge)
     {
         if(ignition==null)ignition=PSXImpactEffects.Create(transform,"Shell ignition sparks",32);
-        for(int i=0;i<3;i++)
+        for(int i=0;i<4;i++)
         {
             float angle=Random.value*Mathf.PI*2;
             var direction=new Vector3(Mathf.Cos(angle),Mathf.Sin(angle),0);
             var particle=new ParticleSystem.EmitParams();
-            particle.position=transform.position+direction*transform.localScale.x*.4f+Vector3.back*.12f;
+            particle.position=transform.position+direction*transform.localScale.x*.72f+Vector3.back*.12f;
             particle.velocity=direction*Random.Range(.35f,1.1f);
             particle.startColor=Color.Lerp(new Color(1,.42f,.08f),new Color(1,.85f,.3f),charge);
-            particle.startSize3D=Vector3.one*Random.Range(.045f,.075f);
-            particle.startLifetime=Random.Range(.12f,.24f);ignition.Emit(particle,1);
+            particle.startSize3D=Vector3.one*Random.Range(.065f,.105f);
+            particle.startLifetime=Random.Range(.18f,.30f);ignition.Emit(particle,1);
         }
     }
     protected override void Tick(float dt)
