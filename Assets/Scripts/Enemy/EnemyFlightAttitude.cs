@@ -32,9 +32,10 @@ public sealed class EnemyFlightAttitude
         heading += yaw;
         Vector2 right = Quaternion.Euler(0, 0, heading) * Vector2.right;
         Vector2 forward = Quaternion.Euler(0, 0, heading) * Vector2.down;
-        float limit = Mathf.Lerp(32, 16, weight);
-        float desiredBank = Mathf.Clamp(Vector2.Dot(velocity, right) * 4.5f
-            + Vector2.Dot(acceleration, right) * .38f + yaw / dt * .13f, -limit, limit);
+        float limit = Mathf.Lerp(62, 42, weight);
+        // Model roll runs opposite to screen-space steering: lean into the maneuver.
+        float desiredBank = Mathf.Clamp(-(Vector2.Dot(velocity, right) * 13f
+            + Vector2.Dot(acceleration, right) * .9f + yaw / dt * .55f), -limit, limit);
         float desiredPitch = Mathf.Clamp(-Vector2.Dot(acceleration, forward) * .5f, -9, 9);
         bank = Mathf.Lerp(bank, desiredBank, blend);
         pitch = Mathf.Lerp(pitch, desiredPitch, blend);
