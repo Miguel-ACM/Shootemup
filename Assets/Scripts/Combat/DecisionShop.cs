@@ -67,7 +67,9 @@ public sealed class DecisionShop : MonoBehaviour
         var camera=UnityEngine.Camera.main;
         var hitbox=player.GetComponent<Collider2D>();
         float bottom=hitbox!=null ? hitbox.bounds.min.y : player.transform.position.y;
-        bool atBottom=bottom<=camera.transform.position.y-camera.orthographicSize+.45f;
+        float worldPerPixel=camera.orthographicSize*2/720f;
+        bool atBottom=bottom<=camera.transform.position.y-camera.orthographicSize+.45f &&
+            Mathf.Abs(player.transform.position.x-camera.transform.position.x)<=DecisionOverlay.SkipWidth*.5f*worldPerPixel;
         skipCharge=atBottom && age>2 && claimed==null ? skipCharge+Time.deltaTime : 0;
         overlay.SetSkip(SkipProgress);
         if(skipCharge>=1.5f)Close();

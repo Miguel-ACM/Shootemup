@@ -6,6 +6,7 @@ using System.Collections.Generic;
 // Decision text is composited after the pixel filter.
 public sealed class DecisionOverlay : MonoBehaviour
 {
+    public const float SkipWidth=96,SkipHeight=48;
     RectTransform skip;
     Image skipFill;
     TMP_FontAsset font;
@@ -41,14 +42,15 @@ public sealed class DecisionOverlay : MonoBehaviour
         font=face;
         var canvas=gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=65;
         var scaler=gameObject.AddComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);scaler.matchWidthOrHeight=1;
-        skip=Plate("Bottom skip",new Vector2(132,30));skip.anchorMin=skip.anchorMax=new Vector2(.5f,0);skip.anchoredPosition=new Vector2(0,25);
-        Text(skip,"SKIP",14).rectTransform.anchoredPosition=new Vector2(0,2);
-        var fill=Plate("Hold progress",new Vector2(0,3),skip);fill.anchorMin=fill.anchorMax=new Vector2(0,0);fill.pivot=Vector2.zero;fill.anchoredPosition=new Vector2(5,3);
-        skipFill=fill.GetComponent<Image>();skipFill.color=new Color(1,.72f,.32f);
+        skip=Plate("Bottom skip",new Vector2(SkipWidth,SkipHeight));skip.anchorMin=skip.anchorMax=new Vector2(.5f,0);skip.anchoredPosition=new Vector2(0,SkipHeight*.5f);
+        var fill=Plate("Bottom-up skip charge",new Vector2(SkipWidth,0),skip);fill.anchorMin=fill.anchorMax=new Vector2(.5f,0);fill.pivot=new Vector2(.5f,0);
+        skipFill=fill.GetComponent<Image>();skipFill.color=new Color(.85f,.52f,.17f,.55f);
+        var edge=Plate("Leading edge",new Vector2(SkipWidth,1.5f),fill);edge.anchorMin=edge.anchorMax=new Vector2(.5f,1);edge.GetComponent<Image>().color=new Color(1,.72f,.32f);
+        Text(skip,"SKIP",12);
     }
     public void SetSkip(float progress)
     {
-        skipFill.rectTransform.sizeDelta=new Vector2(122*Mathf.Clamp01(progress),3);
+        skipFill.rectTransform.sizeDelta=new Vector2(SkipWidth,SkipHeight*Mathf.SmoothStep(0,1,Mathf.Clamp01(progress)));
         skip.GetComponent<Image>().color=progress>0 ? new Color(.04f,.06f,.075f,1) : Color.black;
     }
     RectTransform Plate(string title,Vector2 size,Transform parent=null)
