@@ -9,7 +9,7 @@ public sealed class BurstShell : CombatRound
     static void ResetFlights(){flights=0;}
     protected override void Initialize()
     {
-        visual.color=Color.white;nextSpark=0;if(ignition!=null)ignition.Clear();
+        visual.color=Color.white;nextSpark=0;if(ignition!=null){ignition.Clear();ignition.Play();}
         // Every third shell carries its payload deep into the arena.
         bool longFlight=flights++%3==2;cruise=longFlight ? 1.8f : .65f;brake=longFlight ? .85f : .6f;
     }
