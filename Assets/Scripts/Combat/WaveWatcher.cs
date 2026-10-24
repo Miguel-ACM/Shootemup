@@ -25,7 +25,7 @@ public sealed class WaveWatcher : MonoBehaviour
     Coroutine playback;
     Canvas[] hiddenCanvases;
     TMP_FontAsset font;
-    TextMeshProUGUI heading,status,pauseLabel,loopLabel,speedLabel;
+    TextMeshProUGUI heading,status,pauseLabel,loopLabel,speedLabel,partLabel;
     readonly Dictionary<LevelId,Image> levels=new Dictionary<LevelId,Image>();
     readonly Dictionary<int,Image> encounters=new Dictionary<int,Image>();
     readonly List<Image> aims=new List<Image>();
@@ -80,7 +80,7 @@ public sealed class WaveWatcher : MonoBehaviour
         hiddenCanvases=hidden.ToArray();
         if(FindAnyObjectByType<TunnelReflectors>()==null)new GameObject("Watcher tunnel rails").AddComponent<TunnelReflectors>();
         Build();SetAim(0);HidePilot();
-        while(CloudTransition.Busy)yield return null;
+        while(CloudTransition.Busy || !WavePreparation.Ready)yield return null;
         yield return new WaitForSeconds(WaveOrchestrer.OpeningBreather);
         Ready=true;Replay();
         if(EventSystem.current!=null)EventSystem.current.SetSelectedGameObject(levels[Level].gameObject);
@@ -122,6 +122,7 @@ public sealed class WaveWatcher : MonoBehaviour
     public void TogglePause(){Paused=!Paused;Refresh();}
     public void ToggleLoop(){Looping=!Looping;Refresh();}
     public void CycleSpeed(){PlaybackSpeed=PlaybackSpeed==1 ? .5f : PlaybackSpeed==.5f ? 2 : 1;Refresh();}
+    public void NewSet(){if(Ready)SelectLevel(Level);}
     public void SetAim(int side)
     {
         aim=Mathf.Clamp(side,-1,1);
@@ -143,8 +144,8 @@ public sealed class WaveWatcher : MonoBehaviour
     }
     IEnumerator Play()
     {
-        ClearArena();Elapsed=0;Spawned=0;yield return null;
-        while(CloudTransition.Busy)yield return null;
+        ClearArena();Elapsed=0;Spawned=0;partLabel.text="";yield return null;
+        while(CloudTransition.Busy || !WavePreparation.Ready)yield return null;
         if(Encounter>=BossOne)
         {
             var boss=(DistrictBoss)DistrictEnemy.Spawn(DistrictWaves.BossType,new Vector3(0,Camera.UpLimit+3,1));Spawned=1;
@@ -160,6 +161,7 @@ public sealed class WaveWatcher : MonoBehaviour
             while(true){Elapsed+=Time.deltaTime;yield return null;}
         }
         var wave=Encounter==Miniboss ? DistrictWaves.Miniboss() : DistrictWaves.Create(Encounter);
+        partLabel.text=string.Join("\n",wave.parts);
         int next=0;float quiet=0;
         while(true)
         {
@@ -213,6 +215,8 @@ public sealed class WaveWatcher : MonoBehaviour
         encounters[BossOne]=Button(right,"BOSS  /  PHASE 1",new Vector2(0,-56),new Vector2(230,36),()=>SelectEncounter(BossOne)).GetComponent<Image>();
         encounters[BossTwo]=Button(right,"BOSS  /  PHASE 2",new Vector2(0,-102),new Vector2(230,36),()=>SelectEncounter(BossTwo)).GetComponent<Image>();
         status=Label(right,"",16,new Vector2(0,-186),new Vector2(250,70));Refresh();
+        partLabel=Label(right,"",12,new Vector2(0,-254),new Vector2(230,68));
+        Button(right,"NEW SET",new Vector2(0,-302),new Vector2(230,32),NewSet);
     }
     void Refresh()
     {
