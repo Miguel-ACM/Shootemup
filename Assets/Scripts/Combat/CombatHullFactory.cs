@@ -261,7 +261,7 @@ public sealed class CombatHullVisual : MonoBehaviour
     MeshRenderer[] parts;
     MaterialPropertyBlock properties;
     Vector3 previous;
-    float bank,heading;
+    float bank,heading,headingVelocity;
     void Start(){source=GetComponent<SpriteRenderer>();parts=model.GetComponentsInChildren<MeshRenderer>();properties=new MaterialPropertyBlock();previous=transform.position;}
     void LateUpdate()
     {
@@ -270,7 +270,7 @@ public sealed class CombatHullVisual : MonoBehaviour
         bank=Mathf.Lerp(bank,Mathf.Clamp(velocity*2,-15,15),Time.deltaTime*8);
         var flight=GetComponent<FormationFlight>();
         float target=flight!=null && flight.phrase!=FlightPhrase.Battery && flight.phrase!=FlightPhrase.Chevron ? Vector2.SignedAngle(Vector2.down,flight.Tangent) : 0;
-        heading=Mathf.MoveTowardsAngle(heading,target,300*Time.deltaTime);
+        heading=Mathf.SmoothDampAngle(heading,target,ref headingVelocity,.22f,180,Time.deltaTime);
         if(spin!=0)model.Rotate(0,0,spin*Time.deltaTime,Space.Self);else model.localRotation=Quaternion.Euler(0,bank,heading);
         properties.SetColor("_Tint",source!=null ? source.color : Color.white);
         foreach(var part in parts)if(part!=null)part.SetPropertyBlock(properties);

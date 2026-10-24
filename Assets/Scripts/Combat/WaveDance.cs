@@ -52,7 +52,7 @@ public sealed class WaveDance
         units.Sort((a,b)=>a.time.CompareTo(b.time));
         // The same tempo drives movement, launches and accents. Scaling only
         // movement breaks formations and makes faster-loop enemies miss shots.
-        float tempo=Mathf.Max(.01f,GameRules.enemySpeed*LevelRun.EnemyTempoScale);
+        float tempo=Mathf.Max(.01f,PatternMover.FlightTempo*GameRules.enemySpeed*LevelRun.EnemyTempoScale);
         foreach(var unit in units)unit.time/=tempo;
         return new Wave(budget,Handoff/tempo,1,ConflictGroup.cg.center,units);
     }
