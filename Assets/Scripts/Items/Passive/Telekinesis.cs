@@ -2,7 +2,7 @@ public class Telekinesis : AItem
 {
     private void Awake()
     {
-        SetData("Telekinesis", "The spoon is acting wonky", "Your shots chases your enemies (to an extent).", AItem.ItemType.passive);
+        SetData("Telekinesis", "The spoon is acting wonky", "Homing shots.", AItem.ItemType.passive);
     }
 
     public override void OnBegin()
