@@ -81,7 +81,7 @@ public sealed class PolishReviewProbe : MonoBehaviour
             if(fast)for(int loop=0;loop<8;loop++)
             {LevelRun.Advance(LevelId.Fields);LevelRun.Advance(LevelId.Snow);LevelRun.Advance(LevelId.Thunder);}
             GameRules.enemySpeed=fast ? 1.2f : 1;
-            float tempo=GameRules.enemySpeed*LevelRun.EnemyTempoScale;
+            float tempo=PatternMover.FlightTempo*GameRules.enemySpeed*LevelRun.EnemyTempoScale;
             var score=ThunderChoreography.Create(6).units.First(x=>x.enemy=="ArcLancer").fireTimes;
             var lancer=Station(typeof(ArcLancer),new Vector3(-1.5f,5,1));yield return null;lancer.enabled=false;
             lancer.gameObject.AddComponent<FormationFlight>().enabled=false;

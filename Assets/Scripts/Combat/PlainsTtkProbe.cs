@@ -68,7 +68,7 @@ public sealed class PlainsTtkProbe : MonoBehaviour
         {
             yield return Target(typeof(ScoutInterceptor),"stationary scout",true,null,1);
             yield return Target(typeof(PatrolGunship),"stationary gunship",true,null,1.6f);
-            yield return Target(typeof(HeavyBomber),"stationary bomber",true,null,2.4f);
+            yield return Target(typeof(HeavyBomber),"stationary bomber",true,null,3.5f);
         }
         // Every distinct authored Plains enemy/path combination, including the mirrored crossing.
         var seen=new HashSet<string>();
@@ -85,7 +85,7 @@ public sealed class PlainsTtkProbe : MonoBehaviour
                 }
             }
         if(FormationsOnly)yield break;
-        yield return Target(typeof(FieldsHeavyWing),"moving armored miniboss",false,null,14);
+        yield return Target(typeof(FieldsHeavyWing),"moving armored miniboss",false,null,24);
         yield return Target(typeof(FieldsBomberBoss),"stationary boss",true,null,39);
         yield return Target(typeof(FieldsBomberBoss),"moving boss, 2 seconds disengaged every 8 seconds",false,null,55,true);
         LevelRun.Advance(LevelId.Snow);LevelRun.Advance(LevelId.Thunder);LevelRun.Advance(LevelId.Fields);

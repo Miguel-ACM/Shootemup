@@ -10,6 +10,14 @@ using UnityEngine.SceneManagement;
 [InitializeOnLoad]
 public static class RenderFleetReview
 {
+    public static void PlainsBoss()
+    {
+        const string folder="ArtSource/CombatReview/PlayerFeedback";
+        Directory.CreateDirectory(folder);
+        Sheet(folder+"/BossFront.png",new[]{23},Vector3.zero,1,640,4.1f);
+        Sheet(folder+"/BossAngle.png",new[]{23},new Vector3(-22,24,0),1,640,4.1f);
+        Sheet(folder+"/BossGameplayScale.png",new[]{23},Vector3.zero,1,320,11.34f,true);
+    }
     const string Request="Temp/render-fleet.request";
     static RenderFleetReview(){EditorApplication.update+=Tick;}
     static void Tick()
@@ -62,7 +70,7 @@ public static class RenderFleetReview
                 model.transform.rotation=Quaternion.Euler(angle);
                 if(gameplayScale)model.transform.localScale=Vector3.one*GameplayScale(kinds[i]);
                 model.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(kinds[i]);
-                model.AddComponent<MeshRenderer>().sharedMaterial=CombatMaterials.Fleet;
+                model.AddComponent<MeshRenderer>().sharedMaterial=kinds[i]==23 ? CombatMaterials.Fortress : CombatMaterials.Fleet;
                 var label=new GameObject("Hull ID");SceneManager.MoveGameObjectToScene(label,scene);
                 label.transform.position=model.transform.position+new Vector3(0,-cellWorld*.43f,-1);
                 var text=label.AddComponent<TMPro.TextMeshPro>();text.text=kinds[i].ToString("00");text.fontSize=2.5f;

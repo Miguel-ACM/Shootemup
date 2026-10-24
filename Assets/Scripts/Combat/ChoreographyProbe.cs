@@ -59,12 +59,12 @@ public sealed class ChoreographyProbe : MonoBehaviour
             for(int budget=2;budget<=9;budget++)
             {
                 var wave=DistrictWaves.Create(budget);recipes.Add(Signature(wave));
-                if(wave.units.Count<5 || wave.units[0].time!=0 || wave.duration>4.5f)throw new Exception(level+" empty or slow composition");
+                if(wave.units.Count<5 || wave.units[0].time!=0 || wave.duration>4.5f/PatternMover.FlightTempo)throw new Exception(level+" empty or slow composition");
                 float previous=0;
                 foreach(var unit in wave.units)
                 {
                     if(unit.curve==null || unit.phrase!=FlightPhrase.Flow)throw new Exception(level+" reuses a legacy route");
-                    if(unit.time<previous || unit.time-previous>2 || unit.time>wave.duration+.1f)throw new Exception(level+" broken handoff timing");
+                    if(unit.time<previous || unit.time-previous>2/PatternMover.FlightTempo || unit.time>wave.duration+.1f)throw new Exception(level+" broken handoff timing");
                     previous=unit.time;routes.Add(unit.curve);
                     if(owners.TryGetValue(unit.curve,out var owner) && owner!=level)throw new Exception("Shared route between districts");
                     owners[unit.curve]=level;
@@ -110,7 +110,7 @@ public sealed class ChoreographyProbe : MonoBehaviour
         {
             LevelRun.Reset();
             if(faster){LevelRun.Advance(LevelId.Snow);LevelRun.Advance(LevelId.Thunder);LevelRun.Advance(LevelId.Fields);}
-            float tempo=GameRules.enemySpeed*LevelRun.EnemyTempoScale;
+            float tempo=PatternMover.FlightTempo*GameRules.enemySpeed*LevelRun.EnemyTempoScale;
             var members=launches.Select(at=>ScheduledMember(at,accents)).ToArray();
             var observed=new[]{new List<float>(),new List<float>()};
             for(int tick=1;tick<=180;tick++)
@@ -134,14 +134,14 @@ public sealed class ChoreographyProbe : MonoBehaviour
             foreach(var member in members)Destroy(member.gameObject);
         }
         LevelRun.Reset();
-        var late=ScheduledMember(0,accents);StepManually(late,2.25f);
+        var late=ScheduledMember(0,accents);StepManually(late,2.25f/PatternMover.FlightTempo);
         Check(!late.TakeFireBeat(),"a missed or offscreen accent expires instead of becoming a late catch-up volley");
-        StepManually(late,.351f);
+        StepManually(late,.351f/PatternMover.FlightTempo);
         Check(late.TakeFireBeat() && !late.TakeFireBeat(),"an expired accent does not suppress or duplicate the following beat");Destroy(late.gameObject);
         foreach(var route in new[]{PlainsChoreography.Fan,PlainsChoreography.Loop,SnowChoreography.Petal,TunnelChoreography.Helix})
         {
             var left=ScheduledMember(0,accents,route,-.24f,-.07f);var right=ScheduledMember(0,accents,route,.24f,.07f);
-            StepManually(left,2);StepManually(right,2);
+            StepManually(left,2/PatternMover.FlightTempo);StepManually(right,2/PatternMover.FlightTempo);
             float parameter=(float)typeof(FormationFlight).GetMethod("TravelParameter",Hidden).Invoke(left,new object[]{2f/6});
             Vector2 expected=Vector2.Scale(right.PositionAt(parameter)-left.PositionAt(parameter),new Vector2(Camera.RightLimit,Camera.UpLimit-Camera.DownLimit));
             Vector2 actual=right.transform.position-left.transform.position;
@@ -199,15 +199,15 @@ public sealed class ChoreographyProbe : MonoBehaviour
         flow.waves=Enumerable.Range(2,8).Select(x=>x.ToString()).ToArray();flow.enabled=true;flow.BeginWaves();
         float start=Time.time,nextFrame=0,lastChange=0;int lastWave=0,frames=0,peakEnemies=0,peakBullets=0;
         bool firing=false;var routes=new HashSet<string>();var timing=new List<string>();
-        while(Time.time-start<48)
+        while(Time.time-start<65)
         {
             float elapsed=Time.time-start;int wave=WaveNumber(flow);
             if(wave!=lastWave)
             {
-                if(lastWave>0 && elapsed-lastChange>7)throw new Exception(level+" has a stalled wave handoff");
+                if(lastWave>0 && elapsed-lastChange>7/PatternMover.FlightTempo)throw new Exception(level+" has a stalled wave handoff");
                 lastWave=wave;lastChange=elapsed;timing.Add(wave+":"+elapsed.ToString("F2",System.Globalization.CultureInfo.InvariantCulture));
             }
-            if(wave>=8 && elapsed-lastChange>7)break;
+            if(wave>=8 && elapsed-lastChange>7/PatternMover.FlightTempo)break;
             foreach(var flight in FindObjectsByType<FormationFlight>())if(flight.curve!=null)routes.Add(flight.curve.Name);
             peakEnemies=Mathf.Max(peakEnemies,AEnemy.Live.Count);peakBullets=Mathf.Max(peakBullets,CombatRound.Live.Count);
             // First half exposes the complete choreography. Second half includes stock-gun play.
