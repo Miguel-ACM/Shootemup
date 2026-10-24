@@ -39,12 +39,23 @@ public sealed class LevelEnvironment : MonoBehaviour
     AudioSource rainAudio;
     Transform stormAudioRoot;
     bool stormAudioReleased;
+    bool titleBackdrop;
     const float StormFadeSeconds=3.5f;
     readonly LineRenderer[] bolts=new LineRenderer[3];
     System.Random random;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetRuntime() { kit=null;active=null;preparing=sourceReady=false;preparedRoutes.Clear(); }
+
+    public static IEnumerator CreateTitleBackdrop()
+    {
+        yield return Prepare();
+        var root=new GameObject("Title tunnel backdrop");
+        var environment=root.AddComponent<LevelEnvironment>();
+        environment.level=LevelId.Tunnel;environment.titleBackdrop=true;
+        var build=environment.BuildSteps(true);
+        while(build.MoveNext())yield return build.Current;
+    }
 
     /// <summary>Build an offered route while the player is still flying in the current level.</summary>
     public static IEnumerator PrepareRoute(LevelId next)
@@ -326,7 +337,7 @@ public sealed class LevelEnvironment : MonoBehaviour
 
     void Update()
     {
-        float dt=Time.deltaTime;clock+=dt;
+        float dt=titleBackdrop ? Time.unscaledDeltaTime : Time.deltaTime;clock+=dt;
         travel=Mathf.Repeat(travel+dt*(level==LevelId.Tunnel ? 10.2f : level==LevelId.City ? 1.8f : 4.4f),LoopLength);
         for(int i=0;i<sections.Count;i++)
         {
