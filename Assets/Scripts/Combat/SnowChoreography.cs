@@ -3,13 +3,13 @@ using UnityEngine;
 public static class SnowChoreography
 {
     public static readonly FlightCurve Spiral=new FlightCurve("Snow / Unwinding spiral",Vector2.right,0,
-        -.70f,1.18f, -.78f,.88f, -.76f,.61f, -.70f,.52f, -.60f,.50f, -.48f,.52f, -.42f,.61f, -.42f,.78f, -.42f,1.18f);
+        -.72f,1.18f, -.82f,.92f, -.72f,.67f, -.48f,.52f, -.16f,.53f, .07f,.69f, .08f,.94f, .03f,1.18f);
     public static readonly FlightCurve Petal=new FlightCurve("Snow / Falling petal",Vector2.right,0,
         .58f,1.12f, .69f,.98f, .79f,.72f, .68f,.48f, .52f,.36f, .62f,.26f, .86f,.25f, 1.32f,.42f);
     public static readonly FlightCurve Crosswind=new FlightCurve("Snow / Crosswind",Vector2.up,0,
         -1.32f,.93f, -.70f,.78f, 0,.89f, .65f,.66f, .30f,.46f, -.50f,.50f, -1.32f,.38f);
     public static readonly FlightCurve Drift=new FlightCurve("Snow / Siege arc",Vector2.right,0,
-        0,1.18f, .08f,.90f, .10f,.72f, .03f,.52f, -.09f,.65f, -.09f,.93f, -.025f,1.18f);
+        -.55f,1.18f, -.60f,.90f, -.48f,.68f, -.12f,.56f, .28f,.63f, .50f,.88f, .50f,1.18f);
     public static Wave Create(int budget)
     {
         var d=new WaveDance(budget){Handoff=4.4f};float s=d.Side;int n=d.Extra;
