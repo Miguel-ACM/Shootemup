@@ -2,7 +2,7 @@ public class ProteinSupplement : AItem
 {
     private void Awake()
     {
-        SetData("Protein Supplement", "Faster gains", "Increased bullet size and damage.", AItem.ItemType.passive);
+        SetData("Protein Supplement", "Faster gains", "Bigger, stronger bullets.", AItem.ItemType.passive);
     }
 
     public override void OnBegin()
