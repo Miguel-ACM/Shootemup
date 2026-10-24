@@ -21,7 +21,8 @@ public abstract class DistrictEnemy : AEnemy
         go.AddComponent<CircleCollider2D>().isTrigger=true;
         var enemy=(DistrictEnemy)go.AddComponent(type);enemy.Configure();
         enemy.health*=GameRules.enemyHealth*LevelRun.EnemyHealthScale;
-        if(!(enemy is DistrictBoss)){enemy.health*=1.35f;enemy.attackInterval*=.78f;}
+        // Light wave ships should die during a clean pass with the stock gun.
+        if(!(enemy is DistrictBoss)){enemy.health*=enemy.hullScale<.8f ? .84f : 1.35f;enemy.attackInterval*=.78f;}
         enemy.size=enemy.hullScale;go.GetComponent<CircleCollider2D>().radius=enemy.hullScale*.8f;
         var model=new GameObject("Armored hull");model.transform.SetParent(go.transform,false);model.transform.localScale=Vector3.one*enemy.hullScale;
         model.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(enemy.hull);
