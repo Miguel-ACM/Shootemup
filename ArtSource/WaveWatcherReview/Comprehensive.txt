@@ -1,0 +1,141 @@
+PASS
+PASS title menu exposes Wave Watcher
+PASS title entry loads a ready live viewer after the cloud curtain
+PASS ordinary wave progression is stopped in the viewer
+PASS player hull, equipment and thrusters are invisible
+PASS invisible player cannot erase pattern bullets
+PASS invisible aim target is invulnerable even to beams
+PASS enemy shooting stays enabled in observer mode
+PASS hostile bullets pass through the hidden player
+PASS left aim changes the real target
+PASS right aim changes the real target
+PASS pause freezes real movement and bullets while UI remains usable
+PASS half-speed playback controls the actual simulation
+PASS double-speed playback is available
+PASS Fields exposes every authored wave from 2 through 20
+PASS Fields wave 2 selectable
+PASS Fields wave 3 selectable
+PASS Fields wave 4 selectable
+PASS Fields wave 5 selectable
+PASS Fields wave 6 selectable
+PASS Fields wave 7 selectable
+PASS Fields wave 8 selectable
+PASS Fields wave 9 selectable
+PASS Fields wave 10 selectable
+PASS Fields wave 11 selectable
+PASS Fields wave 12 selectable
+PASS Fields wave 13 selectable
+PASS Fields wave 14 selectable
+PASS Fields wave 15 selectable
+PASS Fields wave 16 selectable
+PASS Fields wave 17 selectable
+PASS Fields wave 18 selectable
+PASS Fields wave 19 selectable
+PASS Fields wave 20 selectable
+PASS FieldsWave shows actual live enemy shooting (peak 58 bullets)
+PASS Fields uses the full real wave recipe and spawn timing
+PASS FieldsMini shows actual live enemy shooting (peak 80 bullets)
+PASS FieldsBossTwo shows actual live enemy shooting (peak 187 bullets)
+PASS Snow exposes every authored wave from 2 through 20
+PASS Snow wave 2 selectable
+PASS Snow wave 3 selectable
+PASS Snow wave 4 selectable
+PASS Snow wave 5 selectable
+PASS Snow wave 6 selectable
+PASS Snow wave 7 selectable
+PASS Snow wave 8 selectable
+PASS Snow wave 9 selectable
+PASS Snow wave 10 selectable
+PASS Snow wave 11 selectable
+PASS Snow wave 12 selectable
+PASS Snow wave 13 selectable
+PASS Snow wave 14 selectable
+PASS Snow wave 15 selectable
+PASS Snow wave 16 selectable
+PASS Snow wave 17 selectable
+PASS Snow wave 18 selectable
+PASS Snow wave 19 selectable
+PASS Snow wave 20 selectable
+PASS SnowWave shows actual live enemy shooting (peak 103 bullets)
+PASS Snow uses the full real wave recipe and spawn timing
+PASS SnowMini shows actual live enemy shooting (peak 68 bullets)
+PASS SnowBossTwo shows actual live enemy shooting (peak 280 bullets)
+PASS City exposes every authored wave from 2 through 20
+PASS City wave 2 selectable
+PASS City wave 3 selectable
+PASS City wave 4 selectable
+PASS City wave 5 selectable
+PASS City wave 6 selectable
+PASS City wave 7 selectable
+PASS City wave 8 selectable
+PASS City wave 9 selectable
+PASS City wave 10 selectable
+PASS City wave 11 selectable
+PASS City wave 12 selectable
+PASS City wave 13 selectable
+PASS City wave 14 selectable
+PASS City wave 15 selectable
+PASS City wave 16 selectable
+PASS City wave 17 selectable
+PASS City wave 18 selectable
+PASS City wave 19 selectable
+PASS City wave 20 selectable
+PASS CityWave shows actual live enemy shooting (peak 80 bullets)
+PASS City uses the full real wave recipe and spawn timing
+PASS CityMini shows actual live enemy shooting (peak 50 bullets)
+PASS CityBossTwo shows actual live enemy shooting (peak 280 bullets)
+PASS City phase two shows the actual enraged survivor
+PASS Thunder exposes every authored wave from 2 through 20
+PASS Thunder wave 2 selectable
+PASS Thunder wave 3 selectable
+PASS Thunder wave 4 selectable
+PASS Thunder wave 5 selectable
+PASS Thunder wave 6 selectable
+PASS Thunder wave 7 selectable
+PASS Thunder wave 8 selectable
+PASS Thunder wave 9 selectable
+PASS Thunder wave 10 selectable
+PASS Thunder wave 11 selectable
+PASS Thunder wave 12 selectable
+PASS Thunder wave 13 selectable
+PASS Thunder wave 14 selectable
+PASS Thunder wave 15 selectable
+PASS Thunder wave 16 selectable
+PASS Thunder wave 17 selectable
+PASS Thunder wave 18 selectable
+PASS Thunder wave 19 selectable
+PASS Thunder wave 20 selectable
+PASS ThunderWave shows actual live enemy shooting (peak 40 bullets)
+PASS Thunder uses the full real wave recipe and spawn timing
+PASS ThunderMini shows actual live enemy shooting (peak 28 bullets)
+PASS ThunderBossTwo shows actual live enemy shooting (peak 37 bullets)
+PASS Tunnel exposes every authored wave from 2 through 20
+PASS Tunnel wave 2 selectable
+PASS Tunnel wave 3 selectable
+PASS Tunnel wave 4 selectable
+PASS Tunnel wave 5 selectable
+PASS Tunnel wave 6 selectable
+PASS Tunnel wave 7 selectable
+PASS Tunnel wave 8 selectable
+PASS Tunnel wave 9 selectable
+PASS Tunnel wave 10 selectable
+PASS Tunnel wave 11 selectable
+PASS Tunnel wave 12 selectable
+PASS Tunnel wave 13 selectable
+PASS Tunnel wave 14 selectable
+PASS Tunnel wave 15 selectable
+PASS Tunnel wave 16 selectable
+PASS Tunnel wave 17 selectable
+PASS Tunnel wave 18 selectable
+PASS Tunnel wave 19 selectable
+PASS Tunnel wave 20 selectable
+PASS TunnelWave shows actual live enemy shooting (peak 34 bullets)
+PASS Tunnel uses the full real wave recipe and spawn timing
+PASS TunnelMini shows actual live enemy shooting (peak 38 bullets)
+PASS TunnelBossTwo shows actual live enemy shooting (peak 263 bullets)
+PASS Tunnel phase two deploys the two real smaller saws
+PASS replay resets the real wave timeline
+PASS looping can be disabled
+PASS Back returns to title and disposes the viewer
+PASS normal START has a visible controllable vulnerable player
+PASS normal START restores ordinary combat and time
