@@ -26,7 +26,9 @@ public static class LevelRun
     }
     // Explicit starts are used by environment/boss previews; new games use Plains.
     public static void Reset(LevelId first = LevelId.Fields)
-    { Stage=Tier(first);Current=first;Seed=Random.Range(1,10000000); }
+    { Reset(first,Random.Range(1,10000000)); }
+    public static void Reset(LevelId first,int seed)
+    { Stage=Tier(first);Current=first;Seed=Mathf.Max(1,seed&int.MaxValue); }
     public static void Advance(LevelId next)
     {
         int expected=ReturnsToPlains ? 1 : Tier(Current)+1;

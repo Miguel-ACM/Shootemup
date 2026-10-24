@@ -30,14 +30,6 @@ public static class DistrictWaves
     }
     public static Wave Create(int budget)
     {
-        switch(LevelRun.Current)
-        {
-            case LevelId.Fields:return PlainsChoreography.Create(budget);
-            case LevelId.Tunnel:return TunnelChoreography.Create(budget);
-            case LevelId.Snow:return SnowChoreography.Create(budget);
-            case LevelId.Thunder:return ThunderChoreography.Create(budget);
-            case LevelId.City:return CityChoreography.Create(budget);
-        }
-        throw new System.ArgumentOutOfRangeException(nameof(LevelRun.Current));
+        return WaveComposer.Create(budget);
     }
 }

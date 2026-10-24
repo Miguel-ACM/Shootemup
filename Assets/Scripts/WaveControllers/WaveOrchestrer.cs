@@ -55,7 +55,7 @@ public class WaveOrchestrer : MonoBehaviour
         {
             // Keep the first phrase clock at zero until the whole arena is visible.
             // This also covers route changes and the loop back to Plains.
-            if(CloudTransition.Busy){openingStartsAt=-1;return;}
+            if(CloudTransition.Busy || !WavePreparation.Ready){openingStartsAt=-1;return;}
             if(GameRules.playerDisabled)return;
             if(openingStartsAt<0)openingStartsAt=Time.time+OpeningBreather;
             if(Time.time<openingStartsAt)return;

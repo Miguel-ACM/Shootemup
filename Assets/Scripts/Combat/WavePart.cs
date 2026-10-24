@@ -142,11 +142,11 @@ public static class WaveGeometry
         }
         return mask;
     }
-    public static bool Fits(ulong[] candidate,float at,ulong[] occupied)
+    public static bool Fits(ulong[] candidate,int[] filled,float at,ulong[] occupied)
     {
         int offset=Mathf.RoundToInt(at/Step)*64;
         int count=Mathf.Min(candidate.Length,occupied.Length-offset);
-        for(int i=0;i<count;i++)if((candidate[i]&occupied[i+offset])!=0)return false;
+        foreach(int i in filled){if(i>=count)break;if((candidate[i]&occupied[i+offset])!=0)return false;}
         return true;
     }
     public static void Reserve(ulong[] candidate,float at,ref ulong[] occupied)

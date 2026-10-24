@@ -15,7 +15,7 @@ public sealed class FlightCurve
     void Measure()
     {
         float width=Camera.RightLimit,height=Camera.UpLimit-Camera.DownLimit;
-        if(distances!=null && measuredWidth==width && measuredHeight==height)return;
+        if(distances!=null && Mathf.Approximately(measuredWidth,width) && Mathf.Approximately(measuredHeight,height))return;
         measuredWidth=width;measuredHeight=height;distances=new float[129];var previous=Sample(0);
         for(int i=1;i<distances.Length;i++)
         {

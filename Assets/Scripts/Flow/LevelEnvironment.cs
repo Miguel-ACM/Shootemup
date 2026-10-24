@@ -110,6 +110,7 @@ public sealed class LevelEnvironment : MonoBehaviour
         foreach(var route in preparedRoutes.Values)
             if(route!=null && route!=active)Destroy(route.gameObject);
         preparedRoutes.Clear();
+        WavePreparation.Begin();
     }
 
     public static void FadeOutStorm()
