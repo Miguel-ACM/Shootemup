@@ -6,7 +6,7 @@ public sealed class ArmoredCarrier : DistrictEnemy
     protected override void Attack(){Fan<ProximityMine>(3,50,2.8f,.25f);Fan<NeedleRound>(9,12,4.5f);}
 
     public override void damage(float amount){base.damage(amount*(age%3<1 ? 1 : .65f));}
-    protected override void Start(){base.Start();SpawnEscorts();}
+    protected override void Start(){base.Start();if(!(movement is FormationFlight))SpawnEscorts();}
     void SpawnEscorts()
     {
         foreach(int side in new[]{-1,1})
