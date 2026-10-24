@@ -2,10 +2,10 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class StormReactor : DistrictEnemy
 {
-    protected override void Configure(){hull=27;health=260;hullScale=1.1f;attackInterval=2.1f;Mover<TopTracker>();}
+    protected override void Configure(){hull=27;health=480;hullScale=1.1f;attackInterval=.72f;Mover<TopTracker>();}
     protected override void Attack()
     {
-        if(volley%2==0){Fan<GuidedMissile>(3,24,4.5f);return;}
+        if(volley%4!=1){Fan<NeedleRound>(9,13,5.5f);return;}
         var laser=CombatRound.Launch<PulseLaser>(transform.position,Aim,0);
         if(laser!=null)laser.Bind(Hull,new Vector3(0,-.35f,-.4f));
     }
