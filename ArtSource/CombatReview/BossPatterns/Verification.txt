@@ -1,0 +1,182 @@
+PASS
+PASS selected shell range 2,85 at 30 FPS / speed 3
+PASS selected shell range 2,85 at 30 FPS / speed 7
+PASS selected shell range 5,2 at 30 FPS / speed 3
+PASS selected shell range 5,2 at 30 FPS / speed 7
+PASS selected shell range 8,4 at 30 FPS / speed 3
+PASS selected shell range 8,4 at 30 FPS / speed 7
+PASS selected shell range 2,85 at 60 FPS / speed 3
+PASS selected shell range 2,85 at 60 FPS / speed 7
+PASS selected shell range 5,2 at 60 FPS / speed 3
+PASS selected shell range 5,2 at 60 FPS / speed 7
+PASS selected shell range 8,4 at 60 FPS / speed 3
+PASS selected shell range 8,4 at 60 FPS / speed 7
+PASS selected shell range 2,85 at 144 FPS / speed 3
+PASS selected shell range 2,85 at 144 FPS / speed 7
+PASS selected shell range 5,2 at 144 FPS / speed 3
+PASS selected shell range 5,2 at 144 FPS / speed 7
+PASS selected shell range 8,4 at 144 FPS / speed 3
+PASS selected shell range 8,4 at 144 FPS / speed 7
+PASS complete twelve-shot ring at phase 0
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS complete twelve-shot ring at phase 27
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS complete twelve-shot ring at phase 359
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS complete twelve-shot ring at phase 725
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS complete twelve-shot ring at phase -411
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS uniform ring angle including wraparound
+PASS full projectile budget defers the whole burst
+PASS deferred burst releases all twelve without exceeding cap
+PASS pooled shells reset their previous enemy's range
+PASS HeavyBomber selects its own shell range
+PASS AvalancheBomber selects its own shell range
+PASS FieldsHeavyWing selects its own shell range
+PASS SnowSiegeCraft selects its own shell range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS SnowSiegeBoss phase 1 scored output 66, rests 4
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS boss shell has an explicit scored range
+PASS SnowSiegeBoss phase 2 scored output 88, rests 4
+PASS beam has a charged attached emitter
+PASS beam has a charged attached emitter
+PASS beam has a charged attached emitter
+PASS beam has a charged attached emitter
+PASS ThunderLanceBoss phase 1 scored output 32, rests 6
+PASS beam has a charged attached emitter
+PASS beam has a charged attached emitter
+PASS beam has a charged attached emitter
+PASS beam has a charged attached emitter
+PASS beam has a charged attached emitter
+PASS beam has a charged attached emitter
+PASS beam has a charged attached emitter
+PASS ThunderLanceBoss phase 2 scored output 79, rests 5
+PASS seven-beam comb alternates sweep direction
+PASS city duo trades beat 1
+PASS city duo trades beat 2
+PASS city duo trades beat 3
+PASS city duo trades beat 4
+PASS city duo trades beat 5
+PASS city duo trades beat 6
+PASS city duo trades beat 7
+PASS city duo trades beat 8
+PASS city duo trades beat 9
+PASS city duo trades beat 10
+PASS city duo trades beat 11
+PASS city duo trades beat 12
+PASS city survivor heals half its missing health
+PASS first city death drops nothing and enrages survivor
+PASS city survivor strengthens its shell phrase
+PASS saw emits nothing on timer, free travel or hit and has no thrusters
+PASS saw bounce emits dense mixed sizes
+PASS right-wall saw burst points entirely back into arena
+PASS second-phase saw deploys two destroyable saws without thrusters
+PASS SnowOne live pressure; peak 247; 100 captured frames
+PASS SnowTwo live pressure; peak 280; 100 captured frames
+PASS CityOne live pressure; peak 173; 100 captured frames
+PASS CityTwo live pressure; peak 199; 100 captured frames
+PASS ThunderOne live pressure; peak 16; 100 captured frames
+PASS ThunderTwo live pressure; peak 61; 100 captured frames
+PASS TunnelOne live pressure; peak 61; 100 captured frames
+PASS TunnelTwo live pressure; peak 280; 100 captured frames
