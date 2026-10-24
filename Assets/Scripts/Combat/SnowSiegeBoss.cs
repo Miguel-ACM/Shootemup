@@ -2,26 +2,48 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class SnowSiegeBoss : DistrictBoss
 {
-    protected override void Configure(){hull=21;hullScale=1.6f;health=3200;attackInterval=1.7f;}
+    Vector2 shellAxis=Vector2.down;
+    protected override void Configure(){hull=21;hullScale=1.6f;health=3200;attackInterval=.65f;shellTravelDistance=6.6f;}
     protected override void MoveBoss(float dt)
     {
         station.x=Mathf.Sin(age*.45f)*1.8f;base.MoveBoss(dt);
     }
-    protected override void PressureAttack()
-    {
-        Radial<SimpleRound>(phaseTwo ? 30 : 22,phaseTwo ? 3.8f : 3.1f,.105f,age*19);
-    }
+    protected override void PressureAttack(){} // The score below owns the rests as well as the volleys.
     protected override void Attack()
     {
-        switch(volley%4)
+        int beat=(volley-1)%12;
+        if(beat==0)shellAxis=Aim;
+        if(beat<4)
         {
-            case 0: Fan<BurstShell>(phaseTwo ? 7 : 4,17,4,.48f);break;
-            case 1:
-                for(int i=-2;i<=2;i++)CombatRound.Launch<SuspendedRound>(transform.position+Vector3.right*i*.8f,Vector2.down,5,.25f);
-                Fan<BurstShell>(2,65,3,.5f);break;
-            case 2: Fan<PlasmaOrb>(phaseTwo ? 4 : 2,28,2,.62f);break;
-            default:Radial<BurstShell>(phaseTwo ? 8 : 5,3.5f,.42f,volley*15);break;
+            // Four matching crowns settle in alternating rows, then open into full rings.
+            int count=phaseTwo ? 7 : 5;
+            float distance=beat%2==0 ? shellTravelDistance : shellTravelDistance-2;
+            for(int i=0;i<count;i++)
+            {
+                var shot=Fire<BurstShell>(Hull.TransformPoint(new Vector3(0,-.65f,-.25f)),
+                    CombatVisuals.Rotate(shellAxis,(i-(count-1)*.5f)*22+(beat%2==0 ? -5 : 5)),4.3f,.44f);
+                if(shot!=null)shot.SetTravelDistance(distance);
+            }
         }
-        if(phaseTwo)Fan<NeedleRound>(3,14,5);
+        else if(beat==4 || beat==6)
+        {
+            // Two straight combs answer the shell crowns; the second fills the first's lanes.
+            int count=phaseTwo ? 13 : 10;
+            for(int i=0;i<count;i++)
+            {
+                float x=Mathf.Lerp(Camera.LeftLimit+.35f,Camera.RightLimit-.35f,(i+.5f)/count);
+                if(beat==6)x+=.22f;
+                Fire<SuspendedRound>(new Vector3(x,transform.position.y-.7f,0),Vector2.down,phaseTwo ? 6 : 5,.18f);
+            }
+        }
+        else if(beat==8 || beat==9)
+        {
+            int sign=beat==8 ? -1 : 1;
+            int count=phaseTwo ? 17 : 13;
+            for(int i=0;i<count;i++)Fire<NeedleRound>(transform.position,
+                CombatVisuals.Rotate(Vector2.down,(i-(count-1)*.5f)*9+sign*12),phaseTwo ? 5.8f : 5,.13f);
+        }
+        // Beats 5, 7, 10 and 11 are intentional rests while existing patterns unfold.
     }
+    protected override void OnPhaseTwo(){volley=0;nextAttack=age+1.1f;}
 }
