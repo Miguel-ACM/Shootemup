@@ -33,7 +33,7 @@ public class BlankBullet : AActiveItem
 
     private void Awake()
     {
-        SetData("Blank bullet", "Puf!", "Erase all the bullets nearby.", AItem.ItemType.active);
+        SetData("Blank bullet", "Puf!", "Erase nearby bullets.", AItem.ItemType.active);
     }
 
     public override float OnPress(float mana)
