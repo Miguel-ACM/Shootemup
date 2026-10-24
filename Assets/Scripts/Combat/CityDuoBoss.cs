@@ -6,14 +6,15 @@ public sealed class CityDuoBoss : DistrictBoss
     public CityDuoBoss partner;
     bool enraged;
     float combinedMaximum;
+    Vector2 attackAxis=Vector2.down;
     public override float DisplayFraction=>(Mathf.Max(0,health)+(partner!=null ? Mathf.Max(0,partner.health) : 0))/Mathf.Max(1,combinedMaximum);
-    protected override void Configure(){hull=12;hullScale=.8f;health=1500;attackInterval=1.1f;}
+    protected override void Configure(){hull=12;hullScale=.8f;health=1500;attackInterval=.48f;shellTravelDistance=5.8f;}
     protected override void Start()
     {
         if(heavy)
         {
             hull=14;hullScale=1.15f;size=hullScale;Hull.GetComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(14);Hull.localScale=Vector3.one*hullScale;
-            GetComponent<CircleCollider2D>().radius=hullScale*.8f;GetComponent<EnemyThrusters>().sockets=IndustrialMeshFactory.CombatEngineSockets(14);attackInterval=1.7f;
+            GetComponent<CircleCollider2D>().radius=hullScale*.8f;GetComponent<EnemyThrusters>().sockets=IndustrialMeshFactory.CombatEngineSockets(14);
         }
         base.Start();
         if(partner==null && !heavy)
@@ -31,24 +32,36 @@ public sealed class CityDuoBoss : DistrictBoss
         station.y=Camera.UpLimit-(heavy ? 2 : 3.5f);
         transform.position=Vector3.MoveTowards(transform.position,station,dt*(heavy ? 2 : 5)*(enraged ? 1.4f : 1));
     }
-    protected override float PressureInterval=>enraged ? .3f : .65f;
-    protected override void PressureAttack()
-    {
-        if(heavy)Radial<SimpleRound>(enraged ? 24 : 16,3.5f,.11f,age*28);
-        else Fan<NeedleRound>(enraged ? 5 : 3,12,6.5f);
-    }
+    // Both ships keep one tempo until a partner dies; independent half-health
+    // acceleration used to scramble the duo's alternating releases.
+    protected override bool PhaseTwoReady=>false;
+    protected override float AttackPace=>enraged ? .64f : 1;
+    protected override void PressureAttack(){}
     protected override void Attack()
     {
-        if(heavy)
+        int beat=(volley-1)%12;
+        if(beat==0 || beat==1 || beat==8)attackAxis=Aim;
+        if(heavy && (beat==0 || beat==2 || beat==4))
         {
-            Fan<BurstShell>(enraged ? 5 : 3,22,3.6f,.4f);
-            if(volley%2==0)Fan<GuidedMissile>(2,35,4);
+            int count=enraged ? 6 : 4;
+            for(int i=0;i<count;i++)Fire<BurstShell>(Hull.TransformPoint(new Vector3(0,-.7f,-.3f)),
+                CombatVisuals.Rotate(attackAxis,(i-(count-1)*.5f)*18),4.4f,.4f);
         }
-        else
+        else if(heavy && (beat==6 || beat==7))
         {
-            Fan<NeedleRound>(enraged ? 5 : 3,8,7);
-            if(volley%2==0)Fan<GuidedMissile>(2,25,5.5f);
+            int count=enraged ? 19 : 15;
+            for(int i=0;i<count;i++)Fire<SimpleRound>(transform.position,
+                CombatVisuals.Rotate(Vector2.down,(i-(count-1)*.5f)*9+(beat==6 ? -4.5f : 4.5f)),4.7f,.12f);
         }
+        else if(!heavy && (beat==1 || beat==3 || beat==5))
+        {
+            int count=enraged ? 15 : 11;
+            for(int i=0;i<count;i++)Fire<NeedleRound>(transform.position,
+                CombatVisuals.Rotate(attackAxis,(i-(count-1)*.5f)*6+(beat-3)*3),7.6f,.13f);
+        }
+        else if(!heavy && (beat==8 || beat==9))Fan<GuidedMissile>(enraged ? 5 : 3,17,5.5f);
+        // A lone survivor fills its missing partner's accents without continuous noise.
+        else if(enraged && (beat==2 || beat==4 || beat==6))Fan<NeedleRound>(9,9,7);
     }
     protected override void UpdateBar(){if(bar!=null)bar.Set(Mathf.Max(0,health)+(partner!=null ? Mathf.Max(0,partner.health) : 0));}
     protected override void Die()
@@ -56,7 +69,7 @@ public sealed class CityDuoBoss : DistrictBoss
         if(partner!=null && partner.health>0)
         {
             partner.health+=Mathf.Max(0,partner.initialHealth-partner.health)*.5f;
-            partner.enraged=true;partner.attackInterval*=.6f;partner.partner=null;
+            partner.enraged=true;partner.phaseTwo=true;partner.volley=0;partner.nextAttack=partner.age+.8f;partner.partner=null;
             partner.NotifyBossPhaseChange(2);
             // The first kill gives neither pickups nor an encounter-completion event.
             isBoss=false;lifeDropChance=manaDropChance=moneyDropChance=0;scoreOnKill=0;bar=null;

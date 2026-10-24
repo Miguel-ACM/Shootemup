@@ -20,11 +20,11 @@ public abstract class DistrictBoss : DistrictEnemy
     {
         if(GameRules.playerDisabled)return;
         age+=Time.deltaTime*LevelRun.EnemyTempoScale;
-        if(!phaseTwo && HealthFraction<=.5f){phaseTwo=true;NotifyBossPhaseChange(2);OnPhaseTwo();}
+        if(!phaseTwo && PhaseTwoReady){phaseTwo=true;NotifyBossPhaseChange(2);OnPhaseTwo();}
         MoveBoss(Time.deltaTime*LevelRun.EnemyTempoScale);
         if(transform.position.y<Camera.UpLimit-1 && age>=nextAttack)
         {
-            volley++;Attack();nextAttack=age+attackInterval*(phaseTwo ? .72f : 1)/Mathf.Max(.5f,GameRules.enemyShootSpeed);
+            volley++;Attack();nextAttack=age+attackInterval*AttackPace/Mathf.Max(.5f,GameRules.enemyShootSpeed);
         }
         if(transform.position.y<Camera.UpLimit-1 && age>=nextPressure)
         {
@@ -33,6 +33,8 @@ public abstract class DistrictBoss : DistrictEnemy
         UpdateBar();
     }
     protected virtual void MoveBoss(float dt){transform.position=Vector3.MoveTowards(transform.position,station,dt*2);}
+    protected virtual bool PhaseTwoReady=>HealthFraction<=.5f;
+    protected virtual float AttackPace=>phaseTwo ? .72f : 1;
     protected virtual float PressureInterval=>phaseTwo ? .55f : .85f;
     protected virtual void PressureAttack(){}
     protected virtual void OnPhaseTwo(){}
