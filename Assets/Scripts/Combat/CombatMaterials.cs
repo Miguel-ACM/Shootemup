@@ -5,6 +5,30 @@ using UnityEngine;
 public static class CombatMaterials
 {
     static Material fleet;
+    static Material fortress;
+    public static Material Fortress
+    {
+        get
+        {
+            if(fortress!=null)return fortress;
+            fortress=new Material(Fleet){name="Plains fortress worn armor"};
+            var texture=Object.Instantiate((Texture2D)Fleet.mainTexture);
+            texture.name="Fortress riveted and weathered trim";
+            // Keep the established atlas and add seams, fasteners and chipped paint.
+            foreach(int tile in new[]{0,2,6})for(int y=8;y<56;y++)for(int x=8;x<56;x++)
+            {
+                int u=tile%4*64+x,v=tile/4*64+y;
+                Color c=texture.GetPixel(u,v);
+                int grain=(x*73+y*37+x*y*3)%101;
+                c*=.94f+grain*.0012f;
+                if((y==22 || y==43) && x<51)c*=.55f;
+                if((x==12 || x==51) && (y==12 || y==49))c=new Color(.65f,.69f,.62f);
+                if(grain>96 && (x<12 || y>51))c=Color.Lerp(c,new Color(.57f,.59f,.52f),.65f);
+                c.a=1;texture.SetPixel(u,v,c);
+            }
+            texture.Apply();fortress.mainTexture=texture;return fortress;
+        }
+    }
     public static Material Fleet
     {
         get

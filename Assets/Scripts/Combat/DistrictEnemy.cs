@@ -26,7 +26,7 @@ public abstract class DistrictEnemy : AEnemy
         enemy.size=enemy.hullScale;go.GetComponent<CircleCollider2D>().radius=enemy.hullScale*.8f;
         var model=new GameObject("Armored hull");model.transform.SetParent(go.transform,false);model.transform.localScale=Vector3.one*enemy.hullScale;
         model.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(enemy.hull);
-        var renderer=model.AddComponent<MeshRenderer>();renderer.sharedMaterial=CombatMaterials.Fleet;renderer.sortingLayerName="Enemy";
+        var renderer=model.AddComponent<MeshRenderer>();renderer.sharedMaterial=enemy is FieldsBomberBoss ? CombatMaterials.Fortress : CombatMaterials.Fleet;renderer.sortingLayerName="Enemy";
         enemy.Hull=model.transform;go.AddComponent<CombatHullVisual>().model=model.transform;
         if(!(enemy is TunnelSawBoss))
         {

@@ -19,6 +19,22 @@ public static partial class IndustrialMeshFactory
                 b.Drum(new Vector3(x,y,-.42f),.1f,.14f,11,8,6);b.Drum(new Vector3(x,y,-.51f),.055f,.045f,3,8);
             }
             Barrel(b,s*1.4f,-.35f,.6f,.16f,-.13f);
+            // Paired ammunition decks, exposed feed rails and cooling vanes.
+            b.Box(new Vector3(s*.98f,.03f,-.43f),new Vector3(.58f,.24f,.12f),2,6);
+            for(int slat=0;slat<5;slat++)
+                b.Box(new Vector3(s*.98f,-.05f+slat*.045f,-.51f),new Vector3(.43f,.018f,.035f),11);
+            b.Box(new Vector3(s*.47f,.24f,-.39f),new Vector3(.07f,.72f,.07f),6,11);
+            for(int plate=0;plate<3;plate++)
+            {
+                float y=.57f-plate*.20f;
+                b.Box(new Vector3(s*.25f,y,-.44f),new Vector3(.28f,.16f,.055f),plate==1 ? 2 : 0,6);
+                b.Drum(new Vector3(s*.34f,y+.045f,-.48f),.022f,.025f,6,6);
+            }
+            // Large shoulder emitters account for the outward pressure patterns.
+            Ring(b,new Vector3(s*1.34f,.32f,-.26f),.11f,.22f,.10f,6,8);
+            b.Drum(new Vector3(s*1.34f,.32f,-.33f),.105f,.045f,11,8);
+            b.Drum(new Vector3(s*1.34f,.32f,-.36f),.065f,.025f,3,8);
+            b.Box(new Vector3(s*1.42f,.04f,-.22f),new Vector3(.075f,.18f,.04f),10,11);
         }
         Inlet(b,0,.42f,.47f,.38f,-.43f,0);
         Armor(b,new[]{V(-.16f,-.62f),V(.16f,-.62f),V(0,-.93f)},.04f,2,-.43f);
