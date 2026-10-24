@@ -34,7 +34,7 @@ public class PulseLaser : CombatRound
         {
             transform.position=source.TransformPoint(localMuzzle);
             // The beam is part of its emitter's phrase, including charge, sweep and release.
-            clockRate=Mathf.Max(.01f,LevelRun.EnemyTempoScale*(source.GetComponentInParent<FormationFlight>()!=null ? GameRules.enemySpeed : 1));
+            clockRate=Mathf.Max(.01f,LevelRun.EnemyTempoScale*(source.GetComponentInParent<FormationFlight>()!=null ? PatternMover.FlightTempo*GameRules.enemySpeed : 1));
         }
         return this;
     }
