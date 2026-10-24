@@ -1,0 +1,36 @@
+PASS
+PASS Fields: 16 authored parts, ten exclusive routes, 152 distinct waves across 8 seeds; no repeated neighboring parts or swept hull intersections; maximum 13 ships / 15,84s.
+PASS Fields: all nineteen third-loop waves preserve model spacing and capped timing at the faster tempo.
+PASS Snow: 16 authored parts, ten exclusive routes, 152 distinct waves across 8 seeds; no repeated neighboring parts or swept hull intersections; maximum 10 ships / 15,94s.
+PASS Snow: all nineteen third-loop waves preserve model spacing and capped timing at the faster tempo.
+PASS City: 16 authored parts, ten exclusive routes, 152 distinct waves across 8 seeds; no repeated neighboring parts or swept hull intersections; maximum 17 ships / 12,82s.
+PASS City: all nineteen third-loop waves preserve model spacing and capped timing at the faster tempo.
+PASS Thunder: 16 authored parts, ten exclusive routes, 152 distinct waves across 8 seeds; no repeated neighboring parts or swept hull intersections; maximum 13 ships / 15,87s.
+PASS Thunder: all nineteen third-loop waves preserve model spacing and capped timing at the faster tempo.
+PASS Tunnel: 16 authored parts, ten exclusive routes, 152 distinct waves across 8 seeds; no repeated neighboring parts or swept hull intersections; maximum 12 ships / 15,91s.
+PASS Tunnel: all nineteen third-loop waves preserve model spacing and capped timing at the faster tempo.
+PASS total 855 waves (including 95 third-loop encounters); 80 authored parts / 50 district-exclusive routes. Build median 0,28 ms, p95 3,96 ms, maximum 26,40 ms (includes first mesh generation).
+PASS seed, spacing and composition stress audit completed
+PASS normal wave director completes three prepared waves with actual fire and no overlapping hulls across handoffs
+PASS New Set changes the actual wave plan
+PASS Replay keeps the exact seeded parts
+PASS Fields completes its full plan before combat; all nineteen cached wave lookups 0,05ms
+PASS FieldsWave2 full live formation, coordinated fire and no hull overlap; Orchard flight + Ridge staff
+PASS FieldsWave8 full live formation, coordinated fire and no hull overlap; Opening crown + Ridge patrol + Orchard guard
+PASS FieldsWave15 full live formation, coordinated fire and no hull overlap; Bomber crescent + Orchard guard + River braid
+PASS Snow completes its full plan before combat; all nineteen cached wave lookups 0,05ms
+PASS SnowWave2 full live formation, coordinated fire and no hull overlap; White curl + Ice wind
+PASS SnowWave8 full live formation, coordinated fire and no hull overlap; Shielded crown + Snow crown + Petal procession
+PASS SnowWave15 full live formation, coordinated fire and no hull overlap; Crystal diamond + Heavy white curl + Glacier flight
+PASS City completes its full plan before combat; all nineteen cached wave lookups 0,07ms
+PASS CityWave2 full live formation, coordinated fire and no hull overlap; Elevated traffic + Junction drones
+PASS CityWave8 full live formation, coordinated fire and no hull overlap; Command ramp + Junction drones + Elevated traffic
+PASS CityWave15 full live formation, coordinated fire and no hull overlap; Overtaking drones + Elevated traffic + Junction pursuit
+PASS Thunder completes its full plan before combat; all nineteen cached wave lookups 0,05ms
+PASS ThunderWave2 full live formation, coordinated fire and no hull overlap; Forked flight + Flash procession
+PASS ThunderWave8 full live formation, coordinated fire and no hull overlap; Hooking rank + Lightning slash + Sweeping lance
+PASS ThunderWave15 full live formation, coordinated fire and no hull overlap; Hooking lance + Capacitor wing + Static flight
+PASS Tunnel completes its full plan before combat; all nineteen cached wave lookups 0,05ms
+PASS TunnelWave2 full live formation, coordinated fire and no hull overlap; Shaft procession + Upper procession
+PASS TunnelWave8 full live formation, coordinated fire and no hull overlap; Upper battery + Low rail + Pipe diamond
+PASS TunnelWave15 full live formation, coordinated fire and no hull overlap; Sliding diamond + Pipe battery + Wall rank

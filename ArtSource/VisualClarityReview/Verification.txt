@@ -1,0 +1,78 @@
+PASS
+PASS SimpleRound has its own sprite
+PASS NeedleRound has its own sprite
+PASS HelixRound has its own sprite
+PASS BurstShell has its own sprite
+PASS RicochetBolt has its own sprite
+PASS SuspendedRound has its own sprite
+PASS GuidedMissile has its own sprite
+PASS PlasmaOrb has its own sprite
+PASS ProximityMine has its own sprite
+PASS ReturningDisc has its own sprite
+PASS ScatterCarrier has its own sprite
+PASS LaserSideRound has its own sprite
+PASS both helix partners draw a continuous tapered wake
+PASS pooled helix clears the previous trail before relaunch
+PASS shell sparks begin only after stopping, travel inward and tighten toward detonation (1,12 → 0,57)
+PASS all six side outlets are visible before any lateral shot
+PASS side volley keeps all six real projectiles
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS pooled laser hides stale side cues
+PASS Plains / Orchard bank: peak frame jerk 610,0 → 14,6; turn 116,5 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Plains / Opening fan: peak frame jerk 912,8 → 35,4; turn 167,7 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Plains / River stream: peak frame jerk 1021,8 → 24,6; turn 110,8 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Plains / Ridge crossing: peak frame jerk 375,7 → 8,8; turn 86,2 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Plains / River braid: peak frame jerk 854,2 → 6,9; turn 43,2 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Plains / Meadow hook: peak frame jerk 735,6 → 80,0; turn 245,9 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Plains / Figure eight: peak frame jerk 2582,9 → 154,5; turn 299,9 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Plains / Orchard return: peak frame jerk 900,5 → 100,2; turn 333,3 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Plains / Swoop: peak frame jerk 446,2 → 9,9; turn 90,5 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Plains / Meadow crescent: peak frame jerk 437,2 → 19,3; turn 129,1 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Tunnel / Shaft screw: peak frame jerk 561,2 → 11,2; turn 58,7 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Tunnel / Service loop: peak frame jerk 891,1 → 57,5; turn 232,2 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Tunnel / Low rail: peak frame jerk 108,6 → 2,5; turn 23,1 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Tunnel / Pipe bank: peak frame jerk 587,3 → 31,7; turn 161,7 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Tunnel / Upper rail: peak frame jerk 66,1 → 3,7; turn 28,0 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Tunnel / Service gate: peak frame jerk 788,9 → 25,5; turn 148,8 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Tunnel / Descending helix: peak frame jerk 1734,7 → 100,3; turn 238,8 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Tunnel / Wall bank: peak frame jerk 623,1 → 55,0; turn 231,5 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Tunnel / Rebound chain: peak frame jerk 3007,8 → 280,8; turn 438,2 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Tunnel / Sliding gate: peak frame jerk 410,4 → 6,6; turn 78,5 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Snow / Glacier crown: peak frame jerk 653,0 → 24,4; turn 159,3 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Snow / White curl: peak frame jerk 599,4 → 40,7; turn 195,5 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Snow / Falling petal: peak frame jerk 992,0 → 65,3; turn 272,1 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Snow / Ice wind: peak frame jerk 203,9 → 3,9; turn 35,6 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Snow / Frost descent: peak frame jerk 556,7 → 9,1; turn 39,7 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Snow / Crystal turn: peak frame jerk 861,2 → 26,1; turn 154,8 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Snow / Crosswind: peak frame jerk 1057,0 → 13,2; turn 88,4 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Snow / Avalanche bow: peak frame jerk 619,3 → 19,3; turn 140,8 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Snow / Unwinding spiral: peak frame jerk 641,6 → 33,8; turn 196,2 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Snow / Siege arc: peak frame jerk 480,7 → 19,7; turn 144,4 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Thunder / Forked descent: peak frame jerk 774,8 → 10,5; turn 29,1 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Thunder / Ion bow: peak frame jerk 928,4 → 111,9; turn 280,0 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Thunder / Storm rail: peak frame jerk 293,4 → 4,0; turn 33,1 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Thunder / Ion peel: peak frame jerk 978,1 → 227,8; turn 409,7 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Thunder / Static fold: peak frame jerk 1327,5 → 216,0; turn 451,7 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Thunder / Flash lane: peak frame jerk 176,3 → 2,9; turn 40,9 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Thunder / Lightning slash: peak frame jerk 784,7 → 41,0; turn 186,4 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Thunder / Hook strike: peak frame jerk 1303,8 → 66,7; turn 211,7 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Thunder / Capacitor crescent: peak frame jerk 957,5 → 162,9; turn 393,3 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS Thunder / Beam pendulum: peak frame jerk 4557,0 → 207,6; turn 450,1 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS City / Elevated ramp: peak frame jerk 1493,3 → 188,7; turn 332,4 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS City / Canyon stitch: peak frame jerk 523,4 → 11,8; turn 57,4 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS City / Skybridge: peak frame jerk 181,2 → 6,7; turn 49,2 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS City / Underpass: peak frame jerk 196,3 → 4,2; turn 39,4 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS City / Rooftop loop: peak frame jerk 957,2 → 336,5; turn 479,0 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS City / Junction peel: peak frame jerk 1071,1 → 247,7; turn 454,7 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS City / Express flyby: peak frame jerk 290,7 → 3,8; turn 32,5 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS City / Overtaking lanes: peak frame jerk 240,3 → 4,2; turn 28,0 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS City / Interchange: peak frame jerk 1889,4 → 148,3; turn 324,2 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS City / Slingshot: peak frame jerk 1231,6 → 188,9; turn 337,1 degrees/s; 30/60/144 FPS constant-distance checks.
+PASS 50 routes: aggregate peak frame jerk reduced 92,2%; largest frame speed error 0,32% at 30/60/144 FPS.
+PASS all district route speed and curvature checks completed
+PASS 855 re-spaced wave layouts, normal director handoffs and fifteen complete live encounters pass with smoothed routes
