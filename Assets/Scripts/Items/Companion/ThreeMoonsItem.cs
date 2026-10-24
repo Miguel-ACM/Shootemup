@@ -3,7 +3,7 @@ public class ThreeMoonsItem : ACompanionItem
     private void Awake()
     {
         companionName = "AMoon";
-        SetData("Three Moons", "Feeling a bit Saturn", "Three moons orbit around you blocking enemy projectiles.", AItem.ItemType.partner);
+        SetData("Three Moons", "Feeling a bit Saturn", "Three orbiting bullet shields.", AItem.ItemType.partner);
     }
 
     public override void OnBegin() { }
