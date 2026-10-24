@@ -1,0 +1,36 @@
+PASS
+PASS Fields: 16 authored parts, ten exclusive routes, 152 distinct waves across 8 seeds; no repeated neighboring parts or swept hull intersections; maximum 12 ships / 15,87s.
+PASS Fields: all nineteen third-loop waves preserve model spacing and capped timing at the faster tempo.
+PASS Snow: 16 authored parts, ten exclusive routes, 148 distinct waves across 8 seeds; no repeated neighboring parts or swept hull intersections; maximum 11 ships / 15,90s.
+PASS Snow: all nineteen third-loop waves preserve model spacing and capped timing at the faster tempo.
+PASS City: 16 authored parts, ten exclusive routes, 152 distinct waves across 8 seeds; no repeated neighboring parts or swept hull intersections; maximum 15 ships / 11,85s.
+PASS City: all nineteen third-loop waves preserve model spacing and capped timing at the faster tempo.
+PASS Thunder: 16 authored parts, ten exclusive routes, 152 distinct waves across 8 seeds; no repeated neighboring parts or swept hull intersections; maximum 12 ships / 15,38s.
+PASS Thunder: all nineteen third-loop waves preserve model spacing and capped timing at the faster tempo.
+PASS Tunnel: 16 authored parts, ten exclusive routes, 152 distinct waves across 8 seeds; no repeated neighboring parts or swept hull intersections; maximum 13 ships / 15,75s.
+PASS Tunnel: all nineteen third-loop waves preserve model spacing and capped timing at the faster tempo.
+PASS total 855 waves (including 95 third-loop encounters); 80 authored parts / 50 district-exclusive routes. Build median 0,32 ms, p95 4,18 ms, maximum 25,76 ms (includes first mesh generation).
+PASS seed, spacing and composition stress audit completed
+PASS normal wave director completes three prepared waves with actual fire and no overlapping hulls across handoffs
+PASS New Set changes the actual wave plan
+PASS Replay keeps the exact seeded parts
+PASS Fields completes its full plan before combat; all nineteen cached wave lookups 0,04ms
+PASS FieldsWave2 full live formation, coordinated fire and no hull overlap; Figure eight + Meadow diamond
+PASS FieldsWave8 full live formation, coordinated fire and no hull overlap; Orchard guard + Bomber crescent + Gunship echelon
+PASS FieldsWave15 full live formation, coordinated fire and no hull overlap; Opening crown + Orchard guard + Bomber bank
+PASS Snow completes its full plan before combat; all nineteen cached wave lookups 0,05ms
+PASS SnowWave2 full live formation, coordinated fire and no hull overlap; Crosswind rank + Glacier flight
+PASS SnowWave8 full live formation, coordinated fire and no hull overlap; Siege descent + Crosswind rank + Ice wind
+PASS SnowWave15 full live formation, coordinated fire and no hull overlap; Avalanche bow + Avalanche flight + Crystal procession
+PASS City completes its full plan before combat; all nineteen cached wave lookups 0,06ms
+PASS CityWave2 full live formation, coordinated fire and no hull overlap; Canyon couriers + Skybridge traffic
+PASS CityWave8 full live formation, coordinated fire and no hull overlap; Junction pursuit + Canyon overtakers + Express couriers
+PASS CityWave15 full live formation, coordinated fire and no hull overlap; Canyon overtakers + Skybridge traffic + Junction drones
+PASS Thunder completes its full plan before combat; all nineteen cached wave lookups 0,05ms
+PASS ThunderWave2 full live formation, coordinated fire and no hull overlap; Ion crown + Ion diamond
+PASS ThunderWave8 full live formation, coordinated fire and no hull overlap; Hooking rank + Sweeping lance + Flash procession
+PASS ThunderWave15 full live formation, coordinated fire and no hull overlap; Hooking lance + Peeling relays + Ion relays
+PASS Tunnel completes its full plan before combat; all nineteen cached wave lookups 0,05ms
+PASS TunnelWave2 full live formation, coordinated fire and no hull overlap; Wall rank + Service crown
+PASS TunnelWave8 full live formation, coordinated fire and no hull overlap; Upper battery + Sliding diamond + Low rail
+PASS TunnelWave15 full live formation, coordinated fire and no hull overlap; Descending snake + Upper battery + Service crown
