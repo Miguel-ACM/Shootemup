@@ -3,6 +3,7 @@ using UnityEngine;
 public class PulseLaser : CombatRound
 {
     BeamRibbon ribbon;
+    LaserSidePorts ports;
     LaserSound sound;
     Transform emitter;
     Vector3 muzzle;
@@ -26,6 +27,7 @@ public class PulseLaser : CombatRound
         if(ribbon==null){ribbon=gameObject.AddComponent<BeamRibbon>();ribbon.Build();}
         if(sound==null)sound=gameObject.AddComponent<LaserSound>();
         ribbon.Draw(transform.position,heading,length,width,0,0);lifetime=12;
+        if(ports!=null)ports.Draw(transform.position,heading,width,0,false);
     }
     public PulseLaser Bind(Transform source,Vector3 localMuzzle)
     {
@@ -61,11 +63,18 @@ public class PulseLaser : CombatRound
             if(along>=0 && along<=length && across<width*power*.5f+.16f)
                 player.SendMessage("ReceiveHazardDamage",damage,SendMessageOptions.DontRequireReceiver);
         }
-        if(Active && sideShots && age>=nextSide)
+        if(sideShots)
         {
-            nextSide=age+.45f;var side=new Vector2(-heading.y,heading.x);
-            for(int i=1;i<=3;i++)for(int sign=-1;sign<=1;sign+=2)
-                Launch<SimpleRound>(transform.position+(Vector3)heading*(i*2.3f),side*sign,2.4f,.12f);
+            if(ports==null){ports=gameObject.AddComponent<LaserSidePorts>();ports.Build();}
+            if(nextSide==0)nextSide=warning;
+            bool cue=age>=nextSide-.32f && age<warning+activeTime;
+            ports.Draw(transform.position,heading,width,Mathf.InverseLerp(nextSide-.32f,nextSide,age),cue);
+            if(Active && age>=nextSide)
+            {
+                nextSide=age+.45f;var side=new Vector2(-heading.y,heading.x);
+                for(int i=1;i<=3;i++)for(int sign=-1;sign<=1;sign+=2)
+                    Launch<LaserSideRound>(LaserSidePorts.Origin(transform.position,heading,width,i,sign),side*sign,2.4f,.12f);
+            }
         }
     }
     public override void Vanish(){Release();}
