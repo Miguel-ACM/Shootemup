@@ -2,7 +2,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class GravityWell : AActiveItem
 {
-    void Awake(){SetData("Gravity Well","Active","Suspend nearby ordinary rounds, then erase them. Costs 25 energy. Beams are unaffected.",ItemType.active);cost=25;cd=7;}
+    void Awake(){SetData("Gravity Well","Active","Freeze and erase nearby bullets. 25 energy.",ItemType.active);cost=25;cd=7;}
     public override float OnPress(float mana)
     {
         float valid=CheckValidPress(mana);if(valid<0)return valid;
