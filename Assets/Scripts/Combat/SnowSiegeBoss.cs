@@ -21,7 +21,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
             for(int i=0;i<count;i++)
             {
                 var shot=Fire<BurstShell>(Hull.TransformPoint(new Vector3(0,-.65f,-.25f)),
-                    CombatVisuals.Rotate(shellAxis,(i-(count-1)*.5f)*22+(beat%2==0 ? -5 : 5)),4.3f,.44f);
+                    CombatVisuals.Rotate(shellAxis,(i-(count-1)*.5f)*22+(beat%2==0 ? -5.5f : 5.5f)),4.3f,.44f);
                 if(shot!=null)shot.SetTravelDistance(distance);
             }
         }
@@ -40,8 +40,8 @@ public sealed class SnowSiegeBoss : DistrictBoss
         {
             int sign=beat==8 ? -1 : 1;
             int count=phaseTwo ? 17 : 13;
-            for(int i=0;i<count;i++)Fire<NeedleRound>(transform.position,
-                CombatVisuals.Rotate(Vector2.down,(i-(count-1)*.5f)*9+sign*12),phaseTwo ? 5.8f : 5,.13f);
+            PetalFan<NeedleRound>(Hull.TransformPoint(new Vector3(0,-.65f,-.25f)),
+                CombatVisuals.Rotate(Vector2.down,sign*11.25f),count,9,phaseTwo ? 5.8f : 5,.13f,.18f);
         }
         // Beats 5, 7, 10 and 11 are intentional rests while existing patterns unfold.
     }
