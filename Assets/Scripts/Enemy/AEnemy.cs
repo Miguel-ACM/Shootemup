@@ -157,9 +157,12 @@ public abstract class AEnemy : MonoBehaviour
 
     float nextImpact;
     bool impactProvided;
+    PartHitFeedback localFeedback;
     public void HitAt(Vector3 point,Vector2 incoming=default)
     {
         impactProvided=true;
+        if(localFeedback==null)localFeedback=GetComponentInChildren<PartHitFeedback>();
+        if(localFeedback!=null)localFeedback.Pulse(incoming);
         if(Time.time<nextImpact)return;
         nextImpact=Time.time+.025f;
         PSXImpactEffects.Burst(point,new Color(1,.68f,.30f),false,incoming.sqrMagnitude>.001f ? incoming : Vector2.up);
@@ -172,7 +175,7 @@ public abstract class AEnemy : MonoBehaviour
         impactProvided=false;
         health = health - damage * GameRules.enemyDamageReceived;
         blinkTimeout = Time.time + blinkSeconds;
-        if (!isBlinking)
+        if (localFeedback==null && !isBlinking)
         {
             isBlinking = true;
             StartCoroutine("Blink");

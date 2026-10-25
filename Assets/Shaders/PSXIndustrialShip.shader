@@ -4,6 +4,7 @@ Shader "Shootemup/PSX Industrial Ship"
     {
         _MainTex ("Pixel atlas", 2D) = "white" {}
         _Tint ("Damage flash tint", Color) = (1,1,1,1)
+        _HitFlash ("Local hit flash", Range(0,1)) = 0
         [HideInInspector] _PlayerDepth ("Player foreground depth", Float) = 0
         _CockpitBlue ("Blue player cockpit", Float) = 0
         _VertexSnap ("Vertex snap amount", Range(0,1)) = 0.35
@@ -32,6 +33,7 @@ Shader "Shootemup/PSX Industrial Ship"
                 float _VertexSnap;
                 float _CockpitBlue;
                 float _PlayerDepth;
+                float _HitFlash;
             CBUFFER_END
             struct Attributes
             {
@@ -67,6 +69,7 @@ Shader "Shootemup/PSX Industrial Ship"
                 half4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv) * _Tint;
                 clip(color.a - 0.01);
                 color.rgb *= input.light;
+                color.rgb=lerp(color.rgb,half3(1,.88,.63),saturate(_HitFlash)*.88);
                 if(_CockpitBlue>0.5 && input.uv.x<0.25 && input.uv.y>=0.25 && input.uv.y<0.5)
                     color.rgb=lerp(float3(0.01,0.38,1.0),float3(0.36,0.93,1.0),saturate(color.r*2));
                 // Five bits per channel evokes the original console's colour precision.
