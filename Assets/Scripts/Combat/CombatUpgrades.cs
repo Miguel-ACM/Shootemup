@@ -72,6 +72,7 @@ public sealed class CombatUpgrades : MonoBehaviour
             poison.Infect(damage*(companion ? .5f : 1));
         }
         if(generation>0)return FinishHit(enemy,damage); // Secondary hits never produce more secondary effects or charge.
+        if(!companion)GetComponent<StaticCharge>()?.Discharge(enemy,damage);
         if(Count(UpgradeKind.Splitter)>0 && Ready("split",.45f))Fragments(enemy.transform.position,damage,2,25);
         if(Count(UpgradeKind.Bearing)>0 && Ready("bearing",.65f))Fragments(enemy.transform.position,damage*.55f,3,60);
         if(Count(UpgradeKind.Battery)>0)

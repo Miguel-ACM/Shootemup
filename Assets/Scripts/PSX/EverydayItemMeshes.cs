@@ -5,6 +5,10 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "StaticSweater":
+                b.Prism(new[]{new Vector2(-.18f,.3f),new Vector2(-.4f,.22f),new Vector2(-.5f,-.08f),new Vector2(-.31f,-.16f),new Vector2(-.22f,.02f),new Vector2(-.23f,-.35f),new Vector2(.23f,-.35f),new Vector2(.22f,.02f),new Vector2(.31f,-.16f),new Vector2(.5f,-.08f),new Vector2(.4f,.22f),new Vector2(.18f,.3f),new Vector2(.1f,.21f),new Vector2(-.1f,.21f)},.14f,7,Vector3.zero,7);
+                b.Box(new Vector3(0,-.31f,-.01f),new Vector3(.47f,.08f,.17f),1);
+                b.Prism(new[]{new Vector2(.04f,.17f),new Vector2(-.12f,-.02f),new Vector2(-.02f,-.02f),new Vector2(-.06f,-.2f),new Vector2(.14f,.04f),new Vector2(.03f,.04f)},.025f,10,new Vector3(0,0,-.09f));return true;
             case "MagnifyingGlass":
                 b.Drum(new Vector3(0,.14f,0),.3f,.1f,13,16);
                 b.Drum(new Vector3(0,.14f,-.065f),.24f,.025f,8,16);
