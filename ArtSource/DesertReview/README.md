@@ -2,7 +2,7 @@
 
 After Thunder or Tunnel, choose **Desert** or loop straight to Plains. Clearing Desert starts the next Plains loop with the existing loadout and score. Desert is also available in Debug Run and Wave Watcher.
 
-The scenery uses seamless wind-carved dune meshes, paired small silos and compact gray outposts with roof vents, doors, antennas and pipe manifolds. The layouts vary with the run seed.
+The scenery uses individual crescent dunes with broad windward slopes, short slipfaces and shared vertex lighting, paired small silos and compact gray outposts with roof vents, doors, antennas and pipe manifolds. The seamless layouts vary with the run seed. The former striped terrain and drawn crest lines have been replaced.
 
 Three new enemies have their own modeled hulls:
 
@@ -10,7 +10,7 @@ Three new enemies have their own modeled hulls:
 - **Sand Striker:** a narrow interceptor that locks one aim direction and sends six shots 75 milliseconds apart.
 - **Sand Worm:** a small articulated machine with four following body sections. Alternating body ports release coordinated fans. Its body can be shot as well as its head.
 
-The **White Worm** boss has seven independently destructible body reactors and one larger head reactor. All eight must be destroyed. Dead reactors stay dark on the moving wreck and stop firing. At four remaining reactors, the boss accelerates its attack score. Its route accounts for the visible playfield rather than the full unmasked camera output.
+The **White Worm** boss has seven independently destructible body reactors and one larger head reactor. Their exposed radii are now about 22% smaller, with matching smaller hit regions and muted brick-red paint. All eight must be destroyed. Dead reactors stay dark on the moving wreck and stop firing. At four remaining reactors, the boss accelerates its attack score. Its route accounts for the visible playfield rather than the full unmasked camera output.
 
 All geometry is authored in the runtime mesh factories, following the project's existing asset pipeline. No external model downloads are required. Existing projectile art and music are reused; Sound Lab selections are unchanged.
 

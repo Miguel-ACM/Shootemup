@@ -48,6 +48,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Tunnel: bouncing projectiles. The boss is a rapidly spinning saw that travels like a DVD logo across the full visible arena, including its corners. **It fires dense mixed-size bursts only when it bounces, never when hit or on a timer, and has no thrusters.** It speeds up as damaged; phase two pauses to deploy two smaller, sturdy, destroyable saws with the same bounce behavior.
 - The latest explicit feedback supersedes earlier ideas (in particular the saw's original on-hit emission).
 - Desert: dunes, small silos and compact gray buildings; buried enemies emerge and fire rings, interceptors fire tightly spaced aimed bursts, and small articulated sandworms shoot from multiple body ports. Its boss is a giant white mechanical sandworm with red weakpoints along its body and a larger red head weakpoint. Every part must be destroyed to win.
+- Desert visual feedback: use individual sculpted crescent dunes, not long striped ridges with drawn crest lines. Keep the worm weakpoints compact and a muted brick red.
 
 ## Items and decisions
 
