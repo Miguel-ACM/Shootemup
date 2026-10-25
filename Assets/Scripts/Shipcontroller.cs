@@ -246,6 +246,7 @@ public class Shipcontroller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        speedMultiplier=input.PlayerControls.Focus.IsPressed() ? slowMultiplier : 1;
         horizontalMove = move.x * GameRules.playerMoveSpeed * Time.deltaTime * speedMultiplier;
         verticalMove = move.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * Time.deltaTime * speedMultiplier;
 

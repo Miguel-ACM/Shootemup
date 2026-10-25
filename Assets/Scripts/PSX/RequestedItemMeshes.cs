@@ -5,6 +5,14 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "FocusTime":
+                b.Box(new Vector3(0,-.05f,0),new Vector3(.82f,.12f,.48f),13,2);
+                foreach(int side in new[]{-1,1})b.Box(new Vector3(side*.3f,-.32f,.1f),new Vector3(.09f,.48f,.09f),2);
+                b.Box(new Vector3(.06f,.08f,-.05f),new Vector3(.43f,.08f,.31f),7);
+                b.Box(new Vector3(.06f,.14f,-.05f),new Vector3(.39f,.05f,.29f),1);
+                b.Box(new Vector3(.06f,.17f,-.05f),new Vector3(.02f,.025f,.3f),13);
+                b.Box(new Vector3(.17f,.17f,-.14f),new Vector3(.035f,.025f,.16f),3);
+                b.Drum(new Vector3(-.28f,.15f,.04f),.07f,.12f,6,8);return true;
             case "BouncingBall":
                 b.Ball(Vector3.zero,new Vector3(.33f,.33f,.33f),3);
                 b.Drum(new Vector3(0,0,-.29f),.15f,.08f,10,12);
