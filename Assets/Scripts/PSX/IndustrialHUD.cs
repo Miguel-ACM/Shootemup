@@ -10,7 +10,8 @@ public sealed class IndustrialHUD : MonoBehaviour
     Text score,chain,coins;
     WaveOrchestrer waves;
     Image[] challengeCells;
-    Image[] healthCells,manaCells,chainCells,bossCells;
+    Image[] healthCells,manaCells,bossCells;
+    RectTransform chainFill;
     RectTransform bossPanel;
     RectTransform scorePanel;
     RectTransform sidePanel;
@@ -53,8 +54,9 @@ public sealed class IndustrialHUD : MonoBehaviour
         Rule(scorePanel,8,3,116,new Color(.21f,.27f,.27f));
         Rule(scorePanel,8,81,116,new Color(.21f,.27f,.27f));
         score=TextAt(scorePanel,"000000000",12,10,12,Steel);score.rectTransform.sizeDelta=new Vector2(108,20);
-        chain=TextAt(scorePanel,"x1",12,35,12,Amber);chain.rectTransform.sizeDelta=new Vector2(30,20);
-        chainCells=Cells(scorePanel,46,43,6,10,Amber);
+        chain=TextAt(scorePanel,"x1",12,32,12,Amber);chain.rectTransform.sizeDelta=new Vector2(108,18);chain.alignment=TextAnchor.MiddleCenter;
+        var chainTrack=Panel(scorePanel,"Multiplier progress line",new Color(.18f,.22f,.21f));Place(chainTrack,30,51,72,3);
+        chainFill=Panel(chainTrack,"Multiplier progress",Amber);Place(chainFill,0,0,0,3);
         Place(Panel(scorePanel,"Coin rim",Amber),13,61,12,8);
         Place(Panel(scorePanel,"Coin shoulders",Amber),15,59,8,12);
         Place(Panel(scorePanel,"Coin stamp",Dark),18,62,2,6);
@@ -124,7 +126,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         coins.text=RunCoins.Count.ToString();
         int challenge=waves!=null ? waves.ChallengeWavesRemaining : 0;
         for(int i=0;i<challengeCells.Length;i++)challengeCells[i].gameObject.SetActive(i<challenge);
-        Fill(chainCells,Score.GetPercentageNextMultiplier(),Amber);
+        chainFill.sizeDelta=new Vector2(72*Mathf.Clamp01(Score.GetPercentageNextMultiplier()),3);
         if(Time.unscaledTime>nextScan)
         {
             nextScan=Time.unscaledTime+.25f;boss=FindAnyObjectByType<Boss>();districtBoss=null;
