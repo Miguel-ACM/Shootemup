@@ -4,6 +4,15 @@ using UnityEngine;
 public enum EncounterKind { Shop, MultShop, Item, Health, Challenge }
 public static class EncounterChoice
 {
+    static readonly Sprite[] icons=new Sprite[5];
+    public static Sprite Icon(EncounterKind kind)
+    {
+        int index=(int)kind;
+        if(icons[index]!=null)return icons[index];
+        var texture=Resources.Load<Texture2D>("EncounterIcons/"+kind);
+        if(texture==null)throw new InvalidOperationException("Missing encounter icon: "+kind);
+        return icons[index]=Sprite.Create(texture,new Rect(0,0,texture.width,texture.height),new Vector2(.5f,.5f),32,0,SpriteMeshType.FullRect);
+    }
     public static EncounterKind[] Draw(int seed,bool challengeAvailable)
     {
         var bag=challengeAvailable ? new[]{EncounterKind.Shop,EncounterKind.MultShop,EncounterKind.Item,EncounterKind.Health,EncounterKind.Challenge} :

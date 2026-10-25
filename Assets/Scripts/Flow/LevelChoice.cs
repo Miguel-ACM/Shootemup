@@ -16,9 +16,11 @@ public sealed class LevelChoice : MonoBehaviour
     Action<int> encounterPicked;
     string[] captions;
     Color[] accents;
+    Sprite[] icons;
     CanvasGroup group;
     RectTransform frame;
-    RectTransform[] fills,names;
+    RectTransform[] fills,contents,panels;
+    CanvasGroup[] panelGroups;
     float[] displayed;
     public LevelId[] Options {get;private set;}
     float panelWidth;
@@ -38,13 +40,13 @@ public sealed class LevelChoice : MonoBehaviour
         CloudTransition.PrepareRoutes(choice.Options);
         choice.Build();Active=true;return choice;
     }
-    public static LevelChoice OpenEncounter(Transform player,string[] captions,Color[] accents,Action<int> picked)
+    public static LevelChoice OpenEncounter(Transform player,string[] captions,Color[] accents,Action<int> picked,Sprite[] icons=null)
     {
         var choice=new GameObject("Choose an encounter").AddComponent<LevelChoice>();choice.player=player;
-        choice.captions=captions;choice.accents=accents;choice.encounterPicked=picked;choice.Allocate();
+        choice.captions=captions;choice.accents=accents;choice.encounterPicked=picked;choice.icons=icons;choice.Allocate();
         choice.Build();Active=true;return choice;
     }
-    void Allocate(){fills=new RectTransform[captions.Length];names=new RectTransform[captions.Length];displayed=new float[captions.Length];}
+    void Allocate(){fills=new RectTransform[captions.Length];contents=new RectTransform[captions.Length];panels=new RectTransform[captions.Length];panelGroups=new CanvasGroup[captions.Length];displayed=new float[captions.Length];}
 
     void Build()
     {
@@ -64,18 +66,27 @@ public sealed class LevelChoice : MonoBehaviour
         {
             var accent=accents[i];
             var half=Rect(frame,captions[i],new Vector2(panelWidth,720),new Vector2(-202.5f+panelWidth*(i+.5f),0));
+            panels[i]=half;panelGroups[i]=half.gameObject.AddComponent<CanvasGroup>();
             Paint(half,new Color(.025f,.045f,.07f,.43f));
             fills[i]=Rect(half,"Bottom-up route charge",new Vector2(panelWidth,0),Vector2.zero);
             fills[i].anchorMin=fills[i].anchorMax=new Vector2(.5f,0);
             fills[i].pivot=new Vector2(.5f,0);Paint(fills[i],new Color(accent.r,accent.g,accent.b,.37f));
             var edge=Rect(fills[i],"Leading edge",new Vector2(panelWidth,1.5f),Vector2.zero);
             edge.anchorMin=edge.anchorMax=new Vector2(.5f,1);Paint(edge,new Color(accent.r,accent.g,accent.b,.65f));
-            names[i]=Text(half,captions[i],captions.Length==3 ? 17 : 24,Vector2.zero,Color.white).rectTransform;
-            names[i].sizeDelta=new Vector2(panelWidth-14,48);
-            if(captions.Length==3)
+            if(icons!=null)
             {
-                var label=names[i].GetComponent<TextMeshProUGUI>();label.enableAutoSizing=true;label.fontSizeMin=12;label.fontSizeMax=17;
-                label.color=Color.Lerp(accent,Color.white,.5f);
+                contents[i]=Rect(half,"Encounter sprite",new Vector2(96,96),Vector2.zero);
+                var image=contents[i].gameObject.AddComponent<Image>();image.sprite=icons[i];image.preserveAspect=true;image.raycastTarget=false;
+            }
+            else
+            {
+                contents[i]=Text(half,captions[i],captions.Length==3 ? 17 : 24,Vector2.zero,Color.white).rectTransform;
+                contents[i].sizeDelta=new Vector2(panelWidth-14,48);
+                if(captions.Length==3)
+                {
+                    var label=contents[i].GetComponent<TextMeshProUGUI>();label.enableAutoSizing=true;label.fontSizeMin=12;label.fontSizeMax=17;
+                    label.color=Color.Lerp(accent,Color.white,.5f);
+                }
             }
         }
         var centre=Rect(frame,"Neutral flight corridor",captions.Length==3 ? new Vector2(405,180) : new Vector2(405*RouteCharge.NeutralWidth,720),captions.Length==3 ? new Vector2(0,-270) : Vector2.zero);
@@ -90,9 +101,9 @@ public sealed class LevelChoice : MonoBehaviour
     {
         // Match the game's pause state; pausing cannot finish a selection offscreen.
         if(Time.timeScale==0 || CloudTransition.Busy || GameOverState.Active || player==null)return;
+        if(committed)return;
         age+=Time.deltaTime;
         float enter=Mathf.SmoothStep(0,1,age/.3f);group.alpha=enter;
-        if(committed)return;
         if(age>=.3f)
         {
             float x=player.position.x/(player.position.x<0 ? -Camera.LeftLimit : Camera.RightLimit);
@@ -112,7 +123,7 @@ public sealed class LevelChoice : MonoBehaviour
             displayed[i]=Mathf.Lerp(displayed[i],target,1-Mathf.Exp(-Time.deltaTime*20));
             if(Charge.Complete && selected)displayed[i]=1;
             fills[i].sizeDelta=new Vector2(panelWidth,720*displayed[i]);
-            names[i].localScale=Vector3.one*(1+(selected ? .035f*Mathf.Sin(Charge.Progress*Mathf.PI) : 0));
+            contents[i].localScale=Vector3.one*(1+(selected ? .035f*Mathf.Sin(Charge.Progress*Mathf.PI) : 0));
         }
         if(Charge.Complete){committed=true;StartCoroutine(Commit());}
     }
@@ -123,7 +134,6 @@ public sealed class LevelChoice : MonoBehaviour
         int index=captions.Length==2 ? (Charge.Side<0 ? 0 : 1) : Charge.Side-1;
         if(encounterPicked!=null)encounterPicked(index);else picked?.Invoke(Options[index]);
     }
-
     static RectTransform Rect(Transform parent,string name,Vector2 size,Vector2 position)
     {
         var go=new GameObject(name,typeof(RectTransform));go.transform.SetParent(parent,false);

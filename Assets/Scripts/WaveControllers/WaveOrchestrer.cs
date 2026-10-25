@@ -196,7 +196,7 @@ public class WaveOrchestrer : MonoBehaviour
         EncounterOptions=EncounterChoice.Draw(unchecked(LevelRun.Seed+LevelRun.Stage*971+currentWaveNumber*7919),remaining>=3 && challengeWavesRemaining==0);
         CombatDecision.Begin();ship.GetComponent<ShipLoadout>().ResetSelection();
         foreach(var weapon in ship.GetComponentsInChildren<AWeapon>())weapon.StopFiring();
-        routeChoice=LevelChoice.OpenEncounter(ship.transform,Array.ConvertAll(EncounterOptions,EncounterChoice.Label),Array.ConvertAll(EncounterOptions,EncounterChoice.Accent),index=>ResolveEncounter(EncounterOptions[index]));
+        routeChoice=LevelChoice.OpenEncounter(ship.transform,Array.ConvertAll(EncounterOptions,EncounterChoice.Label),Array.ConvertAll(EncounterOptions,EncounterChoice.Accent),index=>ResolveEncounter(EncounterOptions[index]),Array.ConvertAll(EncounterOptions,EncounterChoice.Icon));
     }
     void ResolveEncounter(EncounterKind kind)
     {
