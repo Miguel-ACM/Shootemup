@@ -55,8 +55,9 @@ public sealed class SpaceCitadelBoss : DistrictBoss
             for(int i=2;i<4;i++)if(parts[i]!=null && parts[i].health>0)
             {
                 int side=i==2 ? -1 : 1,count=phaseTwo ? 5 : 3;
-                for(int shot=0;shot<count;shot++)Fire<RicochetBolt>(parts[i].transform.position,
-                    CombatVisuals.Rotate(Vector2.down,side*(48+(shot-(count-1)*.5f)*12)),phaseTwo ? 4.7f : 4.1f,.17f);
+                // Half-lane replies form nested mirrored arcs, rather than repeating identical rays.
+                var axis=CombatVisuals.Rotate(Vector2.down,side*(48+(beat==1 ? 6 : beat==8 ? -6 : 0)));
+                PetalFan<RicochetBolt>(parts[i].transform.position,axis,count,12,phaseTwo ? 4.7f : 4.1f,.17f,.16f);
                 fired=true;
             }
             if(!fired)for(int s=-1;s<=1;s+=2)Fire<RicochetBolt>(Hull.TransformPoint(new Vector3(s*.4f,-.9f,-.4f)),CombatVisuals.Rotate(Vector2.down,s*56),4.5f,.17f);
