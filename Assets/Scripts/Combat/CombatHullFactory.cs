@@ -6,6 +6,7 @@ public static partial class IndustrialMeshFactory
     static readonly Dictionary<int,Mesh> combatHulls=new Dictionary<int,Mesh>();
     public static Vector3[] CombatEngineSockets(int kind)
     {
+        if(kind>=41 && kind<=45)return System.Array.Empty<Vector3>();
         if(kind==39 || kind==40)return System.Array.Empty<Vector3>();
         if(kind==35)return new[]{new Vector3(-.3f,.53f,.02f),new Vector3(.3f,.53f,.02f)};
         if(kind==36)return new[]{new Vector3(-.24f,.82f,0),new Vector3(.24f,.82f,0)};
@@ -47,6 +48,11 @@ public static partial class IndustrialMeshFactory
     {
         if(combatHulls.TryGetValue(kind,out var cached))return cached;
         var b=new Builder();bool heavy=kind==2 || kind==5 || kind==7 || kind==8 || kind==14 || kind==16 || kind>=20;
+        if(kind==41){BuildOrbitalScout(b);return combatHulls[kind]=b.Finish("Solar-wing orbital scout");}
+        if(kind==42){BuildLaserSatellite(b);return combatHulls[kind]=b.Finish("Parabolic-dish laser satellite");}
+        if(kind==43){BuildOrbitalCarrier(b);return combatHulls[kind]=b.Finish("Four-array orbital carrier");}
+        if(kind==44){BuildOrbitalMoonlet(b);return combatHulls[kind]=b.Finish("Vertical-fin escort moonlet");}
+        if(kind==45){BuildSpaceCitadel(b);return combatHulls[kind]=b.Finish("Open-truss orbital citadel");}
         if(kind==39){BuildMeadowTank(b);return combatHulls[kind]=b.Finish("Plains tracked tank chassis");}
         if(kind==40){BuildFrostAuger(b);return combatHulls[kind]=b.Finish("Snow twin-auger siege chassis");}
         if(kind==35){BuildBonbon(b);return combatHulls[kind]=b.Finish("Wrapped bonbon skirmisher");}
