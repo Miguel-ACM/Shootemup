@@ -167,6 +167,7 @@ public sealed class EverydayItemReview : MonoBehaviour
         yield return Grant(typeof(MagnifyingGlass));float speed=GameRules.playerShootTravelSpeed;GameRules.playerShootTravelSpeed=1;
         Press(Key.Z);yield return new WaitForSeconds(.65f);Press();yield return null;
         int normal=PlayerRound.LiveCount;var normalRound=FindAnyObjectByType<PlayerRound>();float normalDamage=normalRound.damage;var normalSize=normalRound.transform.localScale;
+        Check(Mathf.Abs(normal/(float)GameRules.playerShootNumber-(1+Mathf.Floor(GameRules.playerShootSpeed*.65f)))<=1,"unfocused firing preserves the configured baseline cadence");
         Clear();yield return null;
         Press(Key.LeftShift);yield return new WaitForSeconds(1.65f);Press(Key.LeftShift,Key.Z);yield return new WaitForSeconds(.65f);Press(Key.LeftShift);yield return null;
         int focused=PlayerRound.LiveCount;round=FindAnyObjectByType<PlayerRound>();

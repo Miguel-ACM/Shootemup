@@ -12,7 +12,7 @@ public abstract class AWeaponAutomatic : AWeapon
         if(!isShootingPrimary && !isShootingSecondary)return;
         if(!KeepFiring())return;
         shotClock-=WorldTimeStop.PlayerDelta*GameRules.playerShootSpeed*shootSpeedModifier*MagnifyingLens.Rate;
-        if(shotClock<=0){shotClock=1;Shoot();}
+        if(shotClock<=0){shotClock=Mathf.Max(0,shotClock+1);Shoot();}
     }
     public override void StopFiring(){base.StopFiring();shotClock=0;}
     public AWeaponAutomatic()
