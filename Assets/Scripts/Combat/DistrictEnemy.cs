@@ -27,7 +27,7 @@ public abstract class DistrictEnemy : AEnemy
         enemy.size=enemy.hullScale;go.GetComponent<CircleCollider2D>().radius=enemy.hullScale*.8f;
         var model=new GameObject("Armored hull");model.transform.SetParent(go.transform,false);model.transform.localScale=Vector3.one*enemy.hullScale;
         model.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(enemy.hull);
-        var renderer=model.AddComponent<MeshRenderer>();renderer.sharedMaterial=enemy is FieldsBomberBoss ? CombatMaterials.Fortress : CombatMaterials.Fleet;renderer.sortingLayerName="Enemy";
+        var renderer=model.AddComponent<MeshRenderer>();renderer.sharedMaterial=enemy.hull>=35 && enemy.hull<=38 ? CandyMaterials.Glaze : enemy is FieldsBomberBoss ? CombatMaterials.Fortress : CombatMaterials.Fleet;renderer.sortingLayerName="Enemy";
         enemy.Hull=model.transform;go.AddComponent<CombatHullVisual>().model=model.transform;
         if(!(enemy is TunnelSawBoss))
         {
@@ -54,6 +54,11 @@ public abstract class DistrictEnemy : AEnemy
         var escort=gameObject.AddComponent<EscortOrbit>();escort.SetAnchor(leader);movement=escort;
     }
     protected T Mover<T>() where T:PatternMover { var m=gameObject.AddComponent<T>();movement=m;return m; }
+    internal void UseMovement(PatternMover next)
+    {
+        if(movement!=null && movement!=next){movement.enabled=false;Destroy(movement);}
+        movement=next;
+    }
     protected virtual void Update()
     {
         age+=Time.deltaTime*LevelRun.EnemyTempoScale;
