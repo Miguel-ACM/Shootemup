@@ -22,7 +22,7 @@ public sealed class ThunderLanceBoss : DistrictBoss
     {
         get{int count=0;foreach(var beam in rotor)if(beam!=null && beam.IsAttachedTo(Hull))count++;return count;}
     }
-    protected override void Configure(){hull=22;hullScale=1.25f;health=1800;attackInterval=.55f;}
+    protected override void Configure(){hull=22;hullScale=1.25f;health=1250;attackInterval=.55f;}
     protected override bool PhaseTwoReady=>HealthFraction<=phaseTwoThreshold;
     protected override float AttackPace=>phaseTwo ? firingPace : 1;
     protected override void MoveBoss(float dt)
@@ -49,7 +49,7 @@ public sealed class ThunderLanceBoss : DistrictBoss
         {
             var beam=Fire<PulseLaser>(port,CombatVisuals.Rotate(axis,30+i*60),0,.17f);
             if(beam==null)continue;
-            beam.Bind(Hull,FrontPort).Sustain();beam.warning=rotorCharge;beam.width=rotorWidth;beam.sweep=-rotorSpeed;beam.length=26;rotor[i]=beam;
+            beam.Bind(Hull,FrontPort).Sustain();beam.warning=rotorCharge;beam.width=rotorWidth;beam.sweep=-rotorSpeed;beam.reversalArc=60;beam.length=26;rotor[i]=beam;
         }
         nextAttack=age+rotorCharge+.45f;
     }
@@ -100,7 +100,7 @@ public sealed class ThunderLanceBoss : DistrictBoss
             for(int side=-1;side<=1;side+=2)
             {
                 var port=Hull.TransformPoint(new Vector3(side*.71f,.435f-(accent-5)*.47f,-.3f));
-                var axis=CombatVisuals.Rotate(Vector2.right*side,side*(accent-6)*18);
+                var axis=CombatVisuals.Rotate(Vector2.down,side*(38+(accent-6)*10));
                 PetalFan<SimpleRound>(port,axis,outwardCount,18,outwardSpeed,.14f,.18f);
             }
         }

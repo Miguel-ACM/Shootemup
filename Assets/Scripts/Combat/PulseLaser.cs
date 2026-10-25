@@ -20,12 +20,13 @@ public class PulseLaser : CombatRound
     public bool IsFiring=>Active;
     public bool IsAttachedTo(Transform source)=>attached && emitter==source && isActiveAndEnabled;
     public bool IsSustained=>sustained;
+    public float reversalArc;
     public float Power=>Active ? Mathf.Min(Mathf.Clamp01((age-warning)/.07f),sustained ? 1 : Mathf.Lerp(.4f,1,Mathf.Clamp01((warning+activeTime-age)/.09f))) :
         age>=warning+activeTime ? Mathf.Pow(Mathf.Clamp01(1-(age-warning-activeTime)/Cooldown),2)*.4f : 0;
     protected override void Initialize()
     {
         warning=.9f;activeTime=.65f;length=22;width=.25f;sweep=0;sideShots=false;nextSide=0;
-        emitter=null;owner=null;attached=false;startedSound=false;sustained=false;clockRate=1;transform.localScale=Vector3.one;
+        emitter=null;owner=null;attached=false;startedSound=false;sustained=false;clockRate=1;reversalArc=0;transform.localScale=Vector3.one;
         visual.enabled=false;collision.enabled=false;
         if(ribbon==null){ribbon=gameObject.AddComponent<BeamRibbon>();ribbon.Build();}
         if(sound==null)sound=gameObject.AddComponent<LaserSound>();
@@ -62,7 +63,16 @@ public class PulseLaser : CombatRound
             else transform.position=emitter.TransformPoint(muzzle);
         }
         if(!sustained && age>warning+activeTime+Cooldown){Release();return;}
-        if(Active)heading=CombatVisuals.Rotate(heading,sweep*dt);
+        if(Active)
+        {
+            float turn=sweep*dt;
+            if(reversalArc>0)
+            {
+                float half=reversalArc*.5f,rate=Mathf.Abs(sweep)/half,t=Mathf.Max(0,age-warning);
+                turn=Mathf.Sign(sweep)*half*(Mathf.Cos(Mathf.Max(0,t-dt)*rate)-Mathf.Cos(t*rate));
+            }
+            heading=CombatVisuals.Rotate(heading,turn);
+        }
         float power=Power;
         sound.Drive(power,Active);
         ribbon.Draw(transform.position,heading,length,width,Charge,power,Mathf.Max(0,age-warning-activeTime)/Cooldown);
