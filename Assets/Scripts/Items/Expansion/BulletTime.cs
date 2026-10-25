@@ -35,7 +35,10 @@ public sealed class WorldTimeStop : MonoBehaviour
         remaining-=Time.unscaledDeltaTime;
         if(remaining<=0){End();return;}
         Time.timeScale=0;
-        float left=Camera.LeftLimit,right=Camera.RightLimit,top=Camera.UpLimit,bottom=Camera.DownLimit;
+        var camera=UnityEngine.Camera.main;
+        float halfHeight=camera.orthographicSize,halfWidth=halfHeight*405f/720f;
+        var center=camera.transform.position;
+        float left=center.x-halfWidth+.04f,right=center.x+halfWidth-.04f,top=center.y+halfHeight-.04f,bottom=center.y-halfHeight+.04f;
         border.SetPositions(new[]{new Vector3(left,bottom,-2),new Vector3(left,top,-2),new Vector3(right,top,-2),new Vector3(right,bottom,-2),new Vector3(left,bottom,-2)});
         border.startColor=border.endColor=new Color(.3f,.75f,.9f,Mathf.Min(.65f,remaining*.8f));
     }
