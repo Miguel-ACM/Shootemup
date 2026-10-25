@@ -1,0 +1,29 @@
+PASS
+PASS Curtain prepares all thirteen deliveries within the existing 768-object budget
+PASS Prepared NeedleRound x128: 4,408 ms, 0 new objects
+PASS Prepared RicochetBolt x96: 1,487 ms, 0 new objects
+PASS Prepared BurstShell x40: 0,689 ms, 0 new objects
+PASS Prepared PulseLaser x16: 0,726 ms, 0 new objects
+PASS Previous preparation plan NeedleRound x128: 9,059 ms, 128 new objects
+PASS Previous preparation plan RicochetBolt x96: 6,196 ms, 96 new objects
+PASS Previous preparation plan BurstShell x40: 2,347 ms, 40 new objects
+PASS Previous preparation plan PulseLaser x16: 3,732 ms, 16 new objects
+PASS Prepared repeat NeedleRound x128: 2,018 ms, 0 new objects
+PASS Prepared repeat RicochetBolt x96: 1,509 ms, 0 new objects
+PASS Prepared repeat BurstShell x40: 0,852 ms, 0 new objects
+PASS Shared glow processes 75% fewer pixels than the previous half-resolution bloom
+PASS Main saw base health reduced from 2800 to 1800
+PASS Timers and hits still emit no saw bullets
+PASS Circular mixed-size volley contains 44 quick and 17 heavy rounds
+PASS SimpleRound: evenly spaced through the complete 360 degrees
+PASS RicochetBolt: evenly spaced through the complete 360 degrees
+PASS Two destroyable auxiliary saws now have 360 base health each
+PASS Circular mixed-size volley contains 60 quick and 21 heavy rounds
+PASS SimpleRound: evenly spaced through the complete 360 degrees
+PASS RicochetBolt: evenly spaced through the complete 360 degrees
+PASS Circular mixed-size volley contains 24 quick and 9 heavy rounds
+PASS SimpleRound: evenly spaced through the complete 360 degrees
+PASS RicochetBolt: evenly spaced through the complete 360 degrees
+PASS Actual wall bounces produce circular bursts during the full-arena patrol, within the cap
+PASS All saws retain their thruster-free models
+PASS Rounds retain the approved sprite renderers

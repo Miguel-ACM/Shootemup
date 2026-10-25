@@ -1,0 +1,1 @@
+HDR peak=3,599609; bloom corner=RGBA(0.000, 0.000, 0.000, 1.000); peak bloom=2,208984
