@@ -59,6 +59,7 @@ public class Shipcontroller : MonoBehaviour
 
     Inputs input;
     Vector2 move;
+    Vector2 waterVelocity;
     public Vector2 MoveInput=>move;
     public bool IsInvulnerable=>invulnerable || (GetComponent<ShipBarrelRoll>()?.Active ?? false);
 
@@ -252,8 +253,18 @@ public class Shipcontroller : MonoBehaviour
         speedMultiplier=input.PlayerControls.Focus.IsPressed() ? slowMultiplier : 1;
         horizontalMove = move.x * GameRules.playerMoveSpeed * WorldTimeStop.PlayerDelta * speedMultiplier;
         verticalMove = move.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * WorldTimeStop.PlayerDelta * speedMultiplier;
+        if(LevelRun.Current==LevelId.Underwater && !CombatDecision.Active && !CloudTransition.Busy)
+        {
+            var desired=new Vector2(move.x,move.y*verticalMoveMultiplier)*GameRules.playerMoveSpeed*speedMultiplier*.79f;
+            float response=move.sqrMagnitude<.01f ? 5.5f : speedMultiplier<1 ? 11 : 7;
+            waterVelocity=Vector2.Lerp(waterVelocity,desired,1-Mathf.Exp(-WorldTimeStop.PlayerDelta*response));
+            horizontalMove=waterVelocity.x*WorldTimeStop.PlayerDelta;verticalMove=waterVelocity.y*WorldTimeStop.PlayerDelta;
+        }
+        else waterVelocity=Vector2.zero;
 
         transform.position = new Vector3(Mathf.Clamp(transform.position.x + horizontalMove, limits[2], limits[3]), Mathf.Clamp(transform.position.y + verticalMove, limits[1], limits[0]), transform.position.z);
+        if(transform.position.x==limits[2] || transform.position.x==limits[3])waterVelocity.x=0;
+        if(transform.position.y==limits[1] || transform.position.y==limits[0])waterVelocity.y=0;
         
     }
 

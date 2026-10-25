@@ -76,6 +76,7 @@ public sealed class PSXPresentation : MonoBehaviour
     void Update()
     {
         if(!initialized)return;
+        composite.SetFloat("_Underwater",LevelRun.Current==LevelId.Underwater ? 1 : 0);
         if(Keyboard.current!=null && Keyboard.current.f9Key.wasPressedThisFrame){filterEnabled=!filterEnabled;Resize();}
         if(width!=Screen.width || height!=Screen.height)Resize();
     }
