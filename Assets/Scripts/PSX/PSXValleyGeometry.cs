@@ -208,10 +208,11 @@ public static class PSXValleyGeometry
             {
                 Block(x+side*(halfWidth+.32f),y,.36f,1.02f,-.10f,.12f,new Color(.36f,.385f,.30f));
                 float px=x+side*halfWidth*.74f;
+                float pileTop=DeckZ((px-x+span/2)/span)+.085f;
                 foreach(float rail in new[]{-1f,1f})
-                    Beam(new Vector3(px,y+rail*.34f-.13f,-.045f),new Vector3(px,y+rail*.34f,-.50f),.14f,timber*.8f);
-                Beam(new Vector3(px-.18f,y-.39f,-.22f),new Vector3(px+.18f,y+.39f,-.49f),.065f,timber);
-                Beam(new Vector3(px+.18f,y-.39f,-.22f),new Vector3(px-.18f,y+.39f,-.49f),.065f,timber);
+                    Beam(new Vector3(px,y+rail*.34f-.13f,-.045f),new Vector3(px,y+rail*.34f,pileTop),.14f,timber*.8f);
+                Beam(new Vector3(px-.18f,y-.39f,-.22f),new Vector3(px+.18f,y+.39f,pileTop+.025f),.065f,timber);
+                Beam(new Vector3(px+.18f,y-.39f,-.22f),new Vector3(px-.18f,y+.39f,pileTop+.025f),.065f,timber);
             }
             int boards=Mathf.CeilToInt(span/.16f);float pitch=span/boards;
             for(int board=0;board<boards;board++)
