@@ -6,12 +6,18 @@ using UnityEngine;
 public sealed class CandyRegentBoss : DistrictBoss
 {
     readonly List<DistrictEnemy> brood=new List<DistrictEnemy>();
-    float nextBrood=3.8f,flightClock;
+    float nextBrood=2.8f,legClock,legDuration,rest;
+    int dash;
+    Vector3 legStart,legEnd,legControl;
+    Vector2 attackAxis=Vector2.down;
+    static readonly Vector2[] Dashes={new Vector2(-.92f,.78f),new Vector2(.8f,.48f),new Vector2(.33f,.88f),
+        new Vector2(-.75f,.35f),new Vector2(.96f,.72f),new Vector2(-.2f,.55f),new Vector2(-.95f,.9f),
+        new Vector2(.75f,.30f),new Vector2(.93f,.86f),new Vector2(-.88f,.57f),new Vector2(.15f,.38f),new Vector2(-.32f,.92f)};
     bool arrived;
     Transform[] doors;
     public int SpawnedMinions {get;private set;}
     public int LiveMinions {get{brood.RemoveAll(e=>e==null);return brood.Count;}}
-    protected override void Configure(){hull=38;hullScale=.85f;health=880;attackInterval=.90f;nextAttack=2.3f;}
+    protected override void Configure(){hull=38;hullScale=.85f;health=1320;attackInterval=.36f;nextAttack=2.0f;}
     protected override void Start()
     {
         base.Start();doors=new Transform[2];
@@ -25,45 +31,75 @@ public sealed class CandyRegentBoss : DistrictBoss
     protected override void MoveBoss(float dt)
     {
         float half=UnityEngine.Camera.main.orthographicSize*405f/720f;
-        float width=Mathf.Min(Camera.RightLimit,half)-1.4f;
+        float width=Mathf.Min(Camera.RightLimit,half)-1.35f;
         if(!arrived)
         {
             transform.position=Vector3.MoveTowards(transform.position,new Vector3(0,Camera.UpLimit-2.4f,1),dt*7.5f);
-            arrived=transform.position.y<=Camera.UpLimit-2.39f;return;
+            arrived=transform.position.y<=Camera.UpLimit-2.39f;
+            if(arrived)BeginDash(width);return;
         }
-        flightClock+=dt*(phaseTwo ? 1.25f : 1);
-        // Continuous looping dashes stay in the upper two thirds; no teleport or sudden aimed ram.
-        float t=flightClock*1.9f;
-        var target=new Vector3(Mathf.Sin(t)*width,Camera.UpLimit-3.3f+Mathf.Sin(t*2+.4f)*1.45f,1);
-        transform.position=Vector3.MoveTowards(transform.position,target,dt*(phaseTwo ? 13 : 10));
-        if(age>=nextBrood){nextBrood=age+(phaseTwo ? 5.4f : 6.8f);StartCoroutine(ReleaseBrood());}
+        if(rest>0){rest-=dt;if(rest<=0)BeginDash(width);}
+        else
+        {
+            legClock+=dt;float t=Mathf.Clamp01(legClock/legDuration);
+            // Fast curved cuts, double-backs and short braking beats; positions remain continuous.
+            float s=t*t*(3-2*t),u=1-s;
+            transform.position=u*u*legStart+2*u*s*legControl+s*s*legEnd;
+            if(t>=1)rest=phaseTwo ? .10f+(dash%3)*.035f : .16f+(dash%3)*.055f;
+        }
+        if(age>=nextBrood){nextBrood=age+(phaseTwo ? 3.25f : 4.1f);StartCoroutine(ReleaseBrood());}
+    }
+    void BeginDash(float width)
+    {
+        var point=Dashes[dash%Dashes.Length];
+        legStart=transform.position;legEnd=new Vector3(point.x*width,Mathf.Lerp(Camera.DownLimit+1.7f,Camera.UpLimit-1.5f,point.y),1);
+        if(player!=null && Vector2.Distance(legEnd,player.position)<2.8f)legEnd.y=Mathf.Min(Camera.UpLimit-1.5f,legEnd.y+2.8f);
+        legControl=(legStart+legEnd)*.5f+Vector3.up*((dash%2==0 ? 1 : -1)*.7f);
+        legControl.y=Mathf.Clamp(legControl.y,Camera.DownLimit+3,Camera.UpLimit-1.4f);
+        legDuration=Mathf.Max(.32f,Vector3.Distance(legStart,legEnd)/(phaseTwo ? 13f : 10.2f));
+        legClock=0;dash++;
     }
     protected override void Attack()
     {
-        if(!arrived || volley%4==0)return;
-        FanFrom<NeedleRound>(phaseTwo ? 3 : 2,16,7.4f,.14f,new Vector3(-.27f,-.95f,-.2f),new Vector3(.27f,-.95f,-.2f));
+        if(!arrived || (player!=null && Vector2.Distance(player.position,transform.position)<2.5f))return;
+        int beat=(volley-1)%8;
+        if(beat==0 || beat==4)attackAxis=Aim;
+        if(beat<3)
+        {
+            var port=Hull.TransformPoint(new Vector3(beat%2==0 ? -.27f : .27f,-.95f,-.2f));
+            int count=phaseTwo ? 5 : 3;
+            for(int i=0;i<count;i++)Fire<NeedleRound>(port,CombatVisuals.Rotate(attackAxis,(i-(count-1)*.5f)*11+(beat-1)*5),phaseTwo ? 9.3f : 8.2f,.14f);
+        }
+        else if(beat==4 || beat==5)
+        {
+            // A broad alternating comb leaves lanes between shots while the next brood enters.
+            int count=phaseTwo ? 9 : 7;
+            for(int i=0;i<count;i++)Fire<SimpleRound>(transform.position,CombatVisuals.Rotate(attackAxis,(i-(count-1)*.5f)*18+(beat==4 ? -9 : 9)),6.2f,.14f);
+        }
     }
-    protected override float AttackPace=>phaseTwo ? .85f : 1;
+    protected override float AttackPace=>phaseTwo ? .80f : 1;
+    protected override void OnPhaseTwo(){volley=0;nextAttack=age+.6f;nextBrood=Mathf.Min(nextBrood,age+1);}
     IEnumerator ReleaseBrood()
     {
         // Hatch expansion is the warning. Nothing spawns underneath the player's ship.
-        for(float t=0;t<.7f;t+=Time.deltaTime)
+        for(float t=0;t<.6f;t+=Time.deltaTime)
         {
-            foreach(var door in doors)door.localScale=Vector3.one*(.24f+.11f*Mathf.Sin(t/.7f*Mathf.PI));
+            foreach(var door in doors)door.localScale=Vector3.one*(.24f+.15f*Mathf.Sin(t/.6f*Mathf.PI));
             yield return null;
         }
-        for(int row=0;row<(phaseTwo ? 4 : 3);row++)
+        for(int row=0;row<(phaseTwo ? 5 : 4);row++)
         {
             foreach(int side in new[]{-1,1})
             {
-                if(LiveMinions>=12)break;
+                if(LiveMinions>=18)break;
                 var p=Hull.TransformPoint(new Vector3(side*.82f,-.35f,-.2f));
                 if(player!=null && Vector2.Distance(p,player.position)<2.5f)continue;
-                var minion=Spawn(typeof(BonbonSkirmisher),p);minion.moneyDropChance=.15f;minion.lifeDropChance=minion.manaDropChance=0;minion.scoreOnKill=15;
+                var kind=row%3==1 ? typeof(WaferDart) : row%3==2 ? typeof(MintSpinner) : typeof(BonbonSkirmisher);
+                var minion=Spawn(kind,p);minion.moneyDropChance=.10f;minion.lifeDropChance=minion.manaDropChance=0;minion.scoreOnKill=15;
                 var flight=minion.gameObject.AddComponent<CandyMinionFlight>();flight.side=side;minion.UseMovement(flight);
                 brood.Add(minion);SpawnedMinions++;
             }
-            yield return new WaitForSeconds(.23f);
+            yield return new WaitForSeconds(.18f);
         }
         foreach(var door in doors)door.localScale=Vector3.one*.24f;
     }
