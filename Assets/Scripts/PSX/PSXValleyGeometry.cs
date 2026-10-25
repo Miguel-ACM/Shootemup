@@ -11,21 +11,22 @@ public static class PSXValleyGeometry
     public static float RiverCentre(float y)=>1.25f*Mathf.Sin(y*Mathf.PI*4/Period)+.38f*Mathf.Sin(y*Mathf.PI*8/Period+.7f);
     public static float RiverHalfWidth(float y)=>1.35f+.25f*Mathf.Sin(y*Mathf.PI*4/Period+.5f);
 
-    public static Mesh Build(float origin,float length,float brightness=1)
+    public static Mesh Build(float origin,float length,float brightness=1,int seed=17381)
     {
         var b=new Builder(origin,brightness);
+        var layout=new PSXValleyLayout(seed);
         // Geometry at each section boundary uses identical world-space samples.
-        for(float y=0;y<length-.01f;y+=1.5f)
+        for(float y=0;y<length-.01f;y+=.75f)
         {
-            float next=Mathf.Min(length,y+1.5f),a=origin+y,c=origin+next;
-            float l0=RiverCentre(a)-RiverHalfWidth(a),l1=RiverCentre(c)-RiverHalfWidth(c);
-            float r0=RiverCentre(a)+RiverHalfWidth(a),r1=RiverCentre(c)+RiverHalfWidth(c);
+            float next=Mathf.Min(length,y+.75f),a=origin+y,c=origin+next;
+            float l0=layout.Centre(a)-layout.HalfWidth(a),l1=layout.Centre(c)-layout.HalfWidth(c);
+            float r0=layout.Centre(a)+layout.HalfWidth(a),r1=layout.Centre(c)+layout.HalfWidth(c);
             Color grass=Grass*(.98f+.025f*Mathf.Sin(a*Mathf.PI*2/Period));grass.a=1;
-            b.Strip(-Width,-Width,l0-.4f,l1-.4f,y,next,0,grass);
-            b.Strip(r0+.4f,r1+.4f,Width,Width,y,next,0,grass);
+            b.Strip(-Width,-Width,l0-layout.BankWidth(a,-1),l1-layout.BankWidth(c,-1),y,next,0,grass);
+            b.Strip(r0+layout.BankWidth(a,1),r1+layout.BankWidth(c,1),Width,Width,y,next,0,grass);
             // Eroded shoulders and darker steep bank faces give the river a visible bed.
-            b.Strip(l0-.4f,l1-.4f,l0,l1,y,next,-.03f,Bank);
-            b.Strip(r0,r1,r0+.4f,r1+.4f,y,next,-.03f,Bank*.91f);
+            b.Strip(l0-layout.BankWidth(a,-1),l1-layout.BankWidth(c,-1),l0,l1,y,next,-.03f,Bank);
+            b.Strip(r0,r1,r0+layout.BankWidth(a,1),r1+layout.BankWidth(c,1),y,next,-.03f,Bank*.91f);
             b.Strip(l0,l1,l0+.12f,l1+.12f,y,next,-.04f,new Color(.15f,.235f,.215f));
             b.Strip(r0-.12f,r1-.12f,r0,r1,y,next,-.04f,new Color(.18f,.265f,.24f));
             b.Strip(l0+.12f,l1+.12f,r0-.12f,r1-.12f,y,next,.02f,Water);
@@ -35,51 +36,42 @@ public static class PSXValleyGeometry
             if(((int)((a+96)/1.5f))%3==0)
                 b.Strip(l0-1.17f,l1-1.17f,l0-1.13f,l1-1.13f,y,next,-.11f,new Color(.43f,.46f,.37f));
         }
-        var rng=new System.Random(710+(int)origin);
+        var rng=new System.Random(unchecked(seed*397+(int)origin));
         // Broad painted ground patches replace the old high-frequency speckled tile.
         for(int i=0;i<16;i++)
         {
             float y=Range(rng,.7f,length-.7f),worldY=origin+y,side=i%2==0 ? -1 : 1;
-            float x=RiverCentre(worldY)+side*(RiverHalfWidth(worldY)+Range(rng,2.0f,4.5f));
+            float x=layout.Centre(worldY)+side*(layout.HalfWidth(worldY)+Range(rng,2.0f,4.5f));
             b.Patch(x,y,Range(rng,.5f,1.3f),Range(rng,.35f,.8f),-.015f,
                 i%3==0 ? new Color(.335f,.40f,.29f) : new Color(.285f,.36f,.27f),rng);
         }
-        // Small groups, with breathing room between them; no solitary objects in the river.
-        for(int group=0;group<8;group++)
+        foreach(var plant in layout.Plants)
         {
-            float y=1.5f+group/2*6+Range(rng,-.4f,.4f),worldY=origin+y;
-            if(Mathf.Abs(Mathf.DeltaAngle((worldY-4)/Period*360,0))<11)continue;
-            float side=group%2==0 ? -1 : 1;
-            float bank=RiverCentre(worldY)+side*RiverHalfWidth(worldY);
-            float x=bank+side*(side<0 ? 2.5f : 1.8f);
-            for(int tree=0;tree<3;tree++)
-            {
-                float tx=Mathf.Clamp(x+Range(rng,-.65f,.65f),-6.5f,6.5f);
-                float ty=Mathf.Clamp(y+Range(rng,-.8f,.8f),.9f,length-.9f);
-                float radius=Range(rng,.42f,.72f);
-                if(Mathf.Abs(tx-RiverCentre(origin+ty)) < RiverHalfWidth(origin+ty)+radius+.55f)continue;
-                b.Tree(tx,ty,radius,rng);
-            }
-            b.Rock(Mathf.Clamp(x+side*.7f,-6.5f,6.5f),y+1.1f,Range(rng,.2f,.38f),rng);
-            // Low ridges at the outer edge frame the river without filling the flight lane.
-            if(group%3==0)b.Rock(Mathf.Clamp(x+side*.9f,-6f,6f),y+1.8f,Range(rng,.55f,.8f),rng);
+            if(plant.y<origin || plant.y>=origin+length)continue;
+            if(plant.kind<2)b.Tree(plant.x,plant.y-origin,plant.radius,new System.Random(plant.seed));
+        }
+        // Gravel outcrops occupy dry ground and follow the road/landmark clearances.
+        for(int i=0;i<23;i++)
+        {
+            float y=Range(rng,.5f,length-.5f),x=Range(rng,-6.5f,6.5f),radius=Range(rng,.12f,.38f);
+            if(layout.Clear(x,origin+y,radius))b.Rock(x,y,radius,rng);
         }
         // Sparse long reflections; there are no white checkerboard water texels.
         for(int i=0;i<12;i++)
         {
             float y=Range(rng,.5f,length-.5f),a=origin+y;
-            float x=RiverCentre(a)+Range(rng,-.7f,.7f);
+            float x=layout.Centre(a)+Range(rng,-.7f,.7f);
             b.Rect(x,y,Range(rng,.12f,.3f),Range(rng,.025f,.05f),-.015f,
                 i%3==0 ? new Color(.205f,.345f,.36f) : new Color(.15f,.31f,.34f));
         }
         // One recognizable landmark per 96 units, fixed to the terrain rather than independently recycled.
-        float bridgeY=4;
-        if(bridgeY>=origin && bridgeY<origin+length)b.Bridge(RiverCentre(bridgeY),bridgeY-origin,RiverHalfWidth(bridgeY),rng);
+        float bridgeY=layout.BridgeY;
+        if(bridgeY>=origin && bridgeY<origin+length)b.Bridge(layout.Centre(bridgeY),bridgeY-origin,layout.HalfWidth(bridgeY),rng);
         // A quieter concrete lookout further along the river establishes a second composed beat.
-        float lookoutY=51;
+        float lookoutY=layout.LookoutY;
         if(lookoutY>=origin && lookoutY<origin+length)
         {
-            float x=RiverCentre(lookoutY)+RiverHalfWidth(lookoutY)+1.6f,y=lookoutY-origin;
+            float x=layout.Centre(lookoutY)+layout.HalfWidth(lookoutY)+1.6f,y=lookoutY-origin;
             b.Block(x,y,1.5f,2,-.1f,.2f,new Color(.34f,.40f,.37f));
             b.Block(x+.15f,y+.35f,.8f,.8f,-.3f,.5f,Stone);
             b.Rect(x+.15f,y+.35f,.55f,.4f,-.82f,Asphalt);
