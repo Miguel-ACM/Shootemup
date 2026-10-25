@@ -48,6 +48,16 @@ public static class VerifyRunProgression
                 Reject(LevelId.Desert);Reject(LevelId.Thunder);LevelRun.Advance(LevelId.Fields);
                 Check(LevelRun.Loop==loop+1,"Extended loop did not increment exactly once");
             }
+            foreach(var third in new[]{LevelId.Thunder,LevelId.Tunnel})
+            {
+                LevelRun.Reset();LevelRun.Advance(LevelId.Snow);LevelRun.Advance(third);
+                var options=LevelRun.GetOptions();
+                Check(options.Length==3 && options[0]==LevelId.Desert && options[1]==LevelId.Candyland && options[2]==LevelId.Fields,"Third district lost a route");
+                int seed=LevelRun.Seed;LevelRun.Advance(LevelId.Candyland);
+                Check(LevelRun.Stage==4 && LevelRun.ReturnsToPlains && LevelRun.Seed==seed,"Candyland route resets progression");
+                Reject(LevelId.Desert);LevelRun.Advance(LevelId.Fields);
+                Check(LevelRun.Stage==5 && LevelRun.Loop==2 && LevelRun.Seed==seed,"Candyland did not finish the loop");
+            }
         }
         finally{LevelRun.Reset();}
         Check(LevelRun.Stage==1 && LevelRun.Loop==1 && LevelRun.EnemyTempoScale==1,"New run did not reset difficulty");

@@ -154,7 +154,7 @@ public sealed class DesertReview : MonoBehaviour
         Check(left==LevelId.Desert && right==LevelId.Fields,"third district offers desert or a new Plains loop");
         var choice=LevelChoice.Open(ship.transform,_=>{});yield return new WaitForSeconds(.5f);Capture("RouteChoice");Destroy(choice.gameObject);
     }
-    public static void Capture(string name)
+    public static void Capture(string name,string folder=Folder)
     {
         var source=UnityEngine.Camera.main;source.Render();
         int width=Screen.width,height=Screen.height;
@@ -173,7 +173,7 @@ public sealed class DesertReview : MonoBehaviour
             }
             Canvas.ForceUpdateCanvases();camera.Render();RenderTexture.active=target;
             var image=new Texture2D(width,height,TextureFormat.RGB24,false);image.ReadPixels(new Rect(0,0,width,height),0,0);image.Apply();
-            File.WriteAllBytes(Folder+"/"+name+".png",image.EncodeToPNG());Destroy(image);
+            File.WriteAllBytes(folder+"/"+name+".png",image.EncodeToPNG());Destroy(image);
         }
         finally
         {

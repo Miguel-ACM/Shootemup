@@ -1,0 +1,1 @@
+PASS: route loops, all three choices, 57 swept formation checks, all 18 Candyland motifs. Minimum ships per wave: 19; longest wave: 15,82s.
