@@ -1,0 +1,29 @@
+PASS
+PASS Fields ConvoyA: real firing with peak 8 rounds
+PASS Fields ConvoyA: terrain contact, clear routes and no flying effects
+PASS Fields ConvoyA: attached moving tread/screw marks
+PASS Fields ConvoyB: real firing with peak 15 rounds
+PASS Fields ConvoyB: terrain contact, clear routes and no flying effects
+PASS Fields ConvoyB: attached moving tread/screw marks
+PASS Fields MixedEarly: real firing with peak 21 rounds
+PASS Fields MixedEarly: terrain contact, clear routes and no flying effects
+PASS Fields MixedEarly: attached moving tread/screw marks
+PASS Fields MixedLate: real firing with peak 30 rounds
+PASS Fields MixedLate: terrain contact, clear routes and no flying effects
+PASS Fields MixedLate: attached moving tread/screw marks
+PASS stock BaseWeapon retained for Fields ground damage test
+PASS Fields moving ground enemy killed with the stock gun in 0,46s from first hit
+PASS Snow ConvoyA: real firing with peak 105 rounds
+PASS Snow ConvoyA: terrain contact, clear routes and no flying effects
+PASS Snow ConvoyA: attached moving tread/screw marks
+PASS Snow ConvoyB: real firing with peak 222 rounds
+PASS Snow ConvoyB: terrain contact, clear routes and no flying effects
+PASS Snow ConvoyB: attached moving tread/screw marks
+PASS Snow MixedEarly: real firing with peak 253 rounds
+PASS Snow MixedEarly: terrain contact, clear routes and no flying effects
+PASS Snow MixedEarly: attached moving tread/screw marks
+PASS Snow MixedLate: real firing with peak 228 rounds
+PASS Snow MixedLate: terrain contact, clear routes and no flying effects
+PASS Snow MixedLate: attached moving tread/screw marks
+PASS stock BaseWeapon retained for Snow ground damage test
+PASS Snow moving ground enemy killed with the stock gun in 0,78s from first hit

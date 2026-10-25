@@ -1,0 +1,6 @@
+PASS Fields seed 17381: 19 safe compositions; 16 include ground troops; all six ground motifs reachable and mirrored.
+PASS Fields seed 421: 19 safe compositions; 14 include ground troops; all six ground motifs reachable and mirrored.
+PASS Fields seed 9826: 19 safe compositions; 14 include ground troops; all six ground motifs reachable and mirrored.
+PASS Snow seed 17381: 19 safe compositions; 12 include ground troops; all six ground motifs reachable and mirrored.
+PASS Snow seed 421: 19 safe compositions; 10 include ground troops; all six ground motifs reachable and mirrored.
+PASS Snow seed 9826: 19 safe compositions; 10 include ground troops; all six ground motifs reachable and mirrored.
