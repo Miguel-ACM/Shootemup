@@ -13,10 +13,11 @@ public sealed class SnowSiegeBoss : DistrictBoss
     {
         int beat=(volley-1)%12;
         if(beat==0)shellAxis=Aim;
-        if(beat<4)
+        if(beat<3)
         {
-            // Four matching crowns settle in alternating rows, then open into full rings.
-            int count=phaseTwo ? 7 : 5;
+            // Three broad crowns leave room for complete rings instead of queueing
+            // oversized shell clusters against the shared projectile cap.
+            int count=phaseTwo ? 6 : 5;
             float distance=beat%2==0 ? shellTravelDistance : shellTravelDistance-2;
             for(int i=0;i<count;i++)
             {
@@ -43,7 +44,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
             PetalFan<NeedleRound>(Hull.TransformPoint(new Vector3(0,-.65f,-.25f)),
                 CombatVisuals.Rotate(Vector2.down,sign*11.25f),count,9,phaseTwo ? 5.8f : 5,.13f,.18f);
         }
-        // Beats 5, 7, 10 and 11 are intentional rests while existing patterns unfold.
+        // Beats 3, 5, 7, 10 and 11 are intentional rests while existing patterns unfold.
     }
     protected override void OnPhaseTwo(){volley=0;nextAttack=age+1.1f;}
 }
