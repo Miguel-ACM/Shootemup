@@ -76,5 +76,5 @@ public sealed class ShipLoadout : MonoBehaviour
         var ship=GetComponent<Shipcontroller>();if(slot==0)ship.AddActiveLeft(item);else ship.AddActiveRight(item);
         if(old!=null && old!=item)Destroy(old.gameObject);
     }
-    void OnDestroy(){input.Disable();input.Dispose();}
+    void OnDestroy(){input?.Disable();input?.Dispose();}
 }

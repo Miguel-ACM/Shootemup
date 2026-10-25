@@ -115,7 +115,7 @@ public class Menu : MonoBehaviour
     // against this destroyed object, so release it with the object.
     void OnDestroy()
     {
-        input.Disable();
-        input.Dispose();
+        input?.Disable();
+        input?.Dispose();
     }
 }

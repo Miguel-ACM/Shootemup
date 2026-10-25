@@ -10,11 +10,12 @@ public static class WaveComposer
     {
         public WavePart Part;public List<WaveUnit> Units;public List<WaveGeometry.Track> Tracks;public float At;
         public float Span;
+        public int Variant;
         public ulong[] Occupancy;public int[] Filled;
         public Motion Copy()
         {
             var copies=new List<WaveGeometry.Track>();foreach(var track in Tracks)copies.Add(new WaveGeometry.Track(track));
-            return new Motion{Part=Part,Units=Units,Tracks=copies,Occupancy=Occupancy,Filled=Filled,Span=Span};
+            return new Motion{Part=Part,Units=Units,Tracks=copies,Occupancy=Occupancy,Filled=Filled,Span=Span,Variant=Variant};
         }
         public void Place(float at){At=Mathf.Round(at/WaveGeometry.Step)*WaveGeometry.Step;foreach(var track in Tracks)track.Start=track.Unit.time+At;}
     }
@@ -132,6 +133,16 @@ public static class WaveComposer
         // The next wave cannot occupy the departing formation's space. Kills still permit early handoff.
         return new Wave(budget,duration,1,ConflictGroup.cg.center,units){parts=names.ToArray()};
     }
+    // The watcher uses the same spacing retries and tempo as live compositions.
+    public static Wave PreviewPart(WavePart part,int variant,int side,out int resolvedVariant)
+    {
+        EnsureContext();var motion=Make(part,variant,side);resolvedVariant=motion!=null ? motion.Variant : variant;
+        if(motion==null)return null;
+        var units=new List<WaveUnit>();
+        foreach(var original in motion.Units){var unit=(WaveUnit)original.Clone();unit.time/=Tempo;units.Add(unit);}
+        units.Sort((a,b)=>a.time.CompareTo(b.time));
+        return new Wave(0,motion.Span/Tempo,1,ConflictGroup.cg.center,units){parts=new[]{part.Name}};
+    }
     static Motion Make(WavePart part,int variant,float side)
     {
         var key=(part,variant,(int)side);
@@ -145,7 +156,7 @@ public static class WaveComposer
             if(WaveGeometry.Clear(tracks))
             {
                 float span=0;foreach(var track in tracks)span=Mathf.Max(span,track.End);
-                var template=new Motion{Part=part,Units=units,Tracks=tracks,Occupancy=WaveGeometry.Occupancy(tracks),Span=span};
+                var template=new Motion{Part=part,Units=units,Tracks=tracks,Occupancy=WaveGeometry.Occupancy(tracks),Span=span,Variant=variant+retry};
                 var filled=new List<int>();for(int i=0;i<template.Occupancy.Length;i++)if(template.Occupancy[i]!=0)filled.Add(i);
                 template.Filled=filled.ToArray();patterns[key]=template;return template.Copy();
             }

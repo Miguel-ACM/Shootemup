@@ -447,12 +447,12 @@ public class Shipcontroller : MonoBehaviour
     }
 
     void OnDisable() {
-        input.PlayerControls.Disable();
+        input?.PlayerControls.Disable();
     }
 
     // Inputs instances stay enabled after their scene unloads, and their callbacks then run
     // against this destroyed object, so release it with the object.
     void OnDestroy() {
-        input.Dispose();
+        input?.Dispose();
     }
 }

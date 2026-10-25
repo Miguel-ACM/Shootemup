@@ -8,9 +8,9 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 // A build-accessible pattern viewer. Enemies, movement, aim and projectiles are the real combat code.
-public sealed class WaveWatcher : MonoBehaviour
+public sealed partial class WaveWatcher : MonoBehaviour
 {
-    public const int FirstWave=2,LastWave=20,Miniboss=21,BossOne=22,BossTwo=23;
+    public const int FirstWave=2,LastWave=20,Miniboss=21,BossOne=22,BossTwo=23,BossOther=24;
     static bool requested;
     public static WaveWatcher Current {get;private set;}
     public LevelId Level=>LevelRun.Current;
@@ -21,6 +21,21 @@ public sealed class WaveWatcher : MonoBehaviour
     public float Elapsed {get;private set;}
     public bool Ready {get;private set;}
     public int Spawned {get;private set;}
+    public WatcherView View {get;private set;}
+    public int Selection {get;private set;}
+    public int Variant {get;private set;}
+    public int ResolvedVariant {get;private set;}
+    public int Mirror {get;private set;}=1;
+    public int ReviewLoop {get;private set;}=1;
+    public bool Touring {get;private set;}
+    public int AimSide=>aim;
+    public IReadOnlyList<WatcherCatalog.Entry> Entries=>catalog;
+    public WatcherCatalog.Entry SelectedEntry=>catalog[Selection];
+    List<WatcherCatalog.Entry> catalog;
+    string recipe="";
+    int pendingSteps;
+    bool stepScheduled;
+    float savedCaptureDelta;
     Shipcontroller ship;
     Coroutine playback;
     Canvas[] hiddenCanvases;
@@ -79,7 +94,7 @@ public sealed class WaveWatcher : MonoBehaviour
             if(canvas.name!="PSX pixel display" && canvas.name!="Cloud scene transitions")hidden.Add(canvas);
         hiddenCanvases=hidden.ToArray();
         if(FindAnyObjectByType<TunnelReflectors>()==null)new GameObject("Watcher tunnel rails").AddComponent<TunnelReflectors>();
-        Build();SetAim(0);HidePilot();
+        catalog=WatcherCatalog.For(View,Level);Build();SetAim(0);HidePilot();
         while(CloudTransition.Busy || !WavePreparation.Ready)yield return null;
         yield return new WaitForSeconds(WaveOrchestrer.OpeningBreather);
         Ready=true;Replay();
@@ -88,15 +103,26 @@ public sealed class WaveWatcher : MonoBehaviour
     void Update()
     {
         if(Ready && ((Keyboard.current?.escapeKey.wasPressedThisFrame ?? false) || (Gamepad.current?.buttonEast.wasPressedThisFrame ?? false)))Exit();
+        if(!Ready || (EventSystem.current!=null && EventSystem.current.currentSelectedGameObject!=null && EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>()!=null))return;
+        var keyboard=Keyboard.current;if(keyboard==null)return;
+        if(keyboard.spaceKey.wasPressedThisFrame)TogglePause();
+        if(keyboard.periodKey.wasPressedThisFrame)StepOnce();
+        if(keyboard.rKey.wasPressedThisFrame)Replay();
+        if(keyboard.cKey.wasPressedThisFrame)CopyForChat();
     }
     void LateUpdate()
     {
         if(ship==null)return;
         HidePilot();
         if(hiddenCanvases!=null)foreach(var canvas in hiddenCanvases)if(canvas!=null)canvas.enabled=false;
-        Time.timeScale=CloudTransition.Busy ? 1 : Paused ? 0 : PlaybackSpeed;
+        if(stepScheduled){Time.captureDeltaTime=savedCaptureDelta;stepScheduled=false;}
+        if(pendingSteps>0 && Ready && !CloudTransition.Busy)
+        {pendingSteps--;savedCaptureDelta=Time.captureDeltaTime;Time.captureDeltaTime=1f/60;Time.timeScale=1;stepScheduled=true;}
+        else Time.timeScale=CloudTransition.Busy ? 1 : Paused ? 0 : PlaybackSpeed;
+        LayoutPanels();
         if(Time.unscaledTime<nextStatus)return;nextStatus=Time.unscaledTime+.15f;
-        status.text=$"{Elapsed:0.0}s\n{AEnemy.Live.Count} ships\n{CombatRound.Live.Count} bullets";
+        status.text=WavePreparation.Ready ? $"{Elapsed:0.00}s  /  {AEnemy.Live.Count} ships  /  {CombatRound.Live.Count} shots" : "PREPARING";
+        if(Ready)SaveCurrentReference();
     }
     void HidePilot()
     {
@@ -106,23 +132,65 @@ public sealed class WaveWatcher : MonoBehaviour
     public void SelectLevel(LevelId level)
     {
         if(!Ready || CloudTransition.Busy)return;
-        LevelRun.Reset(level);LevelEnvironment.Apply();BGMManager.PlayLevelMusic(level);SetAim(aim);Replay();
+        SetContext(level,LevelRun.Seed);LevelEnvironment.Apply();BGMManager.PlayLevelMusic(level);
+        catalog=WatcherCatalog.For(View,level);Selection=Mathf.Min(Selection,catalog.Count-1);RebuildCatalog();SetAim(aim);Replay();
     }
     public void SelectEncounter(int encounter)
     {
-        if(!Ready || encounter<FirstWave || encounter>BossTwo)return;
-        Encounter=encounter;Replay();
+        if(!Ready || encounter<FirstWave || encounter>BossOther)return;
+        var view=encounter<=LastWave ? WatcherView.Waves : WatcherView.Bosses;
+        var entries=WatcherCatalog.For(view,Level);int selected=entries.FindIndex(x=>x.Encounter==encounter);
+        if(selected<0)return;View=view;catalog=entries;Selection=selected;RebuildCatalog();Replay();
     }
     public void Replay()
     {
         if(!Ready)return;
         if(playback!=null)StopCoroutine(playback);
-        playback=StartCoroutine(Play());Refresh();
+        Encounter=SelectedEntry.Encounter;playback=StartCoroutine(Play());Refresh();
     }
     public void TogglePause(){Paused=!Paused;Refresh();}
     public void ToggleLoop(){Looping=!Looping;Refresh();}
     public void CycleSpeed(){PlaybackSpeed=PlaybackSpeed==1 ? .5f : PlaybackSpeed==.5f ? 2 : 1;Refresh();}
-    public void NewSet(){if(Ready)SelectLevel(Level);}
+    public void NewSet(){if(Ready)SetSeed(UnityEngine.Random.Range(1,10000000));}
+    public void SetSeed(int seed)
+    {
+        if(!Ready)return;SetContext(Level,Mathf.Max(1,seed));LevelEnvironment.Apply();Replay();
+    }
+    void SetContext(LevelId level,int seed)
+    {
+        LevelRun.Reset(LevelId.Fields,seed);
+        for(int i=1;i<ReviewLoop;i++){LevelRun.Advance(LevelId.Snow);LevelRun.Advance(LevelId.Thunder);LevelRun.Advance(LevelId.Fields);}
+        if(LevelRun.Tier(level)>=2)LevelRun.Advance(LevelRun.Tier(level)==2 ? level : LevelId.Snow);
+        if(LevelRun.Tier(level)==3)LevelRun.Advance(level);
+    }
+    public void SelectLoop(int loop){if(!Ready)return;ReviewLoop=Mathf.Clamp(loop,1,99);SetContext(Level,LevelRun.Seed);WavePreparation.Begin();Replay();}
+    public void SelectView(WatcherView view)
+    {
+        if(!Ready)return;View=view;Selection=0;catalog=WatcherCatalog.For(view,Level);RebuildCatalog();Replay();
+    }
+    public void SelectEntry(int index)
+    {
+        if(!Ready || index<0 || index>=catalog.Count)return;Selection=index;RebuildCatalog();Replay();
+    }
+    public void SelectVariant(int variant){Variant=(variant%13+13)%13;Replay();}
+    public void ToggleMirror(){Mirror=-Mirror;Replay();}
+    public void StepOnce(){if(!Ready)return;Paused=true;pendingSteps++;Refresh();}
+    public void ToggleTour(){Touring=!Touring;if(Touring){Paused=false;Replay();}Refresh();}
+    public void NextEntry(int direction)
+    {
+        if(Touring && direction>0 && Selection==catalog.Count-1)
+        {
+            if(View==WatcherView.Projectiles)
+            {
+                View=WatcherView.Waves;
+                var order=new[]{LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Tunnel};
+                SelectLevel(order[(System.Array.IndexOf(order,Level)+1)%order.Length]);
+            }
+            else View=(WatcherView)((int)View+1);
+            catalog=WatcherCatalog.For(View,Level);Selection=0;RebuildCatalog();Replay();return;
+        }
+        SelectEntry((Selection+direction+catalog.Count)%catalog.Count);
+    }
     public void SetAim(int side)
     {
         aim=Mathf.Clamp(side,-1,1);
@@ -134,7 +202,7 @@ public sealed class WaveWatcher : MonoBehaviour
         if(CloudTransition.Busy)return;
         requested=false;Time.timeScale=1;Paused=false;PlaybackSpeed=1;CloudTransition.Load("Title");
     }
-    void OnDestroy(){if(Current==this)Current=null;Time.timeScale=1;}
+    void OnDestroy(){if(catalog!=null)SaveCurrentReference(false);if(Current==this)Current=null;if(stepScheduled)Time.captureDeltaTime=savedCaptureDelta;Time.timeScale=1;}
     static void ClearArena()
     {
         foreach(var enemy in FindObjectsByType<AEnemy>()){enemy.enabled=false;Destroy(enemy.gameObject);}
@@ -144,24 +212,65 @@ public sealed class WaveWatcher : MonoBehaviour
     }
     IEnumerator Play()
     {
-        ClearArena();Elapsed=0;Spawned=0;partLabel.text="";yield return null;
+        ClearArena();Elapsed=0;Spawned=0;recipe="";ResolvedVariant=Variant;partLabel.text="";yield return null;
         while(CloudTransition.Busy || !WavePreparation.Ready)yield return null;
-        if(Encounter>=BossOne)
+        // Replay attack randomness as well as the authored composition.
+        UnityEngine.Random.InitState(LevelRun.Seed);
+        var entry=SelectedEntry;
+        if(View==WatcherView.Projectiles)
+        {
+            var emitter=DistrictEnemy.Spawn(typeof(BeamDrone),new Vector3(0,Camera.UpLimit-2.4f,1));
+            emitter.enabled=false;foreach(var mover in emitter.GetComponents<PatternMover>())mover.enabled=false;
+            Spawned=1;Refresh();float nextShot=0;
+            while(true)
+            {
+                if(Elapsed>=nextShot && (Looping || Touring || nextShot==0)){entry.Fire(emitter.transform.position,emitter.Hull);nextShot=Elapsed+4;}
+                Elapsed+=Time.deltaTime;
+                if(Touring && Elapsed>=16){NextEntry(1);yield break;}
+                yield return null;
+            }
+        }
+        if(View==WatcherView.Bosses && Encounter>=BossOne)
         {
             var boss=(DistrictBoss)DistrictEnemy.Spawn(DistrictWaves.BossType,new Vector3(0,Camera.UpLimit+3,1));Spawned=1;
             yield return null;yield return null; // Both City hulls finish Start before selecting the survivor phase.
-            if(Encounter==BossTwo)
+            if(Encounter==BossTwo || Encounter==BossOther)
             {
                 if(boss is CityDuoBoss duo && duo.partner!=null)
                 {
-                    duo.partner.health*=.55f;duo.lifeDropChance=duo.manaDropChance=duo.moneyDropChance=0;duo.damage(1000000);
+                    var victim=Encounter==BossOther ? duo.partner : duo;
+                    var survivor=Encounter==BossOther ? duo : duo.partner;
+                    survivor.health*=.55f;victim.damage(1000000);
                 }
                 else boss.health*=.49f;
             }
-            while(true){Elapsed+=Time.deltaTime;yield return null;}
+            recipe=WatcherCatalog.Pretty(DistrictWaves.BossType.Name);Refresh();
+            while(true)
+            {
+                Elapsed+=Time.deltaTime;
+                if(Elapsed>=24 && (Touring || Looping)){if(Touring)NextEntry(1);else Replay();yield break;}
+                yield return null;
+            }
         }
-        var wave=Encounter==Miniboss ? DistrictWaves.Miniboss() : DistrictWaves.Create(Encounter);
-        partLabel.text=string.Join("\n",wave.parts);
+        if(View==WatcherView.Enemies)
+        {
+            DistrictEnemy.Spawn(entry.Enemy,new Vector3(0,Camera.UpLimit+1,1));Spawned=1;Refresh();
+            float quietEnemy=0;
+            while(true)
+            {
+                Elapsed+=Time.deltaTime;quietEnemy=AEnemy.Live.Count==0 && CombatRound.Live.Count==0 ? quietEnemy+Time.deltaTime : 0;
+                if(quietEnemy>.8f && (Touring || Looping)){if(Touring)NextEntry(1);else Replay();yield break;}
+                yield return null;
+            }
+        }
+        int resolved=Variant;
+        var wave=View==WatcherView.Formations ? WaveComposer.PreviewPart(entry.Part,Variant,Mirror,out resolved) :
+            Encounter==Miniboss ? DistrictWaves.Miniboss() : DistrictWaves.Create(Encounter);
+        if(View==WatcherView.Formations)ResolvedVariant=resolved;
+        if(wave==null){recipe="No safe layout for this variant";Refresh();if(Touring){yield return new WaitForSeconds(1);NextEntry(1);}yield break;}
+        recipe=View==WatcherView.Formations ? WatcherCatalog.Pretty(entry.Part.Enemy)+"\n"+entry.Part.Route.Name :
+            Encounter==Miniboss ? WatcherCatalog.Pretty(wave.units[0].enemy) : string.Join("\n",wave.parts);
+        Refresh();
         int next=0;float quiet=0;
         while(true)
         {
@@ -174,58 +283,9 @@ public sealed class WaveWatcher : MonoBehaviour
             }
             bool clear=next==wave.units.Count && AEnemy.Live.Count==0 && CombatRound.Live.Count==0;
             quiet=clear ? quiet+Time.deltaTime : 0;
-            if(Looping && quiet>.8f){playback=StartCoroutine(Play());yield break;}
+            if((Looping || Touring) && quiet>.8f){if(Touring)NextEntry(1);else Replay();yield break;}
             yield return null;
         }
-    }
-    void Build()
-    {
-        var canvas=gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=80;
-        var scaler=gameObject.AddComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);scaler.matchWidthOrHeight=1;
-        gameObject.AddComponent<GraphicRaycaster>();
-        var leftMask=Box(transform,"Left margin",Vector2.zero,Vector2.zero,Color.black);
-        leftMask.anchorMin=Vector2.zero;leftMask.anchorMax=new Vector2(.5f,1);leftMask.offsetMin=Vector2.zero;leftMask.offsetMax=new Vector2(-202.5f,0);
-        var rightMask=Box(transform,"Right margin",Vector2.zero,Vector2.zero,Color.black);
-        rightMask.anchorMin=new Vector2(.5f,0);rightMask.anchorMax=Vector2.one;rightMask.offsetMin=new Vector2(202.5f,0);rightMask.offsetMax=Vector2.zero;
-        var left=Box(transform,"Watcher levels",new Vector2(-365,0),new Vector2(270,650),Panel);
-        var right=Box(transform,"Watcher waves",new Vector2(365,0),new Vector2(270,650),Panel);
-        Label(left,"WAVE WATCHER",22,new Vector2(0,298),new Vector2(250,38));
-        foreach(var level in new[]{LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Tunnel})
-        {
-            int row=levels.Count;var chosen=level;
-            levels[level]=Button(left,level==LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(),new Vector2(0,225-row*42),new Vector2(230,36),()=>SelectLevel(chosen)).GetComponent<Image>();
-        }
-        Button(left,"REPLAY",new Vector2(0,-10),new Vector2(230,36),Replay);
-        Label(left,"AIM",14,new Vector2(0,-63),new Vector2(230,25));
-        for(int i=-1;i<=1;i++)
-        {
-            int side=i;aims.Add(Button(left,i<0 ? "LEFT" : i>0 ? "RIGHT" : "CENTRE",new Vector2(i*79,-100),new Vector2(73,34),()=>SetAim(side)).GetComponent<Image>());
-        }
-        speedLabel=Button(left,"SPEED",new Vector2(0,-156),new Vector2(230,36),CycleSpeed).GetComponentInChildren<TextMeshProUGUI>();
-        pauseLabel=Button(left,"PAUSE",new Vector2(0,-204),new Vector2(230,36),TogglePause).GetComponentInChildren<TextMeshProUGUI>();
-        loopLabel=Button(left,"LOOP",new Vector2(0,-252),new Vector2(230,36),ToggleLoop).GetComponentInChildren<TextMeshProUGUI>();
-        Button(left,"BACK",new Vector2(0,-300),new Vector2(230,36),Exit);
-        heading=Label(right,"",24,new Vector2(0,298),new Vector2(250,38));
-        for(int wave=FirstWave;wave<=LastWave;wave++)
-        {
-            int chosen=wave,index=wave-FirstWave;
-            encounters[wave]=Button(right,wave.ToString(),new Vector2(-87+(index%4)*58,225-(index/4)*44),new Vector2(50,36),()=>SelectEncounter(chosen)).GetComponent<Image>();
-        }
-        encounters[Miniboss]=Button(right,"MINIBOSS",new Vector2(0,-10),new Vector2(230,36),()=>SelectEncounter(Miniboss)).GetComponent<Image>();
-        encounters[BossOne]=Button(right,"BOSS  /  PHASE 1",new Vector2(0,-56),new Vector2(230,36),()=>SelectEncounter(BossOne)).GetComponent<Image>();
-        encounters[BossTwo]=Button(right,"BOSS  /  PHASE 2",new Vector2(0,-102),new Vector2(230,36),()=>SelectEncounter(BossTwo)).GetComponent<Image>();
-        status=Label(right,"",16,new Vector2(0,-186),new Vector2(250,70));Refresh();
-        partLabel=Label(right,"",12,new Vector2(0,-254),new Vector2(230,68));
-        Button(right,"NEW SET",new Vector2(0,-302),new Vector2(230,32),NewSet);
-    }
-    void Refresh()
-    {
-        if(heading==null)return;
-        heading.text=Encounter==Miniboss ? "MINIBOSS" : Encounter>=BossOne ? "BOSS" : "WAVE "+Encounter;
-        pauseLabel.text=Paused ? "RESUME" : "PAUSE";loopLabel.text=Looping ? "LOOP  ON" : "LOOP  OFF";speedLabel.text="SPEED  "+PlaybackSpeed.ToString("0.#")+"x";
-        foreach(var level in levels)level.Value.color=level.Key==Level ? Selected : ButtonColor;
-        foreach(var wave in encounters)wave.Value.color=wave.Key==Encounter ? Selected : ButtonColor;
-        SetAim(aim);
     }
     RectTransform Box(Transform parent,string name,Vector2 position,Vector2 size,Color color)
     {

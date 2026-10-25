@@ -81,3 +81,6 @@ crashlytics-build.properties
 /ArtSource/PSXPreview/WarningMotion_*.png
 /ArtSource/**/*.request
 /ArtSource/**/*.pending
+
+# Local Wave Watcher chat references and screenshots
+/WaveWatcherFeedback/

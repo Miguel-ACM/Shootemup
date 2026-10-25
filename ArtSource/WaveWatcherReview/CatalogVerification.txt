@@ -1,0 +1,1366 @@
+PASS
+PASS catalog launches through the title into real combat
+PASS district changes retain the reported seed
+PASS returning to a district reproduces its exact wave
+PASS new set explicitly changes the seed
+PASS loop preview uses real run difficulty
+PASS pause freezes the timeline
+PASS single step advances exactly one sixtieth then freezes (delta 0,016667, scale 0, capture 0)
+PASS Fields retains access to all budgets, including extras outside the shortened run
+PASS Fields last catalog page exposes wave 20
+PASS Fields / Orchard flight has selectable safe variants facing -1
+PASS Fields / Orchard flight has selectable safe variants facing 1
+PASS Fields / River arrow has selectable safe variants facing -1
+PASS Fields / River arrow has selectable safe variants facing 1
+PASS Fields / River procession has selectable safe variants facing -1
+PASS Fields / River procession has selectable safe variants facing 1
+PASS Fields / Ridge staff has selectable safe variants facing -1
+PASS Fields / Ridge staff has selectable safe variants facing 1
+PASS Fields / River braid has selectable safe variants facing -1
+PASS Fields / River braid has selectable safe variants facing 1
+PASS Fields / Meadow diamond has selectable safe variants facing -1
+PASS Fields / Meadow diamond has selectable safe variants facing 1
+PASS Fields / Figure eight has selectable safe variants facing -1
+PASS Fields / Figure eight has selectable safe variants facing 1
+PASS Fields / Orchard echelon has selectable safe variants facing -1
+PASS Fields / Orchard echelon has selectable safe variants facing 1
+PASS Fields / Banking rank has selectable safe variants facing -1
+PASS Fields / Banking rank has selectable safe variants facing 1
+PASS Fields / Opening crown has selectable safe variants facing -1
+PASS Fields / Opening crown has selectable safe variants facing 1
+PASS Fields / Patrol return has selectable safe variants facing -1
+PASS Fields / Patrol return has selectable safe variants facing 1
+PASS Fields / Gunship echelon has selectable safe variants facing -1
+PASS Fields / Gunship echelon has selectable safe variants facing 1
+PASS Fields / Bomber crescent has selectable safe variants facing -1
+PASS Fields / Bomber crescent has selectable safe variants facing 1
+PASS Fields / Ridge patrol has selectable safe variants facing -1
+PASS Fields / Ridge patrol has selectable safe variants facing 1
+PASS Fields / Bomber bank has selectable safe variants facing -1
+PASS Fields / Bomber bank has selectable safe variants facing 1
+PASS Fields / Orchard guard has selectable safe variants facing -1
+PASS Fields / Orchard guard has selectable safe variants facing 1
+PASS FieldsCatalogPart shows actual moving models (peak 2 ships, 18 bullets)
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: FORMATIONS  16/16
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Patrol return
+PASS catalog label fits: Gunship echelon
+PASS catalog label fits: Bomber crescent
+PASS catalog label fits: Ridge patrol
+PASS catalog label fits: Bomber bank
+PASS catalog label fits: Orchard guard
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 2 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: -
+PASS catalog label fits: VAR 13/13
+PASS catalog label fits: +
+PASS catalog label fits: LEFT
+PASS catalog label fits: Orchard guard
+Patrol Gunship
+Plains / Orchard bank
+PASS catalog label fits: 5,25s  /  2 ships  /  18 shots
+PASS formation reference identifies variant, mirror and seed
+PASS enemy/ScoutInterceptor spawns its actual runtime model and behavior
+PASS enemy/PatrolGunship spawns its actual runtime model and behavior
+PASS enemy/HeavyBomber spawns its actual runtime model and behavior
+PASS enemy/FieldsHeavyWing spawns its actual runtime model and behavior
+PASS FieldsCatalogBoss shows actual live enemy shooting (peak 104 bullets)
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: BOSSES  3/3
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: MINIBOSS
+PASS catalog label fits: BOSS / PHASE 1
+PASS catalog label fits: BOSS / PHASE 2
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 1
+PASS catalog label fits: PAGE >
+PASS catalog label fits: BOSS / PHASE 2
+Fields Bomber Boss
+PASS catalog label fits: 4,53s  /  1 ships  /  102 shots
+PASS Snow retains access to all budgets, including extras outside the shortened run
+PASS Snow last catalog page exposes wave 20
+PASS Snow / Glacier flight has selectable safe variants facing -1
+PASS Snow / Glacier flight has selectable safe variants facing 1
+PASS Snow / White curl has selectable safe variants facing -1
+PASS Snow / White curl has selectable safe variants facing 1
+PASS Snow / Petal procession has selectable safe variants facing -1
+PASS Snow / Petal procession has selectable safe variants facing 1
+PASS Snow / Ice wind has selectable safe variants facing -1
+PASS Snow / Ice wind has selectable safe variants facing 1
+PASS Snow / Frost descent has selectable safe variants facing -1
+PASS Snow / Frost descent has selectable safe variants facing 1
+PASS Snow / Crystal diamond has selectable safe variants facing -1
+PASS Snow / Crystal diamond has selectable safe variants facing 1
+PASS Snow / Snow crown has selectable safe variants facing -1
+PASS Snow / Snow crown has selectable safe variants facing 1
+PASS Snow / Crosswind rank has selectable safe variants facing -1
+PASS Snow / Crosswind rank has selectable safe variants facing 1
+PASS Snow / Avalanche flight has selectable safe variants facing -1
+PASS Snow / Avalanche flight has selectable safe variants facing 1
+PASS Snow / Crystal procession has selectable safe variants facing -1
+PASS Snow / Crystal procession has selectable safe variants facing 1
+PASS Snow / Mortar coil has selectable safe variants facing -1
+PASS Snow / Mortar coil has selectable safe variants facing 1
+PASS Snow / Shielded crown has selectable safe variants facing -1
+PASS Snow / Shielded crown has selectable safe variants facing 1
+PASS Snow / Avalanche bow has selectable safe variants facing -1
+PASS Snow / Avalanche bow has selectable safe variants facing 1
+PASS Snow / Heavy white curl has selectable safe variants facing -1
+PASS Snow / Heavy white curl has selectable safe variants facing 1
+PASS Snow / Siege descent has selectable safe variants facing -1
+PASS Snow / Siege descent has selectable safe variants facing 1
+PASS Snow / Shielded crystal has selectable safe variants facing -1
+PASS Snow / Shielded crystal has selectable safe variants facing 1
+PASS SnowCatalogPart shows actual moving models (peak 1 ships, 20 bullets)
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: FORMATIONS  16/16
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Mortar coil
+PASS catalog label fits: Shielded crown
+PASS catalog label fits: Avalanche bow
+PASS catalog label fits: Heavy white curl
+PASS catalog label fits: Siege descent
+PASS catalog label fits: Shielded crystal
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 2 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: -
+PASS catalog label fits: VAR 13/13
+PASS catalog label fits: +
+PASS catalog label fits: RIGHT
+PASS catalog label fits: Shielded crystal
+Shield Transport
+Snow / Crystal turn
+PASS catalog label fits: 4,85s  /  1 ships  /  20 shots
+PASS formation reference identifies variant, mirror and seed
+PASS enemy/ColdWeatherFighter spawns its actual runtime model and behavior
+PASS enemy/SiegeGunship spawns its actual runtime model and behavior
+PASS enemy/ShieldTransport spawns its actual runtime model and behavior
+PASS enemy/AvalancheBomber spawns its actual runtime model and behavior
+PASS enemy/SnowSiegeCraft spawns its actual runtime model and behavior
+PASS SnowCatalogBoss shows actual live enemy shooting (peak 41 bullets)
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: BOSSES  3/3
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: MINIBOSS
+PASS catalog label fits: BOSS / PHASE 1
+PASS catalog label fits: BOSS / PHASE 2
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 1
+PASS catalog label fits: PAGE >
+PASS catalog label fits: BOSS / PHASE 2
+Snow Siege Boss
+PASS catalog label fits: 4,47s  /  1 ships  /  41 shots
+PASS City retains access to all budgets, including extras outside the shortened run
+PASS City last catalog page exposes wave 20
+PASS City / Elevated traffic has selectable safe variants facing -1
+PASS City / Elevated traffic has selectable safe variants facing 1
+PASS City / Canyon couriers has selectable safe variants facing -1
+PASS City / Canyon couriers has selectable safe variants facing 1
+PASS City / Skybridge traffic has selectable safe variants facing -1
+PASS City / Skybridge traffic has selectable safe variants facing 1
+PASS City / Underpass traffic has selectable safe variants facing -1
+PASS City / Underpass traffic has selectable safe variants facing 1
+PASS City / Rooftop pack has selectable safe variants facing -1
+PASS City / Rooftop pack has selectable safe variants facing 1
+PASS City / Junction drones has selectable safe variants facing -1
+PASS City / Junction drones has selectable safe variants facing 1
+PASS City / Express couriers has selectable safe variants facing -1
+PASS City / Express couriers has selectable safe variants facing 1
+PASS City / Overtaking drones has selectable safe variants facing -1
+PASS City / Overtaking drones has selectable safe variants facing 1
+PASS City / Interchange pack has selectable safe variants facing -1
+PASS City / Interchange pack has selectable safe variants facing 1
+PASS City / Slingshot arrow has selectable safe variants facing -1
+PASS City / Slingshot arrow has selectable safe variants facing 1
+PASS City / Bridge drones has selectable safe variants facing -1
+PASS City / Bridge drones has selectable safe variants facing 1
+PASS City / Canyon overtakers has selectable safe variants facing -1
+PASS City / Canyon overtakers has selectable safe variants facing 1
+PASS City / Rooftop pursuit has selectable safe variants facing -1
+PASS City / Rooftop pursuit has selectable safe variants facing 1
+PASS City / Junction pursuit has selectable safe variants facing -1
+PASS City / Junction pursuit has selectable safe variants facing 1
+PASS City / Command ramp has selectable safe variants facing -1
+PASS City / Command ramp has selectable safe variants facing 1
+PASS City / Command interchange has selectable safe variants facing -1
+PASS City / Command interchange has selectable safe variants facing 1
+PASS CityCatalogPart shows actual moving models (peak 1 ships, 39 bullets)
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: FORMATIONS  16/16
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Bridge drones
+PASS catalog label fits: Canyon overtakers
+PASS catalog label fits: Rooftop pursuit
+PASS catalog label fits: Junction pursuit
+PASS catalog label fits: Command ramp
+PASS catalog label fits: Command interchange
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 2 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: -
+PASS catalog label fits: VAR 13/13
+PASS catalog label fits: +
+PASS catalog label fits: LEFT
+PASS catalog label fits: Command interchange
+Command Gunship
+City / Interchange
+PASS catalog label fits: 5,03s  /  1 ships  /  34 shots
+PASS formation reference identifies variant, mirror and seed
+PASS enemy/PursuitFighter spawns its actual runtime model and behavior
+PASS enemy/AttackDrone spawns its actual runtime model and behavior
+PASS enemy/CommandGunship spawns its actual runtime model and behavior
+PASS enemy/CourierDiver spawns its actual runtime model and behavior
+PASS enemy/CityCommandCarrier spawns its actual runtime model and behavior
+PASS CityCatalogBoss shows actual live enemy shooting (peak 188 bullets)
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: BOSSES  3/4
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: MINIBOSS
+PASS catalog label fits: BOTH HULLS
+PASS catalog label fits: HEAVY SURVIVOR
+PASS catalog label fits: FAST SURVIVOR
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 1
+PASS catalog label fits: PAGE >
+PASS catalog label fits: HEAVY SURVIVOR
+City Duo Boss
+PASS catalog label fits: 4,71s  /  1 ships  /  188 shots
+PASS City heavy survivor is available
+PASS City fast survivor is available
+PASS Thunder retains access to all budgets, including extras outside the shortened run
+PASS Thunder last catalog page exposes wave 20
+PASS Thunder / Forked flight has selectable safe variants facing -1
+PASS Thunder / Forked flight has selectable safe variants facing 1
+PASS Thunder / Ion crown has selectable safe variants facing -1
+PASS Thunder / Ion crown has selectable safe variants facing 1
+PASS Thunder / Storm rail has selectable safe variants facing -1
+PASS Thunder / Storm rail has selectable safe variants facing 1
+PASS Thunder / Ion diamond has selectable safe variants facing -1
+PASS Thunder / Ion diamond has selectable safe variants facing 1
+PASS Thunder / Static flight has selectable safe variants facing -1
+PASS Thunder / Static flight has selectable safe variants facing 1
+PASS Thunder / Flash procession has selectable safe variants facing -1
+PASS Thunder / Flash procession has selectable safe variants facing 1
+PASS Thunder / Lightning slash has selectable safe variants facing -1
+PASS Thunder / Lightning slash has selectable safe variants facing 1
+PASS Thunder / Hooking rank has selectable safe variants facing -1
+PASS Thunder / Hooking rank has selectable safe variants facing 1
+PASS Thunder / Capacitor wing has selectable safe variants facing -1
+PASS Thunder / Capacitor wing has selectable safe variants facing 1
+PASS Thunder / Ion relays has selectable safe variants facing -1
+PASS Thunder / Ion relays has selectable safe variants facing 1
+PASS Thunder / Static relays has selectable safe variants facing -1
+PASS Thunder / Static relays has selectable safe variants facing 1
+PASS Thunder / Peeling relays has selectable safe variants facing -1
+PASS Thunder / Peeling relays has selectable safe variants facing 1
+PASS Thunder / Pendulum beam has selectable safe variants facing -1
+PASS Thunder / Pendulum beam has selectable safe variants facing 1
+PASS Thunder / Ion beam has selectable safe variants facing -1
+PASS Thunder / Ion beam has selectable safe variants facing 1
+PASS Thunder / Sweeping lance has selectable safe variants facing -1
+PASS Thunder / Sweeping lance has selectable safe variants facing 1
+PASS Thunder / Hooking lance has selectable safe variants facing -1
+PASS Thunder / Hooking lance has selectable safe variants facing 1
+PASS ThunderCatalogPart shows actual moving models (peak 1 ships, 1 bullets)
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: FORMATIONS  16/16
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Static relays
+PASS catalog label fits: Peeling relays
+PASS catalog label fits: Pendulum beam
+PASS catalog label fits: Ion beam
+PASS catalog label fits: Sweeping lance
+PASS catalog label fits: Hooking lance
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 2 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: -
+PASS catalog label fits: VAR 13/13
+PASS catalog label fits: +
+PASS catalog label fits: RIGHT
+PASS catalog label fits: Hooking lance
+Arc Lancer
+Thunder / Hook strike
+PASS catalog label fits: 4,98s  /  1 ships  /  1 shots
+PASS formation reference identifies variant, mirror and seed
+PASS enemy/BeamDrone spawns its actual runtime model and behavior
+PASS enemy/RelayDrone spawns its actual runtime model and behavior
+PASS enemy/StormSkimmer spawns its actual runtime model and behavior
+PASS enemy/ArcLancer spawns its actual runtime model and behavior
+PASS enemy/StormReactor spawns its actual runtime model and behavior
+PASS ThunderCatalogBoss shows actual live enemy shooting (peak 34 bullets)
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: BOSSES  3/3
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: MINIBOSS
+PASS catalog label fits: BOSS / PHASE 1
+PASS catalog label fits: BOSS / PHASE 2
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 1
+PASS catalog label fits: PAGE >
+PASS catalog label fits: BOSS / PHASE 2
+Thunder Lance Boss
+PASS catalog label fits: 4,57s  /  1 ships  /  25 shots
+PASS Tunnel retains access to all budgets, including extras outside the shortened run
+PASS Tunnel last catalog page exposes wave 20
+PASS Tunnel / Shaft procession has selectable safe variants facing -1
+PASS Tunnel / Shaft procession has selectable safe variants facing 1
+PASS Tunnel / Service crown has selectable safe variants facing -1
+PASS Tunnel / Service crown has selectable safe variants facing 1
+PASS Tunnel / Low rail has selectable safe variants facing -1
+PASS Tunnel / Low rail has selectable safe variants facing 1
+PASS Tunnel / Pipe diamond has selectable safe variants facing -1
+PASS Tunnel / Pipe diamond has selectable safe variants facing 1
+PASS Tunnel / Upper procession has selectable safe variants facing -1
+PASS Tunnel / Upper procession has selectable safe variants facing 1
+PASS Tunnel / Service echelon has selectable safe variants facing -1
+PASS Tunnel / Service echelon has selectable safe variants facing 1
+PASS Tunnel / Descending snake has selectable safe variants facing -1
+PASS Tunnel / Descending snake has selectable safe variants facing 1
+PASS Tunnel / Wall rank has selectable safe variants facing -1
+PASS Tunnel / Wall rank has selectable safe variants facing 1
+PASS Tunnel / Rebound flight has selectable safe variants facing -1
+PASS Tunnel / Rebound flight has selectable safe variants facing 1
+PASS Tunnel / Sliding diamond has selectable safe variants facing -1
+PASS Tunnel / Sliding diamond has selectable safe variants facing 1
+PASS Tunnel / Wall battery has selectable safe variants facing -1
+PASS Tunnel / Wall battery has selectable safe variants facing 1
+PASS Tunnel / Pipe battery has selectable safe variants facing -1
+PASS Tunnel / Pipe battery has selectable safe variants facing 1
+PASS Tunnel / Gate battery has selectable safe variants facing -1
+PASS Tunnel / Gate battery has selectable safe variants facing 1
+PASS Tunnel / Upper battery has selectable safe variants facing -1
+PASS Tunnel / Upper battery has selectable safe variants facing 1
+PASS Tunnel / Carrier passage has selectable safe variants facing -1
+PASS Tunnel / Carrier passage has selectable safe variants facing 1
+PASS Tunnel / Carrier bank has selectable safe variants facing -1
+PASS Tunnel / Carrier bank has selectable safe variants facing 1
+PASS TunnelCatalogPart shows actual moving models (peak 1 ships, 24 bullets)
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: FORMATIONS  16/16
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Wall battery
+PASS catalog label fits: Pipe battery
+PASS catalog label fits: Gate battery
+PASS catalog label fits: Upper battery
+PASS catalog label fits: Carrier passage
+PASS catalog label fits: Carrier bank
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 2 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: -
+PASS catalog label fits: VAR 13/13
+PASS catalog label fits: +
+PASS catalog label fits: LEFT
+PASS catalog label fits: Carrier bank
+Armored Carrier
+Tunnel / Pipe bank
+PASS catalog label fits: 5,05s  /  1 ships  /  23 shots
+PASS formation reference identifies variant, mirror and seed
+PASS enemy/WallTurret spawns its actual runtime model and behavior
+PASS enemy/MaintenanceDrone spawns its actual runtime model and behavior
+PASS enemy/ArmoredCarrier spawns its actual runtime model and behavior
+PASS enemy/TunnelDefensePlatform spawns its actual runtime model and behavior
+PASS TunnelCatalogBoss shows actual live enemy shooting (peak 217 bullets)
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: BOSSES  3/3
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: MINIBOSS
+PASS catalog label fits: BOSS / PHASE 1
+PASS catalog label fits: BOSS / PHASE 2
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 1
+PASS catalog label fits: PAGE >
+PASS catalog label fits: BOSS / PHASE 2
+Tunnel Saw Boss
+PASS catalog label fits: 10,55s  /  3 ships  /  200 shots
+PASS enemy browser covers every registered enemy type exactly
+PASS audited 2080 safe mirrored formation variants; 0 unavailable layouts reported explicitly
+PASS projectile/SimpleRound uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  1/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Simple Round
+PASS catalog label fits: Needle Round
+PASS catalog label fits: Burst Shell
+PASS catalog label fits: Scatter Carrier
+PASS catalog label fits: Guided Missile
+PASS catalog label fits: Helix Round
+PASS catalog label fits: Plasma Orb
+PASS catalog label fits: Returning Disc
+PASS catalog label fits: Proximity Mine
+PASS catalog label fits: Ricochet Bolt
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: Simple Round
+
+PASS catalog label fits: PREPARING
+PASS projectile/NeedleRound uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  2/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Simple Round
+PASS catalog label fits: Needle Round
+PASS catalog label fits: Burst Shell
+PASS catalog label fits: Scatter Carrier
+PASS catalog label fits: Guided Missile
+PASS catalog label fits: Helix Round
+PASS catalog label fits: Plasma Orb
+PASS catalog label fits: Returning Disc
+PASS catalog label fits: Proximity Mine
+PASS catalog label fits: Ricochet Bolt
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: Needle Round
+
+PASS catalog label fits: PREPARING
+PASS projectile/BurstShell uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  3/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Simple Round
+PASS catalog label fits: Needle Round
+PASS catalog label fits: Burst Shell
+PASS catalog label fits: Scatter Carrier
+PASS catalog label fits: Guided Missile
+PASS catalog label fits: Helix Round
+PASS catalog label fits: Plasma Orb
+PASS catalog label fits: Returning Disc
+PASS catalog label fits: Proximity Mine
+PASS catalog label fits: Ricochet Bolt
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: Burst Shell
+
+PASS catalog label fits: 0,00s  /  0 ships  /  0 shots
+PASS projectile/ScatterCarrier uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  4/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Simple Round
+PASS catalog label fits: Needle Round
+PASS catalog label fits: Burst Shell
+PASS catalog label fits: Scatter Carrier
+PASS catalog label fits: Guided Missile
+PASS catalog label fits: Helix Round
+PASS catalog label fits: Plasma Orb
+PASS catalog label fits: Returning Disc
+PASS catalog label fits: Proximity Mine
+PASS catalog label fits: Ricochet Bolt
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: Scatter Carrier
+
+PASS catalog label fits: 0,00s  /  0 ships  /  0 shots
+PASS projectile/GuidedMissile uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  5/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Simple Round
+PASS catalog label fits: Needle Round
+PASS catalog label fits: Burst Shell
+PASS catalog label fits: Scatter Carrier
+PASS catalog label fits: Guided Missile
+PASS catalog label fits: Helix Round
+PASS catalog label fits: Plasma Orb
+PASS catalog label fits: Returning Disc
+PASS catalog label fits: Proximity Mine
+PASS catalog label fits: Ricochet Bolt
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: Guided Missile
+
+PASS catalog label fits: 0,00s  /  0 ships  /  0 shots
+PASS projectile/HelixRound uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  6/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Simple Round
+PASS catalog label fits: Needle Round
+PASS catalog label fits: Burst Shell
+PASS catalog label fits: Scatter Carrier
+PASS catalog label fits: Guided Missile
+PASS catalog label fits: Helix Round
+PASS catalog label fits: Plasma Orb
+PASS catalog label fits: Returning Disc
+PASS catalog label fits: Proximity Mine
+PASS catalog label fits: Ricochet Bolt
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: Helix Round
+
+PASS catalog label fits: 0,04s  /  0 ships  /  3 shots
+PASS projectile/PlasmaOrb uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  7/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Simple Round
+PASS catalog label fits: Needle Round
+PASS catalog label fits: Burst Shell
+PASS catalog label fits: Scatter Carrier
+PASS catalog label fits: Guided Missile
+PASS catalog label fits: Helix Round
+PASS catalog label fits: Plasma Orb
+PASS catalog label fits: Returning Disc
+PASS catalog label fits: Proximity Mine
+PASS catalog label fits: Ricochet Bolt
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: Plasma Orb
+
+PASS catalog label fits: 0,04s  /  0 ships  /  3 shots
+PASS projectile/ReturningDisc uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  8/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Simple Round
+PASS catalog label fits: Needle Round
+PASS catalog label fits: Burst Shell
+PASS catalog label fits: Scatter Carrier
+PASS catalog label fits: Guided Missile
+PASS catalog label fits: Helix Round
+PASS catalog label fits: Plasma Orb
+PASS catalog label fits: Returning Disc
+PASS catalog label fits: Proximity Mine
+PASS catalog label fits: Ricochet Bolt
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: Returning Disc
+
+PASS catalog label fits: 0,04s  /  0 ships  /  3 shots
+PASS projectile/ProximityMine uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  9/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Simple Round
+PASS catalog label fits: Needle Round
+PASS catalog label fits: Burst Shell
+PASS catalog label fits: Scatter Carrier
+PASS catalog label fits: Guided Missile
+PASS catalog label fits: Helix Round
+PASS catalog label fits: Plasma Orb
+PASS catalog label fits: Returning Disc
+PASS catalog label fits: Proximity Mine
+PASS catalog label fits: Ricochet Bolt
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: Proximity Mine
+
+PASS catalog label fits: 0,07s  /  0 ships  /  3 shots
+PASS projectile/RicochetBolt uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  10/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Simple Round
+PASS catalog label fits: Needle Round
+PASS catalog label fits: Burst Shell
+PASS catalog label fits: Scatter Carrier
+PASS catalog label fits: Guided Missile
+PASS catalog label fits: Helix Round
+PASS catalog label fits: Plasma Orb
+PASS catalog label fits: Returning Disc
+PASS catalog label fits: Proximity Mine
+PASS catalog label fits: Ricochet Bolt
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 1 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: Ricochet Bolt
+
+PASS catalog label fits: 0,07s  /  0 ships  /  3 shots
+PASS projectile/SuspendedRound uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  11/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Suspended Round
+PASS catalog label fits: Laser Side Round
+PASS catalog label fits: ATTACHED BEAM
+PASS catalog label fits: SWEEPING BEAM
+PASS catalog label fits: BEAM / SIDE PORTS
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 2 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: Suspended Round
+
+PASS catalog label fits: 0,07s  /  0 ships  /  3 shots
+PASS projectile/LaserSideRound uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  12/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Suspended Round
+PASS catalog label fits: Laser Side Round
+PASS catalog label fits: ATTACHED BEAM
+PASS catalog label fits: SWEEPING BEAM
+PASS catalog label fits: BEAM / SIDE PORTS
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 2 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: Laser Side Round
+
+PASS catalog label fits: 0,07s  /  0 ships  /  3 shots
+PASS projectile/beam uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  13/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Suspended Round
+PASS catalog label fits: Laser Side Round
+PASS catalog label fits: ATTACHED BEAM
+PASS catalog label fits: SWEEPING BEAM
+PASS catalog label fits: BEAM / SIDE PORTS
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 2 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: ATTACHED BEAM
+
+PASS catalog label fits: 0,00s  /  0 ships  /  0 shots
+PASS projectile preview beams retain an attached emitter
+PASS projectile/sweep uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  14/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Suspended Round
+PASS catalog label fits: Laser Side Round
+PASS catalog label fits: ATTACHED BEAM
+PASS catalog label fits: SWEEPING BEAM
+PASS catalog label fits: BEAM / SIDE PORTS
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 2 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: SWEEPING BEAM
+
+PASS catalog label fits: 0,00s  /  0 ships  /  0 shots
+PASS projectile preview beams retain an attached emitter
+PASS projectile/side-ports uses real projectiles
+PASS catalog label fits: WAVE WATCHER
+PASS catalog label fits: PLAINS
+PASS catalog label fits: SNOW
+PASS catalog label fits: CITY
+PASS catalog label fits: THUNDER
+PASS catalog label fits: TUNNEL
+PASS catalog label fits: SEED
+PASS catalog label fits: 4137​
+PASS catalog label fits: NEW
+PASS catalog label fits: LOOP -
+PASS catalog label fits: LOOP 1
+PASS catalog label fits: LOOP +
+PASS catalog label fits: AIM L
+PASS catalog label fits: AIM C
+PASS catalog label fits: AIM R
+PASS catalog label fits: REPLAY
+PASS catalog label fits: PAUSE
+PASS catalog label fits: STEP 1/60
+PASS catalog label fits: 2x SPEED
+PASS catalog label fits: REPEAT ON
+PASS catalog label fits: < PREV
+PASS catalog label fits: NEXT >
+PASS catalog label fits: AUTO TOUR
+PASS catalog label fits: COPY FOR CHAT
+PASS catalog label fits: BACK
+PASS catalog label fits: PROJECTILES  15/15
+PASS catalog label fits: WAVES
+PASS catalog label fits: PARTS
+PASS catalog label fits: ENEMIES
+PASS catalog label fits: BOSSES
+PASS catalog label fits: SHOTS
+PASS catalog label fits: Suspended Round
+PASS catalog label fits: Laser Side Round
+PASS catalog label fits: ATTACHED BEAM
+PASS catalog label fits: SWEEPING BEAM
+PASS catalog label fits: BEAM / SIDE PORTS
+PASS catalog label fits: < PAGE
+PASS catalog label fits: 2 / 2
+PASS catalog label fits: PAGE >
+PASS catalog label fits: BEAM / SIDE PORTS
+
+PASS catalog label fits: 0,00s  /  0 ships  /  0 shots
+PASS projectile preview beams retain an attached emitter
+PASS repeat off plays a projectile sample once and lets its whole tail clear
+PASS repeat on resumes the projectile sample
+PASS BeamCatalog shows actual live enemy shooting (peak 25 bullets)
+PASS copy for chat freezes and saves a precise review reference and screenshot
+PASS tour advances between full catalogs
+PASS tour advances to the next district after its final catalog
+PASS exit restores paused title timing and disposes the watcher

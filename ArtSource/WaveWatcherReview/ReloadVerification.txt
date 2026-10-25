@@ -1,0 +1,1 @@
+PASS: an actual script compilation exits without runtime errors and restores the district, seed, loop, catalog entry, variant, mirror, aim, pause, repeat and playback speed in a fresh session.
