@@ -58,7 +58,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         Place(Panel(scorePanel,"Coin rim",Amber),13,61,12,8);
         Place(Panel(scorePanel,"Coin shoulders",Amber),15,59,8,12);
         Place(Panel(scorePanel,"Coin stamp",Dark),18,62,2,6);
-        coins=TextAt(scorePanel,"0",32,57,12,Amber);coins.rectTransform.sizeDelta=new Vector2(48,20);
+        coins=TextAt(scorePanel,"0",32,55,12,Amber);coins.rectTransform.sizeDelta=new Vector2(48,20);coins.alignment=TextAnchor.MiddleLeft;
         challengeCells=Cells(scorePanel,84,64,3,9,new Color(.76f,.48f,.95f));
         sidePanel=Panel(frame.transform,"Side instruments",Dark);
         sidePanel.gameObject.AddComponent<RectMask2D>();
