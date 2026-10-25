@@ -60,7 +60,7 @@ public static class VerifyCombatExpansion
             if (File.Exists("Temp/CombatResult.txt"))
                 File.Delete("Temp/CombatResult.txt");
             SessionState.SetBool(Key, true);
-            EditorApplication.isPlaying = true;
+            CheckHarness.EnterPlayMode();
         }
         if (SessionState.GetBool(Key, false) && EditorApplication.isPlaying &&
             (File.Exists("Temp/CombatResult.txt") || (deadline > 0 && EditorApplication.timeSinceStartup > deadline)))
@@ -68,7 +68,7 @@ public static class VerifyCombatExpansion
             if (!File.Exists("Temp/CombatResult.txt"))
                 File.WriteAllText("Temp/CombatResult.txt", "FAIL: verification timed out");
             SessionState.SetBool(Key, false);
-            EditorApplication.isPlaying = false;
+            CheckHarness.ExitPlayMode();
         }
     }
 }

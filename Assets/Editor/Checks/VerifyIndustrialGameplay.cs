@@ -21,25 +21,25 @@ public static class VerifyIndustrialGameplay
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)
             {
-                EditorApplication.isPlaying = false;
+                CheckHarness.ExitPlayMode();
                 return;
             }
             EditorSceneManager.OpenScene("Assets/Scenes/L1.unity");
             new GameObject("Temporary industrial runtime audit").AddComponent<IndustrialRuntimeProbe>();
             SessionState.SetInt(Key, 1);
-            EditorApplication.isPlaying = true;
+            CheckHarness.EnterPlayMode();
         }
         else if (stage == 1 && File.Exists("ArtSource/PSXPreview/GameplayAudit.json"))
         {
             SessionState.SetInt(Key, 2);
-            EditorApplication.isPlaying = false;
+            CheckHarness.ExitPlayMode();
         }
         else if (stage == 2 && !EditorApplication.isPlayingOrWillChangePlaymode)
         {
             EditorSceneManager.OpenScene("Assets/Scenes/PSX_Showcase.unity");
             SessionState.SetInt(Key, 0);
             File.Delete(Request);
-            EditorApplication.isPlaying = true;
+            CheckHarness.EnterPlayMode();
         }
     }
 }

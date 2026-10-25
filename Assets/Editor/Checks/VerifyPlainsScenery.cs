@@ -31,11 +31,11 @@ public static class VerifyPlainsScenery
               if (!SessionState.GetBool(Key, false) || deadline == 0)
                   return;
               if (File.Exists(Folder + "/Runtime.txt"))
-                  EditorApplication.Exit(File.ReadAllText(Folder + "/Runtime.txt").StartsWith("PASS") ? 0 : 1);
+                  CheckHarness.Exit(File.ReadAllText(Folder + "/Runtime.txt").StartsWith("PASS") ? 0 : 1);
               if (EditorApplication.timeSinceStartup > deadline)
               {
                   File.WriteAllText(Folder + "/Runtime.txt", "FAIL timeout");
-                  EditorApplication.Exit(1);
+                  CheckHarness.Exit(1);
               }
           };
     }
@@ -107,7 +107,7 @@ public static class VerifyPlainsScenery
         File.WriteAllText(Folder + "/Geometry.txt", "PASS\n" + string.Join("\n", notes));
         EditorSceneManager.OpenScene("Assets/Scenes/Title.unity");
         SessionState.SetBool(Key, true);
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 
     static void Render(int seed, float station, string name, Material leaves, Material water, Material composite)

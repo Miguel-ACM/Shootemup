@@ -14,9 +14,9 @@ public static class VerifyProjectileContacts
         try
         {
             RunChecks();
-            EditorApplication.Exit(0);
+            CheckHarness.Exit(0);
         }
-        catch (Exception e) { File.WriteAllText(Folder + "/ContactFailure.txt", e.ToString()); EditorApplication.Exit(1); }
+        catch (Exception e) { File.WriteAllText(Folder + "/ContactFailure.txt", e.ToString()); CheckHarness.Exit(1); }
     }
 
     public static void RunChecks()

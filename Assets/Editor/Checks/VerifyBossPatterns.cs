@@ -28,7 +28,7 @@ public static class VerifyBossPatterns
                   return;
               SessionState.SetBool(Key, false);
               bool passed = File.Exists("Temp/BossPatterns.result") && File.ReadAllText("Temp/BossPatterns.result").StartsWith("PASS");
-              EditorApplication.Exit(passed ? 0 : 1);
+              CheckHarness.Exit(passed ? 0 : 1);
           };
     }
 
@@ -41,7 +41,7 @@ public static class VerifyBossPatterns
             File.Delete("Temp/BossPatterns.result");
         SessionState.SetBool(Key, true);
         EditorSceneManager.OpenScene("Assets/Scenes/L1.unity");
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 }
 #endif

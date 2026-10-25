@@ -31,7 +31,7 @@ public static class VerifyWaveWatcher
               bool pass = watcher.Level == LevelId.Snow && LevelRun.Seed == 7119 && watcher.ReviewLoop == 2 && watcher.View == WatcherView.Formations &&
                   watcher.Selection == 7 && watcher.Variant == 5 && watcher.Mirror == -1 && watcher.AimSide == 1 && watcher.Paused && !watcher.Looping && watcher.PlaybackSpeed == .5f && SessionState.GetString("WaveWatcherReloadErrors", "") == "";
               File.WriteAllText("ArtSource/WaveWatcherReview/ReloadVerification.txt", pass ? "PASS: an actual script compilation exits without runtime errors and restores the district, seed, loop, catalog entry, variant, mirror, aim, pause, repeat and playback speed in a fresh session." : "FAIL: corrected preview state changed\n" + SessionState.GetString("WaveWatcherReloadErrors", ""));
-              EditorApplication.Exit(pass ? 0 : 1);
+              CheckHarness.Exit(pass ? 0 : 1);
           };
         EditorApplication.playModeStateChanged += state =>
           {
@@ -49,12 +49,12 @@ public static class VerifyWaveWatcher
               if (File.Exists(result))
               {
                   SessionState.SetBool(Key, false);
-                  EditorApplication.Exit(File.ReadAllText(result).StartsWith("PASS") ? 0 : 1);
+                  CheckHarness.Exit(File.ReadAllText(result).StartsWith("PASS") ? 0 : 1);
               }
               else if (EditorApplication.timeSinceStartup > deadline)
               {
                   File.WriteAllText(result, "FAIL: timed out");
-                  EditorApplication.Exit(1);
+                  CheckHarness.Exit(1);
               }
           };
     }
@@ -89,7 +89,7 @@ public static class VerifyWaveWatcher
             game.Show();
         }
         SessionState.SetBool(Key, true);
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 }
 

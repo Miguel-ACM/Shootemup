@@ -30,12 +30,12 @@ public static class VerifyDesert
               if (File.Exists(Folder + "/Verification.txt"))
               {
                   SessionState.SetBool("DesertReview", false);
-                  EditorApplication.Exit(File.ReadAllText(Folder + "/Verification.txt").StartsWith("PASS") ? 0 : 1);
+                  CheckHarness.Exit(File.ReadAllText(Folder + "/Verification.txt").StartsWith("PASS") ? 0 : 1);
               }
               else if (EditorApplication.timeSinceStartup > deadline)
               {
                   File.WriteAllText(Folder + "/Verification.txt", "FAIL timeout");
-                  EditorApplication.Exit(1);
+                  CheckHarness.Exit(1);
               }
           };
     }
@@ -83,7 +83,7 @@ public static class VerifyDesert
         File.WriteAllText(Folder + "/Geometry.txt", "PASS: preserved serialized IDs; 400 normal loops and 50 extended loops; seamless dune heights; 57 seeded compositions with swept spacing checks.\n");
         EditorSceneManager.OpenScene("Assets/Scenes/Title.unity");
         SessionState.SetBool("DesertReview", true);
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 }
 

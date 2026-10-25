@@ -56,7 +56,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
             if (failure != null)
             {
                 File.WriteAllText(Output, "FAIL\n" + failure + "\n" + string.Join("\n", errors));
-                UnityEditor.EditorApplication.Exit(1);
+                QuitUnlessTested(1);
                 yield break;
             }
             if (!more)
@@ -64,7 +64,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
             yield return current;
         }
         File.WriteAllText(Output, "PASS: gameplay preloaded without activating the paused menu; same preload reused on new game; all offered environments prepared invisibly and reused, unused routes released; live ship/background movement during title and cloud reveal; two-label title with the game font and Level x eyebrow; main menu; ordered routes and harder loops (400 loop trials); neutral/switch/frame-rate charge checks; five environments; cloud cover/reveal; actual boss death; both spatial route selections; pause; player/stats/equipment preservation; next-stage waves; return to menu and new-run reset.\n" + string.Join("\n", errors));
-        UnityEditor.EditorApplication.Exit(errors.Count == 0 ? 0 : 1);
+        QuitUnlessTested(errors.Count == 0 ? 0 : 1);
     }
 
     IEnumerator Run()
@@ -440,6 +440,13 @@ public sealed class LevelFlowProbe : MonoBehaviour
     void OnDestroy()
     {
         Application.logMessageReceived -= Log;
+    }
+
+    // When a Test Runner test drives this probe (CheckHarness), the test leaves Play mode itself.
+    static void QuitUnlessTested(int code)
+    {
+        if (!UnityEditor.SessionState.GetBool("CheckHarness.UnderTest", false) && !UnityEditor.SessionState.GetBool("CheckHarness.TestSession", false))
+            UnityEditor.EditorApplication.Exit(code);
     }
 }
 #endif

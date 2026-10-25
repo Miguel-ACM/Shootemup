@@ -53,6 +53,6 @@ public static class VerifyInputMigration
         if (File.Exists("FlowReview/InputMigration.txt"))
             File.Delete("FlowReview/InputMigration.txt");
         SessionState.SetBool(Key, true);
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 }

@@ -31,12 +31,12 @@ public static class VerifySpriteProjectiles
               {
                   deadline = 0;
                   SessionState.SetBool("SpriteReview", false);
-                  EditorApplication.Exit(File.ReadAllText(report).StartsWith("PASS") ? 0 : 1);
+                  CheckHarness.Exit(File.ReadAllText(report).StartsWith("PASS") ? 0 : 1);
               }
               else if (EditorApplication.timeSinceStartup > deadline)
               {
                   File.WriteAllText(report, "FAIL timed out");
-                  EditorApplication.Exit(1);
+                  CheckHarness.Exit(1);
               }
           };
     }
@@ -47,7 +47,7 @@ public static class VerifySpriteProjectiles
         File.Delete("ArtSource/SpriteProjectileReview/Verification.txt");
         EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.GameView")).Show();
         SessionState.SetBool("SpriteReview", true);
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 }
 public sealed class SpriteProjectileReview : MonoBehaviour

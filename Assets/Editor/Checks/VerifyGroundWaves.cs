@@ -30,12 +30,12 @@ public static class VerifyGroundWaves
               if (File.Exists(Folder + "/Verification.txt"))
               {
                   SessionState.SetBool("GroundWavesReview", false);
-                  EditorApplication.Exit(File.ReadAllText(Folder + "/Verification.txt").StartsWith("PASS") ? 0 : 1);
+                  CheckHarness.Exit(File.ReadAllText(Folder + "/Verification.txt").StartsWith("PASS") ? 0 : 1);
               }
               else if (EditorApplication.timeSinceStartup > deadline)
               {
                   File.WriteAllText(Folder + "/Verification.txt", "FAIL timeout");
-                  EditorApplication.Exit(1);
+                  CheckHarness.Exit(1);
               }
           };
     }
@@ -79,9 +79,9 @@ public static class VerifyGroundWaves
             File.WriteAllText(Folder + "/Composition.txt", string.Join("\n", report));
             EditorSceneManager.OpenScene("Assets/Scenes/Title.unity");
             SessionState.SetBool("GroundWavesReview", true);
-            EditorApplication.isPlaying = true;
+            CheckHarness.EnterPlayMode();
         }
-        catch (Exception e) { File.WriteAllText(Folder + "/Verification.txt", "FAIL\n" + e); EditorApplication.Exit(1); }
+        catch (Exception e) { File.WriteAllText(Folder + "/Verification.txt", "FAIL\n" + e); CheckHarness.Exit(1); }
     }
 }
 public sealed class GroundWavesReview : MonoBehaviour

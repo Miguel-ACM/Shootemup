@@ -32,12 +32,12 @@ public static class VerifyCombatPolish
               if (File.Exists(file))
               {
                   SessionState.SetBool("CombatPolishReview", false);
-                  EditorApplication.Exit(File.ReadAllText(file).StartsWith("PASS") ? 0 : 1);
+                  CheckHarness.Exit(File.ReadAllText(file).StartsWith("PASS") ? 0 : 1);
               }
               else if (EditorApplication.timeSinceStartup > deadline)
               {
                   File.WriteAllText(file, "FAIL timeout");
-                  EditorApplication.Exit(1);
+                  CheckHarness.Exit(1);
               }
           };
     }
@@ -57,9 +57,9 @@ public static class VerifyCombatPolish
                 throw new Exception("Disc spin changed with orientation caching");
             UnityEngine.Object.DestroyImmediate(round.gameObject);
             File.WriteAllText(Folder + "/DiscRotation.txt", "PASS cached orientation preserves the returning disc's authored spin");
-            EditorApplication.Exit(0);
+            CheckHarness.Exit(0);
         }
-        catch (Exception e) { File.WriteAllText(Folder + "/DiscRotation.txt", "FAIL " + e); EditorApplication.Exit(1); }
+        catch (Exception e) { File.WriteAllText(Folder + "/DiscRotation.txt", "FAIL " + e); CheckHarness.Exit(1); }
     }
 
     static void Begin(bool baseline)
@@ -70,7 +70,7 @@ public static class VerifyCombatPolish
         EditorSceneManager.OpenScene("Assets/Scenes/Title.unity");
         SessionState.SetBool("CombatPolishReview", true);
         SessionState.SetBool("CombatPolishBaseline", baseline);
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 }
 public sealed class CombatPolishReview : MonoBehaviour

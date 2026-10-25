@@ -24,9 +24,9 @@ public static class VerifyDebugMenu
                   return;
               SessionState.SetBool("DebugMenuReview", false);
               if (Application.isBatchMode)
-                  EditorApplication.Exit(File.ReadAllText("DebugMenuReview/result.txt").StartsWith("PASS") ? 0 : 1);
+                  CheckHarness.Exit(File.ReadAllText("DebugMenuReview/result.txt").StartsWith("PASS") ? 0 : 1);
               else
-                  EditorApplication.isPlaying = false;
+                  CheckHarness.ExitPlayMode();
           };
     }
 
@@ -36,7 +36,7 @@ public static class VerifyDebugMenu
         if (File.Exists("DebugMenuReview/result.txt"))
             File.Delete("DebugMenuReview/result.txt");
         SessionState.SetBool("DebugMenuReview", true);
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 }
 

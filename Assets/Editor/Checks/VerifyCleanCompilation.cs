@@ -49,7 +49,7 @@ public static class VerifyCleanCompilation
         File.WriteAllText(Folder + "/Verification.txt", (success ? "PASS" : "FAIL") + "\nFull Unity script rebuild with CleanBuildCache; no Play mode.\n" +
             assemblies.Length + " assemblies compiled; " + diagnostics.Count(line => line.Contains("warning ")) + " warnings; " + diagnostics.Count(line => line.Contains("error ")) + " errors.\n" +
             "Required game, editor and PathCreator assemblies: " + string.Join(", ", assemblies.Where(name => name.StartsWith("Assembly-CSharp") || name.StartsWith("PathCreator"))) + "\n" + string.Join("\n", diagnostics));
-        EditorApplication.Exit(success ? 0 : 1);
+        CheckHarness.Exit(success ? 0 : 1);
     }
 }
 #endif

@@ -25,7 +25,7 @@ public static class VerifyLevelFlow
               if (deadline > 0 && EditorApplication.timeSinceStartup > deadline)
               {
                   File.WriteAllText("Temp/LevelFlowResult.txt", "FAIL: verification timed out");
-                  EditorApplication.Exit(1);
+                  CheckHarness.Exit(1);
               }
           };
     }
@@ -71,9 +71,9 @@ public static class VerifyLevelFlow
             }
             SessionState.SetBool(Key, true);
             deadline = EditorApplication.timeSinceStartup + 200;
-            EditorApplication.isPlaying = true;
+            CheckHarness.EnterPlayMode();
         }
-        catch (Exception e) { File.WriteAllText("Temp/LevelFlowResult.txt", e.ToString()); Debug.LogException(e); EditorApplication.Exit(1); }
+        catch (Exception e) { File.WriteAllText("Temp/LevelFlowResult.txt", e.ToString()); Debug.LogException(e); CheckHarness.Exit(1); }
     }
 
     static void Check(bool condition, string message)

@@ -40,6 +40,6 @@ public static class VerifyBackgrounds
         view.Show();
         view.Focus();
         SessionState.SetBool(Key, true);
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 }

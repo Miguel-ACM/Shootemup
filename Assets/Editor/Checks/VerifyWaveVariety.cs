@@ -30,12 +30,12 @@ public static class VerifyWaveVariety
               if (File.Exists(path))
               {
                   SessionState.SetBool("WaveVarietyReview", false);
-                  EditorApplication.Exit(File.ReadAllText(path).StartsWith("PASS") ? 0 : 1);
+                  CheckHarness.Exit(File.ReadAllText(path).StartsWith("PASS") ? 0 : 1);
               }
               else if (EditorApplication.timeSinceStartup > deadline)
               {
                   File.WriteAllText(path, "FAIL timed out");
-                  EditorApplication.Exit(1);
+                  CheckHarness.Exit(1);
               }
           };
     }
@@ -51,7 +51,7 @@ public static class VerifyWaveVariety
         if (File.Exists("ArtSource/WaveVarietyReview/Verification.txt"))
             File.Delete("ArtSource/WaveVarietyReview/Verification.txt");
         SessionState.SetBool("WaveVarietyReview", true);
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 }
 public sealed class WaveVarietyReview : MonoBehaviour

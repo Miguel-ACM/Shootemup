@@ -36,12 +36,12 @@ public static class VerifyGumSprites
               {
                   deadline = 0;
                   SessionState.SetBool(Key, false);
-                  EditorApplication.Exit(File.ReadAllText(report).StartsWith("PASS") ? 0 : 1);
+                  CheckHarness.Exit(File.ReadAllText(report).StartsWith("PASS") ? 0 : 1);
               }
               else if (EditorApplication.timeSinceStartup > deadline)
               {
                   File.WriteAllText(report, "FAIL timed out");
-                  EditorApplication.Exit(1);
+                  CheckHarness.Exit(1);
               }
           };
     }
@@ -52,7 +52,7 @@ public static class VerifyGumSprites
         File.Delete("ArtSource/GumSpriteReview/Verification.txt");
         EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.GameView")).Show();
         SessionState.SetBool(Key, true);
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 
 }

@@ -172,7 +172,7 @@ public sealed class InputMigrationProbe : MonoBehaviour
     void Finish(string result, int code)
     {
         File.WriteAllText("FlowReview/InputMigration.txt", result + "\n" + string.Join("\n", errors));
-        UnityEditor.EditorApplication.Exit(code);
+        QuitUnlessTested(code);
     }
 
     void OnDestroy()
@@ -184,6 +184,13 @@ public sealed class InputMigrationProbe : MonoBehaviour
             InputSystem.RemoveDevice(gamepad);
         if (mouse != null)
             InputSystem.RemoveDevice(mouse);
+    }
+
+    // When a Test Runner test drives this probe (CheckHarness), the test leaves Play mode itself.
+    static void QuitUnlessTested(int code)
+    {
+        if (!UnityEditor.SessionState.GetBool("CheckHarness.UnderTest", false) && !UnityEditor.SessionState.GetBool("CheckHarness.TestSession", false))
+            UnityEditor.EditorApplication.Exit(code);
     }
 }
 #endif

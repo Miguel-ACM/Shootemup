@@ -30,12 +30,12 @@ public static class VerifySandEmitter
               if (File.Exists(Folder + "/Verification.txt"))
               {
                   SessionState.SetBool("SandEmitterReview", false);
-                  EditorApplication.Exit(File.ReadAllText(Folder + "/Verification.txt").StartsWith("PASS") ? 0 : 1);
+                  CheckHarness.Exit(File.ReadAllText(Folder + "/Verification.txt").StartsWith("PASS") ? 0 : 1);
               }
               else if (EditorApplication.timeSinceStartup > deadline)
               {
                   File.WriteAllText(Folder + "/Verification.txt", "FAIL timeout");
-                  EditorApplication.Exit(1);
+                  CheckHarness.Exit(1);
               }
           };
     }
@@ -47,7 +47,7 @@ public static class VerifySandEmitter
             File.Delete(Folder + "/Verification.txt");
         EditorSceneManager.OpenScene("Assets/Scenes/Title.unity");
         SessionState.SetBool("SandEmitterReview", true);
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 }
 public sealed class SandEmitterReview : MonoBehaviour

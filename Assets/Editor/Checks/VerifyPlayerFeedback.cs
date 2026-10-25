@@ -26,12 +26,12 @@ public static class VerifyPlayerFeedback
               if (File.Exists("Temp/PlayerFeedback.result"))
               {
                   SessionState.SetBool(Key, false);
-                  EditorApplication.Exit(File.ReadAllText("Temp/PlayerFeedback.result").StartsWith("PASS") ? 0 : 1);
+                  CheckHarness.Exit(File.ReadAllText("Temp/PlayerFeedback.result").StartsWith("PASS") ? 0 : 1);
               }
               else if (EditorApplication.timeSinceStartup > deadline)
               {
                   File.WriteAllText("Temp/PlayerFeedback.result", "FAIL review timed out");
-                  EditorApplication.Exit(1);
+                  CheckHarness.Exit(1);
               }
           };
     }
@@ -51,7 +51,7 @@ public static class VerifyPlayerFeedback
         var view = EditorWindow.GetWindow(System.Type.GetType("UnityEditor.GameView,UnityEditor"));
         view.Show();
         view.Focus();
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 }
 #endif

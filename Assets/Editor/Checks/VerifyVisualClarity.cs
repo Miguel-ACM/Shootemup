@@ -31,12 +31,12 @@ public static class VerifyVisualClarity
               if (File.Exists(report))
               {
                   SessionState.SetBool("VisualClarityReview", false);
-                  EditorApplication.Exit(File.ReadAllText(report).StartsWith("PASS") ? 0 : 1);
+                  CheckHarness.Exit(File.ReadAllText(report).StartsWith("PASS") ? 0 : 1);
               }
               else if (EditorApplication.timeSinceStartup > deadline)
               {
                   File.WriteAllText(report, "FAIL timed out");
-                  EditorApplication.Exit(1);
+                  CheckHarness.Exit(1);
               }
           };
     }
@@ -56,7 +56,7 @@ public static class VerifyVisualClarity
         if (File.Exists("ArtSource/VisualClarityReview/Verification.txt"))
             File.Delete("ArtSource/VisualClarityReview/Verification.txt");
         SessionState.SetBool("VisualClarityReview", true);
-        EditorApplication.isPlaying = true;
+        CheckHarness.EnterPlayMode();
     }
 }
 public sealed class VisualClarityReview : MonoBehaviour

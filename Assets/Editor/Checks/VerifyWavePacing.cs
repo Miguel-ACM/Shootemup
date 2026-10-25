@@ -5,29 +5,9 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-// Run with Unity -batchmode -executeMethod VerifyWavePacing.Run.
-[InitializeOnLoad]
+// Runs as the WavePacing test in Unity's Test Runner (Assets/Editor/Tests/LogicTests.cs).
 public static class VerifyWavePacing
 {
-    const string Request = "Temp/verify-wave-pacing.request";
-    static VerifyWavePacing()
-    {
-        EditorApplication.update += Tick;
-    }
-
-    static void Tick()
-    {
-        if (!File.Exists(Request) || EditorApplication.isCompiling || EditorApplication.isUpdating)
-            return;
-        File.Delete(Request);
-        try
-        {
-            Run();
-            File.WriteAllText("Temp/WavePacingResult.txt", "PASS");
-        }
-        catch (Exception e) { File.WriteAllText("Temp/WavePacingResult.txt", e.ToString()); Debug.LogException(e); }
-    }
-
     static void Check(bool condition, string message)
     {
         if (!condition)
