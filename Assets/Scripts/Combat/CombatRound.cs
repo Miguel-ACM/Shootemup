@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public abstract class CombatRound : AEnemyBullet
 {
+    static readonly Unity.Profiling.ProfilerMarker launchMarker=new Unity.Profiling.ProfilerMarker("CombatRound.Launch");
+    static readonly Unity.Profiling.ProfilerMarker createMarker=new Unity.Profiling.ProfilerMarker("CombatRound.Create");
     public const int Limit=280;
     public static readonly HashSet<CombatRound> Live=new HashSet<CombatRound>();
     static readonly Dictionary<Type,Stack<CombatRound>> pools=new Dictionary<Type,Stack<CombatRound>>();
@@ -21,6 +23,10 @@ public abstract class CombatRound : AEnemyBullet
     ProjectileSpriteTint tint;
     Vector2 orientedHeading;
     bool needsOrientation;
+    float localCollisionRadius,collisionReach;
+    Rect[] pixelBoxes;
+    public bool UsesPixelContact {get;private set;}
+    public bool PixelOverlaps(Collider2D target)=>!UsesPixelContact || ProjectilePixelContact.Overlap(transform,pixelBoxes,target);
     protected float lifetime=9;
     protected bool ended;
     public int generation;
@@ -39,12 +45,16 @@ public abstract class CombatRound : AEnemyBullet
     }
     public static T Launch<T>(Vector3 p,Vector2 direction,float velocity=4,float radius=.18f) where T:CombatRound
     {
+        using var sample=launchMarker.Auto();
         if(Live.Count>=Limit) return null;
         T shot=null;
         if(pools.TryGetValue(typeof(T),out var pool))
             while(pool.Count>0 && shot==null){shot=pool.Pop() as T;pooled--;}
         if(shot==null)shot=Create<T>();
         shot.gameObject.layer=ProjectileCollisionLayers.Hostile;
+        // Never insert a whole newborn pixel-fixture crown into the contact tree.
+        // Arm each body's exact collider only when it approaches a valid target.
+        shot.body.simulated=false;
         shot.tint.SetHostile();shot.needsOrientation=true;
         shot.transform.SetPositionAndRotation(new Vector3(p.x,p.y,-.5f),Quaternion.identity);
         shot.transform.localScale=Vector3.one*radius*2;shot.visual.sprite=HostileProjectileArt.Sprite(typeof(T),radius>=.25f);shot.visual.color=Color.white;
@@ -52,18 +62,33 @@ public abstract class CombatRound : AEnemyBullet
         shot.origin=shot.transform.position;shot.heading=direction.sqrMagnitude>.001f ? direction.normalized : Vector2.down;
         shot.speed=velocity*GameRules.enemyBulletSpeed*LevelRun.EnemyShotSpeedScale;shot.damage=10*GameRules.enemyDamage;
         shot.age=0;shot.generation=0;shot.lifetime=9;shot.ended=false;
-        shot.enabled=true;shot.gameObject.SetActive(true);Live.Add(shot);shot.Initialize();return shot;
+        shot.enabled=true;shot.gameObject.SetActive(true);Live.Add(shot);shot.Initialize();
+        shot.collisionReach=shot.localCollisionRadius*Mathf.Max(Mathf.Abs(shot.transform.localScale.x),Mathf.Abs(shot.transform.localScale.y));
+        if(shot.UsesPixelContact && shot.collision is CircleCollider2D proxy)
+            proxy.radius=shot.localCollisionRadius+ProjectilePixelContact.PolygonSkin/Mathf.Max(.00001f,Mathf.Abs(shot.transform.localScale.x));
+        shot.UpdateSimulation();return shot;
     }
     static T Create<T>() where T:CombatRound
     {
+        using var sample=createMarker.Auto();
         var go=new GameObject(typeof(T).Name);go.SetActive(false);go.tag="EnemyBullet";
         go.layer=ProjectileCollisionLayers.Hostile;
-        var rb=go.AddComponent<Rigidbody2D>();rb.gravityScale=0;rb.bodyType=RigidbodyType2D.Kinematic;
+        var rb=go.AddComponent<Rigidbody2D>();rb.gravityScale=0;rb.bodyType=RigidbodyType2D.Kinematic;rb.simulated=false;
         var sr=go.AddComponent<SpriteRenderer>();sr.sprite=CombatVisuals.Projectile();sr.sharedMaterial=CombatVisuals.ProjectileMaterial;sr.sortingOrder=15;
         sr.sortingLayerName="Bullet";
         var collider=go.AddComponent<CustomCollider2D>();collider.isTrigger=true;
         sr.sprite=HostileProjectileArt.Sprite(typeof(T));ProjectileSprites.Fit(collider,sr.sprite);
         var shot=go.AddComponent<T>();shot.body=rb;shot.visual=sr;shot.collision=collider;
+        shot.localCollisionRadius=sr.sprite.bounds.extents.magnitude;
+        shot.pixelBoxes=ProjectileSprites.Boxes(sr.sprite);
+        if(!(shot is PlasmaOrb))
+        {
+            // Keep the authored compound shape as the collision reference, but
+            // do not insert its 9-30 fixtures per round into Box2D's contact tree.
+            collider.enabled=false;
+            var contact=go.AddComponent<CircleCollider2D>();contact.isTrigger=true;contact.radius=shot.localCollisionRadius;
+            shot.collision=contact;shot.UsesPixelContact=true;
+        }
         ProjectileSpriteTint.Apply(go,shot.Accent);shot.tint=go.GetComponent<ProjectileSpriteTint>();
         CreatedCount++;return shot;
     }
@@ -115,6 +140,15 @@ public abstract class CombatRound : AEnemyBullet
             transform.position.x<Camera.LeftLimit-3 || transform.position.x>Camera.RightLimit+3){Release();return;}
         Tick(dt);
         if(!ended && !(this is PulseLaser) && PocketWind.Current!=null)transform.position+=PocketWind.Velocity(transform.position)*Time.deltaTime;
+        if(!ended)UpdateSimulation();
+    }
+    void UpdateSimulation()
+    {
+        // Destructible plasma must remain hittable by player fire anywhere.
+        // Beams do their own analytic collision; mines keep their arming rules.
+        bool simulate=this is PlasmaOrb || (!(this is PulseLaser) && collision.enabled &&
+            ProjectileCollisionWindow.Relevant(transform.position,collisionReach,speed));
+        if(body.simulated!=simulate)body.simulated=simulate;
     }
     protected virtual void Tick(float dt) { transform.position+=(Vector3)heading*speed*dt;Orient(); }
     protected void Orient()

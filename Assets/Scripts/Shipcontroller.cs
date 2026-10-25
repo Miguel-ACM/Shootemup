@@ -283,6 +283,8 @@ public class Shipcontroller : MonoBehaviour
     {
         if (other.tag == "EnemyBullet")
         {
+            var round=other.GetComponent<CombatRound>();
+            if(round!=null && !round.PixelOverlaps(circleCollider))return;
             
             if (!IsInvulnerable && !GameRules.playerDisabled)
             {
@@ -292,6 +294,14 @@ public class Shipcontroller : MonoBehaviour
             }
 
         }
+    }
+
+    void OnTriggerStay2D(Collider2D other)
+    {
+        // A broad contact may begin in transparent ink; check the exact pixels
+        // as the round moves through that contact instead of missing a later hit.
+        var round=other.GetComponent<CombatRound>();
+        if(round!=null && round.UsesPixelContact)OnTriggerEnter2D(other);
     }
 
     public float GetManaChanceMultiplier()

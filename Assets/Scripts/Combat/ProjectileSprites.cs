@@ -6,6 +6,8 @@ public static class ProjectileSprites
 {
     static readonly Dictionary<string,Sprite> sprites=new Dictionary<string,Sprite>();
     static readonly Dictionary<Sprite,PhysicsShapeGroup2D> paths=new Dictionary<Sprite,PhysicsShapeGroup2D>();
+    static readonly Dictionary<Sprite,Rect[]> pixelBoxes=new Dictionary<Sprite,Rect[]>();
+    public static Rect[] Boxes(Sprite sprite)=>pixelBoxes[sprite];
     public static Sprite Load(string name)
     {
         if(sprites.TryGetValue(name,out var sprite))return sprite;
@@ -33,12 +35,15 @@ public static class ProjectileSprites
                 else{var r=rectangles[found];r.height++;rectangles[found]=r;}
             }
             outline=new PhysicsShapeGroup2D();
+            var boxes=new Rect[rectangles.Count];
             Vector2 P(float x,float y)=>(new Vector2(x,y)-sprite.pivot)/sprite.pixelsPerUnit;
             for(int i=0;i<rectangles.Count;i++)
             {
                 var r=rectangles[i];
+                boxes[i]=new Rect(P(r.x,r.y),new Vector2(r.width,r.height)/sprite.pixelsPerUnit);
                 outline.AddBox(P(r.x+r.width*.5f,r.y+r.height*.5f),new Vector2(r.width,r.height)/sprite.pixelsPerUnit,0,0);
             }
+            pixelBoxes[sprite]=boxes;
             paths[sprite]=outline;
         }
         // Direct box shapes avoid polygon tessellation bridging touching pixel runs.
