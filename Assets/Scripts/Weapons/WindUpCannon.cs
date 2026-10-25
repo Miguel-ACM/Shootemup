@@ -18,7 +18,7 @@ public sealed class WindUpCannon : AWeapon
         if(wasCharging || !Charging)return;
         Charge=0;previousLevel=1;
         if(core==null)core=ItemSpark.Sprite(transform,"Winding cannon muzzle","standard",new Color(.45f,.85f,.8f),.14f);
-        core.transform.localPosition=new Vector3(0,.8f,-1);core.enabled=true;
+        core.transform.position=transform.position+new Vector3(0,.5f,-2);core.enabled=true;
         if(winding==null)
         {
             winding=gameObject.AddComponent<AudioSource>();winding.playOnAwake=false;winding.spatialBlend=0;winding.volume=.18f;
@@ -37,7 +37,9 @@ public sealed class WindUpCannon : AWeapon
         if(!held){Release();return;}
         Charge=Mathf.Min(1.2f,Charge+dt*MagnifyingLens.Rate*GameRules.playerShootSpeed/10f);
         winding.UnPause();winding.pitch=.8f+Charge*.4f;
-        core.transform.localScale=Vector3.one*(.14f+.23f*Charge/1.2f);
+        core.transform.position=transform.position+new Vector3(0,.5f,-2);
+        float worldSize=.1f+.16f*Charge/1.2f;
+        core.transform.localScale=new Vector3(worldSize/transform.lossyScale.x,worldSize/transform.lossyScale.y,1);
         core.color=new Color(1,1,1,.65f+.15f*Mathf.Sin(Charge*36));
         if(Level!=previousLevel)
         {
