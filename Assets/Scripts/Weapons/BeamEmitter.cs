@@ -31,7 +31,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
             beams[i]=go.AddComponent<BeamRibbon>();beams[i].Build(true);
         }
         if(sound==null)sound=gameObject.AddComponent<LaserSound>();
-        float charge=CombatUpgrades.Current!=null ? CombatUpgrades.Current.Volley() : 1;
+        float charge=(CombatUpgrades.Current!=null ? CombatUpgrades.Current.Volley() : 1)*MagnifyingLens.Power;
         float warning=.25f/Mathf.Max(1,GameRules.playerShootSpeed/10),end=warning+.65f,t=0,nextTick=warning;
         sound.Charge(warning,true);
         while(t<end+.22f && !GameRules.playerDisabled)

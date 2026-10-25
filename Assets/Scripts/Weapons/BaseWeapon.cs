@@ -26,6 +26,7 @@ public class BaseWeapon : AWeaponAutomatic
             Vector3 spawn = effects != null && GameRules.playerShootNumber == 2
                 ? effects.MuzzlePosition(i) : spawnPoints[i] + transform.position;
             var b=PlayerRound.Spawn(spawn,Vector2.up,GameRules.playerShootDamage*charge,GameRules.playerShootTravelSpeed);
+            MagnifyingLens.Enlarge(b);
 
         }
     }

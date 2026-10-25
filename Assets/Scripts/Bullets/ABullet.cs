@@ -24,5 +24,6 @@ public class ABullet : MonoBehaviour
         float directionX = Utils.GetValueOrDefault<string, float>(properties, "directionX", 0f);
         float directionY = Utils.GetValueOrDefault<string, float>(properties, "directionY", 1f);
         direction = new Vector3(directionX, directionY, -10f);
+        MagnifyingLens.Enlarge(this);
     }
 }

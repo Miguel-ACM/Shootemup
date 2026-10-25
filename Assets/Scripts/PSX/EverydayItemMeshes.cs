@@ -5,6 +5,12 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "MagnifyingGlass":
+                b.Drum(new Vector3(0,.14f,0),.3f,.1f,13,16);
+                b.Drum(new Vector3(0,.14f,-.065f),.24f,.025f,8,16);
+                b.Box(new Vector3(0,-.32f,0),new Vector3(.13f,.42f,.15f),12,12);
+                b.Box(new Vector3(0,-.17f,0),new Vector3(.17f,.12f,.17f),13);
+                b.Box(new Vector3(-.1f,.22f,-.085f),new Vector3(.035f,.16f,.015f),1);return true;
             case "RubberBand":
                 for(int i=0;i<24;i++)
                 {

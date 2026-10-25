@@ -5,23 +5,16 @@ using UnityEngine.InputSystem;
 
 public abstract class AWeaponAutomatic : AWeapon
 {
-    bool wasFrozen;
-    float frozenShotTimer;
+    float shotClock;
     void Update()
     {
-        if(WorldTimeStop.PlayerCanAct)
-        {
-            if(!wasFrozen){CancelInvoke("Shoot");frozenShotTimer=0;wasFrozen=true;}
-            if(!KeepFiring())return;
-            frozenShotTimer-=Time.unscaledDeltaTime;
-            if(frozenShotTimer<=0){frozenShotTimer=1/(GameRules.playerShootSpeed*shootSpeedModifier);Shoot();}
-        }
-        else if(wasFrozen && !WorldTimeStop.Frozen)
-        {
-            wasFrozen=false;
-            if(KeepFiring() && !IsInvoking("Shoot"))InvokeRepeating("Shoot",0,1/(GameRules.playerShootSpeed*shootSpeedModifier));
-        }
+        if(GameRules.playerDisabled || Menu.GameplayPaused || (Time.timeScale<=0 && !WorldTimeStop.PlayerCanAct))return;
+        if(!isShootingPrimary && !isShootingSecondary)return;
+        if(!KeepFiring())return;
+        shotClock-=WorldTimeStop.PlayerDelta*GameRules.playerShootSpeed*shootSpeedModifier*MagnifyingLens.Rate;
+        if(shotClock<=0){shotClock=1;Shoot();}
     }
+    public override void StopFiring(){base.StopFiring();shotClock=0;}
     public AWeaponAutomatic()
     {
         weaponType = WeaponType.automatic;
@@ -29,11 +22,10 @@ public abstract class AWeaponAutomatic : AWeapon
 
     public override void WeaponPressed(bool pressedPrimary)
     {
-        if(IsInvoking("Shoot"))return;
+        bool firing=isShootingPrimary || isShootingSecondary;
         base.WeaponPressed(pressedPrimary);
-        if(WorldTimeStop.Frozen)return;
-        if (pressedPrimary && EffectiveInput == WeaponInput.primary || !pressedPrimary && EffectiveInput == WeaponInput.secondary || EffectiveInput == WeaponInput.both)
-            InvokeRepeating("Shoot", 0f, 1 / (GameRules.playerShootSpeed * shootSpeedModifier));
+        if(!firing && (isShootingPrimary || isShootingSecondary))
+        {shotClock=1;Shoot();}
     }
 
     
