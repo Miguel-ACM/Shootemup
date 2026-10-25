@@ -16,6 +16,6 @@ public sealed class SatelliteOrbit : PatternMover
         Phase+=dt*1.65f;
         var p=Anchor.position+new Vector3(Mathf.Cos(Phase)*1.18f,Mathf.Sin(Phase)*.83f,0);p.z=origin.z;transform.position=p;
         transform.rotation=Quaternion.Euler(0,0,Phase*Mathf.Rad2Deg);
-        Arrive();SetFiring(p.y<Camera.UpLimit-1 && p.y>Camera.DownLimit+1 && Mathf.Cos(Phase)>.30f);
+        Arrive();SetFiring(p.y<Camera.UpLimit-1 && p.y>Camera.DownLimit+1 && Mathf.Abs(Mathf.Sin(Phase))>.35f);
     }
 }
