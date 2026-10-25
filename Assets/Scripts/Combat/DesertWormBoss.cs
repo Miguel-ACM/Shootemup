@@ -19,7 +19,7 @@ public sealed class DesertWormBoss : DistrictBoss
     bool completing;
     public int RemainingParts {get;private set;}=BodyCount+1;
     public DesertWormCore[] Cores=>cores;
-    protected override void Configure(){hull=33;hullScale=1.10f;health=2700;attackInterval=.52f;nextAttack=3;}
+    protected override void Configure(){hull=33;hullScale=1.10f;health=2200;attackInterval=.52f;nextAttack=3;}
     protected override void Start()
     {
         base.Start();GetComponent<Collider2D>().enabled=false;GetComponent<CombatHullVisual>().enabled=false;
@@ -133,6 +133,7 @@ public sealed class DesertWormCore : AEnemy
         var hit=t.gameObject.AddComponent<CircleCollider2D>();hit.isTrigger=true;hit.radius=head ? .51f : .35f;
         var part=t.gameObject.AddComponent<DesertWormCore>();part.owner=owner;part.health=health;
         part.mesh=visual.GetComponent<MeshRenderer>();part.mesh.sharedMaterial=IndustrialMeshFactory.WhiteWormMaterial;
+        PartHitFeedback.Bind(visual);
         part.scoreOnKill=0;part.lifeDropChance=part.manaDropChance=part.moneyDropChance=0;return part;
     }
     public override void damage(float amount)
