@@ -6,6 +6,10 @@ public static partial class IndustrialMeshFactory
     static readonly Dictionary<int,Mesh> combatHulls=new Dictionary<int,Mesh>();
     public static Vector3[] CombatEngineSockets(int kind)
     {
+        if(kind==35)return new[]{new Vector3(-.3f,.53f,.02f),new Vector3(.3f,.53f,.02f)};
+        if(kind==36)return new[]{new Vector3(-.24f,.82f,0),new Vector3(.24f,.82f,0)};
+        if(kind==37)return new[]{new Vector3(-.34f,.52f,0),new Vector3(.34f,.52f,0)};
+        if(kind==38)return new[]{new Vector3(-.65f,.8f,0),new Vector3(.65f,.8f,0)};
         if(kind==30 || kind==32 || kind==33 || kind==34)return System.Array.Empty<Vector3>();
         if(kind==31)return new[]{new Vector3(-.38f,.68f,0),new Vector3(.38f,.68f,0)};
         if(kind==27)return new[]{new Vector3(-.56f,.93f,0),new Vector3(.56f,.93f,0)};
@@ -42,6 +46,10 @@ public static partial class IndustrialMeshFactory
     {
         if(combatHulls.TryGetValue(kind,out var cached))return cached;
         var b=new Builder();bool heavy=kind==2 || kind==5 || kind==7 || kind==8 || kind==14 || kind==16 || kind>=20;
+        if(kind==35){BuildBonbon(b);return combatHulls[kind]=b.Finish("Wrapped bonbon skirmisher");}
+        if(kind==36){BuildWaferDart(b);return combatHulls[kind]=b.Finish("Chocolate wafer dart");}
+        if(kind==37){BuildMintSpinner(b);return combatHulls[kind]=b.Finish("Peppermint spindle");}
+        if(kind==38){BuildCandyRegent(b);return combatHulls[kind]=b.Finish("Candy regent launch wings");}
         if(kind==30){BuildSandEmitter(b);return combatHulls[kind]=b.Finish("Sand eruption turret");}
         if(kind==31){BuildSandStriker(b);return combatHulls[kind]=b.Finish("Desert burst interceptor");}
         if(kind==32){BuildSandWormHead(b);return combatHulls[kind]=b.Finish("Small sandworm jaw");}

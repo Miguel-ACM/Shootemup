@@ -15,9 +15,10 @@ public sealed class LevelChoice : MonoBehaviour
     Action<LevelId> picked;
     CanvasGroup group;
     RectTransform frame;
-    readonly RectTransform[] fills=new RectTransform[2];
-    readonly RectTransform[] names=new RectTransform[2];
-    readonly float[] displayed=new float[2];
+    RectTransform[] fills,names;
+    float[] displayed;
+    public LevelId[] Options {get;private set;}
+    float panelWidth;
     readonly AnimationCurve fillCurve=AnimationCurve.EaseInOut(0,0,1,1);
     TMP_FontAsset font;
     float age;
@@ -28,7 +29,8 @@ public sealed class LevelChoice : MonoBehaviour
         var choice=new GameObject("Choose the next route").AddComponent<LevelChoice>();
         choice.player=player;choice.picked=picked;
         LevelRun.GetChoices(out var left,out var right);choice.Left=left;choice.Right=right;
-        CloudTransition.PrepareRoutes(left,right);
+        choice.Options=LevelRun.GetOptions();choice.fills=new RectTransform[choice.Options.Length];choice.names=new RectTransform[choice.Options.Length];choice.displayed=new float[choice.Options.Length];
+        CloudTransition.PrepareRoutes(choice.Options);
         choice.Build();Active=true;return choice;
     }
 
@@ -45,21 +47,31 @@ public sealed class LevelChoice : MonoBehaviour
         group=gameObject.AddComponent<CanvasGroup>();group.blocksRaycasts=false;group.interactable=false;group.alpha=0;
         frame=Rect(transform,"Route playfield",new Vector2(405,720),Vector2.zero);
         frame.gameObject.AddComponent<RectMask2D>();
-        for(int i=0;i<2;i++)
+        panelWidth=405f/Options.Length;
+        for(int i=0;i<Options.Length;i++)
         {
-            bool left=i==0;var level=left ? Left : Right;var accent=LevelRun.Accent(level);
-            var half=Rect(frame,level.ToString(),new Vector2(202.5f,720),new Vector2(left ? -101.25f : 101.25f,0));
+            var level=Options[i];var accent=LevelRun.Accent(level);
+            var half=Rect(frame,level.ToString(),new Vector2(panelWidth,720),new Vector2(-202.5f+panelWidth*(i+.5f),0));
             Paint(half,new Color(.025f,.045f,.07f,.43f));
-            fills[i]=Rect(half,"Bottom-up route charge",new Vector2(202.5f,0),Vector2.zero);
+            fills[i]=Rect(half,"Bottom-up route charge",new Vector2(panelWidth,0),Vector2.zero);
             fills[i].anchorMin=fills[i].anchorMax=new Vector2(.5f,0);
             fills[i].pivot=new Vector2(.5f,0);Paint(fills[i],new Color(accent.r,accent.g,accent.b,.37f));
-            var edge=Rect(fills[i],"Leading edge",new Vector2(202.5f,1.5f),Vector2.zero);
+            var edge=Rect(fills[i],"Leading edge",new Vector2(panelWidth,1.5f),Vector2.zero);
             edge.anchorMin=edge.anchorMax=new Vector2(.5f,1);Paint(edge,new Color(accent.r,accent.g,accent.b,.65f));
-            names[i]=Text(half,level==LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(),24,Vector2.zero,Color.white).rectTransform;
+            names[i]=Text(half,level==LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(),Options.Length==3 ? 17 : 24,Vector2.zero,Color.white).rectTransform;
+            names[i].sizeDelta=new Vector2(panelWidth-14,48);
+            if(Options.Length==3)
+            {
+                var label=names[i].GetComponent<TextMeshProUGUI>();label.enableAutoSizing=true;label.fontSizeMin=12;label.fontSizeMax=17;
+                label.color=Color.Lerp(accent,Color.white,.5f);
+            }
         }
-        var centre=Rect(frame,"Neutral flight corridor",new Vector2(405*RouteCharge.NeutralWidth,720),Vector2.zero);
+        var centre=Rect(frame,"Neutral flight corridor",Options.Length==3 ? new Vector2(405,180) : new Vector2(405*RouteCharge.NeutralWidth,720),Options.Length==3 ? new Vector2(0,-270) : Vector2.zero);
         Paint(centre,new Color(.04f,.07f,.10f,.2f));
-        var rule=Rect(frame,"Centre line",new Vector2(1,720),Vector2.zero);Paint(rule,new Color(.78f,.88f,.95f,.22f));
+        for(int i=1;i<Options.Length;i++)
+        {
+            var rule=Rect(frame,"Route divider",new Vector2(1,720),new Vector2(-202.5f+i*panelWidth,0));Paint(rule,new Color(.78f,.88f,.95f,.22f));
+        }
     }
 
     void Update()
@@ -69,14 +81,25 @@ public sealed class LevelChoice : MonoBehaviour
         age+=Time.deltaTime;
         float enter=Mathf.SmoothStep(0,1,age/.3f);group.alpha=enter;
         if(committed)return;
-        if(age>=.3f)Charge.Step(player.position.x/(player.position.x<0 ? -Camera.LeftLimit : Camera.RightLimit),Time.deltaTime);
-        for(int i=0;i<2;i++)
+        if(age>=.3f)
         {
-            bool selected=Charge.Side==(i==0 ? -1 : 1);
+            float x=player.position.x/(player.position.x<0 ? -Camera.LeftLimit : Camera.RightLimit);
+            if(Options.Length==2)Charge.Step(x,Time.deltaTime);
+            else
+            {
+                float column=(x+1)*1.5f;
+                bool seam=Mathf.Abs(column-1)<.09f || Mathf.Abs(column-2)<.09f;
+                bool neutral=player.position.y<Mathf.Lerp(Camera.DownLimit,Camera.UpLimit,.25f) || seam;
+                Charge.StepSelection(neutral ? 0 : Mathf.Clamp(Mathf.FloorToInt(column),0,2)+1,Time.deltaTime);
+            }
+        }
+        for(int i=0;i<Options.Length;i++)
+        {
+            bool selected=Charge.Side==(Options.Length==2 ? (i==0 ? -1 : 1) : i+1);
             float target=selected ? fillCurve.Evaluate(Charge.Progress) : 0;
             displayed[i]=Mathf.Lerp(displayed[i],target,1-Mathf.Exp(-Time.deltaTime*20));
             if(Charge.Complete && selected)displayed[i]=1;
-            fills[i].sizeDelta=new Vector2(202.5f,720*displayed[i]);
+            fills[i].sizeDelta=new Vector2(panelWidth,720*displayed[i]);
             names[i].localScale=Vector3.one*(1+(selected ? .035f*Mathf.Sin(Charge.Progress*Mathf.PI) : 0));
         }
         if(Charge.Complete){committed=true;StartCoroutine(Commit());}
@@ -85,7 +108,7 @@ public sealed class LevelChoice : MonoBehaviour
     IEnumerator Commit()
     {
         yield return new WaitForSeconds(.1f);
-        picked?.Invoke(Charge.Side<0 ? Left : Right);
+        picked?.Invoke(Options[Options.Length==2 ? (Charge.Side<0 ? 0 : 1) : Charge.Side-1]);
     }
 
     static RectTransform Rect(Transform parent,string name,Vector2 size,Vector2 position)

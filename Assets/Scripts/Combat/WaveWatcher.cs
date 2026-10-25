@@ -162,7 +162,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
         for(int i=1;i<ReviewLoop;i++){LevelRun.Advance(LevelId.Snow);LevelRun.Advance(LevelId.Thunder);LevelRun.Advance(LevelId.Fields);}
         if(LevelRun.Tier(level)>=2)LevelRun.Advance(LevelRun.Tier(level)==2 ? level : LevelId.Snow);
         if(LevelRun.Tier(level)>=3)LevelRun.Advance(LevelRun.Tier(level)==3 ? level : LevelId.Thunder);
-        if(level==LevelId.Desert)LevelRun.Advance(LevelId.Desert);
+        if(LevelRun.Tier(level)==4)LevelRun.Advance(level);
     }
     public void SelectLoop(int loop){if(!Ready)return;ReviewLoop=Mathf.Clamp(loop,1,99);SetContext(Level,LevelRun.Seed);WavePreparation.Begin();Replay();}
     public void SelectView(WatcherView view)
@@ -184,7 +184,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
             if(View==WatcherView.Projectiles)
             {
                 View=WatcherView.Waves;
-                var order=new[]{LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Tunnel,LevelId.Desert};
+                var order=new[]{LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Tunnel,LevelId.Desert,LevelId.Candyland};
                 SelectLevel(order[(System.Array.IndexOf(order,Level)+1)%order.Length]);
             }
             else View=(WatcherView)((int)View+1);

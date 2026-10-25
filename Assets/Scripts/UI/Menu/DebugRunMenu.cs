@@ -75,11 +75,11 @@ public sealed class DebugRunMenu : AMenuElement
         var panel=Box(overlay.transform,"Debug panel",new Vector2(0,0),new Vector2(1040,672),Ink);
         Text(panel,"DEBUG RUN",30,new Vector2(-330,295),new Vector2(320,48));
         ButtonAt(panel,"BACK",new Vector2(418,295),new Vector2(150,40),Close);
-        var levels=new[]{LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Tunnel,LevelId.Desert};
+        var levels=new[]{LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Tunnel,LevelId.Desert,LevelId.Candyland};
         for(int i=0;i<levels.Length;i++)
         {
             var level=levels[i];
-            ButtonAt(panel,level==LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(),new Vector2(-410+i*164,235),new Vector2(154,38),()=>{first=level;Refresh();});
+            ButtonAt(panel,level==LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(),new Vector2(-420+i*140,235),new Vector2(134,38),()=>{first=level;Refresh();});
         }
         ButtonAt(panel,"SLOT 1",new Vector2(-415,177),new Vector2(145,38),()=>{slot=0;Refresh();});
         ButtonAt(panel,"SLOT 2",new Vector2(-255,177),new Vector2(145,38),()=>{slot=1;Refresh();});

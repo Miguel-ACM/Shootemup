@@ -11,6 +11,10 @@ public sealed class RouteCharge
     public void Step(float normalizedX,float deltaTime)
     {
         int next=normalizedX < -NeutralWidth ? -1 : normalizedX > NeutralWidth ? 1 : 0;
+        StepSelection(next,deltaTime);
+    }
+    public void StepSelection(int next,float deltaTime)
+    {
         if(next!=Side || next==0)Progress=0;
         Side=next;
         if(Side!=0)Progress=Mathf.Clamp01(Progress+Mathf.Max(0,deltaTime)/HoldSeconds);

@@ -42,7 +42,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 ## District and boss identities
 
-- Runs start in Plains, then choose Snow or City, then Thunder or Tunnel. After either third district, offer Desert or a direct loop to harder Plains. Desert ends by looping to harder Plains. Preserve equipment and score on both routes.
+- Runs start in Plains, then choose Snow or City, then Thunder or Tunnel. After either third district, offer Desert, Candyland, or a direct loop to harder Plains. Desert and Candyland end by looping to harder Plains. Preserve equipment and score on every route.
 
 - Snow: many large shells that explode into smaller bullets; a very round boss with several patterns and a harder second phase.
 - Thunder: beams and quick aimed fire; a slim boss with side-emitting lasers, then 6–8 alternating sweeping beams plus a barrage in phase two.
@@ -52,6 +52,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Desert: dunes, small silos and compact gray buildings; buried enemies emerge and fire rings, interceptors fire tightly spaced aimed bursts, and small articulated sandworms shoot from multiple body ports. Its boss is a giant white mechanical sandworm with red weakpoints along its body and a larger red head weakpoint. Every part must be destroyed to win.
 - Desert visual feedback: Miguel chose angular, sculpted low-poly dunes. The previous striped terrain and repeated dark crescent dunes were rejected. Add drifting dust storms while keeping combat readable. Keep the worm weakpoints compact and a muted brick red.
 - Desert buildings need coherent lighting and believable attached shadows. Avoid oversized dark rectangular foundations that read as crude shadow patches.
+- Candyland: pink cloud background with falling modeled lollipops, chocolates and wrapped sweets. Many fast enemies, each firing fewer bullets. A very fast boss has less health and spawns destroyable minions. Candyland is an alternative to Desert after level 3.
 
 ## Items and decisions
 

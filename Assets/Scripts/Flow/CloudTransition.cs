@@ -23,7 +23,7 @@ public sealed class CloudTransition : MonoBehaviour
     Coroutine scenePreparation, routePreparation;
     string preparedScene;
     AsyncOperation preparedLoad;
-    readonly AudioClip[] routeMusic=new AudioClip[2];
+    readonly AudioClip[] routeMusic=new AudioClip[3];
     bool scenePreparing, routesPreparing;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -82,24 +82,25 @@ public sealed class CloudTransition : MonoBehaviour
         if(scenePreparation==null)scenePreparation=StartCoroutine(PreloadScene("L1"));
     }
 
-    public static void PrepareRoutes(LevelId left,LevelId right)
+    public static void PrepareRoutes(params LevelId[] options)
     {
         if(instance.routePreparation!=null)instance.StopCoroutine(instance.routePreparation);
-        instance.routePreparation=instance.StartCoroutine(instance.WarmRoutes(left,right));
+        instance.routePreparation=instance.StartCoroutine(instance.WarmRoutes(options));
     }
 
-    IEnumerator WarmRoutes(LevelId left,LevelId right)
+    IEnumerator WarmRoutes(LevelId[] options)
     {
         routesPreparing=true;
         try
         {
             yield return LevelEnvironment.Prepare();
             // Scene objects stay on the main thread, but each build yields in small batches.
-            yield return LevelEnvironment.PrepareRoute(left);
-            yield return WarmRouteMusic(left,0);
-            yield return null;
-            yield return LevelEnvironment.PrepareRoute(right);
-            yield return WarmRouteMusic(right,1);
+            for(int i=0;i<options.Length;i++)
+            {
+                yield return LevelEnvironment.PrepareRoute(options[i]);
+                yield return WarmRouteMusic(options[i],i);
+                yield return null;
+            }
         }
         finally { routesPreparing=false; }
     }
