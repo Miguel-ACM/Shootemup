@@ -173,6 +173,12 @@ while True:
         os.rmdir(d)
         if os.path.exists(d + ".meta"):
             subprocess.run(["git", "rm", "-q", d + ".meta"], cwd=ROOT, check=True)
+# A folder's .meta can outlive the folder when the folder emptied out in an earlier pass.
+for base in ("Assets/Scripts", "Assets/Editor"):
+    for d, _, files in os.walk(os.path.join(ROOT, base)):
+        for f in files:
+            if f.endswith(".meta") and not os.path.exists(os.path.join(d, f[:-5])):
+                subprocess.run(["git", "rm", "-q", os.path.join(d, f)], cwd=ROOT, check=True)
 FOLDER_META = ("fileFormatVersion: 2\nguid: %s\nfolderAsset: yes\nDefaultImporter:\n  externalObjects: {}\n"
                "  userData: \n  assetBundleName: \n  assetBundleVariant: \n")
 for base in ("Assets/Scripts", "Assets/Editor"):
