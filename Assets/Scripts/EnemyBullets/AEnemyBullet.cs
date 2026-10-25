@@ -23,6 +23,7 @@ public abstract class AEnemyBullet : MonoBehaviour
         if (rigidBody.position.x > Camera.RightLimit + 1f || rigidBody.position.x < Camera.LeftLimit - 1f)
             Destroy(gameObject);
         Move();
+        transform.position+=PocketWind.Velocity(transform.position)*Time.deltaTime;
     }
 
     protected virtual void Move()

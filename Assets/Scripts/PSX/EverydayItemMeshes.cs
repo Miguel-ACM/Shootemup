@@ -5,6 +5,17 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "PocketFan":
+                b.Box(new Vector3(0,-.3f,.02f),new Vector3(.17f,.4f,.18f),1);
+                b.Drum(new Vector3(0,.15f,.04f),.31f,.1f,11,16);
+                for(int i=0;i<3;i++)
+                {
+                    float a=i*120;var points=new[]{new Vector2(.03f,.02f),new Vector2(.24f,.07f),new Vector2(.2f,.21f),new Vector2(.07f,.18f)};
+                    for(int j=0;j<points.Length;j++)points[j]=Quaternion.Euler(0,0,a)*points[j];
+                    b.Prism(points,.045f,9,new Vector3(0,.15f,-.04f),9);
+                }
+                for(int i=0;i<16;i++){float a=i*Mathf.PI/8;b.Box(new Vector3(Mathf.Cos(a)*.31f,.15f+Mathf.Sin(a)*.31f,-.07f),new Vector3(.075f,.075f,.08f),1);}
+                b.Drum(new Vector3(0,.15f,-.1f),.07f,.04f,1,8);return true;
             case "StaticSweater":
                 b.Prism(new[]{new Vector2(-.18f,.3f),new Vector2(-.4f,.22f),new Vector2(-.5f,-.08f),new Vector2(-.31f,-.16f),new Vector2(-.22f,.02f),new Vector2(-.23f,-.35f),new Vector2(.23f,-.35f),new Vector2(.22f,.02f),new Vector2(.31f,-.16f),new Vector2(.5f,-.08f),new Vector2(.4f,.22f),new Vector2(.18f,.3f),new Vector2(.1f,.21f),new Vector2(-.1f,.21f)},.14f,7,Vector3.zero,7);
                 b.Box(new Vector3(0,-.31f,-.01f),new Vector3(.47f,.08f,.17f),1);
