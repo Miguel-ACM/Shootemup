@@ -7,6 +7,7 @@ public static partial class IndustrialMeshFactory
     {
         if(expansionItems.TryGetValue(kind,out var mesh))return mesh;
         var b=new Builder();
+        if(RequestedItem(b,kind))return expansionItems[kind]=b.Finish(kind+" equipment");
         if(kind=="BaseWeaponItem")
         {
             // The starter is a paired ship-mounted autocannon, not a generic equipment icon.

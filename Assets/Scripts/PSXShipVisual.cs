@@ -18,6 +18,12 @@ public sealed class PSXShipVisual : MonoBehaviour
     MaterialPropertyBlock properties;
     Vector3 previousPosition;
     float bank;
+    public void ScaleHull(float factor)
+    {
+        if(model!=null)model.localScale*=factor;
+        if(hitboxRenderers!=null)foreach(var marker in hitboxRenderers)
+            if(marker!=null)marker.transform.localScale*=factor;
+    }
     static readonly int Tint = Shader.PropertyToID("_Tint");
     static readonly int PlayerDepth = Shader.PropertyToID("_PlayerDepth");
 

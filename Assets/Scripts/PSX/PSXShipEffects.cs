@@ -16,7 +16,8 @@ public sealed class PSXShipEffects : MonoBehaviour
     MaterialPropertyBlock properties;
     MeshRenderer[] muzzleRenderers;
     float muzzleUntil;
-    public Vector3 MuzzlePosition(int index) => transform.TransformPoint(new Vector3(index==0 ? -.1134f : .1134f,.30f,-.03f));
+    public float HullScale=1;
+    public Vector3 MuzzlePosition(int index) => transform.TransformPoint(new Vector3(index==0 ? -.1134f : .1134f,.30f,-.03f)*HullScale);
     public void Shot() { muzzleUntil=Time.time+.045f; }
 
     void Start()
@@ -49,7 +50,9 @@ public sealed class PSXShipEffects : MonoBehaviour
         for(int i=0;i<2;i++)
         {
             float pulse=.82f+.23f*Mathf.Sin(tick*2.39f+i*1.7f)+Mathf.Min(speed*.025f,.25f);
-            flames[i].localScale=new Vector3(exhaustScale,pulse*exhaustScale,1f);
+            flames[i].localPosition=new Vector3(i==0 ? -exhaustOffset.x : exhaustOffset.x,exhaustOffset.y,-.08f)*HullScale;
+            flames[i].localScale=new Vector3(exhaustScale,pulse*exhaustScale,1f)*HullScale;
+            muzzleRenderers[i].transform.position=MuzzlePosition(i);
             properties.SetColor("_Tint",new Color(1,1,1,source==null ? 1 : source.color.a));
             renderers[i].SetPropertyBlock(properties);renderers[i].enabled=!GameRules.playerDisabled;
             muzzleRenderers[i].enabled=Time.time<muzzleUntil && !GameRules.playerDisabled;
