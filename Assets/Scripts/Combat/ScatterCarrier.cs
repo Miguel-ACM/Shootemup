@@ -2,7 +2,7 @@ using UnityEngine;
 public sealed class ScatterCarrier : CombatRound
 {
     int releases;
-    protected override void Initialize(){releases=0;Orient();}
+    protected override void Initialize(){releases=0;Orient();if(LevelRun.Current==LevelId.Fields)GetComponent<ProjectileSpriteTint>().SetAccent(new Color(1,.58f,.08f));}
     protected override void Tick(float dt)
     {
         base.Tick(dt);

@@ -25,7 +25,7 @@ public sealed class FieldsBomberBoss : DistrictBoss
     static readonly Vector3[] bays={new Vector3(-1.19f,-.24f,-.51f),new Vector3(-.97f,-.36f,-.51f),new Vector3(-.75f,-.48f,-.51f),
         new Vector3(.75f,-.48f,-.51f),new Vector3(.97f,-.36f,-.51f),new Vector3(1.19f,-.24f,-.51f)};
     Vector2 phraseAxis=Vector2.down;
-    protected override void Configure(){hull=23;hullScale=1.4f;health=1440;attackInterval=.55f;shellTravelDistance=4.6f;}
+    protected override void Configure(){hull=23;hullScale=1.4f;health=1200;attackInterval=.64f;shellTravelDistance=4.6f;}
     protected override void MoveBoss(float dt){station.x=Mathf.Sin(motionAge*.5f)*2;base.MoveBoss(dt);}
     protected override void PressureAttack(){} // One score owns every battery and its rests.
     protected override void Attack()
@@ -37,16 +37,16 @@ public sealed class FieldsBomberBoss : DistrictBoss
             var port=Hull.TransformPoint(new Vector3(side*1.34f,.32f,-.36f));
             var axis=CombatVisuals.Rotate(Vector2.down,side*(32+beat*12));
             PSXImpactEffects.Muzzle(port,axis);
-            PetalFan<SimpleRound>(port,axis,phaseTwo ? 9 : 7,12,phaseTwo ? 3.9f : 3.3f,.13f,.18f);
+            PetalFan<SimpleRound>(port,axis,phaseTwo ? 6 : 4,16,phaseTwo ? 3.7f : 3.2f,.13f,.18f);
         }
-        else if(beat==4)FanFrom<BurstShell>(phaseTwo ? 6 : 4,19,4.8f,.4f,bays);
-        else if(beat==5)FanFrom<ScatterCarrier>(phaseTwo ? 6 : 4,22,3.7f,.3f,bays);
+        else if(beat==4)FanFrom<BurstShell>(phaseTwo ? 3 : 2,23,4.4f,.4f,bays);
+        else if(beat==5)FanFrom<ScatterCarrier>(phaseTwo ? 2 : 1,26,3.4f,.3f,bays);
         else if(beat>=8 && beat<=10)for(int side=-1;side<=1;side+=2)
         {
             var port=Hull.TransformPoint(new Vector3(side*1.4f,-.68f,-.16f));
             var axis=CombatVisuals.Rotate(phraseAxis,side*(16-(beat-8)*8));
             PSXImpactEffects.Muzzle(port,axis);
-            PetalFan<NeedleRound>(port,axis,phaseTwo ? 11 : 7,9,phaseTwo ? 6.3f : 5.2f,.14f);
+            PetalFan<NeedleRound>(port,axis,phaseTwo ? 6 : 4,13,phaseTwo ? 5.8f : 5.0f,.14f);
         }
         // Shoulder petals, shell bloom, then converging wing ribbons; 3/6/7/11 breathe.
     }

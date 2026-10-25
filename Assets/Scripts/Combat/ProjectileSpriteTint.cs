@@ -33,6 +33,10 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
         if(visual.sharedMaterial!=shared)visual.sharedMaterial=shared;
         visual.SetPropertyBlock(null);
     }
+    public void SetAccent(Color color)
+    {
+        Tint=color;properties.SetColor("_SpriteTint",color);properties.SetFloat("_Burn",0);properties.SetFloat("_Poison",0);visual.SetPropertyBlock(properties);
+    }
     public static void Friendly(GameObject go)
     {
         var round=go.GetComponent<PlayerRound>();
