@@ -4,10 +4,10 @@ using UnityEngine;
 
 public enum BossDestructionStage { Burning, Freeze, Breakup, Complete }
 
-// Authored impact holds stop simulation without blocking the render or input threads.
+// Intact-hull explosions flow continuously into breakup without artificial frame holds.
 public sealed class BossDestruction : MonoBehaviour
 {
-    public const float FinalFreezeSeconds=.5f;
+    public const float FinalFreezeSeconds=0;
     public static BossDestruction Current {get;private set;}
     public static bool HoldingFrame=>Current!=null && Current.holding;
     public BossDestructionStage Stage {get;private set;}
@@ -18,8 +18,7 @@ public sealed class BossDestruction : MonoBehaviour
     public float ShatteredAt {get;private set;}
     Bounds bounds;
     Action<Vector3> completed;
-    bool holding;
-    float resumeRate=1;
+    bool holding=>false;
 
     public static void Play(AEnemy source,Action<Vector3> completed)
     {
@@ -66,13 +65,7 @@ public sealed class BossDestruction : MonoBehaviour
             PSXFireballs.Spawn(p,size,beat==4 ? 5 : 3,size*.28f,.065f);
             PSXImpactEffects.Burst(p,new Color(1,.58f,.22f));PreBlasts++;
             yield return Beat(.16f+beat*.015f);
-            if(beat==1 || beat==3)
-            {
-                Hold();yield return Beat(beat==1 ? .055f : .085f);ReleaseHold();
-            }
         }
-        Stage=BossDestructionStage.Freeze;FreezeStarted=Time.unscaledTime;
-        Hold();yield return Beat(FinalFreezeSeconds);ReleaseHold();
         Stage=BossDestructionStage.Breakup;ShatteredAt=Time.unscaledTime;
         BGMManager.StopBGM();
         if(Wreckage!=null)Wreckage.ReleasePrepared();
@@ -93,16 +86,12 @@ public sealed class BossDestruction : MonoBehaviour
         float elapsed=0;
         while(elapsed<seconds){yield return null;if(!Menu.GameplayPaused)elapsed+=Time.unscaledDeltaTime;}
     }
-    void Hold(){resumeRate=Time.timeScale>0 ? Time.timeScale : 1;holding=true;Time.timeScale=0;}
-    void ReleaseHold(){if(!holding)return;holding=false;Time.timeScale=Menu.GameplayPaused ? 0 : resumeRate;}
     void LateUpdate()
     {
-        if(holding && !Menu.GameplayPaused)Time.timeScale=0;
         if(GameOverState.Active || (Source==null && (int)Stage<(int)BossDestructionStage.Breakup))Destroy(gameObject);
     }
     void OnDestroy()
     {
-        ReleaseHold();
         if((int)Stage<(int)BossDestructionStage.Breakup && Wreckage!=null)Destroy(Wreckage.gameObject);
         if(Current==this)Current=null;
     }

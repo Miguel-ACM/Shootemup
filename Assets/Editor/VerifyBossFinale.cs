@@ -146,31 +146,19 @@ public sealed class BossFinaleReview : MonoBehaviour
             Check(death.Wreckage!=null && !death.Wreckage.gameObject.activeSelf,label+": wreckage remains hidden until the shatter accent");
             Check(!WorldTimeStop.Frozen,label+": active bullet-time effects relinquish the cinematic clock");
             var music=(AudioSource)typeof(BGMManager).GetField("audioSource",BindingFlags.Static|BindingFlags.NonPublic).GetValue(null);
-            bool preMusic=true,intact=true,noEarlyRoute=true,paused=false;float pauseDuration=0,freezeWorld=-1,freezeStart=-1;
+            bool preMusic=true,intact=true,noEarlyRoute=true;
             float started=Time.unscaledTime,last=-1;int frame=0;
             while(death!=null && death.Stage!=BossDestructionStage.Breakup && Time.unscaledTime-started<6)
             {
                 intact&=boss!=null && boss.Hull.GetComponent<MeshRenderer>().enabled;
                 preMusic&=music.isPlaying;noEarlyRoute&=!LevelChoice.Active && FindAnyObjectByType<DecisionShop>()==null;
-                if(death.Stage==BossDestructionStage.Freeze)
-                {
-                    if(freezeStart<0){freezeStart=Time.unscaledTime;freezeWorld=Time.time;Capture(label+"-Freeze");}
-                    CheckFrozen(Time.timeScale==0 && Mathf.Abs(Time.time-freezeWorld)<.002f,label);
-                    if(level==LevelId.Fields && !paused)
-                    {
-                        paused=true;var menu=FindAnyObjectByType<Menu>();menu.setMenuOpen(true);float p=Time.unscaledTime;
-                        yield return new WaitForSecondsRealtime(.25f);pauseDuration=Time.unscaledTime-p;
-                        Check(death.Stage==BossDestructionStage.Freeze && Time.timeScale==0,"pausing cannot finish the half-second boss hold behind the menu");menu.setMenuOpen(false);
-                        Check(Time.timeScale==0,"resuming the menu preserves the remaining boss freeze");
-                    }
-                }
+                Check(Time.timeScale==1 && !BossDestruction.HoldingFrame,label+": destruction does not insert artificial frame holds");
                 float elapsed=Time.unscaledTime-started;
                 if(elapsed-last>.06f){last=elapsed;Capture("Frames/"+label+"-"+(frame++).ToString("D4"));}
                 yield return null;
             }
             Check(death!=null && death.Stage==BossDestructionStage.Breakup && death.PreBlasts==5 && intact && preMusic && noEarlyRoute,label+": five explosions play over the held model before any breakup, music cut or route");
-            float held=death.ShatteredAt-death.FreezeStarted-pauseDuration;
-            Check(held>=.49f && held<.65f && !music.isPlaying && Time.timeScale==1,label+": half-second freeze then synchronized shatter/music cut; hold "+held.ToString("F3",System.Globalization.CultureInfo.InvariantCulture)+"s");
+            Check(!music.isPlaying && Time.timeScale==1,label+": continuous breakup retains the synchronized music cut");
             Check(death.Wreckage!=null && death.Wreckage.gameObject.activeSelf,label+": prepared polygon wreckage releases on the shatter accent");
             if(level==LevelId.Desert)Check(death.Wreckage.GetComponentsInChildren<MeshFilter>(true).Length>=8,"Desert worm breakup includes the complete articulated body");
             yield return null;Capture(label+"-Breakup");
@@ -187,10 +175,11 @@ public sealed class BossFinaleReview : MonoBehaviour
             wait=Time.unscaledTime+2;while(reward!=null && Time.unscaledTime<wait)yield return null;
             Check(reward==null,label+": actual item collection completes the reward");
             yield return new WaitForSeconds(.3f);
-            if(level==LevelId.Desert || level==LevelId.Candyland)
+            if(LevelRun.AutomaticNext.HasValue)
             {
-                wait=Time.unscaledTime+12;while((CloudTransition.Busy || LevelRun.Current!=LevelId.Space || !WavePreparation.Ready) && Time.unscaledTime<wait)yield return null;
-                Check(LevelRun.Current==LevelId.Space && LevelRun.Loop==1 && !CloudTransition.Busy && Time.timeScale==1,label+": the Space extension waits for the item and resumes cleanly");
+                var expected=LevelRun.AutomaticNext.Value;
+                wait=Time.unscaledTime+12;while((CloudTransition.Busy || LevelRun.Current!=expected || !WavePreparation.Ready) && Time.unscaledTime<wait)yield return null;
+                Check(LevelRun.Current==expected && !CloudTransition.Busy && Time.timeScale==1,label+": automatic route waits for the item and resumes cleanly");
             }
             else
             {
