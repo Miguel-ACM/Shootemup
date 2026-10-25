@@ -41,7 +41,7 @@ public static class DesertGeometry
     {
         float phase=seed%97*.065f;
         float wind=y*Mathf.PI/10+x*.50f+phase;
-        float crest=.5f+.5f*Mathf.Sin(wind+.32f*Mathf.Sin(x*.56f));
+        float crest=.5f+.5f*Mathf.Sin(wind+.75f*Mathf.Sin(x*.72f));
         return .10f+Mathf.Pow(crest,3)*.85f+(.5f+.5f*Mathf.Sin(y*Mathf.PI/20-x*.45f+phase))*.22f;
     }
     public static Mesh Ground(int section,int seed)
@@ -52,11 +52,21 @@ public static class DesertGeometry
             float x=-14+col*28f/72,y=-10+row*.25f;
             Vector3 P(float dx,float dy)=>new Vector3(x+dx,y+dy,Height(x+dx,origin+y+dy,seed));
             float h=Height(x,origin+y,seed),slope=Height(x,origin+y+.1f,seed)-h;
-            var sand=Color.Lerp(new Color(.46f,.30f,.15f),new Color(.73f,.55f,.30f),Mathf.Clamp01(.52f+slope*9));
+            var sand=Color.Lerp(new Color(.39f,.25f,.12f),new Color(.76f,.58f,.33f),Mathf.Clamp01(.55f+slope*24));
             // Narrow wind-cut contour bands sit in the terrain mesh, beneath the combat plane.
-            float ripple=Mathf.Sin((origin+y)*30+x*11)*.012f;
+            float ripple=Mathf.Sin((origin+y)*30+x*11)*.004f;
             sand+=new Color(ripple,ripple,ripple,0);
             b.Face(sand,P(0,0),P(28f/72,0),P(28f/72,.25f),P(0,.25f));
+        }
+        // A thin windward lip and a broad lee face make each long dune legible through the PSX filter.
+        float phase=seed%97*.065f;
+        for(int ridge=-5;ridge<=5;ridge++)for(int col=0;col<140;col++)
+        {
+            float x=-14+col*.2f,next=x+.2f;
+            float Y(float q)=>(Mathf.PI*.5f-q*.50f-phase-.75f*Mathf.Sin(q*.72f)+ridge*Mathf.PI*2)*10/Mathf.PI-origin;
+            float a=Y(x),c=Y(next);if(Mathf.Min(a,c)<-9.8f || Mathf.Max(a,c)>9.8f)continue;
+            Vector3 P(float q,float y)=>new Vector3(q,y,Height(q,origin+y,seed)+.025f);
+            b.Face(new Color(.79f,.62f,.37f),P(x,a-.06f),P(next,c-.06f),P(next,c+.06f),P(x,a+.06f));
         }
         return b.Finish("Wind-carved dunes "+section);
     }
@@ -67,7 +77,7 @@ public static class DesertGeometry
         var gray=new Color(.39f,.42f,.42f);var dark=new Color(.16f,.19f,.19f);
         for(int site=0;site<4;site++)
         {
-            float x=(site%2==0 ? -1 : 1)*R(3.6f,8.6f),y=-7+site*4.4f+R(-.5f,.5f),z=Height(x,origin+y,seed)+.05f;
+            float x=(site%2==0 ? -1 : 1)*R(2.1f,2.9f),y=-7+site*4.4f+R(-.5f,.5f),z=Height(x,origin+y,seed)+.05f;
             b.Box(new Vector3(x,y,z),new Vector3(2.6f,2.3f,.08f),new Color(.42f,.37f,.27f));
             if((site+section)%2==0)
             {
