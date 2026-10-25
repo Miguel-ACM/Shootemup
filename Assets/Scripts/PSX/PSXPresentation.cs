@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.Rendering;
 
 /// <summary>Integer-scaled low-resolution scene with PS1-style dithering and 15-bit colour.</summary>
 public sealed class PSXPresentation : MonoBehaviour
@@ -15,6 +16,8 @@ public sealed class PSXPresentation : MonoBehaviour
     Canvas canvas;
     RawImage image;
     Material composite;
+    ProjectileGlow glow;
+    bool previousHDR;
     int width,height;
     bool initialized;
     public RenderTexture SceneTexture => pixels;
@@ -33,17 +36,19 @@ public sealed class PSXPresentation : MonoBehaviour
         if(shaker!=null){var rest=shaker.RestPositionOffset;rest.z=-40;shaker.RestPositionOffset=rest;}
         source.GetUniversalAdditionalCameraData().renderPostProcessing=false;
         previousTarget=source.targetTexture;
+        previousHDR=source.allowHDR;source.allowHDR=true;
         composite=new Material(material) {name="PSX runtime composite"};
         var cameraObject=new GameObject("PSX Screen Output");cameraObject.transform.SetParent(transform,false);
         output=cameraObject.AddComponent<UnityEngine.Camera>();output.cullingMask=0;output.clearFlags=CameraClearFlags.SolidColor;
         output.backgroundColor=Color.black;output.depth=100;
+        output.allowHDR=false;
         output.GetUniversalAdditionalCameraData().renderPostProcessing=false;
         var ui=new GameObject("PSX pixel display",typeof(RectTransform),typeof(Canvas));ui.transform.SetParent(transform,false);
         canvas=ui.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=-100;
         var display=new GameObject("320-line dithered scene",typeof(RectTransform),typeof(CanvasRenderer),typeof(RawImage));
         display.transform.SetParent(ui.transform,false);image=display.GetComponent<RawImage>();image.raycastTarget=false;
         var rect=display.GetComponent<RectTransform>();rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;
-        initialized=true;Resize();
+        initialized=true;Resize();RenderPipelineManager.endCameraRendering+=AfterCamera;
     }
 
     void Resize()
@@ -52,13 +57,20 @@ public sealed class PSXPresentation : MonoBehaviour
         width=Screen.width;height=Screen.height;
         source.targetTexture=null;
         if(pixels!=null){pixels.Release();Destroy(pixels);}
+        glow?.Dispose();
         int factor=filterEnabled ? Mathf.Max(1,height/renderHeight) : 1;
         int h=Mathf.Max(1,height/factor),w=Mathf.Max(1,width/factor);
-        pixels=new RenderTexture(w,h,24,RenderTextureFormat.ARGB32) {filterMode=FilterMode.Point,name="PSX world pixels",antiAliasing=1};
+        pixels=new RenderTexture(w,h,24,RenderTextureFormat.ARGBHalf) {filterMode=FilterMode.Point,name="PSX world pixels",antiAliasing=1};
         pixels.Create();source.targetTexture=pixels;image.texture=pixels;
-        image.material=filterEnabled ? composite : null;
+        glow=new ProjectileGlow(w,h);composite.SetTexture("_GlowTex",glow.Texture);
+        composite.SetFloat("_FilterEnabled",filterEnabled ? 1 : 0);image.material=composite;
         // PSXv2Lit snaps vertices to this pixel grid (PS1-style jitter at the internal resolution).
         Shader.SetGlobalVector("_PSXSnapResolution",new Vector4(w,h,0,0));
+    }
+
+    void AfterCamera(ScriptableRenderContext context,UnityEngine.Camera camera)
+    {
+        if(camera==source && pixels!=null)glow.Render(pixels);
     }
 
     void Update()
@@ -70,7 +82,9 @@ public sealed class PSXPresentation : MonoBehaviour
 
     void OnDestroy()
     {
-        if(source!=null)source.targetTexture=previousTarget;
+        RenderPipelineManager.endCameraRendering-=AfterCamera;
+        if(source!=null){source.targetTexture=previousTarget;source.allowHDR=previousHDR;}
+        glow?.Dispose();
         if(pixels!=null){pixels.Release();Destroy(pixels);}
         if(composite!=null)Destroy(composite);
     }

@@ -20,6 +20,7 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
         effect.visual.sortingLayerName="Bullet";effect.visual.sortingOrder=friendly ? 16 : 18;
         if(effect.properties==null)effect.properties=new MaterialPropertyBlock();effect.properties.SetColor("_SpriteTint",tint);
         effect.properties.SetFloat("_Neutralize",neutralize ? 1 : 0);
+        effect.properties.SetFloat("_Emission",1.15f);
         effect.lastBurn=effect.lastPoison=-1;effect.enabled=friendly;
         if(friendly){effect.SetCoatings(0,0);effect.LateUpdate();}
         else effect.SetHostile();

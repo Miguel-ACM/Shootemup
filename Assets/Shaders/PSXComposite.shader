@@ -15,6 +15,9 @@ Shader "Shootemup/PSX Composite"
         _ColorSteps("Colour steps", Float)=31
         _Soften("Horizontal CRT softness", Range(0,0.5))=0.18
         _Vignette("Vignette (unused)", Range(0,1))=0
+        _GlowTex("Projectile radiance",2D)="black"{}
+        _GlowStrength("Glow strength",Float)=.6
+        _FilterEnabled("Pixel filter",Float)=1
     }
     SubShader
     {
@@ -27,12 +30,18 @@ Shader "Shootemup/PSX Composite"
             #pragma fragment frag
             #pragma target 3.0
             #include "UnityCG.cginc"
-            sampler2D _MainTex;
+            sampler2D _MainTex,_GlowTex;
             float4 _MainTex_TexelSize, _Color;
-            float _Dither, _ColorSteps, _Soften;
+            float _Dither, _ColorSteps, _Soften,_GlowStrength,_FilterEnabled;
             struct Input { float4 vertex:POSITION; float2 uv:TEXCOORD0; float4 color:COLOR; };
             struct Output { float4 position:SV_POSITION; float2 uv:TEXCOORD0; float4 color:COLOR; };
             Output vert(Input i) { Output o; o.position=UnityObjectToClipPos(i.vertex); o.uv=i.uv; o.color=i.color*_Color; return o; }
+            float3 Surface(float2 uv)
+            {
+                float3 c=tex2D(_MainTex,uv).rgb;
+                // Preserve the projectile hue instead of clipping HDR cores into white columns.
+                return c/max(1,max(c.r,max(c.g,c.b)));
+            }
             // PS1 GPU dither offsets on the 0..255 scale (DuckStation's table).
             float Offset(float2 p)
             {
@@ -45,13 +54,16 @@ Shader "Shootemup/PSX Composite"
                 float2 size=_MainTex_TexelSize.zw;
                 float2 pixel=floor(i.uv*size);
                 float2 uv=(pixel+0.5)/size;
-                float3 color=tex2D(_MainTex,uv).rgb;
-                float3 left=tex2D(_MainTex,uv-float2(_MainTex_TexelSize.x,0)).rgb;
-                float3 right=tex2D(_MainTex,uv+float2(_MainTex_TexelSize.x,0)).rgb;
-                color=lerp(color,(left+right)*0.5,_Soften);
+                float3 color=Surface(uv);
+                float3 left=Surface(uv-float2(_MainTex_TexelSize.x,0));
+                float3 right=Surface(uv+float2(_MainTex_TexelSize.x,0));
+                color=lerp(color,(left+right)*0.5,_Soften*_FilterEnabled);
                 // 24-bit -> 15-bit: add the signed offset, then truncate (>> 3) like the GPU.
                 float3 c8=saturate(color)*255+Offset(pixel)*_Dither;
-                color=floor(clamp(c8,0,255)/255*_ColorSteps+0.0001)/_ColorSteps;
+                float3 quantized=floor(clamp(c8,0,255)/255*_ColorSteps+0.0001)/_ColorSteps;
+                color=lerp(saturate(color),quantized,_FilterEnabled);
+                // Add the soft colored spill after quantization to preserve its smooth falloff.
+                color+=tex2D(_GlowTex,i.uv).rgb*_GlowStrength;
                 return half4(color,1)*i.color;
             }
             ENDCG
