@@ -48,6 +48,7 @@ public static partial class IndustrialMeshFactory
     {
         if(combatHulls.TryGetValue(kind,out var cached))return cached;
         var b=new Builder();bool heavy=kind==2 || kind==5 || kind==7 || kind==8 || kind==14 || kind==16 || kind>=20;
+        if(kind>=56 && kind<=60){BuildDistrictMini(b,kind);return combatHulls[kind]=b.Finish("District champion "+kind);}
         if(kind==46){BuildSkull(b);return combatHulls[kind]=b.Finish("Horned skull interceptor");}
         if(kind==47){BuildGhostShip(b);return combatHulls[kind]=b.Finish("Spectral broadside galleon");}
         if(kind==48){BuildCinderImp(b);return combatHulls[kind]=b.Finish("Cinder bat imp");}
