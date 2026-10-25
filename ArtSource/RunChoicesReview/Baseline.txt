@@ -1,0 +1,3 @@
+PASS
+PASS sixteen simultaneous shells release all 192 child bullets
+MEASURE simultaneous shell detonation CPU: 43.9195 ms; new bullet objects: 192; ignition particle systems: 16.

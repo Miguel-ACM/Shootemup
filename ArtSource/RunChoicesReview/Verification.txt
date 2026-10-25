@@ -1,0 +1,217 @@
+PASS
+PASS sixteen simultaneous shells release all 192 child bullets
+MEASURE simultaneous shell detonation CPU: 20.6233 ms; new bullet objects: 0; ignition particle systems: 1.
+PASS first combat detonation uses prewarmed bullets and one shared ignition renderer
+PASS clearing 280 bullets uses shared particles without spawning individual shockwave renderers
+PASS moving shell barrage retains dense patterns with one shared ignition buffer
+PASS a collected coin adds one coin without changing score
+PASS wallet rejects insufficient funds and negative prices
+PASS coinShop offers three or four items
+PASS passing far from an offer cannot buy it
+PASS close contact reserves an affordable offer
+PASS coinShop remains open after the first purchase
+PASS close contact reserves an affordable offer
+PASS coinShop allows a second purchase without ending the shop
+PASS coinShop spends only its own currency
+PASS multiplier decay stays frozen while shopping
+PASS close contact reserves an affordable offer
+PASS close contact reserves an affordable offer
+PASS buying every shop item still requires the explicit bottom exit
+PASS shop continues only after holding the bottom skip zone
+PASS shop exit resumes the run exactly once
+PASS multiplierShop offers three or four items
+PASS passing far from an offer cannot buy it
+PASS close contact reserves an affordable offer
+PASS multiplierShop remains open after the first purchase
+PASS close contact reserves an affordable offer
+PASS multiplierShop allows a second purchase without ending the shop
+PASS multiplierShop spends only its own currency
+PASS multiplier decay stays frozen while shopping
+PASS shop continues only after holding the bottom skip zone
+PASS shop exit resumes the run exactly once
+PASS a high score cannot pay for a coin shop
+PASS encounter draw 0 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 1 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 2 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 3 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 4 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 5 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 6 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 7 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 8 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 9 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 10 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 11 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 12 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 13 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 14 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 15 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 16 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 17 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 18 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 19 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 20 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 21 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 22 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 23 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 24 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 25 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 26 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 27 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 28 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 29 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 30 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 31 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 32 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 33 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 34 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 35 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 36 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 37 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 38 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 39 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 40 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 41 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 42 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 43 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 44 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 45 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 46 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 47 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 48 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 49 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 50 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 51 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 52 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 53 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 54 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 55 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 56 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 57 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 58 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 59 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 60 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 61 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 62 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 63 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 64 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 65 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 66 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 67 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 68 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 69 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 70 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 71 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 72 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 73 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 74 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 75 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 76 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 77 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 78 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS encounter draw 79 has two distinct choices
+PASS challenge excluded when three waves are unavailable
+PASS all five encounter types are reachable
+PASS two encounter forks preserve sustained opening combat
+PASS wave fork clears hazards and freezes combat before steering
+PASS holding a side commits the same spatial selection as district routing
+PASS health route gives exactly one health pickup and resumes combat
+PASS item route opens a free item choice
+PASS close contact reserves an affordable offer
+PASS one free reward closes its item choice
+PASS challenge starts with exactly three waves remaining
+PASS challenge wave 1 spawns faster, stronger enemies
+PASS challenge enemy health increases without changing global run stats
+PASS challenge counts down once for completed wave 1
+PASS challenge wave 2 spawns faster, stronger enemies
+PASS challenge enemy health increases without changing global run stats
+PASS challenge counts down once for completed wave 2
+PASS challenge wave 3 spawns faster, stronger enemies
+PASS challenge enemy health increases without changing global run stats
+PASS challenge counts down once for completed wave 3
+PASS clearing the third challenge wave opens its free item reward before later combat
+PASS close contact reserves an affordable offer
+PASS the challenge item is collected before normal combat resumes
+PASS normal difficulty returns after the three-wave challenge
+PASS City duo reduced to 1000 and 1400 base health with run scaling
+PASS district progression preserves the coin wallet
+PASS new runs reset coins and score independently

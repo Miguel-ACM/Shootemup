@@ -52,6 +52,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Improve the Plains riverbanks with natural shoreline shapes and coherent grass, gravel, reeds and stones. Keep the scrolling water and banks attached across section seams, and keep the road clear.
 - Thunder: beams and quick aimed fire; a slim boss with side-emitting lasers, then 6–8 alternating sweeping beams plus a barrage in phase two.
 - City: busy formations of small fast enemies. The boss is a fast/heavy duo with separate health summed in one bar and tracking attacks. The first death drops nothing; the survivor becomes aggressive and heals half its missing health.
+- Latest City feedback: lower duo health; base health is now 1000 for the fast ship and 1400 for the heavy ship, with the survivor rules preserved.
 - Tunnel: bouncing projectiles. The boss is a rapidly spinning saw that travels like a DVD logo across the full visible arena, including its corners. **It fires dense mixed-size bursts only when it bounces, never when hit or on a timer, and has no thrusters.** It speeds up as damaged; phase two pauses to deploy two smaller, sturdy, destroyable saws with the same bounce behavior.
 - The latest explicit feedback supersedes earlier ideas (in particular the saw's original on-hit emission).
 - Desert: dunes, small silos and compact gray buildings; buried enemies emerge and fire rings, interceptors fire tightly spaced aimed bursts, and small articulated sandworms shoot from multiple body ports. Its boss is a giant white mechanical sandworm with red weakpoints along its body and a larger red head weakpoint. Every part must be destroyed to win.
@@ -66,8 +67,10 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 - Broad weapon and active variety, burn damage, shots bouncing between enemies, and surprising combinations.
 - No item at the start of a level. Free rewards normally offer two choices; luck can rarely increase that to three or four.
-- Two distinct shops: one accepts only score, the other only multiplier. Freeze multiplier during decisions.
+- Coins now add to a separate run wallet, one per pickup. They do not add score or scale with multiplier. Keep score as the combat scoring system and preserve coins across districts; reset the wallet on a new run.
+- Two distinct shops: one accepts only coins, the other only multiplier. Freeze multiplier during decisions. Allow multiple purchases from the displayed stock, and keep shops open even when sold out until the player explicitly skips at the bottom.
 - Shops offer three or four items, can include a large health kit when health is low, and can be skipped by staying at the very bottom.
+- During the run, use the same spatial steering selection as district routing to offer two distinct encounters from SHOP, MULT SHOP, ITEM, HEALTH and CHALLENGE. Keep choices at authored wave breaks after sustained combat. HEALTH gives one health pickup; ITEM is a free item choice. CHALLENGE makes the next three waves harder, then awards an item before normal combat resumes. Do not offer a challenge without three remaining combat waves.
 - Require close contact to collect decision items so passing nearby cannot cause accidental purchases or replacements.
 - Make rarity effects noticeable and distinct.
 - Shop names and prices need opaque black backgrounds and must stay readable with the filter. The bottom skip zone must be reachable at the visible screen edge, with a minimal hold indicator.
