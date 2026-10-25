@@ -25,7 +25,8 @@ public sealed class HullAfflictionVfx
             var offset=Random.insideUnitCircle*radius;
             var e=new ParticleSystem.EmitParams();
             e.position=enemy.transform.position+new Vector3(offset.x,offset.y,-2);
-            e.startColor=poison ? new Color(.22f,.88f,.18f,.8f) : Color.Lerp(new Color(.85f,.08f,.02f),new Color(1,.55f,.08f),Random.value);
+            var toxic=PlayerShotPalette.Poison;toxic.a=.8f;
+            e.startColor=poison ? toxic : Color.Lerp(new Color(.85f,.08f,.02f),new Color(1,.55f,.08f),Random.value);
             e.startSize3D=poison ? Vector3.one*Random.Range(.08f,.15f) : new Vector3(.08f,.23f,.08f);
             e.velocity=new Vector3(Random.Range(-.15f,.15f),poison ? .35f : .9f,0);e.startLifetime=poison ? .65f : .38f;
             particles.Emit(e,1);

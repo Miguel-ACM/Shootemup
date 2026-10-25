@@ -21,6 +21,7 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
         if(effect.properties==null)effect.properties=new MaterialPropertyBlock();effect.properties.SetColor("_SpriteTint",tint);
         effect.properties.SetFloat("_Neutralize",neutralize ? 1 : 0);
         effect.properties.SetFloat("_Emission",1.15f);
+        effect.properties.SetColor("_PoisonTint",PlayerShotPalette.Poison);
         effect.lastBurn=effect.lastPoison=-1;effect.enabled=friendly;
         if(friendly){effect.SetCoatings(0,0);effect.LateUpdate();}
         else effect.SetHostile();

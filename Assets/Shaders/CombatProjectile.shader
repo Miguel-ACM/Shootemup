@@ -9,6 +9,7 @@ Shader "Shootemup/Combat Projectile"
         _Neutralize ("Legacy grayscale",Float)=0
         _Burn ("Burn coating",Float)=0
         _Poison ("Poison coating",Float)=0
+        _PoisonTint ("Poison jade",Color)=(.42,.70,.58,1)
         _Gloss ("Enamel highlights",Range(0,1))=.7
         _Emission ("Colored radiance",Range(0,4))=2.6
     }
@@ -30,6 +31,7 @@ Shader "Shootemup/Combat Projectile"
             CBUFFER_START(UnityPerMaterial)
                 float4 _Color;
                 float4 _SpriteTint;
+                float4 _PoisonTint;
                 float _Neutralize,_Burn,_Poison,_Gloss,_Emission;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION;float2 uv:TEXCOORD0;float4 color:COLOR; };
@@ -50,7 +52,7 @@ Shader "Shootemup/Combat Projectile"
                 color.rgb=lerp(color.rgb,half3(1,.15,.07)*brightness,_Burn);
                 // UVs stay local to the artwork when Unity batches sprite vertices in world space.
                 float toxic=_Poison*(1-_Burn*step(.5,v.uv.y));
-                color.rgb=lerp(color.rgb,half3(.22,1,.2)*brightness,toxic);
+                color.rgb=lerp(color.rgb,_PoisonTint.rgb*brightness,toxic);
                 half3 radiance=color.rgb;
                 float facet=saturate(1-abs(dot(v.uv,float2(.85,.45))-.49)*11);
                 float2 light=(v.uv-float2(.34,.69))*float2(5,4.5);
