@@ -31,6 +31,10 @@ public class WaveOrchestrer : MonoBehaviour
     int currShowing = -1;
     bool choosingRoute;
     LevelChoice routeChoice;
+    int challengeWavesRemaining;
+    bool challengeWave;
+    public int ChallengeWavesRemaining=>challengeWavesRemaining;
+    public EncounterKind[] EncounterOptions {get;private set;}
     public const float OpeningBreather = .8f;
     bool openingWavePending;
     float openingStartsAt;
@@ -71,13 +75,14 @@ public class WaveOrchestrer : MonoBehaviour
                 var type=DistrictWaves.EnemyType(currentUnit.enemy);
                 GameObject enemy=type!=null ? DistrictEnemy.Spawn(type,pos).gameObject : Instantiate(currentUnit.GetUnit(),pos,Quaternion.identity);
                 if(type!=null)enemy.GetComponent<DistrictEnemy>().FlyPhrase(currentUnit);
+                if(challengeWave && type!=null)enemy.GetComponent<DistrictEnemy>().MakeChallenging();
                 enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
                 currentUnit = currentWave.getNext();
             }
             // Consecutive phrases overlap their exits: old bullets are part of the rhythm.
             // Decisions and bosses wait for enemies to finish, then explicitly clear hazards.
             string next=currentWaveNumber<waves.Length ? waves[currentWaveNumber] : "";
-            bool nextCombat=int.TryParse(next,out _) || next=="miniboss";
+            bool nextCombat=(int.TryParse(next,out _) || next=="miniboss") && !(challengeWave && challengeWavesRemaining==1);
             bool empty=currentUnit==null && AEnemy.Live.Count==0;
             clearTime=empty ? clearTime+Time.deltaTime : 0;
             bool phraseComplete=currentUnit==null && waveTime>=currentWave.duration && AEnemy.Live.Count<22;
@@ -90,10 +95,25 @@ public class WaveOrchestrer : MonoBehaviour
                     stopingWave = false;
                 } else
                 {
-                    GenerateWave();
+                    FinishCombatWave();
                 }
             }
         }
+    }
+    void FinishCombatWave()
+    {
+        isWaveComingOut=false;
+        if(challengeWave)
+        {
+            challengeWave=false;challengeWavesRemaining--;
+            if(challengeWavesRemaining==0)
+            {
+                // The third wave must be cleared, then pay out before any later combat starts.
+                if(currentWaveNumber<waves.Length && waves[currentWaveNumber]=="encounterChoice")currentWaveNumber++;
+                EraseAllBullets();isShopUp=true;OpenDecision("reward");return;
+            }
+        }
+        GenerateWave();
     }
 
     public void BeginWaves()
@@ -119,13 +139,18 @@ public class WaveOrchestrer : MonoBehaviour
 
     void GenerateWave()
     {
+        if(GameOverState.Active)return;
         if (currentWaveNumber >= waves.Length)
         {
             isWaveComingOut = false;
             return;
         }
         string currWaveType = waves[currentWaveNumber];
-        if (currWaveType == "scoreShop" || currWaveType == "multiplierShop" || currWaveType == "reward")
+        if(currWaveType=="encounterChoice")
+        {
+            EraseAllBullets();isWaveComingOut=false;isShopUp=true;OpenEncounterChoice();
+        }
+        else if (currWaveType == "coinShop" || currWaveType == "scoreShop" || currWaveType == "multiplierShop" || currWaveType == "reward")
         {
             EraseAllBullets();
             isWaveComingOut = false;
@@ -147,7 +172,9 @@ public class WaveOrchestrer : MonoBehaviour
         else
         {
             isWaveComingOut = true;
-            currentWave = wavePool.getWave(currWaveType);
+            challengeWave=challengeWavesRemaining>0;
+            string planned=challengeWave && int.TryParse(currWaveType,out int budget) ? Mathf.Min(20,budget+3).ToString() : currWaveType;
+            currentWave = wavePool.getWave(planned);
             currentWaveEnemies = currentWave.units.Count;
             currentWaveKilledEnemies = 0;
             waveTime = 0;
@@ -162,6 +189,28 @@ public class WaveOrchestrer : MonoBehaviour
     }
 
     DecisionShop decision;
+    void OpenEncounterChoice()
+    {
+        int remaining=0;
+        for(int i=currentWaveNumber+1;i<waves.Length;i++)if(int.TryParse(waves[i],out _) || waves[i]=="miniboss")remaining++;
+        EncounterOptions=EncounterChoice.Draw(unchecked(LevelRun.Seed+LevelRun.Stage*971+currentWaveNumber*7919),remaining>=3 && challengeWavesRemaining==0);
+        CombatDecision.Begin();ship.GetComponent<ShipLoadout>().ResetSelection();
+        foreach(var weapon in ship.GetComponentsInChildren<AWeapon>())weapon.StopFiring();
+        routeChoice=LevelChoice.OpenEncounter(ship.transform,Array.ConvertAll(EncounterOptions,EncounterChoice.Label),Array.ConvertAll(EncounterOptions,EncounterChoice.Accent),index=>ResolveEncounter(EncounterOptions[index]));
+    }
+    void ResolveEncounter(EncounterKind kind)
+    {
+        if(GameOverState.Active)return;
+        if(routeChoice!=null)Destroy(routeChoice.gameObject);routeChoice=null;EncounterOptions=null;
+        if(kind==EncounterKind.Shop || kind==EncounterKind.MultShop || kind==EncounterKind.Item)
+        {
+            OpenDecision(kind==EncounterKind.Shop ? "coinShop" : kind==EncounterKind.MultShop ? "multiplierShop" : "reward");return;
+        }
+        CombatDecision.End();isShopUp=false;
+        if(kind==EncounterKind.Challenge)challengeWavesRemaining=3;
+        else Instantiate(Resources.Load<GameObject>("Pickables/life"),ship.transform.position+Vector3.up*2.4f,Quaternion.identity);
+        Invoke(nameof(GenerateWave),ClearBreather);
+    }
     void OpenDecision(string kind)
     {
         foreach(var enemy in new List<AEnemy>(AEnemy.Live))if(enemy!=null)Destroy(enemy.gameObject);
@@ -171,10 +220,11 @@ public class WaveOrchestrer : MonoBehaviour
 
     private void EraseAllBullets()
     {
+        CombatRound.ClearAll();
         GameObject[] bullets = GameObject.FindGameObjectsWithTag("EnemyBullet");
         foreach (GameObject i in bullets)
         {
-            i.GetComponent<AEnemyBullet>().OnTrigger();
+            var bullet=i.GetComponent<AEnemyBullet>();if(bullet!=null)Destroy(i);
         }
     }
 
@@ -231,6 +281,7 @@ public class WaveOrchestrer : MonoBehaviour
             foreach(var item in items)if(item!=null)Destroy(item);
             items.Clear();claimedItem=null;isShopUp=false;currShowing=-1;dialog.Hide();
             currentWaveNumber=0;currentWaveEnemies=0;currentWaveKilledEnemies=0;
+            challengeWavesRemaining=0;challengeWave=false;EncounterOptions=null;
             waveTime=clearTime=0;currentUnit=null;currentWave=null;stopingWave=false;
             choosingRoute=false;CombatDecision.End();
             waves=DistrictWaves.Sequence();

@@ -11,6 +11,13 @@ public abstract class DistrictEnemy : AEnemy
     public int hull;
     [Min(.1f)] public float shellTravelDistance=3.8f;
     protected float attackInterval=2;
+    public bool Challenged {get;private set;}
+    public void MakeChallenging()
+    {
+        if(Challenged)return;
+        Challenged=true;health*=1.2f;attackInterval*=.9f;
+        if(movement!=null)movement.TempoMultiplier=1.15f;
+    }
     public Transform Hull {get;private set;}
     protected abstract void Configure();
     protected abstract void Attack();
@@ -44,20 +51,20 @@ public abstract class DistrictEnemy : AEnemy
         var flight=gameObject.AddComponent<FormationFlight>();flight.phrase=unit.phrase;flight.side=unit.side;flight.lane=unit.lane;
         flight.duration=unit.flightDuration;flight.fireEvery=unit.fireEvery;flight.curve=unit.curve;
         flight.syncFire=unit.syncFire;flight.firePhase=unit.firePhase;
-        flight.fireTimes=unit.fireTimes;flight.formationDepth=unit.formationDepth;flight.fixedDepth=unit.fixedDepth;movement=flight;
+        flight.fireTimes=unit.fireTimes;flight.formationDepth=unit.formationDepth;flight.fixedDepth=unit.fixedDepth;flight.TempoMultiplier=Challenged ? 1.15f : 1;movement=flight;
         var p=flight.PositionAt(0);
         transform.position=new Vector3(p.x*Camera.RightLimit,Mathf.LerpUnclamped(Camera.DownLimit,Camera.UpLimit,p.y),transform.position.z);
     }
     public void Escort(Transform leader)
     {
         if(movement!=null){movement.enabled=false;Destroy(movement);}
-        var escort=gameObject.AddComponent<EscortOrbit>();escort.SetAnchor(leader);movement=escort;
+        var escort=gameObject.AddComponent<EscortOrbit>();escort.SetAnchor(leader);escort.TempoMultiplier=Challenged ? 1.15f : 1;movement=escort;
     }
-    protected T Mover<T>() where T:PatternMover { var m=gameObject.AddComponent<T>();movement=m;return m; }
+    protected T Mover<T>() where T:PatternMover { var m=gameObject.AddComponent<T>();m.TempoMultiplier=Challenged ? 1.15f : 1;movement=m;return m; }
     internal void UseMovement(PatternMover next)
     {
         if(movement!=null && movement!=next){movement.enabled=false;Destroy(movement);}
-        movement=next;
+        next.TempoMultiplier=Challenged ? 1.15f : 1;movement=next;
     }
     protected virtual void Update()
     {
@@ -76,7 +83,7 @@ public abstract class DistrictEnemy : AEnemy
     protected Vector2 Aim => movement!=null && movement.LockedAim.HasValue ? ((Vector2)(movement.LockedAim.Value-transform.position)).normalized : CombatVisuals.Aim(transform.position);
     protected T Fire<T>(Vector3 position,Vector2 direction,float velocity,float radius) where T:CombatRound
     {
-        var shot=CombatRound.Launch<T>(position,direction,velocity,radius);
+        var shot=CombatRound.Launch<T>(position,direction,velocity*(Challenged ? 1.15f : 1),radius);
         if(shot is BurstShell shell)shell.SetTravelDistance(shellTravelDistance);
         return shot;
     }

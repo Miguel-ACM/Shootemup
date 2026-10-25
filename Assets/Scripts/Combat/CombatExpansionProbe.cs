@@ -158,8 +158,8 @@ public sealed class CombatExpansionProbe : MonoBehaviour
         keyboard=InputSystem.AddDevice<Keyboard>();
         if(FlowOnly){yield return RealWaveFlow();yield break;}
         yield return ModelSheet();
-        Check(DistrictWaves.Sequence().Count(x=>x.EndsWith("Shop"))==1,"one shop interrupts each district");
-        Check(Array.IndexOf(DistrictWaves.Sequence(),"reward")>=6,"six combat phrases precede the first reward");
+        Check(DistrictWaves.Sequence().Count(x=>x=="encounterChoice")==2,"two spatial encounter decisions per district");
+        Check(Array.IndexOf(DistrictWaves.Sequence(),"encounterChoice")==3,"three uninterrupted combat phrases precede the first encounter fork");
         var visibleShot=PlayerRound.Spawn(new Vector3(0,0),Vector2.up,1,0);
         yield return null;
         Check(visibleShot.GetComponent<SpriteRenderer>().bounds.size.x>=.18f,"base player fire has a visible world-space width");

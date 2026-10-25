@@ -8,6 +8,8 @@ public sealed class IndustrialHUD : MonoBehaviour
     public bool showcase;
     Shipcontroller player;
     Text score,chain,coins;
+    WaveOrchestrer waves;
+    Image[] challengeCells;
     Image[] healthCells,manaCells,chainCells,bossCells;
     RectTransform bossPanel;
     RectTransform scorePanel;
@@ -25,6 +27,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     void Start()
     {
         player=GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
+        waves=FindAnyObjectByType<WaveOrchestrer>();
         // The legacy side-cover script accumulates offsets when the Game view resizes.
         foreach(var cover in FindObjectsByType<SideCoverController>())cover.enabled=false;
         var legacyUI=GameObject.Find("UI");
@@ -56,6 +59,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         Place(Panel(scorePanel,"Coin shoulders",Amber),15,59,8,12);
         Place(Panel(scorePanel,"Coin stamp",Dark),18,62,2,6);
         coins=TextAt(scorePanel,"0",32,57,12,Amber);coins.rectTransform.sizeDelta=new Vector2(48,20);
+        challengeCells=Cells(scorePanel,84,64,3,9,new Color(.76f,.48f,.95f));
         sidePanel=Panel(frame.transform,"Side instruments",Dark);
         sideGroup=FluorescentStartup.Attach(sidePanel.gameObject);
         sidePanel.anchorMin=sidePanel.anchorMax=Vector2.zero;
@@ -116,6 +120,8 @@ public sealed class IndustrialHUD : MonoBehaviour
         if(player==null || Time.unscaledTime<nextUpdate)return;nextUpdate=Time.unscaledTime+.1f;
         score.text=Score.CurrentScore.ToString("000000000");chain.text="x"+Score.CurrentMultiplier;
         coins.text=RunCoins.Count.ToString();
+        int challenge=waves!=null ? waves.ChallengeWavesRemaining : 0;
+        for(int i=0;i<challengeCells.Length;i++)challengeCells[i].gameObject.SetActive(i<challenge);
         Fill(chainCells,Score.GetPercentageNextMultiplier(),Amber);
         if(Time.unscaledTime>nextScan)
         {
