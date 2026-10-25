@@ -39,6 +39,14 @@ public sealed class PSXValleyLayout
     public float Centre(float y)=>1.3f*Mathf.Sin(y*Mathf.PI*4/Period+phase)+.44f*Mathf.Sin(y*Mathf.PI*6/Period+phase2);
     public float HalfWidth(float y)=>1.42f+.31f*Mathf.Sin(y*Mathf.PI*4/Period+phase2)+.13f*Mathf.Sin(y*Mathf.PI*10/Period+phase);
     public float BankWidth(float y,int side)=>.30f+.17f*(1+Mathf.Sin(y*Mathf.PI*8/Period+side+phase2));
+    // Small erosion scallops share the landscape's period, including the recycled end section.
+    public float ShoreX(float y,int side)
+    {
+        float pocket=.5f+.5f*Mathf.Sin(y*Mathf.PI*8/Period+phase2+side*1.9f);
+        float erosion=.11f*Mathf.Sin(y*Mathf.PI*16/Period+phase2+side*1.7f)+
+            .045f*Mathf.Sin(y*Mathf.PI*38/Period+phase+side*.8f)-.27f*Mathf.Pow(pocket,4);
+        return Centre(y)+side*(HalfWidth(y)+erosion);
+    }
     public static float Wrap(float y)=>Mathf.Repeat(y+24,Period)-24;
     public static float DistanceY(float a,float b)=>Mathf.Abs(Mathf.Repeat(a-b+Period/2,Period)-Period/2);
     public bool Clear(float x,float y,float radius)

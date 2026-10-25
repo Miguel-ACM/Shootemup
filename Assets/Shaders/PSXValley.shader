@@ -44,7 +44,16 @@ Shader "Shootemup/PSX Valley"
                 p.y=p.y-floor(p.y/1152)*1152;
                 float grain=frac(sin(dot(p,float2(12.9898,78.233)))*43758.5453);
                 float3 c=i.color.rgb*(.985+grain*.03);
-                if(i.meadow>.5)
+                if(i.meadow>1.5)
+                {
+                    // Fine, world-locked gravel flecks on the sloped shore shelves.
+                    float stone=Hash(floor(i.uv*24),2304);
+                    float damp=Noise(floor(i.uv*24)/12,192);
+                    c*=.94+.10*damp;
+                    c+=float3(.035,.033,.024)*step(.91,stone);
+                    c-=float3(.020,.024,.017)*step(stone,.09);
+                }
+                else if(i.meadow>.5)
                 {
                     // World-locked patches of short grass, with a few exposed earth flecks.
                     // Each octave repeats exactly over the 96-unit scrolling landscape.

@@ -16,9 +16,9 @@ public static class PSXValleyGeometry
     {
         var b=new Builder(origin,brightness);
         // Geometry at each section boundary uses identical world-space samples.
-        for(float y=0;y<length-.01f;y+=.75f)
+        for(float y=0;y<length-.01f;y+=.5f)
         {
-            float next=Mathf.Min(length,y+.75f),a=origin+y,c=origin+next;
+            float next=Mathf.Min(length,y+.5f),a=origin+y,c=origin+next;
             float l0=layout.Centre(a)-layout.HalfWidth(a),l1=layout.Centre(c)-layout.HalfWidth(c);
             float r0=layout.Centre(a)+layout.HalfWidth(a),r1=layout.Centre(c)+layout.HalfWidth(c);
             Color grass=Grass*(.98f+.025f*Mathf.Sin(a*Mathf.PI*2/Period));grass.a=1;
@@ -26,12 +26,9 @@ public static class PSXValleyGeometry
             b.Strip(-Width,-Width,l0-layout.BankWidth(a,-1),l1-layout.BankWidth(c,-1),y,next,0,grass);
             b.Strip(r0+layout.BankWidth(a,1),r1+layout.BankWidth(c,1),Width,Width,y,next,0,grass);
             b.Meadow=false;
-            // Eroded shoulders and darker steep bank faces give the river a visible bed.
-            b.Strip(l0-layout.BankWidth(a,-1),l1-layout.BankWidth(c,-1),l0,l1,y,next,-.03f,Bank);
-            b.Strip(r0,r1,r0+layout.BankWidth(a,1),r1+layout.BankWidth(c,1),y,next,-.03f,Bank*.91f);
-            b.Strip(l0,l1,l0+.12f,l1+.12f,y,next,-.04f,new Color(.15f,.235f,.215f));
-            b.Strip(r0-.12f,r1-.12f,r0,r1,y,next,-.04f,new Color(.18f,.265f,.24f));
-            b.Strip(l0+.12f,l1+.12f,r0-.12f,r1-.12f,y,next,.02f,Water);
+            // Sculpted turf lips descend into broken gravel shelves and a dark wet toe.
+            b.RiverBank(layout,y,next,-1);b.RiverBank(layout,y,next,1);
+            b.Strip(layout.ShoreX(a,-1),layout.ShoreX(c,-1),layout.ShoreX(a,1),layout.ShoreX(c,1),y,next,.02f,Water);
             // A narrow road follows the west bank. Long shoulders read clearly at a small scale.
             b.Strip(l0-1.65f,l1-1.65f,l0-.65f,l1-.65f,y,next,-.08f,Bank*.89f);
             b.Strip(l0-1.5f,l1-1.5f,l0-.8f,l1-.8f,y,next,-.10f,Asphalt);
@@ -39,6 +36,36 @@ public static class PSXValleyGeometry
                 b.Strip(l0-1.17f,l1-1.17f,l0-1.13f,l1-1.13f,y,next,-.11f,new Color(.43f,.46f,.37f));
         }
         var rng=new System.Random(unchecked(seed*397+(int)origin));
+        var shoreRng=new System.Random(unchecked(seed*1187+(int)origin));
+        for(int cluster=0;cluster<24;cluster++)
+        {
+            float y=Range(shoreRng,.65f,length-.65f),worldY=origin+y;int side=cluster%2==0 ? -1 : 1;
+            if(PSXValleyLayout.DistanceY(worldY,layout.BridgeY)<1.4f || PSXValleyLayout.DistanceY(worldY,layout.LookoutY)<1.5f)continue;
+            float shore=layout.ShoreX(worldY,side),outer=layout.Centre(worldY)+side*(layout.HalfWidth(worldY)+layout.BankWidth(worldY,side));
+            float x=Mathf.Lerp(shore,outer,Range(shoreRng,.34f,.70f));
+            if(cluster%3==0)
+            {
+                // Pebbles form little bars, rather than an evenly spaced necklace.
+                int stones=shoreRng.Next(3,6);
+                for(int stone=0;stone<stones;stone++)
+                {
+                    float sy=y+Range(shoreRng,-.26f,.26f),wy=origin+sy;
+                    float sx=Mathf.Lerp(layout.ShoreX(wy,side),layout.Centre(wy)+side*(layout.HalfWidth(wy)+layout.BankWidth(wy,side)),Range(shoreRng,.24f,.64f));
+                    b.ShoreStone(sx,sy,Range(shoreRng,.075f,.17f),shoreRng);
+                }
+            }
+            else
+            {
+                int stems=shoreRng.Next(2,5);
+                for(int stem=0;stem<stems;stem++)
+                {
+                    float sy=y+Range(shoreRng,-.30f,.30f),wy=origin+sy;
+                    float sx=layout.ShoreX(wy,side)+side*Range(shoreRng,.13f,.28f);
+                    b.Reeds(sx,sy,Range(shoreRng,.24f,.43f),side,shoreRng);
+                }
+                if(cluster%4==1)b.GrassTuft(x,y,Range(shoreRng,.14f,.22f),shoreRng);
+            }
+        }
         // Broad changes in turf colour sit underneath the finer blade texture.
         b.Meadow=true;
         for(int i=0;i<16;i++)
@@ -95,6 +122,7 @@ public static class PSXValleyGeometry
         readonly List<Vector2> uv=new List<Vector2>();
         readonly List<Vector2> surfaces=new List<Vector2>();
         public bool Meadow;
+        bool shoreSurface;
         readonly float origin;
         readonly float brightness;
         public Builder(float origin,float brightness){this.origin=origin;this.brightness=brightness;}
@@ -103,13 +131,65 @@ public static class PSXValleyGeometry
             int start=vertices.Count;
             var normal=Vector3.Cross(points[1]-points[0],points[2]-points[0]).normalized;
             if(normal.z>0)normal=-normal;
-            foreach(var p in points){vertices.Add(p);normals.Add(normal);colors.Add(color*brightness);uv.Add(new Vector2(p.x,p.y+origin));surfaces.Add(new Vector2(Meadow ? 1 : 0,0));}
+            foreach(var p in points){vertices.Add(p);normals.Add(normal);colors.Add(color*brightness);uv.Add(new Vector2(p.x,p.y+origin));surfaces.Add(new Vector2(shoreSurface ? 2 : Meadow ? 1 : 0,0));}
             for(int i=1;i<points.Length-1;i++){triangles.Add(start);triangles.Add(start+i);triangles.Add(start+i+1);}
         }
         public void Strip(float left0,float left1,float right0,float right1,float y0,float y1,float z,Color color)
         {Face(color,new Vector3(left0,y0,z),new Vector3(left1,y1,z),new Vector3(right1,y1,z),new Vector3(right0,y0,z));}
         public void Rect(float x,float y,float w,float h,float z,Color color)
         {Strip(x-w/2,x-w/2,x+w/2,x+w/2,y-h/2,y+h/2,z,color);}
+        public void RiverBank(PSXValleyLayout layout,float y0,float y1,int side)
+        {
+            Vector3[] Profile(float y)
+            {
+                float wy=origin+y,shore=layout.ShoreX(wy,side);
+                float outer=layout.Centre(wy)+side*(layout.HalfWidth(wy)+layout.BankWidth(wy,side));
+                float fringe=.61f+.17f*Mathf.Sin(wy*Mathf.PI/3+side);
+                return new[]{new Vector3(outer,y,0),new Vector3(Mathf.Lerp(shore,outer,fringe),y,-.065f),
+                    new Vector3(Mathf.Lerp(shore,outer,fringe*.56f),y,-.035f),new Vector3(Mathf.Lerp(shore,outer,.10f),y,-.005f),new Vector3(shore,y,.012f)};
+            }
+            var a=Profile(y0);var b=Profile(y1);float station=origin+(y0+y1)*.5f;
+            float patch=.5f+.5f*Mathf.Sin(station*Mathf.PI/6+side*1.8f);
+            var shades=new[]{Color.Lerp(Grass,new Color(.35f,.425f,.24f),patch*.35f),
+                Color.Lerp(new Color(.30f,.38f,.215f),new Color(.43f,.425f,.315f),patch),
+                Color.Lerp(new Color(.33f,.38f,.255f),new Color(.49f,.47f,.355f),patch),new Color(.205f,.29f,.235f)};
+            shoreSurface=true;
+            for(int i=0;i<4;i++)
+            {
+                if(i==0){Meadow=true;shoreSurface=false;}else{Meadow=false;shoreSurface=true;}
+                Face(shades[i],a[i],b[i],b[i+1]);
+                Face(shades[i]*(i==1 ? .96f : 1.015f),a[i],b[i+1],a[i+1]);
+            }
+            Meadow=false;shoreSurface=false;
+        }
+        public void ShoreStone(float x,float y,float radius,System.Random rng)
+        {
+            // Flattened stones sit inside the gravel, with a small attached contact shadow.
+            Patch(x+.035f,y-.025f,radius*1.10f,radius*.65f,-.045f,new Color(.23f,.29f,.235f),rng);
+            var ring=new Vector3[6];
+            for(int i=0;i<6;i++)
+            {
+                float angle=i*Mathf.PI/3,r=radius*Range(rng,.82f,1.14f);
+                ring[i]=new Vector3(x+Mathf.Cos(angle)*r,y+Mathf.Sin(angle)*r*.76f,-.055f);
+            }
+            var top=new Vector3(x-radius*.18f,y+radius*.15f,-.055f-radius*.60f);
+            var color=Color.Lerp(new Color(.36f,.40f,.335f),new Color(.52f,.51f,.40f),Range(rng,0,1));
+            for(int i=0;i<6;i++)Face(color*(i<3 ? 1 : .88f),ring[i],ring[(i+1)%6],top);
+        }
+        public void Reeds(float x,float y,float size,int side,System.Random rng)
+        {
+            Patch(x,y,size*.37f,size*.28f,-.04f,new Color(.265f,.35f,.19f),rng);
+            for(int reed=0;reed<7;reed++)
+            {
+                float bx=x+Range(rng,-.07f,.07f),by=y+Range(rng,-.06f,.06f),height=size*Range(rng,.65f,1.2f);
+                float fan=(reed-3)*.18f;
+                var root=new Vector3(bx,by,-.045f);var tip=new Vector3(bx+height*(fan-side*.22f),by+height*(.55f-Mathf.Abs(fan)*.15f),-.045f-height);
+                var bend=Vector3.Lerp(root,tip,.63f)+Vector3.right*(side*.03f);
+                Color leaf=Color.Lerp(new Color(.23f,.35f,.17f),new Color(.46f,.52f,.275f),Range(rng,.1f,.85f));
+                Face(leaf,root+Vector3.left*.024f,bend,tip,root+Vector3.right*.024f);
+                if(reed==1 || reed==4)Beam(tip-Vector3.forward*.015f,tip+new Vector3(0,.035f,-.045f),.022f,new Color(.39f,.325f,.19f));
+            }
+        }
         public void Patch(float x,float y,float rx,float ry,float z,Color color,System.Random rng)
         {
             var centre=new Vector3(x,y,z);
