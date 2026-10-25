@@ -1,0 +1,39 @@
+PASS
+PASS Actual gameplay world renders HDR radiance
+PASS Fields phase 1: firing choreography, peak 121 / 280
+PASS Fields: bullets remain sprites
+PASS Fields phase 2: firing choreography, peak 192 / 280
+PASS Fields: bullets remain sprites
+PASS Tunnel phase 1: firing choreography, peak 61 / 280
+PASS Tunnel: bullets remain sprites
+PASS Tunnel phase 2: firing choreography, peak 278 / 280
+PASS Tunnel: bullets remain sprites
+PASS Snow phase 1: firing choreography, peak 250 / 280
+PASS Snow: bullets remain sprites
+PASS Snow phase 2: firing choreography, peak 280 / 280
+PASS Snow: bullets remain sprites
+PASS Thunder phase 1: firing choreography, peak 16 / 280
+PASS Thunder: bullets remain sprites
+PASS Thunder phase 2: firing choreography, peak 54 / 280
+PASS Thunder: bullets remain sprites
+PASS City phase 1: firing choreography, peak 173 / 280
+PASS City: bullets remain sprites
+PASS City phase 2: firing choreography, peak 265 / 280
+PASS City: bullets remain sprites
+PASS Desert phase 1: firing choreography, peak 25 / 280
+PASS Desert: bullets remain sprites
+PASS Desert phase 2: firing choreography, peak 32 / 280
+PASS Desert: bullets remain sprites
+PASS Candyland phase 1: firing choreography, peak 41 / 280
+PASS Candyland: bullets remain sprites
+PASS Candyland phase 2: firing choreography, peak 50 / 280
+PASS Candyland: bullets remain sprites
+PASS Space phase 1: firing choreography, peak 13 / 280
+PASS Space: bullets remain sprites
+PASS Space phase 2: firing choreography, peak 41 / 280
+PASS Space: bullets remain sprites
+PASS Dense field preserves the 280-round cap
+PASS Every round shares one half-resolution glow field
+PASS Hostile rounds retain shared materials and no per-round property updates
+PASS Glow remains enabled when the pixel filter is disabled
+PASS Filter and glow resize cleanly

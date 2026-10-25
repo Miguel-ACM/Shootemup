@@ -1,0 +1,4 @@
+PASS
+108 original sprite renders, eight district palettes plus player.
+Single projectile pass; original sprite silhouette.
+HDR radiance extracted at half resolution with two shared blur passes.
