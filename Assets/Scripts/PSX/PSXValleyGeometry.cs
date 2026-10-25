@@ -113,7 +113,7 @@ public static class PSXValleyGeometry
         }
         public void Tree(float x,float y,float radius,System.Random rng)
         {
-            Patch(x+.20f,y-.22f,radius*1.10f,radius*.78f,-.12f,Shadow,rng);
+            Patch(x+.20f,y-.22f,radius*1.10f,radius*.78f,-.12f,Color.Lerp(Grass,Shadow,.48f),rng);
             var root=new Vector3(x,y,-.16f);var fork=new Vector3(x-.06f,y+.19f,-.72f);
             Beam(root,fork,radius*.18f,new Color(.27f,.265f,.17f));
             for(int branch=0;branch<3;branch++)
