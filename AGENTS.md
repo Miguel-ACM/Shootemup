@@ -10,6 +10,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Do not fill combat or equipment selection with explanatory text. Show only information that helps an immediate decision.
 - Keep equipment outside combat: compact stylized weapon octagons at bottom left/right, with smaller active octagons touching the upper outer corner of each weapon octagon.
 - Keep score, multiplier (including its progress indicator), and enemy/boss health outside the main combat area too. Use the side margins without overlapping equipment or the collected-item column.
+- Keep every health/energy and boss meter row inside its casing, with bottom padding and clipping. At 25% health or lower, blink the health/energy instrument's border red; stop the warning after healing and preserve the separate startup flicker. Align the coin vertically with its number. Use a continuous multiplier progress line centered beneath the multiplier number.
 - Show actual 3D equipment models, including a deliberately modeled base gun. Keep the whole loadout display small.
 - Choose replacements while hovering over the item, never in advance. Show both key/button sprites only when both corresponding slots are occupied; blink those equipment octagons. Pressing a control immediately picks up the item and replaces that slot. Fill empty slots automatically.
 

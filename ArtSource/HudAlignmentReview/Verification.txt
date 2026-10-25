@@ -1,0 +1,15 @@
+PASS
+Editor-only production HUD preview: no Play mode or gameplay run.
+All healthCells rows stay inside their casing
+All manaCells rows stay inside their casing
+All bossCells rows stay inside their casing
+Continuous multiplier track is centered below the multiplier number
+Multiplier line preserves exact fractional progress
+Multiplier progress uses one continuous track and fill
+Wallet icon and number share a centered row
+Correct low-health blink state at 100% / 0,1
+Correct low-health blink state at 100% / 0,5
+Correct low-health blink state at 20% / 0,1
+Correct low-health blink state at 20% / 0,5
+Warning clears after healing
+Startup flicker remains separate from the low-health warning
