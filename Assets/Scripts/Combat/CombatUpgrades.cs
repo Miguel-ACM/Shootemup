@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum UpgradeKind { Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor }
+public enum UpgradeKind { Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses }
 public sealed class CombatUpgrades : MonoBehaviour
 {
     public static CombatUpgrades Current {get;private set;}
@@ -19,6 +19,11 @@ public sealed class CombatUpgrades : MonoBehaviour
     void Awake(){gameObject.AddComponent<UpgradeMeters>();Current=this;ship=GetComponent<Shipcontroller>();inputs=new Inputs();inputs.Enable();}
     void OnDestroy(){if(Current==this)Current=null;inputs?.Disable();inputs?.Dispose();}
     public int Count(UpgradeKind kind)=>stacks.TryGetValue(kind,out int n) ? n : 0;
+    public static float HostileSpeedAt(Vector3 position)
+    {
+        if(Current==null)return 1;
+        return Current.Count(UpgradeKind.QualityGlasses)>0 ? .9f : 1;
+    }
     public void Add(UpgradeKind kind)
     {
         stacks[kind]=Count(kind)+1;

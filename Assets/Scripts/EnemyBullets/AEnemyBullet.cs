@@ -27,7 +27,7 @@ public abstract class AEnemyBullet : MonoBehaviour
 
     protected virtual void Move()
     {
-        rigidBody.linearVelocity = direction * speed;
+        rigidBody.linearVelocity = direction * speed * CombatUpgrades.HostileSpeedAt(transform.position);
     }
 
     public void setProperties(Dictionary<string, float> stats)

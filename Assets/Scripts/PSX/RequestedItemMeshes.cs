@@ -5,6 +5,8 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "QualityGlasses":
+                Glasses(b,false);return true;
             case "EmpPulse":
                 b.Drum(Vector3.zero,.3f,.2f,11,12,6);
                 b.Drum(new Vector3(0,0,-.13f),.2f,.06f,9,12);
@@ -21,5 +23,16 @@ public static partial class IndustrialMeshFactory
                 return true;
         }
         return false;
+    }
+    static void Glasses(Builder b,bool broken)
+    {
+        foreach(int side in new[]{-1,1})
+        {
+            b.Drum(new Vector3(side*.23f,0,0),.22f,.1f,broken ? 11 : 13,8);
+            b.Drum(new Vector3(side*.23f,0,-.065f),.16f,.025f,broken ? 8 : 9,8);
+            b.Box(new Vector3(side*.43f,.06f,.16f),new Vector3(.045f,.08f,.36f),broken ? 11 : 13);
+        }
+        b.Box(new Vector3(0,.02f,-.02f),new Vector3(.15f,.045f,.06f),broken ? 11 : 13);
+        if(broken){b.Box(new Vector3(.23f,0,-.09f),new Vector3(.018f,.28f,.015f),1);b.Box(new Vector3(.29f,.03f,-.09f),new Vector3(.13f,.018f,.015f),1);}
     }
 }
