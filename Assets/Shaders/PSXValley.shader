@@ -52,10 +52,12 @@ Shader "Shootemup/PSX Valley"
                     float clump=Noise(ground*.5,48),mottle=Noise(ground*2,192);
                     c*=.91+.15*clump+.10*mottle;
                     c=lerp(c,c*float3(1.05,.92,.78),smoothstep(.70,.87,mottle)*.36);
-                    float2 cell=floor(ground*4),f=frac(ground*4);
+                    float2 grassSpace=ground;
+                    grassSpace.x+=sin(ground.y*6.2831853/6)*.13+sin(ground.y*6.2831853/3+ground.x)*.09;
+                    float2 cell=floor(grassSpace*4),f=frac(grassSpace*4);
                     float seed=Hash(cell,384);
-                    float2 root=float2(.25+.5*Hash(cell+17,384),.12+.20*seed);
-                    float height=.36+.35*Hash(cell+53,384);
+                    float2 root=float2(.18+.64*Hash(cell+17,384),.03+.37*seed);
+                    float height=.40+.50*Hash(cell+53,384);
                     float t=(f.y-root.y)/height;
                     float blade=0;
                     // Uneven little fans of three tapered blades, never a checkerboard.
@@ -65,8 +67,8 @@ Shader "Shootemup/PSX Valley"
                         float w=.07*(1-saturate(t))+.015;
                         blade=max(blade,(1-smoothstep(w,w+.035,abs(f.x-root.x-bend)))*step(0,t)*step(t,1));
                     }
-                    float density=smoothstep(.20,.65,clump)*step(.22,seed);
-                    c+=float3(.036,.057,.017)*blade*density;
+                    float density=smoothstep(.20,.65,clump)*step(.40,seed);
+                    c+=float3(.020,.035,.010)*blade*density;
                     c-=float3(.018,.026,.010)*blade*(1-density)*.5;
                 }
                 return half4(c,1);
