@@ -28,6 +28,8 @@ public abstract class AWeapon : MonoBehaviour
     public bool stillShooting = false;
 
     protected WeaponInput weaponInput;
+    protected bool Coupled=>CombatUpgrades.Current!=null && CombatUpgrades.Current.Count(UpgradeKind.DoubleTrouble)>0;
+    protected WeaponInput EffectiveInput=>Coupled ? WeaponInput.both : weaponInput;
     public WeaponInput Slot=>weaponInput;
     public virtual void StopFiring(){CancelInvoke();StopAllCoroutines();isShootingPrimary=isShootingSecondary=false;isStopingPrimary=isStopingSecondary=true;}
     protected WeaponType weaponType;
@@ -70,7 +72,7 @@ public abstract class AWeapon : MonoBehaviour
     {
         if(!isActiveAndEnabled || (GetComponentInParent<ShipLoadout>()?.ConsumedInputThisFrame ?? false))return;
         isStopingPrimary = false;
-        isStopingSecondary = true;
+        if(!Coupled)isStopingSecondary = true;
         //isShootingSecondary = false;
         if (!isShootingPrimary && !GameRules.playerDisabled)
         {
@@ -83,7 +85,7 @@ public abstract class AWeapon : MonoBehaviour
     {
         if(!isActiveAndEnabled || (GetComponentInParent<ShipLoadout>()?.ConsumedInputThisFrame ?? false))return;
         isStopingSecondary = false;
-        isStopingPrimary = true;
+        if(!Coupled)isStopingPrimary = true;
         //isShootingPrimary = false;
         if (!isShootingSecondary && !GameRules.playerDisabled)
         {
@@ -94,14 +96,14 @@ public abstract class AWeapon : MonoBehaviour
 
     public virtual void WeaponPressed(bool pressedPrimary)
     {
-        if (weaponInput == WeaponInput.both)
+        if (EffectiveInput == WeaponInput.both)
         {
             if ((pressedPrimary && isShootingSecondary) || (!pressedPrimary && isShootingPrimary))
             {
                 return;
             }
         }
-        if (isShootingPrimary && pressedPrimary ||isShootingSecondary && !pressedPrimary || IsInvoking("Shoot") || pressedPrimary && weaponInput == WeaponInput.secondary || !pressedPrimary && weaponInput == WeaponInput.primary)
+        if (isShootingPrimary && pressedPrimary ||isShootingSecondary && !pressedPrimary || IsInvoking("Shoot") || pressedPrimary && EffectiveInput == WeaponInput.secondary || !pressedPrimary && EffectiveInput == WeaponInput.primary)
         {
             return;
         }

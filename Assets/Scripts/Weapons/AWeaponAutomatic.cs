@@ -12,8 +12,9 @@ public abstract class AWeaponAutomatic : AWeapon
 
     public override void WeaponPressed(bool pressedPrimary)
     {
+        if(IsInvoking("Shoot"))return;
         base.WeaponPressed(pressedPrimary);
-        if (pressedPrimary && weaponInput == WeaponInput.primary || !pressedPrimary && weaponInput == WeaponInput.secondary || weaponInput == WeaponInput.both)
+        if (pressedPrimary && EffectiveInput == WeaponInput.primary || !pressedPrimary && EffectiveInput == WeaponInput.secondary || EffectiveInput == WeaponInput.both)
             InvokeRepeating("Shoot", 0f, 1 / (GameRules.playerShootSpeed * shootSpeedModifier));
     }
 
@@ -28,7 +29,7 @@ public abstract class AWeaponAutomatic : AWeapon
     // base method, which used to let one extra volley out after every release.
     protected bool KeepFiring()
     {
-        if (weaponInput == WeaponInput.primary)
+        if (EffectiveInput == WeaponInput.primary)
         {
             if (isStopingPrimary || GameRules.playerDisabled)
             {
@@ -37,7 +38,7 @@ public abstract class AWeaponAutomatic : AWeapon
                 return false;
             }
         }
-        else if (weaponInput == WeaponInput.secondary)
+        else if (EffectiveInput == WeaponInput.secondary)
         {
             if (isStopingSecondary || GameRules.playerDisabled)
             {

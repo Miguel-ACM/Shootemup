@@ -5,6 +5,14 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "DoubleTrouble":
+                foreach(int side in new[]{-1,1})
+                {
+                    b.Box(new Vector3(side*.23f,0,0),new Vector3(.22f,.57f,.22f),6);
+                    b.Box(new Vector3(side*.23f,.32f,0),new Vector3(.27f,.12f,.27f),11);
+                    b.Box(new Vector3(side*.23f,-.28f,.04f),new Vector3(.16f,.22f,.18f),3);
+                }
+                b.Box(new Vector3(0,-.08f,0),new Vector3(.3f,.12f,.14f),13);return true;
             case "FocusTime":
                 b.Box(new Vector3(0,-.05f,0),new Vector3(.82f,.12f,.48f),13,2);
                 foreach(int side in new[]{-1,1})b.Box(new Vector3(side*.3f,-.32f,.1f),new Vector3(.09f,.48f,.09f),2);
