@@ -17,12 +17,12 @@ public class OrbitPlayer : AMover
     public void SetIndex(int index, int numOrbitals)
     {
         this.index = index;
-        this.offset = (float) index / numOrbitals;
+        this.offset = (float)index / numOrbitals;
     }
 
     public void SetMaxIndex(int numOrbitals)
     {
-        this.offset = (float) this.index / (float) numOrbitals;
+        this.offset = (float)this.index / (float)numOrbitals;
     }
 
     public override void Move()

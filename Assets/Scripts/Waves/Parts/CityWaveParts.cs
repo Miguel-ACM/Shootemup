@@ -1,13 +1,13 @@
 using UnityEngine;
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve CityRamp=Route("City / Elevated ramp",Vector2.right,-.70f,1.24f,-.66f,.9f,-.42f,.59f,.04f,.43f,.43f,.53f,.65f,.89f,.66f,1.24f);
-    static readonly FlightCurve CityCanyon=Route("City / Canyon stitch",Vector2.right,.3f,1.24f,.43f,.87f,.16f,.63f,-.41f,.42f,-.32f,.16f,.12f,-.24f);
-    static readonly FlightCurve Skybridge=Route("City / Skybridge",Vector2.up,-1.36f,.94f,-.8f,.91f,-.13f,.79f,.53f,.84f,1.36f,.96f);
-    static readonly FlightCurve Underpass=Route("City / Underpass",Vector2.up,1.36f,.55f,.8f,.5f,.15f,.41f,-.52f,.33f,-1.36f,.42f);
-    static readonly FlightCurve CityLoop=Route("City / Rooftop loop",Vector2.right,-.55f,1.24f,-.64f,.94f,-.58f,.63f,-.25f,.48f,.12f,.67f,.14f,.98f,.05f,1.24f);
-    static readonly FlightCurve Junction=Route("City / Junction peel",Vector2.right,.65f,1.24f,.62f,.93f,.45f,.67f,.12f,.58f,-.12f,.75f,-.2f,1.24f);
-    public static readonly WavePart[] City={
+    static readonly FlightCurve CityRamp = Route("City / Elevated ramp", Vector2.right, -.70f, 1.24f, -.66f, .9f, -.42f, .59f, .04f, .43f, .43f, .53f, .65f, .89f, .66f, 1.24f);
+    static readonly FlightCurve CityCanyon = Route("City / Canyon stitch", Vector2.right, .3f, 1.24f, .43f, .87f, .16f, .63f, -.41f, .42f, -.32f, .16f, .12f, -.24f);
+    static readonly FlightCurve Skybridge = Route("City / Skybridge", Vector2.up, -1.36f, .94f, -.8f, .91f, -.13f, .79f, .53f, .84f, 1.36f, .96f);
+    static readonly FlightCurve Underpass = Route("City / Underpass", Vector2.up, 1.36f, .55f, .8f, .5f, .15f, .41f, -.52f, .33f, -1.36f, .42f);
+    static readonly FlightCurve CityLoop = Route("City / Rooftop loop", Vector2.right, -.55f, 1.24f, -.64f, .94f, -.58f, .63f, -.25f, .48f, .12f, .67f, .14f, .98f, .05f, 1.24f);
+    static readonly FlightCurve Junction = Route("City / Junction peel", Vector2.right, .65f, 1.24f, .62f, .93f, .45f, .67f, .12f, .58f, -.12f, .75f, -.2f, 1.24f);
+    public static readonly WavePart[] City ={
         new WavePart("Elevated traffic","CourierDiver",CityRamp,WaveShape.Train,5,3.8f),
         new WavePart("Canyon couriers","CourierDiver",CityCanyon,WaveShape.Train,5,3.6f),
         new WavePart("Skybridge traffic","CourierDiver",Skybridge,WaveShape.Rank,3,3.1f),

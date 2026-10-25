@@ -20,9 +20,13 @@ public class Bullet : ABullet
     // Update is called once per frame
     void Update()
     {
-        if(Time.deltaTime<=0 || WorldTimeStop.Frozen)return;
-        if(!rubberReturned && transform.up.y>0 && RubberReturn.AtTop(transform.position))
-        {rubberReturned=true;transform.rotation=Quaternion.FromToRotation(Vector3.up,new Vector3(transform.up.x,-Mathf.Abs(transform.up.y),0));}
+        if (Time.deltaTime <= 0 || WorldTimeStop.Frozen)
+            return;
+        if (!rubberReturned && transform.up.y > 0 && RubberReturn.AtTop(transform.position))
+        {
+            rubberReturned = true;
+            transform.rotation = Quaternion.FromToRotation(Vector3.up, new Vector3(transform.up.x, -Mathf.Abs(transform.up.y), 0));
+        }
         if (followness != 0 && !rubberReturned)
         {
             GameObject e = Utils.FindClosestWithTag(transform.position, "Enemy", out float sqrDistance);
@@ -52,7 +56,7 @@ public class Bullet : ABullet
         rigidBody.linearVelocity = transform.up.normalized * speed;
     }
 
-    
+
     void Move()
     {
         rigidBody.linearVelocity = direction.normalized * speed;//new Vector3(direction.x * speed, direction.y * speed, direction.z);
@@ -61,28 +65,33 @@ public class Bullet : ABullet
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Enemy")) {
+        if (collision.CompareTag("Enemy"))
+        {
             if (player == null)
                 player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
             player.PlayHitSound("hit1");
             AEnemy en = collision.gameObject.GetComponent<AEnemy>(); //collision.transform.position
             //Instantiate(Resources.Load<GameObject>("Particles/HitSpark"), collision.transform.position, Quaternion.identity);
             Score.IncreaseScore(Mathf.RoundToInt(damage));
-            en.HitAt(collision.ClosestPoint(transform.position),rigidBody!=null ? rigidBody.linearVelocity : (Vector2)transform.up);
-            float dealt=CombatUpgrades.Current!=null ? CombatUpgrades.Current.DirectHit(en,damage,0,companionShot) : damage;
+            en.HitAt(collision.ClosestPoint(transform.position), rigidBody != null ? rigidBody.linearVelocity : (Vector2)transform.up);
+            float dealt = CombatUpgrades.Current != null ? CombatUpgrades.Current.DirectHit(en, damage, 0, companionShot) : damage;
             en.damage(dealt);
-            if(CombatUpgrades.Current!=null && (CombatUpgrades.Current.Count(UpgradeKind.BouncingBall)>0 || CombatUpgrades.Current.TryRebound()))
+            if (CombatUpgrades.Current != null && (CombatUpgrades.Current.Count(UpgradeKind.BouncingBall) > 0 || CombatUpgrades.Current.TryRebound()))
             {
-                var next=CombatUpgrades.Nearest(transform.position,new HashSet<AEnemy>{en},12);
-                if(next!=null)
+                var next = CombatUpgrades.Nearest(transform.position, new HashSet<AEnemy> { en }, 12);
+                if (next != null)
                 {
-                    float power=CombatUpgrades.Current.Count(UpgradeKind.BouncingBall)>0 ? damage : damage*.7f;
-                    var bounce=PlayerRound.Spawn(transform.position,(next.transform.position-transform.position).normalized,power,speed,PlayerDelivery.Pulse,1);
-                    if(bounce!=null){bounce.companion=companionShot;bounce.ExcludePreviousHit(en);}
+                    float power = CombatUpgrades.Current.Count(UpgradeKind.BouncingBall) > 0 ? damage : damage * .7f;
+                    var bounce = PlayerRound.Spawn(transform.position, (next.transform.position - transform.position).normalized, power, speed, PlayerDelivery.Pulse, 1);
+                    if (bounce != null)
+                    {
+                        bounce.companion = companionShot;
+                        bounce.ExcludePreviousHit(en);
+                    }
                 }
             }
             Destroy(gameObject);
-        }        
+        }
     }
 
     void OnBecameInvisible()

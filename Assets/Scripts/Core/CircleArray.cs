@@ -59,14 +59,19 @@ public class CircularArray<T>
 
     public void ChangeSize(int newSize, T defaultValue)
     {
-        if(newSize<1)throw new ArgumentOutOfRangeException(nameof(newSize));
-        var resized=new T[newSize];
-        for(int i=0;i<newSize;i++)resized[i]=defaultValue;
+        if (newSize < 1)
+            throw new ArgumentOutOfRangeException(nameof(newSize));
+        var resized = new T[newSize];
+        for (int i = 0; i < newSize; i++)
+            resized[i] = defaultValue;
         // Copy newest-to-oldest, including the initial head=-1 state. The previous
         // sentinel loop could never reach -1 when two followers spawned before movement.
-        int keep=Math.Min(maxLength,newSize);
-        for(int age=0;age<keep;age++)resized[newSize-1-age]=elements[mod(head-age,maxLength)];
-        elements=resized;maxLength=newSize;head=newSize-1;
+        int keep = Math.Min(maxLength, newSize);
+        for (int age = 0; age < keep; age++)
+            resized[newSize - 1 - age] = elements[mod(head - age, maxLength)];
+        elements = resized;
+        maxLength = newSize;
+        head = newSize - 1;
     }
 
     public override string ToString()

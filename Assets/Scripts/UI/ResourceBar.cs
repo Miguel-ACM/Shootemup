@@ -9,7 +9,7 @@ public class ResourceBar : MonoBehaviour
     [SerializeField] private bool visible = true;
     private Image[] images;
     float maxResource = 1;
-    
+
 
     private void Awake()
     {
@@ -23,8 +23,10 @@ public class ResourceBar : MonoBehaviour
 
     void Initialize()
     {
-        if (slider == null) slider = GetComponent<Slider>();
-        if (images == null) images = GetComponentsInChildren<Image>(true);
+        if (slider == null)
+            slider = GetComponent<Slider>();
+        if (images == null)
+            images = GetComponentsInChildren<Image>(true);
     }
 
     public void SetMax(float res)

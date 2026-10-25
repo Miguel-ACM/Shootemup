@@ -6,7 +6,7 @@ public class Biggie : AEnemy
 {
     protected override void Start()
     {
-        size =  1.1f;
+        size = 1.1f;
         base.Start();
     }
 }

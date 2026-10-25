@@ -6,5 +6,7 @@ public class ElectricityItem : AWeaponItem
         SetData("Electricity", "ZiP-ZOOM!", "Seeking, piercing lightning.", AItem.ItemType.weapon);
     }
 
-    public override void OnBegin() { }
+    public override void OnBegin()
+    {
+    }
 }

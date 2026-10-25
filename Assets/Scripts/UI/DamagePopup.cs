@@ -15,7 +15,7 @@ public class DamagePopup : MonoBehaviour
 
         return damagePopup;
     }
-   
+
     private void Awake()
     {
         text = GetComponent<TextMeshPro>();

@@ -28,10 +28,17 @@ public abstract class AWeapon : MonoBehaviour
     public bool stillShooting = false;
 
     protected WeaponInput weaponInput;
-    protected bool Coupled=>CombatUpgrades.Current!=null && CombatUpgrades.Current.Count(UpgradeKind.DoubleTrouble)>0;
-    protected WeaponInput EffectiveInput=>Coupled ? WeaponInput.both : weaponInput;
-    public WeaponInput Slot=>weaponInput;
-    public virtual void StopFiring(){CancelInvoke();StopAllCoroutines();isShootingPrimary=isShootingSecondary=false;isStopingPrimary=isStopingSecondary=true;}
+    protected bool Coupled => CombatUpgrades.Current != null && CombatUpgrades.Current.Count(UpgradeKind.DoubleTrouble) > 0;
+    protected WeaponInput EffectiveInput => Coupled ? WeaponInput.both : weaponInput;
+    public WeaponInput Slot => weaponInput;
+    public virtual void StopFiring()
+    {
+        CancelInvoke();
+        StopAllCoroutines();
+        isShootingPrimary = isShootingSecondary = false;
+        isStopingPrimary = isStopingSecondary = true;
+    }
+
     protected WeaponType weaponType;
     protected float shootSpeedModifier = 1f;
 
@@ -57,7 +64,7 @@ public abstract class AWeapon : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
 
@@ -70,10 +77,13 @@ public abstract class AWeapon : MonoBehaviour
 
     void PrimaryPressed(InputAction.CallbackContext ctx)
     {
-        if(Time.timeScale<=0 && !WorldTimeStop.PlayerCanAct)return;
-        if(!isActiveAndEnabled || (GetComponentInParent<ShipLoadout>()?.ConsumedInputThisFrame ?? false))return;
+        if (Time.timeScale <= 0 && !WorldTimeStop.PlayerCanAct)
+            return;
+        if (!isActiveAndEnabled || (GetComponentInParent<ShipLoadout>()?.ConsumedInputThisFrame ?? false))
+            return;
         isStopingPrimary = false;
-        if(!Coupled)isStopingSecondary = true;
+        if (!Coupled)
+            isStopingSecondary = true;
         //isShootingSecondary = false;
         if (!isShootingPrimary && !GameRules.playerDisabled)
         {
@@ -84,10 +94,13 @@ public abstract class AWeapon : MonoBehaviour
 
     void SecondaryPressed(InputAction.CallbackContext ctx)
     {
-        if(Time.timeScale<=0 && !WorldTimeStop.PlayerCanAct)return;
-        if(!isActiveAndEnabled || (GetComponentInParent<ShipLoadout>()?.ConsumedInputThisFrame ?? false))return;
+        if (Time.timeScale <= 0 && !WorldTimeStop.PlayerCanAct)
+            return;
+        if (!isActiveAndEnabled || (GetComponentInParent<ShipLoadout>()?.ConsumedInputThisFrame ?? false))
+            return;
         isStopingSecondary = false;
-        if(!Coupled)isStopingPrimary = true;
+        if (!Coupled)
+            isStopingPrimary = true;
         //isShootingPrimary = false;
         if (!isShootingSecondary && !GameRules.playerDisabled)
         {
@@ -105,7 +118,7 @@ public abstract class AWeapon : MonoBehaviour
                 return;
             }
         }
-        if (isShootingPrimary && pressedPrimary ||isShootingSecondary && !pressedPrimary || IsInvoking("Shoot") || pressedPrimary && EffectiveInput == WeaponInput.secondary || !pressedPrimary && EffectiveInput == WeaponInput.primary)
+        if (isShootingPrimary && pressedPrimary || isShootingSecondary && !pressedPrimary || IsInvoking("Shoot") || pressedPrimary && EffectiveInput == WeaponInput.secondary || !pressedPrimary && EffectiveInput == WeaponInput.primary)
         {
             return;
         }
@@ -114,6 +127,7 @@ public abstract class AWeapon : MonoBehaviour
         else
             isShootingSecondary = true;
     }
+
     void PrimaryReleased(InputAction.CallbackContext ctx)
     {
         isStopingPrimary = true;

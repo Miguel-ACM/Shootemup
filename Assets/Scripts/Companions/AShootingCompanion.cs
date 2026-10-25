@@ -8,7 +8,7 @@ public class AShootingCompanion : ACompanion
     public bool isShootingPrimary = false;
     public bool isStopingPrimary = true;
     bool isShootingDisabled = false;
-    Vector3[] spawnPoints = { new Vector3(0,0,0) };    
+    Vector3[] spawnPoints = { new Vector3(0, 0, 0) };
     private Inputs input;
     [SerializeField] private GameObject bullet;
     [SerializeField] private float shootSpeed = 8f;

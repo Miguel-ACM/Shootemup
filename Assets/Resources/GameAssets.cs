@@ -10,11 +10,12 @@ public class GameAssets : MonoBehaviour
     {
         get
         {
-            if (_i == null) _i = Instantiate(Resources.Load<GameAssets>("GameAssets"));
+            if (_i == null)
+                _i = Instantiate(Resources.Load<GameAssets>("GameAssets"));
             return _i;
         }
     }
 
     public Transform DamageText;
-    
+
 }

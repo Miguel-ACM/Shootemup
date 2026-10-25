@@ -11,20 +11,28 @@ public class TopTracker : PatternMover
     [SerializeField, Min(.1f)] private float deceleration = 14f;
     private Vector2 velocity;
     public Vector2 Velocity => velocity;
-    private enum Phase { Enter, Track, Lock, Fire, Recover }
+    private enum Phase
+    {
+        Enter, Track, Lock, Fire, Recover
+    }
+
     private Phase phase;
     private float clock;
     private bool assault;
     public void BeginAssault()
     {
-        assault=true;trackingDuration=1.05f;recoveryDuration=.3f;firingDuration=1.8f;
+        assault = true;
+        trackingDuration = 1.05f;
+        recoveryDuration = .3f;
+        firingDuration = 1.8f;
     }
 
     protected override void InitializePattern()
     {
         // Small interceptors can correct quickly; loaded gunships carry momentum.
         var enemy = GetComponent<DistrictEnemy>();
-        if (enemy == null) return;
+        if (enemy == null)
+            return;
         float weight = Mathf.InverseLerp(.45f, 1.1f, enemy.hullScale);
         moveSpeed = Mathf.Lerp(4.8f, 2.8f, weight);
         acceleration = Mathf.Lerp(18f, 5.5f, weight);
@@ -39,7 +47,8 @@ public class TopTracker : PatternMover
         // Braking distance limits the approach; the final proportional stretch
         // avoids crossing the destination and snapping back on the next frame.
         float speed = Mathf.Min(moveSpeed, Mathf.Sqrt(2 * deceleration * distance), distance * 5);
-        if (approachingLock) speed = Mathf.Min(speed, deceleration * Mathf.Max(0, trackingDuration - clock));
+        if (approachingLock)
+            speed = Mathf.Min(speed, deceleration * Mathf.Max(0, trackingDuration - clock));
         Integrate(distance > .001f ? offset / distance * speed : Vector2.zero, dt);
         return distance < .025f && velocity.sqrMagnitude < .0025f;
     }
@@ -69,13 +78,19 @@ public class TopTracker : PatternMover
         switch (phase)
         {
             case Phase.Enter:
-                if(assault)SetFiring(transform.position.y<=Camera.UpLimit-1.1f);
+                if (assault)
+                    SetFiring(transform.position.y <= Camera.UpLimit - 1.1f);
                 if (Steer(InBounds(new Vector3(origin.x, Camera.UpLimit - topOffset, origin.z)), dt))
-                { Arrive(); SetFiring(false); Next(Phase.Track); }
+                {
+                    Arrive();
+                    SetFiring(false);
+                    Next(Phase.Track);
+                }
                 break;
             case Phase.Track:
                 var target = transform.position;
-                if (player != null) target.x = player.position.x;
+                if (player != null)
+                    target.x = player.position.x;
                 Steer(InBounds(target), dt, true);
                 if (clock >= trackingDuration)
                 {
@@ -85,18 +100,34 @@ public class TopTracker : PatternMover
                 break;
             case Phase.Lock:
                 Integrate(Vector2.zero, dt);
-                if (clock >= lockWarning) { Next(Phase.Fire); SetFiring(true); }
+                if (clock >= lockWarning)
+                {
+                    Next(Phase.Fire);
+                    SetFiring(true);
+                }
                 break;
             case Phase.Fire:
                 Integrate(Vector2.zero, dt);
-                if (clock >= firingDuration) { SetFiring(false); Next(Phase.Recover); }
+                if (clock >= firingDuration)
+                {
+                    SetFiring(false);
+                    Next(Phase.Recover);
+                }
                 break;
             case Phase.Recover:
                 Integrate(Vector2.zero, dt);
-                if (clock >= recoveryDuration) { LockAim(null); Next(Phase.Track); }
+                if (clock >= recoveryDuration)
+                {
+                    LockAim(null);
+                    Next(Phase.Track);
+                }
                 break;
         }
     }
 
-    private void Next(Phase next) { phase = next; clock = 0; }
+    private void Next(Phase next)
+    {
+        phase = next;
+        clock = 0;
+    }
 }

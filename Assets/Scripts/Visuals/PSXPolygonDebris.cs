@@ -29,22 +29,27 @@ public sealed class PSXPolygonDebris : MonoBehaviour
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetState() { active.Clear(); }
+    static void ResetState()
+    {
+        active.Clear();
+    }
 
-    public static PSXPolygonDebris Spawn(GameObject source,bool prepareOnly=false,bool wholeAssembly=false)
+    public static PSXPolygonDebris Spawn(GameObject source, bool prepareOnly = false, bool wholeAssembly = false)
     {
         var district = source.GetComponent<DistrictEnemy>();
         var visual = source.GetComponent<PSXObjectVisual>();
         var ship = source.GetComponent<PSXShipVisual>();
         Transform model = district != null ? district.Hull : visual != null ? visual.model : ship != null ? ship.Model : null;
-        if (model == null) return null;
+        if (model == null)
+            return null;
         bool isBoss = source.GetComponent<Boss>() != null || source.GetComponent<DistrictBoss>() != null;
         // Keep a busy wave bounded, reserving the longest-lived breakup for the boss.
         active.RemoveAll(effect => effect == null);
         if (active.Count >= MaxBursts)
         {
             var oldest = active.Find(effect => !effect.boss);
-            if (oldest == null) return null;
+            if (oldest == null)
+                return null;
             active.Remove(oldest);
             oldest.gameObject.SetActive(false);
             Destroy(oldest.gameObject);
@@ -62,21 +67,33 @@ public sealed class PSXPolygonDebris : MonoBehaviour
             ? hullRenderer != null ? new[] { hullRenderer } : System.Array.Empty<MeshRenderer>()
             : model.GetComponentsInChildren<MeshRenderer>();
         Bounds bounds = new Bounds(model.position, Vector3.zero);
-        foreach (var renderer in renderers) bounds.Encapsulate(renderer.bounds);
+        foreach (var renderer in renderers)
+            bounds.Encapsulate(renderer.bounds);
         // Larger cells keep neighbouring polygons attached as a few readable hull chunks.
         float cell = Mathf.Max(.08f, Mathf.Max(bounds.size.x, bounds.size.y) / (isBoss ? 8f : 4f));
         foreach (var renderer in renderers)
         {
             var filter = renderer.GetComponent<MeshFilter>();
-            if (filter == null || filter.sharedMesh == null || !filter.sharedMesh.isReadable) continue;
+            if (filter == null || filter.sharedMesh == null || !filter.sharedMesh.isReadable)
+                continue;
             effect.Build(filter, renderer, bounds.center, cell);
         }
-        if (effect.batches.Count == 0) { Destroy(go); return null; }
+        if (effect.batches.Count == 0)
+        {
+            Destroy(go);
+            return null;
+        }
         active.Add(effect);
-        if(prepareOnly)go.SetActive(false);
+        if (prepareOnly)
+            go.SetActive(false);
         return effect;
     }
-    public void ReleasePrepared(){started=Time.time;gameObject.SetActive(true);}
+
+    public void ReleasePrepared()
+    {
+        started = Time.time;
+        gameObject.SetActive(true);
+    }
 
     void Build(MeshFilter filter, MeshRenderer source, Vector3 blastCentre, float cell)
     {
@@ -98,7 +115,11 @@ public sealed class PSXPolygonDebris : MonoBehaviour
         Vector3 centre = transform.InverseTransformPoint(blastCentre);
         for (int sub = 0; sub < original.subMeshCount; sub++)
         {
-            if (original.GetTopology(sub) != MeshTopology.Triangles) { submeshes.Add(new int[0]); continue; }
+            if (original.GetTopology(sub) != MeshTopology.Triangles)
+            {
+                submeshes.Add(new int[0]);
+                continue;
+            }
             var triangles = original.GetTriangles(sub);
             var indices = new List<int>(triangles.Length * 2);
             for (int t = 0; t < triangles.Length; t += 3)
@@ -116,10 +137,12 @@ public sealed class PSXPolygonDebris : MonoBehaviour
                     outward.z *= .25f;
                     Vector3 direction = (outward.normalized + Random.onUnitSphere * .45f).normalized;
                     uint cleanupGroup = (uint)(key.x * 73856093 ^ key.y * 19349663 ^ key.z * 83492791) % 3;
-                    pieces.Add(new Plate {
+                    pieces.Add(new Plate
+                    {
                         centre = midpoint,
                         velocity = direction * Random.Range(boss ? 2.6f : 1.4f, boss ? 6.2f : 3.6f),
-                        axis = Random.onUnitSphere, spin = Random.Range(-260f, 260f),
+                        axis = Random.onUnitSphere,
+                        spin = Random.Range(-260f, 260f),
                         delay = boss ? Random.Range(0f, .18f) : 0f,
                         // Three shared cleanup beats clear whole groups together, across model parts.
                         clearAt = lifetime * (.55f + .225f * cleanupGroup)
@@ -137,17 +160,26 @@ public sealed class PSXPolygonDebris : MonoBehaviour
                     ids.Add(id);
                 }
                 // Hull plates remain visible when their unmodelled inside turns toward the camera.
-                indices.Add(first); indices.Add(first + 1); indices.Add(first + 2);
-                indices.Add(first + 2); indices.Add(first + 1); indices.Add(first);
+                indices.Add(first);
+                indices.Add(first + 1);
+                indices.Add(first + 2);
+                indices.Add(first + 2);
+                indices.Add(first + 1);
+                indices.Add(first);
             }
             submeshes.Add(indices.ToArray());
         }
-        if (rest.Count == 0) return;
+        if (rest.Count == 0)
+            return;
         var mesh = new Mesh { name = "Fractured " + original.name, indexFormat = IndexFormat.UInt32 };
         mesh.MarkDynamic();
-        mesh.SetVertices(rest); mesh.SetNormals(faceNormals); mesh.SetUVs(0, uvs); mesh.SetColors(vertexColors);
+        mesh.SetVertices(rest);
+        mesh.SetNormals(faceNormals);
+        mesh.SetUVs(0, uvs);
+        mesh.SetColors(vertexColors);
         mesh.subMeshCount = submeshes.Count;
-        for (int sub = 0; sub < submeshes.Count; sub++) mesh.SetTriangles(submeshes[sub], sub);
+        for (int sub = 0; sub < submeshes.Count; sub++)
+            mesh.SetTriangles(submeshes[sub], sub);
         mesh.RecalculateBounds();
         var go = new GameObject(original.name + " plates");
         go.transform.SetParent(transform, false);
@@ -165,14 +197,26 @@ public sealed class PSXPolygonDebris : MonoBehaviour
         tint.a = 1; // Lethal damage may occur during the sprite's damage blink.
         properties.SetColor("_Tint", tint);
         renderer.SetPropertyBlock(properties);
-        batches.Add(new Batch { mesh = mesh, rest = rest.ToArray(), normals = faceNormals.ToArray(),
-            vertices = rest.ToArray(), rotatedNormals = faceNormals.ToArray(), plates = ids.ToArray(), pieces = pieces.ToArray() });
+        batches.Add(new Batch
+        {
+            mesh = mesh,
+            rest = rest.ToArray(),
+            normals = faceNormals.ToArray(),
+            vertices = rest.ToArray(),
+            rotatedNormals = faceNormals.ToArray(),
+            plates = ids.ToArray(),
+            pieces = pieces.ToArray()
+        });
     }
 
     void Update()
     {
         float age = Time.time - started;
-        if (age >= lifetime) { Destroy(gameObject); return; }
+        if (age >= lifetime)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Advance(age);
     }
 
@@ -205,6 +249,9 @@ public sealed class PSXPolygonDebris : MonoBehaviour
     {
         active.Remove(this);
         foreach (var batch in batches)
-            if (Application.isPlaying) Destroy(batch.mesh); else DestroyImmediate(batch.mesh);
+            if (Application.isPlaying)
+                Destroy(batch.mesh);
+            else
+                DestroyImmediate(batch.mesh);
     }
 }

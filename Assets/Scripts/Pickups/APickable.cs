@@ -23,7 +23,8 @@ public abstract class APickable : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(collected || player==null)return;
+        if (collected || player == null)
+            return;
         Vector2 thisPosition = transform.position;
         Vector2 playerPosition = player.transform.position;
         float distance = Vector3.Distance(thisPosition, playerPosition);
@@ -42,8 +43,8 @@ public abstract class APickable : MonoBehaviour
         }
         if (distance <= pickDist)
         {
-            collected=true;
-            PSXImpactEffects.Burst(transform.position,PSXImpactEffects.PickupColor(this),true);
+            collected = true;
+            PSXImpactEffects.Burst(transform.position, PSXImpactEffects.PickupColor(this), true);
             PickUp();
         }
         if (destroying)

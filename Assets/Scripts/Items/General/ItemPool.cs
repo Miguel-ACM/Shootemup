@@ -41,7 +41,8 @@ public static class ItemPool
     }
 
 
-    private static string GetNonEmptyPoolString(string pool){
+    private static string GetNonEmptyPoolString(string pool)
+    {
         int i = 0;
         List<string> p;
         while (i < 3)

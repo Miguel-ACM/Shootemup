@@ -35,14 +35,14 @@ public abstract class AMenuElement : MonoBehaviour, IPointerEnterHandler, IPoint
 
     protected void SetSelectedState()
     {
-        backgroundImage.color = new Color(.76f,.63f,.39f);
-        textElement.color = new Color(.06f,.08f,.08f);
+        backgroundImage.color = new Color(.76f, .63f, .39f);
+        textElement.color = new Color(.06f, .08f, .08f);
     }
 
     protected void SetNormalState()
     {
-        backgroundImage.color = new Color(.10f,.13f,.13f,.85f);
-        textElement.color = new Color(.76f,.81f,.76f);
+        backgroundImage.color = new Color(.10f, .13f, .13f, .85f);
+        textElement.color = new Color(.76f, .81f, .76f);
     }
 
     // Abstract method to be implemented by derived classes
@@ -56,6 +56,7 @@ public abstract class AMenuElement : MonoBehaviour, IPointerEnterHandler, IPoint
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(eventData.button==PointerEventData.InputButton.Left)menu.TryAccept(this);
+        if (eventData.button == PointerEventData.InputButton.Left)
+            menu.TryAccept(this);
     }
 }

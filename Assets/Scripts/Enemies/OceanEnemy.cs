@@ -1,3 +1,5 @@
 using UnityEngine;
 
-public abstract class OceanEnemy : DistrictEnemy { }
+public abstract class OceanEnemy : DistrictEnemy
+{
+}

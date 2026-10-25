@@ -15,11 +15,15 @@ public class Reform : PatternMover
     private Vector3 fixedCentre, offset;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void ResetMembers() { members.Clear(); }
+    private static void ResetMembers()
+    {
+        members.Clear();
+    }
 
     protected override void InitializePattern()
     {
-        if (!members.Contains(this)) members.Add(this);
+        if (!members.Contains(this))
+            members.Add(this);
         fixedCentre = origin;
         offset = formationAnchor != null ? origin - formationAnchor.position : Vector3.zero;
     }
@@ -30,7 +34,8 @@ public class Reform : PatternMover
         peers.Clear();
         foreach (var member in members)
             if (member.isActiveAndEnabled && !member.IsLeaving &&
-                (formationAnchor != null ? member.formationAnchor == formationAnchor : member == this)) peers.Add(member);
+                (formationAnchor != null ? member.formationAnchor == formationAnchor : member == this))
+                peers.Add(member);
         peers.Sort(CompareSlots);
         int rank = peers.IndexOf(this);
         if (rank != lastRank || peers.Count != lastCount)
@@ -40,12 +45,17 @@ public class Reform : PatternMover
             delay = reformDelay;
             SetFiring(false);
         }
-        if (delay > 0) { delay -= dt; return; }
+        if (delay > 0)
+        {
+            delay -= dt;
+            return;
+        }
         Vector3 centre = formationAnchor != null ? formationAnchor.position : fixedCentre;
         var target = centre + new Vector3((rank - (peers.Count - 1) * .5f) * spacing, offset.y, 0);
         bool reached = Travel(InBounds(target), dt);
         SetFiring(reached);
-        if (reached) Arrive();
+        if (reached)
+            Arrive();
     }
 
     private static int CompareSlots(Reform a, Reform b)
@@ -54,5 +64,9 @@ public class Reform : PatternMover
         return order != 0 ? order : a.GetEntityId().CompareTo(b.GetEntityId());
     }
 
-    protected override void OnDisable() { members.Remove(this); base.OnDisable(); }
+    protected override void OnDisable()
+    {
+        members.Remove(this);
+        base.OnDisable();
+    }
 }

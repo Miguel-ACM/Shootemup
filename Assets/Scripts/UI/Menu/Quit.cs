@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Quit : AMenuElement 
+public class Quit : AMenuElement
 {
     public override void OnAccept()
     {

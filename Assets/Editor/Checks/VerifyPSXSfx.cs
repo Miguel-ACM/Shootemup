@@ -22,6 +22,7 @@ public static class VerifyPSXSfx
         try { File.Delete(Request); } catch (IOException) { return; }
         Run();
     }
+
     [MenuItem("Tools/Audio/Verify PSX SFX")]
     public static void Run()
     {
@@ -117,6 +118,7 @@ public static class VerifyPSXSfx
         }
         finally { if (test != null) UnityEngine.Object.DestroyImmediate(test); }
     }
+
     static int Occupied(AudioSource[] sources) { int count = 0; foreach (var source in sources) if (source.clip != null) count++; return count; }
     static void ResetVoices(Array voices, IDictionary banks)
     {
@@ -129,6 +131,7 @@ public static class VerifyPSXSfx
         }
         foreach (DictionaryEntry entry in banks) entry.Value.GetType().GetField("next").SetValue(entry.Value, 0d);
     }
+
     static void Require(bool condition, string message) { if (!condition) throw new InvalidOperationException(message); }
 }
 #endif

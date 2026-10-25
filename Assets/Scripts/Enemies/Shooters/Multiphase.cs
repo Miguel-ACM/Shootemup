@@ -41,9 +41,9 @@ public class Multiphase : AShooter
             currBreak = 0f;
             start = false;
         }
-        
+
         // A phase threshold without a following phase in the inspector is ignored.
-        if (currPhase < life.Length && currPhase + 1 < phases.Length && enemy.health < maxHealth * life[currPhase] )
+        if (currPhase < life.Length && currPhase + 1 < phases.Length && enemy.health < maxHealth * life[currPhase])
         {
             if (!changinPhase)
             {
@@ -60,7 +60,7 @@ public class Multiphase : AShooter
             }
             else
             {
-                
+
                 changinPhase = false;
                 currPhase++;
                 curShooter = phases[currPhase];
@@ -71,7 +71,7 @@ public class Multiphase : AShooter
                 }
                 currBreak = 0f;
             }
-            
+
         }
     }
 

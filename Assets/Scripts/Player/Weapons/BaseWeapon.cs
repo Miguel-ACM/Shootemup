@@ -8,7 +8,7 @@ public class BaseWeapon : AWeaponAutomatic
 
     // Start is called before the first frame update
     [SerializeField] GameObject bullet;
-    
+
     // Update is called once per frame
 
 
@@ -19,15 +19,16 @@ public class BaseWeapon : AWeaponAutomatic
 
         SoundManager.PlaySound("shot1", 0.1f);
         var effects = GetComponent<PSXShipEffects>();
-        if (effects != null) effects.Shot();
-        float charge=CombatUpgrades.Current!=null ? CombatUpgrades.Current.Volley() : 1;
+        if (effects != null)
+            effects.Shot();
+        float charge = CombatUpgrades.Current != null ? CombatUpgrades.Current.Volley() : 1;
         for (int i = 0; i < GameRules.playerShootNumber; i++)
         {
             Vector3 spawn = effects != null && GameRules.playerShootNumber == 2
                 ? effects.MuzzlePosition(i) : spawnPoints[i] + transform.position;
-            var b=PlayerRound.Spawn(spawn,Vector2.up,GameRules.playerShootDamage*charge,GameRules.playerShootTravelSpeed);
+            var b = PlayerRound.Spawn(spawn, Vector2.up, GameRules.playerShootDamage * charge, GameRules.playerShootTravelSpeed);
             MagnifyingLens.Enlarge(b);
-            ChargedShotCue.Apply(b,charge);
+            ChargedShotCue.Apply(b, charge);
 
         }
     }

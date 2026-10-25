@@ -11,7 +11,10 @@ public class EscortOrbit : PatternMover
     private Vector3 tangent;
     private bool peeling, joined;
 
-    public void SetAnchor(Transform leader) { anchor = leader; }
+    public void SetAnchor(Transform leader)
+    {
+        anchor = leader;
+    }
 
     protected override void InitializePattern()
     {
@@ -30,14 +33,20 @@ public class EscortOrbit : PatternMover
         {
             transform.position += tangent * moveSpeed * peelSpeedMultiplier * dt;
             if (transform.position.y < Camera.DownLimit - 2 || transform.position.y > Camera.UpLimit + 2 ||
-                transform.position.x < Camera.LeftLimit - 2 || transform.position.x > Camera.RightLimit + 2) Leave();
+                transform.position.x < Camera.LeftLimit - 2 || transform.position.x > Camera.RightLimit + 2)
+                Leave();
             return;
         }
-        if (joined) angle += dt * Mathf.PI * 2 / Mathf.Max(.1f, orbitPeriod);
+        if (joined)
+            angle += dt * Mathf.PI * 2 / Mathf.Max(.1f, orbitPeriod);
         var target = anchor.position + new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * radius;
         target.z = origin.z;
         tangent = new Vector3(-Mathf.Sin(angle), Mathf.Cos(angle), 0);
-        if (Travel(target, dt)) { joined = true; Arrive(); }
+        if (Travel(target, dt))
+        {
+            joined = true;
+            Arrive();
+        }
         SetFiring(joined);
     }
 }

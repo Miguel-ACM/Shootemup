@@ -32,11 +32,13 @@ public class Zigzag : PatternMover
         {
             Arrive();
             turns++;
-            if (turns % Mathf.Max(1, fireEveryTurns) == 0) fireRemaining = firingWindow;
+            if (turns % Mathf.Max(1, fireEveryTurns) == 0)
+                fireRemaining = firingWindow;
             direction = -direction;
             NextWaypoint();
         }
         SetFiring(fireRemaining > 0);
-        if (transform.position.y < Camera.DownLimit - 1f) Leave();
+        if (transform.position.y < Camera.DownLimit - 1f)
+            Leave();
     }
 }

@@ -14,13 +14,20 @@ public abstract class AShooter : MonoBehaviour
         onVisible,
         onTrigger
     }
+
     public ShootTrigger activation = ShootTrigger.None;
 
     private bool movementFiringAllowed = true;
     private Coroutine firingRoutine;
-    public Vector3? MovementAimPoint { get; set; }
+    public Vector3? MovementAimPoint
+    {
+        get; set;
+    }
 
-    public void SetMovementFiringAllowed(bool allowed) { movementFiringAllowed = allowed; }
+    public void SetMovementFiringAllowed(bool allowed)
+    {
+        movementFiringAllowed = allowed;
+    }
 
     protected Vector3 AimPosition(Transform target)
     {
@@ -29,7 +36,8 @@ public abstract class AShooter : MonoBehaviour
 
     private void BeginShooting()
     {
-        if (firingRoutine == null && isActiveAndEnabled) firingRoutine = StartCoroutine(GatedShoot());
+        if (firingRoutine == null && isActiveAndEnabled)
+            firingRoutine = StartCoroutine(GatedShoot());
     }
 
     private IEnumerator GatedShoot()
@@ -39,8 +47,10 @@ public abstract class AShooter : MonoBehaviour
         {
             while (true)
             {
-                while (!movementFiringAllowed) yield return null;
-                if (!sequence.MoveNext()) break;
+                while (!movementFiringAllowed)
+                    yield return null;
+                if (!sequence.MoveNext())
+                    break;
                 yield return sequence.Current;
             }
         }
@@ -71,7 +81,8 @@ public abstract class AShooter : MonoBehaviour
 
     public virtual void Stop()
     {
-        if (firingRoutine != null) StopCoroutine(firingRoutine);
+        if (firingRoutine != null)
+            StopCoroutine(firingRoutine);
         firingRoutine = null;
     }
 

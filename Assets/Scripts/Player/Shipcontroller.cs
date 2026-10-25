@@ -7,7 +7,11 @@ using EZCameraShake;
 public class Shipcontroller : MonoBehaviour
 {
     public event System.Action HitTaken;
-    public bool ObserverMode {get;set;}
+    public bool ObserverMode
+    {
+        get; set;
+    }
+
     public GameObject bulletPrimary;
 
     [SerializeField] private ResourceBar healthBar;
@@ -24,9 +28,9 @@ public class Shipcontroller : MonoBehaviour
     float verticalMove = 0f;
     float verticalMoveMultiplier = 1.2f;
     float[] limits;
-  
 
-    
+
+
     public bool isShootingPrimary = false;
     public bool isStopingPrimary = true;
 
@@ -60,10 +64,11 @@ public class Shipcontroller : MonoBehaviour
     Inputs input;
     Vector2 move;
     Vector2 waterVelocity;
-    public Vector2 MoveInput=>move;
-    public bool IsInvulnerable=>invulnerable || (GetComponent<ShipBarrelRoll>()?.Active ?? false);
+    public Vector2 MoveInput => move;
+    public bool IsInvulnerable => invulnerable || (GetComponent<ShipBarrelRoll>()?.Active ?? false);
 
-    void Awake(){
+    void Awake()
+    {
         input = new Inputs();
         gameObject.AddComponent<ShipLoadout>();
         gameObject.AddComponent<CombatUpgrades>();
@@ -89,7 +94,8 @@ public class Shipcontroller : MonoBehaviour
         input.PlayerControls.Move.canceled += ctx => move = ctx.ReadValue<Vector2>();
     }
 
-    void OnEnable() {
+    void OnEnable()
+    {
         input.PlayerControls.Enable();
     }
 
@@ -103,7 +109,7 @@ public class Shipcontroller : MonoBehaviour
         activeLeft = a;
     }
 
-    public void AddCompanion(string companionName, int numItems=1)
+    public void AddCompanion(string companionName, int numItems = 1)
     {
         for (int k = 0; k < numItems; k++)
         {
@@ -172,10 +178,12 @@ public class Shipcontroller : MonoBehaviour
 
     void ActiveRightPressed(InputAction.CallbackContext ctx)
     {
-        if(Time.timeScale<=0 && !WorldTimeStop.PlayerCanAct)return;
-        if(GameRules.playerDisabled || GetComponent<ShipLoadout>().ConsumedInputThisFrame)return;
+        if (Time.timeScale <= 0 && !WorldTimeStop.PlayerCanAct)
+            return;
+        if (GameRules.playerDisabled || GetComponent<ShipLoadout>().ConsumedInputThisFrame)
+            return;
         isActiveRightPressed = true;
-        
+
 
         if (activeRight != null)
         {
@@ -192,22 +200,46 @@ public class Shipcontroller : MonoBehaviour
 
     float UseActive(AActiveItem active)
     {
-        var upgrades=GetComponent<CombatUpgrades>();float stored=upgrades!=null ? upgrades.Reserve : 0;
-        float result=active.OnPress(mana+stored);
-        if(result<0)return result;
-        float spent=Mathf.Max(0,mana+stored-result);
-        float fromReserve=upgrades!=null ? upgrades.SpendReserve(spent) : 0;
-        return Mathf.Clamp(mana-(spent-fromReserve),0,maxMana);
+        var upgrades = GetComponent<CombatUpgrades>();
+        float stored = upgrades != null ? upgrades.Reserve : 0;
+        float result = active.OnPress(mana + stored);
+        if (result < 0)
+            return result;
+        float spent = Mathf.Max(0, mana + stored - result);
+        float fromReserve = upgrades != null ? upgrades.SpendReserve(spent) : 0;
+        return Mathf.Clamp(mana - (spent - fromReserve), 0, maxMana);
     }
+
     void ActiveLeftPressed(InputAction.CallbackContext ctx)
     {
-        if(Time.timeScale<=0 && !WorldTimeStop.PlayerCanAct)return;
-        if(GameRules.playerDisabled || GetComponent<ShipLoadout>().ConsumedInputThisFrame)return;
-        isActiveLeftPressed=true;
-        if(activeLeft!=null){float result=UseActive(activeLeft);if(result>=0){mana=result;manaBar.Set(mana);}}
+        if (Time.timeScale <= 0 && !WorldTimeStop.PlayerCanAct)
+            return;
+        if (GameRules.playerDisabled || GetComponent<ShipLoadout>().ConsumedInputThisFrame)
+            return;
+        isActiveLeftPressed = true;
+        if (activeLeft != null)
+        {
+            float result = UseActive(activeLeft);
+            if (result >= 0)
+            {
+                mana = result;
+                manaBar.Set(mana);
+            }
+        }
     }
-    void ActiveLeftReleased(InputAction.CallbackContext ctx){isActiveLeftPressed=false;if(activeLeft!=null)activeLeft.OnRelease(mana);}
-    public void ReceiveHazardDamage(float amount){if(!IsInvulnerable && health>0 && !GameRules.playerDisabled)GetDamaged(amount);}
+
+    void ActiveLeftReleased(InputAction.CallbackContext ctx)
+    {
+        isActiveLeftPressed = false;
+        if (activeLeft != null)
+            activeLeft.OnRelease(mana);
+    }
+
+    public void ReceiveHazardDamage(float amount)
+    {
+        if (!IsInvulnerable && health > 0 && !GameRules.playerDisabled)
+            GetDamaged(amount);
+    }
 
     void ActiveRightReleased(InputAction.CallbackContext ctx)
     {
@@ -250,22 +282,26 @@ public class Shipcontroller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        speedMultiplier=input.PlayerControls.Focus.IsPressed() ? slowMultiplier : 1;
+        speedMultiplier = input.PlayerControls.Focus.IsPressed() ? slowMultiplier : 1;
         horizontalMove = move.x * GameRules.playerMoveSpeed * WorldTimeStop.PlayerDelta * speedMultiplier;
         verticalMove = move.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * WorldTimeStop.PlayerDelta * speedMultiplier;
-        if(LevelRun.Current==LevelId.Underwater && !CombatDecision.Active && !CloudTransition.Busy)
+        if (LevelRun.Current == LevelId.Underwater && !CombatDecision.Active && !CloudTransition.Busy)
         {
-            var desired=new Vector2(move.x,move.y*verticalMoveMultiplier)*GameRules.playerMoveSpeed*speedMultiplier*.79f;
-            float response=move.sqrMagnitude<.01f ? 5.5f : speedMultiplier<1 ? 11 : 7;
-            waterVelocity=Vector2.Lerp(waterVelocity,desired,1-Mathf.Exp(-WorldTimeStop.PlayerDelta*response));
-            horizontalMove=waterVelocity.x*WorldTimeStop.PlayerDelta;verticalMove=waterVelocity.y*WorldTimeStop.PlayerDelta;
+            var desired = new Vector2(move.x, move.y * verticalMoveMultiplier) * GameRules.playerMoveSpeed * speedMultiplier * .79f;
+            float response = move.sqrMagnitude < .01f ? 5.5f : speedMultiplier < 1 ? 11 : 7;
+            waterVelocity = Vector2.Lerp(waterVelocity, desired, 1 - Mathf.Exp(-WorldTimeStop.PlayerDelta * response));
+            horizontalMove = waterVelocity.x * WorldTimeStop.PlayerDelta;
+            verticalMove = waterVelocity.y * WorldTimeStop.PlayerDelta;
         }
-        else waterVelocity=Vector2.zero;
+        else
+            waterVelocity = Vector2.zero;
 
         transform.position = new Vector3(Mathf.Clamp(transform.position.x + horizontalMove, limits[2], limits[3]), Mathf.Clamp(transform.position.y + verticalMove, limits[1], limits[0]), transform.position.z);
-        if(transform.position.x==limits[2] || transform.position.x==limits[3])waterVelocity.x=0;
-        if(transform.position.y==limits[1] || transform.position.y==limits[0])waterVelocity.y=0;
-        
+        if (transform.position.x == limits[2] || transform.position.x == limits[3])
+            waterVelocity.x = 0;
+        if (transform.position.y == limits[1] || transform.position.y == limits[0])
+            waterVelocity.y = 0;
+
     }
 
     private void FixedUpdate()
@@ -275,11 +311,11 @@ public class Shipcontroller : MonoBehaviour
         if (!GameRules.playerDisabled && activeLeft != null && isActiveLeftPressed)
             activeLeft.OnHold(mana);
 
-        
+
         if (previousPositions != null)
         {
-            
-            
+
+
             if (lastPosition != transform.position)
             {
                 Vector2 pos2 = transform.position;
@@ -294,9 +330,10 @@ public class Shipcontroller : MonoBehaviour
     {
         if (other.tag == "EnemyBullet")
         {
-            var round=other.GetComponent<CombatRound>();
-            if(round!=null && !round.PixelOverlaps(circleCollider))return;
-            
+            var round = other.GetComponent<CombatRound>();
+            if (round != null && !round.PixelOverlaps(circleCollider))
+                return;
+
             if (!IsInvulnerable && !GameRules.playerDisabled)
             {
                 AEnemyBullet bullet = other.GetComponent<AEnemyBullet>();
@@ -311,8 +348,9 @@ public class Shipcontroller : MonoBehaviour
     {
         // A broad contact may begin in transparent ink; check the exact pixels
         // as the round moves through that contact instead of missing a later hit.
-        var round=other.GetComponent<CombatRound>();
-        if(round!=null && round.UsesPixelContact)OnTriggerEnter2D(other);
+        var round = other.GetComponent<CombatRound>();
+        if (round != null && round.UsesPixelContact)
+            OnTriggerEnter2D(other);
     }
 
     public float GetManaChanceMultiplier()
@@ -376,16 +414,20 @@ public class Shipcontroller : MonoBehaviour
         renderer.color = tmp;
         GameRules.playerMoveSpeed = 0;
         GameRules.playerDisabled = true;
-        var visual=GetComponent<PSXObjectVisual>();if(visual!=null)visual.Hide();
+        var visual = GetComponent<PSXObjectVisual>();
+        if (visual != null)
+            visual.Hide();
         GameOverState.Show();
 
     }
 
     void GetDamaged(float damage)
     {
-        if(ObserverMode || health<=0 || GameOverState.Active)return;
-        if(damage>0)HitTaken?.Invoke();
-        PSXImpactEffects.Burst(transform.position,new Color(.15f,.65f,1));
+        if (ObserverMode || health <= 0 || GameOverState.Active)
+            return;
+        if (damage > 0)
+            HitTaken?.Invoke();
+        PSXImpactEffects.Burst(transform.position, new Color(.15f, .65f, 1));
         SoundManager.PlaySound("hurt1", 0.2f);
         health -= damage;
         // Kept small: a short nudge that reads as an impact without throwing the playfield around.
@@ -465,8 +507,9 @@ public class Shipcontroller : MonoBehaviour
 
     public void HealManaFlat(float heal)
     {
-        var upgrades=GetComponent<CombatUpgrades>();
-        if(upgrades!=null)upgrades.StoreOverflow(Mathf.Max(0,mana+heal*GameRules.manaHealMultiplier-maxMana));
+        var upgrades = GetComponent<CombatUpgrades>();
+        if (upgrades != null)
+            upgrades.StoreOverflow(Mathf.Max(0, mana + heal * GameRules.manaHealMultiplier - maxMana));
         mana = Mathf.Clamp(mana + heal * GameRules.manaHealMultiplier, 0, maxMana);
         manaBar.Set(mana);
     }
@@ -482,13 +525,15 @@ public class Shipcontroller : MonoBehaviour
         }
     }
 
-    void OnDisable() {
+    void OnDisable()
+    {
         input?.PlayerControls.Disable();
     }
 
     // Inputs instances stay enabled after their scene unloads, and their callbacks then run
     // against this destroyed object, so release it with the object.
-    void OnDestroy() {
+    void OnDestroy()
+    {
         input?.Dispose();
     }
 }

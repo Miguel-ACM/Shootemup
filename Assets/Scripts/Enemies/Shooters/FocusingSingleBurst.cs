@@ -14,7 +14,7 @@ public class FocusingSingleBurst : AShooter
     int numCurShot = 0;
     [SerializeField] private int numBullets = 300;
     [SerializeField] private GameObject bullet;
-    [SerializeField] private float[] bulletSpread = {35f, 1f};
+    [SerializeField] private float[] bulletSpread = { 35f, 1f };
     [SerializeField] private AnimationCurve bulletSpreadCurve;
 
 
@@ -37,7 +37,7 @@ public class FocusingSingleBurst : AShooter
             float angle = Utils.GetAngleBetweenVectors(transform.position, playerPos);
 
             AEnemyBullet createdBullet = Instantiate(bullet, transform.position, transform.rotation).GetComponent<AEnemyBullet>();
-            currentBulletSpread = (bulletSpreadCurve.Evaluate((float) numCurShot / numBullets)) * bulletSpreadDistance + bulletSpread[1];
+            currentBulletSpread = (bulletSpreadCurve.Evaluate((float)numCurShot / numBullets)) * bulletSpreadDistance + bulletSpread[1];
             createdBullet.setProperties(new Dictionary<string, float> { { "damage", shotDamage * GameRules.enemyDamage }, { "angle", Utils.RandomVariateAngle(angle, currentBulletSpread) }, { "speed", shotSpeed * GameRules.enemyBulletSpeed } });
             numCurShot += 1;
             if (numCurShot == numBullets)

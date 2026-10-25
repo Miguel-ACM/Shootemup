@@ -37,13 +37,20 @@ public class SoundManager : MonoBehaviour
     {
         switch (clip)
         {
-            case "hit1": return hit1;
-            case "shot1": return shot1;
-            case "enemyExplosion1": return enemyExplosion1;
-            case "hurt1": return hurt1;
-            case "playerDead": return playerDead;
-            case "blankbullet": return blankbullet;
-            case "bossWarning": return bossWarning;
+            case "hit1":
+                return hit1;
+            case "shot1":
+                return shot1;
+            case "enemyExplosion1":
+                return enemyExplosion1;
+            case "hurt1":
+                return hurt1;
+            case "playerDead":
+                return playerDead;
+            case "blankbullet":
+                return blankbullet;
+            case "bossWarning":
+                return bossWarning;
         }
         return null;
     }

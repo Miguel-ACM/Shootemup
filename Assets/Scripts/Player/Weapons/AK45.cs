@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class AK45 : AWeaponAutomatic
 {
     [SerializeField] GameObject bullet;
-    
+
     public override void Shoot()
     {
         if (!KeepFiring())
@@ -16,7 +16,7 @@ public class AK45 : AWeaponAutomatic
         for (int i = 0; i < GameRules.playerShootNumber; i++)
         {
             ABullet b = Instantiate(bullet, transform.position, Quaternion.identity).GetComponent<ABullet>();
-            b.setProperties(new Dictionary<string, float> { 
+            b.setProperties(new Dictionary<string, float> {
                 { "speed", GameRules.playerShootTravelSpeed },
                 { "damage", GameRules.playerShootDamage },
                 { "size", GameRules.playerShootSize },

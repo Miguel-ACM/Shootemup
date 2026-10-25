@@ -1,3 +1,5 @@
 using UnityEngine;
 
-public abstract class SpaceSatellite : DistrictEnemy { }
+public abstract class SpaceSatellite : DistrictEnemy
+{
+}

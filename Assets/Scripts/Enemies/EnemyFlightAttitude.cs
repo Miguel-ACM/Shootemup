@@ -17,11 +17,16 @@ public sealed class EnemyFlightAttitude
             previous = position;
             heading = targetHeading;
         }
-        if (dt <= 0) return Rotation;
+        if (dt <= 0)
+            return Rotation;
         Vector2 measured = (position - previous) / dt;
         previous = position;
         // Spawn placement and teleports are not flight maneuvers.
-        if (measured.sqrMagnitude > 1600) { velocity = Vector2.zero; return Rotation; }
+        if (measured.sqrMagnitude > 1600)
+        {
+            velocity = Vector2.zero;
+            return Rotation;
+        }
         float response = Mathf.Lerp(.11f, .26f, weight);
         float blend = 1 - Mathf.Exp(-dt / response);
         Vector2 nextVelocity = Vector2.Lerp(velocity, measured, blend);

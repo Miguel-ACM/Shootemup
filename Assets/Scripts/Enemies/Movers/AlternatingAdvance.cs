@@ -22,8 +22,13 @@ public class AlternatingAdvance : PatternMover
     {
         // A unique instance ordering resolves accidentally identical Inspector flags.
         bool first = partner == null || (movesFirst != partner.movesFirst ? movesFirst : GetEntityId().CompareTo(partner.GetEntityId()) < 0);
-        if (pendingTurn || first) BeginAdvance();
-        else { Arrive(); SetFiring(false); }
+        if (pendingTurn || first)
+            BeginAdvance();
+        else
+        {
+            Arrive();
+            SetFiring(false);
+        }
     }
 
     private void BeginAdvance()
@@ -57,11 +62,14 @@ public class AlternatingAdvance : PatternMover
             if ((settled || partnerGone) && holdClock >= holdDuration)
             {
                 settled = false;
-                if (partnerGone) BeginAdvance();
-                else partner.BeginAdvance();
+                if (partnerGone)
+                    BeginAdvance();
+                else
+                    partner.BeginAdvance();
                 holdClock = 0;
             }
         }
-        if (transform.position.y < Camera.DownLimit - 1) Leave();
+        if (transform.position.y < Camera.DownLimit - 1)
+            Leave();
     }
 }

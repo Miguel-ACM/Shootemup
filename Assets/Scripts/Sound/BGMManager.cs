@@ -26,19 +26,23 @@ public class BGMManager : MonoBehaviour
 
     void Start()
     {
-        if (SceneManager.GetActiveScene().name == "Title") StopBGM();
-        else if (!audioSource.isPlaying) PlayLevelMusic(LevelRun.Current);
+        if (SceneManager.GetActiveScene().name == "Title")
+            StopBGM();
+        else if (!audioSource.isPlaying)
+            PlayLevelMusic(LevelRun.Current);
     }
 
     public static void PlayLevelMusic(LevelId level)
     {
         PlayBGM(LevelTrack(level));
     }
-    public static string LevelTrack(LevelId level)=>level.ToString().ToLowerInvariant();
+
+    public static string LevelTrack(LevelId level) => level.ToString().ToLowerInvariant();
 
     public static void PlayBGM(string bgm)
     {
-        if (audioSource == null) return;
+        if (audioSource == null)
+            return;
         if (!tracks.TryGetValue(bgm, out var clip) || clip == null)
         {
             clip = Resources.Load<AudioClip>("Music/" + bgm);
@@ -59,7 +63,8 @@ public class BGMManager : MonoBehaviour
 
     public static void StopBGM()
     {
-        if(audioSource!=null)audioSource.Stop();
+        if (audioSource != null)
+            audioSource.Stop();
     }
 
 
@@ -104,12 +109,13 @@ public class BGMManager : MonoBehaviour
     }
 
     public static void ChangeMood(int semitones)
-{
-    // Convert semitones to pitch multiplier
-    float pitchMultiplier = Mathf.Pow(2f, semitones / 12f);
+    {
+        // Convert semitones to pitch multiplier
+        float pitchMultiplier = Mathf.Pow(2f, semitones / 12f);
 
-    audioSource.pitch = pitchMultiplier;
-}
+        audioSource.pitch = pitchMultiplier;
+    }
+
     public static void RestartSong()
     {
         audioSource.Stop();

@@ -6,5 +6,7 @@ public class AK45Item : APassiveWeaponItem
         SetData("AK45", "45 degrees of fun", "Side-firing gun.", AItem.ItemType.passiveWeapon);
     }
 
-    public override void OnBegin() { }
+    public override void OnBegin()
+    {
+    }
 }

@@ -6,5 +6,7 @@ public class AMoonItem : ACompanionItem
         SetData("A Moon", "It orbits!", "Orbiting bullet shield.", AItem.ItemType.partner);
     }
 
-    public override void OnBegin() { }
+    public override void OnBegin()
+    {
+    }
 }

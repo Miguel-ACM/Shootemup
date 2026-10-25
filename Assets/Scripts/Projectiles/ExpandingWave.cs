@@ -16,10 +16,11 @@ public class ExpandingWave : AEnemyBullet
 
     protected override void Move()
     {
-        float dt=Time.deltaTime*CombatUpgrades.HostileSpeedAt(transform.position);
+        float dt = Time.deltaTime * CombatUpgrades.HostileSpeedAt(transform.position);
         transform.localScale = new Vector3(transform.localScale.x + dt * expandSpeed, transform.localScale.y + dt * expandSpeed, transform.localScale.z);
         transform.Rotate(transform.rotation.x, transform.rotation.y, dt * rotationSpeed);
     }
+
     IEnumerator DestroySelf()
     {
         yield return new WaitForSeconds(timeToDie);

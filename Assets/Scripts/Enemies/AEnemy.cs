@@ -6,10 +6,18 @@ public abstract class AEnemy : MonoBehaviour
 {
 
     public static readonly HashSet<AEnemy> Live = new HashSet<AEnemy>();
-    protected virtual void OnEnable(){Live.Add(this);}
-    protected virtual void OnDisable(){Live.Remove(this);}
-    [EnemyTunable("Base health",1,50000)] public float health = 20f;
-    public virtual bool CanBeTargeted => health>0;
+    protected virtual void OnEnable()
+    {
+        Live.Add(this);
+    }
+
+    protected virtual void OnDisable()
+    {
+        Live.Remove(this);
+    }
+
+    [EnemyTunable("Base health", 1, 50000)] public float health = 20f;
+    public virtual bool CanBeTargeted => health > 0;
 
     bool dying = false;
     public float size = 0.65f;
@@ -40,7 +48,12 @@ public abstract class AEnemy : MonoBehaviour
         orchestrer = o;
         orchesterWaveNumber = waveNumber;
     }
-    protected void ShareEncounterWith(AEnemy other){if(other!=null)other.SetOrchestrer(orchestrer,orchesterWaveNumber);}
+
+    protected void ShareEncounterWith(AEnemy other)
+    {
+        if (other != null)
+            other.SetOrchestrer(orchestrer, orchesterWaveNumber);
+    }
 
 
     protected virtual void Start()
@@ -61,7 +74,7 @@ public abstract class AEnemy : MonoBehaviour
 
     void InstantitatePickables(string pickable, int num)
     {
-        for (int i = 0; i<num; i++)
+        for (int i = 0; i < num; i++)
         {
             Vector3 pos = Utils.RandomVectorInCircle(size, size);
             Instantiate(Resources.Load<GameObject>("Pickables/" + pickable), transform.position + pos, Quaternion.identity);
@@ -85,7 +98,7 @@ public abstract class AEnemy : MonoBehaviour
         }
         if (Random.Range(0f, 1f) < (GameRules.itemLuck * manaDropChance * s.GetManaChanceMultiplier()))
         {
-            numDrops = minmaxMana [0];
+            numDrops = minmaxMana[0];
             if (minmaxMana[0] != minmaxMana[1])
             {
                 numDrops = Random.Range(minmaxMana[0], minmaxMana[1] + 1);
@@ -107,25 +120,35 @@ public abstract class AEnemy : MonoBehaviour
 
     public void Depart()
     {
-        if(dying)return;dying=true;
-        if(orchestrer!=null)orchestrer.NotifyEnemyKilled(orchesterWaveNumber,isBoss:isBoss,defeated:false);
+        if (dying)
+            return;
+        dying = true;
+        if (orchestrer != null)
+            orchestrer.NotifyEnemyKilled(orchesterWaveNumber, isBoss: isBoss, defeated: false);
         Destroy(gameObject);
     }
 
     protected virtual void Die()
     {
-        if(isBoss){BossDestruction.Play(this,position=>CompleteDeath(false,position));return;}
+        if (isBoss)
+        {
+            BossDestruction.Play(this, position => CompleteDeath(false, position));
+            return;
+        }
         CompleteDeath(true);
     }
-    void CompleteDeath(bool explode,Vector3? bossPosition=null)
+
+    void CompleteDeath(bool explode, Vector3? bossPosition = null)
     {
         // The explosion plays its own sound for every fireball it spawns.
-        if(CombatUpgrades.Current!=null)CombatUpgrades.Current.Killed(this);
-        if(explode)PSXImpactEffects.Explosion(gameObject);
+        if (CombatUpgrades.Current != null)
+            CombatUpgrades.Current.Killed(this);
+        if (explode)
+            PSXImpactEffects.Explosion(gameObject);
         Score.IncreaseScore(scoreOnKill);
         DropItems();
         if (orchestrer != null)
-            orchestrer.NotifyEnemyKilled(orchesterWaveNumber,isBoss:isBoss,bossPosition:bossPosition);
+            orchestrer.NotifyEnemyKilled(orchesterWaveNumber, isBoss: isBoss, bossPosition: bossPosition);
         Destroy(gameObject);
     }
 
@@ -158,24 +181,29 @@ public abstract class AEnemy : MonoBehaviour
     float nextImpact;
     bool impactProvided;
     PartHitFeedback localFeedback;
-    public void HitAt(Vector3 point,Vector2 incoming=default)
+    public void HitAt(Vector3 point, Vector2 incoming = default)
     {
-        impactProvided=true;
-        if(localFeedback==null)localFeedback=GetComponentInChildren<PartHitFeedback>();
-        if(localFeedback!=null)localFeedback.Pulse(incoming);
-        if(Time.time<nextImpact)return;
-        nextImpact=Time.time+.025f;
-        PSXImpactEffects.Burst(point,new Color(1,.68f,.30f),false,incoming.sqrMagnitude>.001f ? incoming : Vector2.up);
+        impactProvided = true;
+        if (localFeedback == null)
+            localFeedback = GetComponentInChildren<PartHitFeedback>();
+        if (localFeedback != null)
+            localFeedback.Pulse(incoming);
+        if (Time.time < nextImpact)
+            return;
+        nextImpact = Time.time + .025f;
+        PSXImpactEffects.Burst(point, new Color(1, .68f, .30f), false, incoming.sqrMagnitude > .001f ? incoming : Vector2.up);
     }
 
     public virtual void damage(float damage)
     {
-        if(dying || health<=0)return;
-        if(!impactProvided)HitAt(transform.position);
-        impactProvided=false;
+        if (dying || health <= 0)
+            return;
+        if (!impactProvided)
+            HitAt(transform.position);
+        impactProvided = false;
         health = health - damage * GameRules.enemyDamageReceived;
         blinkTimeout = Time.time + blinkSeconds;
-        if (localFeedback==null && !isBlinking)
+        if (localFeedback == null && !isBlinking)
         {
             isBlinking = true;
             StartCoroutine("Blink");
@@ -192,14 +220,15 @@ public abstract class AEnemy : MonoBehaviour
         if (!dying)
         {
             Destroy(gameObject);
-            if (orchestrer  != null)
-                orchestrer.NotifyEnemyKilled(orchesterWaveNumber, isBoss: isBoss,defeated:false);
+            if (orchestrer != null)
+                orchestrer.NotifyEnemyKilled(orchesterWaveNumber, isBoss: isBoss, defeated: false);
         }
     }
 
     public void NotifyBossPhaseChange(int phase)
     {
-        if(orchestrer!=null)orchestrer.NotifyBossPhaseChange(phase);
+        if (orchestrer != null)
+            orchestrer.NotifyBossPhaseChange(phase);
     }
 
 

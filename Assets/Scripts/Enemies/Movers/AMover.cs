@@ -18,7 +18,12 @@ public abstract class AMover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(FrozenHull.Holds(gameObject)){if(rigidBody!=null)rigidBody.linearVelocity=Vector2.zero;return;}
+        if (FrozenHull.Holds(gameObject))
+        {
+            if (rigidBody != null)
+                rigidBody.linearVelocity = Vector2.zero;
+            return;
+        }
         if (movementEnabled)
             Move();
     }

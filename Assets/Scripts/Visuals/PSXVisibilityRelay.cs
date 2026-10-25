@@ -4,6 +4,15 @@ using UnityEngine;
 public sealed class PSXVisibilityRelay : MonoBehaviour
 {
     public GameObject target;
-    void OnBecameVisible(){if(target!=null)target.SendMessage("OnBecameVisible",SendMessageOptions.DontRequireReceiver);}
-    void OnBecameInvisible(){if(target!=null)target.SendMessage("OnBecameInvisible",SendMessageOptions.DontRequireReceiver);}
+    void OnBecameVisible()
+    {
+        if (target != null)
+            target.SendMessage("OnBecameVisible", SendMessageOptions.DontRequireReceiver);
+    }
+
+    void OnBecameInvisible()
+    {
+        if (target != null)
+            target.SendMessage("OnBecameInvisible", SendMessageOptions.DontRequireReceiver);
+    }
 }

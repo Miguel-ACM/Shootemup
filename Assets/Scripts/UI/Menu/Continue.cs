@@ -1,4 +1,4 @@
-public class Continue : AMenuElement 
+public class Continue : AMenuElement
 {
     public override void OnAccept()
     {

@@ -6,5 +6,7 @@ public class BabyYouItem : ACompanionItem
         SetData("Baby you", "She can't walk yet", "A small copy of your ship.", AItem.ItemType.partner);
     }
 
-    public override void OnBegin() { }
+    public override void OnBegin()
+    {
+    }
 }

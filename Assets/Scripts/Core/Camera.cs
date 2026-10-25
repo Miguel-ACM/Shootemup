@@ -15,8 +15,9 @@ public class Camera : MonoBehaviour
     private static float whiteScreenOverlayDuration;
     private static bool overlayWhite;
 
-    public static float[] getLimits() {
-        return new float[4] {UpLimit, DownLimit, LeftLimit, RightLimit};
+    public static float[] getLimits()
+    {
+        return new float[4] { UpLimit, DownLimit, LeftLimit, RightLimit };
     }
 
     public static void WhiteScreenJitter(float duration)
@@ -31,7 +32,11 @@ public class Camera : MonoBehaviour
         if (overlayWhite)
         {
             // Some PSX scenes use the compositor without the legacy flash image.
-            if(whiteOverlay==null || whiteScreenJitter==null){overlayWhite=false;return;}
+            if (whiteOverlay == null || whiteScreenJitter == null)
+            {
+                overlayWhite = false;
+                return;
+            }
             whiteScreenOverlayT += Time.deltaTime;
             float a = whiteScreenJitter.Evaluate(whiteScreenOverlayT / whiteScreenOverlayDuration);
             if (whiteScreenOverlayT > whiteScreenOverlayDuration)

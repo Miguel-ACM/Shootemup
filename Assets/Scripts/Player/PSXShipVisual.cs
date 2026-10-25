@@ -20,10 +20,14 @@ public sealed class PSXShipVisual : MonoBehaviour
     float bank;
     public void ScaleHull(float factor)
     {
-        if(model!=null)model.localScale*=factor;
-        if(hitboxRenderers!=null)foreach(var marker in hitboxRenderers)
-            if(marker!=null)marker.transform.localScale*=factor;
+        if (model != null)
+            model.localScale *= factor;
+        if (hitboxRenderers != null)
+            foreach (var marker in hitboxRenderers)
+                if (marker != null)
+                    marker.transform.localScale *= factor;
     }
+
     static readonly int Tint = Shader.PropertyToID("_Tint");
     static readonly int PlayerDepth = Shader.PropertyToID("_PlayerDepth");
 
@@ -53,7 +57,8 @@ public sealed class PSXShipVisual : MonoBehaviour
 
     void LateUpdate()
     {
-        if (model == null || modelRenderer == null || sourceSprite == null) return;
+        if (model == null || modelRenderer == null || sourceSprite == null)
+            return;
         if (Application.isPlaying && Time.deltaTime > 0f)
         {
             float speed = (transform.position.x - previousPosition.x) / Time.deltaTime;
@@ -63,7 +68,7 @@ public sealed class PSXShipVisual : MonoBehaviour
         previousPosition = transform.position;
         // Bank around the nose (+Y in Ship space) so the hitbox, a sibling, never shifts.
         model.localRotation = customOrientation
-            ? Quaternion.AngleAxis(bank+(GetComponent<ShipBarrelRoll>()?.Angle ?? 0), Vector3.up) * baseRotation
+            ? Quaternion.AngleAxis(bank + (GetComponent<ShipBarrelRoll>()?.Angle ?? 0), Vector3.up) * baseRotation
             // Face the imported nose toward +Y while keeping the dorsal side toward -Z.
             : Quaternion.Euler(-75f, 0f, 0f) * Quaternion.Euler(0f, 180f, 0f) * Quaternion.AngleAxis(bank, Vector3.forward);
         Apply();
@@ -71,13 +76,15 @@ public sealed class PSXShipVisual : MonoBehaviour
 
     void Apply()
     {
-        if (sourceSprite == null || modelRenderer == null) return;
+        if (sourceSprite == null || modelRenderer == null)
+            return;
         sourceSprite.enabled = false;
         // Companions use the Player layer at order 0. Draw every player part after them.
         sourceSprite.sortingOrder = Mathf.Max(1, sourceSprite.sortingOrder);
         modelRenderer.sortingLayerID = sourceSprite.sortingLayerID;
         modelRenderer.sortingOrder = sourceSprite.sortingOrder;
-        if (properties == null) properties = new MaterialPropertyBlock();
+        if (properties == null)
+            properties = new MaterialPropertyBlock();
         modelRenderer.GetPropertyBlock(properties);
         properties.SetColor(Tint, sourceSprite.color);
         properties.SetFloat(PlayerDepth, 1f);
@@ -86,7 +93,8 @@ public sealed class PSXShipVisual : MonoBehaviour
         if (partRenderers != null)
             foreach (var part in partRenderers)
             {
-                if (part == null || part == modelRenderer) continue;
+                if (part == null || part == modelRenderer)
+                    continue;
                 part.sortingLayerID = modelRenderer.sortingLayerID;
                 part.sortingOrder = modelRenderer.sortingOrder;
                 part.SetPropertyBlock(properties);
@@ -95,6 +103,7 @@ public sealed class PSXShipVisual : MonoBehaviour
         // The hitbox stays fully visible through invulnerability blinking; it only hides on death.
         if (hitboxRenderers != null)
             foreach (var marker in hitboxRenderers)
-                if (marker != null) marker.enabled = sourceSprite.color.a > 0.001f && !GameRules.playerDisabled;
+                if (marker != null)
+                    marker.enabled = sourceSprite.color.a > 0.001f && !GameRules.playerDisabled;
     }
 }

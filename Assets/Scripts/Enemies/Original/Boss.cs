@@ -12,7 +12,7 @@ public class Boss : AEnemy
     protected override void Start()
     {
         base.Start();
-        initialHealth=health;
+        initialHealth = health;
         isBoss = true;
         size = 3.5f;
         healthBarGO = GameObject.Find("UI/ItemsRight/BossHealth");

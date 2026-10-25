@@ -8,13 +8,26 @@ public abstract class AWeaponAutomatic : AWeapon
     float shotClock;
     void Update()
     {
-        if(GameRules.playerDisabled || Menu.GameplayPaused || (Time.timeScale<=0 && !WorldTimeStop.PlayerCanAct))return;
-        if(!isShootingPrimary && !isShootingSecondary)return;
-        if(!KeepFiring())return;
-        shotClock-=WorldTimeStop.PlayerDelta*GameRules.playerShootSpeed*shootSpeedModifier*MagnifyingLens.Rate;
-        if(shotClock<=0){shotClock=Mathf.Max(0,shotClock+1);Shoot();}
+        if (GameRules.playerDisabled || Menu.GameplayPaused || (Time.timeScale <= 0 && !WorldTimeStop.PlayerCanAct))
+            return;
+        if (!isShootingPrimary && !isShootingSecondary)
+            return;
+        if (!KeepFiring())
+            return;
+        shotClock -= WorldTimeStop.PlayerDelta * GameRules.playerShootSpeed * shootSpeedModifier * MagnifyingLens.Rate;
+        if (shotClock <= 0)
+        {
+            shotClock = Mathf.Max(0, shotClock + 1);
+            Shoot();
+        }
     }
-    public override void StopFiring(){base.StopFiring();shotClock=0;}
+
+    public override void StopFiring()
+    {
+        base.StopFiring();
+        shotClock = 0;
+    }
+
     public AWeaponAutomatic()
     {
         weaponType = WeaponType.automatic;
@@ -22,13 +35,13 @@ public abstract class AWeaponAutomatic : AWeapon
 
     public override void WeaponPressed(bool pressedPrimary)
     {
-        bool firing=isShootingPrimary || isShootingSecondary;
+        bool firing = isShootingPrimary || isShootingSecondary;
         base.WeaponPressed(pressedPrimary);
-        if(!firing && (isShootingPrimary || isShootingSecondary))
-            shotClock=0; // Fire after all input actions have processed this frame, including Focus release.
+        if (!firing && (isShootingPrimary || isShootingSecondary))
+            shotClock = 0; // Fire after all input actions have processed this frame, including Focus release.
     }
 
-    
+
     public virtual void Shoot()
     {
         KeepFiring();

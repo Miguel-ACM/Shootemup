@@ -34,7 +34,8 @@ public class Score : MonoBehaviour
         {
             scoreThisMult += quantity;
         }
-        if (tm != null) tm.SetText(score.ToString(fmt));
+        if (tm != null)
+            tm.SetText(score.ToString(fmt));
     }
 
     public static float GetPercentageNextMultiplier()
@@ -44,19 +45,30 @@ public class Score : MonoBehaviour
 
     public static bool TrySpendScore(int cost)
     {
-        if(cost<0 || score<cost)return false;
-        score-=cost;if(tm!=null)tm.SetText(score.ToString(fmt));return true;
+        if (cost < 0 || score < cost)
+            return false;
+        score -= cost;
+        if (tm != null)
+            tm.SetText(score.ToString(fmt));
+        return true;
     }
+
     public static bool TrySpendMultiplier(int cost)
     {
-        if(cost<0 || multiplier-cost<1)return false;
-        if(cost==0)return true;
-        SetMultiplier(multiplier-cost);scoreThisMult=0;timeSinceNoScoreUp=0;return true;
+        if (cost < 0 || multiplier - cost < 1)
+            return false;
+        if (cost == 0)
+            return true;
+        SetMultiplier(multiplier - cost);
+        scoreThisMult = 0;
+        timeSinceNoScoreUp = 0;
+        return true;
     }
 
     void Update()
     {
-        if(CombatDecision.Active)return;
+        if (CombatDecision.Active)
+            return;
         if (scoreThisMult >= multUpThresholds[multiplier - 1] && multiplier < 8)
         {
             SetMultiplier(multiplier + 1);
@@ -74,11 +86,11 @@ public class Score : MonoBehaviour
                     timeSinceNoScoreUp = 0f;
                     scoreThisMult = multUpThresholds[multiplier - 1] / 2;
                 }
-                else 
+                else
                 {
                     scoreThisMult = 0;
                 }
-                
+
             }
         }
         scoreMultBar.Set(GetPercentageNextMultiplier());
@@ -100,15 +112,17 @@ public class Score : MonoBehaviour
     private static void SetMultiplier(int new_mult)
     {
         multiplier = new_mult;
-        if(multiplierText==null)return;
+        if (multiplierText == null)
+            return;
         if (multiplier > 1)
         {
             multiplierText.SetText("x" + multiplier.ToString());
-        } else
+        }
+        else
         {
             multiplierText.SetText("");
         }
-        
+
 
     }
 
@@ -117,7 +131,7 @@ public class Score : MonoBehaviour
         tm = GetComponent<TextMeshProUGUI>();
         multiplierText = GetComponentsInChildren<TextMeshProUGUI>()[1];
         scoreMultBar = GetComponentInChildren<ResourceBar>();
-        increaseSizeCurve = new AnimationCurve(new Keyframe[] { new Keyframe(0,0), new Keyframe(0.5f, 1f), new Keyframe(1, 0) });
+        increaseSizeCurve = new AnimationCurve(new Keyframe[] { new Keyframe(0, 0), new Keyframe(0.5f, 1f), new Keyframe(1, 0) });
         increaseSizeCurve.preWrapMode = WrapMode.Clamp;
         increaseSizeCurve.postWrapMode = WrapMode.Clamp;
     }

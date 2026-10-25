@@ -12,26 +12,29 @@ public class ElectricityBullet : ABullet
     {
         lineDrawerObject = Instantiate(Resources.Load<GameObject>("Bullets/LineDrawer"));
         lineDrawer = lineDrawerObject.GetComponent<LineDrawer>();
-       
+
 
     }
 
     public void Update()
     {
-        if(Time.deltaTime<=0)return;
+        if (Time.deltaTime <= 0)
+            return;
         if (!shoot)
         {
 
             List<AEnemy> hitEnemies;
-            lineDrawer.SetCoatings(PlayerShotPalette.Burning,PlayerShotPalette.Toxic);
+            lineDrawer.SetCoatings(PlayerShotPalette.Burning, PlayerShotPalette.Toxic);
             List<Vector2> path = GetPoints(transform.position, out hitEnemies);
-            lineDrawer.DrawLine(path.ToArray(), transform.position.z, .09f,true);
+            lineDrawer.DrawLine(path.ToArray(), transform.position.z, .09f, true);
             foreach (AEnemy enemy in hitEnemies)
             {
-                if(enemy==null || !enemy.CanBeTargeted)continue;
-                int point=path.IndexOf((Vector2)enemy.transform.position);
-                Vector2 incoming=point>0 ? path[point]-path[point-1] : Vector2.up;
-                enemy.HitAt(enemy.transform.position,incoming);enemy.damage(CombatUpgrades.Current!=null ? CombatUpgrades.Current.DirectHit(enemy,damage) : damage);
+                if (enemy == null || !enemy.CanBeTargeted)
+                    continue;
+                int point = path.IndexOf((Vector2)enemy.transform.position);
+                Vector2 incoming = point > 0 ? path[point] - path[point - 1] : Vector2.up;
+                enemy.HitAt(enemy.transform.position, incoming);
+                enemy.damage(CombatUpgrades.Current != null ? CombatUpgrades.Current.DirectHit(enemy, damage) : damage);
             }
             shoot = true;
             Invoke("Delete", 0.1f);
@@ -52,8 +55,11 @@ public class ElectricityBullet : ABullet
         hitEnemies = new List<AEnemy>();
         float radius = 1f + (followness * 2);
         float currAngle = 90f;
-        float angleLimitLeft = 175f; float angleLimitRight = 5f;
-        float nextAngle; float distance; Vector2 nextPoint;
+        float angleLimitLeft = 175f;
+        float angleLimitRight = 5f;
+        float nextAngle;
+        float distance;
+        Vector2 nextPoint;
         path.Add(origPoint);
         float i = 0;
         while (currPoint.x > Camera.LeftLimit - 1f && currPoint.x < Camera.RightLimit + 1f && currPoint.y < Camera.UpLimit + 2f)
@@ -65,8 +71,8 @@ public class ElectricityBullet : ABullet
             AEnemy hitObject = null;
             foreach (AEnemy candidate in AEnemy.Live)
             {
-                if (candidate==null || !candidate.CanBeTargeted || hitEnemies.Contains(candidate) ||
-                    ((Vector2)candidate.transform.position-currPoint).sqrMagnitude>radius*radius)
+                if (candidate == null || !candidate.CanBeTargeted || hitEnemies.Contains(candidate) ||
+                    ((Vector2)candidate.transform.position - currPoint).sqrMagnitude > radius * radius)
                 {
                     continue;
                 }
@@ -106,5 +112,10 @@ public class ElectricityBullet : ABullet
     {
         Destroy(gameObject);
     }
-    void OnDestroy(){if(lineDrawerObject!=null)Destroy(lineDrawerObject);}
+
+    void OnDestroy()
+    {
+        if (lineDrawerObject != null)
+            Destroy(lineDrawerObject);
+    }
 }

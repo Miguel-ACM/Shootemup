@@ -1,3 +1,5 @@
 using UnityEngine;
 
-public abstract class InfernalEnemy : DistrictEnemy { }
+public abstract class InfernalEnemy : DistrictEnemy
+{
+}

@@ -68,7 +68,9 @@ public static class VerifyMovementPatterns
         {
             GameRules.enemySpeed = originalSpeed;
             UnityEngine.Random.state = randomState;
-            foreach (var go in objects) if (go != null) UnityEngine.Object.DestroyImmediate(go);
+            foreach (var go in objects)
+                if (go != null)
+                    UnityEngine.Object.DestroyImmediate(go);
             objects.Clear();
             checks = 0;
         }
@@ -115,7 +117,8 @@ public static class VerifyMovementPatterns
         var b = Make("Reposition B", new Vector3(3, 6, 7)).AddComponent<FreeReposition>();
         for (int i = 0; i < 600; i++)
         {
-            a.Step(1f / 60); b.Step(1f / 60);
+            a.Step(1f / 60);
+            b.Step(1f / 60);
             Check(Vector2.Distance(a.Destination, b.Destination) >= 1.19f, "Repositioners selected conflicting destinations");
         }
         Check(a.transform.position.y >= 2 && b.transform.position.y >= 2, "Repositioner escaped upper region");
@@ -143,12 +146,15 @@ public static class VerifyMovementPatterns
     {
         var a = Make("Advance A", new Vector3(-1, 6, 7)).AddComponent<AlternatingAdvance>();
         var b = Make("Advance B", new Vector3(1, 6, 7)).AddComponent<AlternatingAdvance>();
-        a.SetPartner(b, true); b.SetPartner(a, false);
+        a.SetPartner(b, true);
+        b.SetPartner(a, false);
         bool sawA = false, sawB = false;
         for (int i = 0; i < 600; i++)
         {
-            a.Step(1f / 60); b.Step(1f / 60);
-            sawA |= a.IsAdvancing; sawB |= b.IsAdvancing;
+            a.Step(1f / 60);
+            b.Step(1f / 60);
+            sawA |= a.IsAdvancing;
+            sawB |= b.IsAdvancing;
             Check(!(a.IsAdvancing && b.IsAdvancing), "Partners advanced simultaneously");
             Check(!(a.IsAdvancing && a.CanFire) && !(b.IsAdvancing && b.CanFire), "Partner fired while advancing");
         }
@@ -167,13 +173,21 @@ public static class VerifyMovementPatterns
         for (int i = 0; i < 3; i++)
         {
             group[i] = Make("Formation member", new Vector3((i - 1) * 1.4f, 4, 7)).AddComponent<Reform>();
-            Set(group[i], "formationAnchor", anchor.transform); Set(group[i], "slotOrder", i);
+            Set(group[i], "formationAnchor", anchor.transform);
+            Set(group[i], "slotOrder", i);
         }
-        for (int i = 0; i < 180; i++) foreach (var mover in group) mover.Step(1f / 60);
+        for (int i = 0; i < 180; i++)
+            foreach (var mover in group)
+                mover.Step(1f / 60);
         UnityEngine.Object.DestroyImmediate(group[1].gameObject);
-        group[0].Step(.01f); group[2].Step(.01f);
+        group[0].Step(.01f);
+        group[2].Step(.01f);
         Check(!group[0].CanFire && !group[2].CanFire, "Formation fired during loss delay");
-        for (int i = 0; i < 180; i++) { group[0].Step(1f / 60); group[2].Step(1f / 60); }
+        for (int i = 0; i < 180; i++)
+        {
+            group[0].Step(1f / 60);
+            group[2].Step(1f / 60);
+        }
         Check(Mathf.Abs(group[0].transform.position.x + .7f) < .01f && Mathf.Abs(group[2].transform.position.x - .7f) < .01f,
             "Survivors did not close formation gaps");
         Check(group[0].CanFire && group[2].CanFire, "Reformed group never resumed firing");
@@ -188,12 +202,15 @@ public static class VerifyMovementPatterns
         var method = typeof(AShooter).GetMethod("GatedShoot", BindingFlags.Instance | BindingFlags.NonPublic);
         var sequence = (IEnumerator)method.Invoke(probe, null);
         probe.SetMovementFiringAllowed(false);
-        for (int i = 0; i < 5; i++) sequence.MoveNext();
+        for (int i = 0; i < 5; i++)
+            sequence.MoveNext();
         Check(probe.Shots == 0, "Blocked shooter emitted a shot");
-        probe.SetMovementFiringAllowed(true); sequence.MoveNext();
+        probe.SetMovementFiringAllowed(true);
+        sequence.MoveNext();
         Check(probe.Shots == 1, "Shooter did not resume");
         probe.SetMovementFiringAllowed(false);
-        for (int i = 0; i < 5; i++) sequence.MoveNext();
+        for (int i = 0; i < 5; i++)
+            sequence.MoveNext();
         Check(probe.Shots == 1, "Shooter kept firing during relocation");
         (sequence as IDisposable)?.Dispose();
         UnityEngine.Object.DestroyImmediate(probe.gameObject);
@@ -206,16 +223,39 @@ public static class VerifyMovementPatterns
         objects.Add(go);
         return go;
     }
+
     private static void Tick(PatternMover mover, float seconds)
-    { for (int i = 0; i < Mathf.CeilToInt(seconds * 60); i++) mover.Step(1f / (60 * PatternMover.FlightTempo * LevelRun.EnemyTempoScale)); }
+    {
+        for (int i = 0; i < Mathf.CeilToInt(seconds * 60); i++)
+            mover.Step(1f / (60 * PatternMover.FlightTempo * LevelRun.EnemyTempoScale));
+    }
+
     private static void Set(object target, string field, object value)
-    { target.GetType().GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value); }
+    {
+        target.GetType().GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value);
+    }
+
     private static void Check(bool condition, string message)
-    { checks++; if (!condition) throw new Exception(message); }
+    {
+        checks++;
+        if (!condition)
+            throw new Exception(message);
+    }
 }
 
 public class MovementProbeShooter : AShooter
 {
-    public int Shots { get; private set; }
-    protected override IEnumerator Shoot() { while (true) { Shots++; yield return null; } }
+    public int Shots
+    {
+        get; private set;
+    }
+
+    protected override IEnumerator Shoot()
+    {
+        while (true)
+        {
+            Shots++;
+            yield return null;
+        }
+    }
 }

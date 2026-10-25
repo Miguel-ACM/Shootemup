@@ -9,11 +9,16 @@ using Object = UnityEngine.Object;
 [InitializeOnLoad]
 public static class VerifyPolygonBreakup
 {
-    static VerifyPolygonBreakup() { EditorApplication.update += Tick; }
+    static VerifyPolygonBreakup()
+    {
+        EditorApplication.update += Tick;
+    }
+
     static void Tick()
     {
         const string request = "Temp/verify-polygon-breakup.request";
-        if (!File.Exists(request) || EditorApplication.isCompiling || EditorApplication.isUpdating || EditorApplication.isPlayingOrWillChangePlaymode) return;
+        if (!File.Exists(request) || EditorApplication.isCompiling || EditorApplication.isUpdating || EditorApplication.isPlayingOrWillChangePlaymode)
+            return;
         File.Delete(request);
         Run();
     }
@@ -32,8 +37,10 @@ public static class VerifyPolygonBreakup
                 var originals = model.GetComponentsInChildren<MeshFilter>();
                 Check(originals.All(f => f.sharedMesh.isReadable), path + " has unreadable model parts");
                 int faces = originals.Sum(f => f.sharedMesh.triangles.Length / 3);
-                var block = new MaterialPropertyBlock(); block.SetColor("_Tint", new Color(.8f, .9f, 1, .15f));
-                foreach (var renderer in model.GetComponentsInChildren<MeshRenderer>()) renderer.SetPropertyBlock(block);
+                var block = new MaterialPropertyBlock();
+                block.SetColor("_Tint", new Color(.8f, .9f, 1, .15f));
+                foreach (var renderer in model.GetComponentsInChildren<MeshRenderer>())
+                    renderer.SetPropertyBlock(block);
                 var debris = PSXPolygonDebris.Spawn(source);
                 Check(debris != null, path + " generated no debris");
                 var meshes = debris.GetComponentsInChildren<MeshFilter>();
@@ -77,13 +84,15 @@ public static class VerifyPolygonBreakup
             Directory.CreateDirectory("Temp");
             File.WriteAllText("Temp/PolygonBreakupVerification.txt", report.ToString());
             Debug.Log(report.ToString());
-            if (Application.isBatchMode) EditorApplication.Exit(0);
+            if (Application.isBatchMode)
+                EditorApplication.Exit(0);
         }
         catch (Exception exception)
         {
             Debug.LogException(exception);
             File.WriteAllText("Temp/PolygonBreakupVerification.txt", "FAIL " + exception);
-            if (Application.isBatchMode) EditorApplication.Exit(1);
+            if (Application.isBatchMode)
+                EditorApplication.Exit(1);
         }
     }
 
@@ -104,7 +113,8 @@ public static class VerifyPolygonBreakup
             exhaust.transform.SetParent(source.Hull, false);
             exhaust.AddComponent<MeshFilter>().sharedMesh = exhaustMesh = IndustrialMeshFactory.CreateFlame();
             exhaust.AddComponent<MeshRenderer>().sharedMaterial = CombatMaterials.Fleet;
-            var block = new MaterialPropertyBlock(); block.SetColor("_Tint", new Color(.8f, .9f, 1, .15f));
+            var block = new MaterialPropertyBlock();
+            block.SetColor("_Tint", new Color(.8f, .9f, 1, .15f));
             source.Hull.GetComponent<MeshRenderer>().SetPropertyBlock(block);
             debris = PSXPolygonDebris.Spawn(source.gameObject);
             Check(debris != null, type.Name + " generated no district hull debris");
@@ -124,17 +134,22 @@ public static class VerifyPolygonBreakup
             advance.Invoke(debris, new object[] { lifetime });
             Check(VisibleFaces(meshes) == 0, type.Name + " did not clear its debris");
             var allocated = meshes[0].sharedMesh;
-            Object.DestroyImmediate(source.gameObject); source = null;
+            Object.DestroyImmediate(source.gameObject);
+            source = null;
             Check(meshes[0] != null, type.Name + " debris was parented to the destroyed hull");
-            Object.DestroyImmediate(debris.gameObject); debris = null;
+            Object.DestroyImmediate(debris.gameObject);
+            debris = null;
             Check(allocated == null, type.Name + " leaked its generated debris mesh");
             report.AppendLine("PASS " + type.Name + ": " + faces + " hull faces, exhaust excluded, rotated pose retained, correct boss budget, motion and cleanup.");
         }
         finally
         {
-            if(source != null) Object.DestroyImmediate(source.gameObject);
-            if(debris != null) Object.DestroyImmediate(debris.gameObject);
-            if(exhaustMesh != null) Object.DestroyImmediate(exhaustMesh);
+            if (source != null)
+                Object.DestroyImmediate(source.gameObject);
+            if (debris != null)
+                Object.DestroyImmediate(debris.gameObject);
+            if (exhaustMesh != null)
+                Object.DestroyImmediate(exhaustMesh);
         }
     }
 
@@ -145,10 +160,15 @@ public static class VerifyPolygonBreakup
         {
             var vertices = filter.sharedMesh.vertices;
             for (int v = 0; v < vertices.Length; v += 3)
-                if (Vector3.Cross(vertices[v + 1] - vertices[v], vertices[v + 2] - vertices[v]).sqrMagnitude > 1e-12f) count++;
+                if (Vector3.Cross(vertices[v + 1] - vertices[v], vertices[v + 2] - vertices[v]).sqrMagnitude > 1e-12f)
+                    count++;
         }
         return count;
     }
 
-    static void Check(bool condition, string message) { if (!condition) throw new Exception(message); }
+    static void Check(bool condition, string message)
+    {
+        if (!condition)
+            throw new Exception(message);
+    }
 }

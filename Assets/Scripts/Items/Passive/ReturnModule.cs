@@ -1,7 +1,18 @@
 [UnityEngine.Scripting.Preserve]
 public sealed class ReturnModule : AItem
 {
-    void Awake(){SetData("Return Module","Ship equipment","Every fourth volley returns.",ItemType.passive);}
-    public override void OnBegin(){}
-    public override void OnPickup(){s.GetComponent<CombatUpgrades>().Add(UpgradeKind.Return);base.OnPickup();}
+    void Awake()
+    {
+        SetData("Return Module", "Ship equipment", "Every fourth volley returns.", ItemType.passive);
+    }
+
+    public override void OnBegin()
+    {
+    }
+
+    public override void OnPickup()
+    {
+        s.GetComponent<CombatUpgrades>().Add(UpgradeKind.Return);
+        base.OnPickup();
+    }
 }

@@ -3,40 +3,41 @@ public static partial class IndustrialMeshFactory
 {
     static void BuildFieldsFortressAirframe(Builder b)
     {
-        BevelArmor(b,new[]{V(-1.7f,.5f),V(-.58f,1.1f),V(0,.8f),V(.58f,1.1f),V(1.7f,.5f),V(1.36f,-.4f),V(.7f,-.72f),V(0,-.32f),V(-.7f,-.72f),V(-1.36f,-.4f)},.39f,2);
-        BevelArmor(b,new[]{V(-.4f,.8f),V(.4f,.8f),V(.57f,-.3f),V(.28f,-.95f),V(0,-1.13f),V(-.28f,-.95f),V(-.57f,-.3f)},.55f,0,-.13f);
-        BevelArmor(b,new[]{V(-.35f,.06f),V(.35f,.06f),V(.36f,-.39f),V(-.36f,-.39f)},.17f,6,-.46f);
-        b.Box(new Vector3(0,-.25f,-.59f),new Vector3(.53f,.12f,.04f),11,11);
-        b.Box(new Vector3(0,-.25f,-.62f),new Vector3(.43f,.055f,.025f),9,11);
-        foreach(int s in new[]{-1,1})
+        BevelArmor(b, new[] { V(-1.7f, .5f), V(-.58f, 1.1f), V(0, .8f), V(.58f, 1.1f), V(1.7f, .5f), V(1.36f, -.4f), V(.7f, -.72f), V(0, -.32f), V(-.7f, -.72f), V(-1.36f, -.4f) }, .39f, 2);
+        BevelArmor(b, new[] { V(-.4f, .8f), V(.4f, .8f), V(.57f, -.3f), V(.28f, -.95f), V(0, -1.13f), V(-.28f, -.95f), V(-.57f, -.3f) }, .55f, 0, -.13f);
+        BevelArmor(b, new[] { V(-.35f, .06f), V(.35f, .06f), V(.36f, -.39f), V(-.36f, -.39f) }, .17f, 6, -.46f);
+        b.Box(new Vector3(0, -.25f, -.59f), new Vector3(.53f, .12f, .04f), 11, 11);
+        b.Box(new Vector3(0, -.25f, -.62f), new Vector3(.43f, .055f, .025f), 9, 11);
+        foreach (int s in new[] { -1, 1 })
         {
-            Motor(b,s*1.04f,.35f,.43f,.74f,2);
-            BevelArmor(b,new[]{V(s*.6f,-.1f),V(s*1.47f,.1f),V(s*1.3f,-.57f),V(s*.75f,-.9f)},.25f,6,-.24f);
-            BevelArmor(b,new[]{V(s*.53f,.55f),V(s*.8f,.81f),V(s*.81f,.2f),V(s*.55f,.05f)},.11f,0,-.25f);
-            for(int i=0;i<3;i++)
+            Motor(b, s * 1.04f, .35f, .43f, .74f, 2);
+            BevelArmor(b, new[] { V(s * .6f, -.1f), V(s * 1.47f, .1f), V(s * 1.3f, -.57f), V(s * .75f, -.9f) }, .25f, 6, -.24f);
+            BevelArmor(b, new[] { V(s * .53f, .55f), V(s * .8f, .81f), V(s * .81f, .2f), V(s * .55f, .05f) }, .11f, 0, -.25f);
+            for (int i = 0; i < 3; i++)
             {
-                float x=s*(.75f+i*.22f),y=-.48f+i*.12f;
-                b.Drum(new Vector3(x,y,-.42f),.1f,.14f,11,8,6);b.Drum(new Vector3(x,y,-.51f),.055f,.045f,3,8);
+                float x = s * (.75f + i * .22f), y = -.48f + i * .12f;
+                b.Drum(new Vector3(x, y, -.42f), .1f, .14f, 11, 8, 6);
+                b.Drum(new Vector3(x, y, -.51f), .055f, .045f, 3, 8);
             }
-            Barrel(b,s*1.4f,-.35f,.6f,.16f,-.13f);
+            Barrel(b, s * 1.4f, -.35f, .6f, .16f, -.13f);
             // Paired ammunition decks, exposed feed rails and cooling vanes.
-            b.Box(new Vector3(s*.98f,.03f,-.43f),new Vector3(.58f,.24f,.12f),2,6);
-            for(int slat=0;slat<5;slat++)
-                b.Box(new Vector3(s*.98f,-.05f+slat*.045f,-.51f),new Vector3(.43f,.018f,.035f),11);
-            b.Box(new Vector3(s*.47f,.24f,-.39f),new Vector3(.07f,.72f,.07f),6,11);
-            for(int plate=0;plate<3;plate++)
+            b.Box(new Vector3(s * .98f, .03f, -.43f), new Vector3(.58f, .24f, .12f), 2, 6);
+            for (int slat = 0; slat < 5; slat++)
+                b.Box(new Vector3(s * .98f, -.05f + slat * .045f, -.51f), new Vector3(.43f, .018f, .035f), 11);
+            b.Box(new Vector3(s * .47f, .24f, -.39f), new Vector3(.07f, .72f, .07f), 6, 11);
+            for (int plate = 0; plate < 3; plate++)
             {
-                float y=.57f-plate*.20f;
-                b.Box(new Vector3(s*.25f,y,-.44f),new Vector3(.28f,.16f,.055f),plate==1 ? 2 : 0,6);
-                b.Drum(new Vector3(s*.34f,y+.045f,-.48f),.022f,.025f,6,6);
+                float y = .57f - plate * .20f;
+                b.Box(new Vector3(s * .25f, y, -.44f), new Vector3(.28f, .16f, .055f), plate == 1 ? 2 : 0, 6);
+                b.Drum(new Vector3(s * .34f, y + .045f, -.48f), .022f, .025f, 6, 6);
             }
             // Large shoulder emitters account for the outward pressure patterns.
-            Ring(b,new Vector3(s*1.34f,.32f,-.26f),.11f,.22f,.10f,6,8);
-            b.Drum(new Vector3(s*1.34f,.32f,-.33f),.105f,.045f,11,8);
-            b.Drum(new Vector3(s*1.34f,.32f,-.36f),.065f,.025f,3,8);
-            b.Box(new Vector3(s*1.42f,.04f,-.22f),new Vector3(.075f,.18f,.04f),10,11);
+            Ring(b, new Vector3(s * 1.34f, .32f, -.26f), .11f, .22f, .10f, 6, 8);
+            b.Drum(new Vector3(s * 1.34f, .32f, -.33f), .105f, .045f, 11, 8);
+            b.Drum(new Vector3(s * 1.34f, .32f, -.36f), .065f, .025f, 3, 8);
+            b.Box(new Vector3(s * 1.42f, .04f, -.22f), new Vector3(.075f, .18f, .04f), 10, 11);
         }
-        Inlet(b,0,.42f,.47f,.38f,-.43f,0);
-        Armor(b,new[]{V(-.16f,-.62f),V(.16f,-.62f),V(0,-.93f)},.04f,2,-.43f);
+        Inlet(b, 0, .42f, .47f, .38f, -.43f, 0);
+        Armor(b, new[] { V(-.16f, -.62f), V(.16f, -.62f), V(0, -.93f) }, .04f, 2, -.43f);
     }
 }

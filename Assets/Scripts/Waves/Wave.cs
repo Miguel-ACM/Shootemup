@@ -13,11 +13,11 @@ public class Wave : ICloneable
     public int weight;
     public ConflictGroup.cg cg;
     public float duration;
-    public string[] parts=Array.Empty<string>();
+    public string[] parts = Array.Empty<string>();
     int currEnemy = 0;
     static System.Random rng = new System.Random();
-   
-    public Wave(int _cost, float _duration, int _weight,  ConflictGroup.cg _conflictGroup, List<WaveUnit> _units)
+
+    public Wave(int _cost, float _duration, int _weight, ConflictGroup.cg _conflictGroup, List<WaveUnit> _units)
     {
         units = _units;
         cost = _cost;
@@ -40,7 +40,7 @@ public class Wave : ICloneable
     {
         if (waves.Count == 1)
         {
-            return (Wave) waves[0].Clone();
+            return (Wave)waves[0].Clone();
         }
         List<WaveUnit> newUnits = new List<WaveUnit>();
         int newCost = 0;
@@ -50,15 +50,16 @@ public class Wave : ICloneable
         {
             // Feed supporting formations in steadily, rather than piling them up at
             // zero or leaving a random four-second hole between entrances.
-            if (i > 0) addedTime += 0.9f + (float)rng.NextDouble() * 0.5f;
+            if (i > 0)
+                addedTime += 0.9f + (float)rng.NextDouble() * 0.5f;
             foreach (WaveUnit u in waves[i].units)
             {
                 WaveUnit newUnit = (WaveUnit)u.Clone();
                 newUnit.time += addedTime;
                 newUnits.Add(newUnit);
             }
-            
-            if (waves[i].duration + addedTime > duration )
+
+            if (waves[i].duration + addedTime > duration)
             {
                 duration = waves[i].duration + addedTime;
             }
@@ -87,8 +88,8 @@ public class Wave : ICloneable
         List<WaveUnit> newUnits = new List<WaveUnit>();
         foreach (WaveUnit u in units)
         {
-            newUnits.Add((WaveUnit) u.Clone());
+            newUnits.Add((WaveUnit)u.Clone());
         }
-        return new Wave(cost, duration, weight, cg, newUnits){parts=(string[])parts.Clone()};
+        return new Wave(cost, duration, weight, cg, newUnits) { parts = (string[])parts.Clone() };
     }
 }

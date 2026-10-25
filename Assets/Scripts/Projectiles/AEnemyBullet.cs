@@ -23,7 +23,7 @@ public abstract class AEnemyBullet : MonoBehaviour
         if (rigidBody.position.x > Camera.RightLimit + 1f || rigidBody.position.x < Camera.LeftLimit - 1f)
             Destroy(gameObject);
         Move();
-        transform.position+=PocketWind.Velocity(transform.position)*Time.deltaTime;
+        transform.position += PocketWind.Velocity(transform.position) * Time.deltaTime;
     }
 
     protected virtual void Move()
@@ -34,10 +34,12 @@ public abstract class AEnemyBullet : MonoBehaviour
     public void setProperties(Dictionary<string, float> stats)
     {
         damage = Utils.GetValueOrDefault(stats, "damage", 1f);
-        if (stats.ContainsKey("angle")) {
+        if (stats.ContainsKey("angle"))
+        {
             float angle = Utils.GetValueOrDefault(stats, "angle", 0f);
             direction = Utils.GetVelocityAngle(angle);
-        } else
+        }
+        else
         {
             float xdir = Utils.GetValueOrDefault(stats, "dirx", 0f);
             float ydir = Utils.GetValueOrDefault(stats, "diry", -1f);
@@ -73,8 +75,8 @@ public abstract class AEnemyBullet : MonoBehaviour
     public virtual void Vanish()
     {
         var sprite = GetComponent<SpriteRenderer>();
-        var coded=GetComponent<ProjectileSpriteTint>();
-        Color tint = coded!=null ? coded.Tint : sprite != null && sprite.sprite != null ? Average(sprite) : new Color(1f, .6f, .25f);
+        var coded = GetComponent<ProjectileSpriteTint>();
+        Color tint = coded != null ? coded.Tint : sprite != null && sprite.sprite != null ? Average(sprite) : new Color(1f, .6f, .25f);
         PSXImpactEffects.Vanish(transform.position, tint, transform.lossyScale.x);
         Destroy(gameObject);
     }
@@ -82,11 +84,18 @@ public abstract class AEnemyBullet : MonoBehaviour
     static readonly Dictionary<Sprite, Color> averages = new Dictionary<Sprite, Color>();
     static Color Average(SpriteRenderer renderer)
     {
-        if (averages.TryGetValue(renderer.sprite, out var cached)) return cached;
-        Color sum = Color.black; int count = 0;
+        if (averages.TryGetValue(renderer.sprite, out var cached))
+            return cached;
+        Color sum = Color.black;
+        int count = 0;
         var texture = renderer.sprite.texture;
         if (texture.isReadable)
-            foreach (var c in texture.GetPixels()) if (c.a > .5f) { sum += c; count++; }
+            foreach (var c in texture.GetPixels())
+                if (c.a > .5f)
+                {
+                    sum += c;
+                    count++;
+                }
         var result = count > 0 ? sum / count : new Color(1f, .6f, .25f);
         result.a = 1;
         averages[renderer.sprite] = result;

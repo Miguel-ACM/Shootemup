@@ -79,7 +79,7 @@ public class Multishooter : AShooter
             }
             float minmaxtime = Random.Range(minmaxTimes[curPhase].min, minmaxTimes[curPhase].max);
             yield return new WaitForSeconds(minmaxtime);
-            
+
             nextPhase = PickNextPhase(curPhase);
 
             foreach (AShooter shooter in shooters[curPhase].shooters)

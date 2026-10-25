@@ -23,7 +23,8 @@ public static class InstallPSXPlayerShip
 
     static void HandleRequest()
     {
-        if (!File.Exists(Request) || EditorApplication.isPlayingOrWillChangePlaymode) return;
+        if (!File.Exists(Request) || EditorApplication.isPlayingOrWillChangePlaymode)
+            return;
         try
         {
             Install();
@@ -63,7 +64,8 @@ public static class InstallPSXPlayerShip
         textureImporter.SaveAndReimport();
 
         var shader = Shader.Find("Shootemup/PSX Industrial Ship");
-        if (shader == null || !shader.isSupported) throw new InvalidOperationException("PSX ship shader is unavailable.");
+        if (shader == null || !shader.isSupported)
+            throw new InvalidOperationException("PSX ship shader is unavailable.");
         var material = AssetDatabase.LoadAssetAtPath<Material>(Folder + "GR07_PixelSteel.mat");
         if (material == null)
         {
@@ -96,7 +98,8 @@ public static class InstallPSXPlayerShip
 
         var scene = SceneManager.GetSceneByPath("Assets/Scenes/L1.unity");
         bool openedHere = !scene.isLoaded;
-        if (openedHere) scene = EditorSceneManager.OpenScene("Assets/Scenes/L1.unity", OpenSceneMode.Additive);
+        if (openedHere)
+            scene = EditorSceneManager.OpenScene("Assets/Scenes/L1.unity", OpenSceneMode.Additive);
         var player = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<Shipcontroller>(true)).Single();
         // Unity names a saved prefab root after its filename. Remove either instance
         // spelling so repeating the import cannot stack a second ship on the player.
@@ -112,7 +115,8 @@ public static class InstallPSXPlayerShip
         // The current player root has scale 2; preserve its familiar on-screen footprint.
         visual.transform.localScale = Vector3.one * 0.21f;
         visual.layer = player.gameObject.layer;
-        foreach (var child in visual.GetComponentsInChildren<Transform>(true)) child.gameObject.layer = player.gameObject.layer;
+        foreach (var child in visual.GetComponentsInChildren<Transform>(true))
+            child.gameObject.layer = player.gameObject.layer;
         var binding = player.GetComponent<PSXShipVisual>() ?? player.gameObject.AddComponent<PSXShipVisual>();
         var sprite = player.GetComponent<SpriteRenderer>();
         binding.Configure(sprite, visual.transform, visual.GetComponentInChildren<MeshRenderer>());
@@ -122,17 +126,24 @@ public static class InstallPSXPlayerShip
         EditorSceneManager.SaveScene(scene);
         AssetDatabase.SaveAssets();
         CapturePreview(player);
-        File.WriteAllText(Report, JsonUtility.ToJson(new ImportReport {
-            triangles = triangles, vertices = mesh.vertexCount, uvCount = mesh.uv.Length,
-            textureWidth = material.mainTexture.width, textureHeight = material.mainTexture.height,
-            shader = shader.name, scene = scene.path, player = player.name,
+        File.WriteAllText(Report, JsonUtility.ToJson(new ImportReport
+        {
+            triangles = triangles,
+            vertices = mesh.vertexCount,
+            uvCount = mesh.uv.Length,
+            textureWidth = material.mainTexture.width,
+            textureHeight = material.mainTexture.height,
+            shader = shader.name,
+            scene = scene.path,
+            player = player.name,
             colliderPreserved = player.GetComponent<CircleCollider2D>() != null,
             rigidbodyPreserved = player.GetComponent<Rigidbody2D>() != null,
             materialCount = 1,
             visualInstances = player.GetComponentsInChildren<MeshRenderer>().Length,
             success = true
         }, true));
-        if (openedHere) EditorSceneManager.CloseScene(scene, true);
+        if (openedHere)
+            EditorSceneManager.CloseScene(scene, true);
         Debug.Log("GR-07 installed: " + triangles + " triangles, atlas UVs, 256px point-filtered texture, original 2D player controls.");
     }
 

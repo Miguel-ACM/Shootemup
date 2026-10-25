@@ -8,7 +8,7 @@ public class BabyYou : ACompanion
     public bool isShootingPrimary = false;
     public bool isStopingPrimary = true;
     bool isShootingDisabled = false;
-    Vector3[] spawnPoints = { new Vector3(0,0,0) };    
+    Vector3[] spawnPoints = { new Vector3(0, 0, 0) };
     private Inputs input;
     [SerializeField] private GameObject bullet;
 
@@ -54,7 +54,7 @@ public class BabyYou : ACompanion
         for (int i = 0; i < spawnPoints.Length; i++)
         {
             Bullet b = Instantiate(bullet, spawnPoints[i] + transform.position, Quaternion.identity).GetComponent<Bullet>();
-            b.setProperties(new Dictionary<string, float> { { "companion", 1f }, { "speed", GameRules.playerShootTravelSpeed }, { "damage", GameRules.playerShootDamage * 0.5f}, { "size", GameRules.playerShootSize * 0.75f }, { "followness", GameRules.playerShootFollowness } });
+            b.setProperties(new Dictionary<string, float> { { "companion", 1f }, { "speed", GameRules.playerShootTravelSpeed }, { "damage", GameRules.playerShootDamage * 0.5f }, { "size", GameRules.playerShootSize * 0.75f }, { "followness", GameRules.playerShootFollowness } });
         }
     }
 

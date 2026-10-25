@@ -100,15 +100,17 @@ public class WavePool : MonoBehaviour
 
     public Wave getWave(string mode)
     {
-        if(mode=="miniboss")return DistrictWaves.Miniboss();
+        if (mode == "miniboss")
+            return DistrictWaves.Miniboss();
         Wave w = null;
         bool isInt = int.TryParse(mode, out int value);
         if (isInt)
         {
             return DistrictWaves.Create(value);
         }
-        else { 
-        switch (mode)
+        else
+        {
+            switch (mode)
             {
                 case "shop":
                     w = _getWave(1);
@@ -136,19 +138,25 @@ public class WavePool : MonoBehaviour
             for (int i = 0; i < wavePool.Count; i++)
             {
                 var candidate = wavePool[i];
-                if (used.Contains(i) || candidate.cost > capacity || ConflictGroup.isConflict(candidate.cg, groups)) continue;
+                if (used.Contains(i) || candidate.cost > capacity || ConflictGroup.isConflict(candidate.cg, groups))
+                    continue;
                 eligible.Add(i);
                 totalWeight += Mathf.Max(1, candidate.weight);
             }
             // Some conflict combinations cannot spend the entire budget. Keep the
             // formations already selected instead of retrying until the stage crashes.
-            if (eligible.Count == 0) break;
+            if (eligible.Count == 0)
+                break;
             int roll = rnd.Next(totalWeight);
             int chosen = eligible[eligible.Count - 1];
             foreach (int index in eligible)
             {
                 roll -= Mathf.Max(1, wavePool[index].weight);
-                if (roll < 0) { chosen = index; break; }
+                if (roll < 0)
+                {
+                    chosen = index;
+                    break;
+                }
             }
             var formation = wavePool[chosen];
             used.Add(chosen);

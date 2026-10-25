@@ -11,7 +11,7 @@ public abstract class AActiveItem : AItem
 
     public override void OnPickup()
     {
-        s.GetComponent<ShipLoadout>().EquipActive(this,ReplacementSlot);
+        s.GetComponent<ShipLoadout>().EquipActive(this, ReplacementSlot);
         base.OnPickup();
     }
 
@@ -49,10 +49,12 @@ public abstract class AActiveItem : AItem
     {
         return mana;
     }
+
     public virtual float OnRelease(float mana)
     {
         return mana;
     }
+
     public virtual float OnHold(float mana)
     {
         return mana;

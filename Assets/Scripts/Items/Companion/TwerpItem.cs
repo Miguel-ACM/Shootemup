@@ -6,5 +6,7 @@ public class TwerpItem : ACompanionItem
         SetData("Twerp", "Annoying, but useful?", "Small shooting companion.", AItem.ItemType.partner);
     }
 
-    public override void OnBegin() { }
+    public override void OnBegin()
+    {
+    }
 }

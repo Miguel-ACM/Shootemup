@@ -8,8 +8,14 @@ public static class SfxCatalog
         public readonly float Gain, Cooldown;
         public readonly int Bus;
         public Cue(string name, float gain, float cooldown, int bus)
-        { Name=name; Gain=gain; Cooldown=cooldown; Bus=bus; }
+        {
+            Name = name;
+            Gain = gain;
+            Cooldown = cooldown;
+            Bus = bus;
+        }
     }
+
     public static readonly Cue[] All = {
         new Cue("shot1", 0.1f, 0.035f, 0),
         new Cue("shotElectric", 0.09f, 0.05f, 0),

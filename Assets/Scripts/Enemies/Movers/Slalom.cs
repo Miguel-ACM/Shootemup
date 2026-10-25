@@ -8,7 +8,11 @@ public class Slalom : PatternMover
     [SerializeField, Range(0, 1)] private float descentRatio = .5f;
     [SerializeField, Range(0, 1)] private float turnFiringThreshold = .8f;
     private float centre;
-    public void BeginAssault(){descentRatio=.62f;turnFiringThreshold=.4f;}
+    public void BeginAssault()
+    {
+        descentRatio = .62f;
+        turnFiringThreshold = .4f;
+    }
 
     protected override void InitializePattern()
     {
@@ -26,8 +30,10 @@ public class Slalom : PatternMover
         p.y = origin.y - age * moveSpeed * descentRatio;
         transform.position = p;
         Destination = p;
-        if (p.y <= Camera.UpLimit - edgeInset) Arrive();
+        if (p.y <= Camera.UpLimit - edgeInset)
+            Arrive();
         SetFiring(p.y <= Camera.UpLimit - edgeInset && Mathf.Abs(Mathf.Sin(phase)) >= turnFiringThreshold);
-        if (p.y < Camera.DownLimit - 1f) Leave();
+        if (p.y < Camera.DownLimit - 1f)
+            Leave();
     }
 }

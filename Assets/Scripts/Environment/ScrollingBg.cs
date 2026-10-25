@@ -18,8 +18,8 @@ public class ScrollingBg : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = new Vector3(- ship.transform.position.x * 0.5f, transform.position.y + (scrollVector.y * Time.deltaTime), transform.position.z);
-        
+        transform.position = new Vector3(-ship.transform.position.x * 0.5f, transform.position.y + (scrollVector.y * Time.deltaTime), transform.position.z);
+
         if (transform.position.y < -20)
         {
             Destroy(gameObject);
