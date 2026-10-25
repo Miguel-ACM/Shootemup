@@ -28,7 +28,7 @@ public sealed class SpectralDecoy : MonoBehaviour
             var materials=new Material[mesh.sharedMesh.subMeshCount];for(int i=0;i<materials.Length;i++)materials[i]=material;
             renderer.sharedMaterials=materials;renderer.sortingLayerName="Player";renderer.sortingOrder=0;copy.parts.Add(renderer);
         }
-        SoundManager.PlaySound("blankbullet",.08f);
+        ItemSound.Play("decoy",.2f);
     }
     void Update()
     {
