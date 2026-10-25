@@ -44,6 +44,7 @@ public class WaveOrchestrer : MonoBehaviour
         dialog = GameObject.FindGameObjectWithTag("Dialog").GetComponent<Dialog>();
         limits = Camera.getLimits();
         ship = GameObject.FindGameObjectWithTag("Player");
+        ship.GetComponent<Shipcontroller>().HitTaken+=CancelChallenge;
         wavePool = GetComponent<WavePool>();
         waves=DistrictWaves.Sequence();
         if(GetComponent<TunnelReflectors>()==null)gameObject.AddComponent<TunnelReflectors>();
@@ -73,7 +74,6 @@ public class WaveOrchestrer : MonoBehaviour
                 var type=DistrictWaves.EnemyType(currentUnit.enemy);
                 GameObject enemy=type!=null ? DistrictEnemy.Spawn(type,pos).gameObject : Instantiate(currentUnit.GetUnit(),pos,Quaternion.identity);
                 if(type!=null)enemy.GetComponent<DistrictEnemy>().FlyPhrase(currentUnit);
-                if(challengeWave && type!=null)enemy.GetComponent<DistrictEnemy>().MakeChallenging();
                 enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
                 currentUnit = currentWave.getNext();
             }
@@ -170,8 +170,7 @@ public class WaveOrchestrer : MonoBehaviour
         {
             isWaveComingOut = true;
             challengeWave=challengeWavesRemaining>0;
-            string planned=challengeWave && int.TryParse(currWaveType,out int budget) ? Mathf.Min(20,budget+3).ToString() : currWaveType;
-            currentWave = wavePool.getWave(planned);
+            currentWave = wavePool.getWave(currWaveType);
             currentWaveEnemies = currentWave.units.Count;
             currentWaveKilledEnemies = 0;
             waveTime = 0;
@@ -186,6 +185,11 @@ public class WaveOrchestrer : MonoBehaviour
     }
 
     DecisionShop decision;
+    void CancelChallenge(){challengeWavesRemaining=0;challengeWave=false;}
+    void OnDestroy()
+    {
+        if(ship!=null)ship.GetComponent<Shipcontroller>().HitTaken-=CancelChallenge;
+    }
     void OpenEncounterChoice()
     {
         int remaining=0;
