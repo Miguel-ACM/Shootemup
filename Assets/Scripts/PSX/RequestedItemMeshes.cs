@@ -5,6 +5,8 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "LaserDroneItem":
+                DroneModel(b,true);return true;
             case "HealthPacks":
                 foreach(int side in new[]{-1,1})
                 {
@@ -95,5 +97,21 @@ public static partial class IndustrialMeshFactory
         }
         b.Box(new Vector3(0,.02f,-.02f),new Vector3(.15f,.045f,.06f),broken ? 11 : 13);
         if(broken){b.Box(new Vector3(.23f,0,-.09f),new Vector3(.018f,.28f,.015f),1);b.Box(new Vector3(.29f,.03f,-.09f),new Vector3(.13f,.018f,.015f),1);}
+    }
+    static void DroneModel(Builder b,bool laser)
+    {
+        b.Prism(new[]{new Vector2(0,.34f),new Vector2(.2f,.12f),new Vector2(.15f,-.3f),new Vector2(-.15f,-.3f),new Vector2(-.2f,.12f)},.23f,laser ? 1 : 0,Vector3.zero,6);
+        foreach(int side in new[]{-1,1})
+        {
+            b.Prism(new[]{new Vector2(side*.14f,.12f),new Vector2(side*.43f,-.12f),new Vector2(side*.4f,-.27f),new Vector2(side*.13f,-.2f)},.12f,laser ? 7 : 2,Vector3.zero,6);
+            b.Box(new Vector3(side*.23f,-.25f,.04f),new Vector3(.14f,.18f,.18f),11);
+        }
+        if(laser)
+        {
+            b.Box(new Vector3(0,.29f,-.04f),new Vector3(.16f,.27f,.14f),6);
+            b.Drum(new Vector3(0,.36f,-.13f),.11f,.08f,9,8);
+            b.Box(new Vector3(0,-.03f,-.14f),new Vector3(.08f,.2f,.04f),9);
+        }
+        else foreach(int side in new[]{-1,1})b.Box(new Vector3(side*.12f,.28f,-.07f),new Vector3(.09f,.37f,.11f),13,11);
     }
 }
