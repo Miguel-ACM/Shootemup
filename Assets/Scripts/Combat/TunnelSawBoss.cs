@@ -10,7 +10,7 @@ public sealed class TunnelSawBoss : DistrictBoss
     float Radius=>Hull.GetComponent<MeshFilter>().sharedMesh.bounds.extents.x*Hull.localScale.x;
     bool entered;
     int impacts;
-    protected override void Configure(){hull=20;hullScale=1.25f;health=2800;attackInterval=1.6f;}
+    protected override void Configure(){hull=20;hullScale=1.25f;health=1800;attackInterval=1.6f;}
     protected override void Start()
     {
         base.Start();GetComponent<CombatHullVisual>().spin=miniature ? 900 : 720;
@@ -43,21 +43,20 @@ public sealed class TunnelSawBoss : DistrictBoss
     void ImpactBurst(Vector2 inward)
     {
         impacts++;
-        // Every bounce throws its whole comb into the arena, with slower heavy
-        // teeth between the quick needles. Alternate the teeth by half a lane.
+        // Full circular crowns on every physical bounce, including the little saws.
+        // Alternate half a quick lane; slower heavy teeth form a second nested ring.
         int small=miniature ? 24 : phaseTwo ? 60 : 44;
         int large=miniature ? 9 : phaseTwo ? 21 : 17;
         int available=Mathf.Min(small+large,CombatRound.Limit-CombatRound.Live.Count);
         int quick=Mathf.RoundToInt(available*small/(float)(small+large));
         int heavy=available-quick;
-        float spread=inward.x!=0 && inward.y!=0 ? 82 : 164;
-        void Comb<T>(int count,float speed,float radius,float offset) where T:CombatRound
+        void Ring<T>(int count,float speed,float radius,float offset) where T:CombatRound
         {
             for(int i=0;i<count;i++)Fire<T>(transform.position,
-                CombatVisuals.Rotate(inward,((i+.5f)/count-.5f)*spread+offset),speed,radius);
+                CombatVisuals.Rotate(inward,(i+.5f)*360f/count+offset),speed,radius);
         }
-        Comb<SimpleRound>(quick,phaseTwo ? 6 : 5.4f,.11f,impacts%2==0 ? 1 : -1);
-        Comb<RicochetBolt>(heavy,phaseTwo ? 3.2f : 2.8f,.23f,0);
+        Ring<SimpleRound>(quick,phaseTwo ? 6 : 5.4f,.11f,impacts%2==0 ? 180f/Mathf.Max(1,quick) : 0);
+        Ring<RicochetBolt>(heavy,phaseTwo ? 3.2f : 2.8f,.23f,0);
     }
     protected override void Attack(){} // Only physical wall impacts emit projectiles.
     protected override void OnPhaseTwo()
@@ -67,7 +66,7 @@ public sealed class TunnelSawBoss : DistrictBoss
         foreach(int side in new[]{-1,1})
         {
             var child=(TunnelSawBoss)Spawn(typeof(TunnelSawBoss),transform.position+Vector3.right*side*1.6f);
-            child.miniature=true;child.health=480*GameRules.enemyHealth*LevelRun.EnemyHealthScale;child.hullScale=.65f;child.Hull.localScale=Vector3.one*.65f;
+            child.miniature=true;child.health=360*GameRules.enemyHealth*LevelRun.EnemyHealthScale;child.hullScale=.65f;child.Hull.localScale=Vector3.one*.65f;
             child.GetComponent<CircleCollider2D>().radius=.6f;child.entered=true;child.velocity=new Vector2(side,.6f).normalized;
         }
     }
