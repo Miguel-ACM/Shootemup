@@ -219,6 +219,7 @@ public sealed class EverydayItemReview : MonoBehaviour
         Press(Key.RightArrow,Key.Z);yield return new WaitForSeconds(.4f);Press();
         Check(ship.transform.position.x>original.x+.5f && PlayerRound.LiveCount>0,"projecting the copy allows uninterrupted movement and firing");
         Check(SpectralDecoy.Current.transform.position.y>original.y+1 && SpectralDecoy.Current.GetComponent<Collider2D>()==null,"spectral copy travels forward without a player collider");
+        Check(SpectralDecoy.Current.GetComponentsInChildren<MeshFilter>().All(m=>m.GetComponent<MeshRenderer>().sharedMaterials.Length==m.sharedMesh.subMeshCount),"every ship submesh receives its spectral material");
         var attacker=Target(new Vector3(1,4));yield return null;
         typeof(ScoutInterceptor).GetMethod("Attack",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(attacker,null);
         var shots=CombatRound.Live.Where(b=>b is NeedleRound).ToArray();
