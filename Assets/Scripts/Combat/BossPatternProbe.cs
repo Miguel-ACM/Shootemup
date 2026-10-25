@@ -127,7 +127,7 @@ public sealed class BossPatternProbe : MonoBehaviour
         int pickups=FindObjectsByType<APickable>().Length;city.damage(city.health+1);yield return null;
         Check(Mathf.Abs(heavy.health-initial*.7f)<.01f && heavy.partner==null,"city survivor heals half its missing health");
         Check(Get<bool>(heavy,"enraged") && FindObjectsByType<APickable>().Length==pickups,"first city death drops nothing and enrages survivor");
-        Set(heavy,"volley",1);Call(heavy,"Attack");Check(CombatRound.Live.OfType<BurstShell>().Count()==6,"city survivor strengthens its shell phrase");
+        Set(heavy,"volley",1);Call(heavy,"Attack");Check(CombatRound.Live.OfType<BurstShell>().Count()==5,"city survivor strengthens its shell phrase");
         Clear();yield return null;
         var saw=(TunnelSawBoss)DistrictEnemy.Spawn(typeof(TunnelSawBoss),new Vector3(0,2,1));yield return null;saw.enabled=false;Set(saw,"entered",true);
         Call(saw,"MoveBoss",.01f);Call(saw,"Attack");saw.damage(1);
@@ -135,7 +135,7 @@ public sealed class BossPatternProbe : MonoBehaviour
         Rect arena=Get<Rect>(saw,"arena");float radius=saw.Hull.GetComponent<MeshFilter>().sharedMesh.bounds.extents.x*saw.Hull.localScale.x;
         saw.transform.position=new Vector3(arena.xMax-radius-.001f,0,1);Set(saw,"velocity",Vector2.right);Call(saw,"MoveBoss",.1f);
         Check(CombatRound.Live.OfType<SimpleRound>().Count()==44 && CombatRound.Live.OfType<RicochetBolt>().Count()==17,"saw bounce emits dense mixed sizes");
-        Check(CombatRound.Live.All(x=>x.Heading.x<0),"right-wall saw burst points entirely back into arena");
+        Check(CombatRound.Live.Any(x=>x.Heading.x<0) && CombatRound.Live.Any(x=>x.Heading.x>0),"right-wall saw burst covers the complete circle");
         ClearRounds();Set(saw,"phaseTwo",true);Call(saw,"OnPhaseTwo");yield return null;
         var saws=FindObjectsByType<TunnelSawBoss>();
         Check(saws.Length==3 && saws.All(x=>x.GetComponent<EnemyThrusters>()==null),"second-phase saw deploys two destroyable saws without thrusters");

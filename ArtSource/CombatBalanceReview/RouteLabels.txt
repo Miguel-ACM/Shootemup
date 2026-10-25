@@ -1,0 +1,2 @@
+PASS
+Editor-only render of production LevelChoice; both labels fit their two-route panels.

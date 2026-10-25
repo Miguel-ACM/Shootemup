@@ -1,0 +1,3 @@
+PASS
+4800 rotated/scaled cases against the original native pixel fixtures, using the production ship hexagon and a blocking companion circle.
+All 400 complete five-district route loops passed; Plains is rejected after either third district.

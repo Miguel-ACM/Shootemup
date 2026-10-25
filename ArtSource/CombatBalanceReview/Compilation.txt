@@ -1,0 +1,6 @@
+PASS
+Full Unity script rebuild with CleanBuildCache; no Play mode.
+108 assemblies compiled; 0 warnings; 0 errors.
+Required game, editor and PathCreator assemblies: Assembly-CSharp, Assembly-CSharp-Editor, PathCreator, PathCreatorEditor
+
+Follow-up route-label source and editor preview compiled without C# diagnostics. Both captions fit in a native editor-only render.

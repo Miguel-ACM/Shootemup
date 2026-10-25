@@ -37,6 +37,8 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Keep hostile bullets within one contrasting colour family per district, including beams and secondary shots. Preserve separate readable player fire and the approved pixel sprite shapes. Dense bullet patterns must run smoothly; preserve challenge while reducing collision, allocation and rendering overhead.
 - Latest bullet polish: add small glossy enamel highlights through the existing sprite shader. Preserve source artwork, alpha, dark rims and pixel colliders; keep one texture sample and one render pass, with no extra lights or bullet objects.
 - Colored projectile glow uses one shared quarter-resolution bloom; avoid per-bullet lights and keep the original sprites. Prepare every hostile delivery, collider and special visual behind the cloud curtain within the existing pool budget, so a new bullet type does not allocate an entire volley during combat.
+- Profile complete frames around dense boss bursts, including the following physics steps. Spawn-call timings alone missed the Tunnel freeze. Ordinary hostile rounds now use one broad native contact shape and an exact opaque-pixel narrow phase with the original native polygon skin; only nearby player/blocker contacts enter physics. Preserve transparent holes, actual ship hits, blocking companions, destructible plasma and all clearing abilities.
+- Poison is a muted jade instead of harsh green. Electricity and static arcs inherit fire/poison colors too; show both colors when both coatings are present, matching the ordinary projectile palette.
 - The standard bullet must be circular. The lopsided returning ring and bent-arrow helix previews were rejected; do not treat technical image checks as proof of good visual design.
 - Thrusters are separate animated effects like the player's, never baked into hull geometry. Exceptions such as the spinning tunnel saw have no thrusters.
 - Iterate models and rendered views. There is no hurry; visual inspection and quality matter.
@@ -50,7 +52,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 ## District and boss identities
 
-- Runs start in Plains, then choose Snow or City, then Thunder or Tunnel. After either third district, offer Desert, Candyland, or a direct loop to harder Plains. Desert and Candyland continue into Space after their boss item is collected. Space ends by looping to harder Plains after its own boss item. Preserve equipment, coins and score on every route.
+- Runs start in Plains, then choose Snow or City, then Thunder or Tunnel. After either third district, offer only Desert or Candyland; there is no direct Plains choice. Desert and Candyland continue into Space after their boss item is collected. Space ends by looping to harder Plains after its own boss item. Preserve equipment, coins and score on every route.
 
 - Snow: many large shells that explode into smaller bullets; a very round boss with several patterns and a harder second phase.
 - Latest Snow feedback: reduce the boss's health; its base health is now 2100 rather than 3200, with the same phase patterns and run scaling.
@@ -74,6 +76,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Candyland: pink cloud background with falling modeled lollipops, chocolates and wrapped sweets. Many fast enemies, each firing fewer bullets. A very fast boss has less health and spawns destroyable minions. Candyland is an alternative to Desert after level 3.
 - Latest Candyland feedback: make its boss much harder with more erratic movement, and improve the scenery's visual quality. Preserve the lighter firing of ordinary enemies.
 - Space: drifting stars and soft distant planets, solar-panel satellite scouts, dish laser satellites and carriers with independently destroyable orbiting escorts. Use authored orbital/slingshot formations, attached charged lasers and one contrasting pink hostile-bullet family. The station boss has two breakable shield generators, two optional ricochet turrets and a gated reactor. Both generators must break before the core can be damaged or targeted by homing. It fires a charged center laser and bouncing bullets; core destruction uses the established dramatic finale and mandatory boss item.
+- Latest balance feedback: Space was too easy. Its scouts/carriers have more shared firing accents, escorts fire paired shots, and dish lasers aim and sweep after a visible charge. The station's exposed core owns independent aimed fan phrases even after both optional guns break; killing the guns still reduces ricochets. Preserve boss health and generator gating. Snow uses three shell crowns (five/six shells) per phrase and City's enraged heavy uses five shells per accent, avoiding excessive explosive overlap without flattening their identities.
 
 ## Items and decisions
 

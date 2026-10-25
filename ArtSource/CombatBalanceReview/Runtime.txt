@@ -1,0 +1,17 @@
+PASS
+PASS Real moving hostile pixels still hit the production ship and release the round
+PASS Transparent centre of the original ring cannot damage the player
+PASS Found the ring's opaque rim after its transparent centre
+PASS A later opaque contact inside an existing broad trigger damages correctly
+PASS Distant blocking companion still erases actual bullet pixels
+PASS Destructible plasma retains native collision anywhere on screen
+PASS Real player shots still destroy distant plasma
+PASS Space wave 8 has sustained authored pressure, peak 50 rounds; beams=False
+PASS Space wave 20 has sustained authored pressure, peak 46 rounds; beams=True
+PASS Space's core remains gated by both generators
+PASS Both generators still open the core after optional gun destruction
+PASS Exposed core owns three nine-shot fan replies even when both side guns are destroyed
+PASS Core-only station maintains pressure during its natural attack score
+PASS Electricity reaches exposed module targets and applies both coatings
+PASS Snow retains dense ring patterns without shells waiting excessively at the cap; peak 253
+PASS The actual third-district selection contains only Desert and Candyland
