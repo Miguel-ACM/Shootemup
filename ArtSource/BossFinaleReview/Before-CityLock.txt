@@ -1,0 +1,4 @@
+PASS
+PASS reproduced missing encounter ownership on the heavy City ship
+PASS first City death preserves its survivor
+PASS reproduced City lock after fast-then-heavy deaths: no route or reward

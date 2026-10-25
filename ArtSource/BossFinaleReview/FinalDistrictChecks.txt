@@ -1,0 +1,28 @@
+PASS
+PASS Desert: lethal damage retains the intact hull while stopping combat
+PASS Desert: wreckage remains hidden until the shatter accent
+PASS Desert: active bullet-time effects relinquish the cinematic clock
+PASS Desert: five explosions play over the held model before any breakup, music cut or route
+PASS Desert: half-second freeze then synchronized shatter/music cut; hold 0.501s
+PASS Desert: prepared polygon wreckage releases on the shatter accent
+PASS Desert worm breakup includes the complete articulated body
+PASS Desert: final explosion drops an item before any route selection
+PASS Desert: exactly one random boss item
+PASS Desert: waiting at the bottom cannot bypass the item
+PASS Desert: mandatory item has no skip control
+PASS Desert: a full loadout can choose a replacement for the mandatory item
+PASS Desert: actual item collection completes the reward
+PASS Desert: the final-district loop waits for the item and resumes cleanly
+PASS Candyland: lethal damage retains the intact hull while stopping combat
+PASS Candyland: wreckage remains hidden until the shatter accent
+PASS Candyland: active bullet-time effects relinquish the cinematic clock
+PASS Candyland: five explosions play over the held model before any breakup, music cut or route
+PASS Candyland: half-second freeze then synchronized shatter/music cut; hold 0.540s
+PASS Candyland: prepared polygon wreckage releases on the shatter accent
+PASS Candyland: final explosion drops an item before any route selection
+PASS Candyland: exactly one random boss item
+PASS Candyland: waiting at the bottom cannot bypass the item
+PASS Candyland: mandatory item has no skip control
+PASS Candyland: a full loadout can choose a replacement for the mandatory item
+PASS Candyland: actual item collection completes the reward
+PASS Candyland: the final-district loop waits for the item and resumes cleanly

@@ -53,6 +53,8 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Thunder: beams and quick aimed fire; a slim boss with side-emitting lasers, then 6–8 alternating sweeping beams plus a barrage in phase two.
 - City: busy formations of small fast enemies. The boss is a fast/heavy duo with separate health summed in one bar and tracking attacks. The first death drops nothing; the survivor becomes aggressive and heals half its missing health.
 - Latest City feedback: lower duo health; base health is now 1000 for the fast ship and 1400 for the heavy ship, with the survivor rules preserved.
+- Both City ships must share encounter completion ownership so either kill order can finish the district.
+- Boss victories hold the intact model through several explosions and deliberate short impact holds. Freeze the scene for half a second immediately before breakup, then cut the music on the shatter accent. Drop one random item at the wreck; require its actual collection before offering the next path or looping to Plains. The City duo's first death still gives no item and keeps the encounter going.
 - Tunnel: bouncing projectiles. The boss is a rapidly spinning saw that travels like a DVD logo across the full visible arena, including its corners. **It fires dense mixed-size bursts only when it bounces, never when hit or on a timer, and has no thrusters.** It speeds up as damaged; phase two pauses to deploy two smaller, sturdy, destroyable saws with the same bounce behavior.
 - The latest explicit feedback supersedes earlier ideas (in particular the saw's original on-hit emission).
 - Desert: dunes, small silos and compact gray buildings; buried enemies emerge and fire rings, interceptors fire tightly spaced aimed bursts, and small articulated sandworms shoot from multiple body ports. Its boss is a giant white mechanical sandworm with red weakpoints along its body and a larger red head weakpoint. Every part must be destroyed to win.
@@ -80,6 +82,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 - Implement each individual feature/enemy/item in its own commit. Commit authorized existing work, but preserve unrelated work being changed by another task.
 - Batch a substantial set of changes before opening the game for testing. Avoid repeated play sessions for every tiny edit.
+- Miguel's latest workflow feedback: do not test-run so much. Use one batched gameplay review, then check only a specific failed or outstanding case instead of repeating full runs.
 - Do not interrupt Miguel's live run. Wait until he finishes; once he says he has finished, proceed with testing.
 - If Computer Use is stopped with Escape, stop interacting with the app for that turn.
 - Do not declare the visual work finished based only on compilation or scripted checks. Review the actual models, HUD and moving formations.

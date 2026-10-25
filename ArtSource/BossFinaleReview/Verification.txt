@@ -1,0 +1,110 @@
+PASS combined batched review and focused final-district checks
+PASS both City ships share the real encounter owner
+PASS first City ship drops no reward and does not complete the encounter
+PASS City survivor still heals half its missing health and becomes aggressive
+PASS City-FastFirst: lethal damage retains the intact hull while stopping combat
+PASS City-FastFirst: wreckage remains hidden until the shatter accent
+PASS City-FastFirst: active bullet-time effects relinquish the cinematic clock
+PASS City-FastFirst: five explosions play over the held model before any breakup, music cut or route
+PASS City-FastFirst: half-second freeze then synchronized shatter/music cut; hold 0.500s
+PASS City-FastFirst: prepared polygon wreckage releases on the shatter accent
+PASS City-FastFirst: final explosion drops an item before any route selection
+PASS City-FastFirst: exactly one random boss item
+PASS City-FastFirst: waiting at the bottom cannot bypass the item
+PASS City-FastFirst: mandatory item has no skip control
+PASS City-FastFirst: actual item collection completes the reward
+PASS City-FastFirst: path choice opens only after collecting the item
+PASS City order complete: City-FastFirst
+PASS City-HeavyFirst: lethal damage retains the intact hull while stopping combat
+PASS City-HeavyFirst: wreckage remains hidden until the shatter accent
+PASS City-HeavyFirst: active bullet-time effects relinquish the cinematic clock
+PASS City-HeavyFirst: five explosions play over the held model before any breakup, music cut or route
+PASS City-HeavyFirst: half-second freeze then synchronized shatter/music cut; hold 0.501s
+PASS City-HeavyFirst: prepared polygon wreckage releases on the shatter accent
+PASS City-HeavyFirst: final explosion drops an item before any route selection
+PASS City-HeavyFirst: exactly one random boss item
+PASS City-HeavyFirst: waiting at the bottom cannot bypass the item
+PASS City-HeavyFirst: mandatory item has no skip control
+PASS City-HeavyFirst: a full loadout can choose a replacement for the mandatory item
+PASS City-HeavyFirst: actual item collection completes the reward
+PASS City-HeavyFirst: path choice opens only after collecting the item
+PASS City order complete: City-HeavyFirst
+PASS Fields: lethal damage retains the intact hull while stopping combat
+PASS Fields: wreckage remains hidden until the shatter accent
+PASS Fields: active bullet-time effects relinquish the cinematic clock
+PASS pausing cannot finish the half-second boss hold behind the menu
+PASS resuming the menu preserves the remaining boss freeze
+PASS Fields: five explosions play over the held model before any breakup, music cut or route
+PASS Fields: half-second freeze then synchronized shatter/music cut; hold 0.501s
+PASS Fields: prepared polygon wreckage releases on the shatter accent
+PASS Fields: final explosion drops an item before any route selection
+PASS Fields: exactly one random boss item
+PASS Fields: waiting at the bottom cannot bypass the item
+PASS Fields: mandatory item has no skip control
+PASS Fields: actual item collection completes the reward
+PASS Fields: path choice opens only after collecting the item
+PASS Snow: lethal damage retains the intact hull while stopping combat
+PASS Snow: wreckage remains hidden until the shatter accent
+PASS Snow: active bullet-time effects relinquish the cinematic clock
+PASS Snow: five explosions play over the held model before any breakup, music cut or route
+PASS Snow: half-second freeze then synchronized shatter/music cut; hold 0.503s
+PASS Snow: prepared polygon wreckage releases on the shatter accent
+PASS Snow: final explosion drops an item before any route selection
+PASS Snow: exactly one random boss item
+PASS Snow: waiting at the bottom cannot bypass the item
+PASS Snow: mandatory item has no skip control
+PASS Snow: actual item collection completes the reward
+PASS Snow: path choice opens only after collecting the item
+PASS Thunder: lethal damage retains the intact hull while stopping combat
+PASS Thunder: wreckage remains hidden until the shatter accent
+PASS Thunder: active bullet-time effects relinquish the cinematic clock
+PASS Thunder: five explosions play over the held model before any breakup, music cut or route
+PASS Thunder: half-second freeze then synchronized shatter/music cut; hold 0.500s
+PASS Thunder: prepared polygon wreckage releases on the shatter accent
+PASS Thunder: final explosion drops an item before any route selection
+PASS Thunder: exactly one random boss item
+PASS Thunder: waiting at the bottom cannot bypass the item
+PASS Thunder: mandatory item has no skip control
+PASS Thunder: a full loadout can choose a replacement for the mandatory item
+PASS Thunder: actual item collection completes the reward
+PASS Thunder: path choice opens only after collecting the item
+PASS miniature saw destruction does not trigger a boss finale or reward
+PASS Tunnel: lethal damage retains the intact hull while stopping combat
+PASS Tunnel: wreckage remains hidden until the shatter accent
+PASS Tunnel: active bullet-time effects relinquish the cinematic clock
+PASS Tunnel: five explosions play over the held model before any breakup, music cut or route
+PASS Tunnel: half-second freeze then synchronized shatter/music cut; hold 0.502s
+PASS Tunnel: prepared polygon wreckage releases on the shatter accent
+PASS Tunnel: final explosion drops an item before any route selection
+PASS Tunnel: exactly one random boss item
+PASS Tunnel: waiting at the bottom cannot bypass the item
+PASS Tunnel: mandatory item has no skip control
+PASS Tunnel: actual item collection completes the reward
+PASS Tunnel: path choice opens only after collecting the item
+PASS Desert: lethal damage retains the intact hull while stopping combat
+PASS Desert: wreckage remains hidden until the shatter accent
+PASS Desert: active bullet-time effects relinquish the cinematic clock
+PASS Desert: five explosions play over the held model before any breakup, music cut or route
+PASS Desert: half-second freeze then synchronized shatter/music cut; hold 0.501s
+PASS Desert: prepared polygon wreckage releases on the shatter accent
+PASS Desert worm breakup includes the complete articulated body
+PASS Desert: final explosion drops an item before any route selection
+PASS Desert: exactly one random boss item
+PASS Desert: waiting at the bottom cannot bypass the item
+PASS Desert: mandatory item has no skip control
+PASS Desert: actual item collection completes the reward
+PASS Desert: a full loadout can choose a replacement for the mandatory item
+PASS Desert: the final-district loop waits for the item and resumes cleanly
+PASS Candyland: lethal damage retains the intact hull while stopping combat
+PASS Candyland: wreckage remains hidden until the shatter accent
+PASS Candyland: active bullet-time effects relinquish the cinematic clock
+PASS Candyland: five explosions play over the held model before any breakup, music cut or route
+PASS Candyland: half-second freeze then synchronized shatter/music cut; hold 0.540s
+PASS Candyland: prepared polygon wreckage releases on the shatter accent
+PASS Candyland: final explosion drops an item before any route selection
+PASS Candyland: exactly one random boss item
+PASS Candyland: waiting at the bottom cannot bypass the item
+PASS Candyland: mandatory item has no skip control
+PASS Candyland: a full loadout can choose a replacement for the mandatory item
+PASS Candyland: actual item collection completes the reward
+PASS Candyland: the final-district loop waits for the item and resumes cleanly
