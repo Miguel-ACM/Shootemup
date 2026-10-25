@@ -80,6 +80,7 @@ public static class WaveComposer
         var chosen=new HashSet<string>();var all=new List<WaveGeometry.Track>();var units=new List<WaveUnit>();var names=new List<string>();
         var occupied=Array.Empty<ulong>();
         int count=budget<5 || compact ? 2 : 3;bool heavy=false;
+        if(level==LevelId.Candyland)count=budget<5 || compact ? 3 : 4;
         float window=compact ? 12.5f : budget<5 ? 8.6f : 11.5f;
         for(int slot=0;slot<count;slot++)
         {
@@ -174,6 +175,7 @@ public static partial class WavePartLibrary
             case LevelId.Fields:return Plains;case LevelId.Snow:return Snow;case LevelId.City:return City;
             case LevelId.Thunder:return Thunder;case LevelId.Tunnel:return Tunnel;
             case LevelId.Desert:return Desert;
+            case LevelId.Candyland:return Candyland;
             default:throw new ArgumentOutOfRangeException(nameof(level));
         }
     }

@@ -48,6 +48,8 @@ public sealed class WavePart
         float first=Mathf.Max(Seconds*.31f,last+.72f);
         // Call, rest, answer. A train shares accents even with staggered entrances.
         float[] score={first,first+Seconds*.15f,first+Seconds*.31f};
+        if(Enemy=="BonbonSkirmisher" || Enemy=="WaferDart" || Enemy=="MintSpinner")
+            score=new[]{Seconds*.36f,Seconds*.65f,last+Seconds*.48f};
         foreach(var unit in units)unit.fireTimes=score;
         return units;
     }
@@ -64,6 +66,9 @@ public static class WaveGeometry
         int hull;float scale;
         switch(enemy)
         {
+            case "BonbonSkirmisher":hull=35;scale=.38f;break;
+            case "WaferDart":hull=36;scale=.39f;break;
+            case "MintSpinner":hull=37;scale=.42f;break;
             case "SandEmitter":hull=30;scale=.63f;break;
             case "SandStriker":hull=31;scale=.52f;break;
             // The small worm's trailing body needs its own reserved corridor through a phrase.
