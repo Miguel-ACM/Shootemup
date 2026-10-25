@@ -31,6 +31,7 @@ public sealed class PlayerRound : ABullet
         var bounds=sr.sprite.bounds.size;float size=Mathf.Sqrt(GameRules.playerShootSize)*(generation>0 ? .85f : 1);
         go.transform.localScale=new Vector3(span.x/Mathf.Max(.01f,bounds.x),span.y/Mathf.Max(.01f,bounds.y),1)*size;
         collider.size=new Vector2(bounds.x*.65f,bounds.y*.78f);
+        ProjectileSolid.Friendly(b);
         b.returns=generation==0 && CombatUpgrades.Current!=null && CombatUpgrades.Current.ReturnThisVolley;
         return b;
     }

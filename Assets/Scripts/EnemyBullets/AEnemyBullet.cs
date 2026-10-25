@@ -13,6 +13,7 @@ public abstract class AEnemyBullet : MonoBehaviour
 
     protected virtual void Start()
     {
+        ProjectileSolid.Legacy(gameObject,false);
         rigidBody = GetComponent<Rigidbody2D>();
     }
 

@@ -31,7 +31,7 @@ public abstract class CombatRound : AEnemyBullet
             var sr=go.AddComponent<SpriteRenderer>();sr.sprite=CombatVisuals.Projectile();sr.sharedMaterial=CombatVisuals.ProjectileMaterial;sr.sortingOrder=15;
             sr.sortingLayerName="Bullet";
             var collider=go.AddComponent<CircleCollider2D>();collider.isTrigger=true;collider.radius=.44f;
-            shot=go.AddComponent<T>();shot.body=rb;shot.visual=sr;
+            shot=go.AddComponent<T>();shot.body=rb;shot.visual=sr;ProjectileSolid.Hostile(shot);
         }
         shot.transform.SetPositionAndRotation(new Vector3(p.x,p.y,-.5f),Quaternion.identity);
         shot.transform.localScale=Vector3.one*radius*2;shot.visual.sprite=HostileProjectileArt.Sprite(typeof(T),radius>=.25f);shot.visual.color=Color.white;

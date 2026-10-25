@@ -1,0 +1,190 @@
+PASS
+PASS SimpleRound uses shared solid geometry
+PASS SimpleRound retains centred .44 collision radius
+PASS SimpleRound has physical mesh depth
+PASS NeedleRound uses shared solid geometry
+PASS NeedleRound retains centred .44 collision radius
+PASS NeedleRound has physical mesh depth
+PASS HelixRound uses shared solid geometry
+PASS HelixRound retains centred .44 collision radius
+PASS HelixRound has physical mesh depth
+PASS BurstShell uses shared solid geometry
+PASS BurstShell retains centred .44 collision radius
+PASS BurstShell has physical mesh depth
+PASS RicochetBolt uses shared solid geometry
+PASS RicochetBolt retains centred .44 collision radius
+PASS RicochetBolt has physical mesh depth
+PASS SuspendedRound uses shared solid geometry
+PASS SuspendedRound retains centred .44 collision radius
+PASS SuspendedRound has physical mesh depth
+PASS GuidedMissile uses shared solid geometry
+PASS GuidedMissile retains centred .44 collision radius
+PASS GuidedMissile has physical mesh depth
+PASS PlasmaOrb uses shared solid geometry
+PASS PlasmaOrb retains centred .44 collision radius
+PASS PlasmaOrb has physical mesh depth
+PASS ProximityMine uses shared solid geometry
+PASS ProximityMine retains centred .44 collision radius
+PASS ProximityMine has physical mesh depth
+PASS ReturningDisc uses shared solid geometry
+PASS ReturningDisc retains centred .44 collision radius
+PASS ReturningDisc has physical mesh depth
+PASS ScatterCarrier uses shared solid geometry
+PASS ScatterCarrier retains centred .44 collision radius
+PASS ScatterCarrier has physical mesh depth
+PASS LaserSideRound uses shared solid geometry
+PASS LaserSideRound retains centred .44 collision radius
+PASS LaserSideRound has physical mesh depth
+PASS player Pulse uses a solid model
+PASS player Needle uses a solid model
+PASS player Shell uses a solid model
+PASS player Disc uses a solid model
+PASS player Missile uses a solid model
+PASS player Flame uses a solid model
+PASS instanced projectile shader compiles
+PASS GPU instancing enabled on the single shared material
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS solid replaces sprite without duplicate rendering
+PASS shared material and no shadow pass
+PASS missile solid core matches circular collision under nonuniform scale
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 0
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 1
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 2
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 3
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 4
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 5
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 6
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 7
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 8
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 9
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 10
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 11
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 12
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 13
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 14
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 15
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 0
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 1
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 2
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 3
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 4
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 5
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 6
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 7
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 8
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 9
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 10
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 11
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 12
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 13
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 14
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 15
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 0
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 1
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 2
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 3
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 4
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 5
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 6
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 7
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 8
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 9
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 10
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 11
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 12
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 13
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 14
+PASS NeedleRound rendered core agrees with actual physics boundary at angle 15
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 0
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 1
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 2
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 3
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 4
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 5
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 6
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 7
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 8
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 9
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 10
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 11
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 12
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 13
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 14
+PASS GuidedMissile rendered core agrees with actual physics boundary at angle 15
+PASS legacy PlayerBullet uses solid geometry
+PASS legacy TwerpBullet uses solid geometry
+PASS legacy EnemyBulletSmall uses solid geometry
+PASS legacy EnemyBulletMedium uses solid geometry
+PASS legacy EnemyBulletBig uses solid geometry
+PASS legacy CircularWave uses solid geometry
+PASS pooled rounds reuse one mesh renderer
+PASS pooled tint and visibility reset
+PASS Fields carrier continues generating modelled lateral bullets
+PASS Snow carrier continues generating modelled lateral bullets
+PASS City carrier continues generating modelled lateral bullets
+PASS Thunder carrier continues generating modelled lateral bullets
+PASS Tunnel carrier continues generating modelled lateral bullets
+PASS Desert carrier continues generating modelled lateral bullets
+PASS stress scene reaches both caps: 280 hostile + 180 friendly
+SPRITE baseline: editor frame median 10,57ms, p95 13,35ms; whole-scene draw calls 530, triangles 17999
+3D: editor frame median 10,48ms, p95 13,16ms; whole-scene draw calls 90, triangles 134949
+SPRITE baseline: editor frame median 9,66ms, p95 11,53ms; whole-scene draw calls 530, triangles 17999
+3D: editor frame median 10,83ms, p95 14,19ms; whole-scene draw calls 90, triangles 134949
+Performance is an uncapped Editor comparison, not a target-device GPU benchmark. Six-district moving frames saved for visual review.

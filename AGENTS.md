@@ -27,7 +27,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Keep first-level time to kill reasonable with the unmodified base weapon. Check actual projectile hits against moving Plains enemies as well as sustained damage; preserve challenge through patterns instead of excessive health.
 - Give every enemy a recognizable silhouette and role. Recolors or minor variations of one generic hull are insufficient.
 - Snow designs need particular care. A round boss must look like a designed spacecraft, not a plate covered with buttons.
-- Use the established projectile art style. Miguel preferred the older bullets to the initial expansion's plain discs.
+- Use clear, inexpensive 3D bullet models for all projectile types. Prioritize precise bullet-hell readability: visible collision cores, crisp silhouettes, clear gaps and restrained highlights. This supersedes the earlier sprite-art preference.
 - Thrusters are separate animated effects like the player's, never baked into hull geometry. Exceptions such as the spinning tunnel saw have no thrusters.
 - Iterate models and rendered views. There is no hurry; visual inspection and quality matter.
 - Bring the whole HUD on gradually with an irregular fluorescent-light startup flicker, then leave it steady and readable.

@@ -9,7 +9,7 @@ public sealed class ScatterCarrier : CombatRound
         if(age>(releases+1)*.65f)
         {
             releases++;var side=new Vector2(-heading.y,heading.x);
-            float muzzle=transform.localScale.x*.44f;
+            float muzzle=transform.localScale.x*.63f;
             Launch<NeedleRound>(transform.position+(Vector3)side*muzzle,side,3,.11f);
             Launch<NeedleRound>(transform.position-(Vector3)side*muzzle,-side,3,.11f);
         }
