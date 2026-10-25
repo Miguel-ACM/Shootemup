@@ -54,6 +54,9 @@ public sealed class WavePart
         if(Enemy=="MeadowTank")score=new[]{.95f,1.60f,2.25f,last+.95f};
         if(Enemy=="BonbonSkirmisher" || Enemy=="WaferDart" || Enemy=="MintSpinner")
             score=new[]{Seconds*.36f,Seconds*.65f,last+Seconds*.48f};
+        if(Enemy=="OrbitalScout")score=new[]{Seconds*.24f,Seconds*.34f,Seconds*.48f,Seconds*.61f,Seconds*.72f};
+        if(Enemy=="OrbitalCarrier")score=new[]{Seconds*.25f,Seconds*.39f,Seconds*.58f,Seconds*.72f};
+        if(Enemy=="LaserSatellite")score=new[]{Seconds*.28f,Seconds*.51f,Seconds*.72f};
         foreach(var unit in units)unit.fireTimes=score;
         return units;
     }
