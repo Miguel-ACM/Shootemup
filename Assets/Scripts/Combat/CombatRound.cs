@@ -46,7 +46,7 @@ public abstract class CombatRound : AEnemyBullet
     protected virtual float ClockRate=>1;
     protected override void Update()
     {
-        if(ended || Time.deltaTime<=0)return;
+        if(ended || WorldTimeStop.Frozen || Time.deltaTime<=0)return;
         float dt=Time.deltaTime*ClockRate*(this is PulseLaser ? 1 : CombatUpgrades.HostileSpeedAt(transform.position));
         age+=dt;
         if(age>lifetime || transform.position.y<Camera.DownLimit-2 || transform.position.y>Camera.UpLimit+5 ||

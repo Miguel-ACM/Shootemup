@@ -49,7 +49,7 @@ public sealed class TrailDrone : ACompanion
         if(owner==null || owner.health<=0){Destroy(gameObject);return;}
         // Ownership stays with the ship, but positions have an independent world-space history.
         // This also prevents parent motion from dragging a frozen drone through stopped time.
-        if(Time.deltaTime<=0){transform.position=worldPosition;return;}
+        if(WorldTimeStop.Frozen || Time.deltaTime<=0){transform.position=worldPosition;return;}
         float stagger=index%2==0 ? .19f : -.19f;
         float spacing=Mathf.Min(.65f,Mathf.Max(0,owner.transform.position.y-Camera.DownLimit-.3f)/(count+1));
         float inward=owner.transform.position.x>0 ? -1 : 1;
