@@ -1112,7 +1112,7 @@ MonoBehaviour:
   sourceSprite: {fileID: 615934621}
   model: {fileID: 449792149}
   modelRenderer: {fileID: 1271078120067941644}
-  bankDegrees: 12
+  bankDegrees: 28
   customOrientation: 1
   baseRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
   partRenderers:

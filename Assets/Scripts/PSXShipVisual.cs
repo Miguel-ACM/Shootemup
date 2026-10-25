@@ -9,7 +9,7 @@ public sealed class PSXShipVisual : MonoBehaviour
     [SerializeField] SpriteRenderer sourceSprite;
     [SerializeField] Transform model;
     [SerializeField] MeshRenderer modelRenderer;
-    [SerializeField] float bankDegrees = 12f;
+    [SerializeField] float bankDegrees = 28f;
     // PSXv2: orientation from the FBX axis check, extra part renderers and a non-banking hitbox.
     [SerializeField] bool customOrientation;
     [SerializeField] Quaternion baseRotation = Quaternion.identity;
