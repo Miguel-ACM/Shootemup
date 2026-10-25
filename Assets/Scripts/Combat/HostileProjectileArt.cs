@@ -51,12 +51,11 @@ public static class HostileProjectileArt
             case Shape.Ricochet:return Mathf.Max((ax+ay)/1.02f,Mathf.Max(ax,ay)/.82f);
             case Shape.Suspended:
             {
-                // Two detached chevron wings frame a separate round core.
-                // Keep transparent gaps wide enough to survive the gameplay pixel grid.
-                var fromTip=new Vector2(ax-.30f,y-.72f);
-                var wing=new Vector2(.52f,-1.18f);
-                float along=Mathf.Clamp01(Vector2.Dot(fromTip,wing)/wing.sqrMagnitude);
-                return Mathf.Min(r/.28f,(fromTip-wing*along).magnitude/.15f);
+                // A joined arrowhead bows out into curved wings around a separate ball.
+                float curve=.74f-.75f*ax-.75f*ax*ax,slope=.75f+1.5f*ax;
+                float arrow=Mathf.Max(Mathf.Abs(y-curve)/(.14f*Mathf.Sqrt(1+slope*slope)),(ax-.77f)/.08f);
+                float ball=Mathf.Sqrt(x*x+(y+.22f)*(y+.22f))/.26f;
+                return Mathf.Min(arrow,ball);
             }
             case Shape.Missile:return Mathf.Max(ay/.98f,ax/(y<-.20f ? .82f : .48f*(1.2f-y*.55f)));
             case Shape.Plasma:return Mathf.Max(Mathf.Max(ax,ay)/.87f,(ax+ay)/1.23f);

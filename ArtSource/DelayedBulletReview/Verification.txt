@@ -1,2 +1,2 @@
 PASS: real SuspendedRound sprites reviewed through the gameplay filter while slowing, paused, and re-accelerating; firing fan uses the smallest watcher radius (0.16).
-PASS: exported 32px sprite has three disconnected components: two chevron wings and a circular core.
+PASS: exported 32px sprite has two disconnected components: one joined curved arrowhead and one separate circular core.
