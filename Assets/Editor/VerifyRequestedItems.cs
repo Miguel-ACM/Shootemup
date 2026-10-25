@@ -202,14 +202,19 @@ public sealed class RequestedItemReview : MonoBehaviour
             yield return new WaitForSeconds(.1f);yield return Capture("DroneMotion"+i.ToString("00"));
         }
         Press();
+        ship.transform.position=new Vector3(Camera.RightLimit,Camera.DownLimit,-1);yield return new WaitForSeconds(.7f);
+        Check(drones.All(d=>d.transform.position.x<Camera.RightLimit && d.transform.position.y>Camera.DownLimit),"drone tail remains inside the visible arena at the bottom corner");
+        yield return Capture("DroneCorner");
         foreach(var drone in drones)Destroy(drone.gameObject);Clear();yield return null;
         yield return Grant(typeof(BulletTime),1);var bulletTime=(BulletTime)granted;
         ship.transform.position=new Vector3(0,-2,-1);
+        var frozenDrone=TrailDrone.Attach(ship,false);
         var enemy=Target(new Vector3(0,4));enemy.GetComponent<PatternMover>().enabled=true;
         hostile=CombatRound.Launch<SimpleRound>(new Vector3(-2,3),Vector2.down,4);
         shot=PlayerRound.Spawn(new Vector3(2,-2),Vector2.up,1,8);yield return null;
         var hostilePosition=hostile.transform.position;var shotPosition=shot.transform.position;var enemyPosition=enemy.transform.position;
         Check(bulletTime.OnPress(35)==0,"Bullet time consumes 35 energy");
+        var dronePosition=frozenDrone.transform.position;
         var frozenBeam=CombatRound.Launch<PulseLaser>(ship.transform.position+Vector3.up*2,Vector2.down,0);
         frozenBeam.warning=0;frozenBeam.activeTime=5;
         typeof(CombatRound).GetField("age",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(frozenBeam,.3f);
@@ -220,6 +225,7 @@ public sealed class RequestedItemReview : MonoBehaviour
         yield return new WaitForSecondsRealtime(.5f);
         Check(hostile.transform.position==hostilePosition && shot.transform.position==shotPosition,"hostile and friendly projectiles freeze together");
         Check(enemy.transform.position==enemyPosition,"enemy movement freezes with the world");
+        Check(frozenDrone.transform.position==dronePosition,"drones stay frozen while the player moves");
         Check(ship.transform.position.x>start+.5f && FindObjectsByType<PlayerRound>(FindObjectsSortMode.None).Length>4,"player can move and spawn suspended shots");
         Press();yield return Capture("BulletTime");
         var menu=FindAnyObjectByType<Menu>();menu.setMenuOpen(true);float remaining=WorldTimeStop.Current.Remaining;
@@ -228,7 +234,7 @@ public sealed class RequestedItemReview : MonoBehaviour
         yield return new WaitForSecondsRealtime(remaining+.15f);
         Check(!WorldTimeStop.Frozen && Time.timeScale==1,"Bullet time restores normal time after two active seconds");
         yield return new WaitForSeconds(.1f);Check(hostile.transform.position!=hostilePosition,"suspended projectiles resume travelling");
-        Clear();yield return null;
+        Destroy(frozenDrone.gameObject);Clear();yield return null;
         yield return Grant(typeof(EmpPulse));var emp=ship.GetComponent<PeriodicEmp>();
         Check(emp.Remaining>19.8f,"EMP begins with a full twenty-second countdown");
         yield return new WaitForSeconds(19.5f);

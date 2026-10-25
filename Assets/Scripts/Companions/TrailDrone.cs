@@ -4,8 +4,9 @@ using System.Collections.Generic;
 public sealed class TrailDrone : ACompanion
 {
     Shipcontroller owner;
-    Transform leader;
-    int index;
+    TrailDrone leader;
+    int index,count;
+    Vector3 worldPosition;
     bool laser;
     float clock=-.8f,nextDamage;
     Vector2 heading=Vector2.up;
@@ -19,7 +20,9 @@ public sealed class TrailDrone : ACompanion
         var go=new GameObject(laser ? "Trailing laser drone" : "Trailing gun drone");
         go.transform.SetParent(ship.transform,false);go.transform.position=ship.transform.position;
         var drone=go.AddComponent<TrailDrone>();drone.owner=ship;drone.laser=laser;drone.index=siblings.Length;
-        drone.leader=siblings.Length>0 ? siblings[siblings.Length-1].transform : ship.transform;
+        drone.leader=siblings.Length>0 ? siblings[siblings.Length-1] : null;
+        drone.count=siblings.Length+1;foreach(var sibling in siblings)sibling.count=drone.count;
+        drone.worldPosition=ship.transform.position;
         drone.type=CompanionType.follower;
         // Scale models only; damage, rounds and spacing stay constant.
         float scale=.7f*Mathf.Max(.6f,Mathf.Pow(.9f,drone.index));
@@ -41,14 +44,20 @@ public sealed class TrailDrone : ACompanion
         drone.clock=-.4f-drone.index*.18f;return drone;
     }
     Vector3 Muzzle=>transform.TransformPoint(new Vector3(0,.44f,-.1f));
-    void Update()
+    void LateUpdate()
     {
         if(owner==null || owner.health<=0){Destroy(gameObject);return;}
-        if(Time.deltaTime<=0)return;
-        if(leader==null)leader=owner.transform;
+        // Ownership stays with the ship, but positions have an independent world-space history.
+        // This also prevents parent motion from dragging a frozen drone through stopped time.
+        if(Time.deltaTime<=0){transform.position=worldPosition;return;}
         float stagger=index%2==0 ? .19f : -.19f;
-        Vector3 target=leader.position+new Vector3(stagger,-.65f,-.02f);
-        transform.position=Vector3.Lerp(transform.position,target,1-Mathf.Exp(-12*Time.deltaTime));
+        float spacing=Mathf.Min(.65f,Mathf.Max(0,owner.transform.position.y-Camera.DownLimit-.3f)/(count+1));
+        float inward=owner.transform.position.x>0 ? -1 : 1;
+        // Near the bottom the tail bends inward instead of disappearing below the visible arena.
+        var offset=new Vector3(stagger*spacing/.65f+inward*(.65f-spacing)*.8f,-spacing,-.02f);
+        Vector3 target=(leader!=null ? leader.worldPosition : owner.transform.position)+offset;
+        target.x=Mathf.Clamp(target.x,Camera.LeftLimit+.3f,Camera.RightLimit-.3f);target.y=Mathf.Max(Camera.DownLimit+.3f,target.y);
+        worldPosition=Vector3.Lerp(worldPosition,target,1-Mathf.Exp(-12*Time.deltaTime));transform.position=worldPosition;
         if(GameRules.playerDisabled)
         {
             clock=-.4f;if(beam!=null)beam.gameObject.SetActive(false);sound?.Stop();return;
