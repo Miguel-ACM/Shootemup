@@ -51,6 +51,7 @@ public sealed class WavePart
         // Call, rest, answer. A train shares accents even with staggered entrances.
         float[] score={first,first+Seconds*.15f,first+Seconds*.31f};
         if(Ground)score=new[]{1.35f,2.45f,3.55f,last+1.35f};
+        if(Enemy=="MeadowTank")score=new[]{.95f,1.60f,2.25f,last+.95f};
         if(Enemy=="BonbonSkirmisher" || Enemy=="WaferDart" || Enemy=="MintSpinner")
             score=new[]{Seconds*.36f,Seconds*.65f,last+Seconds*.48f};
         foreach(var unit in units)unit.fireTimes=score;

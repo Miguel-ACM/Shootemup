@@ -22,6 +22,11 @@ public sealed class PSXGrassField : MonoBehaviour
     Texture2D foliageAtlas;
     PSXValleyLayout layout;
     public float GroundScrollSpeed=>scrollSpeed;
+    public Vector2 RoadDownDirection(float worldY)
+    {
+        if(!SampleRoad(worldY+.12f,out var upper,out var a) || !SampleRoad(worldY-.12f,out var lower,out var b))return Vector2.down;
+        return ((Vector2)(lower.TransformPoint(b)-upper.TransformPoint(a))).normalized;
+    }
     public bool SampleRoad(float worldY,out Transform tile,out Vector3 local)
     {
         tile=null;local=default;if(layout==null)return false;

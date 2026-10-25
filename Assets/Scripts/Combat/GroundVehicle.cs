@@ -7,6 +7,8 @@ public abstract class GroundVehicle : DistrictEnemy
     Transform tile,weapon;
     Vector3 local,planned,previous;
     bool hasPrevious;
+    float roadY;
+    bool drivingRoad;
     GroundTreadMarks marks;
     MeshRenderer[] parts;
     MaterialPropertyBlock tint;
@@ -40,6 +42,14 @@ public abstract class GroundVehicle : DistrictEnemy
     protected virtual void BuildRunningGear(){}
     public Vector3 ProjectToSurface(Vector3 position)
     {
+        if(!Snow && field!=null)
+        {
+            if(!drivingRoad){drivingRoad=true;roadY=position.y;}
+            var flight=movement as FormationFlight;
+            float drive=1.45f+Mathf.Clamp((5.1f-(flight!=null ? flight.duration : 4.8f))*.8f,0,.9f);
+            roadY-=Time.deltaTime*(field.GroundScrollSpeed+drive*GameRules.enemySpeed*LevelRun.EnemyTempoScale);
+            position.y=roadY;
+        }
         planned=position;Sample(position);if(!Grounded)return position;
         var p=tile.TransformPoint(local);return new Vector3(p.x,p.y,1);
     }
@@ -60,10 +70,11 @@ public abstract class GroundVehicle : DistrictEnemy
         var p=tile.TransformPoint(local);transform.position=new Vector3(p.x,p.y,1);Hull.position=p+Vector3.back*.075f;
         float scroll=Snow ? 4.4f : field.GroundScrollSpeed;
         Vector2 driving=hasPrevious ? (Vector2)(p-previous)+Vector2.up*scroll*Time.deltaTime : Vector2.up;
+        if(!Snow)driving=field.RoadDownDirection(p.y)*Mathf.Max(.001f,driving.magnitude);
         if(driving.sqrMagnitude>.00001f)
         {
             var target=Quaternion.FromToRotation(Vector3.down,driving.normalized);
-            Hull.rotation=Quaternion.RotateTowards(Hull.rotation,target,Time.deltaTime*360);
+            Hull.rotation=!hasPrevious && !Snow ? target : Quaternion.RotateTowards(Hull.rotation,target,Time.deltaTime*360);
         }
         if(player!=null)
         {
