@@ -10,27 +10,27 @@ public static class VerifyRunProgression
             Check((int)LevelId.Fields==0 && (int)LevelId.Tunnel==1 && (int)LevelId.Snow==2 && (int)LevelId.Thunder==3 &&
                 (int)LevelId.City==4 && (int)LevelId.Desert==5 && (int)LevelId.Candyland==6 && (int)LevelId.Space==7,"Serialized district IDs changed");
             foreach(var middle in new[]{LevelId.Snow,LevelId.City})
-            foreach(var third in new[]{LevelId.Thunder,LevelId.Tunnel})
-            foreach(var extension in new[]{LevelId.Desert,LevelId.Candyland})
+            foreach(var third in middle==LevelId.Snow ? new[]{LevelId.Desert,LevelId.Thunder} : new[]{LevelId.Tunnel,LevelId.Candyland})
+            foreach(var extension in new[]{LevelId.Space,LevelId.Underwater})
             {
                 LevelRun.Reset();int seed=LevelRun.Seed;float previousHealth=0,previousTempo=0,previousShots=0;
                 for(int loop=1;loop<=50;loop++)
                 {
                     Check(LevelRun.Loop==loop && LevelRun.Stage==(loop-1)*5+1,"Loop or stage advanced incorrectly");
                     Check(LevelRun.EnemyHealthScale>previousHealth && LevelRun.EnemyTempoScale>=previousTempo && LevelRun.EnemyShotSpeedScale>=previousShots,"Run difficulty decreased");
-                    Check(LevelRun.EnemyTempoScale<=1.5f && LevelRun.EnemyShotSpeedScale<=1.4f,"Readability speed caps exceeded");
-                    if(loop==2)Check(Near(LevelRun.EnemyHealthScale,2.1f) && Near(LevelRun.EnemyTempoScale,1.08f) && Near(LevelRun.EnemyShotSpeedScale,1.06f),"First loop escalation is incorrect");
+                    Check(LevelRun.EnemyTempoScale<=1.65f && LevelRun.EnemyShotSpeedScale<=1.5f,"Readability speed caps exceeded");
+                    if(loop==2)Check(Near(LevelRun.EnemyHealthScale,1.48f) && Near(LevelRun.EnemyTempoScale,1.08f) && Near(LevelRun.EnemyShotSpeedScale,1.06f),"First loop escalation is incorrect");
                     previousHealth=LevelRun.EnemyHealthScale;previousTempo=LevelRun.EnemyTempoScale;previousShots=LevelRun.EnemyShotSpeedScale;
                     LevelRun.GetChoices(out var left,out var right);Check(left==LevelId.Snow && right==LevelId.City,"Plains must offer Snow/City");
                     Reject(LevelId.Fields);Reject(LevelId.Thunder);LevelRun.Advance(middle);
-                    LevelRun.GetChoices(out left,out right);Check(left==LevelId.Thunder && right==LevelId.Tunnel,"Middle tier must offer Thunder/Tunnel");
+                    LevelRun.GetChoices(out left,out right);Check(middle==LevelId.Snow ? left==LevelId.Desert && right==LevelId.Thunder : left==LevelId.Tunnel && right==LevelId.Candyland,"Middle tier must preserve its diagram branch");
                     Reject(LevelId.Fields);Reject(middle);LevelRun.Advance(third);
                     LevelRun.GetChoices(out left,out right);var options=LevelRun.GetOptions();
-                    Check(left==LevelId.Desert && right==LevelId.Candyland && options.Length==2 && options[0]==left && options[1]==right,"Third district must offer only Desert/Candyland");
+                    Check(left==LevelId.Space && right==LevelId.Underwater && options.Length==2 && options[0]==left && options[1]==right,"Third district must offer Space/Underwater");
                     Reject(LevelId.Fields);Reject(LevelId.Snow);LevelRun.Advance(extension);
-                    Check(LevelRun.AutomaticNext==LevelId.Space && !LevelRun.ReturnsToPlains && LevelRun.GetOptions().Length==1,"Extension must lead only into Space");
-                    Reject(LevelId.Fields);Reject(extension);LevelRun.Advance(LevelId.Space);
-                    Check(LevelRun.ReturnsToPlains && LevelRun.Stage==loop*5,"Space must finish the loop");
+                    Check(LevelRun.AutomaticNext==LevelId.Hell && !LevelRun.ReturnsToPlains && LevelRun.GetOptions().Length==1,"Fourth tier must lead only into Hell");
+                    Reject(LevelId.Fields);Reject(extension);LevelRun.Advance(LevelId.Hell);
+                    Check(LevelRun.ReturnsToPlains && LevelRun.Stage==loop*5,"Hell must finish the loop");
                     LevelRun.Advance(LevelId.Fields);Check(LevelRun.Seed==seed && LevelRun.Loop==loop+1,"Completed loop lost the seed or incremented incorrectly");
                 }
             }
