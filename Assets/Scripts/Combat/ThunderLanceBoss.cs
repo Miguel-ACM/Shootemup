@@ -26,8 +26,8 @@ public sealed class ThunderLanceBoss : DistrictBoss
             else if(beat==2 || beat==3 || beat==8 || beat==9)
             {
                 if(beat==2 || beat==8)barrageAxis=Aim;
-                for(int i=-3;i<=3;i++)Fire<NeedleRound>(Hull.TransformPoint(new Vector3(0,-1.98f,-.2f)),
-                    CombatVisuals.Rotate(barrageAxis,i*8),7,.13f);
+                PetalFan<NeedleRound>(Hull.TransformPoint(new Vector3(0,-1.98f,-.2f)),
+                    CombatVisuals.Rotate(barrageAxis,beat%2==0 ? -2 : 2),7,8,7,.13f);
             }
         }
         else
@@ -44,8 +44,8 @@ public sealed class ThunderLanceBoss : DistrictBoss
             }
             if(beat==4)barrageAxis=Aim;
             if(beat>=4 && beat<=11)
-                for(int i=-4;i<=4;i++)Fire<NeedleRound>(Hull.TransformPoint(new Vector3(0,-1.98f,-.2f)),
-                    CombatVisuals.Rotate(barrageAxis,i*6.5f+(beat%2==0 ? -3.25f : 3.25f)),7.4f,.13f);
+                PetalFan<NeedleRound>(Hull.TransformPoint(new Vector3(0,-1.98f,-.2f)),
+                    CombatVisuals.Rotate(barrageAxis,((beat-4)%4-1.5f)*3.25f),9,6.5f,7.4f,.13f,.16f);
         }
     }
     protected override void OnPhaseTwo(){volley=0;nextAttack=age+1.5f;}
