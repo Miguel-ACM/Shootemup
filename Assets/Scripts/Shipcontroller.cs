@@ -434,6 +434,12 @@ public class Shipcontroller : MonoBehaviour
         healthBar.Set(health);
     }
 
+    public void HealFraction(float fraction)
+    {
+        health = Mathf.Clamp(health + maxHealth * Mathf.Clamp01(fraction), 0, maxHealth);
+        healthBar.Set(health);
+    }
+
     public void HealManaFlat(float heal)
     {
         var upgrades=GetComponent<CombatUpgrades>();

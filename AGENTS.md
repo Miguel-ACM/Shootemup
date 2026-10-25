@@ -76,6 +76,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Shops offer three or four items, can include a large health kit when health is low, and can be skipped by staying at the very bottom.
 - During the run, use the same spatial steering selection as district routing to offer two distinct encounters from SHOP, MULT SHOP, ITEM, HEALTH and CHALLENGE. Keep choices at authored wave breaks after sustained combat. HEALTH gives one health pickup; ITEM is a free item choice. CHALLENGE makes the next three waves harder, then awards an item before normal combat resumes. Do not offer a challenge without three remaining combat waves.
 - Encounter choices use original Python-drawn pixel sprites rather than text: coin shop, multiplier shop, item crate, medkit and challenge crest. After selection, let the panels fade and move away gracefully before opening the chosen encounter.
+- The HEALTH path drops one pickup restoring 50% of maximum health, capped at full health. Keep ordinary dropped health pickups at their existing flat healing value.
 - Require close contact to collect decision items so passing nearby cannot cause accidental purchases or replacements.
 - Make rarity effects noticeable and distinct.
 - Shop names and prices need opaque black backgrounds and must stay readable with the filter. The bottom skip zone must be reachable at the visible screen edge, with a minimal hold indicator.

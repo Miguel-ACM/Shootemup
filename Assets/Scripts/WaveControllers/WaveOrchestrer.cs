@@ -208,7 +208,11 @@ public class WaveOrchestrer : MonoBehaviour
         }
         CombatDecision.End();isShopUp=false;
         if(kind==EncounterKind.Challenge)challengeWavesRemaining=3;
-        else Instantiate(Resources.Load<GameObject>("Pickables/life"),ship.transform.position+Vector3.up*2.4f,Quaternion.identity);
+        else
+        {
+            var pickup=Instantiate(Resources.Load<GameObject>("Pickables/life"),ship.transform.position+Vector3.up*2.4f,Quaternion.identity);
+            pickup.GetComponent<Life>().maxHealthFraction=.5f;
+        }
         Invoke(nameof(GenerateWave),ClearBreather);
     }
     void OpenDecision(string kind)
