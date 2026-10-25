@@ -68,13 +68,13 @@ public sealed class CandyRegentBoss : DistrictBoss
         {
             var port=Hull.TransformPoint(new Vector3(beat%2==0 ? -.27f : .27f,-.95f,-.2f));
             int count=phaseTwo ? 5 : 3;
-            for(int i=0;i<count;i++)Fire<NeedleRound>(port,CombatVisuals.Rotate(attackAxis,(i-(count-1)*.5f)*11+(beat-1)*5),phaseTwo ? 9.3f : 8.2f,.14f);
+            PetalFan<NeedleRound>(port,CombatVisuals.Rotate(attackAxis,(beat-1)*5),count,11,phaseTwo ? 9.3f : 8.2f,.14f,.13f);
         }
         else if(beat==4 || beat==5)
         {
             // A broad alternating comb leaves lanes between shots while the next brood enters.
             int count=phaseTwo ? 9 : 7;
-            for(int i=0;i<count;i++)Fire<SimpleRound>(transform.position,CombatVisuals.Rotate(attackAxis,(i-(count-1)*.5f)*18+(beat==4 ? -9 : 9)),6.2f,.14f);
+            PetalFan<SimpleRound>(transform.position,CombatVisuals.Rotate(attackAxis,beat==4 ? -4.5f : 4.5f),count,18,6.2f,.14f,.22f);
         }
     }
     protected override float AttackPace=>phaseTwo ? .80f : 1;
