@@ -88,6 +88,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 ## Workflow
 
 - Implement each individual feature/enemy/item in its own commit. Commit authorized existing work, but preserve unrelated work being changed by another task.
+- Keep the code free of compiler warnings on the installed Unity version. Update deprecated APIs and remove unused state rather than suppressing diagnostics. For code-only warning cleanup, use the isolated clean-compilation check without starting gameplay.
 - Batch a substantial set of changes before opening the game for testing. Avoid repeated play sessions for every tiny edit.
 - Miguel's latest workflow feedback: do not test-run so much. Use one batched gameplay review, then check only a specific failed or outstanding case instead of repeating full runs.
 - Do not interrupt Miguel's live run. Wait until he finishes; once he says he has finished, proceed with testing.
