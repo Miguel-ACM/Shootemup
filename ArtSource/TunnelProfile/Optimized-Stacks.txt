@@ -1,0 +1,312 @@
+Frames 3644..5643
+
+FRAME 3860 8,543 ms
+8,543 ms Main Thread
+8,208 ms Application.Tick
+7,309 ms Application.UpdateScene
+7,308 ms UpdateSceneIfNeeded
+7,297 ms UpdateScene
+7,214 ms PlayerLoop
+7,213 ms UpdateScene
+3,608 ms Update.ScriptRunDelayedDynamicFrameRate
+3,607 ms CoroutinesDelayedCalls
+3,590 ms Assembly-CSharp-Editor.dll!::TunnelFrameProfile.Start() [Coroutine: MoveNext] [Invoke]
+2,995 ms GC.Collect
+1,936 ms UnityEngine.CoreModule.dll!UnityEngine.Rendering::RenderPipelineManager.DoRenderLoop_Internal() [Invoke]
+1,909 ms Inl_UniversalRenderTotal
+1,012 ms Inl_RenderCameraStack
+0,845 ms Inl_RenderCameraStack
+0,814 ms Application.TickSceneTracker
+0,785 ms UnityEditor.CoreModule.dll!UnityEditor::EditorApplication.Internal_CallUpdateFunctions() [Invoke]
+0,761 ms Update.ScriptRunBehaviourUpdate
+0,759 ms BehaviourUpdate
+0,538 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,446 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Loadout portrait camera
+0,343 ms Inl_ScriptableRenderContext.Submit
+0,318 ms UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,312 ms Inl_ScriptableRenderContext.Submit
+0,307 ms ExecuteRenderGraph
+0,289 ms UniversalRenderPipeline.RenderSingleCameraInternal: Loadout portrait camera
+0,279 ms ExecuteRenderGraph
+0,267 ms Profiler.FlushCounters
+
+FRAME 4754 8,266 ms
+8,266 ms Main Thread
+7,873 ms Application.Tick
+3,956 ms Application.TickSceneTracker
+3,932 ms UnityEditor.CoreModule.dll!UnityEditor::EditorApplication.Internal_CallUpdateFunctions() [Invoke]
+3,826 ms Application.UpdateScene
+3,824 ms UpdateSceneIfNeeded
+3,816 ms UpdateScene
+3,707 ms PlayerLoop
+3,707 ms UpdateScene
+3,352 ms EditorApplication.update: VerifyIndustrialGameplay.Tick
+1,567 ms UnityEngine.CoreModule.dll!UnityEngine.Rendering::RenderPipelineManager.DoRenderLoop_Internal() [Invoke]
+1,544 ms Inl_UniversalRenderTotal
+1,055 ms Update.ScriptRunBehaviourUpdate
+1,054 ms BehaviourUpdate
+0,932 ms Inl_RenderCameraStack
+0,732 ms Assembly-CSharp.dll!::DistrictBoss.Update() [Invoke]
+0,723 ms TunnelSaw.BounceBurst
+0,561 ms Inl_RenderCameraStack
+0,479 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,343 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Loadout portrait camera
+0,329 ms Inl_ScriptableRenderContext.Submit
+0,299 ms UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,291 ms Profiler.FlushCounters
+0,286 ms ExecuteRenderGraph
+0,270 ms FixedUpdate.Physics2DFixedUpdate
+0,268 ms Physics2D.Simulate
+0,252 ms Physics2D.SyncTransformChanges
+0,250 ms Profiler.FlushMemoryCounters
+
+FRAME 5250 8,157 ms
+8,157 ms Main Thread
+7,850 ms Application.Tick
+6,920 ms Application.UpdateScene
+6,920 ms UpdateSceneIfNeeded
+6,911 ms UpdateScene
+6,843 ms PlayerLoop
+6,843 ms UpdateScene
+5,188 ms UnityEngine.CoreModule.dll!UnityEngine.Rendering::RenderPipelineManager.DoRenderLoop_Internal() [Invoke]
+5,164 ms Inl_UniversalRenderTotal
+4,389 ms Inl_RenderCameraStack
+4,145 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Loadout portrait camera
+3,861 ms Inl_RecordRenderGraph
+3,855 ms Inl_On Record Render Graph
+0,846 ms Application.TickSceneTracker
+0,821 ms UnityEditor.CoreModule.dll!UnityEditor::EditorApplication.Internal_CallUpdateFunctions() [Invoke]
+0,776 ms Update.ScriptRunBehaviourUpdate
+0,775 ms BehaviourUpdate
+0,734 ms Inl_RenderCameraStack
+0,387 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+
+FRAME 4152 7,983 ms
+7,983 ms Main Thread
+7,668 ms Application.Tick
+6,863 ms Application.UpdateScene
+6,862 ms UpdateSceneIfNeeded
+6,857 ms UpdateScene
+6,787 ms PlayerLoop
+6,787 ms UpdateScene
+3,039 ms TimeUpdate.WaitForLastPresentationAndUpdateTime
+3,031 ms GarbageCollector.CollectIncremental
+1,754 ms UnityEngine.CoreModule.dll!UnityEngine.Rendering::RenderPipelineManager.DoRenderLoop_Internal() [Invoke]
+1,725 ms Inl_UniversalRenderTotal
+0,982 ms Inl_RenderCameraStack
+0,920 ms Update.ScriptRunBehaviourUpdate
+0,919 ms BehaviourUpdate
+0,728 ms Application.TickSceneTracker
+0,702 ms UnityEditor.CoreModule.dll!UnityEditor::EditorApplication.Internal_CallUpdateFunctions() [Invoke]
+0,694 ms Inl_RenderCameraStack
+0,610 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,434 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Loadout portrait camera
+0,254 ms Inl_ScriptableRenderContext.Submit
+0,253 ms Inl_RecordRenderGraph
+0,253 ms Profiler.FlushCounters
+
+FRAME 3803 7,980 ms
+7,980 ms Main Thread
+7,621 ms Application.Tick
+3,843 ms Application.TickSceneTracker
+3,818 ms UnityEditor.CoreModule.dll!UnityEditor::EditorApplication.Internal_CallUpdateFunctions() [Invoke]
+3,697 ms Application.UpdateScene
+3,696 ms UpdateSceneIfNeeded
+3,693 ms UpdateScene
+3,601 ms PlayerLoop
+3,601 ms UpdateScene
+3,319 ms EditorApplication.update: InstallPSXv2.Tick
+1,744 ms UnityEngine.CoreModule.dll!UnityEngine.Rendering::RenderPipelineManager.DoRenderLoop_Internal() [Invoke]
+1,714 ms Inl_UniversalRenderTotal
+0,845 ms Inl_RenderCameraStack
+0,778 ms Inl_RenderCameraStack
+0,667 ms Update.ScriptRunBehaviourUpdate
+0,666 ms BehaviourUpdate
+0,470 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,467 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Loadout portrait camera
+0,287 ms Profiler.FlushCounters
+0,258 ms Inl_ScriptableRenderContext.Submit
+0,252 ms Profiler.FlushMemoryCounters
+
+FRAME 4153 7,921 ms
+7,921 ms Main Thread
+7,635 ms Application.Tick
+6,556 ms Application.UpdateScene
+6,555 ms UpdateSceneIfNeeded
+6,548 ms UpdateScene
+6,483 ms PlayerLoop
+6,482 ms UpdateScene
+3,353 ms TimeUpdate.WaitForLastPresentationAndUpdateTime
+3,344 ms GarbageCollector.CollectIncremental
+2,394 ms GC.Collect
+1,255 ms UnityEngine.CoreModule.dll!UnityEngine.Rendering::RenderPipelineManager.DoRenderLoop_Internal() [Invoke]
+1,233 ms Inl_UniversalRenderTotal
+1,002 ms Application.TickSceneTracker
+0,978 ms UnityEditor.CoreModule.dll!UnityEditor::EditorApplication.Internal_CallUpdateFunctions() [Invoke]
+0,630 ms Inl_RenderCameraStack
+0,613 ms Update.ScriptRunBehaviourUpdate
+0,612 ms BehaviourUpdate
+0,564 ms Inl_RenderCameraStack
+0,407 ms EditorApplication.update: InstallPSXv2.Tick
+0,403 ms FixedUpdate.Physics2DFixedUpdate
+0,400 ms Physics2D.Simulate
+0,377 ms Physics2D.SyncTransformChanges
+0,341 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Loadout portrait camera
+0,314 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,262 ms Physics2D.SyncRigidbodyTransformChanges
+
+FRAME 3972 7,911 ms
+7,911 ms Main Thread
+7,522 ms Application.Tick
+6,805 ms Application.UpdateScene
+6,803 ms UpdateSceneIfNeeded
+6,798 ms UpdateScene
+6,673 ms PlayerLoop
+6,673 ms UpdateScene
+2,990 ms TimeUpdate.WaitForLastPresentationAndUpdateTime
+2,982 ms GarbageCollector.CollectIncremental
+2,475 ms GC.Collect
+2,066 ms UnityEngine.CoreModule.dll!UnityEngine.Rendering::RenderPipelineManager.DoRenderLoop_Internal() [Invoke]
+2,042 ms Inl_UniversalRenderTotal
+1,188 ms Inl_RenderCameraStack
+0,789 ms Inl_RenderCameraStack
+0,614 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,609 ms Application.TickSceneTracker
+0,587 ms UnityEditor.CoreModule.dll!UnityEditor::EditorApplication.Internal_CallUpdateFunctions() [Invoke]
+0,459 ms Update.ScriptRunBehaviourUpdate
+0,459 ms BehaviourUpdate
+0,449 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Loadout portrait camera
+0,412 ms Inl_ScriptableRenderContext.Submit
+0,395 ms FixedUpdate.Physics2DFixedUpdate
+0,393 ms Physics2D.Simulate
+0,380 ms UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,371 ms Physics2D.SyncTransformChanges
+0,354 ms ExecuteRenderGraph
+0,310 ms Profiler.FlushCounters
+0,267 ms Profiler.FlushMemoryCounters
+0,266 ms Renderer2D Pass
+0,263 ms Physics2D.SyncRigidbodyTransformChanges
+0,263 ms RenderLoop.ScheduleDraw
+0,261 ms RenderLoop.ScheduleDraw
+
+FRAME 4151 7,897 ms
+7,897 ms Main Thread
+7,543 ms Application.Tick
+6,775 ms Application.UpdateScene
+6,774 ms UpdateSceneIfNeeded
+6,768 ms UpdateScene
+6,676 ms PlayerLoop
+6,676 ms UpdateScene
+3,034 ms TimeUpdate.WaitForLastPresentationAndUpdateTime
+3,029 ms GarbageCollector.CollectIncremental
+1,679 ms UnityEngine.CoreModule.dll!UnityEngine.Rendering::RenderPipelineManager.DoRenderLoop_Internal() [Invoke]
+1,653 ms Inl_UniversalRenderTotal
+0,839 ms Inl_RenderCameraStack
+0,771 ms Inl_RenderCameraStack
+0,646 ms Application.TickSceneTracker
+0,622 ms UnityEditor.CoreModule.dll!UnityEditor::EditorApplication.Internal_CallUpdateFunctions() [Invoke]
+0,605 ms Update.ScriptRunBehaviourUpdate
+0,604 ms BehaviourUpdate
+0,501 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Loadout portrait camera
+0,467 ms FixedUpdate.Physics2DFixedUpdate
+0,465 ms Physics2D.Simulate
+0,449 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,437 ms Physics2D.SyncTransformChanges
+0,282 ms Physics2D.SyncRigidbodyTransformChanges
+0,281 ms Profiler.FlushCounters
+0,270 ms Inl_ScriptableRenderContext.Submit
+0,254 ms UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+
+FRAME 4150 7,768 ms
+7,768 ms Main Thread
+7,414 ms Application.Tick
+4,120 ms Application.TickSceneTracker
+4,095 ms UnityEditor.CoreModule.dll!UnityEditor::EditorApplication.Internal_CallUpdateFunctions() [Invoke]
+3,620 ms EditorApplication.update: InstallPSXv2.Tick
+3,208 ms Application.UpdateScene
+3,207 ms UpdateSceneIfNeeded
+3,199 ms UpdateScene
+3,126 ms PlayerLoop
+3,126 ms UpdateScene
+3,025 ms GC.Collect
+1,592 ms UnityEngine.CoreModule.dll!UnityEngine.Rendering::RenderPipelineManager.DoRenderLoop_Internal() [Invoke]
+1,559 ms Inl_UniversalRenderTotal
+0,756 ms Inl_RenderCameraStack
+0,753 ms Inl_RenderCameraStack
+0,520 ms Update.ScriptRunBehaviourUpdate
+0,519 ms BehaviourUpdate
+0,483 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Loadout portrait camera
+0,399 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,279 ms Profiler.FlushCounters
+
+FRAME 5575 7,603 ms
+7,603 ms Main Thread
+7,310 ms Application.Tick
+3,809 ms Application.TickSceneTracker
+3,781 ms UnityEditor.CoreModule.dll!UnityEditor::EditorApplication.Internal_CallUpdateFunctions() [Invoke]
+3,407 ms Application.UpdateScene
+3,406 ms UpdateSceneIfNeeded
+3,396 ms UpdateScene
+3,329 ms PlayerLoop
+3,329 ms UpdateScene
+3,213 ms EditorApplication.update: OpenFullGameplay.Check
+2,470 ms GC.Collect
+1,557 ms UnityEngine.CoreModule.dll!UnityEngine.Rendering::RenderPipelineManager.DoRenderLoop_Internal() [Invoke]
+1,534 ms Inl_UniversalRenderTotal
+0,753 ms Inl_RenderCameraStack
+0,741 ms Inl_RenderCameraStack
+0,512 ms Update.ScriptRunBehaviourUpdate
+0,511 ms BehaviourUpdate
+0,472 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Loadout portrait camera
+0,414 ms FixedUpdate.Physics2DFixedUpdate
+0,412 ms Physics2D.Simulate
+0,396 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,381 ms Physics2D.SyncTransformChanges
+0,269 ms Physics2D.SyncRigidbodyTransformChanges
+
+FRAME 4343 7,583 ms
+7,583 ms Main Thread
+7,258 ms Application.Tick
+6,395 ms Application.UpdateScene
+6,394 ms UpdateSceneIfNeeded
+6,385 ms UpdateScene
+6,334 ms PlayerLoop
+6,333 ms UpdateScene
+3,864 ms TimeUpdate.WaitForLastPresentationAndUpdateTime
+3,855 ms GarbageCollector.CollectIncremental
+2,215 ms GC.Collect
+1,145 ms UnityEngine.CoreModule.dll!UnityEngine.Rendering::RenderPipelineManager.DoRenderLoop_Internal() [Invoke]
+1,124 ms Inl_UniversalRenderTotal
+0,777 ms Application.TickSceneTracker
+0,751 ms UnityEditor.CoreModule.dll!UnityEditor::EditorApplication.Internal_CallUpdateFunctions() [Invoke]
+0,562 ms Inl_RenderCameraStack
+0,526 ms Inl_RenderCameraStack
+0,327 ms Update.ScriptRunBehaviourUpdate
+0,327 ms BehaviourUpdate
+0,320 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Loadout portrait camera
+0,289 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,263 ms Profiler.FlushCounters
+
+FRAME 4214 7,523 ms
+7,523 ms Main Thread
+7,214 ms Application.Tick
+6,514 ms Application.UpdateScene
+6,514 ms UpdateSceneIfNeeded
+6,509 ms UpdateScene
+6,449 ms PlayerLoop
+6,449 ms UpdateScene
+3,597 ms PreLateUpdate.ScriptRunBehaviourLateUpdate
+3,596 ms LateBehaviourUpdate
+3,547 ms Unity.2D.Animation.Runtime.dll!UnityEngine.U2D.Animation::DeformationManagerUpdater.LateUpdate() [Invoke]
+3,543 ms DeformationManager.LateUpdate
+1,685 ms UnityEngine.CoreModule.dll!UnityEngine.Rendering::RenderPipelineManager.DoRenderLoop_Internal() [Invoke]
+1,657 ms Inl_UniversalRenderTotal
+0,946 ms Inl_RenderCameraStack
+0,668 ms Inl_RenderCameraStack
+0,610 ms Application.TickSceneTracker
+0,605 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Loadout portrait camera
+0,588 ms UnityEditor.CoreModule.dll!UnityEditor::EditorApplication.Internal_CallUpdateFunctions() [Invoke]
+0,405 ms Update.ScriptRunBehaviourUpdate
+0,404 ms BehaviourUpdate
+0,352 ms Inl_UniversalRenderPipeline.RenderSingleCameraInternal: Main Camera
+0,257 ms Inl_ScriptableRenderContext.Submit

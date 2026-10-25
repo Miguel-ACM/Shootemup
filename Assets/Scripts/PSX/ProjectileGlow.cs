@@ -4,6 +4,7 @@ using UnityEngine;
 // Only radiance above white contributes, so bright snow and clouds do not fog the arena.
 public sealed class ProjectileGlow : System.IDisposable
 {
+    static readonly Unity.Profiling.ProfilerMarker renderMarker=new Unity.Profiling.ProfilerMarker("ProjectileGlow.Render");
     readonly Material material;
     readonly RenderTexture horizontal,vertical;
     public RenderTexture Texture=>vertical;
@@ -21,6 +22,7 @@ public sealed class ProjectileGlow : System.IDisposable
     }
     public void Render(RenderTexture source)
     {
+        using var sample=renderMarker.Auto();
         Graphics.Blit(source,vertical,material,0);
         material.SetVector("_Direction",new Vector4(.5f/horizontal.width,0,0,0));
         Graphics.Blit(vertical,horizontal,material,1);

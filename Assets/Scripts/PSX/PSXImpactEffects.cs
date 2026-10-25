@@ -3,6 +3,7 @@ using UnityEngine;
 /// <summary>One shared, bounded particle buffer for hits and pickup bursts; sphere explosions on death.</summary>
 public static class PSXImpactEffects
 {
+    static readonly Unity.Profiling.ProfilerMarker vanishMarker=new Unity.Profiling.ProfilerMarker("PSXImpact.Vanish");
     static ParticleSystem buffer;
     static Material material;
     static Material auraMaterial;
@@ -108,6 +109,7 @@ public static class PSXImpactEffects
     /// <summary>A bullet popping out of existence: one quick ring and a few short sparks in its colour.</summary>
     public static void Vanish(Vector3 position,Color color,float scale)
     {
+        using var sample=vanishMarker.Auto();
         if(buffer==null)buffer=Create(null,"PSX shared impacts",512);
         // Tiny bullet pops belong in the shared buffer, not a mesh renderer per erased bullet.
         for(int i=0;i<6;i++)

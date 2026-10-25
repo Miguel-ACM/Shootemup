@@ -1,0 +1,50 @@
+{
+  "Baseline": {
+    "frames": 3536,
+    "over_25ms_wall_frames": 54,
+    "Physics2D.Simulate": {
+      "maximum_ms": 273.3566,
+      "p99_ms": 31.935,
+      "total_ms": 8322.1901
+    },
+    "TunnelSaw.BounceBurst": {
+      "maximum_ms": 3.9297,
+      "p99_ms": 0.0,
+      "total_ms": 26.9121
+    },
+    "CombatRound.Launch": {
+      "maximum_ms": 3.0738,
+      "p99_ms": 0.0,
+      "total_ms": 24.6811
+    },
+    "Main Thread": {
+      "maximum_ms": 277.4696,
+      "p99_ms": 36.8864,
+      "total_ms": 21935.6532
+    }
+  },
+  "Optimized": {
+    "frames": 5642,
+    "over_25ms_wall_frames": 1,
+    "Physics2D.Simulate": {
+      "maximum_ms": 3.708,
+      "p99_ms": 0.4828,
+      "total_ms": 308.2916
+    },
+    "TunnelSaw.BounceBurst": {
+      "maximum_ms": 4.2241,
+      "p99_ms": 0.0,
+      "total_ms": 19.3186
+    },
+    "CombatRound.Launch": {
+      "maximum_ms": 2.5143,
+      "p99_ms": 0.0,
+      "total_ms": 17.1583
+    },
+    "Main Thread": {
+      "maximum_ms": 288.0376,
+      "p99_ms": 7.1457,
+      "total_ms": 21895.6997
+    }
+  }
+}

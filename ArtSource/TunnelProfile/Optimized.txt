@@ -1,0 +1,3 @@
+PASS
+Actual 22-second full-frame tunnel profile, active player collider, both phases and natural bounces.
+Frames=5642; median=3,709ms; p99=7,244ms; max=287,709ms

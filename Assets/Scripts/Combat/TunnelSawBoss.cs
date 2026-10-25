@@ -2,6 +2,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class TunnelSawBoss : DistrictBoss
 {
+    static readonly Unity.Profiling.ProfilerMarker burstMarker=new Unity.Profiling.ProfilerMarker("TunnelSaw.BounceBurst");
     public bool miniature;
     public override bool UsesHealthBar=>!miniature;
     Vector2 velocity=new Vector2(1,.72f).normalized;
@@ -42,6 +43,7 @@ public sealed class TunnelSawBoss : DistrictBoss
     }
     void ImpactBurst(Vector2 inward)
     {
+        using var sample=burstMarker.Auto();
         impacts++;
         // Full circular crowns on every physical bounce, including the little saws.
         // Alternate half a quick lane; slower heavy teeth form a second nested ring.
