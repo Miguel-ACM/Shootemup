@@ -21,6 +21,7 @@ public sealed class FormationFlight : PatternMover
     int nextStrike;
     Transform ground;
     Vector3 groundPoint;
+    public GroundVehicle SurfaceDriver;
     public void AnchorToGround(Transform section,Vector3 localPoint){ground=section;groundPoint=localPoint;}
     public Vector2 Tangent {get;private set;}=Vector2.down;
     public float Progress=>clock/Mathf.Max(.1f,duration);
@@ -58,6 +59,7 @@ public sealed class FormationFlight : PatternMover
         var p=PositionAt(TravelParameter(t));
         var next=new Vector3(p.x*Camera.RightLimit,Mathf.LerpUnclamped(Camera.DownLimit,Camera.UpLimit,p.y),origin.z);
         if(ground!=null){next=ground.TransformPoint(groundPoint);next.z=origin.z;}
+        if(SurfaceDriver!=null)next=SurfaceDriver.ProjectToSurface(next);
         Vector2 delta=next-transform.position;if(delta.sqrMagnitude>.0001f)Tangent=delta.normalized;
         transform.position=next;SetFiring(t>.12f && t<.82f);
     }

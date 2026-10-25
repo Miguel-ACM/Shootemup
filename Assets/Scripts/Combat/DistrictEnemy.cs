@@ -29,7 +29,7 @@ public abstract class DistrictEnemy : AEnemy
         model.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(enemy.hull);
         var renderer=model.AddComponent<MeshRenderer>();renderer.sharedMaterial=enemy.hull>=35 && enemy.hull<=38 ? CandyMaterials.Glaze : enemy is FieldsBomberBoss ? CombatMaterials.Fortress : CombatMaterials.Fleet;renderer.sortingLayerName="Enemy";
         enemy.Hull=model.transform;go.AddComponent<CombatHullVisual>().model=model.transform;
-        if(!(enemy is TunnelSawBoss))
+        if(!(enemy is TunnelSawBoss) && !(enemy is GroundVehicle))
         {
             var exhaust=go.AddComponent<EnemyThrusters>();exhaust.visualRoot=model.transform;
             exhaust.sockets=IndustrialMeshFactory.CombatEngineSockets(enemy.hull);
@@ -37,7 +37,7 @@ public abstract class DistrictEnemy : AEnemy
         enemy.scoreOnKill=40;enemy.moneyDropChance=.8f;go.SetActive(true);return enemy;
     }
     protected override void Start(){base.Start();var p=GameObject.FindGameObjectWithTag("Player");player=p!=null ? p.transform : null;}
-    public void FlyPhrase(WaveUnit unit)
+    public virtual void FlyPhrase(WaveUnit unit)
     {
         if(unit.phrase==FlightPhrase.None)return;
         if(movement!=null){movement.enabled=false;Destroy(movement);}

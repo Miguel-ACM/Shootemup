@@ -12,6 +12,7 @@ public sealed class WavePart
     public readonly WaveShape Shape;
     public readonly int Count,Unlock;
     public readonly float Seconds;
+    public bool Ground=>Enemy=="MeadowTank" || Enemy=="FrostAuger";
     public WavePart(string name,string enemy,FlightCurve route,WaveShape shape,int count,float seconds,int unlock=2)
     {Name=name;Enemy=enemy;Route=route;Shape=shape;Count=count;Seconds=seconds;Unlock=unlock;}
     public List<WaveUnit> Generate(int variant,float side)
@@ -22,12 +23,13 @@ public sealed class WavePart
         float interval=Mathf.Max(.30f,(2*radius+.32f)/Mathf.Max(1,Route.Length/Seconds)*1.25f)*(1+(variant/2%3)*.12f);
         int count=Shape==WaveShape.Solo ? 1 : Mathf.Max(Count==2 ? 2 : 3,Count+variant%3-1+Mathf.Min(1,(LevelRun.Stage-1)/3));
         WaveShape shape=Shape;
+        if(Ground){count=Mathf.Min(4,Count+variant%2);interval=Mathf.Max(interval,.80f);}
         // Two authored arrangements for each motif, with shared routes and score.
-        if((variant&1)!=0)
+        if((variant&1)!=0 && !Ground)
             shape=Shape==WaveShape.Train ? WaveShape.Rake : Shape==WaveShape.Rake ? WaveShape.Train : Shape==WaveShape.Chevron ? WaveShape.Diamond : Shape==WaveShape.Diamond ? WaveShape.Chevron : Shape;
         if(!Route.HorizontalLanes && (shape==WaveShape.Chevron || shape==WaveShape.Diamond))shape=WaveShape.Rake;
         var units=new List<WaveUnit>();
-        float lane=(variant/3%3-1)*.045f;
+        float lane=Ground ? 0 : (variant/3%3-1)*.045f;
         void Add(float at,float offset,float z=0)
         {
             units.Add(new WaveUnit(Enemy,at,Vector3.zero){phrase=FlightPhrase.Flow,curve=Route,side=side,lane=lane+offset,
@@ -48,6 +50,7 @@ public sealed class WavePart
         float first=Mathf.Max(Seconds*.31f,last+.72f);
         // Call, rest, answer. A train shares accents even with staggered entrances.
         float[] score={first,first+Seconds*.15f,first+Seconds*.31f};
+        if(Ground)score=new[]{1.35f,2.45f,3.55f,last+1.35f};
         if(Enemy=="BonbonSkirmisher" || Enemy=="WaferDart" || Enemy=="MintSpinner")
             score=new[]{Seconds*.36f,Seconds*.65f,last+Seconds*.48f};
         foreach(var unit in units)unit.fireTimes=score;
@@ -66,6 +69,8 @@ public static class WaveGeometry
         int hull;float scale;
         switch(enemy)
         {
+            case "MeadowTank":hull=39;scale=.68f;break;
+            case "FrostAuger":hull=40;scale=.64f;break;
             case "BonbonSkirmisher":hull=35;scale=.38f;break;
             case "WaferDart":hull=36;scale=.39f;break;
             case "MintSpinner":hull=37;scale=.42f;break;

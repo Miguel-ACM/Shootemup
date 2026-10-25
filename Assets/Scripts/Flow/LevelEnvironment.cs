@@ -22,6 +22,34 @@ public sealed class LevelEnvironment : MonoBehaviour
     static readonly Dictionary<LevelId,LevelEnvironment> preparedRoutes=new Dictionary<LevelId,LevelEnvironment>();
     [Range(0,.5f)] public float sideParallax=.12f;
     public float HorizontalOffset { get; private set; }
+    static readonly Vector3[][] snowSurface=new Vector3[4][];
+    public static bool TrySnowGround(Vector3 requested,out Transform tile,out Vector3 localPoint)
+    {
+        tile=null;localPoint=default;if(active==null || active.level!=LevelId.Snow)return false;
+        requested.x+=active.HorizontalOffset;
+        for(int i=0;i<active.sections.Count;i++)
+        {
+            var section=active.sections[i];var p=section.InverseTransformPoint(requested);
+            // Projected drift edges extend beyond the nominal tile boundary; try both neighbours at a seam.
+            if(p.y< -10.15f || p.y>10.15f)continue;
+            if(snowSurface[i]==null)snowSurface[i]=kit["SnowGround"+i].vertices;
+            var points=snowSurface[i];float z=1;
+            void Triangle(Vector3 a,Vector3 b,Vector3 c)
+            {
+                Vector2 v0=b-a,v1=c-a,v2=p-a;
+                float d=v0.x*v1.y-v1.x*v0.y;if(Mathf.Abs(d)<.000001f)return;
+                float u=(v2.x*v1.y-v1.x*v2.y)/d,v=(v0.x*v2.y-v2.x*v0.y)/d;
+                if(u>=-.0001f && v>=-.0001f && u+v<=1.0001f)z=Mathf.Min(z,a.z+u*(b.z-a.z)+v*(c.z-a.z));
+            }
+            int row=Mathf.Clamp(Mathf.FloorToInt((p.y+10)/.5f),0,39),col=Mathf.Clamp(Mathf.FloorToInt((p.x+11)/(22f/16)),0,15);
+            void Quad(int k){Triangle(points[k],points[k+1],points[k+2]);Triangle(points[k],points[k+2],points[k+3]);}
+            for(int y=Mathf.Max(0,row-1);y<=Mathf.Min(39,row+1);y++)for(int x=Mathf.Max(0,col-1);x<=Mathf.Min(15,col+1);x++)Quad((y*16+x)*4);
+            for(int k=2560;k+3<points.Length;k+=4)Quad(k);
+            if(z>0)continue;
+            tile=section;localPoint=new Vector3(p.x,p.y,z);return true;
+        }
+        return false;
+    }
     public static bool TryDesertGround(Vector3 requested,float radius,Predicate<Vector3> available,out Transform section,out Vector3 localPoint)
     {
         section=null;localPoint=default;
@@ -68,7 +96,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     System.Random random;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetRuntime() { kit=null;active=null;preparing=sourceReady=false;preparedRoutes.Clear(); }
+    static void ResetRuntime() { kit=null;active=null;preparing=sourceReady=false;preparedRoutes.Clear();Array.Clear(snowSurface,0,snowSurface.Length); }
 
     public static IEnumerator CreateTitleBackdrop()
     {

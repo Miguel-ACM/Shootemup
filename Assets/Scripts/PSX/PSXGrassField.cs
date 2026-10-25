@@ -20,12 +20,27 @@ public sealed class PSXGrassField : MonoBehaviour
     float travel;
     Material riverMaterial,foliageMaterial;
     Texture2D foliageAtlas;
+    PSXValleyLayout layout;
+    public float GroundScrollSpeed=>scrollSpeed;
+    public bool SampleRoad(float worldY,out Transform tile,out Vector3 local)
+    {
+        tile=null;local=default;if(layout==null)return false;
+        for(int i=0;i<sections.Count;i++)
+        {
+            var section=sections[i];float y=worldY-section.position.y;
+            if(y<0 || y>=SectionLength)continue;
+            float terrainY=(i-1)*SectionLength+y;
+            float road=layout.Centre(terrainY)-layout.HalfWidth(terrainY)-1.15f;
+            tile=section;local=new Vector3(road,y,-.115f);return true;
+        }
+        return false;
+    }
 
     void Start()
     {
         var landscape=Resources.Load<Material>("PSXValley");
         if(landscape==null){Debug.LogError("PSX Valley material is missing",this);return;}
-        var layout=new PSXValleyLayout(LevelRun.Seed);
+        layout=new PSXValleyLayout(LevelRun.Seed);
         riverMaterial=new Material(Resources.Load<Shader>("PSXValleyRiver"));
         riverMaterial.SetFloat("_BridgeY",layout.BridgeY);
         float bridgeWidth=layout.HalfWidth(layout.BridgeY);

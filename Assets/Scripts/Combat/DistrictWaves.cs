@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public static class DistrictWaves
 {
     // Explicit types keep runtime factories safe under managed code stripping.
-    public static readonly Type[] EnemyTypes={typeof(ScoutInterceptor),typeof(PatrolGunship),typeof(HeavyBomber),typeof(WallTurret),typeof(MaintenanceDrone),typeof(ArmoredCarrier),typeof(ColdWeatherFighter),typeof(SiegeGunship),typeof(ShieldTransport),typeof(BeamDrone),typeof(RelayDrone),typeof(StormSkimmer),typeof(PursuitFighter),typeof(AttackDrone),typeof(CommandGunship),typeof(CourierDiver),typeof(AvalancheBomber),typeof(ArcLancer),typeof(FieldsHeavyWing),typeof(TunnelDefensePlatform),typeof(SnowSiegeCraft),typeof(StormReactor),typeof(CityCommandCarrier),typeof(SandEmitter),typeof(SandStriker),typeof(SandWorm),typeof(BonbonSkirmisher),typeof(WaferDart),typeof(MintSpinner)};
+    public static readonly Type[] EnemyTypes={typeof(ScoutInterceptor),typeof(PatrolGunship),typeof(HeavyBomber),typeof(WallTurret),typeof(MaintenanceDrone),typeof(ArmoredCarrier),typeof(ColdWeatherFighter),typeof(SiegeGunship),typeof(ShieldTransport),typeof(BeamDrone),typeof(RelayDrone),typeof(StormSkimmer),typeof(PursuitFighter),typeof(AttackDrone),typeof(CommandGunship),typeof(CourierDiver),typeof(AvalancheBomber),typeof(ArcLancer),typeof(FieldsHeavyWing),typeof(TunnelDefensePlatform),typeof(SnowSiegeCraft),typeof(StormReactor),typeof(CityCommandCarrier),typeof(SandEmitter),typeof(SandStriker),typeof(SandWorm),typeof(BonbonSkirmisher),typeof(WaferDart),typeof(MintSpinner),typeof(MeadowTank),typeof(FrostAuger)};
     public static Type EnemyType(string name)=>Array.Find(EnemyTypes,t=>t.Name==name);
     public static Type BossType
     {

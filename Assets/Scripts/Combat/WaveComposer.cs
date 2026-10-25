@@ -79,7 +79,7 @@ public static class WaveComposer
         var previous=budget>2 ? new HashSet<string>(waves[budget-1].parts) : new HashSet<string>();
         var chosen=new HashSet<string>();var all=new List<WaveGeometry.Track>();var units=new List<WaveUnit>();var names=new List<string>();
         var occupied=Array.Empty<ulong>();
-        int count=budget<5 || compact ? 2 : 3;bool heavy=false;
+        int count=budget<5 || compact ? 2 : 3;bool heavy=false,groundUsed=false;
         if(level==LevelId.Candyland)count=budget<5 || compact ? 3 : 4;
         float window=compact ? 12.5f : budget<5 ? 8.6f : 11.5f;
         for(int slot=0;slot<count;slot++)
@@ -87,7 +87,7 @@ public static class WaveComposer
             var options=new List<(WavePart part,int score)>();
             foreach(var part in WavePartLibrary.For(level))
             {
-                if(part.Unlock>budget || chosen.Contains(part.Name) || previous.Contains(part.Name) || (heavy && part.Shape==WaveShape.Solo))continue;
+                if(part.Unlock>budget || chosen.Contains(part.Name) || previous.Contains(part.Name) || (heavy && part.Shape==WaveShape.Solo) || (groundUsed && part.Ground))continue;
                 uses.TryGetValue(part.Name,out int used);
                 options.Add((part,used*24+random.Next(24)));
             }
@@ -117,7 +117,7 @@ public static class WaveComposer
                 if(best!=null && (slot==0 || best.At<=(slot-1)*.25f+1.75f))break;
             }
             if(best==null)return null; // Retry compatible parts rather than stretching the encounter.
-            chosen.Add(best.Part.Name);names.Add(best.Part.Name);heavy|=best.Part.Shape==WaveShape.Solo;
+            chosen.Add(best.Part.Name);names.Add(best.Part.Name);heavy|=best.Part.Shape==WaveShape.Solo;groundUsed|=best.Part.Ground;
             all.AddRange(best.Tracks);
             WaveGeometry.Reserve(best.Occupancy,best.At,ref occupied);
             foreach(var original in best.Units)
@@ -172,7 +172,8 @@ public static partial class WavePartLibrary
     {
         switch(level)
         {
-            case LevelId.Fields:return Plains;case LevelId.Snow:return Snow;case LevelId.City:return City;
+            case LevelId.Fields:return plainsWithGround ?? (plainsWithGround=WithGround(Plains,PlainsGround));
+            case LevelId.Snow:return snowWithGround ?? (snowWithGround=WithGround(Snow,SnowGround));case LevelId.City:return City;
             case LevelId.Thunder:return Thunder;case LevelId.Tunnel:return Tunnel;
             case LevelId.Desert:return Desert;
             case LevelId.Candyland:return Candyland;

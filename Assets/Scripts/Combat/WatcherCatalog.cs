@@ -21,9 +21,9 @@ public static class WatcherCatalog
         {
             case LevelId.Candyland:return new[]{typeof(BonbonSkirmisher),typeof(WaferDart),typeof(MintSpinner)};
             case LevelId.Desert:return new[]{typeof(SandEmitter),typeof(SandStriker),typeof(SandWorm)};
-            case LevelId.Fields:return new[]{typeof(ScoutInterceptor),typeof(PatrolGunship),typeof(HeavyBomber),typeof(FieldsHeavyWing)};
+            case LevelId.Fields:return new[]{typeof(ScoutInterceptor),typeof(PatrolGunship),typeof(HeavyBomber),typeof(FieldsHeavyWing),typeof(MeadowTank)};
             case LevelId.Tunnel:return new[]{typeof(WallTurret),typeof(MaintenanceDrone),typeof(ArmoredCarrier),typeof(TunnelDefensePlatform)};
-            case LevelId.Snow:return new[]{typeof(ColdWeatherFighter),typeof(SiegeGunship),typeof(ShieldTransport),typeof(AvalancheBomber),typeof(SnowSiegeCraft)};
+            case LevelId.Snow:return new[]{typeof(ColdWeatherFighter),typeof(SiegeGunship),typeof(ShieldTransport),typeof(AvalancheBomber),typeof(SnowSiegeCraft),typeof(FrostAuger)};
             case LevelId.Thunder:return new[]{typeof(BeamDrone),typeof(RelayDrone),typeof(StormSkimmer),typeof(ArcLancer),typeof(StormReactor)};
             default:return new[]{typeof(PursuitFighter),typeof(AttackDrone),typeof(CommandGunship),typeof(CourierDiver),typeof(CityCommandCarrier)};
         }
