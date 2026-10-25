@@ -17,9 +17,9 @@ public sealed class StickyGum : MonoBehaviour
         var go=new GameObject("Swelling gum");go.transform.SetParent(enemy.transform,false);
         float angle=gum.blobs.Count*2.4f;
         go.transform.localPosition=new Vector3(Mathf.Cos(angle)*enemy.size*.4f,Mathf.Sin(angle)*enemy.size*.4f,-.65f);
-        go.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.ExpansionItem("GumBlob");
-        var r=go.AddComponent<MeshRenderer>();r.sharedMaterial=EverydayItemMaterials.For("ChewingGum");r.sortingLayerName="Bullet";r.sortingOrder=24;
-        go.transform.localScale=Vector3.one*.1f;
+        var r=go.AddComponent<SpriteRenderer>();r.sprite=ProjectileSprites.Load("standard");
+        ProjectileSpriteTint.Apply(go,new Color(.95f,.35f,.65f));r.sortingOrder=24;
+        go.transform.localScale=Vector3.one*.13f;go.transform.rotation=Quaternion.identity;
         gum.blobs.Add(new Blob{damage=damage,model=go.transform});return 0;
     }
     void Update()
@@ -28,9 +28,10 @@ public sealed class StickyGum : MonoBehaviour
         for(int i=blobs.Count-1;i>=0;i--)
         {
             var blob=blobs[i];blob.age+=Time.deltaTime;
-            blob.model.localScale=Vector3.one*Mathf.Lerp(.1f,.3f,blob.age/.65f);
+            blob.model.localScale=Vector3.one*Mathf.Lerp(.13f,.39f,blob.age/.65f);
+            blob.model.rotation=Quaternion.identity;
             if(blob.age<.65f)continue;
-            PSXImpactEffects.Burst(blob.model.position,new Color(.95f,.35f,.65f));
+            GumSpritePop.Spawn(blob.model.position);
             if(enemy!=null && enemy.CanBeTargeted){enemy.damage(blob.damage);Score.IncreaseScore(Mathf.RoundToInt(blob.damage));}
             Destroy(blob.model.gameObject);blobs.RemoveAt(i);
         }
