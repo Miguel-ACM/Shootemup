@@ -9,7 +9,7 @@ public sealed class BurningHull : MonoBehaviour
     {
         if(Time.time>expires){Destroy(this);return;}
         effect?.Tick();
-        if(enemy!=null && enemy.health>0 && Time.time>=nextTick)
+        if(enemy!=null && enemy.CanBeTargeted && Time.deltaTime>0 && Time.time>=nextTick)
         {nextTick=Time.time+.4f;enemy.damage(power*.4f);}
     }
     void OnDestroy(){effect?.Dispose();}
