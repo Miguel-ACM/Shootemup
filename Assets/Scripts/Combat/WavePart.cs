@@ -58,6 +58,7 @@ public sealed class WavePart
         if(Enemy=="OrbitalCarrier")score=new[]{Seconds*.25f,Seconds*.39f,Seconds*.58f,Seconds*.72f};
         if(Enemy=="LaserSatellite")score=new[]{Seconds*.28f,Seconds*.51f,Seconds*.72f};
         if(Enemy=="SkullRevenant" || Enemy=="CinderImp")score=new[]{Seconds*.27f,Seconds*.40f,Seconds*.57f,Seconds*.72f};
+        if(Enemy=="CinderImp")score=new[]{Seconds*.34f,Seconds*.68f};
         if(Enemy=="GhostGalleon")score=new[]{Seconds*.27f,Seconds*.43f,Seconds*.65f};
         if(Enemy=="ReefDart" || Enemy=="MantaRay" || Enemy=="Bathysphere")score=new[]{Seconds*.30f,Seconds*.51f,Seconds*.73f};
         EnemyTuning.TuneFormation(Enemy,units,Seconds,ref score);
