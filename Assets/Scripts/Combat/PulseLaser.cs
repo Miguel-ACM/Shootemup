@@ -23,7 +23,7 @@ public class PulseLaser : CombatRound
     {
         warning=.9f;activeTime=.65f;length=22;width=.25f;sweep=0;sideShots=false;nextSide=0;
         emitter=null;attached=false;startedSound=false;clockRate=1;transform.localScale=Vector3.one;
-        visual.enabled=false;GetComponent<Collider2D>().enabled=false;
+        visual.enabled=false;collision.enabled=false;
         if(ribbon==null){ribbon=gameObject.AddComponent<BeamRibbon>();ribbon.Build();}
         if(sound==null)sound=gameObject.AddComponent<LaserSound>();
         ribbon.Draw(transform.position,heading,length,width,0,0);lifetime=12;
@@ -55,10 +55,10 @@ public class PulseLaser : CombatRound
         float power=Power;
         sound.Drive(power,Active);
         ribbon.Draw(transform.position,heading,length,width,Charge,power,Mathf.Max(0,age-warning-activeTime)/Cooldown);
-        var player=GameObject.FindGameObjectWithTag("Player");
+        var player=CombatVisuals.Player;
         if(Active && power>.15f && player!=null)
         {
-            Vector2 delta=player.transform.position-transform.position;
+            Vector2 delta=player.position-transform.position;
             float along=Vector2.Dot(delta,heading),across=Mathf.Abs(delta.x*heading.y-delta.y*heading.x);
             if(along>=0 && along<=length && across<width*power*.5f+.16f)
                 player.SendMessage("ReceiveHazardDamage",damage,SendMessageOptions.DontRequireReceiver);

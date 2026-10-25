@@ -6,6 +6,13 @@ public static class CombatVisuals
 {
     static Sprite disc;
     static Material lineMaterial;
+    static Transform player;
+    public static Transform Player
+    {
+        get{if(player==null){var go=GameObject.FindGameObjectWithTag("Player");if(go!=null)player=go.transform;}return player;}
+    }
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetTarget(){player=null;}
     static readonly Dictionary<string,Sprite> projectiles=new Dictionary<string,Sprite>();
     public static Material ProjectileMaterial=>Resources.Load<GameObject>("Bullets/EnemyBulletSmall").GetComponent<SpriteRenderer>().sharedMaterial;
     public static Sprite Projectile(bool friendly=false,bool large=false,bool energy=false)
@@ -94,7 +101,7 @@ public static class CombatVisuals
     public static Vector2 Rotate(Vector2 d,float degrees) => Quaternion.Euler(0,0,degrees)*d;
     public static Vector2 Aim(Vector3 p)
     {
-        var ship=GameObject.FindGameObjectWithTag("Player");
-        return ship!=null ? ((Vector2)(SpectralDecoy.AimPosition(ship.transform.position)-p)).normalized : Vector2.down;
+        var ship=Player;
+        return ship!=null ? ((Vector2)(SpectralDecoy.AimPosition(ship.position)-p)).normalized : Vector2.down;
     }
 }

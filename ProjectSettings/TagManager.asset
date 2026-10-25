@@ -22,8 +22,8 @@ TagManager:
   - PickUp
   - Player
   - Enemy
-  - 
-  - 
+  - HostileProjectile
+  - DestructibleShot
   - 
   - 
   - 

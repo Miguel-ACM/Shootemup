@@ -5,10 +5,11 @@ public sealed class PlasmaOrb : CombatRound
     LineRenderer outline;
     protected override void Initialize()
     {
-        // The Bullet layer intentionally ignores itself. Destructible shells must accept player rounds.
-        gameObject.layer=0;
+        // Player rounds can hit this shell; other hostile rounds and enemy hulls cannot.
+        gameObject.layer=ProjectileCollisionLayers.Destructible;
         health=12;visual.color=Color.white;
         if(outline==null)outline=CombatVisuals.Line(transform,Accent,.035f);
+        outline.startColor=outline.endColor=Accent;
         CombatVisuals.Ring(outline,transform.position,transform.localScale.x*.6f);
     }
     protected override void Tick(float dt){base.Tick(dt);CombatVisuals.Ring(outline,transform.position,transform.localScale.x*.6f);}
