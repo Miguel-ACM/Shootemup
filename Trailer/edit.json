@@ -1,122 +1,146 @@
 [
-  [
-    3,
-    66,
-    "Plains formations"
-  ],
-  [
-    2,
-    66,
-    "Plains crossfire"
-  ],
-  [
-    2,
-    226,
-    "Snow formations"
-  ],
-  [
-    2,
-    270,
-    "Snow champion"
-  ],
-  [
-    3,
-    208,
-    "City rush"
-  ],
-  [
-    3,
-    264,
-    "City crossfire"
-  ],
-  [
-    2,
-    402,
-    "Thunder formations"
-  ],
-  [
-    2,
-    448,
-    "Thunder champion"
-  ],
-  [
-    3,
-    346,
-    "Tunnel formations"
-  ],
-  [
-    3,
-    389,
-    "Tunnel rings"
-  ],
-  [
-    2,
-    606,
-    "Reef formations"
-  ],
-  [
-    2,
-    686,
-    "Underwater crossfire"
-  ],
-  [
-    2,
-    804,
-    "Hell formations"
-  ],
-  [
-    2,
-    848,
-    "Hell crossfire"
-  ],
-  [
-    2,
-    366,
-    "Snow boss"
-  ],
-  [
-    3,
-    289,
-    "City duo"
-  ],
-  [
-    2,
-    529,
-    "Thunder beams"
-  ],
-  [
-    2,
-    710,
-    "Submarine attack"
-  ],
-  [
-    3,
-    142,
-    "Plains boss"
-  ],
-  [
-    3,
-    469,
-    "Tunnel saw"
-  ],
-  [
-    2,
-    353,
-    "Snow crowns"
-  ],
-  [
-    2,
-    534,
-    "Thunder beam sweep"
-  ],
-  [
-    2,
-    729,
-    "Submarine eruption"
-  ],
-  [
-    2,
-    909,
-    "Hell crab"
-  ]
+  {
+    "source": "semup2.mp4",
+    "source_start": 4.05,
+    "beats": 8,
+    "label": "Cloud curtain into Plains"
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 10.3,
+    "beats": 8,
+    "label": "Choose and collect opening item"
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 66,
+    "beats": 8,
+    "label": "Plains formations"
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 112.6,
+    "beats": 8,
+    "label": "Shop purchase"
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 159.9,
+    "beats": 8,
+    "label": "Plains boss explosion"
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 170,
+    "beats": 8,
+    "label": "Choose City road"
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 208,
+    "beats": 8,
+    "label": "City rush"
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 308,
+    "beats": 8,
+    "label": "Snow aerial assault"
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 346,
+    "beats": 8,
+    "label": "Tunnel formations"
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 448,
+    "beats": 8,
+    "label": "Thunder champion beam"
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 606,
+    "beats": 8,
+    "label": "Reef formations"
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 289,
+    "beats": 8,
+    "label": "City duo"
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 366,
+    "beats": 8,
+    "label": "Snow shell crowns"
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 469,
+    "beats": 8,
+    "label": "Tunnel saw barrage"
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 729,
+    "beats": 8,
+    "label": "Submarine eruption"
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 376.5,
+    "beats": 8,
+    "label": "Snow boss destruction"
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 529,
+    "beats": 8,
+    "label": "Thunder rotating beams"
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 471.8,
+    "beats": 4,
+    "label": "Active clearing the saw barrage"
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 650,
+    "beats": 4,
+    "label": "Underwater fish pass"
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 292,
+    "beats": 4,
+    "label": "City active blast"
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 272,
+    "beats": 4,
+    "label": "Snow champion release"
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 804,
+    "beats": 4,
+    "label": "Hell reveal"
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 918,
+    "beats": 4,
+    "label": "Infernal crab"
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 920.8,
+    "beats": 8,
+    "label": "Crab destruction and blackout"
+  }
 ]
