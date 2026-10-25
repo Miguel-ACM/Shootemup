@@ -1,0 +1,3 @@
+PASS
+PASS final spectral projection shader compiles
+PASS complete ship mesh is projected

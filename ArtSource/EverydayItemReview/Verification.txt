@@ -1,0 +1,46 @@
+PASS
+PASS all seven items are registered for offers and Debug Run
+PASS ChewingGum has a dedicated 3D model
+PASS HotSauce has a dedicated 3D model
+PASS RubberBand has a dedicated 3D model
+PASS MagnifyingGlass has a dedicated 3D model
+PASS StaticSweater has a dedicated 3D model
+PASS PocketFan has a dedicated 3D model
+PASS DecoyProjector has a dedicated 3D model
+PASS spectral projection shader compiles
+PASS physical shot sticks without immediately dealing damage
+PASS gum pops once for the stored hit damage
+PASS one bouncing projectile leaves gum on both enemies
+PASS both gum deposits deal damage independently
+PASS moving burning enemy leaves a trail that ignites a crossing enemy
+PASS fire trail remains bounded
+PASS fire patches expire after enemies are gone
+PASS missed round turns down at the visible top edge
+PASS returning shot can hit and keeps its burn coating
+PASS legacy projectile also returns once
+PASS unfocused firing preserves the configured baseline cadence
+PASS fully focused weapon fires roughly half as many rounds
+PASS focused rounds are three times stronger and 1.6 times wider
+PASS releasing focus immediately restores normal shot power and size (damage=2, expected=2)
+PASS both guns still fire when one coupled trigger is released
+PASS standing still cannot charge the sweater
+PASS actual player movement fully charges the sweater
+PASS charged hit chains to nearby enemies and inherits gum
+PASS chain lightning applies actual delayed damage
+PASS decisions cannot build static charge
+PASS Pocket Fan requires and consumes twenty energy
+PASS Pocket Fan respects its cooldown
+PASS wind pushes nearby bullets upward while distant bullets keep travelling
+PASS pushed bullets remain dangerous
+PASS wind leaves friendly rounds and attached beam positions unchanged
+PASS pause suspends fan duration
+PASS wind expires after its short burst
+PASS Decoy Projector requires and consumes twenty-five energy
+PASS projecting the copy allows uninterrupted movement and firing
+PASS spectral copy travels forward without a player collider
+PASS every ship submesh receives its spectral material
+PASS real aimed volley targets the moving spectral copy
+PASS previously committed volley keeps its direction
+PASS Bullet Time freezes both decoy flight and hostile rounds
+PASS revised weapon timing still emits suspended rounds in Bullet Time
+PASS decoy expires and aiming returns to the player
