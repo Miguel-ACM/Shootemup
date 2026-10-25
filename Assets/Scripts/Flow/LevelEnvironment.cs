@@ -22,7 +22,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     static readonly Dictionary<LevelId,LevelEnvironment> preparedRoutes=new Dictionary<LevelId,LevelEnvironment>();
     [Range(0,.5f)] public float sideParallax=.12f;
     public float HorizontalOffset { get; private set; }
-    static readonly Vector3[][] snowSurface=new Vector3[4][];
+    readonly Vector3[][] snowSurface=new Vector3[4][];
     public static bool TrySnowGround(Vector3 requested,out Transform tile,out Vector3 localPoint)
     {
         tile=null;localPoint=default;if(active==null || active.level!=LevelId.Snow)return false;
@@ -32,8 +32,7 @@ public sealed class LevelEnvironment : MonoBehaviour
             var section=active.sections[i];var p=section.InverseTransformPoint(requested);
             // Projected drift edges extend beyond the nominal tile boundary; try both neighbours at a seam.
             if(p.y< -10.15f || p.y>10.15f)continue;
-            if(snowSurface[i]==null)snowSurface[i]=kit["SnowGround"+i].vertices;
-            var points=snowSurface[i];float z=1;
+            var points=active.snowSurface[i];if(points==null)continue;float z=1;
             void Triangle(Vector3 a,Vector3 b,Vector3 c)
             {
                 Vector2 v0=b-a,v1=c-a,v2=p-a;
@@ -74,6 +73,9 @@ public sealed class LevelEnvironment : MonoBehaviour
         return false;
     }
     Material material;
+    Material snowFoliageMaterial,snowTerrainMaterial;
+    Texture2D snowFoliageAtlas;
+    SnowLandscape snowLandscape;
     Transform player,weatherTransform,lightningRoot;
     readonly List<Transform> sections=new List<Transform>();
     readonly List<Transform> foreground=new List<Transform>();
@@ -96,7 +98,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     System.Random random;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetRuntime() { kit=null;active=null;preparing=sourceReady=false;preparedRoutes.Clear();Array.Clear(snowSurface,0,snowSurface.Length); }
+    static void ResetRuntime() { kit=null;active=null;preparing=sourceReady=false;preparedRoutes.Clear(); }
 
     public static IEnumerator CreateTitleBackdrop()
     {
@@ -245,6 +247,13 @@ public sealed class LevelEnvironment : MonoBehaviour
     {
         LoadKit();random=new System.Random(LevelRun.Seed+810+(int)level);
         material=new Material(Resources.Load<Shader>("LevelScenery"));
+        if(level==LevelId.Snow)
+        {
+            snowLandscape=new SnowLandscape(LevelRun.Seed);
+            snowTerrainMaterial=new Material(Resources.Load<Shader>("SnowSurface"));
+            snowFoliageAtlas=PSXValleyFoliage.CreateAtlas(true);
+            snowFoliageMaterial=new Material(Resources.Load<Shader>("PSXValleyFoliage")){mainTexture=snowFoliageAtlas};
+        }
         if(level==LevelId.City)material.SetFloat("_Haze",.38f);
         var go=GameObject.FindGameObjectWithTag("Player");if(go!=null)player=go.transform;
         yield return null;
@@ -269,17 +278,31 @@ public sealed class LevelEnvironment : MonoBehaviour
                     var ground=DesertGeometry.Ground(i,LevelRun.Seed);var detail=DesertGeometry.Buildings(i,LevelRun.Seed);
                     ownedMeshes.Add(ground);ownedMeshes.Add(detail);Add(ground,section,Vector3.zero,-50);Add(detail,section,Vector3.zero,-40);
                 }
+                else if(level==LevelId.Snow)
+                {
+                    var ground=SnowLandscapeGeometry.Ground(i,snowLandscape);ownedMeshes.Add(ground);snowSurface[i]=ground.vertices;
+                    Add(ground,section,Vector3.zero,-50).GetComponent<MeshRenderer>().sharedMaterial=snowTerrainMaterial;
+                    var detail=SnowLandscapeGeometry.Detail(i,snowLandscape);ownedMeshes.Add(detail);Add(detail,section,Vector3.zero,-40);
+                    var leaves=PSXValleyFoliage.Build(i*20-10,20,snowLandscape.Plants,snowLandscape.Height);ownedMeshes.Add(leaves);
+                    // Leaf builder uses a section-start origin; the terrain uses its centre.
+                    Add(leaves,section,new Vector3(0,-10,0),-39).GetComponent<MeshRenderer>().sharedMaterial=snowFoliageMaterial;
+                }
                 else Add(kit[level+"Ground"+i],section,Vector3.zero,-50);
                 if(level==LevelId.City)
                 {
                     var buildings=CityDistrictGeometry.Build(LevelRun.Seed,i);ownedMeshes.Add(buildings);Add(buildings,section,Vector3.zero,-40);
                 }
-                else if(level!=LevelId.Desert)Add(kit[level+"Detail"+i],section,Vector3.zero,-40);
+                else if(level!=LevelId.Desert && level!=LevelId.Snow)Add(kit[level+"Detail"+i],section,Vector3.zero,-40);
                 sections.Add(section);
-                var nearMesh=level==LevelId.Desert ? DesertGeometry.Near(i,LevelRun.Seed) : kit[level+"Near"+i];
-                if(level==LevelId.Desert)ownedMeshes.Add(nearMesh);
+                var nearMesh=level==LevelId.Desert ? DesertGeometry.Near(i,LevelRun.Seed) : level==LevelId.Snow ? SnowLandscapeGeometry.Detail(i,snowLandscape,true) : kit[level+"Near"+i];
+                if(level==LevelId.Desert || level==LevelId.Snow)ownedMeshes.Add(nearMesh);
                 var near=Add(nearMesh,transform,new Vector3(0,(i-1)*SectionLength,76),-25);
                 near.localScale=new Vector3(.8f,1,1);foreground.Add(near);
+                if(level==LevelId.Snow)
+                {
+                    var leaves=PSXValleyFoliage.Build(i*20-10,20,snowLandscape.NearPlants,snowLandscape.Height);ownedMeshes.Add(leaves);
+                    Add(leaves,near,new Vector3(0,-10,0),-24).GetComponent<MeshRenderer>().sharedMaterial=snowFoliageMaterial;
+                }
                 yield return null;
             }
             Color tint=level==LevelId.Snow ? new Color(.74f,.85f,.89f,.22f) : level==LevelId.City ? new Color(.46f,.54f,.59f,.16f) : new Color(.10f,.16f,.19f,.10f);
@@ -420,6 +443,7 @@ public sealed class LevelEnvironment : MonoBehaviour
             car.transform.localPosition=new Vector3(car.x+HorizontalOffset,y,88);
         }
         if(flakes!=null)UpdateWeather(dt);
+        if(snowFoliageMaterial!=null)snowFoliageMaterial.SetFloat("_FlowTime",clock);
         if(level==LevelId.Thunder)UpdateStorm(dt);
         foreach(var layer in atmosphere)
         {
@@ -528,6 +552,9 @@ public sealed class LevelEnvironment : MonoBehaviour
     void OnDestroy()
     {
         if(material!=null)Destroy(material);
+        if(snowFoliageMaterial!=null)Destroy(snowFoliageMaterial);
+        if(snowTerrainMaterial!=null)Destroy(snowTerrainMaterial);
+        if(snowFoliageAtlas!=null)Destroy(snowFoliageAtlas);
         foreach(var layer in atmosphere)if(layer.material!=null)Destroy(layer.material);
         foreach(var clip in ownedAudio)if(clip!=null)Destroy(clip);
         foreach(var mesh in ownedMeshes)if(mesh!=null)Destroy(mesh);

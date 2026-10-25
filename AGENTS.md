@@ -51,6 +51,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Snow: many large shells that explode into smaller bullets; a very round boss with several patterns and a harder second phase.
 - Latest Snow feedback: reduce the boss's health; its base health is now 2100 rather than 3200, with the same phase patterns and run scaling.
 - Plains also has tracked tank convoys on the valley road. Snow has distinct twin-auger ground siege crawlers. Ground vehicles need actual terrain contact, attached tracks or furrows, articulated weapons, and authored formations mixed with the air waves; no flying thrusters.
+- Snow scenery needs more variety and trees following the Plains tree style: textured, layered winter canopies over modeled branching trunks, mixed birches/evergreens, irregular groves and open glades, icy hollows, snow-capped rocks and fallen logs. Vary the landscape with the run seed, keep the full scroll seamless and sample the actual terrain for auger ground contact.
 - Plains tank tracks and chassis follow the road's bends, driving downward relative to the scrolling terrain. The independently aiming turret must not determine the track direction.
 - Improve the Plains riverbanks with natural shoreline shapes and coherent grass, gravel, reeds and stones. Keep the scrolling water and banks attached across section seams, and keep the road clear.
 - Thunder: beams and quick aimed fire; a slim boss with side-emitting lasers, then 6–8 alternating sweeping beams plus a barrage in phase two.
