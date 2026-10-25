@@ -4,7 +4,8 @@ using System.Collections.Generic;
 [UnityEngine.Scripting.Preserve]
 public sealed class HellCrabBoss : DistrictBoss
 {
-    readonly Transform[] claws=new Transform[2],arms=new Transform[2];
+    readonly Transform[] claws=new Transform[2];
+    readonly Transform[,] arms=new Transform[2,8];
     readonly LineRenderer[] tells=new LineRenderer[2];
     readonly HellCrabEye[] eyes=new HellCrabEye[2];
     readonly List<DistrictEnemy> minions=new List<DistrictEnemy>();
@@ -23,7 +24,7 @@ public sealed class HellCrabBoss : DistrictBoss
             int side=i==0 ? -1 : 1;
             eyes[i]=HellCrabEye.Create(this,Hull,new Vector3(side*.67f,-.52f,-.96f),health*.5f);
             claws[i]=Model("Jointed side pincer",IndustrialMeshFactory.CombatHull(54),Hull);
-            arms[i]=Model("Telescoping pincer arm",IndustrialMeshFactory.CrabArm(),Hull);
+            for(int segment=0;segment<8;segment++)arms[i,segment]=Model("Articulated pincer vertebra "+segment,IndustrialMeshFactory.CrabArm(),Hull);
             tells[i]=CombatVisuals.Line(Hull,LevelProjectilePalette.Accent(LevelId.Hell),.045f);tells[i].enabled=false;
         }
     }
@@ -50,9 +51,15 @@ public sealed class HellCrabBoss : DistrictBoss
         {
             int side=i==0 ? -1 : 1;var p=new Vector3(side*reach*(1-sweep),y,0);
             claws[i].position=p;claws[i].rotation=Quaternion.Euler(0,0,-side*(12+sweep*50));
-            var shoulder=Hull.TransformPoint(new Vector3(side*1.55f,.25f,0));var delta=p-shoulder;
-            arms[i].position=(p+shoulder)*.5f+Vector3.forward*.18f;arms[i].rotation=Quaternion.FromToRotation(Vector3.up,delta);
-            arms[i].localScale=new Vector3(.28f,delta.magnitude,.22f);
+            var shoulder=Hull.TransformPoint(new Vector3(side*1.55f,.25f,0));
+            var elbow=(shoulder+p)*.5f+new Vector3(side*.75f,.8f,.15f);
+            Vector3 Point(float u)=>Vector3.Lerp(Vector3.Lerp(shoulder,elbow,u),Vector3.Lerp(elbow,p,u),u);
+            for(int segment=0;segment<8;segment++)
+            {
+                var a=Point(segment/8f);var b=Point((segment+1)/8f);var bone=arms[i,segment];
+                bone.position=(a+b)*.5f+Vector3.forward*.12f;bone.rotation=Quaternion.FromToRotation(Vector3.up,b-a);
+                bone.localScale=new Vector3(.85f-segment*.035f,Mathf.Max(.32f,Vector3.Distance(a,b)/.95f),.85f);
+            }
             tells[i].enabled=t<1.1f;
             if(tells[i].enabled){tells[i].SetPosition(0,p);tells[i].SetPosition(1,new Vector3(side*reach,lockedY,-.3f));}
             if(t>1.1f && t<4.6f && player!=null && Vector2.Distance(player.position,p+Vector3.down*.45f)<.88f)
