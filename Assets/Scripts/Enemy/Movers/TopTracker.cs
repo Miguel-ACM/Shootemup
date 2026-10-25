@@ -14,6 +14,11 @@ public class TopTracker : PatternMover
     private enum Phase { Enter, Track, Lock, Fire, Recover }
     private Phase phase;
     private float clock;
+    private bool assault;
+    public void BeginAssault()
+    {
+        assault=true;trackingDuration=1.05f;recoveryDuration=.3f;firingDuration=1.8f;
+    }
 
     protected override void InitializePattern()
     {
@@ -64,8 +69,9 @@ public class TopTracker : PatternMover
         switch (phase)
         {
             case Phase.Enter:
+                if(assault)SetFiring(transform.position.y<=Camera.UpLimit-1.1f);
                 if (Steer(InBounds(new Vector3(origin.x, Camera.UpLimit - topOffset, origin.z)), dt))
-                { Arrive(); Next(Phase.Track); }
+                { Arrive(); SetFiring(false); Next(Phase.Track); }
                 break;
             case Phase.Track:
                 var target = transform.position;

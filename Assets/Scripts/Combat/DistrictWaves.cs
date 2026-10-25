@@ -28,15 +28,20 @@ public static class DistrictWaves
         "encounterChoice","14","miniboss","17","20","boss"};
     public static Wave Miniboss()
     {
-        if(LevelRun.Current==LevelId.Candyland)return WaveComposer.Create(16);
+        if(LevelRun.Current==LevelId.Candyland)
+        {
+            var rush=WaveComposer.Create(16);
+            foreach(var unit in rush.units)unit.miniboss=true;
+            return rush;
+        }
         if(LevelRun.Current==LevelId.Desert)
         {
             var brood=new List<WaveUnit>();
-            for(int i=0;i<3;i++)brood.Add(new WaveUnit(nameof(SandWorm),i*3.2f,new Vector3((i%2==0 ? -1 : 1)*.54f,1.2f,1)));
+            for(int i=0;i<3;i++)brood.Add(new WaveUnit(nameof(SandWorm),i*3.2f,new Vector3((i%2==0 ? -1 : 1)*.54f,1.2f,1)){miniboss=true});
             return new Wave(6,19,1,ConflictGroup.cg.center,brood){parts=new[]{"Buried brood"}};
         }
         string[] types={"FieldsHeavyWing","TunnelDefensePlatform","SnowSiegeCraft","StormReactor","CityCommandCarrier"};
-        return new Wave(6,35,1,ConflictGroup.cg.center,new List<WaveUnit>{new WaveUnit(types[(int)LevelRun.Current],0,new Vector3(0,1.2f))});
+        return new Wave(6,35,1,ConflictGroup.cg.center,new List<WaveUnit>{new WaveUnit(types[(int)LevelRun.Current],0,new Vector3(0,1.2f)){miniboss=true}});
     }
     public static Wave Create(int budget)
     {

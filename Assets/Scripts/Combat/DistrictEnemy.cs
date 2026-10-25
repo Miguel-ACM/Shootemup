@@ -12,6 +12,14 @@ public abstract class DistrictEnemy : AEnemy
     [Min(.1f)] public float shellTravelDistance=3.8f;
     protected float attackInterval=2;
     public bool Challenged {get;private set;}
+    public bool IsMiniboss {get;private set;}
+    void MakeMiniboss()
+    {
+        if(IsMiniboss)return;
+        IsMiniboss=true;health*=.68f;attackInterval*=.74f;nextAttack=.45f;
+        if(movement is TopTracker tracker)tracker.BeginAssault();
+        if(movement is Slalom slalom)slalom.BeginAssault();
+    }
     public void MakeChallenging()
     {
         if(Challenged)return;
@@ -46,12 +54,21 @@ public abstract class DistrictEnemy : AEnemy
     protected override void Start(){base.Start();var p=GameObject.FindGameObjectWithTag("Player");player=p!=null ? p.transform : null;}
     public virtual void FlyPhrase(WaveUnit unit)
     {
+        if(unit.miniboss)MakeMiniboss();
         if(unit.phrase==FlightPhrase.None)return;
         if(movement!=null){movement.enabled=false;Destroy(movement);}
         var flight=gameObject.AddComponent<FormationFlight>();flight.phrase=unit.phrase;flight.side=unit.side;flight.lane=unit.lane;
         flight.duration=unit.flightDuration;flight.fireEvery=unit.fireEvery;flight.curve=unit.curve;
         flight.syncFire=unit.syncFire;flight.firePhase=unit.firePhase;
-        flight.fireTimes=unit.fireTimes;flight.formationDepth=unit.formationDepth;flight.fixedDepth=unit.fixedDepth;flight.TempoMultiplier=Challenged ? 1.15f : 1;movement=flight;
+        flight.fireTimes=unit.fireTimes;
+        if(IsMiniboss && unit.fireTimes!=null && unit.fireTimes.Length>0)
+        {
+            // Keep the phrase's shared accents, adding a quick opening reply and a deliberate rest.
+            var score=new float[unit.fireTimes.Length+1];
+            score[0]=Mathf.Max(.65f,unit.fireTimes[0]-.65f);score[1]=unit.fireTimes[0]+.2f;
+            Array.Copy(unit.fireTimes,1,score,2,unit.fireTimes.Length-1);Array.Sort(score);flight.fireTimes=score;
+        }
+        flight.formationDepth=unit.formationDepth;flight.fixedDepth=unit.fixedDepth;flight.TempoMultiplier=Challenged ? 1.15f : 1;movement=flight;
         var p=flight.PositionAt(0);
         transform.position=new Vector3(p.x*Camera.RightLimit,Mathf.LerpUnclamped(Camera.DownLimit,Camera.UpLimit,p.y),transform.position.z);
     }
@@ -83,7 +100,7 @@ public abstract class DistrictEnemy : AEnemy
     protected Vector2 Aim => movement!=null && movement.LockedAim.HasValue ? ((Vector2)(movement.LockedAim.Value-transform.position)).normalized : CombatVisuals.Aim(transform.position);
     protected T Fire<T>(Vector3 position,Vector2 direction,float velocity,float radius) where T:CombatRound
     {
-        var shot=CombatRound.Launch<T>(position,direction,velocity*(Challenged ? 1.15f : 1),radius);
+        var shot=CombatRound.Launch<T>(position,direction,velocity*(Challenged ? 1.15f : 1)*(IsMiniboss ? 1.14f : 1),radius);
         if(shot is BurstShell shell)shell.SetTravelDistance(shellTravelDistance);
         return shot;
     }

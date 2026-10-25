@@ -23,6 +23,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Player fire must remain clearly visible at actual gameplay resolution: bright cores, sufficient pixel width and distinction from hostile fire.
 - Bullets must render above the player hull so incoming fire remains visible and avoidable.
 - Keep momentum between combat phrases. Compare changes with the existing game; do not quietly make it much easier.
+- Miniboss encounters in every district fire earlier and harder but have 32% less health. Large trackers fire once fully visible during entry, then use shorter tracking/recovery and faster volleys; Desert broods open their firing arcs sooner, and Candyland rushes add an early shared reply. Keep ordinary wave enemies unaffected.
 - At the start of a level, wait until the cloud curtain has fully cleared, then allow a short breather before spawning the first enemies. Never hide opening enemy fire behind the clouds.
 - Keep first-level time to kill reasonable with the unmodified base weapon. Check actual projectile hits against moving Plains enemies as well as sustained damage; preserve challenge through patterns instead of excessive health.
 - Give every enemy a recognizable silhouette and role. Recolors or minor variations of one generic hull are insufficient.
