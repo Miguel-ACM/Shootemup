@@ -3,7 +3,18 @@ using UnityEngine;
 public static partial class IndustrialMeshFactory
 {
     static Mesh crabArm;
-    public static Mesh CrabArm(){if(crabArm==null){var b=new Builder();b.Box(Vector3.zero,Vector3.one,6,11);crabArm=b.Finish("Segmented pincer linkage");}return crabArm;}
+    public static Mesh CrabArm()
+    {
+        if(crabArm==null)
+        {
+            var b=new Builder();b.Ball(Vector3.zero,new Vector3(.37f,.58f,.26f),11);
+            b.Prism(new[]{new Vector2(-.38f,.42f),new Vector2(-.30f,-.45f),new Vector2(0,-.62f),new Vector2(.30f,-.45f),new Vector2(.38f,.42f),new Vector2(0,.60f)},.34f,12,new Vector3(0,0,-.20f),5);
+            b.Box(new Vector3(0,.28f,-.41f),new Vector3(.55f,.12f,.08f),6);
+            b.Prism(new[]{new Vector2(-.30f,.32f),new Vector2(-.57f,.60f),new Vector2(-.23f,.57f)},.16f,1,Vector3.zero);
+            crabArm=b.Finish("Overlapping armored pincer vertebra");
+        }
+        return crabArm;
+    }
     static void BuildSkull(Builder b)
     {
         b.Ball(new Vector3(0,.15f,0),new Vector3(.70f,.72f,.33f),1);
@@ -37,7 +48,12 @@ public static partial class IndustrialMeshFactory
     static void BuildHellCrab(Builder b)
     {
         b.Prism(new[]{new Vector2(-1.78f,.10f),new Vector2(-1.38f,1.05f),new Vector2(-.55f,1.45f),new Vector2(.55f,1.45f),new Vector2(1.38f,1.05f),new Vector2(1.78f,.10f),new Vector2(1.15f,-.95f),new Vector2(.52f,-1.35f),new Vector2(-.52f,-1.35f),new Vector2(-1.15f,-.95f)},.78f,5,Vector3.zero,11);
-        b.Ball(new Vector3(0,.12f,-.35f),new Vector3(1.3f,1.17f,.47f),12);
+        // Broad overlapping carapace plates replace the round face-like shell.
+        for(int row=0;row<4;row++)
+        {
+            float y=.78f-row*.38f,w=1.45f-Mathf.Abs(row-1.3f)*.20f;
+            b.Prism(new[]{new Vector2(-w,y+.24f),new Vector2(-w*.85f,y-.24f),new Vector2(0,y-.36f),new Vector2(w*.85f,y-.24f),new Vector2(w,y+.24f),new Vector2(0,y+.35f)},.20f, row%2==0 ? 12 : 5,new Vector3(0,0,-.48f-row*.035f),11);
+        }
         for(int s=-1;s<=1;s+=2)
         {
             for(int i=0;i<3;i++)b.Prism(new[]{new Vector2(s*(1.12f-i*.18f),.75f+i*.19f),new Vector2(s*(1.75f-i*.32f),1.48f+i*.18f),new Vector2(s*(.75f-i*.18f),.98f+i*.15f)},.25f,1,Vector3.zero);
@@ -82,17 +98,35 @@ public static partial class IndustrialMeshFactory
     }
     static void BuildAbyssSubmarine(Builder b)
     {
-        b.Ball(Vector3.zero,new Vector3(.91f,2.20f,.51f),8);
-        b.Prism(new[]{new Vector2(-.75f,1.20f),new Vector2(-.72f,-1.25f),new Vector2(0,-2.1f),new Vector2(.72f,-1.25f),new Vector2(.75f,1.20f)},.12f,6,new Vector3(0,0,-.45f));
-        b.Box(new Vector3(0,.30f,-.70f),new Vector3(.64f,1.05f,.42f),8);
-        b.Box(new Vector3(0,.50f,-1.02f),new Vector3(.09f,.60f,.55f),13);
+        b.Ball(Vector3.zero,new Vector3(.93f,2.18f,.54f),8);
+        b.Ball(new Vector3(0,-1.60f,-.12f),new Vector3(.70f,.67f,.40f),4);
+        for(int row=0;row<5;row++)
+        {
+            float y=1.45f-row*.57f,w=.66f-Mathf.Abs(row-2)*.065f;
+            b.Prism(new[]{new Vector2(-w,y+.22f),new Vector2(-w*.90f,y-.21f),new Vector2(0,y-.32f),new Vector2(w*.90f,y-.21f),new Vector2(w,y+.22f),new Vector2(0,y+.30f)},.16f,row%2==0 ? 4 : 0,new Vector3(0,0,-.50f),11);
+        }
+        // A stepped, rounded sail stands above the armored pressure hull.
+        b.Prism(new[]{new Vector2(-.39f,.84f),new Vector2(-.43f,.11f),new Vector2(-.27f,-.23f),new Vector2(.27f,-.23f),new Vector2(.43f,.11f),new Vector2(.39f,.84f),new Vector2(0,1.04f)},.30f,6,new Vector3(0,0,-.77f),11);
+        b.Prism(new[]{new Vector2(-.29f,.78f),new Vector2(-.31f,.10f),new Vector2(0,-.12f),new Vector2(.31f,.10f),new Vector2(.29f,.78f)},.16f,8,new Vector3(0,0,-1.0f),4);
+        b.Box(new Vector3(0,.66f,-1.11f),new Vector3(.54f,.10f,.08f),9);
+        for(int k=0;k<3;k++)b.Box(new Vector3((k-1)*.15f,.91f,-1.28f),new Vector3(.06f,.12f,.30f+k*.11f),6);
         for(int s=-1;s<=1;s+=2)
         {
-            b.Prism(new[]{new Vector2(s*.6f,.42f),new Vector2(s*1.56f,.83f),new Vector2(s*1.43f,-.05f),new Vector2(s*.65f,-.38f)},.13f,13,Vector3.zero,11);
+            b.Prism(new[]{new Vector2(s*.6f,.30f),new Vector2(s*1.48f,.67f),new Vector2(s*1.40f,.05f),new Vector2(s*.65f,-.32f)},.15f,4,Vector3.zero,11);
             b.Prism(new[]{new Vector2(s*.37f,1.48f),new Vector2(s*1.12f,1.91f),new Vector2(s*.91f,2.22f),new Vector2(s*.20f,1.90f)},.14f,8,Vector3.zero);
-            for(int i=0;i<3;i++)b.Drum(new Vector3(s*.55f,-.25f-i*.43f,-.61f),.14f,.10f,11);
-            b.Box(new Vector3(s*.76f,1.55f,0),new Vector3(.25f,.85f,.38f),11);
+            b.Ball(new Vector3(s*.84f,-.27f,-.18f),new Vector3(.26f,1.40f,.25f),11);
+            for(int j=0;j<4;j++)
+            {
+                b.Box(new Vector3(s*.84f,.69f-j*.52f,-.39f),new Vector3(.34f,.22f,.16f),4);
+                b.Box(new Vector3(s*.84f,.69f-j*.52f,-.49f),new Vector3(.24f,.045f,.05f),13);
+            }
+            b.Drum(new Vector3(s*.40f,-1.50f,-.53f),.21f,.19f,6,8);
+            b.Drum(new Vector3(s*.40f,-1.50f,-.66f),.13f,.09f,11,8);
+            b.Box(new Vector3(s*.70f,1.57f,-.10f),new Vector3(.28f,.67f,.31f),11);
+            for(int j=0;j<6;j++)b.Box(new Vector3(s*.70f,1.32f+j*.10f,-.30f),new Vector3(.27f,.038f,.10f),6);
+            for(int j=0;j<4;j++)b.Drum(new Vector3(s*.46f,-.48f-j*.24f,-.62f),.055f,.06f,13,6);
         }
-        b.Drum(new Vector3(0,-1.55f,-.52f),.25f,.10f,10,8);
+        b.Prism(new[]{new Vector2(-.18f,-1.02f),new Vector2(0,-1.72f),new Vector2(.18f,-1.02f)},.13f,13,new Vector3(0,0,-.64f));
+        b.Box(new Vector3(0,-1.97f,-.40f),new Vector3(.32f,.08f,.10f),9);
     }
 }
