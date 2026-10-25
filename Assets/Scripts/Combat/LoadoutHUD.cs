@@ -81,6 +81,10 @@ public sealed class LoadoutHUD : MonoBehaviour
             keys[i].text=inputs[i];
             bool selected=loadout.HoveredItem!=null && active==(loadout.HoveredItem is AActiveItem);
             rims[i].color=selected ? Color.Lerp(Steel,Amber,.5f+.5f*Mathf.Sin(Time.unscaledTime*12)) : active ? Cyan*.8f : Steel;
+            if(!selected && active && loadout.Actives[i-2] is Overdrive && GetComponent<OverdriveBoost>()!=null)
+                rims[i].color=Color.Lerp(Amber,Steel,.2f+.2f*Mathf.Sin(Time.time*10));
+            if(!selected && !active && loadout.Weapons[i] is WindUpCannon cannon && cannon.Charging)
+                rims[i].color=Color.Lerp(Steel,Cyan,Mathf.Clamp01(cannon.Charge/1.2f));
             names[i].enabled=false;
             states[i].text="";
             if(active && !selected && loadout.Actives[i-2]!=null)
