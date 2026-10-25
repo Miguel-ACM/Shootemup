@@ -181,7 +181,7 @@ public sealed class RequestedItemReview : MonoBehaviour
         var rounds=FindObjectsByType<PlayerRound>(FindObjectsSortMode.None);
         Check(rounds.Any(b=>b.delivery==PlayerDelivery.Pulse) && rounds.Any(b=>b.delivery==PlayerDelivery.Needle),"one trigger fires both equipped weapons");
         Press(Key.Z,Key.X);yield return new WaitForSeconds(.12f);Press(Key.Z);yield return new WaitForSeconds(.12f);
-        Check(ship.GetComponent<ShipLoadout>().Weapons.All(w=>w.IsInvoking("Shoot")),"releasing one held trigger keeps both guns firing");
+        Check(ship.GetComponent<ShipLoadout>().Weapons.All(w=>w.isShootingPrimary || w.isShootingSecondary),"releasing one held trigger keeps both guns firing");
         Press();yield return new WaitForSeconds(.4f);Clear();yield return null;
         yield return Grant(typeof(EnergyCore));ship.mana=20;t=Time.time;yield return new WaitForSeconds(.5f);
         Check(Mathf.Abs((ship.mana-20)/(Time.time-t)-3)<.2f,"Energy core restores three energy per combat second");
