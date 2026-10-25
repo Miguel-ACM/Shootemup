@@ -54,10 +54,10 @@ public sealed class DecisionShop : MonoBehaviour
         int nearest=-1;float d=99;
         for(int i=0;i<items.Count;i++)
         {
-            if(items[i]==null)continue;
+            if(items[i]==null || items[i].Collected || items[i].IsDismissing)continue;
             float x=Vector2.Distance(player.transform.position,items[i].transform.position);
             if(x<d){d=x;nearest=i;}
-            overlay.SetOffer(i,paid ? prices[items[i]]+(coinShop ? "" : "x") : "",!paid || Affordable(prices[items[i]]));
+            overlay.SetOffer(i,paid ? prices[items[i]]+(coinShop ? "" : "x") : "",Affordable(prices[items[i]]));
         }
         if(d<1.8f && nearest>=0)
         {
@@ -74,16 +74,17 @@ public sealed class DecisionShop : MonoBehaviour
         overlay.SetSkip(SkipProgress);
         if(skipCharge>=1.5f)Close();
     }
-    bool Affordable(int price)=>coinShop ? RunCoins.Count>=price : Score.CurrentMultiplier>price;
-    bool Pay(int price)=>coinShop ? RunCoins.TrySpend(price) : Score.TrySpendMultiplier(price);
+    bool Affordable(int price)=>!paid || (coinShop ? RunCoins.Count>=price : Score.CurrentMultiplier>price);
+    bool Pay(int price)=>!paid || (coinShop ? RunCoins.TrySpend(price) : Score.TrySpendMultiplier(price));
     public bool TryClaim(AItem item)
     {
-        if(closed || !items.Contains(item))return false;
+        if(closed || item==null || item.Collected || item.IsDismissing || !items.Contains(item) ||
+            Vector2.Distance(item.transform.position,player.transform.position)>AItem.ItemAttractRange)return false;
         if(claimed!=null)return claimed==item;
         AItem nearest=null;float d=float.MaxValue;
         foreach(var option in items)
         {
-            if(option==null)continue;float distance=Vector2.SqrMagnitude(option.transform.position-player.transform.position);
+            if(option==null || option.Collected || option.IsDismissing)continue;float distance=Vector2.SqrMagnitude(option.transform.position-player.transform.position);
             if(distance<d){d=distance;nearest=option;}
         }
         if(nearest!=item || !Pay(prices[item]))return false;
@@ -92,7 +93,8 @@ public sealed class DecisionShop : MonoBehaviour
     public void Picked(GameObject selected)
     {
         if(claimed==null || claimed.gameObject!=selected)return;
-        Close(selected);
+        if(!paid){Close(selected);return;}
+        claimed=null;preview=-1;dialog.Hide();player.GetComponent<ShipLoadout>().ResetSelection();
     }
     public void Abort(){done=null;Close();}
     void Close(GameObject selected=null)
