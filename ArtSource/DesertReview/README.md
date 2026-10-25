@@ -2,7 +2,9 @@
 
 After Thunder or Tunnel, choose **Desert** or loop straight to Plains. Clearing Desert starts the next Plains loop with the existing loadout and score. Desert is also available in Debug Run and Wave Watcher.
 
-The scenery uses individual crescent dunes with broad windward slopes, short slipfaces and shared vertex lighting, paired small silos and compact gray outposts with roof vents, doors, antennas and pipe manifolds. The seamless layouts vary with the run seed. The former striped terrain and drawn crest lines have been replaced.
+The scenery uses asymmetric sculpted sand ridges with broad windward slopes, short slipfaces and restrained facet lighting, paired small silos and compact gray outposts with roof vents, doors, antennas and pipe manifolds. Irregular crests taper into open sand. The seamless layouts vary with the run seed; the previous repeated dark crescents have been replaced.
+
+Dust storms build into rolling sand banks, with faster wind streamers and flying grains, then fade into clear intervals. All dust renders over the scenery and behind ships and projectiles. Its materials and meshes are released with the district.
 
 Building and silo faces share the dunes' sun direction. Their shadows are baked onto the sand from box and cylinder silhouettes, with a softened edge; close-fitting concrete foundations replace the oversized dark pads. The bake is performed when the district is prepared, not during combat.
 
@@ -18,8 +20,8 @@ All geometry is authored in the runtime mesh factories, following the project's 
 
 ## Verification and visual review
 
-`Assets/Editor/VerifyDesert.cs` compiles and runs in an isolated Unity project. It checks standard and extended route loops, terrain wrapping, 57 seeded wave compositions, all sixteen playable motifs, concealed targeting, real wave firing, projectile collisions against moving cores, head-first destruction, repeated hits on dead parts, full boss completion and cleanup.
+`Assets/Editor/VerifyDesert.cs` compiles and runs in an isolated Unity project. It checks standard and extended route loops, terrain wrapping, 57 seeded wave compositions, all sixteen playable motifs, concealed targeting, real wave firing, clear weather and full dust gusts, projectile collisions against moving cores, head-first destruction, repeated hits on dead parts, full boss completion and cleanup.
 
-`Verification.txt` and `Geometry.txt` contain the results. `Scenery.png`, `Boss.png`, `DamagedBoss.png` and `RouteChoice.png` are captures of the actual filtered game and HUD. `MotionReview.jpg` shows successive formation and boss poses. `DesertMotion.mp4` is sampled playback, not a frame-rate benchmark; wave timing comes from the capture timestamps and boss samples use the nominal quarter-second interval.
+`Verification.txt` and `Geometry.txt` contain the results. `Scenery.png`, `DustStorm.png`, `Boss.png`, `DamagedBoss.png` and `RouteChoice.png` are captures of the actual filtered game and HUD. `MotionReview.jpg` shows successive formation and boss poses. `DesertMotion.mp4` is sampled playback, not a frame-rate benchmark; wave timing comes from the capture timestamps and boss samples use the nominal quarter-second interval.
 
 Rebuild the review with Unity's `-executeMethod VerifyDesert.Run` in a disposable project, then run `Tools/render_desert_review.py` using the project's bundled Python runtime.

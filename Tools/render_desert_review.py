@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "Temp/DesertReviewProject/ArtSource/DesertReview"
 DEST = ROOT / "ArtSource/DesertReview"
 DEST.mkdir(parents=True, exist_ok=True)
-for name in ("Geometry.txt", "Verification.txt", "Scenery.png", "Boss.png", "DamagedBoss.png", "RouteChoice.png"):
+for name in ("Geometry.txt", "Verification.txt", "Scenery.png", "DustStorm.png", "Boss.png", "DamagedBoss.png", "RouteChoice.png"):
     shutil.copy2(SOURCE / name, DEST / name)
 
 frames = SOURCE / "Frames"

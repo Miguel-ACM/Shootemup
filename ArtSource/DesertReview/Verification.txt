@@ -1,9 +1,11 @@
 PASS
+PASS desert creates its dust storm system
 PASS buried turrets retain encounter bookkeeping without attracting homing fire
 PASS emerged turret becomes a valid homing target
 PASS wave 2 completes with real firing; peak rounds 145
 PASS wave 10 completes with real firing; peak rounds 149
 PASS wave 20 completes with real firing; peak rounds 193
+PASS dust alternates between clear weather and full gusts during combat
 PASS eight independently targetable boss reactors
 PASS armor cannot bypass the reactors
 PASS all boss weakpoints fit inside the visible playfield
