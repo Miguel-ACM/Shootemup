@@ -19,6 +19,7 @@ public class WaveOrchestrer : MonoBehaviour
     float waveTime = 0f;
     float clearTime = 0f;
     const float ClearBreather = 0.65f;
+    public const float HandoffLead = .9f;
     bool stopingWave = false;
     GameObject ship;
     Dialog dialog;
@@ -82,7 +83,8 @@ public class WaveOrchestrer : MonoBehaviour
             bool nextCombat=(int.TryParse(next,out _) || next=="miniboss") && !(challengeWave && challengeWavesRemaining==1);
             bool empty=currentUnit==null && AEnemy.Live.Count==0;
             clearTime=empty ? clearTime+Time.deltaTime : 0;
-            bool phraseComplete=currentUnit==null && waveTime>=currentWave.duration && AEnemy.Live.Count<22;
+            bool miniboss=currentWave.units.Exists(unit=>unit.miniboss);
+            bool phraseComplete=currentUnit==null && !miniboss && waveTime>=Mathf.Max(0,currentWave.duration-HandoffLead) && AEnemy.Live.Count<22;
             if (currentUnit == null && ((nextCombat && phraseComplete) || clearTime>=.12f))
             {
 
