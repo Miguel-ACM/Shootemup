@@ -82,7 +82,8 @@ public static partial class IndustrialMeshFactory
 
     public static Mesh CombatHull(int kind)
     {
-        if (combatHulls.TryGetValue(kind, out var cached))
+        // Unity can unload a generated mesh that nothing references (for example on a scene load); rebuild it then.
+        if (combatHulls.TryGetValue(kind, out var cached) && cached != null)
             return cached;
         var b = new Builder();
         bool heavy = kind == 2 || kind == 5 || kind == 7 || kind == 8 || kind == 14 || kind == 16 || kind >= 20;
