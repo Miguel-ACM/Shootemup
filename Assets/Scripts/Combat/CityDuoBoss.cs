@@ -8,7 +8,7 @@ public sealed class CityDuoBoss : DistrictBoss
     float combinedMaximum;
     Vector2 attackAxis=Vector2.down;
     public override float DisplayFraction=>(Mathf.Max(0,health)+(partner!=null ? Mathf.Max(0,partner.health) : 0))/Mathf.Max(1,combinedMaximum);
-    protected override void Configure(){hull=12;hullScale=.8f;health=1500;attackInterval=.48f;shellTravelDistance=5.8f;}
+    protected override void Configure(){hull=12;hullScale=.8f;health=1000;attackInterval=.48f;shellTravelDistance=5.8f;}
     protected override void Start()
     {
         if(heavy)
@@ -20,7 +20,7 @@ public sealed class CityDuoBoss : DistrictBoss
         if(partner==null && !heavy)
         {
             partner=(CityDuoBoss)Spawn(typeof(CityDuoBoss),new Vector3(2,Camera.UpLimit+2,1));
-            partner.heavy=true;partner.health=2100*GameRules.enemyHealth*LevelRun.EnemyHealthScale;partner.partner=this;
+            partner.heavy=true;partner.health=1400*GameRules.enemyHealth*LevelRun.EnemyHealthScale;partner.partner=this;
         }
         combinedMaximum=health+(partner!=null ? partner.health : 0);
         if(bar!=null)bar.SetMax(combinedMaximum);
