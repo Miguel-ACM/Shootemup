@@ -19,6 +19,7 @@ public abstract class AItem : MonoBehaviour
     bool attracting, collected;
     float attractionSpeed;
     public bool IsAttracting => attracting;
+    public bool Settled=>!moving && sgo!=null;
     public bool Collected=>collected;
     public int ReplacementSlot {get;private set;}
     public ItemType Kind=>type;

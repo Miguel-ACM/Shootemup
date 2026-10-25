@@ -6,35 +6,38 @@ using System.Collections.Generic;
 // Decision text is composited after the pixel filter.
 public sealed class DecisionOverlay : MonoBehaviour
 {
-    public const float SkipWidth=96,SkipHeight=48;
+    public const float SkipWidth=405,SkipHeight=145;
     RectTransform skip;
     Image skipFill;
     TMP_FontAsset font;
-    readonly List<(AItem item,RectTransform plate,TextMeshProUGUI name,TextMeshProUGUI price)> offers=new List<(AItem,RectTransform,TextMeshProUGUI,TextMeshProUGUI)>();
+    readonly List<(AItem item,RectTransform plate,TextMeshProUGUI name,TextMeshProUGUI price,TextMeshProUGUI kind,CanvasGroup fade)> offers=new List<(AItem,RectTransform,TextMeshProUGUI,TextMeshProUGUI,TextMeshProUGUI,CanvasGroup)>();
     public void Add(AItem item)
     {
-        var plate=Plate("Offer label",new Vector2(88,60));
-        var name=Text(plate,"",10);name.enableAutoSizing=true;name.fontSizeMin=7;name.fontSizeMax=10;name.rectTransform.sizeDelta=new Vector2(82,32);name.rectTransform.anchoredPosition=new Vector2(0,10);
-        var price=Text(plate,"",11);price.enableAutoSizing=true;price.fontSizeMin=8;price.fontSizeMax=11;price.textWrappingMode=TextWrappingModes.NoWrap;price.rectTransform.sizeDelta=new Vector2(82,20);price.rectTransform.anchoredPosition=new Vector2(0,-17);
-        var stripe=Plate("Rarity edge",new Vector2(88,2),plate);stripe.anchoredPosition=new Vector2(0,29);stripe.GetComponent<Image>().color=AItem.GetRarityColor(item.rarity);
-        offers.Add((item,plate,name,price));
+        var plate=Plate("Offer label",new Vector2(76,43));var fade=plate.gameObject.AddComponent<CanvasGroup>();fade.alpha=0;
+        var name=Text(plate,"",9);name.enableAutoSizing=true;name.fontSizeMin=7;name.fontSizeMax=9;name.rectTransform.sizeDelta=new Vector2(72,24);name.rectTransform.anchoredPosition=new Vector2(0,7);
+        var price=Text(plate,"",10);price.rectTransform.sizeDelta=new Vector2(72,16);price.rectTransform.anchoredPosition=new Vector2(0,-13);
+        var kind=Text(plate,"",8);kind.rectTransform.sizeDelta=new Vector2(76,15);kind.rectTransform.anchoredPosition=new Vector2(0,-31);
+        var stripe=Plate("Rarity edge",new Vector2(76,1.5f),plate);stripe.anchoredPosition=new Vector2(0,21);stripe.GetComponent<Image>().color=AItem.GetRarityColor(item.rarity);
+        offers.Add((item,plate,name,price,kind,fade));
     }
     public void SetOffer(int index,string price,bool affordable)
     {
         var offer=offers[index];if(offer.item==null)return;
         offer.name.text=System.Text.RegularExpressions.Regex.Replace(offer.item.GetData()[0],@"\S+","<nobr>$0</nobr>");offer.price.text=price;
         offer.price.color=affordable ? new Color(1,.78f,.4f) : new Color(1,.36f,.3f);
+        offer.kind.text=offer.item.Kind==AItem.ItemType.active ? "active" : offer.item.Kind==AItem.ItemType.weapon || offer.item.Kind==AItem.ItemType.passiveWeapon ? "weapon" : "passive";
     }
     void LateUpdate()
     {
         var camera=UnityEngine.Camera.main;if(camera==null)return;
         foreach(var offer in offers)
         {
-            bool show=offer.item!=null && !offer.item.Collected && !offer.item.IsDismissing;
+            bool show=offer.item!=null && offer.item.Settled && !offer.item.Collected && !offer.item.IsDismissing;
             offer.plate.gameObject.SetActive(show);if(!show)continue;
+            offer.fade.alpha=Mathf.MoveTowards(offer.fade.alpha,1,Time.deltaTime*6);
             var viewport=camera.WorldToViewportPoint(offer.item.transform.position);
             RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform,new Vector2(viewport.x*Screen.width,viewport.y*Screen.height),null,out var point);
-            offer.plate.anchoredPosition=new Vector2(Mathf.Clamp(point.x,-156,156),Mathf.Clamp(point.y+54,-300,320));
+            offer.plate.anchoredPosition=new Vector2(Mathf.Clamp(point.x,-160,160),Mathf.Clamp(point.y+46,-260,320));
         }
     }
     public void Build(TMP_FontAsset face,bool allowSkip=true)

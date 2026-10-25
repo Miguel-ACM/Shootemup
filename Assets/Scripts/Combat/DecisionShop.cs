@@ -14,7 +14,7 @@ public sealed class DecisionShop : MonoBehaviour
     readonly Dictionary<AItem,int> prices=new Dictionary<AItem,int>();
     AItem claimed;
     DecisionOverlay overlay;
-    public float SkipProgress=>skipCharge/1.5f;
+    public float SkipProgress=>skipCharge/RouteCharge.HoldSeconds;
     Dialog dialog;
     int preview=-1;
     float age,skipCharge;
@@ -32,7 +32,7 @@ public sealed class DecisionShop : MonoBehaviour
         CombatDecision.Begin();player.GetComponent<ShipLoadout>().ResetSelection();
         foreach(var weapon in player.GetComponentsInChildren<AWeapon>())weapon.StopFiring();
         dialog=GameObject.FindGameObjectWithTag("Dialog").GetComponent<Dialog>();
-        overlay=new GameObject("Shop decision overlay",typeof(RectTransform)).AddComponent<DecisionOverlay>();overlay.Build(dialog.font,!mandatory);
+        overlay=new GameObject("Shop decision overlay",typeof(RectTransform)).AddComponent<DecisionOverlay>();overlay.Build(dialog.font);
         int count=mandatory ? 1 : paid ? (UnityEngine.Random.value<.35f ? 4 : 3) : RewardCount(GameRules.luck,UnityEngine.Random.value);
         bool healthKit=paid && player.health<player.maxHealth*.45f;
         for(int i=0;i<count;i++)
@@ -72,11 +72,12 @@ public sealed class DecisionShop : MonoBehaviour
         var hitbox=player.GetComponent<Collider2D>();
         float bottom=hitbox!=null ? hitbox.bounds.min.y : player.transform.position.y;
         float worldPerPixel=camera.orthographicSize*2/720f;
-        bool atBottom=bottom<=camera.transform.position.y-camera.orthographicSize+.45f &&
+        bool atBottom=bottom<=camera.transform.position.y-camera.orthographicSize+DecisionOverlay.SkipHeight*worldPerPixel &&
             Mathf.Abs(player.transform.position.x-camera.transform.position.x)<=DecisionOverlay.SkipWidth*.5f*worldPerPixel;
-        skipCharge=!mandatory && atBottom && age>2 && claimed==null ? skipCharge+Time.deltaTime : 0;
+        bool settled=items.TrueForAll(item=>item==null || item.Collected || item.Settled);
+        skipCharge=atBottom && settled && age>.4f && claimed==null ? skipCharge+Time.deltaTime : 0;
         overlay.SetSkip(SkipProgress);
-        if(skipCharge>=1.5f)Close();
+        if(skipCharge>=RouteCharge.HoldSeconds)Close();
     }
     bool Affordable(int price)=>!paid || (coinShop ? RunCoins.Count>=price : Score.CurrentMultiplier>price);
     bool Pay(int price)=>!paid || (coinShop ? RunCoins.TrySpend(price) : Score.TrySpendMultiplier(price));
