@@ -1,0 +1,59 @@
+PASS
+PASS WindUpCannonItem has a dedicated 3D model
+PASS Popcorn has a dedicated 3D model
+PASS Icicle has a dedicated 3D model
+PASS three new items registered in reward pools
+PASS audio imports: windup
+PASS audio imports: ready
+PASS audio imports: cannon
+PASS audio imports: popcorn
+PASS audio imports: frost
+PASS audio imports: shatter
+PASS audio imports: capacitor
+PASS audio imports: overdrive
+PASS audio imports: powerdown
+PASS audio imports: static
+PASS audio imports: roll
+PASS audio imports: fan
+PASS audio imports: decoy
+PASS audio imports: heal
+PASS audio imports: timeStop
+PASS Wind-up Cannon equips through normal loadout
+PASS charge tier 1 holds fire until release
+PASS one released volley at tier 1
+PASS tier 1 damage scaling
+PASS tier 1 piercing budget
+PASS charge tier 2 holds fire until release
+PASS one released volley at tier 2
+PASS tier 2 damage scaling
+PASS tier 2 piercing budget
+PASS charge tier 3 holds fire until release
+PASS one released volley at tier 3
+PASS tier 3 damage scaling
+PASS tier 3 piercing budget
+PASS pause does not build cannon charge
+PASS cannon charges during Bullet Time
+PASS cannon can release during Bullet Time
+PASS released cannon rounds remain suspended
+PASS decision interruption cancels charge without firing
+PASS Double Trouble keeps charging while either fire control is held
+PASS Double Trouble releases both cannons once
+PASS Popcorn waits for fifth primary hit
+PASS fifth hit creates three Popcorn pellets
+PASS secondary fragments never recursively pop
+PASS Popcorn pellets have short bounded lifetime
+PASS burning target pops on next hit immediately
+PASS three primary hits create a frozen shell
+PASS frost buildup is visible with three sprite crystals
+PASS next hit shatters for bonus damage and releases hold
+PASS shatter releases five nonrecursive sprite fragments
+PASS Icicle actually holds a moving Plains enemy
+PASS enemy movement resumes after shattering
+PASS Capacitor still reaches full charge
+PASS charged volley carries its sprite wake
+PASS Overdrive doubles damage and shows hull cues
+PASS Overdrive expiry restores damage and removes cues
+PASS local glasses feedback preserves 10 percent slowdown
+PASS Energy Core regeneration remains active
+PASS movement charges Static Sweater
+PASS static discharge consumes charge and damages neighbor

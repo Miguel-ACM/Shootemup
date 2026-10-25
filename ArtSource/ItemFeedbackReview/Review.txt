@@ -1,0 +1,31 @@
+Wind-up Cannon, Popcorn, Icicle, and item feedback review
+
+58 isolated Unity play-mode checks passed. Main project run was not controlled.
+Models inspected from two angles. Reviewed actual gameplay frames for charge/release,
+frost buildup/shatter, Popcorn, Capacitor, Overdrive, glasses, energy and static cues,
+plus combined effects against moving Plains enemies.
+
+Wind-up Cannon: hold either assigned fire input, release to fire. Tiers at 0/.45/1.2s,
+2/7/16 damage multipliers, 0/2/5 additional pierces. Fire speed changes charge rate.
+Magnifying Glass trades charge rate for power. Double Trouble keeps charging while
+any coupled input remains held. Pause stops charge; Bullet Time allows charge/fire
+while the resulting rounds remain frozen. Decisions cancel without releasing.
+
+Popcorn: every fifth primary hit creates three short-range pellets, each dealing
+35% of hit damage. Burning targets trigger immediately; .12s proc gate. Fragments
+cannot recursively trigger more Popcorn or Icicle. Companion hits don't build it.
+
+Icicle: three primary hits build frost, with .12s buildup gate. Ice lasts 1.2s;
+next hit shatters for 50% bonus hit damage plus five fragments at 25% damage each.
+Ordinary enemies briefly hold position; bosses retain movement. Frost has a .6s
+rebuild rest after shattering. Ice and fragments freeze during Bullet Time.
+
+Feedback: Capacitor ready chime, muzzle flash and charged sprite wake; Overdrive
+activation/expiry cues and equipment rim; static charge dots and discharge cue;
+subtle glasses boundary/entry flecks; energy meter pulse while core regenerates.
+Distinct roll, fan, projection, healing and time-freeze sounds.
+
+Audio: 15 sample-based Frontlines cues. Existing Sound Lab choices unchanged.
+Audio/manifest.json records source cuts and hashes. TechnicalChecks.txt verifies
+mono PCM, sample rate, peak headroom and faded endpoints. Subjective listening and
+mix approval are not claimed. ItemCues.wav is an ordered audition reel.

@@ -1,0 +1,16 @@
+PASS cannon: mono PCM 22050 Hz, peak 0.393, zero endpoints
+PASS capacitor: mono PCM 22050 Hz, peak 0.371, zero endpoints
+PASS decoy: mono PCM 22050 Hz, peak 0.608, zero endpoints
+PASS fan: mono PCM 22050 Hz, peak 0.468, zero endpoints
+PASS frost: mono PCM 22050 Hz, peak 0.506, zero endpoints
+PASS heal: mono PCM 22050 Hz, peak 0.650, zero endpoints
+PASS overdrive: mono PCM 22050 Hz, peak 0.447, zero endpoints
+PASS popcorn: mono PCM 22050 Hz, peak 0.650, zero endpoints
+PASS powerdown: mono PCM 22050 Hz, peak 0.540, zero endpoints
+PASS ready: mono PCM 22050 Hz, peak 0.443, zero endpoints
+PASS roll: mono PCM 22050 Hz, peak 0.494, zero endpoints
+PASS shatter: mono PCM 22050 Hz, peak 0.475, zero endpoints
+PASS static: mono PCM 22050 Hz, peak 0.348, zero endpoints
+PASS timeStop: mono PCM 22050 Hz, peak 0.502, zero endpoints
+PASS windup: mono PCM 22050 Hz, peak 0.524, zero endpoints
+Technical checks only; subjective listening is not claimed.
