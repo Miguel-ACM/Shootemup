@@ -40,6 +40,17 @@ public abstract class DistrictBoss : DistrictEnemy
     protected virtual void OnPhaseTwo(){}
     protected virtual void UpdateBar(){if(bar!=null)bar.Set(health);}
     protected override void Die(){if(bar!=null)bar.SetVisible(false);base.Die();}
+    // A continuous scalloped front: symmetric speeds bow each fan into a petal.
+    // Geometry and shot counts stay deterministic; nothing is added per projectile.
+    protected void PetalFan<T>(Vector3 port,Vector2 axis,int count,float spacing,float speed,float radius,float curvature=.12f) where T:CombatRound
+    {
+        for(int i=0;i<count;i++)
+        {
+            float lane=i-(count-1)*.5f;
+            float t=count<=1 ? 0 : lane/((count-1)*.5f);
+            Fire<T>(port,CombatVisuals.Rotate(axis,lane*spacing),speed*(1+curvature*(1-t*t)),radius);
+        }
+    }
     protected void Radial<T>(int count,float speed,float radius,float offset=0) where T:CombatRound
     {
         for(int i=0;i<count;i++)Fire<T>(transform.position,CombatVisuals.Rotate(Vector2.down,i*360f/count+offset),speed,radius);
