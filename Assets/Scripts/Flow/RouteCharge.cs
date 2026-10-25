@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>A continuous hold is required. The centre is neutral and switching sides starts a new hold.</summary>
 public sealed class RouteCharge
 {
-    public const float HoldSeconds=2;
+    public const float HoldSeconds=1;
     public const float NeutralWidth=.13f;
     public int Side { get; private set; }
     public float Progress { get; private set; }

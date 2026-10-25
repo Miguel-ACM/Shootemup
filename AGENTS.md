@@ -66,7 +66,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - City: busy formations of small fast enemies. The boss is a fast/heavy duo with separate health summed in one bar and tracking attacks. The first death drops nothing; the survivor becomes aggressive and heals half its missing health.
 - Latest City feedback: lower duo health; base health is now 1000 for the fast ship and 1400 for the heavy ship, with the survivor rules preserved.
 - Both City ships must share encounter completion ownership so either kill order can finish the district.
-- Boss victories retain the intact model through several explosions, then break it up continuously and cut music on the shatter accent. Never insert artificial frame holds. Drop a random item; allow either collection or an explicit two-second bottom skip before continuing. The City duo's first death gives no reward and keeps the encounter going.
+- Boss victories retain the intact model through several explosions, then break it up continuously and cut music on the shatter accent. Never insert artificial frame holds. Drop a random item; allow either collection or an explicit one-second bottom skip before continuing. The City duo's first death gives no reward and keeps the encounter going.
 - Multipart bosses need strong local feedback: briefly flash and recoil only the struck weakpoint model, keeping the parent ship, neighboring parts and damage colliders steady. Preserve dead-part darkening and permanent destruction.
 - Tunnel: bouncing projectiles. The boss is a rapidly spinning saw that travels like a DVD logo across the full visible arena, including its corners. **It fires dense mixed-size bursts only when it bounces, never when hit or on a timer, and has no thrusters.** It speeds up as damaged; phase two pauses to deploy two smaller, sturdy, destroyable saws with the same bounce behavior.
 - The latest explicit feedback supersedes earlier ideas (in particular the saw's original on-hit emission).
@@ -106,7 +106,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Require close contact to collect decision items so passing nearby cannot cause accidental purchases or replacements.
 - Make rarity effects noticeable and distinct.
 - Shop names and prices need opaque black backgrounds and must stay readable with the filter. The bottom skip zone must be reachable at the visible screen edge, with a minimal hold indicator.
-- Latest decision polish: two seconds to fill route/encounter holds and skips. The skip zone spans the full combat width and roughly the bottom fifth of its height, including boss items. Offer plates are compact, fade in only once the item settles, and show a small passive/active/weapon category beneath. Keep immediate equipment replacement controls and multiple shop purchases.
+- Latest decision polish: one second to fill route/encounter holds and skips. The skip zone spans the full combat width and roughly the bottom fifth of its height, including boss items. Offer plates are compact, fade in only once the item settles, and show a small passive/active/weapon category beneath. Keep immediate equipment replacement controls and multiple shop purchases.
 - Death shows huge GAME OVER letters, then returns to the title.
 
 ## Workflow

@@ -37,7 +37,7 @@ public static class ReviewDistrictPolish
             GameRules.ResetRun();VerifyRunProgression.Run();var notes=new List<string>();var types=new HashSet<Type>();
             var sequence=DistrictWaves.Sequence();
             if(sequence[0]!="reward" || sequence.Count(s=>s=="encounterChoice")!=2 || sequence.Count(s=>s=="minibossChoice")!=2 || sequence.Count(s=>int.TryParse(s,out _))!=7)throw new Exception("Incorrect longer level structure");
-            var charge=new RouteCharge();charge.Step(1,1.99f);if(charge.Complete)throw new Exception("Route hold too short");charge.Step(1,.02f);if(!charge.Complete)throw new Exception("Route hold not two seconds");
+            var charge=new RouteCharge();charge.Step(1,.99f);if(charge.Complete)throw new Exception("Route hold too short");charge.Step(1,.02f);if(!charge.Complete)throw new Exception("Route hold not one second");
             foreach(LevelId level in Enum.GetValues(typeof(LevelId)))
             {
                 foreach(int seed in new[]{17381,421,9826})
@@ -50,7 +50,7 @@ public static class ReviewDistrictPolish
             }
             var window=EnemyEditorWindow.Open();foreach(var name in new[]{nameof(ScarabDredger),nameof(TaffyDuelist),nameof(OrbitalWarden),nameof(ReefLeviathan),nameof(InfernalFerryman),nameof(HellCrabBoss),nameof(AbyssSubmarineBoss)})
             {window.Select(name);window.CaptureModel(Folder+"/Model-"+name+".png");}window.Close();
-            File.WriteAllText(Folder+"/Editor.txt","PASS\n570 seeded compositions, all eight routes, exact level structure, two-second holds, ten distinct minibosses and native models passed.\n"+string.Join("\n",notes));
+            File.WriteAllText(Folder+"/Editor.txt","PASS\n570 seeded compositions, all eight routes, exact level structure, one-second holds, ten distinct minibosses and native models passed.\n"+string.Join("\n",notes));
             RuntimeOnly();
         }
         catch(Exception e){File.WriteAllText(Folder+"/Editor.txt","FAIL\n"+e);EditorApplication.Exit(1);}
@@ -134,9 +134,9 @@ public sealed class DistrictPolishReview : MonoBehaviour
         var overlay=FindAnyObjectByType<DecisionOverlay>();Check(!overlay.GetComponentsInChildren<TMPro.TextMeshProUGUI>().Any(t=>t.text=="passive" && t.gameObject.activeInHierarchy),"Item labels stay hidden while offers are falling");
         yield return new WaitForSeconds(1.6f);DesertReview.Capture("Opening-Items",Folder);shop.Abort();yield return new WaitForSeconds(.6f);
         bool skipped=false;shop=flow.gameObject.AddComponent<DecisionShop>();shop.Open(flow,ship,"bossReward",()=>skipped=true,new Vector3(0,3,1));
-        ship.transform.position=new Vector3(0,-3,-1);yield return new WaitForSeconds(1.7f);ship.transform.position=new Vector3(3.6f,-6.5f,-1);yield return new WaitForSeconds(1);
-        Check(shop!=null && shop.SkipProgress>.35f && shop.SkipProgress<.75f,"Wide bottom skip fills over two seconds from the far screen side");DesertReview.Capture("Boss-Item-Skip",Folder);
-        yield return new WaitForSeconds(1.2f);Check(skipped,"Boss item can be explicitly skipped");
+        ship.transform.position=new Vector3(0,-3,-1);yield return new WaitForSeconds(1.7f);ship.transform.position=new Vector3(3.6f,-6.5f,-1);yield return new WaitForSeconds(.5f);
+        Check(shop!=null && shop.SkipProgress>.35f && shop.SkipProgress<.75f,"Wide bottom skip fills over one second from the far screen side");DesertReview.Capture("Boss-Item-Skip",Folder);
+        yield return new WaitForSeconds(.7f);Check(skipped,"Boss item can be explicitly skipped");
         yield return MiniFlow(false);yield return MiniFlow(true);
         foreach(LevelId level in Enum.GetValues(typeof(LevelId)))
         {

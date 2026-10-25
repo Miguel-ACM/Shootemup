@@ -34,13 +34,13 @@ public static class VerifyLevelFlow
             for(int i=0;i<500;i++)charge.Step(0,.02f);
             Check(charge.Side==0 && charge.Progress==0,"Centre selected a route");
             charge.Step(-.5f,1);Check(charge.Side==-1 && charge.Progress>0,"Left did not charge");
-            charge.Step(.5f,.01f);Check(charge.Side==1 && charge.Progress<.01f,"Switching sides retained charge");
+            charge.Step(.5f,.01f);Check(charge.Side==1 && charge.Progress<=.011f,"Switching sides retained charge");
             charge.Step(0,1);Check(charge.Progress==0,"Centre did not cancel the hold");
             foreach(float fps in new[]{30f,60f,144f})
             {
                 charge=new RouteCharge();float elapsed=0;
                 while(!charge.Complete){charge.Step(1,1/fps);elapsed+=1/fps;}
-                Check(elapsed>=2.59f && elapsed<2.7f,"Hold duration varies with frame rate");
+                Check(elapsed>=RouteCharge.HoldSeconds-.001f && elapsed<RouteCharge.HoldSeconds+1/fps+.001f,"Hold duration varies with frame rate");
             }
             VerifyRunProgression.Run();
             Check(EditorBuildSettings.scenes[0].path=="Assets/Scenes/Title.unity","Build does not start at the menu");
