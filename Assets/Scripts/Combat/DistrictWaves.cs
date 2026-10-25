@@ -21,8 +21,9 @@ public static class DistrictWaves
             }
         }
     }
-    public static string[] Sequence()=>new[]{"2","3","4","5","6","7","reward","8","9","10","11","12",
-        LevelRun.Stage%2==1 ? "scoreShop" : "multiplierShop","13","14","15","miniboss","16","17","18","19","20","boss"};
+    // Ten combat phrases (including the miniboss), spanning the full difficulty ramp.
+    public static string[] Sequence()=>new[]{"2","4","6","reward","8","10","12",
+        LevelRun.Stage%2==1 ? "scoreShop" : "multiplierShop","14","miniboss","17","20","boss"};
     public static Wave Miniboss()
     {
         string[] types={"FieldsHeavyWing","TunnelDefensePlatform","SnowSiegeCraft","StormReactor","CityCommandCarrier"};
