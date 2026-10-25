@@ -29,6 +29,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Snow designs need particular care. A round boss must look like a designed spacecraft, not a plate covered with buttons.
 - Show projectile art previews and wait for Miguel's approval before replacing game artwork. The all-sphere 3D direction was rejected. Draw sprite pixels directly or with a Python script; do not use AI image generation. Keep distinct silhouettes and precise bullet-hell readability.
 - Author bullet textures in neutral white/grayscale with transparent backgrounds. Apply all projectile colors in game code; never bake hue into the sprite pixels.
+- The standard bullet must be circular. The lopsided returning ring and bent-arrow helix previews were rejected; do not treat technical image checks as proof of good visual design.
 - Thrusters are separate animated effects like the player's, never baked into hull geometry. Exceptions such as the spinning tunnel saw have no thrusters.
 - Iterate models and rendered views. There is no hurry; visual inspection and quality matter.
 - Bring the whole HUD on gradually with an irregular fluorescent-light startup flicker, then leave it steady and readable.

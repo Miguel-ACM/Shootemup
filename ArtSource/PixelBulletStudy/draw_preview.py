@@ -5,11 +5,12 @@ No antialiasing, glow, hue, random texture, or generated imagery.
 from pathlib import Path
 from textwrap import dedent
 from PIL import Image, ImageDraw, ImageFont
+from corrected_shapes import CORRECTIONS
 
 OUT = Path(__file__).resolve().parent
 INK = (36, 36, 36, 255)
 BG, TEXT, MUTED = (26, 29, 34), (224, 227, 232), (143, 150, 160)
-PALETTE = {k: (v, v, v, 255) for k, v in {"s": 64, "b": 124, "m": 188, "w": 238, "h": 255}.items()}
+PALETTE = {k: (v, v, v, 255) for k, v in {"k": 36, "s": 64, "b": 124, "m": 188, "w": 238, "h": 255}.items()}
 DESIGNS = [
     ("STANDARD", """
         ....mm....
@@ -228,7 +229,8 @@ def sprite(art):
     result = Image.new("RGBA", (max(map(len, rows)) + 2, len(rows) + 2))
     body = {(x + 1, y + 1): PALETTE[c] for y, row in enumerate(rows)
             for x, c in enumerate(row) if c != "."}
-    for x, y in body:
+    # Exact circular masks and the curved stroke include their own ink pixels.
+    for x, y in (() if "k" in art else body):
         for dx, dy in ((-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)):
             if (x + dx, y + dy) not in body:
                 result.putpixel((x + dx, y + dy), INK)
@@ -287,14 +289,34 @@ def rotation_sheet(images):
     return sheet
 
 
+def correction_sheet(images):
+    selected = [(name, image) for name, image in images if name in CORRECTIONS]
+    sheet = Image.new("RGB", (960, 420), BG)
+    draw = ImageDraw.Draw(sheet)
+    draw.text((24, 18), "STANDARD / HELIX / RETURNING DISC", font=font(21), fill=TEXT)
+    draw.text((24, 49), "White source pixels. Preview only.", font=font(13), fill=MUTED)
+    for i, (name, image) in enumerate(selected):
+        x = i * 320
+        centre(draw, name, x + 160, 87, 17)
+        large = image.resize((image.width * 8, image.height * 8), Image.Resampling.NEAREST)
+        sheet.paste(large, (x + 160 - large.width // 2, 210 - large.height // 2), large)
+        for offset, background in ((43, (12, 14, 18)), (170, (213, 215, 218))):
+            draw.rectangle((x + offset, 325, x + offset + 105, 380), fill=background)
+            sheet.paste(image, (x + offset + 27 - image.width // 2, 352 - image.height // 2), image)
+            double = image.resize((image.width * 2, image.height * 2), Image.Resampling.NEAREST)
+            sheet.paste(double, (x + offset + 73 - double.width // 2, 352 - double.height // 2), double)
+    return sheet
+
+
 def main():
     (OUT / "sprites").mkdir(parents=True, exist_ok=True)
-    images = [(name, sprite(pixels)) for name, pixels in DESIGNS]
+    images = [(name, sprite(CORRECTIONS.get(name, pixels))) for name, pixels in DESIGNS]
     for name, image in images:
         assert all(r == g == b and a in (0, 255) for r, g, b, a in image.get_flattened_data())
         image.save(OUT / "sprites" / (name.lower().replace(" ", "_") + ".png"))
     make_sheet(images).save(OUT / "preview.png")
     rotation_sheet(images).save(OUT / "rotation_check.png")
+    correction_sheet(images).save(OUT / "corrections.png")
     print(f"Saved {len(images)} neutral sprites and {OUT / 'preview.png'}")
 
 
