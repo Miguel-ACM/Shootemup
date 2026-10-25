@@ -1,0 +1,56 @@
+PASS
+PASS all 15 items appear in normal offer pools
+PASS ShrinkerJuice has a dedicated 3D model
+PASS EmpPulse has a dedicated 3D model
+PASS QualityGlasses has a dedicated 3D model
+PASS BadGlasses has a dedicated 3D model
+PASS GasolineLeak has a dedicated 3D model
+PASS Poison has a dedicated 3D model
+PASS BarrelRoll has a dedicated 3D model
+PASS BouncingBall has a dedicated 3D model
+PASS FocusTime has a dedicated 3D model
+PASS DoubleTrouble has a dedicated 3D model
+PASS EnergyCore has a dedicated 3D model
+PASS HealthPacks has a dedicated 3D model
+PASS LaserDroneItem has a dedicated 3D model
+PASS BulletDroneItem has a dedicated 3D model
+PASS BulletTime has a dedicated 3D model
+PASS projectile coating shader compiles
+PASS Shrinker leaves the player root and projectile scale unchanged
+PASS Shrinker reduces hull and hitbox to 70 percent
+PASS Quality glasses slows an actual moving projectile by ten percent
+PASS Bad glasses combines locally and releases outside its radius
+PASS actual player hit ignites the enemy
+PASS burn and poison coexist on a projectile hit
+PASS status damage continues after the projectile is gone
+PASS one real collision redirects into a second target, never a third
+PASS Barrel roll activates at zero energy and grants immediate i-frames
+PASS free roll preserves stored reserve energy
+PASS roll i-frames reject hazard damage
+PASS roll moves left and its i-frames expire
+PASS hazard damage resumes after roll
+PASS held focus movement is 40 percent slower than original half-speed; measured 0,2999994, focus multiplier 0,3
+PASS one trigger fires both equipped weapons
+PASS releasing one held trigger keeps both guns firing
+PASS Energy core restores three energy per combat second
+PASS decisions cannot farm passive energy
+PASS Health packs requires sufficient energy
+PASS Health packs converts 30 energy into 20 health
+PASS full health cannot waste a health pack activation
+PASS mixed drones form an ordered trailing line
+PASS drones taper in size and deal actual damage
+PASS entire drone hulls remain inside the actual visible arena at the bottom corner
+PASS Bullet time consumes 35 energy
+PASS frozen active beams cannot damage the player
+PASS hostile and friendly projectiles freeze together
+PASS enemy movement freezes with the world
+PASS drones stay frozen while the player moves
+PASS player can move and spawn suspended shots
+PASS pause suspends the freeze duration
+PASS closing pause does not prematurely resume the world
+PASS Bullet time restores normal time after two active seconds
+PASS suspended projectiles resume travelling
+PASS EMP begins with a full twenty-second countdown
+PASS EMP does not discharge before twenty seconds
+PASS EMP timer clears both friendly and hostile projectiles
+PASS EMP restarts its twenty-second interval
