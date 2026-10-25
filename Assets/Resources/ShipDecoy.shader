@@ -21,8 +21,8 @@ Shader "Shootemup/Ship Decoy"
             half4 Frag(Varyings v):SV_Target
             {
                 float band=step(.35,frac(v.world.y*9-_Phase*2));
-                float light=.45+.55*abs(dot(normalize(v.normal),normalize(float3(-.4,.6,-1))));
-                return half4(float3(.22,.7,.85)*light,(.15+.4*band)*_Fade);
+                float light=.75+.25*abs(dot(normalize(v.normal),normalize(float3(-.4,.6,-1))));
+                return half4(float3(.3,.85,.95)*light,(.25+.45*band)*_Fade);
             }
             ENDHLSL
         }
