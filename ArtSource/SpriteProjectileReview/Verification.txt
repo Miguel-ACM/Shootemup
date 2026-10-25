@@ -61,6 +61,13 @@ PASS LaserSideRound collision matches 540 opaque/transparent pixel samples, incl
 PASS LaserSideRound colour supplied separately by code
 PASS pool preserves shared sprite, collider and resets fade
 PASS horizontal side-shot nose faces travel direction
+PASS carrier emits complete side pair 1, including beyond its third volley
+PASS carrier emits complete side pair 2, including beyond its third volley
+PASS carrier emits complete side pair 3, including beyond its third volley
+PASS carrier emits complete side pair 4, including beyond its third volley
+PASS carrier emits complete side pair 5, including beyond its third volley
+PASS carrier emits complete side pair 6, including beyond its third volley
+PASS carrier emits complete side pair 7, including beyond its third volley
 PASS sprite tint / status shader compiles
 PASS PlayerBullet uses sprite rendering
 PASS TwerpBullet uses sprite rendering
@@ -75,12 +82,12 @@ PASS player Disc restored to 2D
 PASS player Missile restored to 2D
 PASS player Flame restored to 2D
 PASS burn and poison coatings retained on sprites
-PASS Fields moving patterns and later carrier volleys
-PASS Snow moving patterns and later carrier volleys
-PASS City moving patterns and later carrier volleys
-PASS Thunder moving patterns and later carrier volleys
-PASS Tunnel moving patterns and later carrier volleys
-PASS Desert moving patterns and later carrier volleys
-PASS Candyland moving patterns and later carrier volleys
+Captured Fields moving patterns across eight frames.
+Captured Snow moving patterns across eight frames.
+Captured City moving patterns across eight frames.
+Captured Thunder moving patterns across eight frames.
+Captured Tunnel moving patterns across eight frames.
+Captured Desert moving patterns across eight frames.
+Captured Candyland moving patterns across eight frames.
 PASS both projectile caps reached: 460 sprites
-Editor render stress median 13,42ms, p95 17,75ms (not a standalone GPU benchmark).
+Editor render stress median 13,94ms, p95 16,55ms (not a standalone GPU benchmark).
