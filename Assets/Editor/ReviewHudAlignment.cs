@@ -25,12 +25,12 @@ public static class ReviewHudAlignment
             EditorSceneManager.OpenScene("Assets/Scenes/L1.unity");
             foreach(var canvas in UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include))canvas.enabled=false;
             GameRules.ResetRun();Score.ResetRun();RunCoins.Reset();
-            var hud=UnityEngine.Object.FindFirstObjectByType<IndustrialHUD>();
+            var hud=UnityEngine.Object.FindAnyObjectByType<IndustrialHUD>();
             if(hud==null)hud=new GameObject("HUD alignment preview").AddComponent<IndustrialHUD>();
             hud.font=AssetDatabase.LoadAssetAtPath<Font>("Assets/Fonts/prstartk.ttf");
             typeof(IndustrialHUD).GetMethod("Start",Hidden).Invoke(hud,null);Set(hud,"entranceAge",4f);
             foreach(var group in hud.GetComponentsInChildren<CanvasGroup>())group.alpha=1;
-            var ship=UnityEngine.Object.FindFirstObjectByType<Shipcontroller>();ship.maxHealth=100;ship.maxMana=100;
+            var ship=UnityEngine.Object.FindAnyObjectByType<Shipcontroller>();ship.maxHealth=100;ship.maxMana=100;
             var go=new GameObject("HUD review camera");var camera=go.AddComponent<UnityEngine.Camera>();
             camera.orthographic=true;camera.orthographicSize=360;camera.nearClipPlane=.01f;camera.farClipPlane=100;
             camera.transform.position=new Vector3(0,0,-10);camera.cullingMask=1<<31;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=Color.black;

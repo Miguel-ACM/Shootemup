@@ -57,10 +57,10 @@ public sealed class ItemFeedbackReview : MonoBehaviour
     }
     static void Clear()
     {
-        foreach(var b in UnityEngine.Object.FindObjectsByType<AEnemyBullet>(FindObjectsSortMode.None))b.Vanish();
-        foreach(var b in UnityEngine.Object.FindObjectsByType<ABullet>(FindObjectsSortMode.None))Destroy(b.gameObject);
+        foreach(var b in UnityEngine.Object.FindObjectsByType<AEnemyBullet>())b.Vanish();
+        foreach(var b in UnityEngine.Object.FindObjectsByType<ABullet>())Destroy(b.gameObject);
         foreach(var e in AEnemy.Live.ToArray())if(e!=null)Destroy(e.gameObject);
-        foreach(var p in UnityEngine.Object.FindObjectsByType<APickable>(FindObjectsSortMode.None))Destroy(p.gameObject);
+        foreach(var p in UnityEngine.Object.FindObjectsByType<APickable>())Destroy(p.gameObject);
     }
     DistrictEnemy Target(Vector3 p)
     {
@@ -138,10 +138,10 @@ public sealed class ItemFeedbackReview : MonoBehaviour
         for(int tier=1;tier<=3;tier++)
         {
             Press(Key.Z);yield return new WaitForSeconds(tier==1 ? .2f : tier==2 ? .65f : 1.4f);
-            Check(cannon.Level==tier && FindObjectsByType<PlayerRound>(FindObjectsSortMode.None).Length==0,"charge tier "+tier+" holds fire until release");
+            Check(cannon.Level==tier && FindObjectsByType<PlayerRound>().Length==0,"charge tier "+tier+" holds fire until release");
             yield return Capture("Charge"+tier);
             Press();yield return null;yield return null;
-            var shots=FindObjectsByType<PlayerRound>(FindObjectsSortMode.None);
+            var shots=FindObjectsByType<PlayerRound>();
             Check(shots.Length==GameRules.playerShootNumber,"one released volley at tier "+tier);
             Check(shots.All(s=>Mathf.Abs(s.damage-GameRules.playerShootDamage*(tier==1 ? 2 : tier==2 ? 7 : 16))<.01f),"tier "+tier+" damage scaling");
             Check(shots.All(s=>s.pierces==(tier==1 ? 0 : tier==2 ? 2 : 5)),"tier "+tier+" piercing budget");
@@ -156,21 +156,21 @@ public sealed class ItemFeedbackReview : MonoBehaviour
         var position=frozenShot.transform.position;yield return new WaitForSecondsRealtime(.15f);Check(position==frozenShot.transform.position,"released cannon rounds remain suspended");
         Destroy(freeze);yield return null;Time.timeScale=1;Clear();yield return new WaitForSeconds(.2f);
         Press(Key.Z);yield return new WaitForSeconds(.3f);GameRules.playerDisabled=true;yield return null;Press();GameRules.playerDisabled=false;
-        Check(!cannon.Charging && FindObjectsByType<PlayerRound>(FindObjectsSortMode.None).Length==0,"decision interruption cancels charge without firing");
+        Check(!cannon.Charging && FindObjectsByType<PlayerRound>().Length==0,"decision interruption cancels charge without firing");
         yield return Grant(typeof(DoubleTrouble));ship.GetComponent<ShipLoadout>().EquipWeapon("WindUpCannon",1);yield return null;
         Press(Key.Z);yield return new WaitForSeconds(.2f);Press(Key.Z,Key.X);yield return null;Press(Key.X);yield return new WaitForSeconds(.2f);
-        Check(cannon.Charging && FindObjectsByType<PlayerRound>(FindObjectsSortMode.None).Length==0,"Double Trouble keeps charging while either fire control is held");
-        Press();yield return null;yield return null;Check(FindObjectsByType<PlayerRound>(FindObjectsSortMode.None).Length==GameRules.playerShootNumber*2,"Double Trouble releases both cannons once");
+        Check(cannon.Charging && FindObjectsByType<PlayerRound>().Length==0,"Double Trouble keeps charging while either fire control is held");
+        Press();yield return null;yield return null;Check(FindObjectsByType<PlayerRound>().Length==GameRules.playerShootNumber*2,"Double Trouble releases both cannons once");
         Clear();yield return null;
         yield return Grant(typeof(Popcorn));var enemy=Target(new Vector3(0,1));var u=ship.GetComponent<CombatUpgrades>();
         for(int i=0;i<4;i++)u.DirectHit(enemy,10);
-        Check(FindObjectsByType<PlayerRound>(FindObjectsSortMode.None).Length==0,"Popcorn waits for fifth primary hit");
-        u.DirectHit(enemy,10);Check(FindObjectsByType<PlayerRound>(FindObjectsSortMode.None).Length==3,"fifth hit creates three Popcorn pellets");
-        u.DirectHit(enemy,10,1);Check(FindObjectsByType<PlayerRound>(FindObjectsSortMode.None).Length==3,"secondary fragments never recursively pop");
+        Check(FindObjectsByType<PlayerRound>().Length==0,"Popcorn waits for fifth primary hit");
+        u.DirectHit(enemy,10);Check(FindObjectsByType<PlayerRound>().Length==3,"fifth hit creates three Popcorn pellets");
+        u.DirectHit(enemy,10,1);Check(FindObjectsByType<PlayerRound>().Length==3,"secondary fragments never recursively pop");
         yield return new WaitForSeconds(.12f);yield return Capture("Popcorn");yield return new WaitForSeconds(.5f);
-        Check(FindObjectsByType<PlayerRound>(FindObjectsSortMode.None).Length==0,"Popcorn pellets have short bounded lifetime");
+        Check(FindObjectsByType<PlayerRound>().Length==0,"Popcorn pellets have short bounded lifetime");
         enemy.gameObject.AddComponent<BurningHull>().Ignite(2);u.DirectHit(enemy,10);
-        Check(FindObjectsByType<PlayerRound>(FindObjectsSortMode.None).Length==3,"burning target pops on next hit immediately");
+        Check(FindObjectsByType<PlayerRound>().Length==3,"burning target pops on next hit immediately");
         Destroy(ship.GetComponent<PopcornHits>());Clear();yield return null;
         yield return Grant(typeof(Icicle));enemy=Target(new Vector3(0,1));
         for(int i=0;i<3;i++){u.DirectHit(enemy,10);yield return new WaitForSeconds(.13f);}
@@ -178,7 +178,7 @@ public sealed class ItemFeedbackReview : MonoBehaviour
         Check(ice.GetComponentsInChildren<SpriteRenderer>().Count(s=>s.name=="Hull frost" && s.enabled)==3,"frost buildup is visible with three sprite crystals");
         yield return Capture("IcicleFrozen");
         Check(Mathf.Abs(u.DirectHit(enemy,10)-15)<.01f && !ice.Frozen,"next hit shatters for bonus damage and releases hold");
-        Check(FindObjectsByType<PlayerRound>(FindObjectsSortMode.None).Length==5,"shatter releases five nonrecursive sprite fragments");
+        Check(FindObjectsByType<PlayerRound>().Length==5,"shatter releases five nonrecursive sprite fragments");
         yield return new WaitForSeconds(.1f);yield return Capture("IcicleShatter");Clear();yield return null;
         // Actual moving formation: its path clock must stop rather than jumping ahead on thaw.
         enemy=DistrictEnemy.Spawn(typeof(ScoutInterceptor),new Vector3(0,3));enemy.health=1000;yield return new WaitForSeconds(.2f);
@@ -188,7 +188,7 @@ public sealed class ItemFeedbackReview : MonoBehaviour
         Check(Vector3.Distance(position,enemy.transform.position)>.01f,"enemy movement resumes after shattering");Clear();yield return null;
         yield return Grant(typeof(Capacitor));yield return new WaitForSeconds(2.4f);
         Check(u.Charge>.99f,"Capacitor still reaches full charge");Press(Key.Z);yield return new WaitForSeconds(.2f);Press();yield return null;yield return null;
-        Check(FindObjectsByType<ChargedShotCue>(FindObjectsSortMode.None).Length>0,"charged volley carries its sprite wake");yield return Capture("Capacitor");Clear();yield return null;
+        Check(FindObjectsByType<ChargedShotCue>().Length>0,"charged volley carries its sprite wake");yield return Capture("Capacitor");Clear();yield return null;
         yield return Grant(typeof(Overdrive),0);float damage=GameRules.playerShootDamage;((Overdrive)granted).OnPress(100);yield return null;
         Check(GameRules.playerShootDamage==damage*2 && ship.transform.Find("Overdrive port")!=null,"Overdrive doubles damage and shows hull cues");yield return Capture("Overdrive");
         var boost=ship.GetComponent<OverdriveBoost>();boost.until=Time.time;yield return null;yield return null;

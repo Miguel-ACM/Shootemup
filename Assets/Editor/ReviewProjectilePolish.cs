@@ -22,7 +22,7 @@ public static class ReviewProjectilePolish
         {
             EditorSceneManager.OpenScene("Assets/Scenes/L1.unity");
             GameRules.enemySpeed=GameRules.enemyHealth=GameRules.enemyShootSpeed=1;GameRules.playerDisabled=false;
-            var ship=UnityEngine.Object.FindFirstObjectByType<Shipcontroller>();
+            var ship=UnityEngine.Object.FindAnyObjectByType<Shipcontroller>();
             Check(ship!=null,"Loaded production ship and health bar");
             ship.maxHealth=120;ship.health=18;GameRules.healMultiplier=2;ship.HealFraction(.5f);
             Check(Mathf.Approximately(ship.health,78),"Health route restores exactly half maximum health (60 of 120), even with healing modifiers");

@@ -57,10 +57,10 @@ public sealed class RequestedItemReview : MonoBehaviour
     }
     static void Clear()
     {
-        foreach(var b in UnityEngine.Object.FindObjectsByType<AEnemyBullet>(FindObjectsSortMode.None))b.Vanish();
-        foreach(var b in UnityEngine.Object.FindObjectsByType<ABullet>(FindObjectsSortMode.None))Destroy(b.gameObject);
+        foreach(var b in UnityEngine.Object.FindObjectsByType<AEnemyBullet>())b.Vanish();
+        foreach(var b in UnityEngine.Object.FindObjectsByType<ABullet>())Destroy(b.gameObject);
         foreach(var e in AEnemy.Live.ToArray())if(e!=null)Destroy(e.gameObject);
-        foreach(var p in UnityEngine.Object.FindObjectsByType<APickable>(FindObjectsSortMode.None))Destroy(p.gameObject);
+        foreach(var p in UnityEngine.Object.FindObjectsByType<APickable>())Destroy(p.gameObject);
     }
     DistrictEnemy Target(Vector3 p)
     {
@@ -178,7 +178,7 @@ public sealed class RequestedItemReview : MonoBehaviour
         Check(Mathf.Abs(focusRate-.3f)<.05f,"held focus movement is 40 percent slower than original half-speed; measured "+focusRate+", focus multiplier "+ship.slowMultiplier);
         yield return Grant(typeof(DoubleTrouble));ship.GetComponent<ShipLoadout>().EquipWeapon("NeedleCannon",1);yield return null;
         Press(Key.Z);yield return new WaitForSeconds(.24f);
-        var rounds=FindObjectsByType<PlayerRound>(FindObjectsSortMode.None);
+        var rounds=FindObjectsByType<PlayerRound>();
         Check(rounds.Any(b=>b.delivery==PlayerDelivery.Pulse) && rounds.Any(b=>b.delivery==PlayerDelivery.Needle),"one trigger fires both equipped weapons");
         Press(Key.Z,Key.X);yield return new WaitForSeconds(.12f);Press(Key.Z);yield return new WaitForSeconds(.12f);
         Check(ship.GetComponent<ShipLoadout>().Weapons.All(w=>w.isShootingPrimary || w.isShootingSecondary),"releasing one held trigger keeps both guns firing");
@@ -229,7 +229,7 @@ public sealed class RequestedItemReview : MonoBehaviour
         Check(hostile.transform.position==hostilePosition && shot.transform.position==shotPosition,"hostile and friendly projectiles freeze together");
         Check(enemy.transform.position==enemyPosition,"enemy movement freezes with the world");
         Check(frozenDrone.transform.position==dronePosition,"drones stay frozen while the player moves");
-        Check(ship.transform.position.x>start+.5f && FindObjectsByType<PlayerRound>(FindObjectsSortMode.None).Length>4,"player can move and spawn suspended shots");
+        Check(ship.transform.position.x>start+.5f && FindObjectsByType<PlayerRound>().Length>4,"player can move and spawn suspended shots");
         Press();yield return Capture("BulletTime");
         var menu=FindAnyObjectByType<Menu>();menu.setMenuOpen(true);float remaining=WorldTimeStop.Current.Remaining;
         yield return new WaitForSecondsRealtime(.3f);Check(Mathf.Abs(WorldTimeStop.Current.Remaining-remaining)<.03f,"pause suspends the freeze duration");
@@ -243,9 +243,9 @@ public sealed class RequestedItemReview : MonoBehaviour
         yield return new WaitForSeconds(19.5f);
         CombatRound.Launch<SimpleRound>(new Vector3(-2,3),Vector2.down,0);PlayerRound.Spawn(new Vector3(2,3),Vector2.up,1,0);
         yield return new WaitForSeconds(.15f);
-        Check(FindObjectsByType<AEnemyBullet>(FindObjectsSortMode.None).Length>0,"EMP does not discharge before twenty seconds");
+        Check(FindObjectsByType<AEnemyBullet>().Length>0,"EMP does not discharge before twenty seconds");
         yield return new WaitForSeconds(.45f);
-        Check(FindObjectsByType<AEnemyBullet>(FindObjectsSortMode.None).Length==0 && FindObjectsByType<ABullet>(FindObjectsSortMode.None).Length==0,"EMP timer clears both friendly and hostile projectiles");
+        Check(FindObjectsByType<AEnemyBullet>().Length==0 && FindObjectsByType<ABullet>().Length==0,"EMP timer clears both friendly and hostile projectiles");
         Check(emp.Remaining>19.7f && emp.Remaining<=20,"EMP restarts its twenty-second interval");
         yield return Capture("EmpPulse");
     }

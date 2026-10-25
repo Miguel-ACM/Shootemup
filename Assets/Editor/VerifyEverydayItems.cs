@@ -58,10 +58,10 @@ public sealed class EverydayItemReview : MonoBehaviour
     }
     static void Clear()
     {
-        foreach(var b in UnityEngine.Object.FindObjectsByType<AEnemyBullet>(FindObjectsSortMode.None))b.Vanish();
-        foreach(var b in UnityEngine.Object.FindObjectsByType<ABullet>(FindObjectsSortMode.None))Destroy(b.gameObject);
+        foreach(var b in UnityEngine.Object.FindObjectsByType<AEnemyBullet>())b.Vanish();
+        foreach(var b in UnityEngine.Object.FindObjectsByType<ABullet>())Destroy(b.gameObject);
         foreach(var e in AEnemy.Live.ToArray())if(e!=null)Destroy(e.gameObject);
-        foreach(var p in UnityEngine.Object.FindObjectsByType<APickable>(FindObjectsSortMode.None))Destroy(p.gameObject);
+        foreach(var p in UnityEngine.Object.FindObjectsByType<APickable>())Destroy(p.gameObject);
     }
     DistrictEnemy Target(Vector3 p)
     {
@@ -161,10 +161,10 @@ public sealed class EverydayItemReview : MonoBehaviour
         for(int i=0;i<24;i++){burning.transform.position+=Vector3.right*.15f;yield return new WaitForSeconds(.04f);}
         Check(crossing.GetComponent<BurningHull>()!=null && crossing.health<1000,"moving burning enemy leaves a trail that ignites a crossing enemy");
         yield return Capture("HotSauceTrail");
-        var trailCount=FindObjectsByType<HotSauceTrail>(FindObjectsSortMode.None).Length;
+        var trailCount=FindObjectsByType<HotSauceTrail>().Length;
         Check(trailCount>0 && trailCount<=80,"fire trail remains bounded");
         Clear();yield return new WaitForSeconds(1.5f);
-        Check(FindObjectsByType<HotSauceTrail>(FindObjectsSortMode.None).Length==0,"fire patches expire after enemies are gone");
+        Check(FindObjectsByType<HotSauceTrail>().Length==0,"fire patches expire after enemies are gone");
         yield return Grant(typeof(RubberBand));
         float top=UnityEngine.Camera.main.transform.position.y+UnityEngine.Camera.main.orthographicSize;
         var round=PlayerRound.Spawn(new Vector3(0,top-.5f),Vector2.up,10,6);
@@ -193,7 +193,7 @@ public sealed class EverydayItemReview : MonoBehaviour
         Clear();yield return null;GameRules.playerShootTravelSpeed=speed;
         yield return Grant(typeof(NeedleCannonItem),1);yield return Grant(typeof(DoubleTrouble));
         Press(Key.Z,Key.X);yield return new WaitForSeconds(.15f);Press(Key.Z);yield return new WaitForSeconds(.25f);
-        var rounds=FindObjectsByType<PlayerRound>(FindObjectsSortMode.None);
+        var rounds=FindObjectsByType<PlayerRound>();
         Check(rounds.Any(b=>b.delivery==PlayerDelivery.Pulse) && rounds.Any(b=>b.delivery==PlayerDelivery.Needle),"both guns still fire when one coupled trigger is released");
         Press();yield return null;Clear();yield return null;
         yield return Grant(typeof(StaticSweater));var charge=ship.GetComponent<StaticCharge>();

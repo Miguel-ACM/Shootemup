@@ -18,8 +18,8 @@ public sealed class PeriodicEmp : MonoBehaviour
     }
     public static void Discharge(Vector3 position)
     {
-        foreach(var bullet in Object.FindObjectsByType<AEnemyBullet>(FindObjectsSortMode.None))bullet.Vanish();
-        foreach(var bullet in Object.FindObjectsByType<ABullet>(FindObjectsSortMode.None))
+        foreach(var bullet in Object.FindObjectsByType<AEnemyBullet>())bullet.Vanish();
+        foreach(var bullet in Object.FindObjectsByType<ABullet>())
         {bullet.gameObject.SetActive(false);Object.Destroy(bullet.gameObject);}
         PSXFireballs.Shockwave(position,24,.65f,new Color(.24f,.75f,1),2,.1f);
         SoundManager.PlaySound("blankbullet",.15f);

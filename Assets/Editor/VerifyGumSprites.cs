@@ -58,10 +58,10 @@ public sealed class GumSpriteReview : MonoBehaviour
     }
     static void Clear()
     {
-        foreach(var b in UnityEngine.Object.FindObjectsByType<AEnemyBullet>(FindObjectsSortMode.None))b.Vanish();
-        foreach(var b in UnityEngine.Object.FindObjectsByType<ABullet>(FindObjectsSortMode.None))Destroy(b.gameObject);
+        foreach(var b in UnityEngine.Object.FindObjectsByType<AEnemyBullet>())b.Vanish();
+        foreach(var b in UnityEngine.Object.FindObjectsByType<ABullet>())Destroy(b.gameObject);
         foreach(var e in AEnemy.Live.ToArray())if(e!=null)Destroy(e.gameObject);
-        foreach(var p in UnityEngine.Object.FindObjectsByType<APickable>(FindObjectsSortMode.None))Destroy(p.gameObject);
+        foreach(var p in UnityEngine.Object.FindObjectsByType<APickable>())Destroy(p.gameObject);
     }
     DistrictEnemy Target(Vector3 p)
     {
@@ -121,7 +121,7 @@ public sealed class GumSpriteReview : MonoBehaviour
         yield return Capture("GumPop00");yield return new WaitForSeconds(.08f);yield return Capture("GumPop01");
         yield return new WaitForSeconds(.6f);
         Check(first.health==990 && second.health==990,"both bounced gum hits retain their original damage");
-        Check(FindObjectsByType<GumSpritePop>(FindObjectsSortMode.None).Length==0,"sprite pops clean up after their short animation");
+        Check(FindObjectsByType<GumSpritePop>().Length==0,"sprite pops clean up after their short animation");
         Clear();yield return null;
     }
 }

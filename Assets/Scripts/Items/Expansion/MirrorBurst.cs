@@ -7,7 +7,7 @@ public sealed class MirrorBurst : AActiveItem
     {
         float valid=CheckValidPress(mana);if(valid<0)return valid;
         int converted=0;
-        foreach(var shot in FindObjectsByType<AEnemyBullet>(FindObjectsSortMode.None))
+        foreach(var shot in FindObjectsByType<AEnemyBullet>())
         {
             if(converted>=18)break;
             if(shot is PulseLaser || Vector2.Distance(shot.transform.position,s.transform.position)>5)continue;
