@@ -9,15 +9,15 @@ public static partial class WavePartLibrary
     static readonly FlightCurve Halo=Route("Space / Halo carrier",Vector2.right,-.44f,1.26f,-.52f,.90f,-.24f,.77f,.29f,.78f,.55f,.93f,.49f,1.26f);
     static readonly FlightCurve Perigee=Route("Space / Perigee scissors",Vector2.right,.69f,1.24f,.74f,.89f,.31f,.60f,-.22f,.73f,-.45f,1.0f,-.47f,1.24f);
     public static readonly WavePart[] Space={
-        new WavePart("Apogee scouts","OrbitalScout",Apogee,WaveShape.Train,3,5.2f),
-        new WavePart("Transfer scouts","OrbitalScout",Transfer,WaveShape.Rank,3,5.0f),
-        new WavePart("Solar slingshot","OrbitalScout",Slingshot,WaveShape.Chevron,3,5.1f),
-        new WavePart("Perigee twins","OrbitalScout",Perigee,WaveShape.Diamond,3,5.3f),
-        new WavePart("Terminator emitters","LaserSatellite",Terminator,WaveShape.Train,2,5.8f),
-        new WavePart("Halo escort carrier","OrbitalCarrier",Halo,WaveShape.Solo,1,6.5f,6),
-        new WavePart("Low transfer emitter","LaserSatellite",Transfer,WaveShape.Solo,1,5.6f,4),
-        new WavePart("Opposed relay scouts","OrbitalScout",Terminator,WaveShape.Rake,3,5.1f),
-        new WavePart("Wide apogee carrier","OrbitalCarrier",Apogee,WaveShape.Solo,1,6.7f,8),
-        new WavePart("Perigee laser rake","LaserSatellite",Perigee,WaveShape.Rake,2,5.6f,10)
+        new WavePart("Apogee scouts","OrbitalScout",Apogee,WaveShape.Train,4,4.0f),
+        new WavePart("Transfer scouts","OrbitalScout",Transfer,WaveShape.Rank,4,3.9f),
+        new WavePart("Solar slingshot","OrbitalScout",Slingshot,WaveShape.Chevron,5,4.1f),
+        new WavePart("Perigee twins","OrbitalScout",Perigee,WaveShape.Diamond,4,4.1f),
+        new WavePart("Terminator emitters","LaserSatellite",Terminator,WaveShape.Train,2,4.8f),
+        new WavePart("Halo escort carrier","OrbitalCarrier",Halo,WaveShape.Solo,1,5.0f,6),
+        new WavePart("Low transfer emitter","LaserSatellite",Transfer,WaveShape.Solo,1,4.7f,4),
+        new WavePart("Opposed relay scouts","OrbitalScout",Terminator,WaveShape.Rake,4,4.0f),
+        new WavePart("Wide apogee carrier","OrbitalCarrier",Apogee,WaveShape.Solo,1,5.1f,8),
+        new WavePart("Perigee laser rake","LaserSatellite",Perigee,WaveShape.Rake,2,4.8f,10)
     };
 }

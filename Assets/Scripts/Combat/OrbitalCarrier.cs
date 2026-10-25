@@ -15,5 +15,5 @@ public sealed class OrbitalCarrier : SpaceSatellite
             var orbit=moon.gameObject.AddComponent<SatelliteOrbit>();orbit.Anchor=transform;orbit.Phase=i*Mathf.PI;moon.UseMovement(orbit);
         }
     }
-    protected override void Attack(){Fan<RicochetBolt>(5,20,4.6f,.16f);}
+    protected override void Attack(){Fan<RicochetBolt>(7,17,4.6f,.16f);}
 }
