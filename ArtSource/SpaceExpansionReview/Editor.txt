@@ -1,0 +1,7 @@
+PASS
+Four combat waves instead of ten; one decision; no-hit challenge has three remaining waves.
+Route checks passed: Desert/Candyland -> Space -> harder Plains, keeping the run seed; direct third-district loop preserved.
+Seed 17381: all 19 Space difficulty budgets build with the production swept-spacing scheduler.
+Seed 421: all 19 Space difficulty budgets build with the production swept-spacing scheduler.
+Seed 9826: all 19 Space difficulty budgets build with the production swept-spacing scheduler.
+All ten orbital motifs are playable; native satellite and shielded/exposed boss models rendered with the game filter.

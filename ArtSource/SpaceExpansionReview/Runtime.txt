@@ -1,0 +1,22 @@
+PASS
+PASS Space creates its starfield and soft planets
+PASS Challenge starts three unmodified waves at the normal budget
+PASS Taking a real hit cancels the challenge immediately
+PASS First clean challenge wave counts down
+PASS Challenge keeps the final wave at normal difficulty
+PASS Three clean waves open the item reward
+PASS The next wave launches while members of the previous wave remain alive
+PASS Space formations include independently destroyable orbiting satellites
+PASS Stronger lateral banking leaves the player collider unrotated
+INFO visible cohort overlap=False, peak actors=8, peak bank=24,5
+PASS Orbital station has five separately modeled, damageable modules
+PASS Protected center rejects direct damage and targeting
+PASS Charged boss beam fires straight down the arena center
+PASS Boss uses an attached charged center laser and genuinely bouncing bullets
+PASS One generator is insufficient to expose the reactor
+PASS Breaking both generators opens the core
+PASS Gun pods can be destroyed independently of the shield generators
+PASS Exposed reactor accepts damage
+PASS Core destruction enters the staged boss finale
+PASS Space completion waits for its mandatory boss item
+PASS Collecting the Space boss item loops into harder Plains

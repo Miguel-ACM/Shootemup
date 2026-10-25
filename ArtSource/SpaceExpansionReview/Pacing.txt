@@ -1,0 +1,7 @@
+PASS
+PASS Space creates its starfield and soft planets
+PASS The next wave launches while members of the previous wave remain alive
+PASS Space formations include independently destroyable orbiting satellites
+PASS Stronger lateral banking leaves the player collider unrotated
+INFO visible cohort overlap=True, peak actors=11, peak bank=24,5
+PASS Members of both wave cohorts are visible together during the handoff
