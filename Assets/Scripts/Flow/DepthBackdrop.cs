@@ -21,7 +21,14 @@ public sealed class DepthBackdrop : MonoBehaviour
         {
             var mesh=BuildSection(LevelRun.Seed+i*193,infernal);owned.Add(mesh);
             sections.Add(Add(infernal ? "Obsidian spires and broken bones" : "Reef, kelp and sunken ribs",mesh,scenery,new Vector3(0,(i-1)*20,75),-45));
+            if(infernal)
+            {
+                var crater=Add("Environmental volcano",IndustrialMeshFactory.Volcano(),CombatMaterials.Fleet,Vector3.zero,-39);
+                crater.SetParent(sections[i],false);crater.localPosition=new Vector3((i%2==0 ? -1 : 1)*3.65f,(i%2==0 ? 1 : -1)*3.8f,-2);
+                crater.localScale=Vector3.one*.85f;crater.gameObject.AddComponent<VolcanicVent>().phase=i*.67f;
+            }
         }
+        if(!infernal)gameObject.AddComponent<OceanLife>();
         motes=PSXImpactEffects.Create(transform,infernal ? "Drifting cinders" : "Rising air bubbles",180,true);
         var renderer=motes.GetComponent<ParticleSystemRenderer>();renderer.sortingLayerName="Background";renderer.sortingOrder=-20;
     }
@@ -35,6 +42,7 @@ public sealed class DepthBackdrop : MonoBehaviour
         clock+=Time.deltaTime;if(sky==null)return;sky.SetFloat("_Clock",clock);
         var pilot=CombatVisuals.Player;float offset=pilot!=null ? -pilot.position.x*.09f : 0;
         foreach(var section in sections){var p=section.localPosition;p.x=offset;p.y-=Time.deltaTime*(infernal ? 3.7f : 2.6f);if(p.y< -30)p.y+=80;section.localPosition=p;}
+        if(infernal)return; // Fire is attached to craters; no random bright red points across the arena.
         if(clock<nextMote)return;nextMote=clock+.10f;
         var e=new ParticleSystem.EmitParams();e.position=new Vector3(Random.Range(-6,6),Random.Range(-11,11),40);
         e.velocity=new Vector3(Random.Range(-.25f,.25f),infernal ? 1.4f : .85f,0);e.startSize=Random.Range(.035f,.11f);e.startLifetime=2.7f;
@@ -51,7 +59,13 @@ public sealed class DepthBackdrop : MonoBehaviour
             for(int i=0;i<6;i++)
             {
                 float a=i*Mathf.PI/3,b=(i+1)*Mathf.PI/3;
-                Face(color*(.64f+i*.07f),p+new Vector3(Mathf.Cos(a)*radius,Mathf.Sin(a)*radius,0),p+new Vector3(Mathf.Cos(b)*radius,Mathf.Sin(b)*radius,0),top);
+                var u=p+new Vector3(Mathf.Cos(a)*radius,Mathf.Sin(a)*radius,0);var v=p+new Vector3(Mathf.Cos(b)*radius,Mathf.Sin(b)*radius,0);
+                if(hell)Face(color*(.64f+i*.07f),u,v,top);
+                else
+                {
+                    var c=Vector3.Lerp(top,u,.38f);var d=Vector3.Lerp(top,v,.38f);
+                    Face(color*(.77f+i*.035f),u,v,d,c);Face(color*.92f,c,d,top);
+                }
             }
         }
         void Branch(Vector3 p,float length,float width,Color c,float angle)
@@ -67,7 +81,6 @@ public sealed class DepthBackdrop : MonoBehaviour
             if(hell)
             {
                 if(i%3==0)for(int j=0;j<4;j++)Spire(p+new Vector3(j*.22f,.16f,-.2f),.10f,.65f,new Color(.45f,.34f,.25f));
-                else Branch(p+Vector3.back*.5f,R(.4f,.9f),.045f,new Color(.68f,.20f,.055f),R(-2,2));
             }
             else
             {
@@ -78,7 +91,17 @@ public sealed class DepthBackdrop : MonoBehaviour
                     Branch(stem,length,.055f,kelp,bend);
                     for(int leaf=1;leaf<4;leaf++)Branch(stem+new Vector3(bend*leaf*.21f,leaf*length/4,0),.36f,.10f,kelp*1.25f,(leaf%2==0 ? 1 : -1)*1.1f);
                 }
-                if(i%4==0)for(int j=0;j<4;j++)Branch(p+new Vector3(j*.13f,0,-.5f),R(.35f,.70f),.07f,new Color(.30f,.23f,.30f),R(-.8f,.8f));
+                if(i%2==0)
+                {
+                    var coral=i%4==0 ? new Color(.47f,.23f,.26f) : new Color(.35f,.27f,.48f);
+                    for(int j=0;j<5;j++)
+                    {
+                        float a=(j-2)*.30f;var root=p+new Vector3((j-2)*.09f,.12f,-.85f);float length=R(.55f,1.05f);
+                        Branch(root,length,.07f,coral,a);
+                        for(int twig=1;twig<4;twig++)for(int s=-1;s<=1;s+=2)
+                            Branch(root+new Vector3(Mathf.Sin(a)*length*twig/4,Mathf.Cos(a)*length*twig/4,0),.24f,.045f,coral*1.17f,a+s*.68f);
+                    }
+                }
             }
         }
         // Sparse sunken hull ribs or fossil arches appear at the edges, not in the dodge lanes.

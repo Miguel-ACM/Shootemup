@@ -26,21 +26,28 @@ Shader "Shootemup/Depth worlds"
                 float n=Noise(p*.42),detail=Noise(p*1.8);
                 if(_Hell>.5)
                 {
-                    float bend=sin(p.y*.18+_Seed)*.65+sin(p.y*.51)*.22;
-                    float fracture=abs(sin(p.x*.74+bend+sin(p.y*.27)*1.2));
-                    float lava=pow(saturate(1-fracture*8),2);
-                    float heat=.74+.16*sin(_Clock*1.5+p.y*.8)+detail*.15;
-                    float3 rock=lerp(float3(.045,.025,.031),float3(.13,.065,.052),n)*(.85+detail*.20);
-                    float3 fire=float3(.56,.105,.015)*heat+float3(.18,.06,.008)*pow(lava,4);
-                    return half4(rock+fire*lava,1);
+                    float river=abs(p.x-2.6*sin(p.y*.12+_Seed*.1)-.65*sin(p.y*.39));
+                    float tributary=abs(p.x+3.6*sin(p.y*.14+1.4));
+                    float width=.45+Noise(p*.17+5)*.95;
+                    float lava=1-smoothstep(width*.62,width,river);
+                    lava=max(lava,(1-smoothstep(.18,.55,tributary))*.84);
+                    float pools=smoothstep(.67,.79,Noise(p*.20+31));lava=max(lava,pools*.93);
+                    float crust=smoothstep(.38,.75,detail)*.33;
+                    float flow=.68+.16*sin(p.y*1.8+n*6-_Clock*2.4)+.12*detail;
+                    float3 rock=lerp(float3(.035,.025,.029),float3(.105,.066,.055),n)*(.80+detail*.22);
+                    float3 fire=lerp(float3(.35,.105,.018),float3(.73,.34,.065),flow)*(1-crust);
+                    return half4(lerp(rock,fire,lava*.86),1);
                 }
                 float seabed=Noise(p*.12+9)*.55+n*.3;
-                float3 c=lerp(float3(.018,.068,.115),float3(.035,.20,.25),seabed);
-                float2 q=p*.65+float2(sin(_Clock*.32+p.y*.18),cos(_Clock*.27+p.x*.21))*.4;
+                float depth=saturate((i.world.y+17)/35);
+                float3 c=lerp(float3(.009,.052,.105),float3(.035,.22,.28),seabed*.65+depth*.35);
+                float2 q=p*1.25+float2(sin(_Clock*.32+p.y*.18),cos(_Clock*.27+p.x*.21))*.4;
                 float caustic=pow(saturate(1-abs(sin(q.x+sin(q.y*1.3))*sin(q.y+sin(q.x*.8)))*12),3);
-                c+=float3(.055,.12,.13)*caustic*.38;
-                float rays=pow(saturate(sin(i.world.x*.65+i.world.y*.16+sin(_Clock*.17)*.4)),12);
-                c+=float3(.045,.085,.10)*rays*saturate((i.world.y+14)/30)*.4;
+                c+=float3(.045,.12,.12)*caustic*.45;
+                float spread=(14-i.world.y)*.15;
+                float rays=pow(saturate(cos((i.world.x-spread+sin(_Clock*.16)*.35)*1.05)),15);
+                rays+=pow(saturate(cos((i.world.x+spread*.55+2.4)*.72)),22)*.6;
+                c+=float3(.075,.17,.19)*rays*(.25+depth*.75)*.65;
                 return half4(c,1);
             }
             ENDHLSL
