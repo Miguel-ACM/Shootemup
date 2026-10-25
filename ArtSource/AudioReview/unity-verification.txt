@@ -1,0 +1,6 @@
+PASS: 144 imported mono PCM clips; authored levels and boundaries preserved.
+PASS: simultaneous pellets coalesce; overlapping sounds retain independent pitches/clips.
+PASS: all 36 cues route correctly and avoid immediate variant repeats (432 events).
+PASS: 1,000 rapid events stay within 24 sources and the summed gain budget.
+PASS: audio variation preserves Unity gameplay random state.
+PASS: invalid and unknown playback inputs are ignored safely.

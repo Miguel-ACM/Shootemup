@@ -1,0 +1,4972 @@
+{
+  "schemaVersion": 1,
+  "bankVersion": "sample-round-1",
+  "sampleRate": 22050,
+  "cues": [
+    {
+      "id": "shot1",
+      "label": "Pulse cannon",
+      "group": "Player weapons",
+      "family": "gun",
+      "gameGain": 0.1,
+      "original": {
+        "file": "audio/shot1/original.wav",
+        "label": "Current sound",
+        "seconds": 0.247,
+        "peak": 0.24554,
+        "sha256": "af006429929b7da86adf2df9239189ab152ef490517b26baaae28b953a7de101"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Dry crack",
+          "description": "A compact sampled rifle transient.",
+          "file": "audio/shot1/a.wav",
+          "recipe": [
+            [
+              "gun",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1.2,
+              0.2,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.14,
+          "peak": 0.58215,
+          "sha256": "905395200fe45409f6326d560556128f0a6c12fd7fb47fdeae5fc3115fa87c2b"
+        },
+        {
+          "id": "b",
+          "label": "Arcade metal",
+          "description": "Old shot body with a short mechanical snap.",
+          "file": "audio/shot1/b.wav",
+          "recipe": [
+            [
+              "oldShot",
+              1,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "metal",
+              1.45,
+              0.55,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.14,
+          "peak": 0.69998,
+          "sha256": "d914ae4ad062ad1f744c04017531782056ded3c00bbd388c6d7c6c3426bc302b"
+        },
+        {
+          "id": "c",
+          "label": "Heavy punch",
+          "description": "Cannon pressure and a darker gun crack.",
+          "file": "audio/shot1/c.wav",
+          "recipe": [
+            [
+              "cannon",
+              1.1,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              0.85,
+              0.6,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.14,
+          "peak": 0.4628,
+          "sha256": "1c292e303112825a611fdbcfeea168372abdb9f40b8715fffd86938e56002c67"
+        },
+        {
+          "id": "d",
+          "label": "Energy snap",
+          "description": "Electrical crack above a grounded gun body.",
+          "file": "audio/shot1/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.85,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              1.2,
+              0.55,
+              0.006,
+              false
+            ]
+          ],
+          "seconds": 0.14,
+          "peak": 0.50745,
+          "sha256": "788449dbd8b55c5db9ec37ad46644fc53f987742232928a2be9ca56b06832da6"
+        },
+        {
+          "id": "e",
+          "label": "Soft percussion",
+          "description": "Muted impact and a small shell-like tick.",
+          "file": "audio/shot1/e.wav",
+          "recipe": [
+            [
+              "hit",
+              1.3,
+              1,
+              0,
+              false
+            ],
+            [
+              "arrow",
+              1.8,
+              0.5,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.14,
+          "peak": 0.55545,
+          "sha256": "f6ceab476105e1aa78223b38c8e6aa9223e425b2b6e8a37941a3883a008ebcbd"
+        }
+      ]
+    },
+    {
+      "id": "shotElectric",
+      "label": "Electricity",
+      "group": "Player weapons",
+      "family": "electric",
+      "gameGain": 0.1,
+      "original": {
+        "file": "audio/shotElectric/original.wav",
+        "label": "Current sound",
+        "seconds": 0.247,
+        "peak": 0.24554,
+        "sha256": "af006429929b7da86adf2df9239189ab152ef490517b26baaae28b953a7de101"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Dry arc",
+          "description": "A short isolated electrical discharge.",
+          "file": "audio/shotElectric/a.wav",
+          "recipe": [
+            [
+              "electric",
+              1,
+              1,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.16,
+          "peak": 0.30518,
+          "sha256": "7ca6cd8ecc24dffd9f2548378d64bde9da7ff73e96854869ad25a5b6ec13128f"
+        },
+        {
+          "id": "b",
+          "label": "Plasma contact",
+          "description": "Electrical crack and compact energy impact.",
+          "file": "audio/shotElectric/b.wav",
+          "recipe": [
+            [
+              "electric",
+              0.75,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "impact",
+              1.3,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.16,
+          "peak": 0.45688,
+          "sha256": "cfbd676b4c3f0b6fce5807b3e068a884fc2d15a36ffdc3a2a3d15b1fd91b46b2"
+        },
+        {
+          "id": "c",
+          "label": "Metal spark",
+          "description": "A hard contact snap with a muted steel edge.",
+          "file": "audio/shotElectric/c.wav",
+          "recipe": [
+            [
+              "electric",
+              1.3,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "metal",
+              1.5,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.16,
+          "peak": 0.4967,
+          "sha256": "d7a351762180052470b90f343a42f3c8a277da8305f381a1bd2f4c8a6a184f14"
+        },
+        {
+          "id": "d",
+          "label": "Arcane flick",
+          "description": "Airy energy release with a tight zap.",
+          "file": "audio/shotElectric/d.wav",
+          "recipe": [
+            [
+              "arcane",
+              1.4,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "electric",
+              0.9,
+              0.4,
+              0.012,
+              false
+            ]
+          ],
+          "seconds": 0.16,
+          "peak": 0.49176,
+          "sha256": "d05bb54d033fa2afcc41767a63c88b22e1d19883554f5465298c6273c61b1fa7"
+        },
+        {
+          "id": "e",
+          "label": "Low voltage",
+          "description": "A darker grounded electrical punch.",
+          "file": "audio/shotElectric/e.wav",
+          "recipe": [
+            [
+              "electric",
+              0.55,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1,
+              0.45,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.16,
+          "peak": 0.37482,
+          "sha256": "4606f28a8d5fe946e45786f20d809c602eded86a58b21b8e1f709f80d439d511"
+        }
+      ]
+    },
+    {
+      "id": "shotAK45",
+      "label": "AK45 / diagonal fire",
+      "group": "Player weapons",
+      "family": "gun",
+      "gameGain": 0.1,
+      "original": {
+        "file": "audio/shotAK45/original.wav",
+        "label": "Current sound",
+        "seconds": 0.247,
+        "peak": 0.24554,
+        "sha256": "af006429929b7da86adf2df9239189ab152ef490517b26baaae28b953a7de101"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Dry crack",
+          "description": "A compact sampled rifle transient.",
+          "file": "audio/shotAK45/a.wav",
+          "recipe": [
+            [
+              "gun",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1.2,
+              0.2,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.5018,
+          "sha256": "69ecfad3f3bbc7789d200235d9c1acf62ecd84a395c2b148f1fae1183513b3b9"
+        },
+        {
+          "id": "b",
+          "label": "Arcade metal",
+          "description": "Old shot body with a short mechanical snap.",
+          "file": "audio/shotAK45/b.wav",
+          "recipe": [
+            [
+              "oldShot",
+              1,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "metal",
+              1.45,
+              0.55,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.69998,
+          "sha256": "d9fe9ae146e21ce636f6bc3fcfaaa5dd280d1ef1939a342cccc35900b097506e"
+        },
+        {
+          "id": "c",
+          "label": "Heavy punch",
+          "description": "Cannon pressure and a darker gun crack.",
+          "file": "audio/shotAK45/c.wav",
+          "recipe": [
+            [
+              "cannon",
+              1.1,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              0.85,
+              0.6,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.43423,
+          "sha256": "befa0e42d06a50ce41af76f355f8783d6cc8f9ecbf95325392daaea220fba984"
+        },
+        {
+          "id": "d",
+          "label": "Energy snap",
+          "description": "Electrical crack above a grounded gun body.",
+          "file": "audio/shotAK45/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.85,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              1.2,
+              0.55,
+              0.006,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.45474,
+          "sha256": "7a60c7bc63bcd431e4e5ce048ef259449158511a612021a97d212955ffdccea4"
+        },
+        {
+          "id": "e",
+          "label": "Soft percussion",
+          "description": "Muted impact and a small shell-like tick.",
+          "file": "audio/shotAK45/e.wav",
+          "recipe": [
+            [
+              "hit",
+              1.3,
+              1,
+              0,
+              false
+            ],
+            [
+              "arrow",
+              1.8,
+              0.5,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.53592,
+          "sha256": "3ce6c76a277c8b06d4a8d07a2cf49324e3dfe0b2ddaabef004f8155dae9ee408"
+        }
+      ]
+    },
+    {
+      "id": "shotCompanion",
+      "label": "Companion gun",
+      "group": "Player weapons",
+      "family": "gun",
+      "gameGain": 0.065,
+      "original": {
+        "file": "audio/shotCompanion/original.wav",
+        "label": "Current sound",
+        "seconds": 0.247,
+        "peak": 0.24554,
+        "sha256": "af006429929b7da86adf2df9239189ab152ef490517b26baaae28b953a7de101"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Dry crack",
+          "description": "A compact sampled rifle transient.",
+          "file": "audio/shotCompanion/a.wav",
+          "recipe": [
+            [
+              "gun",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1.2,
+              0.2,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.09,
+          "peak": 0.52371,
+          "sha256": "ea2bb5042b4d1605f3f0c1922e03fcbf8d4def78cde6366178624beee20b153d"
+        },
+        {
+          "id": "b",
+          "label": "Arcade metal",
+          "description": "Old shot body with a short mechanical snap.",
+          "file": "audio/shotCompanion/b.wav",
+          "recipe": [
+            [
+              "oldShot",
+              1,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "metal",
+              1.45,
+              0.55,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.09,
+          "peak": 0.69998,
+          "sha256": "5c18df8ee73b243c783bbc6a7259f9ed00c17c321d3a306f0fe456de17ef82c3"
+        },
+        {
+          "id": "c",
+          "label": "Heavy punch",
+          "description": "Cannon pressure and a darker gun crack.",
+          "file": "audio/shotCompanion/c.wav",
+          "recipe": [
+            [
+              "cannon",
+              1.1,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              0.85,
+              0.6,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.09,
+          "peak": 0.43921,
+          "sha256": "541fad14c063a9b8f5de5e3cd2baa0e1814e652f0f826fb9b2fd9a6e442c29d0"
+        },
+        {
+          "id": "d",
+          "label": "Energy snap",
+          "description": "Electrical crack above a grounded gun body.",
+          "file": "audio/shotCompanion/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.85,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              1.2,
+              0.55,
+              0.006,
+              false
+            ]
+          ],
+          "seconds": 0.09,
+          "peak": 0.49899,
+          "sha256": "9d471e0357f03beca39b486823d2bd860e703113a1ce6e27694608292fcdd680"
+        },
+        {
+          "id": "e",
+          "label": "Soft percussion",
+          "description": "Muted impact and a small shell-like tick.",
+          "file": "audio/shotCompanion/e.wav",
+          "recipe": [
+            [
+              "hit",
+              1.3,
+              1,
+              0,
+              false
+            ],
+            [
+              "arrow",
+              1.8,
+              0.5,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.09,
+          "peak": 0.54837,
+          "sha256": "56f42d9819e41625b3e4492f54febd6da91345585658cdee8be5748ff53ffa22"
+        }
+      ]
+    },
+    {
+      "id": "shotNeedle",
+      "label": "Needle cannon",
+      "group": "Player weapons",
+      "family": "gun",
+      "gameGain": 0.1,
+      "original": {
+        "file": "audio/shotNeedle/original.wav",
+        "label": "Current sound",
+        "seconds": 0.247,
+        "peak": 0.24554,
+        "sha256": "af006429929b7da86adf2df9239189ab152ef490517b26baaae28b953a7de101"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Dry crack",
+          "description": "A compact sampled rifle transient.",
+          "file": "audio/shotNeedle/a.wav",
+          "recipe": [
+            [
+              "gun",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1.2,
+              0.2,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.09,
+          "peak": 0.53616,
+          "sha256": "fc6fed2df36c7b5256d0c43c2d4c6aaa7b3396f6a32a3463c95a16e7d1c098c8"
+        },
+        {
+          "id": "b",
+          "label": "Arcade metal",
+          "description": "Old shot body with a short mechanical snap.",
+          "file": "audio/shotNeedle/b.wav",
+          "recipe": [
+            [
+              "oldShot",
+              1,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "metal",
+              1.45,
+              0.55,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.09,
+          "peak": 0.69998,
+          "sha256": "40966774efd0375862c54c3eb43a5724b72d5fdbe4c17e51843da9e642af8973"
+        },
+        {
+          "id": "c",
+          "label": "Heavy punch",
+          "description": "Cannon pressure and a darker gun crack.",
+          "file": "audio/shotNeedle/c.wav",
+          "recipe": [
+            [
+              "cannon",
+              1.1,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              0.85,
+              0.6,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.09,
+          "peak": 0.45682,
+          "sha256": "71acf797d97a49d3ebb274033aeffe937f9d9ebcf10cec465b18822c15c67752"
+        },
+        {
+          "id": "d",
+          "label": "Energy snap",
+          "description": "Electrical crack above a grounded gun body.",
+          "file": "audio/shotNeedle/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.85,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              1.2,
+              0.55,
+              0.006,
+              false
+            ]
+          ],
+          "seconds": 0.09,
+          "peak": 0.48535,
+          "sha256": "67ad9d3e9f60bba55f6b1f89b739e09ed714c20d164046308c26c68d30ea0b4c"
+        },
+        {
+          "id": "e",
+          "label": "Soft percussion",
+          "description": "Muted impact and a small shell-like tick.",
+          "file": "audio/shotNeedle/e.wav",
+          "recipe": [
+            [
+              "hit",
+              1.3,
+              1,
+              0,
+              false
+            ],
+            [
+              "arrow",
+              1.8,
+              0.5,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.09,
+          "peak": 0.55518,
+          "sha256": "bda9c40d7e312f4287e260776ff0d68a47df7a35797470b59897cd05db4290b3"
+        }
+      ]
+    },
+    {
+      "id": "shotRail",
+      "label": "Rail driver",
+      "group": "Player weapons",
+      "family": "rail",
+      "gameGain": 0.13,
+      "original": {
+        "file": "audio/shotRail/original.wav",
+        "label": "Current sound",
+        "seconds": 0.247,
+        "peak": 0.24554,
+        "sha256": "af006429929b7da86adf2df9239189ab152ef490517b26baaae28b953a7de101"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Cannon recoil",
+          "description": "One deep report with a clean front edge.",
+          "file": "audio/shotRail/a.wav",
+          "recipe": [
+            [
+              "cannon",
+              0.95,
+              1,
+              0,
+              false
+            ],
+            [
+              "gun",
+              1.2,
+              0.4,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.3,
+          "peak": 0.48703,
+          "sha256": "957b86eb794ee1a40753786f2038cc14f535c206f5bb0baf15c79e723e90b7ce"
+        },
+        {
+          "id": "b",
+          "label": "Steel driver",
+          "description": "Mechanical strike and dense cannon body.",
+          "file": "audio/shotRail/b.wav",
+          "recipe": [
+            [
+              "metal",
+              0.7,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              1,
+              0.8,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.3,
+          "peak": 0.52585,
+          "sha256": "ed8ed5f628c9474f9ab4f9de51f29e4012b3d71936738a87c32464f88eba83fa"
+        },
+        {
+          "id": "c",
+          "label": "Industrial blast",
+          "description": "Compact destruction and low pressure.",
+          "file": "audio/shotRail/c.wav",
+          "recipe": [
+            [
+              "building",
+              1,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1.35,
+              0.8,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.3,
+          "peak": 0.4942,
+          "sha256": "582a25f1d6281b598c5268cd5239ba16fb77b266dd5ef11a7f9dd8b8d0492b22"
+        },
+        {
+          "id": "d",
+          "label": "Charged rail",
+          "description": "An electrical snap into a weighty shot.",
+          "file": "audio/shotRail/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.7,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              1.1,
+              0.9,
+              0.012,
+              false
+            ]
+          ],
+          "seconds": 0.3,
+          "peak": 0.47519,
+          "sha256": "64a769c350efa3f0f55c280b5371ff0d53dadd942f3c9e5125ca949ef202faeb"
+        },
+        {
+          "id": "e",
+          "label": "Damped thump",
+          "description": "Low, short recoil without a bright crack.",
+          "file": "audio/shotRail/e.wav",
+          "recipe": [
+            [
+              "hit",
+              0.7,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              0.8,
+              0.8,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.3,
+          "peak": 0.54459,
+          "sha256": "88052ee1f0930c00f520e40b833791dc6d9f04d1044229be6d9f67a29a34061f"
+        }
+      ]
+    },
+    {
+      "id": "shotScatter",
+      "label": "Scatter cannon",
+      "group": "Player weapons",
+      "family": "gun",
+      "gameGain": 0.12,
+      "original": {
+        "file": "audio/shotScatter/original.wav",
+        "label": "Current sound",
+        "seconds": 0.247,
+        "peak": 0.24554,
+        "sha256": "af006429929b7da86adf2df9239189ab152ef490517b26baaae28b953a7de101"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Dry crack",
+          "description": "A compact sampled rifle transient.",
+          "file": "audio/shotScatter/a.wav",
+          "recipe": [
+            [
+              "gun",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1.2,
+              0.2,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.18,
+          "peak": 0.56354,
+          "sha256": "e2158fb65339411bf1fa0d2abff99bfd8e2a2643cfb3960621a4f4525e8f45e3"
+        },
+        {
+          "id": "b",
+          "label": "Arcade metal",
+          "description": "Old shot body with a short mechanical snap.",
+          "file": "audio/shotScatter/b.wav",
+          "recipe": [
+            [
+              "oldShot",
+              1,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "metal",
+              1.45,
+              0.55,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.18,
+          "peak": 0.69998,
+          "sha256": "8e64ed4e5fea1e0a598db6908dbf8bc0714df7ac9d9e5ba96dc9b774d18852b3"
+        },
+        {
+          "id": "c",
+          "label": "Heavy punch",
+          "description": "Cannon pressure and a darker gun crack.",
+          "file": "audio/shotScatter/c.wav",
+          "recipe": [
+            [
+              "cannon",
+              1.1,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              0.85,
+              0.6,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.18,
+          "peak": 0.45731,
+          "sha256": "f7b4e834bb944ae9d91ea2c27d6cd6ad2e5a11827de9eed3e47f252b478736da"
+        },
+        {
+          "id": "d",
+          "label": "Energy snap",
+          "description": "Electrical crack above a grounded gun body.",
+          "file": "audio/shotScatter/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.85,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              1.2,
+              0.55,
+              0.006,
+              false
+            ]
+          ],
+          "seconds": 0.18,
+          "peak": 0.5144,
+          "sha256": "1d124b12bc149a622e573852af598323139cf56c2a1ee6e2735a3bf744ad1081"
+        },
+        {
+          "id": "e",
+          "label": "Soft percussion",
+          "description": "Muted impact and a small shell-like tick.",
+          "file": "audio/shotScatter/e.wav",
+          "recipe": [
+            [
+              "hit",
+              1.3,
+              1,
+              0,
+              false
+            ],
+            [
+              "arrow",
+              1.8,
+              0.5,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.18,
+          "peak": 0.55151,
+          "sha256": "15e27e289f15ea24369c2d35c2c9469e71d1c74eca78558e257c75d4b95ea4c8"
+        }
+      ]
+    },
+    {
+      "id": "shotShell",
+      "label": "Burst launcher",
+      "group": "Player weapons",
+      "family": "rail",
+      "gameGain": 0.12,
+      "original": {
+        "file": "audio/shotShell/original.wav",
+        "label": "Current sound",
+        "seconds": 0.247,
+        "peak": 0.24554,
+        "sha256": "af006429929b7da86adf2df9239189ab152ef490517b26baaae28b953a7de101"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Cannon recoil",
+          "description": "One deep report with a clean front edge.",
+          "file": "audio/shotShell/a.wav",
+          "recipe": [
+            [
+              "cannon",
+              0.95,
+              1,
+              0,
+              false
+            ],
+            [
+              "gun",
+              1.2,
+              0.4,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.24,
+          "peak": 0.46225,
+          "sha256": "15afc2d6015cfbd7b0be915c70f85f53a7afc5504650c88cc7b0ab0f05b625d1"
+        },
+        {
+          "id": "b",
+          "label": "Steel driver",
+          "description": "Mechanical strike and dense cannon body.",
+          "file": "audio/shotShell/b.wav",
+          "recipe": [
+            [
+              "metal",
+              0.7,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              1,
+              0.8,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.24,
+          "peak": 0.51495,
+          "sha256": "1849d8ba521fbbc6d43e914b0e0386a30c2c3043fadeff340714942895b0a680"
+        },
+        {
+          "id": "c",
+          "label": "Industrial blast",
+          "description": "Compact destruction and low pressure.",
+          "file": "audio/shotShell/c.wav",
+          "recipe": [
+            [
+              "building",
+              1,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1.35,
+              0.8,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.24,
+          "peak": 0.47443,
+          "sha256": "69d9d1611d971cd69b75be3e1179fff6deff73e5b0ed39feca7efa2232b48c68"
+        },
+        {
+          "id": "d",
+          "label": "Charged rail",
+          "description": "An electrical snap into a weighty shot.",
+          "file": "audio/shotShell/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.7,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              1.1,
+              0.9,
+              0.012,
+              false
+            ]
+          ],
+          "seconds": 0.24,
+          "peak": 0.50055,
+          "sha256": "f2d993b109147be958839ffc79aadfba262080448214029112a82a59ce8e6910"
+        },
+        {
+          "id": "e",
+          "label": "Damped thump",
+          "description": "Low, short recoil without a bright crack.",
+          "file": "audio/shotShell/e.wav",
+          "recipe": [
+            [
+              "hit",
+              0.7,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              0.8,
+              0.8,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.24,
+          "peak": 0.50967,
+          "sha256": "69f4e272e35013636dcb87df8e715fbc55e8b2580bb51261863893d7ffedbc6c"
+        }
+      ]
+    },
+    {
+      "id": "shotDisc",
+      "label": "Disc thrower",
+      "group": "Player weapons",
+      "family": "energy",
+      "gameGain": 0.1,
+      "original": {
+        "file": "audio/shotDisc/original.wav",
+        "label": "Current sound",
+        "seconds": 0.247,
+        "peak": 0.24554,
+        "sha256": "af006429929b7da86adf2df9239189ab152ef490517b26baaae28b953a7de101"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Plasma pulse",
+          "description": "Compact energy impact with physical weight.",
+          "file": "audio/shotDisc/a.wav",
+          "recipe": [
+            [
+              "impact",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.9,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.23,
+          "peak": 0.44745,
+          "sha256": "055bf5017845bf54b7c944e56164c7c8feaeef2c90d9de7616f0efe34ea50767"
+        },
+        {
+          "id": "b",
+          "label": "Air-cut energy",
+          "description": "Air swish with an electrical leading edge.",
+          "file": "audio/shotDisc/b.wav",
+          "recipe": [
+            [
+              "swish",
+              0.85,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "electric",
+              0.8,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.23,
+          "peak": 0.54996,
+          "sha256": "3e73b3e4f3078fca1755a33df4c6e8e02c5c379a8f4b1bed249635047d88320b"
+        },
+        {
+          "id": "c",
+          "label": "Dark pressure",
+          "description": "Hollow air and a low energy body.",
+          "file": "audio/shotDisc/c.wav",
+          "recipe": [
+            [
+              "dark",
+              0.85,
+              1,
+              0,
+              false
+            ],
+            [
+              "impact",
+              0.7,
+              0.45,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.23,
+          "peak": 0.42395,
+          "sha256": "ae5e8264487f9f314ff091238aa7cbae0b9ea17f64dd1cb6c0ceb2fd0cc1682e"
+        },
+        {
+          "id": "d",
+          "label": "Bright discharge",
+          "description": "A defined electric arc and airy release.",
+          "file": "audio/shotDisc/d.wav",
+          "recipe": [
+            [
+              "electric",
+              1.05,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "arcane",
+              1.1,
+              0.8,
+              0.015,
+              false
+            ]
+          ],
+          "seconds": 0.23,
+          "peak": 0.40076,
+          "sha256": "ad07e6c3665ccca1455e1de2ccb05bcb5f1549f466050846795cf11b914d052d"
+        },
+        {
+          "id": "e",
+          "label": "Warm pulse",
+          "description": "Soft energy body with a restrained round edge.",
+          "file": "audio/shotDisc/e.wav",
+          "recipe": [
+            [
+              "arcane",
+              0.7,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.7,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.23,
+          "peak": 0.586,
+          "sha256": "8b577b902f2f725af0f77dc350f7aab0333b094ebb838a4b07e22090b61816bc"
+        }
+      ]
+    },
+    {
+      "id": "shotMissile",
+      "label": "Swarm rack / missile",
+      "group": "Player weapons",
+      "family": "rocket",
+      "gameGain": 0.1,
+      "original": {
+        "file": "audio/shotMissile/original.wav",
+        "label": "Current sound",
+        "seconds": 0.247,
+        "peak": 0.24554,
+        "sha256": "af006429929b7da86adf2df9239189ab152ef490517b26baaae28b953a7de101"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Dry ignition",
+          "description": "Compact fire ignition and a small launch kick.",
+          "file": "audio/shotMissile/a.wav",
+          "recipe": [
+            [
+              "fire",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              1.6,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.3,
+          "peak": 0.60565,
+          "sha256": "ea8dcaee5fd23c3782284f19ca79ed7df99baeff3c1c612019937f6f44d6e349"
+        },
+        {
+          "id": "b",
+          "label": "Pressure jet",
+          "description": "Rushing air and a grounded low launch.",
+          "file": "audio/shotMissile/b.wav",
+          "recipe": [
+            [
+              "swish",
+              0.65,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "dark",
+              1,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.3,
+          "peak": 0.5704,
+          "sha256": "b3c97e1af908c0995ef89d0eb14207846b2774eef32c84f61e612dea09222ab1"
+        },
+        {
+          "id": "c",
+          "label": "Heavy exhaust",
+          "description": "Dark, fiery launch with extra body.",
+          "file": "audio/shotMissile/c.wav",
+          "recipe": [
+            [
+              "fire",
+              0.7,
+              0.85,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1.1,
+              0.5,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.3,
+          "peak": 0.59369,
+          "sha256": "b1eeb7202cf63125d9d0d0126b3175cd0a6693472bd82c2c4622a5531466ecc6"
+        },
+        {
+          "id": "d",
+          "label": "Ion ignition",
+          "description": "Electric ignition into a compact fiery tail.",
+          "file": "audio/shotMissile/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.85,
+              0.55,
+              0,
+              false
+            ],
+            [
+              "fire",
+              1.1,
+              0.8,
+              0.015,
+              false
+            ]
+          ],
+          "seconds": 0.3,
+          "peak": 0.49347,
+          "sha256": "cda18cefcc7aac7c6f2813cfe3589d7ef859026e26d4036252786efd449b26b9"
+        },
+        {
+          "id": "e",
+          "label": "Soft jet",
+          "description": "A damped air burst with a short muted contact.",
+          "file": "audio/shotMissile/e.wav",
+          "recipe": [
+            [
+              "swish",
+              0.9,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.8,
+              0.35,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.3,
+          "peak": 0.63058,
+          "sha256": "9c26c39535b1980511230beae88e2b3469689e58ba93f0ab89e56f09f232ac94"
+        }
+      ]
+    },
+    {
+      "id": "shotFlame",
+      "label": "Flame projector",
+      "group": "Player weapons",
+      "family": "rocket",
+      "gameGain": 0.075,
+      "original": {
+        "file": "audio/shotFlame/original.wav",
+        "label": "Current sound",
+        "seconds": 0.247,
+        "peak": 0.24554,
+        "sha256": "af006429929b7da86adf2df9239189ab152ef490517b26baaae28b953a7de101"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Dry ignition",
+          "description": "Compact fire ignition and a small launch kick.",
+          "file": "audio/shotFlame/a.wav",
+          "recipe": [
+            [
+              "fire",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              1.6,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.53204,
+          "sha256": "211127bab05c65fb988d490dbd39b3c49dde183b3881085457f454dc5a66de87"
+        },
+        {
+          "id": "b",
+          "label": "Pressure jet",
+          "description": "Rushing air and a grounded low launch.",
+          "file": "audio/shotFlame/b.wav",
+          "recipe": [
+            [
+              "swish",
+              0.65,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "dark",
+              1,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.49265,
+          "sha256": "60832d7748c2960cee07421351296b2bab9688cc5b4dab18be622bedb1535708"
+        },
+        {
+          "id": "c",
+          "label": "Heavy exhaust",
+          "description": "Dark, fiery launch with extra body.",
+          "file": "audio/shotFlame/c.wav",
+          "recipe": [
+            [
+              "fire",
+              0.7,
+              0.85,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1.1,
+              0.5,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.54816,
+          "sha256": "45915f30cefc3151dc7eda1f3847b0848cd3e4ddb0511ebe801b1a2ad5b8aa2b"
+        },
+        {
+          "id": "d",
+          "label": "Ion ignition",
+          "description": "Electric ignition into a compact fiery tail.",
+          "file": "audio/shotFlame/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.85,
+              0.55,
+              0,
+              false
+            ],
+            [
+              "fire",
+              1.1,
+              0.8,
+              0.015,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.44,
+          "sha256": "65bb0e7f1ca227b956467777c32962aca65eb965289aa7d208f0632b396ae158"
+        },
+        {
+          "id": "e",
+          "label": "Soft jet",
+          "description": "A damped air burst with a short muted contact.",
+          "file": "audio/shotFlame/e.wav",
+          "recipe": [
+            [
+              "swish",
+              0.9,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.8,
+              0.35,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.60995,
+          "sha256": "e1a3300ee977f3873b8eb7e7653376460fa5623ef7529d39ade2a38821a22d5b"
+        }
+      ]
+    },
+    {
+      "id": "shotBeam",
+      "label": "Beam emitter \u00b7 fire",
+      "group": "Player weapons",
+      "family": "energy",
+      "gameGain": 0.12,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Plasma pulse",
+          "description": "Compact energy impact with physical weight.",
+          "file": "audio/shotBeam/a.wav",
+          "recipe": [
+            [
+              "impact",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.9,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.55,
+          "peak": 0.46585,
+          "sha256": "9b75a3d11f40a77e099153ffa19a9653bf840c3345a77c75484bbaaa33d2f3d1"
+        },
+        {
+          "id": "b",
+          "label": "Air-cut energy",
+          "description": "Air swish with an electrical leading edge.",
+          "file": "audio/shotBeam/b.wav",
+          "recipe": [
+            [
+              "swish",
+              0.85,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "electric",
+              0.8,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.55,
+          "peak": 0.55344,
+          "sha256": "bb7994737f6f3b428d6ab26cf6450d6435711ece35148008b4dbbfa6672aea26"
+        },
+        {
+          "id": "c",
+          "label": "Dark pressure",
+          "description": "Hollow air and a low energy body.",
+          "file": "audio/shotBeam/c.wav",
+          "recipe": [
+            [
+              "dark",
+              0.85,
+              1,
+              0,
+              false
+            ],
+            [
+              "impact",
+              0.7,
+              0.45,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.55,
+          "peak": 0.46664,
+          "sha256": "ba7f6e4007d11794c093d7232a1a2ada3e05eb111848bb9dae4fd9d06bbfa78b"
+        },
+        {
+          "id": "d",
+          "label": "Bright discharge",
+          "description": "A defined electric arc and airy release.",
+          "file": "audio/shotBeam/d.wav",
+          "recipe": [
+            [
+              "electric",
+              1.05,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "arcane",
+              1.1,
+              0.8,
+              0.015,
+              false
+            ]
+          ],
+          "seconds": 0.55,
+          "peak": 0.38959,
+          "sha256": "d2bf9d5bf7d88dc52399024db8771f96467e2d8f9425daf8e2cb604508a64b62"
+        },
+        {
+          "id": "e",
+          "label": "Warm pulse",
+          "description": "Soft energy body with a restrained round edge.",
+          "file": "audio/shotBeam/e.wav",
+          "recipe": [
+            [
+              "arcane",
+              0.7,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.7,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.55,
+          "peak": 0.58206,
+          "sha256": "698ce55021b61c1380dba75889cb9cb63f7c6d6aca81be2d7cf30995feecc131"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "enemySimple",
+      "label": "Standard round",
+      "group": "Enemy projectiles",
+      "family": "gun",
+      "gameGain": 0.045,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Dry crack",
+          "description": "A compact sampled rifle transient.",
+          "file": "audio/enemySimple/a.wav",
+          "recipe": [
+            [
+              "gun",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1.2,
+              0.2,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.50571,
+          "sha256": "763088b518eeaab0ff6e29fb5dbfa1efd5eb150ced20c90ddc8731a189dfe741"
+        },
+        {
+          "id": "b",
+          "label": "Arcade metal",
+          "description": "Old shot body with a short mechanical snap.",
+          "file": "audio/enemySimple/b.wav",
+          "recipe": [
+            [
+              "oldShot",
+              1,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "metal",
+              1.45,
+              0.55,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.69998,
+          "sha256": "6b2551389f77233edafe388b25f2ab49819cc519a899a8d6f006ee9584d0669f"
+        },
+        {
+          "id": "c",
+          "label": "Heavy punch",
+          "description": "Cannon pressure and a darker gun crack.",
+          "file": "audio/enemySimple/c.wav",
+          "recipe": [
+            [
+              "cannon",
+              1.1,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              0.85,
+              0.6,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.43109,
+          "sha256": "84691f6d3ac8a2d57bed1bc169a2fb101c2a49867b6db71f07f43d0241dc1588"
+        },
+        {
+          "id": "d",
+          "label": "Energy snap",
+          "description": "Electrical crack above a grounded gun body.",
+          "file": "audio/enemySimple/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.85,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              1.2,
+              0.55,
+              0.006,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.46707,
+          "sha256": "65af70dacefdb94d8e66d67addd14d2272b1dd9954eeebe18f9539690ec84395"
+        },
+        {
+          "id": "e",
+          "label": "Soft percussion",
+          "description": "Muted impact and a small shell-like tick.",
+          "file": "audio/enemySimple/e.wav",
+          "recipe": [
+            [
+              "hit",
+              1.3,
+              1,
+              0,
+              false
+            ],
+            [
+              "arrow",
+              1.8,
+              0.5,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.12,
+          "peak": 0.54034,
+          "sha256": "2f5934fed7f8f9e9c466fc60912be12871fae1a880863531b1f38e80d5de84f6"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "enemyNeedle",
+      "label": "Needle round",
+      "group": "Enemy projectiles",
+      "family": "gun",
+      "gameGain": 0.04,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Dry crack",
+          "description": "A compact sampled rifle transient.",
+          "file": "audio/enemyNeedle/a.wav",
+          "recipe": [
+            [
+              "gun",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1.2,
+              0.2,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.085,
+          "peak": 0.51617,
+          "sha256": "dc897bd8bc2d8b31afc7d4728c7458d2b3de9c907e3d28c706ab4b4333235949"
+        },
+        {
+          "id": "b",
+          "label": "Arcade metal",
+          "description": "Old shot body with a short mechanical snap.",
+          "file": "audio/enemyNeedle/b.wav",
+          "recipe": [
+            [
+              "oldShot",
+              1,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "metal",
+              1.45,
+              0.55,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.085,
+          "peak": 0.69998,
+          "sha256": "af21dfaf49b59fcc33d60ec027feb0749ac471dc7d2eac0a48028327263ab3a6"
+        },
+        {
+          "id": "c",
+          "label": "Heavy punch",
+          "description": "Cannon pressure and a darker gun crack.",
+          "file": "audio/enemyNeedle/c.wav",
+          "recipe": [
+            [
+              "cannon",
+              1.1,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              0.85,
+              0.6,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.085,
+          "peak": 0.43765,
+          "sha256": "3ad83b4de604a176ee17956553800ad4036ea40a137f5769a7154f74c7a9110d"
+        },
+        {
+          "id": "d",
+          "label": "Energy snap",
+          "description": "Electrical crack above a grounded gun body.",
+          "file": "audio/enemyNeedle/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.85,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "gun",
+              1.2,
+              0.55,
+              0.006,
+              false
+            ]
+          ],
+          "seconds": 0.085,
+          "peak": 0.48581,
+          "sha256": "65ed9dd02d3734bc52e988649dab4db491d94ff40362bb80f3b0acdcdb15d9ad"
+        },
+        {
+          "id": "e",
+          "label": "Soft percussion",
+          "description": "Muted impact and a small shell-like tick.",
+          "file": "audio/enemyNeedle/e.wav",
+          "recipe": [
+            [
+              "hit",
+              1.3,
+              1,
+              0,
+              false
+            ],
+            [
+              "arrow",
+              1.8,
+              0.5,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.085,
+          "peak": 0.54453,
+          "sha256": "a5eb9d00d3a4f9cd9a0e6bdb8ce98127cf24db59492249e1d5f40c4ef65916e9"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "enemyPlasma",
+      "label": "Plasma orb",
+      "group": "Enemy projectiles",
+      "family": "energy",
+      "gameGain": 0.055,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Plasma pulse",
+          "description": "Compact energy impact with physical weight.",
+          "file": "audio/enemyPlasma/a.wav",
+          "recipe": [
+            [
+              "impact",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.9,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.26,
+          "peak": 0.42999,
+          "sha256": "9f4194543cad0056a21efc12ebfa390ac1e68a55f53c6dfb80951f7da3c275e0"
+        },
+        {
+          "id": "b",
+          "label": "Air-cut energy",
+          "description": "Air swish with an electrical leading edge.",
+          "file": "audio/enemyPlasma/b.wav",
+          "recipe": [
+            [
+              "swish",
+              0.85,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "electric",
+              0.8,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.26,
+          "peak": 0.55045,
+          "sha256": "ac1b03511fc1df3ddf431c77641170e847f5c02724368d611f6fdbd4d57bdd5e"
+        },
+        {
+          "id": "c",
+          "label": "Dark pressure",
+          "description": "Hollow air and a low energy body.",
+          "file": "audio/enemyPlasma/c.wav",
+          "recipe": [
+            [
+              "dark",
+              0.85,
+              1,
+              0,
+              false
+            ],
+            [
+              "impact",
+              0.7,
+              0.45,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.26,
+          "peak": 0.44232,
+          "sha256": "a75f1df57730932b9d4d07e6189ba1af5738cbebff02159a43fa60e3c3fc0351"
+        },
+        {
+          "id": "d",
+          "label": "Bright discharge",
+          "description": "A defined electric arc and airy release.",
+          "file": "audio/enemyPlasma/d.wav",
+          "recipe": [
+            [
+              "electric",
+              1.05,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "arcane",
+              1.1,
+              0.8,
+              0.015,
+              false
+            ]
+          ],
+          "seconds": 0.26,
+          "peak": 0.46051,
+          "sha256": "7cbb6dda9f94738a2d035bdabb9aa010d8fe63aaacf586e65428867fa4350bb8"
+        },
+        {
+          "id": "e",
+          "label": "Warm pulse",
+          "description": "Soft energy body with a restrained round edge.",
+          "file": "audio/enemyPlasma/e.wav",
+          "recipe": [
+            [
+              "arcane",
+              0.7,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.7,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.26,
+          "peak": 0.57294,
+          "sha256": "32c15a99bf21b4dee68dc90a8801e67de6f69674b50966625243de19979a8f6a"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "enemyMissile",
+      "label": "Guided missile",
+      "group": "Enemy projectiles",
+      "family": "rocket",
+      "gameGain": 0.055,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Dry ignition",
+          "description": "Compact fire ignition and a small launch kick.",
+          "file": "audio/enemyMissile/a.wav",
+          "recipe": [
+            [
+              "fire",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              1.6,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.32,
+          "peak": 0.60968,
+          "sha256": "0338c3086866104dd1ca55c31c12a839b5968cdd9dde98166e10e865a213232c"
+        },
+        {
+          "id": "b",
+          "label": "Pressure jet",
+          "description": "Rushing air and a grounded low launch.",
+          "file": "audio/enemyMissile/b.wav",
+          "recipe": [
+            [
+              "swish",
+              0.65,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "dark",
+              1,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.32,
+          "peak": 0.55789,
+          "sha256": "f2497c8e137f5f39b756ab4e49a2c4f92749b0bd847bd51a8e36035eb032665f"
+        },
+        {
+          "id": "c",
+          "label": "Heavy exhaust",
+          "description": "Dark, fiery launch with extra body.",
+          "file": "audio/enemyMissile/c.wav",
+          "recipe": [
+            [
+              "fire",
+              0.7,
+              0.85,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1.1,
+              0.5,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.32,
+          "peak": 0.57721,
+          "sha256": "d8dceb8bfd957a7215bcdef28469fa98e445d59f8155549c180aef180d769104"
+        },
+        {
+          "id": "d",
+          "label": "Ion ignition",
+          "description": "Electric ignition into a compact fiery tail.",
+          "file": "audio/enemyMissile/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.85,
+              0.55,
+              0,
+              false
+            ],
+            [
+              "fire",
+              1.1,
+              0.8,
+              0.015,
+              false
+            ]
+          ],
+          "seconds": 0.32,
+          "peak": 0.49039,
+          "sha256": "263eb469db20961a7c58e6669b520b68936c4760440034189bc2fd5d5d38ca6e"
+        },
+        {
+          "id": "e",
+          "label": "Soft jet",
+          "description": "A damped air burst with a short muted contact.",
+          "file": "audio/enemyMissile/e.wav",
+          "recipe": [
+            [
+              "swish",
+              0.9,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.8,
+              0.35,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.32,
+          "peak": 0.6286,
+          "sha256": "b5c2c0aad38d1f6225c6bb1df9420f9535bb95acdc8105bad967eee837263fc0"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "enemyBurst",
+      "label": "Burst shell \u00b7 launch",
+      "group": "Enemy projectiles",
+      "family": "rail",
+      "gameGain": 0.05,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Cannon recoil",
+          "description": "One deep report with a clean front edge.",
+          "file": "audio/enemyBurst/a.wav",
+          "recipe": [
+            [
+              "cannon",
+              0.95,
+              1,
+              0,
+              false
+            ],
+            [
+              "gun",
+              1.2,
+              0.4,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.47339,
+          "sha256": "605835c980066cf99b853e8317ec6ce897eb0b55e3b31f89ee556fc12830a0a5"
+        },
+        {
+          "id": "b",
+          "label": "Steel driver",
+          "description": "Mechanical strike and dense cannon body.",
+          "file": "audio/enemyBurst/b.wav",
+          "recipe": [
+            [
+              "metal",
+              0.7,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              1,
+              0.8,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.51407,
+          "sha256": "86a35e53430116ecbc3776122977f1a4c102c0b02f07d6de5ee680b156fb67a9"
+        },
+        {
+          "id": "c",
+          "label": "Industrial blast",
+          "description": "Compact destruction and low pressure.",
+          "file": "audio/enemyBurst/c.wav",
+          "recipe": [
+            [
+              "building",
+              1,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1.35,
+              0.8,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.46329,
+          "sha256": "cf6abc0428bdabe3aed52c59ab145def637272b8a0087ff7ee878e9593191d86"
+        },
+        {
+          "id": "d",
+          "label": "Charged rail",
+          "description": "An electrical snap into a weighty shot.",
+          "file": "audio/enemyBurst/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.7,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              1.1,
+              0.9,
+              0.012,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.51663,
+          "sha256": "623bd3ba41dc39b1668b79f3d455d87a58142a9d3c6ca4ae246c155354cc6de0"
+        },
+        {
+          "id": "e",
+          "label": "Damped thump",
+          "description": "Low, short recoil without a bright crack.",
+          "file": "audio/enemyBurst/e.wav",
+          "recipe": [
+            [
+              "hit",
+              0.7,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              0.8,
+              0.8,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.51407,
+          "sha256": "8038ff807f42e3f48ae9674f0200e9faf2183f3b917a87852b460f5ba1a550f2"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "enemyDisc",
+      "label": "Returning disc",
+      "group": "Enemy projectiles",
+      "family": "energy",
+      "gameGain": 0.045,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Plasma pulse",
+          "description": "Compact energy impact with physical weight.",
+          "file": "audio/enemyDisc/a.wav",
+          "recipe": [
+            [
+              "impact",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.9,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.4469,
+          "sha256": "87742cedcf8594bb364e2db95f1094df6d5035a2e3c9a695f9e735f1b8aad7ab"
+        },
+        {
+          "id": "b",
+          "label": "Air-cut energy",
+          "description": "Air swish with an electrical leading edge.",
+          "file": "audio/enemyDisc/b.wav",
+          "recipe": [
+            [
+              "swish",
+              0.85,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "electric",
+              0.8,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.54892,
+          "sha256": "12d9fa31db829a7d0bf9c83ee060725672dc7a8d45a0e65a1f5a3b2d94a22dc8"
+        },
+        {
+          "id": "c",
+          "label": "Dark pressure",
+          "description": "Hollow air and a low energy body.",
+          "file": "audio/enemyDisc/c.wav",
+          "recipe": [
+            [
+              "dark",
+              0.85,
+              1,
+              0,
+              false
+            ],
+            [
+              "impact",
+              0.7,
+              0.45,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.4249,
+          "sha256": "9f3e38ab965b9b7043afbe74b37aabb8d5b7a24c92e04e7e5b95adcc465044bc"
+        },
+        {
+          "id": "d",
+          "label": "Bright discharge",
+          "description": "A defined electric arc and airy release.",
+          "file": "audio/enemyDisc/d.wav",
+          "recipe": [
+            [
+              "electric",
+              1.05,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "arcane",
+              1.1,
+              0.8,
+              0.015,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.45425,
+          "sha256": "46a4ed103275edf11a857781754b9ee6f5bc8c6b5104b7acb409e8c60fbdb0ed"
+        },
+        {
+          "id": "e",
+          "label": "Warm pulse",
+          "description": "Soft energy body with a restrained round edge.",
+          "file": "audio/enemyDisc/e.wav",
+          "recipe": [
+            [
+              "arcane",
+              0.7,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.7,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.58353,
+          "sha256": "472f369df2a001b51db23bbb0ff5587b5ca92d567294fa8b0e453979f5f221f2"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "enemyRicochet",
+      "label": "Ricochet bolt",
+      "group": "Enemy projectiles",
+      "family": "metal",
+      "gameGain": 0.045,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Steel contact",
+          "description": "A short, dry metal impact.",
+          "file": "audio/enemyRicochet/a.wav",
+          "recipe": [
+            [
+              "metal",
+              1.2,
+              1,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.14,
+          "peak": 0.69998,
+          "sha256": "9223581b7decdd9a8eebee493b3730a3690bd027e835eba8ea3a73918cebfdc2"
+        },
+        {
+          "id": "b",
+          "label": "Armor thud",
+          "description": "Blunt contact with a little steel bite.",
+          "file": "audio/enemyRicochet/b.wav",
+          "recipe": [
+            [
+              "hit",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "metal",
+              0.8,
+              0.4,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.14,
+          "peak": 0.60709,
+          "sha256": "8b9d893d7f5ce4f4412a682ded794c8eafbdaedfae859e6fbf1ef0203363107a"
+        },
+        {
+          "id": "c",
+          "label": "Heavy plate",
+          "description": "Dense plate strike with a dark body.",
+          "file": "audio/enemyRicochet/c.wav",
+          "recipe": [
+            [
+              "building",
+              1.3,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "metal",
+              0.7,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.14,
+          "peak": 0.68732,
+          "sha256": "bbfe50de14f92bde3cdd1e942ebf71d61965fa839c0f06b71a210bd0c44fb0b3"
+        },
+        {
+          "id": "d",
+          "label": "Hot spark",
+          "description": "A tiny electrical crack over a sharp impact.",
+          "file": "audio/enemyRicochet/d.wav",
+          "recipe": [
+            [
+              "electric",
+              1.2,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "arrow",
+              1.3,
+              0.85,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.14,
+          "peak": 0.47894,
+          "sha256": "5e6ad2dcee5bc20f9382c6b5a5611b67fb53f19507516f63a778b1ce8efbe07f"
+        },
+        {
+          "id": "e",
+          "label": "Muted tick",
+          "description": "A small tactile hit that sits behind shooting.",
+          "file": "audio/enemyRicochet/e.wav",
+          "recipe": [
+            [
+              "arrow",
+              1.1,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1.5,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.14,
+          "peak": 0.54309,
+          "sha256": "d38c50dbda1b8bcbc540279eb289f447d039c225aaf4bd5c2b80f9f3fc7f7eca"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "enemyHelix",
+      "label": "Helix round",
+      "group": "Enemy projectiles",
+      "family": "electric",
+      "gameGain": 0.045,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Dry arc",
+          "description": "A short isolated electrical discharge.",
+          "file": "audio/enemyHelix/a.wav",
+          "recipe": [
+            [
+              "electric",
+              1,
+              1,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.18,
+          "peak": 0.30447,
+          "sha256": "00939796468133fa67cc20292ed8962b24dc76d7db8589676f402438acedf31e"
+        },
+        {
+          "id": "b",
+          "label": "Plasma contact",
+          "description": "Electrical crack and compact energy impact.",
+          "file": "audio/enemyHelix/b.wav",
+          "recipe": [
+            [
+              "electric",
+              0.75,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "impact",
+              1.3,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.18,
+          "peak": 0.45947,
+          "sha256": "6cc01640ee6c7693a4b51a7ebfee9e6b10c1dbd08a65b43dfe37d653e0cae787"
+        },
+        {
+          "id": "c",
+          "label": "Metal spark",
+          "description": "A hard contact snap with a muted steel edge.",
+          "file": "audio/enemyHelix/c.wav",
+          "recipe": [
+            [
+              "electric",
+              1.3,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "metal",
+              1.5,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.18,
+          "peak": 0.51767,
+          "sha256": "42c4f3637269ae68a9266697fa1c07ec92f46c27ea4233491e3be8deaa9a491d"
+        },
+        {
+          "id": "d",
+          "label": "Arcane flick",
+          "description": "Airy energy release with a tight zap.",
+          "file": "audio/enemyHelix/d.wav",
+          "recipe": [
+            [
+              "arcane",
+              1.4,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "electric",
+              0.9,
+              0.4,
+              0.012,
+              false
+            ]
+          ],
+          "seconds": 0.18,
+          "peak": 0.4498,
+          "sha256": "dddaae5bc3836d9ade867d4c2381050555c7486f71ad4eb4d0f9f422ea07d21d"
+        },
+        {
+          "id": "e",
+          "label": "Low voltage",
+          "description": "A darker grounded electrical punch.",
+          "file": "audio/enemyHelix/e.wav",
+          "recipe": [
+            [
+              "electric",
+              0.55,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1,
+              0.45,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.18,
+          "peak": 0.37772,
+          "sha256": "e723727be10d6da5070fcf7c86f0f20cb494895be7a458d456e0e3dd508bbf49"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "enemySuspended",
+      "label": "Suspended round",
+      "group": "Enemy projectiles",
+      "family": "energy",
+      "gameGain": 0.05,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Plasma pulse",
+          "description": "Compact energy impact with physical weight.",
+          "file": "audio/enemySuspended/a.wav",
+          "recipe": [
+            [
+              "impact",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.9,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.24,
+          "peak": 0.39978,
+          "sha256": "9eb5f0ab2f5369692b02196cca32635f4c2fde1158864b69b1b5738c966ea03c"
+        },
+        {
+          "id": "b",
+          "label": "Air-cut energy",
+          "description": "Air swish with an electrical leading edge.",
+          "file": "audio/enemySuspended/b.wav",
+          "recipe": [
+            [
+              "swish",
+              0.85,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "electric",
+              0.8,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.24,
+          "peak": 0.53293,
+          "sha256": "1ca18025a6a9e12cac1e61ff56de2a4da1f96b42a9923574821b5b43deec128e"
+        },
+        {
+          "id": "c",
+          "label": "Dark pressure",
+          "description": "Hollow air and a low energy body.",
+          "file": "audio/enemySuspended/c.wav",
+          "recipe": [
+            [
+              "dark",
+              0.85,
+              1,
+              0,
+              false
+            ],
+            [
+              "impact",
+              0.7,
+              0.45,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.24,
+          "peak": 0.43115,
+          "sha256": "6e451f9771573170ed28a24441342cd8cc4782fbe9b6049cf54bda1d2f969ce1"
+        },
+        {
+          "id": "d",
+          "label": "Bright discharge",
+          "description": "A defined electric arc and airy release.",
+          "file": "audio/enemySuspended/d.wav",
+          "recipe": [
+            [
+              "electric",
+              1.05,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "arcane",
+              1.1,
+              0.8,
+              0.015,
+              false
+            ]
+          ],
+          "seconds": 0.24,
+          "peak": 0.41467,
+          "sha256": "89b79a0d7c233cdb2f89fc21a105faf2f4a796aa941d805069d7c2ff9f2d87ef"
+        },
+        {
+          "id": "e",
+          "label": "Warm pulse",
+          "description": "Soft energy body with a restrained round edge.",
+          "file": "audio/enemySuspended/e.wav",
+          "recipe": [
+            [
+              "arcane",
+              0.7,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.7,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.24,
+          "peak": 0.5224,
+          "sha256": "eb549538f802f6ddf615bd258b2726b1f8f2067c5a0b34da93b1fa6367e40bae"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "enemyScatter",
+      "label": "Scatter carrier",
+      "group": "Enemy projectiles",
+      "family": "rail",
+      "gameGain": 0.05,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Cannon recoil",
+          "description": "One deep report with a clean front edge.",
+          "file": "audio/enemyScatter/a.wav",
+          "recipe": [
+            [
+              "cannon",
+              0.95,
+              1,
+              0,
+              false
+            ],
+            [
+              "gun",
+              1.2,
+              0.4,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.16,
+          "peak": 0.47324,
+          "sha256": "c5eb83ca18e40fa764c13507d7acaf7c8bc8a842ff05ad1095461b6eae260b29"
+        },
+        {
+          "id": "b",
+          "label": "Steel driver",
+          "description": "Mechanical strike and dense cannon body.",
+          "file": "audio/enemyScatter/b.wav",
+          "recipe": [
+            [
+              "metal",
+              0.7,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              1,
+              0.8,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.16,
+          "peak": 0.51154,
+          "sha256": "d5ab30ae0164d8caf4f24d91754d499df6573bf36c84b1de831dccdce7096907"
+        },
+        {
+          "id": "c",
+          "label": "Industrial blast",
+          "description": "Compact destruction and low pressure.",
+          "file": "audio/enemyScatter/c.wav",
+          "recipe": [
+            [
+              "building",
+              1,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1.35,
+              0.8,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.16,
+          "peak": 0.45413,
+          "sha256": "fb4946cc331357637980d59d54b8207d55305354172263f7c16a5cde455d129d"
+        },
+        {
+          "id": "d",
+          "label": "Charged rail",
+          "description": "An electrical snap into a weighty shot.",
+          "file": "audio/enemyScatter/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.7,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              1.1,
+              0.9,
+              0.012,
+              false
+            ]
+          ],
+          "seconds": 0.16,
+          "peak": 0.46765,
+          "sha256": "1a3a3e219dc1cb887772f02dc4d213f7f248e78338984cec0b5a073ede75dbd8"
+        },
+        {
+          "id": "e",
+          "label": "Damped thump",
+          "description": "Low, short recoil without a bright crack.",
+          "file": "audio/enemyScatter/e.wav",
+          "recipe": [
+            [
+              "hit",
+              0.7,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "cannon",
+              0.8,
+              0.8,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.16,
+          "peak": 0.51569,
+          "sha256": "957a8a31ff69a16441d00a2fd6afd94ebe46481d42e4efe1ba87bc0e24e4e1e5"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "enemyMine",
+      "label": "Proximity mine \u00b7 deploy",
+      "group": "Enemy projectiles",
+      "family": "metal",
+      "gameGain": 0.05,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Steel contact",
+          "description": "A short, dry metal impact.",
+          "file": "audio/enemyMine/a.wav",
+          "recipe": [
+            [
+              "metal",
+              1.2,
+              1,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.69998,
+          "sha256": "94cd3e8aa4cbaff8faa77a126be0c492475d9880a36aa7a85a1a2869fd8c6d57"
+        },
+        {
+          "id": "b",
+          "label": "Armor thud",
+          "description": "Blunt contact with a little steel bite.",
+          "file": "audio/enemyMine/b.wav",
+          "recipe": [
+            [
+              "hit",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "metal",
+              0.8,
+              0.4,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.60214,
+          "sha256": "bb63091e9dcda1b791347c77bdd7b782bebf09427c840d5aa709f6f5e7ed4df4"
+        },
+        {
+          "id": "c",
+          "label": "Heavy plate",
+          "description": "Dense plate strike with a dark body.",
+          "file": "audio/enemyMine/c.wav",
+          "recipe": [
+            [
+              "building",
+              1.3,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "metal",
+              0.7,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.66544,
+          "sha256": "edac39f3742c64e5fc3658414d8f4e614a80be2c540b9db69bc490dfeb7289dd"
+        },
+        {
+          "id": "d",
+          "label": "Hot spark",
+          "description": "A tiny electrical crack over a sharp impact.",
+          "file": "audio/enemyMine/d.wav",
+          "recipe": [
+            [
+              "electric",
+              1.2,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "arrow",
+              1.3,
+              0.85,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.48102,
+          "sha256": "f2442692c7eba4fa77e98acaa57f7d2f56170826562ff2d2c76be59345047c3a"
+        },
+        {
+          "id": "e",
+          "label": "Muted tick",
+          "description": "A small tactile hit that sits behind shooting.",
+          "file": "audio/enemyMine/e.wav",
+          "recipe": [
+            [
+              "arrow",
+              1.1,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1.5,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.2,
+          "peak": 0.54105,
+          "sha256": "e780de7a7ee511aa2ad874ef52cd15f90e852025f474cb8f9dcf75150522f708"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "enemyWave",
+      "label": "Expanding wave",
+      "group": "Enemy projectiles",
+      "family": "energy",
+      "gameGain": 0.055,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Plasma pulse",
+          "description": "Compact energy impact with physical weight.",
+          "file": "audio/enemyWave/a.wav",
+          "recipe": [
+            [
+              "impact",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.9,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.36,
+          "peak": 0.4476,
+          "sha256": "336234f7d7f5694ee4f2ad0b1420afe8abac5ebb00a79365b059632691064b06"
+        },
+        {
+          "id": "b",
+          "label": "Air-cut energy",
+          "description": "Air swish with an electrical leading edge.",
+          "file": "audio/enemyWave/b.wav",
+          "recipe": [
+            [
+              "swish",
+              0.85,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "electric",
+              0.8,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.36,
+          "peak": 0.55206,
+          "sha256": "1a81ab99e0b7f7385c66792bf270b3f965fdb61f1a5d7c946d6cdc4555ca28cf"
+        },
+        {
+          "id": "c",
+          "label": "Dark pressure",
+          "description": "Hollow air and a low energy body.",
+          "file": "audio/enemyWave/c.wav",
+          "recipe": [
+            [
+              "dark",
+              0.85,
+              1,
+              0,
+              false
+            ],
+            [
+              "impact",
+              0.7,
+              0.45,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.36,
+          "peak": 0.42282,
+          "sha256": "9087a9e035f211029bf763720a7342d7cb877d5ddc992158bd12d06e5e2b008d"
+        },
+        {
+          "id": "d",
+          "label": "Bright discharge",
+          "description": "A defined electric arc and airy release.",
+          "file": "audio/enemyWave/d.wav",
+          "recipe": [
+            [
+              "electric",
+              1.05,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "arcane",
+              1.1,
+              0.8,
+              0.015,
+              false
+            ]
+          ],
+          "seconds": 0.36,
+          "peak": 0.45844,
+          "sha256": "189ef083a6b2eb9566624c79a0f2ef7156fc551654dc80cbe47ad878e410e655"
+        },
+        {
+          "id": "e",
+          "label": "Warm pulse",
+          "description": "Soft energy body with a restrained round edge.",
+          "file": "audio/enemyWave/e.wav",
+          "recipe": [
+            [
+              "arcane",
+              0.7,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.7,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.36,
+          "peak": 0.5957,
+          "sha256": "b71c0aba787b6c2611b2bcfb1c8c231e25a8ec3245e467242be62c3b71823614"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "beamCharge",
+      "label": "Beam \u00b7 charge warning",
+      "group": "Enemy projectiles",
+      "family": "charge",
+      "gameGain": 0.05,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Air intake",
+          "description": "A single rising reversed-air gesture.",
+          "file": "audio/beamCharge/a.wav",
+          "recipe": [
+            [
+              "swish",
+              0.7,
+              1,
+              0,
+              true
+            ]
+          ],
+          "seconds": 0.4,
+          "peak": 0.51904,
+          "sha256": "170bff5f557b2dfce9ec9977063572d23ec3e6ea1a1b9cf04e2bb33b648c5c2e"
+        },
+        {
+          "id": "b",
+          "label": "Capacitor",
+          "description": "A restrained reversed electrical swell.",
+          "file": "audio/beamCharge/b.wav",
+          "recipe": [
+            [
+              "arcane",
+              0.7,
+              0.8,
+              0,
+              true
+            ],
+            [
+              "electric",
+              0.6,
+              0.45,
+              0.18,
+              false
+            ]
+          ],
+          "seconds": 0.4,
+          "peak": 0.48215,
+          "sha256": "c9b20077926713735def203e09fe57001b6e8b75a725d2b6ca75251aca38c9dc"
+        },
+        {
+          "id": "c",
+          "label": "Heavy charge",
+          "description": "Dark pressure drawing inward.",
+          "file": "audio/beamCharge/c.wav",
+          "recipe": [
+            [
+              "dark",
+              0.8,
+              1,
+              0,
+              true
+            ],
+            [
+              "hit",
+              0.7,
+              0.2,
+              0.25,
+              false
+            ]
+          ],
+          "seconds": 0.4,
+          "peak": 0.44778,
+          "sha256": "9210be6e93e0a3d5785a21fdd31b3ae7e47580169a08fb435a8bb96f8824412c"
+        },
+        {
+          "id": "d",
+          "label": "Ion charge",
+          "description": "An airy reversed energy gesture.",
+          "file": "audio/beamCharge/d.wav",
+          "recipe": [
+            [
+              "impact",
+              0.8,
+              0.8,
+              0,
+              true
+            ],
+            [
+              "arcane",
+              1.1,
+              0.5,
+              0,
+              true
+            ]
+          ],
+          "seconds": 0.4,
+          "peak": 0.47577,
+          "sha256": "e3d66c2ed019957a5f82845d015b27a95456e69c6fe55bf9b9cf26097992e5c6"
+        },
+        {
+          "id": "e",
+          "label": "Soft intake",
+          "description": "A darker, quieter-feeling air movement.",
+          "file": "audio/beamCharge/e.wav",
+          "recipe": [
+            [
+              "swish",
+              0.55,
+              0.8,
+              0,
+              true
+            ],
+            [
+              "dark",
+              1,
+              0.5,
+              0,
+              true
+            ]
+          ],
+          "seconds": 0.4,
+          "peak": 0.64655,
+          "sha256": "6f9982c219ca0acda8ed863e184508f0614f36fa9e50f50cd8a52695e08ea493"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "beamFire",
+      "label": "Enemy beam \u00b7 fire",
+      "group": "Enemy projectiles",
+      "family": "energy",
+      "gameGain": 0.065,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Plasma pulse",
+          "description": "Compact energy impact with physical weight.",
+          "file": "audio/beamFire/a.wav",
+          "recipe": [
+            [
+              "impact",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.9,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.4,
+          "peak": 0.46667,
+          "sha256": "36854cf73fee59e9c35ead65d5e65f388d055f1576ead2f19da76a02e9f1ba48"
+        },
+        {
+          "id": "b",
+          "label": "Air-cut energy",
+          "description": "Air swish with an electrical leading edge.",
+          "file": "audio/beamFire/b.wav",
+          "recipe": [
+            [
+              "swish",
+              0.85,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "electric",
+              0.8,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.4,
+          "peak": 0.55231,
+          "sha256": "0c4606356722894195e1401d4b438c88850a7e2e692c29fe92b9680832fd2150"
+        },
+        {
+          "id": "c",
+          "label": "Dark pressure",
+          "description": "Hollow air and a low energy body.",
+          "file": "audio/beamFire/c.wav",
+          "recipe": [
+            [
+              "dark",
+              0.85,
+              1,
+              0,
+              false
+            ],
+            [
+              "impact",
+              0.7,
+              0.45,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.4,
+          "peak": 0.42725,
+          "sha256": "c9e0df8687d0a49932246c3b86a601b5cb843b7285b6f6a045de4a0d8f57b29c"
+        },
+        {
+          "id": "d",
+          "label": "Bright discharge",
+          "description": "A defined electric arc and airy release.",
+          "file": "audio/beamFire/d.wav",
+          "recipe": [
+            [
+              "electric",
+              1.05,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "arcane",
+              1.1,
+              0.8,
+              0.015,
+              false
+            ]
+          ],
+          "seconds": 0.4,
+          "peak": 0.43967,
+          "sha256": "35a18263ce9e0315fa10ee0130e9a46541213aee7c1a4518d7ee72360d200d1f"
+        },
+        {
+          "id": "e",
+          "label": "Warm pulse",
+          "description": "Soft energy body with a restrained round edge.",
+          "file": "audio/beamFire/e.wav",
+          "recipe": [
+            [
+              "arcane",
+              0.7,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.7,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.4,
+          "peak": 0.58652,
+          "sha256": "a39b7dbf814bafb70d1dcd0cb5972ea9d2e909a3b26da4b5d6089d675d0ffa7c"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "hit1",
+      "label": "Hull impact",
+      "group": "Hits & feedback",
+      "family": "metal",
+      "gameGain": 0.05,
+      "original": {
+        "file": "audio/hit1/original.wav",
+        "label": "Current sound",
+        "seconds": 0.115,
+        "peak": 0.42163,
+        "sha256": "0531b23a05e017052f4c1e4d6a6bc73eee387e57dd91fde093e5b5bd4af4fb30"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Steel contact",
+          "description": "A short, dry metal impact.",
+          "file": "audio/hit1/a.wav",
+          "recipe": [
+            [
+              "metal",
+              1.2,
+              1,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.075,
+          "peak": 0.57962,
+          "sha256": "5f72fb9c93f743cd32c8dc11220438700bf54bde8e67d3d010bd4a785e498165"
+        },
+        {
+          "id": "b",
+          "label": "Armor thud",
+          "description": "Blunt contact with a little steel bite.",
+          "file": "audio/hit1/b.wav",
+          "recipe": [
+            [
+              "hit",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "metal",
+              0.8,
+              0.4,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.075,
+          "peak": 0.49301,
+          "sha256": "83a8014d1c71d7f55f5d9df681b85223bdc237ccdf5c41d3598611355be69866"
+        },
+        {
+          "id": "c",
+          "label": "Heavy plate",
+          "description": "Dense plate strike with a dark body.",
+          "file": "audio/hit1/c.wav",
+          "recipe": [
+            [
+              "building",
+              1.3,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "metal",
+              0.7,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.075,
+          "peak": 0.5816,
+          "sha256": "947889410fa95433a16ea17a02e79b1328890826bd35e09803b269224a709be9"
+        },
+        {
+          "id": "d",
+          "label": "Hot spark",
+          "description": "A tiny electrical crack over a sharp impact.",
+          "file": "audio/hit1/d.wav",
+          "recipe": [
+            [
+              "electric",
+              1.2,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "arrow",
+              1.3,
+              0.85,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.075,
+          "peak": 0.44446,
+          "sha256": "b287153e5755964eddea824b3f697b3b6b0894a2ecc991716c2cc8ebb1d9834a"
+        },
+        {
+          "id": "e",
+          "label": "Muted tick",
+          "description": "A small tactile hit that sits behind shooting.",
+          "file": "audio/hit1/e.wav",
+          "recipe": [
+            [
+              "arrow",
+              1.1,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1.5,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.075,
+          "peak": 0.45856,
+          "sha256": "4882396b786c39d9d222e0fa18375c0e0e9ad5740e7d701cb44c59b230f322d1"
+        }
+      ]
+    },
+    {
+      "id": "hitElectric",
+      "label": "Electric impact",
+      "group": "Hits & feedback",
+      "family": "electric",
+      "gameGain": 0.045,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Dry arc",
+          "description": "A short isolated electrical discharge.",
+          "file": "audio/hitElectric/a.wav",
+          "recipe": [
+            [
+              "electric",
+              1,
+              1,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.1,
+          "peak": 0.30661,
+          "sha256": "d210605d65506129f2a70a89cd586ae53fdc3f346f49d2c3ba033f2fcd1b388f"
+        },
+        {
+          "id": "b",
+          "label": "Plasma contact",
+          "description": "Electrical crack and compact energy impact.",
+          "file": "audio/hitElectric/b.wav",
+          "recipe": [
+            [
+              "electric",
+              0.75,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "impact",
+              1.3,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.1,
+          "peak": 0.40866,
+          "sha256": "66d33a63d5cf6bd7eab61d420ffe9db4a1b7dd0e65dbf6e64ee520985f388a6b"
+        },
+        {
+          "id": "c",
+          "label": "Metal spark",
+          "description": "A hard contact snap with a muted steel edge.",
+          "file": "audio/hitElectric/c.wav",
+          "recipe": [
+            [
+              "electric",
+              1.3,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "metal",
+              1.5,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.1,
+          "peak": 0.4379,
+          "sha256": "786dcb8dcca0164c6c76efb88ccd9a54a3fde35e6899d7d0832e6cda9e724ebc"
+        },
+        {
+          "id": "d",
+          "label": "Arcane flick",
+          "description": "Airy energy release with a tight zap.",
+          "file": "audio/hitElectric/d.wav",
+          "recipe": [
+            [
+              "arcane",
+              1.4,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "electric",
+              0.9,
+              0.4,
+              0.012,
+              false
+            ]
+          ],
+          "seconds": 0.1,
+          "peak": 0.46014,
+          "sha256": "39a8d0cb0a006a9a678a8c826af6ed7e7a76bffc8076ec623cf88fddd8bbbed5"
+        },
+        {
+          "id": "e",
+          "label": "Low voltage",
+          "description": "A darker grounded electrical punch.",
+          "file": "audio/hitElectric/e.wav",
+          "recipe": [
+            [
+              "electric",
+              0.55,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1,
+              0.45,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.1,
+          "peak": 0.33972,
+          "sha256": "0f5091fe5a452bde50ec0246f478efda6a650cb6a508dfe9fead1359d08bc354"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "ricochetHit",
+      "label": "Wall / rebound ping",
+      "group": "Hits & feedback",
+      "family": "metal",
+      "gameGain": 0.045,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Steel contact",
+          "description": "A short, dry metal impact.",
+          "file": "audio/ricochetHit/a.wav",
+          "recipe": [
+            [
+              "metal",
+              1.2,
+              1,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.11,
+          "peak": 0.69998,
+          "sha256": "0c88e85baf6b6a0b3231af093007c80519b1e5da48f4dab301f1439a636b74ef"
+        },
+        {
+          "id": "b",
+          "label": "Armor thud",
+          "description": "Blunt contact with a little steel bite.",
+          "file": "audio/ricochetHit/b.wav",
+          "recipe": [
+            [
+              "hit",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "metal",
+              0.8,
+              0.4,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.11,
+          "peak": 0.60831,
+          "sha256": "4e1a53c560deac28521c6a2ded0747f9288d74be8b666578d8908626274696d4"
+        },
+        {
+          "id": "c",
+          "label": "Heavy plate",
+          "description": "Dense plate strike with a dark body.",
+          "file": "audio/ricochetHit/c.wav",
+          "recipe": [
+            [
+              "building",
+              1.3,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "metal",
+              0.7,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.11,
+          "peak": 0.64282,
+          "sha256": "96f6046b96b90d527a30231a139eb8747db0f00c84b8da6e47686e3383b94b7b"
+        },
+        {
+          "id": "d",
+          "label": "Hot spark",
+          "description": "A tiny electrical crack over a sharp impact.",
+          "file": "audio/ricochetHit/d.wav",
+          "recipe": [
+            [
+              "electric",
+              1.2,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "arrow",
+              1.3,
+              0.85,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.11,
+          "peak": 0.48013,
+          "sha256": "775031f7b75c4d6649da33bef60c0c6bc8b8953b26b6f16efe5de48a48fd6be2"
+        },
+        {
+          "id": "e",
+          "label": "Muted tick",
+          "description": "A small tactile hit that sits behind shooting.",
+          "file": "audio/ricochetHit/e.wav",
+          "recipe": [
+            [
+              "arrow",
+              1.1,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "hit",
+              1.5,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.11,
+          "peak": 0.54324,
+          "sha256": "80d17cff1bf1f9d7560564a52c2771c8b90177e0cc323ac8afce5a3e86bd322d"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "enemyExplosion1",
+      "label": "Small explosion",
+      "group": "Explosions",
+      "family": "blast",
+      "gameGain": 0.1,
+      "original": {
+        "file": "audio/enemyExplosion1/original.wav",
+        "label": "Current sound",
+        "seconds": 0.2269,
+        "peak": 0.3269,
+        "sha256": "e8be07304af7a46de5fbf2ada1e14ab3379447dda7b29767ebf6774472a57c63"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Compact explosion",
+          "description": "A sampled blast with a short debris tail.",
+          "file": "audio/enemyExplosion1/a.wav",
+          "recipe": [
+            [
+              "boom",
+              1,
+              1,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.42,
+          "peak": 0.52008,
+          "sha256": "81f07bb089a69541695887fa0865085a31a9fa5f8701417b0f628fbc0c6284e7"
+        },
+        {
+          "id": "b",
+          "label": "Cannon rupture",
+          "description": "A hard report opening into pressure.",
+          "file": "audio/enemyExplosion1/b.wav",
+          "recipe": [
+            [
+              "cannon",
+              0.8,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1.2,
+              0.7,
+              0.02,
+              false
+            ]
+          ],
+          "seconds": 0.42,
+          "peak": 0.55286,
+          "sha256": "461884354dd6946e6783b52bbc196596b4fa04f4ef2a24593fbc0de0ccd0e2f0"
+        },
+        {
+          "id": "c",
+          "label": "Industrial wreck",
+          "description": "A hull strike and layered destruction.",
+          "file": "audio/enemyExplosion1/c.wav",
+          "recipe": [
+            [
+              "building",
+              0.85,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "boom",
+              0.8,
+              0.8,
+              0.025,
+              false
+            ],
+            [
+              "metal",
+              0.7,
+              0.25,
+              0.08,
+              false
+            ]
+          ],
+          "seconds": 0.42,
+          "peak": 0.53839,
+          "sha256": "6a40f8f2cdb2462000bc3fe0105286fda0e50ec58ad346d4f8e1bc216d5aa465"
+        },
+        {
+          "id": "d",
+          "label": "Fuel ignition",
+          "description": "Fiery rupture with a clear initial crack.",
+          "file": "audio/enemyExplosion1/d.wav",
+          "recipe": [
+            [
+              "fire",
+              0.6,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1,
+              0.85,
+              0,
+              false
+            ],
+            [
+              "gun",
+              0.7,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.42,
+          "peak": 0.55249,
+          "sha256": "1f0c293e98f2705c2bbb30ccc9c6c7c7b152956478d518e306408eeb51768b20"
+        },
+        {
+          "id": "e",
+          "label": "Dark concussion",
+          "description": "Low, rounded pressure with less sharp debris.",
+          "file": "audio/enemyExplosion1/e.wav",
+          "recipe": [
+            [
+              "boom",
+              0.6,
+              0.85,
+              0,
+              false
+            ],
+            [
+              "dark",
+              0.7,
+              0.4,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.42,
+          "peak": 0.46573,
+          "sha256": "ef3cc742f6fe15d420745f081dda6d7ce18c9e99ad3e8ffac4742026c50464ff"
+        }
+      ]
+    },
+    {
+      "id": "explosionHeavy",
+      "label": "Heavy hull explosion",
+      "group": "Explosions",
+      "family": "blast",
+      "gameGain": 0.14,
+      "original": {
+        "file": "audio/explosionHeavy/original.wav",
+        "label": "Current sound",
+        "seconds": 0.2269,
+        "peak": 0.3269,
+        "sha256": "e8be07304af7a46de5fbf2ada1e14ab3379447dda7b29767ebf6774472a57c63"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Compact explosion",
+          "description": "A sampled blast with a short debris tail.",
+          "file": "audio/explosionHeavy/a.wav",
+          "recipe": [
+            [
+              "boom",
+              1,
+              1,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.85,
+          "peak": 0.53094,
+          "sha256": "828afc31398eafacee7e2d2f05bec698c1795aadad83170e7889bd956d4d3376"
+        },
+        {
+          "id": "b",
+          "label": "Cannon rupture",
+          "description": "A hard report opening into pressure.",
+          "file": "audio/explosionHeavy/b.wav",
+          "recipe": [
+            [
+              "cannon",
+              0.8,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1.2,
+              0.7,
+              0.02,
+              false
+            ]
+          ],
+          "seconds": 0.85,
+          "peak": 0.52673,
+          "sha256": "e5cd6ea2e2641fe5fceda9ba9de9a067b398e6bdcbae2530a468b44042635a6a"
+        },
+        {
+          "id": "c",
+          "label": "Industrial wreck",
+          "description": "A hull strike and layered destruction.",
+          "file": "audio/explosionHeavy/c.wav",
+          "recipe": [
+            [
+              "building",
+              0.85,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "boom",
+              0.8,
+              0.8,
+              0.025,
+              false
+            ],
+            [
+              "metal",
+              0.7,
+              0.25,
+              0.08,
+              false
+            ]
+          ],
+          "seconds": 0.85,
+          "peak": 0.61456,
+          "sha256": "ceb7191920e2fd80147d2263e4bea38b3645d23fc69b5fbe879779fd46e22a12"
+        },
+        {
+          "id": "d",
+          "label": "Fuel ignition",
+          "description": "Fiery rupture with a clear initial crack.",
+          "file": "audio/explosionHeavy/d.wav",
+          "recipe": [
+            [
+              "fire",
+              0.6,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1,
+              0.85,
+              0,
+              false
+            ],
+            [
+              "gun",
+              0.7,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.85,
+          "peak": 0.57309,
+          "sha256": "77aba902ffc3fe9097abc969452674a33b294fb8ac0bb1741ffa6bc66eb8f0c1"
+        },
+        {
+          "id": "e",
+          "label": "Dark concussion",
+          "description": "Low, rounded pressure with less sharp debris.",
+          "file": "audio/explosionHeavy/e.wav",
+          "recipe": [
+            [
+              "boom",
+              0.6,
+              0.85,
+              0,
+              false
+            ],
+            [
+              "dark",
+              0.7,
+              0.4,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.85,
+          "peak": 0.50693,
+          "sha256": "02a90225e0a6b10817694805b12dc22957408260f2c89fc17323ad94f897ff2d"
+        }
+      ]
+    },
+    {
+      "id": "shellBurst",
+      "label": "Shell / mine detonation",
+      "group": "Explosions",
+      "family": "blast",
+      "gameGain": 0.08,
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Compact explosion",
+          "description": "A sampled blast with a short debris tail.",
+          "file": "audio/shellBurst/a.wav",
+          "recipe": [
+            [
+              "boom",
+              1,
+              1,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.25,
+          "peak": 0.47552,
+          "sha256": "4b1ee170eef3c4ae39370c03935986e0120e84ba25ba2caf9fe931ad1c3837f6"
+        },
+        {
+          "id": "b",
+          "label": "Cannon rupture",
+          "description": "A hard report opening into pressure.",
+          "file": "audio/shellBurst/b.wav",
+          "recipe": [
+            [
+              "cannon",
+              0.8,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1.2,
+              0.7,
+              0.02,
+              false
+            ]
+          ],
+          "seconds": 0.25,
+          "peak": 0.51889,
+          "sha256": "625e4ec8500082c12c87edaf49d80fe86dc44e038d5b9f2522ba93ad93e4b0f0"
+        },
+        {
+          "id": "c",
+          "label": "Industrial wreck",
+          "description": "A hull strike and layered destruction.",
+          "file": "audio/shellBurst/c.wav",
+          "recipe": [
+            [
+              "building",
+              0.85,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "boom",
+              0.8,
+              0.8,
+              0.025,
+              false
+            ],
+            [
+              "metal",
+              0.7,
+              0.25,
+              0.08,
+              false
+            ]
+          ],
+          "seconds": 0.25,
+          "peak": 0.49527,
+          "sha256": "5058d147aeae7d598cdafbfa551258a00401d2b07e85cd13a037fe10ec780a7e"
+        },
+        {
+          "id": "d",
+          "label": "Fuel ignition",
+          "description": "Fiery rupture with a clear initial crack.",
+          "file": "audio/shellBurst/d.wav",
+          "recipe": [
+            [
+              "fire",
+              0.6,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1,
+              0.85,
+              0,
+              false
+            ],
+            [
+              "gun",
+              0.7,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.25,
+          "peak": 0.50134,
+          "sha256": "06a00c9ad9c04d3f5be6e821fe914dcf99bd5591208d806a5c8851fdbde1da16"
+        },
+        {
+          "id": "e",
+          "label": "Dark concussion",
+          "description": "Low, rounded pressure with less sharp debris.",
+          "file": "audio/shellBurst/e.wav",
+          "recipe": [
+            [
+              "boom",
+              0.6,
+              0.85,
+              0,
+              false
+            ],
+            [
+              "dark",
+              0.7,
+              0.4,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.25,
+          "peak": 0.44562,
+          "sha256": "3cf60bf15079988894d4e57fabc99314aa612ea9a49f5431202538eb4dec41fa"
+        }
+      ],
+      "originalLabel": "Currently silent"
+    },
+    {
+      "id": "hurt1",
+      "label": "Player damage",
+      "group": "Player & encounter",
+      "family": "damage",
+      "gameGain": 0.2,
+      "original": {
+        "file": "audio/hurt1/original.wav",
+        "label": "Current sound",
+        "seconds": 0.1206,
+        "peak": 0.44595,
+        "sha256": "f48f88e4ec4bfb42930ef8dbe66a175cc9c72af8be81f9cf6ce015429975f0cd"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Armor strike",
+          "description": "Firm physical hull contact.",
+          "file": "audio/hurt1/a.wav",
+          "recipe": [
+            [
+              "metal",
+              0.75,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.8,
+              0.85,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.26,
+          "peak": 0.69998,
+          "sha256": "25ce051f11b139278ad0cf391a1035b33e271edc67f374713320bd030b5cc200"
+        },
+        {
+          "id": "b",
+          "label": "Shield overload",
+          "description": "A short electrical failure and low impact.",
+          "file": "audio/hurt1/b.wav",
+          "recipe": [
+            [
+              "electric",
+              0.6,
+              0.9,
+              0,
+              false
+            ],
+            [
+              "impact",
+              0.8,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.26,
+          "peak": 0.51575,
+          "sha256": "0943e404151421d5cde1726f6b45df08fe72d00d49c75a0320567d5f187b7b95"
+        },
+        {
+          "id": "c",
+          "label": "Heavy knock",
+          "description": "A compact structural thump.",
+          "file": "audio/hurt1/c.wav",
+          "recipe": [
+            [
+              "building",
+              1.2,
+              0.9,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.7,
+              0.6,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.26,
+          "peak": 0.50134,
+          "sha256": "b5e5abcbb296e5f1e5190b7a6ed0f05324a4f0091eb75de0908172bd93712d2e"
+        },
+        {
+          "id": "d",
+          "label": "Energy impact",
+          "description": "A distinct energy impact against armor.",
+          "file": "audio/hurt1/d.wav",
+          "recipe": [
+            [
+              "impact",
+              0.75,
+              0.9,
+              0,
+              false
+            ],
+            [
+              "metal",
+              1.3,
+              0.35,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.26,
+          "peak": 0.39847,
+          "sha256": "2de1519c8ab0e2ae5e5734a1571323018c3326561e763e534424de29e494a5ae"
+        },
+        {
+          "id": "e",
+          "label": "Damped damage",
+          "description": "Muted contact for a less abrasive warning.",
+          "file": "audio/hurt1/e.wav",
+          "recipe": [
+            [
+              "hit",
+              0.65,
+              1,
+              0,
+              false
+            ],
+            [
+              "dark",
+              1.2,
+              0.35,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.26,
+          "peak": 0.57062,
+          "sha256": "b497e6f61cf0c8a51a0d599aa561c8a591fb5e7f440b8582dbfd6e8059496f79"
+        }
+      ]
+    },
+    {
+      "id": "playerDead",
+      "label": "Player destroyed",
+      "group": "Player & encounter",
+      "family": "blast",
+      "gameGain": 0.35,
+      "original": {
+        "file": "audio/playerDead/original.wav",
+        "label": "Current sound",
+        "seconds": 3.4136,
+        "peak": 0.57053,
+        "sha256": "db353297bd81085a4431224325ca6e6e9008d6f677146ab724f4e38a5d4a5cc2"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Compact explosion",
+          "description": "A sampled blast with a short debris tail.",
+          "file": "audio/playerDead/a.wav",
+          "recipe": [
+            [
+              "boom",
+              1,
+              1,
+              0,
+              false
+            ]
+          ],
+          "seconds": 1.15,
+          "peak": 0.53009,
+          "sha256": "9d9cc02af2c64401b770aebd6844e347c55a3e1eeda384192beb248706c2941e"
+        },
+        {
+          "id": "b",
+          "label": "Cannon rupture",
+          "description": "A hard report opening into pressure.",
+          "file": "audio/playerDead/b.wav",
+          "recipe": [
+            [
+              "cannon",
+              0.8,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1.2,
+              0.7,
+              0.02,
+              false
+            ]
+          ],
+          "seconds": 1.15,
+          "peak": 0.64285,
+          "sha256": "8a5fca1206b685a1834e9d71df061ee36a6e6bf17fecbdc723b0e30278aa4b6e"
+        },
+        {
+          "id": "c",
+          "label": "Industrial wreck",
+          "description": "A hull strike and layered destruction.",
+          "file": "audio/playerDead/c.wav",
+          "recipe": [
+            [
+              "building",
+              0.85,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "boom",
+              0.8,
+              0.8,
+              0.025,
+              false
+            ],
+            [
+              "metal",
+              0.7,
+              0.25,
+              0.08,
+              false
+            ]
+          ],
+          "seconds": 1.15,
+          "peak": 0.60565,
+          "sha256": "c4e6277c2d037c8848c32ed341dae9b34a487332386e7850f3788b06ce4b6d31"
+        },
+        {
+          "id": "d",
+          "label": "Fuel ignition",
+          "description": "Fiery rupture with a clear initial crack.",
+          "file": "audio/playerDead/d.wav",
+          "recipe": [
+            [
+              "fire",
+              0.6,
+              0.6,
+              0,
+              false
+            ],
+            [
+              "boom",
+              1,
+              0.85,
+              0,
+              false
+            ],
+            [
+              "gun",
+              0.7,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 1.15,
+          "peak": 0.57364,
+          "sha256": "3d83b82a6b407de40cee1b98a1c437773b33bebbbfdd5c9a8ae85d566fa1645a"
+        },
+        {
+          "id": "e",
+          "label": "Dark concussion",
+          "description": "Low, rounded pressure with less sharp debris.",
+          "file": "audio/playerDead/e.wav",
+          "recipe": [
+            [
+              "boom",
+              0.6,
+              0.85,
+              0,
+              false
+            ],
+            [
+              "dark",
+              0.7,
+              0.4,
+              0,
+              false
+            ]
+          ],
+          "seconds": 1.15,
+          "peak": 0.53,
+          "sha256": "7e093ed0ab300574b1a2c3ab8def355936225d04fbd77c049dc76f037c8a80c6"
+        }
+      ]
+    },
+    {
+      "id": "blankbullet",
+      "label": "Blank / bullet clear",
+      "group": "Player & encounter",
+      "family": "energy",
+      "gameGain": 0.15,
+      "original": {
+        "file": "audio/blankbullet/original.wav",
+        "label": "Current sound",
+        "seconds": 1.6891,
+        "peak": 0.62933,
+        "sha256": "5710a224553ff0a5a6a291fe1791c8f42e15cf40fe4d6a6da9cd3b3b731ba0a4"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Plasma pulse",
+          "description": "Compact energy impact with physical weight.",
+          "file": "audio/blankbullet/a.wav",
+          "recipe": [
+            [
+              "impact",
+              1,
+              1,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.9,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.65,
+          "peak": 0.46625,
+          "sha256": "a6d2b3a5435a29705111de79b74b102594abba1e5dd0fc818c73031cc6a8ad83"
+        },
+        {
+          "id": "b",
+          "label": "Air-cut energy",
+          "description": "Air swish with an electrical leading edge.",
+          "file": "audio/blankbullet/b.wav",
+          "recipe": [
+            [
+              "swish",
+              0.85,
+              0.75,
+              0,
+              false
+            ],
+            [
+              "electric",
+              0.8,
+              0.7,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.65,
+          "peak": 0.55386,
+          "sha256": "664b5e116fce13409189c713d32f12e95343945228dd9d975c232b68d005fdba"
+        },
+        {
+          "id": "c",
+          "label": "Dark pressure",
+          "description": "Hollow air and a low energy body.",
+          "file": "audio/blankbullet/c.wav",
+          "recipe": [
+            [
+              "dark",
+              0.85,
+              1,
+              0,
+              false
+            ],
+            [
+              "impact",
+              0.7,
+              0.45,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.65,
+          "peak": 0.45511,
+          "sha256": "7a94fac4ba7a26dca0de2fdafc9a7b17da03bc9b21d769f3601ff339156f145d"
+        },
+        {
+          "id": "d",
+          "label": "Bright discharge",
+          "description": "A defined electric arc and airy release.",
+          "file": "audio/blankbullet/d.wav",
+          "recipe": [
+            [
+              "electric",
+              1.05,
+              0.7,
+              0,
+              false
+            ],
+            [
+              "arcane",
+              1.1,
+              0.8,
+              0.015,
+              false
+            ]
+          ],
+          "seconds": 0.65,
+          "peak": 0.41321,
+          "sha256": "4a9356084e549cf46885707d324eb9afce02d8dd867bec2201d1b723af829ab1"
+        },
+        {
+          "id": "e",
+          "label": "Warm pulse",
+          "description": "Soft energy body with a restrained round edge.",
+          "file": "audio/blankbullet/e.wav",
+          "recipe": [
+            [
+              "arcane",
+              0.7,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "hit",
+              0.7,
+              0.65,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.65,
+          "peak": 0.59738,
+          "sha256": "fc5ae96cd7cd72b86168c2b751d9b7bae07d22875ccd3c063f7e7f7e157e9b93"
+        }
+      ]
+    },
+    {
+      "id": "bossWarning",
+      "label": "Boss warning",
+      "group": "Player & encounter",
+      "family": "warning",
+      "gameGain": 0.18,
+      "original": {
+        "file": "audio/bossWarning/original.wav",
+        "label": "Current sound",
+        "seconds": 4.0026,
+        "peak": 0.44894,
+        "sha256": "f4c6a4693e43f6f4aaca8a66d3ec563a53dca57a5c5e2569e0bebf87e71f5a36"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Metal warning",
+          "description": "Two separated muted metal accents.",
+          "file": "audio/bossWarning/a.wav",
+          "recipe": [
+            [
+              "metal",
+              0.65,
+              1,
+              0,
+              false
+            ],
+            [
+              "metal",
+              0.65,
+              0.8,
+              0.34,
+              false
+            ]
+          ],
+          "seconds": 0.85,
+          "peak": 0.69998,
+          "sha256": "5f9848e0f6717addb6033d56e924149c9787b6de19c765d07e8caf3f0de442c1"
+        },
+        {
+          "id": "b",
+          "label": "Warm signal",
+          "description": "Two rounded chimes, restrained highs.",
+          "file": "audio/bossWarning/b.wav",
+          "recipe": [
+            [
+              "holy",
+              0.7,
+              1,
+              0,
+              false
+            ],
+            [
+              "holy",
+              0.6,
+              0.75,
+              0.35,
+              false
+            ]
+          ],
+          "seconds": 0.85,
+          "peak": 0.69998,
+          "sha256": "a82395e861339ae0f6bed00d1a16e283d30beb8e475f449ec3d24c74083f8694"
+        },
+        {
+          "id": "c",
+          "label": "Low threat",
+          "description": "Two dark pressure accents.",
+          "file": "audio/bossWarning/c.wav",
+          "recipe": [
+            [
+              "dark",
+              0.8,
+              1,
+              0,
+              false
+            ],
+            [
+              "impact",
+              0.6,
+              0.7,
+              0.38,
+              false
+            ]
+          ],
+          "seconds": 0.85,
+          "peak": 0.55185,
+          "sha256": "e530f7ad3710c4a5c16fb5ceb750f6bbe64cc5a56778aafb87a222370ac93685"
+        },
+        {
+          "id": "d",
+          "label": "Electrical alert",
+          "description": "Paired electrical pulses with low body.",
+          "file": "audio/bossWarning/d.wav",
+          "recipe": [
+            [
+              "electric",
+              0.65,
+              1,
+              0,
+              false
+            ],
+            [
+              "electric",
+              0.55,
+              0.85,
+              0.32,
+              false
+            ],
+            [
+              "dark",
+              1,
+              0.3,
+              0,
+              false
+            ]
+          ],
+          "seconds": 0.85,
+          "peak": 0.43021,
+          "sha256": "8383bc4c0c2810fc5241637a9b1e36343f175582920980abef96f738142dc8dc"
+        },
+        {
+          "id": "e",
+          "label": "Mechanical alert",
+          "description": "Damped contact followed by a heavier response.",
+          "file": "audio/bossWarning/e.wav",
+          "recipe": [
+            [
+              "hit",
+              0.65,
+              0.8,
+              0,
+              false
+            ],
+            [
+              "metal",
+              0.55,
+              0.65,
+              0.32,
+              false
+            ]
+          ],
+          "seconds": 0.85,
+          "peak": 0.69998,
+          "sha256": "d3838e6d867fa30e15fd223fe50a5b2f0b49c6eba9b0dc66d2926c14135cd82c"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1617 @@
+{
+  "sample_rate": 22050,
+  "variants": 4,
+  "effects": [
+    {
+      "name": "shot1",
+      "variant": 1,
+      "seconds": 0.105,
+      "peak_db": -4.15,
+      "rms_db": -16.27,
+      "dc": -0.0013545,
+      "sha256": "d16072eefab3310dc425339ef6fda044849f16e3ee5b103f3e48baa0f13d0765"
+    },
+    {
+      "name": "shot1",
+      "variant": 2,
+      "seconds": 0.105,
+      "peak_db": -4.15,
+      "rms_db": -16.45,
+      "dc": -0.0014885,
+      "sha256": "f0414d50e5f8ac1d59922f8643aa90c0351cb65a1566fafd07ce097d717e1a09"
+    },
+    {
+      "name": "shot1",
+      "variant": 3,
+      "seconds": 0.105,
+      "peak_db": -4.15,
+      "rms_db": -16.16,
+      "dc": -0.0013043,
+      "sha256": "a1ed39a88707b6f881e293c788e4552761555d1eb31dd528e118570a2d374e80"
+    },
+    {
+      "name": "shot1",
+      "variant": 4,
+      "seconds": 0.105,
+      "peak_db": -4.15,
+      "rms_db": -16.28,
+      "dc": -0.0011594,
+      "sha256": "af21341d84d86738dc2bdbf9c80cef2b829f822ad11f0aab2114cd1d64d56535"
+    },
+    {
+      "name": "shotElectric",
+      "variant": 1,
+      "seconds": 0.145,
+      "peak_db": -4.15,
+      "rms_db": -14.93,
+      "dc": -0.0019534,
+      "sha256": "d0e1df7db5a10b244b6ebb07aadc7627bbd01c66c3fc9f8150abee2f288cc4a9"
+    },
+    {
+      "name": "shotElectric",
+      "variant": 2,
+      "seconds": 0.145,
+      "peak_db": -4.15,
+      "rms_db": -15.1,
+      "dc": -0.0019329,
+      "sha256": "93f8da01ecb99b5b8afaf7fa9e15573d6f82daed46972556dfd9b5094fe4a6ab"
+    },
+    {
+      "name": "shotElectric",
+      "variant": 3,
+      "seconds": 0.145,
+      "peak_db": -4.15,
+      "rms_db": -14.97,
+      "dc": -0.0019253,
+      "sha256": "bcfb7f2fd320d8b4f17ade014b04d3221c733a7a6908fcc2ea2276e0e3c3eff5"
+    },
+    {
+      "name": "shotElectric",
+      "variant": 4,
+      "seconds": 0.145,
+      "peak_db": -4.15,
+      "rms_db": -15.17,
+      "dc": -0.00187,
+      "sha256": "be85255a25a9a6a325e13ee463989c9eef6c390805037e91f8efa187d770ffc9"
+    },
+    {
+      "name": "shotAK45",
+      "variant": 1,
+      "seconds": 0.095,
+      "peak_db": -4.15,
+      "rms_db": -17.29,
+      "dc": -0.003198,
+      "sha256": "5d03d8501750ca58ed3b6792971ca5fdda6f9727963bdf759c77f1a6a85721d4"
+    },
+    {
+      "name": "shotAK45",
+      "variant": 2,
+      "seconds": 0.095,
+      "peak_db": -4.15,
+      "rms_db": -17.85,
+      "dc": -0.0034968,
+      "sha256": "1947b0d645199853ba7930d27574ea09737517903d57a417db326b27b36b5019"
+    },
+    {
+      "name": "shotAK45",
+      "variant": 3,
+      "seconds": 0.095,
+      "peak_db": -4.15,
+      "rms_db": -17.67,
+      "dc": -0.003419,
+      "sha256": "e02275fe801ee348966b73d34f0d385cd8f134599985a306c7872ebe6559d1dc"
+    },
+    {
+      "name": "shotAK45",
+      "variant": 4,
+      "seconds": 0.095,
+      "peak_db": -4.15,
+      "rms_db": -17.47,
+      "dc": -0.0035356,
+      "sha256": "d6af95e5ca1c226e5514254083c088095cbd06e5887b37280741e8567466cad7"
+    },
+    {
+      "name": "shotCompanion",
+      "variant": 1,
+      "seconds": 0.08,
+      "peak_db": -4.15,
+      "rms_db": -15.84,
+      "dc": -0.0015737,
+      "sha256": "e56dcca5f3b416532c8c4bf7fbb63ab9746c79986ca5b2e30509c0093c7ccf62"
+    },
+    {
+      "name": "shotCompanion",
+      "variant": 2,
+      "seconds": 0.08,
+      "peak_db": -4.15,
+      "rms_db": -15.9,
+      "dc": -0.0015671,
+      "sha256": "a0e0e8a35a2d4e44a9cabc1333c41bcffba96778c7c0003433be2f48f21cf89d"
+    },
+    {
+      "name": "shotCompanion",
+      "variant": 3,
+      "seconds": 0.08,
+      "peak_db": -4.15,
+      "rms_db": -15.87,
+      "dc": -0.0016203,
+      "sha256": "10f10307a3c48b2c94ea00680b4b8aa86b4dc80e8192bb546b4c1067aaebf00e"
+    },
+    {
+      "name": "shotCompanion",
+      "variant": 4,
+      "seconds": 0.08,
+      "peak_db": -4.15,
+      "rms_db": -16.11,
+      "dc": -0.0014898,
+      "sha256": "c8f78439379f33dd373850f544bc0e57d724b9fe199484da44863ca0962c86e2"
+    },
+    {
+      "name": "shotNeedle",
+      "variant": 1,
+      "seconds": 0.09,
+      "peak_db": -4.15,
+      "rms_db": -16.87,
+      "dc": -0.0011934,
+      "sha256": "89be53a02bf0b340fbfa19fd4df58deb558e1f9df24b523610d8d04f54c9422e"
+    },
+    {
+      "name": "shotNeedle",
+      "variant": 2,
+      "seconds": 0.09,
+      "peak_db": -4.15,
+      "rms_db": -16.64,
+      "dc": -0.0010442,
+      "sha256": "2e42265550b4b9201b05ce814e43c3a19c3babc2339f45a1da57cc764f701436"
+    },
+    {
+      "name": "shotNeedle",
+      "variant": 3,
+      "seconds": 0.09,
+      "peak_db": -4.15,
+      "rms_db": -16.67,
+      "dc": -0.0008081,
+      "sha256": "cea5e51e7b7fd8df83a6f70f6ffff700cdd1e316de10af85ebffabfa297ebd2f"
+    },
+    {
+      "name": "shotNeedle",
+      "variant": 4,
+      "seconds": 0.09,
+      "peak_db": -4.15,
+      "rms_db": -16.65,
+      "dc": -0.0013754,
+      "sha256": "b2cd8cf6c00784c8bd632d38b6517b65154bd65e31cc905e2edba0120630ef51"
+    },
+    {
+      "name": "shotRail",
+      "variant": 1,
+      "seconds": 0.23,
+      "peak_db": -4.15,
+      "rms_db": -19.38,
+      "dc": -0.0014151,
+      "sha256": "4b10d4a75570a9e3e6d412cfefd36b54e58e7b65bec69825aada1300d7015863"
+    },
+    {
+      "name": "shotRail",
+      "variant": 2,
+      "seconds": 0.23,
+      "peak_db": -4.15,
+      "rms_db": -19.66,
+      "dc": -0.0013866,
+      "sha256": "228af4a348d2b5d0834d5911340698c2a1fe8306c0e908a676a5f1801b5b29b2"
+    },
+    {
+      "name": "shotRail",
+      "variant": 3,
+      "seconds": 0.23,
+      "peak_db": -4.15,
+      "rms_db": -19.65,
+      "dc": -0.0012908,
+      "sha256": "705a5da0158b3331135a41abb5b710d80e81b28695c0afffdb060587c8567890"
+    },
+    {
+      "name": "shotRail",
+      "variant": 4,
+      "seconds": 0.23,
+      "peak_db": -4.15,
+      "rms_db": -19.34,
+      "dc": -0.0011845,
+      "sha256": "76fd6d5720bc1c2dfbd61f25a52fc8c8ce3a45a5603f24b5c0ce95e203967022"
+    },
+    {
+      "name": "shotScatter",
+      "variant": 1,
+      "seconds": 0.15,
+      "peak_db": -4.15,
+      "rms_db": -18.72,
+      "dc": -0.0014234,
+      "sha256": "c3989bbd20b15c9c49d3e89670142a772fb5b046f856f3cfcea9339e49960807"
+    },
+    {
+      "name": "shotScatter",
+      "variant": 2,
+      "seconds": 0.15,
+      "peak_db": -4.15,
+      "rms_db": -17.8,
+      "dc": -0.0017902,
+      "sha256": "4b547d9f6dca4fe88493369bfb3c5f674da2c4cffbb2d7ff97baf017e61d56fe"
+    },
+    {
+      "name": "shotScatter",
+      "variant": 3,
+      "seconds": 0.15,
+      "peak_db": -4.15,
+      "rms_db": -17.84,
+      "dc": -0.0018311,
+      "sha256": "16803d801b50d259559e10fc6e6ca3c51c07156035a8089ddd0188d47ece8c13"
+    },
+    {
+      "name": "shotScatter",
+      "variant": 4,
+      "seconds": 0.15,
+      "peak_db": -4.15,
+      "rms_db": -17.73,
+      "dc": -0.0022585,
+      "sha256": "87eee606f029a9750864338487e10095a6ca1af31daa0d7e410852affbbc660b"
+    },
+    {
+      "name": "shotShell",
+      "variant": 1,
+      "seconds": 0.21,
+      "peak_db": -4.15,
+      "rms_db": -18.05,
+      "dc": -0.000805,
+      "sha256": "193b44c2ad3454c1286596e89a8bd94faa91229261e3a5b5bb46074fc5711511"
+    },
+    {
+      "name": "shotShell",
+      "variant": 2,
+      "seconds": 0.21,
+      "peak_db": -4.15,
+      "rms_db": -17.87,
+      "dc": -0.0010742,
+      "sha256": "672c4257ab594e149ef89a32c8fd338af0b4c11ba79bbdf7bd63a204773ad388"
+    },
+    {
+      "name": "shotShell",
+      "variant": 3,
+      "seconds": 0.21,
+      "peak_db": -4.15,
+      "rms_db": -18.38,
+      "dc": -0.0005669,
+      "sha256": "b2888336df0f3bc3e740b273159d4b4b1d06eab7834cc6b226d268f3e22a501f"
+    },
+    {
+      "name": "shotShell",
+      "variant": 4,
+      "seconds": 0.21,
+      "peak_db": -4.15,
+      "rms_db": -18.14,
+      "dc": -0.0005745,
+      "sha256": "a8934d078cc001de7a6dcd44555a4a20dde2240bf45c9fc229f5de33c564a459"
+    },
+    {
+      "name": "shotDisc",
+      "variant": 1,
+      "seconds": 0.19,
+      "peak_db": -4.15,
+      "rms_db": -14.59,
+      "dc": -0.0011572,
+      "sha256": "a58decdbaf9fa5200caf6f9723f456d04c1b9fa7a626f113bd042e37bde0258f"
+    },
+    {
+      "name": "shotDisc",
+      "variant": 2,
+      "seconds": 0.19,
+      "peak_db": -4.15,
+      "rms_db": -14.57,
+      "dc": -0.0011403,
+      "sha256": "0e76344f5ee73fa67fa1a61b677e021138e7c1e92907bb57214c5fd7f8f12594"
+    },
+    {
+      "name": "shotDisc",
+      "variant": 3,
+      "seconds": 0.19,
+      "peak_db": -4.15,
+      "rms_db": -14.67,
+      "dc": -0.0010908,
+      "sha256": "a5123c02978121160ab0c32c4e32dbb0357f12298ac5a3e86d5bfca7c4f597ac"
+    },
+    {
+      "name": "shotDisc",
+      "variant": 4,
+      "seconds": 0.19,
+      "peak_db": -4.15,
+      "rms_db": -14.8,
+      "dc": -0.0010314,
+      "sha256": "e97aa816d9c4d61c380b31458ea20931229a6570e0f72364595d2ca8fe613906"
+    },
+    {
+      "name": "shotMissile",
+      "variant": 1,
+      "seconds": 0.26,
+      "peak_db": -4.15,
+      "rms_db": -18.38,
+      "dc": -0.0005082,
+      "sha256": "d361b48c2ae26326bfa26cd89f344cba7df2b0492a8ec55543024db2e0bd090b"
+    },
+    {
+      "name": "shotMissile",
+      "variant": 2,
+      "seconds": 0.26,
+      "peak_db": -4.15,
+      "rms_db": -18.68,
+      "dc": -0.000398,
+      "sha256": "87c6ecf99db1a7a783c4e3c294e88c92f7ed88cccb5def2de0679977f5f47d22"
+    },
+    {
+      "name": "shotMissile",
+      "variant": 3,
+      "seconds": 0.26,
+      "peak_db": -4.15,
+      "rms_db": -18.2,
+      "dc": -0.0005354,
+      "sha256": "098b1e4f57f220de5c7193d40e034bafdbdb28a1fb9f620cd1f66fb2942dd0fc"
+    },
+    {
+      "name": "shotMissile",
+      "variant": 4,
+      "seconds": 0.26,
+      "peak_db": -4.15,
+      "rms_db": -19.19,
+      "dc": -0.0001468,
+      "sha256": "cbeaaaf0d942e028f29df4d140313aa91fe72b353637c3fc39ffaf1875b15fcf"
+    },
+    {
+      "name": "shotFlame",
+      "variant": 1,
+      "seconds": 0.115,
+      "peak_db": -4.15,
+      "rms_db": -17.19,
+      "dc": 0.0013601,
+      "sha256": "4ee312c26d02e32c49c76fe39f2612b0ab213766b1403416f029d4bf6dca84ab"
+    },
+    {
+      "name": "shotFlame",
+      "variant": 2,
+      "seconds": 0.115,
+      "peak_db": -4.15,
+      "rms_db": -15.83,
+      "dc": -7.71e-05,
+      "sha256": "a78775093708e1aee1d28c0c086a32a09b7deb1a1853365bc1bca99934c9b599"
+    },
+    {
+      "name": "shotFlame",
+      "variant": 3,
+      "seconds": 0.115,
+      "peak_db": -4.15,
+      "rms_db": -16.29,
+      "dc": -0.0025823,
+      "sha256": "24ea3a04a898d97320b6d8ca7b5a66e86c8a8961d791e58c843f3fcfbc912e3a"
+    },
+    {
+      "name": "shotFlame",
+      "variant": 4,
+      "seconds": 0.115,
+      "peak_db": -4.15,
+      "rms_db": -16.23,
+      "dc": -0.0027896,
+      "sha256": "2a2d0b6eb1532207405cbad639686e86fd0d055192be70cfd0c1ba2d53e56abd"
+    },
+    {
+      "name": "shotBeam",
+      "variant": 1,
+      "seconds": 0.62,
+      "peak_db": -4.15,
+      "rms_db": -16.39,
+      "dc": -0.000524,
+      "sha256": "58fa7c00b838e6aa903bbeeef3e0d212147a4ea2ad3a1ed32bfef9e85b70f71e"
+    },
+    {
+      "name": "shotBeam",
+      "variant": 2,
+      "seconds": 0.62,
+      "peak_db": -4.15,
+      "rms_db": -16.45,
+      "dc": -0.0005345,
+      "sha256": "73216d0809d3c7683e035c2ecc85bb721496032f8f09f678836769c1d5112419"
+    },
+    {
+      "name": "shotBeam",
+      "variant": 3,
+      "seconds": 0.62,
+      "peak_db": -4.15,
+      "rms_db": -16.3,
+      "dc": -0.0005531,
+      "sha256": "ca354ef8d564148155b41349038f3e0526f3959e9e56617c108b4e8cf35dd47c"
+    },
+    {
+      "name": "shotBeam",
+      "variant": 4,
+      "seconds": 0.62,
+      "peak_db": -4.15,
+      "rms_db": -16.6,
+      "dc": -0.0005376,
+      "sha256": "599c8a2b21f1e63759804e22b88538c50253e3f8d0e520ca03087770dedfd241"
+    },
+    {
+      "name": "enemySimple",
+      "variant": 1,
+      "seconds": 0.105,
+      "peak_db": -4.15,
+      "rms_db": -16.71,
+      "dc": -0.0034092,
+      "sha256": "14389ecf90bb6f908cc8a045f673d6e02561346e2af23bee0d7925d08d0af1f5"
+    },
+    {
+      "name": "enemySimple",
+      "variant": 2,
+      "seconds": 0.105,
+      "peak_db": -4.15,
+      "rms_db": -16.59,
+      "dc": -0.0036317,
+      "sha256": "1fd15d52545dc3675902deb1c8a860064e18fce975233a675d353c2e602bd9dc"
+    },
+    {
+      "name": "enemySimple",
+      "variant": 3,
+      "seconds": 0.105,
+      "peak_db": -4.15,
+      "rms_db": -16.31,
+      "dc": -0.003722,
+      "sha256": "ee0292088230c231b2b32cb146db8f37b87886a6282f966d2d25383ac10b577a"
+    },
+    {
+      "name": "enemySimple",
+      "variant": 4,
+      "seconds": 0.105,
+      "peak_db": -4.15,
+      "rms_db": -16.11,
+      "dc": -0.0032108,
+      "sha256": "ced66efb7e6c13f714d93dc8b49081d500b40d5aefb66e483cbd9e4fa32eaf7b"
+    },
+    {
+      "name": "enemyNeedle",
+      "variant": 1,
+      "seconds": 0.075,
+      "peak_db": -4.15,
+      "rms_db": -17.19,
+      "dc": -0.0014002,
+      "sha256": "37caf194b758a42c1cc0788f5ff18efe6f62d8f11f40dcb258ab61f818093985"
+    },
+    {
+      "name": "enemyNeedle",
+      "variant": 2,
+      "seconds": 0.075,
+      "peak_db": -4.15,
+      "rms_db": -17.19,
+      "dc": -0.000832,
+      "sha256": "7a1d79b95b4c55801ee756aa43fe36661206999cb47d0c2c79608606e8f260b0"
+    },
+    {
+      "name": "enemyNeedle",
+      "variant": 3,
+      "seconds": 0.075,
+      "peak_db": -4.15,
+      "rms_db": -16.89,
+      "dc": -0.0008841,
+      "sha256": "b1ffa769a65138bbb9c16ba4af365230fe8c32569c163bdb66e035f164c94230"
+    },
+    {
+      "name": "enemyNeedle",
+      "variant": 4,
+      "seconds": 0.075,
+      "peak_db": -4.15,
+      "rms_db": -17.14,
+      "dc": -0.0008987,
+      "sha256": "64ba6748b3a97b52234707f2ba09ff3ca808afd6d06847d826e3ffc3d2eb89bc"
+    },
+    {
+      "name": "enemyPlasma",
+      "variant": 1,
+      "seconds": 0.24,
+      "peak_db": -4.15,
+      "rms_db": -13.64,
+      "dc": -0.0018354,
+      "sha256": "a304503a486e470d0dea7ce51b0cb081679906092b6b60b4769610e13f7eaa08"
+    },
+    {
+      "name": "enemyPlasma",
+      "variant": 2,
+      "seconds": 0.24,
+      "peak_db": -4.15,
+      "rms_db": -13.7,
+      "dc": -0.0018225,
+      "sha256": "ea0bd01fbbae0b4238cba29a63a1ec015330ef7a29b35f1b723301b8a9065faf"
+    },
+    {
+      "name": "enemyPlasma",
+      "variant": 3,
+      "seconds": 0.24,
+      "peak_db": -4.15,
+      "rms_db": -13.7,
+      "dc": -0.0018318,
+      "sha256": "5bb66456db2f7974ac143a1e8d378fdaaacfa198db063362b6814f020a9aa466"
+    },
+    {
+      "name": "enemyPlasma",
+      "variant": 4,
+      "seconds": 0.24,
+      "peak_db": -4.15,
+      "rms_db": -13.69,
+      "dc": -0.0018248,
+      "sha256": "13437dcf0f7c0bb61875ccade751fd78e9bf397682cc1b88200b77a24b6c21a2"
+    },
+    {
+      "name": "enemyMissile",
+      "variant": 1,
+      "seconds": 0.3,
+      "peak_db": -4.15,
+      "rms_db": -18.46,
+      "dc": -0.0015018,
+      "sha256": "b784fc8aed4fb138bcec4c4619011ba3ee4996fe621a894da827f3e5cc18e1ad"
+    },
+    {
+      "name": "enemyMissile",
+      "variant": 2,
+      "seconds": 0.3,
+      "peak_db": -4.15,
+      "rms_db": -18.17,
+      "dc": -0.00066,
+      "sha256": "ae55570f49c867df94d8751e58cedde81b1bd429c87ad22f9b57f74c1a9fe430"
+    },
+    {
+      "name": "enemyMissile",
+      "variant": 3,
+      "seconds": 0.3,
+      "peak_db": -4.15,
+      "rms_db": -18.67,
+      "dc": -0.0013955,
+      "sha256": "6387b172bea83079dfd22829ae613aec2d2486e66eed6932fd982a629d354089"
+    },
+    {
+      "name": "enemyMissile",
+      "variant": 4,
+      "seconds": 0.3,
+      "peak_db": -4.15,
+      "rms_db": -18.62,
+      "dc": -0.000324,
+      "sha256": "fbc2b3220b147fd942b82670e766edff18ea0a621fdadc036e0d92ef4d36571d"
+    },
+    {
+      "name": "enemyBurst",
+      "variant": 1,
+      "seconds": 0.18,
+      "peak_db": -4.15,
+      "rms_db": -17.87,
+      "dc": -0.0015428,
+      "sha256": "c94af4760bcffb79b03dea8aa3fd9565ea4f09656344547c065078cfc00465c9"
+    },
+    {
+      "name": "enemyBurst",
+      "variant": 2,
+      "seconds": 0.18,
+      "peak_db": -4.15,
+      "rms_db": -17.83,
+      "dc": -0.0016981,
+      "sha256": "b54bd1b0e12c4afe7d82114e73fe50a23c37a52c7e60037cda4e3581d0f6fc24"
+    },
+    {
+      "name": "enemyBurst",
+      "variant": 3,
+      "seconds": 0.18,
+      "peak_db": -4.15,
+      "rms_db": -17.98,
+      "dc": -0.0012149,
+      "sha256": "2466d3968ded1cd177e6ae7acbfd1f5d86fea93a559e35a5a50fef7be20fb6c5"
+    },
+    {
+      "name": "enemyBurst",
+      "variant": 4,
+      "seconds": 0.18,
+      "peak_db": -4.15,
+      "rms_db": -17.69,
+      "dc": -0.0017935,
+      "sha256": "6d378b5005efe733265a998a54d0fb03ae4cba120f47e889f9efcf44ec98c619"
+    },
+    {
+      "name": "enemyDisc",
+      "variant": 1,
+      "seconds": 0.2,
+      "peak_db": -4.15,
+      "rms_db": -14.53,
+      "dc": -0.0016493,
+      "sha256": "bc5711fa7c0f5b3f97949b1382e079d9441433b3948a00379994383556166025"
+    },
+    {
+      "name": "enemyDisc",
+      "variant": 2,
+      "seconds": 0.2,
+      "peak_db": -4.15,
+      "rms_db": -14.52,
+      "dc": -0.0016893,
+      "sha256": "6d256d9f8ccc1cb2f6a5053f9ee4a8c5bed2dd63897269f875b3e7c13bf824f6"
+    },
+    {
+      "name": "enemyDisc",
+      "variant": 3,
+      "seconds": 0.2,
+      "peak_db": -4.15,
+      "rms_db": -14.39,
+      "dc": -0.0015847,
+      "sha256": "d17779321bf7c3fc2c40edeea2ba36e74eef593cc6fc2446358dd5c69c6981a1"
+    },
+    {
+      "name": "enemyDisc",
+      "variant": 4,
+      "seconds": 0.2,
+      "peak_db": -4.15,
+      "rms_db": -14.48,
+      "dc": -0.0015408,
+      "sha256": "873d7f0ec04c3ea80c8f1dbf1579cec0a661018d828713ba032bebdb2b2ca6a7"
+    },
+    {
+      "name": "enemyRicochet",
+      "variant": 1,
+      "seconds": 0.125,
+      "peak_db": -4.15,
+      "rms_db": -19.71,
+      "dc": -0.0012426,
+      "sha256": "5c02bf7c3312cdf2689dac18fae757efc2125d852c0cec1d1adea4c609507fbb"
+    },
+    {
+      "name": "enemyRicochet",
+      "variant": 2,
+      "seconds": 0.125,
+      "peak_db": -4.15,
+      "rms_db": -19.79,
+      "dc": -0.0017527,
+      "sha256": "f55534819ac2c0775c1a3c93c78a0384a279c81449f45aa43987bf073069fdf5"
+    },
+    {
+      "name": "enemyRicochet",
+      "variant": 3,
+      "seconds": 0.125,
+      "peak_db": -4.15,
+      "rms_db": -19.46,
+      "dc": -0.0011358,
+      "sha256": "7fb2aebd88d394b0fd6d0d7698db60fb3c610fcd1d42e268a6c1ad1e61b498b2"
+    },
+    {
+      "name": "enemyRicochet",
+      "variant": 4,
+      "seconds": 0.125,
+      "peak_db": -4.15,
+      "rms_db": -19.12,
+      "dc": -0.0008972,
+      "sha256": "f891a39056a9bdbeecc7adb9b800d15f4aa2b8e48bd6ddc9f586f2adbe176cab"
+    },
+    {
+      "name": "enemyHelix",
+      "variant": 1,
+      "seconds": 0.165,
+      "peak_db": -4.15,
+      "rms_db": -13.73,
+      "dc": -0.0016245,
+      "sha256": "4d95aef448254680a9cd1ab6e0673521d1b59ec17723bfe88239fa6224c92dd4"
+    },
+    {
+      "name": "enemyHelix",
+      "variant": 2,
+      "seconds": 0.165,
+      "peak_db": -4.15,
+      "rms_db": -13.84,
+      "dc": -0.0017588,
+      "sha256": "2a92a61b8ece400f4591e8eff5898871193b3f6a2b82713d3fd64524bb501b58"
+    },
+    {
+      "name": "enemyHelix",
+      "variant": 3,
+      "seconds": 0.165,
+      "peak_db": -4.15,
+      "rms_db": -13.94,
+      "dc": -0.0016402,
+      "sha256": "4402250fff1581f57b1c65e526b19ad055ab212030212cc1f3b06a8c49a3fc68"
+    },
+    {
+      "name": "enemyHelix",
+      "variant": 4,
+      "seconds": 0.165,
+      "peak_db": -4.15,
+      "rms_db": -13.96,
+      "dc": -0.0015782,
+      "sha256": "d907ee2b29e888be512563ac8104514d3af4f01f40c2b7482b1ba26a24ceb89f"
+    },
+    {
+      "name": "enemySuspended",
+      "variant": 1,
+      "seconds": 0.22,
+      "peak_db": -4.15,
+      "rms_db": -13.78,
+      "dc": -0.0017486,
+      "sha256": "5197989d590f682207b66bcdd61ecee784a98ce7f9766e78ea437ce7f951b0ce"
+    },
+    {
+      "name": "enemySuspended",
+      "variant": 2,
+      "seconds": 0.22,
+      "peak_db": -4.15,
+      "rms_db": -13.78,
+      "dc": -0.0016318,
+      "sha256": "a5eb556ace62be55fd0e49a25d285e44258f19dfad492c3e64c30d1617ac745d"
+    },
+    {
+      "name": "enemySuspended",
+      "variant": 3,
+      "seconds": 0.22,
+      "peak_db": -4.15,
+      "rms_db": -13.66,
+      "dc": -0.0017713,
+      "sha256": "bbfb684a98f8d376c9edaa3b60f7af498b1fa0dd889ae2987d39892a40cba6aa"
+    },
+    {
+      "name": "enemySuspended",
+      "variant": 4,
+      "seconds": 0.22,
+      "peak_db": -4.15,
+      "rms_db": -13.63,
+      "dc": -0.0017736,
+      "sha256": "6cfa8059ef321a6ce1f3816a09a22221758cbb26176c7f98976bfe5449c79a09"
+    },
+    {
+      "name": "enemyScatter",
+      "variant": 1,
+      "seconds": 0.16,
+      "peak_db": -4.15,
+      "rms_db": -17.42,
+      "dc": -0.0016047,
+      "sha256": "aecf2e93a06ee4a4c189954afeb8475d6898932a69f318f62ec90b04807e435f"
+    },
+    {
+      "name": "enemyScatter",
+      "variant": 2,
+      "seconds": 0.16,
+      "peak_db": -4.15,
+      "rms_db": -16.95,
+      "dc": -0.0016053,
+      "sha256": "04a06d38433fdf3ae89d7e46cf2795131f9e67fe15c3c1627dbc45a0d7568aeb"
+    },
+    {
+      "name": "enemyScatter",
+      "variant": 3,
+      "seconds": 0.16,
+      "peak_db": -4.15,
+      "rms_db": -18.1,
+      "dc": -0.0018961,
+      "sha256": "6d0e9b0e9248f3aee8fdd607f699f947edf07457b6d3726da018d358820aaad3"
+    },
+    {
+      "name": "enemyScatter",
+      "variant": 4,
+      "seconds": 0.16,
+      "peak_db": -4.15,
+      "rms_db": -17.39,
+      "dc": -0.0017227,
+      "sha256": "fec3a488fd8f2784c875b2156ba4fbe949c7691463cf308375403cb3273c70ce"
+    },
+    {
+      "name": "enemyMine",
+      "variant": 1,
+      "seconds": 0.18,
+      "peak_db": -4.15,
+      "rms_db": -18.47,
+      "dc": -0.0023262,
+      "sha256": "e25a14b8c61b114d85177fdf72197124f58b1637ead571a3bd5cd8a0653fa3d8"
+    },
+    {
+      "name": "enemyMine",
+      "variant": 2,
+      "seconds": 0.18,
+      "peak_db": -4.15,
+      "rms_db": -18.73,
+      "dc": -0.0021946,
+      "sha256": "adefb5526081a9de409596d81cfc79639de1fb1654627fb90c296ba0a0251e8d"
+    },
+    {
+      "name": "enemyMine",
+      "variant": 3,
+      "seconds": 0.18,
+      "peak_db": -4.15,
+      "rms_db": -18.64,
+      "dc": -0.0021639,
+      "sha256": "8a14342a3eaa341311a0b21a0f881d0509c43a964e1c9f3e2bdf2b205eb26462"
+    },
+    {
+      "name": "enemyMine",
+      "variant": 4,
+      "seconds": 0.18,
+      "peak_db": -4.15,
+      "rms_db": -18.5,
+      "dc": -0.0018016,
+      "sha256": "5cb3b60df3ea79c9ab16a134b02a9e7569a8d2dcc2fd13f56b7ffac5228d70c2"
+    },
+    {
+      "name": "enemyWave",
+      "variant": 1,
+      "seconds": 0.32,
+      "peak_db": -4.15,
+      "rms_db": -14.67,
+      "dc": -0.0011092,
+      "sha256": "9246d63a09ec6dbf27948f54d7797cbb75cef50423d8fc4d6f8ca3defef3a6aa"
+    },
+    {
+      "name": "enemyWave",
+      "variant": 2,
+      "seconds": 0.32,
+      "peak_db": -4.15,
+      "rms_db": -14.53,
+      "dc": -0.001143,
+      "sha256": "ad3153b290a7d669a0e4211d827a2bbed51e03aea094595a4e2484e58464bcbd"
+    },
+    {
+      "name": "enemyWave",
+      "variant": 3,
+      "seconds": 0.32,
+      "peak_db": -4.15,
+      "rms_db": -14.62,
+      "dc": -0.0011019,
+      "sha256": "f7a45fba6c255a6e078c032ea455363f0a750b26b065cdbd6dffbb454ffa7375"
+    },
+    {
+      "name": "enemyWave",
+      "variant": 4,
+      "seconds": 0.32,
+      "peak_db": -4.15,
+      "rms_db": -14.62,
+      "dc": -0.0011509,
+      "sha256": "5462b9d9e649bff9f1740864079352e782eabe756e14bec1745438479acee589"
+    },
+    {
+      "name": "beamCharge",
+      "variant": 1,
+      "seconds": 0.36,
+      "peak_db": -4.15,
+      "rms_db": -14.38,
+      "dc": -0.0028388,
+      "sha256": "0635e693201559ea6a6e18cb4d0a2a67fc540c083c55fbccc1e65f6723c54a0a"
+    },
+    {
+      "name": "beamCharge",
+      "variant": 2,
+      "seconds": 0.36,
+      "peak_db": -4.15,
+      "rms_db": -14.49,
+      "dc": -0.0028193,
+      "sha256": "eea99a7182350efcfd4f8fe6ecb1200c8727819a61f79aa826f27a88efa9b653"
+    },
+    {
+      "name": "beamCharge",
+      "variant": 3,
+      "seconds": 0.36,
+      "peak_db": -4.15,
+      "rms_db": -14.39,
+      "dc": -0.0028113,
+      "sha256": "7425a4b814af634743731066797dda516f134ade950fc669aa7d5b649f091683"
+    },
+    {
+      "name": "beamCharge",
+      "variant": 4,
+      "seconds": 0.36,
+      "peak_db": -4.15,
+      "rms_db": -14.52,
+      "dc": -0.0027121,
+      "sha256": "8ffd2589ffd24bce838ed9c0351e7ac50f013dcc4812909071592155cf00c1d1"
+    },
+    {
+      "name": "beamFire",
+      "variant": 1,
+      "seconds": 0.38,
+      "peak_db": -4.15,
+      "rms_db": -15.87,
+      "dc": -0.0008561,
+      "sha256": "6d99b9b4b444e1de55a2fdb0cc1c1ecddb2692d80eca46bf2649d95eb81c265a"
+    },
+    {
+      "name": "beamFire",
+      "variant": 2,
+      "seconds": 0.38,
+      "peak_db": -4.15,
+      "rms_db": -15.91,
+      "dc": -0.0009461,
+      "sha256": "627168680cc32bc31305475b8f6af614148279cb017447b743fe51fb55a20686"
+    },
+    {
+      "name": "beamFire",
+      "variant": 3,
+      "seconds": 0.38,
+      "peak_db": -4.15,
+      "rms_db": -16.37,
+      "dc": -0.0009298,
+      "sha256": "f2284740c08dcc2f88cb984d5f9e31a6afba364e076abc80cbd77405174fb8b4"
+    },
+    {
+      "name": "beamFire",
+      "variant": 4,
+      "seconds": 0.38,
+      "peak_db": -4.15,
+      "rms_db": -16.05,
+      "dc": -0.0009558,
+      "sha256": "a2fbe1bfcd1976e2e33304dbc33e33fe7eba6c2adb7a6fbecaf63ca46749be68"
+    },
+    {
+      "name": "hit1",
+      "variant": 1,
+      "seconds": 0.07,
+      "peak_db": -4.15,
+      "rms_db": -18.29,
+      "dc": -0.0053533,
+      "sha256": "8c0ac09e30241fb1286cb026785089fcb4ed5a70c9733b5bf712f26c747a6a34"
+    },
+    {
+      "name": "hit1",
+      "variant": 2,
+      "seconds": 0.07,
+      "peak_db": -4.15,
+      "rms_db": -18.12,
+      "dc": -0.0037897,
+      "sha256": "6c7b8734fb8d6bf04fba4ac1bbbb5aabfa6dad4e49167b62f484d1dc54c2e4c5"
+    },
+    {
+      "name": "hit1",
+      "variant": 3,
+      "seconds": 0.07,
+      "peak_db": -4.15,
+      "rms_db": -17.29,
+      "dc": -0.003693,
+      "sha256": "768237083d1e1f8a39ebb73312170b3f3ee7e014b78f2dd9328dd96c33dcb258"
+    },
+    {
+      "name": "hit1",
+      "variant": 4,
+      "seconds": 0.07,
+      "peak_db": -4.15,
+      "rms_db": -18.11,
+      "dc": -0.003859,
+      "sha256": "c54dce8c52a48432f551f8ff7b170cbfb8de8a392e236c0e1ba400266e5ca001"
+    },
+    {
+      "name": "hitElectric",
+      "variant": 1,
+      "seconds": 0.095,
+      "peak_db": -4.15,
+      "rms_db": -15.87,
+      "dc": -0.001738,
+      "sha256": "6f97f2abd568d19a5e0b48efd265a0b3bf2b7388c3a353d44e2979962c3815de"
+    },
+    {
+      "name": "hitElectric",
+      "variant": 2,
+      "seconds": 0.095,
+      "peak_db": -4.15,
+      "rms_db": -15.79,
+      "dc": -0.0014397,
+      "sha256": "341aeffab4a2276adf94dd7d6e1c93496c721bb1eab1f1ea6056a0332c7c9c35"
+    },
+    {
+      "name": "hitElectric",
+      "variant": 3,
+      "seconds": 0.095,
+      "peak_db": -4.15,
+      "rms_db": -15.59,
+      "dc": -0.0017273,
+      "sha256": "68ec339ad183c982a9e0fc54b93e7e117ed462fa9ca0969e6efff93935adfe42"
+    },
+    {
+      "name": "hitElectric",
+      "variant": 4,
+      "seconds": 0.095,
+      "peak_db": -4.15,
+      "rms_db": -15.83,
+      "dc": -0.0021407,
+      "sha256": "8370c463cb9163ced4774b0aa2f04e1caa544c7756ea29b4aee7e2585980168e"
+    },
+    {
+      "name": "ricochetHit",
+      "variant": 1,
+      "seconds": 0.09,
+      "peak_db": -4.15,
+      "rms_db": -19.65,
+      "dc": -0.0008366,
+      "sha256": "c8136edb88026276ae76c56f5752b177addebe02f39bb5006c4b97e3ae116e6a"
+    },
+    {
+      "name": "ricochetHit",
+      "variant": 2,
+      "seconds": 0.09,
+      "peak_db": -4.15,
+      "rms_db": -19.67,
+      "dc": -0.0012171,
+      "sha256": "ac3d94b63005b196c8904df46ec94bd00d018343f515ca97dce53f495b64445f"
+    },
+    {
+      "name": "ricochetHit",
+      "variant": 3,
+      "seconds": 0.09,
+      "peak_db": -4.15,
+      "rms_db": -19.34,
+      "dc": -0.0011933,
+      "sha256": "87b7566f85872788d3365e4d7773d199abd4de90057bae881be64b0a37f030d2"
+    },
+    {
+      "name": "ricochetHit",
+      "variant": 4,
+      "seconds": 0.09,
+      "peak_db": -4.15,
+      "rms_db": -18.83,
+      "dc": -0.0013271,
+      "sha256": "f7b3d37cab74d7b91f6ebf5f6ec2aa01d54113cbae5486fcc55bb8258cbc9fc7"
+    },
+    {
+      "name": "enemyExplosion1",
+      "variant": 1,
+      "seconds": 0.52,
+      "peak_db": -4.15,
+      "rms_db": -17.66,
+      "dc": 0.0001053,
+      "sha256": "eb9aa360f64f23586b9673e41a1e21c47691b2d6460c973dfcf570859419e68e"
+    },
+    {
+      "name": "enemyExplosion1",
+      "variant": 2,
+      "seconds": 0.52,
+      "peak_db": -4.15,
+      "rms_db": -17.27,
+      "dc": 0.0,
+      "sha256": "3428f4864cb3da723e1eb8374d9277c9d3bd7f2f1ce31bb11c3b8a8903e4c5cd"
+    },
+    {
+      "name": "enemyExplosion1",
+      "variant": 3,
+      "seconds": 0.52,
+      "peak_db": -4.15,
+      "rms_db": -17.31,
+      "dc": 0.0003379,
+      "sha256": "1a9ab37b26c365f6865d4335757d8143c09960773219066feae66ea5c71154f9"
+    },
+    {
+      "name": "enemyExplosion1",
+      "variant": 4,
+      "seconds": 0.52,
+      "peak_db": -4.15,
+      "rms_db": -17.71,
+      "dc": -0.0001463,
+      "sha256": "f49957d2cfeb58b680782dfa0b34578f69630dc26ebd59c707ae94b634e13d60"
+    },
+    {
+      "name": "explosionHeavy",
+      "variant": 1,
+      "seconds": 0.88,
+      "peak_db": -4.15,
+      "rms_db": -18.1,
+      "dc": -8.08e-05,
+      "sha256": "5119408f8948c89752009a647957fd661cb6d110abf14fb498ce0da94d98d85a"
+    },
+    {
+      "name": "explosionHeavy",
+      "variant": 2,
+      "seconds": 0.88,
+      "peak_db": -4.15,
+      "rms_db": -17.29,
+      "dc": -0.0001492,
+      "sha256": "1f3dedf9f47f3c90b8ddf36119f3065842563d7709b34172cffa33f2e5bdab18"
+    },
+    {
+      "name": "explosionHeavy",
+      "variant": 3,
+      "seconds": 0.88,
+      "peak_db": -4.15,
+      "rms_db": -17.43,
+      "dc": 7.26e-05,
+      "sha256": "c7c4720c5e3459d2271d59c1c75b319a5b53c3fec0b6f914aff3399d59b7297c"
+    },
+    {
+      "name": "explosionHeavy",
+      "variant": 4,
+      "seconds": 0.88,
+      "peak_db": -4.15,
+      "rms_db": -17.49,
+      "dc": -0.0001353,
+      "sha256": "7e7ff4d142bdc121bbc085020110fcbe58d30e6e0efeb320c8ca349ccde02aa4"
+    },
+    {
+      "name": "shellBurst",
+      "variant": 1,
+      "seconds": 0.27,
+      "peak_db": -4.15,
+      "rms_db": -17.29,
+      "dc": -0.0001238,
+      "sha256": "0cf4a4aa7c6023aa9ec5e39c32fb9038abe51342fd1fe67c72d0f54c4f6141aa"
+    },
+    {
+      "name": "shellBurst",
+      "variant": 2,
+      "seconds": 0.27,
+      "peak_db": -4.15,
+      "rms_db": -17.37,
+      "dc": -0.0009506,
+      "sha256": "5424d6a231c0a7a59ad90df7742929ed4bd36f4bdbf5983a283ccad03b7c3f76"
+    },
+    {
+      "name": "shellBurst",
+      "variant": 3,
+      "seconds": 0.27,
+      "peak_db": -4.15,
+      "rms_db": -17.61,
+      "dc": -2.91e-05,
+      "sha256": "0779a27683dbbad9e370f80921e61b1e3e1c92e39e91e5ce72d2d2a05af9e5e6"
+    },
+    {
+      "name": "shellBurst",
+      "variant": 4,
+      "seconds": 0.27,
+      "peak_db": -4.15,
+      "rms_db": -17.61,
+      "dc": -0.001456,
+      "sha256": "5932faac4420f01607d39edd9a0934b574e507a5a88d8f909e6e45e9cb9fb36f"
+    },
+    {
+      "name": "hurt1",
+      "variant": 1,
+      "seconds": 0.26,
+      "peak_db": -4.15,
+      "rms_db": -16.62,
+      "dc": -0.0013186,
+      "sha256": "8f9ecd2ab383be081e8781a59c7ece450db335413c58ae7591b69093ac6b5384"
+    },
+    {
+      "name": "hurt1",
+      "variant": 2,
+      "seconds": 0.26,
+      "peak_db": -4.15,
+      "rms_db": -16.75,
+      "dc": -0.0012042,
+      "sha256": "ed96d80706b4bf9cc328c88148d0e887d5cbb398164bea424cdf651713c02a23"
+    },
+    {
+      "name": "hurt1",
+      "variant": 3,
+      "seconds": 0.26,
+      "peak_db": -4.15,
+      "rms_db": -16.21,
+      "dc": -0.0012578,
+      "sha256": "be076cf7f9fb974479261e64bea24707a2d581b88200f694b80abb5d6c77a7ba"
+    },
+    {
+      "name": "hurt1",
+      "variant": 4,
+      "seconds": 0.26,
+      "peak_db": -4.15,
+      "rms_db": -16.68,
+      "dc": -0.0012742,
+      "sha256": "89ddeb8bf04da28729deb2f322dde76e0cbb573c1f8758c9f7b5878169b4e0c3"
+    },
+    {
+      "name": "playerDead",
+      "variant": 1,
+      "seconds": 1.18,
+      "peak_db": -4.15,
+      "rms_db": -17.51,
+      "dc": -0.0001775,
+      "sha256": "71e1e365616bf41a1b19331995bacff902c8449739057510a0e52c4883949b83"
+    },
+    {
+      "name": "playerDead",
+      "variant": 2,
+      "seconds": 1.18,
+      "peak_db": -4.15,
+      "rms_db": -17.59,
+      "dc": 8.39e-05,
+      "sha256": "afa037c652352adeadd67299e386e729752dda09c73c30ddfeba67e6e4e4c82d"
+    },
+    {
+      "name": "playerDead",
+      "variant": 3,
+      "seconds": 1.18,
+      "peak_db": -4.15,
+      "rms_db": -17.67,
+      "dc": 3.02e-05,
+      "sha256": "57e7e1d2d58760013d56cd2ce301dad9f9434eb274fcdf30724949bb544cfd84"
+    },
+    {
+      "name": "playerDead",
+      "variant": 4,
+      "seconds": 1.18,
+      "peak_db": -4.15,
+      "rms_db": -17.75,
+      "dc": -0.0001539,
+      "sha256": "eb4a3192a345e88e3e93b8f4c6097c8d265babdf0f8d67a143423af5f5f486e0"
+    },
+    {
+      "name": "blankbullet",
+      "variant": 1,
+      "seconds": 0.65,
+      "peak_db": -4.15,
+      "rms_db": -16.15,
+      "dc": -0.0004421,
+      "sha256": "109e533e4b7107e35d340734fb06953b0b3c380f53426601b5eb3c312a6c7ca6"
+    },
+    {
+      "name": "blankbullet",
+      "variant": 2,
+      "seconds": 0.65,
+      "peak_db": -4.15,
+      "rms_db": -16.36,
+      "dc": -0.0004093,
+      "sha256": "3f9f1296504ec22a7be273d9914d161fc5c4214aa2225a8039ba3f77907cf816"
+    },
+    {
+      "name": "blankbullet",
+      "variant": 3,
+      "seconds": 0.65,
+      "peak_db": -4.15,
+      "rms_db": -16.02,
+      "dc": -0.0004016,
+      "sha256": "cabd0c38d5afcb9c4b064d4e2644c3862eee8b94a41877ddaf775917195324a4"
+    },
+    {
+      "name": "blankbullet",
+      "variant": 4,
+      "seconds": 0.65,
+      "peak_db": -4.15,
+      "rms_db": -15.88,
+      "dc": -0.0003998,
+      "sha256": "315cb3a90312031082a7845de80178aa9f170025343039766abd541f5dc1ae9d"
+    },
+    {
+      "name": "bossWarning",
+      "variant": 1,
+      "seconds": 0.78,
+      "peak_db": -4.15,
+      "rms_db": -16.82,
+      "dc": 2.35e-05,
+      "sha256": "7c533e8b7343effbe52fab29d7f4324085feb5323d1cb543525ad85533ca2f2d"
+    },
+    {
+      "name": "bossWarning",
+      "variant": 2,
+      "seconds": 0.78,
+      "peak_db": -4.15,
+      "rms_db": -16.87,
+      "dc": 8.57e-05,
+      "sha256": "99893e3e36141e93e7f103350d07af84d06f59c13940764e238e72a457b45d32"
+    },
+    {
+      "name": "bossWarning",
+      "variant": 3,
+      "seconds": 0.78,
+      "peak_db": -4.15,
+      "rms_db": -16.9,
+      "dc": 2.05e-05,
+      "sha256": "3491fd90ce3591440d1c969ac4919da885b9911a8942d1534ffbbfa9013b8ff4"
+    },
+    {
+      "name": "bossWarning",
+      "variant": 4,
+      "seconds": 0.78,
+      "peak_db": -4.15,
+      "rms_db": -16.97,
+      "dc": -6.8e-05,
+      "sha256": "ce078d06980ce3730d5a07f4c36eeeaf58d3fb77ee67afb02bbcfd9db4a2fa4b"
+    }
+  ],
+  "repetition": [
+    {
+      "name": "shot1",
+      "interval": 0.075,
+      "seconds": 9.0,
+      "peak_db": -24.07,
+      "rms_db": -35.37,
+      "dc": -0.0001643
+    },
+    {
+      "name": "shotElectric",
+      "interval": 0.075,
+      "seconds": 9.0,
+      "peak_db": -24.46,
+      "rms_db": -33.63,
+      "dc": -0.0002952
+    },
+    {
+      "name": "shotAK45",
+      "interval": 0.075,
+      "seconds": 9.0,
+      "peak_db": -24.94,
+      "rms_db": -37.99,
+      "dc": -0.0003435
+    },
+    {
+      "name": "shotCompanion",
+      "interval": 0.075,
+      "seconds": 9.0,
+      "peak_db": -27.89,
+      "rms_db": -39.93,
+      "dc": -9.57e-05
+    },
+    {
+      "name": "shotNeedle",
+      "interval": 0.075,
+      "seconds": 9.0,
+      "peak_db": -25.05,
+      "rms_db": -37.37,
+      "dc": -0.0001054
+    },
+    {
+      "name": "shotRail",
+      "interval": 0.12,
+      "seconds": 9.0,
+      "peak_db": -20.42,
+      "rms_db": -33.72,
+      "dc": -0.0003344
+    },
+    {
+      "name": "shotScatter",
+      "interval": 0.075,
+      "seconds": 9.0,
+      "peak_db": -22.33,
+      "rms_db": -33.95,
+      "dc": -0.0003863
+    },
+    {
+      "name": "shotShell",
+      "interval": 0.1,
+      "seconds": 9.0,
+      "peak_db": -21.47,
+      "rms_db": -33.13,
+      "dc": -0.0001832
+    },
+    {
+      "name": "shotDisc",
+      "interval": 0.08,
+      "seconds": 9.0,
+      "peak_db": -22.72,
+      "rms_db": -31.41,
+      "dc": -0.0002333
+    },
+    {
+      "name": "shotMissile",
+      "interval": 0.08,
+      "seconds": 9.0,
+      "peak_db": -22.02,
+      "rms_db": -33.24,
+      "dc": -0.0001262
+    },
+    {
+      "name": "shotFlame",
+      "interval": 0.075,
+      "seconds": 9.0,
+      "peak_db": -24.73,
+      "rms_db": -37.38,
+      "dc": -0.0001007
+    },
+    {
+      "name": "shotBeam",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -19.96,
+      "rms_db": -29.25,
+      "dc": -0.0002353
+    },
+    {
+      "name": "enemySimple",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -31.09,
+      "rms_db": -45.46,
+      "dc": -9.71e-05
+    },
+    {
+      "name": "enemyNeedle",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -32.11,
+      "rms_db": -48.61,
+      "dc": -1.79e-05
+    },
+    {
+      "name": "enemyPlasma",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -28.81,
+      "rms_db": -37.37,
+      "dc": -0.0001422
+    },
+    {
+      "name": "enemyMissile",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -27.98,
+      "rms_db": -40.46,
+      "dc": -0.0001039
+    },
+    {
+      "name": "enemyBurst",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -29.34,
+      "rms_db": -42.78,
+      "dc": -9.11e-05
+    },
+    {
+      "name": "enemyDisc",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -30.85,
+      "rms_db": -40.7,
+      "dc": -8.57e-05
+    },
+    {
+      "name": "enemyRicochet",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -31.09,
+      "rms_db": -47.78,
+      "dc": -4.16e-05
+    },
+    {
+      "name": "enemyHelix",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -31.04,
+      "rms_db": -40.93,
+      "dc": -7.21e-05
+    },
+    {
+      "name": "enemySuspended",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -29.67,
+      "rms_db": -38.61,
+      "dc": -0.0001122
+    },
+    {
+      "name": "enemyScatter",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -30.17,
+      "rms_db": -43.72,
+      "dc": -8.03e-05
+    },
+    {
+      "name": "enemyMine",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -30.16,
+      "rms_db": -44.35,
+      "dc": -0.0001126
+    },
+    {
+      "name": "enemyWave",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -28.34,
+      "rms_db": -37.05,
+      "dc": -0.0001167
+    },
+    {
+      "name": "beamCharge",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -28.65,
+      "rms_db": -37.2,
+      "dc": -0.0002964
+    },
+    {
+      "name": "beamFire",
+      "interval": 0.15,
+      "seconds": 9.0,
+      "peak_db": -26.64,
+      "rms_db": -36.3,
+      "dc": -0.0001339
+    },
+    {
+      "name": "hit1",
+      "interval": 0.06,
+      "seconds": 9.0,
+      "peak_db": -30.14,
+      "rms_db": -43.8,
+      "dc": -0.0002164
+    },
+    {
+      "name": "hitElectric",
+      "interval": 0.06,
+      "seconds": 9.0,
+      "peak_db": -30.61,
+      "rms_db": -41.24,
+      "dc": -0.0001113
+    },
+    {
+      "name": "ricochetHit",
+      "interval": 0.06,
+      "seconds": 9.0,
+      "peak_db": -30.95,
+      "rms_db": -45.06,
+      "dc": -6.83e-05
+    },
+    {
+      "name": "enemyExplosion1",
+      "interval": 0.2,
+      "seconds": 9.0,
+      "peak_db": -20.37,
+      "rms_db": -31.57,
+      "dc": 2.23e-05
+    },
+    {
+      "name": "explosionHeavy",
+      "interval": 0.2,
+      "seconds": 9.0,
+      "peak_db": -15.85,
+      "rms_db": -27.18,
+      "dc": -4.86e-05
+    },
+    {
+      "name": "shellBurst",
+      "interval": 0.2,
+      "seconds": 9.0,
+      "peak_db": -25.96,
+      "rms_db": -38.61,
+      "dc": -6.14e-05
+    },
+    {
+      "name": "hurt1",
+      "interval": 0.95,
+      "seconds": 9.0,
+      "peak_db": -18.13,
+      "rms_db": -36.9,
+      "dc": -5.84e-05
+    },
+    {
+      "name": "playerDead",
+      "interval": 0.95,
+      "seconds": 9.0,
+      "peak_db": -15.65,
+      "rms_db": -29.12,
+      "dc": -1.48e-05
+    },
+    {
+      "name": "blankbullet",
+      "interval": 0.95,
+      "seconds": 9.0,
+      "peak_db": -19.05,
+      "rms_db": -33.38,
+      "dc": -4.3e-05
+    },
+    {
+      "name": "bossWarning",
+      "interval": 0.95,
+      "seconds": 9.0,
+      "peak_db": -20.07,
+      "rms_db": -34.4,
+      "dc": 1.7e-06
+    }
+  ],
+  "mixes": [
+    {
+      "name": "combat",
+      "events": 274,
+      "seconds": 18.0,
+      "peak_db": -14.09,
+      "rms_db": -32.46,
+      "dc": -0.0002117
+    },
+    {
+      "name": "stress_combat",
+      "events": 478,
+      "seconds": 18.0,
+      "peak_db": -12.45,
+      "rms_db": -29.87,
+      "dc": -0.0004056
+    },
+    {
+      "name": "endurance",
+      "seconds": 62.0,
+      "peak_db": -13.79,
+      "rms_db": -30.07,
+      "dc": -0.0003576
+    }
+  ]
+}

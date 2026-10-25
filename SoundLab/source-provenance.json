@@ -1,0 +1,114 @@
+[
+  {
+    "id": "gun",
+    "project": "Frontlines",
+    "path": "StableAudio/Combat/gunshot.mp3",
+    "start": 0.075,
+    "end": 0.35,
+    "sha256": "503a6567eae7df72c8ec669de078cc2b2efc4ac364da52deecd61c1f404140e2"
+  },
+  {
+    "id": "cannon",
+    "project": "Frontlines",
+    "path": "StableAudio/Combat/cannon.mp3",
+    "start": 0,
+    "end": 0.34,
+    "sha256": "3abe385d890eb378ba53c6035cf064fb55b4f0572d11068c294625e5811c1f5a"
+  },
+  {
+    "id": "electric",
+    "project": "Frontlines",
+    "path": "StableAudio/Combat/electric.mp3",
+    "start": 0,
+    "end": 0.085,
+    "sha256": "3b78b7c5c1d4d36fbbdc4aa166f85de6663d74b4345e1284c6eb2ed25f9a49d6"
+  },
+  {
+    "id": "arcane",
+    "project": "Frontlines",
+    "path": "StableAudio/Combat/arcane.mp3",
+    "start": 0.035,
+    "end": 0.24,
+    "sha256": "62a3c859d52ed4cf9add50a7e917e05e2271c619d32894c4c4f93753dd7bc3fb"
+  },
+  {
+    "id": "dark",
+    "project": "Frontlines",
+    "path": "StableAudio/Combat/dark.mp3",
+    "start": 0.015,
+    "end": 0.4,
+    "sha256": "7cdee846c385af02b9de7c7a3dba5e141b845e9eee7c7e97b59e250916bf04f2"
+  },
+  {
+    "id": "fire",
+    "project": "Frontlines",
+    "path": "StableAudio/Combat/fire.mp3",
+    "start": 0.17,
+    "end": 0.4,
+    "sha256": "9c607b27925e6a785e458ea7e4512b0b5ed397139f84a250b5cb8ad3e417b762"
+  },
+  {
+    "id": "metal",
+    "project": "Frontlines",
+    "path": "StableAudio/Combat/metal-hit.mp3",
+    "start": 0,
+    "end": 0.23,
+    "sha256": "3907febb72a38845b4d8cfebcc2037bbf82dc78ecdbee730f75fd22401a5c347"
+  },
+  {
+    "id": "arrow",
+    "project": "Frontlines",
+    "path": "StableAudio/Combat/arrow-hit.mp3",
+    "start": 0.012,
+    "end": 0.15,
+    "sha256": "70d8e99803d70aaf74c5f4baed367c45015c4a69f5a01bbfc6dba5edf45ac2c8"
+  },
+  {
+    "id": "boom",
+    "project": "Frontlines",
+    "path": "StableAudio/Combat/explosion.mp3",
+    "start": 0,
+    "end": 0.48,
+    "sha256": "a75030e0d499e2b68f1c00849e4bfe785c4d620cd03319b3d10d7230dba483d9"
+  },
+  {
+    "id": "holy",
+    "project": "Frontlines",
+    "path": "StableAudio/Combat/holy.mp3",
+    "start": 0,
+    "end": 0.23,
+    "sha256": "01e3dcfba373d28d1293fd457b4027fc46cd8ae9dd8690ed1ed10ff6150a0726"
+  },
+  {
+    "id": "hit",
+    "project": "Frontlines",
+    "path": "StableAudio/hit.mp3",
+    "start": 0.205,
+    "end": 0.465,
+    "sha256": "9c7b5702c1021fab1f2b4810d71fcecd41e5b4959dc65230d1984869a3b72cd1"
+  },
+  {
+    "id": "impact",
+    "project": "Frontlines",
+    "path": "StableAudio/spell-impact.mp3",
+    "start": 0,
+    "end": 0.24,
+    "sha256": "d34a0503e5219b3b1229543d1e213b237a658c6db859cca763e8a1c667b85e9e"
+  },
+  {
+    "id": "building",
+    "project": "Frontlines",
+    "path": "StableAudio/building-hit.mp3",
+    "start": 0,
+    "end": 0.39,
+    "sha256": "2f56f3212d25d3f0fdef5ab1c307cd5bd7966482e6516a00f308d23f9796252c"
+  },
+  {
+    "id": "swish",
+    "project": "Frontlines",
+    "path": "StableAudio/attack.mp3",
+    "start": 0.026,
+    "end": 0.225,
+    "sha256": "46f8ee921eb502a8d83f8715274d803a039551056fdf452a4d570b99644a1066"
+  }
+]

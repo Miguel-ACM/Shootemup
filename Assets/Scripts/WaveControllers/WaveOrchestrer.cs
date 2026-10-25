@@ -138,7 +138,7 @@ public class WaveOrchestrer : MonoBehaviour
             // Hold the wave timer while the boss is up; the next wave starts when it dies.
             isWaveComingOut = false;
             StartCoroutine(BGMManager.FadeOutSong(2.9f));
-            SoundManager.PlayCue("bossWarning");
+            SoundManager.PlaySound("bossWarning", 0.18f);
             warning.blink();
             Invoke("SpawnBoss", 3f);
             
@@ -241,7 +241,7 @@ public class WaveOrchestrer : MonoBehaviour
 
     public void NotifyBossPhaseChange(int phase)
     {
-        SoundManager.PlayCue("enemyExplosion1");
+        SoundManager.PlaySound("enemyExplosion1", 0.12f);
         BGMManager.ChangeMood(2);
         //BGMManager.RestartSong();
     }

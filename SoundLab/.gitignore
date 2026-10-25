@@ -1,0 +1,5 @@
+__pycache__/
+server.log
+server-errors.log
+server.pid
+selections.pending.json

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "bankVersion": "sample-round-1",
+  "status": "draft",
+  "picks": {
+    "shot1": {
+      "choice": "pending",
+      "gain": 1,
+      "note": ""
+    }
+  }
+}
