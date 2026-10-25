@@ -106,7 +106,7 @@ public sealed class CloudTransition : MonoBehaviour
 
     IEnumerator WarmRouteMusic(LevelId level,int index)
     {
-        var request=Resources.LoadAsync<AudioClip>("Music/"+level.ToString().ToLowerInvariant());
+        var request=Resources.LoadAsync<AudioClip>("Music/"+BGMManager.LevelTrack(level));
         yield return request;
         var clip=request.asset as AudioClip;
         routeMusic[index]=clip; // Keep the loaded clip alive until the route's music source owns it.

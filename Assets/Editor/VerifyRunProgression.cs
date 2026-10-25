@@ -32,13 +32,21 @@ public static class VerifyRunProgression
                     LevelRun.GetChoices(out left,out right);
                     Check(left==LevelId.Thunder && right==LevelId.Tunnel,"Middle tier must offer Thunder/Tunnel");
                     Reject(LevelId.Fields);Reject(middle);
-                    LevelRun.Advance(final);Check(LevelRun.ReturnsToPlains,"Final district must return to Plains");
-                    bool rejected=false;
-                    try{LevelRun.GetChoices(out left,out right);}catch(InvalidOperationException){rejected=true;}
-                    Check(rejected,"Final tier must not offer duplicate routes");Reject(LevelId.Snow);
+                    LevelRun.Advance(final);Check(!LevelRun.ReturnsToPlains,"Third district must offer the desert extension");
+                    LevelRun.GetChoices(out left,out right);
+                    Check(left==LevelId.Desert && right==LevelId.Fields,"Third district must offer Desert or Plains");Reject(LevelId.Snow);
                     LevelRun.Advance(LevelId.Fields);
                     Check(LevelRun.Seed==seed,"Route transition reset the run seed");
                 }
+            }
+            LevelRun.Reset();
+            for(int loop=1;loop<=50;loop++)
+            {
+                LevelRun.Advance(LevelId.City);LevelRun.Advance(LevelId.Tunnel);LevelRun.Advance(LevelId.Desert);
+                Check(LevelRun.Loop==loop && LevelRun.Stage==loop*4,"Desert advanced loop early");
+                Check(LevelRun.ReturnsToPlains,"Desert must finish the extended loop");
+                Reject(LevelId.Desert);Reject(LevelId.Thunder);LevelRun.Advance(LevelId.Fields);
+                Check(LevelRun.Loop==loop+1,"Extended loop did not increment exactly once");
             }
         }
         finally{LevelRun.Reset();}

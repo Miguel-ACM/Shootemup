@@ -40,13 +40,14 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 ## District and boss identities
 
-- Runs start in Plains, then choose Snow or City, then Thunder or Tunnel. Beating either final district loops directly back to harder Plains while retaining the run's equipment and score.
+- Runs start in Plains, then choose Snow or City, then Thunder or Tunnel. After either third district, offer Desert or a direct loop to harder Plains. Desert ends by looping to harder Plains. Preserve equipment and score on both routes.
 
 - Snow: many large shells that explode into smaller bullets; a very round boss with several patterns and a harder second phase.
 - Thunder: beams and quick aimed fire; a slim boss with side-emitting lasers, then 6–8 alternating sweeping beams plus a barrage in phase two.
 - City: busy formations of small fast enemies. The boss is a fast/heavy duo with separate health summed in one bar and tracking attacks. The first death drops nothing; the survivor becomes aggressive and heals half its missing health.
 - Tunnel: bouncing projectiles. The boss is a rapidly spinning saw that travels like a DVD logo across the full visible arena, including its corners. **It fires dense mixed-size bursts only when it bounces, never when hit or on a timer, and has no thrusters.** It speeds up as damaged; phase two pauses to deploy two smaller, sturdy, destroyable saws with the same bounce behavior.
 - The latest explicit feedback supersedes earlier ideas (in particular the saw's original on-hit emission).
+- Desert: dunes, small silos and compact gray buildings; buried enemies emerge and fire rings, interceptors fire tightly spaced aimed bursts, and small articulated sandworms shoot from multiple body ports. Its boss is a giant white mechanical sandworm with red weakpoints along its body and a larger red head weakpoint. Every part must be destroyed to win.
 
 ## Items and decisions
 
