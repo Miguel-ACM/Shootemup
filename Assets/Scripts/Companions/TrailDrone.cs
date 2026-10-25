@@ -51,12 +51,16 @@ public sealed class TrailDrone : ACompanion
         // This also prevents parent motion from dragging a frozen drone through stopped time.
         if(WorldTimeStop.Frozen || Time.deltaTime<=0){transform.position=worldPosition;return;}
         float stagger=index%2==0 ? .19f : -.19f;
-        float spacing=Mathf.Min(.65f,Mathf.Max(0,owner.transform.position.y-Camera.DownLimit-.3f)/(count+1));
+        var camera=UnityEngine.Camera.main;
+        float bottom=camera!=null ? camera.transform.position.y-camera.orthographicSize : Camera.DownLimit;
+        float halfWidth=camera!=null ? camera.orthographicSize*405f/720f : Camera.RightLimit;
+        float center=camera!=null ? camera.transform.position.x : 0;
+        float spacing=Mathf.Min(.65f,Mathf.Max(0,owner.transform.position.y-bottom-.4f)/(count+1));
         float inward=owner.transform.position.x>0 ? -1 : 1;
         // Near the bottom the tail bends inward instead of disappearing below the visible arena.
         var offset=new Vector3(stagger*spacing/.65f+inward*(.65f-spacing)*.8f,-spacing,-.02f);
         Vector3 target=(leader!=null ? leader.worldPosition : owner.transform.position)+offset;
-        target.x=Mathf.Clamp(target.x,Camera.LeftLimit+.3f,Camera.RightLimit-.3f);target.y=Mathf.Max(Camera.DownLimit+.3f,target.y);
+        target.x=Mathf.Clamp(target.x,center-halfWidth+.35f,center+halfWidth-.35f);target.y=Mathf.Max(bottom+.4f,target.y);
         worldPosition=Vector3.Lerp(worldPosition,target,1-Mathf.Exp(-12*Time.deltaTime));transform.position=worldPosition;
         if(GameRules.playerDisabled)
         {

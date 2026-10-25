@@ -203,7 +203,9 @@ public sealed class RequestedItemReview : MonoBehaviour
         }
         Press();
         ship.transform.position=new Vector3(Camera.RightLimit,Camera.DownLimit,-1);yield return new WaitForSeconds(.7f);
-        Check(drones.All(d=>d.transform.position.x<Camera.RightLimit && d.transform.position.y>Camera.DownLimit),"drone tail remains inside the visible arena at the bottom corner");
+        float visibleBottom=UnityEngine.Camera.main.transform.position.y-UnityEngine.Camera.main.orthographicSize;
+        float visibleRight=UnityEngine.Camera.main.transform.position.x+UnityEngine.Camera.main.orthographicSize*405f/720f;
+        Check(drones.All(d=>d.GetComponent<MeshRenderer>().bounds.max.x<visibleRight && d.GetComponent<MeshRenderer>().bounds.min.y>visibleBottom),"entire drone hulls remain inside the actual visible arena at the bottom corner");
         yield return Capture("DroneCorner");
         foreach(var drone in drones)Destroy(drone.gameObject);Clear();yield return null;
         yield return Grant(typeof(BulletTime),1);var bulletTime=(BulletTime)granted;
@@ -223,6 +225,7 @@ public sealed class RequestedItemReview : MonoBehaviour
         Check(ship.health==health,"frozen active beams cannot damage the player");ship.ObserverMode=true;
         Press(Key.Z,Key.RightArrow);start=ship.transform.position.x;
         yield return new WaitForSecondsRealtime(.5f);
+        yield return new WaitForEndOfFrame(); // Followers undo inherited parent motion in LateUpdate, before rendering.
         Check(hostile.transform.position==hostilePosition && shot.transform.position==shotPosition,"hostile and friendly projectiles freeze together");
         Check(enemy.transform.position==enemyPosition,"enemy movement freezes with the world");
         Check(frozenDrone.transform.position==dronePosition,"drones stay frozen while the player moves");
