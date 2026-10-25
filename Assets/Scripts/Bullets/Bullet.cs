@@ -69,12 +69,12 @@ public class Bullet : ABullet
             en.damage(dealt);
             if(CombatUpgrades.Current!=null && (CombatUpgrades.Current.Count(UpgradeKind.BouncingBall)>0 || CombatUpgrades.Current.TryRebound()))
             {
-                var next=CombatUpgrades.Nearest(transform.position,new HashSet<AEnemy>{en},5);
+                var next=CombatUpgrades.Nearest(transform.position,new HashSet<AEnemy>{en},12);
                 if(next!=null)
                 {
                     float power=CombatUpgrades.Current.Count(UpgradeKind.BouncingBall)>0 ? damage : damage*.7f;
                     var bounce=PlayerRound.Spawn(transform.position,(next.transform.position-transform.position).normalized,power,speed,PlayerDelivery.Pulse,1);
-                    if(bounce!=null)bounce.companion=companionShot;
+                    if(bounce!=null){bounce.companion=companionShot;bounce.ExcludePreviousHit(en);}
                 }
             }
             Destroy(gameObject);

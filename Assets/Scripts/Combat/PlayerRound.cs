@@ -16,6 +16,7 @@ public sealed class PlayerRound : ABullet
     bool detonated, returning, rebounded;
     readonly HashSet<AEnemy> hit=new HashSet<AEnemy>();
     SpriteRenderer visual;
+    public void ExcludePreviousHit(AEnemy enemy){hit.Add(enemy);rebounded=true;}
     public static PlayerRound Spawn(Vector3 p,Vector2 d,float damage,float speed,PlayerDelivery mode=PlayerDelivery.Pulse,int generation=0)
     {
         if(LiveCount>=180)return null;
