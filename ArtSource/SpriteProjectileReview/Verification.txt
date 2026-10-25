@@ -1,0 +1,86 @@
+PASS
+PASS SimpleRound point sampling / no mipmaps
+PASS SimpleRound neutral source pixels and hard alpha
+PASS SimpleRound visible sprite, no 3D model
+PASS SimpleRound collision matches 507 opaque/transparent pixel samples, including holes, at 3 rotations
+PASS SimpleRound colour supplied separately by code
+PASS NeedleRound point sampling / no mipmaps
+PASS NeedleRound neutral source pixels and hard alpha
+PASS NeedleRound visible sprite, no 3D model
+PASS NeedleRound collision matches 480 opaque/transparent pixel samples, including holes, at 3 rotations
+PASS NeedleRound colour supplied separately by code
+PASS HelixRound point sampling / no mipmaps
+PASS HelixRound neutral source pixels and hard alpha
+PASS HelixRound visible sprite, no 3D model
+PASS HelixRound collision matches 693 opaque/transparent pixel samples, including holes, at 3 rotations
+PASS HelixRound colour supplied separately by code
+PASS BurstShell point sampling / no mipmaps
+PASS BurstShell neutral source pixels and hard alpha
+PASS BurstShell visible sprite, no 3D model
+PASS BurstShell collision matches 1140 opaque/transparent pixel samples, including holes, at 3 rotations
+PASS BurstShell colour supplied separately by code
+PASS RicochetBolt point sampling / no mipmaps
+PASS RicochetBolt neutral source pixels and hard alpha
+PASS RicochetBolt visible sprite, no 3D model
+PASS RicochetBolt collision matches 714 opaque/transparent pixel samples, including holes, at 3 rotations
+PASS RicochetBolt colour supplied separately by code
+PASS SuspendedRound point sampling / no mipmaps
+PASS SuspendedRound neutral source pixels and hard alpha
+PASS SuspendedRound visible sprite, no 3D model
+PASS SuspendedRound collision matches 1071 opaque/transparent pixel samples, including holes, at 3 rotations
+PASS SuspendedRound colour supplied separately by code
+PASS GuidedMissile point sampling / no mipmaps
+PASS GuidedMissile neutral source pixels and hard alpha
+PASS GuidedMissile visible sprite, no 3D model
+PASS GuidedMissile collision matches 858 opaque/transparent pixel samples, including holes, at 3 rotations
+PASS GuidedMissile colour supplied separately by code
+PASS PlasmaOrb point sampling / no mipmaps
+PASS PlasmaOrb neutral source pixels and hard alpha
+PASS PlasmaOrb visible sprite, no 3D model
+PASS PlasmaOrb collision matches 1083 opaque/transparent pixel samples, including holes, at 3 rotations
+PASS PlasmaOrb colour supplied separately by code
+PASS ProximityMine point sampling / no mipmaps
+PASS ProximityMine neutral source pixels and hard alpha
+PASS ProximityMine visible sprite, no 3D model
+PASS ProximityMine collision matches 1026 opaque/transparent pixel samples, including holes, at 3 rotations
+PASS ProximityMine colour supplied separately by code
+PASS ReturningDisc point sampling / no mipmaps
+PASS ReturningDisc neutral source pixels and hard alpha
+PASS ReturningDisc visible sprite, no 3D model
+PASS ReturningDisc collision matches 1083 opaque/transparent pixel samples, including holes, at 3 rotations
+PASS ReturningDisc colour supplied separately by code
+PASS ScatterCarrier point sampling / no mipmaps
+PASS ScatterCarrier neutral source pixels and hard alpha
+PASS ScatterCarrier visible sprite, no 3D model
+PASS ScatterCarrier collision matches 1380 opaque/transparent pixel samples, including holes, at 3 rotations
+PASS ScatterCarrier colour supplied separately by code
+PASS LaserSideRound point sampling / no mipmaps
+PASS LaserSideRound neutral source pixels and hard alpha
+PASS LaserSideRound visible sprite, no 3D model
+PASS LaserSideRound collision matches 540 opaque/transparent pixel samples, including holes, at 3 rotations
+PASS LaserSideRound colour supplied separately by code
+PASS pool preserves shared sprite, collider and resets fade
+PASS horizontal side-shot nose faces travel direction
+PASS sprite tint / status shader compiles
+PASS PlayerBullet uses sprite rendering
+PASS TwerpBullet uses sprite rendering
+PASS EnemyBulletSmall uses sprite rendering
+PASS EnemyBulletMedium uses sprite rendering
+PASS EnemyBulletBig uses sprite rendering
+PASS CircularWave uses sprite rendering
+PASS player Pulse restored to 2D
+PASS player Needle restored to 2D
+PASS player Shell restored to 2D
+PASS player Disc restored to 2D
+PASS player Missile restored to 2D
+PASS player Flame restored to 2D
+PASS burn and poison coatings retained on sprites
+PASS Fields moving patterns and later carrier volleys
+PASS Snow moving patterns and later carrier volleys
+PASS City moving patterns and later carrier volleys
+PASS Thunder moving patterns and later carrier volleys
+PASS Tunnel moving patterns and later carrier volleys
+PASS Desert moving patterns and later carrier volleys
+PASS Candyland moving patterns and later carrier volleys
+PASS both projectile caps reached: 460 sprites
+Editor render stress median 13,42ms, p95 17,75ms (not a standalone GPU benchmark).

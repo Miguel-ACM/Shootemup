@@ -1,4 +1,6 @@
-# Solid projectile prototype
+# Solid projectile prototype (retired)
+
+This prototype was rejected and replaced by the approved white sprite set. Its runtime renderer and review entry point have been removed. The notes below describe the historical experiment; see `SpriteProjectiles.md` for the current implementation.
 
 All twelve moving hostile projectile types, six player deliveries, and the legacy bullet prefabs now render shared 3D meshes. Continuous blue beams and chain lightning retain their dedicated energy renderers. Existing sprite components remain hidden as the gameplay tint/visibility channel and to preserve existing player sizing calculations.
 

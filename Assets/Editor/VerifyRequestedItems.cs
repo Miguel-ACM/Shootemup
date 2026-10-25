@@ -131,7 +131,7 @@ public sealed class RequestedItemReview : MonoBehaviour
         var pool=new HashSet<string>();foreach(var f in typeof(ItemPool).GetFields(BindingFlags.NonPublic|BindingFlags.Static))if(f.GetValue(null) is string[] entries)foreach(var e in entries)pool.Add(e);
         Check(Items.All(t=>pool.Contains(t.Name)),"all 15 items appear in normal offer pools");
         yield return Catalog();
-        Check(!ShaderUtil.ShaderHasError(ProjectileSolid.SharedMaterial.shader),"projectile coating shader compiles");
+        Check(!ShaderUtil.ShaderHasError(CombatVisuals.ProjectileMaterial.shader),"projectile coating shader compiles");
         var root=ship.transform.localScale;var hull=ship.GetComponent<PSXShipVisual>().Model.localScale;
         Physics2D.SyncTransforms();var hitbox=ship.GetComponent<Collider2D>().bounds.size;
         var shot=PlayerRound.Spawn(Vector3.zero,Vector2.up,1,0);var shotScale=shot.transform.localScale;Destroy(shot.gameObject);

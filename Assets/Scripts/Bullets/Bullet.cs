@@ -11,7 +11,7 @@ public class Bullet : ABullet
 
     void Start()
     {
-        ProjectileSolid.Legacy(gameObject,true);
+        ProjectileSpriteTint.Friendly(gameObject);
         direction.z = transform.position.z;
         rigidBody = GetComponent<Rigidbody2D>();
         Move();

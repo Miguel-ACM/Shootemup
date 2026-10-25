@@ -13,7 +13,7 @@ public abstract class AEnemyBullet : MonoBehaviour
 
     protected virtual void Start()
     {
-        ProjectileSolid.Legacy(gameObject,false);
+        ProjectileSpriteTint.LegacyEnemy(gameObject);
         rigidBody = GetComponent<Rigidbody2D>();
     }
 
@@ -73,7 +73,8 @@ public abstract class AEnemyBullet : MonoBehaviour
     public virtual void Vanish()
     {
         var sprite = GetComponent<SpriteRenderer>();
-        Color tint = sprite != null && sprite.sprite != null ? Average(sprite) : new Color(1f, .6f, .25f);
+        var coded=GetComponent<ProjectileSpriteTint>();
+        Color tint = coded!=null ? coded.Tint : sprite != null && sprite.sprite != null ? Average(sprite) : new Color(1f, .6f, .25f);
         PSXImpactEffects.Vanish(transform.position, tint, transform.lossyScale.x);
         Destroy(gameObject);
     }

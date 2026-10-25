@@ -5,6 +5,10 @@ Shader "Shootemup/Combat Projectile"
     {
         [PerRendererData] _MainTex ("Projectile artwork",2D)="white" {}
         _Color ("Tint",Color)=(1,1,1,1)
+        _SpriteTint ("Code tint",Color)=(1,1,1,1)
+        _Neutralize ("Legacy grayscale",Float)=0
+        _Burn ("Burn coating",Float)=0
+        _Poison ("Poison coating",Float)=0
     }
     SubShader
     {
@@ -23,6 +27,8 @@ Shader "Shootemup/Combat Projectile"
             TEXTURE2D(_MainTex);SAMPLER(sampler_MainTex);
             CBUFFER_START(UnityPerMaterial)
                 float4 _Color;
+                float4 _SpriteTint;
+                float _Neutralize,_Burn,_Poison;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION;float2 uv:TEXCOORD0;float4 color:COLOR; };
             struct Varyings { float4 positionCS:SV_POSITION;float2 uv:TEXCOORD0;float4 color:COLOR; };
@@ -32,7 +38,15 @@ Shader "Shootemup/Combat Projectile"
             }
             half4 Frag(Varyings v):SV_Target
             {
-                half4 color=SAMPLE_TEXTURE2D(_MainTex,sampler_MainTex,v.uv)*v.color;
+                half4 color=SAMPLE_TEXTURE2D(_MainTex,sampler_MainTex,v.uv);
+                half brightness=max(color.r,max(color.g,color.b));
+                color.rgb=lerp(color.rgb,brightness.xxx,_Neutralize)*_SpriteTint.rgb;
+                color*=v.color;
+                brightness=max(color.r,max(color.g,color.b));
+                color.rgb=lerp(color.rgb,half3(1,.15,.07)*brightness,_Burn);
+                // UVs stay local to the artwork when Unity batches sprite vertices in world space.
+                float toxic=_Poison*(1-_Burn*step(.5,v.uv.y));
+                color.rgb=lerp(color.rgb,half3(.22,1,.2)*brightness,toxic);
                 clip(color.a-.005);return color;
             }
             ENDHLSL

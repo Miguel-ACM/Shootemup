@@ -30,8 +30,10 @@ public abstract class CombatRound : AEnemyBullet
             var rb=go.AddComponent<Rigidbody2D>();rb.gravityScale=0;rb.bodyType=RigidbodyType2D.Kinematic;
             var sr=go.AddComponent<SpriteRenderer>();sr.sprite=CombatVisuals.Projectile();sr.sharedMaterial=CombatVisuals.ProjectileMaterial;sr.sortingOrder=15;
             sr.sortingLayerName="Bullet";
-            var collider=go.AddComponent<CircleCollider2D>();collider.isTrigger=true;collider.radius=.44f;
-            shot=go.AddComponent<T>();shot.body=rb;shot.visual=sr;ProjectileSolid.Hostile(shot);
+            var collider=go.AddComponent<CustomCollider2D>();collider.isTrigger=true;
+            sr.sprite=HostileProjectileArt.Sprite(typeof(T));ProjectileSprites.Fit(collider,sr.sprite);
+            shot=go.AddComponent<T>();shot.body=rb;shot.visual=sr;
+            ProjectileSpriteTint.Apply(go,shot is PulseLaser ? Color.white : shot.Accent);
         }
         shot.transform.SetPositionAndRotation(new Vector3(p.x,p.y,-.5f),Quaternion.identity);
         shot.transform.localScale=Vector3.one*radius*2;shot.visual.sprite=HostileProjectileArt.Sprite(typeof(T),radius>=.25f);shot.visual.color=Color.white;
@@ -55,7 +57,7 @@ public abstract class CombatRound : AEnemyBullet
         if(!ended && !(this is PulseLaser))transform.position+=PocketWind.Velocity(transform.position)*Time.deltaTime;
     }
     protected virtual void Tick(float dt) { transform.position+=(Vector3)heading*speed*dt;Orient(); }
-    protected void Orient() { if(heading.sqrMagnitude>.001f)transform.rotation=Quaternion.FromToRotation(Vector3.up,heading); }
+    protected void Orient() { if(heading.sqrMagnitude>.001f)transform.rotation=Quaternion.FromToRotation(this is LaserSideRound ? Vector3.right : Vector3.up,heading); }
     protected void Release()
     {
         if(ended)return;ended=true;body.linearVelocity=Vector2.zero;gameObject.SetActive(false);

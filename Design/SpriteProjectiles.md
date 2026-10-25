@@ -1,0 +1,9 @@
+# Approved white projectile sprites
+
+The twelve PNGs in `Assets/Resources/ProjectileSprites` are byte-for-byte copies of the approved `ArtSource/PixelBulletStudy/sprites` exports, including the circular standard, S-shaped helix and centred returning disc. Their RGB channels are neutral; tint is supplied in code through `HostileProjectileArt.Accent` and `ProjectileSpriteTint`. Point sampling, no mipmaps and uncompressed imports preserve the authored pixels.
+
+The 3D projectile implementation is removed. Player weapons return to their previous 2D silhouettes, with a neutralizing shader stage and code tint; burn and poison coatings remain, including the red nose/green tail combination. Blue continuous beams keep their existing rendering and timing.
+
+Hostile collision shapes follow opaque pixel runs rather than the old oversized circles. Identical runs on adjacent rows merge into rectangles, cached once per sprite and assigned directly to a CustomCollider2D; this preserves the actual openings in the disc and delayed arrow without polygon tessellation joining touching runs. Needles and guided missiles keep their previous length multipliers uniformly so the approved aspect ratios survive. Carrier side shots start at the new nozzle pixels, and the side-shot sprite's right-facing nose follows its heading. Damage, firing cadence, speed and projectile caps are unchanged.
+
+Run `VerifySpriteProjectiles.Run` in an isolated graphical Unity editor. It checks pixel/collider agreement at three rotations for every hostile type, neutral imports, shared sprite reuse, code tint, player/status rendering, legacy prefabs and both projectile caps. It saves moving samples across seven districts and a dense Snow capture for visual inspection. Timing is an editor observation, not a standalone GPU benchmark.
