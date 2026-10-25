@@ -159,7 +159,7 @@ public sealed class DesertReview : MonoBehaviour
         Check(worm==null,"final core triggers normal boss death");
         Check(!AEnemy.Live.OfType<DesertWormCore>().Any(),"boss cleanup removes all reactor targets");
         LevelRun.Reset(LevelId.Thunder,17381);LevelRun.GetChoices(out var routeLeft,out var routeRight);
-        Check(routeLeft==LevelId.Desert && routeRight==LevelId.Fields,"third district offers desert or a new Plains loop");
+        Check(routeLeft==LevelId.Desert && routeRight==LevelId.Candyland,"third district offers Desert or Candyland");
         var choice=LevelChoice.Open(ship.transform,_=>{});yield return new WaitForSeconds(.5f);Capture("RouteChoice");Destroy(choice.gameObject);
     }
     public static void Capture(string name,string folder=Folder)

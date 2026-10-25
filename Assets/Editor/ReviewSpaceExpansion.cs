@@ -22,7 +22,7 @@ public static class ReviewSpaceExpansion
             var sequence=DistrictWaves.Sequence();
             Check(sequence.Count(s=>int.TryParse(s,out _) || s=="miniboss")==4 && sequence.Count(s=>s=="encounterChoice")==1,"District length must be four combat waves and one decision");
             Check(Enumerable.Range(Array.IndexOf(sequence,"encounterChoice")+1,3).All(i=>int.TryParse(sequence[i],out _) || sequence[i]=="miniboss"),"No-hit challenge needs three remaining waves");
-            var notes=new List<string>{"Four combat waves instead of ten; one decision; no-hit challenge has three remaining waves.","Route checks passed: Desert/Candyland -> Space -> harder Plains, keeping the run seed; direct third-district loop preserved."};
+            var notes=new List<string>{"Four combat waves instead of ten; one decision; no-hit challenge has three remaining waves.","Route checks passed: Desert/Candyland -> Space -> harder Plains, keeping the run seed; third district offers only Desert and Candyland."};
             foreach(int seed in new[]{17381,421,9826})
             {
                 LevelRun.Reset(LevelId.Space,seed);

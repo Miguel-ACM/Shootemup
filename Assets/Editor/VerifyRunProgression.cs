@@ -1,68 +1,42 @@
 using System;
 
-// Pure route/difficulty checks, also runnable without starting the game.
+// Pure route/difficulty checks; no gameplay session is required.
 public static class VerifyRunProgression
 {
     public static void Run()
     {
         try
         {
-            Check((int)LevelId.Fields==0 && (int)LevelId.Tunnel==1 && (int)LevelId.Snow==2 &&
-                (int)LevelId.Thunder==3 && (int)LevelId.City==4 && (int)LevelId.Desert==5 &&
-                (int)LevelId.Candyland==6 && (int)LevelId.Space==7,"Serialized district IDs changed");
+            Check((int)LevelId.Fields==0 && (int)LevelId.Tunnel==1 && (int)LevelId.Snow==2 && (int)LevelId.Thunder==3 &&
+                (int)LevelId.City==4 && (int)LevelId.Desert==5 && (int)LevelId.Candyland==6 && (int)LevelId.Space==7,"Serialized district IDs changed");
             foreach(var middle in new[]{LevelId.Snow,LevelId.City})
-            foreach(var final in new[]{LevelId.Thunder,LevelId.Tunnel})
-            {
-                LevelRun.Reset();int seed=LevelRun.Seed;
-                Check(LevelRun.Current==LevelId.Fields && LevelRun.Stage==1 && LevelRun.Loop==1,"New run must start at Plains");
-                Check(LevelRun.EnemyHealthScale==1 && LevelRun.EnemyTempoScale==1 && LevelRun.EnemyShotSpeedScale==1,"Fresh run retained difficulty");
-                float previousHealth=0,previousTempo=0,previousShots=0;
-                for(int loop=1;loop<=100;loop++)
-                {
-                    Check(LevelRun.Loop==loop && LevelRun.Stage==(loop-1)*3+1,"Loop or stage advanced incorrectly");
-                    Check(LevelRun.EnemyHealthScale>previousHealth,"Health stopped scaling across loops");
-                    Check(LevelRun.EnemyTempoScale>=previousTempo && LevelRun.EnemyShotSpeedScale>=previousShots,"Loop speeds decreased");
-                    Check(LevelRun.EnemyTempoScale<=1.5f && LevelRun.EnemyShotSpeedScale<=1.4f,"Readability speed caps exceeded");
-                    if(loop==2)Check(Near(LevelRun.EnemyHealthScale,1.66f) && Near(LevelRun.EnemyTempoScale,1.08f) && Near(LevelRun.EnemyShotSpeedScale,1.06f),"First loop escalation is incorrect");
-                    previousHealth=LevelRun.EnemyHealthScale;previousTempo=LevelRun.EnemyTempoScale;previousShots=LevelRun.EnemyShotSpeedScale;
-                    LevelRun.GetChoices(out var left,out var right);
-                    Check(left==LevelId.Snow && right==LevelId.City,"Plains must offer Snow/City");
-                    Reject(LevelId.Thunder);Reject(LevelId.Fields);
-                    LevelRun.Advance(middle);
-                    Check(LevelRun.EnemyHealthScale>previousHealth && LevelRun.Loop==loop,"Middle tier difficulty is incorrect");
-                    LevelRun.GetChoices(out left,out right);
-                    Check(left==LevelId.Thunder && right==LevelId.Tunnel,"Middle tier must offer Thunder/Tunnel");
-                    Reject(LevelId.Fields);Reject(middle);
-                    LevelRun.Advance(final);Check(!LevelRun.ReturnsToPlains,"Third district must offer the desert extension");
-                    LevelRun.GetChoices(out left,out right);
-                    Check(left==LevelId.Desert && right==LevelId.Fields,"Third district must offer Desert or Plains");Reject(LevelId.Snow);
-                    LevelRun.Advance(LevelId.Fields);
-                    Check(LevelRun.Seed==seed,"Route transition reset the run seed");
-                }
-            }
-            LevelRun.Reset();
-            for(int loop=1;loop<=50;loop++)
-            {
-                LevelRun.Advance(LevelId.City);LevelRun.Advance(LevelId.Tunnel);LevelRun.Advance(LevelId.Desert);
-                Check(LevelRun.Loop==loop && LevelRun.Stage==loop*5-1,"Desert advanced loop early");
-                Check(!LevelRun.ReturnsToPlains && LevelRun.AutomaticNext==LevelId.Space,"Desert must lead into Space");
-                Reject(LevelId.Desert);Reject(LevelId.Thunder);Reject(LevelId.Fields);LevelRun.Advance(LevelId.Space);
-                Check(LevelRun.ReturnsToPlains && LevelRun.Stage==loop*5,"Space must finish the extended loop");LevelRun.Advance(LevelId.Fields);
-                Check(LevelRun.Loop==loop+1,"Extended loop did not increment exactly once");
-            }
             foreach(var third in new[]{LevelId.Thunder,LevelId.Tunnel})
+            foreach(var extension in new[]{LevelId.Desert,LevelId.Candyland})
             {
-                LevelRun.Reset();LevelRun.Advance(LevelId.Snow);LevelRun.Advance(third);
-                var options=LevelRun.GetOptions();
-                Check(options.Length==3 && options[0]==LevelId.Desert && options[1]==LevelId.Candyland && options[2]==LevelId.Fields,"Third district lost a route");
-                int seed=LevelRun.Seed;LevelRun.Advance(LevelId.Candyland);
-                Check(LevelRun.Stage==4 && LevelRun.AutomaticNext==LevelId.Space && LevelRun.Seed==seed,"Candyland route resets progression");
-                Reject(LevelId.Desert);Reject(LevelId.Fields);LevelRun.Advance(LevelId.Space);LevelRun.Advance(LevelId.Fields);
-                Check(LevelRun.Stage==6 && LevelRun.Loop==2 && LevelRun.Seed==seed,"Space did not finish the Candyland extension");
+                LevelRun.Reset();int seed=LevelRun.Seed;float previousHealth=0,previousTempo=0,previousShots=0;
+                for(int loop=1;loop<=50;loop++)
+                {
+                    Check(LevelRun.Loop==loop && LevelRun.Stage==(loop-1)*5+1,"Loop or stage advanced incorrectly");
+                    Check(LevelRun.EnemyHealthScale>previousHealth && LevelRun.EnemyTempoScale>=previousTempo && LevelRun.EnemyShotSpeedScale>=previousShots,"Run difficulty decreased");
+                    Check(LevelRun.EnemyTempoScale<=1.5f && LevelRun.EnemyShotSpeedScale<=1.4f,"Readability speed caps exceeded");
+                    if(loop==2)Check(Near(LevelRun.EnemyHealthScale,2.1f) && Near(LevelRun.EnemyTempoScale,1.08f) && Near(LevelRun.EnemyShotSpeedScale,1.06f),"First loop escalation is incorrect");
+                    previousHealth=LevelRun.EnemyHealthScale;previousTempo=LevelRun.EnemyTempoScale;previousShots=LevelRun.EnemyShotSpeedScale;
+                    LevelRun.GetChoices(out var left,out var right);Check(left==LevelId.Snow && right==LevelId.City,"Plains must offer Snow/City");
+                    Reject(LevelId.Fields);Reject(LevelId.Thunder);LevelRun.Advance(middle);
+                    LevelRun.GetChoices(out left,out right);Check(left==LevelId.Thunder && right==LevelId.Tunnel,"Middle tier must offer Thunder/Tunnel");
+                    Reject(LevelId.Fields);Reject(middle);LevelRun.Advance(third);
+                    LevelRun.GetChoices(out left,out right);var options=LevelRun.GetOptions();
+                    Check(left==LevelId.Desert && right==LevelId.Candyland && options.Length==2 && options[0]==left && options[1]==right,"Third district must offer only Desert/Candyland");
+                    Reject(LevelId.Fields);Reject(LevelId.Snow);LevelRun.Advance(extension);
+                    Check(LevelRun.AutomaticNext==LevelId.Space && !LevelRun.ReturnsToPlains && LevelRun.GetOptions().Length==1,"Extension must lead only into Space");
+                    Reject(LevelId.Fields);Reject(extension);LevelRun.Advance(LevelId.Space);
+                    Check(LevelRun.ReturnsToPlains && LevelRun.Stage==loop*5,"Space must finish the loop");
+                    LevelRun.Advance(LevelId.Fields);Check(LevelRun.Seed==seed && LevelRun.Loop==loop+1,"Completed loop lost the seed or incremented incorrectly");
+                }
             }
         }
         finally{LevelRun.Reset();}
-        Check(LevelRun.Stage==1 && LevelRun.Loop==1 && LevelRun.EnemyTempoScale==1,"New run did not reset difficulty");
+        Check(LevelRun.Stage==1 && LevelRun.Loop==1 && LevelRun.EnemyHealthScale==1,"New run did not reset difficulty");
     }
     static bool Near(float a,float b)=>Math.Abs(a-b)<.0001f;
     static void Reject(LevelId next)

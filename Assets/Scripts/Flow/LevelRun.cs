@@ -35,7 +35,7 @@ public static class LevelRun
     public static void Advance(LevelId next)
     {
         int tier=Tier(Current);
-        bool valid=tier==3 ? next==LevelId.Fields || next==LevelId.Desert || next==LevelId.Candyland :
+        bool valid=tier==3 ? next==LevelId.Desert || next==LevelId.Candyland :
             AutomaticNext.HasValue ? next==AutomaticNext.Value : Tier(next)==tier+1;
         if(!valid)throw new System.InvalidOperationException("Invalid district progression");
         if(next==LevelId.Fields)Loop++;
@@ -45,7 +45,7 @@ public static class LevelRun
     {
         if(ReturnsToPlains)throw new System.InvalidOperationException("Final districts return directly to Plains");
         if(Tier(Current)==4){left=right=LevelId.Space;return;}
-        if(Tier(Current)==3){left=LevelId.Desert;right=LevelId.Fields;return;}
+        if(Tier(Current)==3){left=LevelId.Desert;right=LevelId.Candyland;return;}
         left=Current==LevelId.Fields ? LevelId.Snow : LevelId.Thunder;
         right=Current==LevelId.Fields ? LevelId.City : LevelId.Tunnel;
     }
@@ -53,7 +53,7 @@ public static class LevelRun
     {
         if(Tier(Current)==4)return new[]{LevelId.Space};
         GetChoices(out var left,out var right);
-        return Tier(Current)==3 ? new[]{left,LevelId.Candyland,right} : new[]{left,right};
+        return new[]{left,right};
     }
     public static Color Accent(LevelId level)
     {
