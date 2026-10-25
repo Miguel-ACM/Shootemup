@@ -6,6 +6,8 @@ public static partial class IndustrialMeshFactory
     static readonly Dictionary<int,Mesh> combatHulls=new Dictionary<int,Mesh>();
     public static Vector3[] CombatEngineSockets(int kind)
     {
+        if(kind==30 || kind==32 || kind==33 || kind==34)return System.Array.Empty<Vector3>();
+        if(kind==31)return new[]{new Vector3(-.38f,.68f,0),new Vector3(.38f,.68f,0)};
         if(kind==27)return new[]{new Vector3(-.56f,.93f,0),new Vector3(.56f,.93f,0)};
         if(kind==0)return new[]{new Vector3(0,0.77f,0)};
         if(kind==1)return new[]{new Vector3(-0.64f,0.93f,0),new Vector3(0.64f,0.93f,0)};
@@ -40,6 +42,7 @@ public static partial class IndustrialMeshFactory
     {
         if(combatHulls.TryGetValue(kind,out var cached))return cached;
         var b=new Builder();bool heavy=kind==2 || kind==5 || kind==7 || kind==8 || kind==14 || kind==16 || kind>=20;
+        if(kind==30){BuildSandEmitter(b);return combatHulls[kind]=b.Finish("Sand eruption turret");}
         bool round=kind==21 || kind==20;bool slim=kind==22;
         float width=slim ? .48f : heavy ? 1.12f : .72f;
         float length=slim ? 1.55f : heavy ? 1.12f : 1.0f;
