@@ -9,11 +9,9 @@ public sealed class FrostAuger : GroundVehicle
     protected override void Attack()
     {
         if(!Grounded || player==null || Vector2.Distance(player.position,transform.position)<2.6f)return;
-        for(int s=-1;s<=1;s+=2)
-        {
-            var muzzle=Weapon.TransformPoint(new Vector3(s*.23f,-.57f,-.36f));
-            Fire<BurstShell>(muzzle,CombatVisuals.Rotate(CombatVisuals.Aim(muzzle),s*12),4.5f,.27f);
-        }
+        int side=volley%2==0 ? -1 : 1;
+        var muzzle=Weapon.TransformPoint(new Vector3(side*.23f,-.57f,-.36f));
+        Fire<BurstShell>(muzzle,CombatVisuals.Rotate(CombatVisuals.Aim(muzzle),side*12),4.5f,.27f);
     }
     protected override void BuildRunningGear()
     {
