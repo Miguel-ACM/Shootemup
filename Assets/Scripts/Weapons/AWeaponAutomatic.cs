@@ -25,7 +25,7 @@ public abstract class AWeaponAutomatic : AWeapon
         bool firing=isShootingPrimary || isShootingSecondary;
         base.WeaponPressed(pressedPrimary);
         if(!firing && (isShootingPrimary || isShootingSecondary))
-        {shotClock=1;Shoot();}
+            shotClock=0; // Fire after all input actions have processed this frame, including Focus release.
     }
 
     

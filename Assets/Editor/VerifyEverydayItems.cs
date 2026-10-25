@@ -177,7 +177,7 @@ public sealed class EverydayItemReview : MonoBehaviour
         Press(Key.LeftShift,Key.Z);yield return new WaitForSeconds(.4f);Press(Key.LeftShift);
         yield return Capture("MagnifiedRounds");Clear();yield return null;
         Press(Key.Z);yield return new WaitForSeconds(.2f);Press();yield return null;round=FindAnyObjectByType<PlayerRound>();
-        Check(round!=null && Mathf.Abs(round.damage-normalDamage)<.01f && Vector3.Distance(round.transform.localScale,normalSize)<.01f,"releasing focus immediately restores normal shot power and size");
+        Check(round!=null && Mathf.Abs(round.damage-normalDamage)<.01f && Vector3.Distance(round.transform.localScale,normalSize)<.01f,"releasing focus immediately restores normal shot power and size (damage="+(round!=null ? round.damage : -1)+", expected="+normalDamage+")");
         Clear();yield return null;GameRules.playerShootTravelSpeed=speed;
         yield return Grant(typeof(NeedleCannonItem),1);yield return Grant(typeof(DoubleTrouble));
         Press(Key.Z,Key.X);yield return new WaitForSeconds(.15f);Press(Key.Z);yield return new WaitForSeconds(.25f);
