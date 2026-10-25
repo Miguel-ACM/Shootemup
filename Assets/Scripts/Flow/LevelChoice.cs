@@ -83,9 +83,10 @@ public sealed class LevelChoice : MonoBehaviour
             {
                 contents[i]=Text(half,captions[i],captions.Length==3 ? 17 : 24,Vector2.zero,Color.white).rectTransform;
                 contents[i].sizeDelta=new Vector2(panelWidth-14,48);
+                var label=contents[i].GetComponent<TextMeshProUGUI>();label.enableAutoSizing=true;
+                label.fontSizeMin=captions.Length==3 ? 12 : 16;label.fontSizeMax=captions.Length==3 ? 17 : 24;
                 if(captions.Length==3)
                 {
-                    var label=contents[i].GetComponent<TextMeshProUGUI>();label.enableAutoSizing=true;label.fontSizeMin=12;label.fontSizeMax=17;
                     label.color=Color.Lerp(accent,Color.white,.5f);
                 }
             }
