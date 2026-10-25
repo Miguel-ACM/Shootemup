@@ -277,7 +277,7 @@ public class WaveOrchestrer : MonoBehaviour
         foreach(var enemy in FindObjectsByType<AEnemy>())Destroy(enemy.gameObject);
         EraseAllBullets();
         CombatDecision.Begin(); // Freeze multiplier and fire while steering to the next route.
-        if(LevelRun.ReturnsToPlains){TravelToLevel(LevelId.Fields);yield break;}
+        if(LevelRun.AutomaticNext.HasValue){TravelToLevel(LevelRun.AutomaticNext.Value);yield break;}
         routeChoice=LevelChoice.Open(ship.transform,TravelToLevel);
     }
 

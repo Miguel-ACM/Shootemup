@@ -24,6 +24,8 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Player fire must remain clearly visible at actual gameplay resolution: bright cores, sufficient pixel width and distinction from hostile fire.
 - Bullets must render above the player hull so incoming fire remains visible and avoidable.
 - Keep momentum between combat phrases. Compare changes with the existing game; do not quietly make it much easier.
+- Levels now have four combat waves instead of ten, retaining the full difficulty ramp, one encounter choice, a miniboss and the boss. Start the next combat wave from the authored visible entrance/exit timings for a small on-screen overlap. Keep the live-enemy cap and wait for clear combat before decisions and bosses.
+- Give the player a stronger lateral visual bank (28 degrees at full speed) while keeping the collider and hitbox marker independent of the hull rotation.
 - Miniboss encounters in every district fire earlier and harder but have 32% less health. Large trackers fire once fully visible during entry, then use shorter tracking/recovery and faster volleys; Desert broods open their firing arcs sooner, and Candyland rushes add an early shared reply. Keep ordinary wave enemies unaffected.
 - At the start of a level, wait until the cloud curtain has fully cleared, then allow a short breather before spawning the first enemies. Never hide opening enemy fire behind the clouds.
 - Cloud transitions must not show vertical pixel lines across the clouds. Use a connected backing surface with shared seam vertices instead of separate narrow strips, while preserving the cloud artwork and continuous motion.
@@ -47,7 +49,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 ## District and boss identities
 
-- Runs start in Plains, then choose Snow or City, then Thunder or Tunnel. After either third district, offer Desert, Candyland, or a direct loop to harder Plains. Desert and Candyland end by looping to harder Plains. Preserve equipment and score on every route.
+- Runs start in Plains, then choose Snow or City, then Thunder or Tunnel. After either third district, offer Desert, Candyland, or a direct loop to harder Plains. Desert and Candyland continue into Space after their boss item is collected. Space ends by looping to harder Plains after its own boss item. Preserve equipment, coins and score on every route.
 
 - Snow: many large shells that explode into smaller bullets; a very round boss with several patterns and a harder second phase.
 - Latest Snow feedback: reduce the boss's health; its base health is now 2100 rather than 3200, with the same phase patterns and run scaling.
@@ -69,6 +71,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Desert boss movement must cover the full arena, including the lower corners, while retaining the flowing articulated body and reachable weakpoints.
 - Candyland: pink cloud background with falling modeled lollipops, chocolates and wrapped sweets. Many fast enemies, each firing fewer bullets. A very fast boss has less health and spawns destroyable minions. Candyland is an alternative to Desert after level 3.
 - Latest Candyland feedback: make its boss much harder with more erratic movement, and improve the scenery's visual quality. Preserve the lighter firing of ordinary enemies.
+- Space: drifting stars and soft distant planets, solar-panel satellite scouts, dish laser satellites and carriers with independently destroyable orbiting escorts. Use authored orbital/slingshot formations, attached charged lasers and one contrasting pink hostile-bullet family. The station boss has two breakable shield generators, two optional ricochet turrets and a gated reactor. Both generators must break before the core can be damaged or targeted by homing. It fires a charged center laser and bouncing bullets; core destruction uses the established dramatic finale and mandatory boss item.
 
 ## Items and decisions
 
@@ -77,7 +80,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Coins now add to a separate run wallet, one per pickup. They do not add score or scale with multiplier. Keep score as the combat scoring system and preserve coins across districts; reset the wallet on a new run.
 - Two distinct shops: one accepts only coins, the other only multiplier. Freeze multiplier during decisions. Allow multiple purchases from the displayed stock, and keep shops open even when sold out until the player explicitly skips at the bottom.
 - Shops offer three or four items, can include a large health kit when health is low, and can be skipped by staying at the very bottom.
-- During the run, use the same spatial steering selection as district routing to offer two distinct encounters from SHOP, MULT SHOP, ITEM, HEALTH and CHALLENGE. Keep choices at authored wave breaks after sustained combat. HEALTH gives one health pickup; ITEM is a free item choice. CHALLENGE makes the next three waves harder, then awards an item before normal combat resumes. Do not offer a challenge without three remaining combat waves.
+- During the run, use the same spatial steering selection as district routing to offer two distinct encounters from SHOP, MULT SHOP, ITEM, HEALTH and CHALLENGE. Keep choices at authored wave breaks after sustained combat. HEALTH gives one health pickup; ITEM is a free item choice. CHALLENGE requires clearing the next three waves without taking a hit, at their normal difficulty. Taking a real hit fails it immediately; three clean waves award an item. Do not offer a challenge without three remaining combat waves.
 - Encounter choices use original Python-drawn pixel sprites rather than text: coin shop, multiplier shop, item crate, medkit and challenge crest. After selection, let the panels fade and move away gracefully before opening the chosen encounter.
 - The HEALTH path drops one pickup restoring 50% of maximum health, capped at full health. Keep ordinary dropped health pickups at their existing flat healing value.
 - Require close contact to collect decision items so passing nearby cannot cause accidental purchases or replacements.

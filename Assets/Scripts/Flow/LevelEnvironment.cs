@@ -257,7 +257,11 @@ public sealed class LevelEnvironment : MonoBehaviour
         if(level==LevelId.City)material.SetFloat("_Haze",.38f);
         var go=GameObject.FindGameObjectWithTag("Player");if(go!=null)player=go.transform;
         yield return null;
-        if(level==LevelId.Candyland)
+        if(level==LevelId.Space)
+        {
+            var orbit=new GameObject("Distant planets and starfield");orbit.transform.SetParent(transform,false);orbit.AddComponent<SpaceBackdrop>();
+        }
+        else if(level==LevelId.Candyland)
         {
             var candy=new GameObject("Candyland sky and falling sweets");candy.transform.SetParent(transform,false);candy.AddComponent<CandylandBackdrop>();
         }

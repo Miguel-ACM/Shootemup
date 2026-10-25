@@ -3,7 +3,7 @@ using UnityEngine;
 // One hostile hue per district; silhouettes and timing still identify the different attacks.
 public static class LevelProjectilePalette
 {
-    static readonly Material[,] shared=new Material[7,2];
+    static readonly Material[,] shared=new Material[System.Enum.GetValues(typeof(LevelId)).Length,2];
     public static Color Accent(LevelId level)
     {
         switch(level)
@@ -15,6 +15,7 @@ public static class LevelProjectilePalette
             case LevelId.Tunnel:return new Color(1,.23f,.59f);
             case LevelId.Desert:return new Color(.39f,.24f,1);
             case LevelId.Candyland:return new Color(.65f,.95f,.12f);
+            case LevelId.Space:return new Color(1,.34f,.46f);
             default:return new Color(1,.28f,.20f);
         }
     }

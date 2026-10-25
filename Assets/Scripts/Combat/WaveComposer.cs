@@ -177,6 +177,7 @@ public static partial class WavePartLibrary
             case LevelId.Thunder:return Thunder;case LevelId.Tunnel:return Tunnel;
             case LevelId.Desert:return Desert;
             case LevelId.Candyland:return Candyland;
+            case LevelId.Space:return Space;
             default:throw new ArgumentOutOfRangeException(nameof(level));
         }
     }

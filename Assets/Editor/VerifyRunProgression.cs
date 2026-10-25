@@ -8,7 +8,8 @@ public static class VerifyRunProgression
         try
         {
             Check((int)LevelId.Fields==0 && (int)LevelId.Tunnel==1 && (int)LevelId.Snow==2 &&
-                (int)LevelId.Thunder==3 && (int)LevelId.City==4,"Serialized district IDs changed");
+                (int)LevelId.Thunder==3 && (int)LevelId.City==4 && (int)LevelId.Desert==5 &&
+                (int)LevelId.Candyland==6 && (int)LevelId.Space==7,"Serialized district IDs changed");
             foreach(var middle in new[]{LevelId.Snow,LevelId.City})
             foreach(var final in new[]{LevelId.Thunder,LevelId.Tunnel})
             {
@@ -43,9 +44,10 @@ public static class VerifyRunProgression
             for(int loop=1;loop<=50;loop++)
             {
                 LevelRun.Advance(LevelId.City);LevelRun.Advance(LevelId.Tunnel);LevelRun.Advance(LevelId.Desert);
-                Check(LevelRun.Loop==loop && LevelRun.Stage==loop*4,"Desert advanced loop early");
-                Check(LevelRun.ReturnsToPlains,"Desert must finish the extended loop");
-                Reject(LevelId.Desert);Reject(LevelId.Thunder);LevelRun.Advance(LevelId.Fields);
+                Check(LevelRun.Loop==loop && LevelRun.Stage==loop*5-1,"Desert advanced loop early");
+                Check(!LevelRun.ReturnsToPlains && LevelRun.AutomaticNext==LevelId.Space,"Desert must lead into Space");
+                Reject(LevelId.Desert);Reject(LevelId.Thunder);Reject(LevelId.Fields);LevelRun.Advance(LevelId.Space);
+                Check(LevelRun.ReturnsToPlains && LevelRun.Stage==loop*5,"Space must finish the extended loop");LevelRun.Advance(LevelId.Fields);
                 Check(LevelRun.Loop==loop+1,"Extended loop did not increment exactly once");
             }
             foreach(var third in new[]{LevelId.Thunder,LevelId.Tunnel})
@@ -54,9 +56,9 @@ public static class VerifyRunProgression
                 var options=LevelRun.GetOptions();
                 Check(options.Length==3 && options[0]==LevelId.Desert && options[1]==LevelId.Candyland && options[2]==LevelId.Fields,"Third district lost a route");
                 int seed=LevelRun.Seed;LevelRun.Advance(LevelId.Candyland);
-                Check(LevelRun.Stage==4 && LevelRun.ReturnsToPlains && LevelRun.Seed==seed,"Candyland route resets progression");
-                Reject(LevelId.Desert);LevelRun.Advance(LevelId.Fields);
-                Check(LevelRun.Stage==5 && LevelRun.Loop==2 && LevelRun.Seed==seed,"Candyland did not finish the loop");
+                Check(LevelRun.Stage==4 && LevelRun.AutomaticNext==LevelId.Space && LevelRun.Seed==seed,"Candyland route resets progression");
+                Reject(LevelId.Desert);Reject(LevelId.Fields);LevelRun.Advance(LevelId.Space);LevelRun.Advance(LevelId.Fields);
+                Check(LevelRun.Stage==6 && LevelRun.Loop==2 && LevelRun.Seed==seed,"Space did not finish the Candyland extension");
             }
         }
         finally{LevelRun.Reset();}

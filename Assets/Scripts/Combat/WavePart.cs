@@ -70,6 +70,10 @@ public static class WaveGeometry
         int hull;float scale;
         switch(enemy)
         {
+            case "OrbitalScout":hull=41;scale=.46f;break;
+            case "LaserSatellite":hull=42;scale=.56f;break;
+            case "OrbitalMoonlet":hull=44;scale=.28f;break;
+            case "OrbitalCarrier":return radii[enemy]=1.46f; // Includes both orbiting, destroyable escorts.
             case "MeadowTank":hull=39;scale=.68f;break;
             case "FrostAuger":hull=40;scale=.64f;break;
             case "BonbonSkirmisher":hull=35;scale=.38f;break;

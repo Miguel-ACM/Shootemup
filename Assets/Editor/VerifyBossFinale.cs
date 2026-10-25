@@ -189,8 +189,8 @@ public sealed class BossFinaleReview : MonoBehaviour
             yield return new WaitForSeconds(.3f);
             if(level==LevelId.Desert || level==LevelId.Candyland)
             {
-                wait=Time.unscaledTime+12;while((CloudTransition.Busy || LevelRun.Current!=LevelId.Fields || !WavePreparation.Ready) && Time.unscaledTime<wait)yield return null;
-                Check(LevelRun.Current==LevelId.Fields && LevelRun.Loop==2 && !CloudTransition.Busy && Time.timeScale==1,label+": the final-district loop waits for the item and resumes cleanly");
+                wait=Time.unscaledTime+12;while((CloudTransition.Busy || LevelRun.Current!=LevelId.Space || !WavePreparation.Ready) && Time.unscaledTime<wait)yield return null;
+                Check(LevelRun.Current==LevelId.Space && LevelRun.Loop==1 && !CloudTransition.Busy && Time.timeScale==1,label+": the Space extension waits for the item and resumes cleanly");
             }
             else
             {

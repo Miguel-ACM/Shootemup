@@ -34,7 +34,7 @@ public class BGMManager : MonoBehaviour
     {
         PlayBGM(LevelTrack(level));
     }
-    public static string LevelTrack(LevelId level)=>level==LevelId.Candyland ? "city" : level==LevelId.Desert ? "fields" : level.ToString().ToLowerInvariant();
+    public static string LevelTrack(LevelId level)=>level==LevelId.Space ? "thunder" : level==LevelId.Candyland ? "city" : level==LevelId.Desert ? "fields" : level.ToString().ToLowerInvariant();
 
     public static void PlayBGM(string bgm)
     {
