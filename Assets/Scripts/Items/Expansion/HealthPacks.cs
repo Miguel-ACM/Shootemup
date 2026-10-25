@@ -9,6 +9,6 @@ public sealed class HealthPacks : AActiveItem
         if(s.health<=0 || s.health>=s.maxHealth)return -1;
         s.HealFlat(20);lastCD=0;
         PSXFireballs.Shockwave(s.transform.position,.9f,.4f,new Color(.3f,.85f,.4f),1,.06f);
-        SoundManager.PlaySound("pickup",.1f);return mana-cost;
+        SoundManager.PlaySound("blankbullet",.05f);return mana-cost;
     }
 }
