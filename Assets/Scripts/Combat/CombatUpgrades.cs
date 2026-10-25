@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum UpgradeKind { Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble }
+public enum UpgradeKind { Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum }
 public sealed class CombatUpgrades : MonoBehaviour
 {
     public static CombatUpgrades Current {get;private set;}
@@ -71,7 +71,7 @@ public sealed class CombatUpgrades : MonoBehaviour
             var poison=enemy.GetComponent<PoisonedHull>();if(poison==null)poison=enemy.gameObject.AddComponent<PoisonedHull>();
             poison.Infect(damage*(companion ? .5f : 1));
         }
-        if(generation>0)return damage; // Secondary hits never produce more secondary effects or charge.
+        if(generation>0)return FinishHit(enemy,damage); // Secondary hits never produce more secondary effects or charge.
         if(Count(UpgradeKind.Splitter)>0 && Ready("split",.45f))Fragments(enemy.transform.position,damage,2,25);
         if(Count(UpgradeKind.Bearing)>0 && Ready("bearing",.65f))Fragments(enemy.transform.position,damage*.55f,3,60);
         if(Count(UpgradeKind.Battery)>0)
@@ -80,8 +80,9 @@ public sealed class CombatUpgrades : MonoBehaviour
             if(battery>=35 && Ready("battery",.7f))
             {battery-=35;PlayerRound.Spawn(transform.position,Vector2.up,28,12,PlayerDelivery.Missile,1);}
         }
-        return damage;
+        return FinishHit(enemy,damage);
     }
+    float FinishHit(AEnemy enemy,float damage)=>Count(UpgradeKind.ChewingGum)>0 ? StickyGum.Stick(enemy,damage) : damage;
     void Fragments(Vector3 p,float damage,int count,float angle)
     {
         for(int i=0;i<count;i++)PlayerRound.Spawn(p,CombatVisuals.Rotate(Vector2.up,(i-(count-1)*.5f)*angle),damage*.45f,11,PlayerDelivery.Pulse,1);
