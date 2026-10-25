@@ -53,7 +53,20 @@ public sealed class TrailDrone : ACompanion
         {
             clock=-.4f;if(beam!=null)beam.gameObject.SetActive(false);sound?.Stop();return;
         }
-        if(laser)FireLaser();
+        if(laser)FireLaser();else FireBullets();
+    }
+    void FireBullets()
+    {
+        clock+=Time.deltaTime;if(clock<0)return;
+        var target=CombatUpgrades.Nearest(Muzzle,null,18);
+        if(target==null){clock=-.15f;return;}
+        clock=-.55f;effects?.Shot();SoundManager.PlaySound("shot1",.045f);
+        var direction=((Vector2)(target.transform.position-Muzzle)).normalized;
+        foreach(int side in new[]{-1,1})
+        {
+            var shot=PlayerRound.Spawn(Muzzle+Vector3.right*side*.09f,direction,GameRules.playerShootDamage*.4f,GameRules.playerShootTravelSpeed);
+            if(shot!=null)shot.companion=true;
+        }
     }
     void FireLaser()
     {

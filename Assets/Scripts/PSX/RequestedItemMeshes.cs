@@ -5,6 +5,8 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "BulletDroneItem":
+                DroneModel(b,false);return true;
             case "LaserDroneItem":
                 DroneModel(b,true);return true;
             case "HealthPacks":
