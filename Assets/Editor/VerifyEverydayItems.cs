@@ -190,7 +190,8 @@ public sealed class EverydayItemReview : MonoBehaviour
         Press();yield return null;Check(charge.Charge>=.999f,"actual player movement fully charges the sweater");
         ship.transform.position=new Vector3(0,-4,-1);yield return Capture("StaticReady");
         first=Target(new Vector3(0,2));second=Target(new Vector3(2,2));var third=Target(new Vector3(-2,2));
-        PlayerRound.Spawn(Vector3.zero,Vector2.up,10,10);yield return new WaitForSeconds(.2f);
+        PlayerRound.Spawn(Vector3.zero,Vector2.up,10,10);
+        float hitDeadline=Time.time+.8f;while(charge.Charge>.1f && Time.time<hitDeadline)yield return null;
         Check(charge.Charge<.1f && second.GetComponent<StickyGum>()!=null && third.GetComponent<StickyGum>()!=null,"charged hit chains to nearby enemies and inherits gum");
         yield return Capture("StaticDischarge");yield return new WaitForSeconds(.9f);
         Check(second.health<1000 && third.health<1000,"chain lightning applies actual delayed damage");
