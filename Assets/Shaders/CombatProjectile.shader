@@ -9,6 +9,7 @@ Shader "Shootemup/Combat Projectile"
         _Neutralize ("Legacy grayscale",Float)=0
         _Burn ("Burn coating",Float)=0
         _Poison ("Poison coating",Float)=0
+        _Gloss ("Enamel highlights",Range(0,1))=.7
     }
     SubShader
     {
@@ -28,7 +29,7 @@ Shader "Shootemup/Combat Projectile"
             CBUFFER_START(UnityPerMaterial)
                 float4 _Color;
                 float4 _SpriteTint;
-                float _Neutralize,_Burn,_Poison;
+                float _Neutralize,_Burn,_Poison,_Gloss;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION;float2 uv:TEXCOORD0;float4 color:COLOR; };
             struct Varyings { float4 positionCS:SV_POSITION;float2 uv:TEXCOORD0;float4 color:COLOR; };
@@ -40,6 +41,8 @@ Shader "Shootemup/Combat Projectile"
             {
                 half4 color=SAMPLE_TEXTURE2D(_MainTex,sampler_MainTex,v.uv);
                 half brightness=max(color.r,max(color.g,color.b));
+                // Shade only existing bright ink: alpha, the dark rim and the collider stay intact.
+                half enamel=smoothstep(.22,.8,brightness);
                 color.rgb=lerp(color.rgb,brightness.xxx,_Neutralize)*_SpriteTint.rgb;
                 color*=v.color;
                 brightness=max(color.r,max(color.g,color.b));
@@ -47,6 +50,11 @@ Shader "Shootemup/Combat Projectile"
                 // UVs stay local to the artwork when Unity batches sprite vertices in world space.
                 float toxic=_Poison*(1-_Burn*step(.5,v.uv.y));
                 color.rgb=lerp(color.rgb,half3(.22,1,.2)*brightness,toxic);
+                float facet=saturate(1-abs(dot(v.uv,float2(.85,.45))-.49)*11);
+                float2 light=(v.uv-float2(.34,.69))*float2(5,4.5);
+                float glint=saturate(1-dot(light,light));
+                half shine=enamel*_Gloss*(facet*facet*.25+glint*glint*.65);
+                color.rgb=lerp(color.rgb,half3(1,1,1),shine);
                 clip(color.a-.005);return color;
             }
             ENDHLSL
