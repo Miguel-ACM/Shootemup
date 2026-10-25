@@ -29,6 +29,7 @@ public sealed class CombatUpgrades : MonoBehaviour
     public void Add(UpgradeKind kind)
     {
         stacks[kind]=Count(kind)+1;
+        if((kind==UpgradeKind.BadGlasses || kind==UpgradeKind.QualityGlasses) && GetComponent<GlassesFieldCue>()==null)gameObject.AddComponent<GlassesFieldCue>();
         if(kind==UpgradeKind.Recovery && ship.GetComponentsInChildren<BlockerOrbital>().Length==0 && FindAnyObjectByType<BlockerOrbital>()==null)ship.AddCompanion("AMoon");
         if(kind==UpgradeKind.Drone)gameObject.AddComponent<SupportDrone>();
     }
