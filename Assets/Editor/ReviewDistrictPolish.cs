@@ -36,7 +36,7 @@ public static class ReviewDistrictPolish
         {
             GameRules.ResetRun();VerifyRunProgression.Run();var notes=new List<string>();var types=new HashSet<Type>();
             var sequence=DistrictWaves.Sequence();
-            if(sequence[0]!="reward" || sequence.Count(s=>s=="encounterChoice")!=2 || sequence.Count(s=>s=="minibossChoice")!=2 || sequence.Count(s=>int.TryParse(s,out _))!=7)throw new Exception("Incorrect longer level structure");
+            if(sequence[0]!="reward" || sequence.Count(s=>s=="encounterChoice")!=2 || sequence.Count(s=>s=="minibossChoice")!=1 || sequence.Count(s=>int.TryParse(s,out _))!=10)throw new Exception("Incorrect longer level structure");
             var charge=new RouteCharge();charge.Step(1,.99f);if(charge.Complete)throw new Exception("Route hold too short");charge.Step(1,.02f);if(!charge.Complete)throw new Exception("Route hold not one second");
             foreach(LevelId level in Enum.GetValues(typeof(LevelId)))
             {
@@ -46,7 +46,7 @@ public static class ReviewDistrictPolish
                 }
                 LevelRun.Reset(level,17381);var unit=DistrictWaves.Miniboss().units.Single();var type=DistrictWaves.EnemyType(unit.enemy);
                 if(!typeof(DistrictMiniboss).IsAssignableFrom(type) || !types.Add(type))throw new Exception("Not a unique miniboss: "+level);
-                var mini=DistrictEnemy.Spawn(type,Vector3.zero,true,true,false);notes.Add(level+": "+type.Name+", health "+mini.health.ToString("0.0")+", seven waves plus opening item / two choices / miniboss / two earned choices.");UnityEngine.Object.DestroyImmediate(mini.gameObject);
+                var mini=DistrictEnemy.Spawn(type,Vector3.zero,true,true,false);notes.Add(level+": "+type.Name+", health "+mini.health.ToString("0.0")+", ten waves plus opening item / two choices / miniboss / one earned choice.");UnityEngine.Object.DestroyImmediate(mini.gameObject);
             }
             var window=EnemyEditorWindow.Open();foreach(var name in new[]{nameof(ScarabDredger),nameof(TaffyDuelist),nameof(OrbitalWarden),nameof(ReefLeviathan),nameof(InfernalFerryman),nameof(HellCrabBoss),nameof(AbyssSubmarineBoss)})
             {window.Select(name);window.CaptureModel(Folder+"/Model-"+name+".png");}window.Close();

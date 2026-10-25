@@ -27,7 +27,7 @@ public static class DistrictWaves
             }
         }
     }
-    public static string[] Sequence()=>new[]{"reward","2","4","encounterChoice","6","8","encounterChoice","miniboss","12","minibossChoice","16","20","boss"};
+    public static string[] Sequence()=>new[]{"reward","2","3","4","encounterChoice","6","8","10","encounterChoice","miniboss","12","14","minibossChoice","16","20","boss"};
     public static Wave Miniboss()
     {
         string[] types={nameof(FieldsHeavyWing),nameof(TunnelDefensePlatform),nameof(SnowSiegeCraft),nameof(StormReactor),nameof(CityCommandCarrier),nameof(ScarabDredger),nameof(TaffyDuelist),nameof(OrbitalWarden),nameof(ReefLeviathan),nameof(InfernalFerryman)};
