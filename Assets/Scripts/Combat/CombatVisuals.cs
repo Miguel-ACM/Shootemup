@@ -6,15 +6,23 @@ public static class CombatVisuals
 {
     static Sprite disc;
     static Material lineMaterial;
+    static Material projectileMaterial;
     static Transform player;
     public static Transform Player
     {
         get{if(player==null){var go=GameObject.FindGameObjectWithTag("Player");if(go!=null)player=go.transform;}return player;}
     }
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetTarget(){player=null;}
+    static void ResetTarget(){player=null;projectileMaterial=null;}
     static readonly Dictionary<string,Sprite> projectiles=new Dictionary<string,Sprite>();
-    public static Material ProjectileMaterial=>Resources.Load<GameObject>("Bullets/EnemyBulletSmall").GetComponent<SpriteRenderer>().sharedMaterial;
+    public static Material ProjectileMaterial
+    {
+        get
+        {
+            if(projectileMaterial==null)projectileMaterial=Resources.Load<GameObject>("Bullets/EnemyBulletSmall").GetComponent<SpriteRenderer>().sharedMaterial;
+            return projectileMaterial;
+        }
+    }
     public static Sprite Projectile(bool friendly=false,bool large=false,bool energy=false)
     {
         if(friendly)return PlayerTracer();

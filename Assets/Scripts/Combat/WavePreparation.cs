@@ -5,10 +5,11 @@ using UnityEngine;
 public sealed class WavePreparation : MonoBehaviour
 {
     static WavePreparation current;
+    static ShaderVariantCollection projectileShaders;
     Coroutine job;
     public static bool Ready=>current==null || current.job==null;
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void Reset(){current=null;}
+    static void Reset(){current=null;projectileShaders=null;}
     public static void Begin()
     {
         if(!Application.isPlaying)return;
@@ -18,6 +19,15 @@ public sealed class WavePreparation : MonoBehaviour
     }
     IEnumerator Prepare()
     {
+        // Compile/upload the projectile pass behind the curtain, before the first volley.
+        if(projectileShaders==null)
+        {
+            projectileShaders=new ShaderVariantCollection();
+            projectileShaders.Add(new ShaderVariantCollection.ShaderVariant(CombatVisuals.ProjectileMaterial.shader,UnityEngine.Rendering.PassType.ScriptableRenderPipeline));
+            projectileShaders.WarmUp();
+        }
+        foreach(PlayerDelivery delivery in System.Enum.GetValues(typeof(PlayerDelivery)))PlayerProjectileArt.For(delivery);
+        yield return null;
         yield return CombatRound.PrepareBursts();
         yield return WaveComposer.Prepare();
         // Complete the seeded plan before the opening breather, keeping combat cache-only.

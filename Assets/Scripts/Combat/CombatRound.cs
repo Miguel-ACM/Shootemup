@@ -69,10 +69,33 @@ public abstract class CombatRound : AEnemyBullet
     }
     public static IEnumerator PrepareBursts()
     {
-        if(!pools.TryGetValue(typeof(SimpleRound),out var pool))pools[typeof(SimpleRound)]=pool=new Stack<CombatRound>();
-        while(pool.Count<Limit && pooled<PoolBudget)
+        // Reserve exactly the existing 768-object budget, across every delivery.
+        // Previously only SimpleRound was ready: a first needle/ricochet volley
+        // constructed its GameObjects, pixel colliders and special effects in combat.
+        yield return Warm<SimpleRound>(280);
+        yield return Warm<NeedleRound>(128);
+        yield return Warm<RicochetBolt>(96);
+        yield return Warm<BurstShell>(40);
+        yield return Warm<SuspendedRound>(48);
+        yield return Warm<GuidedMissile>(24);
+        yield return Warm<ScatterCarrier>(24);
+        yield return Warm<HelixRound>(32);
+        yield return Warm<PlasmaOrb>(24);
+        yield return Warm<ProximityMine>(16);
+        yield return Warm<ReturningDisc>(24);
+        yield return Warm<LaserSideRound>(16);
+        yield return Warm<PulseLaser>(16);
+    }
+    static IEnumerator Warm<T>(int count) where T:CombatRound
+    {
+        if(!pools.TryGetValue(typeof(T),out var pool))pools[typeof(T)]=pool=new Stack<CombatRound>();
+        while(pool.Count<count && pooled<PoolBudget)
         {
-            for(int i=0;i<12 && pool.Count<Limit && pooled<PoolBudget;i++){var shot=Create<SimpleRound>();shot.ended=true;pool.Push(shot);pooled++;}
+            for(int i=0;i<8 && pool.Count<count && pooled<PoolBudget;i++)
+            {
+                var shot=Create<T>();shot.heading=Vector2.down;shot.transform.localScale=Vector3.one*.3f;
+                shot.Initialize();shot.ended=true;pool.Push(shot);pooled++;
+            }
             yield return null;
         }
     }
