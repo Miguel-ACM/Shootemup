@@ -171,7 +171,7 @@ public sealed class DistrictPolishReview : MonoBehaviour
         {float delta=Vector2.SignedAngle(last,beam.Heading);left|=delta<-.02f;right|=delta>.02f;angle+=delta;min=Mathf.Min(min,angle);max=Mathf.Max(max,angle);last=beam.Heading;yield return null;}
         Check(left && right && max-min<61 && max-min>57,"Thunder's six attached lasers smoothly reverse every 60 degrees");DesertReview.Capture("Thunder-Reversal",Folder);
         yield return Context(LevelId.Hell);var crab=(HellCrabBoss)DistrictEnemy.Spawn(typeof(HellCrabBoss),new Vector3(0,4,1));yield return new WaitForSeconds(3.2f);
-        Check(crab.GetComponentsInChildren<MeshFilter>().Count(m=>m.sharedMesh.name.Contains("pincer vertebra"))==16,"Crab uses sixteen overlapping modeled arm pieces");DesertReview.Capture("Crab-Articulated",Folder);
+        Check(crab.GetComponentsInChildren<MeshFilter>().Count(m=>m.sharedMesh.name.Contains("pincer vertebra"))==8,"Crab uses eight overlapping modeled arm pieces");DesertReview.Capture("Crab-Articulated",Folder);
         yield return Context(LevelId.Underwater);var sub=(AbyssSubmarineBoss)DistrictEnemy.Spawn(typeof(AbyssSubmarineBoss),new Vector3(0,4,1));int subPeak=0;began=Time.time;int capture=0;
         while(Time.time-began<15.5f)
         {subPeak=Mathf.Max(subPeak,CombatRound.Live.Count);if(Time.time-began>6.8f+capture*2.4f && capture<4)DesertReview.Capture("Submarine-"+(capture++),Folder);yield return null;}

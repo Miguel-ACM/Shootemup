@@ -1,0 +1,8 @@
+PASS
+Hell uses a completely separate modeled caldera environment
+Crab has two substantially larger pincers
+Short crab arms use four overlapping segments per side
+Crab swings are deliberately limited to a short reach instead of chasing the bottom
+Underwater boss uses the new sculpted pressure hull
+Hull hitbox follows the broader central body
+Native caldera lava shader compiles
