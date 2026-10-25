@@ -10,7 +10,7 @@ Building and silo faces share the dunes' sun direction. Their shadows are baked 
 
 Three new enemies have their own modeled hulls:
 
-- **Sand Emitter:** a buried eight-port machine. Disturbed sand precedes its emergence; it releases evenly spaced rings and burrows again. Concealed machines do not attract homing shots.
+- **Sand Emitter:** a buried eight-port ground machine. It chooses a clear terrain anchor away from buildings, throws sand particles while emerging, releases evenly spaced rings and burrows again. Its base stays embedded and moves with the scrolling terrain and player parallax. Concealed machines do not attract homing shots. The updated lifecycle and building-clearance review is in `ArtSource/SandEmitterReview`.
 - **Sand Striker:** a narrow interceptor that locks one aim direction and sends six shots 75 milliseconds apart.
 - **Sand Worm:** a small articulated machine with four following body sections. Alternating body ports release coordinated fans. Its body can be shot as well as its head.
 

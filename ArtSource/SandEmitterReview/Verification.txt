@@ -1,0 +1,13 @@
+PASS
+PASS building avoidance checked against actual roof, foundation and silo mesh projections across 387 sites
+PASS buried emitter is not a homing or damage target
+PASS emitter chooses a clear terrain anchor before disturbing sand
+PASS surfacing ejects visible ballistic sand particles
+PASS emerged ground turret becomes targetable
+PASS real player rounds hit the terrain-bound turret
+PASS turret stays fixed to scrolling ground through player parallax
+PASS ground hull rises at constant width without airborne banking
+PASS retreat throws sand and disables the buried hit region
+PASS all 15 live wave turrets keep clear of buildings for their entire grounded life
+PASS terrain attachment, particles and hostile firing remain active in composed waves
+PASS captured moving ground encounters through the game filter
