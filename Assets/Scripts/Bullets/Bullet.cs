@@ -20,6 +20,7 @@ public class Bullet : ABullet
     // Update is called once per frame
     void Update()
     {
+        if(Time.deltaTime<=0 || WorldTimeStop.Frozen)return;
         if(!rubberReturned && transform.up.y>0 && RubberReturn.AtTop(transform.position))
         {rubberReturned=true;transform.rotation=Quaternion.FromToRotation(Vector3.up,new Vector3(transform.up.x,-Mathf.Abs(transform.up.y),0));}
         if (followness != 0 && !rubberReturned)
