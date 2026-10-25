@@ -8,6 +8,7 @@ public sealed class DesertWormBoss : DistrictBoss
     readonly Transform[] sections=new Transform[BodyCount];
     SandSpine spine;
     Vector3 previous;
+    float routeWidth,routeHeight,routeCentre;
     bool completing;
     public int RemainingParts {get;private set;}=BodyCount+1;
     public DesertWormCore[] Cores=>cores;
@@ -17,6 +18,9 @@ public sealed class DesertWormBoss : DistrictBoss
         base.Start();GetComponent<Collider2D>().enabled=false;GetComponent<CombatHullVisual>().enabled=false;
         // Only the red reactors are damage targets, including homing, burn and chain weapons.
         Live.Remove(this);previous=transform.position;
+        var camera=UnityEngine.Camera.main;
+        routeWidth=Mathf.Max(.6f,camera.orthographicSize*405f/720f-1.5f);
+        routeHeight=camera.orthographicSize*.37f;routeCentre=camera.transform.position.y+camera.orthographicSize*.28f;
         Hull.GetComponent<MeshRenderer>().sharedMaterial=IndustrialMeshFactory.WhiteWormMaterial;
         cores[0]=DesertWormCore.Create(this,Hull,true,health*670/2700,new Vector3(0,.05f,-.44f));
         spine=new SandSpine(transform.position,1.04f,BodyCount);
@@ -31,8 +35,7 @@ public sealed class DesertWormBoss : DistrictBoss
     protected override void MoveBoss(float dt)
     {
         float t=Mathf.Max(0,age-2)*.54f;
-        float centre=Mathf.Lerp(Camera.DownLimit,Camera.UpLimit,.65f),height=Camera.UpLimit-Camera.DownLimit;
-        Vector3 target=new Vector3(Mathf.Sin(t)*Camera.RightLimit*.67f,centre+Mathf.Sin(t*2+.45f)*height*.17f,1);
+        Vector3 target=new Vector3(Mathf.Sin(t)*routeWidth,routeCentre+Mathf.Sin(t*2+.45f)*routeHeight,1);
         transform.position=Vector3.MoveTowards(transform.position,target,dt*(phaseTwo ? 5.9f : 4.5f));
         Vector2 tangent=transform.position-previous;previous=transform.position;
         if(tangent.sqrMagnitude>.00001f)Hull.rotation=Quaternion.FromToRotation(Vector3.down,tangent);
@@ -97,12 +100,13 @@ public sealed class DesertWormCore : AEnemy
     MeshRenderer mesh;
     public static DesertWormCore Create(DesertWormBoss owner,Transform parent,bool head,float health,Vector3 local)
     {
-        var t=SandSpine.Model(head ? "Head weakpoint" : "Body weakpoint",parent,IndustrialMeshFactory.WhiteWormCore(head),1);
+        var t=new GameObject(head ? "Head weakpoint" : "Body weakpoint").transform;t.SetParent(parent,false);
+        var visual=SandSpine.Model("Exposed red reactor",t,IndustrialMeshFactory.WhiteWormCore(head),1);
         t.localPosition=local;t.gameObject.layer=8;t.gameObject.tag="Enemy";
         var sprite=t.gameObject.AddComponent<SpriteRenderer>();sprite.enabled=false;
         var hit=t.gameObject.AddComponent<CircleCollider2D>();hit.isTrigger=true;hit.radius=head ? .61f : .43f;
         var part=t.gameObject.AddComponent<DesertWormCore>();part.owner=owner;part.health=health;
-        part.mesh=t.GetComponent<MeshRenderer>();part.mesh.sharedMaterial=IndustrialMeshFactory.WhiteWormMaterial;
+        part.mesh=visual.GetComponent<MeshRenderer>();part.mesh.sharedMaterial=IndustrialMeshFactory.WhiteWormMaterial;
         part.scoreOnKill=0;part.lifeDropChance=part.manaDropChance=part.moneyDropChance=0;return part;
     }
     public override void damage(float amount)
