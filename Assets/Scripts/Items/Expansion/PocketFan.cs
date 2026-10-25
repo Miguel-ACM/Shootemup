@@ -19,7 +19,7 @@ public sealed class PocketWind : MonoBehaviour
     {
         Current=this;Remaining=1.2f;
         if(lines==null){lines=new LineRenderer[5];for(int i=0;i<lines.Length;i++)lines[i]=CombatVisuals.Line(transform,new Color(.55f,.85f,.8f,.35f),.035f);}
-        SoundManager.PlaySound("blankbullet",.07f);
+        ItemSound.Play("fan",.18f);
     }
     public static Vector3 Velocity(Vector3 p)
     {
