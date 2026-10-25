@@ -5,6 +5,7 @@ public abstract class DistrictBoss : DistrictEnemy
     protected bool phaseTwo;
     protected ResourceBar bar;
     protected Vector3 station;
+    protected float motionAge;
     float nextPressure;
     public virtual bool UsesHealthBar=>true;
     public virtual float DisplayFraction=>HealthFraction;
@@ -21,7 +22,8 @@ public abstract class DistrictBoss : DistrictEnemy
         if(GameRules.playerDisabled)return;
         age+=Time.deltaTime*LevelRun.EnemyTempoScale;
         if(!phaseTwo && PhaseTwoReady){phaseTwo=true;NotifyBossPhaseChange(2);OnPhaseTwo();}
-        MoveBoss(Time.deltaTime*LevelRun.EnemyTempoScale);
+        float motionDelta=Time.deltaTime*LevelRun.EnemyTempoScale*MovementScale;motionAge+=motionDelta;
+        MoveBoss(motionDelta);
         if(transform.position.y<Camera.UpLimit-1 && age>=nextAttack)
         {
             volley++;Attack();nextAttack=age+attackInterval*AttackPace/Mathf.Max(.5f,GameRules.enemyShootSpeed);

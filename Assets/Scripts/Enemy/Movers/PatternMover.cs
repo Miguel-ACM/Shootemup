@@ -5,9 +5,9 @@ public abstract class PatternMover : AMover
 {
     public const float FlightTempo = .72f;
     public float TempoMultiplier=1;
-    [SerializeField, Min(.01f)] protected float moveSpeed = 3f;
-    [SerializeField, Min(0)] protected float edgeInset = .7f;
-    [SerializeField, Min(.1f)] private float maximumLifetime = 30f;
+    [SerializeField, Min(.01f),EnemyTunable("Standalone movement / Travel speed",.1f,20)] protected float moveSpeed = 3f;
+    [SerializeField, Min(0),EnemyTunable("Standalone movement / Edge inset",0,3)] protected float edgeInset = .7f;
+    [SerializeField, Min(.1f),EnemyTunable("Standalone movement / Maximum lifetime",1,60)] private float maximumLifetime = 30f;
     protected Transform player;
     protected Vector3 origin;
     protected float age;

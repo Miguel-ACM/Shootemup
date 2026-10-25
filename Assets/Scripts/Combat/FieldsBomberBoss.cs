@@ -26,7 +26,7 @@ public sealed class FieldsBomberBoss : DistrictBoss
         new Vector3(.75f,-.48f,-.51f),new Vector3(.97f,-.36f,-.51f),new Vector3(1.19f,-.24f,-.51f)};
     Vector2 phraseAxis=Vector2.down;
     protected override void Configure(){hull=23;hullScale=1.4f;health=1440;attackInterval=.55f;shellTravelDistance=4.6f;}
-    protected override void MoveBoss(float dt){station.x=Mathf.Sin(age*.5f)*2;base.MoveBoss(dt);}
+    protected override void MoveBoss(float dt){station.x=Mathf.Sin(motionAge*.5f)*2;base.MoveBoss(dt);}
     protected override void PressureAttack(){} // One score owns every battery and its rests.
     protected override void Attack()
     {

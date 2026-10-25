@@ -22,7 +22,7 @@ public static class WaveComposer
     static readonly Dictionary<int,Wave> waves=new Dictionary<int,Wave>();
     static readonly Dictionary<string,int> uses=new Dictionary<string,int>();
     static readonly Dictionary<(WavePart,int,int),Motion> patterns=new Dictionary<(WavePart,int,int),Motion>();
-    static int seed=-1,stage=-1;static LevelId level;static float width,height,tempo;
+    static int seed=-1,stage=-1,tuningRevision=-1;static LevelId level;static float width,height,tempo;
     public static float Tempo=>Mathf.Max(.01f,PatternMover.FlightTempo*GameRules.enemySpeed*LevelRun.EnemyTempoScale);
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void Reset(){waves.Clear();uses.Clear();patterns.Clear();seed=-1;stage=-1;}
@@ -32,6 +32,7 @@ public static class WaveComposer
     }
     static void EnsureContext()
     {
+        if(tuningRevision!=EnemyTuning.Revision){patterns.Clear();waves.Clear();uses.Clear();tuningRevision=EnemyTuning.Revision;}
         bool geometry=stage!=LevelRun.Stage || level!=LevelRun.Current || !Mathf.Approximately(width,Camera.RightLimit) || !Mathf.Approximately(height,Camera.UpLimit-Camera.DownLimit);
         if(geometry)patterns.Clear();
         if(seed!=LevelRun.Seed || stage!=LevelRun.Stage || level!=LevelRun.Current || !Mathf.Approximately(width,Camera.RightLimit) || !Mathf.Approximately(height,Camera.UpLimit-Camera.DownLimit) || !Mathf.Approximately(tempo,Tempo))
@@ -82,6 +83,8 @@ public static class WaveComposer
         int count=budget<5 || compact ? 2 : 3;bool heavy=false,groundUsed=false;
         if(level==LevelId.Candyland)count=budget<5 || compact ? 3 : 4;
         float window=compact ? 12.5f : budget<5 ? 8.6f : 11.5f;
+        float slowest=1;foreach(var part in WavePartLibrary.For(level))slowest=Mathf.Min(slowest,EnemyTuning.MovementFor(part.Enemy));
+        window/=slowest;
         for(int slot=0;slot<count;slot++)
         {
             var options=new List<(WavePart part,int score)>();
@@ -102,10 +105,10 @@ public static class WaveComposer
                 {
                     var motion=Make(option.part,variant+variation,variation==0 ? side : -side);
                     if(motion==null)continue;
-                    if(motion.Span>window || (compact && motion.Span>6.2f))continue;
+                    if(motion.Span>window || (compact && motion.Span>6.2f/slowest))continue;
                     if(slot==0){best=motion;break;}
                     float start=(slot-1)*.25f;
-                    for(float at=start;at<=Mathf.Min(compact ? 6.25f : 5.5f,window-motion.Span);at+=.25f)
+                    for(float at=start;at<=Mathf.Min((compact ? 6.25f : 5.5f)/slowest,window-motion.Span);at+=.25f)
                     {
                         motion.Place(at);
                         if(!WaveGeometry.Fits(motion.Occupancy,motion.Filled,at,occupied))continue;

@@ -5,12 +5,17 @@ public abstract class DistrictEnemy : AEnemy
 {
     protected Transform player;
     protected PatternMover movement;
-    protected float age, nextAttack=1.2f;
+    protected float age;
+    [EnemyTunable("Firing / First attack delay",0,15)] protected float nextAttack=1.2f;
     protected int volley;
     public float hullScale=.7f;
     public int hull;
-    [Min(.1f)] public float shellTravelDistance=3.8f;
-    protected float attackInterval=2;
+    [Min(.1f),EnemyTunable("Firing / Shell travel distance",.1f,16)] public float shellTravelDistance=3.8f;
+    [EnemyTunable("Firing / Attack interval",.05f,20)] protected float attackInterval=2;
+    public float MovementScale {get;private set;}=1;
+    public float ProjectileSpeedScale {get;private set;}=1;
+    public float ProjectileDamageScale {get;private set;}=1;
+    internal void SetTuning(float movementRate,float speed,float damage){MovementScale=movementRate;ProjectileSpeedScale=speed;ProjectileDamageScale=damage;if(movement!=null)movement.TempoMultiplier*=MovementScale;}
     public bool Challenged {get;private set;}
     public bool IsMiniboss {get;private set;}
     void MakeMiniboss()
@@ -24,21 +29,22 @@ public abstract class DistrictEnemy : AEnemy
     {
         if(Challenged)return;
         Challenged=true;health*=1.2f;attackInterval*=.9f;
-        if(movement!=null)movement.TempoMultiplier=1.15f;
+        if(movement!=null)movement.TempoMultiplier=1.15f*(movement is FormationFlight ? 1 : MovementScale);
     }
     public Transform Hull {get;private set;}
     protected abstract void Configure();
     protected abstract void Attack();
-    public static DistrictEnemy Spawn(Type type,Vector3 p)
+    public static DistrictEnemy Spawn(Type type,Vector3 p,bool applyTuning=true,bool scaleForRun=true,bool activate=true)
     {
-        var go=new GameObject(type.Name);go.SetActive(false);go.transform.position=p;go.tag="Enemy";go.layer=8;
+        var go=new GameObject(type.Name);go.SetActive(false);if(!activate)go.hideFlags=HideFlags.HideAndDontSave;go.transform.position=p;go.tag="Enemy";go.layer=8;
         var sr=go.AddComponent<SpriteRenderer>();sr.sprite=CombatVisuals.Disc;sr.enabled=false;sr.sortingLayerName="Enemy";
         var rb=go.AddComponent<Rigidbody2D>();rb.gravityScale=0;rb.bodyType=RigidbodyType2D.Kinematic;
         go.AddComponent<CircleCollider2D>().isTrigger=true;
         var enemy=(DistrictEnemy)go.AddComponent(type);enemy.Configure();
-        enemy.health*=GameRules.enemyHealth*LevelRun.EnemyHealthScale;
+        if(applyTuning)EnemyTuning.Apply(enemy,enemy.movement);
+        if(scaleForRun)enemy.health*=GameRules.enemyHealth*LevelRun.EnemyHealthScale;
         // Light wave ships should die during a clean pass with the stock gun.
-        if(!(enemy is DistrictBoss)){enemy.health*=enemy.hullScale<.8f ? .84f : 1.35f;enemy.attackInterval*=.78f;}
+        if(scaleForRun && !(enemy is DistrictBoss)){enemy.health*=enemy.hullScale<.8f ? .84f : 1.35f;enemy.attackInterval*=.78f;}
         enemy.size=enemy.hullScale;go.GetComponent<CircleCollider2D>().radius=enemy.hullScale*.8f;
         var model=new GameObject("Armored hull");model.transform.SetParent(go.transform,false);model.transform.localScale=Vector3.one*enemy.hullScale;
         model.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(enemy.hull);
@@ -49,7 +55,7 @@ public abstract class DistrictEnemy : AEnemy
             var exhaust=go.AddComponent<EnemyThrusters>();exhaust.visualRoot=model.transform;
             exhaust.sockets=IndustrialMeshFactory.CombatEngineSockets(enemy.hull);
         }
-        enemy.scoreOnKill=40;enemy.moneyDropChance=.8f;go.SetActive(true);return enemy;
+        enemy.scoreOnKill=40;enemy.moneyDropChance=.8f;go.SetActive(activate);return enemy;
     }
     protected override void Start(){base.Start();var p=GameObject.FindGameObjectWithTag("Player");player=p!=null ? p.transform : null;}
     public virtual void FlyPhrase(WaveUnit unit)
@@ -75,13 +81,13 @@ public abstract class DistrictEnemy : AEnemy
     public void Escort(Transform leader)
     {
         if(movement!=null){movement.enabled=false;Destroy(movement);}
-        var escort=gameObject.AddComponent<EscortOrbit>();escort.SetAnchor(leader);escort.TempoMultiplier=Challenged ? 1.15f : 1;movement=escort;
+        var escort=gameObject.AddComponent<EscortOrbit>();escort.SetAnchor(leader);escort.TempoMultiplier=MovementScale*(Challenged ? 1.15f : 1);movement=escort;
     }
-    protected T Mover<T>() where T:PatternMover { var m=gameObject.AddComponent<T>();m.TempoMultiplier=Challenged ? 1.15f : 1;movement=m;return m; }
+    protected T Mover<T>() where T:PatternMover { var m=gameObject.AddComponent<T>();m.TempoMultiplier=MovementScale*(Challenged ? 1.15f : 1);movement=m;return m; }
     internal void UseMovement(PatternMover next)
     {
         if(movement!=null && movement!=next){movement.enabled=false;Destroy(movement);}
-        next.TempoMultiplier=Challenged ? 1.15f : 1;movement=next;
+        next.TempoMultiplier=MovementScale*(Challenged ? 1.15f : 1);movement=next;
     }
     protected virtual void Update()
     {
@@ -98,9 +104,10 @@ public abstract class DistrictEnemy : AEnemy
         else if(age>=nextAttack){volley++;Attack();nextAttack=age+attackInterval/Mathf.Max(.5f,GameRules.enemyShootSpeed);}
     }
     protected Vector2 Aim => movement!=null && movement.LockedAim.HasValue ? ((Vector2)(movement.LockedAim.Value-transform.position)).normalized : CombatVisuals.Aim(transform.position);
-    protected T Fire<T>(Vector3 position,Vector2 direction,float velocity,float radius) where T:CombatRound
+    protected T Fire<T>(Vector3 position,Vector2 direction,float velocity,float radius=.18f) where T:CombatRound
     {
-        var shot=CombatRound.Launch<T>(position,direction,velocity*(Challenged ? 1.15f : 1)*(IsMiniboss ? 1.14f : 1),radius);
+        var shot=CombatRound.Launch<T>(position,direction,velocity*ProjectileSpeedScale*(Challenged ? 1.15f : 1)*(IsMiniboss ? 1.14f : 1),radius);
+        if(shot!=null)shot.damage*=ProjectileDamageScale;
         if(shot is BurstShell shell)shell.SetTravelDistance(shellTravelDistance);
         return shot;
     }

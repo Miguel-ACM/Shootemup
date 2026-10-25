@@ -8,7 +8,7 @@ public abstract class AEnemy : MonoBehaviour
     public static readonly HashSet<AEnemy> Live = new HashSet<AEnemy>();
     protected virtual void OnEnable(){Live.Add(this);}
     protected virtual void OnDisable(){Live.Remove(this);}
-    public float health = 20f;
+    [EnemyTunable("Base health",1,50000)] public float health = 20f;
     public virtual bool CanBeTargeted => health>0;
 
     bool dying = false;

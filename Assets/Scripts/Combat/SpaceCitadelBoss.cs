@@ -33,7 +33,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
     protected override bool PhaseTwoReady=>CoreExposed;
     protected override void MoveBoss(float dt)
     {
-        var target=new Vector3(centralLaser!=null && centralLaser.isActiveAndEnabled ? 0 : Mathf.Sin(age*.43f)*.82f,Camera.UpLimit-3.0f+Mathf.Sin(age*.31f)*.32f,1);
+        var target=new Vector3(centralLaser!=null && centralLaser.isActiveAndEnabled ? 0 : Mathf.Sin(motionAge*.43f)*.82f,Camera.UpLimit-3.0f+Mathf.Sin(motionAge*.31f)*.32f,1);
         transform.position=Vector3.MoveTowards(transform.position,target,dt*3.2f);
         iris=Mathf.MoveTowards(iris,CoreExposed ? 1 : 0,dt*1.8f);
         for(int i=0;i<shutters.Length;i++)if(shutters[i]!=null)
@@ -46,7 +46,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
         int beat=(volley-1)%12;
         if(beat==4)
         {
-            centralLaser=CombatRound.Launch<PulseLaser>(Hull.TransformPoint(new Vector3(0,-1.48f,-.30f)),Vector2.down,0);
+            centralLaser=Fire<PulseLaser>(Hull.TransformPoint(new Vector3(0,-1.48f,-.30f)),Vector2.down,0);
             if(centralLaser!=null)
             {centralLaser.Bind(Hull,new Vector3(0,-1.48f,-.30f));centralLaser.warning=1.05f;centralLaser.activeTime=1.2f;centralLaser.width=phaseTwo ? .42f : .34f;}
         }

@@ -57,6 +57,7 @@ public sealed class WavePart
         if(Enemy=="OrbitalScout")score=new[]{Seconds*.24f,Seconds*.34f,Seconds*.48f,Seconds*.61f,Seconds*.72f};
         if(Enemy=="OrbitalCarrier")score=new[]{Seconds*.25f,Seconds*.39f,Seconds*.58f,Seconds*.72f};
         if(Enemy=="LaserSatellite")score=new[]{Seconds*.28f,Seconds*.51f,Seconds*.72f};
+        EnemyTuning.TuneFormation(Enemy,units,Seconds,ref score);
         foreach(var unit in units)unit.fireTimes=score;
         return units;
     }

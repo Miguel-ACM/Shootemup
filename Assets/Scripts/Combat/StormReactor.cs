@@ -6,7 +6,7 @@ public sealed class StormReactor : DistrictEnemy
     protected override void Attack()
     {
         if(volley%4!=1){Fan<NeedleRound>(9,13,5.5f);return;}
-        var laser=CombatRound.Launch<PulseLaser>(transform.position,Aim,0);
+        var laser=Fire<PulseLaser>(transform.position,Aim,0);
         if(laser!=null)laser.Bind(Hull,new Vector3(0,-.35f,-.4f));
     }
     // The bays are exposed during firing and reload; armor still accepts every weapon.

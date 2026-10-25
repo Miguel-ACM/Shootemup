@@ -4,6 +4,7 @@ public sealed class CityDuoBoss : DistrictBoss
 {
     public bool heavy;
     public CityDuoBoss partner;
+    [EnemyTunable("Heavy hull / Base health",1,50000)] public float heavyBaseHealth=1400;
     bool enraged;
     float combinedMaximum;
     Vector2 attackAxis=Vector2.down;
@@ -20,7 +21,7 @@ public sealed class CityDuoBoss : DistrictBoss
         if(partner==null && !heavy)
         {
             partner=(CityDuoBoss)Spawn(typeof(CityDuoBoss),new Vector3(2,Camera.UpLimit+2,1));
-            partner.heavy=true;partner.health=1400*GameRules.enemyHealth*LevelRun.EnemyHealthScale;partner.partner=this;
+            partner.heavy=true;partner.health=partner.heavyBaseHealth*GameRules.enemyHealth*LevelRun.EnemyHealthScale;partner.partner=this;
             ShareEncounterWith(partner);
         }
         combinedMaximum=health+(partner!=null ? partner.health : 0);
@@ -29,7 +30,7 @@ public sealed class CityDuoBoss : DistrictBoss
     protected override void MoveBoss(float dt)
     {
         float pace=heavy ? .6f : 1.6f;
-        station.x=Mathf.Sin(age*pace+(heavy ? Mathf.PI : 0))*(heavy ? 2.1f : 3.2f);
+        station.x=Mathf.Sin(motionAge*pace+(heavy ? Mathf.PI : 0))*(heavy ? 2.1f : 3.2f);
         station.y=Camera.UpLimit-(heavy ? 2 : 3.5f);
         transform.position=Vector3.MoveTowards(transform.position,station,dt*(heavy ? 2 : 5)*(enraged ? 1.4f : 1));
     }

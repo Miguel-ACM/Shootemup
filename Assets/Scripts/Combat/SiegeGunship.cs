@@ -8,7 +8,7 @@ public sealed class SiegeGunship : DistrictEnemy
         for(int i=-1;i<=1;i++)
         {
             var muzzle=Hull.TransformPoint(new Vector3(i*.78f,i==0 ? -1.06f : -.98f,-.34f));
-            for(int j=-1;j<=1;j++)CombatRound.Launch<SuspendedRound>(muzzle,CombatVisuals.Rotate(Vector2.down,j*16),5,.23f);
+            for(int j=-1;j<=1;j++)Fire<SuspendedRound>(muzzle,CombatVisuals.Rotate(Vector2.down,j*16),5,.23f);
         }
     }
 }
