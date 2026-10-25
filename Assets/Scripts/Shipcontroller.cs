@@ -58,6 +58,8 @@ public class Shipcontroller : MonoBehaviour
 
     Inputs input;
     Vector2 move;
+    public Vector2 MoveInput=>move;
+    public bool IsInvulnerable=>invulnerable || (GetComponent<ShipBarrelRoll>()?.Active ?? false);
 
     void Awake(){
         input = new Inputs();
@@ -189,8 +191,10 @@ public class Shipcontroller : MonoBehaviour
     {
         var upgrades=GetComponent<CombatUpgrades>();float stored=upgrades!=null ? upgrades.Reserve : 0;
         float result=active.OnPress(mana+stored);
-        if(result>=0 && upgrades!=null)upgrades.SpendReserve();
-        return result>=0 ? Mathf.Min(maxMana,result) : result;
+        if(result<0)return result;
+        float spent=Mathf.Max(0,mana+stored-result);
+        float fromReserve=upgrades!=null ? upgrades.SpendReserve(spent) : 0;
+        return Mathf.Clamp(mana-(spent-fromReserve),0,maxMana);
     }
     void ActiveLeftPressed(InputAction.CallbackContext ctx)
     {
@@ -199,7 +203,7 @@ public class Shipcontroller : MonoBehaviour
         if(activeLeft!=null){float result=UseActive(activeLeft);if(result>=0){mana=result;manaBar.Set(mana);}}
     }
     void ActiveLeftReleased(InputAction.CallbackContext ctx){isActiveLeftPressed=false;if(activeLeft!=null)activeLeft.OnRelease(mana);}
-    public void ReceiveHazardDamage(float amount){if(!invulnerable && health>0 && !GameRules.playerDisabled)GetDamaged(amount);}
+    public void ReceiveHazardDamage(float amount){if(!IsInvulnerable && health>0 && !GameRules.playerDisabled)GetDamaged(amount);}
 
     void ActiveRightReleased(InputAction.CallbackContext ctx)
     {
@@ -276,7 +280,7 @@ public class Shipcontroller : MonoBehaviour
         if (other.tag == "EnemyBullet")
         {
             
-            if (!invulnerable)
+            if (!IsInvulnerable && !GameRules.playerDisabled)
             {
                 AEnemyBullet bullet = other.GetComponent<AEnemyBullet>();
                 GetDamaged(bullet.getDamage());

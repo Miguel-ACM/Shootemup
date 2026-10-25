@@ -97,7 +97,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         if(++blocks>=8){blocks=0;PlayerRound.Spawn(transform.position,Vector2.up,14,12,PlayerDelivery.Missile,1);}
     }
     public void StoreOverflow(float amount){if(Count(UpgradeKind.Reserve)>0 && amount>0)reserve=Mathf.Min(12,reserve+amount*.5f);}
-    public float SpendReserve(){float value=reserve;reserve=0;return value;}
+    public float SpendReserve(float amount=float.PositiveInfinity){float value=Mathf.Min(reserve,amount);reserve-=value;return value;}
     public void Killed(AEnemy enemy)
     {
         if(Count(UpgradeKind.ChainReactor)>0 && enemy.GetComponent<BurningHull>()!=null && Ready("chain",.3f))

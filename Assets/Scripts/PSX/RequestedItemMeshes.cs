@@ -5,6 +5,10 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "BarrelRoll":
+                b.Prism(new[]{new Vector2(0,.36f),new Vector2(.32f,-.15f),new Vector2(.08f,-.09f),new Vector2(0,-.25f),new Vector2(-.08f,-.09f),new Vector2(-.32f,-.15f)},.13f,1,Vector3.zero,6);
+                for(int i=0;i<10;i++){float a=i*Mathf.PI/6;var p=new Vector3(Mathf.Cos(a)*.43f,Mathf.Sin(a)*.43f,.02f);b.Box(p,new Vector3(.1f,.09f,.1f),9);}
+                b.Prism(new[]{new Vector2(-.16f,-.36f),new Vector2(.07f,-.48f),new Vector2(-.12f,-.57f)},.12f,9,Vector3.zero);return true;
             case "Poison":
                 b.Prism(new[]{new Vector2(-.32f,-.32f),new Vector2(.32f,-.32f),new Vector2(.34f,-.2f),new Vector2(.1f,.22f),new Vector2(.1f,.39f),new Vector2(-.1f,.39f),new Vector2(-.1f,.22f),new Vector2(-.34f,-.2f)},.26f,2,Vector3.zero,2);
                 b.Box(new Vector3(0,.43f,0),new Vector3(.23f,.1f,.29f),13);
