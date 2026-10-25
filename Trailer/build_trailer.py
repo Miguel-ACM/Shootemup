@@ -1,7 +1,7 @@
 import json,subprocess,concurrent.futures,hashlib
 from pathlib import Path
 root=Path(__file__).resolve().parent
-review=root/'Review';parts=review/'v4_parts';parts.mkdir(exist_ok=True)
+review=root/'Review';parts=review/'v5_parts';parts.mkdir(exist_ok=True)
 clips=json.loads((root/'edit.json').read_text())
 beat=json.loads((root/'music_beats.json').read_text())
 cursor=0;total_bars=0;timeline=[]
@@ -26,7 +26,7 @@ def render(c):
  subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-ss',str(c['source_start']),'-i',f"C:/Users/Miguel/Downloads/{c['source']}",'-t',str(c['duration']),'-an','-vf',vf,'-c:v','libx264','-preset','fast','-crf','18','-pix_fmt','yuv420p','-threads','4',str(dest)],check=True)
  stamp.write_text(signature);print(f"Rendered {i}/{len(clips)}: {c['label']}",flush=True)
 with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:list(ex.map(render,timeline))
-concat=review/'concat_v4.txt'
+concat=review/'concat_v5.txt'
 concat.write_text('\n'.join("file '"+str((parts/f'{i:02}.mp4').resolve()).replace('\\','/')+"'" for i in range(1,len(clips)+1)))
-subprocess.run(['ffmpeg','-v','error','-y','-f','concat','-safe','0','-i',str(concat),'-ss',str(music_start),'-i',str(root.parent/'Assets/Resources/Music/fields.mp3'),'-map','0:v','-map','1:a','-af',f'afade=t=in:st=0:d=0.01,afade=t=out:st={anchors[61]-music_start:.6f}:d={anchors[63]-anchors[61]:.6f}','-t','90','-c:v','copy','-c:a','aac','-b:a','320k','-movflags','+faststart',str(root/'Shootemup_Gameplay_Trailer_90s_v4.mp4')],check=True)
+subprocess.run(['ffmpeg','-v','error','-y','-f','concat','-safe','0','-i',str(concat),'-ss',str(music_start),'-i',str(root.parent/'Assets/Resources/Music/fields.mp3'),'-map','0:v','-map','1:a','-af',f'afade=t=in:st=0:d=0.01,afade=t=out:st={anchors[61]-music_start:.6f}:d={anchors[63]-anchors[61]:.6f}','-t','90','-c:v','copy','-c:a','aac','-b:a','320k','-movflags','+faststart',str(root/'Shootemup_Gameplay_Trailer_90s_v5.mp4')],check=True)
 print('COMPLETE',flush=True)
