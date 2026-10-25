@@ -257,7 +257,11 @@ public sealed class LevelEnvironment : MonoBehaviour
         if(level==LevelId.City)material.SetFloat("_Haze",.38f);
         var go=GameObject.FindGameObjectWithTag("Player");if(go!=null)player=go.transform;
         yield return null;
-        if(level==LevelId.Hell || level==LevelId.Underwater)
+        if(level==LevelId.Hell)
+        {
+            var caldera=new GameObject("Hell basalt caldera");caldera.transform.SetParent(transform,false);caldera.AddComponent<InfernalCaldera>();
+        }
+        else if(level==LevelId.Underwater)
         {
             var depth=new GameObject(level+" depth and atmosphere");depth.transform.SetParent(transform,false);depth.AddComponent<DepthBackdrop>().infernal=level==LevelId.Hell;
         }
