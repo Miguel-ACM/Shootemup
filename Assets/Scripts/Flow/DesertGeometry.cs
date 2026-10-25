@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-// Four seamless twenty-unit sections. Height and wind ridges repeat over the full eighty-unit loop.
+// Seeded crescent dunes share one continuous, eighty-unit sand surface.
 public static class DesertGeometry
 {
     sealed class MeshBuilder
@@ -37,38 +37,62 @@ public static class DesertGeometry
         public Mesh Finish(string name)
         {var m=new Mesh{name=name,indexFormat=IndexFormat.UInt32};m.SetVertices(vertices);m.SetColors(colors);m.SetTriangles(triangles,0);m.RecalculateNormals();m.RecalculateBounds();return m;}
     }
+    struct Dune { public float x,y,width,windward,lee,rise,bow,c,s; }
+    static Dune[] dunes;
+    static int layoutSeed;
+    static void Layout(int seed)
+    {
+        if(dunes!=null && layoutSeed==seed)return;
+        layoutSeed=seed;var random=new System.Random(seed);dunes=new Dune[50];
+        float R(float a,float b)=>Mathf.Lerp(a,b,(float)random.NextDouble());
+        for(int row=0;row<10;row++)for(int col=0;col<5;col++)
+        {
+            float angle=R(-.32f,-.12f);
+            dunes[row*5+col]=new Dune{x=-13+col*6.4f+(row%2)*2.4f+R(-1,1),y=row*8+R(-1.4f,1.4f),
+                width=R(2.8f,4.2f),windward=R(2.7f,4.2f),lee=R(.85f,1.35f),rise=R(.65f,1.18f),bow=R(1.3f,2.2f),c=Mathf.Cos(angle),s=Mathf.Sin(angle)};
+        }
+    }
     public static float Height(float x,float y,int seed)
     {
-        float phase=seed%97*.065f;
-        float wind=y*Mathf.PI/10+x*.50f+phase;
-        float crest=.5f+.5f*Mathf.Sin(wind+.75f*Mathf.Sin(x*.72f));
-        return .10f+Mathf.Pow(crest,3)*.85f+(.5f+.5f*Mathf.Sin(y*Mathf.PI/20-x*.45f+phase))*.22f;
+        Layout(seed);float height=0;
+        foreach(var dune in dunes)
+        {
+            float dx=x-dune.x,dy=Mathf.Repeat(y-dune.y+40,80)-40;
+            if(Mathf.Abs(dx)>7 || Mathf.Abs(dy)>8)continue;
+            float u=(dx*dune.c+dy*dune.s)/dune.width;
+            if(Mathf.Abs(u)>=1)continue;
+            // The curved crest tapers into two horns; each dune has a broad windward slope and a short slipface.
+            float v=-dx*dune.s+dy*dune.c+dune.bow*u*u;
+            float span=v<0 ? dune.windward : dune.lee;
+            if(Mathf.Abs(v)>=span)continue;
+            float profile=v<0 ? Mathf.Pow(Mathf.Cos(v/span*Mathf.PI*.5f),2) : Mathf.Pow(1-v/span,1.25f);
+            float mound=dune.rise*Mathf.Pow(1-u*u,.8f)*profile;
+            height=Mathf.Max(height,mound);
+        }
+        return .08f+height;
     }
     public static Mesh Ground(int section,int seed)
     {
-        var b=new MeshBuilder();float origin=(section-1)*20;
-        for(int row=0;row<80;row++)for(int col=0;col<72;col++)
+        const int columns=120,rows=100;
+        float origin=(section-1)*20;
+        var vertices=new Vector3[(columns+1)*(rows+1)];var colors=new Color[vertices.Length];var triangles=new int[columns*rows*6];
+        var sun=new Vector3(-.55f,-.70f,1).normalized;
+        for(int row=0;row<=rows;row++)for(int col=0;col<=columns;col++)
         {
-            float x=-14+col*28f/72,y=-10+row*.25f;
-            Vector3 P(float dx,float dy)=>new Vector3(x+dx,y+dy,Height(x+dx,origin+y+dy,seed));
-            float h=Height(x,origin+y,seed),slope=Height(x,origin+y+.1f,seed)-h;
-            var sand=Color.Lerp(new Color(.39f,.25f,.12f),new Color(.76f,.58f,.33f),Mathf.Clamp01(.55f+slope*24));
-            // Narrow wind-cut contour bands sit in the terrain mesh, beneath the combat plane.
-            float ripple=Mathf.Sin((origin+y)*30+x*11)*.004f;
-            sand+=new Color(ripple,ripple,ripple,0);
-            b.Face(sand,P(0,0),P(28f/72,0),P(28f/72,.25f),P(0,.25f));
+            float x=-14+col*28f/columns,y=-10+row*20f/rows,worldY=origin+y,h=Height(x,worldY,seed);
+            float dx=(Height(x+.07f,worldY,seed)-Height(x-.07f,worldY,seed))/.14f;
+            float dy=(Height(x,worldY+.07f,seed)-Height(x,worldY-.07f,seed))/.14f;
+            float light=Mathf.Clamp01(Vector3.Dot(new Vector3(-dx,-dy,1).normalized,sun));
+            // Shared vertex lighting removes the rectangular bands and the drawn-on crest lines.
+            var color=Color.Lerp(new Color(.48f,.35f,.21f),new Color(.76f,.61f,.40f),light);
+            int index=row*(columns+1)+col;vertices[index]=new Vector3(x+h*.2f,y+h*.3f,-h);colors[index]=color;
+            if(row==rows || col==columns)continue;
+            int t=(row*columns+col)*6;
+            triangles[t]=index;triangles[t+1]=index+columns+1;triangles[t+2]=index+1;
+            triangles[t+3]=index+1;triangles[t+4]=index+columns+1;triangles[t+5]=index+columns+2;
         }
-        // A thin windward lip and a broad lee face make each long dune legible through the PSX filter.
-        float phase=seed%97*.065f;
-        for(int ridge=-5;ridge<=5;ridge++)for(int col=0;col<140;col++)
-        {
-            float x=-14+col*.2f,next=x+.2f;
-            float Y(float q)=>(Mathf.PI*.5f-q*.50f-phase-.75f*Mathf.Sin(q*.72f)+ridge*Mathf.PI*2)*10/Mathf.PI-origin;
-            float a=Y(x),c=Y(next);if(Mathf.Min(a,c)<-9.8f || Mathf.Max(a,c)>9.8f)continue;
-            Vector3 P(float q,float y)=>new Vector3(q,y,Height(q,origin+y,seed)+.025f);
-            b.Face(new Color(.79f,.62f,.37f),P(x,a-.06f),P(next,c-.06f),P(next,c+.06f),P(x,a+.06f));
-        }
-        return b.Finish("Wind-carved dunes "+section);
+        var mesh=new Mesh{name="Sculpted crescent dunes "+section};mesh.vertices=vertices;mesh.colors=colors;mesh.triangles=triangles;
+        mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
     }
     public static Mesh Buildings(int section,int seed)
     {
