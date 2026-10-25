@@ -13,7 +13,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
     public bool IsDefeated=>completing;
     public bool CoreExposed=>parts[0]!=null && parts[1]!=null && parts[0].health<=0 && parts[1].health<=0;
     public override bool CanBeTargeted=>false;
-    protected override void Configure(){hull=45;hullScale=1;health=2000;attackInterval=.46f;nextAttack=2.0f;}
+    protected override void Configure(){hull=45;hullScale=1;health=2500;attackInterval=.38f;nextAttack=1.7f;}
     protected override void Start()
     {
         base.Start();GetComponent<Collider2D>().enabled=false;GetComponent<CombatHullVisual>().enabled=false;
@@ -55,7 +55,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
             for(int i=2;i<4;i++)
             {
                 bool turret=parts[i]!=null && parts[i].health>0;
-                int side=i==2 ? -1 : 1,count=turret ? (phaseTwo ? 5 : 3) : (phaseTwo ? 3 : 2);
+                int side=i==2 ? -1 : 1,count=turret ? (phaseTwo ? 6 : 5) : (phaseTwo ? 4 : 3);
                 // Half-lane replies form nested mirrored arcs, rather than repeating identical rays.
                 var axis=CombatVisuals.Rotate(Vector2.down,side*(48+(beat-1)*6));
                 var port=turret ? parts[i].transform.position : Hull.TransformPoint(new Vector3(side*.4f,-.9f,-.4f));
@@ -68,16 +68,16 @@ public sealed class SpaceCitadelBoss : DistrictBoss
             for(int side=-1;side<=1;side+=2)
             {
                 var port=Hull.TransformPoint(new Vector3(side*.4f,-.9f,-.4f));
-                PetalFan<NeedleRound>(port,CombatVisuals.Rotate(barrageAxis,side*(beat==6 ? 10 : 5)),phaseTwo ? 5 : 3,9,6.7f,.14f);
+                PetalFan<NeedleRound>(port,CombatVisuals.Rotate(barrageAxis,side*(beat==6 ? 14 : 7)),phaseTwo ? 7 : 5,9,6.7f,.14f);
             }
         }
-        else if(phaseTwo && beat>=8 && beat<=10)
+        else if(beat>=8 && beat<=10)
         {
             // Core pressure survives gun destruction. Each exposed-reactor phrase
             // answers the laser with a slow, bowed fan and half-lane replies.
             if(beat==8)barrageAxis=Aim;
             PetalFan<SimpleRound>(Hull.TransformPoint(new Vector3(0,-.7f,-.5f)),
-                CombatVisuals.Rotate(barrageAxis,(beat-9)*5),9,13,5.3f,.15f,.18f);
+                CombatVisuals.Rotate(barrageAxis,(beat-9)*6),phaseTwo ? 11 : 7,13,5.3f,.15f,.18f);
         }
         // Beats 3, 5 and 11 deliberately breathe; broken guns still reduce ricochets.
     }
@@ -112,6 +112,7 @@ public sealed class SpaceBossPart : AEnemy
         var visual=new GameObject("Orbital module model");visual.transform.SetParent(go.transform,false);
         visual.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.SpaceModule(kind);
         var renderer=visual.AddComponent<MeshRenderer>();renderer.sharedMaterial=SpaceMaterials.Fleet;renderer.sortingLayerName="Enemy";
+        PartHitFeedback.Bind(visual.transform);
         var part=go.AddComponent<SpaceBossPart>();part.owner=owner;part.health=health;part.kind=kind;part.model=renderer;part.SetExposed(kind!=2);
         part.lifeDropChance=part.manaDropChance=part.moneyDropChance=0;part.scoreOnKill=0;return part;
     }
