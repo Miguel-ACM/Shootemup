@@ -40,6 +40,7 @@ public abstract class AEnemy : MonoBehaviour
         orchestrer = o;
         orchesterWaveNumber = waveNumber;
     }
+    protected void ShareEncounterWith(AEnemy other){if(other!=null)other.SetOrchestrer(orchestrer,orchesterWaveNumber);}
 
 
     protected virtual void Start()

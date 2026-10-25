@@ -21,6 +21,7 @@ public sealed class CityDuoBoss : DistrictBoss
         {
             partner=(CityDuoBoss)Spawn(typeof(CityDuoBoss),new Vector3(2,Camera.UpLimit+2,1));
             partner.heavy=true;partner.health=1400*GameRules.enemyHealth*LevelRun.EnemyHealthScale;partner.partner=this;
+            ShareEncounterWith(partner);
         }
         combinedMaximum=health+(partner!=null ? partner.health : 0);
         if(bar!=null)bar.SetMax(combinedMaximum);
