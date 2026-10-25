@@ -114,13 +114,18 @@ public abstract class AEnemy : MonoBehaviour
 
     protected virtual void Die()
     {
+        if(isBoss){BossDestruction.Play(this,position=>CompleteDeath(false,position));return;}
+        CompleteDeath(true);
+    }
+    void CompleteDeath(bool explode,Vector3? bossPosition=null)
+    {
         // The explosion plays its own sound for every fireball it spawns.
         if(CombatUpgrades.Current!=null)CombatUpgrades.Current.Killed(this);
-        PSXImpactEffects.Explosion(gameObject);
+        if(explode)PSXImpactEffects.Explosion(gameObject);
         Score.IncreaseScore(scoreOnKill);
         DropItems();
         if (orchestrer != null)
-            orchestrer.NotifyEnemyKilled(orchesterWaveNumber, isBoss: isBoss);
+            orchestrer.NotifyEnemyKilled(orchesterWaveNumber,isBoss:isBoss,bossPosition:bossPosition);
         Destroy(gameObject);
     }
 

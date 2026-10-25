@@ -9,6 +9,11 @@ public sealed class EnemyThrusters : MonoBehaviour
     Transform[] flames;
     Vector3 previous;
     float phase;
+    public void Extinguish()
+    {
+        if(flames!=null)foreach(var flame in flames)if(flame!=null)flame.gameObject.SetActive(false);
+        enabled=false;
+    }
     void Start()
     {
         var player=GameObject.FindGameObjectWithTag("Player");

@@ -31,7 +31,7 @@ public sealed class PSXPolygonDebris : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetState() { active.Clear(); }
 
-    public static PSXPolygonDebris Spawn(GameObject source)
+    public static PSXPolygonDebris Spawn(GameObject source,bool prepareOnly=false,bool wholeAssembly=false)
     {
         var district = source.GetComponent<DistrictEnemy>();
         var visual = source.GetComponent<PSXObjectVisual>();
@@ -58,7 +58,7 @@ public sealed class PSXPolygonDebris : MonoBehaviour
         // District hulls are a single mesh. Their children are animated exhaust, which
         // must extinguish with the craft rather than become solid shards in the blast.
         var hullRenderer = district != null ? model.GetComponent<MeshRenderer>() : null;
-        var renderers = district != null
+        var renderers = wholeAssembly ? source.GetComponentsInChildren<MeshRenderer>() : district != null
             ? hullRenderer != null ? new[] { hullRenderer } : System.Array.Empty<MeshRenderer>()
             : model.GetComponentsInChildren<MeshRenderer>();
         Bounds bounds = new Bounds(model.position, Vector3.zero);
@@ -73,8 +73,10 @@ public sealed class PSXPolygonDebris : MonoBehaviour
         }
         if (effect.batches.Count == 0) { Destroy(go); return null; }
         active.Add(effect);
+        if(prepareOnly)go.SetActive(false);
         return effect;
     }
+    public void ReleasePrepared(){started=Time.time;gameObject.SetActive(true);}
 
     void Build(MeshFilter filter, MeshRenderer source, Vector3 blastCentre, float cell)
     {

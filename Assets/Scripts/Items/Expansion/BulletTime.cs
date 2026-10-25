@@ -43,6 +43,7 @@ public sealed class WorldTimeStop : MonoBehaviour
         border.startColor=border.endColor=new Color(.3f,.75f,.9f,Mathf.Min(.65f,remaining*.8f));
     }
     void End(){ItemSound.Play("powerdown",.16f,1.25f);Restore();Destroy(this);}
+    public void Cancel(){End();}
     void Restore()
     {
         if(Current!=this)return;

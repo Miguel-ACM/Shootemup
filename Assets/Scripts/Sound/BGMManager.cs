@@ -59,7 +59,7 @@ public class BGMManager : MonoBehaviour
 
     public static void StopBGM()
     {
-        audioSource.Stop();
+        if(audioSource!=null)audioSource.Stop();
     }
 
 

@@ -233,16 +233,14 @@ public class WaveOrchestrer : MonoBehaviour
     public bool TryClaimItem(AItem candidate)=>decision!=null && decision.TryClaim(candidate);
     public void NotifyItemPicked(GameObject item){if(decision!=null)decision.Picked(item);}
 
-    public void NotifyEnemyKilled(int waveNumber, bool isBoss = false)
+    public void NotifyEnemyKilled(int waveNumber,bool isBoss=false,Vector3? bossPosition=null)
     {
         if (isBoss)
         {
-            if(choosingRoute || GameRules.playerDisabled)return;
+            if(choosingRoute || GameOverState.Active)return;
             choosingRoute=true;
             isWaveComingOut=false;
-            Camera.WhiteScreenJitter(0.5f);
             EraseAllBullets();
-            StartCoroutine(BGMManager.FadeOutSong(1.4f));
             StartCoroutine(ChooseNextRoute());
         }
         else if (currentWaveNumber == waveNumber)

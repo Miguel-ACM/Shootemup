@@ -95,7 +95,7 @@ public class Menu : MonoBehaviour
             currentIndex = 0;
             if (!CloudTransition.Busy) Time.timeScale = 0f;
         } else {
-            if (!CloudTransition.Busy) Time.timeScale = WorldTimeStop.Frozen ? 0 : 1;
+            if (!CloudTransition.Busy) Time.timeScale = WorldTimeStop.Frozen || BossDestruction.HoldingFrame ? 0 : 1;
         }
         canvasGroup.alpha = menuOpen ? 1 : 0;
         canvasGroup.interactable = menuOpen;
