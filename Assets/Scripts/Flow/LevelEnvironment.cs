@@ -209,14 +209,21 @@ public sealed class LevelEnvironment : MonoBehaviour
                 // All four authored sections form one district. Their boundaries match after a full wrap.
                 var section=new GameObject(level+" district "+i).transform;section.SetParent(transform,false);
                 section.localPosition=new Vector3(0,(i-1)*SectionLength,90);section.localScale=new Vector3(.8f,1,1);
-                Add(kit[level+"Ground"+i],section,Vector3.zero,-50);
+                if(level==LevelId.Desert)
+                {
+                    var ground=DesertGeometry.Ground(i,LevelRun.Seed);var detail=DesertGeometry.Buildings(i,LevelRun.Seed);
+                    ownedMeshes.Add(ground);ownedMeshes.Add(detail);Add(ground,section,Vector3.zero,-50);Add(detail,section,Vector3.zero,-40);
+                }
+                else Add(kit[level+"Ground"+i],section,Vector3.zero,-50);
                 if(level==LevelId.City)
                 {
                     var buildings=CityDistrictGeometry.Build(LevelRun.Seed,i);ownedMeshes.Add(buildings);Add(buildings,section,Vector3.zero,-40);
                 }
-                else Add(kit[level+"Detail"+i],section,Vector3.zero,-40);
+                else if(level!=LevelId.Desert)Add(kit[level+"Detail"+i],section,Vector3.zero,-40);
                 sections.Add(section);
-                var near=Add(kit[level+"Near"+i],transform,new Vector3(0,(i-1)*SectionLength,76),-25);
+                var nearMesh=level==LevelId.Desert ? DesertGeometry.Near(i,LevelRun.Seed) : kit[level+"Near"+i];
+                if(level==LevelId.Desert)ownedMeshes.Add(nearMesh);
+                var near=Add(nearMesh,transform,new Vector3(0,(i-1)*SectionLength,76),-25);
                 near.localScale=new Vector3(.8f,1,1);foreground.Add(near);
                 yield return null;
             }
@@ -228,6 +235,7 @@ public sealed class LevelEnvironment : MonoBehaviour
                 AddAtmosphere("Near windblown powder",3,35,new Color(.89f,.94f,.95f,.21f),2.5f,1.8f);
                 yield return null;
             }
+            if(level==LevelId.Desert)AddAtmosphere("Windblown sand",0,42,new Color(.74f,.53f,.28f,.12f),1.8f,.65f);
             if(level==LevelId.City)
             {
                 AddAtmosphere("Wisps above the distant city",0,35,new Color(.75f,.80f,.83f,.20f),2.6f,.32f);

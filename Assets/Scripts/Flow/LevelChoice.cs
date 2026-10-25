@@ -55,7 +55,7 @@ public sealed class LevelChoice : MonoBehaviour
             fills[i].pivot=new Vector2(.5f,0);Paint(fills[i],new Color(accent.r,accent.g,accent.b,.37f));
             var edge=Rect(fills[i],"Leading edge",new Vector2(202.5f,1.5f),Vector2.zero);
             edge.anchorMin=edge.anchorMax=new Vector2(.5f,1);Paint(edge,new Color(accent.r,accent.g,accent.b,.65f));
-            names[i]=Text(half,level.ToString().ToUpperInvariant(),24,Vector2.zero,Color.white).rectTransform;
+            names[i]=Text(half,level==LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(),24,Vector2.zero,Color.white).rectTransform;
         }
         var centre=Rect(frame,"Neutral flight corridor",new Vector2(405*RouteCharge.NeutralWidth,720),Vector2.zero);
         Paint(centre,new Color(.04f,.07f,.10f,.2f));
