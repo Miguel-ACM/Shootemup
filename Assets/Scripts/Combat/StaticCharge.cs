@@ -45,12 +45,16 @@ public sealed class StaticArc : MonoBehaviour
 {
     float age,duration;
     LineRenderer line;
+    Color fromColor,toColor;
     public static void Draw(Vector3 from,Vector3 to,float duration)
     {
         var go=new GameObject("Static discharge");var arc=go.AddComponent<StaticArc>();arc.duration=duration;
         arc.line=CombatVisuals.Line(go.transform,new Color(.65f,.55f,.95f),.055f);arc.line.positionCount=7;
+        bool fire=PlayerShotPalette.Burning,poison=PlayerShotPalette.Toxic;
+        arc.fromColor=poison ? PlayerShotPalette.Poison : fire ? PlayerShotPalette.Fire : new Color(.65f,.55f,.95f);
+        arc.toColor=fire ? PlayerShotPalette.Fire : arc.fromColor;
         var side=Vector3.Cross(to-from,Vector3.forward).normalized;
         for(int i=0;i<7;i++){var p=Vector3.Lerp(from,to,i/6f)+side*(i==0 || i==6 ? 0 : (i%2==0 ? -.1f : .1f));p.z=-2;arc.line.SetPosition(i,p);}
     }
-    void Update(){if(WorldTimeStop.Frozen)return;age+=Time.deltaTime;var c=new Color(.65f,.55f,.95f,1-age/duration);line.startColor=line.endColor=c;if(age>=duration)Destroy(gameObject);}
+    void Update(){if(WorldTimeStop.Frozen)return;age+=Time.deltaTime;fromColor.a=toColor.a=1-age/duration;line.startColor=fromColor;line.endColor=toColor;if(age>=duration)Destroy(gameObject);}
 }

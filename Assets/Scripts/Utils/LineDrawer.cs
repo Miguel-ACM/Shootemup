@@ -8,6 +8,11 @@ public class LineDrawer : MonoBehaviour
 {
     LineRenderer lineRenderer;
     LineRenderer core;
+    public void SetCoatings(bool fire,bool poison)
+    {
+        lineRenderer.colorGradient=PlayerShotPalette.Electricity(fire,poison,false);
+        core.colorGradient=PlayerShotPalette.Electricity(fire,poison,true);
+    }
 
     void Awake()
     {

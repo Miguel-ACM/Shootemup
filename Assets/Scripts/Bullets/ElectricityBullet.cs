@@ -22,15 +22,16 @@ public class ElectricityBullet : ABullet
         if (!shoot)
         {
 
-            List<Rigidbody2D> hitEnemies;
+            List<AEnemy> hitEnemies;
+            lineDrawer.SetCoatings(PlayerShotPalette.Burning,PlayerShotPalette.Toxic);
             List<Vector2> path = GetPoints(transform.position, out hitEnemies);
             lineDrawer.DrawLine(path.ToArray(), transform.position.z, .09f,true);
-            foreach (Rigidbody2D rb in hitEnemies)
+            foreach (AEnemy enemy in hitEnemies)
             {
-                var enemy=rb.gameObject.GetComponent<AEnemy>();
-                int point=path.IndexOf((Vector2)rb.transform.position);
+                if(enemy==null || !enemy.CanBeTargeted)continue;
+                int point=path.IndexOf((Vector2)enemy.transform.position);
                 Vector2 incoming=point>0 ? path[point]-path[point-1] : Vector2.up;
-                enemy.HitAt(rb.transform.position,incoming);enemy.damage(CombatUpgrades.Current!=null ? CombatUpgrades.Current.DirectHit(enemy,damage) : damage);
+                enemy.HitAt(enemy.transform.position,incoming);enemy.damage(CombatUpgrades.Current!=null ? CombatUpgrades.Current.DirectHit(enemy,damage) : damage);
             }
             shoot = true;
             Invoke("Delete", 0.1f);
@@ -44,11 +45,11 @@ public class ElectricityBullet : ABullet
         Destroy(gameObject);
     }
 
-    private List<Vector2> GetPoints(Vector2 origPoint, out List<Rigidbody2D> hitEnemies)
+    private List<Vector2> GetPoints(Vector2 origPoint, out List<AEnemy> hitEnemies)
     {
         Vector2 currPoint = origPoint;
         List<Vector2> path = new List<Vector2>();
-        hitEnemies = new List<Rigidbody2D>();
+        hitEnemies = new List<AEnemy>();
         float radius = 1f + (followness * 2);
         float currAngle = 90f;
         float angleLimitLeft = 175f; float angleLimitRight = 5f;
@@ -57,28 +58,28 @@ public class ElectricityBullet : ABullet
         float i = 0;
         while (currPoint.x > Camera.LeftLimit - 1f && currPoint.x < Camera.RightLimit + 1f && currPoint.y < Camera.UpLimit + 2f)
         {
-            Collider2D[] results = Physics2D.OverlapCircleAll(currPoint, radius, LayerMask.GetMask("Enemy"));
             float minDistance = float.PositiveInfinity;
             nextAngle = currAngle;
             nextPoint = new Vector2(currPoint.x + Mathf.Cos(Mathf.Deg2Rad * currAngle) * radius,
                                     currPoint.y + Mathf.Sin(Mathf.Deg2Rad * currAngle) * radius);
-            Rigidbody2D hitObject = null;
-            foreach (Collider2D col in results)
+            AEnemy hitObject = null;
+            foreach (AEnemy candidate in AEnemy.Live)
             {
-                if (hitEnemies.Contains(col.attachedRigidbody))
+                if (candidate==null || !candidate.CanBeTargeted || hitEnemies.Contains(candidate) ||
+                    ((Vector2)candidate.transform.position-currPoint).sqrMagnitude>radius*radius)
                 {
                     continue;
                 }
-                float angle = Utils.GetAngleBetweenVectors(currPoint, col.transform.position);
+                float angle = Utils.GetAngleBetweenVectors(currPoint, candidate.transform.position);
                 if (angle < angleLimitLeft && angle > angleLimitRight)
                 {
-                    distance = Vector2.Distance(currPoint, col.transform.position);
+                    distance = Vector2.Distance(currPoint, candidate.transform.position);
                     if (distance < minDistance)
                     {
                         minDistance = distance;
-                        nextPoint = col.transform.position;
+                        nextPoint = candidate.transform.position;
                         nextAngle = angle;
-                        hitObject = col.attachedRigidbody;
+                        hitObject = candidate;
                     }
                 }
             }
