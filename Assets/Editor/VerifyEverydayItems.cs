@@ -38,6 +38,7 @@ public static class VerifyEverydayItems
         EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.GameView")).Show();
         SessionState.SetBool(Key,true);EditorApplication.isPlaying=true;
     }
+    public static void RenderDecoy(){SessionState.SetBool("EverydayDecoyOnly",true);Run();}
 }
 public sealed class EverydayItemReview : MonoBehaviour
 {
@@ -127,6 +128,17 @@ public sealed class EverydayItemReview : MonoBehaviour
         InputSystem.settings.editorInputBehaviorInPlayMode=InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
         foreach(var device in InputSystem.devices.ToArray())if(device is Keyboard || device is Gamepad)InputSystem.DisableDevice(device);
         keyboard=InputSystem.AddDevice<Keyboard>();
+        if(SessionState.GetBool("EverydayDecoyOnly",false))
+        {
+            SessionState.SetBool("EverydayDecoyOnly",false);
+            yield return new WaitForSeconds(2);
+            yield return Grant(typeof(DecoyProjector),0);((DecoyProjector)granted).OnPress(100);
+            ship.transform.position+=Vector3.right*2;
+            Check(!ShaderUtil.ShaderHasError(Resources.Load<Shader>("ShipDecoy")),"final spectral projection shader compiles");
+            Check(SpectralDecoy.Current.GetComponentsInChildren<MeshFilter>().All(m=>m.GetComponent<MeshRenderer>().sharedMaterials.Length==m.sharedMesh.subMeshCount),"complete ship mesh is projected");
+            for(int i=0;i<6;i++){yield return new WaitForSeconds(.18f);yield return Capture("DecoyMotion"+i.ToString("00"));}
+            yield break;
+        }
         var pool=new HashSet<string>();foreach(var f in typeof(ItemPool).GetFields(BindingFlags.NonPublic|BindingFlags.Static))if(f.GetValue(null) is string[] entries)foreach(var e in entries)pool.Add(e);
         Check(Items.All(t=>pool.Contains(t.Name)),"all seven items are registered for offers and Debug Run");
         yield return Catalog();

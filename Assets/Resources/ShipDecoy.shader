@@ -9,7 +9,8 @@ Shader "Shootemup/Ship Decoy"
             Tags { "LightMode"="Universal2D" }
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off
-            Cull Back
+            ZTest Always
+            Cull Off
             HLSLPROGRAM
             #pragma vertex Vert
             #pragma fragment Frag
