@@ -11,6 +11,7 @@ public sealed class HullAfflictionVfx
     {
         enemy=target;poison=toxic;
         particles=PSXImpactEffects.Create(target.transform,toxic ? "Poison bubbles" : "Burning hull flames",48,toxic);
+        if(toxic){var renderer=particles.GetComponent<ParticleSystemRenderer>();renderer.sortingLayerName="Bullet";renderer.sortingOrder=29;}
         var fade=particles.colorOverLifetime;fade.enabled=true;
         var gradient=new Gradient();gradient.SetKeys(new[]{new GradientColorKey(Color.white,0),new GradientColorKey(Color.white,1)},new[]{new GradientAlphaKey(.9f,0),new GradientAlphaKey(0,1)});fade.color=gradient;
     }
