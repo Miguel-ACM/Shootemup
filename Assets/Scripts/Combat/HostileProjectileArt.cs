@@ -49,7 +49,15 @@ public static class HostileProjectileArt
             case Shape.Helix:return Mathf.Pow(ax/.86f,.75f)+Mathf.Pow(ay/.98f,1.3f);
             case Shape.Shell:return Mathf.Max(r/.96f,(ax+ay)/1.30f);
             case Shape.Ricochet:return Mathf.Max((ax+ay)/1.02f,Mathf.Max(ax,ay)/.82f);
-            case Shape.Suspended:return Mathf.Max(ay/.96f,ax/(.39f+.47f*ay));
+            case Shape.Suspended:
+            {
+                // Two detached chevron wings frame a separate round core.
+                // Keep transparent gaps wide enough to survive the gameplay pixel grid.
+                var fromTip=new Vector2(ax-.30f,y-.72f);
+                var wing=new Vector2(.52f,-1.18f);
+                float along=Mathf.Clamp01(Vector2.Dot(fromTip,wing)/wing.sqrMagnitude);
+                return Mathf.Min(r/.28f,(fromTip-wing*along).magnitude/.15f);
+            }
             case Shape.Missile:return Mathf.Max(ay/.98f,ax/(y<-.20f ? .82f : .48f*(1.2f-y*.55f)));
             case Shape.Plasma:return Mathf.Max(Mathf.Max(ax,ay)/.87f,(ax+ay)/1.23f);
             case Shape.Mine:return Mathf.Min(Mathf.Max(ax/.32f,ay/.94f),Mathf.Max(ax/.94f,ay/.32f));
