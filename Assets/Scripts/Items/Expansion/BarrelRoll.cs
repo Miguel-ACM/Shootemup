@@ -19,7 +19,7 @@ public sealed class ShipBarrelRoll : MonoBehaviour
     float elapsed=Duration,direction;
     public bool Active=>elapsed<Duration;
     public float Angle=>Active ? direction*360*Mathf.SmoothStep(0,1,elapsed/Duration) : 0;
-    public void Begin(float side){direction=side;elapsed=0;SoundManager.PlaySound("blankbullet",.07f);}
+    public void Begin(float side){direction=side;elapsed=0;ItemSound.Play("roll",.2f);}
     void Update()
     {
         if(!Active || GameRules.playerDisabled)return;
