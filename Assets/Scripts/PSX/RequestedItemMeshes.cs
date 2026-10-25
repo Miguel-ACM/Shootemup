@@ -5,6 +5,15 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "EnergyCore":
+                b.Ball(Vector3.zero,new Vector3(.23f,.33f,.23f),9);
+                foreach(int side in new[]{-1,1})
+                {
+                    b.Box(new Vector3(side*.3f,0,0),new Vector3(.1f,.46f,.3f),6);
+                    b.Box(new Vector3(0,side*.36f,0),new Vector3(.56f,.13f,.35f),11);
+                    b.Box(new Vector3(0,side*.42f,0),new Vector3(.18f,.08f,.2f),13);
+                }
+                b.Drum(new Vector3(0,0,-.25f),.1f,.05f,1,8);return true;
             case "DoubleTrouble":
                 foreach(int side in new[]{-1,1})
                 {
