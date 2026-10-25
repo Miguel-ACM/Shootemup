@@ -5,6 +5,12 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "RubberBand":
+                for(int i=0;i<24;i++)
+                {
+                    float a=i*Mathf.PI/12,c=(i+1)*Mathf.PI/12;
+                    b.Prism(new[]{new Vector2(Mathf.Cos(a)*.4f,Mathf.Sin(a)*.27f),new Vector2(Mathf.Cos(c)*.4f,Mathf.Sin(c)*.27f),new Vector2(Mathf.Cos(c)*.31f,Mathf.Sin(c)*.18f),new Vector2(Mathf.Cos(a)*.31f,Mathf.Sin(a)*.18f)},.07f,13,Vector3.zero,13);
+                }return true;
             case "HotSauce":
                 b.Box(new Vector3(0,-.13f,0),new Vector3(.35f,.5f,.24f),12,12);
                 b.Prism(new[]{new Vector2(-.175f,.12f),new Vector2(.175f,.12f),new Vector2(.09f,.29f),new Vector2(-.09f,.29f)},.24f,12,Vector3.zero,12);

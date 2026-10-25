@@ -13,7 +13,7 @@ public sealed class PlayerRound : ABullet
     float age;
     Vector3 origin;
     Vector2 heading;
-    bool detonated, returning, rebounded;
+    bool detonated, returning, rebounded, rubberReturned;
     readonly HashSet<AEnemy> hit=new HashSet<AEnemy>();
     SpriteRenderer visual;
     public void ExcludePreviousHit(AEnemy enemy){hit.Add(enemy);rebounded=true;}
@@ -42,6 +42,8 @@ public sealed class PlayerRound : ABullet
     {
         if(WorldTimeStop.Frozen || Time.deltaTime<=0)return;
         age+=Time.deltaTime;
+        if(!rubberReturned && hit.Count==0 && !returns && delivery!=PlayerDelivery.Disc && heading.y>0 && RubberReturn.AtTop(transform.position))
+        {rubberReturned=true;heading=new Vector2(heading.x,-Mathf.Abs(heading.y));age=0;}
         if(age>5 || transform.position.y<Camera.DownLimit-3 || Mathf.Abs(transform.position.x)>Camera.RightLimit+4){Destroy(gameObject);return;}
         if((delivery==PlayerDelivery.Disc || returns) && age>.75f && !returning){returning=true;hit.Clear();}
         if(returning)
@@ -49,7 +51,7 @@ public sealed class PlayerRound : ABullet
             heading=Vector3.RotateTowards(heading,((Vector2)(origin-transform.position)).normalized,Time.deltaTime*5,0);
             if(age>1.3f && Vector2.Distance(transform.position,origin)<.5f){Destroy(gameObject);return;}
         }
-        else if(delivery==PlayerDelivery.Missile || GameRules.playerShootFollowness>0)
+        else if(!rubberReturned && (delivery==PlayerDelivery.Missile || GameRules.playerShootFollowness>0))
         {
             var target=CombatUpgrades.Nearest(transform.position,hit,7);
             if(target!=null)heading=Vector3.RotateTowards(heading,((Vector2)(target.transform.position-transform.position)).normalized,
