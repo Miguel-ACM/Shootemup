@@ -32,6 +32,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
         }
         if(sound==null)sound=gameObject.AddComponent<LaserSound>();
         float charge=(CombatUpgrades.Current!=null ? CombatUpgrades.Current.Volley() : 1)*MagnifyingLens.Power;
+        float lensSize=Mathf.Lerp(1,1.6f,MagnifyingLens.Current!=null ? MagnifyingLens.Current.Charge : 0);
         float warning=.25f/Mathf.Max(1,GameRules.playerShootSpeed/10),end=warning+.65f,t=0,nextTick=warning;
         sound.Charge(warning,true);
         while(t<end+.22f && !GameRules.playerDisabled)
@@ -42,7 +43,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
                 t>=end ? Mathf.Pow(Mathf.Clamp01(1-(t-end)/.22f),2)*.4f : 0;
             sound.Drive(power,active);
             for(int i=0;i<count;i++)
-                beams[i].Draw(transform.position+spawnPoints[i],Vector2.up,20,.14f*Mathf.Sqrt(GameRules.playerShootSize),
+                beams[i].Draw(transform.position+spawnPoints[i],Vector2.up,20,.14f*Mathf.Sqrt(GameRules.playerShootSize)*lensSize,
                     Mathf.Clamp01(t/warning),power,Mathf.Max(0,t-end)/.22f);
             if(active && t>=nextTick)
             {
@@ -54,7 +55,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
                     for(int i=0;i<count;i++)
                     {
                         var delta=enemy.transform.position-(transform.position+spawnPoints[i]);
-                        if(delta.y>=0 && delta.y<20 && Mathf.Abs(delta.x)<.22f+enemy.size*.6f){hit=true;break;}
+                        if(delta.y>=0 && delta.y<20 && Mathf.Abs(delta.x)<.22f*lensSize+enemy.size*.6f){hit=true;break;}
                     }
                     if(!hit)continue;
                     float amount=GameRules.playerShootDamage*1.2f*charge;
