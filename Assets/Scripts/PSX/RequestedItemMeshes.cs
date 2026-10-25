@@ -5,6 +5,16 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "HealthPacks":
+                foreach(int side in new[]{-1,1})
+                {
+                    var p=new Vector3(side*.2f,side*.08f,side*.07f);
+                    b.Box(p,new Vector3(.34f,.48f,.22f),1);
+                    b.Box(p+Vector3.back*.13f,new Vector3(.23f,.07f,.025f),3);
+                    b.Box(p+Vector3.back*.13f,new Vector3(.07f,.23f,.025f),3);
+                    b.Box(p+Vector3.up*.27f,new Vector3(.13f,.06f,.15f),6);
+                }
+                return true;
             case "EnergyCore":
                 b.Ball(Vector3.zero,new Vector3(.23f,.33f,.23f),9);
                 foreach(int side in new[]{-1,1})
