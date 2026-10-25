@@ -49,6 +49,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - The latest explicit feedback supersedes earlier ideas (in particular the saw's original on-hit emission).
 - Desert: dunes, small silos and compact gray buildings; buried enemies emerge and fire rings, interceptors fire tightly spaced aimed bursts, and small articulated sandworms shoot from multiple body ports. Its boss is a giant white mechanical sandworm with red weakpoints along its body and a larger red head weakpoint. Every part must be destroyed to win.
 - Desert visual feedback: use individual sculpted crescent dunes, not long striped ridges with drawn crest lines. Keep the worm weakpoints compact and a muted brick red.
+- Desert buildings need coherent lighting and believable attached shadows. Avoid oversized dark rectangular foundations that read as crude shadow patches.
 
 ## Items and decisions
 

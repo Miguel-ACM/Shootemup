@@ -4,6 +4,8 @@ After Thunder or Tunnel, choose **Desert** or loop straight to Plains. Clearing 
 
 The scenery uses individual crescent dunes with broad windward slopes, short slipfaces and shared vertex lighting, paired small silos and compact gray outposts with roof vents, doors, antennas and pipe manifolds. The seamless layouts vary with the run seed. The former striped terrain and drawn crest lines have been replaced.
 
+Building and silo faces share the dunes' sun direction. Their shadows are baked onto the sand from box and cylinder silhouettes, with a softened edge; close-fitting concrete foundations replace the oversized dark pads. The bake is performed when the district is prepared, not during combat.
+
 Three new enemies have their own modeled hulls:
 
 - **Sand Emitter:** a buried eight-port machine. Disturbed sand precedes its emergence; it releases evenly spaced rings and burrows again. Concealed machines do not attract homing shots.
