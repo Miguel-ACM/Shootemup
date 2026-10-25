@@ -16,14 +16,17 @@ public abstract class DistrictBoss : DistrictEnemy
         lifeDropChance=manaDropChance=moneyDropChance=1;minmaxLife=new[]{4,6};minmaxMana=new[]{6,9};minmaxMoney=new[]{10,15};
         var ui=GameObject.Find("UI/ItemsRight/BossHealth");if(ui!=null && UsesHealthBar){bar=ui.GetComponent<ResourceBar>();bar.SetMax(health);bar.SetVisible(true);}
         station=new Vector3(0,Camera.UpLimit-2.3f,1);
+        nextPressure=nextAttack;
     }
     protected override void Update()
     {
         if(GameRules.playerDisabled)return;
         age+=Time.deltaTime*LevelRun.EnemyTempoScale;
+        firingCue?.Warn((nextAttack-age)/LevelRun.EnemyTempoScale);
         if(!phaseTwo && PhaseTwoReady){phaseTwo=true;NotifyBossPhaseChange(2);OnPhaseTwo();}
         float motionDelta=Time.deltaTime*LevelRun.EnemyTempoScale*MovementScale;motionAge+=motionDelta;
         MoveBoss(motionDelta);
+        if(!enteredFight && transform.position.y<Camera.UpLimit-1){enteredFight=true;nextAttack=Mathf.Max(nextAttack,age+.35f);nextPressure=Mathf.Max(nextPressure,age+.35f);}
         if(transform.position.y<Camera.UpLimit-1 && age>=nextAttack)
         {
             volley++;Attack();nextAttack=age+attackInterval*AttackPace/Mathf.Max(.5f,GameRules.enemyShootSpeed);

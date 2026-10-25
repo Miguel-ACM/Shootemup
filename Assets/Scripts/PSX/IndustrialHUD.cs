@@ -22,6 +22,8 @@ public sealed class IndustrialHUD : MonoBehaviour
     public bool EntranceComplete => entranceAge>=FluorescentStartup.CompleteAt;
     Boss boss;
     DistrictBoss districtBoss;
+    DistrictMiniboss miniboss;
+    Text minibossClock;
     float nextScan,nextUpdate;
     float bottomLimit,topLimit;
     static readonly Color Steel=new Color(.73f,.77f,.72f), Amber=new Color(.83f,.62f,.30f), Cyan=new Color(.48f,.70f,.72f), Dark=new Color(.07f,.09f,.09f,.94f), Frame=new Color(.21f,.27f,.27f), Alarm=new Color(1,.16f,.12f);
@@ -88,6 +90,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         Place(Panel(bossPanel,"Right casing",new Color(.21f,.27f,.27f)),26,3,1,242);
         Rule(bossPanel,6,8,16,Amber);Rule(bossPanel,6,244,16,new Color(.21f,.27f,.27f));
         bossCells=VerticalCells(bossPanel,7,17,32,14,5,Amber);bossPanel.gameObject.SetActive(false);
+        minibossClock=TextAt(bossPanel,"",2,250,12,Amber);minibossClock.rectTransform.sizeDelta=new Vector2(24,20);minibossClock.alignment=TextAnchor.MiddleCenter;
     }
 
     void LateUpdate()
@@ -133,8 +136,14 @@ public sealed class IndustrialHUD : MonoBehaviour
         {
             nextScan=Time.unscaledTime+.25f;boss=FindAnyObjectByType<Boss>();districtBoss=null;
             foreach(var candidate in FindObjectsByType<DistrictBoss>())if(candidate.UsesHealthBar){districtBoss=candidate;break;}
+            miniboss=FindAnyObjectByType<DistrictMiniboss>();
         }
-        bossPanel.gameObject.SetActive(boss!=null || districtBoss!=null);
+        bool showMini=miniboss!=null && !miniboss.Retreating && miniboss.health>0;
+        bossPanel.gameObject.SetActive(boss!=null || districtBoss!=null || showMini);
+        bossPanel.sizeDelta=new Vector2(28,showMini ? 278 : 248);
+        minibossClock.text=showMini ? Mathf.CeilToInt(miniboss.Remaining).ToString() : "";
+        minibossClock.color=showMini && miniboss.Remaining<5 ? Alarm : Amber;
+        if(showMini)Fill(bossCells,miniboss.HealthFraction,Amber);
         if(districtBoss!=null)Fill(bossCells,districtBoss.DisplayFraction,Amber);
         if(boss!=null)Fill(bossCells,boss.HealthFraction,Amber);
     }

@@ -8,6 +8,7 @@ public abstract class DistrictEnemy : AEnemy
     protected float age;
     [EnemyTunable("Firing / First attack delay",0,15)] protected float nextAttack=1.2f;
     protected int volley;
+    protected bool enteredFight;
     public float hullScale=.7f;
     public int hull;
     [Min(.1f),EnemyTunable("Firing / Shell travel distance",.1f,16)] public float shellTravelDistance=3.8f;
@@ -21,6 +22,7 @@ public abstract class DistrictEnemy : AEnemy
     void MakeMiniboss()
     {
         if(IsMiniboss)return;
+        if(this is DistrictMiniboss){IsMiniboss=true;return;}
         IsMiniboss=true;health*=.68f;attackInterval*=.74f;nextAttack=.45f;
         // These minibosses are three-ship guards, rather than one heavy fortress.
         if(this is Bathysphere || this is GhostGalleon || this is SandWorm)health*=3;
@@ -35,6 +37,7 @@ public abstract class DistrictEnemy : AEnemy
         if(movement!=null)movement.TempoMultiplier=1.15f*(movement is FormationFlight ? 1 : MovementScale);
     }
     public Transform Hull {get;private set;}
+    protected EnemyFiringCue firingCue;
     protected abstract void Configure();
     protected abstract void Attack();
     public static DistrictEnemy Spawn(Type type,Vector3 p,bool applyTuning=true,bool scaleForRun=true,bool activate=true)
@@ -47,13 +50,14 @@ public abstract class DistrictEnemy : AEnemy
         if(applyTuning)EnemyTuning.Apply(enemy,enemy.movement);
         if(scaleForRun)enemy.health*=GameRules.enemyHealth*LevelRun.EnemyHealthScale;
         // Light wave ships should die during a clean pass with the stock gun.
-        if(scaleForRun && !(enemy is DistrictBoss)){enemy.health*=enemy.hullScale<.8f ? .84f : 1.35f;enemy.attackInterval*=.78f;}
+        if(scaleForRun && !(enemy is DistrictBoss) && !(enemy is DistrictMiniboss)){enemy.health*=enemy.hullScale<.8f ? .84f : 1.35f;enemy.attackInterval*=.78f;}
         enemy.size=enemy.hullScale;go.GetComponent<CircleCollider2D>().radius=enemy.hullScale*.8f;
         var model=new GameObject("Armored hull");model.transform.SetParent(go.transform,false);model.transform.localScale=Vector3.one*enemy.hullScale;
         model.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(enemy.hull);
-        var renderer=model.AddComponent<MeshRenderer>();renderer.sharedMaterial=enemy is SpaceSatellite || enemy is SpaceCitadelBoss ? SpaceMaterials.Fleet : enemy.hull>=35 && enemy.hull<=38 ? CandyMaterials.Glaze : enemy is FieldsBomberBoss ? CombatMaterials.Fortress : CombatMaterials.Fleet;renderer.sortingLayerName="Enemy";
+        var renderer=model.AddComponent<MeshRenderer>();renderer.sharedMaterial=enemy is SpaceSatellite || enemy is SpaceCitadelBoss || enemy.hull==60 ? SpaceMaterials.Fleet : enemy.hull>=35 && enemy.hull<=38 || enemy.hull==57 ? CandyMaterials.Glaze : enemy is FieldsBomberBoss ? CombatMaterials.Fortress : CombatMaterials.Fleet;renderer.sortingLayerName="Enemy";
         enemy.Hull=model.transform;go.AddComponent<CombatHullVisual>().model=model.transform;
-        if(!(enemy is TunnelSawBoss) && !(enemy is GroundVehicle) && !(enemy is SpaceSatellite) && !(enemy is SpaceCitadelBoss) && !(enemy is InfernalEnemy) && !(enemy is OceanEnemy) && !(enemy is HellCrabBoss) && !(enemy is AbyssSubmarineBoss))
+        enemy.firingCue=go.AddComponent<EnemyFiringCue>();enemy.firingCue.Build(model.transform);
+        if(!(enemy is TunnelSawBoss) && !(enemy is GroundVehicle) && !(enemy is SpaceSatellite) && !(enemy is SpaceCitadelBoss) && !(enemy is InfernalEnemy) && !(enemy is OceanEnemy) && !(enemy is HellCrabBoss) && !(enemy is AbyssSubmarineBoss) && enemy.hull!=56 && enemy.hull<58)
         {
             var exhaust=go.AddComponent<EnemyThrusters>();exhaust.visualRoot=model.transform;
             exhaust.sockets=IndustrialMeshFactory.CombatEngineSockets(enemy.hull);
@@ -96,6 +100,8 @@ public abstract class DistrictEnemy : AEnemy
     {
         if(FrozenHull.Holds(gameObject))return;
         age+=Time.deltaTime*LevelRun.EnemyTempoScale;
+        if(!enteredFight && transform.position.y<Camera.UpLimit-.5f){enteredFight=true;if(!(movement is FormationFlight))nextAttack=Mathf.Max(nextAttack,age+.35f);}
+        firingCue?.Warn(movement is FormationFlight score ? score.FireWarning : (nextAttack-age)/LevelRun.EnemyTempoScale);
         if(age>28 || transform.position.y<Camera.DownLimit-2){Depart();return;}
         if(GameRules.playerDisabled || transform.position.y>Camera.UpLimit-.5f || transform.position.y<Camera.DownLimit+1)return;
         if(movement!=null && !movement.CanFire)return;
@@ -109,6 +115,7 @@ public abstract class DistrictEnemy : AEnemy
     protected Vector2 Aim => movement!=null && movement.LockedAim.HasValue ? ((Vector2)(movement.LockedAim.Value-transform.position)).normalized : CombatVisuals.Aim(transform.position);
     protected T Fire<T>(Vector3 position,Vector2 direction,float velocity,float radius=.18f) where T:CombatRound
     {
+        firingCue?.Flash(position);
         var shot=CombatRound.Launch<T>(position,direction,velocity*ProjectileSpeedScale*(Challenged ? 1.15f : 1)*(IsMiniboss ? 1.14f : 1),radius);
         if(shot!=null)shot.damage*=ProjectileDamageScale;
         if(shot is BurstShell shell)shell.SetTravelDistance(shellTravelDistance);
