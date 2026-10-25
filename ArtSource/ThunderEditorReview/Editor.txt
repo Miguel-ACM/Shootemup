@@ -1,0 +1,2 @@
+PASS
+All 43 authored enemies/bosses listed. Health, rotor speed, projectile speed/damage saved and applied by runtime spawn factory. Disk persistence and Undo passed. Formation movement/accent edits rebuild wave geometry, including slower movement. Native model preview rendered.

@@ -1,0 +1,10 @@
+PASS
+Base boss health reduced from 2800 to 1800; shipping tuning asset has no overrides
+Phase two centres the front muzzle, with the boss hull behind the lasers
+Exactly six attached front spokes visibly charge before becoming dangerous
+Six spokes are evenly spaced through the complete 360 degrees
+The same six laser objects complete a full clockwise revolution and survive beyond the old 12-second lifetime
+Side guns fire real dodging volleys while the six beams stay active; peak 38 rounds
+Sustained beams keep the existing looping beam audio
+Owner destruction cools and releases all six beams
+Owner cleanup leaves no sustained beam audio

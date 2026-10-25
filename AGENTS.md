@@ -60,7 +60,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Snow scenery needs more variety and trees following the Plains tree style: textured, layered winter canopies over modeled branching trunks, mixed birches/evergreens, irregular groves and open glades, icy hollows, snow-capped rocks and fallen logs. Vary the landscape with the run seed, keep the full scroll seamless and sample the actual terrain for auger ground contact.
 - Plains tank tracks and chassis follow the road's bends, driving downward relative to the scrolling terrain. The independently aiming turret must not determine the track direction.
 - Improve the Plains riverbanks with natural shoreline shapes and coherent grass, gravel, reeds and stones. Keep the scrolling water and banks attached across section seams, and keep the road clear.
-- Thunder: beams and quick aimed fire; a slim boss with side-emitting lasers, then 6–8 alternating sweeping beams plus a barrage in phase two.
+- Thunder: beams and quick aimed fire; a slim boss with side-emitting lasers and 1800 base health. In phase two, move the hull back so its front muzzle sits at the arena centre. Six charged, continuous front beams rotate permanently clockwise, while the six shoulder guns play aimed and outward bullet phrases. Preserve the visible charge, firing rests and smooth beam cleanup.
 - City: busy formations of small fast enemies. The boss is a fast/heavy duo with separate health summed in one bar and tracking attacks. The first death drops nothing; the survivor becomes aggressive and heals half its missing health.
 - Latest City feedback: lower duo health; base health is now 1000 for the fast ship and 1400 for the heavy ship, with the survivor rules preserved.
 - Both City ships must share encounter completion ownership so either kill order can finish the district.
@@ -99,6 +99,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Keep the code free of compiler warnings on the installed Unity version. Update deprecated APIs and remove unused state rather than suppressing diagnostics. For code-only warning cleanup, use the isolated clean-compilation check without starting gameplay.
 - Batch a substantial set of changes before opening the game for testing. Avoid repeated play sessions for every tiny edit.
 - Miguel's latest workflow feedback: do not test-run so much. Use one batched gameplay review, then check only a specific failed or outstanding case instead of repeating full runs.
+- Tools > Shootemup > Enemy Editor provides saved enemy/boss overrides, actual model previews and Wave Watcher playtesting. Keep shipping overrides in Assets/Resources/EnemyTuning.asset; unchecked values use code defaults. Apply tuning before run/miniboss modifiers. Formation movement and firing edits must preserve shared choreography and rebuild cached wave geometry.
 - Do not interrupt Miguel's live run. Wait until he finishes; once he says he has finished, proceed with testing.
 - If Computer Use is stopped with Escape, stop interacting with the app for that turn.
 - Do not declare the visual work finished based only on compilation or scripted checks. Review the actual models, HUD and moving formations.
