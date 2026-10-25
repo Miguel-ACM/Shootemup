@@ -1,0 +1,11 @@
+PASS
+PASS player bullet uses a sprite without a mesh renderer
+PASS enemy bullet uses a sprite without a mesh renderer
+PASS actual hit attaches gum and retains delayed damage
+PASS attached gum is a flat sprite, not a 3D mesh
+PASS gum reuses approved neutral sprite pixels
+PASS Bullet Time suspends sprite swelling and delayed damage
+PASS gum impact creates the sprite pop animation
+PASS every pop particle is a sprite
+PASS both bounced gum hits retain their original damage
+PASS sprite pops clean up after their short animation
