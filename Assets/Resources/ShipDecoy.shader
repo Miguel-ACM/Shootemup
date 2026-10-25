@@ -17,7 +17,13 @@ Shader "Shootemup/Ship Decoy"
             float _Fade,_Phase;
             struct Attributes {float4 positionOS:POSITION;float3 normalOS:NORMAL;};
             struct Varyings {float4 positionCS:SV_POSITION;float3 world:TEXCOORD0;float3 normal:TEXCOORD1;};
-            Varyings Vert(Attributes v){Varyings o;o.world=TransformObjectToWorld(v.positionOS.xyz);o.positionCS=TransformWorldToHClip(o.world);o.normal=TransformObjectToWorldNormal(v.normalOS);return o;}
+            Varyings Vert(Attributes v)
+            {
+                Varyings o;o.world=TransformObjectToWorld(v.positionOS.xyz);o.positionCS=TransformWorldToHClip(o.world);
+                // Match the actual ship's foreground placement so terrain cannot cut through the copy.
+                o.positionCS.z=lerp(UNITY_NEAR_CLIP_VALUE*o.positionCS.w,o.positionCS.z,.001);
+                o.normal=TransformObjectToWorldNormal(v.normalOS);return o;
+            }
             half4 Frag(Varyings v):SV_Target
             {
                 float band=step(.35,frac(v.world.y*9-_Phase*2));
