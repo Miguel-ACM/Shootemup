@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-// Seeded crescent dunes share one continuous, eighty-unit sand surface.
+// Broad asymmetric sand ridges share one continuous, faceted eighty-unit surface.
 public static class DesertGeometry
 {
     static readonly Vector3 Sun=new Vector3(-.55f,-.70f,1).normalized;
@@ -98,13 +98,13 @@ public static class DesertGeometry
     static void Layout(int seed)
     {
         if(dunes!=null && layoutSeed==seed)return;
-        layoutSeed=seed;var random=new System.Random(seed);dunes=new Dune[50];
+        layoutSeed=seed;var random=new System.Random(seed);dunes=new Dune[32];
         float R(float a,float b)=>Mathf.Lerp(a,b,(float)random.NextDouble());
-        for(int row=0;row<10;row++)for(int col=0;col<5;col++)
+        for(int row=0;row<8;row++)for(int col=0;col<4;col++)
         {
-            float angle=R(-.32f,-.12f);
-            dunes[row*5+col]=new Dune{x=-13+col*6.4f+(row%2)*2.4f+R(-1,1),y=row*8+R(-1.4f,1.4f),
-                width=R(2.8f,4.2f),windward=R(2.7f,4.2f),lee=R(.85f,1.35f),rise=R(.65f,1.18f),bow=R(1.3f,2.2f),c=Mathf.Cos(angle),s=Mathf.Sin(angle)};
+            float angle=R(-.8f,-.35f);
+            dunes[row*4+col]=new Dune{x=-13+col*8+(row%2)*3.7f+R(-2,2),y=row*10+R(-2.2f,2.2f),
+                width=R(3.8f,6.5f),windward=R(3.5f,6),lee=R(1.6f,2.8f),rise=R(.9f,1.5f),bow=R(-.55f,.55f),c=Mathf.Cos(angle),s=Mathf.Sin(angle)};
         }
     }
     public static float Height(float x,float y,int seed)
@@ -113,42 +113,67 @@ public static class DesertGeometry
         foreach(var dune in dunes)
         {
             float dx=x-dune.x,dy=Mathf.Repeat(y-dune.y+40,80)-40;
-            if(Mathf.Abs(dx)>7 || Mathf.Abs(dy)>8)continue;
+            if(Mathf.Abs(dx)>11 || Mathf.Abs(dy)>11)continue;
             float u=(dx*dune.c+dy*dune.s)/dune.width;
             if(Mathf.Abs(u)>=1)continue;
-            // The curved crest tapers into two horns; each dune has a broad windward slope and a short slipface.
-            float v=-dx*dune.s+dy*dune.c+dune.bow*u*u;
+            // Deliberate broad planes and a bent crest, rather than a serrated row of tiny triangles.
+            float bend=u<-.35f ? Mathf.Lerp(0,-1,(u+1)/.65f) : u<.4f ? Mathf.Lerp(-1,1,(u+.35f)/.75f) : Mathf.Lerp(1,0,(u-.4f)/.6f);
+            float v=-dx*dune.s+dy*dune.c+dune.bow*bend;
             float span=v<0 ? dune.windward : dune.lee;
             if(Mathf.Abs(v)>=span)continue;
-            float profile=v<0 ? Mathf.Pow(Mathf.Cos(v/span*Mathf.PI*.5f),2) : Mathf.Pow(1-v/span,1.25f);
-            float mound=dune.rise*Mathf.Pow(1-u*u,.8f)*profile;
+            float profile=1-Mathf.Abs(v)/span;
+            float end=Mathf.Abs(u);
+            float taper=end<.32f ? Mathf.Lerp(1,.9f,end/.32f) : end<.72f ? Mathf.Lerp(.9f,.46f,(end-.32f)/.4f) : Mathf.Lerp(.46f,0,(end-.72f)/.28f);
+            float mound=dune.rise*taper*profile;
             height=Mathf.Max(height,mound);
         }
         return .08f+height;
     }
     public static Mesh Ground(int section,int seed)
     {
-        const int columns=120,rows=100;
+        const int columns=80,rows=80;
         float origin=(section-1)*20;
-        var vertices=new Vector3[(columns+1)*(rows+1)];var colors=new Color[vertices.Length];var triangles=new int[columns*rows*6];
+        var points=new Vector3[(columns+1)*(rows+1)];
+        var lighting=new float[points.Length];var shadows=new float[points.Length];
+        var vertices=new Vector3[columns*rows*6];var colors=new Color[vertices.Length];var triangles=new int[vertices.Length];
         var buildings=BuildBuildings(section,seed);
+        float Jitter(int x,int y,int salt)
+        {
+            unchecked{uint h=(uint)(seed+x*374761393+y*668265263+salt);h=(h^(h>>13))*1274126177;return ((h^(h>>16))&65535)/65535f-.5f;}
+        }
         for(int row=0;row<=rows;row++)for(int col=0;col<=columns;col++)
         {
-            float x=-14+col*28f/columns,y=-10+row*20f/rows,worldY=origin+y,h=Height(x,worldY,seed);
-            float dx=(Height(x+.07f,worldY,seed)-Height(x-.07f,worldY,seed))/.14f;
-            float dy=(Height(x,worldY+.07f,seed)-Height(x,worldY-.07f,seed))/.14f;
-            float light=Mathf.Clamp01(Vector3.Dot(new Vector3(-dx,-dy,1).normalized,Sun));
-            // Shared vertex lighting removes the rectangular bands and the drawn-on crest lines.
-            var color=Color.Lerp(new Color(.48f,.35f,.21f),new Color(.76f,.61f,.40f),light);
-            float shadow=buildings.Shadow(new Vector3(x,y,h+.02f));
-            color=Color.Lerp(color,new Color(color.r*.69f,color.g*.72f,color.b*.76f),shadow);
-            int index=row*(columns+1)+col;vertices[index]=new Vector3(x+h*.2f,y+h*.3f,-h);colors[index]=color;
-            if(row==rows || col==columns)continue;
-            int t=(row*columns+col)*6;
-            triangles[t]=index;triangles[t+1]=index+columns+1;triangles[t+2]=index+1;
-            triangles[t+3]=index+1;triangles[t+4]=index+columns+1;triangles[t+5]=index+columns+2;
+            int worldRow=((section-1)*rows+row+rows*4)%(rows*4);
+            float x=-14+col*(28f/columns)+(col>0 && col<columns ? Jitter(col,worldRow,0)*.12f : 0);
+            float y=-10+row*(20f/rows)+(row>0 && row<rows ? Jitter(col,worldRow,71)*.10f : 0);
+            int k=row*(columns+1)+col;var p=new Vector3(x,y,Height(x,origin+y,seed));points[k]=p;
+            const float e=.09f;
+            var normal=new Vector3(-(Height(x+e,origin+y,seed)-Height(x-e,origin+y,seed))/(2*e),
+                -(Height(x,origin+y+e,seed)-Height(x,origin+y-e,seed))/(2*e),1).normalized;
+            lighting[k]=Mathf.InverseLerp(.28f,.98f,Vector3.Dot(normal,Sun));
+            shadows[k]=buildings.Shadow(p+Vector3.forward*.025f);
         }
-        var mesh=new Mesh{name="Sculpted crescent dunes "+section};mesh.vertices=vertices;mesh.colors=colors;mesh.triangles=triangles;
+        int vertex=0;
+        void Triangle(int ia,int ib,int ic)
+        {
+            var a=points[ia];var b=points[ib];var c=points[ic];
+            var normal=Vector3.Cross(b-a,c-a).normalized;if(normal.z<0)normal=-normal;
+            float light=Mathf.InverseLerp(.28f,.98f,Vector3.Dot(normal,Sun));
+            void Add(int index)
+            {
+                var p=points[index];float shadow=shadows[index];
+                var sand=Color.Lerp(new Color(.58f,.43f,.27f),new Color(.80f,.66f,.44f),Mathf.Lerp(lighting[index],light,.18f));
+                colors[vertex]=Color.Lerp(sand,new Color(sand.r*.69f,sand.g*.72f,sand.b*.76f),shadow);
+                vertices[vertex]=new Vector3(p.x+p.z*.2f,p.y+p.z*.3f,-p.z);triangles[vertex]=vertex;vertex++;
+            }
+            Add(ia);Add(ib);Add(ic);
+        }
+        for(int row=0;row<rows;row++)for(int col=0;col<columns;col++)
+        {
+            int k=row*(columns+1)+col;int a=k,b=k+1,c=k+columns+1,d=k+columns+2;
+            if((row+col)%2==0){Triangle(a,c,d);Triangle(a,d,b);}else{Triangle(a,c,b);Triangle(b,c,d);}
+        }
+        var mesh=new Mesh{name="Faceted wind-sculpted dunes "+section};mesh.vertices=vertices;mesh.colors=colors;mesh.triangles=triangles;
         mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
     }
     public static Mesh Buildings(int section,int seed)=>BuildBuildings(section,seed).Finish("Desert silos and compact outposts "+section);
