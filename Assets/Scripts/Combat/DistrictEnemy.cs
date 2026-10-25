@@ -24,7 +24,7 @@ public abstract class DistrictEnemy : AEnemy
         IsMiniboss=true;health*=.68f;attackInterval*=.74f;nextAttack=.45f;
         // These minibosses are three-ship guards, rather than one heavy fortress.
         if(this is Bathysphere || this is GhostGalleon || this is SandWorm)health*=3;
-        if(this is OrbitalCarrier)health*=1.6f;
+        if(this is OrbitalCarrier)health*=2.8f;
         if(movement is TopTracker tracker)tracker.BeginAssault();
         if(movement is Slalom slalom)slalom.BeginAssault();
     }
