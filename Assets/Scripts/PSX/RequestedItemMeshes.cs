@@ -5,6 +5,13 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "EmpPulse":
+                b.Drum(Vector3.zero,.3f,.2f,11,12,6);
+                b.Drum(new Vector3(0,0,-.13f),.2f,.06f,9,12);
+                b.Drum(new Vector3(0,0,-.18f),.12f,.06f,1,8);
+                for(int i=0;i<8;i++){float a=i*Mathf.PI/4;var p=new Vector3(Mathf.Cos(a),Mathf.Sin(a),0);b.Box(p*.37f,new Vector3(.11f,.11f,.16f),9);}
+                b.Box(new Vector3(0,.49f,0),new Vector3(.07f,.2f,.08f),6);
+                return true;
             case "ShrinkerJuice":
                 b.Prism(new[]{new Vector2(-.21f,-.37f),new Vector2(.21f,-.37f),new Vector2(.24f,.12f),new Vector2(.1f,.25f),new Vector2(.1f,.44f),new Vector2(-.1f,.44f),new Vector2(-.1f,.25f),new Vector2(-.24f,.12f)},.27f,2,Vector3.zero,2);
                 b.Box(new Vector3(0,.45f,0),new Vector3(.24f,.12f,.31f),13);

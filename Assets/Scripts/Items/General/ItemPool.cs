@@ -6,7 +6,7 @@ public static class ItemPool
 {
     private static readonly string[] allCommon = { "ScatterCannonItem", "BallBearing", "ReserveCell", "SalvageConverter", "FocusingLens", "ReboundCoil", "RabbitsFoot", "BlankBullet", "TwerpItem", "Magnet", "AK45Item" };
     private static readonly string[] allRare = { "ShrinkerJuice", "Overdrive", "GravityWell", "MirrorBurst", "BeamEmitterItem", "FlameProjectorItem", "SwarmRackItem", "DiscThrowerItem", "BurstLauncherItem", "NeedleCannonItem", "Lighter", "ReturnModule", "DroneLink", "RecoveryCoil", "Capacitor", "ProximityFuse", "SplitterCore", "Caffeine", "ProteinSupplement", "AMoonItem", "BabyYouItem", "ElectricityItem" };
-    private static readonly string[] allEpic = { "RailDriverItem", "ChainReactor", "SpareBattery", "AnotherArm", "AngryMoonItem" };
+    private static readonly string[] allEpic = { "EmpPulse", "RailDriverItem", "ChainReactor", "SpareBattery", "AnotherArm", "AngryMoonItem" };
     private static readonly string[] allLegendary = { "Telekinesis", "ThreeMoonsItem" };
 
     // Items are removed from these as they are offered, so they are refilled at the start of each run.
