@@ -6,6 +6,7 @@ public static partial class IndustrialMeshFactory
     public static Mesh ExpansionItem(string kind)
     {
         if(expansionItems.TryGetValue(kind,out var mesh))return mesh;
+        if(kind=="WindUpCannonItem")return expansionItems[kind]=WindUpCannonModel();
         var b=new Builder();
         if(EverydayItem(b,kind))return expansionItems[kind]=b.Finish(kind+" equipment");
         if(RequestedItem(b,kind))return expansionItems[kind]=b.Finish(kind+" equipment");
