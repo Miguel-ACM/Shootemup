@@ -81,6 +81,18 @@ public static class DesertGeometry
             if(Occluded(p,(Sun+new Vector3(-.035f,.025f,0)).normalized))shade+=.25f;
             return shade;
         }
+        public bool ClearFootprint(Vector2 point,float radius)
+        {
+            foreach(var solid in solids)
+            {
+                // Include the projected roof, foundation, pipes and service blocks, not only wall centres.
+                var min=(Vector2)solid.min+new Vector2(.20f,.30f)*solid.min.z;
+                var max=(Vector2)solid.max+new Vector2(.20f,.30f)*solid.max.z;
+                var nearest=new Vector2(Mathf.Clamp(point.x,min.x,max.x),Mathf.Clamp(point.y,min.y,max.y));
+                if((point-nearest).sqrMagnitude<radius*radius)return false;
+            }
+            return true;
+        }
         public Mesh Finish(string name)
         {
             for(int i=0;i<colors.Count;i++)
@@ -177,6 +189,20 @@ public static class DesertGeometry
         mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
     }
     public static Mesh Buildings(int section,int seed)=>BuildBuildings(section,seed).Finish("Desert silos and compact outposts "+section);
+    static readonly MeshBuilder[] footprints=new MeshBuilder[4];
+    static int footprintSeed=-1;
+    public static bool ClearSand(int section,int seed,Vector2 projected,float radius)
+    {
+        if(footprintSeed!=seed){System.Array.Clear(footprints,0,4);footprintSeed=seed;}
+        if(footprints[section]==null)footprints[section]=BuildBuildings(section,seed);
+        return footprints[section].ClearFootprint(projected,radius);
+    }
+    public static Vector3 SurfacePoint(int section,int seed,Vector2 projected)
+    {
+        float h=0,origin=(section-1)*20;
+        for(int i=0;i<5;i++)h=Height(projected.x-h*.20f,origin+projected.y-h*.30f,seed);
+        return new Vector3(projected.x,projected.y,-h);
+    }
     static MeshBuilder BuildBuildings(int section,int seed)
     {
         var b=new MeshBuilder();var r=new System.Random(seed+section*3817);float origin=(section-1)*20;

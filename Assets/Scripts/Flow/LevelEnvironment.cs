@@ -22,6 +22,29 @@ public sealed class LevelEnvironment : MonoBehaviour
     static readonly Dictionary<LevelId,LevelEnvironment> preparedRoutes=new Dictionary<LevelId,LevelEnvironment>();
     [Range(0,.5f)] public float sideParallax=.12f;
     public float HorizontalOffset { get; private set; }
+    public static bool TryDesertGround(Vector3 requested,float radius,Predicate<Vector3> available,out Transform section,out Vector3 localPoint)
+    {
+        section=null;localPoint=default;
+        if(active==null || active.level!=LevelId.Desert)return false;
+        float half=UnityEngine.Camera.main.orthographicSize*405f/720f;
+        // Search nearby clear sand before showing any disturbance. Terrain coordinates stay fixed for life.
+        for(int ring=0;ring<4;ring++)for(int spoke=0;spoke<(ring==0 ? 1 : 12);spoke++)
+        {
+            float angle=spoke*Mathf.PI/6;
+            var candidate=requested+new Vector3(Mathf.Cos(angle),Mathf.Sin(angle),0)*(ring*.70f);
+            if(Mathf.Abs(candidate.x)>Mathf.Min(Camera.RightLimit,half)-radius || candidate.y>Camera.UpLimit-1 || candidate.y<Camera.DownLimit+3)continue;
+            for(int i=0;i<active.sections.Count;i++)
+            {
+                var tile=active.sections[i];var p=tile.InverseTransformPoint(candidate);
+                if(Mathf.Abs(p.y)>10-radius || Mathf.Abs(p.x)>13-radius)continue;
+                if(!DesertGeometry.ClearSand(i,LevelRun.Seed,p,radius/.8f+.12f))continue;
+                var local=DesertGeometry.SurfacePoint(i,LevelRun.Seed,p);var world=tile.TransformPoint(local);
+                if(available!=null && !available(world))continue;
+                section=tile;localPoint=local;return true;
+            }
+        }
+        return false;
+    }
     Material material;
     Transform player,weatherTransform,lightningRoot;
     readonly List<Transform> sections=new List<Transform>();
