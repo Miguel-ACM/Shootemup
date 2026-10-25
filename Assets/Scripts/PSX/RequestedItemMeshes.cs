@@ -5,6 +5,8 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "BadGlasses":
+                Glasses(b,true);return true;
             case "QualityGlasses":
                 Glasses(b,false);return true;
             case "EmpPulse":

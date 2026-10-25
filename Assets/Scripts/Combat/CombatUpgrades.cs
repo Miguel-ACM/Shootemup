@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum UpgradeKind { Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses }
+public enum UpgradeKind { Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses }
 public sealed class CombatUpgrades : MonoBehaviour
 {
     public static CombatUpgrades Current {get;private set;}
@@ -22,7 +22,9 @@ public sealed class CombatUpgrades : MonoBehaviour
     public static float HostileSpeedAt(Vector3 position)
     {
         if(Current==null)return 1;
-        return Current.Count(UpgradeKind.QualityGlasses)>0 ? .9f : 1;
+        float rate=Current.Count(UpgradeKind.QualityGlasses)>0 ? .9f : 1;
+        if(Current.Count(UpgradeKind.BadGlasses)>0 && ((Vector2)(position-Current.transform.position)).sqrMagnitude<=9)rate*=.9f;
+        return rate;
     }
     public void Add(UpgradeKind kind)
     {
