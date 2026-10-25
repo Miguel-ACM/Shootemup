@@ -72,6 +72,16 @@ public sealed class PlayerRound : ABullet
         if(enemy==null || enemy.health<=0 || !hit.Add(enemy))return;
         float dealt=CombatUpgrades.Current!=null ? CombatUpgrades.Current.DirectHit(enemy,damage,generation,companion,delivery==PlayerDelivery.Flame) : damage;
         enemy.HitAt(collision.ClosestPoint(transform.position),heading);enemy.damage(dealt);Score.IncreaseScore(Mathf.RoundToInt(dealt));
+        if(!rebounded && generation==0 && CombatUpgrades.Current!=null && CombatUpgrades.Current.Count(UpgradeKind.BouncingBall)>0)
+        {
+            var next=CombatUpgrades.Nearest(transform.position,hit,12);
+            if(next!=null)
+            {
+                rebounded=true;heading=((Vector2)(next.transform.position-transform.position)).normalized;
+                generation=1;age=0;origin=transform.position;returning=false;returns=false;
+                PSXImpactEffects.Burst(transform.position,new Color(.3f,.85f,1));return;
+            }
+        }
         if(delivery==PlayerDelivery.Shell){Detonate();return;}
         if(pierces-->0 || delivery==PlayerDelivery.Disc)return;
         if(!rebounded && CombatUpgrades.Current!=null && CombatUpgrades.Current.TryRebound())

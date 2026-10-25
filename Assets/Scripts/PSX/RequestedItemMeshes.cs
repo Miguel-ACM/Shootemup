@@ -5,6 +5,11 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "BouncingBall":
+                b.Ball(Vector3.zero,new Vector3(.33f,.33f,.33f),3);
+                b.Drum(new Vector3(0,0,-.29f),.15f,.08f,10,12);
+                b.Box(new Vector3(0,0,-.34f),new Vector3(.035f,.25f,.025f),1);
+                b.Box(new Vector3(0,0,-.34f),new Vector3(.25f,.035f,.025f),1);return true;
             case "BarrelRoll":
                 b.Prism(new[]{new Vector2(0,.36f),new Vector2(.32f,-.15f),new Vector2(.08f,-.09f),new Vector2(0,-.25f),new Vector2(-.08f,-.09f),new Vector2(-.32f,-.15f)},.13f,1,Vector3.zero,6);
                 for(int i=0;i<10;i++){float a=i*Mathf.PI/6;var p=new Vector3(Mathf.Cos(a)*.43f,Mathf.Sin(a)*.43f,.02f);b.Box(p,new Vector3(.1f,.09f,.1f),9);}
