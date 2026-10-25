@@ -7,6 +7,7 @@ public abstract class DistrictMiniboss : DistrictEnemy
     public bool Retreating {get;private set;}
     public float Remaining {get;private set;}=20;
     public float HealthFraction=>health/Mathf.Max(1,maximum);
+    public override bool CanBeTargeted=>!Retreating && health>0;
     protected bool Enraged=>health<maximum*.5f;
     protected override void Start()
     {

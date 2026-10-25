@@ -16,7 +16,7 @@ public sealed class DecisionOverlay : MonoBehaviour
         var plate=Plate("Offer label",new Vector2(76,43));var fade=plate.gameObject.AddComponent<CanvasGroup>();fade.alpha=0;
         var name=Text(plate,"",9);name.enableAutoSizing=true;name.fontSizeMin=7;name.fontSizeMax=9;name.rectTransform.sizeDelta=new Vector2(72,24);name.rectTransform.anchoredPosition=new Vector2(0,7);
         var price=Text(plate,"",10);price.rectTransform.sizeDelta=new Vector2(72,16);price.rectTransform.anchoredPosition=new Vector2(0,-13);
-        var kind=Text(plate,"",8);kind.rectTransform.sizeDelta=new Vector2(76,15);kind.rectTransform.anchoredPosition=new Vector2(0,-31);
+        var kind=Text(plate,"",8);kind.rectTransform.sizeDelta=new Vector2(76,15);kind.rectTransform.anchoredPosition=new Vector2(0,-86);kind.outlineWidth=.15f;kind.outlineColor=Color.black;
         var stripe=Plate("Rarity edge",new Vector2(76,1.5f),plate);stripe.anchoredPosition=new Vector2(0,21);stripe.GetComponent<Image>().color=AItem.GetRarityColor(item.rarity);
         offers.Add((item,plate,name,price,kind,fade));
     }

@@ -63,7 +63,7 @@ public sealed class DecisionShop : MonoBehaviour
             if(x<d){d=x;nearest=i;}
             overlay.SetOffer(i,paid ? prices[items[i]]+(coinShop ? "" : "x") : "",Affordable(prices[items[i]]));
         }
-        if(d<1.8f && nearest>=0)
+        if(d<1.8f && nearest>=0 && items[nearest].Settled)
         {
             if(preview!=nearest){preview=nearest;var data=items[nearest].GetData();dialog.ShowItemDesc(data[0],data[1],data[2],items[nearest].rarity);}
         }
