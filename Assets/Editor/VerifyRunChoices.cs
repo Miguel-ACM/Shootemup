@@ -181,7 +181,7 @@ public sealed class RunChoicesReview : MonoBehaviour
         yield return new WaitForSeconds(.5f);Capture("Encounter-Fork");
         var selector=FindAnyObjectByType<LevelChoice>();var expected=flow.EncounterOptions[0];ship.transform.position=new Vector3(Camera.LeftLimit*.8f,0,-1);
         float steering=Time.time,lastChoice=-1;int choiceFrame=0;bool shown=false;
-        while(Time.time-steering<3.2f)
+        while(Time.time-steering<3.2f+LevelChoice.ExitSeconds)
         {
             float elapsed=Time.time-steering;
             if(elapsed-lastChoice>.12f){lastChoice=elapsed;Capture("Frames/Choice-"+(choiceFrame++).ToString("D4"));}

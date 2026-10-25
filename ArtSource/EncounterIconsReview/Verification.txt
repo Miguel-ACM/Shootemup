@@ -1,0 +1,6 @@
+PASS
+Editor UI preview only: no Play mode or gameplay run.
+All five icons loaded with point sampling and no mipmaps.
+All three encounter pairs use sprites with no text labels.
+Rendered 57 exit-animation poses through the production layout method.
+All options are fully transparent at the end of the animation.
