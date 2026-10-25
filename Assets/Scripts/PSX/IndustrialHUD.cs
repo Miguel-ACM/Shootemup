@@ -11,6 +11,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     WaveOrchestrer waves;
     Image[] challengeCells;
     Image[] healthCells,manaCells,bossCells;
+    Image[] meterCasing;
     RectTransform chainFill;
     RectTransform bossPanel;
     RectTransform scorePanel;
@@ -23,7 +24,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     DistrictBoss districtBoss;
     float nextScan,nextUpdate;
     float bottomLimit,topLimit;
-    static readonly Color Steel=new Color(.73f,.77f,.72f), Amber=new Color(.83f,.62f,.30f), Cyan=new Color(.48f,.70f,.72f), Dark=new Color(.07f,.09f,.09f,.94f);
+    static readonly Color Steel=new Color(.73f,.77f,.72f), Amber=new Color(.83f,.62f,.30f), Cyan=new Color(.48f,.70f,.72f), Dark=new Color(.07f,.09f,.09f,.94f), Frame=new Color(.21f,.27f,.27f), Alarm=new Color(1,.16f,.12f);
 
     void Start()
     {
@@ -69,10 +70,10 @@ public sealed class IndustrialHUD : MonoBehaviour
         sidePanel.pivot=Vector2.zero;
         sidePanel.sizeDelta=new Vector2(40,248);
         sidePanel.anchoredPosition=new Vector2(-44,6);
-        Place(Panel(sidePanel,"Left casing",new Color(.21f,.27f,.27f)),1,3,1,242);
-        Place(Panel(sidePanel,"Right casing",new Color(.21f,.27f,.27f)),38,3,1,242);
-        Rule(sidePanel,3,245,34,new Color(.21f,.27f,.27f));
-        Rule(sidePanel,3,3,34,Steel);
+        meterCasing=new[]{Panel(sidePanel,"Left casing",Frame).GetComponent<Image>(),Panel(sidePanel,"Right casing",Frame).GetComponent<Image>(),
+            Panel(sidePanel,"Top casing",Steel).GetComponent<Image>(),Panel(sidePanel,"Bottom casing",Frame).GetComponent<Image>()};
+        Place(meterCasing[0].rectTransform,1,3,2,242);Place(meterCasing[1].rectTransform,37,3,2,242);
+        Place(meterCasing[2].rectTransform,3,3,34,2);Place(meterCasing[3].rectTransform,3,244,34,2);
         Place(Panel(sidePanel,"Health cross",Steel),7,16,11,3);
         Place(Panel(sidePanel,"Health cross stem",Steel),11,12,3,11);
         Place(Panel(sidePanel,"Reactor indicator",Cyan),25,13,7,8);
@@ -117,6 +118,7 @@ public sealed class IndustrialHUD : MonoBehaviour
             int healthLimit=Mathf.FloorToInt(Mathf.Clamp01((entranceAge-.75f)/.84f)*24);
             int energyLimit=Mathf.FloorToInt(Mathf.Clamp01((entranceAge-1.72f)/.84f)*24);
             Fill(healthCells,player.health/Mathf.Max(1,player.maxHealth),Steel,healthLimit);
+            UpdateMeterWarning(player.health/Mathf.Max(1,player.maxHealth),Time.unscaledTime);
             bool recharging=player.GetComponent<PassiveEnergyCore>()!=null && !GameRules.playerDisabled && player.mana<player.maxMana;
             var energyColor=recharging ? Color.Lerp(Cyan,new Color(.55f,.95f,.82f),.3f+.3f*Mathf.Sin(Time.time*4)) : Cyan;
             Fill(manaCells,player.mana/Mathf.Max(1,player.maxMana),energyColor,energyLimit);
@@ -139,6 +141,12 @@ public sealed class IndustrialHUD : MonoBehaviour
 
     static void Fill(Image[] cells,float value,Color color,int limit=int.MaxValue)
     {int count=Mathf.Min(limit,Mathf.CeilToInt(Mathf.Clamp01(value)*cells.Length));for(int i=0;i<cells.Length;i++)cells[i].color=i<count ? color : new Color(.18f,.22f,.21f);}
+
+    void UpdateMeterWarning(float healthFraction,float time)
+    {
+        bool lit=EntranceComplete && !GameOverState.Active && healthFraction>0 && healthFraction<=.25f && Mathf.Repeat(time,.8f)<.4f;
+        for(int i=0;i<meterCasing.Length;i++)meterCasing[i].color=lit ? Alarm : i==2 ? Steel : Frame;
+    }
 
     Image[] Cells(Transform parent,float x,float y,int count,float width,Color color)
     {
