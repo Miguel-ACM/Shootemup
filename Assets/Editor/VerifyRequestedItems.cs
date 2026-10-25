@@ -125,6 +125,7 @@ public sealed class RequestedItemReview : MonoBehaviour
         var flow=FindAnyObjectByType<WaveOrchestrer>();flow.enabled=false;flow.CancelInvoke();flow.StopAllCoroutines();
         Clear();yield return null;
         InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
+        InputSystem.settings.editorInputBehaviorInPlayMode=InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
         foreach(var device in InputSystem.devices.ToArray())if(device is Keyboard || device is Gamepad)InputSystem.DisableDevice(device);
         keyboard=InputSystem.AddDevice<Keyboard>();
         var pool=new HashSet<string>();foreach(var f in typeof(ItemPool).GetFields(BindingFlags.NonPublic|BindingFlags.Static))if(f.GetValue(null) is string[] entries)foreach(var e in entries)pool.Add(e);
@@ -163,7 +164,10 @@ public sealed class RequestedItemReview : MonoBehaviour
         Clear();yield return null;
         yield return Grant(typeof(BarrelRoll));var roll=(BarrelRoll)granted;
         ship.ObserverMode=false;float startX=ship.transform.position.x;health=ship.health;
-        Check(roll.OnPress(0)==0 && ship.IsInvulnerable,"Barrel roll activates at zero energy and grants immediate i-frames");
+        var upgrades=ship.GetComponent<CombatUpgrades>();upgrades.Add(UpgradeKind.Reserve);upgrades.StoreOverflow(8);ship.mana=0;
+        float rollEnergy=(float)typeof(Shipcontroller).GetMethod("UseActive",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(ship,new object[]{roll});
+        Check(rollEnergy==0 && ship.IsInvulnerable,"Barrel roll activates at zero energy and grants immediate i-frames");
+        Check(upgrades.Reserve==4,"free roll preserves stored reserve energy");
         ship.ReceiveHazardDamage(10);Check(ship.health==health,"roll i-frames reject hazard damage");
         yield return new WaitForSeconds(.18f);yield return Capture("BarrelRoll");yield return new WaitForSeconds(.25f);
         Check(!ship.IsInvulnerable && ship.transform.position.x<startX-2.4f,"roll moves left and its i-frames expire");
@@ -171,7 +175,7 @@ public sealed class RequestedItemReview : MonoBehaviour
         yield return Grant(typeof(FocusTime));ship.transform.position=new Vector3(0,-4,-1);Press(Key.RightArrow,Key.LeftShift);
         float start=ship.transform.position.x;t=Time.time;yield return new WaitForSeconds(.25f);Press();
         float focusRate=(ship.transform.position.x-start)/(GameRules.playerMoveSpeed*(Time.time-t));
-        Check(Mathf.Abs(focusRate-.3f)<.05f,"held focus movement is 40 percent slower than original half-speed; measured "+focusRate);
+        Check(Mathf.Abs(focusRate-.3f)<.05f,"held focus movement is 40 percent slower than original half-speed; measured "+focusRate+", focus multiplier "+ship.slowMultiplier);
         yield return Grant(typeof(DoubleTrouble));ship.GetComponent<ShipLoadout>().EquipWeapon("NeedleCannon",1);yield return null;
         Press(Key.Z);yield return new WaitForSeconds(.24f);
         var rounds=FindObjectsByType<PlayerRound>(FindObjectsSortMode.None);
@@ -191,17 +195,31 @@ public sealed class RequestedItemReview : MonoBehaviour
         yield return new WaitForSeconds(1.2f);var drones=ship.GetComponentsInChildren<TrailDrone>();
         Check(drones.Length==3 && drones[0].transform.position.y>drones[1].transform.position.y && drones[1].transform.position.y>drones[2].transform.position.y,"mixed drones form an ordered trailing line");
         Check(drones[0].transform.lossyScale.x>drones[2].transform.lossyScale.x && droneTarget.health<1000,"drones taper in size and deal actual damage");
-        for(int i=0;i<6;i++){yield return new WaitForSeconds(.18f);yield return Capture("DroneMotion"+i);}
+        Press(Key.RightArrow);
+        for(int i=0;i<12;i++)
+        {
+            if(i==6)Press(Key.LeftArrow);
+            yield return new WaitForSeconds(.1f);yield return Capture("DroneMotion"+i.ToString("00"));
+        }
+        Press();
         foreach(var drone in drones)Destroy(drone.gameObject);Clear();yield return null;
         yield return Grant(typeof(BulletTime),1);var bulletTime=(BulletTime)granted;
-        var enemy=Target(new Vector3(0,4));enemy.enabled=true;
+        ship.transform.position=new Vector3(0,-2,-1);
+        var enemy=Target(new Vector3(0,4));enemy.GetComponent<PatternMover>().enabled=true;
         hostile=CombatRound.Launch<SimpleRound>(new Vector3(-2,3),Vector2.down,4);
         shot=PlayerRound.Spawn(new Vector3(2,-2),Vector2.up,1,8);yield return null;
-        var hostilePosition=hostile.transform.position;var shotPosition=shot.transform.position;
+        var hostilePosition=hostile.transform.position;var shotPosition=shot.transform.position;var enemyPosition=enemy.transform.position;
         Check(bulletTime.OnPress(35)==0,"Bullet time consumes 35 energy");
+        var frozenBeam=CombatRound.Launch<PulseLaser>(ship.transform.position+Vector3.up*2,Vector2.down,0);
+        frozenBeam.warning=0;frozenBeam.activeTime=5;
+        typeof(CombatRound).GetField("age",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(frozenBeam,.3f);
+        ship.ObserverMode=false;health=ship.health;
+        yield return new WaitForSecondsRealtime(.2f);
+        Check(ship.health==health,"frozen active beams cannot damage the player");ship.ObserverMode=true;
         Press(Key.Z,Key.RightArrow);start=ship.transform.position.x;
         yield return new WaitForSecondsRealtime(.5f);
         Check(hostile.transform.position==hostilePosition && shot.transform.position==shotPosition,"hostile and friendly projectiles freeze together");
+        Check(enemy.transform.position==enemyPosition,"enemy movement freezes with the world");
         Check(ship.transform.position.x>start+.5f && FindObjectsByType<PlayerRound>(FindObjectsSortMode.None).Length>4,"player can move and spawn suspended shots");
         Press();yield return Capture("BulletTime");
         var menu=FindAnyObjectByType<Menu>();menu.setMenuOpen(true);float remaining=WorldTimeStop.Current.Remaining;
