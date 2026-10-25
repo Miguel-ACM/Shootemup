@@ -27,7 +27,7 @@ public class PulseLaser : CombatRound
         if(ribbon==null){ribbon=gameObject.AddComponent<BeamRibbon>();ribbon.Build();}
         if(sound==null)sound=gameObject.AddComponent<LaserSound>();
         ribbon.Draw(transform.position,heading,length,width,0,0);lifetime=12;
-        if(ports!=null)ports.Draw(transform.position,heading,width,0,false);
+        if(ports!=null)ports.Hide();
     }
     public PulseLaser Bind(Transform source,Vector3 localMuzzle)
     {
@@ -67,13 +67,14 @@ public class PulseLaser : CombatRound
         {
             if(ports==null){ports=gameObject.AddComponent<LaserSidePorts>();ports.Build();}
             if(nextSide==0)nextSide=warning;
+            var layout=LaserSidePorts.VisibleLayout(transform.position,heading,length);
             bool cue=age>=nextSide-.32f && age<warning+activeTime;
-            ports.Draw(transform.position,heading,width,Mathf.InverseLerp(nextSide-.32f,nextSide,age),cue);
-            if(Active && age>=nextSide)
+            ports.Draw(transform.position,heading,width,layout,Mathf.InverseLerp(nextSide-.32f,nextSide,age),cue);
+            if(Active && age>=nextSide && Live.Count+layout.Count*2<=Limit)
             {
                 nextSide=age+.45f;var side=new Vector2(-heading.y,heading.x);
-                for(int i=1;i<=3;i++)for(int sign=-1;sign<=1;sign+=2)
-                    Launch<LaserSideRound>(LaserSidePorts.Origin(transform.position,heading,width,i,sign),side*sign,2.4f,.12f);
+                for(int i=1;i<=layout.Count;i++)for(int sign=-1;sign<=1;sign+=2)
+                    Launch<LaserSideRound>(LaserSidePorts.Origin(transform.position,heading,width,layout,i,sign),side*sign,2.4f,.12f);
             }
         }
     }

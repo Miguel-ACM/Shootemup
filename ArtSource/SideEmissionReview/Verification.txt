@@ -1,0 +1,57 @@
+PASS
+PASS side outlets cover the whole visible beam before any lateral shot
+PASS side volley fills every visible outlet pair
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS lateral bullet begins at a marked outlet
+PASS side volley reaches the visible bottom edge
+PASS continuous blue beam shader compiles
+PASS later laser volleys retain the full visible span
+PASS active hostile beam has a visible body and sheath
+PASS active hostile beam renders blue
+PASS active hostile beam renders blue
+PASS cooling lasers stop emitting side shots
+PASS pooled laser hides stale side cues
+PASS side ports clip correctly for (0.00, -1.00)
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS side ports clip correctly for (0.00, 1.00)
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS side ports clip correctly for (-1.00, 0.00)
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS side ports clip correctly for (1.00, 0.00)
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS side ports clip correctly for (0.37, -0.93)
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS side ports clip correctly for (-0.37, -0.93)
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS visible outlets keep bounded spacing
+PASS offscreen beams do not consume invisible outlet volleys
+PASS friendly beams render blue too
+PASS friendly beams render blue too
+PASS carriers keep firing in the lower arena after their third volley
+PASS reused carriers restart their side-shot cadence
+PASS full-span blue laser and sustained carrier live reviews complete without runtime errors
