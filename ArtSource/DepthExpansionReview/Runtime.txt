@@ -1,0 +1,15 @@
+PASS
+Hell authored formation fires actual patterns; peak 126 rounds
+Crab has two independent damageable eyes
+Armored crab body cannot bypass eye weakpoints
+Only the struck eye receives local feedback
+Part hits leave the main hull anchored
+One destroyed eye does not kill the crab
+Hell combines side claw bullets and physical attack cycles within pool budget
+Boss destruction flows continuously without artificial freezes
+Underwater authored formation fires actual patterns; peak 37 rounds
+Submarine dives below the water and cannot be hit while submerged
+Submarine erupts in offset crowns, charges down leaving two side trails, and re-enters above
+Underwater blue grade reaches the composed world
+Worm feedback flashes and recoils only the struck reactor
+Native depth-world shader compiles without errors

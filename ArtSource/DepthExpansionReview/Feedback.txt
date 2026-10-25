@@ -1,0 +1,3 @@
+PASS
+Underwater movement has real braking inertia after input release
+Actual weakpoint renderer receives a strong local flash while its neighbor stays steady

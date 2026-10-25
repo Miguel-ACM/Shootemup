@@ -1,0 +1,13 @@
+PASS
+All eight diagram routes and 50 harder loops pass, including invalid route rejection.
+Fields: three seeds x 19 budgets pass; late wave 10 ships / 13,5 seconds; health scale 1,00
+Tunnel: three seeds x 19 budgets pass; late wave 7 ships / 12,3 seconds; health scale 1,32
+Snow: three seeds x 19 budgets pass; late wave 8 ships / 14,1 seconds; health scale 1,16
+Thunder: three seeds x 19 budgets pass; late wave 11 ships / 12,9 seconds; health scale 1,32
+City: three seeds x 19 budgets pass; late wave 13 ships / 11,1 seconds; health scale 1,16
+Desert: three seeds x 19 budgets pass; late wave 15 ships / 9,3 seconds; health scale 1,32
+Candyland: three seeds x 19 budgets pass; late wave 24 ships / 9,5 seconds; health scale 1,32
+Space: three seeds x 19 budgets pass; late wave 13 ships / 10,5 seconds; health scale 1,48
+Underwater: three seeds x 19 budgets pass; late wave 6 ships / 7,8 seconds; health scale 1,48
+Hell: three seeds x 19 budgets pass; late wave 15 ships / 8,5 seconds; health scale 1,64
+All eight new native models rendered; all 51 enemies/bosses in editor.

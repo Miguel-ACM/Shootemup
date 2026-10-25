@@ -1,0 +1,12 @@
+PASS
+Pure route regression checks, tier balance, miniboss health budgets and background music loading passed.
+Fields miniboss main hull health: 440.6
+Tunnel miniboss main hull health: 581.6
+Snow miniboss main hull health: 511.1
+Thunder miniboss main hull health: 581.6
+City miniboss main hull health: 511.1
+Desert miniboss main hull health: 542.9
+Candyland miniboss main hull health: 447.9
+Space miniboss main hull health: 541.0
+Underwater miniboss main hull health: 646.7
+Hell miniboss main hull health: 800.9
