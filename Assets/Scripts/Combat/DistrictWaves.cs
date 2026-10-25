@@ -23,9 +23,8 @@ public static class DistrictWaves
             }
         }
     }
-    // Ten combat phrases (including the miniboss), spanning the full difficulty ramp.
-    public static string[] Sequence()=>new[]{"2","4","6","encounterChoice","8","10","12",
-        "encounterChoice","14","miniboss","17","20","boss"};
+    // Four phrases keep the full ramp, one decision, a miniboss and the finale.
+    public static string[] Sequence()=>new[]{"2","encounterChoice","8","miniboss","20","boss"};
     public static Wave Miniboss()
     {
         if(LevelRun.Current==LevelId.Candyland)
