@@ -257,7 +257,11 @@ public sealed class LevelEnvironment : MonoBehaviour
         if(level==LevelId.City)material.SetFloat("_Haze",.38f);
         var go=GameObject.FindGameObjectWithTag("Player");if(go!=null)player=go.transform;
         yield return null;
-        if(level==LevelId.Space)
+        if(level==LevelId.Hell || level==LevelId.Underwater)
+        {
+            var depth=new GameObject(level+" depth and atmosphere");depth.transform.SetParent(transform,false);depth.AddComponent<DepthBackdrop>().infernal=level==LevelId.Hell;
+        }
+        else if(level==LevelId.Space)
         {
             var orbit=new GameObject("Distant planets and starfield");orbit.transform.SetParent(transform,false);orbit.AddComponent<SpaceBackdrop>();
         }
