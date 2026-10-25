@@ -63,10 +63,10 @@ public sealed partial class WaveWatcher
         leftPanel=Box(transform,"Watcher levels",new Vector2(-365,0),new Vector2(270,674),Panel);
         rightPanel=Box(transform,"Watcher catalog",new Vector2(365,0),new Vector2(270,674),Panel);
         Label(leftPanel,"WAVE WATCHER",22,new Vector2(0,307),new Vector2(250,36));
-        foreach(var level in new[]{LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Tunnel})
+        foreach(var level in new[]{LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Tunnel,LevelId.Desert})
         {
             int row=levels.Count;var chosen=level;
-            levels[level]=Button(leftPanel,level==LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(),new Vector2(0,263-row*34),new Vector2(230,29),()=>SelectLevel(chosen)).GetComponent<Image>();
+            levels[level]=Button(leftPanel,level==LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(),new Vector2(0,270-row*29),new Vector2(230,25),()=>SelectLevel(chosen)).GetComponent<Image>();
         }
         var seedBox=Box(leftPanel,"Seed",new Vector2(-26,83),new Vector2(178,32),ButtonColor);
         Label(seedBox,"SEED",12,new Vector2(-64,0),new Vector2(42,32));

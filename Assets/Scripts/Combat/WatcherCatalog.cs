@@ -19,6 +19,7 @@ public static class WatcherCatalog
     {
         switch(level)
         {
+            case LevelId.Desert:return new[]{typeof(SandEmitter),typeof(SandStriker),typeof(SandWorm)};
             case LevelId.Fields:return new[]{typeof(ScoutInterceptor),typeof(PatrolGunship),typeof(HeavyBomber),typeof(FieldsHeavyWing)};
             case LevelId.Tunnel:return new[]{typeof(WallTurret),typeof(MaintenanceDrone),typeof(ArmoredCarrier),typeof(TunnelDefensePlatform)};
             case LevelId.Snow:return new[]{typeof(ColdWeatherFighter),typeof(SiegeGunship),typeof(ShieldTransport),typeof(AvalancheBomber),typeof(SnowSiegeCraft)};

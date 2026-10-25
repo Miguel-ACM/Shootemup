@@ -5,8 +5,8 @@ using System.Collections.Generic;
 public static class DistrictWaves
 {
     // Explicit types keep runtime factories safe under managed code stripping.
-    public static readonly Type[] EnemyTypes={typeof(ScoutInterceptor),typeof(PatrolGunship),typeof(HeavyBomber),typeof(WallTurret),typeof(MaintenanceDrone),typeof(ArmoredCarrier),typeof(ColdWeatherFighter),typeof(SiegeGunship),typeof(ShieldTransport),typeof(BeamDrone),typeof(RelayDrone),typeof(StormSkimmer),typeof(PursuitFighter),typeof(AttackDrone),typeof(CommandGunship),typeof(CourierDiver),typeof(AvalancheBomber),typeof(ArcLancer),typeof(FieldsHeavyWing),typeof(TunnelDefensePlatform),typeof(SnowSiegeCraft),typeof(StormReactor),typeof(CityCommandCarrier)};
-    public static Type EnemyType(string name)=>name==nameof(SandEmitter) ? typeof(SandEmitter) : name==nameof(SandStriker) ? typeof(SandStriker) : name==nameof(SandWorm) ? typeof(SandWorm) : Array.Find(EnemyTypes,t=>t.Name==name);
+    public static readonly Type[] EnemyTypes={typeof(ScoutInterceptor),typeof(PatrolGunship),typeof(HeavyBomber),typeof(WallTurret),typeof(MaintenanceDrone),typeof(ArmoredCarrier),typeof(ColdWeatherFighter),typeof(SiegeGunship),typeof(ShieldTransport),typeof(BeamDrone),typeof(RelayDrone),typeof(StormSkimmer),typeof(PursuitFighter),typeof(AttackDrone),typeof(CommandGunship),typeof(CourierDiver),typeof(AvalancheBomber),typeof(ArcLancer),typeof(FieldsHeavyWing),typeof(TunnelDefensePlatform),typeof(SnowSiegeCraft),typeof(StormReactor),typeof(CityCommandCarrier),typeof(SandEmitter),typeof(SandStriker),typeof(SandWorm)};
+    public static Type EnemyType(string name)=>Array.Find(EnemyTypes,t=>t.Name==name);
     public static Type BossType
     {
         get
@@ -30,7 +30,7 @@ public static class DistrictWaves
         if(LevelRun.Current==LevelId.Desert)
         {
             var brood=new List<WaveUnit>();
-            for(int i=0;i<3;i++)brood.Add(new WaveUnit(nameof(SandWorm),i*3.2f,new Vector3((i%2==0 ? -1 : 1)*Camera.RightLimit*.54f,Camera.UpLimit+2,1)));
+            for(int i=0;i<3;i++)brood.Add(new WaveUnit(nameof(SandWorm),i*3.2f,new Vector3((i%2==0 ? -1 : 1)*.54f,1.2f,1)));
             return new Wave(6,19,1,ConflictGroup.cg.center,brood){parts=new[]{"Buried brood"}};
         }
         string[] types={"FieldsHeavyWing","TunnelDefensePlatform","SnowSiegeCraft","StormReactor","CityCommandCarrier"};

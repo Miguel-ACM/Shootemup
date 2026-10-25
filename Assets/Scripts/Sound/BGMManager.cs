@@ -32,7 +32,7 @@ public class BGMManager : MonoBehaviour
 
     public static void PlayLevelMusic(LevelId level)
     {
-        PlayBGM(level.ToString().ToLowerInvariant());
+        PlayBGM(level==LevelId.Desert ? "fields" : level.ToString().ToLowerInvariant());
     }
 
     public static void PlayBGM(string bgm)
