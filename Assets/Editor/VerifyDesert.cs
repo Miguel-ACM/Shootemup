@@ -96,6 +96,9 @@ public sealed class DesertReview : MonoBehaviour
         while(CloudTransition.Busy || !WavePreparation.Ready)yield return null;
         GameRules.playerDisabled=false;ship.transform.position=new Vector3(0,Camera.DownLimit+2,-1);
         yield return new WaitForSeconds(1);Capture("Scenery");
+        var dust=FindAnyObjectByType<DesertDustStorm>();
+        Check(dust!=null,"desert creates its dust storm system");
+        float minDust=1,maxDust=0;bool capturedDust=false;
         var buried=DistrictEnemy.Spawn(typeof(SandEmitter),new Vector3(0,2,1));yield return null;
         Check(AEnemy.Live.Contains(buried) && CombatUpgrades.Nearest(buried.transform.position,null,.2f)==null,"buried turrets retain encounter bookkeeping without attracting homing fire");
         yield return new WaitForSeconds(1.7f);
@@ -112,11 +115,14 @@ public sealed class DesertReview : MonoBehaviour
                     var unit=wave.units[next++];var enemy=DistrictEnemy.Spawn(DistrictWaves.EnemyType(unit.enemy),new Vector3(unit.position.x*Camera.RightLimit,unit.position.y*Camera.UpLimit,1));enemy.FlyPhrase(unit);
                 }
                 peak=Mathf.Max(peak,CombatRound.Live.Count);
+                minDust=Mathf.Min(minDust,dust.Strength);maxDust=Mathf.Max(maxDust,dust.Strength);
+                if(!capturedDust && dust.Strength>.85f && CombatRound.Live.Count>20){Capture("DustStorm");capturedDust=true;}
                 if(elapsed-last>.4f){last=elapsed;Capture("Frames/Wave"+budget+"-"+Mathf.RoundToInt(elapsed*100).ToString("D4"));}
                 yield return null;
             }
             Check(next==wave.units.Count && peak>0,"wave "+budget+" completes with real firing; peak rounds "+peak);
         }
+        Check(minDust<.05f && maxDust>.95f && capturedDust,"dust alternates between clear weather and full gusts during combat");
         Clear();yield return null;
         var worm=(DesertWormBoss)DistrictEnemy.Spawn(typeof(DesertWormBoss),new Vector3(0,Camera.UpLimit+3,1));
         yield return null;yield return null;

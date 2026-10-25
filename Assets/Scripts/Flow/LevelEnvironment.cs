@@ -235,7 +235,10 @@ public sealed class LevelEnvironment : MonoBehaviour
                 AddAtmosphere("Near windblown powder",3,35,new Color(.89f,.94f,.95f,.21f),2.5f,1.8f);
                 yield return null;
             }
-            if(level==LevelId.Desert)AddAtmosphere("Windblown sand",0,42,new Color(.74f,.53f,.28f,.12f),1.8f,.65f);
+            if(level==LevelId.Desert)
+            {
+                var dust=new GameObject("Desert dust storms");dust.transform.SetParent(transform,false);dust.AddComponent<DesertDustStorm>();
+            }
             if(level==LevelId.City)
             {
                 AddAtmosphere("Wisps above the distant city",0,35,new Color(.75f,.80f,.83f,.20f),2.6f,.32f);
