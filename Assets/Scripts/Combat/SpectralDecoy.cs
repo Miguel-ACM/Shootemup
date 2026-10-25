@@ -8,7 +8,8 @@ public sealed class SpectralDecoy : MonoBehaviour
     Shipcontroller owner;
     float age;
     readonly List<MeshRenderer> parts=new List<MeshRenderer>();
-    readonly MaterialPropertyBlock properties=new MaterialPropertyBlock();
+    MaterialPropertyBlock properties;
+    void Awake(){properties=new MaterialPropertyBlock();}
     public static Vector3 AimPosition(Vector3 fallback)=>Current!=null && Current.owner!=null && !GameRules.playerDisabled ? Current.transform.position : fallback;
     public static void Launch(Shipcontroller ship)
     {
