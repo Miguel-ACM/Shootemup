@@ -11,10 +11,14 @@ public sealed class CloudTransition : MonoBehaviour
     public static bool Busy => instance != null && instance.busy;
     public const float RevealSeconds=3.2f;
     const float OffscreenY=960;
+    const float LayerSpacing=36;
+    const float TravelSpeed=(OffscreenY+3*LayerSpacing)/RevealSeconds;
     bool busy;
     RectTransform[] banks;
     CloudCurtainGraphic[] billows;
     float flowStartedAt;
+    bool revealing;
+    readonly float[] trailingExtension=new float[4];
     Canvas canvas;
     Coroutine scenePreparation, routePreparation;
     string preparedScene;
@@ -159,10 +163,11 @@ public sealed class CloudTransition : MonoBehaviour
     IEnumerator Travel(string scene, Action covered)
     {
         busy=true;
+        revealing=false;
         flowStartedAt=Time.unscaledTime;
         // Clouds are an overlay: simulation and controls keep running throughout both legs.
         Time.timeScale=1;
-        foreach(var bank in banks)bank.anchoredPosition=new Vector2(0,OffscreenY);
+        PositionClouds();
         canvas.enabled=true;
         var previousPriority=Application.backgroundLoadingPriority;
         Application.backgroundLoadingPriority=ThreadPriority.Low;
@@ -231,31 +236,38 @@ public sealed class CloudTransition : MonoBehaviour
     void Update()
     {
         if(!busy)return;
-        // Texture billows keep travelling even when the opaque carrier must wait for activation.
-        float distance=(Time.unscaledTime-flowStartedAt)*52;
-        foreach(var graphic in billows)graphic.SetFlow(distance);
+        PositionClouds();
+    }
+
+    void PositionClouds()
+    {
+        float elapsed=Time.unscaledTime-flowStartedAt;
+        for(int i=0;i<banks.Length;i++)
+        {
+            // One uninterrupted downward pass, including the loading handoff. Feed more cloud
+            // in from above while loading; release that trailing edge once the scene is ready.
+            float y=OffscreenY+i*LayerSpacing-elapsed*TravelSpeed;
+            if(!revealing)trailingExtension[i]=Mathf.Max(0,-y+(banks.Length-1-i)*LayerSpacing);
+            float extension=trailingExtension[i];
+            float height=1100+extension;
+            banks[i].sizeDelta=new Vector2(650,height);
+            banks[i].pivot=new Vector2(.5f,550/height);
+            banks[i].anchoredPosition=new Vector2(0,y);
+            billows[i].SetTravel(y,extension,elapsed*(TravelSpeed+52));
+        }
     }
 
     IEnumerator Move(bool cover)
     {
-        float duration=cover ? 2.4f : RevealSeconds;
-        for(float elapsed=0;elapsed<duration;elapsed+=Time.unscaledDeltaTime)
+        if(cover)
         {
-            float t=elapsed/duration;
-            for(int i=0;i<banks.Length;i++)
-            {
-                // The front bank leaves first, exposing the shaded banks behind it in succession.
-                int order=cover ? i : banks.Length-1-i;
-                float local=Mathf.Clamp01((t-order*.045f)/.865f);
-                float p=cover ? Mathf.SmoothStep(0,1,local) : local*(.72f+.28f*local);
-                float x=Mathf.Sin(t*Mathf.PI*2+i)*12*Mathf.Sin(t*Mathf.PI);
-                banks[i].anchoredPosition=new Vector2(Mathf.Round(x/2)*2,
-                    Mathf.Round((cover ? Mathf.Lerp(OffscreenY,0,p) : Mathf.Lerp(0,-OffscreenY,p))/2)*2);
-            }
-            yield return null;
+            while(banks[banks.Length-1].anchoredPosition.y>0)yield return null;
+            yield break;
         }
-        // Every textured edge is below the viewport before the canvas switches off.
-        foreach(var bank in banks)bank.anchoredPosition=new Vector2(0,cover ? 0 : -OffscreenY);
+        PositionClouds();
+        revealing=true;
+        // Every trailing sprite is below the viewport before the canvas switches off.
+        yield return new WaitForSecondsRealtime(RevealSeconds);
     }
 
     void OnDestroy()
@@ -271,6 +283,7 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
     Texture2D texture;
     Vector2 white;
     int variant;
+    float carrierY,extension;
     const int BackingColumns=325;
     readonly float[] backingTop=new float[BackingColumns];
     readonly float[] backingBottom=new float[BackingColumns];
@@ -349,10 +362,10 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
         return 0;
     }
 
-    public void SetFlow(float distance)
+    public void SetTravel(float y,float trailingExtension,float distance)
     {
         float snapped=Mathf.Floor(distance/2)*2;
-        if(snapped==FlowDistance)return;
+        carrierY=y;extension=trailingExtension;
         FlowDistance=snapped;SetVerticesDirty();
     }
 
@@ -363,17 +376,19 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
         for(int column=0;column<BackingColumns;column++)
         {
             float x=-325+column*2;
-            Quad(vh,new Vector2(x,backingBottom[column]),new Vector2(x+2,backingTop[column]),white,white);
+            Quad(vh,new Vector2(x,backingBottom[column]),new Vector2(x+2,backingTop[column]+extension),white,white);
         }
         // Fixed edge sprites preserve the scalloped silhouette of the incoming/outgoing carrier.
-        foreach(var sprite in edges)
+        for(int i=0;i<edges.Length;i++)
         {
-            Quad(vh,sprite.lo,sprite.hi,sprite.uv0,sprite.uv1);
+            var sprite=edges[i];
+            var offset=i<4 ? Vector2.zero : new Vector2(0,extension);
+            Quad(vh,sprite.lo+offset,sprite.hi+offset,sprite.uv0,sprite.uv1);
         }
         // Recycle well outside the visible area, so the interior reads as a continuous fly-through.
         for(int row=0;row<14;row++)
         {
-            float y=Mathf.Repeat(row*(1240f/14)-FlowDistance,1240)-620;
+            float y=Mathf.Repeat(row*(1240f/14)-FlowDistance,1240)-620-carrierY;
             for(int col=0;col<4;col++)
             {
                 float seed=row*17.13f+col*7.71f+variant*11.37f;
@@ -391,13 +406,13 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
         Color bottom=color,top=color;
         if(stream)
         {
-            if(hi.y<=-450 || lo.y>=450)return;
+            if(hi.y<=-450 || lo.y>=450+extension)return;
             float from=lo.y,to=hi.y,v0=uv0.y,v1=uv1.y;
-            lo.y=Mathf.Max(-450,lo.y);hi.y=Mathf.Min(450,hi.y);
+            lo.y=Mathf.Max(-450,lo.y);hi.y=Mathf.Min(450+extension,hi.y);
             uv0.y=Mathf.Lerp(v0,v1,Mathf.InverseLerp(from,to,lo.y));
             uv1.y=Mathf.Lerp(v0,v1,Mathf.InverseLerp(from,to,hi.y));
-            bottom.a*=Mathf.InverseLerp(450,290,Mathf.Abs(lo.y));
-            top.a*=Mathf.InverseLerp(450,290,Mathf.Abs(hi.y));
+            bottom.a*=Mathf.InverseLerp(-450,-290,lo.y)*Mathf.InverseLerp(450+extension,290+extension,lo.y);
+            top.a*=Mathf.InverseLerp(-450,-290,hi.y)*Mathf.InverseLerp(450+extension,290+extension,hi.y);
         }
         int k=vh.currentVertCount;
         vh.AddVert(new Vector3(lo.x,lo.y),bottom,uv0);vh.AddVert(new Vector3(lo.x,hi.y),top,new Vector2(uv0.x,uv1.y));

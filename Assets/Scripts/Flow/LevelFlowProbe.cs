@@ -16,6 +16,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
     readonly Queue<string> captures=new Queue<string>();
     bool recordingClouds;
     float nextCloudCapture;
+    float previousCloudTime,previousCloudY;
     int cloudFrames;
     void Awake(){Application.runInBackground=true;Application.logMessageReceived+=Log;}
     void Log(string message,string trace,LogType type)
@@ -94,7 +95,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
             var parked=loadingBanks[0].anchoredPosition;float flow=flowing[0].FlowDistance;
             Capture("02-loading-flow-before");
             yield return new WaitForSecondsRealtime(.5f);
-            Check(loadingBanks[0].anchoredPosition==parked && parked.y==0,"Slow-load fixture did not hold at opaque cover");
+            Check(loadingBanks[0].anchoredPosition.y<parked.y-100,"Cloud curtain stopped while waiting for the next scene");
             Check(flowing[0].FlowDistance>=flow+20,"Cloud texture stopped while waiting for the next scene");
             Capture("02-loading-flow-after");
         }
@@ -128,7 +129,8 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Check(liveShip.transform.position.x>beforeX+.4f,"Ship cannot move during the title/cloud reveal");
         Check(!Mathf.Approximately((float)Get(liveBackground,"travel"),beforeTravel),"Background stopped during the title");
         var banks=(RectTransform[])Get(cloud,"banks");
-        Check(banks[3].anchoredPosition.y<banks[0].anchoredPosition.y,"Cloud exit did not peel away the front layer first");
+        var extensions=(float[])Get(cloud,"trailingExtension");
+        Check(banks[3].anchoredPosition.y+extensions[3]<banks[0].anchoredPosition.y+extensions[0],"Cloud exit did not peel away the front layer first");
         while((float)Get(instruments,"entranceAge")<1.15f)yield return null;
         Check(LitCells(instruments,"healthCells")>0 && LitCells(instruments,"healthCells")<24 && LitCells(instruments,"manaCells")==0,"Health did not charge segment by segment before energy");
         Capture("02-hud-health-charging");
@@ -137,7 +139,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Capture("02-hud-energy-charging");
         while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
         recordingClouds=false;
-        foreach(var bank in banks)Check(bank.anchoredPosition.y+450<-360,"Cloud canvas disappeared before its last edge left the screen");
+        for(int i=0;i<banks.Length;i++)Check(banks[i].anchoredPosition.y+extensions[i]+545<-360,"Cloud canvas disappeared before its last edge left the screen");
         Check(!CloudTransition.Busy && Time.timeScale==1,"Menu-to-game transition stalled");
         yield return new WaitForSecondsRealtime(.1f);Capture("02-live-title");
         Check(SceneManager.GetActiveScene().name=="L1","New game did not load gameplay");
@@ -301,6 +303,15 @@ public sealed class LevelFlowProbe : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
             bool record=recordingClouds && Time.unscaledTime>=nextCloudCapture;
+            if(record && CloudTransition.Busy)
+            {
+                var cloud=FindAnyObjectByType<CloudTransition>();
+                float y=((RectTransform[])Get(cloud,"banks"))[0].anchoredPosition.y;
+                if(previousCloudTime>0 && Time.unscaledTime>previousCloudTime)
+                    Check(y<previousCloudY,"Cloud curtain paused between cover and reveal");
+                previousCloudTime=Time.unscaledTime;previousCloudY=y;
+            }
+            else if(!recordingClouds || !CloudTransition.Busy)previousCloudTime=0;
             if(captures.Count==0 && !record)continue;
             var image=ScreenCapture.CaptureScreenshotAsTexture();
             if(image!=null)
