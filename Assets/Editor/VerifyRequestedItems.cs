@@ -118,11 +118,15 @@ public sealed class RequestedItemReview : MonoBehaviour
     IEnumerator Run()
     {
         GameRules.StartNewRun();LevelRun.Reset(LevelId.Fields,7921);Time.timeScale=1;
-        yield return SceneManager.LoadSceneAsync("L1");yield return new WaitForSecondsRealtime(2);
+        CloudTransition.Load("L1");while(CloudTransition.Busy || SceneManager.GetActiveScene().name!="L1")yield return null;
+        yield return null;
         Time.timeScale=1;CombatDecision.End();
         ship=FindAnyObjectByType<Shipcontroller>();ship.ObserverMode=true;ship.transform.position=new Vector3(0,-4,-1);
         var flow=FindAnyObjectByType<WaveOrchestrer>();flow.enabled=false;flow.CancelInvoke();flow.StopAllCoroutines();
-        Clear();yield return null;keyboard=InputSystem.AddDevice<Keyboard>();
+        Clear();yield return null;
+        InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
+        foreach(var device in InputSystem.devices.ToArray())if(device is Keyboard || device is Gamepad)InputSystem.DisableDevice(device);
+        keyboard=InputSystem.AddDevice<Keyboard>();
         var pool=new HashSet<string>();foreach(var f in typeof(ItemPool).GetFields(BindingFlags.NonPublic|BindingFlags.Static))if(f.GetValue(null) is string[] entries)foreach(var e in entries)pool.Add(e);
         Check(Items.All(t=>pool.Contains(t.Name)),"all 15 items appear in normal offer pools");
         yield return Catalog();
@@ -166,7 +170,8 @@ public sealed class RequestedItemReview : MonoBehaviour
         ship.ReceiveHazardDamage(1);Check(ship.health<health,"hazard damage resumes after roll");ship.ObserverMode=true;
         yield return Grant(typeof(FocusTime));ship.transform.position=new Vector3(0,-4,-1);Press(Key.RightArrow,Key.LeftShift);
         float start=ship.transform.position.x;t=Time.time;yield return new WaitForSeconds(.25f);Press();
-        Check(Mathf.Abs((ship.transform.position.x-start)/(GameRules.playerMoveSpeed*(Time.time-t))-.3f)<.05f,"held focus movement is 40 percent slower than original half-speed");
+        float focusRate=(ship.transform.position.x-start)/(GameRules.playerMoveSpeed*(Time.time-t));
+        Check(Mathf.Abs(focusRate-.3f)<.05f,"held focus movement is 40 percent slower than original half-speed; measured "+focusRate);
         yield return Grant(typeof(DoubleTrouble));ship.GetComponent<ShipLoadout>().EquipWeapon("NeedleCannon",1);yield return null;
         Press(Key.Z);yield return new WaitForSeconds(.24f);
         var rounds=FindObjectsByType<PlayerRound>(FindObjectsSortMode.None);
@@ -207,10 +212,12 @@ public sealed class RequestedItemReview : MonoBehaviour
         yield return new WaitForSeconds(.1f);Check(hostile.transform.position!=hostilePosition,"suspended projectiles resume travelling");
         Clear();yield return null;
         yield return Grant(typeof(EmpPulse));var emp=ship.GetComponent<PeriodicEmp>();
-        // Accelerate only the timer setup; verify the actual Update discharge and recurrence.
-        typeof(PeriodicEmp).GetField("<Remaining>k__BackingField",BindingFlags.NonPublic|BindingFlags.Instance).SetValue(emp,.12f);
+        Check(emp.Remaining>19.8f,"EMP begins with a full twenty-second countdown");
+        yield return new WaitForSeconds(19.5f);
         CombatRound.Launch<SimpleRound>(new Vector3(-2,3),Vector2.down,0);PlayerRound.Spawn(new Vector3(2,3),Vector2.up,1,0);
-        yield return new WaitForSeconds(.2f);
+        yield return new WaitForSeconds(.15f);
+        Check(FindObjectsByType<AEnemyBullet>(FindObjectsSortMode.None).Length>0,"EMP does not discharge before twenty seconds");
+        yield return new WaitForSeconds(.45f);
         Check(FindObjectsByType<AEnemyBullet>(FindObjectsSortMode.None).Length==0 && FindObjectsByType<ABullet>(FindObjectsSortMode.None).Length==0,"EMP timer clears both friendly and hostile projectiles");
         Check(emp.Remaining>19.7f && emp.Remaining<=20,"EMP restarts its twenty-second interval");
         yield return Capture("EmpPulse");
