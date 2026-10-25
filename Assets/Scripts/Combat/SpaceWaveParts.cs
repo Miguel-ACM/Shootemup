@@ -15,7 +15,8 @@ public static partial class WavePartLibrary
         new WavePart("Perigee twins","OrbitalScout",Perigee,WaveShape.Diamond,4,4.1f),
         new WavePart("Terminator emitters","LaserSatellite",Terminator,WaveShape.Train,2,4.8f),
         new WavePart("Halo escort carrier","OrbitalCarrier",Halo,WaveShape.Solo,1,5.0f,6),
-        new WavePart("Low transfer emitter","LaserSatellite",Transfer,WaveShape.Solo,1,4.7f,4),
+        new WavePart("Low transfer emitter","LaserSatellite",Transfer,WaveShape.Solo,1,4.7f),
+        new WavePart("Slingshot dish escort","LaserSatellite",Slingshot,WaveShape.Solo,1,4.9f),
         new WavePart("Opposed relay scouts","OrbitalScout",Terminator,WaveShape.Rake,4,4.0f),
         new WavePart("Wide apogee carrier","OrbitalCarrier",Apogee,WaveShape.Solo,1,5.1f,8),
         new WavePart("Perigee laser rake","LaserSatellite",Perigee,WaveShape.Rake,2,4.8f,10)

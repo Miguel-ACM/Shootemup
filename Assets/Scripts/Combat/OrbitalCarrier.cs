@@ -3,7 +3,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class OrbitalCarrier : SpaceSatellite
 {
-    protected override void Configure(){hull=43;hullScale=.64f;health=105;attackInterval=1.75f;Mover<TopTracker>();}
+    protected override void Configure(){hull=43;hullScale=.64f;health=135;attackInterval=1.45f;Mover<TopTracker>();}
     protected override void Start()
     {
         base.Start();

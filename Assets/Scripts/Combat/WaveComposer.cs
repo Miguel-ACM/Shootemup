@@ -82,6 +82,7 @@ public static class WaveComposer
         var occupied=Array.Empty<ulong>();
         int count=budget<5 || compact ? 2 : 3;bool heavy=false,groundUsed=false;
         if(level==LevelId.Candyland)count=budget<5 || compact ? 3 : 4;
+        if(level==LevelId.Space)count=budget<5 || compact ? 3 : 4;
         float window=compact ? 12.5f : budget<5 ? 8.6f : 11.5f;
         float slowest=1;foreach(var part in WavePartLibrary.For(level))slowest=Mathf.Min(slowest,EnemyTuning.MovementFor(part.Enemy));
         window/=slowest;
@@ -90,6 +91,7 @@ public static class WaveComposer
             var options=new List<(WavePart part,int score)>();
             foreach(var part in WavePartLibrary.For(level))
             {
+                if(level==LevelId.Space && slot==count-1 && !units.Exists(u=>u.enemy==nameof(LaserSatellite) || u.enemy==nameof(OrbitalCarrier)) && part.Enemy!=nameof(LaserSatellite) && part.Enemy!=nameof(OrbitalCarrier))continue;
                 if(part.Unlock>budget || chosen.Contains(part.Name) || previous.Contains(part.Name) || (heavy && part.Shape==WaveShape.Solo) || (groundUsed && part.Ground))continue;
                 uses.TryGetValue(part.Name,out int used);
                 options.Add((part,used*24+random.Next(24)));

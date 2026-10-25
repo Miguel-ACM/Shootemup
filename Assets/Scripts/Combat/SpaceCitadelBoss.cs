@@ -31,6 +31,16 @@ public sealed class SpaceCitadelBoss : DistrictBoss
         }
     }
     protected override bool PhaseTwoReady=>CoreExposed;
+    protected override float PressureInterval=>phaseTwo ? 1.35f : 1.7f;
+    protected override void PressureAttack()
+    {
+        if(parts[0]==null)return;
+        for(int i=0;i<2;i++)
+        {
+            var p=parts[i].health>0 ? parts[i].transform.position : Hull.TransformPoint(new Vector3(i==0 ? -.44f : .44f,-.8f,-.3f));
+            PetalFan<NeedleRound>(p,CombatVisuals.Aim(p),phaseTwo ? 5 : 3,12,6.0f,.13f);
+        }
+    }
     protected override void MoveBoss(float dt)
     {
         var target=new Vector3(centralLaser!=null && centralLaser.isActiveAndEnabled ? 0 : Mathf.Sin(motionAge*.43f)*.82f,Camera.UpLimit-3.0f+Mathf.Sin(motionAge*.31f)*.32f,1);
