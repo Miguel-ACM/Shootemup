@@ -48,6 +48,16 @@ public static partial class IndustrialMeshFactory
     {
         if(combatHulls.TryGetValue(kind,out var cached))return cached;
         var b=new Builder();bool heavy=kind==2 || kind==5 || kind==7 || kind==8 || kind==14 || kind==16 || kind>=20;
+        if(kind==46){BuildSkull(b);return combatHulls[kind]=b.Finish("Horned skull interceptor");}
+        if(kind==47){BuildGhostShip(b);return combatHulls[kind]=b.Finish("Spectral broadside galleon");}
+        if(kind==48){BuildCinderImp(b);return combatHulls[kind]=b.Finish("Cinder bat imp");}
+        if(kind==49){BuildHellCrab(b);return combatHulls[kind]=b.Finish("Infernal armored crab");}
+        if(kind==50){BuildReefDart(b);return combatHulls[kind]=b.Finish("Reef torpedo fish");}
+        if(kind==51){BuildManta(b);return combatHulls[kind]=b.Finish("Hydrofoil manta bomber");}
+        if(kind==52){BuildBathysphere(b);return combatHulls[kind]=b.Finish("Brass bathysphere minelayer");}
+        if(kind==53){BuildAbyssSubmarine(b);return combatHulls[kind]=b.Finish("Abyssal submarine dreadnought");}
+        if(kind==54){BuildHellClaw(b);return combatHulls[kind]=b.Finish("Articulated infernal pincer");}
+        if(kind==55){b.Ball(Vector3.zero,new Vector3(.28f,.30f,.16f),10);b.Box(new Vector3(0,0,-.15f),new Vector3(.075f,.29f,.07f),11);return combatHulls[kind]=b.Finish("Exposed crab eye");}
         if(kind==41){BuildOrbitalScout(b);return combatHulls[kind]=b.Finish("Solar-wing orbital scout");}
         if(kind==42){BuildLaserSatellite(b);return combatHulls[kind]=b.Finish("Parabolic-dish laser satellite");}
         if(kind==43){BuildOrbitalCarrier(b);return combatHulls[kind]=b.Finish("Four-array orbital carrier");}
