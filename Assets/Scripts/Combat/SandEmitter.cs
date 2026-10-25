@@ -19,8 +19,8 @@ public sealed class SandEmitter : DistrictEnemy
         var flight=movement as FormationFlight;
         float progress=flight!=null ? flight.Progress : age/6;
         bool close=player!=null && Vector2.Distance(player.position,transform.position)<2.4f;
-        exposed=age>.8f && progress<.80f && !close;
-        float scale=exposed ? Mathf.SmoothStep(0,1,(age-.8f)/.22f) : 0;
+        exposed=age>.8f && progress>.24f && progress<.80f && !close;
+        float scale=exposed ? Mathf.SmoothStep(0,1,(progress-.24f)/.04f) : 0;
         Hull.localScale=Vector3.one*hullScale*scale;
         GetComponent<Collider2D>().enabled=scale>.65f;
         if(ripple!=null)ripple.localScale=new Vector3(1.6f+Mathf.Sin(age*15)*.12f,1.1f,1)*(exposed ? 1.2f : 1);

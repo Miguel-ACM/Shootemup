@@ -64,6 +64,10 @@ public static class WaveGeometry
         int hull;float scale;
         switch(enemy)
         {
+            case "SandEmitter":hull=30;scale=.63f;break;
+            case "SandStriker":hull=31;scale=.52f;break;
+            // The small worm's trailing body needs its own reserved corridor through a phrase.
+            case "SandWorm":return radii[enemy]=2.55f;
             case "ScoutInterceptor":hull=0;scale=.48f;break;case "PatrolGunship":hull=1;scale=.7f;break;
             case "HeavyBomber":hull=2;scale=.9f;break;case "WallTurret":hull=3;scale=.55f;break;
             case "MaintenanceDrone":hull=4;scale=.5f;break;case "ArmoredCarrier":hull=5;scale=.9f;break;

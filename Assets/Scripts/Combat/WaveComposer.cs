@@ -173,6 +173,7 @@ public static partial class WavePartLibrary
         {
             case LevelId.Fields:return Plains;case LevelId.Snow:return Snow;case LevelId.City:return City;
             case LevelId.Thunder:return Thunder;case LevelId.Tunnel:return Tunnel;
+            case LevelId.Desert:return Desert;
             default:throw new ArgumentOutOfRangeException(nameof(level));
         }
     }
