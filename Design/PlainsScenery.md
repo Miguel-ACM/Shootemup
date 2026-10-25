@@ -4,7 +4,9 @@ The Plains landscape uses a single run-seeded plan for the river, bridge, lookou
 
 Foliage uses original, procedurally drawn 64-pixel leaf cards in a point-filtered 128-pixel atlas. Several tilted cards form each crown above a branched trunk. Alpha clipping writes depth, avoiding the sorting problems of transparent leaf layers. Broadleaf and hanging crowns have different proportions and tones. Small wind offsets stay subordinate to combat movement. The texture and two runtime materials are owned and released by `PSXGrassField`; all foliage is batched per section.
 
-The bridge has battered stone abutments, wing walls, cutwater piers and open eight-bay steel side trusses. Its road connects to the service road and east apron. Deck markings and wear remain subdued.
+The crossing is a narrow wooden footbridge with individual planks, raised handrails and timber pile supports. Its west ramp samples the curved service-road edge at both corners; the east ramp joins a dirt trail through the meadow. There are no vehicle lane markings, toll hut or paved loading apron.
+
+The meadow has a dedicated surface mask in UV1, so its world-locked grass-blade pattern and clumped turf shading never appear on roads, banks or structures. Sparse modeled blade fans add low relief. The texture repeats across the 96-unit boundary and remains low contrast behind combat.
 
 The river has its own opaque shader and channel-space UVs. Cross-channel position controls shallow colour and flow speed; the longitudinal coordinate follows each bend. Broken ripples, stretched current highlights, intermittent shoreline foam and short pier wakes move downstream. There are no ocean waves, static reflection rectangles, scene-colour grabs or transparent sorting dependencies. The normal game compositor supplies the PSX colour treatment. Both water and foliage animation use scaled game time, so they freeze when the game is paused.
 

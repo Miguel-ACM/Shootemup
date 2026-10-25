@@ -70,7 +70,7 @@ public static class PSXValleyGeometry
         }
         // One recognizable landmark per 96 units, fixed to the terrain rather than independently recycled.
         float bridgeY=layout.BridgeY;
-        if(bridgeY>=origin && bridgeY<origin+length)b.Bridge(layout.Centre(bridgeY),bridgeY-origin,layout.HalfWidth(bridgeY),rng);
+        if(bridgeY>=origin && bridgeY<origin+length)b.Bridge(layout.Centre(bridgeY),bridgeY-origin,layout.HalfWidth(bridgeY),rng,layout);
         // A quieter concrete lookout further along the river establishes a second composed beat.
         float lookoutY=layout.LookoutY;
         if(lookoutY>=origin && lookoutY<origin+length)
@@ -178,61 +178,71 @@ public static class PSXValleyGeometry
             for(int i=0;i<4;i++)Face(color*(i==0 ? 1 : .78f),p[i],q[i],q[(i+1)%4],p[(i+1)%4]);
             Face(color,p);Face(color,q);
         }
-        public void Bridge(float x,float y,float halfWidth,System.Random rng)
+        public void Bridge(float x,float y,float halfWidth,System.Random rng,PSXValleyLayout layout)
         {
-            float span=halfWidth*2+3f;
-            Color concrete=new Color(.42f,.43f,.365f),steel=new Color(.29f,.36f,.325f),edge=new Color(.46f,.49f,.405f);
-            // Bank abutments, battered wing walls and pointed cutwaters anchor the crossing.
-            Rect(x+.12f,y-.55f,span,1.65f,-.13f,new Color(.085f,.155f,.145f));
+            float span=halfWidth*2+1;
+            Color wood=new Color(.46f,.355f,.22f),timber=new Color(.31f,.255f,.165f),endGrain=new Color(.39f,.31f,.20f);
+            Color path=new Color(.385f,.365f,.255f);
+            // A pedestrian route: the west ramp meets the actual curved asphalt edge.
+            float roadLo=layout.Centre(origin+y-.39f)-layout.HalfWidth(origin+y-.39f)-.82f;
+            float roadHi=layout.Centre(origin+y+.39f)-layout.HalfWidth(origin+y+.39f)-.82f;
+            Face(wood*.86f,new Vector3(roadLo,y-.39f,-.115f),new Vector3(roadHi,y+.39f,-.115f),
+                new Vector3(x-span/2,y+.39f,-.29f),new Vector3(x-span/2,y-.39f,-.29f));
+            Face(wood*.86f,new Vector3(x+span/2,y-.39f,-.29f),new Vector3(x+span/2,y+.39f,-.29f),
+                new Vector3(x+span/2+.35f,y+.39f,-.10f),new Vector3(x+span/2+.35f,y-.39f,-.10f));
+            // Narrow worn dirt trail continues into the meadow, rather than ending in a paved apron.
+            float startX=x+span/2+.32f;
+            for(int step=0;step<12;step++)
+            {
+                float t=step/12f,n=(step+1)/12f;
+                float ax=Mathf.Lerp(startX,7.2f,t),bx=Mathf.Lerp(startX,7.2f,n);
+                float ay=y+Mathf.SmoothStep(0,.95f,t),by=y+Mathf.SmoothStep(0,.95f,n);
+                float aw=Mathf.Lerp(.38f,.27f,t),bw=Mathf.Lerp(.38f,.27f,n);
+                Face(path,new Vector3(ax,ay-aw,-.085f),new Vector3(ax,ay+aw,-.085f),
+                    new Vector3(bx,by+bw,-.085f),new Vector3(bx,by-bw,-.085f));
+            }
+            Rect(x+.10f,y-.28f,span,.9f,-.13f,new Color(.115f,.19f,.165f));
+            // Small bank pads and timber trestles support the span. The current wakes
+            // remain attached to the same two pile stations as the previous crossing.
             foreach(float side in new[]{-1f,1f})
             {
-                Block(x+side*(halfWidth+.30f),y,.68f,2.12f,-.17f,.38f,concrete);
-                foreach(float bankSide in new[]{-1f,1f})
-                    Beam(new Vector3(x+side*(halfWidth+.1f),y+bankSide*.91f,-.30f),
-                         new Vector3(x+side*(halfWidth+.8f),y+bankSide*1.34f,-.14f),.18f,concrete*.87f);
+                Block(x+side*(halfWidth+.32f),y,.36f,1.02f,-.10f,.12f,new Color(.36f,.385f,.30f));
                 float px=x+side*halfWidth*.74f;
-                Block(px,y-.3f,.35f,1.8f,-.12f,.44f,concrete*.8f);
-                Face(concrete*.87f,new Vector3(px-.175f,y+.65f,-.3f),new Vector3(px,y+.97f,-.3f),new Vector3(px+.175f,y+.65f,-.3f));
+                foreach(float rail in new[]{-1f,1f})
+                    Beam(new Vector3(px,y+rail*.34f-.13f,-.045f),new Vector3(px,y+rail*.34f,-.50f),.14f,timber*.8f);
+                Beam(new Vector3(px-.18f,y-.39f,-.22f),new Vector3(px+.18f,y+.39f,-.49f),.065f,timber);
+                Beam(new Vector3(px+.18f,y-.39f,-.22f),new Vector3(px-.18f,y+.39f,-.49f),.065f,timber);
             }
-            Block(x,y,span,1.58f,-.48f,.16f,concrete);
-            Rect(x,y,span-.08f,1.0f,-.66f,Asphalt*.94f);
+            int boards=Mathf.CeilToInt(span/.16f);float pitch=span/boards;
+            for(int board=0;board<boards;board++)
+            {
+                float t=(board+.5f)/boards,px=x-span/2+(board+.5f)*pitch,z=DeckZ(t);
+                float tint=Range(rng,.87f,1.12f),length=Range(rng,.83f,.88f);
+                Block(px,y,pitch-.012f,length,z+.045f,.045f,wood*tint);
+                // A few dark grain cuts and nail heads sell the planks at gameplay scale.
+                if(board%3==0)
+                {
+                    Rect(px-.02f,y+.05f,.012f,.32f,z-.004f,timber*.93f);
+                    foreach(float side in new[]{-1f,1f})Rect(px,y+side*.31f,.025f,.025f,z-.007f,timber*.72f);
+                }
+            }
             foreach(float side in new[]{-1f,1f})
             {
-                Rect(x,y+side*.49f,span-.1f,.035f,-.68f,new Color(.48f,.47f,.345f));
-                Block(x,y+side*.65f,span,.19f,-.65f,.10f,edge);
-                // Low arched steel side trusses: eight open bays with diagonal bracing.
-                for(int bay=0;bay<8;bay++)
+                const int bays=7;
+                for(int bay=0;bay<bays;bay++)
                 {
-                    float t=bay/8f,n=(bay+1)/8f;
-                    float h=.30f+.42f*Mathf.Sin(t*Mathf.PI),nh=.30f+.42f*Mathf.Sin(n*Mathf.PI);
-                    var a=new Vector3(x-span/2+span*t,y+side*.67f,-.78f);
-                    var b=new Vector3(x-span/2+span*n,y+side*.67f,-.78f);
-                    var top=a+new Vector3(-h*.10f,h*.48f,-h);
-                    var next=b+new Vector3(-nh*.10f,nh*.48f,-nh);
-                    Beam(a,b,.065f,steel);Beam(top,next,.095f,edge);
-                    Beam(a,top,.065f,steel);
-                    Beam(bay%2==0 ? a : top,bay%2==0 ? next : b,.055f,steel);
-                    if(bay==7)Beam(b,next,.065f,steel);
+                    float t=bay/(float)bays,n=(bay+1f)/bays;
+                    var a=new Vector3(x-span/2+t*span,y+side*.44f,DeckZ(t));
+                    var b=new Vector3(x-span/2+n*span,y+side*.44f,DeckZ(n));
+                    var top=a+new Vector3(0,.19f,-.45f);var next=b+new Vector3(0,.19f,-.45f);
+                    Beam(a,b,.075f,timber);Beam(top,next,.075f,endGrain);
+                    Beam(a,top,.085f,timber);
+                    Beam(a+new Vector3(0,.095f,-.225f),b+new Vector3(0,.095f,-.225f),.045f,timber);
+                    if(bay==bays-1)Beam(b,next,.085f,timber);
                 }
-                // Stone end posts keep the small truss readable from the overhead camera.
-                foreach(float endSide in new[]{-1f,1f})
-                    Block(x+endSide*(span/2-.08f),y+side*.68f,.20f,.27f,-.65f,.36f,concrete);
             }
-            for(float mark=-span/2+.3f;mark<span/2-.2f;mark+=.74f)
-                Rect(x+mark,y,.34f,.038f,-.68f,new Color(.50f,.48f,.32f));
-            foreach(float joint in new[]{-.34f,.34f})Rect(x+span*joint,y,.035f,1.03f,-.69f,new Color(.16f,.20f,.18f));
-            // Worn patching on the deck, kept quieter than the moving ships.
-            Rect(x+.45f,y-.21f,.48f,.17f,-.675f,Asphalt*1.08f);
-            float west=x-halfWidth-2.3f;
-            Block(west,y+1.75f,1.1f,1.35f,-.12f,.16f,concrete*.87f);
-            Block(west,y+1.8f,.8f,.95f,-.29f,.40f,new Color(.38f,.42f,.36f));
-            Face(steel,new Vector3(west-.48f,y+1.24f,-.72f),new Vector3(west-.48f,y+2.35f,-.72f),
-                 new Vector3(west,y+2.35f,-.92f),new Vector3(west,y+1.24f,-.92f));
-            Face(edge*.8f,new Vector3(west,y+1.24f,-.92f),new Vector3(west,y+2.35f,-.92f),
-                 new Vector3(west+.48f,y+2.35f,-.72f),new Vector3(west+.48f,y+1.24f,-.72f));
-            Rect(x+halfWidth+1.9f,y,1.5f,1.05f,-.12f,Asphalt);
-            Block(x+halfWidth+2.3f,y+1,.6f,.6f,-.15f,.2f,new Color(.31f,.38f,.34f));
         }
+        static float DeckZ(float t)=>-.29f-.18f*Mathf.Sin(t*Mathf.PI);
         public Mesh Finish()
         {
             var mesh=new Mesh{name="Composed PSX valley "+origin};
