@@ -5,7 +5,7 @@ using UnityEngine;
 public static class PSXValleyGeometry
 {
     const float Period=96, Width=7;
-    static readonly Color Grass=new Color(.31f,.385f,.285f), Water=new Color(.12f,.285f,.32f),
+    static readonly Color Grass=new Color(.30f,.39f,.23f), Water=new Color(.12f,.285f,.32f),
         Bank=new Color(.39f,.405f,.31f), Stone=new Color(.48f,.53f,.50f), Asphalt=new Color(.225f,.27f,.27f),
         Shadow=new Color(.135f,.205f,.175f);
 
@@ -22,8 +22,10 @@ public static class PSXValleyGeometry
             float l0=layout.Centre(a)-layout.HalfWidth(a),l1=layout.Centre(c)-layout.HalfWidth(c);
             float r0=layout.Centre(a)+layout.HalfWidth(a),r1=layout.Centre(c)+layout.HalfWidth(c);
             Color grass=Grass*(.98f+.025f*Mathf.Sin(a*Mathf.PI*2/Period));grass.a=1;
+            b.Meadow=true;
             b.Strip(-Width,-Width,l0-layout.BankWidth(a,-1),l1-layout.BankWidth(c,-1),y,next,0,grass);
             b.Strip(r0+layout.BankWidth(a,1),r1+layout.BankWidth(c,1),Width,Width,y,next,0,grass);
+            b.Meadow=false;
             // Eroded shoulders and darker steep bank faces give the river a visible bed.
             b.Strip(l0-layout.BankWidth(a,-1),l1-layout.BankWidth(c,-1),l0,l1,y,next,-.03f,Bank);
             b.Strip(r0,r1,r0+layout.BankWidth(a,1),r1+layout.BankWidth(c,1),y,next,-.03f,Bank*.91f);
@@ -37,13 +39,23 @@ public static class PSXValleyGeometry
                 b.Strip(l0-1.17f,l1-1.17f,l0-1.13f,l1-1.13f,y,next,-.11f,new Color(.43f,.46f,.37f));
         }
         var rng=new System.Random(unchecked(seed*397+(int)origin));
-        // Broad painted ground patches replace the old high-frequency speckled tile.
+        // Broad changes in turf colour sit underneath the finer blade texture.
+        b.Meadow=true;
         for(int i=0;i<16;i++)
         {
             float y=Range(rng,.7f,length-.7f),worldY=origin+y,side=i%2==0 ? -1 : 1;
             float x=layout.Centre(worldY)+side*(layout.HalfWidth(worldY)+Range(rng,2.0f,4.5f));
             b.Patch(x,y,Range(rng,.5f,1.3f),Range(rng,.35f,.8f),-.015f,
-                i%3==0 ? new Color(.335f,.40f,.29f) : new Color(.285f,.36f,.27f),rng);
+                i%3==0 ? new Color(.32f,.405f,.24f) : new Color(.28f,.365f,.21f),rng);
+        }
+        b.Meadow=false;
+        var grassRng=new System.Random(unchecked(seed*713+(int)origin));
+        for(int tuft=0;tuft<185;tuft++)
+        {
+            float x=Range(grassRng,-6.7f,6.7f),y=Range(grassRng,.25f,length-.25f),worldY=origin+y;
+            if(!layout.Clear(x,worldY,.14f))continue;
+            if(Mathf.Abs(x-layout.Centre(worldY))<layout.HalfWidth(worldY)+layout.BankWidth(worldY,x<layout.Centre(worldY) ? -1 : 1)+.16f)continue;
+            b.GrassTuft(x,y,Range(grassRng,.12f,.24f),grassRng);
         }
         foreach(var plant in layout.Plants)
         {
@@ -81,6 +93,8 @@ public static class PSXValleyGeometry
         readonly List<int> triangles=new List<int>();
         readonly List<Color> colors=new List<Color>();
         readonly List<Vector2> uv=new List<Vector2>();
+        readonly List<Vector2> surfaces=new List<Vector2>();
+        public bool Meadow;
         readonly float origin;
         readonly float brightness;
         public Builder(float origin,float brightness){this.origin=origin;this.brightness=brightness;}
@@ -89,7 +103,7 @@ public static class PSXValleyGeometry
             int start=vertices.Count;
             var normal=Vector3.Cross(points[1]-points[0],points[2]-points[0]).normalized;
             if(normal.z>0)normal=-normal;
-            foreach(var p in points){vertices.Add(p);normals.Add(normal);colors.Add(color*brightness);uv.Add(new Vector2(p.x,p.y+origin));}
+            foreach(var p in points){vertices.Add(p);normals.Add(normal);colors.Add(color*brightness);uv.Add(new Vector2(p.x,p.y+origin));surfaces.Add(new Vector2(Meadow ? 1 : 0,0));}
             for(int i=1;i<points.Length-1;i++){triangles.Add(start);triangles.Add(start+i);triangles.Add(start+i+1);}
         }
         public void Strip(float left0,float left1,float right0,float right1,float y0,float y1,float z,Color color)
@@ -110,6 +124,17 @@ public static class PSXValleyGeometry
             for(int i=0;i<4;i++)hi[i]=new Vector3(Mathf.Lerp(lo[i].x,x,.1f)-height*.08f,Mathf.Lerp(lo[i].y,y,.1f)+height*.12f,z-height);
             for(int i=0;i<4;i++)Face(color*.8f,lo[i],lo[(i+1)%4],hi[(i+1)%4],hi[i]);
             Face(color,hi);
+        }
+        public void GrassTuft(float x,float y,float size,System.Random rng)
+        {
+            Color low=new Color(.25f,.335f,.17f),tip=new Color(.37f,.445f,.24f);
+            for(int blade=0;blade<5;blade++)
+            {
+                float bx=x+Range(rng,-size*.55f,size*.55f),by=y+Range(rng,-size*.3f,size*.3f);
+                float height=size*Range(rng,.65f,1.35f),lean=Range(rng,-.11f,.11f),width=Range(rng,.018f,.035f);
+                Face(Color.Lerp(low,tip,Range(rng,.1f,.85f)),new Vector3(bx-width,by,-.04f),
+                    new Vector3(bx+lean,by+height*.65f,-.04f-height),new Vector3(bx+width,by,-.04f));
+            }
         }
         public void Tree(float x,float y,float radius,System.Random rng)
         {
@@ -211,7 +236,7 @@ public static class PSXValleyGeometry
         public Mesh Finish()
         {
             var mesh=new Mesh{name="Composed PSX valley "+origin};
-            mesh.SetVertices(vertices);mesh.SetNormals(normals);mesh.SetColors(colors);mesh.SetUVs(0,uv);mesh.SetTriangles(triangles,0);mesh.RecalculateBounds();return mesh;
+            mesh.SetVertices(vertices);mesh.SetNormals(normals);mesh.SetColors(colors);mesh.SetUVs(0,uv);mesh.SetUVs(1,surfaces);mesh.SetTriangles(triangles,0);mesh.RecalculateBounds();return mesh;
         }
     }
 }
