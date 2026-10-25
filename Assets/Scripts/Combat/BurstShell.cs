@@ -1,13 +1,15 @@
 using UnityEngine;
 public sealed class BurstShell : CombatRound
 {
-    ParticleSystem ignition;
+    static ParticleSystem ignition;
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetIgnition(){ignition=null;}
     float nextSpark;
     float cruise,brake;
     public float TravelDistance {get;private set;}
     protected override void Initialize()
     {
-        visual.color=Color.white;nextSpark=0;if(ignition!=null){ignition.Clear();ignition.Play();}
+        visual.color=Color.white;nextSpark=0;
         SetTravelDistance(3.8f);
     }
     public BurstShell SetTravelDistance(float distance)
@@ -28,12 +30,12 @@ public sealed class BurstShell : CombatRound
     {
         if(ignition==null)
         {
-            ignition=PSXImpactEffects.Create(transform,"Shell ignition sparks",40);
+            ignition=PSXImpactEffects.Create(null,"Shared shell ignition sparks",384);
             ignition.GetComponent<ParticleSystemRenderer>().sortingOrder=14;
         }
         float shellRadius=transform.localScale.x*.5f;
         float radius=Mathf.Lerp(shellRadius*2.3f+.2f,shellRadius*1.1f+.025f,Mathf.SmoothStep(0,1,charge));
-        for(int i=0;i<4;i++)
+        for(int i=0;i<3;i++)
         {
             float angle=Random.value*Mathf.PI*2;
             var direction=new Vector3(Mathf.Cos(angle),Mathf.Sin(angle),0);
@@ -52,7 +54,7 @@ public sealed class BurstShell : CombatRound
         float stop=cruise+brake;
         float charge=Mathf.Clamp01((age-stop)/.8f);
         visual.color=Color.white;
-        if(age>=stop && age>=nextSpark){Spark(charge);nextSpark=age+Mathf.Lerp(.10f,.035f,charge);}
+        if(age>=stop && age>=nextSpark){Spark(charge);nextSpark=age+Mathf.Lerp(.10f,.05f,charge);}
         if(age>=stop+.8f && Ring(12,3.6f,.14f,Vector2.SignedAngle(Vector2.down,heading)))Release();
     }
 }

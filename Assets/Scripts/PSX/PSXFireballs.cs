@@ -51,6 +51,7 @@ public sealed class PSXFireballs : MonoBehaviour
         if(!Ready())return;
         for(int i=0;i<rings;i++)
         {
+            if(instance.active.Count>=PoolLimit)break;
             var ball=instance.Add(position,radius*(i==0 ? 1 : .8f),i*.08f,life);
             ball.isRing=true;ball.tint=tint;ball.spin=0;ball.drift=Vector3.zero;ball.expand=Mathf.Clamp(expand,.05f,1);
             ball.filter.sharedMesh=Ring();ball.transform.rotation=Quaternion.identity;

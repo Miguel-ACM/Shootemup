@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine.SceneManagement;
 
 public abstract class CombatRound : AEnemyBullet
@@ -9,7 +10,8 @@ public abstract class CombatRound : AEnemyBullet
     public static readonly HashSet<CombatRound> Live=new HashSet<CombatRound>();
     static readonly Dictionary<Type,Stack<CombatRound>> pools=new Dictionary<Type,Stack<CombatRound>>();
     static int pooled;
-    const int PoolBudget=512;
+    const int PoolBudget=768;
+    public static int CreatedCount {get;private set;}
     protected Vector2 heading;
     protected Vector3 origin;
     protected float age;
@@ -25,7 +27,7 @@ public abstract class CombatRound : AEnemyBullet
     public Vector2 Heading => heading;
     public Color Accent=>HostileProjectileArt.Accent(GetType());
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetPools(){pools.Clear();Live.Clear();pooled=0;SceneManager.sceneUnloaded-=PrunePools;SceneManager.sceneUnloaded+=PrunePools;}
+    static void ResetPools(){pools.Clear();Live.Clear();pooled=CreatedCount=0;SceneManager.sceneUnloaded-=PrunePools;SceneManager.sceneUnloaded+=PrunePools;}
     static void PrunePools(Scene scene)
     {
         pooled=0;
@@ -41,18 +43,7 @@ public abstract class CombatRound : AEnemyBullet
         T shot=null;
         if(pools.TryGetValue(typeof(T),out var pool))
             while(pool.Count>0 && shot==null){shot=pool.Pop() as T;pooled--;}
-        if(shot==null)
-        {
-            var go=new GameObject(typeof(T).Name);go.SetActive(false);go.tag="EnemyBullet";
-            go.layer=ProjectileCollisionLayers.Hostile;
-            var rb=go.AddComponent<Rigidbody2D>();rb.gravityScale=0;rb.bodyType=RigidbodyType2D.Kinematic;
-            var sr=go.AddComponent<SpriteRenderer>();sr.sprite=CombatVisuals.Projectile();sr.sharedMaterial=CombatVisuals.ProjectileMaterial;sr.sortingOrder=15;
-            sr.sortingLayerName="Bullet";
-            var collider=go.AddComponent<CustomCollider2D>();collider.isTrigger=true;
-            sr.sprite=HostileProjectileArt.Sprite(typeof(T));ProjectileSprites.Fit(collider,sr.sprite);
-            shot=go.AddComponent<T>();shot.body=rb;shot.visual=sr;shot.collision=collider;
-            ProjectileSpriteTint.Apply(go,shot.Accent);shot.tint=go.GetComponent<ProjectileSpriteTint>();
-        }
+        if(shot==null)shot=Create<T>();
         shot.gameObject.layer=ProjectileCollisionLayers.Hostile;
         shot.tint.SetHostile();shot.needsOrientation=true;
         shot.transform.SetPositionAndRotation(new Vector3(p.x,p.y,-.5f),Quaternion.identity);
@@ -62,6 +53,32 @@ public abstract class CombatRound : AEnemyBullet
         shot.speed=velocity*GameRules.enemyBulletSpeed*LevelRun.EnemyShotSpeedScale;shot.damage=10*GameRules.enemyDamage;
         shot.age=0;shot.generation=0;shot.lifetime=9;shot.ended=false;
         shot.enabled=true;shot.gameObject.SetActive(true);Live.Add(shot);shot.Initialize();return shot;
+    }
+    static T Create<T>() where T:CombatRound
+    {
+        var go=new GameObject(typeof(T).Name);go.SetActive(false);go.tag="EnemyBullet";
+        go.layer=ProjectileCollisionLayers.Hostile;
+        var rb=go.AddComponent<Rigidbody2D>();rb.gravityScale=0;rb.bodyType=RigidbodyType2D.Kinematic;
+        var sr=go.AddComponent<SpriteRenderer>();sr.sprite=CombatVisuals.Projectile();sr.sharedMaterial=CombatVisuals.ProjectileMaterial;sr.sortingOrder=15;
+        sr.sortingLayerName="Bullet";
+        var collider=go.AddComponent<CustomCollider2D>();collider.isTrigger=true;
+        sr.sprite=HostileProjectileArt.Sprite(typeof(T));ProjectileSprites.Fit(collider,sr.sprite);
+        var shot=go.AddComponent<T>();shot.body=rb;shot.visual=sr;shot.collision=collider;
+        ProjectileSpriteTint.Apply(go,shot.Accent);shot.tint=go.GetComponent<ProjectileSpriteTint>();
+        CreatedCount++;return shot;
+    }
+    public static IEnumerator PrepareBursts()
+    {
+        if(!pools.TryGetValue(typeof(SimpleRound),out var pool))pools[typeof(SimpleRound)]=pool=new Stack<CombatRound>();
+        while(pool.Count<Limit && pooled<PoolBudget)
+        {
+            for(int i=0;i<12 && pool.Count<Limit && pooled<PoolBudget;i++){var shot=Create<SimpleRound>();shot.ended=true;pool.Push(shot);pooled++;}
+            yield return null;
+        }
+    }
+    public static void ClearAll()
+    {
+        foreach(var shot in new List<CombatRound>(Live))if(shot!=null)shot.Release();
     }
     protected override void Start() { }
     protected virtual void Initialize() { }
@@ -86,7 +103,9 @@ public abstract class CombatRound : AEnemyBullet
     {
         if(ended)return;ended=true;body.linearVelocity=Vector2.zero;gameObject.SetActive(false);
         if(!pools.TryGetValue(GetType(),out var pool))pools[GetType()]=pool=new Stack<CombatRound>();
-        if(pool.Count<Limit && pooled<PoolBudget){pool.Push(this);pooled++;}else Destroy(gameObject);
+        int standard=pools.TryGetValue(typeof(SimpleRound),out var simple) ? simple.Count : 0;
+        bool room=this is SimpleRound ? pooled<PoolBudget : pooled-standard<PoolBudget-Limit;
+        if(pool.Count<Limit && room){pool.Push(this);pooled++;}else Destroy(gameObject);
     }
     public override void Vanish() { if(!ended)PSXImpactEffects.Vanish(transform.position,Accent,.25f);Release(); }
     protected override void OnBecameInvisible() { } // Lifetime and arena bounds also cover offscreen spawns.

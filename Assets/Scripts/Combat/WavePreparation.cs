@@ -18,6 +18,7 @@ public sealed class WavePreparation : MonoBehaviour
     }
     IEnumerator Prepare()
     {
+        yield return CombatRound.PrepareBursts();
         yield return WaveComposer.Prepare();
         // Complete the seeded plan before the opening breather, keeping combat cache-only.
         for(int budget=2;budget<=20;budget++){WaveComposer.Create(budget);yield return null;}
