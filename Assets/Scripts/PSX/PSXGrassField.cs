@@ -40,7 +40,7 @@ public sealed class PSXGrassField : MonoBehaviour
             float origin=(i-1)*SectionLength;
             var go=new GameObject("Valley section "+i);go.transform.SetParent(transform,false);
             go.transform.localPosition=new Vector3(0,origin,88);
-            var mesh=PSXValleyGeometry.Build(origin,SectionLength,brightness/.62f,LevelRun.Seed);
+            var mesh=PSXValleyGeometry.Build(origin,SectionLength,brightness/.62f,layout,LevelRun.Seed);
             ownedMeshes.Add(mesh);
             go.AddComponent<MeshFilter>().sharedMesh=mesh;
             var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=landscape;

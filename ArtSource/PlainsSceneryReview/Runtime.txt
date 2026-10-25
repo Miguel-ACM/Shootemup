@@ -1,0 +1,2 @@
+PASS
+Actual filtered game: 120 moving frames, player parallax, layered foliage/current, no scenery colliders, full-loop wrap.

@@ -7,14 +7,14 @@ public static class PSXValleyGeometry
     const float Period=96, Width=7;
     static readonly Color Grass=new Color(.31f,.385f,.285f), Water=new Color(.12f,.285f,.32f),
         Bank=new Color(.39f,.405f,.31f), Stone=new Color(.48f,.53f,.50f), Asphalt=new Color(.225f,.27f,.27f),
-        Shadow=new Color(.135f,.205f,.175f), Foliage=new Color(.255f,.385f,.30f);
-    public static float RiverCentre(float y)=>1.25f*Mathf.Sin(y*Mathf.PI*4/Period)+.38f*Mathf.Sin(y*Mathf.PI*8/Period+.7f);
-    public static float RiverHalfWidth(float y)=>1.35f+.25f*Mathf.Sin(y*Mathf.PI*4/Period+.5f);
+        Shadow=new Color(.135f,.205f,.175f);
 
     public static Mesh Build(float origin,float length,float brightness=1,int seed=17381)
+        =>Build(origin,length,brightness,new PSXValleyLayout(seed),seed);
+
+    public static Mesh Build(float origin,float length,float brightness,PSXValleyLayout layout,int seed)
     {
         var b=new Builder(origin,brightness);
-        var layout=new PSXValleyLayout(seed);
         // Geometry at each section boundary uses identical world-space samples.
         for(float y=0;y<length-.01f;y+=.75f)
         {

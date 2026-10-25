@@ -1,0 +1,4 @@
+PASS
+Seed 17381: 123 plants; clear road/landmarks; matching section geometry and flow UVs; 96-unit wrap.
+Seed 421: 127 plants; clear road/landmarks; matching section geometry and flow UVs; 96-unit wrap.
+Seed 9826: 138 plants; clear road/landmarks; matching section geometry and flow UVs; 96-unit wrap.

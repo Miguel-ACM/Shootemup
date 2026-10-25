@@ -20,8 +20,9 @@ public sealed class ValleyReviewProbe : MonoBehaviour
         bool noCollisions=field.GetComponentsInChildren<Collider2D>().Length==0 && field.GetComponentsInChildren<Collider>().Length==0;
         var landscape=Resources.Load<Material>("PSXValley");
         bool shader=landscape!=null && landscape.shader!=null && landscape.shader.isSupported && !UnityEditor.ShaderUtil.ShaderHasError(landscape.shader);
-        bool seams=Mathf.Abs(PSXValleyGeometry.RiverCentre(0)-PSXValleyGeometry.RiverCentre(96))<.0001f &&
-            Mathf.Abs(PSXValleyGeometry.RiverHalfWidth(0)-PSXValleyGeometry.RiverHalfWidth(96))<.0001f;
+        var layout=new PSXValleyLayout(LevelRun.Seed);
+        bool seams=Mathf.Abs(layout.Centre(0)-layout.Centre(96))<.0001f &&
+            Mathf.Abs(layout.HalfWidth(0)-layout.HalfWidth(96))<.0001f;
         yield return new WaitForEndOfFrame();
         Capture("PSXValley_Bridge.png");
         yield return new WaitForSecondsRealtime(2.5f);
