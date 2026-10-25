@@ -1,268 +1,268 @@
 [
   {
-    "source": "semup2.mp4",
-    "source_start": 4.05,
-    "beats": 8,
-    "label": "Cloud curtain into Plains",
-    "speed": 1
-  },
-  {
     "source": "semup3.mp4",
-    "source_start": 13.15,
-    "beats": 2,
-    "label": "Item collection in motion",
-    "speed": 1.3
-  },
-  {
-    "source": "semup3.mp4",
-    "source_start": 66,
-    "beats": 4,
-    "label": "Plains formations",
-    "speed": 1
-  },
-  {
-    "source": "semup2.mp4",
-    "source_start": 68.4,
-    "beats": 4,
-    "label": "Plains crossfire",
-    "speed": 1
-  },
-  {
-    "source": "semup2.mp4",
-    "source_start": 114.8,
-    "beats": 2,
-    "label": "Shop purchase contact",
-    "speed": 1.2
-  },
-  {
-    "source": "semup3.mp4",
-    "source_start": 89.4,
-    "beats": 4,
-    "label": "Plains strafing",
-    "speed": 1
-  },
-  {
-    "source": "semup3.mp4",
-    "source_start": 160,
-    "beats": 8,
-    "label": "Plains boss destruction",
-    "speed": 1
-  },
-  {
-    "source": "semup3.mp4",
-    "source_start": 208,
-    "beats": 4,
-    "label": "City rush",
-    "speed": 1
-  },
-  {
-    "source": "semup2.mp4",
-    "source_start": 308,
-    "beats": 4,
-    "label": "Snow aerial assault",
-    "speed": 1
+    "source_start": 328.65,
+    "label": "Smooth clouds into Tunnel",
+    "speed": 1,
+    "bars": 3
   },
   {
     "source": "semup3.mp4",
     "source_start": 346,
-    "beats": 4,
     "label": "Tunnel entrance attack",
-    "speed": 1
+    "speed": 1,
+    "bars": 2
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 13.15,
+    "label": "Item collection in motion",
+    "speed": 1.3,
+    "bars": 1
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 66,
+    "label": "Plains formations",
+    "speed": 1,
+    "bars": 2
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 68.4,
+    "label": "Plains crossfire",
+    "speed": 1,
+    "bars": 1
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 114.8,
+    "label": "Shop purchase contact",
+    "speed": 1.2,
+    "bars": 1
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 89.4,
+    "label": "Plains strafing",
+    "speed": 1,
+    "bars": 1
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 160,
+    "label": "Plains boss destruction",
+    "speed": 1,
+    "bars": 3
+  },
+  {
+    "source": "semup3.mp4",
+    "source_start": 208,
+    "label": "City rush",
+    "speed": 1,
+    "bars": 2
+  },
+  {
+    "source": "semup2.mp4",
+    "source_start": 308,
+    "label": "Snow aerial assault",
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 448.7,
-    "beats": 4,
     "label": "Thunder champion beam",
-    "speed": 1
+    "speed": 1,
+    "bars": 2
   },
   {
     "source": "semup2.mp4",
     "source_start": 606,
-    "beats": 8,
     "label": "Reef formations",
-    "speed": 1
+    "speed": 1,
+    "bars": 3
   },
   {
     "source": "semup3.mp4",
     "source_start": 289,
-    "beats": 8,
     "label": "City duo barrage",
-    "speed": 1
+    "speed": 1,
+    "bars": 3
   },
   {
     "source": "semup3.mp4",
     "source_start": 292.8,
-    "beats": 2,
     "label": "City active blast",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 366,
-    "beats": 4,
     "label": "Snow shell crowns",
-    "speed": 1
+    "speed": 1,
+    "bars": 2
   },
   {
     "source": "semup2.mp4",
     "source_start": 377.2,
-    "beats": 4,
     "label": "Snow boss shatter",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 382.95,
-    "beats": 2,
     "label": "Choose Thunder road in motion",
-    "speed": 1.35
+    "speed": 1.35,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 384.55,
-    "beats": 4,
     "label": "Cloud handoff into Thunder",
-    "speed": 2.25
+    "speed": 2.25,
+    "bars": 2
   },
   {
     "source": "semup2.mp4",
     "source_start": 402,
-    "beats": 4,
     "label": "Thunder wave rush",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup3.mp4",
     "source_start": 389,
-    "beats": 4,
     "label": "Tunnel ring release",
-    "speed": 1
+    "speed": 1,
+    "bars": 2
   },
   {
     "source": "semup2.mp4",
     "source_start": 686,
-    "beats": 4,
     "label": "Underwater crossfire",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 272,
-    "beats": 4,
     "label": "Snow champion release",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 529,
-    "beats": 8,
     "label": "Thunder rotating beams",
-    "speed": 1
+    "speed": 1,
+    "bars": 3
   },
   {
     "source": "semup3.mp4",
     "source_start": 463.5,
-    "beats": 8,
     "label": "Tunnel saws",
-    "speed": 1
+    "speed": 1,
+    "bars": 3
   },
   {
     "source": "semup2.mp4",
     "source_start": 729,
-    "beats": 8,
     "label": "Submarine eruption",
-    "speed": 1
+    "speed": 1,
+    "bars": 3
   },
   {
     "source": "semup3.mp4",
     "source_start": 211.3,
-    "beats": 4,
     "label": "City interceptors",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup3.mp4",
     "source_start": 87.2,
-    "beats": 2,
     "label": "Plains quick pass",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 354.8,
-    "beats": 4,
     "label": "Snow crown detonation",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup3.mp4",
     "source_start": 472,
-    "beats": 2,
     "label": "Clear the saw barrage",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 650,
-    "beats": 2,
     "label": "Underwater fish pass",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 450.7,
-    "beats": 4,
     "label": "Thunder champion volley",
-    "speed": 1
+    "speed": 1,
+    "bars": 2
   },
   {
     "source": "semup3.mp4",
     "source_start": 294,
-    "beats": 4,
     "label": "City heavy fan",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 273.5,
-    "beats": 2,
     "label": "Snow champion dodge",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 690,
-    "beats": 4,
     "label": "Reef bullet dance",
-    "speed": 1
+    "speed": 1,
+    "bars": 2
   },
   {
     "source": "semup3.mp4",
     "source_start": 431,
-    "beats": 4,
     "label": "Tunnel needle rush",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 804,
-    "beats": 4,
     "label": "Hell reveal",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 918,
-    "beats": 4,
     "label": "Infernal crab",
-    "speed": 1
+    "speed": 1,
+    "bars": 1
   },
   {
     "source": "semup2.mp4",
     "source_start": 920.8,
-    "beats": 8,
     "label": "Crab destruction and blackout",
-    "speed": 1
+    "speed": 1,
+    "bars": 3
   }
 ]
