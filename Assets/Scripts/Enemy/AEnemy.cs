@@ -9,6 +9,7 @@ public abstract class AEnemy : MonoBehaviour
     protected virtual void OnEnable(){Live.Add(this);}
     protected virtual void OnDisable(){Live.Remove(this);}
     public float health = 20f;
+    public virtual bool CanBeTargeted => health>0;
 
     bool dying = false;
     public float size = 0.65f;

@@ -96,7 +96,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         AEnemy result=null;float nearest=radius*radius;
         foreach(var enemy in AEnemy.Live)
         {
-            if(enemy==null || enemy.health<=0 || (excluded!=null && excluded.Contains(enemy)))continue;
+            if(enemy==null || !enemy.CanBeTargeted || (excluded!=null && excluded.Contains(enemy)))continue;
             float d=((Vector2)(enemy.transform.position-p)).sqrMagnitude;
             if(d<nearest){nearest=d;result=enemy;}
         }

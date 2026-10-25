@@ -4,13 +4,15 @@ using UnityEngine;
 public sealed class SandEmitter : DistrictEnemy
 {
     Transform ripple;
+    static Sprite sandRipple;
     bool exposed;
+    public override bool CanBeTargeted=>health>0 && exposed && Hull!=null && Hull.localScale.x>hullScale*.65f;
     protected override void Configure(){hull=30;hullScale=.63f;health=40;attackInterval=1.3f;}
     protected override void Start()
     {
         base.Start();
         var go=new GameObject("Sand disturbance");go.transform.SetParent(transform,false);ripple=go.transform;
-        var r=go.AddComponent<SpriteRenderer>();r.sprite=CombatVisuals.Disc;r.color=new Color(.63f,.42f,.21f,.6f);
+        var r=go.AddComponent<SpriteRenderer>();r.sprite=Ripple();r.color=new Color(.88f,.65f,.35f,.8f);
         r.sortingLayerName="Enemy";r.sortingOrder=-1;
         Hull.localScale=Vector3.zero;GetComponent<Collider2D>().enabled=false;
     }
@@ -37,6 +39,18 @@ public sealed class SandEmitter : DistrictEnemy
         }
     }
     public override void damage(float amount){if(exposed)base.damage(amount);}
+    static Sprite Ripple()
+    {
+        if(sandRipple!=null)return sandRipple;
+        var texture=new Texture2D(64,64,TextureFormat.RGBA32,false){filterMode=FilterMode.Point};var pixels=new Color[4096];
+        for(int y=0;y<64;y++)for(int x=0;x<64;x++)
+        {
+            float dx=x-31.5f,dy=y-31.5f,a=Mathf.Atan2(dy,dx),r=Mathf.Sqrt(dx*dx+dy*dy)+Mathf.Sin(a*9)*1.4f;
+            bool ridge=Mathf.Abs(r-26)<1.5f || Mathf.Abs(r-19)<1;
+            pixels[y*64+x]=ridge && (x*7+y*11)%9!=0 ? new Color(1,1,1,.7f) : Color.clear;
+        }
+        texture.SetPixels(pixels);texture.Apply();return sandRipple=Sprite.Create(texture,new Rect(0,0,64,64),new Vector2(.5f,.5f),64);
+    }
 }
 
 public static partial class IndustrialMeshFactory
