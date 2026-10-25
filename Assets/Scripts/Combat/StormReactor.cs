@@ -1,6 +1,6 @@
 using UnityEngine;
 [UnityEngine.Scripting.Preserve]
-public sealed class StormReactor : DistrictEnemy
+public sealed class StormReactor : DistrictMiniboss
 {
     protected override void Configure(){hull=27;health=480;hullScale=1.1f;attackInterval=.72f;Mover<TopTracker>();}
     protected override void Attack()
