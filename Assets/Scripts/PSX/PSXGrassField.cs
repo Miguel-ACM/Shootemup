@@ -28,6 +28,8 @@ public sealed class PSXGrassField : MonoBehaviour
         var layout=new PSXValleyLayout(LevelRun.Seed);
         riverMaterial=new Material(Resources.Load<Shader>("PSXValleyRiver"));
         riverMaterial.SetFloat("_BridgeY",layout.BridgeY);
+        float bridgeWidth=layout.HalfWidth(layout.BridgeY);
+        riverMaterial.SetFloat("_PierU",.5f-.37f*bridgeWidth/(bridgeWidth-.07f));
         riverMaterial.SetFloat("_Brightness",brightness/.62f);
         foliageAtlas=PSXValleyFoliage.CreateAtlas();
         foliageMaterial=new Material(Resources.Load<Shader>("PSXValleyFoliage"));
