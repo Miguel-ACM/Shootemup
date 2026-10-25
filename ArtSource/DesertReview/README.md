@@ -20,7 +20,7 @@ All geometry is authored in the runtime mesh factories, following the project's 
 
 ## Verification and visual review
 
-`Assets/Editor/VerifyDesert.cs` compiles and runs in an isolated Unity project. It checks standard and extended route loops, terrain wrapping, 57 seeded wave compositions, all sixteen playable motifs, concealed targeting, real wave firing, clear weather and full dust gusts, projectile collisions against moving cores, head-first destruction, repeated hits on dead parts, full boss completion and cleanup.
+`Assets/Editor/Checks/VerifyDesert.cs` compiles and runs in an isolated Unity project. It checks standard and extended route loops, terrain wrapping, 57 seeded wave compositions, all sixteen playable motifs, concealed targeting, real wave firing, clear weather and full dust gusts, projectile collisions against moving cores, head-first destruction, repeated hits on dead parts, full boss completion and cleanup.
 
 The full-arena patrol review also tracks head coverage and checks that every reactor remains inside the viewport after entry. This snapshot uses committed game assets plus the boss/scenery changes, excluding concurrent projectile migration work in the main workspace.
 

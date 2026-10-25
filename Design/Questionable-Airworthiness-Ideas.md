@@ -198,8 +198,8 @@ The project already separates enemies, movers and shooters and has wave costs, c
 
 ### Existing project references
 
-- [Environment roster](../Assets/Scripts/Flow/LevelRun.cs)
+- [Environment roster](../Assets/Scripts/Run/LevelRun.cs)
 - [Current item pool](../Assets/Scripts/Items/General/ItemPool.cs)
-- [Enemy projectile base](../Assets/Scripts/EnemyBullets/AEnemyBullet.cs)
-- [Wave catalogue and selection](../Assets/Scripts/WaveControllers/WavePool.cs)
+- [Enemy projectile base](../Assets/Scripts/Projectiles/AEnemyBullet.cs)
+- [Wave catalogue and selection](../Assets/Scripts/Waves/WavePool.cs)
 - [Art direction and equipment silhouettes](../ArtSource/IndustrialExpansion/README.md)

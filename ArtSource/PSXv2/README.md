@@ -2,7 +2,7 @@
 
 Player ship, four animated enemies, 17 equipment/pickup models and sphere explosions, built in Blender 5.2 through the Blender MCP addon.
 
-Install with **Tools > PSX Player > Install PSXv2 Blender fleet** (`Assets/Editor/InstallPSXv2.cs`). It also runs when `ArtSource/PSXv2/install.request` exists, and `capture.request` replays the showcase capture. The installer:
+Install with **Tools > PSX Player > Install PSXv2 Blender fleet** (`Assets/Editor/Installers/InstallPSXv2.cs`). It also runs when `ArtSource/PSXv2/install.request` exists, and `capture.request` replays the showcase capture. The installer:
 - sets the importers: Point filtering, legacy looping clips and Repeat wrap for the fire skin;
 - builds the materials;
 - swaps the player visual in L1 and PSX_Showcase;

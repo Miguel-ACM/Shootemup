@@ -1,6 +1,6 @@
 # Enemy movement patterns
 
-Attach one concrete mover from `Assets/Scripts/Enemy/Movers` to an enemy root, replacing its previous mover. Keep its existing `AEnemy`, collider and shooter components. These movers preserve Z, use `GameRules.enemySpeed`, and expose their settings in the Inspector. `PatternMover` is shared support, not a component to attach directly.
+Attach one concrete mover from `Assets/Scripts/Enemies/Movers` to an enemy root, replacing its previous mover. Keep its existing `AEnemy`, collider and shooter components. These movers preserve Z, use `GameRules.enemySpeed`, and expose their settings in the Inspector. `PatternMover` is shared support, not a component to attach directly.
 
 | File / component | Setup |
 |---|---|

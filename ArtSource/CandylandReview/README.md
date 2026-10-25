@@ -18,7 +18,7 @@ New models, palette textures and cloud rendering are authored in code following 
 
 ## Review
 
-`Assets/Editor/VerifyCandyland.cs` validates the route loops and three-way choice, 57 seeded wave compositions with swept model spacing, all eighteen motifs, live waves, boss speed, sharp turns and vertical coverage, increased bullet pressure, mixed destroyable broods, stock projectile hits, and cleanup. It runs in the isolated `Temp/DesertReviewProject` copy of the project.
+`Assets/Editor/Checks/VerifyCandyland.cs` validates the route loops and three-way choice, 57 seeded wave compositions with swept model spacing, all eighteen motifs, live waves, boss speed, sharp turns and vertical coverage, increased bullet pressure, mixed destroyable broods, stock projectile hits, and cleanup. It runs in the isolated `Temp/DesertReviewProject` copy of the project.
 
 This boss/scenery review uses the committed game assets plus these changes. Concurrent projectile migration work in the main workspace is excluded from the validation snapshot.
 
