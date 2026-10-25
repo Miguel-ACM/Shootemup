@@ -91,27 +91,26 @@ public sealed class BossPatternProbe : MonoBehaviour
             Check(shells.Length>0 && shells.All(x=>Mathf.Approximately(x.TravelDistance,entry.Item2)),entry.Item1.Name+" selects its own shell range");
             Clear();yield return null;
         }
-        foreach(var entry in new[]{(typeof(SnowSiegeBoss),12,66,88),(typeof(ThunderLanceBoss),12,32,79)})
+        foreach(var entry in new[]{(typeof(SnowSiegeBoss),12,66,88),(typeof(ThunderLanceBoss),12,32,54)})
         {
             var boss=(DistrictBoss)DistrictEnemy.Spawn(entry.Item1,new Vector3(0,5,1));yield return null;boss.enabled=false;
             foreach(bool second in new[]{false,true})
             {
-                Set(boss,"phaseTwo",second);int total=0,rests=0,beats=second && boss is ThunderLanceBoss ? 14 : entry.Item2;
+                Set(boss,"phaseTwo",second);int total=0,rests=0,beats=entry.Item2;
+                if(second && boss is ThunderLanceBoss){Call(boss,"OnPhaseTwo");Call(boss,"MoveBoss",100f);}
                 for(int i=1;i<=beats;i++)
                 {
-                    Set(boss,"volley",i);Call(boss,"Attack");total+=CombatRound.Live.Count;
-                    if(CombatRound.Live.Count==0)rests++;
+                    Set(boss,"volley",i);Call(boss,"Attack");int shots=CombatRound.Live.Count(x=>!(x is PulseLaser beam && beam.IsSustained));total+=shots;
+                    if(shots==0)rests++;
                     foreach(var shell in CombatRound.Live.OfType<BurstShell>())Check(shell.TravelDistance>=4.6f,"boss shell has an explicit scored range");
                     foreach(var beam in CombatRound.Live.OfType<PulseLaser>())Check(beam.IsAttachedTo(boss.Hull) && beam.warning>=1,"beam has a charged attached emitter");
-                    ClearRounds();
+                    foreach(var round in CombatRound.Live.ToArray())if(!(round is PulseLaser beam && beam.IsSustained))round.Vanish();
                 }
                 Check(total==(second ? entry.Item4 : entry.Item3) && rests>=2,entry.Item1.Name+" phase "+(second ? 2 : 1)+" scored output "+total+", rests "+rests);
             }
-            if(boss is ThunderLanceBoss)
+            if(boss is ThunderLanceBoss thunder)
             {
-                Set(boss,"volley",1);Call(boss,"Attack");float first=CombatRound.Live.OfType<PulseLaser>().First().sweep;ClearRounds();
-                Set(boss,"volley",15);Call(boss,"Attack");
-                Check(CombatRound.Live.OfType<PulseLaser>().Count()==7 && CombatRound.Live.OfType<PulseLaser>().All(x=>x.sweep==-first),"seven-beam comb alternates sweep direction");
+                Check(thunder.RotorCount==6 && CombatRound.Live.OfType<PulseLaser>().All(x=>x.IsSustained && x.sweep<0),"six permanent front beams keep one clockwise direction");
             }
             Clear();yield return null;
         }

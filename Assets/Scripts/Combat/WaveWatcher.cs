@@ -246,6 +246,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
                 }
                 else if(boss is DesertWormBoss worm){for(int i=1;i<=4;i++)worm.Cores[i].damage(1000000);}
                 else if(boss is SpaceCitadelBoss station){station.Parts[0].damage(1000000);station.Parts[1].damage(1000000);}
+                else if(boss is ThunderLanceBoss thunder)boss.health*=thunder.phaseTwoThreshold*.95f;
                 else boss.health*=.49f;
             }
             recipe=WatcherCatalog.Pretty(DistrictWaves.BossType.Name);Refresh();

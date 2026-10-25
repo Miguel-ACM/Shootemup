@@ -156,11 +156,12 @@ public sealed class PolishReviewProbe : MonoBehaviour
         directory=BeginClip("LancerSweep");while(Time.time-started<2.2f){yield return Capture(directory);yield return null;}
         Clear();yield return null;
         var boss=Station(typeof(ThunderLanceBoss),new Vector3(0,6,1));yield return null;
-        boss.damage(boss.health*.55f);yield return null;boss.enabled=false;
+        boss.damage(boss.health*.55f);float rotorDeadline=Time.time+8;
+        while(((ThunderLanceBoss)boss).RotorCount!=6 && Time.time<rotorDeadline)yield return null;boss.enabled=false;
         typeof(ThunderLanceBoss).GetMethod("Attack",Hidden).Invoke(boss,null);
         directory=BeginClip("BossArray");int peakLoops=0;
         while(Time.time-started<5.3f){peakLoops=Mathf.Max(peakLoops,LaserSound.SustainingCount);yield return Capture(directory);yield return null;}
-        Check(peakLoops==7,"seven boss emitters each sustain a beam with bounded overlapping audio");
+        Check(peakLoops==6,"six front spokes sustain permanent beams with bounded overlapping audio");
         Clear();yield return null;
 
         yield return RepeatedLanceScore();
