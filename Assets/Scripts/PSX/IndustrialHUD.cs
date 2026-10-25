@@ -61,6 +61,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         coins=TextAt(scorePanel,"0",32,57,12,Amber);coins.rectTransform.sizeDelta=new Vector2(48,20);
         challengeCells=Cells(scorePanel,84,64,3,9,new Color(.76f,.48f,.95f));
         sidePanel=Panel(frame.transform,"Side instruments",Dark);
+        sidePanel.gameObject.AddComponent<RectMask2D>();
         sideGroup=FluorescentStartup.Attach(sidePanel.gameObject);
         sidePanel.anchorMin=sidePanel.anchorMax=Vector2.zero;
         sidePanel.pivot=Vector2.zero;
@@ -78,6 +79,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         Fill(healthCells,0,Steel);Fill(manaCells,0,Cyan);
         // The inventory occupies the first 40 pixels of the right margin.
         bossPanel=Panel(frame.transform,"Boss hull",Dark);Place(bossPanel,455,12,28,248);
+        bossPanel.gameObject.AddComponent<RectMask2D>();
         FluorescentStartup.Attach(bossPanel.gameObject,.18f);
         Place(Panel(bossPanel,"Left casing",new Color(.21f,.27f,.27f)),1,3,1,242);
         Place(Panel(bossPanel,"Right casing",new Color(.21f,.27f,.27f)),26,3,1,242);
@@ -142,7 +144,10 @@ public sealed class IndustrialHUD : MonoBehaviour
     }
     Image[] VerticalCells(Transform parent,float x,float y,int count,float width,float height,Color color)
     {
-        var result=new Image[count];for(int i=0;i<count;i++){var cell=Panel(parent,"Vertical segment "+i,color);Place(cell,x,y+(count-1-i)*(height+2),width,height);result[i]=cell.GetComponent<Image>();}return result;
+        float available=((RectTransform)parent).rect.height-y-12;
+        height=Mathf.Min(height,available/count);
+        float gap=count>1 ? Mathf.Min(2,Mathf.Max(0,(available-count*height)/(count-1))) : 0;
+        var result=new Image[count];for(int i=0;i<count;i++){var cell=Panel(parent,"Vertical segment "+i,color);Place(cell,x,y+(count-1-i)*(height+gap),width,height);result[i]=cell.GetComponent<Image>();}return result;
     }
     void Rule(Transform parent,float x,float y,float width,Color color){Place(Panel(parent,"Panel seam",color),x,y,width,1);}
     RectTransform Panel(Transform parent,string name,Color color)
