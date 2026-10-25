@@ -72,7 +72,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Check(ReferenceEquals(menuLoad,Get(transition,"preparedLoad")),"New game discarded the preloaded gameplay operation");
         LevelRun.Reset(LevelId.Fields); // A dark valley makes the cloud edge readable in the recording.
         Check(CloudTransition.Busy,"New game bypassed the clouds");
-        yield return new WaitForSecondsRealtime(1.1f);Capture("02-cloud-billows");
+        yield return new WaitForSecondsRealtime(CloudTransition.RevealSeconds*.34f);Capture("02-cloud-billows");
         Check(CloudTransition.Busy && SceneManager.GetActiveScene().name=="Title","Cloud cover completed too quickly");
         var cloud=FindAnyObjectByType<CloudTransition>();
         var clip=cloud.GetComponentInChildren<UnityEngine.UI.RectMask2D>();
@@ -85,7 +85,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
         bool transparent=false,opaque=false;
         foreach(var pixel in artwork.GetPixels32()){transparent|=pixel.a==0;opaque|=pixel.a==255;}
         Check(transparent && opaque,"Cloud sprite lost its transparent silhouette or opaque billows");
-        yield return new WaitForSecondsRealtime(1.32f);Capture("02-white-cover");
+        yield return new WaitForSecondsRealtime(CloudTransition.RevealSeconds*.67f);Capture("02-white-cover");
         Check(flowing[0].FlowDistance>coverFlow+40,"Cloud billows stopped during cover/loading");
         if(Array.IndexOf(Environment.GetCommandLineArgs(),"-verifySlowScenery")>=0)
         {
@@ -139,7 +139,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Capture("02-hud-energy-charging");
         while(CloudTransition.Busy && Time.realtimeSinceStartup<until)yield return null;
         recordingClouds=false;
-        for(int i=0;i<banks.Length;i++)Check(banks[i].anchoredPosition.y+extensions[i]+545<-360,"Cloud canvas disappeared before its last edge left the screen");
+        for(int i=0;i<banks.Length;i++)Check(banks[i].anchoredPosition.y+extensions[i]+CloudCurtainGraphic.EdgeOuterY<-360,"Cloud canvas disappeared before its last edge left the screen");
         Check(!CloudTransition.Busy && Time.timeScale==1,"Menu-to-game transition stalled");
         yield return new WaitForSecondsRealtime(.1f);Capture("02-live-title");
         Check(SceneManager.GetActiveScene().name=="L1","New game did not load gameplay");

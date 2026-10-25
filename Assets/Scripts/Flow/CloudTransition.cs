@@ -9,10 +9,11 @@ public sealed class CloudTransition : MonoBehaviour
 {
     static CloudTransition instance;
     public static bool Busy => instance != null && instance.busy;
-    public const float RevealSeconds=3.2f;
+    public const float RevealSeconds=2.1f;
     const float OffscreenY=960;
     const float LayerSpacing=36;
     const float TravelSpeed=(OffscreenY+3*LayerSpacing)/RevealSeconds;
+    const float BankHalfHeight=CloudCurtainGraphic.EdgeOuterY+5;
     bool busy;
     RectTransform[] banks;
     CloudCurtainGraphic[] billows;
@@ -58,7 +59,7 @@ public sealed class CloudTransition : MonoBehaviour
             var go = new GameObject("Cloud bank " + i, typeof(RectTransform), typeof(CanvasRenderer), typeof(CloudCurtainGraphic));
             go.transform.SetParent(clip,false);
             banks[i] = go.GetComponent<RectTransform>();
-            banks[i].sizeDelta = new Vector2(650,1100);
+            banks[i].sizeDelta = new Vector2(650,2*BankHalfHeight);
             var graphic=go.GetComponent<CloudCurtainGraphic>();
             billows[i]=graphic;
             graphic.color = Color.Lerp(new Color(.88f,.92f,.95f),Color.white,i/3f);
@@ -250,9 +251,9 @@ public sealed class CloudTransition : MonoBehaviour
             float y=OffscreenY+i*LayerSpacing-elapsed*TravelSpeed;
             if(!revealing)trailingExtension[i]=Mathf.Max(0,-y+(banks.Length-1-i)*LayerSpacing);
             float extension=trailingExtension[i];
-            float height=1100+extension;
+            float height=2*BankHalfHeight+extension;
             banks[i].sizeDelta=new Vector2(650,height);
-            banks[i].pivot=new Vector2(.5f,550/height);
+            banks[i].pivot=new Vector2(.5f,BankHalfHeight/height);
             banks[i].anchoredPosition=new Vector2(0,y);
             billows[i].SetTravel(y,extension,elapsed*(TravelSpeed+52));
         }
@@ -269,6 +270,7 @@ public sealed class CloudTransition : MonoBehaviour
         revealing=true;
         // Every trailing sprite is below the viewport before the canvas switches off.
         yield return new WaitForSecondsRealtime(RevealSeconds);
+        PositionClouds();
     }
 
     void OnDestroy()
@@ -286,13 +288,16 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
     int variant;
     float carrierY,extension;
     const int BackingColumns=325;
+    const int EdgeColumns=5,FlowRows=16;
+    const float EdgeHalfHeight=125;
+    public const float EdgeOuterY=450+EdgeHalfHeight;
     readonly float[] backingTop=new float[BackingColumns];
     readonly float[] backingBottom=new float[BackingColumns];
     struct EdgeSprite
     {
         public Vector2 lo,hi,uv0,uv1;
     }
-    readonly EdgeSprite[] edges=new EdgeSprite[8];
+    readonly EdgeSprite[] edges=new EdgeSprite[2*EdgeColumns];
     public float FlowDistance { get; private set; }
     public override Texture mainTexture => texture!=null ? texture : base.mainTexture;
 
@@ -307,16 +312,16 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
             {best=brightness;white=new Vector2((i%texture.width+.5f)/texture.width,(i/texture.width+.5f)/texture.height);}
         }
         for(int edge=0;edge<2;edge++)
-        for(int col=0;col<4;col++)
+        for(int col=0;col<EdgeColumns;col++)
         {
             int row=edge*8;
             float seed=row*17.13f+col*7.71f+variant*11.37f;
-            float x=-330+col*220+Mathf.Sin(seed)*65;
-            float width=350+Mathf.Sin(seed*1.9f)*65;
+            float x=-360+col*180+Mathf.Sin(seed)*60;
+            float width=390+Mathf.Sin(seed*1.9f)*65;
             float y=edge==0 ? -450 : 450;
             bool mirror=(row+col+variant)%2==0;
-            edges[edge*4+col]=new EdgeSprite {
-                lo=new Vector2(x-width/2,y-95),hi=new Vector2(x+width/2,y+95),
+            edges[edge*EdgeColumns+col]=new EdgeSprite {
+                lo=new Vector2(x-width/2,y-EdgeHalfHeight),hi=new Vector2(x+width/2,y+EdgeHalfHeight),
                 uv0=new Vector2(mirror ? 1 : 0,edge==0 ? 1 : 0),
                 uv1=new Vector2(mirror ? 0 : 1,edge==0 ? 0 : 1)
             };
@@ -335,7 +340,7 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
     float FindBackingSeam(Color32[] pixels,float x,int side)
     {
         int solidRun=0;
-        for(float distance=544;distance>=356;distance-=2)
+        for(float distance=EdgeOuterY-1;distance>=450-EdgeHalfHeight+1;distance-=2)
         {
             bool solid=true;
             // Include the full strip width, so its corners cannot protrude into a valley.
@@ -343,7 +348,7 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
             {
                 bool covered=false;
                 float sx=x+sample*.5f,y=distance*side;
-                for(int i=side>0 ? 4 : 0;i<(side>0 ? 8 : 4);i++)
+                for(int i=side>0 ? EdgeColumns : 0;i<(side>0 ? edges.Length : EdgeColumns);i++)
                 {
                     var sprite=edges[i];
                     if(sx<sprite.lo.x || sx>sprite.hi.x || y<sprite.lo.y || y>sprite.hi.y)continue;
@@ -383,19 +388,19 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
         for(int i=0;i<edges.Length;i++)
         {
             var sprite=edges[i];
-            var offset=i<4 ? Vector2.zero : new Vector2(0,extension);
+            var offset=i<EdgeColumns ? Vector2.zero : new Vector2(0,extension);
             Quad(vh,sprite.lo+offset,sprite.hi+offset,sprite.uv0,sprite.uv1);
         }
         // Recycle well outside the visible area, so the interior reads as a continuous fly-through.
-        for(int row=0;row<14;row++)
+        for(int row=0;row<FlowRows;row++)
         {
-            float y=Mathf.Repeat(row*(1240f/14)-FlowDistance,1240)-620-carrierY;
-            for(int col=0;col<4;col++)
+            float y=Mathf.Repeat(row*(1240f/FlowRows)-FlowDistance,1240)-620-carrierY;
+            for(int col=0;col<5;col++)
             {
                 float seed=row*17.13f+col*7.71f+variant*11.37f;
-                float x=-330+col*220+Mathf.Sin(seed)*65;
-                float width=350+Mathf.Sin(seed*1.9f)*65;
-                float height=195+Mathf.Cos(seed*.7f)*30;
+                float x=-360+col*180+Mathf.Sin(seed)*60;
+                float width=380+Mathf.Sin(seed*1.9f)*65;
+                float height=245+Mathf.Cos(seed*.7f)*35;
                 bool mirror=(row+col+variant)%2==0;
                 Quad(vh,new Vector2(x-width/2,y-height/2),new Vector2(x+width/2,y+height/2),
                     new Vector2(mirror ? 1 : 0,0),new Vector2(mirror ? 0 : 1,1),true);
