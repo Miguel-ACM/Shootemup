@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public sealed class DecisionShop : MonoBehaviour
 {
     public bool paid;
-    public bool scoreShop;
+    public bool coinShop;
     Shipcontroller player;
     WaveOrchestrer owner;
     Action done;
@@ -26,7 +26,7 @@ public sealed class DecisionShop : MonoBehaviour
     }
     public void Open(WaveOrchestrer orchestrer,Shipcontroller ship,string kind,Action completed)
     {
-        owner=orchestrer;player=ship;paid=kind!="reward";scoreShop=kind=="scoreShop";done=completed;
+        owner=orchestrer;player=ship;paid=kind!="reward";coinShop=kind=="coinShop" || kind=="scoreShop";done=completed;
         CombatDecision.Begin();player.GetComponent<ShipLoadout>().ResetSelection();
         foreach(var weapon in player.GetComponentsInChildren<AWeapon>())weapon.StopFiring();
         dialog=GameObject.FindGameObjectWithTag("Dialog").GetComponent<Dialog>();
@@ -41,8 +41,8 @@ public sealed class DecisionShop : MonoBehaviour
             var item=(AItem)go.AddComponent(Type.GetType(itemKind));item.SetRarity(rarity);item.Register(owner);
             item.GoToPosition(new Vector3(go.transform.position.x,Camera.UpLimit*.5f,1));items.Add(item);
             int tier=rarity=="legendary" ? 3 : rarity=="epic" ? 2 : rarity=="rare" ? 1 : 0;
-            int price=!paid ? 0 : scoreShop ? new[]{1200,2400,4200,6400}[tier] : tier==3 ? 3 : tier==2 ? 2 : 1;
-            if(healthKit && i==count-1)price=scoreShop ? 900 : 1;
+            int price=!paid ? 0 : coinShop ? new[]{12,22,36,55}[tier] : tier==3 ? 3 : tier==2 ? 2 : 1;
+            if(healthKit && i==count-1)price=coinShop ? 10 : 1;
             prices[item]=price;
             overlay.Add(item);
         }
@@ -57,7 +57,7 @@ public sealed class DecisionShop : MonoBehaviour
             if(items[i]==null)continue;
             float x=Vector2.Distance(player.transform.position,items[i].transform.position);
             if(x<d){d=x;nearest=i;}
-            overlay.SetOffer(i,paid ? prices[items[i]]+(scoreShop ? " pts" : "x") : "",!paid || Affordable(prices[items[i]]));
+            overlay.SetOffer(i,paid ? prices[items[i]]+(coinShop ? "" : "x") : "",!paid || Affordable(prices[items[i]]));
         }
         if(d<1.8f && nearest>=0)
         {
@@ -74,8 +74,8 @@ public sealed class DecisionShop : MonoBehaviour
         overlay.SetSkip(SkipProgress);
         if(skipCharge>=1.5f)Close();
     }
-    bool Affordable(int price)=>scoreShop ? Score.CurrentScore>=price : Score.CurrentMultiplier>price;
-    bool Pay(int price)=>scoreShop ? Score.TrySpendScore(price) : Score.TrySpendMultiplier(price);
+    bool Affordable(int price)=>coinShop ? RunCoins.Count>=price : Score.CurrentMultiplier>price;
+    bool Pay(int price)=>coinShop ? RunCoins.TrySpend(price) : Score.TrySpendMultiplier(price);
     public bool TryClaim(AItem item)
     {
         if(closed || !items.Contains(item))return false;

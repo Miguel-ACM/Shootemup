@@ -83,9 +83,9 @@ public sealed class DecisionFeedbackProbe : MonoBehaviour
         Check(loadout.Actives[0]==left && loadout.Actives[1]==active && active.Collected,"active press immediately replaces only the selected active");
         Check(ship.mana==mana && active.lastCD>active.cd,"replacement press does not activate the purchased item");
         CombatDecision.End();Clear();yield return null;
-        foreach(string kind in new[]{"scoreShop","multiplierShop"})
+        foreach(string kind in new[]{"coinShop","multiplierShop"})
         {
-            ship.transform.position=new Vector3(0,-1,-1);Score.ResetRun();Score.IncreaseScore(15000);
+            ship.transform.position=new Vector3(0,-1,-1);Score.ResetRun();Score.IncreaseScore(15000);RunCoins.Reset();RunCoins.Add(200);
             var shop=waves.gameObject.AddComponent<DecisionShop>();bool closed=false;int exitScore=-1,exitMulti=-1;shop.Open(waves,ship,kind,()=>{closed=true;exitScore=Score.CurrentScore;exitMulti=Score.CurrentMultiplier;});
             yield return new WaitForSeconds(2.1f);
             var overlay=FindAnyObjectByType<DecisionOverlay>();Check(overlay!=null && overlay.GetComponent<Canvas>().renderMode==RenderMode.ScreenSpaceOverlay,"shop labels bypass the world filter");

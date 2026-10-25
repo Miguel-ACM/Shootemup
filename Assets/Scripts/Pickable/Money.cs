@@ -6,7 +6,7 @@ public class Money : APickable
 {
     protected override void PickUp()
     {
-        Score.IncreaseScore(10);
+        RunCoins.Add(1);
         if(CombatUpgrades.Current!=null)CombatUpgrades.Current.Coin();
         base.PickUp();
     }

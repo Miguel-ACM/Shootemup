@@ -7,7 +7,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     public Font font;
     public bool showcase;
     Shipcontroller player;
-    Text score,chain;
+    Text score,chain,coins;
     Image[] healthCells,manaCells,chainCells,bossCells;
     RectTransform bossPanel;
     RectTransform scorePanel;
@@ -45,13 +45,17 @@ public sealed class IndustrialHUD : MonoBehaviour
         var right=Panel(root.transform,"Right playfield mask",Color.black);right.anchorMin=new Vector2(.5f,0);right.anchorMax=Vector2.one;right.offsetMin=new Vector2(202.5f,0);right.offsetMax=Vector2.zero;
         var frame=new GameObject("405 x 720 playfield",typeof(RectTransform));frame.transform.SetParent(root.transform,false);
         var rect=frame.GetComponent<RectTransform>();rect.anchorMin=rect.anchorMax=new Vector2(.5f,.5f);rect.sizeDelta=new Vector2(405,720);
-        scorePanel=Panel(frame.transform,"Score and multiplier",Dark);Place(scorePanel,-144,12,132,64);
+        scorePanel=Panel(frame.transform,"Score, multiplier and wallet",Dark);Place(scorePanel,-144,12,132,84);
         FluorescentStartup.Attach(scorePanel.gameObject,.1f);
         Rule(scorePanel,8,3,116,new Color(.21f,.27f,.27f));
-        Rule(scorePanel,8,61,116,new Color(.21f,.27f,.27f));
+        Rule(scorePanel,8,81,116,new Color(.21f,.27f,.27f));
         score=TextAt(scorePanel,"000000000",12,10,12,Steel);score.rectTransform.sizeDelta=new Vector2(108,20);
         chain=TextAt(scorePanel,"x1",12,35,12,Amber);chain.rectTransform.sizeDelta=new Vector2(30,20);
         chainCells=Cells(scorePanel,46,43,6,10,Amber);
+        Place(Panel(scorePanel,"Coin rim",Amber),13,61,12,8);
+        Place(Panel(scorePanel,"Coin shoulders",Amber),15,59,8,12);
+        Place(Panel(scorePanel,"Coin stamp",Dark),18,62,2,6);
+        coins=TextAt(scorePanel,"0",32,57,12,Amber);coins.rectTransform.sizeDelta=new Vector2(48,20);
         sidePanel=Panel(frame.transform,"Side instruments",Dark);
         sideGroup=FluorescentStartup.Attach(sidePanel.gameObject);
         sidePanel.anchorMin=sidePanel.anchorMax=Vector2.zero;
@@ -111,6 +115,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         }
         if(player==null || Time.unscaledTime<nextUpdate)return;nextUpdate=Time.unscaledTime+.1f;
         score.text=Score.CurrentScore.ToString("000000000");chain.text="x"+Score.CurrentMultiplier;
+        coins.text=RunCoins.Count.ToString();
         Fill(chainCells,Score.GetPercentageNextMultiplier(),Amber);
         if(Time.unscaledTime>nextScan)
         {
