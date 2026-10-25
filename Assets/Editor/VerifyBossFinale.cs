@@ -125,7 +125,8 @@ public sealed class BossFinaleReview : MonoBehaviour
             if(level==LevelId.City)
             {
                 var fast=FindObjectsByType<CityDuoBoss>().First(b=>!b.heavy);var heavy=fast.partner;
-                Check(typeof(AEnemy).GetField("orchestrer",Hidden).GetValue(fast)==flow && typeof(AEnemy).GetField("orchestrer",Hidden).GetValue(heavy)==flow,"both City ships share the real encounter owner");
+                var encounterOwner=typeof(AEnemy).GetField("orchestrer",Hidden);
+                Check(ReferenceEquals(encounterOwner.GetValue(fast),flow) && ReferenceEquals(encounterOwner.GetValue(heavy),flow),"both City ships share the real encounter owner");
                 var first=cityCase==0 ? fast : heavy;var survivor=cityCase==0 ? heavy : fast;
                 float maximum=(float)typeof(DistrictBoss).GetField("initialHealth",Hidden).GetValue(survivor);survivor.damage(maximum*.3f/Mathf.Max(.001f,GameRules.enemyDamageReceived));float hurt=survivor.health;
                 int score=Score.CurrentScore;Kill(first);yield return null;
