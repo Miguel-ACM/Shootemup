@@ -58,6 +58,7 @@ public sealed class WindUpCannon : AWeapon
             shot.GetComponent<SpriteRenderer>().sprite=ProjectileSprites.Load("needle");
             shot.transform.localScale*=level==3 ? 1.5f : level==2 ? 1.2f : .85f;
             MagnifyingLens.Enlarge(shot);
+            ChargedShotCue.Apply(shot,capacitor);
         }
         GetComponentInParent<PSXShipEffects>()?.Shot();
         ItemSound.Play("cannon",level==3 ? .28f : .17f,1.25f-level*.12f);

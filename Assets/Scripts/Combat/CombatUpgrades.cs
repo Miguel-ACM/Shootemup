@@ -36,7 +36,10 @@ public sealed class CombatUpgrades : MonoBehaviour
     {
         if(GameRules.playerDisabled)return;
         if(Count(UpgradeKind.Capacitor)>0 && !inputs.PlayerControls.FirePrimary.IsPressed() && !inputs.PlayerControls.FireSecondary.IsPressed())
-            capacitor=Mathf.Min(1,capacitor+Time.deltaTime*.45f*(GameRules.playerShootSpeed/10));
+        {
+            float previous=capacitor;capacitor=Mathf.Min(1,capacitor+Time.deltaTime*.45f*(GameRules.playerShootSpeed/10));
+            if(previous<1 && capacitor>=1){ItemSound.Play("ready",.12f,.85f);ItemSpark.Emit(transform.position+Vector3.up*.7f,new Color(.5f,.9f,.7f),4,.1f);}
+        }
     }
     bool Ready(string key,float cooldown)
     {
@@ -46,7 +49,9 @@ public sealed class CombatUpgrades : MonoBehaviour
     public float Volley()
     {
         volleys++;ReturnThisVolley=Count(UpgradeKind.Return)>0 && volleys%4==0;
-        float multiplier=1+capacitor*2;capacitor=0;return multiplier;
+        float multiplier=1+capacitor*2;
+        if(capacitor>.175f){ItemSound.Play("capacitor",.12f+capacitor*.08f);ItemSpark.Emit(transform.position+Vector3.up*.8f,new Color(.5f,.9f,.7f),4,.16f,true);}
+        capacitor=0;return multiplier;
     }
     public bool ProximityReady=>Count(UpgradeKind.Proximity)>0 && (!gates.TryGetValue("fuse",out float t)||Time.time>=t);
     public bool SpendProximity()=>Count(UpgradeKind.Proximity)>0 && Ready("fuse",.75f);

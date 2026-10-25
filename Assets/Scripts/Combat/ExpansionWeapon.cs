@@ -13,7 +13,7 @@ public abstract class ExpansionWeapon : AWeaponAutomatic
         var effects=GetComponentInParent<PSXShipEffects>();if(effects!=null)effects.Shot();
         SoundManager.PlaySound("shot1",.07f);
         for(int muzzle=0;muzzle<spawnPoints.Length;muzzle++)for(int p=0;p<Pellets;p++)
-            MagnifyingLens.Enlarge(PlayerRound.Spawn(transform.position+spawnPoints[muzzle],CombatVisuals.Rotate(Vector2.up,(p-(Pellets-1)*.5f)*13),
-                GameRules.playerShootDamage*Power*charge,GameRules.playerShootTravelSpeed*Velocity,Delivery));
+            MagnifyingLens.Enlarge(ChargedShotCue.Apply(PlayerRound.Spawn(transform.position+spawnPoints[muzzle],CombatVisuals.Rotate(Vector2.up,(p-(Pellets-1)*.5f)*13),
+                GameRules.playerShootDamage*Power*charge,GameRules.playerShootTravelSpeed*Velocity,Delivery),charge));
     }
 }
