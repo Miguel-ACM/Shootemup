@@ -29,7 +29,7 @@ Shader "Shootemup/Continuous Beam"
                 float edge=1-smoothstep(.55,1,across);
                 float core=1-smoothstep(.0,.42,across);
                 half3 color=lerp(v.color.rgb*.65,v.color.rgb,edge);
-                color=lerp(color,half3(1,.92,.72),core*.38);
+                color=lerp(color,half3(.65,.88,1),core*.38);
                 return half4(color,v.color.a*edge*flow);
             }
             ENDHLSL

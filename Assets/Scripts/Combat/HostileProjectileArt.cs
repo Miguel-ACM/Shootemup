@@ -37,7 +37,7 @@ public static class HostileProjectileArt
             case Shape.Mine:return new Color(1,.28f,.12f);
             case Shape.Disc:return new Color(.90f,.31f,.94f);
             case Shape.Carrier:return new Color(.24f,.92f,.55f);
-            default:return new Color(.69f,.57f,1);
+            default:return new Color(.25f,.60f,1);
         }
     }
     static float Outline(Shape kind,float x,float y)

@@ -11,8 +11,8 @@ public sealed class BeamRibbon : MonoBehaviour
     Color hot, cool;
     public void Build(bool friendly=false)
     {
-        hot=friendly ? new Color(.25f,.79f,.76f) : new Color(1,.43f,.12f);
-        cool=friendly ? new Color(.12f,.54f,.62f) : new Color(.9f,.22f,.07f);
+        hot=friendly ? new Color(.24f,.68f,1) : new Color(.16f,.48f,1);
+        cool=friendly ? new Color(.07f,.35f,.80f) : new Color(.05f,.18f,.78f);
         if(energy==null)energy=new Material(Resources.Load<Shader>("ContinuousBeam")){name="Continuous plasma"};
         sheath=CombatVisuals.Line(transform,cool,.5f);sheath.sharedMaterial=energy;sheath.sortingOrder=19;
         body=CombatVisuals.Line(transform,hot,.2f);body.sharedMaterial=energy;body.sortingOrder=21;
@@ -47,7 +47,7 @@ public sealed class BeamRibbon : MonoBehaviour
         float heat=charging ? charge*.65f : power;
         mouth.enabled=heat>.015f;
         mouth.transform.position=p;mouth.transform.localScale=Vector3.one*Mathf.Min(.36f,.08f+width*heat*.95f);
-        mouth.color=new Color(hot.r,Mathf.Lerp(hot.g,.72f,heat),Mathf.Lerp(hot.b,.38f,heat),heat*.9f);
+        var glow=Color.Lerp(hot,new Color(.55f,.82f,1),heat*.25f);glow.a=heat*.9f;mouth.color=glow;
         collar.enabled=intake.enabled=heat>.01f;
         CombatVisuals.Ring(collar,p,.05f+width*.45f*heat);
         collar.startColor=collar.endColor=new Color(hot.r,hot.g,hot.b,heat*.7f);
