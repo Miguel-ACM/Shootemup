@@ -96,37 +96,4 @@ public static partial class IndustrialMeshFactory
         }
         b.Box(new Vector3(0,.72f,0),new Vector3(.20f,.25f,.25f),6);
     }
-    static void BuildAbyssSubmarine(Builder b)
-    {
-        b.Ball(Vector3.zero,new Vector3(.93f,2.18f,.54f),8);
-        b.Ball(new Vector3(0,-1.60f,-.12f),new Vector3(.70f,.67f,.40f),4);
-        for(int row=0;row<5;row++)
-        {
-            float y=1.45f-row*.57f,w=.66f-Mathf.Abs(row-2)*.065f;
-            b.Prism(new[]{new Vector2(-w,y+.22f),new Vector2(-w*.90f,y-.21f),new Vector2(0,y-.32f),new Vector2(w*.90f,y-.21f),new Vector2(w,y+.22f),new Vector2(0,y+.30f)},.16f,row%2==0 ? 4 : 0,new Vector3(0,0,-.50f),11);
-        }
-        // A stepped, rounded sail stands above the armored pressure hull.
-        b.Prism(new[]{new Vector2(-.39f,.84f),new Vector2(-.43f,.11f),new Vector2(-.27f,-.23f),new Vector2(.27f,-.23f),new Vector2(.43f,.11f),new Vector2(.39f,.84f),new Vector2(0,1.04f)},.30f,6,new Vector3(0,0,-.77f),11);
-        b.Prism(new[]{new Vector2(-.29f,.78f),new Vector2(-.31f,.10f),new Vector2(0,-.12f),new Vector2(.31f,.10f),new Vector2(.29f,.78f)},.16f,8,new Vector3(0,0,-1.0f),4);
-        b.Box(new Vector3(0,.66f,-1.11f),new Vector3(.54f,.10f,.08f),9);
-        for(int k=0;k<3;k++)b.Box(new Vector3((k-1)*.15f,.91f,-1.28f),new Vector3(.06f,.12f,.30f+k*.11f),6);
-        for(int s=-1;s<=1;s+=2)
-        {
-            b.Prism(new[]{new Vector2(s*.6f,.30f),new Vector2(s*1.48f,.67f),new Vector2(s*1.40f,.05f),new Vector2(s*.65f,-.32f)},.15f,4,Vector3.zero,11);
-            b.Prism(new[]{new Vector2(s*.37f,1.48f),new Vector2(s*1.12f,1.91f),new Vector2(s*.91f,2.22f),new Vector2(s*.20f,1.90f)},.14f,8,Vector3.zero);
-            b.Ball(new Vector3(s*.84f,-.27f,-.18f),new Vector3(.26f,1.40f,.25f),11);
-            for(int j=0;j<4;j++)
-            {
-                b.Box(new Vector3(s*.84f,.69f-j*.52f,-.39f),new Vector3(.34f,.22f,.16f),4);
-                b.Box(new Vector3(s*.84f,.69f-j*.52f,-.49f),new Vector3(.24f,.045f,.05f),13);
-            }
-            b.Drum(new Vector3(s*.40f,-1.50f,-.53f),.21f,.19f,6,8);
-            b.Drum(new Vector3(s*.40f,-1.50f,-.66f),.13f,.09f,11,8);
-            b.Box(new Vector3(s*.70f,1.57f,-.10f),new Vector3(.28f,.67f,.31f),11);
-            for(int j=0;j<6;j++)b.Box(new Vector3(s*.70f,1.32f+j*.10f,-.30f),new Vector3(.27f,.038f,.10f),6);
-            for(int j=0;j<4;j++)b.Drum(new Vector3(s*.46f,-.48f-j*.24f,-.62f),.055f,.06f,13,6);
-        }
-        b.Prism(new[]{new Vector2(-.18f,-1.02f),new Vector2(0,-1.72f),new Vector2(.18f,-1.02f)},.13f,13,new Vector3(0,0,-.64f));
-        b.Box(new Vector3(0,-1.97f,-.40f),new Vector3(.32f,.08f,.10f),9);
-    }
 }

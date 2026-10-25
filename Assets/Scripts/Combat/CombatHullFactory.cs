@@ -56,7 +56,7 @@ public static partial class IndustrialMeshFactory
         if(kind==50){BuildReefDart(b);return combatHulls[kind]=b.Finish("Reef torpedo fish");}
         if(kind==51){BuildManta(b);return combatHulls[kind]=b.Finish("Hydrofoil manta bomber");}
         if(kind==52){BuildBathysphere(b);return combatHulls[kind]=b.Finish("Brass bathysphere minelayer");}
-        if(kind==53){BuildAbyssSubmarine(b);return combatHulls[kind]=b.Finish("Abyssal submarine dreadnought");}
+        if(kind==53){BuildAbyssHunter(b);return combatHulls[kind]=b.Finish("Sculpted abyssal hunter pressure hull");}
         if(kind==54){BuildHellClaw(b);return combatHulls[kind]=b.Finish("Articulated infernal pincer");}
         if(kind==55){b.Ball(Vector3.zero,new Vector3(.28f,.30f,.16f),10);b.Box(new Vector3(0,0,-.15f),new Vector3(.075f,.29f,.07f),11);return combatHulls[kind]=b.Finish("Exposed crab eye");}
         if(kind==41){BuildOrbitalScout(b);return combatHulls[kind]=b.Finish("Solar-wing orbital scout");}

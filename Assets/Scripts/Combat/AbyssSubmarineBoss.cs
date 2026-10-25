@@ -23,7 +23,7 @@ public sealed class AbyssSubmarineBoss : DistrictBoss
     protected override void Start()
     {
         base.Start();var old=GetComponent<CircleCollider2D>();old.enabled=false;Destroy(old);
-        var capsule=gameObject.AddComponent<CapsuleCollider2D>();capsule.isTrigger=true;capsule.direction=CapsuleDirection2D.Vertical;capsule.size=new Vector2(1.72f,4.12f)*hullScale;hit=capsule;
+        var capsule=gameObject.AddComponent<CapsuleCollider2D>();capsule.isTrigger=true;capsule.direction=CapsuleDirection2D.Vertical;capsule.size=new Vector2(2.02f,4.12f)*hullScale;hit=capsule;
         GetComponent<CombatHullVisual>().enabled=false;
         model=Hull.GetComponent<MeshRenderer>();sprite=GetComponent<SpriteRenderer>();wake=CombatVisuals.Line(transform,LevelProjectilePalette.Accent(LevelId.Underwater),.055f);wake.enabled=false;
     }
