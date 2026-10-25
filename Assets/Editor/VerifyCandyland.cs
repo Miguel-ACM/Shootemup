@@ -94,7 +94,7 @@ public sealed class CandylandReview : MonoBehaviour
         while(CloudTransition.Busy || !WavePreparation.Ready)yield return null;
         GameRules.playerDisabled=false;ship.transform.position=new Vector3(0,Camera.DownLimit+2,-1);
         yield return new WaitForSeconds(1);Capture("Scenery");
-        var backdrop=FindAnyObjectByType<CandylandBackdrop>();Check(backdrop!=null && backdrop.CandyCount==25,"pink sky and 25 falling modeled sweets loaded");
+        var backdrop=FindAnyObjectByType<CandylandBackdrop>();Check(backdrop!=null && backdrop.CandyCount==30,"layered cotton-candy clouds and 30 sweets across five modeled types loaded");
         foreach(int budget in new[]{2,10,20})
         {
             Clear();yield return null;var wave=DistrictWaves.Create(budget);int next=0,peak=0,peakEnemies=0;float start=Time.time,last=-1;
@@ -114,26 +114,35 @@ public sealed class CandylandReview : MonoBehaviour
         Clear();yield return null;
         var boss=(CandyRegentBoss)DistrictEnemy.Spawn(typeof(CandyRegentBoss),new Vector3(0,Camera.UpLimit+3,1));yield return null;
         float hp=boss.health;Check(hp<1440*GameRules.enemyHealth*LevelRun.EnemyHealthScale,"regent has less health than the Plains boss");
-        Vector3 lastPosition=boss.transform.position;float maxSpeed=0,minX=100,maxX=-100;int maxMinions=0;
+        Vector3 lastPosition=boss.transform.position;Vector2 previousVelocity=Vector2.zero;
+        float maxSpeed=0,minX=100,maxX=-100,minY=100,maxY=-100;int maxMinions=0,peakBossRounds=0,turns=0;
+        var minionTypes=new HashSet<System.Type>();
         for(int phase=0;phase<2;phase++)
         {
             if(phase==1)boss.damage(hp*.53f);
             for(int frame=0;frame<52;frame++)
             {
                 float start=Time.time;yield return new WaitForSeconds(.25f);
-                maxSpeed=Mathf.Max(maxSpeed,Vector3.Distance(lastPosition,boss.transform.position)/(Time.time-start));lastPosition=boss.transform.position;
+                Vector2 velocity=(boss.transform.position-lastPosition)/(Time.time-start);
+                maxSpeed=Mathf.Max(maxSpeed,velocity.magnitude);lastPosition=boss.transform.position;
+                if(velocity.magnitude>3 && previousVelocity.magnitude>3 && Vector2.Angle(velocity,previousVelocity)>65)turns++;
+                previousVelocity=velocity;
                 minX=Mathf.Min(minX,lastPosition.x);maxX=Mathf.Max(maxX,lastPosition.x);maxMinions=Mathf.Max(maxMinions,boss.LiveMinions);
+                if(frame>8){minY=Mathf.Min(minY,lastPosition.y);maxY=Mathf.Max(maxY,lastPosition.y);}
+                peakBossRounds=Mathf.Max(peakBossRounds,CombatRound.Live.Count);
+                foreach(var minion in AEnemy.Live)if(minion!=boss)minionTypes.Add(minion.GetType());
                 Capture("Frames/Boss"+phase+"-"+frame.ToString("D3"));
             }
             Capture("BossPhase"+(phase+1));
         }
-        Check(maxSpeed>6 && maxX-minX>3,"boss traverses the arena quickly in both phases");
-        Check(boss.SpawnedMinions>=12 && maxMinions>0 && maxMinions<=12,"boss releases destroyable minions with a bounded population");
+        Check(maxSpeed>10 && maxX-minX>3 && maxY-minY>4 && turns>=8,"boss makes fast multi-height dashes and repeated sharp direction changes");
+        Check(peakBossRounds>=45,"harder boss sustains pressure: peak "+peakBossRounds+" projectiles");
+        Check(boss.SpawnedMinions>=32 && maxMinions>8 && maxMinions<=18 && minionTypes.Count==3,"boss releases frequent mixed broods, capped at eighteen living minions");
         var victim=AEnemy.Live.FirstOrDefault(e=>e is BonbonSkirmisher);Check(victim!=null,"minions remain independently targetable");victim.damage(100000);yield return null;Check(victim==null,"minions can be destroyed");
         float before=boss.health;
         for(int i=0;i<16;i++){PlayerRound.Spawn(boss.transform.position+Vector3.down*.35f,Vector2.up,20,2,PlayerDelivery.Pulse,0);yield return new WaitForSeconds(.04f);}
         Check(boss.health<before,"stock projectiles can hit the fast moving boss");
-        boss.damage(1000000);yield return null;yield return null;Check(boss==null && !AEnemy.Live.Any(e=>e is BonbonSkirmisher),"boss death clears its surviving brood");
+        boss.damage(1000000);yield return null;yield return null;Check(boss==null && !AEnemy.Live.Any(),"boss death clears every type of surviving minion");
         Clear();yield return new WaitForSeconds(2);LevelRun.Reset(LevelId.Thunder,17381);LevelId? chosen=null;
         var choice=LevelChoice.Open(ship.transform,p=>chosen=p);yield return new WaitForSeconds(.5f);Capture("RouteChoice");
         Check(choice.Options.SequenceEqual(new[]{LevelId.Desert,LevelId.Candyland,LevelId.Fields}),"three-way route includes Desert, Candyland and Plains");

@@ -1,15 +1,16 @@
 PASS
-PASS pink sky and 25 falling modeled sweets loaded
+PASS layered cotton-candy clouds and 30 sweets across five modeled types loaded
 PASS wave 2: 24 ships, peak 15 enemies / 20 bullets
 PASS wave 10: 35 ships, peak 16 enemies / 58 bullets
 PASS wave 20: 35 ships, peak 27 enemies / 62 bullets
 PASS regent has less health than the Plains boss
-PASS boss traverses the arena quickly in both phases
-PASS boss releases destroyable minions with a bounded population
+PASS boss makes fast multi-height dashes and repeated sharp direction changes
+PASS harder boss sustains pressure: peak 50 projectiles
+PASS boss releases frequent mixed broods, capped at eighteen living minions
 PASS minions remain independently targetable
 PASS minions can be destroyed
 PASS stock projectiles can hit the fast moving boss
-PASS boss death clears its surviving brood
+PASS boss death clears every type of surviving minion
 PASS three-way route includes Desert, Candyland and Plains
 PASS bottom of route choice stays neutral
 PASS holding the middle route selects Candyland

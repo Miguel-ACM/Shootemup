@@ -21,7 +21,7 @@ for budget in (2, 10, 20):
     candidates = current(f"Wave{budget}-*.png")
     for fraction in (.3, .5):
         chosen.append((candidates[int(len(candidates) * fraction)], f"Wave {budget}"))
-for frame in (12, 26, 40):
+for frame in (24, 58, 100):
     chosen.append((frames / f"Boss-{frame:03d}.png", "White worm"))
 
 sheet = Image.new("RGB", (405 * 3, 746 * 3), "#10171a")
@@ -46,7 +46,7 @@ for budget in (2, 10, 20):
 # Boss frames are spaced by the probe's explicit quarter-second playback interval.
 for path in current("Boss-*.png"):
     manifest += [f"file '{path.as_posix()}'", "duration 0.25"]
-manifest += [f"file '{(frames / 'Boss-044.png').as_posix()}'"]
+manifest += [f"file '{current('Boss-*.png')[-1].as_posix()}'"]
 sequence = SOURCE / "Sequence.txt"
 sequence.write_text("\n".join(manifest) + "\n")
 subprocess.run([

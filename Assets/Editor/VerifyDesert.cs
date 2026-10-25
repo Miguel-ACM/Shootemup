@@ -128,9 +128,17 @@ public sealed class DesertReview : MonoBehaviour
         yield return null;yield return null;
         Check(worm.Cores.Length==8 && worm.RemainingParts==8,"eight independently targetable boss reactors");
         float health=worm.health;worm.damage(1000000);Check(Mathf.Approximately(worm.health,health),"armor cannot bypass the reactors");
-        for(int frame=0;frame<45;frame++){yield return new WaitForSeconds(.25f);Capture("Frames/Boss-"+frame.ToString("D3"));}
+        float left=100,right=-100,bottom=100,top=-100;bool allReactorsVisible=true;
+        var view=UnityEngine.Camera.main;float half=view.orthographicSize*405f/720f;
+        for(int frame=0;frame<120;frame++)
+        {
+            yield return new WaitForSeconds(.25f);Capture("Frames/Boss-"+frame.ToString("D3"));
+            var p=worm.transform.position;left=Mathf.Min(left,p.x);right=Mathf.Max(right,p.x);bottom=Mathf.Min(bottom,p.y);top=Mathf.Max(top,p.y);
+            if(frame>28)allReactorsVisible&=worm.Cores.All(c=>Mathf.Abs(c.transform.position.x)<half-.4f && Mathf.Abs(c.transform.position.y-view.transform.position.y)<view.orthographicSize-.35f);
+        }
         Capture("Boss");
-        float half=UnityEngine.Camera.main.orthographicSize*405f/720f;
+        Check(allReactorsVisible,"all moving reactors stay within the visible arena throughout the full patrol");
+        Check(right-left>2*(half-1.25f)*.85f && bottom<view.transform.position.y-view.orthographicSize*.70f && top>view.transform.position.y+view.orthographicSize*.70f,"worm patrols both sides, the lower corners and the top of the full arena");
         Check(worm.Cores.All(c=>Mathf.Abs(c.transform.position.x)<half-.45f),"all boss weakpoints fit inside the visible playfield");
         // Physics-driven stock rounds must reach an actual moving red weakpoint.
         var target=worm.Cores[2];float before=target.health;
@@ -150,8 +158,8 @@ public sealed class DesertReview : MonoBehaviour
         yield return null;yield return null;
         Check(worm==null,"final core triggers normal boss death");
         Check(!AEnemy.Live.OfType<DesertWormCore>().Any(),"boss cleanup removes all reactor targets");
-        LevelRun.Reset(LevelId.Thunder,17381);LevelRun.GetChoices(out var left,out var right);
-        Check(left==LevelId.Desert && right==LevelId.Fields,"third district offers desert or a new Plains loop");
+        LevelRun.Reset(LevelId.Thunder,17381);LevelRun.GetChoices(out var routeLeft,out var routeRight);
+        Check(routeLeft==LevelId.Desert && routeRight==LevelId.Fields,"third district offers desert or a new Plains loop");
         var choice=LevelChoice.Open(ship.transform,_=>{});yield return new WaitForSeconds(.5f);Capture("RouteChoice");Destroy(choice.gameObject);
     }
     public static void Capture(string name,string folder=Folder)

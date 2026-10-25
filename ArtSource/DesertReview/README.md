@@ -14,13 +14,15 @@ Three new enemies have their own modeled hulls:
 - **Sand Striker:** a narrow interceptor that locks one aim direction and sends six shots 75 milliseconds apart.
 - **Sand Worm:** a small articulated machine with four following body sections. Alternating body ports release coordinated fans. Its body can be shot as well as its head.
 
-The **White Worm** boss has seven independently destructible body reactors and one larger head reactor. Their exposed radii are now about 22% smaller, with matching smaller hit regions and muted brick-red paint. All eight must be destroyed. Dead reactors stay dark on the moving wreck and stop firing. At four remaining reactors, the boss accelerates its attack score. Its route accounts for the visible playfield rather than the full unmasked camera output.
+The **White Worm** boss has seven independently destructible body reactors and one larger head reactor. Their exposed radii are now about 22% smaller, with matching smaller hit regions and muted brick-red paint. All eight must be destroyed. Dead reactors stay dark on the moving wreck and stop firing. At four remaining reactors, the boss accelerates its attack score and patrol speed. Its twelve-leg route covers both sides, the lower corners and the top of the visible arena, with rounded turns and distance-based body following. Insets keep the reactors on screen after entry.
 
 All geometry is authored in the runtime mesh factories, following the project's existing asset pipeline. No external model downloads are required. Existing projectile art and music are reused; Sound Lab selections are unchanged.
 
 ## Verification and visual review
 
 `Assets/Editor/VerifyDesert.cs` compiles and runs in an isolated Unity project. It checks standard and extended route loops, terrain wrapping, 57 seeded wave compositions, all sixteen playable motifs, concealed targeting, real wave firing, clear weather and full dust gusts, projectile collisions against moving cores, head-first destruction, repeated hits on dead parts, full boss completion and cleanup.
+
+The full-arena patrol review also tracks head coverage and checks that every reactor remains inside the viewport after entry. This snapshot uses committed game assets plus the boss/scenery changes, excluding concurrent projectile migration work in the main workspace.
 
 `Verification.txt` and `Geometry.txt` contain the results. `Scenery.png`, `DustStorm.png`, `Boss.png`, `DamagedBoss.png` and `RouteChoice.png` are captures of the actual filtered game and HUD. `MotionReview.jpg` shows successive formation and boss poses. `DesertMotion.mp4` is sampled playback, not a frame-rate benchmark; wave timing comes from the capture timestamps and boss samples use the nominal quarter-second interval.
 
