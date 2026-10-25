@@ -25,7 +25,7 @@ public sealed class WorldTimeStop : MonoBehaviour
         Current=this;remaining=duration;previousRate=Time.timeScale;Time.timeScale=0;
         var go=new GameObject("Stopped time border");go.transform.SetParent(transform,false);
         border=CombatVisuals.Line(go.transform,new Color(.3f,.75f,.9f,.6f),.04f);border.positionCount=5;
-        SoundManager.PlaySound("blankbullet",.09f);
+        ItemSound.Play("timeStop",.22f);
     }
     void Update()
     {
@@ -42,7 +42,7 @@ public sealed class WorldTimeStop : MonoBehaviour
         border.SetPositions(new[]{new Vector3(left,bottom,-2),new Vector3(left,top,-2),new Vector3(right,top,-2),new Vector3(right,bottom,-2),new Vector3(left,bottom,-2)});
         border.startColor=border.endColor=new Color(.3f,.75f,.9f,Mathf.Min(.65f,remaining*.8f));
     }
-    void End(){Restore();Destroy(this);}
+    void End(){ItemSound.Play("powerdown",.16f,1.25f);Restore();Destroy(this);}
     void Restore()
     {
         if(Current!=this)return;
