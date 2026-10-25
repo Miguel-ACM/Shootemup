@@ -1,0 +1,2 @@
+PASS: real ScatterCarrier sprites reviewed through the gameplay filter while moving and emitting early and later side volleys at the watcher carrier radius (0.30).
+Reviewed tapered energy core, dark lateral housings, warm muzzle tips and side-shot launch positions.

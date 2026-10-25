@@ -61,7 +61,13 @@ public static class HostileProjectileArt
             case Shape.Plasma:return Mathf.Max(Mathf.Max(ax,ay)/.87f,(ax+ay)/1.23f);
             case Shape.Mine:return Mathf.Min(Mathf.Max(ax/.32f,ay/.94f),Mathf.Max(ax/.94f,ay/.32f));
             case Shape.Disc:return Mathf.Max(r/.96f,(.34f-r)/.10f);
-            case Shape.Carrier:return Mathf.Max(ay/.94f,ax/.72f)+Mathf.Max(0,ay-.65f)*.6f;
+            case Shape.Carrier:
+            {
+                float taper=.43f-.09f*Mathf.Clamp01(y/.88f);
+                float body=Mathf.Sqrt(x*x/(taper*taper)+y*y/(.88f*.88f));
+                float ports=Mathf.Sqrt((ax-.54f)*(ax-.54f)/(.41f*.41f)+y*y/(.25f*.25f));
+                return Mathf.Min(body,ports);
+            }
             default:return Mathf.Pow(ax/.94f,.82f)+Mathf.Pow(ay/.94f,.82f);
         }
     }
@@ -81,7 +87,14 @@ public static class HostileProjectileArt
             // Rings and ports remain legible at a few gameplay pixels.
             if(kind==Shape.Shell && Mathf.Sqrt(px*px+py*py)>.50f && (Mathf.Abs(px)<.08f || Mathf.Abs(py)<.08f))color=ink;
             if(kind==Shape.Plasma && Mathf.Abs(px)+Mathf.Abs(py)<.30f)color=Color.Lerp(core,Color.white,.35f);
-            if(kind==Shape.Carrier && Mathf.Abs(px)<.20f && Mathf.Abs(py)<.65f && Mathf.Abs(py% .42f)<.13f)color=core;
+            if(kind==Shape.Carrier)
+            {
+                if(px*px+py*py<.075f)color=core;
+                if(Mathf.Abs(px)<.09f && py>.34f && py<.64f)color=core;
+                if(Mathf.Abs(px)>.34f && d<=.84f){color=accent*(py>.04f ? .85f : .55f);color.a=1;}
+                if(Mathf.Abs(px)>.57f && Mathf.Abs(py)<.10f)color=ink;
+                if(Mathf.Abs(px)>.81f && Mathf.Abs(py)<.065f)color=new Color(1,.52f,.30f);
+            }
             if(kind==Shape.Mine && Mathf.Abs(px)<.17f && Mathf.Abs(py)<.17f)color=new Color(1,.83f,.48f);
             if(d>.49f && d<.69f && px<-.08f && py>.18f)color=core;
             pixels[y*size+x]=color;
