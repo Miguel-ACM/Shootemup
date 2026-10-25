@@ -11,6 +11,8 @@ public sealed class DesertWormBoss : DistrictBoss
     float routeWidth,routeHeight,routeCentre;
     float routeClock;
     bool entered;
+    Vector3 rippleTarget;
+    Vector2 jawAxis=Vector2.down;
     static readonly Vector2[] Route={new Vector2(0,1),new Vector2(-1,.72f),new Vector2(-.86f,-.84f),
         new Vector2(.80f,-1),new Vector2(1,.63f),new Vector2(-.70f,1),new Vector2(-.12f,-.92f),
         new Vector2(.95f,-.48f),new Vector2(.72f,.95f),new Vector2(-1,.14f),new Vector2(.18f,-.65f),new Vector2(.36f,1)};
@@ -69,20 +71,21 @@ public sealed class DesertWormBoss : DistrictBoss
     protected override void Attack()
     {
         int beat=(volley-1)%12;
+        if(beat==0)rippleTarget=player!=null ? player.position : transform.position+Vector3.down*8;
         // Body ripple, pause, jaw burst, pause, crossed body fans. Dead sections are permanently silent.
         if(beat<4)
         {
             for(int i=1;i<cores.Length;i++)if((i-1)%4==beat && CanShoot(cores[i]))
             {
-                Vector3 port=cores[i].transform.position;Vector2 aim=CombatVisuals.Aim(port);
-                for(int j=-2;j<=2;j++)Fire<SimpleRound>(port,CombatVisuals.Rotate(aim,j*16),4.4f,.15f);
+                Vector3 port=cores[i].transform.position;Vector2 aim=(rippleTarget-port).normalized;
+                PetalFan<SimpleRound>(port,aim,5,16,4.4f,.15f,.2f);
             }
         }
         else if((beat==5 || beat==6) && CanShoot(cores[0]))
         {
             Vector3 jaw=Hull.TransformPoint(new Vector3(0,-.92f,-.18f));
-            Vector2 aim=CombatVisuals.Aim(jaw);int count=phaseTwo ? 7 : 5;
-            for(int j=0;j<count;j++)Fire<NeedleRound>(jaw,CombatVisuals.Rotate(aim,(j-(count-1)*.5f)*8),6.7f,.16f);
+            if(beat==5)jawAxis=CombatVisuals.Aim(jaw);
+            PetalFan<NeedleRound>(jaw,CombatVisuals.Rotate(jawAxis,beat==5 ? -2 : 2),phaseTwo ? 7 : 5,8,6.7f,.16f);
         }
         else if(beat==9 || beat==10)
         {
