@@ -18,6 +18,7 @@ public class ElectricityBullet : ABullet
 
     public void Update()
     {
+        if(Time.deltaTime<=0)return;
         if (!shoot)
         {
 

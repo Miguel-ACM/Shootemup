@@ -5,6 +5,23 @@ using UnityEngine.InputSystem;
 
 public abstract class AWeaponAutomatic : AWeapon
 {
+    bool wasFrozen;
+    float frozenShotTimer;
+    void Update()
+    {
+        if(WorldTimeStop.PlayerCanAct)
+        {
+            if(!wasFrozen){CancelInvoke("Shoot");frozenShotTimer=0;wasFrozen=true;}
+            if(!KeepFiring())return;
+            frozenShotTimer-=Time.unscaledDeltaTime;
+            if(frozenShotTimer<=0){frozenShotTimer=1/(GameRules.playerShootSpeed*shootSpeedModifier);Shoot();}
+        }
+        else if(wasFrozen && !WorldTimeStop.Frozen)
+        {
+            wasFrozen=false;
+            if(KeepFiring() && !IsInvoking("Shoot"))InvokeRepeating("Shoot",0,1/(GameRules.playerShootSpeed*shootSpeedModifier));
+        }
+    }
     public AWeaponAutomatic()
     {
         weaponType = WeaponType.automatic;
@@ -14,6 +31,7 @@ public abstract class AWeaponAutomatic : AWeapon
     {
         if(IsInvoking("Shoot"))return;
         base.WeaponPressed(pressedPrimary);
+        if(WorldTimeStop.Frozen)return;
         if (pressedPrimary && EffectiveInput == WeaponInput.primary || !pressedPrimary && EffectiveInput == WeaponInput.secondary || EffectiveInput == WeaponInput.both)
             InvokeRepeating("Shoot", 0f, 1 / (GameRules.playerShootSpeed * shootSpeedModifier));
     }

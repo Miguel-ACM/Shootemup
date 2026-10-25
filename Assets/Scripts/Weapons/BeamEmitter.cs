@@ -36,6 +36,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
         sound.Charge(warning,true);
         while(t<end+.22f && !GameRules.playerDisabled)
         {
+            if(Time.deltaTime<=0){yield return null;continue;}
             t+=Time.deltaTime;bool active=t>=warning && t<end;
             float power=active ? Mathf.Min(Mathf.Clamp01((t-warning)/.055f),Mathf.Lerp(.4f,1,Mathf.Clamp01((end-t)/.09f))) :
                 t>=end ? Mathf.Pow(Mathf.Clamp01(1-(t-end)/.22f),2)*.4f : 0;

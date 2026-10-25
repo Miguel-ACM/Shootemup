@@ -170,6 +170,7 @@ public class Shipcontroller : MonoBehaviour
 
     void ActiveRightPressed(InputAction.CallbackContext ctx)
     {
+        if(Time.timeScale<=0 && !WorldTimeStop.PlayerCanAct)return;
         if(GameRules.playerDisabled || GetComponent<ShipLoadout>().ConsumedInputThisFrame)return;
         isActiveRightPressed = true;
         
@@ -198,6 +199,7 @@ public class Shipcontroller : MonoBehaviour
     }
     void ActiveLeftPressed(InputAction.CallbackContext ctx)
     {
+        if(Time.timeScale<=0 && !WorldTimeStop.PlayerCanAct)return;
         if(GameRules.playerDisabled || GetComponent<ShipLoadout>().ConsumedInputThisFrame)return;
         isActiveLeftPressed=true;
         if(activeLeft!=null){float result=UseActive(activeLeft);if(result>=0){mana=result;manaBar.Set(mana);}}
@@ -247,8 +249,8 @@ public class Shipcontroller : MonoBehaviour
     void Update()
     {
         speedMultiplier=input.PlayerControls.Focus.IsPressed() ? slowMultiplier : 1;
-        horizontalMove = move.x * GameRules.playerMoveSpeed * Time.deltaTime * speedMultiplier;
-        verticalMove = move.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * Time.deltaTime * speedMultiplier;
+        horizontalMove = move.x * GameRules.playerMoveSpeed * WorldTimeStop.PlayerDelta * speedMultiplier;
+        verticalMove = move.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * WorldTimeStop.PlayerDelta * speedMultiplier;
 
         transform.position = new Vector3(Mathf.Clamp(transform.position.x + horizontalMove, limits[2], limits[3]), Mathf.Clamp(transform.position.y + verticalMove, limits[1], limits[0]), transform.position.z);
         

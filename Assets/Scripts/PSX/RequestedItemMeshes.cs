@@ -5,6 +5,14 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "BulletTime":
+                b.Drum(Vector3.zero,.34f,.18f,13,12,6);
+                b.Drum(new Vector3(0,0,-.12f),.28f,.06f,11,12);
+                b.Box(new Vector3(-.08f,0,-.17f),new Vector3(.065f,.3f,.04f),9);
+                b.Box(new Vector3(.08f,0,-.17f),new Vector3(.065f,.3f,.04f),9);
+                b.Box(new Vector3(0,.4f,0),new Vector3(.16f,.13f,.16f),6);
+                b.Box(new Vector3(.27f,.29f,0),new Vector3(.13f,.1f,.13f),3);
+                for(int i=0;i<12;i++){float a=i*Mathf.PI/6;b.Box(new Vector3(Mathf.Sin(a)*.24f,Mathf.Cos(a)*.24f,-.17f),new Vector3(.025f,.025f,.02f),1);}return true;
             case "BulletDroneItem":
                 DroneModel(b,false);return true;
             case "LaserDroneItem":

@@ -39,6 +39,7 @@ public sealed class PlayerRound : ABullet
     void OnDisable(){LiveCount--;}
     void Update()
     {
+        if(Time.deltaTime<=0)return;
         age+=Time.deltaTime;
         if(age>5 || transform.position.y<Camera.DownLimit-3 || Mathf.Abs(transform.position.x)>Camera.RightLimit+4){Destroy(gameObject);return;}
         if((delivery==PlayerDelivery.Disc || returns) && age>.75f && !returning){returning=true;hit.Clear();}

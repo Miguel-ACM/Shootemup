@@ -23,7 +23,7 @@ public sealed class ShipBarrelRoll : MonoBehaviour
     void Update()
     {
         if(!Active || GameRules.playerDisabled)return;
-        float old=elapsed;elapsed=Mathf.Min(Duration,elapsed+Time.deltaTime);
+        float old=elapsed;elapsed=Mathf.Min(Duration,elapsed+WorldTimeStop.PlayerDelta);
         float step=(Mathf.SmoothStep(0,1,elapsed/Duration)-Mathf.SmoothStep(0,1,old/Duration))*Distance*direction;
         var p=transform.position;p.x=Mathf.Clamp(p.x+step,Camera.LeftLimit,Camera.RightLimit);transform.position=p;
     }

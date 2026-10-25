@@ -6,6 +6,9 @@ using UnityEngine.UI;
 
 public class Menu : MonoBehaviour
 {
+    public static bool GameplayPaused {get;private set;}
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetPause(){GameplayPaused=false;}
     private AMenuElement[] menuElements;
     private int currentIndex = 0;
     public AMenuElement CurrentElement { get; private set; }
@@ -84,6 +87,7 @@ public class Menu : MonoBehaviour
 
     public void setMenuOpen(bool open)
     {
+        if(!alwaysOpen)GameplayPaused=open;
         menuOpen = open;
         panel.color = menuOpen ? new Color(.035f,.045f,.045f,.91f) : Color.clear;
         if (menuOpen) {
@@ -91,7 +95,7 @@ public class Menu : MonoBehaviour
             currentIndex = 0;
             if (!CloudTransition.Busy) Time.timeScale = 0f;
         } else {
-            if (!CloudTransition.Busy) Time.timeScale = 1;
+            if (!CloudTransition.Busy) Time.timeScale = WorldTimeStop.Frozen ? 0 : 1;
         }
         canvasGroup.alpha = menuOpen ? 1 : 0;
         canvasGroup.interactable = menuOpen;
