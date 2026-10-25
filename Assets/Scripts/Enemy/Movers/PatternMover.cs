@@ -102,6 +102,7 @@ public abstract class PatternMover : AMover
 
     protected void LockAim(Vector3? point)
     {
+        if(point.HasValue)point=SpectralDecoy.AimPosition(point.Value);
         LockedAim=point;
         foreach (var weapon in controlledShooters)
             if (weapon != null) weapon.MovementAimPoint = point;

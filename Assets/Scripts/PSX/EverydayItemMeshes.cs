@@ -5,6 +5,11 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "DecoyProjector":
+                b.Box(new Vector3(0,-.21f,0),new Vector3(.62f,.29f,.38f),11);
+                b.Drum(new Vector3(0,-.03f,-.04f),.22f,.12f,9,12);
+                b.Prism(new[]{new Vector2(0,.45f),new Vector2(.25f,.12f),new Vector2(.08f,.16f),new Vector2(0,.06f),new Vector2(-.08f,.16f),new Vector2(-.25f,.12f)},.08f,9,Vector3.zero,8);
+                foreach(int side in new[]{-1,1})b.Box(new Vector3(side*.23f,-.22f,-.21f),new Vector3(.07f,.08f,.04f),13);return true;
             case "PocketFan":
                 b.Box(new Vector3(0,-.3f,.02f),new Vector3(.17f,.4f,.18f),1);
                 b.Drum(new Vector3(0,.15f,.04f),.31f,.1f,11,16);

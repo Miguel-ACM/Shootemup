@@ -24,7 +24,7 @@ public abstract class AShooter : MonoBehaviour
 
     protected Vector3 AimPosition(Transform target)
     {
-        return MovementAimPoint ?? (target != null ? target.position : transform.position + Vector3.down);
+        return MovementAimPoint ?? SpectralDecoy.AimPosition(target != null ? target.position : transform.position + Vector3.down);
     }
 
     private void BeginShooting()

@@ -95,6 +95,6 @@ public static class CombatVisuals
     public static Vector2 Aim(Vector3 p)
     {
         var ship=GameObject.FindGameObjectWithTag("Player");
-        return ship!=null ? ((Vector2)(ship.transform.position-p)).normalized : Vector2.down;
+        return ship!=null ? ((Vector2)(SpectralDecoy.AimPosition(ship.transform.position)-p)).normalized : Vector2.down;
     }
 }
