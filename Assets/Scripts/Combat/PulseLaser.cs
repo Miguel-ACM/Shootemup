@@ -9,6 +9,8 @@ public class PulseLaser : CombatRound
     Vector3 muzzle;
     bool attached;
     bool startedSound;
+    bool sustained;
+    AEnemy owner;
     public float warning=.9f, activeTime=.65f, length=22, width=.25f, sweep;
     public bool sideShots;
     float nextSide,clockRate=1;
@@ -17,12 +19,13 @@ public class PulseLaser : CombatRound
     public float Charge=>Mathf.Clamp01(age/Mathf.Max(.01f,warning));
     public bool IsFiring=>Active;
     public bool IsAttachedTo(Transform source)=>attached && emitter==source && isActiveAndEnabled;
-    public float Power=>Active ? Mathf.Min(Mathf.Clamp01((age-warning)/.07f),Mathf.Lerp(.4f,1,Mathf.Clamp01((warning+activeTime-age)/.09f))) :
+    public bool IsSustained=>sustained;
+    public float Power=>Active ? Mathf.Min(Mathf.Clamp01((age-warning)/.07f),sustained ? 1 : Mathf.Lerp(.4f,1,Mathf.Clamp01((warning+activeTime-age)/.09f))) :
         age>=warning+activeTime ? Mathf.Pow(Mathf.Clamp01(1-(age-warning-activeTime)/Cooldown),2)*.4f : 0;
     protected override void Initialize()
     {
         warning=.9f;activeTime=.65f;length=22;width=.25f;sweep=0;sideShots=false;nextSide=0;
-        emitter=null;attached=false;startedSound=false;clockRate=1;transform.localScale=Vector3.one;
+        emitter=null;owner=null;attached=false;startedSound=false;sustained=false;clockRate=1;transform.localScale=Vector3.one;
         visual.enabled=false;collision.enabled=false;
         if(ribbon==null){ribbon=gameObject.AddComponent<BeamRibbon>();ribbon.Build();}
         if(sound==null)sound=gameObject.AddComponent<LaserSound>();
@@ -32,6 +35,7 @@ public class PulseLaser : CombatRound
     public PulseLaser Bind(Transform source,Vector3 localMuzzle)
     {
         emitter=source;muzzle=localMuzzle;attached=source!=null;
+        owner=source!=null ? source.GetComponentInParent<AEnemy>() : null;
         if(attached)
         {
             transform.position=source.TransformPoint(localMuzzle);
@@ -40,17 +44,24 @@ public class PulseLaser : CombatRound
         }
         return this;
     }
-    protected virtual bool Active=>age>=warning && age<warning+activeTime;
+    public PulseLaser Sustain(){sustained=true;lifetime=float.PositiveInfinity;return this;}
+    public void Cease()
+    {
+        sustained=false;activeTime=Mathf.Max(0,age-warning);age=Mathf.Max(age,warning);lifetime=age+Cooldown+.1f;
+        if(!startedSound){startedSound=true;sound.Stop();}
+        if(ports!=null)ports.Hide();sideShots=false;
+    }
+    protected virtual bool Active=>age>=warning && (sustained || age<warning+activeTime);
     protected override void Tick(float dt)
     {
         if(!startedSound){startedSound=true;sound.Charge(warning/clockRate);}
         if(attached)
         {
-            if(emitter==null || !emitter.gameObject.activeInHierarchy)
-            {attached=false;age=Mathf.Max(age,warning+activeTime);}
+            if(emitter==null || !emitter.gameObject.activeInHierarchy || (owner!=null && owner.health<=0))
+            {attached=false;Cease();}
             else transform.position=emitter.TransformPoint(muzzle);
         }
-        if(age>warning+activeTime+Cooldown){Release();return;}
+        if(!sustained && age>warning+activeTime+Cooldown){Release();return;}
         if(Active)heading=CombatVisuals.Rotate(heading,sweep*dt);
         float power=Power;
         sound.Drive(power,Active);
