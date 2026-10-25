@@ -26,9 +26,6 @@ public class WaveOrchestrer : MonoBehaviour
     [SerializeField] private GameObject boss;
 
     List<GameObject> items = new List<GameObject>();
-    bool isShopUp = false;
-    GameObject claimedItem;
-    int currShowing = -1;
     bool choosingRoute;
     LevelChoice routeChoice;
     int challengeWavesRemaining;
@@ -110,7 +107,7 @@ public class WaveOrchestrer : MonoBehaviour
             {
                 // The third wave must be cleared, then pay out before any later combat starts.
                 if(currentWaveNumber<waves.Length && waves[currentWaveNumber]=="encounterChoice")currentWaveNumber++;
-                EraseAllBullets();isShopUp=true;OpenDecision("reward");return;
+                EraseAllBullets();OpenDecision("reward");return;
             }
         }
         GenerateWave();
@@ -148,14 +145,12 @@ public class WaveOrchestrer : MonoBehaviour
         string currWaveType = waves[currentWaveNumber];
         if(currWaveType=="encounterChoice")
         {
-            EraseAllBullets();isWaveComingOut=false;isShopUp=true;OpenEncounterChoice();
+            EraseAllBullets();isWaveComingOut=false;OpenEncounterChoice();
         }
         else if (currWaveType == "coinShop" || currWaveType == "scoreShop" || currWaveType == "multiplierShop" || currWaveType == "reward")
         {
             EraseAllBullets();
             isWaveComingOut = false;
-            isShopUp = true;
-            currShowing = -1;
             OpenDecision(currWaveType);
         }
         else if (currWaveType == "boss")
@@ -206,7 +201,7 @@ public class WaveOrchestrer : MonoBehaviour
         {
             OpenDecision(kind==EncounterKind.Shop ? "coinShop" : kind==EncounterKind.MultShop ? "multiplierShop" : "reward");return;
         }
-        CombatDecision.End();isShopUp=false;
+        CombatDecision.End();
         if(kind==EncounterKind.Challenge)challengeWavesRemaining=3;
         else
         {
@@ -219,7 +214,7 @@ public class WaveOrchestrer : MonoBehaviour
     {
         foreach(var enemy in new List<AEnemy>(AEnemy.Live))if(enemy!=null)Destroy(enemy.gameObject);
         decision=gameObject.AddComponent<DecisionShop>();
-        decision.Open(this,ship.GetComponent<Shipcontroller>(),kind,()=>{isShopUp=false;GenerateWave();});
+        decision.Open(this,ship.GetComponent<Shipcontroller>(),kind,GenerateWave);
     }
 
     private void EraseAllBullets()
@@ -258,12 +253,12 @@ public class WaveOrchestrer : MonoBehaviour
         CombatDecision.Begin();yield return new WaitForSeconds(.8f);
         if(GameOverState.Active)yield break;
         foreach(var enemy in FindObjectsByType<AEnemy>())Destroy(enemy.gameObject);
-        EraseAllBullets();isShopUp=true;
+        EraseAllBullets();
         position=new Vector3(Mathf.Clamp(position.x,Camera.LeftLimit+.8f,Camera.RightLimit-.8f),
             Mathf.Clamp(position.y,Camera.DownLimit+2,Camera.UpLimit-1.5f),1);
         decision=gameObject.AddComponent<DecisionShop>();
         decision.Open(this,ship.GetComponent<Shipcontroller>(),"bossReward",()=>
-        {decision=null;isShopUp=false;StartCoroutine(ChooseNextRoute());},position);
+        {decision=null;StartCoroutine(ChooseNextRoute());},position);
     }
 
     IEnumerator ChooseNextRoute()
@@ -295,14 +290,14 @@ public class WaveOrchestrer : MonoBehaviour
             foreach(var bullet in FindObjectsByType<ABullet>())Destroy(bullet.gameObject);
             foreach(var pickup in FindObjectsByType<APickable>())Destroy(pickup.gameObject);
             foreach(var item in items)if(item!=null)Destroy(item);
-            items.Clear();claimedItem=null;isShopUp=false;currShowing=-1;dialog.Hide();
+            items.Clear();dialog.Hide();
             currentWaveNumber=0;currentWaveEnemies=0;currentWaveKilledEnemies=0;
             challengeWavesRemaining=0;challengeWave=false;EncounterOptions=null;
             waveTime=clearTime=0;currentUnit=null;currentWave=null;stopingWave=false;
             choosingRoute=false;CombatDecision.End();
             waves=DistrictWaves.Sequence();
-        if(GetComponent<TunnelReflectors>()==null)gameObject.AddComponent<TunnelReflectors>();
-        BeginWaves();
+            if(GetComponent<TunnelReflectors>()==null)gameObject.AddComponent<TunnelReflectors>();
+            BeginWaves();
         });
     }
 

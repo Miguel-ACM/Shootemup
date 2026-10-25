@@ -48,7 +48,6 @@ public sealed class ReadabilityProbe : MonoBehaviour
         var waves=FindAnyObjectByType<WaveOrchestrer>();
         var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
         typeof(WaveOrchestrer).GetField("items",flags).SetValue(waves,new System.Collections.Generic.List<GameObject>{selected.gameObject,other.gameObject});
-        typeof(WaveOrchestrer).GetField("isShopUp",flags).SetValue(waves,true);
         selected.Register(waves);other.Register(waves);
         bool rejectsFarther=!waves.TryClaimItem(other),claimsNearest=waves.TryClaimItem(selected);
         int bursts=PSXImpactEffects.BurstCount;float firing=GameRules.playerShootSpeed;

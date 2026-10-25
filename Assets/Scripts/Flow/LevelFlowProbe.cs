@@ -191,7 +191,6 @@ public sealed class LevelFlowProbe : MonoBehaviour
         var waves=FindAnyObjectByType<WaveOrchestrer>();
         // Skip the opening shops only in this probe, so an actual instantiated boss exercises the death hook.
         foreach(var item in FindObjectsByType<AItem>())Destroy(item.gameObject);
-        Field(waves,"isShopUp",false);
         ship.health=73;GameRules.playerShootDamage=9;
         ship.transform.position=new Vector3(0,-4,ship.transform.position.z);
         Call(waves,"SpawnBoss");yield return new WaitForSeconds(.2f);
@@ -231,7 +230,6 @@ public sealed class LevelFlowProbe : MonoBehaviour
         yield return new WaitForSeconds(WaveOrchestrer.OpeningBreather+.1f);
         Check((int)Get(waves,"currentWaveNumber")==1,"Next stage waves did not restart after the opening breather");
         foreach(var item in FindObjectsByType<AItem>())Destroy(item.gameObject);
-        Field(waves,"isShopUp",false);
         Call(waves,"SpawnBoss");yield return new WaitForSeconds(.2f);foreach(var boss in FindObjectsByType<DistrictBoss>())boss.damage(100000);
         yield return new WaitForSeconds(1.1f);
         choice=FindAnyObjectByType<LevelChoice>();Check(choice!=null,"Second boss did not open another choice");

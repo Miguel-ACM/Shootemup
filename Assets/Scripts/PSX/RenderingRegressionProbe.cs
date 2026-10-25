@@ -85,7 +85,6 @@ public sealed class RenderingRegressionProbe : MonoBehaviour
         var other=MakeItem<AMoonItem>(player.transform.position+new Vector3(-2.8f,1,0),"common");
         var flags=BindingFlags.Instance|BindingFlags.NonPublic;
         typeof(WaveOrchestrer).GetField("items",flags).SetValue(waves,new List<GameObject>{chosen.gameObject,other.gameObject});
-        typeof(WaveOrchestrer).GetField("isShopUp",flags).SetValue(waves,true);
         chosen.Register(waves);other.Register(waves);float firing=GameRules.playerShootSpeed;
         float timeout=Time.realtimeSinceStartup+2;
         while(chosen!=null && Time.realtimeSinceStartup<timeout)yield return null;
