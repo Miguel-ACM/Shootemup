@@ -1,0 +1,32 @@
+PASS
+PASS four batched decorative terrain sections without physics colliders
+PASS Shootemup/PSX Valley compiles
+PASS Shootemup/PSX Valley River compiles
+PASS 17381 section 0: bounded finite bank geometry (13894 vertices)
+PASS 17381 section 1: bounded finite bank geometry (15022 vertices)
+PASS 17381 section 2: bounded finite bank geometry (14102 vertices)
+PASS 17381 section 3: bounded finite bank geometry (13743 vertices)
+PASS 17381 river and bank section seam 0 is continuous
+PASS 17381 river and bank section seam 1 is continuous
+PASS 17381 river and bank section seam 2 is continuous
+PASS 17381 river and bank section seam 3 is continuous
+MEASURE 17381: 56761 terrain vertices across four batched sections; no additional renderers or per-frame shore work
+PASS 421 section 0: bounded finite bank geometry (13931 vertices)
+PASS 421 section 1: bounded finite bank geometry (13531 vertices)
+PASS 421 section 2: bounded finite bank geometry (12547 vertices)
+PASS 421 section 3: bounded finite bank geometry (13460 vertices)
+PASS 421 river and bank section seam 0 is continuous
+PASS 421 river and bank section seam 1 is continuous
+PASS 421 river and bank section seam 2 is continuous
+PASS 421 river and bank section seam 3 is continuous
+MEASURE 421: 53469 terrain vertices across four batched sections; no additional renderers or per-frame shore work
+PASS 9826 section 0: bounded finite bank geometry (14161 vertices)
+PASS 9826 section 1: bounded finite bank geometry (14201 vertices)
+PASS 9826 section 2: bounded finite bank geometry (13302 vertices)
+PASS 9826 section 3: bounded finite bank geometry (12424 vertices)
+PASS 9826 river and bank section seam 0 is continuous
+PASS 9826 river and bank section seam 1 is continuous
+PASS 9826 river and bank section seam 2 is continuous
+PASS 9826 river and bank section seam 3 is continuous
+MEASURE 9826: 54088 terrain vertices across four batched sections; no additional renderers or per-frame shore work
+PASS scrolling through the full-loop wrap keeps all terrain sections attached

@@ -1,0 +1,4 @@
+PASS
+PASS four batched decorative terrain sections without physics colliders
+PASS Shootemup/PSX Valley compiles
+PASS Shootemup/PSX Valley River compiles
