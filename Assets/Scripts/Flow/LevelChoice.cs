@@ -28,6 +28,7 @@ public sealed class LevelChoice : MonoBehaviour
     TMP_FontAsset font;
     float age;
     bool committed;
+    public const float ExitSeconds=.45f;
 
     public static LevelChoice Open(Transform player,Action<LevelId> picked)
     {
@@ -132,8 +133,26 @@ public sealed class LevelChoice : MonoBehaviour
     {
         yield return new WaitForSeconds(.1f);
         int index=captions.Length==2 ? (Charge.Side<0 ? 0 : 1) : Charge.Side-1;
+        for(float elapsed=0;elapsed<ExitSeconds;elapsed+=Time.deltaTime)
+        {
+            AnimateExit(index,Mathf.Clamp01(elapsed/ExitSeconds));yield return null;
+        }
+        AnimateExit(index,1);Active=false;
         if(encounterPicked!=null)encounterPicked(index);else picked?.Invoke(Options[index]);
     }
+    void AnimateExit(int selected,float progress)
+    {
+        float t=Mathf.Clamp01(progress),ease=Mathf.SmoothStep(0,1,t);
+        group.alpha=1-Mathf.SmoothStep(0,1,t*t);
+        for(int i=0;i<panels.Length;i++)
+        {
+            bool chosen=i==selected;float x=-202.5f+panelWidth*(i+.5f);
+            panelGroups[i].alpha=1-Mathf.SmoothStep(0,1,Mathf.Clamp01(t*(chosen ? 1 : 1.5f)));
+            panels[i].anchoredPosition=new Vector2(x+(chosen ? 0 : Mathf.Sign(x)*30*ease),chosen ? 16*ease : 0);
+            contents[i].localScale=Vector3.one*(chosen ? 1+.14f*Mathf.Sin(t*Mathf.PI)-.12f*t*t : 1-.1f*ease);
+        }
+    }
+
     static RectTransform Rect(Transform parent,string name,Vector2 size,Vector2 position)
     {
         var go=new GameObject(name,typeof(RectTransform));go.transform.SetParent(parent,false);
