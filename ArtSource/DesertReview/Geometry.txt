@@ -1,0 +1,1 @@
+PASS: preserved serialized IDs; 400 normal loops and 50 extended loops; seamless dune heights; 57 seeded compositions with swept spacing checks.
