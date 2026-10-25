@@ -11,6 +11,8 @@ public sealed class InfernalCaldera : MonoBehaviour
     void Start()
     {
         lava=new Material(Resources.Load<Shader>("CalderaLava"));basalt=new Material(Resources.Load<Shader>("CalderaBasalt"));
+        lava.SetTexture("_CrustMap",Resources.Load<Texture2D>("CalderaCrust"));
+        lava.SetTexture("_FlowMap",Resources.Load<Texture2D>("CalderaFlow"));
         var bed=new Mesh{name="Continuous molten caldera"};bed.vertices=new[]{new Vector3(-16,-25),new Vector3(-16,25),new Vector3(16,25),new Vector3(16,-25)};bed.triangles=new[]{0,1,2,0,2,3};bed.RecalculateBounds();meshes.Add(bed);
         Add("Molten depth",bed,lava,transform,new Vector3(0,0,125),-80);
         for(int i=0;i<4;i++)

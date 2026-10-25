@@ -1,0 +1,5 @@
+PASS
+Native Unity material rendered at 270x480 with the game PSX compositor.
+96 frames over 8 seconds: downstream terrain scroll plus dual-phase curl advection, including a full seven-second distortion cycle.
+Crust and velocity textures present, linear, repeating. No gameplay started.
+Shader compilation passed. Three texture samples, one pass; no extra objects or lights for lava animation.
