@@ -1,0 +1,12 @@
+PASS
+570 seeded compositions, all eight routes, exact level structure, two-second holds, ten distinct minibosses and native models passed.
+Fields: FieldsHeavyWing, health 480,0, seven waves plus opening item / two choices / miniboss / two earned choices.
+Tunnel: TunnelDefensePlatform, health 633,6, seven waves plus opening item / two choices / miniboss / two earned choices.
+Snow: SnowSiegeCraft, health 556,8, seven waves plus opening item / two choices / miniboss / two earned choices.
+Thunder: StormReactor, health 633,6, seven waves plus opening item / two choices / miniboss / two earned choices.
+City: CityCommandCarrier, health 556,8, seven waves plus opening item / two choices / miniboss / two earned choices.
+Desert: ScarabDredger, health 673,2, seven waves plus opening item / two choices / miniboss / two earned choices.
+Candyland: TaffyDuelist, health 633,6, seven waves plus opening item / two choices / miniboss / two earned choices.
+Space: OrbitalWarden, health 873,2, seven waves plus opening item / two choices / miniboss / two earned choices.
+Underwater: ReefLeviathan, health 828,8, seven waves plus opening item / two choices / miniboss / two earned choices.
+Hell: InfernalFerryman, health 1066,0, seven waves plus opening item / two choices / miniboss / two earned choices.

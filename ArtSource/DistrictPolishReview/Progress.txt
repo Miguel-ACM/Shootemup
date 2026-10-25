@@ -1,0 +1,3 @@
+Snow adjusted late-wave peak: 51
+Tunnel adjusted late-wave peak: 18
+Final offer plates appear only after settling, with categories below the models

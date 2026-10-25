@@ -1,0 +1,31 @@
+PASS
+Every level opens with a free item decision
+Item labels stay hidden while offers are falling
+Wide bottom skip fills over two seconds from the far screen side
+Boss item can be explicitly skipped
+Miniboss encounter spawns a dedicated hull
+A 20-second timeout makes the miniboss leave without kill rewards
+Post-miniboss choice 9 follows the actual victory result
+Post-miniboss choice 11 follows the actual victory result
+Timely miniboss kill earns its decisions
+Fields has a real mobile miniboss with an early attack
+Tunnel has a real mobile miniboss with an early attack
+Snow has a real mobile miniboss with an early attack
+Thunder has a real mobile miniboss with an early attack
+City has a real mobile miniboss with an early attack
+Desert has a real mobile miniboss with an early attack
+Candyland has a real mobile miniboss with an early attack
+Space has a real mobile miniboss with an early attack
+Underwater has a real mobile miniboss with an early attack
+Visible environmental volcanoes warn and fire real pooled bullets
+Hell has a real mobile miniboss with an early attack
+Miniboss health and countdown are visible in the actual side HUD
+Thunder's six attached lasers smoothly reverse every 60 degrees
+Crab uses sixteen overlapping modeled arm pieces
+Detailed submarine uses three eruption crowns and dense six-lane charge wakes; peak 102
+Underwater has moving marine life and seabed shadow models
+Only Plains' horizontal-release carrier receives the orange warning color
+Items do not scale boss health; Plains boss has 1200 base health
+Snow adjusted late-wave peak: 51
+Tunnel adjusted late-wave peak: 18
+Final offer plates appear only after settling, with categories below the models

@@ -78,7 +78,7 @@ public static class ReviewDepthExpansion
             var window=EnemyEditorWindow.Open();
             foreach(var name in new[]{nameof(SkullRevenant),nameof(GhostGalleon),nameof(CinderImp),nameof(HellCrabBoss),nameof(ReefDart),nameof(MantaRay),nameof(Bathysphere),nameof(AbyssSubmarineBoss)})
             {window.Select(name);window.CaptureModel(Folder+"/Model-"+name+".png");}
-            window.Close();if(EnemyEditorWindow.Catalog.Count!=51)throw new Exception("Incomplete editor catalog");
+            window.Close();if(EnemyEditorWindow.Catalog.Count!=DistrictWaves.EnemyTypes.Length+Enum.GetValues(typeof(LevelId)).Length)throw new Exception("Incomplete editor catalog");
             File.WriteAllText(Folder+"/Editor.txt","PASS\n"+string.Join("\n",notes)+"\nAll eight new native models rendered; all 51 enemies/bosses in editor.\n");
             EditorSceneManager.OpenScene("Assets/Scenes/Title.unity");SessionState.SetBool("DepthReview",true);EditorApplication.isPlaying=true;
         }

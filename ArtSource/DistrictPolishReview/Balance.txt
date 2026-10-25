@@ -1,0 +1,10 @@
+Fields late-wave live peak in first 5s: 30 bullets; 7 ships launched.
+Tunnel late-wave live peak in first 5s: 18 bullets; 6 ships launched.
+Snow late-wave live peak in first 5s: 102 bullets; 6 ships launched.
+Thunder late-wave live peak in first 5s: 24 bullets; 7 ships launched.
+City late-wave live peak in first 5s: 13 bullets; 8 ships launched.
+Desert late-wave live peak in first 5s: 66 bullets; 15 ships launched.
+Candyland late-wave live peak in first 5s: 30 bullets; 19 ships launched.
+Space late-wave live peak in first 5s: 48 bullets; 7 ships launched.
+Underwater late-wave live peak in first 5s: 27 bullets; 6 ships launched.
+Hell late-wave live peak in first 5s: 48 bullets; 15 ships launched.
