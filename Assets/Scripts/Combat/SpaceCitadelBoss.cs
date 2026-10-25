@@ -8,11 +8,12 @@ public sealed class SpaceCitadelBoss : DistrictBoss
     PulseLaser centralLaser;
     bool completing;
     float iris;
+    Vector2 barrageAxis=Vector2.down;
     public SpaceBossPart[] Parts=>parts;
     public bool IsDefeated=>completing;
     public bool CoreExposed=>parts[0]!=null && parts[1]!=null && parts[0].health<=0 && parts[1].health<=0;
     public override bool CanBeTargeted=>false;
-    protected override void Configure(){hull=45;hullScale=1;health=2000;attackInterval=.62f;nextAttack=2.8f;}
+    protected override void Configure(){hull=45;hullScale=1;health=2000;attackInterval=.46f;nextAttack=2.0f;}
     protected override void Start()
     {
         base.Start();GetComponent<Collider2D>().enabled=false;GetComponent<CombatHullVisual>().enabled=false;
@@ -47,31 +48,40 @@ public sealed class SpaceCitadelBoss : DistrictBoss
         {
             centralLaser=CombatRound.Launch<PulseLaser>(Hull.TransformPoint(new Vector3(0,-1.48f,-.30f)),Vector2.down,0);
             if(centralLaser!=null)
-            {centralLaser.Bind(Hull,new Vector3(0,-1.48f,-.30f));centralLaser.warning=1.2f;centralLaser.activeTime=1.05f;centralLaser.width=phaseTwo ? .42f : .34f;}
+            {centralLaser.Bind(Hull,new Vector3(0,-1.48f,-.30f));centralLaser.warning=1.05f;centralLaser.activeTime=1.2f;centralLaser.width=phaseTwo ? .42f : .34f;}
         }
-        else if(beat==0 || beat==1 || beat==8)
+        else if(beat<3)
         {
-            bool fired=false;
-            for(int i=2;i<4;i++)if(parts[i]!=null && parts[i].health>0)
+            for(int i=2;i<4;i++)
             {
-                int side=i==2 ? -1 : 1,count=phaseTwo ? 5 : 3;
+                bool turret=parts[i]!=null && parts[i].health>0;
+                int side=i==2 ? -1 : 1,count=turret ? (phaseTwo ? 5 : 3) : (phaseTwo ? 3 : 2);
                 // Half-lane replies form nested mirrored arcs, rather than repeating identical rays.
-                var axis=CombatVisuals.Rotate(Vector2.down,side*(48+(beat==1 ? 6 : beat==8 ? -6 : 0)));
-                PetalFan<RicochetBolt>(parts[i].transform.position,axis,count,12,phaseTwo ? 4.7f : 4.1f,.17f,.16f);
-                fired=true;
+                var axis=CombatVisuals.Rotate(Vector2.down,side*(48+(beat-1)*6));
+                var port=turret ? parts[i].transform.position : Hull.TransformPoint(new Vector3(side*.4f,-.9f,-.4f));
+                PetalFan<RicochetBolt>(port,axis,count,12,phaseTwo ? 5.0f : 4.5f,.17f,.16f);
             }
-            if(!fired)for(int s=-1;s<=1;s+=2)Fire<RicochetBolt>(Hull.TransformPoint(new Vector3(s*.4f,-.9f,-.4f)),CombatVisuals.Rotate(Vector2.down,s*56),4.5f,.17f);
         }
-        else if(beat==10)
+        else if(beat==6 || beat==7)
         {
-            for(int i=2;i<4;i++)if(parts[i]!=null && parts[i].health>0)
+            if(beat==6)barrageAxis=Aim;
+            for(int side=-1;side<=1;side+=2)
             {
-                var port=parts[i].transform.position;var aim=CombatVisuals.Aim(port);
-                for(int s=-1;s<=1;s++)Fire<NeedleRound>(port,CombatVisuals.Rotate(aim,s*9),6.2f,.14f);
+                var port=Hull.TransformPoint(new Vector3(side*.4f,-.9f,-.4f));
+                PetalFan<NeedleRound>(port,CombatVisuals.Rotate(barrageAxis,side*(beat==6 ? 10 : 5)),phaseTwo ? 5 : 3,9,6.7f,.14f);
             }
-            if(CoreExposed)Fan<SimpleRound>(5,15,4.8f,.15f);
         }
+        else if(phaseTwo && beat>=8 && beat<=10)
+        {
+            // Core pressure survives gun destruction. Each exposed-reactor phrase
+            // answers the laser with a slow, bowed fan and half-lane replies.
+            if(beat==8)barrageAxis=Aim;
+            PetalFan<SimpleRound>(Hull.TransformPoint(new Vector3(0,-.7f,-.5f)),
+                CombatVisuals.Rotate(barrageAxis,(beat-9)*5),9,13,5.3f,.15f,.18f);
+        }
+        // Beats 3, 5 and 11 deliberately breathe; broken guns still reduce ricochets.
     }
+    protected override void OnPhaseTwo(){volley=0;nextAttack=age+1.2f;}
     public void PartChanged()
     {
         if(completing)return;
