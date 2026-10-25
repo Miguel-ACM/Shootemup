@@ -57,6 +57,9 @@ public sealed class WavePart
         if(Enemy=="OrbitalScout")score=new[]{Seconds*.24f,Seconds*.34f,Seconds*.48f,Seconds*.61f,Seconds*.72f};
         if(Enemy=="OrbitalCarrier")score=new[]{Seconds*.25f,Seconds*.39f,Seconds*.58f,Seconds*.72f};
         if(Enemy=="LaserSatellite")score=new[]{Seconds*.28f,Seconds*.51f,Seconds*.72f};
+        if(Enemy=="SkullRevenant" || Enemy=="CinderImp")score=new[]{Seconds*.27f,Seconds*.40f,Seconds*.57f,Seconds*.72f};
+        if(Enemy=="GhostGalleon")score=new[]{Seconds*.27f,Seconds*.43f,Seconds*.65f};
+        if(Enemy=="ReefDart" || Enemy=="MantaRay" || Enemy=="Bathysphere")score=new[]{Seconds*.30f,Seconds*.51f,Seconds*.73f};
         EnemyTuning.TuneFormation(Enemy,units,Seconds,ref score);
         foreach(var unit in units)unit.fireTimes=score;
         return units;
@@ -74,6 +77,12 @@ public static class WaveGeometry
         int hull;float scale;
         switch(enemy)
         {
+            case "SkullRevenant":hull=46;scale=.47f;break;
+            case "GhostGalleon":hull=47;scale=.64f;break;
+            case "CinderImp":hull=48;scale=.40f;break;
+            case "ReefDart":hull=50;scale=.49f;break;
+            case "MantaRay":hull=51;scale=.57f;break;
+            case "Bathysphere":hull=52;scale=.62f;break;
             case "OrbitalScout":hull=41;scale=.46f;break;
             case "LaserSatellite":hull=42;scale=.56f;break;
             case "OrbitalMoonlet":hull=44;scale=.28f;break;

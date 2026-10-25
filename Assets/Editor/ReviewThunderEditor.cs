@@ -56,7 +56,7 @@ public static class ReviewThunderEditor
             asset.enemies.Add(profile);asset.Changed();var tuned=part.Generate(0,1);
             if(Mathf.Abs(tuned[0].flightDuration-original[0].flightDuration/1.25f)>.001f || tuned[0].fireTimes.Length!=3)throw new Exception("Formation timing override ignored");
             WaveComposer.Create(8);profile.movement=.6f;asset.Changed();WaveComposer.Create(8);
-            if(EnemyEditorWindow.Catalog.Count!=43)throw new Exception("Incomplete enemy/boss catalog");
+            if(EnemyEditorWindow.Catalog.Count!=51)throw new Exception("Incomplete enemy/boss catalog");
             File.WriteAllText(Folder+"/Editor.txt","PASS\nAll 43 authored enemies/bosses listed. Health, rotor speed, projectile speed/damage saved and applied by runtime spawn factory. Disk persistence and Undo passed. Formation movement/accent edits rebuild wave geometry, including slower movement. Native model preview rendered.\n");
         }
         catch(Exception e){File.WriteAllText(Folder+"/Runtime.txt","FAIL editor\n"+e);EditorApplication.Exit(1);return;}

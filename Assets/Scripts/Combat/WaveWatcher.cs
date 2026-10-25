@@ -159,11 +159,11 @@ public sealed partial class WaveWatcher : MonoBehaviour
     void SetContext(LevelId level,int seed)
     {
         LevelRun.Reset(LevelId.Fields,seed);
-        for(int i=1;i<ReviewLoop;i++){LevelRun.Advance(LevelId.Snow);LevelRun.Advance(LevelId.Thunder);LevelRun.Advance(LevelId.Fields);}
-        if(LevelRun.Tier(level)>=2)LevelRun.Advance(LevelRun.Tier(level)==2 ? level : LevelId.Snow);
+        for(int i=1;i<ReviewLoop;i++){LevelRun.Advance(LevelId.Snow);LevelRun.Advance(LevelId.Thunder);LevelRun.Advance(LevelId.Space);LevelRun.Advance(LevelId.Hell);LevelRun.Advance(LevelId.Fields);}
+        if(LevelRun.Tier(level)>=2)LevelRun.Advance(LevelRun.Tier(level)==2 ? level : level==LevelId.Tunnel || level==LevelId.Candyland ? LevelId.City : LevelId.Snow);
         if(LevelRun.Tier(level)>=3)LevelRun.Advance(LevelRun.Tier(level)==3 ? level : LevelId.Thunder);
-        if(LevelRun.Tier(level)>=4)LevelRun.Advance(LevelRun.Tier(level)==4 ? level : LevelId.Desert);
-        if(LevelRun.Tier(level)==5)LevelRun.Advance(LevelId.Space);
+        if(LevelRun.Tier(level)>=4)LevelRun.Advance(LevelRun.Tier(level)==4 ? level : LevelId.Space);
+        if(LevelRun.Tier(level)==5)LevelRun.Advance(LevelId.Hell);
     }
     public void SelectLoop(int loop){if(!Ready)return;ReviewLoop=Mathf.Clamp(loop,1,99);SetContext(Level,LevelRun.Seed);WavePreparation.Begin();Replay();}
     public void SelectView(WatcherView view)
@@ -185,7 +185,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
             if(View==WatcherView.Projectiles)
             {
                 View=WatcherView.Waves;
-                var order=new[]{LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Tunnel,LevelId.Desert,LevelId.Candyland,LevelId.Space};
+                var order=(LevelId[])System.Enum.GetValues(typeof(LevelId));
                 SelectLevel(order[(System.Array.IndexOf(order,Level)+1)%order.Length]);
             }
             else View=(WatcherView)((int)View+1);
@@ -247,6 +247,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
                 else if(boss is DesertWormBoss worm){for(int i=1;i<=4;i++)worm.Cores[i].damage(1000000);}
                 else if(boss is SpaceCitadelBoss station){station.Parts[0].damage(1000000);station.Parts[1].damage(1000000);}
                 else if(boss is ThunderLanceBoss thunder)boss.health*=thunder.phaseTwoThreshold*.95f;
+                else if(boss is HellCrabBoss crab)crab.Eyes[0].damage(1000000);
                 else boss.health*=.49f;
             }
             recipe=WatcherCatalog.Pretty(DistrictWaves.BossType.Name);Refresh();

@@ -22,6 +22,9 @@ public abstract class DistrictEnemy : AEnemy
     {
         if(IsMiniboss)return;
         IsMiniboss=true;health*=.68f;attackInterval*=.74f;nextAttack=.45f;
+        // These minibosses are three-ship guards, rather than one heavy fortress.
+        if(this is Bathysphere || this is GhostGalleon || this is SandWorm)health*=3;
+        if(this is OrbitalCarrier)health*=1.6f;
         if(movement is TopTracker tracker)tracker.BeginAssault();
         if(movement is Slalom slalom)slalom.BeginAssault();
     }
@@ -50,7 +53,7 @@ public abstract class DistrictEnemy : AEnemy
         model.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.CombatHull(enemy.hull);
         var renderer=model.AddComponent<MeshRenderer>();renderer.sharedMaterial=enemy is SpaceSatellite || enemy is SpaceCitadelBoss ? SpaceMaterials.Fleet : enemy.hull>=35 && enemy.hull<=38 ? CandyMaterials.Glaze : enemy is FieldsBomberBoss ? CombatMaterials.Fortress : CombatMaterials.Fleet;renderer.sortingLayerName="Enemy";
         enemy.Hull=model.transform;go.AddComponent<CombatHullVisual>().model=model.transform;
-        if(!(enemy is TunnelSawBoss) && !(enemy is GroundVehicle) && !(enemy is SpaceSatellite) && !(enemy is SpaceCitadelBoss))
+        if(!(enemy is TunnelSawBoss) && !(enemy is GroundVehicle) && !(enemy is SpaceSatellite) && !(enemy is SpaceCitadelBoss) && !(enemy is InfernalEnemy) && !(enemy is OceanEnemy) && !(enemy is HellCrabBoss) && !(enemy is AbyssSubmarineBoss))
         {
             var exhaust=go.AddComponent<EnemyThrusters>();exhaust.visualRoot=model.transform;
             exhaust.sockets=IndustrialMeshFactory.CombatEngineSockets(enemy.hull);

@@ -7,5 +7,7 @@
     <type fullname="ThunderLanceBoss" preserve="fields" />
     <type fullname="CityDuoBoss" preserve="fields" />
     <type fullname="TunnelSawBoss" preserve="fields" />
+    <type fullname="HellCrabBoss" preserve="fields" />
+    <type fullname="AbyssSubmarineBoss" preserve="fields" />
   </assembly>
 </linker>

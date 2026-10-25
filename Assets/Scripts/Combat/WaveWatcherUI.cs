@@ -63,10 +63,10 @@ public sealed partial class WaveWatcher
         leftPanel=Box(transform,"Watcher levels",new Vector2(-365,0),new Vector2(270,674),Panel);
         rightPanel=Box(transform,"Watcher catalog",new Vector2(365,0),new Vector2(270,674),Panel);
         Label(leftPanel,"WAVE WATCHER",22,new Vector2(0,307),new Vector2(250,36));
-        foreach(var level in new[]{LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Tunnel,LevelId.Desert,LevelId.Candyland})
+        foreach(var level in new[]{LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Desert,LevelId.Thunder,LevelId.Tunnel,LevelId.Candyland,LevelId.Space,LevelId.Underwater,LevelId.Hell})
         {
             int row=levels.Count;var chosen=level;
-            levels[level]=Button(leftPanel,level==LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(),new Vector2(0,270-row*25),new Vector2(230,22),()=>SelectLevel(chosen)).GetComponent<Image>();
+            levels[level]=Button(leftPanel,level==LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(),new Vector2(0,280-row*18),new Vector2(230,17),()=>SelectLevel(chosen)).GetComponent<Image>();
         }
         var seedBox=Box(leftPanel,"Seed",new Vector2(-26,83),new Vector2(178,32),ButtonColor);
         Label(seedBox,"SEED",12,new Vector2(-64,0),new Vector2(42,32));

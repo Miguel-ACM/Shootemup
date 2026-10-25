@@ -16,6 +16,8 @@ public static class LevelProjectilePalette
             case LevelId.Desert:return new Color(.39f,.24f,1);
             case LevelId.Candyland:return new Color(.65f,.95f,.12f);
             case LevelId.Space:return new Color(1,.34f,.46f);
+            case LevelId.Underwater:return new Color(1,.63f,.22f);
+            case LevelId.Hell:return new Color(.30f,1,.78f);
             default:return new Color(1,.28f,.20f);
         }
     }

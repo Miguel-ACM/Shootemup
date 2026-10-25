@@ -19,6 +19,8 @@ public static class WatcherCatalog
     {
         switch(level)
         {
+            case LevelId.Hell:return new[]{typeof(SkullRevenant),typeof(GhostGalleon),typeof(CinderImp)};
+            case LevelId.Underwater:return new[]{typeof(ReefDart),typeof(MantaRay),typeof(Bathysphere)};
             case LevelId.Space:return new[]{typeof(OrbitalScout),typeof(LaserSatellite),typeof(OrbitalCarrier),typeof(OrbitalMoonlet)};
             case LevelId.Candyland:return new[]{typeof(BonbonSkirmisher),typeof(WaferDart),typeof(MintSpinner)};
             case LevelId.Desert:return new[]{typeof(SandEmitter),typeof(SandStriker),typeof(SandWorm)};
