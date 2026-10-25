@@ -106,8 +106,7 @@ public sealed class SpriteProjectileReview : MonoBehaviour
                 }
             }
             Check(true,type.Name+" collision matches "+checkedPixels+" opaque/transparent pixel samples, including holes, at 3 rotations");
-            var tint=new MaterialPropertyBlock();shot.GetComponent<SpriteRenderer>().GetPropertyBlock(tint);
-            Check(tint.GetColor("_SpriteTint")==shot.Accent,type.Name+" colour supplied separately by code");shot.Vanish();
+            Check(shot.GetComponent<SpriteRenderer>().sharedMaterial.GetColor("_SpriteTint")==shot.Accent,type.Name+" district colour supplied separately by code");shot.Vanish();
         }
         var round=CombatRound.Launch<SimpleRound>(Vector3.zero,Vector2.down);var original=round.GetComponent<SpriteRenderer>().sprite;
         round.GetComponent<SpriteRenderer>().color=Color.gray;round.Vanish();

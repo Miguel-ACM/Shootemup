@@ -1,0 +1,4 @@
+PASS
+PASS profile kept all 280 hostile projectiles active
+MEASURE physics+transform sync 280 mixed rounds / 24 hulls: median 26.5286 ms; p95 36.5831 ms.
+MEASURE unique round objects across four 280-round bursts: 976.

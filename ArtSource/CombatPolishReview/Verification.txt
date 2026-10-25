@@ -1,0 +1,110 @@
+PASS
+PASS profile kept all 280 hostile projectiles active
+MEASURE physics+transform sync 280 mixed rounds / 24 hulls: median 20.7660 ms; p95 25.2421 ms.
+MEASURE unique round objects across four 280-round bursts: 280.
+PASS hostile bullet cap remains 280
+PASS hostile rounds ignore enemy hulls, hostile rounds and ordinary friendly rounds
+PASS player hits, companion interception and destructible plasma contacts retained
+PASS actual friendly projectile destroys plasma through the new collision filter
+PASS actual hostile projectile contact retained on layer 0
+PASS actual hostile projectile contact retained on layer 7
+PASS SimpleRound: unchanged pixel collision outline, 507 opaque/transparent samples at three angles
+PASS NeedleRound: unchanged pixel collision outline, 480 opaque/transparent samples at three angles
+PASS BurstShell: unchanged pixel collision outline, 1140 opaque/transparent samples at three angles
+PASS SuspendedRound: unchanged pixel collision outline, 1071 opaque/transparent samples at three angles
+PASS HelixRound: unchanged pixel collision outline, 693 opaque/transparent samples at three angles
+PASS RicochetBolt: unchanged pixel collision outline, 714 opaque/transparent samples at three angles
+PASS GuidedMissile: unchanged pixel collision outline, 858 opaque/transparent samples at three angles
+PASS PlasmaOrb: unchanged pixel collision outline, 1083 opaque/transparent samples at three angles
+PASS ProximityMine: unchanged pixel collision outline, 1026 opaque/transparent samples at three angles
+PASS ReturningDisc: unchanged pixel collision outline, 1083 opaque/transparent samples at three angles
+PASS ScatterCarrier: unchanged pixel collision outline, 1380 opaque/transparent samples at three angles
+PASS LaserSideRound: unchanged pixel collision outline, 540 opaque/transparent samples at three angles
+PASS Fields SimpleRound: shared district ink on reused sprite
+PASS Fields NeedleRound: shared district ink on reused sprite
+PASS Fields BurstShell: shared district ink on reused sprite
+PASS Fields SuspendedRound: shared district ink on reused sprite
+PASS Fields HelixRound: shared district ink on reused sprite
+PASS Fields RicochetBolt: shared district ink on reused sprite
+PASS Fields GuidedMissile: shared district ink on reused sprite
+PASS Fields PlasmaOrb: shared district ink on reused sprite
+PASS Fields ProximityMine: shared district ink on reused sprite
+PASS Fields ReturningDisc: shared district ink on reused sprite
+PASS Fields ScatterCarrier: shared district ink on reused sprite
+PASS Fields LaserSideRound: shared district ink on reused sprite
+PASS Tunnel SimpleRound: shared district ink on reused sprite
+PASS Tunnel NeedleRound: shared district ink on reused sprite
+PASS Tunnel BurstShell: shared district ink on reused sprite
+PASS Tunnel SuspendedRound: shared district ink on reused sprite
+PASS Tunnel HelixRound: shared district ink on reused sprite
+PASS Tunnel RicochetBolt: shared district ink on reused sprite
+PASS Tunnel GuidedMissile: shared district ink on reused sprite
+PASS Tunnel PlasmaOrb: shared district ink on reused sprite
+PASS Tunnel ProximityMine: shared district ink on reused sprite
+PASS Tunnel ReturningDisc: shared district ink on reused sprite
+PASS Tunnel ScatterCarrier: shared district ink on reused sprite
+PASS Tunnel LaserSideRound: shared district ink on reused sprite
+PASS Snow SimpleRound: shared district ink on reused sprite
+PASS Snow NeedleRound: shared district ink on reused sprite
+PASS Snow BurstShell: shared district ink on reused sprite
+PASS Snow SuspendedRound: shared district ink on reused sprite
+PASS Snow HelixRound: shared district ink on reused sprite
+PASS Snow RicochetBolt: shared district ink on reused sprite
+PASS Snow GuidedMissile: shared district ink on reused sprite
+PASS Snow PlasmaOrb: shared district ink on reused sprite
+PASS Snow ProximityMine: shared district ink on reused sprite
+PASS Snow ReturningDisc: shared district ink on reused sprite
+PASS Snow ScatterCarrier: shared district ink on reused sprite
+PASS Snow LaserSideRound: shared district ink on reused sprite
+PASS Thunder SimpleRound: shared district ink on reused sprite
+PASS Thunder NeedleRound: shared district ink on reused sprite
+PASS Thunder BurstShell: shared district ink on reused sprite
+PASS Thunder SuspendedRound: shared district ink on reused sprite
+PASS Thunder HelixRound: shared district ink on reused sprite
+PASS Thunder RicochetBolt: shared district ink on reused sprite
+PASS Thunder GuidedMissile: shared district ink on reused sprite
+PASS Thunder PlasmaOrb: shared district ink on reused sprite
+PASS Thunder ProximityMine: shared district ink on reused sprite
+PASS Thunder ReturningDisc: shared district ink on reused sprite
+PASS Thunder ScatterCarrier: shared district ink on reused sprite
+PASS Thunder LaserSideRound: shared district ink on reused sprite
+PASS City SimpleRound: shared district ink on reused sprite
+PASS City NeedleRound: shared district ink on reused sprite
+PASS City BurstShell: shared district ink on reused sprite
+PASS City SuspendedRound: shared district ink on reused sprite
+PASS City HelixRound: shared district ink on reused sprite
+PASS City RicochetBolt: shared district ink on reused sprite
+PASS City GuidedMissile: shared district ink on reused sprite
+PASS City PlasmaOrb: shared district ink on reused sprite
+PASS City ProximityMine: shared district ink on reused sprite
+PASS City ReturningDisc: shared district ink on reused sprite
+PASS City ScatterCarrier: shared district ink on reused sprite
+PASS City LaserSideRound: shared district ink on reused sprite
+PASS Desert SimpleRound: shared district ink on reused sprite
+PASS Desert NeedleRound: shared district ink on reused sprite
+PASS Desert BurstShell: shared district ink on reused sprite
+PASS Desert SuspendedRound: shared district ink on reused sprite
+PASS Desert HelixRound: shared district ink on reused sprite
+PASS Desert RicochetBolt: shared district ink on reused sprite
+PASS Desert GuidedMissile: shared district ink on reused sprite
+PASS Desert PlasmaOrb: shared district ink on reused sprite
+PASS Desert ProximityMine: shared district ink on reused sprite
+PASS Desert ReturningDisc: shared district ink on reused sprite
+PASS Desert ScatterCarrier: shared district ink on reused sprite
+PASS Desert LaserSideRound: shared district ink on reused sprite
+PASS Candyland SimpleRound: shared district ink on reused sprite
+PASS Candyland NeedleRound: shared district ink on reused sprite
+PASS Candyland BurstShell: shared district ink on reused sprite
+PASS Candyland SuspendedRound: shared district ink on reused sprite
+PASS Candyland HelixRound: shared district ink on reused sprite
+PASS Candyland RicochetBolt: shared district ink on reused sprite
+PASS Candyland GuidedMissile: shared district ink on reused sprite
+PASS Candyland PlasmaOrb: shared district ink on reused sprite
+PASS Candyland ProximityMine: shared district ink on reused sprite
+PASS Candyland ReturningDisc: shared district ink on reused sprite
+PASS Candyland ScatterCarrier: shared district ink on reused sprite
+PASS Candyland LaserSideRound: shared district ink on reused sprite
+PASS tanks drive down relative to terrain and turn chassis along road: 2210 observations; max heading error 0,03 degrees
+PASS moving road tank remains killable with the stock gun: 0,40s from first hit
+PASS Snow boss health reduced from 3200 to 2100 with run scaling preserved
+PASS Snow boss retains its shell barrage and harder second phase; peak 280 rounds

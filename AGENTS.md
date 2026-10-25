@@ -29,6 +29,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Snow designs need particular care. A round boss must look like a designed spacecraft, not a plate covered with buttons.
 - Show projectile art previews and wait for Miguel's approval before replacing game artwork. The all-sphere 3D direction was rejected. Draw sprite pixels directly or with a Python script; do not use AI image generation. Keep distinct silhouettes and precise bullet-hell readability.
 - Author bullet textures in neutral white/grayscale with transparent backgrounds. Apply all projectile colors in game code; never bake hue into the sprite pixels.
+- Keep hostile bullets within one contrasting colour family per district, including beams and secondary shots. Preserve separate readable player fire and the approved pixel sprite shapes. Dense bullet patterns must run smoothly; preserve challenge while reducing collision, allocation and rendering overhead.
 - The standard bullet must be circular. The lopsided returning ring and bent-arrow helix previews were rejected; do not treat technical image checks as proof of good visual design.
 - Thrusters are separate animated effects like the player's, never baked into hull geometry. Exceptions such as the spinning tunnel saw have no thrusters.
 - Iterate models and rendered views. There is no hurry; visual inspection and quality matter.
@@ -45,7 +46,9 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Runs start in Plains, then choose Snow or City, then Thunder or Tunnel. After either third district, offer Desert, Candyland, or a direct loop to harder Plains. Desert and Candyland end by looping to harder Plains. Preserve equipment and score on every route.
 
 - Snow: many large shells that explode into smaller bullets; a very round boss with several patterns and a harder second phase.
+- Latest Snow feedback: reduce the boss's health; its base health is now 2100 rather than 3200, with the same phase patterns and run scaling.
 - Plains also has tracked tank convoys on the valley road. Snow has distinct twin-auger ground siege crawlers. Ground vehicles need actual terrain contact, attached tracks or furrows, articulated weapons, and authored formations mixed with the air waves; no flying thrusters.
+- Plains tank tracks and chassis follow the road's bends, driving downward relative to the scrolling terrain. The independently aiming turret must not determine the track direction.
 - Thunder: beams and quick aimed fire; a slim boss with side-emitting lasers, then 6–8 alternating sweeping beams plus a barrage in phase two.
 - City: busy formations of small fast enemies. The boss is a fast/heavy duo with separate health summed in one bar and tracking attacks. The first death drops nothing; the survivor becomes aggressive and heals half its missing health.
 - Tunnel: bouncing projectiles. The boss is a rapidly spinning saw that travels like a DVD logo across the full visible arena, including its corners. **It fires dense mixed-size bursts only when it bounces, never when hit or on a timer, and has no thrusters.** It speeds up as damaged; phase two pauses to deploy two smaller, sturdy, destroyable saws with the same bounce behavior.
