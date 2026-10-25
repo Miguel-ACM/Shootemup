@@ -104,7 +104,7 @@ public sealed class DesertWormCore : AEnemy
         var visual=SandSpine.Model("Exposed red reactor",t,IndustrialMeshFactory.WhiteWormCore(head),1);
         t.localPosition=local;t.gameObject.layer=8;t.gameObject.tag="Enemy";
         var sprite=t.gameObject.AddComponent<SpriteRenderer>();sprite.enabled=false;
-        var hit=t.gameObject.AddComponent<CircleCollider2D>();hit.isTrigger=true;hit.radius=head ? .61f : .43f;
+        var hit=t.gameObject.AddComponent<CircleCollider2D>();hit.isTrigger=true;hit.radius=head ? .51f : .35f;
         var part=t.gameObject.AddComponent<DesertWormCore>();part.owner=owner;part.health=health;
         part.mesh=visual.GetComponent<MeshRenderer>();part.mesh.sharedMaterial=IndustrialMeshFactory.WhiteWormMaterial;
         part.scoreOnKill=0;part.lifeDropChance=part.manaDropChance=part.moneyDropChance=0;return part;

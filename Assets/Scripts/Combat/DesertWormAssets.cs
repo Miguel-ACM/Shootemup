@@ -14,7 +14,8 @@ public static partial class IndustrialMeshFactory
             for(int y=0;y<64;y++)for(int x=0;x<64;x++)
             {
                 float shade=x<5 || x>58 || y<5 || y>58 ? .55f : .86f+.14f*y/64;
-                texture.SetPixel(192+x,y,new Color(.94f,.055f,.065f)*shade);
+                var color=new Color(.68f,.24f,.22f)*shade;color.a=1;
+                texture.SetPixel(192+x,y,color);
             }
             texture.Apply();whiteWormMaterial.mainTexture=texture;return whiteWormMaterial;
         }
@@ -22,7 +23,7 @@ public static partial class IndustrialMeshFactory
     public static Mesh WhiteWormCore(bool head)
     {
         var cached=head ? whiteWormHeadCore : whiteWormCore;if(cached!=null)return cached;
-        var b=new Builder();float r=head ? .56f : .36f;
+        var b=new Builder();float r=head ? .44f : .28f;
         b.Drum(Vector3.zero,r*1.23f,.15f,11,12,6);
         b.Drum(Vector3.back*.10f,r,.14f,3,10,5);
         b.Drum(Vector3.back*.19f,r*.57f,.06f,3,8,5);
