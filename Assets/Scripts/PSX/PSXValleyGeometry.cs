@@ -56,14 +56,6 @@ public static class PSXValleyGeometry
             float y=Range(rng,.5f,length-.5f),x=Range(rng,-6.5f,6.5f),radius=Range(rng,.12f,.38f);
             if(layout.Clear(x,origin+y,radius))b.Rock(x,y,radius,rng);
         }
-        // Sparse long reflections; there are no white checkerboard water texels.
-        for(int i=0;i<12;i++)
-        {
-            float y=Range(rng,.5f,length-.5f),a=origin+y;
-            float x=layout.Centre(a)+Range(rng,-.7f,.7f);
-            b.Rect(x,y,Range(rng,.12f,.3f),Range(rng,.025f,.05f),-.015f,
-                i%3==0 ? new Color(.205f,.345f,.36f) : new Color(.15f,.31f,.34f));
-        }
         // One recognizable landmark per 96 units, fixed to the terrain rather than independently recycled.
         float bridgeY=layout.BridgeY;
         if(bridgeY>=origin && bridgeY<origin+length)b.Bridge(layout.Centre(bridgeY),bridgeY-origin,layout.HalfWidth(bridgeY),rng);

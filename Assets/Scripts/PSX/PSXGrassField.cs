@@ -18,11 +18,16 @@ public sealed class PSXGrassField : MonoBehaviour
     readonly List<Transform> clouds=new List<Transform>();
     Transform player;
     float travel;
+    Material riverMaterial;
 
     void Start()
     {
         var landscape=Resources.Load<Material>("PSXValley");
         if(landscape==null){Debug.LogError("PSX Valley material is missing",this);return;}
+        var layout=new PSXValleyLayout(LevelRun.Seed);
+        riverMaterial=new Material(Resources.Load<Shader>("PSXValleyRiver"));
+        riverMaterial.SetFloat("_BridgeY",layout.BridgeY);
+        riverMaterial.SetFloat("_Brightness",brightness/.62f);
         for(int i=0;i<4;i++)
         {
             float origin=(i-1)*SectionLength;
@@ -34,6 +39,8 @@ public sealed class PSXGrassField : MonoBehaviour
             var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=landscape;
             renderer.sortingLayerName="Background";renderer.sortingOrder=-40;
             renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;
+            var riverMesh=PSXValleyRiver.Build(origin,SectionLength,layout);
+            AddLayer("River current",go.transform,riverMesh,riverMaterial);
             sections.Add(go.transform);
         }
         if(cloudMaterial!=null)
@@ -50,6 +57,15 @@ public sealed class PSXGrassField : MonoBehaviour
             }
     }
 
+    void AddLayer(string name,Transform parent,Mesh mesh,Material surface)
+    {
+        var go=new GameObject(name);go.transform.SetParent(parent,false);ownedMeshes.Add(mesh);
+        go.AddComponent<MeshFilter>().sharedMesh=mesh;
+        var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=surface;
+        renderer.sortingLayerName="Background";renderer.sortingOrder=-40;
+        renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;
+    }
+
     static Mesh CloudQuad(int row)
     {
         float v=1-(row+1)*.25f;
@@ -64,6 +80,7 @@ public sealed class PSXGrassField : MonoBehaviour
     {
         if(player==null){var go=GameObject.FindGameObjectWithTag("Player");if(go!=null)player=go.transform;}
         float side=player!=null ? -player.position.x*sideParallax : 0;
+        if(riverMaterial!=null)riverMaterial.SetFloat("_FlowTime",Time.time);
         travel=Mathf.Repeat(travel+scrollSpeed*Time.deltaTime,LoopLength);
         for(int i=0;i<sections.Count;i++)
         {
@@ -81,5 +98,5 @@ public sealed class PSXGrassField : MonoBehaviour
         }
     }
 
-    void OnDestroy(){foreach(var mesh in ownedMeshes)if(mesh!=null)Destroy(mesh);}
+    void OnDestroy(){foreach(var mesh in ownedMeshes)if(mesh!=null)Destroy(mesh);if(riverMaterial!=null)Destroy(riverMaterial);}
 }
