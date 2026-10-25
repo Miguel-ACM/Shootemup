@@ -44,7 +44,7 @@ public sealed class CityDuoBoss : DistrictBoss
         if(beat==0 || beat==1 || beat==8)attackAxis=Aim;
         if(heavy && (beat==0 || beat==2 || beat==4))
         {
-            int count=enraged ? 6 : 4;
+            int count=enraged ? 5 : 4;
             for(int i=0;i<count;i++)Fire<BurstShell>(Hull.TransformPoint(new Vector3(0,-.7f,-.3f)),
                 CombatVisuals.Rotate(attackAxis,(i-(count-1)*.5f)*18),4.4f,.4f);
         }
