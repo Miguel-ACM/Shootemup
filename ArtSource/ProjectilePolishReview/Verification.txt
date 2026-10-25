@@ -1,0 +1,96 @@
+PASS
+Editor only: no Play mode or gameplay run.
+Loaded production ship and health bar
+Health route restores exactly half maximum health (60 of 120), even with healing modifiers
+Route healing caps at maximum health
+Ordinary health pickups retain their existing healing modifiers
+Ordinary pickup prefab still uses flat healing
+Fields: every miniboss member and clone is flagged
+Fields/FieldsHeavyWing: 32% less health and 26% shorter attack interval
+Fields: first visible firing beat 1,70s, previously 6,03s
+Fields: miniboss projectiles travel 14% faster
+Rounds retain sprite rendering and the original pixel collider
+Tunnel: every miniboss member and clone is flagged
+Tunnel/TunnelDefensePlatform: 32% less health and 26% shorter attack interval
+Tunnel: first visible firing beat 1,70s, previously 6,03s
+Tunnel: miniboss projectiles travel 14% faster
+Rounds retain sprite rendering and the original pixel collider
+Snow: every miniboss member and clone is flagged
+Snow/SnowSiegeCraft: 32% less health and 26% shorter attack interval
+Snow: first visible firing beat 1,70s, previously 6,03s
+Snow: miniboss projectiles travel 14% faster
+Rounds retain sprite rendering and the original pixel collider
+Thunder: every miniboss member and clone is flagged
+Thunder/StormReactor: 32% less health and 26% shorter attack interval
+Thunder: first visible firing beat 1,70s, previously 6,03s
+Thunder: miniboss projectiles travel 14% faster
+Rounds retain sprite rendering and the original pixel collider
+City: every miniboss member and clone is flagged
+City/CityCommandCarrier: 32% less health and 26% shorter attack interval
+City: first visible firing beat 1,70s, previously 6,03s
+City: miniboss projectiles travel 14% faster
+Rounds retain sprite rendering and the original pixel collider
+Desert: every miniboss member and clone is flagged
+Desert/SandWorm: 32% less health and 26% shorter attack interval
+Desert/SandWorm: 32% less health and 26% shorter attack interval
+Desert/SandWorm: 32% less health and 26% shorter attack interval
+Desert: first visible firing beat 1,70s, previously 2,70s
+Desert: miniboss projectiles travel 14% faster
+Rounds retain sprite rendering and the original pixel collider
+Candyland: every miniboss member and clone is flagged
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/BonbonSkirmisher: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/MintSpinner: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/MintSpinner: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/MintSpinner: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/MintSpinner: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/WaferDart: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/WaferDart: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/WaferDart: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland/WaferDart: 32% less health and 26% shorter attack interval
+Miniboss score leaves the cached ordinary formation untouched
+Candyland: first visible firing beat 0,92s, previously 1,40s
+Candyland: miniboss projectiles travel 14% faster
+Rounds retain sprite rendering and the original pixel collider
+Candyland's ordinary waves are not modified through the composition cache
+Production projectile shader compiles
+Existing projectile material receives the enamel highlight default
+Rendered visible highlights on the original sprites across all seven palettes and player fire (7167 affected pixels)
+Highlights use one texture sample and the existing single render pass
