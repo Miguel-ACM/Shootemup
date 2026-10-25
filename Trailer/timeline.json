@@ -1,0 +1,223 @@
+{
+  "music": "Assets/Resources/Music/fields.mp3",
+  "bpm": 112.68000000000137,
+  "duration": 90,
+  "clips": [
+    {
+      "index": 1,
+      "source": "semup3.mp4",
+      "source_start": 66,
+      "label": "Plains formations",
+      "start": 0,
+      "end": 4.616666666666666,
+      "duration": 4.616666666666666
+    },
+    {
+      "index": 2,
+      "source": "semup2.mp4",
+      "source_start": 66,
+      "label": "Plains crossfire",
+      "start": 4.616666666666666,
+      "end": 8.883333333333333,
+      "duration": 4.266666666666667
+    },
+    {
+      "index": 3,
+      "source": "semup2.mp4",
+      "source_start": 226,
+      "label": "Snow formations",
+      "start": 8.883333333333333,
+      "end": 13.133333333333333,
+      "duration": 4.25
+    },
+    {
+      "index": 4,
+      "source": "semup2.mp4",
+      "source_start": 270,
+      "label": "Snow champion",
+      "start": 13.133333333333333,
+      "end": 17.4,
+      "duration": 4.266666666666666
+    },
+    {
+      "index": 5,
+      "source": "semup3.mp4",
+      "source_start": 208,
+      "label": "City rush",
+      "start": 17.4,
+      "end": 21.666666666666668,
+      "duration": 4.266666666666669
+    },
+    {
+      "index": 6,
+      "source": "semup3.mp4",
+      "source_start": 264,
+      "label": "City crossfire",
+      "start": 21.666666666666668,
+      "end": 25.916666666666668,
+      "duration": 4.25
+    },
+    {
+      "index": 7,
+      "source": "semup2.mp4",
+      "source_start": 402,
+      "label": "Thunder formations",
+      "start": 25.916666666666668,
+      "end": 30.183333333333334,
+      "duration": 4.266666666666666
+    },
+    {
+      "index": 8,
+      "source": "semup2.mp4",
+      "source_start": 448,
+      "label": "Thunder champion",
+      "start": 30.183333333333334,
+      "end": 34.43333333333333,
+      "duration": 4.2499999999999964
+    },
+    {
+      "index": 9,
+      "source": "semup3.mp4",
+      "source_start": 346,
+      "label": "Tunnel formations",
+      "start": 34.43333333333333,
+      "end": 38.7,
+      "duration": 4.266666666666673
+    },
+    {
+      "index": 10,
+      "source": "semup3.mp4",
+      "source_start": 389,
+      "label": "Tunnel rings",
+      "start": 38.7,
+      "end": 42.96666666666667,
+      "duration": 4.266666666666666
+    },
+    {
+      "index": 11,
+      "source": "semup2.mp4",
+      "source_start": 606,
+      "label": "Reef formations",
+      "start": 42.96666666666667,
+      "end": 47.21666666666667,
+      "duration": 4.25
+    },
+    {
+      "index": 12,
+      "source": "semup2.mp4",
+      "source_start": 686,
+      "label": "Underwater crossfire",
+      "start": 47.21666666666667,
+      "end": 51.483333333333334,
+      "duration": 4.266666666666666
+    },
+    {
+      "index": 13,
+      "source": "semup2.mp4",
+      "source_start": 804,
+      "label": "Hell formations",
+      "start": 51.483333333333334,
+      "end": 55.733333333333334,
+      "duration": 4.25
+    },
+    {
+      "index": 14,
+      "source": "semup2.mp4",
+      "source_start": 848,
+      "label": "Hell crossfire",
+      "start": 55.733333333333334,
+      "end": 60.0,
+      "duration": 4.266666666666666
+    },
+    {
+      "index": 15,
+      "source": "semup2.mp4",
+      "source_start": 366,
+      "label": "Snow boss",
+      "start": 60.0,
+      "end": 64.25,
+      "duration": 4.25
+    },
+    {
+      "index": 16,
+      "source": "semup3.mp4",
+      "source_start": 289,
+      "label": "City duo",
+      "start": 64.25,
+      "end": 68.51666666666667,
+      "duration": 4.266666666666666
+    },
+    {
+      "index": 17,
+      "source": "semup2.mp4",
+      "source_start": 529,
+      "label": "Thunder beams",
+      "start": 68.51666666666667,
+      "end": 72.78333333333333,
+      "duration": 4.266666666666666
+    },
+    {
+      "index": 18,
+      "source": "semup2.mp4",
+      "source_start": 710,
+      "label": "Submarine attack",
+      "start": 72.78333333333333,
+      "end": 77.03333333333333,
+      "duration": 4.25
+    },
+    {
+      "index": 19,
+      "source": "semup3.mp4",
+      "source_start": 142,
+      "label": "Plains boss",
+      "start": 77.03333333333333,
+      "end": 79.16666666666667,
+      "duration": 2.13333333333334
+    },
+    {
+      "index": 20,
+      "source": "semup3.mp4",
+      "source_start": 469,
+      "label": "Tunnel saw",
+      "start": 79.16666666666667,
+      "end": 81.3,
+      "duration": 2.1333333333333258
+    },
+    {
+      "index": 21,
+      "source": "semup2.mp4",
+      "source_start": 353,
+      "label": "Snow crowns",
+      "start": 81.3,
+      "end": 83.43333333333334,
+      "duration": 2.13333333333334
+    },
+    {
+      "index": 22,
+      "source": "semup2.mp4",
+      "source_start": 534,
+      "label": "Thunder beam sweep",
+      "start": 83.43333333333334,
+      "end": 85.55,
+      "duration": 2.11666666666666
+    },
+    {
+      "index": 23,
+      "source": "semup2.mp4",
+      "source_start": 729,
+      "label": "Submarine eruption",
+      "start": 85.55,
+      "end": 87.68333333333334,
+      "duration": 2.13333333333334
+    },
+    {
+      "index": 24,
+      "source": "semup2.mp4",
+      "source_start": 909,
+      "label": "Hell crab",
+      "start": 87.68333333333334,
+      "end": 89.81666666666666,
+      "duration": 2.1333333333333258
+    }
+  ]
+}
