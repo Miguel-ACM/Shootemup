@@ -5,7 +5,8 @@ using System.Collections.Generic;
 public sealed class HellCrabBoss : DistrictBoss
 {
     readonly Transform[] claws=new Transform[2];
-    readonly Transform[,] arms=new Transform[2,8];
+    const int ArmSections=4;
+    readonly Transform[,] arms=new Transform[2,ArmSections];
     readonly LineRenderer[] tells=new LineRenderer[2];
     readonly HellCrabEye[] eyes=new HellCrabEye[2];
     readonly List<DistrictEnemy> minions=new List<DistrictEnemy>();
@@ -24,7 +25,8 @@ public sealed class HellCrabBoss : DistrictBoss
             int side=i==0 ? -1 : 1;
             eyes[i]=HellCrabEye.Create(this,Hull,new Vector3(side*.67f,-.52f,-.96f),health*.5f);
             claws[i]=Model("Jointed side pincer",IndustrialMeshFactory.CombatHull(54),Hull);
-            for(int segment=0;segment<8;segment++)arms[i,segment]=Model("Articulated pincer vertebra "+segment,IndustrialMeshFactory.CrabArm(),Hull);
+            claws[i].localScale=Vector3.one*1.75f;
+            for(int segment=0;segment<ArmSections;segment++)arms[i,segment]=Model("Articulated pincer vertebra "+segment,IndustrialMeshFactory.CrabArm(),Hull);
             tells[i]=CombatVisuals.Line(Hull,LevelProjectilePalette.Accent(LevelId.Hell),.045f);tells[i].enabled=false;
         }
     }
@@ -41,28 +43,30 @@ public sealed class HellCrabBoss : DistrictBoss
         if(claws[0]==null)return;
         float before=clawClock;clawClock+=dt*(phaseTwo ? 1.18f : 1);
         float t=Mathf.Repeat(clawClock,clawPeriod);
-        if(before==0 || t<Mathf.Repeat(before,clawPeriod))lockedY=Mathf.Clamp(player!=null ? player.position.y : -3,Camera.DownLimit+2,1);
-        float reach=Mathf.Min(Camera.RightLimit-1.0f,3.9f),sweep=0,y=Camera.UpLimit-3.6f;
+        float shoulderY=transform.position.y;
+        if(before==0 || t<Mathf.Repeat(before,clawPeriod))lockedY=Mathf.Clamp(player!=null ? player.position.y : shoulderY-2,shoulderY-2.7f,shoulderY-.8f);
+        lockedY=Mathf.Clamp(lockedY,shoulderY-2.7f,shoulderY-.8f);
+        float reach=Mathf.Min(Camera.RightLimit-1.5f,2.9f),sweep=0,y=shoulderY-.75f;
         if(t<1.1f)y=Mathf.Lerp(y,y+.45f,Mathf.Sin(t/1.1f*Mathf.PI));
         else if(t<2.4f)y=Mathf.Lerp(y,lockedY,Mathf.SmoothStep(0,1,(t-1.1f)/1.3f));
-        else if(t<3.4f){y=lockedY;sweep=Mathf.Sin((t-2.4f)*Mathf.PI)*.74f;}
+        else if(t<3.4f){y=lockedY;sweep=Mathf.Sin((t-2.4f)*Mathf.PI)*.32f;}
         else if(t<4.6f)y=Mathf.Lerp(lockedY,y,Mathf.SmoothStep(0,1,(t-3.4f)/1.2f));
         for(int i=0;i<2;i++)
         {
             int side=i==0 ? -1 : 1;var p=new Vector3(side*reach*(1-sweep),y,0);
             claws[i].position=p;claws[i].rotation=Quaternion.Euler(0,0,-side*(12+sweep*50));
             var shoulder=Hull.TransformPoint(new Vector3(side*1.55f,.25f,0));
-            var elbow=(shoulder+p)*.5f+new Vector3(side*.75f,.8f,.15f);
+            var elbow=(shoulder+p)*.5f+new Vector3(side*.45f,.25f,.15f);
             Vector3 Point(float u)=>Vector3.Lerp(Vector3.Lerp(shoulder,elbow,u),Vector3.Lerp(elbow,p,u),u);
-            for(int segment=0;segment<8;segment++)
+            for(int segment=0;segment<ArmSections;segment++)
             {
-                var a=Point(segment/8f);var b=Point((segment+1)/8f);var bone=arms[i,segment];
+                var a=Point(segment/(float)ArmSections);var b=Point((segment+1)/(float)ArmSections);var bone=arms[i,segment];
                 bone.position=(a+b)*.5f+Vector3.forward*.12f;bone.rotation=Quaternion.FromToRotation(Vector3.up,b-a);
-                bone.localScale=new Vector3(.85f-segment*.035f,Mathf.Max(.32f,Vector3.Distance(a,b)/.95f),.85f);
+                bone.localScale=new Vector3(1.05f-segment*.025f,Mathf.Max(.42f,Vector3.Distance(a,b)/.95f),1);
             }
             tells[i].enabled=t<1.1f;
             if(tells[i].enabled){tells[i].SetPosition(0,p);tells[i].SetPosition(1,new Vector3(side*reach,lockedY,-.3f));}
-            if(t>1.1f && t<4.6f && player!=null && Vector2.Distance(player.position,p+Vector3.down*.45f)<.88f)
+            if(t>1.1f && t<4.6f && player!=null && Vector2.Distance(player.position,claws[i].TransformPoint(new Vector3(0,-.45f,0)))<1.25f)
                 player.SendMessage("ReceiveHazardDamage",18f,SendMessageOptions.DontRequireReceiver);
         }
         if(player!=null && Vector2.Distance(player.position,transform.position)<1.55f)
