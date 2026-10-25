@@ -113,11 +113,15 @@ public static class PSXValleyGeometry
         }
         public void Tree(float x,float y,float radius,System.Random rng)
         {
-            Patch(x+.22f,y-.28f,radius*1.3f,radius*.9f,-.12f,Shadow,rng);
-            // Three overlapping, asymmetrical faceted crowns; no tiled leaf patterns.
-            Crown(x,y,radius,-.45f,Foliage,rng);
-            Crown(x-radius*.35f,y+radius*.4f,radius*.68f,-.75f,Foliage*1.12f,rng);
-            Crown(x+radius*.38f,y+radius*.2f,radius*.58f,-.65f,Foliage*.94f,rng);
+            Patch(x+.20f,y-.22f,radius*1.10f,radius*.78f,-.12f,Shadow,rng);
+            var root=new Vector3(x,y,-.16f);var fork=new Vector3(x-.06f,y+.19f,-.72f);
+            Beam(root,fork,radius*.18f,new Color(.27f,.265f,.17f));
+            for(int branch=0;branch<3;branch++)
+            {
+                float a=branch*2.094f+Range(rng,-.4f,.4f);
+                Beam(fork,new Vector3(x+Mathf.Cos(a)*radius*.56f,y+.2f+Mathf.Sin(a)*radius*.46f,-.83f),
+                    radius*.085f,new Color(.29f,.29f,.185f));
+            }
         }
         void Crown(float x,float y,float radius,float z,Color color,System.Random rng)
         {

@@ -18,7 +18,8 @@ public sealed class PSXGrassField : MonoBehaviour
     readonly List<Transform> clouds=new List<Transform>();
     Transform player;
     float travel;
-    Material riverMaterial;
+    Material riverMaterial,foliageMaterial;
+    Texture2D foliageAtlas;
 
     void Start()
     {
@@ -28,6 +29,10 @@ public sealed class PSXGrassField : MonoBehaviour
         riverMaterial=new Material(Resources.Load<Shader>("PSXValleyRiver"));
         riverMaterial.SetFloat("_BridgeY",layout.BridgeY);
         riverMaterial.SetFloat("_Brightness",brightness/.62f);
+        foliageAtlas=PSXValleyFoliage.CreateAtlas();
+        foliageMaterial=new Material(Resources.Load<Shader>("PSXValleyFoliage"));
+        foliageMaterial.mainTexture=foliageAtlas;
+        foliageMaterial.SetFloat("_Brightness",brightness/.62f);
         for(int i=0;i<4;i++)
         {
             float origin=(i-1)*SectionLength;
@@ -41,6 +46,7 @@ public sealed class PSXGrassField : MonoBehaviour
             renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;
             var riverMesh=PSXValleyRiver.Build(origin,SectionLength,layout);
             AddLayer("River current",go.transform,riverMesh,riverMaterial);
+            AddLayer("Textured leaf clusters",go.transform,PSXValleyFoliage.Build(origin,SectionLength,layout),foliageMaterial);
             sections.Add(go.transform);
         }
         if(cloudMaterial!=null)
@@ -81,6 +87,7 @@ public sealed class PSXGrassField : MonoBehaviour
         if(player==null){var go=GameObject.FindGameObjectWithTag("Player");if(go!=null)player=go.transform;}
         float side=player!=null ? -player.position.x*sideParallax : 0;
         if(riverMaterial!=null)riverMaterial.SetFloat("_FlowTime",Time.time);
+        if(foliageMaterial!=null)foliageMaterial.SetFloat("_FlowTime",Time.time);
         travel=Mathf.Repeat(travel+scrollSpeed*Time.deltaTime,LoopLength);
         for(int i=0;i<sections.Count;i++)
         {
@@ -98,5 +105,5 @@ public sealed class PSXGrassField : MonoBehaviour
         }
     }
 
-    void OnDestroy(){foreach(var mesh in ownedMeshes)if(mesh!=null)Destroy(mesh);if(riverMaterial!=null)Destroy(riverMaterial);}
+    void OnDestroy(){foreach(var mesh in ownedMeshes)if(mesh!=null)Destroy(mesh);if(riverMaterial!=null)Destroy(riverMaterial);if(foliageMaterial!=null)Destroy(foliageMaterial);if(foliageAtlas!=null)Destroy(foliageAtlas);}
 }
