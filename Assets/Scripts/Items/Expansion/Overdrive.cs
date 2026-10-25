@@ -19,7 +19,8 @@ public sealed class OverdriveBoost : MonoBehaviour
     {
         left=ItemSpark.Sprite(transform,"Overdrive port","needle",new Color(1,.55f,.2f),.28f);
         right=ItemSpark.Sprite(transform,"Overdrive starboard","needle",new Color(1,.55f,.2f),.28f);
-        left.transform.localPosition=new Vector3(-.38f,-.3f,-2);right.transform.localPosition=new Vector3(.38f,-.3f,-2);
+        left.transform.position=transform.position+new Vector3(-.3f,-.25f,-2);right.transform.position=transform.position+new Vector3(.3f,-.25f,-2);
+        left.transform.localScale=right.transform.localScale=new Vector3(.18f/transform.lossyScale.x,.18f/transform.lossyScale.y,1);
     }
     void Update()
     {
