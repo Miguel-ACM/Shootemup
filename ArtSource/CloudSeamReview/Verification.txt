@@ -1,0 +1,9 @@
+PASS 1280x720: all seven incoming/covered/outgoing poses render inside the playfield; covered pose has no background holes.
+PASS 640x480: all seven incoming/covered/outgoing poses render inside the playfield; covered pose has no background holes.
+PASS 1366x768: all seven incoming/covered/outgoing poses render inside the playfield; covered pose has no background holes.
+PASS formerly bright vertical backing seam at (571,540): (246, 248, 248) -> (215, 222, 233).
+PASS formerly bright vertical backing seam at (571,545): (253, 253, 250) -> (191, 205, 222).
+PASS formerly bright vertical backing seam at (571,550): (250, 251, 250) -> (189, 201, 222).
+Native enlarged before/after crops visually inspected: hard white vertical pins removed; cloud texture and silhouettes retained.
+Production backing now uses 652 shared vertices instead of 1300 independent strip vertices, within the same Canvas mesh.
+No Play mode or gameplay run. Source cloud PNG and transition timing unchanged.

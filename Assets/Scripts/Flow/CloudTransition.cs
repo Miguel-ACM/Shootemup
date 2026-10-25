@@ -379,10 +379,19 @@ public sealed class CloudCurtainGraphic : MaskableGraphic
     {
         vh.Clear();
         if(texture==null)return;
-        for(int column=0;column<BackingColumns;column++)
+        // One connected surface: independent narrow rectangles expose vertical edges
+        // through the cloud texture's near-opaque pixels, especially at fractional scales.
+        for(int column=0;column<=BackingColumns;column++)
         {
             float x=-325+column*2;
-            Quad(vh,new Vector2(x,backingBottom[column]),new Vector2(x+2,backingTop[column]+extension),white,white);
+            int left=Mathf.Max(0,column-1),right=Mathf.Min(BackingColumns-1,column);
+            float bottom=Mathf.Max(backingBottom[left],backingBottom[right]);
+            float top=Mathf.Min(backingTop[left],backingTop[right])+extension;
+            int k=vh.currentVertCount;
+            vh.AddVert(new Vector3(x,bottom),color,white);
+            vh.AddVert(new Vector3(x,top),color,white);
+            if(column==0)continue;
+            vh.AddTriangle(k-2,k-1,k+1);vh.AddTriangle(k-2,k+1,k);
         }
         // Fixed edge sprites preserve the scalloped silhouette of the incoming/outgoing carrier.
         for(int i=0;i<edges.Length;i++)

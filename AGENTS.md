@@ -25,6 +25,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Keep momentum between combat phrases. Compare changes with the existing game; do not quietly make it much easier.
 - Miniboss encounters in every district fire earlier and harder but have 32% less health. Large trackers fire once fully visible during entry, then use shorter tracking/recovery and faster volleys; Desert broods open their firing arcs sooner, and Candyland rushes add an early shared reply. Keep ordinary wave enemies unaffected.
 - At the start of a level, wait until the cloud curtain has fully cleared, then allow a short breather before spawning the first enemies. Never hide opening enemy fire behind the clouds.
+- Cloud transitions must not show vertical pixel lines across the clouds. Use a connected backing surface with shared seam vertices instead of separate narrow strips, while preserving the cloud artwork and continuous motion.
 - Keep first-level time to kill reasonable with the unmodified base weapon. Check actual projectile hits against moving Plains enemies as well as sustained damage; preserve challenge through patterns instead of excessive health.
 - Give every enemy a recognizable silhouette and role. Recolors or minor variations of one generic hull are insufficient.
 - Snow designs need particular care. A round boss must look like a designed spacecraft, not a plate covered with buttons.
