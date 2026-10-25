@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum UpgradeKind { Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses }
+public enum UpgradeKind { Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline }
 public sealed class CombatUpgrades : MonoBehaviour
 {
     public static CombatUpgrades Current {get;private set;}
@@ -61,7 +61,7 @@ public sealed class CombatUpgrades : MonoBehaviour
             if(Ready("focus",.08f))focus=Mathf.Min(10,focus+1);
             focusUntil=Time.time+1.1f;damage*=1+focus*.045f;
         }
-        if(fire || (Count(UpgradeKind.Burn)>0 && Ready("burn",companion ? .4f : .18f)))
+        if(fire || Count(UpgradeKind.Gasoline)>0 || (Count(UpgradeKind.Burn)>0 && Ready("burn",companion ? .4f : .18f)))
         {
             var burn=enemy.GetComponent<BurningHull>();if(burn==null)burn=enemy.gameObject.AddComponent<BurningHull>();
             burn.Ignite(Mathf.Max(1,damage*.4f)*(companion ? .5f : 1));

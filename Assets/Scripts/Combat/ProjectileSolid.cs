@@ -16,6 +16,8 @@ public sealed class ProjectileSolid : MonoBehaviour
     MeshFilter filter;
     MaterialPropertyBlock properties;
     bool circular;
+    bool friendly;
+    float lastBurn=-1;
     Color lastTint;
     Vector3 lastScale;
     public Mesh Mesh=>filter.sharedMesh;
@@ -64,7 +66,7 @@ public sealed class ProjectileSolid : MonoBehaviour
         solid.model.shadowCastingMode=ShadowCastingMode.Off;solid.model.receiveShadows=false;
         solid.model.lightProbeUsage=LightProbeUsage.Off;solid.model.reflectionProbeUsage=ReflectionProbeUsage.Off;
         solid.model.sortingLayerName="Bullet";solid.model.sortingOrder=friendly ? 16 : 18;
-        solid.circular=circle;solid.properties=new MaterialPropertyBlock();solid.lastTint=Color.clear;
+        solid.circular=circle;solid.friendly=friendly;solid.properties=new MaterialPropertyBlock();solid.lastTint=Color.clear;
         solid.source.forceRenderingOff=true;solid.Sync();
     }
     void LateUpdate()=>Sync();
@@ -73,7 +75,9 @@ public sealed class ProjectileSolid : MonoBehaviour
         if(source==null || model==null)return;
         if(model.enabled!=source.enabled)model.enabled=source.enabled;
         var scale=transform.lossyScale;
-        if(source.color==lastTint && scale==lastScale)return;
+        float burn=friendly && CombatUpgrades.Current!=null && CombatUpgrades.Current.Count(UpgradeKind.Gasoline)>0 ? 1 : 0;
+        if(source.color==lastTint && scale==lastScale && burn==lastBurn)return;
+        lastBurn=burn;properties.SetFloat("_Burn",burn);
         lastTint=source.color;lastScale=scale;
         var stretch=Vector3.one;
         // Unity's CircleCollider2D remains circular under nonuniform scale (guided missiles).

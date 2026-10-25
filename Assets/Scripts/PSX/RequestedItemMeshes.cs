@@ -5,6 +5,14 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "GasolineLeak":
+                b.Prism(new[]{new Vector2(-.27f,-.34f),new Vector2(.27f,-.34f),new Vector2(.27f,.23f),new Vector2(.12f,.34f),new Vector2(-.27f,.23f)},.3f,3,Vector3.zero,12);
+                b.Box(new Vector3(-.16f,.37f,0),new Vector3(.13f,.12f,.22f),11);
+                b.Box(new Vector3(.14f,.36f,0),new Vector3(.24f,.06f,.12f),6);
+                b.Box(new Vector3(.25f,.3f,0),new Vector3(.04f,.16f,.12f),6);
+                b.Box(new Vector3(0,0,-.17f),new Vector3(.36f,.045f,.025f),13);
+                b.Box(new Vector3(0,0,-.17f),new Vector3(.045f,.38f,.025f),13);
+                b.Ball(new Vector3(-.29f,-.43f,0),new Vector3(.06f,.1f,.06f),3);return true;
             case "BadGlasses":
                 Glasses(b,true);return true;
             case "QualityGlasses":
