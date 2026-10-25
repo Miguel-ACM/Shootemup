@@ -6,12 +6,20 @@ public sealed class StaticCharge : MonoBehaviour
     public float Charge {get;private set;}
     Vector3 previous;
     float spark;
+    SpriteRenderer[] buildup;
     void OnEnable(){previous=transform.position;}
     void LateUpdate()
     {
         float distance=Vector2.Distance(previous,transform.position);previous=transform.position;
         if(GameRules.playerDisabled || Menu.GameplayPaused || WorldTimeStop.PlayerDelta<=0)return;
-        Charge=Mathf.Min(1,Charge+Mathf.Min(distance,GameRules.playerMoveSpeed*WorldTimeStop.PlayerDelta*1.5f)/24f);
+        float old=Charge;Charge=Mathf.Min(1,Charge+Mathf.Min(distance,GameRules.playerMoveSpeed*WorldTimeStop.PlayerDelta*1.5f)/24f);
+        if(buildup==null)
+        {
+            buildup=new SpriteRenderer[3];
+            for(int i=0;i<3;i++){buildup[i]=ItemSpark.Sprite(transform,"Static charge spark","standard",new Color(.7f,.5f,.95f),.075f);buildup[i].transform.localPosition=new Vector3((i-1)*.18f,-.48f,-2);}
+        }
+        for(int i=0;i<3;i++)buildup[i].enabled=Charge>=(i+1)*.25f;
+        if(old<1 && Charge>=1)ItemSound.Play("ready",.12f,1.4f);
         if(Charge<1 || Time.time<spark)return;spark=Time.time+.5f;
         var p=transform.position+new Vector3(.25f,-.25f,-2);
         StaticArc.Draw(p,p+new Vector3(-.5f,.1f,0),.15f);
@@ -28,8 +36,10 @@ public sealed class StaticCharge : MonoBehaviour
             next.HitAt(next.transform.position,((Vector2)(next.transform.position-point)).normalized);
             next.damage(dealt);Score.IncreaseScore(Mathf.RoundToInt(dealt));point=next.transform.position;
         }
-        SoundManager.PlaySound("hit1",.05f);
+        ItemSpark.Emit(first.transform.position,new Color(.7f,.5f,.95f),5,.12f);
+        ItemSound.Play("static",.2f);
     }
+    void OnDestroy(){if(buildup!=null)foreach(var sprite in buildup)if(sprite!=null)Destroy(sprite.gameObject);}
 }
 public sealed class StaticArc : MonoBehaviour
 {
