@@ -151,9 +151,10 @@ public static class VerifyEnemyFlight
                     UnityEngine.Object.DestroyImmediate(root);
             UnityEngine.Object.DestroyImmediate(player);
             UnityEngine.Object.DestroyImmediate(pixels);
+            // Close the scene first: releasing a camera's target texture while it is assigned logs an error.
+            EditorSceneManager.ClosePreviewScene(scene);
             target.Release();
             UnityEngine.Object.DestroyImmediate(target);
-            EditorSceneManager.ClosePreviewScene(scene);
         }
     }
 }
