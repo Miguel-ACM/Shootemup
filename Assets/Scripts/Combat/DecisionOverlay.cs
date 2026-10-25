@@ -37,7 +37,7 @@ public sealed class DecisionOverlay : MonoBehaviour
             offer.plate.anchoredPosition=new Vector2(Mathf.Clamp(point.x,-156,156),Mathf.Clamp(point.y+54,-300,320));
         }
     }
-    public void Build(TMP_FontAsset face)
+    public void Build(TMP_FontAsset face,bool allowSkip=true)
     {
         font=face;
         var canvas=gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=65;
@@ -47,6 +47,7 @@ public sealed class DecisionOverlay : MonoBehaviour
         skipFill=fill.GetComponent<Image>();skipFill.color=new Color(.85f,.52f,.17f,.37f);
         var edge=Plate("Leading edge",new Vector2(SkipWidth,1.5f),fill);edge.anchorMin=edge.anchorMax=new Vector2(.5f,1);edge.GetComponent<Image>().color=new Color(1,.72f,.32f);
         Text(skip,"SKIP",12);
+        skip.gameObject.SetActive(allowSkip);
     }
     public void SetSkip(float progress)
     {

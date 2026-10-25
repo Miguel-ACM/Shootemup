@@ -241,18 +241,32 @@ public class WaveOrchestrer : MonoBehaviour
             choosingRoute=true;
             isWaveComingOut=false;
             EraseAllBullets();
-            StartCoroutine(ChooseNextRoute());
+            StartCoroutine(BossReward(bossPosition ?? new Vector3(0,Camera.UpLimit*.5f,1)));
         }
         else if (currentWaveNumber == waveNumber)
         {
             currentWaveKilledEnemies += 1;
         }
     }
+    IEnumerator BossReward(Vector3 position)
+    {
+        // The music has cut on the breakup; let its main blast open before the item falls.
+        CombatDecision.Begin();yield return new WaitForSeconds(.8f);
+        if(GameOverState.Active)yield break;
+        foreach(var enemy in FindObjectsByType<AEnemy>())Destroy(enemy.gameObject);
+        EraseAllBullets();isShopUp=true;
+        position=new Vector3(Mathf.Clamp(position.x,Camera.LeftLimit+.8f,Camera.RightLimit-.8f),
+            Mathf.Clamp(position.y,Camera.DownLimit+2,Camera.UpLimit-1.5f),1);
+        decision=gameObject.AddComponent<DecisionShop>();
+        decision.Open(this,ship.GetComponent<Shipcontroller>(),"bossReward",()=>
+        {decision=null;isShopUp=false;StartCoroutine(ChooseNextRoute());},position);
+    }
 
     IEnumerator ChooseNextRoute()
     {
-        // Let the boss explosion settle, then provide a safe space to steer.
-        yield return new WaitForSeconds(.65f);
+        CombatDecision.Begin();
+        // This coroutine is reached only through the mandatory item's actual pickup callback.
+        yield return new WaitForSeconds(.2f);
         foreach(var enemy in FindObjectsByType<AEnemy>())Destroy(enemy.gameObject);
         EraseAllBullets();
         CombatDecision.Begin(); // Freeze multiplier and fire while steering to the next route.

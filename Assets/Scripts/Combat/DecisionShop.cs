@@ -19,27 +19,31 @@ public sealed class DecisionShop : MonoBehaviour
     int preview=-1;
     float age,skipCharge;
     bool closed;
+    bool mandatory;
     public static int RewardCount(float luck,float roll)
     {
         float chance=Mathf.Clamp(.08f+Mathf.Max(0,luck)*.35f,.08f,.4f);
         return roll<chance*.15f ? 4 : roll<chance ? 3 : 2;
     }
-    public void Open(WaveOrchestrer orchestrer,Shipcontroller ship,string kind,Action completed)
+    public void Open(WaveOrchestrer orchestrer,Shipcontroller ship,string kind,Action completed,Vector3? dropPosition=null)
     {
-        owner=orchestrer;player=ship;paid=kind!="reward";coinShop=kind=="coinShop" || kind=="scoreShop";done=completed;
+        mandatory=kind=="bossReward";
+        owner=orchestrer;player=ship;paid=kind!="reward" && !mandatory;coinShop=kind=="coinShop" || kind=="scoreShop";done=completed;
         CombatDecision.Begin();player.GetComponent<ShipLoadout>().ResetSelection();
         foreach(var weapon in player.GetComponentsInChildren<AWeapon>())weapon.StopFiring();
         dialog=GameObject.FindGameObjectWithTag("Dialog").GetComponent<Dialog>();
-        overlay=new GameObject("Shop decision overlay",typeof(RectTransform)).AddComponent<DecisionOverlay>();overlay.Build(dialog.font);
-        int count=paid ? (UnityEngine.Random.value<.35f ? 4 : 3) : RewardCount(GameRules.luck,UnityEngine.Random.value);
+        overlay=new GameObject("Shop decision overlay",typeof(RectTransform)).AddComponent<DecisionOverlay>();overlay.Build(dialog.font,!mandatory);
+        int count=mandatory ? 1 : paid ? (UnityEngine.Random.value<.35f ? 4 : 3) : RewardCount(GameRules.luck,UnityEngine.Random.value);
         bool healthKit=paid && player.health<player.maxHealth*.45f;
         for(int i=0;i<count;i++)
         {
             string rarity="common";
             string itemKind=healthKit && i==count-1 ? "LargeHealthKit" : ItemPool.GetItem(out rarity);
-            var go=Instantiate(Resources.Load<GameObject>("Items/Item"),new Vector3(Mathf.Lerp(Camera.LeftLimit+1,Camera.RightLimit-1,count==1 ? .5f : i/(float)(count-1)),Camera.UpLimit+3,1),Quaternion.identity);
+            var target=dropPosition ?? new Vector3(Mathf.Lerp(Camera.LeftLimit+1,Camera.RightLimit-1,count==1 ? .5f : i/(float)(count-1)),Camera.UpLimit*.5f,1);
+            var entrance=dropPosition.HasValue ? target+Vector3.up*.9f : new Vector3(target.x,Camera.UpLimit+3,1);
+            var go=Instantiate(Resources.Load<GameObject>("Items/Item"),entrance,Quaternion.identity);
             var item=(AItem)go.AddComponent(Type.GetType(itemKind));item.SetRarity(rarity);item.Register(owner);
-            item.GoToPosition(new Vector3(go.transform.position.x,Camera.UpLimit*.5f,1));items.Add(item);
+            item.GoToPosition(target);items.Add(item);
             int tier=rarity=="legendary" ? 3 : rarity=="epic" ? 2 : rarity=="rare" ? 1 : 0;
             int price=!paid ? 0 : coinShop ? new[]{12,22,36,55}[tier] : tier==3 ? 3 : tier==2 ? 2 : 1;
             if(healthKit && i==count-1)price=coinShop ? 10 : 1;
@@ -70,7 +74,7 @@ public sealed class DecisionShop : MonoBehaviour
         float worldPerPixel=camera.orthographicSize*2/720f;
         bool atBottom=bottom<=camera.transform.position.y-camera.orthographicSize+.45f &&
             Mathf.Abs(player.transform.position.x-camera.transform.position.x)<=DecisionOverlay.SkipWidth*.5f*worldPerPixel;
-        skipCharge=atBottom && age>2 && claimed==null ? skipCharge+Time.deltaTime : 0;
+        skipCharge=!mandatory && atBottom && age>2 && claimed==null ? skipCharge+Time.deltaTime : 0;
         overlay.SetSkip(SkipProgress);
         if(skipCharge>=1.5f)Close();
     }
