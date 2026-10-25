@@ -205,7 +205,8 @@ public sealed class CombatExpansionProbe : MonoBehaviour
         yield return new WaitForSeconds(.4f);Check(Vector2.Dot(committed,missile.Heading)>.999f,"guided missiles stop tracking after committing");Clear();yield return null;
         ship.transform.position=new Vector3(0,-5,-1);
         var scatter=CombatRound.Launch<ScatterCarrier>(new Vector3(0,5),Vector2.down,1);
-        yield return new WaitForSeconds(2.05f);Check(FindObjectsByType<NeedleRound>().Length==6,"scatter carriers release exactly three lateral pairs");Clear();yield return null;
+        yield return new WaitForSeconds(2.05f);Check(CombatRound.Live.OfType<NeedleRound>().Count()==6,"scatter carriers keep their original opening three lateral pairs");
+        yield return new WaitForSeconds(.7f);Check(CombatRound.Live.OfType<NeedleRound>().Count()>=8,"scatter carriers keep releasing lateral pairs beyond the third volley");Clear();yield return null;
         var disc=CombatRound.Launch<ReturningDisc>(new Vector3(0,5),Vector2.down,2);
         yield return new WaitForSeconds(2.3f);Check(disc.Heading.y>0,"returning discs curve back toward their launch point");Clear();yield return null;
         var mine=CombatRound.Launch<ProximityMine>(ship.transform.position,Vector2.down,0);
