@@ -26,7 +26,7 @@ Shader "Shootemup/Projectile Glow"
             #pragma fragment Extract
             half4 Extract(v2f_img i):SV_Target
             {
-                float2 d=_MainTex_TexelSize.xy*.5;
+                float2 d=_MainTex_TexelSize.xy;
                 return half4((Bright(i.uv+d)+Bright(i.uv-d)+Bright(i.uv+float2(d.x,-d.y))+Bright(i.uv+float2(-d.x,d.y)))*.25,1);
             }
             ENDCG

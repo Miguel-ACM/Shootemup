@@ -81,7 +81,7 @@ public static class ReviewBossRadiance
             Save("After",true);
             if(ShaderUtil.ShaderHasError(material.shader) || ShaderUtil.ShaderHasError(Resources.Load<Shader>("ProjectileGlow")) || ShaderUtil.ShaderHasError(composite.shader))throw new Exception("Shader compile error");
             if(material.passCount!=1)throw new Exception("Projectile must remain one pass");
-            File.WriteAllText(Folder+"/Editor.txt","PASS\n108 original sprite renders, eight district palettes plus player.\nSingle projectile pass; original sprite silhouette.\nHDR radiance extracted at half resolution with two shared blur passes.\n");
+            File.WriteAllText(Folder+"/Editor.txt","PASS\n108 original sprite renders, eight district palettes plus player.\nSingle projectile pass; original sprite silhouette.\nHDR radiance extracted at quarter resolution with two shared blur passes.\n");
             void Save(string name,bool emissive)
             {
                 camera.Render();glow.Render(target);composite.SetTexture("_GlowTex",emissive ? glow.Texture : Texture2D.blackTexture);
@@ -174,7 +174,7 @@ public sealed class BossRadianceReview : MonoBehaviour
         for(int i=0;i<CombatRound.Limit;i++)CombatRound.Launch<SimpleRound>(new Vector3((i%20-9.5f)*.42f,(i/20-6.5f)*.7f,0),Vector2.down,0,.14f);
         Check(CombatRound.Live.Count==CombatRound.Limit && CombatRound.Launch<SimpleRound>(Vector3.zero,Vector2.down)==null,"Dense field preserves the 280-round cap");
         DesertReview.Capture("Dense-Field",Folder);
-        Check(presentation.CompositeMaterial.GetTexture("_GlowTex") is RenderTexture glow && glow.width==presentation.SceneTexture.width/2,"Every round shares one half-resolution glow field");
+        Check(presentation.CompositeMaterial.GetTexture("_GlowTex") is RenderTexture glow && glow.width==presentation.SceneTexture.width/4,"Every round shares one quarter-resolution glow field");
         var blockCheck=new MaterialPropertyBlock();CombatRound.Live.First().GetComponent<SpriteRenderer>().GetPropertyBlock(blockCheck);
         Check(blockCheck.isEmpty,"Hostile rounds retain shared materials and no per-round property updates");
         presentation.filterEnabled=false;typeof(PSXPresentation).GetMethod("Resize",Hidden).Invoke(presentation,null);yield return null;
