@@ -1,6 +1,6 @@
 using UnityEngine;
 [UnityEngine.Scripting.Preserve]
-public sealed class FieldsHeavyWing : DistrictEnemy
+public sealed class FieldsHeavyWing : DistrictMiniboss
 {
     static readonly Vector3[] ports={new Vector3(-.68f,-1.20f,-.30f),new Vector3(.68f,-1.20f,-.30f)};
     protected override void Configure(){hull=24;health=480;hullScale=1.1f;attackInterval=.65f;shellTravelDistance=5.4f;Mover<TopTracker>();}
