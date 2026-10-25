@@ -44,6 +44,7 @@ public static partial class IndustrialMeshFactory
         var b=new Builder();bool heavy=kind==2 || kind==5 || kind==7 || kind==8 || kind==14 || kind==16 || kind>=20;
         if(kind==30){BuildSandEmitter(b);return combatHulls[kind]=b.Finish("Sand eruption turret");}
         if(kind==31){BuildSandStriker(b);return combatHulls[kind]=b.Finish("Desert burst interceptor");}
+        if(kind==32){BuildSandWormHead(b);return combatHulls[kind]=b.Finish("Small sandworm jaw");}
         bool round=kind==21 || kind==20;bool slim=kind==22;
         float width=slim ? .48f : heavy ? 1.12f : .72f;
         float length=slim ? 1.55f : heavy ? 1.12f : 1.0f;
