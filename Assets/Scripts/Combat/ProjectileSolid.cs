@@ -18,6 +18,7 @@ public sealed class ProjectileSolid : MonoBehaviour
     bool circular;
     bool friendly;
     float lastBurn=-1;
+    float lastPoison=-1;
     Color lastTint;
     Vector3 lastScale;
     public Mesh Mesh=>filter.sharedMesh;
@@ -76,7 +77,9 @@ public sealed class ProjectileSolid : MonoBehaviour
         if(model.enabled!=source.enabled)model.enabled=source.enabled;
         var scale=transform.lossyScale;
         float burn=friendly && CombatUpgrades.Current!=null && CombatUpgrades.Current.Count(UpgradeKind.Gasoline)>0 ? 1 : 0;
-        if(source.color==lastTint && scale==lastScale && burn==lastBurn)return;
+        float poison=friendly && CombatUpgrades.Current!=null && CombatUpgrades.Current.Count(UpgradeKind.Poison)>0 ? 1 : 0;
+        if(source.color==lastTint && scale==lastScale && burn==lastBurn && poison==lastPoison)return;
+        lastPoison=poison;properties.SetFloat("_Poison",poison);
         lastBurn=burn;properties.SetFloat("_Burn",burn);
         lastTint=source.color;lastScale=scale;
         var stretch=Vector3.one;

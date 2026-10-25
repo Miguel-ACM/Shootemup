@@ -5,6 +5,13 @@ public static partial class IndustrialMeshFactory
     {
         switch(kind)
         {
+            case "Poison":
+                b.Prism(new[]{new Vector2(-.32f,-.32f),new Vector2(.32f,-.32f),new Vector2(.34f,-.2f),new Vector2(.1f,.22f),new Vector2(.1f,.39f),new Vector2(-.1f,.39f),new Vector2(-.1f,.22f),new Vector2(-.34f,-.2f)},.26f,2,Vector3.zero,2);
+                b.Box(new Vector3(0,.43f,0),new Vector3(.23f,.1f,.29f),13);
+                b.Drum(new Vector3(0,-.12f,-.15f),.13f,.025f,1,8);
+                foreach(int side in new[]{-1,1})b.Drum(new Vector3(side*.048f,-.1f,-.17f),.035f,.02f,11,6);
+                b.Box(new Vector3(0,-.2f,-.17f),new Vector3(.09f,.04f,.02f),11);
+                b.Box(new Vector3(-.16f,.01f,-.15f),new Vector3(.025f,.12f,.02f),14);return true;
             case "GasolineLeak":
                 b.Prism(new[]{new Vector2(-.27f,-.34f),new Vector2(.27f,-.34f),new Vector2(.27f,.23f),new Vector2(.12f,.34f),new Vector2(-.27f,.23f)},.3f,3,Vector3.zero,12);
                 b.Box(new Vector3(-.16f,.37f,0),new Vector3(.13f,.12f,.22f),11);

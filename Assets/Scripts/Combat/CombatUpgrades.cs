@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum UpgradeKind { Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline }
+public enum UpgradeKind { Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison }
 public sealed class CombatUpgrades : MonoBehaviour
 {
     public static CombatUpgrades Current {get;private set;}
@@ -65,6 +65,11 @@ public sealed class CombatUpgrades : MonoBehaviour
         {
             var burn=enemy.GetComponent<BurningHull>();if(burn==null)burn=enemy.gameObject.AddComponent<BurningHull>();
             burn.Ignite(Mathf.Max(1,damage*.4f)*(companion ? .5f : 1));
+        }
+        if(Count(UpgradeKind.Poison)>0)
+        {
+            var poison=enemy.GetComponent<PoisonedHull>();if(poison==null)poison=enemy.gameObject.AddComponent<PoisonedHull>();
+            poison.Infect(damage*(companion ? .5f : 1));
         }
         if(generation>0)return damage; // Secondary hits never produce more secondary effects or charge.
         if(Count(UpgradeKind.Splitter)>0 && Ready("split",.45f))Fragments(enemy.transform.position,damage,2,25);
