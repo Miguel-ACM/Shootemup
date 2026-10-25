@@ -8,6 +8,7 @@ public static partial class IndustrialMeshFactory
         if(expansionItems.TryGetValue(kind,out var mesh))return mesh;
         if(kind=="WindUpCannonItem")return expansionItems[kind]=WindUpCannonModel();
         if(kind=="Popcorn")return expansionItems[kind]=PopcornModel();
+        if(kind=="Icicle")return expansionItems[kind]=IcicleModel();
         var b=new Builder();
         if(EverydayItem(b,kind))return expansionItems[kind]=b.Finish(kind+" equipment");
         if(RequestedItem(b,kind))return expansionItems[kind]=b.Finish(kind+" equipment");

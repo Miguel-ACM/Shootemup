@@ -61,6 +61,7 @@ public abstract class DistrictEnemy : AEnemy
     }
     protected virtual void Update()
     {
+        if(FrozenHull.Holds(gameObject))return;
         age+=Time.deltaTime*LevelRun.EnemyTempoScale;
         if(age>28 || transform.position.y<Camera.DownLimit-2){Depart();return;}
         if(GameRules.playerDisabled || transform.position.y>Camera.UpLimit-.5f || transform.position.y<Camera.DownLimit+1)return;

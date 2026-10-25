@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum UpgradeKind { Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand }
+public enum UpgradeKind { Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle }
 public sealed class CombatUpgrades : MonoBehaviour
 {
     public static CombatUpgrades Current {get;private set;}
@@ -72,6 +72,7 @@ public sealed class CombatUpgrades : MonoBehaviour
             poison.Infect(damage*(companion ? .5f : 1));
         }
         if(generation>0)return FinishHit(enemy,damage); // Secondary hits never produce more secondary effects or charge.
+        if(!companion && Count(UpgradeKind.Icicle)>0)damage=(enemy.GetComponent<FrozenHull>() ?? enemy.gameObject.AddComponent<FrozenHull>()).Hit(damage);
         if(!companion)GetComponent<PopcornHits>()?.Hit(enemy,damage);
         if(!companion)GetComponent<StaticCharge>()?.Discharge(enemy,damage);
         if(Count(UpgradeKind.Splitter)>0 && Ready("split",.45f))Fragments(enemy.transform.position,damage,2,25);
