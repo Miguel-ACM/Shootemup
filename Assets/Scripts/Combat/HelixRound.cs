@@ -12,9 +12,8 @@ public sealed class HelixRound : CombatRound
             wake.time=.30f;wake.minVertexDistance=.025f;wake.autodestruct=false;
             wake.sortingLayerName="Bullet";wake.sortingOrder=14;wake.numCornerVertices=2;wake.numCapVertices=2;
             wake.widthCurve=AnimationCurve.Linear(0,1,1,0);
-            var gradient=new Gradient();gradient.SetKeys(new[]{new GradientColorKey(Accent,0),new GradientColorKey(Accent,1)},new[]{new GradientAlphaKey(.70f,0),new GradientAlphaKey(0,1)});
-            wake.colorGradient=gradient;
         }
+        var gradient=new Gradient();gradient.SetKeys(new[]{new GradientColorKey(Accent,0),new GradientColorKey(Accent,1)},new[]{new GradientAlphaKey(.70f,0),new GradientAlphaKey(0,1)});wake.colorGradient=gradient;
         wake.widthMultiplier=transform.localScale.x*.43f;wake.Clear();wake.emitting=true;
     }
     protected override void Tick(float dt)

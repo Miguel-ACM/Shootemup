@@ -16,6 +16,7 @@ public abstract class CombatRound : AEnemyBullet
     protected SpriteRenderer visual;
     protected Rigidbody2D body;
     protected Collider2D collision;
+    ProjectileSpriteTint tint;
     Vector2 orientedHeading;
     bool needsOrientation;
     protected float lifetime=9;
@@ -50,10 +51,10 @@ public abstract class CombatRound : AEnemyBullet
             var collider=go.AddComponent<CustomCollider2D>();collider.isTrigger=true;
             sr.sprite=HostileProjectileArt.Sprite(typeof(T));ProjectileSprites.Fit(collider,sr.sprite);
             shot=go.AddComponent<T>();shot.body=rb;shot.visual=sr;shot.collision=collider;
-            ProjectileSpriteTint.Apply(go,shot is PulseLaser ? Color.white : shot.Accent);
+            ProjectileSpriteTint.Apply(go,shot.Accent);shot.tint=go.GetComponent<ProjectileSpriteTint>();
         }
         shot.gameObject.layer=ProjectileCollisionLayers.Hostile;
-        shot.needsOrientation=true;
+        shot.tint.SetHostile();shot.needsOrientation=true;
         shot.transform.SetPositionAndRotation(new Vector3(p.x,p.y,-.5f),Quaternion.identity);
         shot.transform.localScale=Vector3.one*radius*2;shot.visual.sprite=HostileProjectileArt.Sprite(typeof(T),radius>=.25f);shot.visual.color=Color.white;
         shot.visual.enabled=true;shot.collision.enabled=true;

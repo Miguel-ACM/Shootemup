@@ -8,18 +8,28 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
     SpriteRenderer visual;
     MaterialPropertyBlock properties;
     float lastBurn=-1,lastPoison=-1;
+    bool neutral;
     public Color Tint {get;private set;}
     public static void Apply(GameObject go,Color tint,bool friendly=false,bool neutralize=false)
     {
         var effect=go.GetComponent<ProjectileSpriteTint>() ?? go.AddComponent<ProjectileSpriteTint>();
         effect.Tint=tint;
         effect.visual=go.GetComponent<SpriteRenderer>();effect.visual.forceRenderingOff=false;
-        effect.visual.sharedMaterial=CombatVisuals.ProjectileMaterial;
+        effect.neutral=neutralize;
+        effect.visual.sharedMaterial=friendly ? CombatVisuals.ProjectileMaterial : LevelProjectilePalette.Material(neutralize);
         effect.visual.sortingLayerName="Bullet";effect.visual.sortingOrder=friendly ? 16 : 18;
-        effect.properties=new MaterialPropertyBlock();effect.properties.SetColor("_SpriteTint",tint);
+        if(effect.properties==null)effect.properties=new MaterialPropertyBlock();effect.properties.SetColor("_SpriteTint",tint);
         effect.properties.SetFloat("_Neutralize",neutralize ? 1 : 0);
         effect.lastBurn=effect.lastPoison=-1;effect.enabled=friendly;
-        effect.SetCoatings(0,0);if(friendly)effect.LateUpdate();
+        if(friendly){effect.SetCoatings(0,0);effect.LateUpdate();}
+        else effect.SetHostile();
+    }
+    public void SetHostile()
+    {
+        Tint=LevelProjectilePalette.Accent(LevelRun.Current);
+        var shared=LevelProjectilePalette.Material(neutral);
+        if(visual.sharedMaterial!=shared)visual.sharedMaterial=shared;
+        visual.SetPropertyBlock(null);
     }
     public static void Friendly(GameObject go)
     {
@@ -28,6 +38,7 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
     }
     public static void LegacyEnemy(GameObject go)
     {
+        go.layer=ProjectileCollisionLayers.Hostile;
         var visual=go.GetComponent<SpriteRenderer>();if(visual==null)return;
         if(!(go.GetComponent<AEnemyBullet>() is ExpandingWave))
         {

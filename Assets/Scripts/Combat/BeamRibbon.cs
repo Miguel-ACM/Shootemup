@@ -9,10 +9,11 @@ public sealed class BeamRibbon : MonoBehaviour
     LineRenderer body, sheath, tell, collar, intake;
     SpriteRenderer mouth;
     Color hot, cool;
+    bool playerBeam;
     public void Build(bool friendly=false)
     {
-        hot=friendly ? new Color(.24f,.68f,1) : new Color(.16f,.48f,1);
-        cool=friendly ? new Color(.07f,.35f,.80f) : new Color(.05f,.18f,.78f);
+        playerBeam=friendly;hot=friendly ? new Color(.24f,.68f,1) : LevelProjectilePalette.Accent(LevelRun.Current);
+        cool=hot*.45f;cool.a=1;
         if(energy==null)energy=new Material(Resources.Load<Shader>("ContinuousBeam")){name="Continuous plasma"};
         sheath=CombatVisuals.Line(transform,cool,.5f);sheath.sharedMaterial=energy;sheath.sortingOrder=19;
         body=CombatVisuals.Line(transform,hot,.2f);body.sharedMaterial=energy;body.sortingOrder=21;
@@ -25,6 +26,7 @@ public sealed class BeamRibbon : MonoBehaviour
     }
     public void Draw(Vector3 p,Vector2 direction,float length,float width,float charge,float power,float release=0)
     {
+        if(!playerBeam){hot=LevelProjectilePalette.Accent(LevelRun.Current);cool=hot*.45f;cool.a=1;}
         p.z=-1.05f;
         var end=p+(Vector3)direction*length;
         float flutter=.96f+.04f*Mathf.Sin(Time.time*53);
@@ -47,7 +49,7 @@ public sealed class BeamRibbon : MonoBehaviour
         float heat=charging ? charge*.65f : power;
         mouth.enabled=heat>.015f;
         mouth.transform.position=p;mouth.transform.localScale=Vector3.one*Mathf.Min(.36f,.08f+width*heat*.95f);
-        var glow=Color.Lerp(hot,new Color(.55f,.82f,1),heat*.25f);glow.a=heat*.9f;mouth.color=glow;
+        var glow=Color.Lerp(hot,Color.white,heat*.18f);glow.a=heat*.9f;mouth.color=glow;
         collar.enabled=intake.enabled=heat>.01f;
         CombatVisuals.Ring(collar,p,.05f+width*.45f*heat);
         collar.startColor=collar.endColor=new Color(hot.r,hot.g,hot.b,heat*.7f);
