@@ -33,8 +33,7 @@ public abstract class DistrictEnemy : AEnemy
     public void MakeChallenging()
     {
         if(Challenged)return;
-        Challenged=true;health*=1.2f;attackInterval*=.9f;
-        if(movement!=null)movement.TempoMultiplier=1.15f*(movement is FormationFlight ? 1 : MovementScale);
+        Challenged=true;attackInterval*=.75f;
     }
     public Transform Hull {get;private set;}
     protected EnemyFiringCue firingCue;
@@ -74,6 +73,22 @@ public abstract class DistrictEnemy : AEnemy
         flight.duration=unit.flightDuration;flight.fireEvery=unit.fireEvery;flight.curve=unit.curve;
         flight.syncFire=unit.syncFire;flight.firePhase=unit.firePhase;
         flight.fireTimes=unit.fireTimes;
+        if(Challenged)
+        {
+            // Add one shared answer in the widest rest; retain routes, speed and original accents.
+            if(unit.fireTimes!=null && unit.fireTimes.Length>1)
+            {
+                var score=(float[])unit.fireTimes.Clone();Array.Sort(score);
+                int gap=0;
+                for(int i=1;i<score.Length-1;i++)if(score[i+1]-score[i]>score[gap+1]-score[gap])gap=i;
+                if(score[gap+1]-score[gap]>=.8f)
+                {
+                    var denser=new float[score.Length+1];Array.Copy(score,denser,score.Length);
+                    denser[score.Length]=(score[gap]+score[gap+1])*.5f;Array.Sort(denser);flight.fireTimes=denser;
+                }
+            }
+            else flight.fireEvery*=.75f;
+        }
         if(IsMiniboss && unit.fireTimes!=null && unit.fireTimes.Length>0)
         {
             // Keep the phrase's shared accents, adding a quick opening reply and a deliberate rest.
@@ -81,20 +96,20 @@ public abstract class DistrictEnemy : AEnemy
             score[0]=Mathf.Max(.65f,unit.fireTimes[0]-.65f);score[1]=unit.fireTimes[0]+.2f;
             Array.Copy(unit.fireTimes,1,score,2,unit.fireTimes.Length-1);Array.Sort(score);flight.fireTimes=score;
         }
-        flight.formationDepth=unit.formationDepth;flight.fixedDepth=unit.fixedDepth;flight.TempoMultiplier=Challenged ? 1.15f : 1;movement=flight;
+        flight.formationDepth=unit.formationDepth;flight.fixedDepth=unit.fixedDepth;flight.TempoMultiplier=1;movement=flight;
         var p=flight.PositionAt(0);
         transform.position=new Vector3(p.x*Camera.RightLimit,Mathf.LerpUnclamped(Camera.DownLimit,Camera.UpLimit,p.y),transform.position.z);
     }
     public void Escort(Transform leader)
     {
         if(movement!=null){movement.enabled=false;Destroy(movement);}
-        var escort=gameObject.AddComponent<EscortOrbit>();escort.SetAnchor(leader);escort.TempoMultiplier=MovementScale*(Challenged ? 1.15f : 1);movement=escort;
+        var escort=gameObject.AddComponent<EscortOrbit>();escort.SetAnchor(leader);escort.TempoMultiplier=MovementScale;movement=escort;
     }
-    protected T Mover<T>() where T:PatternMover { var m=gameObject.AddComponent<T>();m.TempoMultiplier=MovementScale*(Challenged ? 1.15f : 1);movement=m;return m; }
+    protected T Mover<T>() where T:PatternMover { var m=gameObject.AddComponent<T>();m.TempoMultiplier=MovementScale;movement=m;return m; }
     internal void UseMovement(PatternMover next)
     {
         if(movement!=null && movement!=next){movement.enabled=false;Destroy(movement);}
-        next.TempoMultiplier=MovementScale*(Challenged ? 1.15f : 1);movement=next;
+        next.TempoMultiplier=MovementScale;movement=next;
     }
     protected virtual void Update()
     {
@@ -116,7 +131,7 @@ public abstract class DistrictEnemy : AEnemy
     protected T Fire<T>(Vector3 position,Vector2 direction,float velocity,float radius=.18f) where T:CombatRound
     {
         firingCue?.Flash(position);
-        var shot=CombatRound.Launch<T>(position,direction,velocity*ProjectileSpeedScale*(Challenged ? 1.15f : 1)*(IsMiniboss ? 1.14f : 1),radius);
+        var shot=CombatRound.Launch<T>(position,direction,velocity*ProjectileSpeedScale*(IsMiniboss ? 1.14f : 1),radius);
         if(shot!=null)shot.damage*=ProjectileDamageScale;
         if(shot is BurstShell shell)shell.SetTravelDistance(shellTravelDistance);
         return shot;

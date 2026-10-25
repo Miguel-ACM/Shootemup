@@ -71,8 +71,7 @@ public class WaveOrchestrer : MonoBehaviour
         }
         if (isWaveComingOut)
         {
-            // Speed the shared entrance clock with challenged formations to retain their spacing.
-            waveTime += Time.deltaTime*(challengeWave ? 1.15f : 1);
+            waveTime += Time.deltaTime;
             while (currentUnit != null && waveTime >= currentUnit.time)
             {
                 Vector3 pos = new Vector3(currentUnit.position.x * limits[3], currentUnit.position.y * limits[0], 1);

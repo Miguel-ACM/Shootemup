@@ -47,7 +47,7 @@ public abstract class GroundVehicle : DistrictEnemy
             if(!drivingRoad){drivingRoad=true;roadY=position.y;}
             var flight=movement as FormationFlight;
             float drive=1.45f+Mathf.Clamp((5.1f-(flight!=null ? flight.duration : 4.8f))*.8f,0,.9f);
-            roadY-=Time.deltaTime*(field.GroundScrollSpeed+drive*GameRules.enemySpeed*LevelRun.EnemyTempoScale*(Challenged ? 1.15f : 1));
+            roadY-=Time.deltaTime*(field.GroundScrollSpeed+drive*GameRules.enemySpeed*LevelRun.EnemyTempoScale);
             position.y=roadY;
         }
         planned=position;Sample(position);if(!Grounded)return position;
