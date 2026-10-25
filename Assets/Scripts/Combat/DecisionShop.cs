@@ -28,12 +28,13 @@ public sealed class DecisionShop : MonoBehaviour
     public void Open(WaveOrchestrer orchestrer,Shipcontroller ship,string kind,Action completed,Vector3? dropPosition=null)
     {
         mandatory=kind=="bossReward";
-        owner=orchestrer;player=ship;paid=kind!="reward" && !mandatory;coinShop=kind=="coinShop" || kind=="scoreShop";done=completed;
+        bool singleReward=mandatory || kind=="challengeReward";
+        owner=orchestrer;player=ship;paid=kind!="reward" && !singleReward;coinShop=kind=="coinShop" || kind=="scoreShop";done=completed;
         CombatDecision.Begin();player.GetComponent<ShipLoadout>().ResetSelection();
         foreach(var weapon in player.GetComponentsInChildren<AWeapon>())weapon.StopFiring();
         dialog=GameObject.FindGameObjectWithTag("Dialog").GetComponent<Dialog>();
         overlay=new GameObject("Shop decision overlay",typeof(RectTransform)).AddComponent<DecisionOverlay>();overlay.Build(dialog.font);
-        int count=mandatory ? 1 : paid ? (UnityEngine.Random.value<.35f ? 4 : 3) : RewardCount(GameRules.luck,UnityEngine.Random.value);
+        int count=singleReward ? 1 : paid ? (UnityEngine.Random.value<.35f ? 4 : 3) : RewardCount(GameRules.luck,UnityEngine.Random.value);
         bool healthKit=paid && player.health<player.maxHealth*.45f;
         for(int i=0;i<count;i++)
         {

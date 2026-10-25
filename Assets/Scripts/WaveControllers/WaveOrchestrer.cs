@@ -49,7 +49,6 @@ public class WaveOrchestrer : MonoBehaviour
         dialog = GameObject.FindGameObjectWithTag("Dialog").GetComponent<Dialog>();
         limits = Camera.getLimits();
         ship = GameObject.FindGameObjectWithTag("Player");
-        ship.GetComponent<Shipcontroller>().HitTaken+=CancelChallenge;
         wavePool = GetComponent<WavePool>();
         waves=DistrictWaves.Sequence();
         if(GetComponent<TunnelReflectors>()==null)gameObject.AddComponent<TunnelReflectors>();
@@ -72,13 +71,19 @@ public class WaveOrchestrer : MonoBehaviour
         }
         if (isWaveComingOut)
         {
-            waveTime += Time.deltaTime;
+            // Speed the shared entrance clock with challenged formations to retain their spacing.
+            waveTime += Time.deltaTime*(challengeWave ? 1.15f : 1);
             while (currentUnit != null && waveTime >= currentUnit.time)
             {
                 Vector3 pos = new Vector3(currentUnit.position.x * limits[3], currentUnit.position.y * limits[0], 1);
                 var type=DistrictWaves.EnemyType(currentUnit.enemy);
                 GameObject enemy=type!=null ? DistrictEnemy.Spawn(type,pos).gameObject : Instantiate(currentUnit.GetUnit(),pos,Quaternion.identity);
-                if(type!=null)enemy.GetComponent<DistrictEnemy>().FlyPhrase(currentUnit);
+                if(type!=null)
+                {
+                    var districtEnemy=enemy.GetComponent<DistrictEnemy>();
+                    if(challengeWave)districtEnemy.MakeChallenging();
+                    districtEnemy.FlyPhrase(currentUnit);
+                }
                 if(enemy.TryGetComponent<DistrictMiniboss>(out var mini))activeMiniboss=mini;
                 enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
                 currentUnit = currentWave.getNext();
@@ -94,7 +99,7 @@ public class WaveOrchestrer : MonoBehaviour
             {
                 if(minibossDeadline<0)minibossDeadline=Time.time+20;
                 activeMiniboss.SetRemaining(MinibossRemaining);
-                if(MinibossRemaining<=0){CancelChallenge();activeMiniboss.Retreat();}
+                if(MinibossRemaining<=0)activeMiniboss.Retreat();
             }
             bool phraseComplete=currentUnit==null && !miniboss && waveTime>=handoffAt && AEnemy.Live.Count<22;
             if (currentUnit == null && ((nextCombat && phraseComplete) || clearTime>=.12f))
@@ -122,7 +127,7 @@ public class WaveOrchestrer : MonoBehaviour
             {
                 // The third wave must be cleared, then pay out before any later combat starts.
                 if(currentWaveNumber<waves.Length && waves[currentWaveNumber]=="encounterChoice")currentWaveNumber++;
-                EraseAllBullets();OpenDecision("reward");return;
+                EraseAllBullets();OpenDecision("challengeReward");return;
             }
         }
         GenerateWave();
@@ -183,7 +188,7 @@ public class WaveOrchestrer : MonoBehaviour
         else
         {
             isWaveComingOut = true;
-            challengeWave=challengeWavesRemaining>0;
+            challengeWave=challengeWavesRemaining>0 && int.TryParse(currWaveType,out _);
             currentWave = wavePool.getWave(currWaveType);
             string following=currentWaveNumber+1<waves.Length ? waves[currentWaveNumber+1] : "";
             handoffAt=int.TryParse(following,out _) ? WaveHandoff.At(currentWave,wavePool.getWave(following)) : currentWave.duration;
@@ -202,15 +207,10 @@ public class WaveOrchestrer : MonoBehaviour
     }
 
     DecisionShop decision;
-    void CancelChallenge(){challengeWavesRemaining=0;challengeWave=false;}
-    void OnDestroy()
-    {
-        if(ship!=null)ship.GetComponent<Shipcontroller>().HitTaken-=CancelChallenge;
-    }
     void OpenEncounterChoice()
     {
         int remaining=0;
-        for(int i=currentWaveNumber+1;i<waves.Length;i++)if(int.TryParse(waves[i],out _) || waves[i]=="miniboss")remaining++;
+        for(int i=currentWaveNumber+1;i<waves.Length;i++)if(int.TryParse(waves[i],out _))remaining++;
         EncounterOptions=EncounterChoice.Draw(unchecked(LevelRun.Seed+LevelRun.Stage*971+currentWaveNumber*7919),remaining>=3 && challengeWavesRemaining==0);
         CombatDecision.Begin();ship.GetComponent<ShipLoadout>().ResetSelection();
         foreach(var weapon in ship.GetComponentsInChildren<AWeapon>())weapon.StopFiring();
@@ -267,7 +267,6 @@ public class WaveOrchestrer : MonoBehaviour
         }
         else if (currentWaveNumber == waveNumber)
         {
-            if(!defeated && currentWave!=null && currentWave.units.Exists(unit=>unit.miniboss))CancelChallenge();
             if(defeated)currentWaveKilledEnemies += 1;
         }
     }
