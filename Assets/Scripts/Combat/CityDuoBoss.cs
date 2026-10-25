@@ -51,14 +51,12 @@ public sealed class CityDuoBoss : DistrictBoss
         else if(heavy && (beat==6 || beat==7))
         {
             int count=enraged ? 19 : 15;
-            for(int i=0;i<count;i++)Fire<SimpleRound>(transform.position,
-                CombatVisuals.Rotate(Vector2.down,(i-(count-1)*.5f)*9+(beat==6 ? -4.5f : 4.5f)),4.7f,.12f);
+            PetalFan<SimpleRound>(transform.position,CombatVisuals.Rotate(Vector2.down,beat==6 ? -2.25f : 2.25f),count,9,4.7f,.12f,-.12f);
         }
         else if(!heavy && (beat==1 || beat==3 || beat==5))
         {
             int count=enraged ? 15 : 11;
-            for(int i=0;i<count;i++)Fire<NeedleRound>(transform.position,
-                CombatVisuals.Rotate(attackAxis,(i-(count-1)*.5f)*6+(beat-3)*3),7.6f,.13f);
+            PetalFan<NeedleRound>(transform.position,CombatVisuals.Rotate(attackAxis,(beat-3)*3),count,6,7.6f,.13f,.15f);
         }
         else if(!heavy && (beat==8 || beat==9))Fan<GuidedMissile>(enraged ? 5 : 3,17,5.5f);
         // A lone survivor fills its missing partner's accents without continuous noise.
