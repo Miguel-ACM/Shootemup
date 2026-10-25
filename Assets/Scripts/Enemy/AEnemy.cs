@@ -108,7 +108,7 @@ public abstract class AEnemy : MonoBehaviour
     public void Depart()
     {
         if(dying)return;dying=true;
-        if(orchestrer!=null)orchestrer.NotifyEnemyKilled(orchesterWaveNumber,isBoss:isBoss);
+        if(orchestrer!=null)orchestrer.NotifyEnemyKilled(orchesterWaveNumber,isBoss:isBoss,defeated:false);
         Destroy(gameObject);
     }
 
@@ -193,7 +193,7 @@ public abstract class AEnemy : MonoBehaviour
         {
             Destroy(gameObject);
             if (orchestrer  != null)
-                orchestrer.NotifyEnemyKilled(orchesterWaveNumber, isBoss: isBoss);
+                orchestrer.NotifyEnemyKilled(orchesterWaveNumber, isBoss: isBoss,defeated:false);
         }
     }
 

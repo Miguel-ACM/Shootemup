@@ -36,6 +36,11 @@ public class WaveOrchestrer : MonoBehaviour
     public const float OpeningBreather = .8f;
     bool openingWavePending;
     float openingStartsAt;
+    DistrictMiniboss activeMiniboss;
+    float minibossDeadline=-1;
+    bool minibossVictory;
+    public float MinibossRemaining=>minibossDeadline<0 ? 20 : Mathf.Max(0,minibossDeadline-Time.time);
+    public bool MinibossVictory=>minibossVictory;
 
 
     // Start is called before the first frame update
@@ -74,16 +79,23 @@ public class WaveOrchestrer : MonoBehaviour
                 var type=DistrictWaves.EnemyType(currentUnit.enemy);
                 GameObject enemy=type!=null ? DistrictEnemy.Spawn(type,pos).gameObject : Instantiate(currentUnit.GetUnit(),pos,Quaternion.identity);
                 if(type!=null)enemy.GetComponent<DistrictEnemy>().FlyPhrase(currentUnit);
+                if(enemy.TryGetComponent<DistrictMiniboss>(out var mini))activeMiniboss=mini;
                 enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
                 currentUnit = currentWave.getNext();
             }
             // Consecutive phrases overlap their exits: old bullets are part of the rhythm.
             // Decisions and bosses wait for enemies to finish, then explicitly clear hazards.
             string next=currentWaveNumber<waves.Length ? waves[currentWaveNumber] : "";
-            bool nextCombat=(int.TryParse(next,out _) || next=="miniboss") && !(challengeWave && challengeWavesRemaining==1);
+            bool nextCombat=int.TryParse(next,out _) && !(challengeWave && challengeWavesRemaining==1);
             bool empty=currentUnit==null && AEnemy.Live.Count==0;
             clearTime=empty ? clearTime+Time.deltaTime : 0;
             bool miniboss=currentWave.units.Exists(unit=>unit.miniboss);
+            if(miniboss && activeMiniboss!=null && activeMiniboss.Engaged && !activeMiniboss.Retreating)
+            {
+                if(minibossDeadline<0)minibossDeadline=Time.time+20;
+                activeMiniboss.SetRemaining(MinibossRemaining);
+                if(MinibossRemaining<=0){CancelChallenge();activeMiniboss.Retreat();}
+            }
             bool phraseComplete=currentUnit==null && !miniboss && waveTime>=handoffAt && AEnemy.Live.Count<22;
             if (currentUnit == null && ((nextCombat && phraseComplete) || clearTime>=.12f))
             {
@@ -102,6 +114,7 @@ public class WaveOrchestrer : MonoBehaviour
     void FinishCombatWave()
     {
         isWaveComingOut=false;
+        if(currentWave.units.Exists(unit=>unit.miniboss)){minibossVictory=currentWaveKilledEnemies>=currentWaveEnemies;activeMiniboss=null;minibossDeadline=-1;}
         if(challengeWave)
         {
             challengeWave=false;challengeWavesRemaining--;
@@ -145,7 +158,8 @@ public class WaveOrchestrer : MonoBehaviour
             return;
         }
         string currWaveType = waves[currentWaveNumber];
-        if(currWaveType=="encounterChoice")
+        if(currWaveType=="minibossChoice" && !minibossVictory){currentWaveNumber++;GenerateWave();return;}
+        if(currWaveType=="encounterChoice" || currWaveType=="minibossChoice")
         {
             EraseAllBullets();isWaveComingOut=false;OpenEncounterChoice();
         }
@@ -172,9 +186,10 @@ public class WaveOrchestrer : MonoBehaviour
             challengeWave=challengeWavesRemaining>0;
             currentWave = wavePool.getWave(currWaveType);
             string following=currentWaveNumber+1<waves.Length ? waves[currentWaveNumber+1] : "";
-            handoffAt=int.TryParse(following,out _) || following=="miniboss" ? WaveHandoff.At(currentWave,wavePool.getWave(following)) : currentWave.duration;
+            handoffAt=int.TryParse(following,out _) ? WaveHandoff.At(currentWave,wavePool.getWave(following)) : currentWave.duration;
             currentWaveEnemies = currentWave.units.Count;
             currentWaveKilledEnemies = 0;
+            if(currWaveType=="miniboss"){minibossVictory=false;minibossDeadline=-1;}
             waveTime = 0;
             clearTime = 0;
             currentUnit = currentWave.getNext();
@@ -240,7 +255,7 @@ public class WaveOrchestrer : MonoBehaviour
     public bool TryClaimItem(AItem candidate)=>decision!=null && decision.TryClaim(candidate);
     public void NotifyItemPicked(GameObject item){if(decision!=null)decision.Picked(item);}
 
-    public void NotifyEnemyKilled(int waveNumber,bool isBoss=false,Vector3? bossPosition=null)
+    public void NotifyEnemyKilled(int waveNumber,bool isBoss=false,Vector3? bossPosition=null,bool defeated=true)
     {
         if (isBoss)
         {
@@ -252,7 +267,8 @@ public class WaveOrchestrer : MonoBehaviour
         }
         else if (currentWaveNumber == waveNumber)
         {
-            currentWaveKilledEnemies += 1;
+            if(!defeated && currentWave!=null && currentWave.units.Exists(unit=>unit.miniboss))CancelChallenge();
+            if(defeated)currentWaveKilledEnemies += 1;
         }
     }
     IEnumerator BossReward(Vector3 position)

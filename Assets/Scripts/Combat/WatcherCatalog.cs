@@ -19,11 +19,11 @@ public static class WatcherCatalog
     {
         switch(level)
         {
-            case LevelId.Hell:return new[]{typeof(SkullRevenant),typeof(GhostGalleon),typeof(CinderImp)};
-            case LevelId.Underwater:return new[]{typeof(ReefDart),typeof(MantaRay),typeof(Bathysphere)};
-            case LevelId.Space:return new[]{typeof(OrbitalScout),typeof(LaserSatellite),typeof(OrbitalCarrier),typeof(OrbitalMoonlet)};
-            case LevelId.Candyland:return new[]{typeof(BonbonSkirmisher),typeof(WaferDart),typeof(MintSpinner)};
-            case LevelId.Desert:return new[]{typeof(SandEmitter),typeof(SandStriker),typeof(SandWorm)};
+            case LevelId.Hell:return new[]{typeof(SkullRevenant),typeof(GhostGalleon),typeof(CinderImp),typeof(InfernalFerryman)};
+            case LevelId.Underwater:return new[]{typeof(ReefDart),typeof(MantaRay),typeof(Bathysphere),typeof(ReefLeviathan)};
+            case LevelId.Space:return new[]{typeof(OrbitalScout),typeof(LaserSatellite),typeof(OrbitalCarrier),typeof(OrbitalMoonlet),typeof(OrbitalWarden)};
+            case LevelId.Candyland:return new[]{typeof(BonbonSkirmisher),typeof(WaferDart),typeof(MintSpinner),typeof(TaffyDuelist)};
+            case LevelId.Desert:return new[]{typeof(SandEmitter),typeof(SandStriker),typeof(SandWorm),typeof(ScarabDredger)};
             case LevelId.Fields:return new[]{typeof(ScoutInterceptor),typeof(PatrolGunship),typeof(HeavyBomber),typeof(FieldsHeavyWing),typeof(MeadowTank)};
             case LevelId.Tunnel:return new[]{typeof(WallTurret),typeof(MaintenanceDrone),typeof(ArmoredCarrier),typeof(TunnelDefensePlatform)};
             case LevelId.Snow:return new[]{typeof(ColdWeatherFighter),typeof(SiegeGunship),typeof(ShieldTransport),typeof(AvalancheBomber),typeof(SnowSiegeCraft),typeof(FrostAuger)};

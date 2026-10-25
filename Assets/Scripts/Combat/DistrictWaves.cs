@@ -6,7 +6,7 @@ public static class DistrictWaves
 {
     // Explicit types keep runtime factories safe under managed code stripping.
     public static readonly Type[] EnemyTypes={typeof(ScoutInterceptor),typeof(PatrolGunship),typeof(HeavyBomber),typeof(WallTurret),typeof(MaintenanceDrone),typeof(ArmoredCarrier),typeof(ColdWeatherFighter),typeof(SiegeGunship),typeof(ShieldTransport),typeof(BeamDrone),typeof(RelayDrone),typeof(StormSkimmer),typeof(PursuitFighter),typeof(AttackDrone),typeof(CommandGunship),typeof(CourierDiver),typeof(AvalancheBomber),typeof(ArcLancer),typeof(FieldsHeavyWing),typeof(TunnelDefensePlatform),typeof(SnowSiegeCraft),typeof(StormReactor),typeof(CityCommandCarrier),typeof(SandEmitter),typeof(SandStriker),typeof(SandWorm),typeof(BonbonSkirmisher),typeof(WaferDart),typeof(MintSpinner),typeof(MeadowTank),typeof(FrostAuger),typeof(OrbitalScout),typeof(LaserSatellite),typeof(OrbitalCarrier),typeof(OrbitalMoonlet)};
-    static DistrictWaves(){var all=new List<Type>(EnemyTypes);all.AddRange(new[]{typeof(SkullRevenant),typeof(GhostGalleon),typeof(CinderImp),typeof(ReefDart),typeof(MantaRay),typeof(Bathysphere)});EnemyTypes=all.ToArray();}
+    static DistrictWaves(){var all=new List<Type>(EnemyTypes);all.AddRange(new[]{typeof(SkullRevenant),typeof(GhostGalleon),typeof(CinderImp),typeof(ReefDart),typeof(MantaRay),typeof(Bathysphere),typeof(ScarabDredger),typeof(TaffyDuelist),typeof(OrbitalWarden),typeof(ReefLeviathan),typeof(InfernalFerryman)});EnemyTypes=all.ToArray();}
     public static Type EnemyType(string name)=>Array.Find(EnemyTypes,t=>t.Name==name);
     public static Type BossType
     {
@@ -27,36 +27,11 @@ public static class DistrictWaves
             }
         }
     }
-    // Four phrases keep the full ramp, one decision, a miniboss and the finale.
-    public static string[] Sequence()=>new[]{"2","encounterChoice","8","miniboss","20","boss"};
+    public static string[] Sequence()=>new[]{"reward","2","4","encounterChoice","6","8","encounterChoice","miniboss","12","minibossChoice","16","minibossChoice","20","boss"};
     public static Wave Miniboss()
     {
-        if(LevelRun.Current==LevelId.Hell || LevelRun.Current==LevelId.Underwater)
-        {
-            bool hell=LevelRun.Current==LevelId.Hell;
-            var units=new List<WaveUnit>();
-            for(int i=0;i<3;i++)units.Add(new WaveUnit(hell ? nameof(GhostGalleon) : nameof(Bathysphere),i*.9f,new Vector3((i-1)*.51f,1.2f,1)){miniboss=true});
-            return new Wave(6,22,1,ConflictGroup.cg.center,units){parts=new[]{hell ? "Spectral admirals" : "Pressure bells"}};
-        }
-        if(LevelRun.Current==LevelId.Space)
-            return new Wave(6,24,1,ConflictGroup.cg.center,new List<WaveUnit>{
-                new WaveUnit(nameof(OrbitalCarrier),0,new Vector3(-.48f,1.2f,1)){miniboss=true},
-                new WaveUnit(nameof(LaserSatellite),1.5f,new Vector3(0,1.2f,1)){miniboss=true},
-                new WaveUnit(nameof(OrbitalCarrier),3,new Vector3(.48f,1.2f,1)){miniboss=true}}){parts=new[]{"Orbital relay guard"}};
-        if(LevelRun.Current==LevelId.Candyland)
-        {
-            var rush=WaveComposer.Create(16);
-            foreach(var unit in rush.units)unit.miniboss=true;
-            return rush;
-        }
-        if(LevelRun.Current==LevelId.Desert)
-        {
-            var brood=new List<WaveUnit>();
-            for(int i=0;i<3;i++)brood.Add(new WaveUnit(nameof(SandWorm),i*3.2f,new Vector3((i%2==0 ? -1 : 1)*.54f,1.2f,1)){miniboss=true});
-            return new Wave(6,19,1,ConflictGroup.cg.center,brood){parts=new[]{"Buried brood"}};
-        }
-        string[] types={"FieldsHeavyWing","TunnelDefensePlatform","SnowSiegeCraft","StormReactor","CityCommandCarrier"};
-        return new Wave(6,35,1,ConflictGroup.cg.center,new List<WaveUnit>{new WaveUnit(types[(int)LevelRun.Current],0,new Vector3(0,1.2f)){miniboss=true}});
+        string[] types={nameof(FieldsHeavyWing),nameof(TunnelDefensePlatform),nameof(SnowSiegeCraft),nameof(StormReactor),nameof(CityCommandCarrier),nameof(ScarabDredger),nameof(TaffyDuelist),nameof(OrbitalWarden),nameof(ReefLeviathan),nameof(InfernalFerryman)};
+        return new Wave(6,23,1,ConflictGroup.cg.center,new List<WaveUnit>{new WaveUnit(types[(int)LevelRun.Current],0,new Vector3(0,1.2f,1)){miniboss=true}}){parts=new[]{types[(int)LevelRun.Current]}};
     }
     public static Wave Create(int budget)
     {
