@@ -2,6 +2,8 @@
 Never modifies SoundLab selections or previously approved game sounds.
 """
 import json
+import sys
+sys.dont_write_bytecode=True
 from build_beam_audio import ROOT, SOURCE, RATE, CUTS, read, pitch, add, tone, save
 import hashlib
 
