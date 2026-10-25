@@ -1,0 +1,5 @@
+PASS
+Seed 17381: 134 plants, birches and two evergreen silhouettes, three ice hollows; continuous four-section terrain and 80-unit loop; original auger grid order.
+Seed 421: 135 plants, birches and two evergreen silhouettes, three ice hollows; continuous four-section terrain and 80-unit loop; original auger grid order.
+Seed 9826: 131 plants, birches and two evergreen silhouettes, three ice hollows; continuous four-section terrain and 80-unit loop; original auger grid order.
+Native 270x480 views rendered through the game composite at four locations for each of three seeds. Tree material uses the Plains foliage shader with a winter atlas.

@@ -1,0 +1,1 @@
+PASS: 220 native triangle-ray comparisons during lateral parallax; 3 grounded augers and 30 track marks; full eighty-unit wrap; 20 static batched meshes, no runtime scenery colliders (verification-only colliders added afterward).
