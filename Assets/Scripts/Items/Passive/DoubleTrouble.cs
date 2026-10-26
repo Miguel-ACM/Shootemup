@@ -3,7 +3,7 @@ public sealed class DoubleTrouble : AItem
 {
     void Awake()
     {
-        SetData("Double trouble", "Two barrels", "Either trigger fires both equipped guns.", ItemType.passive);
+        SetData("Linked Triggers", "Two barrels", "Either trigger fires both equipped guns.", ItemType.passive);
     }
 
     public override void OnBegin()
