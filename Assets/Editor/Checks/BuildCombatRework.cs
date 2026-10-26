@@ -34,7 +34,10 @@ public static class BuildCombatRework
             (success ? "PASS" : "FAIL") + "\n" + report.summary.result + "\n" +
             "Windows x64 player: " + output + "\n" +
             "Errors=" + report.summary.totalErrors + "; warnings=" + report.summary.totalWarnings +
-            "; bytes=" + report.summary.totalSize + "; duration=" + report.summary.totalTime + "\n");
+            "; bytes=" + report.summary.totalSize + "; duration=" + report.summary.totalTime + "\n" +
+            string.Join("\n", report.steps.SelectMany(step => step.messages)
+                .Where(message => message.type == LogType.Warning || message.type == LogType.Error)
+                .Select(message => message.type + ": " + message.content).Distinct()) + "\n");
         EditorApplication.Exit(success ? 0 : 1);
     }
 }
