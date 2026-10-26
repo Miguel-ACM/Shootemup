@@ -3,7 +3,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class EclipseSail : DistrictEnemy
 {
-    protected override Vector2 CueAxis => Vector2.down;
+    protected override Vector2 CueAxis => !Difficulty.Easy && volley % 2 == 1 ? Aim : Vector2.down;
     protected override void Configure()
     {
         hull = 75;
@@ -15,10 +15,11 @@ public sealed class EclipseSail : DistrictEnemy
     }
     protected override void Attack()
     {
-        for (int s = -1; s <= 1; s += 2)
-            Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (volley % 2 == 0 ? 34 : 18)), 1.9f, .37f);
-        if (!Difficulty.Easy)
+        if (!Difficulty.Easy && volley % 2 == 0)
             Fan<NeedleRound>(3, 18, 3.9f, .16f);
+        else
+            for (int s = -1; s <= 1; s += 2)
+                Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (volley % 4 < 2 ? 34 : 18)), 1.9f, .37f);
     }
 
 }
