@@ -24,7 +24,7 @@ public sealed class ReedSkimmer : DistrictEnemy
 public static partial class WavePartLibrary
 {
     static readonly FlightCurve ReedSkimmerRoute0 = Route("Fields / Reedbank skimming", Vector2.right, -0.82f, 1.25f, -0.8f, 0.82f, -0.5f, 0.42f, 0.18f, 0.36f, 0.7f, 0.56f, 1.4f, 0.72f);
-    static readonly FlightCurve ReedSkimmerRoute1 = Route("Fields / Riverbank opening", Vector2.right, -1.4f, 0.73f, -0.72f, 0.59f, -0.12f, 0.66f, 0.35f, 0.91f, 0.46f, 1.25f);
+    static readonly FlightCurve ReedSkimmerRoute1 = Route("Fields / Riverbank opening", Vector2.right, -2.1f, 0.73f, -0.72f, 0.59f, -0.12f, 0.66f, 0.35f, 0.91f, 0.46f, 1.4f);
     static readonly FlightCurve ReedSkimmerRoute2 = Route("Fields / Reedbed switch", Vector2.right, -0.4f, 1.25f, -0.65f, 0.82f, -0.2f, 0.55f, 0.45f, 0.38f, 0.72f, 0.15f, 0.8f, -0.25f);
     public static readonly WavePart[] ReedSkimmerParts =
     {
