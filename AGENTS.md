@@ -49,7 +49,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Choreograph firing as well as movement: shared accents, deliberate rests and coordinated releases within each wave.
 - Remove the segmented laser completely. Thunder drones must not make arbitrary laser links between ships. Beams need visible charge, continuous energy, an attached emitter, a smooth release and appropriate sound.
 - Preserve the snake enemy's flowing character; Miguel likes it.
-- Use the existing Sound Lab/Frontlines sample workflow for new effects. Preserve saved user selections and distinguish technical audio checks from subjective listening.
+- Use the existing Sound Lab/Frontlines sample workflow and the installed local SFX generator at `C:\Users\Miguel\Tools\local-sounds` for new effects. Its default is Stable Audio 3 Small-SFX, with local weights; the older hosted Stable Audio source manifests do not describe the current generator. Use `scripts/iterate.py` for bounded automatic critique and repair, with a fixed brief, preserved original/best takes, repeat-fire previews and an optional equal-generation-budget blind baseline. The iteration prompts explicitly include `TrackType: SFX`. MiDashengLM 0.6B reviews on CPU; its answers are fallible, and unsupported answers remain uncertain. Preserve saved user selections and distinguish technical/model checks from Miguel's listening approval. See `SoundLab/README.md` for commands and the workflow; generation does not automatically import sounds into Unity or update Sound Lab choices.
 - Improve the city's architectural models and variation between runs.
 
 ## District and boss identities
