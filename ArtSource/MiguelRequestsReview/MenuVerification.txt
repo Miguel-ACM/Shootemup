@@ -1,0 +1,5 @@
+PASS
+PASS title has New Game
+PASS New Game opens Easy/Hard/Back without starting the run
+PASS difficulty labels remain readable on the title canvas
+PASS Back restores the title choices

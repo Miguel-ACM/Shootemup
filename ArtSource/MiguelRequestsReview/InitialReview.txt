@@ -1,0 +1,92 @@
+FAIL
+PASS title has New Game
+PASS New Game opens Easy/Hard/Back without starting the run
+PASS Back restores the title choices
+PASS Easy applies lower incoming damage and bullet speed
+PASS difficulty survives district advance and preserves tier health factors
+PASS Hard preserves the previous baseline and new runs clear Easy
+PASS both rear weapons are available in reward and shop pools
+PASS Popcorn has a modeled identity
+PASS PocketFan has a modeled identity
+PASS RubberBand has a modeled identity
+PASS HotSauce has a modeled identity
+PASS BulletDroneItem has a modeled identity
+PASS FocusTime has a modeled identity
+PASS BarrelRoll has a modeled identity
+PASS BadGlasses has a modeled identity
+PASS ScatterCannonItem has a modeled identity
+PASS BallBearing has a modeled identity
+PASS ReserveCell has a modeled identity
+PASS SalvageConverter has a modeled identity
+PASS FocusingLens has a modeled identity
+PASS ReboundCoil has a modeled identity
+PASS RabbitsFoot has a modeled identity
+PASS BlankBullet has a modeled identity
+PASS TwerpItem has a modeled identity
+PASS Magnet has a modeled identity
+PASS AK45Item has a modeled identity
+PASS Icicle has a modeled identity
+PASS WindUpCannonItem has a modeled identity
+PASS DecoyProjector has a modeled identity
+PASS StaticSweater has a modeled identity
+PASS MagnifyingGlass has a modeled identity
+PASS ChewingGum has a modeled identity
+PASS LaserDroneItem has a modeled identity
+PASS HealthPacks has a modeled identity
+PASS EnergyCore has a modeled identity
+PASS BouncingBall has a modeled identity
+PASS Poison has a modeled identity
+PASS GasolineLeak has a modeled identity
+PASS QualityGlasses has a modeled identity
+PASS ShrinkerJuice has a modeled identity
+PASS Overdrive has a modeled identity
+PASS GravityWell has a modeled identity
+PASS MirrorBurst has a modeled identity
+PASS BeamEmitterItem has a modeled identity
+PASS FlameProjectorItem has a modeled identity
+PASS BackdraftItem has a modeled identity
+PASS DepthChargeItem has a modeled identity
+PASS SwarmRackItem has a modeled identity
+PASS DiscThrowerItem has a modeled identity
+PASS BurstLauncherItem has a modeled identity
+PASS NeedleCannonItem has a modeled identity
+PASS Lighter has a modeled identity
+PASS ReturnModule has a modeled identity
+PASS DroneLink has a modeled identity
+PASS RecoveryCoil has a modeled identity
+PASS Capacitor has a modeled identity
+PASS ProximityFuse has a modeled identity
+PASS SplitterCore has a modeled identity
+PASS Caffeine has a modeled identity
+PASS ProteinSupplement has a modeled identity
+PASS AMoonItem has a modeled identity
+PASS BabyYouItem has a modeled identity
+PASS ElectricityItem has a modeled identity
+PASS BulletTime has a modeled identity
+PASS DoubleTrouble has a modeled identity
+PASS EmpPulse has a modeled identity
+PASS RailDriverItem has a modeled identity
+PASS ChainReactor has a modeled identity
+PASS SpareBattery has a modeled identity
+PASS AnotherArm has a modeled identity
+PASS AngryMoonItem has a modeled identity
+PASS Telekinesis has a modeled identity
+PASS ThreeMoonsItem has a modeled identity
+PASS rapid press 0 starts charging
+PASS release 0 fires immediately in the input callback
+PASS rapid press 1 starts charging
+PASS release 1 fires immediately in the input callback
+PASS rapid press 2 starts charging
+PASS release 2 fires immediately in the input callback
+PASS rapid press 3 starts charging
+PASS release 3 fires immediately in the input callback
+PASS four rapid taps produce four volleys without cooldown
+PASS double attack speed halves the time to full charge
+PASS charged impacts create lingering explosions
+PASS lingering explosions continue dealing damage after impact
+PASS held beam keeps dealing damage beyond the old burst duration
+PASS Telekinesis visibly bends the continuous beam
+System.Exception: beam damage follows its curved path to an off-axis target
+  at MiguelRequestsReview.Check (System.Boolean okay, System.String message) [0x00030] in C:\Users\Miguel\AppData\Local\Temp\ShootemupMiguelReview20261026\Assets\Editor\Checks\VerifyMiguelRequests.cs:84 
+  at MiguelRequestsReview+<Weapons>d__18.MoveNext () [0x005b0] in C:\Users\Miguel\AppData\Local\Temp\ShootemupMiguelReview20261026\Assets\Editor\Checks\VerifyMiguelRequests.cs:240 
+  at MiguelRequestsReview+<Start>d__16.MoveNext () [0x00049] in C:\Users\Miguel\AppData\Local\Temp\ShootemupMiguelReview20261026\Assets\Editor\Checks\VerifyMiguelRequests.cs:142 

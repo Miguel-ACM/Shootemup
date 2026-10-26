@@ -1,0 +1,25 @@
+PASS
+PASS title has New Game
+PASS New Game opens Easy/Hard/Back without starting the run
+PASS Back restores the title choices
+PASS Easy applies lower incoming damage and bullet speed
+PASS difficulty survives district advance and preserves tier health factors
+PASS Hard preserves the previous baseline and new runs clear Easy
+PASS Telekinesis visibly bends the continuous beam
+PASS beam damage follows its curved path to an off-axis target
+PASS beam cools down and cleans up after release
+PASS continuous beam respects the locked station reactor
+PASS laser drone commits straight upward despite an off-axis target
+PASS Backdraft emits flame below the player
+PASS rear flame damages and burns a target behind the ship
+PASS Depth Charge drops braking shells behind the player
+PASS rear shells release their fragmentation fan
+PASS full weapon slots require an explicit replacement on close hover
+PASS replacement key sprites are attached above the description card
+PASS description card is entirely above the skip zone
+PASS Snow visibly deploys its physical comb emitters during the real firing score
+PASS boss bottom shadow appears during the fight
+PASS miniboss receives its own bottom position shadow
+PASS boss wreckage lifetime is five seconds from the shatter accent
+PASS boss debris survives beyond the old lifetime
+PASS boss debris cleans up after five seconds

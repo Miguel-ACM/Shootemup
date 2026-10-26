@@ -1,0 +1,13 @@
+PASS
+PASS title has New Game
+PASS New Game opens Easy/Hard/Back without starting the run
+PASS Back restores the title choices
+PASS Easy applies lower incoming damage and bullet speed
+PASS difficulty survives district advance and preserves tier health factors
+PASS Hard preserves the previous baseline and new runs clear Easy
+PASS Snow visibly deploys its physical comb emitters during the real firing score
+PASS boss bottom shadow appears during the fight
+PASS miniboss receives its own bottom position shadow
+PASS boss wreckage lifetime is five seconds from the shatter accent
+PASS boss debris survives beyond the old lifetime
+PASS boss debris cleans up after five seconds
