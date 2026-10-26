@@ -138,7 +138,7 @@ public sealed class TrailDrone : ACompanion
                 clock = -.15f;
                 return;
             }
-            heading = ((Vector2)(target.transform.position - Muzzle)).normalized;
+            heading = Vector2.up;
             beam.gameObject.SetActive(true);
             sound.Charge(.4f, true);
             nextDamage = .4f;
