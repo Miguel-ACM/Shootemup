@@ -1,0 +1,119 @@
+PASS
+PASS Desert-Easy-Wave: 580 complete frames, peak 32, firing True
+PASS Desert-Easy-Wave: all 10 authored actors spawned
+PASS Desert-Easy-Boss1: 713 complete frames, peak 14, firing True
+PASS Desert-Easy-Boss2: 830 complete frames, peak 18, firing True
+PASS Desert-Hard-Wave: 732 complete frames, peak 82, firing True
+PASS Desert-Hard-Wave: all 9 authored actors spawned
+PASS MirageObelisk: 458 complete frames, peak 25, firing True
+PASS MirageObelisk: all 2 authored actors spawned
+PASS DuneMoth: 465 complete frames, peak 52, firing True
+PASS DuneMoth: all 3 authored actors spawned
+PASS SandEmitter: 273 complete frames, peak 14, firing True
+PASS Audited physical weapon layout: SandEmitter
+PASS SandStriker: 273 complete frames, peak 10, firing True
+PASS Audited physical weapon layout: SandStriker
+PASS SandWorm: 273 complete frames, peak 18, firing True
+PASS Audited physical weapon layout: SandWorm
+PASS ScarabDredger: 273 complete frames, peak 46, firing True
+PASS Audited physical weapon layout: ScarabDredger
+PASS Desert-Hard-Boss1: 711 complete frames, peak 37, firing True
+PASS Desert-Hard-Boss2: 829 complete frames, peak 37, firing True
+PASS Candyland-Easy-Wave: 528 complete frames, peak 44, firing True
+PASS Candyland-Easy-Wave: all 21 authored actors spawned
+PASS Candyland-Easy-Boss1: 713 complete frames, peak 20, firing True
+PASS Candy boss keeps its complete route above the lower arena
+PASS Candyland-Easy-Boss2: 830 complete frames, peak 41, firing True
+PASS Candy boss keeps its complete route above the lower arena
+PASS Candyland-Hard-Wave: 395 complete frames, peak 82, firing True
+PASS Candyland-Hard-Wave: all 23 authored actors spawned
+PASS GumdropMortar: 388 complete frames, peak 23, firing True
+PASS GumdropMortar: all 3 authored actors spawned
+PASS RibbonGlider: 363 complete frames, peak 24, firing True
+PASS RibbonGlider: all 4 authored actors spawned
+PASS BonbonSkirmisher: 272 complete frames, peak 2, firing True
+PASS Audited physical weapon layout: BonbonSkirmisher
+PASS WaferDart: 273 complete frames, peak 6, firing True
+PASS Audited physical weapon layout: WaferDart
+PASS MintSpinner: 273 complete frames, peak 9, firing True
+PASS Audited physical weapon layout: MintSpinner
+PASS TaffyDuelist: 273 complete frames, peak 30, firing True
+PASS Audited physical weapon layout: TaffyDuelist
+PASS Candyland-Hard-Boss1: 711 complete frames, peak 49, firing True
+PASS Candy boss keeps its complete route above the lower arena
+PASS Candyland-Hard-Boss2: 829 complete frames, peak 65, firing True
+PASS Candy boss keeps its complete route above the lower arena
+PASS Space-Easy-Wave: 919 complete frames, peak 21, firing True
+PASS Space-Easy-Wave: all 10 authored actors spawned
+PASS Space-Easy-Boss1: 717 complete frames, peak 42, firing True
+PASS Space-Easy-Boss2: 835 complete frames, peak 59, firing True
+PASS Space-Easy-Boss-CoreOnly: 541 complete frames, peak 38, firing True
+PASS Exposed reactor keeps pressure after both optional guns die
+PASS Space-Hard-Wave: 858 complete frames, peak 107, firing True
+PASS Space-Hard-Wave: all 14 authored actors spawned
+PASS CometTug: 517 complete frames, peak 30, firing True
+PASS CometTug: all 2 authored actors spawned
+PASS EclipseSail: 502 complete frames, peak 57, firing True
+PASS EclipseSail: all 3 authored actors spawned
+PASS OrbitalScout: 276 complete frames, peak 14, firing True
+PASS Audited physical weapon layout: OrbitalScout
+PASS LaserSatellite: 276 complete frames, peak 1, firing True
+PASS Audited physical weapon layout: LaserSatellite
+PASS OrbitalCarrier: 275 complete frames, peak 23, firing True
+PASS Audited physical weapon layout: OrbitalCarrier
+PASS OrbitalMoonlet: 276 complete frames, peak 8, firing True
+PASS Audited physical weapon layout: OrbitalMoonlet
+PASS OrbitalWarden: 275 complete frames, peak 26, firing True
+PASS Audited physical weapon layout: OrbitalWarden
+PASS Space-Hard-Boss1: 715 complete frames, peak 64, firing True
+PASS Space-Hard-Boss2: 832 complete frames, peak 92, firing True
+PASS Space-Hard-Boss-CoreOnly: 541 complete frames, peak 65, firing True
+PASS Exposed reactor keeps pressure after both optional guns die
+PASS Underwater-Easy-Wave: 675 complete frames, peak 29, firing True
+PASS Underwater-Easy-Wave: all 11 authored actors spawned
+PASS Underwater-Easy-Boss1: 713 complete frames, peak 57, firing True
+PASS Underwater-Easy-Boss2: 832 complete frames, peak 74, firing True
+PASS Underwater-Hard-Wave: 619 complete frames, peak 60, firing True
+PASS Underwater-Hard-Wave: all 8 authored actors spawned
+PASS JetSquid: 421 complete frames, peak 24, firing True
+PASS JetSquid: all 4 authored actors spawned
+PASS NautilusBell: 519 complete frames, peak 0, firing False
+PASS NautilusBell: all 3 authored actors spawned
+PASS ReefDart: 274 complete frames, peak 6, firing True
+PASS Audited physical weapon layout: ReefDart
+PASS MantaRay: 274 complete frames, peak 9, firing True
+PASS Audited physical weapon layout: MantaRay
+PASS Bathysphere: 274 complete frames, peak 2, firing True
+PASS Audited physical weapon layout: Bathysphere
+PASS ReefLeviathan: 273 complete frames, peak 23, firing True
+PASS Audited physical weapon layout: ReefLeviathan
+PASS Underwater-Hard-Boss1: 713 complete frames, peak 71, firing True
+PASS Underwater-Hard-Boss2: 832 complete frames, peak 91, firing True
+PASS Live underwater boid schools are installed
+PASS Underwater-Boids: 299 complete frames, peak 0, firing False
+PASS Fish schools actually travel and steer through the seabed
+PASS Hell-Easy-Wave: 594 complete frames, peak 46, firing True
+PASS Hell-Easy-Wave: all 13 authored actors spawned
+PASS Hell-Easy-Boss1: 710 complete frames, peak 35, firing True
+PASS Hell boss remains free of minions
+PASS Hell-Easy-Boss2: 829 complete frames, peak 37, firing True
+PASS Hell boss remains free of minions
+PASS Hell-Hard-Wave: 530 complete frames, peak 130, firing True
+PASS Hell-Hard-Wave: all 9 authored actors spawned
+PASS BoneHarrier: 393 complete frames, peak 94, firing True
+PASS BoneHarrier: all 5 authored actors spawned
+PASS AshCenser: 405 complete frames, peak 60, firing True
+PASS AshCenser: all 3 authored actors spawned
+PASS SkullRevenant: 272 complete frames, peak 11, firing True
+PASS Audited physical weapon layout: SkullRevenant
+PASS GhostGalleon: 273 complete frames, peak 11, firing True
+PASS Audited physical weapon layout: GhostGalleon
+PASS CinderImp: 273 complete frames, peak 14, firing True
+PASS Audited physical weapon layout: CinderImp
+PASS InfernalFerryman: 273 complete frames, peak 57, firing True
+PASS Audited physical weapon layout: InfernalFerryman
+PASS Hell-Hard-Boss1: 711 complete frames, peak 45, firing True
+PASS Hell boss remains free of minions
+PASS Hell-Hard-Boss2: 828 complete frames, peak 53, firing True
+PASS Hell boss remains free of minions
+PASS No runtime exceptions during the complete batched review

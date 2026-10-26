@@ -1,0 +1,9 @@
+PASS
+Thirty seconds of actual complete Tunnel frames, both phases and auxiliaries, active player collider, no screenshot captures.
+Frames=1800; peak rounds=138.
+Frame milliseconds: median 16.663, p99 18.842, max 21.634
+Main-thread milliseconds: median 16.659, p99 18.364, max 21.368
+Physics milliseconds: median 0.127, p99 0.284, max 0.374
+Created pooled rounds: 768 to 768.
+Editor Game View measurements at a 60 FPS target; captures in other cases are excluded.
+Native review capture size: (640, 480) pixels.

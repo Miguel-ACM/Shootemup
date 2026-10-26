@@ -1,0 +1,5 @@
+PASS
+Succeeded
+Windows x64 player: C:\Users\Miguel\Shootemup\Build\CombatRework\Shootemup.exe
+Errors=0; warnings=0; bytes=184290917; duration=00:00:08.5812743
+

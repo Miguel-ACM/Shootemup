@@ -1,0 +1,122 @@
+FAIL
+PASS Fields-Easy-Wave: 839 complete frames, peak 20, firing True
+PASS Fields-Easy-Wave: all 8 authored actors spawned
+PASS Fields-Easy-Boss1: 712 complete frames, peak 38, firing True
+PASS Fields-Easy-Boss2: 831 complete frames, peak 50, firing True
+PASS Fields-Hard-Wave: 941 complete frames, peak 39, firing True
+PASS Fields-Hard-Wave: all 9 authored actors spawned
+PASS HarrowBomber: 533 complete frames, peak 30, firing True
+PASS HarrowBomber: all 2 authored actors spawned
+PASS ReedSkimmer: 402 complete frames, peak 18, firing True
+PASS ReedSkimmer: all 3 authored actors spawned
+PASS ScoutInterceptor: 273 complete frames, peak 4, firing True
+PASS Audited physical weapon layout: ScoutInterceptor
+PASS PatrolGunship: 273 complete frames, peak 3, firing True
+PASS Audited physical weapon layout: PatrolGunship
+PASS HeavyBomber: 273 complete frames, peak 7, firing True
+PASS Audited physical weapon layout: HeavyBomber
+PASS FieldsHeavyWing: 272 complete frames, peak 17, firing True
+PASS Audited physical weapon layout: FieldsHeavyWing
+PASS MeadowTank: 274 complete frames, peak 4, firing True
+PASS Audited physical weapon layout: MeadowTank
+PASS Fields-Hard-Boss1: 709 complete frames, peak 61, firing True
+PASS Fields-Hard-Boss2: 828 complete frames, peak 101, firing True
+PASS Tunnel-Easy-Wave: 686 complete frames, peak 22, firing True
+PASS Tunnel-Easy-Wave: all 7 authored actors spawned
+PASS Tunnel-Easy-Boss1: 715 complete frames, peak 14, firing True
+PASS Tunnel-Easy-Boss2: 832 complete frames, peak 75, firing True
+PASS Tunnel-Hard-Wave: 688 complete frames, peak 96, firing True
+PASS Tunnel-Hard-Wave: all 9 authored actors spawned
+PASS RivetMantis: 507 complete frames, peak 40, firing True
+PASS RivetMantis: all 3 authored actors spawned
+PASS BaffleSpinner: 400 complete frames, peak 18, firing True
+PASS BaffleSpinner: all 3 authored actors spawned
+PASS WallTurret: 274 complete frames, peak 9, firing True
+PASS Audited physical weapon layout: WallTurret
+PASS MaintenanceDrone: 274 complete frames, peak 4, firing True
+PASS Audited physical weapon layout: MaintenanceDrone
+PASS ArmoredCarrier: 274 complete frames, peak 39, firing True
+PASS Audited physical weapon layout: ArmoredCarrier
+PASS TunnelDefensePlatform: 274 complete frames, peak 28, firing True
+PASS Audited physical weapon layout: TunnelDefensePlatform
+PASS Tunnel-Hard-Boss1: 715 complete frames, peak 33, firing True
+PASS Tunnel-Hard-Boss2: 830 complete frames, peak 152, firing True
+PASS Snow-Easy-Wave: 939 complete frames, peak 66, firing True
+PASS Snow-Easy-Wave: all 9 authored actors spawned
+PASS Snow-Easy-Boss1: 710 complete frames, peak 76, firing True
+PASS Snow-Easy-Boss2: 828 complete frames, peak 97, firing True
+PASS Snow-Hard-Wave: 884 complete frames, peak 167, firing True
+PASS Snow-Hard-Wave: all 9 authored actors spawned
+PASS HailLantern: 556 complete frames, peak 47, firing True
+PASS HailLantern: all 2 authored actors spawned
+PASS IcicleWeaver: 432 complete frames, peak 45, firing True
+PASS IcicleWeaver: all 3 authored actors spawned
+PASS ColdWeatherFighter: 273 complete frames, peak 6, firing True
+PASS Audited physical weapon layout: ColdWeatherFighter
+PASS SiegeGunship: 273 complete frames, peak 5, firing True
+PASS Audited physical weapon layout: SiegeGunship
+PASS ShieldTransport: 273 complete frames, peak 13, firing True
+PASS Audited physical weapon layout: ShieldTransport
+PASS AvalancheBomber: 273 complete frames, peak 8, firing True
+PASS Audited physical weapon layout: AvalancheBomber
+PASS SnowSiegeCraft: 272 complete frames, peak 20, firing True
+PASS Audited physical weapon layout: SnowSiegeCraft
+PASS FrostAuger: 273 complete frames, peak 13, firing True
+PASS Audited physical weapon layout: FrostAuger
+PASS Snow-Hard-Boss1: 710 complete frames, peak 142, firing True
+PASS Snow-Hard-Boss2: 828 complete frames, peak 184, firing True
+PASS Thunder-Easy-Wave: 912 complete frames, peak 8, firing True
+PASS Thunder-Easy-Wave: all 5 authored actors spawned
+PASS Thunder-Easy-Boss1: 714 complete frames, peak 11, firing True
+PASS Thunder-Easy-Boss2: 833 complete frames, peak 18, firing True
+PASS Thunder-Hard-Wave: 637 complete frames, peak 28, firing True
+PASS Thunder-Hard-Wave: all 8 authored actors spawned
+PASS StormOrgan: 560 complete frames, peak 4, firing True
+PASS StormOrgan: all 2 authored actors spawned
+PASS CapacitorKite: 415 complete frames, peak 27, firing True
+PASS CapacitorKite: all 3 authored actors spawned
+PASS BeamDrone: 274 complete frames, peak 1, firing True
+PASS Audited physical weapon layout: BeamDrone
+PASS RelayDrone: 274 complete frames, peak 6, firing True
+PASS Audited physical weapon layout: RelayDrone
+PASS StormSkimmer: 275 complete frames, peak 6, firing True
+PASS Audited physical weapon layout: StormSkimmer
+PASS ArcLancer: 274 complete frames, peak 1, firing True
+PASS Audited physical weapon layout: ArcLancer
+PASS StormReactor: 273 complete frames, peak 15, firing True
+PASS Audited physical weapon layout: StormReactor
+PASS Thunder-Hard-Boss1: 713 complete frames, peak 23, firing True
+PASS Thunder-Hard-Boss2: 832 complete frames, peak 29, firing True
+PASS City-Easy-Wave: 581 complete frames, peak 39, firing True
+PASS City-Easy-Wave: all 14 authored actors spawned
+PASS City-Easy-Boss1: 712 complete frames, peak 41, firing True
+PASS City-Easy-Boss2: 829 complete frames, peak 62, firing True
+PASS City-Easy-Boss-FastSurvivor: 711 complete frames, peak 29, firing True
+PASS City-Hard-Wave: 512 complete frames, peak 14, firing True
+PASS City-Hard-Wave: all 12 authored actors spawned
+PASS TerraceGunboat: 289 complete frames, peak 54, firing True
+PASS TerraceGunboat: all 3 authored actors spawned
+PASS MetroLancer: 217 complete frames, peak 27, firing True
+PASS MetroLancer: all 3 authored actors spawned
+PASS PursuitFighter: 274 complete frames, peak 1, firing True
+PASS Audited physical weapon layout: PursuitFighter
+PASS AttackDrone: 274 complete frames, peak 15, firing True
+PASS Audited physical weapon layout: AttackDrone
+PASS CommandGunship: 274 complete frames, peak 35, firing True
+PASS Audited physical weapon layout: CommandGunship
+PASS CourierDiver: 273 complete frames, peak 0, firing False
+PASS Audited physical weapon layout: CourierDiver
+PASS CityCommandCarrier: 274 complete frames, peak 34, firing True
+PASS Audited physical weapon layout: CityCommandCarrier
+PASS City-Hard-Boss1: 712 complete frames, peak 88, firing True
+PASS City-Hard-Boss2: 830 complete frames, peak 125, firing True
+PASS City-Hard-Boss-FastSurvivor: 712 complete frames, peak 51, firing True
+PASS Desert-Easy-Wave: 544 complete frames, peak 112, firing True
+PASS Desert-Easy-Wave: all 13 authored actors spawned
+PASS Desert-Easy-Boss1: 711 complete frames, peak 3, firing True
+MissingComponentException: There is no 'MeshRenderer' attached to the "Head weakpoint" game object, but a script is trying to access it.
+You probably need to add a MeshRenderer to the game object "Head weakpoint". Or your script needs to check if the component is attached before using it.
+System.NullReferenceException: Object reference not set to an instance of an object
+  at CombatReworkReview.PhaseTwo (DistrictBoss boss) [0x0003b] in C:\Users\Miguel\Shootemup\Temp\CombatReworkReview\Assets\Editor\Checks\VerifyCombatRework.cs:204 
+  at CombatReworkReview+<Bosses>d__22.MoveNext () [0x0013e] in C:\Users\Miguel\Shootemup\Temp\CombatReworkReview\Assets\Editor\Checks\VerifyCombatRework.cs:217 
+  at CombatReworkReview+<Start>d__14.MoveNext () [0x00049] in C:\Users\Miguel\Shootemup\Temp\CombatReworkReview\Assets\Editor\Checks\VerifyCombatRework.cs:150 

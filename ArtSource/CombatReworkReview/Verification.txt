@@ -1,0 +1,30 @@
+PASS
+All ten districts: ordinary waves and both boss phases on Easy and Hard.
+Every existing regular/champion and all twenty additions observed with actual Unity models and firing.
+Sixty revised formation parts completed; swept geometry checked on both sides and both difficulties.
+Six moving Plains stock-gun hit/kill measurements passed.
+Rising Nautilus route: legacy bottom-edge cleanup corrected; targeted entrance and firing check passed.
+Distinct phase mechanisms inspected in native captures.
+Candyland lower bound, Hell no-minion rule, Space reactor pressure, and moving underwater schools passed.
+Resolved initial Desert construction error by obtaining the weakpoint material from its visual child.
+Subsequent outstanding-district review and focused revisions passed without game runtime exceptions.
+PASS
+Full Unity script rebuild with CleanBuildCache; no Play mode.
+108 assemblies compiled; 0 warnings; 0 errors.
+Required game, editor and PathCreator assemblies: Assembly-CSharp, Assembly-CSharp-Editor, PathCreator, PathCreatorEditor
+
+PASS
+Thirty seconds of actual complete Tunnel frames, both phases and auxiliaries, active player collider, no screenshot captures.
+Frames=1800; peak rounds=138.
+Frame milliseconds: median 16.663, p99 18.842, max 21.634
+Main-thread milliseconds: median 16.659, p99 18.364, max 21.368
+Physics milliseconds: median 0.127, p99 0.284, max 0.374
+Created pooled rounds: 768 to 768.
+Editor Game View measurements at a 60 FPS target; captures in other cases are excluded.
+Native review capture size: (640, 480) pixels.
+
+PASS
+Succeeded
+Windows x64 player: C:\Users\Miguel\Shootemup\Build\CombatRework\Shootemup.exe
+Errors=0; warnings=0; bytes=184290917; duration=00:00:08.5812743
+

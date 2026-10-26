@@ -1,0 +1,8 @@
+PASS
+PASS Bell buoyant procession: 516 complete frames, peak 27, firing True
+PASS Bell buoyant procession: all 3 authored actors spawned
+PASS Bell buoyant procession: authored formation actually enters and fires
+PASS Live underwater boid schools are installed
+PASS Underwater-Boids: 297 complete frames, peak 0, firing False
+PASS Fish schools actually travel and steer through the seabed
+PASS No runtime exceptions during the complete batched review

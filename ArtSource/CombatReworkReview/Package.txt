@@ -1,0 +1,5 @@
+PASS
+Windows player files exist; all twenty authored actor types are present in the built game assembly.
+Build\CombatRework\Shootemup.exe / 667136 bytes / SHA256 af88b840e599661ac63fc10ae27ac77dd97cd46b44df8a7ce60eb0dcfacfc99e
+Build\CombatRework\Shootemup_Data\Managed\Assembly-CSharp.dll / 848896 bytes / SHA256 d533336e9dc7219114150aa12293f057c71052bdcf58db006ac2bfef534a2c35
+Build\CombatRework\UnityPlayer.dll / 38693808 bytes / SHA256 4f8eb2a1431ff69de5aa8ea2c595ceb5d84d9f6ef8141646301f259fd86b9cac

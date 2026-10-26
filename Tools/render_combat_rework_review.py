@@ -107,7 +107,8 @@ def main():
                + 'Main-thread milliseconds: ' + summary('main_ns', 1e6) + '\n'
                + 'Physics milliseconds: ' + summary('physics_ns', 1e6) + '\n'
                + f'Created pooled rounds: {min(int(r["created"]) for r in rows)} to {max(int(r["created"]) for r in rows)}.\n'
-               + 'Editor measurements at a 60 FPS target on this machine; captures in other cases are excluded.\n')
+               + 'Editor Game View measurements at a 60 FPS target; captures in other cases are excluded.\n'
+               + 'Native review capture size: ' + str(Image.open(at('Fields-Hard-Wave', .5)).size) + ' pixels.\n')
     (OUTPUT / 'TunnelPerformance.txt').write_text(profile, encoding='utf-8')
     verification = ('PASS\nAll ten districts: ordinary waves and both boss phases on Easy and Hard.\n'
                     'Every existing regular/champion and all twenty additions observed with actual Unity models and firing.\n'

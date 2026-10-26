@@ -1,0 +1,157 @@
+PASS
+PASS Harrow parallel furrows: 486 complete frames, peak 20, firing True
+PASS Harrow parallel furrows: all 2 authored actors spawned
+PASS Harrow crescent return: 510 complete frames, peak 19, firing True
+PASS Harrow crescent return: all 2 authored actors spawned
+PASS Harrow staggered gate: 455 complete frames, peak 30, firing True
+PASS Harrow staggered gate: all 2 authored actors spawned
+PASS Reedbank skimming: 477 complete frames, peak 16, firing True
+PASS Reedbank skimming: all 3 authored actors spawned
+PASS Riverbank opening: 390 complete frames, peak 12, firing True
+PASS Riverbank opening: all 3 authored actors spawned
+PASS Reedbed switch: 430 complete frames, peak 16, firing True
+PASS Reedbed switch: all 3 authored actors spawned
+PASS Fields-PhaseEntry: 137 complete frames, peak 24, firing True
+PASS Mantis gantry traverse: 412 complete frames, peak 20, firing True
+PASS Mantis gantry traverse: all 2 authored actors spawned
+PASS Mantis lower bracket: 444 complete frames, peak 30, firing True
+PASS Mantis lower bracket: all 2 authored actors spawned
+PASS Mantis return rail: 478 complete frames, peak 20, firing True
+PASS Mantis return rail: all 2 authored actors spawned
+PASS Baffle wall rebound: 483 complete frames, peak 16, firing True
+PASS Baffle wall rebound: all 3 authored actors spawned
+PASS Baffle reflected rank: 405 complete frames, peak 8, firing True
+PASS Baffle reflected rank: all 2 authored actors spawned
+PASS Baffle corner relay: 437 complete frames, peak 18, firing True
+PASS Baffle corner relay: all 3 authored actors spawned
+PASS Tunnel-PhaseEntry: 140 complete frames, peak 26, firing True
+PASS Lantern hanging crown: 485 complete frames, peak 33, firing True
+PASS Lantern hanging crown: all 2 authored actors spawned
+PASS Lantern falling bell: 527 complete frames, peak 54, firing True
+PASS Lantern falling bell: all 2 authored actors spawned
+PASS Lantern winter arch: 460 complete frames, peak 34, firing True
+PASS Lantern winter arch: all 2 authored actors spawned
+PASS Icicle diagonal loom: 436 complete frames, peak 40, firing True
+PASS Icicle diagonal loom: all 3 authored actors spawned
+PASS Icicle folding thread: 542 complete frames, peak 45, firing True
+PASS Icicle folding thread: all 3 authored actors spawned
+PASS Icicle closing seam: 420 complete frames, peak 40, firing True
+PASS Icicle closing seam: all 3 authored actors spawned
+PASS Snow-PhaseEntry: 137 complete frames, peak 5, firing True
+PASS Organ vertical aisle: 520 complete frames, peak 4, firing True
+PASS Organ vertical aisle: all 2 authored actors spawned
+PASS Organ descending columns: 532 complete frames, peak 4, firing True
+PASS Organ descending columns: all 2 authored actors spawned
+PASS Organ lightning terrace: 498 complete frames, peak 4, firing True
+PASS Organ lightning terrace: all 2 authored actors spawned
+PASS Kite stormward curl: 488 complete frames, peak 24, firing True
+PASS Kite stormward curl: all 3 authored actors spawned
+PASS Kite cloud shoulder: 411 complete frames, peak 18, firing True
+PASS Kite cloud shoulder: all 3 authored actors spawned
+PASS Kite outer eddy: 525 complete frames, peak 27, firing True
+PASS Kite outer eddy: all 3 authored actors spawned
+PASS Thunder-PhaseEntry: 140 complete frames, peak 1, firing True
+PASS Terrace balcony sweep: 257 complete frames, peak 24, firing True
+PASS Terrace balcony sweep: all 2 authored actors spawned
+PASS Terrace descending avenue: 266 complete frames, peak 36, firing True
+PASS Terrace descending avenue: all 2 authored actors spawned
+PASS Terrace rooftop turn: 281 complete frames, peak 24, firing True
+PASS Terrace rooftop turn: all 2 authored actors spawned
+PASS Metro express cut: 254 complete frames, peak 33, firing True
+PASS Metro express cut: all 4 authored actors spawned
+PASS Metro flyover climb: 194 complete frames, peak 18, firing True
+PASS Metro flyover climb: all 3 authored actors spawned
+PASS Metro interchange dive: 260 complete frames, peak 24, firing True
+PASS Metro interchange dive: all 3 authored actors spawned
+PASS City-PhaseEntry: 138 complete frames, peak 3, firing True
+PASS Obelisk mirage march: 457 complete frames, peak 25, firing True
+PASS Obelisk mirage march: all 2 authored actors spawned
+PASS Obelisk buried arc: 519 complete frames, peak 20, firing True
+PASS Obelisk buried arc: all 2 authored actors spawned
+PASS Obelisk paired descent: 458 complete frames, peak 30, firing True
+PASS Obelisk paired descent: all 2 authored actors spawned
+PASS Moth dune scallop: 464 complete frames, peak 52, firing True
+PASS Moth dune scallop: all 3 authored actors spawned
+PASS Moth slipface rake: 394 complete frames, peak 47, firing True
+PASS Moth slipface rake: all 3 authored actors spawned
+PASS Moth leeward rise: 401 complete frames, peak 36, firing True
+PASS Moth leeward rise: all 3 authored actors spawned
+PASS Desert-PhaseEntry: 137 complete frames, peak 5, firing True
+PASS Gumdrop sugar fall: 387 complete frames, peak 23, firing True
+PASS Gumdrop sugar fall: all 3 authored actors spawned
+PASS Gumdrop candy shelf: 348 complete frames, peak 4, firing True
+PASS Gumdrop candy shelf: all 2 authored actors spawned
+PASS Gumdrop wrapping turn: 355 complete frames, peak 22, firing True
+PASS Gumdrop wrapping turn: all 2 authored actors spawned
+PASS Ribbon unwinding bow: 363 complete frames, peak 24, firing True
+PASS Ribbon unwinding bow: all 4 authored actors spawned
+PASS Ribbon falling streamer: 274 complete frames, peak 12, firing True
+PASS Ribbon falling streamer: all 3 authored actors spawned
+PASS Ribbon rising loop: 285 complete frames, peak 16, firing True
+PASS Ribbon rising loop: all 4 authored actors spawned
+PASS Candyland-PhaseEntry: 138 complete frames, peak 10, firing True
+PASS Comet gravitational hook: 519 complete frames, peak 30, firing True
+PASS Comet gravitational hook: all 2 authored actors spawned
+PASS Comet apogee rake: 459 complete frames, peak 24, firing True
+PASS Comet apogee rake: all 2 authored actors spawned
+PASS Comet trailing orbit: 452 complete frames, peak 30, firing True
+PASS Comet trailing orbit: all 2 authored actors spawned
+PASS Eclipse orbital crescent: 506 complete frames, peak 29, firing True
+PASS Eclipse orbital crescent: all 3 authored actors spawned
+PASS Eclipse solar arc: 514 complete frames, peak 26, firing True
+PASS Eclipse solar arc: all 4 authored actors spawned
+PASS Eclipse limb transit: 398 complete frames, peak 21, firing True
+PASS Eclipse limb transit: all 3 authored actors spawned
+PASS Space-PhaseEntry: 143 complete frames, peak 14, firing True
+PASS Squid inkward dive: 420 complete frames, peak 24, firing True
+PASS Squid inkward dive: all 4 authored actors spawned
+PASS Squid rising jet: 437 complete frames, peak 24, firing True
+PASS Squid rising jet: all 4 authored actors spawned
+PASS Squid reef scissors: 372 complete frames, peak 17, firing True
+PASS Squid reef scissors: all 3 authored actors spawned
+PASS Bell buoyant procession: 519 complete frames, peak 0, firing False
+PASS Bell buoyant procession: all 3 authored actors spawned
+PASS Bell tidal arch: 441 complete frames, peak 20, firing True
+PASS Bell tidal arch: all 2 authored actors spawned
+PASS Bell reefward roll: 434 complete frames, peak 20, firing True
+PASS Bell reefward roll: all 2 authored actors spawned
+PASS Underwater-PhaseEntry: 140 complete frames, peak 14, firing True
+PASS Live underwater boid schools are installed
+PASS Underwater-Boids: 299 complete frames, peak 0, firing False
+PASS Fish schools actually travel and steer through the seabed
+PASS Harrier talon dive: 396 complete frames, peak 90, firing True
+PASS Harrier talon dive: all 5 authored actors spawned
+PASS Harrier scything ascent: 303 complete frames, peak 48, firing True
+PASS Harrier scything ascent: all 3 authored actors spawned
+PASS Harrier blackwing hook: 414 complete frames, peak 83, firing True
+PASS Harrier blackwing hook: all 4 authored actors spawned
+PASS Censer downward pendulum: 408 complete frames, peak 42, firing True
+PASS Censer downward pendulum: all 3 authored actors spawned
+PASS Censer funeral arch: 401 complete frames, peak 31, firing True
+PASS Censer funeral arch: all 3 authored actors spawned
+PASS Censer ashen return: 490 complete frames, peak 42, firing True
+PASS Censer ashen return: all 3 authored actors spawned
+PASS Hell-PhaseEntry: 137 complete frames, peak 18, firing True
+PASS Hell-Easy-Boss1: 714 complete frames, peak 41, firing True
+PASS Hell boss remains free of minions
+PASS Hell-Easy-Boss2: 831 complete frames, peak 43, firing True
+PASS Hell boss remains free of minions
+PASS Hell-Hard-Boss1: 712 complete frames, peak 80, firing True
+PASS Hell boss remains free of minions
+PASS Hell-Hard-Boss2: 830 complete frames, peak 91, firing True
+PASS Hell boss remains free of minions
+PASS Moving Plains benchmark uses the unmodified stock gun
+PASS Harrow parallel furrows: actual player projectiles kill the moving hull before departure
+PASS Harrow parallel furrows: 40,32 HP, 0,85s from first projectile hit to kill (predictive pilot capped at normal movement speed)
+PASS Harrow crescent return: actual player projectiles kill the moving hull before departure
+PASS Harrow crescent return: 40,32 HP, 0,97s from first projectile hit to kill (predictive pilot capped at normal movement speed)
+PASS Harrow staggered gate: actual player projectiles kill the moving hull before departure
+PASS Harrow staggered gate: 40,32 HP, 0,83s from first projectile hit to kill (predictive pilot capped at normal movement speed)
+PASS Reedbank skimming: actual player projectiles kill the moving hull before departure
+PASS Reedbank skimming: 16,8 HP, 0,30s from first projectile hit to kill (predictive pilot capped at normal movement speed)
+PASS Riverbank opening: actual player projectiles kill the moving hull before departure
+PASS Riverbank opening: 16,8 HP, 0,44s from first projectile hit to kill (predictive pilot capped at normal movement speed)
+PASS Reedbed switch: actual player projectiles kill the moving hull before departure
+PASS Reedbed switch: 16,8 HP, 1,14s from first projectile hit to kill (predictive pilot capped at normal movement speed)
+PASS Tunnel-UncapturedProfile: 1800 complete frames, peak 138, firing True
+PASS No runtime exceptions during the complete batched review

@@ -1,0 +1,240 @@
+Fields / Easy / 17381 / 2: Meadow diamond + Reedbank skimming
+Fields / Easy / 17381 / 4: Riverbank opening + Harrow crescent return
+Fields / Easy / 17381 / 8: Opening crown + Reedbed switch + Orchard guard
+Fields / Easy / 17381 / 12: Last road patrol + Harrow parallel furrows + Banking rank
+Fields / Easy / 17381 / 16: Riverbank opening + Last road patrol + Orchard flight
+Fields / Easy / 17381 / 20: Opening crown + Orchard guard + Reedbank skimming
+Fields / Easy / 421 / 2: River procession + Ridge staff
+Fields / Easy / 421 / 4: Tank downhill rush + Meadow diamond
+Fields / Easy / 421 / 8: River braid + Banking rank + Relief convoy
+Fields / Easy / 421 / 12: Last road patrol + Harrow staggered gate + Bomber bank
+Fields / Easy / 421 / 16: Road armor column + Orchard guard + Banking rank
+Fields / Easy / 421 / 20: Relief convoy + Bomber crescent + Figure eight
+Fields / Hard / 17381 / 2: Meadow diamond + Reedbank skimming
+Fields / Hard / 17381 / 4: Riverbank opening + Harrow crescent return
+Fields / Hard / 17381 / 8: Opening crown + Reedbed switch + Orchard guard
+Fields / Hard / 17381 / 12: Last road patrol + Harrow parallel furrows + Orchard flight
+Fields / Hard / 17381 / 16: Riverbank opening + Last road patrol + Ridge patrol
+Fields / Hard / 17381 / 20: Gunship echelon + Tank downhill rush + Patrol return
+Fields / Hard / 421 / 2: River procession + Ridge staff
+Fields / Hard / 421 / 4: Tank downhill rush + Meadow diamond
+Fields / Hard / 421 / 8: River braid + Banking rank + Relief convoy
+Fields / Hard / 421 / 12: Opening crown + Last road patrol + Ridge patrol
+Fields / Hard / 421 / 16: Road armor column + Bomber bank + Meadow diamond
+Fields / Hard / 421 / 20: Ridge staff + Harrow crescent return + Tread pursuit
+Tunnel / Easy / 17381 / 2: Pipe diamond + Baffle wall rebound
+Tunnel / Easy / 17381 / 4: Low rail + Rebound flight
+Tunnel / Easy / 17381 / 8: Service crown + Upper battery + Upper procession
+Tunnel / Easy / 17381 / 12: Mantis gantry traverse + Carrier bank + Wall rank
+Tunnel / Easy / 17381 / 16: Descending snake + Shaft procession + Upper battery
+Tunnel / Easy / 17381 / 20: Wall rank + Upper battery + Mantis lower bracket
+Tunnel / Easy / 421 / 2: Baffle wall rebound + Descending snake
+Tunnel / Easy / 421 / 4: Mantis gantry traverse + Service echelon
+Tunnel / Easy / 421 / 8: Upper battery + Mantis return rail + Baffle corner relay
+Tunnel / Easy / 421 / 12: Mantis return rail + Wall battery + Baffle corner relay
+Tunnel / Easy / 421 / 16: Descending snake + Rebound flight + Gate battery
+Tunnel / Easy / 421 / 20: Rebound flight + Wall rank + Baffle corner relay
+Tunnel / Hard / 17381 / 2: Pipe diamond + Baffle wall rebound
+Tunnel / Hard / 17381 / 4: Low rail + Rebound flight
+Tunnel / Hard / 17381 / 8: Service crown + Upper battery + Upper procession
+Tunnel / Hard / 17381 / 12: Mantis gantry traverse + Carrier bank + Wall rank
+Tunnel / Hard / 17381 / 16: Descending snake + Shaft procession + Upper battery
+Tunnel / Hard / 17381 / 20: Rebound flight + Upper battery + Pipe diamond
+Tunnel / Hard / 421 / 2: Baffle wall rebound + Descending snake
+Tunnel / Hard / 421 / 4: Mantis gantry traverse + Service echelon
+Tunnel / Hard / 421 / 8: Upper battery + Mantis return rail + Low rail
+Tunnel / Hard / 421 / 12: Rebound flight + Pipe battery + Upper battery
+Tunnel / Hard / 421 / 16: Descending snake + Carrier bank + Pipe battery
+Tunnel / Hard / 421 / 20: Mantis return rail + Wall rank + Pipe diamond
+Snow / Easy / 17381 / 2: Crystal diamond + Ice wind
+Snow / Easy / 17381 / 4: Icicle diagonal loom + Snow crown
+Snow / Easy / 17381 / 8: Shielded crown + Icicle closing seam + Glacier flight
+Snow / Easy / 17381 / 12: Crosswind rank + Siege descent + Avalanche flight
+Snow / Easy / 17381 / 16: Lantern hanging crown + Icicle closing seam + Crystal procession
+Snow / Easy / 17381 / 20: Snow crown + Crosswind rank + Shielded crystal
+Snow / Easy / 421 / 2: Snow crown + Ice wind
+Snow / Easy / 421 / 4: Lantern falling bell + White curl
+Snow / Easy / 421 / 8: Avalanche flight + Siege descent + Petal procession
+Snow / Easy / 421 / 12: White furrow relay + Heavy white curl + Lantern winter arch
+Snow / Easy / 421 / 16: Crystal diamond + White curl + Lantern falling bell
+Snow / Easy / 421 / 20: Icicle closing seam + Shielded crystal + Glacier mortar train
+Snow / Hard / 17381 / 2: Crystal diamond + Ice wind
+Snow / Hard / 17381 / 4: Icicle diagonal loom + Snow crown
+Snow / Hard / 17381 / 8: Shielded crown + Icicle closing seam + Glacier flight
+Snow / Hard / 17381 / 12: Crosswind rank + Siege descent + Avalanche flight
+Snow / Hard / 17381 / 16: Lantern hanging crown + Icicle closing seam + Crystal procession
+Snow / Hard / 17381 / 20: Frost descent + Shielded crystal + Lantern falling bell
+Snow / Hard / 421 / 2: Snow crown + Ice wind
+Snow / Hard / 421 / 4: Lantern falling bell + Glacier flight
+Snow / Hard / 421 / 8: Siege descent + Icicle closing seam + Lantern winter arch
+Snow / Hard / 421 / 12: Twin screw pursuit + Heavy white curl + Lantern winter arch
+Snow / Hard / 421 / 16: Frost descent + Glacier flight + Shielded crown
+Snow / Hard / 421 / 20: Crosswind rank + Shielded crystal + Lantern winter arch
+Thunder / Easy / 17381 / 2: Hooking rank + Forked flight
+Thunder / Easy / 17381 / 4: Storm rail + Capacitor wing
+Thunder / Easy / 17381 / 8: Organ lightning terrace + Ion relays + Kite cloud shoulder
+Thunder / Easy / 17381 / 12: Hooking lance + Organ descending columns + Ion relays
+Thunder / Easy / 17381 / 16: Hooking rank + Flash procession + Sweeping lance
+Thunder / Easy / 17381 / 20: Lightning slash + Static flight + Kite cloud shoulder
+Thunder / Easy / 421 / 2: Ion crown + Lightning slash
+Thunder / Easy / 421 / 4: Organ vertical aisle + Capacitor wing
+Thunder / Easy / 421 / 8: Pendulum beam + Peeling relays + Organ lightning terrace
+Thunder / Easy / 421 / 12: Kite stormward curl + Kite outer eddy + Organ descending columns
+Thunder / Easy / 421 / 16: Hooking rank + Static flight + Organ descending columns
+Thunder / Easy / 421 / 20: Pendulum beam + Ion crown + Kite cloud shoulder
+Thunder / Hard / 17381 / 2: Hooking rank + Forked flight
+Thunder / Hard / 17381 / 4: Storm rail + Capacitor wing
+Thunder / Hard / 17381 / 8: Organ lightning terrace + Ion relays + Pendulum beam
+Thunder / Hard / 17381 / 12: Organ lightning terrace + Flash procession + Static flight
+Thunder / Hard / 17381 / 16: Forked flight + Hooking rank + Kite cloud shoulder
+Thunder / Hard / 17381 / 20: Hooking rank + Organ lightning terrace + Flash procession
+Thunder / Hard / 421 / 2: Ion crown + Lightning slash
+Thunder / Hard / 421 / 4: Organ vertical aisle + Capacitor wing
+Thunder / Hard / 421 / 8: Pendulum beam + Peeling relays + Organ lightning terrace
+Thunder / Hard / 421 / 12: Kite stormward curl + Kite outer eddy + Capacitor wing
+Thunder / Hard / 421 / 16: Sweeping lance + Organ lightning terrace + Static relays
+Thunder / Hard / 421 / 20: Sweeping lance + Peeling relays + Ion relays
+City / Easy / 17381 / 2: Canyon couriers + Junction drones
+City / Easy / 17381 / 4: Interchange pack + Rooftop pack
+City / Easy / 17381 / 8: Metro interchange dive + Command ramp + Metro express cut
+City / Easy / 17381 / 12: Canyon couriers + Junction pursuit + Underpass traffic
+City / Easy / 17381 / 16: Metro flyover climb + Metro interchange dive + Elevated traffic
+City / Easy / 17381 / 20: Elevated traffic + Terrace descending avenue + Rooftop pursuit
+City / Easy / 421 / 2: Canyon couriers + Skybridge traffic
+City / Easy / 421 / 4: Underpass traffic + Express couriers
+City / Easy / 421 / 8: Interchange pack + Command ramp + Canyon overtakers
+City / Easy / 421 / 12: Terrace rooftop turn + Interchange pack + Rooftop pursuit
+City / Easy / 421 / 16: Metro express cut + Bridge drones + Metro interchange dive
+City / Easy / 421 / 20: Terrace balcony sweep + Metro express cut + Junction pursuit
+City / Hard / 17381 / 2: Canyon couriers + Junction drones
+City / Hard / 17381 / 4: Interchange pack + Rooftop pack
+City / Hard / 17381 / 8: Metro interchange dive + Terrace balcony sweep + Metro flyover climb
+City / Hard / 17381 / 12: Canyon couriers + Junction pursuit + Elevated traffic
+City / Hard / 17381 / 16: Canyon overtakers + Metro express cut + Command ramp
+City / Hard / 17381 / 20: Canyon couriers + Terrace descending avenue + Bridge drones
+City / Hard / 421 / 2: Canyon couriers + Skybridge traffic
+City / Hard / 421 / 4: Underpass traffic + Express couriers
+City / Hard / 421 / 8: Interchange pack + Command ramp + Canyon overtakers
+City / Hard / 421 / 12: Terrace rooftop turn + Interchange pack + Rooftop pursuit
+City / Hard / 421 / 16: Metro express cut + Bridge drones + Metro interchange dive
+City / Hard / 421 / 20: Terrace balcony sweep + Metro express cut + Junction pursuit
+Desert / Easy / 17381 / 2: Moth dune scallop + Obelisk mirage march
+Desert / Easy / 17381 / 4: Silo flanking wing + Mirage pursuit
+Desert / Easy / 17381 / 8: Silo eruption fork + Oxbow sandworm + Obelisk paired descent
+Desert / Easy / 17381 / 12: Dune diving squadron + Oxbow sandworm + Moth leeward rise
+Desert / Easy / 17381 / 16: Moth slipface rake + Buried diamond + Obelisk mirage march
+Desert / Easy / 17381 / 20: Crest runners + Obelisk mirage march + Deep outpost serpent
+Desert / Easy / 421 / 2: Moth dune scallop + Eruption crescent
+Desert / Easy / 421 / 4: Buried ridge batteries + Crest runners
+Desert / Easy / 421 / 8: Oxbow sandworm + Silo flanking wing + Buried ridge batteries
+Desert / Easy / 421 / 12: Dune diving squadron + Parallel dune skimmers + Crest ambush
+Desert / Easy / 421 / 16: Dune-traversing sandworm + Buried ridge batteries + Buried diamond
+Desert / Easy / 421 / 20: Buried diamond + Obelisk mirage march + Deep outpost serpent
+Desert / Hard / 17381 / 2: Moth dune scallop + Obelisk mirage march
+Desert / Hard / 17381 / 4: Silo flanking wing + Mirage pursuit
+Desert / Hard / 17381 / 8: Silo eruption fork + Oxbow sandworm + Obelisk paired descent
+Desert / Hard / 17381 / 12: Dune diving squadron + Dune-traversing sandworm + Obelisk mirage march
+Desert / Hard / 17381 / 16: Moth dune scallop + Moth slipface rake + Obelisk mirage march
+Desert / Hard / 17381 / 20: Crest runners + Eruption crescent + Mirage pursuit
+Desert / Hard / 421 / 2: Moth dune scallop + Eruption crescent
+Desert / Hard / 421 / 4: Buried ridge batteries + Crest runners
+Desert / Hard / 421 / 8: Oxbow sandworm + Silo flanking wing + Buried ridge batteries
+Desert / Hard / 421 / 12: Dune diving squadron + Parallel dune skimmers + Crest ambush
+Desert / Hard / 421 / 16: Dune-traversing sandworm + Buried ridge batteries + Buried diamond
+Desert / Hard / 421 / 20: Buried diamond + Obelisk mirage march + Deep outpost serpent
+Candyland / Easy / 17381 / 2: Taffy bow + Gumdrop sugar fall + Chocolate arrow
+Candyland / Easy / 17381 / 4: Gumdrop candy shelf + Double wafer rake + Wrapper fan
+Candyland / Easy / 17381 / 8: Mint braid + Bonbon braid + Taffy bow + Mint wheel procession
+Candyland / Easy / 17381 / 12: Whirling mint staff + Sugar needlework + Chocolate arrow + Ribbon falling streamer
+Candyland / Easy / 17381 / 16: Last wrapper rush + Ribbon falling streamer + Chocolate arrow + Bonbon braid
+Candyland / Easy / 17381 / 20: Chocolate fountain + Last wrapper rush + Chocolate arrow + Mint braid
+Candyland / Easy / 421 / 2: Bonbon braid + Sugar ribbon rush + Gumdrop sugar fall
+Candyland / Easy / 421 / 4: Gumdrop candy shelf + Wrapper fan + Double wafer rake
+Candyland / Easy / 421 / 8: Mint braid + Unwrapped ribbons + Wrapper fan + Mint diamond
+Candyland / Easy / 421 / 12: Whirling mint staff + Taffy bow + Double wafer rake + Gumdrop sugar fall
+Candyland / Easy / 421 / 16: Last wrapper rush + Mint wheel procession + Gumdrop wrapping turn + Double wafer rake
+Candyland / Easy / 421 / 20: Bonbon braid + Last wrapper rush + Sugar needlework + Mint diamond
+Candyland / Hard / 17381 / 2: Taffy bow + Gumdrop sugar fall + Chocolate arrow
+Candyland / Hard / 17381 / 4: Gumdrop candy shelf + Double wafer rake + Wrapper fan
+Candyland / Hard / 17381 / 8: Mint braid + Gumdrop candy shelf + Ribbon unwinding bow + Unwrapped ribbons
+Candyland / Hard / 17381 / 12: Whirling mint staff + Sugar needlework + Chocolate fountain + Double wafer rake
+Candyland / Hard / 17381 / 16: Last wrapper rush + Ribbon falling streamer + Wrapper fan + Mint braid
+Candyland / Hard / 17381 / 20: Confection crown + Ribbon rising loop + Gumdrop sugar fall + Whirling mint staff
+Candyland / Hard / 421 / 2: Bonbon braid + Sugar ribbon rush + Gumdrop sugar fall
+Candyland / Hard / 421 / 4: Gumdrop candy shelf + Wrapper fan + Double wafer rake
+Candyland / Hard / 421 / 8: Chocolate fountain + Mint braid + Double wafer rake + Unwrapped ribbons
+Candyland / Hard / 421 / 12: Whirling mint staff + Wrapper fan + Taffy bow + Licorice knot
+Candyland / Hard / 421 / 16: Last wrapper rush + Bonbon braid + Mint diamond + Chocolate arrow
+Candyland / Hard / 421 / 20: Sugar ribbon rush + Whirling mint staff + Mint wheel procession + Unwrapped ribbons
+Space / Easy / 17381 / 2: Slingshot dish escort + Transfer scouts + Terminator emitters
+Space / Easy / 17381 / 4: Solar slingshot + Eclipse solar arc + Terminator emitters
+Space / Easy / 17381 / 8: Opposed relay scouts + Wide apogee carrier + Eclipse solar arc + Comet gravitational hook
+Space / Easy / 17381 / 12: Perigee laser rake + Eclipse orbital crescent + Low transfer emitter + Comet apogee rake
+Space / Easy / 17381 / 16: Transfer scouts + Opposed relay scouts + Eclipse limb transit + Halo escort carrier
+Space / Easy / 17381 / 20: Solar slingshot + Terminator emitters + Slingshot dish escort + Comet apogee rake
+Space / Easy / 421 / 2: Opposed relay scouts + Perigee twins + Low transfer emitter
+Space / Easy / 421 / 4: Comet apogee rake + Eclipse solar arc + Low transfer emitter
+Space / Easy / 421 / 8: Wide apogee carrier + Perigee twins + Eclipse orbital crescent + Comet apogee rake
+Space / Easy / 421 / 12: Perigee laser rake + Wide apogee carrier + Comet gravitational hook + Perigee twins
+Space / Easy / 421 / 16: Apogee scouts + Perigee laser rake + Eclipse orbital crescent + Comet trailing orbit
+Space / Easy / 421 / 20: Slingshot dish escort + Transfer scouts + Terminator emitters + Eclipse orbital crescent
+Space / Hard / 17381 / 2: Slingshot dish escort + Transfer scouts + Terminator emitters
+Space / Hard / 17381 / 4: Opposed relay scouts + Eclipse solar arc + Slingshot dish escort
+Space / Hard / 17381 / 8: Wide apogee carrier + Comet apogee rake + Comet gravitational hook + Apogee scouts
+Space / Hard / 17381 / 12: Perigee twins + Terminator emitters + Eclipse solar arc + Perigee laser rake
+Space / Hard / 17381 / 16: Perigee twins + Comet trailing orbit + Comet apogee rake + Low transfer emitter
+Space / Hard / 17381 / 20: Solar slingshot + Terminator emitters + Wide apogee carrier + Comet trailing orbit
+Space / Hard / 421 / 2: Opposed relay scouts + Perigee twins + Low transfer emitter
+Space / Hard / 421 / 4: Comet apogee rake + Eclipse solar arc + Low transfer emitter
+Space / Hard / 421 / 8: Wide apogee carrier + Perigee twins + Eclipse orbital crescent + Comet gravitational hook
+Space / Hard / 421 / 12: Perigee laser rake + Wide apogee carrier + Comet trailing orbit + Comet apogee rake
+Space / Hard / 421 / 16: Transfer scouts + Perigee laser rake + Eclipse solar arc + Halo escort carrier
+Space / Hard / 421 / 20: Solar slingshot + Low transfer emitter + Perigee laser rake + Comet apogee rake
+Underwater / Easy / 17381 / 2: Thermocline school + Cross current wings
+Underwater / Easy / 17381 / 4: Rising reef diamond + Bell tidal arch
+Underwater / Easy / 17381 / 8: Squid inkward dive + Tidal needlework + Reef shelf rays
+Underwater / Easy / 17381 / 12: Sunken procession + Trench ribbon + Tidal needlework
+Underwater / Easy / 17381 / 16: Rising reef diamond + Cross current wings + Reef shelf rays
+Underwater / Easy / 17381 / 20: Deep manta bow + Squid reef scissors + Bell tidal arch
+Underwater / Easy / 421 / 2: Rising reef diamond + Thermocline school
+Underwater / Easy / 421 / 4: Reef shelf rays + Bell tidal arch
+Underwater / Easy / 421 / 8: Squid reef scissors + Tidal needlework + Bell buoyant procession
+Underwater / Easy / 421 / 12: Sunken procession + Bell tidal arch + Bell descent
+Underwater / Easy / 421 / 16: Squid inkward dive + Trench sentries + Bell buoyant procession
+Underwater / Easy / 421 / 20: Squid inkward dive + Reef shelf rays + Bell buoyant procession
+Underwater / Hard / 17381 / 2: Thermocline school + Cross current wings
+Underwater / Hard / 17381 / 4: Rising reef diamond + Bell tidal arch
+Underwater / Hard / 17381 / 8: Squid inkward dive + Tidal needlework + Reef shelf rays
+Underwater / Hard / 17381 / 12: Sunken procession + Trench ribbon + Bell reefward roll
+Underwater / Hard / 17381 / 16: Rising reef diamond + Cross current wings + Sunken procession
+Underwater / Hard / 17381 / 20: Bell descent + Undertow darts + Deep manta bow
+Underwater / Hard / 421 / 2: Rising reef diamond + Thermocline school
+Underwater / Hard / 421 / 4: Reef shelf rays + Bell tidal arch
+Underwater / Hard / 421 / 8: Undertow darts + Tidal needlework + Squid rising jet
+Underwater / Hard / 421 / 12: Sunken procession + Bell reefward roll + Bell descent
+Underwater / Hard / 421 / 16: Cross current wings + Sunken procession + Brass upwelling
+Underwater / Hard / 421 / 20: Deep manta bow + Cross current wings + Bell tidal arch
+Hell / Easy / 17381 / 2: Styx galleons + Ember scissors
+Hell / Easy / 17381 / 4: Harrier scything ascent + Jaw spiral
+Hell / Easy / 17381 / 8: Harrier blackwing hook + Styx galleons + Gate revenants
+Hell / Easy / 17381 / 12: Pit procession + Ash crown + Ember scissors
+Hell / Easy / 17381 / 16: Imp descent + Spectral bows + Censer downward pendulum
+Hell / Easy / 17381 / 20: Imp descent + Spectral bows + Ember scissors
+Hell / Easy / 421 / 2: Censer downward pendulum + Ember scissors
+Hell / Easy / 421 / 4: Jaw spiral + Gate revenants
+Hell / Easy / 421 / 8: Pit procession + Harrier blackwing hook + Ember scissors
+Hell / Easy / 421 / 12: Cinder hooks + Censer ashen return + Harrier talon dive
+Hell / Easy / 421 / 16: Harrier scything ascent + Styx galleons + Ember scissors
+Hell / Easy / 421 / 20: Imp descent + Censer ashen return + Harrier blackwing hook
+Hell / Hard / 17381 / 2: Styx galleons + Ember scissors
+Hell / Hard / 17381 / 4: Harrier scything ascent + Gate revenants
+Hell / Hard / 17381 / 8: Harrier blackwing hook + Harrier talon dive + Spectral bows
+Hell / Hard / 17381 / 12: Jaw spiral + Censer downward pendulum + Spectral bows
+Hell / Hard / 17381 / 16: Imp descent + Harrier scything ascent + Ghost flotilla
+Hell / Hard / 17381 / 20: Ash crown + Burning crossing + Spectral bows
+Hell / Hard / 421 / 2: Censer downward pendulum + Ember scissors
+Hell / Hard / 421 / 4: Jaw spiral + Gate revenants
+Hell / Hard / 421 / 8: Pit procession + Imp descent + Censer funeral arch
+Hell / Hard / 421 / 12: Cinder hooks + Harrier talon dive + Spectral bows
+Hell / Hard / 421 / 16: Harrier scything ascent + Styx galleons + Ash crown
+Hell / Hard / 421 / 20: Imp descent + Jaw spiral + Harrier talon dive
