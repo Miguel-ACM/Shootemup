@@ -106,6 +106,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Encounter choices use original Python-drawn pixel sprites rather than text: coin shop, multiplier shop, item crate, medkit and challenge crest. After selection, let the panels fade and move away gracefully before opening the chosen encounter.
 - The HEALTH path drops one pickup restoring 50% of maximum health, capped at full health. Keep ordinary dropped health pickups at their existing flat healing value.
 - Do not offer the HEALTH encounter while the player is above 70% of maximum health; it may appear at or below 70%.
+- ITEM and CHALLENGE are mutually exclusive options: never offer them together in the same encounter selection.
 - Require close contact to collect decision items so passing nearby cannot cause accidental purchases or replacements.
 - Make rarity effects noticeable and distinct.
 - Shop names and prices need opaque black backgrounds and must stay readable with the filter. The bottom skip zone must be reachable at the visible screen edge, with a minimal hold indicator.

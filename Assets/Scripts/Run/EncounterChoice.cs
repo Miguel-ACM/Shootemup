@@ -35,7 +35,9 @@ public static class EncounterChoice
             bag[i] = bag[j];
             bag[j] = swap;
         }
-        return new[] { bag[0], bag[1] };
+        bool incompatible = bag[0] == EncounterKind.Item && bag[1] == EncounterKind.Challenge ||
+            bag[0] == EncounterKind.Challenge && bag[1] == EncounterKind.Item;
+        return new[] { bag[0], bag[incompatible ? 2 : 1] };
     }
 
     public static string Label(EncounterKind kind) => kind == EncounterKind.MultShop ? "MULT SHOP" : kind.ToString().ToUpperInvariant();

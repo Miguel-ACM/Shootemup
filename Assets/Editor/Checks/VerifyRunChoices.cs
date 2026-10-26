@@ -308,10 +308,13 @@ public sealed class RunChoicesReview : MonoBehaviour
         {
             var options = EncounterChoice.Draw(seed, true, 70, 100);
             Check(options.Length == 2 && options[0] != options[1], "encounter draw " + seed + " has two distinct choices");
+            Check(!(options.Contains(EncounterKind.Item) && options.Contains(EncounterKind.Challenge)), "item and challenge are never offered together");
             foreach (var option in options)
                 all.Add(option);
             Check(!EncounterChoice.Draw(seed, false, 70, 100).Contains(EncounterKind.Challenge), "challenge excluded when three waves are unavailable");
-            Check(!EncounterChoice.Draw(seed, true, 70.01f, 100).Contains(EncounterKind.Health), "health excluded above 70 percent");
+            var healthy = EncounterChoice.Draw(seed, true, 70.01f, 100);
+            Check(!healthy.Contains(EncounterKind.Health), "health excluded above 70 percent");
+            Check(!(healthy.Contains(EncounterKind.Item) && healthy.Contains(EncounterKind.Challenge)), "item and challenge stay exclusive above the health threshold");
         }
         Check(all.Count == 5, "all five encounter types are reachable");
         Check(DistrictWaves.Sequence()[0] == "reward" && DistrictWaves.Sequence().Count(x => x == "encounterChoice") == 1 && DistrictWaves.Sequence().Count(x => x == "minibossChoice") == 1 && DistrictWaves.Sequence().Count(x => int.TryParse(x, out _)) == 10, "one pre-miniboss fork preserves the opening reward, ten combat waves and the earned miniboss selection");
