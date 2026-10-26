@@ -131,12 +131,16 @@ public abstract class AWeapon : MonoBehaviour
     void PrimaryReleased(InputAction.CallbackContext ctx)
     {
         isStopingPrimary = true;
+        WeaponReleased(true);
     }
 
     void SecondaryReleased(InputAction.CallbackContext ctx)
     {
         isStopingSecondary = true;
+        WeaponReleased(false);
     }
+
+    protected virtual void WeaponReleased(bool primary) { }
 
     public virtual void updateSpawnPoints()
     {

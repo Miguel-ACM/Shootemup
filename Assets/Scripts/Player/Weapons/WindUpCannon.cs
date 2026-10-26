@@ -10,7 +10,6 @@ public sealed class WindUpCannon : AWeapon
 
     public int Level => Charge >= 1.2f ? 3 : Charge >= .45f ? 2 : 1;
     public bool Charging => isShootingPrimary || isShootingSecondary;
-    float cooldown;
     int previousLevel;
     SpriteRenderer core;
     AudioSource winding;
@@ -21,7 +20,7 @@ public sealed class WindUpCannon : AWeapon
 
     public override void WeaponPressed(bool primary)
     {
-        if (cooldown > 0 || GameRules.playerDisabled)
+        if (GameRules.playerDisabled)
             return;
         bool wasCharging = Charging;
         base.WeaponPressed(primary);
@@ -64,7 +63,6 @@ public sealed class WindUpCannon : AWeapon
         float dt = WorldTimeStop.PlayerDelta;
         if (dt <= 0)
             return;
-        cooldown = Mathf.Max(0, cooldown - dt);
         if (!Charging)
             return;
         bool held = EffectiveInput == WeaponInput.primary ? !isStopingPrimary : EffectiveInput == WeaponInput.secondary ? !isStopingSecondary : !isStopingPrimary || !isStopingSecondary;
@@ -110,7 +108,16 @@ public sealed class WindUpCannon : AWeapon
         ItemSound.Play("cannon", level == 3 ? .28f : .17f, 1.25f - level * .12f);
         ItemSpark.Emit(transform.position + Vector3.up * .9f, new Color(.45f, .85f, .8f), level + 2, .13f, true);
         StopFiring();
-        cooldown = .16f;
+    }
+
+    protected override void WeaponReleased(bool primary)
+    {
+        if (!Charging || GameRules.playerDisabled || Menu.GameplayPaused)
+            return;
+        bool released = EffectiveInput == WeaponInput.both ? isStopingPrimary && isStopingSecondary :
+            EffectiveInput == WeaponInput.primary ? primary : !primary;
+        if (released)
+            Release();
     }
 
     public override void StopFiring()
