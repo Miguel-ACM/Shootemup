@@ -42,6 +42,11 @@ public sealed class BeamRibbon : MonoBehaviour
     public void Draw(Vector3 p, Vector2 direction, float length, float width, float charge, float power, float release = 0)
     {
         body.positionCount = sheath.positionCount = tell.positionCount = 2;
+        Paint(p, direction, length, width, charge, power, release);
+    }
+
+    void Paint(Vector3 p, Vector2 direction, float length, float width, float charge, float power, float release)
+    {
         if (!playerBeam)
         {
             hot = LevelProjectilePalette.Accent(LevelRun.Current);
@@ -86,7 +91,7 @@ public sealed class BeamRibbon : MonoBehaviour
 
     public void DrawPath(Vector3[] path, float width, float charge, float power, float release = 0)
     {
-        Draw(path[0], (path[1] - path[0]).normalized, .5f * (path.Length - 1), width, charge, power, release);
+        Paint(path[0], (path[1] - path[0]).normalized, .5f * (path.Length - 1), width, charge, power, release);
         body.positionCount = sheath.positionCount = tell.positionCount = path.Length;
         float extent = charge < 1 && release <= 0 ? 0 : Mathf.Clamp01(power * 8 + release) * (path.Length - 1);
         for (int i = 0; i < path.Length; i++)

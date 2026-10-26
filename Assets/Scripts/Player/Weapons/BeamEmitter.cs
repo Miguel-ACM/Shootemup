@@ -25,6 +25,13 @@ public sealed class BeamEmitter : AWeaponAutomatic
         firing = StartCoroutine(Fire());
     }
 
+    public override void WeaponPressed(bool primary)
+    {
+        if (releasing && firing != null)
+            StopFiring();
+        base.WeaponPressed(primary);
+    }
+
     public override void StopFiring()
     {
         base.StopFiring();
@@ -113,10 +120,9 @@ public sealed class BeamEmitter : AWeaponAutomatic
         }
         if (sound == null)
             sound = gameObject.AddComponent<LaserSound>();
-        float charge = (CombatUpgrades.Current != null ? CombatUpgrades.Current.Volley() : 1) * MagnifyingLens.Power;
-        float lensSize = Mathf.Lerp(1, 1.6f, MagnifyingLens.Current != null ? MagnifyingLens.Current.Charge : 0);
+        float charge = CombatUpgrades.Current != null ? CombatUpgrades.Current.Volley() : 1;
         float warning = .25f / Mathf.Max(1, GameRules.playerShootSpeed / 10);
-        float t = 0, releasedFor = 0, nextTick = warning;
+        float t = 0, releasedFor = 0, nextTick = warning, nextVolley = warning + .65f;
         sound.Charge(warning, true);
         while (!GameRules.playerDisabled)
         {
@@ -135,6 +141,11 @@ public sealed class BeamEmitter : AWeaponAutomatic
             if (releasedFor >= .18f)
                 break;
             bool active = t >= warning && !releasing;
+            if (active && t >= nextVolley)
+            {
+                charge = CombatUpgrades.Current != null ? CombatUpgrades.Current.Volley() : 1;
+                nextVolley = t + .65f;
+            }
             float power = releasing ? Mathf.Pow(1 - releasedFor / .18f, 2) : active ? Mathf.Clamp01((t - warning) / .055f) : 0;
             sound.Drive(power, active);
             var target = GameRules.playerShootFollowness > 0 ? CombatUpgrades.Nearest(transform.position + Vector3.up, null, 20) : null;
@@ -145,6 +156,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
             }
             else
                 hasAttraction = false;
+            float lensSize = Mathf.Lerp(1, 1.6f, MagnifyingLens.Current != null ? MagnifyingLens.Current.Charge : 0);
             float width = .14f * Mathf.Sqrt(GameRules.playerShootSize) * lensSize;
             for (int i = 0; i < count; i++)
             {
@@ -160,7 +172,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
                 {
                     if (enemy == null || !enemy.CanBeTargeted || !Touches(enemy, width * .5f, out var point, out var direction))
                         continue;
-                    float amount = GameRules.playerShootDamage * 1.2f * charge;
+                    float amount = GameRules.playerShootDamage * 1.2f * charge * MagnifyingLens.Power;
                     float dealt = CombatUpgrades.Current != null ? CombatUpgrades.Current.DirectHit(enemy, amount) : amount;
                     enemy.HitAt(point, direction);
                     enemy.damage(dealt);
