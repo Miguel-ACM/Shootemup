@@ -27,7 +27,7 @@ public static partial class WavePartLibrary
 {
     static readonly FlightCurve EclipseSailRoute0 = Route("Space / Eclipse orbital crescent", Vector2.right, -1.4f, 0.7f, -0.73f, 0.42f, -0.04f, 0.4f, 0.59f, 0.67f, 0.68f, 1.25f);
     static readonly FlightCurve EclipseSailRoute1 = Route("Space / Eclipse solar arc", Vector2.right, -0.48f, 1.25f, -0.69f, 0.8f, -0.39f, 0.42f, 0.2f, 0.27f, 0.69f, 0.5f, 1.4f, 0.74f);
-    static readonly FlightCurve EclipseSailRoute2 = Route("Space / Eclipse limb transit", Vector2.right, 1.4f, 0.73f, 0.7f, 0.82f, 0.12f, 0.72f, -0.32f, 0.41f, -0.68f, 0.12f, -0.72f, -0.25f);
+    static readonly FlightCurve EclipseSailRoute2 = Route("Space / Eclipse limb transit", Vector2.right, 2.2f, 0.73f, 0.7f, 0.82f, 0.12f, 0.72f, -0.32f, 0.41f, -0.68f, 0.12f, -0.72f, -0.4f);
     public static readonly WavePart[] EclipseSailParts =
     {
         new WavePart("Eclipse orbital crescent", nameof(EclipseSail), EclipseSailRoute0, WaveShape.Train, 3, 5.2f, 2, new[] { 0.24f, 0.4f, 0.59f, 0.76f }, new[] { 0.36f, 0.65f }, 3),
