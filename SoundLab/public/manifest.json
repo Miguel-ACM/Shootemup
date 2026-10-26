@@ -6193,6 +6193,179 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemSalvage",
+      "label": "Salvage Converter — conversion",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemSalvage",
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemSalvage/DSGNMisc_LocalTake_v01.wav",
+          "seconds": 0.3333333333333333,
+          "sampleRate": 48000,
+          "sha256": "a5b3de18192e18928bd7dfcdcb4df571ada229850270b3ff87e8dafa6e1ee805",
+          "ref": "20261026-210612-cd4f:261226",
+          "review": {
+            "brief_id": "65ff3bef5823599e316939f26120c3f71ac4dcb04661c995cb5f60b5e93ca872",
+            "blind_caption": "A knife is being used to cut a piece of meat.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small coin mechanism releasing a payload?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "KEEP (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3759
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemSalvage/DSGNMisc_LocalTake_v02.wav",
+          "seconds": 0.3333333333333333,
+          "sampleRate": 48000,
+          "sha256": "d7035363300b40015d286f131e2b4d1c1994792c8ebb520c2ab861d5371d5cec",
+          "ref": "20261026-210637-7906:261229",
+          "review": {
+            "brief_id": "65ff3bef5823599e316939f26120c3f71ac4dcb04661c995cb5f60b5e93ca872",
+            "blind_caption": "A mouse clicking",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small coin mechanism releasing a payload?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3654
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemSalvage/DSGNMisc_LocalTake_v03.wav",
+          "seconds": 0.3333333333333333,
+          "sampleRate": 48000,
+          "sha256": "fd1229d9521132c4f57da1ee6576c5c937b8339247ef38e3087f38e7925b61bb",
+          "ref": "20261026-210637-7906:261228",
+          "review": {
+            "brief_id": "65ff3bef5823599e316939f26120c3f71ac4dcb04661c995cb5f60b5e93ca872",
+            "blind_caption": "A fingering sound",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small coin mechanism releasing a payload?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3464
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemSalvage/DSGNMisc_LocalTake_v04.wav",
+          "seconds": 0.3333333333333333,
+          "sampleRate": 48000,
+          "sha256": "b0dfa9f2cbb012c681569be306d1bc472ed4f0e821e49be36e9e62dee5e00cfa",
+          "ref": "20261026-210612-cd4f:261227",
+          "review": {
+            "brief_id": "65ff3bef5823599e316939f26120c3f71ac4dcb04661c995cb5f60b5e93ca872",
+            "blind_caption": "A typewriter is being used.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small coin mechanism releasing a payload?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.291
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }

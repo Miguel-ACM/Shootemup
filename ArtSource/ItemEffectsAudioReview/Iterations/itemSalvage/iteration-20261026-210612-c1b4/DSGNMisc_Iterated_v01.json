@@ -1,0 +1,82 @@
+{
+  "request": "20261026-210612-cd4f",
+  "ref": "20261026-210612-cd4f:261226",
+  "text": "TrackType: SFX, one small coin mechanism releasing a payload, compact brass clink and mechanical latch, dry and close",
+  "prompt": "TrackType: SFX, one small coin mechanism releasing a payload, compact brass clink and mechanical latch, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "misc",
+  "seed": 261226,
+  "rank": 1,
+  "rank_score": 0.8195,
+  "clap": 0.9635,
+  "clap_cos": 0.3461,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.28,
+    "CU": 6.79,
+    "PC": 2.33,
+    "PQ": 6.99
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 14.05,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.3333,
+    "length_frames": 8.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -21.7
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -5.24,
+    "true_peak_dbtp": -5.18,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.0,
+    "active_s": 0.19,
+    "noise_floor_db": -81.1,
+    "onset_s": 0.1058,
+    "tail_db": -77.6,
+    "stereo_correlation": 0.999,
+    "lufs": -25.9,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "65ff3bef5823599e316939f26120c3f71ac4dcb04661c995cb5f60b5e93ca872",
+    "blind_caption": "A knife is being used to cut a piece of meat.",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small coin mechanism releasing a payload?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "KEEP (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.3759
+  },
+  "iteration_session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemSalvage\\iteration-20261026-210612-c1b4\\session.json",
+  "human_approved": false
+}
