@@ -205,6 +205,8 @@ public sealed class CombatUpgrades : MonoBehaviour
         {
             blocks = 0;
             PlayerRound.Spawn(transform.position, Vector2.up, 14, 12, PlayerDelivery.Missile, 1);
+            ItemProcVfx.Emit(ItemProcShape.Counter, transform.position, new Color(.6f, .65f, .9f), .65f);
+            ItemSound.Cue("itemCounter", volume: .12f);
         }
     }
 
