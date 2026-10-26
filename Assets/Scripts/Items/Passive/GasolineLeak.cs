@@ -3,7 +3,7 @@ public sealed class GasolineLeak : AItem
 {
     void Awake()
     {
-        SetData("Gasoline leak", "Handle with care", "Red bullets set enemies alight.", ItemType.passive);
+        SetData("Incendiary Rounds", "Handle with care", "Red bullets set enemies alight.", ItemType.passive);
     }
 
     public override void OnBegin()
