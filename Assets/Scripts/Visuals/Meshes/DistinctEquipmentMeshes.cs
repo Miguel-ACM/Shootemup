@@ -31,6 +31,26 @@ public static partial class IndustrialMeshFactory
         b.Face(tile, last);
     }
 
+    // A small upright cartridge with a real faceted tip, visible from the side too.
+    static void EquipmentCartridge(Builder b, Vector3 center, float radius, float height)
+    {
+        float body = height * .68f;
+        b.Can(center - Vector3.up * (height - body) * .5f, radius, body, 10, 6);
+        Vector3 tip = center + Vector3.up * (height * .5f);
+        float shoulder = center.y + height * .18f;
+        const int sides = 8;
+        for (int i = 0; i < sides; i++)
+        {
+            float a = i * Mathf.PI * 2 / sides, next = (i + 1) * Mathf.PI * 2 / sides;
+            Vector3 p = new Vector3(center.x + Mathf.Cos(a) * radius, shoulder, center.z + Mathf.Sin(a) * radius);
+            Vector3 q = new Vector3(center.x + Mathf.Cos(next) * radius, shoulder, center.z + Mathf.Sin(next) * radius);
+            var face = new[] { p, tip, q };
+            if (Vector3.Dot(Vector3.Cross(face[1] - face[0], face[2] - face[0]), (p + q) * .5f - new Vector3(center.x, shoulder, center.z)) < 0)
+                System.Array.Reverse(face);
+            b.Face(10, face);
+        }
+    }
+
     // Recognize equipment by its outer contour, not a different dot on the same box.
     static bool DistinctEquipment(Builder b, string kind)
     {
