@@ -26,7 +26,7 @@ public static partial class WavePartLibrary
 {
     static readonly FlightCurve DuneMothRoute0 = Route("Desert / Moth dune scallop", Vector2.right, -1.4f, 0.84f, -0.67f, 0.64f, -0.16f, 0.4f, 0.32f, 0.47f, 0.7f, 0.75f, 0.68f, 1.25f);
     static readonly FlightCurve DuneMothRoute1 = Route("Desert / Moth slipface rake", Vector2.right, -0.68f, 1.25f, -0.51f, 0.85f, 0.1f, 0.65f, 0.63f, 0.34f, 0.78f, -0.25f);
-    static readonly FlightCurve DuneMothRoute2 = Route("Desert / Moth leeward rise", Vector2.right, 1.4f, 0.32f, 0.7f, 0.31f, 0.12f, 0.42f, -0.37f, 0.67f, -0.61f, 1.25f);
+    static readonly FlightCurve DuneMothRoute2 = Route("Desert / Moth leeward rise", Vector2.right, 2.1f, 0.32f, 0.7f, 0.31f, 0.12f, 0.42f, -0.37f, 0.67f, -0.61f, 1.4f);
     public static readonly WavePart[] DuneMothParts =
     {
         new WavePart("Moth dune scallop", nameof(DuneMoth), DuneMothRoute0, WaveShape.Train, 4, 4.8f, 2, new[] { 0.29f, 0.48f, 0.72f }, new[] { 0.4f, 0.72f }, 3),
