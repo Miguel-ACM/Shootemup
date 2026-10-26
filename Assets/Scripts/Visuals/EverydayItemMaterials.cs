@@ -33,6 +33,15 @@ public static class EverydayItemMaterials
             case "ChainReactor": color = new Color(1f, .34f, .12f); return true;
             case "MirrorBurst": color = new Color(.62f, .77f, 1f); return true;
             case "GravityWell": color = new Color(.65f, .35f, .85f); return true;
+            case "BackdraftItem": color = new Color(1f, .29f, .12f); return true;
+            case "DepthChargeItem": color = new Color(.22f, .52f, .92f); return true;
+            case "WindUpCannonItem": color = new Color(.8f, .38f, .88f); return true;
+            case "BulletTime": color = new Color(.54f, .43f, .95f); return true;
+            case "DoubleTrouble": color = new Color(1f, .66f, .18f); return true;
+            case "EmpPulse": color = new Color(.26f, .86f, .82f); return true;
+            case "DroneLink": color = new Color(.85f, .47f, .83f); return true;
+            case "BallBearing": color = new Color(.6f, .73f, .92f); return true;
+            case "BadGlasses": color = new Color(.75f, .42f, .86f); return true;
             default: color = default; return false;
         }
     }
