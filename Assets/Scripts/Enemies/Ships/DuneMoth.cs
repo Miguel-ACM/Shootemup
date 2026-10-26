@@ -9,7 +9,7 @@ public sealed class DuneMoth : DistrictEnemy
         hull = 71;
         hullScale = 0.53f;
         health = 32;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(2.75f, 1.95f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -24,12 +24,14 @@ public sealed class DuneMoth : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve DuneMothRoute0 = Route("Desert / DuneMoth 0", Vector2.right, -.72f, 1.25f, -.52f, .93f, -.31f, .62f, .2f, .57f, .62f, .8f, .7f, 1.25f);
-    static readonly FlightCurve DuneMothRoute1 = Route("Desert / DuneMoth 1", Vector2.right, -1.4f, .69f, -.7f, .53f, 0, .61f, .67f, .79f, 1.4f, .7f);
-    public static readonly WavePart[] DuneMothParts ={
-        new WavePart("DuneMoth call",nameof(DuneMoth),DuneMothRoute0,WaveShape.Rake,3,4.75f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("DuneMoth crossing",nameof(DuneMoth),DuneMothRoute1,WaveShape.Rake,3,5.00f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("DuneMoth answer",nameof(DuneMoth),DuneMothRoute0,WaveShape.Train,3,5.25f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
+    static readonly FlightCurve DuneMothRoute0 = Route("Desert / Moth dune scallop", Vector2.right, -1.4f, 0.84f, -0.67f, 0.64f, -0.16f, 0.4f, 0.32f, 0.47f, 0.7f, 0.75f, 0.68f, 1.25f);
+    static readonly FlightCurve DuneMothRoute1 = Route("Desert / Moth slipface rake", Vector2.right, -0.68f, 1.25f, -0.51f, 0.85f, 0.1f, 0.65f, 0.63f, 0.34f, 0.78f, -0.25f);
+    static readonly FlightCurve DuneMothRoute2 = Route("Desert / Moth leeward rise", Vector2.right, 1.4f, 0.32f, 0.7f, 0.31f, 0.12f, 0.42f, -0.37f, 0.67f, -0.61f, 1.25f);
+    public static readonly WavePart[] DuneMothParts =
+    {
+        new WavePart("Moth dune scallop", nameof(DuneMoth), DuneMothRoute0, WaveShape.Train, 4, 4.8f, 2, new[] { 0.29f, 0.48f, 0.72f }, new[] { 0.4f, 0.72f }, 3),
+        new WavePart("Moth slipface rake", nameof(DuneMoth), DuneMothRoute1, WaveShape.Rake, 3, 4.8f, 4, new[] { 0.27f, 0.53f, 0.74f }, new[] { 0.39f, 0.74f }, 3),
+        new WavePart("Moth leeward rise", nameof(DuneMoth), DuneMothRoute2, WaveShape.Chevron, 3, 4.9f, 7, new[] { 0.32f, 0.62f }, new[] { 0.48f }, 3),
     };
 }
 
