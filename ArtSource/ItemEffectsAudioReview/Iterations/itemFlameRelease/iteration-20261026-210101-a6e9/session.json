@@ -1,0 +1,493 @@
+{
+  "brief": {
+    "description": "one gas torch valve shutoff, short soft air pressure release, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one gas torch valve shutoff?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "c641f22956149457c17b1e040f8d9494638e4b497319bc7b10f07ff24540f702",
+  "options": {
+    "duration": 0.2,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 260426,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-210101-376b",
+      "prompt": "TrackType: SFX, one gas torch valve shutoff, short soft air pressure release, dry and close",
+      "takes": [
+        "20261026-210101-376b:260426",
+        "20261026-210101-376b:260427"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-210123-36a4",
+      "prompt": "TrackType: SFX, one gas torch valve shutoff, short soft air pressure release, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one gas torch valve shutoff?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-210123-36a4:260428",
+        "20261026-210123-36a4:260429"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 260426,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": 0.0,
+        "true_peak_dbtp": 0.0,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00013,
+        "active_s": 0.375,
+        "noise_floor_db": -82.5,
+        "onset_s": 0.015,
+        "tail_db": -82.2,
+        "stereo_correlation": -0.005,
+        "lufs": -13.4,
+        "fails": [],
+        "warnings": [
+          "stereo channels out of phase (correlation -0.00): mono fold-down would cancel"
+        ]
+      },
+      "post": {
+        "gain_db": 3.11,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1,
+        "cut_db": -3.5
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -12.5
+      },
+      "clap": 0.9933,
+      "clap_cos": 0.3356,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.82,
+        "CU": 6.75,
+        "PC": 2.06,
+        "PQ": 7.07
+      },
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.00): mono fold-down would cancel",
+        "cut at the requested duration while still 4 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.7226,
+      "rank": 1,
+      "ref": "20261026-210101-376b:260426",
+      "files": {
+        "wav": "20261026-210101-376b/260426.wav",
+        "png": "20261026-210101-376b/260426.png",
+        "raw": "20261026-210101-376b/260426_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210101-376b\\260426.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210101-376b\\260426.png"
+      },
+      "review": {
+        "brief_id": "c641f22956149457c17b1e040f8d9494638e4b497319bc7b10f07ff24540f702",
+        "blind_caption": "A toothbrush brushing teeth",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one gas torch valve shutoff?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3696
+      }
+    },
+    {
+      "seed": 260427,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -1.86,
+        "true_peak_dbtp": -1.36,
+        "clipped_fraction": 0.0,
+        "dc_offset": 7e-05,
+        "active_s": 0.37,
+        "noise_floor_db": -82.5,
+        "onset_s": 0.015,
+        "tail_db": -81.9,
+        "stereo_correlation": -0.07,
+        "lufs": -14.1,
+        "fails": [],
+        "warnings": [
+          "stereo channels out of phase (correlation -0.07): mono fold-down would cancel"
+        ]
+      },
+      "post": {
+        "gain_db": 2.59,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1,
+        "cut_db": -4.9
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -13.7
+      },
+      "clap": 0.9925,
+      "clap_cos": 0.3206,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.48,
+        "CU": 6.37,
+        "PC": 2.0,
+        "PQ": 6.7
+      },
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.07): mono fold-down would cancel",
+        "cut at the requested duration while still 5 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.6795,
+      "rank": 2,
+      "ref": "20261026-210101-376b:260427",
+      "files": {
+        "wav": "20261026-210101-376b/260427.wav",
+        "png": "20261026-210101-376b/260427.png",
+        "raw": "20261026-210101-376b/260427_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210101-376b\\260427.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210101-376b\\260427.png"
+      },
+      "review": {
+        "brief_id": "c641f22956149457c17b1e040f8d9494638e4b497319bc7b10f07ff24540f702",
+        "blind_caption": "Printer printing",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one gas torch valve shutoff?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3593
+      }
+    },
+    {
+      "seed": 260428,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -1.64,
+        "true_peak_dbtp": -1.42,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00011,
+        "active_s": 0.38,
+        "noise_floor_db": -82.1,
+        "onset_s": 0.0,
+        "tail_db": -82.3,
+        "stereo_correlation": -0.041,
+        "lufs": -15.5,
+        "fails": [],
+        "warnings": [
+          "stereo channels out of phase (correlation -0.04): mono fold-down would cancel"
+        ]
+      },
+      "post": {
+        "gain_db": 3.93,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1,
+        "cut_db": -6.7
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -12.9
+      },
+      "clap": 0.9944,
+      "clap_cos": 0.3874,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.65,
+        "CU": 6.7,
+        "PC": 2.03,
+        "PQ": 7.11
+      },
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.04): mono fold-down would cancel",
+        "cut at the requested duration while still 7 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.772,
+      "rank": 1,
+      "ref": "20261026-210123-36a4:260428",
+      "files": {
+        "wav": "20261026-210123-36a4/260428.wav",
+        "png": "20261026-210123-36a4/260428.png",
+        "raw": "20261026-210123-36a4/260428_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210123-36a4\\260428.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210123-36a4\\260428.png"
+      },
+      "review": {
+        "brief_id": "c641f22956149457c17b1e040f8d9494638e4b497319bc7b10f07ff24540f702",
+        "blind_caption": "A siren",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one gas torch valve shutoff?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3819
+      }
+    },
+    {
+      "seed": 260429,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -1.58,
+        "true_peak_dbtp": -1.21,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00018,
+        "active_s": 0.375,
+        "noise_floor_db": -81.9,
+        "onset_s": 0.0,
+        "tail_db": -82.1,
+        "stereo_correlation": -0.063,
+        "lufs": -15.1,
+        "fails": [],
+        "warnings": [
+          "stereo channels out of phase (correlation -0.06): mono fold-down would cancel"
+        ]
+      },
+      "post": {
+        "gain_db": 2.68,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1,
+        "cut_db": -7.2
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -14.0
+      },
+      "clap": 0.9948,
+      "clap_cos": 0.3873,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.52,
+        "CU": 6.59,
+        "PC": 1.9,
+        "PQ": 7.0
+      },
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.06): mono fold-down would cancel",
+        "cut at the requested duration while still 7 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.7632,
+      "rank": 2,
+      "ref": "20261026-210123-36a4:260429",
+      "files": {
+        "wav": "20261026-210123-36a4/260429.wav",
+        "png": "20261026-210123-36a4/260429.png",
+        "raw": "20261026-210123-36a4/260429_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210123-36a4\\260429.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210123-36a4\\260429.png"
+      },
+      "review": {
+        "brief_id": "c641f22956149457c17b1e040f8d9494638e4b497319bc7b10f07ff24540f702",
+        "blind_caption": "People cheering",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one gas torch valve shutoff?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3635
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 260428,
+    "signal": {
+      "duration_s": 1.0,
+      "peak_dbfs": -1.64,
+      "true_peak_dbtp": -1.42,
+      "clipped_fraction": 0.0,
+      "dc_offset": 0.00011,
+      "active_s": 0.38,
+      "noise_floor_db": -82.1,
+      "onset_s": 0.0,
+      "tail_db": -82.3,
+      "stereo_correlation": -0.041,
+      "lufs": -15.5,
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.04): mono fold-down would cancel"
+      ]
+    },
+    "post": {
+      "gain_db": 3.93,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.2083,
+      "length_frames": 5.0,
+      "channels": 1,
+      "cut_db": -6.7
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -12.9
+    },
+    "clap": 0.9944,
+    "clap_cos": 0.3874,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.65,
+      "CU": 6.7,
+      "PC": 2.03,
+      "PQ": 7.11
+    },
+    "fails": [],
+    "warnings": [
+      "stereo channels out of phase (correlation -0.04): mono fold-down would cancel",
+      "cut at the requested duration while still 7 dB below its peak: the tail is chopped, ask for a longer --duration"
+    ],
+    "rejected": false,
+    "rank_score": 0.772,
+    "rank": 1,
+    "ref": "20261026-210123-36a4:260428",
+    "files": {
+      "wav": "20261026-210123-36a4/260428.wav",
+      "png": "20261026-210123-36a4/260428.png",
+      "raw": "20261026-210123-36a4/260428_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210123-36a4\\260428.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210123-36a4\\260428.png"
+    },
+    "review": {
+      "brief_id": "c641f22956149457c17b1e040f8d9494638e4b497319bc7b10f07ff24540f702",
+      "blind_caption": "A siren",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one gas torch valve shutoff?",
+          "answer": "uncertain",
+          "evidence": "NO"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "NO"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.3819
+    }
+  },
+  "baseline_best": null,
+  "status": "running",
+  "human_approved": false
+}

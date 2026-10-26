@@ -1,0 +1,87 @@
+{
+  "request": "20261026-211329-4681",
+  "ref": "20261026-211329-4681:760426",
+  "text": "TrackType: SFX, one gas torch valve shutoff, short soft air pressure release, dry and close",
+  "prompt": "TrackType: SFX, one gas torch valve shutoff, short soft air pressure release, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "misc",
+  "seed": 760426,
+  "rank": 2,
+  "rank_score": 0.6723,
+  "clap": 0.9976,
+  "clap_cos": 0.3969,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.53,
+    "CU": 5.94,
+    "PC": 2.07,
+    "PQ": 5.75
+  },
+  "fails": [],
+  "warnings": [
+    "stereo channels out of phase (correlation -0.00): mono fold-down would cancel",
+    "cut at the requested duration while still 14 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 12.19,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.5,
+    "length_frames": 12.0,
+    "channels": 1,
+    "cut_db": -14.5
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -12.8
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -8.6,
+    "true_peak_dbtp": -8.6,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.0001,
+    "active_s": 0.865,
+    "noise_floor_db": -76.0,
+    "onset_s": 0.018,
+    "tail_db": -75.4,
+    "stereo_correlation": -0.003,
+    "lufs": -22.7,
+    "fails": [],
+    "warnings": [
+      "stereo channels out of phase (correlation -0.00): mono fold-down would cancel"
+    ]
+  },
+  "review": {
+    "brief_id": "c641f22956149457c17b1e040f8d9494638e4b497319bc7b10f07ff24540f702",
+    "blind_caption": "A door is opened.",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one gas torch valve shutoff?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "KEEP (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.4205
+  },
+  "human_approved": false
+}

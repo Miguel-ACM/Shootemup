@@ -1,0 +1,161 @@
+{
+  "id": "20261026-211329-4681",
+  "created": "2026-10-26 21:13:29",
+  "text": "TrackType: SFX, one gas torch valve shutoff, short soft air pressure release, dry and close",
+  "prompt": "TrackType: SFX, one gas torch valve shutoff, short soft air pressure release, dry and close",
+  "raw": true,
+  "category": "misc",
+  "cat_id": "DSGNMisc",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    760426,
+    760427
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.5,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 1.25,
+  "gen_s": 2.27,
+  "score_s": 1.3,
+  "takes": [
+    {
+      "seed": 760427,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -6.02,
+        "true_peak_dbtp": -6.02,
+        "clipped_fraction": 0.0,
+        "dc_offset": 3e-05,
+        "active_s": 0.775,
+        "noise_floor_db": -79.6,
+        "onset_s": 0.0379,
+        "tail_db": -77.1,
+        "stereo_correlation": -0.264,
+        "lufs": -18.8,
+        "fails": [],
+        "warnings": [
+          "stereo channels out of phase (correlation -0.26): mono fold-down would cancel"
+        ]
+      },
+      "post": {
+        "gain_db": 9.29,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1,
+        "cut_db": -16.5
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -14.4
+      },
+      "clap": 0.997,
+      "clap_cos": 0.3986,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.7,
+        "CU": 5.87,
+        "PC": 2.04,
+        "PQ": 5.87
+      },
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.26): mono fold-down would cancel",
+        "cut at the requested duration while still 16 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.6833,
+      "rank": 1,
+      "ref": "20261026-211329-4681:760427",
+      "files": {
+        "wav": "20261026-211329-4681/760427.wav",
+        "png": "20261026-211329-4681/760427.png",
+        "raw": "20261026-211329-4681/760427_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211329-4681\\760427.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211329-4681\\760427.png"
+      }
+    },
+    {
+      "seed": 760426,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -8.6,
+        "true_peak_dbtp": -8.6,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.0001,
+        "active_s": 0.865,
+        "noise_floor_db": -76.0,
+        "onset_s": 0.018,
+        "tail_db": -75.4,
+        "stereo_correlation": -0.003,
+        "lufs": -22.7,
+        "fails": [],
+        "warnings": [
+          "stereo channels out of phase (correlation -0.00): mono fold-down would cancel"
+        ]
+      },
+      "post": {
+        "gain_db": 12.19,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1,
+        "cut_db": -14.5
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -12.8
+      },
+      "clap": 0.9976,
+      "clap_cos": 0.3969,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.53,
+        "CU": 5.94,
+        "PC": 2.07,
+        "PQ": 5.75
+      },
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.00): mono fold-down would cancel",
+        "cut at the requested duration while still 14 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.6723,
+      "rank": 2,
+      "ref": "20261026-211329-4681:760426",
+      "files": {
+        "wav": "20261026-211329-4681/760426.wav",
+        "png": "20261026-211329-4681/760426.png",
+        "raw": "20261026-211329-4681/760426_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211329-4681\\760426.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211329-4681\\760426.png"
+      }
+    }
+  ],
+  "kept": 2
+}

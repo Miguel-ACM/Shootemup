@@ -1,0 +1,161 @@
+{
+  "id": "20261026-210123-36a4",
+  "created": "2026-10-26 21:01:23",
+  "text": "TrackType: SFX, one gas torch valve shutoff, short soft air pressure release, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one gas torch valve shutoff?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one gas torch valve shutoff, short soft air pressure release, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one gas torch valve shutoff?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "raw": true,
+  "category": "misc",
+  "cat_id": "DSGNMisc",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    260428,
+    260429
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.2,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 0.95,
+  "gen_s": 2.23,
+  "score_s": 1.8,
+  "takes": [
+    {
+      "seed": 260428,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -1.64,
+        "true_peak_dbtp": -1.42,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00011,
+        "active_s": 0.38,
+        "noise_floor_db": -82.1,
+        "onset_s": 0.0,
+        "tail_db": -82.3,
+        "stereo_correlation": -0.041,
+        "lufs": -15.5,
+        "fails": [],
+        "warnings": [
+          "stereo channels out of phase (correlation -0.04): mono fold-down would cancel"
+        ]
+      },
+      "post": {
+        "gain_db": 3.93,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1,
+        "cut_db": -6.7
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -12.9
+      },
+      "clap": 0.9944,
+      "clap_cos": 0.3874,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.65,
+        "CU": 6.7,
+        "PC": 2.03,
+        "PQ": 7.11
+      },
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.04): mono fold-down would cancel",
+        "cut at the requested duration while still 7 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.772,
+      "rank": 1,
+      "ref": "20261026-210123-36a4:260428",
+      "files": {
+        "wav": "20261026-210123-36a4/260428.wav",
+        "png": "20261026-210123-36a4/260428.png",
+        "raw": "20261026-210123-36a4/260428_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210123-36a4\\260428.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210123-36a4\\260428.png"
+      }
+    },
+    {
+      "seed": 260429,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -1.58,
+        "true_peak_dbtp": -1.21,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00018,
+        "active_s": 0.375,
+        "noise_floor_db": -81.9,
+        "onset_s": 0.0,
+        "tail_db": -82.1,
+        "stereo_correlation": -0.063,
+        "lufs": -15.1,
+        "fails": [],
+        "warnings": [
+          "stereo channels out of phase (correlation -0.06): mono fold-down would cancel"
+        ]
+      },
+      "post": {
+        "gain_db": 2.68,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1,
+        "cut_db": -7.2
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -14.0
+      },
+      "clap": 0.9948,
+      "clap_cos": 0.3873,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.52,
+        "CU": 6.59,
+        "PC": 1.9,
+        "PQ": 7.0
+      },
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.06): mono fold-down would cancel",
+        "cut at the requested duration while still 7 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.7632,
+      "rank": 2,
+      "ref": "20261026-210123-36a4:260429",
+      "files": {
+        "wav": "20261026-210123-36a4/260429.wav",
+        "png": "20261026-210123-36a4/260429.png",
+        "raw": "20261026-210123-36a4/260429_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210123-36a4\\260429.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210123-36a4\\260429.png"
+      }
+    }
+  ],
+  "kept": 2
+}
