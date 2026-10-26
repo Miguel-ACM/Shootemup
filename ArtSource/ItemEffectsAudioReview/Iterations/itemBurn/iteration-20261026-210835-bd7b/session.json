@@ -1,0 +1,472 @@
+{
+  "brief": {
+    "description": "one small patch of fuel catching fire on steel, soft breathy ignition crackle, short and dry",
+    "requirements": [
+      "Does the sound contain the requested physical source: one small patch of fuel catching fire on steel?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "ee21e50b74ec0bcab196e64abd8e87c75b8eb42584185c57cc4a173e09388a98",
+  "options": {
+    "duration": 0.24,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 261626,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-210835-c532",
+      "prompt": "TrackType: SFX, one small patch of fuel catching fire on steel, soft breathy ignition crackle, short and dry",
+      "takes": [
+        "20261026-210835-c532:261627",
+        "20261026-210835-c532:261626"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-210901-16dc",
+      "prompt": "TrackType: SFX, one small patch of fuel catching fire on steel, soft breathy ignition crackle, short and dry. Required acoustic properties: Does the sound contain the requested physical source: one small patch of fuel catching fire on steel?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-210901-16dc:261629",
+        "20261026-210901-16dc:261628"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 261627,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -8.12,
+        "true_peak_dbtp": -7.98,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00016,
+        "active_s": 0.29,
+        "noise_floor_db": -55.6,
+        "onset_s": 0.0629,
+        "tail_db": -76.5,
+        "stereo_correlation": 0.406,
+        "lufs": -34.8,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 8.9,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.25,
+        "length_frames": 6.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -22.7
+      },
+      "clap": 0.8993,
+      "clap_cos": 0.2938,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.43,
+        "CU": 7.2,
+        "PC": 2.03,
+        "PQ": 7.4
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.793,
+      "rank": 1,
+      "ref": "20261026-210835-c532:261627",
+      "files": {
+        "wav": "20261026-210835-c532/261627.wav",
+        "png": "20261026-210835-c532/261627.png",
+        "raw": "20261026-210835-c532/261627_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210835-c532\\261627.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210835-c532\\261627.png"
+      },
+      "review": {
+        "brief_id": "ee21e50b74ec0bcab196e64abd8e87c75b8eb42584185c57cc4a173e09388a98",
+        "blind_caption": "A small object is dropped on a hard surface.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small patch of fuel catching fire on steel?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2857
+      }
+    },
+    {
+      "seed": 261626,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -7.46,
+        "true_peak_dbtp": -7.46,
+        "clipped_fraction": 0.0,
+        "dc_offset": 8e-05,
+        "active_s": 0.28,
+        "noise_floor_db": -59.9,
+        "onset_s": 0.0589,
+        "tail_db": -76.1,
+        "stereo_correlation": 0.45,
+        "lufs": -33.7,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 7.1,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.25,
+        "length_frames": 6.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -24.0
+      },
+      "clap": 0.814,
+      "clap_cos": 0.2387,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.3,
+        "CU": 7.1,
+        "PC": 2.06,
+        "PQ": 7.21
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.7118,
+      "rank": 2,
+      "ref": "20261026-210835-c532:261626",
+      "files": {
+        "wav": "20261026-210835-c532/261626.wav",
+        "png": "20261026-210835-c532/261626.png",
+        "raw": "20261026-210835-c532/261626_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210835-c532\\261626.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210835-c532\\261626.png"
+      },
+      "review": {
+        "brief_id": "ee21e50b74ec0bcab196e64abd8e87c75b8eb42584185c57cc4a173e09388a98",
+        "blind_caption": "A bird chirping",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small patch of fuel catching fire on steel?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2244
+      }
+    },
+    {
+      "seed": 261629,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -5.41,
+        "true_peak_dbtp": -5.21,
+        "clipped_fraction": 0.0,
+        "dc_offset": 6e-05,
+        "active_s": 0.365,
+        "noise_floor_db": -58.5,
+        "onset_s": 0.0539,
+        "tail_db": -71.9,
+        "stereo_correlation": 0.141,
+        "lufs": -30.7,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 7.3,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.25,
+        "length_frames": 6.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -20.8
+      },
+      "clap": 0.8248,
+      "clap_cos": 0.2305,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.65,
+        "CU": 7.17,
+        "PC": 2.11,
+        "PQ": 7.57
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.7354,
+      "rank": 1,
+      "ref": "20261026-210901-16dc:261629",
+      "files": {
+        "wav": "20261026-210901-16dc/261629.wav",
+        "png": "20261026-210901-16dc/261629.png",
+        "raw": "20261026-210901-16dc/261629_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210901-16dc\\261629.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210901-16dc\\261629.png"
+      },
+      "review": {
+        "brief_id": "ee21e50b74ec0bcab196e64abd8e87c75b8eb42584185c57cc4a173e09388a98",
+        "blind_caption": "A plastic bottle being opened",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small patch of fuel catching fire on steel?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2511
+      }
+    },
+    {
+      "seed": 261628,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -8.35,
+        "true_peak_dbtp": -8.18,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00013,
+        "active_s": 0.455,
+        "noise_floor_db": -54.8,
+        "onset_s": 0.0639,
+        "tail_db": -69.1,
+        "stereo_correlation": 0.367,
+        "lufs": -32.7,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 8.35,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.25,
+        "length_frames": 6.0,
+        "channels": 1,
+        "cut_db": -18.9
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.2
+      },
+      "clap": 0.6355,
+      "clap_cos": 0.2775,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.56,
+        "CU": 7.18,
+        "PC": 2.02,
+        "PQ": 7.59
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 19 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.691,
+      "rank": 2,
+      "ref": "20261026-210901-16dc:261628",
+      "files": {
+        "wav": "20261026-210901-16dc/261628.wav",
+        "png": "20261026-210901-16dc/261628.png",
+        "raw": "20261026-210901-16dc/261628_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210901-16dc\\261628.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210901-16dc\\261628.png"
+      },
+      "review": {
+        "brief_id": "ee21e50b74ec0bcab196e64abd8e87c75b8eb42584185c57cc4a173e09388a98",
+        "blind_caption": "A coin falls on a hard surface",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small patch of fuel catching fire on steel?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2873
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 261628,
+    "signal": {
+      "duration_s": 1.0,
+      "peak_dbfs": -8.35,
+      "true_peak_dbtp": -8.18,
+      "clipped_fraction": 0.0,
+      "dc_offset": 0.00013,
+      "active_s": 0.455,
+      "noise_floor_db": -54.8,
+      "onset_s": 0.0639,
+      "tail_db": -69.1,
+      "stereo_correlation": 0.367,
+      "lufs": -32.7,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 8.35,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.25,
+      "length_frames": 6.0,
+      "channels": 1,
+      "cut_db": -18.9
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -21.2
+    },
+    "clap": 0.6355,
+    "clap_cos": 0.2775,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.56,
+      "CU": 7.18,
+      "PC": 2.02,
+      "PQ": 7.59
+    },
+    "fails": [],
+    "warnings": [
+      "cut at the requested duration while still 19 dB below its peak: the tail is chopped, ask for a longer --duration"
+    ],
+    "rejected": false,
+    "rank_score": 0.691,
+    "rank": 2,
+    "ref": "20261026-210901-16dc:261628",
+    "files": {
+      "wav": "20261026-210901-16dc/261628.wav",
+      "png": "20261026-210901-16dc/261628.png",
+      "raw": "20261026-210901-16dc/261628_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210901-16dc\\261628.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210901-16dc\\261628.png"
+    },
+    "review": {
+      "brief_id": "ee21e50b74ec0bcab196e64abd8e87c75b8eb42584185c57cc4a173e09388a98",
+      "blind_caption": "A coin falls on a hard surface",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one small patch of fuel catching fire on steel?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.2873
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemBurn\\iteration-20261026-210835-bd7b\\METLImpt_Iterated_v01.wav"
+  ]
+}

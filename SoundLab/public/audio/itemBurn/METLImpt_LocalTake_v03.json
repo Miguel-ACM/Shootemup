@@ -1,0 +1,81 @@
+{
+  "request": "20261026-210835-c532",
+  "ref": "20261026-210835-c532:261626",
+  "text": "TrackType: SFX, one small patch of fuel catching fire on steel, soft breathy ignition crackle, short and dry",
+  "prompt": "TrackType: SFX, one small patch of fuel catching fire on steel, soft breathy ignition crackle, short and dry",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "impact-metal",
+  "seed": 261626,
+  "rank": 2,
+  "rank_score": 0.7118,
+  "clap": 0.814,
+  "clap_cos": 0.2387,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.3,
+    "CU": 7.1,
+    "PC": 2.06,
+    "PQ": 7.21
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 7.1,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.25,
+    "length_frames": 6.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -24.0
+  },
+  "signal": {
+    "duration_s": 1.0,
+    "peak_dbfs": -7.46,
+    "true_peak_dbtp": -7.46,
+    "clipped_fraction": 0.0,
+    "dc_offset": 8e-05,
+    "active_s": 0.28,
+    "noise_floor_db": -59.9,
+    "onset_s": 0.0589,
+    "tail_db": -76.1,
+    "stereo_correlation": 0.45,
+    "lufs": -33.7,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "ee21e50b74ec0bcab196e64abd8e87c75b8eb42584185c57cc4a173e09388a98",
+    "blind_caption": "A bird chirping",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small patch of fuel catching fire on steel?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2244
+  },
+  "human_approved": false
+}

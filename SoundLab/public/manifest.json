@@ -6712,6 +6712,179 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemBurn",
+      "label": "Burn — ignition",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemBurn",
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemBurn/METLImpt_LocalTake_v01.wav",
+          "seconds": 0.25,
+          "sampleRate": 48000,
+          "sha256": "702cd54fb8274c136bb9303ae4428ca0b2aaebaaa23baed3c008fae76f77a942",
+          "ref": "20261026-210835-c532:261627",
+          "review": {
+            "brief_id": "ee21e50b74ec0bcab196e64abd8e87c75b8eb42584185c57cc4a173e09388a98",
+            "blind_caption": "A small object is dropped on a hard surface.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small patch of fuel catching fire on steel?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2857
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemBurn/METLImpt_LocalTake_v02.wav",
+          "seconds": 0.25,
+          "sampleRate": 48000,
+          "sha256": "33792d3c5d898dcd731be44f9710e56d2aaf3a26810f9cbc54ad470e70bc0a2c",
+          "ref": "20261026-210901-16dc:261629",
+          "review": {
+            "brief_id": "ee21e50b74ec0bcab196e64abd8e87c75b8eb42584185c57cc4a173e09388a98",
+            "blind_caption": "A plastic bottle being opened",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small patch of fuel catching fire on steel?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2511
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemBurn/METLImpt_LocalTake_v03.wav",
+          "seconds": 0.25,
+          "sampleRate": 48000,
+          "sha256": "148767406cc69f870b9f171604f118207c1a9fa3d6e8083cc6be10c90f3fc110",
+          "ref": "20261026-210835-c532:261626",
+          "review": {
+            "brief_id": "ee21e50b74ec0bcab196e64abd8e87c75b8eb42584185c57cc4a173e09388a98",
+            "blind_caption": "A bird chirping",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small patch of fuel catching fire on steel?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2244
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic check detected a possibly cut-off tail. The automatic listener was uncertain.",
+          "file": "audio/itemBurn/METLImpt_LocalTake_v04.wav",
+          "seconds": 0.25,
+          "sampleRate": 48000,
+          "sha256": "7702fbc14838fe988210801db87810276e4e9d7bd56bd65c217a0e9c62e91187",
+          "ref": "20261026-210901-16dc:261628",
+          "review": {
+            "brief_id": "ee21e50b74ec0bcab196e64abd8e87c75b8eb42584185c57cc4a173e09388a98",
+            "blind_caption": "A coin falls on a hard surface",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small patch of fuel catching fire on steel?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2873
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }
