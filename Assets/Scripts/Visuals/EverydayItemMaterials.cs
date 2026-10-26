@@ -32,7 +32,7 @@ public static class EverydayItemMaterials
             case "SalvageConverter": color = new Color(1f, .73f, .18f); return true;
             case "ChainReactor": color = new Color(1f, .34f, .12f); return true;
             case "MirrorBurst": color = new Color(.62f, .77f, 1f); return true;
-            case "GravityWell": color = new Color(.65f, .35f, .85f); return true;
+            case "GravityWell": color = new Color(.24f, .78f, 1f); return true;
             case "BackdraftItem": color = new Color(1f, .29f, .12f); return true;
             case "DepthChargeItem": color = new Color(.22f, .52f, .92f); return true;
             case "WindUpCannonItem": color = new Color(.8f, .38f, .88f); return true;

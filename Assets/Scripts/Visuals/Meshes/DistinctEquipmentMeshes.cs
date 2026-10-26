@@ -274,13 +274,18 @@ public static partial class IndustrialMeshFactory
                     b.Prism(new[] { new Vector2(side * .18f, -.1f), new Vector2(side * .5f, .34f), new Vector2(side * .46f, -.2f) }, .1f, 11, Vector3.forward * .1f, 6);
                 break;
             case "GravityWell":
-                // A dark centre enclosed by a four-claw containment cage.
-                b.Drum(Vector3.zero, .22f, .2f, 1, 12);
-                for (int i = 0; i < 4; i++)
+                // A frost crystal around a small emitter signals the stasis field.
+                b.Drum(Vector3.zero, .19f, .28f, 6, 12, 11);
+                b.Drum(new Vector3(0, 0, -.17f), .105f, .07f, 9, 8);
+                for (int i = 0; i < 6; i++)
                 {
-                    float a = i * Mathf.PI / 2;
+                    float a = i * Mathf.PI / 3;
                     Vector2 p = new Vector2(Mathf.Cos(a), Mathf.Sin(a)), q = new Vector2(-p.y, p.x);
-                    b.Prism(new[] { p * .22f - q * .07f, p * .48f - q * .14f, p * .48f + q * .14f, p * .3f + q * .14f }, .18f, 6, Vector3.zero, 9);
+                    Vector3 stem = (Vector3)(p * .46f) + Vector3.back * .12f;
+                    EquipmentRod(b, (Vector3)(p * .1f) + Vector3.back * .12f, stem, .035f, 9);
+                    foreach (int side in new[] { -1, 1 })
+                        EquipmentRod(b, (Vector3)(p * .28f) + Vector3.back * .12f,
+                            (Vector3)(p * .38f + q * (side * .12f)) + Vector3.back * .12f, .028f, 1);
                 }
                 break;
             default:
