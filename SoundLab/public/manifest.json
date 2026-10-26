@@ -1549,7 +1549,7 @@
     },
     {
       "id": "shotBeam",
-      "label": "Beam emitter \u00b7 fire",
+      "label": "Beam emitter · fire",
       "group": "Player weapons",
       "family": "energy",
       "gameGain": 0.12,
@@ -2229,7 +2229,7 @@
     },
     {
       "id": "enemyBurst",
-      "label": "Burst shell \u00b7 launch",
+      "label": "Burst shell · launch",
       "group": "Enemy projectiles",
       "family": "rail",
       "gameGain": 0.05,
@@ -3031,7 +3031,7 @@
     },
     {
       "id": "enemyMine",
-      "label": "Proximity mine \u00b7 deploy",
+      "label": "Proximity mine · deploy",
       "group": "Enemy projectiles",
       "family": "metal",
       "gameGain": 0.05,
@@ -3296,7 +3296,7 @@
     },
     {
       "id": "beamCharge",
-      "label": "Beam \u00b7 charge warning",
+      "label": "Beam · charge warning",
       "group": "Enemy projectiles",
       "family": "charge",
       "gameGain": 0.05,
@@ -3425,7 +3425,7 @@
     },
     {
       "id": "beamFire",
-      "label": "Enemy beam \u00b7 fire",
+      "label": "Enemy beam · fire",
       "group": "Enemy projectiles",
       "family": "energy",
       "gameGain": 0.065,
@@ -4965,6 +4965,184 @@
           "seconds": 0.85,
           "peak": 0.69998,
           "sha256": "d3838e6d867fa30e15fd223fe50a5b2f0b49c6eba9b0dc66d2926c14135cd82c"
+        }
+      ]
+    },
+    {
+      "id": "itemChargeRelease",
+      "label": "Wind-up cannon — release",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemChargeRelease",
+      "original": {
+        "file": "audio/itemChargeRelease/original.wav",
+        "label": "Current sound",
+        "seconds": 0.4,
+        "sha256": "417b586031e579589287221d50fb631101e60ae9ea278d9ad289e189093e81d1"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The automatic check detected a possibly cut-off tail. The automatic listener was uncertain.",
+          "file": "audio/itemChargeRelease/DSGNMisc_LocalTake_v01.wav",
+          "seconds": 0.3333333333333333,
+          "sampleRate": 48000,
+          "sha256": "4227acd0e4ffd6c52e831a4c9ac097401182e953677d5f0aa86e67b1f6f23f5d",
+          "ref": "20261026-205835-3416:260027",
+          "review": {
+            "brief_id": "47ab03cba7ae0450a1812eadd5923881513b708466231c89f6732b142cb028e9",
+            "blind_caption": "A knife is being used to cut a piece of meat.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one compact pneumatic energy cannon discharge?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "KEEP (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2623
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic check detected a possibly cut-off tail. The automatic listener was uncertain.",
+          "file": "audio/itemChargeRelease/DSGNMisc_LocalTake_v02.wav",
+          "seconds": 0.3333333333333333,
+          "sampleRate": 48000,
+          "sha256": "1d7afaed530009cb50a655f3a69989ba18815f3541de93a6614063eba9859dd4",
+          "ref": "20261026-205835-3416:260026",
+          "review": {
+            "brief_id": "47ab03cba7ae0450a1812eadd5923881513b708466231c89f6732b142cb028e9",
+            "blind_caption": "A piece of metal is being struck.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one compact pneumatic energy cannon discharge?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2525
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The automatic check detected a possibly cut-off tail. The automatic listener was uncertain.",
+          "file": "audio/itemChargeRelease/DSGNMisc_LocalTake_v03.wav",
+          "seconds": 0.3333333333333333,
+          "sampleRate": 48000,
+          "sha256": "8a6495be17d820ee44b7df350d2cfcb64cddbcc9b3f84974a7bd924c4c957166",
+          "ref": "20261026-205902-3467:260028",
+          "review": {
+            "brief_id": "47ab03cba7ae0450a1812eadd5923881513b708466231c89f6732b142cb028e9",
+            "blind_caption": "A toothbrush brushing against the teeth",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one compact pneumatic energy cannon discharge?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2523
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic check detected a possibly cut-off tail. The automatic listener was uncertain.",
+          "file": "audio/itemChargeRelease/DSGNMisc_LocalTake_v04.wav",
+          "seconds": 0.3333333333333333,
+          "sampleRate": 48000,
+          "sha256": "cefd135d4acc35675dc9ec5e32bd268a83f4c240a087cd324502b4b8d5ae8eaf",
+          "ref": "20261026-205902-3467:260029",
+          "review": {
+            "brief_id": "47ab03cba7ae0450a1812eadd5923881513b708466231c89f6732b142cb028e9",
+            "blind_caption": "A door is being opened.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one compact pneumatic energy cannon discharge?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "KEEP (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2426
+          },
+          "human_approved": false
         }
       ]
     }

@@ -1,0 +1,155 @@
+{
+  "id": "20261026-205902-3467",
+  "created": "2026-10-26 20:59:02",
+  "text": "TrackType: SFX, one compact pneumatic energy cannon discharge, firm low impact with a short electrical crack, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one compact pneumatic energy cannon discharge?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one compact pneumatic energy cannon discharge, firm low impact with a short electrical crack, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one compact pneumatic energy cannon discharge?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "raw": true,
+  "category": "misc",
+  "cat_id": "DSGNMisc",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    260028,
+    260029
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.3,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 1.05,
+  "gen_s": 2.23,
+  "score_s": 1.52,
+  "takes": [
+    {
+      "seed": 260029,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -10.69,
+        "true_peak_dbtp": -10.67,
+        "clipped_fraction": 0.0,
+        "dc_offset": 8e-05,
+        "active_s": 1.05,
+        "noise_floor_db": -75.6,
+        "onset_s": 0.011,
+        "tail_db": -72.1,
+        "stereo_correlation": 1.0,
+        "lufs": -31.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 11.64,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.3333,
+        "length_frames": 8.0,
+        "channels": 1,
+        "cut_db": -9.1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -23.2
+      },
+      "clap": 0.8619,
+      "clap_cos": 0.2303,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.23,
+        "CU": 6.88,
+        "PC": 2.37,
+        "PQ": 6.96
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 9 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.6439,
+      "rank": 1,
+      "ref": "20261026-205902-3467:260029",
+      "files": {
+        "wav": "20261026-205902-3467/260029.wav",
+        "png": "20261026-205902-3467/260029.png",
+        "raw": "20261026-205902-3467/260029_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205902-3467\\260029.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205902-3467\\260029.png"
+      }
+    },
+    {
+      "seed": 260028,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -5.61,
+        "true_peak_dbtp": -5.51,
+        "clipped_fraction": 0.0,
+        "dc_offset": 8e-05,
+        "active_s": 0.99,
+        "noise_floor_db": -79.7,
+        "onset_s": 0.0269,
+        "tail_db": -76.1,
+        "stereo_correlation": 1.0,
+        "lufs": -19.5,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 9.09,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.3333,
+        "length_frames": 8.0,
+        "channels": 1,
+        "cut_db": -7.6
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -19.9
+      },
+      "clap": 0.7285,
+      "clap_cos": 0.1905,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.37,
+        "CU": 6.77,
+        "PC": 2.01,
+        "PQ": 7.25
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 8 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.605,
+      "rank": 2,
+      "ref": "20261026-205902-3467:260028",
+      "files": {
+        "wav": "20261026-205902-3467/260028.wav",
+        "png": "20261026-205902-3467/260028.png",
+        "raw": "20261026-205902-3467/260028_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205902-3467\\260028.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205902-3467\\260028.png"
+      }
+    }
+  ],
+  "kept": 2
+}
