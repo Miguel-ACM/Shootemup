@@ -128,8 +128,10 @@ public sealed class SpaceCitadelBoss : DistrictBoss
     {
         base.PrepareFire(seconds);firingCue.ClearWarning();if(parts[0]==null)return;
         int beat=volley%12;
-        if(beat==0)for(int i=0;i<2;i++)Cue(parts[i].health>0?parts[i].transform.TransformPoint(new Vector3(0,-.3f,-.3f)):Muzzle(i+1),seconds);
-        else if(beat==2||beat==3)for(int i=2;i<4;i++)if(parts[i].health>0)Cue(parts[i].transform.TransformPoint(new Vector3(beat==2?-.16f:.16f,-.695f,-.08f)),seconds);
+        if(beat==0)
+        { for(int i=0;i<2;i++)Cue(parts[i].health>0?parts[i].transform.TransformPoint(new Vector3(0,-.3f,-.3f)):Muzzle(i+1),seconds); }
+        else if(beat==2||beat==3)
+        { for(int i=2;i<4;i++)if(parts[i].health>0)Cue(parts[i].transform.TransformPoint(new Vector3(beat==2?-.16f:.16f,-.695f,-.08f)),seconds); }
         else if(beat==4)Cue(Muzzle(),seconds);
         else if(beat==6||beat==7){Cue(Muzzle(1),seconds);Cue(Muzzle(2),seconds);}
         else if(beat==9||beat==10)Cue(Muzzle(3),seconds);

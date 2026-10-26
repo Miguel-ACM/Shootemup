@@ -149,9 +149,13 @@ public sealed class HellCrabBoss : DistrictBoss
         base.PrepareFire(seconds);firingCue.ClearWarning();if(claws[0]==null)return;
         int beat=volley%12;
         if(beat<3 || beat==7 || beat==8)
+        {
             for(int i=0;i<2;i++)if(i==beat%2 || phaseTwo&&beat==8)Cue(claws[i].TransformPoint(new Vector3(0,-.32f,-.4f)),seconds);
+        }
         else if(beat==4||beat==5||beat==10)
+        {
             for(int i=0;i<2;i++)if(eyes[i].health>0)Cue(eyes[i].transform.position,seconds);
+        }
     }
 
     public void EyeChanged()

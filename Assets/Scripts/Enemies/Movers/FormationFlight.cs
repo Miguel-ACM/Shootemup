@@ -33,7 +33,7 @@ public sealed class FormationFlight : PatternMover
 
     public Vector2 Tangent { get; private set; } = Vector2.down;
     public float Progress => clock / Mathf.Max(.1f, duration);
-    public float FireWarning => fireTimes != null && nextStrike < fireTimes.Length && clock > .28f && Progress < .82f ? (fireTimes[nextStrike] - clock - firePhase) / Mathf.Max(.1f, PatternMover.FlightTempo * LevelRun.EnemyTempoScale * GameRules.enemySpeed) : float.PositiveInfinity;
+    public float FireWarning => fireTimes != null && nextStrike < fireTimes.Length && clock > .28f && Progress < .82f ? (fireTimes[nextStrike] - clock - firePhase) / Mathf.Max(.1f, PatternMover.DistrictFlightTempo * LevelRun.EnemyTempoScale * GameRules.enemySpeed) : float.PositiveInfinity;
     public bool TakeFireBeat()
     {
         if (fireTimes != null)
