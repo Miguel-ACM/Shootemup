@@ -8,7 +8,7 @@ public sealed class JetSquid : DistrictEnemy
         hull = 78;
         hullScale = 0.51f;
         health = 31;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(2.7f, 1.95f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -21,12 +21,14 @@ public sealed class JetSquid : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve JetSquidRoute0 = Route("Underwater / JetSquid 0", Vector2.right, -.6f, 1.25f, -.52f, .92f, -.12f, .59f, .48f, .44f, .6f, .1f, .2f, -.25f);
-    static readonly FlightCurve JetSquidRoute1 = Route("Underwater / JetSquid 1", Vector2.right, 1.4f, .87f, .72f, .8f, .15f, .59f, -.6f, .68f, -1.4f, .88f);
-    public static readonly WavePart[] JetSquidParts ={
-        new WavePart("JetSquid call",nameof(JetSquid),JetSquidRoute0,WaveShape.Train,3,4.55f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("JetSquid crossing",nameof(JetSquid),JetSquidRoute1,WaveShape.Train,3,4.80f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("JetSquid answer",nameof(JetSquid),JetSquidRoute0,WaveShape.Rake,3,5.05f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
+    static readonly FlightCurve JetSquidRoute0 = Route("Underwater / Squid inkward dive", Vector2.right, -0.52f, 1.25f, -0.34f, 0.83f, 0.32f, 0.57f, 0.57f, 0.29f, 0.29f, 0.09f, -0.46f, -0.25f);
+    static readonly FlightCurve JetSquidRoute1 = Route("Underwater / Squid rising jet", Vector2.right, -1.4f, 0.28f, -0.67f, 0.4f, 0.01f, 0.65f, 0.54f, 0.94f, 0.65f, 1.25f);
+    static readonly FlightCurve JetSquidRoute2 = Route("Underwater / Squid reef scissors", Vector2.right, 1.4f, 0.77f, 0.7f, 0.6f, 0.08f, 0.36f, -0.53f, 0.48f, -0.8f, 0.86f, -0.78f, 1.25f);
+    public static readonly WavePart[] JetSquidParts =
+    {
+        new WavePart("Squid inkward dive", nameof(JetSquid), JetSquidRoute0, WaveShape.Train, 4, 4.3f, 2, new[] { 0.3f, 0.58f }, new[] { 0.46f }, 3),
+        new WavePart("Squid rising jet", nameof(JetSquid), JetSquidRoute1, WaveShape.Rake, 3, 4.2f, 4, new[] { 0.31f, 0.65f }, new[] { 0.48f }, 3),
+        new WavePart("Squid reef scissors", nameof(JetSquid), JetSquidRoute2, WaveShape.Chevron, 3, 4.6f, 7, new[] { 0.28f, 0.61f }, new[] { 0.45f }, 3),
     };
 }
 
