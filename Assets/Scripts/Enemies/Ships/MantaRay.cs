@@ -8,13 +8,13 @@ public sealed class MantaRay : OceanEnemy
         hull = 51;
         hullScale = .57f;
         health = 58;
-        attackInterval = 2.1f;
+        attackInterval = Timing(2.9f,2.2f);
         Mover<Slalom>();
     }
 
     protected override void Attack()
     {
-        for (int i = -1; i <= 1; i++)
-            Fire<SimpleRound>(Hull.TransformPoint(new Vector3(i * .65f, -.20f, -.18f)), CombatVisuals.Rotate(Aim, i * 20), 3.4f, .21f);
+        int n=Shots(2,3);
+        for(int i=0;i<n;i++) Fire<SimpleRound>(Muzzle(n==2?i*2:i),CombatVisuals.Rotate(Aim,(i-(n-1)*.5f)*29),2.6f,.27f);
     }
 }
