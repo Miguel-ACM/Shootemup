@@ -108,7 +108,7 @@ public sealed class WindUpCannon : AWeapon
             ChargedShotCue.Apply(shot, capacitor);
         }
         GetComponentInParent<PSXShipEffects>()?.Shot();
-        ItemSound.Play("cannon", level == 3 ? .28f : .17f, 1.25f - level * .12f);
+        ItemSound.Cue("itemChargeRelease", "cannon", level == 3 ? .28f : .17f, 1.25f - level * .12f, 0);
         ItemSpark.Emit(transform.position + Vector3.up * .9f, new Color(.45f, .85f, .8f), level + 2, .13f, true);
         StopFiring();
     }
