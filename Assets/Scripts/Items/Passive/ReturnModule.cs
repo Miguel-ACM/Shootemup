@@ -3,7 +3,7 @@ public sealed class ReturnModule : AItem
 {
     void Awake()
     {
-        SetData("Return Module", "Ship equipment", "Every fourth volley returns.", ItemType.passive);
+        SetData("Returning Volley", "Ship equipment", "Every fourth volley returns.", ItemType.passive);
     }
 
     public override void OnBegin()
