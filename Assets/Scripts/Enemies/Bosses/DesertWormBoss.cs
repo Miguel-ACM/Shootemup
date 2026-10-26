@@ -24,7 +24,7 @@ public sealed class DesertWormBoss : DistrictBoss
         hull = 33;
         hullScale = 1.10f;
         health = 2200;
-        attackInterval = .52f;
+        attackInterval = Timing(.98f,.75f);
         nextAttack = 3;
     }
 
@@ -49,6 +49,7 @@ public sealed class DesertWormBoss : DistrictBoss
             sections[i].GetComponent<MeshRenderer>().sharedMaterial = IndustrialMeshFactory.WhiteWormMaterial;
             sections[i].position = transform.position + Vector3.up * (i + 1) * 1.04f;
             cores[i + 1] = DesertWormCore.Create(this, sections[i], false, health * 290 / 2700, new Vector3(0, 0, -.44f));
+            firingCue.Register(cores[i+1].transform,Vector3.zero);
         }
     }
 
@@ -105,15 +106,15 @@ public sealed class DesertWormBoss : DistrictBoss
                 {
                     Vector3 port = cores[i].transform.position;
                     Vector2 aim = (rippleTarget - port).normalized;
-                    PetalFan<SimpleRound>(port, aim, 5, 16, 4.4f, .15f, .2f);
+                    PetalFan<SimpleRound>(port, aim, Shots(3,5), 25, 2.7f, .28f, .22f);
                 }
         }
         else if ((beat == 5 || beat == 6) && CanShoot(cores[0]))
         {
             Vector3 jaw = Hull.TransformPoint(new Vector3(0, -.92f, -.18f));
             if (beat == 5)
-                jawAxis = CombatVisuals.Aim(jaw);
-            PetalFan<NeedleRound>(jaw, CombatVisuals.Rotate(jawAxis, beat == 5 ? -2 : 2), phaseTwo ? 7 : 5, 8, 6.7f, .16f);
+                jawAxis = Hull.TransformDirection(Vector3.down);
+            PetalFan<NeedleRound>(jaw, CombatVisuals.Rotate(jawAxis, beat == 5 ? -7 : 7), Shots(phaseTwo?5:3,phaseTwo?7:5), 15, 4.5f, .21f);
         }
         else if (beat == 9 || beat == 10)
         {
@@ -121,20 +122,30 @@ public sealed class DesertWormBoss : DistrictBoss
                 if (i % 2 == beat % 2 && CanShoot(cores[i]))
                 {
                     Vector3 port = cores[i].transform.position;
-                    for (int j = 0; j < 3; j++)
-                        Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, (j - 1) * 24 + (beat == 9 ? -10 : 10)), 4, .17f);
+                    int count=Shots(2,3);
+                    for (int j = 0; j < count; j++)
+                        Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, (j-(count-1)*.5f) * 33 + (beat == 9 ? -12 : 12)), 2.3f, .31f);
                 }
         }
         // When only a few reactors remain, each surviving part owns a readable answer on the shared rest.
         if (phaseTwo && beat == 7)
-            foreach (var core in cores)
-                if (CanShoot(core))
+            for(int i=0;i<cores.Length;i++)
+                if (i%2==(volley/12)%2 && CanShoot(cores[i]))
                 {
-                    Vector3 port = core.transform.position;
+                    Vector3 port = cores[i].transform.position;
                     Vector2 aim = CombatVisuals.Aim(port);
-                    for (int j = -1; j <= 1; j++)
-                        Fire<NeedleRound>(port, CombatVisuals.Rotate(aim, j * 10), 6, .14f);
+                    PetalFan<SimpleRound>(port,aim,Shots(3,5),29,1.8f,.32f,.18f);
                 }
+    }
+
+    protected override void PrepareFire(float seconds)
+    {
+        base.PrepareFire(seconds);firingCue.ClearWarning();
+        int beat=volley%12;
+        if(beat==5||beat==6) {Cue(Muzzle(),seconds);PointWeapon(Muzzle(),Hull.TransformDirection(Vector3.down));}
+        else for(int i=1;i<cores.Length;i++)
+            if(cores[i]!=null && CanShoot(cores[i]) && (beat<4&&(i-1)%4==beat || (beat==9||beat==10)&&i%2==beat%2 || phaseTwo&&beat==7&&i%2==((volley+1)/12)%2))
+                Cue(cores[i].transform.position,seconds);
     }
 
     bool CanShoot(DesertWormCore core) => core != null && core.health > 0 && core.transform.position.y < Camera.UpLimit - .7f &&
