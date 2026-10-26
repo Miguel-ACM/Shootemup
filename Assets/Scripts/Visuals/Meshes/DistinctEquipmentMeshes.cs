@@ -209,6 +209,8 @@ public static partial class IndustrialMeshFactory
                 }
                 for (int i = 1; i <= segments; i++)
                     EquipmentRod(b, CoilPoint(i - 1), CoilPoint(i), .042f, 6);
+                // A visible ball makes the bounce role legible in the small pickup.
+                b.Ball(new Vector3(0, .05f, -.18f), new Vector3(.14f, .14f, .14f), 10);
                 foreach (int side in new[] { -1, 1 })
                 {
                     b.Box(new Vector3(0, side * .43f, 0), new Vector3(.59f, .13f, .48f), 6);
