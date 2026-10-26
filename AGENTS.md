@@ -93,6 +93,16 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Space must sustain late-tier pressure: compose three/four motifs with at least one laser/carrier phrase, sturdier scouts and emitters, longer sweeping lasers, stronger escorts and independent citadel generator/core pressure. Review every district, not only Space. Boss health never scales with the player's items; use only the district/loop factors.
 - Comparative review found Snow's ground mortars were spiking its second-tier density. Augers now alternate one barrel per accent, and ordinary avalanche bombers fire two shells plus four delayed rounds. Keep Snow's exploding-shell identity without overlapping both auger crowns. Tunnel wall batteries use three spaced ricochets; retain the reduced S-shot motion.
 
+## Latest full combat pass (27 October 2026)
+
+- Miguel requested two additional regular enemies per district with their own formation parts, a complete firing-origin audit, slower fair hostile rounds even on Hard, manually authored Easy scores, and a distinct redesign/phase entry for every boss. Preserve these authored changes and the approved projectile sprites.
+- Latest Thunder instruction supersedes the rotating six-beam star above: use charged attached lasers pointing straight down, upper-arena settling during beam phrases, staggered lanes and clear rests. Ordinary Thunder laser craft also use downward beams.
+- Latest Tunnel instruction supersedes the previous preserved counts: substantially reduce its bounce bursts while retaining complete 360-degree mixed-size releases, both destroyable auxiliaries and the full-arena patrol. No damage or timer firing.
+- Candyland's boss stays in the upper arena, with its lower route bound at the arena midpoint + 1.1 world units. Hell's boss has no minions; environmental vents also stay silent during the fight.
+- City craft move faster. Its architecture uses seeded colored neighborhoods, varied modeled buildings, gardens and plazas. Hell scenery is darker and cooler, with restrained hot seams and modeled recessed basalt craters seated on shelves. Underwater fish use moving boid schools with separation, alignment and cohesion, articulated tails and a swimming ray.
+- All twenty additions have individual silhouettes, real weapon lips, three distinct scored formation parts and explicit Easy rhythms. Preserve the district-specific choreography rather than replacing it with a generic flight template.
+- Commit each feature/enemy individually and build after the complete pass. Use an isolated Unity review checkout so Miguel's live game/editor is not disturbed. Review the batch once, then target only failed or revised cases.
+
 ## Items and decisions
 
 - Preserve Miguel's original item names and identities. Another arm and Twerp are deliberately named and are fine. Make an item's behavior recognizable through its effects and sound; do not rename or redesign original items to explain their mechanics.

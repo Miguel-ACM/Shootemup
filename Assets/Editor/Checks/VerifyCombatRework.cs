@@ -62,7 +62,7 @@ public static class VerifyCombatRework
     {
         GameRules.StartNewRun();VerifyRunProgression.Run();
         Require(EnemyExpansion.All.Length==20,"Exactly two authored additions per district");
-        var notes=new List<string>();
+        var notes=new List<string>();var invalid=new List<string>();
         foreach(LevelId level in Enum.GetValues(typeof(LevelId)))
         {
             var additions=EnemyExpansion.All.Where(x=>x.level==level).ToArray();
@@ -80,8 +80,8 @@ public static class VerifyCombatRework
                 foreach(var entry in additions)foreach(var part in entry.parts)foreach(int side in new[]{-1,1})
                 {
                     var preview=WaveComposer.PreviewPart(part,0,side,out _);
-                    Require(preview!=null,"No safe new formation: "+level+" / "+part.Name+" / "+difficulty+" / "+side);
-                    Require(WaveGeometry.Clear(WaveVarietyAudit.Tracks(preview)),"New formation intersects its modeled hulls: "+part.Name);
+                    if(preview==null)invalid.Add("No safe new formation: "+level+" / "+part.Name+" / "+difficulty+" / "+side);
+                    else if(!WaveGeometry.Clear(WaveVarietyAudit.Tracks(preview)))invalid.Add("New formation intersects its modeled hulls: "+part.Name);
                 }
                 foreach(int seed in new[]{17381,421})
                 {
@@ -97,6 +97,7 @@ public static class VerifyCombatRework
             }
         }
         File.WriteAllLines(Folder+"/Compositions.txt",notes);
+        Require(invalid.Count==0,string.Join("\n",invalid));
         Difficulty.Select(RunDifficulty.Hard);LevelRun.Reset();
     }
     public static void ValidateAuthoring() => PureChecks();
