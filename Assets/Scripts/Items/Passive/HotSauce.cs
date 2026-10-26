@@ -3,7 +3,7 @@ public sealed class HotSauce : AItem
 {
     void Awake()
     {
-        SetData("Hot sauce", "Extra spicy", "Burning enemies leave fire in their wake.", ItemType.passive);
+        SetData("Fire Trail", "Extra spicy", "Burning enemies leave fire in their wake.", ItemType.passive);
     }
 
     public override void OnBegin()
