@@ -8,13 +8,13 @@ public sealed class WaferDart : DistrictEnemy
         hull = 36;
         hullScale = .39f;
         health = 23;
-        attackInterval = 1.9f;
+        attackInterval = Timing(2.4f,1.8f);
         Mover<Slalom>();
     }
 
     protected override void Attack()
     {
-        FanFrom<NeedleRound>(2, 12, 7.3f, .13f, new Vector3(-.27f, -.78f, -.16f), new Vector3(.27f, -.78f, -.16f));
+        FanFrom<NeedleRound>(Shots(1,2),18,5.3f,.18f,new Vector3(-.27f,-.78f,-.16f),new Vector3(.27f,-.78f,-.16f));
     }
 }
 public static partial class IndustrialMeshFactory
