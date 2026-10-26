@@ -3,7 +3,7 @@ public sealed class Capacitor : AItem
 {
     void Awake()
     {
-        SetData("Capacitor", "Ship equipment", "Stop firing to charge triple damage.", ItemType.passive);
+        SetData("Idle Charge", "Ship equipment", "Stop firing to charge triple damage.", ItemType.passive);
     }
 
     public override void OnBegin()
