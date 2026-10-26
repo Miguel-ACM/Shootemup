@@ -9,7 +9,7 @@ public sealed class HailLantern : DistrictEnemy
         hull = 64;
         hullScale = 0.58f;
         health = 49;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(3.7f, 2.9f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -27,12 +27,14 @@ public sealed class HailLantern : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve HailLanternRoute0 = Route("Snow / HailLantern 0", Vector2.right, .66f, 1.25f, .62f, .94f, .29f, .73f, -.28f, .69f, -.63f, .88f, -.68f, 1.25f);
-    static readonly FlightCurve HailLanternRoute1 = Route("Snow / HailLantern 1", Vector2.right, -.28f, 1.25f, -.25f, .96f, .05f, .75f, .38f, .63f, .55f, .82f, .45f, 1.25f);
-    public static readonly WavePart[] HailLanternParts ={
-        new WavePart("HailLantern call",nameof(HailLantern),HailLanternRoute0,WaveShape.Train,2,6.05f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
-        new WavePart("HailLantern crossing",nameof(HailLantern),HailLanternRoute1,WaveShape.Train,2,6.30f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
-        new WavePart("HailLantern answer",nameof(HailLantern),HailLanternRoute0,WaveShape.Rake,2,6.55f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
+    static readonly FlightCurve HailLanternRoute0 = Route("Snow / Lantern hanging crown", Vector2.right, -1.4f, 0.8f, -0.65f, 0.69f, 0.0f, 0.66f, 0.65f, 0.69f, 1.4f, 0.8f);
+    static readonly FlightCurve HailLanternRoute1 = Route("Snow / Lantern falling bell", Vector2.right, -0.65f, 1.25f, -0.56f, 0.8f, -0.27f, 0.49f, 0.14f, 0.22f, 0.62f, 0.3f, 1.4f, 0.49f);
+    static readonly FlightCurve HailLanternRoute2 = Route("Snow / Lantern winter arch", Vector2.right, 0.65f, 1.25f, 0.51f, 0.87f, 0.0f, 0.74f, -0.48f, 0.84f, -0.7f, 1.25f);
+    public static readonly WavePart[] HailLanternParts =
+    {
+        new WavePart("Lantern hanging crown", nameof(HailLantern), HailLanternRoute0, WaveShape.Rank, 2, 5.8f, 2, new[] { 0.3f, 0.64f }, new[] { 0.49f }, 2),
+        new WavePart("Lantern falling bell", nameof(HailLantern), HailLanternRoute1, WaveShape.Train, 2, 5.8f, 4, new[] { 0.28f, 0.57f }, new[] { 0.41f }, 2),
+        new WavePart("Lantern winter arch", nameof(HailLantern), HailLanternRoute2, WaveShape.Rake, 2, 5.5f, 7, new[] { 0.34f, 0.68f }, new[] { 0.51f }, 2),
     };
 }
 
