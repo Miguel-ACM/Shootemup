@@ -18,6 +18,7 @@ public sealed class LoadoutHUD : MonoBehaviour
     Transform[] models = new Transform[4];
     string[] displayed = new string[4];
     RectTransform badge;
+    Dialog dialog;
     Text[] badgeKeys = new Text[2];
     static Sprite keycap;
     static readonly Color Amber = new Color(1, .71f, .29f), Cyan = new Color(.4f, .82f, .86f), Steel = new Color(.48f, .59f, .61f);
@@ -62,7 +63,7 @@ public sealed class LoadoutHUD : MonoBehaviour
                     Plate(p, "Fastener", 4, Steel).anchoredPosition = new Vector2(s * 49, 0);
             }
         }
-        badge = new GameObject("Replacement controls above ship", typeof(RectTransform)).GetComponent<RectTransform>();
+        badge = new GameObject("Replacement controls above item card", typeof(RectTransform)).GetComponent<RectTransform>();
         badge.SetParent(root.transform, false);
         badge.sizeDelta = new Vector2(80, 32);
         badgeKeys[0] = Key(badge, new Vector2(-22, 0));
@@ -130,13 +131,16 @@ public sealed class LoadoutHUD : MonoBehaviour
             if (models[i] != null)
                 models[i].localRotation = Quaternion.Euler(-16, Mathf.Sin(Time.unscaledTime * .65f + i) * 24, i < 2 ? -30 : 0);
         }
-        bool show = loadout.HoveredItem != null;
+        if (dialog == null)
+            dialog = FindAnyObjectByType<Dialog>();
+        bool show = loadout.HoveredItem != null && dialog != null && dialog.IsVisible;
         badge.gameObject.SetActive(show);
         if (show)
         {
-            var viewport = UnityEngine.Camera.main.WorldToViewportPoint(transform.position);
-            RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)canvas.transform, new Vector2(viewport.x * Screen.width, viewport.y * Screen.height), null, out var point);
-            badge.anchoredPosition = point + new Vector2(0, 42);
+            badge.SetParent(dialog.Panel, false);
+            badge.anchorMin = badge.anchorMax = new Vector2(.5f, 1);
+            badge.pivot = new Vector2(.5f, 0);
+            badge.anchoredPosition = new Vector2(0, 10);
             int offset = loadout.HoveredItem is AActiveItem ? 2 : 0;
             badgeKeys[0].text = inputs[offset];
             badgeKeys[1].text = inputs[offset + 1];
