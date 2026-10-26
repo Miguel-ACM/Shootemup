@@ -1,0 +1,84 @@
+{
+  "request": "20261026-211456-1f4e",
+  "ref": "20261026-211456-1f4e:760927",
+  "text": "TrackType: SFX, one small steel projectile ricochet, compact bright metallic ping with a falling pitch, very short dry decay",
+  "prompt": "TrackType: SFX, one small steel projectile ricochet, compact bright metallic ping with a falling pitch, very short dry decay",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "impact-metal",
+  "seed": 760927,
+  "rank": 2,
+  "rank_score": 0.5255,
+  "clap": 0.5543,
+  "clap_cos": 0.1645,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.56,
+    "CU": 6.86,
+    "PC": 2.41,
+    "PQ": 6.98
+  },
+  "fails": [],
+  "warnings": [
+    "cut at the requested duration while still 20 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 5.13,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.5,
+    "length_frames": 12.0,
+    "channels": 1,
+    "cut_db": -19.6
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -17.8
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -6.16,
+    "true_peak_dbtp": -6.0,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00034,
+    "active_s": 0.74,
+    "noise_floor_db": -79.1,
+    "onset_s": 0.012,
+    "tail_db": -78.1,
+    "stereo_correlation": 0.996,
+    "lufs": -21.7,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "95828a310c569f97de588a998cc24651a97989979515f41b38eec3c207d79174",
+    "blind_caption": "A metal object being struck against another object",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small steel projectile ricochet?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.1903
+  },
+  "human_approved": false
+}

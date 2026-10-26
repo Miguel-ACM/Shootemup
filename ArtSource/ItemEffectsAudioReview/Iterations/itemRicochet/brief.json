@@ -1,0 +1,8 @@
+{
+  "description": "one small steel projectile ricochet, compact bright metallic ping with a falling pitch, very short dry decay",
+  "requirements": [
+    "Does the sound contain the requested physical source: one small steel projectile ricochet?",
+    "Is the audio free of intelligible speech and music?",
+    "Is the sound compact and dry with a short decay?"
+  ]
+}

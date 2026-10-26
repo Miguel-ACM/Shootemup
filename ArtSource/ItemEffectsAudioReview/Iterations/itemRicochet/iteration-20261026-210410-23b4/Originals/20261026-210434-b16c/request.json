@@ -1,0 +1,149 @@
+{
+  "id": "20261026-210434-b16c",
+  "created": "2026-10-26 21:04:34",
+  "text": "TrackType: SFX, one small steel projectile ricochet, compact bright metallic ping with a falling pitch, very short dry decay. Required acoustic properties: Does the sound contain the requested physical source: one small steel projectile ricochet?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one small steel projectile ricochet, compact bright metallic ping with a falling pitch, very short dry decay. Required acoustic properties: Does the sound contain the requested physical source: one small steel projectile ricochet?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "raw": true,
+  "category": "impact-metal",
+  "cat_id": "METLImpt",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    260928,
+    260929
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.18,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 0.93,
+  "gen_s": 2.11,
+  "score_s": 1.15,
+  "takes": [
+    {
+      "seed": 260929,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -7.99,
+        "true_peak_dbtp": -7.34,
+        "clipped_fraction": 0.0,
+        "dc_offset": 2e-05,
+        "active_s": 0.205,
+        "noise_floor_db": -78.9,
+        "onset_s": 0.0,
+        "tail_db": -76.6,
+        "stereo_correlation": 1.0,
+        "lufs": -26.8,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 6.34,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -20.5
+      },
+      "clap": 0.7323,
+      "clap_cos": 0.1132,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.77,
+        "CU": 7.28,
+        "PC": 2.08,
+        "PQ": 7.68
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.6215,
+      "rank": 1,
+      "ref": "20261026-210434-b16c:260929",
+      "files": {
+        "wav": "20261026-210434-b16c/260929.wav",
+        "png": "20261026-210434-b16c/260929.png",
+        "raw": "20261026-210434-b16c/260929_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210434-b16c\\260929.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210434-b16c\\260929.png"
+      }
+    },
+    {
+      "seed": 260928,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -7.6,
+        "true_peak_dbtp": -7.46,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.0,
+        "active_s": 0.19,
+        "noise_floor_db": -78.7,
+        "onset_s": 0.0,
+        "tail_db": -76.9,
+        "stereo_correlation": 1.0,
+        "lufs": -26.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 6.48,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -19.9
+      },
+      "clap": 0.4247,
+      "clap_cos": 0.0548,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.89,
+        "CU": 7.41,
+        "PC": 2.15,
+        "PQ": 7.69
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.5089,
+      "rank": 2,
+      "ref": "20261026-210434-b16c:260928",
+      "files": {
+        "wav": "20261026-210434-b16c/260928.wav",
+        "png": "20261026-210434-b16c/260928.png",
+        "raw": "20261026-210434-b16c/260928_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210434-b16c\\260928.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210434-b16c\\260928.png"
+      }
+    }
+  ],
+  "kept": 2
+}

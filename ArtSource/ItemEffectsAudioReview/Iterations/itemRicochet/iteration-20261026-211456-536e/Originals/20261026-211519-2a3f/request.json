@@ -1,0 +1,153 @@
+{
+  "id": "20261026-211519-2a3f",
+  "created": "2026-10-26 21:15:19",
+  "text": "TrackType: SFX, one small steel projectile ricochet, compact bright metallic ping with a falling pitch, very short dry decay. Required acoustic properties: Does the sound contain the requested physical source: one small steel projectile ricochet?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one small steel projectile ricochet, compact bright metallic ping with a falling pitch, very short dry decay. Required acoustic properties: Does the sound contain the requested physical source: one small steel projectile ricochet?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "raw": true,
+  "category": "impact-metal",
+  "cat_id": "METLImpt",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    760928,
+    760929
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.5,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 1.25,
+  "gen_s": 2.2,
+  "score_s": 1.26,
+  "takes": [
+    {
+      "seed": 760928,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -6.46,
+        "true_peak_dbtp": -6.27,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00011,
+        "active_s": 0.67,
+        "noise_floor_db": -79.1,
+        "onset_s": 0.0,
+        "tail_db": -78.2,
+        "stereo_correlation": 1.0,
+        "lufs": -26.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 5.22,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5417,
+        "length_frames": 13.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -22.1
+      },
+      "clap": 0.2785,
+      "clap_cos": 0.1151,
+      "clap_top": "glass shattering",
+      "aes": {
+        "CE": 4.18,
+        "CU": 7.57,
+        "PC": 2.31,
+        "PQ": 7.51
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: glass shattering"
+      ],
+      "rejected": false,
+      "rank_score": 0.4688,
+      "rank": 1,
+      "ref": "20261026-211519-2a3f:760928",
+      "files": {
+        "wav": "20261026-211519-2a3f/760928.wav",
+        "png": "20261026-211519-2a3f/760928.png",
+        "raw": "20261026-211519-2a3f/760928_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211519-2a3f\\760928.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211519-2a3f\\760928.png"
+      }
+    },
+    {
+      "seed": 760929,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -5.97,
+        "true_peak_dbtp": -5.97,
+        "clipped_fraction": 0.0,
+        "dc_offset": 9e-05,
+        "active_s": 0.475,
+        "noise_floor_db": -79.0,
+        "onset_s": 0.0,
+        "tail_db": -76.6,
+        "stereo_correlation": 1.0,
+        "lufs": -26.9,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 4.93,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5417,
+        "length_frames": 13.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -22.4
+      },
+      "clap": 0.384,
+      "clap_cos": 0.102,
+      "clap_top": "glass shattering",
+      "aes": {
+        "CE": 4.19,
+        "CU": 7.47,
+        "PC": 2.22,
+        "PQ": 7.36
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: glass shattering"
+      ],
+      "rejected": false,
+      "rank_score": 0.4663,
+      "rank": 2,
+      "ref": "20261026-211519-2a3f:760929",
+      "files": {
+        "wav": "20261026-211519-2a3f/760929.wav",
+        "png": "20261026-211519-2a3f/760929.png",
+        "raw": "20261026-211519-2a3f/760929_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211519-2a3f\\760929.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211519-2a3f\\760929.png"
+      }
+    }
+  ],
+  "kept": 2
+}

@@ -7928,6 +7928,179 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemRicochet",
+      "label": "Ricochet — committed turn",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemRicochet",
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The automatic production-quality score was low. The automatic listener was uncertain.",
+          "file": "audio/itemRicochet/METLImpt_LocalTake_v01.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "d54c08087b0cd7589f624e7c74c3cf14151c8c6619f0ac717218a2c9e0ec7cae",
+          "ref": "20261026-211456-1f4e:760926",
+          "review": {
+            "brief_id": "95828a310c569f97de588a998cc24651a97989979515f41b38eec3c207d79174",
+            "blind_caption": "A hammer is being used to drill into a metal object.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small steel projectile ricochet?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.432
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The similarity check suggested a different sound. The automatic listener was uncertain.",
+          "file": "audio/itemRicochet/METLImpt_LocalTake_v02.wav",
+          "seconds": 0.5416666666666666,
+          "sampleRate": 48000,
+          "sha256": "f569b9a313a4da94c620f1a1f170686a8138872cf27cb923868230ff0222152e",
+          "ref": "20261026-211519-2a3f:760928",
+          "review": {
+            "brief_id": "95828a310c569f97de588a998cc24651a97989979515f41b38eec3c207d79174",
+            "blind_caption": "Metallic clinking",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small steel projectile ricochet?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.1018
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The similarity check suggested a different sound. The automatic listener was uncertain.",
+          "file": "audio/itemRicochet/METLImpt_LocalTake_v03.wav",
+          "seconds": 0.5416666666666666,
+          "sampleRate": 48000,
+          "sha256": "3e3c1fb8fe33c41684618376c778505c8c85940b2a2e613e75a5c7a542e60b1b",
+          "ref": "20261026-211519-2a3f:760929",
+          "review": {
+            "brief_id": "95828a310c569f97de588a998cc24651a97989979515f41b38eec3c207d79174",
+            "blind_caption": "A hammer is being used to break a wooden object.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small steel projectile ricochet?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.0917
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic check detected a possibly cut-off tail. The automatic listener was uncertain.",
+          "file": "audio/itemRicochet/METLImpt_LocalTake_v04.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "537f302b70b46744e738c83149352732a73a47ee460fb6e17509c991e0900a99",
+          "ref": "20261026-211456-1f4e:760927",
+          "review": {
+            "brief_id": "95828a310c569f97de588a998cc24651a97989979515f41b38eec3c207d79174",
+            "blind_caption": "A metal object being struck against another object",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small steel projectile ricochet?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.1903
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }

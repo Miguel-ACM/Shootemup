@@ -1,0 +1,477 @@
+{
+  "brief": {
+    "description": "one small steel projectile ricochet, compact bright metallic ping with a falling pitch, very short dry decay",
+    "requirements": [
+      "Does the sound contain the requested physical source: one small steel projectile ricochet?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "95828a310c569f97de588a998cc24651a97989979515f41b38eec3c207d79174",
+  "options": {
+    "duration": 0.5,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 760926,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-211456-1f4e",
+      "prompt": "TrackType: SFX, one small steel projectile ricochet, compact bright metallic ping with a falling pitch, very short dry decay",
+      "takes": [
+        "20261026-211456-1f4e:760926",
+        "20261026-211456-1f4e:760927"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-211519-2a3f",
+      "prompt": "TrackType: SFX, one small steel projectile ricochet, compact bright metallic ping with a falling pitch, very short dry decay. Required acoustic properties: Does the sound contain the requested physical source: one small steel projectile ricochet?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-211519-2a3f:760928",
+        "20261026-211519-2a3f:760929"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 760926,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -6.62,
+        "true_peak_dbtp": -6.27,
+        "clipped_fraction": 0.0,
+        "dc_offset": 6e-05,
+        "active_s": 0.47,
+        "noise_floor_db": -79.9,
+        "onset_s": 0.2375,
+        "tail_db": -78.2,
+        "stereo_correlation": 1.0,
+        "lufs": -19.9,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 5.25,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -18.2
+      },
+      "clap": 0.9957,
+      "clap_cos": 0.3965,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.33,
+        "CU": 5.95,
+        "PC": 2.06,
+        "PQ": 5.21
+      },
+      "fails": [],
+      "warnings": [
+        "so-so production quality (Audiobox PQ 5.2)"
+      ],
+      "rejected": false,
+      "rank_score": 0.6784,
+      "rank": 1,
+      "ref": "20261026-211456-1f4e:760926",
+      "files": {
+        "wav": "20261026-211456-1f4e/760926.wav",
+        "png": "20261026-211456-1f4e/760926.png",
+        "raw": "20261026-211456-1f4e/760926_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211456-1f4e\\760926.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211456-1f4e\\760926.png"
+      },
+      "review": {
+        "brief_id": "95828a310c569f97de588a998cc24651a97989979515f41b38eec3c207d79174",
+        "blind_caption": "A hammer is being used to drill into a metal object.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small steel projectile ricochet?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.432
+      }
+    },
+    {
+      "seed": 760927,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -6.16,
+        "true_peak_dbtp": -6.0,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00034,
+        "active_s": 0.74,
+        "noise_floor_db": -79.1,
+        "onset_s": 0.012,
+        "tail_db": -78.1,
+        "stereo_correlation": 0.996,
+        "lufs": -21.7,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 5.13,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1,
+        "cut_db": -19.6
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -17.8
+      },
+      "clap": 0.5543,
+      "clap_cos": 0.1645,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.56,
+        "CU": 6.86,
+        "PC": 2.41,
+        "PQ": 6.98
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 20 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.5255,
+      "rank": 2,
+      "ref": "20261026-211456-1f4e:760927",
+      "files": {
+        "wav": "20261026-211456-1f4e/760927.wav",
+        "png": "20261026-211456-1f4e/760927.png",
+        "raw": "20261026-211456-1f4e/760927_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211456-1f4e\\760927.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211456-1f4e\\760927.png"
+      },
+      "review": {
+        "brief_id": "95828a310c569f97de588a998cc24651a97989979515f41b38eec3c207d79174",
+        "blind_caption": "A metal object being struck against another object",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small steel projectile ricochet?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.1903
+      }
+    },
+    {
+      "seed": 760928,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -6.46,
+        "true_peak_dbtp": -6.27,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00011,
+        "active_s": 0.67,
+        "noise_floor_db": -79.1,
+        "onset_s": 0.0,
+        "tail_db": -78.2,
+        "stereo_correlation": 1.0,
+        "lufs": -26.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 5.22,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5417,
+        "length_frames": 13.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -22.1
+      },
+      "clap": 0.2785,
+      "clap_cos": 0.1151,
+      "clap_top": "glass shattering",
+      "aes": {
+        "CE": 4.18,
+        "CU": 7.57,
+        "PC": 2.31,
+        "PQ": 7.51
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: glass shattering"
+      ],
+      "rejected": false,
+      "rank_score": 0.4688,
+      "rank": 1,
+      "ref": "20261026-211519-2a3f:760928",
+      "files": {
+        "wav": "20261026-211519-2a3f/760928.wav",
+        "png": "20261026-211519-2a3f/760928.png",
+        "raw": "20261026-211519-2a3f/760928_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211519-2a3f\\760928.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211519-2a3f\\760928.png"
+      },
+      "review": {
+        "brief_id": "95828a310c569f97de588a998cc24651a97989979515f41b38eec3c207d79174",
+        "blind_caption": "Metallic clinking",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small steel projectile ricochet?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.1018
+      }
+    },
+    {
+      "seed": 760929,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -5.97,
+        "true_peak_dbtp": -5.97,
+        "clipped_fraction": 0.0,
+        "dc_offset": 9e-05,
+        "active_s": 0.475,
+        "noise_floor_db": -79.0,
+        "onset_s": 0.0,
+        "tail_db": -76.6,
+        "stereo_correlation": 1.0,
+        "lufs": -26.9,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 4.93,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5417,
+        "length_frames": 13.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -22.4
+      },
+      "clap": 0.384,
+      "clap_cos": 0.102,
+      "clap_top": "glass shattering",
+      "aes": {
+        "CE": 4.19,
+        "CU": 7.47,
+        "PC": 2.22,
+        "PQ": 7.36
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: glass shattering"
+      ],
+      "rejected": false,
+      "rank_score": 0.4663,
+      "rank": 2,
+      "ref": "20261026-211519-2a3f:760929",
+      "files": {
+        "wav": "20261026-211519-2a3f/760929.wav",
+        "png": "20261026-211519-2a3f/760929.png",
+        "raw": "20261026-211519-2a3f/760929_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211519-2a3f\\760929.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211519-2a3f\\760929.png"
+      },
+      "review": {
+        "brief_id": "95828a310c569f97de588a998cc24651a97989979515f41b38eec3c207d79174",
+        "blind_caption": "A hammer is being used to break a wooden object.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small steel projectile ricochet?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.0917
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 760926,
+    "signal": {
+      "duration_s": 2.0,
+      "peak_dbfs": -6.62,
+      "true_peak_dbtp": -6.27,
+      "clipped_fraction": 0.0,
+      "dc_offset": 6e-05,
+      "active_s": 0.47,
+      "noise_floor_db": -79.9,
+      "onset_s": 0.2375,
+      "tail_db": -78.2,
+      "stereo_correlation": 1.0,
+      "lufs": -19.9,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 5.25,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.5,
+      "length_frames": 12.0,
+      "channels": 1
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -18.2
+    },
+    "clap": 0.9957,
+    "clap_cos": 0.3965,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.33,
+      "CU": 5.95,
+      "PC": 2.06,
+      "PQ": 5.21
+    },
+    "fails": [],
+    "warnings": [
+      "so-so production quality (Audiobox PQ 5.2)"
+    ],
+    "rejected": false,
+    "rank_score": 0.6784,
+    "rank": 1,
+    "ref": "20261026-211456-1f4e:760926",
+    "files": {
+      "wav": "20261026-211456-1f4e/760926.wav",
+      "png": "20261026-211456-1f4e/760926.png",
+      "raw": "20261026-211456-1f4e/760926_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211456-1f4e\\760926.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211456-1f4e\\760926.png"
+    },
+    "review": {
+      "brief_id": "95828a310c569f97de588a998cc24651a97989979515f41b38eec3c207d79174",
+      "blind_caption": "A hammer is being used to drill into a metal object.",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one small steel projectile ricochet?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "NO"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.432
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemRicochet\\iteration-20261026-211456-536e\\METLImpt_Iterated_v01.wav"
+  ]
+}
