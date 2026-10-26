@@ -1,0 +1,39 @@
+{
+  "brief": {
+    "description": "one gas torch ignition, small metallic igniter click and brief breathy flame catch, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one gas torch ignition?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "268dadd888675868fa55baef71990fa0226d5155849d8a8bbb12cccc7e9919d9",
+  "options": {
+    "duration": 0.22,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 260226,
+  "budget": 4,
+  "generated": 2,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-210010-f2f0",
+      "prompt": "TrackType: SFX, one gas torch ignition, small metallic igniter click and brief breathy flame catch, dry and close",
+      "takes": [
+        "20261026-210010-f2f0:260226",
+        "20261026-210010-f2f0:260227"
+      ]
+    }
+  ],
+  "candidates": [],
+  "baseline_candidates": [],
+  "best": null,
+  "baseline_best": null,
+  "status": "failed",
+  "human_approved": false,
+  "error": "server said 500: Internal Server Error"
+}

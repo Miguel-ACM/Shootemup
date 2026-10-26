@@ -1,0 +1,8 @@
+{
+  "description": "one gas torch ignition, small metallic igniter click and brief breathy flame catch, dry and close",
+  "requirements": [
+    "Does the sound contain the requested physical source: one gas torch ignition?",
+    "Is the audio free of intelligible speech and music?",
+    "Is the sound compact and dry with a short decay?"
+  ]
+}

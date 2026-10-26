@@ -1,0 +1,466 @@
+{
+  "brief": {
+    "description": "one gas torch ignition, small metallic igniter click and brief breathy flame catch, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one gas torch ignition?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "268dadd888675868fa55baef71990fa0226d5155849d8a8bbb12cccc7e9919d9",
+  "options": {
+    "duration": 0.5,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 760226,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-211246-9dcf",
+      "prompt": "TrackType: SFX, one gas torch ignition, small metallic igniter click and brief breathy flame catch, dry and close",
+      "takes": [
+        "20261026-211246-9dcf:760227",
+        "20261026-211246-9dcf:760226"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-211307-9908",
+      "prompt": "TrackType: SFX, one gas torch ignition, small metallic igniter click and brief breathy flame catch, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one gas torch ignition?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-211307-9908:760229",
+        "20261026-211307-9908:760228"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 760227,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -5.57,
+        "true_peak_dbtp": -4.74,
+        "clipped_fraction": 0.0,
+        "dc_offset": 5e-05,
+        "active_s": 0.12,
+        "noise_floor_db": -78.0,
+        "onset_s": 0.0509,
+        "tail_db": -77.3,
+        "stereo_correlation": 0.061,
+        "lufs": -31.9,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 7.71,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -24.7
+      },
+      "clap": 0.9844,
+      "clap_cos": 0.4613,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.43,
+        "CU": 6.47,
+        "PC": 1.86,
+        "PQ": 7.27
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.9385,
+      "rank": 1,
+      "ref": "20261026-211246-9dcf:760227",
+      "files": {
+        "wav": "20261026-211246-9dcf/760227.wav",
+        "png": "20261026-211246-9dcf/760227.png",
+        "raw": "20261026-211246-9dcf/760227_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211246-9dcf\\760227.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211246-9dcf\\760227.png"
+      },
+      "review": {
+        "brief_id": "268dadd888675868fa55baef71990fa0226d5155849d8a8bbb12cccc7e9919d9",
+        "blind_caption": "A person flicking a pen",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one gas torch ignition?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "KEEP (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.4752
+      }
+    },
+    {
+      "seed": 760226,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -6.9,
+        "true_peak_dbtp": -6.17,
+        "clipped_fraction": 0.0,
+        "dc_offset": 3e-05,
+        "active_s": 0.11,
+        "noise_floor_db": -79.1,
+        "onset_s": 0.0459,
+        "tail_db": -78.1,
+        "stereo_correlation": 0.178,
+        "lufs": -32.1,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 8.0,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -23.3
+      },
+      "clap": 0.9715,
+      "clap_cos": 0.437,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.49,
+        "CU": 6.64,
+        "PC": 1.88,
+        "PQ": 7.37
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.9323,
+      "rank": 2,
+      "ref": "20261026-211246-9dcf:760226",
+      "files": {
+        "wav": "20261026-211246-9dcf/760226.wav",
+        "png": "20261026-211246-9dcf/760226.png",
+        "raw": "20261026-211246-9dcf/760226_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211246-9dcf\\760226.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211246-9dcf\\760226.png"
+      },
+      "review": {
+        "brief_id": "268dadd888675868fa55baef71990fa0226d5155849d8a8bbb12cccc7e9919d9",
+        "blind_caption": "Finger snapping",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one gas torch ignition?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "KEEP (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.4573
+      }
+    },
+    {
+      "seed": 760229,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -4.5,
+        "true_peak_dbtp": -4.09,
+        "clipped_fraction": 0.0,
+        "dc_offset": 2e-05,
+        "active_s": 0.11,
+        "noise_floor_db": -80.4,
+        "onset_s": 0.0489,
+        "tail_db": -78.6,
+        "stereo_correlation": 0.48,
+        "lufs": -32.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 4.95,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -27.3
+      },
+      "clap": 0.9968,
+      "clap_cos": 0.4936,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.43,
+        "CU": 7.01,
+        "PC": 1.89,
+        "PQ": 7.8
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.9834,
+      "rank": 1,
+      "ref": "20261026-211307-9908:760229",
+      "files": {
+        "wav": "20261026-211307-9908/760229.wav",
+        "png": "20261026-211307-9908/760229.png",
+        "raw": "20261026-211307-9908/760229_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211307-9908\\760229.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211307-9908\\760229.png"
+      },
+      "review": {
+        "brief_id": "268dadd888675868fa55baef71990fa0226d5155849d8a8bbb12cccc7e9919d9",
+        "blind_caption": "A gun is fired.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one gas torch ignition?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.476
+      }
+    },
+    {
+      "seed": 760228,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -5.53,
+        "true_peak_dbtp": -5.38,
+        "clipped_fraction": 0.0,
+        "dc_offset": 2e-05,
+        "active_s": 0.13,
+        "noise_floor_db": -79.5,
+        "onset_s": 0.2375,
+        "tail_db": -78.1,
+        "stereo_correlation": 0.663,
+        "lufs": -26.8,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 5.9,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -24.9
+      },
+      "clap": 0.8884,
+      "clap_cos": 0.3747,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.61,
+        "CU": 7.02,
+        "PC": 1.83,
+        "PQ": 7.95
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.9067,
+      "rank": 2,
+      "ref": "20261026-211307-9908:760228",
+      "files": {
+        "wav": "20261026-211307-9908/760228.wav",
+        "png": "20261026-211307-9908/760228.png",
+        "raw": "20261026-211307-9908/760228_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211307-9908\\760228.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211307-9908\\760228.png"
+      },
+      "review": {
+        "brief_id": "268dadd888675868fa55baef71990fa0226d5155849d8a8bbb12cccc7e9919d9",
+        "blind_caption": "A toothbrush brushing against the teeth",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one gas torch ignition?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3528
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 760229,
+    "signal": {
+      "duration_s": 2.0,
+      "peak_dbfs": -4.5,
+      "true_peak_dbtp": -4.09,
+      "clipped_fraction": 0.0,
+      "dc_offset": 2e-05,
+      "active_s": 0.11,
+      "noise_floor_db": -80.4,
+      "onset_s": 0.0489,
+      "tail_db": -78.6,
+      "stereo_correlation": 0.48,
+      "lufs": -32.3,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 4.95,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.5,
+      "length_frames": 12.0,
+      "channels": 1
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -27.3
+    },
+    "clap": 0.9968,
+    "clap_cos": 0.4936,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.43,
+      "CU": 7.01,
+      "PC": 1.89,
+      "PQ": 7.8
+    },
+    "fails": [],
+    "warnings": [],
+    "rejected": false,
+    "rank_score": 0.9834,
+    "rank": 1,
+    "ref": "20261026-211307-9908:760229",
+    "files": {
+      "wav": "20261026-211307-9908/760229.wav",
+      "png": "20261026-211307-9908/760229.png",
+      "raw": "20261026-211307-9908/760229_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211307-9908\\760229.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211307-9908\\760229.png"
+    },
+    "review": {
+      "brief_id": "268dadd888675868fa55baef71990fa0226d5155849d8a8bbb12cccc7e9919d9",
+      "blind_caption": "A gun is fired.",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one gas torch ignition?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.476
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFlameIgnite\\iteration-20261026-211246-48ba\\UIClick_Iterated_v01.wav"
+  ]
+}

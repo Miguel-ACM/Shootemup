@@ -1,0 +1,81 @@
+{
+  "request": "20261026-211307-9908",
+  "ref": "20261026-211307-9908:760229",
+  "text": "TrackType: SFX, one gas torch ignition, small metallic igniter click and brief breathy flame catch, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one gas torch ignition?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one gas torch ignition, small metallic igniter click and brief breathy flame catch, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one gas torch ignition?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "ui",
+  "seed": 760229,
+  "rank": 1,
+  "rank_score": 0.9834,
+  "clap": 0.9968,
+  "clap_cos": 0.4936,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.43,
+    "CU": 7.01,
+    "PC": 1.89,
+    "PQ": 7.8
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 4.95,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.5,
+    "length_frames": 12.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -27.3
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -4.5,
+    "true_peak_dbtp": -4.09,
+    "clipped_fraction": 0.0,
+    "dc_offset": 2e-05,
+    "active_s": 0.11,
+    "noise_floor_db": -80.4,
+    "onset_s": 0.0489,
+    "tail_db": -78.6,
+    "stereo_correlation": 0.48,
+    "lufs": -32.3,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "268dadd888675868fa55baef71990fa0226d5155849d8a8bbb12cccc7e9919d9",
+    "blind_caption": "A gun is fired.",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one gas torch ignition?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.476
+  },
+  "human_approved": false
+}

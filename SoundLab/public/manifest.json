@@ -7404,6 +7404,184 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemFlameIgnite",
+      "label": "Flamethrowers — ignition",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemFlameIgnite",
+      "original": {
+        "file": "audio/itemFlameIgnite/original.wav",
+        "label": "Current sound",
+        "seconds": 0.2470294784580499,
+        "sha256": "a2adca63df6a3d9224743bc4862c3bdfa1392f4d9c6e2459d338e57de4d0fe30"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemFlameIgnite/UIClick_LocalTake_v01.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "a8e1bbd87db4bda6cac9de48313b7969dfb72db88017d10923c84cf6f3b9ec24",
+          "ref": "20261026-211307-9908:760229",
+          "review": {
+            "brief_id": "268dadd888675868fa55baef71990fa0226d5155849d8a8bbb12cccc7e9919d9",
+            "blind_caption": "A gun is fired.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one gas torch ignition?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.476
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemFlameIgnite/UIClick_LocalTake_v02.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "c570836af46e94a8ce7afeba64a12bd13454cb7b10e24ad22bf84ed64437def3",
+          "ref": "20261026-211246-9dcf:760227",
+          "review": {
+            "brief_id": "268dadd888675868fa55baef71990fa0226d5155849d8a8bbb12cccc7e9919d9",
+            "blind_caption": "A person flicking a pen",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one gas torch ignition?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "KEEP (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.4752
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemFlameIgnite/UIClick_LocalTake_v03.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "0b248363495567cee3f77af36d54cdf6d71d4622d60304239db95b3795cffe1a",
+          "ref": "20261026-211246-9dcf:760226",
+          "review": {
+            "brief_id": "268dadd888675868fa55baef71990fa0226d5155849d8a8bbb12cccc7e9919d9",
+            "blind_caption": "Finger snapping",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one gas torch ignition?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "KEEP (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.4573
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemFlameIgnite/UIClick_LocalTake_v04.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "616122af9dabe8a0d468112691eedc6c41383830791229d03e02f18e14364c02",
+          "ref": "20261026-211307-9908:760228",
+          "review": {
+            "brief_id": "268dadd888675868fa55baef71990fa0226d5155849d8a8bbb12cccc7e9919d9",
+            "blind_caption": "A toothbrush brushing against the teeth",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one gas torch ignition?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3528
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }
