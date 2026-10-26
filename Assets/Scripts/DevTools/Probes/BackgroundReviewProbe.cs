@@ -63,7 +63,11 @@ public sealed class BackgroundReviewProbe : MonoBehaviour
     {
         Directory.CreateDirectory(Folder + "/Frames");
         yield return null;
-        FindAnyObjectByType<NewGame>().OnAccept();
+        {
+            var reviewStart = FindAnyObjectByType<NewGame>();
+            reviewStart.OnAccept();
+            reviewStart.Choose(1);
+        }
         float deadline = Time.realtimeSinceStartup + 15;
         while (CloudTransition.Busy && Time.realtimeSinceStartup < deadline)
             yield return null;

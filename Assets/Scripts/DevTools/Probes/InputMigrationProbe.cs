@@ -98,7 +98,12 @@ public sealed class InputMigrationProbe : MonoBehaviour
         yield return new WaitForSecondsRealtime(.06f);
         InputSystem.QueueStateEvent(gamepad, new GamepadState().WithButton(GamepadButton.South));
         yield return new WaitForSecondsRealtime(.06f);
-        Check(CloudTransition.Busy, "Gamepad accept did not start a run");
+        Check(!CloudTransition.Busy && menu.CurrentElement is DifficultyOption, "Gamepad accept did not open difficulty selection");
+        InputSystem.QueueStateEvent(gamepad, new GamepadState());
+        yield return new WaitForSecondsRealtime(.06f);
+        InputSystem.QueueStateEvent(gamepad, new GamepadState().WithButton(GamepadButton.South));
+        yield return new WaitForSecondsRealtime(.06f);
+        Check(CloudTransition.Busy, "Gamepad difficulty accept did not start a run");
         InputSystem.QueueStateEvent(gamepad, new GamepadState());
         float until = Time.realtimeSinceStartup + 12;
         while (CloudTransition.Busy && Time.realtimeSinceStartup < until)
@@ -151,7 +156,14 @@ public sealed class InputMigrationProbe : MonoBehaviour
         yield return new WaitForSecondsRealtime(.06f);
         var hits = new List<RaycastResult>();
         EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current) { position = point }, hits);
-        Check(CloudTransition.Busy, "Mouse click did not start a run at " + point + "; hits=" + string.Join(",", hits.ConvertAll(hit => hit.gameObject.name)));
+        Check(!CloudTransition.Busy && FindAnyObjectByType<Menu>().CurrentElement is DifficultyOption, "Mouse click did not open difficulty selection");
+        var difficulty = FindAnyObjectByType<Menu>().CurrentElement;
+        point = RectTransformUtility.WorldToScreenPoint(null, difficulty.GetComponent<RectTransform>().position);
+        InputSystem.QueueStateEvent(mouse, new MouseState { position = point }.WithButton(MouseButton.Left));
+        yield return new WaitForSecondsRealtime(.06f);
+        InputSystem.QueueStateEvent(mouse, new MouseState { position = point });
+        yield return new WaitForSecondsRealtime(.06f);
+        Check(CloudTransition.Busy, "Mouse difficulty click did not start a run");
         // Repeated accept and pause during the cloud cover cannot load or pause a second scene.
         InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Enter, Key.Escape));
         yield return new WaitForSecondsRealtime(.06f);

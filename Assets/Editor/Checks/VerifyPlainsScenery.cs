@@ -209,7 +209,11 @@ public sealed class PlainsSceneryReview : MonoBehaviour
     IEnumerator Start()
     {
         yield return null;
-        FindAnyObjectByType<NewGame>().OnAccept();
+        {
+            var reviewStart = FindAnyObjectByType<NewGame>();
+            reviewStart.OnAccept();
+            reviewStart.Choose(1);
+        }
         while (CloudTransition.Busy)
             yield return null;
         yield return new WaitForSeconds(1);

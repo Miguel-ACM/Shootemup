@@ -131,7 +131,11 @@ public sealed class DebugMenuReview : MonoBehaviour
         deadline = Time.realtimeSinceStartup + 30;
         while ((SceneManager.GetActiveScene().name != "Title" || CloudTransition.Busy) && Time.realtimeSinceStartup < deadline)
             yield return null;
-        FindAnyObjectByType<NewGame>().OnAccept();
+        {
+            var reviewStart = FindAnyObjectByType<NewGame>();
+            reviewStart.OnAccept();
+            reviewStart.Choose(1);
+        }
         deadline = Time.realtimeSinceStartup + 30;
         while ((SceneManager.GetActiveScene().name != "L1" || CloudTransition.Busy) && Time.realtimeSinceStartup < deadline)
             yield return null;

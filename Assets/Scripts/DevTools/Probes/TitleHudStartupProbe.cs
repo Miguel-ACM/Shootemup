@@ -111,7 +111,8 @@ public sealed class TitleHudStartupProbe : MonoBehaviour
         yield return new WaitForEndOfFrame();
         Capture(started);
         newGame.OnAccept();
-        Check(CloudTransition.Busy, "NewGame.OnAccept starts the real cloud transition");
+        newGame.Choose(1);
+        Check(CloudTransition.Busy, "Hard selection starts the real cloud transition");
         IndustrialHUD hud = null;
         LoadoutHUD equipment = null;
         float settledAt = -1, clearAt = -1, firstEnemyAt = -1;

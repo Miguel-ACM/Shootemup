@@ -31,7 +31,7 @@ public class NewGame : AMenuElement
             label.transform.SetParent(go.transform, false);
             var text = label.GetComponent<TextMeshProUGUI>();
             text.font = textElement.font;
-            text.fontSize = textElement.fontSize;
+            text.fontSize = Mathf.Max(36, textElement.fontSize);
             text.text = labels[i];
             text.alignment = TextAlignmentOptions.Center;
             text.raycastTarget = false;

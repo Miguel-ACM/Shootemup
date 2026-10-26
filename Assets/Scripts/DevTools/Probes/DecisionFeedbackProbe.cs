@@ -265,7 +265,11 @@ public sealed class DecisionFeedbackProbe : MonoBehaviour
         while ((SceneManager.GetActiveScene().name != "Title" || CloudTransition.Busy) && Time.realtimeSinceStartup < deadline)
             yield return null;
         Check(SceneManager.GetActiveScene().name == "Title" && !GameOverState.Active, "game over returns to the title");
-        FindAnyObjectByType<NewGame>().OnAccept();
+        {
+            var reviewStart = FindAnyObjectByType<NewGame>();
+            reviewStart.OnAccept();
+            reviewStart.Choose(1);
+        }
         deadline = Time.realtimeSinceStartup + 15;
         while (CloudTransition.Busy && Time.realtimeSinceStartup < deadline)
             yield return null;

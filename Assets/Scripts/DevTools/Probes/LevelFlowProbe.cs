@@ -90,7 +90,11 @@ public sealed class LevelFlowProbe : MonoBehaviour
             "Speculative gameplay preload activated the scene or disturbed the paused menu");
         Capture("01-menu");
         recordingClouds = true;
-        FindAnyObjectByType<NewGame>().OnAccept();
+        {
+            var reviewStart = FindAnyObjectByType<NewGame>();
+            reviewStart.OnAccept();
+            reviewStart.Choose(1);
+        }
         Check(ReferenceEquals(menuLoad, Get(transition, "preparedLoad")), "New game discarded the preloaded gameplay operation");
         LevelRun.Reset(LevelId.Fields); // A dark valley makes the cloud edge readable in the recording.
         Check(CloudTransition.Busy, "New game bypassed the clouds");
@@ -334,7 +338,11 @@ public sealed class LevelFlowProbe : MonoBehaviour
             yield return null;
         Check(SceneManager.GetActiveScene().name == "Title" && Time.timeScale == 0, "Return to menu failed");
         Check((bool)Get(FindAnyObjectByType<Menu>(), "menuOpen"), "Returned main menu cannot accept input");
-        FindAnyObjectByType<NewGame>().OnAccept();
+        {
+            var reviewStart = FindAnyObjectByType<NewGame>();
+            reviewStart.OnAccept();
+            reviewStart.Choose(1);
+        }
         until = Time.realtimeSinceStartup + 10;
         while (CloudTransition.Busy && Time.realtimeSinceStartup < until)
             yield return null;
