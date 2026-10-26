@@ -4,7 +4,7 @@ public sealed class BulletTime : AActiveItem
 {
     void Awake()
     {
-        SetData("Bullet time", "Hold that thought", "Freeze the world for 2 seconds. Keep firing.", ItemType.active);
+        SetData("Time Stop", "Hold that thought", "Freeze the world for 2 seconds. Keep firing.", ItemType.active);
         cost = 35;
         cd = 12;
     }
