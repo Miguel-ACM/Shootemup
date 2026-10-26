@@ -9,7 +9,7 @@ public sealed class IcicleWeaver : DistrictEnemy
         hull = 63;
         hullScale = 0.49f;
         health = 27;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(2.8f, 2.0f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -24,12 +24,14 @@ public sealed class IcicleWeaver : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve IcicleWeaverRoute0 = Route("Snow / IcicleWeaver 0", Vector2.right, -.65f, 1.25f, -.5f, .93f, -.2f, .69f, .23f, .56f, .61f, .69f, .62f, 1.25f);
-    static readonly FlightCurve IcicleWeaverRoute1 = Route("Snow / IcicleWeaver 1", Vector2.right, -1.4f, .77f, -.82f, .68f, -.2f, .8f, .45f, .66f, 1.4f, .76f);
-    public static readonly WavePart[] IcicleWeaverParts ={
-        new WavePart("IcicleWeaver call",nameof(IcicleWeaver),IcicleWeaverRoute0,WaveShape.Rake,3,5.15f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("IcicleWeaver crossing",nameof(IcicleWeaver),IcicleWeaverRoute1,WaveShape.Rake,3,5.40f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("IcicleWeaver answer",nameof(IcicleWeaver),IcicleWeaverRoute0,WaveShape.Train,3,5.65f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
+    static readonly FlightCurve IcicleWeaverRoute0 = Route("Snow / Icicle diagonal loom", Vector2.right, -0.7f, 1.25f, -0.58f, 0.92f, -0.1f, 0.72f, 0.53f, 0.5f, 0.62f, 0.18f, 0.64f, -0.25f);
+    static readonly FlightCurve IcicleWeaverRoute1 = Route("Snow / Icicle folding thread", Vector2.right, -1.4f, 0.93f, -0.67f, 0.79f, 0.24f, 0.72f, 0.54f, 0.49f, -0.12f, 0.29f, -1.4f, 0.19f);
+    static readonly FlightCurve IcicleWeaverRoute2 = Route("Snow / Icicle closing seam", Vector2.right, 0.6f, 1.25f, 0.52f, 0.81f, 0.12f, 0.57f, -0.48f, 0.43f, -0.65f, 0.1f, -0.7f, -0.25f);
+    public static readonly WavePart[] IcicleWeaverParts =
+    {
+        new WavePart("Icicle diagonal loom", nameof(IcicleWeaver), IcicleWeaverRoute0, WaveShape.Rake, 3, 5.2f, 2, new[] { 0.25f, 0.48f, 0.7f }, new[] { 0.36f, 0.7f }, 3),
+        new WavePart("Icicle folding thread", nameof(IcicleWeaver), IcicleWeaverRoute1, WaveShape.Train, 4, 5.6f, 4, new[] { 0.27f, 0.39f, 0.66f }, new[] { 0.43f, 0.7f }, 3),
+        new WavePart("Icicle closing seam", nameof(IcicleWeaver), IcicleWeaverRoute2, WaveShape.Rank, 3, 5.0f, 7, new[] { 0.32f, 0.55f, 0.75f }, new[] { 0.41f, 0.74f }, 3),
     };
 }
 
