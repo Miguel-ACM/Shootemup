@@ -4,7 +4,7 @@ public sealed class EnergyCore : AItem
 {
     void Awake()
     {
-        SetData("Energy core", "Self sustaining", "Regenerate 3 energy per second in combat.", ItemType.passive);
+        SetData("Energy Regenerator", "Self sustaining", "Regenerate 3 energy per second in combat.", ItemType.passive);
     }
 
     public override void OnBegin()
