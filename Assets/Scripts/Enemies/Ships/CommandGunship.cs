@@ -7,14 +7,14 @@ public sealed class CommandGunship : DistrictEnemy
         hull = 14;
         health = 90;
         hullScale = .8f;
-        attackInterval = .9f;
+        attackInterval = Timing(2.1f,1.5f);
         Mover<TopTracker>();
     }
 
     protected override void Attack()
     {
-        Fan<ReturningDisc>(4, 24, 3.8f, .24f);
-        Fan<NeedleRound>(9, 10, 5);
+        if(volley%2==0) Fan<ReturningDisc>(Shots(2,4),30,2.9f,.29f);
+        else Fan<NeedleRound>(Shots(4,7),16,4.1f,.18f);
     }
 
     protected override void Start()
