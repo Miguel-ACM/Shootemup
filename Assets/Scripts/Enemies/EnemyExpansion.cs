@@ -21,6 +21,7 @@ public static class EnemyExpansion
     }
     public static readonly Entry[] All = {
         // Individual enemies are registered here with their own content commits.
+        new Entry(LevelId.Snow, typeof(IcicleWeaver), 63, 0.49f, false, IndustrialMeshFactory.IcicleWeaverMesh, new[] { new Vector3(-.55f,-.78f,-.18f), new Vector3(.55f,-.78f,-.18f) }, new[] { new Vector3(-.28f,.68f,0), new Vector3(.28f,.68f,0) }, WavePartLibrary.IcicleWeaverParts),
         new Entry(LevelId.Fields, typeof(HarrowBomber), 62, 0.61f, false, IndustrialMeshFactory.HarrowBomberMesh, new[] { new Vector3(-.72f,-.58f,-.23f), new Vector3(.72f,-.58f,-.23f) }, new[] { new Vector3(-.28f,.68f,0), new Vector3(.28f,.68f,0) }, WavePartLibrary.HarrowBomberParts),
         new Entry(LevelId.Fields, typeof(ReedSkimmer), 61, 0.49f, false, IndustrialMeshFactory.ReedSkimmerMesh, new[] { new Vector3(-.58f,-.62f,-.16f), new Vector3(.58f,-.62f,-.16f) }, new[] { new Vector3(-.28f,.68f,0), new Vector3(.28f,.68f,0) }, WavePartLibrary.ReedSkimmerParts),
     };
