@@ -122,7 +122,15 @@ public sealed class CombatUpgrades : MonoBehaviour
                 focused = enemy;
             }
             if (Ready("focus", .08f))
+            {
+                int previous = focus;
                 focus = Mathf.Min(10, focus + 1);
+                if (previous != focus && (focus == 1 || focus == 5 || focus == 10))
+                {
+                    ItemProcVfx.Emit(ItemProcShape.Lock, enemy.transform.position, new Color(.35f, .72f, .8f), enemy.size + .2f);
+                    ItemSound.Cue("itemFocus", volume: .065f, pitch: .85f + focus * .035f, cooldown: .3f);
+                }
+            }
             focusUntil = Time.time + 1.1f;
             damage *= 1 + focus * .045f;
         }
