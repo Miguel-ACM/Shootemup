@@ -3,7 +3,7 @@ public sealed class BallBearing : AItem
 {
     void Awake()
     {
-        SetData("Ball Bearing", "Ship equipment", "Hits sometimes spray three fragments.", ItemType.passive);
+        SetData("Shrapnel Bearing", "Ship equipment", "Hits sometimes spray three fragments.", ItemType.passive);
     }
 
     public override void OnBegin()
