@@ -9,7 +9,7 @@ public sealed class RibbonGlider : DistrictEnemy
         hull = 73;
         hullScale = 0.46f;
         health = 23;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(2.25f, 1.6f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -23,12 +23,14 @@ public sealed class RibbonGlider : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve RibbonGliderRoute0 = Route("Candyland / RibbonGlider 0", Vector2.right, -.7f, 1.25f, -.6f, .9f, -.1f, .53f, .5f, .72f, .7f, .95f, .62f, 1.25f);
-    static readonly FlightCurve RibbonGliderRoute1 = Route("Candyland / RibbonGlider 1", Vector2.right, -1.4f, .83f, -.75f, .62f, -.1f, .78f, .6f, .58f, 1.4f, .77f);
-    public static readonly WavePart[] RibbonGliderParts ={
-        new WavePart("RibbonGlider call",nameof(RibbonGlider),RibbonGliderRoute0,WaveShape.Train,3,3.55f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("RibbonGlider crossing",nameof(RibbonGlider),RibbonGliderRoute1,WaveShape.Train,3,3.80f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("RibbonGlider answer",nameof(RibbonGlider),RibbonGliderRoute0,WaveShape.Rake,3,4.05f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
+    static readonly FlightCurve RibbonGliderRoute0 = Route("Candyland / Ribbon unwinding bow", Vector2.right, -1.4f, 0.84f, -0.64f, 0.64f, 0.13f, 0.74f, 0.51f, 0.56f, 0.08f, 0.31f, -0.62f, 0.2f, -1.4f, 0.24f);
+    static readonly FlightCurve RibbonGliderRoute1 = Route("Candyland / Ribbon falling streamer", Vector2.right, -0.7f, 1.25f, -0.35f, 0.9f, 0.34f, 0.66f, 0.52f, 0.35f, 0.05f, 0.06f, -0.46f, -0.25f);
+    static readonly FlightCurve RibbonGliderRoute2 = Route("Candyland / Ribbon rising loop", Vector2.right, 1.4f, 0.33f, 0.66f, 0.3f, 0.07f, 0.48f, -0.46f, 0.78f, -0.56f, 1.25f);
+    public static readonly WavePart[] RibbonGliderParts =
+    {
+        new WavePart("Ribbon unwinding bow", nameof(RibbonGlider), RibbonGliderRoute0, WaveShape.Train, 5, 3.5f, 2, new[] { 0.27f, 0.48f, 0.7f }, new[] { 0.39f, 0.72f }, 4),
+        new WavePart("Ribbon falling streamer", nameof(RibbonGlider), RibbonGliderRoute1, WaveShape.Rake, 3, 3.25f, 4, new[] { 0.29f, 0.6f }, new[] { 0.44f }, 3),
+        new WavePart("Ribbon rising loop", nameof(RibbonGlider), RibbonGliderRoute2, WaveShape.Chevron, 3, 3.4f, 7, new[] { 0.32f, 0.65f }, new[] { 0.48f }, 3),
     };
 }
 
