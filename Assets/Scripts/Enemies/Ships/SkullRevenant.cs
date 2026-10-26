@@ -11,7 +11,7 @@ public sealed class SkullRevenant : InfernalEnemy
         hull = 46;
         hullScale = .47f;
         health = 40;
-        attackInterval = 1.25f;
+        attackInterval = Timing(2.1f,1.5f);
         Mover<Slalom>();
     }
 
@@ -37,12 +37,8 @@ public sealed class SkullRevenant : InfernalEnemy
 
     protected override void Attack()
     {
-        if (reveal < .6f)
-            return;
-        var port = Hull.TransformPoint(new Vector3(0, -.48f, -.4f));
-        for (int i = -1; i <= 1; i++)
-            Fire<NeedleRound>(port, CombatVisuals.Rotate(Aim, i * 13), 5.1f + ((volley & 1) == 0 ? .4f : 0), .15f);
-        for (int side = -1; side <= 1; side += 2)
-            Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, side * (40 + volley % 3 * 11)), 3.5f, .18f);
+        if(reveal<.6f) return;
+        Fan<NeedleRound>(Shots(2,3),19,4.2f,.2f);
+        if(volley%2==0) for(int s=-1;s<=1;s+=2) Fire<SimpleRound>(Muzzle(),CombatVisuals.Rotate(Vector2.down,s*52),2.8f,.25f);
     }
 }
