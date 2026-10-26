@@ -1,0 +1,506 @@
+{
+  "brief": {
+    "description": "steady compact gas torch flame, low breathy combustion hiss with restrained crackle, constant intensity, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: steady compact gas torch flame?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the texture steady without impacts or obvious gaps?"
+    ]
+  },
+  "brief_id": "9a158ab9675453a1ad5d90b698e34abb9f858ccf9ffcbab5bb1f2625c7a46ce0",
+  "options": {
+    "duration": 1.2,
+    "mode": "loop",
+    "engine": "sa3"
+  },
+  "seed": 260326,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-210016-480d",
+      "prompt": "TrackType: SFX, steady compact gas torch flame, low breathy combustion hiss with restrained crackle, constant intensity, dry and close",
+      "takes": [
+        "20261026-210016-480d:260327",
+        "20261026-210016-480d:260326"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-210038-c64e",
+      "prompt": "TrackType: SFX, steady compact gas torch flame, low breathy combustion hiss with restrained crackle, constant intensity, dry and close. Required acoustic properties: Does the sound contain the requested physical source: steady compact gas torch flame?; Is the audio free of intelligible speech and music?; Is the texture steady without impacts or obvious gaps?",
+      "takes": [
+        "20261026-210038-c64e:260329",
+        "20261026-210038-c64e:260328"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 260327,
+      "signal": {
+        "duration_s": 4.0,
+        "peak_dbfs": -7.02,
+        "true_peak_dbtp": -6.99,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00065,
+        "active_s": 3.355,
+        "noise_floor_db": -72.9,
+        "onset_s": 0.0549,
+        "tail_db": -81.8,
+        "stereo_correlation": 1.0,
+        "lufs": -30.0,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "loop_start_s": 1.141,
+        "crossfade_s": 0.302,
+        "gain_db": 15.2,
+        "onset_s": 0.0,
+        "onset_frame": 0.0,
+        "length_s": 1.2083,
+        "length_frames": 29.0,
+        "channels": 2,
+        "seam_ok": true,
+        "seam_jump_ratio": 0.15,
+        "seam_flux_ratio": 0.63,
+        "seam_level_ratio": 0.63
+      },
+      "final": {
+        "true_peak_dbtp": -11.91,
+        "lufs": -23.0
+      },
+      "clap": 0.938,
+      "clap_cos": 0.2622,
+      "clap_top": null,
+      "aes": {
+        "CE": 2.31,
+        "CU": 2.63,
+        "PC": 2.18,
+        "PQ": 4.9
+      },
+      "fails": [],
+      "warnings": [
+        "so-so production quality (Audiobox PQ 4.9); normal for noise-like ambiences (rain, wind)"
+      ],
+      "rejected": false,
+      "rank_score": 0.5227,
+      "rank": 1,
+      "ref": "20261026-210016-480d:260327",
+      "files": {
+        "wav": "20261026-210016-480d/260327.wav",
+        "png": "20261026-210016-480d/260327.png",
+        "raw": "20261026-210016-480d/260327_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210016-480d\\260327.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210016-480d\\260327.png"
+      },
+      "review": {
+        "brief_id": "9a158ab9675453a1ad5d90b698e34abb9f858ccf9ffcbab5bb1f2625c7a46ce0",
+        "blind_caption": "A car engine idling",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: steady compact gas torch flame?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the texture steady without impacts or obvious gaps?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2886
+      }
+    },
+    {
+      "seed": 260326,
+      "signal": {
+        "duration_s": 4.0,
+        "peak_dbfs": -5.7,
+        "true_peak_dbtp": -5.7,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00028,
+        "active_s": 3.165,
+        "noise_floor_db": -83.0,
+        "onset_s": 0.0589,
+        "tail_db": -83.7,
+        "stereo_correlation": 1.0,
+        "lufs": -29.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "loop_start_s": 0.788,
+        "crossfade_s": 0.302,
+        "gain_db": 16.94,
+        "onset_s": 0.0,
+        "onset_frame": 0.0,
+        "length_s": 1.2083,
+        "length_frames": 29.0,
+        "channels": 2,
+        "seam_ok": true,
+        "seam_jump_ratio": 0.8,
+        "seam_flux_ratio": 0.93,
+        "seam_level_ratio": 1.12
+      },
+      "final": {
+        "true_peak_dbtp": -10.62,
+        "lufs": -23.0
+      },
+      "clap": 0.735,
+      "clap_cos": 0.32,
+      "clap_top": null,
+      "aes": {
+        "CE": 2.04,
+        "CU": 3.14,
+        "PC": 2.43,
+        "PQ": 4.53
+      },
+      "fails": [],
+      "warnings": [
+        "so-so production quality (Audiobox PQ 4.5); normal for noise-like ambiences (rain, wind)"
+      ],
+      "rejected": false,
+      "rank_score": 0.5038,
+      "rank": 2,
+      "ref": "20261026-210016-480d:260326",
+      "files": {
+        "wav": "20261026-210016-480d/260326.wav",
+        "png": "20261026-210016-480d/260326.png",
+        "raw": "20261026-210016-480d/260326_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210016-480d\\260326.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210016-480d\\260326.png"
+      },
+      "review": {
+        "brief_id": "9a158ab9675453a1ad5d90b698e34abb9f858ccf9ffcbab5bb1f2625c7a46ce0",
+        "blind_caption": "A fire crackling",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: steady compact gas torch flame?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the texture steady without impacts or obvious gaps?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3576
+      }
+    },
+    {
+      "seed": 260329,
+      "signal": {
+        "duration_s": 4.0,
+        "peak_dbfs": -1.54,
+        "true_peak_dbtp": -1.54,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00049,
+        "active_s": 2.725,
+        "noise_floor_db": -88.7,
+        "onset_s": 0.0858,
+        "tail_db": -89.2,
+        "stereo_correlation": 1.0,
+        "lufs": -27.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "loop_start_s": 0.52,
+        "crossfade_s": 0.302,
+        "gain_db": 13.71,
+        "onset_s": 0.0,
+        "onset_frame": 0.0,
+        "length_s": 1.2083,
+        "length_frames": 29.0,
+        "channels": 2,
+        "seam_ok": true,
+        "seam_jump_ratio": 0.5,
+        "seam_flux_ratio": 0.9,
+        "seam_level_ratio": 0.57
+      },
+      "final": {
+        "true_peak_dbtp": -11.47,
+        "lufs": -23.0
+      },
+      "clap": 0.5165,
+      "clap_cos": 0.3403,
+      "clap_top": null,
+      "aes": {
+        "CE": 2.05,
+        "CU": 2.81,
+        "PC": 2.54,
+        "PQ": 4.25
+      },
+      "fails": [],
+      "warnings": [
+        "so-so production quality (Audiobox PQ 4.2); normal for noise-like ambiences (rain, wind)"
+      ],
+      "rejected": false,
+      "rank_score": 0.4558,
+      "rank": 1,
+      "ref": "20261026-210038-c64e:260329",
+      "files": {
+        "wav": "20261026-210038-c64e/260329.wav",
+        "png": "20261026-210038-c64e/260329.png",
+        "raw": "20261026-210038-c64e/260329_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210038-c64e\\260329.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210038-c64e\\260329.png"
+      },
+      "review": {
+        "brief_id": "9a158ab9675453a1ad5d90b698e34abb9f858ccf9ffcbab5bb1f2625c7a46ce0",
+        "blind_caption": "A loud gust of wind",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: steady compact gas torch flame?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the texture steady without impacts or obvious gaps?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3192
+      }
+    },
+    {
+      "seed": 260328,
+      "signal": {
+        "duration_s": 4.0,
+        "peak_dbfs": -2.69,
+        "true_peak_dbtp": -2.69,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.001,
+        "active_s": 2.865,
+        "noise_floor_db": -88.0,
+        "onset_s": 0.0808,
+        "tail_db": -88.2,
+        "stereo_correlation": 1.0,
+        "lufs": -28.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "loop_start_s": 0.55,
+        "crossfade_s": 0.302,
+        "gain_db": 12.45,
+        "onset_s": 0.0,
+        "onset_frame": 0.0,
+        "length_s": 1.2083,
+        "length_frames": 29.0,
+        "channels": 2,
+        "seam_ok": true,
+        "seam_jump_ratio": 0.2,
+        "seam_flux_ratio": 0.92,
+        "seam_level_ratio": 0.56
+      },
+      "final": {
+        "true_peak_dbtp": -9.25,
+        "lufs": -23.0
+      },
+      "clap": 0.6121,
+      "clap_cos": 0.2601,
+      "clap_top": null,
+      "aes": {
+        "CE": 1.8,
+        "CU": 2.49,
+        "PC": 2.54,
+        "PQ": 3.9
+      },
+      "fails": [],
+      "warnings": [
+        "so-so production quality (Audiobox PQ 3.9); normal for noise-like ambiences (rain, wind)"
+      ],
+      "rejected": false,
+      "rank_score": 0.3756,
+      "rank": 2,
+      "ref": "20261026-210038-c64e:260328",
+      "files": {
+        "wav": "20261026-210038-c64e/260328.wav",
+        "png": "20261026-210038-c64e/260328.png",
+        "raw": "20261026-210038-c64e/260328_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210038-c64e\\260328.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210038-c64e\\260328.png"
+      },
+      "review": {
+        "brief_id": "9a158ab9675453a1ad5d90b698e34abb9f858ccf9ffcbab5bb1f2625c7a46ce0",
+        "blind_caption": "A train horn",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: steady compact gas torch flame?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the texture steady without impacts or obvious gaps?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "KEEP (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2702
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 260326,
+    "signal": {
+      "duration_s": 4.0,
+      "peak_dbfs": -5.7,
+      "true_peak_dbtp": -5.7,
+      "clipped_fraction": 0.0,
+      "dc_offset": 0.00028,
+      "active_s": 3.165,
+      "noise_floor_db": -83.0,
+      "onset_s": 0.0589,
+      "tail_db": -83.7,
+      "stereo_correlation": 1.0,
+      "lufs": -29.4,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "loop_start_s": 0.788,
+      "crossfade_s": 0.302,
+      "gain_db": 16.94,
+      "onset_s": 0.0,
+      "onset_frame": 0.0,
+      "length_s": 1.2083,
+      "length_frames": 29.0,
+      "channels": 2,
+      "seam_ok": true,
+      "seam_jump_ratio": 0.8,
+      "seam_flux_ratio": 0.93,
+      "seam_level_ratio": 1.12
+    },
+    "final": {
+      "true_peak_dbtp": -10.62,
+      "lufs": -23.0
+    },
+    "clap": 0.735,
+    "clap_cos": 0.32,
+    "clap_top": null,
+    "aes": {
+      "CE": 2.04,
+      "CU": 3.14,
+      "PC": 2.43,
+      "PQ": 4.53
+    },
+    "fails": [],
+    "warnings": [
+      "so-so production quality (Audiobox PQ 4.5); normal for noise-like ambiences (rain, wind)"
+    ],
+    "rejected": false,
+    "rank_score": 0.5038,
+    "rank": 2,
+    "ref": "20261026-210016-480d:260326",
+    "files": {
+      "wav": "20261026-210016-480d/260326.wav",
+      "png": "20261026-210016-480d/260326.png",
+      "raw": "20261026-210016-480d/260326_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210016-480d\\260326.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210016-480d\\260326.png"
+    },
+    "review": {
+      "brief_id": "9a158ab9675453a1ad5d90b698e34abb9f858ccf9ffcbab5bb1f2625c7a46ce0",
+      "blind_caption": "A fire crackling",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: steady compact gas torch flame?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the texture steady without impacts or obvious gaps?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.3576
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFlameSustain\\iteration-20261026-210016-1b1e\\AMBMisc_Iterated_v01.wav"
+  ]
+}

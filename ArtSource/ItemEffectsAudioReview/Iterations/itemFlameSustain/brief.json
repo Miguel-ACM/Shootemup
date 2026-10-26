@@ -1,0 +1,8 @@
+{
+  "description": "steady compact gas torch flame, low breathy combustion hiss with restrained crackle, constant intensity, dry and close",
+  "requirements": [
+    "Does the sound contain the requested physical source: steady compact gas torch flame?",
+    "Is the audio free of intelligible speech and music?",
+    "Is the texture steady without impacts or obvious gaps?"
+  ]
+}

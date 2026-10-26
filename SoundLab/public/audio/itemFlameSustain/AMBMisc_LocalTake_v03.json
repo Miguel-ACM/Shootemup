@@ -1,0 +1,89 @@
+{
+  "request": "20261026-210016-480d",
+  "ref": "20261026-210016-480d:260327",
+  "text": "TrackType: SFX, steady compact gas torch flame, low breathy combustion hiss with restrained crackle, constant intensity, dry and close",
+  "prompt": "TrackType: SFX, steady compact gas torch flame, low breathy combustion hiss with restrained crackle, constant intensity, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "ambience",
+  "seed": 260327,
+  "rank": 1,
+  "rank_score": 0.5227,
+  "clap": 0.938,
+  "clap_cos": 0.2622,
+  "clap_top": null,
+  "aes": {
+    "CE": 2.31,
+    "CU": 2.63,
+    "PC": 2.18,
+    "PQ": 4.9
+  },
+  "fails": [],
+  "warnings": [
+    "so-so production quality (Audiobox PQ 4.9); normal for noise-like ambiences (rain, wind)"
+  ],
+  "post": {
+    "loop_start_s": 1.141,
+    "crossfade_s": 0.302,
+    "gain_db": 15.2,
+    "onset_s": 0.0,
+    "onset_frame": 0.0,
+    "length_s": 1.2083,
+    "length_frames": 29.0,
+    "channels": 2,
+    "seam_ok": true,
+    "seam_jump_ratio": 0.15,
+    "seam_flux_ratio": 0.63,
+    "seam_level_ratio": 0.63
+  },
+  "final": {
+    "true_peak_dbtp": -11.91,
+    "lufs": -23.0
+  },
+  "signal": {
+    "duration_s": 4.0,
+    "peak_dbfs": -7.02,
+    "true_peak_dbtp": -6.99,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00065,
+    "active_s": 3.355,
+    "noise_floor_db": -72.9,
+    "onset_s": 0.0549,
+    "tail_db": -81.8,
+    "stereo_correlation": 1.0,
+    "lufs": -30.0,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "9a158ab9675453a1ad5d90b698e34abb9f858ccf9ffcbab5bb1f2625c7a46ce0",
+    "blind_caption": "A car engine idling",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: steady compact gas torch flame?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the texture steady without impacts or obvious gaps?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2886
+  },
+  "human_approved": false
+}

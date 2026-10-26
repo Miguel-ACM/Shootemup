@@ -1,0 +1,89 @@
+{
+  "request": "20261026-210038-c64e",
+  "ref": "20261026-210038-c64e:260329",
+  "text": "TrackType: SFX, steady compact gas torch flame, low breathy combustion hiss with restrained crackle, constant intensity, dry and close. Required acoustic properties: Does the sound contain the requested physical source: steady compact gas torch flame?; Is the audio free of intelligible speech and music?; Is the texture steady without impacts or obvious gaps?",
+  "prompt": "TrackType: SFX, steady compact gas torch flame, low breathy combustion hiss with restrained crackle, constant intensity, dry and close. Required acoustic properties: Does the sound contain the requested physical source: steady compact gas torch flame?; Is the audio free of intelligible speech and music?; Is the texture steady without impacts or obvious gaps?",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "ambience",
+  "seed": 260329,
+  "rank": 1,
+  "rank_score": 0.4558,
+  "clap": 0.5165,
+  "clap_cos": 0.3403,
+  "clap_top": null,
+  "aes": {
+    "CE": 2.05,
+    "CU": 2.81,
+    "PC": 2.54,
+    "PQ": 4.25
+  },
+  "fails": [],
+  "warnings": [
+    "so-so production quality (Audiobox PQ 4.2); normal for noise-like ambiences (rain, wind)"
+  ],
+  "post": {
+    "loop_start_s": 0.52,
+    "crossfade_s": 0.302,
+    "gain_db": 13.71,
+    "onset_s": 0.0,
+    "onset_frame": 0.0,
+    "length_s": 1.2083,
+    "length_frames": 29.0,
+    "channels": 2,
+    "seam_ok": true,
+    "seam_jump_ratio": 0.5,
+    "seam_flux_ratio": 0.9,
+    "seam_level_ratio": 0.57
+  },
+  "final": {
+    "true_peak_dbtp": -11.47,
+    "lufs": -23.0
+  },
+  "signal": {
+    "duration_s": 4.0,
+    "peak_dbfs": -1.54,
+    "true_peak_dbtp": -1.54,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00049,
+    "active_s": 2.725,
+    "noise_floor_db": -88.7,
+    "onset_s": 0.0858,
+    "tail_db": -89.2,
+    "stereo_correlation": 1.0,
+    "lufs": -27.4,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "9a158ab9675453a1ad5d90b698e34abb9f858ccf9ffcbab5bb1f2625c7a46ce0",
+    "blind_caption": "A loud gust of wind",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: steady compact gas torch flame?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the texture steady without impacts or obvious gaps?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.3192
+  },
+  "human_approved": false
+}

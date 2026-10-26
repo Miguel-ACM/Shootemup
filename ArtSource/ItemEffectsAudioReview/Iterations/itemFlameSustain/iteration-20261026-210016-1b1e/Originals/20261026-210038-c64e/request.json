@@ -1,0 +1,165 @@
+{
+  "id": "20261026-210038-c64e",
+  "created": "2026-10-26 21:00:38",
+  "text": "TrackType: SFX, steady compact gas torch flame, low breathy combustion hiss with restrained crackle, constant intensity, dry and close. Required acoustic properties: Does the sound contain the requested physical source: steady compact gas torch flame?; Is the audio free of intelligible speech and music?; Is the texture steady without impacts or obvious gaps?",
+  "prompt": "TrackType: SFX, steady compact gas torch flame, low breathy combustion hiss with restrained crackle, constant intensity, dry and close. Required acoustic properties: Does the sound contain the requested physical source: steady compact gas torch flame?; Is the audio free of intelligible speech and music?; Is the texture steady without impacts or obvious gaps?",
+  "raw": true,
+  "category": "ambience",
+  "cat_id": "AMBMisc",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    260328,
+    260329
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "loop",
+    "duration": 1.2,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 3.7,
+  "gen_s": 2.24,
+  "score_s": 1.55,
+  "takes": [
+    {
+      "seed": 260329,
+      "signal": {
+        "duration_s": 4.0,
+        "peak_dbfs": -1.54,
+        "true_peak_dbtp": -1.54,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00049,
+        "active_s": 2.725,
+        "noise_floor_db": -88.7,
+        "onset_s": 0.0858,
+        "tail_db": -89.2,
+        "stereo_correlation": 1.0,
+        "lufs": -27.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "loop_start_s": 0.52,
+        "crossfade_s": 0.302,
+        "gain_db": 13.71,
+        "onset_s": 0.0,
+        "onset_frame": 0.0,
+        "length_s": 1.2083,
+        "length_frames": 29.0,
+        "channels": 2,
+        "seam_ok": true,
+        "seam_jump_ratio": 0.5,
+        "seam_flux_ratio": 0.9,
+        "seam_level_ratio": 0.57
+      },
+      "final": {
+        "true_peak_dbtp": -11.47,
+        "lufs": -23.0
+      },
+      "clap": 0.5165,
+      "clap_cos": 0.3403,
+      "clap_top": null,
+      "aes": {
+        "CE": 2.05,
+        "CU": 2.81,
+        "PC": 2.54,
+        "PQ": 4.25
+      },
+      "fails": [],
+      "warnings": [
+        "so-so production quality (Audiobox PQ 4.2); normal for noise-like ambiences (rain, wind)"
+      ],
+      "rejected": false,
+      "rank_score": 0.4558,
+      "rank": 1,
+      "ref": "20261026-210038-c64e:260329",
+      "files": {
+        "wav": "20261026-210038-c64e/260329.wav",
+        "png": "20261026-210038-c64e/260329.png",
+        "raw": "20261026-210038-c64e/260329_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210038-c64e\\260329.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210038-c64e\\260329.png"
+      }
+    },
+    {
+      "seed": 260328,
+      "signal": {
+        "duration_s": 4.0,
+        "peak_dbfs": -2.69,
+        "true_peak_dbtp": -2.69,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.001,
+        "active_s": 2.865,
+        "noise_floor_db": -88.0,
+        "onset_s": 0.0808,
+        "tail_db": -88.2,
+        "stereo_correlation": 1.0,
+        "lufs": -28.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "loop_start_s": 0.55,
+        "crossfade_s": 0.302,
+        "gain_db": 12.45,
+        "onset_s": 0.0,
+        "onset_frame": 0.0,
+        "length_s": 1.2083,
+        "length_frames": 29.0,
+        "channels": 2,
+        "seam_ok": true,
+        "seam_jump_ratio": 0.2,
+        "seam_flux_ratio": 0.92,
+        "seam_level_ratio": 0.56
+      },
+      "final": {
+        "true_peak_dbtp": -9.25,
+        "lufs": -23.0
+      },
+      "clap": 0.6121,
+      "clap_cos": 0.2601,
+      "clap_top": null,
+      "aes": {
+        "CE": 1.8,
+        "CU": 2.49,
+        "PC": 2.54,
+        "PQ": 3.9
+      },
+      "fails": [],
+      "warnings": [
+        "so-so production quality (Audiobox PQ 3.9); normal for noise-like ambiences (rain, wind)"
+      ],
+      "rejected": false,
+      "rank_score": 0.3756,
+      "rank": 2,
+      "ref": "20261026-210038-c64e:260328",
+      "files": {
+        "wav": "20261026-210038-c64e/260328.wav",
+        "png": "20261026-210038-c64e/260328.png",
+        "raw": "20261026-210038-c64e/260328_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210038-c64e\\260328.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210038-c64e\\260328.png"
+      }
+    }
+  ],
+  "kept": 2
+}

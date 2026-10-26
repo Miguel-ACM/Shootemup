@@ -5323,6 +5323,179 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemFlameSustain",
+      "label": "Flamethrowers — sustained flame",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "loop",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemFlameSustain",
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The automatic production-quality score was low. The automatic listener was uncertain.",
+          "file": "audio/itemFlameSustain/AMBMisc_LocalTake_v01.wav",
+          "seconds": 1.2083333333333333,
+          "sampleRate": 48000,
+          "sha256": "95b02b2df3a4ae894adb09740d8409f2f72a9b983cf923469c34adace0a9ae7f",
+          "ref": "20261026-210016-480d:260326",
+          "review": {
+            "brief_id": "9a158ab9675453a1ad5d90b698e34abb9f858ccf9ffcbab5bb1f2625c7a46ce0",
+            "blind_caption": "A fire crackling",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: steady compact gas torch flame?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the texture steady without impacts or obvious gaps?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3576
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic production-quality score was low. The automatic listener was uncertain.",
+          "file": "audio/itemFlameSustain/AMBMisc_LocalTake_v02.wav",
+          "seconds": 1.2083333333333333,
+          "sampleRate": 48000,
+          "sha256": "1ee767de4d09f15b207ada6b64457cafe4164aaf45c86e07b6352b704bfca076",
+          "ref": "20261026-210038-c64e:260329",
+          "review": {
+            "brief_id": "9a158ab9675453a1ad5d90b698e34abb9f858ccf9ffcbab5bb1f2625c7a46ce0",
+            "blind_caption": "A loud gust of wind",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: steady compact gas torch flame?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the texture steady without impacts or obvious gaps?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3192
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The automatic production-quality score was low. The automatic listener was uncertain.",
+          "file": "audio/itemFlameSustain/AMBMisc_LocalTake_v03.wav",
+          "seconds": 1.2083333333333333,
+          "sampleRate": 48000,
+          "sha256": "cd5885813627bb9486c79d894b6a98ba38f8ab475227ad45b63b9932cae0a88b",
+          "ref": "20261026-210016-480d:260327",
+          "review": {
+            "brief_id": "9a158ab9675453a1ad5d90b698e34abb9f858ccf9ffcbab5bb1f2625c7a46ce0",
+            "blind_caption": "A car engine idling",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: steady compact gas torch flame?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the texture steady without impacts or obvious gaps?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2886
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic production-quality score was low. The automatic listener was uncertain.",
+          "file": "audio/itemFlameSustain/AMBMisc_LocalTake_v04.wav",
+          "seconds": 1.2083333333333333,
+          "sampleRate": 48000,
+          "sha256": "61239dea51e68568787f5e6473f4c5001c368b64ae784ffc1b1283ba5082332d",
+          "ref": "20261026-210038-c64e:260328",
+          "review": {
+            "brief_id": "9a158ab9675453a1ad5d90b698e34abb9f858ccf9ffcbab5bb1f2625c7a46ce0",
+            "blind_caption": "A train horn",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: steady compact gas torch flame?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the texture steady without impacts or obvious gaps?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "KEEP (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2702
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }
