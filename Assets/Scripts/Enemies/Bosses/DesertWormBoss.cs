@@ -153,6 +153,8 @@ public sealed class DesertWormBoss : DistrictBoss
             for (int i = 1; i < cores.Length; i++)
                 if (cores[i] != null && CanShoot(cores[i]) && (beat < 4 && (i - 1) % 4 == beat || (beat == 9 || beat == 10) && i % 2 == beat % 2 || phaseTwo && beat == 7 && i % 2 == ((volley + 1) / 12) % 2))
                     Cue(cores[i].transform.position, seconds);
+        if (phaseTwo && beat == 7 && ((volley + 1) / 12) % 2 == 0 && CanShoot(cores[0]))
+            Cue(cores[0].transform.position, seconds);
     }
 
     bool CanShoot(DesertWormCore core) => core != null && core.health > 0 && core.transform.position.y < Camera.UpLimit - .7f &&
