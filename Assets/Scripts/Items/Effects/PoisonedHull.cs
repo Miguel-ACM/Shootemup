@@ -10,7 +10,11 @@ public sealed class PoisonedHull : MonoBehaviour
         power = Mathf.Max(power, Mathf.Clamp(damage * .35f, 1, 9));
         expires = Time.time + 5;
         if (effect == null)
+        {
             effect = new HullAfflictionVfx(enemy, true);
+            ItemProcVfx.Emit(ItemProcShape.Toxic, transform.position, PlayerShotPalette.Poison, Mathf.Clamp(enemy.size * .6f, .2f, .6f));
+            ItemSound.Cue("itemPoison", volume: .065f, cooldown: .3f);
+        }
         if (nextTick == 0)
             nextTick = Time.time + .5f;
     }
