@@ -36,7 +36,7 @@ public abstract class DistrictBoss : DistrictEnemy
         if (GameRules.playerDisabled)
             return;
         age += Time.deltaTime * LevelRun.EnemyTempoScale;
-        firingCue?.Warn((nextAttack - age) / LevelRun.EnemyTempoScale);
+        PrepareFire((nextAttack - age) / LevelRun.EnemyTempoScale);
         if (!phaseTwo && PhaseTwoReady)
         {
             phaseTwo = true;

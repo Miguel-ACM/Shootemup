@@ -595,6 +595,10 @@ public sealed class CombatHullVisual : MonoBehaviour
             return;
         var flight = GetComponent<FormationFlight>();
         float target = flight != null && flight.phrase != FlightPhrase.Battery && flight.phrase != FlightPhrase.Chevron ? Vector2.SignedAngle(Vector2.down, flight.Tangent) : 0;
+        // Nose weapons turn toward their committed shot. Gunships strafe with
+        // their guns facing the arena instead of swinging through every bend.
+        if (enemy != null)
+            target = enemy.NoseAimed ? enemy.VisualHeading : Mathf.Clamp(target, -12, 12);
         if (spin != 0)
             model.Rotate(0, 0, spin * Time.deltaTime, Space.Self);
         else

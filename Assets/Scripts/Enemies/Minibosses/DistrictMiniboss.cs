@@ -64,7 +64,7 @@ public abstract class DistrictMiniboss : DistrictEnemy
                 return;
             }
         }
-        firingCue?.Warn((nextAttack - age) / LevelRun.EnemyTempoScale);
+        PrepareFire(Engaged ? (nextAttack - age) / LevelRun.EnemyTempoScale : -1);
         if (Engaged && age >= nextAttack)
         {
             volley++;

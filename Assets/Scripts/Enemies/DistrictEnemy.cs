@@ -9,6 +9,14 @@ public abstract class DistrictEnemy : AEnemy
     [EnemyTunable("Firing / First attack delay", 0, 15)] protected float nextAttack = 1.2f;
     protected int volley;
     protected bool enteredFight;
+    Vector2 committedAim = Vector2.down;
+    bool aimCommitted;
+    float lastRelease = -10;
+    public bool IsPreparing { get; private set; }
+    public virtual bool NoseAimed => EnemyWeaponLayout.NoseAimed(hull);
+    public float VisualHeading => NoseAimed && (IsPreparing || age - lastRelease < .24f) ? Vector2.SignedAngle(Vector2.down, committedAim) : 0;
+    protected int Shots(int easy, int hard) => Difficulty.Easy ? easy : hard;
+    protected float Timing(float easy, float hard) => Difficulty.Easy ? easy : hard;
     public float hullScale = .7f;
     public int hull;
     [Min(.1f), EnemyTunable("Firing / Shell travel distance", .1f, 16)] public float shellTravelDistance = 3.8f;
@@ -239,9 +247,9 @@ public abstract class DistrictEnemy : AEnemy
         {
             enteredFight = true;
             if (!(movement is FormationFlight))
-                nextAttack = Mathf.Max(nextAttack, age + .35f);
+                nextAttack = Mathf.Max(nextAttack, age + .65f);
         }
-        firingCue?.Warn(movement is FormationFlight score ? score.FireWarning : (nextAttack - age) / LevelRun.EnemyTempoScale);
+        PrepareFire(movement is FormationFlight score ? score.FireWarning : (nextAttack - age) / LevelRun.EnemyTempoScale);
         if (age > 28 || transform.position.y < Camera.DownLimit - 2)
         {
             Depart();
@@ -269,9 +277,27 @@ public abstract class DistrictEnemy : AEnemy
         }
     }
 
-    protected Vector2 Aim => movement != null && movement.LockedAim.HasValue ? ((Vector2)(movement.LockedAim.Value - transform.position)).normalized : CombatVisuals.Aim(transform.position);
+    Vector2 RawAim => movement != null && movement.LockedAim.HasValue ? ((Vector2)(movement.LockedAim.Value - transform.position)).normalized : CombatVisuals.Aim(transform.position);
+    protected Vector2 Aim => aimCommitted ? committedAim : RawAim;
+    protected virtual void PrepareFire(float seconds)
+    {
+        IsPreparing = enteredFight && seconds >= 0 && seconds < .48f;
+        if (IsPreparing && !aimCommitted) { committedAim = RawAim; aimCommitted = true; }
+        else if (!IsPreparing && age - lastRelease > .24f) aimCommitted = false;
+        firingCue?.Warn(enteredFight ? seconds : -1);
+    }
+    protected void Cue(Vector3 world, float seconds) => firingCue?.WarnAt(world, seconds);
+    protected Vector3 Muzzle(int index = 0)
+    {
+        var ports = EnemyWeaponLayout.Ports(hull);
+        return ports.Length == 0 ? transform.position : Hull.TransformPoint(ports[Mathf.Abs(index) % ports.Length]);
+    }
     protected T Fire<T>(Vector3 position, Vector2 direction, float velocity, float radius = .18f) where T : CombatRound
     {
+        // Legacy center-fired volleys now leave the existing modeled weapon.
+        if (!(this is TunnelSawBoss) && (position - transform.position).sqrMagnitude < .00001f)
+            position = Muzzle(volley);
+        lastRelease = age;
         firingCue?.Flash(position);
         var shot = CombatRound.Launch<T>(position, direction, velocity * ProjectileSpeedScale * (IsMiniboss ? 1.14f : 1), radius);
         if (shot != null)
@@ -284,7 +310,7 @@ public abstract class DistrictEnemy : AEnemy
     protected void Fan<T>(int count, float spread, float velocity, float radius = .14f) where T : CombatRound
     {
         for (int i = 0; i < count; i++)
-            Fire<T>(transform.position, CombatVisuals.Rotate(Aim, (i - (count - 1) * .5f) * spread), velocity, radius);
+            Fire<T>(Muzzle(i), CombatVisuals.Rotate(Aim, (i - (count - 1) * .5f) * spread), velocity, radius);
     }
 
     protected void FanFrom<T>(int count, float spread, float velocity, float radius, params Vector3[] ports) where T : CombatRound
