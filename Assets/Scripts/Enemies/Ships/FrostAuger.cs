@@ -10,9 +10,11 @@ public sealed class FrostAuger : GroundVehicle
         hull = 40;
         hullScale = .64f;
         health = 39;
-        attackInterval = 1.8f;
+        attackInterval = Timing(2.5f,1.9f);
         shellTravelDistance = 2.7f;
     }
+
+    protected override void PrepareFire(float seconds) { base.PrepareFire(seconds); firingCue.ClearWarning(); if(Weapon!=null) Cue(Weapon.TransformPoint(new Vector3((volley%2==0?1:-1)*.23f,-.57f,-.36f)),seconds); }
 
     protected override void Attack()
     {
@@ -20,7 +22,7 @@ public sealed class FrostAuger : GroundVehicle
             return;
         int side = volley % 2 == 0 ? -1 : 1;
         var muzzle = Weapon.TransformPoint(new Vector3(side * .23f, -.57f, -.36f));
-        Fire<BurstShell>(muzzle, CombatVisuals.Rotate(CombatVisuals.Aim(muzzle), side * 12), 4.5f, .27f);
+        Fire<BurstShell>(muzzle, CombatVisuals.Rotate(CombatVisuals.Aim(muzzle), side * 12), 3.5f, .34f);
     }
 
     protected override void BuildRunningGear()
