@@ -3,7 +3,7 @@ public sealed class RecoveryCoil : AItem
 {
     void Awake()
     {
-        SetData("Recovery Coil", "Ship equipment", "Every 8 blocked bullets fire a homing shot.", ItemType.passive);
+        SetData("Countershot Shield", "Ship equipment", "Every 8 blocked bullets fire a homing shot.", ItemType.passive);
     }
 
     public override void OnBegin()
