@@ -137,6 +137,11 @@ public static partial class IndustrialMeshFactory
                     b.Box(new Vector3(side * .2f, .45f, 0), new Vector3(.065f, .18f, .065f), 11);
                 }
                 b.Box(new Vector3(0, .52f, 0), new Vector3(.48f, .06f, .08f), 11);
+                // The little clock shows that the charge builds while waiting.
+                b.Drum(new Vector3(0, 0, -.19f), .15f, .08f, 10, 10, 6);
+                b.Drum(new Vector3(0, 0, -.24f), .105f, .04f, 11, 10);
+                b.Box(new Vector3(0, .025f, -.27f), new Vector3(.025f, .11f, .025f), 1);
+                b.Box(new Vector3(.04f, 0, -.27f), new Vector3(.08f, .025f, .025f), 1);
                 break;
             case "ReserveCell":
                 // Compact storage cell in an open protective cage, with asymmetric terminals.
