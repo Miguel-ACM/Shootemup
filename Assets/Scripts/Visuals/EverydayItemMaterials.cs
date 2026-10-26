@@ -4,6 +4,13 @@ public static class EverydayItemMaterials
     static Material gum;
     public static Material For(string kind)
     {
+        if (System.Array.IndexOf(IndustrialMeshFactory.ItemKinds, kind) >= 0)
+        {
+            var prefab = Resources.Load<GameObject>("Items/Item");
+            var visual = prefab != null ? prefab.GetComponent<PSXObjectVisual>() : null;
+            if (visual != null && visual.modelRenderer != null)
+                return visual.modelRenderer.sharedMaterial;
+        }
         if (kind != "ChewingGum")
             return CombatMaterials.Fleet;
         if (gum != null)

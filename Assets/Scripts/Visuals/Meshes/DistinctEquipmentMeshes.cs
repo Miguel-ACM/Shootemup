@@ -1,0 +1,196 @@
+using UnityEngine;
+
+public static partial class IndustrialMeshFactory
+{
+    // Recognize equipment by its outer contour, not a different dot on the same box.
+    static bool DistinctEquipment(Builder b, string kind)
+    {
+        switch (kind)
+        {
+            case "BeamEmitterItem":
+                // Open tuning fork around a recessed optical channel.
+                foreach (int side in new[] { -1, 1 })
+                {
+                    b.Prism(new[] { new Vector2(side * .12f, -.35f), new Vector2(side * .34f, -.22f), new Vector2(side * .27f, .58f), new Vector2(side * .16f, .65f) }, .18f, 11, Vector3.zero, 6);
+                    b.Box(new Vector3(side * .21f, .35f, -.13f), new Vector3(.08f, .38f, .06f), 9);
+                }
+                b.Box(new Vector3(0, -.27f, 0), new Vector3(.48f, .2f, .3f), 6);
+                b.Drum(new Vector3(0, -.14f, -.15f), .13f, .1f, 9, 12);
+                break;
+            case "NeedleCannonItem":
+                // Long syringe barrel, finger wings, and a visible needle tip.
+                b.Can(Vector3.zero, .12f, .72f, 11, 6);
+                b.Box(new Vector3(0, .54f, 0), new Vector3(.045f, .4f, .06f), 11);
+                b.Box(new Vector3(0, -.28f, 0), new Vector3(.55f, .07f, .18f), 6);
+                b.Box(new Vector3(0, -.5f, 0), new Vector3(.07f, .33f, .08f), 6);
+                b.Box(new Vector3(0, -.65f, 0), new Vector3(.3f, .07f, .18f), 3);
+                break;
+            case "ScatterCannonItem":
+                // Five genuinely splayed barrels form a fan silhouette.
+                b.Drum(new Vector3(0, -.22f, 0), .25f, .22f, 6, 8);
+                for (int i = -2; i <= 2; i++)
+                {
+                    float x = i * .17f;
+                    b.Prism(new[] { new Vector2(i * .065f - .05f, -.15f), new Vector2(i * .065f + .05f, -.15f), new Vector2(x + .065f, .5f - Mathf.Abs(i) * .06f), new Vector2(x - .065f, .5f - Mathf.Abs(i) * .06f) }, .15f, 11, Vector3.zero, 6);
+                }
+                break;
+            case "SwarmRackItem":
+                // Broad six-cell honeycomb launcher with protruding rocket noses.
+                foreach (int side in new[] { -1, 1 })
+                    for (int row = 0; row < 3; row++)
+                    {
+                        Vector3 p = new Vector3(side * .22f, (row - 1) * .24f, 0);
+                        b.Drum(p, .16f, .25f, 6, 6);
+                        b.Drum(p + Vector3.back * .15f, .1f, .09f, 3, 6);
+                        b.Prism(new[] { new Vector2(-.05f, 0), new Vector2(.05f, 0), new Vector2(0, .18f) }, .08f, 11, p + Vector3.up * .12f);
+                    }
+                break;
+            case "BurstLauncherItem":
+                // Short, wide mortar cup over a large round ammunition drum.
+                b.Drum(new Vector3(0, -.18f, 0), .35f, .3f, 4, 12, 6);
+                b.Prism(new[] { new Vector2(-.16f, -.05f), new Vector2(.16f, -.05f), new Vector2(.29f, .45f), new Vector2(-.29f, .45f) }, .32f, 11, Vector3.zero, 6);
+                b.Box(new Vector3(0, .46f, 0), new Vector3(.64f, .11f, .4f), 6);
+                b.Box(new Vector3(0, .48f, -.21f), new Vector3(.42f, .045f, .035f), 1);
+                break;
+            case "RailDriverItem":
+                // Very long twin rails, open centre, three external cross coils.
+                foreach (int side in new[] { -1, 1 })
+                    b.Box(new Vector3(side * .16f, .09f, 0), new Vector3(.1f, 1.25f, .18f), 11);
+                for (int i = 0; i < 3; i++)
+                    b.Box(new Vector3(0, -.27f + i * .27f, -.05f), new Vector3(.57f, .1f, .27f), 9, 6);
+                b.Box(new Vector3(0, -.55f, 0), new Vector3(.4f, .22f, .28f), 6);
+                break;
+            case "DiscThrowerItem":
+                // Exposed toothed circular blade in a half-moon launch cradle.
+                b.Drum(new Vector3(0, .08f, -.08f), .38f, .1f, 11, 16);
+                for (int i = 0; i < 8; i++)
+                {
+                    float a = i * Mathf.PI / 4;
+                    Vector2 p = new Vector2(Mathf.Cos(a), Mathf.Sin(a)), q = new Vector2(-p.y, p.x);
+                    b.Prism(new[] { p * .3f, p * .49f + q * .07f, p * .37f + q * .17f }, .08f, 11, Vector3.up * .08f);
+                }
+                b.Drum(new Vector3(0, .08f, -.16f), .12f, .07f, 9, 8);
+                b.Box(new Vector3(0, -.4f, 0), new Vector3(.68f, .2f, .24f), 6);
+                break;
+            case "FlameProjectorItem":
+                // Single fuel cylinder, bent hose and flared nozzle.
+                b.Can(new Vector3(-.22f, -.1f, 0), .19f, .63f, 3, 6);
+                b.Box(new Vector3(.11f, -.26f, 0), new Vector3(.5f, .1f, .13f), 6);
+                b.Box(new Vector3(.3f, -.02f, 0), new Vector3(.1f, .55f, .12f), 6);
+                b.Prism(new[] { new Vector2(.21f, .14f), new Vector2(.39f, .14f), new Vector2(.49f, .49f), new Vector2(.11f, .49f) }, .23f, 11, Vector3.zero, 6);
+                b.Box(new Vector3(.3f, .49f, 0), new Vector3(.42f, .09f, .28f), 3);
+                break;
+            case "Capacitor":
+                // Tall paired capacitor cans with a metal bus bridge.
+                foreach (int side in new[] { -1, 1 })
+                {
+                    b.Can(new Vector3(side * .2f, 0, 0), .15f, .76f, 9, 6);
+                    b.Box(new Vector3(side * .2f, .45f, 0), new Vector3(.065f, .18f, .065f), 11);
+                }
+                b.Box(new Vector3(0, .52f, 0), new Vector3(.48f, .06f, .08f), 11);
+                break;
+            case "ReserveCell":
+                // Flat pocket cell with one tall and one short terminal.
+                b.Box(new Vector3(0, -.05f, 0), new Vector3(.58f, .45f, .14f), 9, 6);
+                b.Box(new Vector3(-.2f, .3f, 0), new Vector3(.1f, .23f, .13f), 11);
+                b.Box(new Vector3(.2f, .22f, 0), new Vector3(.16f, .08f, .13f), 11);
+                b.Box(new Vector3(0, -.05f, -.09f), new Vector3(.24f, .05f, .025f), 1);
+                break;
+            case "SpareBattery":
+                // Horizontal battery strapped to a tiny guided rocket.
+                b.Box(Vector3.zero, new Vector3(.77f, .31f, .27f), 4, 6);
+                b.Box(new Vector3(.43f, 0, 0), new Vector3(.12f, .18f, .18f), 11);
+                b.Can(new Vector3(0, 0, -.25f), .09f, .8f, 11, 6);
+                b.Prism(new[] { new Vector2(-.1f, .39f), new Vector2(.1f, .39f), new Vector2(0, .61f) }, .14f, 3, Vector3.back * .25f);
+                break;
+            case "Overdrive":
+                // A red throttle lever with swept acceleration fins.
+                b.Prism(new[] { new Vector2(-.36f, -.35f), new Vector2(.36f, -.35f), new Vector2(.24f, .05f), new Vector2(-.24f, .05f) }, .27f, 6, Vector3.zero);
+                b.Box(new Vector3(.13f, .21f, -.03f), new Vector3(.1f, .53f, .1f), 11);
+                b.Box(new Vector3(.13f, .48f, -.03f), new Vector3(.4f, .15f, .18f), 3);
+                foreach (int side in new[] { -1, 1 })
+                    b.Prism(new[] { new Vector2(side * .2f, -.2f), new Vector2(side * .49f, -.02f), new Vector2(side * .29f, -.38f) }, .1f, 3, Vector3.zero);
+                break;
+            case "FocusingLens":
+                // Telescope: large objective, narrow neck, small eyepiece.
+                b.Drum(new Vector3(0, .21f, -.03f), .34f, .16f, 6, 12);
+                b.Drum(new Vector3(0, .21f, -.14f), .27f, .07f, 9, 12);
+                b.Box(new Vector3(0, -.14f, .02f), new Vector3(.22f, .55f, .22f), 11);
+                b.Box(new Vector3(0, -.46f, .02f), new Vector3(.37f, .12f, .26f), 6);
+                break;
+            case "ReturnModule":
+                // Literal U-turn arrow, readable without a label.
+                b.Prism(new[] { new Vector2(-.36f, -.37f), new Vector2(-.36f, .26f), new Vector2(-.22f, .42f), new Vector2(.23f, .42f), new Vector2(.36f, .26f), new Vector2(.36f, -.05f), new Vector2(.18f, -.05f), new Vector2(.18f, .18f), new Vector2(-.17f, .18f), new Vector2(-.17f, -.37f) }, .16f, 11, Vector3.zero, 6);
+                b.Prism(new[] { new Vector2(-.49f, -.22f), new Vector2(-.04f, -.22f), new Vector2(-.27f, -.52f) }, .17f, 9, Vector3.zero);
+                break;
+            case "SplitterCore":
+                // One input cartridge physically divides into two open arms.
+                b.Prism(new[] { new Vector2(-.09f, -.49f), new Vector2(.09f, -.49f), new Vector2(.09f, -.06f), new Vector2(.39f, .3f), new Vector2(.25f, .45f), new Vector2(0, .14f), new Vector2(-.25f, .45f), new Vector2(-.39f, .3f), new Vector2(-.09f, -.06f) }, .2f, 11, Vector3.zero, 6);
+                b.Box(new Vector3(0, -.31f, -.13f), new Vector3(.1f, .23f, .05f), 9);
+                break;
+            case "ReboundCoil":
+                // Exposed zigzag spring between two broad contact plates.
+                for (int i = 0; i < 6; i++)
+                {
+                    float y = -.29f + i * .12f;
+                    int sign = i % 2 == 0 ? 1 : -1;
+                    b.Prism(new[] { new Vector2(-sign * .22f, y), new Vector2(sign * .22f, y + .08f), new Vector2(sign * .22f, y + .14f), new Vector2(-sign * .22f, y + .06f) }, .12f, 11, Vector3.zero);
+                }
+                foreach (int side in new[] { -1, 1 })
+                    b.Box(new Vector3(0, side * .43f, 0), new Vector3(.65f, .1f, .24f), 6);
+                break;
+            case "RecoveryCoil":
+                // Shield plate catches fire and feeds a rocket-shaped return port.
+                b.Prism(new[] { new Vector2(-.4f, .32f), new Vector2(.4f, .32f), new Vector2(.31f, -.18f), new Vector2(0, -.48f), new Vector2(-.31f, -.18f) }, .18f, 11, Vector3.zero, 6);
+                b.Prism(new[] { new Vector2(-.11f, -.18f), new Vector2(.11f, -.18f), new Vector2(.11f, .35f), new Vector2(0, .62f), new Vector2(-.11f, .35f) }, .12f, 9, Vector3.back * .15f);
+                break;
+            case "ProximityFuse":
+                // Whisker detonator: central charge and long exposed sensor prongs.
+                b.Drum(Vector3.zero, .22f, .23f, 3, 8, 6);
+                foreach (int side in new[] { -1, 1 })
+                {
+                    b.Box(new Vector3(side * .35f, .1f, 0), new Vector3(.34f, .055f, .07f), 11);
+                    b.Box(new Vector3(side * .49f, .25f, 0), new Vector3(.055f, .36f, .07f), 11);
+                }
+                b.Box(new Vector3(0, -.32f, 0), new Vector3(.12f, .24f, .14f), 6);
+                break;
+            case "SalvageConverter":
+                // Open coin hopper feeds a small missile chute.
+                b.Prism(new[] { new Vector2(-.43f, .38f), new Vector2(.43f, .38f), new Vector2(.2f, -.05f), new Vector2(-.2f, -.05f) }, .3f, 11, Vector3.zero, 6);
+                for (int i = 0; i < 3; i++)
+                    b.Drum(new Vector3(-.22f + i * .2f, .37f + i % 2 * .13f, -.05f), .12f, .08f, 4, 10);
+                b.Box(new Vector3(.15f, -.25f, 0), new Vector3(.18f, .4f, .2f), 6);
+                b.Prism(new[] { new Vector2(.04f, -.3f), new Vector2(.26f, -.3f), new Vector2(.15f, -.55f) }, .15f, 3, Vector3.zero);
+                break;
+            case "ChainReactor":
+                // Three linked powder charges with an exposed fuse.
+                for (int i = 0; i < 3; i++)
+                {
+                    var p = new Vector3((i - 1) * .27f, (i % 2) * .16f, 0);
+                    b.Can(p, .17f, .57f, 3, 6);
+                    b.Box(p + new Vector3(0, 0, -.18f), new Vector3(.08f, .5f, .04f), 11);
+                }
+                b.Box(new Vector3(0, .48f, 0), new Vector3(.065f, .3f, .07f), 4);
+                break;
+            case "MirrorBurst":
+                // Faceted mirror with split reflected wings, not a round energy core.
+                b.Prism(new[] { new Vector2(0, .48f), new Vector2(.29f, .15f), new Vector2(.21f, -.34f), new Vector2(-.21f, -.34f), new Vector2(-.29f, .15f) }, .14f, 9, Vector3.zero, 11);
+                foreach (int side in new[] { -1, 1 })
+                    b.Prism(new[] { new Vector2(side * .18f, -.1f), new Vector2(side * .5f, .34f), new Vector2(side * .46f, -.2f) }, .1f, 11, Vector3.forward * .1f, 6);
+                break;
+            case "GravityWell":
+                // A dark centre enclosed by a four-claw containment cage.
+                b.Drum(Vector3.zero, .22f, .2f, 1, 12);
+                for (int i = 0; i < 4; i++)
+                {
+                    float a = i * Mathf.PI / 2;
+                    Vector2 p = new Vector2(Mathf.Cos(a), Mathf.Sin(a)), q = new Vector2(-p.y, p.x);
+                    b.Prism(new[] { p * .22f - q * .07f, p * .48f - q * .14f, p * .48f + q * .14f, p * .3f + q * .14f }, .18f, 6, Vector3.zero, 9);
+                }
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+}

@@ -7,6 +7,13 @@ public static partial class IndustrialMeshFactory
     {
         if (expansionItems.TryGetValue(kind, out var mesh))
             return mesh;
+        int original = System.Array.IndexOf(ItemKinds, kind);
+        if (original >= 0)
+        {
+            var prefab = Resources.Load<GameObject>("Items/Item");
+            var visual = prefab != null ? prefab.GetComponent<PSXObjectVisual>() : null;
+            return expansionItems[kind] = visual != null && original < visual.itemMeshes.Length ? visual.itemMeshes[original] : CreateItem(original);
+        }
         if (kind == "WindUpCannonItem")
             return expansionItems[kind] = WindUpCannonModel();
         if (kind == "Popcorn")
@@ -14,6 +21,8 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (DistinctEquipment(b, kind))
+            return expansionItems[kind] = b.Finish(kind + " equipment");
         if (BackfireItem(b, kind))
             return expansionItems[kind] = b.Finish(kind + " equipment");
         if (EverydayItem(b, kind))

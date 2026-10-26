@@ -161,7 +161,7 @@ public sealed class LoadoutHUD : MonoBehaviour
         go.transform.localPosition = new Vector3((slot - 1.5f) * 1.3f, 0, 0);
         go.transform.localScale = Vector3.one * (.87f / Mathf.Max(mesh.bounds.size.x, mesh.bounds.size.y, mesh.bounds.size.z));
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
-        go.AddComponent<MeshRenderer>().sharedMaterial = CombatMaterials.Fleet;
+        go.AddComponent<MeshRenderer>().sharedMaterial = EverydayItemMaterials.For(slot < 2 ? type + "Item" : type);
         models[slot] = go.transform;
     }
 
