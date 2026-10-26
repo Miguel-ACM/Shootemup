@@ -8,13 +8,12 @@ public sealed class OrbitalScout : SpaceSatellite
         hull = 41;
         hullScale = .46f;
         health = 35;
-        attackInterval = 1.4f;
+        attackInterval = Timing(2.2f,1.6f);
         Mover<Slalom>();
     }
 
     protected override void Attack()
     {
-        for (int s = -2; s <= 2; s++)
-            Fire<NeedleRound>(Hull.TransformPoint(new Vector3(s * .095f, -.68f, -.15f)), CombatVisuals.Rotate(Aim, s * 10), 6.4f, .14f);
+        Fan<NeedleRound>(Shots(3,5),16,4.7f,.18f);
     }
 }
