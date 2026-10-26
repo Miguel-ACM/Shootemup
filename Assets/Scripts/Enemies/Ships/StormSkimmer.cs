@@ -7,12 +7,12 @@ public sealed class StormSkimmer : DistrictEnemy
         hull = 11;
         health = 22;
         hullScale = .55f;
-        attackInterval = 2.3f;
+        attackInterval = Timing(3.0f,2.2f);
         Mover<Slalom>();
     }
 
     protected override void Attack()
     {
-        Fan<GuidedMissile>(2, 24, 5, .18f);
+        Fan<GuidedMissile>(Shots(1,2),30,3.8f,.23f);
     }
 }
