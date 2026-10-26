@@ -8,13 +8,12 @@ public sealed class OrbitalMoonlet : SpaceSatellite
         hull = 44;
         hullScale = .28f;
         health = 24;
-        attackInterval = 1.1f;
+        attackInterval = Timing(2.0f,1.4f);
         nextAttack = .8f;
     }
 
     protected override void Attack()
     {
-        for (int s = -1; s <= 1; s++)
-            Fire<SimpleRound>(transform.position, CombatVisuals.Rotate(Aim, s * 11), 5.7f, .12f);
+        Fan<SimpleRound>(Shots(1,2),17,4.1f,.18f);
     }
 }
