@@ -5,12 +5,28 @@ using System.Collections.Generic;
 public sealed class ItemSound : MonoBehaviour
 {
     static ItemSound instance;
+    static readonly Dictionary<string, AudioClip> library = new Dictionary<string, AudioClip>();
     readonly Dictionary<string, AudioClip> clips = new Dictionary<string, AudioClip>();
     readonly Dictionary<string, float> gates = new Dictionary<string, float>();
     readonly AudioSource[] voices = new AudioSource[8];
     int cursor;
     bool paused;
-    public static AudioClip Clip(string cue) => Resources.Load<AudioClip>("Sounds/Items/" + cue);
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetLibrary() { library.Clear(); instance = null; }
+
+    public static AudioClip Clip(string cue)
+    {
+        if (!library.TryGetValue(cue, out var clip))
+            library[cue] = clip = Resources.Load<AudioClip>("Sounds/ItemApproved/" + cue) ?? Resources.Load<AudioClip>("Sounds/Items/" + cue);
+        return clip;
+    }
+
+    // New candidates are auditioned first. Missing approvals preserve the previous cue.
+    public static void Cue(string cue, string fallback = null, float volume = .14f, float pitch = 1, float cooldown = .12f)
+    {
+        string selected = Clip(cue) != null ? cue : fallback;
+        if (!string.IsNullOrEmpty(selected)) Play(selected, volume, pitch, cooldown);
+    }
     public static void Play(string cue, float volume = .18f, float pitch = 1, float cooldown = .08f)
     {
         if (AudioListener.pause || Menu.GameplayPaused)

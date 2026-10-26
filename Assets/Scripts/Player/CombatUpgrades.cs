@@ -29,6 +29,7 @@ public sealed class CombatUpgrades : MonoBehaviour
     public float Reserve => reserve;
     void Awake()
     {
+        ItemProcVfx.Warm();
         gameObject.AddComponent<UpgradeMeters>();
         Current = this;
         ship = GetComponent<Shipcontroller>();
