@@ -178,8 +178,8 @@ public static partial class IndustrialMeshFactory
                 {
                     Vector3 inlet = new Vector3(side * .08f, .04f, .02f);
                     Vector3 muzzle = new Vector3(side * .34f, .4f, .02f);
-                    EquipmentRod(b, inlet, muzzle, .085f, 11);
-                    EquipmentRod(b, muzzle, muzzle + new Vector3(side * .05f, .07f, 0), .11f, 6);
+                    EquipmentRod(b, inlet, muzzle, .085f, 6);
+                    EquipmentRod(b, muzzle, muzzle + new Vector3(side * .05f, .07f, 0), .11f, 11);
                     b.Ball(muzzle + new Vector3(side * .07f, .09f, -.02f), new Vector3(.055f, .065f, .055f), 9);
                 }
                 break;
