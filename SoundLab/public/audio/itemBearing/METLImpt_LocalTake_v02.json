@@ -1,0 +1,81 @@
+{
+  "request": "20261026-210348-b991",
+  "ref": "20261026-210348-b991:260829",
+  "text": "TrackType: SFX, one small burst of steel ball bearings striking a metal plate, crisp brief metallic rattle, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small burst of steel ball bearings striking a metal plate?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one small burst of steel ball bearings striking a metal plate, crisp brief metallic rattle, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small burst of steel ball bearings striking a metal plate?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "impact-metal",
+  "seed": 260829,
+  "rank": 2,
+  "rank_score": 0.7619,
+  "clap": 0.9442,
+  "clap_cos": 0.246,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.29,
+    "CU": 6.89,
+    "PC": 2.21,
+    "PQ": 7.43
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 1.94,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.2083,
+    "length_frames": 5.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -17.6
+  },
+  "signal": {
+    "duration_s": 1.0,
+    "peak_dbfs": -1.64,
+    "true_peak_dbtp": -1.49,
+    "clipped_fraction": 0.0,
+    "dc_offset": 6e-05,
+    "active_s": 0.395,
+    "noise_floor_db": -82.6,
+    "onset_s": 0.0,
+    "tail_db": -82.6,
+    "stereo_correlation": 0.851,
+    "lufs": -21.6,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "f12ea9a2f3bbb560680f1a33632f9aa599d78e459ead59ef1abe7db347099a62",
+    "blind_caption": "A hammer being struck against a metal object",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small burst of steel ball bearings striking a metal plate?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2028
+  },
+  "human_approved": false
+}

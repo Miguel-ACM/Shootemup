@@ -1,0 +1,84 @@
+{
+  "request": "20261026-210325-2d23",
+  "ref": "20261026-210325-2d23:260826",
+  "text": "TrackType: SFX, one small burst of steel ball bearings striking a metal plate, crisp brief metallic rattle, dry and close",
+  "prompt": "TrackType: SFX, one small burst of steel ball bearings striking a metal plate, crisp brief metallic rattle, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "impact-metal",
+  "seed": 260826,
+  "rank": 2,
+  "rank_score": 0.6924,
+  "clap": 0.8996,
+  "clap_cos": 0.2215,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.48,
+    "CU": 7.03,
+    "PC": 2.11,
+    "PQ": 7.57
+  },
+  "fails": [],
+  "warnings": [
+    "cut at the requested duration while still 16 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 4.13,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.2083,
+    "length_frames": 5.0,
+    "channels": 1,
+    "cut_db": -15.7
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -17.0
+  },
+  "signal": {
+    "duration_s": 1.0,
+    "peak_dbfs": -4.1,
+    "true_peak_dbtp": -3.97,
+    "clipped_fraction": 0.0,
+    "dc_offset": 7e-05,
+    "active_s": 0.385,
+    "noise_floor_db": -80.8,
+    "onset_s": 0.012,
+    "tail_db": -78.5,
+    "stereo_correlation": 0.846,
+    "lufs": -24.4,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "f12ea9a2f3bbb560680f1a33632f9aa599d78e459ead59ef1abe7db347099a62",
+    "blind_caption": "A gun is fired.",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small burst of steel ball bearings striking a metal plate?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2214
+  },
+  "human_approved": false
+}

@@ -1,0 +1,475 @@
+{
+  "brief": {
+    "description": "one small burst of steel ball bearings striking a metal plate, crisp brief metallic rattle, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one small burst of steel ball bearings striking a metal plate?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "f12ea9a2f3bbb560680f1a33632f9aa599d78e459ead59ef1abe7db347099a62",
+  "options": {
+    "duration": 0.2,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 260826,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-210325-2d23",
+      "prompt": "TrackType: SFX, one small burst of steel ball bearings striking a metal plate, crisp brief metallic rattle, dry and close",
+      "takes": [
+        "20261026-210325-2d23:260827",
+        "20261026-210325-2d23:260826"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-210348-b991",
+      "prompt": "TrackType: SFX, one small burst of steel ball bearings striking a metal plate, crisp brief metallic rattle, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small burst of steel ball bearings striking a metal plate?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-210348-b991:260828",
+        "20261026-210348-b991:260829"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 260827,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -1.88,
+        "true_peak_dbtp": -1.74,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00015,
+        "active_s": 0.44,
+        "noise_floor_db": -80.5,
+        "onset_s": 0.019,
+        "tail_db": -81.3,
+        "stereo_correlation": 0.84,
+        "lufs": -22.9,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 1.2,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1,
+        "cut_db": -10.7
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -17.7
+      },
+      "clap": 0.9726,
+      "clap_cos": 0.2783,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.77,
+        "CU": 6.92,
+        "PC": 1.82,
+        "PQ": 7.65
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 11 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.7639,
+      "rank": 1,
+      "ref": "20261026-210325-2d23:260827",
+      "files": {
+        "wav": "20261026-210325-2d23/260827.wav",
+        "png": "20261026-210325-2d23/260827.png",
+        "raw": "20261026-210325-2d23/260827_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210325-2d23\\260827.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210325-2d23\\260827.png"
+      },
+      "review": {
+        "brief_id": "f12ea9a2f3bbb560680f1a33632f9aa599d78e459ead59ef1abe7db347099a62",
+        "blind_caption": "A hammer is being used to drill into a metal object.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small burst of steel ball bearings striking a metal plate?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2767
+      }
+    },
+    {
+      "seed": 260826,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -4.1,
+        "true_peak_dbtp": -3.97,
+        "clipped_fraction": 0.0,
+        "dc_offset": 7e-05,
+        "active_s": 0.385,
+        "noise_floor_db": -80.8,
+        "onset_s": 0.012,
+        "tail_db": -78.5,
+        "stereo_correlation": 0.846,
+        "lufs": -24.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 4.13,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1,
+        "cut_db": -15.7
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -17.0
+      },
+      "clap": 0.8996,
+      "clap_cos": 0.2215,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.48,
+        "CU": 7.03,
+        "PC": 2.11,
+        "PQ": 7.57
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 16 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.6924,
+      "rank": 2,
+      "ref": "20261026-210325-2d23:260826",
+      "files": {
+        "wav": "20261026-210325-2d23/260826.wav",
+        "png": "20261026-210325-2d23/260826.png",
+        "raw": "20261026-210325-2d23/260826_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210325-2d23\\260826.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210325-2d23\\260826.png"
+      },
+      "review": {
+        "brief_id": "f12ea9a2f3bbb560680f1a33632f9aa599d78e459ead59ef1abe7db347099a62",
+        "blind_caption": "A gun is fired.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small burst of steel ball bearings striking a metal plate?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2214
+      }
+    },
+    {
+      "seed": 260828,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -3.88,
+        "true_peak_dbtp": -3.74,
+        "clipped_fraction": 0.0,
+        "dc_offset": 2e-05,
+        "active_s": 0.395,
+        "noise_floor_db": -81.3,
+        "onset_s": 0.0,
+        "tail_db": -79.3,
+        "stereo_correlation": 0.87,
+        "lufs": -22.5,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 3.6,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -17.0
+      },
+      "clap": 0.954,
+      "clap_cos": 0.2653,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.24,
+        "CU": 6.88,
+        "PC": 2.29,
+        "PQ": 7.35
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.7746,
+      "rank": 1,
+      "ref": "20261026-210348-b991:260828",
+      "files": {
+        "wav": "20261026-210348-b991/260828.wav",
+        "png": "20261026-210348-b991/260828.png",
+        "raw": "20261026-210348-b991/260828_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210348-b991\\260828.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210348-b991\\260828.png"
+      },
+      "review": {
+        "brief_id": "f12ea9a2f3bbb560680f1a33632f9aa599d78e459ead59ef1abe7db347099a62",
+        "blind_caption": "Clinking",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small burst of steel ball bearings striking a metal plate?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2051
+      }
+    },
+    {
+      "seed": 260829,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -1.64,
+        "true_peak_dbtp": -1.49,
+        "clipped_fraction": 0.0,
+        "dc_offset": 6e-05,
+        "active_s": 0.395,
+        "noise_floor_db": -82.6,
+        "onset_s": 0.0,
+        "tail_db": -82.6,
+        "stereo_correlation": 0.851,
+        "lufs": -21.6,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 1.94,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -17.6
+      },
+      "clap": 0.9442,
+      "clap_cos": 0.246,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.29,
+        "CU": 6.89,
+        "PC": 2.21,
+        "PQ": 7.43
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.7619,
+      "rank": 2,
+      "ref": "20261026-210348-b991:260829",
+      "files": {
+        "wav": "20261026-210348-b991/260829.wav",
+        "png": "20261026-210348-b991/260829.png",
+        "raw": "20261026-210348-b991/260829_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210348-b991\\260829.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210348-b991\\260829.png"
+      },
+      "review": {
+        "brief_id": "f12ea9a2f3bbb560680f1a33632f9aa599d78e459ead59ef1abe7db347099a62",
+        "blind_caption": "A hammer being struck against a metal object",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small burst of steel ball bearings striking a metal plate?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2028
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 260827,
+    "signal": {
+      "duration_s": 1.0,
+      "peak_dbfs": -1.88,
+      "true_peak_dbtp": -1.74,
+      "clipped_fraction": 0.0,
+      "dc_offset": 0.00015,
+      "active_s": 0.44,
+      "noise_floor_db": -80.5,
+      "onset_s": 0.019,
+      "tail_db": -81.3,
+      "stereo_correlation": 0.84,
+      "lufs": -22.9,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 1.2,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.2083,
+      "length_frames": 5.0,
+      "channels": 1,
+      "cut_db": -10.7
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -17.7
+    },
+    "clap": 0.9726,
+    "clap_cos": 0.2783,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.77,
+      "CU": 6.92,
+      "PC": 1.82,
+      "PQ": 7.65
+    },
+    "fails": [],
+    "warnings": [
+      "cut at the requested duration while still 11 dB below its peak: the tail is chopped, ask for a longer --duration"
+    ],
+    "rejected": false,
+    "rank_score": 0.7639,
+    "rank": 1,
+    "ref": "20261026-210325-2d23:260827",
+    "files": {
+      "wav": "20261026-210325-2d23/260827.wav",
+      "png": "20261026-210325-2d23/260827.png",
+      "raw": "20261026-210325-2d23/260827_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210325-2d23\\260827.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210325-2d23\\260827.png"
+    },
+    "review": {
+      "brief_id": "f12ea9a2f3bbb560680f1a33632f9aa599d78e459ead59ef1abe7db347099a62",
+      "blind_caption": "A hammer is being used to drill into a metal object.",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one small burst of steel ball bearings striking a metal plate?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.2767
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemBearing\\iteration-20261026-210325-bb8b\\METLImpt_Iterated_v01.wav"
+  ]
+}
