@@ -151,7 +151,7 @@ public sealed class PlayerRound : ABullet
         {
             var e = CombatUpgrades.Nearest(transform.position, null, .8f);
             if (e != null && CombatUpgrades.Current.SpendProximity())
-                Detonate();
+                Detonate(true);
         }
         if (transform.position.y > Camera.UpLimit + 3 && !returns && delivery != PlayerDelivery.Disc)
             Destroy(gameObject);
@@ -227,12 +227,14 @@ public sealed class PlayerRound : ABullet
         Destroy(gameObject);
     }
 
-    void Detonate()
+    void Detonate(bool proximity = false)
     {
         if (detonated)
             return;
         detonated = true;
-        PSXImpactEffects.Vanish(transform.position, new Color(.4f, 1, .8f), .7f);
+        ItemProcVfx.Emit(proximity ? ItemProcShape.Lock : ItemProcShape.Detonate, transform.position,
+            proximity ? new Color(.75f, .63f, .35f) : new Color(.3f, .65f, .75f), proximity ? .6f : .7f, heading);
+        ItemSound.Cue(proximity ? "itemProximity" : "itemDepthBurst", volume: .11f, cooldown: .16f);
         for (int i = 0; i < 7; i++)
             Spawn(transform.position, CombatVisuals.Rotate(heading, (i - 3) * 24), damage * .45f, 10, PlayerDelivery.Pulse, 1);
         Destroy(gameObject);
