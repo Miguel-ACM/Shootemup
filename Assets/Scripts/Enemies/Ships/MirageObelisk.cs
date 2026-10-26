@@ -9,7 +9,7 @@ public sealed class MirageObelisk : DistrictEnemy
         hull = 72;
         hullScale = 0.56f;
         health = 48;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(3.6f, 2.65f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -24,12 +24,14 @@ public sealed class MirageObelisk : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve MirageObeliskRoute0 = Route("Desert / MirageObelisk 0", Vector2.right, .55f, 1.25f, .64f, .96f, .34f, .75f, -.21f, .65f, -.62f, .9f, -.63f, 1.25f);
-    static readonly FlightCurve MirageObeliskRoute1 = Route("Desert / MirageObelisk 1", Vector2.right, -.55f, 1.25f, -.5f, .88f, -.15f, .67f, .4f, .71f, .65f, .96f, .7f, 1.25f);
-    public static readonly WavePart[] MirageObeliskParts ={
-        new WavePart("MirageObelisk call",nameof(MirageObelisk),MirageObeliskRoute0,WaveShape.Train,2,5.75f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
-        new WavePart("MirageObelisk crossing",nameof(MirageObelisk),MirageObeliskRoute1,WaveShape.Train,2,6.00f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
-        new WavePart("MirageObelisk answer",nameof(MirageObelisk),MirageObeliskRoute0,WaveShape.Rake,2,6.25f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
+    static readonly FlightCurve MirageObeliskRoute0 = Route("Desert / Obelisk mirage march", Vector2.right, -0.46f, 1.25f, -0.46f, 0.89f, -0.4f, 0.64f, -0.31f, 0.4f, -0.22f, 0.14f, -0.19f, -0.25f);
+    static readonly FlightCurve MirageObeliskRoute1 = Route("Desert / Obelisk buried arc", Vector2.right, -1.4f, 0.88f, -0.68f, 0.66f, -0.08f, 0.58f, 0.5f, 0.65f, 0.74f, 0.92f, 0.72f, 1.25f);
+    static readonly FlightCurve MirageObeliskRoute2 = Route("Desert / Obelisk paired descent", Vector2.right, 0.58f, 1.25f, 0.52f, 0.84f, 0.27f, 0.59f, -0.1f, 0.4f, -0.62f, 0.21f, -1.4f, 0.16f);
+    public static readonly WavePart[] MirageObeliskParts =
+    {
+        new WavePart("Obelisk mirage march", nameof(MirageObelisk), MirageObeliskRoute0, WaveShape.Rank, 2, 5.6f, 2, new[] { 0.28f, 0.58f, 0.75f }, new[] { 0.42f, 0.73f }, 2),
+        new WavePart("Obelisk buried arc", nameof(MirageObelisk), MirageObeliskRoute1, WaveShape.Train, 2, 5.8f, 4, new[] { 0.31f, 0.64f }, new[] { 0.47f }, 2),
+        new WavePart("Obelisk paired descent", nameof(MirageObelisk), MirageObeliskRoute2, WaveShape.Rake, 2, 5.6f, 7, new[] { 0.3f, 0.53f, 0.74f }, new[] { 0.4f, 0.72f }, 2),
     };
 }
 
