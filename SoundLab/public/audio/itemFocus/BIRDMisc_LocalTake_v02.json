@@ -1,0 +1,84 @@
+{
+  "request": "20261026-211623-b853",
+  "ref": "20261026-211623-b853:761527",
+  "text": "TrackType: SFX, one optical targeting lock confirmation, subtle compact electronic chirp with a short rising pitch, dry and close",
+  "prompt": "TrackType: SFX, one optical targeting lock confirmation, subtle compact electronic chirp with a short rising pitch, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "bird",
+  "seed": 761527,
+  "rank": 1,
+  "rank_score": 0.6132,
+  "clap": 0.8577,
+  "clap_cos": 0.2489,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.44,
+    "CU": 6.54,
+    "PC": 2.32,
+    "PQ": 6.38
+  },
+  "fails": [],
+  "warnings": [
+    "cut at the requested duration while still 19 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 2.74,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.5417,
+    "length_frames": 13.0,
+    "channels": 1,
+    "cut_db": -19.3
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -21.7
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -3.98,
+    "true_peak_dbtp": -3.73,
+    "clipped_fraction": 0.0,
+    "dc_offset": 3e-05,
+    "active_s": 0.9,
+    "noise_floor_db": -81.4,
+    "onset_s": 0.0,
+    "tail_db": -79.1,
+    "stereo_correlation": 1.0,
+    "lufs": -24.5,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "336e0aa1821ea6f408f4895630aa870fe848921f98b5ebde96c110f42b782c8a",
+    "blind_caption": "A bird chirping",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one optical targeting lock confirmation?",
+        "answer": "uncertain",
+        "evidence": "NO"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "SHORTEN",
+    "suggestion": "SHORTEN (tail too long)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2353
+  },
+  "human_approved": false
+}

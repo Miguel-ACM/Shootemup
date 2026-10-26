@@ -1,0 +1,394 @@
+{
+  "brief": {
+    "description": "one optical targeting lock confirmation, subtle compact electronic chirp with a short rising pitch, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one optical targeting lock confirmation?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "336e0aa1821ea6f408f4895630aa870fe848921f98b5ebde96c110f42b782c8a",
+  "options": {
+    "duration": 0.5,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 761526,
+  "budget": 4,
+  "generated": 2,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-211623-b853",
+      "prompt": "TrackType: SFX, one optical targeting lock confirmation, subtle compact electronic chirp with a short rising pitch, dry and close",
+      "takes": [
+        "20261026-211623-b853:761527",
+        "20261026-211623-b853:761526"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "SHORTEN",
+      "request": "20261026-211645-7ea8",
+      "prompt": "one optical targeting lock confirmation, subtle compact electronic chirp with a short rising pitch, dry and close",
+      "takes": [
+        "20261026-211645-7ea8:761527"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 761527,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -3.98,
+        "true_peak_dbtp": -3.73,
+        "clipped_fraction": 0.0,
+        "dc_offset": 3e-05,
+        "active_s": 0.9,
+        "noise_floor_db": -81.4,
+        "onset_s": 0.0,
+        "tail_db": -79.1,
+        "stereo_correlation": 1.0,
+        "lufs": -24.5,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 2.74,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5417,
+        "length_frames": 13.0,
+        "channels": 1,
+        "cut_db": -19.3
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.7
+      },
+      "clap": 0.8577,
+      "clap_cos": 0.2489,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.44,
+        "CU": 6.54,
+        "PC": 2.32,
+        "PQ": 6.38
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 19 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.6132,
+      "rank": 1,
+      "ref": "20261026-211623-b853:761527",
+      "files": {
+        "wav": "20261026-211623-b853/761527.wav",
+        "png": "20261026-211623-b853/761527.png",
+        "raw": "20261026-211623-b853/761527_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211623-b853\\761527.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211623-b853\\761527.png"
+      },
+      "review": {
+        "brief_id": "336e0aa1821ea6f408f4895630aa870fe848921f98b5ebde96c110f42b782c8a",
+        "blind_caption": "A bird chirping",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one optical targeting lock confirmation?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "SHORTEN",
+        "suggestion": "SHORTEN (tail too long)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2353
+      }
+    },
+    {
+      "seed": 761526,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -17.82,
+        "true_peak_dbtp": -17.78,
+        "clipped_fraction": 0.0,
+        "dc_offset": 1e-05,
+        "active_s": 1.075,
+        "noise_floor_db": -73.4,
+        "onset_s": 0.1477,
+        "tail_db": -69.9,
+        "stereo_correlation": 0.984,
+        "lufs": -24.0,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 17.01,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1,
+        "cut_db": -7.1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -7.5
+      },
+      "clap": 0.5017,
+      "clap_cos": 0.1267,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.05,
+        "CU": 5.64,
+        "PC": 2.1,
+        "PQ": 5.59
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 7 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.3702,
+      "rank": 2,
+      "ref": "20261026-211623-b853:761526",
+      "files": {
+        "wav": "20261026-211623-b853/761526.wav",
+        "png": "20261026-211623-b853/761526.png",
+        "raw": "20261026-211623-b853/761526_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211623-b853\\761526.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211623-b853\\761526.png"
+      },
+      "review": {
+        "brief_id": "336e0aa1821ea6f408f4895630aa870fe848921f98b5ebde96c110f42b782c8a",
+        "blind_caption": "A car horn honking",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one optical targeting lock confirmation?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "SHORTEN",
+        "suggestion": "SHORTEN (tail too long)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.1019
+      }
+    },
+    {
+      "seed": 761527,
+      "signal": {
+        "duration_s": 0.542,
+        "peak_dbfs": -1.0,
+        "true_peak_dbtp": -1.0,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.0,
+        "active_s": 0.36,
+        "noise_floor_db": -65.0,
+        "onset_s": 0.003,
+        "tail_db": -82.9,
+        "stereo_correlation": null,
+        "lufs": -21.7,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 0.04,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.375,
+        "length_frames": 9.0,
+        "channels": 1,
+        "cut_db": -19.9
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -19.7
+      },
+      "clap": 0.9378,
+      "clap_cos": 0.2501,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.51,
+        "CU": 6.98,
+        "PC": 2.39,
+        "PQ": 6.72
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 20 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.6575,
+      "rank": 1,
+      "ref": "20261026-211645-7ea8:761527",
+      "files": {
+        "wav": "20261026-211645-7ea8/761527.wav",
+        "png": "20261026-211645-7ea8/761527.png",
+        "raw": "20261026-211645-7ea8/761527_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211645-7ea8\\761527.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211645-7ea8\\761527.png"
+      },
+      "review": {
+        "brief_id": "336e0aa1821ea6f408f4895630aa870fe848921f98b5ebde96c110f42b782c8a",
+        "blind_caption": "A car horn honking",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one optical targeting lock confirmation?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "SHORTEN",
+        "suggestion": "SHORTEN (tail too long)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2501
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 761527,
+    "signal": {
+      "duration_s": 0.542,
+      "peak_dbfs": -1.0,
+      "true_peak_dbtp": -1.0,
+      "clipped_fraction": 0.0,
+      "dc_offset": 0.0,
+      "active_s": 0.36,
+      "noise_floor_db": -65.0,
+      "onset_s": 0.003,
+      "tail_db": -82.9,
+      "stereo_correlation": null,
+      "lufs": -21.7,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 0.04,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.375,
+      "length_frames": 9.0,
+      "channels": 1,
+      "cut_db": -19.9
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -19.7
+    },
+    "clap": 0.9378,
+    "clap_cos": 0.2501,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.51,
+      "CU": 6.98,
+      "PC": 2.39,
+      "PQ": 6.72
+    },
+    "fails": [],
+    "warnings": [
+      "cut at the requested duration while still 20 dB below its peak: the tail is chopped, ask for a longer --duration"
+    ],
+    "rejected": false,
+    "rank_score": 0.6575,
+    "rank": 1,
+    "ref": "20261026-211645-7ea8:761527",
+    "files": {
+      "wav": "20261026-211645-7ea8/761527.wav",
+      "png": "20261026-211645-7ea8/761527.png",
+      "raw": "20261026-211645-7ea8/761527_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211645-7ea8\\761527.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211645-7ea8\\761527.png"
+    },
+    "review": {
+      "brief_id": "336e0aa1821ea6f408f4895630aa870fe848921f98b5ebde96c110f42b782c8a",
+      "blind_caption": "A car horn honking",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one optical targeting lock confirmation?",
+          "answer": "uncertain",
+          "evidence": "NO"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "SHORTEN",
+      "suggestion": "SHORTEN (tail too long)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.2501
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFocus\\iteration-20261026-211623-b098\\BIRDMisc_Iterated_v01.wav"
+  ]
+}

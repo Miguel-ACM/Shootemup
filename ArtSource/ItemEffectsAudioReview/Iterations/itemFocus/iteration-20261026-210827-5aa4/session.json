@@ -1,0 +1,39 @@
+{
+  "brief": {
+    "description": "one optical targeting lock confirmation, subtle compact electronic chirp with a short rising pitch, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one optical targeting lock confirmation?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "336e0aa1821ea6f408f4895630aa870fe848921f98b5ebde96c110f42b782c8a",
+  "options": {
+    "duration": 0.2,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 261526,
+  "budget": 4,
+  "generated": 2,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-210827-9a6c",
+      "prompt": "TrackType: SFX, one optical targeting lock confirmation, subtle compact electronic chirp with a short rising pitch, dry and close",
+      "takes": [
+        "20261026-210827-9a6c:261527",
+        "20261026-210827-9a6c:261526"
+      ]
+    }
+  ],
+  "candidates": [],
+  "baseline_candidates": [],
+  "best": null,
+  "baseline_best": null,
+  "status": "failed",
+  "human_approved": false,
+  "error": "server said 500: Internal Server Error"
+}
