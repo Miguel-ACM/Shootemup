@@ -26,6 +26,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
             renderer.sortingLayerName = "Enemy";
             apertures[i] = ItemSpark.Sprite(comb[i], "Charging comb aperture", "standard", LevelProjectilePalette.Accent(LevelRun.Current), .35f);
             apertures[i].transform.localPosition = new Vector3(0, -.26f, -.55f);
+            firingCue.Register(comb[i],new Vector3(0,-.26f,-.55f));
             go.SetActive(false);
         }
     }
@@ -56,7 +57,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
 
     void DeployComb()
     {
-        combCount = phaseTwo ? 13 : 10;
+        combCount = Shots(phaseTwo?8:6,phaseTwo?11:9);
         deployment = 0;
         deployed = true;
         returning = false;
@@ -74,7 +75,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
         hull = 21;
         hullScale = 1.6f;
         health = 2100;
-        attackInterval = .65f;
+        attackInterval = Timing(1.05f,.85f);
         shellTravelDistance = 6.6f;
     }
 
@@ -89,58 +90,68 @@ public sealed class SnowSiegeBoss : DistrictBoss
     } // The score below owns the rests as well as the volleys.
     protected override void Attack()
     {
-        int beat = (volley - 1) % 12;
+        int beat = (volley - 1) % 14;
         if (beat == 0)
             shellAxis = Aim;
-        if (beat < 3)
+        if (beat == 0 || beat == 2 || beat == 4)
         {
             // Three broad crowns leave room for complete rings instead of queueing
             // oversized shell clusters against the shared projectile cap.
-            int count = phaseTwo ? 6 : 5;
-            float distance = beat % 2 == 0 ? shellTravelDistance : shellTravelDistance - 2;
+            int count = Shots(phaseTwo?4:3,phaseTwo?5:4);
+            float distance = beat == 2 ? shellTravelDistance - 2 : shellTravelDistance;
             for (int i = 0; i < count; i++)
             {
                 var shot = Fire<BurstShell>(Hull.TransformPoint(new Vector3(0, -.65f, -.25f)),
-                    CombatVisuals.Rotate(shellAxis, (i - (count - 1) * .5f) * 22 + (beat % 2 == 0 ? -5.5f : 5.5f)), 4.3f, .44f);
+                    CombatVisuals.Rotate(shellAxis, (i - (count - 1) * .5f) * 30 + (beat == 2 ? 7.5f : -7.5f)), 3.0f, .48f);
                 if (shot != null)
                     shot.SetTravelDistance(distance);
             }
         }
-        else if (beat == 3)
+        else if (beat == 5)
             DeployComb();
-        else if (beat == 4 || beat == 6)
+        else if (beat == 6 || beat == 8)
         {
             // Two straight combs answer the shell crowns; the second fills the first's lanes.
             for (int i = 0; i < combCount; i++)
             {
-                Fire<SuspendedRound>(comb[i].position + Vector3.down * .06f, Vector2.down, phaseTwo ? 6 : 5, .18f);
+                var port=comb[i].TransformPoint(new Vector3(0,-.26f,-.55f));
+                if(beat==6) Fire<SuspendedRound>(port,Vector2.down,2.8f,.23f);
+                else Fire<SimpleRound>(port,Vector2.down,2.0f,.28f);
                 releases[i] = .1f;
             }
         }
-        else if (beat == 5)
+        else if (beat == 7)
         {
             deployment = 0;
             for (int i = 0; i < combCount; i++)
             {
                 launch[i] = comb[i].position;
-                lanes[i].x += .22f;
+                lanes[i].x += (Camera.RightLimit-Camera.LeftLimit-.7f)/combCount*.5f;
             }
         }
-        else if (beat == 7)
+        else if (beat == 9)
         {
             deployment = 0;
             returning = true;
             for (int i = 0; i < combCount; i++)
                 launch[i] = comb[i].position;
         }
-        else if (beat == 8 || beat == 9)
+        else if (beat == 11 || beat == 12 && phaseTwo)
         {
-            int sign = beat == 8 ? -1 : 1;
-            int count = phaseTwo ? 17 : 13;
+            int sign = beat == 11 ? -1 : 1;
+            int count = Shots(phaseTwo?7:5,phaseTwo?11:9);
             PetalFan<NeedleRound>(Hull.TransformPoint(new Vector3(0, -.65f, -.25f)),
-                CombatVisuals.Rotate(Vector2.down, sign * 11.25f), count, 9, phaseTwo ? 5.8f : 5, .13f, .18f);
+                CombatVisuals.Rotate(Vector2.down, sign * 8), count, 15, 3.7f, .19f, .18f);
         }
         // Beats 3, 5, 7, 10 and 11 are intentional rests while existing patterns unfold.
+    }
+
+    protected override void PrepareFire(float seconds)
+    {
+        base.PrepareFire(seconds);firingCue.ClearWarning();
+        int beat=volley%14;
+        if(beat==6 || beat==8) { for(int i=0;i<combCount;i++) if(comb[i]!=null) Cue(comb[i].TransformPoint(new Vector3(0,-.26f,-.55f)),seconds); }
+        else if(beat==0 || beat==2 || beat==4 || beat==11 || beat==12&&phaseTwo) Cue(Muzzle(),seconds);
     }
 
     protected override void OnPhaseTwo()
