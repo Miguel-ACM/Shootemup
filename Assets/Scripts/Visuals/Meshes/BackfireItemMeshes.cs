@@ -3,6 +3,20 @@ public static partial class IndustrialMeshFactory
 {
     static bool BackfireItem(Builder b, string kind)
     {
+        if (kind == "DepthChargeItem")
+        {
+            // Open U-shaped rack, three suspended drums and downward release rails.
+            foreach (int side in new[] { -1, 1 })
+                b.Box(new Vector3(side * .34f, -.06f, 0), new Vector3(.1f, .83f, .18f), 6);
+            b.Box(new Vector3(0, .35f, 0), new Vector3(.76f, .12f, .22f), 11);
+            for (int i = 0; i < 3; i++)
+            {
+                float y = .2f - i * .23f;
+                b.Can(new Vector3(0, y, -.05f), .13f, .17f, 4, 6);
+                b.Box(new Vector3(0, y, -.2f), new Vector3(.16f, .055f, .04f), 1);
+            }
+            return true;
+        }
         if (kind != "BackdraftItem")
             return false;
         // Twin fuel bottles and a broad downward-facing exhaust bell.
