@@ -3,7 +3,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class AshCenser : DistrictEnemy
 {
-    protected override Vector2 CueAxis => Vector2.down;
+    protected override Vector2 CueAxis => volley % 2 == 0 ? Vector2.down : Aim;
     protected override void Configure()
     {
         hull = 79;
@@ -15,10 +15,11 @@ public sealed class AshCenser : DistrictEnemy
     }
     protected override void Attack()
     {
-        for (int s = -1; s <= 1; s += 2)
-            Fire<PlasmaOrb>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (volley % 2 == 0 ? 32 : 15)), 1.7f, .38f);
-        if (!Difficulty.Easy)
-            Fan<SimpleRound>(3, 24, 2.8f, .22f);
+        if (volley % 2 == 0)
+            Fan<SimpleRound>(Shots(3, 5), 24, 2.5f, .25f);
+        else
+            for (int s = -1; s <= 1; s += 2)
+                Fire<PlasmaOrb>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (volley % 4 == 1 ? 32 : 15)), 1.7f, .38f);
     }
 
 }
