@@ -95,6 +95,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 ## Items and decisions
 
+- Preserve Miguel's original item names and identities. Another arm and Twerp are deliberately named and are fine. Make an item's behavior recognizable through its effects and sound; do not rename or redesign original items to explain their mechanics.
 - Broad weapon and active variety, burn damage, shots bouncing between enemies, and surprising combinations.
 - Start each level with a free item decision. Free rewards normally offer two choices; luck can rarely increase that to three or four.
 - Coins now add to a separate run wallet, one per pickup. They do not add score or scale with multiplier. Keep score as the combat scoring system and preserve coins across districts; reset the wallet on a new run.

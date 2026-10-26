@@ -1,6 +1,6 @@
 # Equipment identities and name proposals
 
-26 October 2026. Proposed names are for Miguel to choose; existing names and serialized type IDs remain in place.
+26 October 2026. Miguel's original names and identities stay. Another arm and Twerp are fine. Any remaining proposals apply only to newer equipment; no runtime names or serialized type IDs have changed.
 
 The model pass replaces the repeated gun boxes and round sockets with recognizable outer contours: a tuning fork, syringe, five-barrel fan, honeycomb rocket rack, mortar cup, open rail assembly, toothed blade, fuel cylinder, twin capacitor cans, pocket cell, battery rocket, throttle lever, telescope, U-turn, Y-fork, spring, countershot shield, whisker detonator, coin hopper, powder chain, faceted mirror and containment cage. Backdraft and Depth Charge have separate rear-facing hardware. Existing literal everyday props, companions and original recognizable equipment keep their identities; loadout portraits now use their actual original models too.
 
@@ -9,7 +9,7 @@ Shape alone cannot explain a hidden trigger, percentage or timing rule. Those ar
 | Current name | Proposed name | Observable effect |
 |---|---|---|
 | Barrel roll | Keep | Roll sideways through danger. No energy cost. |
-| Blank bullet | Blank Cartridge | Erase nearby bullets. |
+| Blank bullet | Keep original | Erase nearby bullets. |
 | Bullet time | Time Stop | Freeze the world for 2 seconds. Keep firing. |
 | Decoy projector | Keep | Launch a spectral copy that draws aimed fire. |
 | Gravity Well | Stasis Well | Freeze and erase nearby bullets. 25 energy. |
@@ -17,18 +17,18 @@ Shape alone cannot explain a hidden trigger, percentage or timing rule. Those ar
 | Mirror Burst | Keep | Turn 18 bullets into homing shots. 35 energy. |
 | Overdrive | Keep | Double damage for 6 seconds. 30 energy. |
 | Pocket fan | Keep | Blow nearby bullets upward. They remain dangerous. |
-| A Moon | Shield Moon | Orbiting bullet shield. |
-| Angry Moon | Gunner Moon | Orbiting shield that shoots. |
-| Baby you | Echo Ship | A small copy of your ship. |
+| A Moon | Keep original | Orbiting bullet shield. |
+| Angry Moon | Keep original | Orbiting shield that shoots. |
+| Baby you | Keep original | A small copy of your ship. |
 | Bullet drone | Keep | A trailing companion with twin guns. |
 | Laser drone | Keep | A trailing companion that fires lasers straight up. |
-| Three Moons | Shield Constellation | Three orbiting bullet shields. |
-| Twerp | Wingman | Small shooting companion. |
-| Another arm | Extra Barrel | +1 bullet per shot. |
+| Three Moons | Keep original | Three orbiting bullet shields. |
+| Twerp | Keep original | Small shooting companion. |
+| Another arm | Keep original | +1 bullet per shot. |
 | Bad glasses | Near-Sight Glasses | Enemy bullets move 10% slower near you. |
 | Ball Bearing | Keep | Hits sometimes spray three fragments. |
 | Bouncing ball | Keep | Shots bounce once toward another enemy. |
-| Caffeine | Coffee Rush | Faster movement, firing and bullets. |
+| Caffeine | Keep original | Faster movement, firing and bullets. |
 | Capacitor | Idle Capacitor | Stop firing to charge triple damage. |
 | Chain Reactor | Powder Chain | Burning enemies explode on death. |
 | Chewing gum | Keep | Shots stick, swell, then pop. |
@@ -43,14 +43,14 @@ Shape alone cannot explain a hidden trigger, percentage or timing rule. Those ar
 | Icicle | Keep | Three hits build ice. The next hit shatters it into fragments. |
 | Large Health Kit | Keep | Restore 45 health. |
 | Lighter | Keep | Hits apply stacking burn. |
-| Magnet | Keep | Longer pickup range. |
+| Magnet | Keep original | Longer pickup range. |
 | Magnifying glass | Keep | Hold focus for larger, stronger, slower shots. |
 | Poison | Keep | Green bullets poison enemies. |
 | Popcorn | Keep | Every fifth hit pops into three pellets. Burning enemies pop immediately. |
-| Protein Supplement | Heavy Rounds | Bigger, stronger bullets. |
+| Protein Supplement | Keep original | Bigger, stronger bullets. |
 | Proximity Fuse | Keep | Shots burst near enemies. |
 | Quality glasses | Slow-Motion Glasses | Enemy bullets move 10% slower. |
-| Rabbit's Foot | Keep | More luck. |
+| Rabbit's Foot | Keep original | More luck. |
 | Rebound Coil | Ricochet Spring | Shots sometimes bounce to another enemy. |
 | Recovery Coil | Countershot Shield | Every 8 blocked bullets fire a homing shot. |
 | Reserve Cell | Energy Reserve | Store 12 spare energy for actives. |
@@ -61,14 +61,14 @@ Shape alone cannot explain a hidden trigger, percentage or timing rule. Those ar
 | Spare Battery | Hit-Charged Rocket | Hits charge a powerful homing shot. |
 | Splitter Core | Forked Rounds | Hits sometimes split into two shots. |
 | Static sweater | Keep | Movement charges a chain-lightning hit. |
-| Telekinesis | Keep | Homing shots. |
-| AK45 | Sidewinder | Side-firing gun. |
+| Telekinesis | Keep original | Homing shots. |
+| AK45 | Keep original | Side-firing gun. |
 | Backdraft | Keep | A wide rear flame cone. Stacking burn. |
 | Beam Emitter | Keep | Hold for a continuous beam. Telekinesis bends it. |
 | Burst Launcher | Keep | Exploding shells. |
 | Depth Charge | Keep | Drop shells behind you. They brake, then burst into a rear fan. |
 | Disc Thrower | Keep | Discs hit again on return. |
-| Electricity | Keep | Seeking, piercing lightning. |
+| Electricity | Keep original | Seeking, piercing lightning. |
 | Flame Projector | Keep | Short-range, stacking burn. |
 | Needle Cannon | Keep | Fast shots pierce one enemy. |
 | Rail Driver | Keep | Slow-firing, heavy piercing shots. |
