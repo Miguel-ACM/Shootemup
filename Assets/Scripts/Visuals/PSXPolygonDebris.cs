@@ -59,7 +59,7 @@ public sealed class PSXPolygonDebris : MonoBehaviour
         var effect = go.AddComponent<PSXPolygonDebris>();
         effect.boss = isBoss;
         effect.started = Time.time;
-        effect.lifetime = isBoss ? 1.65f : .95f;
+        effect.lifetime = isBoss ? 5f : .95f;
         // District hulls are a single mesh. Their children are animated exhaust, which
         // must extinguish with the craft rather than become solid shards in the blast.
         var hullRenderer = district != null ? model.GetComponent<MeshRenderer>() : null;
