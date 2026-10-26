@@ -289,8 +289,8 @@ public sealed class CombatExpansionProbe : MonoBehaviour
             yield break;
         }
         yield return ModelSheet();
-        Check(DistrictWaves.Sequence().Count(x => x == "encounterChoice") == 2, "two spatial encounter decisions per district");
-        Check(Array.IndexOf(DistrictWaves.Sequence(), "encounterChoice") == 3, "three uninterrupted combat phrases precede the first encounter fork");
+        Check(DistrictWaves.Sequence().Count(x => x == "encounterChoice") == 1, "one pre-miniboss encounter decision per district");
+        Check(Array.IndexOf(DistrictWaves.Sequence(), "encounterChoice") == 4, "three uninterrupted combat phrases follow the opening reward before the encounter fork");
         var visibleShot = PlayerRound.Spawn(new Vector3(0, 0), Vector2.up, 1, 0);
         yield return null;
         Check(visibleShot.GetComponent<SpriteRenderer>().bounds.size.x >= .18f, "base player fire has a visible world-space width");

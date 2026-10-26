@@ -313,10 +313,10 @@ public sealed class RunChoicesReview : MonoBehaviour
             Check(!EncounterChoice.Draw(seed, false).Contains(EncounterKind.Challenge), "challenge excluded when three waves are unavailable");
         }
         Check(all.Count == 5, "all five encounter types are reachable");
-        Check(DistrictWaves.Sequence()[0] == "2" && DistrictWaves.Sequence().Count(x => x == "encounterChoice") == 2, "two encounter forks preserve sustained opening combat");
+        Check(DistrictWaves.Sequence()[0] == "reward" && DistrictWaves.Sequence().Count(x => x == "encounterChoice") == 1 && DistrictWaves.Sequence().Count(x => x == "minibossChoice") == 1 && DistrictWaves.Sequence().Count(x => int.TryParse(x, out _)) == 10, "one pre-miniboss fork preserves the opening reward, ten combat waves and the earned miniboss selection");
         // Use the actual selection component and its steering charge, then exercise each outcome.
         flow.waves = DistrictWaves.Sequence();
-        Set(flow, "currentWaveNumber", 3);
+        Set(flow, "currentWaveNumber", 4);
         CombatRound.Launch<SimpleRound>(Vector3.zero, Vector2.down, 0);
         Call(flow, "GenerateWave");
         yield return null;

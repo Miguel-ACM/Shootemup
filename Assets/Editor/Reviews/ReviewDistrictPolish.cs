@@ -54,7 +54,7 @@ public static class ReviewDistrictPolish
             var notes = new List<string>();
             var types = new HashSet<Type>();
             var sequence = DistrictWaves.Sequence();
-            if (sequence[0] != "reward" || sequence.Count(s => s == "encounterChoice") != 2 || sequence.Count(s => s == "minibossChoice") != 1 || sequence.Count(s => int.TryParse(s, out _)) != 10)
+            if (sequence[0] != "reward" || sequence.Count(s => s == "encounterChoice") != 1 || sequence.Count(s => s == "minibossChoice") != 1 || sequence.Count(s => int.TryParse(s, out _)) != 10)
                 throw new Exception("Incorrect longer level structure");
             var charge = new RouteCharge();
             charge.Step(1, .99f);
