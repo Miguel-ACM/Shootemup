@@ -9,7 +9,7 @@ public sealed class AshCenser : DistrictEnemy
         hull = 79;
         hullScale = 0.58f;
         health = 55;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(2.6f, 1.75f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -25,12 +25,14 @@ public sealed class AshCenser : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve AshCenserRoute0 = Route("Hell / AshCenser 0", Vector2.right, -.7f, 1.25f, -.61f, .94f, -.33f, .71f, .21f, .61f, .59f, .81f, .7f, 1.25f);
-    static readonly FlightCurve AshCenserRoute1 = Route("Hell / AshCenser 1", Vector2.right, -1.4f, .83f, -.82f, .71f, -.15f, .56f, .53f, .74f, 1.4f, .85f);
-    public static readonly WavePart[] AshCenserParts ={
-        new WavePart("AshCenser call",nameof(AshCenser),AshCenserRoute0,WaveShape.Rake,3,5.45f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("AshCenser crossing",nameof(AshCenser),AshCenserRoute1,WaveShape.Rake,3,5.70f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("AshCenser answer",nameof(AshCenser),AshCenserRoute0,WaveShape.Train,3,5.95f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
+    static readonly FlightCurve AshCenserRoute0 = Route("Hell / Censer downward pendulum", Vector2.right, -0.65f, 1.25f, -0.62f, 0.86f, -0.24f, 0.58f, 0.42f, 0.42f, 0.72f, 0.17f, 0.76f, -0.25f);
+    static readonly FlightCurve AshCenserRoute1 = Route("Hell / Censer funeral arch", Vector2.right, -1.4f, 0.72f, -0.7f, 0.47f, 0.0f, 0.41f, 0.67f, 0.59f, 1.4f, 0.9f);
+    static readonly FlightCurve AshCenserRoute2 = Route("Hell / Censer ashen return", Vector2.right, 0.64f, 1.25f, 0.69f, 0.83f, 0.28f, 0.54f, -0.36f, 0.61f, -0.74f, 0.93f, -0.78f, 1.25f);
+    public static readonly WavePart[] AshCenserParts =
+    {
+        new WavePart("Censer downward pendulum", nameof(AshCenser), AshCenserRoute0, WaveShape.Rake, 3, 5.2f, 2, new[] { 0.25f, 0.41f, 0.59f, 0.76f }, new[] { 0.34f, 0.57f, 0.76f }, 3),
+        new WavePart("Censer funeral arch", nameof(AshCenser), AshCenserRoute1, WaveShape.Rank, 3, 5.1f, 4, new[] { 0.27f, 0.45f, 0.66f }, new[] { 0.39f, 0.69f }, 2),
+        new WavePart("Censer ashen return", nameof(AshCenser), AshCenserRoute2, WaveShape.Train, 3, 5.4f, 7, new[] { 0.26f, 0.4f, 0.59f, 0.73f }, new[] { 0.37f, 0.62f, 0.78f }, 3),
     };
 }
 
