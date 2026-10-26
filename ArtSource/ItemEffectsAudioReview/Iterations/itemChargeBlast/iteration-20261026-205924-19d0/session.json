@@ -1,0 +1,475 @@
+{
+  "brief": {
+    "description": "one compact plasma detonation, low pressure thump and a granular electrical decay, controlled treble, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one compact plasma detonation?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "304f15a837b4c751737a51083c3b460689011113383b09b746d9dc01b9134c23",
+  "options": {
+    "duration": 0.55,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 260126,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-205924-0f91",
+      "prompt": "TrackType: SFX, one compact plasma detonation, low pressure thump and a granular electrical decay, controlled treble, dry and close",
+      "takes": [
+        "20261026-205924-0f91:260126",
+        "20261026-205924-0f91:260127"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-205947-c63c",
+      "prompt": "TrackType: SFX, one compact plasma detonation, low pressure thump and a granular electrical decay, controlled treble, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one compact plasma detonation?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-205947-c63c:260128",
+        "20261026-205947-c63c:260129"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 260126,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -3.58,
+        "true_peak_dbtp": -3.58,
+        "clipped_fraction": 0.0,
+        "dc_offset": 2e-05,
+        "active_s": 0.995,
+        "noise_floor_db": -84.5,
+        "onset_s": 0.2005,
+        "tail_db": -86.0,
+        "stereo_correlation": 1.0,
+        "lufs": -23.2,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 1.56,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5833,
+        "length_frames": 14.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -24.5
+      },
+      "clap": 0.9405,
+      "clap_cos": 0.2124,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.09,
+        "CU": 6.67,
+        "PC": 2.7,
+        "PQ": 6.26
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.6377,
+      "rank": 1,
+      "ref": "20261026-205924-0f91:260126",
+      "files": {
+        "wav": "20261026-205924-0f91/260126.wav",
+        "png": "20261026-205924-0f91/260126.png",
+        "raw": "20261026-205924-0f91/260126_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205924-0f91\\260126.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205924-0f91\\260126.png"
+      },
+      "review": {
+        "brief_id": "304f15a837b4c751737a51083c3b460689011113383b09b746d9dc01b9134c23",
+        "blind_caption": "A drum roll",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one compact plasma detonation?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.1266
+      }
+    },
+    {
+      "seed": 260127,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -5.76,
+        "true_peak_dbtp": -5.76,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00068,
+        "active_s": 1.195,
+        "noise_floor_db": -77.8,
+        "onset_s": 0.0,
+        "tail_db": -83.8,
+        "stereo_correlation": 1.0,
+        "lufs": -24.1,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 3.72,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5833,
+        "length_frames": 14.0,
+        "channels": 1,
+        "cut_db": -18.8
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -19.7
+      },
+      "clap": 0.9245,
+      "clap_cos": 0.1817,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.22,
+        "CU": 6.15,
+        "PC": 2.57,
+        "PQ": 5.78
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 19 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.5188,
+      "rank": 2,
+      "ref": "20261026-205924-0f91:260127",
+      "files": {
+        "wav": "20261026-205924-0f91/260127.wav",
+        "png": "20261026-205924-0f91/260127.png",
+        "raw": "20261026-205924-0f91/260127_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205924-0f91\\260127.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205924-0f91\\260127.png"
+      },
+      "review": {
+        "brief_id": "304f15a837b4c751737a51083c3b460689011113383b09b746d9dc01b9134c23",
+        "blind_caption": "A gun is fired.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one compact plasma detonation?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.1248
+      }
+    },
+    {
+      "seed": 260128,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -3.22,
+        "true_peak_dbtp": -3.22,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00063,
+        "active_s": 1.145,
+        "noise_floor_db": -85.5,
+        "onset_s": 0.0,
+        "tail_db": -83.0,
+        "stereo_correlation": 1.0,
+        "lufs": -25.5,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 2.26,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5833,
+        "length_frames": 14.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -22.9
+      },
+      "clap": 0.9614,
+      "clap_cos": 0.2215,
+      "clap_top": null,
+      "aes": {
+        "CE": 2.74,
+        "CU": 6.04,
+        "PC": 2.18,
+        "PQ": 5.77
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.6108,
+      "rank": 1,
+      "ref": "20261026-205947-c63c:260128",
+      "files": {
+        "wav": "20261026-205947-c63c/260128.wav",
+        "png": "20261026-205947-c63c/260128.png",
+        "raw": "20261026-205947-c63c/260128_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205947-c63c\\260128.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205947-c63c\\260128.png"
+      },
+      "review": {
+        "brief_id": "304f15a837b4c751737a51083c3b460689011113383b09b746d9dc01b9134c23",
+        "blind_caption": "A drum roll",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one compact plasma detonation?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.191
+      }
+    },
+    {
+      "seed": 260129,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -3.36,
+        "true_peak_dbtp": -3.36,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00176,
+        "active_s": 1.27,
+        "noise_floor_db": -84.9,
+        "onset_s": 0.0,
+        "tail_db": -83.8,
+        "stereo_correlation": 1.0,
+        "lufs": -24.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 2.92,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5833,
+        "length_frames": 14.0,
+        "channels": 1,
+        "cut_db": -17.6
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.7
+      },
+      "clap": 0.9298,
+      "clap_cos": 0.2404,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.16,
+        "CU": 6.61,
+        "PC": 2.17,
+        "PQ": 6.14
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 18 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.6008,
+      "rank": 2,
+      "ref": "20261026-205947-c63c:260129",
+      "files": {
+        "wav": "20261026-205947-c63c/260129.wav",
+        "png": "20261026-205947-c63c/260129.png",
+        "raw": "20261026-205947-c63c/260129_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205947-c63c\\260129.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205947-c63c\\260129.png"
+      },
+      "review": {
+        "brief_id": "304f15a837b4c751737a51083c3b460689011113383b09b746d9dc01b9134c23",
+        "blind_caption": "A gun is fired.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one compact plasma detonation?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2184
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 260129,
+    "signal": {
+      "duration_s": 2.0,
+      "peak_dbfs": -3.36,
+      "true_peak_dbtp": -3.36,
+      "clipped_fraction": 0.0,
+      "dc_offset": 0.00176,
+      "active_s": 1.27,
+      "noise_floor_db": -84.9,
+      "onset_s": 0.0,
+      "tail_db": -83.8,
+      "stereo_correlation": 1.0,
+      "lufs": -24.4,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 2.92,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.5833,
+      "length_frames": 14.0,
+      "channels": 1,
+      "cut_db": -17.6
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -21.7
+    },
+    "clap": 0.9298,
+    "clap_cos": 0.2404,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.16,
+      "CU": 6.61,
+      "PC": 2.17,
+      "PQ": 6.14
+    },
+    "fails": [],
+    "warnings": [
+      "cut at the requested duration while still 18 dB below its peak: the tail is chopped, ask for a longer --duration"
+    ],
+    "rejected": false,
+    "rank_score": 0.6008,
+    "rank": 2,
+    "ref": "20261026-205947-c63c:260129",
+    "files": {
+      "wav": "20261026-205947-c63c/260129.wav",
+      "png": "20261026-205947-c63c/260129.png",
+      "raw": "20261026-205947-c63c/260129_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205947-c63c\\260129.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205947-c63c\\260129.png"
+    },
+    "review": {
+      "brief_id": "304f15a837b4c751737a51083c3b460689011113383b09b746d9dc01b9134c23",
+      "blind_caption": "A gun is fired.",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one compact plasma detonation?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.2184
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemChargeBlast\\iteration-20261026-205924-19d0\\EXPLReal_Iterated_v01.wav"
+  ]
+}

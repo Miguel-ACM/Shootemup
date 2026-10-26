@@ -1,0 +1,84 @@
+{
+  "request": "20261026-205924-0f91",
+  "ref": "20261026-205924-0f91:260127",
+  "text": "TrackType: SFX, one compact plasma detonation, low pressure thump and a granular electrical decay, controlled treble, dry and close",
+  "prompt": "TrackType: SFX, one compact plasma detonation, low pressure thump and a granular electrical decay, controlled treble, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "explosion",
+  "seed": 260127,
+  "rank": 2,
+  "rank_score": 0.5188,
+  "clap": 0.9245,
+  "clap_cos": 0.1817,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.22,
+    "CU": 6.15,
+    "PC": 2.57,
+    "PQ": 5.78
+  },
+  "fails": [],
+  "warnings": [
+    "cut at the requested duration while still 19 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 3.72,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.5833,
+    "length_frames": 14.0,
+    "channels": 1,
+    "cut_db": -18.8
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -19.7
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -5.76,
+    "true_peak_dbtp": -5.76,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00068,
+    "active_s": 1.195,
+    "noise_floor_db": -77.8,
+    "onset_s": 0.0,
+    "tail_db": -83.8,
+    "stereo_correlation": 1.0,
+    "lufs": -24.1,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "304f15a837b4c751737a51083c3b460689011113383b09b746d9dc01b9134c23",
+    "blind_caption": "A gun is fired.",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one compact plasma detonation?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.1248
+  },
+  "human_approved": false
+}

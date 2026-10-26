@@ -1,0 +1,81 @@
+{
+  "request": "20261026-205947-c63c",
+  "ref": "20261026-205947-c63c:260128",
+  "text": "TrackType: SFX, one compact plasma detonation, low pressure thump and a granular electrical decay, controlled treble, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one compact plasma detonation?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one compact plasma detonation, low pressure thump and a granular electrical decay, controlled treble, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one compact plasma detonation?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "explosion",
+  "seed": 260128,
+  "rank": 1,
+  "rank_score": 0.6108,
+  "clap": 0.9614,
+  "clap_cos": 0.2215,
+  "clap_top": null,
+  "aes": {
+    "CE": 2.74,
+    "CU": 6.04,
+    "PC": 2.18,
+    "PQ": 5.77
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 2.26,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.5833,
+    "length_frames": 14.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -22.9
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -3.22,
+    "true_peak_dbtp": -3.22,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00063,
+    "active_s": 1.145,
+    "noise_floor_db": -85.5,
+    "onset_s": 0.0,
+    "tail_db": -83.0,
+    "stereo_correlation": 1.0,
+    "lufs": -25.5,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "304f15a837b4c751737a51083c3b460689011113383b09b746d9dc01b9134c23",
+    "blind_caption": "A drum roll",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one compact plasma detonation?",
+        "answer": "uncertain",
+        "evidence": "NO"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.191
+  },
+  "human_approved": false
+}

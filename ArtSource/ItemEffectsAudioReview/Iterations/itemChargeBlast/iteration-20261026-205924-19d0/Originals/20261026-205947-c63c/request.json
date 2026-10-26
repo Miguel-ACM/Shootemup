@@ -1,0 +1,152 @@
+{
+  "id": "20261026-205947-c63c",
+  "created": "2026-10-26 20:59:47",
+  "text": "TrackType: SFX, one compact plasma detonation, low pressure thump and a granular electrical decay, controlled treble, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one compact plasma detonation?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one compact plasma detonation, low pressure thump and a granular electrical decay, controlled treble, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one compact plasma detonation?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "raw": true,
+  "category": "explosion",
+  "cat_id": "EXPLReal",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    260128,
+    260129
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.55,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 1.3,
+  "gen_s": 2.63,
+  "score_s": 1.3,
+  "takes": [
+    {
+      "seed": 260128,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -3.22,
+        "true_peak_dbtp": -3.22,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00063,
+        "active_s": 1.145,
+        "noise_floor_db": -85.5,
+        "onset_s": 0.0,
+        "tail_db": -83.0,
+        "stereo_correlation": 1.0,
+        "lufs": -25.5,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 2.26,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5833,
+        "length_frames": 14.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -22.9
+      },
+      "clap": 0.9614,
+      "clap_cos": 0.2215,
+      "clap_top": null,
+      "aes": {
+        "CE": 2.74,
+        "CU": 6.04,
+        "PC": 2.18,
+        "PQ": 5.77
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.6108,
+      "rank": 1,
+      "ref": "20261026-205947-c63c:260128",
+      "files": {
+        "wav": "20261026-205947-c63c/260128.wav",
+        "png": "20261026-205947-c63c/260128.png",
+        "raw": "20261026-205947-c63c/260128_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205947-c63c\\260128.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205947-c63c\\260128.png"
+      }
+    },
+    {
+      "seed": 260129,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -3.36,
+        "true_peak_dbtp": -3.36,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00176,
+        "active_s": 1.27,
+        "noise_floor_db": -84.9,
+        "onset_s": 0.0,
+        "tail_db": -83.8,
+        "stereo_correlation": 1.0,
+        "lufs": -24.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 2.92,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5833,
+        "length_frames": 14.0,
+        "channels": 1,
+        "cut_db": -17.6
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.7
+      },
+      "clap": 0.9298,
+      "clap_cos": 0.2404,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.16,
+        "CU": 6.61,
+        "PC": 2.17,
+        "PQ": 6.14
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 18 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.6008,
+      "rank": 2,
+      "ref": "20261026-205947-c63c:260129",
+      "files": {
+        "wav": "20261026-205947-c63c/260129.wav",
+        "png": "20261026-205947-c63c/260129.png",
+        "raw": "20261026-205947-c63c/260129_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205947-c63c\\260129.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205947-c63c\\260129.png"
+      }
+    }
+  ],
+  "kept": 2
+}

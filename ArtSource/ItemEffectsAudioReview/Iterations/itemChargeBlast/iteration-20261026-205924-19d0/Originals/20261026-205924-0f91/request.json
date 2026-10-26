@@ -1,0 +1,152 @@
+{
+  "id": "20261026-205924-0f91",
+  "created": "2026-10-26 20:59:24",
+  "text": "TrackType: SFX, one compact plasma detonation, low pressure thump and a granular electrical decay, controlled treble, dry and close",
+  "prompt": "TrackType: SFX, one compact plasma detonation, low pressure thump and a granular electrical decay, controlled treble, dry and close",
+  "raw": true,
+  "category": "explosion",
+  "cat_id": "EXPLReal",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    260126,
+    260127
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.55,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 1.3,
+  "gen_s": 2.25,
+  "score_s": 1.34,
+  "takes": [
+    {
+      "seed": 260126,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -3.58,
+        "true_peak_dbtp": -3.58,
+        "clipped_fraction": 0.0,
+        "dc_offset": 2e-05,
+        "active_s": 0.995,
+        "noise_floor_db": -84.5,
+        "onset_s": 0.2005,
+        "tail_db": -86.0,
+        "stereo_correlation": 1.0,
+        "lufs": -23.2,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 1.56,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5833,
+        "length_frames": 14.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -24.5
+      },
+      "clap": 0.9405,
+      "clap_cos": 0.2124,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.09,
+        "CU": 6.67,
+        "PC": 2.7,
+        "PQ": 6.26
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.6377,
+      "rank": 1,
+      "ref": "20261026-205924-0f91:260126",
+      "files": {
+        "wav": "20261026-205924-0f91/260126.wav",
+        "png": "20261026-205924-0f91/260126.png",
+        "raw": "20261026-205924-0f91/260126_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205924-0f91\\260126.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205924-0f91\\260126.png"
+      }
+    },
+    {
+      "seed": 260127,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -5.76,
+        "true_peak_dbtp": -5.76,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00068,
+        "active_s": 1.195,
+        "noise_floor_db": -77.8,
+        "onset_s": 0.0,
+        "tail_db": -83.8,
+        "stereo_correlation": 1.0,
+        "lufs": -24.1,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 3.72,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5833,
+        "length_frames": 14.0,
+        "channels": 1,
+        "cut_db": -18.8
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -19.7
+      },
+      "clap": 0.9245,
+      "clap_cos": 0.1817,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.22,
+        "CU": 6.15,
+        "PC": 2.57,
+        "PQ": 5.78
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 19 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.5188,
+      "rank": 2,
+      "ref": "20261026-205924-0f91:260127",
+      "files": {
+        "wav": "20261026-205924-0f91/260127.wav",
+        "png": "20261026-205924-0f91/260127.png",
+        "raw": "20261026-205924-0f91/260127_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205924-0f91\\260127.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-205924-0f91\\260127.png"
+      }
+    }
+  ],
+  "kept": 2
+}
