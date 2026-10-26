@@ -123,10 +123,11 @@ def main():
             folder=REVIEW/'Iterations'/cue['id'];folder.mkdir(parents=True,exist_ok=True)
             brief=folder/'brief.json';save(brief,cue['brief'])
             duration=max(cue['duration'], .5) if previous and cue['mode']=='oneshot' else cue['duration']
+            attempt=len(list(folder.glob('iteration-*')))
             command=[str(TOOL/'.venv/Scripts/python.exe'),str(ROOT/'Tools/run_sound_iteration.py'),'--brief',str(brief),
                 '--out',str(folder),'--duration',str(duration),'--mode',cue['mode'],'--repeat-hz',str(cue['repeat_hz']),
                 '--n',str(plan['initialTakes']),'--rounds',str(plan['repairRounds']),
-                '--seed',str(260026+cue_indices[cue['id']]*100+(500000 if previous else 0)),'--no-start']
+                '--seed',str(260026+cue_indices[cue['id']]*100+attempt*500000),'--no-start']
             mix=REVIEW/'mix-bed.wav'
             if mix.is_file(): command.extend(['--mix',str(mix)])
             print('Creating '+cue['id'],flush=True)
