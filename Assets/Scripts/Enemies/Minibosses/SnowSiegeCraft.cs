@@ -8,7 +8,7 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
         hull = 26;
         health = 480;
         hullScale = 1.1f;
-        attackInterval = .72f;
+        attackInterval = Timing(1.55f,1.1f);
         shellTravelDistance = 7.2f;
         Mover<TopTracker>();
     }
@@ -17,11 +17,11 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
     {
         if (volley % 2 == 0)
         {
-            FanFrom<BurstShell>(5, 22, 3, .44f, ports);
+            FanFrom<BurstShell>(Shots(2,3), 32, 2.8f, .46f, ports);
         }
         else
         {
-            FanFrom<SuspendedRound>(11, 12, 5, .24f, ports);
+            FanFrom<SuspendedRound>(Shots(5,7), 23, 3.0f, .25f, ports);
         }
     }
     // The bays are exposed during firing and reload; armor still accepts every weapon.
