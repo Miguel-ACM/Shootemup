@@ -3,7 +3,7 @@ public sealed class FocusTime : AItem
 {
     void Awake()
     {
-        SetData("Focus time", "Quiet desk", "Move 40% slower while focusing.", ItemType.passive);
+        SetData("Focus Brake", "Quiet desk", "Move 40% slower while focusing.", ItemType.passive);
     }
 
     public override void OnBegin()
