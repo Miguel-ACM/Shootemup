@@ -3,6 +3,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class MirageObelisk : DistrictEnemy
 {
+    protected override Vector2 CueAxis=>Vector2.down;
     protected override void Configure()
     {
         hull=72; hullScale=0.56f; health=48;

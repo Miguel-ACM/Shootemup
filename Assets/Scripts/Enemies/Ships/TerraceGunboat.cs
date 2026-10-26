@@ -3,6 +3,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class TerraceGunboat : DistrictEnemy
 {
+    protected override Vector2 CueAxis=>Vector2.down;
     protected override void Configure()
     {
         hull=66; hullScale=0.53f; health=38;

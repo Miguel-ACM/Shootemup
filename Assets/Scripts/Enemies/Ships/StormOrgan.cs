@@ -3,6 +3,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class StormOrgan : DistrictEnemy
 {
+    protected override Vector2 CueAxis=>Vector2.down;
     protected override void Configure()
     {
         hull=70; hullScale=0.57f; health=48;

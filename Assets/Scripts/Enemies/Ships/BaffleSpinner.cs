@@ -3,6 +3,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class BaffleSpinner : DistrictEnemy
 {
+    protected override Vector2 CueAxis=>Vector2.down;
     protected override void Configure()
     {
         hull=67; hullScale=0.48f; health=30;

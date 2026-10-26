@@ -3,6 +3,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class CometTug : DistrictEnemy
 {
+    protected override Vector2 CueAxis=>Vector2.down;
     protected override void Configure()
     {
         hull=76; hullScale=0.55f; health=47;
