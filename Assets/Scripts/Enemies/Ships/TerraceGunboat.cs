@@ -9,7 +9,7 @@ public sealed class TerraceGunboat : DistrictEnemy
         hull = 66;
         hullScale = 0.53f;
         health = 38;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(2.8f, 2.0f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -24,12 +24,14 @@ public sealed class TerraceGunboat : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve TerraceGunboatRoute0 = Route("City / TerraceGunboat 0", Vector2.right, -1.4f, .73f, -.72f, .65f, -.05f, .57f, .62f, .65f, 1.4f, .78f);
-    static readonly FlightCurve TerraceGunboatRoute1 = Route("City / TerraceGunboat 1", Vector2.right, 1.4f, .88f, .8f, .77f, .2f, .67f, -.45f, .72f, -1.4f, .9f);
-    public static readonly WavePart[] TerraceGunboatParts ={
-        new WavePart("TerraceGunboat call",nameof(TerraceGunboat),TerraceGunboatRoute0,WaveShape.Train,3,3.55f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("TerraceGunboat crossing",nameof(TerraceGunboat),TerraceGunboatRoute1,WaveShape.Train,3,3.80f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("TerraceGunboat answer",nameof(TerraceGunboat),TerraceGunboatRoute0,WaveShape.Rake,3,4.05f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
+    static readonly FlightCurve TerraceGunboatRoute0 = Route("City / Terrace balcony sweep", Vector2.right, -1.4f, 0.87f, -0.61f, 0.69f, 0.16f, 0.67f, 0.72f, 0.83f, 1.4f, 0.96f);
+    static readonly FlightCurve TerraceGunboatRoute1 = Route("City / Terrace descending avenue", Vector2.right, -0.52f, 1.25f, -0.5f, 0.84f, -0.17f, 0.62f, 0.44f, 0.48f, 1.4f, 0.4f);
+    static readonly FlightCurve TerraceGunboatRoute2 = Route("City / Terrace rooftop turn", Vector2.right, 1.4f, 0.63f, 0.68f, 0.56f, 0.08f, 0.68f, -0.49f, 0.9f, -0.62f, 1.25f);
+    public static readonly WavePart[] TerraceGunboatParts =
+    {
+        new WavePart("Terrace balcony sweep", nameof(TerraceGunboat), TerraceGunboatRoute0, WaveShape.Rank, 2, 4.0f, 2, new[] { 0.3f, 0.62f }, new[] { 0.46f }, 2),
+        new WavePart("Terrace descending avenue", nameof(TerraceGunboat), TerraceGunboatRoute1, WaveShape.Rake, 2, 4.15f, 4, new[] { 0.27f, 0.49f, 0.7f }, new[] { 0.39f, 0.72f }, 2),
+        new WavePart("Terrace rooftop turn", nameof(TerraceGunboat), TerraceGunboatRoute2, WaveShape.Train, 2, 3.95f, 7, new[] { 0.32f, 0.65f }, new[] { 0.48f }, 2),
     };
 }
 
