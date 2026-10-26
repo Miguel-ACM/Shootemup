@@ -1,0 +1,207 @@
+{
+  "cues": 22,
+  "max_generations": 88,
+  "engine": "Stable Audio 3 Small-SFX",
+  "listener": "MiDashengLM 0.6B on CPU",
+  "human_approved": false,
+  "briefs": [
+    {
+      "id": "itemChargeRelease",
+      "description": "one compact pneumatic energy cannon discharge, firm low impact with a short electrical crack, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one compact pneumatic energy cannon discharge?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemChargeBlast",
+      "description": "one compact plasma detonation, low pressure thump and a granular electrical decay, controlled treble, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one compact plasma detonation?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemFlameIgnite",
+      "description": "one gas torch ignition, small metallic igniter click and brief breathy flame catch, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one gas torch ignition?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemFlameSustain",
+      "description": "steady compact gas torch flame, low breathy combustion hiss with restrained crackle, constant intensity, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: steady compact gas torch flame?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the texture steady without impacts or obvious gaps?"
+      ]
+    },
+    {
+      "id": "itemFlameRelease",
+      "description": "one gas torch valve shutoff, short soft air pressure release, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one gas torch valve shutoff?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemDepthLaunch",
+      "description": "one small heavy steel bomb rack release, mechanical latch clunk and short hollow body thud, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one small heavy steel bomb rack release?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemDepthBurst",
+      "description": "one small fragmentation charge burst, tight low thump with a brief spray of tiny metal fragments, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one small fragmentation charge burst?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemSplit",
+      "description": "one tiny mechanical splitter snap, sharp paired metallic click with almost no tail, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one tiny mechanical splitter snap?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemBearing",
+      "description": "one small burst of steel ball bearings striking a metal plate, crisp brief metallic rattle, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one small burst of steel ball bearings striking a metal plate?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemRicochet",
+      "description": "one small steel projectile ricochet, compact bright metallic ping with a falling pitch, very short dry decay",
+      "requirements": [
+        "Does the sound contain the requested physical source: one small steel projectile ricochet?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemProximity",
+      "description": "one compact proximity charge pop, muted electrical snap and a tight small impact, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one compact proximity charge pop?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemBattery",
+      "description": "one small guided rocket ignition, short pressurized motor kick with a compact electric snap, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one small guided rocket ignition?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemSalvage",
+      "description": "one small coin mechanism releasing a payload, compact brass clink and mechanical latch, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one small coin mechanism releasing a payload?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemCounter",
+      "description": "one small energy shield deflection, muted metallic catch and short electrical snap, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one small energy shield deflection?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemReserve",
+      "description": "one small electrical cell accepting charge, soft rounded electronic pulse with a quick rising pitch, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one small electrical cell accepting charge?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemFocus",
+      "description": "one optical targeting lock confirmation, subtle compact electronic chirp with a short rising pitch, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one optical targeting lock confirmation?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemBurn",
+      "description": "one small patch of fuel catching fire on steel, soft breathy ignition crackle, short and dry",
+      "requirements": [
+        "Does the sound contain the requested physical source: one small patch of fuel catching fire on steel?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemPoison",
+      "description": "one tiny viscous toxic liquid bubble rupturing, low wet gurgling pop, short and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemChain",
+      "description": "one small burning powder charge detonation, crunchy low thump with a short hot crackle, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one small burning powder charge detonation?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemGum",
+      "description": "one small sticky gum bubble popping, soft elastic wet snap with almost no tail, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one small sticky gum bubble popping?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemReturn",
+      "description": "one small fast boomerang air turn, compact curved swish with a subtle falling pitch, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    },
+    {
+      "id": "itemCapReady",
+      "description": "one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+      "requirements": [
+        "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+        "Is the audio free of intelligible speech and music?",
+        "Is the sound compact and dry with a short decay?"
+      ]
+    }
+  ]
+}

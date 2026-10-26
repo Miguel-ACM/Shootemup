@@ -32,6 +32,8 @@ def validate(value, manifest):
     for cue_id,pick in value['picks'].items():
         if cue_id not in by_id or not isinstance(pick,dict): raise ValueError('Unknown effect.')
         if pick.get('choice') not in ('a','b','c','d','e','original','reject','pending'): raise ValueError('Unknown alternative.')
+        if pick['choice'] in 'abcde' and pick['choice'] not in {choice['id'] for choice in by_id[cue_id]['choices']}:
+            raise ValueError('That alternative is not available for this effect.')
         gain=pick.get('gain',1)
         if not isinstance(gain,(int,float)) or isinstance(gain,bool) or not 0<=gain<=1.5: raise ValueError('Invalid gain.')
         note=pick.get('note','')

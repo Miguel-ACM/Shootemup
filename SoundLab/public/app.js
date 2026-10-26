@@ -33,7 +33,7 @@ function nav() {
 function render() {
   const c=cue(), p=currentPick(), renderId=++renderVersion;
   const chosen=!reviewed(p)?'NOT PICKED':p.choice==='reject'?'ANOTHER ROUND':p.choice==='original'?'KEEP CURRENT':`PICKED ${p.choice.toUpperCase()}`;
-  $('#effect').innerHTML = `<div class="effect-head"><div><div class="eyebrow">${escapeHTML(c.group)} <span class="muted">/ ${String(activeIndex+1).padStart(2,'0')}</span></div><h2>${escapeHTML(c.label)}</h2></div><div class="head-actions"><span class="chip">${chosen}</span>${reviewed(p)?'<button class="quiet" id="clear-choice">Clear choice</button>':''}<button class="quiet" id="compare">▶ Compare A → E</button></div></div>
+  $('#effect').innerHTML = `<div class="effect-head"><div><div class="eyebrow">${escapeHTML(c.group)} <span class="muted">/ ${String(activeIndex+1).padStart(2,'0')}</span></div><h2>${escapeHTML(c.label)}</h2></div><div class="head-actions"><span class="chip">${chosen}</span>${reviewed(p)?'<button class="quiet" id="clear-choice">Clear choice</button>':''}<button class="quiet" id="compare">▶ Compare takes</button></div></div>
     <div class="baseline ${p?.choice==='original'?'chosen-baseline':''}"><div><strong>Current in-game sound</strong><p>${c.original?'The existing sound, level-matched for comparison.':'Currently silent. Keeping current adds no new sound.'}</p></div><div class="baseline-actions">${c.original?'<button id="original-play">▶ Play current</button><button id="original-repeat">↻ Repeat current</button>':''}<button id="keep-current">${p?.choice==='original'?'✓ Keeping current':'Keep current'}</button></div></div>
     <div class="choices">${c.choices.map(ch=>`<article class="choice ${p?.choice===ch.id?'chosen':''}" data-id="${ch.id}"><div class="choice-top"><span class="letter">${ch.id.toUpperCase()}</span><h3>${escapeHTML(ch.label)}</h3><span class="time">${Math.round(ch.seconds*1000)} ms</span></div><p>${escapeHTML(ch.description)}</p><canvas class="waveform" data-wave="${ch.id}" aria-label="${escapeHTML(ch.label)} waveform"></canvas><div class="audio-actions"><button data-play="${ch.id}">▶ Play once</button><button data-repeat="${ch.id}">↻ Repeat</button></div><button class="choose" data-choose="${ch.id}" aria-pressed="${p?.choice===ch.id}"><span class="radio"></span>${p?.choice===ch.id?'Selected':'Choose '+ch.id.toUpperCase()}</button></article>`).join('')}
     <article class="feedback-card ${p?.choice==='reject'?'rejected':''}"><h3>Not the right direction?</h3><p>Keep the original, or ask for another round. Your note will tell me what to change.</p><button id="reject">${p?.choice==='reject'?'✓ Another round requested':'None of these · try again ↻'}</button></article></div>
@@ -118,10 +118,11 @@ function markPlaying(text,id) {
   document.querySelectorAll('.playing').forEach(el=>el.classList.remove('playing'));
   document.querySelector(`.choice[data-id="${id}"]`)?.classList.add('playing');
 }
-function emit(b,at,gain=1) {
+function emit(b,at,gain=1,loopSeconds=0) {
   const source=audio.createBufferSource(),level=audio.createGain();source.buffer=b;level.gain.value=gain;
+  source.loop=loopSeconds>0;
   source.connect(level);level.connect(compressor);nodes.add(source);
-  source.onended=()=>{nodes.delete(source);source.disconnect();level.disconnect();};source.start(at);return source;
+  source.onended=()=>{nodes.delete(source);source.disconnect();level.disconnect();};source.start(at);if(loopSeconds>0)source.stop(at+loopSeconds);return source;
 }
 async function preview(id,repeated) {
   stop(); const token=generation, c=cue(), ch=id==='original'?c.original:c.choices.find(v=>v.id===id);
@@ -129,6 +130,12 @@ async function preview(id,repeated) {
   try {
     graph();await audio.resume();const b=await buffer(ch.file);if(token!==generation)return;
     const gain=currentPick()?.gain??1, rate=Number($('#rate').value), duration=Number($('#duration').value);
+    if (repeated && c.mode==='loop') {
+      emit(b,audio.currentTime+.025,gain,duration);
+      markPlaying(`${c.label} · ${id.toUpperCase()} · continuous · ${duration}s`,id);
+      later(()=>{if(token===generation)stop();},duration*1000+80);
+      return;
+    }
     const count=repeated?Math.ceil(rate*duration):1;
     // Leave overlap headroom when intentionally stress-testing long tails at rapid rates.
     const overlap=repeated?Math.sqrt(Math.max(1,b.duration*rate*.45)):1;
@@ -200,6 +207,7 @@ async function init() {
       $('#save-status').textContent='⚠ Offline · export picks';banner('Project connection unavailable. Picks will stay in this browser; use Export picks to keep a copy.',true);
     }
     if(state.bankVersion!==manifest.bankVersion)throw new Error('Saved picks belong to a different sound round. Export them before switching banks.');
+    $('#bank-summary').textContent=`${manifest.cues.length} EFFECTS / ${manifest.cues.reduce((n,c)=>n+c.choices.length,0)} TAKES`;
     render();
     if(state.status==='ready')banner('Your last selection is saved and marked ready for Codex. Changing a choice starts a new draft.');
   } catch(error){banner(error.message,true);$('#effect').innerHTML='<p>Start the local server with the SoundLab launch script, then reopen its localhost address.</p>';}

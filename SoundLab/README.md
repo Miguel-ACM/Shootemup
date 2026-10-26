@@ -97,3 +97,42 @@ Implementation details and API documentation are in the tool's own `README.md`
 and `SKILL.md`. If the optional critic is absent on another machine, its pinned
 download is `.venv/Scripts/python.exe scripts/download_models.py
 --accept-licenses --only captioner` from the tool directory (Apache-2.0, ~2.8 GB).
+
+## Item effects round
+
+The original bank and saved choices stay intact. New item cues use fixed briefs in
+`ArtSource/ItemEffectsAudioReview/cues.json`. Each cue has two initial takes and one
+bounded repair round (at most four generations); the local CPU critic is advisory.
+The source requests, earlier best take, repeated-fire previews and a preview over
+five seconds of Miguel's Plains music are retained in the review folder.
+
+From the game repository, using the local generator's installed interpreter:
+
+```powershell
+$taskSfxPython = "$env:USERPROFILE/Tools/local-sounds/.venv/Scripts/python.exe"
+& $taskSfxPython Tools/iterate_item_sfx.py --dry-run
+& $taskSfxPython Tools/iterate_item_sfx.py --start
+& $taskSfxPython Tools/iterate_item_sfx.py --publish
+```
+
+The normal GPU guard remains active. `--start-anyway` is only for explicit permission
+to run alongside other GPU programs; never stop Miguel's game to free memory.
+`--only itemChargeBlast` targets one cue; `--retry-failed` explicitly retries failed
+requests. Existing published choice letters are immutable, so saved picks cannot
+quietly change meaning. Publishing adds audition copies; it does not import Unity
+sounds. The continuous flame cue's repeat button plays one loop, rather than
+stacking many copies.
+
+After Miguel finishes the selection, inspect the exact approved import plan:
+
+```powershell
+& $taskSfxPython SoundLab/apply_item_picks.py
+& $taskSfxPython SoundLab/apply_item_picks.py --apply
+```
+
+Only explicitly chosen local item takes are copied to `Sounds/ItemApproved`; their
+saved levels are respected. Pending, rejected and Keep current choices stay as they
+are. Hashes are verified before writing, previous imported takes are backed up and
+existing Unity GUIDs are preserved. This importer never changes the selection files,
+original item names, original bank takes or older Unity audio. Absent approvals,
+new runtime cue hooks retain their previous sound or silence.

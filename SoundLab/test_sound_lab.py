@@ -34,9 +34,11 @@ class SelectionTests(unittest.TestCase):
             method='PUT' if value is not None else 'GET',headers={'Content-Type':'application/json',**(headers or {})})
         with urllib.request.urlopen(request,timeout=5) as response:return response.status,json.loads(response.read())
     def test_candidates_match_manifest(self):
-        self.assertEqual(len(self.manifest['cues']),36)
+        original=[cue for cue in self.manifest['cues'] if cue.get('source')!='local-sa3-item-effects-v1']
+        self.assertEqual(len(original),36)
+        self.assertEqual(len({cue['id'] for cue in self.manifest['cues']}),len(self.manifest['cues']))
         count=0
-        for cue in self.manifest['cues']:
+        for cue in original:
             self.assertEqual([c['id'] for c in cue['choices']],list('abcde'))
             self.assertEqual(len({c['sha256'] for c in cue['choices']}),5)
             for choice in cue['choices']:
@@ -49,6 +51,21 @@ class SelectionTests(unittest.TestCase):
                 self.assertLess(max(map(abs,samples)),23500)
                 count+=1
         self.assertEqual(count,180)
+
+    def test_local_item_takes_keep_their_provenance(self):
+        for cue in self.manifest['cues']:
+            if cue.get('source')!='local-sa3-item-effects-v1': continue
+            self.assertEqual(cue['id'],cue['unityCue'])
+            self.assertTrue(1<=len(cue['choices'])<=5)
+            self.assertEqual([choice['id'] for choice in cue['choices']],list('abcde')[:len(cue['choices'])])
+            for choice in cue['choices']:
+                path=server.PUBLIC/choice['file']
+                self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),choice['sha256'])
+                self.assertFalse(choice['human_approved'])
+                self.assertFalse(choice['review']['human_approved'])
+                with wave.open(str(path),'rb') as audio:
+                    self.assertEqual((audio.getsampwidth(),audio.getframerate()),(3,48000))
+                    self.assertIn(audio.getnchannels(),(1,2))
     def test_round_trip_and_backup(self):
         payload=server.empty();payload['picks']={'shot1':{'choice':'c','gain':.85,'note':'Bite, less tail. "Steel" ✓'}}
         self.assertEqual(self.request('/api/selections',payload)[0],200)
