@@ -4,6 +4,7 @@ using UnityEngine;
 public sealed class FlameWeaponFeedback : MonoBehaviour
 {
     AWeapon weapon;
+    PSXShipEffects hull;
     Vector2 direction;
     readonly LineRenderer[] tongues = new LineRenderer[2];
     AudioSource bed;
@@ -14,6 +15,7 @@ public sealed class FlameWeaponFeedback : MonoBehaviour
     public void Build(AWeapon source, Vector2 fireDirection)
     {
         weapon = source;
+        hull = source.GetComponentInParent<PSXShipEffects>();
         direction = fireDirection;
         bed = gameObject.AddComponent<AudioSource>();
         bed.playOnAwake = false;
@@ -61,7 +63,11 @@ public sealed class FlameWeaponFeedback : MonoBehaviour
         heat = Mathf.MoveTowards(heat, firing ? 1 : 0, WorldTimeStop.PlayerDelta / (firing ? .06f : .14f));
         bed.volume = heat * .07f * ItemSound.Gain("itemFlameSustain");
         if (heat <= .001f && bed.isPlaying) bed.Stop();
-        Vector3 muzzle = transform.position + (Vector3)direction * .72f;
+        Vector3 muzzle = transform.position + (Vector3)direction * .3f;
+        if (hull != null)
+            muzzle = direction.y > 0
+                ? (hull.MuzzlePosition(0) + hull.MuzzlePosition(1)) * .5f
+                : hull.transform.TransformPoint(new Vector3(0, hull.exhaustOffset.y, -.03f) * hull.HullScale);
         Vector2 right = new Vector2(direction.y, -direction.x);
         for (int line = 0; line < 2; line++)
         {
