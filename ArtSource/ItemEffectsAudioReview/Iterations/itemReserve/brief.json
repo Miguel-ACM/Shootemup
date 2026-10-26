@@ -1,0 +1,8 @@
+{
+  "description": "one small electrical cell accepting charge, soft rounded electronic pulse with a quick rising pitch, dry and close",
+  "requirements": [
+    "Does the sound contain the requested physical source: one small electrical cell accepting charge?",
+    "Is the audio free of intelligible speech and music?",
+    "Is the sound compact and dry with a short decay?"
+  ]
+}

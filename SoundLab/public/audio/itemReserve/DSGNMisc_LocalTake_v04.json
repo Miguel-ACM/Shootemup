@@ -1,0 +1,84 @@
+{
+  "request": "20261026-210744-e9ae",
+  "ref": "20261026-210744-e9ae:261427",
+  "text": "TrackType: SFX, one small electrical cell accepting charge, soft rounded electronic pulse with a quick rising pitch, dry and close",
+  "prompt": "TrackType: SFX, one small electrical cell accepting charge, soft rounded electronic pulse with a quick rising pitch, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "misc",
+  "seed": 261427,
+  "rank": 2,
+  "rank_score": 0.6261,
+  "clap": 0.7326,
+  "clap_cos": 0.225,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.31,
+    "CU": 6.56,
+    "PC": 2.19,
+    "PQ": 7.12
+  },
+  "fails": [],
+  "warnings": [
+    "cut at the requested duration while still 15 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 17.38,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.2083,
+    "length_frames": 5.0,
+    "channels": 1,
+    "cut_db": -15.2
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -14.2
+  },
+  "signal": {
+    "duration_s": 1.0,
+    "peak_dbfs": -18.5,
+    "true_peak_dbtp": -18.43,
+    "clipped_fraction": 0.0,
+    "dc_offset": 4e-05,
+    "active_s": 0.31,
+    "noise_floor_db": -68.2,
+    "onset_s": 0.0,
+    "tail_db": -65.8,
+    "stereo_correlation": 1.0,
+    "lufs": -31.3,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "4673488e3e624b8f7ac62792af569f3a7ff96ba9712e9687808c6640cca350eb",
+    "blind_caption": "Bicycle bell ringing",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small electrical cell accepting charge?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "NO"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2003
+  },
+  "human_approved": false
+}

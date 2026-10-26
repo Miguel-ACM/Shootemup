@@ -1,0 +1,475 @@
+{
+  "brief": {
+    "description": "one small electrical cell accepting charge, soft rounded electronic pulse with a quick rising pitch, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one small electrical cell accepting charge?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "4673488e3e624b8f7ac62792af569f3a7ff96ba9712e9687808c6640cca350eb",
+  "options": {
+    "duration": 0.2,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 261426,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-210744-e9ae",
+      "prompt": "TrackType: SFX, one small electrical cell accepting charge, soft rounded electronic pulse with a quick rising pitch, dry and close",
+      "takes": [
+        "20261026-210744-e9ae:261426",
+        "20261026-210744-e9ae:261427"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-210806-91dd",
+      "prompt": "TrackType: SFX, one small electrical cell accepting charge, soft rounded electronic pulse with a quick rising pitch, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small electrical cell accepting charge?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-210806-91dd:261429",
+        "20261026-210806-91dd:261428"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 261426,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -18.51,
+        "true_peak_dbtp": -18.19,
+        "clipped_fraction": 0.0,
+        "dc_offset": 5e-05,
+        "active_s": 0.205,
+        "noise_floor_db": -68.5,
+        "onset_s": 0.0,
+        "tail_db": -65.9,
+        "stereo_correlation": 1.0,
+        "lufs": -32.5,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 17.12,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1,
+        "cut_db": -17.4
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -14.3
+      },
+      "clap": 0.8658,
+      "clap_cos": 0.2283,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.55,
+        "CU": 6.76,
+        "PC": 1.89,
+        "PQ": 7.42
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 17 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.6797,
+      "rank": 1,
+      "ref": "20261026-210744-e9ae:261426",
+      "files": {
+        "wav": "20261026-210744-e9ae/261426.wav",
+        "png": "20261026-210744-e9ae/261426.png",
+        "raw": "20261026-210744-e9ae/261426_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210744-e9ae\\261426.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210744-e9ae\\261426.png"
+      },
+      "review": {
+        "brief_id": "4673488e3e624b8f7ac62792af569f3a7ff96ba9712e9687808c6640cca350eb",
+        "blind_caption": "Rattle of a bicycle bell",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small electrical cell accepting charge?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2108
+      }
+    },
+    {
+      "seed": 261427,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -18.5,
+        "true_peak_dbtp": -18.43,
+        "clipped_fraction": 0.0,
+        "dc_offset": 4e-05,
+        "active_s": 0.31,
+        "noise_floor_db": -68.2,
+        "onset_s": 0.0,
+        "tail_db": -65.8,
+        "stereo_correlation": 1.0,
+        "lufs": -31.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 17.38,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1,
+        "cut_db": -15.2
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -14.2
+      },
+      "clap": 0.7326,
+      "clap_cos": 0.225,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.31,
+        "CU": 6.56,
+        "PC": 2.19,
+        "PQ": 7.12
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 15 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.6261,
+      "rank": 2,
+      "ref": "20261026-210744-e9ae:261427",
+      "files": {
+        "wav": "20261026-210744-e9ae/261427.wav",
+        "png": "20261026-210744-e9ae/261427.png",
+        "raw": "20261026-210744-e9ae/261427_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210744-e9ae\\261427.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210744-e9ae\\261427.png"
+      },
+      "review": {
+        "brief_id": "4673488e3e624b8f7ac62792af569f3a7ff96ba9712e9687808c6640cca350eb",
+        "blind_caption": "Bicycle bell ringing",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small electrical cell accepting charge?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2003
+      }
+    },
+    {
+      "seed": 261429,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -19.31,
+        "true_peak_dbtp": -18.96,
+        "clipped_fraction": 0.0,
+        "dc_offset": 2e-05,
+        "active_s": 0.345,
+        "noise_floor_db": -66.0,
+        "onset_s": 0.0,
+        "tail_db": -66.4,
+        "stereo_correlation": 1.0,
+        "lufs": -38.1,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 17.94,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -19.2
+      },
+      "clap": 0.92,
+      "clap_cos": 0.2891,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.38,
+        "CU": 6.84,
+        "PC": 2.13,
+        "PQ": 7.43
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.7954,
+      "rank": 1,
+      "ref": "20261026-210806-91dd:261429",
+      "files": {
+        "wav": "20261026-210806-91dd/261429.wav",
+        "png": "20261026-210806-91dd/261429.png",
+        "raw": "20261026-210806-91dd/261429_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210806-91dd\\261429.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210806-91dd\\261429.png"
+      },
+      "review": {
+        "brief_id": "4673488e3e624b8f7ac62792af569f3a7ff96ba9712e9687808c6640cca350eb",
+        "blind_caption": "A car passing by",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small electrical cell accepting charge?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.1096
+      }
+    },
+    {
+      "seed": 261428,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -20.91,
+        "true_peak_dbtp": -20.56,
+        "clipped_fraction": 0.0,
+        "dc_offset": 8e-05,
+        "active_s": 0.265,
+        "noise_floor_db": -64.2,
+        "onset_s": 0.0,
+        "tail_db": -62.7,
+        "stereo_correlation": 1.0,
+        "lufs": -37.5,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 19.65,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -17.7
+      },
+      "clap": 0.9374,
+      "clap_cos": 0.2195,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.39,
+        "CU": 6.84,
+        "PC": 2.15,
+        "PQ": 7.36
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.7314,
+      "rank": 2,
+      "ref": "20261026-210806-91dd:261428",
+      "files": {
+        "wav": "20261026-210806-91dd/261428.wav",
+        "png": "20261026-210806-91dd/261428.png",
+        "raw": "20261026-210806-91dd/261428_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210806-91dd\\261428.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210806-91dd\\261428.png"
+      },
+      "review": {
+        "brief_id": "4673488e3e624b8f7ac62792af569f3a7ff96ba9712e9687808c6640cca350eb",
+        "blind_caption": "A gun is fired.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small electrical cell accepting charge?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.0557
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 261426,
+    "signal": {
+      "duration_s": 1.0,
+      "peak_dbfs": -18.51,
+      "true_peak_dbtp": -18.19,
+      "clipped_fraction": 0.0,
+      "dc_offset": 5e-05,
+      "active_s": 0.205,
+      "noise_floor_db": -68.5,
+      "onset_s": 0.0,
+      "tail_db": -65.9,
+      "stereo_correlation": 1.0,
+      "lufs": -32.5,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 17.12,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.2083,
+      "length_frames": 5.0,
+      "channels": 1,
+      "cut_db": -17.4
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -14.3
+    },
+    "clap": 0.8658,
+    "clap_cos": 0.2283,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.55,
+      "CU": 6.76,
+      "PC": 1.89,
+      "PQ": 7.42
+    },
+    "fails": [],
+    "warnings": [
+      "cut at the requested duration while still 17 dB below its peak: the tail is chopped, ask for a longer --duration"
+    ],
+    "rejected": false,
+    "rank_score": 0.6797,
+    "rank": 1,
+    "ref": "20261026-210744-e9ae:261426",
+    "files": {
+      "wav": "20261026-210744-e9ae/261426.wav",
+      "png": "20261026-210744-e9ae/261426.png",
+      "raw": "20261026-210744-e9ae/261426_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210744-e9ae\\261426.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210744-e9ae\\261426.png"
+    },
+    "review": {
+      "brief_id": "4673488e3e624b8f7ac62792af569f3a7ff96ba9712e9687808c6640cca350eb",
+      "blind_caption": "Rattle of a bicycle bell",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one small electrical cell accepting charge?",
+          "answer": "uncertain",
+          "evidence": "NO"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.2108
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemReserve\\iteration-20261026-210744-a964\\DSGNMisc_Iterated_v01.wav"
+  ]
+}

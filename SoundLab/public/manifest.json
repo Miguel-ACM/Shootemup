@@ -6539,6 +6539,179 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemReserve",
+      "label": "Reserve Cell — storage",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemReserve",
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemReserve/DSGNMisc_LocalTake_v01.wav",
+          "seconds": 0.20833333333333334,
+          "sampleRate": 48000,
+          "sha256": "66d09757c5a1044f4f45fb06834da16a5e9fdd0b6763dc4b85a7c7ff0741e2df",
+          "ref": "20261026-210806-91dd:261429",
+          "review": {
+            "brief_id": "4673488e3e624b8f7ac62792af569f3a7ff96ba9712e9687808c6640cca350eb",
+            "blind_caption": "A car passing by",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small electrical cell accepting charge?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.1096
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemReserve/DSGNMisc_LocalTake_v02.wav",
+          "seconds": 0.20833333333333334,
+          "sampleRate": 48000,
+          "sha256": "bedb825c9176121580ee85b876892dcbb4770f50366000c50a0260da198dcfd2",
+          "ref": "20261026-210806-91dd:261428",
+          "review": {
+            "brief_id": "4673488e3e624b8f7ac62792af569f3a7ff96ba9712e9687808c6640cca350eb",
+            "blind_caption": "A gun is fired.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small electrical cell accepting charge?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.0557
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The automatic check detected a possibly cut-off tail. The automatic listener was uncertain.",
+          "file": "audio/itemReserve/DSGNMisc_LocalTake_v03.wav",
+          "seconds": 0.20833333333333334,
+          "sampleRate": 48000,
+          "sha256": "0f50934cdd0f34269a20a2817b0cfab0257a31a2dbbd44c57d9ec56caa85a5f3",
+          "ref": "20261026-210744-e9ae:261426",
+          "review": {
+            "brief_id": "4673488e3e624b8f7ac62792af569f3a7ff96ba9712e9687808c6640cca350eb",
+            "blind_caption": "Rattle of a bicycle bell",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small electrical cell accepting charge?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2108
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic check detected a possibly cut-off tail. The automatic listener was uncertain.",
+          "file": "audio/itemReserve/DSGNMisc_LocalTake_v04.wav",
+          "seconds": 0.20833333333333334,
+          "sampleRate": 48000,
+          "sha256": "d64f2d34005a4530064c8d81cc0eaf9cc2698db75ee933b213b09217c4b918eb",
+          "ref": "20261026-210744-e9ae:261427",
+          "review": {
+            "brief_id": "4673488e3e624b8f7ac62792af569f3a7ff96ba9712e9687808c6640cca350eb",
+            "blind_caption": "Bicycle bell ringing",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small electrical cell accepting charge?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2003
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }
