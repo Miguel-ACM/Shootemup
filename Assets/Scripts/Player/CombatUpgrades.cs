@@ -162,11 +162,16 @@ public sealed class CombatUpgrades : MonoBehaviour
         }
         if (Count(UpgradeKind.Battery) > 0)
         {
+            int previous = Mathf.FloorToInt(battery / 8.75f);
             battery += Mathf.Min(damage, enemy.health) * (companion ? .25f : .3f);
+            if (Mathf.FloorToInt(battery / 8.75f) > previous)
+                ItemProcVfx.Emit(ItemProcShape.Charge, transform.position + Vector3.up * .5f, new Color(.82f, .65f, .3f), .3f);
             if (battery >= 35 && Ready("battery", .7f))
             {
                 battery -= 35;
                 PlayerRound.Spawn(transform.position, Vector2.up, 28, 12, PlayerDelivery.Missile, 1);
+                ItemProcVfx.Emit(ItemProcShape.Counter, transform.position, new Color(.82f, .65f, .3f), .5f);
+                ItemSound.Cue("itemBattery", volume: .12f, cooldown: .18f);
             }
         }
         return FinishHit(enemy, damage);
