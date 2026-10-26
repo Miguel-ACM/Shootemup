@@ -9,7 +9,7 @@ public sealed class CometTug : DistrictEnemy
         hull = 76;
         hullScale = 0.55f;
         health = 47;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(3.25f, 2.25f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -24,12 +24,14 @@ public sealed class CometTug : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve CometTugRoute0 = Route("Space / CometTug 0", Vector2.right, .68f, 1.25f, .61f, .93f, .31f, .71f, -.18f, .66f, -.55f, .86f, -.65f, 1.25f);
-    static readonly FlightCurve CometTugRoute1 = Route("Space / CometTug 1", Vector2.right, -.68f, 1.25f, -.53f, .89f, -.1f, .61f, .45f, .74f, .65f, .96f, .68f, 1.25f);
-    public static readonly WavePart[] CometTugParts ={
-        new WavePart("CometTug call",nameof(CometTug),CometTugRoute0,WaveShape.Train,3,5.55f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("CometTug crossing",nameof(CometTug),CometTugRoute1,WaveShape.Train,3,5.80f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("CometTug answer",nameof(CometTug),CometTugRoute0,WaveShape.Rake,3,6.05f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
+    static readonly FlightCurve CometTugRoute0 = Route("Space / Comet gravitational hook", Vector2.right, -0.63f, 1.25f, -0.72f, 0.85f, -0.6f, 0.46f, -0.08f, 0.29f, 0.58f, 0.47f, 1.4f, 0.76f);
+    static readonly FlightCurve CometTugRoute1 = Route("Space / Comet apogee rake", Vector2.right, -1.4f, 0.32f, -0.73f, 0.47f, -0.18f, 0.77f, 0.44f, 0.93f, 0.71f, 1.25f);
+    static readonly FlightCurve CometTugRoute2 = Route("Space / Comet trailing orbit", Vector2.right, 0.64f, 1.25f, 0.72f, 0.8f, 0.38f, 0.48f, -0.22f, 0.51f, -0.71f, 0.79f, -1.4f, 0.89f);
+    public static readonly WavePart[] CometTugParts =
+    {
+        new WavePart("Comet gravitational hook", nameof(CometTug), CometTugRoute0, WaveShape.Train, 2, 5.9f, 2, new[] { 0.28f, 0.44f, 0.65f }, new[] { 0.42f, 0.73f }, 2),
+        new WavePart("Comet apogee rake", nameof(CometTug), CometTugRoute1, WaveShape.Rake, 2, 5.7f, 4, new[] { 0.3f, 0.54f, 0.74f }, new[] { 0.43f, 0.75f }, 2),
+        new WavePart("Comet trailing orbit", nameof(CometTug), CometTugRoute2, WaveShape.Rank, 2, 5.6f, 7, new[] { 0.27f, 0.46f, 0.68f }, new[] { 0.4f, 0.72f }, 2),
     };
 }
 
