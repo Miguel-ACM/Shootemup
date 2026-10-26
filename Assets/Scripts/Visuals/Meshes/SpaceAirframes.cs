@@ -97,12 +97,13 @@ public static partial class IndustrialMeshFactory
 
     static void BuildOrbitalMoonlet(Builder b)
     {
-        b.Drum(Vector3.zero, .34f, .34f, 13, 6, 6);
-        b.Ball(new Vector3(0, 0, -.24f), new Vector3(.36f, .28f, .20f), 15);
-        b.Box(new Vector3(0, 0, -.36f), new Vector3(.18f, .07f, .045f), 9, 11);
-        foreach (int s in new[] { -1, 1 })
-            SolarPanel(b, new Vector3(.05f, s * .57f, .04f), .41f, .48f);
-        b.Box(new Vector3(.43f, 0, .02f), new Vector3(.4f, .03f, .03f), 13, 6);
+        BevelArmor(b,new[]{V(0,-.51f),V(-.27f,-.1f),V(-.22f,.3f),V(.09f,.52f),V(.31f,.19f),V(.22f,-.2f)},.28f,15);
+        foreach(int s in new[]{-1,1}) {
+            b.Box(new Vector3(s*.4f,.16f,.02f),new Vector3(.43f,.055f,.08f),13,6);
+            b.Prism(new[]{V(s*.31f,-.1f),V(s*.82f,.37f),V(s*.55f,.69f),V(s*.37f,.4f)},.055f,7,Vector3.forward*.05f,13);
+        }
+        b.Box(new Vector3(0,-.22f,-.17f),new Vector3(.13f,.25f,.13f),11,6);
+        b.Drum(new Vector3(0,.13f,-.23f),.12f,.09f,9,8,13);
     }
 
     static void BuildSpaceCitadel(Builder b)
