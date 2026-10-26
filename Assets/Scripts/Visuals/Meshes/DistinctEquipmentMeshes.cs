@@ -166,7 +166,7 @@ public static partial class IndustrialMeshFactory
                     new Vector3(-.31f, .38f, -.12f), new Vector3(-.4f, .1f, -.14f),
                     new Vector3(-.32f, -.1f, -.13f) };
                 for (int i = 1; i < returnRail.Length; i++)
-                    EquipmentRod(b, returnRail[i - 1], returnRail[i], .045f, 11);
+                    EquipmentRod(b, returnRail[i - 1], returnRail[i], .045f, 6);
                 b.Prism(new[] { new Vector2(-.45f, -.08f), new Vector2(-.2f, -.08f), new Vector2(-.32f, -.27f) }, .12f, 9, Vector3.back * .13f);
                 break;
             case "SplitterCore":
