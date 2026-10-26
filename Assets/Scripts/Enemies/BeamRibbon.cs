@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Continuous energy with a visible capacitor, ignition expansion and cooling tail.
-// The dangerous body stays straight; decorative motion never changes its collision path.
+// Hostile beams stay straight; player beams can share their curved damage path.
 public sealed class BeamRibbon : MonoBehaviour
 {
     static Material energy;
@@ -41,6 +41,7 @@ public sealed class BeamRibbon : MonoBehaviour
 
     public void Draw(Vector3 p, Vector2 direction, float length, float width, float charge, float power, float release = 0)
     {
+        body.positionCount = sheath.positionCount = tell.positionCount = 2;
         if (!playerBeam)
         {
             hot = LevelProjectilePalette.Accent(LevelRun.Current);
@@ -81,6 +82,25 @@ public sealed class BeamRibbon : MonoBehaviour
         collar.startColor = collar.endColor = new Color(hot.r, hot.g, hot.b, heat * .7f);
         CombatVisuals.Ring(intake, p, charging ? Mathf.Lerp(.42f, .12f, charge) : .12f + width * .8f);
         intake.startColor = intake.endColor = new Color(hot.r, hot.g, hot.b, charging ? Mathf.Sin(charge * Mathf.PI) * .5f : power * .16f);
+    }
+
+    public void DrawPath(Vector3[] path, float width, float charge, float power, float release = 0)
+    {
+        Draw(path[0], (path[1] - path[0]).normalized, .5f * (path.Length - 1), width, charge, power, release);
+        body.positionCount = sheath.positionCount = tell.positionCount = path.Length;
+        float extent = charge < 1 && release <= 0 ? 0 : Mathf.Clamp01(power * 8 + release) * (path.Length - 1);
+        for (int i = 0; i < path.Length; i++)
+        {
+            float sample = Mathf.Min(i, extent);
+            int index = Mathf.Min(Mathf.FloorToInt(sample), path.Length - 2);
+            Vector3 p = Vector3.Lerp(path[index], path[index + 1], sample - index);
+            p.z = -1.05f;
+            body.SetPosition(i, p);
+            sheath.SetPosition(i, p);
+            p = path[i];
+            p.z = -1.05f;
+            tell.SetPosition(i, p);
+        }
     }
 
     static Sprite EmitterGlow()
