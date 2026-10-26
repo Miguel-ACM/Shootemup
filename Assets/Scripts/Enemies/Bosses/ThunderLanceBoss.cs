@@ -1,189 +1,87 @@
 using UnityEngine;
+
 [UnityEngine.Scripting.Preserve]
 public sealed class ThunderLanceBoss : DistrictBoss
 {
-    static readonly Vector3 FrontPort = new Vector3(0, -1.98f, -.2f);
-    readonly PulseLaser[] rotor = new PulseLaser[6];
-    Vector2 barrageAxis = Vector2.down;
-    Vector3 barrageTarget;
-    bool centred;
-    [EnemyTunable("Phase 2 / Health threshold", .1f, .9f)] public float phaseTwoThreshold = .5f;
-    [EnemyTunable("Phase 2 / Centre travel speed", 1, 8)] public float centreTravelSpeed = 3.8f;
-    [EnemyTunable("Phase 2 / Laser charge", .8f, 3)] public float rotorCharge = 1.35f;
-    [EnemyTunable("Phase 2 / Clockwise laser speed", 8, 35)] public float rotorSpeed = 18;
-    [EnemyTunable("Phase 2 / Laser width", .1f, .32f)] public float rotorWidth = .18f;
-    [EnemyTunable("Phase 2 / Firing pace", .4f, 1.5f)] public float firingPace = .8f;
-    [EnemyTunable("Phase 2 / Aimed fan count", 1, 7)] public int aimedCount = 3;
-    [EnemyTunable("Phase 2 / Aimed shot speed", 3, 9)] public float aimedSpeed = 5.6f;
-    [EnemyTunable("Phase 2 / Outward fan count", 3, 9)] public int outwardCount = 5;
-    [EnemyTunable("Phase 2 / Outward shot speed", 2, 7)] public float outwardSpeed = 3.9f;
-    public bool Centred => centred;
-    public int RotorCount
-    {
-        get
-        {
-            int count = 0;
-            foreach (var beam in rotor)
-                if (beam != null && beam.IsAttachedTo(Hull))
-                    count++;
-            return count;
-        }
-    }
-
+    static readonly Vector3[] BeamPorts={new Vector3(-.71f,.435f,-.3f),new Vector3(.71f,.435f,-.3f),new Vector3(0,-1.98f,-.2f)};
+    readonly PulseLaser[] beams=new PulseLaser[3];
+    Vector2 answerAxis=Vector2.down;
+    [EnemyTunable("Phase 2 / Health threshold",.1f,.9f)] public float phaseTwoThreshold=.5f;
+    [EnemyTunable("Laser / Charge",.8f,3)] public float beamCharge=1.2f;
+    [EnemyTunable("Laser / Width",.1f,.4f)] public float beamWidth=.24f;
+    public bool Centred=>enteredFight;
+    public int RotorCount { get {int n=0;foreach(var beam in beams) if(beam!=null&&beam.IsAttachedTo(Hull))n++;return n;} }
     protected override void Configure()
     {
-        hull = 22;
-        hullScale = 1.25f;
-        health = 1250;
-        attackInterval = .55f;
+        hull=22;hullScale=1.25f;health=1250;
+        attackInterval=Timing(1.04f,.82f);nextAttack=1.8f;
     }
-
-    protected override bool PhaseTwoReady => HealthFraction <= phaseTwoThreshold;
-    protected override float AttackPace => phaseTwo ? firingPace : 1;
+    protected override bool PhaseTwoReady=>HealthFraction<=phaseTwoThreshold;
+    protected override float AttackPace=>1;
+    protected override Vector2 CueAxis=>Vector2.down;
     protected override void MoveBoss(float dt)
     {
-        if (!phaseTwo)
-        {
-            station.x = Mathf.Sin(motionAge * .7f) * 2.1f;
-            base.MoveBoss(dt);
-            return;
-        }
-        var centre = new Vector3(0, (Camera.UpLimit + Camera.DownLimit) * .5f, 1);
-        // Centre the front muzzle, keeping the hull behind the rotating spokes.
-        var destination = transform.position + centre - Hull.TransformPoint(FrontPort);
-        transform.position = Vector3.MoveTowards(transform.position, destination, dt * centreTravelSpeed);
-        if (Vector3.Distance(transform.position, destination) > .03f)
-            return;
-        transform.position = destination;
-        if (!centred)
-        {
-            centred = true;
-            volley = 0;
-        }
-        if (RotorCount != 6)
-            StartRotor();
+        // A laser owns a stationary lane through its entire charge and release.
+        station.x=RotorCount>0?transform.position.x:Mathf.Sin(motionAge*.55f)*1.9f;
+        station.y=Camera.UpLimit-2.4f;
+        transform.position=Vector3.MoveTowards(transform.position,station,dt*3.3f);
     }
-
-    void StartRotor()
+    void Beam(int index)
     {
-        StopRotor();
-        if (CombatRound.Live.Count + 6 > CombatRound.Limit)
-            return;
-        Vector3 port = Hull.TransformPoint(FrontPort);
-        // A visible charge opens a sector around the player's current bearing.
-        // All six spokes start together and rotate clockwise without timer resets.
-        Vector2 axis = CombatVisuals.Aim(port);
-        for (int i = 0; i < rotor.Length; i++)
-        {
-            var beam = Fire<PulseLaser>(port, CombatVisuals.Rotate(axis, 30 + i * 60), 0, .17f);
-            if (beam == null)
-                continue;
-            beam.Bind(Hull, FrontPort).Sustain();
-            beam.warning = rotorCharge;
-            beam.width = rotorWidth;
-            beam.sweep = -rotorSpeed;
-            beam.reversalArc = 60;
-            beam.length = 26;
-            rotor[i] = beam;
-        }
-        nextAttack = age + rotorCharge + .45f;
+        if(beams[index]!=null&&beams[index].IsAttachedTo(Hull))return;
+        var beam=Fire<PulseLaser>(Hull.TransformPoint(BeamPorts[index]),Vector2.down,0);
+        if(beam==null)return;
+        beams[index]=beam;
+        beam.Bind(Hull,BeamPorts[index]);
+        beam.warning=beamCharge+(Difficulty.Easy?.3f:0);
+        beam.activeTime=Timing(1.0f,1.45f);
+        beam.width=beamWidth*(index==2?1.25f:1);
+        beam.length=24;
     }
-
-    void StopRotor()
-    {
-        for (int i = 0; i < rotor.Length; i++)
-        {
-            if (rotor[i] != null && rotor[i].IsAttachedTo(Hull))
-                rotor[i].Cease();
-            rotor[i] = null;
-        }
-    }
-
-    protected override void PressureAttack()
-    {
-    }
-
     protected override void Attack()
     {
-        if (!phaseTwo)
+        int beat=(volley-1)%14;
+        if(!phaseTwo)
         {
-            int beat = (volley - 1) % 12;
-            if (beat == 0 || beat == 6)
+            if(beat==0){Beam(0);Beam(1);}
+            else if(beat==6)Beam(2);
+            else if(beat==3||beat==4||beat==9||beat==10)
             {
-                int sign = beat == 0 ? 1 : -1;
-                for (int side = -1; side <= 1; side += 2)
-                {
-                    var laser = Fire<PulseLaser>(transform.position, CombatVisuals.Rotate(Vector2.down, side * 40 - sign * 10), 0, .18f);
-                    if (laser != null)
-                    {
-                        laser.Bind(Hull, new Vector3(side * .71f, .435f, -.3f));
-                        laser.activeTime = 2;
-                        laser.warning = 1.05f;
-                        laser.sweep = sign * 12;
-                        laser.width = .22f;
-                    }
-                }
+                if(beat==3||beat==9)answerAxis=Aim;
+                PetalFan<NeedleRound>(Hull.TransformPoint(BeamPorts[2]),CombatVisuals.Rotate(answerAxis,beat%2==0?7:-7),Shots(5,7),16,4.2f,.2f);
             }
-            else if (beat == 2 || beat == 3 || beat == 8 || beat == 9)
-            {
-                if (beat == 2 || beat == 8)
-                    barrageAxis = Aim;
-                PetalFan<NeedleRound>(Hull.TransformPoint(FrontPort), CombatVisuals.Rotate(barrageAxis, beat % 2 == 0 ? -2 : 2), 7, 8, 7, .13f);
-            }
+            else if(beat==12)
+                PetalFan<SimpleRound>(Hull.TransformPoint(BeamPorts[2]),Vector2.down,Shots(7,9),21,1.9f,.31f,.2f);
             return;
         }
-        if (!centred || RotorCount != 6)
-            return;
-        int accent = (volley - 1) % 12;
-        if (accent == 0)
-            barrageTarget = player != null ? player.position : transform.position + Vector3.down * 6;
-        if (accent < 3)
+        // Three vertical lanes light in sequence, then mirrored slow side petals.
+        if(beat==0)Beam(0);
+        else if(beat==2)Beam(1);
+        else if(beat==4)Beam(2);
+        else if(beat==6||beat==7)
         {
-            for (int side = -1; side <= 1; side += 2)
-            {
-                var port = Hull.TransformPoint(new Vector3(side * .71f, .435f - accent * .47f, -.3f));
-                var axis = ((Vector2)(barrageTarget - port)).normalized;
-                PetalFan<NeedleRound>(port, CombatVisuals.Rotate(axis, (accent - 1) * 4), aimedCount, 9, aimedSpeed, .13f, .14f);
-            }
+            if(beat==6)answerAxis=Aim;
+            PetalFan<NeedleRound>(Hull.TransformPoint(BeamPorts[2]),CombatVisuals.Rotate(answerAxis,beat==6?-7:7),Shots(5,9),13,4.5f,.19f);
         }
-        else if (accent >= 5 && accent <= 7)
-        {
-            for (int side = -1; side <= 1; side += 2)
+        else if(beat==10||beat==11)
+            for(int side=-1;side<=1;side+=2)
             {
-                var port = Hull.TransformPoint(new Vector3(side * .71f, .435f - (accent - 5) * .47f, -.3f));
-                var axis = CombatVisuals.Rotate(Vector2.down, side * (38 + (accent - 6) * 10));
-                PetalFan<SimpleRound>(port, axis, outwardCount, 18, outwardSpeed, .14f, .18f);
+                var port=Hull.TransformPoint(BeamPorts[side<0?0:1]);
+                PetalFan<SimpleRound>(port,CombatVisuals.Rotate(Vector2.down,side*(beat==10?29:43)),Shots(3,5),23,2.1f,.3f,.2f);
             }
-        }
-        else if (accent == 9)
-        {
-            // A late aimed answer catches parking in the rear sectors without filling every gap.
-            for (int side = -1; side <= 1; side += 2)
-            {
-                var port = Hull.TransformPoint(new Vector3(side * .71f, -.505f, -.3f));
-                PetalFan<NeedleRound>(port, CombatVisuals.Aim(port), aimedCount, 12, aimedSpeed, .13f);
-            }
-        }
     }
-
-    protected override void OnPhaseTwo()
+    protected override void PrepareFire(float seconds)
     {
-        foreach (var round in CombatRound.Live)
-            if (round is PulseLaser beam && beam.IsAttachedTo(Hull))
-                beam.Cease();
-        centred = false;
-        volley = 0;
-        nextAttack = float.PositiveInfinity;
+        base.PrepareFire(seconds);firingCue.ClearWarning();
+        int beat=volley%14;
+        if(beat==0){Cue(Muzzle(0),seconds);if(!phaseTwo)Cue(Muzzle(1),seconds);}
+        else if(phaseTwo&&beat==2)Cue(Muzzle(1),seconds);
+        else if(phaseTwo&&beat==4 || !phaseTwo&&beat==6)Cue(Muzzle(2),seconds);
+        else if(phaseTwo&&(beat==6||beat==7)||!phaseTwo&&(beat==3||beat==4||beat==9||beat==10||beat==12))Cue(Muzzle(2),seconds);
+        else if(phaseTwo&&(beat==10||beat==11)){Cue(Muzzle(0),seconds);Cue(Muzzle(1),seconds);}
     }
-
-    protected override void Die()
-    {
-        StopRotor();
-        base.Die();
-    }
-
-    void OnDestroy()
-    {
-        StopRotor();
-    }
+    protected override void OnPhaseTwo(){volley=0;nextAttack=age+1.5f;}
+    void StopBeams(){foreach(var beam in beams)if(beam!=null&&beam.IsAttachedTo(Hull))beam.Cease();}
+    protected override void Die(){StopBeams();base.Die();}
+    void OnDestroy(){StopBeams();}
 }
