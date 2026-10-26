@@ -1,0 +1,1 @@
+PASS: native renderer captures of ten prepared trigger motifs at three animation ages, the actual charge field, and attached front/rear flame nozzles. No Play mode or user editor interaction.

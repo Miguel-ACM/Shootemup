@@ -47,17 +47,7 @@ public sealed class ChargeBlast : MonoBehaviour
             return;
         }
         age += Time.deltaTime;
-        float size = RadiusAt(age);
-        float fade = Mathf.Clamp01((duration - age) / .2f);
-        CombatVisuals.Ring(edge, transform.position, size);
-        for (int i = 0; i < 49; i++)
-        {
-            float angle = i * Mathf.PI * 2 / 48;
-            float ripple = .65f + .07f * Mathf.Cos(angle * 6 - age * 8) + .04f * Mathf.Sin(age * 25);
-            core.SetPosition(i, transform.position + new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * size * ripple);
-        }
-        edge.startColor = edge.endColor = new Color(.25f, .7f, .8f, .7f * fade);
-        core.startColor = core.endColor = new Color(.4f, .8f, .8f, .3f * fade);
+        DrawField();
         // Fixed slices preserve total damage across frame rates, including the last slice.
         while (nextTick < duration && age >= nextTick)
         {
@@ -82,6 +72,21 @@ public sealed class ChargeBlast : MonoBehaviour
         }
         if (age >= duration)
             Destroy(gameObject);
+    }
+
+    void DrawField()
+    {
+        float size = RadiusAt(age);
+        float fade = Mathf.Clamp01((duration - age) / .2f);
+        CombatVisuals.Ring(edge, transform.position, size);
+        for (int i = 0; i < 49; i++)
+        {
+            float angle = i * Mathf.PI * 2 / 48;
+            float ripple = .65f + .07f * Mathf.Cos(angle * 6 - age * 8) + .04f * Mathf.Sin(age * 25);
+            core.SetPosition(i, transform.position + new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * size * ripple);
+        }
+        edge.startColor = edge.endColor = new Color(.25f, .7f, .8f, .7f * fade);
+        core.startColor = core.endColor = new Color(.4f, .8f, .8f, .3f * fade);
     }
 
     float RadiusAt(float t) => radius * Mathf.Lerp(.35f, 1, Mathf.Clamp01(t / .16f));
