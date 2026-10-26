@@ -21,8 +21,18 @@ public sealed class PlayerRound : ABullet
     Vector3 origin;
     Vector2 heading;
     bool detonated, returning, rebounded, rubberReturned;
+    int chargeLevel;
+    float blastDamage;
     readonly HashSet<AEnemy> hit = new HashSet<AEnemy>();
     SpriteRenderer visual;
+    public void ArmChargeBlast(int level)
+    {
+        chargeLevel = level;
+        blastDamage = damage * .8f;
+        damage *= .35f;
+        pierces = 0;
+        returns = false;
+    }
     public void ExcludePreviousHit(AEnemy enemy)
     {
         hit.Add(enemy);
@@ -84,6 +94,11 @@ public sealed class PlayerRound : ABullet
         if (WorldTimeStop.Frozen || Time.deltaTime <= 0)
             return;
         age += Time.deltaTime;
+        if (chargeLevel > 0 && age >= .6f)
+        {
+            ExplodeCharge();
+            return;
+        }
         if (!rubberReturned && hit.Count == 0 && !returns && delivery != PlayerDelivery.Disc && heading.y > 0 && RubberReturn.AtTop(transform.position))
         {
             rubberReturned = true;
@@ -142,12 +157,17 @@ public sealed class PlayerRound : ABullet
     void OnTriggerEnter2D(Collider2D collision)
     {
         var enemy = collision.GetComponent<AEnemy>();
-        if (enemy == null || enemy.health <= 0 || !hit.Add(enemy))
+        if (enemy == null || !enemy.CanBeTargeted || !hit.Add(enemy))
             return;
         float dealt = CombatUpgrades.Current != null ? CombatUpgrades.Current.DirectHit(enemy, damage, generation, companion, delivery == PlayerDelivery.Flame) : damage;
         enemy.HitAt(collision.ClosestPoint(transform.position), heading);
         enemy.damage(dealt);
         Score.IncreaseScore(Mathf.RoundToInt(dealt));
+        if (chargeLevel > 0)
+        {
+            ExplodeCharge();
+            return;
+        }
         if (!rebounded && generation == 0 && CombatUpgrades.Current != null && CombatUpgrades.Current.Count(UpgradeKind.BouncingBall) > 0)
         {
             var next = CombatUpgrades.Nearest(transform.position, hit, 12);
@@ -183,6 +203,15 @@ public sealed class PlayerRound : ABullet
                 return;
             }
         }
+        Destroy(gameObject);
+    }
+
+    void ExplodeCharge()
+    {
+        if (detonated)
+            return;
+        detonated = true;
+        ChargeBlast.Spawn(transform.position, blastDamage, chargeLevel);
         Destroy(gameObject);
     }
 
