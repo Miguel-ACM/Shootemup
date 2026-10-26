@@ -23,7 +23,7 @@ public static partial class WavePartLibrary
 {
     static readonly FlightCurve JetSquidRoute0 = Route("Underwater / Squid inkward dive", Vector2.right, -0.52f, 1.25f, -0.34f, 0.83f, 0.32f, 0.57f, 0.57f, 0.29f, 0.29f, 0.09f, -0.46f, -0.25f);
     static readonly FlightCurve JetSquidRoute1 = Route("Underwater / Squid rising jet", Vector2.right, -1.4f, 0.28f, -0.67f, 0.4f, 0.01f, 0.65f, 0.54f, 0.94f, 0.65f, 1.25f);
-    static readonly FlightCurve JetSquidRoute2 = Route("Underwater / Squid reef scissors", Vector2.right, 1.4f, 0.77f, 0.7f, 0.6f, 0.08f, 0.36f, -0.53f, 0.48f, -0.8f, 0.86f, -0.78f, 1.25f);
+    static readonly FlightCurve JetSquidRoute2 = Route("Underwater / Squid reef scissors", Vector2.right, 2.1f, 0.77f, 0.7f, 0.6f, 0.08f, 0.36f, -0.53f, 0.48f, -0.8f, 0.86f, -0.78f, 1.4f);
     public static readonly WavePart[] JetSquidParts =
     {
         new WavePart("Squid inkward dive", nameof(JetSquid), JetSquidRoute0, WaveShape.Train, 4, 4.3f, 2, new[] { 0.3f, 0.58f }, new[] { 0.46f }, 3),
