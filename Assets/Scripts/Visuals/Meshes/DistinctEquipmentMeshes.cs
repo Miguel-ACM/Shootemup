@@ -174,15 +174,15 @@ public static partial class IndustrialMeshFactory
                 break;
             case "ReturnModule":
                 // A real boomerang carries a cartridge: returning shots at a glance.
-                b.Prism(new[] { new Vector2(-.55f, .32f), new Vector2(-.34f, .4f), new Vector2(0, -.06f),
-                    new Vector2(.34f, .4f), new Vector2(.55f, .32f), new Vector2(.12f, -.37f),
-                    new Vector2(0, -.43f), new Vector2(-.12f, -.37f) }, .17f, 6, Vector3.zero, 11);
+                b.Prism(new[] { new Vector2(-.32f, -.55f), new Vector2(-.4f, -.34f), new Vector2(.06f, 0),
+                    new Vector2(-.4f, .34f), new Vector2(-.32f, .55f), new Vector2(.37f, .12f),
+                    new Vector2(.43f, 0), new Vector2(.37f, -.12f) }, .17f, 6, Vector3.zero, 11);
                 foreach (int side in new[] { -1, 1 })
                 {
-                    b.Drum(new Vector3(side * .36f, .28f, -.11f), .055f, .045f, 9, 8);
-                    b.Box(new Vector3(side * .2f, -.03f, -.1f), new Vector3(.08f, .1f, .04f), 11);
+                    b.Drum(new Vector3(-.28f, side * .36f, -.11f), .055f, .045f, 9, 8);
+                    b.Box(new Vector3(.03f, side * .2f, -.1f), new Vector3(.1f, .08f, .04f), 11);
                 }
-                EquipmentCartridge(b, new Vector3(0, .19f, -.12f), .09f, .38f);
+                EquipmentCartridge(b, new Vector3(-.19f, 0, -.12f), .09f, .38f);
                 break;
             case "SplitterCore":
                 // A feed cartridge enters a central manifold and divides into two barrels.
