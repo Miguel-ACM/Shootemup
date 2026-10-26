@@ -255,7 +255,9 @@ public abstract class DistrictEnemy : AEnemy
                 nextAttack = Mathf.Max(nextAttack, age + .65f);
         }
         PrepareFire(movement is FormationFlight score ? score.FireWarning : (nextAttack - age) / LevelRun.EnemyTempoScale);
-        if (age > 28 || transform.position.y < Camera.DownLimit - 2)
+        // Authored formations own both their entrance and exit. A rising route
+        // starts below this legacy cleanup boundary and must be allowed to enter.
+        if (age > 28 || (!(movement is FormationFlight) && transform.position.y < Camera.DownLimit - 2))
         {
             Depart();
             return;

@@ -137,6 +137,7 @@ public sealed class CombatReworkReview : MonoBehaviour
     readonly StringBuilder frames=new StringBuilder("case,frame,dt_ms,live,created,main_ns,physics_ns\n");
     Shipcontroller ship;
     int serial;
+    bool observedFiring;
     void Awake(){DontDestroyOnLoad(gameObject);Application.runInBackground=true;Screen.SetResolution(960,720,false);QualitySettings.vSyncCount=0;Application.targetFrameRate=60;AudioListener.volume=0;Application.logMessageReceived+=Log;}
     void OnDestroy(){Application.logMessageReceived-=Log;foreach(var item in recorders)item.recorder.Dispose();}
     void Log(string message,string trace,LogType type){if((type==LogType.Error||type==LogType.Exception)&&!trace.Contains("UnityEditor.Search"))errors.Add(message);}
@@ -189,6 +190,7 @@ public sealed class CombatReworkReview : MonoBehaviour
             Record(label,frame++);yield return null;
         }
         Check(peak<=CombatRound.Limit,label+": "+frame+" complete frames, peak "+peak+", firing "+fired);
+        observedFiring=fired;
     }
     IEnumerator Wave(string label,Wave wave)
     {
@@ -199,6 +201,7 @@ public sealed class CombatReworkReview : MonoBehaviour
             {var unit=wave.units[cursor++];var actor=DistrictEnemy.Spawn(DistrictWaves.EnemyType(unit.enemy),Vector3.zero);actor.FlyPhrase(unit);}
         });
         Check(cursor==wave.units.Count,label+": all "+cursor+" authored actors spawned");
+        Check(observedFiring,label+": authored formation actually enters and fires");
     }
     void PhaseTwo(DistrictBoss boss)
     {
@@ -252,10 +255,12 @@ public sealed class CombatReworkReview : MonoBehaviour
         foreach(LevelId level in Enum.GetValues(typeof(LevelId)))
         {
             if(filter!="all"&&!filter.Split(',').Contains(level.ToString()))continue;
+            if(focus=="rising"&&level!=LevelId.Underwater)continue;
             foreach(RunDifficulty difficulty in Enum.GetValues(typeof(RunDifficulty)))
             {
-                if(focus=="additions"&&difficulty==RunDifficulty.Easy)continue;
+                if((focus=="additions"||focus=="rising")&&difficulty==RunDifficulty.Easy)continue;
                 yield return Context(level,difficulty);
+                if(focus=="rising")yield return Wave("Bell buoyant procession",WaveComposer.PreviewPart(WavePartLibrary.NautilusBellParts[0],0,1,out _));
                 if(focus=="all"||focus=="waves")yield return Wave(level+"-"+difficulty+"-Wave",DistrictWaves.Create(12));
                 if((focus=="all"||focus=="enemies")&&difficulty==RunDifficulty.Hard)
                 {
