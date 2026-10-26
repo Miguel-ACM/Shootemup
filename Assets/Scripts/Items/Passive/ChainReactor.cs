@@ -3,7 +3,7 @@ public sealed class ChainReactor : AItem
 {
     void Awake()
     {
-        SetData("Chain Reactor", "Ship equipment", "Burning enemies explode on death.", ItemType.passive);
+        SetData("Burn Detonator", "Ship equipment", "Burning enemies explode on death.", ItemType.passive);
     }
 
     public override void OnBegin()
