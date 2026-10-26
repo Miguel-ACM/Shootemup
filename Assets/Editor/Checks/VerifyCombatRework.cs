@@ -293,6 +293,11 @@ public sealed class CombatReworkReview : MonoBehaviour
         }
         if(focus=="additions")
         {
+            foreach(RunDifficulty difficulty in Enum.GetValues(typeof(RunDifficulty)))
+            {
+                yield return Context(LevelId.Hell,difficulty);
+                yield return Bosses(LevelId.Hell,difficulty);
+            }
             yield return PlainsHits();
             yield return Context(LevelId.Tunnel,RunDifficulty.Hard);
             Clear();yield return null;

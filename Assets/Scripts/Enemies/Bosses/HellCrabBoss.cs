@@ -117,7 +117,6 @@ public sealed class HellCrabBoss : DistrictBoss
         if (claws[0] == null)
             return;
         int beat = (volley - 1) % 12;
-        float physical = Mathf.Repeat(clawClock, clawPeriod);
         if (beat < 3 || beat == 7 || beat == 8)
         {
             for (int i = 0; i < 2; i++)
@@ -125,13 +124,13 @@ public sealed class HellCrabBoss : DistrictBoss
                 if (i != beat % 2 && !(phaseTwo && beat == 8))
                     continue;
                 var port = claws[i].TransformPoint(new Vector3(0, -.32f, -.4f));
-                var axis = CombatVisuals.Rotate(Vector2.down, (i == 0 ? -1 : 1) * (beat < 3 ? 28 : 46));
+                var axis = CombatVisuals.Rotate(Vector2.down, (i == 0 ? 1 : -1) * (beat < 3 ? 28 : 46));
                 if (player != null && Vector2.Distance(port, player.position) < 1.8f)
                     continue;
-                PetalFan<SimpleRound>(port, CombatVisuals.Rotate(axis, (beat % 3 - 1) * 10), Shots(phaseTwo ? 5 : 4, clawShots), 23, 2.3f, .3f, .2f);
+                PetalFan<SimpleRound>(port, CombatVisuals.Rotate(axis, (beat % 3 - 1) * 10), Shots(phaseTwo ? 5 : 4, clawShots + (phaseTwo ? 2 : 0)), 18, 2.3f, .3f, .2f);
             }
         }
-        else if ((beat == 4 || beat == 5 || beat == 10) && (physical < 1.1f || physical > 3.4f))
+        else if (beat == 4 || beat == 5 || beat == 10)
         {
             for (int i = 0; i < 2; i++)
                 if (eyes[i].health > 0)
@@ -140,9 +139,9 @@ public sealed class HellCrabBoss : DistrictBoss
                     if (beat == 4 || beat == 10)
                         eyeAxes[i] = CombatVisuals.Aim(port);
                     if (beat == 10)
-                        PetalFan<SimpleRound>(port, eyeAxes[i], Shots(phaseTwo ? 7 : 5, phaseTwo ? 11 : 9), 22, 1.9f, .34f, .2f);
+                        PetalFan<SimpleRound>(port, eyeAxes[i], Shots(phaseTwo ? 7 : 5, phaseTwo ? 13 : 11), 16, 1.9f, .34f, .2f);
                     else
-                        PetalFan<NeedleRound>(port, CombatVisuals.Rotate(eyeAxes[i], beat == 4 ? -8 : 8), Shots(phaseTwo ? 5 : 3, phaseTwo ? 7 : 5), 17, 4.0f, .21f);
+                        PetalFan<NeedleRound>(port, CombatVisuals.Rotate(eyeAxes[i], beat == 4 ? -8 : 8), Shots(phaseTwo ? 5 : 3, phaseTwo ? 9 : 7), 15, 3.8f, .21f);
                 }
         }
     }
@@ -164,13 +163,20 @@ public sealed class HellCrabBoss : DistrictBoss
         {
             for (int i = 0; i < 2; i++)
                 if (i == beat % 2 || phaseTwo && beat == 8)
+                {
                     Cue(claws[i].TransformPoint(new Vector3(0, -.32f, -.4f)), seconds);
+                    var axis = CombatVisuals.Rotate(Vector2.down, (i == 0 ? 1 : -1) * (beat < 3 ? 28 : 46) + (beat % 3 - 1) * 10);
+                    PointWeapon(claws[i].TransformPoint(new Vector3(0, -.32f, -.4f)), axis);
+                }
         }
         else if (beat == 4 || beat == 5 || beat == 10)
         {
             for (int i = 0; i < 2; i++)
                 if (eyes[i].health > 0)
+                {
                     Cue(eyes[i].transform.position, seconds);
+                    PointWeapon(eyes[i].transform.position, beat == 5 ? CombatVisuals.Rotate(eyeAxes[i], 8) : Aim);
+                }
         }
     }
 
