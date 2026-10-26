@@ -1,0 +1,466 @@
+{
+  "brief": {
+    "description": "one compact proximity charge pop, muted electrical snap and a tight small impact, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one compact proximity charge pop?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "3c5bd75a5ea9fc9c692db36056c0611073f5284f787fff41966907989de916b6",
+  "options": {
+    "duration": 0.28,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 261026,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-210458-eaa3",
+      "prompt": "TrackType: SFX, one compact proximity charge pop, muted electrical snap and a tight small impact, dry and close",
+      "takes": [
+        "20261026-210458-eaa3:261026",
+        "20261026-210458-eaa3:261027"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-210520-8da3",
+      "prompt": "TrackType: SFX, one compact proximity charge pop, muted electrical snap and a tight small impact, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one compact proximity charge pop?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-210520-8da3:261029",
+        "20261026-210520-8da3:261028"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 261026,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -11.27,
+        "true_peak_dbtp": -11.27,
+        "clipped_fraction": 0.0,
+        "dc_offset": 2e-05,
+        "active_s": 0.06,
+        "noise_floor_db": -74.0,
+        "onset_s": 0.6346,
+        "tail_db": -69.9,
+        "stereo_correlation": 1.0,
+        "lufs": -38.0,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 10.31,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2917,
+        "length_frames": 7.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -26.8
+      },
+      "clap": 0.9823,
+      "clap_cos": 0.4527,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.49,
+        "CU": 7.17,
+        "PC": 1.91,
+        "PQ": 7.99
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.9957,
+      "rank": 1,
+      "ref": "20261026-210458-eaa3:261026",
+      "files": {
+        "wav": "20261026-210458-eaa3/261026.wav",
+        "png": "20261026-210458-eaa3/261026.png",
+        "raw": "20261026-210458-eaa3/261026_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210458-eaa3\\261026.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210458-eaa3\\261026.png"
+      },
+      "review": {
+        "brief_id": "3c5bd75a5ea9fc9c692db36056c0611073f5284f787fff41966907989de916b6",
+        "blind_caption": "A single click",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one compact proximity charge pop?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.4916
+      }
+    },
+    {
+      "seed": 261027,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -15.37,
+        "true_peak_dbtp": -15.16,
+        "clipped_fraction": 0.0,
+        "dc_offset": 2e-05,
+        "active_s": 0.055,
+        "noise_floor_db": -70.7,
+        "onset_s": 0.0,
+        "tail_db": -65.8,
+        "stereo_correlation": 1.0,
+        "lufs": -40.7,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 14.24,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2917,
+        "length_frames": 7.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -26.7
+      },
+      "clap": 0.9717,
+      "clap_cos": 0.4114,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.12,
+        "CU": 7.0,
+        "PC": 1.89,
+        "PQ": 7.89
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.9512,
+      "rank": 2,
+      "ref": "20261026-210458-eaa3:261027",
+      "files": {
+        "wav": "20261026-210458-eaa3/261027.wav",
+        "png": "20261026-210458-eaa3/261027.png",
+        "raw": "20261026-210458-eaa3/261027_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210458-eaa3\\261027.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210458-eaa3\\261027.png"
+      },
+      "review": {
+        "brief_id": "3c5bd75a5ea9fc9c692db36056c0611073f5284f787fff41966907989de916b6",
+        "blind_caption": "A person knocks on a door",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one compact proximity charge pop?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "KEEP (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.4034
+      }
+    },
+    {
+      "seed": 261029,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -12.41,
+        "true_peak_dbtp": -12.39,
+        "clipped_fraction": 0.0,
+        "dc_offset": 1e-05,
+        "active_s": 0.04,
+        "noise_floor_db": -74.3,
+        "onset_s": 0.0,
+        "tail_db": -70.4,
+        "stereo_correlation": 1.0,
+        "lufs": -37.2,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 11.38,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2917,
+        "length_frames": 7.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -25.5
+      },
+      "clap": 0.9816,
+      "clap_cos": 0.4013,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.4,
+        "CU": 7.28,
+        "PC": 1.88,
+        "PQ": 7.98
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.9514,
+      "rank": 1,
+      "ref": "20261026-210520-8da3:261029",
+      "files": {
+        "wav": "20261026-210520-8da3/261029.wav",
+        "png": "20261026-210520-8da3/261029.png",
+        "raw": "20261026-210520-8da3/261029_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210520-8da3\\261029.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210520-8da3\\261029.png"
+      },
+      "review": {
+        "brief_id": "3c5bd75a5ea9fc9c692db36056c0611073f5284f787fff41966907989de916b6",
+        "blind_caption": "A loud thump",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one compact proximity charge pop?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.4173
+      }
+    },
+    {
+      "seed": 261028,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -13.34,
+        "true_peak_dbtp": -13.34,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.0,
+        "active_s": 0.07,
+        "noise_floor_db": -72.1,
+        "onset_s": 0.0,
+        "tail_db": -69.1,
+        "stereo_correlation": 1.0,
+        "lufs": -39.1,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 13.26,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2917,
+        "length_frames": 7.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -25.8
+      },
+      "clap": 0.9788,
+      "clap_cos": 0.3937,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.34,
+        "CU": 7.23,
+        "PC": 1.9,
+        "PQ": 7.89
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.9369,
+      "rank": 2,
+      "ref": "20261026-210520-8da3:261028",
+      "files": {
+        "wav": "20261026-210520-8da3/261028.wav",
+        "png": "20261026-210520-8da3/261028.png",
+        "raw": "20261026-210520-8da3/261028_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210520-8da3\\261028.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210520-8da3\\261028.png"
+      },
+      "review": {
+        "brief_id": "3c5bd75a5ea9fc9c692db36056c0611073f5284f787fff41966907989de916b6",
+        "blind_caption": "A metallic knocking sound",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one compact proximity charge pop?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3929
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 261026,
+    "signal": {
+      "duration_s": 2.0,
+      "peak_dbfs": -11.27,
+      "true_peak_dbtp": -11.27,
+      "clipped_fraction": 0.0,
+      "dc_offset": 2e-05,
+      "active_s": 0.06,
+      "noise_floor_db": -74.0,
+      "onset_s": 0.6346,
+      "tail_db": -69.9,
+      "stereo_correlation": 1.0,
+      "lufs": -38.0,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 10.31,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.2917,
+      "length_frames": 7.0,
+      "channels": 1
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -26.8
+    },
+    "clap": 0.9823,
+    "clap_cos": 0.4527,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.49,
+      "CU": 7.17,
+      "PC": 1.91,
+      "PQ": 7.99
+    },
+    "fails": [],
+    "warnings": [],
+    "rejected": false,
+    "rank_score": 0.9957,
+    "rank": 1,
+    "ref": "20261026-210458-eaa3:261026",
+    "files": {
+      "wav": "20261026-210458-eaa3/261026.wav",
+      "png": "20261026-210458-eaa3/261026.png",
+      "raw": "20261026-210458-eaa3/261026_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210458-eaa3\\261026.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210458-eaa3\\261026.png"
+    },
+    "review": {
+      "brief_id": "3c5bd75a5ea9fc9c692db36056c0611073f5284f787fff41966907989de916b6",
+      "blind_caption": "A single click",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one compact proximity charge pop?",
+          "answer": "uncertain",
+          "evidence": "NO"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.4916
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemProximity\\iteration-20261026-210458-6d2c\\TOONPop_Iterated_v01.wav"
+  ]
+}

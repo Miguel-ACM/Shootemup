@@ -6020,6 +6020,179 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemProximity",
+      "label": "Proximity Fuse — detonation",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemProximity",
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemProximity/TOONPop_LocalTake_v01.wav",
+          "seconds": 0.2916666666666667,
+          "sampleRate": 48000,
+          "sha256": "cda152b3b19dd77a01176d169957ed0a5b3f3267c19b506266d259686cb55e8c",
+          "ref": "20261026-210458-eaa3:261026",
+          "review": {
+            "brief_id": "3c5bd75a5ea9fc9c692db36056c0611073f5284f787fff41966907989de916b6",
+            "blind_caption": "A single click",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one compact proximity charge pop?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.4916
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemProximity/TOONPop_LocalTake_v02.wav",
+          "seconds": 0.2916666666666667,
+          "sampleRate": 48000,
+          "sha256": "d6bfb1079d88649adda4fa1e4e9f21fe11721b772cb1c9fd226c09c44969a54f",
+          "ref": "20261026-210520-8da3:261029",
+          "review": {
+            "brief_id": "3c5bd75a5ea9fc9c692db36056c0611073f5284f787fff41966907989de916b6",
+            "blind_caption": "A loud thump",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one compact proximity charge pop?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.4173
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemProximity/TOONPop_LocalTake_v03.wav",
+          "seconds": 0.2916666666666667,
+          "sampleRate": 48000,
+          "sha256": "a5a2ac4c2726537c9bfd8faeeadd5165994cf826d018676666342d100705cc14",
+          "ref": "20261026-210458-eaa3:261027",
+          "review": {
+            "brief_id": "3c5bd75a5ea9fc9c692db36056c0611073f5284f787fff41966907989de916b6",
+            "blind_caption": "A person knocks on a door",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one compact proximity charge pop?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "KEEP (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.4034
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemProximity/TOONPop_LocalTake_v04.wav",
+          "seconds": 0.2916666666666667,
+          "sampleRate": 48000,
+          "sha256": "6895fd8a808a8829f608da43c8b9ba4a56f7f16c2d5b0679b5f54240d98b72bd",
+          "ref": "20261026-210520-8da3:261028",
+          "review": {
+            "brief_id": "3c5bd75a5ea9fc9c692db36056c0611073f5284f787fff41966907989de916b6",
+            "blind_caption": "A metallic knocking sound",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one compact proximity charge pop?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3929
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }

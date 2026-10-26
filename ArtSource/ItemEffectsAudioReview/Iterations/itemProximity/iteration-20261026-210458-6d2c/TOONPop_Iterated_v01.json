@@ -1,0 +1,82 @@
+{
+  "request": "20261026-210458-eaa3",
+  "ref": "20261026-210458-eaa3:261026",
+  "text": "TrackType: SFX, one compact proximity charge pop, muted electrical snap and a tight small impact, dry and close",
+  "prompt": "TrackType: SFX, one compact proximity charge pop, muted electrical snap and a tight small impact, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "cartoon-pop",
+  "seed": 261026,
+  "rank": 1,
+  "rank_score": 0.9957,
+  "clap": 0.9823,
+  "clap_cos": 0.4527,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.49,
+    "CU": 7.17,
+    "PC": 1.91,
+    "PQ": 7.99
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 10.31,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.2917,
+    "length_frames": 7.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -26.8
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -11.27,
+    "true_peak_dbtp": -11.27,
+    "clipped_fraction": 0.0,
+    "dc_offset": 2e-05,
+    "active_s": 0.06,
+    "noise_floor_db": -74.0,
+    "onset_s": 0.6346,
+    "tail_db": -69.9,
+    "stereo_correlation": 1.0,
+    "lufs": -38.0,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "3c5bd75a5ea9fc9c692db36056c0611073f5284f787fff41966907989de916b6",
+    "blind_caption": "A single click",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one compact proximity charge pop?",
+        "answer": "uncertain",
+        "evidence": "NO"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.4916
+  },
+  "iteration_session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemProximity\\iteration-20261026-210458-6d2c\\session.json",
+  "human_approved": false
+}

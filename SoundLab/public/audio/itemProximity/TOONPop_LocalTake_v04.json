@@ -1,0 +1,81 @@
+{
+  "request": "20261026-210520-8da3",
+  "ref": "20261026-210520-8da3:261028",
+  "text": "TrackType: SFX, one compact proximity charge pop, muted electrical snap and a tight small impact, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one compact proximity charge pop?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one compact proximity charge pop, muted electrical snap and a tight small impact, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one compact proximity charge pop?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "cartoon-pop",
+  "seed": 261028,
+  "rank": 2,
+  "rank_score": 0.9369,
+  "clap": 0.9788,
+  "clap_cos": 0.3937,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.34,
+    "CU": 7.23,
+    "PC": 1.9,
+    "PQ": 7.89
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 13.26,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.2917,
+    "length_frames": 7.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -25.8
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -13.34,
+    "true_peak_dbtp": -13.34,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.0,
+    "active_s": 0.07,
+    "noise_floor_db": -72.1,
+    "onset_s": 0.0,
+    "tail_db": -69.1,
+    "stereo_correlation": 1.0,
+    "lufs": -39.1,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "3c5bd75a5ea9fc9c692db36056c0611073f5284f787fff41966907989de916b6",
+    "blind_caption": "A metallic knocking sound",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one compact proximity charge pop?",
+        "answer": "uncertain",
+        "evidence": "NO"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.3929
+  },
+  "human_approved": false
+}
