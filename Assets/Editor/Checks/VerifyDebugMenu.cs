@@ -101,7 +101,7 @@ public sealed class DebugMenuReview : MonoBehaviour
         Check(FindObjectsByType<Button>().Length >= 50, "all item and district buttons exist");
         Click("SLOT 1");
         Click("Rail Driver");
-        Click("Gravity Well");
+        Click("Stasis Well");
         Click("SLOT 2");
         Click("Flame Projector");
         Click("Mirror Burst");

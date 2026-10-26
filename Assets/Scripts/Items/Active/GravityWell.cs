@@ -4,7 +4,7 @@ public sealed class GravityWell : AActiveItem
 {
     void Awake()
     {
-        SetData("Gravity Well", "Active", "Freeze and erase nearby bullets. 25 energy.", ItemType.active);
+        SetData("Stasis Well", "Active", "Freeze and erase nearby bullets. 25 energy.", ItemType.active);
         cost = 25;
         cd = 7;
     }
