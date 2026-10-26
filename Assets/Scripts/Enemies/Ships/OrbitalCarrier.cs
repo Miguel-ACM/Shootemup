@@ -8,7 +8,7 @@ public sealed class OrbitalCarrier : SpaceSatellite
         hull = 43;
         hullScale = .64f;
         health = 135;
-        attackInterval = 1.45f;
+        attackInterval = Timing(2.4f,1.7f);
         Mover<TopTracker>();
     }
 
@@ -30,6 +30,6 @@ public sealed class OrbitalCarrier : SpaceSatellite
 
     protected override void Attack()
     {
-        Fan<RicochetBolt>(7, 17, 4.6f, .16f);
+        Fan<RicochetBolt>(Shots(5,7),22,3.6f,.21f);
     }
 }
