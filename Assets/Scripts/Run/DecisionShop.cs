@@ -174,7 +174,7 @@ public sealed class DecisionShop : MonoBehaviour
             if (item != null && item.gameObject != selected)
                 item.Dismiss();
         if (overlay != null)
-            Destroy(overlay.gameObject);
+            overlay.Dismiss();
         if (dialog != null)
             dialog.Hide();
         CombatDecision.End();

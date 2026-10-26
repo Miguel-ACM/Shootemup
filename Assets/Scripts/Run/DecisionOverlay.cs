@@ -9,6 +9,10 @@ public sealed class DecisionOverlay : MonoBehaviour
     public const float SkipWidth = 405, SkipHeight = 145;
     RectTransform skip;
     Image skipFill;
+    CanvasGroup fade;
+    bool dismissing;
+    float dismissAge;
+    const float DismissSeconds = .24f;
     TMP_FontAsset font;
     readonly List<(AItem item, RectTransform plate, TextMeshProUGUI name, TextMeshProUGUI price, TextMeshProUGUI kind, CanvasGroup fade)> offers = new List<(AItem, RectTransform, TextMeshProUGUI, TextMeshProUGUI, TextMeshProUGUI, CanvasGroup)>();
     public void Add(AItem item)
@@ -49,6 +53,16 @@ public sealed class DecisionOverlay : MonoBehaviour
 
     void LateUpdate()
     {
+        if (dismissing)
+        {
+            dismissAge += Mathf.Min(Time.unscaledDeltaTime, .05f);
+            float t = Mathf.SmoothStep(0, 1, Mathf.Clamp01(dismissAge / DismissSeconds));
+            fade.alpha = 1 - t;
+            skip.anchoredPosition = new Vector2(0, SkipHeight * .5f - 12 * t);
+            if (dismissAge >= DismissSeconds)
+                Destroy(gameObject);
+            return;
+        }
         var camera = UnityEngine.Camera.main;
         if (camera == null)
             return;
@@ -71,6 +85,9 @@ public sealed class DecisionOverlay : MonoBehaviour
         var canvas = gameObject.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 65;
+        fade = gameObject.AddComponent<CanvasGroup>();
+        fade.interactable = false;
+        fade.blocksRaycasts = false;
         var scaler = gameObject.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1280, 720);
@@ -94,6 +111,11 @@ public sealed class DecisionOverlay : MonoBehaviour
     {
         skipFill.rectTransform.sizeDelta = new Vector2(SkipWidth, SkipHeight * Mathf.SmoothStep(0, 1, Mathf.Clamp01(progress)));
         skip.GetComponent<Image>().color = new Color(.025f, .045f, .07f, .45f);
+    }
+
+    public void Dismiss()
+    {
+        dismissing = true;
     }
 
     RectTransform Plate(string title, Vector2 size, Transform parent = null)
