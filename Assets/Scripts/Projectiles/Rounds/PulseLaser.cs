@@ -127,6 +127,7 @@ public class PulseLaser : CombatRound
             heading = CombatVisuals.Rotate(heading, turn);
         }
         float power = Power;
+        if (owner is DistrictEnemy ship) ship.PointWeapon(transform.position, heading);
         sound.Drive(power, Active);
         ribbon.Draw(transform.position, heading, length, width, Charge, power, Mathf.Max(0, age - warning - activeTime) / Cooldown);
         var player = CombatVisuals.Player;

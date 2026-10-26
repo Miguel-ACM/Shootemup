@@ -280,14 +280,17 @@ public abstract class DistrictEnemy : AEnemy
 
     Vector2 RawAim => movement != null && movement.LockedAim.HasValue ? ((Vector2)(movement.LockedAim.Value - transform.position)).normalized : CombatVisuals.Aim(transform.position);
     protected Vector2 Aim => aimCommitted ? committedAim : RawAim;
+    protected virtual Vector2 CueAxis => Aim;
     protected virtual void PrepareFire(float seconds)
     {
         IsPreparing = enteredFight && seconds >= 0 && seconds < .48f;
         if (IsPreparing && !aimCommitted) { committedAim = RawAim; aimCommitted = true; }
         else if (!IsPreparing && age - lastRelease > .24f) aimCommitted = false;
         firingCue?.Warn(enteredFight ? seconds : -1);
+        firingCue?.PointAll(CueAxis);
     }
     protected void Cue(Vector3 world, float seconds) => firingCue?.WarnAt(world, seconds);
+    public void PointWeapon(Vector3 world, Vector2 direction) => firingCue?.PointAt(world, direction);
     protected Vector3 Muzzle(int index = 0)
     {
         var ports = EnemyWeaponLayout.Ports(hull);
@@ -299,7 +302,7 @@ public abstract class DistrictEnemy : AEnemy
         if (!(this is TunnelSawBoss) && (position - transform.position).sqrMagnitude < .00001f)
             position = Muzzle(volley);
         lastRelease = age;
-        firingCue?.Flash(position);
+        firingCue?.Flash(position, direction);
         var shot = CombatRound.Launch<T>(position, direction, velocity * ProjectileSpeedScale * (IsMiniboss ? 1.14f : 1), radius);
         if (shot != null)
             shot.damage *= ProjectileDamageScale;

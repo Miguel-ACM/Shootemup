@@ -32,6 +32,7 @@ public sealed class SandWorm : DistrictEnemy
             hit.radius = .62f;
             var section = segments[i].gameObject.AddComponent<SandWormSection>();
             section.owner = this;
+            firingCue.Register(segments[i],new Vector3(0,0,-.32f));
         }
         // The articulated model owns its orientation, including the head.
         GetComponent<CombatHullVisual>().enabled = false;

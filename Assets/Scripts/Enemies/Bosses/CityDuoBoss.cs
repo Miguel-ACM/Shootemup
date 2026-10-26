@@ -27,6 +27,7 @@ public sealed class CityDuoBoss : DistrictBoss
             size = hullScale;
             Hull.GetComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CombatHull(14);
             Hull.localScale = Vector3.one * hullScale;
+            firingCue.Build(Hull);
             GetComponent<CircleCollider2D>().radius = hullScale * .8f;
             GetComponent<EnemyThrusters>().sockets = IndustrialMeshFactory.CombatEngineSockets(14);
         }
