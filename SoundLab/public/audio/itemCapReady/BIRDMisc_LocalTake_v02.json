@@ -1,0 +1,85 @@
+{
+  "request": "20261026-211800-ff30",
+  "ref": "20261026-211800-ff30:762128",
+  "text": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small capacitor reaching full charge?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small capacitor reaching full charge?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "bird",
+  "seed": 762128,
+  "rank": 2,
+  "rank_score": 0.4201,
+  "clap": 0.0746,
+  "clap_cos": 0.3145,
+  "clap_top": "electronic static and digital glitches",
+  "aes": {
+    "CE": 2.69,
+    "CU": 5.25,
+    "PC": 2.14,
+    "PQ": 5.82
+  },
+  "fails": [],
+  "warnings": [
+    "CLAP thinks it sounds more like: electronic static and digital glitches",
+    "cut at the requested duration while still 8 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 20.78,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.5417,
+    "length_frames": 13.0,
+    "channels": 1,
+    "cut_db": -7.7
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -12.0
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -15.62,
+    "true_peak_dbtp": -15.49,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.0001,
+    "active_s": 1.095,
+    "noise_floor_db": -67.7,
+    "onset_s": 0.005,
+    "tail_db": -67.1,
+    "stereo_correlation": 1.0,
+    "lufs": -27.3,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+    "blind_caption": "A typewriter is being used.",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2946
+  },
+  "human_approved": false
+}

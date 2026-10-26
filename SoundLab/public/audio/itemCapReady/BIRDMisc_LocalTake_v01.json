@@ -1,0 +1,83 @@
+{
+  "request": "20261026-211739-48a2",
+  "ref": "20261026-211739-48a2:762126",
+  "text": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+  "prompt": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "bird",
+  "seed": 762126,
+  "rank": 1,
+  "rank_score": 0.614,
+  "clap": 0.2577,
+  "clap_cos": 0.3191,
+  "clap_top": "electronic static and digital glitches",
+  "aes": {
+    "CE": 3.0,
+    "CU": 6.66,
+    "PC": 1.97,
+    "PQ": 7.11
+  },
+  "fails": [],
+  "warnings": [
+    "CLAP thinks it sounds more like: electronic static and digital glitches"
+  ],
+  "post": {
+    "gain_db": 9.94,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.5,
+    "length_frames": 12.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -28.8
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -7.85,
+    "true_peak_dbtp": -7.85,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.0,
+    "active_s": 0.83,
+    "noise_floor_db": -72.5,
+    "onset_s": 0.004,
+    "tail_db": -70.7,
+    "stereo_correlation": 0.556,
+    "lufs": -38.2,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+    "blind_caption": "A coin falls on a hard surface",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.3522
+  },
+  "human_approved": false
+}

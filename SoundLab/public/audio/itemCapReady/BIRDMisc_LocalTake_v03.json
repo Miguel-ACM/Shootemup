@@ -1,0 +1,85 @@
+{
+  "request": "20261026-211800-ff30",
+  "ref": "20261026-211800-ff30:762129",
+  "text": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small capacitor reaching full charge?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small capacitor reaching full charge?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "bird",
+  "seed": 762129,
+  "rank": 1,
+  "rank_score": 0.4296,
+  "clap": 0.0238,
+  "clap_cos": 0.2682,
+  "clap_top": "electronic static and digital glitches",
+  "aes": {
+    "CE": 2.44,
+    "CU": 5.51,
+    "PC": 2.03,
+    "PQ": 6.58
+  },
+  "fails": [],
+  "warnings": [
+    "CLAP thinks it sounds more like: electronic static and digital glitches",
+    "cut at the requested duration while still 9 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 18.45,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.5417,
+    "length_frames": 13.0,
+    "channels": 1,
+    "cut_db": -9.4
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -16.1
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -16.57,
+    "true_peak_dbtp": -16.57,
+    "clipped_fraction": 0.0,
+    "dc_offset": 4e-05,
+    "active_s": 0.945,
+    "noise_floor_db": -69.7,
+    "onset_s": 0.0,
+    "tail_db": -67.8,
+    "stereo_correlation": 1.0,
+    "lufs": -32.0,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+    "blind_caption": "A bird chirping",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2922
+  },
+  "human_approved": false
+}

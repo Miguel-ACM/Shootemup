@@ -1,0 +1,482 @@
+{
+  "brief": {
+    "description": "one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+  "options": {
+    "duration": 0.5,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 762126,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-211739-48a2",
+      "prompt": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+      "takes": [
+        "20261026-211739-48a2:762126",
+        "20261026-211739-48a2:762127"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-211800-ff30",
+      "prompt": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small capacitor reaching full charge?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-211800-ff30:762129",
+        "20261026-211800-ff30:762128"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 762126,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -7.85,
+        "true_peak_dbtp": -7.85,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.0,
+        "active_s": 0.83,
+        "noise_floor_db": -72.5,
+        "onset_s": 0.004,
+        "tail_db": -70.7,
+        "stereo_correlation": 0.556,
+        "lufs": -38.2,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 9.94,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -28.8
+      },
+      "clap": 0.2577,
+      "clap_cos": 0.3191,
+      "clap_top": "electronic static and digital glitches",
+      "aes": {
+        "CE": 3.0,
+        "CU": 6.66,
+        "PC": 1.97,
+        "PQ": 7.11
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: electronic static and digital glitches"
+      ],
+      "rejected": false,
+      "rank_score": 0.614,
+      "rank": 1,
+      "ref": "20261026-211739-48a2:762126",
+      "files": {
+        "wav": "20261026-211739-48a2/762126.wav",
+        "png": "20261026-211739-48a2/762126.png",
+        "raw": "20261026-211739-48a2/762126_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211739-48a2\\762126.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211739-48a2\\762126.png"
+      },
+      "review": {
+        "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+        "blind_caption": "A coin falls on a hard surface",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3522
+      }
+    },
+    {
+      "seed": 762127,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -13.11,
+        "true_peak_dbtp": -12.92,
+        "clipped_fraction": 0.0,
+        "dc_offset": 2e-05,
+        "active_s": 0.985,
+        "noise_floor_db": -69.8,
+        "onset_s": 0.021,
+        "tail_db": -68.2,
+        "stereo_correlation": 0.502,
+        "lufs": -34.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 15.67,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1,
+        "cut_db": -16.5
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -23.7
+      },
+      "clap": 0.1251,
+      "clap_cos": 0.2508,
+      "clap_top": "electronic static and digital glitches",
+      "aes": {
+        "CE": 2.91,
+        "CU": 6.51,
+        "PC": 2.14,
+        "PQ": 6.79
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: electronic static and digital glitches",
+        "cut at the requested duration while still 16 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.4512,
+      "rank": 2,
+      "ref": "20261026-211739-48a2:762127",
+      "files": {
+        "wav": "20261026-211739-48a2/762127.wav",
+        "png": "20261026-211739-48a2/762127.png",
+        "raw": "20261026-211739-48a2/762127_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211739-48a2\\762127.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211739-48a2\\762127.png"
+      },
+      "review": {
+        "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+        "blind_caption": "A coin falls on a hard surface",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2606
+      }
+    },
+    {
+      "seed": 762129,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -16.57,
+        "true_peak_dbtp": -16.57,
+        "clipped_fraction": 0.0,
+        "dc_offset": 4e-05,
+        "active_s": 0.945,
+        "noise_floor_db": -69.7,
+        "onset_s": 0.0,
+        "tail_db": -67.8,
+        "stereo_correlation": 1.0,
+        "lufs": -32.0,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 18.45,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5417,
+        "length_frames": 13.0,
+        "channels": 1,
+        "cut_db": -9.4
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -16.1
+      },
+      "clap": 0.0238,
+      "clap_cos": 0.2682,
+      "clap_top": "electronic static and digital glitches",
+      "aes": {
+        "CE": 2.44,
+        "CU": 5.51,
+        "PC": 2.03,
+        "PQ": 6.58
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: electronic static and digital glitches",
+        "cut at the requested duration while still 9 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.4296,
+      "rank": 1,
+      "ref": "20261026-211800-ff30:762129",
+      "files": {
+        "wav": "20261026-211800-ff30/762129.wav",
+        "png": "20261026-211800-ff30/762129.png",
+        "raw": "20261026-211800-ff30/762129_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211800-ff30\\762129.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211800-ff30\\762129.png"
+      },
+      "review": {
+        "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+        "blind_caption": "A bird chirping",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2922
+      }
+    },
+    {
+      "seed": 762128,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -15.62,
+        "true_peak_dbtp": -15.49,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.0001,
+        "active_s": 1.095,
+        "noise_floor_db": -67.7,
+        "onset_s": 0.005,
+        "tail_db": -67.1,
+        "stereo_correlation": 1.0,
+        "lufs": -27.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 20.78,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5417,
+        "length_frames": 13.0,
+        "channels": 1,
+        "cut_db": -7.7
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -12.0
+      },
+      "clap": 0.0746,
+      "clap_cos": 0.3145,
+      "clap_top": "electronic static and digital glitches",
+      "aes": {
+        "CE": 2.69,
+        "CU": 5.25,
+        "PC": 2.14,
+        "PQ": 5.82
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: electronic static and digital glitches",
+        "cut at the requested duration while still 8 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.4201,
+      "rank": 2,
+      "ref": "20261026-211800-ff30:762128",
+      "files": {
+        "wav": "20261026-211800-ff30/762128.wav",
+        "png": "20261026-211800-ff30/762128.png",
+        "raw": "20261026-211800-ff30/762128_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211800-ff30\\762128.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211800-ff30\\762128.png"
+      },
+      "review": {
+        "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+        "blind_caption": "A typewriter is being used.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2946
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 762126,
+    "signal": {
+      "duration_s": 2.0,
+      "peak_dbfs": -7.85,
+      "true_peak_dbtp": -7.85,
+      "clipped_fraction": 0.0,
+      "dc_offset": 0.0,
+      "active_s": 0.83,
+      "noise_floor_db": -72.5,
+      "onset_s": 0.004,
+      "tail_db": -70.7,
+      "stereo_correlation": 0.556,
+      "lufs": -38.2,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 9.94,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.5,
+      "length_frames": 12.0,
+      "channels": 1
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -28.8
+    },
+    "clap": 0.2577,
+    "clap_cos": 0.3191,
+    "clap_top": "electronic static and digital glitches",
+    "aes": {
+      "CE": 3.0,
+      "CU": 6.66,
+      "PC": 1.97,
+      "PQ": 7.11
+    },
+    "fails": [],
+    "warnings": [
+      "CLAP thinks it sounds more like: electronic static and digital glitches"
+    ],
+    "rejected": false,
+    "rank_score": 0.614,
+    "rank": 1,
+    "ref": "20261026-211739-48a2:762126",
+    "files": {
+      "wav": "20261026-211739-48a2/762126.wav",
+      "png": "20261026-211739-48a2/762126.png",
+      "raw": "20261026-211739-48a2/762126_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211739-48a2\\762126.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211739-48a2\\762126.png"
+    },
+    "review": {
+      "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+      "blind_caption": "A coin falls on a hard surface",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.3522
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemCapReady\\iteration-20261026-211739-fbfb\\BIRDMisc_Iterated_v01.wav"
+  ]
+}

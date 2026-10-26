@@ -1,0 +1,157 @@
+{
+  "id": "20261026-211800-ff30",
+  "created": "2026-10-26 21:18:00",
+  "text": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small capacitor reaching full charge?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small capacitor reaching full charge?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "raw": true,
+  "category": "bird",
+  "cat_id": "BIRDMisc",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    762128,
+    762129
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.5,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 1.25,
+  "gen_s": 1.97,
+  "score_s": 1.25,
+  "takes": [
+    {
+      "seed": 762129,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -16.57,
+        "true_peak_dbtp": -16.57,
+        "clipped_fraction": 0.0,
+        "dc_offset": 4e-05,
+        "active_s": 0.945,
+        "noise_floor_db": -69.7,
+        "onset_s": 0.0,
+        "tail_db": -67.8,
+        "stereo_correlation": 1.0,
+        "lufs": -32.0,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 18.45,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5417,
+        "length_frames": 13.0,
+        "channels": 1,
+        "cut_db": -9.4
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -16.1
+      },
+      "clap": 0.0238,
+      "clap_cos": 0.2682,
+      "clap_top": "electronic static and digital glitches",
+      "aes": {
+        "CE": 2.44,
+        "CU": 5.51,
+        "PC": 2.03,
+        "PQ": 6.58
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: electronic static and digital glitches",
+        "cut at the requested duration while still 9 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.4296,
+      "rank": 1,
+      "ref": "20261026-211800-ff30:762129",
+      "files": {
+        "wav": "20261026-211800-ff30/762129.wav",
+        "png": "20261026-211800-ff30/762129.png",
+        "raw": "20261026-211800-ff30/762129_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211800-ff30\\762129.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211800-ff30\\762129.png"
+      }
+    },
+    {
+      "seed": 762128,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -15.62,
+        "true_peak_dbtp": -15.49,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.0001,
+        "active_s": 1.095,
+        "noise_floor_db": -67.7,
+        "onset_s": 0.005,
+        "tail_db": -67.1,
+        "stereo_correlation": 1.0,
+        "lufs": -27.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 20.78,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5417,
+        "length_frames": 13.0,
+        "channels": 1,
+        "cut_db": -7.7
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -12.0
+      },
+      "clap": 0.0746,
+      "clap_cos": 0.3145,
+      "clap_top": "electronic static and digital glitches",
+      "aes": {
+        "CE": 2.69,
+        "CU": 5.25,
+        "PC": 2.14,
+        "PQ": 5.82
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: electronic static and digital glitches",
+        "cut at the requested duration while still 8 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.4201,
+      "rank": 2,
+      "ref": "20261026-211800-ff30:762128",
+      "files": {
+        "wav": "20261026-211800-ff30/762128.wav",
+        "png": "20261026-211800-ff30/762128.png",
+        "raw": "20261026-211800-ff30/762128_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211800-ff30\\762128.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211800-ff30\\762128.png"
+      }
+    }
+  ],
+  "kept": 2
+}

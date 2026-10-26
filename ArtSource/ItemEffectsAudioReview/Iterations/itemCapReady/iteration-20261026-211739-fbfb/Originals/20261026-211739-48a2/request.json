@@ -1,0 +1,155 @@
+{
+  "id": "20261026-211739-48a2",
+  "created": "2026-10-26 21:17:39",
+  "text": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+  "prompt": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+  "raw": true,
+  "category": "bird",
+  "cat_id": "BIRDMisc",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    762126,
+    762127
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.5,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 1.25,
+  "gen_s": 2.01,
+  "score_s": 1.28,
+  "takes": [
+    {
+      "seed": 762126,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -7.85,
+        "true_peak_dbtp": -7.85,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.0,
+        "active_s": 0.83,
+        "noise_floor_db": -72.5,
+        "onset_s": 0.004,
+        "tail_db": -70.7,
+        "stereo_correlation": 0.556,
+        "lufs": -38.2,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 9.94,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -28.8
+      },
+      "clap": 0.2577,
+      "clap_cos": 0.3191,
+      "clap_top": "electronic static and digital glitches",
+      "aes": {
+        "CE": 3.0,
+        "CU": 6.66,
+        "PC": 1.97,
+        "PQ": 7.11
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: electronic static and digital glitches"
+      ],
+      "rejected": false,
+      "rank_score": 0.614,
+      "rank": 1,
+      "ref": "20261026-211739-48a2:762126",
+      "files": {
+        "wav": "20261026-211739-48a2/762126.wav",
+        "png": "20261026-211739-48a2/762126.png",
+        "raw": "20261026-211739-48a2/762126_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211739-48a2\\762126.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211739-48a2\\762126.png"
+      }
+    },
+    {
+      "seed": 762127,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -13.11,
+        "true_peak_dbtp": -12.92,
+        "clipped_fraction": 0.0,
+        "dc_offset": 2e-05,
+        "active_s": 0.985,
+        "noise_floor_db": -69.8,
+        "onset_s": 0.021,
+        "tail_db": -68.2,
+        "stereo_correlation": 0.502,
+        "lufs": -34.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 15.67,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1,
+        "cut_db": -16.5
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -23.7
+      },
+      "clap": 0.1251,
+      "clap_cos": 0.2508,
+      "clap_top": "electronic static and digital glitches",
+      "aes": {
+        "CE": 2.91,
+        "CU": 6.51,
+        "PC": 2.14,
+        "PQ": 6.79
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: electronic static and digital glitches",
+        "cut at the requested duration while still 16 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.4512,
+      "rank": 2,
+      "ref": "20261026-211739-48a2:762127",
+      "files": {
+        "wav": "20261026-211739-48a2/762127.wav",
+        "png": "20261026-211739-48a2/762127.png",
+        "raw": "20261026-211739-48a2/762127_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211739-48a2\\762127.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211739-48a2\\762127.png"
+      }
+    }
+  ],
+  "kept": 2
+}

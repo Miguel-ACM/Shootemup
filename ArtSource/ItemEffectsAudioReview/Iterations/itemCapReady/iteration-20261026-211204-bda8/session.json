@@ -1,0 +1,300 @@
+{
+  "brief": {
+    "description": "one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+  "options": {
+    "duration": 0.25,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 262126,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-211204-0e6d",
+      "prompt": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+      "takes": [
+        "20261026-211204-0e6d:262127",
+        "20261026-211204-0e6d:262126"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-211224-7360",
+      "prompt": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small capacitor reaching full charge?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-211224-7360:262128",
+        "20261026-211224-7360:262129"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 262127,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -15.35,
+        "true_peak_dbtp": -15.19,
+        "clipped_fraction": 0.0,
+        "dc_offset": 1e-05,
+        "active_s": 0.045,
+        "noise_floor_db": -71.3,
+        "onset_s": 0.0,
+        "tail_db": -69.5,
+        "stereo_correlation": 1.0,
+        "lufs": -34.0,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 14.18,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2917,
+        "length_frames": 7.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.6
+      },
+      "clap": 0.5358,
+      "clap_cos": 0.1227,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.11,
+        "CU": 7.03,
+        "PC": 1.97,
+        "PQ": 7.77
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.5978,
+      "rank": 1,
+      "ref": "20261026-211204-0e6d:262127",
+      "files": {
+        "wav": "20261026-211204-0e6d/262127.wav",
+        "png": "20261026-211204-0e6d/262127.png",
+        "raw": "20261026-211204-0e6d/262127_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211204-0e6d\\262127.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211204-0e6d\\262127.png"
+      },
+      "review": {
+        "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+        "blind_caption": "A mouse clicking sound",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.1324
+      }
+    },
+    {
+      "seed": 262126,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -14.24,
+        "true_peak_dbtp": -14.17,
+        "clipped_fraction": 0.0,
+        "dc_offset": 1e-05,
+        "active_s": 0.08,
+        "noise_floor_db": -69.6,
+        "onset_s": 0.0,
+        "tail_db": -67.0,
+        "stereo_correlation": 0.989,
+        "lufs": -34.9,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 13.38,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2917,
+        "length_frames": 7.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -23.4
+      },
+      "clap": 0.4274,
+      "clap_cos": 0.0982,
+      "clap_top": "electronic static and digital glitches",
+      "aes": {
+        "CE": 3.18,
+        "CU": 7.07,
+        "PC": 1.98,
+        "PQ": 7.68
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: electronic static and digital glitches"
+      ],
+      "rejected": false,
+      "rank_score": 0.4972,
+      "rank": 2,
+      "ref": "20261026-211204-0e6d:262126",
+      "files": {
+        "wav": "20261026-211204-0e6d/262126.wav",
+        "png": "20261026-211204-0e6d/262126.png",
+        "raw": "20261026-211204-0e6d/262126_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211204-0e6d\\262126.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211204-0e6d\\262126.png"
+      },
+      "review": {
+        "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+        "blind_caption": "A clock ticking",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.0916
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 262127,
+    "signal": {
+      "duration_s": 1.0,
+      "peak_dbfs": -15.35,
+      "true_peak_dbtp": -15.19,
+      "clipped_fraction": 0.0,
+      "dc_offset": 1e-05,
+      "active_s": 0.045,
+      "noise_floor_db": -71.3,
+      "onset_s": 0.0,
+      "tail_db": -69.5,
+      "stereo_correlation": 1.0,
+      "lufs": -34.0,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 14.18,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.2917,
+      "length_frames": 7.0,
+      "channels": 1
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -21.6
+    },
+    "clap": 0.5358,
+    "clap_cos": 0.1227,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.11,
+      "CU": 7.03,
+      "PC": 1.97,
+      "PQ": 7.77
+    },
+    "fails": [],
+    "warnings": [],
+    "rejected": false,
+    "rank_score": 0.5978,
+    "rank": 1,
+    "ref": "20261026-211204-0e6d:262127",
+    "files": {
+      "wav": "20261026-211204-0e6d/262127.wav",
+      "png": "20261026-211204-0e6d/262127.png",
+      "raw": "20261026-211204-0e6d/262127_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211204-0e6d\\262127.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211204-0e6d\\262127.png"
+    },
+    "review": {
+      "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+      "blind_caption": "A mouse clicking sound",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.1324
+    }
+  },
+  "baseline_best": null,
+  "status": "failed",
+  "human_approved": false,
+  "error": "server said 500: Internal Server Error"
+}

@@ -8585,6 +8585,184 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemCapReady",
+      "label": "Capacitor — ready",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemCapReady",
+      "original": {
+        "file": "audio/itemCapReady/original.wav",
+        "label": "Current sound",
+        "seconds": 0.24,
+        "sha256": "995d8edf388c837f845b29ae21ed09c6bfcc96f78772babea5e0339a238d648c"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The similarity check suggested a different sound. The automatic listener was uncertain.",
+          "file": "audio/itemCapReady/BIRDMisc_LocalTake_v01.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "30d303747b924bfe8d0aa2d1c770657a6c0ec6e89ff14eb284d0e72a82c0e75a",
+          "ref": "20261026-211739-48a2:762126",
+          "review": {
+            "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+            "blind_caption": "A coin falls on a hard surface",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3522
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic check detected a possibly cut-off tail. The similarity check suggested a different sound. The automatic listener was uncertain.",
+          "file": "audio/itemCapReady/BIRDMisc_LocalTake_v02.wav",
+          "seconds": 0.5416666666666666,
+          "sampleRate": 48000,
+          "sha256": "bf4dbe8523d934d8f550113c2752a5675155046f4a981b04ccd06afc61991cdd",
+          "ref": "20261026-211800-ff30:762128",
+          "review": {
+            "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+            "blind_caption": "A typewriter is being used.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2946
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The automatic check detected a possibly cut-off tail. The similarity check suggested a different sound. The automatic listener was uncertain.",
+          "file": "audio/itemCapReady/BIRDMisc_LocalTake_v03.wav",
+          "seconds": 0.5416666666666666,
+          "sampleRate": 48000,
+          "sha256": "59e6d033a86a80702e6801ce7a0c18cf137f41aaf0014d6d37f8d6497bb704f2",
+          "ref": "20261026-211800-ff30:762129",
+          "review": {
+            "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+            "blind_caption": "A bird chirping",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2922
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic check detected a possibly cut-off tail. The similarity check suggested a different sound. The automatic listener was uncertain.",
+          "file": "audio/itemCapReady/BIRDMisc_LocalTake_v04.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "7d8ca0c5322109c4462ba74b89e0abf868a1e8fb6bebaf5b1ffd7ebfa0ebb36f",
+          "ref": "20261026-211739-48a2:762127",
+          "review": {
+            "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+            "blind_caption": "A coin falls on a hard surface",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2606
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,151 @@
+{
+  "id": "20261026-211204-0e6d",
+  "created": "2026-10-26 21:12:04",
+  "text": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+  "prompt": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+  "raw": true,
+  "category": "bird",
+  "cat_id": "BIRDMisc",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    262126,
+    262127
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.25,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 1.0,
+  "gen_s": 2.04,
+  "score_s": 1.11,
+  "takes": [
+    {
+      "seed": 262127,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -15.35,
+        "true_peak_dbtp": -15.19,
+        "clipped_fraction": 0.0,
+        "dc_offset": 1e-05,
+        "active_s": 0.045,
+        "noise_floor_db": -71.3,
+        "onset_s": 0.0,
+        "tail_db": -69.5,
+        "stereo_correlation": 1.0,
+        "lufs": -34.0,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 14.18,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2917,
+        "length_frames": 7.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.6
+      },
+      "clap": 0.5358,
+      "clap_cos": 0.1227,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.11,
+        "CU": 7.03,
+        "PC": 1.97,
+        "PQ": 7.77
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.5978,
+      "rank": 1,
+      "ref": "20261026-211204-0e6d:262127",
+      "files": {
+        "wav": "20261026-211204-0e6d/262127.wav",
+        "png": "20261026-211204-0e6d/262127.png",
+        "raw": "20261026-211204-0e6d/262127_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211204-0e6d\\262127.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211204-0e6d\\262127.png"
+      }
+    },
+    {
+      "seed": 262126,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -14.24,
+        "true_peak_dbtp": -14.17,
+        "clipped_fraction": 0.0,
+        "dc_offset": 1e-05,
+        "active_s": 0.08,
+        "noise_floor_db": -69.6,
+        "onset_s": 0.0,
+        "tail_db": -67.0,
+        "stereo_correlation": 0.989,
+        "lufs": -34.9,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 13.38,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2917,
+        "length_frames": 7.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -23.4
+      },
+      "clap": 0.4274,
+      "clap_cos": 0.0982,
+      "clap_top": "electronic static and digital glitches",
+      "aes": {
+        "CE": 3.18,
+        "CU": 7.07,
+        "PC": 1.98,
+        "PQ": 7.68
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: electronic static and digital glitches"
+      ],
+      "rejected": false,
+      "rank_score": 0.4972,
+      "rank": 2,
+      "ref": "20261026-211204-0e6d:262126",
+      "files": {
+        "wav": "20261026-211204-0e6d/262126.wav",
+        "png": "20261026-211204-0e6d/262126.png",
+        "raw": "20261026-211204-0e6d/262126_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211204-0e6d\\262126.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211204-0e6d\\262126.png"
+      }
+    }
+  ],
+  "kept": 2
+}

@@ -1,0 +1,8 @@
+{
+  "description": "one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+  "requirements": [
+    "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+    "Is the audio free of intelligible speech and music?",
+    "Is the sound compact and dry with a short decay?"
+  ]
+}

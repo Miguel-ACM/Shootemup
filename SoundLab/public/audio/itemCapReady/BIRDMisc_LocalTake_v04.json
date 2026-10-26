@@ -1,0 +1,85 @@
+{
+  "request": "20261026-211739-48a2",
+  "ref": "20261026-211739-48a2:762127",
+  "text": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+  "prompt": "TrackType: SFX, one small capacitor reaching full charge, soft electrical tick with a short bright rising chirp, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "bird",
+  "seed": 762127,
+  "rank": 2,
+  "rank_score": 0.4512,
+  "clap": 0.1251,
+  "clap_cos": 0.2508,
+  "clap_top": "electronic static and digital glitches",
+  "aes": {
+    "CE": 2.91,
+    "CU": 6.51,
+    "PC": 2.14,
+    "PQ": 6.79
+  },
+  "fails": [],
+  "warnings": [
+    "CLAP thinks it sounds more like: electronic static and digital glitches",
+    "cut at the requested duration while still 16 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 15.67,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.5,
+    "length_frames": 12.0,
+    "channels": 1,
+    "cut_db": -16.5
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -23.7
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -13.11,
+    "true_peak_dbtp": -12.92,
+    "clipped_fraction": 0.0,
+    "dc_offset": 2e-05,
+    "active_s": 0.985,
+    "noise_floor_db": -69.8,
+    "onset_s": 0.021,
+    "tail_db": -68.2,
+    "stereo_correlation": 0.502,
+    "lufs": -34.4,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "f90b557a0b6e648dca55e3da78cecdbb1e2428cd15bd682fe108680a1e146f53",
+    "blind_caption": "A coin falls on a hard surface",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small capacitor reaching full charge?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2606
+  },
+  "human_approved": false
+}
