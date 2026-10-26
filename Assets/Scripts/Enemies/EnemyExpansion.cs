@@ -21,6 +21,7 @@ public static class EnemyExpansion
     }
     public static readonly Entry[] All = {
         // Individual enemies are registered here with their own content commits.
+        new Entry(LevelId.Space, typeof(EclipseSail), 75, 0.57f, false, IndustrialMeshFactory.EclipseSailMesh, new[] { new Vector3(-.52f,-.61f,-.3f), new Vector3(.52f,-.61f,-.3f) }, System.Array.Empty<Vector3>(), WavePartLibrary.EclipseSailParts),
         new Entry(LevelId.Candyland, typeof(GumdropMortar), 74, 0.53f, false, IndustrialMeshFactory.GumdropMortarMesh, new[] { new Vector3(-.46f,-.58f,-.21f), new Vector3(.46f,-.58f,-.21f) }, new[] { new Vector3(-.28f,.68f,0), new Vector3(.28f,.68f,0) }, WavePartLibrary.GumdropMortarParts),
         new Entry(LevelId.Candyland, typeof(RibbonGlider), 73, 0.46f, false, IndustrialMeshFactory.RibbonGliderMesh, new[] { new Vector3(-.49f,-.44f,-.16f), new Vector3(.49f,-.44f,-.16f) }, new[] { new Vector3(-.28f,.68f,0), new Vector3(.28f,.68f,0) }, WavePartLibrary.RibbonGliderParts),
         new Entry(LevelId.Desert, typeof(MirageObelisk), 72, 0.56f, false, IndustrialMeshFactory.MirageObeliskMesh, new[] { new Vector3(-.43f,-.87f,-.2f), new Vector3(.43f,-.87f,-.2f) }, new[] { new Vector3(-.28f,.68f,0), new Vector3(.28f,.68f,0) }, WavePartLibrary.MirageObeliskParts),
