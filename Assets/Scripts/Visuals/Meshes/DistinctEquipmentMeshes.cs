@@ -154,8 +154,9 @@ public static partial class IndustrialMeshFactory
                 // Horizontal battery strapped to a tiny guided rocket.
                 b.Box(Vector3.zero, new Vector3(.77f, .31f, .27f), 4, 6);
                 b.Box(new Vector3(.43f, 0, 0), new Vector3(.12f, .18f, .18f), 11);
-                b.Can(new Vector3(0, 0, -.25f), .09f, .8f, 11, 6);
-                b.Prism(new[] { new Vector2(-.1f, .39f), new Vector2(.1f, .39f), new Vector2(0, .61f) }, .14f, 3, Vector3.back * .25f);
+                EquipmentCartridge(b, new Vector3(0, 0, -.27f), .11f, .92f);
+                foreach (int side in new[] { -1, 1 })
+                    b.Prism(new[] { new Vector2(side * .07f, -.21f), new Vector2(side * .25f, -.4f), new Vector2(side * .08f, -.38f) }, .14f, 3, Vector3.back * .27f, 11);
                 break;
             case "Overdrive":
                 // A red throttle lever with swept acceleration fins.
