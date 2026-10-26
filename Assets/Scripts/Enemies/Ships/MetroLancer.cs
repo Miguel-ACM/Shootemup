@@ -8,7 +8,7 @@ public sealed class MetroLancer : DistrictEnemy
         hull = 65;
         hullScale = 0.41f;
         health = 19;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(2.0f, 1.4f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -21,12 +21,14 @@ public sealed class MetroLancer : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve MetroLancerRoute0 = Route("City / MetroLancer 0", Vector2.right, -.8f, 1.25f, -.62f, .94f, -.2f, .67f, .4f, .52f, .92f, .45f, 1.4f, .6f);
-    static readonly FlightCurve MetroLancerRoute1 = Route("City / MetroLancer 1", Vector2.right, -1.4f, .9f, -.72f, .82f, -.07f, .58f, .58f, .73f, 1.4f, .91f);
-    public static readonly WavePart[] MetroLancerParts ={
-        new WavePart("MetroLancer call",nameof(MetroLancer),MetroLancerRoute0,WaveShape.Train,4,2.75f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("MetroLancer crossing",nameof(MetroLancer),MetroLancerRoute1,WaveShape.Train,4,3.00f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("MetroLancer answer",nameof(MetroLancer),MetroLancerRoute0,WaveShape.Rake,4,3.25f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
+    static readonly FlightCurve MetroLancerRoute0 = Route("City / Metro express cut", Vector2.right, -1.4f, 0.9f, -0.65f, 0.75f, 0.08f, 0.49f, 0.7f, 0.26f, 1.4f, 0.17f);
+    static readonly FlightCurve MetroLancerRoute1 = Route("City / Metro flyover climb", Vector2.right, -1.4f, 0.28f, -0.64f, 0.41f, 0.12f, 0.7f, 0.66f, 0.92f, 1.4f, 1.16f);
+    static readonly FlightCurve MetroLancerRoute2 = Route("City / Metro interchange dive", Vector2.right, 0.58f, 1.25f, 0.48f, 0.85f, -0.25f, 0.62f, -0.53f, 0.37f, 0.08f, 0.13f, 0.66f, -0.25f);
+    public static readonly WavePart[] MetroLancerParts =
+    {
+        new WavePart("Metro express cut", nameof(MetroLancer), MetroLancerRoute0, WaveShape.Train, 5, 3.05f, 2, new[] { 0.26f, 0.45f, 0.64f }, new[] { 0.38f, 0.7f }, 4),
+        new WavePart("Metro flyover climb", nameof(MetroLancer), MetroLancerRoute1, WaveShape.Rake, 3, 2.95f, 4, new[] { 0.3f, 0.59f }, new[] { 0.44f }, 3),
+        new WavePart("Metro interchange dive", nameof(MetroLancer), MetroLancerRoute2, WaveShape.Train, 4, 3.45f, 7, new[] { 0.24f, 0.43f, 0.69f }, new[] { 0.38f, 0.73f }, 3),
     };
 }
 
