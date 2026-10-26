@@ -23,7 +23,8 @@ public static class EncounterChoice
     public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth)
     {
         var bag = new List<EncounterKind> { EncounterKind.Shop, EncounterKind.MultShop, EncounterKind.Item };
-        if (maxHealth > 0 && health <= maxHealth * .7f)
+        // Integer factors keep the exact 70/100 boundary inclusive on Unity's runtime.
+        if (maxHealth > 0 && health * 10f <= maxHealth * 7f)
             bag.Add(EncounterKind.Health);
         if (challengeAvailable)
             bag.Add(EncounterKind.Challenge);
