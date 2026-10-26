@@ -271,9 +271,15 @@ public sealed class CombatReworkReview : MonoBehaviour
                     }
                 }
                 if(focus=="additions")
+                {
                     foreach(var entry in EnemyExpansion.All.Where(e=>e.level==level))
                         foreach(var part in entry.parts)
                             yield return Wave(part.Name,WaveComposer.PreviewPart(part,0,1,out _));
+                    Clear();yield return null;
+                    var phaseBoss=(DistrictBoss)DistrictEnemy.Spawn(DistrictWaves.BossType,new Vector3(0,Camera.UpLimit-2,1));
+                    yield return new WaitForSeconds(1.6f);PhaseTwo(phaseBoss);
+                    yield return Observe(level+"-PhaseEntry",2.4f,null,true,.125f);
+                }
                 if(focus=="all"||focus=="bosses")yield return Bosses(level,difficulty);
                 if(level==LevelId.Underwater&&difficulty==RunDifficulty.Hard)
                 {
