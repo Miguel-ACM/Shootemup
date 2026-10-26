@@ -223,8 +223,8 @@ public static partial class IndustrialMeshFactory
                     Vector3 root = new Vector3(side * .2f, .03f, .06f);
                     Vector3 bend = new Vector3(side * .42f, .11f, -.03f);
                     Vector3 tip = new Vector3(side * .48f, .35f, -.1f);
-                    EquipmentRod(b, root, bend, .04f, 11);
-                    EquipmentRod(b, bend, tip, .035f, 11);
+                    EquipmentRod(b, root, bend, .04f, 6);
+                    EquipmentRod(b, bend, tip, .035f, 6);
                     b.Ball(tip, new Vector3(.055f, .055f, .055f), 9);
                 }
                 b.Box(new Vector3(0, -.31f, .02f), new Vector3(.18f, .25f, .25f), 6);
