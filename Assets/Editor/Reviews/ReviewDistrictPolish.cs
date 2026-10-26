@@ -384,7 +384,7 @@ public sealed class DistrictPolishReview : MonoBehaviour
         yield return Context(LevelId.Underwater);
         var sub = (AbyssSubmarineBoss)DistrictEnemy.Spawn(typeof(AbyssSubmarineBoss), new Vector3(0, 4, 1));
         int subPeak = 0;
-        began = Time.time;
+        float began = Time.time;
         int capture = 0;
         while (Time.time - began < 15.5f)
         {

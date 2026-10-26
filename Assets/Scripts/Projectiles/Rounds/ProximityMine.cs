@@ -25,7 +25,7 @@ public sealed class ProximityMine : CombatRound
         bool armed = age >= 1.4f && (collision.enabled || distance > 1.5f);
         collision.enabled = armed;
         visual.color = armed ? Color.Lerp(new Color(.65f, .65f, .65f), Color.white, .65f + .35f * Mathf.Sin(age * 8)) : Color.gray;
-        if (armed && (age > 4.5f || distance < 1.1f) && Ring(Difficulty.Easy?6:10, 2.6f,.18f))
+        if (armed && (age > 4.5f || distance < 1.1f) && Ring(Difficulty.Easy ? 6 : 10, 2.6f, .18f))
             Release();
     }
 }

@@ -10,11 +10,17 @@ public sealed class FrostAuger : GroundVehicle
         hull = 40;
         hullScale = .64f;
         health = 39;
-        attackInterval = Timing(2.5f,1.9f);
+        attackInterval = Timing(2.5f, 1.9f);
         shellTravelDistance = 2.7f;
     }
 
-    protected override void PrepareFire(float seconds) { base.PrepareFire(seconds); firingCue.ClearWarning(); if(Weapon!=null) Cue(Weapon.TransformPoint(new Vector3((volley%2==0?1:-1)*.23f,-.57f,-.36f)),seconds); }
+    protected override void PrepareFire(float seconds)
+    {
+        base.PrepareFire(seconds);
+        firingCue.ClearWarning();
+        if (Weapon != null)
+            Cue(Weapon.TransformPoint(new Vector3((volley % 2 == 0 ? 1 : -1) * .23f, -.57f, -.36f)), seconds);
+    }
 
     protected override void Attack()
     {

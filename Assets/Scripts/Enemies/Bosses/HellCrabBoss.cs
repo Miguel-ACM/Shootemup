@@ -8,7 +8,7 @@ public sealed class HellCrabBoss : DistrictBoss
     readonly Transform[,] arms = new Transform[2, ArmSections];
     readonly LineRenderer[] tells = new LineRenderer[2];
     readonly HellCrabEye[] eyes = new HellCrabEye[2];
-    readonly Vector2[] eyeAxes={Vector2.down,Vector2.down};
+    readonly Vector2[] eyeAxes = { Vector2.down, Vector2.down };
     float clawClock, lockedY;
     bool completing;
     [EnemyTunable("Claws / Cycle seconds", 5, 12)] public float clawPeriod = 7.4f;
@@ -20,7 +20,7 @@ public sealed class HellCrabBoss : DistrictBoss
         hull = 49;
         hullScale = 1;
         health = 3000;
-        attackInterval = Timing(.98f,.72f);
+        attackInterval = Timing(.98f, .72f);
         nextAttack = 2.2f;
     }
 
@@ -35,8 +35,8 @@ public sealed class HellCrabBoss : DistrictBoss
             eyes[i] = HellCrabEye.Create(this, Hull, new Vector3(side * .67f, -.52f, -.96f), health * .5f);
             claws[i] = Model("Jointed side pincer", IndustrialMeshFactory.CombatHull(54), Hull);
             claws[i].localScale = Vector3.one * 1.75f;
-            firingCue.Register(claws[i],new Vector3(0,-.32f,-.4f));
-            firingCue.Register(eyes[i].transform,Vector3.zero);
+            firingCue.Register(claws[i], new Vector3(0, -.32f, -.4f));
+            firingCue.Register(eyes[i].transform, Vector3.zero);
             for (int segment = 0; segment < ArmSections; segment++)
                 arms[i, segment] = Model("Articulated pincer vertebra " + segment, IndustrialMeshFactory.CrabArm(), Hull);
             tells[i] = CombatVisuals.Line(Hull, LevelProjectilePalette.Accent(LevelId.Hell), .045f);
@@ -117,44 +117,60 @@ public sealed class HellCrabBoss : DistrictBoss
         if (claws[0] == null)
             return;
         int beat = (volley - 1) % 12;
-        float physical=Mathf.Repeat(clawClock,clawPeriod);
+        float physical = Mathf.Repeat(clawClock, clawPeriod);
         if (beat < 3 || beat == 7 || beat == 8)
         {
             for (int i = 0; i < 2; i++)
             {
-                if(i!=beat%2 && !(phaseTwo&&beat==8))continue;
+                if (i != beat % 2 && !(phaseTwo && beat == 8))
+                    continue;
                 var port = claws[i].TransformPoint(new Vector3(0, -.32f, -.4f));
-                var axis = CombatVisuals.Rotate(Vector2.down,(i==0?-1:1)*(beat<3?28:46));
+                var axis = CombatVisuals.Rotate(Vector2.down, (i == 0 ? -1 : 1) * (beat < 3 ? 28 : 46));
                 if (player != null && Vector2.Distance(port, player.position) < 1.8f)
                     continue;
-                PetalFan<SimpleRound>(port, CombatVisuals.Rotate(axis, (beat % 3 - 1) * 10), Shots(phaseTwo?5:4,clawShots), 23, 2.3f, .3f, .2f);
+                PetalFan<SimpleRound>(port, CombatVisuals.Rotate(axis, (beat % 3 - 1) * 10), Shots(phaseTwo ? 5 : 4, clawShots), 23, 2.3f, .3f, .2f);
             }
         }
-        else if ((beat == 4 || beat == 5 || beat==10) && (physical<1.1f || physical>3.4f))
+        else if ((beat == 4 || beat == 5 || beat == 10) && (physical < 1.1f || physical > 3.4f))
         {
             for (int i = 0; i < 2; i++)
                 if (eyes[i].health > 0)
                 {
-                    var port=eyes[i].transform.position;
-                    if(beat==4 || beat==10)eyeAxes[i]=CombatVisuals.Aim(port);
-                    if(beat==10)PetalFan<SimpleRound>(port,eyeAxes[i],Shots(phaseTwo?7:5,phaseTwo?11:9),22,1.9f,.34f,.2f);
-                    else PetalFan<NeedleRound>(port,CombatVisuals.Rotate(eyeAxes[i],beat==4?-8:8),Shots(phaseTwo?5:3,phaseTwo?7:5),17,4.0f,.21f);
+                    var port = eyes[i].transform.position;
+                    if (beat == 4 || beat == 10)
+                        eyeAxes[i] = CombatVisuals.Aim(port);
+                    if (beat == 10)
+                        PetalFan<SimpleRound>(port, eyeAxes[i], Shots(phaseTwo ? 7 : 5, phaseTwo ? 11 : 9), 22, 1.9f, .34f, .2f);
+                    else
+                        PetalFan<NeedleRound>(port, CombatVisuals.Rotate(eyeAxes[i], beat == 4 ? -8 : 8), Shots(phaseTwo ? 5 : 3, phaseTwo ? 7 : 5), 17, 4.0f, .21f);
                 }
         }
     }
 
-    protected override void OnPhaseTwo(){volley=0;clawClock=0;nextAttack=age+1.5f;}
+    protected override void OnPhaseTwo()
+    {
+        volley = 0;
+        clawClock = 0;
+        nextAttack = age + 1.5f;
+    }
     protected override void PrepareFire(float seconds)
     {
-        base.PrepareFire(seconds);firingCue.ClearWarning();if(claws[0]==null)return;
-        int beat=volley%12;
-        if(beat<3 || beat==7 || beat==8)
+        base.PrepareFire(seconds);
+        firingCue.ClearWarning();
+        if (claws[0] == null)
+            return;
+        int beat = volley % 12;
+        if (beat < 3 || beat == 7 || beat == 8)
         {
-            for(int i=0;i<2;i++)if(i==beat%2 || phaseTwo&&beat==8)Cue(claws[i].TransformPoint(new Vector3(0,-.32f,-.4f)),seconds);
+            for (int i = 0; i < 2; i++)
+                if (i == beat % 2 || phaseTwo && beat == 8)
+                    Cue(claws[i].TransformPoint(new Vector3(0, -.32f, -.4f)), seconds);
         }
-        else if(beat==4||beat==5||beat==10)
+        else if (beat == 4 || beat == 5 || beat == 10)
         {
-            for(int i=0;i<2;i++)if(eyes[i].health>0)Cue(eyes[i].transform.position,seconds);
+            for (int i = 0; i < 2; i++)
+                if (eyes[i].health > 0)
+                    Cue(eyes[i].transform.position, seconds);
         }
     }
 

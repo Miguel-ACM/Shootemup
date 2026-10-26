@@ -34,7 +34,7 @@ public sealed class CandyRegentBoss : DistrictBoss
         hull = 38;
         hullScale = .85f;
         health = 1320;
-        attackInterval = Timing(.78f,.58f);
+        attackInterval = Timing(.78f, .58f);
         nextAttack = 2.0f;
     }
 
@@ -86,7 +86,7 @@ public sealed class CandyRegentBoss : DistrictBoss
         }
         if (age >= nextBrood)
         {
-            nextBrood = age + Timing(phaseTwo?6.4f:7.2f,phaseTwo?4.8f:5.8f);
+            nextBrood = age + Timing(phaseTwo ? 6.4f : 7.2f, phaseTwo ? 4.8f : 5.8f);
             StartCoroutine(ReleaseBrood());
         }
     }
@@ -95,7 +95,7 @@ public sealed class CandyRegentBoss : DistrictBoss
     {
         var point = Dashes[dash % Dashes.Length];
         legStart = transform.position;
-        float lower=(Camera.UpLimit+Camera.DownLimit)*.5f+1.1f;
+        float lower = (Camera.UpLimit + Camera.DownLimit) * .5f + 1.1f;
         legEnd = new Vector3(point.x * width, Mathf.Lerp(lower, Camera.UpLimit - 1.6f, point.y), 1);
         if (player != null && Vector2.Distance(legEnd, player.position) < 2.8f)
             legEnd.y = Mathf.Min(Camera.UpLimit - 1.5f, legEnd.y + 2.8f);
@@ -115,19 +115,19 @@ public sealed class CandyRegentBoss : DistrictBoss
             attackAxis = Aim;
         if (beat < 3)
         {
-            var port = Hull.TransformPoint(new Vector3(beat % 2 == 0 ? -.27f : .27f, -.95f, -.2f));
-            int count = Shots(phaseTwo?3:2,phaseTwo?5:3);
+            var port = Muzzle(beat % 2);
+            int count = Shots(phaseTwo ? 3 : 2, phaseTwo ? 5 : 3);
             PetalFan<NeedleRound>(port, CombatVisuals.Rotate(attackAxis, (beat - 1) * 9), count, 21, 4.7f, .2f, .13f);
         }
         else if (beat == 4 || beat == 5)
         {
             // A broad alternating comb leaves lanes between shots while the next brood enters.
-            int count = Shots(phaseTwo?5:3,phaseTwo?9:7);
-            PetalFan<SimpleRound>(Muzzle(beat%2), CombatVisuals.Rotate(Vector2.down, beat == 4 ? -9 : 9), count, 24, 2.4f, .31f, .22f);
+            int count = Shots(phaseTwo ? 5 : 3, phaseTwo ? 9 : 7);
+            PetalFan<SimpleRound>(Muzzle(beat % 2), CombatVisuals.Rotate(Vector2.down, beat == 4 ? -9 : 9), count, 24, 2.4f, .31f, .22f);
         }
     }
 
-    protected override float AttackPace => phaseTwo ? Timing(.96f,.88f) : 1;
+    protected override float AttackPace => phaseTwo ? Timing(.96f, .88f) : 1;
     protected override void OnPhaseTwo()
     {
         volley = 0;
@@ -144,11 +144,11 @@ public sealed class CandyRegentBoss : DistrictBoss
                 door.localScale = Vector3.one * (.24f + .15f * Mathf.Sin(t / .6f * Mathf.PI));
             yield return null;
         }
-        for (int row = 0; row < Shots(phaseTwo?3:2,phaseTwo?4:3); row++)
+        for (int row = 0; row < Shots(phaseTwo ? 3 : 2, phaseTwo ? 4 : 3); row++)
         {
             foreach (int side in new[] { -1, 1 })
             {
-                if (LiveMinions >= Shots(6,12))
+                if (LiveMinions >= Shots(6, 12))
                     break;
                 var p = Hull.TransformPoint(new Vector3(side * .82f, -.35f, -.2f));
                 if (player != null && Vector2.Distance(p, player.position) < 2.5f)
@@ -172,9 +172,11 @@ public sealed class CandyRegentBoss : DistrictBoss
 
     protected override void PrepareFire(float seconds)
     {
-        base.PrepareFire(seconds);firingCue.ClearWarning();
-        int beat=volley%8;
-        if(beat<3 || beat==4 || beat==5) Cue(Muzzle(beat%2),seconds);
+        base.PrepareFire(seconds);
+        firingCue.ClearWarning();
+        int beat = volley % 8;
+        if (beat < 3 || beat == 4 || beat == 5)
+            Cue(Muzzle(beat % 2), seconds);
     }
 
     protected override void Die()

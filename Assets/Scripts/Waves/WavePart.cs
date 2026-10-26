@@ -39,7 +39,8 @@ public sealed class WavePart
         float depth = (2 * radius + .3f) / (Camera.UpLimit - Camera.DownLimit);
         float interval = Mathf.Max(.30f, (2 * radius + .32f) / Mathf.Max(1, Route.Length / Seconds) * 1.25f) * (1 + (variant / 2 % 3) * .12f);
         int count = Shape == WaveShape.Solo ? 1 : Mathf.Max(Count == 2 ? 2 : 3, Count + variant % 3 - 1 + Mathf.Min(1, (LevelRun.Stage - 1) / 3));
-        if (Difficulty.Easy && EasyScore != null) count = EasyCount;
+        if (Difficulty.Easy && EasyScore != null)
+            count = EasyCount;
         WaveShape shape = Shape;
         if (Ground)
         {
@@ -128,7 +129,8 @@ public sealed class WavePart
         if (authoredScore != null)
         {
             score = new float[authoredScore.Length];
-            for (int i = 0; i < score.Length; i++) score[i] = Mathf.Max(last + .65f + i * .48f, authoredScore[i] * Seconds);
+            for (int i = 0; i < score.Length; i++)
+                score[i] = Mathf.Max(last + .65f + i * .48f, authoredScore[i] * Seconds);
         }
         EnemyTuning.TuneFormation(Enemy, units, Seconds, ref score);
         foreach (var unit in units)
@@ -293,7 +295,8 @@ public static class WaveGeometry
                 break;
             default:
                 var entry = EnemyExpansion.Find(enemy);
-                if (entry == null) throw new ArgumentException("Missing wave footprint: " + enemy);
+                if (entry == null)
+                    throw new ArgumentException("Missing wave footprint: " + enemy);
                 hull = entry.hull;
                 scale = entry.scale;
                 break;

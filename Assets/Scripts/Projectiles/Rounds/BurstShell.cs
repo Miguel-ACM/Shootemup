@@ -74,8 +74,8 @@ public sealed class BurstShell : CombatRound
             Spark(charge);
             nextSpark = age + Mathf.Lerp(.10f, .05f, charge);
         }
-        int fragments=Difficulty.Easy?(LevelRun.Current==LevelId.Fields?6:8):(LevelRun.Current==LevelId.Snow?12:10);
-        if (age >= stop + (Difficulty.Easy?1.05f:.85f) && Ring(fragments, 2.9f, .18f, Vector2.SignedAngle(Vector2.down, heading)))
+        int fragments = Difficulty.Easy ? (LevelRun.Current == LevelId.Fields ? 6 : 8) : (LevelRun.Current == LevelId.Snow ? 12 : 10);
+        if (age >= stop + (Difficulty.Easy ? 1.05f : .85f) && Ring(fragments, 2.9f, .18f, Vector2.SignedAngle(Vector2.down, heading)))
             Release();
     }
 }

@@ -12,14 +12,16 @@ public static class SpaceMaterials
             fleet = new Material(CombatMaterials.Fleet) { name = "Orbital ivory, gold foil and blue solar cells" };
             var atlas = Object.Instantiate((Texture2D)fleet.mainTexture);
             atlas.name = "Orbital solar-cell trim atlas";
-            foreach(int tile in new[]{6,13,15})
-                for(int y=0;y<64;y++)for(int x=0;x<64;x++)
-                {
-                    var baseColor=tile==15?new Color(.66f,.7f,.71f):tile==13?new Color(.48f,.36f,.18f):new Color(.105f,.15f,.20f);
-                    float grain=.92f+((x*7+y*11)%17)*.006f;
-                    if(x<3||y<3||x>60||y>60)grain*=.69f;
-                    atlas.SetPixel((tile%4)*64+x,(tile/4)*64+y,baseColor*grain);
-                }
+            foreach (int tile in new[] { 6, 13, 15 })
+                for (int y = 0; y < 64; y++)
+                    for (int x = 0; x < 64; x++)
+                    {
+                        var baseColor = tile == 15 ? new Color(.66f, .7f, .71f) : tile == 13 ? new Color(.48f, .36f, .18f) : new Color(.105f, .15f, .20f);
+                        float grain = .92f + ((x * 7 + y * 11) % 17) * .006f;
+                        if (x < 3 || y < 3 || x > 60 || y > 60)
+                            grain *= .69f;
+                        atlas.SetPixel((tile % 4) * 64 + x, (tile / 4) * 64 + y, baseColor * grain);
+                    }
             for (int y = 0; y < 64; y++)
                 for (int x = 0; x < 64; x++)
                 {
@@ -60,58 +62,65 @@ public static partial class IndustrialMeshFactory
 
     static void BuildOrbitalScout(Builder b)
     {
-        BevelArmor(b,new[]{V(0,-.88f),V(-.26f,-.48f),V(-.32f,.31f),V(0,.72f),V(.32f,.31f),V(.26f,-.48f)},.32f,15);
-        foreach(int s in new[]{-1,1}) {
-            b.Box(new Vector3(s*.58f,.12f,.03f),new Vector3(.69f,.07f,.1f),13,6);
-            for(int cell=0;cell<3;cell++) SolarPanel(b,new Vector3(s*(.82f+cell*.14f),.48f-cell*.43f,.08f),.5f,.38f);
-            b.Box(new Vector3(s*.19f,-.53f,-.15f),new Vector3(.12f,.3f,.16f),11,6);
-            b.Box(new Vector3(s*.18f,.27f,-.23f),new Vector3(.12f,.3f,.04f),13,6);
+        BevelArmor(b, new[] { V(0, -.88f), V(-.26f, -.48f), V(-.32f, .31f), V(0, .72f), V(.32f, .31f), V(.26f, -.48f) }, .32f, 15);
+        foreach (int s in new[] { -1, 1 })
+        {
+            b.Box(new Vector3(s * .58f, .12f, .03f), new Vector3(.69f, .07f, .1f), 13, 6);
+            for (int cell = 0; cell < 3; cell++)
+                SolarPanel(b, new Vector3(s * (.82f + cell * .14f), .48f - cell * .43f, .08f), .5f, .38f);
+            b.Box(new Vector3(s * .19f, -.53f, -.15f), new Vector3(.12f, .3f, .16f), 11, 6);
+            b.Box(new Vector3(s * .18f, .27f, -.23f), new Vector3(.12f, .3f, .04f), 13, 6);
         }
-        BevelArmor(b,new[]{V(-.14f,.22f),V(.14f,.22f),V(.12f,-.25f),V(0,-.42f),V(-.12f,-.25f)},.11f,11,-.23f);
-        b.Box(new Vector3(0,-.1f,-.32f),new Vector3(.11f,.2f,.04f),9,11);
-        b.Box(new Vector3(0,.81f,.02f),new Vector3(.035f,.4f,.04f),13,6);
+        BevelArmor(b, new[] { V(-.14f, .22f), V(.14f, .22f), V(.12f, -.25f), V(0, -.42f), V(-.12f, -.25f) }, .11f, 11, -.23f);
+        b.Box(new Vector3(0, -.1f, -.32f), new Vector3(.11f, .2f, .04f), 9, 11);
+        b.Box(new Vector3(0, .81f, .02f), new Vector3(.035f, .4f, .04f), 13, 6);
     }
 
     static void BuildLaserSatellite(Builder b)
     {
-        foreach(int s in new[]{-1,1}) {
-            BevelArmor(b,new[]{V(s*.12f,-.77f),V(s*.34f,-.77f),V(s*.4f,.5f),V(s*.2f,.88f)},.23f,15);
-            b.Box(new Vector3(s*.61f,.38f,.02f),new Vector3(.65f,.07f,.1f),13,6);
-            SolarPanel(b,new Vector3(s*.89f,.4f,.05f),.48f,.85f);
-            b.Prism(new[]{V(s*.25f,.82f),V(s*.57f,1.1f),V(s*.44f,.24f)},.08f,13,Vector3.zero,6);
+        foreach (int s in new[] { -1, 1 })
+        {
+            BevelArmor(b, new[] { V(s * .12f, -.77f), V(s * .34f, -.77f), V(s * .4f, .5f), V(s * .2f, .88f) }, .23f, 15);
+            b.Box(new Vector3(s * .61f, .38f, .02f), new Vector3(.65f, .07f, .1f), 13, 6);
+            SolarPanel(b, new Vector3(s * .89f, .4f, .05f), .48f, .85f);
+            b.Prism(new[] { V(s * .25f, .82f), V(s * .57f, 1.1f), V(s * .44f, .24f) }, .08f, 13, Vector3.zero, 6);
         }
-        SpaceDish(b,new Vector3(0,.28f,-.18f),.53f);
-        b.Box(new Vector3(0,-.65f,-.1f),new Vector3(.29f,.8f,.25f),6,11);
-        b.Drum(new Vector3(0,-.92f,-.24f),.17f,.18f,13,10,11);
-        b.Drum(new Vector3(0,-1.05f,-.24f),.12f,.06f,9,10,11);
-        for(int i=0;i<4;i++)b.Box(new Vector3(0,-.38f-i*.13f,-.26f),new Vector3(.37f,.04f,.08f),15,6);
+        SpaceDish(b, new Vector3(0, .28f, -.18f), .53f);
+        b.Box(new Vector3(0, -.65f, -.1f), new Vector3(.29f, .8f, .25f), 6, 11);
+        b.Drum(new Vector3(0, -.92f, -.24f), .17f, .18f, 13, 10, 11);
+        b.Drum(new Vector3(0, -1.05f, -.24f), .12f, .06f, 9, 10, 11);
+        for (int i = 0; i < 4; i++)
+            b.Box(new Vector3(0, -.38f - i * .13f, -.26f), new Vector3(.37f, .04f, .08f), 15, 6);
     }
 
     static void BuildOrbitalCarrier(Builder b)
     {
-        Ring(b,Vector3.zero,.29f,.65f,.34f,15,12);
-        foreach(int s in new[]{-1,1}) {
-            BevelArmor(b,new[]{V(s*.37f,-.32f),V(s*.78f,-.55f),V(s*.92f,.57f),V(s*.51f,.92f)},.23f,15);
-            b.Box(new Vector3(s*.89f,.28f,.02f),new Vector3(.7f,.1f,.13f),13,6);
-            for(int panel=0;panel<2;panel++)SolarPanel(b,new Vector3(s*1.08f,.47f-panel*.7f,.06f),.4f,.62f);
-            b.Box(new Vector3(s*.52f,-.42f,-.24f),new Vector3(.12f,.4f,.13f),11,6);
-            b.Box(new Vector3(s*.43f,.63f,-.2f),new Vector3(.17f,.25f,.06f),13,6);
+        Ring(b, Vector3.zero, .29f, .65f, .34f, 15, 12);
+        foreach (int s in new[] { -1, 1 })
+        {
+            BevelArmor(b, new[] { V(s * .37f, -.32f), V(s * .78f, -.55f), V(s * .92f, .57f), V(s * .51f, .92f) }, .23f, 15);
+            b.Box(new Vector3(s * .89f, .28f, .02f), new Vector3(.7f, .1f, .13f), 13, 6);
+            for (int panel = 0; panel < 2; panel++)
+                SolarPanel(b, new Vector3(s * 1.08f, .47f - panel * .7f, .06f), .4f, .62f);
+            b.Box(new Vector3(s * .52f, -.42f, -.24f), new Vector3(.12f, .4f, .13f), 11, 6);
+            b.Box(new Vector3(s * .43f, .63f, -.2f), new Vector3(.17f, .25f, .06f), 13, 6);
         }
-        b.Box(new Vector3(0,-.48f,-.04f),new Vector3(.26f,.86f,.28f),6,11);
-        b.Drum(new Vector3(0,-.87f,-.2f),.14f,.13f,9,8,13);
-        b.Box(new Vector3(0,.65f,0),new Vector3(.3f,.44f,.32f),15,13);
-        SpaceDish(b,new Vector3(0,.92f,-.08f),.25f);
+        b.Box(new Vector3(0, -.48f, -.04f), new Vector3(.26f, .86f, .28f), 6, 11);
+        b.Drum(new Vector3(0, -.87f, -.2f), .14f, .13f, 9, 8, 13);
+        b.Box(new Vector3(0, .65f, 0), new Vector3(.3f, .44f, .32f), 15, 13);
+        SpaceDish(b, new Vector3(0, .92f, -.08f), .25f);
     }
 
     static void BuildOrbitalMoonlet(Builder b)
     {
-        BevelArmor(b,new[]{V(0,-.51f),V(-.27f,-.1f),V(-.22f,.3f),V(.09f,.52f),V(.31f,.19f),V(.22f,-.2f)},.28f,15);
-        foreach(int s in new[]{-1,1}) {
-            b.Box(new Vector3(s*.4f,.16f,.02f),new Vector3(.43f,.055f,.08f),13,6);
-            b.Prism(new[]{V(s*.31f,-.1f),V(s*.82f,.37f),V(s*.55f,.69f),V(s*.37f,.4f)},.055f,7,Vector3.forward*.05f,13);
+        BevelArmor(b, new[] { V(0, -.51f), V(-.27f, -.1f), V(-.22f, .3f), V(.09f, .52f), V(.31f, .19f), V(.22f, -.2f) }, .28f, 15);
+        foreach (int s in new[] { -1, 1 })
+        {
+            b.Box(new Vector3(s * .4f, .16f, .02f), new Vector3(.43f, .055f, .08f), 13, 6);
+            b.Prism(new[] { V(s * .31f, -.1f), V(s * .82f, .37f), V(s * .55f, .69f), V(s * .37f, .4f) }, .055f, 7, Vector3.forward * .05f, 13);
         }
-        b.Box(new Vector3(0,-.22f,-.17f),new Vector3(.13f,.25f,.13f),11,6);
-        b.Drum(new Vector3(0,.13f,-.23f),.12f,.09f,9,8,13);
+        b.Box(new Vector3(0, -.22f, -.17f), new Vector3(.13f, .25f, .13f), 11, 6);
+        b.Drum(new Vector3(0, .13f, -.23f), .12f, .09f, 9, 8, 13);
     }
 
     static void BuildSpaceCitadel(Builder b)

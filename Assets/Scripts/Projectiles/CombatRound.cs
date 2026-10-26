@@ -100,7 +100,7 @@ public abstract class CombatRound : AEnemyBullet
         shot.generation = 0;
         // Large slow geometry must still reach the bottom of the arena on Easy.
         // Offscreen culling and each delivery's own lifetime keep residency bounded.
-        shot.lifetime = Mathf.Clamp((Camera.UpLimit-Camera.DownLimit+2)/Mathf.Max(.75f,shot.speed),9,18);
+        shot.lifetime = Mathf.Clamp((Camera.UpLimit - Camera.DownLimit + 2) / Mathf.Max(.75f, shot.speed), 9, 18);
         shot.ended = false;
         shot.enabled = true;
         shot.gameObject.SetActive(true);

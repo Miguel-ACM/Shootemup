@@ -26,7 +26,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
             renderer.sortingLayerName = "Enemy";
             apertures[i] = ItemSpark.Sprite(comb[i], "Charging comb aperture", "standard", LevelProjectilePalette.Accent(LevelRun.Current), .35f);
             apertures[i].transform.localPosition = new Vector3(0, -.26f, -.55f);
-            firingCue.Register(comb[i],new Vector3(0,-.26f,-.55f));
+            firingCue.Register(comb[i], new Vector3(0, -.26f, -.55f));
             go.SetActive(false);
         }
     }
@@ -57,7 +57,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
 
     void DeployComb()
     {
-        combCount = Shots(phaseTwo?8:6,phaseTwo?11:9);
+        combCount = Shots(phaseTwo ? 8 : 6, phaseTwo ? 11 : 9);
         deployment = 0;
         deployed = true;
         returning = false;
@@ -75,7 +75,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
         hull = 21;
         hullScale = 1.6f;
         health = 2100;
-        attackInterval = Timing(1.05f,.85f);
+        attackInterval = Timing(1.05f, .85f);
         shellTravelDistance = 6.6f;
     }
 
@@ -97,7 +97,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
         {
             // Three broad crowns leave room for complete rings instead of queueing
             // oversized shell clusters against the shared projectile cap.
-            int count = Shots(phaseTwo?4:3,phaseTwo?5:4);
+            int count = Shots(phaseTwo ? 4 : 3, phaseTwo ? 5 : 4);
             float distance = beat == 2 ? shellTravelDistance - 2 : shellTravelDistance;
             for (int i = 0; i < count; i++)
             {
@@ -114,9 +114,11 @@ public sealed class SnowSiegeBoss : DistrictBoss
             // Two straight combs answer the shell crowns; the second fills the first's lanes.
             for (int i = 0; i < combCount; i++)
             {
-                var port=comb[i].TransformPoint(new Vector3(0,-.26f,-.55f));
-                if(beat==6) Fire<SuspendedRound>(port,Vector2.down,2.8f,.23f);
-                else Fire<SimpleRound>(port,Vector2.down,2.0f,.28f);
+                var port = comb[i].TransformPoint(new Vector3(0, -.26f, -.55f));
+                if (beat == 6)
+                    Fire<SuspendedRound>(port, Vector2.down, 2.8f, .23f);
+                else
+                    Fire<SimpleRound>(port, Vector2.down, 2.0f, .28f);
                 releases[i] = .1f;
             }
         }
@@ -126,7 +128,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
             for (int i = 0; i < combCount; i++)
             {
                 launch[i] = comb[i].position;
-                lanes[i].x += (Camera.RightLimit-Camera.LeftLimit-.7f)/combCount*.5f;
+                lanes[i].x += (Camera.RightLimit - Camera.LeftLimit - .7f) / combCount * .5f;
             }
         }
         else if (beat == 9)
@@ -139,7 +141,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
         else if (beat == 11 || beat == 12 && phaseTwo)
         {
             int sign = beat == 11 ? -1 : 1;
-            int count = Shots(phaseTwo?7:5,phaseTwo?11:9);
+            int count = Shots(phaseTwo ? 7 : 5, phaseTwo ? 11 : 9);
             PetalFan<NeedleRound>(Hull.TransformPoint(new Vector3(0, -.65f, -.25f)),
                 CombatVisuals.Rotate(Vector2.down, sign * 8), count, 15, 3.7f, .19f, .18f);
         }
@@ -148,10 +150,17 @@ public sealed class SnowSiegeBoss : DistrictBoss
 
     protected override void PrepareFire(float seconds)
     {
-        base.PrepareFire(seconds);firingCue.ClearWarning();
-        int beat=volley%14;
-        if(beat==6 || beat==8) { for(int i=0;i<combCount;i++) if(comb[i]!=null) Cue(comb[i].TransformPoint(new Vector3(0,-.26f,-.55f)),seconds); }
-        else if(beat==0 || beat==2 || beat==4 || beat==11 || beat==12&&phaseTwo) Cue(Muzzle(),seconds);
+        base.PrepareFire(seconds);
+        firingCue.ClearWarning();
+        int beat = volley % 14;
+        if (beat == 6 || beat == 8)
+        {
+            for (int i = 0; i < combCount; i++)
+                if (comb[i] != null)
+                    Cue(comb[i].TransformPoint(new Vector3(0, -.26f, -.55f)), seconds);
+        }
+        else if (beat == 0 || beat == 2 || beat == 4 || beat == 11 || beat == 12 && phaseTwo)
+            Cue(Muzzle(), seconds);
     }
 
     protected override void OnPhaseTwo()

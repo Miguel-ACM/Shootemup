@@ -26,12 +26,12 @@ public sealed class InfernalCaldera : MonoBehaviour
             root.SetParent(transform, false);
             root.localPosition = new Vector3(0, (i - 1) * 20, 83);
             tiles.Add(root);
-            var mesh = Shelf(LevelRun.Seed + i * 719);
+            int side = i % 2 == 0 ? -1 : 1;
+            var mesh = Shelf(LevelRun.Seed + i * 719, side, out var craterSite);
             meshes.Add(mesh);
             Add("Layered volcanic rock", mesh, basalt, root, Vector3.zero, -45);
-            int side = i % 2 == 0 ? -1 : 1;
-            var vent = Add("Terraced basalt crater", IndustrialMeshFactory.Volcano(), basalt, root, new Vector3(side * (3.9f+i*.16f), 2.4f, -1.25f), -39);
-            vent.localScale = new Vector3(1.1f,.86f,1);
+            var vent = Add("Terraced basalt crater", IndustrialMeshFactory.Volcano(), basalt, root, craterSite + Vector3.back * .015f, -39);
+            vent.localScale = new Vector3(1, .85f, 1);
             vent.gameObject.AddComponent<VolcanicVent>().phase = i * .55f;
         }
     }
@@ -68,8 +68,9 @@ public sealed class InfernalCaldera : MonoBehaviour
         }
     }
 
-    static Mesh Shelf(int seed)
+    static Mesh Shelf(int seed, int craterSide, out Vector3 craterSite)
     {
+        craterSite = Vector3.zero;
         var random = new System.Random(seed);
         float R(float a, float b) => Mathf.Lerp(a, b, (float)random.NextDouble());
         var points = new List<Vector3>();
@@ -91,7 +92,7 @@ public sealed class InfernalCaldera : MonoBehaviour
                 triangles.Add(start + j + 1);
             }
         }
-        void Island(Vector3 p, float rx, float ry, int sides)
+        Vector3 Island(Vector3 p, float rx, float ry, int sides)
         {
             var rim = new Vector3[sides];
             var crown = new Vector3[sides];
@@ -114,13 +115,16 @@ public sealed class InfernalCaldera : MonoBehaviour
                 Face(new Color(.065f, .063f, .069f) * facing, footA, footB, crown[j], crown[i]);
                 Face(new Color(.112f, .109f, .115f) * R(.92f, 1.08f), crown[i], crown[j], middle);
             }
+            return middle;
         }
         for (int side = -1; side <= 1; side += 2)
         {
             for (int row = 0; row < 3; row++)
             {
                 var p = new Vector3(side * R(4.1f, 5.5f), -6.4f + row * 6.5f + R(-.35f, .35f), 0);
-                Island(p, R(2.4f, 3.1f), R(2.6f, 3.0f), 9);
+                var top = Island(p, R(2.4f, 3.1f), R(2.6f, 3.0f), 9);
+                if (side == craterSide && row == 1)
+                    craterSite = top;
                 for (int rock = 0; rock < 3; rock++)
                     Island(p + new Vector3(R(-.8f, .8f), R(-1.4f, 1.4f), -1.3f), R(.24f, .48f), R(.28f, .55f), 6);
             }

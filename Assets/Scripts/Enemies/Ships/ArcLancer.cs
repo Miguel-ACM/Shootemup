@@ -8,16 +8,23 @@ public sealed class ArcLancer : DistrictEnemy
         hull = 18;
         health = 34;
         hullScale = .62f;
-        attackInterval = Timing(4.2f,3.4f);
+        attackInterval = Timing(4.2f, 3.4f);
         Mover<StrafeAndBrake>();
     }
 
-    protected override Vector2 CueAxis=>Vector2.down;
+    protected override Vector2 CueAxis => Vector2.down;
 
     protected override void Attack()
     {
-        if(beam!=null && beam.IsAttachedTo(Hull)) return;
-        beam=Fire<PulseLaser>(Muzzle(),Vector2.down,0);
-        if(beam!=null) { beam.Bind(Hull,new Vector3(.52f,-1.45f,-.2f)); beam.warning=Timing(1.45f,1.15f); beam.activeTime=Timing(.7f,1.05f); beam.width=.24f; }
+        if (beam != null && beam.IsAttachedTo(Hull))
+            return;
+        beam = Fire<PulseLaser>(Muzzle(), Vector2.down, 0);
+        if (beam != null)
+        {
+            beam.Bind(Hull, new Vector3(.52f, -1.45f, -.2f));
+            beam.warning = Timing(1.45f, 1.15f);
+            beam.activeTime = Timing(.7f, 1.05f);
+            beam.width = .24f;
+        }
     }
 }

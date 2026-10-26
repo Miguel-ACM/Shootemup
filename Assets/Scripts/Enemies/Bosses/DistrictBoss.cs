@@ -78,12 +78,12 @@ public abstract class DistrictBoss : DistrictEnemy
     }
 
     protected virtual bool PhaseTwoReady => HealthFraction <= .5f;
-    protected virtual float AttackPace => phaseTwo ? Timing(.96f,.87f) : 1;
+    protected virtual float AttackPace => phaseTwo ? Timing(.96f, .87f) : 1;
     protected void PresentPhaseTwo()
     {
-        phaseEntryUntil=age+1.5f*LevelRun.EnemyTempoScale;
-        nextAttack=Mathf.Max(nextAttack,phaseEntryUntil);
-        nextPressure=Mathf.Max(nextPressure,phaseEntryUntil);
+        phaseEntryUntil = age + 1.5f * LevelRun.EnemyTempoScale;
+        nextAttack = Mathf.Max(nextAttack, phaseEntryUntil);
+        nextPressure = Mathf.Max(nextPressure, phaseEntryUntil);
         firingCue.ClearWarning();
         CombatRound.ClearAll();
         phaseEntry.Begin();

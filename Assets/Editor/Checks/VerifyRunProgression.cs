@@ -5,7 +5,7 @@ public static class VerifyRunProgression
 {
     public static void Run()
     {
-        var originalDifficulty=Difficulty.Current;
+        var originalDifficulty = Difficulty.Current;
         Difficulty.Select(RunDifficulty.Hard);
         try
         {
@@ -22,9 +22,9 @@ public static class VerifyRunProgression
                         {
                             Check(LevelRun.Loop == loop && LevelRun.Stage == (loop - 1) * 5 + 1, "Loop or stage advanced incorrectly");
                             Check(LevelRun.EnemyHealthScale > previousHealth && LevelRun.EnemyTempoScale >= previousTempo && LevelRun.EnemyShotSpeedScale >= previousShots, "Run difficulty decreased");
-                            Check(LevelRun.EnemyTempoScale <= 1.3f && LevelRun.EnemyShotSpeedScale <= 1.18f*Difficulty.ShotSpeed+.0001f, "Readability speed caps exceeded");
+                            Check(LevelRun.EnemyTempoScale <= 1.3f && LevelRun.EnemyShotSpeedScale <= 1.18f * Difficulty.ShotSpeed + .0001f, "Readability speed caps exceeded");
                             if (loop == 2)
-                                Check(Near(LevelRun.EnemyHealthScale, 1.48f) && Near(LevelRun.EnemyTempoScale, 1.05f) && Near(LevelRun.EnemyShotSpeedScale, 1.035f*Difficulty.ShotSpeed), "First loop escalation is incorrect");
+                                Check(Near(LevelRun.EnemyHealthScale, 1.48f) && Near(LevelRun.EnemyTempoScale, 1.05f) && Near(LevelRun.EnemyShotSpeedScale, 1.035f * Difficulty.ShotSpeed), "First loop escalation is incorrect");
                             previousHealth = LevelRun.EnemyHealthScale;
                             previousTempo = LevelRun.EnemyTempoScale;
                             previousShots = LevelRun.EnemyShotSpeedScale;
@@ -55,7 +55,7 @@ public static class VerifyRunProgression
                     }
         }
         finally { LevelRun.Reset(); Difficulty.Select(originalDifficulty); }
-        Check(LevelRun.Stage == 1 && LevelRun.Loop == 1 && Near(LevelRun.EnemyHealthScale,Difficulty.Health), "New run did not reset difficulty");
+        Check(LevelRun.Stage == 1 && LevelRun.Loop == 1 && Near(LevelRun.EnemyHealthScale, Difficulty.Health), "New run did not reset difficulty");
     }
 
     static bool Near(float a, float b) => Math.Abs(a - b) < .0001f;

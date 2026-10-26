@@ -17,7 +17,17 @@ public static class EnemyExpansion
         public Vector3[] ports, engines;
         public WavePart[] parts;
         public Entry(LevelId level, Type type, int hull, float scale, bool nose, Func<Mesh> model, Vector3[] ports, Vector3[] engines, WavePart[] parts)
-        { this.level = level; this.type = type; this.hull = hull; this.scale = scale; this.nose = nose; this.model = model; this.ports = ports; this.engines = engines; this.parts = parts; }
+        {
+            this.level = level;
+            this.type = type;
+            this.hull = hull;
+            this.scale = scale;
+            this.nose = nose;
+            this.model = model;
+            this.ports = ports;
+            this.engines = engines;
+            this.parts = parts;
+        }
     }
     public static readonly Entry[] All = {
         // Individual enemies are registered here with their own content commits.
@@ -42,11 +52,18 @@ public static class EnemyExpansion
         new Entry(LevelId.Fields, typeof(HarrowBomber), 62, 0.61f, false, IndustrialMeshFactory.HarrowBomberMesh, new[] { new Vector3(-.72f,-.58f,-.23f), new Vector3(.72f,-.58f,-.23f) }, new[] { new Vector3(-0.7f,0.64f,0), new Vector3(0.7f,0.64f,0) }, WavePartLibrary.HarrowBomberParts),
         new Entry(LevelId.Fields, typeof(ReedSkimmer), 61, 0.49f, false, IndustrialMeshFactory.ReedSkimmerMesh, new[] { new Vector3(-.58f,-.62f,-.16f), new Vector3(.58f,-.62f,-.16f) }, new[] { new Vector3(0f,0.64f,0) }, WavePartLibrary.ReedSkimmerParts),
     };
-    static readonly Dictionary<int,Entry> byHull=new Dictionary<int,Entry>();
-    static readonly Dictionary<string,Entry> byName=new Dictionary<string,Entry>();
-    static EnemyExpansion(){foreach(var entry in All){byHull.Add(entry.hull,entry);byName.Add(entry.type.Name,entry);}}
-    public static Entry Find(int hull) => byHull.TryGetValue(hull,out var entry)?entry:null;
-    public static Entry Find(string name) => byName.TryGetValue(name,out var entry)?entry:null;
+    static readonly Dictionary<int, Entry> byHull = new Dictionary<int, Entry>();
+    static readonly Dictionary<string, Entry> byName = new Dictionary<string, Entry>();
+    static EnemyExpansion()
+    {
+        foreach (var entry in All)
+        {
+            byHull.Add(entry.hull, entry);
+            byName.Add(entry.type.Name, entry);
+        }
+    }
+    public static Entry Find(int hull) => byHull.TryGetValue(hull, out var entry) ? entry : null;
+    public static Entry Find(string name) => byName.TryGetValue(name, out var entry) ? entry : null;
     public static Type[] Types => Array.ConvertAll(All, e => e.type);
     public static Mesh Mesh(int hull) => Find(hull)?.model() ?? throw new ArgumentException("Missing authored hull " + hull);
     public static Material Material(int hull)
@@ -57,7 +74,9 @@ public static class EnemyExpansion
     public static Type[] Include(Type[] types, LevelId level)
     {
         var result = new List<Type>(types);
-        foreach (var entry in All) if (entry.level == level) result.Add(entry.type);
+        foreach (var entry in All)
+            if (entry.level == level)
+                result.Add(entry.type);
         return result.ToArray();
     }
 }
@@ -67,9 +86,12 @@ public static partial class WavePartLibrary
     static readonly Dictionary<LevelId, WavePart[]> expanded = new Dictionary<LevelId, WavePart[]>();
     public static WavePart[] For(LevelId level)
     {
-        if (expanded.TryGetValue(level, out var cached)) return cached;
+        if (expanded.TryGetValue(level, out var cached))
+            return cached;
         var parts = new List<WavePart>(BaseFor(level));
-        foreach (var entry in EnemyExpansion.All) if (entry.level == level) parts.AddRange(entry.parts);
+        foreach (var entry in EnemyExpansion.All)
+            if (entry.level == level)
+                parts.AddRange(entry.parts);
         return expanded[level] = parts.ToArray();
     }
 }

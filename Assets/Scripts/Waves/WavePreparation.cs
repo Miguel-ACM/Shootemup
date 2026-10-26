@@ -37,7 +37,8 @@ public sealed class WavePreparation : MonoBehaviour
         }
         foreach (PlayerDelivery delivery in System.Enum.GetValues(typeof(PlayerDelivery)))
             PlayerProjectileArt.For(delivery);
-        if(LevelRun.Current==LevelId.Space) _ = SpaceMaterials.Fleet;
+        if (LevelRun.Current == LevelId.Space)
+            _ = SpaceMaterials.Fleet;
         yield return null;
         yield return CombatRound.PrepareBursts();
         yield return WaveComposer.Prepare();

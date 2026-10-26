@@ -27,7 +27,12 @@ public sealed class VolcanicVent : MonoBehaviour
         var p = transform.position;
         bool visible = p.y > Camera.DownLimit + 1.8f && p.y < Camera.UpLimit - 1.2f && Mathf.Abs(p.x) < 5.2f;
         bool combat = visible && !GameRules.playerDisabled && !CloudTransition.Busy && WavePreparation.Ready && LevelRun.Current == LevelId.Hell;
-        foreach(var enemy in AEnemy.Live) if(enemy is DistrictBoss) { combat=false;break; }
+        foreach (var enemy in AEnemy.Live)
+            if (enemy is DistrictBoss)
+            {
+                combat = false;
+                break;
+            }
         if (!combat)
         {
             readyAt = -1;
@@ -57,9 +62,9 @@ public sealed class VolcanicVent : MonoBehaviour
         next = Time.time + 9.5f + phase;
         Eruptions++;
         var axis = CombatVisuals.Rotate(Vector2.down, Mathf.Sign(p.x) * -24);
-        int count=Difficulty.Easy?3:5;
+        int count = Difficulty.Easy ? 3 : 5;
         for (int i = 0; i < count; i++)
-            CombatRound.Launch<SimpleRound>(p, CombatVisuals.Rotate(axis, (i-(count-1)*.5f)*25), 2.5f, .24f);
+            CombatRound.Launch<SimpleRound>(p, CombatVisuals.Rotate(axis, (i - (count - 1) * .5f) * 25), 2.5f, .24f);
         SoundManager.PlaySound("enemyExplosion1", .055f);
     }
 }

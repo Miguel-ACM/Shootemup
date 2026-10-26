@@ -12,7 +12,10 @@ public abstract class DistrictEnemy : AEnemy
     Vector2 committedAim = Vector2.down;
     bool aimCommitted;
     float lastRelease = -10;
-    public bool IsPreparing { get; private set; }
+    public bool IsPreparing
+    {
+        get; private set;
+    }
     public virtual bool NoseAimed => EnemyWeaponLayout.NoseAimed(hull);
     public float VisualHeading => NoseAimed && (IsPreparing || age - lastRelease < .24f) ? Vector2.SignedAngle(Vector2.down, committedAim) : 0;
     protected int Shots(int easy, int hard) => Difficulty.Easy ? easy : hard;
@@ -121,7 +124,8 @@ public abstract class DistrictEnemy : AEnemy
         var renderer = model.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = enemy is SpaceSatellite || enemy is SpaceCitadelBoss || enemy.hull == 60 ? SpaceMaterials.Fleet : enemy.hull >= 35 && enemy.hull <= 38 || enemy.hull == 57 ? CandyMaterials.Glaze : enemy is FieldsBomberBoss ? CombatMaterials.Fortress : CombatMaterials.Fleet;
         renderer.sortingLayerName = "Enemy";
-        if (enemy.hull >= 61) renderer.sharedMaterial = EnemyExpansion.Material(enemy.hull);
+        if (enemy.hull >= 61)
+            renderer.sharedMaterial = EnemyExpansion.Material(enemy.hull);
         enemy.Hull = model.transform;
         go.AddComponent<CombatHullVisual>().model = model.transform;
         enemy.firingCue = go.AddComponent<EnemyFiringCue>();
@@ -284,8 +288,13 @@ public abstract class DistrictEnemy : AEnemy
     protected virtual void PrepareFire(float seconds)
     {
         IsPreparing = enteredFight && seconds >= 0 && seconds < .48f;
-        if (IsPreparing && !aimCommitted) { committedAim = RawAim; aimCommitted = true; }
-        else if (!IsPreparing && age - lastRelease > .24f) aimCommitted = false;
+        if (IsPreparing && !aimCommitted)
+        {
+            committedAim = RawAim;
+            aimCommitted = true;
+        }
+        else if (!IsPreparing && age - lastRelease > .24f)
+            aimCommitted = false;
         firingCue?.Warn(enteredFight ? seconds : -1);
         firingCue?.PointAll(CueAxis);
     }

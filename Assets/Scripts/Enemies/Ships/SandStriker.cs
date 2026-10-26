@@ -10,7 +10,7 @@ public sealed class SandStriker : DistrictEnemy
         hull = 31;
         hullScale = .52f;
         health = 31;
-        attackInterval = Timing(2.8f,2.0f);
+        attackInterval = Timing(2.8f, 2.0f);
         Mover<Slalom>();
     }
 
@@ -25,13 +25,13 @@ public sealed class SandStriker : DistrictEnemy
         bursting = true;
         Vector2 locked = Aim;
         // One aiming decision, then six closely packed rounds; strafing can escape the entire stream.
-        for (int i = 0; i < Shots(3,5); i++)
+        for (int i = 0; i < Shots(3, 5); i++)
         {
             if (GameRules.playerDisabled)
                 break;
             if (player == null || Vector2.Distance(player.position, transform.position) > 1.8f)
                 Fire<NeedleRound>(Hull.TransformPoint(new Vector3(0, -1.1f, -.13f)), CombatVisuals.Rotate(locked, i % 2 == 0 ? -1.1f : 1.1f), 5.6f, .19f);
-            yield return new WaitForSeconds(Timing(.15f,.11f) / LevelRun.EnemyTempoScale);
+            yield return new WaitForSeconds(Timing(.15f, .11f) / LevelRun.EnemyTempoScale);
         }
         bursting = false;
     }

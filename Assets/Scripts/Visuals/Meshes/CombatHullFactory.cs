@@ -6,7 +6,8 @@ public static partial class IndustrialMeshFactory
     static readonly Dictionary<int, Mesh> combatHulls = new Dictionary<int, Mesh>();
     public static Vector3[] CombatEngineSockets(int kind)
     {
-        if (kind >= 61) return EnemyExpansion.Find(kind)?.engines ?? System.Array.Empty<Vector3>();
+        if (kind >= 61)
+            return EnemyExpansion.Find(kind)?.engines ?? System.Array.Empty<Vector3>();
         if (kind >= 41 && kind <= 45)
             return System.Array.Empty<Vector3>();
         if (kind == 39 || kind == 40)
@@ -83,7 +84,8 @@ public static partial class IndustrialMeshFactory
 
     public static Mesh CombatHull(int kind)
     {
-        if (kind >= 61) return EnemyExpansion.Mesh(kind);
+        if (kind >= 61)
+            return EnemyExpansion.Mesh(kind);
         // Unity can unload a generated mesh that nothing references (for example on a scene load); rebuild it then.
         if (combatHulls.TryGetValue(kind, out var cached) && cached != null)
             return cached;

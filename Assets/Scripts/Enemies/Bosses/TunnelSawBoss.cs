@@ -23,7 +23,8 @@ public sealed class TunnelSawBoss : DistrictBoss
     protected override void Start()
     {
         base.Start();
-        for(int i=0;i<8;i++) firingCue.Register(Hull,new Vector3(Mathf.Cos(i*Mathf.PI/4)*.94f,Mathf.Sin(i*Mathf.PI/4)*.94f,-.3f));
+        for (int i = 0; i < 8; i++)
+            firingCue.Register(Hull, new Vector3(Mathf.Cos(i * Mathf.PI / 4) * .94f, Mathf.Sin(i * Mathf.PI / 4) * .94f, -.3f));
         GetComponent<CombatHullVisual>().spin = miniature ? 900 : 720;
         var camera = UnityEngine.Camera.main;
         float h = camera.orthographicSize;
@@ -51,10 +52,10 @@ public sealed class TunnelSawBoss : DistrictBoss
         }
         if (age < haltUntil)
             return;
-        float speed = (2.2f + (1 - HealthFraction) * 1.8f) * (phaseTwo ? 1.12f : 1) * (miniature ? 1.08f : 1) * Timing(.9f,1);
-        float etaX=(velocity.x>0?arena.xMax-Radius-transform.position.x:transform.position.x-arena.xMin-Radius)/Mathf.Max(.01f,Mathf.Abs(velocity.x)*speed);
-        float etaY=(velocity.y>0?arena.yMax-Radius-transform.position.y:transform.position.y-arena.yMin-Radius)/Mathf.Max(.01f,Mathf.Abs(velocity.y)*speed);
-        firingCue.Warn(Mathf.Min(etaX,etaY));
+        float speed = (2.2f + (1 - HealthFraction) * 1.8f) * (phaseTwo ? 1.12f : 1) * (miniature ? 1.08f : 1) * Timing(.9f, 1);
+        float etaX = (velocity.x > 0 ? arena.xMax - Radius - transform.position.x : transform.position.x - arena.xMin - Radius) / Mathf.Max(.01f, Mathf.Abs(velocity.x) * speed);
+        float etaY = (velocity.y > 0 ? arena.yMax - Radius - transform.position.y : transform.position.y - arena.yMin - Radius) / Mathf.Max(.01f, Mathf.Abs(velocity.y) * speed);
+        firingCue.Warn(Mathf.Min(etaX, etaY));
         var p = transform.position + (Vector3)velocity * speed * dt;
         float r = Radius;
         Vector2 inward = Vector2.zero;
@@ -83,8 +84,8 @@ public sealed class TunnelSawBoss : DistrictBoss
         impacts++;
         // Full circular crowns on every physical bounce, including the little saws.
         // Alternate half a quick lane; slower heavy teeth form a second nested ring.
-        int small = miniature ? Shots(6,10) : Shots(phaseTwo?14:10,phaseTwo?28:20);
-        int large = miniature ? Shots(2,3) : Shots(phaseTwo?5:4,phaseTwo?8:6);
+        int small = miniature ? Shots(6, 10) : Shots(phaseTwo ? 14 : 10, phaseTwo ? 28 : 20);
+        int large = miniature ? Shots(2, 3) : Shots(phaseTwo ? 5 : 4, phaseTwo ? 8 : 6);
         int available = Mathf.Min(small + large, CombatRound.Limit - CombatRound.Live.Count);
         int quick = Mathf.RoundToInt(available * small / (float)(small + large));
         int heavy = available - quick;
@@ -92,8 +93,8 @@ public sealed class TunnelSawBoss : DistrictBoss
         {
             for (int i = 0; i < count; i++)
             {
-                Vector2 axis=CombatVisuals.Rotate(inward,(i+.5f)*360f/count+offset);
-                Fire<T>(transform.position+(Vector3)axis*(Radius*.92f),axis,speed,radius);
+                Vector2 axis = CombatVisuals.Rotate(inward, (i + .5f) * 360f / count + offset);
+                Fire<T>(transform.position + (Vector3)axis * (Radius * .92f), axis, speed, radius);
             }
         }
         Ring<SimpleRound>(quick, phaseTwo ? 3.7f : 3.3f, .18f, impacts % 2 == 0 ? 180f / Mathf.Max(1, quick) : 0);
@@ -103,7 +104,7 @@ public sealed class TunnelSawBoss : DistrictBoss
     protected override void Attack()
     {
     } // Only physical wall impacts emit projectiles.
-    protected override bool PhaseTwoReady=>!miniature && HealthFraction<=.5f;
+    protected override bool PhaseTwoReady => !miniature && HealthFraction <= .5f;
     protected override void OnPhaseTwo()
     {
         if (miniature)

@@ -48,8 +48,10 @@ public abstract class GroundVehicle : DistrictEnemy
         renderer.sharedMaterial = CombatMaterials.Fleet;
         weapon = turret.transform;
         if (Snow)
-            foreach (int side in new[] {-1,1}) firingCue.Register(weapon,new Vector3(side*.23f,-.57f,-.36f));
-        else firingCue.Register(weapon,new Vector3(0,-.96f,-.22f));
+            foreach (int side in new[] { -1, 1 })
+                firingCue.Register(weapon, new Vector3(side * .23f, -.57f, -.36f));
+        else
+            firingCue.Register(weapon, new Vector3(0, -.96f, -.22f));
         BuildRunningGear();
         parts = Hull.GetComponentsInChildren<MeshRenderer>();
         foreach (var part in parts)

@@ -17,7 +17,13 @@ public sealed class EnemyFiringCue : MonoBehaviour
     public int PortCount => ports.Count;
     public void Build(Transform model)
     {
-        foreach (var port in ports) { if (port.sprite != null) Destroy(port.sprite.gameObject); if (port.lip != null) Destroy(port.lip.gameObject); }
+        foreach (var port in ports)
+        {
+            if (port.sprite != null)
+                Destroy(port.sprite.gameObject);
+            if (port.lip != null)
+                Destroy(port.lip.gameObject);
+        }
         ports.Clear();
         hull = model;
         foreach (var p in EnemyWeaponLayout.Ports(GetComponent<DistrictEnemy>().hull))
@@ -47,25 +53,45 @@ public sealed class EnemyFiringCue : MonoBehaviour
     static float Heat(float seconds) => seconds >= 0 && seconds < .48f ? 1 - seconds / .48f : 0;
     public void Warn(float seconds)
     {
-        foreach (var port in ports) port.heat = Heat(seconds);
+        foreach (var port in ports)
+            port.heat = Heat(seconds);
     }
-    public void ClearWarning() { foreach (var port in ports) port.heat = 0; }
+    public void ClearWarning()
+    {
+        foreach (var port in ports)
+            port.heat = 0;
+    }
     public void WarnAt(Vector3 position, float seconds)
     {
         var port = Nearest(position);
-        if (port != null) port.heat = Mathf.Max(port.heat, Heat(seconds));
+        if (port != null)
+            port.heat = Mathf.Max(port.heat, Heat(seconds));
     }
-    public void PointAll(Vector2 direction) { foreach (var port in ports) port.direction = direction; }
-    public void PointAt(Vector3 position, Vector2 direction) { var port = Nearest(position); if (port != null) port.direction = direction; }
+    public void PointAll(Vector2 direction)
+    {
+        foreach (var port in ports)
+            port.direction = direction;
+    }
+    public void PointAt(Vector3 position, Vector2 direction)
+    {
+        var port = Nearest(position);
+        if (port != null)
+            port.direction = direction;
+    }
     Port Nearest(Vector3 position)
     {
         Port nearest = null;
         float distance = float.PositiveInfinity;
         foreach (var port in ports)
         {
-            if (port.anchor == null) continue;
+            if (port.anchor == null)
+                continue;
             float d = (port.anchor.TransformPoint(port.local) - position).sqrMagnitude;
-            if (d < distance) { distance = d; nearest = port; }
+            if (d < distance)
+            {
+                distance = d;
+                nearest = port;
+            }
         }
         return nearest;
     }
@@ -73,7 +99,11 @@ public sealed class EnemyFiringCue : MonoBehaviour
     public void Flash(Vector3 position, Vector2 direction)
     {
         var port = Nearest(position);
-        if (port != null) { port.flash = .12f; port.releaseAxis += direction; }
+        if (port != null)
+        {
+            port.flash = .12f;
+            port.releaseAxis += direction;
+        }
     }
 
     void LateUpdate()
@@ -82,7 +112,8 @@ public sealed class EnemyFiringCue : MonoBehaviour
         {
             if (port.lip != null && port.anchor != null)
             {
-                if (port.releaseAxis.sqrMagnitude > .001f) port.direction = port.releaseAxis.normalized;
+                if (port.releaseAxis.sqrMagnitude > .001f)
+                    port.direction = port.releaseAxis.normalized;
                 port.releaseAxis = Vector2.zero;
                 var target = Quaternion.FromToRotation(Vector3.down, port.direction);
                 port.lip.rotation = Quaternion.RotateTowards(port.lip.rotation, target, Time.deltaTime * 540);
@@ -90,7 +121,8 @@ public sealed class EnemyFiringCue : MonoBehaviour
             port.flash = Mathf.Max(0, port.flash - Time.deltaTime);
             bool show = !GameRules.playerDisabled && port.anchor != null && port.anchor.gameObject.activeInHierarchy && (port.heat > 0 || port.flash > 0);
             port.sprite.enabled = show;
-            if (!show) continue;
+            if (!show)
+                continue;
             port.sprite.transform.position = port.anchor.TransformPoint(port.local) + Vector3.back * .08f;
             float release = port.flash / .12f;
             float size = release > 0 ? .08f + .20f * release : .055f + .15f * port.heat * port.heat;
@@ -107,10 +139,11 @@ public static partial class IndustrialMeshFactory
     static Mesh weaponLip;
     public static Mesh WeaponLip()
     {
-        if (weaponLip != null) return weaponLip;
+        if (weaponLip != null)
+            return weaponLip;
         var b = new Builder();
-        b.Box(new Vector3(0,.105f,0),new Vector3(.105f,.21f,.11f),6,11);
-        b.Box(new Vector3(0,.015f,-.015f),new Vector3(.135f,.035f,.13f),11,6);
+        b.Box(new Vector3(0, .105f, 0), new Vector3(.105f, .21f, .11f), 6, 11);
+        b.Box(new Vector3(0, .015f, -.015f), new Vector3(.135f, .035f, .13f), 11, 6);
         return weaponLip = b.Finish("Swiveling barrel lip");
     }
 }

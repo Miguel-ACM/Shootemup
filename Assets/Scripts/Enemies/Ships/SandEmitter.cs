@@ -19,7 +19,7 @@ public sealed class SandEmitter : DistrictEnemy
         hull = 30;
         hullScale = .63f;
         health = 40;
-        attackInterval = Timing(2.3f,1.6f);
+        attackInterval = Timing(2.3f, 1.6f);
     }
 
     protected override void Start()
@@ -84,13 +84,28 @@ public sealed class SandEmitter : DistrictEnemy
         sand.Place(surface);
     }
 
+    protected override void PrepareFire(float seconds)
+    {
+        base.PrepareFire(seconds);
+        firingCue.ClearWarning();
+        if (CanBeTargeted)
+        {
+            firingCue.Warn(seconds);
+            for (int i = 0; i < 8; i++)
+                PointWeapon(Muzzle(i), (Muzzle(i) - Hull.position).normalized);
+        }
+    }
+
     protected override void Attack()
     {
-        int count=Shots(10,14);
-        if(!CanBeTargeted || CombatRound.Live.Count+count>CombatRound.Limit) return;
-        for(int i=0;i<count;i++) {
-            Vector2 direction=CombatVisuals.Rotate(Vector2.down,(i+.5f*(volley%2))*360f/count);
-            Fire<SimpleRound>(transform.position+(Vector3)direction*.52f,direction,2.8f,.2f);
+        int count = Shots(10, 14);
+        if (!CanBeTargeted || CombatRound.Live.Count + count > CombatRound.Limit)
+            return;
+        for (int i = 0; i < count; i++)
+        {
+            Vector2 direction = CombatVisuals.Rotate(Vector2.down, (i + .5f * (volley % 2)) * 360f / count);
+            int port = Mathf.RoundToInt(Mathf.Repeat(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, 360) / 45) % 8;
+            Fire<SimpleRound>(Muzzle(port), direction, 2.8f, .2f);
         }
     }
 

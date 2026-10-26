@@ -25,5 +25,5 @@ public static class EnemyEasyScore
         {"Bathysphere",new[]{.44f,.76f}}, {"SkullRevenant",new[]{.32f,.52f,.74f}},
         {"GhostGalleon",new[]{.34f,.59f,.77f}}, {"CinderImp",new[]{.39f,.74f}}
     };
-    public static float[] For(string enemy) => scores.TryGetValue(enemy,out var result) ? result : null;
+    public static float[] For(string enemy) => scores.TryGetValue(enemy, out var result) ? result : null;
 }

@@ -1,4 +1,7 @@
-public enum RunDifficulty { Easy, Hard }
+public enum RunDifficulty
+{
+    Easy, Hard
+}
 
 public static class Difficulty
 {
@@ -10,5 +13,8 @@ public static class Difficulty
     // Counts and firing scores are separately authored in each enemy and wave.
     public static float ShotSpeed => Easy ? .61f : .76f;
     public static float Damage => Easy ? .65f : 1;
-    public static void Select(RunDifficulty difficulty) { Current = difficulty; }
+    public static void Select(RunDifficulty difficulty)
+    {
+        Current = difficulty;
+    }
 }

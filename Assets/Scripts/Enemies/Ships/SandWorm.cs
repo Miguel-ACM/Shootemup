@@ -11,7 +11,7 @@ public sealed class SandWorm : DistrictEnemy
         hull = 32;
         hullScale = .49f;
         health = 80;
-        attackInterval = Timing(2.5f,1.8f);
+        attackInterval = Timing(2.5f, 1.8f);
         Mover<Slalom>();
     }
 
@@ -32,7 +32,7 @@ public sealed class SandWorm : DistrictEnemy
             hit.radius = .62f;
             var section = segments[i].gameObject.AddComponent<SandWormSection>();
             section.owner = this;
-            firingCue.Register(segments[i],new Vector3(0,0,-.32f));
+            firingCue.Register(segments[i], new Vector3(0, 0, -.32f));
         }
         // The articulated model owns its orientation, including the head.
         GetComponent<CombatHullVisual>().enabled = false;
@@ -49,6 +49,16 @@ public sealed class SandWorm : DistrictEnemy
         spine.Follow(transform.position, segments);
     }
 
+    protected override void PrepareFire(float seconds)
+    {
+        base.PrepareFire(seconds);
+        firingCue.ClearWarning();
+        if (segments == null)
+            return;
+        for (int i = (volley + 1) % 2; i < segments.Length; i += 2)
+            Cue(segments[i].TransformPoint(new Vector3(0, 0, -.32f)), seconds);
+    }
+
     protected override void Attack()
     {
         if (segments == null)
@@ -62,8 +72,8 @@ public sealed class SandWorm : DistrictEnemy
             if (player != null && Vector2.Distance(player.position, port) < 2)
                 continue;
             Vector2 aim = CombatVisuals.Aim(port);
-            for (int j = 0; j < Shots(2,3); j++)
-                Fire<SimpleRound>(port, CombatVisuals.Rotate(aim, (j-(Shots(2,3)-1)*.5f)*22), 3.7f, .19f);
+            for (int j = 0; j < Shots(2, 3); j++)
+                Fire<SimpleRound>(port, CombatVisuals.Rotate(aim, (j - (Shots(2, 3) - 1) * .5f) * 22), 3.7f, .19f);
         }
     }
 }
