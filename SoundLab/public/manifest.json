@@ -6366,6 +6366,179 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemCounter",
+      "label": "Recovery Coil — countershot",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemCounter",
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemCounter/METLImpt_LocalTake_v01.wav",
+          "seconds": 0.20833333333333334,
+          "sampleRate": 48000,
+          "sha256": "7fd2debe5c7595f4fe0aa2f69f1bd2a355ac296c5fa24b9ea1f1b905d390f288",
+          "ref": "20261026-210658-d941:261327",
+          "review": {
+            "brief_id": "d47aa8d69893a4f4d232583617676e06ccb23a93bbd3315e9f7548d051500774",
+            "blind_caption": "A gun is fired.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small energy shield deflection?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3707
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemCounter/METLImpt_LocalTake_v02.wav",
+          "seconds": 0.25,
+          "sampleRate": 48000,
+          "sha256": "c2f71fc776b80ab602dbc7c3b70720905bb6f03684b35a8c35158068d8813263",
+          "ref": "20261026-210722-8408:261329",
+          "review": {
+            "brief_id": "d47aa8d69893a4f4d232583617676e06ccb23a93bbd3315e9f7548d051500774",
+            "blind_caption": "A coin is dropped on a hard surface.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small energy shield deflection?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "Yes"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3564
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemCounter/METLImpt_LocalTake_v03.wav",
+          "seconds": 0.20833333333333334,
+          "sampleRate": 48000,
+          "sha256": "c4743948e33b99334a6f6138c4b4177d73fa3f5bebe41c5ab5c9c257678c4fa8",
+          "ref": "20261026-210658-d941:261326",
+          "review": {
+            "brief_id": "d47aa8d69893a4f4d232583617676e06ccb23a93bbd3315e9f7548d051500774",
+            "blind_caption": "A loud click",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small energy shield deflection?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3432
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemCounter/METLImpt_LocalTake_v04.wav",
+          "seconds": 0.25,
+          "sampleRate": 48000,
+          "sha256": "6338b8d7701a8f120776779651b37764dd68c656a9742d91185e1619b70e3c57",
+          "ref": "20261026-210722-8408:261328",
+          "review": {
+            "brief_id": "d47aa8d69893a4f4d232583617676e06ccb23a93bbd3315e9f7548d051500774",
+            "blind_caption": "A clock ticking",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small energy shield deflection?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3213
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }

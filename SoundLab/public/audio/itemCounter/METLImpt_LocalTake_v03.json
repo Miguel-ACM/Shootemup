@@ -1,0 +1,81 @@
+{
+  "request": "20261026-210658-d941",
+  "ref": "20261026-210658-d941:261326",
+  "text": "TrackType: SFX, one small energy shield deflection, muted metallic catch and short electrical snap, dry and close",
+  "prompt": "TrackType: SFX, one small energy shield deflection, muted metallic catch and short electrical snap, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "impact-metal",
+  "seed": 261326,
+  "rank": 1,
+  "rank_score": 0.8261,
+  "clap": 0.9813,
+  "clap_cos": 0.2847,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.84,
+    "CU": 7.49,
+    "PC": 2.19,
+    "PQ": 7.71
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 5.55,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.2083,
+    "length_frames": 5.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -20.0
+  },
+  "signal": {
+    "duration_s": 1.0,
+    "peak_dbfs": -6.01,
+    "true_peak_dbtp": -6.0,
+    "clipped_fraction": 0.0,
+    "dc_offset": 5e-05,
+    "active_s": 0.095,
+    "noise_floor_db": -79.5,
+    "onset_s": 0.0399,
+    "tail_db": -77.5,
+    "stereo_correlation": 0.855,
+    "lufs": -25.2,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "d47aa8d69893a4f4d232583617676e06ccb23a93bbd3315e9f7548d051500774",
+    "blind_caption": "A loud click",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small energy shield deflection?",
+        "answer": "uncertain",
+        "evidence": "NO"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.3432
+  },
+  "human_approved": false
+}
