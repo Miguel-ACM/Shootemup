@@ -149,7 +149,11 @@ public sealed class CombatUpgrades : MonoBehaviour
         if (!companion)
             GetComponent<StaticCharge>()?.Discharge(enemy, damage);
         if (Count(UpgradeKind.Splitter) > 0 && Ready("split", .45f))
+        {
             Fragments(enemy.transform.position, damage, 2, 25);
+            ItemProcVfx.Emit(ItemProcShape.Fork, enemy.transform.position, new Color(.3f, .75f, .82f));
+            ItemSound.Cue("itemSplit", volume: .08f, cooldown: .18f);
+        }
         if (Count(UpgradeKind.Bearing) > 0 && Ready("bearing", .65f))
             Fragments(enemy.transform.position, damage * .55f, 3, 60);
         if (Count(UpgradeKind.Battery) > 0)
