@@ -77,7 +77,8 @@ public sealed class CombatUpgrades : MonoBehaviour
             capacitor = Mathf.Min(1, capacitor + Time.deltaTime * .45f * (GameRules.playerShootSpeed / 10));
             if (previous < 1 && capacitor >= 1)
             {
-                ItemSound.Play("ready", .12f, .85f);
+                ItemSound.Cue("itemCapReady", "ready", .12f, .85f);
+                ItemProcVfx.Emit(ItemProcShape.Charge, transform.position + Vector3.up * .5f, new Color(.45f, .75f, .7f), .5f);
                 ItemSpark.Emit(transform.position + Vector3.up * .7f, new Color(.5f, .9f, .7f), 4, .1f);
             }
         }
@@ -99,6 +100,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         if (capacitor > .175f)
         {
             ItemSound.Play("capacitor", .12f + capacitor * .08f);
+            ItemProcVfx.Emit(ItemProcShape.Charge, transform.position + Vector3.up * .8f, new Color(.45f, .75f, .7f), .55f);
             ItemSpark.Emit(transform.position + Vector3.up * .8f, new Color(.5f, .9f, .7f), 4, .16f, true);
         }
         capacitor = 0;
