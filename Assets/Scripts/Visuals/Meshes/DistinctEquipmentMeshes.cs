@@ -249,7 +249,11 @@ public static partial class IndustrialMeshFactory
                 // Open coin hopper feeds a small missile chute.
                 b.Prism(new[] { new Vector2(-.43f, .38f), new Vector2(.43f, .38f), new Vector2(.2f, -.05f), new Vector2(-.2f, -.05f) }, .3f, 11, Vector3.zero, 6);
                 for (int i = 0; i < 3; i++)
-                    b.Drum(new Vector3(-.22f + i * .2f, .37f + i % 2 * .13f, -.05f), .12f, .08f, 4, 10);
+                {
+                    Vector3 coin = new Vector3(-.22f + i * .2f, .37f + i % 2 * .13f, -.05f);
+                    b.Drum(coin, .12f, .08f, 10, 10, 6);
+                    b.Box(coin + Vector3.back * .06f, new Vector3(.1f, .025f, .02f), 11);
+                }
                 b.Box(new Vector3(.15f, -.25f, 0), new Vector3(.18f, .4f, .2f), 6);
                 b.Prism(new[] { new Vector2(.04f, -.3f), new Vector2(.26f, -.3f), new Vector2(.15f, -.55f) }, .15f, 3, Vector3.zero);
                 break;
