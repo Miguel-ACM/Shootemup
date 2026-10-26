@@ -17,6 +17,8 @@ public sealed class BurningHull : MonoBehaviour
         {
             effect = new HullAfflictionVfx(enemy, false);
             lastTrail = transform.position;
+            ItemProcVfx.Emit(ItemProcShape.Ignite, transform.position, PlayerShotPalette.Fire, Mathf.Clamp(enemy.size * .6f, .2f, .6f));
+            ItemSound.Cue("itemBurn", volume: .06f, cooldown: .3f);
         }
     }
 
