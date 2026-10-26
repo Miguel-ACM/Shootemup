@@ -66,15 +66,17 @@ public static partial class IndustrialMeshFactory
 
     static void BuildLaserSatellite(Builder b)
     {
-        b.Box(Vector3.zero, new Vector3(.62f, 1.15f, .43f), 15, 13);
-        b.Box(new Vector3(0, -.78f, -.12f), new Vector3(.36f, .6f, .35f), 6, 11);
-        b.Drum(new Vector3(0, -1.05f, -.24f), .14f, .14f, 9, 8, 13);
-        SpaceDish(b, new Vector3(0, .20f, -.28f), .52f);
-        foreach (int s in new[] { -1, 1 })
-        {
-            b.Box(new Vector3(s * .72f, 0, .04f), new Vector3(.85f, .08f, .1f), 13, 6);
-            SolarPanel(b, new Vector3(s * 1.02f, .05f, .08f), .62f, 1.35f);
+        foreach(int s in new[]{-1,1}) {
+            BevelArmor(b,new[]{V(s*.12f,-.77f),V(s*.34f,-.77f),V(s*.4f,.5f),V(s*.2f,.88f)},.23f,15);
+            b.Box(new Vector3(s*.61f,.38f,.02f),new Vector3(.65f,.07f,.1f),13,6);
+            SolarPanel(b,new Vector3(s*.89f,.4f,.05f),.48f,.85f);
+            b.Prism(new[]{V(s*.25f,.82f),V(s*.57f,1.1f),V(s*.44f,.24f)},.08f,13,Vector3.zero,6);
         }
+        SpaceDish(b,new Vector3(0,.28f,-.18f),.53f);
+        b.Box(new Vector3(0,-.65f,-.1f),new Vector3(.29f,.8f,.25f),6,11);
+        b.Drum(new Vector3(0,-.92f,-.24f),.17f,.18f,13,10,11);
+        b.Drum(new Vector3(0,-1.05f,-.24f),.12f,.06f,9,10,11);
+        for(int i=0;i<4;i++)b.Box(new Vector3(0,-.38f-i*.13f,-.26f),new Vector3(.37f,.04f,.08f),15,6);
     }
 
     static void BuildOrbitalCarrier(Builder b)
