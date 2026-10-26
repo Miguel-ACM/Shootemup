@@ -29,15 +29,15 @@ Shader "Shootemup/Caldera molten bed"
             {
                 float distance=surface.r-(surface.a-.45)*.32;
                 // An orange shoulder under dark cooling rafts, with narrow yellow-hot seams.
-                float molten=1-smoothstep(.17,.43,distance+(surface.g-.5)*.09);
-                float core=1-smoothstep(.012,.07,distance);
+                float molten=1-smoothstep(.08,.26,distance+(surface.g-.5)*.07);
+                float core=1-smoothstep(.008,.030,distance);
                 float folds=smoothstep(.45,.72,surface.g);
-                float3 crust=lerp(float3(.085,.037,.022),float3(.23,.075,.030),surface.b);
-                float3 magma=lerp(float3(.55,.105,.012),float3(.89,.27,.027),heat);
+                float3 crust=lerp(float3(.027,.021,.023),float3(.10,.045,.027),surface.b);
+                float3 magma=lerp(float3(.23,.045,.009),float3(.43,.115,.018),heat);
                 magma*=.81+surface.g*.25;
-                magma+=float3(.055,.026,.004)*folds;
+                magma+=float3(.018,.008,.002)*folds;
                 float3 c=lerp(crust,magma,molten);
-                return lerp(c,float3(.99,.43,.055),core*(.35+.30*heat));
+                return lerp(c,float3(.64,.20,.027),core*(.25+.20*heat));
             }
             half4 Frag(Output i):SV_Target
             {

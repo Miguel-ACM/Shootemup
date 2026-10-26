@@ -30,8 +30,8 @@ public sealed class InfernalCaldera : MonoBehaviour
             meshes.Add(mesh);
             Add("Layered volcanic rock", mesh, basalt, root, Vector3.zero, -45);
             int side = i % 2 == 0 ? -1 : 1;
-            var vent = Add("Volcano on basalt shelf", IndustrialMeshFactory.Volcano(), CombatMaterials.Fleet, root, new Vector3(side * 3.5f, 2.4f, -2.3f), -39);
-            vent.localScale = Vector3.one * 1.05f;
+            var vent = Add("Terraced basalt crater", IndustrialMeshFactory.Volcano(), basalt, root, new Vector3(side * (3.9f+i*.16f), 2.4f, -1.25f), -39);
+            vent.localScale = new Vector3(1.1f,.86f,1);
             vent.gameObject.AddComponent<VolcanicVent>().phase = i * .55f;
         }
     }
@@ -110,9 +110,9 @@ public sealed class InfernalCaldera : MonoBehaviour
                 // Amber reflected undercuts, dark cliffs, and a broad cool-charcoal top.
                 var footA = Vector3.Lerp(rim[i], crown[i], .20f);
                 var footB = Vector3.Lerp(rim[j], crown[j], .20f);
-                Face(new Color(.31f, .115f, .032f) * facing, rim[i], rim[j], footB, footA);
-                Face(new Color(.085f, .067f, .062f) * facing, footA, footB, crown[j], crown[i]);
-                Face(new Color(.175f, .151f, .14f) * R(.88f, 1.10f), crown[i], crown[j], middle);
+                Face(new Color(.16f, .071f, .035f) * facing, rim[i], rim[j], footB, footA);
+                Face(new Color(.065f, .063f, .069f) * facing, footA, footB, crown[j], crown[i]);
+                Face(new Color(.112f, .109f, .115f) * R(.92f, 1.08f), crown[i], crown[j], middle);
             }
         }
         for (int side = -1; side <= 1; side += 2)

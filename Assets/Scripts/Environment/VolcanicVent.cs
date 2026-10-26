@@ -27,6 +27,7 @@ public sealed class VolcanicVent : MonoBehaviour
         var p = transform.position;
         bool visible = p.y > Camera.DownLimit + 1.8f && p.y < Camera.UpLimit - 1.2f && Mathf.Abs(p.x) < 5.2f;
         bool combat = visible && !GameRules.playerDisabled && !CloudTransition.Busy && WavePreparation.Ready && LevelRun.Current == LevelId.Hell;
+        foreach(var enemy in AEnemy.Live) if(enemy is DistrictBoss) { combat=false;break; }
         if (!combat)
         {
             readyAt = -1;
@@ -39,25 +40,26 @@ public sealed class VolcanicVent : MonoBehaviour
             next = readyAt + .8f + phase * .22f;
         }
         charge = Mathf.Clamp01(1 - (next - Time.time) / 1.15f);
-        embers += dt * (8 + charge * 30);
+        embers += dt * (3 + charge * 12);
         while (embers >= 1)
         {
             embers--;
             var e = new ParticleSystem.EmitParams();
-            e.position = p + new Vector3(Random.Range(-.18f, .18f), Random.Range(-.15f, .15f), -.7f);
+            e.position = p + new Vector3(Random.Range(-.14f, .14f), Random.Range(-.12f, .12f), -1.02f);
             e.velocity = new Vector3(Random.Range(-.25f, .25f), .6f + charge * 1.1f, -.15f);
-            e.startSize = Random.Range(.16f, .36f) * (1 + charge * .5f);
+            e.startSize = Random.Range(.11f, .22f) * (1 + charge * .35f);
             e.startLifetime = .65f;
-            e.startColor = Color.Lerp(new Color(.65f, .20f, .035f, .40f), new Color(.95f, .57f, .15f, .65f), charge);
+            e.startColor = Color.Lerp(new Color(.34f, .095f, .025f, .28f), new Color(.62f, .25f, .055f, .48f), charge);
             fire.Emit(e, 1);
         }
         if (Time.time < next || Time.time < readyAt)
             return;
-        next = Time.time + 7.5f + phase;
+        next = Time.time + 9.5f + phase;
         Eruptions++;
         var axis = CombatVisuals.Rotate(Vector2.down, Mathf.Sign(p.x) * -24);
-        for (int i = -3; i <= 3; i++)
-            CombatRound.Launch<SimpleRound>(p, CombatVisuals.Rotate(axis, i * 17), 3.3f + (.18f * (3 - Mathf.Abs(i))), .18f);
+        int count=Difficulty.Easy?3:5;
+        for (int i = 0; i < count; i++)
+            CombatRound.Launch<SimpleRound>(p, CombatVisuals.Rotate(axis, (i-(count-1)*.5f)*25), 2.5f, .24f);
         SoundManager.PlaySound("enemyExplosion1", .055f);
     }
 }
