@@ -9,7 +9,7 @@ public sealed class CapacitorKite : DistrictEnemy
         hull = 69;
         hullScale = 0.53f;
         health = 34;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(3.0f, 2.15f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -25,12 +25,14 @@ public sealed class CapacitorKite : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve CapacitorKiteRoute0 = Route("Thunder / CapacitorKite 0", Vector2.right, -.7f, 1.25f, -.55f, .93f, -.32f, .67f, .23f, .6f, .6f, .8f, .72f, 1.25f);
-    static readonly FlightCurve CapacitorKiteRoute1 = Route("Thunder / CapacitorKite 1", Vector2.right, -1.4f, .86f, -.8f, .76f, -.1f, .7f, .7f, .79f, 1.4f, .85f);
-    public static readonly WavePart[] CapacitorKiteParts ={
-        new WavePart("CapacitorKite call",nameof(CapacitorKite),CapacitorKiteRoute0,WaveShape.Rake,3,5.05f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("CapacitorKite crossing",nameof(CapacitorKite),CapacitorKiteRoute1,WaveShape.Rake,3,5.30f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("CapacitorKite answer",nameof(CapacitorKite),CapacitorKiteRoute0,WaveShape.Train,3,5.55f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
+    static readonly FlightCurve CapacitorKiteRoute0 = Route("Thunder / Kite stormward curl", Vector2.right, -0.68f, 1.25f, -0.75f, 0.81f, -0.45f, 0.55f, 0.14f, 0.6f, 0.52f, 0.84f, 0.46f, 1.25f);
+    static readonly FlightCurve CapacitorKiteRoute1 = Route("Thunder / Kite cloud shoulder", Vector2.right, -1.4f, 0.83f, -0.71f, 0.57f, -0.18f, 0.65f, 0.22f, 0.95f, 0.7f, 1.25f);
+    static readonly FlightCurve CapacitorKiteRoute2 = Route("Thunder / Kite outer eddy", Vector2.right, 1.4f, 0.91f, 0.71f, 0.8f, 0.29f, 0.52f, -0.17f, 0.43f, -0.64f, 0.66f, -0.8f, 1.25f);
+    public static readonly WavePart[] CapacitorKiteParts =
+    {
+        new WavePart("Kite stormward curl", nameof(CapacitorKite), CapacitorKiteRoute0, WaveShape.Train, 3, 5.2f, 2, new[] { 0.29f, 0.51f, 0.72f }, new[] { 0.42f, 0.74f }, 3),
+        new WavePart("Kite cloud shoulder", nameof(CapacitorKite), CapacitorKiteRoute1, WaveShape.Chevron, 3, 5.0f, 4, new[] { 0.33f, 0.62f }, new[] { 0.48f }, 3),
+        new WavePart("Kite outer eddy", nameof(CapacitorKite), CapacitorKiteRoute2, WaveShape.Rake, 3, 5.6f, 7, new[] { 0.27f, 0.47f, 0.69f }, new[] { 0.38f, 0.72f }, 3),
     };
 }
 
