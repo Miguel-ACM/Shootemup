@@ -3,7 +3,7 @@ public sealed class BadGlasses : AItem
 {
     void Awake()
     {
-        SetData("Bad glasses", "Near sighted", "Enemy bullets move 10% slower near you.", ItemType.passive);
+        SetData("Close-Range Slow", "Near sighted", "Enemy bullets move 10% slower near you.", ItemType.passive);
     }
 
     public override void OnBegin()
