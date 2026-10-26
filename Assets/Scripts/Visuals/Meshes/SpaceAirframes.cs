@@ -12,6 +12,14 @@ public static class SpaceMaterials
             fleet = new Material(CombatMaterials.Fleet) { name = "Orbital ivory, gold foil and blue solar cells" };
             var atlas = Object.Instantiate((Texture2D)fleet.mainTexture);
             atlas.name = "Orbital solar-cell trim atlas";
+            foreach(int tile in new[]{6,13,15})
+                for(int y=0;y<64;y++)for(int x=0;x<64;x++)
+                {
+                    var baseColor=tile==15?new Color(.66f,.7f,.71f):tile==13?new Color(.48f,.36f,.18f):new Color(.105f,.15f,.20f);
+                    float grain=.92f+((x*7+y*11)%17)*.006f;
+                    if(x<3||y<3||x>60||y>60)grain*=.69f;
+                    atlas.SetPixel((tile%4)*64+x,(tile/4)*64+y,baseColor*grain);
+                }
             for (int y = 0; y < 64; y++)
                 for (int x = 0; x < 64; x++)
                 {
