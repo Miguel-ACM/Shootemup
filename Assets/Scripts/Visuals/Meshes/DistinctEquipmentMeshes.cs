@@ -2,6 +2,35 @@ using UnityEngine;
 
 public static partial class IndustrialMeshFactory
 {
+    // A faceted tube between two points, used for actual dimensional mechanisms.
+    static void EquipmentRod(Builder b, Vector3 start, Vector3 end, float radius, int tile)
+    {
+        Vector3 axis = (end - start).normalized;
+        Vector3 across = Vector3.Cross(axis, Mathf.Abs(axis.z) < .9f ? Vector3.forward : Vector3.up).normalized;
+        Vector3 other = Vector3.Cross(axis, across).normalized;
+        const int sides = 6;
+        var first = new Vector3[sides];
+        var last = new Vector3[sides];
+        for (int i = 0; i < sides; i++)
+        {
+            float angle = i * Mathf.PI * 2 / sides;
+            Vector3 rim = (across * Mathf.Cos(angle) + other * Mathf.Sin(angle)) * radius;
+            first[i] = start + rim;
+            last[i] = end + rim;
+        }
+        for (int i = 0; i < sides; i++)
+        {
+            int next = (i + 1) % sides;
+            var face = new[] { first[i], last[i], last[next], first[next] };
+            if (Vector3.Dot(Vector3.Cross(face[1] - face[0], face[2] - face[0]), (first[i] + first[next]) * .5f - start) < 0)
+                System.Array.Reverse(face);
+            b.Face(tile, face);
+        }
+        System.Array.Reverse(first);
+        b.Face(tile, first);
+        b.Face(tile, last);
+    }
+
     // Recognize equipment by its outer contour, not a different dot on the same box.
     static bool DistinctEquipment(Builder b, string kind)
     {
