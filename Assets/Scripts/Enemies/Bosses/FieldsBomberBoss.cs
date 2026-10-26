@@ -41,8 +41,8 @@ public sealed class FieldsBomberBoss : DistrictBoss
     {
         hull = 23;
         hullScale = 1.4f;
-        health = 1300;
-        attackInterval = .6f;
+        health = 1200;
+        attackInterval = Timing(.98f,.8f);
         shellTravelDistance = 4.6f;
     }
 
@@ -58,29 +58,40 @@ public sealed class FieldsBomberBoss : DistrictBoss
     protected override void Attack()
     {
         int beat = (volley - 1) % 12;
-        if (beat == 0 || beat == 4 || beat == 8)
+        if (beat == 0 || beat == 7)
             phraseAxis = Aim;
-        if (beat < 3)
+        if (beat < 2)
             for (int side = -1; side <= 1; side += 2)
             {
                 var port = Hull.TransformPoint(new Vector3(side * 1.34f, .32f, -.36f));
-                var axis = CombatVisuals.Rotate(Vector2.down, side * (32 + beat * 12));
+                var axis = CombatVisuals.Rotate(Vector2.down, side * (28 + beat * 16));
                 PSXImpactEffects.Muzzle(port, axis);
-                PetalFan<SimpleRound>(port, axis, phaseTwo ? 6 : 4, 16, phaseTwo ? 3.7f : 3.2f, .13f, .18f);
+                PetalFan<SimpleRound>(port, axis, Shots(phaseTwo?4:3,phaseTwo?6:5), 22, 2.5f, .27f, .2f);
             }
+        else if (beat == 3)
+            FanFrom<BurstShell>(Shots(1,phaseTwo?3:2), 32, 3.1f, .46f, bays);
         else if (beat == 4)
-            FanFrom<BurstShell>(phaseTwo ? 3 : 2, 23, 4.4f, .4f, bays);
-        else if (beat == 5)
-            FanFrom<ScatterCarrier>(phaseTwo ? 2 : 1, 26, 3.4f, .3f, bays);
-        else if (beat >= 8 && beat <= 10)
+            FanFrom<ScatterCarrier>(Shots(1,phaseTwo?2:1), 32, 2.6f, .33f, bays);
+        else if (beat >= 7 && beat <= 9)
             for (int side = -1; side <= 1; side += 2)
             {
                 var port = Hull.TransformPoint(new Vector3(side * 1.4f, -.68f, -.16f));
-                var axis = CombatVisuals.Rotate(phraseAxis, side * (16 - (beat - 8) * 8));
+                var axis = CombatVisuals.Rotate(phraseAxis, side * (24 - (beat - 7) * 12));
                 PSXImpactEffects.Muzzle(port, axis);
-                PetalFan<NeedleRound>(port, axis, phaseTwo ? 6 : 4, 13, phaseTwo ? 5.8f : 5.0f, .14f);
+                PetalFan<NeedleRound>(port, axis, Shots(phaseTwo?4:3,phaseTwo?6:4), 19, 4.0f, .19f);
             }
-        // Shoulder petals, shell bloom, then converging wing ribbons; 3/6/7/11 breathe.
+        else if (beat == 10 && phaseTwo)
+            PetalFan<SimpleRound>(Muzzle(4),Vector2.down,Shots(5,7),25,1.8f,.33f,.22f);
+        // Slow wing petals, a delivered bloom, then three committed ribbon answers.
+    }
+
+    protected override void PrepareFire(float seconds)
+    {
+        base.PrepareFire(seconds); firingCue.ClearWarning();
+        int beat=volley%12;
+        if(beat<2) { Cue(Muzzle(0),seconds);Cue(Muzzle(1),seconds); }
+        else if(beat==3 || beat==4 || beat==10) { Cue(Muzzle(4),seconds);Cue(Muzzle(5),seconds); }
+        else if(beat>=7 && beat<=9) { Cue(Muzzle(2),seconds);Cue(Muzzle(3),seconds); }
     }
 
     protected override void OnPhaseTwo()
