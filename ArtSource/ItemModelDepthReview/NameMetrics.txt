@@ -1,0 +1,23 @@
+Offer plate: 72 x 24, minimum font size 7; measured with prstartk.
+Time Stop: 63,0 x 7,0
+Stasis Well: 42,0 x 14,0
+Nearby Bullet Slow: 42,0 x 21,0
+Bullet Slow: 42,0 x 14,0
+Idle Charge: 42,0 x 14,0
+Burn Detonator: 63,0 x 14,0
+Linked Triggers: 56,0 x 14,0
+Energy Regen: 42,0 x 14,0
+Combo Lens: 70,0 x 7,0
+Focus Brake: 35,0 x 14,0
+Incendiary Rounds: 70,0 x 14,0
+Fire Trail: 70,0 x 7,0
+Ricochet Spring: 56,0 x 14,0
+Countershot Shield: 70,0 x 14,0
+Energy Reserve: 49,0 x 14,0
+Returning Volley: 63,0 x 14,0
+Coin Launcher: 56,0 x 14,0
+Hit-Charged Rocket: 70,0 x 14,0
+Splitting Rounds: 63,0 x 14,0
+Shrapnel Bearing: 56,0 x 14,0
+Charge Blast Cannon: 42,0 x 21,0
+Rear Flame: 70,0 x 7,0

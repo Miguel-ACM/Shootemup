@@ -1,0 +1,8 @@
+PASS: isolated native Unity render; no Play mode.
+SplitterCore: 432 vertices; depth 0,43
+ReturnModule: 264 vertices; depth 0,30
+ReboundCoil: 1696 vertices; depth 0,56
+RecoveryCoil: 222 vertices; depth 0,51
+ReserveCell: 210 vertices; depth 0,49
+ProximityFuse: 624 vertices; depth 0,54
+No degenerate triangles. Original item assets are unchanged.

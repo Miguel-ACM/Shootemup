@@ -1,0 +1,3 @@
+PASS: original 2023 item pool plus 2025 AK45; no original item script or original IndustrialExpansion asset changed since 57aa274.
+Original kinds: AK45Item, AMoonItem, AngryMoonItem, AnotherArm, BabyYouItem, BlankBullet, Caffeine, ElectricityItem, Magnet, ProteinSupplement, RabbitsFoot, Telekinesis, ThreeMoonsItem, TwerpItem
+Shared rendering changes keep the original-material branch before new-item colour mapping.
