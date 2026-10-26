@@ -252,7 +252,8 @@ public class WaveOrchestrer : MonoBehaviour
         for (int i = currentWaveNumber + 1; i < waves.Length; i++)
             if (int.TryParse(waves[i], out _))
                 remaining++;
-        EncounterOptions = EncounterChoice.Draw(unchecked(LevelRun.Seed + LevelRun.Stage * 971 + currentWaveNumber * 7919), remaining >= 3 && challengeWavesRemaining == 0);
+        var player = ship.GetComponent<Shipcontroller>();
+        EncounterOptions = EncounterChoice.Draw(unchecked(LevelRun.Seed + LevelRun.Stage * 971 + currentWaveNumber * 7919), remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth);
         CombatDecision.Begin();
         ship.GetComponent<ShipLoadout>().ResetSelection();
         foreach (var weapon in ship.GetComponentsInChildren<AWeapon>())

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum EncounterKind
@@ -19,12 +20,15 @@ public static class EncounterChoice
         return icons[index] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 32, 0, SpriteMeshType.FullRect);
     }
 
-    public static EncounterKind[] Draw(int seed, bool challengeAvailable)
+    public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth)
     {
-        var bag = challengeAvailable ? new[] { EncounterKind.Shop, EncounterKind.MultShop, EncounterKind.Item, EncounterKind.Health, EncounterKind.Challenge } :
-            new[] { EncounterKind.Shop, EncounterKind.MultShop, EncounterKind.Item, EncounterKind.Health };
+        var bag = new List<EncounterKind> { EncounterKind.Shop, EncounterKind.MultShop, EncounterKind.Item };
+        if (maxHealth > 0 && health <= maxHealth * .7f)
+            bag.Add(EncounterKind.Health);
+        if (challengeAvailable)
+            bag.Add(EncounterKind.Challenge);
         var rng = new System.Random(seed);
-        for (int i = bag.Length - 1; i > 0; i--)
+        for (int i = bag.Count - 1; i > 0; i--)
         {
             int j = rng.Next(i + 1);
             var swap = bag[i];
