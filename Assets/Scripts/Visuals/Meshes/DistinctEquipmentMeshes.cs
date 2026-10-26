@@ -148,9 +148,22 @@ public static partial class IndustrialMeshFactory
                 b.Box(new Vector3(0, -.46f, .02f), new Vector3(.37f, .12f, .26f), 6);
                 break;
             case "ReturnModule":
-                // Literal U-turn arrow, readable without a label.
-                b.Prism(new[] { new Vector2(-.36f, -.37f), new Vector2(-.36f, .26f), new Vector2(-.22f, .42f), new Vector2(.23f, .42f), new Vector2(.36f, .26f), new Vector2(.36f, -.05f), new Vector2(.18f, -.05f), new Vector2(.18f, .18f), new Vector2(-.17f, .18f), new Vector2(-.17f, -.37f) }, .16f, 11, Vector3.zero, 6);
-                b.Prism(new[] { new Vector2(-.49f, -.22f), new Vector2(-.04f, -.22f), new Vector2(-.27f, -.52f) }, .17f, 9, Vector3.zero);
+                // A return-feed machine: paired guide rollers and an exposed looped rail.
+                b.Box(new Vector3(0, -.29f, .05f), new Vector3(.56f, .27f, .38f), 6, 11);
+                b.Box(new Vector3(0, -.29f, -.17f), new Vector3(.25f, .11f, .06f), 9);
+                foreach (int side in new[] { -1, 1 })
+                {
+                    b.Can(new Vector3(side * .2f, .04f, .08f), .1f, .38f, 11, 6);
+                    b.Drum(new Vector3(side * .2f, .12f, -.07f), .075f, .08f, 9, 8);
+                }
+                Vector3[] returnRail = {
+                    new Vector3(.29f, -.12f, -.13f), new Vector3(.4f, .12f, -.14f),
+                    new Vector3(.31f, .38f, -.12f), new Vector3(0, .48f, -.08f),
+                    new Vector3(-.31f, .38f, -.12f), new Vector3(-.4f, .1f, -.14f),
+                    new Vector3(-.32f, -.1f, -.13f) };
+                for (int i = 1; i < returnRail.Length; i++)
+                    EquipmentRod(b, returnRail[i - 1], returnRail[i], .045f, 11);
+                b.Prism(new[] { new Vector2(-.45f, -.08f), new Vector2(-.2f, -.08f), new Vector2(-.32f, -.27f) }, .12f, 9, Vector3.back * .13f);
                 break;
             case "SplitterCore":
                 // A feed cartridge enters a central manifold and divides into two barrels.
