@@ -119,11 +119,15 @@ public static partial class IndustrialMeshFactory
                 b.Box(new Vector3(0, .52f, 0), new Vector3(.48f, .06f, .08f), 11);
                 break;
             case "ReserveCell":
-                // Flat pocket cell with one tall and one short terminal.
-                b.Box(new Vector3(0, -.05f, 0), new Vector3(.58f, .45f, .14f), 9, 6);
-                b.Box(new Vector3(-.2f, .3f, 0), new Vector3(.1f, .23f, .13f), 11);
-                b.Box(new Vector3(.2f, .22f, 0), new Vector3(.16f, .08f, .13f), 11);
-                b.Box(new Vector3(0, -.05f, -.09f), new Vector3(.24f, .05f, .025f), 1);
+                // Compact storage cell in an open protective cage, with asymmetric terminals.
+                b.Box(new Vector3(0, -.05f, .04f), new Vector3(.52f, .49f, .38f), 9, 6);
+                foreach (int side in new[] { -1, 1 })
+                    b.Box(new Vector3(side * .29f, -.05f, 0), new Vector3(.09f, .56f, .46f), 6, 11);
+                b.Box(new Vector3(0, -.34f, .02f), new Vector3(.64f, .09f, .46f), 11, 6);
+                b.Box(new Vector3(-.16f, .3f, .02f), new Vector3(.12f, .2f, .18f), 11);
+                b.Drum(new Vector3(.16f, .25f, -.08f), .075f, .18f, 3, 8, 6);
+                for (int bar = 0; bar < 3; bar++)
+                    b.Box(new Vector3(-.13f + bar * .13f, -.08f, -.19f), new Vector3(.075f, .18f, .04f), bar == 2 ? 11 : 6);
                 break;
             case "SpareBattery":
                 // Horizontal battery strapped to a tiny guided rocket.
