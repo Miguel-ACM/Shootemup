@@ -30,6 +30,7 @@ public sealed class IndustrialHUD : MonoBehaviour
 
     void Start()
     {
+        gameObject.AddComponent<BossPositionShadow>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
         waves = FindAnyObjectByType<WaveOrchestrer>();
         // The legacy side-cover script accumulates offsets when the Game view resizes.
