@@ -18,7 +18,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
         hull = 45;
         hullScale = 1;
         health = 2500;
-        attackInterval = .38f;
+        attackInterval = Timing(.9f,.68f);
         nextAttack = 1.7f;
     }
 
@@ -32,6 +32,8 @@ public sealed class SpaceCitadelBoss : DistrictBoss
         parts[2] = SpaceBossPart.Create(this, Hull, 1, new Vector3(-1.13f, -1.0f, -.12f), health * .11f);
         parts[3] = SpaceBossPart.Create(this, Hull, 1, new Vector3(1.13f, -1.0f, -.12f), health * .11f);
         parts[4] = SpaceBossPart.Create(this, Hull, 2, new Vector3(0, 0, -.08f), health * .52f);
+        for(int i=0;i<2;i++) firingCue.Register(parts[i].transform,new Vector3(0,-.3f,-.3f));
+        for(int i=2;i<4;i++) foreach(int side in new[]{-1,1}) firingCue.Register(parts[i].transform,new Vector3(side*.16f,-.695f,-.08f));
         for (int i = 0; i < 2; i++)
         {
             var go = new GameObject("Retracting reactor shutter " + i);
@@ -46,21 +48,14 @@ public sealed class SpaceCitadelBoss : DistrictBoss
     }
 
     protected override bool PhaseTwoReady => CoreExposed;
-    protected override float PressureInterval => phaseTwo ? 1.35f : 1.7f;
     protected override void PressureAttack()
     {
-        if (parts[0] == null)
-            return;
-        for (int i = 0; i < 2; i++)
-        {
-            var p = parts[i].health > 0 ? parts[i].transform.position : Hull.TransformPoint(new Vector3(i == 0 ? -.44f : .44f, -.8f, -.3f));
-            PetalFan<NeedleRound>(p, CombatVisuals.Aim(p), phaseTwo ? 5 : 3, 12, 6.0f, .13f);
-        }
+        // Every generator, gun and reactor now belongs to the same audible score.
     }
 
     protected override void MoveBoss(float dt)
     {
-        var target = new Vector3(centralLaser != null && centralLaser.isActiveAndEnabled ? 0 : Mathf.Sin(motionAge * .43f) * .82f, Camera.UpLimit - 3.0f + Mathf.Sin(motionAge * .31f) * .32f, 1);
+        var target = new Vector3(centralLaser != null && centralLaser.IsAttachedTo(Hull) ? transform.position.x : Mathf.Sin(motionAge * .43f) * .82f, Camera.UpLimit - 3.0f + Mathf.Sin(motionAge * .31f) * .32f, 1);
         transform.position = Vector3.MoveTowards(transform.position, target, dt * 3.2f);
         iris = Mathf.MoveTowards(iris, CoreExposed ? 1 : 0, dt * 1.8f);
         for (int i = 0; i < shutters.Length; i++)
@@ -81,21 +76,30 @@ public sealed class SpaceCitadelBoss : DistrictBoss
             if (centralLaser != null)
             {
                 centralLaser.Bind(Hull, new Vector3(0, -1.48f, -.30f));
-                centralLaser.warning = 1.05f;
-                centralLaser.activeTime = 1.2f;
+                centralLaser.warning = Timing(1.6f,1.3f);
+                centralLaser.activeTime = Timing(1.1f,1.5f);
                 centralLaser.width = phaseTwo ? .42f : .34f;
             }
         }
-        else if (beat < 3)
+        else if (beat == 0)
+        {
+            for(int i=0;i<2;i++)
+            {
+                var port=parts[i].health>0?parts[i].transform.TransformPoint(new Vector3(0,-.3f,-.3f)):Muzzle(i+1);
+                PetalFan<SimpleRound>(port,CombatVisuals.Rotate(Vector2.down,i==0?-23:23),Shots(phaseTwo?5:3,phaseTwo?7:5),24,1.8f,.34f,.2f);
+            }
+        }
+        else if (beat == 2 || beat == 3)
         {
             for (int i = 2; i < 4; i++)
             {
                 bool turret = parts[i] != null && parts[i].health > 0;
-                int side = i == 2 ? -1 : 1, count = turret ? (phaseTwo ? 6 : 5) : (phaseTwo ? 4 : 3);
+                if(!turret)continue;
+                int side = i == 2 ? -1 : 1, count = Shots(phaseTwo?5:4,phaseTwo?7:5);
                 // Half-lane replies form nested mirrored arcs, rather than repeating identical rays.
-                var axis = CombatVisuals.Rotate(Vector2.down, side * (48 + (beat - 1) * 6));
-                var port = turret ? parts[i].transform.position : Hull.TransformPoint(new Vector3(side * .4f, -.9f, -.4f));
-                PetalFan<RicochetBolt>(port, axis, count, 12, phaseTwo ? 5.0f : 4.5f, .17f, .16f);
+                var axis = CombatVisuals.Rotate(Vector2.down, side * (35 + (beat - 2) * 12));
+                var port = parts[i].transform.TransformPoint(new Vector3(beat==2?-.16f:.16f,-.695f,-.08f));
+                PetalFan<RicochetBolt>(port, axis, count, 21, 3.1f, .23f, .16f);
             }
         }
         else if (beat == 6 || beat == 7)
@@ -105,19 +109,30 @@ public sealed class SpaceCitadelBoss : DistrictBoss
             for (int side = -1; side <= 1; side += 2)
             {
                 var port = Hull.TransformPoint(new Vector3(side * .4f, -.9f, -.4f));
-                PetalFan<NeedleRound>(port, CombatVisuals.Rotate(barrageAxis, side * (beat == 6 ? 14 : 7)), phaseTwo ? 7 : 5, 9, 6.7f, .14f);
+                PetalFan<NeedleRound>(port, CombatVisuals.Rotate(barrageAxis, side * (beat == 6 ? 21 : 9)), Shots(phaseTwo?5:3,phaseTwo?7:5), 17, 4.3f, .2f);
             }
         }
-        else if (beat >= 8 && beat <= 10)
+        else if (beat == 9 || beat == 10)
         {
             // Core pressure survives gun destruction. Each exposed-reactor phrase
             // answers the laser with a slow, bowed fan and half-lane replies.
-            if (beat == 8)
+            if (beat == 9)
                 barrageAxis = Aim;
             PetalFan<SimpleRound>(Hull.TransformPoint(new Vector3(0, -.7f, -.5f)),
-                CombatVisuals.Rotate(barrageAxis, (beat - 9) * 6), phaseTwo ? 11 : 7, 13, 5.3f, .15f, .18f);
+                CombatVisuals.Rotate(barrageAxis, beat==9?-9:9), Shots(phaseTwo?7:5,phaseTwo?11:9), 19, 2.6f, .29f, .18f);
         }
         // Beats 3, 5 and 11 deliberately breathe; broken guns still reduce ricochets.
+    }
+
+    protected override void PrepareFire(float seconds)
+    {
+        base.PrepareFire(seconds);firingCue.ClearWarning();if(parts[0]==null)return;
+        int beat=volley%12;
+        if(beat==0)for(int i=0;i<2;i++)Cue(parts[i].health>0?parts[i].transform.TransformPoint(new Vector3(0,-.3f,-.3f)):Muzzle(i+1),seconds);
+        else if(beat==2||beat==3)for(int i=2;i<4;i++)if(parts[i].health>0)Cue(parts[i].transform.TransformPoint(new Vector3(beat==2?-.16f:.16f,-.695f,-.08f)),seconds);
+        else if(beat==4)Cue(Muzzle(),seconds);
+        else if(beat==6||beat==7){Cue(Muzzle(1),seconds);Cue(Muzzle(2),seconds);}
+        else if(beat==9||beat==10)Cue(Muzzle(3),seconds);
     }
 
     protected override void OnPhaseTwo()
