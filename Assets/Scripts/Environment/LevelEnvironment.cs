@@ -356,7 +356,7 @@ public sealed class LevelEnvironment : MonoBehaviour
             snowFoliageMaterial = new Material(Resources.Load<Shader>("PSXValleyFoliage")) { mainTexture = snowFoliageAtlas };
         }
         if (level == LevelId.City)
-            material.SetFloat("_Haze", .38f);
+            material.SetFloat("_Haze", .17f);
         var go = GameObject.FindGameObjectWithTag("Player");
         if (go != null)
             player = go.transform;
@@ -464,7 +464,7 @@ public sealed class LevelEnvironment : MonoBehaviour
             }
             if (level == LevelId.City)
             {
-                AddAtmosphere("Wisps above the distant city", 0, 35, new Color(.75f, .80f, .83f, .20f), 2.6f, .32f);
+                AddAtmosphere("Wisps above the distant city", 0, 35, new Color(.66f, .75f, .79f, .08f), 2.6f, .32f);
                 var cars = BuildTrafficSteps();
                 while (cars.MoveNext())
                     yield return cars.Current;

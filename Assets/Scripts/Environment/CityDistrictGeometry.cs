@@ -116,8 +116,11 @@ public static class CityDistrictGeometry
         var rng = new System.Random(seed + section * 7919);
         var b = new Builder();
         float R(float a, float z) => (float)(a + (z - a) * rng.NextDouble());
-        var roof = C(.235f, .28f, .30f);
-        var glass = C(.15f, .235f, .27f);
+        var roof = C(.21f, .25f, .27f);
+        var glass = C(.095f, .27f, .33f);
+        // Coherent neighborhoods: terracotta residences, teal commercial blocks,
+        // pale civic stone and blue glass towers, with seed-dependent prevalence.
+        int palette=BlockHash(seed,17,29)%3;
         for (int row = 0; row < 8; row++)
             for (int column = 0; column < 8; column++)
             {
@@ -127,15 +130,21 @@ public static class CityDistrictGeometry
                 int zoneHash = BlockHash(seed, column / 2, (section * 8 + row) / 2), zone = zoneHash % 4;
                 bool landmark = column % 2 == ((zoneHash >> 3) & 1) && row % 2 == ((zoneHash >> 4) & 1);
                 int use = rng.Next(100);
-                var paving = C(.235f, .27f, .28f);
+                var paving = C(.27f, .29f, .285f);
                 b.Box(x, y, .02f, 2.05f, 1.98f, .06f, paving);
                 if (use < 12 && !landmark)
                 {
-                    b.Box(x, y, .09f, 1.82f, 1.73f, .02f, C(.19f, .265f, .23f));
+                    b.Box(x, y, .09f, 1.82f, 1.73f, .02f, C(.17f, .31f, .23f));
                     b.Box(x + .24f, y, .12f, .18f, 1.75f, .015f, paving);
                     b.Box(x, y - .22f, .12f, 1.8f, .17f, .015f, paving);
                     for (int t = 0; t < 5; t++)
-                        b.Cylinder(x + R(-.72f, .72f), y + R(-.65f, .65f), .13f, R(.14f, .24f), R(.16f, .32f), C(.17f, .245f, .21f), 7);
+                    {
+                        float tx=x+R(-.72f,.72f),ty=y+R(-.65f,.65f),r=R(.16f,.24f);
+                        b.Cylinder(tx,ty,.13f,.035f,.23f,C(.22f,.17f,.12f),6);
+                        b.Cylinder(tx,ty,.28f,r,.13f,C(.13f,.32f,.22f),7);
+                        b.Cylinder(tx-.025f,ty+.02f,.4f,r*.78f,.12f,C(.18f,.38f,.26f),7);
+                    }
+                    if(use%3==0) {b.Cylinder(x-.4f,y-.35f,.12f,.24f,.06f,C(.39f,.38f,.31f),12);b.Cylinder(x-.4f,y-.35f,.19f,.18f,.015f,C(.13f,.32f,.36f),12);}
                     continue;
                 }
                 if (use < 19 && !landmark)
@@ -155,7 +164,7 @@ public static class CityDistrictGeometry
                 // Streets and paving retain their section-safe grid; only the architecture turns.
                 b.OrientBlock(x, y, ((zoneHash >> 11) & 1) != 0);
                 int lots = landmark || zone == 3 ? 1 : zone == 0 && use > 65 ? 4 : 2;
-                var districtColor = zone == 3 ? C(.26f, .31f, .30f) : zone == 2 ? C(.27f, .31f, .34f) : zone == 1 ? C(.34f, .345f, .31f) : C(.29f, .32f, .32f);
+                var districtColor = zone == 3 ? C(.25f,.36f,.33f) : zone == 2 ? C(.23f,.32f,.43f) : zone == 1 ? C(.51f,.45f,.33f) : palette==0?C(.46f,.28f,.22f):palette==1?C(.35f,.41f,.36f):C(.46f,.36f,.27f);
                 for (int lot = 0; lot < lots; lot++)
                 {
                     float xx = x + (lots == 1 ? 0 : (lot % 2 == 0 ? -.5f : .5f));
@@ -163,7 +172,7 @@ public static class CityDistrictGeometry
                     float w = lots == 1 ? R(1.4f, 1.76f) : R(.70f, .86f), d = lots < 4 ? R(1.35f, 1.72f) : R(.68f, .84f);
                     float h = zone == 2 && landmark ? R(1.9f, 2.65f) : zone == 1 && landmark ? R(.9f, 1.35f) : zone == 0 ? R(.26f, .58f) : R(.42f, .84f);
                     var facade = Color.Lerp(districtColor, roof, R(.05f, .25f));
-                    var trim = Color.Lerp(facade, C(.43f, .46f, .45f), .22f);
+                    var trim = Color.Lerp(facade, C(.57f, .54f, .43f), .35f);
                     int style = zone == 3 ? (use % 2 == 0 ? 4 : 8) : zone == 2 && landmark ? (((zoneHash >> 7) & 1) == 0 ? 0 : 9) :
                         zone == 1 && landmark ? (((zoneHash >> 7) & 1) == 0 ? 3 : 2) : zone == 0 ? (use % 3 == 0 ? 1 : 5) : (use % 3 == 0 ? 0 : 6);
                     // A ground-level shadow reinforces the rare tall shapes without bright outlines.
@@ -217,7 +226,7 @@ public static class CityDistrictGeometry
                     else if (style == 5)
                     {
                         b.Box(xx, yy, .09f, w, d, h, facade);
-                        b.Ridge(xx, yy, .09f + h, w, d, .12f, roof);
+                        b.Ridge(xx, yy, .09f + h, w, d, .16f, palette==1?C(.24f,.32f,.3f):C(.39f,.22f,.17f));
                     }
                     else
                         b.Box(xx, yy, .09f, w, d, h, facade);
@@ -246,6 +255,17 @@ public static class CityDistrictGeometry
                             float shift = style == 0 && floor > h * .5f ? 1 : 0;
                             b.Box(xx - w * .07f * shift, yy + d * .06f * shift - fd * .505f, .09f + floor, fw * .70f, .012f, .045f, Color.Lerp(facade, glass, .55f));
                         }
+                    if(style==1 || style==5 || style==6)
+                    {
+                        var awning=zone==0?C(.24f,.38f,.34f):C(.46f,.29f,.21f);
+                        b.Box(xx,yy-d*.49f,.25f,w*.72f,.23f,.055f,awning);
+                        foreach(int s in new[]{-1,1})b.Box(xx+s*w*.31f,yy-d*.55f,.10f,.035f,.035f,.15f,trim);
+                    }
+                    if(landmark && style==0)
+                    {
+                        b.Box(xx-w*.3f,yy-d*.2f,.11f+h*.5f,w*.18f,d*.25f,.08f,C(.18f,.34f,.25f));
+                        b.Box(xx+w*.27f,yy+d*.24f,.11f+h*.5f,w*.17f,d*.22f,.08f,C(.21f,.38f,.27f));
+                    }
                 }
             }
         return b.Finish("Seeded city architecture " + section);
