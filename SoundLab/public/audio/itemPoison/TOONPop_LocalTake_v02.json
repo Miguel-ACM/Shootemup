@@ -1,0 +1,84 @@
+{
+  "request": "20261026-210946-b8ed",
+  "ref": "20261026-210946-b8ed:261729",
+  "text": "TrackType: SFX, one tiny viscous toxic liquid bubble rupturing, low wet gurgling pop, short and close. Required acoustic properties: Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one tiny viscous toxic liquid bubble rupturing, low wet gurgling pop, short and close. Required acoustic properties: Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "cartoon-pop",
+  "seed": 261729,
+  "rank": 1,
+  "rank_score": 0.8682,
+  "clap": 0.9977,
+  "clap_cos": 0.4242,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.78,
+    "CU": 6.49,
+    "PC": 2.52,
+    "PQ": 7.27
+  },
+  "fails": [],
+  "warnings": [
+    "cut at the requested duration while still 17 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 12.48,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.3333,
+    "length_frames": 8.0,
+    "channels": 1,
+    "cut_db": -16.8
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -18.7
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -11.55,
+    "true_peak_dbtp": -11.55,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.0002,
+    "active_s": 0.75,
+    "noise_floor_db": -78.4,
+    "onset_s": 0.0449,
+    "tail_db": -75.0,
+    "stereo_correlation": 1.0,
+    "lufs": -30.8,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "4bfa113b3f02de9e7aa3cb516b978eed8584acd1c8a8d5b4d1fc65127de7ecdc",
+    "blind_caption": "A person sneezes",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "KEEP (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.4252
+  },
+  "human_approved": false
+}

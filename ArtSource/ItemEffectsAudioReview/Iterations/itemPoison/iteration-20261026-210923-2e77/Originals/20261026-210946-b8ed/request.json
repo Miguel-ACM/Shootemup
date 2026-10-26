@@ -1,0 +1,155 @@
+{
+  "id": "20261026-210946-b8ed",
+  "created": "2026-10-26 21:09:46",
+  "text": "TrackType: SFX, one tiny viscous toxic liquid bubble rupturing, low wet gurgling pop, short and close. Required acoustic properties: Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one tiny viscous toxic liquid bubble rupturing, low wet gurgling pop, short and close. Required acoustic properties: Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "raw": true,
+  "category": "cartoon-pop",
+  "cat_id": "TOONPop",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    261728,
+    261729
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.3,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 1.05,
+  "gen_s": 2.0,
+  "score_s": 1.2,
+  "takes": [
+    {
+      "seed": 261729,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -11.55,
+        "true_peak_dbtp": -11.55,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.0002,
+        "active_s": 0.75,
+        "noise_floor_db": -78.4,
+        "onset_s": 0.0449,
+        "tail_db": -75.0,
+        "stereo_correlation": 1.0,
+        "lufs": -30.8,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 12.48,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.3333,
+        "length_frames": 8.0,
+        "channels": 1,
+        "cut_db": -16.8
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -18.7
+      },
+      "clap": 0.9977,
+      "clap_cos": 0.4242,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.78,
+        "CU": 6.49,
+        "PC": 2.52,
+        "PQ": 7.27
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 17 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.8682,
+      "rank": 1,
+      "ref": "20261026-210946-b8ed:261729",
+      "files": {
+        "wav": "20261026-210946-b8ed/261729.wav",
+        "png": "20261026-210946-b8ed/261729.png",
+        "raw": "20261026-210946-b8ed/261729_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210946-b8ed\\261729.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210946-b8ed\\261729.png"
+      }
+    },
+    {
+      "seed": 261728,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -11.63,
+        "true_peak_dbtp": -11.62,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.0001,
+        "active_s": 0.85,
+        "noise_floor_db": -76.4,
+        "onset_s": 0.022,
+        "tail_db": -72.8,
+        "stereo_correlation": 1.0,
+        "lufs": -32.5,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 10.57,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.3333,
+        "length_frames": 8.0,
+        "channels": 1,
+        "cut_db": -6.5
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -19.4
+      },
+      "clap": 0.9986,
+      "clap_cos": 0.4255,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.09,
+        "CU": 6.42,
+        "PC": 2.3,
+        "PQ": 6.76
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 6 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.8287,
+      "rank": 2,
+      "ref": "20261026-210946-b8ed:261728",
+      "files": {
+        "wav": "20261026-210946-b8ed/261728.wav",
+        "png": "20261026-210946-b8ed/261728.png",
+        "raw": "20261026-210946-b8ed/261728_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210946-b8ed\\261728.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210946-b8ed\\261728.png"
+      }
+    }
+  ],
+  "kept": 2
+}

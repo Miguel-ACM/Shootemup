@@ -1,0 +1,481 @@
+{
+  "brief": {
+    "description": "one tiny viscous toxic liquid bubble rupturing, low wet gurgling pop, short and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "4bfa113b3f02de9e7aa3cb516b978eed8584acd1c8a8d5b4d1fc65127de7ecdc",
+  "options": {
+    "duration": 0.3,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 261726,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-210923-f343",
+      "prompt": "TrackType: SFX, one tiny viscous toxic liquid bubble rupturing, low wet gurgling pop, short and close",
+      "takes": [
+        "20261026-210923-f343:261727",
+        "20261026-210923-f343:261726"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-210946-b8ed",
+      "prompt": "TrackType: SFX, one tiny viscous toxic liquid bubble rupturing, low wet gurgling pop, short and close. Required acoustic properties: Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-210946-b8ed:261729",
+        "20261026-210946-b8ed:261728"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 261727,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -10.33,
+        "true_peak_dbtp": -10.33,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00049,
+        "active_s": 1.08,
+        "noise_floor_db": -77.1,
+        "onset_s": 0.0509,
+        "tail_db": -76.3,
+        "stereo_correlation": 0.935,
+        "lufs": -31.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 9.81,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.3333,
+        "length_frames": 8.0,
+        "channels": 1,
+        "cut_db": -11.3
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -22.5
+      },
+      "clap": 0.9943,
+      "clap_cos": 0.3847,
+      "clap_top": null,
+      "aes": {
+        "CE": 2.79,
+        "CU": 5.79,
+        "PC": 2.66,
+        "PQ": 5.84
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 11 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.718,
+      "rank": 1,
+      "ref": "20261026-210923-f343:261727",
+      "files": {
+        "wav": "20261026-210923-f343/261727.wav",
+        "png": "20261026-210923-f343/261727.png",
+        "raw": "20261026-210923-f343/261727_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210923-f343\\261727.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210923-f343\\261727.png"
+      },
+      "review": {
+        "brief_id": "4bfa113b3f02de9e7aa3cb516b978eed8584acd1c8a8d5b4d1fc65127de7ecdc",
+        "blind_caption": "A car door closing",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "KEEP (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3789
+      }
+    },
+    {
+      "seed": 261726,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -4.06,
+        "true_peak_dbtp": -4.05,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00013,
+        "active_s": 0.885,
+        "noise_floor_db": -83.6,
+        "onset_s": 0.0399,
+        "tail_db": -84.1,
+        "stereo_correlation": 0.967,
+        "lufs": -29.1,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 4.03,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.3333,
+        "length_frames": 8.0,
+        "channels": 1,
+        "cut_db": -16.0
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -24.3
+      },
+      "clap": 0.9891,
+      "clap_cos": 0.3859,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.09,
+        "CU": 5.89,
+        "PC": 2.62,
+        "PQ": 5.8
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 16 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.7148,
+      "rank": 2,
+      "ref": "20261026-210923-f343:261726",
+      "files": {
+        "wav": "20261026-210923-f343/261726.wav",
+        "png": "20261026-210923-f343/261726.png",
+        "raw": "20261026-210923-f343/261726_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210923-f343\\261726.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210923-f343\\261726.png"
+      },
+      "review": {
+        "brief_id": "4bfa113b3f02de9e7aa3cb516b978eed8584acd1c8a8d5b4d1fc65127de7ecdc",
+        "blind_caption": "A person coughing",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3679
+      }
+    },
+    {
+      "seed": 261729,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -11.55,
+        "true_peak_dbtp": -11.55,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.0002,
+        "active_s": 0.75,
+        "noise_floor_db": -78.4,
+        "onset_s": 0.0449,
+        "tail_db": -75.0,
+        "stereo_correlation": 1.0,
+        "lufs": -30.8,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 12.48,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.3333,
+        "length_frames": 8.0,
+        "channels": 1,
+        "cut_db": -16.8
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -18.7
+      },
+      "clap": 0.9977,
+      "clap_cos": 0.4242,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.78,
+        "CU": 6.49,
+        "PC": 2.52,
+        "PQ": 7.27
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 17 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.8682,
+      "rank": 1,
+      "ref": "20261026-210946-b8ed:261729",
+      "files": {
+        "wav": "20261026-210946-b8ed/261729.wav",
+        "png": "20261026-210946-b8ed/261729.png",
+        "raw": "20261026-210946-b8ed/261729_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210946-b8ed\\261729.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210946-b8ed\\261729.png"
+      },
+      "review": {
+        "brief_id": "4bfa113b3f02de9e7aa3cb516b978eed8584acd1c8a8d5b4d1fc65127de7ecdc",
+        "blind_caption": "A person sneezes",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "KEEP (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.4252
+      }
+    },
+    {
+      "seed": 261728,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -11.63,
+        "true_peak_dbtp": -11.62,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.0001,
+        "active_s": 0.85,
+        "noise_floor_db": -76.4,
+        "onset_s": 0.022,
+        "tail_db": -72.8,
+        "stereo_correlation": 1.0,
+        "lufs": -32.5,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 10.57,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.3333,
+        "length_frames": 8.0,
+        "channels": 1,
+        "cut_db": -6.5
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -19.4
+      },
+      "clap": 0.9986,
+      "clap_cos": 0.4255,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.09,
+        "CU": 6.42,
+        "PC": 2.3,
+        "PQ": 6.76
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 6 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.8287,
+      "rank": 2,
+      "ref": "20261026-210946-b8ed:261728",
+      "files": {
+        "wav": "20261026-210946-b8ed/261728.wav",
+        "png": "20261026-210946-b8ed/261728.png",
+        "raw": "20261026-210946-b8ed/261728_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210946-b8ed\\261728.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210946-b8ed\\261728.png"
+      },
+      "review": {
+        "brief_id": "4bfa113b3f02de9e7aa3cb516b978eed8584acd1c8a8d5b4d1fc65127de7ecdc",
+        "blind_caption": "A small object is dropped on a hard surface.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.4782
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 261728,
+    "signal": {
+      "duration_s": 2.0,
+      "peak_dbfs": -11.63,
+      "true_peak_dbtp": -11.62,
+      "clipped_fraction": 0.0,
+      "dc_offset": 0.0001,
+      "active_s": 0.85,
+      "noise_floor_db": -76.4,
+      "onset_s": 0.022,
+      "tail_db": -72.8,
+      "stereo_correlation": 1.0,
+      "lufs": -32.5,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 10.57,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.3333,
+      "length_frames": 8.0,
+      "channels": 1,
+      "cut_db": -6.5
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -19.4
+    },
+    "clap": 0.9986,
+    "clap_cos": 0.4255,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.09,
+      "CU": 6.42,
+      "PC": 2.3,
+      "PQ": 6.76
+    },
+    "fails": [],
+    "warnings": [
+      "cut at the requested duration while still 6 dB below its peak: the tail is chopped, ask for a longer --duration"
+    ],
+    "rejected": false,
+    "rank_score": 0.8287,
+    "rank": 2,
+    "ref": "20261026-210946-b8ed:261728",
+    "files": {
+      "wav": "20261026-210946-b8ed/261728.wav",
+      "png": "20261026-210946-b8ed/261728.png",
+      "raw": "20261026-210946-b8ed/261728_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210946-b8ed\\261728.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210946-b8ed\\261728.png"
+    },
+    "review": {
+      "brief_id": "4bfa113b3f02de9e7aa3cb516b978eed8584acd1c8a8d5b4d1fc65127de7ecdc",
+      "blind_caption": "A small object is dropped on a hard surface.",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.4782
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemPoison\\iteration-20261026-210923-2e77\\TOONPop_Iterated_v01.wav"
+  ]
+}

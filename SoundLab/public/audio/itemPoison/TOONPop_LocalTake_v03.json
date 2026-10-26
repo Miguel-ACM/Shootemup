@@ -1,0 +1,84 @@
+{
+  "request": "20261026-210923-f343",
+  "ref": "20261026-210923-f343:261727",
+  "text": "TrackType: SFX, one tiny viscous toxic liquid bubble rupturing, low wet gurgling pop, short and close",
+  "prompt": "TrackType: SFX, one tiny viscous toxic liquid bubble rupturing, low wet gurgling pop, short and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "cartoon-pop",
+  "seed": 261727,
+  "rank": 1,
+  "rank_score": 0.718,
+  "clap": 0.9943,
+  "clap_cos": 0.3847,
+  "clap_top": null,
+  "aes": {
+    "CE": 2.79,
+    "CU": 5.79,
+    "PC": 2.66,
+    "PQ": 5.84
+  },
+  "fails": [],
+  "warnings": [
+    "cut at the requested duration while still 11 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 9.81,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.3333,
+    "length_frames": 8.0,
+    "channels": 1,
+    "cut_db": -11.3
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -22.5
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -10.33,
+    "true_peak_dbtp": -10.33,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00049,
+    "active_s": 1.08,
+    "noise_floor_db": -77.1,
+    "onset_s": 0.0509,
+    "tail_db": -76.3,
+    "stereo_correlation": 0.935,
+    "lufs": -31.4,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "4bfa113b3f02de9e7aa3cb516b978eed8584acd1c8a8d5b4d1fc65127de7ecdc",
+    "blind_caption": "A car door closing",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one tiny viscous toxic liquid bubble rupturing?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "KEEP (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.3789
+  },
+  "human_approved": false
+}
