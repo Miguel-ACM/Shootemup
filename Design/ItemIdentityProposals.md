@@ -25,7 +25,7 @@ Some later items have clearer display names for hidden triggers and effects. The
 | Three Moons | Keep original | Three orbiting bullet shields. |
 | Twerp | Keep original | Small shooting companion. |
 | Another arm | Keep original | +1 bullet per shot. |
-| Bad glasses | Close-Range Slow | Enemy bullets move 10% slower near you. |
+| Bad glasses | Nearby Bullet Slow | Enemy bullets move 10% slower near you. |
 | Ball Bearing | Shrapnel Bearing | Hits sometimes spray three fragments. |
 | Bouncing ball | Keep | Shots bounce once toward another enemy. |
 | Caffeine | Keep original | Faster movement, firing and bullets. |
@@ -35,7 +35,7 @@ Some later items have clearer display names for hidden triggers and effects. The
 | Double trouble | Linked Triggers | Either trigger fires both equipped guns. |
 | Drone Link | Keep | Support drone. +20% companion damage. |
 | EMP Pulse | Keep | Clears all bullets every 20 seconds. |
-| Energy core | Energy Regenerator | Regenerate 3 energy per second in combat. |
+| Energy core | Energy Regen | Regenerate 3 energy per second in combat. |
 | Focusing Lens | Combo Lens | Consecutive hits deal up to +45% damage. |
 | Focus time | Focus Brake | Move 40% slower while focusing. |
 | Gasoline leak | Incendiary Rounds | Red bullets set enemies alight. |
@@ -63,7 +63,7 @@ Some later items have clearer display names for hidden triggers and effects. The
 | Static sweater | Keep | Movement charges a chain-lightning hit. |
 | Telekinesis | Keep original | Homing shots. |
 | AK45 | Keep original | Side-firing gun. |
-| Backdraft | Rear Flamethrower | A wide rear flame cone. Stacking burn. |
+| Backdraft | Rear Flame | A wide rear flame cone. Stacking burn. |
 | Beam Emitter | Keep | Hold for a continuous beam. Telekinesis bends it. |
 | Burst Launcher | Keep | Exploding shells. |
 | Depth Charge | Keep | Drop shells behind you. They brake, then burst into a rear fan. |
