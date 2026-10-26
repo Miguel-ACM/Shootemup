@@ -21,6 +21,7 @@ public static class EnemyExpansion
     }
     public static readonly Entry[] All = {
         // Individual enemies are registered here with their own content commits.
+        new Entry(LevelId.Hell, typeof(BoneHarrier), 80, 0.49f, true, IndustrialMeshFactory.BoneHarrierMesh, new[] { new Vector3(0,-.96f,-.23f) }, System.Array.Empty<Vector3>(), WavePartLibrary.BoneHarrierParts),
         new Entry(LevelId.Hell, typeof(AshCenser), 79, 0.58f, false, IndustrialMeshFactory.AshCenserMesh, new[] { new Vector3(-.41f,-.52f,-.24f), new Vector3(.41f,-.52f,-.24f) }, System.Array.Empty<Vector3>(), WavePartLibrary.AshCenserParts),
         new Entry(LevelId.Underwater, typeof(JetSquid), 78, 0.51f, true, IndustrialMeshFactory.JetSquidMesh, new[] { new Vector3(0,-.92f,-.22f) }, System.Array.Empty<Vector3>(), WavePartLibrary.JetSquidParts),
         new Entry(LevelId.Underwater, typeof(NautilusBell), 77, 0.57f, false, IndustrialMeshFactory.NautilusBellMesh, new[] { new Vector3(-.44f,-.51f,-.23f), new Vector3(.44f,-.51f,-.23f) }, System.Array.Empty<Vector3>(), WavePartLibrary.NautilusBellParts),
