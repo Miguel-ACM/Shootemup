@@ -21,6 +21,7 @@ public static class EnemyExpansion
     }
     public static readonly Entry[] All = {
         // Individual enemies are registered here with their own content commits.
+        new Entry(LevelId.Thunder, typeof(StormOrgan), 70, 0.57f, false, IndustrialMeshFactory.StormOrganMesh, new[] { new Vector3(-.38f,-1.02f,-.23f), new Vector3(.38f,-1.02f,-.23f) }, new[] { new Vector3(-.28f,.68f,0), new Vector3(.28f,.68f,0) }, WavePartLibrary.StormOrganParts),
         new Entry(LevelId.Thunder, typeof(CapacitorKite), 69, 0.53f, false, IndustrialMeshFactory.CapacitorKiteMesh, new[] { new Vector3(-.52f,-.48f,-.26f), new Vector3(.52f,-.48f,-.26f) }, new[] { new Vector3(-.28f,.68f,0), new Vector3(.28f,.68f,0) }, WavePartLibrary.CapacitorKiteParts),
         new Entry(LevelId.Tunnel, typeof(RivetMantis), 68, 0.55f, false, IndustrialMeshFactory.RivetMantisMesh, new[] { new Vector3(-.78f,-.77f,-.16f), new Vector3(.78f,-.77f,-.16f) }, new[] { new Vector3(-.28f,.68f,0), new Vector3(.28f,.68f,0) }, WavePartLibrary.RivetMantisParts),
         new Entry(LevelId.Tunnel, typeof(BaffleSpinner), 67, 0.48f, false, IndustrialMeshFactory.BaffleSpinnerMesh, new[] { new Vector3(-.64f,-.3f,-.16f), new Vector3(.64f,-.3f,-.16f) }, new[] { new Vector3(-.28f,.68f,0), new Vector3(.28f,.68f,0) }, WavePartLibrary.BaffleSpinnerParts),
