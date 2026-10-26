@@ -31,6 +31,10 @@ def audition_description(take):
         notes.append('The automatic check detected a possibly cut-off tail.')
     if any('out of phase' in warning for warning in take.get('warnings', [])):
         notes.append('The automatic check found a possible stereo phase issue.')
+    if any('CLAP thinks' in warning for warning in take.get('warnings', [])):
+        notes.append('The similarity check suggested a different sound.')
+    if any('production quality' in warning for warning in take.get('warnings', [])):
+        notes.append('The automatic production-quality score was low.')
     if take.get('review', {}).get('warnings'):
         notes.append('The automatic listener was uncertain.')
     return ' '.join(notes) or 'Locally generated; your listening decides.'
