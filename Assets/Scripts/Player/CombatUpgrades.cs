@@ -192,6 +192,8 @@ public sealed class CombatUpgrades : MonoBehaviour
         {
             coins -= 5;
             PlayerRound.Spawn(transform.position, Vector2.up, 12, 10, PlayerDelivery.Missile, 1);
+            ItemProcVfx.Emit(ItemProcShape.Convert, transform.position, new Color(.88f, .68f, .28f), .55f);
+            ItemSound.Cue("itemSalvage", volume: .12f);
         }
     }
 
