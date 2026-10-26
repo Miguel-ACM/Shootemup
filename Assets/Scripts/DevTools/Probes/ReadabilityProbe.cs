@@ -54,14 +54,25 @@ public sealed class ReadabilityProbe : MonoBehaviour
         yield return new WaitForSecondsRealtime(.3f);
         bool hidden = !dialog.IsVisible;
         warning.blink();
-        yield return new WaitForSecondsRealtime(.65f);
+        yield return new WaitForSecondsRealtime(1.1f);
         yield return new WaitForEndOfFrame();
         Canvas.ForceUpdateCanvases();
         var corners = new Vector3[4];
         warning.ScreenRect.GetWorldCorners(corners);
         var lo = RectTransformUtility.WorldToScreenPoint(null, corners[0]);
         var hi = RectTransformUtility.WorldToScreenPoint(null, corners[2]);
-        bool full = Mathf.Abs((hi.x - lo.x) - Screen.height * 405f / 720) < 2 && Mathf.Abs(lo.y) < 2 && Mathf.Abs(hi.y - Screen.height) < 2 && lo.x > 1;
+        bool full = Mathf.Abs((hi.x - lo.x) - Screen.height * 405f / 720) < 2 && Mathf.Abs((hi.x + lo.x) * .5f - Screen.width * .5f) < 2 && Mathf.Abs(lo.y) < 2 && Mathf.Abs(hi.y - Screen.height) < 2 && lo.x > 1;
+        int centeredWarnings = 0;
+        foreach (Transform child in warning.ScreenRect)
+        {
+            var label = child.Find("Text");
+            if (label == null)
+                continue;
+            var text = label.GetComponent<TMPro.TextMeshProUGUI>();
+            if (text != null && text.text == "WARNING" && Mathf.Abs(RectTransformUtility.WorldToScreenPoint(null, text.rectTransform.position).x - Screen.width * .5f) < 2)
+                centeredWarnings++;
+        }
+        bool warningWordsCentered = centeredWarnings == 7;
         Capture("Playfield_Warning.png");
         for (int frame = 0; frame < 12; frame++)
         {
@@ -103,7 +114,7 @@ public sealed class ReadabilityProbe : MonoBehaviour
         bool enemyImpact = PSXImpactEffects.BurstCount == bursts + 1;
         yield return new WaitForEndOfFrame();
         Capture("PolishedEffects.png");
-        string report = "{\"dialogCentered\":" + B(centered) + ",\"dialogFullyHides\":" + B(hidden) + ",\"warningClippedToPlayfield\":" + B(full) + ",\"warningClears\":" + B(warningClears) + ",\"bossWorldWidth\":" + bossWidth.ToString(System.Globalization.CultureInfo.InvariantCulture) + ",\"bossScaleRestored\":" + B(bossWidth > 5) + ",\"claimsNearestOnly\":" + B(rejectsFarther && claimsNearest) + ",\"itemFliesToPlayer\":" + B(flies) + ",\"rarityOrbit\":" + B(orbit) + ",\"collectsOnceAndRemovesOtherOptions\":" + B(collectedOnce) + ",\"playerImpact\":" + B(playerImpact) + ",\"enemyImpact\":" + B(enemyImpact) + "}";
+        string report = "{\"dialogCentered\":" + B(centered) + ",\"dialogFullyHides\":" + B(hidden) + ",\"warningClippedToPlayfield\":" + B(full) + ",\"warningWordsCentered\":" + B(warningWordsCentered) + ",\"warningClears\":" + B(warningClears) + ",\"bossWorldWidth\":" + bossWidth.ToString(System.Globalization.CultureInfo.InvariantCulture) + ",\"bossScaleRestored\":" + B(bossWidth > 5) + ",\"claimsNearestOnly\":" + B(rejectsFarther && claimsNearest) + ",\"itemFliesToPlayer\":" + B(flies) + ",\"rarityOrbit\":" + B(orbit) + ",\"collectsOnceAndRemovesOtherOptions\":" + B(collectedOnce) + ",\"playerImpact\":" + B(playerImpact) + ",\"enemyImpact\":" + B(enemyImpact) + "}";
         File.WriteAllText("ArtSource/PSXPreview/ReadabilityAudit.json", report);
         Debug.Log("Readability audit: " + report);
         File.WriteAllText("ArtSource/PSXPreview/open-gameplay.request", "Return to normal L1 after visual QA");

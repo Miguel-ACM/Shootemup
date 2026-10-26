@@ -1,0 +1,2 @@
+PASS: blink before Start and retrigger build seven moving ribbons without exceptions; the 405:720 clip and all complete warning words align at screen center; rows are vertically balanced and the warning clears. Native camera-canvas snapshot, no Play mode.
+Screen 640x480; clip center (320.00, 240.00); clip width 270.

@@ -3,9 +3,8 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>Boss warning clipped to the portrait playfield: seven yellow WARNING ribbons, each edged
-/// with thin hazard stripes over a dark band, enter from fully outside the playfield on random sides
-/// with a short ease-out burst, then cruise across and leave completely. Spacing, sides, speeds and
-/// delays are re-rolled on every warning. Text never fades; only the dim wash eases in and out.</summary>
+/// with thin hazard stripes over a dark band, enter from random sides, align at the centre,
+/// then leave completely. Text never fades; only the dim wash eases in and out.</summary>
 public class Warning : MonoBehaviour
 {
     public TMP_FontAsset font;
@@ -14,14 +13,14 @@ public class Warning : MonoBehaviour
     CanvasGroup group;
     RectTransform field;
     const int RowCount = 7;
-    const float RowHeight = 56, Stripe = 4, FadeIn = .3f, FadeOut = .4f, HalfField = 203;
-    const float EntryBoost = 150, EntryEase = 6;   // extra distance covered quickly on entry, and how fast it eases off
+    const float RowHeight = 56, Stripe = 4, FadeIn = .3f, FadeOut = .4f, HalfField = 202.5f;
+    const float HoldUntil = 1.9f;
     static readonly Color Yellow = new Color(1f, .82f, .16f), YellowTop = new Color(1f, .94f, .5f), YellowBottom = new Color(1f, .7f, .08f);
     float duration;
     Image washImage;
     static Texture2D hazard;
     readonly RectTransform[] rows = new RectTransform[RowCount];
-    readonly float[] widths = new float[RowCount], speeds = new float[RowCount], delays = new float[RowCount], heights = new float[RowCount];
+    readonly float[] widths = new float[RowCount], entryTimes = new float[RowCount], exitTimes = new float[RowCount], delays = new float[RowCount], heights = new float[RowCount];
     readonly bool[] leftward = new bool[RowCount];
     float elapsed;
     bool showing;
@@ -73,12 +72,12 @@ public class Warning : MonoBehaviour
         rect.offsetMax = new Vector2(-20, -Stripe) + offset;
         var text = rect.GetComponent<TextMeshProUGUI>();
         text.font = font;
-        text.text = string.Concat(System.Linq.Enumerable.Repeat("WARNING     ", 3)).TrimEnd();
+        text.text = "WARNING";
         text.fontSize = 38;
         text.fontStyle = FontStyles.Normal;
         text.textWrappingMode = TextWrappingModes.NoWrap;
         text.characterSpacing = 6;
-        text.alignment = TextAlignmentOptions.MidlineLeft;
+        text.alignment = TextAlignmentOptions.Midline;
         text.raycastTarget = false;
         return text;
     }
@@ -105,6 +104,8 @@ public class Warning : MonoBehaviour
         group.blocksRaycasts = false;
         field = Child("Portrait clip", overlay.transform, typeof(RectTransform), typeof(RectMask2D));
         field.anchorMin = field.anchorMax = new Vector2(.5f, .5f);
+        field.pivot = new Vector2(.5f, .5f);
+        field.anchoredPosition = Vector2.zero;
         field.sizeDelta = new Vector2(405, 720);
         var wash = Child("Warning wash", field, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         wash.anchorMin = Vector2.zero;
@@ -116,6 +117,7 @@ public class Warning : MonoBehaviour
         for (int i = 0; i < rows.Length; i++)
         {
             var row = Child("Warning ribbon " + i, field, typeof(RectTransform));
+            rows[i] = row;
             row.anchorMin = row.anchorMax = new Vector2(.5f, .5f);
             row.pivot = new Vector2(0, .5f);
             var band = Child("Band", row, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -152,16 +154,16 @@ public class Warning : MonoBehaviour
         showing = true;
         group.alpha = 1;
         canvas.enabled = true;
-        duration = 0;
+        duration = HoldUntil;
         float pitch = 720f / RowCount;
         for (int i = 0; i < rows.Length; i++)
         {
             leftward[i] = Random.value < .5f;
-            speeds[i] = Random.Range(340f, 520f);
-            delays[i] = Random.Range(0f, .45f);
-            heights[i] = 360 - pitch * (i + .5f) + Random.Range(-pitch * .18f, pitch * .18f);
-            // Finished once the far end of the ribbon has crossed the whole playfield.
-            duration = Mathf.Max(duration, delays[i] + (2 * HalfField + widths[i]) / speeds[i]);
+            entryTimes[i] = Random.Range(.45f, .65f);
+            exitTimes[i] = Random.Range(.5f, .75f);
+            delays[i] = Random.Range(0f, .2f);
+            heights[i] = 360 - pitch * (i + .5f);
+            duration = Mathf.Max(duration, HoldUntil + exitTimes[i]);
         }
         AnimateRows();
     }
@@ -170,11 +172,13 @@ public class Warning : MonoBehaviour
     {
         for (int i = 0; i < rows.Length; i++)
         {
-            float t = Mathf.Max(0, elapsed - delays[i]);
-            // Ease-out entry: a short burst of extra speed that settles into the cruising speed.
-            float travel = t * speeds[i] + EntryBoost * (1 - Mathf.Exp(-t * EntryEase));
-            // Left-moving ribbons start just past the right edge, right-moving ones just past the left.
-            float x = leftward[i] ? HalfField - travel : -HalfField - widths[i] + travel;
+            float start = leftward[i] ? HalfField : -HalfField - widths[i];
+            float center = -widths[i] * .5f;
+            float end = leftward[i] ? -HalfField - widths[i] : HalfField;
+            float x = elapsed < delays[i] + entryTimes[i]
+                ? Mathf.Lerp(start, center, Mathf.SmoothStep(0, 1, Mathf.Clamp01((elapsed - delays[i]) / entryTimes[i])))
+                : elapsed < HoldUntil ? center
+                : Mathf.Lerp(center, end, Mathf.SmoothStep(0, 1, Mathf.Clamp01((elapsed - HoldUntil) / exitTimes[i])));
             rows[i].anchoredPosition = new Vector2(Mathf.Round(x), heights[i]);
         }
     }
