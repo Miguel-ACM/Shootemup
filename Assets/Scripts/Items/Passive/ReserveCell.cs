@@ -3,7 +3,7 @@ public sealed class ReserveCell : AItem
 {
     void Awake()
     {
-        SetData("Reserve Cell", "Ship equipment", "Store 12 spare energy for actives.", ItemType.passive);
+        SetData("Energy Reserve", "Ship equipment", "Store 12 spare energy for actives.", ItemType.passive);
     }
 
     public override void OnBegin()
