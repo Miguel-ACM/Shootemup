@@ -63,17 +63,23 @@ public sealed class BeamEmitter : AWeaponAutomatic
     void Trace(Vector3 origin, Vector3[] path)
     {
         path[0] = origin;
-        Vector2 direction = Vector2.up;
-        float bend = Mathf.Min(3, GameRules.playerShootFollowness);
+        bool bends = GameRules.playerShootFollowness > 0 && hasAttraction;
+        Vector3 target = new Vector3(Mathf.Lerp(origin.x, attraction.x, Mathf.Clamp01(GameRules.playerShootFollowness)), attraction.y, origin.z);
+        float distance = Vector2.Distance(origin, target);
+        int approach = Mathf.Clamp(Mathf.CeilToInt(distance / .4f), 4, Samples - 6);
+        Vector3 control = origin + Vector3.up * Mathf.Max(.25f, distance * .65f);
+        Vector3 exit = (target - control).normalized;
         for (int step = 1; step < path.Length; step++)
         {
-            if (bend > 0 && hasAttraction)
+            if (!bends)
+                path[step] = origin + Vector3.up * (step * .5f);
+            else if (step <= approach)
             {
-                Vector2 delta = attraction - path[step - 1];
-                if (delta.sqrMagnitude > .04f)
-                    direction = Vector3.RotateTowards(direction, delta.normalized, bend * .045f, 0);
+                float t = step / (float)approach;
+                path[step] = (1 - t) * (1 - t) * origin + 2 * (1 - t) * t * control + t * t * target;
             }
-            path[step] = path[step - 1] + (Vector3)direction * .5f;
+            else
+                path[step] = target + exit * ((step - approach) * .5f);
         }
     }
 
@@ -88,7 +94,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
             for (int step = 1; step < path.Length; step++)
             {
                 Vector2 start = path[step - 1], segment = path[step] - path[step - 1];
-                float lengthSquared = segment.sqrMagnitude;
+                float lengthSquared = Mathf.Max(.000001f, segment.sqrMagnitude);
                 Vector2 probe = start + segment * Mathf.Clamp01(Vector2.Dot((Vector2)collider.bounds.center - start, segment) / lengthSquared);
                 for (int i = 0; i < 3; i++)
                 {
