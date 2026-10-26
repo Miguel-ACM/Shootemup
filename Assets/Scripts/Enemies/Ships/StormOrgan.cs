@@ -9,7 +9,7 @@ public sealed class StormOrgan : DistrictEnemy
         hull = 70;
         hullScale = 0.57f;
         health = 48;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(3.8f, 3.0f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -37,12 +37,14 @@ public sealed class StormOrgan : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve StormOrganRoute0 = Route("Thunder / StormOrgan 0", Vector2.right, -.65f, 1.25f, -.57f, .95f, -.3f, .78f, .23f, .78f, .57f, .96f, .65f, 1.25f);
-    static readonly FlightCurve StormOrganRoute1 = Route("Thunder / StormOrgan 1", Vector2.right, -1.4f, .88f, -.8f, .85f, -.15f, .82f, .55f, .87f, 1.4f, .91f);
-    public static readonly WavePart[] StormOrganParts ={
-        new WavePart("StormOrgan call",nameof(StormOrgan),StormOrganRoute0,WaveShape.Train,2,6.15f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
-        new WavePart("StormOrgan crossing",nameof(StormOrgan),StormOrganRoute1,WaveShape.Train,2,6.40f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
-        new WavePart("StormOrgan answer",nameof(StormOrgan),StormOrganRoute0,WaveShape.Rake,2,6.65f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
+    static readonly FlightCurve StormOrganRoute0 = Route("Thunder / Organ vertical aisle", Vector2.right, -0.48f, 1.25f, -0.49f, 0.94f, -0.48f, 0.71f, -0.43f, 0.48f, -0.12f, 0.27f, 0.57f, 0.3f, 1.4f, 0.4f);
+    static readonly FlightCurve StormOrganRoute1 = Route("Thunder / Organ descending columns", Vector2.right, -0.55f, 1.25f, -0.5f, 0.89f, -0.42f, 0.65f, -0.32f, 0.43f, -0.22f, 0.16f, -0.15f, -0.25f);
+    static readonly FlightCurve StormOrganRoute2 = Route("Thunder / Organ lightning terrace", Vector2.right, -1.4f, 0.9f, -0.68f, 0.79f, 0.0f, 0.78f, 0.69f, 0.79f, 1.4f, 0.9f);
+    public static readonly WavePart[] StormOrganParts =
+    {
+        new WavePart("Organ vertical aisle", nameof(StormOrgan), StormOrganRoute0, WaveShape.Rank, 2, 6.4f, 2, new[] { 0.27f, 0.6f }, new[] { 0.45f }, 2),
+        new WavePart("Organ descending columns", nameof(StormOrgan), StormOrganRoute1, WaveShape.Train, 2, 6.0f, 4, new[] { 0.3f, 0.65f }, new[] { 0.48f }, 2),
+        new WavePart("Organ lightning terrace", nameof(StormOrgan), StormOrganRoute2, WaveShape.Rake, 2, 6.1f, 7, new[] { 0.29f, 0.62f }, new[] { 0.46f }, 2),
     };
 }
 
