@@ -155,7 +155,11 @@ public sealed class CombatUpgrades : MonoBehaviour
             ItemSound.Cue("itemSplit", volume: .08f, cooldown: .18f);
         }
         if (Count(UpgradeKind.Bearing) > 0 && Ready("bearing", .65f))
+        {
             Fragments(enemy.transform.position, damage * .55f, 3, 60);
+            ItemProcVfx.Emit(ItemProcShape.Detonate, enemy.transform.position, new Color(.7f, .65f, .42f), .35f);
+            ItemSound.Cue("itemBearing", volume: .07f, cooldown: .2f);
+        }
         if (Count(UpgradeKind.Battery) > 0)
         {
             battery += Mathf.Min(damage, enemy.health) * (companion ? .25f : .3f);
