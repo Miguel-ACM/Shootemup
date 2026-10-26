@@ -1,0 +1,275 @@
+starting the local-sounds server in its own window (close that window, or run stop.cmd, to stop it and free the GPU)...
+Creating itemChargeRelease
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemChargeRelease\\iteration-20261026-205835-4a5b\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemChargeRelease\\iteration-20261026-205835-4a5b\\DSGNMisc_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemChargeBlast
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemChargeBlast\\iteration-20261026-205924-19d0\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemChargeBlast\\iteration-20261026-205924-19d0\\EXPLReal_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemFlameIgnite
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: failed; 1 rounds; 2/4 generated
+SFX iteration: server said 500: Internal Server Error
+Creating itemFlameSustain
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFlameSustain\\iteration-20261026-210016-1b1e\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFlameSustain\\iteration-20261026-210016-1b1e\\AMBMisc_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemFlameRelease
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: [WinError 5] Acceso denegado: 'C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFlameRelease\\iteration-20261026-210101-a6e9\\session.tmp' -> 'C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFlameRelease\\iteration-20261026-210101-a6e9\\session.json'
+Creating itemDepthLaunch
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemDepthLaunch\\iteration-20261026-210145-2bdd\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemDepthLaunch\\iteration-20261026-210145-2bdd\\METLImpt_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemDepthBurst
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemDepthBurst\\iteration-20261026-210229-a7e6\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemDepthBurst\\iteration-20261026-210229-a7e6\\METLImpt_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemSplit
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: failed; 1 rounds; 2/4 generated
+SFX iteration: server said 500: Internal Server Error
+Creating itemBearing
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemBearing\\iteration-20261026-210325-bb8b\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemBearing\\iteration-20261026-210325-bb8b\\METLImpt_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemRicochet
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: [WinError 5] Acceso denegado: 'C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemRicochet\\iteration-20261026-210410-23b4\\session.tmp' -> 'C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemRicochet\\iteration-20261026-210410-23b4\\session.json'
+Creating itemProximity
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemProximity\\iteration-20261026-210458-6d2c\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemProximity\\iteration-20261026-210458-6d2c\\TOONPop_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemBattery
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: failed; 2 rounds; 4/4 generated
+SFX iteration: server said 500: Internal Server Error
+Creating itemSalvage
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemSalvage\\iteration-20261026-210612-c1b4\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemSalvage\\iteration-20261026-210612-c1b4\\DSGNMisc_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemCounter
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemCounter\\iteration-20261026-210658-dc5f\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemCounter\\iteration-20261026-210658-dc5f\\METLImpt_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemReserve
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemReserve\\iteration-20261026-210744-a964\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemReserve\\iteration-20261026-210744-a964\\DSGNMisc_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemFocus
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: failed; 1 rounds; 2/4 generated
+SFX iteration: server said 500: Internal Server Error
+Creating itemBurn
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemBurn\\iteration-20261026-210835-bd7b\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemBurn\\iteration-20261026-210835-bd7b\\METLImpt_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemPoison
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemPoison\\iteration-20261026-210923-2e77\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemPoison\\iteration-20261026-210923-2e77\\TOONPop_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemChain
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemChain\\iteration-20261026-211008-af8b\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemChain\\iteration-20261026-211008-af8b\\EXPLReal_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemGum
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: failed; 2 rounds; 4/4 generated
+SFX iteration: server said 500: Internal Server Error
+Creating itemReturn
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemReturn\\iteration-20261026-211122-36fe\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemReturn\\iteration-20261026-211122-36fe\\WHSH_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemCapReady
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: failed; 2 rounds; 4/4 generated
+SFX iteration: server said 500: Internal Server Error

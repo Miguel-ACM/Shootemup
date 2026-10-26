@@ -23,22 +23,19 @@ flame effects follow the hull's muzzle and exhaust positions.
 
 ## Audio status
 
-No new audio has been generated or imported in this round. The local SFX server is
-stopped; the latest GPU check shows approximately 4.3 GB of 6 GB already occupied.
-The installed generator's instructions require explicit consent to bypass its
-4 GB guard and generate alongside current GPU applications. That question is
-pending; no application has been stopped and the guard has not been bypassed.
+Miguel authorized generation alongside his apps. All 22 fixed briefs in `cues.json`
+now have audition takes in Sound Lab. Each attempt used two initial takes and one
+bounded repair round, with a maximum of four generated takes. Eight failed first
+attempts were retried with new seeds and a longer minimum duration; their original
+sessions and raw takes are retained. `Results.md` records the selected references,
+scores and warnings. The listener gave uncertain answers for many takes, so these
+results are not listening approval. No takes were imported into Unity.
 
-`cues.json` contains 22 fixed briefs; `dry-run.json` records the bounded plan:
-two initial takes plus one repair round, at most four generations per cue.
-The installed iterator's dry run passed. CPU critic judgments remain advisory;
-human listening approval is distinct from technical checks.
+Each iteration preserves the raw generator takes, request metadata, best WAV,
+spectrogram, repeat and music-mix previews. `Tools/preserve_item_sfx_sources.py`
+copies raw takes into those folders without overwriting them.
 
-`Tools/iterate_item_sfx.py --start` uses the normal GPU guard and resumes completed
-requests. After generation, `--publish` adds audition copies without changing
-existing choice letters or selections. Sound Lab presents repeat and music-mix
-previews retained by the iterator. Import only explicitly chosen takes through
-`SoundLab/apply_item_picks.py`; see `SoundLab/README.md`.
-
-Until new takes are chosen, runtime hooks retain existing sound fallbacks or
-silence. The original Unity sounds and saved choices remain intact.
+Sound Lab adds audition copies without changing existing choice letters or saved
+selections. Import explicitly chosen takes through `SoundLab/apply_item_picks.py`;
+see `SoundLab/README.md`. Until new takes are chosen, runtime hooks retain existing
+sound fallbacks or silence. The original Unity sounds and saved picks remain intact.

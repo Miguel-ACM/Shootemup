@@ -1,0 +1,128 @@
+Creating itemFlameIgnite
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFlameIgnite\\iteration-20261026-211246-48ba\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFlameIgnite\\iteration-20261026-211246-48ba\\UIClick_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemFlameRelease
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFlameRelease\\iteration-20261026-211329-6553\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFlameRelease\\iteration-20261026-211329-6553\\DSGNMisc_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemSplit
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemSplit\\iteration-20261026-211413-4e3d\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemSplit\\iteration-20261026-211413-4e3d\\UIClick_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemRicochet
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemRicochet\\iteration-20261026-211456-536e\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemRicochet\\iteration-20261026-211456-536e\\METLImpt_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemBattery
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemBattery\\iteration-20261026-211541-5d27\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemBattery\\iteration-20261026-211541-5d27\\FGHTImpt_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemFocus
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 2/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 2/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 2/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFocus\\iteration-20261026-211623-b098\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFocus\\iteration-20261026-211623-b098\\BIRDMisc_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemGum
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemGum\\iteration-20261026-211657-ff24\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemGum\\iteration-20261026-211657-ff24\\TOONPop_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}
+Creating itemCapReady
+SFX iteration: running; 0 rounds; 0/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 1 rounds; 2/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: running; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+SFX iteration: budget_exhausted; 2 rounds; 4/4 generated
+{
+  "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemCapReady\\iteration-20261026-211739-fbfb\\session.json",
+  "status": "budget_exhausted",
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemCapReady\\iteration-20261026-211739-fbfb\\BIRDMisc_Iterated_v01.wav"
+  ],
+  "human_approved": false
+}

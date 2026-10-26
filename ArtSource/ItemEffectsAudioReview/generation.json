@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "human_approved": false,
+  "cues": {
+    "itemChargeRelease": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemChargeRelease\\iteration-20261026-205835-4a5b\\session.json"
+    },
+    "itemChargeBlast": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemChargeBlast\\iteration-20261026-205924-19d0\\session.json"
+    },
+    "itemFlameIgnite": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFlameIgnite\\iteration-20261026-211246-48ba\\session.json"
+    },
+    "itemFlameSustain": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFlameSustain\\iteration-20261026-210016-1b1e\\session.json"
+    },
+    "itemFlameRelease": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFlameRelease\\iteration-20261026-211329-6553\\session.json"
+    },
+    "itemDepthLaunch": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemDepthLaunch\\iteration-20261026-210145-2bdd\\session.json"
+    },
+    "itemDepthBurst": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemDepthBurst\\iteration-20261026-210229-a7e6\\session.json"
+    },
+    "itemSplit": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemSplit\\iteration-20261026-211413-4e3d\\session.json"
+    },
+    "itemBearing": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemBearing\\iteration-20261026-210325-bb8b\\session.json"
+    },
+    "itemRicochet": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemRicochet\\iteration-20261026-211456-536e\\session.json"
+    },
+    "itemProximity": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemProximity\\iteration-20261026-210458-6d2c\\session.json"
+    },
+    "itemBattery": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemBattery\\iteration-20261026-211541-5d27\\session.json"
+    },
+    "itemSalvage": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemSalvage\\iteration-20261026-210612-c1b4\\session.json"
+    },
+    "itemCounter": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemCounter\\iteration-20261026-210658-dc5f\\session.json"
+    },
+    "itemReserve": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemReserve\\iteration-20261026-210744-a964\\session.json"
+    },
+    "itemFocus": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemFocus\\iteration-20261026-211623-b098\\session.json"
+    },
+    "itemBurn": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemBurn\\iteration-20261026-210835-bd7b\\session.json"
+    },
+    "itemPoison": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemPoison\\iteration-20261026-210923-2e77\\session.json"
+    },
+    "itemChain": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemChain\\iteration-20261026-211008-af8b\\session.json"
+    },
+    "itemGum": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemGum\\iteration-20261026-211657-ff24\\session.json"
+    },
+    "itemReturn": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemReturn\\iteration-20261026-211122-36fe\\session.json"
+    },
+    "itemCapReady": {
+      "returncode": 0,
+      "session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemCapReady\\iteration-20261026-211739-fbfb\\session.json"
+    }
+  }
+}
