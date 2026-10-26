@@ -7,15 +7,17 @@ public sealed class WallTurret : DistrictEnemy
         hull = 3;
         health = 35;
         hullScale = .55f;
-        attackInterval = 2.3f;
+        attackInterval = Timing(3.0f,2.3f);
         Mover<DriftDownPattern>();
     }
 
+    protected override void PrepareFire(float seconds) { base.PrepareFire(seconds); firingCue.ClearWarning(); Cue(Muzzle((volley+1)%2),seconds); }
+
     protected override void Attack()
     {
-        var port = Hull.TransformPoint(new Vector3(volley % 2 == 0 ? .22f : -.22f, -1.115f, -.26f));
-        var axis = new Vector2(transform.position.x > 0 ? -1 : 1, -.8f).normalized;
-        for (int i = -1; i <= 1; i++)
-            Fire<RicochetBolt>(port, CombatVisuals.Rotate(axis, i * 15), 4.8f, .18f);
+        var port=Muzzle(volley%2);
+        var axis=new Vector2(transform.position.x>0?-1:1,-1.2f).normalized;
+        int n=Shots(2,3);
+        for(int i=0;i<n;i++) Fire<RicochetBolt>(port,CombatVisuals.Rotate(axis,(i-(n-1)*.5f)*23),3.8f,.22f);
     }
 }
