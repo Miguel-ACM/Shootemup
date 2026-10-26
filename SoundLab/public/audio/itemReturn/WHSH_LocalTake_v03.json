@@ -1,0 +1,84 @@
+{
+  "request": "20261026-211122-a0ac",
+  "ref": "20261026-211122-a0ac:262026",
+  "text": "TrackType: SFX, one small fast boomerang air turn, compact curved swish with a subtle falling pitch, dry and close",
+  "prompt": "TrackType: SFX, one small fast boomerang air turn, compact curved swish with a subtle falling pitch, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "whoosh",
+  "seed": 262026,
+  "rank": 1,
+  "rank_score": 0.7253,
+  "clap": 0.9834,
+  "clap_cos": 0.3081,
+  "clap_top": null,
+  "aes": {
+    "CE": 2.84,
+    "CU": 6.58,
+    "PC": 2.1,
+    "PQ": 6.81
+  },
+  "fails": [],
+  "warnings": [
+    "cut at the requested duration while still 20 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 13.5,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.2083,
+    "length_frames": 5.0,
+    "channels": 1,
+    "cut_db": -19.6
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -13.6
+  },
+  "signal": {
+    "duration_s": 1.0,
+    "peak_dbfs": -11.41,
+    "true_peak_dbtp": -11.35,
+    "clipped_fraction": 0.0,
+    "dc_offset": 7e-05,
+    "active_s": 0.54,
+    "noise_floor_db": -71.9,
+    "onset_s": 0.0708,
+    "tail_db": -72.1,
+    "stereo_correlation": 0.872,
+    "lufs": -30.8,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "8991b84bcf2d5aa92589d73203bc9110e5b094487b212fe562a97d7e3b08826b",
+    "blind_caption": "A gun is fired",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+        "answer": "uncertain",
+        "evidence": "NO"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "NO"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2924
+  },
+  "human_approved": false
+}

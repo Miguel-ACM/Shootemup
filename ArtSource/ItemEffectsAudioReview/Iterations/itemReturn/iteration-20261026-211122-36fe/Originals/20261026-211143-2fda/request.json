@@ -1,0 +1,157 @@
+{
+  "id": "20261026-211143-2fda",
+  "created": "2026-10-26 21:11:43",
+  "text": "TrackType: SFX, one small fast boomerang air turn, compact curved swish with a subtle falling pitch, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small fast boomerang air turn?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one small fast boomerang air turn, compact curved swish with a subtle falling pitch, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small fast boomerang air turn?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "raw": true,
+  "category": "whoosh",
+  "cat_id": "WHSH",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    262028,
+    262029
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.2,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 0.95,
+  "gen_s": 2.09,
+  "score_s": 1.32,
+  "takes": [
+    {
+      "seed": 262028,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -3.74,
+        "true_peak_dbtp": -3.73,
+        "clipped_fraction": 0.0,
+        "dc_offset": 6e-05,
+        "active_s": 0.29,
+        "noise_floor_db": -80.4,
+        "onset_s": 0.0599,
+        "tail_db": -77.5,
+        "stereo_correlation": -0.115,
+        "lufs": -22.6,
+        "fails": [],
+        "warnings": [
+          "stereo channels out of phase (correlation -0.11): mono fold-down would cancel"
+        ]
+      },
+      "post": {
+        "gain_db": 8.99,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -17.2
+      },
+      "clap": 0.9995,
+      "clap_cos": 0.3987,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.45,
+        "CU": 6.21,
+        "PC": 2.51,
+        "PQ": 6.86
+      },
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.11): mono fold-down would cancel"
+      ],
+      "rejected": false,
+      "rank_score": 0.8131,
+      "rank": 1,
+      "ref": "20261026-211143-2fda:262028",
+      "files": {
+        "wav": "20261026-211143-2fda/262028.wav",
+        "png": "20261026-211143-2fda/262028.png",
+        "raw": "20261026-211143-2fda/262028_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211143-2fda\\262028.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211143-2fda\\262028.png"
+      }
+    },
+    {
+      "seed": 262029,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -7.5,
+        "true_peak_dbtp": -7.49,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00021,
+        "active_s": 0.4,
+        "noise_floor_db": -76.4,
+        "onset_s": 0.0519,
+        "tail_db": -73.8,
+        "stereo_correlation": -0.235,
+        "lufs": -22.7,
+        "fails": [],
+        "warnings": [
+          "stereo channels out of phase (correlation -0.23): mono fold-down would cancel"
+        ]
+      },
+      "post": {
+        "gain_db": 6.54,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -13.6
+      },
+      "clap": 0.9941,
+      "clap_cos": 0.332,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.51,
+        "CU": 6.31,
+        "PC": 2.51,
+        "PQ": 6.95
+      },
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.23): mono fold-down would cancel"
+      ],
+      "rejected": false,
+      "rank_score": 0.7599,
+      "rank": 2,
+      "ref": "20261026-211143-2fda:262029",
+      "files": {
+        "wav": "20261026-211143-2fda/262029.wav",
+        "png": "20261026-211143-2fda/262029.png",
+        "raw": "20261026-211143-2fda/262029_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211143-2fda\\262029.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211143-2fda\\262029.png"
+      }
+    }
+  ],
+  "kept": 2
+}

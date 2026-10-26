@@ -7231,6 +7231,179 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemReturn",
+      "label": "Returning shots — turnaround",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemReturn",
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The automatic check found a possible stereo phase issue. The automatic listener was uncertain.",
+          "file": "audio/itemReturn/WHSH_LocalTake_v01.wav",
+          "seconds": 0.20833333333333334,
+          "sampleRate": 48000,
+          "sha256": "3bb6ca22b400b370f1d2628de95114eb6c9a39e7697c155a324f83d947dd2d16",
+          "ref": "20261026-211143-2fda:262028",
+          "review": {
+            "brief_id": "8991b84bcf2d5aa92589d73203bc9110e5b094487b212fe562a97d7e3b08826b",
+            "blind_caption": "A gun is fired.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3395
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic check found a possible stereo phase issue. The automatic listener was uncertain.",
+          "file": "audio/itemReturn/WHSH_LocalTake_v02.wav",
+          "seconds": 0.20833333333333334,
+          "sampleRate": 48000,
+          "sha256": "f0ef03e9b96ce9552ab734a7bad6f66be864f58f1877ba87b9192f39fbd9f1dd",
+          "ref": "20261026-211143-2fda:262029",
+          "review": {
+            "brief_id": "8991b84bcf2d5aa92589d73203bc9110e5b094487b212fe562a97d7e3b08826b",
+            "blind_caption": "A tap on a metal surface",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.254
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The automatic check detected a possibly cut-off tail. The automatic listener was uncertain.",
+          "file": "audio/itemReturn/WHSH_LocalTake_v03.wav",
+          "seconds": 0.20833333333333334,
+          "sampleRate": 48000,
+          "sha256": "005fe447b525facd9c8e15fef61f23683f7b477bbcbf13e7d12798970167899a",
+          "ref": "20261026-211122-a0ac:262026",
+          "review": {
+            "brief_id": "8991b84bcf2d5aa92589d73203bc9110e5b094487b212fe562a97d7e3b08826b",
+            "blind_caption": "A gun is fired",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2924
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic check detected a possibly cut-off tail. The automatic listener was uncertain.",
+          "file": "audio/itemReturn/WHSH_LocalTake_v04.wav",
+          "seconds": 0.20833333333333334,
+          "sampleRate": 48000,
+          "sha256": "4e6620172dbfa93885603b3c140d78a913f3d0fbaf26228f1b899939732232bb",
+          "ref": "20261026-211122-a0ac:262027",
+          "review": {
+            "brief_id": "8991b84bcf2d5aa92589d73203bc9110e5b094487b212fe562a97d7e3b08826b",
+            "blind_caption": "A rubber band being pulled tight.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2802
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }

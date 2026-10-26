@@ -1,0 +1,86 @@
+{
+  "request": "20261026-211143-2fda",
+  "ref": "20261026-211143-2fda:262028",
+  "text": "TrackType: SFX, one small fast boomerang air turn, compact curved swish with a subtle falling pitch, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small fast boomerang air turn?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one small fast boomerang air turn, compact curved swish with a subtle falling pitch, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small fast boomerang air turn?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "whoosh",
+  "seed": 262028,
+  "rank": 1,
+  "rank_score": 0.8131,
+  "clap": 0.9995,
+  "clap_cos": 0.3987,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.45,
+    "CU": 6.21,
+    "PC": 2.51,
+    "PQ": 6.86
+  },
+  "fails": [],
+  "warnings": [
+    "stereo channels out of phase (correlation -0.11): mono fold-down would cancel"
+  ],
+  "post": {
+    "gain_db": 8.99,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.2083,
+    "length_frames": 5.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -17.2
+  },
+  "signal": {
+    "duration_s": 1.0,
+    "peak_dbfs": -3.74,
+    "true_peak_dbtp": -3.73,
+    "clipped_fraction": 0.0,
+    "dc_offset": 6e-05,
+    "active_s": 0.29,
+    "noise_floor_db": -80.4,
+    "onset_s": 0.0599,
+    "tail_db": -77.5,
+    "stereo_correlation": -0.115,
+    "lufs": -22.6,
+    "fails": [],
+    "warnings": [
+      "stereo channels out of phase (correlation -0.11): mono fold-down would cancel"
+    ]
+  },
+  "review": {
+    "brief_id": "8991b84bcf2d5aa92589d73203bc9110e5b094487b212fe562a97d7e3b08826b",
+    "blind_caption": "A gun is fired.",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.3395
+  },
+  "iteration_session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemReturn\\iteration-20261026-211122-36fe\\session.json",
+  "human_approved": false
+}

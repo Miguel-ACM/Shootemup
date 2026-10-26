@@ -1,0 +1,484 @@
+{
+  "brief": {
+    "description": "one small fast boomerang air turn, compact curved swish with a subtle falling pitch, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "8991b84bcf2d5aa92589d73203bc9110e5b094487b212fe562a97d7e3b08826b",
+  "options": {
+    "duration": 0.2,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 262026,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-211122-a0ac",
+      "prompt": "TrackType: SFX, one small fast boomerang air turn, compact curved swish with a subtle falling pitch, dry and close",
+      "takes": [
+        "20261026-211122-a0ac:262026",
+        "20261026-211122-a0ac:262027"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-211143-2fda",
+      "prompt": "TrackType: SFX, one small fast boomerang air turn, compact curved swish with a subtle falling pitch, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small fast boomerang air turn?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-211143-2fda:262028",
+        "20261026-211143-2fda:262029"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 262026,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -11.41,
+        "true_peak_dbtp": -11.35,
+        "clipped_fraction": 0.0,
+        "dc_offset": 7e-05,
+        "active_s": 0.54,
+        "noise_floor_db": -71.9,
+        "onset_s": 0.0708,
+        "tail_db": -72.1,
+        "stereo_correlation": 0.872,
+        "lufs": -30.8,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 13.5,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1,
+        "cut_db": -19.6
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -13.6
+      },
+      "clap": 0.9834,
+      "clap_cos": 0.3081,
+      "clap_top": null,
+      "aes": {
+        "CE": 2.84,
+        "CU": 6.58,
+        "PC": 2.1,
+        "PQ": 6.81
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 20 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.7253,
+      "rank": 1,
+      "ref": "20261026-211122-a0ac:262026",
+      "files": {
+        "wav": "20261026-211122-a0ac/262026.wav",
+        "png": "20261026-211122-a0ac/262026.png",
+        "raw": "20261026-211122-a0ac/262026_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211122-a0ac\\262026.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211122-a0ac\\262026.png"
+      },
+      "review": {
+        "brief_id": "8991b84bcf2d5aa92589d73203bc9110e5b094487b212fe562a97d7e3b08826b",
+        "blind_caption": "A gun is fired",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2924
+      }
+    },
+    {
+      "seed": 262027,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -10.74,
+        "true_peak_dbtp": -10.74,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00011,
+        "active_s": 0.585,
+        "noise_floor_db": -71.1,
+        "onset_s": 0.0529,
+        "tail_db": -71.4,
+        "stereo_correlation": 0.834,
+        "lufs": -29.8,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 12.36,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1,
+        "cut_db": -17.3
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -14.0
+      },
+      "clap": 0.9862,
+      "clap_cos": 0.2878,
+      "clap_top": null,
+      "aes": {
+        "CE": 2.93,
+        "CU": 6.51,
+        "PC": 2.46,
+        "PQ": 6.74
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 17 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.7023,
+      "rank": 2,
+      "ref": "20261026-211122-a0ac:262027",
+      "files": {
+        "wav": "20261026-211122-a0ac/262027.wav",
+        "png": "20261026-211122-a0ac/262027.png",
+        "raw": "20261026-211122-a0ac/262027_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211122-a0ac\\262027.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211122-a0ac\\262027.png"
+      },
+      "review": {
+        "brief_id": "8991b84bcf2d5aa92589d73203bc9110e5b094487b212fe562a97d7e3b08826b",
+        "blind_caption": "A rubber band being pulled tight.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2802
+      }
+    },
+    {
+      "seed": 262028,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -3.74,
+        "true_peak_dbtp": -3.73,
+        "clipped_fraction": 0.0,
+        "dc_offset": 6e-05,
+        "active_s": 0.29,
+        "noise_floor_db": -80.4,
+        "onset_s": 0.0599,
+        "tail_db": -77.5,
+        "stereo_correlation": -0.115,
+        "lufs": -22.6,
+        "fails": [],
+        "warnings": [
+          "stereo channels out of phase (correlation -0.11): mono fold-down would cancel"
+        ]
+      },
+      "post": {
+        "gain_db": 8.99,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -17.2
+      },
+      "clap": 0.9995,
+      "clap_cos": 0.3987,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.45,
+        "CU": 6.21,
+        "PC": 2.51,
+        "PQ": 6.86
+      },
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.11): mono fold-down would cancel"
+      ],
+      "rejected": false,
+      "rank_score": 0.8131,
+      "rank": 1,
+      "ref": "20261026-211143-2fda:262028",
+      "files": {
+        "wav": "20261026-211143-2fda/262028.wav",
+        "png": "20261026-211143-2fda/262028.png",
+        "raw": "20261026-211143-2fda/262028_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211143-2fda\\262028.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211143-2fda\\262028.png"
+      },
+      "review": {
+        "brief_id": "8991b84bcf2d5aa92589d73203bc9110e5b094487b212fe562a97d7e3b08826b",
+        "blind_caption": "A gun is fired.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3395
+      }
+    },
+    {
+      "seed": 262029,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -7.5,
+        "true_peak_dbtp": -7.49,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00021,
+        "active_s": 0.4,
+        "noise_floor_db": -76.4,
+        "onset_s": 0.0519,
+        "tail_db": -73.8,
+        "stereo_correlation": -0.235,
+        "lufs": -22.7,
+        "fails": [],
+        "warnings": [
+          "stereo channels out of phase (correlation -0.23): mono fold-down would cancel"
+        ]
+      },
+      "post": {
+        "gain_db": 6.54,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -13.6
+      },
+      "clap": 0.9941,
+      "clap_cos": 0.332,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.51,
+        "CU": 6.31,
+        "PC": 2.51,
+        "PQ": 6.95
+      },
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.23): mono fold-down would cancel"
+      ],
+      "rejected": false,
+      "rank_score": 0.7599,
+      "rank": 2,
+      "ref": "20261026-211143-2fda:262029",
+      "files": {
+        "wav": "20261026-211143-2fda/262029.wav",
+        "png": "20261026-211143-2fda/262029.png",
+        "raw": "20261026-211143-2fda/262029_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211143-2fda\\262029.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211143-2fda\\262029.png"
+      },
+      "review": {
+        "brief_id": "8991b84bcf2d5aa92589d73203bc9110e5b094487b212fe562a97d7e3b08826b",
+        "blind_caption": "A tap on a metal surface",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.254
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 262028,
+    "signal": {
+      "duration_s": 1.0,
+      "peak_dbfs": -3.74,
+      "true_peak_dbtp": -3.73,
+      "clipped_fraction": 0.0,
+      "dc_offset": 6e-05,
+      "active_s": 0.29,
+      "noise_floor_db": -80.4,
+      "onset_s": 0.0599,
+      "tail_db": -77.5,
+      "stereo_correlation": -0.115,
+      "lufs": -22.6,
+      "fails": [],
+      "warnings": [
+        "stereo channels out of phase (correlation -0.11): mono fold-down would cancel"
+      ]
+    },
+    "post": {
+      "gain_db": 8.99,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.2083,
+      "length_frames": 5.0,
+      "channels": 1
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -17.2
+    },
+    "clap": 0.9995,
+    "clap_cos": 0.3987,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.45,
+      "CU": 6.21,
+      "PC": 2.51,
+      "PQ": 6.86
+    },
+    "fails": [],
+    "warnings": [
+      "stereo channels out of phase (correlation -0.11): mono fold-down would cancel"
+    ],
+    "rejected": false,
+    "rank_score": 0.8131,
+    "rank": 1,
+    "ref": "20261026-211143-2fda:262028",
+    "files": {
+      "wav": "20261026-211143-2fda/262028.wav",
+      "png": "20261026-211143-2fda/262028.png",
+      "raw": "20261026-211143-2fda/262028_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211143-2fda\\262028.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211143-2fda\\262028.png"
+    },
+    "review": {
+      "brief_id": "8991b84bcf2d5aa92589d73203bc9110e5b094487b212fe562a97d7e3b08826b",
+      "blind_caption": "A gun is fired.",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.3395
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemReturn\\iteration-20261026-211122-36fe\\WHSH_Iterated_v01.wav"
+  ]
+}

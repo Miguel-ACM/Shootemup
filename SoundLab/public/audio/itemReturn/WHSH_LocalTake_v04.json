@@ -1,0 +1,84 @@
+{
+  "request": "20261026-211122-a0ac",
+  "ref": "20261026-211122-a0ac:262027",
+  "text": "TrackType: SFX, one small fast boomerang air turn, compact curved swish with a subtle falling pitch, dry and close",
+  "prompt": "TrackType: SFX, one small fast boomerang air turn, compact curved swish with a subtle falling pitch, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "whoosh",
+  "seed": 262027,
+  "rank": 2,
+  "rank_score": 0.7023,
+  "clap": 0.9862,
+  "clap_cos": 0.2878,
+  "clap_top": null,
+  "aes": {
+    "CE": 2.93,
+    "CU": 6.51,
+    "PC": 2.46,
+    "PQ": 6.74
+  },
+  "fails": [],
+  "warnings": [
+    "cut at the requested duration while still 17 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 12.36,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.2083,
+    "length_frames": 5.0,
+    "channels": 1,
+    "cut_db": -17.3
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -14.0
+  },
+  "signal": {
+    "duration_s": 1.0,
+    "peak_dbfs": -10.74,
+    "true_peak_dbtp": -10.74,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00011,
+    "active_s": 0.585,
+    "noise_floor_db": -71.1,
+    "onset_s": 0.0529,
+    "tail_db": -71.4,
+    "stereo_correlation": 0.834,
+    "lufs": -29.8,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "8991b84bcf2d5aa92589d73203bc9110e5b094487b212fe562a97d7e3b08826b",
+    "blind_caption": "A rubber band being pulled tight.",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small fast boomerang air turn?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2802
+  },
+  "human_approved": false
+}
