@@ -180,15 +180,22 @@ public static partial class IndustrialMeshFactory
                 }
                 break;
             case "ReboundCoil":
-                // Exposed zigzag spring between two broad contact plates.
-                for (int i = 0; i < 6; i++)
+                // A real helical spring around a guide piston between two end plates.
+                b.Can(Vector3.zero, .075f, .72f, 6, 11);
+                const int segments = 40;
+                Vector3 CoilPoint(int step)
                 {
-                    float y = -.29f + i * .12f;
-                    int sign = i % 2 == 0 ? 1 : -1;
-                    b.Prism(new[] { new Vector2(-sign * .22f, y), new Vector2(sign * .22f, y + .08f), new Vector2(sign * .22f, y + .14f), new Vector2(-sign * .22f, y + .06f) }, .12f, 11, Vector3.zero);
+                    float t = step / (float)segments;
+                    float angle = t * Mathf.PI * 7;
+                    return new Vector3(Mathf.Cos(angle) * .23f, Mathf.Lerp(-.34f, .34f, t), Mathf.Sin(angle) * .2f);
                 }
+                for (int i = 1; i <= segments; i++)
+                    EquipmentRod(b, CoilPoint(i - 1), CoilPoint(i), .042f, 11);
                 foreach (int side in new[] { -1, 1 })
-                    b.Box(new Vector3(0, side * .43f, 0), new Vector3(.65f, .1f, .24f), 6);
+                {
+                    b.Box(new Vector3(0, side * .43f, 0), new Vector3(.59f, .13f, .48f), 6);
+                    b.Box(new Vector3(0, side * .43f, -.26f), new Vector3(.27f, .07f, .05f), 9);
+                }
                 break;
             case "RecoveryCoil":
                 // Shield plate catches fire and feeds a rocket-shaped return port.
