@@ -1,0 +1,151 @@
+{
+  "id": "20261026-211031-38c4",
+  "created": "2026-10-26 21:10:31",
+  "text": "TrackType: SFX, one small burning powder charge detonation, crunchy low thump with a short hot crackle, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small burning powder charge detonation?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one small burning powder charge detonation, crunchy low thump with a short hot crackle, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small burning powder charge detonation?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "raw": true,
+  "category": "explosion",
+  "cat_id": "EXPLReal",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    261828,
+    261829
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.4,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 1.15,
+  "gen_s": 2.13,
+  "score_s": 1.41,
+  "takes": [
+    {
+      "seed": 261828,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -6.34,
+        "true_peak_dbtp": -5.6,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00011,
+        "active_s": 0.845,
+        "noise_floor_db": -79.3,
+        "onset_s": 0.021,
+        "tail_db": -78.3,
+        "stereo_correlation": 0.86,
+        "lufs": -24.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 9.54,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.4167,
+        "length_frames": 10.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -23.3
+      },
+      "clap": 0.724,
+      "clap_cos": 0.1346,
+      "clap_top": null,
+      "aes": {
+        "CE": 2.83,
+        "CU": 6.07,
+        "PC": 2.43,
+        "PQ": 6.48
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.5428,
+      "rank": 1,
+      "ref": "20261026-211031-38c4:261828",
+      "files": {
+        "wav": "20261026-211031-38c4/261828.wav",
+        "png": "20261026-211031-38c4/261828.png",
+        "raw": "20261026-211031-38c4/261828_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211031-38c4\\261828.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211031-38c4\\261828.png"
+      }
+    },
+    {
+      "seed": 261829,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -6.53,
+        "true_peak_dbtp": -6.49,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00013,
+        "active_s": 0.84,
+        "noise_floor_db": -78.5,
+        "onset_s": 0.022,
+        "tail_db": -75.8,
+        "stereo_correlation": 0.836,
+        "lufs": -24.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 8.24,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.4167,
+        "length_frames": 10.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -24.0
+      },
+      "clap": 0.4954,
+      "clap_cos": 0.0665,
+      "clap_top": null,
+      "aes": {
+        "CE": 2.59,
+        "CU": 4.78,
+        "PC": 2.61,
+        "PQ": 5.23
+      },
+      "fails": [],
+      "warnings": [
+        "so-so production quality (Audiobox PQ 5.2)"
+      ],
+      "rejected": false,
+      "rank_score": 0.2866,
+      "rank": 2,
+      "ref": "20261026-211031-38c4:261829",
+      "files": {
+        "wav": "20261026-211031-38c4/261829.wav",
+        "png": "20261026-211031-38c4/261829.png",
+        "raw": "20261026-211031-38c4/261829_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211031-38c4\\261829.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211031-38c4\\261829.png"
+      }
+    }
+  ],
+  "kept": 2
+}

@@ -7058,6 +7058,179 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemChain",
+      "label": "Chain Reactor — detonation",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemChain",
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The automatic production-quality score was low. The automatic listener was uncertain.",
+          "file": "audio/itemChain/EXPLReal_LocalTake_v01.wav",
+          "seconds": 0.4166666666666667,
+          "sampleRate": 48000,
+          "sha256": "8bae27fddd3d21327a32fe435b1a71d4e86cf269cd306dc4a7f7cb703aca49bf",
+          "ref": "20261026-211008-f624:261826",
+          "review": {
+            "brief_id": "ce4c65dec2c12ef07e48132dabdf8ec3b0b6e3fac752bcaf9e3b9cb123899ebb",
+            "blind_caption": "A person knocks on a door",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small burning powder charge detonation?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "KEEP (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.1194
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemChain/EXPLReal_LocalTake_v02.wav",
+          "seconds": 0.4166666666666667,
+          "sampleRate": 48000,
+          "sha256": "35a4c4e343b8dcda413587ed14667e11b7859ea39896c960c6f9aff3bab62556",
+          "ref": "20261026-211008-f624:261827",
+          "review": {
+            "brief_id": "ce4c65dec2c12ef07e48132dabdf8ec3b0b6e3fac752bcaf9e3b9cb123899ebb",
+            "blind_caption": "A rubbery object is being pressed against another object.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small burning powder charge detonation?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.1146
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemChain/EXPLReal_LocalTake_v03.wav",
+          "seconds": 0.4166666666666667,
+          "sampleRate": 48000,
+          "sha256": "b407d35a719d82164baf1de64b9ef01f895fc817485c0237abf6c65e394771dc",
+          "ref": "20261026-211031-38c4:261828",
+          "review": {
+            "brief_id": "ce4c65dec2c12ef07e48132dabdf8ec3b0b6e3fac752bcaf9e3b9cb123899ebb",
+            "blind_caption": "A person tapping on a surface",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small burning powder charge detonation?",
+                "answer": "uncertain",
+                "evidence": "NO"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.0488
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic production-quality score was low. The automatic listener was uncertain.",
+          "file": "audio/itemChain/EXPLReal_LocalTake_v04.wav",
+          "seconds": 0.4166666666666667,
+          "sampleRate": 48000,
+          "sha256": "39cf57b23fc7256fefcb0dd7b3e1e19ac2e769ff321e545bd8c3276be88c5f65",
+          "ref": "20261026-211031-38c4:261829",
+          "review": {
+            "brief_id": "ce4c65dec2c12ef07e48132dabdf8ec3b0b6e3fac752bcaf9e3b9cb123899ebb",
+            "blind_caption": "A person tapping on a hard surface",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small burning powder charge detonation?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.0318
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }

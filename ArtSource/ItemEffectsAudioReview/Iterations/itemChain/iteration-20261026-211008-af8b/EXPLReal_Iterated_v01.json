@@ -1,0 +1,84 @@
+{
+  "request": "20261026-211008-f624",
+  "ref": "20261026-211008-f624:261826",
+  "text": "TrackType: SFX, one small burning powder charge detonation, crunchy low thump with a short hot crackle, dry and close",
+  "prompt": "TrackType: SFX, one small burning powder charge detonation, crunchy low thump with a short hot crackle, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "explosion",
+  "seed": 261826,
+  "rank": 2,
+  "rank_score": 0.5446,
+  "clap": 0.9843,
+  "clap_cos": 0.2756,
+  "clap_top": null,
+  "aes": {
+    "CE": 2.71,
+    "CU": 5.41,
+    "PC": 2.08,
+    "PQ": 4.91
+  },
+  "fails": [],
+  "warnings": [
+    "so-so production quality (Audiobox PQ 4.9)"
+  ],
+  "post": {
+    "gain_db": 5.91,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.4167,
+    "length_frames": 10.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -20.9
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -6.74,
+    "true_peak_dbtp": -6.72,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.0001,
+    "active_s": 0.4,
+    "noise_floor_db": -82.0,
+    "onset_s": 0.005,
+    "tail_db": -80.2,
+    "stereo_correlation": 1.0,
+    "lufs": -26.6,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "ce4c65dec2c12ef07e48132dabdf8ec3b0b6e3fac752bcaf9e3b9cb123899ebb",
+    "blind_caption": "A person knocks on a door",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small burning powder charge detonation?",
+        "answer": "uncertain",
+        "evidence": "NO"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "KEEP (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.1194
+  },
+  "iteration_session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemChain\\iteration-20261026-211008-af8b\\session.json",
+  "human_approved": false
+}
