@@ -85,7 +85,7 @@ public sealed class WavePart
                 break;
             case WaveShape.Chevron:
                 Add(0, 0, -depth);
-                int wings = Count >= 5 ? 2 : 1;
+                int wings = count >= 5 ? 2 : 1;
                 for (int i = 1; i <= wings; i++)
                     foreach (int wing in new[] { -1, 1 })
                         Add(0, wing * i * gap, (i - 1) * depth);
@@ -124,7 +124,7 @@ public sealed class WavePart
             score = new[] { Seconds * .27f, Seconds * .43f, Seconds * .65f };
         if (Enemy == "ReefDart" || Enemy == "MantaRay" || Enemy == "Bathysphere")
             score = new[] { Seconds * .30f, Seconds * .51f, Seconds * .73f };
-        var authoredScore = Difficulty.Easy ? EasyScore : HardScore;
+        var authoredScore = Difficulty.Easy ? EasyScore ?? EnemyEasyScore.For(Enemy) : HardScore;
         if (authoredScore != null)
         {
             score = new float[authoredScore.Length];

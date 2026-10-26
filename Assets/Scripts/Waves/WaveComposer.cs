@@ -32,6 +32,7 @@ public static class WaveComposer
     static readonly Dictionary<string, int> uses = new Dictionary<string, int>();
     static readonly Dictionary<(WavePart, int, int), Motion> patterns = new Dictionary<(WavePart, int, int), Motion>();
     static int seed = -1, stage = -1, tuningRevision = -1; static LevelId level; static float width, height, tempo;
+    static RunDifficulty difficulty;
     public static float Tempo => Mathf.Max(.01f, PatternMover.FlightTempo * GameRules.enemySpeed * LevelRun.EnemyTempoScale);
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void Reset()
@@ -58,12 +59,13 @@ public static class WaveComposer
 
     static void EnsureContext()
     {
-        if (tuningRevision != EnemyTuning.Revision)
+        if (tuningRevision != EnemyTuning.Revision || difficulty != Difficulty.Current)
         {
             patterns.Clear();
             waves.Clear();
             uses.Clear();
             tuningRevision = EnemyTuning.Revision;
+            difficulty = Difficulty.Current;
         }
         bool geometry = stage != LevelRun.Stage || level != LevelRun.Current || !Mathf.Approximately(width, Camera.RightLimit) || !Mathf.Approximately(height, Camera.UpLimit - Camera.DownLimit);
         if (geometry)
