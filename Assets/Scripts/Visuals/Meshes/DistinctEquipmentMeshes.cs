@@ -198,9 +198,16 @@ public static partial class IndustrialMeshFactory
                 }
                 break;
             case "RecoveryCoil":
-                // Shield plate catches fire and feeds a rocket-shaped return port.
-                b.Prism(new[] { new Vector2(-.4f, .32f), new Vector2(.4f, .32f), new Vector2(.31f, -.18f), new Vector2(0, -.48f), new Vector2(-.31f, -.18f) }, .18f, 11, Vector3.zero, 6);
-                b.Prism(new[] { new Vector2(-.11f, -.18f), new Vector2(.11f, -.18f), new Vector2(.11f, .35f), new Vector2(0, .62f), new Vector2(-.11f, .35f) }, .12f, 9, Vector3.back * .15f);
+                // A layered shield housing feeds an actual raised countershot barrel.
+                b.Prism(new[] { new Vector2(-.4f, .29f), new Vector2(.4f, .29f), new Vector2(.31f, -.18f), new Vector2(0, -.48f), new Vector2(-.31f, -.18f) }, .3f, 6, new Vector3(0, 0, .07f), 11);
+                foreach (int side in new[] { -1, 1 })
+                {
+                    b.Prism(new[] { new Vector2(side * .14f, .22f), new Vector2(side * .36f, .24f), new Vector2(side * .28f, -.15f), new Vector2(side * .11f, -.29f) }, .09f, 11, Vector3.back * .14f, 6);
+                    b.Box(new Vector3(side * .32f, .19f, .04f), new Vector3(.1f, .16f, .36f), 6);
+                }
+                b.Can(new Vector3(0, .07f, -.19f), .095f, .55f, 9, 11);
+                b.Prism(new[] { new Vector2(-.095f, .3f), new Vector2(.095f, .3f), new Vector2(0, .52f) }, .18f, 9, Vector3.back * .19f, 11);
+                b.Box(new Vector3(0, -.29f, -.18f), new Vector3(.26f, .1f, .2f), 6);
                 break;
             case "ProximityFuse":
                 // Whisker detonator: central charge and long exposed sensor prongs.
