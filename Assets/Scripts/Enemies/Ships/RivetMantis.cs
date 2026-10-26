@@ -9,7 +9,7 @@ public sealed class RivetMantis : DistrictEnemy
         hull = 68;
         hullScale = 0.55f;
         health = 40;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(3.2f, 2.3f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -22,12 +22,14 @@ public sealed class RivetMantis : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve RivetMantisRoute0 = Route("Tunnel / RivetMantis 0", Vector2.right, .68f, 1.25f, .55f, .93f, .2f, .7f, -.22f, .56f, -.6f, .72f, -.6f, 1.25f);
-    static readonly FlightCurve RivetMantisRoute1 = Route("Tunnel / RivetMantis 1", Vector2.right, -.35f, 1.25f, -.2f, .87f, .37f, .7f, .58f, .36f, .2f, .06f, -.3f, -.25f);
-    public static readonly WavePart[] RivetMantisParts ={
-        new WavePart("RivetMantis call",nameof(RivetMantis),RivetMantisRoute0,WaveShape.Train,3,5.25f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("RivetMantis crossing",nameof(RivetMantis),RivetMantisRoute1,WaveShape.Train,3,5.50f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("RivetMantis answer",nameof(RivetMantis),RivetMantisRoute0,WaveShape.Rake,3,5.75f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
+    static readonly FlightCurve RivetMantisRoute0 = Route("Tunnel / Mantis gantry traverse", Vector2.right, -1.4f, 0.92f, -0.63f, 0.89f, 0.1f, 0.87f, 0.65f, 0.63f, 1.4f, 0.58f);
+    static readonly FlightCurve RivetMantisRoute1 = Route("Tunnel / Mantis lower bracket", Vector2.right, 0.6f, 1.25f, 0.58f, 0.7f, 0.4f, 0.47f, -0.16f, 0.38f, -0.7f, 0.39f, -1.4f, 0.4f);
+    static readonly FlightCurve RivetMantisRoute2 = Route("Tunnel / Mantis return rail", Vector2.right, -1.4f, 0.52f, -0.66f, 0.49f, -0.05f, 0.55f, 0.38f, 0.83f, 0.43f, 1.25f);
+    public static readonly WavePart[] RivetMantisParts =
+    {
+        new WavePart("Mantis gantry traverse", nameof(RivetMantis), RivetMantisRoute0, WaveShape.Rank, 2, 5.0f, 2, new[] { 0.28f, 0.61f }, new[] { 0.44f }, 2),
+        new WavePart("Mantis lower bracket", nameof(RivetMantis), RivetMantisRoute1, WaveShape.Rake, 2, 5.4f, 4, new[] { 0.32f, 0.54f, 0.73f }, new[] { 0.43f, 0.76f }, 2),
+        new WavePart("Mantis return rail", nameof(RivetMantis), RivetMantisRoute2, WaveShape.Train, 2, 5.2f, 7, new[] { 0.31f, 0.65f }, new[] { 0.47f }, 2),
     };
 }
 
