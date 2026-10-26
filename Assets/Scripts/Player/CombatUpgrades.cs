@@ -213,7 +213,15 @@ public sealed class CombatUpgrades : MonoBehaviour
     public void StoreOverflow(float amount)
     {
         if (Count(UpgradeKind.Reserve) > 0 && amount > 0)
+        {
+            float previous = reserve;
             reserve = Mathf.Min(12, reserve + amount * .5f);
+            if (reserve > previous)
+            {
+                ItemProcVfx.Emit(ItemProcShape.Convert, transform.position, new Color(.45f, .65f, .86f), .35f);
+                ItemSound.Cue("itemReserve", volume: .08f, cooldown: .3f);
+            }
+        }
     }
 
     public float SpendReserve(float amount = float.PositiveInfinity)
