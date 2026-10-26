@@ -22,7 +22,7 @@ public sealed class BoneHarrier : DistrictEnemy
 public static partial class WavePartLibrary
 {
     static readonly FlightCurve BoneHarrierRoute0 = Route("Hell / Harrier talon dive", Vector2.right, -0.62f, 1.25f, -0.5f, 0.8f, 0.1f, 0.47f, 0.6f, 0.22f, 1.4f, 0.14f);
-    static readonly FlightCurve BoneHarrierRoute1 = Route("Hell / Harrier scything ascent", Vector2.right, -1.4f, 0.22f, -0.68f, 0.3f, 0.04f, 0.55f, 0.53f, 0.89f, 0.59f, 1.25f);
+    static readonly FlightCurve BoneHarrierRoute1 = Route("Hell / Harrier scything ascent", Vector2.right, -2.1f, 0.22f, -0.68f, 0.3f, 0.04f, 0.55f, 0.53f, 0.89f, 0.59f, 1.4f);
     static readonly FlightCurve BoneHarrierRoute2 = Route("Hell / Harrier blackwing hook", Vector2.right, 1.4f, 0.86f, 0.7f, 0.7f, 0.22f, 0.36f, -0.31f, 0.24f, -0.71f, 0.47f, -1.4f, 0.67f);
     public static readonly WavePart[] BoneHarrierParts =
     {
