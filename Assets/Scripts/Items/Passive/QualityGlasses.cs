@@ -3,7 +3,7 @@ public sealed class QualityGlasses : AItem
 {
     void Awake()
     {
-        SetData("Quality glasses", "Clear view", "Enemy bullets move 10% slower.", ItemType.passive);
+        SetData("Bullet Slow", "Clear view", "Enemy bullets move 10% slower.", ItemType.passive);
     }
 
     public override void OnBegin()
