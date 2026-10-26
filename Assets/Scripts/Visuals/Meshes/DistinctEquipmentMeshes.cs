@@ -172,22 +172,16 @@ public static partial class IndustrialMeshFactory
                 b.Box(new Vector3(0, -.46f, .02f), new Vector3(.37f, .12f, .26f), 6);
                 break;
             case "ReturnModule":
-                // A return-feed machine: paired guide rollers and an exposed looped rail.
-                b.Box(new Vector3(0, -.29f, .05f), new Vector3(.56f, .27f, .38f), 6, 11);
-                b.Box(new Vector3(0, -.29f, -.17f), new Vector3(.25f, .11f, .06f), 9);
+                // A real boomerang carries a cartridge: returning shots at a glance.
+                b.Prism(new[] { new Vector2(-.55f, .32f), new Vector2(-.34f, .4f), new Vector2(0, -.06f),
+                    new Vector2(.34f, .4f), new Vector2(.55f, .32f), new Vector2(.12f, -.37f),
+                    new Vector2(0, -.43f), new Vector2(-.12f, -.37f) }, .17f, 6, Vector3.zero, 11);
                 foreach (int side in new[] { -1, 1 })
                 {
-                    b.Can(new Vector3(side * .2f, .04f, .08f), .1f, .38f, 11, 6);
-                    b.Drum(new Vector3(side * .2f, .12f, -.07f), .075f, .08f, 9, 8);
+                    b.Drum(new Vector3(side * .36f, .28f, -.11f), .055f, .045f, 9, 8);
+                    b.Box(new Vector3(side * .2f, -.03f, -.1f), new Vector3(.08f, .1f, .04f), 11);
                 }
-                Vector3[] returnRail = {
-                    new Vector3(.29f, -.12f, -.13f), new Vector3(.4f, .12f, -.14f),
-                    new Vector3(.31f, .38f, -.12f), new Vector3(0, .48f, -.08f),
-                    new Vector3(-.31f, .38f, -.12f), new Vector3(-.4f, .1f, -.14f),
-                    new Vector3(-.32f, -.1f, -.13f) };
-                for (int i = 1; i < returnRail.Length; i++)
-                    EquipmentRod(b, returnRail[i - 1], returnRail[i], .045f, 6);
-                b.Prism(new[] { new Vector2(-.45f, -.08f), new Vector2(-.2f, -.08f), new Vector2(-.32f, -.27f) }, .12f, 9, Vector3.back * .13f);
+                EquipmentCartridge(b, new Vector3(0, .19f, -.12f), .09f, .38f);
                 break;
             case "SplitterCore":
                 // A feed cartridge enters a central manifold and divides into two barrels.
