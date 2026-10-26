@@ -23,7 +23,6 @@ public static partial class IndustrialMeshFactory
             return rayAnimal = b.Finish("Ocean ray silhouette");
         }
         b.Ball(Vector3.zero, new Vector3(.36f, .73f, .13f), 14);
-        b.Prism(new[] { new Vector2(0, .42f), new Vector2(-.40f, .99f), new Vector2(.40f, .99f) }, .035f, 13, Vector3.zero);
         b.Prism(new[] { new Vector2(-.18f, .10f), new Vector2(-.55f, .38f), new Vector2(-.32f, -.22f) }, .03f, 13, Vector3.zero);
         return fishAnimal = b.Finish("Schooling reef fish");
     }

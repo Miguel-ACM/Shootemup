@@ -40,14 +40,16 @@ Shader "Shootemup/Depth worlds"
                 }
                 float seabed=Noise(p*.12+9)*.55+n*.3;
                 float depth=saturate((i.world.y+17)/35);
-                float3 c=lerp(float3(.009,.052,.105),float3(.035,.22,.28),seabed*.65+depth*.35);
+                float3 c=lerp(float3(.012,.065,.12),float3(.065,.24,.29),seabed*.55+depth*.3);
                 float2 q=p*1.25+float2(sin(_Clock*.32+p.y*.18),cos(_Clock*.27+p.x*.21))*.4;
-                float caustic=pow(saturate(1-abs(sin(q.x+sin(q.y*1.3))*sin(q.y+sin(q.x*.8)))*12),3);
-                c+=float3(.045,.12,.12)*caustic*.45;
+                float a=sin(q.x+sin(q.y*.8)),b=sin(q.y*1.1+cos(q.x*.7));
+                float d=sin((q.x+q.y)*.85+sin(_Clock*.2)*.25);
+                float caustic=exp2(-min(abs(a+b*.55),abs(b+d*.55))*18);
+                c+=float3(.025,.075,.075)*caustic*.55;
                 float spread=(14-i.world.y)*.15;
-                float rays=pow(saturate(cos((i.world.x-spread+sin(_Clock*.16)*.35)*1.05)),15);
-                rays+=pow(saturate(cos((i.world.x+spread*.55+2.4)*.72)),22)*.6;
-                c+=float3(.075,.17,.19)*rays*(.25+depth*.75)*.65;
+                float rays=pow(saturate(cos((i.world.x-spread+sin(_Clock*.16)*.35)*.79)),7);
+                rays+=pow(saturate(cos((i.world.x+spread*.55+2.4)*.65)),10)*.6;
+                c+=float3(.04,.105,.13)*rays*(.25+depth*.75)*.65;
                 return half4(c,1);
             }
             ENDHLSL
