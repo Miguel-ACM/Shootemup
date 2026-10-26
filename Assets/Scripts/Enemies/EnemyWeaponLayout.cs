@@ -12,6 +12,7 @@ public static class EnemyWeaponLayout
     }
     static Vector3[] BuildPorts(int hull)
     {
+        if (hull >= 61) return EnemyExpansion.Find(hull)?.ports ?? System.Array.Empty<Vector3>();
         switch (hull)
         {
             case 0: return new[] { P(-.66f, -.16f, -.08f), P(.66f, -.16f, -.08f) };
@@ -58,5 +59,5 @@ public static class EnemyWeaponLayout
             default: return new[] { P(0, -.75f, -.3f) };
         }
     }
-    public static bool NoseAimed(int hull) => hull == 0 || hull == 12 || hull == 13 || hull == 15 || hull == 31 || hull == 36 || hull == 50;
+    public static bool NoseAimed(int hull) => hull >= 61 ? EnemyExpansion.Find(hull)?.nose ?? false : hull == 0 || hull == 12 || hull == 13 || hull == 15 || hull == 31 || hull == 36 || hull == 50;
 }

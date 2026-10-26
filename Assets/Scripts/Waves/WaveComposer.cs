@@ -289,7 +289,7 @@ public static class WaveComposer
 
 public static partial class WavePartLibrary
 {
-    public static WavePart[] For(LevelId level)
+    static WavePart[] BaseFor(LevelId level)
     {
         switch (level)
         {

@@ -21,6 +21,10 @@ public static class WatcherCatalog
 
     public static Type[] Enemies(LevelId level)
     {
+        return EnemyExpansion.Include(BaseEnemies(level), level);
+    }
+    static Type[] BaseEnemies(LevelId level)
+    {
         switch (level)
         {
             case LevelId.Hell:

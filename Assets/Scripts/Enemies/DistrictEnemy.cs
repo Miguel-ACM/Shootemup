@@ -121,11 +121,12 @@ public abstract class DistrictEnemy : AEnemy
         var renderer = model.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = enemy is SpaceSatellite || enemy is SpaceCitadelBoss || enemy.hull == 60 ? SpaceMaterials.Fleet : enemy.hull >= 35 && enemy.hull <= 38 || enemy.hull == 57 ? CandyMaterials.Glaze : enemy is FieldsBomberBoss ? CombatMaterials.Fortress : CombatMaterials.Fleet;
         renderer.sortingLayerName = "Enemy";
+        if (enemy.hull >= 61) renderer.sharedMaterial = EnemyExpansion.Material(enemy.hull);
         enemy.Hull = model.transform;
         go.AddComponent<CombatHullVisual>().model = model.transform;
         enemy.firingCue = go.AddComponent<EnemyFiringCue>();
         enemy.firingCue.Build(model.transform);
-        if (!(enemy is TunnelSawBoss) && !(enemy is GroundVehicle) && !(enemy is SpaceSatellite) && !(enemy is SpaceCitadelBoss) && !(enemy is InfernalEnemy) && !(enemy is OceanEnemy) && !(enemy is HellCrabBoss) && !(enemy is AbyssSubmarineBoss) && enemy.hull != 56 && enemy.hull < 58)
+        if (enemy.hull >= 61 ? IndustrialMeshFactory.CombatEngineSockets(enemy.hull).Length > 0 : !(enemy is TunnelSawBoss) && !(enemy is GroundVehicle) && !(enemy is SpaceSatellite) && !(enemy is SpaceCitadelBoss) && !(enemy is InfernalEnemy) && !(enemy is OceanEnemy) && !(enemy is HellCrabBoss) && !(enemy is AbyssSubmarineBoss) && enemy.hull != 56 && enemy.hull < 58)
         {
             var exhaust = go.AddComponent<EnemyThrusters>();
             exhaust.visualRoot = model.transform;

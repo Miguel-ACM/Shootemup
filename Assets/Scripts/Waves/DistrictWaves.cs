@@ -9,6 +9,7 @@ public static class DistrictWaves
     static DistrictWaves()
     {
         var all = new List<Type>(EnemyTypes);
+        all.AddRange(EnemyExpansion.Types);
         all.AddRange(new[] { typeof(SkullRevenant), typeof(GhostGalleon), typeof(CinderImp), typeof(ReefDart), typeof(MantaRay), typeof(Bathysphere), typeof(ScarabDredger), typeof(TaffyDuelist), typeof(OrbitalWarden), typeof(ReefLeviathan), typeof(InfernalFerryman) });
         EnemyTypes = all.ToArray();
     }
