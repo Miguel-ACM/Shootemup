@@ -15,9 +15,9 @@ public static class LevelRun
     public static bool ReturnsToPlains => Current == LevelId.Hell;
     public static LevelId? AutomaticNext => Tier(Current) == 4 ? LevelId.Hell : ReturnsToPlains ? LevelId.Fields : (LevelId?)null;
     // Health keeps growing after the speed caps preserve readable patterns.
-    public static float EnemyHealthScale => 1 + (Tier(Current) - 1) * .16f + (Loop - 1) * .48f;
-    public static float EnemyTempoScale => Mathf.Min(1.65f, 1 + (Tier(Current) - 1) * .04f + (Loop - 1) * .08f);
-    public static float EnemyShotSpeedScale => Mathf.Min(1.5f, 1 + (Tier(Current) - 1) * .035f + (Loop - 1) * .06f);
+    public static float EnemyHealthScale => (1 + (Tier(Current) - 1) * .16f + (Loop - 1) * .48f) * Difficulty.Health;
+    public static float EnemyTempoScale => Mathf.Min(1.65f, 1 + (Tier(Current) - 1) * .04f + (Loop - 1) * .08f) * Difficulty.Tempo;
+    public static float EnemyShotSpeedScale => Mathf.Min(1.5f, 1 + (Tier(Current) - 1) * .035f + (Loop - 1) * .06f) * Difficulty.ShotSpeed;
     public static int Tier(LevelId level)
     {
         switch (level)
