@@ -370,31 +370,12 @@ public sealed class DistrictPolishReview : MonoBehaviour
             DesertReview.Capture("Hell-Miniboss", Folder);
         }
         yield return Context(LevelId.Thunder);
-        var thunder = (ThunderLanceBoss)DistrictEnemy.Spawn(typeof(ThunderLanceBoss), new Vector3(0, 4, 1));
-        yield return null;
-        thunder.health *= .49f;
-        float timeout = Time.time + 6;
-        while (thunder.RotorCount != 6 && Time.time < timeout)
-            yield return null;
-        yield return new WaitForSeconds(thunder.rotorCharge + .2f);
-        var beam = CombatRound.Live.OfType<PulseLaser>().First(b => b.IsSustained);
-        var last = beam.Heading;
-        float angle = 0, min = 0, max = 0;
-        bool left = false, right = false;
-        float began = Time.time;
-        while (Time.time - began < 12)
-        {
-            float delta = Vector2.SignedAngle(last, beam.Heading);
-            left |= delta < -.02f;
-            right |= delta > .02f;
-            angle += delta;
-            min = Mathf.Min(min, angle);
-            max = Mathf.Max(max, angle);
-            last = beam.Heading;
-            yield return null;
-        }
-        Check(left && right && max - min < 61 && max - min > 57, "Thunder's six attached lasers smoothly reverse every 60 degrees");
-        DesertReview.Capture("Thunder-Reversal", Folder);
+        var thunder=(ThunderLanceBoss)DistrictEnemy.Spawn(typeof(ThunderLanceBoss),new Vector3(0,4,1));
+        yield return null;thunder.health*=.49f;
+        yield return new WaitForSeconds(4);
+        var vertical=CombatRound.Live.OfType<PulseLaser>().Where(b=>b.IsAttachedTo(thunder.Hull)).ToArray();
+        Check(vertical.Length>0 && vertical.All(b=>Vector2.Dot(b.Heading,Vector2.down)>.999f),"Thunder second phase uses charged vertical attached lanes");
+        DesertReview.Capture("Thunder-Vertical",Folder);
         yield return Context(LevelId.Hell);
         var crab = (HellCrabBoss)DistrictEnemy.Spawn(typeof(HellCrabBoss), new Vector3(0, 4, 1));
         yield return new WaitForSeconds(3.2f);
