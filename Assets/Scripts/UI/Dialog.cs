@@ -45,7 +45,7 @@ public class Dialog : MonoBehaviour
         panel = Block(overlay.transform, "Item card", new Color(.045f, .06f, .065f, .97f));
         panel.anchorMin = panel.anchorMax = new Vector2(.5f, 0);
         panel.pivot = new Vector2(.5f, 0);
-        panel.anchoredPosition = new Vector2(0, 22);
+        panel.anchoredPosition = new Vector2(0, DecisionOverlay.SkipHeight + 12);
         panel.sizeDelta = new Vector2(340, 100);
         var edge = Block(panel, "Top accent", new Color(.73f, .62f, .39f));
         edge.anchorMin = new Vector2(0, 1);
