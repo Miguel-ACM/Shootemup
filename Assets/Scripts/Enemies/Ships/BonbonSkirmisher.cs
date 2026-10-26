@@ -8,13 +8,13 @@ public sealed class BonbonSkirmisher : DistrictEnemy
         hull = 35;
         hullScale = .38f;
         health = 19;
-        attackInterval = 1.7f;
+        attackInterval = Timing(2.2f,1.7f);
         Mover<Slalom>();
     }
 
     protected override void Attack()
     {
-        Fire<SimpleRound>(Hull.TransformPoint(new Vector3(0, -.6f, -.25f)), Aim, 6.6f, .14f);
+        Fire<SimpleRound>(Muzzle(),Aim,4.8f,.2f);
     }
 }
 public static partial class IndustrialMeshFactory
