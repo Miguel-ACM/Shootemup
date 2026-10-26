@@ -3,7 +3,7 @@ public sealed class SpareBattery : AItem
 {
     void Awake()
     {
-        SetData("Spare Battery", "Ship equipment", "Hits charge a powerful homing shot.", ItemType.passive);
+        SetData("Hit-Charged Rocket", "Ship equipment", "Hits charge a powerful homing shot.", ItemType.passive);
     }
 
     public override void OnBegin()
