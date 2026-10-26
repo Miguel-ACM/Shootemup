@@ -33,7 +33,7 @@ public static class WaveComposer
     static readonly Dictionary<(WavePart, int, int), Motion> patterns = new Dictionary<(WavePart, int, int), Motion>();
     static int seed = -1, stage = -1, tuningRevision = -1; static LevelId level; static float width, height, tempo;
     static RunDifficulty difficulty;
-    public static float Tempo => Mathf.Max(.01f, PatternMover.FlightTempo * GameRules.enemySpeed * LevelRun.EnemyTempoScale);
+    public static float Tempo => Mathf.Max(.01f, PatternMover.DistrictFlightTempo * GameRules.enemySpeed * LevelRun.EnemyTempoScale);
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void Reset()
     {

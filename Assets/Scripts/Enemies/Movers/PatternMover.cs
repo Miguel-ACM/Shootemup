@@ -4,6 +4,7 @@ using UnityEngine;
 public abstract class PatternMover : AMover
 {
     public const float FlightTempo = .72f;
+    public static float DistrictFlightTempo => FlightTempo * (LevelRun.Current == LevelId.City ? 1.35f : 1);
     public float TempoMultiplier = 1;
     [SerializeField, Min(.01f), EnemyTunable("Standalone movement / Travel speed", .1f, 20)] protected float moveSpeed = 3f;
     [SerializeField, Min(0), EnemyTunable("Standalone movement / Edge inset", 0, 3)] protected float edgeInset = .7f;
@@ -76,7 +77,7 @@ public abstract class PatternMover : AMover
         Initialize();
         if (!movementEnabled || !enabled || deltaTime <= 0 || !float.IsFinite(deltaTime))
             return;
-        float dt = deltaTime * FlightTempo * Mathf.Max(0, GameRules.enemySpeed) * LevelRun.EnemyTempoScale * TempoMultiplier;
+        float dt = deltaTime * DistrictFlightTempo * Mathf.Max(0, GameRules.enemySpeed) * LevelRun.EnemyTempoScale * TempoMultiplier;
         if (dt <= 0)
             return;
         age += dt;
