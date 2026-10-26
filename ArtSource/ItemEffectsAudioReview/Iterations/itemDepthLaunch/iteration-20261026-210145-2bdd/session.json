@@ -1,0 +1,466 @@
+{
+  "brief": {
+    "description": "one small heavy steel bomb rack release, mechanical latch clunk and short hollow body thud, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one small heavy steel bomb rack release?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "410e729dfb6201bfdda01b0afbbaaa0e0a714249ce176730f4132dba7174fa05",
+  "options": {
+    "duration": 0.25,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 260526,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-210145-afe3",
+      "prompt": "TrackType: SFX, one small heavy steel bomb rack release, mechanical latch clunk and short hollow body thud, dry and close",
+      "takes": [
+        "20261026-210145-afe3:260526",
+        "20261026-210145-afe3:260527"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-210207-b0ae",
+      "prompt": "TrackType: SFX, one small heavy steel bomb rack release, mechanical latch clunk and short hollow body thud, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small heavy steel bomb rack release?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-210207-b0ae:260528",
+        "20261026-210207-b0ae:260529"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 260526,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -4.39,
+        "true_peak_dbtp": -4.39,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00016,
+        "active_s": 0.235,
+        "noise_floor_db": -83.8,
+        "onset_s": 0.0519,
+        "tail_db": -80.2,
+        "stereo_correlation": 1.0,
+        "lufs": -22.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 3.3,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.25,
+        "length_frames": 6.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -19.8
+      },
+      "clap": 0.9492,
+      "clap_cos": 0.175,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.17,
+        "CU": 6.82,
+        "PC": 2.39,
+        "PQ": 6.94
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.6606,
+      "rank": 1,
+      "ref": "20261026-210145-afe3:260526",
+      "files": {
+        "wav": "20261026-210145-afe3/260526.wav",
+        "png": "20261026-210145-afe3/260526.png",
+        "raw": "20261026-210145-afe3/260526_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210145-afe3\\260526.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210145-afe3\\260526.png"
+      },
+      "review": {
+        "brief_id": "410e729dfb6201bfdda01b0afbbaaa0e0a714249ce176730f4132dba7174fa05",
+        "blind_caption": "A person strikes a wooden object with a hammer.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small heavy steel bomb rack release?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "KEEP (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2769
+      }
+    },
+    {
+      "seed": 260527,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -3.14,
+        "true_peak_dbtp": -2.84,
+        "clipped_fraction": 0.0,
+        "dc_offset": 5e-05,
+        "active_s": 0.18,
+        "noise_floor_db": -82.9,
+        "onset_s": 0.0459,
+        "tail_db": -80.6,
+        "stereo_correlation": 1.0,
+        "lufs": -21.7,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 1.62,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.25,
+        "length_frames": 6.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.4
+      },
+      "clap": 0.8016,
+      "clap_cos": 0.156,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.36,
+        "CU": 7.25,
+        "PC": 2.32,
+        "PQ": 7.46
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.6558,
+      "rank": 2,
+      "ref": "20261026-210145-afe3:260527",
+      "files": {
+        "wav": "20261026-210145-afe3/260527.wav",
+        "png": "20261026-210145-afe3/260527.png",
+        "raw": "20261026-210145-afe3/260527_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210145-afe3\\260527.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210145-afe3\\260527.png"
+      },
+      "review": {
+        "brief_id": "410e729dfb6201bfdda01b0afbbaaa0e0a714249ce176730f4132dba7174fa05",
+        "blind_caption": "A wooden object is struck with a hammer.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small heavy steel bomb rack release?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "KEEP (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2871
+      }
+    },
+    {
+      "seed": 260528,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -2.88,
+        "true_peak_dbtp": -2.2,
+        "clipped_fraction": 0.0,
+        "dc_offset": 2e-05,
+        "active_s": 0.17,
+        "noise_floor_db": -84.3,
+        "onset_s": 0.0489,
+        "tail_db": -80.9,
+        "stereo_correlation": 1.0,
+        "lufs": -24.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 1.13,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.25,
+        "length_frames": 6.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.9
+      },
+      "clap": 0.9886,
+      "clap_cos": 0.3184,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.7,
+        "CU": 7.28,
+        "PC": 2.3,
+        "PQ": 7.49
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.8399,
+      "rank": 1,
+      "ref": "20261026-210207-b0ae:260528",
+      "files": {
+        "wav": "20261026-210207-b0ae/260528.wav",
+        "png": "20261026-210207-b0ae/260528.png",
+        "raw": "20261026-210207-b0ae/260528_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210207-b0ae\\260528.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210207-b0ae\\260528.png"
+      },
+      "review": {
+        "brief_id": "410e729dfb6201bfdda01b0afbbaaa0e0a714249ce176730f4132dba7174fa05",
+        "blind_caption": "A car door opens and closes.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small heavy steel bomb rack release?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3074
+      }
+    },
+    {
+      "seed": 260529,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -3.03,
+        "true_peak_dbtp": -3.01,
+        "clipped_fraction": 0.0,
+        "dc_offset": 8e-05,
+        "active_s": 0.17,
+        "noise_floor_db": -84.2,
+        "onset_s": 0.0539,
+        "tail_db": -80.7,
+        "stereo_correlation": 1.0,
+        "lufs": -22.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 2.02,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.25,
+        "length_frames": 6.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.6
+      },
+      "clap": 0.9947,
+      "clap_cos": 0.3295,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.51,
+        "CU": 6.67,
+        "PC": 2.65,
+        "PQ": 7.27
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.8334,
+      "rank": 2,
+      "ref": "20261026-210207-b0ae:260529",
+      "files": {
+        "wav": "20261026-210207-b0ae/260529.wav",
+        "png": "20261026-210207-b0ae/260529.png",
+        "raw": "20261026-210207-b0ae/260529_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210207-b0ae\\260529.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210207-b0ae\\260529.png"
+      },
+      "review": {
+        "brief_id": "410e729dfb6201bfdda01b0afbbaaa0e0a714249ce176730f4132dba7174fa05",
+        "blind_caption": "A car door is opened.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small heavy steel bomb rack release?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "KEEP (target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2696
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 260528,
+    "signal": {
+      "duration_s": 1.0,
+      "peak_dbfs": -2.88,
+      "true_peak_dbtp": -2.2,
+      "clipped_fraction": 0.0,
+      "dc_offset": 2e-05,
+      "active_s": 0.17,
+      "noise_floor_db": -84.3,
+      "onset_s": 0.0489,
+      "tail_db": -80.9,
+      "stereo_correlation": 1.0,
+      "lufs": -24.3,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 1.13,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.25,
+      "length_frames": 6.0,
+      "channels": 1
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -21.9
+    },
+    "clap": 0.9886,
+    "clap_cos": 0.3184,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.7,
+      "CU": 7.28,
+      "PC": 2.3,
+      "PQ": 7.49
+    },
+    "fails": [],
+    "warnings": [],
+    "rejected": false,
+    "rank_score": 0.8399,
+    "rank": 1,
+    "ref": "20261026-210207-b0ae:260528",
+    "files": {
+      "wav": "20261026-210207-b0ae/260528.wav",
+      "png": "20261026-210207-b0ae/260528.png",
+      "raw": "20261026-210207-b0ae/260528_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210207-b0ae\\260528.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210207-b0ae\\260528.png"
+    },
+    "review": {
+      "brief_id": "410e729dfb6201bfdda01b0afbbaaa0e0a714249ce176730f4132dba7174fa05",
+      "blind_caption": "A car door opens and closes.",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one small heavy steel bomb rack release?",
+          "answer": "uncertain",
+          "evidence": "NO"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.3074
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemDepthLaunch\\iteration-20261026-210145-2bdd\\METLImpt_Iterated_v01.wav"
+  ]
+}

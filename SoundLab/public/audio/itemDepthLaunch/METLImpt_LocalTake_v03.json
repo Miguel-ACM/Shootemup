@@ -1,0 +1,81 @@
+{
+  "request": "20261026-210145-afe3",
+  "ref": "20261026-210145-afe3:260526",
+  "text": "TrackType: SFX, one small heavy steel bomb rack release, mechanical latch clunk and short hollow body thud, dry and close",
+  "prompt": "TrackType: SFX, one small heavy steel bomb rack release, mechanical latch clunk and short hollow body thud, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "impact-metal",
+  "seed": 260526,
+  "rank": 1,
+  "rank_score": 0.6606,
+  "clap": 0.9492,
+  "clap_cos": 0.175,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.17,
+    "CU": 6.82,
+    "PC": 2.39,
+    "PQ": 6.94
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 3.3,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.25,
+    "length_frames": 6.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -19.8
+  },
+  "signal": {
+    "duration_s": 1.0,
+    "peak_dbfs": -4.39,
+    "true_peak_dbtp": -4.39,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00016,
+    "active_s": 0.235,
+    "noise_floor_db": -83.8,
+    "onset_s": 0.0519,
+    "tail_db": -80.2,
+    "stereo_correlation": 1.0,
+    "lufs": -22.3,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "410e729dfb6201bfdda01b0afbbaaa0e0a714249ce176730f4132dba7174fa05",
+    "blind_caption": "A person strikes a wooden object with a hammer.",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small heavy steel bomb rack release?",
+        "answer": "uncertain",
+        "evidence": "NO"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "KEEP (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2769
+  },
+  "human_approved": false
+}
