@@ -1,0 +1,466 @@
+{
+  "brief": {
+    "description": "one small sticky gum bubble popping, soft elastic wet snap with almost no tail, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one small sticky gum bubble popping?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "eb799f971e6b4cf0f184d1a60ef346b1128c383ec77a3eb598dee9d915e2d714",
+  "options": {
+    "duration": 0.5,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 761926,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-211657-495d",
+      "prompt": "TrackType: SFX, one small sticky gum bubble popping, soft elastic wet snap with almost no tail, dry and close",
+      "takes": [
+        "20261026-211657-495d:761927",
+        "20261026-211657-495d:761926"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-211717-2286",
+      "prompt": "TrackType: SFX, one small sticky gum bubble popping, soft elastic wet snap with almost no tail, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small sticky gum bubble popping?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-211717-2286:761929",
+        "20261026-211717-2286:761928"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 761927,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -11.95,
+        "true_peak_dbtp": -11.68,
+        "clipped_fraction": 0.0,
+        "dc_offset": 1e-05,
+        "active_s": 0.175,
+        "noise_floor_db": -74.0,
+        "onset_s": 0.1167,
+        "tail_db": -73.6,
+        "stereo_correlation": 1.0,
+        "lufs": -34.2,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 14.42,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -24.8
+      },
+      "clap": 0.9061,
+      "clap_cos": 0.3821,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.27,
+        "CU": 7.27,
+        "PC": 2.26,
+        "PQ": 7.18
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.8553,
+      "rank": 1,
+      "ref": "20261026-211657-495d:761927",
+      "files": {
+        "wav": "20261026-211657-495d/761927.wav",
+        "png": "20261026-211657-495d/761927.png",
+        "raw": "20261026-211657-495d/761927_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211657-495d\\761927.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211657-495d\\761927.png"
+      },
+      "review": {
+        "brief_id": "eb799f971e6b4cf0f184d1a60ef346b1128c383ec77a3eb598dee9d915e2d714",
+        "blind_caption": "A plastic snap sound",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small sticky gum bubble popping?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.4051
+      }
+    },
+    {
+      "seed": 761926,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -7.65,
+        "true_peak_dbtp": -7.61,
+        "clipped_fraction": 0.0,
+        "dc_offset": 2e-05,
+        "active_s": 0.22,
+        "noise_floor_db": -75.7,
+        "onset_s": 0.1127,
+        "tail_db": -73.5,
+        "stereo_correlation": 1.0,
+        "lufs": -33.5,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 15.49,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -26.7
+      },
+      "clap": 0.8255,
+      "clap_cos": 0.3403,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.32,
+        "CU": 7.29,
+        "PC": 2.24,
+        "PQ": 6.18
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.722,
+      "rank": 2,
+      "ref": "20261026-211657-495d:761926",
+      "files": {
+        "wav": "20261026-211657-495d/761926.wav",
+        "png": "20261026-211657-495d/761926.png",
+        "raw": "20261026-211657-495d/761926_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211657-495d\\761926.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211657-495d\\761926.png"
+      },
+      "review": {
+        "brief_id": "eb799f971e6b4cf0f184d1a60ef346b1128c383ec77a3eb598dee9d915e2d714",
+        "blind_caption": "A small gun is fired.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small sticky gum bubble popping?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3083
+      }
+    },
+    {
+      "seed": 761929,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -12.39,
+        "true_peak_dbtp": -11.91,
+        "clipped_fraction": 0.0,
+        "dc_offset": 1e-05,
+        "active_s": 0.205,
+        "noise_floor_db": -71.5,
+        "onset_s": 0.1107,
+        "tail_db": -67.9,
+        "stereo_correlation": 1.0,
+        "lufs": -35.1,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 10.84,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -25.5
+      },
+      "clap": 0.9946,
+      "clap_cos": 0.4958,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.35,
+        "CU": 7.2,
+        "PC": 2.15,
+        "PQ": 7.47
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.9565,
+      "rank": 1,
+      "ref": "20261026-211717-2286:761929",
+      "files": {
+        "wav": "20261026-211717-2286/761929.wav",
+        "png": "20261026-211717-2286/761929.png",
+        "raw": "20261026-211717-2286/761929_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211717-2286\\761929.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211717-2286\\761929.png"
+      },
+      "review": {
+        "brief_id": "eb799f971e6b4cf0f184d1a60ef346b1128c383ec77a3eb598dee9d915e2d714",
+        "blind_caption": "A plastic bottle being opened",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small sticky gum bubble popping?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.4551
+      }
+    },
+    {
+      "seed": 761928,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -10.3,
+        "true_peak_dbtp": -10.3,
+        "clipped_fraction": 0.0,
+        "dc_offset": 3e-05,
+        "active_s": 0.29,
+        "noise_floor_db": -71.1,
+        "onset_s": 0.1098,
+        "tail_db": -69.8,
+        "stereo_correlation": 1.0,
+        "lufs": -35.0,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 13.02,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -25.0
+      },
+      "clap": 0.9882,
+      "clap_cos": 0.4833,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.46,
+        "CU": 7.24,
+        "PC": 2.23,
+        "PQ": 6.98
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.916,
+      "rank": 2,
+      "ref": "20261026-211717-2286:761928",
+      "files": {
+        "wav": "20261026-211717-2286/761928.wav",
+        "png": "20261026-211717-2286/761928.png",
+        "raw": "20261026-211717-2286/761928_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211717-2286\\761928.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211717-2286\\761928.png"
+      },
+      "review": {
+        "brief_id": "eb799f971e6b4cf0f184d1a60ef346b1128c383ec77a3eb598dee9d915e2d714",
+        "blind_caption": "A plastic button is pressed.",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small sticky gum bubble popping?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.4271
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 761929,
+    "signal": {
+      "duration_s": 2.0,
+      "peak_dbfs": -12.39,
+      "true_peak_dbtp": -11.91,
+      "clipped_fraction": 0.0,
+      "dc_offset": 1e-05,
+      "active_s": 0.205,
+      "noise_floor_db": -71.5,
+      "onset_s": 0.1107,
+      "tail_db": -67.9,
+      "stereo_correlation": 1.0,
+      "lufs": -35.1,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 10.84,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.5,
+      "length_frames": 12.0,
+      "channels": 1
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -25.5
+    },
+    "clap": 0.9946,
+    "clap_cos": 0.4958,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.35,
+      "CU": 7.2,
+      "PC": 2.15,
+      "PQ": 7.47
+    },
+    "fails": [],
+    "warnings": [],
+    "rejected": false,
+    "rank_score": 0.9565,
+    "rank": 1,
+    "ref": "20261026-211717-2286:761929",
+    "files": {
+      "wav": "20261026-211717-2286/761929.wav",
+      "png": "20261026-211717-2286/761929.png",
+      "raw": "20261026-211717-2286/761929_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211717-2286\\761929.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211717-2286\\761929.png"
+    },
+    "review": {
+      "brief_id": "eb799f971e6b4cf0f184d1a60ef346b1128c383ec77a3eb598dee9d915e2d714",
+      "blind_caption": "A plastic bottle being opened",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one small sticky gum bubble popping?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.4551
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemGum\\iteration-20261026-211657-ff24\\TOONPop_Iterated_v01.wav"
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "id": "20261026-211056-2068",
+  "created": "2026-10-26 21:10:56",
+  "text": "TrackType: SFX, one small sticky gum bubble popping, soft elastic wet snap with almost no tail, dry and close",
+  "prompt": "TrackType: SFX, one small sticky gum bubble popping, soft elastic wet snap with almost no tail, dry and close",
+  "raw": true,
+  "category": "cartoon-pop",
+  "cat_id": "TOONPop",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    261926,
+    261927
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.18,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 0.93,
+  "gen_s": 2.0,
+  "score_s": 1.15,
+  "takes": [
+    {
+      "seed": 261926,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -7.46,
+        "true_peak_dbtp": -7.01,
+        "clipped_fraction": 0.0,
+        "dc_offset": 4e-05,
+        "active_s": 0.1,
+        "noise_floor_db": -77.7,
+        "onset_s": 0.0319,
+        "tail_db": -76.6,
+        "stereo_correlation": 1.0,
+        "lufs": -29.9,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 5.98,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -23.9
+      },
+      "clap": 0.9438,
+      "clap_cos": 0.3725,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.47,
+        "CU": 6.75,
+        "PC": 2.15,
+        "PQ": 6.71
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.8167,
+      "rank": 1,
+      "ref": "20261026-211056-2068:261926",
+      "files": {
+        "wav": "20261026-211056-2068/261926.wav",
+        "png": "20261026-211056-2068/261926.png",
+        "raw": "20261026-211056-2068/261926_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211056-2068\\261926.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211056-2068\\261926.png"
+      }
+    },
+    {
+      "seed": 261927,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -10.46,
+        "true_peak_dbtp": -9.92,
+        "clipped_fraction": 0.0,
+        "dc_offset": 4e-05,
+        "active_s": 0.07,
+        "noise_floor_db": -77.9,
+        "onset_s": 0.0289,
+        "tail_db": -75.4,
+        "stereo_correlation": 1.0,
+        "lufs": -31.1,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 8.98,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -22.1
+      },
+      "clap": 0.9248,
+      "clap_cos": 0.334,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.46,
+        "CU": 6.61,
+        "PC": 2.28,
+        "PQ": 7.02
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.8034,
+      "rank": 2,
+      "ref": "20261026-211056-2068:261927",
+      "files": {
+        "wav": "20261026-211056-2068/261927.wav",
+        "png": "20261026-211056-2068/261927.png",
+        "raw": "20261026-211056-2068/261927_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211056-2068\\261927.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211056-2068\\261927.png"
+      }
+    }
+  ],
+  "kept": 2
+}

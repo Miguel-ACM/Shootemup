@@ -1,0 +1,81 @@
+{
+  "request": "20261026-211657-495d",
+  "ref": "20261026-211657-495d:761927",
+  "text": "TrackType: SFX, one small sticky gum bubble popping, soft elastic wet snap with almost no tail, dry and close",
+  "prompt": "TrackType: SFX, one small sticky gum bubble popping, soft elastic wet snap with almost no tail, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "cartoon-pop",
+  "seed": 761927,
+  "rank": 1,
+  "rank_score": 0.8553,
+  "clap": 0.9061,
+  "clap_cos": 0.3821,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.27,
+    "CU": 7.27,
+    "PC": 2.26,
+    "PQ": 7.18
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 14.42,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.5,
+    "length_frames": 12.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -24.8
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -11.95,
+    "true_peak_dbtp": -11.68,
+    "clipped_fraction": 0.0,
+    "dc_offset": 1e-05,
+    "active_s": 0.175,
+    "noise_floor_db": -74.0,
+    "onset_s": 0.1167,
+    "tail_db": -73.6,
+    "stereo_correlation": 1.0,
+    "lufs": -34.2,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "eb799f971e6b4cf0f184d1a60ef346b1128c383ec77a3eb598dee9d915e2d714",
+    "blind_caption": "A plastic snap sound",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small sticky gum bubble popping?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.4051
+  },
+  "human_approved": false
+}

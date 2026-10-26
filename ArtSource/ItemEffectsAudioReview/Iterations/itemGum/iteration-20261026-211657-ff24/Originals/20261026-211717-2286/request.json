@@ -1,0 +1,149 @@
+{
+  "id": "20261026-211717-2286",
+  "created": "2026-10-26 21:17:17",
+  "text": "TrackType: SFX, one small sticky gum bubble popping, soft elastic wet snap with almost no tail, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small sticky gum bubble popping?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one small sticky gum bubble popping, soft elastic wet snap with almost no tail, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small sticky gum bubble popping?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "raw": true,
+  "category": "cartoon-pop",
+  "cat_id": "TOONPop",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    761928,
+    761929
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.5,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 1.25,
+  "gen_s": 1.96,
+  "score_s": 1.23,
+  "takes": [
+    {
+      "seed": 761929,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -12.39,
+        "true_peak_dbtp": -11.91,
+        "clipped_fraction": 0.0,
+        "dc_offset": 1e-05,
+        "active_s": 0.205,
+        "noise_floor_db": -71.5,
+        "onset_s": 0.1107,
+        "tail_db": -67.9,
+        "stereo_correlation": 1.0,
+        "lufs": -35.1,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 10.84,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -25.5
+      },
+      "clap": 0.9946,
+      "clap_cos": 0.4958,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.35,
+        "CU": 7.2,
+        "PC": 2.15,
+        "PQ": 7.47
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.9565,
+      "rank": 1,
+      "ref": "20261026-211717-2286:761929",
+      "files": {
+        "wav": "20261026-211717-2286/761929.wav",
+        "png": "20261026-211717-2286/761929.png",
+        "raw": "20261026-211717-2286/761929_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211717-2286\\761929.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211717-2286\\761929.png"
+      }
+    },
+    {
+      "seed": 761928,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -10.3,
+        "true_peak_dbtp": -10.3,
+        "clipped_fraction": 0.0,
+        "dc_offset": 3e-05,
+        "active_s": 0.29,
+        "noise_floor_db": -71.1,
+        "onset_s": 0.1098,
+        "tail_db": -69.8,
+        "stereo_correlation": 1.0,
+        "lufs": -35.0,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 13.02,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -25.0
+      },
+      "clap": 0.9882,
+      "clap_cos": 0.4833,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.46,
+        "CU": 7.24,
+        "PC": 2.23,
+        "PQ": 6.98
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.916,
+      "rank": 2,
+      "ref": "20261026-211717-2286:761928",
+      "files": {
+        "wav": "20261026-211717-2286/761928.wav",
+        "png": "20261026-211717-2286/761928.png",
+        "raw": "20261026-211717-2286/761928_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211717-2286\\761928.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211717-2286\\761928.png"
+      }
+    }
+  ],
+  "kept": 2
+}

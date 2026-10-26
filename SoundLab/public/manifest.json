@@ -8407,6 +8407,184 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemGum",
+      "label": "Chewing gum — pop",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemGum",
+      "original": {
+        "file": "audio/itemGum/original.wav",
+        "label": "Current sound",
+        "seconds": 0.15002267573696146,
+        "sha256": "c51e42ce7375ddd67f5abe870fba36fb970eda75f402312404f7a3cc492c7abe"
+      },
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemGum/TOONPop_LocalTake_v01.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "4fd1ee915d21020d77d7e562799fe9e0643657b281d11ee5fe2087e11ddd850d",
+          "ref": "20261026-211717-2286:761929",
+          "review": {
+            "brief_id": "eb799f971e6b4cf0f184d1a60ef346b1128c383ec77a3eb598dee9d915e2d714",
+            "blind_caption": "A plastic bottle being opened",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small sticky gum bubble popping?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.4551
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemGum/TOONPop_LocalTake_v02.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "8c3ba6d11b5669dbfa0aa37ee25ad2766be301d4b4d812fe3cdc19b4a1a989b4",
+          "ref": "20261026-211717-2286:761928",
+          "review": {
+            "brief_id": "eb799f971e6b4cf0f184d1a60ef346b1128c383ec77a3eb598dee9d915e2d714",
+            "blind_caption": "A plastic button is pressed.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small sticky gum bubble popping?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.4271
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemGum/TOONPop_LocalTake_v03.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "30b24f15b181c5cd7d7886aebf6ab98bb3bd8eba22eb95ece99ecd67acbea1d6",
+          "ref": "20261026-211657-495d:761927",
+          "review": {
+            "brief_id": "eb799f971e6b4cf0f184d1a60ef346b1128c383ec77a3eb598dee9d915e2d714",
+            "blind_caption": "A plastic snap sound",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small sticky gum bubble popping?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.4051
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemGum/TOONPop_LocalTake_v04.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "5e3125b032a5a8db0131a6853e1d6d19feb3a81cd2ff14f88d112a082c536b2d",
+          "ref": "20261026-211657-495d:761926",
+          "review": {
+            "brief_id": "eb799f971e6b4cf0f184d1a60ef346b1128c383ec77a3eb598dee9d915e2d714",
+            "blind_caption": "A small gun is fired.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small sticky gum bubble popping?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3083
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }
