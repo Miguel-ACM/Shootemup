@@ -6,13 +6,31 @@ public sealed class ItemSound : MonoBehaviour
 {
     static ItemSound instance;
     static readonly Dictionary<string, AudioClip> library = new Dictionary<string, AudioClip>();
+    static readonly Dictionary<string, float> levels = new Dictionary<string, float>();
+    static bool levelsLoaded;
+    [System.Serializable] sealed class ApprovedLevels { public Level[] cues = null; }
+    [System.Serializable] sealed class Level { public string cue = null; public float gain = 1; }
     readonly Dictionary<string, AudioClip> clips = new Dictionary<string, AudioClip>();
     readonly Dictionary<string, float> gates = new Dictionary<string, float>();
     readonly AudioSource[] voices = new AudioSource[8];
     int cursor;
     bool paused;
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetLibrary() { library.Clear(); instance = null; }
+    static void ResetLibrary() { library.Clear(); levels.Clear(); levelsLoaded = false; instance = null; }
+
+    public static float Gain(string cue)
+    {
+        if (!levelsLoaded)
+        {
+            levelsLoaded = true;
+            var resource = Resources.Load<TextAsset>("ItemSoundGains");
+            var approved = resource != null ? JsonUtility.FromJson<ApprovedLevels>(resource.text) : null;
+            if (approved?.cues != null)
+                foreach (var entry in approved.cues)
+                    if (entry != null && !string.IsNullOrEmpty(entry.cue)) levels[entry.cue] = Mathf.Clamp(entry.gain, 0, 1.5f);
+        }
+        return levels.TryGetValue(cue, out float gain) ? gain : 1;
+    }
 
     public static AudioClip Clip(string cue)
     {
@@ -65,7 +83,7 @@ public sealed class ItemSound : MonoBehaviour
         voice.Stop();
         voice.clip = clip;
         voice.pitch = pitch;
-        voice.volume = volume;
+        voice.volume = volume * Gain(cue);
         voice.Play();
     }
 
