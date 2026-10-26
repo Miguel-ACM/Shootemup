@@ -7,6 +7,9 @@ public abstract class DistrictBoss : DistrictEnemy
     protected Vector3 station;
     protected float motionAge;
     float nextPressure;
+    float phaseEntryUntil;
+    BossPhaseEntry phaseEntry;
+    protected bool PhaseTransitioning => age < phaseEntryUntil;
     public virtual bool UsesHealthBar => true;
     public virtual float DisplayFraction => HealthFraction;
     public float HealthFraction => health / Mathf.Max(1, initialHealth);
@@ -29,6 +32,8 @@ public abstract class DistrictBoss : DistrictEnemy
         }
         station = new Vector3(0, Camera.UpLimit - 2.3f, 1);
         nextPressure = nextAttack;
+        phaseEntry = gameObject.AddComponent<BossPhaseEntry>();
+        phaseEntry.Build(this);
     }
 
     protected override void Update()
@@ -42,6 +47,7 @@ public abstract class DistrictBoss : DistrictEnemy
             phaseTwo = true;
             NotifyBossPhaseChange(2);
             OnPhaseTwo();
+            PresentPhaseTwo();
         }
         float motionDelta = Time.deltaTime * LevelRun.EnemyTempoScale * MovementScale;
         motionAge += motionDelta;
@@ -52,13 +58,13 @@ public abstract class DistrictBoss : DistrictEnemy
             nextAttack = Mathf.Max(nextAttack, age + .35f);
             nextPressure = Mathf.Max(nextPressure, age + .35f);
         }
-        if (transform.position.y < Camera.UpLimit - 1 && age >= nextAttack)
+        if (!PhaseTransitioning && transform.position.y < Camera.UpLimit - 1 && age >= nextAttack)
         {
             volley++;
             Attack();
             nextAttack = age + attackInterval * AttackPace / Mathf.Max(.5f, GameRules.enemyShootSpeed);
         }
-        if (transform.position.y < Camera.UpLimit - 1 && age >= nextPressure)
+        if (!PhaseTransitioning && transform.position.y < Camera.UpLimit - 1 && age >= nextPressure)
         {
             PressureAttack();
             nextPressure = age + PressureInterval / Mathf.Max(.5f, GameRules.enemyShootSpeed);
@@ -72,7 +78,16 @@ public abstract class DistrictBoss : DistrictEnemy
     }
 
     protected virtual bool PhaseTwoReady => HealthFraction <= .5f;
-    protected virtual float AttackPace => phaseTwo ? .72f : 1;
+    protected virtual float AttackPace => phaseTwo ? Timing(.96f,.87f) : 1;
+    protected void PresentPhaseTwo()
+    {
+        phaseEntryUntil=age+1.5f*LevelRun.EnemyTempoScale;
+        nextAttack=Mathf.Max(nextAttack,phaseEntryUntil);
+        nextPressure=Mathf.Max(nextPressure,phaseEntryUntil);
+        firingCue.ClearWarning();
+        CombatRound.ClearAll();
+        phaseEntry.Begin();
+    }
     protected virtual float PressureInterval => phaseTwo ? .55f : .85f;
     protected virtual void PressureAttack()
     {
