@@ -8,13 +8,13 @@ public sealed class CinderImp : InfernalEnemy
         hull = 48;
         hullScale = .40f;
         health = 27;
-        attackInterval = 1.0f;
+        attackInterval = Timing(1.7f,1.2f);
         Mover<Slalom>();
     }
 
     protected override void Attack()
     {
-        for (int i = -1; i <= 1; i++)
-            Fire<HelixRound>(transform.position, CombatVisuals.Rotate(Aim, i * 24 + (volley % 2 == 0 ? 4 : -4)), 4.1f, .14f);
+        int n=Shots(1,3);
+        for(int i=0;i<n;i++) Fire<HelixRound>(Muzzle(),CombatVisuals.Rotate(Aim,(i-(n-1)*.5f)*29),3.1f,.2f);
     }
 }
