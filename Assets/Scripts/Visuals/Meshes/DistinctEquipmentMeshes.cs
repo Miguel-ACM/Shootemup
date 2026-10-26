@@ -146,8 +146,9 @@ public static partial class IndustrialMeshFactory
                 b.Box(new Vector3(0, -.34f, .02f), new Vector3(.64f, .09f, .46f), 11, 6);
                 b.Box(new Vector3(-.16f, .3f, .02f), new Vector3(.12f, .2f, .18f), 11);
                 b.Drum(new Vector3(.16f, .25f, -.08f), .075f, .18f, 3, 8, 6);
-                for (int bar = 0; bar < 3; bar++)
-                    b.Box(new Vector3(-.13f + bar * .13f, -.08f, -.19f), new Vector3(.075f, .18f, .04f), bar == 2 ? 11 : 6);
+                b.Prism(new[] { new Vector2(-.015f, .2f), new Vector2(.13f, .2f), new Vector2(.015f, -.02f),
+                    new Vector2(.13f, -.02f), new Vector2(-.11f, -.26f), new Vector2(-.04f, -.06f), new Vector2(-.14f, -.06f) },
+                    .055f, 10, Vector3.back * .21f, 11);
                 break;
             case "SpareBattery":
                 // Horizontal battery strapped to a tiny guided rocket.
