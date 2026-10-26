@@ -25,6 +25,16 @@ def save(path,value):
 
 def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 
+def audition_description(take):
+    notes=[]
+    if any('tail is chopped' in warning for warning in take.get('warnings', [])):
+        notes.append('The automatic check detected a possibly cut-off tail.')
+    if any('out of phase' in warning for warning in take.get('warnings', [])):
+        notes.append('The automatic check found a possible stereo phase issue.')
+    if take.get('review', {}).get('warnings'):
+        notes.append('The automatic listener was uncertain.')
+    return ' '.join(notes) or 'Locally generated; your listening decides.'
+
 def load_cli():
     sys.path.insert(0,str(TOOL))
     spec=importlib.util.spec_from_file_location('item_sfx_cli',TOOL/'scripts/sfx.py')
@@ -40,7 +50,7 @@ def publish(plan,summary,cli):
     added=[]
     for cue in plan['cues']:
         result=summary['cues'].get(cue['id'],{})
-        if result.get('session') is None: continue
+        if result.get('returncode') != 0 or result.get('session') is None: continue
         session=json.loads(Path(result['session']).read_text(encoding='utf-8'))
         if not session.get('best'): continue
         # An existing letter must never silently refer to a different sound after a saved pick.
@@ -48,8 +58,10 @@ def publish(plan,summary,cli):
             if existing[cue['id']].get('source')!=SOURCE: raise ValueError('Existing cue ID collision: '+cue['id'])
             continue
         selected=[]
-        candidates=sorted(session['candidates'],key=iteration.key,reverse=True)
-        for candidate in [session['best']]+candidates:
+        candidates=sorted([session['best']]+session['candidates'],key=lambda candidate: (
+            not any('tail is chopped' in warning for warning in candidate.get('warnings', [])),
+            iteration.key(candidate)),reverse=True)
+        for candidate in candidates:
             if candidate.get('fails') or candidate.get('rejected') or candidate['ref'] in {c['ref'] for c in selected}: continue
             selected.append(candidate)
             if len(selected)==5: break
@@ -62,7 +74,7 @@ def publish(plan,summary,cli):
             with wave.open(str(path),'rb') as audio:
                 seconds=audio.getnframes()/audio.getframerate();sample_rate=audio.getframerate()
             alternatives.append(dict(id='abcde'[index],label='Local take '+str(index+1),
-                description='Locally generated. Automatic critique is advisory; listening approval is yours.',
+                description=audition_description(take),
                 file=path.relative_to(public).as_posix(),seconds=seconds,sampleRate=sample_rate,sha256=digest(path),
                 ref=take['ref'],review=take['review'],human_approved=False))
         if not alternatives: continue
@@ -93,6 +105,7 @@ def main():
     args=parser.parse_args()
     plan=json.loads((REVIEW/'cues.json').read_text(encoding='utf-8'))
     cues=[cue for cue in plan['cues'] if not args.only or cue['id'] in args.only]
+    cue_indices={cue['id']:index for index,cue in enumerate(plan['cues'])}
     if args.only and set(args.only)-{cue['id'] for cue in cues}: parser.error('Unknown cue')
     if args.dry_run:
         print(json.dumps(dict(cues=len(cues),max_generations=len(cues)*plan['initialTakes']*(plan['repairRounds']+1),
@@ -104,14 +117,15 @@ def main():
     summary_path=REVIEW/'generation.json'
     summary=json.loads(summary_path.read_text(encoding='utf-8')) if summary_path.exists() else dict(schemaVersion=1,human_approved=False,cues={})
     if not args.publish:
-        for index,cue in enumerate(cues):
+        for cue in cues:
             previous=summary['cues'].get(cue['id'])
             if previous and not (args.retry_failed and previous.get('returncode')!=0): continue
             folder=REVIEW/'Iterations'/cue['id'];folder.mkdir(parents=True,exist_ok=True)
             brief=folder/'brief.json';save(brief,cue['brief'])
             command=[str(TOOL/'.venv/Scripts/python.exe'),str(TOOL/'scripts/iterate.py'),'--brief',str(brief),
                 '--out',str(folder),'--duration',str(cue['duration']),'--mode',cue['mode'],'--repeat-hz',str(cue['repeat_hz']),
-                '--n',str(plan['initialTakes']),'--rounds',str(plan['repairRounds']),'--seed',str(260026+index*100),'--no-start']
+                '--n',str(plan['initialTakes']),'--rounds',str(plan['repairRounds']),
+                '--seed',str(260026+cue_indices[cue['id']]*100+(500000 if previous else 0)),'--no-start']
             mix=REVIEW/'mix-bed.wav'
             if mix.is_file(): command.extend(['--mix',str(mix)])
             print('Creating '+cue['id'],flush=True)
