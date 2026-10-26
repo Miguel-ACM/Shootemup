@@ -26,7 +26,7 @@ public sealed class AshCenser : DistrictEnemy
 public static partial class WavePartLibrary
 {
     static readonly FlightCurve AshCenserRoute0 = Route("Hell / Censer downward pendulum", Vector2.right, -0.65f, 1.25f, -0.62f, 0.86f, -0.24f, 0.58f, 0.42f, 0.42f, 0.72f, 0.17f, 0.76f, -0.25f);
-    static readonly FlightCurve AshCenserRoute1 = Route("Hell / Censer funeral arch", Vector2.right, -1.4f, 0.72f, -0.7f, 0.47f, 0.0f, 0.41f, 0.67f, 0.59f, 1.4f, 0.9f);
+    static readonly FlightCurve AshCenserRoute1 = Route("Hell / Censer funeral arch", Vector2.right, -2.2f, 0.72f, -0.7f, 0.47f, 0.0f, 0.41f, 0.67f, 0.59f, 2.2f, 0.9f);
     static readonly FlightCurve AshCenserRoute2 = Route("Hell / Censer ashen return", Vector2.right, 0.64f, 1.25f, 0.69f, 0.83f, 0.28f, 0.54f, -0.36f, 0.61f, -0.74f, 0.93f, -0.78f, 1.25f);
     public static readonly WavePart[] AshCenserParts =
     {
