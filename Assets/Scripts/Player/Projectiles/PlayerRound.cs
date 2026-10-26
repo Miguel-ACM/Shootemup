@@ -103,6 +103,7 @@ public sealed class PlayerRound : ABullet
         {
             rubberReturned = true;
             heading = new Vector2(heading.x, -Mathf.Abs(heading.y));
+            TurnAccent();
             age = 0;
         }
         if (age > 5 || transform.position.y < Camera.DownLimit - 3 || Mathf.Abs(transform.position.x) > Camera.RightLimit + 4)
@@ -114,6 +115,8 @@ public sealed class PlayerRound : ABullet
         {
             returning = true;
             hit.Clear();
+            ItemProcVfx.Emit(ItemProcShape.Return, transform.position, new Color(.4f, .7f, .8f), .3f);
+            ItemSound.Cue("itemReturn", volume: .07f, cooldown: .18f);
         }
         if (returning)
         {
@@ -182,7 +185,7 @@ public sealed class PlayerRound : ABullet
                 origin = transform.position;
                 returning = false;
                 returns = false;
-                PSXImpactEffects.Burst(transform.position, new Color(.3f, .85f, 1));
+                TurnAccent();
                 return;
             }
         }
@@ -202,10 +205,17 @@ public sealed class PlayerRound : ABullet
                 heading = ((Vector2)(next.transform.position - transform.position)).normalized;
                 damage *= .75f;
                 generation = 1;
+                TurnAccent();
                 return;
             }
         }
         Destroy(gameObject);
+    }
+
+    void TurnAccent()
+    {
+        ItemProcVfx.Emit(ItemProcShape.Rebound, transform.position, new Color(.65f, .7f, .58f), .4f, heading);
+        ItemSound.Cue("itemRicochet", volume: .07f, cooldown: .14f);
     }
 
     void ExplodeCharge()
