@@ -1,0 +1,298 @@
+{
+  "brief": {
+    "description": "one small guided rocket ignition, short pressurized motor kick with a compact electric snap, dry and close",
+    "requirements": [
+      "Does the sound contain the requested physical source: one small guided rocket ignition?",
+      "Is the audio free of intelligible speech and music?",
+      "Is the sound compact and dry with a short decay?"
+    ]
+  },
+  "brief_id": "7d9b98c01c85070548083ce4d7d0dd50ddb20c7a22294d315e0d852a2411bc85",
+  "options": {
+    "duration": 0.24,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 261126,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261026-210541-dfef",
+      "prompt": "TrackType: SFX, one small guided rocket ignition, short pressurized motor kick with a compact electric snap, dry and close",
+      "takes": [
+        "20261026-210541-dfef:261126",
+        "20261026-210541-dfef:261127"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261026-210605-c2e6",
+      "prompt": "TrackType: SFX, one small guided rocket ignition, short pressurized motor kick with a compact electric snap, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small guided rocket ignition?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+      "takes": [
+        "20261026-210605-c2e6:261128",
+        "20261026-210605-c2e6:261129"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 261126,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -2.18,
+        "true_peak_dbtp": -1.94,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00018,
+        "active_s": 0.13,
+        "noise_floor_db": -84.4,
+        "onset_s": 0.0369,
+        "tail_db": -82.2,
+        "stereo_correlation": 0.831,
+        "lufs": -20.8,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 1.13,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.25,
+        "length_frames": 6.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.2
+      },
+      "clap": 0.8305,
+      "clap_cos": 0.3081,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.43,
+        "CU": 7.38,
+        "PC": 2.49,
+        "PQ": 7.53
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.8024,
+      "rank": 1,
+      "ref": "20261026-210541-dfef:261126",
+      "files": {
+        "wav": "20261026-210541-dfef/261126.wav",
+        "png": "20261026-210541-dfef/261126.png",
+        "raw": "20261026-210541-dfef/261126_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210541-dfef\\261126.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210541-dfef\\261126.png"
+      },
+      "review": {
+        "brief_id": "7d9b98c01c85070548083ce4d7d0dd50ddb20c7a22294d315e0d852a2411bc85",
+        "blind_caption": "A rubber band being stretched",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small guided rocket ignition?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2933
+      }
+    },
+    {
+      "seed": 261127,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -3.6,
+        "true_peak_dbtp": -3.38,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00035,
+        "active_s": 0.135,
+        "noise_floor_db": -83.0,
+        "onset_s": 0.0359,
+        "tail_db": -80.6,
+        "stereo_correlation": 1.0,
+        "lufs": -23.2,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 3.69,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.25,
+        "length_frames": 6.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -20.3
+      },
+      "clap": 0.9026,
+      "clap_cos": 0.3549,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.31,
+        "CU": 6.94,
+        "PC": 2.49,
+        "PQ": 6.78
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.7984,
+      "rank": 2,
+      "ref": "20261026-210541-dfef:261127",
+      "files": {
+        "wav": "20261026-210541-dfef/261127.wav",
+        "png": "20261026-210541-dfef/261127.png",
+        "raw": "20261026-210541-dfef/261127_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210541-dfef\\261127.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210541-dfef\\261127.png"
+      },
+      "review": {
+        "brief_id": "7d9b98c01c85070548083ce4d7d0dd50ddb20c7a22294d315e0d852a2411bc85",
+        "blind_caption": "A car door closing",
+        "requirements": [
+          {
+            "question": "Does the sound contain the requested physical source: one small guided rocket ignition?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the audio free of intelligible speech and music?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound compact and dry with a short decay?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.35
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 261127,
+    "signal": {
+      "duration_s": 1.0,
+      "peak_dbfs": -3.6,
+      "true_peak_dbtp": -3.38,
+      "clipped_fraction": 0.0,
+      "dc_offset": 0.00035,
+      "active_s": 0.135,
+      "noise_floor_db": -83.0,
+      "onset_s": 0.0359,
+      "tail_db": -80.6,
+      "stereo_correlation": 1.0,
+      "lufs": -23.2,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 3.69,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 0.25,
+      "length_frames": 6.0,
+      "channels": 1
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -20.3
+    },
+    "clap": 0.9026,
+    "clap_cos": 0.3549,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.31,
+      "CU": 6.94,
+      "PC": 2.49,
+      "PQ": 6.78
+    },
+    "fails": [],
+    "warnings": [],
+    "rejected": false,
+    "rank_score": 0.7984,
+    "rank": 2,
+    "ref": "20261026-210541-dfef:261127",
+    "files": {
+      "wav": "20261026-210541-dfef/261127.wav",
+      "png": "20261026-210541-dfef/261127.png",
+      "raw": "20261026-210541-dfef/261127_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210541-dfef\\261127.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210541-dfef\\261127.png"
+    },
+    "review": {
+      "brief_id": "7d9b98c01c85070548083ce4d7d0dd50ddb20c7a22294d315e0d852a2411bc85",
+      "blind_caption": "A car door closing",
+      "requirements": [
+        {
+          "question": "Does the sound contain the requested physical source: one small guided rocket ignition?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the audio free of intelligible speech and music?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound compact and dry with a short decay?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.35
+    }
+  },
+  "baseline_best": null,
+  "status": "failed",
+  "human_approved": false,
+  "error": "server said 500: Internal Server Error"
+}

@@ -1,0 +1,153 @@
+{
+  "id": "20261026-211541-7be9",
+  "created": "2026-10-26 21:15:41",
+  "text": "TrackType: SFX, one small guided rocket ignition, short pressurized motor kick with a compact electric snap, dry and close",
+  "prompt": "TrackType: SFX, one small guided rocket ignition, short pressurized motor kick with a compact electric snap, dry and close",
+  "raw": true,
+  "category": "impact-body",
+  "cat_id": "FGHTImpt",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    761126,
+    761127
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.5,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 1.25,
+  "gen_s": 1.99,
+  "score_s": 1.21,
+  "takes": [
+    {
+      "seed": 761126,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": 0.0,
+        "true_peak_dbtp": 0.48,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00118,
+        "active_s": 0.5,
+        "noise_floor_db": -86.9,
+        "onset_s": 0.0349,
+        "tail_db": -83.5,
+        "stereo_correlation": 0.428,
+        "lufs": -14.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 0.2,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -18.1
+      },
+      "clap": 0.9929,
+      "clap_cos": 0.3459,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.51,
+        "CU": 6.38,
+        "PC": 2.23,
+        "PQ": 6.5
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.786,
+      "rank": 1,
+      "ref": "20261026-211541-7be9:761126",
+      "files": {
+        "wav": "20261026-211541-7be9/761126.wav",
+        "png": "20261026-211541-7be9/761126.png",
+        "raw": "20261026-211541-7be9/761126_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211541-7be9\\761126.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211541-7be9\\761126.png"
+      }
+    },
+    {
+      "seed": 761127,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": 0.0,
+        "true_peak_dbtp": 1.05,
+        "clipped_fraction": 1.7e-05,
+        "dc_offset": 0.0013,
+        "active_s": 0.42,
+        "noise_floor_db": -85.7,
+        "onset_s": 0.0349,
+        "tail_db": -83.5,
+        "stereo_correlation": 0.343,
+        "lufs": -15.3,
+        "fails": [],
+        "warnings": [
+          "a few clipped samples (0.002%)"
+        ]
+      },
+      "post": {
+        "gain_db": -1.06,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.5,
+        "length_frames": 12.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -20.2
+      },
+      "clap": 0.943,
+      "clap_cos": 0.2608,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.67,
+        "CU": 6.67,
+        "PC": 2.32,
+        "PQ": 6.82
+      },
+      "fails": [],
+      "warnings": [
+        "a few clipped samples (0.002%)"
+      ],
+      "rejected": false,
+      "rank_score": 0.676,
+      "rank": 2,
+      "ref": "20261026-211541-7be9:761127",
+      "files": {
+        "wav": "20261026-211541-7be9/761127.wav",
+        "png": "20261026-211541-7be9/761127.png",
+        "raw": "20261026-211541-7be9/761127_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211541-7be9\\761127.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-211541-7be9\\761127.png"
+      }
+    }
+  ],
+  "kept": 2
+}

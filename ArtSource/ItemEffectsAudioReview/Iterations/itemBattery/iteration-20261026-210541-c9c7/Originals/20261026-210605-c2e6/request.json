@@ -1,0 +1,153 @@
+{
+  "id": "20261026-210605-c2e6",
+  "created": "2026-10-26 21:06:05",
+  "text": "TrackType: SFX, one small guided rocket ignition, short pressurized motor kick with a compact electric snap, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small guided rocket ignition?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one small guided rocket ignition, short pressurized motor kick with a compact electric snap, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small guided rocket ignition?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "raw": true,
+  "category": "impact-body",
+  "cat_id": "FGHTImpt",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    261128,
+    261129
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.24,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 0.99,
+  "gen_s": 2.21,
+  "score_s": 1.38,
+  "takes": [
+    {
+      "seed": 261128,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -4.69,
+        "true_peak_dbtp": -4.42,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00023,
+        "active_s": 0.095,
+        "noise_floor_db": -81.5,
+        "onset_s": 0.0,
+        "tail_db": -79.3,
+        "stereo_correlation": 1.0,
+        "lufs": -25.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 3.28,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.1667,
+        "length_frames": 4.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.0
+      },
+      "clap": 0.1619,
+      "clap_cos": 0.1677,
+      "clap_top": "a hand clap",
+      "aes": {
+        "CE": 3.63,
+        "CU": 7.41,
+        "PC": 2.27,
+        "PQ": 7.52
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: a hand clap"
+      ],
+      "rejected": false,
+      "rank_score": 0.493,
+      "rank": 1,
+      "ref": "20261026-210605-c2e6:261128",
+      "files": {
+        "wav": "20261026-210605-c2e6/261128.wav",
+        "png": "20261026-210605-c2e6/261128.png",
+        "raw": "20261026-210605-c2e6/261128_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210605-c2e6\\261128.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210605-c2e6\\261128.png"
+      }
+    },
+    {
+      "seed": 261129,
+      "signal": {
+        "duration_s": 1.0,
+        "peak_dbfs": -7.44,
+        "true_peak_dbtp": -6.96,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00015,
+        "active_s": 0.075,
+        "noise_floor_db": -79.6,
+        "onset_s": 0.0,
+        "tail_db": -77.5,
+        "stereo_correlation": 1.0,
+        "lufs": -27.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 6.08,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.2083,
+        "length_frames": 5.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.3
+      },
+      "clap": 0.1065,
+      "clap_cos": 0.1438,
+      "clap_top": "a hand clap",
+      "aes": {
+        "CE": 3.29,
+        "CU": 7.24,
+        "PC": 2.07,
+        "PQ": 7.55
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: a hand clap"
+      ],
+      "rejected": false,
+      "rank_score": 0.4631,
+      "rank": 2,
+      "ref": "20261026-210605-c2e6:261129",
+      "files": {
+        "wav": "20261026-210605-c2e6/261129.wav",
+        "png": "20261026-210605-c2e6/261129.png",
+        "raw": "20261026-210605-c2e6/261129_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210605-c2e6\\261129.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210605-c2e6\\261129.png"
+      }
+    }
+  ],
+  "kept": 2
+}

@@ -1,0 +1,85 @@
+{
+  "request": "20261026-211541-7be9",
+  "ref": "20261026-211541-7be9:761127",
+  "text": "TrackType: SFX, one small guided rocket ignition, short pressurized motor kick with a compact electric snap, dry and close",
+  "prompt": "TrackType: SFX, one small guided rocket ignition, short pressurized motor kick with a compact electric snap, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "impact-body",
+  "seed": 761127,
+  "rank": 2,
+  "rank_score": 0.676,
+  "clap": 0.943,
+  "clap_cos": 0.2608,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.67,
+    "CU": 6.67,
+    "PC": 2.32,
+    "PQ": 6.82
+  },
+  "fails": [],
+  "warnings": [
+    "a few clipped samples (0.002%)"
+  ],
+  "post": {
+    "gain_db": -1.06,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.5,
+    "length_frames": 12.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -20.2
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": 0.0,
+    "true_peak_dbtp": 1.05,
+    "clipped_fraction": 1.7e-05,
+    "dc_offset": 0.0013,
+    "active_s": 0.42,
+    "noise_floor_db": -85.7,
+    "onset_s": 0.0349,
+    "tail_db": -83.5,
+    "stereo_correlation": 0.343,
+    "lufs": -15.3,
+    "fails": [],
+    "warnings": [
+      "a few clipped samples (0.002%)"
+    ]
+  },
+  "review": {
+    "brief_id": "7d9b98c01c85070548083ce4d7d0dd50ddb20c7a22294d315e0d852a2411bc85",
+    "blind_caption": "A plastic door is being opened.",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small guided rocket ignition?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "KEEP (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2536
+  },
+  "human_approved": false
+}

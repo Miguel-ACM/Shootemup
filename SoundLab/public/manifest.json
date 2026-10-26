@@ -8101,6 +8101,179 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemBattery",
+      "label": "Spare Battery — rocket",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemBattery",
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemBattery/FGHTImpt_LocalTake_v01.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "4ba28eb90898dcaafcd5433d014b30a3a5500e6f1bd5445f98188dbe1271950b",
+          "ref": "20261026-211602-c892:761128",
+          "review": {
+            "brief_id": "7d9b98c01c85070548083ce4d7d0dd50ddb20c7a22294d315e0d852a2411bc85",
+            "blind_caption": "A door opening and closing",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small guided rocket ignition?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.4444
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemBattery/FGHTImpt_LocalTake_v02.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "4265a84550a6e411a9fbc7125116cbebead2c0c2da3a8e2fc2206c8b7db094cd",
+          "ref": "20261026-211602-c892:761129",
+          "review": {
+            "brief_id": "7d9b98c01c85070548083ce4d7d0dd50ddb20c7a22294d315e0d852a2411bc85",
+            "blind_caption": "People typing on a keyboard",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small guided rocket ignition?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.4152
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemBattery/FGHTImpt_LocalTake_v03.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "bbb36e4971a5c44eed580d4c1a8d3f683ff4a36be37ebcbdbb85b130ca2be367",
+          "ref": "20261026-211541-7be9:761126",
+          "review": {
+            "brief_id": "7d9b98c01c85070548083ce4d7d0dd50ddb20c7a22294d315e0d852a2411bc85",
+            "blind_caption": "A plastic bag being opened",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small guided rocket ignition?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.3525
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemBattery/FGHTImpt_LocalTake_v04.wav",
+          "seconds": 0.5,
+          "sampleRate": 48000,
+          "sha256": "641653aa5adc5c2c0d219a96f0e7e5cd69f7974b20cb085edc91675ac28c4447",
+          "ref": "20261026-211541-7be9:761127",
+          "review": {
+            "brief_id": "7d9b98c01c85070548083ce4d7d0dd50ddb20c7a22294d315e0d852a2411bc85",
+            "blind_caption": "A plastic door is being opened.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small guided rocket ignition?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "KEEP (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2536
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }
