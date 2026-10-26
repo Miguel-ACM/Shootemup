@@ -9,7 +9,7 @@ public sealed class EclipseSail : DistrictEnemy
         hull = 75;
         hullScale = 0.57f;
         health = 53;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(2.6f, 1.8f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -25,12 +25,14 @@ public sealed class EclipseSail : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve EclipseSailRoute0 = Route("Space / EclipseSail 0", Vector2.right, -.65f, 1.25f, -.62f, .96f, -.36f, .72f, .18f, .6f, .65f, .81f, .7f, 1.25f);
-    static readonly FlightCurve EclipseSailRoute1 = Route("Space / EclipseSail 1", Vector2.right, -1.4f, .86f, -.82f, .66f, -.12f, .52f, .55f, .72f, 1.4f, .86f);
-    public static readonly WavePart[] EclipseSailParts ={
-        new WavePart("EclipseSail call",nameof(EclipseSail),EclipseSailRoute0,WaveShape.Rake,3,5.55f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("EclipseSail crossing",nameof(EclipseSail),EclipseSailRoute1,WaveShape.Rake,3,5.80f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("EclipseSail answer",nameof(EclipseSail),EclipseSailRoute0,WaveShape.Train,3,6.05f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
+    static readonly FlightCurve EclipseSailRoute0 = Route("Space / Eclipse orbital crescent", Vector2.right, -1.4f, 0.7f, -0.73f, 0.42f, -0.04f, 0.4f, 0.59f, 0.67f, 0.68f, 1.25f);
+    static readonly FlightCurve EclipseSailRoute1 = Route("Space / Eclipse solar arc", Vector2.right, -0.48f, 1.25f, -0.69f, 0.8f, -0.39f, 0.42f, 0.2f, 0.27f, 0.69f, 0.5f, 1.4f, 0.74f);
+    static readonly FlightCurve EclipseSailRoute2 = Route("Space / Eclipse limb transit", Vector2.right, 1.4f, 0.73f, 0.7f, 0.82f, 0.12f, 0.72f, -0.32f, 0.41f, -0.68f, 0.12f, -0.72f, -0.25f);
+    public static readonly WavePart[] EclipseSailParts =
+    {
+        new WavePart("Eclipse orbital crescent", nameof(EclipseSail), EclipseSailRoute0, WaveShape.Train, 3, 5.2f, 2, new[] { 0.24f, 0.4f, 0.59f, 0.76f }, new[] { 0.36f, 0.65f }, 3),
+        new WavePart("Eclipse solar arc", nameof(EclipseSail), EclipseSailRoute1, WaveShape.Rake, 3, 5.0f, 4, new[] { 0.27f, 0.47f, 0.67f }, new[] { 0.4f, 0.72f }, 3),
+        new WavePart("Eclipse limb transit", nameof(EclipseSail), EclipseSailRoute2, WaveShape.Rank, 3, 4.9f, 7, new[] { 0.28f, 0.44f, 0.63f, 0.77f }, new[] { 0.39f, 0.7f }, 3),
     };
 }
 
