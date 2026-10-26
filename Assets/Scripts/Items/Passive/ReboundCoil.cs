@@ -3,7 +3,7 @@ public sealed class ReboundCoil : AItem
 {
     void Awake()
     {
-        SetData("Rebound Coil", "Ship equipment", "Shots sometimes bounce to another enemy.", ItemType.passive);
+        SetData("Ricochet Spring", "Ship equipment", "Shots sometimes bounce to another enemy.", ItemType.passive);
     }
 
     public override void OnBegin()
