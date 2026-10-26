@@ -1,0 +1,151 @@
+{
+  "id": "20261026-210229-22bc",
+  "created": "2026-10-26 21:02:29",
+  "text": "TrackType: SFX, one small fragmentation charge burst, tight low thump with a brief spray of tiny metal fragments, dry and close",
+  "prompt": "TrackType: SFX, one small fragmentation charge burst, tight low thump with a brief spray of tiny metal fragments, dry and close",
+  "raw": true,
+  "category": "impact-metal",
+  "cat_id": "METLImpt",
+  "name": "Tracktype",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "seeds": [
+    260626,
+    260627
+  ],
+  "steps": 8,
+  "like": null,
+  "post": {
+    "mode": "oneshot",
+    "duration": 0.4,
+    "preroll_ms": 3.0,
+    "fade_in_ms": 1.0,
+    "fade_out_ms": 60.0,
+    "fps": 24.0,
+    "align_frame": null,
+    "pad_to_frames": true,
+    "channels": "auto",
+    "reverb": "none",
+    "peak_dbtp": -1.0,
+    "lufs": -23.0,
+    "ceiling_dbtp": -1.0,
+    "highpass_hz": 20.0,
+    "crossfade_s": null
+  },
+  "gen_length_s": 1.15,
+  "gen_s": 2.37,
+  "score_s": 1.64,
+  "takes": [
+    {
+      "seed": 260626,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -6.05,
+        "true_peak_dbtp": -6.03,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00039,
+        "active_s": 0.56,
+        "noise_floor_db": -80.6,
+        "onset_s": 0.01,
+        "tail_db": -79.0,
+        "stereo_correlation": 1.0,
+        "lufs": -24.9,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 5.4,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.4167,
+        "length_frames": 10.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.4
+      },
+      "clap": 0.5564,
+      "clap_cos": 0.2003,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.69,
+        "CU": 7.12,
+        "PC": 2.57,
+        "PQ": 7.12
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.6189,
+      "rank": 1,
+      "ref": "20261026-210229-22bc:260626",
+      "files": {
+        "wav": "20261026-210229-22bc/260626.wav",
+        "png": "20261026-210229-22bc/260626.png",
+        "raw": "20261026-210229-22bc/260626_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210229-22bc\\260626.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210229-22bc\\260626.png"
+      }
+    },
+    {
+      "seed": 260627,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -2.8,
+        "true_peak_dbtp": -2.79,
+        "clipped_fraction": 0.0,
+        "dc_offset": 1e-05,
+        "active_s": 0.43,
+        "noise_floor_db": -79.0,
+        "onset_s": 0.015,
+        "tail_db": -77.7,
+        "stereo_correlation": 1.0,
+        "lufs": -24.3,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 1.7,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 0.4167,
+        "length_frames": 10.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -24.5
+      },
+      "clap": 0.1318,
+      "clap_cos": 0.1411,
+      "clap_top": "a dull thud on cardboard",
+      "aes": {
+        "CE": 3.23,
+        "CU": 6.58,
+        "PC": 2.19,
+        "PQ": 7.09
+      },
+      "fails": [],
+      "warnings": [
+        "CLAP thinks it sounds more like: a dull thud on cardboard"
+      ],
+      "rejected": false,
+      "rank_score": 0.429,
+      "rank": 2,
+      "ref": "20261026-210229-22bc:260627",
+      "files": {
+        "wav": "20261026-210229-22bc/260627.wav",
+        "png": "20261026-210229-22bc/260627.png",
+        "raw": "20261026-210229-22bc/260627_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210229-22bc\\260627.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261026-210229-22bc\\260627.png"
+      }
+    }
+  ],
+  "kept": 2
+}

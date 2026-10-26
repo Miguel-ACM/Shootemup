@@ -5674,6 +5674,179 @@
           "human_approved": false
         }
       ]
+    },
+    {
+      "id": "itemDepthBurst",
+      "label": "Shell weapons — fragmentation",
+      "group": "Item effects — local takes",
+      "family": "energy",
+      "gameGain": 0.12,
+      "mode": "oneshot",
+      "source": "local-sa3-item-effects-v1",
+      "unityCue": "itemDepthBurst",
+      "original": null,
+      "choices": [
+        {
+          "id": "a",
+          "label": "Local take 1",
+          "description": "The similarity check suggested a different sound. The automatic listener was uncertain.",
+          "file": "audio/itemDepthBurst/METLImpt_LocalTake_v01.wav",
+          "seconds": 0.4166666666666667,
+          "sampleRate": 48000,
+          "sha256": "3236c265fbf73ef94ca7d34a33c7d1cd154f5fd52723f611595da63142dd3fd9",
+          "ref": "20261026-210250-1bff:260629",
+          "review": {
+            "brief_id": "dea632d008a49dfc9c14f83d9142e02eebc24fd8469d09c277d2df2bad2646a0",
+            "blind_caption": "A car door is opened.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small fragmentation charge burst?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "KEEP (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2117
+          },
+          "human_approved": false
+        },
+        {
+          "id": "b",
+          "label": "Local take 2",
+          "description": "The automatic listener was uncertain.",
+          "file": "audio/itemDepthBurst/METLImpt_LocalTake_v02.wav",
+          "seconds": 0.4166666666666667,
+          "sampleRate": 48000,
+          "sha256": "7fef2ba41ee1673c5dc24346f5b3eb79810aec8c8af8ca02fe069e47f7af1f3e",
+          "ref": "20261026-210229-22bc:260626",
+          "review": {
+            "brief_id": "dea632d008a49dfc9c14f83d9142e02eebc24fd8469d09c277d2df2bad2646a0",
+            "blind_caption": "A person sneezes",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small fragmentation charge burst?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "KEEP (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.2064
+          },
+          "human_approved": false
+        },
+        {
+          "id": "c",
+          "label": "Local take 3",
+          "description": "The similarity check suggested a different sound. The automatic listener was uncertain.",
+          "file": "audio/itemDepthBurst/METLImpt_LocalTake_v03.wav",
+          "seconds": 0.4166666666666667,
+          "sampleRate": 48000,
+          "sha256": "477177080a83d3a7b2879beac3dab0799461a6d2107eb477e8961c10cd7714d5",
+          "ref": "20261026-210250-1bff:260628",
+          "review": {
+            "brief_id": "dea632d008a49dfc9c14f83d9142e02eebc24fd8469d09c277d2df2bad2646a0",
+            "blind_caption": "A small piece of wood is being struck.",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small fragmentation charge burst?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.1495
+          },
+          "human_approved": false
+        },
+        {
+          "id": "d",
+          "label": "Local take 4",
+          "description": "The similarity check suggested a different sound. The automatic listener was uncertain.",
+          "file": "audio/itemDepthBurst/METLImpt_LocalTake_v04.wav",
+          "seconds": 0.4166666666666667,
+          "sampleRate": 48000,
+          "sha256": "270e26a6359ed866b8a2a847677839fea03797702f5d5f5bca5800ff5bcd31c6",
+          "ref": "20261026-210229-22bc:260627",
+          "review": {
+            "brief_id": "dea632d008a49dfc9c14f83d9142e02eebc24fd8469d09c277d2df2bad2646a0",
+            "blind_caption": "A person sneezes",
+            "requirements": [
+              {
+                "question": "Does the sound contain the requested physical source: one small fragmentation charge burst?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the audio free of intelligible speech and music?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              },
+              {
+                "question": "Is the sound compact and dry with a short decay?",
+                "answer": "uncertain",
+                "evidence": "YES"
+              }
+            ],
+            "action": "KEEP",
+            "suggestion": "Keep (meets target)",
+            "listener": "midashenglm-0.6b",
+            "human_approved": false,
+            "warnings": [
+              "listener gave unsupported or uncertain answers"
+            ],
+            "fixed_clap_cos": 0.1085
+          },
+          "human_approved": false
+        }
+      ]
     }
   ]
 }

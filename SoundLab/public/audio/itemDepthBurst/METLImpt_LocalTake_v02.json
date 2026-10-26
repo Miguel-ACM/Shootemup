@@ -1,0 +1,81 @@
+{
+  "request": "20261026-210229-22bc",
+  "ref": "20261026-210229-22bc:260626",
+  "text": "TrackType: SFX, one small fragmentation charge burst, tight low thump with a brief spray of tiny metal fragments, dry and close",
+  "prompt": "TrackType: SFX, one small fragmentation charge burst, tight low thump with a brief spray of tiny metal fragments, dry and close",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "impact-metal",
+  "seed": 260626,
+  "rank": 1,
+  "rank_score": 0.6189,
+  "clap": 0.5564,
+  "clap_cos": 0.2003,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.69,
+    "CU": 7.12,
+    "PC": 2.57,
+    "PQ": 7.12
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 5.4,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.4167,
+    "length_frames": 10.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -21.4
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -6.05,
+    "true_peak_dbtp": -6.03,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00039,
+    "active_s": 0.56,
+    "noise_floor_db": -80.6,
+    "onset_s": 0.01,
+    "tail_db": -79.0,
+    "stereo_correlation": 1.0,
+    "lufs": -24.9,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "dea632d008a49dfc9c14f83d9142e02eebc24fd8469d09c277d2df2bad2646a0",
+    "blind_caption": "A person sneezes",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small fragmentation charge burst?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "KEEP (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2064
+  },
+  "human_approved": false
+}

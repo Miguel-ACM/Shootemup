@@ -1,0 +1,84 @@
+{
+  "request": "20261026-210250-1bff",
+  "ref": "20261026-210250-1bff:260629",
+  "text": "TrackType: SFX, one small fragmentation charge burst, tight low thump with a brief spray of tiny metal fragments, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small fragmentation charge burst?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "prompt": "TrackType: SFX, one small fragmentation charge burst, tight low thump with a brief spray of tiny metal fragments, dry and close. Required acoustic properties: Does the sound contain the requested physical source: one small fragmentation charge burst?; Is the audio free of intelligible speech and music?; Is the sound compact and dry with a short decay?",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "impact-metal",
+  "seed": 260629,
+  "rank": 1,
+  "rank_score": 0.5553,
+  "clap": 0.3057,
+  "clap_cos": 0.2279,
+  "clap_top": "electronic static and digital glitches",
+  "aes": {
+    "CE": 3.64,
+    "CU": 7.03,
+    "PC": 2.8,
+    "PQ": 7.27
+  },
+  "fails": [],
+  "warnings": [
+    "CLAP thinks it sounds more like: electronic static and digital glitches"
+  ],
+  "post": {
+    "gain_db": 6.18,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.4167,
+    "length_frames": 10.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -21.3
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -7.12,
+    "true_peak_dbtp": -6.96,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.0004,
+    "active_s": 0.675,
+    "noise_floor_db": -76.0,
+    "onset_s": 0.0,
+    "tail_db": -76.4,
+    "stereo_correlation": 1.0,
+    "lufs": -25.6,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "dea632d008a49dfc9c14f83d9142e02eebc24fd8469d09c277d2df2bad2646a0",
+    "blind_caption": "A car door is opened.",
+    "requirements": [
+      {
+        "question": "Does the sound contain the requested physical source: one small fragmentation charge burst?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the audio free of intelligible speech and music?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound compact and dry with a short decay?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "KEEP (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2117
+  },
+  "iteration_session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\ItemEffectsAudioReview\\Iterations\\itemDepthBurst\\iteration-20261026-210229-a7e6\\session.json",
+  "human_approved": false
+}
