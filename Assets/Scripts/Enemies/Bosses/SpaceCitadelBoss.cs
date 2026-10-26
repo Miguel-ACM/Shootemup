@@ -125,7 +125,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
             PetalFan<SimpleRound>(Hull.TransformPoint(new Vector3(0, -.7f, -.5f)),
                 CombatVisuals.Rotate(barrageAxis, beat == 9 ? -9 : 9), Shots(phaseTwo ? 7 : 5, phaseTwo ? 11 : 9), 19, 2.6f, .29f, .18f);
         }
-        // Beats 3, 5 and 11 deliberately breathe; broken guns still reduce ricochets.
+        // Beats 1, 5, 8 and 11 deliberately breathe; broken guns reduce ricochets.
     }
 
     protected override void PrepareFire(float seconds)
