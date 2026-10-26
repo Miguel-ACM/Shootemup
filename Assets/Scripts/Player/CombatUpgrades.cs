@@ -242,7 +242,11 @@ public sealed class CombatUpgrades : MonoBehaviour
     public void Killed(AEnemy enemy)
     {
         if (Count(UpgradeKind.ChainReactor) > 0 && enemy.GetComponent<BurningHull>() != null && Ready("chain", .3f))
+        {
             Fragments(enemy.transform.position, 8, 6, 60);
+            ItemProcVfx.Emit(ItemProcShape.Detonate, enemy.transform.position, PlayerShotPalette.Fire, Mathf.Max(.55f, enemy.size));
+            ItemSound.Cue("itemChain", volume: .13f, cooldown: .25f);
+        }
     }
 
     public static AEnemy Nearest(Vector3 p, HashSet<AEnemy> excluded, float radius)
