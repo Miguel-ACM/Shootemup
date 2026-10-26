@@ -3,7 +3,7 @@ public sealed class SalvageConverter : AItem
 {
     void Awake()
     {
-        SetData("Salvage Converter", "Ship equipment", "Every 5 coins fire a homing shot.", ItemType.passive);
+        SetData("Coin Launcher", "Ship equipment", "Every 5 coins fire a homing shot.", ItemType.passive);
     }
 
     public override void OnBegin()
