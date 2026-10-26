@@ -9,7 +9,7 @@ public sealed class BaffleSpinner : DistrictEnemy
         hull = 67;
         hullScale = 0.48f;
         health = 30;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(2.8f, 2.05f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -23,12 +23,14 @@ public sealed class BaffleSpinner : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve BaffleSpinnerRoute0 = Route("Tunnel / BaffleSpinner 0", Vector2.right, -.7f, 1.25f, -.64f, .9f, -.35f, .62f, .15f, .52f, .58f, .7f, .66f, 1.25f);
-    static readonly FlightCurve BaffleSpinnerRoute1 = Route("Tunnel / BaffleSpinner 1", Vector2.right, 1.4f, .7f, .7f, .62f, .15f, .46f, -.52f, .55f, -1.4f, .7f);
-    public static readonly WavePart[] BaffleSpinnerParts ={
-        new WavePart("BaffleSpinner call",nameof(BaffleSpinner),BaffleSpinnerRoute0,WaveShape.Rake,3,4.85f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("BaffleSpinner crossing",nameof(BaffleSpinner),BaffleSpinnerRoute1,WaveShape.Rake,3,5.10f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("BaffleSpinner answer",nameof(BaffleSpinner),BaffleSpinnerRoute0,WaveShape.Train,3,5.35f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
+    static readonly FlightCurve BaffleSpinnerRoute0 = Route("Tunnel / Baffle wall rebound", Vector2.right, -0.84f, 1.25f, -0.86f, 0.8f, -0.5f, 0.57f, 0.16f, 0.65f, 0.78f, 0.85f, 1.4f, 0.91f);
+    static readonly FlightCurve BaffleSpinnerRoute1 = Route("Tunnel / Baffle reflected rank", Vector2.right, -1.4f, 0.39f, -0.76f, 0.46f, -0.42f, 0.7f, -0.69f, 0.94f, -0.83f, 1.25f);
+    static readonly FlightCurve BaffleSpinnerRoute2 = Route("Tunnel / Baffle corner relay", Vector2.right, 0.8f, 1.25f, 0.76f, 0.7f, 0.24f, 0.45f, -0.51f, 0.35f, -0.78f, 0.08f, -0.84f, -0.25f);
+    public static readonly WavePart[] BaffleSpinnerParts =
+    {
+        new WavePart("Baffle wall rebound", nameof(BaffleSpinner), BaffleSpinnerRoute0, WaveShape.Train, 3, 5.1f, 2, new[] { 0.3f, 0.49f, 0.71f }, new[] { 0.42f, 0.73f }, 3),
+        new WavePart("Baffle reflected rank", nameof(BaffleSpinner), BaffleSpinnerRoute1, WaveShape.Rank, 2, 4.9f, 4, new[] { 0.34f, 0.62f }, new[] { 0.49f }, 2),
+        new WavePart("Baffle corner relay", nameof(BaffleSpinner), BaffleSpinnerRoute2, WaveShape.Rake, 3, 5.3f, 7, new[] { 0.29f, 0.53f, 0.76f }, new[] { 0.41f, 0.74f }, 3),
     };
 }
 
