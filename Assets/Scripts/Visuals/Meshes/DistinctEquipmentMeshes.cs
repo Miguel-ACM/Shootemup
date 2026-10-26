@@ -153,9 +153,18 @@ public static partial class IndustrialMeshFactory
                 b.Prism(new[] { new Vector2(-.49f, -.22f), new Vector2(-.04f, -.22f), new Vector2(-.27f, -.52f) }, .17f, 9, Vector3.zero);
                 break;
             case "SplitterCore":
-                // One input cartridge physically divides into two open arms.
-                b.Prism(new[] { new Vector2(-.09f, -.49f), new Vector2(.09f, -.49f), new Vector2(.09f, -.06f), new Vector2(.39f, .3f), new Vector2(.25f, .45f), new Vector2(0, .14f), new Vector2(-.25f, .45f), new Vector2(-.39f, .3f), new Vector2(-.09f, -.06f) }, .2f, 11, Vector3.zero, 6);
-                b.Box(new Vector3(0, -.31f, -.13f), new Vector3(.1f, .23f, .05f), 9);
+                // A feed cartridge enters a central manifold and divides into two barrels.
+                b.Can(new Vector3(0, -.31f, .04f), .14f, .38f, 6, 11);
+                b.Drum(new Vector3(0, -.03f, -.02f), .2f, .34f, 6, 8, 11);
+                b.Drum(new Vector3(0, -.03f, -.22f), .11f, .06f, 9, 8);
+                foreach (int side in new[] { -1, 1 })
+                {
+                    Vector3 inlet = new Vector3(side * .08f, .04f, .02f);
+                    Vector3 muzzle = new Vector3(side * .34f, .4f, .02f);
+                    EquipmentRod(b, inlet, muzzle, .085f, 11);
+                    EquipmentRod(b, muzzle, muzzle + new Vector3(side * .05f, .07f, 0), .11f, 6);
+                    b.Ball(muzzle + new Vector3(side * .07f, .09f, -.02f), new Vector3(.055f, .065f, .055f), 9);
+                }
                 break;
             case "ReboundCoil":
                 // Exposed zigzag spring between two broad contact plates.
