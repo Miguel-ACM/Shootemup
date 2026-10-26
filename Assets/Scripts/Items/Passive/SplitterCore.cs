@@ -3,7 +3,7 @@ public sealed class SplitterCore : AItem
 {
     void Awake()
     {
-        SetData("Splitter Core", "Ship equipment", "Hits sometimes split into two shots.", ItemType.passive);
+        SetData("Splitting Rounds", "Ship equipment", "Hits sometimes split into two shots.", ItemType.passive);
     }
 
     public override void OnBegin()
