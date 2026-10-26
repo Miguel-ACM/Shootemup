@@ -8,14 +8,12 @@ public sealed class ReefDart : OceanEnemy
         hull = 50;
         hullScale = .49f;
         health = 33;
-        attackInterval = 1.8f;
+        attackInterval = Timing(2.5f,1.9f);
         Mover<Slalom>();
     }
 
     protected override void Attack()
     {
-        var axis = Aim;
-        for (int s = -1; s <= 1; s += 2)
-            Fire<NeedleRound>(Hull.TransformPoint(new Vector3(s * .17f, -.55f, -.2f)), CombatVisuals.Rotate(axis, s * 5), 4.1f, .15f);
+        Fan<NeedleRound>(Shots(1,2),17,3.7f,.2f);
     }
 }
