@@ -9,7 +9,7 @@ public sealed class HarrowBomber : DistrictEnemy
         hull = 62;
         hullScale = 0.61f;
         health = 48;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(3.5f, 2.6f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -24,12 +24,14 @@ public sealed class HarrowBomber : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve HarrowBomberRoute0 = Route("Fields / HarrowBomber 0", Vector2.right, .2f, 1.25f, .4f, .92f, .57f, .74f, .35f, .58f, -.08f, .5f, -.52f, .68f, -.75f, 1.25f);
-    static readonly FlightCurve HarrowBomberRoute1 = Route("Fields / HarrowBomber 1", Vector2.right, -.7f, 1.25f, -.68f, .92f, -.35f, .7f, .25f, .69f, .7f, .9f, .68f, 1.25f);
-    public static readonly WavePart[] HarrowBomberParts ={
-        new WavePart("HarrowBomber call",nameof(HarrowBomber),HarrowBomberRoute0,WaveShape.Train,2,5.75f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
-        new WavePart("HarrowBomber crossing",nameof(HarrowBomber),HarrowBomberRoute1,WaveShape.Train,2,6.00f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
-        new WavePart("HarrowBomber answer",nameof(HarrowBomber),HarrowBomberRoute0,WaveShape.Rake,2,6.25f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
+    static readonly FlightCurve HarrowBomberRoute0 = Route("Fields / Harrow parallel furrows", Vector2.right, -0.42f, 1.25f, -0.42f, 0.82f, -0.36f, 0.56f, -0.12f, 0.34f, 0.42f, 0.4f, 1.4f, 0.54f);
+    static readonly FlightCurve HarrowBomberRoute1 = Route("Fields / Harrow crescent return", Vector2.right, -1.4f, 0.88f, -0.7f, 0.68f, 0.0f, 0.5f, 0.62f, 0.66f, 0.76f, 1.25f);
+    static readonly FlightCurve HarrowBomberRoute2 = Route("Fields / Harrow staggered gate", Vector2.right, 0.62f, 1.25f, 0.55f, 0.82f, 0.3f, 0.61f, -0.34f, 0.5f, -0.73f, 0.66f, -1.4f, 0.8f);
+    public static readonly WavePart[] HarrowBomberParts =
+    {
+        new WavePart("Harrow parallel furrows", nameof(HarrowBomber), HarrowBomberRoute0, WaveShape.Rank, 2, 5.7f, 2, new[] { 0.33f, 0.68f }, new[] { 0.48f }, 2),
+        new WavePart("Harrow crescent return", nameof(HarrowBomber), HarrowBomberRoute1, WaveShape.Train, 2, 5.4f, 4, new[] { 0.3f, 0.62f }, new[] { 0.45f }, 2),
+        new WavePart("Harrow staggered gate", nameof(HarrowBomber), HarrowBomberRoute2, WaveShape.Rake, 2, 5.3f, 7, new[] { 0.31f, 0.59f, 0.76f }, new[] { 0.4f, 0.73f }, 2),
     };
 }
 
