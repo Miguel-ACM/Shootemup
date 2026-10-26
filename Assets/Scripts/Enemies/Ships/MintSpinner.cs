@@ -8,13 +8,13 @@ public sealed class MintSpinner : DistrictEnemy
         hull = 37;
         hullScale = .42f;
         health = 26;
-        attackInterval = 2.1f;
+        attackInterval = Timing(2.8f,2.0f);
         Mover<Slalom>();
     }
 
     protected override void Attack()
     {
-        Fan<SimpleRound>(3, 24, 5.9f, .14f);
+        Fan<SimpleRound>(Shots(2,3),31,3.5f,.25f);
     }
 }
 public static partial class IndustrialMeshFactory
