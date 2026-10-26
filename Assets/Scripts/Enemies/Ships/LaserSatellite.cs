@@ -8,22 +8,15 @@ public sealed class LaserSatellite : SpaceSatellite
         hull = 42;
         hullScale = .56f;
         health = 68;
-        attackInterval = 1.8f;
+        attackInterval = Timing(3.0f,2.3f);
         Mover<TopTracker>();
     }
 
+    protected override Vector2 CueAxis=>Vector2.down;
+
     protected override void Attack()
     {
-        var port = Hull.TransformPoint(new Vector3(0, -1.05f, -.25f));
-        float angle = Mathf.Clamp(Vector2.SignedAngle(Vector2.down, CombatVisuals.Aim(port)), -32, 32);
-        var beam = Fire<PulseLaser>(port, CombatVisuals.Rotate(Vector2.down, angle), 0);
-        if (beam != null)
-        {
-            beam.Bind(Hull, new Vector3(0, -1.05f, -.25f));
-            beam.warning = 1.0f;
-            beam.activeTime = 1.15f;
-            beam.width = .20f;
-            beam.sweep = volley % 2 == 0 ? -14 : 14;
-        }
+        var beam=Fire<PulseLaser>(Muzzle(),Vector2.down,0);
+        if(beam!=null) { beam.Bind(Hull,new Vector3(0,-1.05f,-.24f)); beam.warning=Timing(1.5f,1.2f); beam.activeTime=Timing(.8f,1.15f); beam.width=.23f; }
     }
 }
