@@ -45,7 +45,8 @@ public sealed class EnemyFiringCue : MonoBehaviour
         lip.transform.localPosition = local;
         lip.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.WeaponLip();
         var renderer = lip.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = anchor.GetComponent<MeshRenderer>()?.sharedMaterial ?? CombatMaterials.Fleet;
+        var surface = anchor.GetComponentInChildren<MeshRenderer>();
+        renderer.sharedMaterial = surface != null ? surface.sharedMaterial : CombatMaterials.Fleet;
         renderer.sortingLayerName = "Enemy";
         ports.Add(new Port { anchor = anchor, local = local, sprite = light, lip = lip.transform });
     }
