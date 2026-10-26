@@ -5,7 +5,7 @@ public static partial class IndustrialMeshFactory
     static readonly Dictionary<string, Mesh> expansionItems = new Dictionary<string, Mesh>();
     public static Mesh ExpansionItem(string kind)
     {
-        if (expansionItems.TryGetValue(kind, out var mesh))
+        if (expansionItems.TryGetValue(kind, out var mesh) && mesh != null)
             return mesh;
         int original = System.Array.IndexOf(ItemKinds, kind);
         if (original >= 0)
