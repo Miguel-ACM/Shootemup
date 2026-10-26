@@ -230,10 +230,10 @@ public static partial class IndustrialMeshFactory
                 b.Box(new Vector3(0, -.29f, -.18f), new Vector3(.26f, .1f, .2f), 6);
                 break;
             case "ProximityFuse":
-                // A thick proximity sensor pod with two swept, dimensional feelers.
-                b.Drum(new Vector3(0, 0, .02f), .23f, .38f, 6, 8, 11);
-                b.Drum(new Vector3(0, 0, -.21f), .15f, .08f, 3, 8, 6);
-                b.Drum(new Vector3(0, 0, -.26f), .065f, .035f, 9, 8);
+                // A small spherical charge, with a sensor lens and two feelers.
+                b.Ball(Vector3.zero, new Vector3(.27f, .29f, .24f), 6);
+                b.Drum(new Vector3(0, 0, -.23f), .14f, .07f, 10, 8, 11);
+                b.Drum(new Vector3(0, 0, -.28f), .07f, .035f, 11, 8);
                 foreach (int side in new[] { -1, 1 })
                 {
                     Vector3 root = new Vector3(side * .2f, .03f, .06f);
@@ -241,9 +241,9 @@ public static partial class IndustrialMeshFactory
                     Vector3 tip = new Vector3(side * .48f, .35f, -.1f);
                     EquipmentRod(b, root, bend, .04f, 6);
                     EquipmentRod(b, bend, tip, .035f, 6);
-                    b.Ball(tip, new Vector3(.055f, .055f, .055f), 9);
+                    b.Ball(tip, new Vector3(.055f, .055f, .055f), 10);
                 }
-                b.Box(new Vector3(0, -.31f, .02f), new Vector3(.18f, .25f, .25f), 6);
+                b.Can(new Vector3(0, -.28f, .02f), .11f, .16f, 11, 10);
                 break;
             case "SalvageConverter":
                 // Open coin hopper feeds a small missile chute.
