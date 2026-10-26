@@ -19,7 +19,7 @@ public sealed class SandEmitter : DistrictEnemy
         hull = 30;
         hullScale = .63f;
         health = 40;
-        attackInterval = 1.3f;
+        attackInterval = Timing(2.3f,1.6f);
     }
 
     protected override void Start()
@@ -86,12 +86,11 @@ public sealed class SandEmitter : DistrictEnemy
 
     protected override void Attack()
     {
-        if (!CanBeTargeted || CombatRound.Live.Count + 14 > CombatRound.Limit)
-            return;
-        for (int i = 0; i < 14; i++)
-        {
-            Vector2 direction = CombatVisuals.Rotate(Vector2.down, i * 360f / 14 + volley * 12.857f);
-            Fire<SimpleRound>(transform.position + (Vector3)direction * .52f, direction, 3.7f, .14f);
+        int count=Shots(10,14);
+        if(!CanBeTargeted || CombatRound.Live.Count+count>CombatRound.Limit) return;
+        for(int i=0;i<count;i++) {
+            Vector2 direction=CombatVisuals.Rotate(Vector2.down,(i+.5f*(volley%2))*360f/count);
+            Fire<SimpleRound>(transform.position+(Vector3)direction*.52f,direction,2.8f,.2f);
         }
     }
 
