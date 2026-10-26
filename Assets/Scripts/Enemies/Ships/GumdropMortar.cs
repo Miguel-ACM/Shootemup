@@ -9,7 +9,7 @@ public sealed class GumdropMortar : DistrictEnemy
         hull = 74;
         hullScale = 0.53f;
         health = 35;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(3.45f, 2.6f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -31,12 +31,14 @@ public sealed class GumdropMortar : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve GumdropMortarRoute0 = Route("Candyland / GumdropMortar 0", Vector2.right, .65f, 1.25f, .53f, .91f, .2f, .72f, -.35f, .69f, -.62f, .94f, -.7f, 1.25f);
-    static readonly FlightCurve GumdropMortarRoute1 = Route("Candyland / GumdropMortar 1", Vector2.right, -1.4f, .87f, -.7f, .78f, 0, .69f, .7f, .79f, 1.4f, .88f);
-    public static readonly WavePart[] GumdropMortarParts ={
-        new WavePart("GumdropMortar call",nameof(GumdropMortar),GumdropMortarRoute0,WaveShape.Train,2,4.65f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
-        new WavePart("GumdropMortar crossing",nameof(GumdropMortar),GumdropMortarRoute1,WaveShape.Train,2,4.90f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
-        new WavePart("GumdropMortar answer",nameof(GumdropMortar),GumdropMortarRoute0,WaveShape.Rake,2,5.15f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 2),
+    static readonly FlightCurve GumdropMortarRoute0 = Route("Candyland / Gumdrop sugar fall", Vector2.right, -0.62f, 1.25f, -0.52f, 0.85f, -0.28f, 0.54f, 0.26f, 0.35f, 0.73f, 0.46f, 1.4f, 0.59f);
+    static readonly FlightCurve GumdropMortarRoute1 = Route("Candyland / Gumdrop candy shelf", Vector2.right, -1.4f, 0.87f, -0.66f, 0.72f, 0.04f, 0.73f, 0.7f, 0.84f, 1.4f, 0.9f);
+    static readonly FlightCurve GumdropMortarRoute2 = Route("Candyland / Gumdrop wrapping turn", Vector2.right, 0.62f, 1.25f, 0.58f, 0.82f, 0.25f, 0.59f, -0.31f, 0.55f, -0.72f, 0.74f, -0.8f, 1.25f);
+    public static readonly WavePart[] GumdropMortarParts =
+    {
+        new WavePart("Gumdrop sugar fall", nameof(GumdropMortar), GumdropMortarRoute0, WaveShape.Train, 3, 4.1f, 2, new[] { 0.3f, 0.65f }, new[] { 0.47f }, 2),
+        new WavePart("Gumdrop candy shelf", nameof(GumdropMortar), GumdropMortarRoute1, WaveShape.Rank, 2, 4.2f, 4, new[] { 0.33f, 0.66f }, new[] { 0.5f }, 2),
+        new WavePart("Gumdrop wrapping turn", nameof(GumdropMortar), GumdropMortarRoute2, WaveShape.Rake, 2, 4.3f, 7, new[] { 0.29f, 0.61f }, new[] { 0.46f }, 2),
     };
 }
 
