@@ -21,6 +21,7 @@ public static class EnemyExpansion
     }
     public static readonly Entry[] All = {
         // Individual enemies are registered here with their own content commits.
+        new Entry(LevelId.Fields, typeof(ReedSkimmer), 61, 0.49f, false, IndustrialMeshFactory.ReedSkimmerMesh, new[] { new Vector3(-.58f,-.62f,-.16f), new Vector3(.58f,-.62f,-.16f) }, new[] { new Vector3(-.28f,.68f,0), new Vector3(.28f,.68f,0) }, WavePartLibrary.ReedSkimmerParts),
     };
     public static Entry Find(int hull) => Array.Find(All, e => e.hull == hull);
     public static Entry Find(string name) => Array.Find(All, e => e.type.Name == name);
