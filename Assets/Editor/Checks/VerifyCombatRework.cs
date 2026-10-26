@@ -99,6 +99,7 @@ public static class VerifyCombatRework
         File.WriteAllLines(Folder+"/Compositions.txt",notes);
         Difficulty.Select(RunDifficulty.Hard);LevelRun.Reset();
     }
+    public static void ValidateAuthoring() => PureChecks();
     static void Models()
     {
         foreach(var entry in EnemyExpansion.All)Model(entry.type.Name,entry.model(),EnemyExpansion.Material(entry.hull));
@@ -177,13 +178,13 @@ public sealed class CombatReworkReview : MonoBehaviour
         long main=0,physics=0;foreach(var r in recorders)if(r.recorder.Valid){if(r.name=="Main Thread")main=r.recorder.LastValue;else physics+=r.recorder.LastValue;}
         frames.Append(label).Append(',').Append(frame).Append(',').Append((Time.unscaledDeltaTime*1000).ToString("F3",System.Globalization.CultureInfo.InvariantCulture)).Append(',').Append(CombatRound.Live.Count).Append(',').Append(CombatRound.CreatedCount).Append(',').Append(main).Append(',').Append(physics).AppendLine();
     }
-    IEnumerator Observe(string label,float duration,Action tick=null,bool capture=true)
+    IEnumerator Observe(string label,float duration,Action tick=null,bool capture=true,float captureInterval=.5f)
     {
         float start=Time.time,next=0;int frame=0,peak=0;bool fired=false;
         while(Time.time-start<duration)
         {
             tick?.Invoke();peak=Mathf.Max(peak,CombatRound.Live.Count);fired|=CombatRound.Live.Count>0;
-            if(capture&&Time.time-start>=next){Capture(label,frame);next+=.5f;}
+            if(capture&&Time.time-start>=next){Capture(label,frame);next+=captureInterval;}
             Record(label,frame++);yield return null;
         }
         Check(peak<=CombatRound.Limit,label+": "+frame+" complete frames, peak "+peak+", firing "+fired);
@@ -252,6 +253,7 @@ public sealed class CombatReworkReview : MonoBehaviour
             if(filter!="all"&&!filter.Split(',').Contains(level.ToString()))continue;
             foreach(RunDifficulty difficulty in Enum.GetValues(typeof(RunDifficulty)))
             {
+                if(focus=="additions"&&difficulty==RunDifficulty.Easy)continue;
                 yield return Context(level,difficulty);
                 if(focus=="all"||focus=="waves")yield return Wave(level+"-"+difficulty+"-Wave",DistrictWaves.Create(12));
                 if((focus=="all"||focus=="enemies")&&difficulty==RunDifficulty.Hard)
@@ -267,6 +269,10 @@ public sealed class CombatReworkReview : MonoBehaviour
                         Check(actor==null||actor.GetComponent<EnemyFiringCue>().PortCount>0,"Audited physical weapon layout: "+type.Name);
                     }
                 }
+                if(focus=="additions")
+                    foreach(var entry in EnemyExpansion.All.Where(e=>e.level==level))
+                        foreach(var part in entry.parts)
+                            yield return Wave(part.Name,WaveComposer.PreviewPart(part,0,1,out _));
                 if(focus=="all"||focus=="bosses")yield return Bosses(level,difficulty);
                 if(level==LevelId.Underwater&&difficulty==RunDifficulty.Hard)
                 {
@@ -278,7 +284,49 @@ public sealed class CombatReworkReview : MonoBehaviour
                 serial++;File.WriteAllText(Folder+"/CurrentCase.txt",serial+": "+level+" / "+difficulty+" complete");
             }
         }
+        if(focus=="additions")
+        {
+            yield return PlainsHits();
+            yield return Context(LevelId.Tunnel,RunDifficulty.Hard);
+            Clear();yield return null;
+            var saw=(TunnelSawBoss)DistrictEnemy.Spawn(typeof(TunnelSawBoss),new Vector3(0,Camera.UpLimit-2,1));
+            float began=Time.time;bool phase=false;
+            yield return Observe("Tunnel-UncapturedProfile",30,()=>
+            {
+                if(!phase&&Time.time-began>9){phase=true;saw.health*=.45f;}
+            },false);
+        }
         Clear();yield return null;Check(errors.Count==0,"No runtime exceptions during the complete batched review");
+    }
+    IEnumerator PlainsHits()
+    {
+        yield return Context(LevelId.Fields,RunDifficulty.Hard);
+        var weapon=ship.GetComponentInChildren<BaseWeapon>();
+        Check(weapon!=null&&GameRules.playerShootDamage==2&&GameRules.playerShootNumber==2&&GameRules.playerShootSpeed==10,"Moving Plains benchmark uses the unmodified stock gun");
+        foreach(var entry in EnemyExpansion.All.Where(e=>e.level==LevelId.Fields))
+            foreach(var part in entry.parts)
+            {
+                Clear();yield return null;
+                var unit=WaveComposer.PreviewPart(part,0,1,out _).units[0];
+                var target=DistrictEnemy.Spawn(entry.type,Vector3.zero);target.FlyPhrase(unit);
+                var m=new PlainsTtkProbe.Measurement{health=target.health};
+                target.gameObject.AddComponent<PlainsTtkTarget>().Initialize(target,m);
+                Vector3 previous=target.transform.position;float began=Time.time;
+                weapon.enabled=true;weapon.isStopingPrimary=false;weapon.WeaponPressed(true);
+                while(target!=null&&Time.time-began<10)
+                {
+                    var position=target.transform.position;
+                    float velocity=(position.x-previous.x)/Mathf.Max(.001f,Time.deltaTime);
+                    float flight=Mathf.Max(0,position.y-ship.transform.position.y-.7f)/GameRules.playerShootTravelSpeed;
+                    float aim=Mathf.Clamp(position.x+velocity*flight,Camera.LeftLimit+.4f,Camera.RightLimit-.4f);
+                    var pilot=ship.transform.position;pilot.x=Mathf.MoveTowards(pilot.x,aim,GameRules.playerMoveSpeed*Time.deltaTime);ship.transform.position=pilot;
+                    previous=position;yield return null;
+                }
+                weapon.StopFiring();weapon.enabled=false;yield return null;
+                Check(m.killed&&m.firstHit>=0,part.Name+": actual player projectiles kill the moving hull before departure");
+                float ttk=m.death-m.firstHit;
+                Check(ttk<4.5f,part.Name+": "+m.health+" HP, "+ttk.ToString("F2")+"s from first projectile hit to kill (predictive pilot capped at normal movement speed)");
+            }
     }
 }
 #endif
