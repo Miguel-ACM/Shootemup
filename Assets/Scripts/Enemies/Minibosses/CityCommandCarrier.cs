@@ -8,7 +8,7 @@ public sealed class CityCommandCarrier : DistrictMiniboss
         hull = 28;
         health = 480;
         hullScale = 1.1f;
-        attackInterval = .52f;
+        attackInterval = Timing(1.2f,0.8f);
         Mover<TopTracker>();
     }
 
@@ -16,11 +16,11 @@ public sealed class CityCommandCarrier : DistrictMiniboss
     {
         if (volley % 2 == 0)
         {
-            FanFrom<ReturningDisc>(5, 22, 4, .22f, ports);
+            FanFrom<ReturningDisc>(Shots(3,5), 28, 3.0f, .28f, ports);
         }
         else
         {
-            FanFrom<NeedleRound>(13, 8, 6, .14f, ports);
+            FanFrom<NeedleRound>(Shots(6,9), 14, 4.8f, .19f, ports);
         }
     }
     // The bays are exposed during firing and reload; armor still accepts every weapon.
