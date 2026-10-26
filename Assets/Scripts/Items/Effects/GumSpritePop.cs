@@ -11,6 +11,7 @@ public sealed class GumSpritePop : MonoBehaviour
     {
         if (live >= 64)
             return;
+        ItemSound.Cue("itemGum", "popcorn", .08f, cooldown: .12f);
         var go = new GameObject("Gum sprite pop");
         go.transform.position = position;
         var pop = go.AddComponent<GumSpritePop>();
