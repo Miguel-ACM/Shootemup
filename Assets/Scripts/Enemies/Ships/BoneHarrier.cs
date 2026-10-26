@@ -8,7 +8,7 @@ public sealed class BoneHarrier : DistrictEnemy
         hull = 80;
         hullScale = 0.49f;
         health = 32;
-        attackInterval = Timing(2.7f, 1.9f);
+        attackInterval = Timing(2.3f, 1.5f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -21,12 +21,14 @@ public sealed class BoneHarrier : DistrictEnemy
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve BoneHarrierRoute0 = Route("Hell / BoneHarrier 0", Vector2.right, .65f, 1.25f, .52f, .92f, .12f, .58f, -.45f, .42f, -.65f, .09f, -.2f, -.25f);
-    static readonly FlightCurve BoneHarrierRoute1 = Route("Hell / BoneHarrier 1", Vector2.right, -1.4f, .87f, -.74f, .76f, -.1f, .62f, .6f, .81f, 1.4f, .89f);
-    public static readonly WavePart[] BoneHarrierParts ={
-        new WavePart("BoneHarrier call",nameof(BoneHarrier),BoneHarrierRoute0,WaveShape.Train,3,4.35f,2, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("BoneHarrier crossing",nameof(BoneHarrier),BoneHarrierRoute1,WaveShape.Train,3,4.60f,4, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
-        new WavePart("BoneHarrier answer",nameof(BoneHarrier),BoneHarrierRoute0,WaveShape.Rake,3,4.85f,7, new[]{.28f,.48f,.72f},new[]{.38f,.73f}, 3),
+    static readonly FlightCurve BoneHarrierRoute0 = Route("Hell / Harrier talon dive", Vector2.right, -0.62f, 1.25f, -0.5f, 0.8f, 0.1f, 0.47f, 0.6f, 0.22f, 1.4f, 0.14f);
+    static readonly FlightCurve BoneHarrierRoute1 = Route("Hell / Harrier scything ascent", Vector2.right, -1.4f, 0.22f, -0.68f, 0.3f, 0.04f, 0.55f, 0.53f, 0.89f, 0.59f, 1.25f);
+    static readonly FlightCurve BoneHarrierRoute2 = Route("Hell / Harrier blackwing hook", Vector2.right, 1.4f, 0.86f, 0.7f, 0.7f, 0.22f, 0.36f, -0.31f, 0.24f, -0.71f, 0.47f, -1.4f, 0.67f);
+    public static readonly WavePart[] BoneHarrierParts =
+    {
+        new WavePart("Harrier talon dive", nameof(BoneHarrier), BoneHarrierRoute0, WaveShape.Train, 5, 3.7f, 2, new[] { 0.25f, 0.42f, 0.6f, 0.75f }, new[] { 0.36f, 0.61f, 0.77f }, 4),
+        new WavePart("Harrier scything ascent", nameof(BoneHarrier), BoneHarrierRoute1, WaveShape.Chevron, 3, 3.8f, 4, new[] { 0.28f, 0.47f, 0.7f }, new[] { 0.4f, 0.72f }, 3),
+        new WavePart("Harrier blackwing hook", nameof(BoneHarrier), BoneHarrierRoute2, WaveShape.Rake, 3, 4.1f, 7, new[] { 0.24f, 0.4f, 0.6f, 0.76f }, new[] { 0.35f, 0.58f, 0.76f }, 3),
     };
 }
 
