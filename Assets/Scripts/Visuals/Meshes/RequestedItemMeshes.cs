@@ -45,13 +45,20 @@ public static partial class IndustrialMeshFactory
                 b.Drum(new Vector3(0, 0, -.25f), .1f, .05f, 1, 8);
                 return true;
             case "DoubleTrouble":
+                // Two linked trigger grips, with open guards and visible red triggers.
                 foreach (int side in new[] { -1, 1 })
                 {
-                    b.Box(new Vector3(side * .23f, 0, 0), new Vector3(.22f, .57f, .22f), 6);
-                    b.Box(new Vector3(side * .23f, .32f, 0), new Vector3(.27f, .12f, .27f), 11);
-                    b.Box(new Vector3(side * .23f, -.28f, .04f), new Vector3(.16f, .22f, .18f), 3);
+                    b.Prism(new[] { new Vector2(side * .14f, .14f), new Vector2(side * .36f, .14f),
+                        new Vector2(side * .4f, -.42f), new Vector2(side * .23f, -.46f) }, .25f, 6, Vector3.zero, 11);
+                    b.Box(new Vector3(side * .23f, .24f, 0), new Vector3(.35f, .17f, .3f), 11, 6);
+                    Vector3 top = new Vector3(side * .13f, .12f, -.17f);
+                    Vector3 bottom = new Vector3(side * .13f, -.22f, -.17f);
+                    Vector3 outer = new Vector3(side * .02f, -.14f, -.17f);
+                    EquipmentRod(b, top, outer, .035f, 9);
+                    EquipmentRod(b, outer, bottom, .035f, 9);
+                    b.Box(new Vector3(side * .15f, -.07f, -.19f), new Vector3(.06f, .16f, .05f), 3);
                 }
-                b.Box(new Vector3(0, -.08f, 0), new Vector3(.3f, .12f, .14f), 13);
+                EquipmentRod(b, new Vector3(-.13f, .2f, .06f), new Vector3(.13f, .2f, .06f), .055f, 10);
                 return true;
             case "FocusTime":
                 b.Box(new Vector3(0, -.05f, 0), new Vector3(.82f, .12f, .48f), 13, 2);
