@@ -22,7 +22,7 @@ public sealed class ScatterCarrier : CombatRound
     protected override void Tick(float dt)
     {
         base.Tick(dt);
-        if (age > (releases + 1) * .65f)
+        if (age > (releases + 1) * (Difficulty.Easy?.95f:.78f))
         {
             releases++;
             var side = new Vector2(-heading.y, heading.x);
