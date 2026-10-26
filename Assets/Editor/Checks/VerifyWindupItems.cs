@@ -282,8 +282,8 @@ public sealed class ItemFeedbackReview : MonoBehaviour
             yield return null;
             var shots = FindObjectsByType<PlayerRound>();
             Check(shots.Length == GameRules.playerShootNumber, "one released volley at tier " + tier);
-            Check(shots.All(s => Mathf.Abs(s.damage - GameRules.playerShootDamage * (tier == 1 ? 2 : tier == 2 ? 7 : 16)) < .01f), "tier " + tier + " damage scaling");
-            Check(shots.All(s => s.pierces == (tier == 1 ? 0 : tier == 2 ? 2 : 5)), "tier " + tier + " piercing budget");
+            Check(shots.All(s => Mathf.Abs(s.damage - GameRules.playerShootDamage * (tier == 1 ? 2 : tier == 2 ? 7 * .35f : 16 * .35f)) < .01f), "tier " + tier + " impact damage scaling (remaining power feeds lingering blast)");
+            Check(shots.All(s => s.pierces == 0), "tier " + tier + " detonates on its first impact");
             yield return Capture("Release" + tier);
             Clear();
             yield return new WaitForSeconds(.2f);

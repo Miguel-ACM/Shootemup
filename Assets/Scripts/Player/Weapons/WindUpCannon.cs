@@ -99,9 +99,9 @@ public sealed class WindUpCannon : AWeapon
             var shot = PlayerRound.Spawn(transform.position + muzzle, Vector2.up, GameRules.playerShootDamage * power * capacitor, GameRules.playerShootTravelSpeed * 1.7f, PlayerDelivery.Needle);
             if (shot == null)
                 continue;
+            shot.pierces = 0;
             if (level >= 2)
                 shot.ArmChargeBlast(level);
-            shot.pierces = level == 3 ? 5 : level == 2 ? 2 : 0;
             shot.GetComponent<SpriteRenderer>().sprite = ProjectileSprites.Load("needle");
             shot.transform.localScale *= level == 3 ? 1.5f : level == 2 ? 1.2f : .85f;
             MagnifyingLens.Enlarge(shot);

@@ -156,6 +156,8 @@ public sealed class PlayerRound : ABullet
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        if (detonated)
+            return;
         var enemy = collision.GetComponent<AEnemy>();
         if (enemy == null || !enemy.CanBeTargeted || !hit.Add(enemy))
             return;
