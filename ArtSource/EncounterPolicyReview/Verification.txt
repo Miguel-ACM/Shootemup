@@ -1,0 +1,3 @@
+PASS: all districts retain ten ordinary waves, opening reward and timely-miniboss choice with one pre-miniboss encounter. The remaining encounter precedes exactly three ordinary waves before the miniboss.
+50000 deterministic draws tested at 0%, 69.99%, 70%, 70.01% and 100%, with challenge available and unavailable; valid pairs are distinct, exclude HEALTH above 70%, and never pair ITEM with CHALLENGE. All five choices remain reachable at the threshold, and all four non-health choices remain reachable above it. Zero and scaled maximum-health cases passed.
+No Play mode or live game interaction.
