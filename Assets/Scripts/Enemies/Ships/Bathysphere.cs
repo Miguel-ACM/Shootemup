@@ -8,7 +8,7 @@ public sealed class Bathysphere : OceanEnemy
         hull = 52;
         hullScale = .62f;
         health = 85;
-        attackInterval = Timing(3.1f, 2.4f);
+        attackInterval = 2.4f;
         Mover<TopTracker>();
     }
 
@@ -18,6 +18,6 @@ public sealed class Bathysphere : OceanEnemy
             for (int s = -1; s <= 1; s += 2)
                 Fire<SuspendedRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * 35), 2.2f, .27f);
         else
-            Fan<NeedleRound>(Shots(2, 3), 23, 3.8f, .19f);
+            Fan<NeedleRound>(3, 23, 3.8f, .19f);
     }
 }

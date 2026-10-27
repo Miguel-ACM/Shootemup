@@ -8,7 +8,7 @@ public sealed class ArcLancer : DistrictEnemy
         hull = 18;
         health = 34;
         hullScale = .62f;
-        attackInterval = Timing(4.2f, 3.4f);
+        attackInterval = 3.4f;
         Mover<StrafeAndBrake>();
     }
 
@@ -22,8 +22,8 @@ public sealed class ArcLancer : DistrictEnemy
         if (beam != null)
         {
             beam.Bind(Hull, new Vector3(.52f, -1.45f, -.2f));
-            beam.warning = Timing(1.45f, 1.15f);
-            beam.activeTime = Timing(.7f, 1.05f);
+            beam.warning = 1.15f;
+            beam.activeTime = 1.05f;
             beam.width = .24f;
         }
     }

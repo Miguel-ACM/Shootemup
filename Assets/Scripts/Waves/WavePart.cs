@@ -15,10 +15,9 @@ public sealed class WavePart
     public readonly WaveShape Shape;
     public readonly int Count, Unlock;
     public readonly float Seconds;
-    public readonly float[] HardScore, EasyScore;
-    public readonly int EasyCount;
+    public readonly float[] Score;
     public bool Ground => Enemy == "MeadowTank" || Enemy == "FrostAuger";
-    public WavePart(string name, string enemy, FlightCurve route, WaveShape shape, int count, float seconds, int unlock = 2, float[] hardScore = null, float[] easyScore = null, int easyCount = -1)
+    public WavePart(string name, string enemy, FlightCurve route, WaveShape shape, int count, float seconds, int unlock = 2, float[] score = null)
     {
         Name = name;
         Enemy = enemy;
@@ -27,9 +26,7 @@ public sealed class WavePart
         Count = count;
         Seconds = seconds;
         Unlock = unlock;
-        HardScore = hardScore;
-        EasyScore = easyScore;
-        EasyCount = easyCount < 0 ? count : easyCount;
+        Score = score;
     }
 
     public List<WaveUnit> Generate(int variant, float side)
@@ -39,8 +36,7 @@ public sealed class WavePart
         float depth = (2 * radius + .3f) / (Camera.UpLimit - Camera.DownLimit);
         float interval = Mathf.Max(.30f, (2 * radius + .32f) / Mathf.Max(1, Route.Length / Seconds) * 1.25f) * (1 + (variant / 2 % 3) * .12f);
         int count = Shape == WaveShape.Solo ? 1 : Mathf.Max(Count == 2 ? 2 : 3, Count + variant % 3 - 1 + Mathf.Min(1, (LevelRun.Stage - 1) / 3));
-        if (Difficulty.Easy && EasyScore != null)
-            count = EasyCount;
+        
         WaveShape shape = Shape;
         if (Ground)
         {
@@ -125,7 +121,7 @@ public sealed class WavePart
             score = new[] { Seconds * .27f, Seconds * .43f, Seconds * .65f };
         if (Enemy == "ReefDart" || Enemy == "MantaRay" || Enemy == "Bathysphere")
             score = new[] { Seconds * .30f, Seconds * .51f, Seconds * .73f };
-        var authoredScore = Difficulty.Easy ? EasyScore ?? EnemyEasyScore.For(Enemy) : HardScore;
+        var authoredScore = Score;
         if (authoredScore != null)
         {
             score = new float[authoredScore.Length];

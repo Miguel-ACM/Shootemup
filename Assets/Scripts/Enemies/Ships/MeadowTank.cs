@@ -11,7 +11,7 @@ public sealed class MeadowTank : GroundVehicle
         hull = 39;
         hullScale = .68f;
         health = 27;
-        attackInterval = Timing(2.0f, 1.5f);
+        attackInterval = 1.5f;
     }
 
     protected override void Attack()
@@ -24,12 +24,12 @@ public sealed class MeadowTank : GroundVehicle
     {
         bursting = true;
         Vector2 aim = CombatVisuals.Aim(Weapon.position);
-        for (int i = 0; i < Shots(1, 2); i++)
+        for (int i = 0; i < 2; i++)
         {
             var muzzle = Weapon.TransformPoint(new Vector3(0, -.96f, -.22f));
             if (player != null && Vector2.Distance(player.position, muzzle) > 2.2f)
                 Fire<NeedleRound>(muzzle, CombatVisuals.Rotate(aim, i == 0 ? -3 : 3), 4.9f, .18f);
-            yield return new WaitForSeconds(Timing(.2f, .16f) / LevelRun.EnemyTempoScale);
+            yield return new WaitForSeconds(.16f / LevelRun.EnemyTempoScale);
         }
         bursting = false;
     }

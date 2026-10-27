@@ -9,13 +9,13 @@ public sealed class MirageObelisk : DistrictEnemy
         hull = 72;
         hullScale = 0.56f;
         health = 48;
-        attackInterval = Timing(3.6f, 2.65f);
+        attackInterval = 2.65f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        int count = Shots(3, 5);
+        int count = 5;
         for (int i = 0; i < count; i++)
             Fire<SuspendedRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 24 + (volley % 2 == 0 ? 10 : -10)), 2.5f, .24f);
     }
@@ -29,9 +29,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve MirageObeliskRoute2 = Route("Desert / Obelisk paired descent", Vector2.right, 0.58f, 1.25f, 0.52f, 0.84f, 0.27f, 0.59f, -0.1f, 0.4f, -0.62f, 0.21f, -1.4f, 0.16f);
     public static readonly WavePart[] MirageObeliskParts =
     {
-        new WavePart("Obelisk mirage march", nameof(MirageObelisk), MirageObeliskRoute0, WaveShape.Rank, 2, 5.6f, 2, new[] { 0.28f, 0.58f, 0.75f }, new[] { 0.42f, 0.73f }, 2),
-        new WavePart("Obelisk buried arc", nameof(MirageObelisk), MirageObeliskRoute1, WaveShape.Train, 2, 5.8f, 4, new[] { 0.31f, 0.64f }, new[] { 0.47f }, 2),
-        new WavePart("Obelisk paired descent", nameof(MirageObelisk), MirageObeliskRoute2, WaveShape.Rake, 2, 5.6f, 7, new[] { 0.3f, 0.53f, 0.74f }, new[] { 0.4f, 0.72f }, 2),
+        new WavePart("Obelisk mirage march", nameof(MirageObelisk), MirageObeliskRoute0, WaveShape.Rank, 2, 5.6f, 2, new[] { 0.28f, 0.58f, 0.75f }),
+        new WavePart("Obelisk buried arc", nameof(MirageObelisk), MirageObeliskRoute1, WaveShape.Train, 2, 5.8f, 4, new[] { 0.31f, 0.64f }),
+        new WavePart("Obelisk paired descent", nameof(MirageObelisk), MirageObeliskRoute2, WaveShape.Rake, 2, 5.6f, 7, new[] { 0.3f, 0.53f, 0.74f }),
     };
 }
 

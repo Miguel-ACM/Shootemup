@@ -18,7 +18,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
         hull = 45;
         hullScale = 1;
         health = 2500;
-        attackInterval = Timing(.9f, .68f);
+        attackInterval = .68f;
         nextAttack = 1.7f;
     }
 
@@ -41,7 +41,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
         {
             var go = new GameObject("Retracting reactor shutter " + i);
             go.transform.SetParent(Hull, false);
-            go.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.SpaceModule(3);
+            go.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.SpaceModule3;
             var renderer = go.AddComponent<MeshRenderer>();
             renderer.sharedMaterial = SpaceMaterials.Fleet;
             renderer.sortingLayerName = "Enemy";
@@ -79,8 +79,8 @@ public sealed class SpaceCitadelBoss : DistrictBoss
             if (centralLaser != null)
             {
                 centralLaser.Bind(Hull, new Vector3(0, -1.48f, -.30f));
-                centralLaser.warning = Timing(1.6f, 1.3f);
-                centralLaser.activeTime = Timing(1.1f, 1.5f);
+                centralLaser.warning = 1.3f;
+                centralLaser.activeTime = 1.5f;
                 centralLaser.width = phaseTwo ? .42f : .34f;
             }
         }
@@ -89,7 +89,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
             for (int i = 0; i < 2; i++)
             {
                 var port = parts[i].health > 0 ? parts[i].transform.TransformPoint(new Vector3(0, -.3f, -.3f)) : Muzzle(i + 1);
-                PetalFan<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, i == 0 ? -23 : 23), Shots(phaseTwo ? 5 : 3, phaseTwo ? 7 : 5), 24, 1.8f, .34f, .2f);
+                PetalFan<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, i == 0 ? -23 : 23), (phaseTwo ? 7 : 5), 24, 1.8f, .34f, .2f);
             }
         }
         else if (beat == 2 || beat == 3)
@@ -99,7 +99,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
                 bool turret = parts[i] != null && parts[i].health > 0;
                 if (!turret)
                     continue;
-                int side = i == 2 ? -1 : 1, count = Shots(phaseTwo ? 5 : 4, phaseTwo ? 7 : 5);
+                int side = i == 2 ? -1 : 1, count = (phaseTwo ? 7 : 5);
                 // Half-lane replies form nested mirrored arcs, rather than repeating identical rays.
                 var axis = CombatVisuals.Rotate(Vector2.down, side * (35 + (beat - 2) * 12));
                 var port = parts[i].transform.TransformPoint(new Vector3(beat == 2 ? -.16f : .16f, -.695f, -.08f));
@@ -113,7 +113,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
             for (int side = -1; side <= 1; side += 2)
             {
                 var port = Hull.TransformPoint(new Vector3(side * .4f, -.9f, -.4f));
-                PetalFan<NeedleRound>(port, CombatVisuals.Rotate(barrageAxis, side * (beat == 6 ? 21 : 9)), Shots(phaseTwo ? 5 : 3, phaseTwo ? 7 : 5), 17, 4.3f, .2f);
+                PetalFan<NeedleRound>(port, CombatVisuals.Rotate(barrageAxis, side * (beat == 6 ? 21 : 9)), (phaseTwo ? 7 : 5), 17, 4.3f, .2f);
             }
         }
         else if (beat == 9 || beat == 10)
@@ -123,7 +123,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
             if (beat == 9)
                 barrageAxis = Aim;
             PetalFan<SimpleRound>(Hull.TransformPoint(new Vector3(0, -.7f, -.5f)),
-                CombatVisuals.Rotate(barrageAxis, beat == 9 ? -9 : 9), Shots(phaseTwo ? 7 : 5, phaseTwo ? 11 : 9), 19, 2.6f, .29f, .18f);
+                CombatVisuals.Rotate(barrageAxis, beat == 9 ? -9 : 9), (phaseTwo ? 11 : 9), 19, 2.6f, .29f, .18f);
         }
         // Beats 1, 5, 8 and 11 deliberately breathe; broken guns reduce ricochets.
     }
@@ -150,11 +150,11 @@ public sealed class SpaceCitadelBoss : DistrictBoss
             Cue(Muzzle(), seconds);
         else if (beat == 6 || beat == 7)
         {
-            Cue(Muzzle(1), seconds);
-            Cue(Muzzle(2), seconds);
+            Cue(Muzzle1, seconds);
+            Cue(Muzzle2, seconds);
         }
         else if (beat == 9 || beat == 10)
-            Cue(Muzzle(3), seconds);
+            Cue(Muzzle3, seconds);
     }
 
     protected override void OnPhaseTwo()
@@ -253,7 +253,7 @@ public sealed class SpaceBossPart : AEnemy
             PSXPolygonDebris.Spawn(gameObject);
             PSXImpactEffects.Explosion(transform.position, .65f);
             model.enabled = false;
-            Score.IncreaseScore(80);
+            Score.IncreaseScore80;
         }
         enabled = false;
     }

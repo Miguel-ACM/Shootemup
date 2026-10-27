@@ -34,7 +34,7 @@ public sealed class CandyRegentBoss : DistrictBoss
         hull = 38;
         hullScale = .85f;
         health = 1320;
-        attackInterval = Timing(.78f, .58f);
+        attackInterval = .58f;
         nextAttack = 2.0f;
     }
 
@@ -86,7 +86,7 @@ public sealed class CandyRegentBoss : DistrictBoss
         }
         if (age >= nextBrood)
         {
-            nextBrood = age + Timing(phaseTwo ? 6.4f : 7.2f, phaseTwo ? 4.8f : 5.8f);
+            nextBrood = age + (phaseTwo ? 4.8f : 5.8f);
             StartCoroutine(ReleaseBrood());
         }
     }
@@ -116,18 +116,18 @@ public sealed class CandyRegentBoss : DistrictBoss
         if (beat < 3)
         {
             var port = Muzzle(beat % 2);
-            int count = Shots(phaseTwo ? 3 : 2, phaseTwo ? 5 : 3);
+            int count = (phaseTwo ? 5 : 3);
             PetalFan<NeedleRound>(port, CombatVisuals.Rotate(attackAxis, (beat - 1) * 9), count, 21, 4.7f, .2f, .13f);
         }
         else if (beat == 4 || beat == 5)
         {
             // A broad alternating comb leaves lanes between shots while the next brood enters.
-            int count = Shots(phaseTwo ? 5 : 3, phaseTwo ? 9 : 7);
+            int count = (phaseTwo ? 9 : 7);
             PetalFan<SimpleRound>(Muzzle(beat % 2), CombatVisuals.Rotate(Vector2.down, beat == 4 ? -9 : 9), count, 24, 2.4f, .31f, .22f);
         }
     }
 
-    protected override float AttackPace => phaseTwo ? Timing(.96f, .88f) : 1;
+    protected override float AttackPace => phaseTwo ? .88f : 1;
     protected override void OnPhaseTwo()
     {
         volley = 0;
@@ -144,11 +144,11 @@ public sealed class CandyRegentBoss : DistrictBoss
                 door.localScale = Vector3.one * (.24f + .15f * Mathf.Sin(t / .6f * Mathf.PI));
             yield return null;
         }
-        for (int row = 0; row < Shots(phaseTwo ? 3 : 2, phaseTwo ? 4 : 3); row++)
+        for (int row = 0; row < (phaseTwo ? 4 : 3); row++)
         {
             foreach (int side in new[] { -1, 1 })
             {
-                if (LiveMinions >= Shots(6, 12))
+                if (LiveMinions >= 12)
                     break;
                 var p = Hull.TransformPoint(new Vector3(side * .82f, -.35f, -.2f));
                 if (player != null && Vector2.Distance(p, player.position) < 2.5f)
@@ -164,7 +164,7 @@ public sealed class CandyRegentBoss : DistrictBoss
                 brood.Add(minion);
                 SpawnedMinions++;
             }
-            yield return new WaitForSeconds(.18f);
+            yield return new WaitForSeconds.18f;
         }
         foreach (var door in doors)
             door.localScale = Vector3.one * .24f;

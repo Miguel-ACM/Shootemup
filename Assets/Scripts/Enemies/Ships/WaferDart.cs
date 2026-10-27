@@ -8,7 +8,7 @@ public sealed class WaferDart : DistrictEnemy
         hull = 36;
         hullScale = .39f;
         health = 23;
-        attackInterval = Timing(2.4f, 1.8f);
+        attackInterval = 1.8f;
         Mover<Slalom>();
     }
 
@@ -16,15 +16,12 @@ public sealed class WaferDart : DistrictEnemy
     {
         base.PrepareFire(seconds);
         firingCue.ClearWarning();
-        if (Difficulty.Easy)
-            Cue(Muzzle(volley % 2), seconds);
-        else
-            firingCue.Warn(seconds);
+        firingCue.Warn(seconds);
     }
 
     protected override void Attack()
     {
-        FanFrom<NeedleRound>(Shots(1, 2), 18, 5.3f, .18f, new Vector3(-.27f, -.78f, -.16f), new Vector3(.27f, -.78f, -.16f));
+        FanFrom<NeedleRound>(2, 18, 5.3f, .18f, new Vector3(-.27f, -.78f, -.16f), new Vector3(.27f, -.78f, -.16f));
     }
 }
 public static partial class IndustrialMeshFactory

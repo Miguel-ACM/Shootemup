@@ -9,14 +9,14 @@ public sealed class AshCenser : DistrictEnemy
         hull = 79;
         hullScale = 0.58f;
         health = 55;
-        attackInterval = Timing(2.6f, 1.75f);
+        attackInterval = 1.75f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
         if (volley % 2 == 0)
-            Fan<SimpleRound>(Shots(3, 5), 24, 2.5f, .25f);
+            Fan<SimpleRound>(5, 24, 2.5f, .25f);
         else
             for (int s = -1; s <= 1; s += 2)
                 Fire<PlasmaOrb>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (volley % 4 == 1 ? 32 : 15)), 1.7f, .38f);
@@ -31,9 +31,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve AshCenserRoute2 = Route("Hell / Censer ashen return", Vector2.right, 0.64f, 1.25f, 0.69f, 0.83f, 0.28f, 0.54f, -0.36f, 0.61f, -0.74f, 0.93f, -0.78f, 1.25f);
     public static readonly WavePart[] AshCenserParts =
     {
-        new WavePart("Censer downward pendulum", nameof(AshCenser), AshCenserRoute0, WaveShape.Rake, 3, 5.2f, 2, new[] { 0.25f, 0.41f, 0.59f, 0.76f }, new[] { 0.34f, 0.57f, 0.76f }, 3),
-        new WavePart("Censer funeral arch", nameof(AshCenser), AshCenserRoute1, WaveShape.Rank, 3, 5.1f, 4, new[] { 0.27f, 0.45f, 0.66f }, new[] { 0.39f, 0.69f }, 2),
-        new WavePart("Censer ashen return", nameof(AshCenser), AshCenserRoute2, WaveShape.Train, 3, 5.4f, 7, new[] { 0.26f, 0.4f, 0.59f, 0.73f }, new[] { 0.37f, 0.62f, 0.78f }, 3),
+        new WavePart("Censer downward pendulum", nameof(AshCenser), AshCenserRoute0, WaveShape.Rake, 3, 5.2f, 2, new[] { 0.25f, 0.41f, 0.59f, 0.76f }),
+        new WavePart("Censer funeral arch", nameof(AshCenser), AshCenserRoute1, WaveShape.Rank, 3, 5.1f, 4, new[] { 0.27f, 0.45f, 0.66f }),
+        new WavePart("Censer ashen return", nameof(AshCenser), AshCenserRoute2, WaveShape.Train, 3, 5.4f, 7, new[] { 0.26f, 0.4f, 0.59f, 0.73f }),
     };
 }
 

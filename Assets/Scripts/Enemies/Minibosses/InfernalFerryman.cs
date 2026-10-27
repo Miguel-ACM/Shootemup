@@ -7,7 +7,7 @@ public sealed class InfernalFerryman : DistrictMiniboss
         hull = 59;
         hullScale = 1;
         health = 650;
-        attackInterval = Timing(0.72f, 0.54f);
+        attackInterval = 0.54f;
         nextAttack = 1.0f;
     }
 
@@ -23,8 +23,8 @@ public sealed class InfernalFerryman : DistrictMiniboss
         }
         else if (beat == 4)
         {
-            Cue(Muzzle(2), seconds);
-            Cue(Muzzle(5), seconds);
+            Cue(Muzzle2, seconds);
+            Cue(Muzzle5, seconds);
         }
     }
 
@@ -36,11 +36,11 @@ public sealed class InfernalFerryman : DistrictMiniboss
             for (int side = -1; side <= 1; side += 2)
             {
                 var p = Hull.TransformPoint(new Vector3(side * .88f, .45f - (beat % 3) * .55f, -.3f));
-                for (int i = 0; i < Shots(3, 5); i++)
-                    Fire<SimpleRound>(p, CombatVisuals.Rotate(CombatVisuals.Aim(p), (i - (Shots(3, 5) - 1) * .5f) * 21 + (beat % 3 - 1) * 6), 3.6f, .23f);
+                for (int i = 0; i < 5; i++)
+                    Fire<SimpleRound>(p, CombatVisuals.Rotate(CombatVisuals.Aim(p), (i - (5 - 1) * .5f) * 21 + (beat % 3 - 1) * 6), 3.6f, .23f);
             }
         }
         else if (beat == 4)
-            FanFrom<NeedleRound>(Shots(5, 7), 17, 4.8f, .19f, new Vector3(-.88f, -.65f, -.3f), new Vector3(.88f, -.65f, -.3f));
+            FanFrom<NeedleRound>(7, 17, 4.8f, .19f, new Vector3(-.88f, -.65f, -.3f), new Vector3(.88f, -.65f, -.3f));
     }
 }

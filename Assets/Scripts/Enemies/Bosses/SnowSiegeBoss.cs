@@ -57,7 +57,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
 
     void DeployComb()
     {
-        combCount = Shots(phaseTwo ? 8 : 6, phaseTwo ? 11 : 9);
+        combCount = (phaseTwo ? 11 : 9);
         deployment = 0;
         deployed = true;
         returning = false;
@@ -75,7 +75,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
         hull = 21;
         hullScale = 1.6f;
         health = 2100;
-        attackInterval = Timing(1.05f, .85f);
+        attackInterval = .85f;
         shellTravelDistance = 6.6f;
     }
 
@@ -97,7 +97,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
         {
             // Three broad crowns leave room for complete rings instead of queueing
             // oversized shell clusters against the shared projectile cap.
-            int count = Shots(phaseTwo ? 4 : 3, phaseTwo ? 5 : 4);
+            int count = (phaseTwo ? 5 : 4);
             float distance = beat == 2 ? shellTravelDistance - 2 : shellTravelDistance;
             for (int i = 0; i < count; i++)
             {
@@ -141,7 +141,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
         else if (beat == 11 || beat == 12 && phaseTwo)
         {
             int sign = beat == 11 ? -1 : 1;
-            int count = Shots(phaseTwo ? 7 : 5, phaseTwo ? 11 : 9);
+            int count = (phaseTwo ? 11 : 9);
             PetalFan<NeedleRound>(Hull.TransformPoint(new Vector3(0, -.65f, -.25f)),
                 CombatVisuals.Rotate(Vector2.down, sign * 8), count, 15, 3.7f, .19f, .18f);
         }

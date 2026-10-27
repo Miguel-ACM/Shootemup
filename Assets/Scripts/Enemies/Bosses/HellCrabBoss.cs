@@ -20,7 +20,7 @@ public sealed class HellCrabBoss : DistrictBoss
         hull = 49;
         hullScale = 1;
         health = 3000;
-        attackInterval = Timing(.98f, .72f);
+        attackInterval = .72f;
         nextAttack = 2.2f;
     }
 
@@ -33,7 +33,7 @@ public sealed class HellCrabBoss : DistrictBoss
         {
             int side = i == 0 ? -1 : 1;
             eyes[i] = HellCrabEye.Create(this, Hull, new Vector3(side * .67f, -.52f, -.96f), health * .5f);
-            claws[i] = Model("Jointed side pincer", IndustrialMeshFactory.CombatHull(54), Hull);
+            claws[i] = Model("Jointed side pincer", IndustrialMeshFactory.CombatHull54, Hull);
             claws[i].localScale = Vector3.one * 1.75f;
             firingCue.Register(claws[i], new Vector3(0, -.32f, -.4f));
             firingCue.Register(eyes[i].transform, Vector3.zero);
@@ -127,7 +127,7 @@ public sealed class HellCrabBoss : DistrictBoss
                 var axis = CombatVisuals.Rotate(Vector2.down, (i == 0 ? 1 : -1) * (beat < 3 ? 28 : 46));
                 if (player != null && Vector2.Distance(port, player.position) < 1.8f)
                     continue;
-                PetalFan<SimpleRound>(port, CombatVisuals.Rotate(axis, (beat % 3 - 1) * 10), Shots(phaseTwo ? 5 : 4, clawShots + (phaseTwo ? 2 : 0)), 18, 2.3f, .3f, .2f);
+                PetalFan<SimpleRound>(port, CombatVisuals.Rotate(axis, (beat % 3 - 1) * 10), (clawShots + (phaseTwo ? 2 : 0)), 18, 2.3f, .3f, .2f);
             }
         }
         else if (beat == 4 || beat == 5 || beat == 10)
@@ -139,9 +139,9 @@ public sealed class HellCrabBoss : DistrictBoss
                     if (beat == 4 || beat == 10)
                         eyeAxes[i] = CombatVisuals.Aim(port);
                     if (beat == 10)
-                        PetalFan<SimpleRound>(port, eyeAxes[i], Shots(phaseTwo ? 7 : 5, phaseTwo ? 13 : 11), 16, 1.9f, .34f, .2f);
+                        PetalFan<SimpleRound>(port, eyeAxes[i], (phaseTwo ? 13 : 11), 16, 1.9f, .34f, .2f);
                     else
-                        PetalFan<NeedleRound>(port, CombatVisuals.Rotate(eyeAxes[i], beat == 4 ? -8 : 8), Shots(phaseTwo ? 5 : 3, phaseTwo ? 9 : 7), 15, 3.8f, .21f);
+                        PetalFan<NeedleRound>(port, CombatVisuals.Rotate(eyeAxes[i], beat == 4 ? -8 : 8), (phaseTwo ? 9 : 7), 15, 3.8f, .21f);
                 }
         }
     }
@@ -215,7 +215,7 @@ public sealed class HellCrabEye : AEnemy
         hit.radius = .34f;
         var visual = new GameObject("Eye lens");
         visual.transform.SetParent(go.transform, false);
-        visual.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CombatHull(55);
+        visual.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CombatHull55;
         var renderer = visual.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = CombatMaterials.Fleet;
         renderer.sortingLayerName = "Enemy";

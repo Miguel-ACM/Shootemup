@@ -8,7 +8,7 @@ public sealed class FieldsHeavyWing : DistrictMiniboss
         hull = 24;
         health = 380;
         hullScale = 1.1f;
-        attackInterval = Timing(1.5f, 1.0f);
+        attackInterval = 1.0f;
         shellTravelDistance = 5.4f;
         Mover<TopTracker>();
     }
@@ -17,21 +17,18 @@ public sealed class FieldsHeavyWing : DistrictMiniboss
     {
         base.PrepareFire(seconds);
         firingCue.ClearWarning();
-        if (Difficulty.Easy && (volley + 1) % 2 == 0)
-            Cue(Muzzle(volley % 2), seconds);
-        else
-            firingCue.Warn(seconds);
+        firingCue.Warn(seconds);
     }
 
     protected override void Attack()
     {
         if (volley % 2 == 0)
         {
-            FanFrom<BurstShell>(Shots(1, 2), 24, 3.2f, .4f, ports);
+            FanFrom<BurstShell>(2, 24, 3.2f, .4f, ports);
         }
         else
         {
-            FanFrom<NeedleRound>(Shots(5, 7), 18, 4.2f, .19f, ports);
+            FanFrom<NeedleRound>(7, 18, 4.2f, .19f, ports);
         }
     }
     // The bays are exposed during firing and reload; armor still accepts every weapon.

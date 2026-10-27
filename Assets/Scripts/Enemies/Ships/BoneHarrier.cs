@@ -8,13 +8,13 @@ public sealed class BoneHarrier : DistrictEnemy
         hull = 80;
         hullScale = 0.49f;
         health = 32;
-        attackInterval = Timing(2.3f, 1.5f);
+        attackInterval = 1.5f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        Fan<NeedleRound>(Shots(3, 5), 17, 4.3f, .2f);
+        Fan<NeedleRound>(5, 17, 4.3f, .2f);
     }
 
 }
@@ -26,9 +26,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve BoneHarrierRoute2 = Route("Hell / Harrier blackwing hook", Vector2.right, 1.4f, 0.86f, 0.7f, 0.7f, 0.22f, 0.36f, -0.31f, 0.24f, -0.71f, 0.47f, -1.4f, 0.67f);
     public static readonly WavePart[] BoneHarrierParts =
     {
-        new WavePart("Harrier talon dive", nameof(BoneHarrier), BoneHarrierRoute0, WaveShape.Train, 5, 3.7f, 2, new[] { 0.25f, 0.42f, 0.6f, 0.75f }, new[] { 0.36f, 0.61f, 0.77f }, 4),
-        new WavePart("Harrier scything ascent", nameof(BoneHarrier), BoneHarrierRoute1, WaveShape.Chevron, 3, 3.8f, 4, new[] { 0.28f, 0.47f, 0.7f }, new[] { 0.4f, 0.72f }, 3),
-        new WavePart("Harrier blackwing hook", nameof(BoneHarrier), BoneHarrierRoute2, WaveShape.Rake, 3, 4.1f, 7, new[] { 0.24f, 0.4f, 0.6f, 0.76f }, new[] { 0.35f, 0.58f, 0.76f }, 3),
+        new WavePart("Harrier talon dive", nameof(BoneHarrier), BoneHarrierRoute0, WaveShape.Train, 5, 3.7f, 2, new[] { 0.25f, 0.42f, 0.6f, 0.75f }),
+        new WavePart("Harrier scything ascent", nameof(BoneHarrier), BoneHarrierRoute1, WaveShape.Chevron, 3, 3.8f, 4, new[] { 0.28f, 0.47f, 0.7f }),
+        new WavePart("Harrier blackwing hook", nameof(BoneHarrier), BoneHarrierRoute2, WaveShape.Rake, 3, 4.1f, 7, new[] { 0.24f, 0.4f, 0.6f, 0.76f }),
     };
 }
 

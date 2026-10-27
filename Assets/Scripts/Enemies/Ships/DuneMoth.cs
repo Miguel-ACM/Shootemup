@@ -9,14 +9,14 @@ public sealed class DuneMoth : DistrictEnemy
         hull = 71;
         hullScale = 0.53f;
         health = 32;
-        attackInterval = Timing(2.75f, 1.95f);
+        attackInterval = 1.95f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
         for (int s = -1; s <= 1; s += 2)
-            for (int j = 0; j < Shots(2, 3); j++)
+            for (int j = 0; j < 3; j++)
                 Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (17 + j * 18)), 2.5f + j * .2f, .24f);
     }
 
@@ -29,9 +29,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve DuneMothRoute2 = Route("Desert / Moth leeward rise", Vector2.right, 2.1f, 0.32f, 0.7f, 0.31f, 0.12f, 0.42f, -0.37f, 0.67f, -0.61f, 1.4f);
     public static readonly WavePart[] DuneMothParts =
     {
-        new WavePart("Moth dune scallop", nameof(DuneMoth), DuneMothRoute0, WaveShape.Train, 4, 4.8f, 2, new[] { 0.29f, 0.48f, 0.72f }, new[] { 0.4f, 0.72f }, 3),
-        new WavePart("Moth slipface rake", nameof(DuneMoth), DuneMothRoute1, WaveShape.Rake, 3, 4.8f, 4, new[] { 0.27f, 0.53f, 0.74f }, new[] { 0.39f, 0.74f }, 3),
-        new WavePart("Moth leeward rise", nameof(DuneMoth), DuneMothRoute2, WaveShape.Chevron, 3, 4.9f, 7, new[] { 0.32f, 0.62f }, new[] { 0.48f }, 3),
+        new WavePart("Moth dune scallop", nameof(DuneMoth), DuneMothRoute0, WaveShape.Train, 4, 4.8f, 2, new[] { 0.29f, 0.48f, 0.72f }),
+        new WavePart("Moth slipface rake", nameof(DuneMoth), DuneMothRoute1, WaveShape.Rake, 3, 4.8f, 4, new[] { 0.27f, 0.53f, 0.74f }),
+        new WavePart("Moth leeward rise", nameof(DuneMoth), DuneMothRoute2, WaveShape.Chevron, 3, 4.9f, 7, new[] { 0.32f, 0.62f }),
     };
 }
 

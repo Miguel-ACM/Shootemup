@@ -7,7 +7,7 @@ public sealed class StormReactor : DistrictMiniboss
         hull = 27;
         health = 480;
         hullScale = 1.1f;
-        attackInterval = Timing(1.35f, 0.95f);
+        attackInterval = 0.95f;
         Mover<TopTracker>();
     }
 
@@ -17,14 +17,14 @@ public sealed class StormReactor : DistrictMiniboss
             return;
         if (volley % 6 != 1)
         {
-            Fan<NeedleRound>(Shots(5, 7), 20, 4.4f, .19f);
+            Fan<NeedleRound>(7, 20, 4.4f, .19f);
             return;
         }
         var laser = Fire<PulseLaser>(Muzzle(), Vector2.down, 0);
         if (laser != null)
         {
             laser.Bind(Hull, new Vector3(0, -.35f, -.4f));
-            laser.warning = Timing(1.4f, 1.1f);
+            laser.warning = 1.1f;
             laser.activeTime = 1.0f;
         }
     }

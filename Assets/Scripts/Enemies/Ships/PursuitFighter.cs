@@ -8,7 +8,7 @@ public sealed class PursuitFighter : DistrictEnemy
         hull = 12;
         health = 20;
         hullScale = .45f;
-        attackInterval = Timing(3.5f, 2.8f);
+        attackInterval = 2.8f;
         Mover<TopTracker>();
     }
 
@@ -30,8 +30,8 @@ public sealed class PursuitFighter : DistrictEnemy
         if (beam != null)
         {
             beam.Bind(Hull, new Vector3(0, -1.38f, -.15f));
-            beam.warning = Timing(1.25f, 1.0f);
-            beam.activeTime = Timing(.35f, .55f);
+            beam.warning = 1.0f;
+            beam.activeTime = .55f;
             beam.width = .19f;
         }
     }

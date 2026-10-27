@@ -3,19 +3,19 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class EclipseSail : DistrictEnemy
 {
-    protected override Vector2 CueAxis => !Difficulty.Easy && volley % 2 == 1 ? Aim : Vector2.down;
+    protected override Vector2 CueAxis => volley % 2 == 1 ? Aim : Vector2.down;
     protected override void Configure()
     {
         hull = 75;
         hullScale = 0.57f;
         health = 53;
-        attackInterval = Timing(2.6f, 1.8f);
+        attackInterval = 1.8f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        if (!Difficulty.Easy && volley % 2 == 0)
+        if (volley % 2 == 0)
             Fan<NeedleRound>(3, 18, 3.9f, .16f);
         else
             for (int s = -1; s <= 1; s += 2)
@@ -31,9 +31,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve EclipseSailRoute2 = Route("Space / Eclipse limb transit", Vector2.right, 2.2f, 0.73f, 0.7f, 0.82f, 0.12f, 0.72f, -0.32f, 0.41f, -0.68f, 0.12f, -0.72f, -0.4f);
     public static readonly WavePart[] EclipseSailParts =
     {
-        new WavePart("Eclipse orbital crescent", nameof(EclipseSail), EclipseSailRoute0, WaveShape.Train, 3, 5.2f, 2, new[] { 0.24f, 0.4f, 0.59f, 0.76f }, new[] { 0.36f, 0.65f }, 3),
-        new WavePart("Eclipse solar arc", nameof(EclipseSail), EclipseSailRoute1, WaveShape.Rake, 3, 5.0f, 4, new[] { 0.27f, 0.47f, 0.67f }, new[] { 0.4f, 0.72f }, 3),
-        new WavePart("Eclipse limb transit", nameof(EclipseSail), EclipseSailRoute2, WaveShape.Rank, 3, 4.9f, 7, new[] { 0.28f, 0.44f, 0.63f, 0.77f }, new[] { 0.39f, 0.7f }, 3),
+        new WavePart("Eclipse orbital crescent", nameof(EclipseSail), EclipseSailRoute0, WaveShape.Train, 3, 5.2f, 2, new[] { 0.24f, 0.4f, 0.59f, 0.76f }),
+        new WavePart("Eclipse solar arc", nameof(EclipseSail), EclipseSailRoute1, WaveShape.Rake, 3, 5.0f, 4, new[] { 0.27f, 0.47f, 0.67f }),
+        new WavePart("Eclipse limb transit", nameof(EclipseSail), EclipseSailRoute2, WaveShape.Rank, 3, 4.9f, 7, new[] { 0.28f, 0.44f, 0.63f, 0.77f }),
     };
 }
 

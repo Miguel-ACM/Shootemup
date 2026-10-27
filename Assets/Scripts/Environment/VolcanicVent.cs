@@ -62,7 +62,7 @@ public sealed class VolcanicVent : MonoBehaviour
         next = Time.time + 9.5f + phase;
         Eruptions++;
         var axis = CombatVisuals.Rotate(Vector2.down, Mathf.Sign(p.x) * -24);
-        int count = Difficulty.Easy ? 3 : 5;
+        int count = 5;
         for (int i = 0; i < count; i++)
             CombatRound.Launch<SimpleRound>(p, CombatVisuals.Rotate(axis, (i - (count - 1) * .5f) * 25), 2.5f, .24f);
         SoundManager.PlaySound("enemyExplosion1", .055f);

@@ -9,13 +9,13 @@ public sealed class NautilusBell : DistrictEnemy
         hull = 77;
         hullScale = 0.57f;
         health = 43;
-        attackInterval = Timing(3.5f, 2.55f);
+        attackInterval = 2.55f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        int n = Shots(3, 5);
+        int n = 5;
         for (int i = 0; i < n; i++)
             Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (n - 1) * .5f) * 29 + (volley % 2 == 0 ? 9 : -9)), 1.9f, .32f);
     }
@@ -29,9 +29,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve NautilusBellRoute2 = Route("Underwater / Bell reefward roll", Vector2.right, 0.63f, 1.25f, 0.51f, 0.85f, 0.08f, 0.61f, -0.49f, 0.4f, -0.69f, 0.08f, -0.72f, -0.25f);
     public static readonly WavePart[] NautilusBellParts =
     {
-        new WavePart("Bell buoyant procession", nameof(NautilusBell), NautilusBellRoute0, WaveShape.Train, 3, 5.7f, 2, new[] { 0.34f, 0.68f }, new[] { 0.5f }, 2),
-        new WavePart("Bell tidal arch", nameof(NautilusBell), NautilusBellRoute1, WaveShape.Rank, 2, 5.5f, 4, new[] { 0.32f, 0.66f }, new[] { 0.48f }, 2),
-        new WavePart("Bell reefward roll", nameof(NautilusBell), NautilusBellRoute2, WaveShape.Rake, 2, 5.4f, 7, new[] { 0.3f, 0.65f }, new[] { 0.47f }, 2),
+        new WavePart("Bell buoyant procession", nameof(NautilusBell), NautilusBellRoute0, WaveShape.Train, 3, 5.7f, 2, new[] { 0.34f, 0.68f }),
+        new WavePart("Bell tidal arch", nameof(NautilusBell), NautilusBellRoute1, WaveShape.Rank, 2, 5.5f, 4, new[] { 0.32f, 0.66f }),
+        new WavePart("Bell reefward roll", nameof(NautilusBell), NautilusBellRoute2, WaveShape.Rake, 2, 5.4f, 7, new[] { 0.3f, 0.65f }),
     };
 }
 

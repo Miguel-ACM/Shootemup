@@ -9,7 +9,7 @@ public sealed class ReedSkimmer : DistrictEnemy
         hull = 61;
         hullScale = 0.49f;
         health = 20;
-        attackInterval = Timing(2.9f, 2.0f);
+        attackInterval = 2.0f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -28,9 +28,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve ReedSkimmerRoute2 = Route("Fields / Reedbed switch", Vector2.right, -0.4f, 1.25f, -0.65f, 0.82f, -0.2f, 0.55f, 0.45f, 0.38f, 0.72f, 0.15f, 0.8f, -0.25f);
     public static readonly WavePart[] ReedSkimmerParts =
     {
-        new WavePart("Reedbank skimming", nameof(ReedSkimmer), ReedSkimmerRoute0, WaveShape.Train, 4, 4.8f, 2, new[] { 0.28f, 0.51f, 0.74f }, new[] { 0.38f, 0.7f }, 3),
-        new WavePart("Riverbank opening", nameof(ReedSkimmer), ReedSkimmerRoute1, WaveShape.Chevron, 3, 4.5f, 4, new[] { 0.32f, 0.62f }, new[] { 0.46f }, 3),
-        new WavePart("Reedbed switch", nameof(ReedSkimmer), ReedSkimmerRoute2, WaveShape.Rake, 3, 5.0f, 7, new[] { 0.26f, 0.45f, 0.7f }, new[] { 0.36f, 0.73f }, 3),
+        new WavePart("Reedbank skimming", nameof(ReedSkimmer), ReedSkimmerRoute0, WaveShape.Train, 4, 4.8f, 2, new[] { 0.28f, 0.51f, 0.74f }),
+        new WavePart("Riverbank opening", nameof(ReedSkimmer), ReedSkimmerRoute1, WaveShape.Chevron, 3, 4.5f, 4, new[] { 0.32f, 0.62f }),
+        new WavePart("Reedbed switch", nameof(ReedSkimmer), ReedSkimmerRoute2, WaveShape.Rake, 3, 5.0f, 7, new[] { 0.26f, 0.45f, 0.7f }),
     };
 }
 

@@ -9,7 +9,7 @@ public sealed class GumdropMortar : DistrictEnemy
         hull = 74;
         hullScale = 0.53f;
         health = 35;
-        attackInterval = Timing(3.45f, 2.6f);
+        attackInterval = 2.6f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -17,7 +17,7 @@ public sealed class GumdropMortar : DistrictEnemy
     {
         var shell = Fire<BurstShell>(Muzzle(volley), CombatVisuals.Rotate(Vector2.down, volley % 2 == 0 ? -15 : 15), 2.4f, .46f);
         if (shell != null)
-            shell.SetTravelDistance(4.3f);
+            shell.SetTravelDistance4.3f;
     }
 
     protected override void PrepareFire(float seconds)
@@ -36,9 +36,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve GumdropMortarRoute2 = Route("Candyland / Gumdrop wrapping turn", Vector2.right, 0.62f, 1.25f, 0.58f, 0.82f, 0.25f, 0.59f, -0.31f, 0.55f, -0.72f, 0.74f, -0.8f, 1.25f);
     public static readonly WavePart[] GumdropMortarParts =
     {
-        new WavePart("Gumdrop sugar fall", nameof(GumdropMortar), GumdropMortarRoute0, WaveShape.Train, 3, 4.1f, 2, new[] { 0.3f, 0.65f }, new[] { 0.47f }, 2),
-        new WavePart("Gumdrop candy shelf", nameof(GumdropMortar), GumdropMortarRoute1, WaveShape.Rank, 2, 4.2f, 4, new[] { 0.33f, 0.66f }, new[] { 0.5f }, 2),
-        new WavePart("Gumdrop wrapping turn", nameof(GumdropMortar), GumdropMortarRoute2, WaveShape.Rake, 2, 4.3f, 7, new[] { 0.29f, 0.61f }, new[] { 0.46f }, 2),
+        new WavePart("Gumdrop sugar fall", nameof(GumdropMortar), GumdropMortarRoute0, WaveShape.Train, 3, 4.1f, 2, new[] { 0.3f, 0.65f }),
+        new WavePart("Gumdrop candy shelf", nameof(GumdropMortar), GumdropMortarRoute1, WaveShape.Rank, 2, 4.2f, 4, new[] { 0.33f, 0.66f }),
+        new WavePart("Gumdrop wrapping turn", nameof(GumdropMortar), GumdropMortarRoute2, WaveShape.Rake, 2, 4.3f, 7, new[] { 0.29f, 0.61f }),
     };
 }
 

@@ -19,7 +19,7 @@ public sealed class AbyssSubmarineBoss : DistrictBoss
 
     [EnemyTunable("Dive / Cycle seconds", 15, 22)] public float cycleSeconds = 16;
     [EnemyTunable("Dive / Eruption crown", 12, 36)] public int crownCount = 20;
-    int CrownSize => Shots(phaseTwo ? 16 : 12, crownCount + (phaseTwo ? 4 : 0));
+    int CrownSize => (crownCount + (phaseTwo ? 4 : 0));
     public bool Submerged
     {
         get; private set;
@@ -41,7 +41,7 @@ public sealed class AbyssSubmarineBoss : DistrictBoss
         hull = 53;
         hullScale = .98f;
         health = 2600;
-        attackInterval = Timing(.9f, .68f);
+        attackInterval = .68f;
         nextAttack = 1.7f;
     }
 
@@ -140,7 +140,7 @@ public sealed class AbyssSubmarineBoss : DistrictBoss
             transform.position = descent + Vector3.down * ((t - 11.35f) * 14);
             if (age >= nextWake)
             {
-                nextWake = age + Timing(phaseTwo ? .24f : .28f, phaseTwo ? .15f : .19f);
+                nextWake = age + (phaseTwo ? .15f : .19f);
                 ChargeTrails++;
                 for (int side = -1; side <= 1; side += 2)
                     for (int lane = -1; lane <= 1; lane++)
@@ -190,10 +190,10 @@ public sealed class AbyssSubmarineBoss : DistrictBoss
         if (t >= 3.5f)
             return;
         if (volley % 4 != 3)
-            PetalFan<NeedleRound>(Hull.TransformPoint(new Vector3(0, -1.65f, -.5f)), CombatVisuals.Rotate(Aim, (volley % 3 - 1) * 9), Shots(phaseTwo ? 5 : 3, phaseTwo ? 7 : 5), 19, 3.6f, .21f);
+            PetalFan<NeedleRound>(Hull.TransformPoint(new Vector3(0, -1.65f, -.5f)), CombatVisuals.Rotate(Aim, (volley % 3 - 1) * 9), (phaseTwo ? 7 : 5), 19, 3.6f, .21f);
         else
             for (int side = -1; side <= 1; side += 2)
-                PetalFan<SimpleRound>(Hull.TransformPoint(new Vector3(side * .65f, -.6f, -.4f)), CombatVisuals.Rotate(Vector2.down, side * 42), Shots(3, 5), 24, 2.3f, .28f);
+                PetalFan<SimpleRound>(Hull.TransformPoint(new Vector3(side * .65f, -.6f, -.4f)), CombatVisuals.Rotate(Vector2.down, side * 42), 5, 24, 2.3f, .28f);
     }
 
     protected override void OnPhaseTwo()
@@ -214,8 +214,8 @@ public sealed class AbyssSubmarineBoss : DistrictBoss
                 Cue(Muzzle(), seconds);
             else
             {
-                Cue(Muzzle(1), seconds);
-                Cue(Muzzle(2), seconds);
+                Cue(Muzzle1, seconds);
+                Cue(Muzzle2, seconds);
             }
         }
         else if (t >= 5.9f && t < 7.7f || t >= 10.85f && t < 13.1f)

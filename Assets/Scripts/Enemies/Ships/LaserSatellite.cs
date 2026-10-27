@@ -8,7 +8,7 @@ public sealed class LaserSatellite : SpaceSatellite
         hull = 42;
         hullScale = .56f;
         health = 68;
-        attackInterval = Timing(3.0f, 2.3f);
+        attackInterval = 2.3f;
         Mover<TopTracker>();
     }
 
@@ -20,8 +20,8 @@ public sealed class LaserSatellite : SpaceSatellite
         if (beam != null)
         {
             beam.Bind(Hull, new Vector3(0, -1.05f, -.24f));
-            beam.warning = Timing(1.5f, 1.2f);
-            beam.activeTime = Timing(.8f, 1.15f);
+            beam.warning = 1.2f;
+            beam.activeTime = 1.15f;
             beam.width = .23f;
         }
     }

@@ -52,7 +52,7 @@ public sealed class TunnelSawBoss : DistrictBoss
         }
         if (age < haltUntil)
             return;
-        float speed = (2.2f + (1 - HealthFraction) * 1.8f) * (phaseTwo ? 1.12f : 1) * (miniature ? 1.08f : 1) * Timing(.9f, 1);
+        float speed = (2.2f + (1 - HealthFraction) * 1.8f) * (phaseTwo ? 1.12f : 1) * (miniature ? 1.08f : 1) * 1;
         float etaX = (velocity.x > 0 ? arena.xMax - Radius - transform.position.x : transform.position.x - arena.xMin - Radius) / Mathf.Max(.01f, Mathf.Abs(velocity.x) * speed);
         float etaY = (velocity.y > 0 ? arena.yMax - Radius - transform.position.y : transform.position.y - arena.yMin - Radius) / Mathf.Max(.01f, Mathf.Abs(velocity.y) * speed);
         firingCue.Warn(Mathf.Min(etaX, etaY));
@@ -84,8 +84,8 @@ public sealed class TunnelSawBoss : DistrictBoss
         impacts++;
         // Full circular crowns on every physical bounce, including the little saws.
         // Alternate half a quick lane; slower heavy teeth form a second nested ring.
-        int small = miniature ? Shots(6, 10) : Shots(phaseTwo ? 14 : 10, phaseTwo ? 28 : 20);
-        int large = miniature ? Shots(2, 3) : Shots(phaseTwo ? 5 : 4, phaseTwo ? 8 : 6);
+        int small = miniature ? 10 : (phaseTwo ? 28 : 20);
+        int large = miniature ? 3 : (phaseTwo ? 8 : 6);
         int available = Mathf.Min(small + large, CombatRound.Limit - CombatRound.Live.Count);
         int quick = Mathf.RoundToInt(available * small / (float)(small + large));
         int heavy = available - quick;

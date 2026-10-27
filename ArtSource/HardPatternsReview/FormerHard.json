@@ -1,0 +1,590 @@
+{
+    "health": 1.0,
+    "tempo": 1.0,
+    "speed": 0.7599999904632568,
+    "damage": 1.0,
+    "actors": [
+        {
+            "name": "Fields/ScoutInterceptor",
+            "health": 10.920000076293945,
+            "interval": 0.6240000128746033
+        },
+        {
+            "name": "Fields/PatrolGunship",
+            "health": 29.399999618530273,
+            "interval": 1.1699999570846558
+        },
+        {
+            "name": "Fields/HeavyBomber",
+            "health": 108.0,
+            "interval": 1.403999924659729
+        },
+        {
+            "name": "Fields/FieldsHeavyWing",
+            "health": 380.0,
+            "interval": 1.0
+        },
+        {
+            "name": "Fields/MeadowTank",
+            "health": 22.67999839782715,
+            "interval": 1.1699999570846558
+        },
+        {
+            "name": "Fields/HarrowBomber",
+            "health": 40.31999969482422,
+            "interval": 2.0279998779296875
+        },
+        {
+            "name": "Fields/ReedSkimmer",
+            "health": 16.799999237060547,
+            "interval": 1.559999942779541
+        },
+        {
+            "name": "Fields/FieldsBomberBoss",
+            "health": 1200.0,
+            "interval": 0.800000011920929
+        },
+        {
+            "name": "Tunnel/WallTurret",
+            "health": 38.8079948425293,
+            "interval": 1.7939999103546143
+        },
+        {
+            "name": "Tunnel/MaintenanceDrone",
+            "health": 27.719999313354492,
+            "interval": 1.4819998741149902
+        },
+        {
+            "name": "Tunnel/ArmoredCarrier",
+            "health": 231.6599884033203,
+            "interval": 1.4819998741149902
+        },
+        {
+            "name": "Tunnel/TunnelDefensePlatform",
+            "health": 633.5999755859375,
+            "interval": 1.0
+        },
+        {
+            "name": "Tunnel/RivetMantis",
+            "health": 44.351993560791016,
+            "interval": 1.7939999103546143
+        },
+        {
+            "name": "Tunnel/BaffleSpinner",
+            "health": 33.26399612426758,
+            "interval": 1.5989998579025269
+        },
+        {
+            "name": "Tunnel/TunnelSawBoss",
+            "health": 2376.0,
+            "interval": 1.600000023841858
+        },
+        {
+            "name": "Snow/ColdWeatherFighter",
+            "health": 23.38559913635254,
+            "interval": 0.9749999642372131
+        },
+        {
+            "name": "Snow/SiegeGunship",
+            "health": 148.77000427246094,
+            "interval": 1.3259999752044678
+        },
+        {
+            "name": "Snow/ShieldTransport",
+            "health": 156.60000610351563,
+            "interval": 1.4819998741149902
+        },
+        {
+            "name": "Snow/AvalancheBomber",
+            "health": 125.27999877929688,
+            "interval": 1.559999942779541
+        },
+        {
+            "name": "Snow/SnowSiegeCraft",
+            "health": 556.7999877929688,
+            "interval": 1.100000023841858
+        },
+        {
+            "name": "Snow/FrostAuger",
+            "health": 38.0015983581543,
+            "interval": 1.4819998741149902
+        },
+        {
+            "name": "Snow/HailLantern",
+            "health": 47.74559783935547,
+            "interval": 2.26200008392334
+        },
+        {
+            "name": "Snow/IcicleWeaver",
+            "health": 26.308799743652344,
+            "interval": 1.559999942779541
+        },
+        {
+            "name": "Snow/SnowSiegeBoss",
+            "health": 2436.0,
+            "interval": 0.8500000238418579
+        },
+        {
+            "name": "Thunder/BeamDrone",
+            "health": 27.719999313354492,
+            "interval": 2.26200008392334
+        },
+        {
+            "name": "Thunder/RelayDrone",
+            "health": 35.481597900390625,
+            "interval": 1.4819998741149902
+        },
+        {
+            "name": "Thunder/StormSkimmer",
+            "health": 24.393598556518555,
+            "interval": 1.715999960899353
+        },
+        {
+            "name": "Thunder/ArcLancer",
+            "health": 37.699195861816406,
+            "interval": 2.6519999504089355
+        },
+        {
+            "name": "Thunder/StormReactor",
+            "health": 633.5999755859375,
+            "interval": 0.949999988079071
+        },
+        {
+            "name": "Thunder/StormOrgan",
+            "health": 53.22239685058594,
+            "interval": 2.3399999141693115
+        },
+        {
+            "name": "Thunder/CapacitorKite",
+            "health": 37.699195861816406,
+            "interval": 1.6770000457763672
+        },
+        {
+            "name": "Thunder/ThunderLanceBoss",
+            "health": 1649.9998779296875,
+            "interval": 0.8199999928474426
+        },
+        {
+            "name": "City/PursuitFighter",
+            "health": 19.487998962402344,
+            "interval": 2.18399977684021
+        },
+        {
+            "name": "City/AttackDrone",
+            "health": 13.641599655151367,
+            "interval": 1.2089998722076416
+        },
+        {
+            "name": "City/CommandGunship",
+            "health": 140.9399871826172,
+            "interval": 1.1699999570846558
+        },
+        {
+            "name": "City/CourierDiver",
+            "health": 8.769598960876465,
+            "interval": 0.7409999370574951
+        },
+        {
+            "name": "City/CityCommandCarrier",
+            "health": 556.7999877929688,
+            "interval": 0.800000011920929
+        },
+        {
+            "name": "City/TerraceGunboat",
+            "health": 37.027198791503906,
+            "interval": 1.559999942779541
+        },
+        {
+            "name": "City/MetroLancer",
+            "health": 18.513599395751953,
+            "interval": 1.091999888420105
+        },
+        {
+            "name": "City/CityDuoBoss",
+            "health": 1160.0,
+            "interval": 0.6399999856948853
+        },
+        {
+            "name": "Desert/SandEmitter",
+            "health": 44.351993560791016,
+            "interval": 1.2480000257492065
+        },
+        {
+            "name": "Desert/SandStriker",
+            "health": 34.372798919677734,
+            "interval": 1.559999942779541
+        },
+        {
+            "name": "Desert/SandWorm",
+            "health": 88.70398712158203,
+            "interval": 1.403999924659729
+        },
+        {
+            "name": "Desert/ScarabDredger",
+            "health": 673.199951171875,
+            "interval": 0.6600000262260437
+        },
+        {
+            "name": "Desert/MirageObelisk",
+            "health": 53.22239685058594,
+            "interval": 2.066999912261963
+        },
+        {
+            "name": "Desert/DuneMoth",
+            "health": 35.481597900390625,
+            "interval": 1.5210000276565552
+        },
+        {
+            "name": "Desert/DesertWormBoss",
+            "health": 2903.999755859375,
+            "interval": 0.75
+        },
+        {
+            "name": "Candyland/BonbonSkirmisher",
+            "health": 21.067197799682617,
+            "interval": 1.3259999752044678
+        },
+        {
+            "name": "Candyland/WaferDart",
+            "health": 25.502397537231445,
+            "interval": 1.403999924659729
+        },
+        {
+            "name": "Candyland/MintSpinner",
+            "health": 28.828798294067383,
+            "interval": 1.559999942779541
+        },
+        {
+            "name": "Candyland/TaffyDuelist",
+            "health": 633.5999755859375,
+            "interval": 0.4000000059604645
+        },
+        {
+            "name": "Candyland/GumdropMortar",
+            "health": 38.8079948425293,
+            "interval": 2.0279998779296875
+        },
+        {
+            "name": "Candyland/RibbonGlider",
+            "health": 25.502397537231445,
+            "interval": 1.2480000257492065
+        },
+        {
+            "name": "Candyland/CandyRegentBoss",
+            "health": 1742.39990234375,
+            "interval": 0.5799999833106995
+        },
+        {
+            "name": "Space/OrbitalScout",
+            "health": 43.51199722290039,
+            "interval": 1.2480000257492065
+        },
+        {
+            "name": "Space/LaserSatellite",
+            "health": 84.53759765625,
+            "interval": 1.7939999103546143
+        },
+        {
+            "name": "Space/OrbitalCarrier",
+            "health": 167.83200073242188,
+            "interval": 1.3259999752044678
+        },
+        {
+            "name": "Space/OrbitalMoonlet",
+            "health": 29.83679962158203,
+            "interval": 1.091999888420105
+        },
+        {
+            "name": "Space/OrbitalWarden",
+            "health": 873.2000122070313,
+            "interval": 0.5199999809265137
+        },
+        {
+            "name": "Space/CometTug",
+            "health": 58.430397033691406,
+            "interval": 1.7549998760223389
+        },
+        {
+            "name": "Space/EclipseSail",
+            "health": 65.88960266113281,
+            "interval": 1.403999924659729
+        },
+        {
+            "name": "Space/SpaceCitadelBoss",
+            "health": 3700.0,
+            "interval": 0.6800000071525574
+        },
+        {
+            "name": "Underwater/ReefDart",
+            "health": 41.02560043334961,
+            "interval": 1.4819998741149902
+        },
+        {
+            "name": "Underwater/MantaRay",
+            "health": 72.10559844970703,
+            "interval": 1.715999960899353
+        },
+        {
+            "name": "Underwater/Bathysphere",
+            "health": 105.6719970703125,
+            "interval": 1.871999979019165
+        },
+        {
+            "name": "Underwater/ReefLeviathan",
+            "health": 828.7999877929688,
+            "interval": 0.6800000071525574
+        },
+        {
+            "name": "Underwater/JetSquid",
+            "health": 38.53919982910156,
+            "interval": 1.5210000276565552
+        },
+        {
+            "name": "Underwater/NautilusBell",
+            "health": 53.45759963989258,
+            "interval": 1.988999843597412
+        },
+        {
+            "name": "Underwater/AbyssSubmarineBoss",
+            "health": 3848.0,
+            "interval": 0.6800000071525574
+        },
+        {
+            "name": "Hell/SkullRevenant",
+            "health": 55.10399627685547,
+            "interval": 1.1699999570846558
+        },
+        {
+            "name": "Hell/GhostGalleon",
+            "health": 130.8719940185547,
+            "interval": 1.403999924659729
+        },
+        {
+            "name": "Hell/CinderImp",
+            "health": 37.19519805908203,
+            "interval": 0.9359999895095825
+        },
+        {
+            "name": "Hell/InfernalFerryman",
+            "health": 1066.0,
+            "interval": 0.5400000214576721
+        },
+        {
+            "name": "Hell/BoneHarrier",
+            "health": 44.08319854736328,
+            "interval": 1.1699999570846558
+        },
+        {
+            "name": "Hell/AshCenser",
+            "health": 75.76799774169922,
+            "interval": 1.3650000095367432
+        },
+        {
+            "name": "Hell/HellCrabBoss",
+            "health": 4920.0,
+            "interval": 0.7200000286102295
+        }
+    ],
+    "waves": [
+        {
+            "level": "Fields",
+            "budget": 2,
+            "score": "Meadow diamond:ScoutInterceptor:Plains / Meadow hook:0,0000:1:0,0450:-0,1054:5,400;Meadow diamond:ScoutInterceptor:Plains / Meadow hook:0,0000:1:-0,3231:0,0000:5,400;Meadow diamond:ScoutInterceptor:Plains / Meadow hook:0,0000:1:0,4131:0,0000:5,400;Reedbank skimming:ReedSkimmer:Fields / Reedbank skimming:0,6944:1:0,0000:0,0000:4,800;Reedbank skimming:ReedSkimmer:Fields / Reedbank skimming:1,3538:1:0,0000:0,0000:4,800;Reedbank skimming:ReedSkimmer:Fields / Reedbank skimming:2,0131:1:0,0000:0,0000:4,800;Reedbank skimming:ReedSkimmer:Fields / Reedbank skimming:2,6725:1:0,0000:0,0000:4,800"
+        },
+        {
+            "level": "Fields",
+            "budget": 6,
+            "score": "River braid:ScoutInterceptor:Plains / River braid:0,0000:-1:0,0450:0,0000:5,100;River braid:ScoutInterceptor:Plains / River braid:0,6070:-1:0,0450:0,0000:5,100;River braid:ScoutInterceptor:Plains / River braid:1,2140:-1:0,0450:0,0000:5,100;Relief convoy:MeadowTank:Plains / Relief column:2,0833:-1:0,0000:0,0000:5,100;Patrol return:PatrolGunship:Plains / Orchard return:2,7778:-1:-0,0450:0,0000:5,700;Relief convoy:MeadowTank:Plains / Relief column:3,1944:-1:0,0000:0,0000:5,100;Relief convoy:MeadowTank:Plains / Relief column:4,3056:-1:0,0000:0,0000:5,100;Relief convoy:MeadowTank:Plains / Relief column:5,4167:-1:0,0000:0,0000:5,100"
+        },
+        {
+            "level": "Fields",
+            "budget": 12,
+            "score": "Last road patrol:MeadowTank:Plains / Relief column:0,0000:1:0,0000:0,0000:4,600;Last road patrol:MeadowTank:Plains / Relief column:1,1111:1:0,0000:0,0000:4,600;Last road patrol:MeadowTank:Plains / Relief column:2,2222:1:0,0000:0,0000:4,600;Harrow parallel furrows:HarrowBomber:Fields / Harrow parallel furrows:2,7778:-1:-0,1435:0,0000:5,700;Harrow parallel furrows:HarrowBomber:Fields / Harrow parallel furrows:2,7778:-1:0,2335:0,0000:5,700;Last road patrol:MeadowTank:Plains / Relief column:3,3333:1:0,0000:0,0000:4,600;Orchard flight:ScoutInterceptor:Plains / Orchard bank:4,1667:1:0,0450:0,0000:5,100;Orchard flight:ScoutInterceptor:Plains / Orchard bank:4,9931:1:0,0450:0,0000:5,100;Orchard flight:ScoutInterceptor:Plains / Orchard bank:5,8195:1:0,0450:0,0000:5,100;Orchard flight:ScoutInterceptor:Plains / Orchard bank:6,6459:1:0,0450:0,0000:5,100;Orchard flight:ScoutInterceptor:Plains / Orchard bank:7,4723:1:0,0450:0,0000:5,100"
+        },
+        {
+            "level": "Fields",
+            "budget": 20,
+            "score": "Gunship echelon:PatrolGunship:Plains / Meadow hook:0,0000:-1:-0,2625:0,0000:5,600;Gunship echelon:PatrolGunship:Plains / Meadow hook:0,0000:-1:0,1725:0,0000:5,600;Tank downhill rush:MeadowTank:Plains / Fast road descent:1,3889:-1:0,0000:0,0000:4,100;Tank downhill rush:MeadowTank:Plains / Fast road descent:2,5000:-1:0,0000:0,0000:4,100;Tank downhill rush:MeadowTank:Plains / Fast road descent:3,6111:-1:0,0000:0,0000:4,100;Tank downhill rush:MeadowTank:Plains / Fast road descent:4,7222:-1:0,0000:0,0000:4,100;Patrol return:PatrolGunship:Plains / Orchard return:5,2083:1:-0,0450:0,0000:5,700"
+        },
+        {
+            "level": "Tunnel",
+            "budget": 2,
+            "score": "Pipe diamond:MaintenanceDrone:Tunnel / Pipe bank:0,0000:-1:-0,0450:-0,0889:5,200;Pipe diamond:MaintenanceDrone:Tunnel / Pipe bank:0,0000:-1:-0,3553:0,0000:5,200;Pipe diamond:MaintenanceDrone:Tunnel / Pipe bank:0,0000:-1:0,2653:0,0000:5,200;Pipe diamond:MaintenanceDrone:Tunnel / Pipe bank:0,0000:-1:-0,0450:0,0889:5,200;Baffle wall rebound:BaffleSpinner:Tunnel / Baffle wall rebound:1,3228:1:0,0450:0,0000:5,100;Baffle wall rebound:BaffleSpinner:Tunnel / Baffle wall rebound:1,9056:1:0,0450:0,0000:5,100;Baffle wall rebound:BaffleSpinner:Tunnel / Baffle wall rebound:2,4885:1:0,0450:0,0000:5,100;Baffle wall rebound:BaffleSpinner:Tunnel / Baffle wall rebound:3,0713:1:0,0450:0,0000:5,100"
+        },
+        {
+            "level": "Tunnel",
+            "budget": 6,
+            "score": "Pipe battery:WallTurret:Tunnel / Pipe bank:0,0000:1:-0,1283:0,0000:5,600;Pipe battery:WallTurret:Tunnel / Pipe bank:0,0000:1:0,2183:0,0000:5,600;Mantis lower bracket:RivetMantis:Tunnel / Mantis lower bracket:1,6534:1:0,0000:0,0000:5,400;Mantis lower bracket:RivetMantis:Tunnel / Mantis lower bracket:2,4461:1:0,0000:0,0000:5,400;Wall battery:WallTurret:Tunnel / Wall bank:3,6376:-1:0,0450:0,0000:5,600"
+        },
+        {
+            "level": "Tunnel",
+            "budget": 12,
+            "score": "Mantis gantry traverse:RivetMantis:Tunnel / Mantis gantry traverse:0,0000:-1:-0,1328:0,0000:5,000;Mantis gantry traverse:RivetMantis:Tunnel / Mantis gantry traverse:0,0000:-1:0,2228:0,0000:5,000;Carrier bank:ArmoredCarrier:Tunnel / Pipe bank:1,9841:1:-0,0450:0,0000:5,800;Wall rank:MaintenanceDrone:Tunnel / Wall bank:4,2989:-1:-0,3103:0,0000:4,900;Wall rank:MaintenanceDrone:Tunnel / Wall bank:4,2989:-1:0,0000:0,0000:4,900;Wall rank:MaintenanceDrone:Tunnel / Wall bank:4,2989:-1:0,3103:0,0000:4,900"
+        },
+        {
+            "level": "Tunnel",
+            "budget": 20,
+            "score": "Rebound flight:MaintenanceDrone:Tunnel / Rebound chain:0,0000:1:0,0450:0,0000:4,900;Rebound flight:MaintenanceDrone:Tunnel / Rebound chain:0,3968:1:0,0450:0,0000:4,900;Rebound flight:MaintenanceDrone:Tunnel / Rebound chain:0,7937:1:0,0450:0,0000:4,900;Upper battery:WallTurret:Tunnel / Upper rail:0,9921:-1:-0,0046:0,0000:5,400;Upper battery:WallTurret:Tunnel / Upper rail:0,9921:-1:0,0946:0,0000:5,400;Pipe diamond:MaintenanceDrone:Tunnel / Pipe bank:1,6534:1:0,0450:-0,0889:5,200;Pipe diamond:MaintenanceDrone:Tunnel / Pipe bank:1,6534:1:-0,2653:0,0000:5,200;Pipe diamond:MaintenanceDrone:Tunnel / Pipe bank:1,6534:1:0,3553:0,0000:5,200;Pipe diamond:MaintenanceDrone:Tunnel / Pipe bank:1,6534:1:0,0450:0,0889:5,200"
+        },
+        {
+            "level": "Snow",
+            "budget": 2,
+            "score": "Crystal diamond:ColdWeatherFighter:Snow / Crystal turn:0,0000:-1:-0,0450:-0,1197:5,500;Crystal diamond:ColdWeatherFighter:Snow / Crystal turn:0,0000:-1:-0,4631:0,0000:5,500;Crystal diamond:ColdWeatherFighter:Snow / Crystal turn:0,0000:-1:0,3731:0,0000:5,500;Crystal diamond:ColdWeatherFighter:Snow / Crystal turn:0,0000:-1:-0,0450:0,1197:5,500;Ice wind:ColdWeatherFighter:Snow / Ice wind:4,7425:-1:-0,1796:0,0000:4,700;Ice wind:ColdWeatherFighter:Snow / Ice wind:4,7425:-1:-0,0599:0,0000:4,700;Ice wind:ColdWeatherFighter:Snow / Ice wind:4,7425:-1:0,0599:0,0000:4,700;Ice wind:ColdWeatherFighter:Snow / Ice wind:4,7425:-1:0,1796:0,0000:4,700"
+        },
+        {
+            "level": "Snow",
+            "budget": 6,
+            "score": "Crystal procession:ColdWeatherFighter:Snow / Crystal turn:0,0000:-1:-0,8361:-0,0958:5,700;Crystal procession:ColdWeatherFighter:Snow / Crystal turn:0,0000:-1:-0,4181:-0,0479:5,700;Crystal procession:ColdWeatherFighter:Snow / Crystal turn:0,0000:-1:0,0000:0,0000:5,700;Crystal procession:ColdWeatherFighter:Snow / Crystal turn:0,0000:-1:0,4181:0,0479:5,700;Crystal procession:ColdWeatherFighter:Snow / Crystal turn:0,0000:-1:0,8361:0,0958:5,700;Lantern hanging crown:HailLantern:Snow / Lantern hanging crown:5,4201:-1:-0,2277:0,0000:5,800;Lantern hanging crown:HailLantern:Snow / Lantern hanging crown:5,4201:-1:0,1377:0,0000:5,800;Mortar coil:SiegeGunship:Snow / Unwinding spiral:7,1138:-1:0,0000:0,0000:6,200"
+        },
+        {
+            "level": "Snow",
+            "budget": 12,
+            "score": "Crosswind rank:ColdWeatherFighter:Snow / Crosswind:0,0000:-1:-0,1647:0,0000:4,900;Crosswind rank:ColdWeatherFighter:Snow / Crosswind:0,0000:-1:-0,0450:0,0000:4,900;Crosswind rank:ColdWeatherFighter:Snow / Crosswind:0,0000:-1:0,0747:0,0000:4,900;Siege descent:SiegeGunship:Snow / Siege arc:2,0325:1:-0,0450:0,0000:5,800;Avalanche flight:ColdWeatherFighter:Snow / Avalanche bow:4,7425:1:-0,0450:0,0000:5,500;Avalanche flight:ColdWeatherFighter:Snow / Avalanche bow:5,7988:1:-0,0450:0,0000:5,500;Avalanche flight:ColdWeatherFighter:Snow / Avalanche bow:6,8550:1:-0,0450:0,0000:5,500;Avalanche flight:ColdWeatherFighter:Snow / Avalanche bow:7,9113:1:-0,0450:0,0000:5,500"
+        },
+        {
+            "level": "Snow",
+            "budget": 20,
+            "score": "Frost descent:ColdWeatherFighter:Snow / Frost descent:0,0000:-1:-0,0450:0,0000:5,300;Frost descent:ColdWeatherFighter:Snow / Frost descent:0,9026:-1:-0,0450:0,0000:5,300;Frost descent:ColdWeatherFighter:Snow / Frost descent:1,8051:-1:-0,0450:0,0000:5,300;Frost descent:ColdWeatherFighter:Snow / Frost descent:2,7077:-1:-0,0450:0,0000:5,300;Shielded crystal:ShieldTransport:Snow / Crystal turn:3,3875:1:-0,0450:0,0000:6,100;Lantern falling bell:HailLantern:Snow / Lantern falling bell:6,4363:1:-0,1377:-0,0209:5,800;Lantern falling bell:HailLantern:Snow / Lantern falling bell:6,4363:1:0,2277:0,0209:5,800"
+        },
+        {
+            "level": "Thunder",
+            "budget": 2,
+            "score": "Hooking rank:StormSkimmer:Thunder / Hook strike:0,0000:-1:-0,4615:0,0000:4,400;Hooking rank:StormSkimmer:Thunder / Hook strike:0,0000:-1:-0,1238:0,0000:4,400;Hooking rank:StormSkimmer:Thunder / Hook strike:0,0000:-1:0,2138:0,0000:4,400;Hooking rank:StormSkimmer:Thunder / Hook strike:0,0000:-1:0,5515:0,0000:4,400;Forked flight:StormSkimmer:Thunder / Forked descent:4,6296:-1:-0,3827:-0,0387:4,500;Forked flight:StormSkimmer:Thunder / Forked descent:4,6296:-1:-0,0450:0,0000:4,500;Forked flight:StormSkimmer:Thunder / Forked descent:4,6296:-1:0,2927:0,0387:4,500"
+        },
+        {
+            "level": "Thunder",
+            "budget": 6,
+            "score": "Peeling relays:RelayDrone:Thunder / Ion peel:0,0000:-1:-0,4015:0,0000:5,100;Peeling relays:RelayDrone:Thunder / Ion peel:0,0000:-1:-0,0450:0,0000:5,100;Peeling relays:RelayDrone:Thunder / Ion peel:0,0000:-1:0,3115:0,0000:5,100;Static flight:StormSkimmer:Thunder / Static fold:0,0000:-1:-0,2927:-0,0387:4,700;Static flight:StormSkimmer:Thunder / Static fold:0,0000:-1:0,0450:0,0000:4,700;Static flight:StormSkimmer:Thunder / Static fold:0,0000:-1:0,3827:0,0387:4,700;Organ descending columns:StormOrgan:Thunder / Organ descending columns:4,2989:1:0,0450:0,0000:6,000;Organ descending columns:StormOrgan:Thunder / Organ descending columns:5,0766:1:0,0450:0,0000:6,000;Organ descending columns:StormOrgan:Thunder / Organ descending columns:5,8543:1:0,0450:0,0000:6,000"
+        },
+        {
+            "level": "Thunder",
+            "budget": 12,
+            "score": "Organ lightning terrace:StormOrgan:Thunder / Organ lightning terrace:0,0000:1:-0,0450:0,0000:6,100;Flash procession:StormSkimmer:Thunder / Flash lane:0,0000:1:-0,0450:0,0000:4,100;Flash procession:StormSkimmer:Thunder / Flash lane:0,9258:1:-0,0450:0,0000:4,100;Organ lightning terrace:StormOrgan:Thunder / Organ lightning terrace:1,4037:1:-0,0450:0,0000:6,100;Flash procession:StormSkimmer:Thunder / Flash lane:1,8515:1:-0,0450:0,0000:4,100;Flash procession:StormSkimmer:Thunder / Flash lane:2,7773:1:-0,0450:0,0000:4,100;Static flight:StormSkimmer:Thunder / Static fold:3,3069:1:0,0000:0,0000:4,700;Static flight:StormSkimmer:Thunder / Static fold:4,0534:1:0,0000:0,0000:4,700;Static flight:StormSkimmer:Thunder / Static fold:4,8000:1:0,0000:0,0000:4,700;Static flight:StormSkimmer:Thunder / Static fold:5,5465:1:0,0000:0,0000:4,700"
+        },
+        {
+            "level": "Thunder",
+            "budget": 20,
+            "score": "Hooking rank:StormSkimmer:Thunder / Hook strike:0,0000:1:-0,3827:0,0000:4,400;Hooking rank:StormSkimmer:Thunder / Hook strike:0,0000:1:-0,0450:0,0000:4,400;Hooking rank:StormSkimmer:Thunder / Hook strike:0,0000:1:0,2927:0,0000:4,400;Organ lightning terrace:StormOrgan:Thunder / Organ lightning terrace:2,6455:-1:-0,0450:0,0000:6,100;Flash procession:StormSkimmer:Thunder / Flash lane:2,6455:1:-0,0450:0,0000:4,100;Flash procession:StormSkimmer:Thunder / Flash lane:3,3921:1:-0,0450:0,0000:4,100;Organ lightning terrace:StormOrgan:Thunder / Organ lightning terrace:3,8988:-1:-0,0450:0,0000:6,100;Flash procession:StormSkimmer:Thunder / Flash lane:4,1387:1:-0,0450:0,0000:4,100"
+        },
+        {
+            "level": "City",
+            "budget": 2,
+            "score": "Canyon couriers:CourierDiver:City / Canyon stitch:0,0000:1:-0,6430:-0,0737:3,600;Canyon couriers:CourierDiver:City / Canyon stitch:0,0000:1:-0,3858:-0,0442:3,600;Canyon couriers:CourierDiver:City / Canyon stitch:0,0000:1:-0,1286:-0,0147:3,600;Canyon couriers:CourierDiver:City / Canyon stitch:0,0000:1:0,1286:0,0147:3,600;Canyon couriers:CourierDiver:City / Canyon stitch:0,0000:1:0,3858:0,0442:3,600;Canyon couriers:CourierDiver:City / Canyon stitch:0,0000:1:0,6430:0,0737:3,600;Junction drones:AttackDrone:City / Junction peel:0,5019:1:-0,0450:-0,0683:4,100;Junction drones:AttackDrone:City / Junction peel:0,5019:1:-0,2833:0,0000:4,100;Junction drones:AttackDrone:City / Junction peel:0,5019:1:0,1933:0,0000:4,100;Junction drones:AttackDrone:City / Junction peel:0,5019:1:-0,0450:0,0683:4,100"
+        },
+        {
+            "level": "City",
+            "budget": 6,
+            "score": "Slingshot arrow:AttackDrone:City / Slingshot:0,0000:1:0,0000:-0,0683:4,100;Slingshot arrow:AttackDrone:City / Slingshot:0,0000:1:-0,2383:0,0000:4,100;Slingshot arrow:AttackDrone:City / Slingshot:0,0000:1:0,2383:0,0000:4,100;Bridge drones:AttackDrone:City / Skybridge:1,7565:1:-0,1133:0,0000:3,500;Bridge drones:AttackDrone:City / Skybridge:1,7565:1:-0,0450:0,0000:3,500;Bridge drones:AttackDrone:City / Skybridge:1,7565:1:0,0233:0,0000:3,500;Rooftop pursuit:PursuitFighter:City / Rooftop loop:2,2584:1:-0,0450:0,0000:4,500"
+        },
+        {
+            "level": "City",
+            "budget": 12,
+            "score": "Canyon couriers:CourierDiver:City / Canyon stitch:0,0000:1:0,0450:0,0000:3,600;Canyon couriers:CourierDiver:City / Canyon stitch:0,3372:1:0,0450:0,0000:3,600;Canyon couriers:CourierDiver:City / Canyon stitch:0,6745:1:0,0450:0,0000:3,600;Canyon couriers:CourierDiver:City / Canyon stitch:1,0117:1:0,0450:0,0000:3,600;Canyon couriers:CourierDiver:City / Canyon stitch:1,3490:1:0,0450:0,0000:3,600;Canyon couriers:CourierDiver:City / Canyon stitch:1,6862:1:0,0450:0,0000:3,600;Junction pursuit:PursuitFighter:City / Junction peel:1,7565:1:-0,0450:0,0000:4,500;Elevated traffic:CourierDiver:City / Elevated ramp:3,0111:-1:0,0000:0,0000:3,800;Elevated traffic:CourierDiver:City / Elevated ramp:3,3845:-1:0,0000:0,0000:3,800;Elevated traffic:CourierDiver:City / Elevated ramp:3,7579:-1:0,0000:0,0000:3,800;Elevated traffic:CourierDiver:City / Elevated ramp:4,1313:-1:0,0000:0,0000:3,800;Elevated traffic:CourierDiver:City / Elevated ramp:4,5047:-1:0,0000:0,0000:3,800"
+        },
+        {
+            "level": "City",
+            "budget": 20,
+            "score": "Canyon couriers:CourierDiver:City / Canyon stitch:0,0000:-1:-0,4308:-0,0442:3,600;Canyon couriers:CourierDiver:City / Canyon stitch:0,0000:-1:-0,1736:-0,0147:3,600;Canyon couriers:CourierDiver:City / Canyon stitch:0,0000:-1:0,0836:0,0147:3,600;Canyon couriers:CourierDiver:City / Canyon stitch:0,0000:-1:0,3408:0,0442:3,600;Terrace descending avenue:TerraceGunboat:City / Terrace descending avenue:0,2509:1:-0,2127:-0,0192:4,150;Terrace descending avenue:TerraceGunboat:City / Terrace descending avenue:0,2509:1:0,1227:0,0192:4,150;Bridge drones:AttackDrone:City / Skybridge:1,7565:1:-0,1474:0,0000:3,500;Bridge drones:AttackDrone:City / Skybridge:1,7565:1:-0,0791:0,0000:3,500;Bridge drones:AttackDrone:City / Skybridge:1,7565:1:-0,0109:0,0000:3,500;Bridge drones:AttackDrone:City / Skybridge:1,7565:1:0,0574:0,0000:3,500"
+        },
+        {
+            "level": "Desert",
+            "budget": 2,
+            "score": "Moth dune scallop:DuneMoth:Desert / Moth dune scallop:0,0000:-1:0,0450:0,0000:4,800;Moth dune scallop:DuneMoth:Desert / Moth dune scallop:0,6667:-1:0,0450:0,0000:4,800;Moth dune scallop:DuneMoth:Desert / Moth dune scallop:1,3334:-1:0,0450:0,0000:4,800;Moth dune scallop:DuneMoth:Desert / Moth dune scallop:2,0001:-1:0,0450:0,0000:4,800;Obelisk mirage march:MirageObelisk:Desert / Obelisk mirage march:2,3148:-1:-0,1281:0,0000:5,600;Obelisk mirage march:MirageObelisk:Desert / Obelisk mirage march:2,3148:-1:0,2181:0,0000:5,600;Moth dune scallop:DuneMoth:Desert / Moth dune scallop:2,6669:-1:0,0450:0,0000:4,800"
+        },
+        {
+            "level": "Desert",
+            "budget": 6,
+            "score": "Dune-traversing sandworm:SandWorm:Desert / Worm dune traverse:0,0000:-1:-0,0450:0,0000:5,500;Obelisk buried arc:MirageObelisk:Desert / Obelisk buried arc:2,3148:-1:-0,0450:0,0000:5,800;Obelisk buried arc:MirageObelisk:Desert / Obelisk buried arc:3,1873:-1:-0,0450:0,0000:5,800;Obelisk buried arc:MirageObelisk:Desert / Obelisk buried arc:4,0597:-1:-0,0450:0,0000:5,800;Silo flanking wing:SandStriker:Desert / Silo hook:6,2831:1:0,0450:-0,0946:4,500;Silo flanking wing:SandStriker:Desert / Silo hook:6,2831:1:-0,2853:0,0000:4,500;Silo flanking wing:SandStriker:Desert / Silo hook:6,2831:1:0,3753:0,0000:4,500;Silo flanking wing:SandStriker:Desert / Silo hook:6,2831:1:0,0450:0,0946:4,500"
+        },
+        {
+            "level": "Desert",
+            "budget": 12,
+            "score": "Dune diving squadron:SandStriker:Desert / Slipface dive:0,0000:-1:-0,8708:-0,0946:3,800;Dune diving squadron:SandStriker:Desert / Slipface dive:0,0000:-1:-0,5405:-0,0568:3,800;Dune diving squadron:SandStriker:Desert / Slipface dive:0,0000:-1:-0,2102:-0,0189:3,800;Dune diving squadron:SandStriker:Desert / Slipface dive:0,0000:-1:0,1202:0,0189:3,800;Dune diving squadron:SandStriker:Desert / Slipface dive:0,0000:-1:0,4505:0,0568:3,800;Dune diving squadron:SandStriker:Desert / Slipface dive:0,0000:-1:0,7808:0,0946:3,800;Dune-traversing sandworm:SandWorm:Desert / Worm dune traverse:1,6534:-1:-0,0450:0,0000:5,500;Obelisk mirage march:MirageObelisk:Desert / Obelisk mirage march:4,6296:-1:-0,1731:0,0000:5,600;Obelisk mirage march:MirageObelisk:Desert / Obelisk mirage march:4,6296:-1:0,1731:0,0000:5,600"
+        },
+        {
+            "level": "Desert",
+            "budget": 20,
+            "score": "Crest runners:SandStriker:Desert / Crest skimming:0,0000:-1:-0,0450:0,0000:4,000;Crest runners:SandStriker:Desert / Crest skimming:0,7448:-1:-0,0450:0,0000:4,000;Crest runners:SandStriker:Desert / Crest skimming:1,4896:-1:-0,0450:0,0000:4,000;Crest runners:SandStriker:Desert / Crest skimming:2,2344:-1:-0,0450:0,0000:4,000;Crest runners:SandStriker:Desert / Crest skimming:2,9793:-1:-0,0450:0,0000:4,000;Eruption crescent:SandEmitter:Desert / Subsurface arc:3,6376:-1:-0,0396:-0,0338:4,300;Eruption crescent:SandEmitter:Desert / Subsurface arc:3,6376:-1:0,0450:0,0000:4,300;Eruption crescent:SandEmitter:Desert / Subsurface arc:3,6376:-1:0,1296:0,0338:4,300;Mirage pursuit:SandStriker:Desert / Salt pan sickle:4,6296:-1:-0,2342:-0,0757:4,100;Mirage pursuit:SandStriker:Desert / Salt pan sickle:4,6296:-1:-0,1396:-0,0378:4,100;Mirage pursuit:SandStriker:Desert / Salt pan sickle:4,6296:-1:-0,0450:0,0000:4,100;Mirage pursuit:SandStriker:Desert / Salt pan sickle:4,6296:-1:0,0496:0,0378:4,100;Mirage pursuit:SandStriker:Desert / Salt pan sickle:4,6296:-1:0,1442:0,0757:4,100"
+        },
+        {
+            "level": "Candyland",
+            "budget": 2,
+            "score": "Taffy bow:BonbonSkirmisher:Candyland / Taffy curl:0,0000:-1:-0,0450:0,0000:2,900;Taffy bow:BonbonSkirmisher:Candyland / Taffy curl:0,4444:-1:-0,0450:0,0000:2,900;Taffy bow:BonbonSkirmisher:Candyland / Taffy curl:0,8889:-1:-0,0450:0,0000:2,900;Taffy bow:BonbonSkirmisher:Candyland / Taffy curl:1,3333:-1:-0,0450:0,0000:2,900;Taffy bow:BonbonSkirmisher:Candyland / Taffy curl:1,7778:-1:-0,0450:0,0000:2,900;Taffy bow:BonbonSkirmisher:Candyland / Taffy curl:2,2222:-1:-0,0450:0,0000:2,900;Taffy bow:BonbonSkirmisher:Candyland / Taffy curl:2,6667:-1:-0,0450:0,0000:2,900;Taffy bow:BonbonSkirmisher:Candyland / Taffy curl:3,1111:-1:-0,0450:0,0000:2,900;Gumdrop sugar fall:GumdropMortar:Candyland / Gumdrop sugar fall:3,3069:-1:-0,0450:0,0000:4,100;Gumdrop sugar fall:GumdropMortar:Candyland / Gumdrop sugar fall:3,7065:-1:-0,0450:0,0000:4,100;Gumdrop sugar fall:GumdropMortar:Candyland / Gumdrop sugar fall:4,1061:-1:-0,0450:0,0000:4,100;Chocolate arrow:WaferDart:Candyland / Wafer slice:6,2831:1:-0,0450:-0,0704:2,700;Chocolate arrow:WaferDart:Candyland / Wafer slice:6,2831:1:-0,2909:0,0000:2,700;Chocolate arrow:WaferDart:Candyland / Wafer slice:6,2831:1:0,2009:0,0000:2,700;Chocolate arrow:WaferDart:Candyland / Wafer slice:6,2831:1:-0,5369:0,0704:2,700;Chocolate arrow:WaferDart:Candyland / Wafer slice:6,2831:1:0,4469:0,0704:2,700"
+        },
+        {
+            "level": "Candyland",
+            "budget": 6,
+            "score": "Sugar ribbon rush:BonbonSkirmisher:Candyland / Sugar ribbon:0,0000:1:-0,7958:-0,0860:3,000;Sugar ribbon rush:BonbonSkirmisher:Candyland / Sugar ribbon:0,0000:1:-0,5455:-0,0573:3,000;Sugar ribbon rush:BonbonSkirmisher:Candyland / Sugar ribbon:0,0000:1:-0,2953:-0,0287:3,000;Sugar ribbon rush:BonbonSkirmisher:Candyland / Sugar ribbon:0,0000:1:-0,0450:0,0000:3,000;Sugar ribbon rush:BonbonSkirmisher:Candyland / Sugar ribbon:0,0000:1:0,2053:0,0287:3,000;Sugar ribbon rush:BonbonSkirmisher:Candyland / Sugar ribbon:0,0000:1:0,4555:0,0573:3,000;Sugar ribbon rush:BonbonSkirmisher:Candyland / Sugar ribbon:0,0000:1:0,7058:0,0860:3,000;Ribbon falling streamer:RibbonGlider:Candyland / Ribbon falling streamer:0,6614:1:-0,0450:0,0000:3,250;Ribbon falling streamer:RibbonGlider:Candyland / Ribbon falling streamer:1,1058:1:-0,0450:0,0000:3,250;Ribbon falling streamer:RibbonGlider:Candyland / Ribbon falling streamer:1,5503:1:-0,0450:0,0000:3,250;Unwrapped ribbons:BonbonSkirmisher:Candyland / Wrapper sweep:1,9841:1:-0,0450:0,0000:2,800;Unwrapped ribbons:BonbonSkirmisher:Candyland / Wrapper sweep:2,4286:1:-0,0450:0,0000:2,800;Unwrapped ribbons:BonbonSkirmisher:Candyland / Wrapper sweep:2,8730:1:-0,0450:0,0000:2,800;Unwrapped ribbons:BonbonSkirmisher:Candyland / Wrapper sweep:3,3175:1:-0,0450:0,0000:2,800;Unwrapped ribbons:BonbonSkirmisher:Candyland / Wrapper sweep:3,7619:1:-0,0450:0,0000:2,800;Unwrapped ribbons:BonbonSkirmisher:Candyland / Wrapper sweep:4,2063:1:-0,0450:0,0000:2,800;Unwrapped ribbons:BonbonSkirmisher:Candyland / Wrapper sweep:4,6508:1:-0,0450:0,0000:2,800;Unwrapped ribbons:BonbonSkirmisher:Candyland / Wrapper sweep:5,0952:1:-0,0450:0,0000:2,800;Unwrapped ribbons:BonbonSkirmisher:Candyland / Wrapper sweep:5,5397:1:-0,0450:0,0000:2,800;Unwrapped ribbons:BonbonSkirmisher:Candyland / Wrapper sweep:5,9841:1:-0,0450:0,0000:2,800;Mint wheel procession:MintSpinner:Candyland / Mint wheel:6,2831:-1:0,0000:0,0000:3,000;Mint wheel procession:MintSpinner:Candyland / Mint wheel:6,7751:-1:0,0000:0,0000:3,000;Mint wheel procession:MintSpinner:Candyland / Mint wheel:7,2672:-1:0,0000:0,0000:3,000;Mint wheel procession:MintSpinner:Candyland / Mint wheel:7,7593:-1:0,0000:0,0000:3,000;Mint wheel procession:MintSpinner:Candyland / Mint wheel:8,2513:-1:0,0000:0,0000:3,000;Mint wheel procession:MintSpinner:Candyland / Mint wheel:8,7434:-1:0,0000:0,0000:3,000"
+        },
+        {
+            "level": "Candyland",
+            "budget": 12,
+            "score": "Whirling mint staff:MintSpinner:Candyland / Mint wheel:0,0000:1:-0,1726:0,0000:2,700;Whirling mint staff:MintSpinner:Candyland / Mint wheel:0,0000:1:-0,1088:0,0000:2,700;Whirling mint staff:MintSpinner:Candyland / Mint wheel:0,0000:1:-0,0450:0,0000:2,700;Whirling mint staff:MintSpinner:Candyland / Mint wheel:0,0000:1:0,0188:0,0000:2,700;Whirling mint staff:MintSpinner:Candyland / Mint wheel:0,0000:1:0,0826:0,0000:2,700;Double wafer rake:WaferDart:Candyland / Zipper:0,6614:1:-0,0450:0,0000:2,500;Double wafer rake:WaferDart:Candyland / Zipper:0,6614:1:-0,1154:-0,0282:2,500;Double wafer rake:WaferDart:Candyland / Zipper:0,6614:1:-0,1859:-0,0563:2,500;Double wafer rake:WaferDart:Candyland / Zipper:0,6614:1:0,0254:0,0282:2,500;Double wafer rake:WaferDart:Candyland / Zipper:0,6614:1:0,0959:0,0563:2,500;Sugar needlework:WaferDart:Candyland / Sugar ribbon:1,9841:1:0,4139:0,0423:2,700;Sugar needlework:WaferDart:Candyland / Sugar ribbon:1,9841:1:-0,0780:-0,0141:2,700;Sugar needlework:WaferDart:Candyland / Sugar ribbon:1,9841:1:0,9058:0,0986:2,700;Sugar needlework:WaferDart:Candyland / Sugar ribbon:1,9841:1:-0,3239:-0,0423:2,700;Sugar needlework:WaferDart:Candyland / Sugar ribbon:1,9841:1:-0,5698:-0,0704:2,700;Sugar needlework:WaferDart:Candyland / Sugar ribbon:1,9841:1:-0,8158:-0,0986:2,700;Sugar needlework:WaferDart:Candyland / Sugar ribbon:1,9841:1:0,1680:0,0141:2,700;Sugar needlework:WaferDart:Candyland / Sugar ribbon:1,9841:1:0,6598:0,0704:2,700;Chocolate fountain:WaferDart:Candyland / Sugar fountain:2,6455:-1:-0,0450:-0,0704:2,800;Chocolate fountain:WaferDart:Candyland / Sugar fountain:2,6455:-1:-0,2909:0,0000:2,800;Chocolate fountain:WaferDart:Candyland / Sugar fountain:2,6455:-1:0,2009:0,0000:2,800;Chocolate fountain:WaferDart:Candyland / Sugar fountain:2,6455:-1:-0,5369:0,0704:2,800;Chocolate fountain:WaferDart:Candyland / Sugar fountain:2,6455:-1:0,4469:0,0704:2,800"
+        },
+        {
+            "level": "Candyland",
+            "budget": 20,
+            "score": "Confection crown:BonbonSkirmisher:Candyland / Taffy curl:0,0000:-1:0,0000:-0,0717:2,600;Confection crown:BonbonSkirmisher:Candyland / Taffy curl:0,0000:-1:-0,2503:0,0000:2,600;Confection crown:BonbonSkirmisher:Candyland / Taffy curl:0,0000:-1:0,2503:0,0000:2,600;Confection crown:BonbonSkirmisher:Candyland / Taffy curl:0,0000:-1:0,0000:0,0717:2,600;Ribbon rising loop:RibbonGlider:Candyland / Ribbon rising loop:0,9921:-1:0,0450:-0,0821:3,400;Ribbon rising loop:RibbonGlider:Candyland / Ribbon rising loop:0,9921:-1:-0,2418:0,0000:3,400;Ribbon rising loop:RibbonGlider:Candyland / Ribbon rising loop:0,9921:-1:0,3318:0,0000:3,400;Gumdrop sugar fall:GumdropMortar:Candyland / Gumdrop sugar fall:2,3148:1:0,0450:0,0000:4,100;Whirling mint staff:MintSpinner:Candyland / Mint wheel:2,6455:1:-0,0507:0,0000:2,700;Whirling mint staff:MintSpinner:Candyland / Mint wheel:2,6455:1:0,0131:0,0000:2,700;Whirling mint staff:MintSpinner:Candyland / Mint wheel:2,6455:1:0,0769:0,0000:2,700;Whirling mint staff:MintSpinner:Candyland / Mint wheel:2,6455:1:0,1407:0,0000:2,700;Gumdrop sugar fall:GumdropMortar:Candyland / Gumdrop sugar fall:2,7624:1:0,0450:0,0000:4,100;Gumdrop sugar fall:GumdropMortar:Candyland / Gumdrop sugar fall:3,2100:1:0,0450:0,0000:4,100;Gumdrop sugar fall:GumdropMortar:Candyland / Gumdrop sugar fall:3,6576:1:0,0450:0,0000:4,100"
+        },
+        {
+            "level": "Space",
+            "budget": 2,
+            "score": "Slingshot dish escort:LaserSatellite:Space / Slingshot:0,0000:1:0,0000:0,0000:4,900;Transfer scouts:OrbitalScout:Space / Transfer orbit:1,6150:-1:-0,2589:0,0000:3,900;Transfer scouts:OrbitalScout:Space / Transfer orbit:1,6150:-1:-0,1554:0,0000:3,900;Transfer scouts:OrbitalScout:Space / Transfer orbit:1,6150:-1:-0,0518:0,0000:3,900;Transfer scouts:OrbitalScout:Space / Transfer orbit:1,6150:-1:0,0518:0,0000:3,900;Transfer scouts:OrbitalScout:Space / Transfer orbit:1,6150:-1:0,1554:0,0000:3,900;Transfer scouts:OrbitalScout:Space / Transfer orbit:1,6150:-1:0,2589:0,0000:3,900;Terminator emitters:LaserSatellite:Space / Terminator pass:2,5840:-1:0,0000:0,0000:4,800;Terminator emitters:LaserSatellite:Space / Terminator pass:3,6094:-1:0,0000:0,0000:4,800"
+        },
+        {
+            "level": "Space",
+            "budget": 6,
+            "score": "Halo escort carrier:OrbitalCarrier:Space / Halo carrier:0,0000:1:0,0450:0,0000:5,000;Apogee scouts:OrbitalScout:Space / Apogee curl:1,6150:1:-0,0450:0,0000:4,000;Apogee scouts:OrbitalScout:Space / Apogee curl:2,2882:1:-0,0450:0,0000:4,000;Apogee scouts:OrbitalScout:Space / Apogee curl:2,9614:1:-0,0450:0,0000:4,000;Apogee scouts:OrbitalScout:Space / Apogee curl:3,6346:1:-0,0450:0,0000:4,000;Apogee scouts:OrbitalScout:Space / Apogee curl:4,3079:1:-0,0450:0,0000:4,000;Opposed relay scouts:OrbitalScout:Space / Terminator pass:5,8140:1:-0,2004:-0,0621:4,000;Opposed relay scouts:OrbitalScout:Space / Terminator pass:5,8140:1:-0,0968:-0,0207:4,000;Opposed relay scouts:OrbitalScout:Space / Terminator pass:5,8140:1:0,0068:0,0207:4,000;Opposed relay scouts:OrbitalScout:Space / Terminator pass:5,8140:1:0,1104:0,0621:4,000;Terminator emitters:LaserSatellite:Space / Terminator pass:6,7829:1:0,0450:0,0000:4,800;Terminator emitters:LaserSatellite:Space / Terminator pass:7,8084:1:0,0450:0,0000:4,800"
+        },
+        {
+            "level": "Space",
+            "budget": 12,
+            "score": "Perigee twins:OrbitalScout:Space / Perigee scissors:0,0000:1:-0,0450:-0,1036:4,100;Perigee twins:OrbitalScout:Space / Perigee scissors:0,0000:1:-0,4066:0,0000:4,100;Perigee twins:OrbitalScout:Space / Perigee scissors:0,0000:1:0,3166:0,0000:4,100;Perigee twins:OrbitalScout:Space / Perigee scissors:0,0000:1:-0,7683:0,1036:4,100;Perigee twins:OrbitalScout:Space / Perigee scissors:0,0000:1:0,6783:0,1036:4,100;Terminator emitters:LaserSatellite:Space / Terminator pass:2,5840:-1:-0,1035:-0,0234:4,800;Terminator emitters:LaserSatellite:Space / Terminator pass:2,5840:-1:0,0135:0,0234:4,800;Eclipse solar arc:EclipseSail:Space / Eclipse solar arc:4,1990:-1:0,0000:0,0000:5,000;Eclipse solar arc:EclipseSail:Space / Eclipse solar arc:4,9499:-1:0,0000:0,0000:5,000;Eclipse solar arc:EclipseSail:Space / Eclipse solar arc:5,7008:-1:0,0000:0,0000:5,000;Eclipse solar arc:EclipseSail:Space / Eclipse solar arc:6,4517:-1:0,0000:0,0000:5,000;Perigee laser rake:LaserSatellite:Space / Perigee scissors:7,1059:-1:-0,0450:0,0000:4,800;Eclipse solar arc:EclipseSail:Space / Eclipse solar arc:7,2026:-1:0,0000:0,0000:5,000;Perigee laser rake:LaserSatellite:Space / Perigee scissors:7,9122:-1:-0,0450:0,0000:4,800"
+        },
+        {
+            "level": "Space",
+            "budget": 20,
+            "score": "Solar slingshot:OrbitalScout:Space / Slingshot:0,0000:1:-0,0450:-0,1036:4,100;Solar slingshot:OrbitalScout:Space / Slingshot:0,0000:1:-0,4066:0,0000:4,100;Solar slingshot:OrbitalScout:Space / Slingshot:0,0000:1:0,3166:0,0000:4,100;Solar slingshot:OrbitalScout:Space / Slingshot:0,0000:1:-0,0450:0,1036:4,100;Terminator emitters:LaserSatellite:Space / Terminator pass:1,6150:1:-0,0720:-0,0468:4,800;Terminator emitters:LaserSatellite:Space / Terminator pass:1,6150:1:0,0450:0,0000:4,800;Terminator emitters:LaserSatellite:Space / Terminator pass:1,6150:1:0,1620:0,0468:4,800;Wide apogee carrier:OrbitalCarrier:Space / Apogee curl:3,5530:1:0,0000:0,0000:5,100;Comet trailing orbit:CometTug:Space / Comet trailing orbit:5,1680:-1:-0,2059:0,0000:5,600;Comet trailing orbit:CometTug:Space / Comet trailing orbit:5,1680:-1:0,2059:0,0000:5,600"
+        },
+        {
+            "level": "Underwater",
+            "budget": 2,
+            "score": "Thermocline school:ReefDart:Ocean / Thermocline:0,0000:-1:-0,4714:-0,0540:4,300;Thermocline school:ReefDart:Ocean / Thermocline:0,0000:-1:-0,1571:-0,0180:4,300;Thermocline school:ReefDart:Ocean / Thermocline:0,0000:-1:0,1571:0,0180:4,300;Thermocline school:ReefDart:Ocean / Thermocline:0,0000:-1:0,4714:0,0540:4,300;Cross current wings:MantaRay:Ocean / Crossing current:1,6150:-1:0,0450:0,0000:4,600;Cross current wings:MantaRay:Ocean / Crossing current:2,4638:-1:0,0450:0,0000:4,600;Cross current wings:MantaRay:Ocean / Crossing current:3,3125:-1:0,0450:0,0000:4,600;Cross current wings:MantaRay:Ocean / Crossing current:4,1613:-1:0,0450:0,0000:4,600"
+        },
+        {
+            "level": "Underwater",
+            "budget": 6,
+            "score": "Undertow darts:ReefDart:Ocean / Undertow:0,0000:-1:-0,0450:-0,0900:4,100;Undertow darts:ReefDart:Ocean / Undertow:0,0000:-1:-0,3593:0,0000:4,100;Undertow darts:ReefDart:Ocean / Undertow:0,0000:-1:0,2693:0,0000:4,100;Trench sentries:Bathysphere:Ocean / Trench turn:0,0000:1:-0,3739:0,0000:5,100;Trench sentries:Bathysphere:Ocean / Trench turn:0,0000:1:-0,0450:0,0000:5,100;Trench sentries:Bathysphere:Ocean / Trench turn:0,0000:1:0,2839:0,0000:5,100;Bell descent:Bathysphere:Ocean / Undertow:2,2610:-1:-0,0450:0,0000:5,000"
+        },
+        {
+            "level": "Underwater",
+            "budget": 12,
+            "score": "Sunken procession:Bathysphere:Ocean / Reef shelf:0,0000:-1:-0,0450:0,0000:4,800;Trench ribbon:MantaRay:Ocean / Trench turn:0,3230:1:-0,4674:-0,0484:4,500;Trench ribbon:MantaRay:Ocean / Trench turn:0,3230:1:-0,0450:0,0000:4,500;Trench ribbon:MantaRay:Ocean / Trench turn:0,3230:1:0,3774:0,0484:4,500;Sunken procession:Bathysphere:Ocean / Reef shelf:0,8369:-1:-0,0450:0,0000:4,800;Sunken procession:Bathysphere:Ocean / Reef shelf:1,6737:-1:-0,0450:0,0000:4,800;Bell reefward roll:NautilusBell:Underwater / Bell reefward roll:2,5840:1:0,0000:0,0000:5,400;Bell reefward roll:NautilusBell:Underwater / Bell reefward roll:3,1289:1:0,0000:0,0000:5,400"
+        },
+        {
+            "level": "Underwater",
+            "budget": 20,
+            "score": "Bell descent:Bathysphere:Ocean / Undertow:0,0000:-1:-0,0450:0,0000:5,000;Undertow darts:ReefDart:Ocean / Undertow:1,6150:1:0,0450:-0,0900:4,100;Undertow darts:ReefDart:Ocean / Undertow:1,6150:1:-0,2693:0,0000:4,100;Undertow darts:ReefDart:Ocean / Undertow:1,6150:1:0,3593:0,0000:4,100;Deep manta bow:MantaRay:Ocean / Thermocline:1,9380:1:-0,4224:0,0000:4,500;Deep manta bow:MantaRay:Ocean / Thermocline:1,9380:1:0,0000:0,0000:4,500;Deep manta bow:MantaRay:Ocean / Thermocline:1,9380:1:0,4224:0,0000:4,500"
+        },
+        {
+            "level": "Hell",
+            "budget": 2,
+            "score": "Styx galleons:GhostGalleon:Hell / Styx broadside:0,0000:-1:-0,0649:-0,0259:4,800;Styx galleons:GhostGalleon:Hell / Styx broadside:0,0000:-1:0,0649:0,0259:4,800;Ember scissors:CinderImp:Hell / Ember scissors:2,2096:-1:-0,0776:-0,0490:3,300;Ember scissors:CinderImp:Hell / Ember scissors:2,2096:-1:0,0041:-0,0163:3,300;Ember scissors:CinderImp:Hell / Ember scissors:2,2096:-1:0,0859:0,0163:3,300;Ember scissors:CinderImp:Hell / Ember scissors:2,2096:-1:0,1676:0,0490:3,300"
+        },
+        {
+            "level": "Hell",
+            "budget": 6,
+            "score": "Pit procession:SkullRevenant:Hell / Pit descent:0,0000:-1:-0,5059:-0,0580:3,800;Pit procession:SkullRevenant:Hell / Pit descent:0,0000:-1:-0,1686:-0,0193:3,800;Pit procession:SkullRevenant:Hell / Pit descent:0,0000:-1:0,1686:0,0193:3,800;Pit procession:SkullRevenant:Hell / Pit descent:0,0000:-1:0,5059:0,0580:3,800;Cinder hooks:CinderImp:Hell / Cinder hook:1,2626:-1:0,0000:-0,0817:3,200;Cinder hooks:CinderImp:Hell / Cinder hook:1,2626:-1:-0,2853:0,0000:3,200;Cinder hooks:CinderImp:Hell / Cinder hook:1,2626:-1:0,2853:0,0000:3,200;Cinder hooks:CinderImp:Hell / Cinder hook:1,2626:-1:0,0000:0,0817:3,200;Harrier talon dive:BoneHarrier:Hell / Harrier talon dive:1,8939:1:-0,0450:0,0000:3,700;Harrier talon dive:BoneHarrier:Hell / Harrier talon dive:2,3645:1:-0,0450:0,0000:3,700;Harrier talon dive:BoneHarrier:Hell / Harrier talon dive:2,8350:1:-0,0450:0,0000:3,700;Harrier talon dive:BoneHarrier:Hell / Harrier talon dive:3,3056:1:-0,0450:0,0000:3,700;Harrier talon dive:BoneHarrier:Hell / Harrier talon dive:3,7761:1:-0,0450:0,0000:3,700;Harrier talon dive:BoneHarrier:Hell / Harrier talon dive:4,2466:1:-0,0450:0,0000:3,700;Harrier talon dive:BoneHarrier:Hell / Harrier talon dive:4,7172:1:-0,0450:0,0000:3,700"
+        },
+        {
+            "level": "Hell",
+            "budget": 12,
+            "score": "Jaw spiral:SkullRevenant:Hell / Jaw spiral:0,0000:-1:-0,0450:-0,0966:3,700;Jaw spiral:SkullRevenant:Hell / Jaw spiral:0,0000:-1:-0,3823:0,0000:3,700;Jaw spiral:SkullRevenant:Hell / Jaw spiral:0,0000:-1:0,2923:0,0000:3,700;Jaw spiral:SkullRevenant:Hell / Jaw spiral:0,0000:-1:-0,0450:0,0966:3,700;Censer downward pendulum:AshCenser:Hell / Censer downward pendulum:0,9470:-1:0,0000:0,0000:5,200;Censer downward pendulum:AshCenser:Hell / Censer downward pendulum:1,5166:-1:0,0000:0,0000:5,200;Censer downward pendulum:AshCenser:Hell / Censer downward pendulum:2,0863:-1:0,0000:0,0000:5,200;Spectral bows:GhostGalleon:Hell / Wraith bow:2,2096:1:-0,1815:0,0000:4,900;Spectral bows:GhostGalleon:Hell / Wraith bow:2,2096:1:0,2715:0,0000:4,900"
+        },
+        {
+            "level": "Hell",
+            "budget": 20,
+            "score": "Ash crown:SkullRevenant:Hell / Wraith bow:0,0000:-1:-0,0450:-0,0966:3,800;Ash crown:SkullRevenant:Hell / Wraith bow:0,0000:-1:-0,3823:0,0000:3,800;Ash crown:SkullRevenant:Hell / Wraith bow:0,0000:-1:0,2923:0,0000:3,800;Ash crown:SkullRevenant:Hell / Wraith bow:0,0000:-1:-0,7195:0,0966:3,800;Ash crown:SkullRevenant:Hell / Wraith bow:0,0000:-1:0,6295:0,0966:3,800;Burning crossing:CinderImp:Hell / Styx broadside:1,8939:1:-0,1676:0,0000:3,400;Burning crossing:CinderImp:Hell / Styx broadside:1,8939:1:-0,0859:0,0000:3,400;Burning crossing:CinderImp:Hell / Styx broadside:1,8939:1:-0,0041:0,0000:3,400;Burning crossing:CinderImp:Hell / Styx broadside:1,8939:1:0,0776:0,0000:3,400;Spectral bows:GhostGalleon:Hell / Wraith bow:2,5253:-1:-0,4530:0,0000:4,900;Spectral bows:GhostGalleon:Hell / Wraith bow:2,5253:-1:0,0000:0,0000:4,900;Spectral bows:GhostGalleon:Hell / Wraith bow:2,5253:-1:0,4530:0,0000:4,900"
+        }
+    ]
+}

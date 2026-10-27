@@ -9,14 +9,14 @@ public sealed class TerraceGunboat : DistrictEnemy
         hull = 66;
         hullScale = 0.53f;
         health = 38;
-        attackInterval = Timing(2.8f, 2.0f);
+        attackInterval = 2.0f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
         for (int s = -1; s <= 1; s += 2)
-            for (int i = 0; i < Shots(2, 3); i++)
+            for (int i = 0; i < 3; i++)
                 Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (16 + i * 16) + (volley % 2 == 0 ? 5 : -5)), 3.3f, .22f);
     }
 
@@ -29,9 +29,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve TerraceGunboatRoute2 = Route("City / Terrace rooftop turn", Vector2.right, 1.4f, 0.63f, 0.68f, 0.56f, 0.08f, 0.68f, -0.49f, 0.9f, -0.62f, 1.25f);
     public static readonly WavePart[] TerraceGunboatParts =
     {
-        new WavePart("Terrace balcony sweep", nameof(TerraceGunboat), TerraceGunboatRoute0, WaveShape.Rank, 2, 4.0f, 2, new[] { 0.3f, 0.62f }, new[] { 0.46f }, 2),
-        new WavePart("Terrace descending avenue", nameof(TerraceGunboat), TerraceGunboatRoute1, WaveShape.Rake, 2, 4.15f, 4, new[] { 0.27f, 0.49f, 0.7f }, new[] { 0.39f, 0.72f }, 2),
-        new WavePart("Terrace rooftop turn", nameof(TerraceGunboat), TerraceGunboatRoute2, WaveShape.Train, 2, 3.95f, 7, new[] { 0.32f, 0.65f }, new[] { 0.48f }, 2),
+        new WavePart("Terrace balcony sweep", nameof(TerraceGunboat), TerraceGunboatRoute0, WaveShape.Rank, 2, 4.0f, 2, new[] { 0.3f, 0.62f }),
+        new WavePart("Terrace descending avenue", nameof(TerraceGunboat), TerraceGunboatRoute1, WaveShape.Rake, 2, 4.15f, 4, new[] { 0.27f, 0.49f, 0.7f }),
+        new WavePart("Terrace rooftop turn", nameof(TerraceGunboat), TerraceGunboatRoute2, WaveShape.Train, 2, 3.95f, 7, new[] { 0.32f, 0.65f }),
     };
 }
 

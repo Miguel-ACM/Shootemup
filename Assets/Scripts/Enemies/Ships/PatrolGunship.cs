@@ -7,12 +7,12 @@ public sealed class PatrolGunship : DistrictEnemy
     {
         hull = 1;
         health = 35;
-        attackInterval = Timing(2.0f, 1.5f);
+        attackInterval = 1.5f;
         Mover<TopTracker>();
     }
 
     protected override void Attack()
     {
-        FanFrom<NeedleRound>(Shots(2, 3), 12, 4.6f, .18f, ports);
+        FanFrom<NeedleRound>(3, 12, 4.6f, .18f, ports);
     }
 }

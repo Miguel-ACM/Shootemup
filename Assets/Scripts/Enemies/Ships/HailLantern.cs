@@ -9,7 +9,7 @@ public sealed class HailLantern : DistrictEnemy
         hull = 64;
         hullScale = 0.58f;
         health = 49;
-        attackInterval = Timing(3.7f, 2.9f);
+        attackInterval = 2.9f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -18,7 +18,7 @@ public sealed class HailLantern : DistrictEnemy
         var shell = Fire<BurstShell>(Muzzle(), Vector2.down, 2.4f, .48f);
         if (shell != null)
             shell.SetTravelDistance(volley % 2 == 0 ? 4.1f : 5.5f);
-        if (!Difficulty.Easy)
+        
             for (int s = -1; s <= 1; s += 2)
                 Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Vector2.down, s * 38), 2.2f, .23f);
     }
@@ -32,9 +32,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve HailLanternRoute2 = Route("Snow / Lantern winter arch", Vector2.right, 0.65f, 1.25f, 0.51f, 0.87f, 0.0f, 0.74f, -0.48f, 0.84f, -0.7f, 1.25f);
     public static readonly WavePart[] HailLanternParts =
     {
-        new WavePart("Lantern hanging crown", nameof(HailLantern), HailLanternRoute0, WaveShape.Rank, 2, 5.8f, 2, new[] { 0.3f, 0.64f }, new[] { 0.49f }, 2),
-        new WavePart("Lantern falling bell", nameof(HailLantern), HailLanternRoute1, WaveShape.Train, 2, 5.8f, 4, new[] { 0.28f, 0.57f }, new[] { 0.41f }, 2),
-        new WavePart("Lantern winter arch", nameof(HailLantern), HailLanternRoute2, WaveShape.Rake, 2, 5.5f, 7, new[] { 0.34f, 0.68f }, new[] { 0.51f }, 2),
+        new WavePart("Lantern hanging crown", nameof(HailLantern), HailLanternRoute0, WaveShape.Rank, 2, 5.8f, 2, new[] { 0.3f, 0.64f }),
+        new WavePart("Lantern falling bell", nameof(HailLantern), HailLanternRoute1, WaveShape.Train, 2, 5.8f, 4, new[] { 0.28f, 0.57f }),
+        new WavePart("Lantern winter arch", nameof(HailLantern), HailLanternRoute2, WaveShape.Rake, 2, 5.5f, 7, new[] { 0.34f, 0.68f }),
     };
 }
 

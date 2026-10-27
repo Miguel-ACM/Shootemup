@@ -9,7 +9,7 @@ public sealed class CapacitorKite : DistrictEnemy
         hull = 69;
         hullScale = 0.53f;
         health = 34;
-        attackInterval = Timing(3.0f, 2.15f);
+        attackInterval = 2.15f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -17,7 +17,7 @@ public sealed class CapacitorKite : DistrictEnemy
     {
         for (int s = -1; s <= 1; s += 2)
             Fire<PlasmaOrb>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * 24), 2.0f, .34f);
-        if (!Difficulty.Easy)
+        
             Fire<NeedleRound>(Muzzle(volley), Vector2.down, 4.1f, .17f);
     }
 
@@ -30,9 +30,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve CapacitorKiteRoute2 = Route("Thunder / Kite outer eddy", Vector2.right, 1.4f, 0.91f, 0.71f, 0.8f, 0.29f, 0.52f, -0.17f, 0.43f, -0.64f, 0.66f, -0.8f, 1.25f);
     public static readonly WavePart[] CapacitorKiteParts =
     {
-        new WavePart("Kite stormward curl", nameof(CapacitorKite), CapacitorKiteRoute0, WaveShape.Train, 3, 5.2f, 2, new[] { 0.29f, 0.51f, 0.72f }, new[] { 0.42f, 0.74f }, 3),
-        new WavePart("Kite cloud shoulder", nameof(CapacitorKite), CapacitorKiteRoute1, WaveShape.Chevron, 3, 5.0f, 4, new[] { 0.33f, 0.62f }, new[] { 0.48f }, 3),
-        new WavePart("Kite outer eddy", nameof(CapacitorKite), CapacitorKiteRoute2, WaveShape.Rake, 3, 5.6f, 7, new[] { 0.27f, 0.47f, 0.69f }, new[] { 0.38f, 0.72f }, 3),
+        new WavePart("Kite stormward curl", nameof(CapacitorKite), CapacitorKiteRoute0, WaveShape.Train, 3, 5.2f, 2, new[] { 0.29f, 0.51f, 0.72f }),
+        new WavePart("Kite cloud shoulder", nameof(CapacitorKite), CapacitorKiteRoute1, WaveShape.Chevron, 3, 5.0f, 4, new[] { 0.33f, 0.62f }),
+        new WavePart("Kite outer eddy", nameof(CapacitorKite), CapacitorKiteRoute2, WaveShape.Rake, 3, 5.6f, 7, new[] { 0.27f, 0.47f, 0.69f }),
     };
 }
 

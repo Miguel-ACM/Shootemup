@@ -18,11 +18,9 @@ public abstract class DistrictEnemy : AEnemy
     }
     public virtual bool NoseAimed => EnemyWeaponLayout.NoseAimed(hull);
     public float VisualHeading => NoseAimed && (IsPreparing || age - lastRelease < .24f) ? Vector2.SignedAngle(Vector2.down, committedAim) : 0;
-    protected int Shots(int easy, int hard) => Difficulty.Easy ? easy : hard;
-    protected float Timing(float easy, float hard) => Difficulty.Easy ? easy : hard;
     public float hullScale = .7f;
     public int hull;
-    [Min(.1f), EnemyTunable("Firing / Shell travel distance", .1f, 16)] public float shellTravelDistance = 3.8f;
+    [Min.1f, EnemyTunable("Firing / Shell travel distance", .1f, 16)] public float shellTravelDistance = 3.8f;
     [EnemyTunable("Firing / Attack interval", .05f, 20)] protected float attackInterval = 2;
     public float MovementScale { get; private set; } = 1;
     public float ProjectileSpeedScale { get; private set; } = 1;
@@ -207,7 +205,7 @@ public abstract class DistrictEnemy : AEnemy
         flight.fixedDepth = unit.fixedDepth;
         flight.TempoMultiplier = 1;
         movement = flight;
-        var p = flight.PositionAt(0);
+        var p = flight.PositionAt0;
         transform.position = new Vector3(p.x * Camera.RightLimit, Mathf.LerpUnclamped(Camera.DownLimit, Camera.UpLimit, p.y), transform.position.z);
     }
 

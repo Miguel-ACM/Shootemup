@@ -15,7 +15,7 @@ public sealed class CityDuoBoss : DistrictBoss
         hull = 12;
         hullScale = .8f;
         health = 1000;
-        attackInterval = Timing(.82f, .64f);
+        attackInterval = .64f;
         shellTravelDistance = 5.8f;
     }
 
@@ -26,11 +26,11 @@ public sealed class CityDuoBoss : DistrictBoss
             hull = 14;
             hullScale = 1.15f;
             size = hullScale;
-            Hull.GetComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CombatHull(14);
+            Hull.GetComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CombatHull14;
             Hull.localScale = Vector3.one * hullScale;
             firingCue.Build(Hull);
             GetComponent<CircleCollider2D>().radius = hullScale * .8f;
-            GetComponent<EnemyThrusters>().sockets = IndustrialMeshFactory.CombatEngineSockets(14);
+            GetComponent<EnemyThrusters>().sockets = IndustrialMeshFactory.CombatEngineSockets14;
         }
         base.Start();
         if (partner == null && !heavy)
@@ -56,7 +56,7 @@ public sealed class CityDuoBoss : DistrictBoss
     // Both ships keep one tempo until a partner dies; independent half-health
     // acceleration used to scramble the duo's alternating releases.
     protected override bool PhaseTwoReady => false;
-    protected override float AttackPace => enraged ? Timing(.94f, .83f) : 1;
+    protected override float AttackPace => enraged ? .83f : 1;
     protected override void PressureAttack()
     {
     }
@@ -68,26 +68,26 @@ public sealed class CityDuoBoss : DistrictBoss
             attackAxis = Aim;
         if (heavy && (beat == 0 || beat == 2 || beat == 4))
         {
-            int count = Shots(enraged ? 2 : 1, enraged ? 3 : 2);
+            int count = (enraged ? 3 : 2);
             for (int i = 0; i < count; i++)
                 Fire<BurstShell>(Hull.TransformPoint(new Vector3(0, -.7f, -.3f)),
 CombatVisuals.Rotate(attackAxis, (i - (count - 1) * .5f) * 31), 3.0f, .47f);
         }
         else if (heavy && (beat == 6 || beat == 7))
         {
-            int count = Shots(enraged ? 7 : 5, enraged ? 11 : 9);
-            PetalFan<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.down, beat == 6 ? -7 : 7), count, 17, 2.3f, .29f, -.14f);
+            int count = (enraged ? 11 : 9);
+            PetalFan<SimpleRound>(Muzzle1, CombatVisuals.Rotate(Vector2.down, beat == 6 ? -7 : 7), count, 17, 2.3f, .29f, -.14f);
         }
         else if (!heavy && (beat == 1 || beat == 3 || beat == 5))
         {
-            int count = Shots(enraged ? 5 : 3, enraged ? 9 : 7);
+            int count = (enraged ? 9 : 7);
             PetalFan<NeedleRound>(Muzzle(), CombatVisuals.Rotate(attackAxis, (beat - 3) * 5), count, 12, 4.6f, .19f, .15f);
         }
         else if (!heavy && (beat == 8 || beat == 9))
-            Fan<GuidedMissile>(Shots(enraged ? 3 : 2, enraged ? 4 : 3), 27, 3.6f, .24f);
+            Fan<GuidedMissile>((enraged ? 4 : 3), 27, 3.6f, .24f);
         // A lone survivor fills its missing partner's accents without continuous noise.
         else if (enraged && (beat == 2 || beat == 4 || beat == 6))
-            Fan<SimpleRound>(Shots(5, 7), 23, 2.5f, .28f);
+            Fan<SimpleRound>(7, 23, 2.5f, .28f);
     }
 
     protected override void UpdateBar()
@@ -106,7 +106,7 @@ CombatVisuals.Rotate(attackAxis, (i - (count - 1) * .5f) * 31), 3.0f, .47f);
             partner.volley = 0;
             partner.nextAttack = partner.age + .8f;
             partner.partner = null;
-            partner.NotifyBossPhaseChange(2);
+            partner.NotifyBossPhaseChange2;
             partner.PresentPhaseTwo();
             // The first kill gives neither pickups nor an encounter-completion event.
             isBoss = false;
@@ -123,12 +123,12 @@ CombatVisuals.Rotate(attackAxis, (i - (count - 1) * .5f) * 31), 3.0f, .47f);
         firingCue.ClearWarning();
         int beat = volley % 12;
         if (heavy && (beat == 0 || beat == 2 || beat == 4 || beat == 6 || beat == 7))
-            Cue(Muzzle(1), seconds);
+            Cue(Muzzle1, seconds);
         else if (!heavy && (beat == 1 || beat == 3 || beat == 5 || beat == 8 || beat == 9))
         {
             Cue(Muzzle(), seconds);
-            Cue(Muzzle(1), seconds);
-            Cue(Muzzle(2), seconds);
+            Cue(Muzzle1, seconds);
+            Cue(Muzzle2, seconds);
         }
         else if (enraged && (beat == 2 || beat == 4 || beat == 6))
             firingCue.Warn(seconds);

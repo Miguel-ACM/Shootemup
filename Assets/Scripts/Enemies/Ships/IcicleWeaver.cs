@@ -9,13 +9,13 @@ public sealed class IcicleWeaver : DistrictEnemy
         hull = 63;
         hullScale = 0.49f;
         health = 27;
-        attackInterval = Timing(2.8f, 2.0f);
+        attackInterval = 2.0f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        int count = Shots(3, 5);
+        int count = 5;
         for (int i = 0; i < count; i++)
             Fire<SuspendedRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 19 + (volley % 2 == 0 ? 8 : -8)), 2.9f, .19f);
     }
@@ -29,9 +29,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve IcicleWeaverRoute2 = Route("Snow / Icicle closing seam", Vector2.right, 0.6f, 1.25f, 0.52f, 0.81f, 0.12f, 0.57f, -0.48f, 0.43f, -0.65f, 0.1f, -0.7f, -0.25f);
     public static readonly WavePart[] IcicleWeaverParts =
     {
-        new WavePart("Icicle diagonal loom", nameof(IcicleWeaver), IcicleWeaverRoute0, WaveShape.Rake, 3, 5.2f, 2, new[] { 0.25f, 0.48f, 0.7f }, new[] { 0.36f, 0.7f }, 3),
-        new WavePart("Icicle folding thread", nameof(IcicleWeaver), IcicleWeaverRoute1, WaveShape.Train, 4, 5.6f, 4, new[] { 0.27f, 0.39f, 0.66f }, new[] { 0.43f, 0.7f }, 3),
-        new WavePart("Icicle closing seam", nameof(IcicleWeaver), IcicleWeaverRoute2, WaveShape.Rank, 3, 5.0f, 7, new[] { 0.32f, 0.55f, 0.75f }, new[] { 0.41f, 0.74f }, 3),
+        new WavePart("Icicle diagonal loom", nameof(IcicleWeaver), IcicleWeaverRoute0, WaveShape.Rake, 3, 5.2f, 2, new[] { 0.25f, 0.48f, 0.7f }),
+        new WavePart("Icicle folding thread", nameof(IcicleWeaver), IcicleWeaverRoute1, WaveShape.Train, 4, 5.6f, 4, new[] { 0.27f, 0.39f, 0.66f }),
+        new WavePart("Icicle closing seam", nameof(IcicleWeaver), IcicleWeaverRoute2, WaveShape.Rank, 3, 5.0f, 7, new[] { 0.32f, 0.55f, 0.75f }),
     };
 }
 

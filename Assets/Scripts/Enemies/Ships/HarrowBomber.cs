@@ -9,13 +9,13 @@ public sealed class HarrowBomber : DistrictEnemy
         hull = 62;
         hullScale = 0.61f;
         health = 48;
-        attackInterval = Timing(3.5f, 2.6f);
+        attackInterval = 2.6f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        int count = Shots(3, 5);
+        int count = 5;
         for (int i = 0; i < count; i++)
             Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 24 + (volley % 2 == 0 ? 8 : -8)), 2.1f + Mathf.Abs(i - (count - 1) * .5f) * .18f, .29f);
     }
@@ -29,9 +29,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve HarrowBomberRoute2 = Route("Fields / Harrow staggered gate", Vector2.right, 0.62f, 1.25f, 0.55f, 0.82f, 0.3f, 0.61f, -0.34f, 0.5f, -0.73f, 0.66f, -1.4f, 0.8f);
     public static readonly WavePart[] HarrowBomberParts =
     {
-        new WavePart("Harrow parallel furrows", nameof(HarrowBomber), HarrowBomberRoute0, WaveShape.Rank, 2, 5.7f, 2, new[] { 0.33f, 0.68f }, new[] { 0.48f }, 2),
-        new WavePart("Harrow crescent return", nameof(HarrowBomber), HarrowBomberRoute1, WaveShape.Train, 2, 5.4f, 4, new[] { 0.3f, 0.62f }, new[] { 0.45f }, 2),
-        new WavePart("Harrow staggered gate", nameof(HarrowBomber), HarrowBomberRoute2, WaveShape.Rake, 2, 5.3f, 7, new[] { 0.31f, 0.59f, 0.76f }, new[] { 0.4f, 0.73f }, 2),
+        new WavePart("Harrow parallel furrows", nameof(HarrowBomber), HarrowBomberRoute0, WaveShape.Rank, 2, 5.7f, 2, new[] { 0.33f, 0.68f }),
+        new WavePart("Harrow crescent return", nameof(HarrowBomber), HarrowBomberRoute1, WaveShape.Train, 2, 5.4f, 4, new[] { 0.3f, 0.62f }),
+        new WavePart("Harrow staggered gate", nameof(HarrowBomber), HarrowBomberRoute2, WaveShape.Rake, 2, 5.3f, 7, new[] { 0.31f, 0.59f, 0.76f }),
     };
 }
 

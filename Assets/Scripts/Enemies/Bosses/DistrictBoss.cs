@@ -45,7 +45,7 @@ public abstract class DistrictBoss : DistrictEnemy
         if (!phaseTwo && PhaseTwoReady)
         {
             phaseTwo = true;
-            NotifyBossPhaseChange(2);
+            NotifyBossPhaseChange2;
             OnPhaseTwo();
             PresentPhaseTwo();
         }
@@ -78,7 +78,7 @@ public abstract class DistrictBoss : DistrictEnemy
     }
 
     protected virtual bool PhaseTwoReady => HealthFraction <= .5f;
-    protected virtual float AttackPace => phaseTwo ? Timing(.96f, .87f) : 1;
+    protected virtual float AttackPace => phaseTwo ? .87f : 1;
     protected void PresentPhaseTwo()
     {
         phaseEntryUntil = age + 1.5f * LevelRun.EnemyTempoScale;

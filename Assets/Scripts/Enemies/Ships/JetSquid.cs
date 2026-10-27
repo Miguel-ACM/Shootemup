@@ -8,13 +8,13 @@ public sealed class JetSquid : DistrictEnemy
         hull = 78;
         hullScale = 0.51f;
         health = 31;
-        attackInterval = Timing(2.7f, 1.95f);
+        attackInterval = 1.95f;
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        Fan<NeedleRound>(Shots(2, 3), 19, 3.6f, .21f);
+        Fan<NeedleRound>(3, 19, 3.6f, .21f);
     }
 
 }
@@ -26,9 +26,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve JetSquidRoute2 = Route("Underwater / Squid reef scissors", Vector2.right, 2.1f, 0.77f, 0.7f, 0.6f, 0.08f, 0.36f, -0.53f, 0.48f, -0.8f, 0.86f, -0.78f, 1.4f);
     public static readonly WavePart[] JetSquidParts =
     {
-        new WavePart("Squid inkward dive", nameof(JetSquid), JetSquidRoute0, WaveShape.Train, 4, 4.3f, 2, new[] { 0.3f, 0.58f }, new[] { 0.46f }, 3),
-        new WavePart("Squid rising jet", nameof(JetSquid), JetSquidRoute1, WaveShape.Rake, 3, 4.2f, 4, new[] { 0.31f, 0.65f }, new[] { 0.48f }, 3),
-        new WavePart("Squid reef scissors", nameof(JetSquid), JetSquidRoute2, WaveShape.Chevron, 3, 4.6f, 7, new[] { 0.28f, 0.61f }, new[] { 0.45f }, 3),
+        new WavePart("Squid inkward dive", nameof(JetSquid), JetSquidRoute0, WaveShape.Train, 4, 4.3f, 2, new[] { 0.3f, 0.58f }),
+        new WavePart("Squid rising jet", nameof(JetSquid), JetSquidRoute1, WaveShape.Rake, 3, 4.2f, 4, new[] { 0.31f, 0.65f }),
+        new WavePart("Squid reef scissors", nameof(JetSquid), JetSquidRoute2, WaveShape.Chevron, 3, 4.6f, 7, new[] { 0.28f, 0.61f }),
     };
 }
 

@@ -7,7 +7,7 @@ public sealed class ReefLeviathan : DistrictMiniboss
         hull = 58;
         hullScale = 1;
         health = 560;
-        attackInterval = Timing(0.9f, 0.68f);
+        attackInterval = 0.68f;
         nextAttack = 1.2f;
     }
 
@@ -27,10 +27,10 @@ public sealed class ReefLeviathan : DistrictMiniboss
             for (int side = -1; side <= 1; side += 2)
             {
                 var p = Hull.TransformPoint(new Vector3(side * .82f, -.7f, -.25f));
-                for (int j = 0; j < Shots(2, 3); j++)
-                    Fire<SuspendedRound>(p, CombatVisuals.Rotate(Vector2.down, side * 25 + (j - (Shots(2, 3) - 1) * .5f) * 25 + (beat - 1) * 7), 2.7f, .25f);
+                for (int j = 0; j < 3; j++)
+                    Fire<SuspendedRound>(p, CombatVisuals.Rotate(Vector2.down, side * 25 + (j - (3 - 1) * .5f) * 25 + (beat - 1) * 7), 2.7f, .25f);
             }
         else if (beat == 5 || beat == 6)
-            Fan<NeedleRound>(Shots(Enraged ? 4 : 3, Enraged ? 6 : 5), 21, 3.9f, .2f);
+            Fan<NeedleRound>((Enraged ? 6 : 5), 21, 3.9f, .2f);
     }
 }

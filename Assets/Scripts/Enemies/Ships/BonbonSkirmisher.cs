@@ -8,7 +8,7 @@ public sealed class BonbonSkirmisher : DistrictEnemy
         hull = 35;
         hullScale = .38f;
         health = 19;
-        attackInterval = Timing(2.2f, 1.7f);
+        attackInterval = 1.7f;
         Mover<Slalom>();
     }
 
