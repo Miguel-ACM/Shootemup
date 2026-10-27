@@ -12,6 +12,7 @@ public abstract class DistrictBoss : DistrictEnemy
     protected BossWeave Patterns { get; private set; }
     public int PatternRounds => Patterns != null ? Patterns.Released : 0;
     protected bool PhaseTransitioning => age < phaseEntryUntil;
+    protected virtual bool PatternEmissionAllowed => true;
     public virtual bool UsesHealthBar => true;
     public virtual float DisplayFraction => HealthFraction;
     public float HealthFraction => health / Mathf.Max(1, initialHealth);
@@ -62,7 +63,8 @@ public abstract class DistrictBoss : DistrictEnemy
         float motionDelta = Time.deltaTime * LevelRun.EnemyTempoScale * MovementScale;
         motionAge += motionDelta;
         MoveBoss(motionDelta);
-        if (!PhaseTransitioning) Patterns.Tick(Time.deltaTime * LevelRun.EnemyTempoScale);
+        if (!PhaseTransitioning && PatternEmissionAllowed) Patterns.Tick(Time.deltaTime * LevelRun.EnemyTempoScale);
+        else Patterns.Cancel();
         if (!enteredFight && transform.position.y < Camera.UpLimit - 1)
         {
             enteredFight = true;

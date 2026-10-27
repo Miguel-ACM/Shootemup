@@ -4,7 +4,7 @@ using UnityEngine;
 // real moving weapon transforms, and one shared charge sprite at each emitter.
 public sealed class BossWeave
 {
-    enum Kind { Spiral, Web }
+    enum Kind { Spiral, Web, Ribbon }
     struct Job
     {
         public bool active;
@@ -38,8 +38,16 @@ public sealed class BossWeave
         Add(new Job { kind = Kind.Web, anchor = anchor, port = port, arms = spokes, steps = rings * 3,
             every = .24f, speed = speed, radius = .18f, angle = angle, battery = battery });
     }
+    public void Ribbon(Transform anchor, Vector3 port, Vector2 axis, int lanes = 3, int steps = 16,
+        float sweep = 24, float speed = 3.5f, float interval = .085f, AEnemy battery = null)
+    {
+        Add(new Job { kind = Kind.Ribbon, anchor = anchor, port = port, arms = lanes, steps = steps,
+            turn = sweep, every = interval, speed = speed, radius = .145f,
+            angle = Vector2.SignedAngle(Vector2.down, axis), battery = battery });
+    }
     public void Tick(float dt)
     {
+        if(WorldTimeStop.Frozen)return;
         for (int i = 0; i < jobs.Length; i++)
         {
             var j = jobs[i];
@@ -48,22 +56,24 @@ public sealed class BossWeave
             { jobs[i].active = false; continue; }
             j.wait -= dt;
             Vector3 port = j.anchor.TransformPoint(j.port);
-            float angle = j.angle + (j.kind == Kind.Spiral ? j.step * j.turn : 0);
+            float angle = j.angle + (j.kind == Kind.Spiral ? j.step * j.turn : j.kind == Kind.Ribbon ? Mathf.Sin(j.step * .24f) * j.turn : 0);
             owner.PreparePattern(port, j.wait, CombatVisuals.Rotate(Vector2.down, angle));
             if (j.wait <= 0)
             {
                 bool ring = j.kind == Kind.Web && j.step % 3 == 0;
-                int count = j.kind == Kind.Spiral ? j.arms : ring ? j.arms * 3 : j.arms;
-                int gap = j.kind == Kind.Spiral ? 0 : ring ? 3 : 1;
+                int count = ring ? j.arms * 3 : j.arms;
+                int gap = j.kind == Kind.Web ? ring ? 3 : 1 : 0;
                 var player = CombatVisuals.Player;
                 bool clear = player == null || Vector2.Distance(port, player.position) > 2.15f;
                 if (clear && CombatRound.Live.Count + count - gap <= CombatRound.Limit)
                 {
                     for (int n = gap; n < count; n++)
                     {
-                        Vector2 direction = CombatVisuals.Rotate(Vector2.down, angle + n * 360f / count);
+                        float lane = j.kind == Kind.Ribbon ? (n - (count - 1) * .5f) * 10 : n * 360f / count;
+                        Vector2 direction = CombatVisuals.Rotate(Vector2.down, angle + lane);
                         float speed = j.speed * (j.kind == Kind.Web ? ring ? 1 + (j.step / 3) * .08f : .87f : 1);
-                        owner.PatternShot(port, direction, speed, ring ? j.radius : j.kind == Kind.Web ? .125f : j.radius);
+                        var shot = owner.PatternShot(port, direction, speed, ring ? j.radius : j.kind == Kind.Web ? .125f : j.radius);
+                        if (shot != null && j.kind == Kind.Ribbon) shot.Curl(Mathf.Sign(j.turn) * 9, 1.8f);
                         Released++;
                     }
                     j.step++;
