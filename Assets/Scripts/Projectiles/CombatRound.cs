@@ -212,6 +212,7 @@ public abstract class CombatRound : AEnemyBullet
     }
 
     protected virtual float ClockRate => 1;
+    protected virtual float ContactSpeed => speed;
     protected override void Update()
     {
         if (ended || WorldTimeStop.Frozen || Time.deltaTime <= 0)
@@ -236,7 +237,7 @@ public abstract class CombatRound : AEnemyBullet
         // Destructible plasma must remain hittable by player fire anywhere.
         // Beams do their own analytic collision; mines keep their arming rules.
         bool simulate = this is PlasmaOrb || (!(this is PulseLaser) && collision.enabled &&
-            ProjectileCollisionWindow.Relevant(transform.position, collisionReach, speed));
+            ProjectileCollisionWindow.Relevant(transform.position, collisionReach, ContactSpeed));
         if (body.simulated != simulate)
             body.simulated = simulate;
     }
@@ -308,7 +309,4 @@ public abstract class CombatRound : AEnemyBullet
         }
         return true;
     }
-}
-public sealed class SimpleRound : CombatRound
-{
 }
