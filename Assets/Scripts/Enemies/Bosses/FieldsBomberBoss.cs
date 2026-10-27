@@ -1,6 +1,6 @@
 using UnityEngine;
 [UnityEngine.Scripting.Preserve]
-public sealed class FieldsBomberBoss : DistrictBoss
+public sealed partial class FieldsBomberBoss : DistrictBoss
 {
     // Follow the actual wing cutouts, engine shoulders, barrels and long nose.
     static readonly Vector2[] outline ={new Vector2(-1.7f,.5f),new Vector2(-.58f,1.1f),new Vector2(0,.8f),new Vector2(.58f,1.1f),new Vector2(1.7f,.5f),
@@ -57,6 +57,7 @@ public sealed class FieldsBomberBoss : DistrictBoss
     } // One score owns every battery and its rests.
     protected override void Attack()
     {
+        if (Difficulty.Hard) { AttackHard(); return; }
         int beat = (volley - 1) % 12;
         if (beat == 0 || beat == 7)
             phraseAxis = Aim;
