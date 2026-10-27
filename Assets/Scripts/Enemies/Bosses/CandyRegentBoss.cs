@@ -34,7 +34,7 @@ public sealed class CandyRegentBoss : DistrictBoss
         hull = 38;
         hullScale = .85f;
         health = 1320;
-        attackInterval = .58f;
+        attackInterval = (.58f);
         nextAttack = 2.0f;
     }
 
@@ -127,7 +127,7 @@ public sealed class CandyRegentBoss : DistrictBoss
         }
     }
 
-    protected override float AttackPace => phaseTwo ? .88f : 1;
+    protected override float AttackPace => phaseTwo ? (.88f) : 1;
     protected override void OnPhaseTwo()
     {
         volley = 0;
@@ -148,7 +148,7 @@ public sealed class CandyRegentBoss : DistrictBoss
         {
             foreach (int side in new[] { -1, 1 })
             {
-                if (LiveMinions >= 12)
+                if (LiveMinions >= (12))
                     break;
                 var p = Hull.TransformPoint(new Vector3(side * .82f, -.35f, -.2f));
                 if (player != null && Vector2.Distance(p, player.position) < 2.5f)
@@ -164,7 +164,7 @@ public sealed class CandyRegentBoss : DistrictBoss
                 brood.Add(minion);
                 SpawnedMinions++;
             }
-            yield return new WaitForSeconds.18f;
+            yield return new WaitForSeconds(.18f);
         }
         foreach (var door in doors)
             door.localScale = Vector3.one * .24f;

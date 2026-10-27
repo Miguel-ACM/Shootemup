@@ -9,13 +9,13 @@ public sealed class MirageObelisk : DistrictEnemy
         hull = 72;
         hullScale = 0.56f;
         health = 48;
-        attackInterval = 2.65f;
+        attackInterval = (2.65f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        int count = 5;
+        int count = (5);
         for (int i = 0; i < count; i++)
             Fire<SuspendedRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 24 + (volley % 2 == 0 ? 10 : -10)), 2.5f, .24f);
     }

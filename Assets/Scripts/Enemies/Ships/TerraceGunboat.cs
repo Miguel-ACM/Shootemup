@@ -9,14 +9,14 @@ public sealed class TerraceGunboat : DistrictEnemy
         hull = 66;
         hullScale = 0.53f;
         health = 38;
-        attackInterval = 2.0f;
+        attackInterval = (2.0f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
         for (int s = -1; s <= 1; s += 2)
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < (3); i++)
                 Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (16 + i * 16) + (volley % 2 == 0 ? 5 : -5)), 3.3f, .22f);
     }
 

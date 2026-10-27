@@ -9,13 +9,13 @@ public sealed class HarrowBomber : DistrictEnemy
         hull = 62;
         hullScale = 0.61f;
         health = 48;
-        attackInterval = 2.6f;
+        attackInterval = (2.6f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        int count = 5;
+        int count = (5);
         for (int i = 0; i < count; i++)
             Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 24 + (volley % 2 == 0 ? 8 : -8)), 2.1f + Mathf.Abs(i - (count - 1) * .5f) * .18f, .29f);
     }

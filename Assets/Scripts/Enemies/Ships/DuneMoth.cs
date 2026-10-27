@@ -9,14 +9,14 @@ public sealed class DuneMoth : DistrictEnemy
         hull = 71;
         hullScale = 0.53f;
         health = 32;
-        attackInterval = 1.95f;
+        attackInterval = (1.95f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
         for (int s = -1; s <= 1; s += 2)
-            for (int j = 0; j < 3; j++)
+            for (int j = 0; j < (3); j++)
                 Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (17 + j * 18)), 2.5f + j * .2f, .24f);
     }
 

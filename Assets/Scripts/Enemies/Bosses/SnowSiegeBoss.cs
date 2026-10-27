@@ -75,7 +75,7 @@ public sealed class SnowSiegeBoss : DistrictBoss
         hull = 21;
         hullScale = 1.6f;
         health = 2100;
-        attackInterval = .85f;
+        attackInterval = (.85f);
         shellTravelDistance = 6.6f;
     }
 

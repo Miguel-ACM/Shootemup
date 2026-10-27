@@ -7,7 +7,7 @@ public sealed class SiegeGunship : DistrictEnemy
         hull = 7;
         health = 95;
         hullScale = .9f;
-        attackInterval = 1.7f;
+        attackInterval = (1.7f);
         Mover<TopTracker>();
     }
 
@@ -22,7 +22,7 @@ public sealed class SiegeGunship : DistrictEnemy
     protected override void Attack()
     {
         int gun = (volley - 1) % 3;
-        int n = 5;
+        int n = (5);
         for (int i = 0; i < n; i++)
             Fire<SuspendedRound>(Muzzle(gun), CombatVisuals.Rotate(Vector2.down, (i - (n - 1) * .5f) * 21 + (gun - 1) * 9), 3.1f, .25f);
     }

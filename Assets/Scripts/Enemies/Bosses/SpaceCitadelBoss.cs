@@ -18,7 +18,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
         hull = 45;
         hullScale = 1;
         health = 2500;
-        attackInterval = .68f;
+        attackInterval = (.68f);
         nextAttack = 1.7f;
     }
 
@@ -41,7 +41,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
         {
             var go = new GameObject("Retracting reactor shutter " + i);
             go.transform.SetParent(Hull, false);
-            go.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.SpaceModule3;
+            go.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.SpaceModule(3);
             var renderer = go.AddComponent<MeshRenderer>();
             renderer.sharedMaterial = SpaceMaterials.Fleet;
             renderer.sortingLayerName = "Enemy";
@@ -79,8 +79,8 @@ public sealed class SpaceCitadelBoss : DistrictBoss
             if (centralLaser != null)
             {
                 centralLaser.Bind(Hull, new Vector3(0, -1.48f, -.30f));
-                centralLaser.warning = 1.3f;
-                centralLaser.activeTime = 1.5f;
+                centralLaser.warning = (1.3f);
+                centralLaser.activeTime = (1.5f);
                 centralLaser.width = phaseTwo ? .42f : .34f;
             }
         }
@@ -150,11 +150,11 @@ public sealed class SpaceCitadelBoss : DistrictBoss
             Cue(Muzzle(), seconds);
         else if (beat == 6 || beat == 7)
         {
-            Cue(Muzzle1, seconds);
-            Cue(Muzzle2, seconds);
+            Cue(Muzzle(1), seconds);
+            Cue(Muzzle(2), seconds);
         }
         else if (beat == 9 || beat == 10)
-            Cue(Muzzle3, seconds);
+            Cue(Muzzle(3), seconds);
     }
 
     protected override void OnPhaseTwo()
@@ -253,7 +253,7 @@ public sealed class SpaceBossPart : AEnemy
             PSXPolygonDebris.Spawn(gameObject);
             PSXImpactEffects.Explosion(transform.position, .65f);
             model.enabled = false;
-            Score.IncreaseScore80;
+            Score.IncreaseScore(80);
         }
         enabled = false;
     }

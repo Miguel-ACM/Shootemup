@@ -8,7 +8,7 @@ public sealed class ReefDart : OceanEnemy
         hull = 50;
         hullScale = .49f;
         health = 33;
-        attackInterval = 1.9f;
+        attackInterval = (1.9f);
         Mover<Slalom>();
     }
 
@@ -21,6 +21,6 @@ public sealed class ReefDart : OceanEnemy
 
     protected override void Attack()
     {
-        Fan<NeedleRound>(2, 17, 3.7f, .2f);
+        Fan<NeedleRound>((2), 17, 3.7f, .2f);
     }
 }

@@ -9,14 +9,14 @@ public sealed class AshCenser : DistrictEnemy
         hull = 79;
         hullScale = 0.58f;
         health = 55;
-        attackInterval = 1.75f;
+        attackInterval = (1.75f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
         if (volley % 2 == 0)
-            Fan<SimpleRound>(5, 24, 2.5f, .25f);
+            Fan<SimpleRound>((5), 24, 2.5f, .25f);
         else
             for (int s = -1; s <= 1; s += 2)
                 Fire<PlasmaOrb>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (volley % 4 == 1 ? 32 : 15)), 1.7f, .38f);

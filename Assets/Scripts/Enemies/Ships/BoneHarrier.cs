@@ -8,13 +8,13 @@ public sealed class BoneHarrier : DistrictEnemy
         hull = 80;
         hullScale = 0.49f;
         health = 32;
-        attackInterval = 1.5f;
+        attackInterval = (1.5f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        Fan<NeedleRound>(5, 17, 4.3f, .2f);
+        Fan<NeedleRound>((5), 17, 4.3f, .2f);
     }
 
 }

@@ -26,7 +26,7 @@ public sealed class ThunderLanceBoss : DistrictBoss
         hull = 22;
         hullScale = 1.25f;
         health = 1250;
-        attackInterval = .82f;
+        attackInterval = (.82f);
         nextAttack = 1.8f;
     }
     protected override bool PhaseTwoReady => HealthFraction <= phaseTwoThreshold;
@@ -49,7 +49,7 @@ public sealed class ThunderLanceBoss : DistrictBoss
         beams[index] = beam;
         beam.Bind(Hull, BeamPorts[index]);
         beam.warning = beamCharge;
-        beam.activeTime = 1.45f;
+        beam.activeTime = (1.45f);
         beam.width = beamWidth * (index == 2 ? 1.25f : 1);
         beam.length = 24;
     }
@@ -60,39 +60,39 @@ public sealed class ThunderLanceBoss : DistrictBoss
         {
             if (beat == 0)
             {
-                Beam0;
-                Beam1;
+                Beam(0);
+                Beam(1);
             }
             else if (beat == 6)
-                Beam2;
+                Beam(2);
             else if (beat == 3 || beat == 4 || beat == 9 || beat == 10)
             {
                 if (beat == 3 || beat == 9)
                     answerAxis = Aim;
-                PetalFan<NeedleRound>(Hull.TransformPoint(BeamPorts[2]), CombatVisuals.Rotate(answerAxis, beat % 2 == 0 ? 7 : -7), 7, 16, 4.2f, .2f);
+                PetalFan<NeedleRound>(Hull.TransformPoint(BeamPorts[2]), CombatVisuals.Rotate(answerAxis, beat % 2 == 0 ? 7 : -7), (7), 16, 4.2f, .2f);
             }
             else if (beat == 12)
-                PetalFan<SimpleRound>(Hull.TransformPoint(BeamPorts[2]), Vector2.down, 9, 21, 1.9f, .31f, .2f);
+                PetalFan<SimpleRound>(Hull.TransformPoint(BeamPorts[2]), Vector2.down, (9), 21, 1.9f, .31f, .2f);
             return;
         }
         // Three vertical lanes light in sequence, then mirrored slow side petals.
         if (beat == 0)
-            Beam0;
+            Beam(0);
         else if (beat == 2)
-            Beam1;
+            Beam(1);
         else if (beat == 4)
-            Beam2;
+            Beam(2);
         else if (beat == 6 || beat == 7)
         {
             if (beat == 6)
                 answerAxis = Aim;
-            PetalFan<NeedleRound>(Hull.TransformPoint(BeamPorts[2]), CombatVisuals.Rotate(answerAxis, beat == 6 ? -7 : 7), 9, 13, 4.5f, .19f);
+            PetalFan<NeedleRound>(Hull.TransformPoint(BeamPorts[2]), CombatVisuals.Rotate(answerAxis, beat == 6 ? -7 : 7), (9), 13, 4.5f, .19f);
         }
         else if (beat == 10 || beat == 11)
             for (int side = -1; side <= 1; side += 2)
             {
                 var port = Hull.TransformPoint(BeamPorts[side < 0 ? 0 : 1]);
-                PetalFan<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, side * (beat == 10 ? 29 : 43)), 5, 23, 2.1f, .3f, .2f);
+                PetalFan<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, side * (beat == 10 ? 29 : 43)), (5), 23, 2.1f, .3f, .2f);
             }
     }
     protected override void PrepareFire(float seconds)
@@ -102,20 +102,20 @@ public sealed class ThunderLanceBoss : DistrictBoss
         int beat = volley % 14;
         if (beat == 0)
         {
-            Cue(Muzzle0, seconds);
+            Cue(Muzzle(0), seconds);
             if (!phaseTwo)
-                Cue(Muzzle1, seconds);
+                Cue(Muzzle(1), seconds);
         }
         else if (phaseTwo && beat == 2)
-            Cue(Muzzle1, seconds);
+            Cue(Muzzle(1), seconds);
         else if (phaseTwo && beat == 4 || !phaseTwo && beat == 6)
-            Cue(Muzzle2, seconds);
+            Cue(Muzzle(2), seconds);
         else if (phaseTwo && (beat == 6 || beat == 7) || !phaseTwo && (beat == 3 || beat == 4 || beat == 9 || beat == 10 || beat == 12))
-            Cue(Muzzle2, seconds);
+            Cue(Muzzle(2), seconds);
         else if (phaseTwo && (beat == 10 || beat == 11))
         {
-            Cue(Muzzle0, seconds);
-            Cue(Muzzle1, seconds);
+            Cue(Muzzle(0), seconds);
+            Cue(Muzzle(1), seconds);
         }
     }
     protected override void OnPhaseTwo()

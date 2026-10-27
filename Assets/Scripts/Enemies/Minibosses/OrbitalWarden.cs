@@ -7,7 +7,7 @@ public sealed class OrbitalWarden : DistrictMiniboss
         hull = 60;
         hullScale = .95f;
         health = 590;
-        attackInterval = 0.52f;
+        attackInterval = (0.52f);
         nextAttack = 1.0f;
     }
 
@@ -24,7 +24,7 @@ public sealed class OrbitalWarden : DistrictMiniboss
     {
         int beat = (volley - 1) % 10;
         if (beat < 3)
-            Fan<RicochetBolt>(6, 25, 3.8f, .23f);
+            Fan<RicochetBolt>((6), 25, 3.8f, .23f);
         else if (beat == 4)
             for (int side = -1; side <= 1; side += 2)
             {
@@ -34,7 +34,7 @@ public sealed class OrbitalWarden : DistrictMiniboss
                 if (beam != null)
                 {
                     beam.Bind(Hull, local);
-                    beam.warning = 1.1f;
+                    beam.warning = (1.1f);
                     beam.activeTime = 1.15f;
                     beam.sweep = 0;
                     beam.width = .19f;

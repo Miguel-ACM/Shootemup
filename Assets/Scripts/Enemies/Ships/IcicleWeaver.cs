@@ -9,13 +9,13 @@ public sealed class IcicleWeaver : DistrictEnemy
         hull = 63;
         hullScale = 0.49f;
         health = 27;
-        attackInterval = 2.0f;
+        attackInterval = (2.0f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        int count = 5;
+        int count = (5);
         for (int i = 0; i < count; i++)
             Fire<SuspendedRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 19 + (volley % 2 == 0 ? 8 : -8)), 2.9f, .19f);
     }

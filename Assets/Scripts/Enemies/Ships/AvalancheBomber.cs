@@ -7,7 +7,7 @@ public sealed class AvalancheBomber : DistrictEnemy
         hull = 17;
         health = 80;
         hullScale = .85f;
-        attackInterval = 2.0f;
+        attackInterval = (2.0f);
         shellTravelDistance = 8.4f;
         Mover<DriftDownPattern>();
     }
@@ -22,8 +22,8 @@ public sealed class AvalancheBomber : DistrictEnemy
     protected override void Attack()
     {
         if (volley % 2 == 1)
-            Fan<BurstShell>(2, 37, 3.2f, .46f);
+            Fan<BurstShell>((2), 37, 3.2f, .46f);
         else
-            Fan<SuspendedRound>(4, 25, 2.8f, .23f);
+            Fan<SuspendedRound>((4), 25, 2.8f, .23f);
     }
 }

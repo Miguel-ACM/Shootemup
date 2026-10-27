@@ -8,13 +8,13 @@ public sealed class MetroLancer : DistrictEnemy
         hull = 65;
         hullScale = 0.41f;
         health = 19;
-        attackInterval = 1.4f;
+        attackInterval = (1.4f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        Fan<NeedleRound>(3, 11, 5.4f, .17f);
+        Fan<NeedleRound>((3), 11, 5.4f, .17f);
     }
 
 }

@@ -24,7 +24,7 @@ public sealed class DesertWormBoss : DistrictBoss
         hull = 33;
         hullScale = 1.10f;
         health = 2200;
-        attackInterval = .75f;
+        attackInterval = (.75f);
         nextAttack = 3;
     }
 
@@ -107,7 +107,7 @@ public sealed class DesertWormBoss : DistrictBoss
                 {
                     Vector3 port = cores[i].transform.position;
                     Vector2 aim = (rippleTarget - port).normalized;
-                    PetalFan<SimpleRound>(port, aim, 5, 25, 2.7f, .28f, .22f);
+                    PetalFan<SimpleRound>(port, aim, (5), 25, 2.7f, .28f, .22f);
                 }
         }
         else if ((beat == 5 || beat == 6) && CanShoot(cores[0]))
@@ -123,7 +123,7 @@ public sealed class DesertWormBoss : DistrictBoss
                 if (i % 2 == beat % 2 && CanShoot(cores[i]))
                 {
                     Vector3 port = cores[i].transform.position;
-                    int count = 3;
+                    int count = (3);
                     for (int j = 0; j < count; j++)
                         Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, (j - (count - 1) * .5f) * 33 + (beat == 9 ? -12 : 12)), 2.3f, .31f);
                 }
@@ -135,7 +135,7 @@ public sealed class DesertWormBoss : DistrictBoss
                 {
                     Vector3 port = cores[i].transform.position;
                     Vector2 aim = CombatVisuals.Aim(port);
-                    PetalFan<SimpleRound>(port, aim, 5, 29, 1.8f, .32f, .18f);
+                    PetalFan<SimpleRound>(port, aim, (5), 29, 1.8f, .32f, .18f);
                 }
     }
 

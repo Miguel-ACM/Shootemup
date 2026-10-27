@@ -9,7 +9,7 @@ public sealed class StormOrgan : DistrictEnemy
         hull = 70;
         hullScale = 0.57f;
         health = 48;
-        attackInterval = 3.0f;
+        attackInterval = (3.0f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -20,8 +20,8 @@ public sealed class StormOrgan : DistrictEnemy
         if (beam != null)
         {
             beam.Bind(Hull, local);
-            beam.warning = 1.05f;
-            beam.activeTime = .95f;
+            beam.warning = (1.05f);
+            beam.activeTime = (.95f);
             beam.width = .22f;
         }
     }

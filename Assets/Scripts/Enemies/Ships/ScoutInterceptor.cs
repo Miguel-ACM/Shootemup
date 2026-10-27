@@ -7,7 +7,7 @@ public sealed class ScoutInterceptor : DistrictEnemy
         hull = 0;
         health = 13;
         hullScale = .48f;
-        attackInterval = 0.8f;
+        attackInterval = (0.8f);
         Mover<Zigzag>();
     }
 
@@ -20,6 +20,6 @@ public sealed class ScoutInterceptor : DistrictEnemy
 
     protected override void Attack()
     {
-        Fan<NeedleRound>(2, 13, 5.0f, .17f);
+        Fan<NeedleRound>((2), 13, 5.0f, .17f);
     }
 }

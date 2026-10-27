@@ -9,7 +9,7 @@ public sealed class ReedSkimmer : DistrictEnemy
         hull = 61;
         hullScale = 0.49f;
         health = 20;
-        attackInterval = 2.0f;
+        attackInterval = (2.0f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }

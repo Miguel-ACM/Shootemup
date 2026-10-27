@@ -41,7 +41,7 @@ public sealed class AbyssSubmarineBoss : DistrictBoss
         hull = 53;
         hullScale = .98f;
         health = 2600;
-        attackInterval = .68f;
+        attackInterval = (.68f);
         nextAttack = 1.7f;
     }
 
@@ -193,7 +193,7 @@ public sealed class AbyssSubmarineBoss : DistrictBoss
             PetalFan<NeedleRound>(Hull.TransformPoint(new Vector3(0, -1.65f, -.5f)), CombatVisuals.Rotate(Aim, (volley % 3 - 1) * 9), (phaseTwo ? 7 : 5), 19, 3.6f, .21f);
         else
             for (int side = -1; side <= 1; side += 2)
-                PetalFan<SimpleRound>(Hull.TransformPoint(new Vector3(side * .65f, -.6f, -.4f)), CombatVisuals.Rotate(Vector2.down, side * 42), 5, 24, 2.3f, .28f);
+                PetalFan<SimpleRound>(Hull.TransformPoint(new Vector3(side * .65f, -.6f, -.4f)), CombatVisuals.Rotate(Vector2.down, side * 42), (5), 24, 2.3f, .28f);
     }
 
     protected override void OnPhaseTwo()
@@ -214,8 +214,8 @@ public sealed class AbyssSubmarineBoss : DistrictBoss
                 Cue(Muzzle(), seconds);
             else
             {
-                Cue(Muzzle1, seconds);
-                Cue(Muzzle2, seconds);
+                Cue(Muzzle(1), seconds);
+                Cue(Muzzle(2), seconds);
             }
         }
         else if (t >= 5.9f && t < 7.7f || t >= 10.85f && t < 13.1f)

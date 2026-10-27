@@ -20,7 +20,7 @@ public sealed class HellCrabBoss : DistrictBoss
         hull = 49;
         hullScale = 1;
         health = 3000;
-        attackInterval = .72f;
+        attackInterval = (.72f);
         nextAttack = 2.2f;
     }
 
@@ -33,7 +33,7 @@ public sealed class HellCrabBoss : DistrictBoss
         {
             int side = i == 0 ? -1 : 1;
             eyes[i] = HellCrabEye.Create(this, Hull, new Vector3(side * .67f, -.52f, -.96f), health * .5f);
-            claws[i] = Model("Jointed side pincer", IndustrialMeshFactory.CombatHull54, Hull);
+            claws[i] = Model("Jointed side pincer", IndustrialMeshFactory.CombatHull(54), Hull);
             claws[i].localScale = Vector3.one * 1.75f;
             firingCue.Register(claws[i], new Vector3(0, -.32f, -.4f));
             firingCue.Register(eyes[i].transform, Vector3.zero);
@@ -215,7 +215,7 @@ public sealed class HellCrabEye : AEnemy
         hit.radius = .34f;
         var visual = new GameObject("Eye lens");
         visual.transform.SetParent(go.transform, false);
-        visual.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CombatHull55;
+        visual.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CombatHull(55);
         var renderer = visual.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = CombatMaterials.Fleet;
         renderer.sortingLayerName = "Enemy";

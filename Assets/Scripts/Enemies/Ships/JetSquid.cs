@@ -8,13 +8,13 @@ public sealed class JetSquid : DistrictEnemy
         hull = 78;
         hullScale = 0.51f;
         health = 31;
-        attackInterval = 1.95f;
+        attackInterval = (1.95f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        Fan<NeedleRound>(3, 19, 3.6f, .21f);
+        Fan<NeedleRound>((3), 19, 3.6f, .21f);
     }
 
 }

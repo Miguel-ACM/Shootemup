@@ -9,13 +9,13 @@ public sealed class NautilusBell : DistrictEnemy
         hull = 77;
         hullScale = 0.57f;
         health = 43;
-        attackInterval = 2.55f;
+        attackInterval = (2.55f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        int n = 5;
+        int n = (5);
         for (int i = 0; i < n; i++)
             Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (n - 1) * .5f) * 29 + (volley % 2 == 0 ? 9 : -9)), 1.9f, .32f);
     }

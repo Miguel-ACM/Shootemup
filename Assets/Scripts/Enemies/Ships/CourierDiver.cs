@@ -7,7 +7,7 @@ public sealed class CourierDiver : DistrictEnemy
         hull = 15;
         health = 9;
         hullScale = .34f;
-        attackInterval = 0.95f;
+        attackInterval = (0.95f);
         Mover<CommittedDive>();
     }
 

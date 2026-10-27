@@ -10,7 +10,7 @@ public sealed class FrostAuger : GroundVehicle
         hull = 40;
         hullScale = .64f;
         health = 39;
-        attackInterval = 1.9f;
+        attackInterval = (1.9f);
         shellTravelDistance = 2.7f;
     }
 

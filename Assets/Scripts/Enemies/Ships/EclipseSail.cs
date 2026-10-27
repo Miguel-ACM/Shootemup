@@ -9,7 +9,7 @@ public sealed class EclipseSail : DistrictEnemy
         hull = 75;
         hullScale = 0.57f;
         health = 53;
-        attackInterval = 1.8f;
+        attackInterval = (1.8f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }

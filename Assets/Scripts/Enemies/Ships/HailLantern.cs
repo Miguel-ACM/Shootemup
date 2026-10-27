@@ -9,7 +9,7 @@ public sealed class HailLantern : DistrictEnemy
         hull = 64;
         hullScale = 0.58f;
         health = 49;
-        attackInterval = 2.9f;
+        attackInterval = (2.9f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }

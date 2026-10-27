@@ -9,7 +9,7 @@ public sealed class GumdropMortar : DistrictEnemy
         hull = 74;
         hullScale = 0.53f;
         health = 35;
-        attackInterval = 2.6f;
+        attackInterval = (2.6f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
@@ -17,7 +17,7 @@ public sealed class GumdropMortar : DistrictEnemy
     {
         var shell = Fire<BurstShell>(Muzzle(volley), CombatVisuals.Rotate(Vector2.down, volley % 2 == 0 ? -15 : 15), 2.4f, .46f);
         if (shell != null)
-            shell.SetTravelDistance4.3f;
+            shell.SetTravelDistance(4.3f);
     }
 
     protected override void PrepareFire(float seconds)

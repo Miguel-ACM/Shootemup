@@ -9,7 +9,7 @@ public sealed class BaffleSpinner : DistrictEnemy
         hull = 67;
         hullScale = 0.48f;
         health = 30;
-        attackInterval = 2.05f;
+        attackInterval = (2.05f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }

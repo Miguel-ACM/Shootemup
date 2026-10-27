@@ -42,7 +42,7 @@ public sealed class FieldsBomberBoss : DistrictBoss
         hull = 23;
         hullScale = 1.4f;
         health = 1200;
-        attackInterval = .8f;
+        attackInterval = (.8f);
         shellTravelDistance = 4.6f;
     }
 
@@ -81,7 +81,7 @@ public sealed class FieldsBomberBoss : DistrictBoss
                 PetalFan<NeedleRound>(port, axis, (phaseTwo ? 6 : 4), 19, 4.0f, .19f);
             }
         else if (beat == 10 && phaseTwo)
-            PetalFan<SimpleRound>(Muzzle4, Vector2.down, 7, 25, 1.8f, .33f, .22f);
+            PetalFan<SimpleRound>(Muzzle(4), Vector2.down, (7), 25, 1.8f, .33f, .22f);
         // Slow wing petals, a delivered bloom, then three committed ribbon answers.
     }
 
@@ -92,8 +92,8 @@ public sealed class FieldsBomberBoss : DistrictBoss
         int beat = volley % 12;
         if (beat < 2)
         {
-            Cue(Muzzle0, seconds);
-            Cue(Muzzle1, seconds);
+            Cue(Muzzle(0), seconds);
+            Cue(Muzzle(1), seconds);
         }
         else if (beat == 3 || beat == 4)
         {
@@ -105,11 +105,11 @@ public sealed class FieldsBomberBoss : DistrictBoss
             }
         }
         else if (beat == 10 && phaseTwo)
-            Cue(Muzzle4, seconds);
+            Cue(Muzzle(4), seconds);
         else if (beat >= 7 && beat <= 9)
         {
-            Cue(Muzzle2, seconds);
-            Cue(Muzzle3, seconds);
+            Cue(Muzzle(2), seconds);
+            Cue(Muzzle(3), seconds);
         }
     }
 

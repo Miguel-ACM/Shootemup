@@ -7,7 +7,7 @@ public sealed class ArmoredCarrier : DistrictEnemy
         hull = 5;
         health = 130;
         hullScale = .9f;
-        attackInterval = 1.9f;
+        attackInterval = (1.9f);
         Mover<DriftDownPattern>();
     }
 
@@ -21,9 +21,9 @@ public sealed class ArmoredCarrier : DistrictEnemy
     protected override void Attack()
     {
         if (volley % 2 == 0)
-            Fan<ProximityMine>(2, 62, 2.4f, .3f);
+            Fan<ProximityMine>((2), 62, 2.4f, .3f);
         else
-            Fan<NeedleRound>(7, 17, 3.9f, .19f);
+            Fan<NeedleRound>((7), 17, 3.9f, .19f);
     }
 
     public override void damage(float amount)

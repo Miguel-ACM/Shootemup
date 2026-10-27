@@ -9,7 +9,7 @@ public sealed class RibbonGlider : DistrictEnemy
         hull = 73;
         hullScale = 0.46f;
         health = 23;
-        attackInterval = 1.6f;
+        attackInterval = (1.6f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }

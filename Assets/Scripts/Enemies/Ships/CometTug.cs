@@ -9,13 +9,13 @@ public sealed class CometTug : DistrictEnemy
         hull = 76;
         hullScale = 0.55f;
         health = 47;
-        attackInterval = 2.25f;
+        attackInterval = (2.25f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        int n = 5;
+        int n = (5);
         for (int i = 0; i < n; i++)
             Fire<SuspendedRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (n - 1) * .5f) * 22 + (volley % 2 == 0 ? 8 : -8)), 3.2f, .23f);
     }

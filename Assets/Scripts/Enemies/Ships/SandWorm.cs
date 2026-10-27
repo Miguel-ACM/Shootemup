@@ -11,7 +11,7 @@ public sealed class SandWorm : DistrictEnemy
         hull = 32;
         hullScale = .49f;
         health = 80;
-        attackInterval = 1.8f;
+        attackInterval = (1.8f);
         Mover<Slalom>();
     }
 
@@ -72,8 +72,8 @@ public sealed class SandWorm : DistrictEnemy
             if (player != null && Vector2.Distance(player.position, port) < 2)
                 continue;
             Vector2 aim = CombatVisuals.Aim(port);
-            for (int j = 0; j < 3; j++)
-                Fire<SimpleRound>(port, CombatVisuals.Rotate(aim, (j - (3 - 1) * .5f) * 22), 3.7f, .19f);
+            for (int j = 0; j < (3); j++)
+                Fire<SimpleRound>(port, CombatVisuals.Rotate(aim, (j - ((3) - 1) * .5f) * 22), 3.7f, .19f);
         }
     }
 }

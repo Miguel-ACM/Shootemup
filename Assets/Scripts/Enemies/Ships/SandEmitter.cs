@@ -19,7 +19,7 @@ public sealed class SandEmitter : DistrictEnemy
         hull = 30;
         hullScale = .63f;
         health = 40;
-        attackInterval = 1.6f;
+        attackInterval = (1.6f);
     }
 
     protected override void Start()
@@ -98,7 +98,7 @@ public sealed class SandEmitter : DistrictEnemy
 
     protected override void Attack()
     {
-        int count = 14;
+        int count = (14);
         if (!CanBeTargeted || CombatRound.Live.Count + count > CombatRound.Limit)
             return;
         for (int i = 0; i < count; i++)

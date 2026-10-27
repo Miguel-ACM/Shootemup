@@ -9,7 +9,7 @@ public sealed class CapacitorKite : DistrictEnemy
         hull = 69;
         hullScale = 0.53f;
         health = 34;
-        attackInterval = 2.15f;
+        attackInterval = (2.15f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }

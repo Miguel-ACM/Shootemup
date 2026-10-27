@@ -8,13 +8,13 @@ public sealed class RivetMantis : DistrictEnemy
         hull = 68;
         hullScale = 0.55f;
         health = 40;
-        attackInterval = 2.3f;
+        attackInterval = (2.3f);
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
     protected override void Attack()
     {
-        Fan<RicochetBolt>(5, 25, 3.1f, .21f);
+        Fan<RicochetBolt>((5), 25, 3.1f, .21f);
     }
 
 }
