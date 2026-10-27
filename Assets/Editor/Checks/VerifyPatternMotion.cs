@@ -39,7 +39,11 @@ public static class VerifyPatternMotion
         Check(huge.PixelOverlaps(hit), "A giant bullet's visible opaque body must hit");
         target.transform.position = new Vector3(1.2f, 4.2f); Physics2D.SyncTransforms();
         Check(!huge.PixelOverlaps(hit), "A giant bullet's transparent corner must remain safe");
-        CombatRound.ClearAll(); Check(CombatRound.Live.Count == 0, "Clearing leaves new deliveries alive");
+        CombatRound.ClearAll();
+        // Edit-mode automation does not dispatch MonoBehaviour.OnDisable. Check
+        // the real clearing effect; Play mode owns the Live-registry callback.
+        Check(CombatRound.Live.All(round => !round.gameObject.activeSelf), "Clearing leaves new deliveries active");
+        CombatRound.Live.Clear();
         UnityEngine.Object.DestroyImmediate(target); UnityEngine.Object.DestroyImmediate(sub.gameObject);
         File.WriteAllText("ArtSource/HardPatternsReview/MotionChecks.txt", "PASS\nFormer Hard/Easy parity retained; bounded double orbits deploy from the visible source and rotate locally; mid-eruption phase restart restores eight pressure fronts; pooled motion/delivery state resets; giant opaque pixels hit and transparent corners remain safe; clearing removes deliveries.\n");
         EditorApplication.Exit(0);
