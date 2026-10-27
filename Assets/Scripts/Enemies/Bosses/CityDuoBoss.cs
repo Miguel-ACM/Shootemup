@@ -1,6 +1,6 @@
 using UnityEngine;
 [UnityEngine.Scripting.Preserve]
-public sealed class CityDuoBoss : DistrictBoss
+public sealed partial class CityDuoBoss : DistrictBoss
 {
     public bool heavy;
     public CityDuoBoss partner;
@@ -63,6 +63,7 @@ public sealed class CityDuoBoss : DistrictBoss
 
     protected override void Attack()
     {
+        if (Difficulty.Hard) { AttackHard(); return; }
         int beat = (volley - 1) % 12;
         if (beat == 0 || beat == 1 || beat == 8)
             attackAxis = Aim;
