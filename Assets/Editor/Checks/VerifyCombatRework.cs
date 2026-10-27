@@ -213,6 +213,7 @@ public sealed class CombatReworkReview : MonoBehaviour
     }
     IEnumerator Bosses(LevelId level,RunDifficulty difficulty)
     {
+        bool hardReview=SessionState.GetString("CombatReworkReviewFocus","all")=="hard-patterns";
         Clear();yield return null;
         var boss=(DistrictBoss)DistrictEnemy.Spawn(DistrictWaves.BossType,new Vector3(0,Camera.UpLimit+2.5f,1));
         yield return new WaitForSeconds(1.6f);
@@ -221,19 +222,33 @@ public sealed class CombatReworkReview : MonoBehaviour
         {
             if(phase==2)PhaseTwo(boss);
             float minY=float.PositiveInfinity;int nonBoss=0;
-            yield return Observe(label+phase,phase==1?12:14,()=>
+            int orbit=0,curve=0,trail=0,seed=0;float diameter=0;int created=CombatRound.CreatedCount;
+            yield return Observe(label+phase,hardReview?28:phase==1?12:14,()=>
             {
+                if(hardReview)
+                {
+                    int o=0,c=0,t=0,s=0;
+                    foreach(var round in CombatRound.Live)if(round is SimpleRound simple)
+                    {if(simple.Orbiting)o++;if(simple.Curving)c++;if(simple.Trailing)t++;if(simple.ChargingSeed)s++;diameter=Mathf.Max(diameter,simple.transform.localScale.x);}
+                    orbit=Mathf.Max(orbit,o);curve=Mathf.Max(curve,c);trail=Mathf.Max(trail,t);seed=Mathf.Max(seed,s);
+                }
                 if(level==LevelId.Candyland&&boss!=null)minY=Mathf.Min(minY,boss.transform.position.y);
                 if(level==LevelId.Hell)nonBoss=Mathf.Max(nonBoss,FindObjectsByType<DistrictEnemy>().Count(e=>!(e is DistrictBoss)));
                 if(level==LevelId.Thunder)foreach(var beam in CombatRound.Live.OfType<PulseLaser>())if(beam.IsAttachedTo(boss.Hull)&&Vector2.Dot(beam.Heading,Vector2.down)<.999f)throw new Exception("Diagonal Thunder beam");
-            });
+            },true,hardReview?.25f:.5f);
+            if(hardReview)
+            {
+                Check(orbit+curve+trail+seed>0,level+" phase "+phase+" uses genuinely evolving trajectories/deliveries: orbit="+orbit+", curl="+curve+", trail="+trail+", seed="+seed+", largest diameter="+diameter.ToString("F2"));
+                Check(CombatRound.CreatedCount==created,level+" phase "+phase+" creates no new pooled bullet objects during combat");
+                if(phase==2)yield return Observe(label+phase+"-Uncaptured",10,null,false);
+            }
             if(level==LevelId.Candyland)Check(minY>(Camera.UpLimit+Camera.DownLimit)*.5f+.8f,"Candy boss keeps its complete route above the lower arena");
             if(level==LevelId.Hell)Check(nonBoss==0,"Hell boss remains free of minions");
         }
         if(boss is SpaceCitadelBoss space)
         {
             space.Parts[2].damage(1000000);space.Parts[3].damage(1000000);CombatRound.ClearAll();
-            yield return Observe(label+"-CoreOnly",9,null,false);Check(CombatRound.Live.Count>0,"Exposed reactor keeps pressure after both optional guns die");
+            yield return Observe(label+"-CoreOnly",hardReview?18:9,null,!hardReview);Check(CombatRound.Live.Count>0,"Exposed reactor keeps pressure after both optional guns die");
         }
         if(level==LevelId.City)
         {
@@ -258,10 +273,10 @@ public sealed class CombatReworkReview : MonoBehaviour
             if(focus=="rising"&&level!=LevelId.Underwater)continue;
             foreach(RunDifficulty difficulty in Enum.GetValues(typeof(RunDifficulty)))
             {
-                if((focus=="additions"||focus=="rising")&&difficulty==RunDifficulty.Easy)continue;
+                if((focus=="additions"||focus=="rising"||focus=="hard-patterns")&&difficulty==RunDifficulty.Easy)continue;
                 yield return Context(level,difficulty);
                 if(focus=="rising")yield return Wave("Bell buoyant procession",WaveComposer.PreviewPart(WavePartLibrary.NautilusBellParts[0],0,1,out _));
-                if(focus=="all"||focus=="waves")yield return Wave(level+"-"+difficulty+"-Wave",DistrictWaves.Create(12));
+                if(focus=="all"||focus=="waves"||focus=="hard-patterns")yield return Wave(level+"-"+difficulty+"-Wave",DistrictWaves.Create(12));
                 if((focus=="all"||focus=="enemies")&&difficulty==RunDifficulty.Hard)
                 {
                     foreach(var entry in EnemyExpansion.All.Where(e=>e.level==level))
@@ -285,7 +300,7 @@ public sealed class CombatReworkReview : MonoBehaviour
                     yield return new WaitForSeconds(1.6f);PhaseTwo(phaseBoss);
                     yield return Observe(level+"-PhaseEntry",2.4f,null,true,.125f);
                 }
-                if(focus=="all"||focus=="bosses")yield return Bosses(level,difficulty);
+                if(focus=="all"||focus=="bosses"||focus=="hard-patterns")yield return Bosses(level,difficulty);
                 if(level==LevelId.Underwater&&difficulty==RunDifficulty.Hard)
                 {
                     Clear();yield return null;var school=FindAnyObjectByType<OceanLife>();Check(school!=null,"Live underwater boid schools are installed");

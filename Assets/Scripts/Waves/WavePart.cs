@@ -131,14 +131,14 @@ public sealed class WavePart
         EnemyTuning.TuneFormation(Enemy, units, Seconds, ref score);
         if (Difficulty.Hard && score.Length > 1)
         {
-            int gap = 0;
+            int restIndex = 0;
             for (int i = 1; i < score.Length - 1; i++)
-                if (score[i + 1] - score[i] > score[gap + 1] - score[gap]) gap = i;
-            if (score[gap + 1] - score[gap] > .72f)
+                if (score[i + 1] - score[i] > score[restIndex + 1] - score[restIndex]) restIndex = i;
+            if (score[restIndex + 1] - score[restIndex] > .72f)
             {
                 var answer = new float[score.Length + 1];
                 Array.Copy(score, answer, score.Length);
-                answer[score.Length] = (score[gap] + score[gap + 1]) * .5f;
+                answer[score.Length] = (score[restIndex] + score[restIndex + 1]) * .5f;
                 Array.Sort(answer); score = answer;
             }
         }

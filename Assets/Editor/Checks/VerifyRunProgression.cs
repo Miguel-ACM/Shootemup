@@ -22,9 +22,9 @@ public static class VerifyRunProgression
                         {
                             Check(LevelRun.Loop == loop && LevelRun.Stage == (loop - 1) * 5 + 1, "Loop or stage advanced incorrectly");
                             Check(LevelRun.EnemyHealthScale > previousHealth && LevelRun.EnemyTempoScale >= previousTempo && LevelRun.EnemyShotSpeedScale >= previousShots, "Run difficulty decreased");
-                            Check(LevelRun.EnemyTempoScale <= 1.3f && LevelRun.EnemyShotSpeedScale <= 1.18f * Difficulty.ShotSpeed + .0001f, "Readability speed caps exceeded");
+                            Check(LevelRun.EnemyTempoScale <= 1.3f * Difficulty.Tempo + .0001f && LevelRun.EnemyShotSpeedScale <= 1.18f * Difficulty.ShotSpeed + .0001f, "Readability speed caps exceeded");
                             if (loop == 2)
-                                Check(Near(LevelRun.EnemyHealthScale, 1.48f) && Near(LevelRun.EnemyTempoScale, 1.05f) && Near(LevelRun.EnemyShotSpeedScale, 1.035f * Difficulty.ShotSpeed), "First loop escalation is incorrect");
+                                Check(Near(LevelRun.EnemyHealthScale, 1.48f) && Near(LevelRun.EnemyTempoScale, 1.05f * Difficulty.Tempo) && Near(LevelRun.EnemyShotSpeedScale, 1.035f * Difficulty.ShotSpeed), "First loop escalation is incorrect");
                             previousHealth = LevelRun.EnemyHealthScale;
                             previousTempo = LevelRun.EnemyTempoScale;
                             previousShots = LevelRun.EnemyShotSpeedScale;
