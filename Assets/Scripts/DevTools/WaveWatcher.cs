@@ -11,6 +11,7 @@ using UnityEngine.UI;
 public sealed partial class WaveWatcher : MonoBehaviour
 {
     public const int FirstWave = 2, LastWave = 20, Miniboss = 21, BossOne = 22, BossTwo = 23, BossOther = 24;
+    const string DifficultyPreference = "WaveWatcher.Difficulty";
     static bool requested;
     public static WaveWatcher Current
     {
@@ -63,6 +64,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
 
     public int Mirror { get; private set; } = 1;
     public int ReviewLoop { get; private set; } = 1;
+    public RunDifficulty ReviewDifficulty => Difficulty.Current;
     public bool Touring
     {
         get; private set;
@@ -147,7 +149,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
         if (CloudTransition.Busy || requested)
             return;
         requested = true;
-        GameRules.StartNewRun();
+        GameRules.StartNewRun((RunDifficulty)Mathf.Clamp(PlayerPrefs.GetInt(DifficultyPreference, (int)RunDifficulty.Hard), 0, 1));
         LevelRun.Reset();
         BGMManager.PlayLevelMusic(LevelRun.Current);
         CloudTransition.Load("L1");
@@ -367,6 +369,19 @@ public sealed partial class WaveWatcher : MonoBehaviour
             return;
         ReviewLoop = Mathf.Clamp(loop, 1, 99);
         SetContext(Level, LevelRun.Seed);
+        WavePreparation.Begin();
+        Replay();
+    }
+
+    public void SelectDifficulty(RunDifficulty difficulty)
+    {
+        if (!Ready || CloudTransition.Busy || difficulty == ReviewDifficulty ||
+            (difficulty != RunDifficulty.Easy && difficulty != RunDifficulty.Hard))
+            return;
+        Difficulty.Select(difficulty);
+        GameRules.enemyDamage = Difficulty.Damage;
+        PlayerPrefs.SetInt(DifficultyPreference, (int)difficulty);
+        PlayerPrefs.Save();
         WavePreparation.Begin();
         Replay();
     }

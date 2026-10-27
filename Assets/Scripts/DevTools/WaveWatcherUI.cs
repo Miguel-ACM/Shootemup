@@ -12,6 +12,7 @@ public sealed partial class WaveWatcher
     TextMeshProUGUI pageLabel, variantLabel, mirrorLabel, tourLabel, loopNumber, copyLabel;
     TMP_InputField seedInput;
     readonly System.Collections.Generic.Dictionary<WatcherView, Image> tabs = new System.Collections.Generic.Dictionary<WatcherView, Image>();
+    readonly System.Collections.Generic.Dictionary<RunDifficulty, Image> difficulties = new System.Collections.Generic.Dictionary<RunDifficulty, Image>();
     int page;
     float copiedUntil;
     float nextReference;
@@ -19,7 +20,7 @@ public sealed partial class WaveWatcher
     string feedbackFolder;
     bool capturing;
     string FeedbackFolder => feedbackFolder ?? (feedbackFolder = Path.Combine(Application.isEditor ? Path.GetFullPath(Path.Combine(Application.dataPath, "..")) : Application.persistentDataPath, "WaveWatcherFeedback"));
-    public string ReviewReference => $"WATCHER | {LevelRun.CurrentName} | {SelectedEntry.Id} | seed={LevelRun.Seed} | loop={ReviewLoop}" +
+    public string ReviewReference => $"WATCHER | {LevelRun.CurrentName} | {SelectedEntry.Id} | difficulty={ReviewDifficulty} | seed={LevelRun.Seed} | loop={ReviewLoop}" +
         (View == WatcherView.Formations ? $" | variant={Variant + 1}/13 (layout {ResolvedVariant}) | mirror={Mirror}" : "") +
         $" | aim={aim} | t={Elapsed:0.00}s | speed={PlaybackSpeed:0.#}x\n{recipe}";
 
@@ -98,7 +99,13 @@ public sealed partial class WaveWatcher
             var chosen = level;
             levels[level] = Button(leftPanel, level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(), new Vector2(0, 280 - row * 18), new Vector2(230, 17), () => SelectLevel(chosen)).GetComponent<Image>();
         }
-        var seedBox = Box(leftPanel, "Seed", new Vector2(-26, 83), new Vector2(178, 32), ButtonColor);
+        Label(leftPanel, "DIFFICULTY", 12, new Vector2(-79, 82), new Vector2(73, 30));
+        foreach (var difficulty in new[] { RunDifficulty.Easy, RunDifficulty.Hard })
+        {
+            var chosen = difficulty;
+            difficulties[difficulty] = Button(leftPanel, difficulty.ToString().ToUpperInvariant(), new Vector2((int)difficulty * 79, 82), new Vector2(73, 30), () => SelectDifficulty(chosen)).GetComponent<Image>();
+        }
+        var seedBox = Box(leftPanel, "Seed", new Vector2(-26, 44), new Vector2(178, 32), ButtonColor);
         Label(seedBox, "SEED", 12, new Vector2(-64, 0), new Vector2(42, 32));
         var inputBox = Box(seedBox, "Seed input", new Vector2(23, 0), new Vector2(126, 32), Color.clear);
         var inputText = Label(inputBox, "", 16, Vector2.zero, new Vector2(120, 32));
@@ -109,24 +116,24 @@ public sealed partial class WaveWatcher
         seedInput.contentType = TMP_InputField.ContentType.IntegerNumber;
         seedInput.characterLimit = 10;
         seedInput.onEndEdit.AddListener(value => { if (int.TryParse(value, out int seed) && seed > 0) SetSeed(seed); else seedInput.SetTextWithoutNotify(LevelRun.Seed.ToString()); });
-        Button(leftPanel, "NEW", new Vector2(92, 83), new Vector2(46, 32), NewSet);
-        Button(leftPanel, "LOOP -", new Vector2(-79, 43), new Vector2(73, 30), () => SelectLoop(ReviewLoop - 1));
-        loopNumber = Label(leftPanel, "", 16, new Vector2(0, 43), new Vector2(72, 30));
-        Button(leftPanel, "LOOP +", new Vector2(79, 43), new Vector2(73, 30), () => SelectLoop(ReviewLoop + 1));
+        Button(leftPanel, "NEW", new Vector2(92, 44), new Vector2(46, 32), NewSet);
+        Button(leftPanel, "LOOP -", new Vector2(-79, 6), new Vector2(73, 30), () => SelectLoop(ReviewLoop - 1));
+        loopNumber = Label(leftPanel, "", 16, new Vector2(0, 6), new Vector2(72, 30));
+        Button(leftPanel, "LOOP +", new Vector2(79, 6), new Vector2(73, 30), () => SelectLoop(ReviewLoop + 1));
         for (int i = -1; i <= 1; i++)
         {
             int side = i;
-            aims.Add(Button(leftPanel, i < 0 ? "AIM L" : i > 0 ? "AIM R" : "AIM C", new Vector2(i * 79, 2), new Vector2(73, 30), () => SetAim(side)).GetComponent<Image>());
+            aims.Add(Button(leftPanel, i < 0 ? "AIM L" : i > 0 ? "AIM R" : "AIM C", new Vector2(i * 79, -31), new Vector2(73, 30), () => SetAim(side)).GetComponent<Image>());
         }
-        Button(leftPanel, "REPLAY", new Vector2(0, -43), new Vector2(230, 33), Replay);
-        pauseLabel = Button(leftPanel, "PAUSE", new Vector2(-60, -84), new Vector2(110, 33), TogglePause).GetComponentInChildren<TextMeshProUGUI>();
-        Button(leftPanel, "STEP 1/60", new Vector2(60, -84), new Vector2(110, 33), StepOnce);
-        speedLabel = Button(leftPanel, "SPEED", new Vector2(-60, -125), new Vector2(110, 33), CycleSpeed).GetComponentInChildren<TextMeshProUGUI>();
-        loopLabel = Button(leftPanel, "LOOP", new Vector2(60, -125), new Vector2(110, 33), ToggleLoop).GetComponentInChildren<TextMeshProUGUI>();
-        Button(leftPanel, "< PREV", new Vector2(-60, -166), new Vector2(110, 33), () => NextEntry(-1));
-        Button(leftPanel, "NEXT >", new Vector2(60, -166), new Vector2(110, 33), () => NextEntry(1));
-        tourLabel = Button(leftPanel, "AUTO TOUR", new Vector2(0, -207), new Vector2(230, 33), ToggleTour).GetComponentInChildren<TextMeshProUGUI>();
-        copyLabel = Button(leftPanel, "COPY FOR CHAT", new Vector2(0, -252), new Vector2(230, 36), CopyForChat).GetComponentInChildren<TextMeshProUGUI>();
+        Button(leftPanel, "REPLAY", new Vector2(0, -70), new Vector2(230, 30), Replay);
+        pauseLabel = Button(leftPanel, "PAUSE", new Vector2(-60, -108), new Vector2(110, 30), TogglePause).GetComponentInChildren<TextMeshProUGUI>();
+        Button(leftPanel, "STEP 1/60", new Vector2(60, -108), new Vector2(110, 30), StepOnce);
+        speedLabel = Button(leftPanel, "SPEED", new Vector2(-60, -146), new Vector2(110, 30), CycleSpeed).GetComponentInChildren<TextMeshProUGUI>();
+        loopLabel = Button(leftPanel, "LOOP", new Vector2(60, -146), new Vector2(110, 30), ToggleLoop).GetComponentInChildren<TextMeshProUGUI>();
+        Button(leftPanel, "< PREV", new Vector2(-60, -184), new Vector2(110, 30), () => NextEntry(-1));
+        Button(leftPanel, "NEXT >", new Vector2(60, -184), new Vector2(110, 30), () => NextEntry(1));
+        tourLabel = Button(leftPanel, "AUTO TOUR", new Vector2(0, -222), new Vector2(230, 30), ToggleTour).GetComponentInChildren<TextMeshProUGUI>();
+        copyLabel = Button(leftPanel, "COPY FOR CHAT", new Vector2(0, -263), new Vector2(230, 32), CopyForChat).GetComponentInChildren<TextMeshProUGUI>();
         Button(leftPanel, "BACK", new Vector2(0, -307), new Vector2(230, 30), Exit);
         heading = Label(rightPanel, "", 22, new Vector2(0, 307), new Vector2(250, 36));
         string[] titles = { "WAVES", "PARTS", "ENEMIES", "BOSSES", "SHOTS" };
@@ -219,6 +226,8 @@ public sealed partial class WaveWatcher
         partLabel.text = SelectedEntry.Name + "\n" + recipe;
         foreach (var level in levels)
             level.Value.color = level.Key == Level ? Selected : ButtonColor;
+        foreach (var difficulty in difficulties)
+            difficulty.Value.color = difficulty.Key == ReviewDifficulty ? Selected : ButtonColor;
         foreach (var tab in tabs)
             tab.Value.color = tab.Key == View ? Selected : ButtonColor;
         foreach (var row in encounters)

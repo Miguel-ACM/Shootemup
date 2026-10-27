@@ -24,6 +24,7 @@ public static class WatcherReload
     {
         public LevelId level;
         public WatcherView view;
+        public RunDifficulty difficulty = RunDifficulty.Hard;
         public string id;
         public int seed, loop, variant, mirror, aim, index;
         public float speed;
@@ -111,6 +112,7 @@ public static class WatcherReload
         {
             level = watcher.Level,
             view = watcher.View,
+            difficulty = watcher.ReviewDifficulty,
             id = watcher.SelectedEntry.Id,
             seed = LevelRun.Seed,
             loop = watcher.ReviewLoop,
@@ -146,6 +148,7 @@ public static class WatcherReload
             Debug.LogWarning("Corrected Wave Watcher could not reopen; launch it from the title.");
             yield break;
         }
+        watcher.SelectDifficulty(state.difficulty);
         watcher.SelectLoop(state.loop);
         watcher.SetSeed(state.seed);
         watcher.SelectLevel(state.level);
