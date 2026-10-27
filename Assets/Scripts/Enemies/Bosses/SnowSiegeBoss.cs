@@ -90,7 +90,11 @@ public sealed partial class SnowSiegeBoss : DistrictBoss
     } // The score below owns the rests as well as the volleys.
     protected override void Attack()
     {
-        if (Difficulty.Hard) { AttackHard(); return; }
+        if (Difficulty.Hard)
+        {
+            AttackHard();
+            return;
+        }
         int beat = (volley - 1) % 14;
         if (beat == 0)
             shellAxis = Aim;

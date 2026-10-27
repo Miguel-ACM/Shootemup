@@ -57,7 +57,11 @@ public sealed partial class FieldsBomberBoss : DistrictBoss
     } // One score owns every battery and its rests.
     protected override void Attack()
     {
-        if (Difficulty.Hard) { AttackHard(); return; }
+        if (Difficulty.Hard)
+        {
+            AttackHard();
+            return;
+        }
         int beat = (volley - 1) % 12;
         if (beat == 0 || beat == 7)
             phraseAxis = Aim;

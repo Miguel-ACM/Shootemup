@@ -17,8 +17,8 @@ public sealed class CapacitorKite : DistrictEnemy
     {
         for (int s = -1; s <= 1; s += 2)
             Fire<PlasmaOrb>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * 24), 2.0f, .34f);
-        
-            Fire<NeedleRound>(Muzzle(volley), Vector2.down, 4.1f, .17f);
+
+        Fire<NeedleRound>(Muzzle(volley), Vector2.down, 4.1f, .17f);
     }
 
 }

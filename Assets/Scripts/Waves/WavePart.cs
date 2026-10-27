@@ -36,7 +36,7 @@ public sealed class WavePart
         float depth = (2 * radius + .3f) / (Camera.UpLimit - Camera.DownLimit);
         float interval = Mathf.Max(.30f, (2 * radius + .32f) / Mathf.Max(1, Route.Length / Seconds) * 1.25f) * (1 + (variant / 2 % 3) * .12f);
         int count = Shape == WaveShape.Solo ? 1 : Mathf.Max(Count == 2 ? 2 : 3, Count + variant % 3 - 1 + Mathf.Min(1, (LevelRun.Stage - 1) / 3));
-        
+
         WaveShape shape = Shape;
         if (Ground)
         {
@@ -133,13 +133,15 @@ public sealed class WavePart
         {
             int restIndex = 0;
             for (int i = 1; i < score.Length - 1; i++)
-                if (score[i + 1] - score[i] > score[restIndex + 1] - score[restIndex]) restIndex = i;
+                if (score[i + 1] - score[i] > score[restIndex + 1] - score[restIndex])
+                    restIndex = i;
             if (score[restIndex + 1] - score[restIndex] > .72f)
             {
                 var answer = new float[score.Length + 1];
                 Array.Copy(score, answer, score.Length);
                 answer[score.Length] = (score[restIndex] + score[restIndex + 1]) * .5f;
-                Array.Sort(answer); score = answer;
+                Array.Sort(answer);
+                score = answer;
             }
         }
         foreach (var unit in units)

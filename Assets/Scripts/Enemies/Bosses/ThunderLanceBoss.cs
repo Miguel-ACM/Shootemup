@@ -55,7 +55,11 @@ public sealed partial class ThunderLanceBoss : DistrictBoss
     }
     protected override void Attack()
     {
-        if (Difficulty.Hard) { AttackHard(); return; }
+        if (Difficulty.Hard)
+        {
+            AttackHard();
+            return;
+        }
         int beat = (volley - 1) % 14;
         if (!phaseTwo)
         {

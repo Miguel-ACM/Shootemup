@@ -108,7 +108,11 @@ public sealed partial class CandyRegentBoss : DistrictBoss
 
     protected override void Attack()
     {
-        if (Difficulty.Hard) { AttackHard(); return; }
+        if (Difficulty.Hard)
+        {
+            AttackHard();
+            return;
+        }
         if (!arrived || (player != null && Vector2.Distance(player.position, transform.position) < 2.5f))
             return;
         int beat = (volley - 1) % 8;

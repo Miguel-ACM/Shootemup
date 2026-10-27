@@ -82,7 +82,11 @@ public sealed partial class TunnelSawBoss : DistrictBoss
     {
         using var sample = burstMarker.Auto();
         impacts++;
-        if(Difficulty.Hard){HardImpact(inward);return;}
+        if (Difficulty.Hard)
+        {
+            HardImpact(inward);
+            return;
+        }
         // Full circular crowns on every physical bounce, including the little saws.
         // Alternate half a quick lane; slower heavy teeth form a second nested ring.
         int small = miniature ? (10) : (phaseTwo ? 28 : 20);

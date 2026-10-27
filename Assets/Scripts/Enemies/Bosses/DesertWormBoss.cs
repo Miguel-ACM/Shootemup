@@ -96,7 +96,11 @@ public sealed partial class DesertWormBoss : DistrictBoss
 
     protected override void Attack()
     {
-        if (Difficulty.Hard) { AttackHard(); return; }
+        if (Difficulty.Hard)
+        {
+            AttackHard();
+            return;
+        }
         int beat = (volley - 1) % 12;
         if (beat == 0)
             rippleTarget = player != null ? player.position : transform.position + Vector3.down * 8;

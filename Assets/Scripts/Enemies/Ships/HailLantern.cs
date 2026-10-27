@@ -18,9 +18,9 @@ public sealed class HailLantern : DistrictEnemy
         var shell = Fire<BurstShell>(Muzzle(), Vector2.down, 2.4f, .48f);
         if (shell != null)
             shell.SetTravelDistance(volley % 2 == 0 ? 4.1f : 5.5f);
-        
-            for (int s = -1; s <= 1; s += 2)
-                Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Vector2.down, s * 38), 2.2f, .23f);
+
+        for (int s = -1; s <= 1; s += 2)
+            Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Vector2.down, s * 38), 2.2f, .23f);
     }
 
 }

@@ -70,7 +70,11 @@ public sealed partial class SpaceCitadelBoss : DistrictBoss
 
     protected override void Attack()
     {
-        if (Difficulty.Hard) { AttackHard(); return; }
+        if (Difficulty.Hard)
+        {
+            AttackHard();
+            return;
+        }
         if (parts[0] == null)
             return;
         int beat = (volley - 1) % 12;

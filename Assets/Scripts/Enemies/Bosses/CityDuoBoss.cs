@@ -63,7 +63,11 @@ public sealed partial class CityDuoBoss : DistrictBoss
 
     protected override void Attack()
     {
-        if (Difficulty.Hard) { AttackHard(); return; }
+        if (Difficulty.Hard)
+        {
+            AttackHard();
+            return;
+        }
         int beat = (volley - 1) % 12;
         if (beat == 0 || beat == 1 || beat == 8)
             attackAxis = Aim;

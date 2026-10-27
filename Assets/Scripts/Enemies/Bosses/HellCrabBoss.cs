@@ -114,7 +114,11 @@ public sealed partial class HellCrabBoss : DistrictBoss
 
     protected override void Attack()
     {
-        if (Difficulty.Hard) { AttackHard(); return; }
+        if (Difficulty.Hard)
+        {
+            AttackHard();
+            return;
+        }
         if (claws[0] == null)
             return;
         int beat = (volley - 1) % 12;

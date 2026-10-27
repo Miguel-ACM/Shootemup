@@ -9,7 +9,10 @@ public abstract class DistrictBoss : DistrictEnemy
     float nextPressure;
     float phaseEntryUntil;
     BossPhaseEntry phaseEntry;
-    protected BossWeave Patterns { get; private set; }
+    protected BossWeave Patterns
+    {
+        get; private set;
+    }
     public int PatternRounds => Patterns != null ? Patterns.Released : 0;
     protected bool PhaseTransitioning => age < phaseEntryUntil;
     protected virtual bool PatternEmissionAllowed => true;
@@ -52,7 +55,8 @@ public abstract class DistrictBoss : DistrictEnemy
             firingCue.ClearWarning();
             PrepareHardFire(warning);
         }
-        else PrepareFire(warning);
+        else
+            PrepareFire(warning);
         if (!phaseTwo && PhaseTwoReady)
         {
             phaseTwo = true;
@@ -63,8 +67,10 @@ public abstract class DistrictBoss : DistrictEnemy
         float motionDelta = Time.deltaTime * LevelRun.EnemyTempoScale * MovementScale;
         motionAge += motionDelta;
         MoveBoss(motionDelta);
-        if (!PhaseTransitioning && PatternEmissionAllowed) Patterns.Tick(Time.deltaTime * LevelRun.EnemyTempoScale);
-        else Patterns.Cancel();
+        if (!PhaseTransitioning && PatternEmissionAllowed)
+            Patterns.Tick(Time.deltaTime * LevelRun.EnemyTempoScale);
+        else
+            Patterns.Cancel();
         if (!enteredFight && transform.position.y < Camera.UpLimit - 1)
         {
             enteredFight = true;
@@ -110,41 +116,51 @@ public abstract class DistrictBoss : DistrictEnemy
     protected virtual void OnPhaseTwo()
     {
     }
-    protected virtual void PrepareHardFire(float seconds) { }
+    protected virtual void PrepareHardFire(float seconds)
+    {
+    }
     protected Vector3 WeaponPort(int index = 0)
     {
         var ports = EnemyWeaponLayout.Ports(hull);
         return ports[Mathf.Abs(index) % ports.Length];
     }
     internal void PreparePattern(Vector3 port, float seconds, Vector2 axis)
-    { Cue(port, seconds); PointWeapon(port, axis); }
+    {
+        Cue(port, seconds);
+        PointWeapon(port, axis);
+    }
     internal SimpleRound PatternShot(Vector3 port, Vector2 axis, float speed, float radius)
         => Fire<SimpleRound>(port, axis, speed, radius);
     protected SimpleRound HeavyTrail(Vector3 port, Vector2 axis, float radius = .72f, float speed = 1.65f)
     {
         var shot = Fire<SimpleRound>(port, axis, speed, radius);
-        if (shot != null) shot.LeaveTrail(.28f, 4.8f);
+        if (shot != null)
+            shot.LeaveTrail(.28f, 4.8f);
         return shot;
     }
     protected void OrbitalCrown(Vector3 port, int count, int gap, float radius, float rotation, float drift, float offset)
     {
-        if (CombatRound.Live.Count + count - gap > CombatRound.Limit) return;
+        if (CombatRound.Live.Count + count - gap > CombatRound.Limit)
+            return;
         for (int i = gap; i < count; i++)
         {
             var shot = Fire<SimpleRound>(port, Vector2.down, drift, .18f);
-            if (shot != null) shot.Orbit(radius, offset + i * 360f / count, rotation);
+            if (shot != null)
+                shot.Orbit(radius, offset + i * 360f / count, rotation);
         }
     }
     protected void OrbitalSystem(Vector3 port, int moons, int beads, float offset)
     {
         int gap = 2, count = moons * (beads - gap);
-        if (CombatRound.Live.Count + count > CombatRound.Limit) return;
+        if (CombatRound.Live.Count + count > CombatRound.Limit)
+            return;
         for (int moon = 0; moon < moons; moon++)
             for (int bead = gap; bead < beads; bead++)
             {
                 var shot = Fire<SimpleRound>(port, Vector2.down, 1.05f, .17f);
-                if (shot != null) shot.Orbit(2.25f, offset + moon * 360f / moons, 24,
-                    14, .74f, bead * 360f / beads, -78, 1.6f);
+                if (shot != null)
+                    shot.Orbit(2.25f, offset + moon * 360f / moons, 24,
+      14, .74f, bead * 360f / beads, -78, 1.6f);
             }
     }
 
