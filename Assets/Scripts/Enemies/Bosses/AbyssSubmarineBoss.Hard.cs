@@ -17,7 +17,8 @@ public sealed partial class AbyssSubmarineBoss
     void HardCrown(float offset, float speed)
     {
         EmergenceBursts++;
-        int count = EmergenceBursts % 3 == 1 ? 8 : phaseTwo ? 28 : 24;
+        bool first = !eruptionB && !eruptionC;
+        int count = first ? 8 : phaseTwo ? 28 : 24;
         for (int i = 0; i < count; i++)
         {
             int side = i % 2 == 0 ? -1 : 1, lane = (i / 2) % 3 - 1;
@@ -28,7 +29,7 @@ public sealed partial class AbyssSubmarineBoss
             if (count == 8)
                 shot.LeaveTrail(.4f, 2.5f);
             else
-                shot.Curl((i % 2 == 0 ? 1 : -1) * (EmergenceBursts % 3 == 2 ? 16 : -16), 2.3f);
+                shot.Curl((i % 2 == 0 ? 1 : -1) * (eruptionB && !eruptionC ? 16 : -16), 2.3f);
         }
     }
     void HardWake(Vector3 port, Vector2 direction, float speed, int side)

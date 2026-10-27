@@ -1,4 +1,6 @@
-# Boss scores and projectile delivery
+# Easy baseline scores and projectile delivery
+
+These are the former Hard scores, now the Easy baseline. The new boss-specific Hard scores are documented in [HardBossPatterns.md](HardBossPatterns.md).
 
 The combat pass applies the principles in [TouhouPatternDirection.md](TouhouPatternDirection.md): committed aim, visible delivery, slow geometric fronts, deliberate gaps and rests. Existing approved sprites and district colors remain in use. Large rounds are scaled approved sprites.
 
@@ -19,6 +21,6 @@ Every ordinary enemy and champion has a hull-specific weapon layout. Nose-fired 
 
 Phase changes clear ordinary hostile rounds and allow a 1.5-second firing handoff. District-specific cosmetic machinery animates independently of the hull and damage colliders. No hull/collider scaling or artificial frame hold is used.
 
-`DistrictEnemy.shellTravelDistance` specifies world distance rather than flight time. Shells preserve their distance as speeds change. Fragmentation now produces complete Easy rings of six (Plains) or eight (other districts), and Hard rings of twelve (Snow) or ten (other districts). Mines use six/ten. If the 280-round pool cannot fit a complete ring, it waits rather than drawing a partial angular sector. Slow ordinary rounds receive enough lifetime to cross the arena.
+`DistrictEnemy.shellTravelDistance` specifies world distance rather than flight time. Shells preserve their distance as speeds change. Fragmentation now produces complete rings of twelve (Snow) or ten (other districts) on both difficulties. Mines use ten. These are the former Hard fragment counts, retained as the Easy baseline. If the 280-round pool cannot fit a complete ring, it waits rather than drawing a partial angular sector. Slow ordinary rounds receive enough lifetime to cross the arena.
 
 `VerifyCombatRework.Run` performs deterministic geometry checks and one isolated graphical district tour. `--rework-levels` and `--rework-focus` limit follow-ups to outstanding cases. Complete frame times and physics steps are recorded, including frames after dense releases. The `additions` follow-up checks all sixty revised formation parts, native phase-mechanism deployments, the corrected Hell score on both difficulties, stock-gun hits against moving new Plains craft, and thirty seconds of both Tunnel phases without screenshot overhead. Compiler checks use `VerifyCleanCompilation.Run` without Play mode. The final Windows player is built with `BuildCombatRework.Run` only after graphical checks pass.
