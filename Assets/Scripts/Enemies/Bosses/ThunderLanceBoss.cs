@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [UnityEngine.Scripting.Preserve]
-public sealed class ThunderLanceBoss : DistrictBoss
+public sealed partial class ThunderLanceBoss : DistrictBoss
 {
     static readonly Vector3[] BeamPorts = { new Vector3(-.71f, .435f, -.3f), new Vector3(.71f, .435f, -.3f), new Vector3(0, -1.98f, -.2f) };
     readonly PulseLaser[] beams = new PulseLaser[3];
@@ -55,6 +55,7 @@ public sealed class ThunderLanceBoss : DistrictBoss
     }
     protected override void Attack()
     {
+        if (Difficulty.Hard) { AttackHard(); return; }
         int beat = (volley - 1) % 14;
         if (!phaseTwo)
         {
