@@ -1,0 +1,2 @@
+PASS
+Easy exactly matches former Hard: global factors, 76 configured actors, and 40 deterministic production wave signatures.

@@ -103,6 +103,13 @@ These are the player's instructions. Preserve them across sessions and apply the
 - All twenty additions have individual silhouettes, real weapon lips, three distinct scored formation parts and explicit Easy rhythms. Preserve the district-specific choreography rather than replacing it with a generic flight template.
 - Commit each feature/enemy individually and build after the complete pass. Use an isolated Unity review checkout so Miguel's live game/editor is not disturbed. Review the batch once, then target only failed or revised cases.
 
+## Latest Hard correction (27 October 2026)
+
+- Miguel rejected the previous pass as much too easy. Its former Hard settings, counts and authored wave scores are now the Easy baseline; do not restore the weaker discarded Easy configuration.
+- Hard must have boss-specific evolving geometry and meaningful pressure, not the same fans with small count changes. Research Touhou's connection between a character, its attack identity and the player's movement. Miguel's spirals, webs, giant trail-producing bullets and orbiting circles were examples of variety, not a checklist to apply to every boss.
+- Hard attacks fit the owner: bomber wing spools and payload wakes; Snow crystallizing shells and rotating ice gaps; City heavy cargo curtains interleaved with fast intercepting ribbons; Thunder charged vertical lanes and electrical lattices; Tunnel curved/spinning gears born only on bounces; Desert winding fire from surviving reactors; Candy taffy ribbons and gumdrop wakes; Space counterrotating orbital systems; submarine pressure fronts and curling wakes; Hell interleaving pincer threads and eye-delivered soul wakes.
+- Keep the existing projectile pixels and district hues. New trajectories reuse the existing pooled circular sprite, native contacts and exact pixel narrow phase. Preserve the 280 live / 768 pooled bullet budgets, attached anticipation, multipart gates, upper Candyland boundary and minion-free Hell fight. Hard gains complexity and coordinated replies; boss health still ignores player equipment.
+
 ## Items and decisions
 
 - Preserve Miguel's original item names and identities. Another arm and Twerp are deliberately named and are fine. Make an item's behavior recognizable through its effects and sound; do not rename or redesign original items to explain their mechanics.
