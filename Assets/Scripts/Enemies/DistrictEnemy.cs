@@ -322,6 +322,12 @@ public abstract class DistrictEnemy : AEnemy
 
     protected void Fan<T>(int count, float spread, float velocity, float radius = .14f) where T : CombatRound
     {
+        if (Difficulty.Hard && !(this is DistrictBoss) && count > 1)
+        {
+            float width = (count - 1) * spread;
+            count += count >= 5 ? 2 : 1;
+            spread = width / (count - 1);
+        }
         for (int i = 0; i < count; i++)
             Fire<T>(Muzzle(i), CombatVisuals.Rotate(Aim, (i - (count - 1) * .5f) * spread), velocity, radius);
     }
