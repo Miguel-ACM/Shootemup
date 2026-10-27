@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [UnityEngine.Scripting.Preserve]
-public sealed class CandyRegentBoss : DistrictBoss
+public sealed partial class CandyRegentBoss : DistrictBoss
 {
     readonly List<DistrictEnemy> brood = new List<DistrictEnemy>();
     float nextBrood = 2.8f, legClock, legDuration, rest;
@@ -108,6 +108,7 @@ public sealed class CandyRegentBoss : DistrictBoss
 
     protected override void Attack()
     {
+        if (Difficulty.Hard) { AttackHard(); return; }
         if (!arrived || (player != null && Vector2.Distance(player.position, transform.position) < 2.5f))
             return;
         int beat = (volley - 1) % 8;
