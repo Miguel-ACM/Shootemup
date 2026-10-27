@@ -1,0 +1,112 @@
+PASS
+PASS Fields-Hard-Wave: 816 complete frames, peak 76, firing True
+PASS Fields-Hard-Wave: all 11 authored actors spawned
+PASS Fields-Hard-Wave: authored formation actually enters and fires
+PASS Fields-Hard-Boss1: 1640 complete frames, peak 174, firing True
+PASS Fields phase 1 uses genuinely evolving trajectories/deliveries: orbit=0, curl=0, trail=4, seed=0, largest diameter=1,56
+PASS Fields phase 1 creates no new pooled bullet objects during combat
+PASS Fields-Hard-Boss2: 1637 complete frames, peak 233, firing True
+PASS Fields phase 2 uses genuinely evolving trajectories/deliveries: orbit=0, curl=0, trail=4, seed=0, largest diameter=1,56
+PASS Fields phase 2 creates no new pooled bullet objects during combat
+PASS Fields-Hard-Boss2-Uncaptured: 601 complete frames, peak 227, firing True
+PASS Tunnel-Hard-Wave: 612 complete frames, peak 85, firing True
+PASS Tunnel-Hard-Wave: all 6 authored actors spawned
+PASS Tunnel-Hard-Wave: authored formation actually enters and fires
+PASS Tunnel-Hard-Boss1: 1650 complete frames, peak 94, firing True
+PASS Tunnel phase 1 uses genuinely evolving trajectories/deliveries: orbit=35, curl=59, trail=0, seed=0, largest diameter=0,76
+PASS Tunnel phase 1 creates no new pooled bullet objects during combat
+PASS Tunnel-Hard-Boss2: 1634 complete frames, peak 241, firing True
+PASS Tunnel phase 2 uses genuinely evolving trajectories/deliveries: orbit=104, curl=140, trail=0, seed=0, largest diameter=0,76
+PASS Tunnel phase 2 creates no new pooled bullet objects during combat
+PASS Tunnel-Hard-Boss2-Uncaptured: 601 complete frames, peak 252, firing True
+PASS Snow-Hard-Wave: 860 complete frames, peak 66, firing True
+PASS Snow-Hard-Wave: all 8 authored actors spawned
+PASS Snow-Hard-Wave: authored formation actually enters and fires
+PASS Snow-Hard-Boss1: 1626 complete frames, peak 122, firing True
+PASS Snow phase 1 uses genuinely evolving trajectories/deliveries: orbit=71, curl=18, trail=0, seed=1, largest diameter=1,44
+PASS Snow phase 1 creates no new pooled bullet objects during combat
+PASS Snow-Hard-Boss2: 1624 complete frames, peak 178, firing True
+PASS Snow phase 2 uses genuinely evolving trajectories/deliveries: orbit=97, curl=22, trail=0, seed=1, largest diameter=1,44
+PASS Snow phase 2 creates no new pooled bullet objects during combat
+PASS Snow-Hard-Boss2-Uncaptured: 601 complete frames, peak 177, firing True
+PASS Thunder-Hard-Wave: 663 complete frames, peak 47, firing True
+PASS Thunder-Hard-Wave: all 10 authored actors spawned
+PASS Thunder-Hard-Wave: authored formation actually enters and fires
+PASS Thunder-Hard-Boss1: 1626 complete frames, peak 187, firing True
+PASS Thunder phase 1 uses genuinely evolving trajectories/deliveries: orbit=36, curl=102, trail=0, seed=1, largest diameter=1,64
+PASS Thunder phase 1 creates no new pooled bullet objects during combat
+PASS Thunder-Hard-Boss2: 1628 complete frames, peak 216, firing True
+PASS Thunder phase 2 uses genuinely evolving trajectories/deliveries: orbit=43, curl=134, trail=0, seed=1, largest diameter=1,64
+PASS Thunder phase 2 creates no new pooled bullet objects during combat
+PASS Thunder-Hard-Boss2-Uncaptured: 600 complete frames, peak 220, firing True
+PASS City-Hard-Wave: 443 complete frames, peak 14, firing True
+PASS City-Hard-Wave: all 12 authored actors spawned
+PASS City-Hard-Wave: authored formation actually enters and fires
+PASS City-Hard-Boss1: 1626 complete frames, peak 210, firing True
+PASS City phase 1 uses genuinely evolving trajectories/deliveries: orbit=0, curl=108, trail=4, seed=0, largest diameter=1,72
+PASS City phase 1 creates no new pooled bullet objects during combat
+PASS City-Hard-Boss2: 1628 complete frames, peak 172, firing True
+PASS City phase 2 uses genuinely evolving trajectories/deliveries: orbit=0, curl=69, trail=4, seed=0, largest diameter=1,72
+PASS City phase 2 creates no new pooled bullet objects during combat
+PASS City-Hard-Boss2-Uncaptured: 601 complete frames, peak 175, firing True
+PASS City-Hard-Boss-FastSurvivor: 710 complete frames, peak 174, firing True
+PASS Desert-Hard-Wave: 676 complete frames, peak 82, firing True
+PASS Desert-Hard-Wave: all 9 authored actors spawned
+PASS Desert-Hard-Wave: authored formation actually enters and fires
+PASS Desert-Hard-Boss1: 1622 complete frames, peak 101, firing True
+PASS Desert phase 1 uses genuinely evolving trajectories/deliveries: orbit=0, curl=42, trail=1, seed=0, largest diameter=1,40
+PASS Desert phase 1 creates no new pooled bullet objects during combat
+PASS Desert-Hard-Boss2: 1620 complete frames, peak 151, firing True
+PASS Desert phase 2 uses genuinely evolving trajectories/deliveries: orbit=0, curl=57, trail=1, seed=0, largest diameter=1,40
+PASS Desert phase 2 creates no new pooled bullet objects during combat
+PASS Desert-Hard-Boss2-Uncaptured: 600 complete frames, peak 146, firing True
+PASS Candyland-Hard-Wave: 364 complete frames, peak 196, firing True
+PASS Candyland-Hard-Wave: all 23 authored actors spawned
+PASS Candyland-Hard-Wave: authored formation actually enters and fires
+PASS Candyland-Hard-Boss1: 1617 complete frames, peak 177, firing True
+PASS Candyland phase 1 uses genuinely evolving trajectories/deliveries: orbit=36, curl=72, trail=2, seed=0, largest diameter=1,64
+PASS Candyland phase 1 creates no new pooled bullet objects during combat
+PASS Candy boss keeps its complete route above the lower arena
+PASS Candyland-Hard-Boss2: 1613 complete frames, peak 241, firing True
+PASS Candyland phase 2 uses genuinely evolving trajectories/deliveries: orbit=44, curl=110, trail=4, seed=0, largest diameter=1,64
+PASS Candyland phase 2 creates no new pooled bullet objects during combat
+PASS Candyland-Hard-Boss2-Uncaptured: 601 complete frames, peak 247, firing True
+PASS Candy boss keeps its complete route above the lower arena
+PASS Space-Hard-Wave: 797 complete frames, peak 149, firing True
+PASS Space-Hard-Wave: all 14 authored actors spawned
+PASS Space-Hard-Wave: authored formation actually enters and fires
+PASS Space-Hard-Boss1: 1649 complete frames, peak 200, firing True
+PASS Space phase 1 uses genuinely evolving trajectories/deliveries: orbit=128, curl=0, trail=0, seed=2, largest diameter=1,36
+PASS Space phase 1 creates no new pooled bullet objects during combat
+PASS Space-Hard-Boss2: 1647 complete frames, peak 251, firing True
+PASS Space phase 2 uses genuinely evolving trajectories/deliveries: orbit=151, curl=0, trail=0, seed=0, largest diameter=0,36
+PASS Space phase 2 creates no new pooled bullet objects during combat
+PASS Space-Hard-Boss2-Uncaptured: 600 complete frames, peak 253, firing True
+PASS Space-Hard-Boss-CoreOnly: 1080 complete frames, peak 151, firing True
+PASS Exposed reactor keeps pressure after both optional guns die
+PASS Underwater-Hard-Wave: 574 complete frames, peak 91, firing True
+PASS Underwater-Hard-Wave: all 8 authored actors spawned
+PASS Underwater-Hard-Wave: authored formation actually enters and fires
+PASS Underwater-Hard-Boss1: 1639 complete frames, peak 265, firing True
+PASS Underwater phase 1 uses genuinely evolving trajectories/deliveries: orbit=0, curl=83, trail=12, seed=0, largest diameter=1,36
+PASS Underwater phase 1 creates no new pooled bullet objects during combat
+PASS Underwater-Hard-Boss2: 1640 complete frames, peak 217, firing True
+PASS Underwater phase 2 uses genuinely evolving trajectories/deliveries: orbit=0, curl=91, trail=10, seed=0, largest diameter=1,36
+PASS Underwater phase 2 creates no new pooled bullet objects during combat
+PASS Underwater-Hard-Boss2-Uncaptured: 600 complete frames, peak 280, firing True
+PASS Live underwater boid schools are installed
+PASS Underwater-Boids: 298 complete frames, peak 0, firing False
+PASS Fish schools actually travel and steer through the seabed
+PASS Hell-Hard-Wave: 493 complete frames, peak 163, firing True
+PASS Hell-Hard-Wave: all 9 authored actors spawned
+PASS Hell-Hard-Wave: authored formation actually enters and fires
+PASS Hell-Hard-Boss1: 1634 complete frames, peak 213, firing True
+PASS Hell phase 1 uses genuinely evolving trajectories/deliveries: orbit=0, curl=0, trail=2, seed=0, largest diameter=1,88
+PASS Hell phase 1 creates no new pooled bullet objects during combat
+PASS Hell boss remains free of minions
+PASS Hell-Hard-Boss2: 1627 complete frames, peak 280, firing True
+PASS Hell phase 2 uses genuinely evolving trajectories/deliveries: orbit=0, curl=42, trail=2, seed=0, largest diameter=1,88
+PASS Hell phase 2 creates no new pooled bullet objects during combat
+PASS Hell-Hard-Boss2-Uncaptured: 601 complete frames, peak 279, firing True
+PASS Hell boss remains free of minions
+PASS No runtime exceptions during the complete batched review

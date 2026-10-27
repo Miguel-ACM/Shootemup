@@ -26,3 +26,9 @@ In [ZUN's Garakuta interview](https://en.touhougarakuta.com/article/specialtaida
 Before editing, the isolated project recorded former Hard global factors, 76 configured actors and 40 deterministic wave signatures. The promoted Easy configuration matches that snapshot exactly. Hard adds one coordinated answer in a wave's widest suitable rest, tighter small-shot groups and a modest tempo increase. Boss health and damage are unchanged; projectile speed remains restrained.
 
 The visual review covers complete multi-second phrases and both phases, including enough time for delivered rings to reach the player. It records motion families, actual large diameters, pool stability and complete frames after dense releases. The observer review and mathematical checks do not substitute for Miguel's judgment of difficulty.
+
+## Completed review
+
+The isolated Unity review passed all ten Hard production-wave samples and both phases of every boss, followed by ten-second dense sections without screenshot capture. Those sections recorded frame-time p99 values of 18.64–19.70 ms in the editor, with no new pooled rounds created within any measured section. The largest authored bullets have a 1.88-world-unit diameter. Actual moving sequences and the complete measurements are saved in [ArtSource/HardPatternsReview](../ArtSource/HardPatternsReview/README.md).
+
+Focused checks also passed for independent double-orbit motion, deployment from the visible source, pooled-state reset, exact giant-bullet contacts and an interrupted submarine eruption restarting its first pressure crown correctly. The final clean rebuild compiled 108 assemblies with zero warnings/errors. The Windows x64 build at `Build/HardPatterns/Shootemup.exe` also completed with zero warnings/errors. No additional gameplay run was started after the batched review.

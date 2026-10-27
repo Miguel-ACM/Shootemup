@@ -1,0 +1,5 @@
+PASS
+Windows x64 release player. Packaging verified; player was not launched again after the graphical review.
+Required gameplay symbols: BossWeave, OrbitOffset, AttackHard, HardCrown, OrbitalSystem, IceSeed, LeaveTrail
+Build\HardPatterns\Shootemup.exe SHA256 AF88B840E599661AC63FC10AE27AC77DD97CD46B44DF8A7CE60EB0DCFACFC99E
+Build\HardPatterns\Shootemup_Data\Managed\Assembly-CSharp.dll SHA256 BCABACCC81CF94493C89A0841BE1030E55E024913B3A2FF6B3786622ECC51607

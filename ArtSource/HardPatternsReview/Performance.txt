@@ -1,0 +1,14 @@
+PASS
+Complete frames after dense phase-two phrases, no capture calls in these sections. Editor Game View, 60 FPS target.
+Native capture size: (640, 480)
+case | frames | peak bullets | frame p99/max ms | physics p99/max ms | created range
+Fields-Hard-Boss2-Uncaptured | 601 | 227 | 18.965/21.123 | 0.418/0.486 | 768-768
+Tunnel-Hard-Boss2-Uncaptured | 601 | 252 | 18.643/19.899 | 0.409/0.492 | 768-768
+Snow-Hard-Boss2-Uncaptured | 601 | 177 | 18.750/20.385 | 0.352/0.405 | 768-768
+Thunder-Hard-Boss2-Uncaptured | 600 | 220 | 19.680/22.527 | 0.414/0.547 | 791-791
+City-Hard-Boss2-Uncaptured | 601 | 175 | 19.703/22.923 | 0.364/0.492 | 791-791
+Desert-Hard-Boss2-Uncaptured | 600 | 146 | 18.856/19.813 | 0.310/0.363 | 791-791
+Candyland-Hard-Boss2-Uncaptured | 601 | 247 | 19.209/20.871 | 0.502/0.772 | 791-791
+Space-Hard-Boss2-Uncaptured | 600 | 253 | 19.053/20.953 | 0.454/0.503 | 810-810
+Underwater-Hard-Boss2-Uncaptured | 600 | 280 | 18.831/21.337 | 0.545/0.594 | 810-810
+Hell-Hard-Boss2-Uncaptured | 601 | 279 | 19.416/20.583 | 0.522/2.841 | 810-810
