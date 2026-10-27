@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [UnityEngine.Scripting.Preserve]
-public sealed class HellCrabBoss : DistrictBoss
+public sealed partial class HellCrabBoss : DistrictBoss
 {
     readonly Transform[] claws = new Transform[2];
     const int ArmSections = 4;
@@ -114,6 +114,7 @@ public sealed class HellCrabBoss : DistrictBoss
 
     protected override void Attack()
     {
+        if (Difficulty.Hard) { AttackHard(); return; }
         if (claws[0] == null)
             return;
         int beat = (volley - 1) % 12;
