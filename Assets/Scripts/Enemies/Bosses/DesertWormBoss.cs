@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [UnityEngine.Scripting.Preserve]
-public sealed class DesertWormBoss : DistrictBoss
+public sealed partial class DesertWormBoss : DistrictBoss
 {
     public const int BodyCount = 7;
     readonly DesertWormCore[] cores = new DesertWormCore[BodyCount + 1];
@@ -96,6 +96,7 @@ public sealed class DesertWormBoss : DistrictBoss
 
     protected override void Attack()
     {
+        if (Difficulty.Hard) { AttackHard(); return; }
         int beat = (volley - 1) % 12;
         if (beat == 0)
             rippleTarget = player != null ? player.position : transform.position + Vector3.down * 8;
