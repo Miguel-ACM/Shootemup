@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [UnityEngine.Scripting.Preserve]
-public sealed class AbyssSubmarineBoss : DistrictBoss
+public sealed partial class AbyssSubmarineBoss : DistrictBoss
 {
     float cycleClock, nextWake;
     int lastCycle = -1;
@@ -144,7 +144,12 @@ public sealed class AbyssSubmarineBoss : DistrictBoss
                 ChargeTrails++;
                 for (int side = -1; side <= 1; side += 2)
                     for (int lane = -1; lane <= 1; lane++)
-                        Fire<SuspendedRound>(Hull.TransformPoint(new Vector3(side * 1.02f, .3f + lane * .35f, -.3f)), CombatVisuals.Rotate(Vector2.right * side, lane * 23), 1.8f + lane * .12f, .21f);
+                        {
+                            var port=Hull.TransformPoint(new Vector3(side*1.02f,.3f+lane*.35f,-.3f));
+                            var direction=CombatVisuals.Rotate(Vector2.right*side,lane*23);
+                            if(Difficulty.Hard)HardWake(port,direction,2.3f+lane*.16f,side);
+                            else Fire<SuspendedRound>(Hull.TransformPoint(new Vector3(side * 1.02f, .3f + lane * .35f, -.3f)), CombatVisuals.Rotate(Vector2.right * side, lane * 23), 1.8f + lane * .12f, .21f);
+                        }
             }
             if (player != null && Mathf.Abs(player.position.x - transform.position.x) < .65f && Mathf.Abs(player.position.y - transform.position.y) < 1.5f)
                 player.SendMessage("ReceiveHazardDamage", 16f, SendMessageOptions.DontRequireReceiver);
@@ -172,6 +177,7 @@ public sealed class AbyssSubmarineBoss : DistrictBoss
 
     void Crown(float offset, float speed)
     {
+        if(Difficulty.Hard){HardCrown(offset,speed);return;}
         EmergenceBursts++;
         PSXImpactEffects.Burst(transform.position, new Color(.42f, .83f, .94f), true);
         for (int i = 0; i < CrownSize; i++)
@@ -184,6 +190,7 @@ public sealed class AbyssSubmarineBoss : DistrictBoss
 
     protected override void Attack()
     {
+        if (Difficulty.Hard) { AttackHard(); return; }
         float t = Mathf.Repeat(cycleClock, cycleSeconds);
         if (Submerged || t >= 8.5f)
             return;
