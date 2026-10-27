@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [UnityEngine.Scripting.Preserve]
-public sealed class SpaceCitadelBoss : DistrictBoss
+public sealed partial class SpaceCitadelBoss : DistrictBoss
 {
     readonly SpaceBossPart[] parts = new SpaceBossPart[5];
     readonly Transform[] shutters = new Transform[2];
@@ -70,6 +70,7 @@ public sealed class SpaceCitadelBoss : DistrictBoss
 
     protected override void Attack()
     {
+        if (Difficulty.Hard) { AttackHard(); return; }
         if (parts[0] == null)
             return;
         int beat = (volley - 1) % 12;
