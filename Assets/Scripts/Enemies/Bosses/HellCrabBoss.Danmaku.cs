@@ -37,7 +37,7 @@ public sealed partial class HellCrabBoss
     // Each pincer sweeps its stream across the player's position, so the two lines cross and close.
     IEnumerator Scissors(int sign)
     {
-        int shots = Dense(phaseTwo ? 11 : 9);
+        int shots = Dense(phaseTwo ? 15 : 12);
         for (int i = 0; i < shots; i++)
         {
             float t = i / (shots - 1f);
@@ -60,7 +60,7 @@ public sealed partial class HellCrabBoss
     {
         if (eye < 0 || eyes[eye] == null || eyes[eye].health <= 0)
             return;
-        int souls = Dense(phaseTwo ? 7 : 5);
+        int souls = Dense(phaseTwo ? 9 : 7);
         var port = eyes[eye].transform.position;
         for (int i = 0; i < souls; i++)
         {
@@ -73,7 +73,7 @@ public sealed partial class HellCrabBoss
     // Two eyes stream in antiphase: their threads braid around each other on the way down.
     IEnumerator BraidedThreads()
     {
-        int beads = Dense(phaseTwo ? 16 : 12);
+        int beads = Dense(phaseTwo ? 20 : 15);
         for (int i = 0; i < beads; i++)
         {
             for (int e = 0; e < 2; e++)

@@ -40,7 +40,7 @@ public sealed partial class DesertWormBoss
             return;
         var t = cores[core].transform;
         Vector2 flank = t.right;
-        int mines = Dense(phaseTwo ? 7 : 5);
+        int mines = Dense(phaseTwo ? 9 : 7);
         for (int side = -1; side <= 1; side += 2)
             for (int i = 0; i < mines; i++)
             {
@@ -68,7 +68,7 @@ public sealed partial class DesertWormBoss
     // Heat haze: slow shimmering rounds that fade out at staggered depths.
     void Mirage(int parity)
     {
-        int count = Dense(3);
+        int count = Dense(4);
         for (int i = 1; i < cores.Length; i++)
             if (i % 2 == parity && CanShoot(cores[i]))
                 for (int j = 0; j < count; j++)
