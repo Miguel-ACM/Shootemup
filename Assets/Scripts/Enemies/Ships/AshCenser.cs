@@ -13,10 +13,16 @@ public sealed class AshCenser : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // Embers thrown up that stop at their apex, then fall as fast and slow columns.
     protected override void Attack()
     {
         if (volley % 2 == 0)
-            Fan<SimpleRound>((5), 24, 2.5f, .25f);
+        {
+            int count = Dense(5);
+            for (int i = 0; i < count; i++)
+                Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.up, (i - (count - 1) * .5f) * 16), 2.8f, .24f)
+                    .Pause(.55f, .3f, CombatRound.Turn.Down, 0, i % 2 == 0 ? .6f : 1.05f);
+        }
         else
             for (int s = -1; s <= 1; s += 2)
                 Fire<PlasmaOrb>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (volley % 4 == 1 ? 32 : 15)), 1.7f, .38f);
