@@ -13,10 +13,12 @@ public sealed class ReedSkimmer : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // Twin rounds that sway like reeds in the wind as they fall.
     protected override void Attack()
     {
         for (int side = -1; side <= 1; side += 2)
-            Fire<SimpleRound>(Muzzle(side < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, side * (volley % 2 == 0 ? 18 : 8)), 2.6f, .26f);
+            Fire<SimpleRound>(Muzzle(side < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, side * (volley % 2 == 0 ? 18 : 8)), 2.6f, .24f)
+                .Sway(side * .45f, .6f);
     }
 
 }
