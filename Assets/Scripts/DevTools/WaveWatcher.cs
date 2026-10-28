@@ -708,40 +708,5 @@ public sealed partial class WaveWatcher : MonoBehaviour
 
 public sealed class WaveWatcherMenu : AMenuElement
 {
-    protected override void Start()
-    {
-        base.Start();
-        // Fit the title frame around all four entries, including the added tools.
-        var border = menu.GetComponent<Image>();
-        if (border == null)
-            return;
-        Vector2 minimum = Vector2.one * float.MaxValue, maximum = Vector2.one * float.MinValue;
-        var corners = new Vector3[4];
-        foreach (var entry in menu.GetComponentsInChildren<AMenuElement>())
-        {
-            entry.GetComponent<RectTransform>().GetWorldCorners(corners);
-            foreach (var corner in corners)
-            {
-                Vector2 point = menu.transform.InverseTransformPoint(corner);
-                minimum = Vector2.Min(minimum, point);
-                maximum = Vector2.Max(maximum, point);
-            }
-        }
-        var frame = new GameObject("Title entries frame", typeof(RectTransform), typeof(Image));
-        frame.transform.SetParent(menu.transform, false);
-        frame.transform.SetAsFirstSibling();
-        var rect = frame.GetComponent<RectTransform>();
-        rect.anchoredPosition = (minimum + maximum) * .5f;
-        rect.sizeDelta = maximum - minimum + Vector2.one * 24;
-        var image = frame.GetComponent<Image>();
-        image.sprite = border.sprite;
-        image.type = border.type;
-        image.color = border.color;
-        image.raycastTarget = false;
-        border.enabled = false;
-        var menuRect = menu.GetComponent<RectTransform>();
-        menuRect.anchoredPosition -= new Vector2(0, (minimum.y + maximum.y) * .5f);
-    }
-
     public override void OnAccept() => WaveWatcher.Launch();
 }
