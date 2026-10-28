@@ -12,9 +12,18 @@ public sealed class MetroLancer : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // A skid: three rounds curling away from the aim like a car taking a corner.
     protected override void Attack()
     {
-        Fan<NeedleRound>((3), 11, 5.4f, .17f);
+        int count = Dense(3);
+        int sign = volley % 2 == 0 ? 1 : -1;
+        var aim = Aim;
+        for (int i = 0; i < count; i++)
+        {
+            var round = Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(aim, -sign * 18), 4.2f, .17f);
+            if (round != null)
+                round.Curl(sign * (20 + i * 10), 1.4f);
+        }
     }
 
 }
