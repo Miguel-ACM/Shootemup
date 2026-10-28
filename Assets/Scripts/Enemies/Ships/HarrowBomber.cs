@@ -13,11 +13,16 @@ public sealed class HarrowBomber : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // A harrow: each round stops briefly at its own depth, raking staggered furrows.
     protected override void Attack()
     {
-        int count = (5);
+        int count = Dense(5);
         for (int i = 0; i < count; i++)
-            Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 24 + (volley % 2 == 0 ? 8 : -8)), 2.1f + Mathf.Abs(i - (count - 1) * .5f) * .18f, .29f);
+        {
+            float lane = i - (count - 1) * .5f;
+            Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, lane * 24 + (volley % 2 == 0 ? 8 : -8)), 2.4f, .27f)
+                .Pause(.5f + Mathf.Abs(lane) * .2f, .3f);
+        }
     }
 
 }
