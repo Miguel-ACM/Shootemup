@@ -49,22 +49,24 @@ public sealed partial class AbyssSubmarineBoss
         }
     }
 
-    // Each eruption throws a plume upward that falls back outward over the arena.
+    // Each eruption throws a dense mirrored plume upward in three speed layers;
+    // it falls back under gravity as nested arcs spreading over the arena.
     void Crown(float offset, float speed)
     {
         EmergenceBursts++;
         plumes++;
         PSXImpactEffects.Burst(transform.position, new Color(.42f, .83f, .94f), true);
-        int count = Dense(CrownSize * 3 / 5);
-        float tilt = plumes % 3 == 1 ? -18 : plumes % 3 == 2 ? 18 : 0;
-        for (int i = 0; i < count; i++)
-        {
-            int side = i % 2 == 0 ? -1 : 1, lane = (i / 2) % 3 - 1;
-            var port = Hull.TransformPoint(new Vector3(side * 1.02f, .3f + lane * .35f, -.3f));
-            float angle = tilt + (i - (count - 1) * .5f) * 110f / (count - 1);
-            Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.up, angle), speed + Random.Range(.6f, 1.8f), .22f)
-                .Fall(new Vector2(0, -2.5f));
-        }
+        int lanes = Dense(CrownSize - 6 + (phaseTwo ? 2 : 0)) | 1;
+        float tilt = plumes % 3 == 1 ? -12 : plumes % 3 == 2 ? 12 : 0;
+        for (int layer = 0; layer < 3; layer++)
+            for (int i = 0; i < lanes; i++)
+            {
+                float lane = i - (lanes - 1) * .5f;
+                float angle = tilt + lane * 150f / (lanes - 1) + (layer == 1 ? 75f / (lanes - 1) : 0);
+                var port = Hull.TransformPoint(new Vector3(Mathf.Sign(lane) * 1.02f * Mathf.Min(1, Mathf.Abs(lane)), .3f, -.3f));
+                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.up, angle), speed + .8f + layer * .9f, .19f)
+                    .Fall(new Vector2(0, -2.6f));
+            }
     }
 
     // The charge's wake hangs beside the hull, then sinks away diagonally.

@@ -275,6 +275,7 @@ public abstract class CombatRound : AEnemyBullet
     internal float wallRunFor, wallRunStart;
     internal int wallDirection, wallSide;
     Vector3 baseScale;
+    Vector2 travel;
     public bool Paused => pauseAt >= 0 && age >= pauseAt && age < pauseAt + pauseHold;
     public bool RunningWall => wallSide >= 0;
 
@@ -288,7 +289,7 @@ public abstract class CombatRound : AEnemyBullet
         resumeTurn = Turn.Keep;
         resumed = false;
         bounces = 0;
-        gravity = drift = Vector2.zero;
+        gravity = drift = travel = Vector2.zero;
         swayAmplitude = swayRate = 0;
         zigEvery = zigAngle = nextZig = 0;
         zigSign = 1;
@@ -358,6 +359,8 @@ public abstract class CombatRound : AEnemyBullet
             step += new Vector2(-heading.y, heading.x) * swayAmplitude * w * Mathf.Cos(w * age);
         }
         transform.position += (Vector3)step * dt;
+        if (step.sqrMagnitude > .0001f)
+            travel = step.normalized;
         if (zigEvery > 0 && age >= nextZig && factor > 0)
         {
             nextZig = age + zigEvery;
@@ -469,12 +472,14 @@ public abstract class CombatRound : AEnemyBullet
 
     protected void Orient()
     {
-        if (!needsOrientation && heading == orientedHeading && !(this is ReturningDisc))
+        // Arrows under gravity or sway point along their actual path, not their launch heading.
+        Vector2 facing = gravity != Vector2.zero || swayAmplitude != 0 ? travel : heading;
+        if (!needsOrientation && facing == orientedHeading && !(this is ReturningDisc))
             return;
-        if (heading.sqrMagnitude > .001f)
+        if (facing.sqrMagnitude > .001f)
         {
-            transform.rotation = Quaternion.FromToRotation(this is LaserSideRound ? Vector3.right : Vector3.up, heading);
-            orientedHeading = heading;
+            transform.rotation = Quaternion.FromToRotation(this is LaserSideRound ? Vector3.right : Vector3.up, facing);
+            orientedHeading = facing;
             needsOrientation = false;
         }
     }

@@ -47,9 +47,17 @@ public sealed partial class CityDuoBoss : DistrictBoss
 
     protected override void MoveBoss(float dt)
     {
+        if (!heavy && partner != null)
+        {
+            // The interceptor circles its hauler, so its fire winds out as spiral arms.
+            float angle = motionAge * 1.25f;
+            station = partner.transform.position + new Vector3(Mathf.Cos(angle) * 2.3f, Mathf.Sin(angle) * 1.7f, 0);
+            transform.position = Vector3.MoveTowards(transform.position, station, dt * 9);
+            return;
+        }
         float pace = heavy ? .8f : 2.05f;
-        station.x = Mathf.Sin(motionAge * pace + (heavy ? Mathf.PI : 0)) * (heavy ? 2.1f : 3.2f);
-        station.y = Camera.UpLimit - (heavy ? 2 : 3.5f);
+        station.x = Mathf.Sin(motionAge * pace + (heavy ? Mathf.PI : 0)) * (heavy ? 1.6f : 3.2f);
+        station.y = Camera.UpLimit - (heavy ? 2.7f : 3.5f);
         transform.position = Vector3.MoveTowards(transform.position, station, dt * (heavy ? 2.8f : 6.8f) * (enraged ? 1.2f : 1));
     }
     // Both ships keep one tempo until a partner dies; independent half-health
