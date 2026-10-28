@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public sealed partial class WaveWatcher
 {
     const int PageSize = 10;
+    static readonly Color Accent = new Color(.86f, .7f, .4f);
     RectTransform leftPanel, rightPanel, listPanel, variantPanel;
     TextMeshProUGUI pageLabel, variantLabel, mirrorLabel, tourLabel, loopNumber, copyLabel;
     TMP_InputField seedInput;
@@ -92,20 +93,22 @@ public sealed partial class WaveWatcher
         rightMask.offsetMax = Vector2.zero;
         leftPanel = Box(transform, "Watcher levels", new Vector2(-365, 0), new Vector2(270, 674), Panel);
         rightPanel = Box(transform, "Watcher catalog", new Vector2(365, 0), new Vector2(270, 674), Panel);
-        Label(leftPanel, "WAVE WATCHER", 22, new Vector2(0, 307), new Vector2(250, 36));
+        Label(leftPanel, "WAVE WATCHER", 22, new Vector2(0, 307), new Vector2(250, 36)).color = Accent;
+        Rule(leftPanel, 286);
+        // Districts in route order, two per row: early tiers on top, Hell last.
         foreach (var level in new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Desert, LevelId.Thunder, LevelId.Tunnel, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell })
         {
-            int row = levels.Count;
+            int index = levels.Count;
             var chosen = level;
-            levels[level] = Button(leftPanel, level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(), new Vector2(0, 280 - row * 18), new Vector2(230, 17), () => SelectLevel(chosen)).GetComponent<Image>();
+            levels[level] = Button(leftPanel, level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(), new Vector2(index % 2 == 0 ? -58 : 58, 266 - index / 2 * 30), new Vector2(112, 26), () => SelectLevel(chosen)).GetComponent<Image>();
         }
-        Label(leftPanel, "DIFFICULTY", 12, new Vector2(-79, 82), new Vector2(73, 30));
         foreach (var difficulty in new[] { RunDifficulty.Easy, RunDifficulty.Hard })
         {
             var chosen = difficulty;
-            difficulties[difficulty] = Button(leftPanel, difficulty.ToString().ToUpperInvariant(), new Vector2((int)difficulty * 79, 82), new Vector2(73, 30), () => SelectDifficulty(chosen)).GetComponent<Image>();
+            difficulties[difficulty] = Button(leftPanel, difficulty.ToString().ToUpperInvariant(), new Vector2(difficulty == RunDifficulty.Easy ? -58 : 58, 112), new Vector2(112, 26), () => SelectDifficulty(chosen)).GetComponent<Image>();
         }
-        var seedBox = Box(leftPanel, "Seed", new Vector2(-26, 44), new Vector2(178, 32), ButtonColor);
+        Rule(leftPanel, 92);
+        var seedBox = Box(leftPanel, "Seed", new Vector2(-26, 66), new Vector2(178, 30), ButtonColor);
         Label(seedBox, "SEED", 12, new Vector2(-64, 0), new Vector2(42, 32));
         var inputBox = Box(seedBox, "Seed input", new Vector2(23, 0), new Vector2(126, 32), Color.clear);
         var inputText = Label(inputBox, "", 16, Vector2.zero, new Vector2(120, 32));
@@ -116,15 +119,16 @@ public sealed partial class WaveWatcher
         seedInput.contentType = TMP_InputField.ContentType.IntegerNumber;
         seedInput.characterLimit = 10;
         seedInput.onEndEdit.AddListener(value => { if (int.TryParse(value, out int seed) && seed > 0) SetSeed(seed); else seedInput.SetTextWithoutNotify(LevelRun.Seed.ToString()); });
-        Button(leftPanel, "NEW", new Vector2(92, 44), new Vector2(46, 32), NewSet);
-        Button(leftPanel, "LOOP -", new Vector2(-79, 6), new Vector2(73, 30), () => SelectLoop(ReviewLoop - 1));
-        loopNumber = Label(leftPanel, "", 16, new Vector2(0, 6), new Vector2(72, 30));
-        Button(leftPanel, "LOOP +", new Vector2(79, 6), new Vector2(73, 30), () => SelectLoop(ReviewLoop + 1));
+        Button(leftPanel, "NEW", new Vector2(92, 66), new Vector2(46, 30), NewSet);
+        Button(leftPanel, "-", new Vector2(-92, 30), new Vector2(46, 28), () => SelectLoop(ReviewLoop - 1));
+        loopNumber = Label(leftPanel, "", 16, new Vector2(0, 30), new Vector2(120, 28));
+        Button(leftPanel, "+", new Vector2(92, 30), new Vector2(46, 28), () => SelectLoop(ReviewLoop + 1));
         for (int i = -1; i <= 1; i++)
         {
             int side = i;
-            aims.Add(Button(leftPanel, i < 0 ? "AIM L" : i > 0 ? "AIM R" : "AIM C", new Vector2(i * 79, -31), new Vector2(73, 30), () => SetAim(side)).GetComponent<Image>());
+            aims.Add(Button(leftPanel, i < 0 ? "AIM L" : i > 0 ? "AIM R" : "AIM C", new Vector2(i * 79, -4), new Vector2(73, 28), () => SetAim(side)).GetComponent<Image>());
         }
+        Rule(leftPanel, -26);
         Button(leftPanel, "REPLAY", new Vector2(0, -70), new Vector2(230, 30), Replay);
         pauseLabel = Button(leftPanel, "PAUSE", new Vector2(-60, -108), new Vector2(110, 30), TogglePause).GetComponentInChildren<TextMeshProUGUI>();
         Button(leftPanel, "STEP 1/60", new Vector2(60, -108), new Vector2(110, 30), StepOnce);
@@ -136,6 +140,8 @@ public sealed partial class WaveWatcher
         copyLabel = Button(leftPanel, "COPY FOR CHAT", new Vector2(0, -263), new Vector2(230, 32), CopyForChat).GetComponentInChildren<TextMeshProUGUI>();
         Button(leftPanel, "BACK", new Vector2(0, -307), new Vector2(230, 30), Exit);
         heading = Label(rightPanel, "", 22, new Vector2(0, 307), new Vector2(250, 36));
+        heading.color = Accent;
+        Rule(rightPanel, 286);
         string[] titles = { "WAVES", "PARTS", "ENEMIES", "BOSSES", "SHOTS" };
         for (int i = 0; i < titles.Length; i++)
         {
@@ -151,11 +157,17 @@ public sealed partial class WaveWatcher
         variantLabel = Label(variantPanel, "", 14, new Vector2(-40, 0), new Vector2(86, 28));
         Button(variantPanel, "+", new Vector2(20, 0), new Vector2(28, 28), () => SelectVariant(Variant + 1));
         mirrorLabel = Button(variantPanel, "MIRROR", new Vector2(82, 0), new Vector2(70, 28), ToggleMirror).GetComponentInChildren<TextMeshProUGUI>();
+        Rule(rightPanel, -228);
         partLabel = Label(rightPanel, "", 13, new Vector2(0, -261), new Vector2(234, 65));
         status = Label(rightPanel, "", 14, new Vector2(0, -315), new Vector2(250, 28));
         RebuildCatalog();
         LayoutPanels();
         Refresh();
+    }
+
+    void Rule(Transform panel, float y)
+    {
+        Box(panel, "Section rule", new Vector2(0, y), new Vector2(230, 1), new Color(.2f, .27f, .27f)).GetComponent<Image>().raycastTarget = false;
     }
 
     void LayoutPanels()
