@@ -157,6 +157,49 @@ public abstract class DistrictBoss : DistrictEnemy
         return ports[Mathf.Abs(index) % ports.Length];
     }
 
+    // Shared symmetric geometry. Every helper fires mirrored arrows around a centre
+    // line, so a boss's own mechanics stay distinct while its fire stays orderly.
+
+    // Mirrored pendulum streams from two ports: a lace that opens and folds.
+    protected IEnumerator MirrorLace(Transform anchor, Vector3 leftLocal, Vector3 rightLocal, int steps, int arms, float swing, float armGap, float speed, float interval, int sign = 1)
+    {
+        for (int i = 0; i < steps && anchor != null; i++)
+        {
+            float angle = sign * swing * Mathf.Sin(i / (float)steps * Mathf.PI * 2);
+            for (int arm = 0; arm < arms; arm++)
+            {
+                float a = angle + (arm - (arms - 1) * .5f) * armGap;
+                Fire<NeedleRound>(anchor.TransformPoint(leftLocal), CombatVisuals.Rotate(Vector2.down, -a), speed, .19f);
+                Fire<NeedleRound>(anchor.TransformPoint(rightLocal), CombatVisuals.Rotate(Vector2.down, a), speed, .19f);
+            }
+            yield return Wait(Rest(interval));
+        }
+    }
+
+    // A symmetric arrow fan released at several speeds: nested arcs that separate.
+    protected void ArrowWavefront(Vector3 port, Vector2 axis, int lanes, float arc, int layers, float speed, float layerStep)
+    {
+        float step = arc / Mathf.Max(1, lanes - 1);
+        for (int layer = 0; layer < layers; layer++)
+            for (int i = 0; i < lanes; i++)
+                Fire<NeedleRound>(port, CombatVisuals.Rotate(axis, (i - (lanes - 1) * .5f) * step + (layer % 2) * step * .5f), speed + layer * layerStep, .19f);
+    }
+
+    // Rows of arrow chevrons aimed at the player, each row a wider V.
+    protected IEnumerator Chevrons(Transform anchor, Vector3 local, int rows, float speed, float interval)
+    {
+        var aim = CombatVisuals.Aim(anchor.TransformPoint(local));
+        for (int row = 0; row < rows && anchor != null; row++)
+        {
+            var port = anchor.TransformPoint(local);
+            Fire<NeedleRound>(port, aim, speed, .19f);
+            for (int k = 1; k <= 2 + row; k++)
+                for (int mirror = -1; mirror <= 1; mirror += 2)
+                    Fire<NeedleRound>(port, CombatVisuals.Rotate(aim, mirror * k * 7), speed - k * .12f, .19f);
+            yield return Wait(Rest(interval));
+        }
+    }
+
     protected virtual void UpdateBar()
     {
         if (bar != null)
