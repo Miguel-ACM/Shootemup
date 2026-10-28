@@ -13,13 +13,18 @@ public sealed class EclipseSail : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // Needles, then two heavy moons orbiting each other on the way down.
     protected override void Attack()
     {
         if (volley % 2 == 0)
             Fan<NeedleRound>(3, 18, 3.9f, .16f);
         else
-            for (int s = -1; s <= 1; s += 2)
-                Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (volley % 4 < 2 ? 34 : 18)), 1.9f, .37f);
+            for (int s = 0; s < 2; s++)
+            {
+                var moon = Fire<SimpleRound>(Muzzle(s), Vector2.down, 1.7f, .33f);
+                if (moon != null)
+                    moon.Orbit(.7f, s * 180, 110, 12, 0, 0, 0, .4f);
+            }
     }
 
 }
