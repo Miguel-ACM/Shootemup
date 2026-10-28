@@ -16,13 +16,15 @@ public sealed partial class TunnelSawBoss
             return;
         if ((volley - 1) % 3 == 2)
             Phrase(SpinRings());
+        else if ((volley - 1) % 3 == 0)
+            ArrowWavefront(transform.position, CombatVisuals.Aim(transform.position), Dense(13), 70, 2, 3.2f, .9f);
     }
 
     void ImpactBurst(Vector2 inward)
     {
         using var sample = burstMarker.Auto();
         impacts++;
-        int rays = Dense(phaseTwo ? 9 : 7);
+        int rays = Dense(phaseTwo ? 13 : 11);
         float jitter = impacts % 2 == 0 ? 8 : -8;
         for (int i = 0; i < rays; i++)
         {
@@ -34,7 +36,7 @@ public sealed partial class TunnelSawBoss
         }
         if (!phaseTwo)
             return;
-        int runners = Dense(4);
+        int runners = Dense(6);
         for (int i = 0; i < runners; i++)
         {
             var axis = CombatVisuals.Rotate(inward, (i - (runners - 1) * .5f) * 34);
@@ -49,7 +51,7 @@ public sealed partial class TunnelSawBoss
     {
         if (spinner == null)
             spinner = GetComponent<CombatHullVisual>();
-        int rings = phaseTwo ? 4 : 3, teeth = Dense(phaseTwo ? 24 : 20);
+        int rings = phaseTwo ? 5 : 4, teeth = Dense(phaseTwo ? 32 : 28);
         float hold = .45f + rings * .38f;
         haltUntil = age + hold + .2f;
         spinner.spin = 1500;
