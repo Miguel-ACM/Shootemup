@@ -8,7 +8,6 @@ public sealed partial class SpaceCitadelBoss : DistrictBoss
     PulseLaser centralLaser;
     bool completing;
     float iris;
-    Vector2 barrageAxis = Vector2.down;
     public SpaceBossPart[] Parts => parts;
     public bool IsDefeated => completing;
     public bool CoreExposed => parts[0] != null && parts[1] != null && parts[0].health <= 0 && parts[1].health <= 0;
@@ -66,100 +65,6 @@ public sealed partial class SpaceCitadelBoss : DistrictBoss
                 shutters[i].localPosition = new Vector3((i == 0 ? -1 : 1) * iris * .72f, iris * .12f, 0);
         if (parts[4] != null)
             parts[4].SetExposed(CoreExposed);
-    }
-
-    protected override void Attack()
-    {
-        if (Difficulty.Hard)
-        {
-            AttackHard();
-            return;
-        }
-        if (parts[0] == null)
-            return;
-        int beat = (volley - 1) % 12;
-        if (beat == 4)
-        {
-            centralLaser = Fire<PulseLaser>(Hull.TransformPoint(new Vector3(0, -1.48f, -.30f)), Vector2.down, 0);
-            if (centralLaser != null)
-            {
-                centralLaser.Bind(Hull, new Vector3(0, -1.48f, -.30f));
-                centralLaser.warning = (1.3f);
-                centralLaser.activeTime = (1.5f);
-                centralLaser.width = phaseTwo ? .42f : .34f;
-            }
-        }
-        else if (beat == 0)
-        {
-            for (int i = 0; i < 2; i++)
-            {
-                var port = parts[i].health > 0 ? parts[i].transform.TransformPoint(new Vector3(0, -.3f, -.3f)) : Muzzle(i + 1);
-                PetalFan<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, i == 0 ? -23 : 23), (phaseTwo ? 7 : 5), 24, 1.8f, .34f, .2f);
-            }
-        }
-        else if (beat == 2 || beat == 3)
-        {
-            for (int i = 2; i < 4; i++)
-            {
-                bool turret = parts[i] != null && parts[i].health > 0;
-                if (!turret)
-                    continue;
-                int side = i == 2 ? -1 : 1, count = (phaseTwo ? 7 : 5);
-                // Half-lane replies form nested mirrored arcs, rather than repeating identical rays.
-                var axis = CombatVisuals.Rotate(Vector2.down, side * (35 + (beat - 2) * 12));
-                var port = parts[i].transform.TransformPoint(new Vector3(beat == 2 ? -.16f : .16f, -.695f, -.08f));
-                PetalFan<RicochetBolt>(port, axis, count, 21, 3.1f, .23f, .16f);
-            }
-        }
-        else if (beat == 6 || beat == 7)
-        {
-            if (beat == 6)
-                barrageAxis = Aim;
-            for (int side = -1; side <= 1; side += 2)
-            {
-                var port = Hull.TransformPoint(new Vector3(side * .4f, -.9f, -.4f));
-                PetalFan<NeedleRound>(port, CombatVisuals.Rotate(barrageAxis, side * (beat == 6 ? 21 : 9)), (phaseTwo ? 7 : 5), 17, 4.3f, .2f);
-            }
-        }
-        else if (beat == 9 || beat == 10)
-        {
-            // Core pressure survives gun destruction. Each exposed-reactor phrase
-            // answers the laser with a slow, bowed fan and half-lane replies.
-            if (beat == 9)
-                barrageAxis = Aim;
-            PetalFan<SimpleRound>(Hull.TransformPoint(new Vector3(0, -.7f, -.5f)),
-                CombatVisuals.Rotate(barrageAxis, beat == 9 ? -9 : 9), (phaseTwo ? 11 : 9), 19, 2.6f, .29f, .18f);
-        }
-        // Beats 1, 5, 8 and 11 deliberately breathe; broken guns reduce ricochets.
-    }
-
-    protected override void PrepareFire(float seconds)
-    {
-        base.PrepareFire(seconds);
-        firingCue.ClearWarning();
-        if (parts[0] == null)
-            return;
-        int beat = volley % 12;
-        if (beat == 0)
-        {
-            for (int i = 0; i < 2; i++)
-                Cue(parts[i].health > 0 ? parts[i].transform.TransformPoint(new Vector3(0, -.3f, -.3f)) : Muzzle(i + 1), seconds);
-        }
-        else if (beat == 2 || beat == 3)
-        {
-            for (int i = 2; i < 4; i++)
-                if (parts[i].health > 0)
-                    Cue(parts[i].transform.TransformPoint(new Vector3(beat == 2 ? -.16f : .16f, -.695f, -.08f)), seconds);
-        }
-        else if (beat == 4)
-            Cue(Muzzle(), seconds);
-        else if (beat == 6 || beat == 7)
-        {
-            Cue(Muzzle(1), seconds);
-            Cue(Muzzle(2), seconds);
-        }
-        else if (beat == 9 || beat == 10)
-            Cue(Muzzle(3), seconds);
     }
 
     protected override void OnPhaseTwo()
