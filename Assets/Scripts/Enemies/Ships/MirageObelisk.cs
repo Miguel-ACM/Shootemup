@@ -13,11 +13,18 @@ public sealed class MirageObelisk : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // Mines that stop and glint: even ones lunge at the player, odd ones sink into the sand.
     protected override void Attack()
     {
-        int count = (5);
+        int count = Dense(5);
         for (int i = 0; i < count; i++)
-            Fire<SuspendedRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 24 + (volley % 2 == 0 ? 10 : -10)), 2.5f, .24f);
+        {
+            float lane = i - (count - 1) * .5f;
+            var mine = Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, lane * 26 + (volley % 2 == 0 ? 10 : -10)), 2.5f, .22f)
+                .Pause(.5f, .9f + Mathf.Abs(lane) * .1f, CombatRound.Turn.Aim, 0, .9f);
+            if (i % 2 == 1)
+                mine.FadeAt(1.4f + Mathf.Abs(lane) * .1f);
+        }
     }
 
 }
