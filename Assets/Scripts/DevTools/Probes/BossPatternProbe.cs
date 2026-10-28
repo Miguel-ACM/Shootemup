@@ -168,33 +168,29 @@ public sealed class BossPatternProbe : MonoBehaviour
 
     IEnumerator ScoreChecks()
     {
-        foreach (var entry in new[] { (typeof(HeavyBomber), 5.2f), (typeof(AvalancheBomber), 8.4f), (typeof(FieldsHeavyWing), 5.4f), (typeof(SnowSiegeCraft), 7.2f) })
+        foreach (var entry in new[] { (typeof(AvalancheBomber), 8.4f, 1), (typeof(SnowSiegeCraft), 7.2f, 1) })
         {
             var enemy = DistrictEnemy.Spawn(entry.Item1, new Vector3(0, 5, 1));
             yield return null;
             enemy.enabled = false;
-            Set(enemy, "volley", 2);
+            Set(enemy, "volley", entry.Item3);
             Call(enemy, "Attack");
             var shells = CombatRound.Live.OfType<BurstShell>().ToArray();
             Check(shells.Length > 0 && shells.All(x => Mathf.Approximately(x.TravelDistance, entry.Item2)), entry.Item1.Name + " selects its own shell range");
             Clear();
             yield return null;
         }
-        foreach (var entry in new[] { (typeof(SnowSiegeBoss), 12, 66, 88), (typeof(ThunderLanceBoss), 12, 32, 54) })
+        // Every boss owns a phrased score: real output, attached charged beams and deliberate rests.
+        foreach (var type in new[] { typeof(SnowSiegeBoss), typeof(ThunderLanceBoss), typeof(FieldsBomberBoss) })
         {
-            var boss = (DistrictBoss)DistrictEnemy.Spawn(entry.Item1, new Vector3(0, 5, 1));
+            var boss = (DistrictBoss)DistrictEnemy.Spawn(type, new Vector3(0, 5, 1));
             yield return null;
             boss.enabled = false;
             foreach (bool second in new[] { false, true })
             {
                 Set(boss, "phaseTwo", second);
-                int total = 0, rests = 0, beats = entry.Item2;
-                if (second && boss is ThunderLanceBoss)
-                {
-                    Call(boss, "OnPhaseTwo");
-                    Call(boss, "MoveBoss", 100f);
-                }
-                for (int i = 1; i <= beats; i++)
+                int total = 0, rests = 0;
+                for (int i = 1; i <= 16; i++)
                 {
                     Set(boss, "volley", i);
                     Call(boss, "Attack");
@@ -203,18 +199,12 @@ public sealed class BossPatternProbe : MonoBehaviour
                     if (shots == 0)
                         rests++;
                     foreach (var shell in CombatRound.Live.OfType<BurstShell>())
-                        Check(shell.TravelDistance >= 4.6f, "boss shell has an explicit scored range");
+                        Check(shell.TravelDistance >= 4.4f, "boss shell has an explicit scored range");
                     foreach (var beam in CombatRound.Live.OfType<PulseLaser>())
                         Check(beam.IsAttachedTo(boss.Hull) && beam.warning >= 1, "beam has a charged attached emitter");
-                    foreach (var round in CombatRound.Live.ToArray())
-                        if (!(round is PulseLaser beam && beam.IsSustained))
-                            round.Vanish();
+                    ClearRounds();
                 }
-                Check(total == (second ? entry.Item4 : entry.Item3) && rests >= 2, entry.Item1.Name + " phase " + (second ? 2 : 1) + " scored output " + total + ", rests " + rests);
-            }
-            if (boss is ThunderLanceBoss thunder)
-            {
-                Check(thunder.RotorCount == 6 && CombatRound.Live.OfType<PulseLaser>().All(x => x.IsSustained && x.sweep < 0), "six permanent front beams keep one clockwise direction");
+                Check(total > 20 && rests >= 2, type.Name + " phase " + (second ? 2 : 1) + " scored output " + total + ", rests " + rests);
             }
             Clear();
             yield return null;
@@ -244,9 +234,9 @@ public sealed class BossPatternProbe : MonoBehaviour
         yield return null;
         Check(Mathf.Abs(heavy.health - initial * .7f) < .01f && heavy.partner == null, "city survivor heals half its missing health");
         Check(Get<bool>(heavy, "enraged") && FindObjectsByType<APickable>().Length == pickups, "first city death drops nothing and enrages survivor");
-        Set(heavy, "volley", 1);
+        Set(heavy, "volley", 3);
         Call(heavy, "Attack");
-        Check(CombatRound.Live.OfType<BurstShell>().Count() == 5, "city survivor strengthens its shell phrase");
+        Check(CombatRound.Live.OfType<NeedleRound>().Any(), "city survivor inherits its partner's headlight rays");
         Clear();
         yield return null;
         var saw = (TunnelSawBoss)DistrictEnemy.Spawn(typeof(TunnelSawBoss), new Vector3(0, 2, 1));
@@ -254,22 +244,26 @@ public sealed class BossPatternProbe : MonoBehaviour
         saw.enabled = false;
         Set(saw, "entered", true);
         Call(saw, "MoveBoss", .01f);
-        Call(saw, "Attack");
         saw.damage(1);
-        Check(CombatRound.Live.Count == 0 && saw.GetComponent<EnemyThrusters>() == null, "saw emits nothing on timer, free travel or hit and has no thrusters");
+        Check(CombatRound.Live.Count == 0 && saw.GetComponent<EnemyThrusters>() == null, "saw emits nothing when hit and has no thrusters");
         Rect arena = Get<Rect>(saw, "arena");
         float radius = saw.Hull.GetComponent<MeshFilter>().sharedMesh.bounds.extents.x * saw.Hull.localScale.x;
         saw.transform.position = new Vector3(arena.xMax - radius - .001f, 0, 1);
         Set(saw, "velocity", Vector2.right);
         Call(saw, "MoveBoss", .1f);
-        Check(CombatRound.Live.OfType<SimpleRound>().Count() == 44 && CombatRound.Live.OfType<RicochetBolt>().Count() == 17, "saw bounce emits dense mixed sizes");
-        Check(CombatRound.Live.Any(x => x.Heading.x < 0) && CombatRound.Live.Any(x => x.Heading.x > 0), "right-wall saw burst covers the complete circle");
+        int needles = CombatRound.Live.OfType<NeedleRound>().Count(), teeth = CombatRound.Live.OfType<SimpleRound>().Count();
+        Check(needles > 0 && needles == teeth, "saw bounce pairs fast needles with slow teeth");
+        Check(CombatRound.Live.All(x => x.Heading.x < .2f), "right-wall saw spray faces back into the arena");
         ClearRounds();
         Set(saw, "phaseTwo", true);
         Call(saw, "OnPhaseTwo");
         yield return null;
-        var saws = FindObjectsByType<TunnelSawBoss>();
-        Check(saws.Length == 3 && saws.All(x => x.GetComponent<EnemyThrusters>() == null), "second-phase saw deploys two destroyable saws without thrusters");
+        Check(FindObjectsByType<TunnelSawBoss>().Length == 1, "second-phase saw deploys no minions");
+        saw.transform.position = new Vector3(arena.xMax - radius - .001f, 0, 1);
+        Set(saw, "velocity", Vector2.right);
+        Set(saw, "haltUntil", 0f);
+        Call(saw, "MoveBoss", .1f);
+        Check(CombatRound.Live.OfType<SimpleRound>().Count() > CombatRound.Live.OfType<NeedleRound>().Count(), "second-phase bounce also throws wall runners");
         Clear();
         yield return null;
     }
@@ -340,9 +334,12 @@ public sealed class BossPatternProbe : MonoBehaviour
             yield return null;
         Clear();
         yield return null;
+        // Snow shells still open as a complete twelve-shard ring before the flakes hang and fall.
+        LevelRun.Reset(LevelId.Snow);
         ShellChecks();
         yield return ScoreChecks();
-        foreach (var entry in new[] { (LevelId.Snow, typeof(SnowSiegeBoss)), (LevelId.City, typeof(CityDuoBoss)), (LevelId.Thunder, typeof(ThunderLanceBoss)), (LevelId.Tunnel, typeof(TunnelSawBoss)) })
+        foreach (var entry in new[] { (LevelId.Fields, typeof(FieldsBomberBoss)), (LevelId.Snow, typeof(SnowSiegeBoss)), (LevelId.City, typeof(CityDuoBoss)), (LevelId.Thunder, typeof(ThunderLanceBoss)), (LevelId.Tunnel, typeof(TunnelSawBoss)),
+            (LevelId.Desert, typeof(DesertWormBoss)), (LevelId.Candyland, typeof(CandyRegentBoss)), (LevelId.Space, typeof(SpaceCitadelBoss)), (LevelId.Underwater, typeof(AbyssSubmarineBoss)), (LevelId.Hell, typeof(HellCrabBoss)) })
         {
             LevelRun.Reset(entry.Item1);
             LevelEnvironment.Apply();

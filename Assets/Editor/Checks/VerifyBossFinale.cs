@@ -262,10 +262,8 @@ public sealed class BossFinaleReview : MonoBehaviour
                 boss.damage(boss.health * .6f / Mathf.Max(.001f, GameRules.enemyDamageReceived));
                 yield return null;
                 yield return null;
-                var mini = FindObjectsByType<TunnelSawBoss>().First(b => b.miniature);
-                Kill(mini);
-                yield return null;
-                Check(BossDestruction.Current == null && !LevelChoice.Active, "miniature saw destruction does not trigger a boss finale or reward");
+                Check(!FindObjectsByType<TunnelSawBoss>().Any(b => b.miniature) && BossDestruction.Current == null && !LevelChoice.Active,
+                    "phase two throws wall runners instead of deploying saws, without a finale or reward");
             }
             if (level == LevelId.Snow)
             {
