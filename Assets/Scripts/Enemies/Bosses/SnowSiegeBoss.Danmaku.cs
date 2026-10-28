@@ -41,18 +41,22 @@ public sealed partial class SnowSiegeBoss
             CrystalShells();
     }
 
-    // Fast fan, full stop, then every round re-aims slowly at the player and accelerates.
-    // The re-aimed fan keeps its spacing, so the escape is a short sidestep, not a dash.
+    // Two mirrored arrow fans fly out, stop dead and glint, then every arrow re-aims
+    // at the player and crawls before accelerating. The re-aimed fans keep their spacing.
     void FreezeFrame(int sign)
     {
-        int count = Dense(phaseTwo ? 17 : 13);
-        float spread = 150f / (count - 1);
-        for (int i = 0; i < count; i++)
+        int count = Dense(phaseTwo ? 19 : 15);
+        float spread = 130f / (count - 1);
+        for (int mirror = -1; mirror <= 1; mirror += 2)
         {
-            float lane = i - (count - 1) * .5f;
-            Fire<SimpleRound>(Mouth, CombatVisuals.Rotate(Vector2.down, lane * spread + sign * 4), 4.2f - Mathf.Abs(lane) * .08f, .2f)
-                .Pause(.7f, .75f + Mathf.Abs(lane) * .03f, CombatRound.Turn.Aim, lane * 5.5f, .22f)
-                .Ramp(4, 1.6f, 1.5f);
+            var port = Hull.TransformPoint(new Vector3(mirror * .55f, -.55f, -.25f));
+            for (int i = 0; i < count; i++)
+            {
+                float lane = i - (count - 1) * .5f;
+                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.down, mirror * (35 + lane * spread * .5f)), 4.4f - Mathf.Abs(lane) * .06f, .19f)
+                    .Pause(.7f, .7f + Mathf.Abs(lane) * .03f, CombatRound.Turn.Aim, mirror * lane * 3.5f, .22f)
+                    .Ramp(4.5f, 1.4f, 1.45f);
+            }
         }
     }
 
@@ -83,19 +87,20 @@ public sealed partial class SnowSiegeBoss
         }
     }
 
-    // Rounds thrown out sideways, braking to a halt, then turning down and inward.
+    // Mirrored gusts thrown sideways that halt together and turn down and inward.
     IEnumerator Blizzard()
     {
-        int gusts = Dense(phaseTwo ? 12 : 9);
+        int gusts = Dense(phaseTwo ? 14 : 11);
         for (int g = 0; g < gusts; g++)
         {
-            int side = g % 2 == 0 ? -1 : 1;
-            var port = Hull.TransformPoint(new Vector3(side * .9f, -.3f, -.25f));
-            var axis = CombatVisuals.Rotate(Vector2.right * side, -side * Random.Range(5f, 25f));
-            Fire<SimpleRound>(port, axis, Random.Range(2.6f, 3.6f), .19f)
-                .Pause(.6f, .35f, CombatRound.Turn.Rotate, -side * Random.Range(95f, 125f), .75f)
-                .Sway(.25f, .6f);
-            yield return Wait(Rest(.13f));
+            float lift = 8 + (g % 4) * 7;
+            for (int side = -1; side <= 1; side += 2)
+            {
+                var port = Hull.TransformPoint(new Vector3(side * .9f, -.3f, -.25f));
+                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.right * side, -side * lift), 3.0f + (g % 3) * .3f, .19f)
+                    .Pause(.6f, .35f, CombatRound.Turn.Rotate, -side * (100 + (g % 3) * 10), .8f);
+            }
+            yield return Wait(Rest(.11f));
         }
     }
 
