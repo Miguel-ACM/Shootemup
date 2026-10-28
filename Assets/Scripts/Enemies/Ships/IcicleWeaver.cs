@@ -13,11 +13,14 @@ public sealed class IcicleWeaver : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // Icicles: rounds that hang below the ship, then drop straight down and speed up.
     protected override void Attack()
     {
-        int count = (5);
+        int count = Dense(5);
         for (int i = 0; i < count; i++)
-            Fire<SuspendedRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 19 + (volley % 2 == 0 ? 8 : -8)), 2.9f, .19f);
+            Fire<NeedleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 19 + (volley % 2 == 0 ? 8 : -8)), 2.6f, .17f)
+                .Pause(.45f, .5f + i * .12f, CombatRound.Turn.Down, 0, .5f)
+                .Ramp(3, 1.0f, .95f + i * .12f);
     }
 
 }
