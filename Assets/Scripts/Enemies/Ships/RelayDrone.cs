@@ -18,10 +18,11 @@ public sealed class RelayDrone : DistrictEnemy
         firingCue.Warn(seconds);
     }
 
+    // Lightning needles that jag left and right on their way down.
     protected override void Attack()
     {
-        int n = (3);
+        int n = Dense(3);
         for (int i = 0; i < n; i++)
-            Fire<NeedleRound>(Muzzle(n == 2 ? i * 2 : i), CombatVisuals.Rotate(Aim, (i - (n - 1) * .5f) * 15), 4.8f, .18f);
+            Fire<NeedleRound>(Muzzle(n == 2 ? i * 2 : i), CombatVisuals.Rotate(Aim, (i - (n - 1) * .5f) * 15), 4.2f, .18f).Zigzag(.2f, 22);
     }
 }
