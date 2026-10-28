@@ -106,6 +106,8 @@ public sealed class BossPatternProbe : MonoBehaviour
                 Destroy(enemy.gameObject);
         foreach (var item in FindObjectsByType<APickable>())
             Destroy(item.gameObject);
+        foreach (var drone in FindObjectsByType<ThunderLaserBot>())
+            Destroy(drone.gameObject);
     }
 
     BurstShell Shell(float distance, float speed = 3)
