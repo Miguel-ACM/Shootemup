@@ -63,7 +63,8 @@ public sealed class SandWorm : DistrictEnemy
     {
         if (segments == null)
             return;
-        // Alternating body ports create a travelling accent rather than a blob from the head.
+        // Alternating body ports create a travelling accent; the rounds shimmer like heat haze.
+        int count = Dense(3);
         for (int i = volley % 2; i < segments.Length; i += 2)
         {
             Vector3 port = segments[i].TransformPoint(new Vector3(0, 0, -.32f));
@@ -72,8 +73,8 @@ public sealed class SandWorm : DistrictEnemy
             if (player != null && Vector2.Distance(player.position, port) < 2)
                 continue;
             Vector2 aim = CombatVisuals.Aim(port);
-            for (int j = 0; j < (3); j++)
-                Fire<SimpleRound>(port, CombatVisuals.Rotate(aim, (j - ((3) - 1) * .5f) * 22), 3.7f, .19f);
+            for (int j = 0; j < count; j++)
+                Fire<SimpleRound>(port, CombatVisuals.Rotate(aim, (j - (count - 1) * .5f) * 22), 3.4f, .19f).Sway(.3f, .9f);
         }
     }
 }
