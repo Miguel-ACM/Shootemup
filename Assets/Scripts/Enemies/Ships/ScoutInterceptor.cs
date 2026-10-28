@@ -18,8 +18,10 @@ public sealed class ScoutInterceptor : DistrictEnemy
         firingCue.Warn(seconds);
     }
 
+    // A double tap: a fast pair, then a slower pair on the same lines.
     protected override void Attack()
     {
-        Fan<NeedleRound>((2), 13, 5.0f, .17f);
+        Fan<NeedleRound>(2, 13, 5.0f, .17f);
+        Fan<NeedleRound>(2, 13, 3.4f, .17f);
     }
 }
