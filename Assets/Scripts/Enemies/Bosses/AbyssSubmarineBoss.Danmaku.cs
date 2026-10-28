@@ -36,14 +36,15 @@ public sealed partial class AbyssSubmarineBoss
     // A volley caught by a sideways current, bending into a sweeping arc.
     IEnumerator Current(int sign)
     {
-        int shots = Dense(phaseTwo ? 14 : 10);
+        int shots = Dense(phaseTwo ? 14 : 10), cycle = lastCycle;
         for (int i = 0; i < shots; i++)
         {
             float lane = i / (shots - 1f) * 2 - 1;
             Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Vector2.down, -sign * (10 + lane * 22)), 2.6f, .2f)
                 .Fall(new Vector2(sign * 1.5f, 0));
             yield return Wait(Rest(.07f));
-            if (!PatternEmissionAllowed)
+            // A dive pauses the phrase; abandon it rather than finish on the next surfacing.
+            if (lastCycle != cycle)
                 yield break;
         }
     }
