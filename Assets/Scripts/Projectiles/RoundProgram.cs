@@ -74,8 +74,8 @@ public static class RoundProgram
         return shot;
     }
 
-    // Break into a fan of small rounds around the current heading.
-    public static T SplitAt<T>(this T shot, float at, int count, float spread, float speed, float radius = .14f) where T : CombatRound
+    // Break into a fan of small rounds around the current heading, or toward the player.
+    public static T SplitAt<T>(this T shot, float at, int count, float spread, float speed, float radius = .14f, bool aimed = false) where T : CombatRound
     {
         if (shot == null)
             return null;
@@ -84,6 +84,7 @@ public static class RoundProgram
         shot.splitSpread = spread;
         shot.splitSpeed = speed;
         shot.splitRadius = radius;
+        shot.splitAimed = aimed;
         return shot;
     }
 

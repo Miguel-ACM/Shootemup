@@ -271,6 +271,7 @@ public abstract class CombatRound : AEnemyBullet
     internal int zigSign;
     internal float splitAt, splitSpread, splitSpeed, splitRadius;
     internal int splitCount;
+    internal bool splitAimed;
     internal float wallRunFor, wallRunStart;
     internal int wallDirection, wallSide;
     Vector3 baseScale;
@@ -292,6 +293,7 @@ public abstract class CombatRound : AEnemyBullet
         zigEvery = zigAngle = nextZig = 0;
         zigSign = 1;
         splitCount = 0;
+        splitAimed = false;
         splitSpread = splitSpeed = splitRadius = 0;
         wallRunFor = wallRunStart = 0;
         wallDirection = 0;
@@ -441,6 +443,8 @@ public abstract class CombatRound : AEnemyBullet
             visual.color = Color.white;
         if (splitAt >= 0 && age >= splitAt && Live.Count + splitCount <= Limit)
         {
+            if (splitAimed)
+                heading = CombatVisuals.Aim(transform.position);
             for (int i = 0; i < splitCount; i++)
             {
                 float lane = splitCount <= 1 ? 0 : i - (splitCount - 1) * .5f;
