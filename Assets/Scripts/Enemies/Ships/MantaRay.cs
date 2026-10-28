@@ -19,10 +19,13 @@ public sealed class MantaRay : OceanEnemy
         firingCue.Warn(seconds);
     }
 
+    // Three rounds caught in a current that sweeps them toward the arena centre.
     protected override void Attack()
     {
-        int n = (3);
+        int n = Dense(3);
+        float current = transform.position.x > 0 ? -1.3f : 1.3f;
         for (int i = 0; i < n; i++)
-            Fire<SimpleRound>(Muzzle(n == 2 ? i * 2 : i), CombatVisuals.Rotate(Aim, (i - (n - 1) * .5f) * 29), 2.6f, .27f);
+            Fire<SimpleRound>(Muzzle(n == 2 ? i * 2 : i), CombatVisuals.Rotate(Aim, (i - (n - 1) * .5f) * 29 - current * 12), 2.5f, .25f)
+                .Fall(new Vector2(current, 0));
     }
 }
