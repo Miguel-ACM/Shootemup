@@ -12,9 +12,19 @@ public sealed class RivetMantis : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // Alternating fast ricochets and slow bouncing rivets in one fan.
     protected override void Attack()
     {
-        Fan<RicochetBolt>((5), 25, 3.1f, .21f);
+        int count = Dense(5);
+        var aim = Aim;
+        for (int i = 0; i < count; i++)
+        {
+            var axis = CombatVisuals.Rotate(aim, (i - (count - 1) * .5f) * 25);
+            if (i % 2 == 0)
+                Fire<RicochetBolt>(Muzzle(i), axis, 3.6f, .21f);
+            else
+                Fire<SimpleRound>(Muzzle(i), axis, 1.7f, .27f).Bounce(1);
+        }
     }
 
 }
