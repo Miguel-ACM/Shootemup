@@ -22,7 +22,7 @@ public sealed partial class AbyssSubmarineBoss
     // Big slow torpedoes that wind up to full speed along their aim.
     void Torpedoes()
     {
-        int tubes = Dense(phaseTwo ? 3 : 2);
+        int tubes = Dense(phaseTwo ? 5 : 4);
         for (int side = 1; side <= 2; side++)
         {
             var port = Muzzle(side);
@@ -33,16 +33,17 @@ public sealed partial class AbyssSubmarineBoss
         }
     }
 
-    // A volley caught by a sideways current, bending into a sweeping arc.
+    // Mirrored arrow volleys caught by opposite currents, curling outward in arcs.
     IEnumerator Current(int sign)
     {
-        int shots = Dense(phaseTwo ? 14 : 10), cycle = lastCycle;
+        int shots = Dense(phaseTwo ? 18 : 14), cycle = lastCycle;
         for (int i = 0; i < shots; i++)
         {
             float lane = i / (shots - 1f) * 2 - 1;
-            Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Vector2.down, -sign * (10 + lane * 22)), 2.6f, .2f)
-                .Fall(new Vector2(sign * 1.5f, 0));
-            yield return Wait(Rest(.07f));
+            for (int mirror = -1; mirror <= 1; mirror += 2)
+                Fire<NeedleRound>(Muzzle(mirror < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.down, mirror * sign * (12 + lane * 20)), 2.8f, .19f)
+                    .Fall(new Vector2(-mirror * sign * 1.5f, 0));
+            yield return Wait(Rest(.06f));
             // A dive pauses the phrase; abandon it rather than finish on the next surfacing.
             if (lastCycle != cycle)
                 yield break;
