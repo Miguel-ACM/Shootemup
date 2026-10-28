@@ -12,9 +12,18 @@ public sealed class BoneHarrier : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // Scissors: two curling lines that cross over the player's position.
     protected override void Attack()
     {
-        Fan<NeedleRound>((5), 17, 4.3f, .2f);
+        int count = Dense(3);
+        var aim = Aim;
+        for (int s = -1; s <= 1; s += 2)
+            for (int i = 0; i < count; i++)
+            {
+                var round = Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(aim, s * 24), 4.0f - i * .5f, .18f);
+                if (round != null)
+                    round.Curl(-s * 26, 1.6f);
+            }
     }
 
 }
