@@ -28,6 +28,8 @@ public sealed partial class HellCrabBoss
             SoulSnipe(BurningEye());
         else if (beat == 11)
             Phrase(BraidedThreads());
+        else if (beat == 2 || beat == 15)
+            Phrase(Chevrons(Hull, new Vector3(0, -.9f, -.4f), Dense(phaseTwo ? 7 : 5), 4.4f, .11f));
         else if (phaseTwo && (beat == 3 || beat == 14))
             EmberCage();
         else if (phaseTwo && beat == 13)
@@ -80,7 +82,7 @@ public sealed partial class HellCrabBoss
                 if (eyes[e] != null && eyes[e].health > 0)
                 {
                     var p = eyes[e].transform.position;
-                    Fire<SimpleRound>(p, CombatVisuals.Rotate(Vector2.down, (e == 0 ? 1 : -1) * 9), 2.6f, .2f)
+                    Fire<NeedleRound>(p, CombatVisuals.Rotate(Vector2.down, (e == 0 ? 1 : -1) * 9), 2.8f, .19f)
                         .Sway(e == 0 ? .7f : -.7f, .7f);
                 }
             yield return Wait(Rest(.085f));
@@ -90,14 +92,14 @@ public sealed partial class HellCrabBoss
     // Embers thrown up from the claws stop at their apex, then fall as alternating fast and slow columns.
     void EmberCage()
     {
-        int embers = Dense(8);
+        int embers = Dense(11);
         for (int side = 0; side < 2; side++)
         {
             var port = claws[side].TransformPoint(Pincer);
             for (int i = 0; i < embers; i++)
             {
                 float lane = i - (embers - 1) * .5f;
-                Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.up, lane * 11 + (side == 0 ? 20 : -20)), 3.2f, .21f)
+                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.up, lane * 11 + (side == 0 ? 20 : -20)), 3.2f, .19f)
                     .Pause(.6f, .35f, CombatRound.Turn.Down, 0, i % 2 == 0 ? .55f : 1.05f);
             }
         }
@@ -113,6 +115,8 @@ public sealed partial class HellCrabBoss
             Cue(claws[0].TransformPoint(Pincer), seconds);
             Cue(claws[1].TransformPoint(Pincer), seconds);
         }
+        else if (beat == 2 || beat == 15)
+            Cue(Hull.TransformPoint(new Vector3(0, -.9f, -.4f)), seconds);
         else if (beat == 8 || beat == 11 || phaseTwo && beat == 13)
             for (int e = 0; e < 2; e++)
                 if (eyes[e].health > 0)
