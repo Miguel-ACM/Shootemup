@@ -42,7 +42,8 @@ public sealed partial class SpaceCitadelBoss
         else if (beat == 10)
             OrbitalCrown(Muzzle(3), phaseTwo ? 32 : 28, 4, 2.8f, volley / 12 % 2 == 0 ? 32 : -32, 1.15f, volley * 11);
     }
-    protected override void PrepareHardFire(float seconds)
+
+    protected override void PrepareScore(float seconds)
     {
         if (parts[0] == null)
             return;

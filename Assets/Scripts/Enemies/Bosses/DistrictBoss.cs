@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 public abstract class DistrictBoss : DistrictEnemy
 {
@@ -13,6 +15,7 @@ public abstract class DistrictBoss : DistrictEnemy
     {
         get; private set;
     }
+
     public int PatternRounds => Patterns != null ? Patterns.Released : 0;
     protected bool PhaseTransitioning => age < phaseEntryUntil;
     protected virtual bool PatternEmissionAllowed => true;
@@ -49,14 +52,10 @@ public abstract class DistrictBoss : DistrictEnemy
             return;
         age += Time.deltaTime * LevelRun.EnemyTempoScale;
         float warning = (nextAttack - age) / LevelRun.EnemyTempoScale;
-        if (Difficulty.Hard)
-        {
-            base.PrepareFire(warning);
-            firingCue.ClearWarning();
-            PrepareHardFire(warning);
-        }
-        else
-            PrepareFire(warning);
+        // One authored score on both difficulties; Easy thins the counts.
+        base.PrepareFire(warning);
+        firingCue.ClearWarning();
+        PrepareScore(warning);
         if (!phaseTwo && PhaseTwoReady)
         {
             phaseTwo = true;
@@ -105,9 +104,11 @@ public abstract class DistrictBoss : DistrictEnemy
         nextPressure = Mathf.Max(nextPressure, phaseEntryUntil);
         firingCue.ClearWarning();
         Patterns.Cancel();
+        StopPhrases();
         CombatRound.ClearAll();
         phaseEntry.Begin();
     }
+
     protected virtual float PressureInterval => phaseTwo ? .55f : .85f;
     protected virtual void PressureAttack()
     {
@@ -116,19 +117,64 @@ public abstract class DistrictBoss : DistrictEnemy
     protected virtual void OnPhaseTwo()
     {
     }
-    protected virtual void PrepareHardFire(float seconds)
+
+    protected virtual void PrepareScore(float seconds)
     {
     }
+
+    // Multi-frame phrases: coroutines on the boss that wait in enemy tempo,
+    // hold through phase entries and stop with the phase or the boss.
+    readonly List<Coroutine> phrases = new List<Coroutine>();
+    protected bool Holding => GameRules.playerDisabled || WorldTimeStop.Frozen || PhaseTransitioning || !PatternEmissionAllowed;
+    protected void Phrase(IEnumerator routine)
+    {
+        if (isActiveAndEnabled)
+            phrases.Add(StartCoroutine(routine));
+    }
+
+    protected void StopPhrases()
+    {
+        foreach (var phrase in phrases)
+            if (phrase != null)
+                StopCoroutine(phrase);
+        phrases.Clear();
+    }
+
+    protected IEnumerator Wait(float seconds)
+    {
+        for (float t = 0; t < seconds;)
+        {
+            if (!Holding)
+                t += Time.deltaTime * LevelRun.EnemyTempoScale;
+            yield return null;
+        }
+    }
+    // A visible charge at a moving emitter for the whole wait.
+    protected IEnumerator Charge(Transform anchor, Vector3 local, float seconds)
+    {
+        for (float t = 0; t < seconds;)
+        {
+            if (anchor == null)
+                yield break;
+            if (!Holding)
+                t += Time.deltaTime * LevelRun.EnemyTempoScale;
+            Cue(anchor.TransformPoint(local), seconds - t);
+            yield return null;
+        }
+    }
+
     protected Vector3 WeaponPort(int index = 0)
     {
         var ports = EnemyWeaponLayout.Ports(hull);
         return ports[Mathf.Abs(index) % ports.Length];
     }
+
     internal void PreparePattern(Vector3 port, float seconds, Vector2 axis)
     {
         Cue(port, seconds);
         PointWeapon(port, axis);
     }
+
     internal SimpleRound PatternShot(Vector3 port, Vector2 axis, float speed, float radius)
         => Fire<SimpleRound>(port, axis, speed, radius);
     protected SimpleRound HeavyTrail(Vector3 port, Vector2 axis, float radius = .72f, float speed = 1.65f)
@@ -138,6 +184,7 @@ public abstract class DistrictBoss : DistrictEnemy
             shot.LeaveTrail(.28f, 4.8f);
         return shot;
     }
+
     protected void OrbitalCrown(Vector3 port, int count, int gap, float radius, float rotation, float drift, float offset)
     {
         if (CombatRound.Live.Count + count - gap > CombatRound.Limit)
@@ -149,6 +196,7 @@ public abstract class DistrictBoss : DistrictEnemy
                 shot.Orbit(radius, offset + i * 360f / count, rotation);
         }
     }
+
     protected void OrbitalSystem(Vector3 port, int moons, int beads, float offset)
     {
         int gap = 2, count = moons * (beads - gap);
@@ -172,6 +220,7 @@ public abstract class DistrictBoss : DistrictEnemy
 
     protected override void Die()
     {
+        StopPhrases();
         if (bar != null)
             bar.SetVisible(false);
         base.Die();

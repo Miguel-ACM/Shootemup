@@ -14,6 +14,7 @@ public sealed partial class AbyssSubmarineBoss
         else if (volley % 4 == 2)
             Patterns.Ribbon(Hull, WeaponPort(), Aim, 3, 14, 24, 3.0f, .09f);
     }
+
     void HardCrown(float offset, float speed)
     {
         EmergenceBursts++;
@@ -32,13 +33,15 @@ public sealed partial class AbyssSubmarineBoss
                 shot.Curl((i % 2 == 0 ? 1 : -1) * (eruptionB && !eruptionC ? 16 : -16), 2.3f);
         }
     }
+
     void HardWake(Vector3 port, Vector2 direction, float speed, int side)
     {
         var shot = Fire<SimpleRound>(port, direction, speed, .18f);
         if (shot != null)
             shot.Curl(-side * 26, 1.6f);
     }
-    protected override void PrepareHardFire(float seconds)
+
+    protected override void PrepareScore(float seconds)
     {
         // Emergence and charge keep their existing physical warnings and launcher cues.
         float t = Mathf.Repeat(cycleClock, cycleSeconds);

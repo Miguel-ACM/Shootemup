@@ -28,7 +28,8 @@ public sealed partial class ThunderLanceBoss
                 pulse.IceSeed(1.8f, phaseTwo ? 32 : 28, 5, 2.7f, phaseTwo ? -30 : 22, 1.15f, 20);
         }
     }
-    protected override void PrepareHardFire(float seconds)
+
+    protected override void PrepareScore(float seconds)
     {
         int beat = volley % 16;
         if (beat == 0 || beat == 5 || beat == 11)

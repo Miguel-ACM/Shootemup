@@ -1,10 +1,10 @@
 using UnityEngine;
 public sealed class RicochetBolt : CombatRound
 {
-    int bounces;
+    int wallHits;
     protected override void Initialize()
     {
-        bounces = 0;
+        wallHits = 0;
     }
 
     protected override void Tick(float dt)
@@ -13,7 +13,7 @@ public sealed class RicochetBolt : CombatRound
         var p = transform.position;
         if ((p.x < Camera.LeftLimit + .15f && heading.x < 0) || (p.x > Camera.RightLimit - .15f && heading.x > 0))
         {
-            if (bounces++ >= 1)
+            if (wallHits++ >= 1)
             {
                 Release();
                 return;

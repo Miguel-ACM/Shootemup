@@ -26,7 +26,8 @@ public sealed partial class CityDuoBoss
                 HeavyTrail(Muzzle(2), Vector2.down, .72f, 2.0f);
         }
     }
-    protected override void PrepareHardFire(float seconds)
+
+    protected override void PrepareScore(float seconds)
     {
         int beat = volley % 12;
         if (heavy && (beat == 0 || beat == 2 || beat == 4 || beat == 6) || enraged && beat == 8)

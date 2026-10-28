@@ -16,6 +16,7 @@ public abstract class DistrictEnemy : AEnemy
     {
         get; private set;
     }
+
     public virtual bool NoseAimed => EnemyWeaponLayout.NoseAimed(hull);
     public float VisualHeading => NoseAimed && (IsPreparing || age - lastRelease < .24f) ? Vector2.SignedAngle(Vector2.down, committedAim) : 0;
     public float hullScale = .7f;
@@ -298,6 +299,9 @@ public abstract class DistrictEnemy : AEnemy
         firingCue?.Warn(enteredFight ? seconds : -1);
         firingCue?.PointAll(CueAxis);
     }
+    // Easy keeps every pattern's geometry and identity but fewer rounds and longer rests.
+    protected static int Dense(int count) => Difficulty.Hard ? count : Mathf.Max(1, Mathf.RoundToInt(count * .65f));
+    protected static float Rest(float seconds) => Difficulty.Hard ? seconds : seconds * 1.3f;
     protected void Cue(Vector3 world, float seconds) => firingCue?.WarnAt(world, seconds);
     public void PointWeapon(Vector3 world, Vector2 direction) => firingCue?.PointAt(world, direction);
     protected Vector3 Muzzle(int index = 0)
@@ -305,6 +309,7 @@ public abstract class DistrictEnemy : AEnemy
         var ports = EnemyWeaponLayout.Ports(hull);
         return ports.Length == 0 ? transform.position : Hull.TransformPoint(ports[Mathf.Abs(index) % ports.Length]);
     }
+
     protected T Fire<T>(Vector3 position, Vector2 direction, float velocity, float radius = .18f) where T : CombatRound
     {
         // Legacy center-fired volleys now leave the existing modeled weapon.

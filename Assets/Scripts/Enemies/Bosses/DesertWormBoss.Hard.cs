@@ -13,6 +13,7 @@ public sealed partial class DesertWormBoss
         }
         return -1;
     }
+
     void AttackHard()
     {
         int beat = (volley - 1) % 16;
@@ -50,7 +51,8 @@ public sealed partial class DesertWormBoss
                 Patterns.Ribbon(cores[i].transform, Vector3.zero, CombatVisuals.Aim(cores[i].transform.position), 3, 16, 32, 3.2f, .09f, cores[i]);
         }
     }
-    protected override void PrepareHardFire(float seconds)
+
+    protected override void PrepareScore(float seconds)
     {
         int beat = volley % 16;
         if (beat == 0 || beat == 2 || beat == 4)

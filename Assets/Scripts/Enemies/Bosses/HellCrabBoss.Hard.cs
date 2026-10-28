@@ -10,6 +10,7 @@ public sealed partial class HellCrabBoss
         int first = (volley / 16) % 2;
         return eyes[first].health > 0 ? first : eyes[1 - first].health > 0 ? 1 - first : -1;
     }
+
     void AttackHard()
     {
         if (claws[0] == null)
@@ -36,7 +37,8 @@ public sealed partial class HellCrabBoss
         else if (phaseTwo && beat == 14)
             Patterns.Ribbon(claws[0], new Vector3(0, -.32f, -.4f), Vector2.down, 3, 14, 36, 2.8f);
     }
-    protected override void PrepareHardFire(float seconds)
+
+    protected override void PrepareScore(float seconds)
     {
         if (claws[0] == null)
             return;

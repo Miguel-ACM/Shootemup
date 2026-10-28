@@ -17,7 +17,8 @@ public sealed partial class FieldsBomberBoss
         else if (beat == 9)
             Fire<ScatterCarrier>(Muzzle(4), Vector2.down, 2.6f, .33f);
     }
-    protected override void PrepareHardFire(float seconds)
+
+    protected override void PrepareScore(float seconds)
     {
         int beat = volley % 12;
         if (beat == 0 || beat == 3)

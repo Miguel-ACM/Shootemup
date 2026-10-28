@@ -17,7 +17,8 @@ public sealed partial class CandyRegentBoss
         else if (beat == 14)
             OrbitalCrown(Muzzle(0), phaseTwo ? 26 : 22, 4, 1.75f, phaseTwo ? -46 : 38, 1.45f, volley * 7);
     }
-    protected override void PrepareHardFire(float seconds)
+
+    protected override void PrepareScore(float seconds)
     {
         int beat = volley % 16;
         if (beat == 0 || beat == 4)

@@ -39,7 +39,8 @@ public sealed partial class SnowSiegeBoss
                 launch[i] = comb[i].position;
         }
     }
-    protected override void PrepareHardFire(float seconds)
+
+    protected override void PrepareScore(float seconds)
     {
         int beat = volley % 14;
         if (beat == 0 || beat == 3 || beat == 5 || beat == 8)

@@ -105,7 +105,9 @@ public abstract class CombatRound : AEnemyBullet
         shot.enabled = true;
         shot.gameObject.SetActive(true);
         Live.Add(shot);
+        shot.ResetProgram();
         shot.Initialize();
+        shot.baseScale = shot.transform.localScale;
         shot.collisionReach = shot.localCollisionRadius * Mathf.Max(Mathf.Abs(shot.transform.localScale.x), Mathf.Abs(shot.transform.localScale.y));
         if (shot.UsesPixelContact && shot.collision is CircleCollider2D proxy)
             proxy.radius = shot.localCollisionRadius + ProjectilePixelContact.PolygonSkin / Mathf.Max(.00001f, Mathf.Abs(shot.transform.localScale.x));
@@ -212,7 +214,7 @@ public abstract class CombatRound : AEnemyBullet
     }
 
     protected virtual float ClockRate => 1;
-    protected virtual float ContactSpeed => speed;
+    protected virtual float ContactSpeed => speed * Mathf.Max(1, rampTo, resumeSpeed) + drift.magnitude + swayAmplitude * swayRate * 6.3f;
     protected override void Update()
     {
         if (ended || WorldTimeStop.Frozen || Time.deltaTime <= 0)
@@ -226,6 +228,8 @@ public abstract class CombatRound : AEnemyBullet
             return;
         }
         Tick(dt);
+        if (!ended)
+            Program();
         if (!ended && !(this is PulseLaser) && PocketWind.Current != null)
             transform.position += PocketWind.Velocity(transform.position) * Time.deltaTime;
         if (!ended)
@@ -244,8 +248,219 @@ public abstract class CombatRound : AEnemyBullet
 
     protected virtual void Tick(float dt)
     {
-        transform.position += (Vector3)heading * speed * dt;
+        Advance(dt);
         Orient();
+    }
+
+    // Authored danmaku behaviours, configured through RoundProgram after launch.
+    // Every field resets on launch; nothing allocates and no child objects are added.
+    public enum Turn
+    {
+        Keep, Aim, Rotate, Scatter, Down
+    }
+
+    internal float rampAt, rampOver, rampTo;
+    internal float pauseAt, pauseHold, resumeAngle, resumeSpeed;
+    internal Turn resumeTurn;
+    internal bool resumed;
+    internal float fadeAt;
+    internal int bounces;
+    internal Vector2 gravity, drift;
+    internal float swayAmplitude, swayRate;
+    internal float zigEvery, zigAngle, nextZig;
+    internal int zigSign;
+    internal float splitAt, splitSpread, splitSpeed, splitRadius;
+    internal int splitCount;
+    internal float wallRunFor, wallRunStart;
+    internal int wallDirection, wallSide;
+    Vector3 baseScale;
+    public bool Paused => pauseAt >= 0 && age >= pauseAt && age < pauseAt + pauseHold;
+    public bool RunningWall => wallSide >= 0;
+
+    void ResetProgram()
+    {
+        rampAt = rampOver = 0;
+        rampTo = 1;
+        pauseAt = fadeAt = splitAt = -1;
+        pauseHold = resumeAngle = 0;
+        resumeSpeed = 1;
+        resumeTurn = Turn.Keep;
+        resumed = false;
+        bounces = 0;
+        gravity = drift = Vector2.zero;
+        swayAmplitude = swayRate = 0;
+        zigEvery = zigAngle = nextZig = 0;
+        zigSign = 1;
+        splitCount = 0;
+        splitSpread = splitSpeed = splitRadius = 0;
+        wallRunFor = wallRunStart = 0;
+        wallDirection = 0;
+        wallSide = -1;
+    }
+
+    protected float SpeedFactor()
+    {
+        float factor = rampOver > 0 ? Mathf.Lerp(1, rampTo, Mathf.Clamp01((age - rampAt) / rampOver)) : 1;
+        if (pauseAt < 0)
+            return factor;
+        float resume = pauseAt + pauseHold;
+        if (age < pauseAt)
+            return factor * Mathf.Clamp01((pauseAt - age) / Mathf.Max(.05f, Mathf.Min(.35f, pauseAt)));
+        if (age < resume)
+            return 0;
+        if (!resumed)
+        {
+            resumed = true;
+            Redirect();
+        }
+        return factor * resumeSpeed * Mathf.SmoothStep(0, 1, Mathf.Clamp01((age - resume) / .3f));
+    }
+
+    void Redirect()
+    {
+        switch (resumeTurn)
+        {
+            case Turn.Aim:
+                heading = CombatVisuals.Rotate(CombatVisuals.Aim(transform.position), resumeAngle);
+                break;
+            case Turn.Rotate:
+                heading = CombatVisuals.Rotate(heading, resumeAngle);
+                break;
+            case Turn.Scatter:
+                heading = CombatVisuals.Rotate(heading, UnityEngine.Random.Range(-resumeAngle, resumeAngle));
+                break;
+            case Turn.Down:
+                heading = CombatVisuals.Rotate(Vector2.down, resumeAngle);
+                break;
+        }
+        needsOrientation = true;
+    }
+
+    protected void Advance(float dt)
+    {
+        if (wallSide >= 0)
+        {
+            RunWall(dt);
+            return;
+        }
+        float factor = SpeedFactor();
+        Vector2 step = heading * speed * factor;
+        if (gravity != Vector2.zero)
+        {
+            drift += gravity * dt;
+            step += drift;
+        }
+        if (swayAmplitude > 0 && factor > 0)
+        {
+            float w = swayRate * Mathf.PI * 2;
+            step += new Vector2(-heading.y, heading.x) * swayAmplitude * w * Mathf.Cos(w * age);
+        }
+        transform.position += (Vector3)step * dt;
+        if (zigEvery > 0 && age >= nextZig && factor > 0)
+        {
+            nextZig = age + zigEvery;
+            heading = CombatVisuals.Rotate(heading, zigSign * zigAngle * 2);
+            zigSign = -zigSign;
+            needsOrientation = true;
+        }
+        Walls();
+    }
+
+    void Walls()
+    {
+        var p = transform.position;
+        if (wallDirection != 0)
+        {
+            const float inset = .3f;
+            if (p.x <= Camera.LeftLimit + inset || p.x >= Camera.RightLimit - inset || p.y >= Camera.UpLimit - inset || p.y <= Camera.DownLimit + inset)
+            {
+                // 0 left, 1 top, 2 right, 3 bottom: clockwise order around the arena.
+                float left = p.x - Camera.LeftLimit, right = Camera.RightLimit - p.x, top = Camera.UpLimit - p.y, bottom = p.y - Camera.DownLimit;
+                float least = Mathf.Min(Mathf.Min(left, right), Mathf.Min(top, bottom));
+                wallSide = least == left ? 0 : least == top ? 1 : least == right ? 2 : 3;
+                wallRunStart = age;
+                PSXImpactEffects.Vanish(p, Accent, .2f);
+            }
+            return;
+        }
+        if (bounces <= 0)
+            return;
+        bool side = p.x < Camera.LeftLimit + .15f && heading.x < 0 || p.x > Camera.RightLimit - .15f && heading.x > 0;
+        bool ceiling = p.y > Camera.UpLimit - .15f && heading.y > 0;
+        if (!side && !ceiling)
+            return;
+        bounces--;
+        if (side)
+            heading.x = -heading.x;
+        if (ceiling)
+            heading.y = -heading.y;
+        p.x = Mathf.Clamp(p.x, Camera.LeftLimit + .15f, Camera.RightLimit - .15f);
+        transform.position = p;
+        needsOrientation = true;
+    }
+
+    void RunWall(float dt)
+    {
+        const float inset = .3f;
+        float xMin = Camera.LeftLimit + inset, xMax = Camera.RightLimit - inset, yMin = Camera.DownLimit + inset, yMax = Camera.UpLimit - inset;
+        var p = (Vector2)transform.position;
+        float travel = speed * dt;
+        for (int guard = 0; guard < 3 && travel > 0; guard++)
+        {
+            // Clockwise: up the left wall, right along the top, down the right, left along the bottom.
+            int side = wallSide;
+            Vector2 direction = side == 0 ? Vector2.up : side == 1 ? Vector2.right : side == 2 ? Vector2.down : Vector2.left;
+            if (wallDirection < 0)
+                direction = -direction;
+            if (side == 0 || side == 2)
+                p.x = side == 0 ? xMin : xMax;
+            else
+                p.y = side == 1 ? yMax : yMin;
+            float limit = direction.y > 0 ? yMax - p.y : direction.y < 0 ? p.y - yMin : direction.x > 0 ? xMax - p.x : p.x - xMin;
+            float move = Mathf.Min(travel, Mathf.Max(0, limit));
+            p += direction * move;
+            travel -= move;
+            if (travel > 0)
+                wallSide = (side + (wallDirection > 0 ? 1 : 3)) % 4;
+            heading = direction;
+        }
+        transform.position = new Vector3(p.x, p.y, transform.position.z);
+        needsOrientation = true;
+        if (age - wallRunStart > wallRunFor && fadeAt < 0)
+            fadeAt = age;
+    }
+
+    void Program()
+    {
+        if (Paused)
+        {
+            float glint = 1.12f + .1f * Mathf.Sin(age * 22);
+            visual.color = new Color(glint, glint, glint, 1);
+        }
+        else if (resumed && pauseHold > 0 && age < pauseAt + pauseHold + .1f)
+            visual.color = Color.white;
+        if (splitAt >= 0 && age >= splitAt && Live.Count + splitCount <= Limit)
+        {
+            for (int i = 0; i < splitCount; i++)
+            {
+                float lane = splitCount <= 1 ? 0 : i - (splitCount - 1) * .5f;
+                var shard = Launch<SimpleRound>(transform.position, CombatVisuals.Rotate(heading, lane * splitSpread), splitSpeed, splitRadius);
+                if (shard != null)
+                    shard.generation = generation + 1;
+            }
+            Release();
+            return;
+        }
+        if (fadeAt >= 0 && age >= fadeAt)
+        {
+            float t = (age - fadeAt) / .3f;
+            if (t >= 1)
+            {
+                Release();
+                return;
+            }
+            transform.localScale = baseScale * (1 - t * t);
+        }
     }
 
     protected void Orient()
