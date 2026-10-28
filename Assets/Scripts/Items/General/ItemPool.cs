@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class ItemPool
 {
-    private static readonly string[] allCommon = { "Popcorn", "PocketFan", "RubberBand", "HotSauce", "BulletDroneItem", "FocusTime", "BarrelRoll", "BadGlasses", "ScatterCannonItem", "BallBearing", "ReserveCell", "SalvageConverter", "FocusingLens", "ReboundCoil", "RabbitsFoot", "BlankBullet", "TwerpItem", "Magnet", "AK45Item" };
+    private static readonly string[] allCommon = { "Popcorn", "PocketFan", "HotSauce", "BulletDroneItem", "FocusTime", "BarrelRoll", "BadGlasses", "ScatterCannonItem", "BallBearing", "ReserveCell", "SalvageConverter", "FocusingLens", "ReboundCoil", "RabbitsFoot", "BlankBullet", "TwerpItem", "Magnet", "AK45Item" };
     private static readonly string[] allRare = { "Icicle", "WindUpCannonItem", "DecoyProjector", "StaticSweater", "MagnifyingGlass", "ChewingGum", "LaserDroneItem", "HealthPacks", "EnergyCore", "BouncingBall", "Poison", "GasolineLeak", "QualityGlasses", "ShrinkerJuice", "Overdrive", "GravityWell", "MirrorBurst", "BeamEmitterItem", "FlameProjectorItem", "BackdraftItem", "DepthChargeItem", "SwarmRackItem", "DiscThrowerItem", "BurstLauncherItem", "NeedleCannonItem", "Lighter", "ReturnModule", "DroneLink", "RecoveryCoil", "Capacitor", "ProximityFuse", "SplitterCore", "Caffeine", "ProteinSupplement", "AMoonItem", "BabyYouItem", "ElectricityItem" };
     private static readonly string[] allEpic = { "BulletTime", "DoubleTrouble", "EmpPulse", "RailDriverItem", "ChainReactor", "SpareBattery", "AnotherArm", "AngryMoonItem" };
     private static readonly string[] allLegendary = { "Telekinesis", "ThreeMoonsItem" };

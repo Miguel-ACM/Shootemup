@@ -5,7 +5,6 @@ using UnityEngine;
 public class Bullet : ABullet
 {
     Rigidbody2D rigidBody;
-    bool rubberReturned;
     // Shared by all bullets so the scene is searched once, not on every trigger contact.
     static Shipcontroller player;
 
@@ -22,12 +21,7 @@ public class Bullet : ABullet
     {
         if (Time.deltaTime <= 0 || WorldTimeStop.Frozen)
             return;
-        if (!rubberReturned && transform.up.y > 0 && RubberReturn.AtTop(transform.position))
-        {
-            rubberReturned = true;
-            transform.rotation = Quaternion.FromToRotation(Vector3.up, new Vector3(transform.up.x, -Mathf.Abs(transform.up.y), 0));
-        }
-        if (followness != 0 && !rubberReturned)
+        if (followness != 0)
         {
             GameObject e = Utils.FindClosestWithTag(transform.position, "Enemy", out float sqrDistance);
             if (e != null)

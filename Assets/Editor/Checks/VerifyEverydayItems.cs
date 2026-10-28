@@ -64,7 +64,7 @@ public static class VerifyEverydayItems
 public sealed class EverydayItemReview : MonoBehaviour
 {
     const string Folder = "ArtSource/EverydayItemReview/";
-    static readonly Type[] Items = { typeof(ChewingGum), typeof(HotSauce), typeof(RubberBand), typeof(MagnifyingGlass), typeof(StaticSweater), typeof(PocketFan), typeof(DecoyProjector) };
+    static readonly Type[] Items = { typeof(ChewingGum), typeof(HotSauce), typeof(MagnifyingGlass), typeof(StaticSweater), typeof(PocketFan), typeof(DecoyProjector) };
     readonly List<string> checks = new List<string>(), errors = new List<string>();
     Shipcontroller ship; Keyboard keyboard; AItem granted;
     void Awake()
@@ -326,22 +326,6 @@ public sealed class EverydayItemReview : MonoBehaviour
         Clear();
         yield return new WaitForSeconds(1.5f);
         Check(FindObjectsByType<HotSauceTrail>().Length == 0, "fire patches expire after enemies are gone");
-        yield return Grant(typeof(RubberBand));
-        float top = UnityEngine.Camera.main.transform.position.y + UnityEngine.Camera.main.orthographicSize;
-        var round = PlayerRound.Spawn(new Vector3(0, top - .5f), Vector2.up, 10, 6);
-        yield return new WaitForSeconds(.12f);
-        Check(round != null && round.transform.up.y < -.9f, "missed round turns down at the visible top edge");
-        var returnTarget = Target(new Vector3(0, top - 2));
-        yield return new WaitForSeconds(1.1f);
-        Check(returnTarget.health < 1000 && returnTarget.GetComponent<BurningHull>() != null, "returning shot can hit and keeps its burn coating");
-        Clear();
-        yield return null;
-        var legacy = Instantiate(Resources.Load<GameObject>("Bullets/PlayerBullet"), new Vector3(2, top - .5f, -1), Quaternion.identity).GetComponent<ABullet>();
-        legacy.setProperties(new Dictionary<string, float> { { "speed", 6 }, { "damage", 10 }, { "followness", 0 } });
-        yield return new WaitForSeconds(.15f);
-        Check(legacy != null && legacy.transform.up.y < -.9f, "legacy projectile also returns once");
-        Clear();
-        yield return null;
         yield return Grant(typeof(MagnifyingGlass));
         float speed = GameRules.playerShootTravelSpeed;
         GameRules.playerShootTravelSpeed = 1;
@@ -363,7 +347,7 @@ public sealed class EverydayItemReview : MonoBehaviour
         Press(Key.LeftShift);
         yield return null;
         int focused = PlayerRound.LiveCount;
-        round = FindAnyObjectByType<PlayerRound>();
+        var round = FindAnyObjectByType<PlayerRound>();
         Check(focused < normal && focused >= normal * .35f, "fully focused weapon fires roughly half as many rounds");
         Check(Mathf.Abs(round.damage / normalDamage - 3) < .01f && Vector3.Distance(round.transform.localScale, normalSize * 1.6f) < .01f, "focused rounds are three times stronger and 1.6 times wider");
         Clear();
