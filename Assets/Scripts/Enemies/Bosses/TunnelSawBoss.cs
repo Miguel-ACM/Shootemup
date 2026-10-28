@@ -78,54 +78,5 @@ public sealed partial class TunnelSawBoss : DistrictBoss
             player.SendMessage("ReceiveHazardDamage", 14f, SendMessageOptions.DontRequireReceiver);
     }
 
-    void ImpactBurst(Vector2 inward)
-    {
-        using var sample = burstMarker.Auto();
-        impacts++;
-        if (Difficulty.Hard)
-        {
-            HardImpact(inward);
-            return;
-        }
-        // Full circular crowns on every physical bounce, including the little saws.
-        // Alternate half a quick lane; slower heavy teeth form a second nested ring.
-        int small = miniature ? (10) : (phaseTwo ? 28 : 20);
-        int large = miniature ? (3) : (phaseTwo ? 8 : 6);
-        int available = Mathf.Min(small + large, CombatRound.Limit - CombatRound.Live.Count);
-        int quick = Mathf.RoundToInt(available * small / (float)(small + large));
-        int heavy = available - quick;
-        void Ring<T>(int count, float speed, float radius, float offset) where T : CombatRound
-        {
-            for (int i = 0; i < count; i++)
-            {
-                Vector2 axis = CombatVisuals.Rotate(inward, (i + .5f) * 360f / count + offset);
-                Fire<T>(transform.position + (Vector3)axis * (Radius * .92f), axis, speed, radius);
-            }
-        }
-        Ring<SimpleRound>(quick, phaseTwo ? 3.7f : 3.3f, .18f, impacts % 2 == 0 ? 180f / Mathf.Max(1, quick) : 0);
-        Ring<RicochetBolt>(heavy, phaseTwo ? 2.3f : 1.9f, .32f, 0);
-    }
-
-    protected override void Attack()
-    {
-    } // Only physical wall impacts emit projectiles.
     protected override bool PhaseTwoReady => !miniature && HealthFraction <= .5f;
-    protected override void OnPhaseTwo()
-    {
-        if (miniature)
-            return;
-        haltUntil = age + 2.2f;
-        PSXFireballs.Shockwave(transform.position, 2, 1.8f, Color.yellow, 2, .1f);
-        foreach (int side in new[] { -1, 1 })
-        {
-            var child = (TunnelSawBoss)Spawn(typeof(TunnelSawBoss), transform.position + Vector3.right * side * 1.6f);
-            child.miniature = true;
-            child.health = auxiliaryHealth * GameRules.enemyHealth * LevelRun.EnemyHealthScale;
-            child.hullScale = .65f;
-            child.Hull.localScale = Vector3.one * .65f;
-            child.GetComponent<CircleCollider2D>().radius = .6f;
-            child.entered = true;
-            child.velocity = new Vector2(side, .6f).normalized;
-        }
-    }
 }
