@@ -53,7 +53,7 @@ public sealed partial class SpaceCitadelBoss
     // A breathing ring with a three-bead gap, turning one way while it sinks.
     void Orrery(Vector3 port, int sign)
     {
-        int beads = Dense(18);
+        int beads = Dense(24);
         int gap = (volley * 5) % beads;
         for (int i = 0; i < beads; i++)
         {
@@ -68,7 +68,7 @@ public sealed partial class SpaceCitadelBoss
     // A tight fast-spinning ring that travels at the player as one body.
     void Comet(Vector3 port, int sign)
     {
-        int beads = Dense(10);
+        int beads = Dense(12);
         var aim = CombatVisuals.Aim(port);
         for (int i = 0; i < beads; i++)
         {
@@ -81,7 +81,7 @@ public sealed partial class SpaceCitadelBoss
     // Stars wound round the core on two arms, slung off on the tangent one after another.
     void Galaxy(int sign)
     {
-        int stars = Dense(phaseTwo ? 30 : 24);
+        int stars = Dense(phaseTwo ? 40 : 32);
         for (int i = 0; i < stars; i++)
         {
             var star = Fire<SimpleRound>(Core, Vector2.down, 0, .19f);
@@ -93,7 +93,7 @@ public sealed partial class SpaceCitadelBoss
     // Nested rings turning against each other; their gaps line up only now and then.
     void Eclipse()
     {
-        int inner = Dense(14), outer = Dense(22);
+        int inner = Dense(18), outer = Dense(28);
         int innerGap = (volley * 3) % inner, outerGap = (volley * 7) % outer;
         for (int i = 0; i < inner; i++)
         {
