@@ -30,10 +30,21 @@ public sealed class ScarabDredger : DistrictMiniboss
         int beat = (volley - 1) % 8;
         if (beat < 3)
             for (int side = -1; side <= 1; side += 2)
-                FanPort(new Vector3(side * .85f, -.45f, -.2f), (5), 3.5f, (beat - 1) * 8);
+                FanPort(new Vector3(side * .85f, -.45f, -.2f), Dense(5), 3.5f, (beat - 1) * 8);
         else if (beat == 5)
-            for (int i = 0; i < (16); i++)
-                Fire<SimpleRound>(Hull.TransformPoint(new Vector3(0, -.65f, -.3f)), CombatVisuals.Rotate(Vector2.down, i * 360f / (16) + volley * 4), 3.6f, .15f);
+        {
+            // Quicksand mines: they stop and glint; even mines lunge at the player, odd ones sink away.
+            int mines = Dense(10);
+            var p = Hull.TransformPoint(new Vector3(0, -.65f, -.3f));
+            for (int i = 0; i < mines; i++)
+            {
+                float lane = i - (mines - 1) * .5f;
+                var mine = Fire<SimpleRound>(p, CombatVisuals.Rotate(Vector2.down, lane * 150f / (mines - 1)), 2.6f, .2f)
+                    .Pause(.5f, 1.0f + Mathf.Abs(lane) * .06f, CombatRound.Turn.Aim, 0, .9f);
+                if (i % 2 == 1)
+                    mine.FadeAt(1.5f + Mathf.Abs(lane) * .06f);
+            }
+        }
     }
 
     void FanPort(Vector3 local, int count, float speed, float turn)
