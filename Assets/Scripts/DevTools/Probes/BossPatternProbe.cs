@@ -183,7 +183,8 @@ public sealed class BossPatternProbe : MonoBehaviour
             yield return null;
         }
         // Every boss owns a phrased score: real output, attached charged beams and deliberate rests.
-        foreach (var type in new[] { typeof(SnowSiegeBoss), typeof(ThunderLanceBoss), typeof(FieldsBomberBoss) })
+        // Spell-card bosses only play while enabled; the timed clips below cover them.
+        foreach (var type in new[] { typeof(ThunderLanceBoss) })
         {
             var boss = (DistrictBoss)DistrictEnemy.Spawn(type, new Vector3(0, 5, 1));
             yield return null;
@@ -349,15 +350,25 @@ public sealed class BossPatternProbe : MonoBehaviour
             var boss = (DistrictBoss)DistrictEnemy.Spawn(entry.Item2, new Vector3(0, Camera.UpLimit - 2.3f, 1));
             yield return null;
             yield return null;
-            yield return Clip(entry.Item1 + "One", 10);
+            // Long enough for both phase-one spell cards.
+            yield return Clip(entry.Item1 + "One", 17);
+            float lethal = 1e6f;
             if (boss is CityDuoBoss duo)
             {
                 if (duo.partner != null)
                     duo.partner.damage(duo.partner.health + 1);
             }
+            else if (boss is DesertWormBoss worm)
+                for (int i = 1; i <= 4; i++)
+                    worm.Cores[i].damage(lethal);
+            else if (boss is SpaceCitadelBoss citadel)
+                for (int i = 0; i < 2; i++)
+                    citadel.Parts[i].damage(lethal);
+            else if (boss is HellCrabBoss crab)
+                crab.Eyes[0].damage(lethal);
             else
                 boss.damage(boss.health * .55f);
-            yield return Clip(entry.Item1 + "Two", 10);
+            yield return Clip(entry.Item1 + "Two", 17);
             Clear();
             yield return null;
         }

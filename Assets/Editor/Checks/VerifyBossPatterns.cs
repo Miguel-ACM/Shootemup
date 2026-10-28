@@ -17,7 +17,7 @@ public static class VerifyBossPatterns
               if (state == PlayModeStateChange.EnteredPlayMode && SessionState.GetBool(Key, false))
               {
                   new GameObject("Boss pattern review").AddComponent<BossPatternProbe>();
-                  deadline = EditorApplication.timeSinceStartup + 900;
+                  deadline = EditorApplication.timeSinceStartup + 1500;
               }
           };
         EditorApplication.update += () =>
