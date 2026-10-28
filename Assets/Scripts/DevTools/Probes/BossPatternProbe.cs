@@ -266,8 +266,9 @@ public sealed class BossPatternProbe : MonoBehaviour
         saw.transform.position = new Vector3(arena.xMax - radius - .001f, 0, 1);
         Set(saw, "velocity", Vector2.right);
         Set(saw, "haltUntil", 0f);
+        Set(saw, "runners", true);
         Call(saw, "MoveBoss", .1f);
-        Check(CombatRound.Live.OfType<SimpleRound>().Count() > CombatRound.Live.OfType<NeedleRound>().Count(), "second-phase bounce also throws wall runners");
+        Check(CombatRound.Live.OfType<SimpleRound>().Count() > CombatRound.Live.OfType<NeedleRound>().Count(), "Rim Runners bounces also throw wall runners");
         Clear();
         yield return null;
     }
