@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -93,6 +94,7 @@ public abstract class DistrictBoss : DistrictEnemy
         nextPressure = Mathf.Max(nextPressure, phaseEntryUntil);
         firingCue.ClearWarning();
         StopPhrases();
+        cardsRunning = false;
         CombatRound.ClearAll();
         phaseEntry.Begin();
     }
@@ -155,6 +157,34 @@ public abstract class DistrictBoss : DistrictEnemy
     {
         var ports = EnemyWeaponLayout.Ports(hull);
         return ports[Mathf.Abs(index) % ports.Length];
+    }
+
+    // Spell cards: a boss that overrides Cards() runs one named attack at a time,
+    // in order, instead of mixing unrelated volleys on a beat. A phase change stops
+    // the book and the next attack opens the phase-two cards.
+    bool cardsRunning;
+    protected virtual IEnumerator Cards() => null;
+    protected bool OpenCards()
+    {
+        if (cardsRunning)
+            return true;
+        var book = Cards();
+        if (book == null)
+            return false;
+        cardsRunning = true;
+        Phrase(book);
+        return true;
+    }
+
+    // Repeats a volley at a fixed cadence for the length of a card.
+    protected IEnumerator Every(float seconds, float interval, Action<int> volley)
+    {
+        int n = 0;
+        for (float t = 0; t < seconds; t += interval)
+        {
+            volley(n++);
+            yield return Wait(Rest(interval));
+        }
     }
 
     // Shared symmetric geometry. Every helper fires mirrored arrows around a centre
