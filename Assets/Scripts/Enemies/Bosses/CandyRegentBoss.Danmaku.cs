@@ -1,32 +1,64 @@
 using System.Collections;
 using UnityEngine;
 
-// Candy regent: a sugar rush. Taffy pulls stretch one aimed line from slow to
-// fast and bend it; sprinkles ricochet off the walls and ceiling like a pinball
-// table; gumdrops brake and then pop into a tight forward shotgun; wiggling
-// candy-worm streams follow the darting hull. Brood minions still hatch.
+// Candy regent: a sugar rush that never stops darting. Brood minions still hatch.
+// Phase one
+//   Taffy Pull: both hatches stretch a line of rounds from slow to fast along one aim,
+//     bending in mirror, so each pull arrives as two curling ribbons.
+//   Pinball Parlour: mirrored sprinkles ricochet off the walls and ceiling while
+//     gumdrops brake and pop into tight aimed shotguns.
+// Phase two
+//   Sugar Rush: a three-arm mirrored lace pours out while candy worms wiggle down
+//     in antiphase from both hatches.
+//   Gumdrop Barrage: volley after volley of gumdrops popping at the player, with
+//     sprinkle storms between them.
 public sealed partial class CandyRegentBoss
 {
     protected override void Attack()
     {
-        if (!arrived || player != null && Vector2.Distance(player.position, transform.position) < 2.5f)
-            return;
-        int beat = (volley - 1) % 16;
-        if (beat == 0 || beat == 8)
-            TaffyPull(beat == 0 ? 1 : -1);
-        else if (beat == 3 || phaseTwo && beat == 12)
-            Sprinkles();
-        else if (beat == 5 || beat == 13)
-            Gumdrops();
-        else if (beat == 10)
-            Phrase(CandyWorms());
-        else if (beat == 15)
-            Phrase(MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(phaseTwo ? 26 : 20), 2, 65, 22, 3.6f, .065f));
+        if (arrived)
+            OpenCards();
     }
+
+    protected override IEnumerator Cards()
+    {
+        while (true)
+        {
+            if (!phaseTwo)
+            {
+                yield return Every(6, .9f, n => TaffyPull(n % 2 == 0 ? 1 : -1));
+                yield return Wait(.7f);
+                yield return Every(6, .8f, n =>
+                {
+                    Sprinkles();
+                    if (n % 3 == 2)
+                        Gumdrops(3);
+                });
+                yield return Wait(.7f);
+            }
+            else
+            {
+                Phrase(CandyWorms(80));
+                yield return MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(90), 3, 70, 20, 3.6f, .065f);
+                yield return Wait(.6f);
+                yield return Every(6, .7f, n =>
+                {
+                    Gumdrops(3);
+                    if (n % 3 == 1)
+                        Sprinkles();
+                });
+                yield return Wait(.6f);
+            }
+        }
+    }
+
+    bool Clear => player == null || Vector2.Distance(player.position, transform.position) > 2.5f;
 
     // One aim per hatch, a line of rounds from slow to fast that curls as it stretches.
     void TaffyPull(int sign)
     {
+        if (!Clear)
+            return;
         int beads = Dense(phaseTwo ? 16 : 13);
         for (int hatch = 0; hatch < 2; hatch++)
         {
@@ -45,6 +77,8 @@ public sealed partial class CandyRegentBoss
     // Mirrored sprinkles thrown in a wide spread, ricocheting off the walls and ceiling.
     void Sprinkles()
     {
+        if (!Clear)
+            return;
         int count = Dense(phaseTwo ? 13 : 10);
         for (int i = 0; i < count; i++)
         {
@@ -54,37 +88,29 @@ public sealed partial class CandyRegentBoss
         }
     }
 
-    // Gumdrops brake hard, then pop into a narrow fast fan along their path.
-    void Gumdrops()
+    // Gumdrops brake hard, then pop into a narrow fast fan of arrows at the player.
+    void Gumdrops(int drops)
     {
-        int drops = Dense(5), shards = Dense(phaseTwo ? 9 : 7);
+        if (!Clear)
+            return;
+        int shards = Dense(phaseTwo ? 9 : 7);
         var aim = Aim;
         for (int i = 0; i < drops; i++)
-            Fire<SimpleRound>(Muzzle(i % 2), CombatVisuals.Rotate(aim, (i - (drops - 1) * .5f) * 32), 3.2f, .4f)
+            Fire<SimpleRound>(Muzzle(i % 2), CombatVisuals.Rotate(aim, (i - (drops - 1) * .5f) * 34), 3.2f, .4f)
                 .Ramp(.15f, .7f)
-                .SplitAt(.95f, shards, 9, 4.6f, .16f, true);
+                .SplitAt(.95f, shards, 8, 4.6f, .19f, true);
     }
 
-    // Wiggling streams that follow the regent's darting path.
-    IEnumerator CandyWorms()
+    // Wiggling streams in antiphase from both hatches, following the regent's path.
+    IEnumerator CandyWorms(int length)
     {
-        int length = Dense(phaseTwo ? 20 : 15);
+        length = Dense(length);
         for (int i = 0; i < length; i++)
         {
             for (int hatch = 0; hatch < 2; hatch++)
                 Fire<SimpleRound>(Muzzle(hatch), CombatVisuals.Rotate(Vector2.down, (hatch == 0 ? -1 : 1) * 18), 2.9f, .19f)
                     .Sway(hatch == 0 ? .45f : -.45f, .8f);
-            yield return Wait(Rest(.08f));
-        }
-    }
-
-    protected override void PrepareScore(float seconds)
-    {
-        int beat = volley % 16;
-        if (beat == 0 || beat == 8 || beat == 3 || phaseTwo && beat == 12 || beat == 5 || beat == 13 || beat == 10 || beat == 15)
-        {
-            Cue(Muzzle(0), seconds);
-            Cue(Muzzle(1), seconds);
+            yield return Wait(Rest(.075f));
         }
     }
 }
