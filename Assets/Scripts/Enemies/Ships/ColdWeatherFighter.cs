@@ -11,8 +11,16 @@ public sealed class ColdWeatherFighter : DistrictEnemy
         Mover<Slalom>();
     }
 
+    // Three rounds that freeze in place, then crawl back toward the player.
     protected override void Attack()
     {
-        Fan<NeedleRound>((3), 18, 4.0f, .19f);
+        int count = Dense(3);
+        var aim = Aim;
+        for (int i = 0; i < count; i++)
+        {
+            float lane = i - (count - 1) * .5f;
+            Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(aim, lane * 24), 3.8f, .19f)
+                .Pause(.5f, .55f, CombatRound.Turn.Aim, lane * 8, .7f);
+        }
     }
 }
