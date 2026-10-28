@@ -14,7 +14,8 @@ public sealed class LoadoutHUD : MonoBehaviour
     Transform studio;
     RectTransform[] panels = new RectTransform[4];
     OctagonGraphic[] rims = new OctagonGraphic[4];
-    Text[] names = new Text[4], keys = new Text[4], states = new Text[4];
+    Text[] names = new Text[4], keys = new Text[4];
+    CooldownDial[] dials = new CooldownDial[4];
     Transform[] models = new Transform[4];
     string[] displayed = new string[4];
     RectTransform badge;
@@ -40,12 +41,25 @@ public sealed class LoadoutHUD : MonoBehaviour
         {
             bool active = i >= 2;
             float size = active ? 74 : 124;
-            var p = Plate(root.transform, (active ? "Active " : "Weapon ") + (i % 2 + 1), size, new Color(.035f, .055f, .065f, .98f));
+            var p = Plate(root.transform, (active ? "Active " : "Weapon ") + (i % 2 + 1), size, new Color(.05f, .075f, .085f, .98f));
+            p.GetComponent<OctagonGraphic>().shade = .5f;
             panels[i] = p;
             FluorescentStartup.Attach(p.gameObject, .16f + (i % 2) * .1f + (active ? .08f : 0));
             p.anchorMin = p.anchorMax = new Vector2(.5f, 0);
             rims[i] = Plate(p, "Machined rim", size - 4, Steel, 2).GetComponent<OctagonGraphic>();
+            // A recessed face, lit from above, gives each instrument a little depth.
+            var face = Plate(p, "Recessed face", size - 13, new Color(.085f, .12f, .135f));
+            face.GetComponent<OctagonGraphic>().shade = -.35f;
             Plate(p, "Inset seam", size - 13, new Color(.19f, .27f, .29f), 1);
+            Plate(p, "Top bevel", size - 6, new Color(.62f, .72f, .72f, .22f), 1).GetComponent<OctagonGraphic>().shade = 1;
+            if (active)
+            {
+                var dial = new GameObject("Cooldown dial", typeof(RectTransform), typeof(CanvasRenderer), typeof(CooldownDial));
+                dial.transform.SetParent(p, false);
+                dials[i] = dial.GetComponent<CooldownDial>();
+                dials[i].raycastTarget = false;
+                ((RectTransform)dial.transform).sizeDelta = Vector2.one * (size - 20);
+            }
             var picture = new GameObject("Equipment model", typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
             picture.transform.SetParent(p, false);
             var image = picture.GetComponent<RawImage>();
@@ -56,7 +70,6 @@ public sealed class LoadoutHUD : MonoBehaviour
             picture.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, active ? 2 : 7);
             keys[i] = Key(p, active ? new Vector2(0, -32) : new Vector2(0, -55));
             names[i] = Label(p, "EMPTY", active ? 9 : 10, new Vector2(0, active ? 62 : -84), new Vector2(active ? 114 : 170, 30), Steel);
-            states[i] = Label(p, "", 8, new Vector2(0, active ? 44 : 43), new Vector2(100, 12), Cyan);
             if (!active)
             {
                 for (int s = -1; s <= 1; s += 2)
@@ -120,13 +133,10 @@ public sealed class LoadoutHUD : MonoBehaviour
             if (!selected && !active && loadout.Weapons[i] is WindUpCannon cannon && cannon.Charging)
                 rims[i].color = Color.Lerp(Steel, Cyan, Mathf.Clamp01(cannon.Charge / 1.2f));
             names[i].enabled = false;
-            states[i].text = "";
-            if (active && !selected && loadout.Actives[i - 2] != null)
+            if (active)
             {
                 var item = loadout.Actives[i - 2];
-                float remaining = Mathf.Max(0, item.cd - item.lastCD);
-                states[i].text = remaining > .05f ? Mathf.CeilToInt(remaining).ToString() : "";
-                states[i].color = remaining > .05f ? Steel : Cyan;
+                dials[i].Show(item != null && item.cd > 0 ? 1 - item.lastCD / item.cd : 0);
             }
             if (models[i] != null)
                 models[i].localRotation = Quaternion.Euler(-16, Mathf.Sin(Time.unscaledTime * .65f + i) * 24, i < 2 ? -30 : 0);
