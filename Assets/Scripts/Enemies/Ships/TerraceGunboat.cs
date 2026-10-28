@@ -13,11 +13,14 @@ public sealed class TerraceGunboat : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // Cargo lobbed from the terraces, falling and then bursting toward the player.
     protected override void Attack()
     {
+        int shards = Dense(3);
         for (int s = -1; s <= 1; s += 2)
-            for (int i = 0; i < (3); i++)
-                Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (16 + i * 16) + (volley % 2 == 0 ? 5 : -5)), 3.3f, .22f);
+            Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.up, s * (35 + (volley % 2) * 10)), 2.4f, .3f)
+                .Fall(new Vector2(0, -2.8f))
+                .SplitAt(1.6f, shards, 14, 3.2f, .16f, true);
     }
 
 }
