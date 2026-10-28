@@ -143,7 +143,7 @@ public sealed class BossPatternProbe : MonoBehaviour
         {
             var shell = Shell(2);
             Set(shell, "heading", CombatVisuals.Rotate(Vector2.down, phase));
-            ShellTick(shell, Stop(shell) + .81f, Stop(shell) + .81f);
+            ShellTick(shell, Stop(shell) + .86f, Stop(shell) + .86f);
             var fragments = CombatRound.Live.Where(x => x.generation == 1).ToArray();
             Check(fragments.Length == 12, "complete twelve-shot ring at phase " + phase);
             var angles = fragments.Select(x => Mathf.Repeat(Vector2.SignedAngle(Vector2.down, x.Heading), 360)).OrderBy(x => x).ToArray();
@@ -154,11 +154,11 @@ public sealed class BossPatternProbe : MonoBehaviour
         var waiting = Shell(2);
         for (int i = 0; i < CombatRound.Limit - 6; i++)
             CombatRound.Launch<SimpleRound>(new Vector3(0, 2), Vector2.down, 0);
-        ShellTick(waiting, Stop(waiting) + .81f, Stop(waiting) + .81f);
+        ShellTick(waiting, Stop(waiting) + .86f, Stop(waiting) + .86f);
         Check(waiting.gameObject.activeSelf && CombatRound.Live.All(x => x.generation == 0), "full projectile budget defers the whole burst");
         foreach (var round in CombatRound.Live.Where(x => x != waiting).Take(10).ToArray())
             round.Vanish();
-        ShellTick(waiting, Stop(waiting) + .82f, .01f);
+        ShellTick(waiting, Stop(waiting) + .87f, .01f);
         Check(!waiting.gameObject.activeSelf && CombatRound.Live.Count(x => x.generation == 1) == 12 && CombatRound.Live.Count <= CombatRound.Limit, "deferred burst releases all twelve without exceeding cap");
         ClearRounds();
         var recycled = CombatRound.Launch<BurstShell>(new Vector3(0, 5), Vector2.down, 3);
