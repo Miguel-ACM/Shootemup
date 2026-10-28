@@ -19,11 +19,18 @@ public sealed class HeavyBomber : DistrictEnemy
         firingCue.Warn(seconds);
     }
 
+    // Bombs that brake, glint and burst into a flat sideways fan; needles between drops.
     protected override void Attack()
     {
-        if (volley % 2 == 0)
-            Fan<BurstShell>((2), 32, 3.0f, .44f);
+        if (volley % 2 == 1)
+        {
+            int shards = Dense(5);
+            for (int i = 0; i < 2; i++)
+                Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, i == 0 ? -10 : 10), 2.4f, .38f)
+                    .Pause(.85f + i * .3f, .35f)
+                    .SplitAt(1.2f + i * .3f, shards, 170f / (shards - 1), 2.3f, .15f);
+        }
         else
-            Fan<NeedleRound>((5), 18, 3.8f, .19f);
+            Fan<NeedleRound>(5, 18, 3.8f, .19f);
     }
 }
