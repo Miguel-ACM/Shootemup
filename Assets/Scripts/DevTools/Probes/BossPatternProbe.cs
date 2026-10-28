@@ -256,7 +256,7 @@ public sealed class BossPatternProbe : MonoBehaviour
         Set(saw, "velocity", Vector2.right);
         Call(saw, "MoveBoss", .1f);
         int needles = CombatRound.Live.OfType<NeedleRound>().Count(), teeth = CombatRound.Live.OfType<SimpleRound>().Count();
-        Check(needles > 0 && needles == teeth, "saw bounce pairs fast needles with slow teeth");
+        Check(needles > 1 && needles == teeth + 1, "saw bounce pairs fast needles with slow teeth");
         Check(CombatRound.Live.All(x => x.Heading.x < .2f), "right-wall saw spray faces back into the arena");
         ClearRounds();
         Set(saw, "phaseTwo", true);
