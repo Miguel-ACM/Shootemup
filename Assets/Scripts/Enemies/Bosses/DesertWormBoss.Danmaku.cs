@@ -52,16 +52,18 @@ public sealed partial class DesertWormBoss
             }
     }
 
-    // A wavering stream from the jaw that sweeps across the worm's heading.
+    // Twin mirrored arrow streams from the jaw, sweeping apart and back together.
     IEnumerator Sandblast()
     {
-        int shots = Dense(phaseTwo ? 18 : 14);
+        int shots = Dense(phaseTwo ? 26 : 20);
         for (int i = 0; i < shots && CanShoot(cores[0]); i++)
         {
             Vector2 heading = Hull.TransformDirection(Vector3.down);
-            var axis = CombatVisuals.Rotate(heading, Mathf.Sin(i / (float)shots * Mathf.PI * 2) * 38);
-            Fire<SimpleRound>(Muzzle(), axis, 3.1f, .2f).Sway(.35f, 1.1f);
-            yield return Wait(Rest(.065f));
+            float open = Mathf.Sin(i / (float)shots * Mathf.PI * 2) * 40;
+            foreach (int mirror in new[] { -1, 1 })
+                foreach (float arm in new[] { 0f, 14f })
+                    Fire<NeedleRound>(Muzzle(), CombatVisuals.Rotate(heading, mirror * (open + arm)), 3.4f, .19f);
+            yield return Wait(Rest(.06f));
         }
     }
 
@@ -74,13 +76,13 @@ public sealed partial class DesertWormBoss
                 for (int j = 0; j < count; j++)
                     Fire<SimpleRound>(cores[i].transform.position, CombatVisuals.Rotate(Vector2.down, (j - (count - 1) * .5f) * 30 + (parity == 0 ? 8 : -8)), 2.0f, .24f)
                         .Sway(.55f, .55f)
-                        .FadeAt(Random.Range(2.2f, 3.4f));
+                        .FadeAt(2.2f + j * .35f);
     }
 
     // Each surviving reactor answers in turn from head to tail: a travelling ripple of aimed fire.
     IEnumerator RippleVolley()
     {
-        int spread = Dense(3);
+        int spread = Dense(5);
         for (int i = 0; i < cores.Length; i++)
         {
             if (!CanShoot(cores[i]))
