@@ -6,7 +6,7 @@ public sealed class BarrelRoll : AActiveItem
     {
         SetData("Barrel roll", "Take a side", "Roll sideways through danger. No energy cost.", ItemType.active);
         cost = 0;
-        cd = 2.5f;
+        cd = 1f;
     }
 
     public override float OnPress(float mana)

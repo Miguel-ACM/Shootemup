@@ -6,7 +6,7 @@ public sealed class GravityWell : AActiveItem
     {
         SetData("Stasis Well", "Active", "Freeze and erase nearby bullets. 25 energy.", ItemType.active);
         cost = 25;
-        cd = 7;
+        cd = 3;
     }
 
     public override float OnPress(float mana)

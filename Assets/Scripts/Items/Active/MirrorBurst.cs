@@ -6,7 +6,7 @@ public sealed class MirrorBurst : AActiveItem
     {
         SetData("Mirror Burst", "Active", "Turn 18 bullets into homing shots. 35 energy.", ItemType.active);
         cost = 35;
-        cd = 8;
+        cd = 3;
     }
 
     public override float OnPress(float mana)

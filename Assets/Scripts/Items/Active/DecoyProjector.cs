@@ -6,7 +6,7 @@ public sealed class DecoyProjector : AActiveItem
     {
         SetData("Decoy projector", "Look over there", "Launch a spectral copy that draws aimed fire.", ItemType.active);
         cost = 25;
-        cd = 8;
+        cd = 3;
     }
 
     public override float OnPress(float mana)

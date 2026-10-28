@@ -6,7 +6,7 @@ public sealed class BulletTime : AActiveItem
     {
         SetData("Time Stop", "Hold that thought", "Freeze the world for 2 seconds. Keep firing.", ItemType.active);
         cost = 35;
-        cd = 12;
+        cd = 5;
     }
 
     public override float OnPress(float mana)

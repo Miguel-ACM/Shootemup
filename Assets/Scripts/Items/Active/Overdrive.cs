@@ -6,7 +6,7 @@ public sealed class Overdrive : AActiveItem
     {
         SetData("Overdrive", "Active", "Double damage for 6 seconds. 30 energy.", ItemType.active);
         cost = 30;
-        cd = 10;
+        cd = 4;
     }
 
     public override float OnPress(float mana)

@@ -6,7 +6,7 @@ public sealed class PocketFan : AActiveItem
     {
         SetData("Pocket fan", "Make some room", "Blow nearby bullets upward. They remain dangerous.", ItemType.active);
         cost = 20;
-        cd = 6;
+        cd = 2.5f;
     }
 
     public override float OnPress(float mana)

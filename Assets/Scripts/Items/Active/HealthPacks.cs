@@ -6,7 +6,7 @@ public sealed class HealthPacks : AActiveItem
     {
         SetData("Health packs", "Field medicine", "Spend 30 energy to restore 20 health.", ItemType.active);
         cost = 30;
-        cd = 8;
+        cd = 3;
     }
 
     public override float OnPress(float mana)
