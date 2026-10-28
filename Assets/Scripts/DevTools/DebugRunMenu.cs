@@ -18,17 +18,28 @@ public sealed class DebugRunMenu : AMenuElement
         public string name;
         public AItem.ItemType kind;
         public int count;
-        public TextMeshProUGUI label;
+        public int portrait;
+        public Image card;
+        public TextMeshProUGUI badge;
+    }
+
+    sealed class SlotCard
+    {
+        public Image card;
+        public RawImage weapon, active;
+        public TextMeshProUGUI weaponName, activeName;
     }
 
     static readonly List<(Type type, int slot)> pending = new List<(Type, int)>();
     readonly List<Entry> entries = new List<Entry>();
     readonly Entry[] weapons = new Entry[2], actives = new Entry[2];
     readonly List<Button> buttons = new List<Button>();
+    readonly Dictionary<LevelId, Image> levelButtons = new Dictionary<LevelId, Image>();
+    readonly SlotCard[] slots = new SlotCard[2];
+    ItemPortraitStudio studio;
     GameObject overlay;
     ScrollRect scroll;
     RectTransform content;
-    TextMeshProUGUI loadout;
     LevelId first = LevelId.Fields;
     int slot;
     bool starting;
@@ -36,6 +47,11 @@ public sealed class DebugRunMenu : AMenuElement
     GameObject previousSelection;
     static readonly Color Ink = new Color(.035f, .055f, .06f, .98f);
     static readonly Color Gold = new Color(.86f, .7f, .4f);
+    static readonly Color CardColor = new Color(.085f, .12f, .125f, 1), ChosenCard = new Color(.32f, .25f, .12f, 1);
+    static readonly Color Ivory = new Color(.76f, .84f, .8f);
+    const int Columns = 6;
+    const float CardWidth = 152, CardHeight = 104, CardStep = 112, ViewHeight = 330;
+    const int BaseGun = -1;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetPending()
@@ -64,7 +80,7 @@ public sealed class DebugRunMenu : AMenuElement
             rect.sizeDelta = new Vector2(726, 52);
             rect.anchoredPosition = new Vector2(0, -126);
             var debug = row.AddComponent<DebugRunMenu>();
-            debug.Text(row.transform, "DEBUG", 24, Vector2.zero, new Vector2(726, 52));
+            debug.Label(row.transform, "DEBUG", 24, Vector2.zero, new Vector2(726, 52));
             menu.RefreshElements();
         }
         else if (scene.name == "L1" && pending.Count > 0)
@@ -94,18 +110,34 @@ public sealed class DebugRunMenu : AMenuElement
         scaler.referenceResolution = new Vector2(1280, 720);
         scaler.matchWidthOrHeight = 1;
         var panel = Box(overlay.transform, "Debug panel", new Vector2(0, 0), new Vector2(1040, 672), Ink);
-        Text(panel, "DEBUG RUN", 30, new Vector2(-330, 295), new Vector2(320, 48));
-        ButtonAt(panel, "BACK", new Vector2(418, 295), new Vector2(150, 40), Close);
-        var levels = new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Thunder, LevelId.Tunnel, LevelId.Desert, LevelId.Candyland };
+        Box(panel, "Header rule", new Vector2(0, 268), new Vector2(980, 2), new Color(.2f, .27f, .27f));
+        Label(panel, "DEBUG RUN", 30, new Vector2(-330, 300), new Vector2(320, 48)).color = Gold;
+        ButtonAt(panel, "BACK", new Vector2(418, 300), new Vector2(150, 38), Close);
+        var levels = new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Thunder, LevelId.Tunnel, LevelId.Desert, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell };
         for (int i = 0; i < levels.Length; i++)
         {
             var level = levels[i];
-            ButtonAt(panel, level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(), new Vector2(-420 + i * 140, 235), new Vector2(134, 38), () => { first = level; Refresh(); });
+            var button = ButtonAt(panel, level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(), new Vector2(-441 + i * 98, 238), new Vector2(92, 34), () => { first = level; Refresh(); }, 14);
+            levelButtons[level] = button.GetComponent<Image>();
         }
-        ButtonAt(panel, "SLOT 1", new Vector2(-415, 177), new Vector2(145, 38), () => { slot = 0; Refresh(); });
-        ButtonAt(panel, "SLOT 2", new Vector2(-255, 177), new Vector2(145, 38), () => { slot = 1; Refresh(); });
-        loadout = Text(panel, "", 18, new Vector2(170, 167), new Vector2(610, 66));
-        var viewport = Box(panel, "Items", new Vector2(0, -49), new Vector2(980, 340), new Color(.06f, .09f, .09f, 1));
+        foreach (var type in typeof(AItem).Assembly.GetTypes().Where(t => !t.IsAbstract && typeof(AItem).IsAssignableFrom(t)))
+        {
+            // Awake supplies the authored name/type. Disable before Start can seek a ship.
+            var probe = new GameObject("Catalogue metadata");
+            var item = (AItem)probe.AddComponent(type);
+            item.enabled = false;
+            entries.Add(new Entry { type = type, name = item.GetData()[0], kind = item.Kind });
+            Destroy(probe);
+        }
+        entries.Sort((a, b) => { int c = a.kind.CompareTo(b.kind); return c != 0 ? c : string.Compare(a.name, b.name, StringComparison.Ordinal); });
+        var kinds = entries.Select(e => e.type.Name).ToList();
+        kinds.Add("BaseWeaponItem");
+        studio = ItemPortraitStudio.Create(kinds);
+        for (int i = 0; i < entries.Count; i++)
+            entries[i].portrait = i;
+        for (int i = 0; i < 2; i++)
+            slots[i] = SlotCardAt(panel, i);
+        var viewport = Box(panel, "Items", new Vector2(0, -52), new Vector2(980, ViewHeight), new Color(.05f, .075f, .08f, 1));
         viewport.gameObject.AddComponent<RectMask2D>();
         scroll = viewport.gameObject.AddComponent<ScrollRect>();
         scroll.viewport = viewport;
@@ -118,29 +150,57 @@ public sealed class DebugRunMenu : AMenuElement
         content.anchorMax = new Vector2(1, 1);
         content.pivot = new Vector2(.5f, 1);
         scroll.content = content;
-        foreach (var type in typeof(AItem).Assembly.GetTypes().Where(t => !t.IsAbstract && typeof(AItem).IsAssignableFrom(t)))
-        {
-            // Awake supplies the authored name/type. Disable before Start can seek a ship.
-            var probe = new GameObject("Catalogue metadata");
-            var item = (AItem)probe.AddComponent(type);
-            item.enabled = false;
-            entries.Add(new Entry { type = type, name = item.GetData()[0], kind = item.Kind });
-            Destroy(probe);
-        }
-        entries.Sort((a, b) => { int c = a.kind.CompareTo(b.kind); return c != 0 ? c : string.Compare(a.name, b.name, StringComparison.Ordinal); });
-        content.sizeDelta = new Vector2(0, Mathf.CeilToInt(entries.Count / 3f) * 46 + 12);
+        content.sizeDelta = new Vector2(0, Mathf.CeilToInt(entries.Count / (float)Columns) * CardStep + 8);
         for (int i = 0; i < entries.Count; i++)
-        {
-            var e = entries[i];
-            var button = ButtonAt(content, e.name, new Vector2(-324 + i % 3 * 324, -29 - i / 3 * 46), new Vector2(312, 38), () => Add(e));
-            var rect = button.GetComponent<RectTransform>();
-            rect.anchorMin = rect.anchorMax = new Vector2(.5f, 1);
-            e.label = button.GetComponentInChildren<TextMeshProUGUI>();
-        }
-        Text(panel, "SCROLL  /  SELECT TO ADD", 16, new Vector2(-240, -246), new Vector2(500, 30));
+            ItemCard(entries[i], new Vector2((i % Columns - (Columns - 1) * .5f) * 160, -8 - CardHeight * .5f - i / Columns * CardStep));
         ButtonAt(panel, "CLEAR", new Vector2(-390, -294), new Vector2(190, 42), Clear);
         ButtonAt(panel, "START DEBUG RUN", new Vector2(240, -294), new Vector2(490, 42), StartRun);
         Refresh();
+    }
+
+    SlotCard SlotCardAt(Transform panel, int index)
+    {
+        var card = new SlotCard();
+        var button = ButtonAt(panel, "SLOT " + (index + 1), new Vector2(index == 0 ? -245 : 245, 166), new Vector2(470, 76), () => { slot = index; Refresh(); }, 0);
+        card.card = button.GetComponent<Image>();
+        Label(button.transform, (index + 1).ToString(), 30, new Vector2(-200, 0), new Vector2(50, 60)).color = Gold;
+        card.weapon = Portrait(button.transform, new Vector2(-140, 0), 64);
+        card.weaponName = Label(button.transform, "", 14, new Vector2(-40, 0), new Vector2(136, 60));
+        card.active = Portrait(button.transform, new Vector2(50, 0), 64);
+        card.activeName = Label(button.transform, "", 14, new Vector2(160, 0), new Vector2(136, 60));
+        card.weaponName.alignment = card.activeName.alignment = TextAlignmentOptions.Left;
+        card.weaponName.textWrappingMode = card.activeName.textWrappingMode = TextWrappingModes.Normal;
+        return card;
+    }
+
+    void ItemCard(Entry entry, Vector2 position)
+    {
+        var button = ButtonAt(content, entry.name, position, new Vector2(CardWidth, CardHeight), () => Add(entry), 0);
+        var rect = button.GetComponent<RectTransform>();
+        rect.anchorMin = rect.anchorMax = new Vector2(.5f, 1);
+        entry.card = button.GetComponent<Image>();
+        var stripe = Box(button.transform, "Kind", new Vector2(0, CardHeight * .5f - 2), new Vector2(CardWidth, 4), KindColor(entry.kind));
+        stripe.GetComponent<Image>().raycastTarget = false;
+        Portrait(button.transform, new Vector2(0, 14), 70).uvRect = studio.Cell(entry.portrait);
+        var name = Label(button.transform, entry.name, 13, new Vector2(0, -34), new Vector2(CardWidth - 8, 30));
+        name.textWrappingMode = TextWrappingModes.Normal;
+        entry.badge = Label(button.transform, "", 15, new Vector2(CardWidth * .5f - 22, CardHeight * .5f - 18), new Vector2(40, 22));
+        entry.badge.color = Gold;
+    }
+
+    static Color KindColor(AItem.ItemType kind) => kind == AItem.ItemType.weapon ? Gold : kind == AItem.ItemType.active ? new Color(.35f, .6f, 1f) : new Color(.45f, .62f, .58f);
+
+    RawImage Portrait(Transform parent, Vector2 position, float size)
+    {
+        var go = new GameObject("Model", typeof(RectTransform), typeof(RawImage));
+        go.transform.SetParent(parent, false);
+        var rect = go.GetComponent<RectTransform>();
+        rect.anchoredPosition = position;
+        rect.sizeDelta = Vector2.one * size;
+        var image = go.GetComponent<RawImage>();
+        image.texture = studio.Atlas;
+        image.raycastTarget = false;
+        return image;
     }
 
     void Add(Entry entry)
@@ -165,18 +225,34 @@ public sealed class DebugRunMenu : AMenuElement
 
     void Refresh()
     {
-        loadout.text = $"{(first == LevelId.Fields ? "PLAINS" : first.ToString().ToUpperInvariant())}  /  SLOT {slot + 1}\n" +
-            $"{weapons[0]?.name ?? "Base gun"}  |  {weapons[1]?.name ?? "Empty"}\n{actives[0]?.name ?? "Empty"}  |  {actives[1]?.name ?? "Empty"}";
+        foreach (var level in levelButtons)
+            level.Value.color = level.Key == first ? ChosenCard : CardColor;
+        for (int i = 0; i < 2; i++)
+        {
+            slots[i].card.color = i == slot ? ChosenCard : CardColor;
+            Show(slots[i].weapon, slots[i].weaponName, weapons[i], i == 0 ? "Base gun" : "", i == 0);
+            Show(slots[i].active, slots[i].activeName, actives[i], "", false);
+        }
         foreach (var entry in entries)
         {
-            string suffix = entry.count > 0 ? "  x" + entry.count : "";
+            string badge = entry.count > 0 ? "x" + entry.count : "";
             if (weapons[0] == entry || actives[0] == entry)
-                suffix += "  [1]";
+                badge = "1";
             if (weapons[1] == entry || actives[1] == entry)
-                suffix += "  [2]";
-            entry.label.text = entry.name + suffix;
-            entry.label.color = suffix.Length > 0 ? Gold : new Color(.76f, .84f, .8f);
+                badge = badge == "1" ? "1+2" : "2";
+            entry.badge.text = badge;
+            entry.card.color = badge.Length > 0 ? ChosenCard : CardColor;
         }
+    }
+
+    // An empty first weapon slot shows the ship's base gun.
+    void Show(RawImage portrait, TextMeshProUGUI label, Entry entry, string fallback, bool baseGun)
+    {
+        int index = entry != null ? entry.portrait : baseGun ? entries.Count : -1;
+        portrait.enabled = index >= 0;
+        if (index >= 0)
+            portrait.uvRect = studio.Cell(index);
+        label.text = entry?.name ?? fallback;
     }
 
     void StartRun()
@@ -205,6 +281,9 @@ public sealed class DebugRunMenu : AMenuElement
     {
         Destroy(overlay);
         overlay = null;
+        if (studio != null)
+            Destroy(studio.gameObject);
+        levelButtons.Clear();
         entries.Clear();
         buttons.Clear();
         Array.Clear(weapons, 0, 2);
@@ -232,11 +311,12 @@ public sealed class DebugRunMenu : AMenuElement
         var rect = selected.GetComponent<RectTransform>();
         float y = -rect.anchoredPosition.y;
         float top = content.anchoredPosition.y;
-        if (y - 22 < top)
-            top = y - 22;
-        else if (y + 22 > top + 340)
-            top = y + 22 - 340;
-        content.anchoredPosition = new Vector2(0, Mathf.Clamp(top, 0, Mathf.Max(0, content.sizeDelta.y - 340)));
+        float half = CardHeight * .5f + 6;
+        if (y - half < top)
+            top = y - half;
+        else if (y + half > top + ViewHeight)
+            top = y + half - ViewHeight;
+        content.anchoredPosition = new Vector2(0, Mathf.Clamp(top, 0, Mathf.Max(0, content.sizeDelta.y - ViewHeight)));
     }
 
     protected override void LateUpdate()
@@ -249,6 +329,8 @@ public sealed class DebugRunMenu : AMenuElement
     {
         if (overlay != null)
             Destroy(overlay);
+        if (studio != null)
+            Destroy(studio.gameObject);
     }
 
     RectTransform Box(Transform parent, string name, Vector2 position, Vector2 size, Color color)
@@ -262,7 +344,7 @@ public sealed class DebugRunMenu : AMenuElement
         return rect;
     }
 
-    TextMeshProUGUI Text(Transform parent, string value, float size, Vector2 position, Vector2 dimensions)
+    TextMeshProUGUI Label(Transform parent, string value, float size, Vector2 position, Vector2 dimensions)
     {
         var go = new GameObject(value, typeof(RectTransform), typeof(TextMeshProUGUI));
         go.transform.SetParent(parent, false);
@@ -273,23 +355,31 @@ public sealed class DebugRunMenu : AMenuElement
         text.font = GetComponentInParent<Menu>().GetComponentInChildren<TextMeshProUGUI>().font;
         text.text = value;
         text.fontSize = size;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = size * .6f;
+        text.fontSizeMax = size;
+        text.textWrappingMode = TextWrappingModes.NoWrap;
         text.alignment = TextAlignmentOptions.Center;
-        text.color = new Color(.76f, .84f, .8f);
+        text.color = Ivory;
         text.raycastTarget = false;
         return text;
     }
 
-    Button ButtonAt(Transform parent, string label, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action)
+    // A text size of 0 leaves the label out, for cards that lay out their own contents.
+    Button ButtonAt(Transform parent, string label, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action, float textSize = 20)
     {
-        var rect = Box(parent, label, position, size, new Color(.12f, .17f, .17f, 1));
+        var rect = Box(parent, label, position, size, CardColor);
         var button = rect.gameObject.AddComponent<Button>();
         button.targetGraphic = rect.GetComponent<Image>();
         var colors = button.colors;
-        colors.highlightedColor = Gold;
-        colors.selectedColor = Gold;
-        colors.pressedColor = new Color(.6f, .48f, .25f);
+        // Focus lights the card's own colour, so chosen cards stay distinct while focused.
+        colors.colorMultiplier = 2.4f;
+        colors.normalColor = new Color(1 / 2.4f, 1 / 2.4f, 1 / 2.4f);
+        colors.highlightedColor = colors.selectedColor = new Color(1, .82f, .5f);
+        colors.pressedColor = new Color(.8f, .65f, .4f);
         button.colors = colors;
-        Text(rect, label, 20, Vector2.zero, size);
+        if (textSize > 0)
+            Label(rect, label, textSize, Vector2.zero, size);
         // The submit that opens DEBUG must not also activate its first button.
         button.onClick.AddListener(() => { if (Time.frameCount > openedFrame) action(); });
         buttons.Add(button);
