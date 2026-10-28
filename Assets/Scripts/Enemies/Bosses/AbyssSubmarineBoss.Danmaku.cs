@@ -1,10 +1,13 @@
 using System.Collections;
 using UnityEngine;
 
-// Abyss submarine: water does the work. Torpedoes leave the tubes almost
-// still and then accelerate at the player; volleys are caught by a current and
-// swept sideways in arcs; each eruption throws a plume that collapses outward
-// under its own weight; the charge leaves a wake that hangs, then sinks away.
+// Abyss submarine: water does the work. Its dive cycle is the spell sequence.
+//   Surfaced, alternate dives: Torpedo Salvo (racks of torpedoes that leave almost
+//     still and wind up at the player, between mirrored volleys swept outward by
+//     opposite currents) or Pressure Lace (a three-arm mirrored lace from the
+//     launch channels with aimed arrow wavefronts).
+//   Eruption: three dense mirrored plumes of arrows thrown up, falling back under gravity.
+//   Charge: the wake hangs beside the hull in arrows, then sinks away diagonally.
 public sealed partial class AbyssSubmarineBoss
 {
     int plumes;
@@ -13,10 +16,15 @@ public sealed partial class AbyssSubmarineBoss
     {
         if (Submerged || Mathf.Repeat(cycleClock, cycleSeconds) >= 3.5f)
             return;
-        if (volley % 4 == 1)
+        bool salvo = lastCycle % 2 == 0;
+        if (salvo && volley % 3 == 1)
             Torpedoes();
-        else if (volley % 4 == 2)
-            Phrase(Current(volley / 4 % 2 == 0 ? 1 : -1));
+        else if (salvo && volley % 3 == 2)
+            Phrase(Current(volley / 3 % 2 == 0 ? 1 : -1));
+        else if (!salvo && volley % 3 == 1)
+            Phrase(MirrorLace(Hull, new Vector3(-1.02f, .3f, -.3f), new Vector3(1.02f, .3f, -.3f), Dense(phaseTwo ? 32 : 26), 3, 60, 18, 3.4f, .06f, volley % 2 == 0 ? 1 : -1));
+        else if (!salvo && volley % 3 == 2)
+            ArrowWavefront(Muzzle(), Aim, Dense(phaseTwo ? 19 : 15), 90, 3, 2.8f, .8f);
     }
 
     // Big slow torpedoes that wind up to full speed along their aim.
@@ -75,7 +83,7 @@ public sealed partial class AbyssSubmarineBoss
     {
         if (Difficulty.Easy && lane == 0)
             return;
-        Fire<SimpleRound>(port, direction, 2.0f + lane * .2f, .19f)
+        Fire<NeedleRound>(port, direction, 2.0f + lane * .2f, .19f)
             .Pause(.45f, .55f + (lane + 1) * .15f, CombatRound.Turn.Down, -side * 18, .8f);
     }
 
@@ -84,13 +92,12 @@ public sealed partial class AbyssSubmarineBoss
         float t = Mathf.Repeat(cycleClock, cycleSeconds);
         if (t < 3.5f)
         {
-            if ((volley + 1) % 4 == 1)
+            if ((volley + 1) % 3 != 0)
             {
+                Cue(Muzzle(), seconds);
                 Cue(Muzzle(1), seconds);
                 Cue(Muzzle(2), seconds);
             }
-            else if ((volley + 1) % 4 == 2)
-                Cue(Muzzle(), seconds);
         }
         else if (t >= 5.9f && t < 7.7f || t >= 10.85f && t < 13.1f)
         {
