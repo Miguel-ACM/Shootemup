@@ -13,10 +13,14 @@ public sealed class BaffleSpinner : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // Returning discs, and every other volley a pair of rounds that run along the walls.
     protected override void Attack()
     {
         for (int s = -1; s <= 1; s += 2)
             Fire<ReturningDisc>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (volley % 2 == 0 ? 35 : 55)), 2.6f, .31f);
+        if (volley % 2 == 0)
+            for (int s = -1; s <= 1; s += 2)
+                Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), Vector2.right * s, 3.6f, .2f).RunWalls(3.5f, s);
     }
 
 }
