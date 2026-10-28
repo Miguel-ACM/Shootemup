@@ -13,11 +13,12 @@ public sealed class GumdropMortar : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // A gumdrop that brakes hard, then pops into a short shotgun aimed at the player.
     protected override void Attack()
     {
-        var shell = Fire<BurstShell>(Muzzle(volley), CombatVisuals.Rotate(Vector2.down, volley % 2 == 0 ? -15 : 15), 2.4f, .46f);
-        if (shell != null)
-            shell.SetTravelDistance(4.3f);
+        Fire<SimpleRound>(Muzzle(volley), CombatVisuals.Rotate(Vector2.down, volley % 2 == 0 ? -15 : 15), 2.8f, .4f)
+            .Ramp(.15f, .7f)
+            .SplitAt(1.0f, Dense(4), 11, 4.2f, .16f, true);
     }
 
     protected override void PrepareFire(float seconds)
