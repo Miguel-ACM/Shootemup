@@ -214,7 +214,7 @@ public abstract class CombatRound : AEnemyBullet
     }
 
     protected virtual float ClockRate => 1;
-    protected virtual float ContactSpeed => speed * Mathf.Max(1, rampTo, resumeSpeed) + drift.magnitude + swayAmplitude * swayRate * 6.3f;
+    protected virtual float ContactSpeed => speed * Mathf.Max(1, rampTo, resumeSpeed) + drift.magnitude + Mathf.Abs(swayAmplitude) * swayRate * 6.3f;
     protected override void Update()
     {
         if (ended || WorldTimeStop.Frozen || Time.deltaTime <= 0)
@@ -352,7 +352,7 @@ public abstract class CombatRound : AEnemyBullet
             drift += gravity * dt;
             step += drift;
         }
-        if (swayAmplitude > 0 && factor > 0)
+        if (swayAmplitude != 0 && factor > 0)
         {
             float w = swayRate * Mathf.PI * 2;
             step += new Vector2(-heading.y, heading.x) * swayAmplitude * w * Mathf.Cos(w * age);
