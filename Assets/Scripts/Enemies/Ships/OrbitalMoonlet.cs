@@ -12,8 +12,15 @@ public sealed class OrbitalMoonlet : SpaceSatellite
         nextAttack = .8f;
     }
 
+    // A binary star: two beads orbiting each other as they travel at the player.
     protected override void Attack()
     {
-        Fan<SimpleRound>((2), 17, 4.1f, .18f);
+        var aim = Aim;
+        for (int i = 0; i < 2; i++)
+        {
+            var bead = Fire<SimpleRound>(Muzzle(), aim, 2.6f, .18f);
+            if (bead != null)
+                bead.Orbit(.4f, i * 180, volley % 2 == 0 ? 220 : -220, 9, 0, 0, 0, .25f);
+        }
     }
 }
