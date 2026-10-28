@@ -13,11 +13,17 @@ public sealed class CometTug : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // A towed comet: a spinning ring of six that travels down as one body.
     protected override void Attack()
     {
-        int n = (5);
-        for (int i = 0; i < n; i++)
-            Fire<SuspendedRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (n - 1) * .5f) * 22 + (volley % 2 == 0 ? 8 : -8)), 3.2f, .23f);
+        int beads = Dense(6);
+        var axis = CombatVisuals.Rotate(Vector2.down, volley % 2 == 0 ? 12 : -12);
+        for (int i = 0; i < beads; i++)
+        {
+            var bead = Fire<SimpleRound>(Muzzle(volley), axis, 2.4f, .19f);
+            if (bead != null)
+                bead.Orbit(.65f, i * 360f / beads, volley % 2 == 0 ? 130 : -130, 10, 0, 0, 0, .35f);
+        }
     }
 
 }
