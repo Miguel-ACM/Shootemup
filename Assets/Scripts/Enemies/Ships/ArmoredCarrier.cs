@@ -18,12 +18,22 @@ public sealed class ArmoredCarrier : DistrictEnemy
         firingCue.Warn(seconds);
     }
 
+    // Each needle has a slow heavy twin on the same line.
     protected override void Attack()
     {
         if (volley % 2 == 0)
-            Fan<ProximityMine>((2), 62, 2.4f, .3f);
+            Fan<ProximityMine>(2, 62, 2.4f, .3f);
         else
-            Fan<NeedleRound>((7), 17, 3.9f, .19f);
+        {
+            int count = Dense(5);
+            var aim = Aim;
+            for (int i = 0; i < count; i++)
+            {
+                var axis = CombatVisuals.Rotate(aim, (i - (count - 1) * .5f) * 17);
+                Fire<NeedleRound>(Muzzle(i), axis, 4.2f, .18f);
+                Fire<SimpleRound>(Muzzle(i), axis, 1.6f, .27f);
+            }
+        }
     }
 
     public override void damage(float amount)
