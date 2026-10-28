@@ -1,11 +1,17 @@
 using System.Collections;
 using UnityEngine;
 
-// Desert worm: everything comes off the sand-coloured body as it winds. Body
-// reactors sow quicksand mines on both flanks that stop and glint; half of
-// each row then sinks away, the other half lunges at the player. The jaw sweeps
-// a wavering sandblast, and the body sheds heat-haze rounds that shimmer and
-// vanish mid-screen. With few reactors left, a volley ripples head to tail.
+// Desert worm: everything comes off the white body as it winds through the arena.
+// Phase one
+//   Quicksand Field: reactor after reactor, head to tail, sows mirrored rows of mines
+//     on both flanks; they brake and glint, odd mines sink away, even mines lunge.
+//   Sandblast: twin mirrored arrow streams sweep apart and back from the jaw while
+//     the body sheds ordered heat haze that fades at staggered depths.
+// Phase two
+//   Sidewinder: every surviving reactor fires arrows straight out of both flanks as
+//     the body winds, drawing ribbons of arrows along its whole path.
+//   Dune Collapse: reactors in turn throw dense mirrored geysers of arrows upward,
+//     which fall back across the arena under gravity.
 public sealed partial class DesertWormBoss
 {
     int WindingCore(int wanted)
@@ -19,18 +25,30 @@ public sealed partial class DesertWormBoss
         return -1;
     }
 
-    int MineCore(int beat) => WindingCore(1 + (beat / 2 + volley / 16) * 3 % 7);
     protected override void Attack()
     {
-        int beat = (volley - 1) % 16;
-        if (beat == 0 || beat == 2 || beat == 4)
-            QuicksandMines(MineCore(beat));
-        else if (beat == 6 && CanShoot(cores[0]))
-            Phrase(Sandblast());
-        else if (beat == 9 || beat == 10)
-            Mirage(beat % 2);
-        else if (phaseTwo && beat == 13)
-            Phrase(RippleVolley());
+        OpenCards();
+    }
+
+    protected override IEnumerator Cards()
+    {
+        while (true)
+        {
+            if (!phaseTwo)
+            {
+                yield return Every(7, .45f, n => QuicksandMines(WindingCore(1 + n % 7)));
+                yield return Wait(.8f);
+                yield return Sandblast();
+                yield return Wait(.8f);
+            }
+            else
+            {
+                yield return Every(7, .2f, n => Sidewinder(n));
+                yield return Wait(.8f);
+                yield return Every(6, .3f, n => Geyser(WindingCore(n % cores.Length)));
+                yield return Wait(.8f);
+            }
+        }
     }
 
     // Two flanking rows that brake and glint; even mines lunge at the player, odd ones sink.
@@ -40,75 +58,72 @@ public sealed partial class DesertWormBoss
             return;
         var t = cores[core].transform;
         Vector2 flank = t.right;
-        int mines = Dense(phaseTwo ? 9 : 7);
+        int mines = Dense(7);
         for (int side = -1; side <= 1; side += 2)
             for (int i = 0; i < mines; i++)
             {
-                var axis = CombatVisuals.Rotate(flank * side, (i - (mines - 1) * .5f) * 15);
-                float hold = 1.2f + i * .09f;
-                var mine = Fire<SimpleRound>(t.position, axis, 2.1f + (i % 2) * .5f, .22f).Pause(.55f, hold, CombatRound.Turn.Aim, 0, .85f);
+                var axis = CombatVisuals.Rotate(flank * side, (i - (mines - 1) * .5f) * 14);
+                float hold = 1.0f + i * .08f;
+                var mine = Fire<SimpleRound>(t.position, axis, 2.3f + (i % 2) * .5f, .22f).Pause(.5f, hold, CombatRound.Turn.Aim, 0, 1.0f);
                 if (i % 2 == 1)
-                    mine.FadeAt(.55f + hold);
+                    mine.FadeAt(.5f + hold);
             }
     }
 
     // Twin mirrored arrow streams from the jaw, sweeping apart and back together.
     IEnumerator Sandblast()
     {
-        int shots = Dense(phaseTwo ? 26 : 20);
+        Phrase(Every(6, 1.5f, n => Mirage(n % 2)));
+        int shots = Dense(90);
         for (int i = 0; i < shots && CanShoot(cores[0]); i++)
         {
             Vector2 heading = Hull.TransformDirection(Vector3.down);
-            float open = Mathf.Sin(i / (float)shots * Mathf.PI * 2) * 40;
+            float open = Mathf.Sin(i / 30f * Mathf.PI * 2) * 40;
             foreach (int mirror in new[] { -1, 1 })
                 foreach (float arm in new[] { 0f, 14f })
                     Fire<NeedleRound>(Muzzle(), CombatVisuals.Rotate(heading, mirror * (open + arm)), 3.4f, .19f);
-            yield return Wait(Rest(.06f));
+            yield return Wait(Rest(.065f));
         }
     }
 
-    // Heat haze: slow shimmering rounds that fade out at staggered depths.
+    // Heat haze: slow mirrored rounds that shimmer and fade out at staggered depths.
     void Mirage(int parity)
     {
-        int count = Dense(4);
+        int count = Dense(5);
         for (int i = 1; i < cores.Length; i++)
             if (i % 2 == parity && CanShoot(cores[i]))
                 for (int j = 0; j < count; j++)
-                    Fire<SimpleRound>(cores[i].transform.position, CombatVisuals.Rotate(Vector2.down, (j - (count - 1) * .5f) * 30 + (parity == 0 ? 8 : -8)), 2.0f, .24f)
-                        .Sway(.55f, .55f)
-                        .FadeAt(2.2f + j * .35f);
+                    Fire<SimpleRound>(cores[i].transform.position, CombatVisuals.Rotate(Vector2.down, (j - (count - 1) * .5f) * 24), 2.0f, .24f)
+                        .Sway((j % 2 == 0 ? 1 : -1) * .5f, .55f)
+                        .FadeAt(2.2f + Mathf.Abs(j - (count - 1) * .5f) * .4f);
     }
 
-    // Each surviving reactor answers in turn from head to tail: a travelling ripple of aimed fire.
-    IEnumerator RippleVolley()
+    // Arrows straight out of both flanks of every reactor: the body draws ribbons.
+    void Sidewinder(int n)
     {
-        int spread = Dense(5);
-        for (int i = 0; i < cores.Length; i++)
+        for (int i = n % 2; i < cores.Length; i += 2)
         {
             if (!CanShoot(cores[i]))
                 continue;
-            var p = cores[i].transform.position;
-            var aim = CombatVisuals.Aim(p);
-            for (int j = 0; j < spread; j++)
-                Fire<NeedleRound>(p, CombatVisuals.Rotate(aim, (j - (spread - 1) * .5f) * 14), 4.0f, .19f);
-            yield return Wait(.08f);
+            var t = cores[i].transform;
+            for (int side = -1; side <= 1; side += 2)
+                Fire<NeedleRound>(t.position, (Vector2)t.right * side, 2.6f, .19f);
         }
     }
 
-    protected override void PrepareScore(float seconds)
+    // A mirrored fountain of arrows thrown up from one reactor, falling back under gravity.
+    void Geyser(int core)
     {
-        int beat = volley % 16;
-        if (beat == 0 || beat == 2 || beat == 4)
-        {
-            int i = WindingCore(1 + (beat / 2 + (volley + 1) / 16) * 3 % 7);
-            if (i >= 0)
-                Cue(cores[i].transform.position, seconds);
-        }
-        else if (beat == 6)
-            Cue(Muzzle(), seconds);
-        else if (beat == 9 || beat == 10 || phaseTwo && beat == 13)
-            for (int i = 1; i < cores.Length; i++)
-                if (CanShoot(cores[i]) && (beat == 13 || i % 2 == beat % 2))
-                    Cue(cores[i].transform.position, seconds);
+        if (core < 0)
+            return;
+        var p = cores[core].transform.position;
+        int lanes = Dense(13);
+        for (int layer = 0; layer < 2; layer++)
+            for (int i = 0; i < lanes; i++)
+            {
+                float lane = i - (lanes - 1) * .5f;
+                Fire<NeedleRound>(p, CombatVisuals.Rotate(Vector2.up, lane * 100f / (lanes - 1)), 3.6f + layer * 1.1f, .19f)
+                    .Fall(new Vector2(0, -2.8f));
+            }
     }
 }
