@@ -59,7 +59,7 @@ public static class VerifyGumSprites
 public sealed class GumSpriteReview : MonoBehaviour
 {
     const string Folder = "ArtSource/GumSpriteReview/";
-    static readonly Type[] Items = { typeof(ChewingGum), typeof(HotSauce), typeof(MagnifyingGlass), typeof(StaticSweater), typeof(PocketFan), typeof(DecoyProjector) };
+    static readonly Type[] Items = { typeof(ChewingGum), typeof(HotSauce), typeof(RubberBand), typeof(MagnifyingGlass), typeof(StaticSweater), typeof(PocketFan), typeof(DecoyProjector) };
     readonly List<string> checks = new List<string>(), errors = new List<string>();
     Shipcontroller ship; Keyboard keyboard; AItem granted;
     void Awake()
