@@ -103,7 +103,6 @@ public sealed class PlayerRound : ABullet
         {
             rubberReturned = true;
             heading = new Vector2(heading.x, -Mathf.Abs(heading.y));
-            TurnAccent();
             age = 0;
         }
         if (age > 5 || transform.position.y < Camera.DownLimit - 3 || Mathf.Abs(transform.position.x) > Camera.RightLimit + 4)
