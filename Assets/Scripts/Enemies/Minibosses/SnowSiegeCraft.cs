@@ -13,16 +13,22 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
         Mover<TopTracker>();
     }
 
+    // Snow siege craft: a fan that freezes and re-aims, then shells that burst into falling snow.
     protected override void Attack()
     {
         if (volley % 2 == 0)
         {
-            FanFrom<BurstShell>((3), 32, 2.8f, .46f, ports);
+            int count = Dense(Enraged ? 11 : 9);
+            for (int i = 0; i < count; i++)
+            {
+                float lane = i - (count - 1) * .5f;
+                Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, lane * 15), 3.8f, .2f)
+                    .Pause(.6f, .7f + Mathf.Abs(lane) * .04f, CombatRound.Turn.Aim, lane * 6, .25f)
+                    .Ramp(4, 1.4f, 1.3f);
+            }
         }
         else
-        {
-            FanFrom<SuspendedRound>((7), 23, 3.0f, .25f, ports);
-        }
+            FanFrom<BurstShell>(Dense(3), 32, 2.8f, .46f, ports);
     }
     // The bays are exposed during firing and reload; armor still accepts every weapon.
     public override void damage(float amount)
