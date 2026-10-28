@@ -17,7 +17,13 @@ public sealed class CloudTransition : MonoBehaviour
     bool busy;
     RectTransform[] banks;
     CloudCurtainGraphic[] billows;
-    float flowStartedAt;
+    // Cloud travel advances by capped frame steps, so a loading hitch pauses the flow
+    // for one frame instead of making every bank jump ahead.
+    float flowElapsed;
+    const float MaxFlowStep = 1 / 30f;
+    // Keep the curtain closed until frames have settled after the new scene starts.
+    const int SettledFrames = 12;
+    const float SettledFrameSeconds = 1 / 40f, MaxSettleSeconds = 4;
     bool revealing;
     readonly float[] trailingExtension = new float[4];
     Canvas canvas;
@@ -185,7 +191,7 @@ public sealed class CloudTransition : MonoBehaviour
     {
         busy = true;
         revealing = false;
-        flowStartedAt = Time.unscaledTime;
+        flowElapsed = 0;
         // Clouds are an overlay: simulation and controls keep running throughout both legs.
         Time.timeScale = 1;
         PositionClouds();
@@ -226,10 +232,12 @@ public sealed class CloudTransition : MonoBehaviour
                 while (!load.isDone)
                     yield return null;
             }
-            // Start new scene components behind the moving cloud bank; no timed loading hold.
+            // Start new scene components behind the moving cloud bank, then let wave geometry,
+            // pools and shaders finish warming while the clouds keep flowing.
             yield return null;
             if (SceneManager.GetActiveScene().name == "L1")
             {
+                yield return Settle();
                 Time.timeScale = 1;
                 LevelReveal.Show();
             }
@@ -243,6 +251,17 @@ public sealed class CloudTransition : MonoBehaviour
             Time.timeScale = SceneManager.GetActiveScene().name == "Title" ? 0 : 1;
             if (SceneManager.GetActiveScene().name == "Title")
                 PrepareGameplay();
+        }
+    }
+
+    IEnumerator Settle()
+    {
+        float until = Time.unscaledTime + MaxSettleSeconds;
+        int smooth = 0;
+        while (Time.unscaledTime < until && (!WavePreparation.Ready || smooth < SettledFrames))
+        {
+            yield return null;
+            smooth = Time.unscaledDeltaTime < SettledFrameSeconds ? smooth + 1 : 0;
         }
     }
 
@@ -268,12 +287,13 @@ public sealed class CloudTransition : MonoBehaviour
     {
         if (!busy)
             return;
+        flowElapsed += Mathf.Min(Time.unscaledDeltaTime, MaxFlowStep);
         PositionClouds();
     }
 
     void PositionClouds()
     {
-        float elapsed = Time.unscaledTime - flowStartedAt;
+        float elapsed = flowElapsed;
         for (int i = 0; i < banks.Length; i++)
         {
             // One uninterrupted downward pass, including the loading handoff. Feed more cloud
@@ -301,7 +321,9 @@ public sealed class CloudTransition : MonoBehaviour
         PositionClouds();
         revealing = true;
         // Every trailing sprite is below the viewport before the canvas switches off.
-        yield return new WaitForSecondsRealtime(RevealSeconds);
+        float revealEnd = flowElapsed + RevealSeconds;
+        while (flowElapsed < revealEnd)
+            yield return null;
         PositionClouds();
     }
 
