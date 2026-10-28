@@ -9,7 +9,6 @@ public sealed partial class CandyRegentBoss : DistrictBoss
     float nextBrood = 2.8f, legClock, legDuration, rest;
     int dash;
     Vector3 legStart, legEnd, legControl;
-    Vector2 attackAxis = Vector2.down;
     static readonly Vector2[] Dashes ={new Vector2(-.92f,.78f),new Vector2(.8f,.48f),new Vector2(.33f,.88f),
         new Vector2(-.75f,.35f),new Vector2(.96f,.72f),new Vector2(-.2f,.55f),new Vector2(-.95f,.9f),
         new Vector2(.75f,.30f),new Vector2(.93f,.86f),new Vector2(-.88f,.57f),new Vector2(.15f,.38f),new Vector2(-.32f,.92f)};
@@ -106,32 +105,6 @@ public sealed partial class CandyRegentBoss : DistrictBoss
         dash++;
     }
 
-    protected override void Attack()
-    {
-        if (Difficulty.Hard)
-        {
-            AttackHard();
-            return;
-        }
-        if (!arrived || (player != null && Vector2.Distance(player.position, transform.position) < 2.5f))
-            return;
-        int beat = (volley - 1) % 8;
-        if (beat == 0 || beat == 4)
-            attackAxis = Aim;
-        if (beat < 3)
-        {
-            var port = Muzzle(beat % 2);
-            int count = (phaseTwo ? 5 : 3);
-            PetalFan<NeedleRound>(port, CombatVisuals.Rotate(attackAxis, (beat - 1) * 9), count, 21, 4.7f, .2f, .13f);
-        }
-        else if (beat == 4 || beat == 5)
-        {
-            // A broad alternating comb leaves lanes between shots while the next brood enters.
-            int count = (phaseTwo ? 9 : 7);
-            PetalFan<SimpleRound>(Muzzle(beat % 2), CombatVisuals.Rotate(Vector2.down, beat == 4 ? -9 : 9), count, 24, 2.4f, .31f, .22f);
-        }
-    }
-
     protected override float AttackPace => phaseTwo ? (.88f) : 1;
     protected override void OnPhaseTwo()
     {
@@ -173,15 +146,6 @@ public sealed partial class CandyRegentBoss : DistrictBoss
         }
         foreach (var door in doors)
             door.localScale = Vector3.one * .24f;
-    }
-
-    protected override void PrepareFire(float seconds)
-    {
-        base.PrepareFire(seconds);
-        firingCue.ClearWarning();
-        int beat = volley % 8;
-        if (beat < 3 || beat == 4 || beat == 5)
-            Cue(Muzzle(beat % 2), seconds);
     }
 
     protected override void Die()
