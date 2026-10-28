@@ -12,9 +12,10 @@ public sealed class BonbonSkirmisher : DistrictEnemy
         Mover<Slalom>();
     }
 
+    // One bonbon that ricochets off a wall.
     protected override void Attack()
     {
-        Fire<SimpleRound>(Muzzle(), Aim, 4.8f, .2f);
+        Fire<SimpleRound>(Muzzle(), Aim, 4.4f, .2f).Bounce(1);
     }
 }
 public static partial class IndustrialMeshFactory
