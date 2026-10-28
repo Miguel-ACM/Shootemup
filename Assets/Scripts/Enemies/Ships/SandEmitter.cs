@@ -96,16 +96,18 @@ public sealed class SandEmitter : DistrictEnemy
         }
     }
 
+    // A puff of sand thrown over the dunes: an arc of fast and slow grains that dissipates mid-air.
     protected override void Attack()
     {
-        int count = (14);
+        int count = Dense(14);
         if (!CanBeTargeted || CombatRound.Live.Count + count > CombatRound.Limit)
             return;
         for (int i = 0; i < count; i++)
         {
-            Vector2 direction = CombatVisuals.Rotate(Vector2.down, (i + .5f * (volley % 2)) * 360f / count);
+            float lane = i - (count - 1) * .5f;
+            Vector2 direction = CombatVisuals.Rotate(Vector2.down, lane * 220f / (count - 1) + (volley % 2) * 6);
             int port = Mathf.RoundToInt(Mathf.Repeat(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, 360) / 45) % 8;
-            Fire<SimpleRound>(Muzzle(port), direction, 2.8f, .2f);
+            Fire<SimpleRound>(Muzzle(port), direction, i % 2 == 0 ? 3.0f : 1.9f, .2f).FadeAt(Random.Range(2.0f, 2.8f));
         }
     }
 
