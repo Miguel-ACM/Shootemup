@@ -19,11 +19,17 @@ public sealed class AvalancheBomber : DistrictEnemy
         firingCue.Warn(seconds);
     }
 
+    // Snow shells, then pillars that start almost still and accelerate.
     protected override void Attack()
     {
         if (volley % 2 == 1)
-            Fan<BurstShell>((2), 37, 3.2f, .46f);
+            Fan<BurstShell>(2, 37, 3.2f, .46f);
         else
-            Fan<SuspendedRound>((4), 25, 2.8f, .23f);
+        {
+            int count = Dense(4);
+            for (int i = 0; i < count; i++)
+                Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 22), .3f, .22f)
+                    .Ramp(11, 1.4f, .3f + i * .2f);
+        }
     }
 }
