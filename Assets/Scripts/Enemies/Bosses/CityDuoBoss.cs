@@ -7,7 +7,6 @@ public sealed partial class CityDuoBoss : DistrictBoss
     [EnemyTunable("Heavy hull / Base health", 1, 50000)] public float heavyBaseHealth = 1400;
     bool enraged;
     float combinedMaximum;
-    Vector2 attackAxis = Vector2.down;
     public override bool NoseAimed => false;
     public override float DisplayFraction => (Mathf.Max(0, health) + (partner != null ? Mathf.Max(0, partner.health) : 0)) / Mathf.Max(1, combinedMaximum);
     protected override void Configure()
@@ -61,40 +60,6 @@ public sealed partial class CityDuoBoss : DistrictBoss
     {
     }
 
-    protected override void Attack()
-    {
-        if (Difficulty.Hard)
-        {
-            AttackHard();
-            return;
-        }
-        int beat = (volley - 1) % 12;
-        if (beat == 0 || beat == 1 || beat == 8)
-            attackAxis = Aim;
-        if (heavy && (beat == 0 || beat == 2 || beat == 4))
-        {
-            int count = (enraged ? 3 : 2);
-            for (int i = 0; i < count; i++)
-                Fire<BurstShell>(Hull.TransformPoint(new Vector3(0, -.7f, -.3f)),
-CombatVisuals.Rotate(attackAxis, (i - (count - 1) * .5f) * 31), 3.0f, .47f);
-        }
-        else if (heavy && (beat == 6 || beat == 7))
-        {
-            int count = (enraged ? 11 : 9);
-            PetalFan<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.down, beat == 6 ? -7 : 7), count, 17, 2.3f, .29f, -.14f);
-        }
-        else if (!heavy && (beat == 1 || beat == 3 || beat == 5))
-        {
-            int count = (enraged ? 9 : 7);
-            PetalFan<NeedleRound>(Muzzle(), CombatVisuals.Rotate(attackAxis, (beat - 3) * 5), count, 12, 4.6f, .19f, .15f);
-        }
-        else if (!heavy && (beat == 8 || beat == 9))
-            Fan<GuidedMissile>((enraged ? 4 : 3), 27, 3.6f, .24f);
-        // A lone survivor fills its missing partner's accents without continuous noise.
-        else if (enraged && (beat == 2 || beat == 4 || beat == 6))
-            Fan<SimpleRound>((7), 23, 2.5f, .28f);
-    }
-
     protected override void UpdateBar()
     {
         if (bar != null)
@@ -122,20 +87,4 @@ CombatVisuals.Rotate(attackAxis, (i - (count - 1) * .5f) * 31), 3.0f, .47f);
         base.Die();
     }
 
-    protected override void PrepareFire(float seconds)
-    {
-        base.PrepareFire(seconds);
-        firingCue.ClearWarning();
-        int beat = volley % 12;
-        if (heavy && (beat == 0 || beat == 2 || beat == 4 || beat == 6 || beat == 7))
-            Cue(Muzzle(1), seconds);
-        else if (!heavy && (beat == 1 || beat == 3 || beat == 5 || beat == 8 || beat == 9))
-        {
-            Cue(Muzzle(), seconds);
-            Cue(Muzzle(1), seconds);
-            Cue(Muzzle(2), seconds);
-        }
-        else if (enraged && (beat == 2 || beat == 4 || beat == 6))
-            firingCue.Warn(seconds);
-    }
 }
