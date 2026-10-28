@@ -24,13 +24,24 @@ public sealed class ReefLeviathan : DistrictMiniboss
     {
         int beat = (volley - 1) % 8;
         if (beat < 3)
+        {
+            // Volleys caught in a current that carries them sideways in arcs.
+            int count = Dense(3);
             for (int side = -1; side <= 1; side += 2)
             {
                 var p = Hull.TransformPoint(new Vector3(side * .82f, -.7f, -.25f));
-                for (int j = 0; j < (3); j++)
-                    Fire<SuspendedRound>(p, CombatVisuals.Rotate(Vector2.down, side * 25 + (j - ((3) - 1) * .5f) * 25 + (beat - 1) * 7), 2.7f, .25f);
+                for (int j = 0; j < count; j++)
+                    Fire<SimpleRound>(p, CombatVisuals.Rotate(Vector2.down, side * 20 + (j - (count - 1) * .5f) * 22 + (beat - 1) * 7), 2.6f, .22f)
+                        .Fall(new Vector2(-side * 1.3f, 0));
             }
+        }
         else if (beat == 5 || beat == 6)
-            Fan<NeedleRound>((Enraged ? 6 : 5), 21, 3.9f, .2f);
+        {
+            // Torpedoes leave almost still and accelerate along their aim.
+            int count = Dense(Enraged ? 4 : 3);
+            var aim = Aim;
+            for (int i = 0; i < count; i++)
+                Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(aim, (i - (count - 1) * .5f) * 20), .45f, .3f).Ramp(9, 1.0f, .4f + i * .15f);
+        }
     }
 }
