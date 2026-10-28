@@ -8,7 +8,6 @@ public sealed partial class HellCrabBoss : DistrictBoss
     readonly Transform[,] arms = new Transform[2, ArmSections];
     readonly LineRenderer[] tells = new LineRenderer[2];
     readonly HellCrabEye[] eyes = new HellCrabEye[2];
-    readonly Vector2[] eyeAxes = { Vector2.down, Vector2.down };
     float clawClock, lockedY;
     bool completing;
     [EnemyTunable("Claws / Cycle seconds", 5, 12)] public float clawPeriod = 7.4f;
@@ -112,79 +111,12 @@ public sealed partial class HellCrabBoss : DistrictBoss
             player.SendMessage("ReceiveHazardDamage", 18f, SendMessageOptions.DontRequireReceiver);
     }
 
-    protected override void Attack()
-    {
-        if (Difficulty.Hard)
-        {
-            AttackHard();
-            return;
-        }
-        if (claws[0] == null)
-            return;
-        int beat = (volley - 1) % 12;
-        if (beat < 3 || beat == 7 || beat == 8)
-        {
-            for (int i = 0; i < 2; i++)
-            {
-                if (i != beat % 2 && !(phaseTwo && beat == 8))
-                    continue;
-                var port = claws[i].TransformPoint(new Vector3(0, -.32f, -.4f));
-                var axis = CombatVisuals.Rotate(Vector2.down, (i == 0 ? 1 : -1) * (beat < 3 ? 28 : 46));
-                if (player != null && Vector2.Distance(port, player.position) < 1.8f)
-                    continue;
-                PetalFan<SimpleRound>(port, CombatVisuals.Rotate(axis, (beat % 3 - 1) * 10), (clawShots + (phaseTwo ? 2 : 0)), 18, 2.3f, .3f, .2f);
-            }
-        }
-        else if (beat == 4 || beat == 5 || beat == 10)
-        {
-            for (int i = 0; i < 2; i++)
-                if (eyes[i].health > 0)
-                {
-                    var port = eyes[i].transform.position;
-                    if (beat == 4 || beat == 10)
-                        eyeAxes[i] = CombatVisuals.Aim(port);
-                    if (beat == 10)
-                        PetalFan<SimpleRound>(port, eyeAxes[i], (phaseTwo ? 13 : 11), 16, 1.9f, .34f, .2f);
-                    else
-                        PetalFan<NeedleRound>(port, CombatVisuals.Rotate(eyeAxes[i], beat == 4 ? -8 : 8), (phaseTwo ? 9 : 7), 15, 3.8f, .21f);
-                }
-        }
-    }
-
     protected override void OnPhaseTwo()
     {
         volley = 0;
         clawClock = 0;
         nextAttack = age + 1.5f;
     }
-    protected override void PrepareFire(float seconds)
-    {
-        base.PrepareFire(seconds);
-        firingCue.ClearWarning();
-        if (claws[0] == null)
-            return;
-        int beat = volley % 12;
-        if (beat < 3 || beat == 7 || beat == 8)
-        {
-            for (int i = 0; i < 2; i++)
-                if (i == beat % 2 || phaseTwo && beat == 8)
-                {
-                    Cue(claws[i].TransformPoint(new Vector3(0, -.32f, -.4f)), seconds);
-                    var axis = CombatVisuals.Rotate(Vector2.down, (i == 0 ? 1 : -1) * (beat < 3 ? 28 : 46) + (beat % 3 - 1) * 10);
-                    PointWeapon(claws[i].TransformPoint(new Vector3(0, -.32f, -.4f)), axis);
-                }
-        }
-        else if (beat == 4 || beat == 5 || beat == 10)
-        {
-            for (int i = 0; i < 2; i++)
-                if (eyes[i].health > 0)
-                {
-                    Cue(eyes[i].transform.position, seconds);
-                    PointWeapon(eyes[i].transform.position, beat == 5 ? CombatVisuals.Rotate(eyeAxes[i], 8) : Aim);
-                }
-        }
-    }
-
     public void EyeChanged()
     {
         if (completing)
