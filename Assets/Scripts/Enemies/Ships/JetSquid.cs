@@ -12,9 +12,14 @@ public sealed class JetSquid : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+    // Ink: rounds that squirt out, hang in a cloud, then sink slowly and dissolve.
     protected override void Attack()
     {
-        Fan<NeedleRound>((3), 19, 3.6f, .21f);
+        int count = Dense(4);
+        for (int i = 0; i < count; i++)
+            Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Aim, (i - (count - 1) * .5f) * 26), 3.4f, .22f)
+                .Pause(.45f, .7f, CombatRound.Turn.Down, (i - (count - 1) * .5f) * 12, .35f)
+                .FadeAt(4.5f);
     }
 
 }
