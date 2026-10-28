@@ -1,14 +1,20 @@
 using System.Collections;
 using UnityEngine;
 
-// Hell crab: the final exam. Its pincers stream scissoring needles whose aim
-// lines cross over the player and close; its eyes loose slow souls that stop,
-// stare and then dart at the player one by one; both eyes weave braided
-// threads in antiphase; in phase two the claws hurl embers that hang at the
-// top of their arc and fall as a cage of fast and slow columns.
+// Hell crab: the final exam, flown as spell cards.
+// Phase one
+//   Pincer Scissors: both pincers stream arrows whose aim lines cross over the
+//     player and close, answered by widening arrow chevrons from the mouth.
+//   Soul Procession: the eyes loose mirrored arcs of slow souls that stop, stare and
+//     dart at the player one by one, while braided arrow threads weave down.
+// Phase two (one eye lost speeds up the claws)
+//   Ember Cage: the claws hurl arrows that hang at the top of their arc and fall as
+//     a cage of fast and slow columns, with scissors closing through it.
+//   Inferno Lace: a three-arm mirrored lace pours from both claws while souls stare.
 public sealed partial class HellCrabBoss
 {
     static readonly Vector3 Pincer = new Vector3(0, -.32f, -.4f);
+    static readonly Vector3 Mouth = new Vector3(0, -.9f, -.4f);
     int BurningEye()
     {
         if (eyes[0] == null)
@@ -19,21 +25,45 @@ public sealed partial class HellCrabBoss
 
     protected override void Attack()
     {
-        if (claws[0] == null)
-            return;
-        int beat = (volley - 1) % 16;
-        if (beat == 0 || beat == 5)
-            Phrase(Scissors(beat == 0 ? 1 : -1));
-        else if (beat == 8)
-            SoulSnipe(BurningEye());
-        else if (beat == 11)
-            Phrase(BraidedThreads());
-        else if (beat == 2 || beat == 15)
-            Phrase(Chevrons(Hull, new Vector3(0, -.9f, -.4f), Dense(phaseTwo ? 7 : 5), 4.4f, .11f));
-        else if (phaseTwo && (beat == 3 || beat == 14))
-            EmberCage();
-        else if (phaseTwo && beat == 13)
-            SoulSnipe(1 - Mathf.Max(0, BurningEye()));
+        if (claws[0] != null)
+            OpenCards();
+    }
+
+    protected override IEnumerator Cards()
+    {
+        while (true)
+        {
+            if (!phaseTwo)
+            {
+                yield return Every(8, 1.6f, n =>
+                {
+                    Phrase(Scissors(n % 2 == 0 ? 1 : -1));
+                    if (n % 2 == 1)
+                        Phrase(Chevrons(Hull, Mouth, Dense(6), 4.4f, .11f));
+                });
+                yield return Wait(.8f);
+                Phrase(BraidedThreads(90));
+                yield return Every(8, 1.6f, n =>
+                {
+                    for (int e = 0; e < 2; e++)
+                        SoulSnipe(e);
+                });
+                yield return Wait(.8f);
+            }
+            else
+            {
+                yield return Every(7, .9f, n =>
+                {
+                    EmberCage();
+                    if (n % 3 == 1)
+                        Phrase(Scissors(n % 2 == 0 ? 1 : -1));
+                });
+                yield return Wait(.7f);
+                Phrase(Every(8, 2f, n => SoulSnipe(BurningEye())));
+                yield return MirrorLace(Hull, claws[0].localPosition + Pincer, claws[1].localPosition + Pincer, Dense(110), 3, 75, 18, 3.6f, .065f);
+                yield return Wait(.7f);
+            }
+        }
     }
 
     // Each pincer sweeps its stream across the player's position, so the two lines cross and close.
@@ -73,9 +103,9 @@ public sealed partial class HellCrabBoss
     }
 
     // Two eyes stream in antiphase: their threads braid around each other on the way down.
-    IEnumerator BraidedThreads()
+    IEnumerator BraidedThreads(int beads)
     {
-        int beads = Dense(phaseTwo ? 20 : 15);
+        beads = Dense(beads);
         for (int i = 0; i < beads; i++)
         {
             for (int e = 0; e < 2; e++)
@@ -103,23 +133,5 @@ public sealed partial class HellCrabBoss
                     .Pause(.6f, .35f, CombatRound.Turn.Down, 0, i % 2 == 0 ? .55f : 1.05f);
             }
         }
-    }
-
-    protected override void PrepareScore(float seconds)
-    {
-        if (claws[0] == null)
-            return;
-        int beat = volley % 16;
-        if (beat == 0 || beat == 5 || phaseTwo && (beat == 3 || beat == 14))
-        {
-            Cue(claws[0].TransformPoint(Pincer), seconds);
-            Cue(claws[1].TransformPoint(Pincer), seconds);
-        }
-        else if (beat == 2 || beat == 15)
-            Cue(Hull.TransformPoint(new Vector3(0, -.9f, -.4f)), seconds);
-        else if (beat == 8 || beat == 11 || phaseTwo && beat == 13)
-            for (int e = 0; e < 2; e++)
-                if (eyes[e].health > 0)
-                    Cue(eyes[e].transform.position, seconds);
     }
 }
