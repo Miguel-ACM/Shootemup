@@ -12,12 +12,13 @@ public sealed class Bathysphere : OceanEnemy
         Mover<TopTracker>();
     }
 
+    // Torpedoes that leave almost still and wind up, then a short needle reply.
     protected override void Attack()
     {
         if (volley % 2 == 1)
             for (int s = -1; s <= 1; s += 2)
-                Fire<SuspendedRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * 35), 2.2f, .27f);
+                Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Aim, s * 14), .45f, .27f).Ramp(8, 1.0f, .4f);
         else
-            Fan<NeedleRound>((3), 23, 3.8f, .19f);
+            Fan<NeedleRound>(3, 23, 3.8f, .19f);
     }
 }
