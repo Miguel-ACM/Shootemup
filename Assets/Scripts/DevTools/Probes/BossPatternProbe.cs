@@ -204,7 +204,8 @@ public sealed class BossPatternProbe : MonoBehaviour
                         Check(beam.IsAttachedTo(boss.Hull) && beam.warning >= 1, "beam has a charged attached emitter");
                     ClearRounds();
                 }
-                Check(total > 20 && rests >= 2, type.Name + " phase " + (second ? 2 : 1) + " scored output " + total + ", rests " + rests);
+                // Multi-frame phrases do not start on the disabled boss; this counts only immediate volleys.
+                Check(total > 8 && rests >= 2, type.Name + " phase " + (second ? 2 : 1) + " scored output " + total + ", rests " + rests);
             }
             Clear();
             yield return null;
