@@ -12,16 +12,27 @@ public sealed class TunnelDefensePlatform : DistrictMiniboss
         Mover<TopTracker>();
     }
 
+    // Tunnel platform: fast ricochets paired with slow bouncing rounds on the same rays,
+    // then rounds that cling to the walls and run around the arena.
     protected override void Attack()
     {
         if (volley % 2 == 0)
         {
-            FanFrom<RicochetBolt>((7), 26, 3.3f, .25f, ports);
+            int rays = Dense(Enraged ? 6 : 5);
+            var aim = Aim;
+            for (int i = 0; i < rays; i++)
+            {
+                var axis = CombatVisuals.Rotate(aim, (i - (rays - 1) * .5f) * 24);
+                Fire<RicochetBolt>(Muzzle(i), axis, 3.9f, .22f);
+                Fire<SimpleRound>(Muzzle(i), axis, 1.4f, .3f).Bounce(2);
+            }
         }
         else
         {
-            FanFrom<ProximityMine>((2), 40, 2.5f, .25f, ports);
-            FanFrom<NeedleRound>((5), 21, 3.9f, .19f, ports);
+            int runners = Dense(4);
+            for (int i = 0; i < runners; i++)
+                Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (runners - 1) * .5f) * 40), 4.0f, .23f)
+                    .RunWalls(5, i % 2 == 0 ? 1 : -1);
         }
     }
     // The bays are exposed during firing and reload; armor still accepts every weapon.
