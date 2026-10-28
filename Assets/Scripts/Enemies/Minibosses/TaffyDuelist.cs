@@ -26,10 +26,28 @@ public sealed class TaffyDuelist : DistrictMiniboss
         if (beat == 3 || beat == 4 || beat == 9)
             return;
         var port = Hull.TransformPoint(new Vector3((beat % 2 == 0 ? -1 : 1) * .74f, -.55f, -.25f));
-        for (int i = 0; i < (3); i++)
-            Fire<NeedleRound>(port, CombatVisuals.Rotate(CombatVisuals.Aim(port), (i - ((3) - 1) * .5f) * (Enraged ? 22 : 26)), 4.8f, .19f);
         if (beat == 6)
-            for (int i = 0; i < (10); i++)
-                Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, i * 360f / (10) + 18), 3.3f, .16f);
+        {
+            // Pinball sprinkles off the walls and ceiling.
+            int count = Dense(Enraged ? 10 : 8);
+            for (int i = 0; i < count; i++)
+                Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, Random.Range(-95f, 95f)), Random.Range(2.8f, 3.8f), .15f).Bounce(2);
+            return;
+        }
+        if (beat == 8)
+        {
+            // A taffy pull: one aim, slow to fast, bending as it stretches.
+            int beads = Dense(8);
+            var aim = CombatVisuals.Aim(port);
+            for (int i = 0; i < beads; i++)
+            {
+                var bead = Fire<SimpleRound>(port, aim, Mathf.Lerp(1.5f, 4.4f, i / (beads - 1f)), .19f);
+                if (bead != null)
+                    bead.Curl(volley % 20 < 10 ? 24 : -24, 1.3f);
+            }
+            return;
+        }
+        for (int i = 0; i < 3; i++)
+            Fire<NeedleRound>(port, CombatVisuals.Rotate(CombatVisuals.Aim(port), (i - 1) * (Enraged ? 22 : 26)), 4.8f, .19f);
     }
 }
