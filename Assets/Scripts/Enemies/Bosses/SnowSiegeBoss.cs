@@ -2,7 +2,6 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed partial class SnowSiegeBoss : DistrictBoss
 {
-    Vector2 shellAxis = Vector2.down;
     readonly Transform[] comb = new Transform[13];
     readonly SpriteRenderer[] apertures = new SpriteRenderer[13];
     readonly Vector3[] launch = new Vector3[13], lanes = new Vector3[13];
@@ -88,86 +87,6 @@ public sealed partial class SnowSiegeBoss : DistrictBoss
     protected override void PressureAttack()
     {
     } // The score below owns the rests as well as the volleys.
-    protected override void Attack()
-    {
-        if (Difficulty.Hard)
-        {
-            AttackHard();
-            return;
-        }
-        int beat = (volley - 1) % 14;
-        if (beat == 0)
-            shellAxis = Aim;
-        if (beat == 0 || beat == 2 || beat == 4)
-        {
-            // Three broad crowns leave room for complete rings instead of queueing
-            // oversized shell clusters against the shared projectile cap.
-            int count = (phaseTwo ? 5 : 4);
-            float distance = beat == 2 ? shellTravelDistance - 2 : shellTravelDistance;
-            for (int i = 0; i < count; i++)
-            {
-                var shot = Fire<BurstShell>(Hull.TransformPoint(new Vector3(0, -.65f, -.25f)),
-                    CombatVisuals.Rotate(shellAxis, (i - (count - 1) * .5f) * 30 + (beat == 2 ? 7.5f : -7.5f)), 3.0f, .48f);
-                if (shot != null)
-                    shot.SetTravelDistance(distance);
-            }
-        }
-        else if (beat == 5)
-            DeployComb();
-        else if (beat == 6 || beat == 8)
-        {
-            // Two straight combs answer the shell crowns; the second fills the first's lanes.
-            for (int i = 0; i < combCount; i++)
-            {
-                var port = comb[i].TransformPoint(new Vector3(0, -.26f, -.55f));
-                if (beat == 6)
-                    Fire<SuspendedRound>(port, Vector2.down, 2.8f, .23f);
-                else
-                    Fire<SimpleRound>(port, Vector2.down, 2.0f, .28f);
-                releases[i] = .1f;
-            }
-        }
-        else if (beat == 7)
-        {
-            deployment = 0;
-            for (int i = 0; i < combCount; i++)
-            {
-                launch[i] = comb[i].position;
-                lanes[i].x += (Camera.RightLimit - Camera.LeftLimit - .7f) / combCount * .5f;
-            }
-        }
-        else if (beat == 9)
-        {
-            deployment = 0;
-            returning = true;
-            for (int i = 0; i < combCount; i++)
-                launch[i] = comb[i].position;
-        }
-        else if (beat == 11 || beat == 12 && phaseTwo)
-        {
-            int sign = beat == 11 ? -1 : 1;
-            int count = (phaseTwo ? 11 : 9);
-            PetalFan<NeedleRound>(Hull.TransformPoint(new Vector3(0, -.65f, -.25f)),
-                CombatVisuals.Rotate(Vector2.down, sign * 8), count, 15, 3.7f, .19f, .18f);
-        }
-        // Beats 3, 5, 7, 10 and 11 are intentional rests while existing patterns unfold.
-    }
-
-    protected override void PrepareFire(float seconds)
-    {
-        base.PrepareFire(seconds);
-        firingCue.ClearWarning();
-        int beat = volley % 14;
-        if (beat == 6 || beat == 8)
-        {
-            for (int i = 0; i < combCount; i++)
-                if (comb[i] != null)
-                    Cue(comb[i].TransformPoint(new Vector3(0, -.26f, -.55f)), seconds);
-        }
-        else if (beat == 0 || beat == 2 || beat == 4 || beat == 11 || beat == 12 && phaseTwo)
-            Cue(Muzzle(), seconds);
-    }
-
     protected override void OnPhaseTwo()
     {
         deployed = false;
