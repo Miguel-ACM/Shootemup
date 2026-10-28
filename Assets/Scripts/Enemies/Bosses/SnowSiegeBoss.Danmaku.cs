@@ -1,51 +1,65 @@
 using System.Collections;
 using UnityEngine;
 
-// Snow fortress: time freezes around it. Fans fly out, stop dead and glint,
-// then crawl back toward the player; comb pillars start almost still and
-// accelerate; a blizzard flings rounds sideways that halt and change course.
-// Its exploding shells remain, and their fragments now hang and fall as snow.
+// Snow fortress: time freezes around it. It flies its attacks as spell cards.
+// Phase one
+//   Frozen Petals: mirrored arrow fans fly out, stop dead and glint, then re-aim at
+//     the player, crawl and accelerate; snow shells burst between them.
+//   Icicle Comb: the comb spreads across the top; each emitter hangs arrows at
+//     staggered depths into a lattice of icicles, which all drop at once.
+// Phase two
+//   Whiteout: mirrored gusts thrown sideways halt and turn down and inward, with
+//     frozen petals cutting across them.
+//   Glacier: comb pillars start almost still and accelerate column by column while
+//     the mouth fires slow orb arcs that stop and resume.
 public sealed partial class SnowSiegeBoss
 {
-    Vector3 Mouth => Hull.TransformPoint(new Vector3(0, -.65f, -.25f));
+    Vector3 Mouth => Hull.TransformPoint(MouthLocal);
+    static readonly Vector3 MouthLocal = new Vector3(0, -.65f, -.25f);
     protected override void Attack()
     {
-        int beat = (volley - 1) % 14;
-        if (beat == 0 || phaseTwo && beat == 12)
-            FreezeFrame(beat == 0 ? 1 : -1);
-        else if (beat == 2)
-            CrystalShells();
-        else if (beat == 4)
-            DeployComb();
-        else if (beat == 5 || beat == 7)
-            CombPillars(beat == 7);
-        else if (beat == 6)
+        OpenCards();
+    }
+
+    protected override IEnumerator Cards()
+    {
+        while (true)
         {
-            deployment = 0;
-            for (int i = 0; i < combCount; i++)
+            if (!phaseTwo)
             {
-                launch[i] = comb[i].position;
-                lanes[i].x += (Camera.RightLimit - Camera.LeftLimit - .7f) / combCount * .5f;
+                yield return FrozenPetals();
+                yield return Wait(1);
+                yield return IcicleComb();
+                yield return Wait(1);
+            }
+            else
+            {
+                yield return Whiteout();
+                yield return Wait(.9f);
+                yield return Glacier();
+                yield return Wait(.9f);
             }
         }
-        else if (beat == 8)
+    }
+
+    IEnumerator FrozenPetals()
+    {
+        for (int bloom = 0; bloom < 4; bloom++)
         {
-            deployment = 0;
-            returning = true;
-            for (int i = 0; i < combCount; i++)
-                launch[i] = comb[i].position;
+            yield return Charge(Hull, MouthLocal, .45f);
+            FreezeFrame(bloom % 2 == 0 ? 1 : -1);
+            yield return Wait(.9f);
+            if (bloom % 2 == 1)
+                CrystalShells();
+            yield return Wait(.6f);
         }
-        else if (beat == 9)
-            Phrase(Blizzard());
-        else if (beat == 11 && phaseTwo)
-            CrystalShells();
     }
 
     // Two mirrored arrow fans fly out, stop dead and glint, then every arrow re-aims
     // at the player and crawls before accelerating. The re-aimed fans keep their spacing.
     void FreezeFrame(int sign)
     {
-        int count = Dense(phaseTwo ? 19 : 15);
+        int count = Dense(phaseTwo ? 21 : 17);
         float spread = 130f / (count - 1);
         for (int mirror = -1; mirror <= 1; mirror += 2)
         {
@@ -53,44 +67,77 @@ public sealed partial class SnowSiegeBoss
             for (int i = 0; i < count; i++)
             {
                 float lane = i - (count - 1) * .5f;
-                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.down, mirror * (35 + lane * spread * .5f)), 4.4f - Mathf.Abs(lane) * .06f, .19f)
+                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.down, mirror * (35 + sign * 6 + lane * spread * .5f)), 4.4f - Mathf.Abs(lane) * .06f, .19f)
                     .Pause(.7f, .7f + Mathf.Abs(lane) * .03f, CombatRound.Turn.Aim, mirror * lane * 3.5f, .22f)
                     .Ramp(4.5f, 1.4f, 1.45f);
             }
         }
     }
 
-    // Shells keep Snow's explosive identity; BurstShell turns their fragments into falling snow.
     void CrystalShells()
     {
-        int count = Dense(phaseTwo ? 4 : 3);
-        var axis = Aim;
+        int count = Dense(phaseTwo ? 5 : 4);
         for (int i = 0; i < count; i++)
         {
-            var shell = Fire<BurstShell>(Mouth, CombatVisuals.Rotate(axis, (i - (count - 1) * .5f) * 34), 2.7f, .5f);
+            float lane = i - (count - 1) * .5f;
+            var shell = Fire<BurstShell>(Mouth, CombatVisuals.Rotate(Vector2.down, lane * 30), 2.7f, .5f);
             if (shell != null)
-                shell.SetTravelDistance(i % 2 == 0 ? 4.4f : 6.2f);
+                shell.SetTravelDistance(Mathf.Abs(lane) < 1 ? 6.2f : 4.6f);
         }
     }
 
-    // Almost static pillars that accelerate downward: lanes that close from slow to fast.
-    void CombPillars(bool second)
+    // Six rows from every comb emitter stop at their own depths, building a lattice
+    // of icicles; the whole lattice is timed to fall at the same instant.
+    IEnumerator IcicleComb()
     {
-        for (int i = 0; i < combCount; i++)
+        DeployComb();
+        yield return Wait(.6f);
+        for (int wave = 0; wave < 3; wave++)
         {
-            if (Difficulty.Easy && i % 3 == 2)
-                continue;
-            var p = comb[i].TransformPoint(new Vector3(0, -.26f, -.55f));
-            for (int k = 0; k < (phaseTwo ? 3 : 2); k++)
-                Fire<SimpleRound>(p, Vector2.down, .25f, .2f).Ramp(second ? 14 : 11, 1.8f, .4f + k * .45f + (i % 2) * .25f);
-            releases[i] = .1f;
+            const float fall = 3.4f;
+            for (int k = 0; k < 6; k++)
+            {
+                for (int i = 0; i < combCount; i++)
+                {
+                    if (Difficulty.Easy && i % 3 == 2)
+                        continue;
+                    var p = comb[i].TransformPoint(new Vector3(0, -.26f, -.55f));
+                    float depth = .25f + ((i + k + wave) % 3) * .2f + k * .2f;
+                    float hold = Mathf.Max(.1f, fall - k * .32f - depth);
+                    Fire<NeedleRound>(p, Vector2.down, 3.2f, .19f)
+                        .Pause(depth, hold, CombatRound.Turn.Down, 0, .45f)
+                        .Ramp(5, 1.3f, depth + hold + .3f);
+                    releases[i] = .1f;
+                }
+                yield return Wait(.32f);
+            }
+            yield return Wait(1.3f);
+            CrystalShells();
+            if (wave == 1)
+            {
+                deployment = 0;
+                for (int i = 0; i < combCount; i++)
+                {
+                    launch[i] = comb[i].position;
+                    lanes[i].x += (Camera.RightLimit - Camera.LeftLimit - .7f) / combCount * .5f;
+                }
+            }
         }
+        RecallComb();
     }
 
-    // Mirrored gusts thrown sideways that halt together and turn down and inward.
-    IEnumerator Blizzard()
+    void RecallComb()
     {
-        int gusts = Dense(phaseTwo ? 14 : 11);
+        deployment = 0;
+        returning = true;
+        for (int i = 0; i < combCount; i++)
+            launch[i] = comb[i].position;
+    }
+
+    IEnumerator Whiteout()
+    {
+        Phrase(Every(7, 2.2f, n => FreezeFrame(n % 2 == 0 ? 1 : -1)));
+        int gusts = Dense(60);
         for (int g = 0; g < gusts; g++)
         {
             float lift = 8 + (g % 4) * 7;
@@ -104,18 +151,31 @@ public sealed partial class SnowSiegeBoss
         }
     }
 
-    protected override void PrepareScore(float seconds)
+    IEnumerator Glacier()
     {
-        int beat = volley % 14;
-        if (beat == 0 || beat == 2 || phaseTwo && (beat == 11 || beat == 12))
-            Cue(Mouth, seconds);
-        else if (beat == 5 || beat == 7)
-            for (int i = 0; i < combCount; i++)
-                Cue(comb[i].TransformPoint(new Vector3(0, -.26f, -.55f)), seconds);
-        else if (beat == 9)
+        DeployComb();
+        yield return Wait(.6f);
+        yield return Every(7, .7f, n =>
         {
-            Cue(Hull.TransformPoint(new Vector3(-.9f, -.3f, -.25f)), seconds);
-            Cue(Hull.TransformPoint(new Vector3(.9f, -.3f, -.25f)), seconds);
-        }
+            for (int i = 0; i < combCount; i++)
+            {
+                if (Difficulty.Easy && i % 3 == 2)
+                    continue;
+                var p = comb[i].TransformPoint(new Vector3(0, -.26f, -.55f));
+                Fire<SimpleRound>(p, Vector2.down, .25f, .2f).Ramp(13, 1.6f, .3f + (i % 2 == n % 2 ? 0 : .5f));
+                releases[i] = .1f;
+            }
+            if (n % 2 == 1)
+            {
+                int lanes = Dense(13);
+                for (int i = 0; i < lanes; i++)
+                {
+                    float lane = i - (lanes - 1) * .5f;
+                    Fire<SimpleRound>(Mouth, CombatVisuals.Rotate(Vector2.down, lane * 11), 3.0f, .24f)
+                        .Pause(.8f, .6f + Mathf.Abs(lane) * .05f, CombatRound.Turn.Keep, 0, .8f);
+                }
+            }
+        });
+        RecallComb();
     }
 }
