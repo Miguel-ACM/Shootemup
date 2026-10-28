@@ -12,9 +12,12 @@ public sealed class MintSpinner : DistrictEnemy
         Mover<Slalom>();
     }
 
+    // Three mints that ricochet off the walls and ceiling.
     protected override void Attack()
     {
-        Fan<SimpleRound>((3), 31, 3.5f, .25f);
+        int count = Dense(3);
+        for (int i = 0; i < count; i++)
+            Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Aim, (i - (count - 1) * .5f) * 40), 3.4f, .23f).Bounce(1);
     }
 }
 public static partial class IndustrialMeshFactory
