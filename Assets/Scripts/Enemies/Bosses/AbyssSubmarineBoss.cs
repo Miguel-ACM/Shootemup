@@ -147,10 +147,7 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
                     {
                         var port = Hull.TransformPoint(new Vector3(side * 1.02f, .3f + lane * .35f, -.3f));
                         var direction = CombatVisuals.Rotate(Vector2.right * side, lane * 23);
-                        if (Difficulty.Hard)
-                            HardWake(port, direction, 2.3f + lane * .16f, side);
-                        else
-                            Fire<SuspendedRound>(Hull.TransformPoint(new Vector3(side * 1.02f, .3f + lane * .35f, -.3f)), CombatVisuals.Rotate(Vector2.right * side, lane * 23), 1.8f + lane * .12f, .21f);
+                        Wake(port, direction, lane, side);
                     }
             }
             if (player != null && Mathf.Abs(player.position.x - transform.position.x) < .65f && Mathf.Abs(player.position.y - transform.position.y) < 1.5f)
@@ -177,42 +174,6 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
         model.SetPropertyBlock(ink);
     }
 
-    void Crown(float offset, float speed)
-    {
-        if (Difficulty.Hard)
-        {
-            HardCrown(offset, speed);
-            return;
-        }
-        EmergenceBursts++;
-        PSXImpactEffects.Burst(transform.position, new Color(.42f, .83f, .94f), true);
-        for (int i = 0; i < CrownSize; i++)
-        {
-            int side = i % 2 == 0 ? -1 : 1, lane = (i / 2) % 3 - 1;
-            var port = Hull.TransformPoint(new Vector3(side * 1.02f, .3f + lane * .35f, -.3f));
-            Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, offset + i * 360f / CrownSize), speed, .26f);
-        }
-    }
-
-    protected override void Attack()
-    {
-        if (Difficulty.Hard)
-        {
-            AttackHard();
-            return;
-        }
-        float t = Mathf.Repeat(cycleClock, cycleSeconds);
-        if (Submerged || t >= 8.5f)
-            return;
-        if (t >= 3.5f)
-            return;
-        if (volley % 4 != 3)
-            PetalFan<NeedleRound>(Hull.TransformPoint(new Vector3(0, -1.65f, -.5f)), CombatVisuals.Rotate(Aim, (volley % 3 - 1) * 9), (phaseTwo ? 7 : 5), 19, 3.6f, .21f);
-        else
-            for (int side = -1; side <= 1; side += 2)
-                PetalFan<SimpleRound>(Hull.TransformPoint(new Vector3(side * .65f, -.6f, -.4f)), CombatVisuals.Rotate(Vector2.down, side * 42), (5), 24, 2.3f, .28f);
-    }
-
     protected override void OnPhaseTwo()
     {
         cycleClock = 0;
@@ -220,33 +181,6 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
         volley = 0;
         nextAttack = age + 1.5f;
     }
-    protected override void PrepareFire(float seconds)
-    {
-        base.PrepareFire(seconds);
-        firingCue.ClearWarning();
-        float t = Mathf.Repeat(cycleClock, cycleSeconds);
-        if (t < 3.5f)
-        {
-            if ((volley + 1) % 4 != 3)
-                Cue(Muzzle(), seconds);
-            else
-            {
-                Cue(Muzzle(1), seconds);
-                Cue(Muzzle(2), seconds);
-            }
-        }
-        else if (t >= 5.9f && t < 7.7f || t >= 10.85f && t < 13.1f)
-        {
-            float nextCrown = t < 6.4f ? 6.4f : t < 7.05f ? 7.05f : 7.7f;
-            float warning = t < 7.7f ? (nextCrown - t) / (phaseTwo ? 1.1f : 1) : (11.35f - t) / (phaseTwo ? 1.1f : 1);
-            if (t >= 11.35f)
-                warning = Mathf.Max(0, (nextWake - age) / LevelRun.EnemyTempoScale);
-            for (int side = -1; side <= 1; side += 2)
-                for (int lane = -1; lane <= 1; lane++)
-                    Cue(Hull.TransformPoint(new Vector3(side * 1.02f, .3f + lane * .35f, -.3f)), warning);
-        }
-    }
-
     public override void damage(float amount)
     {
         if (!Submerged)
