@@ -74,8 +74,37 @@ public sealed class BurstShell : CombatRound
             Spark(charge);
             nextSpark = age + Mathf.Lerp(.10f, .05f, charge);
         }
-        int fragments = LevelRun.Current == LevelId.Snow ? 12 : 10;
-        if (age >= stop + .85f && Ring(fragments, 2.9f, .18f, Vector2.SignedAngle(Vector2.down, heading)))
+        if (age >= stop + .85f && Burst())
             Release();
+    }
+
+    // Space keeps the full circular ring. Snow fragments burst, hang and drift
+    // down as snow. Elsewhere a shell throws a forward cone of fast and slow shrapnel.
+    bool Burst()
+    {
+        var district = LevelRun.Current;
+        if (district == LevelId.Space)
+            return Ring(10, 2.9f, .18f, Vector2.SignedAngle(Vector2.down, heading));
+        int count = district == LevelId.Snow ? 12 : 9;
+        if (generation > 0 || Live.Count + count > Limit)
+            return false;
+        float facing = Vector2.SignedAngle(Vector2.down, heading);
+        for (int i = 0; i < count; i++)
+        {
+            SimpleRound shard;
+            if (district == LevelId.Snow)
+            {
+                shard = Launch<SimpleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, facing + i * 360f / count), 2.9f, .18f);
+                shard.Pause(.45f, .4f + (i % 3) * .15f, Turn.Down, Random.Range(-30f, 30f), .3f).Sway(.3f, .45f).FadeAt(Random.Range(6f, 8.5f));
+            }
+            else
+            {
+                float lane = i - (count - 1) * .5f;
+                shard = Launch<SimpleRound>(transform.position, CombatVisuals.Rotate(heading, lane * 200f / (count - 1)), i % 2 == 0 ? 3.3f : 2.1f, .18f);
+            }
+            if (shard != null)
+                shard.generation = 1;
+        }
+        return true;
     }
 }
