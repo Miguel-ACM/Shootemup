@@ -29,9 +29,10 @@ public sealed class TaffyDuelist : DistrictMiniboss
         if (beat == 6)
         {
             // Pinball sprinkles off the walls and ceiling.
-            int count = Dense(Enraged ? 10 : 8);
+            int count = Dense(Enraged ? 7 : 5);
             for (int i = 0; i < count; i++)
-                Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, Random.Range(-95f, 95f)), Random.Range(2.8f, 3.8f), .15f).Bounce(2);
+                for (int mirror = -1; mirror <= 1; mirror += 2)
+                    Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, mirror * (15 + i * 18)), 2.9f + (i % 2) * .5f, .15f).Bounce(2);
             return;
         }
         if (beat == 8)
