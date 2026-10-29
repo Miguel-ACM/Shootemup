@@ -39,8 +39,9 @@ public sealed class HelixRound : CombatRound
         var old = transform.position;
         transform.position = origin + (Vector3)(heading * age * speed + side * Mathf.Sin(age * 3.8f + phase) * .30f);
         var d = transform.position - old;
+        // The helix spins as it travels, so its sprite reads as a turning screw.
         if (d.sqrMagnitude > .001f)
-            transform.rotation = Quaternion.FromToRotation(Vector3.up, d);
+            transform.rotation = Quaternion.FromToRotation(Vector3.up, d) * Quaternion.Euler(0, 0, age * 540);
     }
 
     public static void Pair(Vector3 p, Vector2 d, float speed = 3)
