@@ -1,0 +1,366 @@
+[
+ {
+  "id": "shot1",
+  "label": "Base gun",
+  "group": "Shots",
+  "current": "current_shot1.wav",
+  "options": {
+   "chip": "shot1_chip.wav",
+   "layered": "shot1_layered.wav",
+   "physical": "shot1_physical.wav",
+   "energy": "shot1_energy.wav"
+  },
+  "repeat": 0.075
+ },
+ {
+  "id": "enemyHit",
+  "label": "Hit on enemy",
+  "group": "Hits",
+  "current": null,
+  "options": {
+   "chip": "enemyHit_chip.wav",
+   "layered": "enemyHit_layered.wav",
+   "physical": "enemyHit_physical.wav",
+   "energy": "enemyHit_energy.wav"
+  },
+  "repeat": 0.06
+ },
+ {
+  "id": "bossHit",
+  "label": "Hit on boss",
+  "group": "Hits",
+  "current": null,
+  "options": {
+   "chip": "bossHit_chip.wav",
+   "layered": "bossHit_layered.wav",
+   "physical": "bossHit_physical.wav",
+   "energy": "bossHit_energy.wav"
+  },
+  "repeat": 0.08
+ },
+ {
+  "id": "hurt1",
+  "label": "Player hurt",
+  "group": "Hits",
+  "current": "current_hurt1.wav",
+  "options": {
+   "chip": "hurt1_chip.wav",
+   "layered": "hurt1_layered.wav",
+   "physical": "hurt1_physical.wav",
+   "energy": "hurt1_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "enemyExplosion1",
+  "label": "Enemy explosion",
+  "group": "Explosions",
+  "current": "current_enemyExplosion1.wav",
+  "options": {
+   "chip": "enemyExplosion1_chip.wav",
+   "layered": "enemyExplosion1_layered.wav",
+   "physical": "enemyExplosion1_physical.wav",
+   "energy": "enemyExplosion1_energy.wav"
+  },
+  "repeat": 0.22
+ },
+ {
+  "id": "explosionLarge",
+  "label": "Boss phase change",
+  "group": "Explosions",
+  "current": null,
+  "options": {
+   "chip": "explosionLarge_chip.wav",
+   "layered": "explosionLarge_layered.wav",
+   "physical": "explosionLarge_physical.wav",
+   "energy": "explosionLarge_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "bossDeath",
+  "label": "Boss death",
+  "group": "Bosses",
+  "current": null,
+  "options": {
+   "chip": "bossDeath_chip.wav",
+   "layered": "bossDeath_layered.wav",
+   "physical": "bossDeath_physical.wav",
+   "energy": "bossDeath_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "bossWarning",
+  "label": "Boss warning",
+  "group": "Bosses",
+  "current": "current_bossWarning.wav",
+  "options": {
+   "chip": "bossWarning_chip.wav",
+   "layered": "bossWarning_layered.wav",
+   "physical": "bossWarning_physical.wav",
+   "energy": "bossWarning_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "playerDead",
+  "label": "Player death",
+  "group": "Explosions",
+  "current": "current_playerDead.wav",
+  "options": {
+   "chip": "playerDead_chip.wav",
+   "layered": "playerDead_layered.wav",
+   "physical": "playerDead_physical.wav",
+   "energy": "playerDead_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "blankbullet",
+  "label": "Screen clear / shield",
+  "group": "Items",
+  "current": "current_blankbullet.wav",
+  "options": {
+   "chip": "blankbullet_chip.wav",
+   "layered": "blankbullet_layered.wav",
+   "physical": "blankbullet_physical.wav",
+   "energy": "blankbullet_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "coin",
+  "label": "Coin",
+  "group": "Pickups",
+  "current": null,
+  "options": {
+   "chip": "coin_chip.wav",
+   "layered": "coin_layered.wav",
+   "physical": "coin_physical.wav",
+   "energy": "coin_energy.wav"
+  },
+  "repeat": 0.09
+ },
+ {
+  "id": "mana",
+  "label": "Energy",
+  "group": "Pickups",
+  "current": null,
+  "options": {
+   "chip": "mana_chip.wav",
+   "layered": "mana_layered.wav",
+   "physical": "mana_physical.wav",
+   "energy": "mana_energy.wav"
+  },
+  "repeat": 0.15
+ },
+ {
+  "id": "itemGet",
+  "label": "Item chosen",
+  "group": "Pickups",
+  "current": null,
+  "options": {
+   "chip": "itemGet_chip.wav",
+   "layered": "itemGet_layered.wav",
+   "physical": "itemGet_physical.wav",
+   "energy": "itemGet_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "uiConfirm",
+  "label": "Purchase / confirm",
+  "group": "UI",
+  "current": null,
+  "options": {
+   "chip": "uiConfirm_chip.wav",
+   "layered": "uiConfirm_layered.wav",
+   "physical": "uiConfirm_physical.wav",
+   "energy": "uiConfirm_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "uiSkip",
+  "label": "Skip",
+  "group": "UI",
+  "current": null,
+  "options": {
+   "chip": "uiSkip_chip.wav",
+   "layered": "uiSkip_layered.wav",
+   "physical": "uiSkip_physical.wav",
+   "energy": "uiSkip_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "heal",
+  "label": "Heal",
+  "group": "Items",
+  "current": "current_heal.wav",
+  "options": {
+   "chip": "heal_chip.wav",
+   "layered": "heal_layered.wav",
+   "physical": "heal_physical.wav",
+   "energy": "heal_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "timeStop",
+  "label": "Time stop",
+  "group": "Items",
+  "current": "current_timeStop.wav",
+  "options": {
+   "chip": "timeStop_chip.wav",
+   "layered": "timeStop_layered.wav",
+   "physical": "timeStop_physical.wav",
+   "energy": "timeStop_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "powerdown",
+  "label": "Power down",
+  "group": "Items",
+  "current": "current_powerdown.wav",
+  "options": {
+   "chip": "powerdown_chip.wav",
+   "layered": "powerdown_layered.wav",
+   "physical": "powerdown_physical.wav",
+   "energy": "powerdown_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "overdrive",
+  "label": "Overdrive",
+  "group": "Items",
+  "current": "current_overdrive.wav",
+  "options": {
+   "chip": "overdrive_chip.wav",
+   "layered": "overdrive_layered.wav",
+   "physical": "overdrive_physical.wav",
+   "energy": "overdrive_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "roll",
+  "label": "Roll / dash",
+  "group": "Items",
+  "current": "current_roll.wav",
+  "options": {
+   "chip": "roll_chip.wav",
+   "layered": "roll_layered.wav",
+   "physical": "roll_physical.wav",
+   "energy": "roll_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "ready",
+  "label": "Ready",
+  "group": "Items",
+  "current": "current_ready.wav",
+  "options": {
+   "chip": "ready_chip.wav",
+   "layered": "ready_layered.wav",
+   "physical": "ready_physical.wav",
+   "energy": "ready_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "shatter",
+  "label": "Shatter",
+  "group": "Items",
+  "current": "current_shatter.wav",
+  "options": {
+   "chip": "shatter_chip.wav",
+   "layered": "shatter_layered.wav",
+   "physical": "shatter_physical.wav",
+   "energy": "shatter_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "capacitor",
+  "label": "Capacitor",
+  "group": "Items",
+  "current": "current_capacitor.wav",
+  "options": {
+   "chip": "capacitor_chip.wav",
+   "layered": "capacitor_layered.wav",
+   "physical": "capacitor_physical.wav",
+   "energy": "capacitor_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "fan",
+  "label": "Fan",
+  "group": "Items",
+  "current": "current_fan.wav",
+  "options": {
+   "chip": "fan_chip.wav",
+   "layered": "fan_layered.wav",
+   "physical": "fan_physical.wav",
+   "energy": "fan_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "frost",
+  "label": "Frost",
+  "group": "Items",
+  "current": "current_frost.wav",
+  "options": {
+   "chip": "frost_chip.wav",
+   "layered": "frost_layered.wav",
+   "physical": "frost_physical.wav",
+   "energy": "frost_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "decoy",
+  "label": "Decoy",
+  "group": "Items",
+  "current": "current_decoy.wav",
+  "options": {
+   "chip": "decoy_chip.wav",
+   "layered": "decoy_layered.wav",
+   "physical": "decoy_physical.wav",
+   "energy": "decoy_energy.wav"
+  },
+  "repeat": null
+ },
+ {
+  "id": "popcorn",
+  "label": "Popcorn",
+  "group": "Items",
+  "current": "current_popcorn.wav",
+  "options": {
+   "chip": "popcorn_chip.wav",
+   "layered": "popcorn_layered.wav",
+   "physical": "popcorn_physical.wav",
+   "energy": "popcorn_energy.wav"
+  },
+  "repeat": 0.12
+ },
+ {
+  "id": "static",
+  "label": "Static",
+  "group": "Items",
+  "current": "current_static.wav",
+  "options": {
+   "chip": "static_chip.wav",
+   "layered": "static_layered.wav",
+   "physical": "static_physical.wav",
+   "energy": "static_energy.wav"
+  },
+  "repeat": null
+ }
+]

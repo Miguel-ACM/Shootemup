@@ -1,0 +1,161 @@
+<title>Shootemup Sound Picks</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+/* Layout: a console sound-test list; each cue is a row of four style pads plus the old sound. Single dark look by choice. */
+:root {
+  --bg: #0e0f14; --panel: #171922; --panel-hi: #20232f; --line: #2a2d3a; --text: #e9e6dc; --muted: #8f8c84;
+  --chip: #7ee0a1; --layered: #ffb347; --physical: #d9a27a; --energy: #9fb4ff; --cur: #b9b3a6; --pick: #ffe08a;
+  --display: 'Silkscreen', ui-monospace, monospace; --body: 'IBM Plex Sans', system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.4 var(--body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; background: var(--bg); border-bottom: 1px solid var(--line);
+  padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+h1 { font: 400 18px var(--display); margin: 0; letter-spacing: .04em; color: var(--pick); }
+#count { font: 400 13px var(--display); color: var(--muted); font-variant-numeric: tabular-nums; }
+label { color: var(--muted); font-size: 13px; display: flex; gap: 6px; align-items: center; }
+#status { color: var(--muted); font-size: 12px; margin-left: auto; }
+main { padding-block: 4px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1040px; margin: auto; }
+h2 { font: 400 12px var(--display); letter-spacing: .12em; color: var(--muted); margin: 22px 0 8px; }
+.cue { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; margin: 6px 0;
+  display: grid; grid-template-columns: 150px 1fr; gap: 10px; align-items: center; }
+.cue.done { border-color: color-mix(in srgb, var(--pick) 40%, var(--line)); }
+.cue > div { min-width: 0; }
+.cue b { font-weight: 600; }
+.cue small { display: block; color: var(--muted); font-size: 12px; }
+.pads { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.pad { display: flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; min-width: 0; }
+.pad button { background: transparent; border: 0; color: inherit; font: 13px var(--body); cursor: pointer; padding: 7px 8px; }
+.pad .play { flex: 1; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pad .pick { border-left: 1px solid var(--line); width: 34px; flex: none; color: var(--muted); }
+.pad .play:hover, .pad .pick:hover { background: var(--panel-hi); }
+.pad.chip { color: var(--chip); } .pad.layered { color: var(--layered); } .pad.physical { color: var(--physical); } .pad.energy { color: var(--energy); } .pad.current { color: var(--cur); }
+.pad.chosen { border-color: var(--pick); background: color-mix(in srgb, var(--pick) 12%, transparent); }
+.pad.chosen .pick { color: var(--pick); }
+.pad.disabled { opacity: .35; }
+.pad.disabled button { cursor: default; }
+button:focus-visible { outline: 2px solid var(--pick); outline-offset: -2px; }
+@media (max-width: 760px) { .cue { grid-template-columns: 1fr; } .pads { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+</style>
+
+<header>
+  <h1>Sound Picks</h1>
+  <span id="count">0 / 0</span>
+  <label><input id="rapid" type="checkbox"> Rapid fire</label>
+  <label>Volume <input id="vol" type="range" min="0" max="1" step=".01" value=".7"></label>
+  <span id="status">Loading picks…</span>
+</header>
+<main id="list"></main>
+
+<script>
+const CUES = __CUES__;
+const STYLES = [['chip', 'Chip'], ['layered', 'Layered'], ['physical', 'Physical'], ['energy', 'Energy']];
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+const master = ctx.createGain(); master.connect(ctx.destination);
+const buffers = {}, levels = {};
+let live = [];
+const picks = {};
+let db = null;
+
+const vol = document.getElementById('vol');
+const rapid = document.getElementById('rapid');
+const status = document.getElementById('status');
+vol.oninput = () => master.gain.value = +vol.value; vol.oninput();
+
+async function load(file) {
+  if (buffers[file]) return buffers[file];
+  const buf = await ctx.decodeAudioData(await (await fetch('audio/' + file)).arrayBuffer());
+  const d = buf.getChannelData(0), win = Math.round(buf.sampleRate * .03);
+  let sum = 0, best = 0;
+  for (let i = 0; i < d.length; i++) { sum += d[i]*d[i]; if (i >= win) sum -= d[i-win]*d[i-win]; best = Math.max(best, sum / win); }
+  levels[file] = Math.sqrt(best) || 1e-4;
+  return buffers[file] = buf;
+}
+function stopAll() { live.forEach(s => { try { s.stop(); } catch (e) {} }); live = []; }
+addEventListener('keydown', e => { if (e.key === 'Escape') stopAll(); });
+addEventListener('visibilitychange', () => { if (document.hidden) stopAll(); });
+
+async function play(file, at = 0) {
+  await ctx.resume();
+  const buf = await load(file);
+  const src = ctx.createBufferSource(), g = ctx.createGain();
+  src.buffer = buf; g.gain.value = Math.min(.12 / levels[file], 4);
+  src.connect(g); g.connect(master); src.start(ctx.currentTime + at);
+  live.push(src); src.onended = () => live = live.filter(s => s !== src);
+}
+async function audition(cue, file) {
+  stopAll();
+  if (rapid.checked) {
+    const interval = cue.repeat || .18;
+    await load(file);
+    for (let i = 0; i < Math.round(2.4 / interval); i++) play(file, i * interval * (1 + (Math.random() - .5) * .1));
+  } else play(file);
+}
+
+const rows = {};
+function render(id) {
+  const r = rows[id];
+  r.el.classList.toggle('done', !!picks[id]);
+  r.pads.forEach((pad, key) => pad.classList.toggle('chosen', picks[id] === key));
+  const done = CUES.filter(c => picks[c.id]).length;
+  document.getElementById('count').textContent = `${done} / ${CUES.length}`;
+}
+
+async function choose(id, key) {
+  const value = picks[id] === key ? null : key;
+  if (value) picks[id] = value; else delete picks[id];
+  render(id);
+  try { localStorage.setItem('soundPicks', JSON.stringify(picks)); } catch (e) {}
+  if (!db) return;
+  try {
+    if (value) await db.doc('picks/' + id).set({ choice: value });
+    else await db.doc('picks/' + id).delete();
+    status.textContent = 'Saved';
+  } catch (e) { status.textContent = 'Not saved: ' + (e.message || e.code); }
+}
+
+const groups = {};
+CUES.forEach(c => (groups[c.group] = groups[c.group] || []).push(c));
+const list = document.getElementById('list');
+for (const [group, cues] of Object.entries(groups)) {
+  const h = document.createElement('h2'); h.textContent = group; list.appendChild(h);
+  for (const c of cues) {
+    const el = document.createElement('div'); el.className = 'cue';
+    el.innerHTML = `<div><b></b><small></small></div><div class="pads"></div>`;
+    el.querySelector('b').textContent = c.label;
+    el.querySelector('small').textContent = c.id;
+    const padsEl = el.querySelector('.pads');
+    const pads = new Map();
+    const addPad = (key, label, file) => {
+      const pad = document.createElement('div'); pad.className = 'pad ' + key + (file ? '' : ' disabled');
+      const p = document.createElement('button'); p.className = 'play'; p.textContent = '▶ ' + label;
+      const k = document.createElement('button'); k.className = 'pick'; k.textContent = '✓'; k.setAttribute('aria-label', 'Pick ' + label + ' for ' + c.label);
+      if (file) p.onclick = () => audition(c, file); else p.disabled = true;
+      k.onclick = () => choose(c.id, key);
+      pad.append(p, k); padsEl.appendChild(pad); pads.set(key, pad);
+    };
+    STYLES.forEach(([key, label]) => addPad(key, label, c.options[key]));
+    addPad('current', c.current ? 'Old' : 'Silent', c.current);
+    rows[c.id] = { el, pads };
+    list.appendChild(el);
+  }
+}
+
+try { Object.assign(picks, JSON.parse(localStorage.getItem('soundPicks') || '{}')); } catch (e) {}
+CUES.forEach(c => render(c.id));
+
+(async () => {
+  db = (await window.claude?.use?.('db')) ?? null;
+  if (!db) { status.textContent = 'Picks stay in this browser'; return; }
+  db.collection('picks').onSnapshot(snap => {
+    for (const k of Object.keys(picks)) delete picks[k];
+    snap.docs.forEach(d => { const v = d.data()?.choice; if (v) picks[d.id] = v; });
+    CUES.forEach(c => render(c.id));
+    status.textContent = 'Picks saved';
+  }, () => { status.textContent = 'Picks stay in this browser'; db = null; });
+})();
+</script>

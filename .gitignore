@@ -87,3 +87,4 @@ crashlytics-build.properties
 
 # Rendered by Tools/synth_sfx.py for the A/B page; the game uses Assets/Resources/Sounds/Synth.
 ArtSource/AudioReview/Synth/audio/
+ArtSource/AudioReview/SynthOptions/audio/
