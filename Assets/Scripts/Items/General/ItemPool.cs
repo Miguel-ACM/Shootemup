@@ -105,18 +105,19 @@ public static class ItemPool
 
     public static string GetItem(out string pool)
     {
+        // Weights: common 50%, rare 38%, epic 10%, legendary 2%. Luck shifts the roll upward.
         float randomNumber = Random.Range(0f, 1f) + GameRules.luck;
         pool = "legendary";
 
-        if (randomNumber < 0.22f)
+        if (randomNumber < 0.50f)
         {
             pool = "common";
         }
-        else if (randomNumber < 0.52f)
+        else if (randomNumber < 0.88f)
         {
             pool = "rare";
         }
-        else if (randomNumber < 0.76f)
+        else if (randomNumber < 0.98f)
         {
             pool = "epic";
         }
