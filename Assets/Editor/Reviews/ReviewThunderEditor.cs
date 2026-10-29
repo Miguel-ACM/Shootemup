@@ -204,27 +204,36 @@ public sealed class ThunderEditorReview : MonoBehaviour
         foreach (var enemy in FindObjectsByType<DistrictEnemy>())
             Destroy(enemy.gameObject);
         yield return null;
-        var boss=(ThunderLanceBoss)DistrictEnemy.Spawn(typeof(ThunderLanceBoss),new Vector3(0,Camera.UpLimit-2.5f,1));
+        var boss = (ThunderLanceBoss)DistrictEnemy.Spawn(typeof(ThunderLanceBoss), new Vector3(0, Camera.UpLimit - 2.5f, 1));
         yield return null;
-        Check(Mathf.Abs(boss.health-1250*LevelRun.EnemyHealthScale)<.01f,"Shipping Thunder base health and route scaling");
-        for(int phase=0;phase<2;phase++)
+        Check(Mathf.Abs(boss.health - 1250 * LevelRun.EnemyHealthScale) < .01f, "Shipping Thunder base health and route scaling");
+        for (int phase = 0; phase < 2; phase++)
         {
-            if(phase==1)boss.health*=.49f;
-            float begin=Time.time,next=0;int observed=0,peak=0;
-            while(Time.time-begin<13)
+            if (phase == 1)
+                boss.health *= .49f;
+            float begin = Time.time, next = 0;
+            int observed = 0, peak = 0;
+            while (Time.time - begin < 13)
             {
-                var active=CombatRound.Live.OfType<PulseLaser>().Where(b=>b.IsAttachedTo(boss.Hull)).ToArray();
-                foreach(var beam in active)Check(Vector2.Dot(beam.Heading,Vector2.down)>.999f,"Thunder beam points straight down");
-                observed+=active.Length;peak=Mathf.Max(peak,CombatRound.Live.Count);
-                Check(boss.transform.position.y>Camera.UpLimit-3,"Thunder keeps its emitter hull above the dodge space");
-                if(Time.time-begin>=next){next+=3;DesertReview.Capture("Vertical-"+phase+"-"+(int)next,Folder);}
+                var active = CombatRound.Live.OfType<PulseLaser>().Where(b => b.IsAttachedTo(boss.Hull)).ToArray();
+                foreach (var beam in active)
+                    Check(Vector2.Dot(beam.Heading, Vector2.down) > .999f, "Thunder beam points straight down");
+                observed += active.Length;
+                peak = Mathf.Max(peak, CombatRound.Live.Count);
+                Check(boss.transform.position.y > Camera.UpLimit - 3, "Thunder keeps its emitter hull above the dodge space");
+                if (Time.time - begin >= next)
+                {
+                    next += 3;
+                    DesertReview.Capture("Vertical-" + phase + "-" + (int)next, Folder);
+                }
                 yield return null;
             }
-            Check(observed>0 && peak<CombatRound.Limit,"Both Thunder scores use attached vertical beams within budget");
+            Check(observed > 0 && peak < CombatRound.Limit, "Both Thunder scores use attached vertical beams within budget");
         }
-        checks.RemoveAll(x=>x=="Thunder beam points straight down"||x=="Thunder keeps its emitter hull above the dodge space");
-        Destroy(boss.gameObject);yield return new WaitForSeconds(.4f);
-        Check(!CombatRound.Live.OfType<PulseLaser>().Any(b=>b.IsFiring),"Thunder owner cleanup releases its finite beams");
+        checks.RemoveAll(x => x == "Thunder beam points straight down" || x == "Thunder keeps its emitter hull above the dodge space");
+        Destroy(boss.gameObject);
+        yield return new WaitForSeconds(.4f);
+        Check(!CombatRound.Live.OfType<PulseLaser>().Any(b => b.IsFiring), "Thunder owner cleanup releases its finite beams");
     }
 }
 #endif

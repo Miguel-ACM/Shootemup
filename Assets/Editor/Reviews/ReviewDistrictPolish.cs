@@ -370,12 +370,13 @@ public sealed class DistrictPolishReview : MonoBehaviour
             DesertReview.Capture("Hell-Miniboss", Folder);
         }
         yield return Context(LevelId.Thunder);
-        var thunder=(ThunderLanceBoss)DistrictEnemy.Spawn(typeof(ThunderLanceBoss),new Vector3(0,4,1));
-        yield return null;thunder.health*=.49f;
+        var thunder = (ThunderLanceBoss)DistrictEnemy.Spawn(typeof(ThunderLanceBoss), new Vector3(0, 4, 1));
+        yield return null;
+        thunder.health *= .49f;
         yield return new WaitForSeconds(4);
-        var vertical=CombatRound.Live.OfType<PulseLaser>().Where(b=>b.IsAttachedTo(thunder.Hull)).ToArray();
-        Check(vertical.Length>0 && vertical.All(b=>Vector2.Dot(b.Heading,Vector2.down)>.999f),"Thunder second phase uses charged vertical attached lanes");
-        DesertReview.Capture("Thunder-Vertical",Folder);
+        var vertical = CombatRound.Live.OfType<PulseLaser>().Where(b => b.IsAttachedTo(thunder.Hull)).ToArray();
+        Check(vertical.Length > 0 && vertical.All(b => Vector2.Dot(b.Heading, Vector2.down) > .999f), "Thunder second phase uses charged vertical attached lanes");
+        DesertReview.Capture("Thunder-Vertical", Folder);
         yield return Context(LevelId.Hell);
         var crab = (HellCrabBoss)DistrictEnemy.Spawn(typeof(HellCrabBoss), new Vector3(0, 4, 1));
         yield return new WaitForSeconds(3.2f);

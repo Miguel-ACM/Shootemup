@@ -318,38 +318,29 @@ public sealed class RunChoicesReview : MonoBehaviour
         }
         Check(all.Count == 5, "all five encounter types are reachable");
         Check(DistrictWaves.Sequence()[0] == "reward" && DistrictWaves.Sequence().Count(x => x == "encounterChoice") == 1 && DistrictWaves.Sequence().Count(x => x == "minibossChoice") == 1 && DistrictWaves.Sequence().Count(x => int.TryParse(x, out _)) == 10, "one pre-miniboss fork preserves the opening reward, ten combat waves and the earned miniboss selection");
-        // Use the actual selection component and its steering charge, then exercise each outcome.
+        // The fork rides along with the next wave: it is offered half-way through without pausing combat.
         flow.waves = DistrictWaves.Sequence();
         Set(flow, "currentWaveNumber", 4);
         CombatRound.Launch<SimpleRound>(Vector3.zero, Vector2.down, 0);
         Call(flow, "GenerateWave");
         yield return null;
-        Check(CombatRound.Live.Count == 0 && CombatDecision.Active && flow.EncounterOptions.Length == 2, "wave fork clears hazards and freezes combat before steering");
+        Check(CombatRound.Live.Count > 0 && !CombatDecision.Active && flow.RewardOffer == null && (bool)Get(flow, "isWaveComingOut"), "wave fork keeps combat running and waits for the middle of the next wave");
+        Set(flow, "openingWavePending", false);
+        Set(flow, "waveTime", (float)Get(flow, "offerAt"));
+        Call(flow, "Update");
+        var strip = flow.RewardOffer;
+        Check(strip != null && flow.EncounterOptions.Length == 2 && !CombatDecision.Active, "mid-wave offer opens over live combat with two options");
         yield return new WaitForSeconds(.5f);
         Capture("Encounter-Fork");
-        var selector = FindAnyObjectByType<LevelChoice>();
-        var expected = flow.EncounterOptions[0];
-        ship.transform.position = new Vector3(Camera.LeftLimit * .8f, 0, -1);
-        float steering = Time.time, lastChoice = -1;
-        int choiceFrame = 0;
-        bool shown = false;
-        while (Time.time - steering < 3.2f + LevelChoice.ExitSeconds)
-        {
-            float elapsed = Time.time - steering;
-            if (elapsed - lastChoice > .12f)
-            {
-                lastChoice = elapsed;
-                Capture("Frames/Choice-" + (choiceFrame++).ToString("D4"));
-            }
-            if (!shown && elapsed > 1.4f)
-            {
-                shown = true;
-                Capture("Encounter-Choosing");
-            }
-            yield return null;
-        }
-        Check(selector == null, "holding a side commits the same spatial selection as district routing");
-        // Close the selected result before testing the other authored outcomes.
+        Call(strip, "Choose", -1);
+        Check(flow.RewardOffer == null && FindAnyObjectByType<DecisionShop>() == null, "skipping the offer leaves combat untouched");
+        Call(flow, "OpenEncounterChoice");
+        strip = flow.RewardOffer;
+        Set(flow, "isWaveComingOut", false);
+        flow.waves = new[] { "reward", "8" };
+        Set(flow, "currentWaveNumber", 0);
+        Call(flow, "GenerateWave");
+        Check(strip != null && flow.RewardOffer == null && flow.EncounterOptions == null, "a decision or boss silently withdraws an unanswered offer");
         foreach (var shop in FindObjectsByType<DecisionShop>())
             shop.Abort();
         flow.CancelInvoke();
@@ -358,16 +349,24 @@ public sealed class RunChoicesReview : MonoBehaviour
         Set(flow, "challengeWavesRemaining", 0);
         Set(flow, "challengeWave", false);
         Set(flow, "isWaveComingOut", false);
+        ship.health = ship.maxHealth * .3f;
         Call(flow, "ResolveEncounter", EncounterKind.Health);
-        flow.CancelInvoke();
-        Check(FindObjectsByType<Life>().Length == 1 && !CombatDecision.Active, "health route gives exactly one health pickup and resumes combat");
+        float healStart = ship.health;
+        yield return new WaitForSeconds(.3f);
+        float healMiddle = ship.health;
+        yield return new WaitForSeconds(.7f);
+        Check(healStart < healMiddle && healMiddle < ship.health && Mathf.Abs(ship.health - ship.maxHealth * .8f) < .5f && !CombatDecision.Active, "health route visibly fills half of maximum health at once, without pausing");
         Clear();
         yield return null;
+        flow.waves = new[] { "8", "10" };
+        Set(flow, "currentWaveNumber", 1);
         Call(flow, "ResolveEncounter", EncounterKind.Item);
+        Check(flow.waves[1] == "reward" && FindAnyObjectByType<DecisionShop>() == null, "item route waits for the next wave break");
+        Call(flow, "GenerateWave");
         yield return new WaitForSeconds(1.7f);
         var reward = FindAnyObjectByType<DecisionShop>();
         Set(flow, "decision", reward);
-        Check(reward != null && !reward.paid, "item route opens a free item choice");
+        Check(reward != null && !reward.paid, "item route opens a free item choice at the next wave");
         var free = ((List<AItem>)Get(reward, "items"))[0];
         yield return Buy(reward, free);
         yield return null;
