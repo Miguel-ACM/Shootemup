@@ -1,7 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
-// Candy regent: a sugar rush that never stops darting. Brood minions still hatch.
+// Candy regent: a sugar rush that never stops darting. Brood minions hatch in phase
+// one only, and both phase-one cards keep a candy canopy over the top of the arena.
 // Phase one
 //   Taffy Pull: both hatches stretch a line of rounds from slow to fast along one aim,
 //     bending in mirror, so each pull arrives as two curling ribbons.
@@ -26,13 +27,20 @@ public sealed partial class CandyRegentBoss
         {
             if (!phaseTwo)
             {
-                yield return Every(6, .9f, n => TaffyPull(n % 2 == 0 ? 1 : -1));
+                yield return Every(6, .9f, n =>
+                {
+                    TaffyPull(n % 2 == 0 ? 1 : -1);
+                    if (n % 2 == 1)
+                        Canopy();
+                });
                 yield return Wait(.7f);
                 yield return Every(6, .8f, n =>
                 {
                     Sprinkles();
                     if (n % 3 == 2)
                         Gumdrops(3);
+                    else if (n % 3 == 0)
+                        Canopy();
                 });
                 yield return Wait(.7f);
             }
@@ -72,6 +80,16 @@ public sealed partial class CandyRegentBoss
                     bead.Curl(bend * 26, 1.4f);
             }
         }
+    }
+
+    // Candy canopy: arrows thrown sideways and upward from both hatches that ricochet
+    // between the walls and the ceiling, so the top of the arena is never a safe spot.
+    void Canopy()
+    {
+        int count = Dense(7);
+        for (int i = 0; i < count; i++)
+            for (int mirror = -1; mirror <= 1; mirror += 2)
+                Fire<NeedleRound>(Muzzle(mirror < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.right * mirror, mirror * (-15 + i * 9)), 3.4f, .19f).Bounce(3);
     }
 
     // Mirrored sprinkles thrown in a wide spread, ricocheting off the walls and ceiling.

@@ -83,7 +83,8 @@ public sealed partial class CandyRegentBoss : DistrictBoss
             if (t >= 1)
                 rest = phaseTwo ? .10f + (dash % 3) * .035f : .16f + (dash % 3) * .055f;
         }
-        if (age >= nextBrood)
+        // Minions hatch in phase one only.
+        if (!phaseTwo && age >= nextBrood)
         {
             nextBrood = age + (phaseTwo ? 4.8f : 5.8f);
             StartCoroutine(ReleaseBrood());
