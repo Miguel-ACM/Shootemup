@@ -124,8 +124,6 @@ cylinder((0,-.13,.423), .325, .07, 11, 16)
 ring_z(0,-.13,.452,.315,.235,.048,13,16)
 cylinder((0,-.13,.465), .231, .018, 8, 16)
 cylinder((0,-.13,.477), .195, .012, 9, 16)
-# Broad window reflection, a geometric highlight rather than a texture.
-bevel_box((-.058,-.16,.488), (.055,.21,.012), 6, .015)
 # Flanking ballast tanks, with tapered-looking beveled ends and distinct steel caps.
 for side in (-1, 1):
     x = side * .70
