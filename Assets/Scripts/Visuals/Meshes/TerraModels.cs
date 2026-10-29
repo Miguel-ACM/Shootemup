@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
@@ -181,6 +181,7 @@ public static partial class IndustrialMeshFactory
 /// <summary>Turns a rotor continuously or swings a fin back and forth around its pivot.</summary>
 public sealed class TerraPartMotion : MonoBehaviour
 {
+    [System.NonSerialized]
     public IndustrialMeshFactory.TerraPart part;
     float phase;
 
