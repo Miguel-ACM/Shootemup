@@ -52,6 +52,14 @@ public static class RoundProgram
         return shot;
     }
 
+    // Override the launch lifetime, for rounds that loop back through the arena.
+    public static T LivesFor<T>(this T shot, float seconds) where T : CombatRound
+    {
+        if (shot != null)
+            shot.SetLifetime(seconds);
+        return shot;
+    }
+
     // Pulled toward a point in the arena: rounds curve round it, orbit and slingshot past.
     public static T Attract<T>(this T shot, Vector2 point, float strength) where T : CombatRound
     {

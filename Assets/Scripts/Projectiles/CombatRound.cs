@@ -36,6 +36,7 @@ public abstract class CombatRound : AEnemyBullet
 
     public bool PixelOverlaps(Collider2D target) => !UsesPixelContact || ProjectilePixelContact.Overlap(transform, pixelBoxes, target);
     protected float lifetime = 9;
+    internal void SetLifetime(float seconds) => lifetime = seconds;
     protected bool ended;
     public int generation;
     public Vector2 Heading => heading;
