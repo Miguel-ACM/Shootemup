@@ -30,3 +30,7 @@ Colours: deep royal blue hull with lighter cobalt/ice-blue panel plates and a fe
 Footprint: about 0.46 wide and 0.92 long, from y = -0.40 to y = +0.52. Narrow overall, slightly wider at the rear engine section with short swept stabiliser wings.
 Muzzle: one laser emitter lens at the very nose, (0, +0.52), a ring-shaped lens housing at the tip of the forward spine.
 Engines: two nozzles at (-0.11, -0.40) and (+0.11, -0.40).
+
+## Revision: round cockpit = hitbox
+
+The attached image is your current version (script: previous_model.py). Keep the ship exactly as it is (silhouette, colours, muzzles, engines, parts), EXCEPT the cockpit canopy. In this game the cockpit marks the player's hitbox, so it must read instantly as a small, compact ROUND (or regular hexagonal/octagonal) dome centered EXACTLY at (0, +0.08), about 0.13 across, raised as a faceted glass bubble with a thin dark rim, in the same canopy colour. Remove the old elongated canopy (fill that area with hull plating) so the round dome is the only canopy. Write a new model.py (start from previous_model.py) and keep parts.json if the previous version had one.

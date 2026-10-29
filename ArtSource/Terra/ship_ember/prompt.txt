@@ -30,3 +30,7 @@ Colours: bright racing red hull with darker crimson and charcoal accents and sma
 Footprint: about 0.60 wide and 0.70 long, from y = -0.30 to y = +0.40.
 Muzzles: three gun barrels: (0, +0.40) at the nose, and (-0.12, +0.30), (+0.12, +0.30) on the wing roots.
 Engines: two nozzles at (-0.15, -0.30) and (+0.15, -0.30).
+
+## Revision: round cockpit = hitbox
+
+The attached image is your current version (script: previous_model.py). Keep the ship exactly as it is (silhouette, colours, muzzles, engines, parts), EXCEPT the cockpit canopy. In this game the cockpit marks the player's hitbox, so it must read instantly as a small, compact ROUND (or regular hexagonal/octagonal) dome centered EXACTLY at (0, +0.08), about 0.13 across, raised as a faceted glass bubble with a thin dark rim, in the same canopy colour. Remove the old elongated canopy (fill that area with hull plating) so the round dome is the only canopy. Write a new model.py (start from previous_model.py) and keep parts.json if the previous version had one.

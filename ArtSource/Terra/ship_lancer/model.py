@@ -1,4 +1,4 @@
-﻿import bpy
+import bpy
 import math
 import os
 import sys
@@ -140,11 +140,30 @@ loft('Laser spine', [(.045,.034,.044,.076),(.22,.029,.035,.069),(.405,.020,.018,
 mesh('Spine highlight', [(-.009,.18,.071),(.009,.18,.071),(.008,.405,.048),(-.008,.405,.048),(-.006,.472,.035),(.006,.472,.035)], [(0,1,2,3),(3,2,5,4)], 4)
 # Ring mouth exactly at the forward tip, with the violet lens recessed behind it.
 ring_y('Laser emitter',0,.52,.491,.017,.017,.011,11,15,12)
-# Cockpit: dark surround and a faceted solid purple canopy, highly visible from above.
-plate('Canopy surround', [(-.049,-.17),(.049,-.17),(.055,-.075),(.036,.02),(0,.071),(-.036,.02),(-.055,-.075)], .060,.068,0,.004)
-loft('Violet canopy', [(-.155,.034,.068,.083),(-.105,.042,.068,.106),(-.035,.038,.068,.112),(.035,.021,.067,.090),(.057,.006,.065,.073)], 8,
-     [9,8,10,10,10,10,8,9])
-plate('Canopy aft collar', [(-.048,-.177),(.048,-.177),(.047,-.162),(-.047,-.162)], .068,.073,5,.002)
+# Replace the former elongated cockpit with a flush blue armor plate.
+plate('Central hull infill', [(-.046,-.17),(.046,-.17),(.050,-.075),(.033,.02),
+                             (-.033,.02),(-.050,-.075)], .058,.063,2,.003)
+# Compact octagonal hitbox canopy, centered precisely at (0, .08).
+# A thin dark rim sits over the spine; the dome's rings form faceted glass.
+cx, cy = 0.0, .08
+n = 8
+angles = [2*math.pi*i/n + math.pi/8 for i in range(n)]
+outline = [(cx + .065*math.cos(a), cy + .065*math.sin(a)) for a in angles]
+plate('Canopy rim', outline, .077, .081, 0, .001)
+verts = []
+for radius, z in [(.060,.081), (.052,.099), (.032,.113)]:
+    verts.extend((cx + radius*math.cos(a), cy + radius*math.sin(a), z) for a in angles)
+verts.append((cx, cy, .119))
+faces = []
+ids = []
+for j in range(2):
+    for i in range(n):
+        faces.append((j*n+i, j*n+(i+1)%n, (j+1)*n+(i+1)%n, (j+1)*n+i))
+        ids.append(8 if (i+j)%3 else 9)
+for i in range(n):
+    faces.append((2*n+i, 2*n+(i+1)%n, 3*n))
+    ids.append(9 if i in (2,3,4) else 8)
+mesh('Violet canopy', verts, faces, 8, ids)
 # Small dorsal and ventral armor facets make the silhouette work during rolls.
 plate('Rear deck', [(-.042,-.355),(.042,-.355),(.055,-.31),(.045,-.19),(-.045,-.19),(-.055,-.31)], .035,.045,2,.003)
 plate('Rear deck inset', [(-.020,-.331),(.020,-.331),(.026,-.24),(-.026,-.24)], .046,.049,6,.002)

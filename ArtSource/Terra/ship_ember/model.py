@@ -1,4 +1,4 @@
-﻿import bpy
+import bpy
 import math
 import json
 import os
@@ -136,11 +136,27 @@ verts=[(-.075,-.25,.012),(.075,-.25,.012),(-.090,-.08,.018),(.090,-.08,.018),(-.
 faces=[(0,2,9,7),(2,4,11,9),(4,6,13,11),(1,8,10,3),(3,10,12,5),(5,12,13,6),
        (7,9,10,8),(9,11,12,10),(11,13,12),(0,7,8,1),(0,14,15,2),(2,15,17,6,4),(1,3,16,14),(3,5,6,17,16),(0,1,14),(14,16,17,15)]
 mesh_piece('Fuselage',verts,faces,[1,0,2,1,0,2,0,2,0,10,10,1,10,1,10,3])
-# Cockpit frame and opaque jewel canopy, with broad geometric facets.
-slab('Canopy surround',[(-.052,-.095),(-.050,.055),(0,.150),(.050,.055),(.052,-.095),(0,-.125)], .068,.077,.92,3,10,9)
-verts=[(-.040,-.083,.078),(.040,-.083,.078),(-.039,.049,.078),(.039,.049,.078),(0,.128,.066),(-.024,-.060,.101),(.024,-.060,.101),(-.023,.038,.095),(.023,.038,.095),(0,.091,.080)]
-faces=[(0,1,6,5),(0,5,7,2),(1,3,8,6),(2,7,9,4),(3,4,9,8),(5,6,8,7),(7,8,9)]
-mesh_piece('Emerald canopy',verts,faces,[5,5,5,5,5,6,5])
+# Compact octagonal hitbox canopy centered at (0, .08). The existing
+# fuselage plating remains underneath the rim and fills the former canopy area.
+n = 8
+cx, cy = 0.0, .08
+angles = [2 * math.pi * i / n + math.pi / 8 for i in range(n)]
+outline = [(cx + .065 * math.cos(a), cy + .065 * math.sin(a)) for a in angles]
+slab('Canopy rim', outline, .052, .075, .97, 3, 3, 9)
+# Two octagonal rings and a crown form a shallow, faceted glass bubble.
+verts = [(cx + r * math.cos(a), cy + r * math.sin(a), z)
+         for r, z in [(.058, .075), (.044, .095), (.023, .108)] for a in angles]
+verts.append((cx, cy, .112))
+faces, ids = [], []
+for ring in range(2):
+    for i in range(n):
+        j = (i + 1) % n
+        faces.append((ring*n+i, ring*n+j, (ring+1)*n+j, (ring+1)*n+i))
+        ids.append(5 if ring == 0 else (6 if i in (1, 2, 3) else 5))
+for i in range(n):
+    faces.append((2*n+i, 2*n+(i+1)%n, 3*n))
+    ids.append(6 if i in (1, 2, 3) else 5)
+mesh_piece('Emerald canopy', verts, faces, ids)
 # Dorsal spine and three clear forward muzzle lips.
 slab('Nose spine',[(-.022,.151),(0,.346),(.022,.151)], .026,.039,.90,2,1,0)
 barrel('Nose cannon',0,.40,.022,.009)

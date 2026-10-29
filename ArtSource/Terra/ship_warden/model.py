@@ -1,4 +1,4 @@
-﻿import bpy
+import bpy
 import math
 import os
 import sys
@@ -132,12 +132,18 @@ plate('Dorsal armor', [(-.105,-.22),(.105,-.22),(.15,-.14),(.142,.09),(.10,.195)
 plate('Raised spine', [(-.055,-.19),(.055,-.19),(.074,-.11),(.068,.13),(.048,.23),(0,.29),(-.048,.23),(-.068,.13),(-.074,-.11)], .069,.084,2,.006,0)
 plate('Nose shield', [(-.068,.205),(-.045,.275),(0,.318),(.045,.275),(.068,.205),(.048,.184),(-.048,.184)], .069,.078,3,.004,0)
 plate('Nose chevron', [(-.027,.262),(0,.297),(.027,.262),(.021,.252),(-.021,.252)], .079,.082,4,.002,2)
-# Raised blue faceted canopy, distinctly visible from gameplay view.
-canopy_base = [(-.067,.065),(-.073,.145),(-.048,.205),(.048,.205),(.073,.145),(.067,.065),(.038,.036),(-.038,.036)]
-plate('Canopy gasket', canopy_base, .080,.087,6,.003,6)
-loft('Blue canopy', [[(x*.90,y,.087) for x,y in canopy_base], [(-.045,.080,.111),(-.050,.141,.116),(-.032,.184,.106),(.032,.184,.106),(.050,.141,.116),(.045,.080,.111),(.026,.054,.100),(-.026,.054,.100)]], [[8,8,9,9,9,8,8,8]], 9, 8)
-# A short transverse canopy frame reads as a structural detail, not a weapon.
-box('Canopy frame', (0,.067,.108), (.092,.009,.006), 5, .002)
+# Compact octagonal hitbox canopy, centered exactly on the ship's spine.
+# A narrow dark gasket surrounds the faceted blue glass bubble.
+def canopy_ring(radius, z):
+    return [(radius * math.cos(2 * math.pi * k / 8 + math.pi / 8),
+             .08 + radius * math.sin(2 * math.pi * k / 8 + math.pi / 8), z)
+            for k in range(8)]
+
+loft('Canopy gasket', [canopy_ring(.065, .084), canopy_ring(.065, .089)],
+     [6], 6, 6)
+loft('Blue canopy', [canopy_ring(.060, .089), canopy_ring(.050, .106),
+                     canopy_ring(.029, .120)],
+     [[8, 8, 9, 9, 9, 8, 8, 8], [8, 9, 9, 9, 9, 8, 8, 8]], 9, 8)
 
 # Outboard support wings and U-shaped drone cradles, open toward the nose.
 for s, label in [(-1,'L'),(1,'R')]:
