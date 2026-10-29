@@ -339,8 +339,8 @@ public sealed class BossPatternProbe : MonoBehaviour
             yield return null;
         Clear();
         yield return null;
-        // Snow shells still open as a complete twelve-shard ring before the flakes hang and fall.
-        LevelRun.Reset(LevelId.Snow);
+        // Plains shells open as a complete twelve-shard ring.
+        LevelRun.Reset(LevelId.Fields);
         ShellChecks();
         yield return ScoreChecks();
         foreach (var entry in new[] { (LevelId.Fields, typeof(FieldsBomberBoss)), (LevelId.Snow, typeof(SnowSiegeBoss)), (LevelId.City, typeof(CityDuoBoss)), (LevelId.Thunder, typeof(ThunderLanceBoss)), (LevelId.Tunnel, typeof(TunnelSawBoss)),

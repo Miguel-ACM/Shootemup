@@ -78,32 +78,48 @@ public sealed class BurstShell : CombatRound
             Release();
     }
 
-    // Space keeps the full circular ring. Snow fragments burst, hang and drift
-    // down as snow. Elsewhere a shell throws a forward cone of fast and slow shrapnel.
+    // Plains and Space shells explode in a full 360-degree ring (Miguel).
+    // Snow shells throw their shards straight up and out of sight, then the same
+    // number of flakes drift down from the top of the screen, spread across the
+    // shell's column. Elsewhere a shell throws a forward cone of fast and slow shrapnel.
     bool Burst()
     {
         var district = LevelRun.Current;
-        if (district == LevelId.Space)
-            return Ring(10, 2.9f, .18f, Vector2.SignedAngle(Vector2.down, heading));
-        int count = district == LevelId.Snow ? 12 : 9;
+        float facing = Vector2.SignedAngle(Vector2.down, heading);
+        if (district == LevelId.Space || district == LevelId.Fields)
+            return Ring(12, 2.9f, .18f, facing);
+        if (district == LevelId.Snow)
+            return Snowfall(12);
+        const int count = 9;
         if (generation > 0 || Live.Count + count > Limit)
             return false;
-        float facing = Vector2.SignedAngle(Vector2.down, heading);
         for (int i = 0; i < count; i++)
         {
-            SimpleRound shard;
-            if (district == LevelId.Snow)
-            {
-                shard = Launch<SimpleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, facing + i * 360f / count), 2.9f, .18f);
-                shard.Pause(.45f, .4f + (i % 3) * .15f, Turn.Down, Random.Range(-30f, 30f), .3f).Sway(.3f, .45f).FadeAt(Random.Range(6f, 8.5f));
-            }
-            else
-            {
-                float lane = i - (count - 1) * .5f;
-                shard = Launch<SimpleRound>(transform.position, CombatVisuals.Rotate(heading, lane * 200f / (count - 1)), i % 2 == 0 ? 3.3f : 2.1f, .18f);
-            }
+            float lane = i - (count - 1) * .5f;
+            var shard = Launch<SimpleRound>(transform.position, CombatVisuals.Rotate(heading, lane * 200f / (count - 1)), i % 2 == 0 ? 3.3f : 2.1f, .18f);
             if (shard != null)
                 shard.generation = 1;
+        }
+        return true;
+    }
+
+    bool Snowfall(int flakes)
+    {
+        if (generation > 0 || Live.Count + flakes * 2 > Limit)
+            return false;
+        for (int i = 0; i < flakes; i++)
+        {
+            float lane = i - (flakes - 1) * .5f;
+            // The upward throw is the animation: fast, short-lived and gone off the top.
+            var spray = Launch<SimpleRound>(transform.position, CombatVisuals.Rotate(Vector2.up, lane * 6), 9 + (i % 3), .16f);
+            spray.FadeAt(.45f);
+            float x = Mathf.Clamp(transform.position.x + lane * .55f, Camera.LeftLimit + .3f, Camera.RightLimit - .3f);
+            var flake = Launch<SimpleRound>(new Vector3(x, Camera.UpLimit + .4f), Vector2.down, 1.4f + (i % 3) * .25f, .19f);
+            flake.Pause(.05f, .5f + (i % 4) * .12f, Turn.Down, lane * 2, 1).Sway(i % 2 == 0 ? .35f : -.35f, .45f);
+            if (spray != null)
+                spray.generation = 2;
+            if (flake != null)
+                flake.generation = 1;
         }
         return true;
     }
