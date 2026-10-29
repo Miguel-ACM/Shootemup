@@ -1,0 +1,17 @@
+[
+  {
+    "object": "Baffle",
+    "motion": "spin",
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "pivot": [
+      0,
+      0,
+      0.247
+    ],
+    "speed": 360
+  }
+]
