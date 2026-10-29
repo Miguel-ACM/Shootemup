@@ -9,11 +9,11 @@ public sealed class DecisionOverlay : MonoBehaviour
     public const float SkipWidth = 405, SkipHeight = 145;
     const float SkipDip = 26;
     RectTransform skip, skipFill;
-    CurvedStripGraphic skipGlass;
+    AngledStripGraphic skipGlass;
     CanvasGroup fade;
     bool dismissing;
-    float dismissAge;
-    const float DismissSeconds = .24f;
+    float age, dismissAge;
+    const float EnterSeconds = .3f, DismissSeconds = .3f, Slide = 14;
     TMP_FontAsset font;
     readonly List<(AItem item, RectTransform plate, TextMeshProUGUI name, TextMeshProUGUI price, TextMeshProUGUI kind, CanvasGroup fade)> offers = new List<(AItem, RectTransform, TextMeshProUGUI, TextMeshProUGUI, TextMeshProUGUI, CanvasGroup)>();
     public void Add(AItem item)
@@ -58,12 +58,17 @@ public sealed class DecisionOverlay : MonoBehaviour
         {
             dismissAge += Mathf.Min(Time.unscaledDeltaTime, .05f);
             float t = Mathf.SmoothStep(0, 1, Mathf.Clamp01(dismissAge / DismissSeconds));
-            fade.alpha = 1 - t;
-            skip.anchoredPosition = new Vector2(0, SkipHeight * .5f - 12 * t);
+            fade.alpha = Mathf.Min(fade.alpha, 1 - t);
+            skip.anchoredPosition = new Vector2(0, SkipHeight * .5f - Slide * t);
             if (dismissAge >= DismissSeconds)
                 Destroy(gameObject);
             return;
         }
+        // The skip rises out of the bottom edge as it fades in.
+        age += Mathf.Min(Time.unscaledDeltaTime, .05f);
+        float enter = Mathf.SmoothStep(0, 1, Mathf.Clamp01(age / EnterSeconds));
+        fade.alpha = enter;
+        skip.anchoredPosition = new Vector2(0, SkipHeight * .5f - Slide * (1 - enter));
         var camera = UnityEngine.Camera.main;
         if (camera == null)
             return;
@@ -87,16 +92,17 @@ public sealed class DecisionOverlay : MonoBehaviour
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 65;
         fade = gameObject.AddComponent<CanvasGroup>();
+        fade.alpha = 0;
         fade.interactable = false;
         fade.blocksRaycasts = false;
         var scaler = gameObject.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1280, 720);
         scaler.matchWidthOrHeight = 1;
-        // The same curved-top strip as the mid-wave offers, dipping toward the middle.
+        // The top edge steps down at thirty degrees from each corner.
         skip = Plate("Bottom skip", new Vector2(SkipWidth, SkipHeight));
         skip.anchorMin = skip.anchorMax = new Vector2(.5f, 0);
-        skip.anchoredPosition = new Vector2(0, SkipHeight * .5f);
+        skip.anchoredPosition = new Vector2(0, SkipHeight * .5f - Slide);
         skip.GetComponent<Image>().enabled = false;
         skipGlass = Strip(skip, "Glass", new Color(.025f, .045f, .07f, .45f), 0);
         var fill = Plate("Bottom-up skip charge", new Vector2(SkipWidth, 0), skip);
@@ -121,11 +127,11 @@ public sealed class DecisionOverlay : MonoBehaviour
         skipGlass.color = new Color(.025f, .045f, .07f, .45f);
     }
 
-    CurvedStripGraphic Strip(Transform parent, string title, Color color, float thickness)
+    AngledStripGraphic Strip(Transform parent, string title, Color color, float thickness)
     {
-        var go = new GameObject(title, typeof(RectTransform), typeof(CanvasRenderer), typeof(CurvedStripGraphic));
+        var go = new GameObject(title, typeof(RectTransform), typeof(CanvasRenderer), typeof(AngledStripGraphic));
         go.transform.SetParent(parent, false);
-        var graphic = go.GetComponent<CurvedStripGraphic>();
+        var graphic = go.GetComponent<AngledStripGraphic>();
         graphic.color = color;
         graphic.raycastTarget = false;
         graphic.dip = SkipDip;
