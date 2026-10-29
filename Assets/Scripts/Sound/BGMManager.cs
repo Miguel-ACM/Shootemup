@@ -26,8 +26,9 @@ public class BGMManager : MonoBehaviour
 
     void Start()
     {
-        if (SceneManager.GetActiveScene().name == "Title")
-            StopBGM();
+        // The title and the hangar share one track that keeps playing across the transition between them.
+        if (SceneManager.GetActiveScene().name == "Title" || HangarHub.Active)
+            PlayHangarMusic();
         else if (!audioSource.isPlaying)
             PlayLevelMusic(LevelRun.Current);
     }
@@ -35,6 +36,15 @@ public class BGMManager : MonoBehaviour
     public static void PlayLevelMusic(LevelId level)
     {
         PlayBGM(LevelTrack(level));
+    }
+
+    public const string HangarTrack = "hangar";
+
+    public static void PlayHangarMusic()
+    {
+        if (audioSource != null && audioSource.isPlaying && audioSource.clip != null && audioSource.clip.name == HangarTrack)
+            return;
+        PlayBGM(HangarTrack);
     }
 
     public static string LevelTrack(LevelId level) => level.ToString().ToLowerInvariant();
