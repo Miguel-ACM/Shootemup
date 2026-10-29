@@ -7,7 +7,7 @@ public sealed class OrbitalWarden : DistrictMiniboss
         hull = 60;
         hullScale = .95f;
         health = 590;
-        attackInterval = (0.52f);
+        attackInterval = 1.2f;
         nextAttack = 1.0f;
     }
 
@@ -20,48 +20,43 @@ public sealed class OrbitalWarden : DistrictMiniboss
             firingCue.Warn(seconds);
     }
 
+    // Space orbital warden: supernova rings that stop, hold and fall back through it to
+    // burst out the far side; arrow streams bent by a gravity well below it; and a
+    // pair of charged lasers.
     protected override void Attack()
     {
-        int beat = (volley - 1) % 10;
+        int beat = volley % 3;
         if (beat == 0)
         {
-            // A comet: a tight spinning ring that travels at the player as one body.
-            int beads = Dense(9);
-            var aim = Aim;
+            int beads = Dense(Enraged ? 26 : 22);
+            float radius = 2.8f, travel = .8f, speed = radius / (travel - .175f);
             for (int i = 0; i < beads; i++)
-            {
-                var bead = Fire<SimpleRound>(Muzzle(), aim, 1.9f, .19f);
-                if (bead != null)
-                    bead.Orbit(.75f, i * 360f / beads, 150, 10, 0, 0, 0, .4f);
-            }
+                Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, i * 360f / beads + volley * 5), WorldSpeed(speed), .19f)
+                    .Pause(travel, .6f, CombatRound.Turn.Rotate, 180, 2.6f / speed)
+                    .LivesFor(8);
         }
-        else if (beat == 1 || beat == 2)
-            Fan<RicochetBolt>(Dense(5), 25, 3.8f, .23f);
-        else if (beat == 4)
+        else if (beat == 1)
+        {
+            Vector2 well = transform.position + Vector3.down * 4.5f;
+            Stream(Dense(16), .09f, n =>
+            {
+                for (int side = -1; side <= 1; side += 2)
+                    Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.right * side, -side * (n % 5) * 14), 3.4f, .19f).Attract(well, 8).LivesFor(8);
+            });
+        }
+        else
             for (int side = -1; side <= 1; side += 2)
             {
                 var local = new Vector3(side * .95f, -.85f, -.3f);
-                var p = Hull.TransformPoint(local);
-                var beam = Fire<PulseLaser>(p, Vector2.down, 0);
+                var beam = Fire<PulseLaser>(Hull.TransformPoint(local), Vector2.down, 0);
                 if (beam != null)
                 {
                     beam.Bind(Hull, local);
-                    beam.warning = 1.1f;
-                    beam.activeTime = 1.15f;
-                    beam.sweep = 0;
-                    beam.width = .19f;
+                    beam.warning = 1.0f;
+                    beam.activeTime = 1.2f;
+                    beam.sweep = side * 14;
+                    beam.width = .2f;
                 }
             }
-        else if (beat == 7)
-        {
-            // A small galaxy: stars wound round the warden, slung off one after another.
-            int stars = Dense(Enraged ? 16 : 12);
-            for (int i = 0; i < stars; i++)
-            {
-                var star = Fire<SimpleRound>(Muzzle(), Vector2.down, 0, .18f);
-                if (star != null)
-                    star.Orbit(.9f, i * 360f / stars, volley % 20 < 10 ? 90 : -90, 8, 0, 0, 0, .4f).Sling(.7f + i * .06f, .7f);
-            }
-        }
     }
 }
