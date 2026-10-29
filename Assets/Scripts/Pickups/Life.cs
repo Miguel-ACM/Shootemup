@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class Life : APickable
 {
+    void Awake()
+    {
+        gameObject.AddComponent<HealthPackGlow>();
+    }
+
     protected override void PickUp()
     {
         Shipcontroller s = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();

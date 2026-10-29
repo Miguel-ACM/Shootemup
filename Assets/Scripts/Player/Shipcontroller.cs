@@ -365,14 +365,6 @@ public class Shipcontroller : MonoBehaviour
         return 100 * Mathf.Pow(0.01f, manaPer);
     }
 
-    public float GetHealthChanceMultiplier()
-    {
-        float healthPer = health / maxHealth;
-        if (healthPer == 1f)
-            return 0;
-        return 4 * Mathf.Pow(0.25f, healthPer);
-    }
-
     IEnumerator Invulnerability(float invulnerabilitySeconds)
     {
         invulnerable = true;

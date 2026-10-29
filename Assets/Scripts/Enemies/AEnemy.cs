@@ -26,7 +26,7 @@ public abstract class AEnemy : MonoBehaviour
     public float lifeDropChance = 0.1f;
     public float manaDropChance = 0.1f;
     public float moneyDropChance = 0.1f;
-    public int[] minmaxLife = new int[] { 1, 1 };
+    public int[] minmaxLife = new int[] { 1, 3 };
     public int[] minmaxMoney = new int[] { 1, 1 };
     public int[] minmaxMana = new int[] { 1, 1 };
     protected bool isBoss = false;
@@ -85,16 +85,11 @@ public abstract class AEnemy : MonoBehaviour
     void DropItems()
     {
         int numDrops = 0;
-        if (Random.Range(0f, 1f) < (GameRules.itemLuck * lifeDropChance * s.GetHealthChanceMultiplier()))
+        // Health is precious now: only boss kills drop it, always, whatever the ship's health.
+        if (isBoss && Random.Range(0f, 1f) < lifeDropChance)
         {
-            numDrops = minmaxLife[0];
-            if (minmaxLife[0] != minmaxLife[1])
-            {
-                numDrops = Random.Range(minmaxLife[0], minmaxLife[1] + 1);
-            }
-            numDrops += GameRules.morePickables;
+            numDrops = Random.Range(minmaxLife[0], minmaxLife[1] + 1) + GameRules.morePickables;
             InstantitatePickables("life", numDrops);
-
         }
         if (Random.Range(0f, 1f) < (GameRules.itemLuck * manaDropChance * s.GetManaChanceMultiplier()))
         {
