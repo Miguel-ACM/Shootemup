@@ -72,7 +72,34 @@ public sealed class CloudTransition : MonoBehaviour
             graphic.color = Color.Lerp(new Color(.88f, .92f, .95f), Color.white, i / 3f);
             graphic.Configure(artwork, i);
         }
+        cloudLayer = viewport;
+        // Some trips (the title into the hangar) dip briefly through black instead of the clouds.
+        var dip = new GameObject("Black dip", typeof(RectTransform), typeof(Image));
+        dip.transform.SetParent(transform, false);
+        var dipRect = dip.GetComponent<RectTransform>();
+        dipRect.anchorMin = Vector2.zero;
+        dipRect.anchorMax = Vector2.one;
+        dipRect.offsetMin = dipRect.offsetMax = Vector2.zero;
+        blackDip = dip.GetComponent<Image>();
+        blackDip.color = new Color(0, 0, 0, 0);
+        blackDip.raycastTarget = false;
         canvas.enabled = false;
+    }
+
+    GameObject cloudLayer;
+    Image blackDip;
+    bool clouds = true;
+    const float DipSeconds = .3f;
+
+    IEnumerator Dip(bool cover)
+    {
+        for (float t = 0; t < DipSeconds; t += Mathf.Min(Time.unscaledDeltaTime, MaxFlowStep))
+        {
+            float a = Mathf.SmoothStep(0, 1, t / DipSeconds);
+            blackDip.color = new Color(0, 0, 0, cover ? a : 1 - a);
+            yield return null;
+        }
+        blackDip.color = new Color(0, 0, 0, cover ? 1 : 0);
     }
 
     void SceneLoaded(Scene scene, LoadSceneMode mode)
@@ -135,10 +162,11 @@ public sealed class CloudTransition : MonoBehaviour
             yield return null;
     }
 
-    public static void Load(string scene, Action covered = null)
+    public static void Load(string scene, Action covered = null, bool clouds = true)
     {
         if (Busy)
             return;
+        instance.clouds = clouds;
         LevelEnvironment.FadeOutStorm();
         // Leaving gameplay supersedes route preparation; do not leave resource requests behind
         // a newly parked scene load, or build scenery into the menu after its level unloads.
@@ -197,6 +225,7 @@ public sealed class CloudTransition : MonoBehaviour
         // Clouds are an overlay: simulation and controls keep running throughout both legs.
         Time.timeScale = 1;
         PositionClouds();
+        cloudLayer.SetActive(clouds);
         canvas.enabled = true;
         var previousPriority = Application.backgroundLoadingPriority;
         Application.backgroundLoadingPriority = ThreadPriority.Low;
@@ -205,7 +234,7 @@ public sealed class CloudTransition : MonoBehaviour
             var preparing = StartCoroutine(LevelEnvironment.Prepare());
             if (scene != null && scenePreparation == null)
                 scenePreparation = StartCoroutine(PreloadScene(scene));
-            yield return Move(true);
+            yield return clouds ? Move(true) : Dip(true);
             yield return preparing;
             if (scene != null)
             {
@@ -244,10 +273,13 @@ public sealed class CloudTransition : MonoBehaviour
                 if (!HangarHub.Active)
                     LevelReveal.Show();
             }
-            yield return Move(false);
+            yield return clouds ? Move(false) : Dip(false);
         }
         finally
         {
+            blackDip.color = new Color(0, 0, 0, 0);
+            cloudLayer.SetActive(true);
+            clouds = true;
             Application.backgroundLoadingPriority = previousPriority;
             canvas.enabled = false;
             busy = false;

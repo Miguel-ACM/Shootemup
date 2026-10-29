@@ -49,7 +49,7 @@ public sealed class HangarHub : MonoBehaviour
         Active = true;
         GameRules.StartNewRun(chosen);
         LevelRun.Reset();
-        CloudTransition.Load("L1");
+        CloudTransition.Load("L1", null, false);
     }
 
     public static void Leave()
@@ -89,6 +89,11 @@ public sealed class HangarHub : MonoBehaviour
         BuildBays();
         BuildShop();
         BuildGate();
+        if (player != null)
+        {
+            parkedAt = player.transform.position;
+            arrival = 0;
+        }
         input = new Inputs();
         input.PlayerControls.FirePrimary.started += Interact;
         input.PlayerControls.FireSecondary.started += Interact;
@@ -276,9 +281,29 @@ public sealed class HangarHub : MonoBehaviour
     float GateY => Mathf.Min(center.y + 6.4f, Camera.UpLimit - .3f);
     Vector3 Spot(Vector2 local, float z) => new Vector3(center.x + local.x, center.y + local.y, z);
 
+    // The ship rises into the hangar from below the screen once the screen is showing.
+    // Applied after the controller's own update, which would otherwise clamp it into the arena.
+    const float ArrivalSeconds = 1.4f;
+    Vector3 parkedAt;
+    float arrival = -1;
+    bool Arriving => arrival >= 0;
+
+    void LateUpdate()
+    {
+        if (!Arriving || player == null)
+            return;
+        if (!CloudTransition.Busy)
+            arrival += Time.deltaTime / ArrivalSeconds;
+        float below = center.y - UnityEngine.Camera.main.orthographicSize - 1.2f;
+        float t = 1 - Mathf.Pow(1 - Mathf.Clamp01(arrival), 3);
+        player.transform.position = new Vector3(parkedAt.x, Mathf.LerpUnclamped(below, parkedAt.y, t), parkedAt.z);
+        if (arrival >= 1)
+            arrival = -1;
+    }
+
     void Update()
     {
-        if (player == null || launching)
+        if (player == null || launching || Arriving)
             return;
         var p = player.transform.position;
         int pad = NearestBay(p);
@@ -368,7 +393,7 @@ public sealed class HangarHub : MonoBehaviour
 
     void Interact(InputAction.CallbackContext context)
     {
-        if (player == null || launching || Menu.GameplayPaused || CloudTransition.Busy)
+        if (player == null || launching || Arriving || Menu.GameplayPaused || CloudTransition.Busy)
             return;
         var p = player.transform.position;
         int pad = NearestBay(p);
