@@ -339,6 +339,8 @@ public class Shipcontroller : MonoBehaviour
                 return;
             if (!GameRules.playerDisabled && DeflectWindow.Catches(gameObject, other.GetComponent<AEnemyBullet>()))
                 return;
+            if (!IsInvulnerable && !GameRules.playerDisabled && OathMirror.Catches(gameObject, other.GetComponent<AEnemyBullet>()))
+                return;
             if (PolarityEngine.Absorbs(other.gameObject))
             {
                 PolarityEngine.Absorb(other.GetComponent<AEnemyBullet>());
