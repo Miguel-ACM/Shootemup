@@ -5,7 +5,7 @@ using UnityEngine;
 public static class ItemPool
 {
     private static readonly string[] allCommon = { "Popcorn", "PocketFan", "RubberBand", "HotSauce", "BulletDroneItem", "FocusTime", "BarrelRoll", "BadGlasses", "ScatterCannonItem", "BallBearing", "ReserveCell", "SalvageConverter", "FocusingLens", "ReboundCoil", "RabbitsFoot", "BlankBullet", "TwerpItem", "Magnet", "AK45Item", "SparePlating" };
-    private static readonly string[] allRare = { "Icicle", "WindUpCannonItem", "DecoyProjector", "StaticSweater", "MagnifyingGlass", "ChewingGum", "LaserDroneItem", "HealthPacks", "EnergyCore", "BouncingBall", "Poison", "GasolineLeak", "QualityGlasses", "ShrinkerJuice", "Overdrive", "GravityWell", "MirrorBurst", "BeamEmitterItem", "FlameProjectorItem", "BackdraftItem", "DrillItem", "FillableFlask", "DepthChargeItem", "SwarmRackItem", "DiscThrowerItem", "BurstLauncherItem", "NeedleCannonItem", "Lighter", "ReturnModule", "DroneLink", "RecoveryCoil", "Capacitor", "ProximityFuse", "SplitterCore", "Caffeine", "ProteinSupplement", "AMoonItem", "BabyYouItem", "ElectricityItem", "DoubleHull" };
+    private static readonly string[] allRare = { "Icicle", "WindUpCannonItem", "DecoyProjector", "StaticSweater", "MagnifyingGlass", "ChewingGum", "LaserDroneItem", "HealthPacks", "EnergyCore", "BouncingBall", "Poison", "GasolineLeak", "QualityGlasses", "ShrinkerJuice", "Overdrive", "GravityWell", "MirrorBurst", "BeamEmitterItem", "FlameProjectorItem", "BackdraftItem", "DrillItem", "FillableFlask", "DepthChargeItem", "SwarmRackItem", "DiscThrowerItem", "BurstLauncherItem", "NeedleCannonItem", "Lighter", "ReturnModule", "DroneLink", "RecoveryCoil", "Capacitor", "ProximityFuse", "SplitterCore", "Caffeine", "ProteinSupplement", "AMoonItem", "BabyYouItem", "ElectricityItem", "DoubleHull", "SquadWhistle" };
     private static readonly string[] allEpic = { "BulletTime", "DoubleTrouble", "EmpPulse", "RailDriverItem", "ChainReactor", "SpareBattery", "AnotherArm", "AngryMoonItem", "EnergyShield", "SpellCard", "Kusabimaru" };
     private static readonly string[] allLegendary = { "Telekinesis", "ThreeMoonsItem", "PolarityEngine", "WarpCore" };
 
@@ -21,12 +21,34 @@ public static class ItemPool
         ResetRun();
     }
 
+    // Runs only draw from the items unlocked in the hangar shop.
     public static void ResetRun()
     {
-        common = new List<string>(allCommon);
-        rare = new List<string>(allRare);
-        epic = new List<string>(allEpic);
-        legendary = new List<string>(allLegendary);
+        common = new List<string>(System.Array.FindAll(allCommon, MetaProgress.IsUnlocked));
+        rare = new List<string>(System.Array.FindAll(allRare, MetaProgress.IsUnlocked));
+        epic = new List<string>(System.Array.FindAll(allEpic, MetaProgress.IsUnlocked));
+        legendary = new List<string>(System.Array.FindAll(allLegendary, MetaProgress.IsUnlocked));
+    }
+
+    public static IEnumerable<string> AllItems
+    {
+        get
+        {
+            foreach (var pool in new[] { allCommon, allRare, allEpic, allLegendary })
+                foreach (var item in pool)
+                    yield return item;
+        }
+    }
+
+    public static string RarityOf(string item)
+    {
+        if (System.Array.IndexOf(allLegendary, item) >= 0)
+            return "legendary";
+        if (System.Array.IndexOf(allEpic, item) >= 0)
+            return "epic";
+        if (System.Array.IndexOf(allRare, item) >= 0)
+            return "rare";
+        return "common";
     }
 
     private static string LowerPool(string pool)

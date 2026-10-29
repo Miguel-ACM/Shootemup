@@ -16,6 +16,7 @@ public sealed class GameOverState : MonoBehaviour
         if (Active)
             return;
         instance = new GameObject("Game over", typeof(RectTransform)).AddComponent<GameOverState>();
+        MetaProgress.EndRun();
         CombatDecision.End();
         GameRules.playerDisabled = true;
         foreach (var wave in FindObjectsByType<WaveOrchestrer>())
