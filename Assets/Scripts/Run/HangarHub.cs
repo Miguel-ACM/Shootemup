@@ -193,8 +193,8 @@ public sealed class HangarHub : MonoBehaviour
     {
         // A faint mist across the open doors, fading downward; flying into it launches the run.
         var bottom = new Color(.62f, .74f, .8f, 0);
-        var top = new Color(.62f, .74f, .8f, .42f);
-        float width = GateHalfWidth + .9f, low = GateY - .9f, high = center.y + 9.5f;
+        var top = new Color(.7f, .8f, .86f, .85f);
+        float width = GateHalfWidth + .9f, low = GateY - 1.6f, high = center.y + 9.5f;
         var mesh = new Mesh { name = "Launch mist" };
         mesh.vertices = new[] { new Vector3(-width, low), new Vector3(-width, high), new Vector3(width, high), new Vector3(width, low) };
         mesh.colors = new[] { bottom, top, top, bottom };
