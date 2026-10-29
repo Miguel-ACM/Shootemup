@@ -28,6 +28,8 @@ public static class MetaProgress
         public bool runActive;
         public List<string> unlocked = new List<string>();
         public List<string> stock = new List<string>();
+        // Bought in the hangar: equipped at the start of the next run, then gone.
+        public List<string> loadout = new List<string>();
     }
 
     static SaveData data;
@@ -81,8 +83,18 @@ public static class MetaProgress
         Data.coins -= price;
         Data.stock.Remove(item);
         Data.unlocked.Add(item);
+        Data.loadout.Add(item);
         Save();
         return true;
+    }
+
+    /// <summary>The items bought since the last run; taking them empties the list.</summary>
+    public static string[] TakeLoadout()
+    {
+        var items = Data.loadout.ToArray();
+        Data.loadout.Clear();
+        Save();
+        return items;
     }
 
     public static void BeginRun()

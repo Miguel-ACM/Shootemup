@@ -71,11 +71,14 @@ public static class ShipFrames
     }
 
     /// <summary>Starting equipment arrives through the normal pickup feedback, like the Exploding Shield.</summary>
+    // Items bought in the hangar since the last run follow the frame's own.
     public static IEnumerator GrantStarters(Shipcontroller ship, Definition frame)
     {
+        var kinds = new System.Collections.Generic.List<string>(frame.starters);
+        kinds.AddRange(MetaProgress.TakeLoadout());
         yield return null;
         yield return null;
-        foreach (var kind in frame.starters)
+        foreach (var kind in kinds)
         {
             var type = System.Type.GetType(kind);
             if (ship == null || type == null)
@@ -84,8 +87,11 @@ public static class ShipFrames
             var item = (AItem)go.AddComponent(type);
             item.SetRarity(ItemPool.RarityOf(kind));
             yield return null;
-            if (ship != null && item != null)
-                item.GrantTo(ship);
+            if (ship == null || item == null)
+                continue;
+            // Bought weapons and actives take a free slot, keeping the frame's own gun.
+            int slot = ship.GetComponent<ShipLoadout>().SlotFor(item);
+            item.GrantTo(ship, slot < 0 ? 1 : slot);
         }
     }
 
