@@ -3,7 +3,7 @@ public sealed class LargeHealthKit : AItem
 {
     void Awake()
     {
-        SetData("Large Health Kit", "Emergency repair", "Restore 45 health.", ItemType.passive);
+        SetData("Large Health Kit", "Emergency repair", "Repair three hits.", ItemType.passive);
     }
 
     public override void OnBegin()
@@ -12,7 +12,7 @@ public sealed class LargeHealthKit : AItem
 
     public override void OnPickup()
     {
-        s.HealFlat(45);
+        HealthRecovery.Begin(s, 3);
         base.OnPickup();
     }
 }

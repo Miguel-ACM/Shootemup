@@ -11,7 +11,7 @@ public sealed class IndustrialRuntimeProbe : MonoBehaviour
         yield return new WaitForSecondsRealtime(1);
         Time.timeScale = 1;
         var player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
-        player.health = 62;
+        player.health = 3;
         player.mana = 47;
         int score = Score.CurrentScore;
         foreach (string kind in new[] { "life", "mana", "money" })
@@ -26,7 +26,7 @@ public sealed class IndustrialRuntimeProbe : MonoBehaviour
         Quaternion rotation = itemVisual.model.localRotation;
         blank.OnPickup();
         yield return new WaitForSecondsRealtime(.6f);
-        bool healing = player.health > 62, charging = player.mana > 47, scoring = Score.CurrentScore > score;
+        bool healing = player.health > 3, charging = player.mana > 47, scoring = Score.CurrentScore > score;
         bool spinning = Quaternion.Angle(rotation, itemVisual.model.localRotation) > 1;
         bool itemMapped = itemVisual.model.GetComponent<MeshFilter>().sharedMesh.name.Contains("Magnet");
         bool activeHidden = !active.GetComponent<PSXObjectVisual>().model.gameObject.activeSelf;

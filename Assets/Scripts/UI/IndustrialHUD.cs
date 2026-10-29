@@ -114,7 +114,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         Place(Panel(sidePanel, "Health cross", Steel), 7, 16, 11, 3);
         Place(Panel(sidePanel, "Health cross stem", Steel), 11, 12, 3, 11);
         Place(Panel(sidePanel, "Reactor indicator", Cyan), 25, 13, 7, 8);
-        healthCells = VerticalCells(sidePanel, 8, 34, 24, 10, 7, Steel);
+        BuildHealthCells(Shipcontroller.StartingHits);
         manaCells = VerticalCells(sidePanel, 25, 34, 24, 7, 7, Cyan);
         Fill(healthCells, 0, Steel);
         Fill(manaCells, 0, Cyan);
@@ -164,7 +164,10 @@ public sealed class IndustrialHUD : MonoBehaviour
         {
             entranceAge += Time.unscaledDeltaTime;
             // Charge the instruments one segment at a time, without changing the player's resources.
-            int healthLimit = Mathf.FloorToInt(Mathf.Clamp01((entranceAge - .75f) / .84f) * 24);
+            int hits = Mathf.Clamp(Mathf.RoundToInt(player.maxHealth), 1, MaxHitCells);
+            if (hits != healthCells.Length)
+                BuildHealthCells(hits);
+            int healthLimit = Mathf.FloorToInt(Mathf.Clamp01((entranceAge - .75f) / .84f) * hits);
             int energyLimit = Mathf.FloorToInt(Mathf.Clamp01((entranceAge - 1.72f) / .84f) * 24);
             float health = player.health / Mathf.Max(1, player.maxHealth);
             Fill(healthCells, health, HealthRecovery.Tint(health <= .25f ? Color.Lerp(Steel, Alarm, .55f) : Steel), healthLimit);
@@ -262,6 +265,25 @@ public sealed class IndustrialHUD : MonoBehaviour
         bool lit = EntranceComplete && !GameOverState.Active && healthFraction > 0 && healthFraction <= .25f && Mathf.Repeat(time, .8f) < .4f;
         for (int i = 0; i < meterCasing.Length; i++)
             meterCasing[i].color = lit ? Alarm : i == 2 ? Steel : Frame;
+    }
+
+    // One chunky cell per hit, bottom first; the column keeps its height as maximum hits grow.
+    const int MaxHitCells = 12;
+    void BuildHealthCells(int count)
+    {
+        if (healthCells != null)
+            foreach (var cell in healthCells)
+                Destroy(cell.gameObject);
+        const float top = 34, gap = 4;
+        float height = (sidePanel.rect.height - top - 12 - gap * (count - 1)) / count;
+        healthCells = new Image[count];
+        for (int i = 0; i < count; i++)
+        {
+            var cell = Panel(sidePanel, "Hit segment " + i, Steel);
+            Place(cell, 8, top + (count - 1 - i) * (height + gap), 10, height);
+            healthCells[i] = cell.GetComponent<Image>();
+        }
+        Fill(healthCells, 0, Steel);
     }
 
     Image[] Cells(Transform parent, float x, float y, int count, float width, Color color)

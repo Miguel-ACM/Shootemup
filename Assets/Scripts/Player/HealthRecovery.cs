@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Restores health over a short visible fill instead of all at once; the meter glows while it rises.
+// Restores hits one segment at a time over a short visible fill; the meter glows while it rises.
 public sealed class HealthRecovery : MonoBehaviour
 {
     static readonly Color Mint = new Color(.55f, 1, .72f);
@@ -10,15 +10,21 @@ public sealed class HealthRecovery : MonoBehaviour
     }
 
     Shipcontroller ship;
-    float remaining, rate, afterglow;
+    int remaining;
+    float interval, nextSegment, afterglow;
 
-    public static void Begin(Shipcontroller ship, float fraction, float seconds = .75f)
+    public static void Begin(Shipcontroller ship, float fraction, float seconds = .75f) =>
+        Begin(ship, Mathf.Max(1, Mathf.CeilToInt(ship.maxHealth * Mathf.Clamp01(fraction) - .01f)), seconds);
+
+    public static void Begin(Shipcontroller ship, int hits, float seconds = .75f)
     {
         if (!ship.TryGetComponent<HealthRecovery>(out var recovery))
             recovery = ship.gameObject.AddComponent<HealthRecovery>();
         recovery.ship = ship;
-        recovery.remaining += fraction;
-        recovery.rate = recovery.remaining / seconds;
+        if (recovery.remaining == 0)
+            recovery.nextSegment = Time.time + .12f;
+        recovery.remaining += hits;
+        recovery.interval = seconds / recovery.remaining;
         PSXImpactEffects.Burst(ship.transform.position, Mint);
         ItemSound.Play("heal", .2f);
     }
@@ -35,11 +41,14 @@ public sealed class HealthRecovery : MonoBehaviour
         }
         if (remaining > 0)
         {
-            float step = Mathf.Min(remaining, rate * Time.deltaTime);
-            remaining -= step;
-            ship.HealFraction(step);
-            afterglow = .45f;
             Glow = 1;
+            afterglow = .45f;
+            if (Time.time >= nextSegment)
+            {
+                remaining--;
+                nextSegment = Time.time + interval;
+                ship.Repair(1);
+            }
             return;
         }
         afterglow = Mathf.Max(0, afterglow - Time.deltaTime);

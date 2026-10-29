@@ -31,17 +31,12 @@ public static class ReviewProjectilePolish
             GameRules.playerDisabled = false;
             var ship = UnityEngine.Object.FindAnyObjectByType<Shipcontroller>();
             Check(ship != null, "Loaded production ship and health bar");
-            ship.maxHealth = 120;
-            ship.health = 18;
-            GameRules.healMultiplier = 2;
-            ship.HealFraction(.5f);
-            Check(Mathf.Approximately(ship.health, 78), "Health route restores exactly half maximum health (60 of 120), even with healing modifiers");
-            ship.HealFraction(.5f);
-            Check(ship.health == 120, "Route healing caps at maximum health");
-            ship.health = 18;
-            ship.HealFlat(2);
-            Check(ship.health == 22, "Ordinary health pickups retain their existing healing modifiers");
-            Check(Resources.Load<GameObject>("Pickables/life").GetComponent<Life>().maxHealthFraction == 0, "Ordinary pickup prefab still uses flat healing");
+            ship.maxHealth = Shipcontroller.StartingHits;
+            ship.health = 2;
+            ship.Repair(1);
+            Check(ship.health == 3, "A health pickup repairs exactly one hit");
+            ship.Repair(9);
+            Check(ship.health == Shipcontroller.StartingHits, "Repairs cap at maximum hits");
             foreach (LevelId level in Enum.GetValues(typeof(LevelId)))
                 ReviewMiniboss(level);
             RenderBullets();

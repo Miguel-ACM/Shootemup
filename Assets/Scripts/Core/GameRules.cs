@@ -27,7 +27,6 @@ public class GameRules : MonoBehaviour
     public static int morePickables;
     public static float scoreMultiplier;
     public static int numShopItems;
-    public static float healMultiplier;
     public static float manaHealMultiplier;
     public static float pickDistance;
 
@@ -66,7 +65,6 @@ public class GameRules : MonoBehaviour
         morePickables = 0;
         scoreMultiplier = 1f;
         numShopItems = 3;
-        healMultiplier = 1f;
         manaHealMultiplier = 1f;
         pickDistance = 1f;
 

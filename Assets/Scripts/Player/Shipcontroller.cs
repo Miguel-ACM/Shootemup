@@ -16,8 +16,10 @@ public class Shipcontroller : MonoBehaviour
 
     [SerializeField] private ResourceBar healthBar;
     [SerializeField] private ResourceBar manaBar;
-    public float maxHealth = 100f;
-    public float health = 100f;
+    // Health counts whole hits: every hit removes one segment, whatever fired it.
+    public const int StartingHits = 6;
+    public float maxHealth = StartingHits;
+    public float health = StartingHits;
     public float maxMana = 100f;
     public float mana = 100f;
     public float invulnerabilitySeconds = 1.5f;
@@ -72,6 +74,7 @@ public class Shipcontroller : MonoBehaviour
         input = new Inputs();
         gameObject.AddComponent<ShipLoadout>();
         gameObject.AddComponent<CombatUpgrades>();
+        maxHealth = health = StartingHits;
         healthBar.SetMax(maxHealth);
         healthBar.Set(health);
 
@@ -429,7 +432,8 @@ public class Shipcontroller : MonoBehaviour
             HitTaken?.Invoke();
         PSXImpactEffects.Burst(transform.position, new Color(.15f, .65f, 1));
         SoundManager.PlaySound("hurt1", 0.2f);
-        health -= damage;
+        int lost = damage > 0 ? 1 : 0;
+        health -= lost;
         // Kept small: a short nudge that reads as an impact without throwing the playfield around.
         float moveQuantity = Mathf.Clamp(damage * 0.3f, 0, 4);
         float roughness = Mathf.Clamp(damage * 0.25f, 0, 3);
@@ -493,15 +497,9 @@ public class Shipcontroller : MonoBehaviour
 
     }
 
-    public void HealFlat(float heal)
+    public void Repair(int hits)
     {
-        health = Mathf.Clamp(health + heal * GameRules.healMultiplier, 0, maxHealth);
-        healthBar.Set(health);
-    }
-
-    public void HealFraction(float fraction)
-    {
-        health = Mathf.Clamp(health + maxHealth * Mathf.Clamp01(fraction), 0, maxHealth);
+        health = Mathf.Clamp(health + hits, 0, maxHealth);
         healthBar.Set(health);
     }
 
