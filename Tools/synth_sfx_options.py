@@ -402,27 +402,39 @@ def _(v):
     return room(mix(.45, (0, .45, charge), (.25, .3, fm(np.full(n_of(.2), 1600 * k), 3, env(.2, 0, .03)) * env(.2, .001, .06))), .5, .5, .25)
 
 
-# Item collected
+# Item collected. Miguel found the fanfares cringy (2026-10-29): short, low-key equip sounds, no arpeggios.
 @option('itemGet', 'chip')
 def _(v):
-    fan = arp([523, 659, 784, 1047, 784, 1047, 1319], .06, 'square', .5, .3, .08)
-    return chipify(fan)
+    # Two muted pulses a fourth apart, like a console menu accepting a cartridge.
+    a = osc(np.full(n_of(.05), 392), 'square', .25) * env(.05, .001, .02)
+    b = osc(np.full(n_of(.12), 523), 'square', .25) * env(.12, .001, .04)
+    return chipify(lp(mix(.18, (0, .4, a), (.05, .4, b)), 3500), 14000, 7)
+
+
+@option('itemGet', 'layered')
+def _(v):
+    # A soft filtered swell that settles on one warm note.
+    d = .45
+    body = svf(osc(np.full(n_of(d), 330), 'saw') + osc(np.full(n_of(d), 331.5), 'saw'), ramp(d, 300, 1800, .6), q=1.2)
+    body *= env(d, .03, .12, hold=.08)
+    tick = hp(noise(.006), 3000) * env(.006, 0, .001)
+    return room(mix(d, (0, .4, body), (0, .2, tick), (0, .35, thud(.12, 160, 90, .03))), .3, .4, .14)
 
 
 @option('itemGet', 'physical')
 def _(v):
-    out = np.zeros(n_of(1.1))
-    for i, f in enumerate((587, 880, 1175)):
-        place(out, metal(f, .9, .35, (1, 2.0, 3.0, 4.07), seed=v + i), i * .09)
-    return room(out, .6, .55, .3)
+    # Mounting hardware: a latch, a seat and a short low ring.
+    latch = hp(noise(.008), 2500) * env(.008, 0, .0015)
+    seat = mix(.12, (0, 1, thud(.12, 180, 80, .035)), (0, .3, bp(noise(.05), 300, 1500) * env(.05, 0, .01)))
+    return room(mix(.4, (0, .5, latch), (.035, .6, seat), (.035, .25, metal(420, .3, .09, (1, 2.4, 3.9), seed=v))), .25, .35, .1)
 
 
 @option('itemGet', 'energy')
 def _(v):
-    d = 1.3
-    rise = swell(fm(ramp(.4, 250, 1050, 1.6), 2.0, 2), .4)
-    chord_ = sum(fm(np.full(n_of(.9), f), 2.0, 1.4 * env(.9, 0, .2)) for f in (1047, 1319, 1568)) * env(.9, .002, .3)
-    return room(mix(d, (0, .3, rise), (.4, .35, chord_), (.4, .25, sparkle(.9, 60, .35, 2600, 2.5, seed=v))), .9, .6, .35)
+    # One soft bell with a slow shimmer tail; no melody.
+    d = .7
+    bell = fm(np.full(n_of(d), 659), 2.0, 1.2 * env(d, 0, .08)) * env(d, .003, .2)
+    return room(mix(d, (0, .4, bell), (.02, .1, sparkle(.4, 25, .2, 2600, 1.6, seed=v))), .5, .5, .2)
 
 
 # Purchase / confirm
@@ -725,7 +737,7 @@ LABELS = {'chip': 'Chip', 'layered': 'Layered', 'physical': 'Physical', 'energy'
 
 
 def design(cue, style):
-    if style == 'layered':
+    if style == 'layered' and (cue, style) not in OPTION_DESIGNS:
         return S.CUES[cue][0]
     return OPTION_DESIGNS[(cue, style)]
 
@@ -742,11 +754,14 @@ def take(cue, style, v):
     return x * min(level_target(cue) / S.loudness(x), .98 / np.max(np.abs(x)))
 
 
-def render_options():
+def render_options(only=None):
     audio = OPTIONS / 'audio'
     audio.mkdir(parents=True, exist_ok=True)
     rows = []
     for cue, (_, original, label, group) in S.CUES.items():
+        if only and cue not in only:
+            rows.append(next(r for r in json.loads((OPTIONS / 'cues.json').read_text(encoding='utf-8')) if r['id'] == cue))
+            continue
         files = {}
         for style in STYLES:
             name = f'{cue}_{style}.wav'
@@ -778,8 +793,9 @@ def apply(picks):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--apply', help='JSON file of {cue: style}')
+    parser.add_argument('--only', default='', help='comma-separated cues to rerender for the picker')
     args = parser.parse_args()
     if args.apply:
         apply(json.loads(Path(args.apply).read_text(encoding='utf-8')))
     else:
-        render_options()
+        render_options(set(filter(None, args.only.split(','))))
