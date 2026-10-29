@@ -1,31 +1,21 @@
 using UnityEngine;
-// A faint ring and small orbiting sparks (one per rarity tier) hint at rarity without competing with the item.
+// A soft pulse in the rarity colour: rings expand from the item and fade, one ring per rarity tier in each beat.
 public sealed class ItemRarityHalo : MonoBehaviour
 {
+    const float Beat = 1.8f, Stagger = .16f, Grow = .7f;
     AItem item;
-    LineRenderer outer;
-    SpriteRenderer[] stars;
+    LineRenderer[] rings;
+    Color color;
     float phase;
     void Start()
     {
         item = GetComponent<AItem>();
-        phase = Random.value * 6;
-        var color = AItem.GetRarityColor(item.rarity);
-        color.a = .3f;
-        outer = CombatVisuals.Line(transform, color, .022f);
+        phase = Random.value * Beat;
+        color = AItem.GetRarityColor(item.rarity);
         int tier = item.rarity == "legendary" || item.rarity == PactPool.Rarity ? 4 : item.rarity == "epic" ? 3 : item.rarity == "rare" ? 2 : 1;
-        stars = new SpriteRenderer[tier];
+        rings = new LineRenderer[tier];
         for (int i = 0; i < tier; i++)
-        {
-            var go = new GameObject("Rarity spark");
-            go.transform.SetParent(transform, false);
-            var s = go.AddComponent<SpriteRenderer>();
-            s.sprite = CombatVisuals.Disc;
-            s.color = color;
-            s.sortingLayerName = "Bullet";
-            s.sortingOrder = 10;
-            stars[i] = s;
-        }
+            rings[i] = CombatVisuals.Line(transform, color, .02f);
     }
 
     void Update()
@@ -33,18 +23,18 @@ public sealed class ItemRarityHalo : MonoBehaviour
         if (item == null)
             return;
         bool visible = !item.Collected && !item.IsDismissing;
-        outer.enabled = visible;
-        float pulse = 1 + Mathf.Sin(Time.time * 3 + phase) * .02f;
         var p = transform.position + Vector3.back * .7f;
-        CombatVisuals.Ring(outer, p, .49f * pulse);
-        for (int i = 0; i < stars.Length; i++)
+        for (int i = 0; i < rings.Length; i++)
         {
-            float a = Time.time * (.8f + stars.Length * .18f) + phase + i * Mathf.PI * 2 / stars.Length;
-            stars[i].enabled = visible;
-            stars[i].transform.position = p + new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0) * .62f;
-            float glint = .8f + .2f * Mathf.Sin(Time.time * 5 + phase + i * 2);
-            stars[i].transform.localScale = new Vector3(.035f, .07f * glint, 1);
-            stars[i].transform.rotation = Quaternion.Euler(0, 0, -a * Mathf.Rad2Deg);
+            float t = (Time.time + phase - i * Stagger) % Beat / Grow;
+            bool live = visible && t >= 0 && t < 1;
+            rings[i].enabled = live;
+            if (!live)
+                continue;
+            var c = color;
+            c.a = .4f * (1 - t) * (1 - t);
+            rings[i].startColor = rings[i].endColor = c;
+            CombatVisuals.Ring(rings[i], p, Mathf.Lerp(.3f, .8f, 1 - (1 - t) * (1 - t)));
         }
     }
 }
