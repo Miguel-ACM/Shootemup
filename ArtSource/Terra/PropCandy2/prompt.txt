@@ -1,0 +1,20 @@
+﻿# Brief: remodel one scenery prop for a top-down shoot-em-up
+
+You are remodeling one background scenery prop of a Unity vertical shoot-em-up. The game renders low-poly, flat-shaded, PS1-flavoured 3D models seen from almost straight above. Props sit behind the combat layer, so they must look rich and clearly shaped but stay calmer than enemies and bullets (no glowing parts). The current prop is built procedurally in C#; its source is given below. Read it to understand the object, its size, orientation, pivot and colours, then build a clearly better model of the same object.
+
+Write ONE Blender 5.x Python script named `model.py` in the current directory. Do not run Blender yourself. The script must:
+
+1. Clear the default scene, then build the model only from bpy primitives, bmesh and modifiers applied before export (no external files, no addons).
+2. Coordinates: use exactly the same coordinate frame, orientation, pivot and size as the current C# model (X right, Y up the screen, and +Z toward the camera; the C# code uses -Z toward the camera, so negate its z values). Match its extents within about 10%.
+3. Materials: name them `tile_NN` using ONLY the palette tiles listed below for this prop (their colours come from the game's atlas; set each Blender material's Base Color to the listed colour so the renders match). Flat colours, no textures, transparency or emission.
+4. Budget: 150-1500 triangles (props appear many times on screen). Flat shading. Real 3D form with a recognisable silhouette from above.
+5. Join everything into ONE mesh object named `Model`, apply all transforms and modifiers.
+6. Export `model.obj` (+ .mtl) next to the script with `bpy.ops.wm.obj_export` (export materials, forward_axis='Y', up_axis='Z', so coordinates are unchanged).
+7. Then render two 512x512 PNGs next to the script with Cycles (CPU, 48 samples), dark blue-gray world (0.05,0.07,0.09), one sun from the upper left plus a soft fill: `top.png` (orthographic, straight down from +Z, ~15% margin) and `angle.png` (perspective 3/4 view, model filling about 70% of the frame). Find the script directory from `__file__`, falling back to the path after `--` in sys.argv.
+
+Use the Blender 5.x API. When done, reply with one short paragraph describing the design.
+
+## This prop
+
+Falling wrapped candy (twisted wrapper ends) in the Candyland background. Current source: kind == 2 in CandyProp in C:/Users/Miguel/Shootemup/Assets/Scripts/Environment/CandylandBackdrop.cs. Palette (candy atlas): tile_00 raspberry (0.78,0.19,0.40), tile_01 cream (0.97,0.85,0.71), tile_02 mint (0.30,0.78,0.66), tile_03 orange (1,0.59,0.25), tile_04 chocolate (0.39,0.17,0.12), tile_05 caramel (0.62,0.28,0.18), tile_06 mauve (0.45,0.25,0.34), tile_07 lilac (0.57,0.38,0.79), tile_08 pink (0.90,0.44,0.65), tile_11 dark plum (0.13,0.055,0.13), tile_12 cherry (0.92,0.31,0.49), tile_13 butterscotch (0.83,0.66,0.39), tile_14 grape (0.51,0.26,0.58), tile_15 sugar white (0.98,0.96,0.88).
+
