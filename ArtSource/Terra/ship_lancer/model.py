@@ -1,4 +1,4 @@
-import bpy
+﻿import bpy
 import math
 import os
 import sys
@@ -17,11 +17,11 @@ for datablock in bpy.data.materials:
     bpy.data.materials.remove(datablock)
 
 colors = [
-    (0.075, 0.13, 0.34, 1),   # royal blue shadow
-    (0.105, 0.22, 0.52, 1),   # royal blue hull
-    (0.16, 0.32, 0.67, 1),    # cobalt
-    (0.29, 0.48, 0.79, 1),    # light cobalt
-    (0.54, 0.73, 0.88, 1),    # ice blue
+    (0.075, 0.115, 0.22, 1),   # royal blue shadow
+    (0.14, 0.22, 0.36, 1),   # royal blue hull
+    (0.20, 0.32, 0.50, 1),    # cobalt
+    (0.32, 0.46, 0.62, 1),    # light cobalt
+    (0.52, 0.66, 0.76, 1),    # ice blue
     (0.58, 0.65, 0.70, 1),    # steel
     (0.34, 0.42, 0.49, 1),    # dark steel
     (0.045, 0.06, 0.09, 1),   # recessed detail
@@ -29,9 +29,9 @@ colors = [
     (0.62, 0.28, 0.86, 1),    # canopy facets
     (0.27, 0.06, 0.48, 1),    # violet shadow
     (0.67, 0.75, 0.79, 1),    # bright steel
-    (0.20, 0.28, 0.39, 1),    # blue steel
+    (0.20, 0.25, 0.29, 1),    # blue steel
     (0.22, 0.39, 0.64, 1),    # medium blue
-    (0.45, 0.60, 0.75, 1),    # trim
+    (0.76, 0.62, 0.24, 1),    # trim
     (0.52, 0.20, 0.76, 1),    # lens
 ]
 mats = []
@@ -169,6 +169,46 @@ plate('Rear deck', [(-.042,-.355),(.042,-.355),(.055,-.31),(.045,-.19),(-.045,-.
 plate('Rear deck inset', [(-.020,-.331),(.020,-.331),(.026,-.24),(-.026,-.24)], .046,.049,6,.002)
 plate('Belly armor', [(-.075,-.27),(.075,-.27),(.085,-.10),(.048,.16),(0,.34),(-.048,.16),(-.085,-.10)], -.071,-.065,2,.003)
 
+# Industrial armour: chunky overlapping plates, dark channels and machinery.
+for s in (-1, 1):
+    def m(points):
+        return [(s*x, y) for x, y in points]
+    plate('Shoulder seam', m([(.085,-.105),(.114,-.115),(.105,-.015),(.076,.105),(.066,.12),(.089,-.02)]), .064,.066,12,.001)
+    plate('Shoulder armor step', m([(.094,-.102),(.112,-.108),(.103,-.022),(.083,.065),(.077,.074),(.096,-.026)]), .067,.070,2,.001)
+    # Dark intake beds and wide cross slats on each nacelle.
+    plate('Nacelle intake recess', m([(.083,-.295),(.137,-.295),(.137,-.211),(.130,-.198),(.090,-.198),(.083,-.211)]), .062,.064,7,.001)
+    for yy in (-.282,-.264,-.246,-.228,-.210):
+        plate('Intake slat', m([(.087,yy),(.133,yy),(.133,yy+.005),(.087,yy+.005)]), .065,.068,6,0)
+    plate('Outer rail', m([(.142,-.315),(.151,-.307),(.149,-.217),(.141,-.205)]), .044,.051,12,.001)
+    plate('Rail actuator', m([(.137,-.272),(.151,-.272),(.151,-.247),(.137,-.247)]), .052,.058,5,.001)
+    plate('Wing overlap', m([(.153,-.247),(.204,-.282),(.196,-.298),(.154,-.281),(.139,-.293),(.138,-.275)]), .023,.028,12,.002)
+    plate('Wing armor facet', m([(.156,-.251),(.199,-.282),(.194,-.290),(.155,-.275),(.144,-.283),(.143,-.275)]), .029,.032,3,.001)
+    # Compact hazard panels with three broad yellow stripes.
+    plate('Hazard backing', m([(.118,-.185),(.143,-.198),(.140,-.164),(.123,-.148)]), .057,.061,7,.001)
+    for y in (-.181,-.170,-.159):
+        plate('Hazard stripe', m([(.122,y),(.139,y-.009),(.139,y-.004),(.122,y+.005)]), .062,.064,14,0)
+    plate('Engine collar', m([(.078,-.360),(.142,-.360),(.143,-.335),(.136,-.327),(.084,-.327),(.077,-.335)]), .038,.045,12,.002)
+    plate('Collar edge', m([(.083,-.357),(.137,-.357),(.137,-.351),(.083,-.351)]), .046,.049,5,.001)
+    # Underside panels remain visible during a roll.
+    plate('Belly service panel', m([(.049,-.23),(.079,-.23),(.078,-.12),(.054,-.10)]), -.075,-.071,12,.002)
+    for yy in (-.21,-.19,-.17):
+        plate('Belly vent slat', m([(.052,yy),(.075,yy),(.075,yy+.006),(.052,yy+.006)]), -.077,-.075,5,0)
+
+# Segmented barrel shroud and channels emphasize the long laser weapon.
+for s in (-1, 1):
+    def m(points): return [(s*x,y) for x,y in points]
+    plate('Spine channel', m([(.021,.195),(.032,.195),(.024,.35),(.016,.42),(.013,.42)]), .050,.053,12,.001)
+    plate('Spine clamp aft', m([(.014,.195),(.031,.195),(.030,.214),(.014,.214)]), .070,.074,6,.001)
+    plate('Spine clamp forward', m([(.011,.351),(.023,.351),(.022,.366),(.010,.366)]), .053,.057,6,.001)
+    plate('Emitter collar', m([(.008,.464),(.016,.464),(.015,.486),(.008,.486)]), .029,.033,12,.001)
+
+# Layered central service hatch and grille break up the broad aft deck.
+plate('Central service well', [(-.033,-.186),(.033,-.186),(.037,-.116),(.028,-.092),(-.028,-.092),(-.037,-.116)], .064,.067,12,.002)
+plate('Central grille', [(-.025,-.177),(.025,-.177),(.027,-.120),(-.027,-.120)], .068,.070,7,.001)
+for y in (-.166,-.153,-.140,-.127):
+    plate('Central grille rib', [(-.024,y),(.024,y),(.024,y+.004),(-.024,y+.004)], .071,.073,5,0)
+plate('Aft sensor block', [(-.023,-.322),(.023,-.322),(.025,-.295),(-.025,-.295)], .050,.058,12,.002)
+plate('Sensor face', [(-.017,-.316),(.017,-.316),(.017,-.303),(-.017,-.303)], .059,.061,4,.001)
 # Collapse all geometry, including applied bevels and nacelle offsets, into one object.
 bpy.ops.object.select_all(action='DESELECT')
 for ob in pieces:
@@ -236,4 +276,5 @@ cam.location = (1.05, 1.35, 1.2)
 point_at(cam, (0,.04,0))
 scene.render.filepath = os.path.join(OUT, 'angle.png')
 bpy.ops.render.render(write_still=True)
+
 

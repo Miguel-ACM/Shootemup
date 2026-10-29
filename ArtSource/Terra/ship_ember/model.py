@@ -1,4 +1,4 @@
-import bpy
+﻿import bpy
 import math
 import json
 import os
@@ -24,10 +24,10 @@ for datablocks in (bpy.data.meshes, bpy.data.materials, bpy.data.cameras, bpy.da
             datablocks.remove(block)
 
 palette = [
-    (0.80, 0.035, 0.045, 1), # racing red
-    (0.49, 0.018, 0.032, 1), # crimson sides
-    (0.98, 0.09, 0.065, 1),  # vermilion highlight
-    (0.19, 0.22, 0.24, 1),   # charcoal armour
+    (0.64, 0.075, 0.085, 1), # racing red
+    (0.38, 0.045, 0.055, 1), # crimson sides
+    (0.78, 0.13, 0.12, 1),  # vermilion highlight
+    (0.22, 0.25, 0.27, 1),   # charcoal armour
     (0.075, 0.09, 0.10, 1),  # recesses
     (0.12, 0.72, 0.29, 1),   # emerald canopy
     (0.43, 0.95, 0.31, 1),   # lime canopy facets
@@ -165,6 +165,49 @@ slab('Tail stripe',[(-.007,-.224),(-.007,-.155),(.007,-.155),(.007,-.224)], .064
 # Contrasting armour facets underneath keep the model finished through rolls.
 slab('Under keel',[(-.048,-.21),(-.058,-.06),(0,.27),(.058,-.06),(.048,-.21),(0,-.25)], -.055,-.048,.88,10,3,1)
 
+# Layered, chunky industrial armour. The cockpit and muzzle lips remain clear.
+for s, tag in [(-1, 'L'), (1, 'R')]:
+    def mirrored(poly):
+        return [(s*x, y) for x, y in (poly if s == 1 else list(reversed(poly)))]
+    # Dark reveals around overlapping wing and shoulder plates.
+    slab('Wing root seam '+tag, mirrored([(.076,.151),(.099,.211),(.115,.169),(.105,.074),(.087,.005),(.075,.017)]), .035,.043,.96,4,1,3)
+    slab('Wing root plate '+tag, mirrored([(.080,.145),(.097,.191),(.108,.163),(.099,.077),(.085,.027)]), .043,.050,.88,1,3,0)
+    slab('Blade seam '+tag, mirrored([(.157,.065),(.180,.013),(.224,-.127),(.207,-.119),(.170,-.036)]), .039,.042,.96,3,1,4)
+    slab('Blade armour '+tag, mirrored([(.160,.054),(.178,.012),(.214,-.106),(.205,-.104),(.174,-.033)]), .042,.047,.90,0,3,2)
+    slab('Wing trailing plate '+tag, mirrored([(.201,-.144),(.239,-.157),(.266,-.185),(.216,-.179),(.195,-.168)]), .039,.046,.88,1,3,0)
+    # Deep dark grille wells and broad metal slats on the engine shoulders.
+    slab('Nacelle grille well '+tag, mirrored([(.122,-.090),(.171,-.101),(.177,-.211),(.123,-.211)]), .054,.058,.96,4,3,3)
+    for j in range(4):
+        y = -.115 - j*.023
+        slab('Grille slat '+tag, mirrored([(.128,y),(.170,y-.002),(.171,y-.008),(.128,y-.006)]), .058,.061,.93,9,3,3)
+    slab('Outer rail '+tag, mirrored([(.181,-.083),(.186,-.101),(.190,-.219),(.184,-.222)]), .052,.059,.90,9,3,3)
+    slab('Rail end '+tag, mirrored([(.180,-.219),(.193,-.219),(.193,-.235),(.180,-.235)]), .053,.063,.85,3,10,9)
+    # Large caution patches and diagonal dark stripes.
+    slab('Hazard field '+tag, mirrored([(.178,-.055),(.194,-.075),(.202,-.101),(.186,-.084)]), .048,.051,.97,8,3,8)
+    for j in range(2):
+        y = -.061 - j*.013
+        slab('Hazard slash '+tag, mirrored([(.180+j*.004,y),(.184+j*.004,y-.005),(.196+j*.004,y-.016),(.194+j*.004,y-.009)]), .051,.053,.96,4,4,4)
+    # Armoured gun housings stop behind the actual barrel openings.
+    slab('Cannon shroud '+tag, mirrored([(.101,.202),(.102,.253),(.110,.274),(.130,.274),(.138,.253),(.138,.202)]), .041,.048,.85,3,4,9)
+    slab('Cannon shroud cap '+tag, mirrored([(.106,.215),(.107,.250),(.114,.261),(.126,.261),(.133,.250),(.133,.215)]), .048,.052,.88,9,3,3)
+    # Finished lower surfaces are visible through a barrel roll.
+    slab('Underside wing panel '+tag, mirrored([(.092,-.190),(.182,-.190),(.245,-.180),(.187,-.096),(.118,-.055)]), -.048,-.043,.91,3,10,9)
+    slab('Underside heat panel '+tag, mirrored([(.131,-.194),(.169,-.194),(.169,-.118),(.131,-.118)]), -.052,-.048,.90,1,3,9)
+
+# Segmented rear spine and an inset service channel.
+slab('Aft spine surround',[(-.044,-.135),(-.050,-.205),(-.036,-.235),(.036,-.235),(.050,-.205),(.044,-.135)], .063,.067,.94,4,1,3)
+slab('Aft spine armour',[(-.037,-.141),(-.041,-.195),(-.030,-.214),(.030,-.214),(.041,-.195),(.037,-.141)], .067,.073,.88,3,4,9)
+for y in (-.155,-.173,-.191):
+    slab('Spine cooling fin',[(-.027,y),(-.027,y-.006),(.027,y-.006),(.027,y)], .073,.076,.94,9,3,9)
+slab('Nose channel',[(-.017,.169),(-.012,.263),(0,.326),(.012,.263),(.017,.169)], .039,.043,.94,3,1,9)
+slab('Nose channel inset',[(-.008,.181),(-.006,.262),(0,.303),(.006,.262),(.008,.181)], .043,.047,.93,1,3,0)
+slab('Nose emitter collar',[(-.014,.326),(-.013,.361),(.013,.361),(.014,.326)], .029,.038,.85,3,4,9)
+for s, tag in [(-1, 'L'), (1, 'R')]:
+    poly=[(.067,.043),(.078,.043),(.080,.015),(.067,.018)]
+    if s == -1:
+        poly=list(reversed(poly))
+    slab('Sensor block '+tag, [(s*x,y) for x,y in poly], .050,.061,.82,3,4,9)
+
 # Join, bake all transforms, and triangulate once for a predictable game mesh.
 bpy.ops.object.select_all(action='DESELECT')
 for ob in pieces:
@@ -231,4 +274,5 @@ cam_data.lens=50
 cam_data.sensor_width=36
 scene.render.filepath=os.path.join(OUT,'angle.png')
 bpy.ops.render.render(write_still=True)
+
 

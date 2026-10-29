@@ -19,9 +19,9 @@ for datablock in bpy.data.materials:
     bpy.data.materials.remove(datablock)
 
 palette = [
-    (0.24, 0.39, 0.25, 1),  # forest green
-    (0.34, 0.52, 0.31, 1),  # leaf green
-    (0.46, 0.64, 0.43, 1),  # sage
+    (0.25, 0.35, 0.29, 1),  # forest green
+    (0.34, 0.46, 0.37, 1),  # leaf green
+    (0.46, 0.57, 0.48, 1),  # sage
     (0.65, 0.78, 0.61, 1),  # mint
     (0.77, 0.79, 0.68, 1),  # cream
     (0.48, 0.57, 0.55, 1),  # pale steel
@@ -31,9 +31,9 @@ palette = [
     (0.27, 0.62, 0.86, 1),  # sky blue facets
     (0.68, 0.77, 0.72, 1),  # bright steel
     (0.29, 0.43, 0.36, 1),  # underside
-    (0.73, 0.67, 0.40, 1),  # small warm marking
+    (0.82, 0.69, 0.29, 1),  # small warm marking
     (0.35, 0.57, 0.51, 1),
-    (0.19, 0.31, 0.27, 1),
+    (0.22, 0.27, 0.28, 1),
     (0.55, 0.70, 0.58, 1),
 ]
 mats = []
@@ -169,6 +169,45 @@ for s, label in [(-1,'L'),(1,'R')]:
     ring_y('Nozzle '+label, s*.17, -.28, -.004, [.041,.041,.030,.030], [-.245,-.28,-.28,-.255], [5,4,7], 12)
     # Underside plate is visible in rolls.
     plate('Underwing '+label, mirror([(.15,-.16),(.275,-.15),(.31,-.09),(.29,.075),(.22,.11),(.15,.08)]), -.055,-.050,11,.006,14)
+
+# Industrial detailing stays inside the original silhouette. All fittings are
+# docking or sensor equipment; Warden carries no guns.
+for s, label in [(-1, 'L'), (1, 'R')]:
+    def mirrored(points):
+        p = [(s*x, y) for x, y in points]
+        return p if s == 1 else list(reversed(p))
+    # Recessed intake wells with broad, widely spaced slats.
+    plate('Intake surround '+label, mirrored([(.155,-.105),(.216,-.105),(.225,-.075),(.220,.025),(.159,.025)]), .057,.061,14,.003,6)
+    plate('Intake well '+label, mirrored([(.162,-.096),(.210,-.096),(.216,-.071),(.213,.017),(.165,.017)]), .062,.064,7,.002,14)
+    for y in (-.082, -.063, -.044, -.025, -.006):
+        box('Intake slat '+label, (s*.188,y,.066), (.043,.006,.004), 5, .001)
+    plate('Forward cheek '+label, mirrored([(.074,.150),(.125,.135),(.151,.176),(.115,.224),(.078,.205)]), .069,.075,0,.003,14)
+    plate('Cheek inlay '+label, mirrored([(.083,.164),(.120,.153),(.136,.177),(.113,.207),(.087,.195)]), .076,.079,5,.002,0)
+    plate('Aft shoulder armour '+label, mirrored([(.132,-.150),(.210,-.150),(.217,-.122),(.151,-.119)]), .057,.064,14,.003,0)
+    plate('Engine top armour '+label, mirrored([(.122,-.235),(.205,-.235),(.217,-.204),(.207,-.165),(.128,-.165)]), .049,.057,2,.004,14)
+    box('Heat sink bed '+label, (s*.168,-.198,.059), (.063,.051,.004), 14, .002)
+    for x in (.146,.168,.190):
+        box('Heat sink vane '+label, (s*x,-.198,.063), (.008,.041,.006), 5, .001)
+    # Hazard stripes and docking rails are intentionally chunky at game scale.
+    box('Warning field '+label, (s*.293,-.089,.055), (.047,.018,.003), 12, .001)
+    for x in (.276,.288,.300,.312):
+        box('Warning stripe '+label, (s*x,-.089,.057), (.004,.017,.002), 7, 0, -.35)
+    for x in (.273,.311):
+        box('Launch rail '+label, (s*x,-.008,.036), (.006,.097,.006), 5, .001)
+    box('Cradle stop '+label, (s*.292,-.061,.040), (.041,.008,.010), 14, .001)
+    box('Dock actuator '+label, (s*.239,-.045,.061), (.012,.047,.011), 14, .002)
+    box('Actuator cap '+label, (s*.239,-.045,.068), (.006,.026,.004), 10, .001)
+    box('Side rail '+label, (s*.224,-.045,-.016), (.012,.115,.014), 14, .002)
+    plate('Belly access '+label, mirrored([(.045,-.20),(.116,-.20),(.145,-.12),(.138,-.02),(.055,-.02)]), -.058,-.055,14,.003,11)
+
+# Spine seams and service blocks leave the round blue hitbox unobstructed.
+plate('Spine rear panel', [(-.044,-.142),(.044,-.142),(.048,-.121),(.041,-.085),(-.041,-.085),(-.048,-.121)], .085,.089,14,.003,6)
+for x in (-.034,.034):
+    box('Spine service rib', (x,-.117,.091), (.009,.034,.004), 5, .001)
+plate('Nose centre seam', [(-.007,.205),(.007,.205),(.006,.25),(-.006,.25)], .083,.085,14,.001,14)
+for s in (-1,1):
+    box('Sensor block', (s*.103,.106,.070), (.025,.030,.014), 14, .003)
+    box('Sensor face', (s*.103,.120,.073), (.017,.004,.006), 10, .001)
 
 # Fixed socket for the rotating radar dish.
 bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=.028, depth=.013, location=(0,-.105,.085))
