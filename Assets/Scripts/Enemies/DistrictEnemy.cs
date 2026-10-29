@@ -108,6 +108,9 @@ public abstract class DistrictEnemy : AEnemy
             EnemyTuning.Apply(enemy, enemy.movement);
         if (scaleForRun)
             enemy.health *= GameRules.enemyHealth * LevelRun.EnemyHealthScale;
+        // Cursed Coin toughens ordinary enemies and minibosses; boss health stays on district/loop factors.
+        if (scaleForRun && !(enemy is DistrictBoss))
+            enemy.health *= PactPool.EnemyHealth;
         // Light wave ships should die during a clean pass with the stock gun.
         if (scaleForRun && !(enemy is DistrictBoss) && !(enemy is DistrictMiniboss))
         {

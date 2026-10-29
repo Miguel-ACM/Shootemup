@@ -121,6 +121,9 @@ public static class ItemPool
         {
             pool = "epic";
         }
+        // Cursed Coin: every later item is one rarity higher.
+        if (PactPool.RarityUpgrade)
+            pool = pool == "common" ? "rare" : pool == "rare" ? "epic" : "legendary";
         string itemString = GetItemStringFromPool(pool, out string actualPool);
         pool = actualPool;
         return itemString;
