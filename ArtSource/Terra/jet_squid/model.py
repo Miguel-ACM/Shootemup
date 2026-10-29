@@ -1,8 +1,9 @@
 ﻿import bpy
 import math
+import json
 import os
 import sys
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 # Jet Squid: faceted pressure mantle, swept hydrofoils and four inkward vanes.
 try:
@@ -104,15 +105,24 @@ def cylinder(name, radius, depth, location, material, vertices=12, rotation=(0,0
     return obj
 
 ring_body()
+moving_groups = []
 # Pale, angular side fins make the squid silhouette legible from directly above.
 for s in (-1, 1):
+    side = 'L' if s == -1 else 'R'
+    fin_start = len(parts)
     plate('Swept fin', [(s*.24,.43),(s*.49,.36),(s*.80,.08),(s*.47,-.19),(s*.30,-.10)], .055,.145,6,0,.13)
     plate('Fin inset', [(s*.39,.29),(s*.69,.08),(s*.47,-.08),(s*.36,-.05)], .148,.166,8,8,.08)
+    fin_pieces = parts[fin_start:]
+    del parts[fin_start:]
     # Two tapering, individually swept vanes on each side; overlapping roots sit under mantle.
     plate('Outer tentacle vane', [(s*.28,-.25),(s*.48,-.48),(s*.53,-.87),(s*.40,-1.10),(s*.38,-.70),(s*.22,-.42)], .04,.13,13,11,.12)
+    moving_groups.append(('VaneOuter_' + side, parts.pop(), (s*.28, -.25, .085), (0, 0, s), 1.0, 12))
     plate('Inner tentacle vane', [(s*.10,-.34),(s*.27,-.57),(s*.26,-.93),(s*.16,-1.09),(s*.13,-.72),(s*.06,-.48)], .045,.155,4,11,.12)
+    moving_groups.append(('VaneInner_' + side, parts.pop(), (s*.10, -.34, .10), (0, 0, s), 1.0, 10))
     # Brass leading edges give the fins a clear mechanical rhythm.
     plate('Fin edge', [(s*.32,.41),(s*.49,.34),(s*.76,.09),(s*.69,.10),(s*.45,.29)], .17,.185,13,13,.06)
+    fin_pieces.append(parts.pop())
+    moving_groups.append(('Fin_' + side, fin_pieces, (s*.27, .16, .10), (0, s, 0), 1.2, 15))
 
 # A raised, armored lance on the mantle, with a dark seam and a small cyan sensor.
 plate('Dorsal armor', [(-.16,-.27),(-.22,.19),(-.15,.50),(0,.75),(.15,.50),(.22,.19),(.16,-.27),(0,-.39)], .36,.46,0,11,.17)
@@ -138,18 +148,42 @@ def launcher():
     mesh_part('Ink launcher with recessed bore',verts,faces,8,ids)
 launcher()
 
-# Consolidate before export; the exported asset contains just this mesh.
+# Join the static hull and each layered moving part separately.
+def join_meshes(objects, name, pivot=None):
+    bpy.ops.object.select_all(action='DESELECT')
+    for obj in objects:
+        obj.select_set(True)
+    bpy.context.view_layer.objects.active = objects[0]
+    if len(objects) > 1:
+        bpy.ops.object.join()
+    obj = bpy.context.object
+    obj.name = name
+    if pivot is not None:
+        # Move the object origin to its hinge without moving its visible geometry.
+        obj.data.transform(Matrix.Translation(-Vector(pivot)))
+        obj.location = pivot
+    mod = obj.modifiers.new('Export triangulation', 'TRIANGULATE')
+    bpy.ops.object.modifier_apply(modifier=mod.name)
+    for poly in obj.data.polygons:
+        poly.use_smooth = False
+    return obj
+
+model = join_meshes(parts, 'Model')
+export_objects = [model]
+manifest = []
+for name, geometry, pivot, axis, speed, amplitude in moving_groups:
+    objects = geometry if isinstance(geometry, list) else [geometry]
+    export_objects.append(join_meshes(objects, name, pivot))
+    manifest.append({'object': name, 'motion': 'swing', 'axis': list(axis),
+                     'pivot': list(pivot), 'speed': speed, 'amplitude': amplitude})
+with open(os.path.join(HERE, 'parts.json'), 'w', encoding='utf-8') as file:
+    json.dump(manifest, file, indent=2)
+    file.write('\n')
+
 bpy.ops.object.select_all(action='DESELECT')
-for obj in parts: obj.select_set(True)
-bpy.context.view_layer.objects.active = parts[0]
-bpy.ops.object.join()
-model = bpy.context.object
-model.name = 'Model'
-bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-# Triangulate explicitly so the budget and flat surfaces are deterministic.
-mod = model.modifiers.new('Export triangulation', 'TRIANGULATE')
-bpy.ops.object.modifier_apply(modifier=mod.name)
-for poly in model.data.polygons: poly.use_smooth = False
+for obj in export_objects:
+    obj.select_set(True)
+bpy.context.view_layer.objects.active = model
 bpy.ops.wm.obj_export(filepath=os.path.join(HERE, 'model.obj'), export_selected_objects=True,
                       export_materials=True, forward_axis='Y', up_axis='Z')
 

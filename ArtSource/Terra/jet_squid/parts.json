@@ -1,0 +1,98 @@
+[
+  {
+    "object": "VaneOuter_L",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      -1
+    ],
+    "pivot": [
+      -0.28,
+      -0.25,
+      0.085
+    ],
+    "speed": 1.0,
+    "amplitude": 12
+  },
+  {
+    "object": "VaneInner_L",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      -1
+    ],
+    "pivot": [
+      -0.1,
+      -0.34,
+      0.1
+    ],
+    "speed": 1.0,
+    "amplitude": 10
+  },
+  {
+    "object": "Fin_L",
+    "motion": "swing",
+    "axis": [
+      0,
+      -1,
+      0
+    ],
+    "pivot": [
+      -0.27,
+      0.16,
+      0.1
+    ],
+    "speed": 1.2,
+    "amplitude": 15
+  },
+  {
+    "object": "VaneOuter_R",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "pivot": [
+      0.28,
+      -0.25,
+      0.085
+    ],
+    "speed": 1.0,
+    "amplitude": 12
+  },
+  {
+    "object": "VaneInner_R",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "pivot": [
+      0.1,
+      -0.34,
+      0.1
+    ],
+    "speed": 1.0,
+    "amplitude": 10
+  },
+  {
+    "object": "Fin_R",
+    "motion": "swing",
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "pivot": [
+      0.27,
+      0.16,
+      0.1
+    ],
+    "speed": 1.2,
+    "amplitude": 15
+  }
+]
