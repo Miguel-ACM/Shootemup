@@ -11,6 +11,7 @@ public sealed class OceanLife : MonoBehaviour
         public float phase, size;
         public int school;
     }
+
     Fish[] fish;
     Material ink, shadowInk;
     float clock, nextSteer;
@@ -40,6 +41,7 @@ public sealed class OceanLife : MonoBehaviour
             fish[i] = new Fish { model = model, shadow = shadow, tail = tail, position = new Vector2((school == 0 ? -3 : 2.7f) + R(-1.4f, 1.4f), R(-7, 7)), velocity = new Vector2(school == 0 ? 1 : -1, R(-.35f, .35f)), phase = R(0, 6.28f), size = ray ? .78f : R(.2f, .29f), school = ray ? 2 : school };
         }
     }
+
     Transform Add(string label, Mesh mesh, Material material, int order)
     {
         var go = new GameObject(label);
@@ -51,6 +53,7 @@ public sealed class OceanLife : MonoBehaviour
         renderer.sortingOrder = order;
         return go.transform;
     }
+
     void Steer()
     {
         for (int i = 0; i < fish.Length; i++)
@@ -89,6 +92,7 @@ public sealed class OceanLife : MonoBehaviour
             f.force = Vector2.ClampMagnitude(force, f.school == 2 ? .6f : 1.5f);
         }
     }
+
     void Update()
     {
         float dt = Time.deltaTime;
@@ -119,6 +123,7 @@ public sealed class OceanLife : MonoBehaviour
             f.shadow.localScale = new Vector3(f.size * 1.13f, f.size * 1.13f, .04f);
         }
     }
+
     void OnDestroy()
     {
         if (ink != null)

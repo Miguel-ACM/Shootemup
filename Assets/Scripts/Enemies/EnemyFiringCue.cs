@@ -12,6 +12,7 @@ public sealed class EnemyFiringCue : MonoBehaviour
         public Vector2 direction = Vector2.down, releaseAxis;
         public float heat, flash;
     }
+
     readonly System.Collections.Generic.List<Port> ports = new System.Collections.Generic.List<Port>(24);
     Transform hull;
     public int PortCount => ports.Count;
@@ -57,28 +58,33 @@ public sealed class EnemyFiringCue : MonoBehaviour
         foreach (var port in ports)
             port.heat = Heat(seconds);
     }
+
     public void ClearWarning()
     {
         foreach (var port in ports)
             port.heat = 0;
     }
+
     public void WarnAt(Vector3 position, float seconds)
     {
         var port = Nearest(position);
         if (port != null)
             port.heat = Mathf.Max(port.heat, Heat(seconds));
     }
+
     public void PointAll(Vector2 direction)
     {
         foreach (var port in ports)
             port.direction = direction;
     }
+
     public void PointAt(Vector3 position, Vector2 direction)
     {
         var port = Nearest(position);
         if (port != null)
             port.direction = direction;
     }
+
     Port Nearest(Vector3 position)
     {
         Port nearest = null;
@@ -96,6 +102,7 @@ public sealed class EnemyFiringCue : MonoBehaviour
         }
         return nearest;
     }
+
     public Vector3 Primary => ports.Count > 0 && ports[0].anchor != null ? ports[0].anchor.TransformPoint(ports[0].local) : hull.position;
     public void Flash(Vector3 position, Vector2 direction)
     {

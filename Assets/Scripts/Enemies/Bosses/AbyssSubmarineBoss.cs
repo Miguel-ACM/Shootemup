@@ -181,6 +181,7 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
         volley = 0;
         nextAttack = age + 1.5f;
     }
+
     public override void damage(float amount)
     {
         if (!Submerged)

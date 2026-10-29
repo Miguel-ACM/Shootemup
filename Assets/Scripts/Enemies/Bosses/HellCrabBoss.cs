@@ -117,6 +117,7 @@ public sealed partial class HellCrabBoss : DistrictBoss
         clawClock = 0;
         nextAttack = age + 1.5f;
     }
+
     public void EyeChanged()
     {
         if (completing)

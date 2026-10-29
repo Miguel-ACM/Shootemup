@@ -69,6 +69,7 @@ public sealed partial class SnowSiegeBoss : DistrictBoss
             comb[i].gameObject.SetActive(true);
         }
     }
+
     protected override void Configure()
     {
         hull = 21;

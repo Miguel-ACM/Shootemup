@@ -13,6 +13,7 @@ public sealed class StormOrgan : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
+
     protected override void Attack()
     {
         var local = EnemyWeaponLayout.Ports(hull)[volley % 2];

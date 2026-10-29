@@ -11,6 +11,7 @@ public static class EnemyWeaponLayout
             cache[hull] = ports = BuildPorts(hull);
         return ports;
     }
+
     static Vector3[] BuildPorts(int hull)
     {
         if (hull >= 61)
@@ -131,5 +132,6 @@ public static class EnemyWeaponLayout
                 return new[] { P(0, -.75f, -.3f) };
         }
     }
+
     public static bool NoseAimed(int hull) => hull >= 61 ? EnemyExpansion.Find(hull)?.nose ?? false : hull == 0 || hull == 12 || hull == 13 || hull == 15 || hull == 31 || hull == 36 || hull == 50;
 }

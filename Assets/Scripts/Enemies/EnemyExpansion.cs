@@ -29,6 +29,7 @@ public static class EnemyExpansion
             this.parts = parts;
         }
     }
+
     public static readonly Entry[] All = {
         // Individual enemies are registered here with their own content commits.
         new Entry(LevelId.Hell, typeof(BoneHarrier), 80, 0.49f, true, IndustrialMeshFactory.BoneHarrierMesh, new[] { new Vector3(0,-.96f,-.23f) }, System.Array.Empty<Vector3>(), WavePartLibrary.BoneHarrierParts),
@@ -62,6 +63,7 @@ public static class EnemyExpansion
             byName.Add(entry.type.Name, entry);
         }
     }
+
     public static Entry Find(int hull) => byHull.TryGetValue(hull, out var entry) ? entry : null;
     public static Entry Find(string name) => byName.TryGetValue(name, out var entry) ? entry : null;
     public static Type[] Types => Array.ConvertAll(All, e => e.type);
@@ -71,6 +73,7 @@ public static class EnemyExpansion
         var entry = Find(hull);
         return entry != null && entry.level == LevelId.Space ? SpaceMaterials.Fleet : entry != null && entry.level == LevelId.Candyland ? CandyMaterials.Glaze : CombatMaterials.Fleet;
     }
+
     public static Type[] Include(Type[] types, LevelId level)
     {
         var result = new List<Type>(types);

@@ -20,6 +20,7 @@ public sealed partial class ThunderLanceBoss : DistrictBoss
             return n;
         }
     }
+
     protected override void Configure()
     {
         hull = 22;
@@ -28,6 +29,7 @@ public sealed partial class ThunderLanceBoss : DistrictBoss
         attackInterval = (.82f);
         nextAttack = 1.8f;
     }
+
     protected override bool PhaseTwoReady => HealthFraction <= phaseTwoThreshold;
     protected override float AttackPace => 1;
     protected override Vector2 CueAxis => Vector2.down;
@@ -38,6 +40,7 @@ public sealed partial class ThunderLanceBoss : DistrictBoss
         station.y = Camera.UpLimit - 2.4f;
         transform.position = Vector3.MoveTowards(transform.position, station, dt * 3.3f);
     }
+
     void Beam(int index)
     {
         if (beams[index] != null && beams[index].IsAttachedTo(Hull))

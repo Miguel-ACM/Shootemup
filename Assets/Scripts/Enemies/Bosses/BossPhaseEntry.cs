@@ -26,6 +26,7 @@ public sealed class BossPhaseEntry : MonoBehaviour
             go.SetActive(false);
         }
     }
+
     public void Begin()
     {
         clock = 0;
@@ -42,6 +43,7 @@ public sealed class BossPhaseEntry : MonoBehaviour
         }
         PSXImpactEffects.Burst(boss.transform.position, LevelProjectilePalette.Accent(LevelRun.Current), true);
     }
+
     void Update()
     {
         if (!running || GameRules.playerDisabled)
