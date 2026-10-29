@@ -63,6 +63,7 @@ public sealed class RewardHexes : MonoBehaviour
         switch (kind)
         {
             case EncounterKind.Item:
+            case EncounterKind.Pact:
                 return 1;
             case EncounterKind.Challenge:
                 return .75f;

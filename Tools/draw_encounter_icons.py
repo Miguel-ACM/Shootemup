@@ -119,7 +119,37 @@ def challenge():
     return im
 
 
-icons = {"Shop":shop(), "MultShop":shop(True), "Item":item(), "Health":health(), "Challenge":challenge()}
+def pact():
+    im,d = canvas()
+    paper, paper_shade, paper_light = "#d8bf88", "#9c7c4f", "#f4e3b4"
+    blood, blood_dark, blood_light = "#c8283c", "#6e1424", "#ff7a7e"
+    # A contract scroll: rolled ends top and bottom, a written page between.
+    d.rectangle((7,5,25,27), fill=INK)
+    d.rectangle((9,7,23,25), fill=paper)
+    d.rectangle((9,7,10,25), fill=paper_light)
+    d.rectangle((22,7,23,25), fill=paper_shade)
+    for y in (4,25):
+        d.rectangle((5,y,27,y+3), fill=INK)
+        d.rectangle((6,y+1,26,y+2), fill=paper_shade)
+        d.line((7,y+1,25,y+1), fill=paper_light)
+    for y in (10,13,16):
+        d.line((11,y,21,y), fill=paper_shade)
+    d.line((11,19,16,19), fill=paper_shade)
+    # The binding: a blood wax seal stamped with a horned sigil, with one drip.
+    d.polygon([(18,17),(23,17),(26,20),(26,25),(23,28),(18,28),(15,25),(15,20)], fill=INK)
+    d.polygon([(18,18),(23,18),(25,20),(25,25),(23,27),(18,27),(16,25),(16,20)], fill=blood)
+    d.line((18,19,22,19), fill=blood_light)
+    d.point((17,20), fill=blood_light)
+    d.rectangle((19,22,22,25), fill=blood_dark)
+    d.point((18,21), fill=blood_dark)
+    d.point((23,21), fill=blood_dark)
+    d.rectangle((20,23,21,24), fill=blood)
+    d.rectangle((19,28,20,30), fill=INK)
+    d.point((19,29), fill=blood)
+    return im
+
+
+icons = {"Shop":shop(), "MultShop":shop(True), "Item":item(), "Health":health(), "Challenge":challenge(), "Pact":pact()}
 template = (ROOT / "Assets/Resources/ProjectileSprites/standard.png.meta").read_text()
 folder_meta = DEST.with_suffix(".meta")
 if not folder_meta.exists():
@@ -138,11 +168,11 @@ for name,im in icons.items():
     meta.write_text("\n".join(line.rstrip() for line in meta.read_text().splitlines())+"\n")
 folder_meta.write_text("\n".join(line.rstrip() for line in folder_meta.read_text().splitlines())+"\n")
 
-sheet = Image.new("RGB", (5*192, 248), "#18232f")
+sheet = Image.new("RGB", (len(icons)*192, 248), "#18232f")
 d = ImageDraw.Draw(sheet)
 for i,(name,im) in enumerate(icons.items()):
     sheet.paste(im.resize((128,128),Image.Resampling.NEAREST), (i*192+32,24), im.resize((128,128),Image.Resampling.NEAREST))
     sheet.paste(im.resize((64,64),Image.Resampling.NEAREST), (i*192+64,164), im.resize((64,64),Image.Resampling.NEAREST))
     d.text((i*192+12,235),name,fill="#e1e8df")
 sheet.save(REVIEW / "IconSheet.png")
-print("Generated five 32px sprites and point-sampled 2x / 4x preview.")
+print("Generated six 32px sprites and point-sampled 2x / 4x preview.")

@@ -284,7 +284,11 @@ public class WaveOrchestrer : MonoBehaviour
                 remaining++;
         var player = ship.GetComponent<Shipcontroller>();
         int seed = unchecked(LevelRun.Seed + LevelRun.Stage * 971 + currentWaveNumber * 7919);
-        var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth);
+        // Every second district offers one pact hexagon, at its first reward break.
+        bool pactAvailable = PactPool.Due && PactPool.HexStage != LevelRun.Stage && PactPool.HasEligible(player);
+        var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth, pactAvailable);
+        if (Array.IndexOf(options, EncounterKind.Pact) >= 0)
+            PactPool.HexStage = LevelRun.Stage;
         EncounterOptions = options;
         rewardOffer = RewardHexes.Open(options, ship.transform, unchecked(seed * 31 + 17), index =>
         {
@@ -310,11 +314,11 @@ public class WaveOrchestrer : MonoBehaviour
         if (GameOverState.Active)
             return;
         DismissOffer();
-        if (kind == EncounterKind.Shop || kind == EncounterKind.MultShop || kind == EncounterKind.Item)
+        if (kind == EncounterKind.Shop || kind == EncounterKind.MultShop || kind == EncounterKind.Item || kind == EncounterKind.Pact)
         {
-            // Items and shops open at the next wave break, after the current phrase is cleared.
+            // Items, shops and pacts open at the next wave break, after the current phrase is cleared.
             var sequence = new List<string>(waves);
-            sequence.Insert(Mathf.Min(currentWaveNumber, sequence.Count), kind == EncounterKind.Shop ? "coinShop" : kind == EncounterKind.MultShop ? "multiplierShop" : "reward");
+            sequence.Insert(Mathf.Min(currentWaveNumber, sequence.Count), kind == EncounterKind.Shop ? "coinShop" : kind == EncounterKind.MultShop ? "multiplierShop" : kind == EncounterKind.Pact ? "pact" : "reward");
             waves = sequence.ToArray();
             return;
         }
@@ -398,26 +402,8 @@ public class WaveOrchestrer : MonoBehaviour
         decision.Open(this, ship.GetComponent<Shipcontroller>(), "bossReward", () =>
            {
                decision = null;
-               if (PactPool.Due && PactPool.HasEligible(ship.GetComponent<Shipcontroller>()))
-                   StartCoroutine(OfferPact());
-               else
-                   StartCoroutine(ChooseNextRoute());
-           }, position);
-    }
-
-    // Every second district closes with a pact: take one bargain or skip at the bottom.
-    IEnumerator OfferPact()
-    {
-        CombatDecision.Begin();
-        yield return new WaitForSeconds(.5f);
-        if (GameOverState.Active)
-            yield break;
-        decision = gameObject.AddComponent<DecisionShop>();
-        decision.Open(this, ship.GetComponent<Shipcontroller>(), "pact", () =>
-           {
-               decision = null;
                StartCoroutine(ChooseNextRoute());
-           });
+           }, position);
     }
 
     /// <summary>Debug: the next wave break opens a pact offer.</summary>

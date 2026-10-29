@@ -4,11 +4,11 @@ using UnityEngine;
 
 public enum EncounterKind
 {
-    Shop, MultShop, Item, Health, Challenge
+    Shop, MultShop, Item, Health, Challenge, Pact
 }
 public static class EncounterChoice
 {
-    static readonly Sprite[] icons = new Sprite[5];
+    static readonly Sprite[] icons = new Sprite[Enum.GetValues(typeof(EncounterKind)).Length];
     public static Sprite Icon(EncounterKind kind)
     {
         int index = (int)kind;
@@ -20,7 +20,7 @@ public static class EncounterChoice
         return icons[index] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 32, 0, SpriteMeshType.FullRect);
     }
 
-    public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth)
+    public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false)
     {
         // Shops are no longer offered mid-run; the hangar shop between runs replaces them.
         var bag = new List<EncounterKind> { EncounterKind.Item };
@@ -42,6 +42,14 @@ public static class EncounterChoice
         foreach (var kind in bag)
             if (picked.Count < 2 && !picked.Contains(kind) && !Incompatible(picked[0], kind))
                 picked.Add(kind);
+        // A due pact always takes the second zone, so it is never crowded out.
+        if (pactAvailable)
+        {
+            if (picked.Count == 2)
+                picked[1] = EncounterKind.Pact;
+            else
+                picked.Add(EncounterKind.Pact);
+        }
         return picked.ToArray();
     }
 
@@ -63,6 +71,8 @@ public static class EncounterChoice
                 return new Color(.61f, .87f, .49f);
             case EncounterKind.Health:
                 return new Color(.94f, .42f, .44f);
+            case EncounterKind.Pact:
+                return new Color(.88f, .1f, .2f);
             default:
                 return new Color(.76f, .48f, .95f);
         }

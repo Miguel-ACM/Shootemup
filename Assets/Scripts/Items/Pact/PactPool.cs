@@ -25,9 +25,16 @@ public static class PactPool
         get; private set;
     } = 1;
 
+    /// <summary>The stage whose reward break already showed a pact hexagon.</summary>
+    public static int HexStage
+    {
+        get; set;
+    } = -1;
+
     public static void ResetRun()
     {
         remaining = new List<string>(all);
+        HexStage = -1;
         GlassHull = false;
         RarityUpgrade = false;
         EnemyHealth = 1;
@@ -40,7 +47,7 @@ public static class PactPool
         EnemyHealth *= 1.25f;
     }
 
-    /// <summary>Pacts arrive after the boss of every second district (stages 2, 4, 6...).</summary>
+    /// <summary>Every second district (stages 2, 4, 6...) offers one pact hexagon.</summary>
     public static bool Due => LevelRun.Stage % 2 == 0;
 
     static bool Eligible(string pact, Shipcontroller ship)
