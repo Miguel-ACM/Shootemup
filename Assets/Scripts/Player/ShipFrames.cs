@@ -20,17 +20,18 @@ public static class ShipFrames
         public string[] starters = new string[0];
         public Vector2 exhaust = new Vector2(.2016f, -.245f);
         public float exhaustScale = 1;
+        public Color cockpit = new Color(.35f, .95f, 1f);
     }
 
     static readonly Definition[] definitions =
     {
         new Definition { frame = ShipFrame.GR07, hits = 6 },
         // Long and slow: a continuous laser instead of the twin cannon, more hull and a barrel roll.
-        new Definition { frame = ShipFrame.Lancer, model = "ShipLancer", hits = 5, moveSpeed = 6.8f, primary = "BeamEmitter", starters = new[] { "BarrelRoll" }, exhaust = new Vector2(.11f, -.40f), exhaustScale = .8f },
+        new Definition { frame = ShipFrame.Lancer, model = "ShipLancer", hits = 5, moveSpeed = 6.8f, primary = "BeamEmitter", starters = new[] { "BarrelRoll" }, cockpit = new Color(.85f, .45f, 1f), exhaust = new Vector2(.11f, -.40f), exhaustScale = .8f },
         // Glass cannon: three harder-hitting rounds that ignite, three hits.
-        new Definition { frame = ShipFrame.Ember, model = "ShipEmber", hits = 3, moveSpeed = 9.2f, shootNumber = 3, shootDamage = 2.4f, starters = new[] { "Lighter" }, exhaust = new Vector2(.15f, -.30f), exhaustScale = .85f },
+        new Definition { frame = ShipFrame.Ember, model = "ShipEmber", hits = 3, moveSpeed = 9.2f, shootNumber = 3, shootDamage = 2.4f, starters = new[] { "Lighter" }, cockpit = new Color(.4f, 1f, .45f), exhaust = new Vector2(.15f, -.30f), exhaustScale = .85f },
         // Unarmed carrier: two laser drones do the fighting.
-        new Definition { frame = ShipFrame.Warden, model = "ShipWarden", hits = 6, primary = null, starters = new[] { "LaserDroneItem", "LaserDroneItem" }, exhaust = new Vector2(.17f, -.28f), exhaustScale = .9f },
+        new Definition { frame = ShipFrame.Warden, model = "ShipWarden", hits = 6, primary = null, starters = new[] { "LaserDroneItem", "LaserDroneItem" }, cockpit = new Color(.35f, .7f, 1f), exhaust = new Vector2(.17f, -.28f), exhaustScale = .9f },
     };
 
     public static Definition Get(ShipFrame frame) => definitions[(int)frame];
@@ -50,7 +51,10 @@ public static class ShipFrames
     {
         var visual = ship.GetComponent<PSXShipVisual>();
         if (visual != null)
+        {
             visual.UseHull(frame.model);
+            visual.UseCockpit(frame.cockpit);
+        }
         var effects = ship.GetComponent<PSXShipEffects>();
         if (effects != null)
         {
@@ -89,6 +93,6 @@ public static class ShipFrames
     public static GameObject BuildDisplay(Shipcontroller template, Definition frame)
     {
         var visual = template.GetComponent<PSXShipVisual>();
-        return visual != null ? visual.BuildDisplayHull(frame.model) : null;
+        return visual != null ? visual.BuildDisplayHull(frame.model, frame.cockpit) : null;
     }
 }

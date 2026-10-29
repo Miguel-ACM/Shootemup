@@ -18,6 +18,7 @@ public class Shipcontroller : MonoBehaviour
     [SerializeField] private ResourceBar manaBar;
     // Health counts whole hits: every hit removes one segment, whatever fired it.
     public const int StartingHits = 6;
+    public const float HitboxScale = .7f;
     public float maxHealth = StartingHits;
     public float health = StartingHits;
     public float maxMana = 100f;
@@ -165,6 +166,14 @@ public class Shipcontroller : MonoBehaviour
     {
         limits = Camera.getLimits();
         circleCollider = GetComponent<Collider2D>();
+        // A smaller hitbox, well inside the glowing cockpit that marks it.
+        if (circleCollider is PolygonCollider2D hitbox)
+        {
+            var points = hitbox.points;
+            for (int i = 0; i < points.Length; i++)
+                points[i] *= HitboxScale;
+            hitbox.points = points;
+        }
         renderer = GetComponent<SpriteRenderer>();
         ShipFrames.ApplyHull(this, ShipFrames.Current);
         if (!HangarHub.Active)

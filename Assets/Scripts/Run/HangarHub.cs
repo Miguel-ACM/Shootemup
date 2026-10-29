@@ -141,7 +141,7 @@ public sealed class HangarHub : MonoBehaviour
                 foreach (var renderer in display.GetComponentsInChildren<MeshRenderer>())
                 {
                     renderer.sortingLayerName = "Player";
-                    renderer.sortingOrder = -2;
+                    renderer.sortingOrder = renderer.name == "Cockpit" ? -1 : -2;
                 }
                 bay.display = display.transform;
             }
