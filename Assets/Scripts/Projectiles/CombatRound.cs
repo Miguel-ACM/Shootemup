@@ -8,11 +8,11 @@ public abstract class CombatRound : AEnemyBullet
 {
     static readonly Unity.Profiling.ProfilerMarker launchMarker = new Unity.Profiling.ProfilerMarker("CombatRound.Launch");
     static readonly Unity.Profiling.ProfilerMarker createMarker = new Unity.Profiling.ProfilerMarker("CombatRound.Create");
-    public const int Limit = 280;
+    public const int Limit = 420;
     public static readonly HashSet<CombatRound> Live = new HashSet<CombatRound>();
     static readonly Dictionary<Type, Stack<CombatRound>> pools = new Dictionary<Type, Stack<CombatRound>>();
     static int pooled;
-    const int PoolBudget = 768;
+    const int PoolBudget = 1100;
     public static int CreatedCount
     {
         get; private set;
@@ -163,8 +163,8 @@ public abstract class CombatRound : AEnemyBullet
         // Reserve exactly the existing 768-object budget, across every delivery.
         // Previously only SimpleRound was ready: a first needle/ricochet volley
         // constructed its GameObjects, pixel colliders and special effects in combat.
-        yield return Warm<SimpleRound>(280);
-        yield return Warm<NeedleRound>(128);
+        yield return Warm<SimpleRound>(380);
+        yield return Warm<NeedleRound>(300);
         yield return Warm<RicochetBolt>(96);
         yield return Warm<BurstShell>(40);
         yield return Warm<SuspendedRound>(48);
@@ -265,7 +265,8 @@ public abstract class CombatRound : AEnemyBullet
     internal bool resumed;
     internal float fadeAt;
     internal int bounces;
-    internal Vector2 gravity, drift;
+    internal Vector2 gravity, drift, well;
+    internal float pull;
     internal float swayAmplitude, swayRate;
     internal float zigEvery, zigAngle, nextZig;
     internal int zigSign;
@@ -289,7 +290,8 @@ public abstract class CombatRound : AEnemyBullet
         resumeTurn = Turn.Keep;
         resumed = false;
         bounces = 0;
-        gravity = drift = travel = Vector2.zero;
+        gravity = drift = travel = well = Vector2.zero;
+        pull = 0;
         swayAmplitude = swayRate = 0;
         zigEvery = zigAngle = nextZig = 0;
         zigSign = 1;
@@ -348,11 +350,15 @@ public abstract class CombatRound : AEnemyBullet
         }
         float factor = SpeedFactor();
         Vector2 step = heading * speed * factor;
-        if (gravity != Vector2.zero)
+        if (pull > 0)
         {
-            drift += gravity * dt;
-            step += drift;
+            // A point well: inverse-square-like pull, softened so nothing reaches infinite speed.
+            Vector2 toward = well - (Vector2)transform.position;
+            drift += toward.normalized * pull / (toward.sqrMagnitude * .2f + 1) * dt;
         }
+        if (gravity != Vector2.zero)
+            drift += gravity * dt;
+        step += drift;
         if (swayAmplitude != 0 && factor > 0)
         {
             float w = swayRate * Mathf.PI * 2;
@@ -473,7 +479,7 @@ public abstract class CombatRound : AEnemyBullet
     protected void Orient()
     {
         // Arrows under gravity or sway point along their actual path, not their launch heading.
-        Vector2 facing = gravity != Vector2.zero || swayAmplitude != 0 ? travel : heading;
+        Vector2 facing = gravity != Vector2.zero || pull > 0 || swayAmplitude != 0 ? travel : heading;
         if (!needsOrientation && facing == orientedHeading && !(this is ReturningDisc))
             return;
         if (facing.sqrMagnitude > .001f)

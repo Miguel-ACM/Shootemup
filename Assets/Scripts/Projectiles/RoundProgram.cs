@@ -52,6 +52,16 @@ public static class RoundProgram
         return shot;
     }
 
+    // Pulled toward a point in the arena: rounds curve round it, orbit and slingshot past.
+    public static T Attract<T>(this T shot, Vector2 point, float strength) where T : CombatRound
+    {
+        if (shot == null)
+            return null;
+        shot.well = point;
+        shot.pull = strength;
+        return shot;
+    }
+
     // Lateral sine motion around the travel line.
     public static T Sway<T>(this T shot, float amplitude, float cycles) where T : CombatRound
     {
