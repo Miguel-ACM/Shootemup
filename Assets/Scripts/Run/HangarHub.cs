@@ -111,7 +111,8 @@ public sealed class HangarHub : MonoBehaviour
     {
         for (int i = 0; i < 4; i++)
         {
-            float y = LevelEnvironment.SectionY(i, tunnelTravel);
+            // The title's camera sits at the origin; keep each section at the same place on screen.
+            float y = center.y + LevelEnvironment.SectionY(i, tunnelTravel);
             Scenery(LevelEnvironment.KitMesh("TunnelGround" + i), y, 90, -50, .8f);
             Scenery(LevelEnvironment.KitMesh("TunnelDetail" + i), y, 90, -40, .8f);
             Scenery(LevelEnvironment.KitMesh("TunnelNear" + i), y, 76, -25, .8f);
@@ -148,7 +149,7 @@ public sealed class HangarHub : MonoBehaviour
             if (display != null)
             {
                 display.transform.SetParent(transform, true);
-                display.transform.position = bay.spot;
+                display.transform.position = bay.spot + Vector3.left * SlideDistance;
                 foreach (var renderer in display.GetComponentsInChildren<MeshRenderer>())
                 {
                     renderer.sortingLayerName = "Player";
@@ -156,8 +157,8 @@ public sealed class HangarHub : MonoBehaviour
                 }
                 bay.display = display.transform;
             }
-            bay.pad = Hover("HangarDockPad", bay.spot + new Vector3(0, 0, .6f), -4);
-            bay.shadow = Shadow(bay.spot, 1.15f);
+            bay.pad = Hover("HangarDockPad", bay.spot + new Vector3(-SlideDistance, 0, .6f), -4);
+            bay.shadow = Shadow(bay.spot + Vector3.left * SlideDistance, 1.15f);
             bay.pips = new GameObject("Hull pips").transform;
             bay.pips.SetParent(transform, false);
             bay.pips.position = bay.spot + new Vector3(0, -1.05f, 0);
@@ -194,8 +195,8 @@ public sealed class HangarHub : MonoBehaviour
             go.SetActive(false);
             plinth.item = (AItem)go.AddComponent(type);
             plinth.item.SetRarity(ItemPool.RarityOf(stock[i]));
-            plinth.disc = Hover("HangarShopPlinth", plinth.spot + new Vector3(0, -.3f, .5f), -4);
-            plinth.shadow = Shadow(plinth.spot + new Vector3(0, -.3f, 0), .7f);
+            plinth.disc = Hover("HangarShopPlinth", plinth.spot + new Vector3(SlideDistance, -.3f, .5f), -4);
+            plinth.shadow = Shadow(plinth.spot + new Vector3(SlideDistance, -.3f, 0), .7f);
             plinths.Add(plinth);
             overlay.Add(plinth.item);
         }
