@@ -200,11 +200,12 @@ public abstract class CombatRound : AEnemyBullet
         }
     }
 
+    // Every cleared round dissolves in a pop sized to itself rather than blinking out.
     public static void ClearAll()
     {
         foreach (var shot in new List<CombatRound>(Live))
             if (shot != null)
-                shot.Release();
+                shot.Vanish();
     }
 
     protected override void Start()
@@ -515,7 +516,10 @@ public abstract class CombatRound : AEnemyBullet
     public override void Vanish()
     {
         if (!ended)
-            PSXImpactEffects.Vanish(transform.position, Accent, .25f);
+        {
+            var size = visual.bounds.size;
+            PSXImpactEffects.Vanish(transform.position, tint.Tint, Mathf.Max(size.x, size.y));
+        }
         Release();
     }
 

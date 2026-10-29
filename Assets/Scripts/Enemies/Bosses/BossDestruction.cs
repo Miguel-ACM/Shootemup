@@ -71,7 +71,7 @@ public sealed class BossDestruction : MonoBehaviour
                 weapon.StopFiring();
         CombatRound.ClearAll();
         foreach (var shot in FindObjectsByType<AEnemyBullet>())
-            Destroy(shot.gameObject);
+            shot.Vanish();
         foreach (var shot in FindObjectsByType<ABullet>())
             Destroy(shot.gameObject);
         foreach (var enemy in FindObjectsByType<AEnemy>())

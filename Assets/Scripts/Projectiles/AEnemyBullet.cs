@@ -77,7 +77,8 @@ public abstract class AEnemyBullet : MonoBehaviour
         var sprite = GetComponent<SpriteRenderer>();
         var coded = GetComponent<ProjectileSpriteTint>();
         Color tint = coded != null ? coded.Tint : sprite != null && sprite.sprite != null ? Average(sprite) : new Color(1f, .6f, .25f);
-        PSXImpactEffects.Vanish(transform.position, tint, transform.lossyScale.x);
+        float size = sprite != null ? Mathf.Max(sprite.bounds.size.x, sprite.bounds.size.y) : transform.lossyScale.x;
+        PSXImpactEffects.Vanish(transform.position, tint, size);
         Destroy(gameObject);
     }
 

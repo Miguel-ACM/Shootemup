@@ -340,7 +340,7 @@ public class WaveOrchestrer : MonoBehaviour
         {
             var bullet = i.GetComponent<AEnemyBullet>();
             if (bullet != null)
-                Destroy(i);
+                bullet.Vanish();
         }
     }
 

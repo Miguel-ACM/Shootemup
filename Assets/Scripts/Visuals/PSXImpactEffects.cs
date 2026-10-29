@@ -5,6 +5,7 @@ public static class PSXImpactEffects
 {
     static readonly Unity.Profiling.ProfilerMarker vanishMarker = new Unity.Profiling.ProfilerMarker("PSXImpact.Vanish");
     static ParticleSystem buffer;
+    static ParticleSystem dissolves;
     static Material material;
     static Material auraMaterial;
     public static int BurstCount
@@ -21,6 +22,7 @@ public static class PSXImpactEffects
     static void Reset()
     {
         buffer = null;
+        dissolves = null;
         material = null;
         auraMaterial = null;
         BurstCount = 0;
@@ -151,23 +153,38 @@ public static class PSXImpactEffects
         }
     }
 
-    /// <summary>A bullet popping out of existence: one quick ring and a few short sparks in its colour.</summary>
-    public static void Vanish(Vector3 position, Color color, float scale)
+    /// <summary>A bullet dissolving: its core shrinks to a sparkle while a ring of sparks expands from
+    /// its rim. Every part scales with the bullet's own world size, so a giant orb pops widely and a
+    /// needle barely flickers. Mass clears share one bounded buffer apart from the hit sparks.</summary>
+    public static void Vanish(Vector3 position, Color color, float size)
     {
         using var sample = vanishMarker.Auto();
-        if (buffer == null)
-            buffer = Create(null, "PSX shared impacts", 512);
-        // Tiny bullet pops belong in the shared buffer, not a mesh renderer per erased bullet.
-        for (int i = 0; i < 6; i++)
+        if (dissolves == null)
+            dissolves = Create(null, "PSX bullet dissolves", 3200);
+        float d = Mathf.Clamp(size, .08f, 3f);
+        Vector3 at = position + Vector3.back * .3f;
+        var core = new ParticleSystem.EmitParams();
+        core.position = at;
+        core.velocity = Vector3.zero;
+        core.startColor = Color.Lerp(color, Color.white, .55f);
+        core.startSize3D = Vector3.one * d * .9f;
+        core.rotation3D = new Vector3(0, 0, 45);
+        core.startLifetime = .14f + d * .06f;
+        dissolves.Emit(core, 1);
+        int sparks = d > .6f ? 10 : 6;
+        float turn = Random.Range(0, Mathf.PI * 2);
+        for (int i = 0; i < sparks; i++)
         {
-            float angle = i * Mathf.PI / 3 + Random.Range(-.15f, .15f);
+            float angle = turn + i * Mathf.PI * 2 / sparks;
+            var outward = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
             var e = new ParticleSystem.EmitParams();
-            e.position = position + new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * .045f + Vector3.back * .3f;
-            e.velocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * Random.Range(.6f, 1.3f);
-            e.startColor = Color.Lerp(color, Color.white, .4f);
-            e.startSize3D = Vector3.one * .03f;
-            e.startLifetime = Random.Range(.08f, .14f);
-            buffer.Emit(e, 1);
+            e.position = at + outward * d * .45f;
+            e.velocity = outward * (1.1f + d * 2.4f);
+            e.startColor = i % 2 == 0 ? Color.Lerp(color, Color.white, .3f) : color;
+            e.startSize3D = Vector3.one * (.025f + d * .07f);
+            e.rotation3D = new Vector3(0, 0, 45);
+            e.startLifetime = .12f + d * .07f;
+            dissolves.Emit(e, 1);
         }
     }
 
