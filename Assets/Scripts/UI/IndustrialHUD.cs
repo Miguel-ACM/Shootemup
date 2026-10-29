@@ -184,7 +184,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         nextUpdate = Time.unscaledTime + .1f;
         score.text = DimLeadingZeros(Score.CurrentScore.ToString("000000000"));
         chain.text = "x" + Score.CurrentMultiplier;
-        coins.text = RunCoins.Count.ToString();
+        coins.text = (HangarHub.Active ? MetaProgress.Coins : RunCoins.Count).ToString();
         int challenge = waves != null ? waves.ChallengeWavesRemaining : 0;
         for (int i = 0; i < challengeCells.Length; i++)
             challengeCells[i].gameObject.SetActive(i < challenge);

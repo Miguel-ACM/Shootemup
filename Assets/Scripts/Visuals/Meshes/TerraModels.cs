@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
@@ -134,6 +134,45 @@ public static partial class IndustrialMeshFactory
         texture.Apply();
         material.mainTexture = texture;
         return terraMaterials[name] = material;
+    }
+
+    /// <summary>
+    /// Scenery baked by obj_to_scenery.py for the unlit LevelScenery shader: each line is one polygon,
+    /// its lit colour (r g b), then x y z per corner.
+    /// </summary>
+    public static Mesh TerraScenery(string name)
+    {
+        var asset = Resources.Load<TextAsset>("TerraModels/" + name);
+        if (asset == null)
+            return null;
+        var vertices = new List<Vector3>();
+        var colors = new List<Color>();
+        var triangles = new List<int>();
+        foreach (var line in asset.text.Split('\n'))
+        {
+            var fields = line.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+            if (fields.Length < 12)
+                continue;
+            var color = new Color(Float(fields[0]), Float(fields[1]), Float(fields[2]));
+            int first = vertices.Count;
+            for (int i = 3; i + 2 < fields.Length; i += 3)
+            {
+                vertices.Add(new Vector3(Float(fields[i]), Float(fields[i + 1]), Float(fields[i + 2])));
+                colors.Add(color);
+            }
+            for (int i = first + 1; i < vertices.Count - 1; i++)
+            {
+                triangles.Add(first);
+                triangles.Add(i);
+                triangles.Add(i + 1);
+            }
+        }
+        var mesh = new Mesh { name = "Terra " + name, indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+        mesh.SetVertices(vertices);
+        mesh.SetColors(colors);
+        mesh.SetTriangles(triangles, 0);
+        mesh.RecalculateBounds();
+        return mesh;
     }
 
     static float Float(string text) => float.Parse(text, CultureInfo.InvariantCulture);

@@ -79,7 +79,8 @@ public abstract class AWeapon : MonoBehaviour
     {
         if (Time.timeScale <= 0 && !WorldTimeStop.PlayerCanAct)
             return;
-        if (!isActiveAndEnabled || (GetComponentInParent<ShipLoadout>()?.ConsumedInputThisFrame ?? false))
+        // In the hangar the fire buttons pick ships and buy items instead.
+        if (!isActiveAndEnabled || HangarHub.Active || (GetComponentInParent<ShipLoadout>()?.ConsumedInputThisFrame ?? false))
             return;
         isStopingPrimary = false;
         if (!Coupled)
@@ -96,7 +97,8 @@ public abstract class AWeapon : MonoBehaviour
     {
         if (Time.timeScale <= 0 && !WorldTimeStop.PlayerCanAct)
             return;
-        if (!isActiveAndEnabled || (GetComponentInParent<ShipLoadout>()?.ConsumedInputThisFrame ?? false))
+        // In the hangar the fire buttons pick ships and buy items instead.
+        if (!isActiveAndEnabled || HangarHub.Active || (GetComponentInParent<ShipLoadout>()?.ConsumedInputThisFrame ?? false))
             return;
         isStopingSecondary = false;
         if (!Coupled)

@@ -68,11 +68,7 @@ public class NewGame : AMenuElement
             return;
         }
         starting = true;
-        GameRules.StartNewRun(option == 0 ? RunDifficulty.Easy : RunDifficulty.Hard);
-        LevelRun.Reset();
-        BGMManager.PlayLevelMusic(LevelRun.Current);
-
-        CloudTransition.Load("L1");
+        HangarHub.Enter(option == 0 ? RunDifficulty.Easy : RunDifficulty.Hard);
     }
 }
 

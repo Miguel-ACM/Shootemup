@@ -64,6 +64,12 @@ public class WaveOrchestrer : MonoBehaviour
         waves = DistrictWaves.Sequence();
         if (GetComponent<TunnelReflectors>() == null)
             gameObject.AddComponent<TunnelReflectors>();
+        // The hangar shares the gameplay scene but has no combat.
+        if (HangarHub.Active)
+        {
+            enabled = false;
+            return;
+        }
         BeginWaves();
     }
 
@@ -502,7 +508,7 @@ public class WaveOrchestrer : MonoBehaviour
 
     public void NotifyBossPhaseChange(int phase)
     {
-        SoundManager.PlaySound("enemyExplosion1", 0.12f);
+        SoundManager.PlaySound(SoundManager.HasSynth("explosionLarge") ? "explosionLarge" : "enemyExplosion1", 0.12f);
         BGMManager.ChangeMood(2);
         //BGMManager.RestartSong();
     }

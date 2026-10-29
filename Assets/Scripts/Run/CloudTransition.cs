@@ -77,7 +77,9 @@ public sealed class CloudTransition : MonoBehaviour
 
     void SceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "L1")
+        if (scene.name == "L1" && HangarHub.Active)
+            HangarHub.Build();
+        else if (scene.name == "L1")
             LevelEnvironment.Apply();
         // Supersede the old world-space clouds, which were behind the PSX output canvas.
         foreach (var spawner in FindObjectsByType<CloudSpawner>())
@@ -239,7 +241,8 @@ public sealed class CloudTransition : MonoBehaviour
             {
                 yield return Settle();
                 Time.timeScale = 1;
-                LevelReveal.Show();
+                if (!HangarHub.Active)
+                    LevelReveal.Show();
             }
             yield return Move(false);
         }
@@ -249,7 +252,8 @@ public sealed class CloudTransition : MonoBehaviour
             canvas.enabled = false;
             busy = false;
             Time.timeScale = SceneManager.GetActiveScene().name == "Title" ? 0 : 1;
-            if (SceneManager.GetActiveScene().name == "Title")
+            // The title and the hangar are idle screens: park the next gameplay scene behind them.
+            if (SceneManager.GetActiveScene().name == "Title" || HangarHub.Active)
                 PrepareGameplay();
         }
     }
@@ -258,7 +262,7 @@ public sealed class CloudTransition : MonoBehaviour
     {
         float until = Time.unscaledTime + MaxSettleSeconds;
         int smooth = 0;
-        while (Time.unscaledTime < until && (!WavePreparation.Ready || smooth < SettledFrames))
+        while (Time.unscaledTime < until && ((!WavePreparation.Ready && !HangarHub.Active) || smooth < SettledFrames))
         {
             yield return null;
             smooth = Time.unscaledDeltaTime < SettledFrameSeconds ? smooth + 1 : 0;
