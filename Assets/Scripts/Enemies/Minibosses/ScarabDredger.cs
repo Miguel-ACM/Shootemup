@@ -7,7 +7,7 @@ public sealed class ScarabDredger : DistrictMiniboss
         hull = 56;
         hullScale = .96f;
         health = 510;
-        attackInterval = (0.66f);
+        attackInterval = 1.0f;
         nextAttack = 1.1f;
     }
 
@@ -25,32 +25,38 @@ public sealed class ScarabDredger : DistrictMiniboss
             Cue(Muzzle(2), seconds);
     }
 
+    // Desert scarab dredger: mirrored rows of quicksand mines that stop, then carry on
+    // outward or sink; twin mirrored arrow sandblasts either side of the player; and
+    // a sand fountain thrown up from its scoop.
     protected override void Attack()
     {
-        int beat = (volley - 1) % 8;
-        if (beat < 3)
-            for (int side = -1; side <= 1; side += 2)
-                FanPort(new Vector3(side * .85f, -.45f, -.2f), Dense(5), 3.5f, (beat - 1) * 8);
-        else if (beat == 5)
+        int beat = volley % 3;
+        if (beat == 0)
         {
-            // Quicksand mines: they stop and glint; even mines lunge at the player, odd ones sink away.
-            int mines = Dense(10);
-            var p = Hull.TransformPoint(new Vector3(0, -.65f, -.3f));
-            for (int i = 0; i < mines; i++)
-            {
-                float lane = i - (mines - 1) * .5f;
-                var mine = Fire<SimpleRound>(p, CombatVisuals.Rotate(Vector2.down, lane * 150f / (mines - 1)), 2.6f, .2f)
-                    .Pause(.5f, 1.0f + Mathf.Abs(lane) * .06f, CombatRound.Turn.Aim, 0, .9f);
-                if (i % 2 == 1)
-                    mine.FadeAt(1.5f + Mathf.Abs(lane) * .06f);
-            }
+            int mines = Dense(8);
+            for (int side = -1; side <= 1; side += 2)
+                for (int i = 0; i < mines; i++)
+                {
+                    var axis = CombatVisuals.Rotate(Vector2.right * side, -side * (i * 15 - 30));
+                    var mine = Fire<SimpleRound>(Muzzle(side < 0 ? 0 : 1), axis, 2.4f + (i % 2) * .5f, .22f)
+                        .Pause(.5f, .8f + i * .06f, CombatRound.Turn.Keep, 0, 1.2f);
+                    if (i % 2 == 1)
+                        mine.FadeAt(1.3f + i * .06f);
+                }
         }
-    }
-
-    void FanPort(Vector3 local, int count, float speed, float turn)
-    {
-        var p = Hull.TransformPoint(local);
-        for (int j = 0; j < count; j++)
-            Fire<NeedleRound>(p, CombatVisuals.Rotate(CombatVisuals.Aim(p), (j - (count - 1) * .5f) * 15 + turn), speed, .14f);
+        else if (beat == 1)
+            Stream(Dense(14), .07f, n =>
+            {
+                var aim = CombatVisuals.Aim(Muzzle(2));
+                float open = 10 + Mathf.Abs(Mathf.Sin(n * .45f)) * 30;
+                foreach (int mirror in new[] { -1, 1 })
+                    Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(aim, mirror * open), 3.8f, .19f);
+            });
+        else
+        {
+            int lanes = Dense(11);
+            for (int i = 0; i < lanes; i++)
+                Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(Vector2.up, (i - (lanes - 1) * .5f) * 12), 4.2f, .19f).Fall(new Vector2(0, -3f));
+        }
     }
 }
