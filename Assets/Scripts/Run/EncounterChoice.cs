@@ -22,7 +22,8 @@ public static class EncounterChoice
 
     public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth)
     {
-        var bag = new List<EncounterKind> { EncounterKind.Shop, EncounterKind.MultShop, EncounterKind.Item };
+        // Shops are no longer offered mid-run; the hangar shop between runs replaces them.
+        var bag = new List<EncounterKind> { EncounterKind.Item };
         // Integer factors keep the exact 70/100 boundary inclusive on Unity's runtime.
         if (maxHealth > 0 && health * 10f <= maxHealth * 7f)
             bag.Add(EncounterKind.Health);
@@ -36,9 +37,17 @@ public static class EncounterChoice
             bag[i] = bag[j];
             bag[j] = swap;
         }
-        bool incompatible = bag[0] == EncounterKind.Item && bag[1] == EncounterKind.Challenge ||
-            bag[0] == EncounterKind.Challenge && bag[1] == EncounterKind.Item;
-        return new[] { bag[0], bag[incompatible ? 2 : 1] };
+        // Item and Challenge never appear together; without a compatible second option a single zone is offered.
+        var picked = new List<EncounterKind> { bag[0] };
+        foreach (var kind in bag)
+            if (picked.Count < 2 && !picked.Contains(kind) && !Incompatible(picked[0], kind))
+                picked.Add(kind);
+        return picked.ToArray();
+    }
+
+    static bool Incompatible(EncounterKind a, EncounterKind b)
+    {
+        return a == EncounterKind.Item && b == EncounterKind.Challenge || a == EncounterKind.Challenge && b == EncounterKind.Item;
     }
 
     public static string Label(EncounterKind kind) => kind == EncounterKind.MultShop ? "MULT SHOP" : kind.ToString().ToUpperInvariant();

@@ -78,7 +78,8 @@ public sealed class RewardHexes : MonoBehaviour
         var rng = new System.Random(seed);
         float margin = Radius + .35f;
         float left = Camera.LeftLimit + margin, right = Camera.RightLimit - margin;
-        float low = Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, .3f), high = Camera.UpLimit - margin;
+        // Kept in the lower half of the arena, within easy reach of the ship.
+        float low = Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, .14f), high = Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, .55f);
         var spots = new Vector2[options.Length];
         for (int i = 0; i < options.Length; i++)
         {

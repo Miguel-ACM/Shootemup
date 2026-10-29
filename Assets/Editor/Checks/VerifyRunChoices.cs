@@ -307,7 +307,8 @@ public sealed class RunChoicesReview : MonoBehaviour
         for (int seed = 0; seed < 80; seed++)
         {
             var options = EncounterChoice.Draw(seed, true, 70, 100);
-            Check(options.Length == 2 && options[0] != options[1], "encounter draw " + seed + " has two distinct choices");
+            Check(options.Length >= 1 && options.Length <= 2 && options.Distinct().Count() == options.Length, "encounter draw " + seed + " has one or two distinct choices");
+            Check(!options.Contains(EncounterKind.Shop) && !options.Contains(EncounterKind.MultShop), "shops are not offered mid-run");
             Check(!(options.Contains(EncounterKind.Item) && options.Contains(EncounterKind.Challenge)), "item and challenge are never offered together");
             foreach (var option in options)
                 all.Add(option);
@@ -316,7 +317,7 @@ public sealed class RunChoicesReview : MonoBehaviour
             Check(!healthy.Contains(EncounterKind.Health), "health excluded above 70 percent");
             Check(!(healthy.Contains(EncounterKind.Item) && healthy.Contains(EncounterKind.Challenge)), "item and challenge stay exclusive above the health threshold");
         }
-        Check(all.Count == 5, "all five encounter types are reachable");
+        Check(all.Count == 3, "item, health and challenge encounters are reachable");
         Check(DistrictWaves.Sequence()[0] == "reward" && DistrictWaves.Sequence().Count(x => x == "encounterChoice") == 1 && DistrictWaves.Sequence().Count(x => x == "minibossChoice") == 1 && DistrictWaves.Sequence().Count(x => int.TryParse(x, out _)) == 10, "one pre-miniboss fork preserves the opening reward, ten combat waves and the earned miniboss selection");
         // The fork rides along with the next wave: it is offered half-way through without pausing combat.
         flow.waves = DistrictWaves.Sequence();
