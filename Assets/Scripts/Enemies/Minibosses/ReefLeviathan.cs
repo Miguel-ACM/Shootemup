@@ -7,7 +7,7 @@ public sealed class ReefLeviathan : DistrictMiniboss
         hull = 58;
         hullScale = 1;
         health = 560;
-        attackInterval = (0.68f);
+        attackInterval = 1.0f;
         nextAttack = 1.2f;
     }
 
@@ -20,28 +20,36 @@ public sealed class ReefLeviathan : DistrictMiniboss
             firingCue.Warn(seconds);
     }
 
+    // Underwater reef leviathan: plumes of arrows thrown up that rain back down,
+    // torpedo racks that wind up at the player, and mirrored current-swept volleys.
     protected override void Attack()
     {
-        int beat = (volley - 1) % 8;
-        if (beat < 3)
+        int beat = volley % 3;
+        if (beat == 0)
         {
-            // Volleys caught in a current that carries them sideways in arcs.
-            int count = Dense(3);
-            for (int side = -1; side <= 1; side += 2)
+            int lanes = Dense(13);
+            for (int layer = 0; layer < 2; layer++)
+                for (int i = 0; i < lanes; i++)
+                    Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.up, (i - (lanes - 1) * .5f) * 12 + layer * 6), 3.2f + layer * .9f, .19f)
+                        .Fall(new Vector2(0, -2.6f));
+        }
+        else if (beat == 1)
+        {
+            int tubes = Dense(Enraged ? 5 : 4);
+            for (int side = 0; side < 2; side++)
             {
-                var p = Hull.TransformPoint(new Vector3(side * .82f, -.7f, -.25f));
-                for (int j = 0; j < count; j++)
-                    Fire<SimpleRound>(p, CombatVisuals.Rotate(Vector2.down, side * 20 + (j - (count - 1) * .5f) * 22 + (beat - 1) * 7), 2.6f, .22f)
-                        .Fall(new Vector2(-side * 1.3f, 0));
+                var aim = CombatVisuals.Aim(Muzzle(side));
+                for (int i = 0; i < tubes; i++)
+                    Fire<SimpleRound>(Muzzle(side), CombatVisuals.Rotate(aim, (i - (tubes - 1) * .5f) * 18), .45f, .3f).Ramp(9, 1.0f, .35f + i * .14f);
             }
         }
-        else if (beat == 5 || beat == 6)
-        {
-            // Torpedoes leave almost still and accelerate along their aim.
-            int count = Dense(Enraged ? 4 : 3);
-            var aim = Aim;
-            for (int i = 0; i < count; i++)
-                Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(aim, (i - (count - 1) * .5f) * 20), .45f, .3f).Ramp(9, 1.0f, .4f + i * .15f);
-        }
+        else
+            Stream(Dense(12), .07f, n =>
+            {
+                float lane = n / 11f * 2 - 1;
+                for (int mirror = -1; mirror <= 1; mirror += 2)
+                    Fire<NeedleRound>(Muzzle(mirror < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, mirror * (12 + lane * 18)), 2.9f, .19f)
+                        .Fall(new Vector2(-mirror * 1.4f, 0));
+            });
     }
 }
