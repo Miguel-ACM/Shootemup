@@ -9,7 +9,7 @@ public sealed class Drill : AWeaponAutomatic
     // Cumulative damage that grows the drill to its second and third size.
     static readonly float[] Growth = { 0, 900, 2600 };
     static readonly float[] Scales = { 1, 1.3f, 1.6f };
-    const float BaseLength = 1.5f, BaseWidth = .5f, SlowRate = .35f;
+    const float BaseLength = 1.5f, BaseWidth = .7f, SlowRate = .35f;
     static Drill spinning;
     static Vector2 slowBase, slowTip;
     static float slowRadius;
