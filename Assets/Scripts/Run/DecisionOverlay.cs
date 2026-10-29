@@ -7,8 +7,9 @@ using System.Collections.Generic;
 public sealed class DecisionOverlay : MonoBehaviour
 {
     public const float SkipWidth = 405, SkipHeight = 145;
-    RectTransform skip;
-    Image skipFill;
+    const float SkipDip = 26;
+    RectTransform skip, skipFill;
+    CurvedStripGraphic skipGlass;
     CanvasGroup fade;
     bool dismissing;
     float dismissAge;
@@ -92,25 +93,49 @@ public sealed class DecisionOverlay : MonoBehaviour
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1280, 720);
         scaler.matchWidthOrHeight = 1;
+        // The same curved-top strip as the mid-wave offers, dipping toward the middle.
         skip = Plate("Bottom skip", new Vector2(SkipWidth, SkipHeight));
         skip.anchorMin = skip.anchorMax = new Vector2(.5f, 0);
         skip.anchoredPosition = new Vector2(0, SkipHeight * .5f);
+        skip.GetComponent<Image>().enabled = false;
+        skipGlass = Strip(skip, "Glass", new Color(.025f, .045f, .07f, .45f), 0);
         var fill = Plate("Bottom-up skip charge", new Vector2(SkipWidth, 0), skip);
         fill.anchorMin = fill.anchorMax = new Vector2(.5f, 0);
         fill.pivot = new Vector2(.5f, 0);
-        skipFill = fill.GetComponent<Image>();
-        skipFill.color = new Color(.85f, .52f, .17f, .37f);
-        var edge = Plate("Leading edge", new Vector2(SkipWidth, 1.5f), fill);
-        edge.anchorMin = edge.anchorMax = new Vector2(.5f, 1);
-        edge.GetComponent<Image>().color = new Color(1, .72f, .32f);
-        Text(skip, "SKIP", 12);
+        fill.GetComponent<Image>().enabled = false;
+        fill.gameObject.AddComponent<RectMask2D>();
+        skipFill = fill;
+        var charge = Strip(fill, "Charge", new Color(.85f, .52f, .17f, .37f), 0);
+        charge.rectTransform.anchorMin = charge.rectTransform.anchorMax = new Vector2(.5f, 0);
+        charge.rectTransform.pivot = new Vector2(.5f, 0);
+        charge.rectTransform.sizeDelta = new Vector2(SkipWidth, SkipHeight);
+        Strip(skip, "Rim", new Color(1, .72f, .32f, .55f), 1.5f);
+        var label = Text(skip, "SKIP", 12);
+        label.rectTransform.anchoredPosition = new Vector2(0, -SkipDip * .5f);
         skip.gameObject.SetActive(allowSkip);
     }
 
     public void SetSkip(float progress)
     {
-        skipFill.rectTransform.sizeDelta = new Vector2(SkipWidth, SkipHeight * Mathf.SmoothStep(0, 1, Mathf.Clamp01(progress)));
-        skip.GetComponent<Image>().color = new Color(.025f, .045f, .07f, .45f);
+        skipFill.sizeDelta = new Vector2(SkipWidth, SkipHeight * Mathf.SmoothStep(0, 1, Mathf.Clamp01(progress)));
+        skipGlass.color = new Color(.025f, .045f, .07f, .45f);
+    }
+
+    CurvedStripGraphic Strip(Transform parent, string title, Color color, float thickness)
+    {
+        var go = new GameObject(title, typeof(RectTransform), typeof(CanvasRenderer), typeof(CurvedStripGraphic));
+        go.transform.SetParent(parent, false);
+        var graphic = go.GetComponent<CurvedStripGraphic>();
+        graphic.color = color;
+        graphic.raycastTarget = false;
+        graphic.dip = SkipDip;
+        graphic.thickness = thickness;
+        graphic.topGlow = thickness > 0 ? 0 : .06f;
+        var rect = (RectTransform)go.transform;
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = rect.offsetMax = Vector2.zero;
+        return graphic;
     }
 
     public void Dismiss()

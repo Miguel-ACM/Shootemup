@@ -167,7 +167,7 @@ public sealed class IndustrialHUD : MonoBehaviour
             int healthLimit = Mathf.FloorToInt(Mathf.Clamp01((entranceAge - .75f) / .84f) * 24);
             int energyLimit = Mathf.FloorToInt(Mathf.Clamp01((entranceAge - 1.72f) / .84f) * 24);
             float health = player.health / Mathf.Max(1, player.maxHealth);
-            Fill(healthCells, health, health <= .25f ? Color.Lerp(Steel, Alarm, .55f) : Steel, healthLimit);
+            Fill(healthCells, health, HealthRecovery.Tint(health <= .25f ? Color.Lerp(Steel, Alarm, .55f) : Steel), healthLimit);
             UpdateMeterWarning(player.health / Mathf.Max(1, player.maxHealth), Time.unscaledTime);
             bool recharging = player.GetComponent<PassiveEnergyCore>() != null && !GameRules.playerDisabled && player.mana < player.maxMana;
             var energyColor = recharging ? Color.Lerp(Cyan, new Color(.55f, .95f, .82f), .3f + .3f * Mathf.Sin(Time.time * 4)) : Cyan;

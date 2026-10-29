@@ -71,7 +71,12 @@ public sealed class BossPositionShadow : MonoBehaviour
 
 public sealed class BossShadowGraphic : MaskableGraphic
 {
-    protected override void Awake() { base.Awake(); raycastTarget = false; }
+    protected override void Awake()
+    {
+        base.Awake();
+        raycastTarget = false;
+    }
+
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         vh.Clear();
@@ -86,7 +91,8 @@ public sealed class BossShadowGraphic : MaskableGraphic
             {
                 float a = i * Mathf.PI * 2 / 20;
                 vh.AddVert(new Vector3(Mathf.Cos(a) * half * spread, -7 + ring + Mathf.Sin(a) * 8 * spread), ink, Vector2.zero);
-                if (i > 0) vh.AddTriangle(start, start + i, start + i + 1);
+                if (i > 0)
+                    vh.AddTriangle(start, start + i, start + i + 1);
             }
         }
         int arrow = vh.currentVertCount;

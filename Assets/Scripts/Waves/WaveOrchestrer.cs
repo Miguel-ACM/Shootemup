@@ -18,7 +18,6 @@ public class WaveOrchestrer : MonoBehaviour
     //float waveStartTime = 0;
     float waveTime = 0f;
     float clearTime = 0f;
-    const float ClearBreather = 0.65f;
     float handoffAt;
     bool stopingWave = false;
     GameObject ship;
@@ -36,6 +35,12 @@ public class WaveOrchestrer : MonoBehaviour
     {
         get; private set;
     }
+
+    // Encounter slots are offered half-way through the following combat wave, without pausing it.
+    bool offerPending;
+    float offerAt;
+    RewardStrip rewardStrip;
+    public RewardStrip RewardOffer => rewardStrip;
 
     public const float OpeningBreather = .8f;
     bool openingWavePending;
@@ -101,9 +106,11 @@ public class WaveOrchestrer : MonoBehaviour
                 enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
                 currentUnit = currentWave.getNext();
             }
+            if (offerPending && waveTime >= offerAt)
+                OpenEncounterChoice();
             // Consecutive phrases overlap their exits: old bullets are part of the rhythm.
             // Decisions and bosses wait for enemies to finish, then explicitly clear hazards.
-            string next = currentWaveNumber < waves.Length ? waves[currentWaveNumber] : "";
+            string next = FollowingSlot(currentWaveNumber);
             bool nextCombat = int.TryParse(next, out _) && !(challengeWave && challengeWavesRemaining == 1);
             bool empty = currentUnit == null && AEnemy.Live.Count == 0;
             clearTime = empty ? clearTime + Time.deltaTime : 0;
@@ -199,11 +206,14 @@ public class WaveOrchestrer : MonoBehaviour
         }
         if (currWaveType == "encounterChoice" || currWaveType == "minibossChoice")
         {
-            EraseAllBullets();
-            isWaveComingOut = false;
-            OpenEncounterChoice();
+            offerPending = true;
+            currentWaveNumber++;
+            GenerateWave();
+            return;
         }
-        else if (currWaveType == "coinShop" || currWaveType == "scoreShop" || currWaveType == "multiplierShop" || currWaveType == "reward")
+        if (!int.TryParse(currWaveType, out _))
+            DismissOffer();
+        if (currWaveType == "coinShop" || currWaveType == "scoreShop" || currWaveType == "multiplierShop" || currWaveType == "reward")
         {
             EraseAllBullets();
             isWaveComingOut = false;
@@ -225,8 +235,9 @@ public class WaveOrchestrer : MonoBehaviour
             isWaveComingOut = true;
             challengeWave = challengeWavesRemaining > 0 && int.TryParse(currWaveType, out _);
             currentWave = wavePool.getWave(currWaveType);
-            string following = currentWaveNumber + 1 < waves.Length ? waves[currentWaveNumber + 1] : "";
+            string following = FollowingSlot(currentWaveNumber + 1);
             handoffAt = int.TryParse(following, out _) ? WaveHandoff.At(currentWave, wavePool.getWave(following)) : currentWave.duration;
+            offerAt = handoffAt * .5f;
             currentWaveEnemies = currentWave.units.Count;
             currentWaveKilledEnemies = 0;
             if (currWaveType == "miniboss")
@@ -246,47 +257,74 @@ public class WaveOrchestrer : MonoBehaviour
     }
 
     DecisionShop decision;
+    // Choice slots are transparent to wave handoffs: the offer rides along with the next wave.
+    string FollowingSlot(int index)
+    {
+        while (index < waves.Length && (waves[index] == "encounterChoice" || waves[index] == "minibossChoice"))
+            index++;
+        return index < waves.Length ? waves[index] : "";
+    }
+
     void OpenEncounterChoice()
     {
-        int remaining = 0;
-        for (int i = currentWaveNumber + 1; i < waves.Length; i++)
+        offerPending = false;
+        // The wave in progress counts, because a challenge starts at once.
+        int remaining = 1;
+        for (int i = currentWaveNumber; i < waves.Length; i++)
             if (int.TryParse(waves[i], out _))
                 remaining++;
         var player = ship.GetComponent<Shipcontroller>();
-        EncounterOptions = EncounterChoice.Draw(unchecked(LevelRun.Seed + LevelRun.Stage * 971 + currentWaveNumber * 7919), remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth);
-        CombatDecision.Begin();
-        ship.GetComponent<ShipLoadout>().ResetSelection();
-        foreach (var weapon in ship.GetComponentsInChildren<AWeapon>())
-            weapon.StopFiring();
-        routeChoice = LevelChoice.OpenEncounter(ship.transform, Array.ConvertAll(EncounterOptions, EncounterChoice.Label), Array.ConvertAll(EncounterOptions, EncounterChoice.Accent), index => ResolveEncounter(EncounterOptions[index]), Array.ConvertAll(EncounterOptions, EncounterChoice.Icon));
+        var options = EncounterChoice.Draw(unchecked(LevelRun.Seed + LevelRun.Stage * 971 + currentWaveNumber * 7919), remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth);
+        EncounterOptions = options;
+        rewardStrip = RewardStrip.Open(options, index =>
+        {
+            rewardStrip = null;
+            EncounterOptions = null;
+            if (index >= 0)
+                ResolveEncounter(options[index]);
+        });
+    }
+
+    // Bosses, minibosses and decisions silently withdraw an offer that is still open.
+    void DismissOffer()
+    {
+        offerPending = false;
+        if (rewardStrip != null)
+            rewardStrip.Dismiss();
+        rewardStrip = null;
+        EncounterOptions = null;
     }
 
     void ResolveEncounter(EncounterKind kind)
     {
         if (GameOverState.Active)
             return;
-        if (routeChoice != null)
-            Destroy(routeChoice.gameObject);
-        routeChoice = null;
-        EncounterOptions = null;
+        DismissOffer();
         if (kind == EncounterKind.Shop || kind == EncounterKind.MultShop || kind == EncounterKind.Item)
         {
-            OpenDecision(kind == EncounterKind.Shop ? "coinShop" : kind == EncounterKind.MultShop ? "multiplierShop" : "reward");
+            // Items and shops open at the next wave break, after the current phrase is cleared.
+            var sequence = new List<string>(waves);
+            sequence.Insert(Mathf.Min(currentWaveNumber, sequence.Count), kind == EncounterKind.Shop ? "coinShop" : kind == EncounterKind.MultShop ? "multiplierShop" : "reward");
+            waves = sequence.ToArray();
             return;
         }
-        CombatDecision.End();
         if (kind == EncounterKind.Challenge)
-            challengeWavesRemaining = 3;
-        else
         {
-            var pickup = Instantiate(Resources.Load<GameObject>("Pickables/life"), ship.transform.position + Vector3.up * 2.4f, Quaternion.identity);
-            pickup.GetComponent<Life>().maxHealthFraction = .5f;
+            // The wave in progress is the first of the three.
+            challengeWavesRemaining = 3;
+            challengeWave = isWaveComingOut && currentWave != null && !currentWave.units.Exists(unit => unit.miniboss);
+            if (challengeWave)
+                foreach (var enemy in AEnemy.Live)
+                    if (enemy is DistrictEnemy districtEnemy && !(enemy is DistrictMiniboss))
+                        districtEnemy.MakeChallenging();
         }
-        Invoke(nameof(GenerateWave), ClearBreather);
+        else
+            HealthRecovery.Begin(ship.GetComponent<Shipcontroller>(), .5f);
     }
 
     void OpenDecision(string kind)
     {
+        DismissOffer();
         foreach (var enemy in new List<AEnemy>(AEnemy.Live))
             if (enemy != null)
                 Destroy(enemy.gameObject);
@@ -319,6 +357,7 @@ public class WaveOrchestrer : MonoBehaviour
     {
         if (isBoss)
         {
+            DismissOffer();
             if (choosingRoute || GameOverState.Active)
                 return;
             choosingRoute = true;
@@ -402,7 +441,7 @@ public class WaveOrchestrer : MonoBehaviour
             currentWaveKilledEnemies = 0;
             challengeWavesRemaining = 0;
             challengeWave = false;
-            EncounterOptions = null;
+            DismissOffer();
             waveTime = clearTime = 0;
             currentUnit = null;
             currentWave = null;
