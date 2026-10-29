@@ -258,6 +258,13 @@ public sealed class LevelEnvironment : MonoBehaviour
         active.ownedAudio.Clear(); // The fading audio now owns these clips.
     }
 
+    /// <summary>A shared scenery mesh from the level kit; the hangar reuses a Tunnel section.</summary>
+    public static Mesh KitMesh(string name)
+    {
+        LoadKit();
+        return kit.TryGetValue(name, out var mesh) ? mesh : null;
+    }
+
     static void LoadKit()
     {
         if (kit != null)

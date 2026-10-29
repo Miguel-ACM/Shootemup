@@ -97,19 +97,31 @@ public sealed class HangarHub : MonoBehaviour
         input.Enable();
     }
 
+    // The hangar is a bay inside the Tunnel: one still Tunnel section, with the docks, shop and doors built into it.
     void BuildHall()
     {
-        hall = IndustrialMeshFactory.TerraScenery("Hangar");
-        if (hall == null)
+        Scenery(LevelEnvironment.KitMesh("TunnelGround" + TunnelSection), 90, -50, .8f);
+        Scenery(LevelEnvironment.KitMesh("TunnelDetail" + TunnelSection), 90, -40, .8f);
+        hall = IndustrialMeshFactory.TerraScenery("HangarProps");
+        Scenery(hall, 90, -30, 1);
+        Scenery(LevelEnvironment.KitMesh("TunnelNear" + TunnelSection), 76, -25, .8f);
+    }
+
+    const int TunnelSection = 1;
+
+    void Scenery(Mesh mesh, float z, int order, float width)
+    {
+        if (mesh == null)
             return;
-        var floor = new GameObject("Hangar bay");
-        floor.transform.SetParent(transform, false);
-        floor.transform.position = new Vector3(center.x, center.y, 90);
-        floor.AddComponent<MeshFilter>().sharedMesh = hall;
-        var renderer = floor.AddComponent<MeshRenderer>();
+        var part = new GameObject(mesh.name);
+        part.transform.SetParent(transform, false);
+        part.transform.position = new Vector3(center.x, center.y, z);
+        part.transform.localScale = new Vector3(width, 1, 1);
+        part.AddComponent<MeshFilter>().sharedMesh = mesh;
+        var renderer = part.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = scenery;
         renderer.sortingLayerName = "Background";
-        renderer.sortingOrder = -50;
+        renderer.sortingOrder = order;
     }
 
     void BuildBays()
