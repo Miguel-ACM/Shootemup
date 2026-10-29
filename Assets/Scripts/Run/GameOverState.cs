@@ -77,6 +77,27 @@ public sealed class GameOverState : MonoBehaviour
         lettering = text.rectTransform;
         lettering.sizeDelta = new Vector2(380, 280);
         lettering.anchoredPosition = new Vector2(0, 20);
+        // The coins this run banked for the hangar: a coin and its count under the lettering.
+        var haul = new GameObject("Coins gathered", typeof(RectTransform), typeof(TextMeshProUGUI));
+        haul.transform.SetParent(rect, false);
+        var count = haul.GetComponent<TextMeshProUGUI>();
+        if (font != null)
+            count.font = font;
+        count.text = "+" + RunCoins.Count;
+        count.fontSize = 34;
+        count.alignment = TextAlignmentOptions.MidlineLeft;
+        count.color = new Color(1, .82f, .4f);
+        count.raycastTarget = false;
+        count.rectTransform.sizeDelta = new Vector2(160, 44);
+        count.rectTransform.anchoredPosition = new Vector2(64, -150);
+        var coin = new GameObject("Coin", typeof(RectTransform), typeof(Image));
+        coin.transform.SetParent(rect, false);
+        var disc = coin.GetComponent<Image>();
+        disc.sprite = CombatVisuals.Disc;
+        disc.color = new Color(1, .76f, .25f);
+        disc.raycastTarget = false;
+        disc.rectTransform.sizeDelta = new Vector2(24, 24);
+        disc.rectTransform.anchoredPosition = new Vector2(-30, -150);
     }
 
     void Update()
