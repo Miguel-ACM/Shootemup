@@ -1,9 +1,9 @@
 using UnityEngine;
-// Colour, ring count and orbiting markers all communicate rarity before the preview opens.
+// A faint ring and small orbiting sparks (one per rarity tier) hint at rarity without competing with the item.
 public sealed class ItemRarityHalo : MonoBehaviour
 {
     AItem item;
-    LineRenderer outer, inner;
+    LineRenderer outer;
     SpriteRenderer[] stars;
     float phase;
     void Start()
@@ -11,8 +11,8 @@ public sealed class ItemRarityHalo : MonoBehaviour
         item = GetComponent<AItem>();
         phase = Random.value * 6;
         var color = AItem.GetRarityColor(item.rarity);
-        outer = CombatVisuals.Line(transform, color, .055f);
-        inner = CombatVisuals.Line(transform, color * .8f, .025f);
+        color.a = .3f;
+        outer = CombatVisuals.Line(transform, color, .022f);
         int tier = item.rarity == "legendary" || item.rarity == PactPool.Rarity ? 4 : item.rarity == "epic" ? 3 : item.rarity == "rare" ? 2 : 1;
         stars = new SpriteRenderer[tier];
         for (int i = 0; i < tier; i++)
@@ -26,7 +26,6 @@ public sealed class ItemRarityHalo : MonoBehaviour
             s.sortingOrder = 10;
             stars[i] = s;
         }
-        inner.enabled = tier > 1;
     }
 
     void Update()
@@ -35,18 +34,16 @@ public sealed class ItemRarityHalo : MonoBehaviour
             return;
         bool visible = !item.Collected && !item.IsDismissing;
         outer.enabled = visible;
-        inner.enabled = visible && stars.Length > 1;
-        float pulse = 1 + Mathf.Sin(Time.time * 3 + phase) * .06f;
+        float pulse = 1 + Mathf.Sin(Time.time * 3 + phase) * .02f;
         var p = transform.position + Vector3.back * .7f;
         CombatVisuals.Ring(outer, p, .49f * pulse);
-        CombatVisuals.Ring(inner, p, .61f * pulse);
         for (int i = 0; i < stars.Length; i++)
         {
             float a = Time.time * (.8f + stars.Length * .18f) + phase + i * Mathf.PI * 2 / stars.Length;
             stars[i].enabled = visible;
             stars[i].transform.position = p + new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0) * .62f;
             float glint = .8f + .2f * Mathf.Sin(Time.time * 5 + phase + i * 2);
-            stars[i].transform.localScale = new Vector3(.055f, .13f * glint, 1);
+            stars[i].transform.localScale = new Vector3(.035f, .07f * glint, 1);
             stars[i].transform.rotation = Quaternion.Euler(0, 0, -a * Mathf.Rad2Deg);
         }
     }
