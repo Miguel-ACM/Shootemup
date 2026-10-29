@@ -1,9 +1,12 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 // Approved neutral sprite silhouettes, code tint, no replacement projectile artwork.
 public sealed class ItemSpark : MonoBehaviour
 {
     static int live;
+    static readonly Stack<ItemSpark> pool = new Stack<ItemSpark>();
+    static MaterialPropertyBlock tintBlock;
     SpriteRenderer sprite;
     Vector3 velocity;
     float age, duration, size;
@@ -29,14 +32,34 @@ public sealed class ItemSpark : MonoBehaviour
     {
         for (int i = 0; i < count && live < 100; i++)
         {
-            var sr = Sprite(null, "Item spark", art, color, size);
+            while (pool.Count > 0 && pool.Peek() == null)
+                pool.Pop();
+            ItemSpark fx;
+            if (pool.Count > 0)
+                fx = pool.Pop();
+            else
+            {
+                var created = Sprite(null, "Item spark", art, color, size);
+                fx = created.gameObject.AddComponent<ItemSpark>();
+                fx.sprite = created;
+            }
+            var sr = fx.sprite;
+            sr.sprite = ProjectileSprites.Load(art);
+            if (tintBlock == null)
+                tintBlock = new MaterialPropertyBlock();
+            tintBlock.Clear();
+            tintBlock.SetColor("_SpriteTint", color);
+            tintBlock.SetFloat("_Neutralize", 0);
+            sr.SetPropertyBlock(tintBlock);
+            sr.color = Color.white;
             sr.transform.position = new Vector3(p.x, p.y, -2);
-            var fx = sr.gameObject.AddComponent<ItemSpark>();
-            fx.sprite = sr;
+            fx.age = 0;
             fx.duration = .32f;
             fx.size = size;
             fx.playerClock = playerClock;
             fx.velocity = Quaternion.Euler(0, 0, i * 360f / count + 25) * Vector3.up * 1.5f;
+            if (!fx.gameObject.activeSelf)
+                fx.gameObject.SetActive(true);
         }
     }
 
@@ -61,6 +84,9 @@ public sealed class ItemSpark : MonoBehaviour
         sprite.color = new Color(1, 1, 1, 1 - t);
         transform.localScale = Vector3.one * size * (1 - t * .6f);
         if (age >= duration)
-            Destroy(gameObject);
+        {
+            gameObject.SetActive(false);
+            pool.Push(this);
+        }
     }
 }

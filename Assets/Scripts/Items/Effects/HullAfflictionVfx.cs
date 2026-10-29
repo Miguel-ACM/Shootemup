@@ -1,32 +1,49 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 // Small local emissions cling to the hull, leaving the collision lanes readable.
 public sealed class HullAfflictionVfx
 {
-    readonly ParticleSystem particles;
-    readonly AEnemy enemy;
-    readonly bool poison;
+    static ParticleSystem flames, bubbles;
+    static readonly Stack<HullAfflictionVfx> pool = new Stack<HullAfflictionVfx>();
+    AEnemy enemy;
+    bool poison;
     float next;
+    HullAfflictionVfx()
+    {
+    }
+
     public HullAfflictionVfx(AEnemy target, bool toxic)
+    {
+        Initialize(target, toxic);
+    }
+
+    public static HullAfflictionVfx Acquire(AEnemy target, bool toxic)
+    {
+        var effect = pool.Count > 0 ? pool.Pop() : new HullAfflictionVfx();
+        effect.Initialize(target, toxic);
+        return effect;
+    }
+
+    void Initialize(AEnemy target, bool toxic)
     {
         enemy = target;
         poison = toxic;
-        particles = PSXImpactEffects.Create(target.transform, toxic ? "Poison bubbles" : "Burning hull flames", 48, toxic);
-        if (toxic)
+        next = 0;
+        if (toxic && bubbles == null)
         {
-            var renderer = particles.GetComponent<ParticleSystemRenderer>();
+            bubbles = PSXImpactEffects.Create(null, "Shared poison bubbles", 384, true);
+            var renderer = bubbles.GetComponent<ParticleSystemRenderer>();
             renderer.sortingLayerName = "Bullet";
             renderer.sortingOrder = 29;
         }
-        var fade = particles.colorOverLifetime;
-        fade.enabled = true;
-        var gradient = new Gradient();
-        gradient.SetKeys(new[] { new GradientColorKey(Color.white, 0), new GradientColorKey(Color.white, 1) }, new[] { new GradientAlphaKey(.9f, 0), new GradientAlphaKey(0, 1) });
-        fade.color = gradient;
+        if (!toxic && flames == null)
+            flames = PSXImpactEffects.Create(null, "Shared burning hull flames", 384);
     }
 
     public void Tick()
     {
+        var particles = poison ? bubbles : flames;
         if (particles == null || enemy == null || Time.deltaTime <= 0 || Time.time < next)
             return;
         next = Time.time + .08f;
@@ -48,7 +65,7 @@ public sealed class HullAfflictionVfx
 
     public void Dispose()
     {
-        if (particles != null)
-            Object.Destroy(particles.gameObject);
+        enemy = null;
+        pool.Push(this);
     }
 }

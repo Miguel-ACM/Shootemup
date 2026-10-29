@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public sealed class HotSauceTrail : MonoBehaviour
 {
     static int live;
+    static readonly Stack<HotSauceTrail> pool = new Stack<HotSauceTrail>();
     float age, next;
     AEnemy source;
     ParticleSystem flames;
@@ -12,6 +13,20 @@ public sealed class HotSauceTrail : MonoBehaviour
     {
         if (live >= 80)
             return;
+        while (pool.Count > 0 && pool.Peek() == null)
+            pool.Pop();
+        if (pool.Count > 0)
+        {
+            var reused = pool.Pop();
+            reused.age = 0;
+            reused.next = 0;
+            reused.source = source;
+            reused.touched.Clear();
+            reused.transform.position = source.transform.position;
+            reused.gameObject.SetActive(true);
+            reused.flames.Play();
+            return;
+        }
         var go = new GameObject("Hot sauce fire trail");
         go.transform.position = source.transform.position;
         var patch = go.AddComponent<HotSauceTrail>();
@@ -40,13 +55,13 @@ public sealed class HotSauceTrail : MonoBehaviour
             return;
         if (GameRules.playerDisabled)
         {
-            Destroy(gameObject);
+            Release();
             return;
         }
         age += Time.deltaTime;
         if (age > 1.35f)
         {
-            Destroy(gameObject);
+            Release();
             return;
         }
         if (age < next)
@@ -65,5 +80,14 @@ public sealed class HotSauceTrail : MonoBehaviour
             touched.Add(target);
             (target.GetComponent<BurningHull>() ?? target.gameObject.AddComponent<BurningHull>()).Ignite(6, false);
         }
+    }
+
+    void Release()
+    {
+        flames.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        source = null;
+        touched.Clear();
+        gameObject.SetActive(false);
+        pool.Push(this);
     }
 }

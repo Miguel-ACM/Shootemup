@@ -11,6 +11,7 @@ public sealed class StaticCharge : MonoBehaviour
     Vector3 previous;
     float spark;
     SpriteRenderer[] buildup;
+    readonly HashSet<AEnemy> used = new HashSet<AEnemy>();
     void OnEnable()
     {
         previous = transform.position;
@@ -49,7 +50,8 @@ public sealed class StaticCharge : MonoBehaviour
         if (Charge < 1)
             return;
         Charge = 0;
-        var used = new HashSet<AEnemy> { first };
+        used.Clear();
+        used.Add(first);
         var point = first.transform.position;
         for (int i = 0; i < 3; i++)
         {
@@ -78,19 +80,38 @@ public sealed class StaticCharge : MonoBehaviour
 }
 public sealed class StaticArc : MonoBehaviour
 {
+    const int Limit = 64;
+    static readonly Stack<StaticArc> pool = new Stack<StaticArc>();
+    static int live;
     float age, duration;
     LineRenderer line;
     Color fromColor, toColor;
     public static void Draw(Vector3 from, Vector3 to, float duration)
     {
-        var go = new GameObject("Static discharge");
-        var arc = go.AddComponent<StaticArc>();
+        if (live >= Limit)
+            return;
+        while (pool.Count > 0 && pool.Peek() == null)
+            pool.Pop();
+        StaticArc arc;
+        if (pool.Count > 0)
+        {
+            arc = pool.Pop();
+            arc.gameObject.SetActive(true);
+        }
+        else
+        {
+            var go = new GameObject("Static discharge");
+            arc = go.AddComponent<StaticArc>();
+            arc.line = CombatVisuals.Line(go.transform, new Color(.65f, .55f, .95f), .055f);
+            arc.line.positionCount = 7;
+        }
+        arc.age = 0;
         arc.duration = duration;
-        arc.line = CombatVisuals.Line(go.transform, new Color(.65f, .55f, .95f), .055f);
-        arc.line.positionCount = 7;
         bool fire = PlayerShotPalette.Burning, poison = PlayerShotPalette.Toxic;
         arc.fromColor = poison ? PlayerShotPalette.Poison : fire ? PlayerShotPalette.Fire : new Color(.65f, .55f, .95f);
         arc.toColor = fire ? PlayerShotPalette.Fire : arc.fromColor;
+        arc.line.startColor = arc.fromColor;
+        arc.line.endColor = arc.toColor;
         var side = Vector3.Cross(to - from, Vector3.forward).normalized;
         for (int i = 0; i < 7; i++)
         {
@@ -98,6 +119,16 @@ public sealed class StaticArc : MonoBehaviour
             p.z = -2;
             arc.line.SetPosition(i, p);
         }
+    }
+
+    void OnEnable()
+    {
+        live++;
+    }
+
+    void OnDisable()
+    {
+        live--;
     }
 
     void Update()
@@ -109,6 +140,9 @@ public sealed class StaticArc : MonoBehaviour
         line.startColor = fromColor;
         line.endColor = toColor;
         if (age >= duration)
-            Destroy(gameObject);
+        {
+            gameObject.SetActive(false);
+            pool.Push(this);
+        }
     }
 }

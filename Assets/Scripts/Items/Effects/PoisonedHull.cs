@@ -11,7 +11,7 @@ public sealed class PoisonedHull : MonoBehaviour
         expires = Time.time + 5;
         if (effect == null)
         {
-            effect = new HullAfflictionVfx(enemy, true);
+            effect = HullAfflictionVfx.Acquire(enemy, true);
             ItemProcVfx.Emit(ItemProcShape.Toxic, transform.position, PlayerShotPalette.Poison, Mathf.Clamp(enemy.size * .6f, .2f, .6f));
             ItemSound.Cue("itemPoison", volume: .065f, cooldown: .3f);
         }

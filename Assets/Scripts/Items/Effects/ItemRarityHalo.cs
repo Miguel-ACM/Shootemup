@@ -45,7 +45,8 @@ public sealed class ItemRarityHalo : MonoBehaviour
             float a = Time.time * (.8f + stars.Length * .18f) + phase + i * Mathf.PI * 2 / stars.Length;
             stars[i].enabled = visible;
             stars[i].transform.position = p + new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0) * .62f;
-            stars[i].transform.localScale = new Vector3(.07f, .13f, 1);
+            float glint = .8f + .2f * Mathf.Sin(Time.time * 5 + phase + i * 2);
+            stars[i].transform.localScale = new Vector3(.055f, .13f * glint, 1);
             stars[i].transform.rotation = Quaternion.Euler(0, 0, -a * Mathf.Rad2Deg);
         }
     }

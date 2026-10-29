@@ -1,10 +1,12 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 // Reuse the approved neutral pixels: all gum colour comes from code, including the pop.
 public sealed class GumSpritePop : MonoBehaviour
 {
     const float Duration = .24f;
     static int live;
+    static readonly Stack<GumSpritePop> pool = new Stack<GumSpritePop>();
     readonly SpriteRenderer[] sprites = new SpriteRenderer[5];
     float age;
     public static void Spawn(Vector3 position)
@@ -12,6 +14,16 @@ public sealed class GumSpritePop : MonoBehaviour
         if (live >= 64)
             return;
         ItemSound.Cue("itemGum", "popcorn", .08f, cooldown: .12f);
+        while (pool.Count > 0 && pool.Peek() == null)
+            pool.Pop();
+        if (pool.Count > 0)
+        {
+            var reused = pool.Pop();
+            reused.age = 0;
+            reused.transform.position = position;
+            reused.gameObject.SetActive(true);
+            return;
+        }
         var go = new GameObject("Gum sprite pop");
         go.transform.position = position;
         var pop = go.AddComponent<GumSpritePop>();
@@ -58,6 +70,9 @@ public sealed class GumSpritePop : MonoBehaviour
             }
         }
         if (age >= Duration)
-            Destroy(gameObject);
+        {
+            gameObject.SetActive(false);
+            pool.Push(this);
+        }
     }
 }
