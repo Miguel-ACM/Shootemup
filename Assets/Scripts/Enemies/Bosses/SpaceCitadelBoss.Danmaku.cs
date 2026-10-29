@@ -6,13 +6,13 @@ using System.Collections;
 // Phase one (shield generators up)
 //   Gravity Well: a well opens in the middle of the arena. The generators fire arrow
 //     streams sideways and the well bends them into arcs, loops and slingshots; the
-//     turrets lob slow orbs that fall into orbit around it.
+//     turrets lob dark stars (giant spiked orbs) that fall into slow orbits around it.
 //   Supernova: the core throws rings of arrows outward; each ring stops, holds, then
 //     collapses back through the core and bursts out the other side. The centre
 //     laser cuts the middle at the end.
 // Phase two (core exposed)
 //   Event Horizon: the well drifts after the player while the core winds four spiral
-//     arms of arrows that bend into it.
+//     arms of arrows that bend into it, with pairs of dark stars falling in.
 //   Binary Collapse: two supernova rings at once, counter-rotating offsets, with the
 //     laser between them.
 public sealed partial class SpaceCitadelBoss
@@ -93,9 +93,12 @@ public sealed partial class SpaceCitadelBoss
                 }
             if (n % 8 == 4)
                 for (int i = 2; i < 4; i++)
-                    if (parts[i].health > 0)
-                        for (int k = -1; k <= 1; k++)
-                            Fire<SimpleRound>(TurretPort(i), CombatVisuals.Rotate(Vector2.down, (i == 2 ? 50 : -50) + k * 16), 2.0f, .26f).Attract(point, 7).LivesFor(10);
+                {
+                    // Dark stars: giant orbs lobbed into the well, where they fall into slow orbits.
+                    var port = parts[i].health > 0 ? TurretPort(i) : Muzzle();
+                    for (int k = 0; k < Dense(2); k++)
+                        Fire<GiantOrb>(port, CombatVisuals.Rotate(Vector2.down, (i == 2 ? 55 : -55) + k * (i == 2 ? -22 : 22)), 1.7f, .75f).Attract(point, 5).LivesFor(13);
+                }
         });
         CloseWell();
     }
@@ -140,6 +143,9 @@ public sealed partial class SpaceCitadelBoss
             well.position = new Vector3(point.x, point.y, -.4f);
             for (int arm = 0; arm < 4; arm++)
                 Fire<NeedleRound>(Core, CombatVisuals.Rotate(Vector2.down, arm * 90 + i * 9), 3.2f, .19f).Attract(point, 8).LivesFor(9);
+            if (i % 18 == 9)
+                foreach (int side in new[] { -1, 1 })
+                    Fire<GiantOrb>(Core, CombatVisuals.Rotate(Vector2.down, side * 70), 1.8f, .75f).Attract(point, 5).LivesFor(13);
             yield return Wait(Rest(.075f));
         }
         CloseWell();
