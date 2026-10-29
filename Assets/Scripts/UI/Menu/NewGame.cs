@@ -68,7 +68,8 @@ public class NewGame : AMenuElement
             return;
         }
         starting = true;
-        StartCoroutine(IntoHangar(option == 0 ? RunDifficulty.Easy : RunDifficulty.Hard));
+        // This row is hidden while the difficulty rows show, so the menu, which stays active, runs the exit.
+        menu.StartCoroutine(IntoHangar(option == 0 ? RunDifficulty.Easy : RunDifficulty.Hard));
     }
 
     // The menu fades away while the title's tunnel slows to a stop; the hangar then continues from that same view.
