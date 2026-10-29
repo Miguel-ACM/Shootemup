@@ -1,5 +1,6 @@
 ﻿import bpy
 import math
+import json
 import os
 import sys
 from mathutils import Vector
@@ -11,6 +12,11 @@ except NameError:
     args = sys.argv
     ROOT = os.path.abspath(args[args.index('--') + 1]) if '--' in args and len(args) > args.index('--') + 1 else os.getcwd()
 os.makedirs(ROOT, exist_ok=True)
+
+# This design has no visible moving parts.
+with open(os.path.join(ROOT, 'parts.json'), 'w', encoding='utf-8') as manifest:
+    json.dump([], manifest, indent=2)
+    manifest.write('\n')
 
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
@@ -143,6 +149,10 @@ model.name = 'Model'
 bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 for poly in model.data.polygons:
     poly.use_smooth = False
+# Explicitly select the complete static model for export.
+bpy.ops.object.select_all(action='DESELECT')
+model.select_set(True)
+bpy.context.view_layer.objects.active = model
 bpy.ops.wm.obj_export(filepath=os.path.join(ROOT,'model.obj'), export_selected_objects=True,
                       export_materials=True, forward_axis='Y', up_axis='Z')
 
