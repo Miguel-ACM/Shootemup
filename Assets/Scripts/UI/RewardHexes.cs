@@ -8,7 +8,7 @@ public sealed class RewardHexes : MonoBehaviour
 {
     public static bool Active => current != null;
     static RewardHexes current;
-    public const float FillSeconds = 3, LifeSeconds = 20;
+    public const float FillSeconds = 2.2f, LifeSeconds = 20;
     // World radius of each hexagon, corner to centre.
     public const float Radius = 1.15f;
     const float EnterSeconds = .45f, ExitSeconds = .4f, Stagger = .12f, WarningSeconds = 4, HoverAlpha = .1f;
