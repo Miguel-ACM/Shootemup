@@ -2,7 +2,7 @@
 
 A thick bright rim around a dark core, with a ring of spikes reaching from the rim into
 the core, like a large Touhou "big bullet". Writes Assets/Resources/ProjectileSprites/giant_orb.png
-and a tinted preview to ArtSource/GiantOrbPreview.png.
+and a tinted preview over a checker (to show the see-through core) to ArtSource/GiantOrbPreview.png.
 """
 import math
 from pathlib import Path
@@ -31,9 +31,10 @@ def shade(x, y):
     reach = RIM_IN - (1.2 + 5.2 * wave ** 4) * (1.0 if int((angle + math.pi) / (2 * math.pi) * SPIKES) % 2 == 0 else .65)
     if r > reach:
         return int(150 + 80 * (r - reach) / max(.1, RIM_IN - reach))
+    # The dark core is see-through (alpha stays above the 128 collider threshold).
     if r < CORE:
-        return 44
-    return int(40 + 25 * (r - CORE) / max(.1, reach - CORE))
+        return 44, 150
+    return int(40 + 25 * (r - CORE) / max(.1, reach - CORE)), int(150 + 40 * (r - CORE) / max(.1, reach - CORE))
 
 
 def draw():
@@ -43,7 +44,8 @@ def draw():
         for x in range(SIZE):
             v = shade(x, y)
             if v is not None:
-                px[x, y] = (v, v, v, 255)
+                v, a = v if isinstance(v, tuple) else (v, 255)
+                px[x, y] = (v, v, v, a)
     return im
 
 
@@ -57,6 +59,10 @@ def preview(sprite):
         for x in range(big.size[0]):
             r, g, b, a = bp[x, y]
             tp[x, y] = (r * tint[0] // 255, g * tint[1] // 255, b * tint[2] // 255, a)
+    for y in range(0, 220, 20):
+        for x in range(0, 420, 20):
+            if (x + y) // 20 % 2 == 0:
+                board.paste((40, 30, 80), (x, y, x + 20, y + 20))
     board.paste(big, (10, 11), big)
     board.paste(tinted, (220, 11), tinted)
     return board
