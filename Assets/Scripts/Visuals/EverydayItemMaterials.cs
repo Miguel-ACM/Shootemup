@@ -170,6 +170,9 @@ public static class EverydayItemMaterials
 
     public static Material For(string kind)
     {
+        var authored = IndustrialMeshFactory.TerraMaterial("Item" + kind);
+        if (authored != null)
+            return authored;
         if (System.Array.IndexOf(IndustrialMeshFactory.ItemKinds, kind) >= 0)
         {
             var prefab = Resources.Load<GameObject>("Items/Item");

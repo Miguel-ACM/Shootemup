@@ -7,6 +7,9 @@ public static partial class IndustrialMeshFactory
     {
         if (expansionItems.TryGetValue(kind, out var mesh) && mesh != null)
             return mesh;
+        var authored = TerraModel("Item" + kind);
+        if (authored != null)
+            return expansionItems[kind] = authored;
         int original = System.Array.IndexOf(ItemKinds, kind);
         if (original >= 0)
         {

@@ -54,7 +54,8 @@ public sealed class PSXObjectVisual : MonoBehaviour
             var item = GetComponent<AItem>();
             string kind = item != null ? item.GetType().Name : "money";
             int index = Array.IndexOf(IndustrialMeshFactory.ItemKinds, kind);
-            if (index >= 0)
+            // A Terra model replaces even the original item meshes; it carries its own palette.
+            if (index >= 0 && IndustrialMeshFactory.TerraModel("Item" + kind) == null)
                 model.GetComponent<MeshFilter>().sharedMesh = itemMeshes[index];
             else
             {
