@@ -103,7 +103,8 @@ public sealed class HangarHub : MonoBehaviour
         Scenery(LevelEnvironment.KitMesh("TunnelGround" + TunnelSection), 90, -50, .8f);
         Scenery(LevelEnvironment.KitMesh("TunnelDetail" + TunnelSection), 90, -40, .8f);
         hall = IndustrialMeshFactory.TerraScenery("HangarProps");
-        Scenery(hall, 90, -30, 1);
+        // Raised above the Tunnel's wall detail, which writes depth up to 2.2 units toward the camera.
+        Scenery(hall, 87.5f, -30, 1);
         Scenery(LevelEnvironment.KitMesh("TunnelNear" + TunnelSection), 76, -25, .8f);
     }
 
