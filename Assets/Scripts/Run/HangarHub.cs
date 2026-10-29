@@ -14,8 +14,8 @@ public sealed class HangarHub : MonoBehaviour
     }
 
     static RunDifficulty difficulty = RunDifficulty.Hard;
-    static readonly Vector2[] padSpots = { new Vector2(-3.4f, 4.2f), new Vector2(-3.4f, 1.4f), new Vector2(-3.4f, -1.4f), new Vector2(-3.4f, -4.2f) };
-    static readonly Vector2[] plinthSpots = { new Vector2(3.4f, 4.4f), new Vector2(3.4f, .9f), new Vector2(3.4f, -2.6f) };
+    static readonly Vector2[] padSpots = { new Vector2(-2.2f, 4.2f), new Vector2(-2.2f, 1.4f), new Vector2(-2.2f, -1.4f), new Vector2(-2.2f, -4.2f) };
+    static readonly Vector2[] plinthSpots = { new Vector2(2.3f, 4.4f), new Vector2(2.3f, .9f), new Vector2(2.3f, -2.6f) };
     const float PadReach = 1f, PlinthReach = .85f, GateHalfWidth = 2f;
 
     sealed class Bay
@@ -147,7 +147,7 @@ public sealed class HangarHub : MonoBehaviour
                 bay.display = display.transform;
             }
             bay.pad = Hover("HangarDockPad", bay.spot + new Vector3(0, 0, .6f), -4);
-            bay.shadow = Shadow(bay.spot, 1.05f);
+            bay.shadow = Shadow(bay.spot, 1.15f);
             bay.pips = new GameObject("Hull pips").transform;
             bay.pips.SetParent(transform, false);
             bay.pips.position = bay.spot + new Vector3(0, -1.05f, 0);
@@ -221,7 +221,7 @@ public sealed class HangarHub : MonoBehaviour
         var vertices = new Vector3[Sides + 1];
         var colors = new Color[Sides + 1];
         var triangles = new int[Sides * 3];
-        colors[0] = new Color(0, 0, 0, .55f);
+        colors[0] = new Color(0, 0, 0, .8f);
         for (int i = 0; i < Sides; i++)
         {
             float angle = i * Mathf.PI * 2 / Sides;
@@ -235,7 +235,7 @@ public sealed class HangarHub : MonoBehaviour
         quads.Add(mesh);
         var go = new GameObject("Hover shadow");
         go.transform.SetParent(transform, false);
-        go.transform.position = new Vector3(spot.x + .3f, spot.y - .45f, 87);
+        go.transform.position = new Vector3(spot.x + .35f, spot.y - .55f, 87);
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var renderer = go.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = scenery;
