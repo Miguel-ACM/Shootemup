@@ -4,14 +4,14 @@ using UnityEngine;
 // Plains bomber, a working aircraft that flies its sorties as spell cards.
 // Phase one
 //   Wingtip Crossfire: both wingtips stream triple arrows at the player while the
-//     bays drop mirrored bombs that stop mid-air and burst into flat arrow fans.
+//     bays drop mirrored bombs that travel the same distance, stop and explode 360.
 //   Harvest Lace: a three-arm mirrored lace folds open and shut from the wings,
 //     with slow orb wavefronts from the nose rolling under it.
 // Phase two
-//   Contrail Curtain: three fences of rounds strung across the arena, each with a
-//     gap, hang and then fall at once; wing streams keep the player moving between.
-//   Scatter Squadron: orange carriers released sparsely and irregularly, rows of
-//     mirrored bombs, and a two-arm lace.
+//   Contrail Curtain: fences of rounds strung along the very top of the screen,
+//     across its whole width, hang and then fall at alternating speeds; wing streams
+//     keep the player moving between them.
+//   Bomb Run: rows of mirrored 360 bombs under a two-arm lace.
 public sealed partial class FieldsBomberBoss
 {
     protected override void Attack()
@@ -34,7 +34,7 @@ public sealed partial class FieldsBomberBoss
             {
                 yield return Curtains();
                 yield return Wait(1f);
-                yield return ScatterSquadron();
+                yield return BombRun();
                 yield return Wait(1f);
             }
         }
@@ -75,18 +75,18 @@ public sealed partial class FieldsBomberBoss
             }
     }
 
-    // Mirrored bombs brake at matching heights, glint, then burst into flat arrow fans.
+    // Mirrored bombs brake at matching distances, glint, then explode in a full ring.
     void CarpetBombs(int pairs)
     {
-        int shards = Dense(13);
+        int shards = Dense(16);
         for (int i = 0; i < Dense(pairs); i++)
             for (int mirror = 0; mirror < 2; mirror++)
             {
                 var port = Hull.TransformPoint(bays[mirror == 0 ? i : bays.Length - 1 - i]);
-                float stop = .8f + i * .4f;
-                Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, (mirror == 0 ? -1 : 1) * (6 + i * 10)), 2.5f, .42f)
-                    .Pause(stop, .45f)
-                    .SplitAt(stop + .45f, shards, 170f / (shards - 1), 2.6f, .19f);
+                // Every bomb travels the same distance before it stops and explodes all round.
+                Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, (mirror == 0 ? -1 : 1) * (8 + i * 14)), 2.5f, .42f)
+                    .Pause(1.0f, .45f)
+                    .SplitAt(1.45f, shards, 360f / shards, 2.6f, .19f);
             }
     }
 
@@ -105,30 +105,21 @@ public sealed partial class FieldsBomberBoss
         }
     }
 
-    IEnumerator ScatterSquadron()
+    IEnumerator BombRun()
     {
         Phrase(MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(80), 2, 55, 24, 3.2f, .085f, -1));
-        yield return Every(7, .9f, n =>
-        {
-            if (n % 3 == 0)
-                Fire<ScatterCarrier>(Muzzle(4), CombatVisuals.Rotate(Vector2.down, Random.Range(-20f, 20f)), 2.2f, .33f);
-            else
-                CarpetBombs(n % 3 == 1 ? 2 : 3);
-        });
+        yield return Every(7, 1.1f, n => CarpetBombs(n % 2 == 0 ? 2 : 3));
     }
 
-    // A line strung from wingtip to wingtip across the arena, with a gap where the
-    // player was. It hangs as a fence, then drops with alternating speeds.
+    // A line strung along the very top of the screen across its whole width. It hangs
+    // as a fence, then drops with alternating speeds, so the gaps open as it falls.
     IEnumerator ContrailCurtain()
     {
-        int lanes = Dense(22);
-        float y = Camera.UpLimit - 4.2f;
-        float gap = player != null ? player.position.x : 0;
+        int lanes = Dense(24);
+        float y = Camera.UpLimit - .45f;
         for (int i = 0; i < lanes; i++)
         {
-            float x = Mathf.Lerp(Camera.LeftLimit + .3f, Camera.RightLimit - .3f, i / (lanes - 1f));
-            if (Mathf.Abs(x - gap) < .75f)
-                continue;
+            float x = Mathf.Lerp(Camera.LeftLimit + .25f, Camera.RightLimit - .25f, i / (lanes - 1f));
             var port = Muzzle(x < transform.position.x ? 0 : 1);
             Vector2 travel = new Vector2(x, y) - (Vector2)port;
             // Braking over the last .35 s covers half that time's distance.
