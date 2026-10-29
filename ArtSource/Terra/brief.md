@@ -25,3 +25,11 @@ Write ONE Blender 5.x Python script named `model.py` in the current directory. D
    Find the script directory from `__file__`, falling back to the path after `--` in sys.argv.
 
 Keep the script self-contained and robust for Blender 5.x API (e.g. use `bpy.ops.wm.obj_export`, `Material.use_nodes`, Principled BSDF input names "Base Color", "Emission Color", "Emission Strength"). When done, reply with one short paragraph describing the design.
+
+## Animated parts
+
+Wherever this craft or creature naturally has moving parts (rotors, propellers, impellers, turbines, fins, tail flukes, flapping wings, tentacles, turning radar dishes, spinning drums), model each moving part as a SEPARATE mesh object instead of joining it into `Model`, so the game can animate it. Rules:
+- Give each part object a short unique name (e.g. `Impeller_L`, `Fin_R`, `Tail`) and put the part's geometry where it sits at rest.
+- Write `parts.json` next to the script, a JSON list with one entry per part: `{"object": "Impeller_L", "motion": "spin", "axis": [0, 1, 0], "pivot": [x, y, z], "speed": 540}` for continuous rotation (speed in degrees per second), or `{"object": "Fin_R", "motion": "swing", "axis": [0, 1, 0], "pivot": [x, y, z], "speed": 1.4, "amplitude": 18}` for back-and-forth motion (speed in cycles per second, amplitude in degrees). Axis and pivot are in the same Blender coordinates as the model (the pivot is the hinge or hub; for a hinged fin, the root edge).
+- Use 0-6 parts; leave the model static (an empty list) if nothing would move naturally. Never animate a part that carries a muzzle. Fins swing gently (8-25 degrees), rotors spin fast; mirrored parts should swing in mirror (use opposite axis signs).
+- Export the body and all parts together into the one model.obj (select them all before exporting), and include the parts in both renders.
