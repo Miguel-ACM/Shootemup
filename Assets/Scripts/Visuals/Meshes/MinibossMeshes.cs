@@ -6,18 +6,31 @@ public static partial class IndustrialMeshFactory
     {
         if (kind == 56)
         {
-            b.Ball(Vector3.zero, new Vector3(1.05f, 1.25f, .48f), 13);
-            for (int row = 0; row < 4; row++)
-                for (int s = -1; s <= 1; s += 2)
-                    b.Prism(new[] { new Vector2(s * .08f, .90f - row * .45f), new Vector2(s * .82f, .92f - row * .45f), new Vector2(s * .95f, .52f - row * .45f), new Vector2(s * .08f, .46f - row * .45f) }, .16f, 2, new Vector3(0, 0, -.45f), 11);
+            // Armoured dredging scarab: split domed wing cases, a ridged thorax shield,
+            // a horned head with curved mandibles, six jointed legs and two scoop guns.
             for (int s = -1; s <= 1; s += 2)
             {
+                b.Prism(new[] { V(s * .05f, .92f), V(s * .55f, .88f), V(s * .92f, .48f), V(s * 1.0f, -.15f), V(s * .82f, -.72f), V(s * .42f, -.95f), V(s * .05f, -.98f) }, .38f, 13, new Vector3(0, 0, -.08f), 2);
+                b.Prism(new[] { V(s * .14f, .78f), V(s * .5f, .74f), V(s * .78f, .42f), V(s * .84f, -.12f), V(s * .68f, -.6f), V(s * .36f, -.8f), V(s * .14f, -.82f) }, .1f, 11, new Vector3(0, 0, -.3f));
+                for (int r = 0; r < 3; r++)
+                    b.Box(new Vector3(s * (.3f + r * .2f), .05f - r * .08f, -.38f), new Vector3(.05f, 1.15f - r * .25f, .05f), 9);
                 for (int j = 0; j < 3; j++)
-                    b.Prism(new[] { new Vector2(s * .83f, .63f - j * .55f), new Vector2(s * 1.55f, .32f - j * .52f), new Vector2(s * 1.25f, -.18f - j * .52f), new Vector2(s * 1.14f, .18f - j * .52f) }, .20f, 6, Vector3.zero);
-                b.Box(new Vector3(s * .70f, -.72f, -.35f), new Vector3(.27f, 1.0f, .25f), 11);
-                b.Drum(new Vector3(s * .70f, -1.12f, -.39f), .19f, .19f, 10, 8);
+                {
+                    float y = .45f - j * .55f;
+                    b.Prism(new[] { V(s * .9f, y + .08f), V(s * 1.38f, y + .3f), V(s * 1.46f, y + .18f), V(s * 1.0f, y - .06f) }, .1f, 6, new Vector3(0, 0, .05f));
+                    b.Prism(new[] { V(s * 1.36f, y + .3f), V(s * 1.62f, y - .12f), V(s * 1.52f, y - .2f), V(s * 1.3f, y + .16f) }, .09f, 6, new Vector3(0, 0, .05f));
+                }
+                b.Drum(new Vector3(s * .85f, -.45f, -.42f), .2f, .2f, 10, 8);
+                b.Box(new Vector3(s * .85f, -.62f, -.42f), new Vector3(.12f, .3f, .12f), 1);
+                b.Prism(new[] { V(s * .1f, -1.62f), V(s * .42f, -1.78f), V(s * .5f, -2.12f), V(s * .34f, -2.02f), V(s * .3f, -1.86f), V(s * .1f, -1.78f) }, .12f, 2, new Vector3(0, 0, -.12f));
             }
-            b.Box(new Vector3(0, -.72f, -.57f), new Vector3(.46f, .34f, .15f), 9);
+            b.Box(new Vector3(0, -.05f, -.4f), new Vector3(.08f, 1.85f, .1f), 1);
+            b.Prism(new[] { V(-.72f, -.95f), V(.72f, -.95f), V(.6f, -1.38f), V(.25f, -1.5f), V(-.25f, -1.5f), V(-.6f, -1.38f) }, .34f, 11, new Vector3(0, 0, -.12f), 9);
+            for (int r = 0; r < 3; r++)
+                b.Box(new Vector3(0, -1.05f - r * .14f, -.32f), new Vector3(1.1f - r * .25f, .04f, .05f), 9);
+            b.Ball(new Vector3(0, -1.62f, -.18f), new Vector3(.46f, .3f, .28f), 9);
+            b.Prism(new[] { V(-.06f, -1.55f), V(0, -1.2f), V(.06f, -1.55f) }, .16f, 2, new Vector3(0, 0, -.38f));
+            b.Drum(new Vector3(0, -.65f, -.34f), .17f, .18f, 10, 8);
             return;
         }
         if (kind == 57)
