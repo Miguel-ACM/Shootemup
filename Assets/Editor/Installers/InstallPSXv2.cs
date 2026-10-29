@@ -138,7 +138,7 @@ public static class InstallPSXv2
         var fire = Mat("Assets/Resources/Effects/PSXv2Fireball.mat", "Shootemup/PSXv2 Fireball");
         fire.mainTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(Folder + "FX/Fireball_64.png");
         // Full PSX presentation by default, kept light: PS1 half-step dither, mild softness, no vignette.
-        var screen = AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/PSXPass/PSX screen composite.mat");
+        var screen = AssetDatabase.LoadAssetAtPath<Material>("Assets/Resources/PSXScreenComposite.mat");
         if (screen != null)
         {
             screen.SetFloat("_Dither", .5f);

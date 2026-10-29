@@ -26,6 +26,15 @@ public sealed class TitleTunnelBackdrop : MonoBehaviour
 
     IEnumerator Start()
     {
+        // The title shares the gameplay scenes' PS1 dithering and colour depth.
+        var camera = UnityEngine.Camera.main;
+        if (camera != null)
+        {
+            var presentation = camera.GetComponent<PSXPresentation>();
+            if (presentation == null)
+                presentation = camera.gameObject.AddComponent<PSXPresentation>();
+            presentation.Configure(Resources.Load<Material>("PSXScreenComposite"));
+        }
         var menu = FindAnyObjectByType<NewGame>()?.GetComponentInParent<Menu>();
         if (menu != null)
         {

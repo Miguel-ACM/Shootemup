@@ -70,7 +70,7 @@ public static class InstallIndustrialExpansion
         var background = AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/PSXPass/Industrial salvage.mat");
         background.SetFloat("_VertexSnap", 0);
         EditorUtility.SetDirty(background);
-        var screen = AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/PSXPass/PSX screen composite.mat");
+        var screen = AssetDatabase.LoadAssetAtPath<Material>("Assets/Resources/PSXScreenComposite.mat");
         screen.SetFloat("_Dither", .08f);
         screen.SetFloat("_Vignette", 0);
         EditorUtility.SetDirty(screen);
