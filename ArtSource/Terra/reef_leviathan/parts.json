@@ -8,12 +8,12 @@
       0
     ],
     "pivot": [
-      -0.5,
-      0.02,
-      0.09
+      -0.34,
+      0.55,
+      0.13
     ],
-    "speed": 1.0,
-    "amplitude": 14
+    "speed": 0.72,
+    "amplitude": 12
   },
   {
     "object": "Fin_R",
@@ -24,15 +24,95 @@
       0
     ],
     "pivot": [
-      0.5,
-      0.02,
-      0.09
+      0.34,
+      0.55,
+      0.13
     ],
-    "speed": 1.0,
+    "speed": 0.72,
+    "amplitude": 12
+  },
+  {
+    "object": "Arm1_L",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      -1
+    ],
+    "pivot": [
+      -0.07,
+      -0.39,
+      0.11
+    ],
+    "speed": 0.62,
+    "amplitude": 8
+  },
+  {
+    "object": "Arm2_L",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      -1
+    ],
+    "pivot": [
+      -0.175,
+      -0.365,
+      0.11
+    ],
+    "speed": 0.73,
+    "amplitude": 10
+  },
+  {
+    "object": "Arm3_L",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      -1
+    ],
+    "pivot": [
+      -0.28,
+      -0.34,
+      0.11
+    ],
+    "speed": 0.84,
+    "amplitude": 12
+  },
+  {
+    "object": "Arm4_L",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      -1
+    ],
+    "pivot": [
+      -0.385,
+      -0.315,
+      0.11
+    ],
+    "speed": 0.95,
     "amplitude": 14
   },
   {
-    "object": "Tail",
+    "object": "Tent_L",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      -1
+    ],
+    "pivot": [
+      -0.49,
+      -0.29000000000000004,
+      0.11
+    ],
+    "speed": 1.06,
+    "amplitude": 16
+  },
+  {
+    "object": "Arm1_R",
     "motion": "swing",
     "axis": [
       0,
@@ -40,27 +120,75 @@
       1
     ],
     "pivot": [
-      0,
-      0.82,
-      0.03
+      0.07,
+      -0.39,
+      0.11
     ],
-    "speed": 1.15,
+    "speed": 0.62,
+    "amplitude": 8
+  },
+  {
+    "object": "Arm2_R",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "pivot": [
+      0.175,
+      -0.365,
+      0.11
+    ],
+    "speed": 0.73,
+    "amplitude": 10
+  },
+  {
+    "object": "Arm3_R",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "pivot": [
+      0.28,
+      -0.34,
+      0.11
+    ],
+    "speed": 0.84,
+    "amplitude": 12
+  },
+  {
+    "object": "Arm4_R",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "pivot": [
+      0.385,
+      -0.315,
+      0.11
+    ],
+    "speed": 0.95,
     "amplitude": 14
   },
   {
-    "object": "Jaw",
+    "object": "Tent_R",
     "motion": "swing",
     "axis": [
-      1,
       0,
-      0
+      0,
+      1
     ],
     "pivot": [
-      0,
-      -0.66,
-      0.02
+      0.49,
+      -0.29000000000000004,
+      0.11
     ],
-    "speed": 0.8,
-    "amplitude": 9
+    "speed": 1.06,
+    "amplitude": 16
   }
 ]

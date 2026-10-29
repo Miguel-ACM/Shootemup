@@ -1,112 +1,291 @@
-﻿import bpy, math, os, sys, json
+﻿import bpy
+import math
+import json
+import os
+import sys
 from mathutils import Vector
-if '__file__' in globals():
-    OUT = os.path.dirname(os.path.abspath(__file__))
-elif '--' in sys.argv and sys.argv.index('--') + 1 < len(sys.argv):
-    p = os.path.abspath(sys.argv[sys.argv.index('--') + 1]); OUT = p if os.path.isdir(p) else os.path.dirname(p)
-else: OUT = os.getcwd()
-bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
-colors = [( .24,.35,.40),(.78,.83,.79),(.35,.43,.30),(.95,.38,.12),(.32,.48,.55),(.54,.18,.16),(.53,.61,.62),(.34,.31,.48),(.20,.36,.40),(.16,.83,.91),(1,.77,.27),(.055,.09,.12),(.62,.25,.19),(.82,.64,.26),(.53,.61,.55),(.80,.84,.83)]
-mats=[]
-for i,c in enumerate(colors):
-    m=bpy.data.materials.new('tile_%02d'%i); m.diffuse_color=(*c,1); m.use_nodes=True
-    bs=m.node_tree.nodes.get('Principled BSDF'); bs.inputs['Base Color'].default_value=(*c,1); bs.inputs['Roughness'].default_value=.65
-    if i in (9,10): bs.inputs['Emission Color'].default_value=(*c,1); bs.inputs['Emission Strength'].default_value=1.5
+
+# Reef Leviathan: coordinates are kept in gameplay space throughout.
+def output_directory():
+    try:
+        return os.path.dirname(os.path.abspath(__file__))
+    except NameError:
+        if '--' in sys.argv:
+            args = sys.argv[sys.argv.index('--') + 1:]
+            if args:
+                return os.path.dirname(os.path.abspath(args[0]))
+        return os.getcwd()
+
+OUT = output_directory()
+bpy.ops.object.select_all(action='SELECT')
+bpy.ops.object.delete(use_global=False)
+for datablocks in (bpy.data.meshes, bpy.data.materials, bpy.data.cameras, bpy.data.lights):
+    for block in list(datablocks):
+        if block.users == 0:
+            datablocks.remove(block)
+
+palette = [
+    (0.24, 0.35, 0.40), (0.78, 0.83, 0.79), (0.35, 0.43, 0.30),
+    (0.95, 0.38, 0.12), (0.32, 0.48, 0.55), (0.54, 0.18, 0.16),
+    (0.53, 0.61, 0.62), (0.34, 0.31, 0.48), (0.20, 0.36, 0.40),
+    (0.16, 0.83, 0.91), (1.0, 0.77, 0.27), (0.055, 0.09, 0.12),
+    (0.62, 0.25, 0.19), (0.82, 0.64, 0.26), (0.53, 0.61, 0.55),
+    (0.80, 0.84, 0.83),
+]
+mats = []
+for i, color in enumerate(palette):
+    m = bpy.data.materials.new('tile_%02d' % i)
+    m.diffuse_color = (*color, 1.0)
+    m.use_nodes = True
+    bsdf = m.node_tree.nodes.get('Principled BSDF')
+    bsdf.inputs['Base Color'].default_value = (*color, 1.0)
+    bsdf.inputs['Roughness'].default_value = 0.48 if i in (9, 10, 13) else 0.72
+    if i in (9, 10):
+        bsdf.inputs['Emission Color'].default_value = (*color, 1.0)
+        bsdf.inputs['Emission Strength'].default_value = 1.7
     mats.append(m)
-body=[]; parts={}
-def mesh(name,verts,faces,mat,g):
-    data=bpy.data.meshes.new(name); data.from_pydata(verts,[],faces); data.materials.append(mats[mat]); data.update()
-    obj=bpy.data.objects.new(name,data); bpy.context.collection.objects.link(obj); g.append(obj); return obj
-def loft(name,rings,mat,g):
-    n=12; v=[]
-    for y,w,z,h in rings:
-        for j in range(n):
-            a=2*math.pi*j/n; v.append((w*math.cos(a),y,z+h*math.sin(a)))
-    f=[tuple(reversed(range(n)))]
-    for i in range(len(rings)-1):
-        for j in range(n): f.append((i*n+j,i*n+(j+1)%n,(i+1)*n+(j+1)%n,(i+1)*n+j))
-    f.append(tuple((len(rings)-1)*n+j for j in range(n)))
-    return mesh(name,v,f,mat,g)
-def plate(name,outline,bottom,top,mat,g):
-    n=len(outline); cx=sum(p[0] for p in outline)/n; cy=sum(p[1] for p in outline)/n
-    v=[(x,y,bottom) for x,y in outline]+[(cx+(x-cx)*.82,cy+(y-cy)*.82,top) for x,y in outline]
-    f=[tuple(reversed(range(n))),tuple(range(n,2*n))]+[(i,(i+1)%n,(i+1)%n+n,i+n) for i in range(n)]
-    return mesh(name,v,f,mat,g)
-def ball(name,loc,scale,mat,g,segments=12,rings=6):
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=segments,ring_count=rings,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; o.data.materials.append(mats[mat]); g.append(o)
-def cyl(name,loc,r,depth,mat,g,axis='Z',vertices=10):
-    bpy.ops.mesh.primitive_cylinder_add(vertices=vertices,radius=r,depth=depth,location=loc); o=bpy.context.object; o.name=name
-    if axis=='Y': o.rotation_euler[0]=math.pi/2
-    o.data.materials.append(mats[mat]); g.append(o)
-def cone(name,base,tip,r,mat,g):
-    a=Vector(base); b=Vector(tip); d=b-a
-    bpy.ops.mesh.primitive_cone_add(vertices=6,radius1=r,radius2=0,depth=d.length,location=(a+b)/2); o=bpy.context.object; o.name=name; o.rotation_euler=d.to_track_quat('Z','Y').to_euler(); o.data.materials.append(mats[mat]); g.append(o)
-loft('Muscular body',[(-.91,.38,.10,.15),(-.75,.58,.09,.23),(-.46,.65,.08,.30),(-.15,.60,.06,.33),(.20,.49,.04,.29),(.50,.34,.03,.22),(.76,.20,.02,.15),(.91,.13,.02,.10)],8,body)
-loft('Pale belly',[(-.87,.38,-.045,.10),(-.68,.53,-.055,.10),(-.39,.52,-.07,.09)],14,body)
-plate('Mouth shadow',[(-.52,-.64),(-.44,-.95),(-.25,-1.02),(.25,-1.02),(.44,-.95),(.52,-.64)],.09,.15,11,body)
-plate('Skull rim',[(-.59,-.43),(-.50,-.77),(-.33,-.88),(0,-.92),(.33,-.88),(.50,-.77),(.59,-.43),(.42,-.24),(-.42,-.24)],.19,.30,13,body)
-plate('Skull crown',[(-.51,-.42),(-.41,-.70),(-.25,-.80),(0,-.84),(.25,-.80),(.41,-.70),(.51,-.42),(.34,-.25),(-.34,-.25)],.29,.36,0,body)
-plate('Nasal blade',[(-.10,-.35),(-.13,-.70),(0,-.81),(.13,-.70),(.10,-.35),(0,-.22)],.35,.405,6,body)
-for s in (-1,1):
-    ball('Eye socket',(s*.40,-.49,.305),(.16,.12,.055),11,body)
-    ball('Cyan eye',(s*.40,-.50,.351),(.095,.065,.025),9,body,10,5)
-    plate('Brow',[(s*.26,-.40),(s*.53,-.34),(s*.53,-.42),(s*.29,-.48)],.35,.395,13,body)
-    ball('Gill cannon housing',(s*.82,-.42,.12),(.18,.29,.15),0,body)
-    cyl('Barrel sleeve',(s*.82,-.56,.20),.105,.25,13,body,'Y')
-    cyl('Muzzle rim',(s*.82,-.69,.20),.105,.02,6,body,'Y')
-    cyl('Muzzle bore',(s*.82,-.701,.20),.073,.004,11,body,'Y')
-    cyl('Muzzle ember',(s*.82,-.704,.20),.029,.004,10,body,'Y')
-    g=[]; parts['Fin_L' if s<0 else 'Fin_R']=g
-    plate('Pectoral fin',[(s*.46,-.18),(s*.72,-.09),(s*1.08,.29),(s*1.03,.46),(s*.67,.30),(s*.48,.20)],.02,.13,8,g)
-    plate('Fin leading armor',[(s*.52,-.13),(s*.72,-.07),(s*1.05,.30),(s*.96,.30),(s*.68,.12)],.13,.18,13,g)
-    plate('Fin inset',[(s*.59,.13),(s*.91,.31),(s*.99,.40),(s*.70,.27)],.13,.16,6,g)
-for y,w,l,z in [(-.06,.27,.30,.37),(.20,.24,.28,.34),(.43,.19,.25,.28),(.63,.14,.20,.22),(.78,.10,.16,.16)]:
-    shape=[(0,y-l*.52),(-w,y-l*.20),(-w*.86,y+l*.27),(0,y+l*.52),(w*.86,y+l*.27),(w,y-l*.20)]
-    plate('Dorsal brass edge',shape,z-.065,z,13,body)
-    plate('Dorsal steel crown',[(x*.79,y+(yy-y)*.79) for x,yy in shape],z-.005,z+.035,4,body)
-    plate('Dorsal keel',[(-.035,y-l*.34),(0,y-l*.43),(.035,y-l*.34),(.025,y+l*.28),(0,y+l*.40),(-.025,y+l*.28)],z+.03,z+.075,6,body)
-for x,y,z in [(-.18,.04,.40),(.15,.30,.37),(-.10,.53,.30)]:
-    ball('Coral base',(x,y,z),(.065,.055,.035),12,body,8,4)
-    cone('Coral branch',(x,y,z),(x-.025,y+.025,z+.11),.024,12,body)
-    cone('Coral branch',(x+.02,y,z),(x+.055,y+.015,z+.075),.018,3,body)
-for x,y,z,r in [(.25,-.03,.37,.045),(.30,.02,.35,.032),(-.19,.30,.34,.042)]:
-    cyl('Barnacle shell',(x,y,z),r,.042,14,body,vertices=7); cyl('Barnacle opening',(x,y,z+.022),r*.42,.004,11,body,vertices=7)
-g=[]; parts['Tail']=g
-plate('Fluke',[(-.13,.82),(-.23,.94),(-.54,1.03),(-.60,1.18),(-.30,1.12),(0,1.00),(.30,1.12),(.60,1.18),(.54,1.03),(.23,.94),(.13,.82)],-.04,.10,8,g)
-plate('Fluke center',[(-.12,.83),(-.17,.96),(0,1.03),(.17,.96),(.12,.83)],.10,.16,6,g)
-for s in (-1,1): plate('Fluke leading edge',[(s*.13,.93),(s*.30,1.10),(s*.58,1.17),(s*.52,1.10),(s*.29,1.02)],.10,.14,13,g)
-g=[]; parts['Jaw']=g
-plate('Jaw frame',[(-.50,-.66),(-.48,-.91),(-.35,-1.04),(0,-1.10),(.35,-1.04),(.48,-.91),(.50,-.66),(.40,-.73),(.34,-.91),(0,-.98),(-.34,-.91),(-.40,-.73)],-.07,.12,14,g)
-for s in (-1,1):
-    for x,y in [(.18,-.97),(.32,-.94),(.40,-.85)]: cone('Tooth',(s*x,y,.10),(s*x*.86,y+.075,.18),.035,15,g)
-def join_group(objects,name):
+
+body = []
+parts = []
+metadata = []
+
+def mesh(name, vertices, faces, material, group):
+    data = bpy.data.meshes.new(name + '_mesh')
+    data.from_pydata(vertices, [], faces)
+    data.update()
+    ob = bpy.data.objects.new(name, data)
+    bpy.context.collection.objects.link(ob)
+    ob.data.materials.append(mats[material])
+    group.append(ob)
+    return ob
+
+def ellipsoid(name, loc, scale, material, group, segments=12, rings=6):
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=segments, ring_count=rings, location=loc)
+    ob = bpy.context.object
+    ob.name = name
+    ob.scale = scale
+    ob.data.materials.append(mats[material])
+    group.append(ob)
+    return ob
+
+def cylinder(name, loc, radius, depth, material, group, axis='Z', vertices=10):
+    bpy.ops.mesh.primitive_cylinder_add(vertices=vertices, radius=radius, depth=depth, location=loc)
+    ob = bpy.context.object
+    ob.name = name
+    if axis == 'Y':
+        ob.rotation_euler[0] = math.pi / 2
+    ob.data.materials.append(mats[material])
+    group.append(ob)
+    return ob
+
+def loft(name, sections, material, group, sides=10):
+    # Each section is (x, y, z, horizontal radius, vertical radius).
+    vertices = []
+    for x, y, z, rx, rz in sections:
+        for k in range(sides):
+            a = 2 * math.pi * k / sides
+            vertices.append((x + rx * math.cos(a), y, z + rz * math.sin(a)))
+    faces = []
+    faces.append(tuple(reversed(range(sides))))
+    for j in range(len(sections) - 1):
+        for k in range(sides):
+            n = (k + 1) % sides
+            faces.append((j*sides+k, j*sides+n, (j+1)*sides+n, (j+1)*sides+k))
+    faces.append(tuple((len(sections)-1)*sides+k for k in range(sides)))
+    return mesh(name, vertices, faces, material, group)
+
+def plate(name, outline, center, material, group, bottom=0.02):
+    # Faceted double-sided, convex plate with a raised center ridge.
+    verts = [(x, y, z) for x, y, z in outline]
+    verts += [center, (center[0], center[1], bottom)]
+    n = len(outline)
+    faces = []
+    for i in range(n):
+        j = (i + 1) % n
+        faces.extend(((i, j, n), (j, i, n + 1)))
+    return mesh(name, verts, faces, material, group)
+
+def join_group(group, name):
     bpy.ops.object.select_all(action='DESELECT')
-    for o in objects:
-        o.select_set(True); bpy.context.view_layer.objects.active=o; bpy.ops.object.transform_apply(location=False,rotation=True,scale=True)
-        for mod in list(o.modifiers): bpy.ops.object.modifier_apply(modifier=mod.name)
-    bpy.context.view_layer.objects.active=objects[0]; bpy.ops.object.join(); o=bpy.context.object; o.name=name
-    for p in o.data.polygons: p.use_smooth=False
-    bpy.ops.object.transform_apply(location=True,rotation=True,scale=True); return o
-model=join_group(body,'Model'); moving=[join_group(g,n) for n,g in parts.items()]
-manifest=[{'object':'Fin_L','motion':'swing','axis':[0,-1,0],'pivot':[-.50,.02,.09],'speed':1.0,'amplitude':14},{'object':'Fin_R','motion':'swing','axis':[0,1,0],'pivot':[.50,.02,.09],'speed':1.0,'amplitude':14},{'object':'Tail','motion':'swing','axis':[0,0,1],'pivot':[0,.82,.03],'speed':1.15,'amplitude':14},{'object':'Jaw','motion':'swing','axis':[1,0,0],'pivot':[0,-.66,.02],'speed':.8,'amplitude':9}]
-with open(os.path.join(OUT,'parts.json'),'w',encoding='utf-8') as f: json.dump(manifest,f,indent=2)
+    for ob in group:
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = group[0]
+    bpy.ops.object.join()
+    ob = bpy.context.object
+    ob.name = name
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    for poly in ob.data.polygons:
+        poly.use_smooth = False
+    return ob
+
+# Deep, pointed mantle. Overlapping lofts form raised, substantial armor.
+loft('Mantle', [(0,-0.12,0.19,0.36,0.16), (0,0.12,0.20,0.48,0.20),
+                (0,0.43,0.19,0.43,0.19), (0,0.76,0.15,0.29,0.15),
+                (0,1.10,0.09,0.025,0.025)], 8, body, 12)
+loft('Mantle armor', [(0,0.26,0.24,0.375,0.17), (0,0.52,0.22,0.34,0.16),
+                      (0,0.78,0.17,0.235,0.12), (0,1.07,0.10,0.018,0.02)], 0, body, 12)
+# Surface bands follow the faceted crown and remain visible above the shell.
+def surface_band(name, y, half_width, z_center, z_edge):
+    xs = [-half_width, -half_width*0.72, 0, half_width*0.72, half_width]
+    zs = [z_edge, z_center-0.025, z_center, z_center-0.025, z_edge]
+    verts = [(x, yy, z) for yy in (y-0.035, y+0.035) for x,z in zip(xs,zs)]
+    mesh(name, verts, [(i,i+1,i+6,i+5) for i in range(4)], 13, body)
+
+for side in (-1, 1):
+    plate('Deep teal panel', [(side*0.35,0.34,0.345), (side*0.29,0.56,0.343),
+          (side*0.19,0.76,0.279), (side*0.09,0.78,0.286), (side*0.12,0.34,0.410)],
+          (side*0.21,0.53,0.385), 8, body, 0.27)
+surface_band('Lower brass band', 0.31, 0.395, 0.426, 0.285)
+surface_band('Upper brass band', 0.65, 0.275, 0.353, 0.252)
+plate('Steel crown', [(-0.13,0.35,0.420), (-0.10,0.65,0.360),
+      (0,0.94,0.218), (0.10,0.65,0.360), (0.13,0.35,0.420)],
+      (0,0.53,0.440), 6, body, 0.30)
+plate('Dorsal ridge', [(-0.045,0.37,0.438), (-0.035,0.68,0.362),
+      (0,0.99,0.175), (0.035,0.68,0.362), (0.045,0.37,0.438)],
+      (0,0.57,0.480), 13, body, 0.31)
+for y, x, z in [(0.31,0.27,0.390), (0.65,0.18,0.322)]:
+    for side in (-1, 1):
+        ellipsoid('Band rivet', (side*x,y,z), (0.024,0.024,0.016), 15, body, 8, 4)
+for side in (-1, 1):
+    ellipsoid('Plate rivet', (side*0.105,0.45,0.425), (0.022,0.022,0.014), 13, body, 8, 4)
+
+# Head and pressure visor. Large inset cyan eyes read strongly from overhead.
+ellipsoid('Head', (0,-0.26,0.17), (0.43,0.31,0.20), 8, body, 16, 8)
+ellipsoid('Visor surround', (0,-0.30,0.30), (0.38,0.20,0.10), 13, body, 16, 6)
+ellipsoid('Pressure visor', (0,-0.31,0.355), (0.34,0.16,0.07), 11, body, 16, 6)
+for side in (-1, 1):
+    ellipsoid('Eye', (side*0.205,-0.315,0.405), (0.105,0.095,0.04), 9, body, 12, 6)
+    ellipsoid('Eye pupil', (side*0.205,-0.325,0.439), (0.028,0.055,0.012), 11, body, 8, 4)
+    # Fixed housings and barrels: the forward face of each lip is exactly y=-0.7.
+    ellipsoid('Gill housing', (side*0.75,-0.46,0.14), (0.16,0.22,0.12), 0, body, 10, 6)
+    cylinder('Gill cannon', (side*0.82,-0.59,0.18), 0.068, 0.18, 13, body, 'Y', 10)
+    cylinder('Muzzle lip', (side*0.82,-0.69,0.18), 0.079, 0.02, 6, body, 'Y', 10)
+    # Dark inset and small amber bore sit on the forward-facing mouth.
+    cylinder('Muzzle bore', (side*0.82,-0.701,0.18), 0.052, 0.004, 11, body, 'Y', 10)
+    cylinder('Muzzle core', (side*0.82,-0.704,0.18), 0.025, 0.004, 10, body, 'Y', 8)
+
+# Swinging mantle fins, each hinged at the inner root. Their plate silhouette
+# points aft (+Y), making the mantle unmistakably squid-like.
+for side, suffix in [(-1, 'L'), (1, 'R')]:
+    group = []
+    outline = [(side*0.32,0.26,0.13), (side*0.62,0.30,0.10),
+               (side*0.82,0.38,0.09), (side*0.92,0.52,0.08),
+               (side*0.90,0.66,0.08), (side*0.80,0.79,0.08),
+               (side*0.60,0.86,0.09), (side*0.29,0.93,0.10)]
+    plate('Fin brass rim', outline, (side*0.55,0.60,0.205), 13, group, 0.025)
+    inset = [(side*0.34,0.32,0.145), (side*0.60,0.36,0.125),
+             (side*0.77,0.43,0.115), (side*0.85,0.53,0.105),
+             (side*0.83,0.64,0.105), (side*0.75,0.73,0.105),
+             (side*0.59,0.80,0.115), (side*0.32,0.87,0.125)]
+    plate('Fin lobe', inset, (side*0.53,0.60,0.23), 4, group, 0.08)
+    plate('Fin inset', [(side*0.39,0.42,0.17), (side*0.70,0.51,0.16),
+                        (side*0.69,0.67,0.15), (side*0.38,0.80,0.15)],
+          (side*0.52,0.60,0.24), 8, group, 0.10)
+    part = join_group(group, 'Fin_' + suffix)
+    parts.append(part)
+    metadata.append({'object': part.name, 'motion': 'swing', 'axis': [0,side,0],
+                     'pivot': [side*0.34,0.55,0.13], 'speed': 0.72, 'amplitude': 12})
+
+# Eight tapering arms, plus a longer hunting tentacle on each outer edge.
+# All details on an arm are joined to that arm, so they move together.
+for side, suffix in [(-1, 'L'), (1, 'R')]:
+    for j in range(5):
+        hunting = (j == 4)
+        root_x = side * (0.07 + 0.105*j)
+        root_y = -0.39 + 0.025*j
+        end_x = side * ([0.16, 0.36, 0.57, 0.75, 0.91][j])
+        end_y = [-1.08, -1.16, -1.08, -0.98, -1.19][j]
+        group = []
+        section_data = []
+        # The outward sweep increases towards the tip, creating a curled fan.
+        def arm_point(t):
+            x = root_x + (end_x-root_x)*(0.22*t + 0.78*t*t)
+            y = root_y + (end_y-root_y)*t
+            return x, y
+        for k in range(7):
+            t = k / 6
+            x, y = arm_point(t)
+            if hunting:
+                radius = [0.078,0.069,0.057,0.048,0.043,0.065,0.040][k]
+            else:
+                radius = [0.105,0.096,0.081,0.067,0.052,0.038,0.014][k]
+            section_data.append((x,y,0.12 - 0.025*t,radius,radius*0.70))
+        loft('Arm', section_data, 8 if j % 2 == 0 else 0, group, 8)
+        # Contrasting suckers are embedded on the visible upper/inner surface.
+        for t in (0.42, 0.72):
+            x, y = arm_point(t)
+            cylinder('Sucker', (x,y,0.166 - 0.015*t), 0.034 if not hunting else 0.028,
+                     0.014, 15, group, 'Z', 8)
+        if hunting:
+            club_x, club_y = arm_point(0.93)
+            ellipsoid('Tentacle club', (club_x,club_y,0.10), (0.075,0.10,0.055), 4, group, 10, 6)
+            cylinder('Club sucker', (club_x,club_y,0.157), 0.033, 0.014, 15, group, 'Z', 8)
+        name = ('Tent_' if hunting else 'Arm%d_' % (j+1)) + suffix
+        part = join_group(group, name)
+        parts.append(part)
+        metadata.append({'object': name, 'motion': 'swing', 'axis': [0,0,side],
+                         'pivot': [root_x,root_y,0.11], 'speed': round(0.62+0.11*j,2),
+                         'amplitude': 8 + 2*j})
+
+model = join_group(body, 'Model')
+with open(os.path.join(OUT, 'parts.json'), 'w', encoding='utf-8') as f:
+    json.dump(metadata, f, indent=2)
+    f.write('\n')
+
+# Preserve the body and the 12 individually named moving meshes in the OBJ.
 bpy.ops.object.select_all(action='DESELECT')
-for o in [model]+moving: o.select_set(True)
-bpy.context.view_layer.objects.active=model
-bpy.ops.wm.obj_export(filepath=os.path.join(OUT,'model.obj'),export_selected_objects=True,export_materials=True,forward_axis='Y',up_axis='Z')
-scene=bpy.context.scene; scene.render.engine='CYCLES'; scene.cycles.device='CPU'; scene.cycles.samples=48
-scene.render.resolution_x=640; scene.render.resolution_y=640; scene.render.resolution_percentage=100; scene.render.image_settings.file_format='PNG'
-scene.world=bpy.data.worlds.new('Deep water studio'); scene.world.use_nodes=True
-scene.world.node_tree.nodes['Background'].inputs['Color'].default_value=(.05,.07,.09,1); scene.world.node_tree.nodes['Background'].inputs['Strength'].default_value=1
-scene.view_settings.view_transform='Standard'
-def point_at(o,target): o.rotation_euler=(Vector(target)-o.location).to_track_quat('-Z','Y').to_euler()
-def light(name,kind,loc,energy,target,size=1):
-    d=bpy.data.lights.new(name,kind); d.energy=energy
-    if kind=='AREA': d.shape='DISK'; d.size=size
-    o=bpy.data.objects.new(name,d); bpy.context.collection.objects.link(o); o.location=loc; point_at(o,target)
-light('Sun','SUN',(-3,-4,7),2,(0,0,0)); light('Soft fill','AREA',(4,1,5),250,(0,0,0),5)
-d=bpy.data.cameras.new('Camera'); cam=bpy.data.objects.new('Camera',d); bpy.context.collection.objects.link(cam); scene.camera=cam
-cam.location=(0,0,6); cam.rotation_euler=(0,0,0); d.type='ORTHO'; d.ortho_scale=2.72
-scene.render.filepath=os.path.join(OUT,'top.png'); bpy.ops.render.render(write_still=True)
-d.type='PERSP'; d.lens=48; cam.location=(3,-4.5,3.3); point_at(cam,(0,0,.10))
-scene.render.filepath=os.path.join(OUT,'angle.png'); bpy.ops.render.render(write_still=True)
+for ob in [model] + parts:
+    ob.select_set(True)
+bpy.context.view_layer.objects.active = model
+bpy.ops.wm.obj_export(filepath=os.path.join(OUT, 'model.obj'),
+                      export_selected_objects=True, export_materials=True,
+                      forward_axis='Y', up_axis='Z')
+
+scene = bpy.context.scene
+scene.render.engine = 'CYCLES'
+scene.cycles.device = 'CPU'
+scene.cycles.samples = 48
+scene.render.resolution_x = 640
+scene.render.resolution_y = 640
+scene.render.resolution_percentage = 100
+scene.render.image_settings.file_format = 'PNG'
+scene.world = bpy.data.worlds.new('Dark blue gray') if not bpy.data.worlds else bpy.data.worlds[0]
+scene.world.use_nodes = True
+background = scene.world.node_tree.nodes.get('Background')
+background.inputs['Color'].default_value = (0.05,0.07,0.09,1)
+background.inputs['Strength'].default_value = 1.0
+scene.view_settings.view_transform = 'Standard'
+
+def aim(ob, target):
+    ob.rotation_euler = (Vector(target) - ob.location).to_track_quat('-Z', 'Y').to_euler()
+
+def light(name, kind, location, energy, target, size=1):
+    data = bpy.data.lights.new(name, kind)
+    data.energy = energy
+    if kind == 'AREA':
+        data.shape = 'DISK'
+        data.size = size
+    ob = bpy.data.objects.new(name, data)
+    bpy.context.collection.objects.link(ob)
+    ob.location = location
+    aim(ob, target)
+    return ob
+
+light('Sun', 'SUN', (-3,4,6), 2.0, (0,0,0))
+light('Soft fill', 'AREA', (3,-3,4), 160, (0,0,0), 5)
+cam_data = bpy.data.cameras.new('Camera')
+cam = bpy.data.objects.new('Camera', cam_data)
+bpy.context.collection.objects.link(cam)
+scene.camera = cam
+cam.location = (0,0,6)
+cam.rotation_euler = (0,0,0)  # camera local -Z looks down, local +Y is screen up
+cam_data.type = 'ORTHO'
+cam_data.ortho_scale = 2.8
+scene.render.filepath = os.path.join(OUT, 'top.png')
+bpy.ops.render.render(write_still=True)
+cam_data.type = 'PERSP'
+cam_data.lens = 50
+cam.location = (3.2,-4.3,3.5)
+aim(cam, (0,-0.03,0.12))
+scene.render.filepath = os.path.join(OUT, 'angle.png')
+bpy.ops.render.render(write_still=True)
