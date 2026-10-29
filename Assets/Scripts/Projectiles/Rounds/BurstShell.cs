@@ -57,7 +57,9 @@ public sealed class BurstShell : CombatRound
             particle.position = transform.position + direction * radius + Vector3.back * .12f;
             particle.velocity = -direction * (radius - shellRadius * .72f) / life;
             particle.startColor = Color.Lerp(Accent, Color.white, charge * .30f);
-            particle.startSize3D = Vector3.one * Random.Range(.055f, .085f);
+            float size = Random.Range(.045f, .075f) * Mathf.Lerp(.8f, 1.2f, charge);
+            particle.startSize3D = new Vector3(size, size * 1.8f, size);
+            particle.rotation3D = new Vector3(0, 0, 90 - angle * Mathf.Rad2Deg);
             particle.startLifetime = life;
             ignition.Emit(particle, 1);
         }

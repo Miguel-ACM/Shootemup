@@ -50,8 +50,9 @@ public sealed class EnemyThrusters : MonoBehaviour
         previous = transform.position;
         for (int i = 0; i < flames.Length; i++)
         {
-            float flutter = .85f + .2f * Mathf.Sin(Mathf.Floor(Time.time * 24) * 2.3f + phase + i);
-            flames[i].localScale = new Vector3(1.3f, (1.2f + Mathf.Min(thrust * .12f, 1.4f)) * flutter, 1);
+            float tick = Mathf.Floor(Time.time * 24);
+            float flutter = .85f + .14f * Mathf.Sin(tick * 2.3f + phase + i) + .06f * Mathf.Sin(tick * .9f + phase);
+            flames[i].localScale = new Vector3(1.3f / Mathf.Sqrt(flutter), (1.2f + Mathf.Min(thrust * .12f, 1.4f)) * flutter, 1);
         }
     }
 }

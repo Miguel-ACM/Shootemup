@@ -55,7 +55,7 @@ public sealed class BeamRibbon : MonoBehaviour
         }
         p.z = -1.05f;
         var end = p + (Vector3)direction * length;
-        float flutter = .96f + .04f * Mathf.Sin(Time.time * 53);
+        float flutter = .96f + .025f * Mathf.Sin(Time.time * 53) + .015f * Mathf.Sin(Time.time * 31);
         bool charging = charge < 1 && release <= 0;
         tell.enabled = charging;
         if (charging)
@@ -78,7 +78,7 @@ public sealed class BeamRibbon : MonoBehaviour
         float heat = charging ? charge * .65f : power;
         mouth.enabled = heat > .015f;
         mouth.transform.position = p;
-        mouth.transform.localScale = Vector3.one * Mathf.Min(.36f, .08f + width * heat * .95f);
+        mouth.transform.localScale = Vector3.one * Mathf.Min(.36f, .08f + width * heat * .95f) * (1 + .04f * heat * Mathf.Sin(Time.time * 19));
         var glow = Color.Lerp(hot, Color.white, heat * .18f);
         glow.a = heat * .9f;
         mouth.color = glow;

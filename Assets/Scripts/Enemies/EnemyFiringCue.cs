@@ -134,7 +134,8 @@ public sealed class EnemyFiringCue : MonoBehaviour
             port.sprite.transform.position = port.anchor.TransformPoint(port.local) + Vector3.back * .08f;
             float release = port.flash / .12f;
             float size = release > 0 ? .08f + .20f * release : .055f + .15f * port.heat * port.heat;
-            port.sprite.transform.localScale = Vector3.one * size;
+            port.sprite.transform.localScale = new Vector3(size * (release > 0 ? .75f : 1), size * (release > 0 ? 1.5f : 1), 1);
+            port.sprite.transform.rotation = Quaternion.FromToRotation(Vector3.up, port.direction);
             var color = Color.Lerp(LevelProjectilePalette.Accent(LevelRun.Current), Color.white, release * .22f);
             color.a = release > 0 ? release * .9f : port.heat * .75f;
             port.sprite.color = color;

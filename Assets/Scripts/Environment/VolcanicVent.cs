@@ -52,8 +52,9 @@ public sealed class VolcanicVent : MonoBehaviour
             var e = new ParticleSystem.EmitParams();
             e.position = p + new Vector3(Random.Range(-.14f, .14f), Random.Range(-.12f, .12f), -1.02f);
             e.velocity = new Vector3(Random.Range(-.25f, .25f), .6f + charge * 1.1f, -.15f);
-            e.startSize = Random.Range(.11f, .22f) * (1 + charge * .35f);
-            e.startLifetime = .65f;
+            float size = Random.Range(.09f, .18f) * (1 + charge * .35f);
+            e.startSize3D = new Vector3(size, size * Mathf.Lerp(1.2f, 2f, charge), size);
+            e.startLifetime = Mathf.Lerp(.55f, .75f, charge);
             e.startColor = Color.Lerp(new Color(.34f, .095f, .025f, .28f), new Color(.62f, .25f, .055f, .48f), charge);
             fire.Emit(e, 1);
         }
