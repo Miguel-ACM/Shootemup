@@ -44,6 +44,8 @@ public static class HostileProjectileArt
     {
         if (type == typeof(SimpleRound))
             return "standard";
+        if (type == typeof(GiantOrb))
+            return "giant_orb";
         switch (Kind(type))
         {
             case Shape.Needle:

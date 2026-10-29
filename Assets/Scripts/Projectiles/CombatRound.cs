@@ -173,6 +173,7 @@ public abstract class CombatRound : AEnemyBullet
         yield return Warm<ScatterCarrier>(24);
         yield return Warm<HelixRound>(32);
         yield return Warm<PlasmaOrb>(24);
+        yield return Warm<GiantOrb>(40);
         yield return Warm<ProximityMine>(16);
         yield return Warm<ReturningDisc>(24);
         yield return Warm<LaserSideRound>(16);
