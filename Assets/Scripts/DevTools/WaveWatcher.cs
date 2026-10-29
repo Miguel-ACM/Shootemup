@@ -193,8 +193,6 @@ public sealed partial class WaveWatcher : MonoBehaviour
             if (canvas.name != "PSX pixel display" && canvas.name != "Cloud scene transitions")
                 hidden.Add(canvas);
         hiddenCanvases = hidden.ToArray();
-        if (FindAnyObjectByType<TunnelReflectors>() == null)
-            new GameObject("Watcher tunnel rails").AddComponent<TunnelReflectors>();
         catalog = WatcherCatalog.For(View, Level);
         Build();
         SetAim(0);

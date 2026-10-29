@@ -62,8 +62,6 @@ public class WaveOrchestrer : MonoBehaviour
         ship = GameObject.FindGameObjectWithTag("Player");
         wavePool = GetComponent<WavePool>();
         waves = DistrictWaves.Sequence();
-        if (GetComponent<TunnelReflectors>() == null)
-            gameObject.AddComponent<TunnelReflectors>();
         // The hangar shares the gameplay scene but has no combat.
         if (HangarHub.Active)
         {
@@ -501,8 +499,6 @@ public class WaveOrchestrer : MonoBehaviour
         waves = DistrictWaves.Sequence();
         activeMiniboss = null;
         minibossDeadline = -1;
-        if (GetComponent<TunnelReflectors>() == null)
-            gameObject.AddComponent<TunnelReflectors>();
         BeginWaves();
     }
 
