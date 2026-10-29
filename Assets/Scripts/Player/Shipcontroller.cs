@@ -496,6 +496,14 @@ public class Shipcontroller : MonoBehaviour
         healthBar.Set(health);
     }
 
+    // New segments arrive filled.
+    public void AddMaxHits(int hits)
+    {
+        maxHealth += hits;
+        healthBar.SetMax(maxHealth);
+        HealthRecovery.Begin(this, hits);
+    }
+
     public void HealManaFlat(float heal)
     {
         var upgrades = GetComponent<CombatUpgrades>();

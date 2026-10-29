@@ -16,9 +16,33 @@ public static partial class IndustrialMeshFactory
                 b.Drum(new Vector3(0, .41f, 0), .05f, .1f, 11, 6);
                 b.Ball(new Vector3(.03f, .5f, 0), new Vector3(.06f, .06f, .06f), 10);
                 return true;
+            case "SparePlating":
+                ArmorPlate(b, Vector3.zero, 0);
+                b.Box(new Vector3(0, 0, -.08f), new Vector3(.24f, .07f, .04f), 15);
+                b.Box(new Vector3(0, 0, -.08f), new Vector3(.07f, .24f, .04f), 15);
+                return true;
+            case "DoubleHull":
+                // Two overlapping plates, the front one marked with a double chevron.
+                ArmorPlate(b, new Vector3(.11f, .12f, .09f), -12);
+                ArmorPlate(b, new Vector3(-.07f, -.06f, 0), 8);
+                foreach (float y in new[] { -.12f, .02f })
+                    b.Prism(new[] { new Vector2(-.16f, y), new Vector2(0, y + .1f), new Vector2(.16f, y), new Vector2(.16f, y + .06f), new Vector2(0, y + .16f), new Vector2(-.16f, y + .06f) }, .04f, 15, new Vector3(-.07f, -.06f, -.08f), 15);
+                return true;
             default:
                 return false;
         }
+    }
+
+    // A clipped-corner hull plate with four rivets.
+    static void ArmorPlate(Builder b, Vector3 center, float degrees)
+    {
+        var rotation = Quaternion.Euler(0, 0, degrees);
+        var outline = new[] { new Vector2(-.24f, .27f), new Vector2(.24f, .27f), new Vector2(.32f, .19f), new Vector2(.32f, -.19f), new Vector2(.24f, -.27f), new Vector2(-.24f, -.27f), new Vector2(-.32f, -.19f), new Vector2(-.32f, .19f) };
+        for (int i = 0; i < outline.Length; i++)
+            outline[i] = rotation * outline[i];
+        b.Prism(outline, .09f, 6, center, 6);
+        foreach (var corner in new[] { new Vector2(-.22f, .17f), new Vector2(.22f, .17f), new Vector2(.22f, -.17f), new Vector2(-.22f, -.17f) })
+            b.Ball(center + (Vector3)(Vector2)(rotation * corner) + Vector3.back * .055f, new Vector3(.035f, .035f, .025f), 1);
     }
 
     static Vector2[] Scaled(Vector2[] outline, float scale)

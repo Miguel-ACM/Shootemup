@@ -101,6 +101,12 @@ public static class EverydayItemMaterials
             case "BallBearing":
                 color = new Color(.6f, .73f, .92f);
                 return true;
+            case "SparePlating":
+                color = new Color(.4f, .88f, .46f);
+                return true;
+            case "DoubleHull":
+                color = new Color(.95f, .36f, .42f);
+                return true;
             case "ExplodingShield":
                 color = new Color(1f, .5f, .16f);
                 return true;
