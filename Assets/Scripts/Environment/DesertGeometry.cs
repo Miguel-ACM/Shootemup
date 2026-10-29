@@ -53,7 +53,7 @@ public static class DesertGeometry
             Face(color, new Vector3(a, c, t), new Vector3(b, c, t), new Vector3(b, d, t), new Vector3(a, d, t));
         }
 
-        public void Silo(Vector3 p, float radius, float height, Color color)
+        public void Silo(Vector3 p, float radius, float height, Color color, bool cap = true, float capRise = .28f)
         {
             solids.Add(new Solid { min = p - new Vector3(radius, radius, 0), max = p + new Vector3(radius, radius, height), round = true });
             for (int i = 0; i < 12; i++)
@@ -61,8 +61,20 @@ public static class DesertGeometry
                 float a = i * Mathf.PI / 6, b = (i + 1) * Mathf.PI / 6;
                 Vector3 u = p + new Vector3(Mathf.Cos(a) * radius, Mathf.Sin(a) * radius), v = p + new Vector3(Mathf.Cos(b) * radius, Mathf.Sin(b) * radius);
                 Face(color, u, v, v + Vector3.forward * height, u + Vector3.forward * height);
-                Face(color, u + Vector3.forward * height, v + Vector3.forward * height, p + Vector3.forward * (height + radius * .28f));
+                if (cap)
+                    Face(color, u + Vector3.forward * height, v + Vector3.forward * height, p + new Vector3(radius * .08f, -radius * .05f, height + radius * capRise));
             }
+        }
+
+        // Fitted details share the lighting of the solids without enlarging their clearance footprints.
+        public void DetailBox(Vector3 p, Vector3 size, Color color)
+        {
+            float a = p.x - size.x / 2, b = p.x + size.x / 2, c = p.y - size.y / 2, d = p.y + size.y / 2, z = p.z, t = z + size.z;
+            Face(color, new Vector3(a, c, z), new Vector3(b, c, z), new Vector3(b, c, t), new Vector3(a, c, t));
+            Face(color, new Vector3(b, c, z), new Vector3(b, d, z), new Vector3(b, d, t), new Vector3(b, c, t));
+            Face(color, new Vector3(a, d, z), new Vector3(a, c, z), new Vector3(a, c, t), new Vector3(a, d, t));
+            Face(color, new Vector3(b, d, z), new Vector3(a, d, z), new Vector3(a, d, t), new Vector3(b, d, t));
+            Face(color, new Vector3(a, c, t), new Vector3(b, c, t), new Vector3(b, d, t), new Vector3(a, d, t));
         }
 
         public bool Occluded(Vector3 p, Vector3 direction)
@@ -325,6 +337,7 @@ public static class DesertGeometry
         {
             float x = (site % 2 == 0 ? -1 : 1) * R(2.1f, 2.9f), y = -7 + site * 4.4f + R(-.5f, .5f), z = Height(x, origin + y, seed) + .05f;
             bool silos = (site + section) % 2 == 0;
+            int variant = (int)((uint)(seed ^ (section * 3817 + site * 7919)) % 3);
             b.Box(new Vector3(x, y, z), new Vector3(silos ? 2.05f : 1.82f, silos ? 1.45f : 1.62f, .08f), new Color(.55f, .52f, .44f));
             if ((site + section) % 2 == 0)
             {
@@ -332,12 +345,39 @@ public static class DesertGeometry
                 foreach (float dx in new[] { -.62f, .62f })
                 {
                     var p = new Vector3(x + dx, y, z + .09f);
-                    b.Silo(p, .43f, .14f, dark);
-                    b.Silo(p + Vector3.forward * .14f, .36f, .85f, gray);
-                    b.Silo(p + Vector3.forward * .58f, .375f, .075f, dark);
+                    b.Silo(p, .43f, .14f, dark, false);
+                    b.Silo(p + Vector3.forward * .14f, .36f, .85f, gray, true, .24f + variant * .08f);
+                    b.Silo(p + Vector3.forward * .58f, .375f, .075f, dark, false);
                     b.Box(p + new Vector3(.33f, -.12f, .2f), new Vector3(.06f, .10f, .73f), new Color(.65f, .56f, .37f));
+                    for (int rib = 6; rib < 12; rib++)
+                    {
+                        float angle = (rib + .5f) * Mathf.PI / 6;
+                        var radial = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
+                        var tangent = new Vector3(-radial.y, radial.x, 0) * .018f;
+                        var basePoint = p + radial * .352f + Vector3.forward * .16f;
+                        b.Face(gray * 1.17f, basePoint - tangent, basePoint + tangent,
+                            basePoint + tangent + Vector3.forward * .81f, basePoint - tangent + Vector3.forward * .81f);
+                    }
+                    float ladderX = p.x - .10f + (variant - 1) * .035f;
+                    float ladderY = p.y - .365f;
+                    var ladder = new Color(.61f, .55f, .42f);
+                    for (int rail = 0; rail < 2; rail++)
+                    {
+                        float lx = ladderX + rail * .20f;
+                        b.Face(ladder, new Vector3(lx - .012f, ladderY, p.z + .18f), new Vector3(lx + .012f, ladderY, p.z + .18f),
+                            new Vector3(lx + .012f, ladderY, p.z + .94f), new Vector3(lx - .012f, ladderY, p.z + .94f));
+                    }
+                    for (int rung = 0; rung < 5; rung++)
+                    {
+                        float rz = p.z + .25f + rung * .14f;
+                        b.Face(ladder, new Vector3(ladderX, ladderY - .004f, rz), new Vector3(ladderX + .20f, ladderY - .004f, rz),
+                            new Vector3(ladderX + .20f, ladderY - .004f, rz + .025f), new Vector3(ladderX, ladderY - .004f, rz + .025f));
+                    }
                 }
                 b.Box(new Vector3(x, y - .65f, z + .15f), new Vector3(1.7f, .13f, .15f), gray * .8f);
+                b.DetailBox(new Vector3(x, y - .22f, z + .36f), new Vector3(.70f, .09f, .09f), gray * .78f);
+                b.DetailBox(new Vector3(x, y - .22f, z + .20f), new Vector3(.09f, .09f, .25f), gray * .78f);
+                b.DetailBox(new Vector3(x, y - .43f, z + .20f), new Vector3(.09f, .43f, .09f), gray * .78f);
             }
             else
             {
@@ -350,6 +390,25 @@ public static class DesertGeometry
                 b.Box(new Vector3(x - .2f, y - .711f, z + .1f), new Vector3(.42f, .018f, .39f), dark);
                 b.Box(new Vector3(x + .55f, y - .715f, z + .38f), new Vector3(.3f, .02f, .13f), new Color(.52f, .64f, .64f));
                 b.Box(new Vector3(x - .65f, y + .48f, z + h + .16f), new Vector3(.045f, .045f, .65f), gray * 1.3f);
+                float roof = z + h + .18f;
+                b.DetailBox(new Vector3(x, y + .70f, roof), new Vector3(1.58f, .10f, .12f), gray * 1.08f);
+                b.DetailBox(new Vector3(x - .75f, y, roof), new Vector3(.10f, 1.32f, .12f), gray * 1.02f);
+                b.DetailBox(new Vector3(x + .75f, y, roof), new Vector3(.10f, 1.32f, .12f), gray * 1.02f);
+                float front = y - .725f;
+                float awningTop = z + .08f + h * .88f;
+                var awning = gray * (variant == 0 ? 1.28f : .95f);
+                b.Face(awning, new Vector3(x - .49f, front - .075f, awningTop - .07f),
+                    new Vector3(x + .09f, front - .075f, awningTop - .07f),
+                    new Vector3(x + .09f, front, awningTop), new Vector3(x - .49f, front, awningTop));
+                b.Face(dark, new Vector3(x - .49f, front - .075f, awningTop - .11f),
+                    new Vector3(x + .09f, front - .075f, awningTop - .11f),
+                    new Vector3(x + .09f, front - .075f, awningTop - .07f), new Vector3(x - .49f, front - .075f, awningTop - .07f));
+                for (int slat = 0; slat < 3; slat++)
+                {
+                    float vz = z + .19f + slat * .075f;
+                    b.Face(dark, new Vector3(x + .30f, front, vz), new Vector3(x + .64f, front, vz),
+                        new Vector3(x + .64f, front, vz + .025f), new Vector3(x + .30f, front, vz + .025f));
+                }
             }
             // A partly swallowed service block makes the installations feel rooted in the dunes.
             b.Box(new Vector3(x + 1.1f, y + .65f, z), new Vector3(.45f, .6f, .28f), gray * .75f);
