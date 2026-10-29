@@ -1,16 +1,19 @@
 using System.Collections;
 using UnityEngine;
 
-// Hell crab: the final exam, flown as spell cards.
+// Hell crab: the final exam, flown as spell cards. Every round leaves a pincer, an
+// eye or the mouth, and the top of the arena is never safe.
 // Phase one
 //   Pincer Scissors: both pincers stream arrows whose aim lines cross over the
-//     player and close, answered by widening arrow chevrons from the mouth.
+//     player and close, answered by widening arrow chevrons from the mouth and a
+//     brimstone canopy: mouth arrows thrown up that rebound off the ceiling.
 //   Soul Procession: the eyes loose mirrored arcs of slow souls that stop, stare and
-//     dart at the player one by one, while braided arrow threads weave down.
+//     dart at the player one by one, while braided arrow threads weave down and the
+//     canopy keeps the ceiling covered.
 // Phase two (one eye lost speeds up the claws)
-//   Ember Cage: the claws hurl arrows that hang at the top of their arc and fall as
-//     a cage of fast and slow columns, with scissors closing through it.
-//   Inferno Lace: a three-arm mirrored lace pours from both claws while souls stare.
+//   Pincer Inferno: scissors from both pincers twice as often, with chevrons and canopy.
+//   Inferno Lace: a three-arm mirrored lace pours from the two pincers themselves,
+//     following them as they sweep, while the surviving eye's souls stare.
 public sealed partial class HellCrabBoss
 {
     static readonly Vector3 Pincer = new Vector3(0, -.32f, -.4f);
@@ -40,6 +43,8 @@ public sealed partial class HellCrabBoss
                     Phrase(Scissors(n % 2 == 0 ? 1 : -1));
                     if (n % 2 == 1)
                         Phrase(Chevrons(Hull, Mouth, Dense(6), 4.4f, .11f));
+                    else
+                        Canopy(n);
                 });
                 yield return Wait(.8f);
                 Phrase(BraidedThreads(90));
@@ -47,6 +52,7 @@ public sealed partial class HellCrabBoss
                 {
                     for (int e = 0; e < 2; e++)
                         SoulSnipe(e);
+                    Canopy(n);
                 });
                 yield return Wait(.8f);
             }
@@ -54,16 +60,28 @@ public sealed partial class HellCrabBoss
             {
                 yield return Every(7, .9f, n =>
                 {
-                    EmberCage();
-                    if (n % 3 == 1)
-                        Phrase(Scissors(n % 2 == 0 ? 1 : -1));
+                    Phrase(Scissors(n % 2 == 0 ? 1 : -1));
+                    if (n % 2 == 1)
+                        Phrase(Chevrons(Hull, Mouth, Dense(7), 4.6f, .1f));
+                    else
+                        Canopy(n);
                 });
                 yield return Wait(.7f);
                 Phrase(Every(8, 2f, n => SoulSnipe(BurningEye())));
-                yield return MirrorLace(Hull, claws[0].localPosition + Pincer, claws[1].localPosition + Pincer, Dense(110), 3, 75, 18, 3.6f, .065f);
+                yield return MirrorLace(claws[0], Pincer, claws[1], Pincer, Dense(110), 3, 75, 18, 3.6f, .065f);
                 yield return Wait(.7f);
             }
         }
+    }
+
+    // Brimstone canopy: arrows thrown up from the mouth that rebound off the ceiling.
+    void Canopy(int n)
+    {
+        int count = Dense(9);
+        var mouth = Hull.TransformPoint(Mouth);
+        for (int i = 0; i < count; i++)
+            for (int mirror = -1; mirror <= 1; mirror += 2)
+                Fire<NeedleRound>(mouth, CombatVisuals.Rotate(Vector2.up, mirror * (6 + i * 9 + (n % 2) * 4)), 3.6f, .19f).Bounce(1);
     }
 
     // Each pincer sweeps its stream across the player's position, so the two lines cross and close.
@@ -116,22 +134,6 @@ public sealed partial class HellCrabBoss
                         .Sway(e == 0 ? .7f : -.7f, .7f);
                 }
             yield return Wait(Rest(.085f));
-        }
-    }
-
-    // Embers thrown up from the claws stop at their apex, then fall as alternating fast and slow columns.
-    void EmberCage()
-    {
-        int embers = Dense(11);
-        for (int side = 0; side < 2; side++)
-        {
-            var port = claws[side].TransformPoint(Pincer);
-            for (int i = 0; i < embers; i++)
-            {
-                float lane = i - (embers - 1) * .5f;
-                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.up, lane * 11 + (side == 0 ? 20 : -20)), 3.2f, .19f)
-                    .Pause(.6f, .35f, CombatRound.Turn.Down, 0, i % 2 == 0 ? .55f : 1.05f);
-            }
         }
     }
 }

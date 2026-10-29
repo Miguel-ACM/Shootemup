@@ -24,7 +24,7 @@ public abstract class DistrictBoss : DistrictEnemy
         isBoss = true;
         scoreOnKill = 1600;
         lifeDropChance = manaDropChance = moneyDropChance = 1;
-        minmaxLife = new[] { 4, 6 };
+        minmaxLife = new[] { 1, 3 };
         minmaxMana = new[] { 6, 9 };
         minmaxMoney = new[] { 10, 15 };
         var ui = GameObject.Find("UI/ItemsRight/BossHealth");
@@ -192,15 +192,19 @@ public abstract class DistrictBoss : DistrictEnemy
 
     // Mirrored pendulum streams from two ports: a lace that opens and folds.
     protected IEnumerator MirrorLace(Transform anchor, Vector3 leftLocal, Vector3 rightLocal, int steps, int arms, float swing, float armGap, float speed, float interval, int sign = 1)
+        => MirrorLace(anchor, leftLocal, anchor, rightLocal, steps, arms, swing, armGap, speed, interval, sign);
+
+    // The same lace from two separately moving emitters, such as a pair of claws.
+    protected IEnumerator MirrorLace(Transform left, Vector3 leftLocal, Transform right, Vector3 rightLocal, int steps, int arms, float swing, float armGap, float speed, float interval, int sign = 1)
     {
-        for (int i = 0; i < steps && anchor != null; i++)
+        for (int i = 0; i < steps && left != null && right != null; i++)
         {
             float angle = sign * swing * Mathf.Sin(i / (float)steps * Mathf.PI * 2);
             for (int arm = 0; arm < arms; arm++)
             {
                 float a = angle + (arm - (arms - 1) * .5f) * armGap;
-                Fire<NeedleRound>(anchor.TransformPoint(leftLocal), CombatVisuals.Rotate(Vector2.down, -a), speed, .19f);
-                Fire<NeedleRound>(anchor.TransformPoint(rightLocal), CombatVisuals.Rotate(Vector2.down, a), speed, .19f);
+                Fire<NeedleRound>(left.TransformPoint(leftLocal), CombatVisuals.Rotate(Vector2.down, -a), speed, .19f);
+                Fire<NeedleRound>(right.TransformPoint(rightLocal), CombatVisuals.Rotate(Vector2.down, a), speed, .19f);
             }
             yield return Wait(Rest(interval));
         }
