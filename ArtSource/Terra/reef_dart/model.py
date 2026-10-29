@@ -1,6 +1,7 @@
 ﻿import bpy
 import bmesh
 import math
+import json
 import os
 import sys
 from mathutils import Vector
@@ -96,13 +97,21 @@ ids.append(0)
 mesh_part('torpedo hull', verts, faces, 8, ids)
 
 # Broad swept pectoral fins and the brass forked tail give a fish silhouette.
+fin_parts = {}
+tail_parts = []
 for s in (-1, 1):
+    fin_start = len(parts)
     plate('swept fin', [(s*.21,-.23),(s*.43,-.20),(s*.85,.63),
                         (s*.56,.52),(s*.24,.35)], -.035,.085, 6, 0)
     plate('fin inset', [(s*.38,-.07),(s*.75,.53),(s*.54,.43),
                         (s*.31,.22)], .087,.104, 4, 4)
+    fin_parts[s] = parts[fin_start:]
+    del parts[fin_start:]
+    tail_start = len(parts)
     plate('tail lobe', [(s*.035,.67),(s*.17,.82),(s*.37,1.12),
                         (s*.14,1.03),(0,.91)], -.02,.095, 13, 0)
+    tail_parts.extend(parts[tail_start:])
+    del parts[tail_start:]
     # Layered cheek armor points toward the nose, echoing gill covers.
     plate('cheek', [(s*.08,-.72),(s*.23,-.56),(s*.29,-.20),
                     (s*.23,.03),(s*.14,-.15)], .15,.205, 4, 0)
@@ -142,7 +151,33 @@ def gun(x):
 for x in (-.17,.17):
     gun(x)
 
-# Join before export; all pieces already use final world-space coordinates.
+# Join moving assemblies separately, preserving their rest positions.
+def join_objects(objects, name):
+    bpy.ops.object.select_all(action='DESELECT')
+    for obj in objects:
+        obj.select_set(True)
+    bpy.context.view_layer.objects.active = objects[0]
+    bpy.ops.object.join()
+    result = bpy.context.object
+    result.name = name
+    return result
+
+moving = [join_objects(fin_parts[-1], 'Fin_L'),
+          join_objects(fin_parts[1], 'Fin_R'),
+          join_objects(tail_parts, 'Tail')]
+part_specs = [
+    {'object': 'Fin_L', 'motion': 'swing', 'axis': [0, -1, 0],
+     'pivot': [-0.21, -0.23, 0.0], 'speed': 1.4, 'amplitude': 18},
+    {'object': 'Fin_R', 'motion': 'swing', 'axis': [0, 1, 0],
+     'pivot': [0.21, -0.23, 0.0], 'speed': 1.4, 'amplitude': 18},
+    {'object': 'Tail', 'motion': 'swing', 'axis': [0, 0, 1],
+     'pivot': [0, 0.67, 0.0], 'speed': 1.4, 'amplitude': 18},
+]
+with open(os.path.join(OUT, 'parts.json'), 'w', encoding='utf-8') as f:
+    json.dump(part_specs, f, indent=2)
+    f.write('\n')
+
+# Join the stationary body before exporting it together with the moving parts.
 bpy.ops.object.select_all(action='DESELECT')
 for obj in parts:
     obj.select_set(True)
@@ -153,6 +188,10 @@ model.name = 'Model'
 bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 for p in model.data.polygons:
     p.use_smooth = False
+bpy.ops.object.select_all(action='DESELECT')
+for obj in [model] + moving:
+    obj.select_set(True)
+bpy.context.view_layer.objects.active = model
 bpy.ops.wm.obj_export(filepath=os.path.join(OUT,'model.obj'),
                       export_selected_objects=True, export_materials=True,
                       forward_axis='Y', up_axis='Z')
