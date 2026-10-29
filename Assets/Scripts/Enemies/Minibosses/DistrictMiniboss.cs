@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEngine;
 
 public abstract class DistrictMiniboss : DistrictEnemy
@@ -127,8 +129,38 @@ public abstract class DistrictMiniboss : DistrictEnemy
         Remaining = Mathf.Max(0, remaining);
     }
 
+    // A short stream of volleys over several frames, in enemy tempo. Streams stop
+    // the moment the miniboss retreats or dies.
+    protected void Stream(int shots, float interval, Action<int> volley)
+    {
+        if (isActiveAndEnabled)
+            StartCoroutine(Streaming(shots, interval, volley));
+    }
+
+    IEnumerator Streaming(int shots, float interval, Action<int> volley)
+    {
+        for (int i = 0; i < shots && !Retreating && health > 0; i++)
+        {
+            volley(i);
+            for (float t = 0; t < Rest(interval);)
+            {
+                if (!GameRules.playerDisabled && !WorldTimeStop.Frozen)
+                    t += Time.deltaTime * LevelRun.EnemyTempoScale;
+                yield return null;
+            }
+        }
+    }
+
+    // Mirrored arrow fan around a centre line.
+    protected void MirrorFan(Vector3 port, Vector2 axis, int count, float spacing, float speed)
+    {
+        for (int i = 0; i < count; i++)
+            Fire<NeedleRound>(port, CombatVisuals.Rotate(axis, (i - (count - 1) * .5f) * spacing), speed, .19f);
+    }
+
     public void Retreat()
     {
+        StopAllCoroutines();
         Retreating = true;
         foreach (var round in CombatRound.Live)
             if (round is PulseLaser beam && beam.IsAttachedTo(Hull))
