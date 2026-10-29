@@ -39,8 +39,8 @@ public class WaveOrchestrer : MonoBehaviour
     // Encounter slots are offered half-way through the following combat wave, without pausing it.
     bool offerPending;
     float offerAt;
-    RewardStrip rewardStrip;
-    public RewardStrip RewardOffer => rewardStrip;
+    RewardHexes rewardOffer;
+    public RewardHexes RewardOffer => rewardOffer;
 
     public const float OpeningBreather = .8f;
     bool openingWavePending;
@@ -279,11 +279,12 @@ public class WaveOrchestrer : MonoBehaviour
             if (int.TryParse(waves[i], out _))
                 remaining++;
         var player = ship.GetComponent<Shipcontroller>();
-        var options = EncounterChoice.Draw(unchecked(LevelRun.Seed + LevelRun.Stage * 971 + currentWaveNumber * 7919), remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth);
+        int seed = unchecked(LevelRun.Seed + LevelRun.Stage * 971 + currentWaveNumber * 7919);
+        var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth);
         EncounterOptions = options;
-        rewardStrip = RewardStrip.Open(options, index =>
+        rewardOffer = RewardHexes.Open(options, ship.transform, unchecked(seed * 31 + 17), index =>
         {
-            rewardStrip = null;
+            rewardOffer = null;
             EncounterOptions = null;
             if (index >= 0)
                 ResolveEncounter(options[index]);
@@ -294,9 +295,9 @@ public class WaveOrchestrer : MonoBehaviour
     void DismissOffer()
     {
         offerPending = false;
-        if (rewardStrip != null)
-            rewardStrip.Dismiss();
-        rewardStrip = null;
+        if (rewardOffer != null)
+            rewardOffer.Dismiss();
+        rewardOffer = null;
         EncounterOptions = null;
     }
 

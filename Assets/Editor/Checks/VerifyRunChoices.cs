@@ -328,14 +328,51 @@ public sealed class RunChoicesReview : MonoBehaviour
         Set(flow, "openingWavePending", false);
         Set(flow, "waveTime", (float)Get(flow, "offerAt"));
         Call(flow, "Update");
-        var strip = flow.RewardOffer;
-        Check(strip != null && flow.EncounterOptions.Length == 2 && !CombatDecision.Active, "mid-wave offer opens over live combat with two options");
-        yield return new WaitForSeconds(.5f);
-        Capture("Encounter-Fork");
-        Call(strip, "Choose", -1);
-        Check(flow.RewardOffer == null && FindAnyObjectByType<DecisionShop>() == null, "skipping the offer leaves combat untouched");
+        var hexes = flow.RewardOffer;
+        Check(hexes != null && flow.EncounterOptions.Length == 2 && !CombatDecision.Active, "mid-wave offer opens over live combat with two hexagons");
+        var zones = (Array)Get(hexes, "zones");
+        var centre = (Vector2)zones.GetValue(0).GetType().GetField("centre").GetValue(zones.GetValue(0));
+        // Hovering part of the way shows the faint tint and a partial border charge.
+        float hover = Time.time;
+        while (Time.time - hover < 1.5f)
+        {
+            ship.transform.position = new Vector3(centre.x, centre.y, ship.transform.position.z);
+            yield return null;
+        }
+        Capture("Encounter-Hexagons");
+        Check(flow.RewardOffer == hexes, "a hexagon needs a full three-second hold");
+        Set(hexes, "age", RewardHexes.LifeSeconds);
+        ship.transform.position = new Vector3(0, -4, -1);
+        yield return null;
+        Check(flow.RewardOffer == null && FindAnyObjectByType<DecisionShop>() == null, "an offer nobody holds lapses after twenty seconds and leaves combat untouched");
+        var place = typeof(RewardHexes).GetMethod("Place", BindingFlags.Static | BindingFlags.NonPublic);
+        float itemHeight = 0, healthHeight = 0;
+        for (int seed = 0; seed < 60; seed++)
+        {
+            var spots = (Vector2[])place.Invoke(null, new object[] { new[] { EncounterKind.Item, EncounterKind.Health }, seed, new Vector2(0, -6) });
+            Check(spots.All(spot => spot.x - RewardHexes.Radius > Camera.LeftLimit && spot.x + RewardHexes.Radius < Camera.RightLimit && spot.y + RewardHexes.Radius < Camera.UpLimit), "hexagon placement " + seed + " stays inside the arena");
+            Check(Vector2.Distance(spots[0], spots[1]) > RewardHexes.Radius * 2, "hexagon placement " + seed + " keeps the two zones apart");
+            itemHeight += spots[0].y;
+            healthHeight += spots[1].y;
+        }
+        Check(itemHeight > healthHeight, "items lean toward the riskier upper arena");
         Call(flow, "OpenEncounterChoice");
-        strip = flow.RewardOffer;
+        hexes = flow.RewardOffer;
+        zones = (Array)Get(hexes, "zones");
+        centre = (Vector2)zones.GetValue(1).GetType().GetField("centre").GetValue(zones.GetValue(1));
+        var picked = flow.EncounterOptions[1];
+        hover = Time.time;
+        while (flow.RewardOffer != null && Time.time - hover < 5)
+        {
+            ship.transform.position = new Vector3(centre.x, centre.y, ship.transform.position.z);
+            yield return null;
+        }
+        Check(flow.RewardOffer == null && Time.time - hover > 2.9f, "holding a hexagon for three seconds takes its " + picked + " reward");
+        ship.transform.position = new Vector3(0, -4, -1);
+        Set(flow, "challengeWavesRemaining", 0);
+        flow.CancelInvoke();
+        Call(flow, "OpenEncounterChoice");
+        var strip = flow.RewardOffer;
         Set(flow, "isWaveComingOut", false);
         flow.waves = new[] { "reward", "8" };
         Set(flow, "currentWaveNumber", 0);
