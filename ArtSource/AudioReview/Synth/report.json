@@ -1,0 +1,898 @@
+{
+ "shot1": {
+  "label": "Base gun",
+  "group": "Shots",
+  "original": "Sounds/shot1",
+  "takes": [
+   {
+    "file": "shot1_01.wav",
+    "seconds": 0.1,
+    "peak": 0.078,
+    "loudness": 0.028
+   },
+   {
+    "file": "shot1_02.wav",
+    "seconds": 0.1,
+    "peak": 0.073,
+    "loudness": 0.028
+   },
+   {
+    "file": "shot1_03.wav",
+    "seconds": 0.1,
+    "peak": 0.071,
+    "loudness": 0.028
+   },
+   {
+    "file": "shot1_04.wav",
+    "seconds": 0.1,
+    "peak": 0.069,
+    "loudness": 0.028
+   }
+  ],
+  "original_loudness": 0.028
+ },
+ "enemyHit": {
+  "label": "Hit on enemy",
+  "group": "Hits",
+  "original": null,
+  "takes": [
+   {
+    "file": "enemyHit_01.wav",
+    "seconds": 0.168,
+    "peak": 0.084,
+    "loudness": 0.0154
+   },
+   {
+    "file": "enemyHit_02.wav",
+    "seconds": 0.169,
+    "peak": 0.06,
+    "loudness": 0.0154
+   },
+   {
+    "file": "enemyHit_03.wav",
+    "seconds": 0.165,
+    "peak": 0.066,
+    "loudness": 0.0154
+   },
+   {
+    "file": "enemyHit_04.wav",
+    "seconds": 0.189,
+    "peak": 0.063,
+    "loudness": 0.0154
+   }
+  ],
+  "original_loudness": 0.0154
+ },
+ "bossHit": {
+  "label": "Hit on boss",
+  "group": "Hits",
+  "original": null,
+  "takes": [
+   {
+    "file": "bossHit_01.wav",
+    "seconds": 0.275,
+    "peak": 0.054,
+    "loudness": 0.0182
+   },
+   {
+    "file": "bossHit_02.wav",
+    "seconds": 0.245,
+    "peak": 0.058,
+    "loudness": 0.0182
+   },
+   {
+    "file": "bossHit_03.wav",
+    "seconds": 0.249,
+    "peak": 0.054,
+    "loudness": 0.0182
+   },
+   {
+    "file": "bossHit_04.wav",
+    "seconds": 0.259,
+    "peak": 0.051,
+    "loudness": 0.0182
+   }
+  ],
+  "original_loudness": 0.0182
+ },
+ "hurt1": {
+  "label": "Player hurt",
+  "group": "Hits",
+  "original": "Sounds/hurt1",
+  "takes": [
+   {
+    "file": "hurt1_01.wav",
+    "seconds": 0.477,
+    "peak": 0.389,
+    "loudness": 0.1535
+   },
+   {
+    "file": "hurt1_02.wav",
+    "seconds": 0.477,
+    "peak": 0.407,
+    "loudness": 0.1535
+   },
+   {
+    "file": "hurt1_03.wav",
+    "seconds": 0.476,
+    "peak": 0.385,
+    "loudness": 0.1535
+   },
+   {
+    "file": "hurt1_04.wav",
+    "seconds": 0.477,
+    "peak": 0.421,
+    "loudness": 0.1535
+   }
+  ],
+  "original_loudness": 0.1535
+ },
+ "enemyExplosion1": {
+  "label": "Enemy explosion",
+  "group": "Explosions",
+  "original": "Sounds/enemyExplosion1",
+  "takes": [
+   {
+    "file": "enemyExplosion1_01.wav",
+    "seconds": 0.558,
+    "peak": 0.98,
+    "loudness": 0.3401
+   },
+   {
+    "file": "enemyExplosion1_02.wav",
+    "seconds": 0.553,
+    "peak": 0.98,
+    "loudness": 0.2603
+   },
+   {
+    "file": "enemyExplosion1_03.wav",
+    "seconds": 0.557,
+    "peak": 0.98,
+    "loudness": 0.3705
+   },
+   {
+    "file": "enemyExplosion1_04.wav",
+    "seconds": 0.554,
+    "peak": 0.98,
+    "loudness": 0.3411
+   }
+  ],
+  "original_loudness": 0.4174
+ },
+ "explosionLarge": {
+  "label": "Boss phase change",
+  "group": "Explosions",
+  "original": null,
+  "takes": [
+   {
+    "file": "explosionLarge_01.wav",
+    "seconds": 1.441,
+    "peak": 0.98,
+    "loudness": 0.2674
+   },
+   {
+    "file": "explosionLarge_02.wav",
+    "seconds": 1.44,
+    "peak": 0.98,
+    "loudness": 0.269
+   },
+   {
+    "file": "explosionLarge_03.wav",
+    "seconds": 1.456,
+    "peak": 0.98,
+    "loudness": 0.3288
+   },
+   {
+    "file": "explosionLarge_04.wav",
+    "seconds": 1.389,
+    "peak": 0.98,
+    "loudness": 0.3028
+   }
+  ],
+  "original_loudness": 0.5217
+ },
+ "bossDeath": {
+  "label": "Boss death",
+  "group": "Bosses",
+  "original": null,
+  "takes": [
+   {
+    "file": "bossDeath_01.wav",
+    "seconds": 3.267,
+    "peak": 0.98,
+    "loudness": 0.1783
+   },
+   {
+    "file": "bossDeath_02.wav",
+    "seconds": 3.22,
+    "peak": 0.98,
+    "loudness": 0.2038
+   },
+   {
+    "file": "bossDeath_03.wav",
+    "seconds": 3.363,
+    "peak": 0.98,
+    "loudness": 0.2469
+   },
+   {
+    "file": "bossDeath_04.wav",
+    "seconds": 3.265,
+    "peak": 0.98,
+    "loudness": 0.1853
+   }
+  ],
+  "original_loudness": 0.6261
+ },
+ "bossWarning": {
+  "label": "Boss warning",
+  "group": "Bosses",
+  "original": "Sounds/bosswarning",
+  "takes": [
+   {
+    "file": "bossWarning_01.wav",
+    "seconds": 3.136,
+    "peak": 0.309,
+    "loudness": 0.1452
+   },
+   {
+    "file": "bossWarning_02.wav",
+    "seconds": 3.164,
+    "peak": 0.315,
+    "loudness": 0.1452
+   },
+   {
+    "file": "bossWarning_03.wav",
+    "seconds": 3.151,
+    "peak": 0.317,
+    "loudness": 0.1452
+   },
+   {
+    "file": "bossWarning_04.wav",
+    "seconds": 3.159,
+    "peak": 0.298,
+    "loudness": 0.1452
+   }
+  ],
+  "original_loudness": 0.1452
+ },
+ "playerDead": {
+  "label": "Player death",
+  "group": "Explosions",
+  "original": "Sounds/playerDead",
+  "takes": [
+   {
+    "file": "playerDead_01.wav",
+    "seconds": 2.811,
+    "peak": 0.98,
+    "loudness": 0.2452
+   },
+   {
+    "file": "playerDead_02.wav",
+    "seconds": 2.785,
+    "peak": 0.98,
+    "loudness": 0.2528
+   },
+   {
+    "file": "playerDead_03.wav",
+    "seconds": 2.713,
+    "peak": 0.98,
+    "loudness": 0.2466
+   },
+   {
+    "file": "playerDead_04.wav",
+    "seconds": 2.63,
+    "peak": 0.98,
+    "loudness": 0.2466
+   }
+  ],
+  "original_loudness": 0.3442
+ },
+ "blankbullet": {
+  "label": "Screen clear / shield",
+  "group": "Items",
+  "original": "Sounds/blankbullet",
+  "takes": [
+   {
+    "file": "blankbullet_01.wav",
+    "seconds": 1.332,
+    "peak": 0.407,
+    "loudness": 0.1426
+   },
+   {
+    "file": "blankbullet_02.wav",
+    "seconds": 1.331,
+    "peak": 0.386,
+    "loudness": 0.1426
+   },
+   {
+    "file": "blankbullet_03.wav",
+    "seconds": 1.325,
+    "peak": 0.381,
+    "loudness": 0.1426
+   },
+   {
+    "file": "blankbullet_04.wav",
+    "seconds": 1.322,
+    "peak": 0.383,
+    "loudness": 0.1426
+   }
+  ],
+  "original_loudness": 0.1426
+ },
+ "coin": {
+  "label": "Coin",
+  "group": "Pickups",
+  "original": null,
+  "takes": [
+   {
+    "file": "coin_01.wav",
+    "seconds": 0.344,
+    "peak": 0.032,
+    "loudness": 0.0224
+   },
+   {
+    "file": "coin_02.wav",
+    "seconds": 0.343,
+    "peak": 0.042,
+    "loudness": 0.0224
+   },
+   {
+    "file": "coin_03.wav",
+    "seconds": 0.343,
+    "peak": 0.037,
+    "loudness": 0.0224
+   },
+   {
+    "file": "coin_04.wav",
+    "seconds": 0.343,
+    "peak": 0.034,
+    "loudness": 0.0224
+   }
+  ],
+  "original_loudness": 0.0224
+ },
+ "mana": {
+  "label": "Energy",
+  "group": "Pickups",
+  "original": null,
+  "takes": [
+   {
+    "file": "mana_01.wav",
+    "seconds": 0.502,
+    "peak": 0.032,
+    "loudness": 0.0224
+   },
+   {
+    "file": "mana_02.wav",
+    "seconds": 0.511,
+    "peak": 0.035,
+    "loudness": 0.0224
+   },
+   {
+    "file": "mana_03.wav",
+    "seconds": 0.489,
+    "peak": 0.032,
+    "loudness": 0.0224
+   },
+   {
+    "file": "mana_04.wav",
+    "seconds": 0.502,
+    "peak": 0.033,
+    "loudness": 0.0224
+   }
+  ],
+  "original_loudness": 0.0224
+ },
+ "itemGet": {
+  "label": "Item chosen",
+  "group": "Pickups",
+  "original": null,
+  "takes": [
+   {
+    "file": "itemGet_01.wav",
+    "seconds": 1.0,
+    "peak": 0.1,
+    "loudness": 0.0364
+   },
+   {
+    "file": "itemGet_02.wav",
+    "seconds": 1.044,
+    "peak": 0.097,
+    "loudness": 0.0364
+   },
+   {
+    "file": "itemGet_03.wav",
+    "seconds": 1.022,
+    "peak": 0.093,
+    "loudness": 0.0364
+   },
+   {
+    "file": "itemGet_04.wav",
+    "seconds": 1.022,
+    "peak": 0.092,
+    "loudness": 0.0364
+   }
+  ],
+  "original_loudness": 0.0364
+ },
+ "uiConfirm": {
+  "label": "Purchase / confirm",
+  "group": "UI",
+  "original": null,
+  "takes": [
+   {
+    "file": "uiConfirm_01.wav",
+    "seconds": 0.298,
+    "peak": 0.056,
+    "loudness": 0.028
+   },
+   {
+    "file": "uiConfirm_02.wav",
+    "seconds": 0.318,
+    "peak": 0.054,
+    "loudness": 0.028
+   },
+   {
+    "file": "uiConfirm_03.wav",
+    "seconds": 0.299,
+    "peak": 0.054,
+    "loudness": 0.028
+   },
+   {
+    "file": "uiConfirm_04.wav",
+    "seconds": 0.334,
+    "peak": 0.054,
+    "loudness": 0.028
+   }
+  ],
+  "original_loudness": 0.028
+ },
+ "uiSkip": {
+  "label": "Skip",
+  "group": "UI",
+  "original": null,
+  "takes": [
+   {
+    "file": "uiSkip_01.wav",
+    "seconds": 0.282,
+    "peak": 0.04,
+    "loudness": 0.0224
+   },
+   {
+    "file": "uiSkip_02.wav",
+    "seconds": 0.294,
+    "peak": 0.041,
+    "loudness": 0.0224
+   },
+   {
+    "file": "uiSkip_03.wav",
+    "seconds": 0.296,
+    "peak": 0.041,
+    "loudness": 0.0224
+   },
+   {
+    "file": "uiSkip_04.wav",
+    "seconds": 0.345,
+    "peak": 0.04,
+    "loudness": 0.0224
+   }
+  ],
+  "original_loudness": 0.0224
+ },
+ "heal": {
+  "label": "Heal",
+  "group": "Items",
+  "original": "Sounds/Items/heal",
+  "takes": [
+   {
+    "file": "heal_01.wav",
+    "seconds": 0.74,
+    "peak": 0.389,
+    "loudness": 0.1933
+   },
+   {
+    "file": "heal_02.wav",
+    "seconds": 0.772,
+    "peak": 0.327,
+    "loudness": 0.1933
+   },
+   {
+    "file": "heal_03.wav",
+    "seconds": 0.741,
+    "peak": 0.321,
+    "loudness": 0.1933
+   },
+   {
+    "file": "heal_04.wav",
+    "seconds": 0.783,
+    "peak": 0.313,
+    "loudness": 0.1933
+   }
+  ],
+  "original_loudness": 0.1933
+ },
+ "timeStop": {
+  "label": "Time stop",
+  "group": "Items",
+  "original": "Sounds/Items/timeStop",
+  "takes": [
+   {
+    "file": "timeStop_01.wav",
+    "seconds": 1.128,
+    "peak": 0.412,
+    "loudness": 0.1952
+   },
+   {
+    "file": "timeStop_02.wav",
+    "seconds": 1.153,
+    "peak": 0.476,
+    "loudness": 0.1952
+   },
+   {
+    "file": "timeStop_03.wav",
+    "seconds": 1.184,
+    "peak": 0.452,
+    "loudness": 0.1952
+   },
+   {
+    "file": "timeStop_04.wav",
+    "seconds": 1.166,
+    "peak": 0.45,
+    "loudness": 0.1952
+   }
+  ],
+  "original_loudness": 0.1952
+ },
+ "powerdown": {
+  "label": "Power down",
+  "group": "Items",
+  "original": "Sounds/Items/powerdown",
+  "takes": [
+   {
+    "file": "powerdown_01.wav",
+    "seconds": 0.588,
+    "peak": 0.603,
+    "loudness": 0.2425
+   },
+   {
+    "file": "powerdown_02.wav",
+    "seconds": 0.591,
+    "peak": 0.64,
+    "loudness": 0.2425
+   },
+   {
+    "file": "powerdown_03.wav",
+    "seconds": 0.593,
+    "peak": 0.605,
+    "loudness": 0.2425
+   },
+   {
+    "file": "powerdown_04.wav",
+    "seconds": 0.585,
+    "peak": 0.633,
+    "loudness": 0.2425
+   }
+  ],
+  "original_loudness": 0.2425
+ },
+ "overdrive": {
+  "label": "Overdrive",
+  "group": "Items",
+  "original": "Sounds/Items/overdrive",
+  "takes": [
+   {
+    "file": "overdrive_01.wav",
+    "seconds": 0.766,
+    "peak": 0.56,
+    "loudness": 0.1419
+   },
+   {
+    "file": "overdrive_02.wav",
+    "seconds": 0.764,
+    "peak": 0.53,
+    "loudness": 0.1419
+   },
+   {
+    "file": "overdrive_03.wav",
+    "seconds": 0.761,
+    "peak": 0.531,
+    "loudness": 0.1419
+   },
+   {
+    "file": "overdrive_04.wav",
+    "seconds": 0.748,
+    "peak": 0.546,
+    "loudness": 0.1419
+   }
+  ],
+  "original_loudness": 0.1419
+ },
+ "roll": {
+  "label": "Roll / dash",
+  "group": "Items",
+  "original": "Sounds/Items/roll",
+  "takes": [
+   {
+    "file": "roll_01.wav",
+    "seconds": 0.42,
+    "peak": 0.56,
+    "loudness": 0.238
+   },
+   {
+    "file": "roll_02.wav",
+    "seconds": 0.42,
+    "peak": 0.541,
+    "loudness": 0.238
+   },
+   {
+    "file": "roll_03.wav",
+    "seconds": 0.42,
+    "peak": 0.581,
+    "loudness": 0.238
+   },
+   {
+    "file": "roll_04.wav",
+    "seconds": 0.42,
+    "peak": 0.561,
+    "loudness": 0.238
+   }
+  ],
+  "original_loudness": 0.238
+ },
+ "ready": {
+  "label": "Ready",
+  "group": "Items",
+  "original": "Sounds/Items/ready",
+  "takes": [
+   {
+    "file": "ready_01.wav",
+    "seconds": 0.444,
+    "peak": 0.356,
+    "loudness": 0.2271
+   },
+   {
+    "file": "ready_02.wav",
+    "seconds": 0.402,
+    "peak": 0.324,
+    "loudness": 0.2271
+   },
+   {
+    "file": "ready_03.wav",
+    "seconds": 0.421,
+    "peak": 0.337,
+    "loudness": 0.2271
+   },
+   {
+    "file": "ready_04.wav",
+    "seconds": 0.476,
+    "peak": 0.346,
+    "loudness": 0.2271
+   }
+  ],
+  "original_loudness": 0.2271
+ },
+ "shatter": {
+  "label": "Shatter",
+  "group": "Items",
+  "original": "Sounds/Items/shatter",
+  "takes": [
+   {
+    "file": "shatter_01.wav",
+    "seconds": 0.588,
+    "peak": 0.481,
+    "loudness": 0.196
+   },
+   {
+    "file": "shatter_02.wav",
+    "seconds": 0.464,
+    "peak": 0.481,
+    "loudness": 0.196
+   },
+   {
+    "file": "shatter_03.wav",
+    "seconds": 0.456,
+    "peak": 0.523,
+    "loudness": 0.196
+   },
+   {
+    "file": "shatter_04.wav",
+    "seconds": 0.598,
+    "peak": 0.471,
+    "loudness": 0.196
+   }
+  ],
+  "original_loudness": 0.196
+ },
+ "capacitor": {
+  "label": "Capacitor",
+  "group": "Items",
+  "original": "Sounds/Items/capacitor",
+  "takes": [
+   {
+    "file": "capacitor_01.wav",
+    "seconds": 0.497,
+    "peak": 0.34,
+    "loudness": 0.1367
+   },
+   {
+    "file": "capacitor_02.wav",
+    "seconds": 0.486,
+    "peak": 0.326,
+    "loudness": 0.1367
+   },
+   {
+    "file": "capacitor_03.wav",
+    "seconds": 0.488,
+    "peak": 0.315,
+    "loudness": 0.1367
+   },
+   {
+    "file": "capacitor_04.wav",
+    "seconds": 0.49,
+    "peak": 0.329,
+    "loudness": 0.1367
+   }
+  ],
+  "original_loudness": 0.1367
+ },
+ "fan": {
+  "label": "Fan",
+  "group": "Items",
+  "original": "Sounds/Items/fan",
+  "takes": [
+   {
+    "file": "fan_01.wav",
+    "seconds": 0.7,
+    "peak": 0.596,
+    "loudness": 0.2357
+   },
+   {
+    "file": "fan_02.wav",
+    "seconds": 0.7,
+    "peak": 0.674,
+    "loudness": 0.2357
+   },
+   {
+    "file": "fan_03.wav",
+    "seconds": 0.7,
+    "peak": 0.654,
+    "loudness": 0.2357
+   },
+   {
+    "file": "fan_04.wav",
+    "seconds": 0.7,
+    "peak": 0.656,
+    "loudness": 0.2357
+   }
+  ],
+  "original_loudness": 0.2357
+ },
+ "frost": {
+  "label": "Frost",
+  "group": "Items",
+  "original": "Sounds/Items/frost",
+  "takes": [
+   {
+    "file": "frost_01.wav",
+    "seconds": 0.542,
+    "peak": 0.638,
+    "loudness": 0.2616
+   },
+   {
+    "file": "frost_02.wav",
+    "seconds": 0.478,
+    "peak": 0.579,
+    "loudness": 0.2616
+   },
+   {
+    "file": "frost_03.wav",
+    "seconds": 0.479,
+    "peak": 0.531,
+    "loudness": 0.2616
+   },
+   {
+    "file": "frost_04.wav",
+    "seconds": 0.539,
+    "peak": 0.596,
+    "loudness": 0.2616
+   }
+  ],
+  "original_loudness": 0.2616
+ },
+ "decoy": {
+  "label": "Decoy",
+  "group": "Items",
+  "original": "Sounds/Items/decoy",
+  "takes": [
+   {
+    "file": "decoy_01.wav",
+    "seconds": 0.813,
+    "peak": 0.459,
+    "loudness": 0.2724
+   },
+   {
+    "file": "decoy_02.wav",
+    "seconds": 0.822,
+    "peak": 0.459,
+    "loudness": 0.2724
+   },
+   {
+    "file": "decoy_03.wav",
+    "seconds": 0.813,
+    "peak": 0.519,
+    "loudness": 0.2724
+   },
+   {
+    "file": "decoy_04.wav",
+    "seconds": 0.83,
+    "peak": 0.532,
+    "loudness": 0.2724
+   }
+  ],
+  "original_loudness": 0.2724
+ },
+ "popcorn": {
+  "label": "Popcorn",
+  "group": "Items",
+  "original": "Sounds/Items/popcorn",
+  "takes": [
+   {
+    "file": "popcorn_01.wav",
+    "seconds": 0.181,
+    "peak": 0.57,
+    "loudness": 0.1937
+   },
+   {
+    "file": "popcorn_02.wav",
+    "seconds": 0.206,
+    "peak": 0.574,
+    "loudness": 0.1937
+   },
+   {
+    "file": "popcorn_03.wav",
+    "seconds": 0.186,
+    "peak": 0.682,
+    "loudness": 0.1937
+   },
+   {
+    "file": "popcorn_04.wav",
+    "seconds": 0.188,
+    "peak": 0.707,
+    "loudness": 0.1937
+   }
+  ],
+  "original_loudness": 0.1937
+ },
+ "static": {
+  "label": "Static",
+  "group": "Items",
+  "original": "Sounds/Items/static",
+  "takes": [
+   {
+    "file": "static_01.wav",
+    "seconds": 0.3,
+    "peak": 0.521,
+    "loudness": 0.1574
+   },
+   {
+    "file": "static_02.wav",
+    "seconds": 0.3,
+    "peak": 0.7,
+    "loudness": 0.1574
+   },
+   {
+    "file": "static_03.wav",
+    "seconds": 0.3,
+    "peak": 0.63,
+    "loudness": 0.1574
+   },
+   {
+    "file": "static_04.wav",
+    "seconds": 0.3,
+    "peak": 0.643,
+    "loudness": 0.1574
+   }
+  ],
+  "original_loudness": 0.1574
+ }
+}

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shootemup Sound Test</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+/* Layout: a console "sound test" screen; one row per cue, current (blue) against new (amber). Single dark look by choice. */
+:root {
+  --bg: #0e0f14; --panel: #171922; --line: #2a2d3a; --text: #e9e6dc; --muted: #8f8c84;
+  --new: #ffb347; --cur: #7fb8ff; --focus: #ffe08a;
+  --display: 'Silkscreen', ui-monospace, monospace; --body: 'IBM Plex Sans', system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.4 var(--body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; background: var(--bg); border-bottom: 1px solid var(--line);
+  padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+h1 { font: 400 18px var(--display); margin: 0 8px 0 0; letter-spacing: .04em; color: var(--new); }
+label { color: var(--muted); font-size: 13px; display: flex; gap: 6px; align-items: center; }
+main { padding-block: 4px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1000px; margin: auto; }
+h2 { font: 400 12px var(--display); letter-spacing: .12em; color: var(--muted); margin: 22px 0 8px; }
+.cue { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; margin: 6px 0;
+  display: grid; grid-template-columns: 170px 1fr; gap: 10px; align-items: center; }
+.cue > div { min-width: 0; }
+.cue b { font-weight: 600; }
+.cue small { display: block; color: var(--muted); font-size: 12px; }
+.btns { display: flex; gap: 6px; flex-wrap: wrap; }
+button { background: transparent; color: var(--text); border: 1px solid var(--line); border-radius: 4px; padding: 6px 10px; font: 13px var(--body); cursor: pointer; }
+button:hover { border-color: currentColor; }
+button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+button.cur { color: var(--cur); }
+button.new { color: var(--new); }
+button.ab { font-weight: 600; }
+button:disabled { opacity: .35; cursor: default; border-color: var(--line); }
+@media (max-width: 600px) { .cue { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Sound Test</h1>
+  <label>Volume <input id="vol" type="range" min="0" max="1" step=".01" value=".7"></label>
+  <label><input id="match" type="checkbox" checked> Level match</label>
+  <button id="stop">Stop (Esc)</button>
+</header>
+<main id="list"></main>
+<script>
+const CUES = [{"id": "shot1", "label": "Base gun", "group": "Shots", "current": "current_shot1.wav", "takes": ["shot1_01.wav", "shot1_02.wav", "shot1_03.wav", "shot1_04.wav"], "repeat": 0.075}, {"id": "enemyHit", "label": "Hit on enemy", "group": "Hits", "current": null, "takes": ["enemyHit_01.wav", "enemyHit_02.wav", "enemyHit_03.wav", "enemyHit_04.wav"], "repeat": 0.06}, {"id": "bossHit", "label": "Hit on boss", "group": "Hits", "current": null, "takes": ["bossHit_01.wav", "bossHit_02.wav", "bossHit_03.wav", "bossHit_04.wav"], "repeat": 0.08}, {"id": "hurt1", "label": "Player hurt", "group": "Hits", "current": "current_hurt1.wav", "takes": ["hurt1_01.wav", "hurt1_02.wav", "hurt1_03.wav", "hurt1_04.wav"], "repeat": null}, {"id": "enemyExplosion1", "label": "Enemy explosion", "group": "Explosions", "current": "current_enemyExplosion1.wav", "takes": ["enemyExplosion1_01.wav", "enemyExplosion1_02.wav", "enemyExplosion1_03.wav", "enemyExplosion1_04.wav"], "repeat": 0.22}, {"id": "explosionLarge", "label": "Boss phase change", "group": "Explosions", "current": null, "takes": ["explosionLarge_01.wav", "explosionLarge_02.wav", "explosionLarge_03.wav", "explosionLarge_04.wav"], "repeat": null}, {"id": "bossDeath", "label": "Boss death", "group": "Bosses", "current": null, "takes": ["bossDeath_01.wav", "bossDeath_02.wav", "bossDeath_03.wav", "bossDeath_04.wav"], "repeat": null}, {"id": "bossWarning", "label": "Boss warning", "group": "Bosses", "current": "current_bossWarning.wav", "takes": ["bossWarning_01.wav", "bossWarning_02.wav", "bossWarning_03.wav", "bossWarning_04.wav"], "repeat": null}, {"id": "playerDead", "label": "Player death", "group": "Explosions", "current": "current_playerDead.wav", "takes": ["playerDead_01.wav", "playerDead_02.wav", "playerDead_03.wav", "playerDead_04.wav"], "repeat": null}, {"id": "blankbullet", "label": "Screen clear / shield", "group": "Items", "current": "current_blankbullet.wav", "takes": ["blankbullet_01.wav", "blankbullet_02.wav", "blankbullet_03.wav", "blankbullet_04.wav"], "repeat": null}, {"id": "coin", "label": "Coin", "group": "Pickups", "current": null, "takes": ["coin_01.wav", "coin_02.wav", "coin_03.wav", "coin_04.wav"], "repeat": 0.09}, {"id": "mana", "label": "Energy", "group": "Pickups", "current": null, "takes": ["mana_01.wav", "mana_02.wav", "mana_03.wav", "mana_04.wav"], "repeat": 0.15}, {"id": "itemGet", "label": "Item chosen", "group": "Pickups", "current": null, "takes": ["itemGet_01.wav", "itemGet_02.wav", "itemGet_03.wav", "itemGet_04.wav"], "repeat": null}, {"id": "uiConfirm", "label": "Purchase / confirm", "group": "UI", "current": null, "takes": ["uiConfirm_01.wav", "uiConfirm_02.wav", "uiConfirm_03.wav", "uiConfirm_04.wav"], "repeat": null}, {"id": "uiSkip", "label": "Skip", "group": "UI", "current": null, "takes": ["uiSkip_01.wav", "uiSkip_02.wav", "uiSkip_03.wav", "uiSkip_04.wav"], "repeat": null}, {"id": "heal", "label": "Heal", "group": "Items", "current": "current_heal.wav", "takes": ["heal_01.wav", "heal_02.wav", "heal_03.wav", "heal_04.wav"], "repeat": null}, {"id": "timeStop", "label": "Time stop", "group": "Items", "current": "current_timeStop.wav", "takes": ["timeStop_01.wav", "timeStop_02.wav", "timeStop_03.wav", "timeStop_04.wav"], "repeat": null}, {"id": "powerdown", "label": "Power down", "group": "Items", "current": "current_powerdown.wav", "takes": ["powerdown_01.wav", "powerdown_02.wav", "powerdown_03.wav", "powerdown_04.wav"], "repeat": null}, {"id": "overdrive", "label": "Overdrive", "group": "Items", "current": "current_overdrive.wav", "takes": ["overdrive_01.wav", "overdrive_02.wav", "overdrive_03.wav", "overdrive_04.wav"], "repeat": null}, {"id": "roll", "label": "Roll / dash", "group": "Items", "current": "current_roll.wav", "takes": ["roll_01.wav", "roll_02.wav", "roll_03.wav", "roll_04.wav"], "repeat": null}, {"id": "ready", "label": "Ready", "group": "Items", "current": "current_ready.wav", "takes": ["ready_01.wav", "ready_02.wav", "ready_03.wav", "ready_04.wav"], "repeat": null}, {"id": "shatter", "label": "Shatter", "group": "Items", "current": "current_shatter.wav", "takes": ["shatter_01.wav", "shatter_02.wav", "shatter_03.wav", "shatter_04.wav"], "repeat": null}, {"id": "capacitor", "label": "Capacitor", "group": "Items", "current": "current_capacitor.wav", "takes": ["capacitor_01.wav", "capacitor_02.wav", "capacitor_03.wav", "capacitor_04.wav"], "repeat": null}, {"id": "fan", "label": "Fan", "group": "Items", "current": "current_fan.wav", "takes": ["fan_01.wav", "fan_02.wav", "fan_03.wav", "fan_04.wav"], "repeat": null}, {"id": "frost", "label": "Frost", "group": "Items", "current": "current_frost.wav", "takes": ["frost_01.wav", "frost_02.wav", "frost_03.wav", "frost_04.wav"], "repeat": null}, {"id": "decoy", "label": "Decoy", "group": "Items", "current": "current_decoy.wav", "takes": ["decoy_01.wav", "decoy_02.wav", "decoy_03.wav", "decoy_04.wav"], "repeat": null}, {"id": "popcorn", "label": "Popcorn", "group": "Items", "current": "current_popcorn.wav", "takes": ["popcorn_01.wav", "popcorn_02.wav", "popcorn_03.wav", "popcorn_04.wav"], "repeat": 0.12}, {"id": "static", "label": "Static", "group": "Items", "current": "current_static.wav", "takes": ["static_01.wav", "static_02.wav", "static_03.wav", "static_04.wav"], "repeat": null}];
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+const master = ctx.createGain(); master.connect(ctx.destination);
+const buffers = {}, levels = {};
+let live = [];
+const vol = document.getElementById('vol');
+const match = document.getElementById('match');
+const setVol = () => master.gain.value = +vol.value;
+vol.oninput = setVol; setVol();
+
+async function load(file) {
+  if (buffers[file]) return buffers[file];
+  const data = await (await fetch('audio/' + file)).arrayBuffer();
+  const buf = await ctx.decodeAudioData(data);
+  // Peak 30 ms RMS, the same measure the generator uses to match replaced cues.
+  const d = buf.getChannelData(0), win = Math.round(buf.sampleRate * .03);
+  let sum = 0, best = 0;
+  for (let i = 0; i < d.length; i++) { sum += d[i]*d[i]; if (i >= win) sum -= d[i-win]*d[i-win]; best = Math.max(best, sum / win); }
+  levels[file] = Math.sqrt(best) || 1e-4;
+  return buffers[file] = buf;
+}
+
+function stopAll() { live.forEach(s => { try { s.stop(); } catch (e) {} }); live = []; }
+document.getElementById('stop').onclick = stopAll;
+addEventListener('keydown', e => { if (e.key === 'Escape') stopAll(); });
+addEventListener('visibilitychange', () => { if (document.hidden) stopAll(); });
+
+async function play(file, at = 0) {
+  await ctx.resume();
+  const buf = await load(file);
+  const src = ctx.createBufferSource(), g = ctx.createGain();
+  src.buffer = buf;
+  g.gain.value = match.checked ? Math.min(.12 / levels[file], 4) : 1;
+  src.connect(g); g.connect(master);
+  src.start(ctx.currentTime + at);
+  live.push(src);
+  src.onended = () => live = live.filter(s => s !== src);
+}
+
+async function burst(files, interval) {
+  stopAll();
+  await Promise.all(files.map(load));
+  const count = Math.round(2.4 / interval);
+  for (let i = 0; i < count; i++) play(files[i % files.length], i * interval * (1 + (Math.random() - .5) * .1));
+}
+
+async function ab(cue) {
+  stopAll();
+  const a = cue.current, b = cue.takes[0];
+  await Promise.all([load(a), load(b)]);
+  play(a, 0);
+  play(b, buffers[a].duration + .45);
+}
+
+const groups = {};
+CUES.forEach(c => (groups[c.group] = groups[c.group] || []).push(c));
+const list = document.getElementById('list');
+for (const [group, cues] of Object.entries(groups)) {
+  const h = document.createElement('h2'); h.textContent = group; list.appendChild(h);
+  for (const c of cues) {
+    const row = document.createElement('div'); row.className = 'cue';
+    row.innerHTML = `<div><b>${c.label}</b><small>${c.id}</small></div><div class="btns"></div>`;
+    const btns = row.querySelector('.btns');
+    const add = (text, cls, fn, disabled) => { const b = document.createElement('button'); b.textContent = text; b.className = cls; b.disabled = !!disabled; b.onclick = fn; btns.appendChild(b); };
+    add(c.current ? 'Current' : 'Was silent', 'cur', () => { stopAll(); play(c.current); }, !c.current);
+    c.takes.forEach((t, i) => add('New ' + 'ABCD'[i], 'new', () => { stopAll(); play(t); }));
+    if (c.current) add('Current then new', 'ab', () => ab(c));
+    if (c.repeat) {
+      add('Rapid current', 'cur', () => burst([c.current], c.repeat), !c.current);
+      add('Rapid new', 'new', () => burst(c.takes, c.repeat));
+    }
+    list.appendChild(row);
+  }
+}
+</script>
+</body>
+</html>

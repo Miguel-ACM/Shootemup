@@ -84,3 +84,6 @@ crashlytics-build.properties
 
 # Local Wave Watcher chat references and screenshots
 /WaveWatcherFeedback/
+
+# Rendered by Tools/synth_sfx.py for the A/B page; the game uses Assets/Resources/Sounds/Synth.
+ArtSource/AudioReview/Synth/audio/

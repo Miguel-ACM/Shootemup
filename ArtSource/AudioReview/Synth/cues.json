@@ -1,0 +1,366 @@
+[
+ {
+  "id": "shot1",
+  "label": "Base gun",
+  "group": "Shots",
+  "current": "current_shot1.wav",
+  "takes": [
+   "shot1_01.wav",
+   "shot1_02.wav",
+   "shot1_03.wav",
+   "shot1_04.wav"
+  ],
+  "repeat": 0.075
+ },
+ {
+  "id": "enemyHit",
+  "label": "Hit on enemy",
+  "group": "Hits",
+  "current": null,
+  "takes": [
+   "enemyHit_01.wav",
+   "enemyHit_02.wav",
+   "enemyHit_03.wav",
+   "enemyHit_04.wav"
+  ],
+  "repeat": 0.06
+ },
+ {
+  "id": "bossHit",
+  "label": "Hit on boss",
+  "group": "Hits",
+  "current": null,
+  "takes": [
+   "bossHit_01.wav",
+   "bossHit_02.wav",
+   "bossHit_03.wav",
+   "bossHit_04.wav"
+  ],
+  "repeat": 0.08
+ },
+ {
+  "id": "hurt1",
+  "label": "Player hurt",
+  "group": "Hits",
+  "current": "current_hurt1.wav",
+  "takes": [
+   "hurt1_01.wav",
+   "hurt1_02.wav",
+   "hurt1_03.wav",
+   "hurt1_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "enemyExplosion1",
+  "label": "Enemy explosion",
+  "group": "Explosions",
+  "current": "current_enemyExplosion1.wav",
+  "takes": [
+   "enemyExplosion1_01.wav",
+   "enemyExplosion1_02.wav",
+   "enemyExplosion1_03.wav",
+   "enemyExplosion1_04.wav"
+  ],
+  "repeat": 0.22
+ },
+ {
+  "id": "explosionLarge",
+  "label": "Boss phase change",
+  "group": "Explosions",
+  "current": null,
+  "takes": [
+   "explosionLarge_01.wav",
+   "explosionLarge_02.wav",
+   "explosionLarge_03.wav",
+   "explosionLarge_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "bossDeath",
+  "label": "Boss death",
+  "group": "Bosses",
+  "current": null,
+  "takes": [
+   "bossDeath_01.wav",
+   "bossDeath_02.wav",
+   "bossDeath_03.wav",
+   "bossDeath_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "bossWarning",
+  "label": "Boss warning",
+  "group": "Bosses",
+  "current": "current_bossWarning.wav",
+  "takes": [
+   "bossWarning_01.wav",
+   "bossWarning_02.wav",
+   "bossWarning_03.wav",
+   "bossWarning_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "playerDead",
+  "label": "Player death",
+  "group": "Explosions",
+  "current": "current_playerDead.wav",
+  "takes": [
+   "playerDead_01.wav",
+   "playerDead_02.wav",
+   "playerDead_03.wav",
+   "playerDead_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "blankbullet",
+  "label": "Screen clear / shield",
+  "group": "Items",
+  "current": "current_blankbullet.wav",
+  "takes": [
+   "blankbullet_01.wav",
+   "blankbullet_02.wav",
+   "blankbullet_03.wav",
+   "blankbullet_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "coin",
+  "label": "Coin",
+  "group": "Pickups",
+  "current": null,
+  "takes": [
+   "coin_01.wav",
+   "coin_02.wav",
+   "coin_03.wav",
+   "coin_04.wav"
+  ],
+  "repeat": 0.09
+ },
+ {
+  "id": "mana",
+  "label": "Energy",
+  "group": "Pickups",
+  "current": null,
+  "takes": [
+   "mana_01.wav",
+   "mana_02.wav",
+   "mana_03.wav",
+   "mana_04.wav"
+  ],
+  "repeat": 0.15
+ },
+ {
+  "id": "itemGet",
+  "label": "Item chosen",
+  "group": "Pickups",
+  "current": null,
+  "takes": [
+   "itemGet_01.wav",
+   "itemGet_02.wav",
+   "itemGet_03.wav",
+   "itemGet_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "uiConfirm",
+  "label": "Purchase / confirm",
+  "group": "UI",
+  "current": null,
+  "takes": [
+   "uiConfirm_01.wav",
+   "uiConfirm_02.wav",
+   "uiConfirm_03.wav",
+   "uiConfirm_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "uiSkip",
+  "label": "Skip",
+  "group": "UI",
+  "current": null,
+  "takes": [
+   "uiSkip_01.wav",
+   "uiSkip_02.wav",
+   "uiSkip_03.wav",
+   "uiSkip_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "heal",
+  "label": "Heal",
+  "group": "Items",
+  "current": "current_heal.wav",
+  "takes": [
+   "heal_01.wav",
+   "heal_02.wav",
+   "heal_03.wav",
+   "heal_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "timeStop",
+  "label": "Time stop",
+  "group": "Items",
+  "current": "current_timeStop.wav",
+  "takes": [
+   "timeStop_01.wav",
+   "timeStop_02.wav",
+   "timeStop_03.wav",
+   "timeStop_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "powerdown",
+  "label": "Power down",
+  "group": "Items",
+  "current": "current_powerdown.wav",
+  "takes": [
+   "powerdown_01.wav",
+   "powerdown_02.wav",
+   "powerdown_03.wav",
+   "powerdown_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "overdrive",
+  "label": "Overdrive",
+  "group": "Items",
+  "current": "current_overdrive.wav",
+  "takes": [
+   "overdrive_01.wav",
+   "overdrive_02.wav",
+   "overdrive_03.wav",
+   "overdrive_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "roll",
+  "label": "Roll / dash",
+  "group": "Items",
+  "current": "current_roll.wav",
+  "takes": [
+   "roll_01.wav",
+   "roll_02.wav",
+   "roll_03.wav",
+   "roll_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "ready",
+  "label": "Ready",
+  "group": "Items",
+  "current": "current_ready.wav",
+  "takes": [
+   "ready_01.wav",
+   "ready_02.wav",
+   "ready_03.wav",
+   "ready_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "shatter",
+  "label": "Shatter",
+  "group": "Items",
+  "current": "current_shatter.wav",
+  "takes": [
+   "shatter_01.wav",
+   "shatter_02.wav",
+   "shatter_03.wav",
+   "shatter_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "capacitor",
+  "label": "Capacitor",
+  "group": "Items",
+  "current": "current_capacitor.wav",
+  "takes": [
+   "capacitor_01.wav",
+   "capacitor_02.wav",
+   "capacitor_03.wav",
+   "capacitor_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "fan",
+  "label": "Fan",
+  "group": "Items",
+  "current": "current_fan.wav",
+  "takes": [
+   "fan_01.wav",
+   "fan_02.wav",
+   "fan_03.wav",
+   "fan_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "frost",
+  "label": "Frost",
+  "group": "Items",
+  "current": "current_frost.wav",
+  "takes": [
+   "frost_01.wav",
+   "frost_02.wav",
+   "frost_03.wav",
+   "frost_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "decoy",
+  "label": "Decoy",
+  "group": "Items",
+  "current": "current_decoy.wav",
+  "takes": [
+   "decoy_01.wav",
+   "decoy_02.wav",
+   "decoy_03.wav",
+   "decoy_04.wav"
+  ],
+  "repeat": null
+ },
+ {
+  "id": "popcorn",
+  "label": "Popcorn",
+  "group": "Items",
+  "current": "current_popcorn.wav",
+  "takes": [
+   "popcorn_01.wav",
+   "popcorn_02.wav",
+   "popcorn_03.wav",
+   "popcorn_04.wav"
+  ],
+  "repeat": 0.12
+ },
+ {
+  "id": "static",
+  "label": "Static",
+  "group": "Items",
+  "current": "current_static.wav",
+  "takes": [
+   "static_01.wav",
+   "static_02.wav",
+   "static_03.wav",
+   "static_04.wav"
+  ],
+  "repeat": null
+ }
+]
