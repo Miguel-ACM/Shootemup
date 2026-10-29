@@ -1,238 +1,112 @@
-﻿import bpy
-import math
-import os
-import sys
+﻿import bpy, math, os, sys, json
 from mathutils import Vector
-
-# The game uses X right, Y up-screen, Z up; the head faces -Y.
-def script_directory():
-    path = globals().get('__file__')
-    if path:
-        return os.path.dirname(os.path.abspath(path))
-    if '--' in sys.argv:
-        args = sys.argv[sys.argv.index('--') + 1:]
-        if args:
-            path = os.path.abspath(args[0])
-            return path if os.path.isdir(path) else os.path.dirname(path)
-    return os.getcwd()
-
-OUT = script_directory()
-bpy.ops.object.select_all(action='SELECT')
-bpy.ops.object.delete(use_global=False)
-for datablocks in (bpy.data.materials, bpy.data.meshes, bpy.data.cameras, bpy.data.lights):
-    for block in list(datablocks):
-        if block.users == 0:
-            datablocks.remove(block)
-
-palette = [
-    (0.24,0.35,0.40), (0.78,0.83,0.79), (0.35,0.43,0.30),
-    (0.95,0.38,0.12), (0.32,0.48,0.55), (0.54,0.18,0.16),
-    (0.53,0.61,0.62), (0.34,0.31,0.48), (0.20,0.36,0.40),
-    (0.16,0.83,0.91), (1.0,0.77,0.27), (0.055,0.09,0.12),
-    (0.62,0.25,0.19), (0.82,0.64,0.26), (0.53,0.61,0.55),
-    (0.80,0.84,0.83),
-]
-mats = []
-for i, color in enumerate(palette):
-    mat = bpy.data.materials.new('tile_%02d' % i)
-    mat.diffuse_color = (*color, 1.0)
-    mat.use_nodes = True
-    bsdf = mat.node_tree.nodes.get('Principled BSDF')
-    bsdf.inputs['Base Color'].default_value = (*color, 1.0)
-    bsdf.inputs['Roughness'].default_value = 0.63
-    bsdf.inputs['Metallic'].default_value = 0.25 if i in (4, 6, 8, 13) else 0.08
-    if i in (9, 10):
-        bsdf.inputs['Emission Color'].default_value = (*color, 1.0)
-        bsdf.inputs['Emission Strength'].default_value = 1.8
-    mats.append(mat)
-
-parts = []
-def mesh(name, verts, faces, material, face_materials=None):
-    data = bpy.data.meshes.new(name)
-    data.from_pydata(verts, [], faces)
-    data.materials.clear()
-    for m in mats:
-        data.materials.append(m)
-    data.update()
-    obj = bpy.data.objects.new(name, data)
-    bpy.context.collection.objects.link(obj)
-    for idx, poly in enumerate(data.polygons):
-        poly.material_index = face_materials[idx] if face_materials else material
-        poly.use_smooth = False
-    parts.append(obj)
-    return obj
-
-# Hull cross sections, ordered from snout to tail. Eight facets give a
-# substantial curved body without making the top view into a flat outline.
-def hull():
-    rings = [(-1.57, .16, .07, .16), (-1.37, .49, .12, .29),
-             (-1.05, .77, .13, .40), (-.66, .96, .12, .48),
-             (-.18, 1.06, .10, .53), (.30, 1.04, .09, .52),
-             (.69, .88, .08, .43), (1.02, .57, .06, .31),
-             (1.23, .25, .05, .19)]
-    verts = []
-    for y, w, mid, h in rings:
-        for k in range(10):
-            a = 2 * math.pi * k / 10
-            verts.append((w * math.cos(a), y, mid + h * math.sin(a)))
-    faces = [tuple(range(9, -1, -1))]
-    ids = [11]
-    for j in range(len(rings)-1):
-        for k in range(10):
-            faces.append((j*10+k, j*10+(k+1)%10, (j+1)*10+(k+1)%10, (j+1)*10+k))
-            ids.append(8 if k in (0, 1, 2, 3, 4) else 0)
-    faces.append(tuple((len(rings)-1)*10+k for k in range(10)))
-    ids.append(0)
-    mesh('Faceted pressure hull', verts, faces, 8, ids)
-
-# A convex beveled armor plate: narrow dark side wall, sloping rim, raised face.
-def plate(name, outline, z, rise, material, rim=0.075, side=11):
-    cx = sum(p[0] for p in outline) / len(outline)
-    cy = sum(p[1] for p in outline) / len(outline)
-    n = len(outline)
-    verts = [(x,y,z) for x,y in outline]
-    verts += [(cx+(x-cx)*(1-rim), cy+(y-cy)*(1-rim), z+rise) for x,y in outline]
-    faces = []
-    ids = []
-    for i in range(n):
-        faces.append((i,(i+1)%n,(i+1)%n+n,i+n))
-        ids.append(side)
-    faces.append(tuple(range(n, 2*n)))
-    ids.append(material)
-    return mesh(name, verts, faces, material, ids)
-
-hull()
-# Heavy swept pectoral fins, held within the old side armor's width.
-for s in (-1, 1):
-    plate('Swept pectoral fin', [(s*.76,-.23),(s*1.16,-.43),(s*1.18,.36),
-          (s*.98,.67),(s*.70,.49)], .17, .10, 4, .13, 0)
-    plate('Fin inset', [(s*.91,-.17),(s*1.10,-.28),(s*1.10,.29),
-          (s*.96,.46),(s*.89,.32)], .282, .025, 13, .12, 8)
-    # Side cheek shields and the broad jaw make the head unmistakably forward-facing.
-    plate('Cheek armor', [(s*.25,-1.36),(s*.55,-1.27),(s*.83,-.97),
-          (s*.85,-.72),(s*.56,-.70),(s*.32,-.95)], .33, .085, 6, .09, 0)
-    plate('Eye socket', [(s*.38,-1.12),(s*.58,-1.08),(s*.68,-.94),
-          (s*.47,-.96)], .425, .025, 11, .10, 11)
-    plate('Amber eye', [(s*.43,-1.088),(s*.56,-1.063),(s*.60,-1.005),
-          (s*.46,-1.020)], .456, .008, 10, .04, 10)
-
-plate('Armored snout', [(-.25,-1.54),(.25,-1.54),(.48,-1.30),(.40,-1.11),
-      (0,-1.02),(-.40,-1.11),(-.48,-1.30)], .25, .10, 4, .10, 0)
-plate('Central brow', [(-.23,-1.26),(0,-1.43),(.23,-1.26),(.19,-.93),
-      (0,-.80),(-.19,-.93)], .385, .08, 13, .12, 8)
-
-# Three large overlapping dorsal scutes, with a strong central ridge.
-for y, w, length, z in [(-.57,.64,.53,.51), (-.06,.75,.57,.59), (.48,.65,.55,.56), (.87,.43,.38,.43)]:
-    outline = [(-w*.72,y-length*.48),(0,y-length*.58),(w*.72,y-length*.48),
-               (w,y+length*.18),(w*.67,y+length*.48),(0,y+length*.56),
-               (-w*.67,y+length*.48),(-w,y+length*.18)]
-    plate('Dorsal scute', outline, z, .045, 4 if y < .4 else 6, .10, 11)
-    plate('Scute crest', [(-.075,y-length*.40),(0,y-length*.49),(.075,y-length*.40),
-          (.085,y+length*.35),(0,y+length*.45),(-.085,y+length*.35)],
-          z+.05, .025, 13, .10, 8)
-
-# Forked armored tail is a silhouette cue, not an engine.
-for s in (-1, 1):
-    plate('Tail fluke', [(0,.94),(s*.25,1.02),(s*.67,1.27),(s*.62,1.05),
-          (s*.38,.82),(s*.17,.80)], .16, .055, 8, .10, 0)
-    plate('Tail edge', [(s*.23,.99),(s*.62,1.24),(s*.55,1.08),(s*.32,.91)],
-          .22, .018, 13, .10, 8)
-
-# Each mouth is an actual annular opening in a horizontal barrel. The front
-# annulus is exactly at its gameplay muzzle coordinate; its bore is recessed.
-def launcher(x):
-    z = .39
-    n = 10
-    verts = []
-    # Front lip outer, front lip inner, recessed bore and rear barrel ring.
-    for y, radius in [(-.70,.145),(-.70,.088),(-.61,.088),(-.38,.115)]:
-        for k in range(n):
-            a = 2*math.pi*k/n
-            verts.append((x+radius*math.cos(a), y, z+radius*math.sin(a)))
-    faces, ids = [], []
-    for k in range(n):
-        q=(k+1)%n
-        faces.extend([(k,q,n+q,n+k), (n+k,n+q,2*n+q,2*n+k),
-                      (k,3*n+k,3*n+q,q)])
-        ids.extend([13,11,4])
-    faces.append(tuple(2*n+k for k in range(n)))
-    ids.append(11)
-    mesh('Launcher mouth', verts, faces, 13, ids)
-    # Small amber core, recessed behind the dark bore.
-    r=.035
-    verts2=[(x+r*math.cos(2*math.pi*k/n),-.612,z+r*math.sin(2*math.pi*k/n)) for k in range(n)]
-    mesh('Launcher ember', verts2, [tuple(range(n))], 10)
-for x in (-.82,.82):
-    launcher(x)
-
-# Combine the geometry; authored vertices are already in world coordinates.
+if '__file__' in globals():
+    OUT = os.path.dirname(os.path.abspath(__file__))
+elif '--' in sys.argv and sys.argv.index('--') + 1 < len(sys.argv):
+    p = os.path.abspath(sys.argv[sys.argv.index('--') + 1]); OUT = p if os.path.isdir(p) else os.path.dirname(p)
+else: OUT = os.getcwd()
+bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
+colors = [( .24,.35,.40),(.78,.83,.79),(.35,.43,.30),(.95,.38,.12),(.32,.48,.55),(.54,.18,.16),(.53,.61,.62),(.34,.31,.48),(.20,.36,.40),(.16,.83,.91),(1,.77,.27),(.055,.09,.12),(.62,.25,.19),(.82,.64,.26),(.53,.61,.55),(.80,.84,.83)]
+mats=[]
+for i,c in enumerate(colors):
+    m=bpy.data.materials.new('tile_%02d'%i); m.diffuse_color=(*c,1); m.use_nodes=True
+    bs=m.node_tree.nodes.get('Principled BSDF'); bs.inputs['Base Color'].default_value=(*c,1); bs.inputs['Roughness'].default_value=.65
+    if i in (9,10): bs.inputs['Emission Color'].default_value=(*c,1); bs.inputs['Emission Strength'].default_value=1.5
+    mats.append(m)
+body=[]; parts={}
+def mesh(name,verts,faces,mat,g):
+    data=bpy.data.meshes.new(name); data.from_pydata(verts,[],faces); data.materials.append(mats[mat]); data.update()
+    obj=bpy.data.objects.new(name,data); bpy.context.collection.objects.link(obj); g.append(obj); return obj
+def loft(name,rings,mat,g):
+    n=12; v=[]
+    for y,w,z,h in rings:
+        for j in range(n):
+            a=2*math.pi*j/n; v.append((w*math.cos(a),y,z+h*math.sin(a)))
+    f=[tuple(reversed(range(n)))]
+    for i in range(len(rings)-1):
+        for j in range(n): f.append((i*n+j,i*n+(j+1)%n,(i+1)*n+(j+1)%n,(i+1)*n+j))
+    f.append(tuple((len(rings)-1)*n+j for j in range(n)))
+    return mesh(name,v,f,mat,g)
+def plate(name,outline,bottom,top,mat,g):
+    n=len(outline); cx=sum(p[0] for p in outline)/n; cy=sum(p[1] for p in outline)/n
+    v=[(x,y,bottom) for x,y in outline]+[(cx+(x-cx)*.82,cy+(y-cy)*.82,top) for x,y in outline]
+    f=[tuple(reversed(range(n))),tuple(range(n,2*n))]+[(i,(i+1)%n,(i+1)%n+n,i+n) for i in range(n)]
+    return mesh(name,v,f,mat,g)
+def ball(name,loc,scale,mat,g,segments=12,rings=6):
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=segments,ring_count=rings,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; o.data.materials.append(mats[mat]); g.append(o)
+def cyl(name,loc,r,depth,mat,g,axis='Z',vertices=10):
+    bpy.ops.mesh.primitive_cylinder_add(vertices=vertices,radius=r,depth=depth,location=loc); o=bpy.context.object; o.name=name
+    if axis=='Y': o.rotation_euler[0]=math.pi/2
+    o.data.materials.append(mats[mat]); g.append(o)
+def cone(name,base,tip,r,mat,g):
+    a=Vector(base); b=Vector(tip); d=b-a
+    bpy.ops.mesh.primitive_cone_add(vertices=6,radius1=r,radius2=0,depth=d.length,location=(a+b)/2); o=bpy.context.object; o.name=name; o.rotation_euler=d.to_track_quat('Z','Y').to_euler(); o.data.materials.append(mats[mat]); g.append(o)
+loft('Muscular body',[(-.91,.38,.10,.15),(-.75,.58,.09,.23),(-.46,.65,.08,.30),(-.15,.60,.06,.33),(.20,.49,.04,.29),(.50,.34,.03,.22),(.76,.20,.02,.15),(.91,.13,.02,.10)],8,body)
+loft('Pale belly',[(-.87,.38,-.045,.10),(-.68,.53,-.055,.10),(-.39,.52,-.07,.09)],14,body)
+plate('Mouth shadow',[(-.52,-.64),(-.44,-.95),(-.25,-1.02),(.25,-1.02),(.44,-.95),(.52,-.64)],.09,.15,11,body)
+plate('Skull rim',[(-.59,-.43),(-.50,-.77),(-.33,-.88),(0,-.92),(.33,-.88),(.50,-.77),(.59,-.43),(.42,-.24),(-.42,-.24)],.19,.30,13,body)
+plate('Skull crown',[(-.51,-.42),(-.41,-.70),(-.25,-.80),(0,-.84),(.25,-.80),(.41,-.70),(.51,-.42),(.34,-.25),(-.34,-.25)],.29,.36,0,body)
+plate('Nasal blade',[(-.10,-.35),(-.13,-.70),(0,-.81),(.13,-.70),(.10,-.35),(0,-.22)],.35,.405,6,body)
+for s in (-1,1):
+    ball('Eye socket',(s*.40,-.49,.305),(.16,.12,.055),11,body)
+    ball('Cyan eye',(s*.40,-.50,.351),(.095,.065,.025),9,body,10,5)
+    plate('Brow',[(s*.26,-.40),(s*.53,-.34),(s*.53,-.42),(s*.29,-.48)],.35,.395,13,body)
+    ball('Gill cannon housing',(s*.82,-.42,.12),(.18,.29,.15),0,body)
+    cyl('Barrel sleeve',(s*.82,-.56,.20),.105,.25,13,body,'Y')
+    cyl('Muzzle rim',(s*.82,-.69,.20),.105,.02,6,body,'Y')
+    cyl('Muzzle bore',(s*.82,-.701,.20),.073,.004,11,body,'Y')
+    cyl('Muzzle ember',(s*.82,-.704,.20),.029,.004,10,body,'Y')
+    g=[]; parts['Fin_L' if s<0 else 'Fin_R']=g
+    plate('Pectoral fin',[(s*.46,-.18),(s*.72,-.09),(s*1.08,.29),(s*1.03,.46),(s*.67,.30),(s*.48,.20)],.02,.13,8,g)
+    plate('Fin leading armor',[(s*.52,-.13),(s*.72,-.07),(s*1.05,.30),(s*.96,.30),(s*.68,.12)],.13,.18,13,g)
+    plate('Fin inset',[(s*.59,.13),(s*.91,.31),(s*.99,.40),(s*.70,.27)],.13,.16,6,g)
+for y,w,l,z in [(-.06,.27,.30,.37),(.20,.24,.28,.34),(.43,.19,.25,.28),(.63,.14,.20,.22),(.78,.10,.16,.16)]:
+    shape=[(0,y-l*.52),(-w,y-l*.20),(-w*.86,y+l*.27),(0,y+l*.52),(w*.86,y+l*.27),(w,y-l*.20)]
+    plate('Dorsal brass edge',shape,z-.065,z,13,body)
+    plate('Dorsal steel crown',[(x*.79,y+(yy-y)*.79) for x,yy in shape],z-.005,z+.035,4,body)
+    plate('Dorsal keel',[(-.035,y-l*.34),(0,y-l*.43),(.035,y-l*.34),(.025,y+l*.28),(0,y+l*.40),(-.025,y+l*.28)],z+.03,z+.075,6,body)
+for x,y,z in [(-.18,.04,.40),(.15,.30,.37),(-.10,.53,.30)]:
+    ball('Coral base',(x,y,z),(.065,.055,.035),12,body,8,4)
+    cone('Coral branch',(x,y,z),(x-.025,y+.025,z+.11),.024,12,body)
+    cone('Coral branch',(x+.02,y,z),(x+.055,y+.015,z+.075),.018,3,body)
+for x,y,z,r in [(.25,-.03,.37,.045),(.30,.02,.35,.032),(-.19,.30,.34,.042)]:
+    cyl('Barnacle shell',(x,y,z),r,.042,14,body,vertices=7); cyl('Barnacle opening',(x,y,z+.022),r*.42,.004,11,body,vertices=7)
+g=[]; parts['Tail']=g
+plate('Fluke',[(-.13,.82),(-.23,.94),(-.54,1.03),(-.60,1.18),(-.30,1.12),(0,1.00),(.30,1.12),(.60,1.18),(.54,1.03),(.23,.94),(.13,.82)],-.04,.10,8,g)
+plate('Fluke center',[(-.12,.83),(-.17,.96),(0,1.03),(.17,.96),(.12,.83)],.10,.16,6,g)
+for s in (-1,1): plate('Fluke leading edge',[(s*.13,.93),(s*.30,1.10),(s*.58,1.17),(s*.52,1.10),(s*.29,1.02)],.10,.14,13,g)
+g=[]; parts['Jaw']=g
+plate('Jaw frame',[(-.50,-.66),(-.48,-.91),(-.35,-1.04),(0,-1.10),(.35,-1.04),(.48,-.91),(.50,-.66),(.40,-.73),(.34,-.91),(0,-.98),(-.34,-.91),(-.40,-.73)],-.07,.12,14,g)
+for s in (-1,1):
+    for x,y in [(.18,-.97),(.32,-.94),(.40,-.85)]: cone('Tooth',(s*x,y,.10),(s*x*.86,y+.075,.18),.035,15,g)
+def join_group(objects,name):
+    bpy.ops.object.select_all(action='DESELECT')
+    for o in objects:
+        o.select_set(True); bpy.context.view_layer.objects.active=o; bpy.ops.object.transform_apply(location=False,rotation=True,scale=True)
+        for mod in list(o.modifiers): bpy.ops.object.modifier_apply(modifier=mod.name)
+    bpy.context.view_layer.objects.active=objects[0]; bpy.ops.object.join(); o=bpy.context.object; o.name=name
+    for p in o.data.polygons: p.use_smooth=False
+    bpy.ops.object.transform_apply(location=True,rotation=True,scale=True); return o
+model=join_group(body,'Model'); moving=[join_group(g,n) for n,g in parts.items()]
+manifest=[{'object':'Fin_L','motion':'swing','axis':[0,-1,0],'pivot':[-.50,.02,.09],'speed':1.0,'amplitude':14},{'object':'Fin_R','motion':'swing','axis':[0,1,0],'pivot':[.50,.02,.09],'speed':1.0,'amplitude':14},{'object':'Tail','motion':'swing','axis':[0,0,1],'pivot':[0,.82,.03],'speed':1.15,'amplitude':14},{'object':'Jaw','motion':'swing','axis':[1,0,0],'pivot':[0,-.66,.02],'speed':.8,'amplitude':9}]
+with open(os.path.join(OUT,'parts.json'),'w',encoding='utf-8') as f: json.dump(manifest,f,indent=2)
 bpy.ops.object.select_all(action='DESELECT')
-for obj in parts:
-    obj.select_set(True)
-bpy.context.view_layer.objects.active = parts[0]
-bpy.ops.object.join()
-model = bpy.context.object
-model.name = 'Model'
-bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-for poly in model.data.polygons:
-    poly.use_smooth = False
-bpy.ops.wm.obj_export(filepath=os.path.join(OUT, 'model.obj'), export_selected_objects=True,
-                      export_materials=True, forward_axis='Y', up_axis='Z')
-
-# Lighting and cameras are created after export so the OBJ contains only Model.
-scene = bpy.context.scene
-scene.render.engine = 'CYCLES'
-scene.cycles.device = 'CPU'
-scene.cycles.samples = 48
-scene.render.resolution_x = 640
-scene.render.resolution_y = 640
-scene.render.resolution_percentage = 100
-scene.render.image_settings.file_format = 'PNG'
-scene.world = bpy.data.worlds.new('Deep blue-gray world') if scene.world is None else scene.world
-scene.world.use_nodes = True
-bg = scene.world.node_tree.nodes.get('Background')
-bg.inputs['Color'].default_value = (.05,.07,.09,1)
-bg.inputs['Strength'].default_value = 1.0
-scene.view_settings.view_transform = 'AgX'
-
-def aim(obj, target):
-    obj.rotation_euler = (Vector(target)-obj.location).to_track_quat('-Z','Y').to_euler()
-
-def light(name, typ, location, energy, target, size=None):
-    data = bpy.data.lights.new(name, typ)
-    data.energy = energy
-    if size is not None:
-        data.shape = 'DISK'
-        data.size = size
-    obj = bpy.data.objects.new(name, data)
-    bpy.context.collection.objects.link(obj)
-    obj.location = location
-    aim(obj, target)
-    return obj
-
-sun = light('Upper left sun', 'SUN', (-4, 5, 8), 2.0, (0,0,0))
-sun.data.angle = math.radians(18)
-light('Soft fill', 'AREA', (4,-3,5), 350, (0,0,0), 5.0)
-
-def camera(name, location, target, ortho=False):
-    data = bpy.data.cameras.new(name)
-    obj = bpy.data.objects.new(name, data)
-    bpy.context.collection.objects.link(obj)
-    obj.location = location
-    aim(obj, target)
-    if ortho:
-        data.type = 'ORTHO'
-        data.ortho_scale = 3.45
-        # Set camera up to +Y so the nose points down in the render.
-        obj.rotation_euler = (0,0,0)
-    else:
-        data.type = 'PERSP'
-        data.lens = 50
-    return obj
-
-scene.camera = camera('Top camera', (0,0,8), (0,0,0), True)
-scene.render.filepath = os.path.join(OUT, 'top.png')
-bpy.ops.render.render(write_still=True)
-scene.camera = camera('Front right camera', (4.4,-6.2,5.4), (0,-.05,.12))
-scene.render.filepath = os.path.join(OUT, 'angle.png')
-bpy.ops.render.render(write_still=True)
+for o in [model]+moving: o.select_set(True)
+bpy.context.view_layer.objects.active=model
+bpy.ops.wm.obj_export(filepath=os.path.join(OUT,'model.obj'),export_selected_objects=True,export_materials=True,forward_axis='Y',up_axis='Z')
+scene=bpy.context.scene; scene.render.engine='CYCLES'; scene.cycles.device='CPU'; scene.cycles.samples=48
+scene.render.resolution_x=640; scene.render.resolution_y=640; scene.render.resolution_percentage=100; scene.render.image_settings.file_format='PNG'
+scene.world=bpy.data.worlds.new('Deep water studio'); scene.world.use_nodes=True
+scene.world.node_tree.nodes['Background'].inputs['Color'].default_value=(.05,.07,.09,1); scene.world.node_tree.nodes['Background'].inputs['Strength'].default_value=1
+scene.view_settings.view_transform='Standard'
+def point_at(o,target): o.rotation_euler=(Vector(target)-o.location).to_track_quat('-Z','Y').to_euler()
+def light(name,kind,loc,energy,target,size=1):
+    d=bpy.data.lights.new(name,kind); d.energy=energy
+    if kind=='AREA': d.shape='DISK'; d.size=size
+    o=bpy.data.objects.new(name,d); bpy.context.collection.objects.link(o); o.location=loc; point_at(o,target)
+light('Sun','SUN',(-3,-4,7),2,(0,0,0)); light('Soft fill','AREA',(4,1,5),250,(0,0,0),5)
+d=bpy.data.cameras.new('Camera'); cam=bpy.data.objects.new('Camera',d); bpy.context.collection.objects.link(cam); scene.camera=cam
+cam.location=(0,0,6); cam.rotation_euler=(0,0,0); d.type='ORTHO'; d.ortho_scale=2.72
+scene.render.filepath=os.path.join(OUT,'top.png'); bpy.ops.render.render(write_still=True)
+d.type='PERSP'; d.lens=48; cam.location=(3,-4.5,3.3); point_at(cam,(0,0,.10))
+scene.render.filepath=os.path.join(OUT,'angle.png'); bpy.ops.render.render(write_still=True)
