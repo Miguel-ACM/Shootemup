@@ -67,7 +67,7 @@ public class Shipcontroller : MonoBehaviour
     Vector2 move;
     Vector2 waterVelocity;
     public Vector2 MoveInput => move;
-    public bool IsInvulnerable => invulnerable || (GetComponent<ShipBarrelRoll>()?.Active ?? false);
+    public bool IsInvulnerable => invulnerable || (GetComponent<ShipBarrelRoll>()?.Active ?? false) || GetComponent<SpellCardCast>() != null;
 
     void Awake()
     {
