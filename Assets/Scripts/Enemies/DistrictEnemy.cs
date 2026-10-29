@@ -128,6 +128,7 @@ public abstract class DistrictEnemy : AEnemy
         renderer.sortingLayerName = "Enemy";
         if (enemy.hull >= 61)
             renderer.sharedMaterial = EnemyExpansion.Material(enemy.hull);
+        IndustrialMeshFactory.AttachTerraParts("Hull" + enemy.hull, model.transform, renderer.sharedMaterial);
         enemy.Hull = model.transform;
         go.AddComponent<CombatHullVisual>().model = model.transform;
         enemy.firingCue = go.AddComponent<EnemyFiringCue>();
