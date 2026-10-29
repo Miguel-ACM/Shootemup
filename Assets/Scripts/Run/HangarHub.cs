@@ -15,6 +15,8 @@ public sealed class HangarHub : MonoBehaviour
     }
 
     static RunDifficulty difficulty = RunDifficulty.Hard;
+    // Where the title's tunnel came to rest, so the hangar continues from exactly that view.
+    static float tunnelTravel;
     static readonly Vector2[] padSpots = { new Vector2(-2.2f, 4.2f), new Vector2(-2.2f, 1.4f), new Vector2(-2.2f, -1.4f), new Vector2(-2.2f, -4.2f) };
     static readonly Vector2[] plinthSpots = { new Vector2(2.3f, 4.4f), new Vector2(2.3f, .9f), new Vector2(2.3f, -2.6f) };
     const float PadReach = 1f, PlinthReach = .85f, GateHalfWidth = 2f;
@@ -34,6 +36,7 @@ public sealed class HangarHub : MonoBehaviour
         public AItem item;
         public Vector3 spot;
         public Transform disc, shadow;
+        public bool sent;
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -46,6 +49,7 @@ public sealed class HangarHub : MonoBehaviour
     public static void Enter(RunDifficulty chosen)
     {
         difficulty = chosen;
+        tunnelTravel = LevelEnvironment.TitleTravel;
         Active = true;
         GameRules.StartNewRun(chosen);
         LevelRun.Reset();
@@ -105,23 +109,25 @@ public sealed class HangarHub : MonoBehaviour
     // The hangar is a bay inside the Tunnel: one still Tunnel section, with the docks, shop and doors built into it.
     void BuildHall()
     {
-        Scenery(LevelEnvironment.KitMesh("TunnelGround" + TunnelSection), 90, -50, .8f);
-        Scenery(LevelEnvironment.KitMesh("TunnelDetail" + TunnelSection), 90, -40, .8f);
+        for (int i = 0; i < 4; i++)
+        {
+            float y = LevelEnvironment.SectionY(i, tunnelTravel);
+            Scenery(LevelEnvironment.KitMesh("TunnelGround" + i), y, 90, -50, .8f);
+            Scenery(LevelEnvironment.KitMesh("TunnelDetail" + i), y, 90, -40, .8f);
+            Scenery(LevelEnvironment.KitMesh("TunnelNear" + i), y, 76, -25, .8f);
+        }
         hall = IndustrialMeshFactory.TerraScenery("HangarProps");
         // Raised above the Tunnel's wall detail, which writes depth up to 2.2 units toward the camera.
-        Scenery(hall, 87.5f, -30, 1);
-        Scenery(LevelEnvironment.KitMesh("TunnelNear" + TunnelSection), 76, -25, .8f);
+        Scenery(hall, center.y, 87.5f, -30, 1);
     }
 
-    const int TunnelSection = 1;
-
-    void Scenery(Mesh mesh, float z, int order, float width)
+    void Scenery(Mesh mesh, float y, float z, int order, float width)
     {
         if (mesh == null)
             return;
         var part = new GameObject(mesh.name);
         part.transform.SetParent(transform, false);
-        part.transform.position = new Vector3(center.x, center.y, z);
+        part.transform.position = new Vector3(center.x, y, z);
         part.transform.localScale = new Vector3(width, 1, 1);
         part.AddComponent<MeshFilter>().sharedMesh = mesh;
         var renderer = part.AddComponent<MeshRenderer>();
@@ -182,8 +188,10 @@ public sealed class HangarHub : MonoBehaviour
             if (type == null)
                 continue;
             var plinth = new Plinth { kind = stock[i], spot = Spot(plinthSpots[i], 1) };
-            var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.spot, Quaternion.identity);
+            // Waits off the right edge, then glides onto its plinth during the arrival.
+            var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.spot + Vector3.right * SlideDistance, Quaternion.identity);
             go.transform.SetParent(transform, true);
+            go.SetActive(false);
             plinth.item = (AItem)go.AddComponent(type);
             plinth.item.SetRarity(ItemPool.RarityOf(stock[i]));
             plinth.disc = Hover("HangarShopPlinth", plinth.spot + new Vector3(0, -.3f, .5f), -4);
@@ -193,18 +201,18 @@ public sealed class HangarHub : MonoBehaviour
         }
     }
 
-    // A thin amber line across the open doors fills while the ship holds there.
     void BuildGate()
     {
         // A faint mist across the open doors, fading downward; flying into it launches the run.
         var bottom = new Color(.62f, .74f, .8f, 0);
-        var top = new Color(.7f, .8f, .86f, .85f);
+        var top = new Color(.7f, .8f, .86f, 0);
         float width = GateHalfWidth + .9f, low = GateY - 1.6f, high = center.y + 9.5f;
         var mesh = new Mesh { name = "Launch mist" };
         mesh.vertices = new[] { new Vector3(-width, low), new Vector3(-width, high), new Vector3(width, high), new Vector3(width, low) };
         mesh.colors = new[] { bottom, top, top, bottom };
         mesh.triangles = new[] { 0, 1, 2, 0, 2, 3 };
         quads.Add(mesh);
+        mist = mesh;
         var go = new GameObject("Launch mist");
         go.transform.SetParent(transform, false);
         go.transform.position = new Vector3(center.x, 0, 2);
@@ -278,21 +286,43 @@ public sealed class HangarHub : MonoBehaviour
         return go.transform;
     }
 
-    float GateY => Mathf.Min(center.y + 6.4f, Camera.UpLimit - .3f);
+    // The very top of the reachable arena.
+    float GateY => Camera.UpLimit - .1f;
     Vector3 Spot(Vector2 local, float z) => new Vector3(center.x + local.x, center.y + local.y, z);
 
-    // The ship rises into the hangar from below the screen once the screen is showing.
-    // Applied after the controller's own update, which would otherwise clamp it into the arena.
-    const float ArrivalSeconds = 1.4f;
+    // Arrival: the ship rises from below, the docks and plinths slide in from the sides and the light
+    // at the top grows. Applied after the controller's own update, which would otherwise clamp the ship.
+    const float ArrivalSeconds = 1.4f, SlideDistance = 6, SlideSeconds = .9f, LightSeconds = 2.6f;
     Vector3 parkedAt;
-    float arrival = -1;
+    float arrival = -1, introTime;
     bool Arriving => arrival >= 0;
+    Mesh mist;
+
+    float Slide(int order) => 1 - Mathf.SmoothStep(0, 1, (introTime - .25f - order * .12f) / SlideSeconds);
 
     void LateUpdate()
     {
+        // Everything holds its starting pose until the transition has finished.
+        bool running = !CloudTransition.Busy;
+        if (running)
+            introTime += Time.deltaTime;
+        if (mist != null && introTime < LightSeconds + .5f)
+        {
+            float glow = Mathf.SmoothStep(0, 1, (introTime - .2f) / LightSeconds) * .85f;
+            var bottom = new Color(.62f, .74f, .8f, 0);
+            var top = new Color(.7f, .8f, .86f, glow);
+            mist.colors = new[] { bottom, top, top, bottom };
+        }
+        for (int i = 0; i < plinths.Count; i++)
+            if (!plinths[i].sent && plinths[i].item != null && Slide(i) < .999f)
+            {
+                plinths[i].sent = true;
+                plinths[i].item.gameObject.SetActive(true);
+                plinths[i].item.GoToPosition(plinths[i].spot);
+            }
         if (!Arriving || player == null)
             return;
-        if (!CloudTransition.Busy)
+        if (running)
             arrival += Time.deltaTime / ArrivalSeconds;
         float below = center.y - UnityEngine.Camera.main.orthographicSize - 1.2f;
         float t = 1 - Mathf.Pow(1 - Mathf.Clamp01(arrival), 3);
@@ -303,7 +333,7 @@ public sealed class HangarHub : MonoBehaviour
 
     void Update()
     {
-        if (player == null || launching || Arriving)
+        if (player == null || launching)
             return;
         var p = player.transform.position;
         int pad = NearestBay(p);
@@ -313,13 +343,17 @@ public sealed class HangarHub : MonoBehaviour
             bay.lift = Mathf.MoveTowards(bay.lift, i == pad ? 1 : 0, Time.deltaTime * 5);
             float t = Time.time * 1.3f + i;
             float hover = Mathf.Sin(t) * .06f + bay.lift * .12f;
+            var slide = Vector3.left * SlideDistance * Slide(i);
             if (bay.pad != null)
-                bay.pad.position = bay.spot + new Vector3(0, hover, .6f);
+                bay.pad.position = bay.spot + slide + new Vector3(0, hover, .6f);
             if (bay.shadow != null)
+            {
+                bay.shadow.position = new Vector3(bay.spot.x + .35f, bay.spot.y - .55f, 87) + slide;
                 bay.shadow.localScale = Vector3.one * (1 - hover * .5f);
+            }
             if (bay.display != null)
             {
-                bay.display.position = bay.spot + new Vector3(0, hover, 0);
+                bay.display.position = bay.spot + slide + new Vector3(0, hover, 0);
                 bay.display.rotation = Quaternion.AngleAxis(Mathf.Sin(t * .7f) * (4 + bay.lift * 10), Vector3.up);
                 bay.display.localScale = player.transform.lossyScale * (1 + bay.lift * .1f);
             }
@@ -329,13 +363,16 @@ public sealed class HangarHub : MonoBehaviour
         for (int i = 0; i < plinths.Count; i++)
         {
             float bob = Mathf.Sin(Time.time * 1.1f + i * 1.7f) * .05f;
+            var slide = Vector3.right * SlideDistance * Slide(i);
             if (plinths[i].disc != null)
-                plinths[i].disc.position = plinths[i].spot + new Vector3(0, -.3f + bob, .5f);
+                plinths[i].disc.position = plinths[i].spot + slide + new Vector3(0, -.3f + bob, .5f);
+            if (plinths[i].shadow != null)
+                plinths[i].shadow.position = new Vector3(plinths[i].spot.x + .35f, plinths[i].spot.y - .85f, 87) + slide;
             var item = plinths[i].item;
             if (item == null)
                 continue;
             // Shop items are displays: keep their spin but never let them be attracted or equipped.
-            if (item.enabled && item.Settled)
+            if (item.enabled && plinths[i].sent && item.Settled)
                 item.enabled = false;
             int price = MetaProgress.Price(item.rarity);
             overlay.SetOffer(i, price.ToString(), MetaProgress.Coins >= price);
@@ -351,7 +388,7 @@ public sealed class HangarHub : MonoBehaviour
             else
                 dialog.Hide();
         }
-        if (p.y >= GateY && Mathf.Abs(p.x - center.x) <= GateHalfWidth)
+        if (!Arriving && p.y >= GateY && Mathf.Abs(p.x - center.x) <= GateHalfWidth)
             StartCoroutine(Launch());
     }
 
@@ -455,12 +492,12 @@ public sealed class HangarHub : MonoBehaviour
         // The controller clamps the ship inside the arena, so it lets go first.
         player.enabled = false;
         var ship = player.transform;
-        float top = center.y + UnityEngine.Camera.main.orthographicSize + 1.5f, speed = 1.5f;
+        float top = center.y + UnityEngine.Camera.main.orthographicSize + 1.5f, speed = 1f;
         while (ship.position.y < top)
         {
-            speed += Time.deltaTime * 14;
+            speed += Time.deltaTime * 6;
             var p = ship.position;
-            p.x = Mathf.Lerp(p.x, center.x, 1 - Mathf.Exp(-3 * Time.deltaTime));
+            p.x = Mathf.Lerp(p.x, center.x, 1 - Mathf.Exp(-.8f * Time.deltaTime));
             p.y += speed * Time.deltaTime;
             ship.position = p;
             yield return null;

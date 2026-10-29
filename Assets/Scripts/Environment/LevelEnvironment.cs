@@ -153,6 +153,21 @@ public sealed class LevelEnvironment : MonoBehaviour
     Transform stormAudioRoot;
     bool stormAudioReleased;
     bool titleBackdrop;
+    // The title's tunnel can be brought to a stop, so the hangar can take over from the very same view.
+    static LevelEnvironment title;
+    float travelRate = 1;
+    public static float TitleTravel => title != null ? title.travel : 0;
+
+    public static IEnumerator HaltTitle(float seconds)
+    {
+        for (float t = 0; t < seconds && title != null; t += Time.unscaledDeltaTime)
+        {
+            title.travelRate = 1 - Mathf.SmoothStep(0, 1, t / seconds);
+            yield return null;
+        }
+        if (title != null)
+            title.travelRate = 0;
+    }
     const float StormFadeSeconds = 3.5f;
     readonly LineRenderer[] bolts = new LineRenderer[3];
     System.Random random;
@@ -173,6 +188,7 @@ public sealed class LevelEnvironment : MonoBehaviour
         var environment = root.AddComponent<LevelEnvironment>();
         environment.level = LevelId.Tunnel;
         environment.titleBackdrop = true;
+        title = environment;
         var build = environment.BuildSteps(true);
         while (build.MoveNext())
             yield return build.Current;
@@ -633,7 +649,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     {
         float dt = titleBackdrop ? Time.unscaledDeltaTime : Time.deltaTime;
         clock += dt;
-        travel = Mathf.Repeat(travel + dt * (level == LevelId.Tunnel ? 10.2f : level == LevelId.City ? 1.8f : 4.4f), LoopLength);
+        travel = Mathf.Repeat(travel + dt * travelRate * (level == LevelId.Tunnel ? 10.2f : level == LevelId.City ? 1.8f : 4.4f), LoopLength);
         for (int i = 0; i < sections.Count; i++)
         {
             float y = SectionY(i, travel);

@@ -73,34 +73,12 @@ public sealed class CloudTransition : MonoBehaviour
             graphic.Configure(artwork, i);
         }
         cloudLayer = viewport;
-        // Some trips (the title into the hangar) dip briefly through black instead of the clouds.
-        var dip = new GameObject("Black dip", typeof(RectTransform), typeof(Image));
-        dip.transform.SetParent(transform, false);
-        var dipRect = dip.GetComponent<RectTransform>();
-        dipRect.anchorMin = Vector2.zero;
-        dipRect.anchorMax = Vector2.one;
-        dipRect.offsetMin = dipRect.offsetMax = Vector2.zero;
-        blackDip = dip.GetComponent<Image>();
-        blackDip.color = new Color(0, 0, 0, 0);
-        blackDip.raycastTarget = false;
         canvas.enabled = false;
     }
 
+    // Some trips (the title into the hangar, which shows the same tunnel) cut straight across without the clouds.
     GameObject cloudLayer;
-    Image blackDip;
     bool clouds = true;
-    const float DipSeconds = .3f;
-
-    IEnumerator Dip(bool cover)
-    {
-        for (float t = 0; t < DipSeconds; t += Mathf.Min(Time.unscaledDeltaTime, MaxFlowStep))
-        {
-            float a = Mathf.SmoothStep(0, 1, t / DipSeconds);
-            blackDip.color = new Color(0, 0, 0, cover ? a : 1 - a);
-            yield return null;
-        }
-        blackDip.color = new Color(0, 0, 0, cover ? 1 : 0);
-    }
 
     void SceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -234,7 +212,8 @@ public sealed class CloudTransition : MonoBehaviour
             var preparing = StartCoroutine(LevelEnvironment.Prepare());
             if (scene != null && scenePreparation == null)
                 scenePreparation = StartCoroutine(PreloadScene(scene));
-            yield return clouds ? Move(true) : Dip(true);
+            if (clouds)
+                yield return Move(true);
             yield return preparing;
             if (scene != null)
             {
@@ -273,11 +252,11 @@ public sealed class CloudTransition : MonoBehaviour
                 if (!HangarHub.Active)
                     LevelReveal.Show();
             }
-            yield return clouds ? Move(false) : Dip(false);
+            if (clouds)
+                yield return Move(false);
         }
         finally
         {
-            blackDip.color = new Color(0, 0, 0, 0);
             cloudLayer.SetActive(true);
             clouds = true;
             Application.backgroundLoadingPriority = previousPriority;

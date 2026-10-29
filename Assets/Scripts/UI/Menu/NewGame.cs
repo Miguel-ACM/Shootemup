@@ -68,7 +68,29 @@ public class NewGame : AMenuElement
             return;
         }
         starting = true;
-        HangarHub.Enter(option == 0 ? RunDifficulty.Easy : RunDifficulty.Hard);
+        StartCoroutine(IntoHangar(option == 0 ? RunDifficulty.Easy : RunDifficulty.Hard));
+    }
+
+    // The menu fades away while the title's tunnel slows to a stop; the hangar then continues from that same view.
+    System.Collections.IEnumerator IntoHangar(RunDifficulty difficulty)
+    {
+        const float Seconds = 1.1f;
+        menu.Suspended = true;
+        var group = menu.GetComponent<CanvasGroup>();
+        var panel = menu.transform.parent.GetComponent<Image>();
+        var shade = panel != null ? panel.color : Color.clear;
+        var halt = StartCoroutine(LevelEnvironment.HaltTitle(Seconds));
+        for (float t = 0; t < Seconds; t += Time.unscaledDeltaTime)
+        {
+            float fade = Mathf.Clamp01(t / .4f);
+            if (group != null)
+                group.alpha = 1 - fade;
+            if (panel != null)
+                panel.color = new Color(shade.r, shade.g, shade.b, shade.a * (1 - Mathf.Clamp01(t / Seconds)));
+            yield return null;
+        }
+        yield return halt;
+        HangarHub.Enter(difficulty);
     }
 }
 
