@@ -1,0 +1,17 @@
+[
+  {
+    "object": "Spindle",
+    "motion": "spin",
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "pivot": [
+      0,
+      0,
+      0.17
+    ],
+    "speed": 360
+  }
+]
