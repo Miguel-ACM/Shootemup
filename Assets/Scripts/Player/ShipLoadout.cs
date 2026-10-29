@@ -30,6 +30,7 @@ public sealed class ShipLoadout : MonoBehaviour
         foreach (var w in GetComponentsInChildren<AWeapon>())
             if (w.Slot != AWeapon.WeaponInput.both)
                 Weapons[w.Slot == AWeapon.WeaponInput.primary ? 0 : 1] = w;
+        ShipFrames.ApplyWeapons(this, ShipFrames.Current);
         gameObject.AddComponent<LoadoutHUD>();
     }
 
@@ -106,18 +107,44 @@ public sealed class ShipLoadout : MonoBehaviour
         }
         replacement.transform.localPosition = Vector3.zero;
         replacement.SetWeaponInput(slot == 0 ? AWeapon.WeaponInput.primary : AWeapon.WeaponInput.secondary);
-        var old = Weapons[slot];
+        RemoveWeapon(slot);
         Weapons[slot] = replacement;
-        if (old != null)
-        {
-            old.StopFiring();
-            old.enabled = false;
-            if (old.gameObject == gameObject)
-                Destroy(old);
-            else
-                Destroy(old.gameObject);
-        }
+    }
 
+    /// <summary>The ship frame's own gun: the base cannon, another weapon by name, or none.</summary>
+    public void SetPrimary(string name)
+    {
+        var current = Weapons[0];
+        if (name == null)
+        {
+            RemoveWeapon(0);
+            return;
+        }
+        if (current != null && current.GetType().Name == name)
+            return;
+        if (name != nameof(BaseWeapon))
+        {
+            EquipWeapon(name, 0);
+            return;
+        }
+        RemoveWeapon(0);
+        var gun = gameObject.AddComponent<BaseWeapon>();
+        gun.SetWeaponInput(AWeapon.WeaponInput.primary);
+        Weapons[0] = gun;
+    }
+
+    void RemoveWeapon(int slot)
+    {
+        var old = Weapons[slot];
+        Weapons[slot] = null;
+        if (old == null)
+            return;
+        old.StopFiring();
+        old.enabled = false;
+        if (old.gameObject == gameObject)
+            Destroy(old);
+        else
+            Destroy(old.gameObject);
     }
 
     public void EquipActive(AActiveItem item, int slot)

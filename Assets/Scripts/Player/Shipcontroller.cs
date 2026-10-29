@@ -74,7 +74,10 @@ public class Shipcontroller : MonoBehaviour
         input = new Inputs();
         gameObject.AddComponent<ShipLoadout>();
         gameObject.AddComponent<CombatUpgrades>();
-        maxHealth = health = StartingHits;
+        // The chosen frame sets hits and handling before any item modifies them.
+        var frame = ShipFrames.Current;
+        ShipFrames.ApplyStats(frame);
+        maxHealth = health = frame.hits;
         healthBar.SetMax(maxHealth);
         healthBar.Set(health);
 
@@ -163,7 +166,12 @@ public class Shipcontroller : MonoBehaviour
         limits = Camera.getLimits();
         circleCollider = GetComponent<Collider2D>();
         renderer = GetComponent<SpriteRenderer>();
-        StartCoroutine(ExplodingShield.GrantStarter(this));
+        ShipFrames.ApplyHull(this, ShipFrames.Current);
+        if (!HangarHub.Active)
+        {
+            StartCoroutine(ExplodingShield.GrantStarter(this));
+            StartCoroutine(ShipFrames.GrantStarters(this, ShipFrames.Current));
+        }
         //bigCollision = GameObject.GetComponent<PollygonCollider2D();
 
     }

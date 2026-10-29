@@ -28,6 +28,102 @@ public sealed class PSXShipVisual : MonoBehaviour
                     marker.transform.localScale *= factor;
     }
 
+    // Selectable ships swap the hull under the banking model; the authored hull stays as the fallback.
+    GameObject alternateHull;
+    MeshRenderer defaultRenderer;
+    MeshRenderer[] defaultParts;
+    bool defaultPoseCaptured;
+    Matrix4x4 defaultPose;
+    Quaternion RestRotation => customOrientation ? baseRotation : Quaternion.Euler(-75f, 0f, 0f) * Quaternion.Euler(0f, 180f, 0f);
+
+    /// <summary>Shows a Terra hull (authored in ship-root space, nose +Y), or the authored hull for null or a missing model.</summary>
+    public void UseHull(string terraModel)
+    {
+        CaptureDefault();
+        if (alternateHull != null)
+        {
+            alternateHull.SetActive(false);
+            Destroy(alternateHull);
+            alternateHull = null;
+        }
+        var mesh = terraModel != null ? IndustrialMeshFactory.TerraModel(terraModel) : null;
+        if (mesh == null)
+        {
+            modelRenderer = defaultRenderer;
+            partRenderers = defaultParts;
+            Apply();
+            return;
+        }
+        foreach (var part in DefaultRenderers())
+            part.enabled = false;
+        alternateHull = BuildTerraHull(terraModel, mesh, model);
+        var saved = model.localRotation;
+        model.localRotation = RestRotation;
+        alternateHull.transform.SetPositionAndRotation(transform.position, transform.rotation);
+        alternateHull.transform.localScale = Vector3.one * (transform.lossyScale.x / model.lossyScale.x);
+        model.localRotation = saved;
+        partRenderers = alternateHull.GetComponentsInChildren<MeshRenderer>();
+        modelRenderer = partRenderers[0];
+        Apply();
+    }
+
+    /// <summary>A copy of a hull with the ship root's scale, for parking it in the hangar.</summary>
+    public GameObject BuildDisplayHull(string terraModel)
+    {
+        CaptureDefault();
+        var root = new GameObject("Parked " + (terraModel ?? "GR-07"));
+        root.transform.localScale = transform.lossyScale;
+        var mesh = terraModel != null ? IndustrialMeshFactory.TerraModel(terraModel) : null;
+        if (mesh != null)
+        {
+            BuildTerraHull(terraModel, mesh, root.transform);
+            return root;
+        }
+        var hull = new GameObject("GR-07 hull");
+        hull.transform.SetParent(root.transform, false);
+        hull.transform.localPosition = defaultPose.GetColumn(3);
+        hull.transform.localRotation = defaultPose.rotation;
+        hull.transform.localScale = defaultPose.lossyScale;
+        hull.AddComponent<MeshFilter>().sharedMesh = defaultRenderer.GetComponent<MeshFilter>().sharedMesh;
+        var renderer = hull.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = defaultRenderer.sharedMaterial;
+        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        return root;
+    }
+
+    GameObject BuildTerraHull(string name, Mesh mesh, Transform parent)
+    {
+        var hull = new GameObject("Terra " + name);
+        hull.transform.SetParent(parent, false);
+        hull.layer = gameObject.layer;
+        hull.AddComponent<MeshFilter>().sharedMesh = mesh;
+        var renderer = hull.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = IndustrialMeshFactory.TerraMaterial(name) ?? defaultRenderer.sharedMaterial;
+        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        renderer.receiveShadows = false;
+        renderer.sortingLayerID = defaultRenderer.sortingLayerID;
+        renderer.sortingOrder = defaultRenderer.sortingOrder;
+        IndustrialMeshFactory.AttachTerraParts(name, hull.transform, renderer.sharedMaterial);
+        foreach (var child in hull.GetComponentsInChildren<Transform>())
+            child.gameObject.layer = gameObject.layer;
+        return hull;
+    }
+
+    MeshRenderer[] DefaultRenderers() => defaultParts != null && defaultParts.Length > 0 ? defaultParts : new[] { defaultRenderer };
+
+    void CaptureDefault()
+    {
+        if (defaultPoseCaptured)
+            return;
+        defaultPoseCaptured = true;
+        defaultRenderer = modelRenderer;
+        defaultParts = partRenderers;
+        var saved = model.localRotation;
+        model.localRotation = RestRotation;
+        defaultPose = transform.worldToLocalMatrix * defaultRenderer.transform.localToWorldMatrix;
+        model.localRotation = saved;
+    }
+
     static readonly int Tint = Shader.PropertyToID("_Tint");
     static readonly int PlayerDepth = Shader.PropertyToID("_PlayerDepth");
 
