@@ -30,6 +30,7 @@ public sealed class EnemyEditorWindow : EditorWindow
     List<ValueInfo> values;
     Mesh mesh;
     Material material;
+    (Mesh mesh, IndustrialMeshFactory.TerraPart part)[] parts = System.Array.Empty<(Mesh, IndustrialMeshFactory.TerraPart)>();
     PreviewRenderUtility preview;
     EnemyTuning asset;
     public static IReadOnlyList<EnemyInfo> Catalog
@@ -84,6 +85,12 @@ public sealed class EnemyEditorWindow : EditorWindow
         preview = null;
     }
 
+    void OnInspectorUpdate()
+    {
+        if (parts.Length > 0)
+            Repaint();
+    }
+
     void UndoChanged()
     {
         Select(selected, false);
@@ -100,6 +107,7 @@ public sealed class EnemyEditorWindow : EditorWindow
         {
             mesh = model.Hull.GetComponent<MeshFilter>().sharedMesh;
             material = model.Hull.GetComponent<MeshRenderer>().sharedMaterial;
+            parts = model.Hull.GetComponentsInChildren<TerraPartMotion>().Select(p => (p.GetComponent<MeshFilter>().sharedMesh, p.part)).ToArray();
             if (model is DesertWormBoss)
                 material = IndustrialMeshFactory.WhiteWormMaterial;
             AddValues(model, "");
@@ -348,6 +356,13 @@ public sealed class EnemyEditorWindow : EditorWindow
         try
         {
             preview.DrawMesh(mesh, matrix, material, 0);
+            // Terra rotors and fins move in the preview as they do in the game.
+            float t = (float)EditorApplication.timeSinceStartup;
+            foreach (var (partMesh, part) in parts)
+            {
+                float angle = part.spin ? t * part.speed : part.amplitude * Mathf.Sin(t * part.speed * Mathf.PI * 2);
+                preview.DrawMesh(partMesh, matrix * Matrix4x4.TRS(part.pivot, Quaternion.AngleAxis(angle, part.axis), Vector3.one), material, 0);
+            }
             preview.Render(true);
             return preview.EndPreview();
         }
