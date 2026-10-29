@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// The hub between runs, inside the gameplay scene: parked ships on the left (hover and press a button to switch),
@@ -17,8 +19,8 @@ public sealed class HangarHub : MonoBehaviour
     static RunDifficulty difficulty = RunDifficulty.Hard;
     // Where the title's tunnel came to rest, so the hangar continues from exactly that view.
     static float tunnelTravel;
-    static readonly Vector2[] padSpots = { new Vector2(-2.2f, 4.2f), new Vector2(-2.2f, 1.4f), new Vector2(-2.2f, -1.4f), new Vector2(-2.2f, -4.2f) };
-    static readonly Vector2[] plinthSpots = { new Vector2(2.3f, 4.4f), new Vector2(2.3f, .9f), new Vector2(2.3f, -2.6f) };
+    static readonly Vector2[] padSpots = { new Vector2(-2.25f, 4.2f), new Vector2(-2.25f, 1.4f), new Vector2(-2.25f, -1.4f), new Vector2(-2.25f, -4.2f) };
+    static readonly Vector2[] plinthSpots = { new Vector2(2.25f, 3.5f), new Vector2(2.25f, 0), new Vector2(2.25f, -3.5f) };
     const float PadReach = 1f, PlinthReach = .85f, GateHalfWidth = 2f;
 
     sealed class Bay
@@ -202,6 +204,56 @@ public sealed class HangarHub : MonoBehaviour
         }
     }
 
+    // The banked coins, on the wall beside the shop: a coin and a number on an opaque plate.
+    RectTransform wallet;
+    TextMeshProUGUI walletCount;
+
+    void UpdateWallet()
+    {
+        if (wallet == null)
+        {
+            var root = new GameObject("Hangar wallet", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
+            root.transform.SetParent(transform, false);
+            var canvas = root.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 64;
+            var scaler = root.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1280, 720);
+            scaler.matchWidthOrHeight = 1;
+            var plate = new GameObject("Wallet plate", typeof(RectTransform), typeof(Image));
+            plate.transform.SetParent(root.transform, false);
+            plate.GetComponent<Image>().color = Color.black;
+            wallet = plate.GetComponent<RectTransform>();
+            wallet.sizeDelta = new Vector2(58, 24);
+            var coin = new GameObject("Coin", typeof(RectTransform), typeof(Image));
+            coin.transform.SetParent(wallet, false);
+            var disc = coin.GetComponent<Image>();
+            disc.sprite = CombatVisuals.Disc;
+            disc.color = new Color(1, .76f, .25f);
+            disc.raycastTarget = false;
+            disc.rectTransform.sizeDelta = new Vector2(12, 12);
+            disc.rectTransform.anchoredPosition = new Vector2(-18, 0);
+            var text = new GameObject("Coins", typeof(RectTransform), typeof(TextMeshProUGUI));
+            text.transform.SetParent(wallet, false);
+            walletCount = text.GetComponent<TextMeshProUGUI>();
+            if (dialog != null)
+                walletCount.font = dialog.font;
+            walletCount.fontSize = 12;
+            walletCount.alignment = TextAlignmentOptions.MidlineLeft;
+            walletCount.color = new Color(1, .82f, .4f);
+            walletCount.raycastTarget = false;
+            walletCount.rectTransform.sizeDelta = new Vector2(36, 20);
+            walletCount.rectTransform.anchoredPosition = new Vector2(8, 0);
+        }
+        walletCount.text = MetaProgress.Coins.ToString();
+        var camera = UnityEngine.Camera.main;
+        var canvasRect = (RectTransform)wallet.parent;
+        var viewport = camera.WorldToViewportPoint(new Vector3(center.x + 4, center.y, 0));
+        wallet.anchoredPosition = new Vector2((viewport.x - .5f) * canvasRect.rect.width, (viewport.y - .5f) * canvasRect.rect.height);
+        wallet.gameObject.SetActive(Slide(plinths.Count) < .5f);
+    }
+
     void BuildGate()
     {
         // A faint mist across the open doors, fading downward; flying into it launches the run.
@@ -378,12 +430,16 @@ public sealed class HangarHub : MonoBehaviour
             int price = MetaProgress.Price(item.rarity);
             overlay.SetOffer(i, price.ToString(), MetaProgress.Coins >= price);
         }
+        UpdateWallet();
         if (dialog != null && shop != described)
         {
             described = shop;
             if (shop >= 0)
             {
                 var data = plinths[shop].item.GetData();
+                // In the hangar the card sits at the very bottom, clear of the shop.
+                if (dialog.Panel != null)
+                    dialog.Panel.anchoredPosition = new Vector2(0, 12);
                 dialog.ShowItemDesc(data[0], data[1], data[2], plinths[shop].item.rarity);
             }
             else
