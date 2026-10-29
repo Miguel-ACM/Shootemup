@@ -72,6 +72,9 @@ public sealed class PSXPresentation : MonoBehaviour
         rect.anchorMax = Vector2.one;
         rect.offsetMin = rect.offsetMax = Vector2.zero;
         initialized = true;
+        // The hangar keeps the title's clean image; the PS1 filter belongs to the run.
+        if (HangarHub.Active)
+            filterEnabled = false;
         Resize();
         RenderPipelineManager.endCameraRendering += AfterCamera;
     }
