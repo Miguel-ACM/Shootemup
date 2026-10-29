@@ -86,10 +86,19 @@ public sealed class TrailDrone : ACompanion
         Vector3 target = (leader != null ? leader.worldPosition : owner.transform.position) + offset;
         target.x = Mathf.Clamp(target.x, center - halfWidth + .35f, center + halfWidth - .35f);
         target.y = Mathf.Max(bottom + .4f, target.y);
-        // Laser drones hold a rigid column straight behind the ship instead of trailing its path.
+        // Laser drones hold a rigid row straight behind the ship instead of trailing its path:
+        // one sits centred, two sit a little left and right, more spread evenly.
         if (laser)
         {
-            target = owner.transform.position + new Vector3(0, -.65f * (index + 1), -.02f);
+            int slot = 0, lasers = 0;
+            foreach (var drone in owner.GetComponentsInChildren<TrailDrone>())
+                if (drone.laser)
+                {
+                    if (drone == this)
+                        slot = lasers;
+                    lasers++;
+                }
+            target = owner.transform.position + new Vector3((slot - (lasers - 1) * .5f) * .55f, -.65f, -.02f);
             target.y = Mathf.Max(bottom + .4f, target.y);
             worldPosition = target;
         }
