@@ -1,16 +1,16 @@
 using System.Collections;
 using UnityEngine;
 
-// Tunnel saw: it ricochets around the whole arena and flies its attacks as cards.
+// Tunnel saw. Every round leaves from the centre of the spinning blade.
 // Phase one
-//   Frogger Crossing: it brakes in the middle of the arena and spins out six widening
-//     rings that turn in alternate directions; each ring has a gap and the gaps slide,
-//     so crossing them is a timing puzzle.
-//   Ricochet Storm: free bouncing; every wall it strikes is sprayed with fast arrows
-//     and slow teeth along the same rays, and it answers with aimed arrow wavefronts.
+//   Frogger Crossing, over and over: it glides to a new station, brakes, spins up and
+//     throws six widening rings that turn in alternate directions; each ring has a
+//     gap and the gaps slide, so crossing them is a timing puzzle.
 // Phase two (no minions)
-//   Rim Runners: each bounce also hurls teeth that cling to the walls and run round
-//     the arena's rim, closing in the space.
+//   Ricochet Storm / Rim Runners: it ricochets round the whole arena; every bounce
+//     releases a full 360-degree burst of fast arrows and slow teeth, some of which
+//     bounce off the walls, and during Rim Runners teeth that cling to the walls and
+//     run round the rim. Between bounces it fires 360 arrow wavefronts.
 //   Gearbox: it locks in the middle and turns out four interlocking spiral arms,
 //     two winding each way, like meshing gears.
 public sealed partial class TunnelSawBoss
@@ -29,10 +29,7 @@ public sealed partial class TunnelSawBoss
         while (true)
         {
             if (!phaseTwo)
-            {
                 yield return FroggerCrossing();
-                yield return RicochetStorm(8);
-            }
             else
             {
                 runners = true;
@@ -47,15 +44,15 @@ public sealed partial class TunnelSawBoss
     {
         using var sample = burstMarker.Auto();
         impacts++;
-        int rays = Dense(phaseTwo ? 15 : 13);
-        float step = 160f / (rays - 1);
+        int rays = Dense(20);
+        float step = 360f / rays;
         for (int i = 0; i < rays; i++)
         {
-            var axis = CombatVisuals.Rotate(inward, (i - (rays - 1) * .5f) * step);
-            var rim = transform.position + (Vector3)axis * Radius * .92f;
-            Fire<NeedleRound>(rim, axis, 4.8f, .19f);
-            if (i < rays - 1)
-                Fire<SimpleRound>(rim, CombatVisuals.Rotate(axis, step * .5f), 1.5f, .3f);
+            var axis = CombatVisuals.Rotate(inward, i * step + impacts * 7);
+            Fire<NeedleRound>(transform.position, axis, 4.8f, .19f);
+            var tooth = Fire<SimpleRound>(transform.position, CombatVisuals.Rotate(axis, step * .5f), 1.6f, .3f);
+            if (i % 2 == 0)
+                tooth.Bounce(2);
         }
         if (!runners)
             return;
@@ -63,16 +60,20 @@ public sealed partial class TunnelSawBoss
         for (int i = 0; i < count; i++)
         {
             var axis = CombatVisuals.Rotate(inward, (i - (count - 1) * .5f) * 26);
-            Fire<SimpleRound>(transform.position + (Vector3)axis * Radius, axis, 4.4f, .24f)
+            Fire<SimpleRound>(transform.position, axis, 4.4f, .24f)
                 .RunWalls(8, impacts % 2 == 0 ? 1 : -1);
         }
     }
 
-    // Brake, travel to the centre and hold there while the card plays.
-    IEnumerator Centre()
+    static readonly Vector2[] Stations = { new Vector2(0, .25f), new Vector2(-.55f, .5f), new Vector2(.55f, .05f), new Vector2(-.5f, -.1f), new Vector2(.5f, .55f) };
+    int nextStation;
+
+    // Brake, glide to a station (the centre by default) and hold there while the card plays.
+    IEnumerator Centre(Vector2? spot = null)
     {
         haltUntil = float.MaxValue;
-        var centre = new Vector3(arena.center.x, arena.center.y + 1.2f, transform.position.z);
+        var at = spot ?? new Vector2(0, .25f);
+        var centre = new Vector3(arena.center.x + at.x * (arena.width * .5f - Radius), arena.center.y + at.y * (arena.height * .5f - Radius), transform.position.z);
         while (Vector3.Distance(transform.position, centre) > .05f)
         {
             if (!Holding)
@@ -91,7 +92,8 @@ public sealed partial class TunnelSawBoss
 
     IEnumerator FroggerCrossing()
     {
-        yield return Centre();
+        spinner.spin = 720;
+        yield return Centre(Stations[nextStation++ % Stations.Length]);
         yield return Charge(Hull, Vector3.zero, .5f);
         int teeth = Dense(30);
         for (int ring = 0; ring < 6; ring++)
@@ -109,13 +111,18 @@ public sealed partial class TunnelSawBoss
             yield return Wait(Rest(.55f));
         }
         yield return Wait(.6f);
-        ResumeBouncing();
     }
 
     IEnumerator RicochetStorm(float seconds)
     {
+        ResumeBouncing();
         yield return Every(seconds, 1.3f, n =>
-            ArrowWavefront(transform.position, CombatVisuals.Aim(transform.position), Dense(13), 80, 2, 3.2f, .9f));
+        {
+            int arrows = Dense(24);
+            for (int layer = 0; layer < 2; layer++)
+                for (int i = 0; i < arrows; i++)
+                    Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, (i + layer * .5f + n * .25f) * 360f / arrows), 3.0f + layer * .9f, .19f);
+        });
     }
 
     // Four spiral arms, two winding each way: the crossings mesh like gear teeth.
@@ -136,7 +143,6 @@ public sealed partial class TunnelSawBoss
             yield return Wait(Rest(.085f));
         }
         yield return Wait(.8f);
-        ResumeBouncing();
     }
 
     protected override void OnPhaseTwo()
