@@ -64,7 +64,8 @@ public sealed partial class SnowSiegeBoss : DistrictBoss
         {
             launch[i] = Hull.TransformPoint(new Vector3((i % 2 == 0 ? -1 : 1) * .38f, -.65f, -.25f));
             float x = Mathf.Lerp(Camera.LeftLimit + .35f, Camera.RightLimit - .35f, (i + .5f) / combCount);
-            lanes[i] = new Vector3(x, Hull.GetComponent<MeshRenderer>().bounds.min.y - .25f, 0);
+            // The comb lines the top edge of the screen, so its rain covers the whole arena.
+            lanes[i] = new Vector3(x, Camera.UpLimit - .35f, 0);
             comb[i].position = launch[i];
             comb[i].gameObject.SetActive(true);
         }
