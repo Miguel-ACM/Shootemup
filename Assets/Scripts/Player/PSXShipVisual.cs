@@ -131,50 +131,63 @@ public sealed class PSXShipVisual : MonoBehaviour
         }
         if (cockpit != null)
             DestroyCockpit(cockpit);
-        cockpit = BuildCockpit(cockpitFrame, color);
+        cockpit = BuildCockpit(cockpitFrame, color, true);
         cockpit.gameObject.layer = gameObject.layer;
         Apply();
     }
 
-    /// <summary>A shining hexagonal canopy: dark rim, coloured glass and a bright crown, unlit so it reads over any hull.</summary>
-    public static MeshRenderer BuildCockpit(Transform parent, Color color)
+    /// <summary>
+    /// A shining hexagonal canopy: dark rim, coloured glass and a bright crown. It uses the ships' own shader,
+    /// so on the player it is drawn in the same foreground depth as the hull instead of behind it.
+    /// </summary>
+    public static MeshRenderer BuildCockpit(Transform parent, Color color, bool player = false)
     {
+        var palette = new Texture2D(4, 1, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp, name = "Cockpit glass" };
+        palette.SetPixels(new[] { color * .4f, color, Color.Lerp(color, Color.white, .6f), color });
+        for (int i = 0; i < 3; i++)
+        {
+            var c = palette.GetPixel(i, 0);
+            c.a = 1;
+            palette.SetPixel(i, 0, c);
+        }
+        palette.Apply();
         var vertices = new Vector3[13];
-        var colors = new Color[13];
+        var uvs = new Vector2[13];
         var triangles = new int[6 * 9];
         for (int i = 0; i < 6; i++)
         {
             float angle = (i * 60 + 30) * Mathf.Deg2Rad;
             var corner = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle));
             vertices[i] = corner * CockpitRadius;
-            colors[i] = color * .35f;
+            uvs[i] = new Vector2(.125f, .5f);
             vertices[6 + i] = corner * CockpitRadius * .72f + Vector3.back * .012f;
-            colors[6 + i] = color;
+            uvs[6 + i] = new Vector2(.375f, .5f);
         }
         vertices[12] = Vector3.back * .03f;
-        colors[12] = Color.Lerp(color, Color.white, .65f);
+        uvs[12] = new Vector2(.625f, .5f);
         for (int i = 0; i < 6; i++)
         {
             int next = (i + 1) % 6, t = i * 9;
             triangles[t] = i;
-            triangles[t + 1] = next;
-            triangles[t + 2] = 6 + next;
+            triangles[t + 1] = 6 + next;
+            triangles[t + 2] = next;
             triangles[t + 3] = i;
-            triangles[t + 4] = 6 + next;
-            triangles[t + 5] = 6 + i;
+            triangles[t + 4] = 6 + i;
+            triangles[t + 5] = 6 + next;
             triangles[t + 6] = 6 + i;
-            triangles[t + 7] = 6 + next;
-            triangles[t + 8] = 12;
+            triangles[t + 7] = 12;
+            triangles[t + 8] = 6 + next;
         }
-        for (int i = 0; i < 13; i++)
-            colors[i].a = 1;
-        var mesh = new Mesh { name = "Hexagonal cockpit", vertices = vertices, colors = colors, triangles = triangles };
+        var mesh = new Mesh { name = "Hexagonal cockpit", vertices = vertices, uv = uvs, triangles = triangles };
+        mesh.RecalculateNormals();
         var go = new GameObject("Cockpit");
         go.transform.SetParent(parent, false);
         go.transform.localPosition = CockpitCentre;
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var renderer = go.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = new Material(Resources.Load<Shader>("LevelScenery")) { name = "Shining cockpit" };
+        var material = new Material(CombatMaterials.Fleet) { name = "Shining cockpit", mainTexture = palette };
+        material.SetFloat("_PlayerDepth", player ? 1 : 0);
+        renderer.sharedMaterial = material;
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         go.AddComponent<CockpitShine>();
         return renderer;
@@ -183,6 +196,7 @@ public sealed class PSXShipVisual : MonoBehaviour
     static void DestroyCockpit(MeshRenderer renderer)
     {
         Destroy(renderer.GetComponent<MeshFilter>().sharedMesh);
+        Destroy(renderer.sharedMaterial.mainTexture);
         Destroy(renderer.sharedMaterial);
         Destroy(renderer.gameObject);
     }
@@ -288,10 +302,10 @@ public sealed class PSXShipVisual : MonoBehaviour
     }
 }
 
-/// <summary>Makes a cockpit shine with a slow glint, through the scenery shader's flash.</summary>
+/// <summary>Makes a cockpit shine with a slow glint, overdriving its tint past the hull's lighting.</summary>
 public sealed class CockpitShine : MonoBehaviour
 {
-    static readonly int Flash = Shader.PropertyToID("_Flash");
+    static readonly int Tint = Shader.PropertyToID("_Tint");
     Material material;
     float phase;
 
@@ -304,6 +318,6 @@ public sealed class CockpitShine : MonoBehaviour
     void Update()
     {
         float glint = Mathf.Pow(.5f + .5f * Mathf.Sin(Time.time * 2.6f + phase), 3);
-        material.SetFloat(Flash, .08f + .3f * glint);
+        material.SetColor(Tint, Color.white * (1.4f + .6f * glint));
     }
 }
