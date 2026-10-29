@@ -1,0 +1,12 @@
+# Effects work summary
+
+This remains a partial pass. Unity could not be run; compilation, moving visuals and frame times have not been verified.
+
+- Shared impacts and fireballs: the earlier pass strengthened the leading hit spark and prepared the bounded impact and 96-object fireball buffers behind the curtain. Enemy deaths now sample visible hull material/property tint for the fireballs. Inspect textured or multicolour hulls: a material tint cannot recover colours baked into a texture or mesh vertices.
+- Underwater: ordinary deaths use a muted core and rising particles; direct boss finale fireballs now drift upward more slowly with a muted blue-green palette, and finale sparks and shockwaves match it. The earlier pass added globally rate-limited wake bubbles in the backdrop buffer. Check against the background and amber hostile shots.
+- Item effects: item sparks, gum pops, static arcs and hot-sauce patches reuse bounded objects after their first creation; burn and poison share particle buffers and reuse their visual state. Static chains reuse their target set. These pools are lazy, so first use or a new high-water mark can still allocate during combat. Burning/poison components and frozen crystals also still allocate on application. Check scene transitions, time-stop and dense applications.
+- Shell ignition: elongated inward sparks grow with charge without changing the tell timing or count. Vent embers stretch as charge rises, without changing eruption timing. Check both for readability.
+- Rarity, muzzle, beam and thrusters: rarity glints breathe; muzzle releases stretch along the firing direction; beam emitter and width have subtle layered flutter; independent exhaust varies width and length. Check all at gameplay resolution and confirm firing tells remain clear.
+- Ground tracks: the earlier pass removed recurring small side arrays and broadened snow powder. Check turning road vehicles and augers.
+
+Outstanding: polygon debris still builds objects, meshes and arrays per death, including prepared boss wreckage. Pools above are not prewarmed; frozen and gameplay affliction components still allocate. Further item and other procedural effects have not received a complete visual pass, and the inventory is an audit aid rather than proof of exhaustive coverage. Profile complete dense-burst frames and following physics steps, then visually review the actual effects before considering this work complete.

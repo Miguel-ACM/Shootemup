@@ -1,0 +1,34 @@
+# In-game effects inventory
+
+Source audit, 29 October 2026. Costs below describe the implementation found during the audit; particle limits are capacities, not measured frame timings. Scene/prefab-authored effects and every indirect caller still need a separate audit.
+
+| Effect and source | Spawn and appearance | Cost and limits |
+| --- | --- | --- |
+| `PSXImpactEffects` | `AEnemy`, player, pickups, item triggers, boss sequence and weapons call bursts, muzzle flashes, deaths, item pickups and bullet dissolves. Directional rectangular sparks, radial pickup flecks, white core and dissolving rim. | Shared 512-particle impact buffer and 3200-particle dissolve buffer; explicit emits. Death also calls fireballs and polygon debris. |
+| `PSXFireballs` | Deaths, boss finale and active/passive items. Staggered faceted fire spheres and expanding textured annuli. | Shared mesh/material and property block; capped at 96 renderer objects. Pool previously grew on demand; now warmed behind the curtain. |
+| `PSXPolygonDebris` | Enemy deaths and boss destruction. Textured hull polygons become drifting, spinning chunks. | At most eight live bursts, but constructs meshes, arrays and objects on each death; substantial allocation and CPU mesh updates. Boss wreckage can be prepared. |
+| `PSXObjectVisual`, `ItemRarityHalo`, `HealthPackGlow` | Item/pickup aura and health pickup glow. Halo particles, orbiting glints and line rings. | Aura particle system per visual, capacity 64; rarity and health rings use line renderers and child sprites. |
+| `HullAfflictionVfx`, `BurningHull`, `PoisonedHull`, `FrozenHull` | Effects attached to affected enemies: rising orange flames, jade bubbles and ice crystals. | Two shared 384-particle systems and recycled visual state; status components and frozen crystals are still created on application. |
+| `HotSauceTrail` | Burning enemy leaves short fire patches that also apply the item's gameplay effect. | Up to 80 live patches; lazily reused objects each retain a 16-particle system and check live enemies. |
+| `ItemSpark`, `ItemProcVfx`, `GumSpritePop`, `StaticCharge` | Item triggers, frozen shards, gum pops and static arcs. Sprite flecks, two-stroke symbols, expanding gum flash, zigzag line. | Item sparks, gum pops and static arcs lazily reuse up to 100, 64 and 64 live objects respectively; first-use growth allocates. Item trigger accents use 20 prepared two-line objects. |
+| `GlassesFieldCue`, `StickyGum`, `SpectralDecoy`, `MagnifyingLens` | Item-specific boundary/sparks, swelling blobs, decoy hull and model adjustment. | Per-item lines, sprite/mesh objects and temporary effects; inspect lifecycle before pooling. |
+| `BurstShell` | Stopped shell ignition: three converging sparks per tick, increasingly frequent as it charges. | Shared 384-particle system created on first use; tint follows district accent. This cue precedes gameplay release. |
+| `VolcanicVent` | Hell crater emits dim embers that intensify before a projectile eruption. Disabled during boss combat. | One 80-particle system per crater; rate 3–15/s while active. Its charge is an attack tell. |
+| `DepthBackdrop` | Underwater backdrop rising translucent motes; Hell vent fire is separate. | One background system, capacity 180, one ambient particle per 0.1 s. Now also shares this system for globally rate-limited enemy bubbles. |
+| `GroundTreadMarks` | Tank and auger contact produces scrolling terrain-attached paired marks and dirt/snow powder. | Per vehicle: dynamic 72-mark mesh, fixed arrays, 80-particle system; four powder particles per 0.1 s while moving. Previously allocated two small arrays repeatedly. |
+| `EnemyFiringCue`, `BeamRibbon` | Weapon-lip charge/release sprites; attached beam tell, sheath, body, collar and emitter. | Reused port sprites and lip meshes per enemy; beam owns multiple line renderers and an emitter sprite. These are gameplay tells. |
+| `EnemyThrusters`, `PSXShipEffects`, `PSXShooterVisual` | Independent flickering exhaust meshes and player muzzle flashes. | Child renderers share meshes/materials; muzzle sparks use the shared impact buffer. |
+| `BossDestruction`, `PartHitFeedback`, boss-specific files | Timed intact-hull blasts and final breakup, local hit recoil/flashes, claw tells, submarine wake and station horizon. | Boss sequence allocates a controller and debris; shared fireballs plus boss-specific persistent line renderers. |
+| `PSXProjectileEffects`, `HelixRound`, `PlasmaOrb`, `ProximityMine`, `ChargeBlast` | Projectile trails, helix wake, plasma life outline, mine radius and charge edge/core. | Trail and line renderers attached to projectile instances; their silhouettes and indicators have gameplay significance. |
+| `LevelEnvironment`, `TunnelReflectors`, `SkullRevenant` | Environmental lightning, tunnel rails and apparition portal. | Persistent line renderers created with their owners. |
+| `FlameWeaponFeedback`, active item effects | Flame tongues, fan lines, gravity/slow fields and spell/shield shockwaves. | Mostly owner-attached line renderers; shockwaves share the capped fireball pool. |
+| `LineDrawer`, `UpgradeMeters`, `CooldownDial`, other UI | Lines, meters, equipment and selection feedback. | Persistent renderers or UI geometry; HUD is outside this change's scope. |
+
+Additional procedural visuals occur in boss and enemy code without a particle/line/trail component. The `rg` audit of those terms is not a proof that every custom shader, sprite animation, or prefab effect has been catalogued. No runtime profile was possible in this environment.
+
+## Additional audit and current allocation notes
+
+The text search across scripts found the effect families above as well as `BulletTime`, `GravityWell`, `PocketFan`, `AItem`, and the probes. Active-item lines are owner-attached; probes are diagnostic, and UI lines remain outside this task. Prefab serialization contains particle systems in `Resources/Items/Item.prefab`, `Resources/Particles/Ripple.prefab`, and `Resources/Particles/HitSpark.prefab`, plus a line renderer in `Resources/Bullets/LineDrawer.prefab`; the PathCreator example scene also contains a line renderer. Serialized presence alone does not establish whether a prefab is used in a current run, its appearance, or its runtime cost.
+
+Current changes replace per-use item spark, gum pop, static arc and hot-sauce object destruction with lazy bounded reuse (100, 64, 64 and 80 live respectively). First use and growth still create objects. Afflictions share two 384-particle buffers and recycle their small visual state, but status components and frozen crystal objects still allocate. Polygon debris remains per-death mesh construction. No runtime measurements or complete custom-shader/procedural-geometry audit were possible; remaining coverage and actual costs require further investigation.
+
