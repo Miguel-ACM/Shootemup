@@ -69,6 +69,7 @@ public sealed partial class SpaceCitadelBoss : DistrictBoss
 
     protected override void OnPhaseTwo()
     {
+        CloseWell();
         volley = 0;
         nextAttack = age + 1.2f;
     }
