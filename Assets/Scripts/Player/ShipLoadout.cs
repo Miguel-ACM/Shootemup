@@ -14,7 +14,7 @@ public sealed class ShipLoadout : MonoBehaviour
     public bool ConsumedInputThisFrame => pickedFrame == Time.frameCount;
     public readonly AWeapon[] Weapons = new AWeapon[2];
     public readonly AActiveItem[] Actives = new AActiveItem[2];
-    static readonly Type[] weaponTypes = { typeof(DepthCharge), typeof(Backdraft), typeof(WindUpCannon), typeof(NeedleCannon), typeof(BurstLauncher), typeof(BeamEmitter), typeof(DiscThrower), typeof(SwarmRack), typeof(ScatterCannon), typeof(FlameProjector), typeof(RailDriver) };
+    static readonly Type[] weaponTypes = { typeof(DepthCharge), typeof(Backdraft), typeof(WindUpCannon), typeof(NeedleCannon), typeof(BurstLauncher), typeof(BeamEmitter), typeof(DiscThrower), typeof(SwarmRack), typeof(ScatterCannon), typeof(FlameProjector), typeof(RailDriver), typeof(Drill) };
     void Awake()
     {
         input = new Inputs();

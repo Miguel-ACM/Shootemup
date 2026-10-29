@@ -49,11 +49,11 @@ public sealed class CombatUpgrades : MonoBehaviour
     public static float HostileSpeedAt(Vector3 position)
     {
         if (Current == null)
-            return 1;
+            return Drill.SlowAt(position);
         float rate = Current.Count(UpgradeKind.QualityGlasses) > 0 ? .9f : 1;
         if (Current.Count(UpgradeKind.BadGlasses) > 0 && ((Vector2)(position - Current.transform.position)).sqrMagnitude <= 9)
             rate *= .9f;
-        return rate;
+        return rate * Drill.SlowAt(position);
     }
 
     public void Add(UpgradeKind kind)
