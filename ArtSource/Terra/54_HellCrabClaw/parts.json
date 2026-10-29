@@ -1,0 +1,18 @@
+[
+  {
+    "object": "Jaw_R",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "pivot": [
+      0.35,
+      0.02,
+      0.04
+    ],
+    "speed": 0.7,
+    "amplitude": 14
+  }
+]
