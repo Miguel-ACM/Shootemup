@@ -1,42 +1,71 @@
 using System.Collections;
 using UnityEngine;
 
-// City duo: rush hour around a hub. The light interceptor circles the heavy
-// hauler and fires arrows straight out from the hub, so its streams wind into
-// spiral arms; between arms it sends headlight rays (one aim, many speeds). The
-// hauler lays a mirrored street grid, lobs paired cargo that bursts at the player
-// and fans layered arrow wavefronts. A lone survivor inherits its partner's moves.
+// City duo: rush hour around a hub, flown as spell cards by both ships together.
+// Phase one (both ships)
+//   Ring Road: the light interceptor circles the heavy hauler and fires arrows
+//     straight out from the hub, winding spiral arms all round it; the hauler covers
+//     its back with mirrored fans fired up and out that ricochet off the ceiling.
+//   Rush Hour: the hauler lays a two-family street grid in front and a second grid
+//     behind it that rebounds off the ceiling; the interceptor fires headlight rays.
+// Phase two (the survivor, enraged)
+//   Hauler: Cargo Storm, mirrored crates lobbed high that explode all round, with
+//     rear-guard fans and headlights.
+//   Interceptor: Junction, a four-arm arrow spiral turning round itself in every
+//     direction, with headlights between.
 public sealed partial class CityDuoBoss
 {
     protected override void Attack()
     {
-        int beat = (volley - 1) % 12;
-        if (heavy)
+        OpenCards();
+    }
+
+    protected override IEnumerator Cards()
+    {
+        while (true)
         {
-            if (beat == 0 || beat == 6)
-                Phrase(Gridlock(beat == 0 ? 1 : -1));
-            else if (beat == 3 || enraged && beat == 9)
-                CargoLob();
-            else if (beat == 10)
-                Wavefront(Muzzle(1));
-            else if (enraged && (beat == 2 || beat == 8))
-                Headlights(Muzzle(1));
-        }
-        else
-        {
-            if (beat == 1 || beat == 7)
-                Phrase(SpiralArm());
-            else if (beat == 4 || beat == 11)
-                Headlights(Muzzle());
-            else if (enraged && (beat == 5 || beat == 9))
-                Phrase(Gridlock(beat == 5 ? 1 : -1));
+            if (!enraged)
+            {
+                if (heavy)
+                {
+                    yield return Every(8, 1.1f, n => RearGuard(n));
+                    yield return Wait(.6f);
+                    yield return Every(8, .45f, n => Gridlock(n));
+                    yield return Wait(.6f);
+                }
+                else
+                {
+                    yield return SpiralArm(8);
+                    yield return Wait(.6f);
+                    yield return Every(8, .9f, n => Headlights(Muzzle()));
+                    yield return Wait(.6f);
+                }
+            }
+            else if (heavy)
+            {
+                yield return Every(7, 1.2f, n =>
+                {
+                    CargoLob();
+                    RearGuard(n);
+                });
+                yield return Wait(.5f);
+                yield return Every(6, .7f, n => Headlights(Muzzle(1)));
+                yield return Wait(.5f);
+            }
+            else
+            {
+                yield return Junction(7);
+                yield return Wait(.5f);
+                yield return Every(5, .7f, n => Headlights(Muzzle()));
+                yield return Wait(.5f);
+            }
         }
     }
 
-    // Arrows fired straight out from the hub while circling it: a winding spiral arm.
-    IEnumerator SpiralArm()
+    // Arrows fired straight out from the hub while circling it: winding spiral arms.
+    IEnumerator SpiralArm(float seconds)
     {
-        int shots = Dense(enraged ? 34 : 26);
+        int shots = Mathf.RoundToInt(seconds / .055f);
         for (int i = 0; i < shots; i++)
         {
             Vector2 hub = partner != null ? partner.transform.position : transform.position + Vector3.up;
@@ -49,6 +78,27 @@ public sealed partial class CityDuoBoss
         }
     }
 
+    // Four arrow arms turning round the ship in every direction.
+    IEnumerator Junction(float seconds)
+    {
+        int steps = Mathf.RoundToInt(seconds / .07f);
+        for (int i = 0; i < steps; i++)
+        {
+            for (int arm = 0; arm < 4; arm++)
+                Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, arm * 90 + i * 11), 3.4f, .19f);
+            yield return Wait(Rest(.07f));
+        }
+    }
+
+    // The hauler covers its back: mirrored fans fired up and out that rebound off the ceiling.
+    void RearGuard(int n)
+    {
+        int lanes = Dense(7);
+        foreach (int mirror in new[] { -1, 1 })
+            for (int i = 0; i < lanes; i++)
+                Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.up, mirror * (20 + i * 11 + (n % 2) * 5)), 3.0f, .2f).Bounce(2);
+    }
+
     // Three mirrored rays, each a line of arrows at falling speeds.
     void Headlights(Vector3 port)
     {
@@ -59,50 +109,32 @@ public sealed partial class CityDuoBoss
                 Fire<NeedleRound>(port, CombatVisuals.Rotate(aim, ray), 5.4f - b * .45f, .18f);
     }
 
-    // Two mirrored diagonal families; the diamonds between them are the streets.
-    IEnumerator Gridlock(int sign)
+    // Two mirrored diagonal families in front, and the same grid behind that
+    // rebounds off the ceiling: the diamonds between them are the streets.
+    void Gridlock(int row)
     {
-        int rows = Dense(6), lanes = Dense(enraged ? 11 : 9);
-        for (int row = 0; row < rows; row++)
+        int lanes = Dense(enraged ? 11 : 9);
+        foreach (int family in new[] { -1, 1 })
         {
-            foreach (int family in new[] { -1, 1 })
+            var front = CombatVisuals.Rotate(Vector2.down, family * 36);
+            var back = CombatVisuals.Rotate(Vector2.up, family * 36);
+            for (int i = 0; i < lanes; i++)
             {
-                var axis = CombatVisuals.Rotate(Vector2.down, family * 36);
-                for (int i = 0; i < lanes; i++)
-                    Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(axis, (i - (lanes - 1) * .5f) * 6.5f + (row % 2) * 3.25f * sign), 2.2f, .2f);
+                float offset = (i - (lanes - 1) * .5f) * 6.5f + (row % 2) * 3.25f;
+                Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(front, offset), 2.2f, .2f);
+                if (i % 2 == row % 2)
+                    Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(back, offset), 2.2f, .2f).Bounce(1);
             }
-            yield return Wait(Rest(.38f));
         }
     }
 
-    // Mirrored crates lobbed high, falling under gravity, bursting into arrows at the player.
+    // Mirrored crates lobbed high, falling under gravity, exploding all round.
     void CargoLob()
     {
-        int shards = Dense(7);
-        foreach (float lob in enraged ? new[] { -60f, -30f, 30f, 60f } : new[] { -45f, 0f, 45f })
+        int shards = Dense(14);
+        foreach (float lob in new[] { -60f, -30f, 30f, 60f })
             Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.up, lob), 2.7f, .42f)
                 .Fall(new Vector2(0, -2.7f))
-                .SplitAt(1.9f + Mathf.Abs(lob) / 150f, shards, 9, 3.6f, .17f, true);
-    }
-
-    // A symmetric arrow fan at two speeds: two nested arcs that separate.
-    void Wavefront(Vector3 port)
-    {
-        int lanes = Dense(enraged ? 23 : 19);
-        for (int layer = 0; layer < 2; layer++)
-            for (int i = 0; i < lanes; i++)
-            {
-                float step = 140f / (lanes - 1);
-                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.down, (i - (lanes - 1) * .5f) * step + layer * step * .5f), 2.6f + layer * .8f, .19f);
-            }
-    }
-
-    protected override void PrepareScore(float seconds)
-    {
-        int beat = volley % 12;
-        if (heavy && (beat == 0 || beat == 6 || beat == 3 || beat == 10 || enraged && (beat == 9 || beat == 2 || beat == 8)))
-            Cue(Muzzle(1), seconds);
-        else if (!heavy && (beat == 1 || beat == 7 || beat == 4 || beat == 11 || enraged && (beat == 5 || beat == 9)))
-            Cue(Muzzle(), seconds);
+                .SplitAt(1.8f, shards, 360f / shards, 3.0f, .19f);
     }
 }

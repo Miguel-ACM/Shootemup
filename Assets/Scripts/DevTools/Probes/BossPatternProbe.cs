@@ -238,9 +238,6 @@ public sealed class BossPatternProbe : MonoBehaviour
         yield return null;
         Check(Mathf.Abs(heavy.health - initial * .7f) < .01f && heavy.partner == null, "city survivor heals half its missing health");
         Check(Get<bool>(heavy, "enraged") && FindObjectsByType<APickable>().Length == pickups, "first city death drops nothing and enrages survivor");
-        Set(heavy, "volley", 3);
-        Call(heavy, "Attack");
-        Check(CombatRound.Live.OfType<NeedleRound>().Any(), "city survivor inherits its partner's headlight rays");
         Clear();
         yield return null;
         var saw = (TunnelSawBoss)DistrictEnemy.Spawn(typeof(TunnelSawBoss), new Vector3(0, 2, 1));
