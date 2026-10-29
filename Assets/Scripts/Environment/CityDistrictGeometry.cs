@@ -45,6 +45,25 @@ public static class CityDistrictGeometry
             Face(c, new Vector3(a, f, t), new Vector3(b, f, t), new Vector3(b, k, t), new Vector3(a, k, t));
         }
 
+        public void WindowBand(float x, float y, float z, float w, float d, float h, Color c)
+        {
+            float a = x - w * .42f, b = x + w * .42f;
+            float f = y - d * .5f - .003f, k = y + d * .42f;
+            Face(c * .8f, new Vector3(a, f, z), new Vector3(b, f, z), new Vector3(b, f, z + h), new Vector3(a, f, z + h));
+            float side = x + w * .5f + .003f;
+            Face(c, new Vector3(side, y - d * .42f, z), new Vector3(side, k, z), new Vector3(side, k, z + h), new Vector3(side, y - d * .42f, z + h));
+        }
+
+        public void Parapet(float x, float y, float z, float w, float d, float h, Color c)
+        {
+            float a = x - w * .49f, b = x + w * .49f;
+            float f = y - d * .49f, k = y + d * .49f;
+            Face(c * .72f, new Vector3(a, f, z), new Vector3(b, f, z), new Vector3(b, f, z + h), new Vector3(a, f, z + h));
+            Face(c * .85f, new Vector3(b, f, z), new Vector3(b, k, z), new Vector3(b, k, z + h), new Vector3(b, f, z + h));
+            Face(c, new Vector3(b, k, z), new Vector3(a, k, z), new Vector3(a, k, z + h), new Vector3(b, k, z + h));
+            Face(c * .9f, new Vector3(a, k, z), new Vector3(a, f, z), new Vector3(a, f, z + h), new Vector3(a, k, z + h));
+        }
+
         public void Cylinder(float x, float y, float z, float radius, float h, Color c, int sides = 10)
         {
             for (int i = 0; i < sides; i++)
@@ -134,20 +153,35 @@ public static class CityDistrictGeometry
                 b.Box(x, y, .02f, 2.05f, 1.98f, .06f, paving);
                 if (use < 12 && !landmark)
                 {
-                    b.Box(x, y, .09f, 1.82f, 1.73f, .02f, C(.17f, .31f, .23f));
-                    b.Box(x + .24f, y, .12f, .18f, 1.75f, .015f, paving);
-                    b.Box(x, y - .22f, .12f, 1.8f, .17f, .015f, paving);
-                    for (int t = 0; t < 5; t++)
+                    bool plaza = use % 3 == 0;
+                    b.Box(x, y, .09f, 1.82f, 1.73f, .02f, plaza ? C(.36f, .35f, .31f) : C(.17f, .31f, .23f));
+                    b.Box(x, y, .115f, 1.70f, .20f, .015f, paving);
+                    b.Box(x, y, .115f, .20f, 1.60f, .015f, paving);
+                    if (plaza)
                     {
-                        float tx = x + R(-.72f, .72f), ty = y + R(-.65f, .65f), r = R(.16f, .24f);
-                        b.Cylinder(tx, ty, .13f, .035f, .23f, C(.22f, .17f, .12f), 6);
-                        b.Cylinder(tx, ty, .28f, r, .13f, C(.13f, .32f, .22f), 7);
-                        b.Cylinder(tx - .025f, ty + .02f, .4f, r * .78f, .12f, C(.18f, .38f, .26f), 7);
+                        b.Cylinder(x, y, .14f, .30f, .07f, C(.43f, .42f, .37f), 8);
+                        b.Cylinder(x, y, .215f, .22f, .015f, C(.13f, .32f, .36f), 8);
+                        b.Cylinder(x, y, .23f, .055f, .12f, C(.43f, .42f, .37f), 6);
                     }
-                    if (use % 3 == 0)
+                    else
                     {
-                        b.Cylinder(x - .4f, y - .35f, .12f, .24f, .06f, C(.39f, .38f, .31f), 12);
-                        b.Cylinder(x - .4f, y - .35f, .19f, .18f, .015f, C(.13f, .32f, .36f), 12);
+                        b.Box(x, y, .14f, .32f, .32f, .06f, C(.42f, .40f, .34f));
+                    }
+                    for (int t = 0; t < 4; t++)
+                    {
+                        float tx = x + (t % 2 == 0 ? -.55f : .55f) + R(-.08f, .08f);
+                        float ty = y + (t < 2 ? -.51f : .51f) + R(-.08f, .08f);
+                        float r = R(.16f, .22f);
+                        if (plaza)
+                            b.Box(tx, ty, .12f, .38f, .38f, .06f, C(.40f, .39f, .34f));
+                        b.Cylinder(tx, ty, .13f, .035f, .25f, C(.22f, .17f, .12f), 5);
+                        b.Cylinder(tx, ty, .30f, r, .14f, C(.13f, .32f, .22f), 6);
+                        b.Cylinder(tx - .025f, ty + .02f, .44f, r * .72f, .11f, C(.18f, .38f, .26f), 6);
+                    }
+                    if (!plaza)
+                    {
+                        b.Box(x - .59f, y, .13f, .42f, .10f, .08f, C(.34f, .28f, .20f));
+                        b.Box(x + .59f, y, .13f, .42f, .10f, .08f, C(.34f, .28f, .20f));
                     }
                     continue;
                 }
@@ -200,6 +234,12 @@ public static class CityDistrictGeometry
                         b.Box(xx, yy - d * .4f, .09f, w * .6f, d * .2f, h, facade);
                         b.Box(xx, yy + d * .4f, .09f, w * .6f, d * .2f, h, facade);
                         b.Box(xx, yy, .1f, w * .52f, d * .5f, .01f, C(.16f, .25f, .21f));
+                        b.Box(xx, yy, .115f, w * .10f, d * .45f, .015f, trim);
+                        b.Box(xx - w * .17f, yy, .12f, w * .10f, d * .30f, .07f, C(.22f, .37f, .24f));
+                        b.Box(xx + w * .17f, yy, .12f, w * .10f, d * .30f, .07f, C(.22f, .37f, .24f));
+                        b.Box(xx, yy, .115f, w * .10f, d * .45f, .015f, trim);
+                        b.Box(xx - w * .17f, yy, .12f, w * .10f, d * .30f, .07f, C(.22f, .37f, .24f));
+                        b.Box(xx + w * .17f, yy, .12f, w * .10f, d * .30f, .07f, C(.22f, .37f, .24f));
                     }
                     else if (style == 3) // A civic rotunda surrounded by a quiet low podium.
                     {
@@ -233,32 +273,61 @@ public static class CityDistrictGeometry
                         b.Ridge(xx, yy, .09f + h, w, d, .16f, palette == 1 ? C(.24f, .32f, .3f) : C(.39f, .22f, .17f));
                     }
                     else
-                        b.Box(xx, yy, .09f, w, d, h, facade);
+                    {
+                        b.Box(xx, yy, .09f, w, d, h * .65f, facade);
+                        b.Box(xx, yy + d * .05f, .09f + h * .65f, w * .82f, d * .80f, h * .35f, facade);
+                    }
                     if (style == 0 || style == 6 || style == 9)
                     {
-                        float rw = style == 0 ? w * .52f : style == 9 ? w * .57f : w, rd = style == 0 ? d * .57f : style == 9 ? d * .58f : d;
-                        float rx = xx - (style == 0 ? w * .07f : 0), ry = yy + (style == 0 ? d * .06f : 0);
-                        if (style != 9)
-                            b.Box(rx, ry, .09f + h, rw * .94f, rd * .94f, .025f, roof);
-                        // A single service feature on selected roofs; large surfaces do the visual work.
-                        if (use % 3 == 0)
-                            b.Box(rx - rw * .13f, ry + rd * .14f, .12f + h, rw * .27f, rd * .30f, .10f, trim);
-                        else if (landmark && use % 3 == 1)
+                        float rw = style == 0 ? w * .52f : style == 9 ? w * .57f : w * .82f, rd = style == 0 ? d * .57f : style == 9 ? d * .58f : d * .80f;
+                        float rx = xx - (style == 0 ? w * .07f : 0), ry = yy + (style == 0 ? d * .06f : style == 6 ? d * .05f : 0);
+                        float roofScale = style == 0 || style == 9 ? .72f : .94f;
+                        b.Box(rx, ry, .09f + h, rw * roofScale, rd * roofScale, .025f, roof);
+                        b.Parapet(rx, ry, .115f + h, style == 9 || style == 0 ? rw * .72f : rw, style == 9 || style == 0 ? rd * .72f : rd, .075f, trim);
+                        int roofUse = (use + lot + zone) % 4;
+                        if (roofUse == 0)
                         {
-                            b.Cylinder(rx, ry, .12f + h, .035f, .40f, trim, 6);
-                            b.Box(rx, ry, .42f + h, .25f, .035f, .025f, trim);
+                            b.Box(rx - rw * .10f, ry, .12f + h, rw * .36f, rd * .35f, .13f, trim);
+                            b.Box(rx - rw * .10f, ry, .25f + h, rw * .24f, rd * .24f, .025f, roof);
                         }
-                        if (landmark && style == 0)
-                            b.Box(rx, ry + rd * .47f, .11f + h, rw, .03f, .035f, trim);
+                        else if (roofUse == 1)
+                        {
+                            float tankRadius = Mathf.Min(rw, rd) * .14f;
+                            b.Box(rx, ry, .12f + h, tankRadius * 2.2f, tankRadius * 2.2f, .08f, roof);
+                            b.Cylinder(rx, ry, .20f + h, tankRadius, .20f, trim, 6);
+                            b.Cylinder(rx, ry, .40f + h, tankRadius * .82f, .025f, roof, 6);
+                        }
+                        else if (roofUse == 2)
+                        {
+                            b.Box(rx, ry, .12f + h, rw * .62f, rd * .48f, .045f, trim);
+                            b.Box(rx, ry, .165f + h, rw * .52f, rd * .38f, .035f, C(.18f, .35f, .24f));
+                            b.Box(rx - rw * .16f, ry, .20f + h, rw * .12f, rd * .30f, .045f, C(.24f, .42f, .27f));
+                            b.Box(rx + rw * .16f, ry, .20f + h, rw * .12f, rd * .30f, .045f, C(.24f, .42f, .27f));
+                        }
+                        else
+                        {
+                            b.Cylinder(rx, ry, .12f + h, .025f, .32f, trim, 5);
+                            b.Box(rx, ry, .34f + h, rw * .30f, .025f, .025f, trim);
+                        }
                     }
                     if (style == 0 || style == 6)
-                        for (float floor = .25f; floor < h; floor += .31f)
+                        for (float floor = .25f; floor + .07f < h; floor += .31f)
                         {
-                            float fw = style == 0 ? floor > h * .79f ? w * .52f : floor > h * .50f ? w * .78f : w : w;
-                            float fd = style == 0 ? floor > h * .79f ? d * .57f : floor > h * .50f ? d * .78f : d : d;
-                            float shift = style == 0 && floor > h * .5f ? 1 : 0;
-                            b.Box(xx - w * .07f * shift, yy + d * .06f * shift - fd * .505f, .09f + floor, fw * .70f, .012f, .045f, Color.Lerp(facade, glass, .55f));
+                            if (style == 0 && ((floor < h * .50f && floor + .07f > h * .50f) || (floor < h * .79f && floor + .07f > h * .79f)))
+                                continue;
+                            if (style == 6 && floor < h * .65f && floor + .07f > h * .65f)
+                                continue;
+                            float fw = style == 0 ? floor > h * .79f ? w * .52f : floor > h * .50f ? w * .78f : w : floor > h * .65f ? w * .82f : w;
+                            float fd = style == 0 ? floor > h * .79f ? d * .57f : floor > h * .50f ? d * .78f : d : floor > h * .65f ? d * .80f : d;
+                            float shiftX = style == 0 && floor > h * .5f ? -w * .07f : 0;
+                            float shiftY = style == 0 && floor > h * .5f ? d * .06f : style == 6 && floor > h * .65f ? d * .05f : 0;
+                            if (style != 0 || floor < h * .79f)
+                                b.WindowBand(xx + shiftX, yy + shiftY, .09f + floor, fw, fd, .07f, Color.Lerp(facade, glass, .7f));
                         }
+                    if (style == 1)
+                        b.WindowBand(xx - w * .23f, yy, .09f + h * .40f, w * .54f, d, .065f, glass);
+                    if (style == 5 || style == 8)
+                        b.WindowBand(xx, yy, .09f + h * .42f, w, d, .075f, glass);
                     if (style == 1 || style == 5 || style == 6)
                     {
                         var awning = zone == 0 ? C(.24f, .38f, .34f) : C(.46f, .29f, .21f);
