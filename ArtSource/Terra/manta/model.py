@@ -1,4 +1,4 @@
-﻿import bpy
+import bpy
 import math
 import os
 import sys
@@ -150,20 +150,39 @@ for x in (-.65, 0, .65):
 # terminal fin makes it read as a hydrofoil rather than a stretched rod.
 plate('Tail root', [(-.14,.53),(-.09,1.02),(-.055,1.25),
                     (.055,1.25),(.09,1.02),(.14,.53)], .02,.14, 6, .015)
-plate('Tail fin', [(-.055,1.10),(-.24,1.32),(-.12,1.31),(0,1.475),
-                   (.12,1.31),(.24,1.32),(.055,1.10)], .035,.095, 8)
+tail = plate('Tail', [(-.055,1.10),(-.24,1.32),(-.12,1.31),(0,1.475),
+                      (.12,1.31),(.24,1.32),(.055,1.10)], .035,.095, 8)
+# Set the origin at the root hinge while preserving the fin's rest position.
+tail_pivot = Vector((0, 1.10, .065))
+for vertex in tail.data.vertices:
+    vertex.co -= tail_pivot
+tail.location = tail_pivot
 
-# Consolidate the model and bake all transforms and triangulation before export.
-bpy.ops.object.select_all(action='SELECT')
-bpy.context.view_layer.objects.active = bpy.context.selected_objects[0]
+# Join fixed geometry, keeping the tail independently animatable.
+bpy.ops.object.select_all(action='DESELECT')
+body_objects = [obj for obj in bpy.context.scene.objects
+                if obj.type == 'MESH' and obj != tail]
+for obj in body_objects:
+    obj.select_set(True)
+bpy.context.view_layer.objects.active = body_objects[0]
 bpy.ops.object.join()
 model = bpy.context.object
 model.name = 'Model'
 bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-tri = model.modifiers.new('Export triangulation', 'TRIANGULATE')
-bpy.ops.object.modifier_apply(modifier=tri.name)
-for polygon in model.data.polygons:
-    polygon.use_smooth = False
+
+# Triangulate both meshes and export them together at their rest positions.
+for obj in (model, tail):
+    bpy.ops.object.select_all(action='DESELECT')
+    obj.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+    tri = obj.modifiers.new('Export triangulation', 'TRIANGULATE')
+    bpy.ops.object.modifier_apply(modifier=tri.name)
+    for polygon in obj.data.polygons:
+        polygon.use_smooth = False
+bpy.ops.object.select_all(action='DESELECT')
+model.select_set(True)
+tail.select_set(True)
+bpy.context.view_layer.objects.active = model
 bpy.ops.wm.obj_export(filepath=os.path.join(OUT, 'model.obj'),
                       export_selected_objects=True, export_materials=True,
                       forward_axis='Y', up_axis='Z')
