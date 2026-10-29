@@ -1,0 +1,17 @@
+[
+  {
+    "object": "Dish",
+    "motion": "spin",
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "pivot": [
+      0,
+      1.1,
+      0.18
+    ],
+    "speed": 45
+  }
+]
