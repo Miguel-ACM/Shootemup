@@ -101,6 +101,9 @@ public static class EverydayItemMaterials
             case "BallBearing":
                 color = new Color(.6f, .73f, .92f);
                 return true;
+            case "ExplodingShield":
+                color = new Color(1f, .5f, .16f);
+                return true;
             case "BadGlasses":
                 color = new Color(.75f, .42f, .86f);
                 return true;

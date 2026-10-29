@@ -163,6 +163,7 @@ public class Shipcontroller : MonoBehaviour
         limits = Camera.getLimits();
         circleCollider = GetComponent<Collider2D>();
         renderer = GetComponent<SpriteRenderer>();
+        StartCoroutine(ExplodingShield.GrantStarter(this));
         //bigCollision = GameObject.GetComponent<PollygonCollider2D();
 
     }

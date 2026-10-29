@@ -29,6 +29,8 @@ public static partial class IndustrialMeshFactory
             return expansionItems[kind] = b.Finish(kind + " equipment");
         if (RequestedItem(b, kind))
             return expansionItems[kind] = b.Finish(kind + " equipment");
+        if (HealthItem(b, kind))
+            return expansionItems[kind] = b.Finish(kind + " equipment");
         if (kind == "BaseWeaponItem")
         {
             // The starter is a paired ship-mounted autocannon, not a generic equipment icon.
