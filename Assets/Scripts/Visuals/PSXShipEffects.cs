@@ -76,7 +76,8 @@ public sealed class PSXShipEffects : MonoBehaviour
             muzzleRenderers[i].transform.position = MuzzlePosition(i);
             properties.SetColor("_Tint", new Color(1, 1, 1, source == null ? 1 : source.color.a));
             renderers[i].SetPropertyBlock(properties);
-            renderers[i].enabled = !GameRules.playerDisabled;
+            // Decisions (shops, rewards) disable the controls, not the engines; only a destroyed ship goes dark.
+            renderers[i].enabled = !GameRules.playerDisabled || CombatDecision.Active;
             muzzleRenderers[i].enabled = Time.time < muzzleUntil && !GameRules.playerDisabled;
         }
     }
