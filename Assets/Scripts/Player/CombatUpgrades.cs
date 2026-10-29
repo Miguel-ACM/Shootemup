@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public enum UpgradeKind
 {
-    Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle
+    Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -115,7 +115,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         if (enemy == null || enemy.health <= 0)
             return 0;
         if (companion)
-            damage *= 1 + Count(UpgradeKind.Drone) * .2f;
+            damage *= 1 + Count(UpgradeKind.Drone) * .2f + Count(UpgradeKind.Squad) * .5f;
         if (Count(UpgradeKind.Focus) > 0 && generation == 0)
         {
             if (focused != enemy || Time.time > focusUntil)
