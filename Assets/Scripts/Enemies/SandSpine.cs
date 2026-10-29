@@ -13,6 +13,15 @@ public sealed class SandSpine
             trail.Add(head + Vector3.up * i * .08f);
     }
 
+    // Lay the whole body out in a straight line behind the head, e.g. offscreen
+    // before a new pass, so nothing is ever stretched across the arena.
+    public void Reset(Vector3 head, Vector3 back)
+    {
+        trail.Clear();
+        for (int i = 0; i < 480; i++)
+            trail.Add(head + back.normalized * i * .06f);
+    }
+
     public void Follow(Vector3 head, Transform[] sections)
     {
         if (Vector3.Distance(head, trail[0]) > .06f)

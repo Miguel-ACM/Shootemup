@@ -8,12 +8,7 @@ public sealed partial class DesertWormBoss : DistrictBoss
     readonly Transform[] sections = new Transform[BodyCount];
     SandSpine spine;
     Vector3 previous;
-    float routeWidth, routeHeight, routeCentre;
-    float routeClock;
-    bool entered;
-    static readonly Vector2[] Route ={new Vector2(0,1),new Vector2(-1,.72f),new Vector2(-.86f,-.84f),
-        new Vector2(.80f,-1),new Vector2(1,.63f),new Vector2(-.70f,1),new Vector2(-.12f,-.92f),
-        new Vector2(.95f,-.48f),new Vector2(.72f,.95f),new Vector2(-1,.14f),new Vector2(.18f,-.65f),new Vector2(.36f,1)};
+    float routeWidth;
     bool completing;
     public int RemainingParts { get; private set; } = BodyCount + 1;
     public DesertWormCore[] Cores => cores;
@@ -36,8 +31,6 @@ public sealed partial class DesertWormBoss : DistrictBoss
         previous = transform.position;
         var camera = UnityEngine.Camera.main;
         routeWidth = Mathf.Max(.6f, camera.orthographicSize * 405f / 720f - 1.25f);
-        routeHeight = camera.orthographicSize - 1.35f;
-        routeCentre = camera.transform.position.y;
         Hull.GetComponent<MeshRenderer>().sharedMaterial = IndustrialMeshFactory.WhiteWormMaterial;
         cores[0] = DesertWormCore.Create(this, Hull, true, health * 670 / 2700, new Vector3(0, .05f, -.44f));
         firingCue.Register(cores[0].transform, Vector3.zero);
@@ -52,36 +45,47 @@ public sealed partial class DesertWormBoss : DistrictBoss
         }
     }
 
+    // A predictable route: after one dive down through the arena, the worm keeps rising
+    // from below the bottom edge to above the top in a gentle S, each pass in the next
+    // lane, its body laid out offscreen before every new pass.
+    static readonly float[] Lanes = { 0, -.55f, .55f, -.25f, .3f };
+    int pass = -1;
+    float passTravel;
     protected override void MoveBoss(float dt)
     {
-        var entry = new Vector3(0, routeCentre + routeHeight, 1);
-        if (!entered)
+        float body = BodyCount * 1.04f + 1.5f;
+        float speed = phaseTwo ? 4.3f : 3.3f;
+        if (pass < 0)
         {
-            transform.position = Vector3.MoveTowards(transform.position, entry, dt * 5.2f);
-            entered = Vector3.Distance(transform.position, entry) < .02f;
+            // Opening dive: straight down the middle and out of the bottom.
+            transform.position += Vector3.down * dt * speed * 1.3f;
+            if (transform.position.y < Camera.DownLimit - body)
+                BeginPass();
         }
         else
         {
-            int leg = Mathf.FloorToInt(routeClock) % Route.Length;
-            Vector2 a = Route[leg], b = Route[(leg + 1) % Route.Length];
-            float distance = Vector2.Scale(b - a, new Vector2(routeWidth, routeHeight)).magnitude;
-            routeClock += dt * (phaseTwo ? 7.3f : 5.8f) / Mathf.Max(3, distance);
-            leg = Mathf.FloorToInt(routeClock) % Route.Length;
-            float t = routeClock - Mathf.Floor(routeClock);
-            // Rounded corners keep the entire articulated body flowing through a full-arena route.
-            a = Route[leg];
-            b = Route[(leg + 1) % Route.Length];
-            Vector2 before = Route[(leg + Route.Length - 1) % Route.Length], after = Route[(leg + 2) % Route.Length];
-            Vector2 p = .5f * ((2 * a) + (-before + b) * t + (2 * before - 5 * a + 4 * b - after) * t * t + (-before + 3 * a - 3 * b + after) * t * t * t);
-            p.x = Mathf.Clamp(p.x, -1, 1);
-            p.y = Mathf.Clamp(p.y, -1, 1);
-            var target = new Vector3(p.x * routeWidth, routeCentre + p.y * routeHeight, 1);
-            transform.position = Vector3.MoveTowards(transform.position, target, dt * (phaseTwo ? 8.4f : 6.8f));
+            passTravel += dt * speed;
+            float lane = Lanes[pass % Lanes.Length] * routeWidth;
+            float y = Camera.DownLimit - 1.2f + passTravel;
+            float x = lane + Mathf.Sin(passTravel * .5f + pass) * routeWidth * .35f;
+            transform.position = new Vector3(Mathf.Clamp(x, -routeWidth, routeWidth), y, 1);
+            if (y > Camera.UpLimit + body)
+                BeginPass();
         }
         Vector2 tangent = transform.position - previous;
         previous = transform.position;
         if (tangent.sqrMagnitude > .00001f)
             Hull.rotation = Quaternion.FromToRotation(Vector3.down, tangent);
+        spine?.Follow(transform.position, sections);
+    }
+
+    void BeginPass()
+    {
+        pass++;
+        passTravel = 0;
+        transform.position = new Vector3(Lanes[pass % Lanes.Length] * routeWidth, Camera.DownLimit - 1.2f, 1);
+        previous = transform.position + Vector3.down * .1f;
+        spine?.Reset(transform.position, Vector3.down);
         spine?.Follow(transform.position, sections);
     }
 

@@ -1,17 +1,18 @@
 using System.Collections;
 using UnityEngine;
 
-// Desert worm: everything comes off the white body as it winds through the arena.
+// Desert worm: after one dive it keeps rising from the bottom edge to the top in a
+// steady S, lane by lane, attacking on the way up. Everything comes off its body.
 // Phase one
 //   Quicksand Field: reactor after reactor, head to tail, sows mirrored rows of mines
-//     on both flanks; they brake and glint, odd mines sink away, even mines lunge.
-//   Sandblast: twin mirrored arrow streams sweep apart and back from the jaw while
-//     the body sheds ordered heat haze that fades at staggered depths.
+//     on both flanks; they brake and glint, odd mines sink away, even mines carry on
+//     outward, so the field spreads across the arena instead of piling on the player.
+//   Sandblast: twin mirrored arrow streams fan either side of the player from the
+//     jaw, with a little ordered heat haze from the body.
 // Phase two
 //   Sidewinder: every surviving reactor fires arrows straight out of both flanks as
-//     the body winds, drawing ribbons of arrows along its whole path.
-//   Dune Collapse: reactors in turn throw dense mirrored geysers of arrows upward,
-//     which fall back across the arena under gravity.
+//     the body rises, drawing ribbons of arrows along its whole path.
+//   Dune Collapse: reactors in turn throw small geysers of arrows that fall back.
 public sealed partial class DesertWormBoss
 {
     int WindingCore(int wanted)
@@ -45,13 +46,13 @@ public sealed partial class DesertWormBoss
             {
                 yield return Every(7, .2f, n => Sidewinder(n));
                 yield return Wait(.8f);
-                yield return Every(6, .3f, n => Geyser(WindingCore(n % cores.Length)));
+                yield return Every(6, .6f, n => Geyser(WindingCore(n % cores.Length)));
                 yield return Wait(.8f);
             }
         }
     }
 
-    // Two flanking rows that brake and glint; even mines lunge at the player, odd ones sink.
+    // Two flanking rows that brake and glint; even mines carry on outward, odd ones sink.
     void QuicksandMines(int core)
     {
         if (core < 0)
@@ -64,7 +65,7 @@ public sealed partial class DesertWormBoss
             {
                 var axis = CombatVisuals.Rotate(flank * side, (i - (mines - 1) * .5f) * 14);
                 float hold = 1.0f + i * .08f;
-                var mine = Fire<SimpleRound>(t.position, axis, 2.3f + (i % 2) * .5f, .22f).Pause(.5f, hold, CombatRound.Turn.Aim, 0, 1.0f);
+                var mine = Fire<SimpleRound>(t.position, axis, 2.3f + (i % 2) * .5f, .22f).Pause(.5f, hold, CombatRound.Turn.Keep, 0, 1.2f);
                 if (i % 2 == 1)
                     mine.FadeAt(.5f + hold);
             }
@@ -73,12 +74,12 @@ public sealed partial class DesertWormBoss
     // Twin mirrored arrow streams from the jaw, sweeping apart and back together.
     IEnumerator Sandblast()
     {
-        Phrase(Every(6, 1.5f, n => Mirage(n % 2)));
+        Phrase(Every(6, 2.5f, n => Mirage(n % 2)));
         int shots = Dense(90);
         for (int i = 0; i < shots && CanShoot(cores[0]); i++)
         {
-            Vector2 heading = Hull.TransformDirection(Vector3.down);
-            float open = Mathf.Sin(i / 30f * Mathf.PI * 2) * 40;
+            Vector2 heading = CombatVisuals.Aim(Muzzle());
+            float open = 12 + Mathf.Abs(Mathf.Sin(i / 30f * Mathf.PI * 2)) * 34;
             foreach (int mirror in new[] { -1, 1 })
                 foreach (float arm in new[] { 0f, 14f })
                     Fire<NeedleRound>(Muzzle(), CombatVisuals.Rotate(heading, mirror * (open + arm)), 3.4f, .19f);
@@ -89,7 +90,7 @@ public sealed partial class DesertWormBoss
     // Heat haze: slow mirrored rounds that shimmer and fade out at staggered depths.
     void Mirage(int parity)
     {
-        int count = Dense(5);
+        int count = Dense(3);
         for (int i = 1; i < cores.Length; i++)
             if (i % 2 == parity && CanShoot(cores[i]))
                 for (int j = 0; j < count; j++)
@@ -117,8 +118,8 @@ public sealed partial class DesertWormBoss
         if (core < 0)
             return;
         var p = cores[core].transform.position;
-        int lanes = Dense(13);
-        for (int layer = 0; layer < 2; layer++)
+        int lanes = Dense(9);
+        for (int layer = 0; layer < 1; layer++)
             for (int i = 0; i < lanes; i++)
             {
                 float lane = i - (lanes - 1) * .5f;
