@@ -1,0 +1,24 @@
+# Brief: remodel one item for a top-down shoot-em-up
+
+You are remodeling one collectible item (or pickup) of a Unity vertical shoot-em-up. The game renders low-poly, flat-shaded, PS1-flavoured 3D models. Items float in the arena and slowly spin around their vertical axis, so they are seen from the front, the sides and the back, at small size (about 50-80 pixels on screen); the same model also appears as a tiny icon in the loadout HUD. The current model is built procedurally (its source is given below). Read it to understand the object, its proportions and colours, then build a clearly better model of the same object.
+
+Write ONE Blender 5.x Python script named `model.py` in the current directory. Do not run Blender yourself. The script must:
+
+1. Clear the default scene, then build the model only from bpy primitives, bmesh and modifiers applied before export (no external files, no addons).
+2. Coordinates: the item stands upright: +Y is up, +Z faces the camera, X is right. Center it at the origin and fit it inside a box about 0.9 units tall and 0.9 wide (match the current model's size within about 15%). It spins around Y, so the back and sides must look finished too.
+3. Materials: name them `tile_00` .. `tile_15` (at most 16), flat colours with no textures, transparency or emission. YOU choose each material's colour (its Base Color is what the game will use), so pick a strong, readable palette for this object; dark rims and highlights are added by the game, so use mid-to-bright colours and avoid near-black except for small details.
+4. Budget: 300-2000 triangles. Flat shading. A distinct silhouette and colour identity that is recognisable at icon size; avoid noisy detail that turns into mush and avoid thin parts that vanish. Real 3D form (bevels, curvature, layered parts), not a flat cut-out, unless the object really is flat (a card, a coin).
+5. Join everything into ONE mesh object named `Model` (multiple material slots are fine), apply all transforms and modifiers.
+6. Export `model.obj` (+ .mtl) next to the script with `bpy.ops.wm.obj_export` (export materials, forward_axis='Y', up_axis='Z', so coordinates are unchanged).
+7. Then render two 512x512 PNGs next to the script with Cycles (CPU, 48 samples), neutral dark blue-gray world (0.05,0.07,0.09), one sun light from the upper left plus a soft fill:
+   - `top.png`: orthographic camera on +Z looking at -Z, framing the model with ~15% margin (the in-game front view).
+   - `angle.png`: perspective view from front-right and slightly above, so the 3D form is visible; frame the model to fill about 70% of the image.
+   Find the script directory from `__file__`, falling back to the path after `--` in sys.argv.
+
+Use the Blender 5.x API (`bpy.ops.wm.obj_export`, Principled BSDF input "Base Color"). When done, reply with one short paragraph describing the design.
+
+## This item
+
+Item `RailDriverItem`.
+What it does in the game: read C:/Users/Miguel/Shootemup/Assets/Scripts/Items/Weapon/RailDriverItem.cs (class RailDriverItem) only to understand the item's identity.
+Current model: search the C# files in C:/Users/Miguel/Shootemup/Assets/Scripts/Visuals/Meshes for "\"RailDriverItem\"" and read the branch that builds it (its int arguments are tile numbers of an equipment atlas; colours may be overridden in C:/Users/Miguel/Shootemup/Assets/Scripts/Visuals/EverydayItemMaterials.cs). Keep what the object is and its recognisable colour identity; make it a colourful, immediately distinguishable, clearly better three-dimensional model.
