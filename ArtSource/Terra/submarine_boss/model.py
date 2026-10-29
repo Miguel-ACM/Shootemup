@@ -1,4 +1,4 @@
-﻿import bpy, math, os, sys
+import bpy, math, os, sys, json
 from mathutils import Vector
 
 # Blender can execute this file directly or receive its path following --.
@@ -29,6 +29,7 @@ for i, color in enumerate(palette):
     mats.append(m)
 
 parts = []
+animated_parts = []
 def mesh(name, verts, faces, material, indices=None):
     me = bpy.data.meshes.new(name)
     me.from_pydata(verts, [], faces)
@@ -108,7 +109,13 @@ for s in (-1,1):
     plate('Shoulder armor',mirror([(.60,.27),(1.31,-.43),(1.32,-1.11),(.84,-1.67),(.54,-1.41),(.88,-.81)]),.10,.38,6,.055,4)
     plate('Swept lateral fin',mirror([(.65,.52),(1.58,.79),(1.45,.12),(.76,-.13)]),.05,.23,4,.045,0)
     plate('Shoulder inlay',mirror([(.91,-.52),(1.22,-.62),(1.22,-1.03),(.93,-1.39),(.79,-1.32),(1.02,-.98)]),.38,.405,8,.025,4)
+    start = len(parts)
     plate('Stern fin',mirror([(.24,1.56),(.66,2.10),(.39,2.30),(.11,1.93)]),.05,.19,4,.035,0)
+    animated_parts.append(({'object': 'SternFin_' + ('L' if s < 0 else 'R'),
+                            'motion': 'swing', 'axis': [0, s, 0],
+                            'pivot': [s*.175, 1.745, .12], 'speed': 1.0,
+                            'amplitude': 15}, parts[start:]))
+    del parts[start:]
     # Broad dark inset beds with raised edges convey recessed launch channels.
     plate('Launch channel',mirror([(.43,-1.52),(.72,-1.49),(.83,-.50),(.58,-.42)]),.47,.505,11,.025,8)
     beam('Channel rail',(s*.43,-1.48,.53),(s*.58,-.43,.53),.035,13)
@@ -126,11 +133,16 @@ for s in (-1,1):
     cylinder('Impeller well',.35,.13,(x,y,.19),0,12)
     ring('Impeller rim',x,y,.275,.34,.265,.075,6,'Z',12)
     cylinder('Impeller dark bed',.263,.025,(x,y,.252),11,12)
+    start = len(parts)
     for k in range(3):
         a=k*2*math.pi/3
         def polar(r,t): return (x+r*math.cos(a+t),y+r*math.sin(a+t))
         plate('Impeller blade',[polar(.065,0),polar(.245,.20),polar(.24,.70),polar(.10,.85)],.268,.303,4,.01,4)
     cylinder('Impeller hub',.085,.08,(x,y,.31),13,10)
+    animated_parts.append(({'object': 'Impeller_' + ('L' if s < 0 else 'R'),
+                            'motion': 'spin', 'axis': [0, 0, 1],
+                            'pivot': [x, y, .31], 'speed': 540}, parts[start:]))
+    del parts[start:]
 
 # A sculpted multi-level bridge, its front points down the screen.
 plate('Sail base',[(-.32,.94),(-.38,.25),(-.21,-.28),(0,-.44),(.21,-.28),(.38,.25),(.32,.94),(0,1.15)],.43,.68,4,.055,11)
@@ -149,18 +161,36 @@ for x,y,z,r in [(0,-1.65,.39,.125),(-.65,-.6,.57,.105),(.65,-.6,.57,.105),(-1.02
     cylinder('Bore shadow',r*.60,.012,(x,y+.08,z),11,12,'Y')
     cylinder('Bore glint',r*.23,.014,(x,y+.071,z),10,10,'Y')
 
-# Collapse all geometry into one exportable mesh and bake object transforms.
-bpy.ops.object.select_all(action='DESELECT')
-for ob in parts:
-    ob.select_set(True)
-bpy.context.view_layer.objects.active=parts[0]
-bpy.ops.object.join()
-model=bpy.context.object; model.name='Model'
-bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-for mod in list(model.modifiers): bpy.ops.object.modifier_apply(modifier=mod.name)
-for poly in model.data.polygons: poly.use_smooth=False
-bpy.ops.wm.obj_export(filepath=os.path.join(SCRIPT_DIR,'model.obj'), export_selected_objects=True, export_materials=True, forward_axis='Y', up_axis='Z')
+# Join stationary geometry and moving assemblies separately. Bake transforms,
+# then place each moving object's origin at its hinge or hub without moving it.
+def join_meshes(objects, name, pivot=None):
+    bpy.ops.object.select_all(action='DESELECT')
+    for ob in objects: ob.select_set(True)
+    bpy.context.view_layer.objects.active=objects[0]
+    bpy.ops.object.join()
+    ob=bpy.context.object; ob.name=name
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    for mod in list(ob.modifiers): bpy.ops.object.modifier_apply(modifier=mod.name)
+    for poly in ob.data.polygons: poly.use_smooth=False
+    if pivot is not None:
+        offset=Vector(pivot)
+        for vertex in ob.data.vertices: vertex.co -= offset
+        ob.location=offset
+    return ob
 
+model=join_meshes(parts, 'Model')
+export_objects=[model]
+for info, objects in animated_parts:
+    export_objects.append(join_meshes(objects, info['object'], info['pivot']))
+
+with open(os.path.join(SCRIPT_DIR, 'parts.json'), 'w', encoding='utf-8') as f:
+    json.dump([info for info, objects in animated_parts], f, indent=2)
+    f.write('\n')
+
+bpy.ops.object.select_all(action='DESELECT')
+for ob in export_objects: ob.select_set(True)
+bpy.context.view_layer.objects.active=model
+bpy.ops.wm.obj_export(filepath=os.path.join(SCRIPT_DIR,'model.obj'), export_selected_objects=True, export_materials=True, forward_axis='Y', up_axis='Z')
 # Studio lighting and two model views, created only after the mesh export.
 scene=bpy.context.scene
 scene.render.engine='CYCLES'; scene.cycles.device='CPU'; scene.cycles.samples=48

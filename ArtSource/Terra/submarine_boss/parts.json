@@ -1,0 +1,64 @@
+[
+  {
+    "object": "SternFin_L",
+    "motion": "swing",
+    "axis": [
+      0,
+      -1,
+      0
+    ],
+    "pivot": [
+      -0.175,
+      1.745,
+      0.12
+    ],
+    "speed": 1.0,
+    "amplitude": 15
+  },
+  {
+    "object": "Impeller_L",
+    "motion": "spin",
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "pivot": [
+      -0.65,
+      1.49,
+      0.31
+    ],
+    "speed": 540
+  },
+  {
+    "object": "SternFin_R",
+    "motion": "swing",
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "pivot": [
+      0.175,
+      1.745,
+      0.12
+    ],
+    "speed": 1.0,
+    "amplitude": 15
+  },
+  {
+    "object": "Impeller_R",
+    "motion": "spin",
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "pivot": [
+      0.65,
+      1.49,
+      0.31
+    ],
+    "speed": 540
+  }
+]
