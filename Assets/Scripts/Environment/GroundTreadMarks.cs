@@ -68,7 +68,7 @@ public sealed class GroundTreadMarks : MonoBehaviour
             distance = 0;
             var side = facing * Vector3.right;
             var forward = facing * Vector3.up;
-            foreach (int s in new[] { -1, 1 })
+            for (int s = -1; s <= 1; s += 2)
             {
                 var centre = p + side * s * (Snow ? .37f : .36f) + Vector3.back * .025f;
                 history[cursor] = new Mark
@@ -86,14 +86,14 @@ public sealed class GroundTreadMarks : MonoBehaviour
         if (Time.time >= nextPowder && travelled > .001f)
         {
             nextPowder = Time.time + .10f;
-            foreach (int s in new[] { -1, 1 })
+            for (int s = -1; s <= 1; s += 2)
             {
                 var e = new ParticleSystem.EmitParams();
                 e.position = p + facing * new Vector3(s * .39f, .52f, -.12f);
                 e.velocity = facing * new Vector3(s * .3f, .8f, -.3f);
                 e.startColor = Snow ? new Color(.78f, .86f, .88f, .65f) : new Color(.44f, .40f, .25f, .55f);
-                e.startSize3D = Vector3.one * (Snow ? .09f : .055f);
-                e.startLifetime = .35f;
+                e.startSize3D = new Vector3(Snow ? .12f : .075f, Snow ? .07f : .045f, .05f);
+                e.startLifetime = Snow ? .45f : .3f;
                 powder.Emit(e, 2);
             }
         }
