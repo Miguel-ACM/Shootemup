@@ -24,7 +24,8 @@ public sealed class FlameWeaponFeedback : MonoBehaviour
         bed.priority = 105;
         bed.clip = ItemSound.Clip("itemFlameSustain");
         var manager = FindAnyObjectByType<SoundManager>();
-        if (manager != null) bed.outputAudioMixerGroup = manager.GetComponent<AudioSource>().outputAudioMixerGroup;
+        if (manager != null)
+            bed.outputAudioMixerGroup = manager.GetComponent<AudioSource>().outputAudioMixerGroup;
         for (int i = 0; i < tongues.Length; i++)
         {
             tongues[i] = CombatVisuals.Line(transform, PlayerShotPalette.Fire, .035f);
@@ -40,19 +41,29 @@ public sealed class FlameWeaponFeedback : MonoBehaviour
         {
             lit = true;
             ItemSound.Cue("itemFlameIgnite", volume: .1f, cooldown: .1f);
-            if (HasApprovedLoop && !bed.isPlaying) bed.Play();
+            if (HasApprovedLoop && !bed.isPlaying)
+                bed.Play();
         }
     }
 
     void LateUpdate()
     {
-        if (weapon == null || bed == null) return;
+        if (weapon == null || bed == null)
+            return;
         if (Menu.GameplayPaused)
         {
-            if (!paused) { paused = true; bed.Pause(); }
+            if (!paused)
+            {
+                paused = true;
+                bed.Pause();
+            }
             return;
         }
-        if (paused) { paused = false; bed.UnPause(); }
+        if (paused)
+        {
+            paused = false;
+            bed.UnPause();
+        }
         bool held = weapon.isShootingPrimary && !weapon.isStopingPrimary || weapon.isShootingSecondary && !weapon.isStopingSecondary;
         bool firing = lit && held && !GameRules.playerDisabled;
         if (lit && !firing)
@@ -62,7 +73,8 @@ public sealed class FlameWeaponFeedback : MonoBehaviour
         }
         heat = Mathf.MoveTowards(heat, firing ? 1 : 0, WorldTimeStop.PlayerDelta / (firing ? .06f : .14f));
         bed.volume = heat * .07f * ItemSound.Gain("itemFlameSustain");
-        if (heat <= .001f && bed.isPlaying) bed.Stop();
+        if (heat <= .001f && bed.isPlaying)
+            bed.Stop();
         Vector3 muzzle = transform.position + (Vector3)direction * .3f;
         if (hull != null)
             muzzle = direction.y > 0
@@ -73,7 +85,8 @@ public sealed class FlameWeaponFeedback : MonoBehaviour
         {
             var tongue = tongues[line];
             tongue.enabled = heat > .01f;
-            if (!tongue.enabled) continue;
+            if (!tongue.enabled)
+                continue;
             Color color = PlayerShotPalette.Fire;
             color.a = heat * .55f;
             tongue.startColor = tongue.endColor = color;
@@ -95,7 +108,10 @@ public sealed class FlameWeaponFeedback : MonoBehaviour
     {
         lit = false;
         heat = 0;
-        if (bed != null) bed.Stop();
-        foreach (var tongue in tongues) if (tongue != null) tongue.enabled = false;
+        if (bed != null)
+            bed.Stop();
+        foreach (var tongue in tongues)
+            if (tongue != null)
+                tongue.enabled = false;
     }
 }

@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public enum ItemProcShape { Fork, Rebound, Counter, Convert, Charge, Ignite, Toxic, Detonate, Lock, Return }
+public enum ItemProcShape
+{
+    Fork, Rebound, Counter, Convert, Charge, Ignite, Toxic, Detonate, Lock, Return
+}
 
 // Prepared once behind the curtain. Short accents explain a trigger, beneath live rounds.
 public sealed class ItemProcVfx : MonoBehaviour
@@ -26,7 +29,8 @@ public sealed class ItemProcVfx : MonoBehaviour
 
     public static void Warm()
     {
-        if (pool != null && pool[0] != null) return;
+        if (pool != null && pool[0] != null)
+            return;
         var root = new GameObject("Prepared item trigger accents");
         pool = new ItemProcVfx[Capacity];
         for (int i = 0; i < Capacity; i++)
@@ -48,7 +52,8 @@ public sealed class ItemProcVfx : MonoBehaviour
 
     public static void Emit(ItemProcShape shape, Vector3 position, Color color, float size = .45f, Vector2 direction = default)
     {
-        if (GameRules.playerDisabled || Menu.GameplayPaused || Time.time < gates[(int)shape]) return;
+        if (GameRules.playerDisabled || Menu.GameplayPaused || Time.time < gates[(int)shape])
+            return;
         gates[(int)shape] = Time.time + .075f;
         Warm();
         var effect = pool[cursor++ % Capacity];
@@ -65,12 +70,14 @@ public sealed class ItemProcVfx : MonoBehaviour
 
     void Update()
     {
-        if (!playing || Menu.GameplayPaused || WorldTimeStop.Frozen || Time.deltaTime <= 0) return;
+        if (!playing || Menu.GameplayPaused || WorldTimeStop.Frozen || Time.deltaTime <= 0)
+            return;
         age += Time.deltaTime;
         if (age >= duration || GameRules.playerDisabled)
         {
             playing = false;
-            foreach (var stroke in strokes) stroke.enabled = false;
+            foreach (var stroke in strokes)
+                stroke.enabled = false;
             return;
         }
         Draw();

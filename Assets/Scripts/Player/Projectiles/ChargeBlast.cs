@@ -90,5 +90,8 @@ public sealed class ChargeBlast : MonoBehaviour
     }
 
     float RadiusAt(float t) => radius * Mathf.Lerp(.35f, 1, Mathf.Clamp01(t / .16f));
-    void OnDestroy() { live.Remove(this); }
+    void OnDestroy()
+    {
+        live.Remove(this);
+    }
 }

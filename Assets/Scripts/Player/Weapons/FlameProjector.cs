@@ -17,6 +17,7 @@ public sealed class FlameProjector : ExpansionWeapon
     protected override void ShotFeedback()
     {
         feedback.Fire();
-        if (!feedback.HasApprovedLoop) base.ShotFeedback();
+        if (!feedback.HasApprovedLoop)
+            base.ShotFeedback();
     }
 }

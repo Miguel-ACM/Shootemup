@@ -8,15 +8,31 @@ public sealed class ItemSound : MonoBehaviour
     static readonly Dictionary<string, AudioClip> library = new Dictionary<string, AudioClip>();
     static readonly Dictionary<string, float> levels = new Dictionary<string, float>();
     static bool levelsLoaded;
-    [System.Serializable] sealed class ApprovedLevels { public Level[] cues = null; }
-    [System.Serializable] sealed class Level { public string cue = null; public float gain = 1; }
+    [System.Serializable]
+    sealed class ApprovedLevels
+    {
+        public Level[] cues = null;
+    }
+
+    [System.Serializable]
+    sealed class Level
+    {
+        public string cue = null; public float gain = 1;
+    }
+
     readonly Dictionary<string, AudioClip> clips = new Dictionary<string, AudioClip>();
     readonly Dictionary<string, float> gates = new Dictionary<string, float>();
     readonly AudioSource[] voices = new AudioSource[8];
     int cursor;
     bool paused;
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetLibrary() { library.Clear(); levels.Clear(); levelsLoaded = false; instance = null; }
+    static void ResetLibrary()
+    {
+        library.Clear();
+        levels.Clear();
+        levelsLoaded = false;
+        instance = null;
+    }
 
     public static float Gain(string cue)
     {
@@ -27,7 +43,8 @@ public sealed class ItemSound : MonoBehaviour
             var approved = resource != null ? JsonUtility.FromJson<ApprovedLevels>(resource.text) : null;
             if (approved?.cues != null)
                 foreach (var entry in approved.cues)
-                    if (entry != null && !string.IsNullOrEmpty(entry.cue)) levels[entry.cue] = Mathf.Clamp(entry.gain, 0, 1.5f);
+                    if (entry != null && !string.IsNullOrEmpty(entry.cue))
+                        levels[entry.cue] = Mathf.Clamp(entry.gain, 0, 1.5f);
         }
         return levels.TryGetValue(cue, out float gain) ? gain : 1;
     }
@@ -43,8 +60,10 @@ public sealed class ItemSound : MonoBehaviour
     public static void Cue(string cue, string fallback = null, float volume = .14f, float pitch = 1, float cooldown = .12f)
     {
         string selected = Clip(cue) != null ? cue : fallback;
-        if (!string.IsNullOrEmpty(selected)) Play(selected, volume, pitch, cooldown);
+        if (!string.IsNullOrEmpty(selected))
+            Play(selected, volume, pitch, cooldown);
     }
+
     public static void Play(string cue, float volume = .18f, float pitch = 1, float cooldown = .08f)
     {
         if (AudioListener.pause || Menu.GameplayPaused)

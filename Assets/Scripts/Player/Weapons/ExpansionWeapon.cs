@@ -10,7 +10,11 @@ public abstract class ExpansionWeapon : AWeaponAutomatic
     protected virtual float Velocity => 1;
     protected virtual int Pellets => 1;
     protected virtual Vector2 FireDirection => Vector2.up;
-    protected virtual void ShotFeedback() { SoundManager.PlaySound("shot1", .07f); }
+    protected virtual void ShotFeedback()
+    {
+        SoundManager.PlaySound("shot1", .07f);
+    }
+
     protected virtual void Awake()
     {
         shootSpeedModifier = .35f;

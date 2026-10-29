@@ -11,38 +11,102 @@ public static class EverydayItemMaterials
     {
         switch (kind)
         {
-            case "SplitterCore": color = new Color(1f, .72f, .16f); return true;
-            case "ReturnModule": color = new Color(1f, .4f, .15f); return true;
-            case "ReboundCoil": color = new Color(.7f, .36f, .95f); return true;
-            case "RecoveryCoil": color = new Color(.18f, .56f, 1f); return true;
-            case "ReserveCell": color = new Color(.25f, .88f, .32f); return true;
-            case "ProximityFuse": color = new Color(1f, .2f, .24f); return true;
-            case "BeamEmitterItem": color = new Color(.16f, .85f, .93f); return true;
-            case "NeedleCannonItem": color = new Color(.75f, .45f, .96f); return true;
-            case "ScatterCannonItem": color = new Color(.95f, .75f, .18f); return true;
-            case "SwarmRackItem": color = new Color(.51f, .85f, .23f); return true;
-            case "BurstLauncherItem": color = new Color(1f, .46f, .18f); return true;
-            case "RailDriverItem": color = new Color(.48f, .43f, .94f); return true;
-            case "DiscThrowerItem": color = new Color(.3f, .8f, .77f); return true;
-            case "FlameProjectorItem": color = new Color(1f, .34f, .12f); return true;
-            case "Capacitor": color = new Color(.37f, .65f, 1f); return true;
-            case "SpareBattery": color = new Color(.75f, .8f, .2f); return true;
-            case "Overdrive": color = new Color(1f, .25f, .2f); return true;
-            case "FocusingLens": color = new Color(.35f, .86f, .91f); return true;
-            case "SalvageConverter": color = new Color(1f, .73f, .18f); return true;
-            case "ChainReactor": color = new Color(1f, .34f, .12f); return true;
-            case "MirrorBurst": color = new Color(.62f, .77f, 1f); return true;
-            case "GravityWell": color = new Color(.24f, .78f, 1f); return true;
-            case "BackdraftItem": color = new Color(1f, .29f, .12f); return true;
-            case "DepthChargeItem": color = new Color(.22f, .52f, .92f); return true;
-            case "WindUpCannonItem": color = new Color(.8f, .38f, .88f); return true;
-            case "BulletTime": color = new Color(.54f, .43f, .95f); return true;
-            case "DoubleTrouble": color = new Color(1f, .66f, .18f); return true;
-            case "EmpPulse": color = new Color(.26f, .86f, .82f); return true;
-            case "DroneLink": color = new Color(.85f, .47f, .83f); return true;
-            case "BallBearing": color = new Color(.6f, .73f, .92f); return true;
-            case "BadGlasses": color = new Color(.75f, .42f, .86f); return true;
-            default: color = default; return false;
+            case "SplitterCore":
+                color = new Color(1f, .72f, .16f);
+                return true;
+            case "ReturnModule":
+                color = new Color(1f, .4f, .15f);
+                return true;
+            case "ReboundCoil":
+                color = new Color(.7f, .36f, .95f);
+                return true;
+            case "RecoveryCoil":
+                color = new Color(.18f, .56f, 1f);
+                return true;
+            case "ReserveCell":
+                color = new Color(.25f, .88f, .32f);
+                return true;
+            case "ProximityFuse":
+                color = new Color(1f, .2f, .24f);
+                return true;
+            case "BeamEmitterItem":
+                color = new Color(.16f, .85f, .93f);
+                return true;
+            case "NeedleCannonItem":
+                color = new Color(.75f, .45f, .96f);
+                return true;
+            case "ScatterCannonItem":
+                color = new Color(.95f, .75f, .18f);
+                return true;
+            case "SwarmRackItem":
+                color = new Color(.51f, .85f, .23f);
+                return true;
+            case "BurstLauncherItem":
+                color = new Color(1f, .46f, .18f);
+                return true;
+            case "RailDriverItem":
+                color = new Color(.48f, .43f, .94f);
+                return true;
+            case "DiscThrowerItem":
+                color = new Color(.3f, .8f, .77f);
+                return true;
+            case "FlameProjectorItem":
+                color = new Color(1f, .34f, .12f);
+                return true;
+            case "Capacitor":
+                color = new Color(.37f, .65f, 1f);
+                return true;
+            case "SpareBattery":
+                color = new Color(.75f, .8f, .2f);
+                return true;
+            case "Overdrive":
+                color = new Color(1f, .25f, .2f);
+                return true;
+            case "FocusingLens":
+                color = new Color(.35f, .86f, .91f);
+                return true;
+            case "SalvageConverter":
+                color = new Color(1f, .73f, .18f);
+                return true;
+            case "ChainReactor":
+                color = new Color(1f, .34f, .12f);
+                return true;
+            case "MirrorBurst":
+                color = new Color(.62f, .77f, 1f);
+                return true;
+            case "GravityWell":
+                color = new Color(.24f, .78f, 1f);
+                return true;
+            case "BackdraftItem":
+                color = new Color(1f, .29f, .12f);
+                return true;
+            case "DepthChargeItem":
+                color = new Color(.22f, .52f, .92f);
+                return true;
+            case "WindUpCannonItem":
+                color = new Color(.8f, .38f, .88f);
+                return true;
+            case "BulletTime":
+                color = new Color(.54f, .43f, .95f);
+                return true;
+            case "DoubleTrouble":
+                color = new Color(1f, .66f, .18f);
+                return true;
+            case "EmpPulse":
+                color = new Color(.26f, .86f, .82f);
+                return true;
+            case "DroneLink":
+                color = new Color(.85f, .47f, .83f);
+                return true;
+            case "BallBearing":
+                color = new Color(.6f, .73f, .92f);
+                return true;
+            case "BadGlasses":
+                color = new Color(.75f, .42f, .86f);
+                return true;
+            default:
+                color = default;
+                return false;
         }
     }
 
@@ -73,6 +137,7 @@ public static class EverydayItemMaterials
         identities[kind] = material;
         return material;
     }
+
     public static Material For(string kind)
     {
         if (System.Array.IndexOf(IndustrialMeshFactory.ItemKinds, kind) >= 0)

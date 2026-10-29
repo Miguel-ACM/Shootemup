@@ -4,7 +4,8 @@ public static partial class IndustrialMeshFactory
     static Mesh snowCombEmitter;
     public static Mesh SnowCombEmitter()
     {
-        if (snowCombEmitter != null) return snowCombEmitter;
+        if (snowCombEmitter != null)
+            return snowCombEmitter;
         var b = new Builder();
         b.Prism(new[] { new Vector2(-.3f, .25f), new Vector2(.3f, .25f), new Vector2(.23f, -.27f), new Vector2(0, -.42f), new Vector2(-.23f, -.27f) }, .25f, 1, Vector3.zero, 6);
         foreach (int side in new[] { -1, 1 })

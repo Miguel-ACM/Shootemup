@@ -140,7 +140,9 @@ public abstract class AWeapon : MonoBehaviour
         WeaponReleased(false);
     }
 
-    protected virtual void WeaponReleased(bool primary) { }
+    protected virtual void WeaponReleased(bool primary)
+    {
+    }
 
     public virtual void updateSpawnPoints()
     {

@@ -14,9 +14,11 @@ public sealed class Backdraft : ExpansionWeapon
         feedback = gameObject.AddComponent<FlameWeaponFeedback>();
         feedback.Build(this, Vector2.down);
     }
+
     protected override void ShotFeedback()
     {
         feedback.Fire();
-        if (!feedback.HasApprovedLoop) base.ShotFeedback();
+        if (!feedback.HasApprovedLoop)
+            base.ShotFeedback();
     }
 }

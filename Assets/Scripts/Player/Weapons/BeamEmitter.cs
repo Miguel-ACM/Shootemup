@@ -15,7 +15,10 @@ public sealed class BeamEmitter : AWeaponAutomatic
     Vector3 attraction;
     bool hasAttraction;
 
-    void Awake() { shootSpeedModifier = .12f; }
+    void Awake()
+    {
+        shootSpeedModifier = .12f;
+    }
 
     public override void Shoot()
     {
@@ -46,7 +49,10 @@ public sealed class BeamEmitter : AWeaponAutomatic
             releasing = true;
     }
 
-    void OnDisable() { StopFiring(); }
+    void OnDisable()
+    {
+        StopFiring();
+    }
 
     void Cleanup()
     {
