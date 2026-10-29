@@ -30,9 +30,10 @@ public sealed class DecisionShop : MonoBehaviour
     {
         mandatory = kind == "bossReward";
         bool singleReward = mandatory || kind == "challengeReward";
+        bool pact = kind == "pact";
         owner = orchestrer;
         player = ship;
-        paid = kind != "reward" && !singleReward;
+        paid = kind != "reward" && !singleReward && !pact;
         coinShop = kind == "coinShop" || kind == "scoreShop";
         done = completed;
         CombatDecision.Begin();
@@ -42,12 +43,14 @@ public sealed class DecisionShop : MonoBehaviour
         dialog = GameObject.FindGameObjectWithTag("Dialog").GetComponent<Dialog>();
         overlay = new GameObject("Shop decision overlay", typeof(RectTransform)).AddComponent<DecisionOverlay>();
         overlay.Build(dialog.font);
-        int count = singleReward ? 1 : paid ? (UnityEngine.Random.value < .35f ? 4 : 3) : RewardCount(GameRules.luck, UnityEngine.Random.value);
+        // Pacts always offer two bargains when two remain; declining is the bottom skip.
+        var pacts = pact ? PactPool.Draw(player, 2) : null;
+        int count = pact ? pacts.Count : singleReward ? 1 : paid ? (UnityEngine.Random.value < .35f ? 4 : 3) : RewardCount(GameRules.luck, UnityEngine.Random.value);
         bool healthKit = paid && player.health < player.maxHealth * .45f;
         for (int i = 0; i < count; i++)
         {
-            string rarity = "common";
-            string itemKind = healthKit && i == count - 1 ? "LargeHealthKit" : ItemPool.GetItem(out rarity);
+            string rarity = pact ? PactPool.Rarity : "common";
+            string itemKind = pact ? pacts[i] : healthKit && i == count - 1 ? "LargeHealthKit" : ItemPool.GetItem(out rarity);
             var target = dropPosition ?? new Vector3(Mathf.Lerp(Camera.LeftLimit + 1, Camera.RightLimit - 1, count == 1 ? .5f : i / (float)(count - 1)), Camera.UpLimit * .5f, 1);
             var entrance = dropPosition.HasValue ? target + Vector3.up * .9f : new Vector3(target.x, Camera.UpLimit + 3, 1);
             var go = Instantiate(Resources.Load<GameObject>("Items/Item"), entrance, Quaternion.identity);
@@ -70,6 +73,12 @@ public sealed class DecisionShop : MonoBehaviour
         if (closed || player == null)
             return;
         age += Time.deltaTime;
+        // Nothing left to offer (every pact already seen): close on the next frame, never inside Open.
+        if (items.Count == 0)
+        {
+            Close();
+            return;
+        }
         if (player.health <= 0)
         {
             Abort();

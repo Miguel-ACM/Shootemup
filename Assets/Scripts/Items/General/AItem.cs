@@ -207,6 +207,8 @@ public abstract class AItem : MonoBehaviour
         {
             case "legendary":
                 return new Color(1f, .74f, .12f);
+            case PactPool.Rarity:
+                return new Color(.88f, .1f, .2f);
             case "epic":
                 return new Color(.85f, .36f, 1f);
             case "rare":

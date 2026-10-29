@@ -83,5 +83,6 @@ public class GameRules : MonoBehaviour
         Score.ResetRun();
         RunCoins.Reset();
         ItemPool.ResetRun();
+        PactPool.ResetRun();
     }
 }

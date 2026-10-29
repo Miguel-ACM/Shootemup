@@ -49,7 +49,7 @@ public sealed class DecisionOverlay : MonoBehaviour
         offer.name.text = System.Text.RegularExpressions.Regex.Replace(offer.item.GetData()[0], @"\S+", "<nobr>$0</nobr>");
         offer.price.text = price;
         offer.price.color = affordable ? new Color(1, .78f, .4f) : new Color(1, .36f, .3f);
-        offer.kind.text = offer.item.Kind == AItem.ItemType.active ? "active" : offer.item.Kind == AItem.ItemType.weapon || offer.item.Kind == AItem.ItemType.passiveWeapon ? "weapon" : "passive";
+        offer.kind.text = offer.item is APactItem ? "pact" : offer.item.Kind == AItem.ItemType.active ? "active" : offer.item.Kind == AItem.ItemType.weapon || offer.item.Kind == AItem.ItemType.passiveWeapon ? "weapon" : "passive";
     }
 
     void LateUpdate()

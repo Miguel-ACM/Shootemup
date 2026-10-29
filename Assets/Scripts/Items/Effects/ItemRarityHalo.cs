@@ -13,7 +13,7 @@ public sealed class ItemRarityHalo : MonoBehaviour
         var color = AItem.GetRarityColor(item.rarity);
         outer = CombatVisuals.Line(transform, color, .055f);
         inner = CombatVisuals.Line(transform, color * .8f, .025f);
-        int tier = item.rarity == "legendary" ? 4 : item.rarity == "epic" ? 3 : item.rarity == "rare" ? 2 : 1;
+        int tier = item.rarity == "legendary" || item.rarity == PactPool.Rarity ? 4 : item.rarity == "epic" ? 3 : item.rarity == "rare" ? 2 : 1;
         stars = new SpriteRenderer[tier];
         for (int i = 0; i < tier; i++)
         {

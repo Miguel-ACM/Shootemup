@@ -116,6 +116,24 @@ public static class EverydayItemMaterials
             case "BadGlasses":
                 color = new Color(.75f, .42f, .86f);
                 return true;
+            case "GlassHull":
+                color = new Color(.62f, .92f, 1f);
+                return true;
+            case "BloodPrice":
+                color = new Color(.78f, .08f, .14f);
+                return true;
+            case "DevilImp":
+                color = new Color(.92f, .18f, .16f);
+                return true;
+            case "MirrorOath":
+                color = new Color(.82f, .86f, .94f);
+                return true;
+            case "Hunger":
+                color = new Color(.55f, .12f, .22f);
+                return true;
+            case "CursedCoin":
+                color = new Color(.5f, .9f, .42f);
+                return true;
             default:
                 color = default;
                 return false;

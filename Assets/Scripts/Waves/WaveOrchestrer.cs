@@ -48,6 +48,8 @@ public class WaveOrchestrer : MonoBehaviour
     DistrictMiniboss activeMiniboss;
     float minibossDeadline = -1;
     bool minibossVictory;
+    /// <summary>An ordinary combat wave ended: (enemies in the wave, enemies destroyed).</summary>
+    public static event Action<int, int> CombatWaveFinished;
     public float MinibossRemaining => minibossDeadline < 0 ? 20 : Mathf.Max(0, minibossDeadline - Time.time);
     public bool MinibossVictory => minibossVictory;
 
@@ -149,6 +151,8 @@ public class WaveOrchestrer : MonoBehaviour
             activeMiniboss = null;
             minibossDeadline = -1;
         }
+        else
+            CombatWaveFinished?.Invoke(currentWaveEnemies, currentWaveKilledEnemies);
         if (challengeWave)
         {
             challengeWave = false;
@@ -214,7 +218,7 @@ public class WaveOrchestrer : MonoBehaviour
         }
         if (!int.TryParse(currWaveType, out _))
             DismissOffer();
-        if (currWaveType == "coinShop" || currWaveType == "scoreShop" || currWaveType == "multiplierShop" || currWaveType == "reward")
+        if (currWaveType == "coinShop" || currWaveType == "scoreShop" || currWaveType == "multiplierShop" || currWaveType == "reward" || currWaveType == "pact")
         {
             EraseAllBullets();
             isWaveComingOut = false;
@@ -389,8 +393,34 @@ public class WaveOrchestrer : MonoBehaviour
         decision.Open(this, ship.GetComponent<Shipcontroller>(), "bossReward", () =>
            {
                decision = null;
-               StartCoroutine(ChooseNextRoute());
+               if (PactPool.Due && PactPool.HasEligible(ship.GetComponent<Shipcontroller>()))
+                   StartCoroutine(OfferPact());
+               else
+                   StartCoroutine(ChooseNextRoute());
            }, position);
+    }
+
+    // Every second district closes with a pact: take one bargain or skip at the bottom.
+    IEnumerator OfferPact()
+    {
+        CombatDecision.Begin();
+        yield return new WaitForSeconds(.5f);
+        if (GameOverState.Active)
+            yield break;
+        decision = gameObject.AddComponent<DecisionShop>();
+        decision.Open(this, ship.GetComponent<Shipcontroller>(), "pact", () =>
+           {
+               decision = null;
+               StartCoroutine(ChooseNextRoute());
+           });
+    }
+
+    /// <summary>Debug: the next wave break opens a pact offer.</summary>
+    public void ForcePactNext()
+    {
+        var sequence = new List<string>(waves);
+        sequence.Insert(Mathf.Min(currentWaveNumber, sequence.Count), "pact");
+        waves = sequence.ToArray();
     }
 
     IEnumerator ChooseNextRoute()

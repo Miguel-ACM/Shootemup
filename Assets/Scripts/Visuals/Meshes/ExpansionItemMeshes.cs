@@ -31,6 +31,8 @@ public static partial class IndustrialMeshFactory
             return expansionItems[kind] = b.Finish(kind + " equipment");
         if (ReferenceItem(b, kind))
             return expansionItems[kind] = b.Finish(kind + " equipment");
+        if (PactItem(b, kind))
+            return expansionItems[kind] = b.Finish(kind + " equipment");
         if (HealthItem(b, kind))
             return expansionItems[kind] = b.Finish(kind + " equipment");
         if (kind == "BaseWeaponItem")

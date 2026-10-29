@@ -507,12 +507,43 @@ public class Shipcontroller : MonoBehaviour
         healthBar.Set(health);
     }
 
-    // New segments arrive filled.
+    // New segments arrive filled. Glass Hull keeps the hull at one segment for the rest of the run.
     public void AddMaxHits(int hits)
     {
+        if (PactPool.GlassHull)
+            return;
         maxHealth += hits;
         healthBar.SetMax(maxHealth);
         HealthRecovery.Begin(this, hits);
+    }
+
+    public void SetMaxHits(int hits)
+    {
+        maxHealth = Mathf.Max(1, hits);
+        health = Mathf.Min(health, maxHealth);
+        healthBar.SetMax(maxHealth);
+        healthBar.Set(health);
+    }
+
+    public void ReduceMaxHits(int hits) => SetMaxHits((int)maxHealth - hits);
+
+    // Pact costs: no hit reaction, shield, multiplier loss or invulnerability.
+    // Unless lethal, the cost stops at the last segment.
+    public void Sacrifice(int hits, bool lethal = false)
+    {
+        if (ObserverMode || health <= 0 || GameOverState.Active)
+            return;
+        float floor = lethal ? 0 : Mathf.Min(1, health);
+        health = Mathf.Max(floor, health - hits);
+        healthBar.Set(health);
+        PSXImpactEffects.Burst(transform.position, new Color(.9f, .12f, .2f));
+        SoundManager.PlaySound("hurt1", 0.2f);
+        if (health > 0)
+            return;
+        if (WarpCoreLoop.TryLoop(this))
+            StartCoroutine("Invulnerability", 4f);
+        else
+            Die();
     }
 
     public void HealManaFlat(float heal)

@@ -31,6 +31,9 @@ public sealed class DebugRunMenu : AMenuElement
     }
 
     static readonly List<(Type type, int slot)> pending = new List<(Type, int)>();
+    // Opens a pact offer before the run's first wave.
+    static bool forcePact;
+    Image pactButton;
     readonly List<Entry> entries = new List<Entry>();
     readonly Entry[] weapons = new Entry[2], actives = new Entry[2];
     readonly List<Button> buttons = new List<Button>();
@@ -57,6 +60,7 @@ public sealed class DebugRunMenu : AMenuElement
     static void ResetPending()
     {
         pending.Clear();
+        forcePact = false;
         SceneManager.sceneLoaded -= SceneReady;
     }
 
@@ -85,8 +89,13 @@ public sealed class DebugRunMenu : AMenuElement
         }
         else if (scene.name == "L1" && pending.Count > 0)
             new GameObject("Debug starting loadout").AddComponent<DebugLoadoutGrant>().Begin(pending.ToArray());
+        if (scene.name == "L1" && forcePact)
+            new GameObject("Debug pact").AddComponent<DebugPactOffer>();
         if (scene.name != "Title")
+        {
             pending.Clear();
+            forcePact = false;
+        }
     }
 
     public override void OnAccept()
@@ -113,6 +122,7 @@ public sealed class DebugRunMenu : AMenuElement
         Box(panel, "Header rule", new Vector2(0, 268), new Vector2(980, 2), new Color(.2f, .27f, .27f));
         Label(panel, "DEBUG RUN", 30, new Vector2(-330, 300), new Vector2(320, 48)).color = Gold;
         ButtonAt(panel, "BACK", new Vector2(418, 300), new Vector2(150, 38), Close);
+        pactButton = ButtonAt(panel, "PACT", new Vector2(258, 300), new Vector2(150, 38), () => { forcePact = !forcePact; Refresh(); }).GetComponent<Image>();
         var levels = new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Thunder, LevelId.Tunnel, LevelId.Desert, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell };
         for (int i = 0; i < levels.Length; i++)
         {
@@ -227,6 +237,7 @@ public sealed class DebugRunMenu : AMenuElement
     {
         foreach (var level in levelButtons)
             level.Value.color = level.Key == first ? ChosenCard : CardColor;
+        pactButton.color = forcePact ? ChosenCard : CardColor;
         for (int i = 0; i < 2; i++)
         {
             slots[i].card.color = i == slot ? ChosenCard : CardColor;
@@ -384,6 +395,18 @@ public sealed class DebugRunMenu : AMenuElement
         button.onClick.AddListener(() => { if (Time.frameCount > openedFrame) action(); });
         buttons.Add(button);
         return button;
+    }
+}
+
+public sealed class DebugPactOffer : MonoBehaviour
+{
+    IEnumerator Start()
+    {
+        yield return null; // The orchestrer has built its wave sequence.
+        var orchestrer = FindAnyObjectByType<WaveOrchestrer>();
+        if (orchestrer != null)
+            orchestrer.ForcePactNext();
+        Destroy(gameObject);
     }
 }
 
