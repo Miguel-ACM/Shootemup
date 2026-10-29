@@ -1,21 +1,15 @@
 using UnityEngine;
 
 // An indestructible laser drone deployed by the Thunder boss. It holds a station
-// (fixed or patrolling), keeps one charged attached beam, and can shut down on a
-// schedule: the beam ceases, the drone turns its emitter upward to show the lane is
-// open, then turns back and recharges with a visible warning before firing again.
+// and keeps one charged attached beam. The boss can power it down and move it: the
+// beam ceases and the drone turns its emitter to the sky while it travels, then
+// turns back and recharges with a visible warning before firing again.
 // It is not an enemy: player fire passes through it and it never collides.
 public sealed class ThunderLaserBot : MonoBehaviour
 {
-    public enum Route
-    {
-        Fixed, Patrol
-    }
-    Route route;
     Vector2 home, aim;
-    float patrolWidth, patrolPeriod;
     float swing, swingRate;
-    float cycle, offTime, offset;
+    public bool Powered { get; set; } = true;
     float age, length, width, armAt = 1.5f;
     PulseLaser beam;
     Transform model;
@@ -54,15 +48,6 @@ public sealed class ThunderLaserBot : MonoBehaviour
         return this;
     }
 
-    // Travel right across the arena and back, as a group sharing one clock.
-    public ThunderLaserBot Patrol(float width, float period)
-    {
-        route = Route.Patrol;
-        patrolWidth = width;
-        patrolPeriod = period;
-        return this;
-    }
-
     // Every drone of a formation first fires at the same moment, so swings stay in step.
     public ThunderLaserBot ArmAt(float seconds)
     {
@@ -70,32 +55,9 @@ public sealed class ThunderLaserBot : MonoBehaviour
         return this;
     }
 
-    // Shut down for a window once per cycle, so the player can cross the lane.
-    public ThunderLaserBot ShutDown(float cycleSeconds, float offSeconds, float offsetSeconds)
+    public void MoveTo(Vector2 station)
     {
-        cycle = cycleSeconds;
-        offTime = offSeconds;
-        offset = offsetSeconds;
-        return this;
-    }
-
-    Vector2 Station()
-    {
-        if (route == Route.Fixed)
-            return home;
-        float t = Mathf.PingPong(Mathf.Max(0, age - armAt) / Mathf.Max(.1f, patrolPeriod) * 2, 1);
-        return home + Vector2.right * Mathf.Lerp(0, patrolWidth, Mathf.SmoothStep(0, 1, t));
-    }
-
-    bool Off
-    {
-        get
-        {
-            if (cycle <= 0)
-                return false;
-            float t = Mathf.Repeat(age - offset, cycle);
-            return t < offTime;
-        }
+        home = station;
     }
 
     void Update()
@@ -112,15 +74,10 @@ public sealed class ThunderLaserBot : MonoBehaviour
                 Destroy(gameObject);
             return;
         }
-        bool arrived = Vector2.Distance(transform.position, Station()) < .05f;
-        Vector2 p = Vector2.MoveTowards(transform.position, Station(), dt * (arrived ? 30 : 9));
+        bool arrived = Vector2.Distance(transform.position, home) < .05f;
+        Vector2 p = Vector2.MoveTowards(transform.position, home, dt * (arrived ? 30 : 7));
         transform.position = new Vector3(p.x, p.y, -.4f);
-        if (!arrived)
-        {
-            Face(facing, dt);
-            return;
-        }
-        bool off = Off;
+        bool off = !Powered || !arrived;
         if (off && !open)
         {
             open = true;
@@ -130,7 +87,7 @@ public sealed class ThunderLaserBot : MonoBehaviour
         }
         else if (!off && open)
             open = false;
-        if (!open && age >= armAt && (beam == null || !beam.IsAttachedTo(transform)))
+        if (!open && arrived && age >= armAt && (beam == null || !beam.IsAttachedTo(transform)))
             Fire();
         // Facing follows the live beam; a shut-down drone points its emitter at the sky.
         float target = open ? 180 : beam != null ? Vector2.SignedAngle(Vector2.down, beam.Heading) : facing;

@@ -4,11 +4,13 @@ using UnityEngine;
 
 // Thunder lance. Phase one: six indestructible drones lock into a hexagon at the
 // centre of the arena and fire six beams that swing together through sixty degrees
-// and back, a turning star the player rides around. Phase two: four drones patrol
-// the top, beams down, sweeping right and back, while eight drones line the left
-// wall with beams across the arena. Each drone shuts down in turn and points its
-// emitter at the sky: that lane is open to cross. Throughout, the boss itself fires
-// mirrored arrow lace, chevrons and layered arrow wavefronts.
+// and back; the swing is centred on straight down, so the player can hold the
+// middle and ride the gap. Phase two: four drones along the top (beams down) and
+// eight down the left wall (beams across) start bunched in the top-left corner.
+// The groups take turns to move: every beam shuts down and turns to the sky, one
+// group steps along (the top row rightward, the left column downward), and every
+// beam charges and fires again. Step by step the grid crosses the whole screen.
+// The boss fires mirrored arrow lace and chevrons, and in phase two zigzag lightning.
 public sealed partial class ThunderLanceBoss
 {
     readonly List<ThunderLaserBot> drones = new List<ThunderLaserBot>();
@@ -25,12 +27,19 @@ public sealed partial class ThunderLanceBoss
                 DeployStar();
         }
         int beat = (volley - 1) % 12;
-        if (beat == 0 || beat == 6)
-            Phrase(Lace(beat == 0 ? 1 : -1));
-        else if (beat == 3 || beat == 9)
+        if (!phaseTwo)
+        {
+            if (beat == 0 || beat == 6)
+                Phrase(Lace(beat == 0 ? 1 : -1));
+            else if (beat == 3 || beat == 9)
+                Phrase(Chevrons());
+            else if (beat == 11)
+                Wavefront();
+        }
+        else if (beat % 3 == 0)
+            Lightning(beat / 3);
+        else if (beat == 4 || beat == 10)
             Phrase(Chevrons());
-        else if (beat == 11 || phaseTwo && beat == 5)
-            Wavefront();
     }
 
     void DeployStar()
@@ -38,7 +47,9 @@ public sealed partial class ThunderLanceBoss
         var hub = new Vector2(0, Middle + .8f);
         for (int i = 0; i < 6; i++)
         {
-            float angle = 30 + i * 60;
+            // Swings run from each start angle sixty degrees on, so the gap below the hub
+            // sweeps from thirty degrees left of straight down to thirty degrees right.
+            float angle = i * 60;
             Vector2 radial = CombatVisuals.Rotate(Vector2.down, angle);
             drones.Add(ThunderLaserBot.Deploy(Muzzle(2), hub + radial * 1.0f, radial, 16, .2f)
                 .Swing(60, Difficulty.Hard ? 24 : 18)
@@ -48,22 +59,70 @@ public sealed partial class ThunderLanceBoss
 
     void DeployGrid()
     {
-        float off = Difficulty.Hard ? 1.7f : 2.3f;
+        var corner = new Vector2(Camera.LeftLimit + .4f, Camera.UpLimit - .9f);
         for (int i = 0; i < 4; i++)
-        {
-            var home = new Vector2(Camera.LeftLimit + .9f + i * 2.0f, Camera.UpLimit - 1.1f);
-            drones.Add(ThunderLaserBot.Deploy(Muzzle(2), home, Vector2.down, 20, .19f)
-                .Patrol(1.8f, 6)
-                .ShutDown(6, off + .3f, 2.2f + i * 1.5f)
-                .ArmAt(1.6f));
-        }
-        float top = Camera.UpLimit - 3.6f, bottom = Camera.DownLimit + 1.4f;
+            drones.Add(ThunderLaserBot.Deploy(Muzzle(2), corner + Vector2.right * i * .35f, Vector2.down, 20, .19f).ArmAt(1.6f));
         for (int i = 0; i < 8; i++)
+            drones.Add(ThunderLaserBot.Deploy(Muzzle(2), corner + Vector2.down * (.7f + i * .3f), Vector2.right, 10.5f, .18f).ArmAt(1.6f));
+        Phrase(MarchGrid());
+    }
+
+    // The two groups take turns to step across the screen, every beam dark while anyone moves.
+    IEnumerator MarchGrid()
+    {
+        float topSpacing = 2.4f, leftSpacing = 1.8f;
+        float width = Camera.RightLimit - Camera.LeftLimit - .8f, height = Camera.UpLimit - Camera.DownLimit - 2.6f;
+        int topStep = 0, leftStep = 0;
+        float hold = Difficulty.Hard ? 2.4f : 3.2f;
+        for (int turn = 0; ; turn++)
         {
-            var home = new Vector2(Camera.LeftLimit + .35f, Mathf.Lerp(top, bottom, i / 7f));
-            drones.Add(ThunderLaserBot.Deploy(Muzzle(2), home, Vector2.right, 10.5f, .18f)
-                .ShutDown(5.6f, off, 1.6f + i * .7f)
-                .ArmAt(1.6f));
+            foreach (var drone in drones)
+                if (drone != null)
+                    drone.Powered = false;
+            yield return Wait(.35f);
+            bool top = turn % 2 == 0;
+            if (top)
+                topStep++;
+            else
+                leftStep++;
+            for (int i = 0; i < drones.Count; i++)
+            {
+                if (drones[i] == null)
+                    continue;
+                if (i < 4)
+                {
+                    // Spread out from the corner, then sweep right and back in steps.
+                    float spacing = Mathf.Min(topSpacing, .35f + topStep * .7f);
+                    float shift = Mathf.PingPong(Mathf.Max(0, topStep - 3) * .6f, width - topSpacing * 3);
+                    drones[i].MoveTo(new Vector2(Camera.LeftLimit + .4f + shift + i * spacing, Camera.UpLimit - .9f));
+                }
+                else
+                {
+                    int j = i - 4;
+                    float spacing = Mathf.Min(leftSpacing, .3f + leftStep * .5f);
+                    float shift = Mathf.PingPong(Mathf.Max(0, leftStep - 3) * .6f, Mathf.Max(.1f, height - leftSpacing * 7));
+                    drones[i].MoveTo(new Vector2(Camera.LeftLimit + .35f, Camera.UpLimit - 1.6f - shift - j * spacing));
+                }
+            }
+            yield return Wait(.6f);
+            foreach (var drone in drones)
+                if (drone != null)
+                    drone.Powered = true;
+            yield return Wait(hold);
+        }
+    }
+
+    // Zigzag lightning from both shoulders and the front, in mirrored fans.
+    void Lightning(int n)
+    {
+        int bolts = Dense(7);
+        for (int port = 0; port < 3; port++)
+        {
+            var origin = Muzzle(port);
+            var aim = port == 2 ? CombatVisuals.Aim(origin) : CombatVisuals.Rotate(Vector2.down, port == 0 ? 20 : -20);
+            for (int i = 0; i < bolts; i++)
+                Fire<NeedleRound>(origin, CombatVisuals.Rotate(aim, (i - (bolts - 1) * .5f) * 14 + (n % 2) * 7), 3.6f, .19f)
+                    .Zigzag(.2f, 26);
         }
     }
 
