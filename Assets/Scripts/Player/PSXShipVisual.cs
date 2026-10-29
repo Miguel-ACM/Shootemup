@@ -68,9 +68,9 @@ public sealed class PSXShipVisual : MonoBehaviour
         previousPosition = transform.position;
         // Bank around the nose (+Y in Ship space) so the hitbox, a sibling, never shifts.
         model.localRotation = customOrientation
-            ? Quaternion.AngleAxis(bank + (GetComponent<ShipBarrelRoll>()?.Angle ?? 0), Vector3.up) * baseRotation
+            ? Quaternion.AngleAxis(bank + (GetComponent<ShipBarrelRoll>()?.Angle ?? 0) + PolarityEngine.SpinAngle, Vector3.up) * baseRotation
             // Face the imported nose toward +Y while keeping the dorsal side toward -Z.
-            : Quaternion.Euler(-75f, 0f, 0f) * Quaternion.Euler(0f, 180f, 0f) * Quaternion.AngleAxis(bank, Vector3.forward);
+            : Quaternion.Euler(-75f, 0f, 0f) * Quaternion.Euler(0f, 180f, 0f) * Quaternion.AngleAxis(bank + PolarityEngine.SpinAngle, Vector3.forward);
         Apply();
     }
 
@@ -86,7 +86,7 @@ public sealed class PSXShipVisual : MonoBehaviour
         if (properties == null)
             properties = new MaterialPropertyBlock();
         modelRenderer.GetPropertyBlock(properties);
-        properties.SetColor(Tint, sourceSprite.color);
+        properties.SetColor(Tint, sourceSprite.color * PolarityEngine.ShipTint);
         properties.SetFloat(PlayerDepth, 1f);
         modelRenderer.SetPropertyBlock(properties);
         modelRenderer.enabled = sourceSprite.color.a > 0.001f;

@@ -86,6 +86,9 @@ public abstract class CombatRound : AEnemyBullet
         // Arm each body's exact collider only when it approaches a valid target.
         shot.body.simulated = false;
         shot.tint.SetHostile();
+        // Beams are not rounds and never take a polarity.
+        if (!(shot is PulseLaser))
+            PolarityEngine.Assign(shot.tint);
         shot.needsOrientation = true;
         shot.transform.SetPositionAndRotation(new Vector3(p.x, p.y, -.5f), Quaternion.identity);
         shot.transform.localScale = Vector3.one * radius * 2;

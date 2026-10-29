@@ -14,6 +14,7 @@ public abstract class AEnemyBullet : MonoBehaviour
     protected virtual void Start()
     {
         ProjectileSpriteTint.LegacyEnemy(gameObject);
+        PolarityEngine.Assign(GetComponent<ProjectileSpriteTint>());
         rigidBody = GetComponent<Rigidbody2D>();
     }
 

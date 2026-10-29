@@ -279,6 +279,16 @@ public static partial class IndustrialMeshFactory
                 foreach (int side in new[] { -1, 1 })
                     b.Prism(new[] { new Vector2(side * .18f, -.1f), new Vector2(side * .5f, .34f), new Vector2(side * .46f, -.2f) }, .1f, 11, Vector3.forward * .1f, 6);
                 break;
+            case "PolarityEngine":
+                // Two interlocking light and dark halves in a steel collar, each holding a seed of the other.
+                b.Drum(new Vector3(0, 0, .05f), .5f, .12f, 6, 16);
+                foreach (int side in new[] { 1, -1 })
+                    b.Prism(PolarityHalf(.42f, side), .16f, side > 0 ? 15 : 11, Vector3.zero, side > 0 ? 1 : 11);
+                b.Drum(new Vector3(0, -.21f, -.09f), .075f, .04f, 11, 10);
+                b.Drum(new Vector3(0, .21f, -.09f), .075f, .04f, 15, 10);
+                foreach (int side in new[] { -1, 1 })
+                    b.Box(new Vector3(side * .5f, 0, .02f), new Vector3(.09f, .2f, .14f), 9, 6);
+                break;
             case "GravityWell":
                 // A frost crystal around a small emitter signals the stasis field.
                 b.Drum(Vector3.zero, .19f, .28f, 6, 12, 11);
@@ -298,5 +308,31 @@ public static partial class IndustrialMeshFactory
                 return false;
         }
         return true;
+    }
+
+    // One half of the polarity disc: the outer arc on one side, closed by an S through the centre.
+    static Vector2[] PolarityHalf(float radius, int side)
+    {
+        const int steps = 10;
+        var points = new System.Collections.Generic.List<Vector2>();
+        for (int i = 0; i < steps; i++)
+        {
+            float a = Mathf.PI * .5f + i * Mathf.PI / steps;
+            points.Add(new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * radius);
+        }
+        float small = radius * .5f;
+        for (int i = 0; i < steps; i++)
+        {
+            float a = -Mathf.PI * .5f + i * Mathf.PI / steps;
+            points.Add(new Vector2(Mathf.Cos(a) * small, -small + Mathf.Sin(a) * small));
+        }
+        for (int i = 0; i < steps; i++)
+        {
+            float a = -Mathf.PI * .5f - i * Mathf.PI / steps;
+            points.Add(new Vector2(Mathf.Cos(a) * small, small + Mathf.Sin(a) * small));
+        }
+        for (int i = 0; i < points.Count; i++)
+            points[i] *= side;
+        return points.ToArray();
     }
 }

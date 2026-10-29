@@ -14,6 +14,12 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
         get; private set;
     }
 
+    // Polarity Engine pole of a hostile round, or -1 when the engine is not held.
+    public int Polarity
+    {
+        get; private set;
+    } = -1;
+
     public static void Apply(GameObject go, Color tint, bool friendly = false, bool neutralize = false)
     {
         var effect = go.GetComponent<ProjectileSpriteTint>() ?? go.AddComponent<ProjectileSpriteTint>();
@@ -43,6 +49,7 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
 
     public void SetHostile()
     {
+        Polarity = -1;
         Tint = LevelProjectilePalette.Accent(LevelRun.Current);
         var shared = LevelProjectilePalette.Material(neutral);
         if (visual.sharedMaterial != shared)
@@ -50,8 +57,22 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
         visual.SetPropertyBlock(null);
     }
 
+    // Light rounds share one pale material; shade rounds keep the district's shared ink.
+    public void SetPolarity(int pole)
+    {
+        SetHostile();
+        Polarity = pole;
+        if (pole != PolarityEngine.Light)
+            return;
+        Tint = PolarityEngine.LightColor;
+        visual.sharedMaterial = LevelProjectilePalette.LightMaterial(neutral);
+    }
+
     public void SetAccent(Color color)
     {
+        // A polarised round must always show the colour that decides whether it hurts.
+        if (Polarity >= 0)
+            return;
         Tint = color;
         properties.SetColor("_SpriteTint", color);
         properties.SetFloat("_Burn", 0);

@@ -337,6 +337,11 @@ public class Shipcontroller : MonoBehaviour
             var round = other.GetComponent<CombatRound>();
             if (round != null && !round.PixelOverlaps(circleCollider))
                 return;
+            if (PolarityEngine.Absorbs(other.gameObject))
+            {
+                PolarityEngine.Absorb(other.GetComponent<AEnemyBullet>());
+                return;
+            }
 
             if (!IsInvulnerable && !GameRules.playerDisabled)
             {

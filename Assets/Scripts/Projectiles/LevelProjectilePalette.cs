@@ -4,6 +4,7 @@ using UnityEngine;
 public static class LevelProjectilePalette
 {
     static readonly Material[,] shared = new Material[System.Enum.GetValues(typeof(LevelId)).Length, 2];
+    static readonly Material[] light = new Material[2];
     public static Color Accent(LevelId level)
     {
         switch (level)
@@ -44,5 +45,19 @@ public static class LevelProjectilePalette
         material.SetFloat("_Burn", 0);
         material.SetFloat("_Poison", 0);
         return shared[level, variant] = material;
+    }
+
+    /// <summary>The Polarity Engine's light rounds: one pale shared material for every district.</summary>
+    public static Material LightMaterial(bool neutral = false)
+    {
+        int variant = neutral ? 1 : 0;
+        if (light[variant] != null)
+            return light[variant];
+        var material = new Material(CombatVisuals.ProjectileMaterial) { name = "Polarity light hostile ink" };
+        material.SetColor("_SpriteTint", PolarityEngine.LightColor);
+        material.SetFloat("_Neutralize", neutral ? 1 : 0);
+        material.SetFloat("_Burn", 0);
+        material.SetFloat("_Poison", 0);
+        return light[variant] = material;
     }
 }
