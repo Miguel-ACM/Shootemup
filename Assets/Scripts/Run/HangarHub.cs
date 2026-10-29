@@ -71,7 +71,7 @@ public sealed class HangarHub : MonoBehaviour
     DecisionOverlay overlay;
     Dialog dialog;
     Transform gateFill;
-    Sprite cell;
+    readonly List<Mesh> quads = new List<Mesh>();
     int described = -1;
     float launchHold;
     bool launching;
@@ -84,8 +84,8 @@ public sealed class HangarHub : MonoBehaviour
         center = camera != null ? camera.transform.position : Vector3.zero;
         foreach (var field in FindObjectsByType<PSXGrassField>(FindObjectsInactive.Include))
             field.gameObject.SetActive(false);
+        scenery = new Material(Resources.Load<Shader>("LevelScenery"));
         BuildHall();
-        cell = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), new Vector2(.5f, .5f), 16);
         BuildBays();
         BuildShop();
         BuildGate();
@@ -106,7 +106,6 @@ public sealed class HangarHub : MonoBehaviour
         floor.transform.SetParent(transform, false);
         floor.transform.position = new Vector3(center.x, center.y, 90);
         floor.AddComponent<MeshFilter>().sharedMesh = hall;
-        scenery = new Material(Resources.Load<Shader>("LevelScenery"));
         var renderer = floor.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = scenery;
         renderer.sortingLayerName = "Background";
@@ -139,14 +138,10 @@ public sealed class HangarHub : MonoBehaviour
             int hits = ShipFrames.Get(frame).hits;
             for (int h = 0; h < hits; h++)
             {
-                var pip = new GameObject("Pip").AddComponent<SpriteRenderer>();
-                pip.transform.SetParent(bay.pips, false);
-                pip.transform.localPosition = new Vector3((h - (hits - 1) * .5f) * .2f, 0, 0);
-                pip.transform.localScale = new Vector3(.6f, .9f, 1);
-                pip.sprite = cell;
-                pip.color = new Color(1, .62f, .3f);
-                pip.sortingLayerName = "Player";
-                pip.sortingOrder = -1;
+                var pip = Quad("Pip", new Color(1, .62f, .3f), -1);
+                pip.SetParent(bay.pips, false);
+                pip.localPosition = new Vector3((h - (hits - 1) * .5f) * .2f, 0, 0);
+                pip.localScale = new Vector3(.6f, .9f, 1);
             }
             bay.pips.gameObject.SetActive(false);
             bays.Add(bay);
@@ -179,15 +174,27 @@ public sealed class HangarHub : MonoBehaviour
     // A thin amber line across the open doors fills while the ship holds there.
     void BuildGate()
     {
-        var fill = new GameObject("Launch charge").AddComponent<SpriteRenderer>();
-        fill.transform.SetParent(transform, false);
-        fill.transform.position = new Vector3(center.x, GateY + .35f, 2);
-        fill.sprite = cell;
-        fill.color = new Color(1, .7f, .25f, .9f);
-        fill.sortingLayerName = "Player";
-        fill.sortingOrder = 3;
-        gateFill = fill.transform;
+        gateFill = Quad("Launch charge", new Color(1, .7f, .25f), 3);
+        gateFill.SetParent(transform, false);
+        gateFill.position = new Vector3(center.x, GateY + .35f, 2);
         gateFill.localScale = new Vector3(0, .5f, 1);
+    }
+
+    // A flat, unlit quad a quarter unit across, drawn among the ships.
+    Transform Quad(string title, Color color, int order)
+    {
+        var mesh = new Mesh { name = title };
+        mesh.vertices = new[] { new Vector3(-.125f, -.125f), new Vector3(-.125f, .125f), new Vector3(.125f, .125f), new Vector3(.125f, -.125f) };
+        mesh.colors = new[] { color, color, color, color };
+        mesh.triangles = new[] { 0, 1, 2, 0, 2, 3 };
+        quads.Add(mesh);
+        var go = new GameObject(title);
+        go.AddComponent<MeshFilter>().sharedMesh = mesh;
+        var renderer = go.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = scenery;
+        renderer.sortingLayerName = "Player";
+        renderer.sortingOrder = order;
+        return go.transform;
     }
 
     float GateY => Mathf.Min(center.y + 6.4f, Camera.UpLimit - .3f);
@@ -356,5 +363,7 @@ public sealed class HangarHub : MonoBehaviour
             Destroy(scenery);
         if (hall != null)
             Destroy(hall);
+        foreach (var mesh in quads)
+            Destroy(mesh);
     }
 }
