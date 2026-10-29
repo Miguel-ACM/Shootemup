@@ -107,6 +107,9 @@ public static class EverydayItemMaterials
             case "DoubleHull":
                 color = new Color(.95f, .36f, .42f);
                 return true;
+            case "EnergyShield":
+                color = new Color(.42f, .8f, 1f);
+                return true;
             case "ExplodingShield":
                 color = new Color(1f, .5f, .16f);
                 return true;

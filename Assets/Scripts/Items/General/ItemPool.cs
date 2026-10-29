@@ -6,7 +6,7 @@ public static class ItemPool
 {
     private static readonly string[] allCommon = { "Popcorn", "PocketFan", "RubberBand", "HotSauce", "BulletDroneItem", "FocusTime", "BarrelRoll", "BadGlasses", "ScatterCannonItem", "BallBearing", "ReserveCell", "SalvageConverter", "FocusingLens", "ReboundCoil", "RabbitsFoot", "BlankBullet", "TwerpItem", "Magnet", "AK45Item", "SparePlating" };
     private static readonly string[] allRare = { "Icicle", "WindUpCannonItem", "DecoyProjector", "StaticSweater", "MagnifyingGlass", "ChewingGum", "LaserDroneItem", "HealthPacks", "EnergyCore", "BouncingBall", "Poison", "GasolineLeak", "QualityGlasses", "ShrinkerJuice", "Overdrive", "GravityWell", "MirrorBurst", "BeamEmitterItem", "FlameProjectorItem", "BackdraftItem", "DepthChargeItem", "SwarmRackItem", "DiscThrowerItem", "BurstLauncherItem", "NeedleCannonItem", "Lighter", "ReturnModule", "DroneLink", "RecoveryCoil", "Capacitor", "ProximityFuse", "SplitterCore", "Caffeine", "ProteinSupplement", "AMoonItem", "BabyYouItem", "ElectricityItem", "DoubleHull" };
-    private static readonly string[] allEpic = { "BulletTime", "DoubleTrouble", "EmpPulse", "RailDriverItem", "ChainReactor", "SpareBattery", "AnotherArm", "AngryMoonItem" };
+    private static readonly string[] allEpic = { "BulletTime", "DoubleTrouble", "EmpPulse", "RailDriverItem", "ChainReactor", "SpareBattery", "AnotherArm", "AngryMoonItem", "EnergyShield" };
     private static readonly string[] allLegendary = { "Telekinesis", "ThreeMoonsItem" };
 
     // Items are removed from these as they are offered, so they are refilled at the start of each run.

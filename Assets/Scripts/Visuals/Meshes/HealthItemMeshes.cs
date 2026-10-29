@@ -28,6 +28,19 @@ public static partial class IndustrialMeshFactory
                 foreach (float y in new[] { -.12f, .02f })
                     b.Prism(new[] { new Vector2(-.16f, y), new Vector2(0, y + .1f), new Vector2(.16f, y), new Vector2(.16f, y + .06f), new Vector2(0, y + .16f), new Vector2(-.16f, y + .06f) }, .04f, 15, new Vector3(-.07f, -.06f, -.08f), 15);
                 return true;
+            case "EnergyShield":
+                // A hexagonal emitter raising a glowing dome, its field studs ringing the rim.
+                b.Drum(Vector3.zero, .33f, .12f, 11, 6, 6);
+                b.Drum(new Vector3(0, 0, -.07f), .25f, .04f, 6, 6);
+                b.Ball(new Vector3(0, 0, -.1f), new Vector3(.21f, .21f, .17f), 9);
+                for (int i = 0; i < 6; i++)
+                {
+                    float a = i * Mathf.PI / 3 + Mathf.PI / 6;
+                    b.Box(new Vector3(Mathf.Cos(a) * .3f, Mathf.Sin(a) * .3f, -.08f), new Vector3(.07f, .07f, .06f), 9);
+                }
+                foreach (int side in new[] { -1, 1 })
+                    b.Box(new Vector3(side * .38f, 0, .02f), new Vector3(.08f, .3f, .1f), 6);
+                return true;
             default:
                 return false;
         }

@@ -426,6 +426,8 @@ public class Shipcontroller : MonoBehaviour
         PSXImpactEffects.Burst(transform.position, new Color(.15f, .65f, 1));
         SoundManager.PlaySound("hurt1", 0.2f);
         int lost = damage > 0 ? 1 : 0;
+        if (lost > 0 && health <= 1 && TryGetComponent<EnergyShieldCell>(out var shield) && shield.Absorb())
+            lost = 0;
         health -= lost;
         // Kept small: a short nudge that reads as an impact without throwing the playfield around.
         float moveQuantity = Mathf.Clamp(damage * 0.3f, 0, 4);
