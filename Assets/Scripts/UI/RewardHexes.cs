@@ -217,7 +217,10 @@ public sealed class RewardHexes : MonoBehaviour
         var callback = picked;
         Dismiss();
         chosen = index;
-        ItemSound.Play("ready", .2f);
+        if (SoundManager.HasSynth("uiConfirm"))
+            SoundManager.PlaySound("uiConfirm", .1f);
+        else
+            ItemSound.Play("ready", .2f);
         zones[index].charge.color = Color.white;
         callback?.Invoke(index);
     }

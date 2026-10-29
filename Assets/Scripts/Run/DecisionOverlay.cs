@@ -125,7 +125,12 @@ public sealed class DecisionOverlay : MonoBehaviour
     {
         skipFill.sizeDelta = new Vector2(SkipWidth, SkipHeight * Mathf.SmoothStep(0, 1, Mathf.Clamp01(progress)));
         skipGlass.color = new Color(.025f, .045f, .07f, .45f);
+        if (progress >= 1 && skipShown < 1)
+            SoundManager.PlaySound("uiSkip", .1f);
+        skipShown = progress;
     }
+
+    float skipShown;
 
     AngledStripGraphic Strip(Transform parent, string title, Color color, float thickness)
     {

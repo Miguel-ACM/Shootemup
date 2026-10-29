@@ -186,6 +186,7 @@ public abstract class AEnemy : MonoBehaviour
         if (Time.time < nextImpact)
             return;
         nextImpact = Time.time + .025f;
+        SoundManager.PlayGated(isBoss ? "bossHit" : "enemyHit", .1f, isBoss ? .085f : .06f);
         PSXImpactEffects.Burst(point, new Color(1, .68f, .30f), false, incoming.sqrMagnitude > .001f ? incoming : Vector2.up);
     }
 

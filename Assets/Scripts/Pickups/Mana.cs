@@ -8,6 +8,7 @@ public class Mana : APickable
     {
         Shipcontroller s = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
         s.HealManaFlat(2);
+        SoundManager.PlayGated("mana", .1f, .08f);
         base.PickUp();
     }
 }

@@ -172,6 +172,7 @@ public abstract class AItem : MonoBehaviour
             return;
         collected = true;
         PSXImpactEffects.ItemGet(transform.position, GetRarityColor(rarity));
+        SoundManager.PlaySound("itemGet", .1f);
         // Show the collected item in the side panel next to the playfield.
         var visual = GetComponent<PSXObjectVisual>();
         if (visual != null && visual.model != null && visual.modelRenderer != null)

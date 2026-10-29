@@ -150,6 +150,8 @@ public sealed class DecisionShop : MonoBehaviour
         if (nearest != item || !Pay(prices[item]))
             return false;
         claimed = item;
+        if (paid)
+            SoundManager.PlaySound("uiConfirm", .1f);
         return true;
     }
 
