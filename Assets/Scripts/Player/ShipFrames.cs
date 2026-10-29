@@ -24,7 +24,7 @@ public static class ShipFrames
 
     static readonly Definition[] definitions =
     {
-        new Definition { frame = ShipFrame.GR07, model = "ShipGR07", hits = 6 },
+        new Definition { frame = ShipFrame.GR07, hits = 6 },
         // Long and slow: a continuous laser instead of the twin cannon, more hull and a barrel roll.
         new Definition { frame = ShipFrame.Lancer, model = "ShipLancer", hits = 5, moveSpeed = 6.8f, primary = "BeamEmitter", starters = new[] { "BarrelRoll" }, exhaust = new Vector2(.11f, -.40f), exhaustScale = .8f },
         // Glass cannon: three harder-hitting rounds that ignite, three hits.
