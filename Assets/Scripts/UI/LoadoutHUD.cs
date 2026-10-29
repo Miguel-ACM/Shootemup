@@ -26,6 +26,11 @@ public sealed class LoadoutHUD : MonoBehaviour
     public RectTransform[] Panels => panels;
     void Start()
     {
+        if (HangarHub.Active)
+        {
+            enabled = false;
+            return;
+        }
         loadout = GetComponent<ShipLoadout>();
         font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         var root = new GameObject("Octagonal loadout instruments", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));

@@ -33,6 +33,12 @@ public sealed class IndustrialHUD : MonoBehaviour
 
     void Start()
     {
+        // The side instruments switch on with the run; the hangar shows only its coin count.
+        if (HangarHub.Active)
+        {
+            enabled = false;
+            return;
+        }
         gameObject.AddComponent<BossPositionShadow>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
         waves = FindAnyObjectByType<WaveOrchestrer>();
@@ -184,7 +190,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         nextUpdate = Time.unscaledTime + .1f;
         score.text = DimLeadingZeros(Score.CurrentScore.ToString("000000000"));
         chain.text = "x" + Score.CurrentMultiplier;
-        coins.text = (HangarHub.Active ? MetaProgress.Coins : RunCoins.Count).ToString();
+        coins.text = RunCoins.Count.ToString();
         int challenge = waves != null ? waves.ChallengeWavesRemaining : 0;
         for (int i = 0; i < challengeCells.Length; i++)
             challengeCells[i].gameObject.SetActive(i < challenge);
