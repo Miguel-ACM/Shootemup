@@ -1,0 +1,47 @@
+# Brief: remodel one enemy for a top-down shoot-em-up
+
+You are remodeling one enemy of a Unity vertical shoot-em-up. The game renders low-poly, flat-shaded, PS1-flavoured 3D ships seen from almost straight above at small size (a regular enemy is about 60-90 pixels tall on screen). The current model is built procedurally in C#; its source is given below. Read it to understand the footprint, parts and proportions, then design a clearly better model of the same creature/vehicle.
+
+Write ONE Blender 5.x Python script named `model.py` in the current directory. Do not run Blender yourself. The script must:
+
+1. Clear the default scene, then build the model only from bpy primitives, bmesh and modifiers that are applied before export (no external files, no addons).
+2. Coordinates: X = right, Y = screen up, the ship's nose/front points toward -Y (it flies down the screen toward the player). +Z is toward the camera above. Keep the same overall footprint as the current C# model (within about 10%) and centered near the origin. The top surface matters most; the underside is never seen.
+3. Weapons: put a real, visible muzzle/barrel lip (a short barrel, port or launcher mouth) at each muzzle point listed below (x, y given in the same units; z of the muzzle is slightly above the hull). Those points are fixed by gameplay and must not move.
+4. Materials: use ONLY these named materials, flat colors, no textures, no transparency except where stated. The names map to the game's palette atlas, so name them exactly `tile_NN`:
+   - tile_00 slate teal (0.24,0.35,0.40)   tile_01 pale gray (0.78,0.83,0.79)   tile_02 olive (0.35,0.43,0.30)
+   - tile_03 hot orange (0.95,0.38,0.12)   tile_04 steel blue (0.32,0.48,0.55)  tile_05 dark red (0.54,0.18,0.16)
+   - tile_06 light steel (0.53,0.61,0.62)  tile_07 muted violet (0.34,0.31,0.48) tile_08 deep teal (0.20,0.36,0.40)
+   - tile_09 cyan glow (0.16,0.83,0.91, emissive)  tile_10 amber glow (1.0,0.77,0.27, emissive)
+   - tile_11 near-black (0.055,0.09,0.12)  tile_12 rust (0.62,0.25,0.19)    tile_13 brass (0.82,0.64,0.26)
+   - tile_14 sage gray (0.53,0.61,0.55)    tile_15 off-white (0.80,0.84,0.83)
+   Keep glowing tiles small (muzzles, eyes, cores) so they never read as bullets.
+5. Budget: 300-2500 triangles for regular enemies, up to 6000 for the boss. Flat shading. Distinct, readable silhouette at small size; avoid noisy greebles that turn into mush, avoid rows of identical buttons, avoid stretched rods. Real 3D form (bevels, curvature, layered plates), not a flat extrusion.
+6. No thrusters or engine flames in the mesh (the game adds animated thrusters separately). Propellers/impellers/fins are fine.
+7. Join everything into ONE mesh object named `Model` (multiple material slots are fine), apply all transforms and modifiers.
+8. Export `model.obj` (+ .mtl) next to the script with `bpy.ops.wm.obj_export` (export materials, forward axis Y, up axis Z, so coordinates are unchanged).
+9. Then render two 640x640 PNGs next to the script with Cycles (CPU, 48 samples), neutral dark blue-gray world (0.05,0.07,0.09), one sun light from upper left plus a soft fill:
+   - `top.png`: orthographic camera straight down (+Z looking at -Z), framing the model with ~15% margin (this is the gameplay view).
+   - `angle.png`: perspective 3/4 view from the front-right-above, so the 3D form is visible.
+   Find the script directory from `__file__`, falling back to the path after `--` in sys.argv.
+
+Keep the script self-contained and robust for Blender 5.x API (e.g. use `bpy.ops.wm.obj_export`, `Material.use_nodes`, Principled BSDF input names "Base Color", "Emission Color", "Emission Strength"). When done, reply with one short paragraph describing the design.
+
+## Animated parts
+
+Wherever this craft or creature naturally has moving parts (rotors, propellers, impellers, turbines, fins, tail flukes, flapping wings, tentacles, turning radar dishes, spinning drums), model each moving part as a SEPARATE mesh object instead of joining it into `Model`, so the game can animate it. Rules:
+- Give each part object a short unique name (e.g. `Impeller_L`, `Fin_R`, `Tail`) and put the part's geometry where it sits at rest.
+- Write `parts.json` next to the script, a JSON list with one entry per part: `{"object": "Impeller_L", "motion": "spin", "axis": [0, 1, 0], "pivot": [x, y, z], "speed": 540}` for continuous rotation (speed in degrees per second), or `{"object": "Fin_R", "motion": "swing", "axis": [0, 1, 0], "pivot": [x, y, z], "speed": 1.4, "amplitude": 18}` for back-and-forth motion (speed in cycles per second, amplitude in degrees). Axis and pivot are in the same Blender coordinates as the model (the pivot is the hinge or hub; for a hinged fin, the root edge).
+- Use 0-6 parts; leave the model static (an empty list) if nothing would move naturally. Never animate a part that carries a muzzle. Fins swing gently (8-25 degrees), rotors spin fast; mirrored parts should swing in mirror (use opposite axis signs).
+- Export the body and all parts together into the one model.obj (select them all before exporting), and include the parts in both renders.
+
+## This model
+
+CometTug (hull 76), district Space. Space: orbital satellites, carriers and stations.
+Role and character: comet tug
+Triangle budget for this one: 300-2500.
+Current source: function in C:/Users/Miguel/Shootemup/Assets/Scripts/Enemies/Ships/CometTug.cs. The procedural helpers it calls (Builder, Face, Prism, Armor, BevelArmor, Barrel, Glass, Ball, Box...) are in C:\Users\Miguel\Shootemup\Assets\Scripts/Visuals/Meshes/IndustrialMeshFactory.cs and CombatHullFactory.cs; their int arguments are palette tile numbers (the same as tile_NN). Read them only as needed to understand the footprint, parts and colours.
+Muzzle points (fixed by gameplay, keep a visible barrel lip at each): read the Vector3 array of muzzles in the `typeof(...), 76,` entry of C:\Users\Miguel\Shootemup\Assets\Scripts/Enemies/EnemyExpansion.cs (x, y, z; z is already toward the camera as a negative number in Unity space, so use +|z| in Blender).
+Engine sockets: if C:\Users\Miguel\Shootemup\Assets\Scripts/Visuals/Meshes/CombatHullFactory.cs `CombatEngineSockets` returns sockets for this hull, put an engine nozzle opening at each socket (the game draws animated thrusters there); otherwise add no engine nozzles.
+Keep the current model's recognisable identity (the creature/vehicle it is, its colour scheme, its silhouette type), but make it a clearly better, more detailed and more three-dimensional model.
+
+This district renders with the Space atlas, where some tiles differ from the list above: tile_06 is dark navy hull (0.105,0.15,0.20), tile_13 is gold foil (0.48,0.36,0.18), tile_15 is ivory (0.66,0.70,0.71), and tile_07 is a blue solar-cell grid (use it for solar panels). Space identity: ivory, gold foil, navy and solar blue.
