@@ -118,9 +118,21 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Rounds have authored behaviours through `RoundProgram`: speed ramps, stop-and-go with a new heading (keep, aim, rotate, scatter, down), fading away mid-screen, wall/ceiling bounces, gravity, sway, lightning zigzag, late splits (optionally aimed) and running along the arena walls. Orbits can expand, breathe and slingshot off on the tangent. Use these, and mix fast and slow rounds, before adding counts.
 - Circles belong to Space only, and they must move (orrery, comets, eclipse, slingshot galaxy). Elsewhere shells burst into a forward shrapnel cone; Snow shells open, hang and fall as snow. The one exception is Miguel's own Tunnel idea below.
 - District grammars: Plains streams and bombs that stop and burst flat, with sparse irregular orange carriers; Snow freezes, re-aims, starts slow and accelerates; City mixes speeds along one aim (headlights), skids, street lattices and lobbed cargo; Tunnel pairs fast with slow and bounces; Thunder zigzags and lasers; Desert mines that stop then sink or lunge, and fading heat haze; Candyland ricochets, taffy pulls and popping gumdrops; Space moving circles; Underwater torpedoes, currents, plumes and hanging wakes; Hell staring souls that dart, scissors, braids and ember cages.
-- Tunnel saw (Miguel): phase one spins and throws widening rings that rotate in alternate directions with sliding gaps (a frogger crossing); every bounce pairs fast needles with slow teeth; phase two throws teeth that run around the walls instead of deploying auxiliary saws.
-- Thunder boss (Miguel): releases indestructible spark drones that run a grid inside a bounded box and leave fading dotted walls, a maze in limited space. Charged downward lasers and zigzag lightning stay.
-- The giant round that releases to the side (ScatterCarrier) releases sparsely and irregularly, usually one flank at a time.
+- Bosses fly named spell cards one at a time (two per phase), mirrored and arrow-heavy (NeedleRound is "the sharp/arrow bullet"). Fire must come from the boss's own parts (claws, mouth, eyes, launchers), never from arbitrary points. Cover the top of the arena too, not only the player's area.
+- Live hostile budget is 420 rounds (pool 1100) so long streams never lose their tail.
+- Miguel's 29 October boss review (supersedes earlier per-boss notes):
+  - Plains: bombs travel the same distance and explode 360; phase-two curtain sits at the very top across the whole width; no side-throwing carriers on the boss or its miniboss.
+  - Snow: never use a ring that hangs and rains; shells throw shards up out of sight and snow falls from the top. The comb sits at the top edge and rains arrows directly (no stop-and-go), in both phases.
+  - City: the small ship orbits the big one; both cover behind themselves (fans rebounding off the ceiling).
+  - Thunder: phase one six drones in a centre hexagon, beams swinging sixty degrees around straight down so the middle is mostly safe. Phase two four top and eight left drones start in the top-left corner and take turns stepping across (top row rightward, left column downward); every beam shuts down and turns up while any group moves. Zigzag lightning from the boss.
+  - Tunnel: every round leaves the saw's centre. Phase one repeats the widening frogger rings from new stations (no bouncing); phase two bounces with 360 bursts including bouncing teeth, wall runners and the gearbox; no minions.
+  - Desert: predictable route rising from the bottom edge to the top lane by lane; spread fire out instead of converging on the player; little falling fire.
+  - Candyland: a ricocheting canopy covers the top; no minions in phase two.
+  - Space: gravity wells and supernova rings that stop and collapse back through the core.
+  - Underwater: 360 explosion on emergence; rain plumes only while surfaced; the downward charge sheds a dense, non-stopping, non-aimed wake with foam and full-hull contact damage; phase two differs (lace, zigzag crowns, depth charges).
+  - Hell: brimstone canopy covers the ceiling; no rain from the claws; laces fire from the moving pincers.
+  - Minibosses are three-move rotations, much harder, everything mirrored. The Desert scarab has a new model.
+- Helix rounds spin as they travel. Destructible plasma is sturdy (60 health) and shows a shrinking life ring.
 
 ## Items and decisions
 
