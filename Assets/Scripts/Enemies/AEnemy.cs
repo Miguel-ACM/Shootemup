@@ -142,6 +142,9 @@ public abstract class AEnemy : MonoBehaviour
             PSXImpactEffects.Explosion(gameObject);
         Score.IncreaseScore(scoreOnKill);
         DropItems();
+        // Later districts' bosses pay out more coins: 8 per tier, more again on later loops.
+        if (isBoss)
+            InstantitatePickables("money", 8 * LevelRun.Tier(LevelRun.Current) * LevelRun.Loop);
         if (orchestrer != null)
             orchestrer.NotifyEnemyKilled(orchesterWaveNumber, isBoss: isBoss, bossPosition: bossPosition);
         Destroy(gameObject);
