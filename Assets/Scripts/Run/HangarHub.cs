@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -71,10 +72,8 @@ public sealed class HangarHub : MonoBehaviour
     Mesh hall;
     DecisionOverlay overlay;
     Dialog dialog;
-    Transform gateFill;
     readonly List<Mesh> quads = new List<Mesh>();
     int described = -1;
-    float launchHold;
     bool launching;
 
     void Start()
@@ -192,10 +191,23 @@ public sealed class HangarHub : MonoBehaviour
     // A thin amber line across the open doors fills while the ship holds there.
     void BuildGate()
     {
-        gateFill = Quad("Launch charge", new Color(1, .7f, .25f), 3);
-        gateFill.SetParent(transform, false);
-        gateFill.position = new Vector3(center.x, GateY + .35f, 2);
-        gateFill.localScale = new Vector3(0, .5f, 1);
+        // A faint mist across the open doors, fading downward; flying into it launches the run.
+        var bottom = new Color(.62f, .74f, .8f, 0);
+        var top = new Color(.62f, .74f, .8f, .42f);
+        float width = GateHalfWidth + .9f, low = GateY - .9f, high = center.y + 9.5f;
+        var mesh = new Mesh { name = "Launch mist" };
+        mesh.vertices = new[] { new Vector3(-width, low), new Vector3(-width, high), new Vector3(width, high), new Vector3(width, low) };
+        mesh.colors = new[] { bottom, top, top, bottom };
+        mesh.triangles = new[] { 0, 1, 2, 0, 2, 3 };
+        quads.Add(mesh);
+        var go = new GameObject("Launch mist");
+        go.transform.SetParent(transform, false);
+        go.transform.position = new Vector3(center.x, 0, 2);
+        go.AddComponent<MeshFilter>().sharedMesh = mesh;
+        var renderer = go.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = scenery;
+        renderer.sortingLayerName = "Player";
+        renderer.sortingOrder = 6;
     }
 
     // Docks and plinths hover over the Tunnel floor, with a soft shadow below and behind them.
@@ -314,12 +326,8 @@ public sealed class HangarHub : MonoBehaviour
             else
                 dialog.Hide();
         }
-        bool atGate = p.y >= GateY && Mathf.Abs(p.x - center.x) <= GateHalfWidth;
-        launchHold = atGate ? launchHold + Time.deltaTime : 0;
-        float progress = Mathf.Clamp01(launchHold / RouteCharge.HoldSeconds);
-        gateFill.localScale = new Vector3(progress * GateHalfWidth * 2 * 16 / 4, .5f, 1);
-        if (progress >= 1)
-            Launch();
+        if (p.y >= GateY && Mathf.Abs(p.x - center.x) <= GateHalfWidth)
+            StartCoroutine(Launch());
     }
 
     int NearestBay(Vector3 p)
@@ -410,13 +418,29 @@ public sealed class HangarHub : MonoBehaviour
         described = -2;
     }
 
-    void Launch()
+    // The mist takes the ship: controls stop, it is drawn up out of view, and the clouds follow a second later.
+    IEnumerator Launch()
     {
         launching = true;
-        gateFill.localScale = new Vector3(GateHalfWidth * 2 * 4, .5f, 1);
         if (dialog != null)
             dialog.Hide();
         overlay.Dismiss();
+        foreach (var weapon in player.GetComponentsInChildren<AWeapon>())
+            weapon.StopFiring();
+        // The controller clamps the ship inside the arena, so it lets go first.
+        player.enabled = false;
+        var ship = player.transform;
+        float top = center.y + UnityEngine.Camera.main.orthographicSize + 1.5f, speed = 1.5f;
+        while (ship.position.y < top)
+        {
+            speed += Time.deltaTime * 14;
+            var p = ship.position;
+            p.x = Mathf.Lerp(p.x, center.x, 1 - Mathf.Exp(-3 * Time.deltaTime));
+            p.y += speed * Time.deltaTime;
+            ship.position = p;
+            yield return null;
+        }
+        yield return new WaitForSeconds(1);
         CloudTransition.Load("L1", () =>
         {
             Active = false;
