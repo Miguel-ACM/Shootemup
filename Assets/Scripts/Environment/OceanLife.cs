@@ -140,6 +140,9 @@ public static partial class IndustrialMeshFactory
     {
         if (oceanFishTail != null)
             return oceanFishTail;
+        var authored = TerraModel("PropFishTail");
+        if (authored != null)
+            return oceanFishTail = authored;
         var b = new Builder();
         b.Prism(new[] { new Vector2(0, 0), new Vector2(-.34f, .56f), new Vector2(0, .43f), new Vector2(.34f, .56f) }, .035f, 13, Vector3.zero, 6);
         return oceanFishTail = b.Finish("Articulated reef fish tail fin");

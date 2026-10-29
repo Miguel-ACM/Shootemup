@@ -15,6 +15,9 @@ public static partial class IndustrialMeshFactory
             return rayAnimal;
         if (!ray && fishAnimal != null)
             return fishAnimal;
+        var authored = TerraModel(ray ? "PropRay" : "PropFish");
+        if (authored != null)
+            return ray ? rayAnimal = authored : fishAnimal = authored;
         var b = new Builder();
         if (ray)
         {

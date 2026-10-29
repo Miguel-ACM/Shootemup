@@ -98,6 +98,9 @@ public static partial class IndustrialMeshFactory
     {
         if (candyProps[kind] != null)
             return candyProps[kind];
+        var authored = TerraModel("PropCandy" + kind);
+        if (authored != null)
+            return candyProps[kind] = authored;
         var b = new Builder();
         if (kind == 0)
         {
