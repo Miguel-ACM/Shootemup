@@ -170,6 +170,7 @@ public class WaveOrchestrer : MonoBehaviour
     {
         if (currentWaveNumber == 0)
         {
+            WarpCoreLoop.MarkLevelStart(ship != null ? ship.GetComponent<Shipcontroller>() : null);
             isWaveComingOut = false;
             openingWavePending = true;
             openingStartsAt = -1;
@@ -413,46 +414,59 @@ public class WaveOrchestrer : MonoBehaviour
     {
         BGMManager.PlayLevelMusic(next);
         CombatDecision.End();
-        CloudTransition.Change(() =>
-        {
-            if (GameOverState.Active)
-                return;
-            StopAllCoroutines();
-            CancelInvoke();
-            if (routeChoice != null)
-                Destroy(routeChoice.gameObject);
-            routeChoice = null;
-            LevelRun.Advance(next);
-            LevelEnvironment.Apply();
-            foreach (var enemy in FindObjectsByType<AEnemy>())
-                Destroy(enemy.gameObject);
-            EraseAllBullets();
-            foreach (var bullet in FindObjectsByType<ABullet>())
-                Destroy(bullet.gameObject);
-            foreach (var pickup in FindObjectsByType<APickable>())
-                Destroy(pickup.gameObject);
-            foreach (var item in items)
-                if (item != null)
-                    Destroy(item);
-            items.Clear();
-            dialog.Hide();
-            currentWaveNumber = 0;
-            currentWaveEnemies = 0;
-            currentWaveKilledEnemies = 0;
-            challengeWavesRemaining = 0;
-            challengeWave = false;
-            DismissOffer();
-            waveTime = clearTime = 0;
-            currentUnit = null;
-            currentWave = null;
-            stopingWave = false;
-            choosingRoute = false;
-            CombatDecision.End();
-            waves = DistrictWaves.Sequence();
-            if (GetComponent<TunnelReflectors>() == null)
-                gameObject.AddComponent<TunnelReflectors>();
-            BeginWaves();
-        });
+        CloudTransition.Change(() => ResetDistrict(next));
+    }
+
+    /// <summary>Warp-Core loop: replay the current district from its first wave, keeping the run.</summary>
+    public void RestartLevel()
+    {
+        BGMManager.PlayLevelMusic(LevelRun.Current);
+        CombatDecision.End();
+        CloudTransition.Change(() => ResetDistrict(null));
+    }
+
+    void ResetDistrict(LevelId? next)
+    {
+        if (GameOverState.Active)
+            return;
+        StopAllCoroutines();
+        CancelInvoke();
+        if (routeChoice != null)
+            Destroy(routeChoice.gameObject);
+        routeChoice = null;
+        if (next.HasValue)
+            LevelRun.Advance(next.Value);
+        LevelEnvironment.Apply();
+        foreach (var enemy in FindObjectsByType<AEnemy>())
+            Destroy(enemy.gameObject);
+        EraseAllBullets();
+        foreach (var bullet in FindObjectsByType<ABullet>())
+            Destroy(bullet.gameObject);
+        foreach (var pickup in FindObjectsByType<APickable>())
+            Destroy(pickup.gameObject);
+        foreach (var item in items)
+            if (item != null)
+                Destroy(item);
+        items.Clear();
+        dialog.Hide();
+        currentWaveNumber = 0;
+        currentWaveEnemies = 0;
+        currentWaveKilledEnemies = 0;
+        challengeWavesRemaining = 0;
+        challengeWave = false;
+        DismissOffer();
+        waveTime = clearTime = 0;
+        currentUnit = null;
+        currentWave = null;
+        stopingWave = false;
+        choosingRoute = false;
+        CombatDecision.End();
+        waves = DistrictWaves.Sequence();
+        activeMiniboss = null;
+        minibossDeadline = -1;
+        if (GetComponent<TunnelReflectors>() == null)
+            gameObject.AddComponent<TunnelReflectors>();
+        BeginWaves();
     }
 
     public void NotifyBossPhaseChange(int phase)

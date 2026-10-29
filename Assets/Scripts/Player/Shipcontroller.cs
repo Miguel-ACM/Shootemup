@@ -443,7 +443,9 @@ public class Shipcontroller : MonoBehaviour
         healthBar.Set(health);
         invulnerable = true;
         Score.MultiplierDown();
-        if (health <= 0)
+        if (health <= 0 && WarpCoreLoop.TryLoop(this))
+            StartCoroutine("Invulnerability", 4f);
+        else if (health <= 0)
         {
             Die();
         }
