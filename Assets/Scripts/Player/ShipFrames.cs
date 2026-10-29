@@ -20,7 +20,7 @@ public static class ShipFrames
         public string[] starters = new string[0];
         public Vector2 exhaust = new Vector2(.2016f, -.245f);
         public float exhaustScale = 1;
-        public Color cockpit = new Color(.35f, .95f, 1f);
+        public Color cockpit = new Color(1f, .82f, .3f);
     }
 
     static readonly Definition[] definitions =

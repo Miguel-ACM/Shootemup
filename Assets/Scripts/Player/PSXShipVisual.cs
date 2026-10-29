@@ -111,7 +111,7 @@ public sealed class PSXShipVisual : MonoBehaviour
     }
 
     // Every ship wears a glowing hexagonal cockpit over the hitbox, so the point that can be hit is always clear.
-    static readonly Vector3 CockpitCentre = new Vector3(0, .08f, -.2f);
+    static readonly Vector3 CockpitCentre = new Vector3(0, .08f, -.32f);
     const float CockpitRadius = .062f;
     Transform cockpitFrame;
     MeshRenderer cockpit;
