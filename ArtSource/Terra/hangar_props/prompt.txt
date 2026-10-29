@@ -17,3 +17,7 @@ Write ONE Blender 5.x Python script named `model.py` in the current directory. D
 7. Render `top.png` (450x800) next to the script with Cycles (CPU, 32 samples): orthographic camera straight down framing exactly X -5..5, Y -8.9..8.9, world colour (0.06,0.08,0.09), sun from the upper left plus a soft fill. Find the script directory from `__file__`, falling back to the path after `--` in sys.argv.
 
 When done, reply with one short paragraph describing the design.
+
+## Revision
+
+Your previous script is previous_model.py (render previous_top.png). Keep the top blast doors with beacons, the amber guide dots down the centre and the bottom workshop ledge exactly. REMOVE the four docking cradles with their wall arms, the three shop plinths and the right-wall counter/rack: the game now draws floating platforms there instead, so those areas must be empty tunnel. Write a new model.py.

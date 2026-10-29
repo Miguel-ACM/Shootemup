@@ -15,7 +15,7 @@ public sealed class HangarHub : MonoBehaviour
 
     static RunDifficulty difficulty = RunDifficulty.Hard;
     static readonly Vector2[] padSpots = { new Vector2(-3.4f, 4.2f), new Vector2(-3.4f, 1.4f), new Vector2(-3.4f, -1.4f), new Vector2(-3.4f, -4.2f) };
-    static readonly Vector2[] plinthSpots = { new Vector2(3.4f, 3.4f), new Vector2(3.4f, .6f), new Vector2(3.4f, -2.2f) };
+    static readonly Vector2[] plinthSpots = { new Vector2(3.4f, 4.4f), new Vector2(3.4f, .9f), new Vector2(3.4f, -2.6f) };
     const float PadReach = 1f, PlinthReach = .85f, GateHalfWidth = 2f;
 
     sealed class Bay
@@ -23,7 +23,7 @@ public sealed class HangarHub : MonoBehaviour
         public ShipFrame frame;
         public Transform display;
         public Vector3 spot;
-        public Transform pips;
+        public Transform pips, pad, shadow;
         public float lift;
     }
 
@@ -32,6 +32,7 @@ public sealed class HangarHub : MonoBehaviour
         public string kind;
         public AItem item;
         public Vector3 spot;
+        public Transform disc, shadow;
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -145,6 +146,8 @@ public sealed class HangarHub : MonoBehaviour
                 }
                 bay.display = display.transform;
             }
+            bay.pad = Hover("HangarDockPad", bay.spot + new Vector3(0, 0, .6f), -4);
+            bay.shadow = Shadow(bay.spot, 1.05f);
             bay.pips = new GameObject("Hull pips").transform;
             bay.pips.SetParent(transform, false);
             bay.pips.position = bay.spot + new Vector3(0, -1.05f, 0);
@@ -179,6 +182,8 @@ public sealed class HangarHub : MonoBehaviour
             go.transform.SetParent(transform, true);
             plinth.item = (AItem)go.AddComponent(type);
             plinth.item.SetRarity(ItemPool.RarityOf(stock[i]));
+            plinth.disc = Hover("HangarShopPlinth", plinth.spot + new Vector3(0, -.3f, .5f), -4);
+            plinth.shadow = Shadow(plinth.spot + new Vector3(0, -.3f, 0), .7f);
             plinths.Add(plinth);
             overlay.Add(plinth.item);
         }
@@ -191,6 +196,52 @@ public sealed class HangarHub : MonoBehaviour
         gateFill.SetParent(transform, false);
         gateFill.position = new Vector3(center.x, GateY + .35f, 2);
         gateFill.localScale = new Vector3(0, .5f, 1);
+    }
+
+    // Docks and plinths hover over the Tunnel floor, with a soft shadow below and behind them.
+    Transform Hover(string model, Vector3 position, int order)
+    {
+        var mesh = IndustrialMeshFactory.TerraModel(model);
+        if (mesh == null)
+            return null;
+        var go = new GameObject(model);
+        go.transform.SetParent(transform, false);
+        go.transform.position = position;
+        go.AddComponent<MeshFilter>().sharedMesh = mesh;
+        var renderer = go.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = IndustrialMeshFactory.TerraMaterial(model) ?? CombatMaterials.Fleet;
+        renderer.sortingLayerName = "Player";
+        renderer.sortingOrder = order;
+        return go.transform;
+    }
+
+    Transform Shadow(Vector3 spot, float radius)
+    {
+        const int Sides = 20;
+        var vertices = new Vector3[Sides + 1];
+        var colors = new Color[Sides + 1];
+        var triangles = new int[Sides * 3];
+        colors[0] = new Color(0, 0, 0, .55f);
+        for (int i = 0; i < Sides; i++)
+        {
+            float angle = i * Mathf.PI * 2 / Sides;
+            vertices[i + 1] = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle) * .8f) * radius;
+            colors[i + 1] = new Color(0, 0, 0, 0);
+            triangles[i * 3] = 0;
+            triangles[i * 3 + 1] = 1 + (i + 1) % Sides;
+            triangles[i * 3 + 2] = 1 + i;
+        }
+        var mesh = new Mesh { name = "Hover shadow", vertices = vertices, colors = colors, triangles = triangles };
+        quads.Add(mesh);
+        var go = new GameObject("Hover shadow");
+        go.transform.SetParent(transform, false);
+        go.transform.position = new Vector3(spot.x + .3f, spot.y - .45f, 87);
+        go.AddComponent<MeshFilter>().sharedMesh = mesh;
+        var renderer = go.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = scenery;
+        renderer.sortingLayerName = "Background";
+        renderer.sortingOrder = -20;
+        return go.transform;
     }
 
     // A flat, unlit quad a quarter unit across, drawn among the ships.
@@ -223,10 +274,15 @@ public sealed class HangarHub : MonoBehaviour
         {
             var bay = bays[i];
             bay.lift = Mathf.MoveTowards(bay.lift, i == pad ? 1 : 0, Time.deltaTime * 5);
+            float t = Time.time * 1.3f + i;
+            float hover = Mathf.Sin(t) * .06f + bay.lift * .12f;
+            if (bay.pad != null)
+                bay.pad.position = bay.spot + new Vector3(0, hover, .6f);
+            if (bay.shadow != null)
+                bay.shadow.localScale = Vector3.one * (1 - hover * .5f);
             if (bay.display != null)
             {
-                float t = Time.time * 1.3f + i;
-                bay.display.position = bay.spot + new Vector3(0, Mathf.Sin(t) * .04f + bay.lift * .12f, 0);
+                bay.display.position = bay.spot + new Vector3(0, hover, 0);
                 bay.display.rotation = Quaternion.AngleAxis(Mathf.Sin(t * .7f) * (4 + bay.lift * 10), Vector3.up);
                 bay.display.localScale = player.transform.lossyScale * (1 + bay.lift * .1f);
             }
@@ -235,6 +291,9 @@ public sealed class HangarHub : MonoBehaviour
         int shop = NearestPlinth(p);
         for (int i = 0; i < plinths.Count; i++)
         {
+            float bob = Mathf.Sin(Time.time * 1.1f + i * 1.7f) * .05f;
+            if (plinths[i].disc != null)
+                plinths[i].disc.position = plinths[i].spot + new Vector3(0, -.3f + bob, .5f);
             var item = plinths[i].item;
             if (item == null)
                 continue;

@@ -1,4 +1,4 @@
-﻿import bpy
+import bpy
 import math
 import os
 import sys
@@ -88,36 +88,6 @@ def beam_between(name, a, b, width, height, mat):
     o = box(name, midpoint, (length, width, height), mat, 0.015)
     o.rotation_euler.z = math.atan2(b[1] - a[1], b[0] - a[0])
     return o
-
-# Docking platforms are shallow, with empty, dark top surfaces.
-for y in (4.2, 1.4, -1.4, -4.2):
-    box('Dock wall anchor', (-4.82, y, 0.13), (0.34, 1.18, 0.26), steel, 0.045)
-    box('Dock arm', (-4.38, y, 0.075), (0.95, 0.25, 0.15), edge, 0.025)
-    for dy in (-0.32, 0.32):
-        beam_between('Dock fork', (-4.60, y + dy, 0.07), (-4.02, y + dy * 0.65, 0.07), 0.10, 0.13, plate)
-    cylinder('Octagonal cradle', (-3.4, y, 0.055), 0.80, 0.11, steel, 8)
-    ring('Cradle rim', -3.4, y, 0.67, 0.78, 0.108, 0.012, edge)
-    cylinder('Empty landing surface', (-3.4, y, 0.112), 0.66, 0.012, recess, 8)
-    for i in range(12):
-        a = 2 * math.pi * i / 12
-        cylinder('Amber rim lamp', (-3.4 + 0.72 * math.cos(a), y + 0.72 * math.sin(a), 0.126), 0.022, 0.012, amber, 8)
-
-# Narrow rack hugs the right wall; the item surfaces are deliberately clear.
-box('Shop rack spine', (4.72, 0.6, 0.18), (0.43, 7.6, 0.36), steel, 0.05)
-for y in (-3.05, -0.8, 2.0, 4.25):
-    box('Rack upright', (4.65, y, 0.27), (0.53, 0.13, 0.54), edge, 0.025)
-for y in (3.4, 0.6, -2.2):
-    box('Plinth mount', (4.10, y, 0.12), (1.0, 0.36, 0.24), plate, 0.04)
-    cylinder('Display pedestal', (3.4, y, 0.15), 0.56, 0.30, steel, 8)
-    ring('Cyan display rim', 3.4, y, 0.47, 0.51, 0.301, 0.012, cyan)
-    cylinder('Empty display top', (3.4, y, 0.303), 0.46, 0.012, recess, 8)
-# Wall equipment fits between the display positions.
-box('Vending cabinet', (4.53, 1.99, 0.28), (0.64, 0.73, 0.56), plate, 0.045)
-box('Cabinet inset', (4.53, 1.99, 0.566), (0.47, 0.53, 0.015), recess, 0.015)
-box('Cabinet latch', (4.42, 1.99, 0.58), (0.035, 0.17, 0.025), brass, 0.005)
-for y in (-0.78, 4.02):
-    box('Storage shelf', (4.45, y, 0.13), (0.78, 0.56, 0.26), steel, 0.03)
-    box('Small supply case', (4.42, y, 0.30), (0.48, 0.37, 0.12), edge, 0.025)
 
 # Open blast doors: both leaves are retracted into the wall pockets.
 for side in (-1, 1):
