@@ -140,18 +140,13 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
             transform.position = descent + Vector3.down * ((t - 11.35f) * 14);
             if (age >= nextWake)
             {
-                nextWake = age + (phaseTwo ? .15f : .19f);
+                nextWake = age + (phaseTwo ? .08f : .1f);
                 ChargeTrails++;
-                for (int side = -1; side <= 1; side += 2)
-                    for (int lane = -1; lane <= 1; lane++)
-                    {
-                        var port = Hull.TransformPoint(new Vector3(side * 1.02f, .3f + lane * .35f, -.3f));
-                        var direction = CombatVisuals.Rotate(Vector2.right * side, lane * 23);
-                        Wake(port, direction, lane, side);
-                    }
+                ChargeWake(ChargeTrails);
             }
-            if (player != null && Mathf.Abs(player.position.x - transform.position.x) < .65f && Mathf.Abs(player.position.y - transform.position.y) < 1.5f)
-                player.SendMessage("ReceiveHazardDamage", 16f, SendMessageOptions.DontRequireReceiver);
+            // The whole pressure hull rams: contact anywhere on it hurts.
+            if (player != null && Mathf.Abs(player.position.x - transform.position.x) < 1.0f * hullScale && Mathf.Abs(player.position.y - transform.position.y) < 2.0f * hullScale)
+                player.SendMessage("ReceiveHazardDamage", 18f, SendMessageOptions.DontRequireReceiver);
         }
         else
         {
