@@ -1,0 +1,32 @@
+[
+  {
+    "object": "Auger_L",
+    "motion": "spin",
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "pivot": [
+      -0.59,
+      0,
+      0.1
+    ],
+    "speed": 260
+  },
+  {
+    "object": "Auger_R",
+    "motion": "spin",
+    "axis": [
+      0,
+      -1,
+      0
+    ],
+    "pivot": [
+      0.59,
+      0,
+      0.1
+    ],
+    "speed": 260
+  }
+]
