@@ -10,7 +10,8 @@ public sealed class DepthBackdrop : MonoBehaviour
     readonly List<Mesh> owned = new List<Mesh>();
     readonly List<Transform> sections = new List<Transform>();
     ParticleSystem motes;
-    float clock, nextMote;
+    float clock, nextMote, nextWake;
+    int wakeCursor;
     void Start()
     {
         sky = new Material(Resources.Load<Shader>("DepthWorld"));
@@ -76,6 +77,29 @@ public sealed class DepthBackdrop : MonoBehaviour
         }
         if (infernal)
             return; // Fire is attached to craters; no random bright red points across the arena.
+        if (clock >= nextWake)
+        {
+            nextWake = clock + .12f;
+            int index = 0;
+            int count = AEnemy.Live.Count;
+            if (count > 0)
+            {
+                int selected = wakeCursor++ % count;
+                foreach (var enemy in AEnemy.Live)
+                {
+                    if (index++ != selected || enemy == null || !enemy.isActiveAndEnabled)
+                        continue;
+                    var bubble = new ParticleSystem.EmitParams();
+                    bubble.position = enemy.transform.position + new Vector3(Random.Range(-.18f, .18f), .35f, 0);
+                    bubble.velocity = new Vector3(Random.Range(-.12f, .12f), Random.Range(.35f, .7f), 0);
+                    bubble.startSize3D = Vector3.one * Random.Range(.04f, .09f);
+                    bubble.startLifetime = Random.Range(.65f, 1.1f);
+                    bubble.startColor = new Color(.45f, .75f, .8f, .3f);
+                    motes.Emit(bubble, 1);
+                    break;
+                }
+            }
+        }
         if (clock < nextMote)
             return;
         nextMote = clock + .10f;
