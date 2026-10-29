@@ -6,6 +6,7 @@ public sealed class ItemSound : MonoBehaviour
 {
     static ItemSound instance;
     static readonly Dictionary<string, AudioClip> library = new Dictionary<string, AudioClip>();
+    static readonly Dictionary<string, AudioClip> approved = new Dictionary<string, AudioClip>();
     static readonly Dictionary<string, float> levels = new Dictionary<string, float>();
     static bool levelsLoaded;
     [System.Serializable]
@@ -20,7 +21,6 @@ public sealed class ItemSound : MonoBehaviour
         public string cue = null; public float gain = 1;
     }
 
-    readonly Dictionary<string, AudioClip> clips = new Dictionary<string, AudioClip>();
     readonly Dictionary<string, float> gates = new Dictionary<string, float>();
     readonly AudioSource[] voices = new AudioSource[8];
     int cursor;
@@ -29,6 +29,7 @@ public sealed class ItemSound : MonoBehaviour
     static void ResetLibrary()
     {
         library.Clear();
+        approved.Clear();
         levels.Clear();
         levelsLoaded = false;
         instance = null;
@@ -49,10 +50,18 @@ public sealed class ItemSound : MonoBehaviour
         return levels.TryGetValue(cue, out float gain) ? gain : 1;
     }
 
+    // Approved sample picks win; otherwise the procedural bank (F9 toggles it) replaces the older takes.
     public static AudioClip Clip(string cue)
     {
+        if (!approved.TryGetValue(cue, out var pick))
+            approved[cue] = pick = Resources.Load<AudioClip>("Sounds/ItemApproved/" + cue);
+        if (pick != null)
+            return pick;
+        var generated = SoundManager.Synth(cue);
+        if (generated != null)
+            return generated;
         if (!library.TryGetValue(cue, out var clip))
-            library[cue] = clip = Resources.Load<AudioClip>("Sounds/ItemApproved/" + cue) ?? Resources.Load<AudioClip>("Sounds/Items/" + cue);
+            library[cue] = clip = Resources.Load<AudioClip>("Sounds/Items/" + cue);
         return clip;
     }
 
@@ -93,8 +102,7 @@ public sealed class ItemSound : MonoBehaviour
     {
         if (gates.TryGetValue(cue, out float next) && Time.unscaledTime < next)
             return;
-        if (!clips.TryGetValue(cue, out var clip))
-            clips[cue] = clip = Clip(cue);
+        var clip = Clip(cue);
         if (clip == null)
             return;
         gates[cue] = Time.unscaledTime + cooldown;
