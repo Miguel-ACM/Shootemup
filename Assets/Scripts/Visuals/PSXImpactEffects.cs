@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>One shared, bounded particle buffer for hits and pickup bursts; sphere explosions on death.</summary>
@@ -8,6 +9,8 @@ public static class PSXImpactEffects
     static ParticleSystem dissolves;
     static Material material;
     static Material auraMaterial;
+    static readonly List<MeshRenderer> hullRenderers = new List<MeshRenderer>();
+    static MaterialPropertyBlock hullProperties;
     public static int BurstCount
     {
         get; private set;
@@ -16,6 +19,14 @@ public static class PSXImpactEffects
     public static int ExplosionCount
     {
         get; private set;
+    }
+
+    public static void Warm()
+    {
+        if (buffer == null)
+            buffer = Create(null, "PSX shared impacts", 512);
+        if (dissolves == null)
+            dissolves = Create(null, "PSX bullet dissolves", 3200);
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -76,15 +87,17 @@ public static class PSXImpactEffects
             buffer = Create(null, "PSX shared impacts", 512);
         BurstCount++;
         int count = pickup ? 22 : 9;
+        Vector2 direction = incoming.sqrMagnitude > .001f ? incoming.normalized : Vector2.up;
         for (int i = 0; i < count; i++)
         {
-            Vector2 direction = incoming.sqrMagnitude > .001f ? incoming.normalized : Vector2.up;
             float angle = pickup ? i * Mathf.PI * 2 / count + Random.Range(-.18f, .18f) : Mathf.Atan2(direction.y, direction.x) + Random.Range(-.48f, .48f);
             var e = new ParticleSystem.EmitParams();
             e.position = position;
             e.velocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * Random.Range(pickup ? 1f : 1.6f, pickup ? 3.5f : 4.8f);
             e.startColor = i % 4 == 0 ? Color.Lerp(color, Color.white, .65f) : color;
             float size = Random.Range(.035f, pickup ? .10f : .055f);
+            if (!pickup && i == 0)
+                size *= 1.7f;
             e.startSize3D = pickup ? Vector3.one * size : new Vector3(size, size * 2.8f, size);
             e.rotation3D = new Vector3(0, 0, 90 - angle * Mathf.Rad2Deg);
             e.startLifetime = Random.Range(.16f, pickup ? .55f : .34f);
@@ -96,14 +109,46 @@ public static class PSXImpactEffects
     /// and chain length all grow with the hull, so a gunboat or the boss goes up in a long, wide blast.</summary>
     public static void Explosion(Vector3 position, float size)
     {
+        Explosion(position, size, Color.white);
+    }
+
+    static void Explosion(Vector3 position, float size, Color tint)
+    {
         ExplosionCount++;
         size = Mathf.Max(.6f, size);
+        if (LevelRun.Current == LevelId.Underwater)
+        {
+            UnderwaterExplosion(position, size, tint);
+            return;
+        }
         float sphere = .6f + size * .75f;
         int count = Mathf.Clamp(3 + Mathf.RoundToInt(size * 2), 4, 18);
-        PSXFireballs.Spawn(position, sphere, count, size * .45f, Mathf.Clamp(size * .15f, .1f, 1.1f));
+        PSXFireballs.Spawn(position, sphere, count, size * .45f, Mathf.Clamp(size * .15f, .1f, 1.1f), tint);
         int sparks = Mathf.Clamp(Mathf.RoundToInt(size), 1, 6);
         for (int i = 0; i < sparks; i++)
             Burst(position + (Vector3)(Random.insideUnitCircle * size * .4f), new Color(1, .68f, .30f));
+    }
+
+    static void UnderwaterExplosion(Vector3 position, float size, Color tint)
+    {
+        if (buffer == null)
+            buffer = Create(null, "PSX shared impacts", 512);
+        int count = Mathf.Clamp(Mathf.RoundToInt(7 + size * 3), 8, 22);
+        for (int i = 0; i < count; i++)
+        {
+            var e = new ParticleSystem.EmitParams();
+            Vector2 offset = Random.insideUnitCircle * size * .25f;
+            e.position = position + new Vector3(offset.x, offset.y, -.3f);
+            e.velocity = new Vector3(offset.x * .5f, Random.Range(.3f, 1.1f), 0);
+            e.startColor = i == 0 ? new Color(.65f, .84f, .87f, .55f) : new Color(.32f, .65f, .72f, .45f);
+            Color tinted = e.startColor * tint;
+            tinted.a = e.startColor.a;
+            e.startColor = Color.Lerp(e.startColor, tinted, .25f);
+            float diameter = i == 0 ? size * .42f : Random.Range(.04f, .12f) * Mathf.Sqrt(size);
+            e.startSize3D = Vector3.one * diameter;
+            e.startLifetime = i == 0 ? .18f : Random.Range(.55f, 1.1f);
+            buffer.Emit(e, 1);
+        }
     }
 
     public static void Explosion(GameObject source)
@@ -111,7 +156,36 @@ public static class PSXImpactEffects
         PSXPolygonDebris.Spawn(source);
         var collider = source.GetComponent<Collider2D>();
         float size = collider != null ? Mathf.Max(collider.bounds.size.x, collider.bounds.size.y) : 1;
-        Explosion(collider != null ? collider.bounds.center : source.transform.position, size);
+        Explosion(collider != null ? collider.bounds.center : source.transform.position, size, HullColor(source));
+    }
+
+    public static Color HullColor(GameObject source)
+    {
+        hullRenderers.Clear();
+        source.GetComponentsInChildren(false, hullRenderers);
+        if (hullProperties == null)
+            hullProperties = new MaterialPropertyBlock();
+        Color sum = Color.black;
+        int count = 0;
+        foreach (var renderer in hullRenderers)
+        {
+            if (!renderer.enabled || renderer.sharedMaterial == null)
+                continue;
+            hullProperties.Clear();
+            renderer.GetPropertyBlock(hullProperties);
+            Color color = hullProperties.HasColor("_Tint") ? hullProperties.GetColor("_Tint") :
+                renderer.sharedMaterial.HasProperty("_Color") ? renderer.sharedMaterial.color : Color.white;
+            if (Mathf.Max(color.r, Mathf.Max(color.g, color.b)) < .08f)
+                continue;
+            sum += color;
+            count++;
+        }
+        hullRenderers.Clear();
+        if (count == 0)
+            return Color.white;
+        Color tint = sum / count;
+        tint.a = 1;
+        return tint;
     }
 
     /// <summary>Small forward cone of hot sparks from a gun muzzle (shares the impact buffer).</summary>

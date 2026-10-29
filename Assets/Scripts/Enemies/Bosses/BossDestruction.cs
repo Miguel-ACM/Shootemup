@@ -119,14 +119,15 @@ public sealed class BossDestruction : MonoBehaviour
         }
         // Build wreckage while the intact model is still visible; release only on the final accent.
         Wreckage = PSXPolygonDebris.Spawn(Source.gameObject, true, true);
+        Color blastTint = PSXImpactEffects.HullColor(Source.gameObject);
         Stage = BossDestructionStage.Burning;
         var ports = new[] { new Vector2(-.62f, .35f), new Vector2(.55f, -.4f), new Vector2(-.4f, -.52f), new Vector2(.55f, .5f), Vector2.zero };
         for (int beat = 0; beat < ports.Length; beat++)
         {
             Vector3 p = bounds.center + new Vector3(ports[beat].x * bounds.extents.x, ports[beat].y * bounds.extents.y, -.2f);
             float size = Mathf.Clamp(Mathf.Max(bounds.size.x, bounds.size.y) * (.18f + beat * .025f), .45f, 1.25f);
-            PSXFireballs.Spawn(p, size, beat == 4 ? 5 : 3, size * .28f, .065f);
-            PSXImpactEffects.Burst(p, new Color(1, .58f, .22f));
+            PSXFireballs.Spawn(p, size, beat == 4 ? 5 : 3, size * .28f, .065f, blastTint);
+            PSXImpactEffects.Burst(p, LevelRun.Current == LevelId.Underwater ? new Color(.35f, .65f, .7f) : Color.Lerp(new Color(1, .58f, .22f), blastTint, .35f));
             PreBlasts++;
             yield return Beat(.16f + beat * .015f);
         }
@@ -142,7 +143,7 @@ public sealed class BossDestruction : MonoBehaviour
                     hull.enabled = false;
             float size = Mathf.Clamp(Mathf.Max(bounds.size.x, bounds.size.y) * .85f, 1.8f, 4.5f);
             PSXImpactEffects.Explosion(bounds.center, size);
-            PSXFireballs.Shockwave(bounds.center, Mathf.Min(5, size * 1.05f), .7f, new Color(1, .66f, .3f), 2, .26f);
+            PSXFireballs.Shockwave(bounds.center, Mathf.Min(5, size * 1.05f), .7f, LevelRun.Current == LevelId.Underwater ? new Color(.3f, .62f, .68f) : new Color(1, .66f, .3f), 2, .26f);
             Camera.WhiteScreenJitter(.22f);
             completed?.Invoke(bounds.center);
         }

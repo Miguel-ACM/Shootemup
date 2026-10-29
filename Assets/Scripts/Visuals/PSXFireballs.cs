@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -39,6 +40,11 @@ public sealed class PSXFireballs : MonoBehaviour
     /// <summary>A burst of count spheres spread over radius, the largest about size across.</summary>
     public static void Spawn(Vector3 position, float size, int count, float radius, float stagger)
     {
+        Spawn(position, size, count, radius, stagger, Color.white);
+    }
+
+    public static void Spawn(Vector3 position, float size, int count, float radius, float stagger, Color tint)
+    {
         if (!Ready())
             return;
         for (int i = 0; i < count; i++)
@@ -47,7 +53,13 @@ public sealed class PSXFireballs : MonoBehaviour
                 return;
             var offset = i == 0 ? Vector2.zero : Random.insideUnitCircle * radius;
             float s = size * (i == 0 ? 1f : Random.Range(.45f, .85f));
-            instance.Add(position + (Vector3)offset, s, i == 0 ? 0 : Random.Range(0, stagger), Random.Range(.42f, .6f) + s * .04f);
+            var ball = instance.Add(position + (Vector3)offset, s, i == 0 ? 0 : Random.Range(0, stagger), Random.Range(.42f, .6f) + s * .04f);
+            ball.tint = tint;
+            if (LevelRun.Current == LevelId.Underwater)
+            {
+                ball.life *= 1.35f;
+                ball.drift = new Vector3(ball.drift.x * .25f, .3f + Random.value * .3f, 0);
+            }
         }
     }
 
@@ -85,6 +97,22 @@ public sealed class PSXFireballs : MonoBehaviour
         instance.material = material;
         instance.properties = new MaterialPropertyBlock();
         return true;
+    }
+
+    public static IEnumerator Warm()
+    {
+        if (!Ready())
+            yield break;
+        while (instance.pool.Count + instance.active.Count < PoolLimit)
+        {
+            for (int i = 0; i < 8 && instance.pool.Count + instance.active.Count < PoolLimit; i++)
+            {
+                var ball = instance.Create();
+                ball.renderer.enabled = false;
+                instance.pool.Push(ball);
+            }
+            yield return null;
+        }
     }
 
     Ball Add(Vector3 position, float size, float delay, float life)
@@ -162,7 +190,10 @@ public sealed class PSXFireballs : MonoBehaviour
             ball.transform.localScale = Vector3.one * ball.size * (.2f + .8f * grow);
             ball.transform.rotation = Quaternion.AngleAxis(ball.spin * stepped * ball.life, ball.axis);
             ball.transform.position += ball.drift * Time.deltaTime;
-            properties.SetColor(ColorId, Heat(stepped));
+            Color heat = LevelRun.Current == LevelId.Underwater
+                ? Color.Lerp(new Color(.55f, .75f, .78f), new Color(.12f, .34f, .39f), stepped)
+                : Heat(stepped);
+            properties.SetColor(ColorId, Color.Lerp(heat, heat * ball.tint, .45f));
             properties.SetFloat(FadeId, Mathf.Clamp01((stepped - .25f) / .75f));
             ball.renderer.SetPropertyBlock(properties);
         }
