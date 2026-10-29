@@ -1,4 +1,5 @@
 ﻿import bpy
+import json
 import math
 import os
 import sys
@@ -12,6 +13,9 @@ except NameError:
         raise RuntimeError('Supply the output directory after -- when __file__ is unavailable')
     OUT = os.path.abspath(sys.argv[sys.argv.index('--') + 1])
 os.makedirs(OUT, exist_ok=True)
+# The approved bell has no naturally moving components.
+with open(os.path.join(OUT, 'parts.json'), 'w', encoding='utf-8') as parts_file:
+    json.dump([], parts_file)
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
 
