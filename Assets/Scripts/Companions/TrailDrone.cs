@@ -86,7 +86,15 @@ public sealed class TrailDrone : ACompanion
         Vector3 target = (leader != null ? leader.worldPosition : owner.transform.position) + offset;
         target.x = Mathf.Clamp(target.x, center - halfWidth + .35f, center + halfWidth - .35f);
         target.y = Mathf.Max(bottom + .4f, target.y);
-        worldPosition = Vector3.Lerp(worldPosition, target, 1 - Mathf.Exp(-12 * Time.deltaTime));
+        // Laser drones hold a rigid column straight behind the ship instead of trailing its path.
+        if (laser)
+        {
+            target = owner.transform.position + new Vector3(0, -.65f * (index + 1), -.02f);
+            target.y = Mathf.Max(bottom + .4f, target.y);
+            worldPosition = target;
+        }
+        else
+            worldPosition = Vector3.Lerp(worldPosition, target, 1 - Mathf.Exp(-12 * Time.deltaTime));
         transform.position = worldPosition;
         if (GameRules.playerDisabled)
         {
