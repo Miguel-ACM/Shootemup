@@ -247,22 +247,50 @@ public static class SnowLandscapeGeometry
             float x = plant.x, y = plant.y, r = plant.radius, h = layout.Height(x, y);
             var rng = new System.Random(plant.seed);
             Patch(x + .18f, y - .19f, r * 1.17f, r * .73f, new Color(.59f, .70f, .75f), layout);
-            Vector3 root = new Vector3(x, y, h), fork = new Vector3(x - .05f, y + .19f, h + .71f);
+            float height = SnowLandscape.Range(rng, .95f, 1.3f);
+            Vector3 root = new Vector3(x, y, h), fork = new Vector3(x + SnowLandscape.Range(rng, -.15f, .15f) * r, y + .19f, h + height);
             var bark = plant.kind == 1 ? new Color(.68f, .73f, .69f) : new Color(.30f, .34f, .30f);
             Beam(root, fork, r * .18f, bark);
             if (plant.kind == 1)
             {
-                for (int band = 0; band < 4; band++)
+                for (int band = 0; band < 5; band++)
                 {
-                    var at = Vector3.Lerp(root, fork, (band + 1) / 5f);
-                    Beam(at, at + new Vector3(r * .075f, .006f, .012f), r * .10f, new Color(.25f, .31f, .31f));
+                    var at = Vector3.Lerp(root, fork, (band + 1) / 6f) + new Vector3(0, -r * .085f, 0);
+                    float w = r * SnowLandscape.Range(rng, .045f, .09f);
+                    Face(new Color(.30f, .36f, .35f), at + new Vector3(-w, 0, 0), at + new Vector3(w, 0, .018f), at + new Vector3(w * .6f, 0, .045f), at + new Vector3(-w, 0, .025f));
                 }
             }
-            for (int branch = 0; branch < 4; branch++)
+            if (plant.kind == 1)
             {
-                float angle = branch * Mathf.PI * .5f + SnowLandscape.Range(rng, -.4f, .4f);
-                var tip = new Vector3(x + Mathf.Cos(angle) * r * .58f, y + .20f + Mathf.Sin(angle) * r * .48f, h + .85f);
-                Beam(fork, tip, r * .065f, bark);
+                for (int branch = 0; branch < 4; branch++)
+                {
+                    float angle = plant.angle * Mathf.Deg2Rad + branch * Mathf.PI * .5f + SnowLandscape.Range(rng, -.3f, .3f);
+                    var start = Vector3.Lerp(root, fork, .48f + branch * .09f);
+                    var tip = start + new Vector3(Mathf.Cos(angle) * r * .65f, Mathf.Sin(angle) * r * .52f, height * .24f);
+                    Beam(start, tip, r * .055f, bark * .82f);
+                }
+            }
+            else
+            {
+                // Uneven whorls support the existing textured evergreen crown cards.
+                float rotation = plant.angle * Mathf.Deg2Rad;
+                for (int tier = 0; tier < 3; tier++)
+                {
+                    var hub = Vector3.Lerp(root, fork, .42f + tier * .19f);
+                    float reach = r * (1.03f - tier * .22f) * SnowLandscape.Range(rng, .88f, 1.08f);
+                    for (int branch = 0; branch < 5; branch++)
+                    {
+                        float angle = rotation + branch * Mathf.PI * 2 / 5 + tier * .38f;
+                        float next = rotation + (branch + 1) * Mathf.PI * 2 / 5 + tier * .38f;
+                        var tip = hub + new Vector3(Mathf.Cos(angle) * reach, Mathf.Sin(angle) * reach * .8f, -height * .10f);
+                        var nextTip = hub + new Vector3(Mathf.Cos(next) * reach, Mathf.Sin(next) * reach * .8f, -height * .10f);
+                        var peak = hub + Vector3.forward * (height * .13f);
+                        Face(new Color(.24f, .36f, .31f) * (branch % 2 == 0 ? 1f : .85f), tip, nextTip, peak);
+                        var snowA = Vector3.Lerp(tip, peak, .30f) + Vector3.forward * .008f;
+                        var snowB = Vector3.Lerp(nextTip, peak, .30f) + Vector3.forward * .008f;
+                        Face(new Color(.78f, .86f, .85f), snowA, snowB, peak + Vector3.forward * .008f);
+                    }
+                }
             }
         }
 
@@ -270,57 +298,86 @@ public static class SnowLandscapeGeometry
         {
             float floor = layout.Height(x, y);
             Patch(x + .12f, y - .12f, radius * 1.25f, radius * .8f, new Color(.61f, .71f, .75f), layout);
-            var top = new Vector3(x - radius * .15f, y + radius * .08f, floor + radius * .67f);
+            float stretch = SnowLandscape.Range(rng, .72f, 1f);
+            float rotation = SnowLandscape.Range(rng, 0, Mathf.PI * 2);
+            var top = new Vector3(x + radius * SnowLandscape.Range(rng, -.25f, .25f), y + radius * SnowLandscape.Range(rng, -.18f, .18f), floor + radius * SnowLandscape.Range(rng, .45f, .85f));
+            var foot = new Vector3[7];
+            var shoulder = new Vector3[7];
             for (int i = 0; i < 7; i++)
             {
-                float a = i * Mathf.PI * 2 / 7, n = (i + 1) * Mathf.PI * 2 / 7;
-                var p = new Vector3(x + Mathf.Cos(a) * radius, y + Mathf.Sin(a) * radius * .8f, floor + .04f);
-                var q = new Vector3(x + Mathf.Cos(n) * radius, y + Mathf.Sin(n) * radius * .8f, floor + .04f);
-                Face(Color.Lerp(new Color(.35f, .43f, .46f), new Color(.56f, .64f, .64f), i / 7f), p, q, top);
-                float cap = .72f + .22f * Mathf.Cos(a + 1);
-                var u = Vector3.Lerp(top, p, cap) + Vector3.forward * .016f;
-                var v = Vector3.Lerp(top, q, cap) + Vector3.forward * .016f;
-                Face(new Color(.83f, .89f, .90f) * (.94f + .05f * Mathf.Cos(a + 1)), u, v, top + Vector3.forward * .02f);
+                float angle = rotation + i * Mathf.PI * 2 / 7;
+                float reach = radius * SnowLandscape.Range(rng, .82f, 1.12f);
+                float px = x + Mathf.Cos(angle) * reach, py = y + Mathf.Sin(angle) * reach * stretch;
+                foot[i] = new Vector3(px, py, layout.Height(px, py) + .025f);
+                shoulder[i] = Vector3.Lerp(foot[i], top, SnowLandscape.Range(rng, .32f, .48f));
+            }
+            for (int i = 0; i < 7; i++)
+            {
+                int next = (i + 1) % 7;
+                var stone = Color.Lerp(new Color(.35f, .43f, .46f), new Color(.56f, .64f, .64f), i / 7f);
+                Face(stone * .85f, foot[i], foot[next], shoulder[next], shoulder[i]);
+                Face(stone, shoulder[i], shoulder[next], top);
+                var u = Vector3.Lerp(top, shoulder[i], .85f) + Vector3.forward * .016f;
+                var v = Vector3.Lerp(top, shoulder[next], .85f) + Vector3.forward * .016f;
+                Face(new Color(.83f, .89f, .90f) * (i % 2 == 0 ? .97f : .90f), u, v, top + Vector3.forward * .016f);
             }
         }
 
         public void FallenLog(float x, float y, SnowLandscape layout, System.Random rng)
         {
-            float h = layout.Height(x, y) + .16f;
-            Vector3 a = new Vector3(x - .75f, y - .2f, h), b = new Vector3(x + .65f, y + .27f, h + .03f);
-            Beam(a, b, .22f, new Color(.36f, .35f, .29f));
-            Beam(a + Vector3.forward * .12f, b + Vector3.forward * .12f, .18f, new Color(.85f, .90f, .88f));
-            Beam(Vector3.Lerp(a, b, .35f), new Vector3(x - .4f, y + .25f, h + .23f), .065f, new Color(.39f, .40f, .33f));
+            float angle = SnowLandscape.Range(rng, -Mathf.PI, Mathf.PI);
+            float length = SnowLandscape.Range(rng, 1.1f, 1.65f);
+            float width = SnowLandscape.Range(rng, .19f, .29f);
+            var axis = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+            var side = new Vector3(-axis.y, axis.x, 0);
+            float ax = x - axis.x * length * .5f, ay = y - axis.y * length * .5f;
+            float bx = x + axis.x * length * .5f, by = y + axis.y * length * .5f;
+            Vector3 a = new Vector3(ax, ay, layout.Height(ax, ay) + width * .48f);
+            Vector3 b = new Vector3(bx, by, layout.Height(bx, by) + width * .48f);
+            Beam(a, b, width, new Color(.36f, .35f, .29f));
+            var snowA = a + Vector3.forward * width * .48f;
+            var snowB = b + Vector3.forward * width * .48f;
+            Face(new Color(.85f, .90f, .88f), snowA - side * width * .38f, snowB - side * width * .38f, snowB + side * width * .38f, snowA + side * width * .38f);
+            var branch = Vector3.Lerp(a, b, SnowLandscape.Range(rng, .3f, .65f));
+            Beam(branch, branch + side * SnowLandscape.Range(rng, .24f, .4f) + Vector3.forward * .18f, width * .3f, new Color(.39f, .40f, .33f));
         }
 
         public void Pool(Vector2 pool, Vector3 shape, SnowLandscape layout, System.Random rng)
         {
-            const int sides = 24;
+            const int sides = 16;
             var rim = new Vector3[sides];
             var inside = new Vector3[sides];
+            float phase = SnowLandscape.Range(rng, 0, Mathf.PI * 2);
+            float cs = Mathf.Cos(shape.z), sn = Mathf.Sin(shape.z);
             for (int i = 0; i < sides; i++)
             {
-                float a = i * Mathf.PI * 2 / sides, r = 1 + .07f * Mathf.Sin(a * 3) + .04f * Mathf.Cos(a * 5);
+                float a = i * Mathf.PI * 2 / sides, r = 1 + .07f * Mathf.Sin(a * 3 + phase) + .04f * Mathf.Cos(a * 5 - phase);
                 float px = Mathf.Cos(a) * shape.x * r, py = Mathf.Sin(a) * shape.y * r;
-                float x = pool.x + px * Mathf.Cos(shape.z) - py * Mathf.Sin(shape.z), y = pool.y + px * Mathf.Sin(shape.z) + py * Mathf.Cos(shape.z);
-                rim[i] = new Vector3(x, y, layout.Height(x, y) + .035f);
-                float ix = Mathf.Lerp(pool.x, x, .86f), iy = Mathf.Lerp(pool.y, y, .88f);
-                inside[i] = new Vector3(ix, iy, layout.Height(ix, iy) + .04f);
+                float x = pool.x + px * cs - py * sn, y = pool.y + px * sn + py * cs;
+                rim[i] = new Vector3(x, y, layout.Height(x, y) + .065f);
+                float ix = Mathf.Lerp(pool.x, x, .82f), iy = Mathf.Lerp(pool.y, y, .82f);
+                inside[i] = new Vector3(ix, iy, layout.Height(ix, iy) + .025f);
             }
-            var centre = new Vector3(pool.x, pool.y, layout.Height(pool.x, pool.y) + .045f);
+            var centre = new Vector3(pool.x, pool.y, layout.Height(pool.x, pool.y) + .03f);
             for (int i = 0; i < sides; i++)
             {
                 int n = (i + 1) % sides;
-                Face(new Color(.81f, .88f, .89f), rim[i], rim[n], inside[n], inside[i]);
+                Face(i % 3 == 0 ? new Color(.75f, .84f, .86f) : new Color(.81f, .88f, .89f), rim[i], rim[n], inside[n], inside[i]);
                 GradientTriangle(inside[i], inside[n], centre, new Color(.64f, .79f, .82f), new Color(.47f, .67f, .74f));
             }
             // Fine opaque scratches remain attached to the ice rather than flashing like bullets.
-            for (int crack = 0; crack < 6; crack++)
+            for (int crack = 0; crack < 4; crack++)
             {
-                float x = pool.x + SnowLandscape.Range(rng, -.75f, .75f), y = pool.y + SnowLandscape.Range(rng, -1.1f, 1.1f), h = layout.Height(x, y) + .06f;
-                Vector3 start = new Vector3(x, y, h), joint = new Vector3(x + .15f, y + .25f, h + .01f);
+                float u = SnowLandscape.Range(rng, -.35f, .35f), v = SnowLandscape.Range(rng, -.35f, .35f);
+                Vector3 IcePoint(float du, float dv)
+                {
+                    float px = (u + du) * shape.x, py = (v + dv) * shape.y;
+                    float x = pool.x + px * cs - py * sn, y = pool.y + px * sn + py * cs;
+                    return new Vector3(x, y, layout.Height(x, y) + .05f);
+                }
+                Vector3 start = IcePoint(-.12f, -.12f), joint = IcePoint(.02f, .02f);
                 Beam(start, joint, .015f, new Color(.76f, .86f, .87f));
-                Beam(joint, joint + new Vector3(-.08f, .24f, 0), .012f, new Color(.76f, .86f, .87f));
+                Beam(joint, IcePoint(-.04f, .17f), .012f, new Color(.76f, .86f, .87f));
             }
         }
 
