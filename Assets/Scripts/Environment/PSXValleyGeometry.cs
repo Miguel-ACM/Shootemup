@@ -96,7 +96,7 @@ public static class PSXValleyGeometry
             if (plant.y < origin || plant.y >= origin + length)
                 continue;
             if (plant.kind < 2)
-                b.Tree(plant.x, plant.y - origin, plant.radius, new System.Random(plant.seed));
+                b.Tree(plant.x, plant.y - origin, plant.radius, plant.kind, new System.Random(plant.seed));
         }
         // Gravel outcrops occupy dry ground and follow the road/landmark clearances.
         for (int i = 0; i < 23; i++)
@@ -280,17 +280,50 @@ public static class PSXValleyGeometry
             }
         }
 
-        public void Tree(float x, float y, float radius, System.Random rng)
+        public void Tree(float x, float y, float radius, int kind, System.Random rng)
         {
+            int shape = kind == 1 ? 1 : rng.Next(3) == 0 ? 2 : 0;
+            float lean = Range(rng, -.12f, .12f) * radius;
+            Color bark = Color.Lerp(new Color(.235f, .245f, .16f), new Color(.34f, .31f, .20f), Range(rng, 0, 1));
             Patch(x + .20f, y - .22f, radius * 1.10f, radius * .78f, -.12f, Color.Lerp(Grass, Shadow, .48f), rng);
-            var root = new Vector3(x, y, -.16f);
-            var fork = new Vector3(x - .06f, y + .19f, -.72f);
-            Beam(root, fork, radius * .18f, new Color(.27f, .265f, .17f));
+            var root = new Vector3(x, y, -.035f);
+            var fork = new Vector3(x + lean, y + .15f, -.62f);
+            var crown = new Vector3(x + lean * 1.5f, y + .23f, shape == 1 ? -1.1f : shape == 2 ? -1.02f : -.85f);
+            TaperedWood(root, fork, radius * .24f, radius * .13f, bark);
+            TaperedWood(fork, crown, radius * .13f, radius * .045f, bark);
+            for (int i = 0; i < 4; i++)
+            {
+                float angle = i * Mathf.PI * .5f + .35f;
+                var direction = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
+                var across = new Vector3(-direction.y, direction.x, 0) * radius * .075f;
+                Face(bark * .84f, root - across, root + direction * radius * .30f,
+                    root + across, root + new Vector3(0, .035f, -.19f));
+            }
             for (int branch = 0; branch < 3; branch++)
             {
-                float a = branch * 2.094f + Range(rng, -.4f, .4f);
-                Beam(fork, new Vector3(x + Mathf.Cos(a) * radius * .56f, y + .2f + Mathf.Sin(a) * radius * .46f, -.83f),
-                    radius * .085f, new Color(.29f, .29f, .185f));
+                float a = branch * 2.094f + Range(rng, -.35f, .35f);
+                var tip = new Vector3(x + Mathf.Cos(a) * radius * .52f,
+                    y + .19f + Mathf.Sin(a) * radius * .40f, -.86f - branch * .045f);
+                TaperedWood(Vector3.Lerp(fork, crown, branch * .17f), tip, radius * .095f, radius * .025f, bark);
+            }
+        }
+
+        void TaperedWood(Vector3 a, Vector3 b, float baseWidth, float tipWidth, Color color)
+        {
+            var direction = (b - a).normalized;
+            var across = Vector3.Cross(direction, Vector3.forward).normalized;
+            if (across.sqrMagnitude < .00001f)
+                across = Vector3.right;
+            var depth = Vector3.Cross(direction, across).normalized;
+            for (int side = 0; side < 4; side++)
+            {
+                float angle = side * Mathf.PI * .5f + Mathf.PI * .25f;
+                float next = (side + 1) * Mathf.PI * .5f + Mathf.PI * .25f;
+                var edge = across * Mathf.Cos(angle) + depth * Mathf.Sin(angle);
+                var nextEdge = across * Mathf.Cos(next) + depth * Mathf.Sin(next);
+                Face(color * (side == 0 ? 1.08f : side == 2 ? .76f : .9f),
+                    a + edge * baseWidth, a + nextEdge * baseWidth,
+                    b + nextEdge * tipWidth, b + edge * tipWidth);
             }
         }
 
@@ -303,9 +336,9 @@ public static class PSXValleyGeometry
             {
                 float a = i * Mathf.PI * 2 / sides, r = radius * Range(rng, .83f, 1.1f);
                 ring[i] = new Vector3(x + Mathf.Cos(a) * r, y + Mathf.Sin(a) * r * .83f, z);
-                inner[i] = new Vector3(x - .1f + Mathf.Cos(a) * r * .46f, y + .12f + Mathf.Sin(a) * r * .4f, z - radius * .5f);
+                inner[i] = new Vector3(x - radius * .25f + Mathf.Cos(a) * r * .46f, y + radius * .3f + Mathf.Sin(a) * r * .4f, z - radius * .5f);
             }
-            var top = new Vector3(x - .1f, y + .15f, z - radius * .66f);
+            var top = new Vector3(x - radius * .25f, y + radius * .38f, z - radius * .66f);
             for (int i = 0; i < sides; i++)
             {
                 int j = (i + 1) % sides;
@@ -316,8 +349,9 @@ public static class PSXValleyGeometry
 
         public void Rock(float x, float y, float radius, System.Random rng)
         {
-            Patch(x + .12f, y - .13f, radius * 1.3f, radius * .7f, -.13f, Shadow, rng);
-            Crown(x, y, radius, -.23f, new Color(.34f, .40f, .37f), rng);
+            Patch(x + .08f, y - .09f, radius * 1.15f, radius * .70f, -.012f, Shadow, rng);
+            Color stone = Color.Lerp(new Color(.31f, .37f, .34f), new Color(.46f, .48f, .40f), Range(rng, 0, 1));
+            Crown(x, y, radius, -.025f, stone, rng);
         }
 
         void Beam(Vector3 a, Vector3 b, float width, Color color)

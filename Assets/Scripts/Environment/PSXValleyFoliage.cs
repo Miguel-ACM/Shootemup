@@ -96,23 +96,75 @@ public static class PSXValleyFoliage
             var rng = new System.Random(p.seed);
             float y = p.y - origin;
             float ground = surfaceHeight != null ? -surfaceHeight(p.x, p.y) : 0;
-            if (p.kind == 2)
+            if (surfaceHeight != null)
             {
-                Card(new Vector3(p.x, y, ground - .18f), p.radius * 2.2f, p.radius * 2.9f, p.angle, 2, .93f, .16f);
+                if (p.kind == 2)
+                {
+                    Card(new Vector3(p.x, y, ground - .18f), p.radius * 2.2f, p.radius * 2.9f, p.angle, 2, .93f, .16f);
+                }
+                else
+                {
+                    int snowClusters = p.kind == 1 ? 5 : 7;
+                    float snowHeight = p.kind == 1 ? .95f : .65f;
+                    float crownStretch = Range(rng, .82f, 1f);
+                    for (int cluster = 0; cluster < snowClusters; cluster++)
+                    {
+                        float a = p.angle * Mathf.Deg2Rad + cluster * 2.39996f;
+                        float ring = cluster == snowClusters - 1 ? 0 : p.radius * .52f;
+                        float radius = p.radius * (cluster == snowClusters - 1 ? .77f : Range(rng, .48f, .70f));
+                        var centre = new Vector3(p.x + Mathf.Cos(a) * ring, y + Mathf.Sin(a) * ring * .80f + snowHeight * .3f,
+                            ground - snowHeight - cluster * .065f);
+                        Card(centre, radius * 2.25f * crownStretch, radius * (p.kind == 1 ? 2.6f : 2.05f),
+                            Range(rng, 0, 360), p.kind, Range(rng, .84f, 1.10f), cluster % 2 == 0 ? .3f : -.32f);
+                    }
+                }
                 continue;
             }
-            // Offset and tilt each crown card: a volume of leaves with a broken silhouette,
-            // including a top-facing card so an overhead camera never sees edge-on foliage.
-            int clusters = p.kind == 1 ? 5 : 7;
-            float height = p.kind == 1 ? .95f : .65f;
+            if (p.kind == 2)
+            {
+                if (rng.Next(3) == 0)
+                {
+                    for (int clump = 0; clump < 3; clump++)
+                    {
+                        float a = (p.angle + clump * 120) * Mathf.Deg2Rad;
+                        var centre = new Vector3(p.x + Mathf.Cos(a) * p.radius * .25f,
+                            y + Mathf.Sin(a) * p.radius * .2f, ground - .12f - clump * .025f);
+                        Card(centre, p.radius * 1.45f, p.radius * 1.3f, p.angle + clump * 67,
+                            0, .84f + clump * .07f, clump == 1 ? -.25f : .2f);
+                    }
+                }
+                else
+                {
+                    Card(new Vector3(p.x, y, ground - .18f), p.radius * 2.0f, p.radius * 2.7f, p.angle, 2, .93f, .16f);
+                    Card(new Vector3(p.x + p.radius * .12f, y + p.radius * .08f, ground - .23f),
+                        p.radius * 1.45f, p.radius * 2.15f, p.angle + 72, 2, .82f, -.2f);
+                }
+                continue;
+            }
+            // Tall poplars and stepped pines share the textured cutout vocabulary.
+            int shape = p.kind == 1 ? 1 : rng.Next(3) == 0 ? 2 : 0;
+            int clusters = shape == 1 ? 7 : 8;
+            float height = shape == 1 ? .95f : .65f;
             for (int cluster = 0; cluster < clusters; cluster++)
             {
                 float a = p.angle * Mathf.Deg2Rad + cluster * 2.39996f;
-                float ring = cluster == clusters - 1 ? 0 : p.radius * .52f;
-                float radius = p.radius * (cluster == clusters - 1 ? .77f : Range(rng, .48f, .70f));
-                var centre = new Vector3(p.x + Mathf.Cos(a) * ring, y + Mathf.Sin(a) * ring * .80f + height * .3f, ground - height - cluster * .065f);
-                Card(centre, radius * 2.25f, radius * (p.kind == 1 ? 2.6f : 2.05f), Range(rng, 0, 360), p.kind,
-                    Range(rng, .84f, 1.10f), cluster % 2 == 0 ? .3f : -.32f);
+                bool top = cluster >= clusters - 2;
+                float ring = top ? p.radius * .14f : p.radius * (shape == 1 ? .32f : .47f);
+                float radius = p.radius * (top ? .55f : Range(rng, .43f, .58f));
+                float level = top ? .25f : (cluster % 3) * .11f;
+                float width = radius * (shape == 1 ? 1.65f : 2.0f);
+                float depth = radius * (shape == 1 ? 2.45f : 1.9f);
+                if (shape == 2)
+                {
+                    level = cluster * .075f;
+                    ring *= 1f - cluster * .075f;
+                    width *= 1f - cluster * .055f;
+                    depth *= 1f - cluster * .035f;
+                }
+                var centre = new Vector3(p.x + Mathf.Cos(a) * ring,
+                    y + Mathf.Sin(a) * ring * .8f + height * .3f, ground - height - level);
+                Card(centre, width, depth, Range(rng, 0, 360), shape == 2 ? 1 : p.kind,
+                    Range(rng, .82f, 1.08f), cluster % 2 == 0 ? .3f : -.32f);
             }
             void Card(Vector3 centre, float width, float depth, float angle, int tile, float shade, float tilt)
             {
