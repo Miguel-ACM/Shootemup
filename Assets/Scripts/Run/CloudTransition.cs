@@ -80,12 +80,21 @@ public sealed class CloudTransition : MonoBehaviour
     GameObject cloudLayer;
     bool clouds = true;
 
+    // Play mode entered straight into the core (the editor, tools, checks) may not report the first scene as
+    // loaded; bring its run content in here as well.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    static void EnsureRunContent()
+    {
+        if (SceneManager.GetActiveScene().name == "L1" && !HangarHub.Active && !SceneManager.GetSceneByName(HangarHub.RunScene).IsValid())
+            SceneManager.LoadScene(HangarHub.RunScene, LoadSceneMode.Additive);
+    }
+
     void SceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // L1 is the persistent core. Its content comes in additive scenes: the hangar's, or a run's.
         if (scene.name == "L1" && HangarHub.Active)
             HangarHub.PrepareCore();
-        else if (scene.name == "L1" && !SceneManager.GetSceneByName(HangarHub.RunScene).isLoaded)
+        else if (scene.name == "L1" && !SceneManager.GetSceneByName(HangarHub.RunScene).IsValid())
             SceneManager.LoadScene(HangarHub.RunScene, LoadSceneMode.Additive);
         else if (scene.name == HangarHub.RunScene && !HangarHub.Launching)
             LevelEnvironment.Apply();
