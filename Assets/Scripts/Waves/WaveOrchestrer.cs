@@ -58,26 +58,12 @@ public class WaveOrchestrer : MonoBehaviour
     void Start()
     {
         dialog = GameObject.FindGameObjectWithTag("Dialog").GetComponent<Dialog>();
+        // This orchestrator lives in the additive Run scene; the warning banner belongs to the core's UI.
+        if (warning == null)
+            warning = FindAnyObjectByType<Warning>(FindObjectsInactive.Include);
         limits = Camera.getLimits();
         ship = GameObject.FindGameObjectWithTag("Player");
         wavePool = GetComponent<WavePool>();
-        waves = DistrictWaves.Sequence();
-        // The hangar shares the gameplay scene but has no combat.
-        if (HangarHub.Active)
-        {
-            enabled = false;
-            HangarHub.RunStarted += BeginRun;
-            return;
-        }
-        BeginWaves();
-    }
-
-    // The run starts in this same scene, under the clouds; the sequence follows the new run's seed.
-    void BeginRun()
-    {
-        if (this == null)
-            return;
-        enabled = true;
         waves = DistrictWaves.Sequence();
         BeginWaves();
     }

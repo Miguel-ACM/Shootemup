@@ -6,8 +6,10 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// The hub between runs, inside the gameplay scene: parked ships on the left (hover and press a button to switch),
-/// the item shop on the right (hover and press to buy into the unlock pool) and the launch doors at the top.
+/// The hub between runs: parked ships on the left (hover and press a button to switch), the item shop on the right
+/// (hover and press to buy into the unlock pool) and the launch mist at the top.
+/// Scenes: L1 is the persistent core (camera, player, instruments, UI). The hangar's content lives in the additive
+/// Hangar scene; a run's content (waves, Plains scenery) lives in the additive Run scene, loaded behind the clouds.
 /// </summary>
 public sealed class HangarHub : MonoBehaviour
 {
@@ -65,14 +67,15 @@ public sealed class HangarHub : MonoBehaviour
         LevelEnvironment.ReleaseTitle();
     }
 
-    // Called once the gameplay scene has loaded in hangar mode.
-    public static void Build()
+    public const string HangarScene = "Hangar", RunScene = "Run";
+
+    // Called when the core scene has loaded in hangar mode, before its first frame: prepare the core,
+    // then bring in the hangar's own scene.
+    public static void PrepareCore()
     {
-        // The gameplay scene's legacy shaft scenery and valley grass never show behind the hangar.
+        // The core's legacy shaft scenery never shows behind the hangar.
         foreach (var industrial in FindObjectsByType<PSXIndustrialField>())
             industrial.steelMaterial = null;
-        foreach (var field in FindObjectsByType<PSXGrassField>(FindObjectsInactive.Include))
-            field.gameObject.SetActive(false);
         // The ship waits below the screen from the very first frame, then flies up into place.
         var ship = GameObject.FindGameObjectWithTag("Player");
         var camera = UnityEngine.Camera.main;
@@ -81,7 +84,13 @@ public sealed class HangarHub : MonoBehaviour
             dockedAt = ship.transform.position;
             ship.transform.position = new Vector3(dockedAt.x, camera.transform.position.y - camera.orthographicSize - 1.2f, dockedAt.z);
         }
-        new GameObject("Hangar hub").AddComponent<HangarHub>();
+        UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(HangarScene, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+    }
+
+    /// <summary>True from the launch until the run's content has started, so the core skips its own setup.</summary>
+    public static bool Launching
+    {
+        get; private set;
     }
 
     static Vector3 dockedAt;
@@ -104,8 +113,6 @@ public sealed class HangarHub : MonoBehaviour
         player = go != null ? go.GetComponent<Shipcontroller>() : null;
         var camera = UnityEngine.Camera.main;
         center = camera != null ? camera.transform.position : Vector3.zero;
-        foreach (var field in FindObjectsByType<PSXGrassField>(FindObjectsInactive.Include))
-            field.gameObject.SetActive(false);
         scenery = new Material(Resources.Load<Shader>("LevelScenery"));
         BuildHall();
         BuildBays();
@@ -555,6 +562,10 @@ public sealed class HangarHub : MonoBehaviour
     IEnumerator Launch()
     {
         launching = true;
+        // The run's content starts loading now, at low priority, and waits ready behind the clouds.
+        Application.backgroundLoadingPriority = ThreadPriority.Low;
+        var runLoad = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(RunScene, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+        runLoad.allowSceneActivation = false;
         if (dialog != null)
             dialog.Hide();
         overlay.Dismiss();
@@ -574,37 +585,60 @@ public sealed class HangarHub : MonoBehaviour
             yield return null;
         }
         yield return new WaitForSeconds(1);
-        // The hangar already is the gameplay scene: the run starts right here under the clouds, so no
-        // scene has to activate (that single frame cost ~300 ms and stalled the clouds).
-        CloudTransition.Change(StartRun);
+        // Run by the cloud transition, which outlives this hub when the hangar scene unloads.
+        CloudTransition.Change(StartRun(player, parkedAt, dialog, runLoad));
     }
 
-    void StartRun()
+    // The run begins behind flowing clouds: the small Run scene activates additively (no Single load and no
+    // automatic asset unload), the hangar scene unloads a few frames later, and the core's heavier parts start
+    // one per frame, so no frame has to absorb the whole start.
+    static IEnumerator StartRun(Shipcontroller player, Vector3 parkedAt, Dialog dialog, AsyncOperation runLoad)
     {
+        Launching = true;
+        while (runLoad.progress < .9f)
+            yield return null;
         Active = false;
-        LevelEnvironment.ReleaseTitle();
         GameRules.StartNewRun(difficulty);
         LevelRun.Reset();
         MetaProgress.BeginRun();
         BGMManager.PlayLevelMusic(LevelRun.Current);
+        runLoad.allowSceneActivation = true;
+        while (!runLoad.isDone)
+            yield return null;
+        Application.backgroundLoadingPriority = ThreadPriority.Normal;
+        yield return null;
+        LevelEnvironment.ReleaseTitle();
+        yield return null;
+        var unload = UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(HangarScene);
+        yield return null;
+        LevelEnvironment.Apply();
+        yield return null;
         var frame = ShipFrames.Current;
         ShipFrames.ApplyStats(frame);
         player.transform.position = parkedAt;
         player.SetMaxHits(frame.hits);
         player.Repair(frame.hits);
         player.enabled = true;
-        player.StartCoroutine(ExplodingShield.GrantStarter(player));
-        player.StartCoroutine(ShipFrames.GrantStarters(player, frame));
         if (dialog != null && dialog.Panel != null)
             dialog.Panel.anchoredPosition = new Vector2(0, DecisionOverlay.SkipHeight + 12);
-        LevelEnvironment.Apply();
+        yield return null;
+        // The core's instruments build one per frame.
         var started = RunStarted;
         RunStarted = null;
-        started?.Invoke();
-        Destroy(gameObject);
+        if (started != null)
+            foreach (System.Action start in started.GetInvocationList())
+            {
+                start();
+                yield return null;
+            }
+        player.StartCoroutine(ExplodingShield.GrantStarter(player));
+        player.StartCoroutine(ShipFrames.GrantStarters(player, frame));
+        while (unload != null && !unload.isDone)
+            yield return null;
+        Launching = false;
     }
 
-    /// <summary>Raised under the clouds when the run begins in the hangar's own scene.</summary>
+    /// <summary>Raised under the clouds, one listener per frame, when the run begins.</summary>
     public static event System.Action RunStarted;
 
     void OnDestroy()

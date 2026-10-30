@@ -210,6 +210,9 @@ public sealed class IndustrialHUD : MonoBehaviour
         score.text = DimLeadingZeros(Score.CurrentScore.ToString("000000000"));
         chain.text = "x" + Score.CurrentMultiplier;
         coins.text = RunCoins.Count.ToString();
+        // The orchestrator arrives with the additive Run scene, possibly after these instruments.
+        if (waves == null)
+            waves = FindAnyObjectByType<WaveOrchestrer>();
         int challenge = waves != null ? waves.ChallengeWavesRemaining : 0;
         for (int i = 0; i < challengeCells.Length; i++)
             challengeCells[i].gameObject.SetActive(i < challenge);

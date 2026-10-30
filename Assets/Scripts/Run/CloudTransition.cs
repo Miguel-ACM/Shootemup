@@ -82,9 +82,12 @@ public sealed class CloudTransition : MonoBehaviour
 
     void SceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        // L1 is the persistent core. Its content comes in additive scenes: the hangar's, or a run's.
         if (scene.name == "L1" && HangarHub.Active)
-            HangarHub.Build();
-        else if (scene.name == "L1")
+            HangarHub.PrepareCore();
+        else if (scene.name == "L1" && !SceneManager.GetSceneByName(HangarHub.RunScene).isLoaded)
+            SceneManager.LoadScene(HangarHub.RunScene, LoadSceneMode.Additive);
+        else if (scene.name == HangarHub.RunScene && !HangarHub.Launching)
             LevelEnvironment.Apply();
         // Supersede the old world-space clouds, which were behind the PSX output canvas.
         foreach (var spawner in FindObjectsByType<CloudSpawner>())
@@ -163,6 +166,15 @@ public sealed class CloudTransition : MonoBehaviour
         instance.StartCoroutine(instance.Travel(null, covered));
     }
 
+    /// <summary>A trip without a scene change whose covered work runs over several frames while the clouds flow.</summary>
+    public static void Change(IEnumerator covered)
+    {
+        if (Busy)
+            return;
+        LevelEnvironment.FadeOutStorm();
+        instance.StartCoroutine(instance.Travel(null, null, covered));
+    }
+
     public static void FadeOutAudio(GameObject root, AudioClip[] clips, float seconds)
     {
         instance.StartCoroutine(instance.FadeAudio(root, clips, seconds));
@@ -195,7 +207,7 @@ public sealed class CloudTransition : MonoBehaviour
         }
     }
 
-    IEnumerator Travel(string scene, Action covered)
+    IEnumerator Travel(string scene, Action covered, IEnumerator coveredSteps = null)
     {
         busy = true;
         revealing = false;
@@ -232,6 +244,8 @@ public sealed class CloudTransition : MonoBehaviour
                 while (routesPreparing)
                     yield return null;
             covered?.Invoke();
+            if (coveredSteps != null)
+                yield return coveredSteps;
             if (scene != null && preparedLoad != null)
             {
                 var load = preparedLoad;
