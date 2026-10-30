@@ -37,6 +37,30 @@ public sealed class BeamRibbon : MonoBehaviour
         mouth.sharedMaterial = CombatVisuals.ProjectileMaterial;
         mouth.sortingLayerName = "Bullet";
         mouth.sortingOrder = 23;
+        // Player beams pass beneath the ship, like player rounds, so the cockpit always stays in view.
+        if (friendly)
+        {
+            foreach (var line in new Renderer[] { sheath, body, tell, collar, intake, mouth })
+            {
+                line.sortingLayerName = "Player";
+                line.sortingOrder -= 30;
+            }
+        }
+    }
+
+    // Player beams take on the rounds' coatings: fire, poison, or fire at the core inside a poison sheath.
+    static readonly Color PlayerBlue = new Color(.24f, .68f, 1);
+
+    void TintPlayerBeam()
+    {
+        bool fire = PlayerShotPalette.Burning, poison = PlayerShotPalette.Toxic;
+        var core = fire ? Color.Lerp(PlayerShotPalette.Fire, new Color(1, .6f, .2f), .45f) : poison ? PlayerShotPalette.Poison : PlayerBlue;
+        var sheathColour = poison ? PlayerShotPalette.Poison : fire ? PlayerShotPalette.Fire : PlayerBlue;
+        float blend = 1 - Mathf.Exp(-8 * Time.deltaTime);
+        hot = Color.Lerp(hot, core, blend);
+        var target = sheathColour * .45f;
+        target.a = 1;
+        cool = Color.Lerp(cool, target, blend);
     }
 
     public void Draw(Vector3 p, Vector2 direction, float length, float width, float charge, float power, float release = 0)
@@ -53,6 +77,8 @@ public sealed class BeamRibbon : MonoBehaviour
             cool = hot * .45f;
             cool.a = 1;
         }
+        else
+            TintPlayerBeam();
         p.z = -1.05f;
         var end = p + (Vector3)direction * length;
         float flutter = .96f + .025f * Mathf.Sin(Time.time * 53) + .015f * Mathf.Sin(Time.time * 31);
