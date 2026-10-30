@@ -100,6 +100,17 @@ public static partial class IndustrialMeshFactory
                     b.Box(new Vector3(0, -.15f - i * .09f, -.045f), new Vector3(.06f, .03f, .01f), 11, 11);
                 b.Box(new Vector3(0, -.52f, 0), new Vector3(.1f, .05f, .1f), 10);
                 return true;
+            case "ThrowableShield":
+                // A round buckler: steel rim, glowing energy face, a gold boss and rim rivets.
+                b.Drum(Vector3.zero, .46f, .1f, 6, 16, 11);
+                b.Drum(new Vector3(0, 0, -.06f), .36f, .04f, 9, 16, 9);
+                b.Drum(new Vector3(0, 0, -.09f), .12f, .05f, 10, 10, 13);
+                for (int i = 0; i < 8; i++)
+                {
+                    float a = i * Mathf.PI / 4;
+                    b.Box(new Vector3(Mathf.Cos(a) * .41f, Mathf.Sin(a) * .41f, -.06f), new Vector3(.045f, .045f, .03f), 1);
+                }
+                return true;
             default:
                 return false;
         }
