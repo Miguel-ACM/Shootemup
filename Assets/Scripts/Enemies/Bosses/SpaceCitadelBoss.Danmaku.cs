@@ -33,7 +33,9 @@ public sealed partial class SpaceCitadelBoss
     {
         while (true)
         {
-            if (!phaseTwo)
+            if (phaseThree)
+                yield return FinalSpell();
+            else if (!phaseTwo)
             {
                 yield return GravityWell();
                 yield return Wait(.8f);
@@ -166,5 +168,26 @@ public sealed partial class SpaceCitadelBoss
     {
         if (well != null)
             Destroy(well.gameObject);
+    }
+
+    // Hard final phase, Big Crunch: the well sits under the core and pulls in six spiral
+    // arms, pairs of dark stars and supernova rings all together.
+    IEnumerator FinalSpell()
+    {
+        Vector2 point = new Vector2(0, Middle - .5f);
+        OpenWell(point);
+        yield return Wait(.5f);
+        yield return Every(9, .1f, n =>
+        {
+            for (int arm = 0; arm < 6; arm++)
+                Fire<NeedleRound>(Core, CombatVisuals.Rotate(Vector2.down, arm * 60 + n * 7), 3.2f, .19f).Attract(point, 8).LivesFor(9);
+            if (n % 14 == 7)
+                foreach (int side in new[] { -1, 1 })
+                    Fire<GiantOrb>(Core, CombatVisuals.Rotate(Vector2.down, side * 70), 1.8f, .75f).Attract(point, 5).LivesFor(13);
+            if (n % 24 == 0)
+                SupernovaRing(Dense(26), 3.4f, n);
+        });
+        CloseWell();
+        yield return Wait(.6f);
     }
 }
