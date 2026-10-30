@@ -110,9 +110,12 @@ public sealed class PSXShipVisual : MonoBehaviour
         return hull;
     }
 
-    // Every ship wears a glowing hexagonal cockpit over the hitbox, so the point that can be hit is always clear.
-    static readonly Vector3 CockpitCentre = new Vector3(0, .08f, -.32f);
-    const float CockpitRadius = .062f;
+    // Every ship wears a small, shining round cockpit exactly over its hitbox, so the point that can be hit is always clear.
+    // On the flown ship it sits on the banking axis (z = 0), so banking and rolls never carry it off the hitbox,
+    // and it is drawn above hostile rounds.
+    static readonly Vector2 CockpitCentre = new Vector2(0, .08f);
+    const float CockpitRadius = .045f;
+    const int CockpitSides = 12;
     Transform cockpitFrame;
     MeshRenderer cockpit;
 
@@ -137,52 +140,52 @@ public sealed class PSXShipVisual : MonoBehaviour
     }
 
     /// <summary>
-    /// A shining hexagonal canopy: dark rim, coloured glass and a bright crown. It uses the ships' own shader,
-    /// so on the player it is drawn in the same foreground depth as the hull instead of behind it.
+    /// A glossy round canopy: dark rim, coloured glass and a white glint. It uses the ships' own shader, so on the
+    /// player it shares the hull's foreground depth; parked copies sit just above their hull instead.
     /// </summary>
     public static MeshRenderer BuildCockpit(Transform parent, Color color, bool player = false)
     {
         var palette = new Texture2D(4, 1, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp, name = "Cockpit glass" };
-        palette.SetPixels(new[] { color * .4f, color, Color.Lerp(color, Color.white, .6f), color });
-        for (int i = 0; i < 3; i++)
-        {
-            var c = palette.GetPixel(i, 0);
-            c.a = 1;
-            palette.SetPixel(i, 0, c);
-        }
+        var rim = color * .45f;
+        var glass = Color.Lerp(color, Color.white, .15f);
+        var glint = Color.Lerp(color, Color.white, .85f);
+        rim.a = glass.a = glint.a = 1;
+        palette.SetPixels(new[] { rim, glass, glint, glass });
         palette.Apply();
-        var vertices = new Vector3[13];
-        var uvs = new Vector2[13];
-        var triangles = new int[6 * 9];
-        for (int i = 0; i < 6; i++)
+        // Rim ring, glass ring and a centre crown.
+        var vertices = new Vector3[CockpitSides * 2 + 1];
+        var uvs = new Vector2[vertices.Length];
+        var triangles = new int[CockpitSides * 9];
+        int crown = CockpitSides * 2;
+        for (int i = 0; i < CockpitSides; i++)
         {
-            float angle = (i * 60 + 30) * Mathf.Deg2Rad;
+            float angle = i * Mathf.PI * 2 / CockpitSides;
             var corner = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle));
             vertices[i] = corner * CockpitRadius;
             uvs[i] = new Vector2(.125f, .5f);
-            vertices[6 + i] = corner * CockpitRadius * .72f + Vector3.back * .012f;
-            uvs[6 + i] = new Vector2(.375f, .5f);
+            vertices[CockpitSides + i] = corner * CockpitRadius * .7f + Vector3.back * .01f;
+            uvs[CockpitSides + i] = new Vector2(.375f, .5f);
         }
-        vertices[12] = Vector3.back * .03f;
-        uvs[12] = new Vector2(.625f, .5f);
-        for (int i = 0; i < 6; i++)
+        vertices[crown] = new Vector3(-.25f, .25f) * CockpitRadius + Vector3.back * .025f;
+        uvs[crown] = new Vector2(.625f, .5f);
+        for (int i = 0; i < CockpitSides; i++)
         {
-            int next = (i + 1) % 6, t = i * 9;
+            int next = (i + 1) % CockpitSides, t = i * 9;
             triangles[t] = i;
-            triangles[t + 1] = 6 + next;
+            triangles[t + 1] = CockpitSides + next;
             triangles[t + 2] = next;
             triangles[t + 3] = i;
-            triangles[t + 4] = 6 + i;
-            triangles[t + 5] = 6 + next;
-            triangles[t + 6] = 6 + i;
-            triangles[t + 7] = 12;
-            triangles[t + 8] = 6 + next;
+            triangles[t + 4] = CockpitSides + i;
+            triangles[t + 5] = CockpitSides + next;
+            triangles[t + 6] = CockpitSides + i;
+            triangles[t + 7] = crown;
+            triangles[t + 8] = CockpitSides + next;
         }
-        var mesh = new Mesh { name = "Hexagonal cockpit", vertices = vertices, uv = uvs, triangles = triangles };
+        var mesh = new Mesh { name = "Round cockpit", vertices = vertices, uv = uvs, triangles = triangles };
         mesh.RecalculateNormals();
         var go = new GameObject("Cockpit");
         go.transform.SetParent(parent, false);
-        go.transform.localPosition = CockpitCentre;
+        go.transform.localPosition = new Vector3(CockpitCentre.x, CockpitCentre.y, player ? 0 : -.12f);
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var renderer = go.AddComponent<MeshRenderer>();
         var material = new Material(CombatMaterials.Fleet) { name = "Shining cockpit", mainTexture = palette };
@@ -192,7 +195,6 @@ public sealed class PSXShipVisual : MonoBehaviour
         go.AddComponent<CockpitShine>();
         return renderer;
     }
-
     static void DestroyCockpit(MeshRenderer renderer)
     {
         Destroy(renderer.GetComponent<MeshFilter>().sharedMesh);
@@ -290,8 +292,9 @@ public sealed class PSXShipVisual : MonoBehaviour
             }
         if (cockpit != null)
         {
-            cockpit.sortingLayerID = modelRenderer.sortingLayerID;
-            cockpit.sortingOrder = modelRenderer.sortingOrder + 1;
+            // Above hostile rounds, so the hitbox is never hidden.
+            cockpit.sortingLayerName = "Bullet";
+            cockpit.sortingOrder = 40;
             cockpit.enabled = modelRenderer.enabled;
         }
         // The hitbox stays fully visible through invulnerability blinking; it only hides on death.
@@ -318,6 +321,6 @@ public sealed class CockpitShine : MonoBehaviour
     void Update()
     {
         float glint = Mathf.Pow(.5f + .5f * Mathf.Sin(Time.time * 2.6f + phase), 3);
-        material.SetColor(Tint, Color.white * (1.4f + .6f * glint));
+        material.SetColor(Tint, Color.white * (1.7f + .8f * glint));
     }
 }
