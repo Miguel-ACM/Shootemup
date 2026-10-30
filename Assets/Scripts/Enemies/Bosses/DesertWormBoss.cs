@@ -90,6 +90,8 @@ public sealed partial class DesertWormBoss : DistrictBoss
     }
 
     protected override bool PhaseTwoReady => RemainingParts <= 4;
+    // The body keeps winding through a phase break; only its fire and damage pause.
+    protected override bool RepositionsOnPhase => false;
     protected override void OnPhaseTwo()
     {
         nextAttack = age + 1.1f;
@@ -155,7 +157,7 @@ public sealed class DesertWormCore : AEnemy
 
     public override void damage(float amount)
     {
-        if (health <= 0 || owner == null)
+        if (health <= 0 || owner == null || owner.Invulnerable)
             return;
         base.damage(amount);
         if (owner != null)

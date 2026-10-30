@@ -11,8 +11,10 @@ public abstract class DistrictBoss : DistrictEnemy
     protected float motionAge;
     float nextPressure;
     float phaseEntryUntil;
-    BossPhaseEntry phaseEntry;
     protected bool PhaseTransitioning => age < phaseEntryUntil;
+    // While a phase breaks the boss repositions and cannot be hurt.
+    public bool Invulnerable => PhaseTransitioning;
+    protected virtual bool RepositionsOnPhase => true;
     protected virtual bool PatternEmissionAllowed => true;
     public virtual bool UsesHealthBar => true;
     public virtual float DisplayFraction => HealthFraction;
@@ -36,8 +38,6 @@ public abstract class DistrictBoss : DistrictEnemy
         }
         station = new Vector3(0, Camera.UpLimit - 2.3f, 1);
         nextPressure = nextAttack;
-        phaseEntry = gameObject.AddComponent<BossPhaseEntry>();
-        phaseEntry.Build(this);
     }
 
     protected override void Update()
@@ -58,8 +58,13 @@ public abstract class DistrictBoss : DistrictEnemy
             PresentPhaseTwo();
         }
         float motionDelta = Time.deltaTime * LevelRun.EnemyTempoScale * MovementScale;
-        motionAge += motionDelta;
-        MoveBoss(motionDelta);
+        if (PhaseTransitioning && RepositionsOnPhase)
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.UpLimit - 2.5f, transform.position.z), motionDelta * 6);
+        else
+        {
+            motionAge += motionDelta;
+            MoveBoss(motionDelta);
+        }
         if (!enteredFight && transform.position.y < Camera.UpLimit - 1)
         {
             enteredFight = true;
@@ -95,8 +100,17 @@ public abstract class DistrictBoss : DistrictEnemy
         firingCue.ClearWarning();
         StopPhrases();
         cardsRunning = false;
-        CombatRound.ClearAll();
-        phaseEntry.Begin();
+        // Spell break: every hostile round bursts into light and a white blast spreads out.
+        foreach (var round in new List<CombatRound>(CombatRound.Live))
+            if (round != null)
+                round.Vanish();
+        PhaseBreak.Play(transform.position);
+    }
+
+    public override void damage(float amount)
+    {
+        if (!Invulnerable)
+            base.damage(amount);
     }
 
     protected virtual float PressureInterval => phaseTwo ? .55f : .85f;

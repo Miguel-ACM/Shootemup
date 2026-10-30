@@ -36,6 +36,8 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
     }
 
     public override bool CanBeTargeted => !Submerged && health > 0;
+    // The dive cycle owns the hull's position, including through a phase break.
+    protected override bool RepositionsOnPhase => false;
     protected override void Configure()
     {
         hull = 53;

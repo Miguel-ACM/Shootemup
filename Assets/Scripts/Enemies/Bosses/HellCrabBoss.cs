@@ -168,7 +168,7 @@ public sealed class HellCrabEye : AEnemy
 
     public override void damage(float amount)
     {
-        if (health <= 0 || owner == null)
+        if (health <= 0 || owner == null || owner.Invulnerable)
             return;
         base.damage(amount);
         owner.EyeChanged();

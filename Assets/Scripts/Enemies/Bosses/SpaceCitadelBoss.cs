@@ -148,7 +148,7 @@ public sealed class SpaceBossPart : AEnemy
 
     public override void damage(float amount)
     {
-        if (!CanBeTargeted || owner == null)
+        if (!CanBeTargeted || owner == null || owner.Invulnerable)
             return;
         base.damage(amount);
         if (owner != null)
