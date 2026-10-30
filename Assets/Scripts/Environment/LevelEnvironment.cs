@@ -711,7 +711,8 @@ public sealed class LevelEnvironment : MonoBehaviour
             if (go != null)
                 player = go.transform;
         }
-        HorizontalOffset = player != null ? -player.position.x * sideParallax : 0;
+        // The title's tunnel never follows a ship, including when it is carried into the hangar.
+        HorizontalOffset = player != null && !titleBackdrop ? -player.position.x * sideParallax : 0;
         foreach (var section in sections)
         {
             var p = section.localPosition;
