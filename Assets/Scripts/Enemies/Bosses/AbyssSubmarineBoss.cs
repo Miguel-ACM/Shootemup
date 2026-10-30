@@ -72,7 +72,7 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
     {
         if (hit == null)
             return;
-        cycleClock += dt * (phaseTwo ? 1.10f : 1);
+        cycleClock += dt * (phaseThree ? 1.3f : phaseTwo ? 1.10f : 1);
         float t = Mathf.Repeat(cycleClock, cycleSeconds);
         int cycle = Mathf.FloorToInt(cycleClock / cycleSeconds);
         if (cycle != lastCycle)

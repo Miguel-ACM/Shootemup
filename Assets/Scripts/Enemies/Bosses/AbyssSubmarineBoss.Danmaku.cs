@@ -20,6 +20,21 @@ public sealed partial class AbyssSubmarineBoss
         if (Submerged || Mathf.Repeat(cycleClock, cycleSeconds) >= 3.5f)
             return;
         int beat = volley % 3;
+        if (phaseThree)
+        {
+            // Hard final phase, Crush Depth: rain, torpedo racks and the pressure lace all
+            // fire on every surfacing, the dive cycle runs faster and the wake is thicker.
+            if (beat == 0)
+                Rain();
+            else if (beat == 1)
+            {
+                Torpedoes();
+                Phrase(MirrorLace(Hull, new Vector3(-1.02f, .3f, -.3f), new Vector3(1.02f, .3f, -.3f), Dense(30), 3, 60, 18, 3.4f, .06f, volley % 2 == 0 ? 1 : -1));
+            }
+            else
+                ArrowWavefront(Muzzle(), Aim, Dense(21), 100, 3, 2.8f, .8f);
+            return;
+        }
         if (beat == 0)
             Rain();
         else if (!phaseTwo && beat == 1)
@@ -88,7 +103,7 @@ public sealed partial class AbyssSubmarineBoss
         emergences++;
         PSXImpactEffects.Burst(transform.position, new Color(.42f, .83f, .94f), true);
         int beads = Dense(phaseTwo ? 32 : 28);
-        int rings = phaseTwo ? 2 : 1;
+        int rings = phaseThree ? 3 : phaseTwo ? 2 : 1;
         for (int ring = 0; ring < rings; ring++)
             for (int i = 0; i < beads; i++)
             {
@@ -118,7 +133,7 @@ public sealed partial class AbyssSubmarineBoss
         }
         if (tick % 3 == 0)
             PSXImpactEffects.Burst(transform.position + Vector3.down * 1.8f * hullScale, foam, false);
-        if (phaseTwo && tick % 5 == 0)
+        if (phaseTwo && tick % (phaseThree ? 3 : 5) == 0)
         {
             // Depth charges left in the path, exploding all round a moment later.
             int shards = Dense(14);
