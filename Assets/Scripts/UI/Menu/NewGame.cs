@@ -80,7 +80,7 @@ public class NewGame : AMenuElement
         var group = menu.GetComponent<CanvasGroup>();
         var panel = menu.transform.parent.GetComponent<Image>();
         var shade = panel != null ? panel.color : Color.clear;
-        var halt = StartCoroutine(LevelEnvironment.HaltTitle(Seconds));
+        var halt = menu.StartCoroutine(LevelEnvironment.HaltTitle(Seconds));
         for (float t = 0; t < Seconds; t += Time.unscaledDeltaTime)
         {
             float fade = Mathf.Clamp01(t / .4f);
