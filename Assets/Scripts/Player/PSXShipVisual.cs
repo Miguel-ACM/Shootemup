@@ -192,11 +192,53 @@ public sealed class PSXShipVisual : MonoBehaviour
         material.SetFloat("_PlayerDepth", player ? 1 : 0);
         renderer.sharedMaterial = material;
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        AddGlow(go.transform, color, player);
         go.AddComponent<CockpitShine>();
         return renderer;
     }
+
+    // A soft halo in the canopy colour around the cockpit, so it reads at a glance over hull and bullets alike.
+    static Texture2D glowTexture;
+    static Mesh glowQuad;
+
+    static void AddGlow(Transform cockpit, Color color, bool player)
+    {
+        if (glowTexture == null)
+        {
+            const int Size = 32;
+            glowTexture = new Texture2D(Size, Size, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, name = "Cockpit glow" };
+            for (int y = 0; y < Size; y++)
+                for (int x = 0; x < Size; x++)
+                {
+                    float d = Vector2.Distance(new Vector2(x + .5f, y + .5f), Vector2.one * Size * .5f) / (Size * .5f);
+                    float a = Mathf.Pow(Mathf.Clamp01(1 - d), 2.2f);
+                    glowTexture.SetPixel(x, y, new Color(1, 1, 1, a));
+                }
+            glowTexture.Apply();
+            glowQuad = new Mesh { name = "Cockpit glow quad" };
+            float r = CockpitRadius * 2.6f;
+            glowQuad.vertices = new[] { new Vector3(-r, -r), new Vector3(-r, r), new Vector3(r, r), new Vector3(r, -r) };
+            glowQuad.uv = new[] { Vector2.zero, Vector2.up, Vector2.one, Vector2.right };
+            glowQuad.triangles = new[] { 0, 1, 2, 0, 2, 3 };
+            glowQuad.RecalculateNormals();
+        }
+        var go = new GameObject("Cockpit glow");
+        go.transform.SetParent(cockpit, false);
+        go.transform.localPosition = Vector3.forward * .005f;
+        go.layer = cockpit.gameObject.layer;
+        go.AddComponent<MeshFilter>().sharedMesh = glowQuad;
+        var renderer = go.AddComponent<MeshRenderer>();
+        var material = new Material(CombatMaterials.Fleet) { name = "Cockpit glow", mainTexture = glowTexture };
+        material.SetFloat("_PlayerDepth", player ? 1 : 0);
+        material.SetColor("_Tint", Color.Lerp(color, Color.white, .25f) * 1.6f);
+        renderer.sharedMaterial = material;
+        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+    }
     static void DestroyCockpit(MeshRenderer renderer)
     {
+        foreach (var glow in renderer.GetComponentsInChildren<MeshRenderer>())
+            if (glow != renderer)
+                Destroy(glow.sharedMaterial);
         Destroy(renderer.GetComponent<MeshFilter>().sharedMesh);
         Destroy(renderer.sharedMaterial.mainTexture);
         Destroy(renderer.sharedMaterial);
@@ -295,6 +337,13 @@ public sealed class PSXShipVisual : MonoBehaviour
             // Above hostile rounds, so the hitbox is never hidden.
             cockpit.sortingLayerName = "Bullet";
             cockpit.sortingOrder = 40;
+            foreach (var glow in cockpit.GetComponentsInChildren<MeshRenderer>())
+                if (glow != cockpit)
+                {
+                    glow.sortingLayerName = "Bullet";
+                    glow.sortingOrder = 39;
+                    glow.enabled = cockpit.enabled;
+                }
             cockpit.enabled = modelRenderer.enabled;
         }
         // The hitbox stays fully visible through invulnerability blinking; it only hides on death.
