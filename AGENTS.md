@@ -132,6 +132,7 @@ These are the player's instructions. Preserve them across sessions and apply the
   - Underwater: 360 explosion on emergence; rain plumes only while surfaced; the downward charge sheds a dense, non-stopping, non-aimed wake with foam and full-hull contact damage; phase two differs (lace, zigzag crowns, depth charges).
   - Hell: brimstone canopy covers the ceiling; no rain from the claws; laces fire from the moving pincers.
   - Minibosses are three-move rotations, much harder, everything mirrored. The Desert scarab has a new model.
+- Boss batch (30 October 2026): a phase change plays a white Touhou-style spell break (flash, racing rings, starburst, shake), every hostile round bursts into light, and the boss repositions while invulnerable (weakpoints too). No 3D vanes on phase change. Bosses are 30% sturdier. The boss meter shows one life bar per phase, recoloured per phase, with pips for the bars still to come. Every boss has a third, harder phase on Hard only (Firestorm Sortie, Absolute Zero, Gridlock Storm / Six-Way Junction, Superstorm, Overdrive, Dune Sea, Sugar Crash, Big Crunch, Crush Depth, Inferno). Each phase darkens the scenery behind ships and bullets and adds drifting abstract shapes in the district colour. Thunder's laser drones are Tesla pylons with a coiled emitter, charge ring and sparks.
 - Helix rounds spin as they travel. Destructible plasma is sturdy (60 health) and shows a shrinking life ring.
 
 ## Items and decisions
