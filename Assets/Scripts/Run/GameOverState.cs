@@ -17,6 +17,7 @@ public sealed class GameOverState : MonoBehaviour
             return;
         instance = new GameObject("Game over", typeof(RectTransform)).AddComponent<GameOverState>();
         MetaProgress.EndRun();
+        IndustrialHUD.ShutDown();
         CombatDecision.End();
         GameRules.playerDisabled = true;
         foreach (var wave in FindObjectsByType<WaveOrchestrer>())
@@ -88,8 +89,11 @@ public sealed class GameOverState : MonoBehaviour
         count.alignment = TextAlignmentOptions.MidlineLeft;
         count.color = new Color(1, .82f, .4f);
         count.raycastTarget = false;
-        count.rectTransform.sizeDelta = new Vector2(160, 44);
-        count.rectTransform.anchoredPosition = new Vector2(64, -150);
+        // Coin and number centred together beneath the lettering.
+        float numberWidth = count.GetPreferredValues(count.text).x;
+        float total = 24 + 8 + numberWidth;
+        count.rectTransform.sizeDelta = new Vector2(numberWidth + 4, 44);
+        count.rectTransform.anchoredPosition = new Vector2(-total * .5f + 32 + numberWidth * .5f + 2, -150);
         var coin = new GameObject("Coin", typeof(RectTransform), typeof(Image));
         coin.transform.SetParent(rect, false);
         var disc = coin.GetComponent<Image>();
@@ -97,7 +101,7 @@ public sealed class GameOverState : MonoBehaviour
         disc.color = new Color(1, .76f, .25f);
         disc.raycastTarget = false;
         disc.rectTransform.sizeDelta = new Vector2(24, 24);
-        disc.rectTransform.anchoredPosition = new Vector2(-30, -150);
+        disc.rectTransform.anchoredPosition = new Vector2(-total * .5f + 12, -150);
     }
 
     void Update()
