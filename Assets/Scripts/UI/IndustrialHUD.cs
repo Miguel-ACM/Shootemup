@@ -21,7 +21,21 @@ public sealed class IndustrialHUD : MonoBehaviour
     CanvasGroup sideGroup;
     float entranceAge;
     public float EntranceAge => entranceAge;
-    public bool EntranceComplete => entranceAge >= FluorescentStartup.CompleteAt;
+    public bool EntranceComplete => entranceAge >= FluorescentStartup.CompleteAt && !shuttingDown;
+    bool shuttingDown;
+
+    /// <summary>Switches every instrument off with the startup flicker played in reverse.</summary>
+    public static void ShutDown()
+    {
+        var hud = FindAnyObjectByType<IndustrialHUD>();
+        if (hud == null || hud.shuttingDown)
+            return;
+        hud.shuttingDown = true;
+        // Just inside the flicker, so every tube keeps sampling the clock as it runs back to zero.
+        hud.entranceAge = Mathf.Min(hud.entranceAge, FluorescentStartup.Duration - .001f);
+        foreach (var tube in FindObjectsByType<FluorescentStartup>(FindObjectsInactive.Include))
+            tube.enabled = true;
+    }
     Boss boss;
     DistrictBoss districtBoss;
     DistrictMiniboss miniboss;
@@ -175,7 +189,9 @@ public sealed class IndustrialHUD : MonoBehaviour
         if (player != null)
         {
             // The shared flicker clock waits at zero, all instruments dark, until the run leaves the hangar.
-            if (!HangarHub.Active && !HangarHub.Launching)
+            if (shuttingDown)
+                entranceAge = Mathf.Max(0, entranceAge - Time.unscaledDeltaTime);
+            else if (!HangarHub.Active && !HangarHub.Launching)
                 entranceAge += Time.unscaledDeltaTime;
             // Charge the instruments one segment at a time, without changing the player's resources.
             int hits = Mathf.Clamp(Mathf.RoundToInt(player.maxHealth), 1, MaxHitCells);
