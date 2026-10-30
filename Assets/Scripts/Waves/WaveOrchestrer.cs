@@ -284,6 +284,9 @@ public class WaveOrchestrer : MonoBehaviour
         // Every second district offers one pact hexagon, at its first reward break.
         bool pactAvailable = PactPool.Due && PactPool.HexStage != LevelRun.Stage && PactPool.HasEligible(player);
         var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth, pactAvailable);
+        // A pick needs a real choice: with a single option, nothing is offered at this break.
+        if (options.Length < 2)
+            return;
         if (Array.IndexOf(options, EncounterKind.Pact) >= 0)
             PactPool.HexStage = LevelRun.Stage;
         EncounterOptions = options;
