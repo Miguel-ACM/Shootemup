@@ -111,6 +111,20 @@ public static partial class IndustrialMeshFactory
                     b.Box(new Vector3(Mathf.Cos(a) * .41f, Mathf.Sin(a) * .41f, -.06f), new Vector3(.045f, .045f, .03f), 1);
                 }
                 return true;
+            case "EarlyRise":
+                // A rising sun: a warm disc with alternating long and short rays over a horizon bar.
+                b.Drum(new Vector3(0, .05f, 0), .24f, .12f, 10, 16, 3);
+                b.Drum(new Vector3(0, .05f, -.065f), .15f, .02f, 13, 16, 10);
+                for (int i = 0; i < 12; i++)
+                {
+                    float a = i * Mathf.PI / 6, inner = .29f, outer = i % 2 == 0 ? .47f : .38f;
+                    var d = new Vector2(Mathf.Cos(a), Mathf.Sin(a));
+                    var n = new Vector2(-d.y, d.x) * .045f;
+                    var c = new Vector2(0, .05f);
+                    b.Prism(new[] { c + d * inner + n, c + d * outer, c + d * inner - n }, .06f, i % 2 == 0 ? 10 : 3, Vector3.zero);
+                }
+                b.Box(new Vector3(0, -.3f, .02f), new Vector3(.9f, .07f, .1f), 3, 12);
+                return true;
             default:
                 return false;
         }

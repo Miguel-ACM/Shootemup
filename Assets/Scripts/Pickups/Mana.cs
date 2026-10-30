@@ -7,7 +7,7 @@ public class Mana : APickable
     protected override void PickUp()
     {
         Shipcontroller s = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
-        s.HealManaFlat(2);
+        s.HealManaFlat(2 * GameRules.manaDropMultiplier);
         SoundManager.PlayGated("mana", .1f, .08f);
         base.PickUp();
     }

@@ -28,6 +28,8 @@ public class GameRules : MonoBehaviour
     public static float scoreMultiplier;
     public static int numShopItems;
     public static float manaHealMultiplier;
+    // Energy from drops only (Early Rise); passive regeneration is unaffected.
+    public static float manaDropMultiplier;
     public static float pickDistance;
 
     // Companions
@@ -66,6 +68,7 @@ public class GameRules : MonoBehaviour
         scoreMultiplier = 1f;
         numShopItems = 3;
         manaHealMultiplier = 1f;
+        manaDropMultiplier = 1f;
         pickDistance = 1f;
 
         followCompanionDelay = 8;
