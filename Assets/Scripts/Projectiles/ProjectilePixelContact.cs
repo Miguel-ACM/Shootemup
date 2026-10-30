@@ -8,6 +8,9 @@ public static class ProjectilePixelContact
 {
     // Box2D's polygon skin is present even when the authored box radius is zero.
     public const float PolygonSkin = .01f;
+    // Hostile rounds hurt only within the inner 75% of their opaque pixels, measured from the round's centre,
+    // so the coloured rim of a bullet can graze the ship.
+    public const float HitboxScale = .75f;
     sealed class Shape
     {
         public Vector2[] local, projected;
@@ -24,10 +27,10 @@ public static class ProjectilePixelContact
     {
         if (target == null || !target.enabled || !target.gameObject.activeInHierarchy)
             return false;
-        float bulletScale = Mathf.Max(.00001f, Mathf.Abs(bullet.lossyScale.x));
+        float bulletScale = Mathf.Max(.00001f, Mathf.Abs(bullet.lossyScale.x)) * HitboxScale;
         if (target is CircleCollider2D circle)
         {
-            Vector2 centre = bullet.InverseTransformPoint(circle.transform.TransformPoint(circle.offset));
+            Vector2 centre = (Vector2)bullet.InverseTransformPoint(circle.transform.TransformPoint(circle.offset)) / HitboxScale;
             var scale = circle.transform.lossyScale;
             float radius = (circle.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y)) + PolygonSkin) / bulletScale;
             foreach (var box in boxes)
@@ -53,7 +56,7 @@ public static class ProjectilePixelContact
             shape.projected = new Vector2[shape.local.Length];
             shapes[target] = shape;
         }
-        Matrix4x4 matrix = bullet.worldToLocalMatrix * target.transform.localToWorldMatrix;
+        Matrix4x4 matrix = Matrix4x4.Scale(Vector3.one / HitboxScale) * bullet.worldToLocalMatrix * target.transform.localToWorldMatrix;
         float skin = 2 * PolygonSkin / bulletScale;
         float minX = float.MaxValue, minY = float.MaxValue, maxX = float.MinValue, maxY = float.MinValue;
         for (int i = 0; i < shape.local.Length; i++)
