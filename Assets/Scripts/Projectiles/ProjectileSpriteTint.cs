@@ -28,8 +28,9 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
         effect.visual.forceRenderingOff = false;
         effect.neutral = neutralize;
         effect.visual.sharedMaterial = friendly ? CombatVisuals.ProjectileMaterial : LevelProjectilePalette.Material(neutralize);
-        effect.visual.sortingLayerName = "Bullet";
-        effect.visual.sortingOrder = friendly ? 16 : 18;
+        // Player fire passes under the ship, so hostile rounds over the hull stay readable.
+        effect.visual.sortingLayerName = friendly ? "Player" : "Bullet";
+        effect.visual.sortingOrder = friendly ? -5 : 18;
         if (effect.properties == null)
             effect.properties = new MaterialPropertyBlock();
         effect.properties.SetColor("_SpriteTint", tint);
