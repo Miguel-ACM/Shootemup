@@ -72,8 +72,18 @@ public sealed class HangarHub : MonoBehaviour
             industrial.steelMaterial = null;
         foreach (var field in FindObjectsByType<PSXGrassField>(FindObjectsInactive.Include))
             field.gameObject.SetActive(false);
+        // The ship waits below the screen from the very first frame, then flies up into place.
+        var ship = GameObject.FindGameObjectWithTag("Player");
+        var camera = UnityEngine.Camera.main;
+        if (ship != null && camera != null)
+        {
+            dockedAt = ship.transform.position;
+            ship.transform.position = new Vector3(dockedAt.x, camera.transform.position.y - camera.orthographicSize - 1.2f, dockedAt.z);
+        }
         new GameObject("Hangar hub").AddComponent<HangarHub>();
     }
+
+    static Vector3 dockedAt;
 
     readonly List<Bay> bays = new List<Bay>();
     readonly List<Plinth> plinths = new List<Plinth>();
@@ -102,7 +112,7 @@ public sealed class HangarHub : MonoBehaviour
         BuildGate();
         if (player != null)
         {
-            parkedAt = player.transform.position;
+            parkedAt = dockedAt;
             arrival = 0;
         }
         input = new Inputs();
@@ -349,7 +359,7 @@ public sealed class HangarHub : MonoBehaviour
 
     // Arrival: the ship rises from below, the docks and plinths slide in from the sides and the light
     // at the top grows. Applied after the controller's own update, which would otherwise clamp the ship.
-    const float ArrivalSeconds = 1.4f, SlideDistance = 6, SlideSeconds = .9f, LightSeconds = 2.6f;
+    const float ArrivalSeconds = 1.8f, SlideDistance = 6, SlideSeconds = .9f, LightSeconds = 2.6f;
     Vector3 parkedAt;
     float arrival = -1, introTime;
     bool Arriving => arrival >= 0;
