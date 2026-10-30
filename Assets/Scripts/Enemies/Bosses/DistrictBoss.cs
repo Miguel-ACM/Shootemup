@@ -49,6 +49,8 @@ public abstract class DistrictBoss : DistrictEnemy
         }
         station = new Vector3(0, Camera.UpLimit - 2.3f, 1);
         nextPressure = nextAttack;
+        if (UsesHealthBar)
+            BossAtmosphere.Begin();
     }
 
     protected override void Update()
