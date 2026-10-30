@@ -7,6 +7,14 @@ public class NewGame : AMenuElement
     bool starting;
     AMenuElement[] original;
     DifficultyOption[] options;
+    // Progress lives in the hangar save, so the first row continues it rather than starting over.
+    protected override void Start()
+    {
+        base.Start();
+        if (textElement != null)
+            textElement.text = "CONTINUE";
+    }
+
     public override void OnAccept()
     {
         if (starting || options != null)
