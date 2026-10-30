@@ -142,7 +142,8 @@ public sealed class TrailDrone : ACompanion
     }
 
     // A continuous beam straight up that ends on the first enemy in its path, with sparks where it lands.
-    const float BeamReach = 18, BeamTick = .12f;
+    // Two beams together match the base twin cannon (2 rounds x 2 damage x 10 volleys per second).
+    const float BeamReach = 18, BeamTick = .1f;
     static readonly Color BeamSpark = new Color(.45f, .85f, 1f);
     float beamPower, nextSpark;
 
@@ -200,7 +201,7 @@ public sealed class TrailDrone : ACompanion
         if (Time.time < nextDamage)
             return;
         nextDamage = Time.time + BeamTick;
-        float damage = GameRules.playerShootDamage * .5f;
+        float damage = GameRules.playerShootDamage;
         if (CombatUpgrades.Current != null)
             damage = CombatUpgrades.Current.DirectHit(struck, damage, 0, true);
         struck.HitAt(point, Vector2.up);
