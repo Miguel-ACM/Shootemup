@@ -25,7 +25,9 @@ public sealed partial class CandyRegentBoss
     {
         while (true)
         {
-            if (!phaseTwo)
+            if (phaseThree)
+                yield return FinalSpell();
+            else if (!phaseTwo)
             {
                 yield return Every(6, .9f, n =>
                 {
@@ -130,5 +132,20 @@ public sealed partial class CandyRegentBoss
                     .Sway(hatch == 0 ? .45f : -.45f, .8f);
             yield return Wait(Rest(.075f));
         }
+    }
+
+    // Hard final phase, Sugar Crash: a four-arm lace pours out while candy worms wiggle,
+    // gumdrops pop at the player and the canopy keeps the ceiling covered.
+    IEnumerator FinalSpell()
+    {
+        Phrase(CandyWorms(100));
+        Phrase(Every(8, .9f, n =>
+        {
+            Gumdrops(3);
+            if (n % 2 == 1)
+                Canopy();
+        }));
+        yield return MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(120), 4, 75, 16, 3.6f, .065f);
+        yield return Wait(.5f);
     }
 }
