@@ -191,8 +191,11 @@ public sealed class TrailDrone : ACompanion
         var point = (Vector2)origin + Vector2.up * length;
         if (Time.time >= nextSpark)
         {
-            nextSpark = Time.time + .05f;
-            ItemSpark.Emit(point, BeamSpark, 3, .1f);
+            // Irregular bursts: varied timing, spread, size and tint so the contact crackles instead of pulsing.
+            nextSpark = Time.time + Random.Range(.025f, .09f);
+            var jitter = new Vector2(Random.Range(-.08f, .08f), Random.Range(-.05f, .05f));
+            var tint = Color.Lerp(BeamSpark, Color.white, Random.value * .6f);
+            ItemSpark.Emit(point + jitter, tint, Random.Range(1, 5), Random.Range(.06f, .15f));
         }
         if (Time.time < nextDamage)
             return;
