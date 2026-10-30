@@ -23,7 +23,9 @@ public sealed partial class FieldsBomberBoss
     {
         while (true)
         {
-            if (!phaseTwo)
+            if (phaseThree)
+                yield return FinalSpell();
+            else if (!phaseTwo)
             {
                 yield return WingtipCrossfire();
                 yield return Wait(1.1f);
@@ -136,5 +138,20 @@ public sealed partial class FieldsBomberBoss
     {
         volley = 0;
         nextAttack = age + 1;
+    }
+
+    // Hard final phase, Firestorm Sortie: a curtain along the top, a three-arm wing
+    // lace and rows of 360 bombs all at once, with a second curtain halfway through.
+    IEnumerator FinalSpell()
+    {
+        Phrase(ContrailCurtain());
+        Phrase(MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(110), 3, 70, 20, 3.6f, .07f));
+        yield return Every(8, 1.0f, n =>
+        {
+            CarpetBombs(3);
+            if (n == 4)
+                Phrase(ContrailCurtain());
+        });
+        yield return Wait(.6f);
     }
 }
