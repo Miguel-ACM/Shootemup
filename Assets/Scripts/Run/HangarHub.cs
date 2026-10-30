@@ -81,7 +81,6 @@ public sealed class HangarHub : MonoBehaviour
     Inputs input;
     Vector3 center;
     Material scenery;
-    Mesh hall;
     DecisionOverlay overlay;
     Dialog dialog;
     readonly List<Mesh> quads = new List<Mesh>();
@@ -126,9 +125,6 @@ public sealed class HangarHub : MonoBehaviour
             Scenery(LevelEnvironment.KitMesh("TunnelDetail" + i), y, 90, -40, .8f);
             Scenery(LevelEnvironment.KitMesh("TunnelNear" + i), y, 76, -25, .8f);
         }
-        hall = IndustrialMeshFactory.TerraScenery("HangarProps");
-        // Raised above the Tunnel's wall detail, which writes depth up to 2.2 units toward the camera.
-        Scenery(hall, center.y, 87.5f, -30, 1);
     }
 
     void Scenery(Mesh mesh, float y, float z, int order, float width)
@@ -584,8 +580,6 @@ public sealed class HangarHub : MonoBehaviour
         input?.Dispose();
         if (scenery != null)
             Destroy(scenery);
-        if (hall != null)
-            Destroy(hall);
         foreach (var mesh in quads)
             Destroy(mesh);
     }
