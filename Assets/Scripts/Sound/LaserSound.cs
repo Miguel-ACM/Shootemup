@@ -4,6 +4,8 @@ using UnityEngine;
 public sealed class LaserSound : MonoBehaviour
 {
     static AudioClip chargeClip, ignitionClip, sustainClip, releaseClip;
+    // The player's own beams (Beam Emitter, laser drones) have their own ignition and hum.
+    static AudioClip playerIgnitionClip, playerSustainClip;
     static float lastCharge = -10, lastIgnition = -10, lastRelease = -10;
     static int sustaining;
     AudioSource transient, bed;
@@ -18,6 +20,8 @@ public sealed class LaserSound : MonoBehaviour
             ignitionClip = Resources.Load<AudioClip>("Sounds/Beam/ignite");
             sustainClip = Resources.Load<AudioClip>("Sounds/Beam/sustain");
             releaseClip = Resources.Load<AudioClip>("Sounds/Beam/release");
+            playerIgnitionClip = Resources.Load<AudioClip>("Sounds/Beam/player_ignite");
+            playerSustainClip = Resources.Load<AudioClip>("Sounds/Beam/player_sustain");
         }
         if (transient != null)
             return;
@@ -63,14 +67,15 @@ public sealed class LaserSound : MonoBehaviour
             if (Time.time - lastIgnition > .075f)
             {
                 lastIgnition = Time.time;
-                transient.pitch = friendly ? 1.12f : 1;
+                transient.pitch = 1;
                 transient.volume = friendly ? .18f : .24f;
-                transient.PlayOneShot(ignitionClip);
+                transient.PlayOneShot(friendly && playerIgnitionClip != null ? playerIgnitionClip : ignitionClip);
             }
-            if (sustainClip != null)
+            bed.clip = friendly && playerSustainClip != null ? playerSustainClip : sustainClip;
+            if (bed.clip != null)
             {
-                bed.pitch = friendly ? 1.12f : 1;
-                bed.time = (((GetEntityId().GetHashCode() & 0x7fffffff) % 7) * .071f) % sustainClip.length;
+                bed.pitch = 1;
+                bed.time = (((GetEntityId().GetHashCode() & 0x7fffffff) % 7) * .071f) % bed.clip.length;
                 bed.Play();
                 counted = true;
                 sustaining++;
