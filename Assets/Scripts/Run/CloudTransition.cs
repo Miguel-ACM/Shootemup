@@ -81,9 +81,8 @@ public sealed class CloudTransition : MonoBehaviour
     bool clouds = true;
 
     // Play mode entered straight into the core (the editor, tools, checks) may not report the first scene as
-    // loaded; bring its run content in here as well.
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    static void EnsureRunContent()
+    // loaded; on the first frame, bring its run content in as well.
+    void Start()
     {
         if (SceneManager.GetActiveScene().name == "L1" && !HangarHub.Active && !SceneManager.GetSceneByName(HangarHub.RunScene).IsValid())
             SceneManager.LoadScene(HangarHub.RunScene, LoadSceneMode.Additive);
