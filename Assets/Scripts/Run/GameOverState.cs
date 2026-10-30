@@ -108,7 +108,8 @@ public sealed class GameOverState : MonoBehaviour
         if (age >= 4.2f && !leaving && !CloudTransition.Busy)
         {
             leaving = true;
-            CloudTransition.Load("Title");
+            // The roguelite loop: a lost run goes back to the hangar, where the banked coins can be spent.
+            CloudTransition.Load("L1", HangarHub.Return);
         }
     }
 

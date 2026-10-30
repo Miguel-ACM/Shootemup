@@ -60,6 +60,14 @@ public sealed class HangarHub : MonoBehaviour
         CloudTransition.Load("L1", null, false);
     }
 
+    /// <summary>After a lost run the ship returns to the hangar, with the same difficulty.</summary>
+    public static void Return()
+    {
+        Active = true;
+        GameRules.StartNewRun(difficulty);
+        LevelRun.Reset();
+    }
+
     public static void Leave()
     {
         Active = false;

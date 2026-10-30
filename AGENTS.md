@@ -156,7 +156,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Make rarity effects noticeable and distinct.
 - Shop names and prices need opaque black backgrounds and must stay readable with the filter. The bottom skip zone must be reachable at the visible screen edge, with a minimal hold indicator.
 - Latest decision polish: one second to fill route/encounter holds and skips. The skip zone spans the full combat width and roughly the bottom fifth of its height, including boss items. Offer plates are compact, fade in only once the item settles, and show a small passive/active/weapon category beneath. Keep immediate equipment replacement controls and multiple shop purchases.
-- Death shows huge GAME OVER letters, then returns to the title.
+- Death shows huge GAME OVER letters with the coins the run banked, switches the instruments off with the startup flicker in reverse, then returns to the hangar (30 October 2026; previously the title). The title's first row reads CONTINUE.
 
 ## Workflow
 
