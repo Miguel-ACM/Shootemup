@@ -36,7 +36,9 @@ public sealed partial class HellCrabBoss
     {
         while (true)
         {
-            if (!phaseTwo)
+            if (phaseThree)
+                yield return FinalSpell();
+            else if (!phaseTwo)
             {
                 yield return Every(8, 1.6f, n =>
                 {
@@ -135,5 +137,20 @@ public sealed partial class HellCrabBoss
                 }
             yield return Wait(Rest(.085f));
         }
+    }
+
+    // Hard final phase, Inferno: a three-arm lace from the moving pincers, scissors
+    // closing through it, the ceiling canopy and the surviving eye's staring souls.
+    IEnumerator FinalSpell()
+    {
+        Phrase(Every(9, 1.0f, n =>
+        {
+            Phrase(Scissors(n % 2 == 0 ? 1 : -1));
+            Canopy(n);
+            if (n % 2 == 1)
+                SoulSnipe(BurningEye());
+        }));
+        yield return MirrorLace(claws[0], Pincer, claws[1], Pincer, Dense(130), 3, 80, 18, 3.8f, .065f);
+        yield return Wait(.6f);
     }
 }
