@@ -35,7 +35,9 @@ public sealed partial class DesertWormBoss
     {
         while (true)
         {
-            if (!phaseTwo)
+            if (phaseThree)
+                yield return FinalSpell();
+            else if (!phaseTwo)
             {
                 yield return Every(7, .45f, n => QuicksandMines(WindingCore(1 + n % 7)));
                 yield return Wait(.8f);
@@ -126,5 +128,20 @@ public sealed partial class DesertWormBoss
                 Fire<NeedleRound>(p, CombatVisuals.Rotate(Vector2.up, lane * 100f / (lanes - 1)), 3.6f + layer * 1.1f, .19f)
                     .Fall(new Vector2(0, -2.8f));
             }
+    }
+
+    // Hard final phase, Dune Sea: the rising body draws ribbons of arrows from every
+    // reactor while mines are sown head to tail and small geysers burst.
+    IEnumerator FinalSpell()
+    {
+        yield return Every(9, .25f, n =>
+        {
+            Sidewinder(n);
+            if (n % 4 == 0)
+                QuicksandMines(WindingCore(1 + n / 4 % 7));
+            if (n % 10 == 5)
+                Geyser(WindingCore(n % cores.Length));
+        });
+        yield return Wait(.6f);
     }
 }
