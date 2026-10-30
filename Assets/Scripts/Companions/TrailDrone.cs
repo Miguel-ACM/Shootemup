@@ -9,7 +9,6 @@ public sealed class TrailDrone : ACompanion
     Vector3 worldPosition;
     bool laser;
     float clock = -.8f, nextDamage;
-    Vector2 heading = Vector2.up;
     BeamRibbon beam;
     LaserSound sound;
     PSXShipEffects effects;
@@ -98,7 +97,7 @@ public sealed class TrailDrone : ACompanion
                         slot = lasers;
                     lasers++;
                 }
-            target = owner.transform.position + new Vector3((slot - (lasers - 1) * .5f) * .55f, -.65f, -.02f);
+            target = owner.transform.position + new Vector3((slot - (lasers - 1) * .5f) * .55f, -1.05f, -.02f);
             target.y = Mathf.Max(bottom + .4f, target.y);
             worldPosition = target;
         }
@@ -142,59 +141,68 @@ public sealed class TrailDrone : ACompanion
         }
     }
 
+    // A continuous beam straight up that ends on the first enemy in its path, with sparks where it lands.
+    const float BeamReach = 18, BeamTick = .12f;
+    static readonly Color BeamSpark = new Color(.45f, .85f, 1f);
+    float beamPower, nextSpark;
+
     void FireLaser()
     {
-        if (clock < 0)
+        bool wanted = CombatUpgrades.Nearest(Muzzle, null, BeamReach) != null;
+        beamPower = Mathf.MoveTowards(beamPower, wanted ? 1 : 0, Time.deltaTime * (wanted ? 3 : 5));
+        if (beamPower <= 0)
         {
-            clock += Time.deltaTime;
-            if (clock < 0)
-                return;
-            var target = CombatUpgrades.Nearest(Muzzle, null, 18);
-            if (target == null)
+            if (beam.gameObject.activeSelf)
             {
-                clock = -.15f;
-                return;
+                beam.gameObject.SetActive(false);
+                sound.Stop();
             }
-            heading = Vector2.up;
+            return;
+        }
+        if (!beam.gameObject.activeSelf)
+        {
             beam.gameObject.SetActive(true);
-            sound.Charge(.4f, true);
-            nextDamage = .4f;
+            sound.Charge(.25f, true);
         }
-        clock += Time.deltaTime;
-        bool firing = clock >= .4f && clock < .95f;
-        float power = firing ? Mathf.Min(Mathf.Clamp01((clock - .4f) / .06f), Mathf.Clamp01((.95f - clock) / .1f)) : clock >= .95f ? Mathf.Pow(Mathf.Clamp01(1 - (clock - .95f) / .2f), 2) * .3f : 0;
-        beam.Draw(Muzzle, heading, 18, .12f, Mathf.Clamp01(clock / .4f), power, Mathf.Max(0, clock - .95f) / .2f);
-        sound.Drive(power, firing);
-        if (firing && clock >= nextDamage)
+        var origin = Muzzle;
+        float length = BeamReach;
+        AEnemy struck = null;
+        foreach (var enemy in AEnemy.Live)
         {
-            nextDamage = clock + .12f;
-            foreach (var enemy in new List<AEnemy>(AEnemy.Live))
+            if (enemy == null || !enemy.CanBeTargeted)
+                continue;
+            var collider = enemy.GetComponent<Collider2D>();
+            if (collider == null)
+                continue;
+            var bounds = collider.bounds;
+            if (Mathf.Abs(bounds.center.x - origin.x) > bounds.extents.x + .06f)
+                continue;
+            float along = bounds.min.y - origin.y;
+            if (along < length && bounds.max.y > origin.y)
             {
-                if (enemy == null || !enemy.CanBeTargeted)
-                    continue;
-                var delta = (Vector2)(enemy.transform.position - Muzzle);
-                float along = Vector2.Dot(delta, heading);
-                if (along < 0 || along > 18)
-                    continue;
-                var collider = enemy.GetComponent<Collider2D>();
-                var point = (Vector2)Muzzle + heading * along;
-                if (collider == null || (collider.ClosestPoint(point) - point).sqrMagnitude > .1f * .1f)
-                    continue;
-                float damage = GameRules.playerShootDamage * .55f;
-                if (CombatUpgrades.Current != null)
-                    damage = CombatUpgrades.Current.DirectHit(enemy, damage, 0, true);
-                enemy.HitAt(point, heading);
-                enemy.damage(damage);
+                length = Mathf.Max(0, along);
+                struck = enemy;
             }
         }
-        if (clock >= 1.15f)
+        beam.Draw(origin, Vector2.up, length, .12f, 1, beamPower, 0);
+        sound.Drive(beamPower, true);
+        if (struck == null || beamPower < .9f)
+            return;
+        var point = (Vector2)origin + Vector2.up * length;
+        if (Time.time >= nextSpark)
         {
-            clock = -.8f;
-            beam.gameObject.SetActive(false);
-            sound.Stop();
+            nextSpark = Time.time + .05f;
+            ItemSpark.Emit(point, BeamSpark, 3, .1f);
         }
+        if (Time.time < nextDamage)
+            return;
+        nextDamage = Time.time + BeamTick;
+        float damage = GameRules.playerShootDamage * .3f;
+        if (CombatUpgrades.Current != null)
+            damage = CombatUpgrades.Current.DirectHit(struck, damage, 0, true);
+        struck.HitAt(point, Vector2.up);
+        struck.damage(damage);
     }
-
     void OnDisable()
     {
         sound?.Stop();
