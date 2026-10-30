@@ -14,8 +14,9 @@ public sealed class ThunderLaserBot : MonoBehaviour
     PulseLaser beam;
     Transform model;
     bool leaving, open;
-    SpriteRenderer glow;
-    float facing;
+    SpriteRenderer glow, tip;
+    LineRenderer coil;
+    float facing, nextSpark;
 
     public static ThunderLaserBot Deploy(Vector3 from, Vector2 home, Vector2 aim, float length, float width)
     {
@@ -29,14 +30,19 @@ public sealed class ThunderLaserBot : MonoBehaviour
         bot.facing = Vector2.SignedAngle(Vector2.down, bot.aim);
         var model = new GameObject("Laser drone");
         model.transform.SetParent(go.transform, false);
-        model.transform.localScale = Vector3.one * .5f;
-        model.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CombatHull(9);
+        model.transform.localScale = Vector3.one * .62f;
+        model.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.ThunderDrone();
         var renderer = model.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = CombatMaterials.Fleet;
         renderer.sortingLayerName = "Enemy";
         bot.model = model.transform;
-        bot.glow = ItemSpark.Sprite(go.transform, "Drone core", "standard", LevelProjectilePalette.Accent(LevelRun.Current), .45f);
-        bot.glow.transform.localPosition = new Vector3(0, 0, -.2f);
+        var accent = LevelProjectilePalette.Accent(LevelRun.Current);
+        bot.glow = ItemSpark.Sprite(model.transform, "Capacitor dome", "standard", accent, .32f);
+        bot.glow.transform.localPosition = new Vector3(0, .06f, -.42f);
+        bot.tip = ItemSpark.Sprite(model.transform, "Emitter lens", "standard", accent, .3f);
+        bot.tip.transform.localPosition = new Vector3(0, -.95f, -.25f);
+        // A charge ring round the capacitor that tightens and brightens as the beam charges.
+        bot.coil = CombatVisuals.Line(go.transform, accent, .04f);
         return bot;
     }
 
@@ -66,7 +72,26 @@ public sealed class ThunderLaserBot : MonoBehaviour
             return;
         float dt = Time.deltaTime * LevelRun.EnemyTempoScale;
         age += dt;
-        glow.transform.localScale = Vector3.one * (.42f + .08f * Mathf.Sin(age * 24));
+        bool live = beam != null && beam.IsAttachedTo(transform);
+        float charge = live ? beam.Charge : 0, power = live ? beam.Power : 0;
+        float flicker = .5f + .5f * Mathf.Sin(age * 31) * Mathf.Sin(age * 17);
+        glow.transform.localScale = Vector3.one * (.26f + .08f * flicker + .1f * charge);
+        tip.transform.localScale = Vector3.one * (open ? .12f : .2f + .25f * charge + .15f * power * flicker);
+        var accent = LevelProjectilePalette.Accent(LevelRun.Current);
+        coil.enabled = !open;
+        if (coil.enabled)
+        {
+            var c = Color.Lerp(accent * .6f, Color.white, charge * (1 - power) * .6f);
+            c.a = .35f + .5f * charge;
+            coil.startColor = coil.endColor = c;
+            CombatVisuals.Ring(coil, transform.position, Mathf.Lerp(.85f, .5f, charge) + .04f * flicker);
+        }
+        // Sparks crawl off the emitter while it charges.
+        if (live && charge < 1 && age > nextSpark)
+        {
+            nextSpark = age + .12f;
+            PSXImpactEffects.Vanish(tip.transform.position, Color.Lerp(accent, Color.white, .5f), .25f);
+        }
         if (leaving)
         {
             transform.position += Vector3.up * dt * 9;
