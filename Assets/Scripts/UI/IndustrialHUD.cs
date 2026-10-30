@@ -26,6 +26,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     DistrictBoss districtBoss;
     DistrictMiniboss miniboss;
     Text minibossClock;
+    Image[] phasePips;
     float nextScan, nextUpdate;
     float bottomLimit, topLimit;
     static readonly Color Unlit = new Color(.1f, .135f, .14f);
@@ -138,6 +139,14 @@ public sealed class IndustrialHUD : MonoBehaviour
         Rule(bossPanel, 6, 244, 16, new Color(.21f, .27f, .27f));
         bossCells = VerticalCells(bossPanel, 7, 17, 32, 14, 5, Amber);
         bossPanel.gameObject.SetActive(false);
+        // One pip per boss life bar still to come after the current one.
+        phasePips = new Image[2];
+        for (int i = 0; i < phasePips.Length; i++)
+        {
+            var pip = Panel(bossPanel, "Phase pip " + i, Amber);
+            Place(pip, 8 + i * 7, 262, 5, 5);
+            phasePips[i] = pip.GetComponent<Image>();
+        }
         minibossClock = TextAt(bossPanel, "", 2, 250, 12, Amber);
         minibossClock.rectTransform.sizeDelta = new Vector2(24, 20);
         minibossClock.alignment = TextAnchor.MiddleCenter;
@@ -210,13 +219,16 @@ public sealed class IndustrialHUD : MonoBehaviour
         }
         bool showMini = miniboss != null && !miniboss.Retreating && miniboss.health > 0;
         bossPanel.gameObject.SetActive(boss != null || districtBoss != null || showMini);
-        bossPanel.sizeDelta = new Vector2(28, showMini ? 278 : 248);
+        bossPanel.sizeDelta = new Vector2(28, showMini || districtBoss != null ? 278 : 248);
+        int remaining = !showMini && districtBoss != null ? districtBoss.PhaseCount - districtBoss.CurrentPhase : 0;
+        for (int i = 0; i < phasePips.Length; i++)
+            phasePips[i].gameObject.SetActive(i < remaining);
         minibossClock.text = showMini ? Mathf.CeilToInt(miniboss.Remaining).ToString() : "";
         minibossClock.color = showMini && miniboss.Remaining < 5 ? Alarm : Amber;
         if (showMini)
             Fill(bossCells, miniboss.HealthFraction, Amber);
         if (districtBoss != null)
-            Fill(bossCells, districtBoss.DisplayFraction, Amber);
+            Fill(bossCells, districtBoss.PhaseFraction, districtBoss.CurrentPhase == 1 ? Amber : districtBoss.CurrentPhase == 2 ? new Color(1, .45f, .18f) : Alarm);
         if (boss != null)
             Fill(bossCells, boss.HealthFraction, Amber);
     }
