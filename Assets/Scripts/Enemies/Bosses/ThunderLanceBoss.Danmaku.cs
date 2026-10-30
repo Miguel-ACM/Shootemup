@@ -14,7 +14,7 @@ using UnityEngine;
 public sealed partial class ThunderLanceBoss
 {
     readonly List<ThunderLaserBot> drones = new List<ThunderLaserBot>();
-    bool deployed;
+    bool deployed, regrid;
     static float Middle => (Camera.UpLimit + Camera.DownLimit) * .5f;
     protected override void Attack()
     {
@@ -27,6 +27,21 @@ public sealed partial class ThunderLanceBoss
                 DeployStar();
         }
         int beat = (volley - 1) % 12;
+        if (phaseThree)
+        {
+            // Hard final phase, Superstorm: the grid keeps marching, faster, under
+            // lightning fans and full rings of zigzag bolts.
+            if (regrid)
+            {
+                regrid = false;
+                Phrase(MarchGrid());
+            }
+            if (beat % 2 == 0)
+                Lightning(beat / 2);
+            else if (beat % 4 == 1)
+                StormRing(beat);
+            return;
+        }
         if (!phaseTwo)
         {
             if (beat == 0 || beat == 6)
@@ -73,7 +88,7 @@ public sealed partial class ThunderLanceBoss
         float topSpacing = 2.4f, leftSpacing = 1.8f;
         float width = Camera.RightLimit - Camera.LeftLimit - .8f, height = Camera.UpLimit - Camera.DownLimit - 2.6f;
         int topStep = 0, leftStep = 0;
-        float hold = Difficulty.Hard ? 2.4f : 3.2f;
+        float hold = phaseThree ? 1.7f : Difficulty.Hard ? 2.4f : 3.2f;
         for (int turn = 0; ; turn++)
         {
             foreach (var drone in drones)
@@ -110,6 +125,20 @@ public sealed partial class ThunderLanceBoss
                     drone.Powered = true;
             yield return Wait(hold);
         }
+    }
+
+    // A full ring of zigzag bolts from the front emitter.
+    void StormRing(int n)
+    {
+        int bolts = Dense(24);
+        for (int i = 0; i < bolts; i++)
+            Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(Vector2.down, (i + (n % 2) * .5f) * 360f / bolts), 3.2f, .19f).Zigzag(.22f, 22);
+    }
+
+    protected override void OnPhaseThree()
+    {
+        regrid = true;
+        volley = 0;
     }
 
     // Zigzag lightning from both shoulders and the front, in mirrored fans.
