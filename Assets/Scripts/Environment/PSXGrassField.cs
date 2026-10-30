@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -50,13 +51,14 @@ public sealed class PSXGrassField : MonoBehaviour
         return false;
     }
 
-    void Start()
+    // Built one section per frame, so the valley never costs a single long frame when a run begins.
+    IEnumerator Start()
     {
         var landscape = Resources.Load<Material>("PSXValley");
         if (landscape == null)
         {
             Debug.LogError("PSX Valley material is missing", this);
-            return;
+            yield break;
         }
         layout = new PSXValleyLayout(LevelRun.Seed);
         riverMaterial = new Material(Resources.Load<Shader>("PSXValleyRiver"));
@@ -70,6 +72,7 @@ public sealed class PSXGrassField : MonoBehaviour
         foliageMaterial.SetFloat("_Brightness", brightness / .62f);
         for (int i = 0; i < 4; i++)
         {
+            yield return null;
             float origin = (i - 1) * SectionLength;
             var go = new GameObject("Valley section " + i);
             go.transform.SetParent(transform, false);
