@@ -61,11 +61,17 @@ public sealed class HangarHub : MonoBehaviour
     public static void Leave()
     {
         Active = false;
+        LevelEnvironment.ReleaseTitle();
     }
 
     // Called once the gameplay scene has loaded in hangar mode.
     public static void Build()
     {
+        // The gameplay scene's legacy shaft scenery and valley grass never show behind the hangar.
+        foreach (var industrial in FindObjectsByType<PSXIndustrialField>())
+            industrial.steelMaterial = null;
+        foreach (var field in FindObjectsByType<PSXGrassField>(FindObjectsInactive.Include))
+            field.gameObject.SetActive(false);
         new GameObject("Hangar hub").AddComponent<HangarHub>();
     }
 
@@ -111,7 +117,8 @@ public sealed class HangarHub : MonoBehaviour
     // The hangar is a bay inside the Tunnel: one still Tunnel section, with the docks, shop and doors built into it.
     void BuildHall()
     {
-        for (int i = 0; i < 4; i++)
+        // Normally the title's own tunnel came along; build a matching one only when it did not.
+        for (int i = 0; i < 4 && !LevelEnvironment.CarriesTitle; i++)
         {
             // The title's camera sits at the origin; keep each section at the same place on screen.
             float y = center.y + LevelEnvironment.SectionY(i, tunnelTravel);
@@ -563,6 +570,7 @@ public sealed class HangarHub : MonoBehaviour
         CloudTransition.Load("L1", () =>
         {
             Active = false;
+            LevelEnvironment.ReleaseTitle();
             GameRules.StartNewRun(difficulty);
             LevelRun.Reset();
             MetaProgress.BeginRun();

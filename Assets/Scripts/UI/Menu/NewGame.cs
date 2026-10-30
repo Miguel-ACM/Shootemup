@@ -91,6 +91,20 @@ public class NewGame : AMenuElement
             yield return null;
         }
         yield return halt;
+        // A short jolt as the tunnel locks in place, then the hangar takes over the very same view.
+        var camera = UnityEngine.Camera.main;
+        if (camera != null)
+        {
+            var rest = camera.transform.localPosition;
+            for (float t = 0; t < .35f; t += Time.unscaledDeltaTime)
+            {
+                float strength = .14f * (1 - t / .35f);
+                camera.transform.localPosition = rest + (Vector3)(Random.insideUnitCircle * strength);
+                yield return null;
+            }
+            camera.transform.localPosition = rest;
+        }
+        LevelEnvironment.CarryTitle();
         HangarHub.Enter(difficulty);
     }
 }

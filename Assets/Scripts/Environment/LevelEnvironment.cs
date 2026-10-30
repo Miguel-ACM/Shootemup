@@ -157,6 +157,24 @@ public sealed class LevelEnvironment : MonoBehaviour
     static LevelEnvironment title;
     float travelRate = 1;
     public static float TitleTravel => title != null ? title.travel : 0;
+    static LevelEnvironment carried;
+    public static bool CarriesTitle => carried != null;
+
+    /// <summary>Keeps the halted title tunnel alive into the hangar, so the hangar shows exactly the same view.</summary>
+    public static void CarryTitle()
+    {
+        if (title == null)
+            return;
+        DontDestroyOnLoad(title.gameObject);
+        carried = title;
+    }
+
+    public static void ReleaseTitle()
+    {
+        if (carried != null)
+            Destroy(carried.gameObject);
+        carried = null;
+    }
 
     public static IEnumerator HaltTitle(float seconds)
     {
