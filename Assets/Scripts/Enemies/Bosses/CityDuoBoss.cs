@@ -64,6 +64,9 @@ public sealed partial class CityDuoBoss : DistrictBoss
     // Both ships keep one tempo until a partner dies; independent half-health
     // acceleration used to scramble the duo's alternating releases.
     protected override bool PhaseTwoReady => false;
+    // The enraged survivor breaks into its hard third phase below 45% of its own health.
+    protected override bool PhaseThreeReady => Difficulty.Hard && enraged && HealthFraction <= .45f;
+    protected override float PhaseEnd(int phase) => phase == 1 ? .5f : phase == 2 && Difficulty.Hard ? .45f * initialHealth / Mathf.Max(1, combinedMaximum) : 0;
     protected override float AttackPace => enraged ? (.83f) : 1;
     protected override void PressureAttack()
     {

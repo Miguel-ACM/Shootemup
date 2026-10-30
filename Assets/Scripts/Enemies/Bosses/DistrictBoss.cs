@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class DistrictBoss : DistrictEnemy
 {
     protected float initialHealth;
-    protected bool phaseTwo;
+    protected bool phaseTwo, phaseThree;
     const float Sturdiness = 1.3f;
     protected ResourceBar bar;
     protected Vector3 station;
@@ -20,6 +20,14 @@ public abstract class DistrictBoss : DistrictEnemy
     public virtual bool UsesHealthBar => true;
     public virtual float DisplayFraction => HealthFraction;
     public float HealthFraction => health / Mathf.Max(1, initialHealth);
+
+    // One life bar per phase. Hard adds a third, harder phase to every boss.
+    public int PhaseCount => Difficulty.Hard ? 3 : 2;
+    public int CurrentPhase => phaseThree ? 3 : phaseTwo ? 2 : 1;
+    float phaseStart = 1;
+    protected virtual float PhaseEnd(int phase) => phase == 1 ? .5f : phase == 2 && Difficulty.Hard ? .25f : 0;
+    public float PhaseFraction => Mathf.Clamp01((DisplayFraction - PhaseEnd(CurrentPhase)) / Mathf.Max(.01f, phaseStart - PhaseEnd(CurrentPhase)));
+    protected virtual bool PhaseThreeReady => Difficulty.Hard && HealthFraction <= .25f;
     protected override void Start()
     {
         base.Start();
@@ -60,6 +68,13 @@ public abstract class DistrictBoss : DistrictEnemy
             OnPhaseTwo();
             PresentPhaseTwo();
         }
+        else if (phaseTwo && !phaseThree && !PhaseTransitioning && PhaseThreeReady)
+        {
+            phaseThree = true;
+            NotifyBossPhaseChange(3);
+            OnPhaseThree();
+            PresentPhaseTwo();
+        }
         float motionDelta = Time.deltaTime * LevelRun.EnemyTempoScale * MovementScale;
         if (PhaseTransitioning && RepositionsOnPhase)
             transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.UpLimit - 2.5f, transform.position.z), motionDelta * 6);
@@ -98,6 +113,7 @@ public abstract class DistrictBoss : DistrictEnemy
     protected void PresentPhaseTwo()
     {
         phaseEntryUntil = age + 1.5f * LevelRun.EnemyTempoScale;
+        phaseStart = DisplayFraction;
         nextAttack = Mathf.Max(nextAttack, phaseEntryUntil);
         nextPressure = Mathf.Max(nextPressure, phaseEntryUntil);
         firingCue.ClearWarning();
@@ -122,6 +138,10 @@ public abstract class DistrictBoss : DistrictEnemy
     }
 
     protected virtual void OnPhaseTwo()
+    {
+    }
+
+    protected virtual void OnPhaseThree()
     {
     }
 
