@@ -68,12 +68,12 @@ public sealed class PSXShipVisual : MonoBehaviour
     }
 
     /// <summary>A copy of a hull with the ship root's scale, for parking it in the hangar.</summary>
-    public GameObject BuildDisplayHull(string terraModel, Color cockpitColor)
+    public GameObject BuildDisplayHull(string terraModel, Color cockpitColor, int cockpitSides = 12)
     {
         CaptureDefault();
         var root = new GameObject("Parked " + (terraModel ?? "GR-07"));
         root.transform.localScale = transform.lossyScale;
-        BuildCockpit(root.transform, cockpitColor);
+        BuildCockpit(root.transform, cockpitColor, false, cockpitSides);
         var mesh = terraModel != null ? IndustrialMeshFactory.TerraModel(terraModel) : null;
         if (mesh != null)
         {
@@ -115,11 +115,10 @@ public sealed class PSXShipVisual : MonoBehaviour
     // and it is drawn above hostile rounds.
     static readonly Vector2 CockpitCentre = new Vector2(0, .08f);
     const float CockpitRadius = .045f;
-    const int CockpitSides = 12;
     Transform cockpitFrame;
     MeshRenderer cockpit;
 
-    public void UseCockpit(Color color)
+    public void UseCockpit(Color color, int sides = 12)
     {
         CaptureDefault();
         if (cockpitFrame == null)
@@ -134,7 +133,7 @@ public sealed class PSXShipVisual : MonoBehaviour
         }
         if (cockpit != null)
             DestroyCockpit(cockpit);
-        cockpit = BuildCockpit(cockpitFrame, color, true);
+        cockpit = BuildCockpit(cockpitFrame, color, true, sides);
         cockpit.gameObject.layer = gameObject.layer;
         Apply();
     }
@@ -143,7 +142,7 @@ public sealed class PSXShipVisual : MonoBehaviour
     /// A glossy round canopy: dark rim, coloured glass and a white glint. It uses the ships' own shader, so on the
     /// player it shares the hull's foreground depth; parked copies sit just above their hull instead.
     /// </summary>
-    public static MeshRenderer BuildCockpit(Transform parent, Color color, bool player = false)
+    public static MeshRenderer BuildCockpit(Transform parent, Color color, bool player = false, int sides = 12)
     {
         var palette = new Texture2D(4, 1, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp, name = "Cockpit glass" };
         var rim = color * .45f;
@@ -153,35 +152,36 @@ public sealed class PSXShipVisual : MonoBehaviour
         palette.SetPixels(new[] { rim, glass, glint, glass });
         palette.Apply();
         // Rim ring, glass ring and a centre crown.
-        var vertices = new Vector3[CockpitSides * 2 + 1];
+        var vertices = new Vector3[sides * 2 + 1];
         var uvs = new Vector2[vertices.Length];
-        var triangles = new int[CockpitSides * 9];
-        int crown = CockpitSides * 2;
-        for (int i = 0; i < CockpitSides; i++)
+        var triangles = new int[sides * 9];
+        int crown = sides * 2;
+        for (int i = 0; i < sides; i++)
         {
-            float angle = i * Mathf.PI * 2 / CockpitSides;
+            // A hexagon stands on a point at the nose; rounder canopies start anywhere.
+            float angle = i * Mathf.PI * 2 / sides + (sides == 6 ? Mathf.PI / 2 : 0);
             var corner = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle));
             vertices[i] = corner * CockpitRadius;
             uvs[i] = new Vector2(.125f, .5f);
-            vertices[CockpitSides + i] = corner * CockpitRadius * .7f + Vector3.back * .01f;
-            uvs[CockpitSides + i] = new Vector2(.375f, .5f);
+            vertices[sides + i] = corner * CockpitRadius * .7f + Vector3.back * .01f;
+            uvs[sides + i] = new Vector2(.375f, .5f);
         }
         vertices[crown] = new Vector3(-.25f, .25f) * CockpitRadius + Vector3.back * .025f;
         uvs[crown] = new Vector2(.625f, .5f);
-        for (int i = 0; i < CockpitSides; i++)
+        for (int i = 0; i < sides; i++)
         {
-            int next = (i + 1) % CockpitSides, t = i * 9;
+            int next = (i + 1) % sides, t = i * 9;
             triangles[t] = i;
-            triangles[t + 1] = CockpitSides + next;
+            triangles[t + 1] = sides + next;
             triangles[t + 2] = next;
             triangles[t + 3] = i;
-            triangles[t + 4] = CockpitSides + i;
-            triangles[t + 5] = CockpitSides + next;
-            triangles[t + 6] = CockpitSides + i;
+            triangles[t + 4] = sides + i;
+            triangles[t + 5] = sides + next;
+            triangles[t + 6] = sides + i;
             triangles[t + 7] = crown;
-            triangles[t + 8] = CockpitSides + next;
+            triangles[t + 8] = sides + next;
         }
-        var mesh = new Mesh { name = "Round cockpit", vertices = vertices, uv = uvs, triangles = triangles };
+        var mesh = new Mesh { name = sides == 6 ? "Hexagonal cockpit" : "Round cockpit", vertices = vertices, uv = uvs, triangles = triangles };
         mesh.RecalculateNormals();
         var go = new GameObject("Cockpit");
         go.transform.SetParent(parent, false);

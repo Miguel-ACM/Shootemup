@@ -21,11 +21,12 @@ public static class ShipFrames
         public Vector2 exhaust = new Vector2(.1925f, -.18f);
         public float exhaustScale = .4f;
         public Color cockpit = new Color(1f, .82f, .3f);
+        public int cockpitSides = 12;
     }
 
     static readonly Definition[] definitions =
     {
-        new Definition { frame = ShipFrame.GR07, hits = 6 },
+        new Definition { frame = ShipFrame.GR07, hits = 6, cockpitSides = 6 },
         // Long and slow: a continuous laser instead of the twin cannon, more hull and a barrel roll.
         new Definition { frame = ShipFrame.Lancer, model = "ShipLancer", hits = 5, moveSpeed = 6.8f, primary = "BeamEmitter", starters = new[] { "BarrelRoll" }, cockpit = new Color(.85f, .45f, 1f), exhaust = new Vector2(.11f, -.40f), exhaustScale = .32f },
         // Glass cannon: three harder-hitting rounds that ignite, three hits.
@@ -53,7 +54,7 @@ public static class ShipFrames
         if (visual != null)
         {
             visual.UseHull(frame.model);
-            visual.UseCockpit(frame.cockpit);
+            visual.UseCockpit(frame.cockpit, frame.cockpitSides);
         }
         var effects = ship.GetComponent<PSXShipEffects>();
         if (effects != null)
@@ -99,6 +100,6 @@ public static class ShipFrames
     public static GameObject BuildDisplay(Shipcontroller template, Definition frame)
     {
         var visual = template.GetComponent<PSXShipVisual>();
-        return visual != null ? visual.BuildDisplayHull(frame.model, frame.cockpit) : null;
+        return visual != null ? visual.BuildDisplayHull(frame.model, frame.cockpit, frame.cockpitSides) : null;
     }
 }
