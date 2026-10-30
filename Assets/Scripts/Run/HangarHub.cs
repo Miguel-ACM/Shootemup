@@ -521,7 +521,6 @@ public sealed class HangarHub : MonoBehaviour
         if (loadout != null)
             ShipFrames.ApplyWeapons(loadout, definition);
         PSXImpactEffects.ItemGet(player.transform.position, new Color(.55f, .85f, 1));
-        ItemSound.Play("ready", .16f);
         RefreshBays();
     }
 
