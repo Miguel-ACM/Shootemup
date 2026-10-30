@@ -38,6 +38,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         if (HangarHub.Active)
         {
             enabled = false;
+            HangarHub.RunStarted += BeginRun;
             return;
         }
         gameObject.AddComponent<BossPositionShadow>();
@@ -150,6 +151,15 @@ public sealed class IndustrialHUD : MonoBehaviour
         minibossClock = TextAt(bossPanel, "", 2, 250, 12, Amber);
         minibossClock.rectTransform.sizeDelta = new Vector2(24, 20);
         minibossClock.alignment = TextAnchor.MiddleCenter;
+    }
+
+    // The run starts in this same scene, under the clouds.
+    void BeginRun()
+    {
+        if (this == null)
+            return;
+        enabled = true;
+        Start();
     }
 
     void LateUpdate()
