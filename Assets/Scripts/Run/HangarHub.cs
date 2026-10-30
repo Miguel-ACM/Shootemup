@@ -51,7 +51,6 @@ public sealed class HangarHub : MonoBehaviour
     public static void Enter(RunDifficulty chosen)
     {
         difficulty = chosen;
-        RunStarted = null;
         tunnelTravel = LevelEnvironment.TitleTravel;
         Active = true;
         GameRules.StartNewRun(chosen);
@@ -574,38 +573,16 @@ public sealed class HangarHub : MonoBehaviour
             yield return null;
         }
         yield return new WaitForSeconds(1);
-        // The hangar already is the gameplay scene: the run starts right here under the clouds, so no
-        // scene has to activate (that single frame cost ~300 ms and stalled the clouds).
-        CloudTransition.Change(StartRun);
+        CloudTransition.Load("L1", () =>
+        {
+            Active = false;
+            LevelEnvironment.ReleaseTitle();
+            GameRules.StartNewRun(difficulty);
+            LevelRun.Reset();
+            MetaProgress.BeginRun();
+            BGMManager.PlayLevelMusic(LevelRun.Current);
+        });
     }
-
-    void StartRun()
-    {
-        Active = false;
-        LevelEnvironment.ReleaseTitle();
-        GameRules.StartNewRun(difficulty);
-        LevelRun.Reset();
-        MetaProgress.BeginRun();
-        BGMManager.PlayLevelMusic(LevelRun.Current);
-        var frame = ShipFrames.Current;
-        ShipFrames.ApplyStats(frame);
-        player.transform.position = parkedAt;
-        player.SetMaxHits(frame.hits);
-        player.Repair(frame.hits);
-        player.enabled = true;
-        player.StartCoroutine(ExplodingShield.GrantStarter(player));
-        player.StartCoroutine(ShipFrames.GrantStarters(player, frame));
-        if (dialog != null && dialog.Panel != null)
-            dialog.Panel.anchoredPosition = new Vector2(0, DecisionOverlay.SkipHeight + 12);
-        LevelEnvironment.Apply();
-        var started = RunStarted;
-        RunStarted = null;
-        started?.Invoke();
-        Destroy(gameObject);
-    }
-
-    /// <summary>Raised under the clouds when the run begins in the hangar's own scene.</summary>
-    public static event System.Action RunStarted;
 
     void OnDestroy()
     {

@@ -29,7 +29,6 @@ public sealed class LoadoutHUD : MonoBehaviour
         if (HangarHub.Active)
         {
             enabled = false;
-            HangarHub.RunStarted += BeginRun;
             return;
         }
         loadout = GetComponent<ShipLoadout>();
@@ -110,15 +109,6 @@ public sealed class LoadoutHUD : MonoBehaviour
         camera.targetTexture = texture;
         camera.depth = -49;
         camera.GetUniversalAdditionalCameraData().renderPostProcessing = false;
-    }
-
-    // The run starts in this same scene, under the clouds.
-    void BeginRun()
-    {
-        if (this == null)
-            return;
-        enabled = true;
-        Start();
     }
 
     void Update()
