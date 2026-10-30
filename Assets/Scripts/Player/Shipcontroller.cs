@@ -68,6 +68,11 @@ public class Shipcontroller : MonoBehaviour
     Vector2 move;
     Vector2 waterVelocity;
     public Vector2 MoveInput => move;
+    /// <summary>True while the player holds either fire button; companions only shoot with the ship.</summary>
+    public static bool Firing
+    {
+        get; private set;
+    }
     public bool IsInvulnerable => invulnerable || (GetComponent<ShipBarrelRoll>()?.Active ?? false) || GetComponent<SpellCardCast>() != null;
 
     void Awake()
@@ -303,6 +308,7 @@ public class Shipcontroller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Firing = !GameRules.playerDisabled && (input.PlayerControls.FirePrimary.IsPressed() || input.PlayerControls.FireSecondary.IsPressed());
         speedMultiplier = input.PlayerControls.Focus.IsPressed() ? slowMultiplier : 1;
         horizontalMove = move.x * GameRules.playerMoveSpeed * WorldTimeStop.PlayerDelta * speedMultiplier;
         verticalMove = move.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * WorldTimeStop.PlayerDelta * speedMultiplier;

@@ -121,7 +121,7 @@ public sealed class TrailDrone : ACompanion
     void FireBullets()
     {
         clock += Time.deltaTime;
-        if (clock < 0)
+        if (clock < 0 || !Shipcontroller.Firing)
             return;
         var target = CombatUpgrades.Nearest(Muzzle, null, 18);
         if (target == null)
@@ -148,7 +148,7 @@ public sealed class TrailDrone : ACompanion
 
     void FireLaser()
     {
-        bool wanted = CombatUpgrades.Nearest(Muzzle, null, BeamReach) != null;
+        bool wanted = Shipcontroller.Firing && CombatUpgrades.Nearest(Muzzle, null, BeamReach) != null;
         beamPower = Mathf.MoveTowards(beamPower, wanted ? 1 : 0, Time.deltaTime * (wanted ? 3 : 5));
         if (beamPower <= 0)
         {

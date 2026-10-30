@@ -24,7 +24,7 @@ public sealed class SupportDrone : MonoBehaviour
             return;
         model.localPosition = new Vector3(Mathf.Cos(Time.time * 1.3f + phase) * 1.25f, -.55f, -.1f);
         model.localRotation = Quaternion.Euler(0, 0, 180);
-        if (GameRules.playerDisabled || Time.time < nextShot)
+        if (GameRules.playerDisabled || !Shipcontroller.Firing || Time.time < nextShot)
             return;
         nextShot = Time.time + .55f;
         var target = CombatUpgrades.Nearest(model.position, null, 12);
