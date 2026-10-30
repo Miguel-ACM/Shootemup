@@ -28,7 +28,9 @@ public sealed partial class TunnelSawBoss
         spinner = GetComponent<CombatHullVisual>();
         while (true)
         {
-            if (!phaseTwo)
+            if (phaseThree)
+                yield return FinalSpell();
+            else if (!phaseTwo)
                 yield return FroggerCrossing();
             else
             {
@@ -153,5 +155,20 @@ public sealed partial class TunnelSawBoss
         haltUntil = age + 1.8f;
         GetComponent<CombatHullVisual>().spin = 720;
         PSXFireballs.Shockwave(transform.position, 2, 1.8f, Color.yellow, 2, .1f);
+    }
+
+    // Hard final phase, Overdrive: it ricochets round the arena throwing wall runners
+    // while turning out a four-arm arrow spiral from its centre the whole time.
+    IEnumerator FinalSpell()
+    {
+        runners = true;
+        ResumeBouncing();
+        yield return Every(9, .08f, n =>
+        {
+            for (int arm = 0; arm < 4; arm++)
+                Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, arm * 90 + n * 13), 3.4f, .19f);
+        });
+        runners = false;
+        yield return Gearbox();
     }
 }
