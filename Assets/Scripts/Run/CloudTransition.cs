@@ -263,8 +263,9 @@ public sealed class CloudTransition : MonoBehaviour
             canvas.enabled = false;
             busy = false;
             Time.timeScale = SceneManager.GetActiveScene().name == "Title" ? 0 : 1;
-            // The title and the hangar are idle screens: park the next gameplay scene behind them.
-            if (SceneManager.GetActiveScene().name == "Title" || HangarHub.Active)
+            // The title is an idle screen: park the gameplay scene behind it. The hangar needs no load,
+            // because the run starts inside the hangar's own scene.
+            if (SceneManager.GetActiveScene().name == "Title")
                 PrepareGameplay();
         }
     }

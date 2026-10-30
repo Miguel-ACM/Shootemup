@@ -66,8 +66,19 @@ public class WaveOrchestrer : MonoBehaviour
         if (HangarHub.Active)
         {
             enabled = false;
+            HangarHub.RunStarted += BeginRun;
             return;
         }
+        BeginWaves();
+    }
+
+    // The run starts in this same scene, under the clouds; the sequence follows the new run's seed.
+    void BeginRun()
+    {
+        if (this == null)
+            return;
+        enabled = true;
+        waves = DistrictWaves.Sequence();
         BeginWaves();
     }
 
