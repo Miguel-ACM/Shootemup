@@ -79,6 +79,21 @@ public sealed class CloudTransition : MonoBehaviour
     // Some trips (the title into the hangar, which shows the same tunnel) cut straight across without the clouds.
     GameObject cloudLayer;
     bool clouds = true;
+    // Scales the clouds' flow, so they can ease to a stop over a scene activation and back up again.
+    float flowRate = 1;
+    const float GlideSeconds = .45f;
+
+    IEnumerator Glide(float target)
+    {
+        float from = flowRate;
+        // Measured in capped steps, so a long frame cannot skip the ease.
+        for (float t = 0; t < GlideSeconds; t += Mathf.Min(Time.unscaledDeltaTime, MaxFlowStep))
+        {
+            flowRate = Mathf.Lerp(from, target, Mathf.SmoothStep(0, 1, t / GlideSeconds));
+            yield return null;
+        }
+        flowRate = target;
+    }
 
     void SceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -200,6 +215,7 @@ public sealed class CloudTransition : MonoBehaviour
         busy = true;
         revealing = false;
         flowElapsed = 0;
+        flowRate = 1;
         // Clouds are an overlay: simulation and controls keep running throughout both legs.
         Time.timeScale = 1;
         PositionClouds();
@@ -231,6 +247,10 @@ public sealed class CloudTransition : MonoBehaviour
             else
                 while (routesPreparing)
                     yield return null;
+            // Scene activation and the first frames of the new scene cost a few long frames that no loading
+            // can spread out. The clouds glide to a standstill first, so those frames show a still image.
+            if (clouds)
+                yield return Glide(0);
             covered?.Invoke();
             if (scene != null && preparedLoad != null)
             {
@@ -253,7 +273,10 @@ public sealed class CloudTransition : MonoBehaviour
                     LevelReveal.Show();
             }
             if (clouds)
+            {
+                yield return Glide(1);
                 yield return Move(false);
+            }
         }
         finally
         {
@@ -302,7 +325,7 @@ public sealed class CloudTransition : MonoBehaviour
     {
         if (!busy)
             return;
-        flowElapsed += Mathf.Min(Time.unscaledDeltaTime, MaxFlowStep);
+        flowElapsed += Mathf.Min(Time.unscaledDeltaTime, MaxFlowStep) * flowRate;
         PositionClouds();
     }
 
