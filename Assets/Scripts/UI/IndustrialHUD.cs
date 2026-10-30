@@ -244,19 +244,29 @@ public sealed class IndustrialHUD : MonoBehaviour
         if (showMini)
             Fill(bossCells, miniboss.HealthFraction, Amber);
         if (districtBoss != null)
-            Fill(bossCells, districtBoss.PhaseFraction, districtBoss.CurrentPhase == 1 ? Amber : districtBoss.CurrentPhase == 2 ? new Color(1, .45f, .18f) : Alarm);
+        {
+            // The emptied part of the current bar shows the next bar's colour waiting underneath.
+            int phase = districtBoss.CurrentPhase;
+            var below = phase < districtBoss.PhaseCount ? PhaseColor(phase + 1) * .45f : Unlit;
+            below.a = 1;
+            Fill(bossCells, districtBoss.PhaseFraction, PhaseColor(phase), int.MaxValue, below);
+        }
         if (boss != null)
             Fill(bossCells, boss.HealthFraction, Amber);
     }
 
-    static void Fill(Image[] cells, float value, Color color, int limit = int.MaxValue)
+    static Color PhaseColor(int phase) => phase == 1 ? Amber : phase == 2 ? new Color(1, .45f, .18f) : Alarm;
+
+    static void Fill(Image[] cells, float value, Color color, int limit = int.MaxValue) => Fill(cells, value, color, limit, Unlit);
+
+    static void Fill(Image[] cells, float value, Color color, int limit, Color empty)
     {
         int count = Mathf.Min(limit, Mathf.CeilToInt(Mathf.Clamp01(value) * cells.Length));
         for (int i = 0; i < cells.Length; i++)
         {
             // Lit segments brighten toward the top of the column; the topmost lit one glows.
             float light = Mathf.Lerp(.8f, 1.04f, cells.Length > 1 ? i / (cells.Length - 1f) : 1) + (i == count - 1 ? .12f : 0);
-            cells[i].color = i < count ? new Color(color.r * light, color.g * light, color.b * light, color.a) : Unlit;
+            cells[i].color = i < count ? new Color(color.r * light, color.g * light, color.b * light, color.a) : empty;
         }
     }
 
