@@ -26,7 +26,9 @@ public sealed partial class SnowSiegeBoss
     {
         while (true)
         {
-            if (!phaseTwo)
+            if (phaseThree)
+                yield return FinalSpell();
+            else if (!phaseTwo)
             {
                 yield return FrozenPetals();
                 yield return Wait(1);
@@ -172,5 +174,29 @@ public sealed partial class SnowSiegeBoss
             }
         });
         RecallComb();
+    }
+
+    // Hard final phase, Absolute Zero: the comb rains from the top without pause while
+    // mirrored petals freeze and re-aim and snow shells keep bursting.
+    IEnumerator FinalSpell()
+    {
+        DeployComb();
+        yield return Wait(.5f);
+        yield return Every(9, .3f, n =>
+        {
+            for (int i = 0; i < combCount; i++)
+            {
+                if (i % 2 != n % 2 || Difficulty.Easy && i % 3 == 2)
+                    continue;
+                Fire<NeedleRound>(comb[i].TransformPoint(new Vector3(0, -.26f, -.55f)), Vector2.down, 3.6f, .19f);
+                releases[i] = .1f;
+            }
+            if (n % 6 == 0)
+                FreezeFrame(n % 12 == 0 ? 1 : -1);
+            if (n % 7 == 3)
+                CrystalShells();
+        });
+        RecallComb();
+        yield return Wait(.6f);
     }
 }
