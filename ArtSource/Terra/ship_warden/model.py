@@ -122,105 +122,66 @@ def ring_y(name, x, y, z, radii, ys, material_indices, segments=12):
     indices.append(7)
     return mesh_obj(name, verts, faces, indices)
 
-# Faceted chisel keel with swept shoulders and a pointed forward prow.
-outline = [(-.12,-.255),(.12,-.255),(.215,-.195),(.235,-.065),(.225,.115),(.15,.225),(.065,.305),(0,.34),(-.065,.305),(-.15,.225),(-.225,.115),(-.235,-.065),(-.215,-.195)]
+# Narrow command wedge, separated from the engine booms by open lanes.
 def scaled_ring(points, sx, sy, z):
     return [(x*sx,y*sy,z) for x,y in points]
-loft('Armoured keel', [scaled_ring(outline,.82,.92,-.055), scaled_ring(outline,1,1,-.020), scaled_ring(outline,.97,.99,.025), scaled_ring(outline,.84,.94,.055)], [11,0,1], 2, 11)
-# Center dorsal shell and nose layers.
-plate('Dorsal armor', [(-.105,-.22),(.105,-.22),(.15,-.14),(.142,.09),(.10,.195),(.045,.285),(0,.315),(-.045,.285),(-.10,.195),(-.142,.09),(-.15,-.14)], .056,.068,1,.006,0)
-plate('Raised spine', [(-.055,-.19),(.055,-.19),(.074,-.11),(.068,.13),(.048,.23),(0,.29),(-.048,.23),(-.068,.13),(-.074,-.11)], .069,.084,2,.006,0)
-plate('Nose shield', [(-.068,.205),(-.045,.275),(0,.318),(.045,.275),(.068,.205),(.048,.184),(-.048,.184)], .069,.078,3,.004,0)
-plate('Nose chevron', [(-.027,.262),(0,.297),(.027,.262),(.021,.252),(-.021,.252)], .079,.082,4,.002,2)
-# Compact octagonal hitbox canopy, centered exactly on the ship's spine.
-# A narrow dark gasket surrounds the faceted blue glass bubble.
-def canopy_ring(radius, z):
-    return [(radius * math.cos(2 * math.pi * k / 8 + math.pi / 8),
-             .08 + radius * math.sin(2 * math.pi * k / 8 + math.pi / 8), z)
-            for k in range(8)]
-
-loft('Canopy gasket', [canopy_ring(.065, .084), canopy_ring(.065, .089)],
-     [6], 6, 6)
-loft('Blue canopy', [canopy_ring(.060, .089), canopy_ring(.050, .106),
-                     canopy_ring(.029, .120)],
-     [[8, 8, 9, 9, 9, 8, 8, 8], [8, 9, 9, 9, 9, 8, 8, 8]], 9, 8)
-
-# Outboard support wings and U-shaped drone cradles, open toward the nose.
+outline = [(-.075,-.255),(.075,-.255),(.105,-.19),(.105,-.06),(.083,.13),(.045,.265),(0,.34),(-.045,.265),(-.083,.13),(-.105,-.06),(-.105,-.19)]
+loft('Command hull', [scaled_ring(outline,.78,.97,-.055),scaled_ring(outline,1,1,-.025),scaled_ring(outline,1,1,.015),scaled_ring(outline,.83,.98,.047)], [11,0,1],2,11)
+plate('Dorsal shell',[(-.062,-.21),(.062,-.21),(.083,-.14),(.079,.10),(.046,.25),(0,.315),(-.046,.25),(-.079,.10),(-.083,-.14)],.047,.053,1,.005,0)
+plate('Forward armour',[(-.045,.155),(-.034,.25),(0,.318),(.034,.25),(.045,.155),(.032,.14),(-.032,.14)],.054,.059,3,.004,0)
+plate('Nose marking',[(-.013,.26),(0,.299),(.013,.26),(.011,.248),(-.011,.248)],.060,.062,4,.002,2)
+# Round, flush blue canopy: centered at (0, .08), 0.10 across, top z=.079.
+def canopy_ring(radius,z):
+    return [(radius*math.cos(2*math.pi*k/12),.08+radius*math.sin(2*math.pi*k/12),z) for k in range(12)]
+loft('Canopy gasket',[canopy_ring(.052,.054),canopy_ring(.052,.057)],[6],6,6)
+loft('Blue canopy',[canopy_ring(.05,.057),canopy_ring(.043,.069),canopy_ring(.025,.077),canopy_ring(.006,.079)],[[8,8,8,9,9,9,9,9,8,8,8,8],[8,8,9,9,9,9,9,9,9,8,8,8],[8,9,9,9,9,9,9,9,9,9,8,8]],9,8)
 for s, label in [(-1,'L'),(1,'R')]:
     def mirror(poly):
         p = [(s*x,y) for x,y in poly]
         return p if s == 1 else list(reversed(p))
-    plate('Wing '+label, mirror([(.175,-.18),(.285,-.19),(.335,-.125),(.35,-.015),(.335,.105),(.275,.155),(.205,.115)]), -.012,.026,1,.012,0)
-    # Dark bay floor, edged by separated arms and rear sill. Empty central area signals docking.
-    plate('Bay recess '+label, mirror([(.255,-.103),(.331,-.103),(.342,-.045),(.338,.065),(.319,.092),(.264,.092),(.250,.065)]), .027,.030,6,.003,6)
-    plate('Bay deck '+label, mirror([(.263,-.080),(.319,-.080),(.327,-.040),(.323,.052),(.267,.052),(.258,-.040)]), .031,.033,13,.003,6)
-    plate('Inner clamp '+label, mirror([(.247,-.105),(.264,-.093),(.270,.045),(.282,.081),(.271,.103),(.251,.082),(.241,.035)]), .034,.058,3,.004,2)
-    plate('Outer clamp '+label, mirror([(.323,-.103),(.341,-.092),(.356,-.041),(.355,.059),(.339,.096),(.325,.080),(.333,.043),(.334,-.037)]), .034,.058,3,.004,2)
-    plate('Cradle heel '+label, mirror([(.261,-.105),(.325,-.105),(.334,-.083),(.322,-.072),(.265,-.072),(.253,-.084)]), .034,.053,4,.004,5)
-    # Wing root armor and a single stripe distinguish the silhouette without busy detail.
-    plate('Shoulder '+label, mirror([(.149,-.12),(.218,-.13),(.245,-.09),(.241,.092),(.210,.16),(.154,.13)]), .038,.056,2,.006,0)
-    plate('Shoulder stripe '+label, mirror([(.199,.065),(.219,.065),(.216,.115),(.204,.132)]), .057,.060,4,.002,4)
-    # Swept leading edge and a raised sensor fin on each shoulder.
-    plate('Leading shoulder '+label, mirror([(.174,.16),(.205,.20),(.258,.15),(.286,.12),(.269,.098),(.222,.113)]), .025,.043,0,.004,11)
-    plate('Fin base '+label, mirror([(.185,.075),(.204,.078),(.214,.14),(.203,.16),(.189,.145)]), .057,.061,4,.002,2)
-    loft('Sensor fin '+label, [[(s*.19,.08,.060),(s*.205,.08,.060),(s*.211,.147,.060),(s*.196,.15,.060)], [(s*.193,.09,.090),(s*.202,.09,.090),(s*.207,.137,.078),(s*.199,.14,.078)]], [5], 4, 2)
-    # Rear engine housings blend into the hull; openings end exactly at y=-.28.
-    plate('Engine pod '+label, mirror([(.112,-.255),(.215,-.255),(.232,-.205),(.218,-.133),(.125,-.133),(.107,-.205)]), -.025,.048,0,.007,11)
-    ring_y('Nozzle '+label, s*.17, -.28, -.004, [.041,.041,.030,.030], [-.245,-.28,-.28,-.255], [5,4,7], 12)
-    # Underside plate is visible in rolls.
-    plate('Underwing '+label, mirror([(.15,-.16),(.275,-.15),(.31,-.09),(.29,.075),(.22,.11),(.15,.08)]), -.055,-.050,11,.006,14)
-
-# Industrial detailing stays inside the original silhouette. All fittings are
-# docking or sensor equipment; Warden carries no guns.
-for s, label in [(-1, 'L'), (1, 'R')]:
-    def mirrored(points):
-        p = [(s*x, y) for x, y in points]
-        return p if s == 1 else list(reversed(p))
-    # Recessed intake wells with broad, widely spaced slats.
-    plate('Intake surround '+label, mirrored([(.155,-.105),(.216,-.105),(.225,-.075),(.220,.025),(.159,.025)]), .057,.061,14,.003,6)
-    plate('Intake well '+label, mirrored([(.162,-.096),(.210,-.096),(.216,-.071),(.213,.017),(.165,.017)]), .062,.064,7,.002,14)
-    for y in (-.082, -.063, -.044, -.025, -.006):
-        box('Intake slat '+label, (s*.188,y,.066), (.043,.006,.004), 5, .001)
-    plate('Forward cheek '+label, mirrored([(.074,.150),(.125,.135),(.151,.176),(.115,.224),(.078,.205)]), .069,.075,0,.003,14)
-    plate('Cheek inlay '+label, mirrored([(.083,.164),(.120,.153),(.136,.177),(.113,.207),(.087,.195)]), .076,.079,5,.002,0)
-    plate('Aft shoulder armour '+label, mirrored([(.132,-.150),(.210,-.150),(.217,-.122),(.151,-.119)]), .057,.064,14,.003,0)
-    plate('Engine top armour '+label, mirrored([(.122,-.235),(.205,-.235),(.217,-.204),(.207,-.165),(.128,-.165)]), .049,.057,2,.004,14)
-    box('Heat sink bed '+label, (s*.168,-.198,.059), (.063,.051,.004), 14, .002)
-    for x in (.146,.168,.190):
-        box('Heat sink vane '+label, (s*x,-.198,.063), (.008,.041,.006), 5, .001)
-    # Hazard stripes and docking rails are intentionally chunky at game scale.
-    box('Warning field '+label, (s*.293,-.089,.055), (.047,.018,.003), 12, .001)
-    for x in (.276,.288,.300,.312):
-        box('Warning stripe '+label, (s*x,-.089,.057), (.004,.017,.002), 7, 0, -.35)
-    for x in (.273,.311):
-        box('Launch rail '+label, (s*x,-.008,.036), (.006,.097,.006), 5, .001)
-    box('Cradle stop '+label, (s*.292,-.061,.040), (.041,.008,.010), 14, .001)
-    box('Dock actuator '+label, (s*.239,-.045,.061), (.012,.047,.011), 14, .002)
-    box('Actuator cap '+label, (s*.239,-.045,.068), (.006,.026,.004), 10, .001)
-    box('Side rail '+label, (s*.224,-.045,-.016), (.012,.115,.014), 14, .002)
-    plate('Belly access '+label, mirrored([(.045,-.20),(.116,-.20),(.145,-.12),(.138,-.02),(.055,-.02)]), -.058,-.055,14,.003,11)
-
-# Spine seams and service blocks leave the round blue hitbox unobstructed.
-plate('Spine rear panel', [(-.044,-.142),(.044,-.142),(.048,-.121),(.041,-.085),(-.041,-.085),(-.048,-.121)], .085,.089,14,.003,6)
+    # Short swept bridges leave large apertures to either side of the hull.
+    plate('Swept bridge '+label,mirror([(.075,-.105),(.155,-.165),(.215,-.105),(.213,-.069),(.091,-.035)]),-.035,.022,0,.006,11)
+    plate('Bridge armour '+label,mirror([(.091,-.083),(.163,-.134),(.201,-.099),(.200,-.084),(.103,-.050)]),.023,.030,3,.004,0)
+    pod = mirror([(.122,-.245),(.215,-.245),(.231,-.19),(.215,.065),(.195,.176),(.17,.245),(.146,.16),(.119,.015),(.108,-.15)])
+    loft('Engine boom '+label,[scaled_ring(pod,.96,1,-.052),scaled_ring(pod,1,1,-.025),scaled_ring(pod,1,1,.021),scaled_ring(pod,.98,.98,.046)],[11,0,1],2,11)
+    plate('Boom armour '+label,mirror([(.126,-.205),(.207,-.205),(.216,-.16),(.202,.045),(.183,.15),(.168,.195),(.149,.125),(.129,.01)]),.047,.054,1,.005,0)
+    plate('Boom forward blade '+label,mirror([(.151,.085),(.17,.215),(.185,.245),(.196,.13),(.187,.072)]),.052,.059,3,.003,0)
+    # Tapered sensor vanes are flat blades, not gun barrels.
+    plate('Sensor vane '+label,mirror([(.181,.15),(.194,.315),(.205,.25),(.203,.12)]),.008,.025,5,.002,0)
+    plate('Vane inset '+label,mirror([(.188,.18),(.195,.277),(.199,.245),(.198,.175)]),.026,.029,4,.001,5)
+    ring_y('Engine nozzle '+label,s*.17,-.28,-.008,[.039,.039,.028,.028],[-.235,-.28,-.28,-.253],[5,4,7],12)
+    plate('Outrigger pylon '+label,mirror([(.205,-.12),(.275,-.17),(.303,-.13),(.218,-.065)]),-.036,.017,0,.006,11)
+    plate('Pylon cap '+label,mirror([(.218,-.107),(.272,-.146),(.287,-.127),(.226,-.077)]),.018,.026,3,.003,0)
+    # Open-nosed clamps around a recessed, empty drone service bed.
+    plate('Bay floor '+label,mirror([(.265,-.115),(.336,-.115),(.344,-.075),(.338,.038),(.319,.075),(.273,.075),(.257,.034)]),-.025,-.010,6,.004,11)
+    plate('Bay bed '+label,mirror([(.273,-.09),(.326,-.09),(.331,-.06),(.326,.038),(.275,.038),(.268,-.06)]),-.009,-.005,13,.003,6)
+    plate('Inner clamp '+label,mirror([(.248,-.13),(.267,-.113),(.277,-.065),(.275,.045),(.268,.103),(.255,.15),(.245,.08),(.246,-.075)]),-.026,.041,3,.004,0)
+    plate('Outer clamp '+label,mirror([(.326,-.13),(.346,-.115),(.36,-.065),(.357,.065),(.343,.132),(.330,.094),(.337,.035),(.336,-.065)]),-.026,.041,3,.004,0)
+    plate('Cradle heel '+label,mirror([(.257,-.138),(.336,-.138),(.347,-.112),(.333,-.094),(.264,-.094),(.251,-.111)]),-.025,.039,2,.004,0)
+    plate('Heel stripe '+label,mirror([(.269,-.128),(.325,-.128),(.33,-.115),(.27,-.115)]),.040,.043,4,.002,5)
+    for x in (.278,.322):
+        box('Dock guide '+label,(s*x,-.025,-.002),(.006,.095,.006),5,.001)
+    box('Cradle stop '+label,(s*.300,-.075,.005),(.042,.008,.012),14,.001)
+    plate('Intake rim '+label,mirror([(.137,-.16),(.199,-.16),(.201,-.045),(.139,-.045)]),.055,.058,14,.003,6)
+    plate('Intake recess '+label,mirror([(.143,-.151),(.193,-.151),(.195,-.052),(.144,-.052)]),.059,.061,7,.002,14)
+    for y in (-.135,-.112,-.089,-.066):
+        box('Cooling slat '+label,(s*.169,y,.063),(.046,.006,.004),5,.001)
+    plate('Rear engine armour '+label,mirror([(.13,-.238),(.205,-.238),(.215,-.207),(.127,-.207)]),.047,.054,2,.003,0)
+    box('Hazard field '+label,(s*.168,-.221,.056),(.057,.014,.003),12,.001)
+    for x in (.148,.163,.178,.193):
+        box('Hazard stripe '+label,(s*x,-.221,.058),(.005,.014,.002),7,0,-.4)
+    plate('Belly panel '+label,mirror([(.13,-.205),(.205,-.205),(.207,-.08),(.137,-.08)]),-.056,-.052,14,.004,11)
+plate('Rear spine panel',[(-.053,-.225),(.053,-.225),(.065,-.17),(.052,-.12),(-.052,-.12),(-.065,-.17)],.054,.060,2,.004,0)
 for x in (-.034,.034):
-    box('Spine service rib', (x,-.117,.091), (.009,.034,.004), 5, .001)
-plate('Nose centre seam', [(-.007,.205),(.007,.205),(.006,.25),(-.006,.25)], .083,.085,14,.001,14)
-for s in (-1,1):
-    box('Sensor block', (s*.103,.106,.070), (.025,.030,.014), 14, .003)
-    box('Sensor face', (s*.103,.120,.073), (.017,.004,.006), 10, .001)
-
-# Fixed socket for the rotating radar dish.
-bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=.028, depth=.013, location=(0,-.105,.085))
+    box('Rear vent well',(x,-.188,.062),(.038,.045,.004),7,.002)
+    for y in (-.199,-.187,-.175):
+        box('Rear vent slat',(x,y,.065),(.031,.004,.003),5,.001)
+plate('Belly keel',[(-.055,-.20),(.055,-.20),(.074,-.10),(.055,.14),(0,.265),(-.055,.14),(-.074,-.10)],-.060,-.055,14,.004,11)
+bpy.ops.mesh.primitive_cylinder_add(vertices=12,radius=.028,depth=.012,location=(0,-.105,.057))
 pedestal = bpy.context.object
 pedestal.name = 'Radar pedestal'
 pedestal.data.materials.append(mats[0])
 body.append(pedestal)
-# Rear deck panels and small vents, arranged as a single assembly.
-plate('Rear deck', [(-.087,-.235),(-.103,-.205),(-.092,-.15),(.092,-.15),(.103,-.205),(.087,-.235)], .058,.068,2,.005,0)
-for x in (-.051, .051):
-    box('Cooling recess', (x,-.199,.070), (.042,.033,.004), 6, .003)
-    for y in (-.207,-.197,-.187):
-        box('Cooling vane', (x,y,.073), (.032,.003,.003), 5, .001)
 
 # Join and triangulate, leaving exactly one fully applied mesh object.
 bpy.ops.object.select_all(action='DESELECT')
@@ -250,7 +211,7 @@ mesh.from_pydata(verts, [], faces)
 mesh.update()
 radar = bpy.data.objects.new('Radar', mesh)
 bpy.context.collection.objects.link(radar)
-radar.location = (0,-.105,.092)
+radar.location = (0,-.105,.063)
 for material in mats:
     mesh.materials.append(material)
 for poly in mesh.polygons:
@@ -264,7 +225,7 @@ bpy.ops.object.modifier_apply(modifier=tri.name)
 import json
 with open(os.path.join(ROOT, 'parts.json'), 'w', encoding='utf-8') as f:
     json.dump([{'object':'Radar', 'motion':'spin', 'axis':[0,0,1],
-                'pivot':[0,-.105,.092], 'speed':90}], f, indent=2)
+                'pivot':[0,-.105,.063], 'speed':90}], f, indent=2)
     f.write('\n')
 bpy.ops.object.select_all(action='DESELECT')
 model.select_set(True)

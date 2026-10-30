@@ -32,20 +32,14 @@ Muzzles: none.
 Engines: two nozzles at (-0.17, -0.28) and (+0.17, -0.28).
 A small radar dish or sensor dome on the spine that spins is a good animated part.
 
-## Revision
 
-The attached image is the top render of your first version (its script is previous_model.py). Its colours and side drone bays are good, but the main hull reads as a soft rounded bean or pill: too plain, too round and too toy-like next to the angular GR-07. Redesign it as a clearly designed SPACECRAFT carrier: an angular, faceted hull with a defined pointed or chisel nose, layered armour plates and panel breaks, a raised dorsal spine leading to the cockpit, swept shoulders that carry the two drone docking cradles as distinct outrigger pods (open clamp jaws or recessed launch rails you can read from above), sensor fins, and the small spinning radar dish. Keep it broad and sturdy (it is the support ship), keep the green/mint/cream colours and the blue canopy, keep it unarmed. Write a new model.py (you may reuse helpers from previous_model.py).
+## Revision 3: a more dynamic shape
 
-## Revision: round cockpit = hitbox
+Your current version is previous_model.py (render previous_top.png). The player says it is still not as cool as the GR-07 (attached), which they love: the GR-07 reads as a dynamic, aggressive machine because of its SILHOUETTE: separate elements with gaps between them (a central wedge fuselage flanked by two detached engine booms, joined only by short swept wings), long forward-reaching gun barrels, stepped and angled armour, strong asymmetry between the sharp front and the heavy rear, and negative space you can see through from above. Redesign this ship's shape with that energy while keeping its identity (role, footprint size, colour scheme, muzzles, engine points):
+- break the hull into distinct, purposeful masses separated by visible gaps (booms, nacelles, outriggers, forward-swept or swept-back blades), not one rounded blob;
+- strong diagonals and forward-leaning, swept angles; sharp leading edges;
+- long protruding hardware (barrels, emitter spines, antennae, fins) for a crisp silhouette;
+- keep the GR-07-level detail (panel seams, vents, hazard patches, gunmetal) and chunky readable shapes at ~120 px;
+- the cockpit is a small ROUND glass dome centred EXACTLY at (0, +0.08), about 0.10 across, sitting flush on top of the fuselage (z no higher than +0.08), in the ship's canopy colour.
+Budget up to 3500 triangles. Write a new model.py and keep parts.json if there was one.
 
-The attached image is your current version (script: previous_model.py). Keep the ship exactly as it is (silhouette, colours, muzzles, engines, parts), EXCEPT the cockpit canopy. In this game the cockpit marks the player's hitbox, so it must read instantly as a small, compact ROUND (or regular hexagonal/octagonal) dome centered EXACTLY at (0, +0.08), about 0.13 across, raised as a faceted glass bubble with a thin dark rim, in the same canopy colour. Remove the old elongated canopy (fill that area with hull plating) so the round dome is the only canopy. Write a new model.py (start from previous_model.py) and keep parts.json if the previous version had one.
-
-## Revision 2: make it as cool as the GR-07
-
-Your current version is previous_model.py (render previous_top.png). Keep its silhouette, footprint, colour identity, muzzles, engines, parts and the round cockpit at (0, +0.08) exactly. The player says it looks plain and toy-like next to the default ship, the GR-07 in the attached image, which they love. Bring it to the GR-07's level of craft:
-- a gritty military-industrial machine, not a smooth toy: hard angular armour plates with visible panel seams and stepped bevels; slightly desaturate the main colour toward steel and add a dark gunmetal secondary colour so the hue reads as paint on metal;
-- recessed slatted vents/grilles (dark), small yellow-black hazard patches (like the GR-07's), exposed mechanical parts: rails, actuators, heat sinks, intake ducts, sensor blocks;
-- strong, purposeful weapon hardware (barrel shrouds, emitter housings) and chunky engine nacelles with nozzle bells;
-- layered depth: raised spine, recessed channels, overlapping wing plates;
-- keep detail chunky enough to read at about 120 pixels tall.
-Budget up to 3500 triangles. Write a new model.py (start from previous_model.py) and keep parts.json if there was one.

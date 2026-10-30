@@ -1,4 +1,4 @@
-﻿import bpy
+import bpy
 import math
 import json
 import os
@@ -98,7 +98,7 @@ def barrel(name, x, tip, z, radius):
     # Barrel points toward +Y; dark annulus at the true forward muzzle.
     n=10
     verts=[]
-    for y,r in [(tip-0.057,radius*1.25),(tip-0.008,radius),(tip,radius),(tip,radius*0.53),(tip-0.009,radius*0.53)]:
+    for y,r in [(tip-0.105,radius*1.25),(tip-0.012,radius),(tip,radius),(tip,radius*0.53),(tip-0.009,radius*0.53)]:
         verts += [(x+math.cos(2*math.pi*i/n)*r,y,z+math.sin(2*math.pi*i/n)*r) for i in range(n)]
     faces=[]; ids=[]
     for k in range(4):
@@ -109,104 +109,60 @@ def barrel(name, x, tip, z, radius):
     faces.append(tuple(range(4*n,5*n))); ids.append(4)
     return mesh_piece(name,verts,faces,ids)
 
-# Broad pointed delta silhouette. The split trailing edge reveals the twin nacelles.
-slab('Main delta', [(-.105,-.255),(-.215,-.235),(-.300,-.205),(-.235,-.075),(-.145,.095),(0,.383),(.145,.095),(.235,-.075),(.300,-.205),(.215,-.235),(.105,-.255)], -.042, .018, .88, 0, 1, 2)
-# Independently layered swept blades create long directional lines.
+# A narrow spear and two independent nacelles leave open channels on either side.
+slab('Central hull',[(-.045,-.255),(-.073,-.185),(-.066,.075),(-.045,.19),(0,.342),(.045,.19),(.066,.075),(.073,-.185),(.045,-.255)],-.040,.035,.84,0,1,2)
+slab('Dorsal armour',[(-.042,-.19),(-.049,-.07),(-.041,.10),(-.025,.18),(0,.278),(.025,.18),(.041,.10),(.049,-.07),(.042,-.19),(0,-.226)],.035,.047,.88,0,1,2)
+slab('Belly keel',[(-.045,-.20),(-.050,-.055),(0,.285),(.050,-.055),(.045,-.20),(0,-.24)],-.053,-.039,.86,1,3,10)
+slab('Nose channel',[(-.014,.16),(0,.324),(.014,.16)],.047,.050,.92,3,1,9)
+barrel('Center cannon',0,.40,.032,.009)
+slab('Center gun collar',[(-.018,.29),(-.015,.325),(.015,.325),(.018,.29)],.030,.045,.84,3,4,9)
+
 for s, tag in [(-1,'L'),(1,'R')]:
     def mirror(poly):
         return [(s*x,y) for x,y in (poly if s==1 else list(reversed(poly)))]
-    slab('Wing '+tag, mirror([(.080,.065),(.130,.205),(.170,.148),(.225,-.055),(.298,-.196),(.205,-.177),(.147,-.116)]), .012,.034,.88,0,1,2)
-    slab('Wing dark inset '+tag, mirror([(.155,.099),(.186,.040),(.239,-.145),(.212,-.136)]), .034,.038,.94,10,1,10)
-    slab('Wing tip heat '+tag, mirror([(.244,-.153),(.296,-.194),(.271,-.193),(.235,-.174)]), .035,.039,.90,7,1,8)
-    # Long raised engine shoulders, visible from top and in a roll.
-    slab('Engine cowling '+tag, mirror([(.104,-.263),(.104,-.115),(.128,.008),(.176,-.037),(.196,-.164),(.194,-.270)]), -.025,.047,.84,1,10,0)
-    slab('Engine upper plate '+tag, mirror([(.115,-.230),(.115,-.125),(.135,-.048),(.166,-.066),(.182,-.155),(.182,-.235)]), .047,.053,.88,0,1,2)
-    # Grouped heat slits, kept large enough to read at game scale.
+    # Two short swept bridges connect each nacelle, leaving a long visible gap.
+    slab('Forward bridge '+tag,mirror([(.050,.085),(.082,.142),(.127,.196),(.153,.151),(.086,.028),(.061,.018)]),-.018,.021,.88,1,10,0)
+    slab('Aft bridge '+tag,mirror([(.056,-.177),(.083,-.145),(.119,-.185),(.130,-.221),(.070,-.223)]),-.024,.014,.88,3,10,9)
+    slab('Nacelle '+tag,mirror([(.106,-.267),(.105,-.095),(.115,.061),(.137,.133),(.160,.092),(.188,-.053),(.199,-.245),(.183,-.277)]),-.038,.037,.83,1,10,0)
+    slab('Nacelle top '+tag,mirror([(.116,-.240),(.115,-.096),(.126,.052),(.139,.093),(.153,.058),(.176,-.075),(.184,-.238),(.169,-.255),(.130,-.255)]),.037,.048,.86,0,1,2)
+    slab('Outer blade '+tag,mirror([(.168,-.054),(.213,-.105),(.300,-.192),(.267,-.217),(.224,-.202),(.207,-.264),(.185,-.250)]),-.024,.018,.88,0,1,2)
+    slab('Blade armour '+tag,mirror([(.183,-.103),(.228,-.147),(.280,-.191),(.259,-.198),(.217,-.181),(.203,-.214)]),.018,.024,.88,1,3,0)
+    slab('Hot wing tip '+tag,mirror([(.267,-.176),(.300,-.192),(.278,-.204),(.254,-.190)]),.024,.028,.90,7,1,8)
+    slab('Cannon mount '+tag,mirror([(.102,.114),(.104,.192),(.112,.225),(.128,.225),(.137,.192),(.137,.110)]),.018,.038,.83,3,1,9)
+    slab('Cannon shoulder '+tag,mirror([(.106,.13),(.108,.19),(.115,.207),(.126,.207),(.132,.19),(.132,.13)]),.038,.044,.86,0,3,2)
+    barrel('Root cannon '+tag,s*.12,.30,.033,.009)
+    slab('Nozzle housing '+tag,mirror([(.118,-.250),(.182,-.250),(.184,-.278),(.175,-.288),(.125,-.288),(.116,-.278)]),-.032,.032,.85,3,10,9)
+    ring_y('Recessed engine '+tag,s*.15,-.30,-.264,-.003,.030,.021,9)
+    slab('Cooling recess '+tag,mirror([(.124,-.085),(.167,-.095),(.175,-.205),(.125,-.205)]),.048,.051,.96,4,3,3)
     for j in range(3):
-        y=-.105-j*.033
-        slab('Heat vent', mirror([(.132,y),(.166,y-.006),(.169,y-.016),(.133,y-.010)]), .054,.056,.92,7,10,8)
-    ring_y('Engine nozzle '+tag, s*.15, -.300, -.264, -.002, .030, .021, 9)
-    barrel('Root cannon '+tag, s*.12, .30, .034, .009)
-    slab('Gun root mount '+tag, mirror([(.101,.188),(.105,.257),(.119,.282),(.137,.256),(.137,.184)]), .020,.041,.83,3,1,9)
+        y=-.112-j*.029
+        slab('Cooling rib '+tag,mirror([(.129,y),(.168,y-.002),(.169,y-.010),(.129,y-.008)]),.051,.054,.92,9,3,9)
+    slab('Caution patch '+tag,mirror([(.166,-.025),(.177,-.049),(.184,-.077),(.173,-.060)]),.048,.051,.94,8,3,7)
+    slab('Caution slash '+tag,mirror([(.169,-.036),(.172,-.043),(.180,-.055),(.178,-.047)]),.051,.053,.95,4,4,4)
+    slab('Nacelle underside '+tag,mirror([(.120,-.23),(.119,-.095),(.135,.035),(.153,.025),(.176,-.095),(.181,-.23)]),-.045,-.038,.87,3,10,9)
+    slab('Lower engine panel '+tag,mirror([(.13,-.21),(.17,-.21),(.17,-.13),(.13,-.13)]),-.049,-.045,.90,1,3,9)
 
-# Faceted central fuselage: angular loft with ridge and underside facets.
-verts=[(-.075,-.25,.012),(.075,-.25,.012),(-.090,-.08,.018),(.090,-.08,.018),(-.065,.18,.016),(.065,.18,.016),(0,.375,.012),
-       (-.050,-.23,.058),(.050,-.23,.058),(-.058,-.075,.075),(.058,-.075,.075),(-.041,.16,.050),(.041,.16,.050),(0,.326,.025),
-       (0,-.24,-.046),(-.055,-.07,-.049),(.055,-.07,-.049),(0,.32,-.018)]
-faces=[(0,2,9,7),(2,4,11,9),(4,6,13,11),(1,8,10,3),(3,10,12,5),(5,12,13,6),
-       (7,9,10,8),(9,11,12,10),(11,13,12),(0,7,8,1),(0,14,15,2),(2,15,17,6,4),(1,3,16,14),(3,5,6,17,16),(0,1,14),(14,16,17,15)]
-mesh_piece('Fuselage',verts,faces,[1,0,2,1,0,2,0,2,0,10,10,1,10,1,10,3])
-# Compact octagonal hitbox canopy centered at (0, .08). The existing
-# fuselage plating remains underneath the rim and fills the former canopy area.
-n = 8
-cx, cy = 0.0, .08
-angles = [2 * math.pi * i / n + math.pi / 8 for i in range(n)]
-outline = [(cx + .065 * math.cos(a), cy + .065 * math.sin(a)) for a in angles]
-slab('Canopy rim', outline, .052, .075, .97, 3, 3, 9)
-# Two octagonal rings and a crown form a shallow, faceted glass bubble.
-verts = [(cx + r * math.cos(a), cy + r * math.sin(a), z)
-         for r, z in [(.058, .075), (.044, .095), (.023, .108)] for a in angles]
-verts.append((cx, cy, .112))
-faces, ids = [], []
-for ring in range(2):
+# A shallow twelve-sided glass dome, exactly centered and below z=0.08.
+n=12
+angles=[2*math.pi*i/n for i in range(n)]
+outline=[(.051*math.cos(a),.08+.051*math.sin(a)) for a in angles]
+slab('Canopy rim',outline,.046,.051,.97,3,1,9)
+verts=[(r*math.cos(a),.08+r*math.sin(a),z) for r,z in [(.047,.051),(.038,.065),(.023,.075)] for a in angles]
+verts.append((0,.08,.079))
+faces=[]; ids=[]
+for k in range(2):
     for i in range(n):
-        j = (i + 1) % n
-        faces.append((ring*n+i, ring*n+j, (ring+1)*n+j, (ring+1)*n+i))
-        ids.append(5 if ring == 0 else (6 if i in (1, 2, 3) else 5))
+        j=(i+1)%n
+        faces.append((k*n+i,k*n+j,(k+1)*n+j,(k+1)*n+i))
+        ids.append(6 if i in (2,3,4) else 5)
 for i in range(n):
-    faces.append((2*n+i, 2*n+(i+1)%n, 3*n))
-    ids.append(6 if i in (1, 2, 3) else 5)
-mesh_piece('Emerald canopy', verts, faces, ids)
-# Dorsal spine and three clear forward muzzle lips.
-slab('Nose spine',[(-.022,.151),(0,.346),(.022,.151)], .026,.039,.90,2,1,0)
-barrel('Nose cannon',0,.40,.022,.009)
-slab('Tail spine',[(-.035,-.24),(-.043,-.145),(0,-.115),(.043,-.145),(.035,-.24)], .056,.063,.89,3,1,9)
-slab('Tail stripe',[(-.007,-.224),(-.007,-.155),(.007,-.155),(.007,-.224)], .064,.066,.93,8,3,7)
-# Contrasting armour facets underneath keep the model finished through rolls.
-slab('Under keel',[(-.048,-.21),(-.058,-.06),(0,.27),(.058,-.06),(.048,-.21),(0,-.25)], -.055,-.048,.88,10,3,1)
-
-# Layered, chunky industrial armour. The cockpit and muzzle lips remain clear.
-for s, tag in [(-1, 'L'), (1, 'R')]:
-    def mirrored(poly):
-        return [(s*x, y) for x, y in (poly if s == 1 else list(reversed(poly)))]
-    # Dark reveals around overlapping wing and shoulder plates.
-    slab('Wing root seam '+tag, mirrored([(.076,.151),(.099,.211),(.115,.169),(.105,.074),(.087,.005),(.075,.017)]), .035,.043,.96,4,1,3)
-    slab('Wing root plate '+tag, mirrored([(.080,.145),(.097,.191),(.108,.163),(.099,.077),(.085,.027)]), .043,.050,.88,1,3,0)
-    slab('Blade seam '+tag, mirrored([(.157,.065),(.180,.013),(.224,-.127),(.207,-.119),(.170,-.036)]), .039,.042,.96,3,1,4)
-    slab('Blade armour '+tag, mirrored([(.160,.054),(.178,.012),(.214,-.106),(.205,-.104),(.174,-.033)]), .042,.047,.90,0,3,2)
-    slab('Wing trailing plate '+tag, mirrored([(.201,-.144),(.239,-.157),(.266,-.185),(.216,-.179),(.195,-.168)]), .039,.046,.88,1,3,0)
-    # Deep dark grille wells and broad metal slats on the engine shoulders.
-    slab('Nacelle grille well '+tag, mirrored([(.122,-.090),(.171,-.101),(.177,-.211),(.123,-.211)]), .054,.058,.96,4,3,3)
-    for j in range(4):
-        y = -.115 - j*.023
-        slab('Grille slat '+tag, mirrored([(.128,y),(.170,y-.002),(.171,y-.008),(.128,y-.006)]), .058,.061,.93,9,3,3)
-    slab('Outer rail '+tag, mirrored([(.181,-.083),(.186,-.101),(.190,-.219),(.184,-.222)]), .052,.059,.90,9,3,3)
-    slab('Rail end '+tag, mirrored([(.180,-.219),(.193,-.219),(.193,-.235),(.180,-.235)]), .053,.063,.85,3,10,9)
-    # Large caution patches and diagonal dark stripes.
-    slab('Hazard field '+tag, mirrored([(.178,-.055),(.194,-.075),(.202,-.101),(.186,-.084)]), .048,.051,.97,8,3,8)
-    for j in range(2):
-        y = -.061 - j*.013
-        slab('Hazard slash '+tag, mirrored([(.180+j*.004,y),(.184+j*.004,y-.005),(.196+j*.004,y-.016),(.194+j*.004,y-.009)]), .051,.053,.96,4,4,4)
-    # Armoured gun housings stop behind the actual barrel openings.
-    slab('Cannon shroud '+tag, mirrored([(.101,.202),(.102,.253),(.110,.274),(.130,.274),(.138,.253),(.138,.202)]), .041,.048,.85,3,4,9)
-    slab('Cannon shroud cap '+tag, mirrored([(.106,.215),(.107,.250),(.114,.261),(.126,.261),(.133,.250),(.133,.215)]), .048,.052,.88,9,3,3)
-    # Finished lower surfaces are visible through a barrel roll.
-    slab('Underside wing panel '+tag, mirrored([(.092,-.190),(.182,-.190),(.245,-.180),(.187,-.096),(.118,-.055)]), -.048,-.043,.91,3,10,9)
-    slab('Underside heat panel '+tag, mirrored([(.131,-.194),(.169,-.194),(.169,-.118),(.131,-.118)]), -.052,-.048,.90,1,3,9)
-
-# Segmented rear spine and an inset service channel.
-slab('Aft spine surround',[(-.044,-.135),(-.050,-.205),(-.036,-.235),(.036,-.235),(.050,-.205),(.044,-.135)], .063,.067,.94,4,1,3)
-slab('Aft spine armour',[(-.037,-.141),(-.041,-.195),(-.030,-.214),(.030,-.214),(.041,-.195),(.037,-.141)], .067,.073,.88,3,4,9)
-for y in (-.155,-.173,-.191):
-    slab('Spine cooling fin',[(-.027,y),(-.027,y-.006),(.027,y-.006),(.027,y)], .073,.076,.94,9,3,9)
-slab('Nose channel',[(-.017,.169),(-.012,.263),(0,.326),(.012,.263),(.017,.169)], .039,.043,.94,3,1,9)
-slab('Nose channel inset',[(-.008,.181),(-.006,.262),(0,.303),(.006,.262),(.008,.181)], .043,.047,.93,1,3,0)
-slab('Nose emitter collar',[(-.014,.326),(-.013,.361),(.013,.361),(.014,.326)], .029,.038,.85,3,4,9)
-for s, tag in [(-1, 'L'), (1, 'R')]:
-    poly=[(.067,.043),(.078,.043),(.080,.015),(.067,.018)]
-    if s == -1:
-        poly=list(reversed(poly))
-    slab('Sensor block '+tag, [(s*x,y) for x,y in poly], .050,.061,.82,3,4,9)
+    faces.append((2*n+i,2*n+(i+1)%n,3*n)); ids.append(6 if i in (2,3,4) else 5)
+mesh_piece('Emerald dome',verts,faces,ids)
+slab('Aft spine well',[(-.037,-.20),(-.045,-.12),(-.032,-.075),(.032,-.075),(.045,-.12),(.037,-.20)],.047,.050,.95,4,1,3)
+slab('Aft spine armour',[(-.029,-.19),(-.035,-.125),(-.026,-.09),(.026,-.09),(.035,-.125),(.029,-.19)],.050,.056,.86,3,4,9)
+for y in (-.12,-.145,-.17):
+    slab('Aft cooling fin',[(-.024,y),(-.024,y-.007),(.024,y-.007),(.024,y)],.056,.059,.93,9,3,9)
+slab('Ember spine mark',[(-.006,-.205),(-.006,-.19),(.006,-.19),(.006,-.205)],.048,.051,.95,8,1,7)
 
 # Join, bake all transforms, and triangulate once for a predictable game mesh.
 bpy.ops.object.select_all(action='DESELECT')
