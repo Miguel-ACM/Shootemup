@@ -201,9 +201,10 @@ public sealed class HangarHub : MonoBehaviour
             // Waits off the right edge, then glides onto its plinth during the arrival.
             var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.spot + Vector3.right * SlideDistance, Quaternion.identity);
             go.transform.SetParent(transform, true);
-            go.SetActive(false);
             plinth.item = (AItem)go.AddComponent(type);
             plinth.item.SetRarity(ItemPool.RarityOf(stock[i]));
+            // Hidden only after Awake has given the item its name and description.
+            go.SetActive(false);
             plinth.disc = Hover("HangarShopPlinth", plinth.spot + new Vector3(SlideDistance, -.3f, .5f), -4);
             plinth.shadow = Shadow(plinth.spot + new Vector3(SlideDistance, -.3f, 0), .7f);
             plinths.Add(plinth);
