@@ -34,13 +34,7 @@ public sealed class IndustrialHUD : MonoBehaviour
 
     void Start()
     {
-        // The side instruments switch on with the run; the hangar shows only its coin count.
-        if (HangarHub.Active)
-        {
-            enabled = false;
-            HangarHub.RunStarted += BeginRun;
-            return;
-        }
+        // Built while the hangar idles but kept dark: the startup flicker only begins with the run (see Update).
         gameObject.AddComponent<BossPositionShadow>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
         waves = FindAnyObjectByType<WaveOrchestrer>();
@@ -153,15 +147,6 @@ public sealed class IndustrialHUD : MonoBehaviour
         minibossClock.alignment = TextAnchor.MiddleCenter;
     }
 
-    // The run starts in this same scene, under the clouds.
-    void BeginRun()
-    {
-        if (this == null)
-            return;
-        enabled = true;
-        Start();
-    }
-
     void LateUpdate()
     {
         // Compress into narrow side margins; never push an instrument into combat.
@@ -189,7 +174,9 @@ public sealed class IndustrialHUD : MonoBehaviour
     {
         if (player != null)
         {
-            entranceAge += Time.unscaledDeltaTime;
+            // The shared flicker clock waits at zero, all instruments dark, until the run leaves the hangar.
+            if (!HangarHub.Active && !HangarHub.Launching)
+                entranceAge += Time.unscaledDeltaTime;
             // Charge the instruments one segment at a time, without changing the player's resources.
             int hits = Mathf.Clamp(Mathf.RoundToInt(player.maxHealth), 1, MaxHitCells);
             if (hits != healthCells.Length)

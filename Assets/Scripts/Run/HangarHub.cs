@@ -53,7 +53,6 @@ public sealed class HangarHub : MonoBehaviour
     public static void Enter(RunDifficulty chosen)
     {
         difficulty = chosen;
-        RunStarted = null;
         tunnelTravel = LevelEnvironment.TitleTravel;
         Active = true;
         GameRules.StartNewRun(chosen);
@@ -622,24 +621,16 @@ public sealed class HangarHub : MonoBehaviour
         if (dialog != null && dialog.Panel != null)
             dialog.Panel.anchoredPosition = new Vector2(0, DecisionOverlay.SkipHeight + 12);
         yield return null;
-        // The core's instruments build one per frame.
-        var started = RunStarted;
-        RunStarted = null;
-        if (started != null)
-            foreach (System.Action start in started.GetInvocationList())
-            {
-                start();
-                yield return null;
-            }
+        // The instruments were built while the hangar idled; they light up on their own once the run is under way.
         player.StartCoroutine(ExplodingShield.GrantStarter(player));
+        yield return null;
+        yield return null;
         player.StartCoroutine(ShipFrames.GrantStarters(player, frame));
         while (unload != null && !unload.isDone)
             yield return null;
         Launching = false;
     }
 
-    /// <summary>Raised under the clouds, one listener per frame, when the run begins.</summary>
-    public static event System.Action RunStarted;
 
     void OnDestroy()
     {
