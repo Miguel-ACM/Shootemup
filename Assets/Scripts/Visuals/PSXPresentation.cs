@@ -118,6 +118,9 @@ public sealed class PSXPresentation : MonoBehaviour
         // Real time, since the world itself is frozen while the filter is up.
         timeStopTint = Mathf.MoveTowards(timeStopTint, WorldTimeStop.Frozen ? 1 : 0, Time.unscaledDeltaTime * 3.5f);
         composite.SetFloat("_TimeStop", Mathf.SmoothStep(0, 1, timeStopTint));
+        composite.SetFloat("_ClearFlash", ClearEffects.Flash);
+        composite.SetFloat("_ClearSweep", ClearEffects.Sweep);
+        composite.SetColor("_ClearTint", ClearEffects.Tint);
         if (Keyboard.current != null && Keyboard.current.f9Key.wasPressedThisFrame)
         {
             filterEnabled = !filterEnabled;

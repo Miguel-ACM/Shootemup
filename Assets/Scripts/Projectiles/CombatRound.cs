@@ -206,6 +206,8 @@ public abstract class CombatRound : AEnemyBullet
     // Every cleared round dissolves in a pop sized to itself rather than blinking out.
     public static void ClearAll()
     {
+        if (Live.Count > 0)
+            ClearEffects.ScreenClear();
         foreach (var shot in new List<CombatRound>(Live))
             if (shot != null)
                 shot.Vanish();

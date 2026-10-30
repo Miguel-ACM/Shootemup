@@ -38,6 +38,7 @@ public sealed class SpellCardCast : MonoBehaviour
     void Start()
     {
         var p = transform.position;
+        ClearEffects.ScreenClear(Vermilion);
         PSXFireballs.Shockwave(p, 3.2f, .6f, Vermilion, 3, .3f);
         PSXFireballs.Shockwave(p, 1.6f, .45f, Gold, 2, .15f);
         PSXImpactEffects.ItemGet(p, Vermilion);

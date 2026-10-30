@@ -20,6 +20,9 @@ Shader "Shootemup/PSX Composite"
         _FilterEnabled("Pixel filter",Float)=1
         _Underwater("Underwater grade",Float)=0
         _TimeStop("Stopped time blue filter",Range(0,1))=0
+        _ClearFlash("Full clear flash",Range(0,1))=0
+        _ClearSweep("Full clear sweep height",Float)=-1
+        _ClearTint("Full clear tint",Color)=(1,1,1,1)
     }
     SubShader
     {
@@ -33,8 +36,8 @@ Shader "Shootemup/PSX Composite"
             #pragma target 3.0
             #include "UnityCG.cginc"
             sampler2D _MainTex,_GlowTex;
-            float4 _MainTex_TexelSize, _Color;
-            float _Dither, _ColorSteps, _Soften,_GlowStrength,_FilterEnabled,_Underwater,_TimeStop;
+            float4 _MainTex_TexelSize, _Color, _ClearTint;
+            float _Dither, _ColorSteps, _Soften,_GlowStrength,_FilterEnabled,_Underwater,_TimeStop,_ClearFlash,_ClearSweep;
             struct Input { float4 vertex:POSITION; float2 uv:TEXCOORD0; float4 color:COLOR; };
             struct Output { float4 position:SV_POSITION; float2 uv:TEXCOORD0; float4 color:COLOR; };
             Output vert(Input i) { Output o; o.position=UnityObjectToClipPos(i.vertex); o.uv=i.uv; o.color=i.color*_Color; return o; }
@@ -70,6 +73,11 @@ Shader "Shootemup/PSX Composite"
                 // Stopped time: a cool monochrome blue wash that still keeps bright rounds readable.
                 float luma=dot(color,float3(.299,.587,.114));
                 color=lerp(color,luma*float3(.5,.78,1.22)+float3(.015,.045,.11),_TimeStop*.75);
+                // Full-screen clear: a white flash and a bright band sweeping up with a soft wake.
+                color=lerp(color,float3(1,1,1),_ClearFlash*.45);
+                float above=i.uv.y-_ClearSweep;
+                float band=_ClearSweep<-.5?0:exp(-above*above*900)+(above<0?.18*exp(above*7):0);
+                color+=_ClearTint.rgb*band*.6;
                 return half4(color,1)*i.color;
             }
             ENDCG

@@ -26,7 +26,7 @@ public sealed class MirrorBurst : AActiveItem
             CombatUpgrades.Current?.Block();
             converted++;
         }
-        PSXFireballs.Shockwave(s.transform.position, 5, .5f, new Color(.3f, 1, .8f), 2, .12f);
+        ClearEffects.RadiusClear(s.transform.position, 5, new Color(.3f, 1, .8f));
         lastCD = 0;
         return mana - cost;
     }

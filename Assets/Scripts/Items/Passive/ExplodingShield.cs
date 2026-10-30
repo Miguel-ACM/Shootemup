@@ -56,7 +56,7 @@ public sealed class ShieldDetonation : MonoBehaviour
         clearing = ClearTime;
         var p = transform.position;
         PSXImpactEffects.Explosion(p, 1.1f);
-        PSXFireballs.Shockwave(p, 14f, .55f, Blast, 3, .6f);
+        ClearEffects.ScreenClear(Blast);
         SoundManager.PlaySound("blankbullet", .2f);
     }
 

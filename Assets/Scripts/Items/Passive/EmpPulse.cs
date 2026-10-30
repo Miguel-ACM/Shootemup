@@ -41,7 +41,7 @@ public sealed class PeriodicEmp : MonoBehaviour
             bullet.gameObject.SetActive(false);
             Object.Destroy(bullet.gameObject);
         }
-        PSXFireballs.Shockwave(position, 24, .65f, new Color(.24f, .75f, 1), 2, .1f);
+        ClearEffects.ScreenClear(new Color(.24f, .75f, 1));
         SoundManager.PlaySound("blankbullet", .15f);
     }
 }
