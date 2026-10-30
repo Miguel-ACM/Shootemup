@@ -24,7 +24,9 @@ public sealed partial class CityDuoBoss
     {
         while (true)
         {
-            if (!enraged)
+            if (phaseThree)
+                yield return FinalSpell();
+            else if (!enraged)
             {
                 if (heavy)
                 {
@@ -136,5 +138,29 @@ public sealed partial class CityDuoBoss
             Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.up, lob), 2.7f, .42f)
                 .Fall(new Vector2(0, -2.7f))
                 .SplitAt(1.8f, shards, 360f / shards, 3.0f, .19f);
+    }
+
+    // Hard final phase for the survivor. Hauler: Gridlock Storm, cargo, rear guard and
+    // street grid together. Interceptor: Six-Way Junction with headlights.
+    IEnumerator FinalSpell()
+    {
+        if (heavy)
+            yield return Every(8, .8f, n =>
+            {
+                Gridlock(n);
+                if (n % 2 == 0)
+                    RearGuard(n);
+                if (n % 3 == 1)
+                    CargoLob();
+            });
+        else
+            yield return Every(8, .07f, n =>
+            {
+                for (int arm = 0; arm < 6; arm++)
+                    Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, arm * 60 + n * 9), 3.5f, .19f);
+                if (n % 17 == 8)
+                    Headlights(Muzzle());
+            });
+        yield return Wait(.5f);
     }
 }
