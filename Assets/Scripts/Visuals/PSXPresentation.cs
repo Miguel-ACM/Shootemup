@@ -20,6 +20,7 @@ public sealed class PSXPresentation : MonoBehaviour
     bool previousHDR;
     int width, height;
     bool initialized;
+    float timeStopTint;
     public RenderTexture SceneTexture => pixels;
     public Material CompositeMaterial => composite;
 
@@ -114,6 +115,9 @@ public sealed class PSXPresentation : MonoBehaviour
         if (!initialized)
             return;
         composite.SetFloat("_Underwater", LevelRun.Current == LevelId.Underwater ? 1 : 0);
+        // Real time, since the world itself is frozen while the filter is up.
+        timeStopTint = Mathf.MoveTowards(timeStopTint, WorldTimeStop.Frozen ? 1 : 0, Time.unscaledDeltaTime * 3.5f);
+        composite.SetFloat("_TimeStop", Mathf.SmoothStep(0, 1, timeStopTint));
         if (Keyboard.current != null && Keyboard.current.f9Key.wasPressedThisFrame)
         {
             filterEnabled = !filterEnabled;

@@ -19,6 +19,7 @@ Shader "Shootemup/PSX Composite"
         _GlowStrength("Glow strength",Float)=.6
         _FilterEnabled("Pixel filter",Float)=1
         _Underwater("Underwater grade",Float)=0
+        _TimeStop("Stopped time blue filter",Range(0,1))=0
     }
     SubShader
     {
@@ -33,7 +34,7 @@ Shader "Shootemup/PSX Composite"
             #include "UnityCG.cginc"
             sampler2D _MainTex,_GlowTex;
             float4 _MainTex_TexelSize, _Color;
-            float _Dither, _ColorSteps, _Soften,_GlowStrength,_FilterEnabled,_Underwater;
+            float _Dither, _ColorSteps, _Soften,_GlowStrength,_FilterEnabled,_Underwater,_TimeStop;
             struct Input { float4 vertex:POSITION; float2 uv:TEXCOORD0; float4 color:COLOR; };
             struct Output { float4 position:SV_POSITION; float2 uv:TEXCOORD0; float4 color:COLOR; };
             Output vert(Input i) { Output o; o.position=UnityObjectToClipPos(i.vertex); o.uv=i.uv; o.color=i.color*_Color; return o; }
@@ -66,6 +67,9 @@ Shader "Shootemup/PSX Composite"
                 // Add the soft colored spill after quantization to preserve its smooth falloff.
                 color+=tex2D(_GlowTex,i.uv).rgb*_GlowStrength;
                 color=lerp(color,color*float3(.69,.89,1.04)+float3(.008,.021,.042),_Underwater);
+                // Stopped time: a cool monochrome blue wash that still keeps bright rounds readable.
+                float luma=dot(color,float3(.299,.587,.114));
+                color=lerp(color,luma*float3(.5,.78,1.22)+float3(.015,.045,.11),_TimeStop*.75);
                 return half4(color,1)*i.color;
             }
             ENDCG
