@@ -14,7 +14,7 @@ public static class ItemPool
     private static List<string> rare;
     private static List<string> epic;
     private static List<string> legendary;
-    private static List<string> defaultPool = new List<string> { "TwerpItem", "AMoonItem", "BabyYouItem" };
+    private static List<string> defaultPool;
 
     static ItemPool()
     {
@@ -28,6 +28,12 @@ public static class ItemPool
         rare = new List<string>(System.Array.FindAll(allRare, MetaProgress.IsUnlocked));
         epic = new List<string>(System.Array.FindAll(allEpic, MetaProgress.IsUnlocked));
         legendary = new List<string>(System.Array.FindAll(allLegendary, MetaProgress.IsUnlocked));
+        // Exhausted common offers repeat eligible commons, never bypass hangar unlocks.
+        defaultPool = new List<string>(common);
+        if (defaultPool.Count == 0)
+            foreach (string item in AllItems)
+                if (MetaProgress.IsUnlocked(item))
+                    defaultPool.Add(item);
     }
 
     public static IEnumerable<string> AllItems
@@ -118,7 +124,7 @@ public static class ItemPool
         {
             p.RemoveAt(itemI);
         }
-        actualPool = pool;
+        actualPool = pool == "default" ? RarityOf(itemString) : pool;
         return itemString;
 
 
