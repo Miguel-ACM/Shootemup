@@ -6,6 +6,31 @@ using System.Reflection;
 public class ReviewRegressionTests
 {
     [Test]
+    public void HomingSkipsProtectedHullAndCore()
+    {
+        var hullObject = new UnityEngine.GameObject("Protected hull");
+        var targetObject = new UnityEngine.GameObject("Eligible target");
+        hullObject.SetActive(false);
+        targetObject.SetActive(false);
+        var hull = hullObject.AddComponent<SpaceCitadelBoss>();
+        var core = hullObject.AddComponent<SpaceBossPart>();
+        var target = targetObject.AddComponent<ThunderLanceBoss>();
+        targetObject.transform.position = UnityEngine.Vector3.up * 2;
+        AEnemy.Live.Add(hull);
+        AEnemy.Live.Add(core);
+        AEnemy.Live.Add(target);
+        try { Assert.AreSame(target, CombatUpgrades.Nearest(UnityEngine.Vector3.zero, null, 5)); }
+        finally
+        {
+            AEnemy.Live.Remove(hull);
+            AEnemy.Live.Remove(core);
+            AEnemy.Live.Remove(target);
+            UnityEngine.Object.DestroyImmediate(hullObject);
+            UnityEngine.Object.DestroyImmediate(targetObject);
+        }
+    }
+
+    [Test]
     public void PhaseInvulnerabilityRejectsDirectHitsBeforeEffectsAndScore()
     {
         var go = new UnityEngine.GameObject("Invulnerability test");

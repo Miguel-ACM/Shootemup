@@ -29,9 +29,10 @@ public class Bullet : ABullet
         }
         if (followness != 0 && !rubberReturned)
         {
-            GameObject e = Utils.FindClosestWithTag(transform.position, "Enemy", out float sqrDistance);
+            var e = CombatUpgrades.Nearest(transform.position, null, Mathf.Sqrt(Mathf.Abs(followness) * 10));
             if (e != null)
             {
+                float sqrDistance = ((Vector2)(e.transform.position - transform.position)).sqrMagnitude;
                 int factor = 1;
                 if (followness < 0)
                     factor = -1;
