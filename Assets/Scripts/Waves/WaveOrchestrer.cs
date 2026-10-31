@@ -12,6 +12,7 @@ public class WaveOrchestrer : MonoBehaviour
     int currentWaveNumber = 0;
     int currentWaveEnemies = 0;
     int currentWaveKilledEnemies = 0;
+    readonly WaveKillLedger killLedger = new WaveKillLedger();
     float[] limits;
     Wave currentWave;
     WaveUnit currentUnit;
@@ -48,7 +49,7 @@ public class WaveOrchestrer : MonoBehaviour
     DistrictMiniboss activeMiniboss;
     float minibossDeadline = -1;
     bool minibossVictory;
-    /// <summary>An ordinary combat wave ended: (enemies in the wave, enemies destroyed).</summary>
+    /// <summary>Every enemy of an ordinary wave resolved, in wave order: (total, destroyed).</summary>
     public static event Action<int, int> CombatWaveFinished;
     public float MinibossRemaining => minibossDeadline < 0 ? 20 : Mathf.Max(0, minibossDeadline - Time.time);
     public bool MinibossVictory => minibossVictory;
@@ -153,7 +154,10 @@ public class WaveOrchestrer : MonoBehaviour
             minibossDeadline = -1;
         }
         else
-            CombatWaveFinished?.Invoke(currentWaveEnemies, currentWaveKilledEnemies);
+        {
+            killLedger.HandOff(currentWaveNumber);
+            killLedger.Drain(CombatWaveFinished);
+        }
         if (challengeWave)
         {
             challengeWave = false;
@@ -246,6 +250,8 @@ public class WaveOrchestrer : MonoBehaviour
             offerAt = handoffAt * .5f;
             currentWaveEnemies = currentWave.units.Count;
             currentWaveKilledEnemies = 0;
+            if (!currentWave.units.Exists(unit => unit.miniboss))
+                killLedger.Begin(currentWaveNumber + 1, currentWaveEnemies);
             if (currWaveType == "miniboss")
             {
                 minibossVictory = false;
@@ -379,10 +385,12 @@ public class WaveOrchestrer : MonoBehaviour
             EraseAllBullets();
             StartCoroutine(BossReward(bossPosition ?? new Vector3(0, Camera.UpLimit * .5f, 1)));
         }
-        else if (currentWaveNumber == waveNumber)
+        else
         {
-            if (defeated)
+            if (defeated && currentWaveNumber == waveNumber)
                 currentWaveKilledEnemies += 1;
+            killLedger.Resolve(waveNumber, defeated);
+            killLedger.Drain(CombatWaveFinished);
         }
     }
 
@@ -471,6 +479,7 @@ public class WaveOrchestrer : MonoBehaviour
         items.Clear();
         dialog.Hide();
         currentWaveNumber = 0;
+        killLedger.Clear();
         currentWaveEnemies = 0;
         currentWaveKilledEnemies = 0;
         challengeWavesRemaining = 0;

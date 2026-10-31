@@ -14,6 +14,12 @@ public abstract class AEnemy : MonoBehaviour
     protected virtual void OnDisable()
     {
         Live.Remove(this);
+        // Explicit cleanup can remove an ordinary ship without calling Depart.
+        if (!dying && !isBoss && orchestrer != null)
+        {
+            dying = true;
+            orchestrer.NotifyEnemyKilled(orchesterWaveNumber, defeated: false);
+        }
     }
 
     [EnemyTunable("Base health", 1, 50000)] public float health = 20f;
@@ -216,12 +222,7 @@ public abstract class AEnemy : MonoBehaviour
 
     protected virtual void OnBecameInvisible()
     {
-        if (!dying)
-        {
-            Destroy(gameObject);
-            if (orchestrer != null)
-                orchestrer.NotifyEnemyKilled(orchesterWaveNumber, isBoss: isBoss, defeated: false);
-        }
+        Depart();
     }
 
     public void NotifyBossPhaseChange(int phase)
