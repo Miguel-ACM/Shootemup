@@ -112,7 +112,7 @@ public sealed class CombatUpgrades : MonoBehaviour
     public bool TryRebound() => Count(UpgradeKind.Rebound) > 0 && Ready("rebound", .18f);
     public float DirectHit(AEnemy enemy, float damage, int generation = 0, bool companion = false, bool fire = false)
     {
-        if (enemy == null || enemy.health <= 0)
+        if (enemy == null || !enemy.CanReceiveDamage)
             return 0;
         if (companion)
             damage *= 1 + Count(UpgradeKind.Drone) * .2f + Count(UpgradeKind.Squad) * .5f;

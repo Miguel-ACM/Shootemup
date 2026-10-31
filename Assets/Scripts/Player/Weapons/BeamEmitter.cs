@@ -185,10 +185,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
                     if (enemy == null || !enemy.CanBeTargeted || !Touches(enemy, width * .5f, out var point, out var direction))
                         continue;
                     float amount = GameRules.playerShootDamage * 1.2f * charge * MagnifyingLens.Power;
-                    float dealt = CombatUpgrades.Current != null ? CombatUpgrades.Current.DirectHit(enemy, amount) : amount;
-                    enemy.HitAt(point, direction);
-                    enemy.damage(dealt);
-                    Score.IncreaseScore(Mathf.RoundToInt(dealt));
+                    CombatHit.Apply(enemy, amount, point, direction);
                 }
             }
             yield return null;

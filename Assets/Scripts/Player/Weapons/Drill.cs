@@ -54,10 +54,9 @@ public sealed class Drill : AWeaponAutomatic
             if (enemy == null || !enemy.CanBeTargeted || !Touches(enemy, start, tip, out var point))
                 continue;
             float amount = GameRules.playerShootDamage * 1.6f * scale * MagnifyingLens.Power;
-            float damage = CombatUpgrades.Current != null ? CombatUpgrades.Current.DirectHit(enemy, amount) : amount;
-            enemy.HitAt(point, Vector2.up);
-            enemy.damage(damage);
-            Score.IncreaseScore(Mathf.RoundToInt(damage));
+            float damage = CombatHit.Apply(enemy, amount, point, Vector2.up);
+            if (damage <= 0)
+                continue;
             dealt += damage;
             hit = true;
             PSXImpactEffects.Burst(point, new Color(1f, .8f, .4f), false, Random.insideUnitCircle);

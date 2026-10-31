@@ -67,15 +67,14 @@ public class Bullet : ABullet
     {
         if (collision.CompareTag("Enemy"))
         {
+            AEnemy en = collision.gameObject.GetComponent<AEnemy>();
+            if (en == null || !en.CanReceiveDamage)
+                return;
             if (player == null)
                 player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
             player.PlayHitSound("hit1");
-            AEnemy en = collision.gameObject.GetComponent<AEnemy>(); //collision.transform.position
-            //Instantiate(Resources.Load<GameObject>("Particles/HitSpark"), collision.transform.position, Quaternion.identity);
-            Score.IncreaseScore(Mathf.RoundToInt(damage));
-            en.HitAt(collision.ClosestPoint(transform.position), rigidBody != null ? rigidBody.linearVelocity : (Vector2)transform.up);
-            float dealt = CombatUpgrades.Current != null ? CombatUpgrades.Current.DirectHit(en, damage, 0, companionShot) : damage;
-            en.damage(dealt);
+            CombatHit.Apply(en, damage, collision.ClosestPoint(transform.position),
+                rigidBody != null ? rigidBody.linearVelocity : (Vector2)transform.up, companion: companionShot);
             if (CombatUpgrades.Current != null && (CombatUpgrades.Current.Count(UpgradeKind.BouncingBall) > 0 || CombatUpgrades.Current.TryRebound()))
             {
                 var next = CombatUpgrades.Nearest(transform.position, new HashSet<AEnemy> { en }, 12);

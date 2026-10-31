@@ -130,6 +130,7 @@ public sealed partial class DesertWormBoss : DistrictBoss
 public sealed class DesertWormCore : AEnemy
 {
     DesertWormBoss owner;
+    public override bool CanReceiveDamage => base.CanReceiveDamage && owner != null && !owner.Invulnerable;
     MeshRenderer mesh;
     public static DesertWormCore Create(DesertWormBoss owner, Transform parent, bool head, float health, Vector3 local)
     {

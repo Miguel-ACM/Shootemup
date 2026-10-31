@@ -202,10 +202,7 @@ public sealed class TrailDrone : ACompanion
             return;
         nextDamage = Time.time + BeamTick;
         float damage = GameRules.playerShootDamage;
-        if (CombatUpgrades.Current != null)
-            damage = CombatUpgrades.Current.DirectHit(struck, damage, 0, true);
-        struck.HitAt(point, Vector2.up);
-        struck.damage(damage);
+        CombatHit.Apply(struck, damage, point, Vector2.up, companion: true, score: false);
     }
     void OnDisable()
     {

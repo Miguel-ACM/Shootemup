@@ -60,10 +60,8 @@ public sealed class StaticCharge : MonoBehaviour
                 break;
             used.Add(next);
             StaticArc.Draw(point, next.transform.position, .22f);
-            float dealt = CombatUpgrades.Current.DirectHit(next, damage * .7f * Mathf.Pow(.8f, i), 1);
-            next.HitAt(next.transform.position, ((Vector2)(next.transform.position - point)).normalized);
-            next.damage(dealt);
-            Score.IncreaseScore(Mathf.RoundToInt(dealt));
+            CombatHit.Apply(next, damage * .7f * Mathf.Pow(.8f, i), next.transform.position,
+                ((Vector2)(next.transform.position - point)).normalized, generation: 1);
             point = next.transform.position;
         }
         ItemSpark.Emit(first.transform.position, new Color(.7f, .5f, .95f), 5, .12f);

@@ -139,6 +139,7 @@ public sealed partial class HellCrabBoss : DistrictBoss
 public sealed class HellCrabEye : AEnemy
 {
     HellCrabBoss owner;
+    public override bool CanReceiveDamage => base.CanReceiveDamage && owner != null && !owner.Invulnerable;
     MeshRenderer model;
     public static HellCrabEye Create(HellCrabBoss owner, Transform parent, Vector3 position, float health)
     {

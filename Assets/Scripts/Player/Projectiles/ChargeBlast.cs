@@ -63,10 +63,7 @@ public sealed class ChargeBlast : MonoBehaviour
                 if (collider == null || !collider.enabled || (collider.ClosestPoint(transform.position) - (Vector2)transform.position).sqrMagnitude > tickRadius * tickRadius)
                     continue;
                 float amount = totalDamage * slice / duration;
-                float dealt = CombatUpgrades.Current != null ? CombatUpgrades.Current.DirectHit(enemy, amount, 1) : amount;
-                enemy.HitAt(collider.ClosestPoint(transform.position), Vector2.up);
-                enemy.damage(dealt);
-                Score.IncreaseScore(Mathf.RoundToInt(dealt));
+                CombatHit.Apply(enemy, amount, collider.ClosestPoint(transform.position), Vector2.up, generation: 1);
             }
             nextTick += slice;
         }

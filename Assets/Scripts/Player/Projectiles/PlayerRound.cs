@@ -162,12 +162,10 @@ public sealed class PlayerRound : ABullet
         if (detonated)
             return;
         var enemy = collision.GetComponent<AEnemy>();
-        if (enemy == null || !enemy.CanBeTargeted || !hit.Add(enemy))
+        if (enemy == null || !enemy.CanReceiveDamage || !hit.Add(enemy))
             return;
-        float dealt = CombatUpgrades.Current != null ? CombatUpgrades.Current.DirectHit(enemy, damage, generation, companion, delivery == PlayerDelivery.Flame) : damage;
-        enemy.HitAt(collision.ClosestPoint(transform.position), heading);
-        enemy.damage(dealt);
-        Score.IncreaseScore(Mathf.RoundToInt(dealt));
+        CombatHit.Apply(enemy, damage, collision.ClosestPoint(transform.position), heading,
+            generation, companion, delivery == PlayerDelivery.Flame);
         if (chargeLevel > 0)
         {
             ExplodeCharge();

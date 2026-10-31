@@ -24,6 +24,7 @@ public abstract class AEnemy : MonoBehaviour
 
     [EnemyTunable("Base health", 1, 50000)] public float health = 20f;
     public virtual bool CanBeTargeted => health > 0;
+    public virtual bool CanReceiveDamage => CanBeTargeted && !dying;
 
     bool dying = false;
     public float size = 0.65f;

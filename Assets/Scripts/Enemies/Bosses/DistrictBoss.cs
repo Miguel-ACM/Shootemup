@@ -15,6 +15,7 @@ public abstract class DistrictBoss : DistrictEnemy
     protected bool PhaseTransitioning => age < phaseEntryUntil;
     // While a phase breaks the boss repositions and cannot be hurt.
     public bool Invulnerable => PhaseTransitioning;
+    public override bool CanReceiveDamage => base.CanReceiveDamage && !Invulnerable;
     protected virtual bool RepositionsOnPhase => true;
     protected virtual bool PatternEmissionAllowed => true;
     public virtual bool UsesHealthBar => true;

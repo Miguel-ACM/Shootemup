@@ -106,6 +106,7 @@ public sealed class SpaceBossPart : AEnemy
     MeshRenderer model;
     public bool IsExposed => exposed;
     public override bool CanBeTargeted => exposed && health > 0 && owner != null && !owner.IsDefeated;
+    public override bool CanReceiveDamage => base.CanReceiveDamage && !owner.Invulnerable;
     public static SpaceBossPart Create(SpaceCitadelBoss owner, Transform parent, int kind, Vector3 position, float health)
     {
         var go = new GameObject(kind == 0 ? "Breakable shield generator" : kind == 1 ? "Breakable ricochet turret" : "Protected reactor core");

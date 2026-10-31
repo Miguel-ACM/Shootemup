@@ -6,6 +6,30 @@ using System.Reflection;
 public class ReviewRegressionTests
 {
     [Test]
+    public void PhaseInvulnerabilityRejectsDirectHitsBeforeEffectsAndScore()
+    {
+        var go = new UnityEngine.GameObject("Invulnerability test");
+        go.SetActive(false);
+        try
+        {
+            var boss = go.AddComponent<ThunderLanceBoss>();
+            typeof(DistrictBoss).GetField("phaseEntryUntil", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boss, 1.5f);
+            float health = boss.health;
+            Assert.IsFalse(boss.CanReceiveDamage);
+            Assert.AreEqual(0, CombatHit.Apply(boss, 10, UnityEngine.Vector3.zero, UnityEngine.Vector2.up, fire: true));
+            Assert.AreEqual(health, boss.health);
+            Assert.IsNull(go.GetComponent<BurningHull>());
+            foreach (Type type in new[] { typeof(SpaceBossPart), typeof(HellCrabEye), typeof(DesertWormCore) })
+            {
+                var part = (AEnemy)go.AddComponent(type);
+                Assert.IsFalse(part.CanReceiveDamage); // Detached parts cannot accept hits either.
+                Assert.AreEqual(0, CombatHit.Apply(part, 10, UnityEngine.Vector3.zero, UnityEngine.Vector2.up));
+            }
+        }
+        finally { UnityEngine.Object.DestroyImmediate(go); }
+    }
+
+    [Test]
     public void ThunderEmitterStaysSuppressedForItsOwnersEntirePhaseBreak()
     {
         var go = new UnityEngine.GameObject("Thunder phase test");

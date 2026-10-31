@@ -50,7 +50,7 @@ public sealed class StickyGum : MonoBehaviour
             if (blob.age < .65f)
                 continue;
             GumSpritePop.Spawn(blob.model.position);
-            if (enemy != null && enemy.CanBeTargeted)
+            if (enemy != null && enemy.CanReceiveDamage)
             {
                 enemy.damage(blob.damage);
                 Score.IncreaseScore(Mathf.RoundToInt(blob.damage));
