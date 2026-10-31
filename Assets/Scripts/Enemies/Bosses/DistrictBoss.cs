@@ -5,31 +5,35 @@ using UnityEngine;
 public abstract class DistrictBoss : DistrictEnemy
 {
     protected float initialHealth;
-    protected bool phaseTwo, phaseThree;
+    readonly BossPhaseState encounter = new BossPhaseState();
+    protected bool phaseTwo { get => encounter.Phase >= 2; set => encounter.Phase = value ? Mathf.Max(2, encounter.Phase) : 1; }
+    protected bool phaseThree { get => encounter.Phase >= 3; set => encounter.Phase = value ? 3 : Mathf.Min(2, encounter.Phase); }
     const float Sturdiness = 1.3f;
     protected ResourceBar bar;
     protected Vector3 station;
     protected float motionAge;
     float nextPressure;
-    float phaseEntryUntil;
-    protected bool PhaseTransitioning => age < phaseEntryUntil;
+    float phaseEntryUntil { get => encounter.TransitionUntil; set => encounter.TransitionUntil = value; }
+    protected bool PhaseTransitioning => encounter.Transitioning(age);
     // While a phase breaks the boss repositions and cannot be hurt.
     public bool Invulnerable => PhaseTransitioning;
     public override bool CanReceiveDamage => base.CanReceiveDamage && !Invulnerable;
     protected virtual bool RepositionsOnPhase => true;
     protected virtual bool PatternEmissionAllowed => true;
+    public bool EmissionAllowed => health > 0 && !PhaseTransitioning && !GameRules.playerDisabled && !WorldTimeStop.Frozen && PatternEmissionAllowed;
+    protected override bool CanEmit => EmissionAllowed;
     public virtual bool UsesHealthBar => true;
     public virtual float DisplayFraction => HealthFraction;
     public float HealthFraction => health / Mathf.Max(1, initialHealth);
 
     // One life bar per phase. Hard adds a third, harder phase to every boss.
     public int PhaseCount => Difficulty.Hard ? 3 : 2;
-    public int CurrentPhase => phaseThree ? 3 : phaseTwo ? 2 : 1;
-    float phaseStart = 1;
+    public int CurrentPhase => encounter.Phase;
+    float phaseStart { get => encounter.MeterStart; set => encounter.MeterStart = value; }
     // Multipart encounters can measure the objectives of this phase rather than total hull health.
     protected virtual float PhaseMeterValue => DisplayFraction;
     protected virtual float PhaseEnd(int phase) => phase == 1 ? .5f : phase == 2 && Difficulty.Hard ? .25f : 0;
-    public float PhaseFraction => Mathf.Clamp01((PhaseMeterValue - PhaseEnd(CurrentPhase)) / Mathf.Max(.00001f, phaseStart - PhaseEnd(CurrentPhase)));
+    public float PhaseFraction => encounter.Fraction(PhaseMeterValue, PhaseEnd(CurrentPhase));
     protected virtual bool PhaseThreeReady => Difficulty.Hard && HealthFraction <= .25f;
     protected override void Start()
     {
@@ -68,17 +72,11 @@ public abstract class DistrictBoss : DistrictEnemy
         PrepareScore(warning);
         if (!phaseTwo && PhaseTwoReady)
         {
-            phaseTwo = true;
-            NotifyBossPhaseChange(2);
-            OnPhaseTwo();
-            PresentPhaseTwo();
+            EnterPhase(2);
         }
         else if (phaseTwo && !phaseThree && !PhaseTransitioning && PhaseThreeReady)
         {
-            phaseThree = true;
-            NotifyBossPhaseChange(3);
-            OnPhaseThree();
-            PresentPhaseTwo();
+            EnterPhase(3);
         }
         float motionDelta = Time.deltaTime * LevelRun.EnemyTempoScale * MovementScale;
         if (PhaseTransitioning && RepositionsOnPhase)
@@ -114,11 +112,17 @@ public abstract class DistrictBoss : DistrictEnemy
     }
 
     protected virtual bool PhaseTwoReady => HealthFraction <= .5f;
+    protected void EnterPhase(int phase)
+    {
+        encounter.Phase = phase;
+        NotifyBossPhaseChange(phase);
+        if (phase == 2) OnPhaseTwo(); else OnPhaseThree();
+        PresentPhaseTwo();
+    }
     protected virtual float AttackPace => phaseTwo ? (.87f) : 1;
     protected void PresentPhaseTwo()
     {
-        phaseEntryUntil = age + 1.5f * LevelRun.EnemyTempoScale;
-        phaseStart = PhaseMeterValue;
+        encounter.BeginBreak(age, 1.5f * LevelRun.EnemyTempoScale, PhaseMeterValue);
         nextAttack = Mathf.Max(nextAttack, phaseEntryUntil);
         nextPressure = Mathf.Max(nextPressure, phaseEntryUntil);
         firingCue.ClearWarning();

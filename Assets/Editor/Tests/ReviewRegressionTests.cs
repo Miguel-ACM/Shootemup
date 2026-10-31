@@ -42,10 +42,10 @@ public class ReviewRegressionTests
 
     static void EnterTestPhase(DistrictBoss boss, int phase)
     {
-        typeof(DistrictBoss).GetField("phaseTwo", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boss, phase >= 2);
-        typeof(DistrictBoss).GetField("phaseThree", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boss, phase >= 3);
+        ProbeAccess.Set(boss, "phaseTwo", phase >= 2);
+        ProbeAccess.Set(boss, "phaseThree", phase >= 3);
         var value = boss.GetType().GetProperty("PhaseMeterValue", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(boss);
-        typeof(DistrictBoss).GetField("phaseStart", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boss, value);
+        ProbeAccess.Set(boss, "phaseStart", value);
     }
 
     [TestCase(RunDifficulty.Easy)]
@@ -202,7 +202,7 @@ public class ReviewRegressionTests
         try
         {
             var boss = go.AddComponent<ThunderLanceBoss>();
-            typeof(DistrictBoss).GetField("phaseEntryUntil", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boss, 1.5f);
+            ProbeAccess.Set(boss, "phaseEntryUntil", 1.5f);
             float health = boss.health;
             Assert.IsFalse(boss.CanReceiveDamage);
             Assert.AreEqual(0, CombatHit.Apply(boss, 10, UnityEngine.Vector3.zero, UnityEngine.Vector2.up, fire: true));
@@ -228,10 +228,10 @@ public class ReviewRegressionTests
             var boss = go.AddComponent<ThunderLanceBoss>();
             var bot = go.AddComponent<ThunderLaserBot>().OwnedBy(boss);
             Assert.IsTrue(bot.EmissionAllowed);
-            var until = typeof(DistrictBoss).GetField("phaseEntryUntil", BindingFlags.Instance | BindingFlags.NonPublic);
-            until.SetValue(boss, 1.5f);
+            const string until = "phaseEntryUntil";
+            ProbeAccess.Set(boss, until, 1.5f);
             Assert.IsFalse(bot.EmissionAllowed);
-            until.SetValue(boss, 0f);
+            ProbeAccess.Set(boss, until, 0f);
             Assert.IsTrue(bot.EmissionAllowed);
             bot.Powered = false;
             Assert.IsFalse(bot.EmissionAllowed);

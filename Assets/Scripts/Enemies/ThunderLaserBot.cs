@@ -12,7 +12,7 @@ public sealed class ThunderLaserBot : MonoBehaviour
     public bool Powered { get; set; } = true;
     DistrictBoss owner;
     bool owned;
-    public bool EmissionAllowed => Powered && (!owned || owner != null && owner.health > 0 && !owner.Invulnerable);
+    public bool EmissionAllowed => Powered && (!owned || owner != null && owner.EmissionAllowed);
     public ThunderLaserBot OwnedBy(DistrictBoss boss)
     {
         owner = boss;

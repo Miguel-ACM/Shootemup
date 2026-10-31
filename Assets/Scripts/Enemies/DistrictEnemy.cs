@@ -297,8 +297,11 @@ public abstract class DistrictEnemy : AEnemy
         return ports.Length == 0 ? transform.position : Hull.TransformPoint(ports[Mathf.Abs(index) % ports.Length]);
     }
 
+    protected virtual bool CanEmit => true;
     protected T Fire<T>(Vector3 position, Vector2 direction, float velocity, float radius = .18f) where T : CombatRound
     {
+        if (!CanEmit)
+            return null;
         // Legacy center-fired volleys now leave the existing modeled weapon.
         if (!(this is TunnelSawBoss) && (position - transform.position).sqrMagnitude < .00001f)
             position = Muzzle(volley);

@@ -445,7 +445,7 @@ public sealed class CombatPolishReview : MonoBehaviour
             }
             yield return null;
         }
-        Check((bool)typeof(DistrictBoss).GetField("phaseTwo", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(boss) && peak > 50, "Snow boss retains its shell barrage and harder second phase; peak " + peak + " rounds");
+        Check((bool)ProbeAccess.Get(boss, "phaseTwo") && peak > 50, "Snow boss retains its shell barrage and harder second phase; peak " + peak + " rounds");
         Clear();
         yield return null;
     }

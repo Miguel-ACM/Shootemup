@@ -32,7 +32,7 @@ public static class VerifyPatternMotion
         LevelRun.Reset(LevelId.Underwater, 17381);
         var sub = (AbyssSubmarineBoss)DistrictEnemy.Spawn(typeof(AbyssSubmarineBoss), new Vector3(0, 3, 1), true, true, false);
         const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
-        typeof(DistrictBoss).GetField("phaseTwo", flags).SetValue(sub, true);
+        ProbeAccess.Set(sub, "phaseTwo", true);
         typeof(AbyssSubmarineBoss).GetField("<EmergenceBursts>k__BackingField", flags).SetValue(sub, 2);
         typeof(AbyssSubmarineBoss).GetField("eruptionA", flags).SetValue(sub, true);
         typeof(AbyssSubmarineBoss).GetMethod("HardCrown", flags).Invoke(sub, new object[] { 0f, 2.2f });

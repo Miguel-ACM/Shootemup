@@ -87,12 +87,10 @@ public sealed partial class CityDuoBoss : DistrictBoss
         {
             partner.health += Mathf.Max(0, partner.initialHealth - partner.health) * .5f;
             partner.enraged = true;
-            partner.phaseTwo = true;
             partner.volley = 0;
             partner.nextAttack = partner.age + .8f;
             partner.partner = null;
-            partner.NotifyBossPhaseChange(2);
-            partner.PresentPhaseTwo();
+            partner.EnterPhase(2);
             // The first kill gives neither pickups nor an encounter-completion event.
             isBoss = false;
             lifeDropChance = manaDropChance = moneyDropChance = 0;

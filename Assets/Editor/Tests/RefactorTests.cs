@@ -11,6 +11,18 @@ public sealed class DamageContractProbe : AEnemy
 public class RefactorTests
 {
     [Test]
+    public void PhaseStateUsesOneClockAndAnObjectiveSpecificMeter()
+    {
+        var phase = new BossPhaseState { Phase = 2 };
+        phase.BeginBreak(10, 1.5f, .74f);
+        Assert.IsTrue(phase.Transitioning(11.49f));
+        Assert.IsFalse(phase.Transitioning(11.5f));
+        Assert.AreEqual(1, phase.Fraction(.74f, .25f), .0001f);
+        Assert.AreEqual(.5f, phase.Fraction(.495f, .25f), .0001f);
+        Assert.AreEqual(0, phase.Fraction(.25f, .25f), .0001f);
+    }
+
+    [Test]
     public void RunPlanKeepsAuthoredOrderAndChallengeCountsOnlyOrdinaryWaves()
     {
         var plan = new RunPlan();
