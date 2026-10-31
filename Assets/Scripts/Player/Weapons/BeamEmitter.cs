@@ -9,6 +9,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
     BeamRibbon[] beams;
     Vector3[][] paths;
     readonly List<AEnemy> targets = new List<AEnemy>();
+    readonly List<PlasmaOrb> plasmaTargets = new List<PlasmaOrb>();
     LaserSound sound;
     Coroutine firing;
     bool releasing;
@@ -89,28 +90,18 @@ public sealed class BeamEmitter : AWeaponAutomatic
         }
     }
 
-    bool Touches(AEnemy enemy, float radius, out Vector2 point, out Vector2 direction)
+    bool Touches(Collider2D collider, float radius, out Vector2 point, out Vector2 direction)
     {
-        point = enemy.transform.position;
+        point = transform.position;
         direction = Vector2.up;
-        var collider = enemy.GetComponent<Collider2D>();
         if (collider == null || !collider.enabled)
             return false;
         foreach (var path in paths)
             for (int step = 1; step < path.Length; step++)
             {
-                Vector2 start = path[step - 1], segment = path[step] - path[step - 1];
-                float lengthSquared = Mathf.Max(.000001f, segment.sqrMagnitude);
-                Vector2 probe = start + segment * Mathf.Clamp01(Vector2.Dot((Vector2)collider.bounds.center - start, segment) / lengthSquared);
-                for (int i = 0; i < 3; i++)
+                if (BeamContact.Touches(collider, path[step - 1], path[step], radius, out point))
                 {
-                    Vector2 surface = collider.ClosestPoint(probe);
-                    probe = start + segment * Mathf.Clamp01(Vector2.Dot(surface - start, segment) / lengthSquared);
-                }
-                if ((collider.ClosestPoint(probe) - probe).sqrMagnitude <= radius * radius)
-                {
-                    point = probe;
-                    direction = segment.normalized;
+                    direction = (path[step] - path[step - 1]).normalized;
                     return true;
                 }
             }
@@ -182,11 +173,19 @@ public sealed class BeamEmitter : AWeaponAutomatic
                 targets.AddRange(AEnemy.Live);
                 foreach (var enemy in targets)
                 {
-                    if (enemy == null || !enemy.CanBeTargeted || !Touches(enemy, width * .5f, out var point, out var direction))
+                    if (enemy == null || !enemy.CanBeTargeted || !Touches(enemy.GetComponent<Collider2D>(), width * .5f, out var point, out var direction))
                         continue;
                     float amount = GameRules.playerShootDamage * 1.2f * charge * MagnifyingLens.Power;
                     CombatHit.Apply(enemy, amount, point, direction);
                 }
+                // Snapshot before damaging: a destroyed orb returns to its pool and leaves Live.
+                plasmaTargets.Clear();
+                foreach (var round in CombatRound.Live)
+                    if (round is PlasmaOrb orb)
+                        plasmaTargets.Add(orb);
+                foreach (var orb in plasmaTargets)
+                    if (orb != null && Touches(orb.GetComponent<Collider2D>(), width * .5f, out _, out _))
+                        orb.Hit(GameRules.playerShootDamage * 1.2f * charge * MagnifyingLens.Power);
             }
             yield return null;
         }

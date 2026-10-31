@@ -149,7 +149,9 @@ public sealed class TrailDrone : ACompanion
 
     void FireLaser()
     {
-        bool wanted = Shipcontroller.Firing && CombatUpgrades.Nearest(Muzzle, null, BeamReach) != null;
+        var origin = Muzzle;
+        var plasma = PlasmaOrb.FirstOnBeam(origin, origin + Vector3.up * BeamReach, .06f, out var plasmaPoint);
+        bool wanted = Shipcontroller.Firing && (plasma != null || CombatUpgrades.Nearest(origin, null, BeamReach) != null);
         beamPower = Mathf.MoveTowards(beamPower, wanted ? 1 : 0, Time.deltaTime * (wanted ? 3 : 5));
         if (beamPower <= 0)
         {
@@ -165,7 +167,6 @@ public sealed class TrailDrone : ACompanion
             beam.gameObject.SetActive(true);
             sound.Charge(.25f, true);
         }
-        var origin = Muzzle;
         float length = BeamReach;
         AEnemy struck = null;
         foreach (var enemy in AEnemy.Live)
@@ -185,9 +186,16 @@ public sealed class TrailDrone : ACompanion
                 struck = enemy;
             }
         }
+        if (plasma != null && plasmaPoint.y - origin.y <= length)
+        {
+            length = Mathf.Max(0, plasmaPoint.y - origin.y);
+            struck = null;
+        }
+        else
+            plasma = null;
         beam.Draw(origin, Vector2.up, length, .12f, 1, beamPower, 0);
         sound.Drive(beamPower, true);
-        if (struck == null || beamPower < .9f)
+        if (struck == null && plasma == null || beamPower < .9f)
             return;
         var point = (Vector2)origin + Vector2.up * length;
         if (Time.time >= nextSpark)
@@ -202,7 +210,10 @@ public sealed class TrailDrone : ACompanion
             return;
         nextDamage = Time.time + BeamTick;
         float damage = GameRules.playerShootDamage;
-        CombatHit.Apply(struck, damage, point, Vector2.up, companion: true, score: false);
+        if (plasma != null)
+            plasma.Hit(damage);
+        else
+            CombatHit.Apply(struck, damage, point, Vector2.up, companion: true, score: false);
     }
     void OnDisable()
     {

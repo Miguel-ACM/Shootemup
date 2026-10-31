@@ -6,6 +6,24 @@ public sealed class PlasmaOrb : CombatRound
     const float Sturdiness = 60;
     float health;
     LineRenderer outline;
+    public static PlasmaOrb FirstOnBeam(Vector2 start, Vector2 end, float radius, out Vector2 point)
+    {
+        PlasmaOrb nearest = null;
+        point = end;
+        float closest = (end - start).sqrMagnitude;
+        foreach (var round in Live)
+            if (round is PlasmaOrb orb && !orb.ended && BeamContact.Touches(orb.collision, start, end, radius, out var hit))
+            {
+                float distance = (hit - start).sqrMagnitude;
+                if (distance < closest)
+                {
+                    closest = distance;
+                    point = hit;
+                    nearest = orb;
+                }
+            }
+        return nearest;
+    }
     protected override void Initialize()
     {
         // Player rounds can hit this shell; other hostile rounds and enemy hulls cannot.
@@ -42,6 +60,8 @@ public sealed class PlasmaOrb : CombatRound
 
     public void Hit(float amount)
     {
+        if (ended)
+            return;
         health -= amount;
         visual.color = Color.white * 1.6f;
         if (health <= 0)

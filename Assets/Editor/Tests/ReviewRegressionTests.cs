@@ -6,6 +6,25 @@ using System.Reflection;
 public class ReviewRegressionTests
 {
     [Test]
+    public void BeamsFindAndDestroyPlasmaUsingItsAuthoredCollider()
+    {
+        var orb = CombatRound.Launch<PlasmaOrb>(UnityEngine.Vector3.up * 2, UnityEngine.Vector2.down, 0, .3f);
+        Assert.IsNotNull(orb);
+        try
+        {
+            UnityEngine.Physics2D.SyncTransforms();
+            Assert.AreSame(orb, PlasmaOrb.FirstOnBeam(UnityEngine.Vector2.zero, UnityEngine.Vector2.up * 5, .06f, out _));
+            Assert.IsNull(PlasmaOrb.FirstOnBeam(UnityEngine.Vector2.right * 2, new UnityEngine.Vector2(2, 5), .06f, out _));
+            orb.Hit(59);
+            Assert.IsTrue(orb.gameObject.activeSelf);
+            orb.Hit(1);
+            Assert.IsFalse(orb.gameObject.activeSelf);
+            Assert.IsFalse(CombatRound.Live.Contains(orb));
+        }
+        finally { UnityEngine.Object.DestroyImmediate(orb.gameObject); }
+    }
+
+    [Test]
     public void HomingSkipsProtectedHullAndCore()
     {
         var hullObject = new UnityEngine.GameObject("Protected hull");
