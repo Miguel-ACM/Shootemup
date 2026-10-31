@@ -53,7 +53,7 @@ public sealed class SpellCardCast : MonoBehaviour
             Destroy(this);
             return;
         }
-        float dt = WorldTimeStop.PlayerDelta;
+        float dt = GameClock.PlayerDelta;
         elapsed += dt;
         Clear();
         // Two counter-rotating arms of amulets, Reimu-style, swirling out of the ship.

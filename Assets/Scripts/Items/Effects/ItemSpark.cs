@@ -75,7 +75,7 @@ public sealed class ItemSpark : MonoBehaviour
 
     void Update()
     {
-        float dt = playerClock ? WorldTimeStop.PlayerDelta : Time.deltaTime;
+        float dt = playerClock ? GameClock.PlayerDelta : Time.deltaTime;
         if (dt <= 0)
             return;
         age += dt;

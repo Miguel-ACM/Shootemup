@@ -32,7 +32,7 @@ public sealed class WorldTimeStop : MonoBehaviour
 
     public static bool Frozen => Current != null && Current.remaining > 0;
     public static bool PlayerCanAct => Frozen && !Menu.GameplayPaused;
-    public static float PlayerDelta => PlayerCanAct ? Time.unscaledDeltaTime : Time.deltaTime;
+    public static float PlayerDelta => GameClock.PlayerDelta;
     float remaining, previousRate = 1;
     LineRenderer border;
     public float Remaining => remaining;

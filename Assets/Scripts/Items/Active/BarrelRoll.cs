@@ -43,7 +43,7 @@ public sealed class ShipBarrelRoll : MonoBehaviour
         if (!Active || GameRules.playerDisabled)
             return;
         float old = elapsed;
-        elapsed = Mathf.Min(Duration, elapsed + WorldTimeStop.PlayerDelta);
+        elapsed = Mathf.Min(Duration, elapsed + GameClock.PlayerDelta);
         float step = (Mathf.SmoothStep(0, 1, elapsed / Duration) - Mathf.SmoothStep(0, 1, old / Duration)) * Distance * direction;
         var p = transform.position;
         p.x = Mathf.Clamp(p.x + step, Camera.LeftLimit, Camera.RightLimit);

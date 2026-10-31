@@ -61,7 +61,7 @@ public sealed class WindUpCannon : AWeapon
                 winding.Pause();
             return;
         }
-        float dt = WorldTimeStop.PlayerDelta;
+        float dt = GameClock.PlayerDelta;
         if (dt <= 0)
             return;
         if (!Charging)

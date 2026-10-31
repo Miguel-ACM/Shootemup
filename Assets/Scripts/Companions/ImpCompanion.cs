@@ -28,7 +28,7 @@ public sealed class ImpCompanion : MonoBehaviour
     {
         if (model == null)
             return;
-        angle += WorldTimeStop.PlayerDelta * 2.4f;
+        angle += GameClock.PlayerDelta * 2.4f;
         // A slightly squashed orbit with a bob, so it reads as a creature rather than a satellite.
         model.localPosition = new Vector3(Mathf.Cos(angle) * Orbit, Mathf.Sin(angle) * Orbit * .8f + Mathf.Sin(angle * 3) * .08f, -.1f);
         model.localRotation = Quaternion.Euler(0, Mathf.Sin(angle * 2) * 25, 0);

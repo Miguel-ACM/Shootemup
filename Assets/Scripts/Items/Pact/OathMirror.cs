@@ -27,9 +27,9 @@ public sealed class OathMirror : MonoBehaviour
 
     void Update()
     {
-        if (Ready || CombatDecision.Active || CloudTransition.Busy || GameRules.playerDisabled || GameOverState.Active)
+        if (Ready || !GameClock.ActivePlay)
             return;
-        charge = Mathf.Min(1, charge + Time.deltaTime / RechargeSeconds);
+        charge = Mathf.Min(1, charge + GameClock.ActivePlayDelta / RechargeSeconds);
         if (Ready)
         {
             PSXFireballs.Shockwave(transform.position, .9f, .25f, Silver, 1, .6f);

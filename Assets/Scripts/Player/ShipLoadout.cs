@@ -4,7 +4,6 @@ using System;
 
 public sealed class ShipLoadout : MonoBehaviour
 {
-    Inputs input;
     public AItem HoveredItem
     {
         get; private set;
@@ -16,12 +15,8 @@ public sealed class ShipLoadout : MonoBehaviour
     public readonly AActiveItem[] Actives = new AActiveItem[2];
     void Awake()
     {
-        input = new Inputs();
-        input.PlayerControls.FirePrimary.started += _ => Choose(false, 0);
-        input.PlayerControls.FireSecondary.started += _ => Choose(false, 1);
-        input.PlayerControls.ActiveLeft.started += _ => Choose(true, 0);
-        input.PlayerControls.ActiveRight.started += _ => Choose(true, 1);
-        input.Enable();
+        _ = GameInput.Actions;
+        GameInput.EquipmentSelection = Choose;
     }
 
     void Start()
@@ -63,17 +58,18 @@ public sealed class ShipLoadout : MonoBehaviour
         }
     }
 
-    void Choose(bool active, int slot)
+    bool Choose(bool active, int slot)
     {
         RefreshHover();
-        if (HoveredItem == null || active != (HoveredItem is AActiveItem))
-            return;
+        if (!isActiveAndEnabled || HoveredItem == null || active != (HoveredItem is AActiveItem))
+            return false;
         var item = HoveredItem;
         pickedFrame = Time.frameCount;
         if (item.TryPick(slot))
             HoveredItem = null;
         else
             pickedFrame = -1;
+        return pickedFrame == Time.frameCount;
     }
 
     public int SlotFor(AItem item)
@@ -149,8 +145,8 @@ public sealed class ShipLoadout : MonoBehaviour
 
     void OnDestroy()
     {
-        input?.Disable();
-        input?.Dispose();
+        if (GameInput.EquipmentSelection == Choose)
+            GameInput.EquipmentSelection = null;
     }
 }
 

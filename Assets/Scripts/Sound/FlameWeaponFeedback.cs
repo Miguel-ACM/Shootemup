@@ -71,7 +71,7 @@ public sealed class FlameWeaponFeedback : MonoBehaviour
             lit = false;
             ItemSound.Cue("itemFlameRelease", volume: .08f, cooldown: .12f);
         }
-        heat = Mathf.MoveTowards(heat, firing ? 1 : 0, WorldTimeStop.PlayerDelta / (firing ? .06f : .14f));
+        heat = Mathf.MoveTowards(heat, firing ? 1 : 0, GameClock.PlayerDelta / (firing ? .06f : .14f));
         bed.volume = heat * .07f * ItemSound.Gain("itemFlameSustain");
         if (heat <= .001f && bed.isPlaying)
             bed.Stop();

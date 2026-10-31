@@ -21,10 +21,10 @@ public sealed class StaticCharge : MonoBehaviour
     {
         float distance = Vector2.Distance(previous, transform.position);
         previous = transform.position;
-        if (GameRules.playerDisabled || Menu.GameplayPaused || WorldTimeStop.PlayerDelta <= 0)
+        if (GameRules.playerDisabled || Menu.GameplayPaused || GameClock.PlayerDelta <= 0)
             return;
         float old = Charge;
-        Charge = Mathf.Min(1, Charge + Mathf.Min(distance, GameRules.playerMoveSpeed * WorldTimeStop.PlayerDelta * 1.5f) / 24f);
+        Charge = Mathf.Min(1, Charge + Mathf.Min(distance, GameRules.playerMoveSpeed * GameClock.PlayerDelta * 1.5f) / 24f);
         if (buildup == null)
         {
             buildup = new SpriteRenderer[3];

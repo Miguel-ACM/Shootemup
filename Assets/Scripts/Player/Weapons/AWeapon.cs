@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 
 public abstract class AWeapon : MonoBehaviour
 {
-    Inputs input;
 
     public enum WeaponType
     {
@@ -49,16 +48,16 @@ public abstract class AWeapon : MonoBehaviour
     public void Start()
     {
         updateSpawnPoints();
-        input = new Inputs();
+        _ = GameInput.Actions;
 
 
-        input.PlayerControls.FirePrimary.started += PrimaryPressed;
-        input.PlayerControls.FirePrimary.canceled += PrimaryReleased;
+        GameInput.PrimaryPressed += PrimaryPressed;
+        GameInput.PrimaryReleased += PrimaryReleased;
 
-        input.PlayerControls.FireSecondary.started += SecondaryPressed;
-        input.PlayerControls.FireSecondary.canceled += SecondaryReleased;
+        GameInput.SecondaryPressed += SecondaryPressed;
+        GameInput.SecondaryReleased += SecondaryReleased;
 
-        input.Enable();
+
     }
 
     // Update is called once per frame
@@ -206,13 +205,11 @@ public abstract class AWeapon : MonoBehaviour
 
     }
 
-    // Inputs instances stay enabled after their scene unloads, and their callbacks then run
-    // against this destroyed object, so release it with the object.
     void OnDestroy()
     {
-        if (input == null)
-            return;
-        input.Disable();
-        input.Dispose();
+        GameInput.PrimaryPressed -= PrimaryPressed;
+        GameInput.PrimaryReleased -= PrimaryReleased;
+        GameInput.SecondaryPressed -= SecondaryPressed;
+        GameInput.SecondaryReleased -= SecondaryReleased;
     }
 }

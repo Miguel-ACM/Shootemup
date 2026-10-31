@@ -61,7 +61,7 @@ public sealed class PolarityEngine : AActiveItem
     {
         base.Update();
         if (held == this && spinElapsed < SpinDuration)
-            spinElapsed = Mathf.Min(SpinDuration, spinElapsed + WorldTimeStop.PlayerDelta);
+            spinElapsed = Mathf.Min(SpinDuration, spinElapsed + GameClock.PlayerDelta);
     }
 
     public override float OnPress(float mana)

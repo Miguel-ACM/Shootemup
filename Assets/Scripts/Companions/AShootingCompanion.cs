@@ -9,7 +9,6 @@ public class AShootingCompanion : ACompanion
     public bool isStopingPrimary = true;
     bool isShootingDisabled = false;
     Vector3[] spawnPoints = { new Vector3(0, 0, 0) };
-    private Inputs input;
     [SerializeField] private GameObject bullet;
     [SerializeField] private float shootSpeed = 8f;
     [SerializeField] private float shootTravelSpeed = 5f;
@@ -19,11 +18,10 @@ public class AShootingCompanion : ACompanion
 
     void Awake()
     {
-        input = new Inputs();
-        input.Enable();
+        _ = GameInput.Actions;
 
-        input.PlayerControls.FirePrimary.started += PrimaryPressedCompanion;
-        input.PlayerControls.FirePrimary.canceled += PrimaryReleasedCompanion;
+        GameInput.PrimaryPressed += PrimaryPressedCompanion;
+        GameInput.PrimaryReleased += PrimaryReleasedCompanion;
     }
 
     void PrimaryPressedCompanion(InputAction.CallbackContext ctx)
@@ -65,7 +63,7 @@ public class AShootingCompanion : ACompanion
     // against this destroyed object, so release it with the object.
     void OnDestroy()
     {
-        input.Disable();
-        input.Dispose();
+        GameInput.PrimaryPressed -= PrimaryPressedCompanion;
+        GameInput.PrimaryReleased -= PrimaryReleasedCompanion;
     }
 }

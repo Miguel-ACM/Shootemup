@@ -42,7 +42,7 @@ public class Menu : MonoBehaviour
 
     void Awake()
     {
-        input = new Inputs();
+        input = GameInput.Actions;
         menuElements = GetComponentsInChildren<AMenuElement>();
         panel = transform.parent.GetComponent<Image>();
         panel.color = Color.clear;
@@ -61,7 +61,7 @@ public class Menu : MonoBehaviour
 
         if (!alwaysOpen)
         {
-            input.PlayerControls.Start.performed += ctx => { if (!CloudTransition.Busy && !GameOverState.Active) setMenuOpen(!menuOpen); };
+            input.PlayerControls.Start.performed += ToggleMenu;
             setMenuOpen(false);
         }
         else
@@ -69,12 +69,16 @@ public class Menu : MonoBehaviour
             setMenuOpen(true);
         }
 
-        input.PlayerControls.Move.performed += ctx => move = ctx.ReadValue<Vector2>();
-        input.PlayerControls.Move.canceled += ctx => { move = Vector2.zero; inputProcessed = false; };
+        input.PlayerControls.Move.performed += MoveChanged;
+        input.PlayerControls.Move.canceled += MoveCanceled;
 
         input.PlayerControls.Accept.performed += OnAccept;
-        input.PlayerControls.Enable();
+
     }
+
+    void ToggleMenu(InputAction.CallbackContext context) { if (!CloudTransition.Busy && !GameOverState.Active) setMenuOpen(!menuOpen); }
+    void MoveChanged(InputAction.CallbackContext context) => move = context.ReadValue<Vector2>();
+    void MoveCanceled(InputAction.CallbackContext context) { move = Vector2.zero; inputProcessed = false; }
 
     void Update()
     {
@@ -153,7 +157,12 @@ public class Menu : MonoBehaviour
     {
         if (!alwaysOpen)
             GameplayPaused = false;
-        input?.Disable();
-        input?.Dispose();
+        if (input != null)
+        {
+            input.PlayerControls.Start.performed -= ToggleMenu;
+            input.PlayerControls.Move.performed -= MoveChanged;
+            input.PlayerControls.Move.canceled -= MoveCanceled;
+            input.PlayerControls.Accept.performed -= OnAccept;
+        }
     }
 }

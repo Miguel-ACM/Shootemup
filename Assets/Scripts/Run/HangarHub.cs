@@ -130,12 +130,12 @@ public sealed class HangarHub : MonoBehaviour
             parkedAt = dockedAt;
             arrival = 0;
         }
-        input = new Inputs();
+        input = GameInput.Actions;
         input.PlayerControls.FirePrimary.started += Interact;
         input.PlayerControls.FireSecondary.started += Interact;
         input.PlayerControls.ActiveLeft.started += Interact;
         input.PlayerControls.ActiveRight.started += Interact;
-        input.Enable();
+
     }
 
     // The hangar is a bay inside the Tunnel: one still Tunnel section, with the docks, shop and doors built into it.
@@ -642,8 +642,13 @@ public sealed class HangarHub : MonoBehaviour
 
     void OnDestroy()
     {
-        input?.Disable();
-        input?.Dispose();
+        if (input != null)
+        {
+            input.PlayerControls.FirePrimary.started -= Interact;
+            input.PlayerControls.FireSecondary.started -= Interact;
+            input.PlayerControls.ActiveLeft.started -= Interact;
+            input.PlayerControls.ActiveRight.started -= Interact;
+        }
         if (scenery != null)
             Destroy(scenery);
         foreach (var mesh in quads)

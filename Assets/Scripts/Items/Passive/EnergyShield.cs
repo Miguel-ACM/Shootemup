@@ -54,9 +54,9 @@ public sealed class EnergyShieldCell : MonoBehaviour
         if (Ready)
             return;
         // Only active play counts: shops, route choices, transitions and pauses do not recharge it.
-        if (CombatDecision.Active || CloudTransition.Busy || GameRules.playerDisabled || GameOverState.Active)
+        if (!GameClock.ActivePlay)
             return;
-        Charge = Mathf.Min(1, Charge + Time.deltaTime / RechargeSeconds);
+        Charge = Mathf.Min(1, Charge + GameClock.ActivePlayDelta / RechargeSeconds);
         if (Ready)
         {
             Flash = 1;

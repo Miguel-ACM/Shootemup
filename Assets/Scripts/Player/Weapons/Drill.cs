@@ -96,7 +96,7 @@ public sealed class Drill : AWeaponAutomatic
     {
         if (Menu.GameplayPaused)
             return;
-        float dt = WorldTimeStop.PlayerDelta;
+        float dt = GameClock.PlayerDelta;
         bool held = Held && enabled;
         extension = Mathf.MoveTowards(extension, held ? 1 : 0, dt * (held ? 7 : 5));
         shownScale = Mathf.Lerp(shownScale, scale, 1 - Mathf.Exp(-8 * dt));

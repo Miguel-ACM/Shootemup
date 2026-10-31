@@ -6,29 +6,25 @@ public sealed class MagnifyingLens : MonoBehaviour
         get; private set;
     }
 
-    Inputs input;
     float charge;
-    public float Charge => input != null && input.PlayerControls.Focus.IsPressed() && !GameRules.playerDisabled ? charge : 0;
+    public float Charge => GameInput.Snapshot.Focus && !GameRules.playerDisabled ? charge : 0;
     public static float Rate => Current != null ? Mathf.Lerp(1, .5f, Current.Charge) : 1;
     public static float Power => Current != null ? Mathf.Lerp(1, 3, Current.Charge) : 1;
     void Awake()
     {
         Current = this;
-        input = new Inputs();
-        input.Enable();
+        _ = GameInput.Actions;
     }
 
     void Update()
     {
-        charge = input.PlayerControls.Focus.IsPressed() && !GameRules.playerDisabled ? Mathf.Min(1, charge + WorldTimeStop.PlayerDelta / 1.5f) : 0;
+        charge = GameInput.Snapshot.Focus && !GameRules.playerDisabled ? Mathf.Min(1, charge + GameClock.PlayerDelta / 1.5f) : 0;
     }
 
     void OnDestroy()
     {
         if (Current == this)
             Current = null;
-        input?.Disable();
-        input?.Dispose();
     }
 
     public static void Enlarge(ABullet bullet)

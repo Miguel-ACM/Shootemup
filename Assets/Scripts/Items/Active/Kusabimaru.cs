@@ -69,7 +69,7 @@ public sealed class DeflectWindow : MonoBehaviour
     {
         if (remaining <= 0)
             return;
-        remaining -= WorldTimeStop.PlayerDelta;
+        remaining -= GameClock.PlayerDelta;
         // Rounds a moment away from the hull count too, so a visibly timed press is honoured.
         nearby.Clear();
         foreach (var round in CombatRound.Live)

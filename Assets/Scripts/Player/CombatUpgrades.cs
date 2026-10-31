@@ -15,7 +15,6 @@ public sealed class CombatUpgrades : MonoBehaviour
     readonly Dictionary<UpgradeKind, int> stacks = new Dictionary<UpgradeKind, int>();
     readonly Dictionary<string, float> gates = new Dictionary<string, float>();
     Shipcontroller ship;
-    Inputs inputs;
     float capacitor, battery, reserve, focusUntil;
     int volleys, focus, coins, blocks;
     AEnemy focused;
@@ -33,16 +32,13 @@ public sealed class CombatUpgrades : MonoBehaviour
         gameObject.AddComponent<UpgradeMeters>();
         Current = this;
         ship = GetComponent<Shipcontroller>();
-        inputs = new Inputs();
-        inputs.Enable();
+        _ = GameInput.Actions;
     }
 
     void OnDestroy()
     {
         if (Current == this)
             Current = null;
-        inputs?.Disable();
-        inputs?.Dispose();
     }
 
     public int Count(UpgradeKind kind) => stacks.TryGetValue(kind, out int n) ? n : 0;
@@ -71,7 +67,7 @@ public sealed class CombatUpgrades : MonoBehaviour
     {
         if (GameRules.playerDisabled)
             return;
-        if (Count(UpgradeKind.Capacitor) > 0 && !inputs.PlayerControls.FirePrimary.IsPressed() && !inputs.PlayerControls.FireSecondary.IsPressed())
+        if (Count(UpgradeKind.Capacitor) > 0 && !GameInput.Snapshot.Primary && !GameInput.Snapshot.Secondary)
         {
             float previous = capacitor;
             capacitor = Mathf.Min(1, capacitor + Time.deltaTime * .45f * (GameRules.playerShootSpeed / 10));

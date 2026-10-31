@@ -129,7 +129,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
         sound.Charge(warning, true);
         while (!GameRules.playerDisabled)
         {
-            float dt = WorldTimeStop.PlayerDelta;
+            float dt = GameClock.PlayerDelta;
             if (Menu.GameplayPaused || dt <= 0)
             {
                 yield return null;

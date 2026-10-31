@@ -64,7 +64,6 @@ public class Shipcontroller : MonoBehaviour
         };
     CircularArray<Vector2> previousPositions = null;
 
-    Inputs input;
     Vector2 move;
     Vector2 waterVelocity;
     public Vector2 MoveInput => move;
@@ -77,7 +76,7 @@ public class Shipcontroller : MonoBehaviour
 
     void Awake()
     {
-        input = new Inputs();
+        _ = GameInput.Actions;
         gameObject.AddComponent<ShipLoadout>();
         gameObject.AddComponent<CombatUpgrades>();
         // The chosen frame sets hits and handling before any item modifies them.
@@ -90,25 +89,10 @@ public class Shipcontroller : MonoBehaviour
         manaBar.SetMax(maxMana);
         manaBar.Set(mana);
 
-        input.PlayerControls.Focus.started += FocusPressed;// = ctx.ReadValue<float>() * slowMultiplier;
-        input.PlayerControls.Focus.canceled += FocusReleased; // ctx => speedMultiplier = 1f;
-
-        input.PlayerControls.ActiveRight.started += ActiveRightPressed;
-        input.PlayerControls.ActiveRight.canceled += ActiveRightReleased;
-
-        input.PlayerControls.ActiveLeft.started += ActiveLeftPressed;
-        input.PlayerControls.ActiveLeft.canceled += ActiveLeftReleased;
-
-        input.PlayerControls.Focus.started += FocusPressed;// = ctx.ReadValue<float>() * slowMultiplier;
-        input.PlayerControls.Focus.canceled += FocusReleased;
-
-        input.PlayerControls.Move.performed += ctx => move = ctx.ReadValue<Vector2>(); //PrimaryPressed();
-        input.PlayerControls.Move.canceled += ctx => move = ctx.ReadValue<Vector2>();
-    }
-
-    void OnEnable()
-    {
-        input.PlayerControls.Enable();
+        GameInput.ActiveRightPressed += ActiveRightPressed;
+        GameInput.ActiveRightReleased += ActiveRightReleased;
+        GameInput.ActiveLeftPressed += ActiveLeftPressed;
+        GameInput.ActiveLeftReleased += ActiveLeftReleased;
     }
 
     public void AddActiveRight(AActiveItem a)
@@ -191,21 +175,11 @@ public class Shipcontroller : MonoBehaviour
 
     // CONTROLS -----------------------------------------------------------
 
-    void FocusPressed(InputAction.CallbackContext ctx)
-    {
-        speedMultiplier = ctx.ReadValue<float>() * slowMultiplier;
-    }
-
-    void FocusReleased(InputAction.CallbackContext ctx)
-    {
-        speedMultiplier = 1f;
-    }
-
     void ActiveRightPressed(InputAction.CallbackContext ctx)
     {
         if (Time.timeScale <= 0 && !WorldTimeStop.PlayerCanAct)
             return;
-        if (GameRules.playerDisabled || GetComponent<ShipLoadout>().ConsumedInputThisFrame)
+        if (!isActiveAndEnabled || GameRules.playerDisabled || GetComponent<ShipLoadout>().ConsumedInputThisFrame)
             return;
         isActiveRightPressed = true;
 
@@ -239,7 +213,7 @@ public class Shipcontroller : MonoBehaviour
     {
         if (Time.timeScale <= 0 && !WorldTimeStop.PlayerCanAct)
             return;
-        if (GameRules.playerDisabled || GetComponent<ShipLoadout>().ConsumedInputThisFrame)
+        if (!isActiveAndEnabled || GameRules.playerDisabled || GetComponent<ShipLoadout>().ConsumedInputThisFrame)
             return;
         isActiveLeftPressed = true;
         if (activeLeft != null)
@@ -307,17 +281,18 @@ public class Shipcontroller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Firing = !GameRules.playerDisabled && (input.PlayerControls.FirePrimary.IsPressed() || input.PlayerControls.FireSecondary.IsPressed());
-        speedMultiplier = input.PlayerControls.Focus.IsPressed() ? slowMultiplier : 1;
-        horizontalMove = move.x * GameRules.playerMoveSpeed * WorldTimeStop.PlayerDelta * speedMultiplier;
-        verticalMove = move.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * WorldTimeStop.PlayerDelta * speedMultiplier;
+        move = GameInput.Snapshot.Move;
+        Firing = !GameRules.playerDisabled && (GameInput.Snapshot.Primary || GameInput.Snapshot.Secondary);
+        speedMultiplier = GameInput.Snapshot.Focus ? slowMultiplier : 1;
+        horizontalMove = move.x * GameRules.playerMoveSpeed * GameClock.PlayerDelta * speedMultiplier;
+        verticalMove = move.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * GameClock.PlayerDelta * speedMultiplier;
         if (LevelRun.Current == LevelId.Underwater && !CombatDecision.Active && !CloudTransition.Busy)
         {
             var desired = new Vector2(move.x, move.y * verticalMoveMultiplier) * GameRules.playerMoveSpeed * speedMultiplier * .79f;
             float response = move.sqrMagnitude < .01f ? 5.5f : speedMultiplier < 1 ? 11 : 7;
-            waterVelocity = Vector2.Lerp(waterVelocity, desired, 1 - Mathf.Exp(-WorldTimeStop.PlayerDelta * response));
-            horizontalMove = waterVelocity.x * WorldTimeStop.PlayerDelta;
-            verticalMove = waterVelocity.y * WorldTimeStop.PlayerDelta;
+            waterVelocity = Vector2.Lerp(waterVelocity, desired, 1 - Mathf.Exp(-GameClock.PlayerDelta * response));
+            horizontalMove = waterVelocity.x * GameClock.PlayerDelta;
+            verticalMove = waterVelocity.y * GameClock.PlayerDelta;
         }
         else
             waterVelocity = Vector2.zero;
@@ -592,13 +567,14 @@ public class Shipcontroller : MonoBehaviour
 
     void OnDisable()
     {
-        input?.PlayerControls.Disable();
+        Firing = false;
     }
 
-    // Inputs instances stay enabled after their scene unloads, and their callbacks then run
-    // against this destroyed object, so release it with the object.
     void OnDestroy()
     {
-        input?.Dispose();
+        GameInput.ActiveRightPressed -= ActiveRightPressed;
+        GameInput.ActiveRightReleased -= ActiveRightReleased;
+        GameInput.ActiveLeftPressed -= ActiveLeftPressed;
+        GameInput.ActiveLeftReleased -= ActiveLeftReleased;
     }
 }

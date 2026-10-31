@@ -1,5 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 
 public sealed class DamageContractProbe : AEnemy
 {
@@ -10,6 +12,42 @@ public sealed class DamageContractProbe : AEnemy
 
 public class RefactorTests
 {
+    [Test]
+    public void EquipmentPressIsConsumedBeforeWeaponSubscribers()
+    {
+        _ = GameInput.Actions;
+        var keyboard = InputSystem.AddDevice<Keyboard>();
+        var previous = GameInput.EquipmentSelection;
+        int selections = 0, shots = 0;
+        bool consume = true;
+        System.Action<InputAction.CallbackContext> fire = _ => shots++;
+        GameInput.PrimaryPressed += fire;
+        GameInput.EquipmentSelection = (active, slot) => { selections++; return consume; };
+        try
+        {
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Z, Key.LeftShift));
+            InputSystem.Update();
+            Assert.AreEqual(1, selections);
+            Assert.AreEqual(0, shots);
+            Assert.IsTrue(GameInput.Snapshot.Primary);
+            Assert.IsTrue(GameInput.Snapshot.Focus);
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+            InputSystem.Update();
+            consume = false;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Z));
+            InputSystem.Update();
+            Assert.AreEqual(2, selections);
+            Assert.AreEqual(1, shots);
+            Assert.IsFalse(GameInput.Snapshot.Focus);
+        }
+        finally
+        {
+            GameInput.PrimaryPressed -= fire;
+            GameInput.EquipmentSelection = previous;
+            InputSystem.RemoveDevice(keyboard);
+        }
+    }
+
     [Test]
     public void CatalogsCoverEveryConcreteItemAndEveryAuthoredActor()
     {
