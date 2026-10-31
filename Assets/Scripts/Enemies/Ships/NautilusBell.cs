@@ -6,7 +6,6 @@ public sealed class NautilusBell : DistrictEnemy
     protected override Vector2 CueAxis => Vector2.down;
     protected override void Configure()
     {
-        hull = 77;
         hullScale = 0.57f;
         health = 43;
         attackInterval = (2.55f);

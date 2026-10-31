@@ -23,7 +23,6 @@ public sealed partial class ThunderLanceBoss : DistrictBoss
 
     protected override void Configure()
     {
-        hull = 22;
         hullScale = 1.25f;
         health = 1250;
         attackInterval = (.82f);

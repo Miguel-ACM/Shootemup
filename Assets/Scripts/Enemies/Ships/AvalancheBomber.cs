@@ -4,7 +4,6 @@ public sealed class AvalancheBomber : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 17;
         health = 80;
         hullScale = .85f;
         attackInterval = (2.0f);

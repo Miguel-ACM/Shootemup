@@ -7,7 +7,6 @@ public sealed class FrostAuger : GroundVehicle
     protected override bool Snow => true;
     protected override void Configure()
     {
-        hull = 40;
         hullScale = .64f;
         health = 39;
         attackInterval = (1.9f);

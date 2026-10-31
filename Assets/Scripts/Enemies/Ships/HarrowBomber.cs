@@ -6,7 +6,6 @@ public sealed class HarrowBomber : DistrictEnemy
     protected override Vector2 CueAxis => Vector2.down;
     protected override void Configure()
     {
-        hull = 62;
         hullScale = 0.61f;
         health = 48;
         attackInterval = (2.6f);

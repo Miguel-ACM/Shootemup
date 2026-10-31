@@ -6,7 +6,6 @@ public sealed class BaffleSpinner : DistrictEnemy
     protected override Vector2 CueAxis => Vector2.down;
     protected override void Configure()
     {
-        hull = 67;
         hullScale = 0.48f;
         health = 30;
         attackInterval = (2.05f);

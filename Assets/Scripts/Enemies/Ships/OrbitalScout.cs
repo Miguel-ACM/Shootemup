@@ -5,7 +5,6 @@ public sealed class OrbitalScout : SpaceSatellite
 {
     protected override void Configure()
     {
-        hull = 41;
         hullScale = .46f;
         health = 35;
         attackInterval = (1.6f);

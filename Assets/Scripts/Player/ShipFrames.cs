@@ -81,11 +81,11 @@ public static class ShipFrames
         yield return null;
         foreach (var kind in kinds)
         {
-            var type = System.Type.GetType(kind);
-            if (ship == null || type == null)
+            ItemCatalog.TryGet(kind, out var definition);
+            if (ship == null || definition == null)
                 yield break;
             var go = Object.Instantiate(Resources.Load<GameObject>("Items/Item"), new Vector3(100, 100, 1), Quaternion.identity);
-            var item = (AItem)go.AddComponent(type);
+            var item = definition.Attach(go);
             item.SetRarity(ItemPool.RarityOf(kind));
             yield return null;
             if (ship == null || item == null)

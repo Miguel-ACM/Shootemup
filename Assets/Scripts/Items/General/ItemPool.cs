@@ -4,10 +4,10 @@ using UnityEngine;
 
 public static class ItemPool
 {
-    private static readonly string[] allCommon = { "Popcorn", "PocketFan", "RubberBand", "HotSauce", "BulletDroneItem", "FocusTime", "BarrelRoll", "BadGlasses", "ScatterCannonItem", "BallBearing", "ReserveCell", "SalvageConverter", "FocusingLens", "ReboundCoil", "RabbitsFoot", "BlankBullet", "EarlyRise", "TwerpItem", "Magnet", "AK45Item", "SparePlating" };
-    private static readonly string[] allRare = { "Icicle", "WindUpCannonItem", "DecoyProjector", "StaticSweater", "MagnifyingGlass", "ChewingGum", "LaserDroneItem", "HealthPacks", "EnergyCore", "BouncingBall", "Poison", "GasolineLeak", "QualityGlasses", "ShrinkerJuice", "Overdrive", "GravityWell", "MirrorBurst", "BeamEmitterItem", "FlameProjectorItem", "BackdraftItem", "DrillItem", "ThrowableShield", "FillableFlask", "DepthChargeItem", "SwarmRackItem", "DiscThrowerItem", "BurstLauncherItem", "NeedleCannonItem", "Lighter", "ReturnModule", "DroneLink", "RecoveryCoil", "Capacitor", "ProximityFuse", "SplitterCore", "Caffeine", "ProteinSupplement", "AMoonItem", "BabyYouItem", "ElectricityItem", "DoubleHull", "SquadWhistle" };
-    private static readonly string[] allEpic = { "BulletTime", "DoubleTrouble", "EmpPulse", "RailDriverItem", "ChainReactor", "SpareBattery", "AnotherArm", "AngryMoonItem", "EnergyShield", "SpellCard", "Kusabimaru" };
-    private static readonly string[] allLegendary = { "Telekinesis", "ThreeMoonsItem", "PolarityEngine", "WarpCore" };
+    private static readonly string[] allCommon = ItemCatalog.Keys(ItemRarity.Common);
+    private static readonly string[] allRare = ItemCatalog.Keys(ItemRarity.Rare);
+    private static readonly string[] allEpic = ItemCatalog.Keys(ItemRarity.Epic);
+    private static readonly string[] allLegendary = ItemCatalog.Keys(ItemRarity.Legendary);
 
     // Items are removed from these as they are offered, so they are refilled at the start of each run.
     private static List<string> common;
@@ -46,16 +46,7 @@ public static class ItemPool
         }
     }
 
-    public static string RarityOf(string item)
-    {
-        if (System.Array.IndexOf(allLegendary, item) >= 0)
-            return "legendary";
-        if (System.Array.IndexOf(allEpic, item) >= 0)
-            return "epic";
-        if (System.Array.IndexOf(allRare, item) >= 0)
-            return "rare";
-        return "common";
-    }
+    public static string RarityOf(string item) => ItemCatalog.Get(item).RarityKey;
 
     private static string LowerPool(string pool)
     {

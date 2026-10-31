@@ -5,7 +5,6 @@ public sealed class ArcLancer : DistrictEnemy
     PulseLaser beam;
     protected override void Configure()
     {
-        hull = 18;
         health = 34;
         hullScale = .62f;
         attackInterval = (3.4f);

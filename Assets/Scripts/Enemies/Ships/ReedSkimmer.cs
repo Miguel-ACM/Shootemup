@@ -6,7 +6,6 @@ public sealed class ReedSkimmer : DistrictEnemy
     protected override Vector2 CueAxis => Vector2.down;
     protected override void Configure()
     {
-        hull = 61;
         hullScale = 0.49f;
         health = 20;
         attackInterval = (2.0f);

@@ -5,7 +5,6 @@ public sealed class OrbitalCarrier : SpaceSatellite
 {
     protected override void Configure()
     {
-        hull = 43;
         hullScale = .64f;
         health = 135;
         attackInterval = (1.7f);

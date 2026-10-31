@@ -5,7 +5,6 @@ public sealed class FieldsHeavyWing : DistrictMiniboss
     static readonly Vector3[] ports = { new Vector3(-.68f, -1.20f, -.30f), new Vector3(.68f, -1.20f, -.30f) };
     protected override void Configure()
     {
-        hull = 24;
         health = 380;
         hullScale = 1.1f;
         attackInterval = 1.0f;

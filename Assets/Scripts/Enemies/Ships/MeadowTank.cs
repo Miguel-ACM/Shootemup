@@ -8,7 +8,6 @@ public sealed class MeadowTank : GroundVehicle
     protected override bool Snow => false;
     protected override void Configure()
     {
-        hull = 39;
         hullScale = .68f;
         health = 27;
         attackInterval = (1.5f);

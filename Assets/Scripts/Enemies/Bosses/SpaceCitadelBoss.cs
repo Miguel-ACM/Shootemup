@@ -20,7 +20,6 @@ public sealed partial class SpaceCitadelBoss : DistrictBoss
     protected override float PhaseEnd(int phase) => phase == 2 && Difficulty.Hard ? .25f : 0;
     protected override void Configure()
     {
-        hull = 45;
         hullScale = 1;
         health = 2500;
         attackInterval = (.68f);

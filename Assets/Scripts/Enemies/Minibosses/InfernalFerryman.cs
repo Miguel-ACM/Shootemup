@@ -4,7 +4,6 @@ public sealed class InfernalFerryman : DistrictMiniboss
 {
     protected override void Configure()
     {
-        hull = 59;
         hullScale = 1;
         health = 650;
         attackInterval = 1.0f;

@@ -4,7 +4,6 @@ public sealed class OrbitalWarden : DistrictMiniboss
 {
     protected override void Configure()
     {
-        hull = 60;
         hullScale = .95f;
         health = 590;
         attackInterval = 1.2f;

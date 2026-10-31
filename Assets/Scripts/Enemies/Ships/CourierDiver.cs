@@ -4,7 +4,6 @@ public sealed class CourierDiver : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 15;
         health = 9;
         hullScale = .34f;
         attackInterval = (0.95f);

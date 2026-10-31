@@ -7,7 +7,6 @@ public sealed class SandStriker : DistrictEnemy
     bool bursting;
     protected override void Configure()
     {
-        hull = 31;
         hullScale = .52f;
         health = 31;
         attackInterval = (2.0f);

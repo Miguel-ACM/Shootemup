@@ -5,7 +5,6 @@ public sealed class MetroLancer : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 65;
         hullScale = 0.41f;
         health = 19;
         attackInterval = (1.4f);

@@ -11,7 +11,6 @@ public sealed partial class CityDuoBoss : DistrictBoss
     public override float DisplayFraction => (Mathf.Max(0, health) + (partner != null ? Mathf.Max(0, partner.health) : 0)) / Mathf.Max(1, combinedMaximum);
     protected override void Configure()
     {
-        hull = 12;
         hullScale = .8f;
         health = 1000;
         attackInterval = (.64f);

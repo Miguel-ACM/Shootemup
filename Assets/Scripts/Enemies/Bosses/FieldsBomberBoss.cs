@@ -39,7 +39,6 @@ public sealed partial class FieldsBomberBoss : DistrictBoss
     Vector2 phraseAxis = Vector2.down;
     protected override void Configure()
     {
-        hull = 23;
         hullScale = 1.4f;
         health = 1200;
         attackInterval = (.8f);

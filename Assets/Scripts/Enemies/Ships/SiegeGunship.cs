@@ -4,7 +4,6 @@ public sealed class SiegeGunship : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 7;
         health = 95;
         hullScale = .9f;
         attackInterval = (1.7f);

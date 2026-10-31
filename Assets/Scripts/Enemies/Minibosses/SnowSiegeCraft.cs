@@ -5,7 +5,6 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
     static readonly Vector3[] ports = { new Vector3(0, -1.46f, -.3f) };
     protected override void Configure()
     {
-        hull = 26;
         health = 480;
         hullScale = 1.1f;
         attackInterval = 1.15f;

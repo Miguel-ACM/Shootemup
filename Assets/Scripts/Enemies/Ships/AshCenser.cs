@@ -6,7 +6,6 @@ public sealed class AshCenser : DistrictEnemy
     protected override Vector2 CueAxis => volley % 2 == 0 ? Vector2.down : Aim;
     protected override void Configure()
     {
-        hull = 79;
         hullScale = 0.58f;
         health = 55;
         attackInterval = (1.75f);

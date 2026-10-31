@@ -16,7 +16,6 @@ public sealed class SandEmitter : DistrictEnemy
     public override bool CanBeTargeted => health > 0 && Grounded && exposed && rise > .65f;
     protected override void Configure()
     {
-        hull = 30;
         hullScale = .63f;
         health = 40;
         attackInterval = (1.6f);

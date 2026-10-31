@@ -5,7 +5,6 @@ public sealed class LaserSatellite : SpaceSatellite
 {
     protected override void Configure()
     {
-        hull = 42;
         hullScale = .56f;
         health = 68;
         attackInterval = (2.3f);

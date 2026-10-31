@@ -4,17 +4,8 @@ using System.Collections.Generic;
 
 public static class DistrictWaves
 {
-    // Explicit types keep runtime factories safe under managed code stripping.
-    public static readonly Type[] EnemyTypes = { typeof(ScoutInterceptor), typeof(PatrolGunship), typeof(HeavyBomber), typeof(WallTurret), typeof(MaintenanceDrone), typeof(ArmoredCarrier), typeof(ColdWeatherFighter), typeof(SiegeGunship), typeof(ShieldTransport), typeof(BeamDrone), typeof(RelayDrone), typeof(StormSkimmer), typeof(PursuitFighter), typeof(AttackDrone), typeof(CommandGunship), typeof(CourierDiver), typeof(AvalancheBomber), typeof(ArcLancer), typeof(FieldsHeavyWing), typeof(TunnelDefensePlatform), typeof(SnowSiegeCraft), typeof(StormReactor), typeof(CityCommandCarrier), typeof(SandEmitter), typeof(SandStriker), typeof(SandWorm), typeof(BonbonSkirmisher), typeof(WaferDart), typeof(MintSpinner), typeof(MeadowTank), typeof(FrostAuger), typeof(OrbitalScout), typeof(LaserSatellite), typeof(OrbitalCarrier), typeof(OrbitalMoonlet) };
-    static DistrictWaves()
-    {
-        var all = new List<Type>(EnemyTypes);
-        all.AddRange(EnemyExpansion.Types);
-        all.AddRange(new[] { typeof(SkullRevenant), typeof(GhostGalleon), typeof(CinderImp), typeof(ReefDart), typeof(MantaRay), typeof(Bathysphere), typeof(ScarabDredger), typeof(TaffyDuelist), typeof(OrbitalWarden), typeof(ReefLeviathan), typeof(InfernalFerryman) });
-        EnemyTypes = all.ToArray();
-    }
-
-    public static Type EnemyType(string name) => Array.Find(EnemyTypes, t => t.Name == name);
+    public static readonly Type[] EnemyTypes = EnemyCatalog.WaveTypes;
+    public static Type EnemyType(string name) => EnemyCatalog.Resolve(name);
     public static Type BossType
     {
         get

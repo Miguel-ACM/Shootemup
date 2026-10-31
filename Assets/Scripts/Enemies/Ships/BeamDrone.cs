@@ -5,7 +5,6 @@ public sealed class BeamDrone : DistrictEnemy
     PulseLaser beam;
     protected override void Configure()
     {
-        hull = 9;
         health = 25;
         hullScale = .55f;
         attackInterval = (2.9f);

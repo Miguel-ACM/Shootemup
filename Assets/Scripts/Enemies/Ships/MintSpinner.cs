@@ -5,7 +5,6 @@ public sealed class MintSpinner : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 37;
         hullScale = .42f;
         health = 26;
         attackInterval = (2.0f);

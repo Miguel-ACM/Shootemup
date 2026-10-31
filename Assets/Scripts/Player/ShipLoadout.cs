@@ -14,7 +14,6 @@ public sealed class ShipLoadout : MonoBehaviour
     public bool ConsumedInputThisFrame => pickedFrame == Time.frameCount;
     public readonly AWeapon[] Weapons = new AWeapon[2];
     public readonly AActiveItem[] Actives = new AActiveItem[2];
-    static readonly Type[] weaponTypes = { typeof(DepthCharge), typeof(Backdraft), typeof(WindUpCannon), typeof(NeedleCannon), typeof(BurstLauncher), typeof(BeamEmitter), typeof(DiscThrower), typeof(SwarmRack), typeof(ScatterCannon), typeof(FlameProjector), typeof(RailDriver), typeof(Drill) };
     void Awake()
     {
         input = new Inputs();
@@ -89,22 +88,9 @@ public sealed class ShipLoadout : MonoBehaviour
     public void EquipWeapon(string name, int slot)
     {
         slot = Mathf.Clamp(slot, 0, 1);
-        AWeapon replacement = null;
-        var prefab = Resources.Load<GameObject>("Weapons/" + name);
-        if (prefab != null)
-            replacement = Instantiate(prefab, transform).GetComponent<AWeapon>();
-        else
-        {
-            Type type = Array.Find(weaponTypes, t => t.Name == name);
-            if (type == null)
-            {
-                Debug.LogError("Unknown weapon: " + name);
-                return;
-            }
-            var go = new GameObject(name);
-            go.transform.SetParent(transform, false);
-            replacement = (AWeapon)go.AddComponent(type);
-        }
+        var replacement = WeaponCatalog.Create(name, transform);
+        if (replacement == null)
+            return;
         replacement.transform.localPosition = Vector3.zero;
         replacement.SetWeaponInput(slot == 0 ? AWeapon.WeaponInput.primary : AWeapon.WeaponInput.secondary);
         RemoveWeapon(slot);

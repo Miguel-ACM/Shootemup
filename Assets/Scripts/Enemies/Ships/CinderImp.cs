@@ -5,7 +5,6 @@ public sealed class CinderImp : InfernalEnemy
 {
     protected override void Configure()
     {
-        hull = 48;
         hullScale = .40f;
         health = 27;
         attackInterval = (1.2f);

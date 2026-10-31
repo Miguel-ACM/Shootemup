@@ -5,7 +5,6 @@ public sealed class RivetMantis : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 68;
         hullScale = 0.55f;
         health = 40;
         attackInterval = (2.3f);

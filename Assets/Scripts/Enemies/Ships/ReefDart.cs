@@ -5,7 +5,6 @@ public sealed class ReefDart : OceanEnemy
 {
     protected override void Configure()
     {
-        hull = 50;
         hullScale = .49f;
         health = 33;
         attackInterval = (1.9f);

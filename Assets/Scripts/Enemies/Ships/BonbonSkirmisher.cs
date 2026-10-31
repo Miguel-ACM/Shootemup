@@ -5,7 +5,6 @@ public sealed class BonbonSkirmisher : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 35;
         hullScale = .38f;
         health = 19;
         attackInterval = (1.7f);

@@ -4,7 +4,6 @@ public sealed class AttackDrone : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 13;
         health = 14;
         hullScale = .38f;
         attackInterval = (1.55f);

@@ -4,7 +4,6 @@ public sealed class StormReactor : DistrictMiniboss
 {
     protected override void Configure()
     {
-        hull = 27;
         health = 480;
         hullScale = 1.1f;
         attackInterval = 1.05f;

@@ -6,7 +6,6 @@ public sealed class CapacitorKite : DistrictEnemy
     protected override Vector2 CueAxis => Vector2.down;
     protected override void Configure()
     {
-        hull = 69;
         hullScale = 0.53f;
         health = 34;
         attackInterval = (2.15f);

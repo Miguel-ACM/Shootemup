@@ -5,7 +5,6 @@ public sealed class MantaRay : OceanEnemy
 {
     protected override void Configure()
     {
-        hull = 51;
         hullScale = .57f;
         health = 58;
         attackInterval = (2.2f);

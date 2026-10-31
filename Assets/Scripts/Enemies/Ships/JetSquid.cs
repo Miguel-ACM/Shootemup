@@ -5,7 +5,6 @@ public sealed class JetSquid : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 78;
         hullScale = 0.51f;
         health = 31;
         attackInterval = (1.95f);

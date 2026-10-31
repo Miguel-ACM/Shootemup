@@ -4,7 +4,6 @@ public sealed class ReefLeviathan : DistrictMiniboss
 {
     protected override void Configure()
     {
-        hull = 58;
         hullScale = 1;
         health = 560;
         attackInterval = 1.0f;

@@ -4,7 +4,6 @@ public sealed class ColdWeatherFighter : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 6;
         health = 24;
         hullScale = .62f;
         attackInterval = (1.25f);

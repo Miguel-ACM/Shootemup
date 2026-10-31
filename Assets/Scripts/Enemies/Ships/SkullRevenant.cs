@@ -8,7 +8,6 @@ public sealed class SkullRevenant : InfernalEnemy
     LineRenderer portal;
     protected override void Configure()
     {
-        hull = 46;
         hullScale = .47f;
         health = 40;
         attackInterval = (1.5f);

@@ -20,7 +20,6 @@ public sealed partial class HellCrabBoss : DistrictBoss
     protected override float PhaseEnd(int phase) => phase == 1 ? 0 : base.PhaseEnd(phase);
     protected override void Configure()
     {
-        hull = 49;
         hullScale = 1;
         health = 3000;
         attackInterval = (.72f);

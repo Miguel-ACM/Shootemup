@@ -4,7 +4,6 @@ public sealed class HeavyBomber : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 2;
         health = 80;
         hullScale = .9f;
         attackInterval = (1.8f);

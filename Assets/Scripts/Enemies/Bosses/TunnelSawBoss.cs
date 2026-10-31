@@ -14,7 +14,6 @@ public sealed partial class TunnelSawBoss : DistrictBoss
     int impacts;
     protected override void Configure()
     {
-        hull = 20;
         hullScale = 1.25f;
         health = 1800;
         attackInterval = 1.6f;

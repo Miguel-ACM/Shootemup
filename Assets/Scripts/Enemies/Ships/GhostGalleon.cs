@@ -5,7 +5,6 @@ public sealed class GhostGalleon : InfernalEnemy
 {
     protected override void Configure()
     {
-        hull = 47;
         hullScale = .64f;
         health = 95;
         attackInterval = (1.8f);

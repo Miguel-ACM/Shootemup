@@ -4,7 +4,6 @@ public sealed class RelayDrone : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 10;
         health = 32;
         hullScale = .55f;
         attackInterval = (1.9f);

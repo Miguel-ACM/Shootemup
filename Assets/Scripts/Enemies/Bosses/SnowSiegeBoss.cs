@@ -73,7 +73,6 @@ public sealed partial class SnowSiegeBoss : DistrictBoss
 
     protected override void Configure()
     {
-        hull = 21;
         hullScale = 1.6f;
         health = 2100;
         attackInterval = (.85f);

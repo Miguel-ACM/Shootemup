@@ -5,7 +5,6 @@ public sealed class OrbitalMoonlet : SpaceSatellite
 {
     protected override void Configure()
     {
-        hull = 44;
         hullScale = .28f;
         health = 24;
         attackInterval = (1.4f);

@@ -215,14 +215,14 @@ public sealed class HangarHub : MonoBehaviour
         var stock = MetaProgress.Stock;
         for (int i = 0; i < stock.Count && i < plinthSpots.Length; i++)
         {
-            var type = System.Type.GetType(stock[i]);
-            if (type == null)
+            ItemCatalog.TryGet(stock[i], out var definition);
+            if (definition == null)
                 continue;
             var plinth = new Plinth { kind = stock[i], spot = Spot(plinthSpots[i], 1) };
             // Waits off the right edge, then glides onto its plinth during the arrival.
             var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.spot + Vector3.right * SlideDistance, Quaternion.identity);
             go.transform.SetParent(transform, true);
-            plinth.item = (AItem)go.AddComponent(type);
+            plinth.item = definition.Attach(go);
             plinth.item.SetRarity(ItemPool.RarityOf(stock[i]));
             // Hidden only after Awake has given the item its name and description.
             go.SetActive(false);

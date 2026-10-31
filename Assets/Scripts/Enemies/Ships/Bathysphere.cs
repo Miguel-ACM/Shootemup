@@ -5,7 +5,6 @@ public sealed class Bathysphere : OceanEnemy
 {
     protected override void Configure()
     {
-        hull = 52;
         hullScale = .62f;
         health = 85;
         attackInterval = (2.4f);

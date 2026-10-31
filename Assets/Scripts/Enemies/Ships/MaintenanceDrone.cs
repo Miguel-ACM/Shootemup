@@ -4,7 +4,6 @@ public sealed class MaintenanceDrone : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 4;
         health = 25;
         hullScale = .5f;
         attackInterval = (1.9f);

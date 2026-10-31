@@ -30,7 +30,6 @@ public sealed partial class CandyRegentBoss : DistrictBoss
 
     protected override void Configure()
     {
-        hull = 38;
         hullScale = .85f;
         health = 1320;
         attackInterval = (.58f);

@@ -6,7 +6,6 @@ public sealed class HailLantern : DistrictEnemy
     protected override Vector2 CueAxis => Vector2.down;
     protected override void Configure()
     {
-        hull = 64;
         hullScale = 0.58f;
         health = 49;
         attackInterval = (2.9f);

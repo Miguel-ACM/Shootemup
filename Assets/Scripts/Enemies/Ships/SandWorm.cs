@@ -8,7 +8,6 @@ public sealed class SandWorm : DistrictEnemy
     Vector3 previous;
     protected override void Configure()
     {
-        hull = 32;
         hullScale = .49f;
         health = 80;
         attackInterval = (1.8f);

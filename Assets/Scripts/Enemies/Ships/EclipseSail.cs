@@ -6,7 +6,6 @@ public sealed class EclipseSail : DistrictEnemy
     protected override Vector2 CueAxis => volley % 2 == 1 ? Aim : Vector2.down;
     protected override void Configure()
     {
-        hull = 75;
         hullScale = 0.57f;
         health = 53;
         attackInterval = (1.8f);

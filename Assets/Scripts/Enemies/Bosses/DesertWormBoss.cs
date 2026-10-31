@@ -30,7 +30,6 @@ public sealed partial class DesertWormBoss : DistrictBoss
     protected override float PhaseEnd(int phase) => phase == 1 ? 0 : base.PhaseEnd(phase);
     protected override void Configure()
     {
-        hull = 33;
         hullScale = 1.10f;
         health = 2200;
         attackInterval = (.75f);

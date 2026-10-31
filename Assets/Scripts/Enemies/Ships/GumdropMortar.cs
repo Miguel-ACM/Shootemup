@@ -6,7 +6,6 @@ public sealed class GumdropMortar : DistrictEnemy
     protected override Vector2 CueAxis => Vector2.down;
     protected override void Configure()
     {
-        hull = 74;
         hullScale = 0.53f;
         health = 35;
         attackInterval = (2.6f);

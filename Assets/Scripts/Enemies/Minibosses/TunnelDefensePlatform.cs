@@ -5,7 +5,6 @@ public sealed class TunnelDefensePlatform : DistrictMiniboss
     static readonly Vector3[] ports = { new Vector3(-.20f, -1.09f, -.48f), new Vector3(0, -1.09f, -.48f), new Vector3(.20f, -1.09f, -.48f) };
     protected override void Configure()
     {
-        hull = 25;
         health = 480;
         hullScale = 1.1f;
         attackInterval = 0.95f;

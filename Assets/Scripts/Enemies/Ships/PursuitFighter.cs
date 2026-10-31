@@ -5,7 +5,6 @@ public sealed class PursuitFighter : DistrictEnemy
     PulseLaser beam;
     protected override void Configure()
     {
-        hull = 12;
         health = 20;
         hullScale = .45f;
         attackInterval = (2.8f);

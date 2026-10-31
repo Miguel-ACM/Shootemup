@@ -5,7 +5,6 @@ public sealed class BoneHarrier : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 80;
         hullScale = 0.49f;
         health = 32;
         attackInterval = (1.5f);

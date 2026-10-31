@@ -5,7 +5,6 @@ public sealed class WaferDart : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 36;
         hullScale = .39f;
         health = 23;
         attackInterval = (1.8f);

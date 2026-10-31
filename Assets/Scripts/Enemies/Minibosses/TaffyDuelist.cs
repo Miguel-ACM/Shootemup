@@ -4,7 +4,6 @@ public sealed class TaffyDuelist : DistrictMiniboss
 {
     protected override void Configure()
     {
-        hull = 57;
         hullScale = .9f;
         health = 480;
         attackInterval = 0.8f;

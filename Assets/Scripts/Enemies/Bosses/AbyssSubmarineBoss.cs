@@ -40,7 +40,6 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
     protected override bool RepositionsOnPhase => false;
     protected override void Configure()
     {
-        hull = 53;
         hullScale = .98f;
         health = 2600;
         attackInterval = (.68f);

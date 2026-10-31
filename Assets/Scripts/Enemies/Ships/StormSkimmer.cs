@@ -4,7 +4,6 @@ public sealed class StormSkimmer : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 11;
         health = 22;
         hullScale = .55f;
         attackInterval = (2.2f);

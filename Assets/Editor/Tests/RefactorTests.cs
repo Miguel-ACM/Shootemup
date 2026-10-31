@@ -11,6 +11,32 @@ public sealed class DamageContractProbe : AEnemy
 public class RefactorTests
 {
     [Test]
+    public void CatalogsCoverEveryConcreteItemAndEveryAuthoredActor()
+    {
+        var keys = new System.Collections.Generic.HashSet<string>();
+        foreach (var item in ItemCatalog.All)
+        {
+            Assert.IsTrue(keys.Add(item.Key));
+            Assert.AreSame(item, ItemCatalog.Get(item.Id));
+            Assert.AreEqual(item.Key, item.ComponentType.Name);
+        }
+        foreach (var type in typeof(AItem).Assembly.GetTypes())
+            if (!type.IsAbstract && typeof(AItem).IsAssignableFrom(type))
+                Assert.IsTrue(keys.Contains(type.Name), "Unregistered item " + type.Name);
+        Assert.AreEqual(66, EnemyCatalog.WaveTypes.Length);
+        Assert.AreEqual(76, EnemyCatalog.All.Length);
+        foreach (var actor in EnemyCatalog.All)
+        {
+            Assert.AreSame(actor.ComponentType, EnemyCatalog.Resolve(actor.Key));
+            Assert.AreSame(actor, EnemyCatalog.Get(actor.Id));
+        }
+        foreach (var entry in EnemyExpansion.All)
+            Assert.AreEqual(entry.hull, (int)EnemyCatalog.Get(entry.type).Hull);
+        Assert.AreEqual("common", ItemCatalog.Get(ItemId.TwerpItem).RarityKey);
+        Assert.AreEqual("rare", ItemCatalog.Get(ItemId.AMoonItem).RarityKey);
+    }
+
+    [Test]
     public void PhaseStateUsesOneClockAndAnObjectiveSpecificMeter()
     {
         var phase = new BossPhaseState { Phase = 2 };

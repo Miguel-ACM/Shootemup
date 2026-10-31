@@ -4,7 +4,6 @@ public sealed class ScarabDredger : DistrictMiniboss
 {
     protected override void Configure()
     {
-        hull = 56;
         hullScale = .96f;
         health = 510;
         attackInterval = 1.0f;

@@ -4,7 +4,6 @@ public sealed class ShieldTransport : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 8;
         health = 100;
         hullScale = .95f;
         attackInterval = (1.9f);

@@ -4,7 +4,6 @@ public sealed class CommandGunship : DistrictEnemy
 {
     protected override void Configure()
     {
-        hull = 14;
         health = 90;
         hullScale = .8f;
         attackInterval = (1.5f);
