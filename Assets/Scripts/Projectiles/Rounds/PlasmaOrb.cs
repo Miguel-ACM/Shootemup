@@ -1,10 +1,11 @@
 using UnityEngine;
-public sealed class PlasmaOrb : CombatRound
+public sealed class PlasmaOrb : CombatRound, ICombatDamageable
 {
     // Destructible plasma is sturdy: it takes a sustained stream to burst it.
     // Its outline is a life ring that shrinks to an arc as it loses health.
     const float Sturdiness = 60;
     float health;
+    public bool CanReceiveDamage => !ended && health > 0 && gameObject.activeInHierarchy;
     LineRenderer outline;
     public static PlasmaOrb FirstOnBeam(Vector2 start, Vector2 end, float radius, out Vector2 point)
     {
@@ -58,14 +59,18 @@ public sealed class PlasmaOrb : CombatRound
         }
     }
 
-    public void Hit(float amount)
+    public void Hit(float amount) => ReceiveDamage(amount);
+
+    public DamageResult ReceiveDamage(float amount)
     {
-        if (ended)
-            return;
+        if (!CanReceiveDamage || amount <= 0 || !float.IsFinite(amount))
+            return default;
+        float applied = Mathf.Min(amount, health);
         health -= amount;
         visual.color = Color.white * 1.6f;
         if (health <= 0)
             Vanish();
+        return new DamageResult(true, amount, applied);
     }
 
     void OnTriggerEnter2D(Collider2D other)

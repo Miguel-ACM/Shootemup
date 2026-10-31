@@ -82,6 +82,8 @@ public sealed class SandWorm : DistrictEnemy
 public sealed class SandWormSection : AEnemy
 {
     public SandWorm owner;
+    public override bool CanReceiveDamage => owner != null && owner.CanReceiveDamage;
+    public override DamageResult ReceiveDamage(float amount) => owner != null ? owner.ReceiveDamage(amount) : default;
     protected override void Start()
     {
     }

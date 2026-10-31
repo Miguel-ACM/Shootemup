@@ -251,21 +251,6 @@ public sealed class CombatUpgrades : MonoBehaviour
         }
     }
 
-    public static AEnemy Nearest(Vector3 p, HashSet<AEnemy> excluded, float radius)
-    {
-        AEnemy result = null;
-        float nearest = radius * radius;
-        foreach (var enemy in AEnemy.Live)
-        {
-            if (enemy == null || !enemy.CanBeTargeted || (excluded != null && excluded.Contains(enemy)))
-                continue;
-            float d = ((Vector2)(enemy.transform.position - p)).sqrMagnitude;
-            if (d < nearest)
-            {
-                nearest = d;
-                result = enemy;
-            }
-        }
-        return result;
-    }
+    // Kept for authored item/probe callers; all targeting shares one query.
+    public static AEnemy Nearest(Vector3 p, HashSet<AEnemy> excluded, float radius) => CombatTargets.Nearest(p, excluded, radius);
 }

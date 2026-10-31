@@ -172,4 +172,6 @@ public abstract class DistrictMiniboss : DistrictEnemy
         if (!Retreating)
             base.damage(amount);
     }
+
+    public override bool CanReceiveDamage => base.CanReceiveDamage && !Retreating;
 }

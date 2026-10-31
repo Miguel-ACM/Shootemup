@@ -52,8 +52,7 @@ public sealed class StickyGum : MonoBehaviour
             GumSpritePop.Spawn(blob.model.position);
             if (enemy != null && enemy.CanReceiveDamage)
             {
-                enemy.damage(blob.damage);
-                Score.IncreaseScore(Mathf.RoundToInt(blob.damage));
+                CombatHit.Tick(enemy, blob.damage, score: true);
             }
             Destroy(blob.model.gameObject);
             blobs.RemoveAt(i);

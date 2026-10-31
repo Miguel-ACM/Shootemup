@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 
-public abstract class AEnemy : MonoBehaviour
+public abstract class AEnemy : MonoBehaviour, ICombatDamageable
 {
 
     public static readonly HashSet<AEnemy> Live = new HashSet<AEnemy>();
@@ -25,6 +25,15 @@ public abstract class AEnemy : MonoBehaviour
     [EnemyTunable("Base health", 1, 50000)] public float health = 20f;
     public virtual bool CanBeTargeted => health > 0;
     public virtual bool CanReceiveDamage => CanBeTargeted && !dying;
+    public virtual DamageResult ReceiveDamage(float amount)
+    {
+        if (!CanReceiveDamage || amount <= 0 || !float.IsFinite(amount))
+            return default;
+        float before = Mathf.Max(0, health);
+        damage(amount);
+        float applied = Mathf.Clamp(before - health, 0, before);
+        return new DamageResult(applied > 0, amount, applied);
+    }
 
     bool dying = false;
     public float size = 0.65f;

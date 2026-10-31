@@ -39,7 +39,7 @@ public sealed class BurningHull : MonoBehaviour
         if (enemy != null && enemy.CanBeTargeted && Time.deltaTime > 0 && Time.time >= nextTick)
         {
             nextTick = Time.time + .4f;
-            enemy.damage(power * .4f);
+            CombatHit.Tick(enemy, power * .4f);
         }
     }
 

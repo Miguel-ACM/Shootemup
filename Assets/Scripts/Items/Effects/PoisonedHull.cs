@@ -30,7 +30,7 @@ public sealed class PoisonedHull : MonoBehaviour
         if (enemy != null && enemy.CanBeTargeted && Time.deltaTime > 0 && Time.time >= nextTick)
         {
             nextTick = Time.time + .5f;
-            enemy.damage(power * .5f);
+            CombatHit.Tick(enemy, power * .5f);
         }
     }
 
