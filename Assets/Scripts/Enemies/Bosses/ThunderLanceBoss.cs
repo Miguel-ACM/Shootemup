@@ -31,6 +31,7 @@ public sealed partial class ThunderLanceBoss : DistrictBoss
     }
 
     protected override bool PhaseTwoReady => HealthFraction <= phaseTwoThreshold;
+    protected override float PhaseEnd(int phase) => phase == 1 ? phaseTwoThreshold : base.PhaseEnd(phase);
     protected override float AttackPace => 1;
     protected override Vector2 CueAxis => Vector2.down;
     protected override void MoveBoss(float dt)

@@ -14,6 +14,10 @@ public sealed partial class HellCrabBoss : DistrictBoss
     [EnemyTunable("Claws / Fan count", 3, 9)] public int clawShots = 7;
     public HellCrabEye[] Eyes => eyes;
     public override bool CanBeTargeted => false;
+    protected override float PhaseMeterValue => !phaseTwo && eyes[0] != null && eyes[1] != null
+        ? Mathf.Max(0, Mathf.Min(eyes[0].health, eyes[1].health)) / Mathf.Max(1, initialHealth * .5f)
+        : base.PhaseMeterValue;
+    protected override float PhaseEnd(int phase) => phase == 1 ? 0 : base.PhaseEnd(phase);
     protected override void Configure()
     {
         hull = 49;

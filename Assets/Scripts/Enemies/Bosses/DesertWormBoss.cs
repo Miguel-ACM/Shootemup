@@ -12,6 +12,22 @@ public sealed partial class DesertWormBoss : DistrictBoss
     bool completing;
     public int RemainingParts { get; private set; } = BodyCount + 1;
     public DesertWormCore[] Cores => cores;
+    readonly float[] reactorProgress = new float[BodyCount + 1];
+    protected override float PhaseMeterValue
+    {
+        get
+        {
+            if (phaseTwo)
+                return base.PhaseMeterValue;
+            // Phase one ends at four destroyed reactors, in any order.
+            for (int i = 0; i < cores.Length; i++)
+                reactorProgress[i] = cores[i] == null ? 1 : Mathf.Clamp01(cores[i].health /
+                    Mathf.Max(1, initialHealth * (i == 0 ? 670f : 290f) / 2700));
+            System.Array.Sort(reactorProgress);
+            return (reactorProgress[0] + reactorProgress[1] + reactorProgress[2] + reactorProgress[3]) * .25f;
+        }
+    }
+    protected override float PhaseEnd(int phase) => phase == 1 ? 0 : base.PhaseEnd(phase);
     protected override void Configure()
     {
         hull = 33;

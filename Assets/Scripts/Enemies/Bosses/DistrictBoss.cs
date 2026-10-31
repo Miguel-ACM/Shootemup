@@ -26,8 +26,10 @@ public abstract class DistrictBoss : DistrictEnemy
     public int PhaseCount => Difficulty.Hard ? 3 : 2;
     public int CurrentPhase => phaseThree ? 3 : phaseTwo ? 2 : 1;
     float phaseStart = 1;
+    // Multipart encounters can measure the objectives of this phase rather than total hull health.
+    protected virtual float PhaseMeterValue => DisplayFraction;
     protected virtual float PhaseEnd(int phase) => phase == 1 ? .5f : phase == 2 && Difficulty.Hard ? .25f : 0;
-    public float PhaseFraction => Mathf.Clamp01((DisplayFraction - PhaseEnd(CurrentPhase)) / Mathf.Max(.01f, phaseStart - PhaseEnd(CurrentPhase)));
+    public float PhaseFraction => Mathf.Clamp01((PhaseMeterValue - PhaseEnd(CurrentPhase)) / Mathf.Max(.00001f, phaseStart - PhaseEnd(CurrentPhase)));
     protected virtual bool PhaseThreeReady => Difficulty.Hard && HealthFraction <= .25f;
     protected override void Start()
     {
@@ -116,7 +118,7 @@ public abstract class DistrictBoss : DistrictEnemy
     protected void PresentPhaseTwo()
     {
         phaseEntryUntil = age + 1.5f * LevelRun.EnemyTempoScale;
-        phaseStart = DisplayFraction;
+        phaseStart = PhaseMeterValue;
         nextAttack = Mathf.Max(nextAttack, phaseEntryUntil);
         nextPressure = Mathf.Max(nextPressure, phaseEntryUntil);
         firingCue.ClearWarning();

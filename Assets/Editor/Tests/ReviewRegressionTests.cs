@@ -6,6 +6,117 @@ using System.Reflection;
 public class ReviewRegressionTests
 {
     [Test]
+    public void ReflectionStillInterceptsAtTheFriendlyProjectileCap()
+    {
+        var count = typeof(PlayerRound).GetField("<LiveCount>k__BackingField", BindingFlags.Static | BindingFlags.NonPublic);
+        int previous = (int)count.GetValue(null);
+        var round = CombatRound.Launch<SimpleRound>(UnityEngine.Vector3.zero, UnityEngine.Vector2.down);
+        Assert.IsNotNull(round);
+        try
+        {
+            count.SetValue(null, 180);
+            Assert.IsTrue(BulletReflection.Reflect(round));
+            Assert.IsFalse(round.gameObject.activeSelf);
+            Assert.AreEqual(180, PlayerRound.LiveCount);
+            Assert.IsFalse(BulletReflection.Reflect(null));
+        }
+        finally
+        {
+            count.SetValue(null, previous);
+            CombatRound.Live.Remove(round); // Edit Mode does not invoke the runtime OnDisable callback.
+            UnityEngine.Object.DestroyImmediate(round.gameObject);
+        }
+    }
+
+    static T TestEnemy<T>(UnityEngine.Transform parent, float health) where T : AEnemy
+    {
+        var go = new UnityEngine.GameObject(typeof(T).Name);
+        go.SetActive(false);
+        go.transform.SetParent(parent);
+        var enemy = go.AddComponent<T>();
+        enemy.health = health;
+        if (enemy is DistrictBoss)
+            typeof(DistrictBoss).GetField("initialHealth", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(enemy, health);
+        return enemy;
+    }
+
+    static void EnterTestPhase(DistrictBoss boss, int phase)
+    {
+        typeof(DistrictBoss).GetField("phaseTwo", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boss, phase >= 2);
+        typeof(DistrictBoss).GetField("phaseThree", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boss, phase >= 3);
+        var value = boss.GetType().GetProperty("PhaseMeterValue", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(boss);
+        typeof(DistrictBoss).GetField("phaseStart", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boss, value);
+    }
+
+    [TestCase(RunDifficulty.Easy)]
+    [TestCase(RunDifficulty.Hard)]
+    public void MultipartMetersTrackPhaseObjectives(RunDifficulty difficulty)
+    {
+        var previous = Difficulty.Current;
+        Difficulty.Select(difficulty);
+        var root = new UnityEngine.GameObject("Phase meter test");
+        root.SetActive(false);
+        try
+        {
+            var space = TestEnemy<SpaceCitadelBoss>(root.transform, 1000);
+            for (int i = 0; i < 5; i++)
+                space.Parts[i] = TestEnemy<SpaceBossPart>(root.transform, i < 2 ? 130 : i < 4 ? 110 : 520);
+            Assert.AreEqual(1, space.PhaseFraction, .0001f);
+            space.Parts[0].health = space.Parts[1].health = 0;
+            space.health = 740;
+            Assert.AreEqual(0, space.PhaseFraction, .0001f);
+            EnterTestPhase(space, 2);
+            Assert.AreEqual(1, space.PhaseFraction, .0001f);
+            if (Difficulty.Hard)
+            {
+                space.Parts[4].health = 30;
+                space.health = 250;
+                Assert.AreEqual(0, space.PhaseFraction, .0001f);
+                EnterTestPhase(space, 3);
+                Assert.AreEqual(1, space.PhaseFraction, .0001f);
+            }
+            space.Parts[4].health = 0; // Optional guns survive the reactor.
+            space.health = 220;
+            Assert.AreEqual(0, space.PhaseFraction, .0001f);
+
+            var hell = TestEnemy<HellCrabBoss>(root.transform, 1000);
+            for (int i = 0; i < 2; i++)
+                hell.Eyes[i] = TestEnemy<HellCrabEye>(root.transform, 250);
+            hell.health = 500;
+            Assert.AreEqual(.5f, hell.PhaseFraction, .0001f); // Neither eye is dead yet.
+            hell.Eyes[0].health = 0;
+            Assert.AreEqual(0, hell.PhaseFraction, .0001f);
+
+            var desert = TestEnemy<DesertWormBoss>(root.transform, 2700);
+            for (int i = 0; i < desert.Cores.Length; i++)
+                desert.Cores[i] = TestEnemy<DesertWormCore>(root.transform, i == 0 ? 670 : 290);
+            for (int i = 0; i < 4; i++)
+                desert.Cores[i].health = 0;
+            Assert.AreEqual(0, desert.PhaseFraction, .0001f);
+
+            foreach (bool heavyFirst in new[] { false, true })
+            {
+                var first = TestEnemy<CityDuoBoss>(root.transform, heavyFirst ? 1400 : 1000);
+                var survivor = TestEnemy<CityDuoBoss>(root.transform, heavyFirst ? 1000 : 1400);
+                first.partner = survivor;
+                survivor.partner = first;
+                first.health = 0;
+                Assert.AreEqual(0, survivor.PhaseFraction, .0001f);
+                survivor.partner = null;
+                EnterTestPhase(survivor, 2);
+                Assert.AreEqual(1, survivor.PhaseFraction, .0001f);
+                survivor.health *= Difficulty.Hard ? .45f : 0;
+                Assert.AreEqual(0, survivor.PhaseFraction, .0001f);
+            }
+        }
+        finally
+        {
+            Difficulty.Select(previous);
+            UnityEngine.Object.DestroyImmediate(root);
+        }
+    }
+
+    [Test]
     public void FollowersDoNotHideOrbitalsFromSpacingUpdates()
     {
         var go = new UnityEngine.GameObject("Companion spacing test");
@@ -49,9 +160,13 @@ public class ReviewRegressionTests
             Assert.IsTrue(orb.gameObject.activeSelf);
             orb.Hit(1);
             Assert.IsFalse(orb.gameObject.activeSelf);
-            Assert.IsFalse(CombatRound.Live.Contains(orb));
+            Assert.IsNull(PlasmaOrb.FirstOnBeam(UnityEngine.Vector2.zero, UnityEngine.Vector2.up * 5, .06f, out _));
         }
-        finally { UnityEngine.Object.DestroyImmediate(orb.gameObject); }
+        finally
+        {
+            CombatRound.Live.Remove(orb); // Edit Mode does not invoke the runtime OnDisable callback.
+            UnityEngine.Object.DestroyImmediate(orb.gameObject);
+        }
     }
 
     [Test]

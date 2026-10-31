@@ -12,6 +12,12 @@ public sealed partial class SpaceCitadelBoss : DistrictBoss
     public bool IsDefeated => completing;
     public bool CoreExposed => parts[0] != null && parts[1] != null && parts[0].health <= 0 && parts[1].health <= 0;
     public override bool CanBeTargeted => false;
+    protected override float PhaseMeterValue => !phaseTwo
+        ? parts[0] == null || parts[1] == null ? 1 : (Mathf.Max(0, parts[0].health) + Mathf.Max(0, parts[1].health)) / Mathf.Max(1, initialHealth * .26f)
+        : phaseThree || Difficulty.Easy
+            ? parts[4] == null ? 1 : Mathf.Max(0, parts[4].health) / Mathf.Max(1, initialHealth * .52f)
+            : HealthFraction;
+    protected override float PhaseEnd(int phase) => phase == 2 && Difficulty.Hard ? .25f : 0;
     protected override void Configure()
     {
         hull = 45;
