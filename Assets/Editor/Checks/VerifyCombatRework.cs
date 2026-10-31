@@ -220,13 +220,7 @@ public sealed class CombatReworkReview : MonoBehaviour
         return null;
     }
 
-    static void Set(object target, string name, object value)
-    {
-        var f = Field(target.GetType(), name);
-        if (f == null)
-            throw new Exception("Missing field " + name);
-        f.SetValue(target, value);
-    }
+    static void Set(object target, string name, object value) => ProbeAccess.Set(target, name, value);
 
     void Check(bool pass, string text)
     {

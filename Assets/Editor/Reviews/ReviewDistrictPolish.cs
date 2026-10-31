@@ -127,19 +127,7 @@ public sealed class DistrictPolishReview : MonoBehaviour
     const BindingFlags Hidden = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
     readonly List<string> checks = new List<string>(), errors = new List<string>(), balance = new List<string>();
     Shipcontroller ship; WaveOrchestrer flow;
-    static void Set(object target, string name, object value)
-    {
-        for (var type = target.GetType(); type != null; type = type.BaseType)
-        {
-            var field = type.GetField(name, Hidden | BindingFlags.DeclaredOnly);
-            if (field != null)
-            {
-                field.SetValue(target, value);
-                return;
-            }
-        }
-        throw new Exception(name);
-    }
+    static void Set(object target, string name, object value) => ProbeAccess.Set(target, name, value);
 
     static object Call(object target, string name, params object[] args) => target.GetType().GetMethod(name, Hidden).Invoke(target, args);
     void Awake()

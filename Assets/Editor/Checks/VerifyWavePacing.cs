@@ -15,7 +15,7 @@ public static class VerifyWavePacing
     }
 
     static FieldInfo Field(string name) => typeof(WaveOrchestrer).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic);
-    static void Set(WaveOrchestrer o, string name, object value) => Field(name).SetValue(o, value);
+    static void Set(object o, string name, object value) => ProbeAccess.Set(o, name, value);
     public static void Run()
     {
         var go = new GameObject("Wave pacing verification");

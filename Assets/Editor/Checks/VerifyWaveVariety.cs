@@ -160,7 +160,7 @@ public sealed class WaveVarietyReview : MonoBehaviour
             collider.enabled = false;
         var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
         typeof(WaveOrchestrer).GetField("currentWaveNumber", flags).SetValue(flow, 0);
-        typeof(WaveOrchestrer).GetField("isWaveComingOut", flags).SetValue(flow, false);
+        ProbeAccess.Set(flow, "isWaveComingOut", false);
         typeof(WaveOrchestrer).GetField("stopingWave", flags).SetValue(flow, false);
         flow.waves = new[] { "2", "3", "4" };
         flow.enabled = true;
@@ -173,7 +173,7 @@ public sealed class WaveVarietyReview : MonoBehaviour
             wave = (int)typeof(WaveOrchestrer).GetField("currentWaveNumber", flags).GetValue(flow);
             LiveSpacing("normal director handoff");
             peak = Mathf.Max(peak, CombatRound.Live.Count);
-            if (wave == 3 && !(bool)typeof(WaveOrchestrer).GetField("isWaveComingOut", flags).GetValue(flow))
+            if (wave == 3 && !(bool)ProbeAccess.Get(flow, "isWaveComingOut"))
                 break;
             yield return null;
         }

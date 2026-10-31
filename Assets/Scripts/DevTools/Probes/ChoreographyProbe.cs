@@ -210,7 +210,7 @@ public sealed class ChoreographyProbe : MonoBehaviour
             Destroy(pickup.gameObject);
     }
 
-    static void Set(WaveOrchestrer target, string field, object value) => typeof(WaveOrchestrer).GetField(field, Hidden).SetValue(target, value);
+    static void Set(object target, string field, object value) => ProbeAccess.Set(target, field, value);
     static int WaveNumber(WaveOrchestrer target) => (int)typeof(WaveOrchestrer).GetField("currentWaveNumber", Hidden).GetValue(target);
     IEnumerator Run()
     {

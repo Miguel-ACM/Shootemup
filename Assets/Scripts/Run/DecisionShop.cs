@@ -27,14 +27,17 @@ public sealed class DecisionShop : MonoBehaviour
     }
 
     public void Open(WaveOrchestrer orchestrer, Shipcontroller ship, string kind, Action completed, Vector3? dropPosition = null)
+        => Open(orchestrer, ship, RunSlot.Parse(kind).Kind, completed, dropPosition);
+
+    public void Open(WaveOrchestrer orchestrer, Shipcontroller ship, RunSlotKind kind, Action completed, Vector3? dropPosition = null)
     {
-        mandatory = kind == "bossReward";
-        bool singleReward = mandatory || kind == "challengeReward";
-        bool pact = kind == "pact";
+        mandatory = kind == RunSlotKind.BossReward;
+        bool singleReward = mandatory || kind == RunSlotKind.ChallengeReward;
+        bool pact = kind == RunSlotKind.Pact;
         owner = orchestrer;
         player = ship;
-        paid = kind != "reward" && !singleReward && !pact;
-        coinShop = kind == "coinShop" || kind == "scoreShop";
+        paid = kind != RunSlotKind.Reward && !singleReward && !pact;
+        coinShop = kind == RunSlotKind.CoinShop;
         done = completed;
         CombatDecision.Begin();
         player.GetComponent<ShipLoadout>().ResetSelection();

@@ -90,7 +90,7 @@ public sealed class BossFinaleReview : MonoBehaviour
         File.WriteAllText(Folder + "/Progress.txt", string.Join("\n", checks));
     }
 
-    static void Set(object owner, string name, object value) => owner.GetType().GetField(name, Hidden).SetValue(owner, value);
+    static void Set(object owner, string name, object value) => ProbeAccess.Set(owner, name, value);
     static void Call(object owner, string name, params object[] values) => owner.GetType().GetMethod(name, Hidden).Invoke(owner, values);
     void Capture(string name) => DesertReview.Capture(name, Folder);
     IEnumerator Start()

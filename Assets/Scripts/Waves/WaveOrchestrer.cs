@@ -7,8 +7,11 @@ public class WaveOrchestrer : MonoBehaviour
 {
 
     WavePool wavePool;
-    bool isWaveComingOut = false;
-    public string[] waves;
+    public RunPhase Phase { get; private set; }
+    bool isWaveComingOut { get => Phase == RunPhase.Combat; set => Phase = value ? RunPhase.Combat : RunPhase.Idle; }
+    readonly RunPlan plan = new RunPlan();
+    // Stable textual keys remain at the authoring/debug boundary.
+    public string[] waves { get => plan.Export(); set => plan.Load(value); }
     int currentWaveNumber = 0;
     int currentWaveEnemies = 0;
     int currentWaveKilledEnemies = 0;
@@ -29,8 +32,9 @@ public class WaveOrchestrer : MonoBehaviour
     List<GameObject> items = new List<GameObject>();
     bool choosingRoute;
     LevelChoice routeChoice;
-    int challengeWavesRemaining;
-    bool challengeWave;
+    readonly ChallengeProgress challenge = new ChallengeProgress();
+    int challengeWavesRemaining { get => challenge.Remaining; set => challenge.Remaining = value; }
+    bool challengeWave { get => challenge.CurrentWave; set => challenge.CurrentWave = value; }
     public int ChallengeWavesRemaining => challengeWavesRemaining;
     public EncounterKind[] EncounterOptions
     {
@@ -44,7 +48,7 @@ public class WaveOrchestrer : MonoBehaviour
     public RewardHexes RewardOffer => rewardOffer;
 
     public const float OpeningBreather = .8f;
-    bool openingWavePending;
+    bool openingWavePending { get => Phase == RunPhase.Opening; set => Phase = value ? RunPhase.Opening : RunPhase.Idle; }
     float openingStartsAt;
     DistrictMiniboss activeMiniboss;
     float minibossDeadline = -1;
@@ -114,8 +118,8 @@ public class WaveOrchestrer : MonoBehaviour
                 OpenEncounterChoice();
             // Consecutive phrases overlap their exits: old bullets are part of the rhythm.
             // Decisions and bosses wait for enemies to finish, then explicitly clear hazards.
-            string next = FollowingSlot(currentWaveNumber);
-            bool nextCombat = int.TryParse(next, out _) && !(challengeWave && challengeWavesRemaining == 1);
+            var next = plan.Following(currentWaveNumber);
+            bool nextCombat = next.Kind == RunSlotKind.Combat && !(challengeWave && challengeWavesRemaining == 1);
             bool empty = currentUnit == null && AEnemy.Live.Count == 0;
             clearTime = empty ? clearTime + Time.deltaTime : 0;
             bool miniboss = currentWave.units.Exists(unit => unit.miniboss);
@@ -158,19 +162,14 @@ public class WaveOrchestrer : MonoBehaviour
             killLedger.HandOff(currentWaveNumber);
             killLedger.Drain(CombatWaveFinished);
         }
-        if (challengeWave)
+        if (challenge.FinishWave())
         {
-            challengeWave = false;
-            challengeWavesRemaining--;
-            if (challengeWavesRemaining == 0)
-            {
-                // The third wave must be cleared, then pay out before any later combat starts.
-                if (currentWaveNumber < waves.Length && waves[currentWaveNumber] == "encounterChoice")
-                    currentWaveNumber++;
-                EraseAllBullets();
-                OpenDecision("challengeReward");
-                return;
-            }
+            // The third wave is clear before its single reward opens.
+            if (plan[currentWaveNumber].Kind == RunSlotKind.EncounterChoice)
+                currentWaveNumber++;
+            EraseAllBullets();
+            OpenDecision(RunSlotKind.ChallengeReward);
+            return;
         }
         GenerateWave();
     }
@@ -190,6 +189,7 @@ public class WaveOrchestrer : MonoBehaviour
 
     private void SpawnBoss()
     {
+        Phase = RunPhase.Boss;
         // Camera.WhiteScreenJitter(0.5f);
         BGMManager.PlayBGM("boss");
         GameObject bossGO = DistrictEnemy.Spawn(DistrictWaves.BossType, new Vector3(0, Camera.UpLimit + 3, 1)).gameObject;
@@ -202,37 +202,39 @@ public class WaveOrchestrer : MonoBehaviour
     {
         if (GameOverState.Active)
             return;
-        if (currentWaveNumber >= waves.Length)
+        if (currentWaveNumber >= plan.Count)
         {
             isWaveComingOut = false;
             return;
         }
-        string currWaveType = waves[currentWaveNumber];
-        if (currWaveType == "minibossChoice" && !minibossVictory)
+        var slot = plan[currentWaveNumber];
+        var kind = slot.Kind;
+        if (kind == RunSlotKind.MinibossChoice && !minibossVictory)
         {
             currentWaveNumber++;
             GenerateWave();
             return;
         }
-        if (currWaveType == "encounterChoice" || currWaveType == "minibossChoice")
+        if (kind == RunSlotKind.EncounterChoice || kind == RunSlotKind.MinibossChoice)
         {
             offerPending = true;
             currentWaveNumber++;
             GenerateWave();
             return;
         }
-        if (!int.TryParse(currWaveType, out _))
+        if (kind != RunSlotKind.Combat)
             DismissOffer();
-        if (currWaveType == "coinShop" || currWaveType == "scoreShop" || currWaveType == "multiplierShop" || currWaveType == "reward" || currWaveType == "pact")
+        if (slot.IsDecision)
         {
             EraseAllBullets();
             isWaveComingOut = false;
-            OpenDecision(currWaveType);
+            OpenDecision(kind);
         }
-        else if (currWaveType == "boss")
+        else if (kind == RunSlotKind.Boss)
         {
             // Hold the wave timer while the boss is up; the next wave starts when it dies.
             isWaveComingOut = false;
+            Phase = RunPhase.BossWarning;
             StartCoroutine(BGMManager.FadeOutSong(2.9f));
             SoundManager.PlaySound("bossWarning", 0.18f);
             warning.blink();
@@ -243,16 +245,16 @@ public class WaveOrchestrer : MonoBehaviour
         else
         {
             isWaveComingOut = true;
-            challengeWave = challengeWavesRemaining > 0 && int.TryParse(currWaveType, out _);
-            currentWave = wavePool.getWave(currWaveType);
-            string following = FollowingSlot(currentWaveNumber + 1);
-            handoffAt = int.TryParse(following, out _) ? WaveHandoff.At(currentWave, wavePool.getWave(following)) : currentWave.duration;
+            challenge.BeginWave(kind == RunSlotKind.Combat);
+            currentWave = wavePool.getWave(slot.Key);
+            var following = plan.Following(currentWaveNumber + 1);
+            handoffAt = following.Kind == RunSlotKind.Combat ? WaveHandoff.At(currentWave, wavePool.getWave(following.Key)) : currentWave.duration;
             offerAt = handoffAt * .5f;
             currentWaveEnemies = currentWave.units.Count;
             currentWaveKilledEnemies = 0;
             if (!currentWave.units.Exists(unit => unit.miniboss))
                 killLedger.Begin(currentWaveNumber + 1, currentWaveEnemies);
-            if (currWaveType == "miniboss")
+            if (kind == RunSlotKind.Miniboss)
             {
                 minibossVictory = false;
                 minibossDeadline = -1;
@@ -262,29 +264,18 @@ public class WaveOrchestrer : MonoBehaviour
             currentUnit = currentWave.getNext();
         }
         currentWaveNumber += 1;
-        if (currentWaveNumber >= waves.Length)
+        if (currentWaveNumber >= plan.Count)
         {
             stopingWave = true;
         }
     }
 
     DecisionShop decision;
-    // Choice slots are transparent to wave handoffs: the offer rides along with the next wave.
-    string FollowingSlot(int index)
-    {
-        while (index < waves.Length && (waves[index] == "encounterChoice" || waves[index] == "minibossChoice"))
-            index++;
-        return index < waves.Length ? waves[index] : "";
-    }
-
     void OpenEncounterChoice()
     {
         offerPending = false;
         // The wave in progress counts, because a challenge starts at once.
-        int remaining = 1;
-        for (int i = currentWaveNumber; i < waves.Length; i++)
-            if (int.TryParse(waves[i], out _))
-                remaining++;
+        int remaining = 1 + plan.RemainingCombat(currentWaveNumber);
         var player = ship.GetComponent<Shipcontroller>();
         int seed = unchecked(LevelRun.Seed + LevelRun.Stage * 971 + currentWaveNumber * 7919);
         // Every second district offers one pact hexagon, at its first reward break.
@@ -323,16 +314,14 @@ public class WaveOrchestrer : MonoBehaviour
         if (kind == EncounterKind.Shop || kind == EncounterKind.MultShop || kind == EncounterKind.Item || kind == EncounterKind.Pact)
         {
             // Items, shops and pacts open at the next wave break, after the current phrase is cleared.
-            var sequence = new List<string>(waves);
-            sequence.Insert(Mathf.Min(currentWaveNumber, sequence.Count), kind == EncounterKind.Shop ? "coinShop" : kind == EncounterKind.MultShop ? "multiplierShop" : kind == EncounterKind.Pact ? "pact" : "reward");
-            waves = sequence.ToArray();
+            plan.Insert(currentWaveNumber, kind == EncounterKind.Shop ? RunSlotKind.CoinShop :
+                kind == EncounterKind.MultShop ? RunSlotKind.MultiplierShop : kind == EncounterKind.Pact ? RunSlotKind.Pact : RunSlotKind.Reward);
             return;
         }
         if (kind == EncounterKind.Challenge)
         {
             // The wave in progress is the first of the three.
-            challengeWavesRemaining = 3;
-            challengeWave = isWaveComingOut && currentWave != null && !currentWave.units.Exists(unit => unit.miniboss);
+            challenge.Start(isWaveComingOut && currentWave != null && !currentWave.units.Exists(unit => unit.miniboss));
             if (challengeWave)
                 foreach (var enemy in AEnemy.Live)
                     if (enemy is DistrictEnemy districtEnemy && !(enemy is DistrictMiniboss))
@@ -342,8 +331,9 @@ public class WaveOrchestrer : MonoBehaviour
             HealthRecovery.Begin(ship.GetComponent<Shipcontroller>(), .5f);
     }
 
-    void OpenDecision(string kind)
+    void OpenDecision(RunSlotKind kind)
     {
+        Phase = RunPhase.Decision;
         DismissOffer();
         foreach (var enemy in new List<AEnemy>(AEnemy.Live))
             if (enemy != null)
@@ -396,6 +386,7 @@ public class WaveOrchestrer : MonoBehaviour
 
     IEnumerator BossReward(Vector3 position)
     {
+        Phase = RunPhase.Decision;
         // The music has cut on the breakup; let its main blast open before the item falls.
         CombatDecision.Begin();
         yield return new WaitForSeconds(.8f);
@@ -407,7 +398,7 @@ public class WaveOrchestrer : MonoBehaviour
         position = new Vector3(Mathf.Clamp(position.x, Camera.LeftLimit + .8f, Camera.RightLimit - .8f),
             Mathf.Clamp(position.y, Camera.DownLimit + 2, Camera.UpLimit - 1.5f), 1);
         decision = gameObject.AddComponent<DecisionShop>();
-        decision.Open(this, ship.GetComponent<Shipcontroller>(), "bossReward", () =>
+        decision.Open(this, ship.GetComponent<Shipcontroller>(), RunSlotKind.BossReward, () =>
            {
                decision = null;
                StartCoroutine(ChooseNextRoute());
@@ -417,13 +408,12 @@ public class WaveOrchestrer : MonoBehaviour
     /// <summary>Debug: the next wave break opens a pact offer.</summary>
     public void ForcePactNext()
     {
-        var sequence = new List<string>(waves);
-        sequence.Insert(Mathf.Min(currentWaveNumber, sequence.Count), "pact");
-        waves = sequence.ToArray();
+        plan.Insert(currentWaveNumber, RunSlotKind.Pact);
     }
 
     IEnumerator ChooseNextRoute()
     {
+        Phase = RunPhase.Routing;
         CombatDecision.Begin();
         // This coroutine is reached only through the mandatory item's actual pickup callback.
         yield return new WaitForSeconds(.2f);
@@ -482,8 +472,7 @@ public class WaveOrchestrer : MonoBehaviour
         killLedger.Clear();
         currentWaveEnemies = 0;
         currentWaveKilledEnemies = 0;
-        challengeWavesRemaining = 0;
-        challengeWave = false;
+        challenge.Reset();
         DismissOffer();
         waveTime = clearTime = 0;
         currentUnit = null;

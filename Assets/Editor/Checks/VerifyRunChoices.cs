@@ -198,8 +198,8 @@ public sealed class RunChoicesReview : MonoBehaviour
         yield return null;
     }
 
-    static void Set(object owner, string name, object value) => owner.GetType().GetField(name, Hidden).SetValue(owner, value);
-    static object Get(object owner, string name) => owner.GetType().GetField(name, Hidden).GetValue(owner);
+    static void Set(object owner, string name, object value) => ProbeAccess.Set(owner, name, value);
+    static object Get(object owner, string name) => ProbeAccess.Get(owner, name);
     static void Call(object owner, string name, params object[] values) => owner.GetType().GetMethod(name, Hidden).Invoke(owner, values);
     IEnumerator ExitShop(DecisionShop shop)
     {

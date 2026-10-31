@@ -81,7 +81,7 @@ public sealed class SpaceGameplayReview : MonoBehaviour
             errors.Add(text);
     }
 
-    static void Set(object target, string field, object value) => target.GetType().GetField(field, Hidden).SetValue(target, value);
+    static void Set(object target, string field, object value) => ProbeAccess.Set(target, field, value);
     static T Get<T>(object target, string field) => (T)target.GetType().GetField(field, Hidden).GetValue(target);
     static object Call(object target, string method, params object[] args) => target.GetType().GetMethod(method, Hidden).Invoke(target, args);
     void Check(bool ok, string message)
