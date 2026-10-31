@@ -73,7 +73,7 @@ public sealed class BossDestruction : MonoBehaviour
         foreach (var shot in FindObjectsByType<AEnemyBullet>())
             shot.Vanish();
         foreach (var shot in FindObjectsByType<ABullet>())
-            Destroy(shot.gameObject);
+            shot.Despawn();
         foreach (var enemy in FindObjectsByType<AEnemy>())
             if (enemy != Source && !enemy.transform.IsChildOf(Source.transform))
                 Destroy(enemy.gameObject);

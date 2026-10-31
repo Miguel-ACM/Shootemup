@@ -39,7 +39,7 @@ public sealed class FrozenHull : MonoBehaviour
                 shot.pierces = 0;
                 shot.GetComponent<SpriteRenderer>().sprite = ProjectileSprites.Load("needle");
                 shot.transform.localScale *= .65f;
-                shot.gameObject.AddComponent<ShortLivedRound>().duration = .55f;
+                shot.LimitLifetime(.55f);
             }
             return damage * 1.5f;
         }

@@ -44,7 +44,7 @@ public sealed class PopcornHits : MonoBehaviour
             var sr = shot.GetComponent<SpriteRenderer>();
             sr.sprite = ProjectileSprites.Load("standard");
             shot.transform.localScale = Vector3.one * .2f;
-            shot.gameObject.AddComponent<ShortLivedRound>().duration = .48f;
+            shot.LimitLifetime(.48f);
         }
     }
 }

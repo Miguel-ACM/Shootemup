@@ -79,6 +79,6 @@ public sealed class PlasmaOrb : CombatRound, ICombatDamageable
         if (shot == null)
             return;
         Hit(shot.damage);
-        Destroy(shot.gameObject);
+        shot.Despawn();
     }
 }

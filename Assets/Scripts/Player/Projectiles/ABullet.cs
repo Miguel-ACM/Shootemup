@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ABullet : MonoBehaviour
 {
+    public virtual void Despawn() { gameObject.SetActive(false); Destroy(gameObject); }
+
     public bool companionShot;
     public float speed = 0.00002f;
     public Vector3 direction = new Vector3(0f, 1f, -10f);

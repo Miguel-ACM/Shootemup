@@ -460,7 +460,7 @@ public class WaveOrchestrer : MonoBehaviour
             Destroy(enemy.gameObject);
         EraseAllBullets();
         foreach (var bullet in FindObjectsByType<ABullet>())
-            Destroy(bullet.gameObject);
+            bullet.Despawn();
         foreach (var pickup in FindObjectsByType<APickable>())
             Destroy(pickup.gameObject);
         foreach (var item in items)

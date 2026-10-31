@@ -7,6 +7,9 @@ public enum PlayerDelivery
 }
 public sealed class PlayerRound : ABullet
 {
+    static readonly Unity.Profiling.ProfilerMarker spawnMarker = new Unity.Profiling.ProfilerMarker("PlayerRound.Spawn");
+    static readonly Unity.Profiling.ProfilerMarker createMarker = new Unity.Profiling.ProfilerMarker("PlayerRound.Create");
+    public static int CreatedCount { get; private set; }
     public static int LiveCount
     {
         get; private set;
@@ -42,26 +45,61 @@ public sealed class PlayerRound : ABullet
 
     public static PlayerRound Spawn(Vector3 p, Vector2 d, float damage, float speed, PlayerDelivery mode = PlayerDelivery.Pulse, int generation = 0)
     {
+        using var sample = spawnMarker.Auto();
         if (LiveCount >= 180)
             return null;
-        var go = new GameObject("Friendly " + mode);
+        var b = Create();
+        b.Initialize(p, d, damage, speed, mode, generation);
+        b.gameObject.SetActive(true);
+        return b;
+    }
+
+    static PlayerRound Create()
+    {
+        using var sample = createMarker.Auto();
+        CreatedCount++;
+        var go = new GameObject("Friendly round");
+        go.SetActive(false);
         go.tag = "PlayerBullet";
         go.layer = 3;
-        go.transform.position = new Vector3(p.x, p.y, -1);
         var rb = go.AddComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Kinematic;
         rb.gravityScale = 0;
         var collider = go.AddComponent<CapsuleCollider2D>();
         collider.isTrigger = true;
         collider.direction = CapsuleDirection2D.Vertical;
-        var sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = PlayerProjectileArt.For(mode);
-        sr.sharedMaterial = CombatVisuals.ProjectileMaterial;
-        sr.sortingLayerName = "Bullet";
-        sr.sortingOrder = 16;
-        sr.color = Color.white;
         var b = go.AddComponent<PlayerRound>();
-        b.visual = sr;
+        b.visual = go.AddComponent<SpriteRenderer>();
+        b.contact = collider;
+        return b;
+    }
+
+    CapsuleCollider2D contact;
+    float lifetime, lifetimeAge;
+    public void LimitLifetime(float seconds) { lifetime = Mathf.Max(0, seconds); }
+
+    void Initialize(Vector3 p, Vector2 d, float damage, float speed, PlayerDelivery mode, int generation)
+    {
+        var b = this;
+        var go = gameObject;
+        var sr = visual;
+        var collider = contact;
+        go.transform.SetPositionAndRotation(new Vector3(p.x, p.y, -1), Quaternion.FromToRotation(Vector3.up, d));
+        sr.sprite = PlayerProjectileArt.For(mode);
+        sr.color = Color.white;
+        sr.enabled = true;
+        collider.enabled = true;
+        age = 0;
+        lifetimeAge = 0;
+        lifetime = float.PositiveInfinity;
+        chargeLevel = 0;
+        blastDamage = 0;
+        detonated = returning = rebounded = rubberReturned = false;
+        companion = companionShot = false;
+        this.size = 1;
+        followness = .01f;
+        direction = new Vector3(0, 1, -10);
+        hit.Clear();
         b.damage = damage;
         b.speed = speed;
         b.delivery = mode;
@@ -77,7 +115,14 @@ public sealed class PlayerRound : ABullet
         collider.size = new Vector2(bounds.x * .65f, bounds.y * .78f);
         ProjectileSpriteTint.Friendly(go);
         b.returns = generation == 0 && CombatUpgrades.Current != null && CombatUpgrades.Current.ReturnThisVolley;
-        return b;
+    }
+
+    public override void Despawn()
+    {
+        if (!gameObject.activeSelf) return;
+        detonated = true;
+        gameObject.SetActive(false);
+        Destroy(gameObject);
     }
 
     void OnEnable()
@@ -95,6 +140,7 @@ public sealed class PlayerRound : ABullet
         if (WorldTimeStop.Frozen || Time.deltaTime <= 0)
             return;
         age += Time.deltaTime;
+        lifetimeAge += Time.deltaTime;
         if (chargeLevel > 0 && age >= .6f)
         {
             ExplodeCharge();
@@ -106,9 +152,9 @@ public sealed class PlayerRound : ABullet
             heading = new Vector2(heading.x, -Mathf.Abs(heading.y));
             age = 0;
         }
-        if (age > 5 || transform.position.y < Camera.DownLimit - 3 || Mathf.Abs(transform.position.x) > Camera.RightLimit + 4)
+        if (age > 5 || lifetimeAge > lifetime || transform.position.y < Camera.DownLimit - 3 || Mathf.Abs(transform.position.x) > Camera.RightLimit + 4)
         {
-            Destroy(gameObject);
+            Despawn();
             return;
         }
         if ((delivery == PlayerDelivery.Disc || returns) && age > .75f && !returning)
@@ -123,7 +169,7 @@ public sealed class PlayerRound : ABullet
             heading = Vector3.RotateTowards(heading, ((Vector2)(origin - transform.position)).normalized, Time.deltaTime * 5, 0);
             if (age > 1.3f && Vector2.Distance(transform.position, origin) < .5f)
             {
-                Destroy(gameObject);
+                Despawn();
                 return;
             }
         }
@@ -143,7 +189,10 @@ public sealed class PlayerRound : ABullet
         {
             visual.color = new Color(1, 1, 1, 1 - Mathf.Clamp01(age / .55f));
             if (age > .55f)
-                Destroy(gameObject);
+            {
+                Despawn();
+                return;
+            }
         }
         if (delivery == PlayerDelivery.Shell && age > 1.05f)
             Detonate();
@@ -154,7 +203,7 @@ public sealed class PlayerRound : ABullet
                 Detonate(true);
         }
         if (transform.position.y > Camera.UpLimit + 3 && !returns && delivery != PlayerDelivery.Disc)
-            Destroy(gameObject);
+            Despawn();
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -207,7 +256,7 @@ public sealed class PlayerRound : ABullet
                 return;
             }
         }
-        Destroy(gameObject);
+        Despawn();
     }
 
     void TurnAccent()
@@ -222,7 +271,7 @@ public sealed class PlayerRound : ABullet
             return;
         detonated = true;
         ChargeBlast.Spawn(transform.position, blastDamage, chargeLevel);
-        Destroy(gameObject);
+        Despawn();
     }
 
     void Detonate(bool proximity = false)
@@ -235,6 +284,6 @@ public sealed class PlayerRound : ABullet
         ItemSound.Cue(proximity ? "itemProximity" : "itemDepthBurst", volume: .11f, cooldown: .16f);
         for (int i = 0; i < 7; i++)
             Spawn(transform.position, CombatVisuals.Rotate(heading, (i - 3) * 24), damage * .45f, 10, PlayerDelivery.Pulse, 1);
-        Destroy(gameObject);
+        Despawn();
     }
 }

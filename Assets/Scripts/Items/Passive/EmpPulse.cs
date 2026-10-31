@@ -38,8 +38,7 @@ public sealed class PeriodicEmp : MonoBehaviour
             bullet.Vanish();
         foreach (var bullet in Object.FindObjectsByType<ABullet>())
         {
-            bullet.gameObject.SetActive(false);
-            Object.Destroy(bullet.gameObject);
+            bullet.Despawn();
         }
         ClearEffects.ScreenClear(new Color(.24f, .75f, 1));
         SoundManager.PlaySound("blankbullet", .15f);
