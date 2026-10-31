@@ -1,0 +1,521 @@
+{
+  "environment": {
+    "unity": "6000.6.2f1",
+    "cpu": "Intel Core i5-12600K",
+    "gpu": "NVIDIA GeForce RTX 2060",
+    "resolution": [
+      1280,
+      720
+    ],
+    "difficulty": "Hard",
+    "seed": 17381,
+    "simulation_hz": 60,
+    "frames_per_case": 1800
+  },
+  "method": [
+    "Isolated Unity Editor checkout; complete rendered frames and active physics, including frames after bursts.",
+    "Scripted moving observer ship with 72 mixed friendly rounds requested per second, plus shell fragments; default item state and .01 projectile damage to preserve bosses.",
+    "Three boss phases advanced at frames 600 and 1200. Space generator gate opened for phase two. Health is otherwise retained; this is a stress workload, not a balance playthrough.",
+    "Objects and shaders prepared behind the existing curtain; initial 120 boss frames excluded. Samples use preallocated buffers; formatting and screenshots happen after measurement.",
+    "Baseline: projectile lifecycle refactor, before pooling. Optimized: 180 pooled friendly rounds, warmed in batches of 12, with a one-frame reuse fence. Hostile live/pool budgets remain 420/1100."
+  ],
+  "limitations": [
+    "One baseline and one optimized sample per district; not a statistical benchmark. Fields baseline finished before a profiler scene-reload fix; Tunnel and Space were resumed with the corrected harness.",
+    "Frame pacing is capped at 60 FPS. Main Thread includes wait time; no GPU performance claim.",
+    "GC Allocated In Frame includes Unity Editor overhead and barely changed; object creation and spawn CPU are the specific measured gains.",
+    "Same seed and simulation steps, but native contact ordering and the reuse fence can vary friendly residency slightly near the cap."
+  ],
+  "cases": {
+    "Fields": {
+      "baseline": {
+        "wall_ms": {
+          "unit": "ms",
+          "mean": 16.667297,
+          "p95": 18.022,
+          "p99": 19.954,
+          "max": 21.842
+        },
+        "Main Thread": {
+          "unit": "ms",
+          "mean": 16.661831,
+          "p95": 16.9798,
+          "p99": 18.6718,
+          "max": 21.2412
+        },
+        "BehaviourUpdate": {
+          "unit": "ms",
+          "mean": 0.850749,
+          "p95": 1.5701,
+          "p99": 2.5176,
+          "max": 4.7922
+        },
+        "Physics2D.Simulate": {
+          "unit": "ms",
+          "mean": 0.581465,
+          "p95": 1.0273,
+          "p99": 1.182,
+          "max": 5.0222
+        },
+        "PlayerRound.Spawn": {
+          "unit": "ms",
+          "mean": 0.137894,
+          "p95": 0.4008,
+          "p99": 0.4968,
+          "max": 3.4594
+        },
+        "PlayerRound.Create": {
+          "unit": "ms",
+          "mean": 0.075031,
+          "p95": 0.2184,
+          "p99": 0.2616,
+          "max": 3.0363
+        },
+        "GC Allocated In Frame": {
+          "unit": "bytes",
+          "mean": 945112.005,
+          "p95": 1118276.0,
+          "p99": 1161463.0,
+          "max": 1344924.0
+        },
+        "hostile": {
+          "unit": "count",
+          "mean": 226.970556,
+          "p95": 420.0,
+          "p99": 420.0,
+          "max": 420.0
+        },
+        "friendly": {
+          "unit": "count",
+          "mean": 169.617778,
+          "p95": 179.0,
+          "p99": 180.0,
+          "max": 180.0
+        },
+        "friendly_created_during_sample": 3734
+      },
+      "optimized": {
+        "wall_ms": {
+          "unit": "ms",
+          "mean": 16.667553,
+          "p95": 18.024,
+          "p99": 19.536,
+          "max": 20.999
+        },
+        "Main Thread": {
+          "unit": "ms",
+          "mean": 16.661592,
+          "p95": 17.0821,
+          "p99": 18.6887,
+          "max": 20.6669
+        },
+        "BehaviourUpdate": {
+          "unit": "ms",
+          "mean": 0.7908,
+          "p95": 1.5069,
+          "p99": 2.1139,
+          "max": 4.4263
+        },
+        "Physics2D.Simulate": {
+          "unit": "ms",
+          "mean": 0.530296,
+          "p95": 0.9666,
+          "p99": 1.1831,
+          "max": 3.9937
+        },
+        "PlayerRound.Spawn": {
+          "unit": "ms",
+          "mean": 0.03713,
+          "p95": 0.1121,
+          "p99": 0.1329,
+          "max": 2.3642
+        },
+        "PlayerRound.Create": {
+          "unit": "ms",
+          "mean": 0.0,
+          "p95": 0.0,
+          "p99": 0.0,
+          "max": 0.0
+        },
+        "GC Allocated In Frame": {
+          "unit": "bytes",
+          "mean": 942785.617778,
+          "p95": 1129578.0,
+          "p99": 1176046.0,
+          "max": 1303553.0
+        },
+        "hostile": {
+          "unit": "count",
+          "mean": 226.973333,
+          "p95": 420.0,
+          "p99": 420.0,
+          "max": 420.0
+        },
+        "friendly": {
+          "unit": "count",
+          "mean": 165.213333,
+          "p95": 178.0,
+          "p99": 179.0,
+          "max": 180.0
+        },
+        "friendly_created_during_sample": 0
+      },
+      "spawn_cpu_reduction_percent": 73.1
+    },
+    "Tunnel": {
+      "baseline": {
+        "wall_ms": {
+          "unit": "ms",
+          "mean": 16.667327,
+          "p95": 17.99,
+          "p99": 19.547,
+          "max": 21.015
+        },
+        "Main Thread": {
+          "unit": "ms",
+          "mean": 16.662171,
+          "p95": 17.0782,
+          "p99": 18.7948,
+          "max": 19.9213
+        },
+        "BehaviourUpdate": {
+          "unit": "ms",
+          "mean": 0.738294,
+          "p95": 1.4416,
+          "p99": 1.8984,
+          "max": 4.2892
+        },
+        "Physics2D.Simulate": {
+          "unit": "ms",
+          "mean": 0.482844,
+          "p95": 0.8418,
+          "p99": 1.4886,
+          "max": 3.6333
+        },
+        "PlayerRound.Spawn": {
+          "unit": "ms",
+          "mean": 0.142158,
+          "p95": 0.3976,
+          "p99": 0.5855,
+          "max": 3.5149
+        },
+        "PlayerRound.Create": {
+          "unit": "ms",
+          "mean": 0.076609,
+          "p95": 0.2169,
+          "p99": 0.2963,
+          "max": 3.2908
+        },
+        "GC Allocated In Frame": {
+          "unit": "bytes",
+          "mean": 960452.017778,
+          "p95": 1151714.0,
+          "p99": 1189758.0,
+          "max": 1266191.0
+        },
+        "hostile": {
+          "unit": "count",
+          "mean": 164.509444,
+          "p95": 265.0,
+          "p99": 320.0,
+          "max": 326.0
+        },
+        "friendly": {
+          "unit": "count",
+          "mean": 160.017222,
+          "p95": 179.0,
+          "p99": 180.0,
+          "max": 180.0
+        },
+        "friendly_created_during_sample": 3890
+      },
+      "optimized": {
+        "wall_ms": {
+          "unit": "ms",
+          "mean": 16.667528,
+          "p95": 17.831,
+          "p99": 19.504,
+          "max": 21.251
+        },
+        "Main Thread": {
+          "unit": "ms",
+          "mean": 16.661886,
+          "p95": 16.9673,
+          "p99": 18.3633,
+          "max": 21.1262
+        },
+        "BehaviourUpdate": {
+          "unit": "ms",
+          "mean": 0.706191,
+          "p95": 1.3126,
+          "p99": 1.7999,
+          "max": 4.3161
+        },
+        "Physics2D.Simulate": {
+          "unit": "ms",
+          "mean": 0.455906,
+          "p95": 0.7619,
+          "p99": 1.0984,
+          "max": 3.4763
+        },
+        "PlayerRound.Spawn": {
+          "unit": "ms",
+          "mean": 0.037506,
+          "p95": 0.1161,
+          "p99": 0.1369,
+          "max": 0.2331
+        },
+        "PlayerRound.Create": {
+          "unit": "ms",
+          "mean": 0.0,
+          "p95": 0.0,
+          "p99": 0.0,
+          "max": 0.0
+        },
+        "GC Allocated In Frame": {
+          "unit": "bytes",
+          "mean": 964686.152778,
+          "p95": 1132045.0,
+          "p99": 1166768.0,
+          "max": 1295214.0
+        },
+        "hostile": {
+          "unit": "count",
+          "mean": 164.410556,
+          "p95": 265.0,
+          "p99": 320.0,
+          "max": 326.0
+        },
+        "friendly": {
+          "unit": "count",
+          "mean": 156.481111,
+          "p95": 178.0,
+          "p99": 179.0,
+          "max": 180.0
+        },
+        "friendly_created_during_sample": 0
+      },
+      "spawn_cpu_reduction_percent": 73.6
+    },
+    "Space": {
+      "baseline": {
+        "wall_ms": {
+          "unit": "ms",
+          "mean": 16.668058,
+          "p95": 18.068,
+          "p99": 19.576,
+          "max": 21.303
+        },
+        "Main Thread": {
+          "unit": "ms",
+          "mean": 16.662068,
+          "p95": 16.9553,
+          "p99": 18.6129,
+          "max": 20.0182
+        },
+        "BehaviourUpdate": {
+          "unit": "ms",
+          "mean": 0.780411,
+          "p95": 1.439,
+          "p99": 2.1737,
+          "max": 4.2295
+        },
+        "Physics2D.Simulate": {
+          "unit": "ms",
+          "mean": 0.512928,
+          "p95": 0.9484,
+          "p99": 1.122,
+          "max": 3.4871
+        },
+        "PlayerRound.Spawn": {
+          "unit": "ms",
+          "mean": 0.126754,
+          "p95": 0.3894,
+          "p99": 0.454,
+          "max": 0.6747
+        },
+        "PlayerRound.Create": {
+          "unit": "ms",
+          "mean": 0.069678,
+          "p95": 0.2128,
+          "p99": 0.2416,
+          "max": 0.4934
+        },
+        "GC Allocated In Frame": {
+          "unit": "bytes",
+          "mean": 960479.897778,
+          "p95": 1111278.0,
+          "p99": 1145324.0,
+          "max": 1228175.0
+        },
+        "hostile": {
+          "unit": "count",
+          "mean": 169.522222,
+          "p95": 416.0,
+          "p99": 420.0,
+          "max": 420.0
+        },
+        "friendly": {
+          "unit": "count",
+          "mean": 169.192222,
+          "p95": 180.0,
+          "p99": 180.0,
+          "max": 180.0
+        },
+        "friendly_created_during_sample": 3695
+      },
+      "optimized": {
+        "wall_ms": {
+          "unit": "ms",
+          "mean": 16.666193,
+          "p95": 18.006,
+          "p99": 19.52,
+          "max": 21.431
+        },
+        "Main Thread": {
+          "unit": "ms",
+          "mean": 16.661694,
+          "p95": 17.1905,
+          "p99": 18.9472,
+          "max": 21.7975
+        },
+        "BehaviourUpdate": {
+          "unit": "ms",
+          "mean": 0.747628,
+          "p95": 1.4066,
+          "p99": 2.0719,
+          "max": 4.2068
+        },
+        "Physics2D.Simulate": {
+          "unit": "ms",
+          "mean": 0.480002,
+          "p95": 0.8806,
+          "p99": 1.0089,
+          "max": 2.7535
+        },
+        "PlayerRound.Spawn": {
+          "unit": "ms",
+          "mean": 0.03625,
+          "p95": 0.1163,
+          "p99": 0.1445,
+          "max": 0.1929
+        },
+        "PlayerRound.Create": {
+          "unit": "ms",
+          "mean": 0.0,
+          "p95": 0.0,
+          "p99": 0.0,
+          "max": 0.0
+        },
+        "GC Allocated In Frame": {
+          "unit": "bytes",
+          "mean": 943384.256667,
+          "p95": 1132748.0,
+          "p99": 1174389.0,
+          "max": 1263469.0
+        },
+        "hostile": {
+          "unit": "count",
+          "mean": 169.522222,
+          "p95": 416.0,
+          "p99": 420.0,
+          "max": 420.0
+        },
+        "friendly": {
+          "unit": "count",
+          "mean": 165.579444,
+          "p95": 178.0,
+          "p99": 179.0,
+          "max": 180.0
+        },
+        "friendly_created_during_sample": 0
+      },
+      "spawn_cpu_reduction_percent": 71.4
+    }
+  },
+  "baseline_revision": "7801145c",
+  "validation": {
+    "focused_tests_passed": 18,
+    "test_note": "Sixteen unchanged cases passed in the batch, the revised pool/coating case passed in its targeted rerun, and the input case passed with hidden Game View focus routing enabled only inside the test.",
+    "runtime_profiles": "Baseline and optimized captures completed without gameplay errors. Unity Editor Search indexing errors are excluded by stack trace.",
+    "windows_build": {
+      "result": "Succeeded",
+      "errors": 0,
+      "warnings": 0,
+      "target": "StandaloneWindows64"
+    },
+    "tests": {
+      "RefactorTests.CatalogsCoverEveryConcreteItemAndEveryAuthoredActor": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "RefactorTests.DamageResultsSeparateRejectionArmourAndOverkill": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "RefactorTests.EquipmentPressIsConsumedBeforeWeaponSubscribers": {
+        "result": "Passed",
+        "source": "InputFocusTest.xml"
+      },
+      "RefactorTests.PhaseStateUsesOneClockAndAnObjectiveSpecificMeter": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "RefactorTests.RecycledProjectileClearsChargeCoatingsLifetimeAndCollisionState": {
+        "result": "Passed",
+        "source": "FinalInputAndReuse.xml"
+      },
+      "RefactorTests.RunPlanKeepsAuthoredOrderAndChallengeCountsOnlyOrdinaryWaves": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "ReviewRegressionTests.BeamsFindAndDestroyPlasmaUsingItsAuthoredCollider": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "ReviewRegressionTests.ExhaustedRewardsOnlyRepeatUnlockedItemsWithTheirRealRarity": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "ReviewRegressionTests.FollowersDoNotHideOrbitalsFromSpacingUpdates": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "ReviewRegressionTests.HomingSkipsProtectedHullAndCore": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "ReviewRegressionTests.MidFlightChallengeAddsFutureAccentWithoutReplayingEarlierShots": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "ReviewRegressionTests.MultipartMetersTrackPhaseObjectives(Easy)": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "ReviewRegressionTests.MultipartMetersTrackPhaseObjectives(Hard)": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "ReviewRegressionTests.OverlappingWavesCreditLateKillsAndResolveInOrder": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "ReviewRegressionTests.PhaseInvulnerabilityRejectsDirectHitsBeforeEffectsAndScore": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "ReviewRegressionTests.ReflectionStillInterceptsAtTheFriendlyProjectileCap": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "ReviewRegressionTests.SaveReplacementRetainsBackupAndRecoversInterruptedWrites": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      },
+      "ReviewRegressionTests.ThunderEmitterStaysSuppressedForItsOwnersEntirePhaseBreak": {
+        "result": "Passed",
+        "source": "FinalRefactorTests.xml"
+      }
+    }
+  }
+}

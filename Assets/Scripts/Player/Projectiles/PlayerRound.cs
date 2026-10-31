@@ -10,6 +10,37 @@ public sealed class PlayerRound : ABullet
     static readonly Unity.Profiling.ProfilerMarker spawnMarker = new Unity.Profiling.ProfilerMarker("PlayerRound.Spawn");
     static readonly Unity.Profiling.ProfilerMarker createMarker = new Unity.Profiling.ProfilerMarker("PlayerRound.Create");
     public static int CreatedCount { get; private set; }
+    public const int Limit = 180;
+    static readonly Queue<PlayerRound> pool = new Queue<PlayerRound>(Limit);
+    static Transform poolRoot;
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetPool()
+    {
+        pool.Clear();
+        poolRoot = null;
+        LiveCount = CreatedCount = 0;
+    }
+
+    static void EnsurePool()
+    {
+        if (poolRoot != null) return;
+        // Scene-owned: a district unload releases the native bodies, sprites and materials.
+        pool.Clear();
+        poolRoot = new GameObject("Friendly projectile pool").transform;
+    }
+
+    public static System.Collections.IEnumerator Prepare()
+    {
+        EnsurePool();
+        int batch = 0;
+        while (pool.Count + LiveCount < Limit)
+        {
+            var shot = Create();
+            shot.Initialize(Vector3.zero, Vector2.up, 1, 1, PlayerDelivery.Pulse, 0);
+            pool.Enqueue(shot);
+            if (++batch % 12 == 0) yield return null;
+        }
+    }
     public static int LiveCount
     {
         get; private set;
@@ -46,9 +77,15 @@ public sealed class PlayerRound : ABullet
     public static PlayerRound Spawn(Vector3 p, Vector2 d, float damage, float speed, PlayerDelivery mode = PlayerDelivery.Pulse, int generation = 0)
     {
         using var sample = spawnMarker.Auto();
-        if (LiveCount >= 180)
+        if (LiveCount >= Limit)
             return null;
-        var b = Create();
+        EnsurePool();
+        PlayerRound b = null;
+        while (pool.Count > 0 && pool.Peek() == null) pool.Dequeue();
+        // Native trigger callbacks from this frame must not hit a recycled incarnation.
+        if (pool.Count > 0 && pool.Peek().retiredFrame == Time.frameCount) return null;
+        if (pool.Count > 0) b = pool.Dequeue();
+        if (b == null) b = Create();
         b.Initialize(p, d, damage, speed, mode, generation);
         b.gameObject.SetActive(true);
         return b;
@@ -60,6 +97,7 @@ public sealed class PlayerRound : ABullet
         CreatedCount++;
         var go = new GameObject("Friendly round");
         go.SetActive(false);
+        go.transform.SetParent(poolRoot, false);
         go.tag = "PlayerBullet";
         go.layer = 3;
         var rb = go.AddComponent<Rigidbody2D>();
@@ -75,6 +113,7 @@ public sealed class PlayerRound : ABullet
     }
 
     CapsuleCollider2D contact;
+    int retiredFrame = -1;
     float lifetime, lifetimeAge;
     public void LimitLifetime(float seconds) { lifetime = Mathf.Max(0, seconds); }
 
@@ -121,8 +160,10 @@ public sealed class PlayerRound : ABullet
     {
         if (!gameObject.activeSelf) return;
         detonated = true;
+        retiredFrame = Time.frameCount;
         gameObject.SetActive(false);
-        Destroy(gameObject);
+        if (pool.Count < Limit) pool.Enqueue(this);
+        else Destroy(gameObject);
     }
 
     void OnEnable()

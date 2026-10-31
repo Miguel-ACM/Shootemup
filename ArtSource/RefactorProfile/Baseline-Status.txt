@@ -1,0 +1,3 @@
+PASS
+Unity 6000.6.2f1; 12th Gen Intel(R) Core(TM) i5-12600K; NVIDIA GeForce RTX 2060
+1280x720, Hard, seed 17381, fixed simulation 60Hz, 1800 measured frames per boss, three phases, active physics, mixed friendly stream 72/s. Editor wall timings include frame pacing; counters are nanoseconds except allocation bytes.

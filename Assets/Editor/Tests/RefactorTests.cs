@@ -13,8 +13,58 @@ public sealed class DamageContractProbe : AEnemy
 public class RefactorTests
 {
     [Test]
-    public void EquipmentPressIsConsumedBeforeWeaponSubscribers()
+    public void RecycledProjectileClearsChargeCoatingsLifetimeAndCollisionState()
     {
+        var shot = PlayerRound.Spawn(Vector3.zero, Vector2.up, 10, 12, PlayerDelivery.Flame, 1);
+        var root = shot.transform.parent.gameObject;
+        try
+        {
+            shot.ArmChargeBlast(3);
+            shot.LimitLifetime(.01f);
+            shot.companion = shot.companionShot = true;
+            shot.returns = true;
+            shot.GetComponent<SpriteRenderer>().color = Color.clear;
+            var properties = new MaterialPropertyBlock();
+            properties.SetFloat("_Burn", 1);
+            properties.SetFloat("_Poison", 1);
+            shot.GetComponent<SpriteRenderer>().SetPropertyBlock(properties);
+            shot.GetComponent<Collider2D>().enabled = false;
+            shot.Despawn();
+            Assert.IsNull(PlayerRound.Spawn(Vector3.zero, Vector2.up, 1, 1), "Do not reuse during pending trigger callbacks");
+            ProbeAccess.Set(shot, "retiredFrame", -1); // Advance the reuse fence without entering gameplay.
+            var reused = PlayerRound.Spawn(Vector3.right, Vector2.down, 7, 9, PlayerDelivery.Needle);
+            Assert.AreSame(shot, reused);
+            Assert.AreEqual(7, reused.damage);
+            Assert.AreEqual(9, reused.speed);
+            Assert.AreEqual(1, reused.pierces);
+            Assert.AreEqual(0, reused.generation);
+            Assert.IsFalse(reused.companion || reused.companionShot || reused.returns);
+            Assert.AreEqual(0, ProbeAccess.Get(reused, "chargeLevel"));
+            Assert.AreEqual(float.PositiveInfinity, ProbeAccess.Get(reused, "lifetime"));
+            Assert.AreEqual(Color.white, reused.GetComponent<SpriteRenderer>().color);
+            reused.GetComponent<SpriteRenderer>().GetPropertyBlock(properties);
+            Assert.AreEqual(0, properties.GetFloat("_Burn"));
+            Assert.AreEqual(0, properties.GetFloat("_Poison"));
+            Assert.IsTrue(reused.GetComponent<Collider2D>().enabled);
+            Assert.AreSame(PlayerProjectileArt.For(PlayerDelivery.Needle), reused.GetComponent<SpriteRenderer>().sprite);
+        }
+        finally { Object.DestroyImmediate(root); }
+    }
+
+    [UnityEngine.TestTools.UnityTest]
+    public System.Collections.IEnumerator EquipmentPressIsConsumedBeforeWeaponSubscribers()
+    {
+        yield return new UnityEngine.TestTools.EnterPlayMode();
+        AssertInputRouting();
+        yield return new UnityEngine.TestTools.ExitPlayMode();
+    }
+
+    public static void AssertInputRouting()
+    {
+        var background = InputSystem.settings.backgroundBehavior;
+        var editorInput = InputSystem.settings.editorInputBehaviorInPlayMode;
+        InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+        InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
         _ = GameInput.Actions;
         var keyboard = InputSystem.AddDevice<Keyboard>();
         var previous = GameInput.EquipmentSelection;
@@ -26,16 +76,16 @@ public class RefactorTests
         try
         {
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Z, Key.LeftShift));
-            InputSystem.Update(InputUpdateType.Dynamic);
+            InputSystem.Update();
             Assert.AreEqual(1, selections);
             Assert.AreEqual(0, shots);
             Assert.IsTrue(GameInput.Snapshot.Primary);
             Assert.IsTrue(GameInput.Snapshot.Focus);
             InputSystem.QueueStateEvent(keyboard, new KeyboardState());
-            InputSystem.Update(InputUpdateType.Dynamic);
+            InputSystem.Update();
             consume = false;
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Z));
-            InputSystem.Update(InputUpdateType.Dynamic);
+            InputSystem.Update();
             Assert.AreEqual(2, selections);
             Assert.AreEqual(1, shots);
             Assert.IsFalse(GameInput.Snapshot.Focus);
@@ -45,6 +95,8 @@ public class RefactorTests
             GameInput.PrimaryPressed -= fire;
             GameInput.EquipmentSelection = previous;
             InputSystem.RemoveDevice(keyboard);
+            InputSystem.settings.backgroundBehavior = background;
+            InputSystem.settings.editorInputBehaviorInPlayMode = editorInput;
         }
     }
 

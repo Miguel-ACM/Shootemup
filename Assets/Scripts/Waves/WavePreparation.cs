@@ -37,6 +37,7 @@ public sealed class WavePreparation : MonoBehaviour
         }
         foreach (PlayerDelivery delivery in System.Enum.GetValues(typeof(PlayerDelivery)))
             PlayerProjectileArt.For(delivery);
+        yield return PlayerRound.Prepare();
         if (LevelRun.Current == LevelId.Space)
             _ = SpaceMaterials.Fleet;
         PSXImpactEffects.Warm();
