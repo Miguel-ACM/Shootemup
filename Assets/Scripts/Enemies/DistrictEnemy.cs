@@ -105,8 +105,8 @@ public abstract class DistrictEnemy : AEnemy
         rb.bodyType = RigidbodyType2D.Kinematic;
         go.AddComponent<CircleCollider2D>().isTrigger = true;
         var enemy = (DistrictEnemy)go.AddComponent(type);
-        enemy.Configure();
         enemy.hull = (int)EnemyCatalog.Get(type).Hull;
+        enemy.Configure();
         if (applyTuning)
             EnemyTuning.Apply(enemy, enemy.movement);
         if (scaleForRun)

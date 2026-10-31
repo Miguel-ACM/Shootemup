@@ -26,16 +26,16 @@ public class RefactorTests
         try
         {
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Z, Key.LeftShift));
-            InputSystem.Update();
+            InputSystem.Update(InputUpdateType.Dynamic);
             Assert.AreEqual(1, selections);
             Assert.AreEqual(0, shots);
             Assert.IsTrue(GameInput.Snapshot.Primary);
             Assert.IsTrue(GameInput.Snapshot.Focus);
             InputSystem.QueueStateEvent(keyboard, new KeyboardState());
-            InputSystem.Update();
+            InputSystem.Update(InputUpdateType.Dynamic);
             consume = false;
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Z));
-            InputSystem.Update();
+            InputSystem.Update(InputUpdateType.Dynamic);
             Assert.AreEqual(2, selections);
             Assert.AreEqual(1, shots);
             Assert.IsFalse(GameInput.Snapshot.Focus);

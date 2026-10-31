@@ -45,6 +45,14 @@ public sealed class BossPatternProbe : MonoBehaviour
     }
 
     static void Set(object target, string name, object value) => ProbeAccess.Set(target, name, value);
+    static T Get<T>(object target, string name) => (T)ProbeAccess.Get(target, name);
+    static void Call(object target, string name, params object[] args) => target.GetType().GetMethod(name, Hidden).Invoke(target, args);
+    void Check(bool condition, string message)
+    {
+        if (!condition)
+            throw new Exception(message);
+        results.Add("PASS " + message);
+    }
 
     IEnumerator Start()
     {
