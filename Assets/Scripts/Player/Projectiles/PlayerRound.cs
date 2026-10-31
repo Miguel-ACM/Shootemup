@@ -33,6 +33,7 @@ public sealed class PlayerRound : ABullet
         pierces = 0;
         returns = false;
     }
+
     public void ExcludePreviousHit(AEnemy enemy)
     {
         hit.Add(enemy);
