@@ -22,6 +22,40 @@ public sealed class FormationFlight : PatternMover
     int lastBeat = -1;
     float nextSharedBeat = -1;
     int nextStrike;
+    bool challenged;
+
+    public void MakeChallenging()
+    {
+        if (challenged)
+            return;
+        challenged = true;
+        if (fireTimes == null)
+        {
+            fireEvery *= .75f;
+            return;
+        }
+        // Pick a shared future rest, allowing a visible charge. Never replay a past accent.
+        float phraseTime = clock + firePhase;
+        float lead = .35f * Mathf.Max(.1f, DistrictFlightTempo * LevelRun.EnemyTempoScale * GameRules.enemySpeed);
+        int gap = -1;
+        for (int i = 0; i < fireTimes.Length - 1; i++)
+        {
+            float middle = (fireTimes[i] + fireTimes[i + 1]) * .5f;
+            if (middle <= phraseTime + lead || middle - firePhase >= duration * .82f || fireTimes[i + 1] - fireTimes[i] < .8f)
+                continue;
+            if (gap < 0 || fireTimes[i + 1] - fireTimes[i] > fireTimes[gap + 1] - fireTimes[gap])
+                gap = i;
+        }
+        if (gap < 0)
+            return;
+        var denser = new float[fireTimes.Length + 1];
+        System.Array.Copy(fireTimes, 0, denser, 0, gap + 1);
+        denser[gap + 1] = (fireTimes[gap] + fireTimes[gap + 1]) * .5f;
+        System.Array.Copy(fireTimes, gap + 1, denser, gap + 2, fireTimes.Length - gap - 1);
+        if (nextStrike > gap + 1)
+            nextStrike++;
+        fireTimes = denser;
+    }
     Transform ground;
     Vector3 groundPoint;
     public GroundVehicle SurfaceDriver;

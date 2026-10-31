@@ -75,6 +75,8 @@ public abstract class DistrictEnemy : AEnemy
             return;
         Challenged = true;
         attackInterval *= .75f;
+        if (movement is FormationFlight flight)
+            flight.MakeChallenging();
     }
 
     public Transform Hull
@@ -174,28 +176,7 @@ public abstract class DistrictEnemy : AEnemy
         flight.firePhase = unit.firePhase;
         flight.fireTimes = unit.fireTimes;
         if (Challenged)
-        {
-            // Add one shared answer in the widest rest; retain routes, speed and original accents.
-            if (unit.fireTimes != null && unit.fireTimes.Length > 1)
-            {
-                var score = (float[])unit.fireTimes.Clone();
-                Array.Sort(score);
-                int gap = 0;
-                for (int i = 1; i < score.Length - 1; i++)
-                    if (score[i + 1] - score[i] > score[gap + 1] - score[gap])
-                        gap = i;
-                if (score[gap + 1] - score[gap] >= .8f)
-                {
-                    var denser = new float[score.Length + 1];
-                    Array.Copy(score, denser, score.Length);
-                    denser[score.Length] = (score[gap] + score[gap + 1]) * .5f;
-                    Array.Sort(denser);
-                    flight.fireTimes = denser;
-                }
-            }
-            else
-                flight.fireEvery *= .75f;
-        }
+            flight.MakeChallenging();
         if (IsMiniboss && unit.fireTimes != null && unit.fireTimes.Length > 0)
         {
             // Keep the phrase's shared accents, adding a quick opening reply and a deliberate rest.

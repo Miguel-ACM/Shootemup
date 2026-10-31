@@ -6,6 +6,33 @@ using System.Reflection;
 public class ReviewRegressionTests
 {
     [Test]
+    public void MidFlightChallengeAddsFutureAccentWithoutReplayingEarlierShots()
+    {
+        var go = new UnityEngine.GameObject("Challenge test");
+        go.SetActive(false);
+        try
+        {
+            var flight = go.AddComponent<FormationFlight>();
+            flight.duration = 12;
+            flight.fireTimes = new[] { 1f, 3f, 5f, 7f };
+            typeof(FormationFlight).GetField("clock", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(flight, 4f);
+            typeof(FormationFlight).GetField("nextStrike", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(flight, 2);
+            flight.MakeChallenging();
+            CollectionAssert.AreEqual(new[] { 1f, 3f, 5f, 6f, 7f }, flight.fireTimes);
+            Assert.IsFalse(flight.TakeFireBeat());
+            flight.MakeChallenging();
+            Assert.AreEqual(5, flight.fireTimes.Length);
+            foreach (float time in new[] { 5f, 6f, 7f })
+            {
+                typeof(FormationFlight).GetField("clock", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(flight, time);
+                Assert.IsTrue(flight.TakeFireBeat());
+                Assert.IsFalse(flight.TakeFireBeat());
+            }
+        }
+        finally { UnityEngine.Object.DestroyImmediate(go); }
+    }
+
+    [Test]
     public void ExhaustedRewardsOnlyRepeatUnlockedItemsWithTheirRealRarity()
     {
         // Inject a tiny save in memory: this test must never load or alter the player's hangar.
