@@ -148,15 +148,7 @@ public class Shipcontroller : MonoBehaviour
             else if (ctype == ACompanion.CompanionType.orbital)
             {
                 c.GetComponent<OrbitPlayer>().SetIndex(numCompanionsPerType[ctypestr], numCompanionsPerType[ctypestr]);
-                int i = 0;
-                while (i < numCompanionsPerType[ctypestr])
-                {
-                    if (i >= companions.Count)
-                        break;
-                    if (companions[i].GetCompanionType() == ctype)
-                        companions[i].GetComponent<OrbitPlayer>().SetMaxIndex(numCompanionsPerType[ctypestr]);
-                    i++;
-                }
+                RedistributeOrbitals(numCompanionsPerType[ctypestr]);
             }
         }
     }
@@ -164,6 +156,13 @@ public class Shipcontroller : MonoBehaviour
     public Vector2 GetPreviousPosition(int index)
     {
         return previousPositions.Get(index);
+    }
+
+    void RedistributeOrbitals(int count)
+    {
+        foreach (var companion in companions)
+            if (companion != null && companion.GetCompanionType() == ACompanion.CompanionType.orbital)
+                companion.GetComponent<OrbitPlayer>().SetMaxIndex(count);
     }
 
     // Start is called before the first frame update

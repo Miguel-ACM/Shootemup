@@ -6,6 +6,36 @@ using System.Reflection;
 public class ReviewRegressionTests
 {
     [Test]
+    public void FollowersDoNotHideOrbitalsFromSpacingUpdates()
+    {
+        var go = new UnityEngine.GameObject("Companion spacing test");
+        go.SetActive(false);
+        try
+        {
+            var ship = go.AddComponent<Shipcontroller>();
+            var list = (System.Collections.Generic.List<ACompanion>)typeof(Shipcontroller)
+                .GetField("companions", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(ship);
+            for (int i = 0; i < 4; i++)
+            {
+                var child = new UnityEngine.GameObject("Companion " + i);
+                child.transform.SetParent(go.transform);
+                var companion = child.AddComponent<ACompanion>();
+                list.Add(companion);
+                if (i < 2)
+                    continue;
+                typeof(ACompanion).GetField("type", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(companion, ACompanion.CompanionType.orbital);
+                child.AddComponent<OrbitPlayer>().SetIndex(i - 1, i - 1);
+            }
+            typeof(Shipcontroller).GetMethod("RedistributeOrbitals", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ship, new object[] { 2 });
+            var offset = typeof(OrbitPlayer).GetField("offset", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.AreEqual(.5f, offset.GetValue(list[2].GetComponent<OrbitPlayer>()));
+            Assert.AreEqual(1f, offset.GetValue(list[3].GetComponent<OrbitPlayer>()));
+        }
+        finally { UnityEngine.Object.DestroyImmediate(go); }
+    }
+
+    [Test]
     public void BeamsFindAndDestroyPlasmaUsingItsAuthoredCollider()
     {
         var orb = CombatRound.Launch<PlasmaOrb>(UnityEngine.Vector3.up * 2, UnityEngine.Vector2.down, 0, .3f);
