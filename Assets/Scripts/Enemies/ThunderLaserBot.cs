@@ -10,6 +10,15 @@ public sealed class ThunderLaserBot : MonoBehaviour
     Vector2 home, aim;
     float swing, swingRate;
     public bool Powered { get; set; } = true;
+    DistrictBoss owner;
+    bool owned;
+    public bool EmissionAllowed => Powered && (!owned || owner != null && owner.health > 0 && !owner.Invulnerable);
+    public ThunderLaserBot OwnedBy(DistrictBoss boss)
+    {
+        owner = boss;
+        owned = true;
+        return this;
+    }
     float age, length, width, armAt = 1.5f;
     PulseLaser beam;
     Transform model;
@@ -102,7 +111,7 @@ public sealed class ThunderLaserBot : MonoBehaviour
         bool arrived = Vector2.Distance(transform.position, home) < .05f;
         Vector2 p = Vector2.MoveTowards(transform.position, home, dt * (arrived ? 30 : 7));
         transform.position = new Vector3(p.x, p.y, -.4f);
-        bool off = !Powered || !arrived;
+        bool off = !EmissionAllowed || !arrived;
         if (off && !open)
         {
             open = true;

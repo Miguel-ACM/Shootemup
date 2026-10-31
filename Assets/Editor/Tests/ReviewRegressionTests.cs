@@ -6,6 +6,27 @@ using System.Reflection;
 public class ReviewRegressionTests
 {
     [Test]
+    public void ThunderEmitterStaysSuppressedForItsOwnersEntirePhaseBreak()
+    {
+        var go = new UnityEngine.GameObject("Thunder phase test");
+        go.SetActive(false);
+        try
+        {
+            var boss = go.AddComponent<ThunderLanceBoss>();
+            var bot = go.AddComponent<ThunderLaserBot>().OwnedBy(boss);
+            Assert.IsTrue(bot.EmissionAllowed);
+            var until = typeof(DistrictBoss).GetField("phaseEntryUntil", BindingFlags.Instance | BindingFlags.NonPublic);
+            until.SetValue(boss, 1.5f);
+            Assert.IsFalse(bot.EmissionAllowed);
+            until.SetValue(boss, 0f);
+            Assert.IsTrue(bot.EmissionAllowed);
+            bot.Powered = false;
+            Assert.IsFalse(bot.EmissionAllowed);
+        }
+        finally { UnityEngine.Object.DestroyImmediate(go); }
+    }
+
+    [Test]
     public void MidFlightChallengeAddsFutureAccentWithoutReplayingEarlierShots()
     {
         var go = new UnityEngine.GameObject("Challenge test");

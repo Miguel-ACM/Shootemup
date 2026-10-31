@@ -67,6 +67,7 @@ public sealed partial class ThunderLanceBoss
             float angle = i * 60;
             Vector2 radial = CombatVisuals.Rotate(Vector2.down, angle);
             drones.Add(ThunderLaserBot.Deploy(Muzzle(2), hub + radial * 1.0f, radial, 16, .2f)
+                .OwnedBy(this)
                 .Swing(60, Difficulty.Hard ? 24 : 18)
                 .ArmAt(1.6f));
         }
@@ -80,9 +81,9 @@ public sealed partial class ThunderLanceBoss
     void DeployGrid()
     {
         for (int i = 0; i < Columns; i++)
-            drones.Add(ThunderLaserBot.Deploy(Muzzle(2), GridColumn(i, 0), Vector2.down, 20, .19f).ArmAt(1.6f));
+            drones.Add(ThunderLaserBot.Deploy(Muzzle(2), GridColumn(i, 0), Vector2.down, 20, .19f).OwnedBy(this).ArmAt(1.6f));
         for (int j = 0; j < Rows; j++)
-            drones.Add(ThunderLaserBot.Deploy(Muzzle(2), GridRow(j, 0), Vector2.right, 10.5f, .18f).ArmAt(1.6f));
+            drones.Add(ThunderLaserBot.Deploy(Muzzle(2), GridRow(j, 0), Vector2.right, 10.5f, .18f).OwnedBy(this).ArmAt(1.6f));
         Phrase(MarchGrid());
     }
 
