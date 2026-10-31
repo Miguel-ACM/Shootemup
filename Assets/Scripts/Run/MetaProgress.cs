@@ -133,8 +133,14 @@ public static class MetaProgress
     {
         try
         {
-            if (File.Exists(FilePath))
-                data = JsonUtility.FromJson<SaveData>(File.ReadAllText(FilePath));
+            string saved = AtomicSaveFile.Read(FilePath, contents =>
+            {
+                var candidate = JsonUtility.FromJson<SaveData>(contents);
+                return candidate != null && candidate.unlocked != null && candidate.unlocked.Count > 0 &&
+                    candidate.stock != null && candidate.loadout != null;
+            });
+            if (saved != null)
+                data = JsonUtility.FromJson<SaveData>(saved);
         }
         catch (Exception exception)
         {
@@ -161,11 +167,7 @@ public static class MetaProgress
     {
         try
         {
-            string temporary = FilePath + ".tmp";
-            File.WriteAllText(temporary, JsonUtility.ToJson(data, true));
-            if (File.Exists(FilePath))
-                File.Delete(FilePath);
-            File.Move(temporary, FilePath);
+            AtomicSaveFile.Write(FilePath, JsonUtility.ToJson(data, true));
         }
         catch (Exception exception)
         {
