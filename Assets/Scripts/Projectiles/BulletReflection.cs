@@ -10,11 +10,11 @@ public static class BulletReflection
     /// <summary>True for rounds that can be sent back; beams are emitters, not rounds.</summary>
     public static bool CanReflect(AEnemyBullet round) => round != null && !(round is PulseLaser);
 
-    /// <summary>Reflects one hostile round as a player round. Returns null when it cannot be reflected.</summary>
-    public static PlayerRound Reflect(AEnemyBullet round, float damageScale = 1)
+    /// <summary>True once intercepted, even when the friendly round budget cannot fit the return shot.</summary>
+    public static bool Reflect(AEnemyBullet round, float damageScale = 1)
     {
         if (!CanReflect(round))
-            return null;
+            return false;
         Vector3 p = round.transform.position;
         Vector2 direction = Toward(p);
         PSXImpactEffects.Burst(p, Spark, false, direction);
@@ -22,7 +22,7 @@ public static class BulletReflection
         var shot = PlayerRound.Spawn(p, direction, GameRules.playerShootDamage * 2.5f * damageScale, Speed, PlayerDelivery.Needle);
         if (shot != null)
             shot.generation = 1;
-        return shot;
+        return true;
     }
 
     /// <summary>The reflected heading: the nearest targetable enemy, or straight up the arena.</summary>

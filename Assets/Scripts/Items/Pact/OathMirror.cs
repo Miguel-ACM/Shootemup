@@ -17,7 +17,7 @@ public sealed class OathMirror : MonoBehaviour
 
     bool Reflect(AEnemyBullet round)
     {
-        if (!Ready || BulletReflection.Reflect(round, 1.5f) == null)
+        if (!Ready || !BulletReflection.Reflect(round, 1.5f))
             return false;
         charge = 0;
         PSXFireballs.Shockwave(transform.position, 1.4f, .3f, Silver, 1, .5f);

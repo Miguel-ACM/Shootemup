@@ -54,7 +54,7 @@ public sealed class DeflectWindow : MonoBehaviour
 
     bool Deflect(AEnemyBullet round)
     {
-        if (BulletReflection.Reflect(round, 1.5f) == null)
+        if (!BulletReflection.Reflect(round, 1.5f))
             return false;
         // One ringing clang per window keeps a dense deflect from turning into noise.
         if (deflected++ == 0)
