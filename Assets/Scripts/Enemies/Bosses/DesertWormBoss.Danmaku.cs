@@ -4,7 +4,7 @@ using UnityEngine;
 // Desert worm: after one dive it keeps rising from the bottom edge to the top in a
 // steady S, lane by lane, attacking on the way up. Everything comes off its body.
 // Phase one
-//   Quicksand Field: reactor after reactor, head to tail, sows mirrored rows of mines
+//   Quicksand Field: reactor after reactor, tail to head, sows mirrored rows of mines
 //     on both flanks; they brake and glint, odd mines sink away, even mines carry on
 //     outward, so the field spreads across the arena instead of piling on the player.
 //   Sandblast: twin mirrored arrow streams fan either side of the player from the
@@ -12,14 +12,19 @@ using UnityEngine;
 // Phase two
 //   Sidewinder: every surviving reactor fires arrows straight out of both flanks as
 //     the body rises, drawing ribbons of arrows along its whole path.
-//   Dune Collapse: reactors in turn throw small geysers of arrows that fall back.
+//   Dune Collapse: reactors in turn, tail to head, throw small geysers of arrows
+//     that fall back.
 public sealed partial class DesertWormBoss
 {
-    int WindingCore(int wanted)
+    // Sequences run tail to head: step 0 is the tail reactor, later steps climb the
+    // body. A reactor that cannot fire hands the step to the next one toward the head.
+    int TailToHead(int step, bool head = true)
     {
+        int span = head ? cores.Length : cores.Length - 1;
+        int wanted = cores.Length - 1 - step % span;
         for (int n = 0; n < cores.Length; n++)
         {
-            int i = (wanted + n) % cores.Length;
+            int i = ((wanted - n) % cores.Length + cores.Length) % cores.Length;
             if (CanShoot(cores[i]))
                 return i;
         }
@@ -39,7 +44,7 @@ public sealed partial class DesertWormBoss
                 yield return FinalSpell();
             else if (!phaseTwo)
             {
-                yield return Every(7, .45f, n => QuicksandMines(WindingCore(1 + n % 7)));
+                yield return Every(7, .45f, n => QuicksandMines(TailToHead(n, false)));
                 yield return Wait(.8f);
                 yield return Sandblast();
                 yield return Wait(.8f);
@@ -48,7 +53,7 @@ public sealed partial class DesertWormBoss
             {
                 yield return Every(7, .2f, n => Sidewinder(n));
                 yield return Wait(.8f);
-                yield return Every(6, .6f, n => Geyser(WindingCore(n % cores.Length)));
+                yield return Every(6, .6f, n => Geyser(TailToHead(n)));
                 yield return Wait(.8f);
             }
         }
@@ -131,16 +136,16 @@ public sealed partial class DesertWormBoss
     }
 
     // Hard final phase, Dune Sea: the rising body draws ribbons of arrows from every
-    // reactor while mines are sown head to tail and small geysers burst.
+    // reactor while mines are sown tail to head and small geysers burst.
     IEnumerator FinalSpell()
     {
         yield return Every(9, .25f, n =>
         {
             Sidewinder(n);
             if (n % 4 == 0)
-                QuicksandMines(WindingCore(1 + n / 4 % 7));
+                QuicksandMines(TailToHead(n / 4, false));
             if (n % 10 == 5)
-                Geyser(WindingCore(n % cores.Length));
+                Geyser(TailToHead(n / 10));
         });
         yield return Wait(.6f);
     }
