@@ -47,6 +47,7 @@ public sealed class HangarHub : MonoBehaviour
     static void ResetState()
     {
         Active = false;
+        HoldingShip = false;
     }
 
     /// <summary>A new game opens the hangar first; the run itself starts from its doors.</summary>
@@ -71,6 +72,7 @@ public sealed class HangarHub : MonoBehaviour
     public static void Leave()
     {
         Active = false;
+        HoldingShip = false;
         LevelEnvironment.ReleaseTitle();
     }
 
@@ -89,9 +91,20 @@ public sealed class HangarHub : MonoBehaviour
         if (ship != null && camera != null)
         {
             dockedAt = ship.transform.position;
-            ship.transform.position = new Vector3(dockedAt.x, camera.transform.position.y - camera.orthographicSize - 1.2f, dockedAt.z);
+            ship.transform.position = new Vector3(dockedAt.x, camera.transform.position.y - camera.orthographicSize - ArrivalDepth, dockedAt.z);
+            // Until the hangar scene arrives and flies it in, nothing may clamp the ship back into view.
+            HoldingShip = true;
         }
         UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(HangarScene, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+    }
+
+    // Far enough below the screen that the ship and its thrusters are fully hidden before the entrance.
+    const float ArrivalDepth = 2.6f;
+
+    /// <summary>The hangar is placing the ship itself (its entrance); the controller leaves its position alone.</summary>
+    public static bool HoldingShip
+    {
+        get; private set;
     }
 
     /// <summary>True from the launch until the run's content has started, so the core skips its own setup.</summary>
@@ -406,11 +419,14 @@ public sealed class HangarHub : MonoBehaviour
             return;
         if (running)
             arrival += Time.deltaTime / ArrivalSeconds;
-        float below = center.y - UnityEngine.Camera.main.orthographicSize - 1.2f;
+        float below = center.y - UnityEngine.Camera.main.orthographicSize - ArrivalDepth;
         float t = 1 - Mathf.Pow(1 - Mathf.Clamp01(arrival), 3);
         player.transform.position = new Vector3(parkedAt.x, Mathf.LerpUnclamped(below, parkedAt.y, t), parkedAt.z);
         if (arrival >= 1)
+        {
             arrival = -1;
+            HoldingShip = false;
+        }
     }
 
     void Update()

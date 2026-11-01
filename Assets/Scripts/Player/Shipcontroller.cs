@@ -283,6 +283,9 @@ public class Shipcontroller : MonoBehaviour
     {
         move = GameInput.Snapshot.Move;
         Firing = !GameRules.playerDisabled && (GameInput.Snapshot.Primary || GameInput.Snapshot.Secondary);
+        // The hangar flies the ship in from below the screen; clamping it into the arena would show it early.
+        if (HangarHub.HoldingShip)
+            return;
         speedMultiplier = GameInput.Snapshot.Focus ? slowMultiplier : 1;
         horizontalMove = move.x * GameRules.playerMoveSpeed * GameClock.PlayerDelta * speedMultiplier;
         verticalMove = move.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * GameClock.PlayerDelta * speedMultiplier;
