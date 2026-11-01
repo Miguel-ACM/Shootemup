@@ -1,28 +1,28 @@
 using UnityEngine;
 using System.Collections;
 
-// Space citadel: gravity is the weapon. Every round still leaves the station's own
-// generators, turrets or core.
+// Space citadel: gravity is the weapon. Rounds come from the edges of space or the
+// station's own core.
 // Phase one (shield generators up)
-//   Gravity Well: a well opens in the middle of the arena. The generators fire arrow
-//     streams sideways and the well bends them into arcs, loops and slingshots; the
-//     turrets lob dark stars (giant spiked orbs) that fall into slow orbits around it.
+//   Accretion: mirrored rings of arrows appear just outside every edge of the screen
+//     and spiral in, accelerating, until the core swallows them; dark stars (giant
+//     orbs) drift in from the edges among them.
 //   Supernova: the core throws rings of arrows outward; each ring stops, holds, then
 //     collapses back through the core and bursts out the other side. The centre
 //     laser cuts the middle at the end.
 // Phase two (core exposed)
-//   Event Horizon: the well drifts after the player while the core winds four spiral
-//     arms of arrows that bend into it, with pairs of dark stars falling in.
+//   Expulsion: the core flings mirrored spiral arms of arrows that accelerate away
+//     and bend straight as they leave the screen, with rings of dark stars between.
 //   Binary Collapse: two supernova rings at once, counter-rotating offsets, with the
 //     laser between them.
+// Phase three (Hard)
+//   Big Crunch: the core breathes, swallowing accretion rings from the edges and
+//     flinging spiral arms back out, both always running and trading dominance.
 public sealed partial class SpaceCitadelBoss
 {
     Vector3 Core => parts[4] != null ? parts[4].transform.position : transform.position;
-    Vector3 GeneratorPort(int i) => parts[i].transform.TransformPoint(new Vector3(0, -.3f, -.3f));
-    Vector3 TurretPort(int i) => parts[i].transform.TransformPoint(new Vector3(i == 2 ? -.16f : .16f, -.695f, -.08f));
     Transform well;
     LineRenderer horizon;
-    static float Middle => (Camera.UpLimit + Camera.DownLimit) * .5f;
     protected override void Attack()
     {
         if (parts[0] != null)
@@ -37,14 +37,14 @@ public sealed partial class SpaceCitadelBoss
                 yield return FinalSpell();
             else if (!phaseTwo)
             {
-                yield return GravityWell();
+                yield return Accretion();
                 yield return Wait(.8f);
                 yield return Supernova(false);
                 yield return Wait(.8f);
             }
             else
             {
-                yield return EventHorizon();
+                yield return Expulsion();
                 yield return Wait(.7f);
                 yield return Supernova(true);
                 yield return Wait(.7f);
@@ -52,8 +52,10 @@ public sealed partial class SpaceCitadelBoss
         }
     }
 
-    // A visible well: a pulsing ring with a dark core, where the pull is centred.
-    void OpenWell(Vector2 at)
+    Transform CoreBody => parts[4] != null ? parts[4].transform : transform;
+
+    // The event horizon: a pulsing ring on the core while it absorbs or expels.
+    void OpenWell()
     {
         if (well == null)
         {
@@ -62,7 +64,7 @@ public sealed partial class SpaceCitadelBoss
             ItemSpark.Sprite(well, "Well core", "standard", LevelProjectilePalette.Accent(LevelId.Space), .6f);
         }
         well.gameObject.SetActive(true);
-        well.position = new Vector3(at.x, at.y, -.4f);
+        well.position = new Vector3(Core.x, Core.y, -.4f);
     }
 
     void CloseWell()
@@ -76,32 +78,92 @@ public sealed partial class SpaceCitadelBoss
         if (completing || health <= 0)
             CloseWell();
         if (well != null && well.gameObject.activeSelf)
+        {
+            well.position = new Vector3(Core.x, Core.y, -.4f);
             CombatVisuals.Ring(horizon, well.position, .55f + .12f * Mathf.Sin(Time.time * 6));
+        }
     }
 
-    IEnumerator GravityWell()
+    // A point just outside the screen, walking its edge clockwise from the top centre.
+    static Vector2 EdgePoint(float u)
     {
-        var point = new Vector2(0, Middle + .6f);
-        OpenWell(point);
-        yield return Wait(.6f);
-        yield return Every(8, .12f, n =>
+        const float Margin = .7f;
+        float left = Camera.LeftLimit - Margin, right = Camera.RightLimit + Margin, bottom = Camera.DownLimit - Margin, top = Camera.UpLimit + Margin;
+        float width = right - left, height = top - bottom;
+        float d = Mathf.Repeat(Mathf.Repeat(u, 1) * 2 * (width + height) + width * .5f, 2 * (width + height));
+        if (d < width)
+            return new Vector2(left + d, top);
+        d -= width;
+        if (d < height)
+            return new Vector2(right, top - d);
+        d -= height;
+        if (d < width)
+            return new Vector2(right - d, bottom);
+        return new Vector2(left, bottom + d - width);
+    }
+
+    // A mirrored ring around the whole screen edge that spirals in to the core.
+    void AccretionRing(int n, int beads, float spin)
+    {
+        var into = CoreBody;
+        for (int i = 0; i < beads; i++)
         {
-            for (int i = 0; i < 2; i++)
-                if (parts[i].health > 0)
-                {
-                    int side = i == 0 ? -1 : 1;
-                    var axis = CombatVisuals.Rotate(Vector2.right * side, -side * (n % 6) * 12);
-                    Fire<NeedleRound>(GeneratorPort(i), axis, 3.6f, .19f).Attract(point, 9).LivesFor(9);
-                }
-            if (n % 8 == 4)
-                for (int i = 2; i < 4; i++)
-                {
-                    // Dark stars: giant orbs lobbed into the well, where they fall into slow orbits.
-                    var port = parts[i].health > 0 ? TurretPort(i) : Muzzle();
-                    for (int k = 0; k < Dense(2); k++)
-                        Fire<GiantOrb>(port, CombatVisuals.Rotate(Vector2.down, (i == 2 ? 55 : -55) + k * (i == 2 ? -22 : 22)), 1.7f, .75f).Attract(point, 5).LivesFor(13);
-                }
+            var p = EdgePoint((i + .5f * (n % 2)) / (beads * 2f));
+            foreach (int mirror in new[] { 1, -1 })
+            {
+                var from = new Vector2(p.x * mirror, p.y);
+                var inward = ((Vector2)Core - from).normalized;
+                Fire<NeedleRound>(new Vector3(from.x, from.y, 1), CombatVisuals.Rotate(inward, mirror * spin), 1.0f, .19f)
+                    .Absorb(into, 7, .6f).LivesFor(12);
+            }
+        }
+    }
+
+    // Dark stars drifting in from mirrored points on the edge.
+    void AccretionStars(int n, int pairs)
+    {
+        var into = CoreBody;
+        for (int k = 0; k < pairs; k++)
+        {
+            var p = EdgePoint(.08f + Mathf.Repeat(n * .137f + k * .19f, .34f));
+            foreach (int mirror in new[] { 1, -1 })
+            {
+                var from = new Vector2(p.x * mirror, p.y);
+                var inward = ((Vector2)Core - from).normalized;
+                Fire<GiantOrb>(new Vector3(from.x, from.y, 1), CombatVisuals.Rotate(inward, mirror * 20), .7f, .75f)
+                    .Absorb(into, 4, 1).LivesFor(14);
+            }
+        }
+    }
+
+    // Mirrored spiral arms flung from the core; they accelerate out and straighten.
+    void Expel(int n, int arms, float twist)
+    {
+        for (int arm = 0; arm < arms; arm++)
+            foreach (int mirror in new[] { 1, -1 })
+            {
+                var radial = CombatVisuals.Rotate(Vector2.down, mirror * (n * 9 + arm * 360f / arms));
+                Fire<NeedleRound>(Core, CombatVisuals.Rotate(radial, mirror * twist), .5f, .19f).Repel(Core, 7).LivesFor(9);
+            }
+    }
+
+    void ExpelStars(int n, int count)
+    {
+        for (int i = 0; i < count; i++)
+            Fire<GiantOrb>(Core, CombatVisuals.Rotate(Vector2.down, n * 11 + i * 360f / count), .4f, .75f).Repel(Core, 3).LivesFor(13);
+    }
+
+    IEnumerator Accretion()
+    {
+        OpenWell();
+        yield return Wait(.6f);
+        yield return Every(8, Rest(.5f), n =>
+        {
+            AccretionRing(n, Dense(14), 28);
+            if (n % 4 == 1)
+                AccretionStars(n, Dense(2));
         });
+        yield return Wait(1.2f);
         CloseWell();
     }
 
@@ -131,25 +193,16 @@ public sealed partial class SpaceCitadelBoss
         yield return Wait(2.2f);
     }
 
-    IEnumerator EventHorizon()
+    IEnumerator Expulsion()
     {
-        Vector2 point = new Vector2(0, Middle);
-        OpenWell(point);
-        yield return Wait(.5f);
-        int steps = Dense(110);
-        for (int i = 0; i < steps; i++)
+        OpenWell();
+        yield return Charge(Hull, WeaponPort(), .5f);
+        yield return Every(8, Rest(.1f), n =>
         {
-            // The well drifts after the player, slowly enough to outrun.
-            if (player != null)
-                point = Vector2.MoveTowards(point, new Vector2(player.position.x, Mathf.Max(player.position.y + 2.5f, Camera.DownLimit + 3)), .025f);
-            well.position = new Vector3(point.x, point.y, -.4f);
-            for (int arm = 0; arm < 4; arm++)
-                Fire<NeedleRound>(Core, CombatVisuals.Rotate(Vector2.down, arm * 90 + i * 9), 3.2f, .19f).Attract(point, 8).LivesFor(9);
-            if (i % 18 == 9)
-                foreach (int side in new[] { -1, 1 })
-                    Fire<GiantOrb>(Core, CombatVisuals.Rotate(Vector2.down, side * 70), 1.8f, .75f).Attract(point, 5).LivesFor(13);
-            yield return Wait(Rest(.075f));
-        }
+            Expel(n, 3, 55);
+            if (n % 14 == 7)
+                ExpelStars(n, Dense(6));
+        });
         CloseWell();
     }
 
@@ -170,22 +223,27 @@ public sealed partial class SpaceCitadelBoss
             Destroy(well.gameObject);
     }
 
-    // Hard final phase, Big Crunch: the well sits under the core and pulls in six spiral
-    // arms, pairs of dark stars and supernova rings all together.
+    // Hard final phase, Big Crunch: absorbing and expelling at once. Every 2.5 s the
+    // dominant side flips: full accretion rings with a thin pair of arms, then full
+    // spiral arms with sparse rings, dark stars travelling both ways.
     IEnumerator FinalSpell()
     {
-        Vector2 point = new Vector2(0, Middle - .5f);
-        OpenWell(point);
+        OpenWell();
         yield return Wait(.5f);
-        yield return Every(9, .1f, n =>
+        yield return Every(10, .1f, n =>
         {
-            for (int arm = 0; arm < 6; arm++)
-                Fire<NeedleRound>(Core, CombatVisuals.Rotate(Vector2.down, arm * 60 + n * 7), 3.2f, .19f).Attract(point, 8).LivesFor(9);
-            if (n % 14 == 7)
-                foreach (int side in new[] { -1, 1 })
-                    Fire<GiantOrb>(Core, CombatVisuals.Rotate(Vector2.down, side * 70), 1.8f, .75f).Attract(point, 5).LivesFor(13);
-            if (n % 24 == 0)
-                SupernovaRing(Dense(26), 3.4f, n);
+            bool inward = n / 25 % 2 == 0;
+            if (n % (inward ? 5 : 10) == 0)
+                AccretionRing(n / 5, Dense(inward ? 13 : 8), 28);
+            if (!inward || n % 3 == 0)
+                Expel(n, inward ? 1 : 3, 55);
+            if (n % 20 == 10)
+            {
+                if (inward)
+                    AccretionStars(n, Dense(2));
+                else
+                    ExpelStars(n, Dense(5));
+            }
         });
         CloseWell();
         yield return Wait(.6f);

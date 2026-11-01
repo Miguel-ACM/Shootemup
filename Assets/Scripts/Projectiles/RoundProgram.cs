@@ -70,6 +70,28 @@ public static class RoundProgram
         return shot;
     }
 
+    // Drawn into a moving body that swallows the round once it comes within reach.
+    public static T Absorb<T>(this T shot, Transform into, float strength, float reach) where T : CombatRound
+    {
+        if (shot == null)
+            return null;
+        shot.sink = into;
+        shot.well = into.position;
+        shot.pull = strength;
+        shot.sinkRadius = reach;
+        return shot;
+    }
+
+    // Pushed away from a point: the round accelerates out and bends onto the radial.
+    public static T Repel<T>(this T shot, Vector2 point, float strength) where T : CombatRound
+    {
+        if (shot == null)
+            return null;
+        shot.well = point;
+        shot.pull = -strength;
+        return shot;
+    }
+
     // Lateral sine motion around the travel line.
     public static T Sway<T>(this T shot, float amplitude, float cycles) where T : CombatRound
     {

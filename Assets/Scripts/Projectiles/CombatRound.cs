@@ -292,6 +292,8 @@ public abstract class CombatRound : AEnemyBullet
     internal int bounces;
     internal Vector2 gravity, drift, well;
     internal float pull;
+    internal Transform sink;
+    internal float sinkRadius;
     internal float swayAmplitude, swayRate;
     internal float zigEvery, zigAngle, nextZig;
     internal int zigSign;
@@ -317,6 +319,8 @@ public abstract class CombatRound : AEnemyBullet
         bounces = 0;
         gravity = drift = travel = well = Vector2.zero;
         pull = 0;
+        sink = null;
+        sinkRadius = 0;
         swayAmplitude = swayRate = 0;
         zigEvery = zigAngle = nextZig = 0;
         zigSign = 1;
@@ -375,11 +379,23 @@ public abstract class CombatRound : AEnemyBullet
         }
         float factor = SpeedFactor();
         Vector2 step = heading * speed * factor;
-        if (pull > 0)
+        if (pull != 0)
         {
             // A point well: inverse-square-like pull, softened so nothing reaches infinite speed.
+            // A negative strength repels; a sink well follows its moving body.
+            if (sink != null)
+                well = sink.position;
             Vector2 toward = well - (Vector2)transform.position;
             drift += toward.normalized * pull / (toward.sqrMagnitude * .2f + 1) * dt;
+            if (sink != null && toward.sqrMagnitude > .0001f)
+            {
+                // A sink spirals its rounds in instead of letting them settle into orbit:
+                // the heading turns inward and sideways drift bleeds away.
+                var inward = toward.normalized;
+                heading = Vector3.RotateTowards(heading, inward, 1.1f * dt, 0);
+                drift -= (drift - inward * Vector2.Dot(drift, inward)) * Mathf.Min(1, 1.4f * dt);
+                needsOrientation = true;
+            }
         }
         if (gravity != Vector2.zero)
             drift += gravity * dt;
@@ -468,6 +484,12 @@ public abstract class CombatRound : AEnemyBullet
 
     void Program()
     {
+        // Swallowed by the body that absorbs it.
+        if (sink != null && sinkRadius > 0 && ((Vector2)(sink.position - transform.position)).sqrMagnitude < sinkRadius * sinkRadius)
+        {
+            Vanish();
+            return;
+        }
         if (Paused)
         {
             float glint = 1.12f + .1f * Mathf.Sin(age * 22);
@@ -504,7 +526,7 @@ public abstract class CombatRound : AEnemyBullet
     protected void Orient()
     {
         // Arrows under gravity or sway point along their actual path, not their launch heading.
-        Vector2 facing = gravity != Vector2.zero || pull > 0 || swayAmplitude != 0 ? travel : heading;
+        Vector2 facing = gravity != Vector2.zero || pull != 0 || swayAmplitude != 0 ? travel : heading;
         if (!needsOrientation && facing == orientedHeading && !(this is ReturningDisc))
             return;
         if (facing.sqrMagnitude > .001f)
