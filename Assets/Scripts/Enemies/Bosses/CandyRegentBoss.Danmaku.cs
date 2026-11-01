@@ -9,11 +9,10 @@ using UnityEngine;
 //     bending in mirror, so each pull arrives as two curling ribbons.
 //   Pinball Parlour: mirrored sprinkles ricochet off the walls and ceiling while
 //     gumdrops brake and pop into tight aimed shotguns.
-// Phase two
-//   Sugar Rush: a three-arm mirrored lace pours out while candy worms wiggle down
-//     in antiphase from both hatches.
-//   Gumdrop Barrage: volley after volley of gumdrops popping at the player, with
-//     sprinkle storms between them.
+// Phase two: one idea at a time, every card mirrored.
+//   Sugar Rush: a two-arm mirrored lace folds open and shut.
+//   Candy Worms: wiggling streams in antiphase from both hatches.
+//   Gumdrop Barrage: steady volleys of three gumdrops popping at the player.
 public sealed partial class CandyRegentBoss
 {
     protected override void Attack()
@@ -49,16 +48,12 @@ public sealed partial class CandyRegentBoss
             }
             else
             {
-                Phrase(CandyWorms(80));
-                yield return MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(90), 3, 70, 20, 3.6f, .065f);
-                yield return Wait(.6f);
-                yield return Every(6, .7f, n =>
-                {
-                    Gumdrops(3);
-                    if (n % 3 == 1)
-                        Sprinkles();
-                });
-                yield return Wait(.6f);
+                yield return MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(64), 2, 66, 22, 3.4f, .07f);
+                yield return Wait(.7f);
+                yield return CandyWorms(56);
+                yield return Wait(.7f);
+                yield return Every(6, 1.0f, n => Gumdrops(3));
+                yield return Wait(.7f);
             }
         }
     }
@@ -135,18 +130,20 @@ public sealed partial class CandyRegentBoss
         }
     }
 
-    // Hard final phase, Sugar Crash: a four-arm lace pours out while candy worms wiggle,
-    // gumdrops pop at the player and the canopy keeps the ceiling covered.
+    // Hard final phase, Sugar Crash: two layers only. A three-arm lace folds over the
+    // candy worms; then gumdrop volleys alternate with the worms on a steady beat.
     IEnumerator FinalSpell()
     {
-        Phrase(CandyWorms(100));
-        Phrase(Every(8, .9f, n =>
+        Phrase(CandyWorms(60));
+        yield return MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(84), 3, 70, 20, 3.5f, .07f);
+        yield return Wait(.6f);
+        yield return Every(6, 1.2f, n =>
         {
-            Gumdrops(3);
-            if (n % 2 == 1)
-                Canopy();
-        }));
-        yield return MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(120), 4, 75, 16, 3.6f, .065f);
-        yield return Wait(.5f);
+            if (n % 2 == 0)
+                Gumdrops(3);
+            else
+                Phrase(CandyWorms(12));
+        });
+        yield return Wait(.6f);
     }
 }
