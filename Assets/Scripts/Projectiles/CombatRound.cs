@@ -14,7 +14,7 @@ public abstract class CombatRound : AEnemyBullet
     public static readonly HashSet<CombatRound> Live = new HashSet<CombatRound>();
     static readonly Dictionary<Type, Stack<CombatRound>> pools = new Dictionary<Type, Stack<CombatRound>>();
     static int pooled;
-    const int PoolBudget = 1800;
+    const int PoolBudget = 1850;
     // Older rounds always draw above rounds launched after them: each launch, reused
     // or new, sits a hair further from the camera than the previous one. The sequence
     // restarts whenever the arena is clear, or after a long unbroken stream.
@@ -212,7 +212,7 @@ public abstract class CombatRound : AEnemyBullet
         yield return Warm<ScatterCarrier>(24);
         yield return Warm<HelixRound>(32);
         yield return Warm<PlasmaOrb>(24);
-        yield return Warm<GiantOrb>(160);
+        yield return Warm<GiantOrb>(200);
         yield return Warm<ProximityMine>(16);
         yield return Warm<ReturningDisc>(24);
         yield return Warm<LaserSideRound>(16);

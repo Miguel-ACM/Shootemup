@@ -212,8 +212,9 @@ public sealed partial class SpaceCitadelBoss
             Expel(n, 4, 55);
             if (n % 13 == 0)
                 ExpelRing(n, Dense(20));
-            if (n % 7 == 3)
-                ExpelStars(n, Dense(8));
+            // Dark stars every 0.36 s, alternating between a big and a small ring.
+            if (n % 4 == 1)
+                ExpelStars(n, Dense(n % 8 == 1 ? 12 : 8));
         });
         CloseWell();
     }
