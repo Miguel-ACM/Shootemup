@@ -11,6 +11,10 @@ using UnityEngine;
 //     wall. Every impact throws a full 360-degree burst of fast arrows and slow teeth,
 //     some of which bounce off the walls, an aimed shotgun of arrows, and teeth that
 //     cling to the walls and run round the rim. Between impacts it is silent.
+// Phase three (Hard)
+//   Overdrive: it ricochets faster, and every impact drives a glowing tooth into the
+//     wall. The embedded teeth keep spitting swaying fans back across the arena for a
+//     few seconds, so the walls it has struck stay live while it hunts the next one.
 public sealed partial class TunnelSawBoss
 {
     CombatHullVisual spinner;
@@ -42,6 +46,11 @@ public sealed partial class TunnelSawBoss
     {
         using var sample = burstMarker.Auto();
         impacts++;
+        if (overdrive)
+        {
+            Embed(inward);
+            return;
+        }
         int rays = Dense(phaseTwo ? 28 : 20);
         float step = 360f / rays;
         for (int i = 0; i < rays; i++)
@@ -136,18 +145,46 @@ public sealed partial class TunnelSawBoss
         PSXFireballs.Shockwave(transform.position, 2, 1.8f, Color.yellow, 2, .1f);
     }
 
-    // Hard final phase, Overdrive: it ricochets round the arena throwing wall runners
-    // while turning out a four-arm arrow spiral from its centre the whole time.
+    // Hard final phase, Overdrive. Each impact drives a tooth into the wall: a giant
+    // round that stays where it struck, with a light ring thrown off the hit.
+    const int EmbeddedTeeth = 4;
+    readonly Vector2[] embeddedAt = new Vector2[EmbeddedTeeth], embeddedFacing = new Vector2[EmbeddedTeeth];
+    readonly float[] embeddedUntil = new float[EmbeddedTeeth];
+    bool overdrive;
+
+    void Embed(Vector2 inward)
+    {
+        int slot = impacts % EmbeddedTeeth;
+        embeddedAt[slot] = transform.position - (Vector3)inward * Radius * .7f;
+        embeddedFacing[slot] = inward;
+        embeddedUntil[slot] = age + 4.2f;
+        Fire<GiantOrb>(embeddedAt[slot], inward, 0, .6f).LivesFor(4.2f);
+        int rays = Dense(16);
+        for (int i = 0; i < rays; i++)
+            Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(inward, i * 360f / rays + impacts * 11), 4.4f, .19f);
+    }
+
     IEnumerator FinalSpell()
     {
-        runners = true;
+        overdrive = true;
         if (haltUntil > age)
             ResumeBouncing();
-        yield return Every(9, .08f, n =>
+        yield return Every(12, Rest(.3f), n =>
         {
-            for (int arm = 0; arm < 4; arm++)
-                Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, arm * 90 + n * 13), 3.4f, .19f);
+            for (int slot = 0; slot < EmbeddedTeeth; slot++)
+            {
+                if (age >= embeddedUntil[slot])
+                    continue;
+                // Each embedded tooth sweeps a narrow fan back across the arena.
+                var axis = CombatVisuals.Rotate(embeddedFacing[slot], Mathf.Sin(n * .45f + slot * 1.7f) * 40);
+                int fan = Dense(5);
+                for (int i = 0; i < fan; i++)
+                    Fire<NeedleRound>(embeddedAt[slot], CombatVisuals.Rotate(axis, (i - (fan - 1) * .5f) * 13), 3.1f, .19f)
+                        .Sway(.25f, .7f);
+            }
         });
-        runners = false;
+        overdrive = false;
+        for (int slot = 0; slot < EmbeddedTeeth; slot++)
+            embeddedUntil[slot] = 0;
     }
 }
