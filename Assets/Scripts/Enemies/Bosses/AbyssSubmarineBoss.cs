@@ -36,6 +36,8 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
     }
 
     public override bool CanBeTargeted => !Submerged && health > 0;
+    // The charge winds up for 0.6 s after it settles at the top.
+    const float ChargeStart = 10.9f;
     // The dive cycle owns the hull's position, including through a phase break.
     protected override bool RepositionsOnPhase => false;
     protected override void Configure()
@@ -78,6 +80,8 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
         {
             lastCycle = cycle;
             eruptionA = eruptionB = eruptionC = false;
+            // It surfaces at one of three marked spots along the top: left, centre or right.
+            emerge = new Vector3((Random.Range(0, 3) - 1) * 2.8f, Camera.UpLimit - 3.1f, 1);
         }
         Submerged = t >= 3.5f && t < 6.4f;
         hit.enabled = !Submerged;
@@ -86,7 +90,6 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
         {
             station = new Vector3(Mathf.Sin(motionAge * .65f) * 2.1f, Camera.UpLimit - 2.65f, 1);
             transform.position = Vector3.MoveTowards(transform.position, station, dt * 5);
-            emerge = new Vector3(Mathf.Clamp(player != null ? player.position.x : 0, -2.8f, 2.8f), Mathf.Clamp((player != null ? player.position.y : -2) + 2, -3.5f, 2.3f), 1);
             descent = transform.position;
         }
         else if (t < 4.4f)
@@ -132,13 +135,13 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
             descent = transform.position;
             nextWake = 0;
         }
-        else if (t < 11.35f)
+        else if (t < ChargeStart)
         {
             descent = transform.position;
         }
-        else if (t < 13.1f)
+        else if (t < ChargeStart + 1.75f)
         {
-            transform.position = descent + Vector3.down * ((t - 11.35f) * 14);
+            transform.position = descent + Vector3.down * ((t - ChargeStart) * 14);
             if (age >= nextWake)
             {
                 nextWake = age + (phaseTwo ? .08f : .1f);
@@ -156,7 +159,7 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
                 transform.position = new Vector3(-emerge.x, Camera.UpLimit + 3.5f, 1);
             transform.position = Vector3.MoveTowards(transform.position, new Vector3(-emerge.x, Camera.UpLimit - 2.65f, 1), dt * 5.5f);
         }
-        wake.enabled = t >= 4.4f && t < 6.4f || t >= 10.3f && t < 11.35f;
+        wake.enabled = t >= 4.4f && t < 6.4f || t >= 10.3f && t < ChargeStart;
         if (t >= 4.4f && t < 6.4f)
             CombatVisuals.Ring(wake, new Vector3(emerge.x, emerge.y, -.3f), Mathf.Lerp(1.45f, .65f, Mathf.InverseLerp(4.4f, 6.4f, t)));
         else if (wake.enabled)

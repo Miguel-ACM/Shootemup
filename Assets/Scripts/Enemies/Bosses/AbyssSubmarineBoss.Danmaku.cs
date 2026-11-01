@@ -6,8 +6,9 @@ using UnityEngine;
 //     (rounds that leave almost still and wind up) with rain: plumes of arrows thrown
 //     up that fall back over the arena. Phase two replaces the racks with a three-arm
 //     mirrored pressure lace and aimed arrow wavefronts between the rain.
-//   Emergence: it bursts out of the water in an explosion of 360 arrow rings, one per
-//     crown in phase one and two (zigzagging) in phase two.
+//   Emergence: it surfaces at one of three spots along the top (left, centre or
+//     right) in an explosion of two offset 360 arrow rings per crown; in phase two
+//     every crown also releases a ring of big bubbles that drift out and rise.
 //   Charge: it rams straight down the arena, shedding a dense wake of arrows sideways
 //     the whole way, never stopping or aiming; foam marks the hull, which hurts on
 //     contact. In phase two it also drops depth charges that explode 360.
@@ -50,7 +51,7 @@ public sealed partial class AbyssSubmarineBoss
     // Big slow torpedoes that wind up to full speed along their aim.
     void Torpedoes()
     {
-        int tubes = Dense(5);
+        int tubes = Dense(7);
         for (int side = 1; side <= 2; side++)
         {
             var port = Muzzle(side);
@@ -83,7 +84,7 @@ public sealed partial class AbyssSubmarineBoss
     void Rain()
     {
         plumes++;
-        int lanes = Dense(phaseTwo ? 17 : 15) | 1;
+        int lanes = Dense(19) | 1;
         float tilt = plumes % 3 == 1 ? -12 : plumes % 3 == 2 ? 12 : 0;
         for (int layer = 0; layer < 3; layer++)
             for (int i = 0; i < lanes; i++)
@@ -103,15 +104,26 @@ public sealed partial class AbyssSubmarineBoss
         emergences++;
         PSXImpactEffects.Burst(transform.position, new Color(.42f, .83f, .94f), true);
         int beads = Dense(phaseTwo ? 32 : 28);
-        int rings = phaseThree ? 3 : phaseTwo ? 2 : 1;
+        int rings = phaseThree ? 3 : 2;
         for (int ring = 0; ring < rings; ring++)
             for (int i = 0; i < beads; i++)
             {
                 var axis = CombatVisuals.Rotate(Vector2.down, offset * beads + (i + ring * .5f) * 360f / beads + emergences * 5);
-                var round = Fire<NeedleRound>(transform.position + (Vector3)axis * .8f, axis, speed + .6f + ring * .8f, .19f);
-                if (phaseTwo && round != null)
-                    round.Zigzag(.4f, 10);
+                Fire<NeedleRound>(transform.position + (Vector3)axis * .8f, axis, speed + .6f + ring * .8f, .19f);
             }
+        if (!phaseTwo)
+            return;
+        // Bubbles: big slow rounds pushed out all round, then buoyancy lifts them in
+        // wobbling arcs back up past the hull.
+        int bubbles = Dense(14);
+        for (int i = 0; i < bubbles; i++)
+        {
+            var axis = CombatVisuals.Rotate(Vector2.down, (i + .5f) * 360f / bubbles + emergences * 9);
+            Fire<SimpleRound>(transform.position + (Vector3)axis * .9f, axis, 2.2f, .34f)
+                .Fall(new Vector2(0, 1.5f))
+                .Sway(i % 2 == 0 ? .3f : -.3f, .6f)
+                .LivesFor(9);
+        }
     }
 
     // The charge sheds a dense sideways wake of arrows on both flanks, never stopping.
@@ -154,11 +166,11 @@ public sealed partial class AbyssSubmarineBoss
                 Cue(Muzzle(2), seconds);
             }
         }
-        else if (t >= 5.9f && t < 7.7f || t >= 10.85f && t < 13.1f)
+        else if (t >= 5.9f && t < 7.7f || t >= 10.4f && t < 12.65f)
         {
             float nextCrown = t < 6.4f ? 6.4f : t < 7.05f ? 7.05f : 7.7f;
-            float warning = t < 7.7f ? (nextCrown - t) / (phaseTwo ? 1.1f : 1) : (11.35f - t) / (phaseTwo ? 1.1f : 1);
-            if (t >= 11.35f)
+            float warning = t < 7.7f ? (nextCrown - t) / (phaseTwo ? 1.1f : 1) : (10.9f - t) / (phaseTwo ? 1.1f : 1);
+            if (t >= 10.9f)
                 warning = Mathf.Max(0, (nextWake - age) / LevelRun.EnemyTempoScale);
             for (int side = -1; side <= 1; side += 2)
                 for (int lane = -1; lane <= 1; lane++)
