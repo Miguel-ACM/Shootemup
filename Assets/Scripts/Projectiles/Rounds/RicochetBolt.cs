@@ -2,6 +2,7 @@ using UnityEngine;
 public sealed class RicochetBolt : CombatRound
 {
     int wallHits;
+    protected override bool Erratic => true;
     protected override void Initialize()
     {
         wallHits = 0;

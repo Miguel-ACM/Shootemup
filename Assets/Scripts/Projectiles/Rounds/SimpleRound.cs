@@ -23,6 +23,7 @@ public sealed class SimpleRound : CombatRound
     float seedRadius, seedRate, seedDrift, seedPhase;
     Vector2 center, lastOrbitPosition;
     public bool Orbiting => motion == Motion.Orbit;
+    protected override bool Erratic => motion != Motion.Straight || base.Erratic;
     public bool Curving => motion == Motion.Curl;
     public bool Trailing => delivery == Delivery.Trail;
     public bool ChargingSeed => delivery == Delivery.Seed;

@@ -2,6 +2,7 @@ using UnityEngine;
 public sealed class ReturningDisc : CombatRound
 {
     Vector2 initial;
+    protected override bool Erratic => true;
     protected override void Initialize()
     {
         initial = heading;

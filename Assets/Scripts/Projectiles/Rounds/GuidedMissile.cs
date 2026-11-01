@@ -2,6 +2,7 @@ using UnityEngine;
 public sealed class GuidedMissile : CombatRound
 {
     bool committed;
+    protected override bool Erratic => true;
     protected override void Initialize()
     {
         committed = false;

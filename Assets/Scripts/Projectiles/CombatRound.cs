@@ -101,6 +101,7 @@ public abstract class CombatRound : AEnemyBullet
         if (Live.Count == 0 || launchSequence >= DepthSlots)
             launchSequence = 0;
         shot.transform.SetPositionAndRotation(new Vector3(p.x, p.y, -.5f + launchSequence++ * DepthStep), Quaternion.identity);
+        shot.trailFrom = p;
         shot.transform.localScale = Vector3.one * radius * 2;
         shot.visual.sprite = HostileProjectileArt.Sprite(typeof(T), radius >= .25f);
         shot.visual.color = Color.white;
@@ -252,7 +253,13 @@ public abstract class CombatRound : AEnemyBullet
             transform.position += PocketWind.Velocity(transform.position) * Time.deltaTime;
         if (!ended)
             UpdateSimulation();
+        if (!ended && Erratic && visual.enabled)
+            RoundTrails.Follow(ref trailFrom, transform.position, tint != null ? tint.Tint : Accent, Mathf.Abs(transform.localScale.x) * .5f);
     }
+
+    // Rounds whose path wanders leave a short trail in their colour.
+    protected virtual bool Erratic => gravity != Vector2.zero || pull != 0 || swayAmplitude != 0 || zigEvery > 0 || bounces > 0 || wallRunFor > 0;
+    Vector2 trailFrom;
 
     void UpdateSimulation()
     {
