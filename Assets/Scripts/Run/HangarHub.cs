@@ -444,6 +444,12 @@ public sealed class HangarHub : MonoBehaviour
     {
         if (player == null || launching)
             return;
+        // Debug: K unlocks every item.
+        if (Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
+        {
+            MetaProgress.UnlockAll();
+            ItemSound.Play("itemSalvage", .16f);
+        }
         var p = player.transform.position;
         int pad = NearestBay(p);
         for (int i = 0; i < bays.Count; i++)

@@ -77,14 +77,15 @@ public static class MetaProgress
 
     public static bool TryBuy(string item)
     {
-        if (!Data.stock.Contains(item) || IsUnlocked(item))
+        if (!Data.stock.Contains(item))
             return false;
         int price = Price(ItemPool.RarityOf(item));
         if (Data.coins < price)
             return false;
         Data.coins -= price;
         Data.stock.Remove(item);
-        Data.unlocked.Add(item);
+        if (!IsUnlocked(item))
+            Data.unlocked.Add(item);
         Data.loadout.Add(item);
         Save();
         return true;
@@ -116,19 +117,30 @@ public static class MetaProgress
         Save();
     }
 
+    /// <summary>Debug: the whole item pool becomes available. The shop keeps its stock.</summary>
+    public static void UnlockAll()
+    {
+        foreach (var item in ItemPool.AllItems)
+            if (!IsUnlocked(item))
+                Data.unlocked.Add(item);
+        Save();
+    }
+
+    // Locked items first; once few or none are left, owned items fill the shelf, so it always shows three.
     static void Restock()
     {
         var locked = new List<string>();
+        var owned = new List<string>();
         foreach (var item in ItemPool.AllItems)
-            if (!IsUnlocked(item))
-                locked.Add(item);
+            (IsUnlocked(item) ? owned : locked).Add(item);
         Data.stock.Clear();
-        while (Data.stock.Count < ShopSize && locked.Count > 0)
-        {
-            int pick = UnityEngine.Random.Range(0, locked.Count);
-            Data.stock.Add(locked[pick]);
-            locked.RemoveAt(pick);
-        }
+        foreach (var pool in new[] { locked, owned })
+            while (Data.stock.Count < ShopSize && pool.Count > 0)
+            {
+                int pick = UnityEngine.Random.Range(0, pool.Count);
+                Data.stock.Add(pool[pick]);
+                pool.RemoveAt(pick);
+            }
     }
 
     static void Load()
