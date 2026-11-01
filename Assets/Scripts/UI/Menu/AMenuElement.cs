@@ -15,6 +15,7 @@ public abstract class AMenuElement : MonoBehaviour, IPointerEnterHandler, IPoint
     float focus;
     Image marker;
     float textShift;
+    protected float Focus => Mathf.SmoothStep(0, 1, focus);
     static readonly Color Normal = new Color(.10f, .13f, .13f, .85f), Lit = new Color(.76f, .63f, .39f);
     static readonly Color NormalText = new Color(.76f, .81f, .76f), LitText = new Color(.06f, .08f, .08f);
 

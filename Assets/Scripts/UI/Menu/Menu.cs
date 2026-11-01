@@ -35,6 +35,7 @@ public class Menu : MonoBehaviour
         get; set;
     }
 
+    public bool IsOpen => menuOpen;
     public void RefreshElements() => menuElements = GetComponentsInChildren<AMenuElement>();
 
     [SerializeField] private bool alwaysOpen = false;
@@ -74,6 +75,15 @@ public class Menu : MonoBehaviour
 
         input.PlayerControls.Accept.performed += OnAccept;
 
+    }
+
+    // The dev tools add their title rows on scene load, before Start, so every row exists here.
+    void Start()
+    {
+        MenuLayout.Dress(this, alwaysOpen);
+        RefreshElements();
+        if (menuElements.Length > 0)
+            setCurrentElement(menuElements[0]);
     }
 
     void ToggleMenu(InputAction.CallbackContext context) { if (!CloudTransition.Busy && !GameOverState.Active) setMenuOpen(!menuOpen); }
