@@ -13,7 +13,7 @@ using UnityEngine;
 //     cling to the walls and run round the rim. Between impacts it is silent.
 // Phase three (Hard)
 //   Overdrive: it ricochets faster, and every impact drives a glowing tooth into the
-//     wall. The embedded teeth keep spitting swaying fans back across the arena for a
+//     wall. The embedded teeth keep spitting straight fans back across the arena for a
 //     few seconds, so the walls it has struck stay live while it hunts the next one.
 public sealed partial class TunnelSawBoss
 {
@@ -175,12 +175,11 @@ public sealed partial class TunnelSawBoss
             {
                 if (age >= embeddedUntil[slot])
                     continue;
-                // Each embedded tooth sweeps a narrow fan back across the arena.
+                // Each embedded tooth sweeps a narrow fan of straight arrows back across the arena.
                 var axis = CombatVisuals.Rotate(embeddedFacing[slot], Mathf.Sin(n * .45f + slot * 1.7f) * 40);
                 int fan = Dense(5);
                 for (int i = 0; i < fan; i++)
-                    Fire<NeedleRound>(embeddedAt[slot], CombatVisuals.Rotate(axis, (i - (fan - 1) * .5f) * 13), 3.1f, .19f)
-                        .Sway(.25f, .7f);
+                    Fire<NeedleRound>(embeddedAt[slot], CombatVisuals.Rotate(axis, (i - (fan - 1) * .5f) * 13), 3.1f, .19f);
             }
         });
         overdrive = false;
