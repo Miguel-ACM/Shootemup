@@ -116,7 +116,8 @@ public sealed class PSXShipVisual : MonoBehaviour
     // On the flown ship it rides on the ship root above the hull, not on the banking model: banks and rolls never
     // carry it off the hitbox, and the hull (which shares the foreground depth) can never cover it.
     static readonly Vector2 CockpitCentre = new Vector2(0, .08f);
-    const float CockpitRadius = .045f;
+    // The hexagonal canopy is the hitbox's own shape and size (see Shipcontroller.HitboxScale).
+    const float CockpitRadius = .03f;
     Transform cockpitFrame;
     MeshRenderer cockpit;
 
@@ -125,8 +126,14 @@ public sealed class PSXShipVisual : MonoBehaviour
         CaptureDefault();
         if (cockpitFrame == null)
         {
+            // Part of the hull: it banks and rolls with the model, exactly like modelled geometry.
             cockpitFrame = new GameObject("Cockpit frame").transform;
-            cockpitFrame.SetParent(transform, false);
+            cockpitFrame.SetParent(model, false);
+            var saved = model.localRotation;
+            model.localRotation = RestRotation;
+            cockpitFrame.SetPositionAndRotation(transform.position, transform.rotation);
+            cockpitFrame.localScale = Vector3.one * (transform.lossyScale.x / model.lossyScale.x);
+            model.localRotation = saved;
         }
         if (cockpit != null)
             DestroyCockpit(cockpit);
@@ -178,15 +185,20 @@ public sealed class PSXShipVisual : MonoBehaviour
             triangles[t + 7] = crown;
             triangles[t + 8] = sides + next;
         }
-        var mesh = new Mesh { name = sides == 6 ? "Hexagonal cockpit" : "Round cockpit", vertices = vertices, uv = uvs, triangles = triangles };
+        // Terra hulls model their own round canopy; on those only the glow is added. GR-07 gets the hexagon.
+        if (sides != 6)
+            triangles = new int[0];
+        var mesh = new Mesh { name = sides == 6 ? "Hexagonal cockpit" : "Canopy glow anchor", vertices = vertices, uv = uvs, triangles = triangles };
         mesh.RecalculateNormals();
         var go = new GameObject("Cockpit");
         go.transform.SetParent(parent, false);
-        go.transform.localPosition = new Vector3(CockpitCentre.x, CockpitCentre.y, player ? -.2f : -.12f);
+        go.transform.localPosition = new Vector3(CockpitCentre.x, CockpitCentre.y, player ? -.1f : -.12f);
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var renderer = go.AddComponent<MeshRenderer>();
         var material = new Material(CombatMaterials.Fleet) { name = "Shining cockpit", mainTexture = palette };
         material.SetFloat("_PlayerDepth", player ? 1 : 0);
+        // No vertex snapping: a canopy this small would hop between virtual pixels on its own.
+        material.SetFloat("_VertexSnap", 0);
         renderer.sharedMaterial = material;
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         AddGlow(go.transform, color, player);
@@ -208,12 +220,13 @@ public sealed class PSXShipVisual : MonoBehaviour
                 for (int x = 0; x < Size; x++)
                 {
                     float d = Vector2.Distance(new Vector2(x + .5f, y + .5f), Vector2.one * Size * .5f) / (Size * .5f);
-                    float a = Mathf.Pow(Mathf.Clamp01(1 - d), 2.2f);
+                    // A ring, brightest just outside the canopy, so the modelled glass inside stays visible.
+                    float a = Mathf.Pow(Mathf.Clamp01(1 - Mathf.Abs(d - .5f) * 2), 1.6f);
                     glowTexture.SetPixel(x, y, new Color(1, 1, 1, a));
                 }
             glowTexture.Apply();
             glowQuad = new Mesh { name = "Cockpit glow quad" };
-            float r = CockpitRadius * 1.9f;
+            float r = CockpitRadius * 3.2f;
             glowQuad.vertices = new[] { new Vector3(-r, -r), new Vector3(-r, r), new Vector3(r, r), new Vector3(r, -r) };
             glowQuad.uv = new[] { Vector2.zero, Vector2.up, Vector2.one, Vector2.right };
             glowQuad.triangles = new[] { 0, 1, 2, 0, 2, 3 };
@@ -227,6 +240,7 @@ public sealed class PSXShipVisual : MonoBehaviour
         var renderer = go.AddComponent<MeshRenderer>();
         var material = new Material(CombatMaterials.Fleet) { name = "Cockpit glow", mainTexture = glowTexture };
         material.SetFloat("_PlayerDepth", player ? 1 : 0);
+        material.SetFloat("_VertexSnap", 0);
         material.SetColor("_Tint", Color.Lerp(color, Color.white, .25f) * 1.6f);
         renderer.sharedMaterial = material;
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;

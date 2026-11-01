@@ -18,7 +18,7 @@ public class Shipcontroller : MonoBehaviour
     [SerializeField] private ResourceBar manaBar;
     // Health counts whole hits: every hit removes one segment, whatever fired it.
     public const int StartingHits = 6;
-    public const float HitboxScale = .5f;
+    public const float HitboxScale = .7f;
     public float maxHealth = StartingHits;
     public float health = StartingHits;
     public float maxMana = 100f;
@@ -154,7 +154,7 @@ public class Shipcontroller : MonoBehaviour
     {
         limits = Camera.getLimits();
         circleCollider = GetComponent<Collider2D>();
-        // A small hitbox, centred inside the glowing cockpit that marks it.
+        // The hitbox is the hexagon of GR-07's canopy, kept small: radius .028, centred on the cockpit.
         if (circleCollider is PolygonCollider2D hitbox)
         {
             var points = hitbox.points;
