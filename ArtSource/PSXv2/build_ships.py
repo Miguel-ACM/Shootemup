@@ -332,7 +332,7 @@ def material(name, color=None):
 
 # --------------------------------------------------------------------------- player
 CORE_Z = 0.30   # height of the hitbox core/ring above the hull
-COCKPIT_RADIUS = HITBOX_RADIUS * 0.7   # the in-game collider is shrunk by Shipcontroller.HitboxScale
+COCKPIT_RADIUS = 0.1   # as large as the other ships' canopies; the hitbox (0.056) stays centred inside it
 PX = 0.035      # world units per pixel of Miguel's 34x34 reference sprite
 
 
@@ -392,8 +392,8 @@ def player_geometry(b, hitbox=False):
     for px in (5.6, 27.4):
         x, y = ref(px, 23)
         b.box(x, y, 0.095, 0.13, 0.195, 0.26, "vent", "dark", taper=0.75)
-    # Black cockpit collar; the small yellow hexagon on top is the cockpit and exactly the hitbox
-    # (the collider's circumradius after Shipcontroller.HitboxScale), pointy top like the collider.
+    # Black cockpit collar; the yellow hexagon on top is the cockpit, centred on the hitbox
+    # (pointy top like the collider).
     b.prism(R([(16.5, 9.5), (19.5, 12), (19.5, 17), (16.5, 19.5), (13.5, 17), (13.5, 12)]), 0.22, CORE_Z - 0.02,
             "blackarmour", "dark", taper=0.9)
     b.ngon(*HITBOX_CENTER, COCKPIT_RADIUS, 6, CORE_Z - 0.02, CORE_Z, "g_yellow", "dark", rot=HEX)
