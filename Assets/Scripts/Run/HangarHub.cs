@@ -258,8 +258,7 @@ public sealed class HangarHub : MonoBehaviour
             var root = new GameObject("Hangar wallet", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
             root.transform.SetParent(transform, false);
             var canvas = root.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 64;
+            DecisionOverlay.PlaceUnderShips(canvas);
             var scaler = root.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1280, 720);
