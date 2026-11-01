@@ -134,14 +134,22 @@ public sealed partial class WaveWatcher : MonoBehaviour
         }
         else if (scene.name == "L1" && requested)
         {
-            var flow = FindAnyObjectByType<WaveOrchestrer>();
-            if (flow != null)
-            {
-                flow.enabled = false;
-                flow.CancelInvoke();
-                flow.StopAllCoroutines();
-            }
+            SuspendWaves();
             Current = new GameObject("Wave watcher controls", typeof(RectTransform)).AddComponent<WaveWatcher>();
+        }
+        // The orchestrator lives in the additive run scene, which loads after the core:
+        // stop it before its Start begins the ordinary waves underneath the watcher.
+        else if (scene.name == HangarHub.RunScene && requested)
+            SuspendWaves();
+    }
+
+    static void SuspendWaves()
+    {
+        foreach (var flow in FindObjectsByType<WaveOrchestrer>(FindObjectsInactive.Include))
+        {
+            flow.enabled = false;
+            flow.CancelInvoke();
+            flow.StopAllCoroutines();
         }
     }
 
