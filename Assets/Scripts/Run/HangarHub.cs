@@ -267,7 +267,7 @@ public sealed class HangarHub : MonoBehaviour
             plate.transform.SetParent(root.transform, false);
             plate.GetComponent<Image>().color = Color.black;
             wallet = plate.GetComponent<RectTransform>();
-            wallet.sizeDelta = new Vector2(70, 24);
+            wallet.sizeDelta = new Vector2(78, 24);
             var coin = new GameObject("Coin", typeof(RectTransform), typeof(Image));
             coin.transform.SetParent(wallet, false);
             var disc = coin.GetComponent<Image>();
@@ -285,8 +285,10 @@ public sealed class HangarHub : MonoBehaviour
             walletCount.alignment = TextAlignmentOptions.MidlineLeft;
             walletCount.color = new Color(1, .82f, .4f);
             walletCount.raycastTarget = false;
-            walletCount.rectTransform.sizeDelta = new Vector2(44, 20);
-            walletCount.rectTransform.anchoredPosition = new Vector2(8, 0);
+            // Four digits on one line.
+            walletCount.textWrappingMode = TextWrappingModes.NoWrap;
+            walletCount.rectTransform.sizeDelta = new Vector2(54, 20);
+            walletCount.rectTransform.anchoredPosition = new Vector2(12, 0);
         }
         // The count rolls smoothly to the banked total once the plate is in view, and down again after a purchase.
         if (wallet.gameObject.activeSelf)
