@@ -7,6 +7,8 @@ public class BGMManager : MonoBehaviour
 {
     static readonly Dictionary<string, AudioClip> tracks = new Dictionary<string, AudioClip>();
     static AudioSource audioSource;
+    const float BaseVolume = .1f;
+    static bool fading;
     void Awake()
     {
         var sceneSource = GetComponent<AudioSource>();
@@ -21,6 +23,8 @@ public class BGMManager : MonoBehaviour
             audioSource.playOnAwake = false;
             audioSource.spatialBlend = 0;
             audioSource.priority = 1;
+            // The sound option scales the listener; music has its own option.
+            audioSource.ignoreListenerVolume = true;
         }
     }
 
@@ -65,10 +69,18 @@ public class BGMManager : MonoBehaviour
         }
         audioSource.Stop();
         audioSource.clip = clip;
-        audioSource.volume = 0.1f;
+        // A fade stopped with its scene must not hold the volume option back.
+        fading = false;
+        audioSource.volume = BaseVolume * GameOptions.MusicVolume;
         audioSource.pitch = 1f;
         audioSource.loop = bgm != "stageComplete";
         audioSource.Play();
+    }
+
+    public static void ApplyVolume()
+    {
+        if (audioSource != null && !fading)
+            audioSource.volume = BaseVolume * GameOptions.MusicVolume;
     }
 
     public static void StopBGM()
@@ -88,12 +100,14 @@ public class BGMManager : MonoBehaviour
     {
         float currentTime = 0;
         float start = audioSource.volume;
+        fading = true;
         while (currentTime < duration)
         {
             currentTime += Time.deltaTime;
             audioSource.volume = Mathf.Lerp(start, 0, currentTime / duration);
             yield return null;
         }
+        fading = false;
         audioSource.Stop();
         yield break;
     }
@@ -102,12 +116,14 @@ public class BGMManager : MonoBehaviour
     {
         float currentTime = 0;
         float start = audioSource.volume;
+        fading = true;
         while (currentTime < duration)
         {
             currentTime += Time.deltaTime;
             audioSource.volume = Mathf.Lerp(start, 0, currentTime / duration);
             yield return null;
         }
+        fading = false;
         audioSource.pitch = 1f;
         PlayBGM(newSong);
         yield break;

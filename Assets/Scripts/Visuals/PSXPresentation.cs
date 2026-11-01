@@ -31,6 +31,7 @@ public sealed class PSXPresentation : MonoBehaviour
         source = GetComponent<UnityEngine.Camera>();
         if (source == null)
             return;
+        filterEnabled = GameOptions.PsxFilter;
         // Gameplay roots occupy Z=0..20; raised mesh surfaces extend in front of them.
         // An orthographic camera can move back without changing the playfield framing.
         var cameraPosition = source.transform.localPosition;
@@ -122,12 +123,17 @@ public sealed class PSXPresentation : MonoBehaviour
         composite.SetFloat("_ClearSweep", ClearEffects.Sweep);
         composite.SetColor("_ClearTint", ClearEffects.Tint);
         if (Keyboard.current != null && Keyboard.current.f9Key.wasPressedThisFrame)
-        {
-            filterEnabled = !filterEnabled;
-            Resize();
-        }
+            GameOptions.SetPsxFilter(!filterEnabled);
         if (width != Screen.width || height != Screen.height)
             Resize();
+    }
+
+    public void SetFilter(bool enabled)
+    {
+        if (filterEnabled == enabled)
+            return;
+        filterEnabled = enabled;
+        Resize();
     }
 
     void OnDestroy()
