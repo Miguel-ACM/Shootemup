@@ -22,8 +22,6 @@ public sealed class PSXShipVisual : MonoBehaviour
     {
         if (model != null)
             model.localScale *= factor;
-        if (cockpitFrame != null)
-            cockpitFrame.localScale *= factor;
         if (hitboxRenderers != null)
             foreach (var marker in hitboxRenderers)
                 if (marker != null)
@@ -70,12 +68,11 @@ public sealed class PSXShipVisual : MonoBehaviour
     }
 
     /// <summary>A copy of a hull with the ship root's scale, for parking it in the hangar.</summary>
-    public GameObject BuildDisplayHull(string terraModel, Color cockpitColor, int cockpitSides = 12)
+    public GameObject BuildDisplayHull(string terraModel)
     {
         CaptureDefault();
         var root = new GameObject("Parked " + (terraModel ?? "GR-07"));
         root.transform.localScale = transform.lossyScale;
-        BuildCockpit(root.transform, cockpitColor, false, cockpitSides);
         var mesh = terraModel != null ? IndustrialMeshFactory.TerraModel(terraModel) : null;
         if (mesh != null)
         {
@@ -110,150 +107,6 @@ public sealed class PSXShipVisual : MonoBehaviour
         foreach (var child in hull.GetComponentsInChildren<Transform>())
             child.gameObject.layer = gameObject.layer;
         return hull;
-    }
-
-    // Every ship wears a small, shining cockpit exactly over its hitbox, so the point that can be hit is always clear.
-    // On the flown ship it rides on the ship root above the hull, not on the banking model: banks and rolls never
-    // carry it off the hitbox, and the hull (which shares the foreground depth) can never cover it.
-    static readonly Vector2 CockpitCentre = new Vector2(0, .08f);
-    // The hexagonal canopy is the hitbox's own shape and size (see Shipcontroller.HitboxScale).
-    const float CockpitRadius = .03f;
-    Transform cockpitFrame;
-    MeshRenderer cockpit;
-
-    public void UseCockpit(Color color, int sides = 12)
-    {
-        CaptureDefault();
-        if (cockpitFrame == null)
-        {
-            // Part of the hull: it banks and rolls with the model, exactly like modelled geometry.
-            cockpitFrame = new GameObject("Cockpit frame").transform;
-            cockpitFrame.SetParent(model, false);
-            var saved = model.localRotation;
-            model.localRotation = RestRotation;
-            cockpitFrame.SetPositionAndRotation(transform.position, transform.rotation);
-            cockpitFrame.localScale = Vector3.one * (transform.lossyScale.x / model.lossyScale.x);
-            model.localRotation = saved;
-        }
-        if (cockpit != null)
-            DestroyCockpit(cockpit);
-        cockpit = BuildCockpit(cockpitFrame, color, true, sides);
-        cockpit.gameObject.layer = gameObject.layer;
-        Apply();
-    }
-
-    /// <summary>
-    /// A glossy round canopy: dark rim, coloured glass and a white glint. It uses the ships' own shader, so on the
-    /// player it shares the hull's foreground depth; parked copies sit just above their hull instead.
-    /// </summary>
-    public static MeshRenderer BuildCockpit(Transform parent, Color color, bool player = false, int sides = 12)
-    {
-        var palette = new Texture2D(4, 1, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp, name = "Cockpit glass" };
-        var rim = color * .45f;
-        var glass = Color.Lerp(color, Color.white, .15f);
-        var glint = Color.Lerp(color, Color.white, .85f);
-        rim.a = glass.a = glint.a = 1;
-        palette.SetPixels(new[] { rim, glass, glint, glass });
-        palette.Apply();
-        // Rim ring, glass ring and a centre crown.
-        var vertices = new Vector3[sides * 2 + 1];
-        var uvs = new Vector2[vertices.Length];
-        var triangles = new int[sides * 9];
-        int crown = sides * 2;
-        for (int i = 0; i < sides; i++)
-        {
-            // A hexagon stands on a point at the nose; rounder canopies start anywhere.
-            float angle = i * Mathf.PI * 2 / sides + (sides == 6 ? Mathf.PI / 2 : 0);
-            var corner = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle));
-            vertices[i] = corner * CockpitRadius;
-            uvs[i] = new Vector2(.125f, .5f);
-            vertices[sides + i] = corner * CockpitRadius * .7f + Vector3.back * .01f;
-            uvs[sides + i] = new Vector2(.375f, .5f);
-        }
-        vertices[crown] = new Vector3(-.25f, .25f) * CockpitRadius + Vector3.back * .025f;
-        uvs[crown] = new Vector2(.625f, .5f);
-        for (int i = 0; i < sides; i++)
-        {
-            int next = (i + 1) % sides, t = i * 9;
-            triangles[t] = i;
-            triangles[t + 1] = sides + next;
-            triangles[t + 2] = next;
-            triangles[t + 3] = i;
-            triangles[t + 4] = sides + i;
-            triangles[t + 5] = sides + next;
-            triangles[t + 6] = sides + i;
-            triangles[t + 7] = crown;
-            triangles[t + 8] = sides + next;
-        }
-        // Terra hulls model their own round canopy; on those only the glow is added. GR-07 gets the hexagon.
-        if (sides != 6)
-            triangles = new int[0];
-        var mesh = new Mesh { name = sides == 6 ? "Hexagonal cockpit" : "Canopy glow anchor", vertices = vertices, uv = uvs, triangles = triangles };
-        mesh.RecalculateNormals();
-        var go = new GameObject("Cockpit");
-        go.transform.SetParent(parent, false);
-        go.transform.localPosition = new Vector3(CockpitCentre.x, CockpitCentre.y, player ? -.1f : -.12f);
-        go.AddComponent<MeshFilter>().sharedMesh = mesh;
-        var renderer = go.AddComponent<MeshRenderer>();
-        var material = new Material(CombatMaterials.Fleet) { name = "Shining cockpit", mainTexture = palette };
-        material.SetFloat("_PlayerDepth", player ? 1 : 0);
-        // No vertex snapping: a canopy this small would hop between virtual pixels on its own.
-        material.SetFloat("_VertexSnap", 0);
-        renderer.sharedMaterial = material;
-        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        AddGlow(go.transform, color, player);
-        go.AddComponent<CockpitShine>();
-        return renderer;
-    }
-
-    // A soft halo in the canopy colour around the cockpit, so it reads at a glance over hull and bullets alike.
-    static Texture2D glowTexture;
-    static Mesh glowQuad;
-
-    static void AddGlow(Transform cockpit, Color color, bool player)
-    {
-        if (glowTexture == null)
-        {
-            const int Size = 32;
-            glowTexture = new Texture2D(Size, Size, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, name = "Cockpit glow" };
-            for (int y = 0; y < Size; y++)
-                for (int x = 0; x < Size; x++)
-                {
-                    float d = Vector2.Distance(new Vector2(x + .5f, y + .5f), Vector2.one * Size * .5f) / (Size * .5f);
-                    // A ring, brightest just outside the canopy, so the modelled glass inside stays visible.
-                    float a = Mathf.Pow(Mathf.Clamp01(1 - Mathf.Abs(d - .5f) * 2), 1.6f);
-                    glowTexture.SetPixel(x, y, new Color(1, 1, 1, a));
-                }
-            glowTexture.Apply();
-            glowQuad = new Mesh { name = "Cockpit glow quad" };
-            float r = CockpitRadius * 3.2f;
-            glowQuad.vertices = new[] { new Vector3(-r, -r), new Vector3(-r, r), new Vector3(r, r), new Vector3(r, -r) };
-            glowQuad.uv = new[] { Vector2.zero, Vector2.up, Vector2.one, Vector2.right };
-            glowQuad.triangles = new[] { 0, 1, 2, 0, 2, 3 };
-            glowQuad.RecalculateNormals();
-        }
-        var go = new GameObject("Cockpit glow");
-        go.transform.SetParent(cockpit, false);
-        go.transform.localPosition = Vector3.forward * .005f;
-        go.layer = cockpit.gameObject.layer;
-        go.AddComponent<MeshFilter>().sharedMesh = glowQuad;
-        var renderer = go.AddComponent<MeshRenderer>();
-        var material = new Material(CombatMaterials.Fleet) { name = "Cockpit glow", mainTexture = glowTexture };
-        material.SetFloat("_PlayerDepth", player ? 1 : 0);
-        material.SetFloat("_VertexSnap", 0);
-        material.SetColor("_Tint", Color.Lerp(color, Color.white, .25f) * 1.6f);
-        renderer.sharedMaterial = material;
-        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-    }
-    static void DestroyCockpit(MeshRenderer renderer)
-    {
-        foreach (var glow in renderer.GetComponentsInChildren<MeshRenderer>())
-            if (glow != renderer)
-                Destroy(glow.sharedMaterial);
-        Destroy(renderer.GetComponent<MeshFilter>().sharedMesh);
-        Destroy(renderer.sharedMaterial.mainTexture);
-        Destroy(renderer.sharedMaterial);
-        Destroy(renderer.gameObject);
     }
 
     MeshRenderer[] DefaultRenderers() => defaultParts != null && defaultParts.Length > 0 ? defaultParts : new[] { defaultRenderer };
@@ -343,20 +196,6 @@ public sealed class PSXShipVisual : MonoBehaviour
                 part.SetPropertyBlock(properties);
                 part.enabled = modelRenderer.enabled;
             }
-        if (cockpit != null)
-        {
-            // Above hostile rounds, so the hitbox is never hidden.
-            cockpit.sortingLayerName = "Bullet";
-            cockpit.sortingOrder = 40;
-            foreach (var glow in cockpit.GetComponentsInChildren<MeshRenderer>())
-                if (glow != cockpit)
-                {
-                    glow.sortingLayerName = "Bullet";
-                    glow.sortingOrder = 39;
-                    glow.enabled = cockpit.enabled;
-                }
-            cockpit.enabled = modelRenderer.enabled;
-        }
         // The hitbox stays fully visible through invulnerability blinking; it only hides on death.
         if (hitboxRenderers != null)
             foreach (var marker in hitboxRenderers)
@@ -365,22 +204,3 @@ public sealed class PSXShipVisual : MonoBehaviour
     }
 }
 
-/// <summary>Makes a cockpit shine with a slow glint, overdriving its tint past the hull's lighting.</summary>
-public sealed class CockpitShine : MonoBehaviour
-{
-    static readonly int Tint = Shader.PropertyToID("_Tint");
-    Material material;
-    float phase;
-
-    void Start()
-    {
-        material = GetComponent<MeshRenderer>().sharedMaterial;
-        phase = Random.value * 6;
-    }
-
-    void Update()
-    {
-        float glint = Mathf.Pow(.5f + .5f * Mathf.Sin(Time.time * 2.6f + phase), 3);
-        material.SetColor(Tint, Color.white * (1.7f + .8f * glint));
-    }
-}
