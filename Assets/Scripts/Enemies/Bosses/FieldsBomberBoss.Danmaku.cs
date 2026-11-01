@@ -8,7 +8,7 @@ using UnityEngine;
 //   Harvest Lace: a three-arm mirrored lace folds open and shut from the wings,
 //     with slow orb wavefronts from the nose rolling under it.
 // Phase two
-//   Contrail Curtain: fences of rounds strung along the very top of the screen,
+//   Contrail Curtain: fences of rounds slid in along the very top of the screen,
 //     across its whole width, hang and then fall at alternating speeds; wing streams
 //     keep the player moving between them.
 //   Bomb Run: rows of mirrored 360 bombs under a two-arm lace.
@@ -113,21 +113,20 @@ public sealed partial class FieldsBomberBoss
         yield return Every(7, 1.1f, n => CarpetBombs(n % 2 == 0 ? 2 : 3));
     }
 
-    // A line strung along the very top of the screen across its whole width. It hangs
-    // as a fence, then drops with alternating speeds, so the gaps open as it falls.
+    // A line strung along the very top of the screen across its whole width. Each
+    // round slides in from just above the top edge, hangs as a fence, then drops
+    // with alternating speeds, so the gaps open as it falls.
     IEnumerator ContrailCurtain()
     {
         int lanes = Dense(24);
-        float y = Camera.UpLimit - .45f;
+        float y = Camera.UpLimit + .35f;
         for (int i = 0; i < lanes; i++)
         {
             float x = Mathf.Lerp(Camera.LeftLimit + .25f, Camera.RightLimit - .25f, i / (lanes - 1f));
-            var port = Muzzle(x < transform.position.x ? 0 : 1);
-            Vector2 travel = new Vector2(x, y) - (Vector2)port;
-            // Braking over the last .35 s covers half that time's distance.
-            float arrive = .75f, launch = travel.magnitude / (arrive - .175f);
+            // Braking over the last .35 s covers half that time's distance: about .5 units in.
+            float arrive = .5f, launch = 1.6f;
             float fall = i % 2 == 0 ? 1.2f : 2.0f;
-            Fire<SimpleRound>(port, travel, WorldSpeed(launch), .24f)
+            Fire<SimpleRound>(new Vector3(x, y, transform.position.z), Vector2.down, WorldSpeed(launch), .24f)
                 .Pause(arrive, 1.1f - i * .02f, CombatRound.Turn.Down, 0, fall / launch)
                 .Ramp(1.8f, 1.2f, arrive + 1.1f);
             yield return Wait(.02f);
