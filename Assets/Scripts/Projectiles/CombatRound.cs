@@ -8,11 +8,13 @@ public abstract class CombatRound : AEnemyBullet
 {
     static readonly Unity.Profiling.ProfilerMarker launchMarker = new Unity.Profiling.ProfilerMarker("CombatRound.Launch");
     static readonly Unity.Profiling.ProfilerMarker createMarker = new Unity.Profiling.ProfilerMarker("CombatRound.Create");
-    public const int Limit = 420;
+    // Dense late-phase cards (bomb shards, laces and curtains together) outgrew 420
+    // live rounds; at the cap Launch drops rounds and rings and rows open holes.
+    public const int Limit = 900;
     public static readonly HashSet<CombatRound> Live = new HashSet<CombatRound>();
     static readonly Dictionary<Type, Stack<CombatRound>> pools = new Dictionary<Type, Stack<CombatRound>>();
     static int pooled;
-    const int PoolBudget = 1100;
+    const int PoolBudget = 1650;
     // Older rounds always draw above rounds launched after them: each launch, reused
     // or new, sits a hair further from the camera than the previous one. The sequence
     // restarts whenever the arena is clear, or after a long unbroken stream.
@@ -172,10 +174,10 @@ public abstract class CombatRound : AEnemyBullet
 
     public static IEnumerator PrepareBursts()
     {
-        // Reserve exactly the existing 768-object budget, across every delivery.
+        // Reserve the pool budget across every delivery.
         // Previously only SimpleRound was ready: a first needle/ricochet volley
         // constructed its GameObjects, pixel colliders and special effects in combat.
-        yield return Warm<SimpleRound>(380);
+        yield return Warm<SimpleRound>(800);
         yield return Warm<NeedleRound>(300);
         yield return Warm<RicochetBolt>(96);
         yield return Warm<BurstShell>(40);

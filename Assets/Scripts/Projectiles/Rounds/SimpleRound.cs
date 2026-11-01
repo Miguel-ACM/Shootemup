@@ -138,7 +138,7 @@ public sealed class SimpleRound : CombatRound
             center += heading * speed * dt;
             Vector2 p = center + OrbitAt(age);
             lastOrbitPosition = p;
-            transform.position = new Vector3(p.x, p.y, -.5f);
+            transform.position = new Vector3(p.x, p.y, transform.position.z);
             if (slingAt >= 0 && age >= slingAt)
             {
                 // Leave on the tangent with the speed the orbit actually had.
