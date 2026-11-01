@@ -40,6 +40,9 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
 
     public int scoreOnKill;
     public float lifeDropChance = 0.1f;
+    // Minibosses also drop health, and coins that grow with the run's stage like a boss's.
+    protected bool dropsLife;
+    protected int coinsPerStage;
     public float manaDropChance = 0.1f;
     public float moneyDropChance = 0.1f;
     public int[] minmaxLife = new int[] { 1, 3 };
@@ -101,8 +104,8 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
     void DropItems()
     {
         int numDrops = 0;
-        // Health is precious now: only boss kills drop it, always, whatever the ship's health.
-        if (isBoss && Random.Range(0f, 1f) < lifeDropChance)
+        // Health is precious now: only boss and miniboss kills drop it, always, whatever the ship's health.
+        if ((isBoss || dropsLife) && Random.Range(0f, 1f) < lifeDropChance)
         {
             numDrops = Random.Range(minmaxLife[0], minmaxLife[1] + 1) + GameRules.morePickables;
             InstantitatePickables("life", numDrops);
@@ -161,6 +164,8 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
         // Each boss of the run pays more: 40 coins for the first, 80 for the second, and so on.
         if (isBoss)
             InstantitatePickables("money", 40 * LevelRun.Stage);
+        else if (coinsPerStage > 0)
+            InstantitatePickables("money", coinsPerStage * LevelRun.Stage);
         if (orchestrer != null)
             orchestrer.NotifyEnemyKilled(orchesterWaveNumber, isBoss: isBoss, bossPosition: bossPosition);
         Destroy(gameObject);

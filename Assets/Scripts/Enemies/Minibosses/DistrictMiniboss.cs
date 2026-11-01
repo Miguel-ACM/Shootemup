@@ -24,6 +24,12 @@ public abstract class DistrictMiniboss : DistrictEnemy
         base.Start();
         maximum = health;
         scoreOnKill = 400;
+        // A timely kill pays one health pickup, some energy and a quarter of a boss's coins.
+        dropsLife = true;
+        lifeDropChance = manaDropChance = 1;
+        minmaxLife = new[] { 1, 1 };
+        minmaxMana = new[] { 3, 5 };
+        coinsPerStage = 10;
         if (movement != null)
         {
             movement.enabled = false;
