@@ -48,7 +48,7 @@ public sealed class CombatUpgrades : MonoBehaviour
             return Drill.SlowAt(position);
         float rate = Current.Count(UpgradeKind.QualityGlasses) > 0 ? .9f : 1;
         if (Current.Count(UpgradeKind.BadGlasses) > 0 && ((Vector2)(position - Current.transform.position)).sqrMagnitude <= 9)
-            rate *= .9f;
+            rate *= .75f;
         return rate * Drill.SlowAt(position);
     }
 
