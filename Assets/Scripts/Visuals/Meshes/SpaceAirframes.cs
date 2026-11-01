@@ -149,6 +149,9 @@ public static partial class IndustrialMeshFactory
     {
         if (orbitalParts[kind] != null)
             return orbitalParts[kind];
+        var authored = TerraModel("SpaceModule" + kind);
+        if (authored != null)
+            return orbitalParts[kind] = authored;
         var b = new Builder();
         if (kind == 0)
         {
