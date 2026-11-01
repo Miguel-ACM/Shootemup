@@ -229,7 +229,7 @@ public sealed class CandylandReview : MonoBehaviour
         Vector3 lastPosition = boss.transform.position;
         Vector2 previousVelocity = Vector2.zero;
         float maxSpeed = 0, minX = 100, maxX = -100, minY = 100, maxY = -100;
-        int maxMinions = 0, peakBossRounds = 0, turns = 0;
+        int peakBossRounds = 0, turns = 0;
         var minionTypes = new HashSet<System.Type>();
         for (int phase = 0; phase < 2; phase++)
         {
@@ -247,7 +247,6 @@ public sealed class CandylandReview : MonoBehaviour
                 previousVelocity = velocity;
                 minX = Mathf.Min(minX, lastPosition.x);
                 maxX = Mathf.Max(maxX, lastPosition.x);
-                maxMinions = Mathf.Max(maxMinions, boss.LiveMinions);
                 if (frame > 8)
                 {
                     minY = Mathf.Min(minY, lastPosition.y);
@@ -263,12 +262,7 @@ public sealed class CandylandReview : MonoBehaviour
         }
         Check(maxSpeed > 10 && maxX - minX > 3 && maxY - minY > 4 && turns >= 8, "boss makes fast multi-height dashes and repeated sharp direction changes");
         Check(peakBossRounds >= 45, "harder boss sustains pressure: peak " + peakBossRounds + " projectiles");
-        Check(boss.SpawnedMinions >= 32 && maxMinions > 8 && maxMinions <= 18 && minionTypes.Count == 3, "boss releases frequent mixed broods, capped at eighteen living minions");
-        var victim = AEnemy.Live.FirstOrDefault(e => e is BonbonSkirmisher);
-        Check(victim != null, "minions remain independently targetable");
-        victim.damage(100000);
-        yield return null;
-        Check(victim == null, "minions can be destroyed");
+        Check(minionTypes.Count == 0 && boss.HatchSprays > 0, "boss has no minions; its hatches spray bonbons instead");
         float before = boss.health;
         for (int i = 0; i < 16; i++)
         {
@@ -279,7 +273,7 @@ public sealed class CandylandReview : MonoBehaviour
         boss.damage(1000000);
         yield return null;
         yield return null;
-        Check(boss == null && !AEnemy.Live.Any(), "boss death clears every type of surviving minion");
+        Check(boss == null && !AEnemy.Live.Any(), "boss death leaves no enemies behind");
         Clear();
         yield return new WaitForSeconds(2);
         LevelRun.Reset(LevelId.Thunder, 17381);

@@ -5,7 +5,6 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed partial class CandyRegentBoss : DistrictBoss
 {
-    readonly List<DistrictEnemy> brood = new List<DistrictEnemy>();
     float nextBrood = 2.8f, legClock, legDuration, rest;
     int dash;
     Vector3 legStart, legEnd, legControl;
@@ -14,18 +13,10 @@ public sealed partial class CandyRegentBoss : DistrictBoss
         new Vector2(.75f,.30f),new Vector2(.93f,.86f),new Vector2(-.88f,.57f),new Vector2(.15f,.38f),new Vector2(-.32f,.92f)};
     bool arrived;
     Transform[] doors;
-    public int SpawnedMinions
+    // Hatch sprays released so far; the regent has no minions.
+    public int HatchSprays
     {
         get; private set;
-    }
-
-    public int LiveMinions
-    {
-        get
-        {
-            brood.RemoveAll(e => e == null);
-            return brood.Count;
-        }
     }
 
     protected override void Configure()
@@ -82,11 +73,11 @@ public sealed partial class CandyRegentBoss : DistrictBoss
             if (t >= 1)
                 rest = phaseTwo ? .10f + (dash % 3) * .035f : .16f + (dash % 3) * .055f;
         }
-        // Minions hatch in phase one only.
+        // The hatches swell and spray in phase one only.
         if (!phaseTwo && age >= nextBrood)
         {
-            nextBrood = age + (phaseTwo ? 4.8f : 5.8f);
-            StartCoroutine(ReleaseBrood());
+            nextBrood = age + 5.8f;
+            StartCoroutine(HatchSpray());
         }
     }
 
@@ -113,78 +104,34 @@ public sealed partial class CandyRegentBoss : DistrictBoss
         nextBrood = Mathf.Min(nextBrood, age + 1);
     }
 
-    IEnumerator ReleaseBrood()
+    IEnumerator HatchSpray()
     {
-        // Hatch expansion is the warning. Nothing spawns underneath the player's ship.
+        // Hatch expansion is the warning. Each hatch then sprays rows of wiggling
+        // bonbons out and down, mirrored, sweeping a little further every row.
         for (float t = 0; t < .6f; t += Time.deltaTime)
         {
             foreach (var door in doors)
                 door.localScale = Vector3.one * (.24f + .15f * Mathf.Sin(t / .6f * Mathf.PI));
             yield return null;
         }
-        for (int row = 0; row < (phaseTwo ? 4 : 3); row++)
+        HatchSprays++;
+        int bonbons = Dense(7);
+        for (int row = 0; row < 4; row++)
         {
             foreach (int side in new[] { -1, 1 })
             {
-                if (LiveMinions >= (12))
-                    break;
                 var p = Hull.TransformPoint(new Vector3(side * .82f, -.35f, -.2f));
-                if (player != null && Vector2.Distance(p, player.position) < 2.5f)
-                    continue;
-                var kind = row % 3 == 1 ? typeof(WaferDart) : row % 3 == 2 ? typeof(MintSpinner) : typeof(BonbonSkirmisher);
-                var minion = Spawn(kind, p);
-                minion.moneyDropChance = .10f;
-                minion.lifeDropChance = minion.manaDropChance = 0;
-                minion.scoreOnKill = 15;
-                var flight = minion.gameObject.AddComponent<CandyMinionFlight>();
-                flight.side = side;
-                minion.UseMovement(flight);
-                brood.Add(minion);
-                SpawnedMinions++;
+                for (int i = 0; i < bonbons; i++)
+                {
+                    float angle = side * (20 + row * 9 + i * 70f / Mathf.Max(1, bonbons - 1));
+                    Fire<SimpleRound>(p, CombatVisuals.Rotate(Vector2.down, angle), 2.3f + row * .25f, .2f)
+                        .Sway(.35f, .9f);
+                }
             }
-            yield return new WaitForSeconds(.18f);
+            yield return new WaitForSeconds(Rest(.2f));
         }
         foreach (var door in doors)
             door.localScale = Vector3.one * .24f;
-    }
-
-    protected override void Die()
-    {
-        ClearBrood();
-        base.Die();
-    }
-
-    void OnDestroy()
-    {
-        ClearBrood();
-    }
-
-    void ClearBrood()
-    {
-        foreach (var child in brood)
-            if (child != null)
-                Destroy(child.gameObject);
-        brood.Clear();
-    }
-}
-
-public sealed class CandyMinionFlight : PatternMover
-{
-    public int side;
-    protected override void StepPattern(float dt)
-    {
-        if (GameRules.playerDisabled)
-            return;
-        float t = age / 3.8f;
-        if (t >= 1)
-        {
-            GetComponent<AEnemy>().Depart();
-            return;
-        }
-        float u = 1 - t;
-        Vector3 a = origin, b = new Vector3(side * Camera.RightLimit * .82f, origin.y - 1, origin.z), c = new Vector3(-side * Camera.RightLimit * .38f, Camera.DownLimit + 4, origin.z), d = new Vector3(-side * Camera.RightLimit * .7f, Camera.DownLimit - 2, origin.z);
-        transform.position = u * u * u * a + 3 * u * u * t * b + 3 * u * t * t * c + t * t * t * d;
-        SetFiring(t > .24f && t < .72f);
     }
 }
 

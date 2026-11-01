@@ -1,8 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
-// Candy regent: a sugar rush that never stops darting. Brood minions hatch in phase
-// one only, and both phase-one cards keep a candy canopy over the top of the arena.
+// Candy regent: a sugar rush that never stops darting. It has no minions: in phase
+// one its hatches swell and spray wiggling bonbons, and both phase-one cards keep a
+// candy canopy over the top of the arena.
 // Phase one
 //   Taffy Pull: both hatches stretch a line of rounds from slow to fast along one aim,
 //     bending in mirror, so each pull arrives as two curling ribbons.
