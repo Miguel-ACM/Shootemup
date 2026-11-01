@@ -83,7 +83,7 @@ public class NewGame : AMenuElement
     // The menu fades away while the title's tunnel slows to a stop; the hangar then continues from that same view.
     System.Collections.IEnumerator IntoHangar(RunDifficulty difficulty)
     {
-        const float Seconds = 1.1f;
+        const float Seconds = 2.1f;
         menu.Suspended = true;
         var group = menu.GetComponent<CanvasGroup>();
         var panel = menu.transform.parent.GetComponent<Image>();
