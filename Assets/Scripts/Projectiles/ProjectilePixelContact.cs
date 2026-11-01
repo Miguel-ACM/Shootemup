@@ -8,9 +8,9 @@ public static class ProjectilePixelContact
 {
     // Box2D's polygon skin is present even when the authored box radius is zero.
     public const float PolygonSkin = .01f;
-    // Hostile rounds hurt only within the inner 75% of their opaque pixels, measured from the round's centre,
-    // so the coloured rim of a bullet can graze the ship.
-    public const float HitboxScale = .75f;
+    // Hostile rounds hurt only within the inner 60% of their opaque pixels, measured from the round's centre,
+    // so the coloured rim of a bullet can graze the ship, Touhou style.
+    public const float HitboxScale = .6f;
     sealed class Shape
     {
         public Vector2[] local, projected;

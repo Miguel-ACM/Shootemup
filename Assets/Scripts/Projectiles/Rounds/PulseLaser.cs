@@ -136,7 +136,8 @@ public class PulseLaser : CombatRound
         {
             Vector2 delta = player.position - transform.position;
             float along = Vector2.Dot(delta, heading), across = Mathf.Abs(delta.x * heading.y - delta.y * heading.x);
-            if (along >= 0 && along <= length && across < width * power * .5f + .16f)
+            // Like the rounds, a beam hurts only within the inner part of its glow.
+            if (along >= 0 && along <= length && across < width * power * .5f * ProjectilePixelContact.HitboxScale + .1f)
                 player.SendMessage("ReceiveHazardDamage", damage, SendMessageOptions.DontRequireReceiver);
         }
         if (sideShots)
