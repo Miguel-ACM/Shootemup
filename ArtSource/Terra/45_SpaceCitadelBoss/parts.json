@@ -1,6 +1,6 @@
 [
   {
-    "object": "Dish",
+    "object": "Disk",
     "motion": "spin",
     "axis": [
       0,
@@ -9,9 +9,9 @@
     ],
     "pivot": [
       0,
-      1.1,
-      0.18
+      0,
+      0
     ],
-    "speed": 45
+    "speed": 32
   }
 ]
