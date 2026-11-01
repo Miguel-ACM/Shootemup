@@ -5,9 +5,10 @@ using UnityEngine;
 // Phase one (both ships)
 //   Ring Road: the light interceptor circles the heavy hauler and fires arrows
 //     straight out from the hub, winding spiral arms all round it; the hauler covers
-//     its back with mirrored fans fired up and out that ricochet off the ceiling.
+//     its back with mirrored fans fired out sideways that ricochet off the side walls.
 //   Rush Hour: the hauler lays a two-family street grid in front and a second grid
-//     behind it that rebounds off the ceiling; the interceptor fires headlight rays.
+//     thrown at the side walls that rebounds back across; the interceptor fires
+//     headlight rays. Nothing bounces off the top of the screen.
 // Phase two (the survivor, enraged)
 //   Hauler: Cargo Storm, mirrored crates lobbed high that explode all round, with
 //     rear-guard fans and headlights.
@@ -92,13 +93,14 @@ public sealed partial class CityDuoBoss
         }
     }
 
-    // The hauler covers its back: mirrored fans fired up and out that rebound off the ceiling.
+    // The hauler covers its flanks: mirrored fans fired out sideways that ricochet off
+    // the side walls and cross back behind and below it.
     void RearGuard(int n)
     {
         int lanes = Dense(7);
         foreach (int mirror in new[] { -1, 1 })
             for (int i = 0; i < lanes; i++)
-                Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.up, mirror * (20 + i * 11 + (n % 2) * 5)), 3.0f, .2f).Bounce(2);
+                Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.up, mirror * (66 + i * 8 + (n % 2) * 4)), 3.0f, .2f).Bounce(2, false);
     }
 
     // Three mirrored rays, each a line of arrows at falling speeds.
@@ -112,20 +114,21 @@ public sealed partial class CityDuoBoss
     }
 
     // Two mirrored diagonal families in front, and the same grid behind that
-    // rebounds off the ceiling: the diamonds between them are the streets.
+    // is thrown at the side walls and rebounds back across: the diamonds between them
+    // are the streets.
     void Gridlock(int row)
     {
         int lanes = Dense(enraged ? 11 : 9);
         foreach (int family in new[] { -1, 1 })
         {
             var front = CombatVisuals.Rotate(Vector2.down, family * 36);
-            var back = CombatVisuals.Rotate(Vector2.up, family * 36);
+            var back = CombatVisuals.Rotate(Vector2.down, family * 74);
             for (int i = 0; i < lanes; i++)
             {
                 float offset = (i - (lanes - 1) * .5f) * 6.5f + (row % 2) * 3.25f;
                 Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(front, offset), 2.2f, .2f);
                 if (i % 2 == row % 2)
-                    Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(back, offset), 2.2f, .2f).Bounce(1);
+                    Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(back, offset * .5f), 2.2f, .2f).Bounce(1, false);
             }
         }
     }

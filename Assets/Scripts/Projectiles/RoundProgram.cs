@@ -36,11 +36,15 @@ public static class RoundProgram
         return shot;
     }
 
-    // Reflect from the side walls and ceiling a limited number of times.
-    public static T Bounce<T>(this T shot, int walls) where T : CombatRound
+    // Reflect from the side walls, and the ceiling unless told not to, a limited
+    // number of times, on the visible screen border.
+    public static T Bounce<T>(this T shot, int walls, bool ceiling = true) where T : CombatRound
     {
         if (shot != null)
+        {
             shot.bounces = walls;
+            shot.bounceCeiling = ceiling;
+        }
         return shot;
     }
 

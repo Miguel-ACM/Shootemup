@@ -12,7 +12,9 @@ public sealed class RicochetBolt : CombatRound
     {
         base.Tick(dt);
         var p = transform.position;
-        if ((p.x < Camera.LeftLimit + .15f && heading.x < 0) || (p.x > Camera.RightLimit - .15f && heading.x > 0))
+        var border = Border;
+        float reach = BorderReach;
+        if ((p.x < border.xMin + reach && heading.x < 0) || (p.x > border.xMax - reach && heading.x > 0))
         {
             if (wallHits++ >= 1)
             {
@@ -20,7 +22,7 @@ public sealed class RicochetBolt : CombatRound
                 return;
             }
             heading.x = -heading.x;
-            p.x = Mathf.Clamp(p.x, Camera.LeftLimit + .15f, Camera.RightLimit - .15f);
+            p.x = Mathf.Clamp(p.x, border.xMin + reach, border.xMax - reach);
             transform.position = p;
             PSXImpactEffects.Vanish(p, Accent, .3f);
             Orient();

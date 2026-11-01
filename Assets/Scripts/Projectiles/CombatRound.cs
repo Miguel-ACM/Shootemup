@@ -21,6 +21,31 @@ public abstract class CombatRound : AEnemyBullet
     const int DepthSlots = 16384;
     const float DepthStep = .000004f;
     static int launchSequence;
+    static Rect border;
+    static int borderFrame = -1;
+
+    // The visible combat area: what the camera actually shows between the HUD margins.
+    // Bounces and wall runners use it, so rounds turn on the real screen edges rather
+    // than on the gameplay limits a little inside them.
+    public static Rect Border
+    {
+        get
+        {
+            if (borderFrame == Time.frameCount)
+                return border;
+            borderFrame = Time.frameCount;
+            var view = UnityEngine.Camera.main;
+            if (view == null || !view.orthographic)
+                border = Rect.MinMaxRect(Camera.LeftLimit, Camera.DownLimit, Camera.RightLimit, Camera.UpLimit);
+            else
+            {
+                float h = view.orthographicSize, w = h * 405f / 720f;
+                var c = view.transform.position;
+                border = new Rect(c.x - w, c.y - h, w * 2, h * 2);
+            }
+            return border;
+        }
+    }
     public static int CreatedCount
     {
         get; private set;
@@ -290,6 +315,7 @@ public abstract class CombatRound : AEnemyBullet
     internal bool resumed;
     internal float fadeAt;
     internal int bounces;
+    internal bool bounceCeiling;
     internal Vector2 gravity, drift, well;
     internal float pull;
     internal Transform sink;
@@ -317,6 +343,7 @@ public abstract class CombatRound : AEnemyBullet
         resumeTurn = Turn.Keep;
         resumed = false;
         bounces = 0;
+        bounceCeiling = true;
         gravity = drift = travel = well = Vector2.zero;
         pull = 0;
         sink = null;
@@ -423,11 +450,12 @@ public abstract class CombatRound : AEnemyBullet
         var p = transform.position;
         if (wallDirection != 0)
         {
-            const float inset = .3f;
-            if (p.x <= Camera.LeftLimit + inset || p.x >= Camera.RightLimit - inset || p.y >= Camera.UpLimit - inset || p.y <= Camera.DownLimit + inset)
+            const float inset = .15f;
+            var edge = Border;
+            if (p.x <= edge.xMin + inset || p.x >= edge.xMax - inset || p.y >= edge.yMax - inset || p.y <= edge.yMin + inset)
             {
                 // 0 left, 1 top, 2 right, 3 bottom: clockwise order around the arena.
-                float left = p.x - Camera.LeftLimit, right = Camera.RightLimit - p.x, top = Camera.UpLimit - p.y, bottom = p.y - Camera.DownLimit;
+                float left = p.x - edge.xMin, right = edge.xMax - p.x, top = edge.yMax - p.y, bottom = p.y - edge.yMin;
                 float least = Mathf.Min(Mathf.Min(left, right), Mathf.Min(top, bottom));
                 wallSide = least == left ? 0 : least == top ? 1 : least == right ? 2 : 3;
                 wallRunStart = age;
@@ -437,8 +465,11 @@ public abstract class CombatRound : AEnemyBullet
         }
         if (bounces <= 0)
             return;
-        bool side = p.x < Camera.LeftLimit + .15f && heading.x < 0 || p.x > Camera.RightLimit - .15f && heading.x > 0;
-        bool ceiling = p.y > Camera.UpLimit - .15f && heading.y > 0;
+        // Turn as the round's edge meets the visible border.
+        var bounds = Border;
+        float reach = BorderReach;
+        bool side = p.x < bounds.xMin + reach && heading.x < 0 || p.x > bounds.xMax - reach && heading.x > 0;
+        bool ceiling = bounceCeiling && p.y > bounds.yMax - reach && heading.y > 0;
         if (!side && !ceiling)
             return;
         bounces--;
@@ -446,15 +477,20 @@ public abstract class CombatRound : AEnemyBullet
             heading.x = -heading.x;
         if (ceiling)
             heading.y = -heading.y;
-        p.x = Mathf.Clamp(p.x, Camera.LeftLimit + .15f, Camera.RightLimit - .15f);
+        p.x = Mathf.Clamp(p.x, bounds.xMin + reach, bounds.xMax - reach);
         transform.position = p;
         needsOrientation = true;
     }
 
+    // Half the round's visible size: how far its centre sits from a wall it touches.
+    public float BorderReach => visual != null ? Mathf.Min(visual.bounds.extents.x, visual.bounds.extents.y) : .1f;
+
     void RunWall(float dt)
     {
-        const float inset = .3f;
-        float xMin = Camera.LeftLimit + inset, xMax = Camera.RightLimit - inset, yMin = Camera.DownLimit + inset, yMax = Camera.UpLimit - inset;
+        // Runners hug the visible border, their edge on the screen edge.
+        var edge = Border;
+        float inset = BorderReach;
+        float xMin = edge.xMin + inset, xMax = edge.xMax - inset, yMin = edge.yMin + inset, yMax = edge.yMax - inset;
         var p = (Vector2)transform.position;
         float travel = speed * dt;
         for (int guard = 0; guard < 3 && travel > 0; guard++)
