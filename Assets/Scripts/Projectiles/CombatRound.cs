@@ -13,6 +13,12 @@ public abstract class CombatRound : AEnemyBullet
     static readonly Dictionary<Type, Stack<CombatRound>> pools = new Dictionary<Type, Stack<CombatRound>>();
     static int pooled;
     const int PoolBudget = 1100;
+    // Older rounds always draw above rounds launched after them: each launch, reused
+    // or new, sits a hair further from the camera than the previous one. The sequence
+    // restarts whenever the arena is clear, or after a long unbroken stream.
+    const int DepthSlots = 16384;
+    const float DepthStep = .000004f;
+    static int launchSequence;
     public static int CreatedCount
     {
         get; private set;
@@ -46,7 +52,7 @@ public abstract class CombatRound : AEnemyBullet
     {
         pools.Clear();
         Live.Clear();
-        pooled = CreatedCount = 0;
+        pooled = CreatedCount = launchSequence = 0;
         SceneManager.sceneUnloaded -= PrunePools;
         SceneManager.sceneUnloaded += PrunePools;
     }
@@ -90,7 +96,9 @@ public abstract class CombatRound : AEnemyBullet
         if (!(shot is PulseLaser))
             PolarityEngine.Assign(shot.tint);
         shot.needsOrientation = true;
-        shot.transform.SetPositionAndRotation(new Vector3(p.x, p.y, -.5f), Quaternion.identity);
+        if (Live.Count == 0 || launchSequence >= DepthSlots)
+            launchSequence = 0;
+        shot.transform.SetPositionAndRotation(new Vector3(p.x, p.y, -.5f + launchSequence++ * DepthStep), Quaternion.identity);
         shot.transform.localScale = Vector3.one * radius * 2;
         shot.visual.sprite = HostileProjectileArt.Sprite(typeof(T), radius >= .25f);
         shot.visual.color = Color.white;
