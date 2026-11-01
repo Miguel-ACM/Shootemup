@@ -596,6 +596,8 @@ public sealed class HangarHub : MonoBehaviour
     IEnumerator Launch()
     {
         launching = true;
+        // The hangar track fades away as the ship is drawn up; Plains' music starts behind the clouds.
+        StartCoroutine(BGMManager.FadeOutSong(2.5f));
         // The run's content starts loading now, at low priority, and waits ready behind the clouds.
         Application.backgroundLoadingPriority = ThreadPriority.Low;
         var runLoad = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(RunScene, UnityEngine.SceneManagement.LoadSceneMode.Additive);
