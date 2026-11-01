@@ -79,7 +79,7 @@ public sealed class InputMigrationProbe : MonoBehaviour
         Check(!CloudTransition.Busy, "Clicking outside the menu accepted the selected entry");
         InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.DownArrow));
         yield return new WaitForSecondsRealtime(.06f);
-        Check(menu.CurrentElement is OptionRow, "Keyboard menu navigation failed");
+        Check(menu.CurrentElement is SettingsEntry, "Keyboard menu navigation failed");
         InputSystem.QueueStateEvent(keyboard, new KeyboardState());
         yield return new WaitForSecondsRealtime(.06f);
         InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.UpArrow));
@@ -88,7 +88,7 @@ public sealed class InputMigrationProbe : MonoBehaviour
         InputSystem.QueueStateEvent(keyboard, new KeyboardState());
         InputSystem.QueueStateEvent(gamepad, new GamepadState().WithButton(GamepadButton.DpadDown));
         yield return new WaitForSecondsRealtime(.06f);
-        Check(menu.CurrentElement is OptionRow, "Gamepad menu navigation failed");
+        Check(menu.CurrentElement is SettingsEntry, "Gamepad menu navigation failed");
         InputSystem.QueueStateEvent(gamepad, new GamepadState());
         yield return new WaitForSecondsRealtime(.06f);
         InputSystem.QueueStateEvent(gamepad, new GamepadState().WithButton(GamepadButton.DpadUp));
