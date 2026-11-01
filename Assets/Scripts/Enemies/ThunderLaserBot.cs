@@ -10,6 +10,13 @@ public sealed class ThunderLaserBot : MonoBehaviour
     Vector2 home, aim;
     float swing, swingRate;
     public bool Powered { get; set; } = true;
+    // A sweeping drone keeps its beam alive while it glides to each new station.
+    public bool FiresWhileMoving
+    {
+        get; set;
+    }
+
+    public bool Arrived => Vector2.Distance(transform.position, home) < .05f;
     DistrictBoss owner;
     bool owned;
     public bool EmissionAllowed => Powered && (!owned || owner != null && owner.EmissionAllowed);
@@ -108,10 +115,11 @@ public sealed class ThunderLaserBot : MonoBehaviour
                 Destroy(gameObject);
             return;
         }
-        bool arrived = Vector2.Distance(transform.position, home) < .05f;
-        Vector2 p = Vector2.MoveTowards(transform.position, home, dt * (arrived ? 30 : 7));
+        bool arrived = Arrived;
+        Vector2 p = Vector2.MoveTowards(transform.position, home, dt * (arrived || FiresWhileMoving ? 30 : 7));
         transform.position = new Vector3(p.x, p.y, -.4f);
-        bool off = !EmissionAllowed || !arrived;
+        bool settled = arrived || FiresWhileMoving;
+        bool off = !EmissionAllowed || !settled;
         if (off && !open)
         {
             open = true;
@@ -121,7 +129,7 @@ public sealed class ThunderLaserBot : MonoBehaviour
         }
         else if (!off && open)
             open = false;
-        if (!open && arrived && age >= armAt && (beam == null || !beam.IsAttachedTo(transform)))
+        if (!open && settled && age >= armAt && (beam == null || !beam.IsAttachedTo(transform)))
             Fire();
         // Facing follows the live beam; a shut-down drone points its emitter at the sky.
         float target = open ? 180 : beam != null ? Vector2.SignedAngle(Vector2.down, beam.Heading) : facing;

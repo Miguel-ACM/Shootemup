@@ -9,7 +9,11 @@ using UnityEngine;
 // along the top firing down and six down the left wall firing across, with one open
 // column and one open row whose drones point at the sky. The groups take turns to
 // slide half a cell while every beam is dark, the open lanes move on, and every beam
-// charges where it now stands before it fires again.
+// charges where it now stands before it fires again. Every drone waits until the
+// whole lattice has arrived, so all beams charge and fire together.
+// Hard phase three: the lattice never goes dark. The top drones sweep across a full
+// cell and back while firing, the wall drones sweep up and down, and the open lanes
+// move on every few seconds, so no column of the screen stays safe.
 // The boss fires mirrored arrow lace and chevrons, and in phase two zigzag lightning.
 public sealed partial class ThunderLanceBoss
 {
@@ -101,11 +105,18 @@ public sealed partial class ThunderLanceBoss
     // every beam charges visibly where it now stands before it fires again.
     IEnumerator MarchGrid()
     {
+        if (phaseThree)
+        {
+            yield return SweepGrid();
+            yield break;
+        }
         float shiftX = 0, shiftY = 0;
         int openColumn = 1, openRow = 2;
         for (int turn = 0; ; turn++)
         {
-            float hold = phaseThree ? 1.7f : Difficulty.Hard ? 2.6f : 3.3f;
+            float hold = Difficulty.Hard ? 2.6f : 3.3f;
+            // Wait for the whole lattice before any beam powers, so they charge in step.
+            yield return Settle();
             for (int i = 0; i < drones.Count; i++)
                 if (drones[i] != null)
                     drones[i].Powered = i < Columns ? i != openColumn : i - Columns != openRow;
@@ -130,6 +141,60 @@ public sealed partial class ThunderLanceBoss
             yield return Wait(.55f);
         }
     }
+
+    IEnumerator Settle()
+    {
+        for (float t = 0; t < 3; t += Time.deltaTime)
+        {
+            bool all = true;
+            foreach (var drone in drones)
+                if (drone != null && !drone.Arrived)
+                    all = false;
+            if (all)
+                yield break;
+            yield return null;
+        }
+    }
+
+    // Superstorm's lattice: columns sweep half a cell either side of their places and
+    // rows sweep up and down, all while firing; one column and one row stay open and
+    // move on every 2.2 s, recharging visibly where they come back on.
+    IEnumerator SweepGrid()
+    {
+        for (int i = 0; i < drones.Count; i++)
+            if (drones[i] != null)
+                drones[i].MoveTo(i < Columns ? SweepColumn(i, -ColumnSpacing * .5f) : SweepRow(i - Columns, -RowSpacing * .5f));
+        yield return Settle();
+        foreach (var drone in drones)
+            if (drone != null)
+                drone.FiresWhileMoving = true;
+        int openColumn = 1, openRow = 2;
+        float clock = 0, nextSwap = 2.2f;
+        while (true)
+        {
+            if (!Holding)
+                clock += Time.deltaTime * LevelRun.EnemyTempoScale;
+            float sx = Mathf.PingPong(clock * .7f, ColumnSpacing) - ColumnSpacing * .5f;
+            float sy = Mathf.PingPong(clock * .45f, RowSpacing) - RowSpacing * .5f;
+            if (clock >= nextSwap)
+            {
+                nextSwap += 2.2f;
+                openColumn = (openColumn + 1) % Columns;
+                openRow = (openRow + 2) % Rows;
+            }
+            for (int i = 0; i < drones.Count; i++)
+            {
+                if (drones[i] == null)
+                    continue;
+                drones[i].MoveTo(i < Columns ? SweepColumn(i, sx) : SweepRow(i - Columns, sy));
+                drones[i].Powered = i < Columns ? i != openColumn : i - Columns != openRow;
+            }
+            yield return null;
+        }
+    }
+
+    static Vector2 SweepColumn(int i, float shift) => new Vector2(Camera.LeftLimit + (i + .5f) * ColumnSpacing + shift, Camera.UpLimit - .9f);
+    static Vector2 SweepRow(int j, float shift) => new Vector2(Camera.LeftLimit + .35f, RowTop - .25f - j * RowSpacing - shift);
 
     // A full ring of zigzag bolts from the front emitter.
     void StormRing(int n)
