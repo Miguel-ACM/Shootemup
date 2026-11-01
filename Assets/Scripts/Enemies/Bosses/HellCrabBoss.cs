@@ -37,6 +37,8 @@ public sealed partial class HellCrabBoss : DistrictBoss
             eyes[i] = HellCrabEye.Create(this, Hull, new Vector3(side * .67f, -.52f, -.96f), health * .5f);
             claws[i] = Model("Jointed side pincer", IndustrialMeshFactory.CombatHull(54), Hull);
             claws[i].localScale = Vector3.one * 1.75f;
+            // The Terra pincer's moving jaw is a separate animated part; without it each claw lost its jaw.
+            IndustrialMeshFactory.AttachTerraParts("Hull54", claws[i], CombatMaterials.Fleet);
             firingCue.Register(claws[i], new Vector3(0, -.32f, -.4f));
             firingCue.Register(eyes[i].transform, Vector3.zero);
             for (int segment = 0; segment < ArmSections; segment++)

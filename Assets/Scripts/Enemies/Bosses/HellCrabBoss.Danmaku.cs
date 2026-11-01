@@ -3,15 +3,15 @@ using UnityEngine;
 
 // Hell crab: the final exam, flown as spell cards. Every round leaves a pincer, an
 // eye or the mouth, and the top of the arena is never safe.
+// The claws already sweep in from the sides, so every card layers at most two ideas.
 // Phase one
 //   Pincer Scissors: both pincers stream arrows whose aim lines cross over the
-//     player and close, answered by widening arrow chevrons from the mouth and a
-//     brimstone canopy: mouth arrows thrown up that rebound off the ceiling.
+//     player and close, answered by widening arrow chevrons from the mouth.
 //   Soul Procession: the eyes loose mirrored arcs of slow souls that stop, stare and
-//     dart at the player one by one, while braided arrow threads weave down and the
-//     canopy keeps the ceiling covered.
+//     dart at the player one by one, under a brimstone canopy: mouth arrows thrown
+//     up that rebound off the ceiling.
 // Phase two (one eye lost speeds up the claws)
-//   Pincer Inferno: scissors from both pincers twice as often, with chevrons and canopy.
+//   Pincer Inferno: scissors from both pincers more often, alternating with the canopy.
 //   Inferno Lace: a three-arm mirrored lace pours from the two pincers themselves,
 //     following them as they sweep, while the surviving eye's souls stare.
 public sealed partial class HellCrabBoss
@@ -42,36 +42,35 @@ public sealed partial class HellCrabBoss
             {
                 yield return Every(8, 1.6f, n =>
                 {
-                    Phrase(Scissors(n % 2 == 0 ? 1 : -1));
-                    if (n % 2 == 1)
-                        Phrase(Chevrons(Hull, Mouth, Dense(6), 4.4f, .11f));
+                    if (n % 2 == 0)
+                        Phrase(Scissors(n % 4 == 0 ? 1 : -1));
                     else
-                        Canopy(n);
+                        Phrase(Chevrons(Hull, Mouth, Dense(6), 4.4f, .11f));
                 });
                 yield return Wait(.8f);
-                Phrase(BraidedThreads(90));
                 yield return Every(8, 1.6f, n =>
                 {
-                    for (int e = 0; e < 2; e++)
-                        SoulSnipe(e);
-                    Canopy(n);
+                    if (n % 2 == 0)
+                        for (int e = 0; e < 2; e++)
+                            SoulSnipe(e);
+                    else
+                        Canopy(n);
                 });
                 yield return Wait(.8f);
             }
             else
             {
-                yield return Every(7, .9f, n =>
+                yield return Every(7, 1.1f, n =>
                 {
-                    Phrase(Scissors(n % 2 == 0 ? 1 : -1));
-                    if (n % 2 == 1)
-                        Phrase(Chevrons(Hull, Mouth, Dense(7), 4.6f, .1f));
+                    if (n % 3 != 2)
+                        Phrase(Scissors(n % 2 == 0 ? 1 : -1));
                     else
                         Canopy(n);
                 });
-                yield return Wait(.7f);
-                Phrase(Every(8, 2f, n => SoulSnipe(BurningEye())));
-                yield return MirrorLace(claws[0], Pincer, claws[1], Pincer, Dense(110), 3, 75, 18, 3.6f, .065f);
-                yield return Wait(.7f);
+                yield return Wait(.8f);
+                Phrase(Every(8, 2.6f, n => SoulSnipe(BurningEye())));
+                yield return MirrorLace(claws[0], Pincer, claws[1], Pincer, Dense(90), 3, 75, 18, 3.6f, .07f);
+                yield return Wait(.8f);
             }
         }
     }
@@ -122,35 +121,18 @@ public sealed partial class HellCrabBoss
         }
     }
 
-    // Two eyes stream in antiphase: their threads braid around each other on the way down.
-    IEnumerator BraidedThreads(int beads)
-    {
-        beads = Dense(beads);
-        for (int i = 0; i < beads; i++)
-        {
-            for (int e = 0; e < 2; e++)
-                if (eyes[e] != null && eyes[e].health > 0)
-                {
-                    var p = eyes[e].transform.position;
-                    Fire<NeedleRound>(p, CombatVisuals.Rotate(Vector2.down, (e == 0 ? 1 : -1) * 9), 2.8f, .19f)
-                        .Sway(e == 0 ? .7f : -.7f, .7f);
-                }
-            yield return Wait(Rest(.085f));
-        }
-    }
-
-    // Hard final phase, Inferno: a three-arm lace from the moving pincers, scissors
-    // closing through it, the ceiling canopy and the surviving eye's staring souls.
+    // Hard final phase, Inferno: a three-arm lace from the moving pincers with one
+    // answer at a time through it, scissors closing, then the surviving eye's souls.
     IEnumerator FinalSpell()
     {
-        Phrase(Every(9, 1.0f, n =>
+        Phrase(Every(9, 1.4f, n =>
         {
-            Phrase(Scissors(n % 2 == 0 ? 1 : -1));
-            Canopy(n);
-            if (n % 2 == 1)
+            if (n % 2 == 0)
+                Phrase(Scissors(n % 4 == 0 ? 1 : -1));
+            else
                 SoulSnipe(BurningEye());
         }));
-        yield return MirrorLace(claws[0], Pincer, claws[1], Pincer, Dense(130), 3, 80, 18, 3.8f, .065f);
-        yield return Wait(.6f);
+        yield return MirrorLace(claws[0], Pincer, claws[1], Pincer, Dense(110), 3, 80, 18, 3.8f, .065f);
+        yield return Wait(.8f);
     }
 }
