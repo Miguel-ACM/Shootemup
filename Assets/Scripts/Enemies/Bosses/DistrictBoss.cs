@@ -33,7 +33,10 @@ public abstract class DistrictBoss : DistrictEnemy
     protected virtual bool RepositionsOnPhase => true;
     protected virtual bool PatternEmissionAllowed => true;
     public bool EmissionAllowed => health > 0 && !PhaseTransitioning && !GameRules.playerDisabled && !WorldTimeStop.Frozen && PatternEmissionAllowed;
-    protected override bool CanEmit => EmissionAllowed;
+    // The pattern gate only holds authored card phrases. A boss's own scripted fire
+    // outside them (the submarine's eruption crowns, charge wake and depth charges)
+    // must still leave its hull.
+    protected override bool CanEmit => health > 0 && !PhaseTransitioning && !GameRules.playerDisabled && !WorldTimeStop.Frozen;
     public virtual bool UsesHealthBar => true;
     public virtual float DisplayFraction => HealthFraction;
     public float HealthFraction => health / Mathf.Max(1, initialHealth);
