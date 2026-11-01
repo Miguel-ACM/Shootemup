@@ -22,6 +22,8 @@ public sealed class PSXShipVisual : MonoBehaviour
     {
         if (model != null)
             model.localScale *= factor;
+        if (cockpitFrame != null)
+            cockpitFrame.localScale *= factor;
         if (hitboxRenderers != null)
             foreach (var marker in hitboxRenderers)
                 if (marker != null)
@@ -110,9 +112,9 @@ public sealed class PSXShipVisual : MonoBehaviour
         return hull;
     }
 
-    // Every ship wears a small, shining round cockpit exactly over its hitbox, so the point that can be hit is always clear.
-    // On the flown ship it sits on the banking axis (z = 0), so banking and rolls never carry it off the hitbox,
-    // and it is drawn above hostile rounds.
+    // Every ship wears a small, shining cockpit exactly over its hitbox, so the point that can be hit is always clear.
+    // On the flown ship it rides on the ship root above the hull, not on the banking model: banks and rolls never
+    // carry it off the hitbox, and the hull (which shares the foreground depth) can never cover it.
     static readonly Vector2 CockpitCentre = new Vector2(0, .08f);
     const float CockpitRadius = .045f;
     Transform cockpitFrame;
@@ -124,12 +126,7 @@ public sealed class PSXShipVisual : MonoBehaviour
         if (cockpitFrame == null)
         {
             cockpitFrame = new GameObject("Cockpit frame").transform;
-            cockpitFrame.SetParent(model, false);
-            var saved = model.localRotation;
-            model.localRotation = RestRotation;
-            cockpitFrame.SetPositionAndRotation(transform.position, transform.rotation);
-            cockpitFrame.localScale = Vector3.one * (transform.lossyScale.x / model.lossyScale.x);
-            model.localRotation = saved;
+            cockpitFrame.SetParent(transform, false);
         }
         if (cockpit != null)
             DestroyCockpit(cockpit);
@@ -185,7 +182,7 @@ public sealed class PSXShipVisual : MonoBehaviour
         mesh.RecalculateNormals();
         var go = new GameObject("Cockpit");
         go.transform.SetParent(parent, false);
-        go.transform.localPosition = new Vector3(CockpitCentre.x, CockpitCentre.y, player ? 0 : -.12f);
+        go.transform.localPosition = new Vector3(CockpitCentre.x, CockpitCentre.y, player ? -.2f : -.12f);
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var renderer = go.AddComponent<MeshRenderer>();
         var material = new Material(CombatMaterials.Fleet) { name = "Shining cockpit", mainTexture = palette };
@@ -216,7 +213,7 @@ public sealed class PSXShipVisual : MonoBehaviour
                 }
             glowTexture.Apply();
             glowQuad = new Mesh { name = "Cockpit glow quad" };
-            float r = CockpitRadius * 2.6f;
+            float r = CockpitRadius * 1.9f;
             glowQuad.vertices = new[] { new Vector3(-r, -r), new Vector3(-r, r), new Vector3(r, r), new Vector3(r, -r) };
             glowQuad.uv = new[] { Vector2.zero, Vector2.up, Vector2.one, Vector2.right };
             glowQuad.triangles = new[] { 0, 1, 2, 0, 2, 3 };
