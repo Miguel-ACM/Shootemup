@@ -45,7 +45,8 @@ public sealed partial class FieldsBomberBoss
     IEnumerator WingtipCrossfire()
     {
         yield return Charge(Hull, WeaponPort(0), .5f);
-        yield return Every(7, .1f, n =>
+        // The triple streams run for 3.5 s (was 7), so the card does not drag.
+        yield return Every(3.5f, .1f, n =>
         {
             for (int side = 0; side < 2; side++)
             {
