@@ -1,13 +1,14 @@
 using UnityEngine;
 
-// A pact shows its boon in gold and its curse in red on the item card.
+// A pact shows its boon in gold above its curse in red on the item card.
 public abstract class APactItem : AItem
 {
     const string BoonColor = "#F2C35A", CurseColor = "#FF5A5A";
 
     protected void SetPact(string name, string boon, string curse)
     {
-        SetData(name, "<color=" + BoonColor + ">" + boon + "</color>", "<color=" + CurseColor + ">" + curse + "</color>", ItemType.passive);
+        // Both halves go in the description: the item card hides the flavour line.
+        SetData(name, "", "<color=" + BoonColor + ">" + boon + "</color>\n<color=" + CurseColor + ">" + curse + "</color>", ItemType.passive);
         SetRarity(PactPool.Rarity);
     }
 
