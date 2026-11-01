@@ -197,6 +197,8 @@ public sealed class HangarHub : MonoBehaviour
                 {
                     renderer.sortingLayerName = "Player";
                     renderer.sortingOrder = renderer.name == "Cockpit" ? -1 : -2;
+                    // Only the flown ship is redrawn over the labels; parked ones stay in the scene, under the black margins.
+                    renderer.gameObject.layer = 0;
                 }
                 bay.display = display.transform;
             }
