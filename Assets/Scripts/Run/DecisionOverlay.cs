@@ -15,7 +15,6 @@ public sealed class DecisionOverlay : MonoBehaviour
     float age, dismissAge;
     const float EnterSeconds = .3f, DismissSeconds = .3f, Slide = 14;
     TMP_FontAsset font;
-    Canvas canvas;
     readonly List<(AItem item, RectTransform plate, TextMeshProUGUI name, TextMeshProUGUI price, TextMeshProUGUI kind, CanvasGroup fade)> offers = new List<(AItem, RectTransform, TextMeshProUGUI, TextMeshProUGUI, TextMeshProUGUI, CanvasGroup)>();
     public void Add(AItem item)
     {
@@ -80,39 +79,28 @@ public sealed class DecisionOverlay : MonoBehaviour
             if (!show)
                 continue;
             offer.fade.alpha = Mathf.MoveTowards(offer.fade.alpha, 1, Time.deltaTime * 6);
-            var screen = camera.WorldToScreenPoint(offer.item.transform.position);
-            RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, screen, canvas.worldCamera, out var point);
+            // The camera renders into the low-resolution scene texture, so go through the viewport.
+            var viewport = camera.WorldToViewportPoint(offer.item.transform.position);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, new Vector2(viewport.x * Screen.width, viewport.y * Screen.height), null, out var point);
             offer.plate.anchoredPosition = new Vector2(Mathf.Clamp(point.x, -160, 160), Mathf.Clamp(point.y + 46, -260, 320));
         }
     }
 
     /// <summary>
-    /// Decision labels live in the scene, just behind the ships, instead of over the whole screen: ships always draw
-    /// above item names, prices and coin counters.
+    /// Labels stay crisp above the pixel filter; while they are up, the player's ship is drawn over them again.
     /// </summary>
-    public static void PlaceUnderShips(Canvas target)
+    public static void PlaceUnderShips(Canvas target, int order)
     {
-        var camera = UnityEngine.Camera.main;
-        if (camera == null)
-        {
-            target.renderMode = RenderMode.ScreenSpaceOverlay;
-            target.sortingOrder = 65;
-            return;
-        }
-        var player = GameObject.FindGameObjectWithTag("Player");
-        float depth = (player != null ? player.transform.position.z : 20) - camera.transform.position.z;
-        target.renderMode = RenderMode.ScreenSpaceCamera;
-        target.worldCamera = camera;
-        target.planeDistance = depth + 1.5f;
-        target.sortingLayerName = "Player";
-        target.sortingOrder = -20;
+        target.renderMode = RenderMode.ScreenSpaceOverlay;
+        target.sortingOrder = order;
+        target.gameObject.AddComponent<ShipsOverLabels>();
     }
 
     public void Build(TMP_FontAsset face, bool allowSkip = true)
     {
         font = face;
-        canvas = gameObject.AddComponent<Canvas>();
-        PlaceUnderShips(canvas);
+        var canvas = gameObject.AddComponent<Canvas>();
+        PlaceUnderShips(canvas, 65);
         fade = gameObject.AddComponent<CanvasGroup>();
         fade.alpha = 0;
         fade.interactable = false;
@@ -203,4 +191,11 @@ public sealed class DecisionOverlay : MonoBehaviour
         text.rectTransform.sizeDelta = ((RectTransform)parent).sizeDelta - new Vector2(8, 0);
         return text;
     }
+}
+
+/// <summary>Keeps the ship-over-labels pass running while this label canvas is shown.</summary>
+public sealed class ShipsOverLabels : MonoBehaviour
+{
+    void OnEnable() => PSXPresentation.LabelsShown++;
+    void OnDisable() => PSXPresentation.LabelsShown--;
 }

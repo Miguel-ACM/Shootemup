@@ -23,11 +23,13 @@ Shader "Shootemup/PSX Composite"
         _ClearFlash("Full clear flash",Range(0,1))=0
         _ClearSweep("Full clear sweep height",Float)=-1
         _ClearTint("Full clear tint",Color)=(1,1,1,1)
+        _Cutout("Keep the scene's alpha (ships redrawn over labels)",Float)=0
     }
     SubShader
     {
         Tags { "Queue"="Overlay" "RenderType"="Transparent" "IgnoreProjector"="True" }
         Cull Off ZWrite Off ZTest Always
+        Blend SrcAlpha OneMinusSrcAlpha
         Pass
         {
             CGPROGRAM
@@ -37,7 +39,7 @@ Shader "Shootemup/PSX Composite"
             #include "UnityCG.cginc"
             sampler2D _MainTex,_GlowTex;
             float4 _MainTex_TexelSize, _Color, _ClearTint;
-            float _Dither, _ColorSteps, _Soften,_GlowStrength,_FilterEnabled,_Underwater,_TimeStop,_ClearFlash,_ClearSweep;
+            float _Dither, _ColorSteps, _Soften,_GlowStrength,_FilterEnabled,_Underwater,_TimeStop,_ClearFlash,_ClearSweep,_Cutout;
             struct Input { float4 vertex:POSITION; float2 uv:TEXCOORD0; float4 color:COLOR; };
             struct Output { float4 position:SV_POSITION; float2 uv:TEXCOORD0; float4 color:COLOR; };
             Output vert(Input i) { Output o; o.position=UnityObjectToClipPos(i.vertex); o.uv=i.uv; o.color=i.color*_Color; return o; }
@@ -78,7 +80,9 @@ Shader "Shootemup/PSX Composite"
                 float above=i.uv.y-_ClearSweep;
                 float band=_ClearSweep<-.5?0:exp(-above*above*900)+(above<0?.18*exp(above*7):0);
                 color+=_ClearTint.rgb*band*.6;
-                return half4(color,1)*i.color;
+                // The ship pass is drawn over the labels: only its covered pixels are opaque.
+                float alpha=lerp(1,step(.5,tex2D(_MainTex,uv).a),_Cutout);
+                return half4(color,alpha)*i.color;
             }
             ENDCG
         }

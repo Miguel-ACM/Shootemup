@@ -21,6 +21,13 @@ public sealed class PSXPresentation : MonoBehaviour
     int width, height;
     bool initialized;
     float timeStopTint;
+    // Item names, prices and the hangar wallet stay crisp above the filter; while any are up, the player's ship
+    // is rendered once more on its own and drawn, filtered the same way, over them.
+    public static int LabelsShown;
+    UnityEngine.Camera shipCamera;
+    RenderTexture shipPixels;
+    RawImage shipImage;
+    Material shipComposite;
     public RenderTexture SceneTexture => pixels;
     public Material CompositeMaterial => composite;
 
@@ -73,6 +80,35 @@ public sealed class PSXPresentation : MonoBehaviour
         rect.anchorMin = Vector2.zero;
         rect.anchorMax = Vector2.one;
         rect.offsetMin = rect.offsetMax = Vector2.zero;
+        var shipCameraObject = new GameObject("PSX ships over labels");
+        shipCameraObject.transform.SetParent(transform, false);
+        shipCamera = shipCameraObject.AddComponent<UnityEngine.Camera>();
+        shipCamera.CopyFrom(source);
+        shipCamera.cullingMask = LayerMask.GetMask("Player");
+        shipCamera.clearFlags = CameraClearFlags.SolidColor;
+        shipCamera.backgroundColor = Color.clear;
+        shipCamera.depth = source.depth + 1;
+        shipCamera.GetUniversalAdditionalCameraData().renderPostProcessing = false;
+        shipCamera.enabled = false;
+        shipComposite = new Material(material) { name = "PSX ships over labels" };
+        shipComposite.SetFloat("_Cutout", 1);
+        shipComposite.SetFloat("_GlowStrength", 0);
+        var shipCanvasObject = new GameObject("PSX ships over labels", typeof(RectTransform), typeof(Canvas));
+        shipCanvasObject.transform.SetParent(transform, false);
+        var shipCanvas = shipCanvasObject.GetComponent<Canvas>();
+        shipCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        // Just above the labels (64-65), below every menu and curtain.
+        shipCanvas.sortingOrder = 66;
+        var shipDisplay = new GameObject("Ships", typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
+        shipDisplay.transform.SetParent(shipCanvasObject.transform, false);
+        shipImage = shipDisplay.GetComponent<RawImage>();
+        shipImage.raycastTarget = false;
+        shipImage.material = shipComposite;
+        shipImage.enabled = false;
+        var shipRect = shipDisplay.GetComponent<RectTransform>();
+        shipRect.anchorMin = Vector2.zero;
+        shipRect.anchorMax = Vector2.one;
+        shipRect.offsetMin = shipRect.offsetMax = Vector2.zero;
         initialized = true;
         Resize();
         RenderPipelineManager.endCameraRendering += AfterCamera;
@@ -97,6 +133,16 @@ public sealed class PSXPresentation : MonoBehaviour
         pixels.Create();
         source.targetTexture = pixels;
         image.texture = pixels;
+        if (shipPixels != null)
+        {
+            shipPixels.Release();
+            Destroy(shipPixels);
+        }
+        shipPixels = new RenderTexture(w, h, 24, RenderTextureFormat.ARGBHalf) { filterMode = FilterMode.Point, name = "PSX ships over labels", antiAliasing = 1 };
+        shipPixels.Create();
+        shipCamera.targetTexture = shipPixels;
+        shipImage.texture = shipPixels;
+        shipComposite.SetFloat("_FilterEnabled", filterEnabled ? 1 : 0);
         glow = new ProjectileGlow(w, h);
         composite.SetTexture("_GlowTex", glow.Texture);
         composite.SetFloat("_FilterEnabled", filterEnabled ? 1 : 0);
@@ -126,6 +172,17 @@ public sealed class PSXPresentation : MonoBehaviour
             GameOptions.SetPsxFilter(!filterEnabled);
         if (width != Screen.width || height != Screen.height)
             Resize();
+        bool ships = LabelsShown > 0;
+        shipCamera.enabled = shipImage.enabled = ships;
+        if (ships)
+        {
+            shipCamera.orthographic = source.orthographic;
+            shipCamera.orthographicSize = source.orthographicSize;
+            shipCamera.fieldOfView = source.fieldOfView;
+            shipCamera.nearClipPlane = source.nearClipPlane;
+            shipCamera.farClipPlane = source.farClipPlane;
+            shipComposite.SetFloat("_Underwater", composite.GetFloat("_Underwater"));
+        }
     }
 
     public void SetFilter(bool enabled)
@@ -150,7 +207,14 @@ public sealed class PSXPresentation : MonoBehaviour
             pixels.Release();
             Destroy(pixels);
         }
+        if (shipPixels != null)
+        {
+            shipPixels.Release();
+            Destroy(shipPixels);
+        }
         if (composite != null)
             Destroy(composite);
+        if (shipComposite != null)
+            Destroy(shipComposite);
     }
 }
