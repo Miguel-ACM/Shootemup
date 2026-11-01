@@ -154,7 +154,7 @@ public sealed class RewardHexes : MonoBehaviour
         root.anchoredPosition = new Vector2(0, -30);
         var canvas = root.gameObject.AddComponent<Canvas>();
         canvas.overrideSorting = true;
-        canvas.sortingOrder = 65;
+        canvas.sortingOrder = 17;
         prompt = root.gameObject.AddComponent<CanvasGroup>();
         prompt.alpha = 0;
         var plate = root.gameObject.AddComponent<Image>();

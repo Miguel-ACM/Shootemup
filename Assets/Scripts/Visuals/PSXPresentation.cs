@@ -97,8 +97,8 @@ public sealed class PSXPresentation : MonoBehaviour
         shipCanvasObject.transform.SetParent(transform, false);
         var shipCanvas = shipCanvasObject.GetComponent<Canvas>();
         shipCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        // Just above the labels (64-65), below every menu and curtain.
-        shipCanvas.sortingOrder = 66;
+        // Just above the labels (16-17), under the side covers, pause menu and fades (UI canvas, 20) and every curtain.
+        shipCanvas.sortingOrder = 18;
         var shipDisplay = new GameObject("Ships", typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
         shipDisplay.transform.SetParent(shipCanvasObject.transform, false);
         shipImage = shipDisplay.GetComponent<RawImage>();

@@ -100,7 +100,7 @@ public sealed class DecisionOverlay : MonoBehaviour
     {
         font = face;
         var canvas = gameObject.AddComponent<Canvas>();
-        PlaceUnderShips(canvas, 65);
+        PlaceUnderShips(canvas, 17);
         fade = gameObject.AddComponent<CanvasGroup>();
         fade.alpha = 0;
         fade.interactable = false;

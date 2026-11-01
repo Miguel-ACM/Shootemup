@@ -33,7 +33,8 @@ public class Dialog : MonoBehaviour
         overlay = new GameObject("Item description overlay", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(CanvasGroup));
         canvas = overlay.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 60;
+        // Over the ships and labels (16-18), under the pause menu and fades (20).
+        canvas.sortingOrder = 19;
         var scaler = overlay.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1280, 720);
