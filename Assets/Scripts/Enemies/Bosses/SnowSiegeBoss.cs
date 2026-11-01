@@ -56,16 +56,18 @@ public sealed partial class SnowSiegeBoss : DistrictBoss
 
     void DeployComb()
     {
-        combCount = (phaseTwo ? 11 : 9);
+        // One column more on each side than before, with the outermost on the screen
+        // edges, so hugging a side is never safe from the rain.
+        combCount = (phaseTwo ? 13 : 11);
         deployment = 0;
         deployed = true;
         returning = false;
         for (int i = 0; i < combCount; i++)
         {
             launch[i] = Hull.TransformPoint(new Vector3((i % 2 == 0 ? -1 : 1) * .38f, -.65f, -.25f));
-            float x = Mathf.Lerp(Camera.LeftLimit + .35f, Camera.RightLimit - .35f, (i + .5f) / combCount);
-            // The comb lines the top edge of the screen, so its rain covers the whole arena.
-            lanes[i] = new Vector3(x, Camera.UpLimit - .35f, 0);
+            float x = Mathf.Lerp(Camera.LeftLimit + .2f, Camera.RightLimit - .2f, i / (combCount - 1f));
+            // The comb lines the very top edge of the screen, so its rain covers the whole arena.
+            lanes[i] = new Vector3(x, Camera.UpLimit - .25f, 0);
             comb[i].position = launch[i];
             comb[i].gameObject.SetActive(true);
         }
