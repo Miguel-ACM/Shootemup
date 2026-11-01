@@ -8,6 +8,8 @@ public sealed class LaserSound : MonoBehaviour
     static AudioClip playerIgnitionClip, playerSustainClip;
     static float lastCharge = -10, lastIgnition = -10, lastRelease = -10;
     static int sustaining;
+    // The held hum sits lower than its source clip; at its original pitch it grated over long beams.
+    const float SustainPitch = .7f;
     AudioSource transient, bed;
     bool ignited, cooling, counted, friendly;
     public bool Sustaining => bed != null && bed.isPlaying;
@@ -74,7 +76,7 @@ public sealed class LaserSound : MonoBehaviour
             bed.clip = friendly && playerSustainClip != null ? playerSustainClip : sustainClip;
             if (bed.clip != null)
             {
-                bed.pitch = 1;
+                bed.pitch = SustainPitch;
                 bed.time = (((GetEntityId().GetHashCode() & 0x7fffffff) % 7) * .071f) % bed.clip.length;
                 bed.Play();
                 counted = true;
