@@ -7,12 +7,10 @@ using UnityEngine;
 //     throws six widening rings that turn in alternate directions; each ring has a
 //     gap and the gaps slide, so crossing them is a timing puzzle.
 // Phase two (no minions)
-//   Ricochet Storm / Rim Runners: it ricochets round the whole arena; every bounce
-//     releases a full 360-degree burst of fast arrows and slow teeth, some of which
-//     bounce off the walls, and during Rim Runners teeth that cling to the walls and
-//     run round the rim. Between bounces it fires 360 arrow wavefronts.
-//   Gearbox: it locks in the middle and turns out four interlocking spiral arms,
-//     two winding each way, like meshing gears.
+//   Ricochet Storm: it ricochets round the whole arena and fires only when it hits a
+//     wall. Every impact throws a full 360-degree burst of fast arrows and slow teeth,
+//     some of which bounce off the walls, an aimed shotgun of arrows, and teeth that
+//     cling to the walls and run round the rim. Between impacts it is silent.
 public sealed partial class TunnelSawBoss
 {
     CombatHullVisual spinner;
@@ -35,9 +33,7 @@ public sealed partial class TunnelSawBoss
             else
             {
                 runners = true;
-                yield return RicochetStorm(8);
-                runners = false;
-                yield return Gearbox();
+                yield return RicochetStorm(10);
             }
         }
     }
@@ -46,7 +42,7 @@ public sealed partial class TunnelSawBoss
     {
         using var sample = burstMarker.Auto();
         impacts++;
-        int rays = Dense(20);
+        int rays = Dense(phaseTwo ? 28 : 20);
         float step = 360f / rays;
         for (int i = 0; i < rays; i++)
         {
@@ -55,6 +51,13 @@ public sealed partial class TunnelSawBoss
             var tooth = Fire<SimpleRound>(transform.position, CombatVisuals.Rotate(axis, step * .5f), 1.6f, .3f);
             if (i % 2 == 0)
                 tooth.Bounce(2);
+        }
+        if (phaseTwo)
+        {
+            // An aimed shotgun out of every impact, so a bounce near the player is a threat.
+            var aim = CombatVisuals.Aim(transform.position);
+            for (int i = 0; i < Dense(5); i++)
+                Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(aim, (i - 2) * 9), 5.6f, .19f);
         }
         if (!runners)
             return;
@@ -115,36 +118,12 @@ public sealed partial class TunnelSawBoss
         yield return Wait(.6f);
     }
 
+    // Silent while it travels: all of its fire comes from the impacts.
     IEnumerator RicochetStorm(float seconds)
     {
-        ResumeBouncing();
-        yield return Every(seconds, 1.3f, n =>
-        {
-            int arrows = Dense(24);
-            for (int layer = 0; layer < 2; layer++)
-                for (int i = 0; i < arrows; i++)
-                    Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, (i + layer * .5f + n * .25f) * 360f / arrows), 3.0f + layer * .9f, .19f);
-        });
-    }
-
-    // Four spiral arms, two winding each way: the crossings mesh like gear teeth.
-    IEnumerator Gearbox()
-    {
-        yield return Centre();
-        yield return Charge(Hull, Vector3.zero, .5f);
-        int beads = Dense(48);
-        for (int b = 0; b < beads; b++)
-        {
-            for (int arm = 0; arm < 4; arm++)
-            {
-                int sign = arm % 2 == 0 ? 1 : -1;
-                var tooth = Fire<SimpleRound>(transform.position, Vector2.down, 0, .2f);
-                if (tooth != null)
-                    tooth.Orbit(Radius * .8f, arm * 90 + sign * b * 9, sign * 40, 10, 0, 0, 0, .05f).Expand(1.5f);
-            }
-            yield return Wait(Rest(.085f));
-        }
-        yield return Wait(.8f);
+        if (haltUntil > age)
+            ResumeBouncing();
+        yield return Wait(seconds);
     }
 
     protected override void OnPhaseTwo()
@@ -162,13 +141,13 @@ public sealed partial class TunnelSawBoss
     IEnumerator FinalSpell()
     {
         runners = true;
-        ResumeBouncing();
+        if (haltUntil > age)
+            ResumeBouncing();
         yield return Every(9, .08f, n =>
         {
             for (int arm = 0; arm < 4; arm++)
                 Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, arm * 90 + n * 13), 3.4f, .19f);
         });
         runners = false;
-        yield return Gearbox();
     }
 }
