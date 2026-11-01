@@ -5,14 +5,15 @@ using System.Collections;
 // station's own core.
 // Phase one (shield generators up)
 //   Accretion: mirrored rings of arrows appear just outside every edge of the screen
-//     and spiral in, accelerating, until the core swallows them; dark stars (giant
-//     orbs) drift in from the edges among them.
+//     and spiral in, accelerating, until the core swallows them; swarms of dark stars
+//     (giant orbs) drift in from the edges among them.
 //   Supernova: the core throws rings of arrows outward; each ring stops, holds, then
 //     collapses back through the core and bursts out the other side. The centre
 //     laser cuts the middle at the end.
 // Phase two (core exposed)
 //   Expulsion: the core flings mirrored spiral arms of arrows that accelerate away
-//     and bend straight as they leave the screen, with rings of dark stars between.
+//     and bend straight as they leave the screen, with full rings and rings of dark
+//     stars flung out between them.
 //   Binary Collapse: two supernova rings at once, counter-rotating offsets, with the
 //     laser between them.
 // Phase three (Hard)
@@ -108,12 +109,14 @@ public sealed partial class SpaceCitadelBoss
         var into = CoreBody;
         for (int i = 0; i < beads; i++)
         {
-            var p = EdgePoint((i + .5f * (n % 2)) / (beads * 2f));
+            // The ring creeps round the edge every time, so no stretch of it stays empty.
+            var p = EdgePoint((i + Mathf.Repeat(n * .37f, 1)) / (beads * 2f));
             foreach (int mirror in new[] { 1, -1 })
             {
                 var from = new Vector2(p.x * mirror, p.y);
-                var inward = ((Vector2)Core - from).normalized;
-                Fire<NeedleRound>(new Vector3(from.x, from.y, 1), CombatVisuals.Rotate(inward, mirror * spin), 1.0f, .19f)
+                var toward = (Vector2)Core - from;
+                // Far rounds (the bottom edge) start faster, so the whole ring arrives together.
+                Fire<NeedleRound>(new Vector3(from.x, from.y, 1), CombatVisuals.Rotate(toward.normalized, mirror * spin), .6f + toward.magnitude * .22f, .19f)
                     .Absorb(into, 7, .6f).LivesFor(12);
             }
         }
@@ -125,12 +128,12 @@ public sealed partial class SpaceCitadelBoss
         var into = CoreBody;
         for (int k = 0; k < pairs; k++)
         {
-            var p = EdgePoint(.08f + Mathf.Repeat(n * .137f + k * .19f, .34f));
+            var p = EdgePoint(Mathf.Repeat(n * .137f + k * .5f / pairs, .5f));
             foreach (int mirror in new[] { 1, -1 })
             {
                 var from = new Vector2(p.x * mirror, p.y);
-                var inward = ((Vector2)Core - from).normalized;
-                Fire<GiantOrb>(new Vector3(from.x, from.y, 1), CombatVisuals.Rotate(inward, mirror * 20), .7f, .75f)
+                var toward = (Vector2)Core - from;
+                Fire<GiantOrb>(new Vector3(from.x, from.y, 1), CombatVisuals.Rotate(toward.normalized, mirror * 20), .4f + toward.magnitude * .14f, .75f)
                     .Absorb(into, 4, 1).LivesFor(14);
             }
         }
@@ -147,6 +150,13 @@ public sealed partial class SpaceCitadelBoss
             }
     }
 
+    // A full ring flung out between the arms, offset every time.
+    void ExpelRing(int n, int beads)
+    {
+        for (int i = 0; i < beads; i++)
+            Fire<NeedleRound>(Core, CombatVisuals.Rotate(Vector2.down, n * 7.3f + i * 360f / beads), .7f, .19f).Repel(Core, 6).LivesFor(9);
+    }
+
     void ExpelStars(int n, int count)
     {
         for (int i = 0; i < count; i++)
@@ -157,11 +167,11 @@ public sealed partial class SpaceCitadelBoss
     {
         OpenWell();
         yield return Wait(.6f);
-        yield return Every(8, Rest(.5f), n =>
+        yield return Every(8, Rest(.4f), n =>
         {
-            AccretionRing(n, Dense(14), 28);
-            if (n % 4 == 1)
-                AccretionStars(n, Dense(2));
+            AccretionRing(n, Dense(18), 28);
+            if (n % 2 == 1)
+                AccretionStars(n, Dense(4));
         });
         yield return Wait(1.2f);
         CloseWell();
@@ -197,11 +207,13 @@ public sealed partial class SpaceCitadelBoss
     {
         OpenWell();
         yield return Charge(Hull, WeaponPort(), .5f);
-        yield return Every(8, Rest(.1f), n =>
+        yield return Every(8, Rest(.09f), n =>
         {
-            Expel(n, 3, 55);
-            if (n % 14 == 7)
-                ExpelStars(n, Dense(6));
+            Expel(n, 4, 55);
+            if (n % 13 == 0)
+                ExpelRing(n, Dense(20));
+            if (n % 7 == 3)
+                ExpelStars(n, Dense(8));
         });
         CloseWell();
     }
@@ -233,16 +245,16 @@ public sealed partial class SpaceCitadelBoss
         yield return Every(10, .1f, n =>
         {
             bool inward = n / 25 % 2 == 0;
-            if (n % (inward ? 5 : 10) == 0)
-                AccretionRing(n / 5, Dense(inward ? 13 : 8), 28);
+            if (n % (inward ? 4 : 8) == 0)
+                AccretionRing(n / 4, Dense(inward ? 16 : 10), 28);
             if (!inward || n % 3 == 0)
-                Expel(n, inward ? 1 : 3, 55);
-            if (n % 20 == 10)
+                Expel(n, inward ? 2 : 4, 55);
+            if (!inward && n % 15 == 5)
+                ExpelRing(n, Dense(18));
+            if (n % 8 == 4)
             {
-                if (inward)
-                    AccretionStars(n, Dense(2));
-                else
-                    ExpelStars(n, Dense(5));
+                AccretionStars(n, Dense(inward ? 4 : 2));
+                ExpelStars(n, Dense(inward ? 4 : 7));
             }
         });
         CloseWell();
