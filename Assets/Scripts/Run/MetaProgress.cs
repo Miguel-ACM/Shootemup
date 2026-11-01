@@ -10,6 +10,8 @@ using UnityEngine;
 public static class MetaProgress
 {
     public const int ShopSize = 3;
+    // The hangar counter shows four digits.
+    public const int MaxCoins = 9999;
     // A deliberately small first pool; everything else is bought in the hangar.
     static readonly string[] startingPool =
     {
@@ -108,7 +110,7 @@ public static class MetaProgress
     {
         if (!Data.runActive)
             return;
-        Data.coins = (int)Math.Min(int.MaxValue, (long)Data.coins + RunCoins.Count);
+        Data.coins = (int)Math.Min(MaxCoins, (long)Data.coins + RunCoins.Count);
         Data.runActive = false;
         Restock();
         Save();

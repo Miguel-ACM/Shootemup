@@ -249,6 +249,7 @@ public sealed class HangarHub : MonoBehaviour
     // The banked coins, on the wall beside the shop: a coin and a number on an opaque plate.
     RectTransform wallet;
     TextMeshProUGUI walletCount;
+    float shownCoins;
 
     void UpdateWallet()
     {
@@ -267,7 +268,7 @@ public sealed class HangarHub : MonoBehaviour
             plate.transform.SetParent(root.transform, false);
             plate.GetComponent<Image>().color = Color.black;
             wallet = plate.GetComponent<RectTransform>();
-            wallet.sizeDelta = new Vector2(58, 24);
+            wallet.sizeDelta = new Vector2(70, 24);
             var coin = new GameObject("Coin", typeof(RectTransform), typeof(Image));
             coin.transform.SetParent(wallet, false);
             var disc = coin.GetComponent<Image>();
@@ -275,7 +276,7 @@ public sealed class HangarHub : MonoBehaviour
             disc.color = new Color(1, .76f, .25f);
             disc.raycastTarget = false;
             disc.rectTransform.sizeDelta = new Vector2(12, 12);
-            disc.rectTransform.anchoredPosition = new Vector2(-18, 0);
+            disc.rectTransform.anchoredPosition = new Vector2(-24, 0);
             var text = new GameObject("Coins", typeof(RectTransform), typeof(TextMeshProUGUI));
             text.transform.SetParent(wallet, false);
             walletCount = text.GetComponent<TextMeshProUGUI>();
@@ -285,10 +286,17 @@ public sealed class HangarHub : MonoBehaviour
             walletCount.alignment = TextAlignmentOptions.MidlineLeft;
             walletCount.color = new Color(1, .82f, .4f);
             walletCount.raycastTarget = false;
-            walletCount.rectTransform.sizeDelta = new Vector2(36, 20);
+            walletCount.rectTransform.sizeDelta = new Vector2(44, 20);
             walletCount.rectTransform.anchoredPosition = new Vector2(8, 0);
         }
-        walletCount.text = MetaProgress.Coins.ToString();
+        // The count rolls smoothly to the banked total once the plate is in view, and down again after a purchase.
+        if (wallet.gameObject.activeSelf)
+        {
+            float target = MetaProgress.Coins;
+            float rate = Mathf.Max(40, Mathf.Abs(target - shownCoins) * 1.6f);
+            shownCoins = Mathf.MoveTowards(shownCoins, target, rate * Time.deltaTime);
+        }
+        walletCount.text = Mathf.RoundToInt(shownCoins).ToString();
         var camera = UnityEngine.Camera.main;
         var canvasRect = (RectTransform)wallet.parent;
         var viewport = camera.WorldToViewportPoint(new Vector3(center.x + 4, center.y, 0));
