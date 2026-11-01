@@ -16,7 +16,7 @@ public static class MetaProgress
         "Popcorn", "PocketFan", "HotSauce", "BulletDroneItem", "BadGlasses", "ScatterCannonItem", "Magnet", "SparePlating",
         "Icicle", "LaserDroneItem", "Poison", "BouncingBall", "ChewingGum", "WindUpCannonItem",
         "AnotherArm", "BulletTime",
-        "ThreeMoonsItem",
+        "ThreeMoonsItem", "BlankBullet",
     };
 
     [Serializable]
