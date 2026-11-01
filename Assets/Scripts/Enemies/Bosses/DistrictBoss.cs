@@ -6,14 +6,26 @@ public abstract class DistrictBoss : DistrictEnemy
 {
     protected float initialHealth;
     readonly BossPhaseState encounter = new BossPhaseState();
-    protected bool phaseTwo { get => encounter.Phase >= 2; set => encounter.Phase = value ? Mathf.Max(2, encounter.Phase) : 1; }
-    protected bool phaseThree { get => encounter.Phase >= 3; set => encounter.Phase = value ? 3 : Mathf.Min(2, encounter.Phase); }
+    protected bool phaseTwo
+    {
+        get => encounter.Phase >= 2; set => encounter.Phase = value ? Mathf.Max(2, encounter.Phase) : 1;
+    }
+
+    protected bool phaseThree
+    {
+        get => encounter.Phase >= 3; set => encounter.Phase = value ? 3 : Mathf.Min(2, encounter.Phase);
+    }
+
     const float Sturdiness = 1.3f;
     protected ResourceBar bar;
     protected Vector3 station;
     protected float motionAge;
     float nextPressure;
-    float phaseEntryUntil { get => encounter.TransitionUntil; set => encounter.TransitionUntil = value; }
+    float phaseEntryUntil
+    {
+        get => encounter.TransitionUntil; set => encounter.TransitionUntil = value;
+    }
+
     protected bool PhaseTransitioning => encounter.Transitioning(age);
     // While a phase breaks the boss repositions and cannot be hurt.
     public bool Invulnerable => PhaseTransitioning;
@@ -26,15 +38,21 @@ public abstract class DistrictBoss : DistrictEnemy
     public virtual float DisplayFraction => HealthFraction;
     public float HealthFraction => health / Mathf.Max(1, initialHealth);
 
-    // One life bar per phase. Hard adds a third, harder phase to every boss.
-    public int PhaseCount => Difficulty.Hard ? 3 : 2;
+    // One life bar per phase. Hard adds a third, harder phase to every boss; the
+    // Wave Watcher reviews that phase on either difficulty.
+    public static bool PreviewThirdPhase;
+    protected static bool HasThirdPhase => Difficulty.Hard || PreviewThirdPhase;
+    public int PhaseCount => HasThirdPhase ? 3 : 2;
     public int CurrentPhase => encounter.Phase;
-    float phaseStart { get => encounter.MeterStart; set => encounter.MeterStart = value; }
+    float phaseStart
+    {
+        get => encounter.MeterStart; set => encounter.MeterStart = value;
+    }
     // Multipart encounters can measure the objectives of this phase rather than total hull health.
     protected virtual float PhaseMeterValue => DisplayFraction;
-    protected virtual float PhaseEnd(int phase) => phase == 1 ? .5f : phase == 2 && Difficulty.Hard ? .25f : 0;
+    protected virtual float PhaseEnd(int phase) => phase == 1 ? .5f : phase == 2 && HasThirdPhase ? .25f : 0;
     public float PhaseFraction => encounter.Fraction(PhaseMeterValue, PhaseEnd(CurrentPhase));
-    protected virtual bool PhaseThreeReady => Difficulty.Hard && HealthFraction <= .25f;
+    protected virtual bool PhaseThreeReady => HasThirdPhase && HealthFraction <= .25f;
     protected override void Start()
     {
         base.Start();
@@ -116,9 +134,13 @@ public abstract class DistrictBoss : DistrictEnemy
     {
         encounter.Phase = phase;
         NotifyBossPhaseChange(phase);
-        if (phase == 2) OnPhaseTwo(); else OnPhaseThree();
+        if (phase == 2)
+            OnPhaseTwo();
+        else
+            OnPhaseThree();
         PresentPhaseTwo();
     }
+
     protected virtual float AttackPace => phaseTwo ? (.87f) : 1;
     protected void PresentPhaseTwo()
     {

@@ -10,7 +10,7 @@ using UnityEngine.UI;
 // A build-accessible pattern viewer. Enemies, movement, aim and projectiles are the real combat code.
 public sealed partial class WaveWatcher : MonoBehaviour
 {
-    public const int FirstWave = 2, LastWave = 20, Miniboss = 21, BossOne = 22, BossTwo = 23, BossOther = 24;
+    public const int FirstWave = 2, LastWave = 20, Miniboss = 21, BossOne = 22, BossTwo = 23, BossOther = 24, BossThree = 25;
     const string DifficultyPreference = "WaveWatcher.Difficulty";
     static bool requested;
     public static WaveWatcher Current
@@ -95,6 +95,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
     {
         requested = false;
         Current = null;
+        DistrictBoss.PreviewThirdPhase = false;
         SceneManager.sceneLoaded -= SceneReady;
     }
 
@@ -165,6 +166,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
             yield break;
         }
         ship.ObserverMode = true;
+        DistrictBoss.PreviewThirdPhase = true;
         ship.enabled = false;
         var body = ship.GetComponent<Rigidbody2D>();
         if (body != null)
@@ -282,7 +284,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
 
     public void SelectEncounter(int encounter)
     {
-        if (!Ready || encounter < FirstWave || encounter > BossOther)
+        if (!Ready || encounter < FirstWave || encounter > BossThree)
             return;
         var view = encounter <= LastWave ? WatcherView.Waves : WatcherView.Bosses;
         var entries = WatcherCatalog.For(view, Level);
@@ -483,6 +485,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
             SaveCurrentReference(false);
         if (Current == this)
             Current = null;
+        DistrictBoss.PreviewThirdPhase = false;
         if (stepScheduled)
             Time.captureDeltaTime = savedCaptureDelta;
         Time.timeScale = 1;
@@ -548,37 +551,27 @@ public sealed partial class WaveWatcher : MonoBehaviour
             Spawned = 1;
             yield return null;
             yield return null; // Both City hulls finish Start before selecting the survivor phase.
-            if (Encounter == BossTwo || Encounter == BossOther)
+            int targetPhase = Encounter == BossThree ? 3 : Encounter == BossOne ? 1 : 2;
+            DistrictBoss survivor = boss, victim = null;
+            if (boss is CityDuoBoss duo && duo.partner != null && targetPhase > 1)
             {
-                if (boss is CityDuoBoss duo && duo.partner != null)
-                {
-                    var victim = Encounter == BossOther ? duo.partner : duo;
-                    var survivor = Encounter == BossOther ? duo : duo.partner;
-                    survivor.health *= .55f;
-                    victim.damage(1000000);
-                }
-                else if (boss is DesertWormBoss worm)
-                {
-                    for (int i = 1; i <= 4; i++)
-                        worm.Cores[i].damage(1000000);
-                }
-                else if (boss is SpaceCitadelBoss station)
-                {
-                    station.Parts[0].damage(1000000);
-                    station.Parts[1].damage(1000000);
-                }
-                else if (boss is ThunderLanceBoss thunder)
-                    boss.health *= thunder.phaseTwoThreshold * .95f;
-                else if (boss is HellCrabBoss crab)
-                    crab.Eyes[0].damage(1000000);
-                else
-                    boss.health *= .49f;
+                victim = Encounter == BossOther ? duo.partner : duo;
+                survivor = Encounter == BossOther ? duo : duo.partner;
             }
             recipe = WatcherCatalog.Pretty(DistrictWaves.BossType.Name);
             Refresh();
+            float nextPush = 1;
             while (true)
             {
                 Elapsed += Time.deltaTime;
+                // Later phases are reached like a real fight, once the boss is in the arena, so
+                // each spell break plays on screen instead of above it during the entrance.
+                if (survivor != null && survivor.CurrentPhase < targetPhase && !survivor.Invulnerable && Elapsed >= nextPush &&
+                    survivor.transform.position.y < Camera.UpLimit - 1 && survivor.transform.position.y > Camera.DownLimit + .5f)
+                {
+                    PushToPhase(survivor, victim, survivor.CurrentPhase + 1);
+                    nextPush = Elapsed + .5f;
+                }
                 if (Elapsed >= 24 && (Touring || Looping))
                 {
                     if (Touring)
@@ -654,6 +647,69 @@ public sealed partial class WaveWatcher : MonoBehaviour
             }
             yield return null;
         }
+    }
+
+    // Deals the damage that opens the next phase: the boss's own objectives for multipart
+    // encounters, its hull health otherwise.
+    static void PushToPhase(DistrictBoss boss, DistrictBoss victim, int phase)
+    {
+        if (phase == 2)
+        {
+            if (victim != null)
+            {
+                if (victim.health > 0)
+                {
+                    boss.health *= .55f;
+                    victim.damage(1000000);
+                }
+            }
+            else if (boss is DesertWormBoss worm)
+            {
+                for (int i = 1; i <= 4; i++)
+                    worm.Cores[i].damage(1000000);
+            }
+            else if (boss is SpaceCitadelBoss station)
+            {
+                station.Parts[0].damage(1000000);
+                station.Parts[1].damage(1000000);
+            }
+            else if (boss is ThunderLanceBoss thunder)
+                ThinHull(boss, thunder.phaseTwoThreshold * .95f);
+            else if (boss is HellCrabBoss crab)
+                crab.Eyes[0].damage(1000000);
+            else
+                ThinHull(boss, .49f);
+            return;
+        }
+        float goal = boss is CityDuoBoss ? .43f : .23f;
+        if (boss is DesertWormBoss desert)
+            ThinParts(boss, desert.Cores, goal);
+        else if (boss is SpaceCitadelBoss citadel)
+            ThinParts(boss, citadel.Parts, goal);
+        else if (boss is HellCrabBoss hell)
+            ThinParts(boss, hell.Eyes, goal);
+        else
+            ThinHull(boss, goal);
+    }
+
+    static void ThinHull(DistrictBoss boss, float fraction)
+    {
+        if (boss.HealthFraction > fraction)
+            boss.health *= fraction / boss.HealthFraction;
+    }
+
+    static void ThinParts(DistrictBoss boss, IEnumerable<AEnemy> parts, float fraction)
+    {
+        float total = 0;
+        foreach (var part in parts)
+            if (part != null && part.health > 0)
+                total += part.health;
+        float initial = boss.health / Mathf.Max(.0001f, boss.HealthFraction), keep = fraction * initial / Mathf.Max(1, total);
+        if (keep >= 1)
+            return;
+        foreach (var part in parts)
+            if (part != null && part.health > 0)
+                part.damage(part.health * (1 - keep) / Mathf.Max(.001f, GameRules.enemyDamageReceived));
     }
 
     RectTransform Box(Transform parent, string name, Vector2 position, Vector2 size, Color color)

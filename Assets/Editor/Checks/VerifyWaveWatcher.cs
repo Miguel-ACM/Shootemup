@@ -277,7 +277,7 @@ public sealed class WaveWatcherReview : MonoBehaviour
             {
                 Check(AEnemy.Live.OfType<CityDuoBoss>().Count() == 1 && AEnemy.Live.OfType<CityDuoBoss>().Single().heavy, "City heavy survivor is available");
                 watcher.SelectEncounter(WaveWatcher.BossOther);
-                yield return new WaitForSeconds(1);
+                yield return new WaitForSeconds(3.5f);
                 Check(AEnemy.Live.OfType<CityDuoBoss>().Count() == 1 && !AEnemy.Live.OfType<CityDuoBoss>().Single().heavy, "City fast survivor is available");
                 yield return Capture("CityFastSurvivor");
             }

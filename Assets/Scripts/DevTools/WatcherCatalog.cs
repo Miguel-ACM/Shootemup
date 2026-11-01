@@ -76,6 +76,7 @@ public static class WatcherCatalog
                 entries.Add(new Entry { Id = "miniboss", Name = "MINIBOSS", Encounter = WaveWatcher.Miniboss });
                 entries.Add(new Entry { Id = "boss/phase-1", Name = level == LevelId.City ? "BOTH HULLS" : "BOSS / PHASE 1", Encounter = WaveWatcher.BossOne });
                 entries.Add(new Entry { Id = "boss/phase-2", Name = level == LevelId.City ? "HEAVY SURVIVOR" : "BOSS / PHASE 2", Encounter = WaveWatcher.BossTwo });
+                entries.Add(new Entry { Id = "boss/phase-3", Name = level == LevelId.City ? "HEAVY SURVIVOR / PHASE 3" : "BOSS / PHASE 3", Encounter = WaveWatcher.BossThree });
                 if (level == LevelId.City)
                     entries.Add(new Entry { Id = "boss/fast-survivor", Name = "FAST SURVIVOR", Encounter = WaveWatcher.BossOther });
                 break;
