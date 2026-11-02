@@ -101,9 +101,10 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
         }
     }
 
-    void DropItems()
+    int DropItems()
     {
         int numDrops = 0;
+        int bossCoins = 0;
         // Health is precious now: only boss and miniboss kills drop it, always, whatever the ship's health.
         if ((isBoss || dropsLife) && Random.Range(0f, 1f) < lifeDropChance)
         {
@@ -128,8 +129,12 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
                 numDrops = Random.Range(minmaxMoney[0], minmaxMoney[1] + 1);
             }
             numDrops += GameRules.morePickables;
-            InstantitatePickables("money", numDrops);
+            if (isBoss)
+                bossCoins = numDrops;
+            else
+                InstantitatePickables("money", numDrops);
         }
+        return bossCoins;
     }
 
     public void Depart()
@@ -160,10 +165,10 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
         if (explode)
             PSXImpactEffects.Explosion(gameObject);
         Score.IncreaseScore(scoreOnKill);
-        DropItems();
+        int bonusCoins = DropItems();
         // Each boss of the run pays more: 40 coins for the first, 80 for the second, and so on.
         if (isBoss)
-            InstantitatePickables("money", 40 * LevelRun.Stage);
+            BossCoinBurst.Spawn(bossPosition ?? transform.position, 40 * LevelRun.Stage + bonusCoins);
         else if (coinsPerStage > 0)
             InstantitatePickables("money", coinsPerStage * LevelRun.Stage);
         if (orchestrer != null)

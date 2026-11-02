@@ -1,0 +1,10 @@
+PASS
+isolated run loads
+actual boss finale preserves forty stage coins plus the configured bonus coins
+all boss coins use the same outward burst
+the burst resists immediate collection even with extreme pickup range
+native physics spreads the payout across 9,0 by 9,1 world units
+pause freezes the burst
+normal attraction resumes and each coin credits the wallet once
+two hundred edge-launched coins remain visible and collectible
+no runtime errors

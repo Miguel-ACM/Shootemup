@@ -13,18 +13,50 @@ public abstract class APickable : MonoBehaviour
     bool destroying;
     bool collected;
     float destroyingTime = 0f;
+    bool launched;
+    float scatterTime;
+    public bool IsScattering => scatterTime > 0;
+
+    public void Launch(Vector2 velocity, float seconds = 1)
+    {
+        launched = true;
+        scatterTime = Mathf.Max(.1f, seconds);
+        rb = GetComponent<Rigidbody2D>();
+        rb.linearVelocity = velocity;
+    }
 
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         rb = GetComponent<Rigidbody2D>();
-        rb.AddForce(Vector3.up * 100f);
+        if (!launched)
+            rb.AddForce(Vector3.up * 100f);
     }
 
     private void FixedUpdate()
     {
         if (collected || player == null)
             return;
+        if (launched)
+        {
+            // Rebound inside the arena so the explosion never throws its reward away.
+            Vector2 p = rb.position, v = rb.linearVelocity;
+            float left = Camera.LeftLimit + .25f, right = Camera.RightLimit - .25f;
+            float bottom = Camera.DownLimit + .25f, top = Camera.UpLimit - .25f;
+            if (p.x < left) { p.x = left; v.x = Mathf.Abs(v.x) * .65f; }
+            if (p.x > right) { p.x = right; v.x = -Mathf.Abs(v.x) * .65f; }
+            if (p.y < bottom) { p.y = bottom; v.y = Mathf.Abs(v.y) * .65f; }
+            if (p.y > top) { p.y = top; v.y = -Mathf.Abs(v.y) * .65f; }
+            rb.position = p;
+            rb.linearVelocity = v;
+            destroying = false;
+            destroyingTime = 0;
+            if (scatterTime > 0)
+            {
+                scatterTime = Mathf.Max(0, scatterTime - Time.fixedDeltaTime);
+                return; // Let the burst open before pickup attraction gathers it.
+            }
+        }
         Vector2 thisPosition = transform.position;
         Vector2 playerPosition = player.transform.position;
         float distance = Vector3.Distance(thisPosition, playerPosition);
