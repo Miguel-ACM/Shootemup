@@ -21,3 +21,17 @@ Dock review  flew the full length of the deck
 Dock review  gate reachable and camera stops at far end
 Dock review  launch restores combat camera and ship position
 Dock review  scrolling lane and campaign handoff
+Dock review  wallet hidden away from outfitter
+Dock review  shop labels are mounted in the world
+Dock review  ship overlay stays behind side guards in hangar
+Dock review  fly through lit left portal into fleet room
+Dock review  fleet giant screen is mounted inside room
+Dock review  locked Lancer cannot be selected at its pad
+Dock review  cross hallway into opposite armory
+Dock review  armory console receives controls only at physical desk
+Dock review  release console to fly freely inside armory
+Dock review  simulator closes a pressure door before changing space
+Dock review  simulator launch restores combat camera
+Dock review  physical simulator console launches selected loaned flight
+Dock review  no gameplay errors in connected rooms
+Dock build Succeeded errors=0 warnings=0
