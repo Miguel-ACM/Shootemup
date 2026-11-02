@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum EncounterKind
 {
-    Shop, MultShop, Item, Health, Challenge, Pact, HealthTrade, Reforge
+    Shop, MultShop, Item, Health, Challenge, Pact, Salvage, HealthTrade, Reforge
 }
 public static class EncounterChoice
 {
@@ -20,10 +20,12 @@ public static class EncounterChoice
         return icons[index] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 32, 0, SpriteMeshType.FullRect);
     }
 
+    public static int SalvageCoins(int tier, float luck) => 12 + Mathf.Max(0, tier - 1) * 4 + Mathf.FloorToInt(Mathf.Clamp(luck, 0, 2) * 12);
+
     public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false, bool canTrade = false, bool canReforge = false)
     {
         // Shops are no longer offered mid-run; the hangar shop between runs replaces them.
-        var bag = new List<EncounterKind> { EncounterKind.Item };
+        var bag = new List<EncounterKind> { EncounterKind.Item, EncounterKind.Salvage };
         // Integer factors keep the exact 70/100 boundary inclusive on Unity's runtime.
         if (maxHealth > 0 && health * 10f <= maxHealth * 7f)
             bag.Add(EncounterKind.Health);
@@ -82,6 +84,8 @@ public static class EncounterChoice
                 return new Color(.95f, .56f, .65f);
             case EncounterKind.Reforge:
                 return new Color(.5f, .8f, .95f);
+            case EncounterKind.Salvage:
+                return new Color(.95f, .73f, .32f);
             default:
                 return new Color(.76f, .48f, .95f);
         }

@@ -313,6 +313,13 @@ public class WaveOrchestrer : MonoBehaviour
         if (GameOverState.Active)
             return;
         DismissOffer();
+        if (kind == EncounterKind.Salvage)
+        {
+            RunCoins.Add(EncounterChoice.SalvageCoins(LevelRun.Tier(LevelRun.Current), GameRules.luck));
+            ItemSound.Play("ready", .18f);
+            PSXImpactEffects.Burst(ship.transform.position, EncounterChoice.Accent(kind));
+            return;
+        }
         if (kind == EncounterKind.HealthTrade || kind == EncounterKind.Reforge)
         {
             plan.Insert(currentWaveNumber, kind == EncounterKind.HealthTrade ? RunSlotKind.HealthTrade : RunSlotKind.Reforge);
