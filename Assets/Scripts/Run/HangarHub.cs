@@ -20,8 +20,8 @@ public sealed partial class HangarHub : MonoBehaviour
     static RunDifficulty difficulty = RunDifficulty.Normal;
     // Where the title's tunnel came to rest, so the hangar continues from exactly that view.
     static float tunnelTravel;
-    static readonly Vector2[] plinthSpots = { new Vector2(0, 2), new Vector2(0, 13), new Vector2(0, 24) };
-    public const float DeckExtension = 36f;
+    static readonly Vector2[] plinthSpots = { new Vector2(2.7f, -3), new Vector2(2.7f, 0), new Vector2(2.7f, 3) };
+    public const float DeckExtension = 48f;
     const float PlinthReach = .95f, GateHalfWidth = 1.55f;
 
     sealed class Plinth
@@ -31,6 +31,7 @@ public sealed partial class HangarHub : MonoBehaviour
         public Vector3 spot;
         public Transform disc, shadow;
         public bool sent;
+        public TextMeshProUGUI label;
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -117,14 +118,15 @@ public sealed partial class HangarHub : MonoBehaviour
     float cameraTravel;
 
     Material scenery;
-    DecisionOverlay overlay;
+    Transform stockScreen;
+    TextMeshProUGUI stockInfo, walletText;
     Dialog dialog;
     readonly List<Mesh> quads = new List<Mesh>();
-    int described = -1;
     bool launching;
 
     void Start()
     {
+        current = this;
         var go = GameObject.FindGameObjectWithTag("Player");
         player = go != null ? go.GetComponent<Shipcontroller>() : null;
         view = UnityEngine.Camera.main;
@@ -190,9 +192,6 @@ public sealed partial class HangarHub : MonoBehaviour
     void BuildShop()
     {
         dialog = GameObject.FindGameObjectWithTag("Dialog")?.GetComponent<Dialog>();
-        overlay = new GameObject("Hangar shop prices", typeof(RectTransform)).AddComponent<DecisionOverlay>();
-        overlay.transform.SetParent(transform, false);
-        overlay.Build(dialog != null ? dialog.font : null, false);
         var stock = MetaProgress.Stock;
         for (int i = 0; i < stock.Count && i < plinthSpots.Length; i++)
         {
@@ -201,78 +200,38 @@ public sealed partial class HangarHub : MonoBehaviour
                 continue;
             var plinth = new Plinth { kind = stock[i], spot = Spot(plinthSpots[i], 1) };
             // Waits off the right edge, then glides onto its plinth during the arrival.
-            var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.spot + Vector3.right * SlideDistance, Quaternion.identity);
+            var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.spot, Quaternion.identity);
             go.transform.SetParent(transform, true);
             plinth.item = definition.Attach(go);
             var visual = go.GetComponent<PSXObjectVisual>();
-            if (visual != null) visual.itemKindOverride = definition.Key;
+            if (visual != null)
+                visual.itemKindOverride = definition.Key;
             plinth.item.SetRarity(ItemPool.RarityOf(stock[i]));
             // Hidden only after Awake has given the item its name and description.
             go.SetActive(false);
-            plinth.disc = Hover("HangarShopPlinth", plinth.spot + new Vector3(SlideDistance, -.3f, .5f), -4);
-            plinth.shadow = Shadow(plinth.spot + new Vector3(SlideDistance, -.3f, 0), .7f);
+            plinth.disc = Hover("HangarShopPlinth", plinth.spot + new Vector3(0, -.3f, .5f), -4);
+            plinth.shadow = Shadow(plinth.spot + new Vector3(0, -.3f, 0), .7f);
             plinths.Add(plinth);
-            overlay.Add(plinth.item);
+            var plaque = MountedPanel("Stock placard", new Vector2(2.7f, plinthSpots[i].y + 1.12f), new Vector2(2.7f, 1.35f));
+            plinth.label = WorldLabel(plaque, "", Vector2.zero, new Vector2(254, 121), 31, DockInstrument.Paper);
+
         }
     }
 
-    // The banked coins, on the wall beside the shop: a coin and a number on an opaque plate.
-    RectTransform wallet;
-    TextMeshProUGUI walletCount;
-    float shownCoins;
-
     void UpdateWallet()
     {
-        if (wallet == null)
+        bool near = player != null && player.transform.position.x > center.x + 1 &&
+            Mathf.Abs(player.transform.position.y - center.y) < 5.8f && room < 0;
+        walletText.transform.parent.gameObject.SetActive(near);
+        walletText.text = "●  " + MetaProgress.Coins;
+        int closest = NearestPlinth(player.transform.position);
+        stockScreen.gameObject.SetActive(closest >= 0 && room < 0);
+        if (closest >= 0)
         {
-            var root = new GameObject("Hangar wallet", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
-            root.transform.SetParent(transform, false);
-            var canvas = root.GetComponent<Canvas>();
-            DecisionOverlay.PlaceUnderShips(canvas, 16);
-            var scaler = root.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1280, 720);
-            scaler.matchWidthOrHeight = 1;
-            var plate = new GameObject("Wallet plate", typeof(RectTransform), typeof(Image));
-            plate.transform.SetParent(root.transform, false);
-            plate.GetComponent<Image>().color = Color.black;
-            wallet = plate.GetComponent<RectTransform>();
-            wallet.sizeDelta = new Vector2(78, 24);
-            var coin = new GameObject("Coin", typeof(RectTransform), typeof(Image));
-            coin.transform.SetParent(wallet, false);
-            var disc = coin.GetComponent<Image>();
-            disc.sprite = CombatVisuals.Disc;
-            disc.color = new Color(1, .76f, .25f);
-            disc.raycastTarget = false;
-            disc.rectTransform.sizeDelta = new Vector2(12, 12);
-            disc.rectTransform.anchoredPosition = new Vector2(-24, 0);
-            var text = new GameObject("Coins", typeof(RectTransform), typeof(TextMeshProUGUI));
-            text.transform.SetParent(wallet, false);
-            walletCount = text.GetComponent<TextMeshProUGUI>();
-            if (dialog != null)
-                walletCount.font = dialog.font;
-            walletCount.fontSize = 12;
-            walletCount.alignment = TextAlignmentOptions.MidlineLeft;
-            walletCount.color = new Color(1, .82f, .4f);
-            walletCount.raycastTarget = false;
-            // Four digits on one line.
-            walletCount.textWrappingMode = TextWrappingModes.NoWrap;
-            walletCount.rectTransform.sizeDelta = new Vector2(54, 20);
-            walletCount.rectTransform.anchoredPosition = new Vector2(12, 0);
+            var data = plinths[closest].item.GetData();
+            stockInfo.text = "<b>" + data[0] + "</b>\n\n" + data[2] + "\n\n<size=75%>" +
+                DockInstrument.FireKey() + "  BUY    " + DockInstrument.FireKey(true) + "  PIN</size>";
         }
-        // The count rolls smoothly to the banked total once the plate is in view, and down again after a purchase.
-        if (wallet.gameObject.activeSelf)
-        {
-            float target = MetaProgress.Coins;
-            float rate = Mathf.Max(40, Mathf.Abs(target - shownCoins) * 1.6f);
-            shownCoins = Mathf.MoveTowards(shownCoins, target, rate * Time.deltaTime);
-        }
-        walletCount.text = Mathf.RoundToInt(shownCoins).ToString();
-        var camera = UnityEngine.Camera.main;
-        var canvasRect = (RectTransform)wallet.parent;
-        var viewport = camera.WorldToViewportPoint(new Vector3(center.x + 4, view.transform.position.y, 0));
-        wallet.anchoredPosition = new Vector2((viewport.x - .5f) * canvasRect.rect.width, (viewport.y - .5f) * canvasRect.rect.height);
-        wallet.gameObject.SetActive(Slide(plinths.Count) < .5f);
     }
 
     void BuildGate()
@@ -366,7 +325,7 @@ public sealed partial class HangarHub : MonoBehaviour
 
     // Arrival: the ship rises from below, the docks and plinths slide in from the sides and the light
     // at the top grows. Applied after the controller's own update, which would otherwise clamp the ship.
-    const float ArrivalSeconds = 1.8f, SlideDistance = 6, SlideSeconds = .9f, LightSeconds = 2.6f;
+    const float ArrivalSeconds = 1.8f, SlideSeconds = .9f, LightSeconds = 2.6f;
     Vector3 parkedAt;
     float arrival = -1, introTime;
     bool Arriving => arrival >= 0;
@@ -419,45 +378,23 @@ public sealed partial class HangarHub : MonoBehaviour
             ItemSound.Play("itemSalvage", .16f);
         }
         var p = player.transform.position;
-        if (!Arriving && room < 0)
-        {
-            float target = Mathf.Clamp(p.y - center.y, 0, DeckExtension);
-            SetCameraTravel(Mathf.Lerp(cameraTravel, target, 1 - Mathf.Exp(-8 * Time.deltaTime)));
-        }
-        if (UpdateDock(p)) return;
-        int shop = NearestPlinth(p);
+        if (!Arriving)
+            FollowDeck(p);
+        UpdateDock(p);
         for (int i = 0; i < plinths.Count; i++)
         {
-            float bob = Mathf.Sin(Time.time * 1.1f + i * 1.7f) * .05f;
-            var slide = Vector3.right * SlideDistance * Slide(i);
-            if (plinths[i].disc != null)
-                plinths[i].disc.position = plinths[i].spot + slide + new Vector3(0, -.3f + bob, .5f);
-            if (plinths[i].shadow != null)
-                plinths[i].shadow.position = new Vector3(plinths[i].spot.x + .35f, plinths[i].spot.y - .85f, 87) + slide;
-            var item = plinths[i].item;
-            if (item == null)
+            var offer = plinths[i];
+            if (offer.item == null)
                 continue;
-            // Shop items are displays: keep their spin but never let them be attracted or equipped.
-            if (item.enabled && plinths[i].sent && item.Settled)
-                item.enabled = false;
-            int price = MetaProgress.Price(item.rarity);
-            overlay.SetOffer(i, (MetaProgress.Pin == plinths[i].kind ? "PIN " : "") + price, MetaProgress.Coins >= price);
+            if (offer.item.enabled && offer.sent && offer.item.Settled)
+                offer.item.enabled = false;
+            int price = MetaProgress.Price(offer.item.rarity);
+            string tint = MetaProgress.Coins >= price ? "#F4C16C" : "#EB8A7C";
+            offer.label.text = offer.item.GetData()[0] + "\n<size=85%><color=" + tint + ">" +
+                (MetaProgress.Pin == offer.kind ? "PIN  " : "") + price + "  ●</color></size>";
+            offer.label.transform.parent.gameObject.SetActive(!offer.item.IsDismissing);
         }
         UpdateWallet();
-        if (dialog != null && shop != described)
-        {
-            described = shop;
-            if (shop >= 0)
-            {
-                var data = plinths[shop].item.GetData();
-                // In the hangar the card sits at the very bottom, clear of the shop.
-                if (dialog.Panel != null)
-                    dialog.Panel.anchoredPosition = new Vector2(0, 12);
-                dialog.ShowItemDesc(data[0], data[1], data[2], plinths[shop].item.rarity);
-            }
-            else
-                dialog.Hide();
-        }
     }
 
     void SetCameraTravel(float travel)
@@ -492,20 +429,24 @@ public sealed partial class HangarHub : MonoBehaviour
 
     void Interact(InputAction.CallbackContext context)
     {
-        if (player == null || launching || Arriving || Menu.GameplayPaused || CloudTransition.Busy)
+        if (player == null || launching || Arriving || HangarShutter.Active || Menu.GameplayPaused || CloudTransition.Busy)
             return;
         var p = player.transform.position;
-        if (UseDock(context, p)) return;
+        if (UseDock(context, p))
+            return;
         int shop = NearestPlinth(p);
-        if (shop < 0) return;
+        if (shop < 0)
+            return;
         if (context.action == input.PlayerControls.FireSecondary)
             MetaProgress.TogglePin(plinths[shop].kind);
-        else Buy(plinths[shop]);
+        else
+            Buy(plinths[shop]);
     }
 
     void Switch(ShipFrame frame)
     {
-        if (!MetaProgress.CanFly(frame)) return;
+        if (!MetaProgress.CanFly(frame))
+            return;
         MetaProgress.Ship = frame;
         var definition = ShipFrames.Get(frame);
         ShipFrames.ApplyStats(definition);
@@ -528,7 +469,6 @@ public sealed partial class HangarHub : MonoBehaviour
         PSXImpactEffects.ItemGet(plinth.item.transform.position, AItem.GetRarityColor(plinth.item.rarity));
         ItemSound.Play("itemSalvage", .16f);
         plinth.item.Dismiss();
-        described = -2;
     }
 
     // The mist takes the ship: controls stop, it is drawn up out of view, and the clouds follow a second later.
@@ -543,7 +483,7 @@ public sealed partial class HangarHub : MonoBehaviour
         runLoad.allowSceneActivation = false;
         if (dialog != null)
             dialog.Hide();
-        overlay.Dismiss();
+        stockScreen.gameObject.SetActive(false);
         foreach (var weapon in player.GetComponentsInChildren<AWeapon>())
             weapon.StopFiring();
         // The controller clamps the ship inside the arena, so it lets go first.
@@ -572,7 +512,7 @@ public sealed partial class HangarHub : MonoBehaviour
         Launching = true;
         while (runLoad.progress < .9f)
             yield return null;
-        SetCameraTravel(0);
+        ResetDeckCamera();
         Active = false;
         GameRules.StartNewRun(FlightTrials.Active?.difficulty ?? difficulty);
         LevelRun.Reset(FlightTrials.Active?.district ?? LevelId.Fields);
@@ -595,7 +535,8 @@ public sealed partial class HangarHub : MonoBehaviour
         ShipFrames.ApplyHull(player, frame);
         var loadout = player.GetComponent<ShipLoadout>();
         ShipFrames.ApplyWeapons(loadout, frame);
-        if (FlightTrials.SecondaryFireOnly) loadout.SetPrimary(null);
+        if (FlightTrials.SecondaryFireOnly)
+            loadout.SetPrimary(null);
         player.SetMaxHits(frame.hits);
         player.Repair(frame.hits);
         player.enabled = true;
@@ -622,7 +563,9 @@ public sealed partial class HangarHub : MonoBehaviour
             input.PlayerControls.ActiveLeft.started -= Interact;
             input.PlayerControls.ActiveRight.started -= Interact;
         }
-        SetCameraTravel(0);
+        ResetDeckCamera();
+        if (current == this)
+            current = null;
         ReleaseExhibit();
         if (scenery != null)
             Destroy(scenery);

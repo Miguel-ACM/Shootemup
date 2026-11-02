@@ -11,23 +11,31 @@ public sealed class DockInstrument
     static TMP_FontAsset print;
     public static readonly Color Ink = new Color(.035f, .073f, .09f), Sea = new Color(.50f, .88f, .83f),
         Paper = new Color(.90f, .94f, .89f), Brass = new Color(.98f, .74f, .38f), Muted = new Color(.59f, .70f, .72f);
-    public DockInstrument(GameObject root, TMP_FontAsset typeface, Color accent, int order)
+    public DockInstrument(GameObject root, TMP_FontAsset typeface, Color accent, int order, bool mounted = false)
     {
         font = typeface;
         if (print == null)
             print = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
         var canvas = root.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.renderMode = mounted ? RenderMode.WorldSpace : RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = order;
         var scaler = root.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(960, 720);
         scaler.matchWidthOrHeight = .5f;
         group = root.AddComponent<CanvasGroup>();
-        var shade = Block(root.transform, "Recess", Vector2.zero, Vector2.one, new Color(.006f, .018f, .026f, .9f));
-        shade.anchorMin = Vector2.zero;
-        shade.anchorMax = Vector2.one;
-        shade.sizeDelta = Vector2.zero;
+        if (mounted)
+        {
+            root.GetComponent<RectTransform>().sizeDelta = new Vector2(622, 574);
+            canvas.sortingLayerName = "Background";
+        }
+        else
+        {
+            var shade = Block(root.transform, "Recess", Vector2.zero, Vector2.one, new Color(.006f, .018f, .026f, .9f));
+            shade.anchorMin = Vector2.zero;
+            shade.anchorMax = Vector2.one;
+            shade.sizeDelta = Vector2.zero;
+        }
         face = Block(root.transform, "Cast metal frame", Vector2.zero, new Vector2(622, 574), new Color(.18f, .26f, .27f));
         Block(face, "Enamel", Vector2.zero, new Vector2(616, 568), Ink);
         Block(face, "Top rail", new Vector2(0, 229), new Vector2(560, 2), accent);

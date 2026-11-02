@@ -189,14 +189,16 @@ public sealed partial class HangarHub
                 action = "SET";
                 break;
         }
-        string keys = (action.Length > 0 ? DockInstrument.FireKey() + "  " + action + "      " : "") + DockInstrument.FireKey(true) + "  BACK";
+        string keys = room == (int)Dock.Fleet ? (action.Length > 0 ? DockInstrument.FireKey() + "  " + action : "") :
+            operating ? (action.Length > 0 ? DockInstrument.FireKey() + "  " + action + "   " : "") + DockInstrument.FireKey(true) + " RELEASE" :
+            DockInstrument.FireKey() + "  USE CONSOLE";
         Legend(keys, 0, -254, 558, 32, 17, DockInstrument.Paper);
     }
     string FleetPage()
     {
         var hull = ShipFrames.Get((ShipFrame)selection);
         var record = MetaProgress.Record(hull.frame, modes[band]);
-        HullPortrait(hull.frame, -193, 117, 157);
+        Photo(Resources.Load<Texture2D>("DockArt/Portrait" + hull.frame), new Rect(0, 0, 1, 1), -193, 117, 165, Color.white);
         Legend(hull.frame.ToString().ToUpperInvariant(), 76, 179, 350, 56, 41, DockInstrument.Paper, true);
         Legend(hull.hits + " HULL     " + hull.moveSpeed.ToString("0.#") + " SPEED", 76, 126, 350, 38, 21, lamps[room]);
         string gun = hull.primary == "BaseWeapon" ? "Twin cannon" : hull.primary == null ? "Unarmed" : FlightTrials.Display(hull.primary);
@@ -225,7 +227,7 @@ public sealed partial class HangarHub
         bool open = MetaProgress.CanFly(hull.frame);
         string status = !open ? "LOCKED    /    Clear Hell with " + (ShipFrame)(selection - 1) : MetaProgress.Ship == hull.frame ? "ON THE LAUNCH LINE" : "CLEARED FOR FLIGHT";
         Legend(status, 0, -130, 558, 50, 22, DockInstrument.Brass, true);
-        Legend("← →  HULL       ↑ ↓  DIFFICULTY      *  NO-HIT", 0, -189, 558, 33, 15, DockInstrument.Muted);
+        Legend("BOSS SERVICE PLATE     /     GOLD  *  NO-HIT", 0, -189, 558, 33, 15, DockInstrument.Muted);
         return open && MetaProgress.Ship != hull.frame ? "FLY THIS HULL" : "";
     }
     void ArchivePage()

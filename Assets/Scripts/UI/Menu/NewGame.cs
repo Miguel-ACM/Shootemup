@@ -63,7 +63,7 @@ public class NewGame : AMenuElement
             camera.transform.localPosition = rest;
         }
         LevelEnvironment.CarryTitle();
-        HangarHub.Enter(difficulty);
+        HangarShutter.Enter(difficulty);
     }
 }
 

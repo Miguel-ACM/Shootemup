@@ -169,8 +169,10 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 ## Hangar and campaign completion (2 November 2026)
 
-- Put the three randomized shop items on the central launch lane. The Fleet, Armory, Simulator and Recorder are side workstations. Select and confirm difficulty at the flight desk, then deliberately hold to launch.
-- Space the workstations and shop plinths along a vertically scrolling hangar. The camera follows the ship up and down the deck. Holding Focus doubles hangar movement speed and retains precision movement during a run.
+- Group the three randomized shop items closely on the right of the main lane. Mount their readable prices and descriptions in the world and show the bank balance only when approached.
+- Build actual flyable side rooms with lit entrances, paired across the corridor. Fleet is left and Armory right, with Simulator and Recorder opposite each other farther up. Screens belong on the room walls. The Fleet room shows all four parked hull models and a giant service screen with a directly drawn pixel portrait.
+- Keep title and hangar scenery continuous or cover new scenery with a transition. The title-to-hangar transfer now closes and reopens a pressure door. Keep the player's hull underneath the black side guards.
+- The camera follows travel vertically and into side rooms. Holding Focus doubles hangar movement speed and retains precision movement during a run.
 - GR07 is the only starting hull. Campaign Hell clears commission Lancer, Ember and Warden in sequence, each with its predecessor. Simulator loans and victories are separate from campaign ship progression. Keep boss and no-hit marks per hull and difficulty.
 - A Hell campaign clear now ends the run after its boss reward. Show the victory receipt, coins collected and banked, run stats and new unlocks, then return to the hangar. A loss also files a receipt and reveals its unlocks.
 - Show victory and game over directly over the vertical flight area. Fit the title, tally and unlocks within its edges and keep the side margins clear.

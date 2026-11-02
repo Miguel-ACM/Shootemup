@@ -284,7 +284,7 @@ public class Shipcontroller : MonoBehaviour
         move = GameInput.Snapshot.Move;
         Firing = !GameRules.playerDisabled && (GameInput.Snapshot.Primary || GameInput.Snapshot.Secondary);
         // The hangar flies the ship in from below the screen; clamping it into the arena would show it early.
-        if (HangarHub.HoldingShip)
+        if (HangarHub.HoldingShip || HangarShutter.Active)
             return;
         // Debug: K repairs the hull to full during a run (in the hangar K unlocks every item).
         if (!HangarHub.Active && health > 0 && Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
@@ -304,8 +304,10 @@ public class Shipcontroller : MonoBehaviour
         else
             waterVelocity = Vector2.zero;
 
-        float upperLimit = HangarHub.Active ? limits[0] + HangarHub.DeckExtension : limits[0];
-        transform.position = new Vector3(Mathf.Clamp(transform.position.x + horizontalMove, limits[2], limits[3]), Mathf.Clamp(transform.position.y + verticalMove, limits[1], upperLimit), transform.position.z);
+        float upperLimit = limits[0];
+        var destination = transform.position + new Vector3(horizontalMove, verticalMove);
+        transform.position = HangarHub.Active ? HangarHub.ConstrainTravel(transform.position, destination) :
+            new Vector3(Mathf.Clamp(destination.x, limits[2], limits[3]), Mathf.Clamp(destination.y, limits[1], upperLimit), transform.position.z);
         if (transform.position.x == limits[2] || transform.position.x == limits[3])
             waterVelocity.x = 0;
         if (transform.position.y == limits[1] || transform.position.y == upperLimit)
