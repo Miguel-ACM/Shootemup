@@ -43,6 +43,11 @@ public static class VerifyHangarDeck
         SessionState.SetBool("InspectDockLane", true);
         Run();
     }
+    public static void Endings()
+    {
+        SessionState.SetBool("InspectFlightEndings", true);
+        Run();
+    }
     public static void Polish()
     {
         SessionState.SetBool("InspectDockArt", true);
@@ -123,7 +128,7 @@ public sealed class HangarDeckReview : MonoBehaviour
             File.WriteAllText(VerifyHangarDeck.Folder + "/Result.txt", "PASS");
             yield break;
         }
-        if (SessionState.GetBool("InspectDockArt", false))
+        if (SessionState.GetBool("InspectDockArt", false) || SessionState.GetBool("InspectFlightEndings", false))
         {
             SessionState.SetBool("InspectDockArt", false);
             yield return CheckPresentation();
@@ -186,15 +191,20 @@ public sealed class HangarDeckReview : MonoBehaviour
     }
     IEnumerator CheckPresentation()
     {
-        yield return Capture("Concourse");
-        for (int i = 0; i < 5; i++)
+        bool endingsOnly = SessionState.GetBool("InspectFlightEndings", false);
+        SessionState.SetBool("InspectFlightEndings", false);
+        if (!endingsOnly)
         {
-            Call("OpenDock", i);
-            if (i != 1)
-                Call("Navigate", true, 1);
-            yield return Capture(new[] { "Fleet", "Armory", "Simulator", "Recorder", "Dispatch" }[i]);
-            Call("CloseDock");
-            yield return null;
+            yield return Capture("Concourse");
+            for (int i = 0; i < 5; i++)
+            {
+                Call("OpenDock", i);
+                if (i != 1)
+                    Call("Navigate", true, 1);
+                yield return Capture(new[] { "Fleet", "Armory", "Simulator", "Recorder", "Dispatch" }[i]);
+                Call("CloseDock");
+                yield return null;
+            }
         }
         // Exercise the regular departure and terminal routing callback with a post-boss fixture.
         hub.StartCoroutine((IEnumerator)typeof(HangarHub).GetMethod("Launch", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(hub, null));
@@ -216,11 +226,16 @@ public sealed class HangarDeckReview : MonoBehaviour
         Check(MetaProgress.LastFlight.outcome == "Victory" && MetaProgress.CanFly(ShipFrame.Lancer), "Hell reward exit ends campaign and releases Lancer");
         while (GameOverState.Active || (hub = FindAnyObjectByType<HangarHub>()) == null || CloudTransition.Busy || HangarHub.HoldingShip)
             yield return null;
-        Call("OpenDock", 0);
-        yield return Capture("StampedHull");
-        Call("CloseDock");
+        if (!endingsOnly)
+        {
+            Call("OpenDock", 0);
+            yield return Capture("StampedHull");
+            Call("CloseDock");
+        }
         Call("Switch", ShipFrame.Lancer);
-        MetaProgress.BeginRun();
+        hub.StartCoroutine((IEnumerator)typeof(HangarHub).GetMethod("Launch", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(hub, null));
+        while (FindAnyObjectByType<WaveOrchestrer>() == null || HangarHub.Launching || CloudTransition.Busy)
+            yield return null;
         MetaProgress.EngageBoss();
         MetaProgress.TookHit();
         MetaProgress.DefeatBoss();

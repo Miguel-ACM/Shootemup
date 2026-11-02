@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-// A short, unmistakable end to the run, followed by the existing title transition.
+// The final flight tally occupies the same portrait aperture as the district reveals.
 public sealed class GameOverState : MonoBehaviour
 {
     static GameOverState instance;
@@ -41,8 +41,8 @@ public sealed class GameOverState : MonoBehaviour
         instance.Build(dialog != null ? dialog.font : null);
     }
 
-    DockInstrument meter;
-    TextMeshProUGUI tally, stamps, footer;
+    RectTransform playfield;
+    TextMeshProUGUI score, coins, stamps, footer;
     FlightLog log;
     bool won;
     int sounded;
@@ -58,31 +58,62 @@ public sealed class GameOverState : MonoBehaviour
             difficulty = Difficulty.Current
         };
         var accent = won ? DockInstrument.Brass : DockInstrument.Sea;
-        meter = new DockInstrument(gameObject, font, accent, 32010);
-        group = meter.group;
-        meter.Label("FLIGHT DEBRIEF", -48, 255, 462, 32, 15, accent, true);
-        string title = won ? (log.contract == null ? "VICTORY" : "CERTIFIED") : "GAME OVER";
-        var headline = meter.Label(title, 0, 173, 558, 94, 74, won ? DockInstrument.Brass : DockInstrument.Paper, true);
-        lettering = headline.rectTransform;
+        var canvas = gameObject.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 32010;
+        var scaler = gameObject.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1280, 720);
+        scaler.matchWidthOrHeight = 1;
+        group = gameObject.AddComponent<CanvasGroup>();
+        group.blocksRaycasts = false;
+
+        playfield = DockInstrument.Block(transform, "Flight area", Vector2.zero,
+            new Vector2(405, 720), new Color(.013f, .025f, .035f, .86f));
+        playfield.gameObject.AddComponent<RectMask2D>();
+        var print = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+        string title = won ? (log.contract == null ? "VICTORY" : "CERTIFIED") : "GAME\nOVER";
+        lettering = Label(title, won ? 220 : 247, won ? 82 : 145, won ? 44 : 63, font,
+            won ? accent : DockInstrument.Paper).rectTransform;
         if (won)
         {
-            headline.rectTransform.anchoredPosition = new Vector2(70, 173);
-            headline.rectTransform.sizeDelta = new Vector2(412, 88);
             wings = new GameObject("Pilot wings", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
-            wings.transform.SetParent(meter.face, false);
+            wings.transform.SetParent(playfield, false);
             wings.sprite = Resources.Load<Sprite>("DockArt/Wings");
-            wings.rectTransform.sizeDelta = new Vector2(135, 68);
-            wings.rectTransform.anchoredPosition = new Vector2(-217, 173);
+            wings.rectTransform.sizeDelta = new Vector2(124, 62);
+            wings.rectTransform.anchoredPosition = new Vector2(0, 291);
+            wings.raycastTarget = false;
             ItemSound.Play("ready", .21f);
         }
-        meter.Label((log.contract ?? log.frame.ToString()).ToUpperInvariant() + "    /    " + log.difficulty.ToString().ToUpperInvariant()
-            + "    /    " + log.Duration, 0, 105, 558, 36, 19, DockInstrument.Muted);
-        meter.Label(log.route, 0, 65, 558, 48, 19, DockInstrument.Paper);
-        DockInstrument.Block(meter.face, "Tally rule", new Vector2(0, 35), new Vector2(558, 2), accent);
-        tally = meter.Label("", 0, -16, 558, 85, 23, DockInstrument.Paper);
-        stamps = meter.Label("", 0, -138, 558, 142, 19, accent, true);
-        footer = meter.Label("", 0, -252, 558, 36, 17, DockInstrument.Muted);
+        Label((log.contract ?? log.frame.ToString()).ToUpperInvariant() + "   /   " + log.difficulty.ToString().ToUpperInvariant()
+            + "   /   " + log.Duration, 151, 35, 18, print, DockInstrument.Paper);
+        Label(log.route, 111, 48, 18, print, DockInstrument.Muted);
+        Label("SCORE", 48, 22, 13, font, accent);
+        score = Label("", 9, 52, 34, font, DockInstrument.Paper);
+        coins = Label("", -39, 38, 22, print, DockInstrument.Brass);
+        Label(log.bosses + (log.bosses == 1 ? " boss" : " bosses") + "     " + log.clean + " no-hit     "
+            + log.hits + (log.hits == 1 ? " hit" : " hits") + "     " + log.peak + "× peak", -78, 32, 18, print, DockInstrument.Paper);
+        stamps = Label("", -192, 151, 20, print, accent);
+        footer = Label("", -321, 36, 14, font, DockInstrument.Muted);
         group.alpha = 0;
+    }
+
+    TextMeshProUGUI Label(string text, float y, float height, float size, TMP_FontAsset font, Color color)
+    {
+        var label = new GameObject("Result lettering", typeof(RectTransform), typeof(TextMeshProUGUI)).GetComponent<TextMeshProUGUI>();
+        label.transform.SetParent(playfield, false);
+        label.rectTransform.sizeDelta = new Vector2(365, height);
+        label.rectTransform.anchoredPosition = new Vector2(0, y);
+        if (font != null)
+            label.font = font;
+        label.fontSizeMax = size;
+        label.fontSizeMin = size * .65f;
+        label.enableAutoSizing = true;
+        label.alignment = TextAlignmentOptions.Center;
+        label.color = color;
+        label.raycastTarget = false;
+        label.text = text;
+        return label;
     }
 
     void Update()
@@ -97,8 +128,8 @@ public sealed class GameOverState : MonoBehaviour
             wings.color = new Color(1, 1, 1, strike);
         }
         float t = Mathf.SmoothStep(0, 1, (age - .35f) / 1.1f);
-        tally.text = "SCORE   " + Mathf.RoundToInt(log.score * t).ToString("N0") + "      COINS   +" + Mathf.RoundToInt(log.earned * t)
-            + "   <size=65%>(" + log.banked + " banked)</size>\n" + log.bosses + (log.bosses == 1 ? " boss     " : " bosses     ") + log.clean + " no-hit     " + log.hits + (log.hits == 1 ? " hit     " : " hits     ") + log.peak + "× peak";
+        score.text = Mathf.RoundToInt(log.score * t).ToString("N0");
+        coins.text = "+" + Mathf.RoundToInt(log.earned * t) + " coins    <size=80%>" + log.banked + " banked</size>";
         int count = Mathf.Clamp(Mathf.FloorToInt((age - 1.05f) * 3), 0, log.awards.Count);
         if (count > sounded)
         {
