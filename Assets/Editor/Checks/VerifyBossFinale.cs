@@ -326,7 +326,9 @@ public sealed class BossFinaleReview : MonoBehaviour
                 yield return null;
             Check(reward == null, label + ": actual item collection completes the reward");
             yield return new WaitForSeconds(.3f);
-            if (LevelRun.AutomaticNext.HasValue)
+            if (level == LevelId.Hell)
+                Check(GameOverState.Active && !LevelChoice.Active, label + ": Hell reward closes the campaign");
+            else if (LevelRun.AutomaticNext.HasValue)
             {
                 var expected = LevelRun.AutomaticNext.Value;
                 wait = Time.unscaledTime + 12;
