@@ -19,7 +19,7 @@ public sealed class RewardHexes : MonoBehaviour
         public EncounterKind kind;
         public Vector2 centre;
         public RectTransform root;
-        public CanvasGroup group;
+        public CanvasGroup group, body;
         public HexagonGraphic hover, track, charge;
         public Image icon;
         public float progress;
@@ -126,14 +126,17 @@ public sealed class RewardHexes : MonoBehaviour
             zone.root.anchorMin = zone.root.anchorMax = new Vector2(.5f, .5f);
             zone.group = zone.root.gameObject.AddComponent<CanvasGroup>();
             zone.group.alpha = 0;
+            var body = Rect(zone.root, "Offer body", Vector2.zero);
+            body.anchorMin = Vector2.zero;
+            body.anchorMax = Vector2.one;
+            body.offsetMin = body.offsetMax = Vector2.zero;
+            zone.body = body.gameObject.AddComponent<CanvasGroup>();
             // Faint smoked glass keeps hostile rounds readable through the zone.
-            Hex(zone.root, "Glass", Glass, 0, 0);
-            zone.hover = Hex(zone.root, "Hover tint", new Color(accent.r, accent.g, accent.b, 0), 0, 0);
-            Hex(zone.root, "Machined rim", new Color(Steel.r, Steel.g, Steel.b, .8f), 0, 2).shade = .5f;
-            zone.track = Hex(zone.root, "Charge track", new Color(accent.r, accent.g, accent.b, .3f), .07f, 3);
-            zone.charge = Hex(zone.root, "Charge", accent, .07f, 3);
-            zone.charge.progress = 0;
-            var icon = Rect(zone.root, "Encounter sprite", Vector2.zero);
+            Hex(body, "Glass", Glass, 0, 0);
+            zone.hover = Hex(body, "Hover tint", new Color(accent.r, accent.g, accent.b, 0), 0, 0);
+            Hex(body, "Machined rim", new Color(Steel.r, Steel.g, Steel.b, .8f), 0, 2).shade = .5f;
+            zone.track = Hex(body, "Charge track", new Color(accent.r, accent.g, accent.b, .3f), .07f, 3);
+            var icon = Rect(body, "Encounter sprite", Vector2.zero);
             icon.anchorMin = new Vector2(.3f, .3f);
             icon.anchorMax = new Vector2(.7f, .7f);
             icon.offsetMin = icon.offsetMax = Vector2.zero;
@@ -141,6 +144,9 @@ public sealed class RewardHexes : MonoBehaviour
             zone.icon.sprite = EncounterChoice.Icon(options[i]);
             zone.icon.preserveAspect = true;
             zone.icon.raycastTarget = false;
+            // Keep the filling border above, and outside, the body that fades on hover.
+            zone.charge = Hex(zone.root, "Charge", accent, .07f, 3);
+            zone.charge.progress = 0;
         }
         BuildPrompt(Array.IndexOf(options, EncounterKind.Item) >= 0 ? "Choose an item" : "Choose a reward");
         LateUpdate();
@@ -198,6 +204,7 @@ public sealed class RewardHexes : MonoBehaviour
             zone.progress = Mathf.Clamp01(zone.progress + Time.deltaTime / FillSeconds * (inside ? 1 : -1.5f));
             var accent = EncounterChoice.Accent(zone.kind);
             zone.hover.color = new Color(accent.r, accent.g, accent.b, Mathf.MoveTowards(zone.hover.color.a, inside ? HoverAlpha : 0, Time.deltaTime * .6f));
+            zone.body.alpha = Mathf.MoveTowards(zone.body.alpha, inside ? HoverAlpha : 1, Time.deltaTime * 6);
             zone.charge.progress = zone.progress;
             zone.charge.SetVerticesDirty();
             if (zone.kind == EncounterKind.Challenge)
