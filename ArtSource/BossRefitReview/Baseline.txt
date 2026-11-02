@@ -1,0 +1,2 @@
+PASS
+Captured the former Easy configuration and original station meshes without starting gameplay.

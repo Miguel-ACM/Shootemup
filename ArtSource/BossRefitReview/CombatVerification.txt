@@ -1,0 +1,66 @@
+PASS
+Completed all three-tier native boss combat checks. The review paused on a scaled-time wait at the title; that harness wait was corrected and the menu checked separately.
+isolated run controller loaded
+Easy Space has exactly one central weakpoint
+Space outer armor cannot bypass the reactor
+native shots at exterior station armor do no damage
+Easy Space native hits update the shared boss health
+homing targets the actual weakpoint
+Easy Space phase one fires within the existing pool
+shared health triggers a protected second phase
+phase break rejects weakpoint damage, coatings and score
+Easy has the correct phase count and resumes taking hits
+Easy crab head covers cheek/center x=-1,1
+Easy crab head covers cheek/center x=0
+Easy crab head covers cheek/center x=1,1
+crab eyes and pincers have no separate weakpoints
+Easy Hell native hits update the shared boss health
+homing targets the actual weakpoint
+Easy Hell phase one fires within the existing pool
+shared health triggers a protected second phase
+phase break rejects weakpoint damage, coatings and score
+Easy has the correct phase count and resumes taking hits
+Normal Space has exactly one central weakpoint
+Space outer armor cannot bypass the reactor
+native shots at exterior station armor do no damage
+Normal Space native hits update the shared boss health
+homing targets the actual weakpoint
+Normal Space phase one fires within the existing pool
+shared health triggers a protected second phase
+phase break rejects weakpoint damage, coatings and score
+Normal has the correct phase count and resumes taking hits
+Space keeps its intact-hull finale and prepared breakup
+Space victory still opens its mandatory item reward
+Normal crab head covers cheek/center x=-1,1
+Normal crab head covers cheek/center x=0
+Normal crab head covers cheek/center x=1,1
+crab eyes and pincers have no separate weakpoints
+Normal Hell native hits update the shared boss health
+homing targets the actual weakpoint
+Normal Hell phase one fires within the existing pool
+shared health triggers a protected second phase
+phase break rejects weakpoint damage, coatings and score
+Normal has the correct phase count and resumes taking hits
+Hell keeps its intact-hull finale and prepared breakup
+Hell victory still opens its mandatory item reward
+Hard Space has exactly one central weakpoint
+Space outer armor cannot bypass the reactor
+native shots at exterior station armor do no damage
+Hard Space native hits update the shared boss health
+homing targets the actual weakpoint
+Hard Space phase one fires within the existing pool
+shared health triggers a protected second phase
+phase break rejects weakpoint damage, coatings and score
+Hard has the correct phase count and resumes taking hits
+Space retains its Hard-only third phase
+Hard crab head covers cheek/center x=-1,1
+Hard crab head covers cheek/center x=0
+Hard crab head covers cheek/center x=1,1
+crab eyes and pincers have no separate weakpoints
+Hard Hell native hits update the shared boss health
+homing targets the actual weakpoint
+Hard Hell phase one fires within the existing pool
+shared health triggers a protected second phase
+phase break rejects weakpoint damage, coatings and score
+Hard has the correct phase count and resumes taking hits
+Hell retains its Hard-only third phase

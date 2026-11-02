@@ -1,0 +1,5 @@
+PASS
+title Continue row exists
+title offers all three difficulties and score factors
+Back returns from difficulty selection
+no runtime errors

@@ -1,0 +1,2 @@
+PASS
+100 one-point awards produce Easy=50, Normal=100, Hard=200. Combo growth and the coin wallet stay independent.

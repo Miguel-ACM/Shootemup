@@ -1,0 +1,2 @@
+PASS
+Normal exactly preserves former Easy: global factors, 76 actor configurations and 40 production wave signatures.
