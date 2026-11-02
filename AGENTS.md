@@ -136,6 +136,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Helix rounds spin as they travel. Destructible plasma is sturdy (60 health) and shows a shrinking life ring.
 - Latest boss targets (2 November 2026): Space uses a connected armored orbital station with one central reactor weakpoint; remove the exterior generator/turret weakpoints and their core gate. The crab has one shared weakpoint across its whole head; its two eyes remain firing ports. Preserve phase breaks, Hard's third phases, full fight health, local hit feedback, continuous finales and mandatory boss rewards.
 - Latest difficulty tiers (2 November 2026): the former Easy is now Normal, preserving its exact balance and authored scores. Add a gentler Easy beneath it with fewer rounds, longer rests, slower hostile travel and lower enemy health. Hard retains its full geometry and third phases. Score factors are Easy ×0.5, Normal ×1 and Hard ×2, independent of combo growth and coins. Default new runs to Normal.
+- Latest Space visual correction (2 November 2026) supersedes the armored station refit: the boss must resemble a black hole only, with a dark event horizon, animated luminous accretion disk and lensed light. No hull, wings, machinery or other structure. Keep the central target, gravity attacks, phases and rewards; the attached laser originates at the singularity.
 
 ## Items and decisions
 

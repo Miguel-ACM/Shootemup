@@ -22,8 +22,7 @@ using System.Collections;
 public sealed partial class SpaceCitadelBoss
 {
     Vector3 Core => Reactor != null ? Reactor.transform.position : transform.position;
-    Transform well;
-    LineRenderer horizon;
+    MaterialPropertyBlock wellInk;
     protected override void Attack()
     {
         if (Reactor != null)
@@ -55,34 +54,17 @@ public sealed partial class SpaceCitadelBoss
 
     Transform CoreBody => Reactor != null ? Reactor.transform : transform;
 
-    // The event horizon: a pulsing ring on the core while it absorbs or expels.
-    void OpenWell()
+    // Accretion brightens the disk itself; the singularity stays dark.
+    void OpenWell() => SetAccretion(1);
+    void CloseWell() => SetAccretion(0);
+    void SetAccretion(float strength)
     {
-        if (well == null)
-        {
-            well = new GameObject("Gravity well").transform;
-            horizon = CombatVisuals.Line(well, LevelProjectilePalette.Accent(LevelId.Space), .06f);
-            ItemSpark.Sprite(well, "Well core", "standard", LevelProjectilePalette.Accent(LevelId.Space), .6f);
-        }
-        well.gameObject.SetActive(true);
-        well.position = new Vector3(Core.x, Core.y, -.4f);
-    }
-
-    void CloseWell()
-    {
-        if (well != null)
-            well.gameObject.SetActive(false);
-    }
-
-    void LateUpdate()
-    {
-        if (completing || health <= 0)
-            CloseWell();
-        if (well != null && well.gameObject.activeSelf)
-        {
-            well.position = new Vector3(Core.x, Core.y, -.4f);
-            CombatVisuals.Ring(horizon, well.position, .55f + .12f * Mathf.Sin(Time.time * 6));
-        }
+        if (Hull == null) return;
+        if (wellInk == null) wellInk = new MaterialPropertyBlock();
+        var renderer = Hull.GetComponent<MeshRenderer>();
+        renderer.GetPropertyBlock(wellInk);
+        wellInk.SetFloat("_Feeding", strength);
+        renderer.SetPropertyBlock(wellInk);
     }
 
     // A point just outside the screen, walking its edge clockwise from the top centre.
@@ -228,12 +210,6 @@ public sealed partial class SpaceCitadelBoss
         centralLaser.warning = 1.1f;
         centralLaser.activeTime = phaseTwo ? 1.8f : 1.4f;
         centralLaser.width = phaseTwo ? .42f : .34f;
-    }
-
-    void OnDestroy()
-    {
-        if (well != null)
-            Destroy(well.gameObject);
     }
 
     // Hard final phase, Big Crunch: absorbing and expelling at once. Every 2.5 s the

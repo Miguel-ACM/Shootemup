@@ -129,6 +129,8 @@ public abstract class DistrictEnemy : AEnemy
         var renderer = model.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = enemy is SpaceSatellite || enemy is SpaceCitadelBoss || enemy.hull == 60 ? SpaceMaterials.Fleet : enemy.hull >= 35 && enemy.hull <= 38 || enemy.hull == 57 ? CandyMaterials.Glaze : enemy is FieldsBomberBoss ? CombatMaterials.Fortress : CombatMaterials.Fleet;
         renderer.sortingLayerName = "Enemy";
+        if (enemy is SpaceCitadelBoss)
+            renderer.sharedMaterial = SpaceBlackHoleVisual.Body;
         if (enemy.hull >= 61)
             renderer.sharedMaterial = EnemyExpansion.Material(enemy.hull);
         if (!(enemy is SpaceCitadelBoss))

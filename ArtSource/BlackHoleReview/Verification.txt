@@ -1,0 +1,33 @@
+PASS
+isolated run controller loaded
+Easy Space has exactly one central weakpoint
+Space outer armor cannot bypass the reactor
+native shots at exterior station armor do no damage
+Easy Space native hits update the shared boss health
+homing targets the actual weakpoint
+Easy Space phase one fires within the existing pool
+shared health triggers a protected second phase
+phase break rejects weakpoint damage, coatings and score
+Easy has the correct phase count and resumes taking hits
+Normal Space has exactly one central weakpoint
+Space outer armor cannot bypass the reactor
+native shots at exterior station armor do no damage
+Normal Space native hits update the shared boss health
+homing targets the actual weakpoint
+Normal Space phase one fires within the existing pool
+shared health triggers a protected second phase
+phase break rejects weakpoint damage, coatings and score
+Normal has the correct phase count and resumes taking hits
+Space keeps its intact-hull finale and prepared breakup
+Space victory still opens its mandatory item reward
+Hard Space has exactly one central weakpoint
+Space outer armor cannot bypass the reactor
+native shots at exterior station armor do no damage
+Hard Space native hits update the shared boss health
+homing targets the actual weakpoint
+Hard Space phase one fires within the existing pool
+shared health triggers a protected second phase
+phase break rejects weakpoint damage, coatings and score
+Hard has the correct phase count and resumes taking hits
+Space retains its Hard-only third phase
+no runtime errors

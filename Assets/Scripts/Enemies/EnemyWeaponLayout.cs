@@ -103,7 +103,7 @@ public static class EnemyWeaponLayout
             case 44:
                 return new[] { P(0, -.34f) };
             case 45:
-                return new[] { P(0, -1.48f, -.3f), P(-.4f, -.9f, -.4f), P(.4f, -.9f, -.4f), P(0, -.7f, -.5f) };
+                return new[] { P(0, 0, -.6f) };
             case 46:
                 return new[] { P(0, -.48f, -.4f) };
             case 47:

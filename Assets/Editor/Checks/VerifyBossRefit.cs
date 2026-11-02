@@ -105,8 +105,8 @@ public static class VerifyBossRefit
             }
             else
             {
-                Model(root, IndustrialMeshFactory.CitadelRefit(), Vector3.zero);
-                Model(root, IndustrialMeshFactory.CitadelReactor(), new Vector3(0, 0, -.38f));
+                Model(root, IndustrialMeshFactory.CitadelRefit(), Vector3.zero).GetComponent<MeshRenderer>().sharedMaterial = SpaceBlackHoleVisual.Body;
+                Model(root, IndustrialMeshFactory.CitadelReactor(), new Vector3(0, 0, -.38f)).GetComponent<MeshRenderer>().sharedMaterial = SpaceBlackHoleVisual.Core;
             }
             foreach (var child in root.GetComponentsInChildren<Transform>()) child.gameObject.layer = 31;
             for (int view = 0; view < 2; view++)
@@ -215,7 +215,7 @@ public sealed class BossRefitReview : MonoBehaviour
             var menu = FindAnyObjectByType<NewGame>(); Check(menu != null, "title Continue row exists");
             menu.OnAccept(); yield return new WaitForSecondsRealtime(.3f);
             var labels = FindObjectsByType<DifficultyOption>().Select(o => o.GetComponentInChildren<TMPro.TextMeshProUGUI>().text).ToArray();
-            Check(labels.Length == 4 && labels.Any(s => s.Contains("NORMAL")) && labels.Any(s => s.Contains("0.5×")) && labels.Any(s => s.Contains("2×")), "title offers all three difficulties and score factors");
+            Check(labels.Length == 4 && labels.Any(s => s.Contains("NORMAL")) && labels.Any(s => s.Contains("0.5Ã—")) && labels.Any(s => s.Contains("2Ã—")), "title offers all three difficulties and score factors");
             yield return Capture("DifficultyMenu"); menu.Choose(3); yield return null;
             Check(FindObjectsByType<DifficultyOption>().Length == 0, "Back returns from difficulty selection");
         Check(errors.Count == 0, "no runtime errors");

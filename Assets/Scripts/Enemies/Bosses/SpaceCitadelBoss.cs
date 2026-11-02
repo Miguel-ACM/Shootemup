@@ -53,7 +53,7 @@ public sealed partial class SpaceCitadelBoss : DistrictBoss
         base.damage(2 / Mathf.Max(.001f, GameRules.enemyDamageReceived));
     }
 
-    public override void damage(float amount) { } // Armor cannot bypass the central reactor.
+    public override void damage(float amount) { } // Only the central event horizon accepts hits.
 }
 
 public sealed class SpaceBossPart : AEnemy
@@ -64,18 +64,18 @@ public sealed class SpaceBossPart : AEnemy
     public override bool CanReceiveDamage => base.CanReceiveDamage && !owner.Invulnerable;
     public static SpaceBossPart Create(SpaceCitadelBoss owner, Transform parent, float health)
     {
-        var go = new GameObject("Central reactor weakpoint");
+        var go = new GameObject("Central event horizon weakpoint");
         go.transform.SetParent(parent, false);
         go.transform.localPosition = new Vector3(0, 0, -.38f);
         go.layer = 8; go.tag = "Enemy";
         go.AddComponent<SpriteRenderer>().enabled = false;
         var collider = go.AddComponent<CircleCollider2D>();
         collider.isTrigger = true; collider.radius = .76f;
-        var visual = new GameObject("Recessed reactor lens");
+        var visual = new GameObject("Dark event horizon");
         visual.transform.SetParent(go.transform, false);
         visual.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CitadelReactor();
         var renderer = visual.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = SpaceMaterials.Fleet; renderer.sortingLayerName = "Enemy";
+        renderer.sharedMaterial = SpaceBlackHoleVisual.Core; renderer.sortingLayerName = "Enemy";
         PartHitFeedback.Bind(visual.transform);
         var part = go.AddComponent<SpaceBossPart>();
         part.owner = owner; part.health = health;
@@ -93,7 +93,7 @@ public sealed class SpaceBossPart : AEnemy
     {
         health = 0;
         GetComponent<Collider2D>().enabled = false;
-        enabled = false; // The reactor remains intact for the owner's continuous finale.
+        enabled = false; // The event horizon remains visible for the continuous finale.
     }
     protected override void OnBecameInvisible() { }
 }
