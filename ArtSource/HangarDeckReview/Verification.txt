@@ -11,3 +11,13 @@ Dock review  loss files a new boss stamp and preserves hull lock
 Dock review  no gameplay errors
 Dock review  final lane lighting
 Dock build Succeeded errors=0 warnings=0
+Dock review  ordinary hangar speed
+Dock review  Focus doubles hangar travel speed
+Dock review  passed the first workshops
+Dock review  camera follows beyond combat ceiling
+Dock review  returned to lower deck
+Dock review  camera follows back down the lane
+Dock review  flew the full length of the deck
+Dock review  gate reachable and camera stops at far end
+Dock review  launch restores combat camera and ship position
+Dock review  scrolling lane and campaign handoff

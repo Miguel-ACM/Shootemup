@@ -9,6 +9,7 @@ using TMPro;
 /// Dockside workshops flank a central outfitting lane. The persistent L1 core carries
 /// the player and instruments across the handoff from the hangar to the additive run.
 /// </summary>
+[DefaultExecutionOrder(50)]
 public sealed partial class HangarHub : MonoBehaviour
 {
     public static bool Active
@@ -19,7 +20,8 @@ public sealed partial class HangarHub : MonoBehaviour
     static RunDifficulty difficulty = RunDifficulty.Normal;
     // Where the title's tunnel came to rest, so the hangar continues from exactly that view.
     static float tunnelTravel;
-    static readonly Vector2[] plinthSpots = { new Vector2(0, -4), Vector2.zero, new Vector2(0, 4) };
+    static readonly Vector2[] plinthSpots = { new Vector2(0, 2), new Vector2(0, 13), new Vector2(0, 24) };
+    public const float DeckExtension = 36f;
     const float PlinthReach = .95f, GateHalfWidth = 1.55f;
 
     sealed class Plinth
@@ -110,6 +112,10 @@ public sealed partial class HangarHub : MonoBehaviour
     Shipcontroller player;
     Inputs input;
     Vector3 center;
+    UnityEngine.Camera view;
+    EZCameraShake.CameraShaker shaker;
+    float cameraTravel;
+
     Material scenery;
     DecisionOverlay overlay;
     Dialog dialog;
@@ -121,8 +127,9 @@ public sealed partial class HangarHub : MonoBehaviour
     {
         var go = GameObject.FindGameObjectWithTag("Player");
         player = go != null ? go.GetComponent<Shipcontroller>() : null;
-        var camera = UnityEngine.Camera.main;
-        center = camera != null ? camera.transform.position : Vector3.zero;
+        view = UnityEngine.Camera.main;
+        center = view != null ? view.transform.position : Vector3.zero;
+        shaker = view != null ? view.GetComponent<EZCameraShake.CameraShaker>() : null;
         scenery = new Material(Resources.Load<Shader>("LevelScenery"));
         BuildHall();
         BuildShop();
@@ -145,14 +152,24 @@ public sealed partial class HangarHub : MonoBehaviour
     void BuildHall()
     {
         // Normally the title's own tunnel came along; build a matching one only when it did not.
-        for (int i = 0; i < 4 && !LevelEnvironment.CarriesTitle; i++)
+        for (int i = 0; i < 4; i++)
         {
             // The title's camera sits at the origin; keep each section at the same place on screen.
             float y = center.y + LevelEnvironment.SectionY(i, tunnelTravel);
-            Scenery(LevelEnvironment.KitMesh("TunnelGround" + i), y, 90, -50, .8f);
-            Scenery(LevelEnvironment.KitMesh("TunnelDetail" + i), y, 90, -40, .8f);
-            Scenery(LevelEnvironment.KitMesh("TunnelNear" + i), y, 76, -25, .8f);
+            if (!LevelEnvironment.CarriesTitle)
+                HallSection(i, y);
+            // Continue the same four-section tunnel beyond the carried title scenery.
+            float next = center.y + LevelEnvironment.SectionY(i, tunnelTravel + DeckExtension) + DeckExtension;
+            if (next > y + 1f)
+                HallSection(i, next);
         }
+    }
+
+    void HallSection(int i, float y)
+    {
+        Scenery(LevelEnvironment.KitMesh("TunnelGround" + i), y, 90, -50, .8f);
+        Scenery(LevelEnvironment.KitMesh("TunnelDetail" + i), y, 90, -40, .8f);
+        Scenery(LevelEnvironment.KitMesh("TunnelNear" + i), y, 76, -25, .8f);
     }
 
     void Scenery(Mesh mesh, float y, float z, int order, float width)
@@ -253,7 +270,7 @@ public sealed partial class HangarHub : MonoBehaviour
         walletCount.text = Mathf.RoundToInt(shownCoins).ToString();
         var camera = UnityEngine.Camera.main;
         var canvasRect = (RectTransform)wallet.parent;
-        var viewport = camera.WorldToViewportPoint(new Vector3(center.x + 4, center.y, 0));
+        var viewport = camera.WorldToViewportPoint(new Vector3(center.x + 4, view.transform.position.y, 0));
         wallet.anchoredPosition = new Vector2((viewport.x - .5f) * canvasRect.rect.width, (viewport.y - .5f) * canvasRect.rect.height);
         wallet.gameObject.SetActive(Slide(plinths.Count) < .5f);
     }
@@ -263,7 +280,7 @@ public sealed partial class HangarHub : MonoBehaviour
         // A faint mist across the open doors, fading downward; flying into it launches the run.
         var bottom = new Color(.62f, .74f, .8f, 0);
         var top = new Color(.7f, .8f, .86f, 0);
-        float width = GateHalfWidth + .9f, low = GateY - 1.6f, high = center.y + 9.5f;
+        float width = GateHalfWidth + .9f, low = GateY - 1.6f, high = GateY + 2f;
         var mesh = new Mesh { name = "Launch mist" };
         mesh.vertices = new[] { new Vector3(-width, low), new Vector3(-width, high), new Vector3(width, high), new Vector3(width, low) };
         mesh.colors = new[] { bottom, top, top, bottom };
@@ -344,7 +361,7 @@ public sealed partial class HangarHub : MonoBehaviour
     }
 
     // The very top of the reachable arena.
-    float GateY => Camera.UpLimit - .1f;
+    float GateY => Camera.UpLimit + DeckExtension - .1f;
     Vector3 Spot(Vector2 local, float z) => new Vector3(center.x + local.x, center.y + local.y, z);
 
     // Arrival: the ship rises from below, the docks and plinths slide in from the sides and the light
@@ -402,6 +419,11 @@ public sealed partial class HangarHub : MonoBehaviour
             ItemSound.Play("itemSalvage", .16f);
         }
         var p = player.transform.position;
+        if (!Arriving && room < 0)
+        {
+            float target = Mathf.Clamp(p.y - center.y, 0, DeckExtension);
+            SetCameraTravel(Mathf.Lerp(cameraTravel, target, 1 - Mathf.Exp(-8 * Time.deltaTime)));
+        }
         if (UpdateDock(p)) return;
         int shop = NearestPlinth(p);
         for (int i = 0; i < plinths.Count; i++)
@@ -436,6 +458,18 @@ public sealed partial class HangarHub : MonoBehaviour
             else
                 dialog.Hide();
         }
+    }
+
+    void SetCameraTravel(float travel)
+    {
+        if (view != null)
+        {
+            var delta = Vector3.up * (travel - cameraTravel);
+            view.transform.position += delta;
+            if (shaker != null)
+                shaker.RestPositionOffset += view.transform.parent != null ? view.transform.parent.InverseTransformVector(delta) : delta;
+        }
+        cameraTravel = travel;
     }
 
     int NearestPlinth(Vector3 p)
@@ -515,7 +549,7 @@ public sealed partial class HangarHub : MonoBehaviour
         // The controller clamps the ship inside the arena, so it lets go first.
         player.enabled = false;
         var ship = player.transform;
-        float top = center.y + UnityEngine.Camera.main.orthographicSize + 1.5f, speed = 1f;
+        float top = view.transform.position.y + view.orthographicSize + 1.5f, speed = 1f;
         while (ship.position.y < top)
         {
             speed += Time.deltaTime * 6;
@@ -533,11 +567,12 @@ public sealed partial class HangarHub : MonoBehaviour
     // The run begins behind flowing clouds: the small Run scene activates additively (no Single load and no
     // automatic asset unload), the hangar scene unloads a few frames later, and the core's heavier parts start
     // one per frame, so no frame has to absorb the whole start.
-    static IEnumerator StartRun(Shipcontroller player, Vector3 parkedAt, Dialog dialog, AsyncOperation runLoad)
+    IEnumerator StartRun(Shipcontroller player, Vector3 parkedAt, Dialog dialog, AsyncOperation runLoad)
     {
         Launching = true;
         while (runLoad.progress < .9f)
             yield return null;
+        SetCameraTravel(0);
         Active = false;
         GameRules.StartNewRun(FlightTrials.Active?.difficulty ?? difficulty);
         LevelRun.Reset(FlightTrials.Active?.district ?? LevelId.Fields);
@@ -587,6 +622,7 @@ public sealed partial class HangarHub : MonoBehaviour
             input.PlayerControls.ActiveLeft.started -= Interact;
             input.PlayerControls.ActiveRight.started -= Interact;
         }
+        SetCameraTravel(0);
         ReleaseExhibit();
         if (scenery != null)
             Destroy(scenery);

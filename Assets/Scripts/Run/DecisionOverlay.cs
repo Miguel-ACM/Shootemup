@@ -115,14 +115,27 @@ public sealed class DecisionOverlay : MonoBehaviour
         foreach (var offer in offers)
         {
             bool show = offer.item != null && offer.item.Settled && !offer.item.Collected && !offer.item.IsDismissing;
-            offer.plate.gameObject.SetActive(show);
             if (!show)
+            {
+                offer.plate.gameObject.SetActive(false);
                 continue;
+            }
             offer.fade.alpha = Mathf.MoveTowards(offer.fade.alpha, 1, Time.deltaTime * 6);
             // The camera renders into the low-resolution scene texture, so go through the viewport.
             var viewport = camera.WorldToViewportPoint(offer.item.transform.position);
+            bool visible = !HangarHub.Active || (viewport.y >= 0 && viewport.y <= 1);
+            offer.plate.gameObject.SetActive(visible);
+            if (!visible)
+                continue;
             RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, new Vector2(viewport.x * Screen.width, viewport.y * Screen.height), null, out var point);
-            offer.plate.anchoredPosition = new Vector2(Mathf.Clamp(point.x, -160, 160), Mathf.Clamp(point.y + 46, -260, 320));
+            var labelPoint = point + Vector2.up * 46;
+            if (HangarHub.Active)
+            {
+                // Dockside prices travel with their plinths along the scrolling lane.
+                offer.plate.anchoredPosition = labelPoint;
+            }
+            else
+                offer.plate.anchoredPosition = new Vector2(Mathf.Clamp(point.x, -160, 160), Mathf.Clamp(labelPoint.y, -260, 320));
         }
     }
 

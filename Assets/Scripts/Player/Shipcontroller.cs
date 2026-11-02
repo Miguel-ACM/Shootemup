@@ -289,7 +289,8 @@ public class Shipcontroller : MonoBehaviour
         // Debug: K repairs the hull to full during a run (in the hangar K unlocks every item).
         if (!HangarHub.Active && health > 0 && Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
             Repair(Mathf.CeilToInt(maxHealth));
-        speedMultiplier = GameInput.Snapshot.Focus ? slowMultiplier : 1;
+        float focusSpeed = HangarHub.Active ? 2f : slowMultiplier;
+        speedMultiplier = GameInput.Snapshot.Focus ? focusSpeed : 1;
         horizontalMove = move.x * GameRules.playerMoveSpeed * GameClock.PlayerDelta * speedMultiplier;
         verticalMove = move.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * GameClock.PlayerDelta * speedMultiplier;
         if (LevelRun.Current == LevelId.Underwater && !CombatDecision.Active && !CloudTransition.Busy)
@@ -303,10 +304,11 @@ public class Shipcontroller : MonoBehaviour
         else
             waterVelocity = Vector2.zero;
 
-        transform.position = new Vector3(Mathf.Clamp(transform.position.x + horizontalMove, limits[2], limits[3]), Mathf.Clamp(transform.position.y + verticalMove, limits[1], limits[0]), transform.position.z);
+        float upperLimit = HangarHub.Active ? limits[0] + HangarHub.DeckExtension : limits[0];
+        transform.position = new Vector3(Mathf.Clamp(transform.position.x + horizontalMove, limits[2], limits[3]), Mathf.Clamp(transform.position.y + verticalMove, limits[1], upperLimit), transform.position.z);
         if (transform.position.x == limits[2] || transform.position.x == limits[3])
             waterVelocity.x = 0;
-        if (transform.position.y == limits[1] || transform.position.y == limits[0])
+        if (transform.position.y == limits[1] || transform.position.y == upperLimit)
             waterVelocity.y = 0;
 
     }

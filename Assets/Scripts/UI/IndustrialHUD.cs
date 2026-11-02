@@ -177,7 +177,8 @@ public sealed class IndustrialHUD : MonoBehaviour
         {
             sidePanel.anchoredPosition = new Vector2((float)Screen.width / Screen.height > .72f ? -44 : 6, 6);
         }
-        if (player == null || !player.enabled)
+        // Dock travel and arrival use the hangar's world-space limits.
+        if (HangarHub.Active || player == null || !player.enabled)
             return;
         var position = player.transform.position;
         position.y = Mathf.Clamp(position.y, bottomLimit, topLimit);

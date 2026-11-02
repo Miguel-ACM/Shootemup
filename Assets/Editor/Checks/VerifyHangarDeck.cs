@@ -7,6 +7,8 @@ using System.Reflection;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 
 [InitializeOnLoad]
 public static class VerifyHangarDeck
@@ -123,8 +125,8 @@ public sealed class HangarDeckReview : MonoBehaviour
         if (SessionState.GetBool("InspectDockLane", false))
         {
             SessionState.SetBool("InspectDockLane", false);
-            yield return Capture("Concourse");
-            Check(error == null, error ?? "final lane lighting");
+            yield return TraverseLane();
+            Check(error == null, error ?? "scrolling lane and campaign handoff");
             File.WriteAllText(VerifyHangarDeck.Folder + "/Result.txt", "PASS");
             yield break;
         }
@@ -189,6 +191,55 @@ public sealed class HangarDeckReview : MonoBehaviour
         Check(GameOverState.Active && MetaProgress.ContractClear("Cold Delivery") && MetaProgress.IsUnlocked("Thermos"), "sim objective certifies blueprint");
         File.WriteAllText(VerifyHangarDeck.Folder + "/Result.txt", "PASS");
     }
+    IEnumerator TraverseLane()
+    {
+        var keys = InputSystem.AddDevice<Keyboard>();
+        void Press(params Key[] state)
+        {
+            InputSystem.QueueStateEvent(keys, new KeyboardState(state));
+            InputSystem.Update();
+        }
+        var ship = FindAnyObjectByType<Shipcontroller>().transform;
+        var view = UnityEngine.Camera.main.transform;
+        float cameraOrigin = view.position.y, spawn = ship.position.y;
+        yield return Capture("Concourse");
+        Press(Key.UpArrow);
+        yield return null;
+        Check(Mathf.Abs(ship.position.y - spawn - GameRules.playerMoveSpeed * 1.2f * Time.deltaTime) < .05f, "ordinary hangar speed");
+        float before = ship.position.y;
+        Press(Key.UpArrow, Key.LeftShift);
+        yield return null;
+        Check(Mathf.Abs(ship.position.y - before - GameRules.playerMoveSpeed * 2.4f * Time.deltaTime) < .05f, "Focus doubles hangar travel speed");
+        float deadline = Time.realtimeSinceStartup + 8;
+        while (ship.position.y < 16 && Time.realtimeSinceStartup < deadline) yield return null;
+        Check(ship.position.y >= 16, "passed the first workshops");
+        Press();
+        yield return new WaitForSeconds(.45f);
+        Check(view.position.y > cameraOrigin + 14 && Mathf.Abs(ship.position.y - view.position.y) < .3f, "camera follows beyond combat ceiling");
+        yield return Capture("MidConcourse");
+        Press(Key.DownArrow, Key.LeftShift);
+        deadline = Time.realtimeSinceStartup + 8;
+        while (ship.position.y > 5 && Time.realtimeSinceStartup < deadline) yield return null;
+        Check(ship.position.y <= 5, "returned to lower deck");
+        Press();
+        yield return new WaitForSeconds(.55f);
+        Check(Mathf.Abs(ship.position.y - view.position.y) < .3f, "camera follows back down the lane");
+        Press(Key.UpArrow, Key.LeftShift);
+        deadline = Time.realtimeSinceStartup + 10;
+        float gate = Camera.UpLimit + HangarHub.DeckExtension - .1f;
+        while (ship.position.y < gate && Time.realtimeSinceStartup < deadline) yield return null;
+        Check(ship.position.y >= gate, "flew the full length of the deck");
+        Press();
+        yield return new WaitForSeconds(.5f);
+        Check(!CloudTransition.Busy && Mathf.Abs(view.position.y - cameraOrigin - HangarHub.DeckExtension) < .3f, "gate reachable and camera stops at far end");
+        yield return Capture("DepartureLane");
+        Press(Key.Z);
+        while (HangarHub.Active || HangarHub.Launching || CloudTransition.Busy) yield return null;
+        Press();
+        Check(Mathf.Abs(view.position.y - cameraOrigin) < .05f && Mathf.Abs(ship.position.y - spawn) < .1f, "launch restores combat camera and ship position");
+        InputSystem.RemoveDevice(keys);
+    }
+
     IEnumerator CheckPresentation()
     {
         bool endingsOnly = SessionState.GetBool("InspectFlightEndings", false);

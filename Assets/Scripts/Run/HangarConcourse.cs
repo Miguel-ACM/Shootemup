@@ -10,8 +10,10 @@ public sealed partial class HangarHub
     {
         Fleet, Armory, Simulator, Recorder, Flight
     }
-    static readonly Vector2[] berths = { new Vector2(-3.15f,-2.65f),new Vector2(3.15f,-2.65f),
-        new Vector2(-3.15f,2.65f),new Vector2(3.15f,2.65f),new Vector2(2.9f,6.25f) };
+    static readonly Vector2[] berths = {
+        new Vector2(-3.15f, -4), new Vector2(3.15f, 7), new Vector2(-3.15f, 18),
+        new Vector2(3.15f, 29), new Vector2(2.9f, 38)
+    };
     static readonly string[] signs = { "FLEET", "ARMORY", "SIMULATOR", "RECORDER", "FLIGHT DESK" };
     static readonly Color[] lamps = { DockInstrument.Sea,DockInstrument.Brass,new Color(.70f,.65f,.98f),
         new Color(.55f,.77f,.94f),new Color(.96f,.59f,.39f) };
@@ -57,9 +59,9 @@ public sealed partial class HangarHub
     {
         for (int side = -1; side <= 1; side += 2)
         {
-            Strip("Runway channel", new Vector2(side * 1.38f, 0), new Vector2(.18f, 16), Deck, -12);
-            for (int i = -7; i <= 7; i++)
-                Strip("Inset runway light", new Vector2(side * 1.38f, i), new Vector2(.065f, i % 2 == 0 ? .47f : .19f), i % 2 == 0 ? DockInstrument.Sea : Metal, -11);
+            Strip("Runway channel", new Vector2(side * 1.38f, DeckExtension * .5f), new Vector2(.18f, 16 + DeckExtension), Deck, -12);
+            for (int i = -7; i <= 7 + DeckExtension; i += 2)
+                Strip("Inset runway light", new Vector2(side * 1.38f, i), new Vector2(.065f, i % 4 == 1 ? .47f : .19f), i % 4 == 1 ? DockInstrument.Sea : Metal, -11);
         }
         for (int i = 0; i < berths.Length; i++)
         {
@@ -90,9 +92,9 @@ public sealed partial class HangarHub
             movingParts.Add(Strip("Status diode", berths[i] + new Vector2(.82f, -.40f), new Vector2(.075f, .075f), lamps[i], -5));
         Strip("Gantry track", new Vector2(-2.9f, 5.15f), new Vector2(2.8f, .08f), Metal);
         trolley = Strip("Overhead hoist", new Vector2(-2.9f, 5.1f), new Vector2(.58f, .27f), DockInstrument.Brass, -6);
-        Strip("Departure latch", new Vector2(0, 6.65f), new Vector2(2.1f, .12f), Metal);
-        gateGauge = Strip("Launch charge", new Vector2(0, 6.65f), new Vector2(.001f, .12f), DockInstrument.Brass, -5);
-        Stencil("LAUNCH", new Vector2(0, 7.05f), 2.8f, DockInstrument.Paper);
+        Strip("Departure latch", new Vector2(0, DeckExtension + 6.65f), new Vector2(2.1f, .12f), Metal);
+        gateGauge = Strip("Launch charge", new Vector2(0, DeckExtension + 6.65f), new Vector2(.001f, .12f), DockInstrument.Brass, -5);
+        Stencil("LAUNCH", new Vector2(0, DeckExtension + 7.05f), 2.8f, DockInstrument.Paper);
         dockHint = Stencil("", new Vector2(0, -6.15f), 2.7f, DockInstrument.Paper);
     }
 
@@ -129,6 +131,7 @@ public sealed partial class HangarHub
         int near = NearbyDock(p), stock = NearestPlinth(p);
         string text = gate ? "HOLD  " + DockInstrument.FireKey() + "   /   LAUNCH" : near >= 0 ? DockInstrument.FireKey() + "   /   " + signs[near] :
             stock >= 0 ? DockInstrument.FireKey() + "  BUY     " + DockInstrument.FireKey(true) + "  PIN" : "";
+        dockHint.transform.position = Spot(new Vector2(0, cameraTravel - 6.15f), 2);
         dockHint.text = text;
         gateHold = gate && !Arriving && !CloudTransition.Busy && !Menu.GameplayPaused && GameInput.Snapshot.Primary ?
             Mathf.Min(1, gateHold + Time.deltaTime) : 0;
