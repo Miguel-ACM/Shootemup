@@ -30,6 +30,16 @@ public abstract class AActiveItem : AItem
         return 0;
     }
 
+    // Apply efficiency to both the affordability check and the energy actually spent,
+    // including original actives which implement their own OnPress subtraction.
+    public float PressWithEnergyEfficiency(float mana)
+    {
+        float originalCost = cost;
+        cost *= GameRules.activeEnergyCost;
+        try { return OnPress(mana); }
+        finally { cost = originalCost; }
+    }
+
     public override void OnBegin()
     {
     }

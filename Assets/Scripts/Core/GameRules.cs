@@ -20,6 +20,7 @@ public class GameRules : MonoBehaviour
     public static float playerShootSize;
     public static float playerShootFollowness;
     public static float playerMoveSpeed;
+    public static float activeEnergyCost;
 
     // Pickables
     public static float luck;
@@ -61,6 +62,7 @@ public class GameRules : MonoBehaviour
         playerShootSize = 1.5f;
         playerShootFollowness = 0f;
         playerMoveSpeed = 8f;
+        activeEnergyCost = 1f;
 
         luck = 0f;
         itemLuck = 1f;

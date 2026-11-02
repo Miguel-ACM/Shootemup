@@ -24,6 +24,8 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (TrySecondaryItem(b, kind))
+            return expansionItems[kind] = b.Finish(kind + " equipment");
         if (DistinctEquipment(b, kind))
             return expansionItems[kind] = b.Finish(kind + " equipment");
         if (BackfireItem(b, kind))

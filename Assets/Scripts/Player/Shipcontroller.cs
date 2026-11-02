@@ -201,7 +201,7 @@ public class Shipcontroller : MonoBehaviour
     {
         var upgrades = GetComponent<CombatUpgrades>();
         float stored = upgrades != null ? upgrades.Reserve : 0;
-        float result = active.OnPress(mana + stored);
+        float result = active.PressWithEnergyEfficiency(mana + stored);
         if (result < 0)
             return result;
         float spent = Mathf.Max(0, mana + stored - result);
@@ -549,6 +549,14 @@ public class Shipcontroller : MonoBehaviour
             StartCoroutine("Invulnerability", 4f);
         else
             Die();
+    }
+
+    public void SetMaxEnergy(float maximum)
+    {
+        maxMana = Mathf.Max(1, maximum);
+        mana = Mathf.Min(mana, maxMana);
+        manaBar.SetMax(maxMana);
+        manaBar.Set(mana);
     }
 
     public void HealManaFlat(float heal)

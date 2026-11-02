@@ -42,7 +42,8 @@ public sealed class RunInventory : MonoBehaviour
     float[] ReadStats() => new[] { GameRules.playerShootDamage / DamageScale, GameRules.playerShootSpeed,
         GameRules.playerShootTravelSpeed, GameRules.playerShootSize, GameRules.playerShootNumber,
         GameRules.playerMoveSpeed, GameRules.playerShootFollowness, GameRules.pickDistance,
-        GameRules.luck, GameRules.manaDropMultiplier, ship.slowMultiplier };
+        GameRules.luck, GameRules.manaDropMultiplier, ship.slowMultiplier,
+        GameRules.activeEnergyCost, ship.maxMana };
     void WriteStats(float[] values)
     {
         GameRules.playerShootDamage = values[0] * DamageScale;
@@ -56,6 +57,8 @@ public sealed class RunInventory : MonoBehaviour
         GameRules.luck = values[8];
         GameRules.manaDropMultiplier = values[9];
         ship.slowMultiplier = values[10];
+        GameRules.activeEnergyCost = values[11];
+        ship.SetMaxEnergy(values[12]);
         ship.updateBulletSpawnPoints();
     }
 
