@@ -16,6 +16,7 @@ public static partial class IndustrialMeshFactory
             case "FireflyJar": FireflyJarModel(b); break;
             case "SaltShaker": SaltShakerModel(b); break;
             case "PocketMortar": PocketMortarModel(b); break;
+            case "WindUpTeeth": WindUpTeethModel(b); break;
             default: return false;
         }
         return true;
