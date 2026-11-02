@@ -137,7 +137,7 @@ public sealed partial class AbyssSubmarineBoss
                 PSXImpactEffects.Vanish(flank, foam, .35f);
             for (int lane = -2; lane <= 2; lane++)
             {
-                if (Difficulty.Easy && (lane + tick) % 2 != 0)
+                if (!Difficulty.Hard && (lane + tick) % 2 != 0 || Difficulty.Easy && Mathf.Abs(lane) == 2)
                     continue;
                 var port = Hull.TransformPoint(new Vector3(side * 1.02f, .3f + lane * .3f, -.3f));
                 Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.right * side, lane * 14 + (tick % 2) * 7), 2.4f + Mathf.Abs(lane) * .3f, .19f);

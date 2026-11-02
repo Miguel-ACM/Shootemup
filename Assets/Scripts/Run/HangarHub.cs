@@ -18,7 +18,7 @@ public sealed class HangarHub : MonoBehaviour
         get; private set;
     }
 
-    static RunDifficulty difficulty = RunDifficulty.Hard;
+    static RunDifficulty difficulty = RunDifficulty.Normal;
     // Where the title's tunnel came to rest, so the hangar continues from exactly that view.
     static float tunnelTravel;
     static readonly Vector2[] padSpots = { new Vector2(-2.25f, 4.2f), new Vector2(-2.25f, 1.4f), new Vector2(-2.25f, -1.4f), new Vector2(-2.25f, -4.2f) };

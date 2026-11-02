@@ -79,7 +79,7 @@ public class GameRules : MonoBehaviour
     }
 
     // Resets everything a run accumulates: player stats, score and the shop's item pools.
-    public static void StartNewRun(RunDifficulty difficulty = RunDifficulty.Hard)
+    public static void StartNewRun(RunDifficulty difficulty = RunDifficulty.Normal)
     {
         CombatDecision.End();
         ResetRun();

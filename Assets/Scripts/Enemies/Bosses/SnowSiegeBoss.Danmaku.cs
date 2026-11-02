@@ -98,7 +98,7 @@ public sealed partial class SnowSiegeBoss
             {
                 for (int i = 0; i < combCount; i++)
                 {
-                    if (i % 2 != k % 2 || Difficulty.Easy && i % 3 == 2)
+                    if (i % 2 != k % 2 || !Difficulty.Hard && i % 3 == 2 || Difficulty.Easy && i % 3 == 1)
                         continue;
                     Fire<NeedleRound>(comb[i].TransformPoint(new Vector3(0, -.26f, -.55f)), Vector2.down, 3.4f, .19f);
                     releases[i] = .1f;
@@ -188,7 +188,7 @@ public sealed partial class SnowSiegeBoss
             bool woven = n / 10 % 2 == 0;
             for (int i = 0; i < combCount; i++)
             {
-                if (Difficulty.Easy && i % 3 == 2)
+                if (!Difficulty.Hard && i % 3 == 2 || Difficulty.Easy && i % 3 == 1)
                     continue;
                 var p = comb[i].TransformPoint(new Vector3(0, -.26f, -.55f));
                 if (woven && i % 2 == n % 2)

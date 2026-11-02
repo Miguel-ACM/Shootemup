@@ -49,6 +49,7 @@ public class ReviewRegressionTests
     }
 
     [TestCase(RunDifficulty.Easy)]
+    [TestCase(RunDifficulty.Normal)]
     [TestCase(RunDifficulty.Hard)]
     public void MultipartMetersTrackPhaseObjectives(RunDifficulty difficulty)
     {

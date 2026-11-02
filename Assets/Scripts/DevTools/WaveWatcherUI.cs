@@ -102,10 +102,11 @@ public sealed partial class WaveWatcher
             var chosen = level;
             levels[level] = Button(leftPanel, level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(), new Vector2(index % 2 == 0 ? -58 : 58, 266 - index / 2 * 30), new Vector2(112, 26), () => SelectLevel(chosen)).GetComponent<Image>();
         }
-        foreach (var difficulty in new[] { RunDifficulty.Easy, RunDifficulty.Hard })
+        foreach (var difficulty in new[] { RunDifficulty.Easy, RunDifficulty.Normal, RunDifficulty.Hard })
         {
             var chosen = difficulty;
-            difficulties[difficulty] = Button(leftPanel, difficulty.ToString().ToUpperInvariant(), new Vector2(difficulty == RunDifficulty.Easy ? -58 : 58, 112), new Vector2(112, 26), () => SelectDifficulty(chosen)).GetComponent<Image>();
+            float x = difficulty == RunDifficulty.Easy ? -78 : difficulty == RunDifficulty.Normal ? 0 : 78;
+            difficulties[difficulty] = Button(leftPanel, difficulty.ToString().ToUpperInvariant(), new Vector2(x, 112), new Vector2(74, 26), () => SelectDifficulty(chosen)).GetComponent<Image>();
         }
         Rule(leftPanel, 92);
         var seedBox = Box(leftPanel, "Seed", new Vector2(-26, 66), new Vector2(178, 30), ButtonColor);

@@ -286,9 +286,9 @@ public abstract class DistrictEnemy : AEnemy
         firingCue?.Warn(enteredFight ? seconds : -1);
         firingCue?.PointAll(CueAxis);
     }
-    // Easy keeps every pattern's geometry and identity but fewer rounds and longer rests.
-    protected static int Dense(int count) => Difficulty.Hard ? count : Mathf.Max(1, Mathf.RoundToInt(count * .65f));
-    protected static float Rest(float seconds) => Difficulty.Hard ? seconds : seconds * 1.3f;
+    // One geometry on all three tiers. Normal retains the former Easy score.
+    protected static int Dense(int count) => Difficulty.Dense(count);
+    protected static float Rest(float seconds) => Difficulty.Rest(seconds);
     // The launch speed that travels a given number of world units per second here.
     protected float WorldSpeed(float units) => units / Mathf.Max(.01f, ProjectileSpeedScale * (IsMiniboss ? 1.14f : 1) * GameRules.enemyBulletSpeed * LevelRun.EnemyShotSpeedScale);
     protected void Cue(Vector3 world, float seconds) => firingCue?.WarnAt(world, seconds);

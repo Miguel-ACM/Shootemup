@@ -20,8 +20,8 @@ public class NewGame : AMenuElement
         if (starting || options != null)
             return;
         original = menu.GetComponentsInChildren<AMenuElement>();
-        options = new DifficultyOption[3];
-        string[] labels = { "EASY", "HARD", "BACK" };
+        options = new DifficultyOption[4];
+        string[] labels = { "EASY", "NORMAL", "HARD", "BACK" };
         for (int i = 0; i < options.Length; i++)
         {
             var go = new GameObject(labels[i], typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(LayoutElement));
@@ -54,14 +54,14 @@ public class NewGame : AMenuElement
         foreach (var element in original)
             element.gameObject.SetActive(false);
         menu.RefreshElements();
-        menu.setCurrentElement(options[0]);
+        menu.setCurrentElement(options[1]);
     }
 
     public void Choose(int option)
     {
         if (starting)
             return;
-        if (option == 2)
+        if (option == 3)
         {
             foreach (var element in original)
                 element.gameObject.SetActive(true);
@@ -77,7 +77,7 @@ public class NewGame : AMenuElement
         }
         starting = true;
         // This row is hidden while the difficulty rows show, so the menu, which stays active, runs the exit.
-        menu.StartCoroutine(IntoHangar(option == 0 ? RunDifficulty.Easy : RunDifficulty.Hard));
+        menu.StartCoroutine(IntoHangar(option == 0 ? RunDifficulty.Easy : option == 1 ? RunDifficulty.Normal : RunDifficulty.Hard));
     }
 
     // The menu fades away while the title's tunnel slows to a stop; the hangar then continues from that same view.

@@ -129,6 +129,13 @@ public sealed class WavePart
                 score[i] = Mathf.Max(last + .65f + i * .48f, authoredScore[i] * Seconds);
         }
         EnemyTuning.TuneFormation(Enemy, units, Seconds, ref score);
+        if (Difficulty.Easy && score.Length > 1)
+        {
+            var reduced = new List<float>();
+            for (int i = 0; i < score.Length; i += 2)
+                reduced.Add(score[i]);
+            score = reduced.ToArray();
+        }
         if (Difficulty.Hard && score.Length > 1)
         {
             int restIndex = 0;
