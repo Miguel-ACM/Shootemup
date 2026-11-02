@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-public enum RunSlotKind { Combat, Miniboss, Boss, EncounterChoice, MinibossChoice, Reward, CoinShop, MultiplierShop, Pact, BossReward, ChallengeReward, HealthTrade, End }
+public enum RunSlotKind { Combat, Miniboss, Boss, EncounterChoice, MinibossChoice, Reward, CoinShop, MultiplierShop, Pact, BossReward, ChallengeReward, HealthTrade, Reforge, End }
 public enum RunPhase { Idle, Opening, Combat, BossWarning, Boss, Decision, Routing }
 
 public readonly struct RunSlot
@@ -11,7 +11,7 @@ public readonly struct RunSlot
     public RunSlot(RunSlotKind kind, int budget = 0) { Kind = kind; Budget = budget; }
     public bool IsChoice => Kind == RunSlotKind.EncounterChoice || Kind == RunSlotKind.MinibossChoice;
     public bool IsDecision => Kind == RunSlotKind.Reward || Kind == RunSlotKind.CoinShop || Kind == RunSlotKind.MultiplierShop ||
-        Kind == RunSlotKind.Pact || Kind == RunSlotKind.BossReward || Kind == RunSlotKind.ChallengeReward || Kind == RunSlotKind.HealthTrade;
+        Kind == RunSlotKind.Pact || Kind == RunSlotKind.BossReward || Kind == RunSlotKind.ChallengeReward || Kind == RunSlotKind.HealthTrade || Kind == RunSlotKind.Reforge;
     public string Key => Kind == RunSlotKind.Combat ? Budget.ToString(System.Globalization.CultureInfo.InvariantCulture) :
         Kind == RunSlotKind.CoinShop ? "coinShop" : Kind == RunSlotKind.MultiplierShop ? "multiplierShop" :
         Kind == RunSlotKind.EncounterChoice ? "encounterChoice" : Kind == RunSlotKind.MinibossChoice ? "minibossChoice" :

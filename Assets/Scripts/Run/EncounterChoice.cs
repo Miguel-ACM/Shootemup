@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum EncounterKind
 {
-    Shop, MultShop, Item, Health, Challenge, Pact, HealthTrade
+    Shop, MultShop, Item, Health, Challenge, Pact, HealthTrade, Reforge
 }
 public static class EncounterChoice
 {
@@ -20,7 +20,7 @@ public static class EncounterChoice
         return icons[index] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 32, 0, SpriteMeshType.FullRect);
     }
 
-    public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false, bool canTrade = false)
+    public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false, bool canTrade = false, bool canReforge = false)
     {
         // Shops are no longer offered mid-run; the hangar shop between runs replaces them.
         var bag = new List<EncounterKind> { EncounterKind.Item };
@@ -29,6 +29,8 @@ public static class EncounterChoice
             bag.Add(EncounterKind.Health);
         if (maxHealth > 0 && health < maxHealth && canTrade)
             bag.Add(EncounterKind.HealthTrade);
+        if (canReforge)
+            bag.Add(EncounterKind.Reforge);
         if (challengeAvailable)
             bag.Add(EncounterKind.Challenge);
         var rng = new System.Random(seed);
@@ -78,6 +80,8 @@ public static class EncounterChoice
                 return new Color(.88f, .1f, .2f);
             case EncounterKind.HealthTrade:
                 return new Color(.95f, .56f, .65f);
+            case EncounterKind.Reforge:
+                return new Color(.5f, .8f, .95f);
             default:
                 return new Color(.76f, .48f, .95f);
         }

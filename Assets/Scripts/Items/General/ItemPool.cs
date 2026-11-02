@@ -48,6 +48,30 @@ public static class ItemPool
 
     public static string RarityOf(string item) => ItemCatalog.Get(item).RarityKey;
 
+    public static List<string> ReforgeAlternatives(string original, string rarity)
+    {
+        var result = new List<string>();
+        foreach (var item in ItemCatalog.All)
+            if (item.InRewardPool && item.Key != original && item.RarityKey == rarity && MetaProgress.IsUnlocked(item.Key))
+                result.Add(item.Key);
+        return result;
+    }
+
+    public static List<string> DrawReforge(string original, string rarity, int count)
+    {
+        var candidates = ReforgeAlternatives(original, rarity);
+        var result = new List<string>();
+        while (result.Count < count && candidates.Count > 0)
+        {
+            int index = Random.Range(0, candidates.Count);
+            string key = candidates[index];
+            candidates.RemoveAt(index);
+            result.Add(key);
+            PoolStringToList(rarity).Remove(key);
+        }
+        return result;
+    }
+
     private static string LowerPool(string pool)
     {
         if (pool == "rare")

@@ -281,7 +281,8 @@ public class WaveOrchestrer : MonoBehaviour
         // Every second district offers one pact hexagon, at its first reward break.
         bool pactAvailable = PactPool.Due && PactPool.HexStage != LevelRun.Stage && PactPool.HasEligible(player);
         var tradeable = RunInventory.For(player).Tradeable();
-        var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth, pactAvailable, tradeable.Count > 0);
+        bool canReforge = tradeable.Exists(entry => ItemPool.ReforgeAlternatives(entry.key, entry.rarity).Count >= 2);
+        var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth, pactAvailable, tradeable.Count > 0, canReforge);
         // A pick needs a real choice: with a single option, nothing is offered at this break.
         if (options.Length < 2)
             return;
@@ -312,9 +313,9 @@ public class WaveOrchestrer : MonoBehaviour
         if (GameOverState.Active)
             return;
         DismissOffer();
-        if (kind == EncounterKind.HealthTrade)
+        if (kind == EncounterKind.HealthTrade || kind == EncounterKind.Reforge)
         {
-            plan.Insert(currentWaveNumber, RunSlotKind.HealthTrade);
+            plan.Insert(currentWaveNumber, kind == EncounterKind.HealthTrade ? RunSlotKind.HealthTrade : RunSlotKind.Reforge);
             return;
         }
         if (kind == EncounterKind.Shop || kind == EncounterKind.MultShop || kind == EncounterKind.Item || kind == EncounterKind.Pact)

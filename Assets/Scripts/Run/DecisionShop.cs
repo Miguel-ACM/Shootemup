@@ -22,6 +22,7 @@ public sealed class DecisionShop : MonoBehaviour
     bool mandatory;
     RunSlotKind exchangeKind;
     RunInventory inventory;
+    RunInventory.Entry reforgeSource;
     List<RunInventory.Entry> tradeEntries;
     int tradePage;
     float pageCharge;
@@ -44,7 +45,7 @@ public sealed class DecisionShop : MonoBehaviour
         owner = orchestrer;
         player = ship;
         exchangeKind = kind;
-        bool exchange = kind == RunSlotKind.HealthTrade;
+        bool exchange = kind == RunSlotKind.HealthTrade || kind == RunSlotKind.Reforge;
         paid = kind != RunSlotKind.Reward && !singleReward && !pact && !exchange;
         coinShop = kind == RunSlotKind.CoinShop;
         done = completed;
@@ -59,6 +60,8 @@ public sealed class DecisionShop : MonoBehaviour
         {
             inventory = RunInventory.For(player);
             tradeEntries = inventory.Tradeable();
+            if (kind == RunSlotKind.Reforge)
+                tradeEntries.RemoveAll(entry => ItemPool.ReforgeAlternatives(entry.key, entry.rarity).Count < 2);
             ShowTradePage(0);
             return;
         }
@@ -150,8 +153,18 @@ public sealed class DecisionShop : MonoBehaviour
 
     bool Affordable(int price) => !paid || (coinShop ? RunCoins.Count >= price : Score.CurrentMultiplier > price);
     bool Pay(int price) => !paid || (coinShop ? RunCoins.TrySpend(price) : Score.TrySpendMultiplier(price));
-    public bool CommitItem(AItem item) => !closed && claimed == item;
-
+    public bool CommitItem(AItem item)
+    {
+        if (closed || claimed != item)
+            return false;
+        if (reforgeSource != null && !(item is ItemExchangeOffer))
+        {
+            if (!inventory.Remove(reforgeSource))
+                return false;
+            reforgeSource = null;
+        }
+        return true;
+    }
     public bool TryClaim(AItem item)
     {
         if (item is ItemExchangeOffer && exchangeKind == RunSlotKind.HealthTrade && player.health >= player.maxHealth)
@@ -194,6 +207,8 @@ public sealed class DecisionShop : MonoBehaviour
                     HealthRecovery.Begin(player, 3);
                 Close(selected);
             }
+            else
+                ShowReforge(trade.Entry);
             return;
         }
         if (!paid)
@@ -248,7 +263,7 @@ public sealed class DecisionShop : MonoBehaviour
 
     void UpdateTradePages()
     {
-        if (tradeEntries == null || tradeEntries.Count <= TradesPerPage || claimed != null)
+        if (tradeEntries == null || reforgeSource != null || tradeEntries.Count <= TradesPerPage || claimed != null)
             return;
         float y = Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, .35f);
         int side = Vector2.Distance(player.transform.position, new Vector2(Camera.LeftLimit + 1, y)) < .7f ? -1 :
@@ -265,6 +280,25 @@ public sealed class DecisionShop : MonoBehaviour
             ItemSound.Play("ready", .12f);
         }
         overlay.SetPages(tradePage, Mathf.CeilToInt(tradeEntries.Count / (float)TradesPerPage), pageCharge / RouteCharge.HoldSeconds, side);
+    }
+
+    void ShowReforge(RunInventory.Entry source)
+    {
+        reforgeSource = source;
+        ClearOffers();
+        var choices = ItemPool.DrawReforge(source.key, source.rarity, 2);
+        for (int i = 0; i < choices.Count; i++)
+        {
+            var target = new Vector3(i == 0 ? -2 : 2, Camera.UpLimit * .4f, 1);
+            var go = Instantiate(Resources.Load<GameObject>("Items/Item"), new Vector3(target.x, Camera.UpLimit + 3, 1), Quaternion.identity);
+            var item = ItemCatalog.Get(choices[i]).Attach(go);
+            item.SetRarity(source.rarity);
+            item.Register(owner);
+            item.GoToPosition(target);
+            items.Add(item);
+            prices[item] = 0;
+            overlay.Add(item);
+        }
     }
 
     public void Abort()
