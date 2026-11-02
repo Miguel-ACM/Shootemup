@@ -71,7 +71,7 @@ public class WaveOrchestrer : MonoBehaviour
         limits = Camera.getLimits();
         ship = GameObject.FindGameObjectWithTag("Player");
         wavePool = GetComponent<WavePool>();
-        waves = DistrictWaves.Sequence();
+        waves = FlightTrials.Active?.Sequence() ?? DistrictWaves.Sequence();
         BeginWaves();
     }
 
@@ -94,6 +94,7 @@ public class WaveOrchestrer : MonoBehaviour
             if (Time.time < openingStartsAt)
                 return;
             openingWavePending = false;
+            if (FlightTrials.Active == FlightTrials.All[1]) cargo = CargoEscort.Create(ship.GetComponent<Shipcontroller>());
             GenerateWave();
         }
         if (isWaveComingOut)
@@ -185,7 +186,8 @@ public class WaveOrchestrer : MonoBehaviour
         RunCoins.Add(EncounterChoice.SalvageCoins(LevelRun.Tier(LevelRun.Current), GameRules.luck) * 2);
         cargo.Deliver();
         cargo = null;
-        plan.Insert(currentWaveNumber, RunSlotKind.CargoReward);
+        if (FlightTrials.Active == FlightTrials.All[1]) GameOverState.Show(true);
+        else plan.Insert(currentWaveNumber, RunSlotKind.CargoReward);
     }
 
     public void BeginWaves()
@@ -415,6 +417,11 @@ public class WaveOrchestrer : MonoBehaviour
             choosingRoute = true;
             isWaveComingOut = false;
             EraseAllBullets();
+            if (FlightTrials.Active != null)
+            {
+                GameOverState.Show(true);
+                return;
+            }
             StartCoroutine(BossReward(bossPosition ?? new Vector3(0, Camera.UpLimit * .5f, 1)));
         }
         else
@@ -533,7 +540,7 @@ public class WaveOrchestrer : MonoBehaviour
         stopingWave = false;
         choosingRoute = false;
         CombatDecision.End();
-        waves = DistrictWaves.Sequence();
+        waves = FlightTrials.Active?.Sequence() ?? DistrictWaves.Sequence();
         activeMiniboss = null;
         minibossDeadline = -1;
         BeginWaves();

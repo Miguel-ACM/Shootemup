@@ -34,7 +34,7 @@ public static class ShipFrames
     };
 
     public static Definition Get(ShipFrame frame) => definitions[(int)frame];
-    public static Definition Current => Get(MetaProgress.Ship);
+    public static Definition Current => Get(FlightTrials.Active?.frame ?? MetaProgress.Ship);
     public static int Count => definitions.Length;
 
     /// <summary>Handling and gun stats, applied over the run's defaults before any item.</summary>
@@ -71,7 +71,8 @@ public static class ShipFrames
     public static IEnumerator GrantStarters(Shipcontroller ship, Definition frame)
     {
         var kinds = new System.Collections.Generic.List<string>(frame.starters);
-        kinds.AddRange(MetaProgress.TakeLoadout());
+        if (FlightTrials.Active != null) kinds.AddRange(FlightTrials.Active.kit);
+        else kinds.AddRange(MetaProgress.TakeLoadout());
         yield return null;
         yield return null;
         foreach (var kind in kinds)
