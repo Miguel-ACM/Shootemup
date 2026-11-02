@@ -20,6 +20,9 @@ public static class EverydayItemMaterials
             case "SaltShaker":
                 color = new Color(.66f, .82f, .9f);
                 return true;
+            case "PocketMortar":
+                color = new Color(.46f, .55f, .31f);
+                return true;
             case "SteelWashers":
                 color = new Color(.56f, .65f, .72f);
                 return true;
