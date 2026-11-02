@@ -9,7 +9,8 @@ public readonly struct RunSlot
     public readonly RunSlotKind Kind;
     public readonly int Budget;
     public RunSlot(RunSlotKind kind, int budget = 0) { Kind = kind; Budget = budget; }
-    public bool IsChoice => Kind == RunSlotKind.EncounterChoice || Kind == RunSlotKind.MinibossChoice;
+    // The miniboss slot is now an earned item decision, so handoffs must clear before it.
+    public bool IsChoice => Kind == RunSlotKind.EncounterChoice;
     public bool IsDecision => Kind == RunSlotKind.Reward || Kind == RunSlotKind.CoinShop || Kind == RunSlotKind.MultiplierShop ||
         Kind == RunSlotKind.Pact || Kind == RunSlotKind.BossReward || Kind == RunSlotKind.ChallengeReward ||
         Kind == RunSlotKind.HealthTrade || Kind == RunSlotKind.Reforge || Kind == RunSlotKind.CargoReward;

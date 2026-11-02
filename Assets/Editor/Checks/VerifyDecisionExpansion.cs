@@ -224,6 +224,8 @@ public sealed class DecisionExpansionReview : MonoBehaviour
             yield return ExchangeChecks();
         if (focus == "all" || focus == "exchange" || focus == "cargo")
             yield return CargoChecks();
+        if (focus == "all" || focus == "cadence")
+            yield return CadenceChecks();
         CombatDecision.End();
         var hexes = RewardHexes.Open(new[] { EncounterKind.Salvage, EncounterKind.HealthTrade, EncounterKind.Cargo }, ship.transform, 17381, _ => { });
         yield return new WaitForSeconds(.7f);
@@ -420,6 +422,47 @@ public sealed class DecisionExpansionReview : MonoBehaviour
         wallet = RunCoins.Count;
         Call(flow, "FinishCargoWave");
         Check(flow.Cargo == null && RunCoins.Count == wallet && !flow.waves.Contains("cargoreward"), "a destroyed crate grants no coins or item reward");
+    }
+
+    IEnumerator CadenceChecks()
+    {
+        ship.health = ship.maxHealth;
+        flow.waves = DistrictWaves.Sequence();
+        Set(flow, "currentWaveNumber", 4);
+        Call(flow, "GenerateWave");
+        Check((bool)Get(flow, "offerPending") && (int)Get(flow, "currentWaveNumber") == 6,
+            "the first selection is scheduled with ordinary wave four");
+        Call(flow, "OpenEncounterChoice");
+        Check(flow.RewardOffer != null && flow.EncounterOptions.Length >= 2,
+            "healthy Plains opens a real first hexagon offer");
+        Call(flow, "DismissOffer");
+        var plan = new RunPlan();
+        plan.Load(DistrictWaves.Sequence());
+        Check(plan.Following(11).Kind == RunSlotKind.MinibossChoice,
+            "the earned miniboss reward prevents an overlapping combat handoff");
+        foreach (bool victory in new[] { false, true })
+        {
+            ((WaveKillLedger)Get(flow, "killLedger")).Clear();
+            flow.waves = DistrictWaves.Sequence();
+            Set(flow, "currentWaveNumber", 11);
+            Set(flow, "minibossVictory", victory);
+            Call(flow, "GenerateWave");
+            if (victory)
+            {
+                Check(Shop != null && !Shop.paid && (int)Get(flow, "currentWaveNumber") == 12,
+                    "a timely miniboss kill opens its separate earned item decision");
+                yield return Skip();
+            }
+            Check((bool)Get(flow, "offerPending") && (int)Get(flow, "currentWaveNumber") == 14,
+                "ordinary wave nine schedules selection two after miniboss " + (victory ? "victory" : "timeout"));
+            Call(flow, "OpenEncounterChoice");
+            Check(flow.RewardOffer != null && flow.EncounterOptions.Length >= 2 && !flow.EncounterOptions.Contains(EncounterKind.Challenge),
+                "the second hexagon offer survives either miniboss result and excludes late challenges");
+            Call(flow, "DismissOffer");
+            yield return null;
+        }
+        flow.waves = Array.Empty<string>();
+        Set(flow, "currentWaveNumber", 0);
     }
 }
 #endif

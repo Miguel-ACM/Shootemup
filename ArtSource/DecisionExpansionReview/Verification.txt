@@ -1,21 +1,14 @@
 PASS
 additive Run scene loads before reviewing its orchestrator
 opening preparation completes in the isolated review
-spatial paging exposes items beyond the first three owned passives
-spatial paging returns without consuming or copying items
-close-contact collection completes
-health exchange consumes the chosen item once and repairs three actual hits
-close-contact collection completes
-reforge previews two distinct same-rarity alternatives while preserving the source
+the first selection is scheduled with ordinary wave four
+healthy Plains opens a real first hexagon offer
+the earned miniboss reward prevents an overlapping combat handoff
+ordinary wave nine schedules selection two after miniboss timeout
+the second hexagon offer survives either miniboss result and excludes late challenges
+a timely miniboss kill opens its separate earned item decision
 bottom hold skips the exchange
-skipping reforge keeps the original item and all its effects
-close-contact collection completes
-close-contact collection completes
-taking a reforge replacement atomically removes the source and records the real new item
-cargo uses actual opaque-pixel projectile contact
-a real hostile round damages the crate through native physics
-cargo pays nothing after its first ordinary wave
-two-wave delivery pays coins once and schedules the enhanced item reward
-a destroyed crate grants no coins or item reward
+ordinary wave nine schedules selection two after miniboss victory
+the second hexagon offer survives either miniboss result and excludes late challenges
 three-zone hover retains the 10% body and solid filling border
 no runtime errors during the combined decision review
