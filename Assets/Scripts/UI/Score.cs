@@ -119,6 +119,7 @@ public class Score : MonoBehaviour
     private static void SetMultiplier(int new_mult)
     {
         multiplier = new_mult;
+        MetaProgress.Multiplier(new_mult);
         if (multiplierText == null)
             return;
         if (multiplier > 1)

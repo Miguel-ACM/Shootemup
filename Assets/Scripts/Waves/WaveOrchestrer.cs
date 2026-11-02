@@ -203,6 +203,7 @@ public class WaveOrchestrer : MonoBehaviour
 
     private void SpawnBoss()
     {
+        MetaProgress.EngageBoss();
         Phase = RunPhase.Boss;
         // Camera.WhiteScreenJitter(0.5f);
         BGMManager.PlayBGM("boss");
@@ -410,6 +411,7 @@ public class WaveOrchestrer : MonoBehaviour
             DismissOffer();
             if (choosingRoute || GameOverState.Active)
                 return;
+            MetaProgress.DefeatBoss();
             choosingRoute = true;
             isWaveComingOut = false;
             EraseAllBullets();
@@ -494,7 +496,10 @@ public class WaveOrchestrer : MonoBehaviour
             Destroy(routeChoice.gameObject);
         routeChoice = null;
         if (next.HasValue)
+        {
             LevelRun.Advance(next.Value);
+            MetaProgress.EnterDistrict();
+        }
         LevelEnvironment.Apply();
         foreach (var enemy in FindObjectsByType<AEnemy>())
             Destroy(enemy.gameObject);

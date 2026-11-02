@@ -6,15 +6,20 @@ public static class RunCoins
         get; private set;
     }
 
+    public static int Earned { get; private set; }
+
     public static void Reset()
     {
-        Count = 0;
+        Count = Earned = 0;
     }
 
     public static void Add(int amount)
     {
         if (amount > 0)
+        {
+            Earned = amount > int.MaxValue - Earned ? int.MaxValue : Earned + amount;
             Count = amount > int.MaxValue - Count ? int.MaxValue : Count + amount;
+        }
     }
 
     public static bool TrySpend(int amount)

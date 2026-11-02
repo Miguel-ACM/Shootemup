@@ -7,7 +7,7 @@ using UnityEngine;
 /// What survives between runs: banked coins, the item unlock pool, the hangar shop's stock and the chosen ship.
 /// Coins left in the run wallet are banked when the run ends; the shop restocks only then.
 /// </summary>
-public static class MetaProgress
+public static partial class MetaProgress
 {
     public const int ShopSize = 3;
     // The hangar counter shows four digits.
@@ -24,7 +24,13 @@ public static class MetaProgress
     [Serializable]
     sealed class SaveData
     {
-        public int version = 1;
+        public int version = 2;
+        public int lastFrame;
+        public RunDifficulty difficulty = RunDifficulty.Normal;
+        public string pin;
+        public List<FlightLog> history = new List<FlightLog>();
+        public List<ServiceRecord> records = new List<ServiceRecord>();
+        public List<string> completed = new List<string>();
         public int coins;
         public string ship = nameof(ShipFrame.GR07);
         public bool runActive;
@@ -52,9 +58,10 @@ public static class MetaProgress
 
     public static ShipFrame Ship
     {
-        get => Enum.TryParse(Data.ship, out ShipFrame frame) ? frame : ShipFrame.GR07;
+        get => Enum.TryParse(Data.ship, out ShipFrame frame) && CanFly(frame) ? frame : ShipFrame.GR07;
         set
         {
+            if (!CanFly(value)) return;
             Data.ship = value.ToString();
             Save();
         }
@@ -84,6 +91,7 @@ public static class MetaProgress
             return false;
         Data.coins -= price;
         Data.stock.Remove(item);
+        if (Pin == item) Data.pin = null;
         if (!IsUnlocked(item))
             Data.unlocked.Add(item);
         Data.loadout.Add(item);
@@ -98,23 +106,6 @@ public static class MetaProgress
         Data.loadout.Clear();
         Save();
         return items;
-    }
-
-    public static void BeginRun()
-    {
-        Data.runActive = true;
-        Save();
-    }
-
-    /// <summary>Banks the wallet and restocks the shop. Safe to call more than once per run.</summary>
-    public static void EndRun()
-    {
-        if (!Data.runActive)
-            return;
-        Data.coins = (int)Math.Min(MaxCoins, (long)Data.coins + RunCoins.Count);
-        Data.runActive = false;
-        Restock();
-        Save();
     }
 
     /// <summary>Debug: the whole item pool becomes available. The shop keeps its stock.</summary>
@@ -132,8 +123,10 @@ public static class MetaProgress
         var locked = new List<string>();
         var owned = new List<string>();
         foreach (var item in ItemPool.AllItems)
-            (IsUnlocked(item) ? owned : locked).Add(item);
+            if (item != Pin && (IsUnlocked(item) || FlightTrials.Blueprint(item) == null))
+                (IsUnlocked(item) ? owned : locked).Add(item);
         Data.stock.Clear();
+        if (!string.IsNullOrEmpty(Pin)) Data.stock.Add(Pin);
         foreach (var pool in new[] { locked, owned })
             while (Data.stock.Count < ShopSize && pool.Count > 0)
             {
@@ -166,6 +159,17 @@ public static class MetaProgress
             data = new SaveData();
             data.unlocked.AddRange(startingPool);
             Restock();
+            Save();
+        }
+        data.history ??= new List<FlightLog>();
+        data.records ??= new List<ServiceRecord>();
+        data.completed ??= new List<string>();
+        if (data.version < 2)
+        {
+            data.version = 2;
+            data.difficulty = RunDifficulty.Normal;
+            data.ship = nameof(ShipFrame.GR07);
+            if (data.stock.Exists(k => !IsUnlocked(k) && FlightTrials.Blueprint(k) != null)) Restock();
             Save();
         }
         // A run that never reached its end (the game was closed) still earns a fresh shop.

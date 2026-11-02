@@ -434,7 +434,10 @@ public class Shipcontroller : MonoBehaviour
         if (ObserverMode || health <= 0 || GameOverState.Active)
             return;
         if (damage > 0)
+        {
+            MetaProgress.TookHit();
             HitTaken?.Invoke();
+        }
         PSXImpactEffects.Burst(transform.position, new Color(.15f, .65f, 1));
         SoundManager.PlaySound("hurt1", 0.2f);
         int lost = damage > 0 ? 1 : 0;
