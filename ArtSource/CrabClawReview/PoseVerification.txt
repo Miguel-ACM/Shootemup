@@ -1,0 +1,2 @@
+PASS
+Actual crab movement sampled at wind-up, approach, sweep and return. No movement LineRenderers. Editor-only model review; no gameplay run.

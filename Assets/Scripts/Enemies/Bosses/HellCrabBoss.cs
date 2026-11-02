@@ -6,7 +6,6 @@ public sealed partial class HellCrabBoss : DistrictBoss
     readonly Transform[] claws = new Transform[2];
     const int ArmSections = 4;
     readonly Transform[,] arms = new Transform[2, ArmSections];
-    readonly LineRenderer[] tells = new LineRenderer[2];
     readonly Transform[] eyes = new Transform[2];
     readonly HellCrabHead[] headParts = new HellCrabHead[1];
     float clawClock, lockedY;
@@ -43,8 +42,6 @@ public sealed partial class HellCrabBoss : DistrictBoss
             firingCue.Register(eyes[i], Vector3.zero);
             for (int segment = 0; segment < ArmSections; segment++)
                 arms[i, segment] = Model("Articulated pincer vertebra " + segment, IndustrialMeshFactory.CrabArm(), Hull);
-            tells[i] = CombatVisuals.Line(Hull, LevelProjectilePalette.Accent(LevelId.Hell), .045f);
-            tells[i].enabled = false;
         }
         PartHitFeedback.Bind(Head.Visual);
     }
@@ -102,12 +99,6 @@ public sealed partial class HellCrabBoss : DistrictBoss
                 bone.position = (a + b) * .5f + Vector3.forward * .12f;
                 bone.rotation = Quaternion.FromToRotation(Vector3.up, b - a);
                 bone.localScale = new Vector3(1.05f - segment * .025f, Mathf.Max(.42f, Vector3.Distance(a, b) / .95f), 1);
-            }
-            tells[i].enabled = t < 1.1f;
-            if (tells[i].enabled)
-            {
-                tells[i].SetPosition(0, p);
-                tells[i].SetPosition(1, new Vector3(side * reach, lockedY, -.3f));
             }
             if (t > 1.1f && t < 4.6f && player != null && Vector2.Distance(player.position, claws[i].TransformPoint(new Vector3(0, -.45f, 0))) < 1.25f)
                 player.SendMessage("ReceiveHazardDamage", 18f, SendMessageOptions.DontRequireReceiver);
