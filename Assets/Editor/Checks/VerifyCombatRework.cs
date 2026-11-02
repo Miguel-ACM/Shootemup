@@ -368,8 +368,7 @@ public sealed class CombatReworkReview : MonoBehaviour
         }
         else if (boss is SpaceCitadelBoss station)
         {
-            station.Parts[0].damage(1000000);
-            station.Parts[1].damage(1000000);
+            station.Reactor.damage(station.health * .55f);
         }
         else if (boss is HellCrabBoss crab)
             crab.Eyes[0].damage(1000000);
@@ -440,11 +439,9 @@ public sealed class CombatReworkReview : MonoBehaviour
         }
         if (boss is SpaceCitadelBoss space)
         {
-            space.Parts[2].damage(1000000);
-            space.Parts[3].damage(1000000);
             CombatRound.ClearAll();
             yield return Observe(label + "-CoreOnly", hardReview ? 18 : 9, null, !hardReview);
-            Check(CombatRound.Live.Count > 0, "Exposed reactor keeps pressure after both optional guns die");
+            Check(CombatRound.Live.Count > 0, "Central reactor sustains its authored firing pressure");
         }
         if (level == LevelId.City)
         {

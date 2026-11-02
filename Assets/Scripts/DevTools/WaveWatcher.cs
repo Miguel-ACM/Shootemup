@@ -678,8 +678,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
             }
             else if (boss is SpaceCitadelBoss station)
             {
-                station.Parts[0].damage(1000000);
-                station.Parts[1].damage(1000000);
+                ThinParts(boss, station.Parts, .49f);
             }
             else if (boss is ThunderLanceBoss thunder)
                 ThinHull(boss, thunder.phaseTwoThreshold * .95f);

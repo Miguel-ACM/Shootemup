@@ -314,8 +314,7 @@ public sealed class BossRadianceReview : MonoBehaviour
                     }
                     else if (boss is SpaceCitadelBoss station)
                     {
-                        station.Parts[0].damage(100000);
-                        station.Parts[1].damage(100000);
+                        station.Reactor.damage(station.health * .55f);
                     }
                     else if (boss is CityDuoBoss duo)
                     {

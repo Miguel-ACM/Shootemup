@@ -353,11 +353,11 @@ public sealed class MiguelRequestsReview : MonoBehaviour
         var station = (SpaceCitadelBoss)DistrictEnemy.Spawn(typeof(SpaceCitadelBoss), new Vector3(0, 4, 1));
         Set(station, "nextAttack", 10000f);
         yield return null;
-        health = station.Parts[4].health;
+        health = station.Reactor.health;
         Press(Key.Z);
         yield return new WaitForSeconds(.6f);
         Press();
-        Check(station.Parts[4].health == health && !station.Parts[4].CanBeTargeted, "continuous beam respects the locked station reactor");
+        Check(station.Reactor.health < health && station.Reactor.CanBeTargeted, "continuous beam can hit the central station reactor");
         yield return new WaitForSeconds(.24f);
         Clear();
         yield return null;

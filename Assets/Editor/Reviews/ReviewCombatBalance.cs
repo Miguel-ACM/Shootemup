@@ -250,24 +250,22 @@ public sealed class CombatBalanceReview : MonoBehaviour
         }
         var station = (SpaceCitadelBoss)DistrictEnemy.Spawn(typeof(SpaceCitadelBoss), new Vector3(0, Camera.UpLimit - 3, 1));
         yield return null;
-        float protectedHealth = station.Parts[4].health;
-        station.Parts[4].damage(100000);
-        Check(station.Parts[4].health == protectedHealth, "Space's core remains gated by both generators");
+        float protectedHealth = station.Reactor.health;
+        station.damage(100000);
+        Check(station.Reactor.health == protectedHealth && station.Reactor.CanBeTargeted, "Space armor is immune while its center is targetable");
         yield return new WaitForSeconds(5.5f);
         DesertReview.Capture("Space-Shielded", Folder);
-        station.Parts[0].damage(100000);
-        station.Parts[1].damage(100000);
-        station.Parts[2].damage(100000);
-        station.Parts[3].damage(100000);
-        yield return null;
-        Check(station.CoreExposed && station.Parts[4].CanBeTargeted, "Both generators still open the core after optional gun destruction");
+        station.Reactor.damage(station.health * .55f);
+        yield return new WaitForSeconds(1.8f);
+        Check(station.CoreExposed && station.Reactor.CanBeTargeted, "The central reactor remains the only target after the phase break");
         CombatRound.ClearAll();
         for (int beat = 8; beat <= 10; beat++)
         {
             Set(station, "volley", beat + 1);
             Call(station, "Attack");
         }
-        Check(CombatRound.Live.OfType<SimpleRound>().Count() == 27, "Exposed core owns three nine-shot fan replies even when both side guns are destroyed");
+        yield return new WaitForSeconds(2);
+        Check(CombatRound.Live.Count > 0, "The central reactor sustains its authored pressure without exterior weakpoints");
         CombatRound.ClearAll();
         yield return new WaitForSeconds(6.5f);
         DesertReview.Capture("Space-Core-Pressure", Folder);
@@ -276,12 +274,12 @@ public sealed class CombatBalanceReview : MonoBehaviour
         var upgrades = CombatUpgrades.Current;
         upgrades.Add(UpgradeKind.Gasoline);
         upgrades.Add(UpgradeKind.Poison);
-        float before = station.Parts[4].health;
-        var electricity = Instantiate(Resources.Load<GameObject>("Bullets/PlayerElectricityBullet"), station.Parts[4].transform.position + Vector3.down * .8f, Quaternion.identity).GetComponent<ElectricityBullet>();
+        float before = station.Reactor.health;
+        var electricity = Instantiate(Resources.Load<GameObject>("Bullets/PlayerElectricityBullet"), station.Reactor.transform.position + Vector3.down * .8f, Quaternion.identity).GetComponent<ElectricityBullet>();
         electricity.damage = 8;
         electricity.followness = 1;
         yield return new WaitForSeconds(.05f);
-        Check(station.Parts[4].health < before && station.Parts[4].GetComponent<BurningHull>() != null && station.Parts[4].GetComponent<PoisonedHull>() != null, "Electricity reaches exposed module targets and applies both coatings");
+        Check(station.Reactor.health < before && station.Reactor.GetComponent<BurningHull>() != null && station.Reactor.GetComponent<PoisonedHull>() != null, "Electricity reaches the central reactor and applies both coatings");
         DesertReview.Capture("Electric-Coatings", Folder);
         Clear();
         yield return null;

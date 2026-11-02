@@ -269,12 +269,11 @@ public sealed class SpaceGameplayReview : MonoBehaviour
         Call(flow, "SpawnBoss");
         yield return new WaitForSeconds(2.6f);
         var boss = FindAnyObjectByType<SpaceCitadelBoss>();
-        Check(boss != null && boss.Parts.All(p => p != null), "Orbital station has five separately modeled, damageable modules");
-        var core = boss.Parts[4];
+        Check(boss != null && boss.Parts.Length == 1 && boss.Reactor != null, "Orbital station has one central damageable reactor");
+        var core = boss.Reactor;
         float hp = core.health, total = boss.health;
-        core.damage(100000);
         boss.damage(100000);
-        Check(core.health == hp && boss.health == total && !core.CanBeTargeted && !core.GetComponent<Collider2D>().enabled, "Protected center rejects direct damage and targeting");
+        Check(core.health == hp && boss.health == total && core.CanBeTargeted && core.GetComponent<Collider2D>().enabled, "Armored hull rejects damage while the central reactor remains exposed");
         Capture("Boss-Shielded");
         bool beam = false;
         float until = Time.time + 6.5f;
@@ -297,14 +296,11 @@ public sealed class SpaceGameplayReview : MonoBehaviour
             yield return null;
         }
         Check(beam && bounced, "Boss uses an attached charged center laser and genuinely bouncing bullets");
-        boss.Parts[0].damage(100000);
-        Check(!boss.CoreExposed && !core.CanBeTargeted, "One generator is insufficient to expose the reactor");
-        boss.Parts[1].damage(100000);
-        Check(boss.CoreExposed && core.CanBeTargeted && core.GetComponent<Collider2D>().enabled, "Breaking both generators opens the core");
-        boss.Parts[2].damage(100000);
-        yield return new WaitForSeconds(.7f);
+        core.damage(total * .55f);
+        yield return new WaitForSeconds(1.8f);
+        Check(boss.CoreExposed && core.CanBeTargeted && core.GetComponent<Collider2D>().enabled, "Central reactor resumes taking damage after its phase break");
         Capture("Boss-Exposed");
-        Check(!boss.Parts[2].CanBeTargeted && boss.Parts[3].health > 0, "Gun pods can be destroyed independently of the shield generators");
+        Check(boss.Parts.Length == 1, "No exterior gun or generator weakpoints remain");
         core.damage(20);
         Check(core.health < hp, "Exposed reactor accepts damage");
         yield return new WaitForSeconds(1.4f);

@@ -360,8 +360,7 @@ public sealed class BossPatternProbe : MonoBehaviour
                 for (int i = 1; i <= 4; i++)
                     worm.Cores[i].damage(lethal);
             else if (boss is SpaceCitadelBoss citadel)
-                for (int i = 0; i < 2; i++)
-                    citadel.Parts[i].damage(lethal);
+                citadel.Reactor.damage(citadel.health * .55f);
             else if (boss is HellCrabBoss crab)
                 crab.Eyes[0].damage(lethal);
             else

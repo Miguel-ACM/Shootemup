@@ -105,12 +105,7 @@ public static class ReviewSpaceExpansion
                 typeof(SpaceCitadelBoss).GetMethod("Start", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(station, null);
                 if (exposed)
                 {
-                    for (int i = 0; i < 2; i++)
-                    {
-                        station.Parts[i].health = 0;
-                        foreach (var renderer in station.Parts[i].GetComponentsInChildren<MeshRenderer>())
-                            renderer.enabled = false;
-                    }
+                    station.Reactor.health = station.health * .49f;
                     station.PartChanged();
                     foreach (var shutter in station.GetComponentsInChildren<Transform>().Where(t => t.name.StartsWith("Retracting reactor shutter")))
                         shutter.localPosition = new Vector3(shutter.localScale.x > 0 ? -.72f : .72f, .12f, 0);

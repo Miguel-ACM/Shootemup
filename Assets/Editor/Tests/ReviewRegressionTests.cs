@@ -59,24 +59,19 @@ public class ReviewRegressionTests
         try
         {
             var space = TestEnemy<SpaceCitadelBoss>(root.transform, 1000);
-            for (int i = 0; i < 5; i++)
-                space.Parts[i] = TestEnemy<SpaceBossPart>(root.transform, i < 2 ? 130 : i < 4 ? 110 : 520);
             Assert.AreEqual(1, space.PhaseFraction, .0001f);
-            space.Parts[0].health = space.Parts[1].health = 0;
-            space.health = 740;
+            space.health = 500;
             Assert.AreEqual(0, space.PhaseFraction, .0001f);
             EnterTestPhase(space, 2);
             Assert.AreEqual(1, space.PhaseFraction, .0001f);
             if (Difficulty.Hard)
             {
-                space.Parts[4].health = 30;
                 space.health = 250;
                 Assert.AreEqual(0, space.PhaseFraction, .0001f);
                 EnterTestPhase(space, 3);
                 Assert.AreEqual(1, space.PhaseFraction, .0001f);
             }
-            space.Parts[4].health = 0; // Optional guns survive the reactor.
-            space.health = 220;
+            space.health = 0;
             Assert.AreEqual(0, space.PhaseFraction, .0001f);
 
             var hell = TestEnemy<HellCrabBoss>(root.transform, 1000);

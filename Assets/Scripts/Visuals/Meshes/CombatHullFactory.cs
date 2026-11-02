@@ -84,6 +84,7 @@ public static partial class IndustrialMeshFactory
 
     public static Mesh CombatHull(int kind)
     {
+        if (kind == 45) return CitadelRefit();
         var authored = TerraModel("Hull" + kind);
         if (authored != null)
             return authored;

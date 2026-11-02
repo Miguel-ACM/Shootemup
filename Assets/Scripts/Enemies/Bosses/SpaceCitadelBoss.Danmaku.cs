@@ -3,14 +3,14 @@ using System.Collections;
 
 // Space citadel: gravity is the weapon. Rounds come from the edges of space or the
 // station's own core.
-// Phase one (shield generators up)
+// Phase one (central reactor open)
 //   Accretion: mirrored rings of arrows appear just outside every edge of the screen
 //     and spiral in, accelerating, until the core swallows them; swarms of dark stars
 //     (giant orbs) drift in from the edges among them.
 //   Supernova: the core throws rings of arrows outward; each ring stops, holds, then
 //     collapses back through the core and bursts out the other side. The centre
 //     laser cuts the middle at the end.
-// Phase two (core exposed)
+// Phase two (reactor overload at half health)
 //   Expulsion: the core flings mirrored spiral arms of arrows that accelerate away
 //     and bend straight as they leave the screen, with full rings and rings of dark
 //     stars flung out between them.
@@ -21,12 +21,12 @@ using System.Collections;
 //     flinging spiral arms back out, both always running and trading dominance.
 public sealed partial class SpaceCitadelBoss
 {
-    Vector3 Core => parts[4] != null ? parts[4].transform.position : transform.position;
+    Vector3 Core => Reactor != null ? Reactor.transform.position : transform.position;
     Transform well;
     LineRenderer horizon;
     protected override void Attack()
     {
-        if (parts[0] != null)
+        if (Reactor != null)
             OpenCards();
     }
 
@@ -53,7 +53,7 @@ public sealed partial class SpaceCitadelBoss
         }
     }
 
-    Transform CoreBody => parts[4] != null ? parts[4].transform : transform;
+    Transform CoreBody => Reactor != null ? Reactor.transform : transform;
 
     // The event horizon: a pulsing ring on the core while it absorbs or expels.
     void OpenWell()
