@@ -23,6 +23,9 @@ public static class EverydayItemMaterials
             case "LuckyPenny":
                 color = new Color(.8f, .36f, .13f);
                 return true;
+            case "PaperclipBox":
+                color = new Color(.43f, .53f, .92f);
+                return true;
             case "Thermos":
                 color = new Color(.12f, .65f, .68f);
                 return true;
