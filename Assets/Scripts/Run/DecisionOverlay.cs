@@ -15,6 +15,9 @@ public sealed class DecisionOverlay : MonoBehaviour
     float age, dismissAge;
     const float EnterSeconds = .3f, DismissSeconds = .3f, Slide = 14;
     TMP_FontAsset font;
+    RectTransform[] pagePads;
+    HexagonGraphic[] pageCharge;
+    TextMeshProUGUI[] pageArrows;
     readonly List<(AItem item, RectTransform plate, TextMeshProUGUI name, TextMeshProUGUI price, TextMeshProUGUI kind, CanvasGroup fade)> offers = new List<(AItem, RectTransform, TextMeshProUGUI, TextMeshProUGUI, TextMeshProUGUI, CanvasGroup)>();
     public void Add(AItem item)
     {
@@ -41,7 +44,7 @@ public sealed class DecisionOverlay : MonoBehaviour
         offers.Add((item, plate, name, price, kind, fade));
     }
 
-    public void SetOffer(int index, string price, bool affordable)
+    public void SetOffer(int index, string price, bool affordable, string category = null)
     {
         var offer = offers[index];
         if (offer.item == null)
@@ -49,7 +52,44 @@ public sealed class DecisionOverlay : MonoBehaviour
         offer.name.text = System.Text.RegularExpressions.Regex.Replace(offer.item.GetData()[0], @"\S+", "<nobr>$0</nobr>");
         offer.price.text = price;
         offer.price.color = affordable ? new Color(1, .78f, .4f) : new Color(1, .36f, .3f);
-        offer.kind.text = offer.item is APactItem ? "pact" : offer.item.Kind == AItem.ItemType.active ? "active" : offer.item.Kind == AItem.ItemType.weapon || offer.item.Kind == AItem.ItemType.passiveWeapon ? "weapon" : "passive";
+        offer.kind.text = category ?? (offer.item is APactItem ? "pact" : offer.item.Kind == AItem.ItemType.active ? "active" : offer.item.Kind == AItem.ItemType.weapon || offer.item.Kind == AItem.ItemType.passiveWeapon ? "weapon" : "passive");
+    }
+
+    public void SetPages(int page, int count, float progress, int direction)
+    {
+        if (count <= 1)
+            return;
+        if (pagePads == null)
+        {
+            pagePads = new RectTransform[2];
+            pageCharge = new HexagonGraphic[2];
+            pageArrows = new TextMeshProUGUI[2];
+            for (int i = 0; i < 2; i++)
+            {
+                pagePads[i] = Plate("Inventory page", new Vector2(34, 34));
+                pagePads[i].GetComponent<Image>().enabled = false;
+                var ring = new GameObject("Hold", typeof(RectTransform), typeof(CanvasRenderer), typeof(HexagonGraphic));
+                ring.transform.SetParent(pagePads[i], false);
+                var rect = (RectTransform)ring.transform;
+                rect.sizeDelta = new Vector2(34, 34);
+                pageCharge[i] = ring.GetComponent<HexagonGraphic>();
+                pageCharge[i].thickness = 2;
+                pageCharge[i].color = new Color(.65f, .85f, .9f);
+                pageArrows[i] = Text(pagePads[i], i == 0 ? "<" : ">", 22);
+            }
+        }
+        var camera = UnityEngine.Camera.main;
+        for (int i = 0; i < 2; i++)
+        {
+            bool available = i == 0 ? page > 0 : page + 1 < count;
+            pageArrows[i].color = available ? Color.white : new Color(.3f, .35f, .4f);
+            pageCharge[i].progress = direction == (i == 0 ? -1 : 1) ? progress : 0;
+            pageCharge[i].SetVerticesDirty();
+            var world = new Vector3(i == 0 ? Camera.LeftLimit + 1 : Camera.RightLimit - 1, Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, .35f), 0);
+            var viewport = camera.WorldToViewportPoint(world);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, new Vector2(viewport.x * Screen.width, viewport.y * Screen.height), null, out var point);
+            pagePads[i].anchoredPosition = point;
+        }
     }
 
     void LateUpdate()

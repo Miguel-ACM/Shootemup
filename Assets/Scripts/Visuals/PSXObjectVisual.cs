@@ -12,6 +12,7 @@ public sealed class PSXObjectVisual : MonoBehaviour
     public SpriteRenderer sourceSprite;
     public bool spin;
     public bool chooseItem;
+    public string itemKindOverride;
     public Color accent = Color.white;
     MaterialPropertyBlock properties;
     Vector3 home;
@@ -52,7 +53,7 @@ public sealed class PSXObjectVisual : MonoBehaviour
         if (chooseItem && itemMeshes != null && itemMeshes.Length > 0)
         {
             var item = GetComponent<AItem>();
-            string kind = item != null ? item.GetType().Name : "money";
+            string kind = itemKindOverride ?? (item != null ? item.GetType().Name : "money");
             int index = Array.IndexOf(IndustrialMeshFactory.ItemKinds, kind);
             // A Terra model replaces even the original item meshes; it carries its own palette.
             if (index >= 0 && IndustrialMeshFactory.TerraModel("Item" + kind) == null)

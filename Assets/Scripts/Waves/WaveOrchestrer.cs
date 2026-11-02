@@ -280,7 +280,8 @@ public class WaveOrchestrer : MonoBehaviour
         int seed = unchecked(LevelRun.Seed + LevelRun.Stage * 971 + currentWaveNumber * 7919);
         // Every second district offers one pact hexagon, at its first reward break.
         bool pactAvailable = PactPool.Due && PactPool.HexStage != LevelRun.Stage && PactPool.HasEligible(player);
-        var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth, pactAvailable);
+        var tradeable = RunInventory.For(player).Tradeable();
+        var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth, pactAvailable, tradeable.Count > 0);
         // A pick needs a real choice: with a single option, nothing is offered at this break.
         if (options.Length < 2)
             return;
@@ -311,6 +312,11 @@ public class WaveOrchestrer : MonoBehaviour
         if (GameOverState.Active)
             return;
         DismissOffer();
+        if (kind == EncounterKind.HealthTrade)
+        {
+            plan.Insert(currentWaveNumber, RunSlotKind.HealthTrade);
+            return;
+        }
         if (kind == EncounterKind.Shop || kind == EncounterKind.MultShop || kind == EncounterKind.Item || kind == EncounterKind.Pact)
         {
             // Items, shops and pacts open at the next wave break, after the current phrase is cleared.

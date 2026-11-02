@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum EncounterKind
 {
-    Shop, MultShop, Item, Health, Challenge, Pact
+    Shop, MultShop, Item, Health, Challenge, Pact, HealthTrade
 }
 public static class EncounterChoice
 {
@@ -20,13 +20,15 @@ public static class EncounterChoice
         return icons[index] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 32, 0, SpriteMeshType.FullRect);
     }
 
-    public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false)
+    public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false, bool canTrade = false)
     {
         // Shops are no longer offered mid-run; the hangar shop between runs replaces them.
         var bag = new List<EncounterKind> { EncounterKind.Item };
         // Integer factors keep the exact 70/100 boundary inclusive on Unity's runtime.
         if (maxHealth > 0 && health * 10f <= maxHealth * 7f)
             bag.Add(EncounterKind.Health);
+        if (maxHealth > 0 && health < maxHealth && canTrade)
+            bag.Add(EncounterKind.HealthTrade);
         if (challengeAvailable)
             bag.Add(EncounterKind.Challenge);
         var rng = new System.Random(seed);
@@ -40,7 +42,7 @@ public static class EncounterChoice
         // Item and Challenge never appear together; without a compatible second option a single zone is offered.
         var picked = new List<EncounterKind> { bag[0] };
         foreach (var kind in bag)
-            if (picked.Count < 2 && !picked.Contains(kind) && !Incompatible(picked[0], kind))
+            if (picked.Count < 2 && !picked.Contains(kind) && picked.TrueForAll(other => !Incompatible(other, kind)))
                 picked.Add(kind);
         // A due pact always takes the second zone, so it is never crowded out.
         if (pactAvailable)
@@ -55,7 +57,8 @@ public static class EncounterChoice
 
     static bool Incompatible(EncounterKind a, EncounterKind b)
     {
-        return a == EncounterKind.Item && b == EncounterKind.Challenge || a == EncounterKind.Challenge && b == EncounterKind.Item;
+        return a == EncounterKind.Item && b == EncounterKind.Challenge || a == EncounterKind.Challenge && b == EncounterKind.Item ||
+            a == EncounterKind.Health && b == EncounterKind.HealthTrade || a == EncounterKind.HealthTrade && b == EncounterKind.Health;
     }
 
     public static string Label(EncounterKind kind) => kind == EncounterKind.MultShop ? "MULT SHOP" : kind.ToString().ToUpperInvariant();
@@ -73,6 +76,8 @@ public static class EncounterChoice
                 return new Color(.94f, .42f, .44f);
             case EncounterKind.Pact:
                 return new Color(.88f, .1f, .2f);
+            case EncounterKind.HealthTrade:
+                return new Color(.95f, .56f, .65f);
             default:
                 return new Color(.76f, .48f, .95f);
         }
