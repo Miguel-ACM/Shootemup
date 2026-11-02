@@ -78,7 +78,7 @@ public sealed class RunInventory : MonoBehaviour
             return;
         var data = item.GetData();
         var entry = new Entry { key = item.GetType().Name, name = data[0], rarity = item.rarity, display = display,
-            multiply = item is APactItem || item is EarlyRise || item is FocusTime,
+            multiply = item is APactItem || item is EarlyRise || item is FocusTime || item is HeatSink,
             tradeable = (item.Kind == AItem.ItemType.passive || item.Kind == AItem.ItemType.passiveWeapon) &&
                 !(item is APactItem) && !(item is ExplodingShield) && !(item is LargeHealthKit) &&
                 !(item is SparePlating) && !(item is DoubleHull) && !(item is ShrinkerJuice) &&

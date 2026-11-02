@@ -10,6 +10,7 @@ public static partial class IndustrialMeshFactory
             case "ClockworkSpring": ClockworkSpringModel(b); break;
             case "RollerBearings": RollerBearingsModel(b); break;
             case "Thermos": ThermosModel(b); break;
+            case "HeatSink": HeatSinkModel(b); break;
             default: return false;
         }
         return true;

@@ -23,6 +23,9 @@ public static class EverydayItemMaterials
             case "Thermos":
                 color = new Color(.12f, .65f, .68f);
                 return true;
+            case "HeatSink":
+                color = new Color(.38f, .58f, .8f);
+                return true;
             case "SplitterCore":
                 color = new Color(1f, .72f, .16f);
                 return true;
