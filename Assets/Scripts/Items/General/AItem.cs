@@ -35,6 +35,7 @@ public abstract class AItem : MonoBehaviour
     }
 
     public ItemType Kind => type;
+    public virtual bool RecordsPickup => true;
     public bool IsDismissing
     {
         get; private set;
@@ -170,14 +171,21 @@ public abstract class AItem : MonoBehaviour
     {
         if (collected)
             return;
+        if (waveOrchestrer != null && !waveOrchestrer.CommitItem(this))
+            return;
         collected = true;
         PSXImpactEffects.ItemGet(transform.position, GetRarityColor(rarity));
         SoundManager.PlaySound("itemGet", .1f);
         // Show the collected item in the side panel next to the playfield.
         var visual = GetComponent<PSXObjectVisual>();
-        if (visual != null && visual.model != null && visual.modelRenderer != null)
-            PSXInventoryDisplay.Add(visual.model.GetComponent<MeshFilter>()?.sharedMesh, visual.modelRenderer.sharedMaterial);
+        var mesh = visual != null && visual.model != null ? visual.model.GetComponent<MeshFilter>()?.sharedMesh : null;
+        var material = visual != null && visual.modelRenderer != null ? visual.modelRenderer.sharedMaterial : null;
+        var inventory = RecordsPickup ? RunInventory.For(s) : null;
+        var before = inventory != null ? inventory.Capture() : null;
+        var display = RecordsPickup ? PSXInventoryDisplay.Add(mesh, material) : null;
         OnPickup();
+        if (inventory != null)
+            inventory.Record(this, before, display);
         s.PickUpItem(this);
     }
 

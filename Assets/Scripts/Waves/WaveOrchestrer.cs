@@ -357,6 +357,7 @@ public class WaveOrchestrer : MonoBehaviour
 
     // Claim the closest eligible option once; rewards are applied only on arrival.
     public bool TryClaimItem(AItem candidate) => decision != null && decision.TryClaim(candidate);
+    public bool CommitItem(AItem candidate) => decision != null && decision.CommitItem(candidate);
     public void NotifyItemPicked(GameObject item)
     {
         if (decision != null)

@@ -35,13 +35,25 @@ public sealed class PSXInventoryDisplay : MonoBehaviour
         instance = null;
     }
 
-    public static void Add(Mesh mesh, Material material)
+    public static Transform Add(Mesh mesh, Material material)
     {
         if (mesh == null || material == null)
-            return;
+            return null;
         if (instance == null)
             instance = new GameObject("PSX inventory display").AddComponent<PSXInventoryDisplay>();
-        instance.AddItem(mesh, material);
+        return instance.AddItem(mesh, material);
+    }
+
+    public static void Remove(Transform display)
+    {
+        if (instance == null || display == null)
+            return;
+        int index = instance.items.IndexOf(display);
+        if (index < 0)
+            return;
+        instance.items.RemoveAt(index);
+        instance.itemSizes.RemoveAt(index);
+        Destroy(display.gameObject);
     }
 
     void Awake()
@@ -86,7 +98,7 @@ public sealed class PSXInventoryDisplay : MonoBehaviour
         panel.sizeDelta = new Vector2(AreaWidth, AreaHeight);
     }
 
-    void AddItem(Mesh mesh, Material material)
+    Transform AddItem(Mesh mesh, Material material)
     {
         // The slot pivots on the model's centre so off-centre meshes spin in place.
         var slot = new GameObject("Collected " + mesh.name).transform;
@@ -105,6 +117,7 @@ public sealed class PSXInventoryDisplay : MonoBehaviour
         float width = AvailableWidth(BossShift()), cell = CellSize(items.Count, width);
         Arrange(items.Count - 1, cell, Columns(width, cell), 1);
         slot.localScale = Vector3.zero;
+        return slot;
     }
 
     /// <summary>The largest cell, between MinCell and MaxCell, whose grid holds every item in the area.</summary>

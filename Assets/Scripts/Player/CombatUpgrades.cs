@@ -42,6 +42,12 @@ public sealed class CombatUpgrades : MonoBehaviour
     }
 
     public int Count(UpgradeKind kind) => stacks.TryGetValue(kind, out int n) ? n : 0;
+    public void Remove(UpgradeKind kind)
+    {
+        stacks[kind] = Mathf.Max(0, Count(kind) - 1);
+        if (kind == UpgradeKind.Reserve)
+            reserve = Count(kind) > 0 ? reserve : 0;
+    }
     public static float HostileSpeedAt(Vector3 position)
     {
         if (Current == null)

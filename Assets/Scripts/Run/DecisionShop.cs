@@ -130,6 +130,7 @@ public sealed class DecisionShop : MonoBehaviour
 
     bool Affordable(int price) => !paid || (coinShop ? RunCoins.Count >= price : Score.CurrentMultiplier > price);
     bool Pay(int price) => !paid || (coinShop ? RunCoins.TrySpend(price) : Score.TrySpendMultiplier(price));
+    public bool CommitItem(AItem item) => !closed && claimed == item;
     public bool TryClaim(AItem item)
     {
         if (closed || item == null || item.Collected || item.IsDismissing || !items.Contains(item) ||
