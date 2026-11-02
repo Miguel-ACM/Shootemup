@@ -8,6 +8,7 @@ public static partial class IndustrialMeshFactory
         {
             case "SteelWashers": SteelWashersModel(b); break;
             case "ClockworkSpring": ClockworkSpringModel(b); break;
+            case "RollerBearings": RollerBearingsModel(b); break;
             default: return false;
         }
         return true;

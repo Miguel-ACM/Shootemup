@@ -11,6 +11,9 @@ public static class EverydayItemMaterials
     {
         switch (kind)
         {
+            case "RollerBearings":
+                color = new Color(.52f, .67f, .77f);
+                return true;
             case "ClockworkSpring":
                 color = new Color(.91f, .61f, .19f);
                 return true;
