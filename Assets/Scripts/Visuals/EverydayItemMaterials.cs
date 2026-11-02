@@ -20,6 +20,9 @@ public static class EverydayItemMaterials
             case "SteelWashers":
                 color = new Color(.56f, .65f, .72f);
                 return true;
+            case "LuckyPenny":
+                color = new Color(.8f, .36f, .13f);
+                return true;
             case "Thermos":
                 color = new Color(.12f, .65f, .68f);
                 return true;

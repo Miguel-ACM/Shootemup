@@ -11,6 +11,7 @@ public static partial class IndustrialMeshFactory
             case "RollerBearings": RollerBearingsModel(b); break;
             case "Thermos": ThermosModel(b); break;
             case "HeatSink": HeatSinkModel(b); break;
+            case "LuckyPenny": LuckyPennyModel(b); break;
             default: return false;
         }
         return true;
