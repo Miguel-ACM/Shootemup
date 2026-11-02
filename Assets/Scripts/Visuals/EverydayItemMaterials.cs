@@ -17,6 +17,9 @@ public static class EverydayItemMaterials
             case "ClockworkSpring":
                 color = new Color(.91f, .61f, .19f);
                 return true;
+            case "SaltShaker":
+                color = new Color(.66f, .82f, .9f);
+                return true;
             case "SteelWashers":
                 color = new Color(.56f, .65f, .72f);
                 return true;
