@@ -10,6 +10,7 @@ public class Score : MonoBehaviour
     static int score = 0;
     static int multiplier = 1;
     static float scoreThisMult = 0;
+    static float scoreFraction;
     static float timeSinceNoScoreUp = 0f;
     static int[] multUpThresholds = { 200, 400, 800, 1600, 3200, 6400, 12800, 24800 };
     static ResourceBar scoreMultBar;
@@ -23,13 +24,19 @@ public class Score : MonoBehaviour
         score = 0;
         multiplier = 1;
         scoreThisMult = 0;
+        scoreFraction = 0;
         timeSinceNoScoreUp = 0f;
     }
 
     public static void IncreaseScore(int quantity)
     {
         timeSinceNoScoreUp = 0f;
-        score += Mathf.RoundToInt(quantity * multiplier * GameRules.scoreMultiplier);
+        // Preserve half-points across small Easy hits instead of rounding each
+        // one-point hit down to zero. Combo growth and the coin wallet are separate.
+        float award = Mathf.RoundToInt(quantity * multiplier * GameRules.scoreMultiplier) * Difficulty.ScoreFactor + scoreFraction;
+        int whole = Mathf.FloorToInt(award);
+        score += whole;
+        scoreFraction = award - whole;
         if (multiplier < 8 && scoreThisMult < multUpThresholds[multiplier - 1])
         {
             scoreThisMult += quantity;

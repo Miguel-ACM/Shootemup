@@ -21,7 +21,7 @@ public class NewGame : AMenuElement
             return;
         original = menu.GetComponentsInChildren<AMenuElement>();
         options = new DifficultyOption[4];
-        string[] labels = { "EASY", "NORMAL", "HARD", "BACK" };
+        string[] labels = { "EASY  <size=65%>0.5×</size>", "NORMAL  <size=65%>1×</size>", "HARD  <size=65%>2×</size>", "BACK" };
         for (int i = 0; i < options.Length; i++)
         {
             var go = new GameObject(labels[i], typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(LayoutElement));
