@@ -7,6 +7,7 @@ public static partial class IndustrialMeshFactory
         switch (kind)
         {
             case "SteelWashers": SteelWashersModel(b); break;
+            case "ClockworkSpring": ClockworkSpringModel(b); break;
             default: return false;
         }
         return true;
