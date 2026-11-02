@@ -99,16 +99,22 @@ public sealed class PSXPresentation : MonoBehaviour
         shipCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
         // Just above the labels (16-17), under the side covers, pause menu and fades (UI canvas, 20) and every curtain.
         shipCanvas.sortingOrder = 18;
+        var scaler = shipCanvasObject.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1280,720);
+        scaler.matchWidthOrHeight = 1;
+        var aperture = new GameObject("Ship portrait aperture",typeof(RectTransform),typeof(RectMask2D)).GetComponent<RectTransform>();
+        aperture.SetParent(shipCanvasObject.transform,false);
+        aperture.anchorMin = new Vector2(.5f,0);
+        aperture.anchorMax = new Vector2(.5f,1);
+        aperture.sizeDelta = new Vector2(405,0);
         var shipDisplay = new GameObject("Ships", typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
-        shipDisplay.transform.SetParent(shipCanvasObject.transform, false);
+        shipDisplay.transform.SetParent(aperture, false);
         shipImage = shipDisplay.GetComponent<RawImage>();
         shipImage.raycastTarget = false;
         shipImage.material = shipComposite;
         shipImage.enabled = false;
-        var shipRect = shipDisplay.GetComponent<RectTransform>();
-        shipRect.anchorMin = Vector2.zero;
-        shipRect.anchorMax = Vector2.one;
-        shipRect.offsetMin = shipRect.offsetMax = Vector2.zero;
+        shipImage.rectTransform.anchorMin = shipImage.rectTransform.anchorMax = new Vector2(.5f,.5f);
         initialized = true;
         Resize();
         RenderPipelineManager.endCameraRendering += AfterCamera;
@@ -142,6 +148,7 @@ public sealed class PSXPresentation : MonoBehaviour
         shipPixels.Create();
         shipCamera.targetTexture = shipPixels;
         shipImage.texture = shipPixels;
+        shipImage.rectTransform.sizeDelta = new Vector2(width * 720f / height,720);
         shipComposite.SetFloat("_FilterEnabled", filterEnabled ? 1 : 0);
         glow = new ProjectileGlow(w, h);
         composite.SetTexture("_GlowTex", glow.Texture);
@@ -172,7 +179,7 @@ public sealed class PSXPresentation : MonoBehaviour
             GameOptions.SetPsxFilter(!filterEnabled);
         if (width != Screen.width || height != Screen.height)
             Resize();
-        bool ships = LabelsShown > 0;
+        bool ships = LabelsShown > 0 && !HangarHub.Active;
         shipCamera.enabled = shipImage.enabled = ships;
         if (ships)
         {
