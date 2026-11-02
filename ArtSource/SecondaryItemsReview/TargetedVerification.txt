@@ -1,0 +1,19 @@
+PASS
+isolated Plains player loaded
+contact diagnostic: ship=(0.00, -7.30, -1.00), scale=(2.00, 2.00, 2.00), target=(0.00, -2.30, -1.00), rounds=6, health=97,76
+rapid option needles make actual native projectile hits
+all seven patterns stay within the existing pool and preserve primary capacity
+SteelWashers portrait has volumetric modeled detail
+ClockworkSpring portrait has volumetric modeled detail
+RollerBearings portrait has volumetric modeled detail
+Thermos portrait has volumetric modeled detail
+HeatSink portrait has volumetric modeled detail
+LuckyPenny portrait has volumetric modeled detail
+PaperclipBox portrait has volumetric modeled detail
+FireflyJar portrait has volumetric modeled detail
+SaltShaker portrait has volumetric modeled detail
+PocketMortar portrait has volumetric modeled detail
+WindUpTeeth portrait has volumetric modeled detail
+RibbonSpool portrait has volumetric modeled detail
+SewingKit portrait has volumetric modeled detail
+no runtime errors

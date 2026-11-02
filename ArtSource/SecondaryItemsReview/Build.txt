@@ -1,0 +1,3 @@
+PASS
+Windows x64: C:/Users/Miguel/Shootemup/Build/SecondaryItems/Shootemup.exe
+Errors=0; warnings=0

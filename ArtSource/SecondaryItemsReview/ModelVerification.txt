@@ -1,0 +1,2 @@
+PASS
+Fixed front and three-quarter views of all thirteen actual pickup meshes, rendered at 256x256. No gameplay run.

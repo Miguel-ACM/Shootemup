@@ -1,0 +1,89 @@
+FAIL
+isolated Plains player loaded
+four stat pickups apply their base increments
+Thermos adds and fills twenty energy
+Heat Sink copies stack multiplicatively
+trading older Thermos and Heat Sink preserves later copies and clamps the meter
+discount permits an active with exactly reduced energy and restores its base cost
+active still rejects insufficient discounted energy
+all six stat items trade back cleanly
+PaperclipBox fires at its authored cadence with primary held
+PaperclipBox uses bounded secondary rounds without recursive procs
+PaperclipBox retains piercing
+PaperclipBox stops on release and uses no active energy
+PaperclipBox also fires with secondary held
+PaperclipBox focus tightens the shot geometry
+PaperclipBox respects pause
+PaperclipBox respects decisions
+PaperclipBox duplicates have separate ownership
+PaperclipBox trade removes exactly one battery
+PaperclipBox last trade removes its option
+PaperclipBox preserves both weapon slots
+FireflyJar fires at its authored cadence with primary held
+FireflyJar uses bounded secondary rounds without recursive procs
+FireflyJar stops on release and uses no active energy
+FireflyJar also fires with secondary held
+FireflyJar respects pause
+FireflyJar respects decisions
+FireflyJar duplicates have separate ownership
+FireflyJar trade removes exactly one battery
+FireflyJar last trade removes its option
+FireflyJar preserves both weapon slots
+SaltShaker fires at its authored cadence with primary held
+SaltShaker uses bounded secondary rounds without recursive procs
+Salt Shaker covers behind the ship
+SaltShaker stops on release and uses no active energy
+SaltShaker also fires with secondary held
+SaltShaker respects pause
+SaltShaker respects decisions
+SaltShaker duplicates have separate ownership
+SaltShaker trade removes exactly one battery
+SaltShaker last trade removes its option
+SaltShaker preserves both weapon slots
+PocketMortar fires at its authored cadence with primary held
+PocketMortar uses bounded secondary rounds without recursive procs
+PocketMortar stops on release and uses no active energy
+PocketMortar also fires with secondary held
+PocketMortar respects pause
+PocketMortar respects decisions
+PocketMortar duplicates have separate ownership
+PocketMortar trade removes exactly one battery
+PocketMortar last trade removes its option
+PocketMortar preserves both weapon slots
+WindUpTeeth fires at its authored cadence with primary held
+WindUpTeeth uses bounded secondary rounds without recursive procs
+WindUpTeeth stops on release and uses no active energy
+WindUpTeeth also fires with secondary held
+WindUpTeeth respects pause
+WindUpTeeth respects decisions
+WindUpTeeth duplicates have separate ownership
+WindUpTeeth trade removes exactly one battery
+WindUpTeeth last trade removes its option
+WindUpTeeth preserves both weapon slots
+RibbonSpool fires at its authored cadence with primary held
+RibbonSpool uses bounded secondary rounds without recursive procs
+RibbonSpool stops on release and uses no active energy
+RibbonSpool also fires with secondary held
+RibbonSpool focus tightens the shot geometry
+RibbonSpool respects pause
+RibbonSpool respects decisions
+RibbonSpool duplicates have separate ownership
+RibbonSpool trade removes exactly one battery
+RibbonSpool last trade removes its option
+RibbonSpool preserves both weapon slots
+SewingKit fires at its authored cadence with primary held
+SewingKit uses bounded secondary rounds without recursive procs
+SewingKit retains piercing
+SewingKit stops on release and uses no active energy
+SewingKit also fires with secondary held
+SewingKit focus tightens the shot geometry
+SewingKit respects pause
+SewingKit respects decisions
+SewingKit duplicates have separate ownership
+SewingKit trade removes exactly one battery
+SewingKit last trade removes its option
+SewingKit preserves both weapon slots
+System.Exception: rapid option needles make actual native projectile hits
+  at SecondaryItemsReview.Check (System.Boolean ok, System.String message) [0x00026] in C:\Users\Miguel\Shootemup\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifySecondaryItems.cs:90
+  at SecondaryItemsReview+<ShotChecks>d__21.MoveNext () [0x007f9] in C:\Users\Miguel\Shootemup\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifySecondaryItems.cs:243
+  at SecondaryItemsReview+<Start>d__18.MoveNext () [0x00049] in C:\Users\Miguel\Shootemup\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifySecondaryItems.cs:124
