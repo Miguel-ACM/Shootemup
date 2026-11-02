@@ -6,12 +6,10 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// The hub between runs: parked ships on the left (hover and press a button to switch), the item shop on the right
-/// (hover and press to buy into the unlock pool) and the launch mist at the top.
-/// Scenes: L1 is the persistent core (camera, player, instruments, UI). The hangar's content lives in the additive
-/// Hangar scene; a run's content (waves, Plains scenery) lives in the additive Run scene, loaded behind the clouds.
+/// Dockside workshops flank a central outfitting lane. The persistent L1 core carries
+/// the player and instruments across the handoff from the hangar to the additive run.
 /// </summary>
-public sealed class HangarHub : MonoBehaviour
+public sealed partial class HangarHub : MonoBehaviour
 {
     public static bool Active
     {
@@ -21,18 +19,8 @@ public sealed class HangarHub : MonoBehaviour
     static RunDifficulty difficulty = RunDifficulty.Normal;
     // Where the title's tunnel came to rest, so the hangar continues from exactly that view.
     static float tunnelTravel;
-    static readonly Vector2[] padSpots = { new Vector2(-2.25f, 4.2f), new Vector2(-2.25f, 1.4f), new Vector2(-2.25f, -1.4f), new Vector2(-2.25f, -4.2f) };
-    static readonly Vector2[] plinthSpots = { new Vector2(2.25f, 3.5f), new Vector2(2.25f, 0), new Vector2(2.25f, -3.5f) };
-    const float PadReach = 1f, PlinthReach = .85f, GateHalfWidth = 2f;
-
-    sealed class Bay
-    {
-        public ShipFrame frame;
-        public Transform display;
-        public Vector3 spot;
-        public Transform pips, pad, shadow;
-        public float lift;
-    }
+    static readonly Vector2[] plinthSpots = { new Vector2(0, -4), Vector2.zero, new Vector2(0, 4) };
+    const float PlinthReach = .95f, GateHalfWidth = 1.55f;
 
     sealed class Plinth
     {
@@ -118,7 +106,6 @@ public sealed class HangarHub : MonoBehaviour
 
     static Vector3 dockedAt;
 
-    readonly List<Bay> bays = new List<Bay>();
     readonly List<Plinth> plinths = new List<Plinth>();
     Shipcontroller player;
     Inputs input;
@@ -138,8 +125,8 @@ public sealed class HangarHub : MonoBehaviour
         center = camera != null ? camera.transform.position : Vector3.zero;
         scenery = new Material(Resources.Load<Shader>("LevelScenery"));
         BuildHall();
-        BuildBays();
         BuildShop();
+        BuildConcourse();
         BuildGate();
         if (player != null)
         {
@@ -183,47 +170,6 @@ public sealed class HangarHub : MonoBehaviour
         renderer.sortingOrder = order;
     }
 
-    void BuildBays()
-    {
-        if (player == null)
-            return;
-        for (int i = 0; i < ShipFrames.Count && i < padSpots.Length; i++)
-        {
-            var frame = (ShipFrame)i;
-            var bay = new Bay { frame = frame, spot = Spot(padSpots[i], player.transform.position.z + 1) };
-            var display = ShipFrames.BuildDisplay(player, ShipFrames.Get(frame));
-            if (display != null)
-            {
-                display.transform.SetParent(transform, true);
-                display.transform.position = bay.spot + Vector3.left * SlideDistance;
-                foreach (var renderer in display.GetComponentsInChildren<MeshRenderer>())
-                {
-                    renderer.sortingLayerName = "Player";
-                    renderer.sortingOrder = renderer.name == "Cockpit" ? -1 : -2;
-                    // Only the flown ship is redrawn over the labels; parked ones stay in the scene, under the black margins.
-                    renderer.gameObject.layer = 0;
-                }
-                bay.display = display.transform;
-            }
-            bay.pad = Hover("HangarDockPad", bay.spot + new Vector3(-SlideDistance, 0, .6f), -4);
-            bay.shadow = Shadow(bay.spot + Vector3.left * SlideDistance, 1.15f);
-            bay.pips = new GameObject("Hull pips").transform;
-            bay.pips.SetParent(transform, false);
-            bay.pips.position = bay.spot + new Vector3(0, -1.05f, 0);
-            int hits = ShipFrames.Get(frame).hits;
-            for (int h = 0; h < hits; h++)
-            {
-                var pip = Quad("Pip", new Color(1, .62f, .3f), -1);
-                pip.SetParent(bay.pips, false);
-                pip.localPosition = new Vector3((h - (hits - 1) * .5f) * .2f, 0, 0);
-                pip.localScale = new Vector3(.6f, .9f, 1);
-            }
-            bay.pips.gameObject.SetActive(false);
-            bays.Add(bay);
-        }
-        RefreshBays();
-    }
-
     void BuildShop()
     {
         dialog = GameObject.FindGameObjectWithTag("Dialog")?.GetComponent<Dialog>();
@@ -241,6 +187,8 @@ public sealed class HangarHub : MonoBehaviour
             var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.spot + Vector3.right * SlideDistance, Quaternion.identity);
             go.transform.SetParent(transform, true);
             plinth.item = definition.Attach(go);
+            var visual = go.GetComponent<PSXObjectVisual>();
+            if (visual != null) visual.itemKindOverride = definition.Key;
             plinth.item.SetRarity(ItemPool.RarityOf(stock[i]));
             // Hidden only after Awake has given the item its name and description.
             go.SetActive(false);
@@ -454,29 +402,7 @@ public sealed class HangarHub : MonoBehaviour
             ItemSound.Play("itemSalvage", .16f);
         }
         var p = player.transform.position;
-        int pad = NearestBay(p);
-        for (int i = 0; i < bays.Count; i++)
-        {
-            var bay = bays[i];
-            bay.lift = Mathf.MoveTowards(bay.lift, i == pad ? 1 : 0, Time.deltaTime * 5);
-            float t = Time.time * 1.3f + i;
-            float hover = Mathf.Sin(t) * .06f + bay.lift * .12f;
-            var slide = Vector3.left * SlideDistance * Slide(i);
-            if (bay.pad != null)
-                bay.pad.position = bay.spot + slide + new Vector3(0, hover, .6f);
-            if (bay.shadow != null)
-            {
-                bay.shadow.position = new Vector3(bay.spot.x + .35f, bay.spot.y - .55f, 87) + slide;
-                bay.shadow.localScale = Vector3.one * (1 - hover * .5f);
-            }
-            if (bay.display != null)
-            {
-                bay.display.position = bay.spot + slide + new Vector3(0, hover, 0);
-                bay.display.rotation = Quaternion.AngleAxis(Mathf.Sin(t * .7f) * (4 + bay.lift * 10), Vector3.up);
-                bay.display.localScale = player.transform.lossyScale * (1 + bay.lift * .1f);
-            }
-            bay.pips.gameObject.SetActive(i == pad);
-        }
+        if (UpdateDock(p)) return;
         int shop = NearestPlinth(p);
         for (int i = 0; i < plinths.Count; i++)
         {
@@ -493,7 +419,7 @@ public sealed class HangarHub : MonoBehaviour
             if (item.enabled && plinths[i].sent && item.Settled)
                 item.enabled = false;
             int price = MetaProgress.Price(item.rarity);
-            overlay.SetOffer(i, price.ToString(), MetaProgress.Coins >= price);
+            overlay.SetOffer(i, (MetaProgress.Pin == plinths[i].kind ? "PIN " : "") + price, MetaProgress.Coins >= price);
         }
         UpdateWallet();
         if (dialog != null && shop != described)
@@ -510,26 +436,6 @@ public sealed class HangarHub : MonoBehaviour
             else
                 dialog.Hide();
         }
-        if (!Arriving && p.y >= GateY && Mathf.Abs(p.x - center.x) <= GateHalfWidth)
-            StartCoroutine(Launch());
-    }
-
-    int NearestBay(Vector3 p)
-    {
-        int best = -1;
-        float closest = PadReach;
-        for (int i = 0; i < bays.Count; i++)
-        {
-            if (bays[i].frame == MetaProgress.Ship)
-                continue;
-            float d = Vector2.Distance(p, bays[i].spot);
-            if (d < closest)
-            {
-                closest = d;
-                best = i;
-            }
-        }
-        return best;
     }
 
     int NearestPlinth(Vector3 p)
@@ -555,19 +461,17 @@ public sealed class HangarHub : MonoBehaviour
         if (player == null || launching || Arriving || Menu.GameplayPaused || CloudTransition.Busy)
             return;
         var p = player.transform.position;
-        int pad = NearestBay(p);
-        if (pad >= 0)
-        {
-            Switch(bays[pad].frame);
-            return;
-        }
+        if (UseDock(context, p)) return;
         int shop = NearestPlinth(p);
-        if (shop >= 0)
-            Buy(plinths[shop]);
+        if (shop < 0) return;
+        if (context.action == input.PlayerControls.FireSecondary)
+            MetaProgress.TogglePin(plinths[shop].kind);
+        else Buy(plinths[shop]);
     }
 
     void Switch(ShipFrame frame)
     {
+        if (!MetaProgress.CanFly(frame)) return;
         MetaProgress.Ship = frame;
         var definition = ShipFrames.Get(frame);
         ShipFrames.ApplyStats(definition);
@@ -578,14 +482,6 @@ public sealed class HangarHub : MonoBehaviour
         if (loadout != null)
             ShipFrames.ApplyWeapons(loadout, definition);
         PSXImpactEffects.ItemGet(player.transform.position, new Color(.55f, .85f, 1));
-        RefreshBays();
-    }
-
-    void RefreshBays()
-    {
-        foreach (var bay in bays)
-            if (bay.display != null)
-                bay.display.gameObject.SetActive(bay.frame != MetaProgress.Ship);
     }
 
     void Buy(Plinth plinth)
@@ -664,7 +560,7 @@ public sealed class HangarHub : MonoBehaviour
         ShipFrames.ApplyHull(player, frame);
         var loadout = player.GetComponent<ShipLoadout>();
         ShipFrames.ApplyWeapons(loadout, frame);
-        if (FlightTrials.Active == FlightTrials.All[0]) loadout.SetPrimary(null);
+        if (FlightTrials.SecondaryFireOnly) loadout.SetPrimary(null);
         player.SetMaxHits(frame.hits);
         player.Repair(frame.hits);
         player.enabled = true;
@@ -691,6 +587,7 @@ public sealed class HangarHub : MonoBehaviour
             input.PlayerControls.ActiveLeft.started -= Interact;
             input.PlayerControls.ActiveRight.started -= Interact;
         }
+        ReleaseExhibit();
         if (scenery != null)
             Destroy(scenery);
         foreach (var mesh in quads)

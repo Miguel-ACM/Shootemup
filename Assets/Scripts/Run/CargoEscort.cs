@@ -61,7 +61,7 @@ public sealed class CargoEscort : MonoBehaviour
         if (ship == null || ship.health <= 0 || GameOverState.Active)
         {
             Destroy(gameObject);
-            if (FlightTrials.Active == FlightTrials.All[1]) GameOverState.Show();
+            if (FlightTrials.EscortsCargo) GameOverState.Show();
             return;
         }
         float dt = GameClock.ActivePlayDelta;
@@ -109,7 +109,7 @@ public sealed class CargoEscort : MonoBehaviour
             contact.enabled = false;
             PSXImpactEffects.Explosion(transform.position, .65f);
             Destroy(gameObject);
-            if (FlightTrials.Active == FlightTrials.All[1]) GameOverState.Show();
+            if (FlightTrials.EscortsCargo) GameOverState.Show();
         }
     }
 

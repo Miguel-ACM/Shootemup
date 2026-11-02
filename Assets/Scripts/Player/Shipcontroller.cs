@@ -511,7 +511,7 @@ public class Shipcontroller : MonoBehaviour
 
     public void Repair(int hits)
     {
-        if (hits > 0 && FlightTrials.Active == FlightTrials.All[3] && !HangarHub.Launching) return;
+        if (hits > 0 && FlightTrials.DisableRepairs && !HangarHub.Launching) return;
         health = Mathf.Clamp(health + hits, 0, maxHealth);
         healthBar.Set(health);
     }

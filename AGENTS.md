@@ -167,6 +167,12 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Latest decision polish: one second to fill route/encounter holds and skips. The skip zone spans the full combat width and roughly the bottom fifth of its height, including boss items. Offer plates are compact, fade in only once the item settles, and show a small passive/active/weapon category beneath. Keep immediate equipment replacement controls and multiple shop purchases.
 - Death shows huge GAME OVER letters with the coins the run banked, switches the instruments off with the startup flicker in reverse, then returns to the hangar (30 October 2026; previously the title). The title's first row reads CONTINUE.
 
+## Hangar and campaign completion (2 November 2026)
+
+- Put the three randomized shop items on the central launch lane. The Fleet, Armory, Simulator and Recorder are side workstations. Select and confirm difficulty at the flight desk, then deliberately hold to launch.
+- GR07 is the only starting hull. Campaign Hell clears commission Lancer, Ember and Warden in sequence, each with its predecessor. Simulator loans and victories are separate from campaign ship progression. Keep boss and no-hit marks per hull and difficulty.
+- A Hell campaign clear now ends the run after its boss reward. Show the victory receipt, coins collected and banked, run stats and new unlocks, then return to the hangar. A loss also files a receipt and reveals its unlocks.
+
 ## Workflow
 
 - Implement each individual feature/enemy/item in its own commit. Commit authorized existing work, but preserve unrelated work being changed by another task.

@@ -15,7 +15,7 @@ public abstract class AItem : MonoBehaviour
         Available.Remove(this);
     }
 
-    public bool CanPick(Shipcontroller ship) => ship != null && ship.health > 0 && !GameOverState.Active && !moving && !collected && !attracting &&
+    public bool CanPick(Shipcontroller ship) => !HangarHub.Active && ship != null && ship.health > 0 && !GameOverState.Active && !moving && !collected && !attracting &&
         Vector2.Distance(transform.position, ship.transform.position) <= ItemAttractRange;
     // Start is called before the first frame update
     protected string itemName;

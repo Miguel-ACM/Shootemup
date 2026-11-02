@@ -53,6 +53,7 @@ public static partial class MetaProgress
     }
 
     public static int Coins => Data.coins;
+    public static IReadOnlyList<string> Outbound => Data.loadout;
     public static IReadOnlyList<string> Stock => Data.stock;
     public static bool IsUnlocked(string item) => Data.unlocked.Contains(item);
 

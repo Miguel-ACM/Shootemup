@@ -94,7 +94,7 @@ public class WaveOrchestrer : MonoBehaviour
             if (Time.time < openingStartsAt)
                 return;
             openingWavePending = false;
-            if (FlightTrials.Active == FlightTrials.All[1]) cargo = CargoEscort.Create(ship.GetComponent<Shipcontroller>());
+            if (FlightTrials.EscortsCargo) cargo = CargoEscort.Create(ship.GetComponent<Shipcontroller>());
             GenerateWave();
         }
         if (isWaveComingOut)
@@ -186,7 +186,7 @@ public class WaveOrchestrer : MonoBehaviour
         RunCoins.Add(EncounterChoice.SalvageCoins(LevelRun.Tier(LevelRun.Current), GameRules.luck) * 2);
         cargo.Deliver();
         cargo = null;
-        if (FlightTrials.Active == FlightTrials.All[1]) GameOverState.Show(true);
+        if (FlightTrials.EscortsCargo) GameOverState.Show(true);
         else plan.Insert(currentWaveNumber, RunSlotKind.CargoReward);
     }
 

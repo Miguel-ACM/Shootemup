@@ -1,12 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class NewGame : AMenuElement
 {
     bool starting;
-    AMenuElement[] original;
-    DifficultyOption[] options;
     // Progress lives in the hangar save, so the first row continues it rather than starting over.
     protected override void Start()
     {
@@ -17,67 +14,20 @@ public class NewGame : AMenuElement
 
     public override void OnAccept()
     {
-        if (starting || options != null)
-            return;
-        original = menu.GetComponentsInChildren<AMenuElement>();
-        options = new DifficultyOption[4];
-        string[] labels = { "EASY  <size=65%>0.5×</size>", "NORMAL  <size=65%>1×</size>", "HARD  <size=65%>2×</size>", "BACK" };
-        for (int i = 0; i < options.Length; i++)
-        {
-            var go = new GameObject(labels[i], typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(LayoutElement));
-            go.transform.SetParent(transform.parent, false);
-            var rect = go.GetComponent<RectTransform>();
-            rect.anchorMin = rectTransform.anchorMin;
-            rect.anchorMax = rectTransform.anchorMax;
-            rect.pivot = rectTransform.pivot;
-            rect.sizeDelta = rectTransform.sizeDelta;
-            rect.anchoredPosition = rectTransform.anchoredPosition + Vector2.down * i * (rectTransform.rect.height + 10);
-            var layout = go.GetComponent<LayoutElement>();
-            layout.preferredHeight = rectTransform.rect.height;
-            layout.preferredWidth = rectTransform.rect.width;
-            var label = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-            label.transform.SetParent(go.transform, false);
-            var text = label.GetComponent<TextMeshProUGUI>();
-            text.font = textElement.font;
-            text.fontSize = Mathf.Max(36, textElement.fontSize);
-            text.text = labels[i];
-            text.alignment = TextAlignmentOptions.Center;
-            text.raycastTarget = false;
-            var textRect = (RectTransform)label.transform;
-            textRect.anchorMin = Vector2.zero;
-            textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = textRect.offsetMax = Vector2.zero;
-            var option = go.AddComponent<DifficultyOption>();
-            option.Configure(this, i);
-            options[i] = option;
-        }
-        foreach (var element in original)
-            element.gameObject.SetActive(false);
-        menu.RefreshElements();
-        menu.setCurrentElement(options[1]);
+        Depart(MetaProgress.FlightSetting);
     }
 
     public void Choose(int option)
     {
-        if (starting)
-            return;
-        if (option == 3)
-        {
-            foreach (var element in original)
-                element.gameObject.SetActive(true);
-            foreach (var entry in options)
-            {
-                entry.gameObject.SetActive(false);
-                Destroy(entry.gameObject);
-            }
-            options = null;
-            menu.RefreshElements();
-            menu.setCurrentElement(this);
-            return;
-        }
+        if (option >= 0 && option < 3)
+            Depart(option == 0 ? RunDifficulty.Easy : option == 1 ? RunDifficulty.Normal : RunDifficulty.Hard);
+    }
+
+    void Depart(RunDifficulty difficulty)
+    {
+        if (starting) return;
         starting = true;
-        // This row is hidden while the difficulty rows show, so the menu, which stays active, runs the exit.
-        menu.StartCoroutine(IntoHangar(option == 0 ? RunDifficulty.Easy : option == 1 ? RunDifficulty.Normal : RunDifficulty.Hard));
+        menu.StartCoroutine(IntoHangar(difficulty));
     }
 
     // The menu fades away while the title's tunnel slows to a stop; the hangar then continues from that same view.
