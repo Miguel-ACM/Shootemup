@@ -151,89 +151,153 @@ def pact():
 
 def salvage():
     im, d = canvas()
-    # An open, battered scrap bin: a gear, a copper coil and a loose coin.
-    d.polygon([(3,15),(26,15),(24,29),(6,29)], fill=INK)
-    d.polygon([(5,17),(24,17),(22,27),(8,27)], fill="#547783")
-    d.line((8,18,10,25), fill="#9db9b6")
-    d.line((20,18,19,25), fill="#2c485a")
-    d.rectangle((3,14,26,17), fill=INK)
-    d.line((5,15,24,15), fill=STEEL)
-    for x,y in ((6,5),(13,5),(3,9),(16,9),(6,13),(13,13)):
-        d.rectangle((x,y,x+3,y+3), fill=INK)
-    d.polygon([(7,5),(13,5),(17,9),(17,13),(13,17),(7,17),(3,13),(3,9)], fill=INK)
-    d.polygon([(7,7),(12,7),(15,10),(15,13),(12,15),(7,15),(5,13),(5,10)], fill=STEEL)
-    d.rectangle((8,10,11,12), fill=INK)
-    d.line((7,8,12,8), fill=LIGHT)
-    d.line([(17,12),(20,5),(24,6),(22,12)], fill=INK, width=4)
-    d.line([(18,12),(21,6),(23,7),(21,12)], fill="#d08c58", width=2)
-    coin(d,22,20)
-    d.line((27,3,27,7), fill=CREAM)
-    d.line((25,5,29,5), fill=CREAM)
+    # Open riveted salvage tote. Its lip occludes the scrap, seating everything inside.
+    d.polygon([(4,14),(22,11),(28,15),(26,26),(9,29),(3,24)], fill=INK)
+    d.polygon([(5,15),(22,13),(26,15),(9,18)], fill="#25373c")
+    # A thick broken copper pipe behind the gear, with a visible open end.
+    d.line([(18,14),(18,7),(21,4),(25,4),(27,6),(27,11)], fill=INK, width=5)
+    d.line([(18,13),(18,7),(21,5),(25,5),(26,7),(26,11)], fill="#a46340", width=3)
+    d.line([(18,11),(18,7),(21,5),(24,5)], fill="#e6a86e")
+    d.rectangle((25,10,27,12), fill=INK)
+    d.line((25,10,26,10), fill="#edbd87")
+    gear(d, 2, 2)
+    # A single bent sheet, behind the front rim rather than floating above the bin.
+    d.polygon([(16,11),(21,9),(25,14),(21,18),(17,17)], fill=INK)
+    d.polygon([(17,12),(20,11),(23,14),(20,16)], fill="#a7b9ae")
+    d.line((18,12,20,12), fill=LIGHT)
+    # Two visible faces, a folded steel lip and a recessed front grip.
+    d.polygon([(4,16),(9,19),(9,27),(5,24)], fill="#425b61")
+    d.polygon([(10,19),(26,16),(24,25),(10,28)], fill="#638887")
+    d.polygon([(4,14),(9,17),(27,14),(28,16),(9,20),(3,16)], fill=INK)
+    d.line([(5,15),(9,18),(26,15)], fill="#b6c8b7")
+    d.line((11,21,23,19), fill="#83a69a")
+    d.polygon([(14,22),(20,21),(20,23),(14,24)], fill=INK)
+    d.line((15,22,19,21), fill="#a1b9aa")
+    for x,y in ((11,20),(23,18),(11,26),(23,24)):
+        d.point((x,y), fill="#c0c8ae")
+    coin(d,22,22, "#dba34b", "#ffe1a0")
     return im
+
+
+def gear(d, x, y):
+    # A deliberately stepped 15px cog with eight teeth, a bevel and a dark square bore.
+    points = [(5,0),(9,0),(9,2),(12,2),(12,5),(14,5),(14,9),(12,9),
+              (12,12),(9,12),(9,14),(5,14),(5,12),(2,12),(2,9),(0,9),
+              (0,5),(2,5),(2,2),(5,2)]
+    d.polygon([(x+a,y+b) for a,b in points], fill=INK)
+    d.polygon([(x+a,y+b) for a,b in [(6,1),(8,1),(8,3),(11,3),(11,6),(13,6),
+        (13,8),(11,8),(11,11),(8,11),(8,13),(6,13),(6,11),(3,11),(3,8),
+        (1,8),(1,6),(3,6),(3,3),(6,3)]], fill="#728f9d")
+    d.line([(x+6,y+1),(x+8,y+1)], fill="#d6e3d8")
+    d.line([(x+3,y+3),(x+5,y+3),(x+5,y+2)], fill="#c2d5cf")
+    d.line((x+3,y+4,x+3,y+6), fill="#b6ccc9")
+    d.line((x+1,y+6,x+1,y+8), fill="#b6ccc9")
+    d.line((x+8,y+12,x+8,y+13), fill="#42596b")
+    d.line((x+10,y+10,x+11,y+8), fill="#42596b")
+    d.rectangle((x+5,y+5,x+9,y+9), fill="#354954")
+    d.rectangle((x+6,y+6,x+8,y+8), fill=INK)
+    d.line((x+5,y+5,x+9,y+5), fill="#c2d5cf")
+    d.line((x+5,y+6,x+5,y+8), fill="#9eb6ba")
 
 
 def health_trade():
     im, d = canvas()
-    # A little balance scale: surrendered equipment on one pan, a heart on the other.
-    d.rectangle((14,8,17,26), fill=INK)
-    d.rectangle((15,10,16,25), fill=STEEL)
-    d.polygon([(10,26),(21,26),(24,29),(7,29)], fill=INK)
-    d.line((11,27,21,27), fill=LIGHT)
-    d.line((5,9,26,5), fill=INK, width=3)
-    d.line((6,9,25,6), fill=GOLD)
-    for x,y in ((6,10),(25,7)):
-        d.line((x,y,x-3,y+10), fill=INK)
-        d.line((x,y,x+3,y+10), fill=INK)
-        d.polygon([(x-5,y+9),(x+5,y+9),(x+3,y+12),(x-3,y+12)], fill=INK)
-        d.line((x-3,y+10,x+3,y+10), fill=STEEL)
-    d.rectangle((2,12,10,18), fill=INK)
-    d.rectangle((3,13,9,17), fill="#72a2b0")
-    d.line((4,13,8,13), fill=PALE_BLUE)
-    d.rectangle((5,14,6,16), fill=GOLD)
-    d.polygon([(21,10),(24,10),(25,11),(26,10),(29,10),(31,12),(31,15),(26,19),(21,15),(19,13)], fill=INK)
-    d.polygon([(21,11),(24,11),(25,13),(27,11),(29,11),(30,13),(29,15),(26,17),(22,14),(21,13)], fill="#e8727b")
-    d.line((22,11,23,11), fill="#ffe0cb")
-    d.point((15,7), fill=LIGHT)
+    # Two large, separate silhouettes: equipment is converted into health.
+    gear(d, 1, 3)
+    heart = [(20,4),(23,4),(25,6),(27,4),(29,4),(31,6),(31,11),
+             (29,14),(25,18),(21,15),(18,11),(18,7)]
+    d.polygon(heart, fill=INK)
+    d.polygon([(20,6),(22,5),(24,7),(25,9),(27,6),(29,5),(30,7),(30,11),
+               (28,13),(25,16),(22,13),(20,11),(19,8)], fill="#cb5265")
+    d.polygon([(20,7),(22,6),(24,8),(25,10),(27,7),(29,6),(29,10),
+               (27,12),(24,13),(21,11),(20,9)], fill="#ec7b7b")
+    d.line((21,7,22,7), fill="#ffe5c5")
+    d.point((20,8), fill="#ffc2a1")
+    d.line([(25,15),(28,12),(29,11)], fill="#a73752")
+    # One directional, chunky exchange arrow; no tiny scale pans or hanging lines.
+    d.polygon([(4,23),(21,23),(21,20),(29,25),(21,30),(21,28),(4,28)], fill=INK)
+    d.polygon([(6,24),(23,24),(23,23),(27,25),(23,28),(23,27),(6,27)], fill="#d49b49")
+    d.line((6,24,22,24), fill="#ffe0a0")
+    d.point((24,24), fill="#ffe0a0")
     return im
 
 
 def reforge():
     im, d = canvas()
-    # A broad iron anvil under a diagonal hammer, with a hot forging spark.
-    d.polygon([(3,16),(13,16),(16,14),(27,14),(29,17),(24,21),(21,21),(21,25),(25,27),(25,29),(7,29),(7,27),(11,25),(11,21),(6,21)], fill=INK)
-    d.polygon([(5,17),(14,17),(17,15),(26,15),(27,17),(23,19),(9,19)], fill=STEEL)
-    d.line((7,17,13,17), fill=LIGHT)
-    d.rectangle((13,20,19,25), fill="#4b6076")
-    d.polygon([(12,26),(20,26),(22,27),(10,27)], fill="#829bab")
-    d.line((20,6,11,15), fill=INK, width=4)
-    d.line((20,7,13,14), fill="#bc8454", width=2)
-    d.polygon([(18,2),(21,2),(29,9),(29,12),(26,15),(23,15),(15,8),(15,5)], fill=INK)
-    d.polygon([(18,4),(20,4),(27,10),(27,12),(25,13),(17,7),(17,5)], fill="#6b92ac")
-    d.line((18,4,25,10), fill=PALE_BLUE)
-    for x,y in ((6,8),(9,5),(4,12)):
-        d.line((x-1,y,x+1,y), fill=GOLD)
-        d.line((x,y-1,x,y+1), fill=CREAM)
-    d.rectangle((12,15,15,16), fill="#ffca75")
+    # A solid blacksmith's anvil: pointed horn, thick waist, heel and broad feet.
+    d.polygon([(2,16),(10,16),(13,14),(29,14),(30,15),(30,20),(25,22),
+               (23,22),(22,25),(26,27),(26,30),(8,30),(8,27),(12,25),
+               (12,22),(7,21),(2,18)], fill=INK)
+    d.polygon([(4,17),(11,17),(14,15),(28,15),(29,16),(25,18),(10,19)], fill="#b0c8cd")
+    d.line((14,15,27,15), fill="#e1e9dc")
+    d.polygon([(10,20),(25,19),(29,17),(29,19),(24,21),(22,21),(22,25),
+               (25,28),(10,28),(14,25),(14,22)], fill="#5f7f95")
+    d.line((15,20,23,20), fill="#8faebc")
+    d.polygon([(22,22),(23,22),(22,25),(25,27),(25,29),(21,29),
+               (21,27),(20,25),(20,22)], fill="#3d526b")
+    d.polygon([(14,22),(16,22),(16,25),(12,28),(10,28),(14,25)], fill="#83a1ad")
+    d.line((11,28,23,28), fill="#92b2bb")
+    d.line((5,18,10,20), fill="#7495a5")
+    # Handle and head meet at right angles: a real sledgehammer silhouette.
+    d.polygon([(23,1),(26,4),(15,14),(12,11)], fill=INK)
+    d.polygon([(23,3),(24,4),(15,12),(14,11)], fill="#af7148")
+    d.line((22,3,16,9), fill="#e6b078")
+    d.line((21,5,22,6), fill="#754832")
+    d.polygon([(9,3),(20,11),(20,13),(17,16),(15,16),(5,8),(5,6),(7,4)], fill=INK)
+    d.polygon([(9,5),(18,11),(16,14),(7,7)], fill="#7a9eaf")
+    d.line((9,5,16,10), fill="#d7e4d8")
+    d.line((8,7,15,12), fill="#a6c7ce")
+    d.polygon([(18,11),(18,12),(16,14),(15,14),(16,12)], fill="#405d77")
+    d.line((7,7,14,13), fill="#506e88")
+    # A small hot workpiece and two sparks establish the forging action.
+    d.polygon([(11,15),(16,14),(20,16),(18,18),(12,17)], fill=INK)
+    d.polygon([(12,15),(16,15),(18,16),(16,17),(12,16)], fill="#df8852")
+    d.line((13,15,16,15), fill="#ffe1a0")
+    d.line((8,11,8,13), fill="#e9b967")
+    d.line((7,12,9,12), fill="#ffe4a8")
+    d.point((5,15), fill="#e9b967")
     return im
 
 
 def cargo():
     im, d = canvas()
-    # A strapped drop crate suspended below a striped parachute.
-    d.polygon([(2,10),(4,5),(9,2),(22,2),(27,5),(30,10),(30,12),(2,12)], fill=INK)
-    d.polygon([(4,10),(6,6),(10,4),(21,4),(25,6),(28,10)], fill="#e8c68a")
-    d.polygon([(12,4),(19,4),(21,10),(10,10)], fill="#e78655")
-    d.line((4,11,10,20), fill=INK)
-    d.line((27,11,22,20), fill=INK)
-    d.line((15,11,16,19), fill=INK)
-    d.line((6,12,11,19), fill=LIGHT)
-    d.line((25,12,21,19), fill=LIGHT)
-    d.polygon([(8,20),(16,17),(24,20),(24,28),(16,31),(8,28)], fill=INK)
-    d.polygon([(10,20),(16,19),(22,20),(16,23)], fill="#f4cf8c")
-    d.polygon([(10,22),(15,24),(15,29),(10,27)], fill="#9f6d47")
-    d.polygon([(17,24),(22,22),(22,27),(17,29)], fill="#d59555")
-    d.line([(13,20),(19,23),(19,28)], fill=INK, width=2)
-    d.line([(14,20),(20,23),(20,27)], fill="#6792a2")
+    # The crate owns most of the silhouette. All three faces share the same corners.
+    d.line((6,9,8,17), fill=INK, width=3)
+    d.line((25,9,24,17), fill=INK, width=3)
+    d.line((6,10,8,16), fill="#d5dac5")
+    d.line((25,10,24,16), fill="#b5c2b7")
+    # A small inflated canopy with separated gores and scalloped lower edges.
+    d.polygon([(4,8),(6,4),(10,1),(21,1),(25,4),(28,8),(28,10),
+               (24,9),(20,10),(16,9),(12,10),(8,9),(4,10)], fill=INK)
+    d.polygon([(6,7),(8,4),(11,3),(20,3),(24,5),(26,7),(23,8),
+               (20,8),(16,7),(12,8),(8,7)], fill="#d5b382")
+    d.polygon([(12,3),(19,3),(21,8),(16,7),(11,8)], fill="#d07749")
+    d.line((13,3,18,3), fill="#f0b37a")
+    d.line([(8,5),(11,3),(12,3)], fill="#f6e2b3")
+    d.line((7,7,10,7), fill="#ead8aa")
+    # A broad timber box; the shared top/front corner prevents a twisted perspective.
+    d.polygon([(4,17),(15,13),(28,17),(28,26),(17,30),(4,26)], fill=INK)
+    d.polygon([(6,17),(15,14),(26,17),(17,20)], fill="#dfb676")
+    d.polygon([(6,19),(16,22),(16,29),(6,25)], fill="#ba824c")
+    d.polygon([(18,22),(26,19),(26,25),(18,29)], fill="#825a3c")
+    d.line([(6,17),(17,21),(26,18)], fill="#f1d39a")
+    d.line((17,22,17,29), fill="#382e29")
+    # Plank seams follow the face planes; a crossed brace belongs to the front face.
+    d.line((7,21,15,24), fill="#8e5c37")
+    d.line((7,24,15,27), fill="#8e5c37")
+    d.line((19,24,25,22), fill="#614731")
+    d.line((19,27,25,25), fill="#614731")
+    d.line((7,20,14,27), fill="#e0af6b", width=2)
+    d.line((7,24,14,23), fill="#d39b59")
+    # A continuous blue steel band wraps over the lid and down the right face.
+    d.polygon([(10,15),(13,14),(25,18),(22,19)], fill=INK)
+    d.polygon([(12,15),(13,15),(23,18),(22,18)], fill="#9bb2ae")
+    d.polygon([(22,20),(24,19),(24,26),(22,27)], fill=INK)
+    d.line((23,20,23,26), fill="#789697")
+    d.point((23,21), fill="#d3d9bf")
+    d.point((23,25), fill="#d3d9bf")
+    d.point((8,19), fill="#6f4932")
+    d.point((14,27), fill="#6f4932")
     return im
 
 

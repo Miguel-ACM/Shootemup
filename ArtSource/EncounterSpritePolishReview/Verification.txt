@@ -1,0 +1,4 @@
+PASS
+Native Unity production RewardHexes UI rendered at 640x480, no Play mode or gameplay run.
+Reforge, HealthTrade, Cargo and Salvage shown before/after at their unchanged in-game size.
+Reforge hover pose preserves 10% body opacity and the solid charge border.
