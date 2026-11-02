@@ -149,13 +149,105 @@ def pact():
     return im
 
 
-icons = {"Shop":shop(), "MultShop":shop(True), "Item":item(), "Health":health(), "Challenge":challenge(), "Pact":pact()}
+def salvage():
+    im, d = canvas()
+    # An open, battered scrap bin: a gear, a copper coil and a loose coin.
+    d.polygon([(3,15),(26,15),(24,29),(6,29)], fill=INK)
+    d.polygon([(5,17),(24,17),(22,27),(8,27)], fill="#547783")
+    d.line((8,18,10,25), fill="#9db9b6")
+    d.line((20,18,19,25), fill="#2c485a")
+    d.rectangle((3,14,26,17), fill=INK)
+    d.line((5,15,24,15), fill=STEEL)
+    for x,y in ((6,5),(13,5),(3,9),(16,9),(6,13),(13,13)):
+        d.rectangle((x,y,x+3,y+3), fill=INK)
+    d.polygon([(7,5),(13,5),(17,9),(17,13),(13,17),(7,17),(3,13),(3,9)], fill=INK)
+    d.polygon([(7,7),(12,7),(15,10),(15,13),(12,15),(7,15),(5,13),(5,10)], fill=STEEL)
+    d.rectangle((8,10,11,12), fill=INK)
+    d.line((7,8,12,8), fill=LIGHT)
+    d.line([(17,12),(20,5),(24,6),(22,12)], fill=INK, width=4)
+    d.line([(18,12),(21,6),(23,7),(21,12)], fill="#d08c58", width=2)
+    coin(d,22,20)
+    d.line((27,3,27,7), fill=CREAM)
+    d.line((25,5,29,5), fill=CREAM)
+    return im
+
+
+def health_trade():
+    im, d = canvas()
+    # A little balance scale: surrendered equipment on one pan, a heart on the other.
+    d.rectangle((14,8,17,26), fill=INK)
+    d.rectangle((15,10,16,25), fill=STEEL)
+    d.polygon([(10,26),(21,26),(24,29),(7,29)], fill=INK)
+    d.line((11,27,21,27), fill=LIGHT)
+    d.line((5,9,26,5), fill=INK, width=3)
+    d.line((6,9,25,6), fill=GOLD)
+    for x,y in ((6,10),(25,7)):
+        d.line((x,y,x-3,y+10), fill=INK)
+        d.line((x,y,x+3,y+10), fill=INK)
+        d.polygon([(x-5,y+9),(x+5,y+9),(x+3,y+12),(x-3,y+12)], fill=INK)
+        d.line((x-3,y+10,x+3,y+10), fill=STEEL)
+    d.rectangle((2,12,10,18), fill=INK)
+    d.rectangle((3,13,9,17), fill="#72a2b0")
+    d.line((4,13,8,13), fill=PALE_BLUE)
+    d.rectangle((5,14,6,16), fill=GOLD)
+    d.polygon([(21,10),(24,10),(25,11),(26,10),(29,10),(31,12),(31,15),(26,19),(21,15),(19,13)], fill=INK)
+    d.polygon([(21,11),(24,11),(25,13),(27,11),(29,11),(30,13),(29,15),(26,17),(22,14),(21,13)], fill="#e8727b")
+    d.line((22,11,23,11), fill="#ffe0cb")
+    d.point((15,7), fill=LIGHT)
+    return im
+
+
+def reforge():
+    im, d = canvas()
+    # A broad iron anvil under a diagonal hammer, with a hot forging spark.
+    d.polygon([(3,16),(13,16),(16,14),(27,14),(29,17),(24,21),(21,21),(21,25),(25,27),(25,29),(7,29),(7,27),(11,25),(11,21),(6,21)], fill=INK)
+    d.polygon([(5,17),(14,17),(17,15),(26,15),(27,17),(23,19),(9,19)], fill=STEEL)
+    d.line((7,17,13,17), fill=LIGHT)
+    d.rectangle((13,20,19,25), fill="#4b6076")
+    d.polygon([(12,26),(20,26),(22,27),(10,27)], fill="#829bab")
+    d.line((20,6,11,15), fill=INK, width=4)
+    d.line((20,7,13,14), fill="#bc8454", width=2)
+    d.polygon([(18,2),(21,2),(29,9),(29,12),(26,15),(23,15),(15,8),(15,5)], fill=INK)
+    d.polygon([(18,4),(20,4),(27,10),(27,12),(25,13),(17,7),(17,5)], fill="#6b92ac")
+    d.line((18,4,25,10), fill=PALE_BLUE)
+    for x,y in ((6,8),(9,5),(4,12)):
+        d.line((x-1,y,x+1,y), fill=GOLD)
+        d.line((x,y-1,x,y+1), fill=CREAM)
+    d.rectangle((12,15,15,16), fill="#ffca75")
+    return im
+
+
+def cargo():
+    im, d = canvas()
+    # A strapped drop crate suspended below a striped parachute.
+    d.polygon([(2,10),(4,5),(9,2),(22,2),(27,5),(30,10),(30,12),(2,12)], fill=INK)
+    d.polygon([(4,10),(6,6),(10,4),(21,4),(25,6),(28,10)], fill="#e8c68a")
+    d.polygon([(12,4),(19,4),(21,10),(10,10)], fill="#e78655")
+    d.line((4,11,10,20), fill=INK)
+    d.line((27,11,22,20), fill=INK)
+    d.line((15,11,16,19), fill=INK)
+    d.line((6,12,11,19), fill=LIGHT)
+    d.line((25,12,21,19), fill=LIGHT)
+    d.polygon([(8,20),(16,17),(24,20),(24,28),(16,31),(8,28)], fill=INK)
+    d.polygon([(10,20),(16,19),(22,20),(16,23)], fill="#f4cf8c")
+    d.polygon([(10,22),(15,24),(15,29),(10,27)], fill="#9f6d47")
+    d.polygon([(17,24),(22,22),(22,27),(17,29)], fill="#d59555")
+    d.line([(13,20),(19,23),(19,28)], fill=INK, width=2)
+    d.line([(14,20),(20,23),(20,27)], fill="#6792a2")
+    return im
+
+
+icons = {"Shop":shop(), "MultShop":shop(True), "Item":item(), "Health":health(), "Challenge":challenge(), "Pact":pact(),
+         "Salvage":salvage(), "HealthTrade":health_trade(), "Reforge":reforge(), "Cargo":cargo()}
 template = (ROOT / "Assets/Resources/ProjectileSprites/standard.png.meta").read_text()
 folder_meta = DEST.with_suffix(".meta")
 if not folder_meta.exists():
     folder_meta.write_text(f"fileFormatVersion: 2\nguid: {uuid.uuid4().hex}\nfolderAsset: yes\nDefaultImporter:\n  externalObjects: {{}}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n")
 for name,im in icons.items():
-    im.save(DEST / f"{name}.png")
+    destination = DEST / f"{name}.png"
+    # Preserve approved files byte-for-byte when only Pillow's PNG encoder changed.
+    if not destination.exists() or Image.open(destination).convert("RGBA").tobytes() != im.tobytes():
+        im.save(destination)
     assert im.size == (32,32) and set(im.getchannel("A").tobytes()) == {0,255}
     meta = DEST / f"{name}.png.meta"
     if not meta.exists():
@@ -175,4 +267,4 @@ for i,(name,im) in enumerate(icons.items()):
     sheet.paste(im.resize((64,64),Image.Resampling.NEAREST), (i*192+64,164), im.resize((64,64),Image.Resampling.NEAREST))
     d.text((i*192+12,235),name,fill="#e1e8df")
 sheet.save(REVIEW / "IconSheet.png")
-print("Generated six 32px sprites and point-sampled 2x / 4x preview.")
+print(f"Generated {len(icons)} directly drawn 32px sprites and point-sampled 2x / 4x preview.")
