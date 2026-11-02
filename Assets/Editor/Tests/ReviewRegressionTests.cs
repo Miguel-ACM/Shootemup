@@ -75,11 +75,9 @@ public class ReviewRegressionTests
             Assert.AreEqual(0, space.PhaseFraction, .0001f);
 
             var hell = TestEnemy<HellCrabBoss>(root.transform, 1000);
-            for (int i = 0; i < 2; i++)
-                hell.Eyes[i] = TestEnemy<HellCrabEye>(root.transform, 250);
+            hell.health = 750;
+            Assert.AreEqual(.5f, hell.PhaseFraction, .0001f);
             hell.health = 500;
-            Assert.AreEqual(.5f, hell.PhaseFraction, .0001f); // Neither eye is dead yet.
-            hell.Eyes[0].health = 0;
             Assert.AreEqual(0, hell.PhaseFraction, .0001f);
 
             var desert = TestEnemy<DesertWormBoss>(root.transform, 2700);
@@ -203,7 +201,7 @@ public class ReviewRegressionTests
             Assert.AreEqual(0, CombatHit.Apply(boss, 10, UnityEngine.Vector3.zero, UnityEngine.Vector2.up, fire: true));
             Assert.AreEqual(health, boss.health);
             Assert.IsNull(go.GetComponent<BurningHull>());
-            foreach (Type type in new[] { typeof(SpaceBossPart), typeof(HellCrabEye), typeof(DesertWormCore) })
+            foreach (Type type in new[] { typeof(SpaceBossPart), typeof(HellCrabHead), typeof(DesertWormCore) })
             {
                 var part = (AEnemy)go.AddComponent(type);
                 Assert.IsFalse(part.CanReceiveDamage); // Detached parts cannot accept hits either.

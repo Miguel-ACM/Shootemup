@@ -7,17 +7,15 @@ public sealed partial class HellCrabBoss : DistrictBoss
     const int ArmSections = 4;
     readonly Transform[,] arms = new Transform[2, ArmSections];
     readonly LineRenderer[] tells = new LineRenderer[2];
-    readonly HellCrabEye[] eyes = new HellCrabEye[2];
+    readonly Transform[] eyes = new Transform[2];
+    readonly HellCrabHead[] headParts = new HellCrabHead[1];
     float clawClock, lockedY;
     bool completing;
     [EnemyTunable("Claws / Cycle seconds", 5, 12)] public float clawPeriod = 7.4f;
     [EnemyTunable("Claws / Fan count", 3, 9)] public int clawShots = 7;
-    public HellCrabEye[] Eyes => eyes;
+    public HellCrabHead Head => headParts[0];
+    public HellCrabHead[] HeadParts => headParts;
     public override bool CanBeTargeted => false;
-    protected override float PhaseMeterValue => !phaseTwo && eyes[0] != null && eyes[1] != null
-        ? Mathf.Max(0, Mathf.Min(eyes[0].health, eyes[1].health)) / Mathf.Max(1, initialHealth * .5f)
-        : base.PhaseMeterValue;
-    protected override float PhaseEnd(int phase) => phase == 1 ? 0 : base.PhaseEnd(phase);
     protected override void Configure()
     {
         hullScale = 1;
@@ -31,21 +29,24 @@ public sealed partial class HellCrabBoss : DistrictBoss
         base.Start();
         GetComponent<Collider2D>().enabled = false;
         GetComponent<CombatHullVisual>().enabled = false;
+        headParts[0] = HellCrabHead.Create(this, Hull, health);
         for (int i = 0; i < 2; i++)
         {
             int side = i == 0 ? -1 : 1;
-            eyes[i] = HellCrabEye.Create(this, Hull, new Vector3(side * .67f, -.52f, -.96f), health * .5f);
+            eyes[i] = Model("Amber firing eye", IndustrialMeshFactory.CombatHull(55), Head.Visual);
+            eyes[i].localPosition = new Vector3(side * .67f, -.52f, -.96f);
             claws[i] = Model("Jointed side pincer", IndustrialMeshFactory.CombatHull(54), Hull);
             claws[i].localScale = Vector3.one * 1.75f;
             // The Terra pincer's moving jaw is a separate animated part; without it each claw lost its jaw.
             IndustrialMeshFactory.AttachTerraParts("Hull54", claws[i], CombatMaterials.Fleet);
             firingCue.Register(claws[i], new Vector3(0, -.32f, -.4f));
-            firingCue.Register(eyes[i].transform, Vector3.zero);
+            firingCue.Register(eyes[i], Vector3.zero);
             for (int segment = 0; segment < ArmSections; segment++)
                 arms[i, segment] = Model("Articulated pincer vertebra " + segment, IndustrialMeshFactory.CrabArm(), Hull);
             tells[i] = CombatVisuals.Line(Hull, LevelProjectilePalette.Accent(LevelId.Hell), .045f);
             tells[i].enabled = false;
         }
+        PartHitFeedback.Bind(Head.Visual);
     }
 
     static Transform Model(string name, Mesh mesh, Transform parent)
@@ -59,7 +60,6 @@ public sealed partial class HellCrabBoss : DistrictBoss
         return go.transform;
     }
 
-    protected override bool PhaseTwoReady => eyes[0] != null && (eyes[0].health <= 0 || eyes[1].health <= 0);
     protected override void MoveBoss(float dt)
     {
         var target = new Vector3(Mathf.Sin(motionAge * .58f) * .70f, Camera.UpLimit - 2.55f, 1);
@@ -123,11 +123,11 @@ public sealed partial class HellCrabBoss : DistrictBoss
         nextAttack = age + 1.5f;
     }
 
-    public void EyeChanged()
+    public void HeadChanged()
     {
         if (completing)
             return;
-        health = Mathf.Max(0, eyes[0].health) + Mathf.Max(0, eyes[1].health);
+        health = Mathf.Max(0, Head.health);
         if (health <= 0)
         {
             completing = true;
@@ -141,34 +141,38 @@ public sealed partial class HellCrabBoss : DistrictBoss
     }
 }
 
-public sealed class HellCrabEye : AEnemy
+public sealed class HellCrabHead : AEnemy
 {
     HellCrabBoss owner;
+    public Transform Visual { get; private set; }
+    public override bool CanBeTargeted => health > 0 && owner != null && owner.health > 0 && !owner.Invulnerable;
     public override bool CanReceiveDamage => base.CanReceiveDamage && owner != null && !owner.Invulnerable;
-    MeshRenderer model;
-    public static HellCrabEye Create(HellCrabBoss owner, Transform parent, Vector3 position, float health)
+    public static HellCrabHead Create(HellCrabBoss owner, Transform parent, float health)
     {
-        var go = new GameObject("Breakable amber eye");
+        var go = new GameObject("Whole crab head weakpoint");
         go.transform.SetParent(parent, false);
-        go.transform.localPosition = position;
         go.tag = "Enemy";
         go.layer = 8;
         go.AddComponent<SpriteRenderer>().enabled = false;
-        var hit = go.AddComponent<CircleCollider2D>();
+        var hit = go.AddComponent<PolygonCollider2D>();
         hit.isTrigger = true;
-        hit.radius = .34f;
-        var visual = new GameObject("Eye lens");
+        hit.points = new[] { new Vector2(-1.70f, .10f), new Vector2(-1.32f, 1.05f), new Vector2(-.55f, 1.43f),
+            new Vector2(.55f, 1.43f), new Vector2(1.32f, 1.05f), new Vector2(1.70f, .10f), new Vector2(1.15f, -.95f),
+            new Vector2(.52f, -1.35f), new Vector2(-.52f, -1.35f), new Vector2(-1.15f, -.95f) };
+        var visual = new GameObject("Struck head carapace");
         visual.transform.SetParent(go.transform, false);
-        visual.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CombatHull(55);
+        visual.AddComponent<MeshFilter>().sharedMesh = parent.GetComponent<MeshFilter>().sharedMesh;
         var renderer = visual.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = CombatMaterials.Fleet;
+        renderer.sharedMaterial = parent.GetComponent<MeshRenderer>().sharedMaterial;
         renderer.sortingLayerName = "Enemy";
-        PartHitFeedback.Bind(visual.transform);
-        var part = go.AddComponent<HellCrabEye>();
+        parent.GetComponent<MeshFilter>().sharedMesh = null;
+        parent.GetComponent<MeshRenderer>().enabled = false;
+        var part = go.AddComponent<HellCrabHead>();
         part.health = health;
         part.owner = owner;
-        part.model = renderer;
+        part.Visual = visual.transform;
         part.lifeDropChance = part.manaDropChance = part.moneyDropChance = 0;
+        part.scoreOnKill = 0;
         return part;
     }
 
@@ -177,17 +181,13 @@ public sealed class HellCrabEye : AEnemy
         if (health <= 0 || owner == null || owner.Invulnerable)
             return;
         base.damage(amount);
-        owner.EyeChanged();
+        owner.HeadChanged();
     }
 
     protected override void Die()
     {
         health = 0;
         GetComponent<Collider2D>().enabled = false;
-        PSXImpactEffects.Explosion(transform.position, .5f);
-        var ink = new MaterialPropertyBlock();
-        ink.SetColor("_Tint", new Color(.16f, .12f, .10f));
-        model.SetPropertyBlock(ink);
         enabled = false;
     }
 

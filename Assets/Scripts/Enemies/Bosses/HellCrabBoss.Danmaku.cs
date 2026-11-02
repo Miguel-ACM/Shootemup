@@ -10,10 +10,10 @@ using UnityEngine;
 //   Soul Procession: the eyes loose mirrored arcs of slow souls that stop, stare and
 //     dart at the player one by one, under a brimstone canopy: mouth arrows thrown
 //     up that rebound off the ceiling.
-// Phase two (one eye lost speeds up the claws)
+// Phase two (half the shared head health speeds up the claws)
 //   Pincer Inferno: scissors from both pincers more often, alternating with the canopy.
 //   Inferno Lace: a three-arm mirrored lace pours from the two pincers themselves,
-//     following them as they sweep, while the surviving eye's souls stare.
+//     following them as they sweep, while the eyes' souls stare.
 public sealed partial class HellCrabBoss
 {
     static readonly Vector3 Pincer = new Vector3(0, -.32f, -.4f);
@@ -22,8 +22,7 @@ public sealed partial class HellCrabBoss
     {
         if (eyes[0] == null)
             return -1;
-        int first = (volley / 16) % 2;
-        return eyes[first].health > 0 ? first : eyes[1 - first].health > 0 ? 1 - first : -1;
+        return (volley / 16) % 2;
     }
 
     protected override void Attack()
@@ -109,10 +108,10 @@ public sealed partial class HellCrabBoss
     // Slow souls that stop, stare, then dart at the player one after another.
     void SoulSnipe(int eye)
     {
-        if (eye < 0 || eyes[eye] == null || eyes[eye].health <= 0)
+        if (eye < 0 || eyes[eye] == null || Head == null || Head.health <= 0)
             return;
         int souls = Dense(phaseTwo ? 9 : 7);
-        var port = eyes[eye].transform.position;
+        var port = eyes[eye].position;
         for (int i = 0; i < souls; i++)
         {
             float lane = i - (souls - 1) * .5f;
@@ -122,7 +121,7 @@ public sealed partial class HellCrabBoss
     }
 
     // Hard final phase, Inferno: a three-arm lace from the moving pincers with one
-    // answer at a time through it, scissors closing, then the surviving eye's souls.
+    // answer at a time through it, scissors closing, then the firing eye's souls.
     IEnumerator FinalSpell()
     {
         Phrase(Every(9, 1.4f, n =>

@@ -362,7 +362,7 @@ public sealed class BossPatternProbe : MonoBehaviour
             else if (boss is SpaceCitadelBoss citadel)
                 citadel.Reactor.damage(citadel.health * .55f);
             else if (boss is HellCrabBoss crab)
-                crab.Eyes[0].damage(lethal);
+                crab.Head.damage(crab.health * .55f);
             else
                 boss.damage(boss.health * .55f);
             yield return Clip(entry.Item1 + "Two", 17);

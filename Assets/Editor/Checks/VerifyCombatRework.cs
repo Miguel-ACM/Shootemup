@@ -371,7 +371,7 @@ public sealed class CombatReworkReview : MonoBehaviour
             station.Reactor.damage(station.health * .55f);
         }
         else if (boss is HellCrabBoss crab)
-            crab.Eyes[0].damage(1000000);
+            crab.Head.damage(crab.health * .55f);
         else
             boss.health *= .49f;
     }

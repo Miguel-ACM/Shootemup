@@ -683,7 +683,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
             else if (boss is ThunderLanceBoss thunder)
                 ThinHull(boss, thunder.phaseTwoThreshold * .95f);
             else if (boss is HellCrabBoss crab)
-                crab.Eyes[0].damage(1000000);
+                ThinParts(boss, crab.HeadParts, .49f);
             else
                 ThinHull(boss, .49f);
             return;
@@ -694,7 +694,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
         else if (boss is SpaceCitadelBoss citadel)
             ThinParts(boss, citadel.Parts, goal);
         else if (boss is HellCrabBoss hell)
-            ThinParts(boss, hell.Eyes, goal);
+            ThinParts(boss, hell.HeadParts, goal);
         else
             ThinHull(boss, goal);
     }
