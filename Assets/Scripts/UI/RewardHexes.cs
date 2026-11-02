@@ -66,9 +66,15 @@ public sealed class RewardHexes : MonoBehaviour
             case EncounterKind.Pact:
                 return 1;
             case EncounterKind.Challenge:
+            case EncounterKind.Cargo:
                 return .75f;
             case EncounterKind.Health:
+            case EncounterKind.HealthTrade:
                 return .35f;
+            case EncounterKind.Salvage:
+                return .45f;
+            case EncounterKind.Reforge:
+                return .65f;
             default:
                 return .55f;
         }
@@ -82,6 +88,33 @@ public sealed class RewardHexes : MonoBehaviour
         // Kept in the lower half of the arena, within easy reach of the ship.
         float low = Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, .14f), high = Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, .55f);
         var spots = new Vector2[options.Length];
+        if (options.Length == 3)
+        {
+            // Alternating triangles leave actual flight corridors between three full-size zones.
+            // Choose the orientation furthest from the pilot before assigning the reward heights.
+            float x = Mathf.Min(-left, right) * .8f, bottom = low + .4f, top = high - .4f;
+            var upright = new[] { new Vector2(-x, bottom), new Vector2(x, bottom), new Vector2(0, top) };
+            var inverted = new[] { new Vector2(0, bottom), new Vector2(-x, top), new Vector2(x, top) };
+            float Distance(Vector2[] points)
+            {
+                float nearest = float.MaxValue;
+                foreach (var point in points)
+                    nearest = Mathf.Min(nearest, Vector2.Distance(point, avoid));
+                return nearest;
+            }
+            var positions = Distance(upright) >= Distance(inverted) ? upright : inverted;
+            int[] order = { 0, 1, 2 };
+            Array.Sort(order, (a, b) => Importance(options[a]).CompareTo(Importance(options[b])));
+            Array.Sort(positions, (a, b) => a.y.CompareTo(b.y));
+            float mirror = rng.Next(2) == 0 ? -1 : 1;
+            for (int i = 0; i < 3; i++)
+            {
+                var point = positions[i];
+                spots[order[i]] = new Vector2(point.x * mirror + ((float)rng.NextDouble() - .5f) * .3f,
+                    point.y + ((float)rng.NextDouble() - .5f) * .3f);
+            }
+            return spots;
+        }
         for (int i = 0; i < options.Length; i++)
         {
             float exponent = Mathf.Lerp(1.6f, .3f, Importance(options[i]));

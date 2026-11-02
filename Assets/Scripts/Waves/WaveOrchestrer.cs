@@ -229,7 +229,14 @@ public class WaveOrchestrer : MonoBehaviour
             GenerateWave();
             return;
         }
-        if (kind == RunSlotKind.EncounterChoice || kind == RunSlotKind.MinibossChoice)
+        if (kind == RunSlotKind.MinibossChoice)
+        {
+            currentWaveNumber++;
+            EraseAllBullets();
+            OpenDecision(RunSlotKind.Reward);
+            return;
+        }
+        if (kind == RunSlotKind.EncounterChoice)
         {
             offerPending = true;
             currentWaveNumber++;

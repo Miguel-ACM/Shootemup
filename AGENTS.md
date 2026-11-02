@@ -152,6 +152,9 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Spare Plating (+1 max hit, common), Double Hull (+2, rare) and Energy Shield (epic). Energy Shield absorbs the hit that would take the last segment, shown as a glowing ring around the bottom HUD cell, and recharges over 60 seconds of active play only; shops, route choices, transitions and pauses do not count.
 - Do not offer the HEALTH encounter while the player is above 70% of maximum health; it may appear at or below 70%.
 - ITEM and CHALLENGE are mutually exclusive options: never offer them together in the same encounter selection.
+- Latest decisions (2 November 2026): offer two unconditional mid-combat hexagon selections per district, after ordinary waves three and eight. Keep ten ordinary waves, the opening item and a separate earned miniboss item selection. Luck can raise each offer from two hexagons to three. Healthy Plains players must still receive useful choices.
+- Add directly Python-drawn pixel icons for Salvage (run-wallet coins), an owned-item health trade (three hits), Reforge (two distinct same-rarity alternatives; preserve the source until a replacement is actually collected) and Cargo (protect a visible three-hit crate for two ordinary waves to earn coins and an enhanced item). Never offer health trades at full health or trades without eligible owned items. Preserve pacts, the starter shield and permanent hull changes.
+- Hovered reward hexagon faces, icons and static rims fade to 10% opacity; keep their filling borders solid. Give three hexagons separate flight corridors.
 - Require close contact to collect decision items so passing nearby cannot cause accidental purchases or replacements.
 - Make rarity effects noticeable and distinct.
 - Shop names and prices need opaque black backgrounds and must stay readable with the filter. The bottom skip zone must be reachable at the visible screen edge, with a minimal hold indicator.
