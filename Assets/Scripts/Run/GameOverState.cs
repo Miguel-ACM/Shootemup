@@ -11,12 +11,13 @@ public sealed class GameOverState : MonoBehaviour
     RectTransform lettering;
     float age;
     bool leaving;
-    public static void Show()
+    public static void Show(bool victory = false)
     {
         if (Active)
             return;
         instance = new GameObject("Game over", typeof(RectTransform)).AddComponent<GameOverState>();
-        MetaProgress.EndRun();
+        instance.won = victory;
+        MetaProgress.EndRun(victory ? (FlightTrials.Active == null ? "Victory" : "Certified") : "Lost");
         IndustrialHUD.ShutDown();
         CombatDecision.End();
         GameRules.playerDisabled = true;
@@ -40,80 +41,56 @@ public sealed class GameOverState : MonoBehaviour
         instance.Build(dialog != null ? dialog.font : null);
     }
 
+    DockInstrument meter;
+    TextMeshProUGUI tally, stamps, footer;
+    FlightLog log;
+    bool won;
+    int sounded;
     void Build(TMP_FontAsset font)
     {
-        var canvas = gameObject.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 32010;
-        var scaler = gameObject.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1280, 720);
-        scaler.matchWidthOrHeight = 1;
-        group = gameObject.AddComponent<CanvasGroup>();
-        group.alpha = 0;
-        group.blocksRaycasts = false;
-        var panel = new GameObject("Dark playfield", typeof(RectTransform), typeof(Image));
-        panel.transform.SetParent(transform, false);
-        var rect = panel.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(.5f, 0);
-        rect.anchorMax = new Vector2(.5f, 1);
-        rect.sizeDelta = new Vector2(405, 0);
-        panel.GetComponent<Image>().color = new Color(.012f, .018f, .025f, .92f);
-        var title = new GameObject("GAME OVER", typeof(RectTransform), typeof(TextMeshProUGUI));
-        title.transform.SetParent(rect, false);
-        var text = title.GetComponent<TextMeshProUGUI>();
-        if (font != null)
-            text.font = font;
-        text.text = "GAME\nOVER";
-        text.fontSize = 100;
-        text.enableAutoSizing = true;
-        text.fontSizeMin = 68;
-        text.fontSizeMax = 100;
-        text.textWrappingMode = TextWrappingModes.NoWrap;
-        text.fontStyle = FontStyles.Bold;
-        text.alignment = TextAlignmentOptions.Center;
-        text.color = new Color(1, .75f, .38f);
-        text.lineSpacing = -12;
-        text.raycastTarget = false;
-        lettering = text.rectTransform;
-        lettering.sizeDelta = new Vector2(380, 280);
-        lettering.anchoredPosition = new Vector2(0, 20);
-        // The coins this run banked for the hangar: a coin and its count under the lettering.
-        var haul = new GameObject("Coins gathered", typeof(RectTransform), typeof(TextMeshProUGUI));
-        haul.transform.SetParent(rect, false);
-        var count = haul.GetComponent<TextMeshProUGUI>();
-        if (font != null)
-            count.font = font;
-        count.text = "+" + RunCoins.Count;
-        count.fontSize = 34;
-        count.alignment = TextAlignmentOptions.MidlineLeft;
-        count.color = new Color(1, .82f, .4f);
-        count.raycastTarget = false;
-        // Coin and number centred together beneath the lettering.
-        float numberWidth = count.GetPreferredValues(count.text).x;
-        float total = 24 + 8 + numberWidth;
-        count.rectTransform.sizeDelta = new Vector2(numberWidth + 4, 44);
-        count.rectTransform.anchoredPosition = new Vector2(-total * .5f + 32 + numberWidth * .5f + 2, -150);
-        var coin = new GameObject("Coin", typeof(RectTransform), typeof(Image));
-        coin.transform.SetParent(rect, false);
-        var disc = coin.GetComponent<Image>();
-        disc.sprite = CombatVisuals.Disc;
-        disc.color = new Color(1, .76f, .25f);
-        disc.raycastTarget = false;
-        disc.rectTransform.sizeDelta = new Vector2(24, 24);
-        disc.rectTransform.anchoredPosition = new Vector2(-total * .5f + 12, -150);
+        log = MetaProgress.LastFlight ?? new FlightLog { score = Score.CurrentScore, earned = RunCoins.Earned,
+            route = LevelRun.CurrentName, frame = ShipFrames.Current.frame, difficulty = Difficulty.Current };
+        var accent = won ? DockInstrument.Brass : DockInstrument.Sea;
+        meter = new DockInstrument(gameObject, font, accent, 32010);
+        group = meter.group;
+        meter.Label("FLIGHT RECORDER     /     DEBRIEF", -48,255,462,32,15,accent,true);
+        string title = won ? (log.contract == null ? "VICTORY" : "CERTIFIED") : "GAME OVER";
+        var headline = meter.Label(title,0,173,558,94,74,won ? DockInstrument.Brass : DockInstrument.Paper,true);
+        lettering = headline.rectTransform;
+        meter.Label((log.contract ?? log.frame.ToString()).ToUpperInvariant() + "    /    " + log.difficulty.ToString().ToUpperInvariant()
+            + "    /    " + log.Duration,0,105,558,36,19,DockInstrument.Muted);
+        meter.Label(log.route,0,65,558,48,19,DockInstrument.Paper);
+        DockInstrument.Block(meter.face,"Tally rule",new Vector2(0,35),new Vector2(558,2),accent);
+        tally = meter.Label("",0,-16,558,85,23,DockInstrument.Paper);
+        stamps = meter.Label("",0,-138,558,142,19,accent,true);
+        footer = meter.Label("",0,-252,558,36,17,DockInstrument.Muted);
+        group.alpha=0;
     }
 
     void Update()
     {
         age += Time.unscaledDeltaTime;
         group.alpha = Mathf.Clamp01(age / .35f);
-        lettering.localScale = Vector3.one * Mathf.Lerp(1.12f, 1, Mathf.SmoothStep(0, 1, age / .45f));
-        if (age >= 4.2f && !leaving && !CloudTransition.Busy)
+        lettering.localScale = Vector3.one * Mathf.Lerp(1.08f, 1, Mathf.SmoothStep(0, 1, age / .55f));
+        float t = Mathf.SmoothStep(0,1,(age-.35f)/1.1f);
+        tally.text = "SCORE   " + Mathf.RoundToInt(log.score*t).ToString("N0") + "      COINS   +" + Mathf.RoundToInt(log.earned*t)
+            + "   <size=65%>(" + log.banked + " banked)</size>\n" + log.bosses + " bosses     " + log.clean + " no-hit     " + log.hits + " hits     " + log.peak + "× peak";
+        int count = Mathf.Clamp(Mathf.FloorToInt((age-1.05f)*3),0,log.awards.Count);
+        if(count>sounded) { sounded=count; ItemSound.Play("ready",.13f); }
+        if(count>0)
         {
-            leaving = true;
-            // The roguelite loop: a lost run goes back to the hangar, where the banked coins can be spent.
-            CloudTransition.Load("L1", HangarHub.Return);
+            // The complete list stays available on the recorder; cycle four stamps at a time on long receipts.
+            int start = count<log.awards.Count ? (count-1)/4*4 : (Mathf.FloorToInt(Mathf.Max(0,age-2-log.awards.Count/3f)/3)%((count+3)/4))*4;
+            stamps.text = "NEW RELEASES\n" + string.Join("\n",log.awards.GetRange(start,Mathf.Min(4,count-start)));
+        }
+        else stamps.text = age>1.2f && log.awards.Count==0 ? "FLIGHT LOG FILED" : "";
+        bool ready=age>1.6f+log.awards.Count/3f;
+        footer.text=ready ? DockInstrument.FireKey()+"   RETURN TO HANGAR" : "";
+        if(ready && !leaving && !CloudTransition.Busy && (GameInput.Actions.PlayerControls.FirePrimary.WasPressedThisFrame()
+            || age>Mathf.Max(12,5+log.awards.Count*1.4f)))
+        {
+            leaving=true;
+            CloudTransition.Load("L1",HangarHub.Return);
         }
     }
 

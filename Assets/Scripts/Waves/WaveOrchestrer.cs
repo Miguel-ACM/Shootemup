@@ -463,6 +463,11 @@ public class WaveOrchestrer : MonoBehaviour
             Destroy(enemy.gameObject);
         EraseAllBullets();
         CombatDecision.Begin(); // Freeze multiplier and fire while steering to the next route.
+        if (LevelRun.Current == LevelId.Hell || FlightTrials.Active != null)
+        {
+            GameOverState.Show(true);
+            yield break;
+        }
         if (LevelRun.AutomaticNext.HasValue)
         {
             TravelToLevel(LevelRun.AutomaticNext.Value);
