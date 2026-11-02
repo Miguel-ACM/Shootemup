@@ -13,6 +13,7 @@ public static partial class IndustrialMeshFactory
             case "HeatSink": HeatSinkModel(b); break;
             case "LuckyPenny": LuckyPennyModel(b); break;
             case "PaperclipBox": PaperclipBoxModel(b); break;
+            case "FireflyJar": FireflyJarModel(b); break;
             default: return false;
         }
         return true;

@@ -29,6 +29,9 @@ public static class EverydayItemMaterials
             case "Thermos":
                 color = new Color(.12f, .65f, .68f);
                 return true;
+            case "FireflyJar":
+                color = new Color(.47f, .78f, .62f);
+                return true;
             case "HeatSink":
                 color = new Color(.38f, .58f, .8f);
                 return true;
