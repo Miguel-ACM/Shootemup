@@ -72,6 +72,13 @@ public static class ItemPool
         return result;
     }
 
+    public static string GetCargoReward(out string rarity)
+    {
+        float roll = Random.value + Mathf.Max(0, GameRules.luck);
+        string wanted = roll >= .98f || PactPool.RarityUpgrade && roll >= .88f ? "legendary" : roll >= .88f || PactPool.RarityUpgrade ? "epic" : "rare";
+        return GetItemStringFromPool(wanted, out rarity);
+    }
+
     private static string LowerPool(string pool)
     {
         if (pool == "rare")

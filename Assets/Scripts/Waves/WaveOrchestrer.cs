@@ -46,6 +46,8 @@ public class WaveOrchestrer : MonoBehaviour
     float offerAt;
     RewardHexes rewardOffer;
     public RewardHexes RewardOffer => rewardOffer;
+    CargoEscort cargo;
+    public CargoEscort Cargo => cargo;
 
     public const float OpeningBreather = .8f;
     bool openingWavePending { get => Phase == RunPhase.Opening; set => Phase = value ? RunPhase.Opening : RunPhase.Idle; }
@@ -114,12 +116,13 @@ public class WaveOrchestrer : MonoBehaviour
                 enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
                 currentUnit = currentWave.getNext();
             }
-            if (offerPending && waveTime >= offerAt)
+            if (offerPending && (waveTime >= offerAt || currentUnit == null && AEnemy.Live.Count == 0))
                 OpenEncounterChoice();
             // Consecutive phrases overlap their exits: old bullets are part of the rhythm.
             // Decisions and bosses wait for enemies to finish, then explicitly clear hazards.
             var next = plan.Following(currentWaveNumber);
-            bool nextCombat = next.Kind == RunSlotKind.Combat && !(challengeWave && challengeWavesRemaining == 1);
+            bool nextCombat = next.Kind == RunSlotKind.Combat && !(challengeWave && challengeWavesRemaining == 1) &&
+                !(cargo != null && cargo.WavesRemaining == 1);
             bool empty = currentUnit == null && AEnemy.Live.Count == 0;
             clearTime = empty ? clearTime + Time.deltaTime : 0;
             bool miniboss = currentWave.units.Exists(unit => unit.miniboss);
@@ -132,7 +135,7 @@ public class WaveOrchestrer : MonoBehaviour
                     activeMiniboss.Retreat();
             }
             bool phraseComplete = currentUnit == null && !miniboss && waveTime >= handoffAt && AEnemy.Live.Count < 22;
-            if (currentUnit == null && ((nextCombat && phraseComplete) || clearTime >= .12f))
+            if (currentUnit == null && ((nextCombat && phraseComplete) || clearTime >= .12f) && (nextCombat || rewardOffer == null))
             {
 
                 if (stopingWave)
@@ -161,6 +164,7 @@ public class WaveOrchestrer : MonoBehaviour
         {
             killLedger.HandOff(currentWaveNumber);
             killLedger.Drain(CombatWaveFinished);
+            FinishCargoWave();
         }
         if (challenge.FinishWave())
         {
@@ -172,6 +176,16 @@ public class WaveOrchestrer : MonoBehaviour
             return;
         }
         GenerateWave();
+    }
+
+    void FinishCargoWave()
+    {
+        if (cargo == null || !cargo.FinishWave())
+            return;
+        RunCoins.Add(EncounterChoice.SalvageCoins(LevelRun.Tier(LevelRun.Current), GameRules.luck) * 2);
+        cargo.Deliver();
+        cargo = null;
+        plan.Insert(currentWaveNumber, RunSlotKind.CargoReward);
     }
 
     public void BeginWaves()
@@ -282,10 +296,8 @@ public class WaveOrchestrer : MonoBehaviour
         bool pactAvailable = PactPool.Due && PactPool.HexStage != LevelRun.Stage && PactPool.HasEligible(player);
         var tradeable = RunInventory.For(player).Tradeable();
         bool canReforge = tradeable.Exists(entry => ItemPool.ReforgeAlternatives(entry.key, entry.rarity).Count >= 2);
-        var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth, pactAvailable, tradeable.Count > 0, canReforge);
-        // A pick needs a real choice: with a single option, nothing is offered at this break.
-        if (options.Length < 2)
-            return;
+        var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth,
+            pactAvailable, GameRules.luck, tradeable.Count > 0, canReforge, cargo == null && remaining >= 2);
         if (Array.IndexOf(options, EncounterKind.Pact) >= 0)
             PactPool.HexStage = LevelRun.Stage;
         EncounterOptions = options;
@@ -318,6 +330,12 @@ public class WaveOrchestrer : MonoBehaviour
             RunCoins.Add(EncounterChoice.SalvageCoins(LevelRun.Tier(LevelRun.Current), GameRules.luck));
             ItemSound.Play("ready", .18f);
             PSXImpactEffects.Burst(ship.transform.position, EncounterChoice.Accent(kind));
+            return;
+        }
+        if (kind == EncounterKind.Cargo)
+        {
+            if (cargo == null)
+                cargo = CargoEscort.Create(ship.GetComponent<Shipcontroller>());
             return;
         }
         if (kind == EncounterKind.HealthTrade || kind == EncounterKind.Reforge)
@@ -488,6 +506,9 @@ public class WaveOrchestrer : MonoBehaviour
         currentWaveEnemies = 0;
         currentWaveKilledEnemies = 0;
         challenge.Reset();
+        if (cargo != null)
+            Destroy(cargo.gameObject);
+        cargo = null;
         DismissOffer();
         waveTime = clearTime = 0;
         currentUnit = null;

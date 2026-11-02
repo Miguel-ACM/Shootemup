@@ -40,7 +40,7 @@ public sealed class DecisionShop : MonoBehaviour
     public void Open(WaveOrchestrer orchestrer, Shipcontroller ship, RunSlotKind kind, Action completed, Vector3? dropPosition = null)
     {
         mandatory = kind == RunSlotKind.BossReward;
-        bool singleReward = mandatory || kind == RunSlotKind.ChallengeReward;
+        bool singleReward = mandatory || kind == RunSlotKind.ChallengeReward || kind == RunSlotKind.CargoReward;
         bool pact = kind == RunSlotKind.Pact;
         owner = orchestrer;
         player = ship;
@@ -73,7 +73,7 @@ public sealed class DecisionShop : MonoBehaviour
         {
             string rarity = pact ? PactPool.Rarity : "common";
             string itemKind = pact ? pacts[i] : healthKit && i == count - 1 ? "LargeHealthKit" :
-                ItemPool.GetItem(out rarity);
+                kind == RunSlotKind.CargoReward ? ItemPool.GetCargoReward(out rarity) : ItemPool.GetItem(out rarity);
             var target = dropPosition ?? new Vector3(Mathf.Lerp(Camera.LeftLimit + 1, Camera.RightLimit - 1, count == 1 ? .5f : i / (float)(count - 1)), Camera.UpLimit * .5f, 1);
             var entrance = dropPosition.HasValue ? target + Vector3.up * .9f : new Vector3(target.x, Camera.UpLimit + 3, 1);
             var go = Instantiate(Resources.Load<GameObject>("Items/Item"), entrance, Quaternion.identity);

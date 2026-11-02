@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum EncounterKind
 {
-    Shop, MultShop, Item, Health, Challenge, Pact, Salvage, HealthTrade, Reforge
+    Shop, MultShop, Item, Health, Challenge, Pact, Salvage, HealthTrade, Reforge, Cargo
 }
 public static class EncounterChoice
 {
@@ -22,7 +22,8 @@ public static class EncounterChoice
 
     public static int SalvageCoins(int tier, float luck) => 12 + Mathf.Max(0, tier - 1) * 4 + Mathf.FloorToInt(Mathf.Clamp(luck, 0, 2) * 12);
 
-    public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false, bool canTrade = false, bool canReforge = false)
+    public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false,
+        float luck = 0, bool canTrade = false, bool canReforge = false, bool cargoAvailable = true)
     {
         // Shops are no longer offered mid-run; the hangar shop between runs replaces them.
         var bag = new List<EncounterKind> { EncounterKind.Item, EncounterKind.Salvage };
@@ -33,9 +34,12 @@ public static class EncounterChoice
             bag.Add(EncounterKind.HealthTrade);
         if (canReforge)
             bag.Add(EncounterKind.Reforge);
+        if (cargoAvailable)
+            bag.Add(EncounterKind.Cargo);
         if (challengeAvailable)
             bag.Add(EncounterKind.Challenge);
         var rng = new System.Random(seed);
+        int count = 2;
         for (int i = bag.Count - 1; i > 0; i--)
         {
             int j = rng.Next(i + 1);
@@ -43,16 +47,16 @@ public static class EncounterChoice
             bag[i] = bag[j];
             bag[j] = swap;
         }
-        // Item and Challenge never appear together; without a compatible second option a single zone is offered.
+        // Salvage provides a useful alternative even at full health and without spare items.
         var picked = new List<EncounterKind> { bag[0] };
         foreach (var kind in bag)
-            if (picked.Count < 2 && !picked.Contains(kind) && picked.TrueForAll(other => !Incompatible(other, kind)))
+            if (picked.Count < count && !picked.Contains(kind) && picked.TrueForAll(other => !Incompatible(other, kind)))
                 picked.Add(kind);
-        // A due pact always takes the second zone, so it is never crowded out.
+        // A due pact replaces the last zone, so it is never crowded out.
         if (pactAvailable)
         {
-            if (picked.Count == 2)
-                picked[1] = EncounterKind.Pact;
+            if (picked.Count == count)
+                picked[picked.Count - 1] = EncounterKind.Pact;
             else
                 picked.Add(EncounterKind.Pact);
         }
@@ -80,12 +84,14 @@ public static class EncounterChoice
                 return new Color(.94f, .42f, .44f);
             case EncounterKind.Pact:
                 return new Color(.88f, .1f, .2f);
+            case EncounterKind.Salvage:
+                return new Color(.95f, .73f, .32f);
             case EncounterKind.HealthTrade:
                 return new Color(.95f, .56f, .65f);
             case EncounterKind.Reforge:
                 return new Color(.5f, .8f, .95f);
-            case EncounterKind.Salvage:
-                return new Color(.95f, .73f, .32f);
+            case EncounterKind.Cargo:
+                return new Color(.96f, .63f, .33f);
             default:
                 return new Color(.76f, .48f, .95f);
         }
