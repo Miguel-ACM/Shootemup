@@ -29,6 +29,9 @@ public static class EverydayItemMaterials
             case "RibbonSpool":
                 color = new Color(.38f, .74f, .83f);
                 return true;
+            case "SewingKit":
+                color = new Color(.67f, .42f, .72f);
+                return true;
             case "WindUpTeeth":
                 color = new Color(.93f, .48f, .51f);
                 return true;

@@ -18,6 +18,7 @@ public static partial class IndustrialMeshFactory
             case "PocketMortar": PocketMortarModel(b); break;
             case "WindUpTeeth": WindUpTeethModel(b); break;
             case "RibbonSpool": RibbonSpoolModel(b); break;
+            case "SewingKit": SewingKitModel(b); break;
             default: return false;
         }
         return true;
