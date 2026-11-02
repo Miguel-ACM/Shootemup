@@ -17,6 +17,7 @@ public static partial class IndustrialMeshFactory
             case "SaltShaker": SaltShakerModel(b); break;
             case "PocketMortar": PocketMortarModel(b); break;
             case "WindUpTeeth": WindUpTeethModel(b); break;
+            case "RibbonSpool": RibbonSpoolModel(b); break;
             default: return false;
         }
         return true;

@@ -26,6 +26,9 @@ public static class EverydayItemMaterials
             case "SteelWashers":
                 color = new Color(.56f, .65f, .72f);
                 return true;
+            case "RibbonSpool":
+                color = new Color(.38f, .74f, .83f);
+                return true;
             case "WindUpTeeth":
                 color = new Color(.93f, .48f, .51f);
                 return true;
