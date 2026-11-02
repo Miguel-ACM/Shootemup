@@ -1,0 +1,18 @@
+PASS
+additive Run scene loads before reviewing its orchestrator
+opening preparation completes in the isolated review
+512 seeds: healthy offers have 2-3 compatible hexagons; luck raises third-zone frequency from 41 to 220
+two unconditional selections preserve ten combat waves and a separate earned miniboss reward
+all four directly drawn 32px encounter icons use point sampling without mipmaps
+Salvage credits only the run wallet, never score
+trading one Caffeine removes exactly one copy's movement bonus
+removal preserves a later pact multiplier and a later additive item
+multiplicative energy pickups lose only the traded copy
+duplicate passive keeps its shared firing effect
+last passive copy removes its firing effect
+duplicate Focus Brake retains its single handling modifier
+last Focus Brake restores original handling
+coating trades preserve the remaining upgrade stack
+passive shooting pickup owns its separate gun
+trading a passive shooting item removes only its gun
+pacts and the starter shield are protected from exchanges
