@@ -150,3 +150,11 @@ for name in ('KeyPrompt','PadPrompt'):
         d.polygon([(4,16),(9,10),(25,6),(39,5),(44,8),(44,14),(39,20),(15,25),(5,24)],fill='#dedfbd')
         d.line([(9,12),(24,8),(38,6)],fill='#ffffff',width=2)
     im.save(out/(name+'.png'))
+
+# A round face button; the input legend is drawn by the game.
+im=Image.new('RGBA',(48,32))
+d=ImageDraw.Draw(im)
+d.ellipse((9,2,38,31), fill=ink, outline=edge)
+d.ellipse((10,1,37,27), fill='#c8dbda', outline=steel)
+d.arc((12,3,35,25), 195, 295, fill='#f6fcf0', width=2)
+im.save(out/'FacePrompt.png')

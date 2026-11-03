@@ -67,11 +67,28 @@ public sealed partial class HangarHub
         image.raycastTarget = false;
         pageNodes.Add(image.gameObject);
     }
+    TextMeshProUGUI consoleFooter;
+    bool footerUsesPad;
+
+    void RefreshConsoleFooter()
+    {
+        footerUsesPad = DockInstrument.UsingGamepad;
+        if (!operating) { consoleFooter.text = ""; return; }
+        string back = DockInstrument.MenuKey(true);
+        consoleFooter.text = (Dock)room switch
+        {
+            Dock.Fleet => "< > HULL   ^ v MODE   " + back + " EXIT",
+            Dock.Simulator => DockInstrument.MenuKey() + "  LAUNCH SIM   " + back + " RELEASE",
+            Dock.Flight => DockInstrument.MenuKey() + "  SET   " + back + " RELEASE",
+            _ => back + "  RELEASE"
+        };
+    }
     void RenderPage()
     {
         if (room == (int)Dock.Armory)
         {
-            directoryControls.text = operating ? DockInstrument.FireKey(true) + "  RELEASE" : "";
+            consoleFooter = directoryControls;
+            RefreshConsoleFooter();
             return;
         }
         foreach (var node in pageNodes)
@@ -83,7 +100,6 @@ public sealed partial class HangarHub
         pageNodes.Clear();
         Color accent = lamps[room];
         Legend((room + 1).ToString("00") + "  /  " + signs[room], -41, 255, 476, 34, 17, accent, true);
-        string action = "";
         switch ((Dock)room)
         {
             case Dock.Fleet:
@@ -91,21 +107,16 @@ public sealed partial class HangarHub
                 break;
             case Dock.Simulator:
                 TrialPage();
-                action = "LAUNCH SIM";
                 break;
             case Dock.Recorder:
                 HistoryPage();
                 break;
             case Dock.Flight:
                 FlightPage();
-                action = "SET";
                 break;
         }
-        string keys = operating ? (action.Length > 0 ? DockInstrument.FireKey() + "  " + action + "   " : "") + DockInstrument.FireKey(true) + " RELEASE" :
-            "";
-        if (operating && room == (int)Dock.Fleet)
-            keys = "< > HULL   ^ v MODE   " + DockInstrument.FireKey(true) + " EXIT";
-        Legend(keys, 0, -254, 558, 32, 17, DockInstrument.Paper);
+        consoleFooter = Legend("", 0, -254, 558, 32, 17, DockInstrument.Paper);
+        RefreshConsoleFooter();
     }
     void FleetPage()
     {

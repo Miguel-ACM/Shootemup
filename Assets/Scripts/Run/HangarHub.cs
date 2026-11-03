@@ -197,10 +197,9 @@ public sealed partial class HangarHub : MonoBehaviour
         BuildGate();
         deckReady = true;
         input = GameInput.Actions;
-        input.PlayerControls.FirePrimary.started += Interact;
-        input.PlayerControls.FireSecondary.started += Interact;
-        input.PlayerControls.ActiveLeft.started += Interact;
-        input.PlayerControls.ActiveRight.started += Interact;
+        input.PlayerControls.Accept.performed += Interact;
+        input.PlayerControls.Back.performed += Interact;
+        input.PlayerControls.FireSecondary.performed += Interact;
 
     }
 
@@ -506,7 +505,7 @@ public sealed partial class HangarHub : MonoBehaviour
 
     void Update()
     {
-        if (!deckReady || player == null || launching)
+        if (!deckReady || player == null || launching || Menu.GameplayPaused)
             return;
         // Debug: K unlocks every item.
         if (Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
@@ -570,7 +569,7 @@ public sealed partial class HangarHub : MonoBehaviour
 
     void Interact(InputAction.CallbackContext context)
     {
-        if (!deckReady || player == null || launching || Arriving || Menu.GameplayPaused || CloudTransition.Busy)
+        if (!deckReady || player == null || launching || Arriving || Menu.GameplayPaused || Menu.HandledInputThisFrame || GameOverState.Active || CloudTransition.Busy)
             return;
         var p = player.transform.position;
         if (UseDock(context, p))
@@ -580,7 +579,7 @@ public sealed partial class HangarHub : MonoBehaviour
             return;
         if (context.action == input.PlayerControls.FireSecondary)
             MetaProgress.TogglePin(plinths[shop].kind);
-        else
+        else if (context.action == input.PlayerControls.Accept)
             Buy(plinths[shop]);
     }
 
@@ -706,10 +705,9 @@ public sealed partial class HangarHub : MonoBehaviour
     {
         if (input != null)
         {
-            input.PlayerControls.FirePrimary.started -= Interact;
-            input.PlayerControls.FireSecondary.started -= Interact;
-            input.PlayerControls.ActiveLeft.started -= Interact;
-            input.PlayerControls.ActiveRight.started -= Interact;
+            input.PlayerControls.Accept.performed -= Interact;
+            input.PlayerControls.Back.performed -= Interact;
+            input.PlayerControls.FireSecondary.performed -= Interact;
         }
         ResetDeckCamera();
         if (silhouette != null)

@@ -402,6 +402,7 @@ public sealed partial class HangarHub
             }
             if (operating && !Menu.GameplayPaused)
             {
+                if (footerUsesPad != DockInstrument.UsingGamepad) RefreshConsoleFooter();
                 var seat = Spot(Desk() + Vector2.down * 2.17f, p.z);
                 player.transform.position = Vector3.Lerp(p, seat, 1 - Mathf.Exp(-9 * Time.deltaTime));
                 var move = GameInput.Snapshot.Move;
@@ -426,8 +427,8 @@ public sealed partial class HangarHub
     {
         if (room < 0)
             return false;
-        bool primary = ctx.action == input.PlayerControls.FirePrimary;
-        bool secondary = ctx.action == input.PlayerControls.FireSecondary;
+        bool primary = ctx.action == input.PlayerControls.Accept;
+        bool secondary = ctx.action == input.PlayerControls.Back;
         if (secondary && operating)
         {
             operating = false;

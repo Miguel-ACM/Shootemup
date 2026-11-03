@@ -6,6 +6,9 @@ using UnityEngine.UI;
 
 public class Menu : MonoBehaviour
 {
+    static int handledFrame = -1;
+    public static bool HandledInputThisFrame => handledFrame == Time.frameCount;
+    SettingsEntry settings;
     public static bool GameplayPaused
     {
         get; private set;
@@ -15,6 +18,7 @@ public class Menu : MonoBehaviour
     static void ResetPause()
     {
         GameplayPaused = false;
+        handledFrame = -1;
     }
 
     private AMenuElement[] menuElements;
@@ -74,6 +78,7 @@ public class Menu : MonoBehaviour
         input.PlayerControls.Move.canceled += MoveCanceled;
 
         input.PlayerControls.Accept.performed += OnAccept;
+        input.PlayerControls.Back.performed += OnBack;
 
     }
 
@@ -81,12 +86,29 @@ public class Menu : MonoBehaviour
     void Start()
     {
         MenuLayout.Dress(this, alwaysOpen);
+        settings = GetComponentInChildren<SettingsEntry>(true);
         RefreshElements();
         if (menuElements.Length > 0)
             setCurrentElement(menuElements[0]);
     }
 
-    void ToggleMenu(InputAction.CallbackContext context) { if (!CloudTransition.Busy && !GameOverState.Active) setMenuOpen(!menuOpen); }
+    void ToggleMenu(InputAction.CallbackContext context)
+    {
+        if (!isActiveAndEnabled || Suspended || CloudTransition.Busy || GameOverState.Active) return;
+        handledFrame = Time.frameCount;
+        if (menuOpen && context.control.device is Keyboard && settings != null && settings.TryBack()) return;
+        setMenuOpen(!menuOpen);
+    }
+    void OnBack(InputAction.CallbackContext context)
+    {
+        if (!isActiveAndEnabled || !menuOpen || Suspended || CloudTransition.Busy || GameOverState.Active) return;
+        handledFrame = Time.frameCount;
+        if (settings != null && settings.TryBack()) return;
+        if (!alwaysOpen)
+            setMenuOpen(false);
+        else if (GetComponentInChildren<QuitGame>() is QuitGame quit)
+            setCurrentElement(quit);
+    }
     void MoveChanged(InputAction.CallbackContext context) => move = context.ReadValue<Vector2>();
     void MoveCanceled(InputAction.CallbackContext context) { move = Vector2.zero; inputProcessed = false; }
 
@@ -155,8 +177,9 @@ public class Menu : MonoBehaviour
 
     public void TryAccept(AMenuElement element)
     {
-        if (!menuOpen || Suspended || CloudTransition.Busy || element == null || Array.IndexOf(menuElements, element) < 0)
+        if (!isActiveAndEnabled || !menuOpen || Suspended || CloudTransition.Busy || GameOverState.Active || element == null || Array.IndexOf(menuElements, element) < 0)
             return;
+        handledFrame = Time.frameCount;
         setCurrentElement(element);
         element.OnAccept();
     }
@@ -173,6 +196,7 @@ public class Menu : MonoBehaviour
             input.PlayerControls.Move.performed -= MoveChanged;
             input.PlayerControls.Move.canceled -= MoveCanceled;
             input.PlayerControls.Accept.performed -= OnAccept;
+            input.PlayerControls.Back.performed -= OnBack;
         }
     }
 }

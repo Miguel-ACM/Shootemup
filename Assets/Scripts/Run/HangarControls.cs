@@ -7,7 +7,7 @@ public sealed partial class HangarHub
 {
     RectTransform hoverPrompt;
     RawImage inputPicture, buyIcon, pinIcon;
-    Texture keyPicture, bumperPicture;
+    Texture keyPicture, bumperPicture, facePicture;
     const float DeskReach = 1.9f;
     static readonly string[] stationModels = { "DockQuadrant", "DockReader", "DockTrainer", "DockTransport", "DockScope" };
     readonly Transform[] pilotLamps = new Transform[5];
@@ -135,6 +135,7 @@ public sealed partial class HangarHub
         hoverPrompt.GetComponent<Image>().enabled = false;
         keyPicture = Resources.Load<Texture2D>("DockArt/KeyPrompt");
         bumperPicture = Resources.Load<Texture2D>("DockArt/PadPrompt");
+        facePicture = Resources.Load<Texture2D>("DockArt/FacePrompt");
         inputPicture = ButtonIcon(hoverPrompt, Vector2.zero, 1);
         buyIcon = ButtonIcon(stockScreen, new Vector2(-157, -100), .72f);
         pinIcon = ButtonIcon(stockScreen, new Vector2(48, -100), .72f);
@@ -157,14 +158,14 @@ public sealed partial class HangarHub
     void UpdateButtonIcon(RawImage icon, bool secondary = false)
     {
         bool pad = DockInstrument.UsingGamepad;
-        var texture = pad ? bumperPicture : keyPicture;
+        var texture = !pad ? keyPicture : secondary ? bumperPicture : facePicture;
         if (icon.texture == texture) return;
         icon.texture = texture;
-        string key = DockInstrument.FireKey(secondary);
+        string key = secondary ? DockInstrument.FireKey(true) : DockInstrument.MenuKey();
         bool leftBumper = pad && key == "LEFT SHOULDER";
         icon.uvRect = leftBumper ? new Rect(1, 0, -1, 1) : new Rect(0, 0, 1, 1);
         var legend = icon.GetComponentInChildren<TextMeshProUGUI>();
-        legend.fontSizeMax = pad ? 31 : 45;
+        legend.fontSizeMax = pad && secondary ? 31 : 45;
         legend.fontSizeMin = legend.fontSizeMax * .75f;
         legend.text = leftBumper ? "LB" : pad && key == "RIGHT SHOULDER" ? "RB" : key;
     }

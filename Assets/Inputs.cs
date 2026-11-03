@@ -171,6 +171,16 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""Back"",
+                    ""type"": ""Button"",
+                    ""id"": ""fe1cefa8-f157-46eb-8bae-86cb63917e60"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -429,6 +439,39 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""38c01eb1-8e28-44a2-b1bd-d03ee2675692"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Accept"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5a524f15-74c5-4e74-b10e-edcd77fece0f"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Back"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2cc04bcb-b299-470d-9385-98713e434551"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Back"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""80bf646b-cae7-40a7-a66b-f19d1c8a5aca"",
                     ""path"": ""<Keyboard>/enter"",
                     ""interactions"": """",
@@ -486,6 +529,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         m_PlayerControls_ActiveLeft = m_PlayerControls.FindAction("ActiveLeft", throwIfNotFound: true);
         m_PlayerControls_Start = m_PlayerControls.FindAction("Start", throwIfNotFound: true);
         m_PlayerControls_Accept = m_PlayerControls.FindAction("Accept", throwIfNotFound: true);
+        m_PlayerControls_Back = m_PlayerControls.FindAction("Back", throwIfNotFound: true);
     }
 
     ~@Inputs()
@@ -574,6 +618,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerControls_ActiveLeft;
     private readonly InputAction m_PlayerControls_Start;
     private readonly InputAction m_PlayerControls_Accept;
+    private readonly InputAction m_PlayerControls_Back;
     /// <summary>
     /// Provides access to input actions defined in input action map "PlayerControls".
     /// </summary>
@@ -617,6 +662,10 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "PlayerControls/Accept".
         /// </summary>
         public InputAction @Accept => m_Wrapper.m_PlayerControls_Accept;
+        /// <summary>
+        /// Provides access to the underlying input action "PlayerControls/Back".
+        /// </summary>
+        public InputAction @Back => m_Wrapper.m_PlayerControls_Back;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -667,6 +716,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Accept.started += instance.OnAccept;
             @Accept.performed += instance.OnAccept;
             @Accept.canceled += instance.OnAccept;
+            @Back.started += instance.OnBack;
+            @Back.performed += instance.OnBack;
+            @Back.canceled += instance.OnBack;
         }
 
         /// <summary>
@@ -702,6 +754,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Accept.started -= instance.OnAccept;
             @Accept.performed -= instance.OnAccept;
             @Accept.canceled -= instance.OnAccept;
+            @Back.started -= instance.OnBack;
+            @Back.performed -= instance.OnBack;
+            @Back.canceled -= instance.OnBack;
         }
 
         /// <summary>
@@ -811,5 +866,12 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAccept(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Back" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnBack(InputAction.CallbackContext context);
     }
 }

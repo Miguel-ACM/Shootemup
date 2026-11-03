@@ -70,6 +70,14 @@ public sealed class SettingsEntry : AMenuElement
         menu.setCurrentElement(choice == 0 ? confirmation[0] : erase);
     }
 
+    public bool TryBack()
+    {
+        if (hidden == null) return false;
+        if (confirmation[0].gameObject.activeSelf) ChooseErase(1);
+        else Close();
+        return true;
+    }
+
     public void Close()
     {
         if (hidden == null)
