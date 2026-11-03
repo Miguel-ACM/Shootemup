@@ -14,10 +14,12 @@ public static class EnemyWeaponLayout
 
     static Vector3[] BuildPorts(int hull)
     {
-        if (hull >= 61)
-            return EnemyExpansion.Find(hull)?.ports ?? System.Array.Empty<Vector3>();
+        if (hull >= 61 && EnemyExpansion.Find(hull) is { } expansion)
+            return expansion.ports;
         switch (hull)
         {
+            case 81:
+                return new[] { P(0, -1.50f), P(-.93f, -.32f), P(.93f, -.32f) };
             case 0:
                 return new[] { P(-.66f, -.16f, -.08f), P(.66f, -.16f, -.08f) };
             case 1:

@@ -6,6 +6,8 @@ public static partial class IndustrialMeshFactory
     static readonly Dictionary<int, Mesh> combatHulls = new Dictionary<int, Mesh>();
     public static Vector3[] CombatEngineSockets(int kind)
     {
+        if (kind == 81)
+            return new[] { new Vector3(-.45f, .90f, 0), new Vector3(.45f, .90f, 0) };
         if (kind >= 61)
             return EnemyExpansion.Find(kind)?.engines ?? System.Array.Empty<Vector3>();
         if (kind >= 41 && kind <= 45)
