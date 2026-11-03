@@ -36,8 +36,12 @@ async function openTransport(id, sheet, signal) {
             .then(([,buffer]) => prepareKick(buffer.getChannelData(0),context.sampleRate))
             .catch(err => { kickLoad = null; throw err; });
     }
-    const [audio,kick] = await Promise.all([decode('/audio/' + id,signal),sheet.adaptive ? kickLoad : null]);
-    return signal.aborted ? null : new Transport(context,audio,sheet,volume(),kick);
+    const [audio,kick,fast] = await Promise.all([decode('/audio/' + id,signal),sheet.adaptive ? kickLoad : null,
+        sheet.adaptive ? decode('/fast/' + id + '?full=1',signal).catch(() => null) : null]);
+    if (signal.aborted) return null;
+    const transport = new Transport(context,audio,sheet,volume(),kick);
+    transport.fastBuffer = fast;
+    return transport;
 }
 
 function library() {

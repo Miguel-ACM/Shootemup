@@ -8,7 +8,7 @@ Choose a track and press Play. Intro runs into Flight. Section and song changes 
 
 Choose **Intro**, **Flight**, **Boss** or **Outro** under **Section markers**. Drag either waveform handle or use the arrows beside **Start** and **End** to step one four-beat bar. The file edges are available for pickups and tails. Each section must include one full bar. **Hear ending** auditions the last two beats and what follows them. Intro hands off to Flight, Flight and Boss loop, and Outro plays out. **Save for game** writes all edited sections for the song together. The next Unity play session and future builds read those markers.
 
-**Boss (fast)** is an audition-only 6% tempo lift at the original pitch. On first use the server renders and caches a fast copy of the recording so both boss modes can audition edits immediately. Both crossfade into the original outro with no speed ramp.
+**Boss (fast)** is an audition-only 6% tempo lift at the original pitch. Opening an adaptive recording prepares both tempos. Switching between Boss and Boss (fast) keeps the current playhead and kick, with a 12 ms crossfade. Both crossfade into the original outro with no speed ramp.
 
 Boss adds a hard kick on every beat in the song’s cue sheet. The game and both boss previews use the same mono mix of **Monster Kick 127** from FL Studio 20’s `Data/Patches/Packs/Drums/Kicks` folder. Its level is 4 dB above the original boss mix. Each hit ducks the backing music by up to 1 dB with a 2 ms attack and a 55 ms release. In the fast preview the hits move closer together and keep their original pitch.
 

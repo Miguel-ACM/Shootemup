@@ -71,7 +71,7 @@ export class Transport {
         return this.map.adaptive === false || part === 'recording' ? { start:0, end:this.map.duration } :
             this.map.sections[part === 'fast' ? 'peak' : part];
     }
-    deck(part, at, offset, from, fadeIn, end = this.range(part).end) {
+    deck(part, at, offset, from, fadeIn, end = this.range(part).end, ringingHits = []) {
         const source = this.ctx.createBufferSource(), shelf = this.ctx.createBiquadFilter(), gain = this.ctx.createGain();
         const speed = part === 'fast' ? 1.06 : 1;
         const start = offset/speed;
@@ -88,8 +88,10 @@ export class Transport {
         const deck = { part, at, offset, end, speed, from, to, ramp, source, shelf, gain,
             availableUntil:at + source.buffer.duration - start };
         if (boss(part) && this.kickSample && this.map.beats.length) {
-            const hits = this.map.beats.filter(t => t >= offset)
+            const upcoming = this.map.beats.filter(t => t >= offset)
                 .map(t => Math.round(clockAt(deck,t)*this.ctx.sampleRate));
+            const hits = ringingHits.filter(frame => frame !== upcoming[0]).concat(upcoming);
+            deck.hits = hits;
             deck.kick = new AudioWorkletNode(this.ctx,'boss-kick',{numberOfInputs:0, numberOfOutputs:2, outputChannelCount:[1,1],
                 processorOptions:{hits,...this.kickSample}});
             deck.kick.connect(this.master,0);
@@ -126,22 +128,33 @@ export class Transport {
         this.current = this.deck('intro', at, this.range('intro').start, 0, fadeIn);
         this.plan();
     }
-    seek({part, pos, bass}) {
-        const now = this.ctx.currentTime, at = now + .012;
+    seek({part, pos, bass}, previousMix = null) {
+        const now = this.ctx.currentTime, stop = now + .012;
+        const at = previousMix ? now : stop;
+        const frame = Math.round(now*this.ctx.sampleRate);
+        // A tempo toggle takes over both the playhead and any one-shot already ringing.
+        const ringingHits = previousMix?.hits?.filter(hit => hit <= frame && hit + this.kickSample.pcm.length > frame);
+        if (previousMix) {
+            pos = position(previousMix,now);
+            bass = bassAt(previousMix,now);
+        }
         for (const d of this.voices) {
             if (d.at >= now) this.discard(d);
             else {
                 const gain = d.gain.gain, level = gain.value;
                 gain.cancelScheduledValues(now);
                 gain.setValueAtTime(level,now);
-                gain.linearRampToValueAtTime(0,at);
+                gain.linearRampToValueAtTime(0,stop);
                 if (d.kickLevel) {
                     const level = d.kickLevel.value;
                     d.kickLevel.cancelScheduledValues(now);
-                    d.kickLevel.setValueAtTime(level,now);
-                    d.kickLevel.linearRampToValueAtTime(0,at);
+                    if (previousMix) d.kickLevel.setValueAtTime(0,now);
+                    else {
+                        d.kickLevel.setValueAtTime(level,now);
+                        d.kickLevel.linearRampToValueAtTime(0,stop);
+                    }
                 }
-                d.source.stop(at);
+                d.source.stop(stop);
             }
         }
         this.current = this.next = this.cut = this.requested = this.afterCut = null;
@@ -150,7 +163,7 @@ export class Transport {
         this.playing = !this.ended;
         this.cutOffset = pos;
         if (this.ended) return;
-        this.current = this.deck(part, at, pos, bass, .012);
+        this.current = this.deck(part, at, pos, bass, .012, this.range(part).end, ringingHits);
         this.plan();
     }
     plan(request = null, incoming = null, requestedAt = this.ctx.currentTime, point = null) {
@@ -207,6 +220,11 @@ export class Transport {
     request(part, requestedAt = this.ctx.currentTime) {
         this.tick();
         if (this.map.adaptive === false || !this.current) return;
+        const d = this.current;
+        if (boss(part) && boss(d.part) && part !== d.part) {
+            this.seek({part},d);
+            return;
+        }
         if (part !== 'outro' && this.next && this.cut - this.ctx.currentTime < lead) {
             this.afterCut = {part, requestedAt};
             return;
