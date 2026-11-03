@@ -24,7 +24,7 @@ public sealed partial class HangarHub : MonoBehaviour
     const float LoadingBayX = -8f;
     const float PlacardHeight = 1.84f, ClassDrop = 1.54f;
     public const float DeckExtension = 32f;
-    const float PlinthReach = .95f, GateHalfWidth = 1.55f;
+    const float PlinthReach = .95f, GateHalfWidth = 3.85f;
 
     sealed class Plinth
     {
@@ -349,13 +349,15 @@ public sealed partial class HangarHub : MonoBehaviour
     void BuildGate()
     {
         // A faint mist across the open doors, fading downward; flying into it launches the run.
-        var bottom = new Color(.62f, .74f, .8f, 0);
-        var top = new Color(.7f, .8f, .86f, 0);
-        float width = GateHalfWidth + .9f, low = GateY - 1.6f, high = GateY + 2f;
+        float width = GateHalfWidth + .65f, low = GateY - 1.6f, high = GateY + 2f;
         var mesh = new Mesh { name = "Launch mist" };
-        mesh.vertices = new[] { new Vector3(-width, low), new Vector3(-width, high), new Vector3(width, high), new Vector3(width, low) };
-        mesh.colors = new[] { bottom, top, top, bottom };
-        mesh.triangles = new[] { 0, 1, 2, 0, 2, 3 };
+        mesh.vertices = new[] { new Vector3(-width, low), new Vector3(-width, high),
+            new Vector3(-GateHalfWidth, low), new Vector3(-GateHalfWidth, high),
+            new Vector3(GateHalfWidth, low), new Vector3(GateHalfWidth, high), new Vector3(width, low), new Vector3(width, high) };
+        for (int i = 0; i < mistColors.Length; i++)
+            mistColors[i] = new Color(.7f, .8f, .86f, 0);
+        mesh.colors = mistColors;
+        mesh.triangles = new[] { 0, 1, 3, 0, 3, 2, 2, 3, 5, 2, 5, 4, 4, 5, 7, 4, 7, 6 };
         quads.Add(mesh);
         mist = mesh;
         var go = new GameObject("Launch mist");
@@ -443,6 +445,7 @@ public sealed partial class HangarHub : MonoBehaviour
     float arrival = -1, introTime;
     bool Arriving => arrival >= 0;
     Mesh mist;
+    readonly Color[] mistColors = new Color[8];
 
     void LateUpdate()
     {
@@ -459,9 +462,8 @@ public sealed partial class HangarHub : MonoBehaviour
         if (mist != null && introTime < LightSeconds + .5f)
         {
             float glow = Mathf.SmoothStep(0, 1, (introTime - .2f) / LightSeconds) * .85f;
-            var bottom = new Color(.62f, .74f, .8f, 0);
-            var top = new Color(.7f, .8f, .86f, glow);
-            mist.colors = new[] { bottom, top, top, bottom };
+            mistColors[3].a = mistColors[5].a = glow;
+            mist.colors = mistColors;
         }
         if (room == (int)Dock.Armory)
             FloatGalleryPlatforms();
