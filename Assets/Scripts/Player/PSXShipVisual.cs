@@ -91,6 +91,9 @@ public sealed class PSXShipVisual : MonoBehaviour
             hull.AddComponent<MeshFilter>().sharedMesh = part.GetComponent<MeshFilter>().sharedMesh;
             var renderer = hull.AddComponent<MeshRenderer>();
             renderer.sharedMaterials = part.sharedMaterials;
+            var finish = new MaterialPropertyBlock();
+            finish.SetFloat(PilotCanopy, 1);
+            renderer.SetPropertyBlock(finish);
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
         model.localRotation = saved;
@@ -128,6 +131,7 @@ public sealed class PSXShipVisual : MonoBehaviour
 
     static readonly int Tint = Shader.PropertyToID("_Tint");
     static readonly int PlayerDepth = Shader.PropertyToID("_PlayerDepth");
+    static readonly int PilotCanopy = Shader.PropertyToID("_PilotCanopy");
 
     public void Configure(SpriteRenderer sprite, Transform visual, MeshRenderer meshRenderer)
     {
@@ -186,6 +190,7 @@ public sealed class PSXShipVisual : MonoBehaviour
         modelRenderer.GetPropertyBlock(properties);
         properties.SetColor(Tint, sourceSprite.color * PolarityEngine.ShipTint);
         properties.SetFloat(PlayerDepth, 1f);
+        properties.SetFloat(PilotCanopy, alternateHull == null ? 1f : 0f);
         modelRenderer.SetPropertyBlock(properties);
         modelRenderer.enabled = sourceSprite.color.a > 0.001f;
         if (partRenderers != null)

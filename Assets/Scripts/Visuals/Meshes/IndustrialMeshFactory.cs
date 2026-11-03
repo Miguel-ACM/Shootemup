@@ -9,6 +9,17 @@ public static partial class IndustrialMeshFactory
         readonly List<Vector3> vertices = new List<Vector3>();
         readonly List<int> indices = new List<int>();
         readonly List<Vector2> uv = new List<Vector2>();
+        List<Vector2> glazing;
+
+        public void GlassFace(int tile, Vector3[] points, Vector4 pane, Vector3 origin)
+        {
+            glazing ??= new List<Vector2>();
+            while (glazing.Count < vertices.Count) glazing.Add(Vector2.zero);
+            foreach (var point in points)
+                glazing.Add(new Vector2(3f + (point.x + origin.x - pane.x) / pane.z,
+                    (point.y + origin.y - pane.y) / pane.w));
+            Face(tile, points);
+        }
 
         public void Face(int tile, params Vector3[] points)
         {
@@ -101,6 +112,11 @@ public static partial class IndustrialMeshFactory
             mesh.SetVertices(vertices);
             mesh.SetTriangles(indices, 0);
             mesh.SetUVs(0, uv);
+            if (glazing != null)
+            {
+                while (glazing.Count < vertices.Count) glazing.Add(Vector2.zero);
+                mesh.SetUVs(1, glazing);
+            }
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
             return mesh;

@@ -5,6 +5,7 @@ Hull space: X right, Y screen up, -Z toward the camera, clockwise front faces.
 Materials must be named tile_NN (the palette tile of the fleet atlas).
 With --palette, the colours of those materials (Kd in the .mtl) become the model's own atlas,
 written as a first "palette" line of sixteen r g b triples.
+cockpit_glass.json identifies each named pane by lower/upper hull-space bounds and palette tiles.
 An optional parts.json next to the .obj lists animated objects:
 [{"object": "Rotor_L", "motion": "spin" | "swing", "axis": [x, y, z], "pivot": [x, y, z],
   "speed": degrees per second (spin) or cycles per second (swing), "amplitude": degrees (swing)}]
@@ -37,6 +38,35 @@ def read_palette(obj_path):
 
 def flip(v):
     return (v[0], v[1], -v[2])
+
+
+def glazing(name, lines):
+    """Tag the authored panes, retaining their palette colours and the original face order."""
+    panels = json.loads(Path(__file__).with_name("cockpit_glass.json").read_text()).get(name)
+    if not panels:
+        return lines
+    result, previous = [], None
+    for line in lines:
+        fields = line.split()
+        panel = None
+        if fields and fields[0].isdigit():
+            tile = int(fields[0])
+            coords = [float(v) for v in fields[1:]]
+            for low, high, tiles in panels.values():
+                if tile in tiles and all(low[i % 3] - .0002 <= v <= high[i % 3] + .0002 for i, v in enumerate(coords)):
+                    panel = (low, high)
+                    break
+        if panel != previous:
+            if panel:
+                low, high = panel
+                center = [(low[i] + high[i]) / 2 for i in (0, 1)]
+                half = [max(.001, (high[i] - low[i]) / 2) for i in (0, 1)]
+                result.append("glass " + " ".join(f"{v:.5f}" for v in center + half))
+            else:
+                result.append("paint")
+            previous = panel
+        result.append(line)
+    return result
 
 
 def bake(obj_path, name, palette=False):
@@ -80,7 +110,7 @@ def bake(obj_path, name, palette=False):
         lines += polygons
     out = ROOT / "Assets/Resources/TerraModels" / (name + ".txt")
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    out.write_text("\n".join(glazing(name, lines)) + "\n", encoding="utf-8")
     print(f"{name}: {len(lines)} lines, {len([k for k in groups if k])} animated parts -> {out.relative_to(ROOT)}")
 
 

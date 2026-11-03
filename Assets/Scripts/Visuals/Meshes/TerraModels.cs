@@ -7,6 +7,7 @@ using UnityEngine;
 /// Each line is one polygon: its palette tile, then x y z per corner, already in hull space.
 /// An optional first "palette" line gives the model its own sixteen tile colours (items use this).
 /// A "part" line starts an animated part (rotor, fin, impeller): its polygons follow until the next part line.
+/// A "glass" line gives the next panes a center and half extents in hull space. "paint" ends the glazing.
 /// A baked model replaces the procedural model of the same name; muzzles, sockets and colliders stay in code.
 /// </summary>
 public static partial class IndustrialMeshFactory
@@ -43,9 +44,20 @@ public static partial class IndustrialMeshFactory
         var parts = new List<TerraPart>();
         var builders = new List<Builder>();
         TerraPart part = null;
+        Vector4 pane = default;
         foreach (var line in asset.text.Split('\n'))
         {
             var fields = line.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+            if (fields.Length == 5 && fields[0] == "glass")
+            {
+                pane = new Vector4(Float(fields[1]), Float(fields[2]), Float(fields[3]), Float(fields[4]));
+                continue;
+            }
+            if (fields.Length == 1 && fields[0].TrimEnd('\r') == "paint")
+            {
+                pane = default;
+                continue;
+            }
             if (fields.Length == 49 && fields[0] == "palette")
             {
                 var palette = new Color[16];
@@ -78,7 +90,8 @@ public static partial class IndustrialMeshFactory
             var origin = part != null ? part.pivot : Vector3.zero;
             for (int i = 0; i < points.Length; i++)
                 points[i] = new Vector3(Float(fields[1 + i * 3]), Float(fields[2 + i * 3]), Float(fields[3 + i * 3])) - origin;
-            b.Face(tile, points);
+            if (pane.z > 0) b.GlassFace(tile, points, pane, origin);
+            else b.Face(tile, points);
         }
         for (int i = 0; i < parts.Count; i++)
             parts[i].mesh = builders[i].Finish("Terra " + name + " " + parts[i].name);

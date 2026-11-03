@@ -24,6 +24,7 @@ Shader "Shootemup/PSX Industrial Ship"
             #pragma vertex Vert
             #pragma fragment Frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "CockpitGlass.hlsl"
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
             CBUFFER_START(UnityPerMaterial)
@@ -40,12 +41,14 @@ Shader "Shootemup/PSX Industrial Ship"
                 float4 positionOS : POSITION;
                 float3 normalOS : NORMAL;
                 float2 uv : TEXCOORD0;
+                float2 glazing : TEXCOORD1;
             };
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 float light : TEXCOORD1;
+                float3 reflection : TEXCOORD2;
             };
             Varyings Vert(Attributes input)
             {
@@ -60,13 +63,18 @@ Shader "Shootemup/PSX Industrial Ship"
                     output.positionCS.z = lerp(UNITY_NEAR_CLIP_VALUE * output.positionCS.w, output.positionCS.z, 0.001);
                 output.uv = TRANSFORM_TEX(input.uv, _MainTex);
                 float3 normal = TransformObjectToWorldNormal(input.normalOS);
+                output.reflection = 0;
+                if (input.glazing.x > 1.5)
+                    output.reflection = CockpitReflection(input.glazing - float2(3,0), normal, input.positionOS.xyz, float3(1,0,0), float3(0,1,0));
                 float diffuse = saturate(dot(normal, normalize(float3(-0.45, 0.65, -0.8))));
                 output.light = 0.50 + floor(diffuse * 4.0 + 0.5) / 4.0 * 0.60;
                 return output;
             }
             half4 Frag(Varyings input) : SV_Target
             {
-                half4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv) * _Tint;
+                half4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
+                if (input.reflection.z > .5) color.rgb = CockpitGlass(color.rgb, input.reflection);
+                color *= _Tint;
                 clip(color.a - 0.01);
                 color.rgb *= input.light;
                 color.rgb=lerp(color.rgb,half3(1,.88,.63),saturate(_HitFlash)*.88);

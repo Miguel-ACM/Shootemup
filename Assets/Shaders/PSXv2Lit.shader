@@ -14,6 +14,7 @@ Shader "Shootemup/PSXv2 Lit"
         _MainTex ("Atlas (Point filtered)", 2D) = "white" {}
         _Tint ("Damage flash tint", Color) = (1,1,1,1)
         [HideInInspector] _PlayerDepth ("Player foreground depth", Float) = 0
+        [HideInInspector] _PilotCanopy ("GR-07 canopy finish", Float) = 0
         _SnapResolution ("Fallback virtual resolution", Vector) = (569,320,0,0)
         _VertexSnap ("Vertex snap", Range(0,1)) = 1
         _Affine ("Affine warp", Range(0,1)) = 1
@@ -35,12 +36,13 @@ Shader "Shootemup/PSXv2 Lit"
             #pragma vertex Vert
             #pragma fragment Frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "CockpitGlass.hlsl"
             TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
             float4 _PSXSnapResolution;
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST, _Tint, _SnapResolution;
                 float _VertexSnap, _Affine, _Dither, _LightBands, _GlowRow;
-                float _PlayerDepth;
+                float _PlayerDepth, _PilotCanopy;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; float4 color:COLOR; };
             struct Varyings
@@ -50,6 +52,7 @@ Shader "Shootemup/PSXv2 Lit"
                 float2 uvPersp    : TEXCOORD1;
                 nointerpolation float light : TEXCOORD2;
                 float ao          : TEXCOORD3;
+                float3 reflection : TEXCOORD4;
             };
             Varyings Vert(Attributes i)
             {
@@ -68,6 +71,11 @@ Shader "Shootemup/PSXv2 Lit"
                 o.uvw = float3(uv * cs.w, cs.w);
                 o.uvPersp = uv;
                 float3 n = TransformObjectToWorldNormal(i.normalOS);
+                o.reflection = 0;
+                // Only the GR-07 cockpit cap uses its g_yellow tile (column 6, row 2 from the top).
+                float2 tileUV = i.uv * 8;
+                if (_PilotCanopy > .5 && all(floor(tileUV) == float2(6,5)))
+                    o.reflection = CockpitReflection(frac(tileUV) * 2 - 1, n, i.positionOS.xyz, float3(1,0,0), float3(0,0,1));
                 float d = saturate(abs(dot(n, normalize(float3(-0.45, 0.65, -0.8)))));
                 o.light = 0.45 + floor(d * _LightBands + 0.5) / _LightBands * 0.65;
                 o.ao = i.color.r;
@@ -79,6 +87,7 @@ Shader "Shootemup/PSXv2 Lit"
                 half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
                 float glow = step(0.625, i.uvPersp.y) * step(i.uvPersp.y, 0.75) * _GlowRow;
                 c.rgb *= lerp(i.light * i.ao * 1.15, 1.0, glow);
+                if (i.reflection.z > .5) c.rgb = CockpitGlass(c.rgb, i.reflection);
                 c *= _Tint;
                 uint2 p = (uint2)i.positionCS.xy & 3;
                 const float bayer[16] = {0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5};
