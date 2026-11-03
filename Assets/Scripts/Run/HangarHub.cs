@@ -20,7 +20,8 @@ public sealed partial class HangarHub : MonoBehaviour
     static RunDifficulty difficulty = RunDifficulty.Normal;
     // The tunnel phase on the frame its motion transfers to the incoming dock camera.
     static float tunnelTravel;
-    static readonly Vector2[] plinthSpots = { new Vector2(2.7f, -3), new Vector2(2.7f, 0), new Vector2(2.7f, 3) };
+    static readonly Vector2[] plinthSpots = { new Vector2(2.7f, -6.8f), new Vector2(2.7f, -1.4f), new Vector2(2.7f, 4) };
+    const float PlacardHeight = 1.84f, ClassDrop = 1.54f;
     public const float DeckExtension = 32f;
     const float PlinthReach = .95f, GateHalfWidth = 1.55f;
 
@@ -31,8 +32,8 @@ public sealed partial class HangarHub : MonoBehaviour
         public Vector3 spot;
         public Transform disc, shadow;
         public bool sent, positioned;
-        public TextMeshProUGUI label;
-        public RectTransform category;
+        public TextMeshProUGUI price;
+        public RectTransform plaque, category;
         public int lastBank = -1;
         public bool pinned;
     }
@@ -137,8 +138,10 @@ public sealed partial class HangarHub : MonoBehaviour
 
     DockReadouts readouts;
     Material scenery;
-    Transform stockScreen;
+    RectTransform stockScreen;
     TextMeshProUGUI stockInfo, walletText;
+    RectTransform walletPanel;
+    Sprite coinStamp;
     Dialog dialog;
     readonly List<Mesh> quads = new List<Mesh>();
     bool launching, deckReady;
@@ -239,6 +242,7 @@ public sealed partial class HangarHub : MonoBehaviour
     void BuildShop()
     {
         dialog = GameObject.FindGameObjectWithTag("Dialog")?.GetComponent<Dialog>();
+        coinStamp = Resources.Load<Sprite>("DockArt/DockCoin");
         var stock = MetaProgress.Stock;
         var glowVertices = new List<Vector3>();
         var glowColors = new List<Color>();
@@ -264,29 +268,57 @@ public sealed partial class HangarHub : MonoBehaviour
             plinths.Add(plinth);
             GalleryWell(glowVertices, glowColors, glowTriangles, plinthSpots[i], 1.22f,
                 new Color(1, .07f, .035f, .88f), new Color(.85f, .025f, .016f, 0));
-            var plaque = MountedPanel("Stock placard", plinthSpots[i] + Vector2.up * 1.11f, new Vector2(3, 1.23f));
+            var plaque = plinth.plaque = MountedPanel("Stock placard", plinthSpots[i] + Vector2.up * PlacardHeight, new Vector2(3.62f, 1.94f));
             plaque.GetComponent<Image>().color = Color.black;
-            DockInstrument.Block(plaque, "Rarity edge", new Vector2(0, 59), new Vector2(300, 5), AItem.GetRarityColor(plinth.item.rarity));
-            plinth.category = MountedPanel("Equipment class", plinthSpots[i] + Vector2.down * .85f, new Vector2(3, .45f));
+            DockInstrument.Block(plaque, "Rarity edge", new Vector2(0, 94), new Vector2(362, 5), AItem.GetRarityColor(plinth.item.rarity));
+            WorldLabel(plaque, plinth.item.GetData()[0], new Vector2(0, 38), new Vector2(338, 91), 34, DockInstrument.Paper);
+            plinth.price = CoinRow(plaque, -49, 330);
+            plinth.category = MountedPanel("Equipment class", plinthSpots[i] + Vector2.down * ClassDrop, new Vector2(3.4f, .50f));
             plinth.category.GetComponent<Image>().enabled = false;
-            WorldLabel(plinth.category, DecisionOverlay.Category(plinth.item), Vector2.zero, new Vector2(286, 47), 34, DockInstrument.Paper);
-            plinth.label = WorldLabel(plaque, "", Vector2.zero, new Vector2(289, 115), 35, DockInstrument.Paper);
+            WorldLabel(plinth.category, DecisionOverlay.Category(plinth.item), Vector2.zero, new Vector2(334, 50), 32, DockInstrument.Paper);
             plaque.gameObject.SetActive(false);
             plinth.category.gameObject.SetActive(false);
         }
         GallerySurface("Outfitter red footlights", glowVertices, glowColors, glowTriangles, -6);
     }
 
+    TextMeshProUGUI CoinRow(RectTransform face, float y, float width)
+    {
+        var row = new GameObject("Coin amount", typeof(RectTransform), typeof(HorizontalLayoutGroup)).GetComponent<RectTransform>();
+        row.SetParent(face, false);
+        row.anchoredPosition = new Vector2(0, y);
+        row.sizeDelta = new Vector2(width, 62);
+        var layout = row.GetComponent<HorizontalLayoutGroup>();
+        layout.childAlignment = TextAnchor.MiddleCenter;
+        layout.spacing = 21;
+        layout.childForceExpandWidth = layout.childForceExpandHeight = false;
+        layout.childControlWidth = layout.childControlHeight = true;
+        var icon = new GameObject("Stamped coin", typeof(RectTransform), typeof(Image), typeof(LayoutElement)).GetComponent<Image>();
+        icon.transform.SetParent(row, false);
+        icon.sprite = coinStamp;
+        icon.raycastTarget = false;
+        var dimensions = icon.GetComponent<LayoutElement>();
+        dimensions.preferredWidth = dimensions.preferredHeight = 56;
+        var amount = WorldLabel(row, "0", Vector2.zero, row.sizeDelta, 34, DockInstrument.Brass);
+        amount.enableAutoSizing = false;
+        amount.textWrappingMode = TextWrappingModes.NoWrap;
+        return amount;
+    }
+
     void UpdateWallet()
     {
-        bool near = player != null && player.transform.position.x > center.x + 1 &&
-            Mathf.Abs(player.transform.position.y - center.y) < 5.8f && room < 0;
-        walletText.transform.parent.gameObject.SetActive(near);
-        walletText.text = "●  " + MetaProgress.Coins;
-        int closest = NearestPlinth(player.transform.position);
-        stockScreen.gameObject.SetActive(closest >= 0 && room < 0);
+        int near = room < 0 ? NearestPlinth(player.transform.position, 2.45f) : -1;
+        walletPanel.gameObject.SetActive(near >= 0);
+        if (near >= 0)
+        {
+            readouts.Aim(walletPanel, plinths[near].spot + new Vector3(-4.22f, 2.24f));
+            walletText.text = MetaProgress.Coins.ToString();
+        }
+        int closest = near >= 0 ? NearestPlinth(player.transform.position) : -1;
+        stockScreen.gameObject.SetActive(closest >= 0);
         if (closest >= 0)
         {
+            readouts.Aim(stockScreen, plinths[closest].spot + Vector3.left * 4.22f);
             var data = plinths[closest].item.GetData();
             stockInfo.text = data[2] + "\n\n<size=80%>" +
                 DockInstrument.FireKey() + " BUY  " + DockInstrument.FireKey(true) + " PIN</size>";
@@ -463,12 +495,12 @@ public sealed partial class HangarHub : MonoBehaviour
                 continue;
             if (offer.item.enabled && offer.sent && offer.item.Settled)
                 offer.item.enabled = false;
-            offer.label.transform.parent.gameObject.SetActive(offer.sent && !offer.item.IsDismissing);
+            offer.plaque.gameObject.SetActive(offer.sent && !offer.item.IsDismissing);
             offer.category.gameObject.SetActive(offer.sent && !offer.item.IsDismissing);
             if (offer.sent && !offer.positioned)
             {
-                readouts.Aim((RectTransform)offer.label.transform.parent, offer.item.transform.position + Vector3.up * 1.11f);
-                readouts.Aim(offer.category, offer.item.transform.position + Vector3.down * .85f);
+                readouts.Aim(offer.plaque, offer.item.transform.position + Vector3.up * PlacardHeight);
+                readouts.Aim(offer.category, offer.item.transform.position + Vector3.down * ClassDrop);
                 offer.positioned = offer.item.Settled;
             }
             bool pinned = MetaProgress.Pin == offer.kind;
@@ -477,9 +509,8 @@ public sealed partial class HangarHub : MonoBehaviour
             offer.lastBank = MetaProgress.Coins;
             offer.pinned = pinned;
             int price = MetaProgress.Price(offer.item.rarity);
-            string tint = MetaProgress.Coins >= price ? "#F4C16C" : "#EB8A7C";
-            offer.label.text = offer.item.GetData()[0] + "\n<size=85%><color=" + tint + ">" +
-                (MetaProgress.Pin == offer.kind ? "PIN  " : "") + price + "  ●</color></size>";
+            offer.price.color = MetaProgress.Coins >= price ? DockInstrument.Brass : new Color(.92f, .54f, .49f);
+            offer.price.text = price + (pinned ? "  <size=65%>PIN</size>" : "");
         }
         UpdateWallet();
     }
@@ -496,10 +527,10 @@ public sealed partial class HangarHub : MonoBehaviour
         cameraTravel = travel;
     }
 
-    int NearestPlinth(Vector3 p)
+    int NearestPlinth(Vector3 p, float reach = PlinthReach)
     {
         int best = -1;
-        float closest = PlinthReach;
+        float closest = reach;
         for (int i = 0; i < plinths.Count; i++)
         {
             if (plinths[i].item == null || plinths[i].item.IsDismissing)

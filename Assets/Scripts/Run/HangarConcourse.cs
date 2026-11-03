@@ -285,10 +285,11 @@ public sealed partial class HangarHub
             HoverSign(signs[i], new Vector2(side * 2.95f, y + 2.25f), lamps[i]);
             PortalLight(new Vector2(side * 4.55f, y), side);
         }
-        var walletPanel = MountedPanel("Coin reader", new Vector2(2.7f, 5.3f), new Vector2(2.4f, .7f));
-        walletText = WorldLabel(walletPanel, "", Vector2.zero, new Vector2(228, 60), 36, DockInstrument.Brass);
-        stockScreen = MountedPanel("Outfitter display", new Vector2(-1.42f, 0), new Vector2(4.9f, 3.3f));
-        stockInfo = WorldLabel((RectTransform)stockScreen, "", Vector2.zero, new Vector2(466, 300), 25, DockInstrument.Paper);
+        walletPanel = MountedPanel("Coin reader", Vector2.zero, new Vector2(3.1f, .88f));
+        walletText = CoinRow(walletPanel, 0, 296);
+        walletPanel.gameObject.SetActive(false);
+        stockScreen = MountedPanel("Outfitter display", Vector2.zero, new Vector2(4.35f, 3.08f));
+        stockInfo = WorldLabel(stockScreen, "", Vector2.zero, new Vector2(413, 286), 25, DockInstrument.Paper);
         stockScreen.gameObject.SetActive(false);
         Stencil("LAUNCH", new Vector2(0, DeckExtension + 6.6f), 2.8f, DockInstrument.Paper);
     }

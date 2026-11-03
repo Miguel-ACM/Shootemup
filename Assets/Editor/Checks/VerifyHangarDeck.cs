@@ -66,6 +66,11 @@ public static class VerifyHangarDeck
         SessionState.SetBool("InspectDockLane", true);
         Run();
     }
+    public static void Outfitter()
+    {
+        SessionState.SetBool("InspectOutfitter", true);
+        Run();
+    }
     public static void Endings()
     {
         SessionState.SetBool("InspectFlightEndings", true);
@@ -114,6 +119,9 @@ public sealed class HangarDeckReview : MonoBehaviour
             throw new InvalidOperationException("Dock review needs its disposable checkout");
         var scratch = Directory.CreateDirectory(Path.Combine(project, "Temp", "PilotReview", Guid.NewGuid().ToString("N")));
         MetaProgress.ReviewSaveDirectory = scratch.FullName;
+        if (SessionState.GetBool("InspectOutfitter", false))
+            File.WriteAllText(Path.Combine(scratch.FullName, "hangar.json"),
+                "{\"version\":2,\"lastFrame\":1,\"coins\":9999,\"ship\":\"GR07\",\"unlocked\":[\"Popcorn\"],\"stock\":[\"SaltShaker\",\"LuckyPenny\",\"RollerBearings\"],\"loadout\":[]}");
         Application.runInBackground = true;
         Application.logMessageReceived += OnLog;
     }
@@ -210,6 +218,14 @@ public sealed class HangarDeckReview : MonoBehaviour
         while ((hub = FindAnyObjectByType<HangarHub>()) == null || CloudTransition.Busy || HangarHub.HoldingShip)
             yield return null;
         yield return new WaitForSecondsRealtime(2);
+        if (SessionState.GetBool("InspectOutfitter", false))
+        {
+            SessionState.SetBool("InspectOutfitter", false);
+            yield return OutfitterAndBerths();
+            Check(error == null, error ?? "no gameplay errors in the outfitter or fleet");
+            File.WriteAllText(VerifyHangarDeck.Folder + "/Result.txt", "PASS");
+            yield break;
+        }
         if(SessionState.GetBool("InspectPressureDoor",false))
         {
             SessionState.SetBool("InspectPressureDoor",false);
@@ -381,6 +397,85 @@ public sealed class HangarDeckReview : MonoBehaviour
         }
         Debug.Log("Gallery population " + Frames(timings));
     }
+    IEnumerator OutfitterAndBerths()
+    {
+        InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+        var keys = InputSystem.AddDevice<Keyboard>();
+        void Press(params Key[] state)
+        {
+            InputSystem.QueueStateEvent(keys, new KeyboardState(state));
+            InputSystem.Update();
+        }
+        var ship = FindAnyObjectByType<Shipcontroller>().transform;
+        void Place(float x, float y) => ship.position = new Vector3(x, y, ship.position.z);
+        T Field<T>(string name) => (T)typeof(HangarHub).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(hub);
+        Place(0, 0);
+        yield return Capture("OutfitterSpacing");
+        var offers = hub.GetComponentsInChildren<AItem>().OrderBy(o => o.transform.position.y).ToArray();
+        Check(offers.Length == 3 && offers[1].GetData()[0] == "Lucky Penny" &&
+            offers[1].transform.position.y - offers[0].transform.position.y > 5 &&
+            offers[2].transform.position.y - offers[1].transform.position.y > 5, "three separated right-lane offers from the reference");
+        var rows = hub.GetComponentsInChildren<HorizontalLayoutGroup>().Where(row => row.transform.parent.name == "Stock placard").ToArray();
+        Check(rows.Length == 3, "each stock placard has a dedicated price row");
+        foreach (var row in rows)
+        {
+            var icon = row.GetComponentInChildren<Image>().rectTransform;
+            var number = row.GetComponentInChildren<TMPro.TMP_Text>().rectTransform;
+            var a = new Vector3[4];
+            var b = new Vector3[4];
+            icon.GetWorldCorners(a);
+            number.GetWorldCorners(b);
+            Check(icon.GetComponent<Image>().sprite.name == "DockCoin" && a[2].x - a[0].x >= 12 &&
+                b[0].x - a[2].x >= 4 && Mathf.Abs(icon.position.y - number.position.y) < 1,
+                "stamped coin and amount have separate, aligned bounds at gameplay size");
+        }
+        Check(!Field<RectTransform>("walletPanel").gameObject.activeSelf, "wallet stays dark away from stock");
+        Place(2.7f, -1.4f);
+        yield return Capture("OutfitterPrice");
+        Check(Field<RectTransform>("walletPanel").gameObject.activeSelf && Field<TMPro.TMP_Text>("walletText").text == "9999", "nearby wallet reads the full bank");
+        Press(Key.X);
+        yield return null;
+        Press();
+        Check(MetaProgress.Pin == "LuckyPenny", "secondary pins the approached offer");
+        int cost = MetaProgress.Price(offers[1].rarity);
+        Press(Key.Z);
+        yield return null;
+        Press();
+        Check(!MetaProgress.Stock.Contains("LuckyPenny") && MetaProgress.Coins == 9999 - cost, "buying debits the displayed price");
+        Place(-23.6f, 6);
+        yield return new WaitForSeconds(.8f);
+        yield return Capture("FleetBerths");
+        var hulls = Field<System.Collections.Generic.List<Transform>>("parkedShips");
+        for (int i = 0; i < hulls.Count; i++)
+        {
+            bool locked = !MetaProgress.CanFly((ShipFrame)i);
+            Check(hulls[i].GetComponentsInChildren<MeshRenderer>(true).All(r => r.sharedMaterials.All(m =>
+                (m.shader.name == "Shootemup/Gallery silhouette") == locked)), "fleet paint follows the hull's unlock");
+        }
+        var ember = hulls[(int)ShipFrame.Ember].position;
+        Place(ember.x, ember.y);
+        yield return new WaitForSeconds(.5f);
+        Press(Key.Z);
+        yield return null;
+        Press();
+        Check(MetaProgress.Ship == ShipFrame.GR07 && Field<TMPro.TMP_Text>("berthNotice").text.Contains("Lancer"),
+            "locked berth explains its release condition and cannot equip");
+        Place(-12.75f, 1.6f);
+        yield return Capture("FleetLockedRecord");
+        var portrait = GameObject.Find("FLEET mounted screen").GetComponentsInChildren<RawImage>()
+            .Single(im => im.texture.name == "PortraitEmber");
+        Check(portrait.color == Color.black, "locked fleet portrait is a silhouette");
+        var lancer = hulls[(int)ShipFrame.Lancer].position;
+        Place(lancer.x, lancer.y);
+        yield return new WaitForSeconds(.4f);
+        Press(Key.Z);
+        yield return null;
+        Press();
+        Check(MetaProgress.Ship == ShipFrame.Lancer && !hulls[(int)ShipFrame.Lancer].gameObject.activeSelf &&
+            hulls[(int)ShipFrame.GR07].gameObject.activeSelf, "commissioned hull swaps normally and leaves its berth empty");
+        InputSystem.RemoveDevice(keys);
+    }
+
     IEnumerator PhysicalRooms()
     {
         InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
@@ -422,7 +517,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         }
         if (!directoryOnly)
         {
-            Place(2.7f, 0);
+            Place(2.7f, -1.4f);
             yield return Capture("CRTOutfitter");
             Place(0, 6);
             yield return new WaitForSeconds(.8f);

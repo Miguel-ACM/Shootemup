@@ -170,8 +170,8 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 ## Hangar and campaign completion (2 November 2026)
 
-- Group the three randomized shop items closely on the right of the main lane. Mount their readable prices and descriptions in the world and show the bank balance only when approached.
-- Build actual flyable side rooms with lit entrances, paired across the corridor. Fleet is left and Armory right, with Simulator and Recorder opposite each other farther up. Screens belong on the room walls. Fleet has a berth for every hull and a giant service screen with a directly drawn pixel portrait.
+- Keep the three randomized shop items on the right of the main lane, with clear vertical space between offers and between each placard, floating platform and category label. Give the stamped coin an aligned price row with its own padding. Show the bank balance only near stock.
+- Build actual flyable side rooms with lit entrances, paired across the corridor. Fleet is left and Armory right, with Simulator and Recorder opposite each other farther up. Screens belong on the room walls. Fleet has a berth for every hull and a giant service screen with a directly drawn pixel portrait. Render locked hulls and their Fleet portraits as black silhouettes.
 - Fly continuously through the live title tunnel into the hangar. Feed outfitter pickups in from the left with their run-style labels and red footlights. The departure light draws the ship in automatically. Let the ship fly freely across the room displays, in front of the glass and beneath the black side guards.
 - The camera follows travel vertically and into side rooms. Holding Focus doubles hangar movement speed and retains precision movement during a run.
 - Shorten the main and side corridors. Ease the flight and camera pan through doorways in both directions. Mark rooms with illuminated signs held aloft by two visible side thrusters, the departure gate's pale mist, and a keyboard or controller glyph over the console on approach. Keep slightly curved CRTs permanently mounted. Use restrained scan lines, the game's pixel lettering and a physical control pedestal.

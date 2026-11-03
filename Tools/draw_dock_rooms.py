@@ -54,6 +54,22 @@ def workshop_floor(w, fleet):
 
 workshop_floor(295, False)
 workshop_floor(454, True)
+
+# Price token. The three strokes on its face echo the modeled money pickup.
+coin = Image.new('RGBA', (16,16))
+mint = ImageDraw.Draw(coin)
+mint.polygon([(4,0),(10,0),(13,2),(15,5),(15,10),(12,14),(9,15),(4,15),(1,12),(0,9),(0,5),(2,2)], fill='#422c24')
+mint.polygon([(5,1),(10,1),(13,3),(14,5),(14,10),(11,13),(9,14),(5,14),(2,11)], fill='#a46331')
+mint.polygon([(4,1),(9,1),(12,4),(12,9),(9,12),(4,12),(1,9),(1,5)], fill='#e6a547')
+mint.line([(1,7),(1,5),(4,2),(8,1),(9,1)], fill='#fff1a3')
+mint.line([(4,12),(8,12),(12,8)], fill='#f5ce70')
+mint.line([(4,4),(6,3),(9,3)], fill='#f8ca68')
+mint.line([(8,4),(5,4),(4,5),(4,7),(8,7),(8,9),(7,10),(4,10)], fill='#805023')
+mint.line([(5,5),(7,5)], fill='#ffe798')
+mint.line([(5,8),(7,8)], fill='#feda84')
+for x,y in ((13,7),(13,10),(11,12)):
+    mint.point((x,y), fill='#df9d45')
+coin.save(out/'DockCoin.png')
 # Alternating steel shutter slats, fixed highlights and worn brass latch.
 im=Image.new('RGBA',(128,128),deep);d=ImageDraw.Draw(im)
 for y in range(0,128,16):
