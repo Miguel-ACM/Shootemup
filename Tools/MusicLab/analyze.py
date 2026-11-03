@@ -1,4 +1,4 @@
-"""Build cue sheets from the shipped MP3s. Requires Python 3.9+, numpy and ffmpeg on PATH.
+"""Build cue sheets from the shipped MP3s. Requires NumPy, FFmpeg, Node 18+ and the Music Lab npm dependencies.
 
 Run from any directory: python Tools/MusicLab/analyze.py [track_id ...]
 All times refer to the gapless decoded recording, in seconds. No audio is rewritten.
@@ -18,7 +18,6 @@ OUTPUT = ROOT / "Assets/Resources/MusicAnalysis"
 SR = 22050
 HOP = 220
 DT = HOP / SR
-NOTES = ("C", "Db", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B")
 TITLES = {"greenlandsOST": "Greenlands OST", "stage1bossOST": "Stage 1 Boss OST",
           "stageComplete": "Stage Complete"}
 
@@ -174,51 +173,60 @@ def aggregate(values, times, step, end, offset=0):
                      for i, j in zip(edges, edges[1:])])
 
 
-def chord_features(samples, beats, duration):
+def bar_features(samples, beats, duration):
     pitch, bass = tonal_frames(samples)
     pc = aggregate(pitch, beats, DT * 5, duration)
     low = aggregate(bass, beats, DT * 5, duration)
-    tonal_strength = pc.sum(1)
     pc /= np.maximum(pc.sum(1, keepdims=True), 1e-6)
     low /= np.maximum(low.sum(1, keepdims=True), 1e-6)
-    names, profiles, roots = [], [], []
-    for root, name in enumerate(NOTES):
-        for suffix, third in (("", 4), ("m", 3)):
-            template = np.zeros(12)
-            template[[0, third, 7]] = [1, .80, .84]
-            profiles.append(np.roll(template, root))
-            roots.append(root)
-            names.append(name + suffix)
-    centered = pc - pc.mean(1, keepdims=True)
-    centered /= np.maximum(np.linalg.norm(centered, axis=1, keepdims=True), 1e-8)
-    profiles = np.array(profiles)
-    profiles -= profiles.mean(1, keepdims=True)
-    profiles /= np.linalg.norm(profiles, axis=1, keepdims=True)
-    score = centered @ profiles.T + .55 * low[:, roots]
-    # Beat-synchronous chord decoder. Require persistent evidence before changing harmony.
-    path = score[0].copy()
-    parents = []
-    change = .36 * (1 - np.eye(len(names)))
-    for row in score[1:]:
-        possible = path[:, None] - change
-        parents.append(possible.argmax(0))
-        path = possible.max(0) + row
-    labels = [int(np.argmax(path))]
-    for prev in reversed(parents):
-        labels.append(prev[labels[-1]])
-    labels = labels[::-1]
-    chords = []
-    for i, idx in enumerate(labels):
-        name = names[idx]
-        if tonal_strength[i] < max(.4, .035 * np.median(tonal_strength)) or score[i, idx] < .14:
-            name = "N"
-        if not chords or chords[-1]["name"] != name:
-            chords.append({"time": round(float(beats[i]), 3), "name": name})
-    if chords[0]["time"] > .08:
-        chords.insert(0, {"time": 0.0, "name": "N"})
-    else:
-        chords[0]["time"] = 0.0
-    return pc, low, chords, float(np.median(score[np.arange(len(score)), labels]).clip(0, 1))
+    return pc, low
+
+
+def silent_spans(samples):
+    # The chord decoder can carry the last harmony through digital silence.
+    frame = round(.02 * SR)
+    starts = np.arange(0, len(samples), frame)
+    rms = np.sqrt(np.add.reduceat(samples * samples, starts) / np.diff(np.r_[starts, len(samples)]))
+    quiet = rms < max(.0002, np.percentile(rms, 90) * .003)
+    edges = np.flatnonzero(np.diff(np.r_[False, quiet, False]))
+    return [(a * frame / SR, min(b * frame, len(samples)) / SR)
+            for a, b in edges.reshape(-1, 2) if b - a >= 8]
+
+
+def chord_cues(segments, beats, samples):
+    duration = len(samples) / SR
+    quiet = silent_spans(samples)
+    onsets = [s["time"] for s in segments]
+    times = sorted({*onsets, *(t for span in quiet for t in span if t < duration)})
+    indices = np.searchsorted(onsets, times, side="right") - 1
+    silent = np.searchsorted(np.ravel(quiet), times, side="right") % 2
+    changes = []
+    fit_sum = pitched_seconds = 0.
+    for i, (time, idx) in enumerate(zip(times, indices)):
+        segment = segments[idx]
+        name = "N" if silent[i] else segment["label"]
+        if not changes or changes[-1][1] != name:
+            changes.append((time, name))
+        if name != "N":
+            length = (times[i+1] if i+1 < len(times) else duration) - time
+            fit_sum += segment["confidence"] * length
+            pitched_seconds += length
+
+    # The decoder uses overlapping frames. Align near-beat attacks to the measured
+    # pulse for transitions, preserving syncopation and the order of short chords.
+    beats = np.asarray(beats)
+    events = []
+    for i, (time, name) in enumerate(changes):
+        if i and len(beats) >= 2:
+            index = int(np.argmin(abs(beats - time)))
+            interval = beats[index] - beats[index-1] if index else beats[1] - beats[0]
+            left = (changes[i-1][0] + time) / 2
+            right = (time + changes[i+1][0]) / 2 if i+1 < len(changes) else duration
+            beat = beats[index]
+            if left < beat < right and abs(beat - time) <= min(.10, interval * .23):
+                time = float(beat)
+        events.append({"time": round(time, 3), "name": name})
+    return events, round(fit_sum / pitched_seconds, 2) if pitched_seconds else 0.
 
 
 def downbeat_index(beats, pc, low, onset):
@@ -363,18 +371,14 @@ def write_meta(path, folder=False):
                     "  userData:\n  assetBundleName:\n  assetBundleVariant:\n", encoding="utf-8")
 
 
-def analyze(path):
-    decoded = subprocess.check_output(["ffmpeg", "-v", "error", "-i", str(path),
-                                       "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"])
-    samples = np.frombuffer(decoded, dtype="<f4")
-    duration = len(samples) / SR
+def score_features(path, samples, duration):
     flux, energies = extract(samples)
     hints = {"fields": 169, "greenlandsOST": 140, "stage1bossOST": 172}
     beats, pulse_confidence, onset = track_beats(flux, hints.get(path.stem))
     beats = beats[beats < duration]
     if path.stem == "fields":
         beats = fields_pulse(onset, duration)
-    pc, low, chords, chord_confidence = chord_features(samples, beats, duration)
+    pc, low = bar_features(samples, beats, duration)
     offset = 0 if path.stem == "fields" else downbeat_index(beats, pc, low, onset)
     downbeats, phrases, novelty, phrase_confidence = find_phrases(
         beats, offset, pc, low, energies, duration)
@@ -394,13 +398,23 @@ def analyze(path):
     # Use the full grid to avoid quantizing steady BPM to the frame hop.
     intervals = (beats[8:] - beats[:-8]) / 8
     bpm = round(float(60 / np.median(intervals if len(intervals) else np.diff(beats))), 1)
-    data = {"id": path.stem, "title": TITLES.get(path.stem, path.stem.title()),
+    return {"id": path.stem, "title": TITLES.get(path.stem, path.stem.title()),
             "adaptive": adaptive, "duration": round(duration, 3), "bpm": bpm,
             "beats": np.round(beats, 3).tolist(), "downbeats": np.round(downbeats, 3).tolist(),
-            "boundaries": times.tolist(), "chords": chords, "sections": sections,
-            "waveform": waveform.tolist(),
-            "confidence": {"beat": round(pulse_confidence, 2), "chord": round(chord_confidence, 2),
-                           "phrase": round(phrase_confidence, 2)}}
+            "boundaries": times.tolist(), "sections": sections, "waveform": waveform.tolist(),
+            "confidence": {"beat": round(pulse_confidence, 2), "phrase": round(phrase_confidence, 2)}}
+
+
+def analyze(path, chords_only=False):
+    decoded = subprocess.check_output(["ffmpeg", "-v", "error", "-i", str(path),
+                                       "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"])
+    samples = np.frombuffer(decoded, dtype="<f4")
+    duration = len(samples) / SR
+    detector = Path(__file__).with_name("chords.mjs")
+    segments = json.loads(subprocess.check_output(["node", str(detector), str(SR)], input=decoded))
+    if not segments or segments[0]["time"] != 0:
+        raise ValueError(f"{path.stem}: chord analysis did not cover the recording")
+    data = None if chords_only else score_features(path, samples, duration)
     OUTPUT.mkdir(exist_ok=True)
     write_meta(OUTPUT, folder=True)
     dest = OUTPUT / (path.stem + ".json")
@@ -414,31 +428,37 @@ def analyze(path):
         edited = set(previous.get("editedSections", []))
         if previous.get("peakEdited"):
             edited.add("peak")
-        if edited:
+        if chords_only:
+            if previous.get("duration") != round(duration, 3):
+                raise ValueError(f"{path.stem}: run full analysis to generate a matching beat grid")
+            data = previous
+        elif edited:
             grid = sorted({0, *data["downbeats"], data["duration"]})
             for name in edited:
                 span = previous["sections"][name]
                 start, end = (min(grid, key=lambda b: abs(b - span[k])) for k in ("start", "end"))
-                if not adaptive or sum(start <= b <= end for b in data["downbeats"]) < 2:
+                if not data["adaptive"] or sum(start <= b <= end for b in data["downbeats"]) < 2:
                     raise ValueError(f"{path.stem}: new bar grid cannot fit the saved {name}; kept the original sheet")
                 data["sections"][name] = {"start": start, "end": end}
-            data["editedSections"] = [name for name in sections if name in edited]
+            data["editedSections"] = [name for name in data["sections"] if name in edited]
             if "peak" in edited:
                 data["peakEdited"] = True
+        data["chords"], data["confidence"]["chord"] = chord_cues(segments, data["beats"], samples)
+        data["chordDetector"] = "Chordino NNLS 1.0.0"
         tmp.write_text(json.dumps(data, separators=(",", ":"), allow_nan=False) + "\n", encoding="utf-8")
         tmp.replace(dest)
     finally:
         tmp.unlink(missing_ok=True)
         lock.unlink()
     write_meta(dest)
-    print(f"{path.stem:15} {bpm:5.1f} BPM, {len(beats):3} beats, {len(times) - 1:2} phrases; "
-          f"sections {sections}, confidence {data['confidence']}", flush=True)
+    print(f"{path.stem:15} {len(data['chords']):3} chord segments, {data['bpm']} BPM", flush=True)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--chords-only", action="store_true", help="refresh harmony on existing cue sheets")
     parser.add_argument("tracks", nargs="*", help="MP3 basenames; omit to analyze the complete library")
     args = parser.parse_args()
     for track in sorted(MUSIC.glob("*.mp3")):
         if not args.tracks or track.stem in args.tracks:
-            analyze(track)
+            analyze(track, args.chords_only)

@@ -1,0 +1,9 @@
+{
+  "name": "shootemup-music-lab",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@audio/mir-chordino": "1.0.0",
+    "@audio/mir-nnls-chroma": "1.0.0"
+  }
+}
