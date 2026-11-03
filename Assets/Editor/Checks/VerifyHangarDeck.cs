@@ -326,14 +326,18 @@ public sealed class HangarDeckReview : MonoBehaviour
     }
     IEnumerator TraverseLane()
     {
+        InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+        InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
         var keys = InputSystem.AddDevice<Keyboard>();
         void Press(params Key[] state)
         {
             InputSystem.QueueStateEvent(keys, new KeyboardState(state));
             InputSystem.Update();
         }
-        var ship = FindAnyObjectByType<Shipcontroller>().transform;
-        var view = UnityEngine.Camera.main.transform;
+        var pilot = FindAnyObjectByType<Shipcontroller>();
+        var ship = pilot.transform;
+        var camera = UnityEngine.Camera.main;
+        var view = camera.transform;
         float cameraOrigin = 0, spawn = ship.position.y;
         yield return Capture("Concourse");
         Press(Key.UpArrow);
@@ -366,9 +370,30 @@ public sealed class HangarDeckReview : MonoBehaviour
         yield return new WaitForSeconds(.5f);
         Check(!CloudTransition.Busy && Mathf.Abs(view.position.y - cameraOrigin - HangarHub.DeckExtension) < .3f, "gate reachable and camera stops at far end");
         yield return Capture("DepartureLane");
-        while (HangarHub.Active || HangarHub.Launching || CloudTransition.Busy) yield return null;
-        Press();
+        while (HangarHub.Active || !pilot.enabled) yield return null;
+        var hull = ship.GetComponent<PSXShipVisual>().Model.GetComponentsInChildren<MeshRenderer>().First(r => r.enabled);
+        var frameEnd = new WaitForEndOfFrame();
+        do
+        {
+            yield return frameEnd; // Include the HUD's LateUpdate clamp.
+            var low = camera.WorldToViewportPoint(hull.bounds.min);
+            var high = camera.WorldToViewportPoint(hull.bounds.max);
+            float halfWidth = .5f * (405f / 720f) / camera.aspect;
+            if (low.y < 0 || high.y > 1 || low.x < .5f - halfWidth || high.x > .5f + halfWidth)
+                throw new Exception($"Plains launch put the pilot outside the portrait: ship {ship.position}, camera {view.position}");
+        }
+        while (HangarHub.Launching || CloudTransition.Busy);
         Check(Mathf.Abs(view.position.y - cameraOrigin) < .05f && Mathf.Abs(ship.position.y - spawn) < .1f, "launch restores combat camera and ship position");
+        yield return Capture("PlainsPlayerSpawn");
+        Press(Key.UpArrow);
+        yield return new WaitForSeconds(2);
+        Check(ship.position.y >= Camera.UpLimit - .05f, "pilot can cross Plains to its upper combat limit");
+        Press(Key.DownArrow);
+        yield return new WaitForSeconds(2.2f);
+        Press();
+        yield return frameEnd;
+        float cockpitBottom = camera.WorldToViewportPoint(ship.GetComponent<Collider2D>().bounds.min).y;
+        Check(Mathf.Abs(cockpitBottom) < .005f, "the cockpit can reach the bottom edge of the actual playfield");
         InputSystem.RemoveDevice(keys);
     }
 

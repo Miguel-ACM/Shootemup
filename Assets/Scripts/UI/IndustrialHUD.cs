@@ -43,6 +43,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     Image[] phasePips;
     float nextScan, nextUpdate;
     float bottomLimit, topLimit;
+    bool combatLimitsReady;
     static readonly Color Unlit = new Color(.1f, .135f, .14f);
     static readonly Color Steel = new Color(.73f, .77f, .72f), Amber = new Color(.83f, .62f, .30f), Cyan = new Color(.48f, .70f, .72f), Dark = new Color(.07f, .09f, .09f, .94f), Frame = new Color(.21f, .27f, .27f), Alarm = new Color(1, .16f, .12f);
 
@@ -60,14 +61,6 @@ public sealed class IndustrialHUD : MonoBehaviour
             foreach (var child in legacyUI.GetComponentsInChildren<Transform>(true))
                 if (child.name == "CoverLeft" || child.name == "CoverRight")
                     child.gameObject.SetActive(false);
-        var camera = UnityEngine.Camera.main;
-        float viewBottom = camera.transform.position.y - camera.orthographicSize;
-        float viewHeight = camera.orthographicSize * 2;
-        // Let the cockpit (the hitbox) come right down to the bottom edge: its lowest point may
-        // touch the screen border while the rest of the hull dips off screen.
-        var hitbox = player.GetComponent<Collider2D>();
-        bottomLimit = hitbox != null ? viewBottom + (player.transform.position.y - hitbox.bounds.min.y) : viewBottom + 1.75f;
-        topLimit = viewBottom + viewHeight - .65f;
         var root = new GameObject("Industrial instruments", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
         root.transform.SetParent(transform, false);
         root.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
@@ -180,6 +173,19 @@ public sealed class IndustrialHUD : MonoBehaviour
         // Dock travel and arrival use the hangar's world-space limits.
         if (HangarHub.Active || player == null || !player.enabled)
             return;
+        // The HUD is built during the moving hangar approach. Wait until the combat
+        // camera and pilot have both been restored before measuring their playfield.
+        if (!combatLimitsReady)
+        {
+            var camera = UnityEngine.Camera.main;
+            if (camera == null) return;
+            Physics2D.SyncTransforms();
+            var hitbox = player.GetComponent<Collider2D>();
+            float cockpitInset = hitbox != null ? player.transform.position.y - hitbox.bounds.min.y : 1.75f;
+            bottomLimit = camera.transform.position.y - camera.orthographicSize + cockpitInset;
+            topLimit = camera.transform.position.y + camera.orthographicSize - .65f;
+            combatLimitsReady = true;
+        }
         var position = player.transform.position;
         position.y = Mathf.Clamp(position.y, bottomLimit, topLimit);
         player.transform.position = position;
