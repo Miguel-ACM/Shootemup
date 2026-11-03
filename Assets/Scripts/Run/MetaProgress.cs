@@ -137,6 +137,25 @@ public static partial class MetaProgress
             }
     }
 
+    public static bool DeleteProgress()
+    {
+        try
+        {
+            // If erasure is interrupted, the committed save is the last file touched.
+            File.Delete(FilePath + ".tmp");
+            File.Delete(FilePath + ".bak");
+            File.Delete(FilePath);
+        }
+        catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
+        {
+            Debug.LogWarning("Could not erase flight data. " + e.Message);
+            return false;
+        }
+        data = null;
+        flight = LastFlight = null;
+        return true;
+    }
+
     static void Load()
     {
         try
