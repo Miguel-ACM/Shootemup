@@ -39,8 +39,8 @@ black = material('tile_06', (0.035, 0.055, 0.06))
 
 parts = []
 
-# A revolved, faceted profile makes the octagonal housing and its sloping bottom.
-# Octagon vertices at the cardinal axes: maximum X and Y are exactly 0.5.
+# A revolved, faceted profile makes the hexagonal housing and its sloping bottom.
+# Two opposing points and parallel fore and aft edges keep the six sides legible from above.
 def profile_mesh(name, profile, sides, mats, bands, phase=0.0, caps=True):
     verts = []
     for radius, z in profile:
@@ -73,26 +73,24 @@ def profile_mesh(name, profile, sides, mats, bands, phase=0.0, caps=True):
     parts.append(obj)
     return obj
 
-# Ordered bottom to top; uppermost face is the z=0 display surface.
+# Ordered bottom to top, with the display surface at z=0.
 profile_mesh('Housing', [(0.23,-0.155), (0.36,-0.135), (0.47,-0.095),
                          (0.50,-0.070), (0.50,-0.026), (0.472,-0.002)],
-             8, [underside, shell, edge], [0,0,1,1,2])
+             6, [underside, shell, edge], [0,0,1,1,2])
 
-# Shallow concentric inset gives the projector a framed, recessed appearance.
-# Components remain just below the top plane, so the disc's top is at z=0.
-profile_mesh('Lens surround', [(0.355,-0.0018), (0.340,-0.001)], 32,
+# A shallow layered bezel frames the lens. Lift the inlays just clear of the housing face.
+profile_mesh('Lens surround', [(0.431,0.001), (0.411,0.002)], 6,
              [black], [0], caps=False)
-profile_mesh('Projector ring', [(0.340,-0.0009), (0.322,-0.0009)], 32,
+profile_mesh('Projector ring', [(0.411,0.002), (0.380,0.002)], 6,
              [cyan], [0], caps=False)
-profile_mesh('Inner bezel', [(0.322,-0.0008), (0.306,-0.0008)], 32,
+profile_mesh('Inner bezel', [(0.380,0.002), (0.354,0.003)], 6,
              [edge], [0], caps=False)
-profile_mesh('Centre lens', [(0.306,-0.0007), (0.282,-0.0007)], 32,
+profile_mesh('Centre lens', [(0.354,0.003), (0.338,0.004)], 6,
              [lens], [0], caps=True)
-# Center lens cap covers the housing face and uses a subtle inset octagonal core.
-profile_mesh('Lens core', [(0.19,-0.0005), (0.19,-0.0004)], 8,
+profile_mesh('Lens core', [(0.218,0.004), (0.210,0.006)], 6,
              [black], [0])
 
-# Four small inset brass registration blocks, placed within the octagonal outline.
+# Brass registration marks sit in the wide corners outside the projector.
 def block(name, loc, scale, mat, angle=0.0):
     bpy.ops.mesh.primitive_cube_add(size=1, location=loc)
     obj = bpy.context.object
@@ -108,8 +106,9 @@ def block(name, loc, scale, mat, angle=0.0):
     bpy.ops.object.modifier_apply(modifier=bevel.name)
     parts.append(obj)
 
-for a in (math.pi/4, 3*math.pi/4, 5*math.pi/4, 7*math.pi/4):
-    block('Brass index', (0.405*math.cos(a), 0.405*math.sin(a), -0.002),
+for corner in range(6):
+    a = corner * math.tau / 6
+    block('Brass index', (0.437*math.cos(a), 0.437*math.sin(a), 0.003),
           (0.046, 0.012, 0.004), brass, a + math.pi/2)
 
 # Single downward emitter, integrated into the tapered underside.

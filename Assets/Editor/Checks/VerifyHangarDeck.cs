@@ -144,6 +144,28 @@ public sealed class HangarDeckReview : MonoBehaviour
         File.WriteAllBytes(VerifyHangarDeck.Folder + "/" + title + ".png", image.EncodeToPNG());
         Destroy(image);
     }
+    IEnumerator ReviewPlatformMotion(MeshRenderer platform, MeshRenderer exhibit)
+    {
+        var separation = exhibit.bounds.center - platform.bounds.center;
+        float low = platform.bounds.center.y, high = low;
+        const int frames = 60;
+        float start = Time.time, period = 2 * Mathf.PI / 1.1f;
+        var folder = Directory.CreateDirectory(VerifyHangarDeck.Folder + "/Hover");
+        for (int frame = 0; frame < frames; frame++)
+        {
+            while (Time.time < start + period * frame / frames)
+                yield return null;
+            yield return new WaitForEndOfFrame();
+            low = Mathf.Min(low, platform.bounds.center.y);
+            high = Mathf.Max(high, platform.bounds.center.y);
+            if ((exhibit.bounds.center - platform.bounds.center - separation).sqrMagnitude > .0001f)
+                throw new Exception("exhibit shifted on its floating platform");
+            var image = ScreenCapture.CaptureScreenshotAsTexture();
+            File.WriteAllBytes(Path.Combine(folder.FullName, frame.ToString("D2") + ".png"), image.EncodeToPNG());
+            Destroy(image);
+        }
+        Check(high - low > .22f, "item and platform floated together across a full hover cycle");
+    }
     IEnumerator Start()
     {
         yield return new WaitForSecondsRealtime(1);
@@ -393,6 +415,11 @@ public sealed class HangarDeckReview : MonoBehaviour
         }
         bool directoryOnly = SessionState.GetBool("DirectoryOnly", false);
         SessionState.SetBool("DirectoryOnly", false);
+        if (directoryOnly)
+        {
+            Place(0, 0);
+            yield return Capture("HexOutfitter");
+        }
         if (!directoryOnly)
         {
             Place(2.7f, 0);
@@ -475,11 +502,16 @@ public sealed class HangarDeckReview : MonoBehaviour
         Debug.Log("Gallery entry " + Frames(entryFrames));
         var exhibits = Field<GalleryShelf.Exhibit[]>("exhibits");
         var models = Field<MeshRenderer[]>("pieces");
+        var platforms = Field<MeshRenderer[]>("platforms");
+        var shopMesh = hub.transform.Find("HangarShopPlinth").GetComponent<MeshFilter>().sharedMesh;
+        var outerCorners = shopMesh.vertices.Select(v => (Vector2)v).Where(p => Mathf.Abs(p.sqrMagnitude - .25f) < .0001f).Distinct().Count();
+        Check(outerCorners == 6 && platforms.All(p => p.GetComponent<MeshFilter>().sharedMesh == shopMesh),
+            "gallery and outfitter share the six-sided floating plinth");
         CheckInteriors(1);
         void CheckCaseLighting()
         {
             var offsets = Field<int[]>("caseVertices");
-            var colors = Field<Mesh>("platforms").colors;
+            var colors = Field<Mesh>("floorLights").colors;
             var category = Field<int>("galleryCategory");
             var access = Field<int>("galleryAvailability");
             bool correct = true;
@@ -488,7 +520,7 @@ public sealed class HangarDeckReview : MonoBehaviour
                 bool released = !ItemCatalog.Get(exhibits[i].key).InRewardPool || MetaProgress.IsUnlocked(exhibits[i].key);
                 bool match = (category == 0 || category - 1 == (int)exhibits[i].category) && (access == 0 || released == (access == 1));
                 bool lampLit = colors[offsets[i + 1] - 1].r > .8f;
-                correct &= lampLit == match && models[i].HasPropertyBlock() == (released && !match);
+                correct &= lampLit == match && platforms[i].HasPropertyBlock() == !match && models[i].HasPropertyBlock() == (released && !match);
             }
             Check(correct, "all 99 case lamps and exhibit finishes follow both filters");
         }
@@ -563,6 +595,10 @@ public sealed class HangarDeckReview : MonoBehaviour
         CheckCaseLighting();
         if (directoryOnly)
         {
+            var anchor = platforms[known].transform.parent.position;
+            Place(anchor.x + 1.4f, anchor.y - 1.3f);
+            yield return new WaitForSeconds(.8f);
+            yield return ReviewPlatformMotion(platforms[known], models[known]);
             InputSystem.RemoveDevice(keyboard);
             yield break;
         }

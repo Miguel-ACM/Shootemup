@@ -14,10 +14,11 @@ public sealed partial class HangarHub
     MeshRenderer[] pieces;
     Material silhouette, guidePaint;
     Mesh guideMesh;
-    Mesh platforms;
+    Mesh floorLights;
+    MeshRenderer[] platforms;
     int[] caseVertices;
-    Color[] litPlatformColors;
-    List<Color> platformColors;
+    Color[] litFloorColors;
+    List<Color> floorColors;
     MaterialPropertyBlock dimItem;
     static readonly int ItemTint = Shader.PropertyToID("_Tint");
     static readonly Color GalleryDeck = new Color(.075f, .11f, .13f);
@@ -34,6 +35,7 @@ public sealed partial class HangarHub
     {
         exhibits = new GalleryShelf.Exhibit[ItemCatalog.All.Count];
         pieces = new MeshRenderer[exhibits.Length];
+        platforms = new MeshRenderer[exhibits.Length];
         caseVertices = new int[exhibits.Length + 1];
         dimItem = new MaterialPropertyBlock();
         silhouette = new Material(Resources.Load<Shader>("GallerySilhouette"));
@@ -68,22 +70,15 @@ public sealed partial class HangarHub
         {
             caseVertices[i] = colors.Count;
             var at = Case(i);
-            // A shallow enamel saddle leaves the object open at the front; the warm halo
-            // and two inset lamps follow the same filter as the exhibit.
-            GalleryWell(floor, colors, indices, at, 1.33f, new Color(.43f, .055f, .045f), new Color(.075f, .11f, .13f));
-            GalleryWell(floor, colors, indices, at, .84f, new Color(.27f, .28f, .26f), new Color(.14f, .17f, .18f));
-            for (int side = -1; side <= 1; side += 2)
-            {
-                Bar(at + new Vector2(side * .83f, -.03f), new Vector2(.14f, 1.03f), Metal);
-                Bar(at + new Vector2(side * .69f, .49f), new Vector2(.41f, .10f), new Color(.37f, .41f, .39f));
-                Bar(at + new Vector2(side * .83f, -.42f), new Vector2(.10f, .19f), new Color(.88f, .16f, .095f));
-            }
-            Bar(at + Vector2.down * .78f, new Vector2(.47f, .055f), new Color(1, .32f, .2f));
+            // A fixed pool of red light and an offset contact shadow beneath the levitating base.
+            GalleryWell(floor, colors, indices, at + new Vector2(.17f, -.35f), 1.39f, new Color(.48f, .065f, .045f), GalleryDeck);
+            GalleryWell(floor, colors, indices, at + new Vector2(.23f, -.76f), .93f, new Color(.012f, .016f, .021f, .86f), Color.clear);
+            Bar(at + Vector2.down * 1.12f, new Vector2(.47f, .055f), new Color(1, .32f, .2f));
         }
         caseVertices[exhibits.Length] = colors.Count;
-        platforms = GallerySurface("Museum cases", floor, colors, indices, -14);
-        platformColors = colors;
-        litPlatformColors = colors.ToArray();
+        floorLights = GallerySurface("Gallery floor and footlights", floor, colors, indices, -14);
+        floorColors = colors;
+        litFloorColors = colors.ToArray();
         guidePaint = new Material(Resources.Load<Shader>("GalleryGuide"));
         guidePaint.SetVector("_Origin", new Vector4(FilterDesk.x, FilterDesk.y, 0, 0));
         guideMesh = GallerySurface("Red inlaid guide lamps", new List<Vector3>(), new List<Color>(), new List<int>(), -10);
@@ -164,12 +159,19 @@ public sealed partial class HangarHub
             {
                 int i = first + j;
                 var e = exhibits[i] = shelf.exhibits[j];
+                var rig = new GameObject("Floating exhibit " + i).transform;
+                rig.SetParent(interiors[(int)Dock.Armory].fixtures.transform, false);
+                rig.position = Spot(Case(i), 0);
+                var platform = MountModel("HangarShopPlinth", rig.position + new Vector3(0, -.24f, 2.4f), -4, "Background", rig);
+                platform.localScale = Vector3.one * 2.18f;
+                platform.localRotation = PlatformTilt;
+                platforms[i] = platform.GetComponent<MeshRenderer>();
                 var go = new GameObject("Museum exhibit " + i);
-                go.transform.SetParent(interiors[(int)Dock.Armory].fixtures.transform, false);
+                go.transform.SetParent(rig, false);
                 var bounds = e.mesh.bounds;
                 var rotation = Quaternion.Euler(-18, 28, -9);
                 float scale = 1.24f / Mathf.Max(.01f, bounds.size.x, bounds.size.y, bounds.size.z);
-                go.transform.SetPositionAndRotation(Spot(Case(i), 1) - rotation * (bounds.center * scale), rotation);
+                go.transform.SetPositionAndRotation(rig.position + new Vector3(0, .15f, 1) - rotation * (bounds.center * scale), rotation);
                 go.transform.localScale = Vector3.one * scale;
                 go.AddComponent<MeshFilter>().sharedMesh = e.mesh;
                 var r = pieces[i] = go.AddComponent<MeshRenderer>();
@@ -188,6 +190,20 @@ public sealed partial class HangarHub
         galleryReady = true;
         ApplyGalleryFilter();
     }
+    void FloatGalleryPlatforms()
+    {
+        Vector2 focus = view.transform.position - center;
+        float halfHeight = view.orthographicSize;
+        float halfWidth = halfHeight * (405f / 720f);
+        for (int i = 0; i < loadedItems; i++)
+        {
+            Vector2 at = Case(i);
+            if (Mathf.Abs(at.x - focus.x) > halfWidth + 1.5f || Mathf.Abs(at.y - focus.y) > halfHeight + 2)
+                continue;
+            // Move the hull and its cargo together. The selection point, lights and labels stay steady.
+            platforms[i].transform.parent.position = Spot(at + Vector2.up * PlatformLift(i), 0);
+        }
+    }
     void RefreshGalleryAccess()
     {
         for (int i = 0; i < loadedItems; i++)
@@ -204,17 +220,26 @@ public sealed partial class HangarHub
     {
         const float dim = .22f;
         for (int v = caseVertices[i]; v < caseVertices[i + 1]; v++)
-            platformColors[v] = match ? litPlatformColors[v] : Color.Lerp(GalleryDeck, litPlatformColors[v], dim);
-
-        var paint = pieces[i].sharedMaterial;
+        {
+            Color lit = litFloorColors[v];
+            Color faded = Color.Lerp(GalleryDeck, lit, dim);
+            faded.a = lit.a;
+            floorColors[v] = match ? lit : faded;
+        }
+        TintExhibit(platforms[i], match, dim);
+        TintExhibit(pieces[i], match, dim);
+    }
+    void TintExhibit(MeshRenderer model, bool match, float dim)
+    {
+        var paint = model.sharedMaterial;
         if (match || paint == silhouette)
         {
-            pieces[i].SetPropertyBlock(null);
+            model.SetPropertyBlock(null);
             return;
         }
         var tint = paint.GetColor(ItemTint);
         dimItem.SetColor(ItemTint, new Color(tint.r * dim, tint.g * dim, tint.b * dim, tint.a));
-        pieces[i].SetPropertyBlock(dimItem);
+        model.SetPropertyBlock(dimItem);
     }
     void ApplyGalleryFilter()
     {
@@ -242,7 +267,7 @@ public sealed partial class HangarHub
                     continue;
                 highest = at.y;
                 GalleryQuad(v, c, t, at + Vector2.left * .94f, new Vector2(.45f, .055f), red);
-                GalleryQuad(v, c, t, at + Vector2.down * .78f, new Vector2(.55f, .10f), red);
+                GalleryQuad(v, c, t, at + Vector2.down * 1.12f, new Vector2(.55f, .10f), red);
             }
             if (highest <= FilterDesk.y)
                 continue;
@@ -251,7 +276,7 @@ public sealed partial class HangarHub
             GalleryQuad(v, c, t, new Vector2((x + FilterDesk.x) / 2, FilterDesk.y), new Vector2(Mathf.Abs(x - FilterDesk.x), .055f), red);
         }
         caseLeds.SetVerticesDirty();
-        platforms.SetColors(platformColors);
+        floorLights.SetColors(floorColors);
         guideMesh.Clear();
         guideMesh.SetVertices(v);
         guideMesh.SetColors(c);

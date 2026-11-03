@@ -37,6 +37,10 @@ public sealed partial class HangarHub : MonoBehaviour
         public bool pinned;
     }
 
+    // The original outfitter's staggered lift, with enough travel to read at arcade resolution.
+    static float PlatformLift(int index) => .13f * Mathf.Sin(Time.time * 1.1f + index * 1.7f);
+    static readonly Quaternion PlatformTilt = Quaternion.Euler(32, 0, 0);
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetState()
     {
@@ -250,7 +254,9 @@ public sealed partial class HangarHub : MonoBehaviour
             plinth.item.SetRarity(ItemPool.RarityOf(stock[i]));
             // Hidden only after Awake has given the item its name and description.
             go.SetActive(false);
-            plinth.disc = MountModel("HangarShopPlinth", plinth.spot + new Vector3(0, -.3f, .5f), -4);
+            plinth.disc = MountModel("HangarShopPlinth", plinth.spot + new Vector3(0, -.27f, 1.3f), -4);
+            plinth.disc.localScale = Vector3.one * 1.72f;
+            plinth.disc.localRotation = PlatformTilt;
             plinth.shadow = Shadow(new Vector3(plinth.spot.x + .35f, plinth.spot.y - .85f, 87), .7f, -20);
             plinths.Add(plinth);
             GalleryWell(glowVertices, glowColors, glowTriangles, plinthSpots[i], 1.22f,
@@ -307,13 +313,13 @@ public sealed partial class HangarHub : MonoBehaviour
     }
 
     // Docks and plinths hover over the Tunnel floor, with a soft shadow below and behind them.
-    Transform MountModel(string model, Vector3 position, int order, string layer = "Player")
+    Transform MountModel(string model, Vector3 position, int order, string layer = "Player", Transform parent = null)
     {
         var mesh = IndustrialMeshFactory.TerraModel(model);
         if (mesh == null)
             return null;
         var go = new GameObject(model);
-        go.transform.SetParent(FixtureParent, false);
+        go.transform.SetParent(parent != null ? parent : FixtureParent, false);
         go.transform.position = position;
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var renderer = go.AddComponent<MeshRenderer>();
@@ -400,13 +406,23 @@ public sealed partial class HangarHub : MonoBehaviour
             var top = new Color(.7f, .8f, .86f, glow);
             mist.colors = new[] { bottom, top, top, bottom };
         }
+        if (room == (int)Dock.Armory)
+            FloatGalleryPlatforms();
         for (int i = 0; i < plinths.Count; i++)
-            if (!plinths[i].sent && plinths[i].item != null && introTime > (inlet > 0 ? 1.7f : .25f) + i * .18f)
+        {
+            var offer = plinths[i];
+            float lift = PlatformLift(i);
+            offer.disc.position = offer.spot + new Vector3(0, -.27f + lift, 1.3f);
+            offer.shadow.localScale = Vector3.one * (1 - lift * .6f);
+            if (offer.positioned && offer.item != null && !offer.item.IsDismissing)
+                offer.item.transform.position = offer.spot + Vector3.up * lift;
+            if (!offer.sent && offer.item != null && introTime > (inlet > 0 ? 1.7f : .25f) + i * .18f)
             {
-                plinths[i].sent = true;
-                plinths[i].item.gameObject.SetActive(true);
-                plinths[i].item.GoToPosition(plinths[i].spot);
+                offer.sent = true;
+                offer.item.gameObject.SetActive(true);
+                offer.item.GoToPosition(offer.spot);
             }
+        }
         if (!Arriving || player == null)
             return;
         if (running)
