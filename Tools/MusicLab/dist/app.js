@@ -1,4 +1,4 @@
-import { Transport, seekTarget } from './transport.js';
+import { Transport, prepareKick, seekTarget } from './transport.js';
 import { barGrid, markerLimits, sameSpan, sectionKeys, validSpan } from './markers.mjs';
 
 const $ = id => document.getElementById(id);
@@ -33,7 +33,7 @@ async function decode(url, signal) {
 async function openTransport(id, sheet, signal) {
     if (sheet.adaptive && !kickLoad) {
         kickLoad = Promise.all([context.audioWorklet.addModule('/boss-kick.js'), decode('/boss-kick.wav')])
-            .then(([,buffer]) => buffer.getChannelData(0))
+            .then(([,buffer]) => prepareKick(buffer.getChannelData(0),context.sampleRate))
             .catch(err => { kickLoad = null; throw err; });
     }
     const [audio,kick] = await Promise.all([decode('/audio/' + id,signal),sheet.adaptive ? kickLoad : null]);

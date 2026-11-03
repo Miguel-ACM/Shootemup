@@ -6,12 +6,25 @@ using UnityEngine;
 public sealed class BossKick
 {
     readonly float[] pcm;
+    readonly float[] reduction;
     readonly int rate;
 
     BossKick(float[] pcm, int rate)
     {
         this.pcm = pcm;
         this.rate = rate;
+        reduction = new float[pcm.Length];
+        // Peak-follow the actual kick with a 2 ms attack and 55 ms release.
+        // Return fully to unity at the end of this short one-shot.
+        double attack = Math.Exp(-1/(.002*rate)), release = Math.Exp(-1/(.055*rate));
+        double envelope = 0, depth = 1 - Math.Pow(10,-5.0/20);
+        for (int i = 0; i < pcm.Length; i++)
+        {
+            double peak = Math.Abs(pcm[i]);
+            envelope = peak + (envelope-peak)*(peak > envelope ? attack : release);
+            double tail = Math.Min(1,(pcm.Length-1-i)/(.04*rate));
+            reduction[i] = (float)(depth * Math.Min(1,envelope/.2) * tail);
+        }
     }
 
     public static BossKick Load()
@@ -44,8 +57,14 @@ public sealed class BossKick
             for (int frame = first; frame < last && sample < pcm.Length-1; frame++, sample += step)
             {
                 int i = (int)sample;
-                float value = volume * (pcm[i] + (pcm[i+1]-pcm[i])*(float)(sample-i));
-                for (int ch = 0; ch < channels; ch++) output[frame*channels+ch] += value;
+                float fraction = (float)(sample-i);
+                float value = volume * (pcm[i] + (pcm[i+1]-pcm[i])*fraction);
+                float backing = 1 - (reduction[i] + (reduction[i+1]-reduction[i])*fraction);
+                for (int ch = 0; ch < channels; ch++)
+                {
+                    int index = frame*channels + ch;
+                    output[index] = output[index]*backing + value;
+                }
             }
         }
     }

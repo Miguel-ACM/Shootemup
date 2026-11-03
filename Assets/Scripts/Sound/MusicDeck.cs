@@ -11,6 +11,7 @@ public sealed class MusicDeck : MonoBehaviour
     public double StartAt { get; private set; }
     public float Offset => offset;
     public BossKick Kick { private get; set; }
+    public MusicDeck OtherDeck { private get; set; }
     float[] kickBeats;
     volatile float kickVolume = 1;
     float offset, from, to, seconds;
@@ -52,7 +53,7 @@ public sealed class MusicDeck : MonoBehaviour
     public void StartCue(AudioClip clip, double at, float position, float mixFrom, float mixTo, float ramp, double fade,
         float[] beats = null)
     {
-        Source.Stop();
+        Stop();
         StartAt = at;
         offset = position;
         from = mixFrom;
@@ -82,6 +83,12 @@ public sealed class MusicDeck : MonoBehaviour
     public float MixAt(double at) => seconds <= 0 ? to : Mathf.Lerp(from, to, (float)(at - StartAt)/seconds);
     public double ClockAt(float position) => StartAt + position - offset;
 
+    public void Stop()
+    {
+        envelope = null;
+        Source.Stop();
+    }
+
     public void SetVolume(float volume)
     {
         Source.volume = volume;
@@ -100,7 +107,8 @@ public sealed class MusicDeck : MonoBehaviour
         }
         previous = env;
         double blockAt = AudioSettings.dspTime, now = blockAt, step = 1.0 / sampleRate;
-        if (env.beats == null && env.from == 0 && env.to == 0 && now >= env.start + env.fadeIn &&
+        var other = OtherDeck?.envelope;
+        if (env.beats == null && other?.beats == null && env.from == 0 && env.to == 0 && now >= env.start + env.fadeIn &&
             now + samples.Length*step/channels <= env.stop - env.fadeOut) return;
         for (int i = 0; i < samples.Length; now += step)
         {
@@ -115,6 +123,9 @@ public sealed class MusicDeck : MonoBehaviour
                 samples[i] = (float)(gain * (dry + mix*(wet-dry)));
             }
         }
+        // During a crossfade both recordings feel the same kick. Only its owner adds the drum.
+        if (other?.beats != null && kickVolume > 0)
+            Kick?.Mix(samples, channels, sampleRate, blockAt, other.beats, other.start, other.offset, other.kickCut, 0);
         if (env.beats != null && kickVolume > 0)
             Kick?.Mix(samples, channels, sampleRate, blockAt, env.beats, env.start, env.offset, env.kickCut, kickVolume);
     }

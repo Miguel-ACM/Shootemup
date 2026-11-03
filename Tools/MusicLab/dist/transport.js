@@ -18,6 +18,20 @@ function bassAt(d, at) {
     return d.from + (d.to - d.from)*t;
 }
 
+export function prepareKick(pcm, rate) {
+    const duck = new Float32Array(pcm.length);
+    const attack = Math.exp(-1/(.002*rate)), release = Math.exp(-1/(.055*rate));
+    const depth = 1 - 10**(-5/20);
+    let envelope = 0;
+    for (let i = 0; i < pcm.length; i++) {
+        const peak = Math.abs(pcm[i]);
+        envelope = peak + (envelope-peak)*(peak > envelope ? attack : release);
+        const tail = Math.min(1,(pcm.length-1-i)/(.04*rate));
+        duck[i] = depth * Math.min(1,envelope/.2) * tail;
+    }
+    return {pcm,duck};
+}
+
 function openingChord(chords, { start, end }) {
     if (!chords?.length) return null;
     let i = 0;
@@ -44,12 +58,14 @@ function transitionPoint(map, start, end, earliest, deadline, target) {
 }
 
 export class Transport {
-    constructor(ctx, buffer, map, volume, kickPCM) {
-        Object.assign(this, { ctx, buffer, map, kickPCM, playing:false, ended:false });
+    constructor(ctx, buffer, map, volume, kickSample) {
+        Object.assign(this, { ctx, buffer, map, kickSample, playing:false, ended:false });
         this.voices = new Set();
         this.master = ctx.createGain();
         this.master.gain.value = volume;
         this.master.connect(ctx.destination);
+        this.backing = ctx.createGain();
+        this.backing.connect(this.master);
     }
     range(part) {
         return this.map.adaptive === false || part === 'recording' ? { start:0, end:this.map.duration } :
@@ -62,7 +78,7 @@ export class Transport {
         source.buffer = part === 'fast' ? this.fastBuffer : this.buffer;
         shelf.type = 'lowshelf';
         shelf.frequency.value = shelfHz;
-        source.connect(shelf).connect(gain).connect(this.master);
+        source.connect(shelf).connect(gain).connect(this.backing);
         const to = boss(part) ? bassDb : 0;
         const ramp = from === to ? 0 : Math.min((to > from ? 1 : 8)*60/this.map.bpm, Math.max(0,end-offset)/speed);
         shelf.gain.setValueAtTime(from, at);
@@ -71,12 +87,13 @@ export class Transport {
         gain.gain.linearRampToValueAtTime(1, at+fadeIn);
         const deck = { part, at, offset, end, speed, from, to, ramp, source, shelf, gain,
             availableUntil:at + source.buffer.duration - start };
-        if (boss(part) && this.kickPCM && this.map.beats.length) {
+        if (boss(part) && this.kickSample && this.map.beats.length) {
             const hits = this.map.beats.filter(t => t >= offset)
                 .map(t => Math.round(clockAt(deck,t)*this.ctx.sampleRate));
-            deck.kick = new AudioWorkletNode(this.ctx,'boss-kick',{numberOfInputs:0, outputChannelCount:[1],
-                processorOptions:{hits,pcm:this.kickPCM}});
-            deck.kick.connect(this.master);
+            deck.kick = new AudioWorkletNode(this.ctx,'boss-kick',{numberOfInputs:0, numberOfOutputs:2, outputChannelCount:[1,1],
+                processorOptions:{hits,...this.kickSample}});
+            deck.kick.connect(this.master,0);
+            deck.kick.connect(this.backing.gain,1);
             deck.kickLevel = deck.kick.parameters.get('level');
         }
         this.voices.add(deck);

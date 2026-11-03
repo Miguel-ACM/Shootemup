@@ -125,6 +125,8 @@ public sealed class DistrictScore : MonoBehaviour
             decks[i] = child.AddComponent<MusicDeck>();
             decks[i].Kick = kick;
         }
+        decks[0].OtherDeck = decks[1];
+        decks[1].OtherDeck = decks[0];
     }
 
     public void Play(AudioClip clip, Cues cues, bool adaptive = true)
@@ -149,7 +151,7 @@ public sealed class DistrictScore : MonoBehaviour
         Generation++;
         foreach (var deck in decks)
         {
-            deck.Source.Stop();
+            deck.Stop();
             deck.Source.clip = null;
         }
         started = false;
@@ -197,7 +199,7 @@ public sealed class DistrictScore : MonoBehaviour
     void Plan()
     {
         MusicDeck active = decks[index], next = decks[1-index];
-        next.Source.Stop();
+        next.Stop();
         float end = track.End(part);
         pendingTrack = part == Part.Outro ? null : track;
         pendingPart = part == Part.Intro ? Part.Flight : part;
