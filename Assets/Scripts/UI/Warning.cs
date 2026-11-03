@@ -29,7 +29,10 @@ public class Warning : MonoBehaviour
     public RectTransform ScreenRect => field;
     public void Start()
     {
-        Build();
+        foreach (var graphic in GetComponentsInChildren<Graphic>(true))
+            graphic.enabled = false;
+        if (!HangarHub.Active)
+            Prepare();
     }
 
     /// <summary>4-pixel-tall diagonal yellow/black tile, repeated along each ribbon edge.</summary>
@@ -83,15 +86,13 @@ public class Warning : MonoBehaviour
         return text;
     }
 
-    void Build()
+    public void Prepare()
     {
         if (overlay != null)
             return;
         var old = GetComponentsInChildren<TextMeshProUGUI>(true);
         if (font == null && old.Length > 0)
             font = old[0].font;
-        foreach (var graphic in GetComponentsInChildren<Graphic>(true))
-            graphic.enabled = false;
         overlay = new GameObject("Playfield warning", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(CanvasGroup));
         canvas = overlay.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -152,7 +153,7 @@ public class Warning : MonoBehaviour
 
     public void ShowFor(float seconds)
     {
-        Build();
+        Prepare();
         elapsed = 0;
         showing = true;
         group.alpha = 1;

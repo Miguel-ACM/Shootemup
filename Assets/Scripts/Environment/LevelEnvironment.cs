@@ -176,8 +176,9 @@ public sealed class LevelEnvironment : MonoBehaviour
         carried = null;
     }
 
-    // Match the live tunnel on the activation frame. The incoming camera takes over
-    // its northbound velocity and eases to rest as the dock comes into view.
+    public const float TunnelSpeed = 10.2f;
+
+    // Pin the live tile phase only when the dock camera is ready to move.
     public static float MoorTitle(float approach)
     {
         if (carried == null)
@@ -669,7 +670,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     {
         float dt = titleBackdrop ? Time.unscaledDeltaTime : Time.deltaTime;
         clock += dt;
-        travel = Mathf.Repeat(travel + dt * travelRate * (level == LevelId.Tunnel ? 10.2f : level == LevelId.City ? 1.8f : 4.4f), LoopLength);
+        travel = Mathf.Repeat(travel + dt * travelRate * (level == LevelId.Tunnel ? TunnelSpeed : level == LevelId.City ? 1.8f : 4.4f), LoopLength);
         for (int i = 0; i < sections.Count; i++)
         {
             float y = SectionY(i, travel);

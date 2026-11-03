@@ -242,7 +242,7 @@ public sealed partial class HangarHub
         return t;
     }
 
-    IEnumerator BuildConcourse()
+    void BuildRunway()
     {
         for (int side = -1; side <= 1; side += 2)
         {
@@ -250,6 +250,10 @@ public sealed partial class HangarHub
             for (int y = -7; y <= 7 + DeckExtension; y += 2)
                 Strip("Inset runway lamp", new Vector2(side * 1.3f, y), new Vector2(.055f, .32f), DockInstrument.Sea, -11);
         }
+    }
+
+    IEnumerator BuildConcourse()
+    {
         for (int i = 0; i < berths.Length; i++)
         {
             installing = interiors[i] = new Interior
@@ -263,6 +267,8 @@ public sealed partial class HangarHub
             else
             {
                 BuildRoom(i);
+                installing.Show(false);
+                yield return null;
                 room = i;
                 selection = i == (int)Dock.Fleet ? (int)MetaProgress.Ship : i == (int)Dock.Flight ? System.Array.IndexOf(modes, difficulty) : 0;
                 band = i == (int)Dock.Fleet ? System.Array.IndexOf(modes, difficulty) : 0;

@@ -40,14 +40,14 @@ public class NewGame : AMenuElement
         var group = menu.GetComponent<CanvasGroup>();
         var panel = menu.transform.parent.GetComponent<Image>();
         var shade = panel != null ? panel.color : Color.clear;
-        for (float t = 0; t < Seconds; t += Time.unscaledDeltaTime)
+        for (float elapsed = 0; elapsed < Seconds;)
         {
-            float fade = Mathf.Clamp01(t / .4f);
-            if (group != null)
-                group.alpha = 1 - fade;
-            if (panel != null)
-                panel.color = new Color(shade.r, shade.g, shade.b, shade.a * (1 - Mathf.Clamp01(t / Seconds)));
             yield return null;
+            elapsed += Time.unscaledDeltaTime;
+            if (group != null)
+                group.alpha = Mathf.SmoothStep(1, 0, elapsed / .4f);
+            if (panel != null)
+                panel.color = new Color(shade.r, shade.g, shade.b, Mathf.SmoothStep(shade.a, 0, elapsed / Seconds));
         }
         LevelEnvironment.CarryTitle();
         HangarHub.Enter(difficulty);

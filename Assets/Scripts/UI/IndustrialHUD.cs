@@ -7,6 +7,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     public Font font;
     public bool showcase;
     Shipcontroller player;
+    Transform instrumentRoot;
     Text score, chain, coins;
     WaveOrchestrer waves;
     Image[] challengeCells;
@@ -50,10 +51,6 @@ public sealed class IndustrialHUD : MonoBehaviour
 
     void Start()
     {
-        // Built while the hangar idles but kept dark: the startup flicker only begins with the run (see Update).
-        gameObject.AddComponent<BossPositionShadow>();
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
-        waves = FindAnyObjectByType<WaveOrchestrer>();
         // The legacy side-cover script accumulates offsets when the Game view resizes.
         foreach (var cover in FindObjectsByType<SideCoverController>())
             cover.enabled = false;
@@ -80,8 +77,20 @@ public sealed class IndustrialHUD : MonoBehaviour
         right.anchorMax = Vector2.one;
         right.offsetMin = new Vector2(202.5f, 0);
         right.offsetMax = Vector2.zero;
+        instrumentRoot = root.transform;
+        if (!HangarHub.Active)
+            PrepareInstruments();
+    }
+
+    public void PrepareInstruments()
+    {
+        if (scorePanel != null)
+            return;
+        gameObject.AddComponent<BossPositionShadow>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
+        waves = FindAnyObjectByType<WaveOrchestrer>();
         var frame = new GameObject("405 x 720 playfield", typeof(RectTransform));
-        frame.transform.SetParent(root.transform, false);
+        frame.transform.SetParent(instrumentRoot, false);
         var rect = frame.GetComponent<RectTransform>();
         rect.anchorMin = rect.anchorMax = new Vector2(.5f, .5f);
         rect.sizeDelta = new Vector2(405, 720);
@@ -174,8 +183,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         // Dock travel and arrival use the hangar's world-space limits.
         if (HangarHub.Active || player == null || !player.enabled)
             return;
-        // The HUD is built during the moving hangar approach. Wait until the combat
-        // camera and pilot have both been restored before measuring their playfield.
+        // Wait for the restored combat camera and pilot before measuring their playfield.
         if (!combatLimitsReady)
         {
             var camera = UnityEngine.Camera.main;

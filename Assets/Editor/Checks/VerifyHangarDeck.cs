@@ -66,6 +66,11 @@ public static class VerifyHangarDeck
         SessionState.SetBool("InspectDockLane", true);
         Run();
     }
+    public static void Arrival()
+    {
+        SessionState.SetBool("InspectDockArrival", true);
+        Run();
+    }
     public static void Outfitter()
     {
         SessionState.SetBool("InspectOutfitter", true);
@@ -203,6 +208,11 @@ public sealed class HangarDeckReview : MonoBehaviour
     IEnumerator Start()
     {
         yield return new WaitForSecondsRealtime(1);
+        if (SessionState.GetBool("InspectDockArrival", false))
+        {
+            yield return ReviewArrival();
+            yield break;
+        }
         if (SessionState.GetBool("InspectPhysicalRooms", false) || SessionState.GetBool("InspectPressureDoor", false))
             StartCoroutine(MeasurePopulation());
         if (SessionState.GetBool("InspectPhysicalRooms", false) && !SessionState.GetBool("StationArtOnly", false))
@@ -411,6 +421,10 @@ public sealed class HangarDeckReview : MonoBehaviour
         Check(!CloudTransition.Busy && Mathf.Abs(view.position.y - cameraOrigin - HangarHub.DeckExtension) < .3f, "gate reachable and camera stops at far end");
         yield return Capture("DepartureLane");
         while (HangarHub.Active || !pilot.enabled) yield return null;
+        Check(pilot.GetComponent<LoadoutHUD>().Panels.All(panel => panel != null) &&
+              FindAnyObjectByType<Warning>().ScreenRect != null &&
+              GameObject.Find("Score, multiplier and wallet") != null,
+              "flight instruments and warning display are prepared before control returns");
         var hull = ship.GetComponent<PSXShipVisual>().Model.GetComponentsInChildren<MeshRenderer>().First(r => r.enabled);
         var frameEnd = new WaitForEndOfFrame();
         do
@@ -444,6 +458,52 @@ public sealed class HangarDeckReview : MonoBehaviour
         samples.Sort();
         return samples.Count + " frames, p95 " + samples[Mathf.CeilToInt(samples.Count * .95f) - 1].ToString("F1") + " ms, max " + samples[samples.Count - 1].ToString("F1") + " ms";
     }
+    IEnumerator ReviewArrival()
+    {
+        while (!LevelEnvironment.TitleReady)
+            yield return null;
+        var landmark = GameObject.Find("Title tunnel backdrop").transform.GetChild(0);
+        GameObject aircraft = null;
+        var trace = new System.Text.StringBuilder("seconds,frame_ms,scene,tunnel_y,ship_y\n");
+        var frames = Directory.CreateDirectory(VerifyHangarDeck.Folder + "/Arrival");
+        var end = new WaitForEndOfFrame();
+        float start = Time.unscaledTime, nextCapture = 0, highestShipY = float.NegativeInfinity;
+        float previousY = float.NaN, reverse = 0;
+        bool tunnelStopped = false;
+        bool boarded = false;
+        FindAnyObjectByType<NewGame>().OnAccept();
+        do
+        {
+            yield return end;
+            var camera = UnityEngine.Camera.main;
+            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            if (scene == "L1" && aircraft == null)
+                aircraft = GameObject.FindGameObjectWithTag("Player");
+            float elapsed = Time.unscaledTime - start;
+            float shipY = aircraft == null ? float.NaN : aircraft.transform.position.y - camera.transform.position.y;
+            float tileY = landmark.position.y - camera.transform.position.y;
+            trace.AppendLine(FormattableString.Invariant($"{elapsed:F4},{Time.unscaledDeltaTime * 1000:F2},{scene},{tileY:F4},{shipY:F4}"));
+            if (elapsed >= nextCapture)
+            {
+                ScreenCapture.CaptureScreenshot(Path.Combine(frames.FullName, Time.frameCount.ToString("D6") + ".png"));
+                nextCapture = elapsed + .24f;
+            }
+            if (aircraft != null)
+            {
+                boarded = true;
+                if (shipY < -camera.orthographicSize && tileY == previousY)
+                    tunnelStopped = true;
+                reverse = Mathf.Max(reverse, highestShipY - shipY);
+                highestShipY = Mathf.Max(highestShipY, shipY);
+            }
+            previousY = tileY;
+        } while (!boarded || HangarHub.HoldingShip || CloudTransition.Busy);
+        File.WriteAllText(Path.Combine(frames.FullName, "trace.csv"), trace.ToString());
+        Check(reverse < .04f, $"ship advances continuously into its berth (reversal {reverse:F3})");
+        Check(!tunnelStopped, "live tunnel keeps moving across scene activation");
+        if (error == null) File.WriteAllText(VerifyHangarDeck.Folder + "/Result.txt", "PASS");
+    }
+
     IEnumerator MeasurePopulation()
     {
         HangarHub deck;

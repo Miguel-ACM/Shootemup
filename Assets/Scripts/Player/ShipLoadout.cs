@@ -25,7 +25,7 @@ public sealed class ShipLoadout : MonoBehaviour
             if (w.Slot != AWeapon.WeaponInput.both)
                 Weapons[w.Slot == AWeapon.WeaponInput.primary ? 0 : 1] = w;
         ShipFrames.ApplyWeapons(this, ShipFrames.Current);
-        gameObject.AddComponent<LoadoutHUD>();
+        gameObject.AddComponent<LoadoutHUD>().enabled = !HangarHub.Active;
     }
 
     public void ResetSelection()
