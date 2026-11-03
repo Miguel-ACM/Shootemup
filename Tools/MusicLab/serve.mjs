@@ -1,6 +1,8 @@
 import { createServer } from 'node:http';
 import { createReadStream } from 'node:fs';
-import { readdir, stat } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rename, stat } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -19,6 +21,34 @@ for (const { id } of tracks) {
     routes.set('/cues/' + id, [path.join(resources, 'MusicAnalysis', id + '.json'), 'application/json']);
 }
 
+// Render only on first audition. atempo keeps pitch intact; the extra source tail supplies the crossfade.
+const render = promisify(execFile);
+const jobs = new Map();
+async function fastFile(id) {
+    const original = path.join(resources, 'Music', id + '.mp3');
+    const cue = JSON.parse(await readFile(path.join(resources, 'MusicAnalysis', id + '.json'), 'utf8'));
+    if (!cue.adaptive) throw new Error('Linear cue');
+    const { start, end } = cue.sections.peak;
+    const dir = path.resolve(lab, '../../Build/MusicLabCache');
+    const stamp = Math.round((await stat(original)).mtimeMs);
+    const file = path.join(dir, [id, stamp, start, end, '1.06'].join('-') + '.mp3');
+    if (!jobs.has(file)) {
+        const job = (async () => {
+            try { await stat(file); return file; } catch {}
+            await mkdir(dir, { recursive: true });
+            const tmp = file + '.' + process.pid + '.mp3';
+            await render('ffmpeg', ['-nostdin','-loglevel','error','-y','-ss',String(start),'-i',original,
+                '-af','atrim=duration=' + (end-start+2) + ',atempo=1.06','-vn','-c:a','libmp3lame','-q:a','2',tmp],
+                { windowsHide: true, timeout: 90000 });
+            await rename(tmp, file);
+            return file;
+        })();
+        jobs.set(file, job);
+        job.catch(() => jobs.delete(file));
+    }
+    return jobs.get(file);
+}
+
 const port = Number(process.argv[2] ?? 8766);
 const server = createServer(async (req, res) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') {
@@ -30,7 +60,11 @@ const server = createServer(async (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' }).end(JSON.stringify(tracks));
         return;
     }
-    const route = routes.get(url);
+    let route = routes.get(url);
+    if (url.startsWith('/fast/') && tracks.some(t => t.id === url.slice(6))) {
+        try { route = [await fastFile(url.slice(6)), 'audio/mpeg']; }
+        catch { res.writeHead(503).end('Fast audition requires FFmpeg.'); return; }
+    }
     if (!route) {
         res.writeHead(404).end();
         return;

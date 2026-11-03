@@ -1,147 +1,133 @@
-// All cue coordinates are seconds in the unmodified recording. The audio clock owns cuts.
-export const mix = { rate: 1.06, bass: 4.5, hz: 145, releaseBeats: 8 };
-const edge = .008;
-const lead = .045;
+// Cue coordinates are seconds in the original recording. The fast audition is already time-stretched.
+const bassDb = 4.5, shelfHz = 145, lead = .045;
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
-
-function position(deck, at) {
-    const dt = Math.max(0, at - deck.at);
-    const t = Math.min(dt, deck.ramp);
-    return deck.offset + dt * deck.to + (deck.from - deck.to) * (t - (deck.ramp ? t*t/(2*deck.ramp) : 0));
-}
-
-function clockAt(deck, offset) {
-    const distance = Math.max(0, offset - deck.offset);
-    const inRamp = deck.ramp * (deck.from + deck.to) / 2;
-    if (distance >= inRamp) return deck.at + deck.ramp + (distance - inRamp) / deck.to;
-    const slope = (deck.to - deck.from) / deck.ramp;
-    return deck.at + 2 * distance / (deck.from + Math.sqrt(deck.from * deck.from + 2*slope*distance));
-}
-
-function fraction(deck, now) {
-    return deck.ramp ? clamp((now - deck.at) / deck.ramp, 0, 1) : 1;
+const position = (d, at) => d.offset + Math.max(0, at - d.at)*d.speed;
+const clockAt = (d, offset) => d.at + (offset - d.offset)/d.speed;
+const boss = part => part === 'peak' || part === 'fast';
+function bassAt(d, at) {
+    const t = d.ramp ? clamp((at - d.at)/d.ramp, 0, 1) : 1;
+    return d.from + (d.to - d.from)*t;
 }
 
 export class Transport {
     constructor(ctx, buffer, map, volume) {
-        this.ctx = ctx;
-        this.buffer = buffer;
-        this.map = map;
+        Object.assign(this, { ctx, buffer, map, playing:false, ended:false });
+        this.voices = new Set();
         this.master = ctx.createGain();
         this.master.gain.value = volume;
         this.master.connect(ctx.destination);
-        this.playing = false;
-        this.ended = false;
     }
     range(part) {
-        return this.map.adaptive === false ? { start: 0, end: this.map.duration } : this.map.sections[part];
+        return this.map.adaptive === false ? { start:0, end:this.map.duration } :
+            this.map.sections[part === 'fast' ? 'peak' : part];
     }
-    deck(part, at, offset, from, bassFrom) {
-        const source = this.ctx.createBufferSource();
-        const shelf = this.ctx.createBiquadFilter();
-        const gain = this.ctx.createGain();
-        source.buffer = this.buffer;
+    deck(part, at, offset, from, fadeIn) {
+        const source = this.ctx.createBufferSource(), shelf = this.ctx.createBiquadFilter(), gain = this.ctx.createGain();
+        const speed = part === 'fast' ? 1.06 : 1;
+        const start = part === 'fast' ? (offset - this.range(part).start)/speed : offset;
+        source.buffer = part === 'fast' ? this.fastBuffer : this.buffer;
         shelf.type = 'lowshelf';
-        shelf.frequency.value = mix.hz;
+        shelf.frequency.value = shelfHz;
         source.connect(shelf).connect(gain).connect(this.master);
-        const to = part === 'peak' ? mix.rate : 1;
-        const bassTo = part === 'peak' ? mix.bass : 0;
-        const beats = part === 'peak' ? 1 : mix.releaseBeats;
-        const ramp = (from === to && bassFrom === bassTo) ? 0 :
-            Math.min(beats * 60/this.map.bpm, (this.range(part).end - offset) / Math.max(to, from));
-        source.playbackRate.setValueAtTime(from, at);
-        shelf.gain.setValueAtTime(bassFrom, at);
-        if (ramp) {
-            source.playbackRate.linearRampToValueAtTime(to, at + ramp);
-            shelf.gain.linearRampToValueAtTime(bassTo, at + ramp);
-        }
+        const to = boss(part) ? bassDb : 0;
+        const ramp = from === to ? 0 : Math.min((to > from ? 1 : 8)*60/this.map.bpm, (this.range(part).end-offset)/speed);
+        shelf.gain.setValueAtTime(from, at);
+        if (ramp) shelf.gain.linearRampToValueAtTime(to, at+ramp);
         gain.gain.setValueAtTime(0, at);
-        gain.gain.linearRampToValueAtTime(1, at + edge);
-        source.onended = () => { source.disconnect(); shelf.disconnect(); gain.disconnect(); this.tick(); };
-        source.start(at, offset);
-        return { part, at, offset, from, to, bassFrom, bassTo, ramp, source, gain };
+        gain.gain.linearRampToValueAtTime(1, at+fadeIn);
+        const deck = { part, at, offset, speed, from, to, ramp, source, shelf, gain,
+            availableUntil:at + source.buffer.duration - start };
+        this.voices.add(deck);
+        source.onended = () => { this.disconnect(deck); this.tick(); };
+        source.start(at, start);
+        return deck;
     }
-    start() {
+    disconnect(d) {
+        d.source.disconnect(); d.shelf.disconnect(); d.gain.disconnect();
+        this.voices.delete(d);
+        if (this.retired && !this.voices.size) this.master.disconnect();
+    }
+    discard(d) {
+        d.source.onended = null;
+        d.source.stop();
+        this.disconnect(d);
+    }
+    disposeDecks() {
+        for (const d of this.voices) this.discard(d);
+        this.current = this.next = this.cut = this.requested = this.afterCut = null;
+    }
+    close() { this.disposeDecks(); this.master.disconnect(); this.playing = false; }
+    retire() { this.retired = true; if (!this.voices.size) this.master.disconnect(); }
+    start(at = this.ctx.currentTime + lead, fadeIn = .04) {
         this.disposeDecks();
         this.ended = false;
         this.playing = true;
-        this.current = this.deck('intro', this.ctx.currentTime + lead, 0, 1, 0);
+        this.current = this.deck('intro', at, 0, 0, fadeIn);
         this.plan();
     }
-    disposeDecks() {
-        for (const deck of [this.current, this.next]) {
-            if (!deck) continue;
-            deck.source.onended = null;
-            deck.source.stop();
-            deck.source.disconnect();
-            deck.gain.disconnect();
-        }
-        this.current = this.next = null;
-        this.cut = null;
-        this.requested = null;
-    }
-    close() { this.disposeDecks(); this.master.disconnect(); this.playing = false; }
-    // Place the incoming start, outgoing fade and outgoing stop on one exact audio-clock time.
-    plan(request = null) {
+    plan(request = null, exit = false) {
         const d = this.current;
-        if (!d) return;
-        if (this.next) {
-            this.next.source.onended = null;
-            this.next.source.stop();
-            this.next.source.disconnect();
-            this.next.gain.disconnect();
-            this.next = null;
-        }
-        if (this.cut != null) d.gain.gain.cancelScheduledValues(this.cut - edge - .000001);
-        const end = Math.min(this.range(d.part).end, this.buffer.duration);
+        if (this.next) this.discard(this.next);
+        this.next = null;
+        if (this.cut != null) d.gain.gain.cancelScheduledValues(this.fadeAt - .000001);
+        const end = Math.min(this.range(d.part).end, this.map.duration);
         const pos = position(d, this.ctx.currentTime + lead);
-        const boundary = request ? this.map.boundaries.find(b => b > pos && b <= end) ?? end : end;
-        this.cut = clockAt(d, boundary);
+        this.cutOffset = request || exit ? this.map.boundaries.find(b => b > pos && b <= end) ?? end : end;
+        this.cut = clockAt(d, this.cutOffset);
         this.requested = request;
-        this.cutOffset = boundary;
-        const nextPart = request ?? (this.map.adaptive === false || d.part === 'outro' ? null : d.part === 'intro' ? 'body' : d.part);
-        const t = fraction(d, this.cut);
-        if (nextPart) this.next = this.deck(nextPart, this.cut, this.range(nextPart).start,
-            d.from + t*(d.to-d.from), d.bassFrom + t*(d.bassTo-d.bassFrom));
-        d.gain.gain.setValueAtTime(1, this.cut - edge);
-        d.gain.gain.linearRampToValueAtTime(0, this.cut);
-        d.source.stop(this.cut);
+        const part = exit ? null : request ?? (this.map.adaptive === false || d.part === 'outro' ? null : d.part === 'intro' ? 'body' : d.part);
+        const fade = clamp(2*60/this.map.bpm, .48, 1);
+        // An outgoing deck plays beyond the cut while the incoming downbeat lands exactly on it.
+        // At the physical end of a recording, use its final tail for the fade instead.
+        const tail = Math.max(0, Math.min(fade, d.availableUntil - this.cut));
+        const overlap = (part || exit) && tail >= .04 ? tail : 0;
+        this.fadeAt = overlap ? this.cut : Math.max(d.at+.05, this.cut-fade);
+        const stop = this.cut + overlap;
+        d.gain.gain.setValueAtTime(1, this.fadeAt);
+        d.gain.gain.linearRampToValueAtTime(0, stop);
+        d.source.stop(stop);
+        if (part) this.next = this.deck(part, this.cut, this.range(part).start, bassAt(d,this.cut), overlap || fade);
+        return { at:this.cut, fade:overlap || fade };
     }
     tick() {
         if (!this.current || this.ctx.currentTime < this.cut) return;
         this.current = this.next;
-        this.next = null;
-        this.cut = null;
-        this.requested = null;
+        this.next = this.cut = this.requested = null;
         if (this.current) this.plan();
         else { this.ended = true; this.playing = false; }
     }
     request(part) {
         this.tick();
         if (this.map.adaptive === false || !this.current) return;
-        // If the next downbeat is already in the device's output buffer, let it land.
-        if (this.cut - this.ctx.currentTime < lead) return;
+        if (this.cut - this.ctx.currentTime < lead) {
+            this.afterCut = part;
+            return;
+        }
         this.plan(part === this.current.part ? null : part);
     }
     previewChange() {
         this.tick();
         if (!this.requested) return;
-        const offset = this.cutOffset - 2 * 60 / this.map.bpm;
-        if (offset <= position(this.current, this.ctx.currentTime + lead)) return;
-        const { part, from, to, bassFrom, bassTo } = this.current;
-        const f = fraction(this.current, clockAt(this.current, offset));
+        const offset = this.cutOffset - 2*60/this.map.bpm;
+        if (offset <= position(this.current,this.ctx.currentTime + lead)) return;
+        const { part } = this.current;
+        const bass = bassAt(this.current,clockAt(this.current,offset));
         const request = this.requested;
         this.disposeDecks();
-        this.current = this.deck(part, this.ctx.currentTime + lead, offset, from + (to-from)*f, bassFrom + (bassTo-bassFrom)*f);
+        this.current = this.deck(part,this.ctx.currentTime+lead,offset,bass,.04);
         this.plan(request);
     }
     state() {
         this.tick();
+        if (this.afterCut && this.current && this.cut - this.ctx.currentTime >= lead) {
+            const part = this.afterCut;
+            this.afterCut = null;
+            this.request(part);
+        }
         const d = this.current;
-        if (!d) return { part: this.ended && this.map.adaptive !== false ? 'outro' : 'intro',
-            pos: this.ended ? this.buffer.duration : 0, rate: 1, bass: 0 };
-        const t = fraction(d, this.ctx.currentTime);
-        return { part: d.part, pos: position(d, this.ctx.currentTime), rate: d.from + t*(d.to-d.from),
-            bass: d.bassFrom + t*(d.bassTo-d.bassFrom), next: this.requested, remaining: this.cut - this.ctx.currentTime };
+        if (!d) return { part:this.ended && this.map.adaptive !== false ? 'outro' : 'intro',
+            pos:this.ended ? this.map.duration : 0, rate:1, bass:0 };
+        return { part:d.part, pos:position(d,this.ctx.currentTime), rate:d.speed,
+            bass:bassAt(d,this.ctx.currentTime), next:this.requested, remaining:this.cut-this.ctx.currentTime };
     }
 }

@@ -2,7 +2,9 @@
 
 From the project root, run `node Tools/MusicLab/serve.mjs` and open [Music Lab](http://127.0.0.1:8766/). The server reads the game's MP3s and cue sheets directly. An optional numeric argument selects another local port.
 
-Choose a track and press Play. Intro runs into Flight. Select Boss or Outro to queue the next change at a detected progression ending. **Preview the change** moves the audition playhead to two beats before that cut. Boss repeats its high-energy passage with a 6% playback-rate lift and a 4.5 dB low shelf at 145 Hz. The outro brings both back to baseline over eight beats. The short Stage Complete cue plays through once.
+Choose a track and press Play. Intro runs into Flight. Select Boss or Outro to queue a crossfade at a detected progression ending. **Preview the change** moves the audition playhead to two beats before that cut. Boss repeats a long high-energy passage at its original tempo with a 4.5 dB low shelf at 145 Hz. The outro releases the bass over eight beats. The short Stage Complete cue plays through once.
+
+**Boss (fast)** is an audition-only 6% tempo lift at the original pitch. On first use the server renders that passage with FFmpeg and caches it in the ignored build folder. Both boss versions crossfade into the original outro with no speed ramp.
 
 ## Cue analysis
 

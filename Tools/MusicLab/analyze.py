@@ -316,26 +316,39 @@ def section_cues(times, starts, changes, energies, onset, duration):
                     if 8 <= duration - times[i] <= min(38, duration * .30)]
     outro = max(outro_options, key=lambda i: boundary_strength(i) + .45 * (drive[i-1] - drive[i]),
                 default=count - 1)
-    # Choose the most active *sustained passage* (16–32 bars when possible). Scoring a
-    # window of full progressions keeps a single fill or transient outlier from winning.
+    # Locate the high-energy anchor first. Score full progressions so a single fill
+    # cannot win, then build a longer boss performance around the whole anchor.
     bar_length = np.median(np.diff(starts))
     available = times[outro] - times[intro]
-    min_length = min(15.5 * bar_length, available * .45)
-    max_length = max(32.5 * bar_length, min_length)
     windows = []
     for start in range(intro, outro):
         for end in range(start + 1, outro + 1):
             length = times[end] - times[start]
-            if min_length <= length <= max_length:
-                phrase_drive = drive[start:end]
-                sustained = .80 * np.average(phrase_drive, weights=np.diff(times[start:end+1]))
-                sustained += .20 * np.percentile(phrase_drive, 25)
-                windows.append((sustained, length, start, end))
-    peak, peak_end = intro, outro
-    if windows:
-        best = max(w[0] for w in windows)
-        # Nearly indistinguishable peaks favor more complete musical material.
-        _, _, peak, peak_end = max((w for w in windows if w[0] >= best - .025), key=lambda w: (w[1], w[0]))
+            phrase_drive = drive[start:end]
+            sustained = .80 * np.average(phrase_drive, weights=np.diff(times[start:end+1]))
+            sustained += .20 * np.percentile(phrase_drive, 25)
+            windows.append((sustained, length, start, end))
+
+    def best_span(candidates):
+        if not candidates:
+            return intro, outro
+        best = max(row[0] for row in candidates)
+        # Near ties favor more complete musical material.
+        _, _, start, end = max((row for row in candidates if row[0] >= best - .025),
+                               key=lambda row: (row[1], row[0]))
+        return start, end
+
+    anchor_min = min(15.5 * bar_length, available * .45)
+    anchor, anchor_end = best_span([w for w in windows if anchor_min <= w[1] <= 32.5 * bar_length])
+    # Aim for 40–64 bars and at least one minute, fitting short tracks between their
+    # bookends. The initial progression must also have enough drive for the boss arrival.
+    anchor_length = times[anchor_end] - times[anchor]
+    boss_min = min(available, max(60, 39.5 * bar_length, anchor_length * 1.5))
+    boss_max = max(boss_min, 64.5 * bar_length)
+    candidates = [(.78 * sustained + .22 * drive[start], length, start, end)
+                  for sustained, length, start, end in windows
+                  if boss_min <= length <= boss_max and start <= anchor and end >= anchor_end]
+    peak, peak_end = best_span(candidates)
     spans = dict(intro=(0, intro), body=(intro, outro), peak=(peak, peak_end), outro=(outro, count))
     return {name: {"start": float(times[a]), "end": float(times[b])} for name, (a, b) in spans.items()}
 

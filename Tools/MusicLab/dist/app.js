@@ -1,11 +1,12 @@
 import { Transport } from './transport.js';
 
 const $ = id => document.getElementById(id);
-const parts = { intro: ['Intro','↗'], body: ['Flight','≋'], peak: ['Boss','▲'], outro: ['Outro','↘'] };
+const parts = { intro: ['Intro','↗'], body: ['Flight','≋'], peak: ['Boss','▲'], fast: ['Boss (fast)','▲▲'], outro: ['Outro','↘'] };
 const fmt = s => Number.isFinite(s) ? Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0') : '—';
 const set = (node, value) => { if (node.textContent !== value) node.textContent = value; };
 const volume = () => Number($('volume').value) / 100 * .65;
 let tracks = [], track, map, engine, context, controller, loadingAudio = false, message = '', chordKey = '';
+let fastLoad, cueRequest = 0, selection, handoff;
 const padNodes = {};
 
 async function get(url, signal) {
@@ -41,25 +42,76 @@ function library() {
     $('track-picker').onchange = e => select(tracks.find(t => t.id === e.target.value));
 }
 
-async function select(item) {
-    if (track === item && map) return;
-    const keepPlaying = engine?.playing || loadingAudio;
-    controller?.abort();
-    controller = new AbortController();
-    const signal = controller.signal;
-    engine?.close();
-    engine = map = null;
-    loadingAudio = false;
-    chordKey = '';
+function showTrack(item) {
     track = item;
-    message = 'Loading cue map…';
+    chordKey = '';
     $('title').textContent = item.title;
     $('track-no').textContent = (item.district ? 'DISTRICT' : 'RECORDING') + ' / ' + String(tracks.indexOf(item)+1).padStart(2,'0');
     $('track-picker').value = item.id;
     for (const b of document.querySelectorAll('.track')) b.setAttribute('aria-current', b.dataset.id === item.id);
+}
+
+function finishHandoff() {
+    if (!handoff || context.currentTime < handoff.at) return;
+    // Its last source owns the outgoing tail and disconnects itself when the fade completes.
+    engine.retire();
+    controller?.abort();
+    controller = new AbortController();
+    selection = null;
+    engine = handoff.engine;
+    map = handoff.map;
+    fastLoad = null;
+    showTrack(handoff.item);
+    handoff = null;
+    message = '';
+}
+
+function cancelSelection() {
+    finishHandoff();
+    selection?.abort();
+    selection = null;
+    if (!handoff) return;
+    handoff.engine.close();
+    handoff = null;
+    if (engine.current) engine.plan();
+}
+
+async function select(item) {
+    cancelSelection();
+    message = '';
+    if (track === item && map) return;
+    const switching = !!engine?.playing;
+    const keepPlaying = switching || loadingAudio;
+    if (switching) selection = new AbortController();
+    else {
+        controller?.abort();
+        controller = new AbortController();
+    }
+    const signal = (switching ? selection : controller).signal;
+    cueRequest++;
+    if (!switching) {
+        engine?.close();
+        engine = map = fastLoad = null;
+        loadingAudio = false;
+        showTrack(item);
+    }
+    message = switching ? 'Opening ' + item.title + '…' : 'Loading cue map…';
     try {
         const value = await (await get('/cues/' + item.id, signal)).json();
         if (signal.aborted) return;
+        if (switching) {
+            const data = await (await get('/audio/' + item.id, signal)).arrayBuffer();
+            if (signal.aborted) return;
+            const audio = await context.decodeAudioData(data);
+            if (signal.aborted) return;
+            engine.tick();
+            const cut = engine.current ? engine.plan(null,true) : { at:context.currentTime+.045, fade:.1 };
+            const incoming = new Transport(context,audio,value,volume());
+            incoming.start(cut.at,cut.fade);
+            handoff = { ...cut, engine:incoming, map:value, item };
+            message = item.title + ' queued · next progression ending.';
+            return;
+        }
         map = value;
         message = '';
         $('bpm').textContent = map.bpm ? Number(map.bpm.toFixed(1)) : '—';
@@ -110,9 +162,30 @@ for (const [part,[label,icon]] of Object.entries(parts)) {
     b.firstChild.textContent = icon;
     b.children[1].textContent = label;
     b.onclick = async () => {
-        const chosen = track;
+        cancelSelection();
+        const chosen = track, ticket = ++cueRequest;
+        message = '';
         if (!engine?.playing) await play();
-        if (chosen === track) engine?.request(part);
+        if (chosen !== track || !engine || ticket !== cueRequest) return;
+        if (part === 'fast' && !engine.fastBuffer) {
+            const signal = controller.signal;
+            message = 'Preparing pitch-preserved fast mix…';
+            try {
+                fastLoad ??= get('/fast/' + track.id, signal).then(r => r.arrayBuffer()).then(data => context.decodeAudioData(data));
+                const buffer = await fastLoad;
+                if (signal.aborted) return;
+                engine.fastBuffer = buffer;
+                if (ticket !== cueRequest) return;
+                message = '';
+            } catch {
+                if (!signal.aborted) {
+                    fastLoad = null;
+                    if (ticket === cueRequest) message = 'Fast mix unavailable. Check FFmpeg, then try again.';
+                }
+                return;
+            }
+        }
+        engine.request(part);
     };
     padNodes[part] = b;
     $('pads').append(b);
@@ -158,8 +231,8 @@ function waveform(s) {
     g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,w,h);
     if (!map) return;
     const x = t => w*t/map.duration;
-    const rect = map.sections[s.part];
-    const boss = s.part === 'peak';
+    const rect = map.sections[s.part === 'fast' ? 'peak' : s.part];
+    const boss = s.part === 'peak' || s.part === 'fast';
     g.fillStyle = boss ? '#34271e' : '#1a2820';
     if (rect) g.fillRect(x(rect.start), 10, x(rect.end-rect.start), h-27);
     g.fillStyle = '#33413c';
@@ -183,15 +256,16 @@ function waveform(s) {
 }
 
 function draw() {
+    finishHandoff();
     const s = engine?.state() ?? { part:'intro',pos:0,rate:1,bass:0 };
     const moving = !!engine?.playing;
     $('play').disabled = !map || loadingAudio;
     const label = moving ? 'Ⅱ  Pause' : engine?.ended ? '↺  Replay' : '▶  Play';
     set($('play'), label);
     set($('clock'), fmt(s.pos) + ' / ' + fmt(map?.duration));
-    if (!map) set($('bpm'), '—');
+    set($('bpm'), map?.bpm ? String(Number(map.bpm.toFixed(1))) : '—');
     for (const [part,b] of Object.entries(padNodes)) {
-        const range = map?.sections[part];
+        const range = map?.sections[part === 'fast' ? 'peak' : part];
         b.disabled = !map || loadingAudio || map.adaptive === false;
         b.setAttribute('aria-pressed', String(s.part === part));
         b.classList.toggle('queued', s.next === part);
@@ -200,7 +274,8 @@ function draw() {
     set($('status'), message || (s.next ? parts[s.next][0] + ' queued for the next progression ending.' :
         engine?.ended ? 'Recording complete.' : map?.adaptive === false ? 'Short cue · plays straight through.' :
         !engine ? 'Start on Intro. Choose a cue to queue a change.' : !moving ? 'Paused.' :
-        s.part === 'peak' ? 'Boss section looping.' : s.part === 'body' ? 'Flight section looping.' : s.part === 'outro' ? 'Playing out.' : 'Flight follows the intro.'));
+        s.part === 'fast' ? 'Fast boss loop · original pitch.' : s.part === 'peak' ? 'Boss loop · original tempo.' :
+        s.part === 'body' ? 'Flight section looping.' : s.part === 'outro' ? 'Playing out.' : 'Flight follows the intro.'));
     $('preview').hidden = !s.next || !moving || s.remaining < 2*60/(map?.bpm || 120) + .1;
     set($('rate'), s.rate.toFixed(2) + '×');
     set($('bass'), (s.bass > .05 ? '+' + s.bass.toFixed(1) : '0') + ' dB');
