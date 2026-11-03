@@ -50,19 +50,15 @@ public sealed class PSXObjectVisual : MonoBehaviour
         home = model.localPosition;
         homeScale = model.localScale;
         phase = (transform.position.x + transform.position.y) * .73f;
-        if (chooseItem && itemMeshes != null && itemMeshes.Length > 0)
+        item = GetComponent<AItem>();
+        if (chooseItem)
         {
-            var item = GetComponent<AItem>();
-            string kind = itemKindOverride ?? (item != null ? item.GetType().Name : "money");
-            int index = Array.IndexOf(IndustrialMeshFactory.ItemKinds, kind);
-            // A Terra model replaces even the original item meshes; it carries its own palette.
-            if (index >= 0 && IndustrialMeshFactory.TerraModel("Item" + kind) == null)
-                model.GetComponent<MeshFilter>().sharedMesh = itemMeshes[index];
-            else
-            {
-                model.GetComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.ExpansionItem(kind);
-                modelRenderer.sharedMaterial = EverydayItemMaterials.For(kind);
-            }
+            string kind = string.IsNullOrEmpty(itemKindOverride)
+                ? (item != null ? item.GetType().Name : "money")
+                : itemKindOverride;
+            bool baked=GalleryShelf.TryGet(kind,out var exhibit);
+            model.GetComponent<MeshFilter>().sharedMesh = baked ? exhibit.mesh : IndustrialMeshFactory.ExpansionItem(kind);
+            modelRenderer.sharedMaterial = baked ? exhibit.paint : EverydayItemMaterials.For(kind);
         }
         if (sourceSprite != null)
             sourceSprite.enabled = false;
@@ -75,7 +71,6 @@ public sealed class PSXObjectVisual : MonoBehaviour
             state.wrapMode = WrapMode.Loop;
             state.time = UnityEngine.Random.Range(0f, state.length);
         }
-        item = GetComponent<AItem>();
         pickup = GetComponent<APickable>();
         companion = GetComponent<ACompanion>() != null;
         enemyFlight = GetComponent<AEnemy>() != null;
