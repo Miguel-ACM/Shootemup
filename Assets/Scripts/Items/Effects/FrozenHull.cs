@@ -28,7 +28,7 @@ public sealed class FrozenHull : MonoBehaviour
         {
             Clear();
             next = Time.time + .6f;
-            ItemSound.Play("shatter", .2f);
+            ItemSound.Play("shatter", .1f);
             ItemSpark.Emit(transform.position, new Color(.5f, .8f, .95f), 7, .22f, false, "needle");
             for (int i = 0; i < 5; i++)
             {
@@ -60,7 +60,7 @@ public sealed class FrozenHull : MonoBehaviour
             crystals[i].enabled = true;
         }
         if (Frost == 3)
-            ItemSound.Play("frost", .16f);
+            ItemSound.Play("frost", .08f);
         return damage;
     }
 
