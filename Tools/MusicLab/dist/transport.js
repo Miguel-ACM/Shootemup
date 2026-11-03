@@ -1,5 +1,5 @@
 // Cue coordinates are seconds in the original recording. The fast audition is already time-stretched.
-const bassDb = 4.5, shelfHz = 145, lead = .045;
+const bassDb = 4.5, shelfHz = 145, lead = .045, maxWait = 10;
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const position = (d, at) => d.offset + Math.max(0, at - d.at)*d.speed;
 const clockAt = (d, offset) => d.at + (offset - d.offset)/d.speed;
@@ -27,6 +27,20 @@ function openingChord(chords, { start, end }) {
         if (name && name !== 'N') return name;
     }
     return null;
+}
+
+function transitionPoint(map, start, end, earliest, deadline, target) {
+    const limit = Math.min(end,Math.max(earliest,deadline));
+    const eligible = t => t > start && t >= earliest && t <= limit;
+    const chord = target && map.chords?.find(c => eligible(c.time) && c.name === target);
+    if (chord) return { offset:chord.time, label:chord.name };
+    const phrase = map.boundaries?.find(eligible);
+    if (phrase !== undefined) return { offset:phrase, label:'progression end' };
+    if (end <= limit) return { offset:end, label:'section end' };
+    const bar = map.downbeats?.findLast(eligible);
+    if (bar !== undefined) return { offset:bar, label:'bar line' };
+    const beat = map.beats?.findLast(eligible);
+    return { offset:beat ?? limit, label:beat === undefined ? 'time limit' : 'beat' };
 }
 
 export class Transport {
@@ -122,17 +136,22 @@ export class Transport {
         this.current = this.deck(part, at, pos, bass, .012);
         this.plan();
     }
-    plan(request = null, incoming = null) {
+    plan(request = null, incoming = null, requestedAt = this.ctx.currentTime, point = null) {
         const d = this.current;
         if (this.next) this.discard(this.next);
         this.next = null;
         if (this.cut != null) d.gain.gain.cancelScheduledValues(this.fadeAt - .000001);
         const end = Math.min(d.end, this.map.duration);
-        const pos = position(d, this.ctx.currentTime + lead);
-        const dest = incoming ?? this;
-        const target = request || incoming ? openingChord(dest.map.chords, dest.range(incoming ? 'intro' : request)) : null;
-        this.match = target ? this.map.chords?.find(c => c.time > d.offset && c.time >= pos && c.time <= end && c.name === target) : null;
-        this.cutOffset = this.match?.time ?? end;
+        if (!point && (request || incoming)) {
+            const dest = incoming ?? this;
+            const target = openingChord(dest.map.chords, dest.range(incoming ? 'intro' : request));
+            const deadline = d.offset + (requestedAt + maxWait - d.at)*d.speed;
+            point = transitionPoint(this.map,d.offset,end,position(d,this.ctx.currentTime+lead),deadline,target);
+        }
+        point ??= {offset:end};
+        this.requestedAt = requestedAt;
+        this.cutLabel = point.label;
+        this.cutOffset = point.offset;
         this.cut = clockAt(d, this.cutOffset);
         // Only the incoming deck owns the downbeat at the cut, including on a boss loop.
         if (d.kickLevel) {
@@ -155,7 +174,7 @@ export class Transport {
         d.gain.gain.linearRampToValueAtTime(0, stop);
         d.source.stop(stop);
         if (part) this.next = this.deck(part, this.cut, this.range(part).start, bassAt(d,this.cut), overlap || fade);
-        return { at:this.cut, fade:overlap || fade, match:this.match, offset:this.cutOffset };
+        return { at:this.cut, fade:overlap || fade, label:this.cutLabel, offset:this.cutOffset };
     }
     tick() {
         if (!this.current || this.ctx.currentTime < this.cut) return;
@@ -167,14 +186,14 @@ export class Transport {
         }
         else { this.ended = true; this.playing = false; }
     }
-    request(part) {
+    request(part, requestedAt = this.ctx.currentTime) {
         this.tick();
         if (this.map.adaptive === false || !this.current) return;
-        if (this.cut - this.ctx.currentTime < lead) {
-            this.afterCut = part;
+        if (this.next && this.cut - this.ctx.currentTime < lead) {
+            this.afterCut = {part, requestedAt};
             return;
         }
-        this.plan(part === this.current.part ? null : part);
+        this.plan(part === this.current.part ? null : part,null,requestedAt);
     }
     updateSections() {
         this.tick();
@@ -185,8 +204,8 @@ export class Transport {
         const pos = position(d, this.ctx.currentTime + lead);
         if (pos >= start && pos < end) {
             d.end = end;
-            this.plan(this.requested);
-        } else this.plan(this.requested ?? d.part);
+            this.plan(this.requested,null,this.requestedAt);
+        } else this.plan(this.requested ?? d.part,null,this.requested ? this.requestedAt : this.ctx.currentTime);
     }
     auditionEnding(selected) {
         const part = selected === 'peak' && this.current?.part === 'fast' ? 'fast' : selected;
@@ -204,24 +223,27 @@ export class Transport {
         const offset = this.cutOffset - 2*60/this.map.bpm;
         if (offset <= position(this.current,this.ctx.currentTime + lead)) return;
         const { part, end } = this.current;
-        const bass = bassAt(this.current,clockAt(this.current,offset));
+        const oldClock = clockAt(this.current,offset), newClock = this.ctx.currentTime+lead;
+        const bass = bassAt(this.current,oldClock);
         const request = this.requested;
+        const point = {offset:this.cutOffset, label:this.cutLabel};
+        const requestedAt = this.requestedAt + (newClock-oldClock);
         this.disposeDecks();
-        this.current = this.deck(part,this.ctx.currentTime+lead,offset,bass,.04,end);
-        this.plan(request);
+        this.current = this.deck(part,newClock,offset,bass,.04,end);
+        this.plan(request,null,requestedAt,point);
     }
     state() {
         this.tick();
         if (this.afterCut && this.current && this.cut - this.ctx.currentTime >= lead) {
-            const part = this.afterCut;
+            const {part,requestedAt} = this.afterCut;
             this.afterCut = null;
-            this.request(part);
+            this.request(part,requestedAt);
         }
         const d = this.current;
         if (!d) return { part:this.ended && this.map.adaptive !== false ? 'outro' : 'intro',
             pos:this.ended ? this.cutOffset : this.range('intro').start, rate:1, bass:0 };
         return { part:d.part, pos:position(d,this.ctx.currentTime), rate:d.speed,
-            bass:bassAt(d,this.ctx.currentTime), next:this.requested, match:this.match, offset:this.cutOffset,
+            bass:bassAt(d,this.ctx.currentTime), next:this.requested, label:this.cutLabel, offset:this.cutOffset,
             remaining:this.cut-this.ctx.currentTime };
     }
 }

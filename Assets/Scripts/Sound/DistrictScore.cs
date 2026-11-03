@@ -7,7 +7,7 @@ public sealed class DistrictScore : MonoBehaviour
     [Serializable] public class Span { public float start, end; }
     [Serializable] public class Chord { public float time; public string name; }
     [Serializable] public class Sections { public Span intro, body, peak, outro; }
-    [Serializable] public class Cues { public float bpm; public float[] beats; public Chord[] chords; public Sections sections; }
+    [Serializable] public class Cues { public float bpm; public float[] beats, downbeats, boundaries; public Chord[] chords; public Sections sections; }
     enum Part { Intro, Flight, Boss, Outro, Linear }
     sealed class Track
     {
@@ -39,15 +39,31 @@ public sealed class DistrictScore : MonoBehaviour
             return null;
         }
 
-        public float ExitPoint(float start, float end, double earliest, string target)
+        public float ExitPoint(float start, float end, double earliest, double deadline, string target)
         {
+            double limit = Math.Min(end, Math.Max(earliest, deadline));
             if (target != null && cues?.chords != null)
                 foreach (var chord in cues.chords)
                 {
-                    if (chord.time > end) break;
+                    if (chord.time > limit) break;
                     if (chord.time > start && chord.time >= earliest && chord.name == target) return chord.time;
                 }
-            return end;
+            if (cues?.boundaries != null)
+                foreach (float point in cues.boundaries)
+                {
+                    if (point > limit) break;
+                    if (point > start && point >= earliest) return point;
+                }
+            if (end <= limit) return end;
+            return LastPoint(cues?.downbeats) ?? LastPoint(cues?.beats) ?? (float)limit;
+
+            float? LastPoint(float[] points)
+            {
+                if (points != null)
+                    for (int i = points.Length-1; i >= 0 && points[i] >= earliest; i--)
+                        if (points[i] <= limit && points[i] > start) return points[i];
+                return null;
+            }
         }
     }
 
@@ -56,6 +72,8 @@ public sealed class DistrictScore : MonoBehaviour
     Track track, following, pendingTrack;
     Part part, wanted, pendingPart;
     double cut = double.PositiveInfinity, earliestBoss, reuseAt, tailEnd;
+    double requestDeadline, travelDeadline;
+    const double MaxWait = 10;
     bool started, waitingForLoad;
     const double Lead = .1;
     public bool Active => track != null;
@@ -79,7 +97,8 @@ public sealed class DistrictScore : MonoBehaviour
                 float end = track.End(part);
                 if (after <= active.ClockAt(end))
                 {
-                    float point = track.ExitPoint(active.Offset, end, active.Offset + after - active.StartAt, target);
+                    float point = track.ExitPoint(active.Offset, end, active.Offset + after - active.StartAt,
+                        active.Offset + requestDeadline - active.StartAt, target);
                     return (float)Math.Max(0, active.ClockAt(point) - now);
                 }
                 flightAt = active.ClockAt(end);
@@ -89,7 +108,8 @@ public sealed class DistrictScore : MonoBehaviour
             double length = finish - start;
             if (length <= 0) return 0;
             flightAt += Math.Max(0, Math.Ceiling((earliestBoss - flightAt) / length) - 1) * length;
-            float exit = track.ExitPoint(start, finish, start + Math.Max(0, earliestBoss - flightAt), target);
+            float exit = track.ExitPoint(start, finish, start + Math.Max(0, earliestBoss - flightAt),
+                start + requestDeadline - flightAt, target);
             return (float)Math.Max(0, flightAt + exit - start - now);
         }
     }
@@ -114,6 +134,7 @@ public sealed class DistrictScore : MonoBehaviour
         if (WantsOutro)
         {
             following = song;
+            travelDeadline = AudioSettings.dspTime + MaxWait;
             Replan();
             return;
         }
@@ -152,7 +173,9 @@ public sealed class DistrictScore : MonoBehaviour
     {
         if (!Active || !track.adaptive || wanted == Part.Boss) return;
         wanted = Part.Boss;
-        earliestBoss = AudioSettings.dspTime + warningSeconds;
+        double now = AudioSettings.dspTime;
+        earliestBoss = now + warningSeconds;
+        requestDeadline = now + MaxWait;
         Replan();
     }
 
@@ -160,6 +183,7 @@ public sealed class DistrictScore : MonoBehaviour
     {
         if (!Active || !track.adaptive || wanted == Part.Outro) return;
         wanted = Part.Outro;
+        requestDeadline = AudioSettings.dspTime + MaxWait;
         Replan();
     }
 
@@ -189,7 +213,9 @@ public sealed class DistrictScore : MonoBehaviour
             {
                 pendingTrack = travel ? following : track;
                 pendingPart = travel ? following.First : wanted;
-                end = track.ExitPoint(active.Offset, end, active.Offset + after - active.StartAt, pendingTrack.OpeningChord(pendingPart));
+                double deadline = travel ? travelDeadline : requestDeadline;
+                end = track.ExitPoint(active.Offset, end, active.Offset + after - active.StartAt,
+                    active.Offset + deadline - active.StartAt, pendingTrack.OpeningChord(pendingPart));
             }
         }
         cut = active.ClockAt(end);

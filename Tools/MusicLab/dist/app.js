@@ -17,7 +17,7 @@ const stamp = t => {
     const ticks = Math.round(t*100);
     return Math.floor(ticks/6000) + ':' + ((ticks%6000)/100).toFixed(2).padStart(5,'0');
 };
-const queued = (title, cut) => title + ' queued · ' + (cut.match?.name ?? 'section end') + ' at ' + stamp(cut.offset);
+const queued = (title, cut) => title + ' queued · ' + cut.label + ' at ' + stamp(cut.offset);
 
 async function get(url, signal) {
     const res = await fetch(url, { signal });
@@ -109,6 +109,7 @@ async function select(item) {
     message = '';
     if (track === item && map) return;
     const switching = !!engine?.playing;
+    const requestedAt = context?.currentTime ?? 0;
     const keepPlaying = switching || loadingAudio;
     if (switching) selection = new AbortController();
     else {
@@ -138,7 +139,7 @@ async function select(item) {
             const incoming = await openTransport(item.id,value,signal);
             if (signal.aborted) return;
             engine.tick();
-            const cut = engine.current ? engine.plan(null,incoming) : { at:context.currentTime+.045, fade:.1 };
+            const cut = engine.current ? engine.plan(null,incoming,requestedAt) : { at:context.currentTime+.045, fade:.1 };
             incoming.start(cut.at,cut.fade);
             handoff = { ...cut, engine:incoming, map:value, item };
             message = cut.offset == null ? 'Starting ' + item.title + '…' : queued(item.title,cut);
@@ -226,6 +227,7 @@ for (const [part,[label,icon]] of Object.entries(parts)) {
     b.onclick = async () => {
         cancelSelection();
         const chosen = track, ticket = ++cueRequest;
+        const requestedAt = context?.currentTime ?? 0;
         message = '';
         if (!engine?.playing) await play();
         if (chosen !== track || !engine || ticket !== cueRequest) return;
@@ -247,7 +249,7 @@ for (const [part,[label,icon]] of Object.entries(parts)) {
                 return;
             }
         }
-        engine.request(part);
+        engine.request(part,requestedAt);
     };
     padNodes[part] = b;
     $('pads').append(b);
