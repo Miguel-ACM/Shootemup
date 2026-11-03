@@ -48,6 +48,9 @@ public class WaveOrchestrer : MonoBehaviour
     public RewardHexes RewardOffer => rewardOffer;
     CargoEscort cargo;
     public CargoEscort Cargo => cargo;
+    readonly float[] encounterExpiry = new float[Enum.GetValues(typeof(EncounterKind)).Length];
+    public bool ShowingEncounter(EncounterKind kind) => encounterExpiry[(int)kind] > Time.time &&
+        (kind != EncounterKind.Cargo || cargo != null);
 
     public const float OpeningBreather = .8f;
     bool openingWavePending { get => Phase == RunPhase.Opening; set => Phase = value ? RunPhase.Opening : RunPhase.Idle; }
@@ -344,6 +347,8 @@ public class WaveOrchestrer : MonoBehaviour
         if (GameOverState.Active)
             return;
         DismissOffer();
+        encounterExpiry[(int)kind] = kind == EncounterKind.Health || kind == EncounterKind.Salvage
+            ? Time.time + 5 : float.PositiveInfinity;
         if (kind == EncounterKind.Salvage)
         {
             RunCoins.Add(EncounterChoice.SalvageCoins(LevelRun.Tier(LevelRun.Current), GameRules.luck));
@@ -390,7 +395,21 @@ public class WaveOrchestrer : MonoBehaviour
             if (enemy != null)
                 Destroy(enemy.gameObject);
         decision = gameObject.AddComponent<DecisionShop>();
-        decision.Open(this, ship.GetComponent<Shipcontroller>(), kind, GenerateWave);
+        decision.Open(this, ship.GetComponent<Shipcontroller>(), kind, () =>
+        {
+            switch (kind)
+            {
+                case RunSlotKind.CoinShop: Clear(EncounterKind.Shop); break;
+                case RunSlotKind.MultiplierShop: Clear(EncounterKind.MultShop); break;
+                case RunSlotKind.Reward: Clear(EncounterKind.Item); break;
+                case RunSlotKind.Pact: Clear(EncounterKind.Pact); break;
+                case RunSlotKind.HealthTrade: Clear(EncounterKind.HealthTrade); break;
+                case RunSlotKind.Reforge: Clear(EncounterKind.Reforge); break;
+                case RunSlotKind.ChallengeReward: Clear(EncounterKind.Challenge); break;
+            }
+            GenerateWave();
+        });
+        void Clear(EncounterKind encounter) => encounterExpiry[(int)encounter] = 0;
     }
 
     private void EraseAllBullets()
@@ -539,6 +558,7 @@ public class WaveOrchestrer : MonoBehaviour
         currentWaveEnemies = 0;
         currentWaveKilledEnemies = 0;
         challenge.Reset();
+        Array.Clear(encounterExpiry, 0, encounterExpiry.Length);
         if (cargo != null)
             Destroy(cargo.gameObject);
         cargo = null;

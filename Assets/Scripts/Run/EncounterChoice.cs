@@ -70,7 +70,8 @@ public static class EncounterChoice
             a == EncounterKind.Health && b == EncounterKind.HealthTrade || a == EncounterKind.HealthTrade && b == EncounterKind.Health;
     }
 
-    public static string Label(EncounterKind kind) => kind == EncounterKind.MultShop ? "MULT SHOP" : kind.ToString().ToUpperInvariant();
+    public static string Label(EncounterKind kind) => kind == EncounterKind.MultShop ? "MULT SHOP" :
+        kind == EncounterKind.HealthTrade ? "HEALTH TRADE" : kind.ToString().ToUpperInvariant();
     public static Color Accent(EncounterKind kind)
     {
         switch (kind)

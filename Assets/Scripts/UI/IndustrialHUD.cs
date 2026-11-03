@@ -10,6 +10,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     Text score, chain, coins;
     WaveOrchestrer waves;
     Image[] challengeCells;
+    readonly RectTransform[] encounterRows = new RectTransform[System.Enum.GetValues(typeof(EncounterKind)).Length];
     Image[] healthCells, manaCells, bossCells;
     Image[] meterCasing;
     OctagonGraphic shieldGlow, shieldRing;
@@ -224,6 +225,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         if (waves == null)
             waves = FindAnyObjectByType<WaveOrchestrer>();
         int challenge = waves != null ? waves.ChallengeWavesRemaining : 0;
+        UpdateEncounterRows();
         for (int i = 0; i < challengeCells.Length; i++)
             challengeCells[i].gameObject.SetActive(i < challenge);
         chainFill.sizeDelta = new Vector2(72 * Mathf.Clamp01(Score.GetPercentageNextMultiplier()), 3);
@@ -406,6 +408,39 @@ public sealed class IndustrialHUD : MonoBehaviour
     void Rule(Transform parent, float x, float y, float width, Color color)
     {
         Place(Panel(parent, "Panel seam", color), x, y, width, 1);
+    }
+
+    void UpdateEncounterRows()
+    {
+        int visible = 0;
+        for (int i = 0; i < encounterRows.Length; i++)
+        {
+            var kind = (EncounterKind)i;
+            var row = encounterRows[i];
+            if (waves == null || !waves.ShowingEncounter(kind) || GameOverState.Active)
+            {
+                if (row != null && row.gameObject.activeSelf) row.gameObject.SetActive(false);
+                continue;
+            }
+            if (row == null)
+            {
+                string caption = EncounterChoice.Label(kind);
+                encounterRows[i] = row = Panel(scorePanel, caption, Dark);
+                var icon = Panel(row, "Selected hexagon", Color.white);
+                Place(icon, 3, 2, 26, 26);
+                icon.GetComponent<Image>().sprite = EncounterChoice.Icon(kind);
+                icon.GetComponent<Image>().preserveAspect = true;
+                var label = TextAt(row, caption, 33, 3, 12, Steel);
+                label.rectTransform.sizeDelta = new Vector2(96, 24);
+                label.alignment = TextAnchor.MiddleLeft;
+                label.horizontalOverflow = HorizontalWrapMode.Wrap;
+                label.resizeTextForBestFit = true;
+                label.resizeTextMinSize = 8;
+                label.resizeTextMaxSize = 12;
+            }
+            Place(row, 0, 88 + visible++ * 32, 132, 30);
+            if (!row.gameObject.activeSelf) row.gameObject.SetActive(true);
+        }
     }
 
     RectTransform Panel(Transform parent, string name, Color color)
