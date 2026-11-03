@@ -533,30 +533,57 @@ public sealed class HangarDeckReview : MonoBehaviour
             yield return new WaitForSeconds(.2f);
             Check(Mathf.Abs(beforeLift - sign.position.y) > .0001f && Mathf.Abs(beforeThrust - portJet.localScale.y) > .0001f,
                 "sign hovers and the attached engines pulse");
-            Place(3.35f, 6);
-            for (int speed = 0; speed < 2; speed++)
+            var camera = UnityEngine.Camera.main;
+            for (int pass = 0; pass < 4; pass++)
             {
+                bool boost = pass % 2 != 0;
+                int side = pass < 2 ? 1 : -1;
+                Place(0, 6);
+                yield return null;
+                float expectedSpeed = GameRules.playerMoveSpeed * (boost ? 2 : 1);
                 for (int direction = 1; direction >= -1; direction -= 2)
                 {
-                    Key steer = direction > 0 ? Key.RightArrow : Key.LeftArrow;
-                    if (speed == 1) Press(steer, Key.LeftShift);
+                    Key steer = side * direction > 0 ? Key.RightArrow : Key.LeftArrow;
+                    if (boost) Press(steer, Key.LeftShift);
                     else Press(steer);
-                    float started = Time.time, peakPan = 0, furthestOffset = 0;
-                    var camera = UnityEngine.Camera.main;
+                    float started = Time.time, peakPan = 0, peakAtX = 0, furthestOffset = 0;
+                    float laneDistance = 0, laneTime = 0, worstDoorError = 0;
                     float previousX = camera.transform.position.x;
-                    while ((direction > 0 ? ship.position.x < 12.2f : ship.position.x > 3.35f) && Time.time - started < 6)
+                    while ((direction > 0 ? side * ship.position.x < 12.2f : side * ship.position.x > .2f) && Time.time - started < 6)
                     {
+                        float from = side * ship.position.x;
                         yield return null;
+                        float distance = (side * ship.position.x - from) * direction;
+                        if (from > .35f && from < 3)
+                        {
+                            laneDistance += distance;
+                            laneTime += GameClock.PlayerDelta;
+                        }
+                        if (from >= 3.35f && from <= 12.2f && GameClock.PlayerDelta > 0)
+                            worstDoorError = Mathf.Max(worstDoorError, Mathf.Abs(distance / GameClock.PlayerDelta - expectedSpeed));
                         float x = camera.transform.position.x;
-                        peakPan = Mathf.Max(peakPan, Mathf.Abs(x - previousX) / Mathf.Max(.001f, Time.deltaTime));
+                        float panSpeed = Mathf.Abs(x - previousX) / Mathf.Max(.001f, Time.deltaTime);
+                        if (panSpeed > peakPan)
+                        {
+                            peakPan = panSpeed;
+                            peakAtX = ship.position.x;
+                        }
                         furthestOffset = Mathf.Max(furthestOffset, Mathf.Abs(ship.position.x - x));
                         previousX = x;
                     }
                     Press();
-                    float elapsed = Time.time - started;
-                    Check(elapsed > (speed == 0 ? 1.45f : .75f) && elapsed < 6 && peakPan < 29 &&
+                    Check(Time.time - started < 6 && laneTime > 0 && Mathf.Abs(laneDistance / laneTime - expectedSpeed) < .02f &&
+                        worstDoorError < .02f, $"ship holds {expectedSpeed:F1} units/s in lane and doorway, direction {direction}");
+                    Check(peakPan < 29 &&
                         furthestOffset < camera.orthographicSize * 405f / 720f,
-                        $"passage speed {speed}, direction {direction}: {elapsed:F2}s, peak pan {peakPan:F1}, ship in view");
+                        $"passage at {expectedSpeed:F1} units/s, direction {direction}: peak pan {peakPan:F1} at x={peakAtX:F2}, offset {furthestOffset:F2}");
+                    if (direction > 0)
+                    {
+                        float stopped = ship.position.x, framing = camera.transform.position.x;
+                        yield return new WaitForSeconds(.4f);
+                        float drift = Mathf.Abs(ship.position.x - stopped), pan = side * (camera.transform.position.x - framing);
+                        Check(drift < .001f && pan > .2f, $"after release the ship moved {drift:F3} and the camera settled {pan:F2} units");
+                    }
                 }
             }
             Place(-12.75f, 1.6f);
