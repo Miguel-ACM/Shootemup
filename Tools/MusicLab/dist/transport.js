@@ -1,5 +1,5 @@
 // Cue coordinates are seconds in the original recording. The fast audition is already time-stretched.
-const bassDb = 4.5, shelfHz = 145, lead = .045, maxWait = 10;
+const bassDb = 4.5, shelfHz = 145, lead = .045, maxWait = 10, outroWait = 4;
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const position = (d, at) => d.offset + Math.max(0, at - d.at)*d.speed;
 const clockAt = (d, offset) => d.at + (offset - d.offset)/d.speed;
@@ -162,7 +162,8 @@ export class Transport {
         if (!point && (request || incoming)) {
             const dest = incoming ?? this;
             const target = openingChord(dest.map.chords, dest.range(incoming ? 'intro' : request));
-            const deadline = d.offset + (requestedAt + maxWait - d.at)*d.speed;
+            const wait = request === 'outro' ? outroWait : maxWait;
+            const deadline = d.offset + (requestedAt + wait - d.at)*d.speed;
             point = transitionPoint(this.map,d.offset,end,position(d,this.ctx.currentTime+lead),deadline,target);
         }
         point ??= {offset:end};
@@ -206,10 +207,11 @@ export class Transport {
     request(part, requestedAt = this.ctx.currentTime) {
         this.tick();
         if (this.map.adaptive === false || !this.current) return;
-        if (this.next && this.cut - this.ctx.currentTime < lead) {
+        if (part !== 'outro' && this.next && this.cut - this.ctx.currentTime < lead) {
             this.afterCut = {part, requestedAt};
             return;
         }
+        this.afterCut = null;
         this.plan(part === this.current.part ? null : part,null,requestedAt);
     }
     updateSections() {

@@ -73,7 +73,7 @@ public sealed class DistrictScore : MonoBehaviour
     Part part, wanted, pendingPart;
     double cut = double.PositiveInfinity, earliestBoss, reuseAt, tailEnd;
     double requestDeadline, travelDeadline;
-    const double MaxWait = 10;
+    const double MaxWait = 10, OutroWait = 4;
     bool started, waitingForLoad;
     const double Lead = .1;
     public bool Active => track != null;
@@ -185,7 +185,7 @@ public sealed class DistrictScore : MonoBehaviour
     {
         if (!Active || !track.adaptive || wanted == Part.Outro) return;
         wanted = Part.Outro;
-        requestDeadline = AudioSettings.dspTime + MaxWait;
+        requestDeadline = AudioSettings.dspTime + OutroWait;
         Replan();
     }
 
