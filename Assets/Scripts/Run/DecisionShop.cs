@@ -68,7 +68,11 @@ public sealed class DecisionShop : MonoBehaviour
         // Pacts always offer two bargains when two remain; declining is the bottom skip.
         var pacts = pact ? PactPool.Draw(player, 2) : null;
         int count = pact ? pacts.Count : singleReward ? 1 : paid ? (UnityEngine.Random.value < .35f ? 4 : 3) : RewardCount(GameRules.luck, UnityEngine.Random.value);
-        bool healthKit = paid && player.health < player.maxHealth * .45f;
+        bool healthKit = paid && player.health < player.maxHealth * .45f && ItemPool.ReserveHealthKit();
+        if (!pact)
+            count = Mathf.Min(count, ItemPool.RemainingCount + (healthKit ? 1 : 0));
+        if (count == 0 && !paid && !pact)
+            RunCoins.Add(8);
         for (int i = 0; i < count; i++)
         {
             string rarity = pact ? PactPool.Rarity : "common";

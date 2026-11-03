@@ -192,6 +192,7 @@ public abstract class AItem : MonoBehaviour
     // Debug grants use the same effects and inventory feedback without a world pickup.
     public void GrantTo(Shipcontroller ship, int slot = 0)
     {
+        ItemPool.ReserveGrant(GetType().Name);
         s = ship;
         sgo = ship.gameObject;
         ReplacementSlot = Mathf.Clamp(slot, 0, 1);
