@@ -60,7 +60,7 @@ public sealed partial class SnowSiegeBoss
     // at the player and crawls before accelerating. The re-aimed fans keep their spacing.
     void FreezeFrame(int sign)
     {
-        int count = Dense(phaseTwo ? 21 : 17);
+        int count = Dense(phaseTwo ? (Difficulty.Normal ? 15 : 21) : 17);
         float spread = 130f / (count - 1);
         for (int mirror = -1; mirror <= 1; mirror += 2)
         {
@@ -134,9 +134,9 @@ public sealed partial class SnowSiegeBoss
         Phrase(Every(7, 2.2f, n =>
         {
             FreezeFrame(n % 2 == 0 ? 1 : -1);
-            CrystalShells(Dense(4), 34);
+            CrystalShells(Difficulty.Normal ? 2 : Dense(4), 34);
         }));
-        int gusts = Dense(60);
+        int gusts = Dense(Difficulty.Normal ? 42 : 60);
         for (int g = 0; g < gusts; g++)
         {
             float lift = 8 + (g % 4) * 7;
@@ -146,16 +146,16 @@ public sealed partial class SnowSiegeBoss
                 Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.right * side, -side * lift), 3.0f + (g % 3) * .3f, .19f)
                     .Pause(.6f, .35f, CombatRound.Turn.Rotate, -side * (100 + (g % 3) * 10), .8f);
             }
-            yield return Wait(Rest(.11f));
+            yield return Wait(Rest(Difficulty.Normal ? .16f : .11f));
         }
     }
 
     IEnumerator Snowdrift()
     {
-        yield return Every(7, 1.0f, n =>
+        yield return Every(7, Difficulty.Normal ? 1.35f : 1f, n =>
         {
             // A wide fan of shells, offset every beat, so the snow covers the whole top.
-            int shells = Dense(6);
+            int shells = Difficulty.Normal ? 3 : Dense(6);
             for (int i = 0; i < shells; i++)
             {
                 float lane = i - (shells - 1) * .5f + (n % 2 == 0 ? -.25f : .25f);
