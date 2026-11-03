@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#14191c"><title>Music Lab · GR–07</title>
+<link rel="stylesheet" href="/style.css"><script type="module" src="/app.js"></script>
+</head><body>
+<header><div class="brand"><svg viewBox="0 0 36 28" aria-hidden="true"><path d="M0 16h6l4-11 6 21 6-24 5 14h9"/></svg><b>Music Lab</b></div><span class="header-id">GR–07 <i>/</i> AUDIO SYSTEMS</span></header>
+<main>
+ <aside><div class="library-title"><h2>Soundtrack</h2><span class="count" id="count">··</span></div>
+ <label class="mobile-picker">Track <select id="track-picker" aria-label="Choose track"></select></label>
+ <nav id="library" aria-label="Soundtrack library"></nav></aside>
+ <article aria-label="Audition deck">
+  <div class="deck-head"><div><div class="eyebrow" id="track-no">DISTRICT / 01</div><h1 id="title">Plains</h1></div>
+   <div class="tempo"><span class="eyebrow">TRACK TEMPO</span><strong id="bpm">—</strong><span class="unit"> BPM</span></div></div>
+  <section class="scope" aria-label="Waveform and transport"><div class="scope-top"><span class="eyebrow"><i class="led"></i> SIGNAL</span><span id="clock">0:00 / —</span></div>
+   <div class="plot"><canvas id="wave" aria-label="Waveform with progression boundaries and the active section"></canvas></div>
+   <div class="transport"><button id="play" class="play" disabled><span aria-hidden="true">▶</span> Play</button>
+    <div class="beat-group"><div id="pulses" aria-hidden="true"></div><span class="eyebrow" id="beat">BEAT —</span></div>
+    <label class="volume"><span>VOL</span><input id="volume" type="range" min="0" max="100" value="56" aria-label="Volume"></label>
+   </div>
+  </section>
+  <div class="section-heading"><h2>Section cues</h2><span class="eyebrow">PROGRESSION SYNC</span></div>
+  <div class="pads" id="pads"></div>
+  <div class="status-row"><span id="status" role="status">Loading cue map…</span><button id="preview" hidden>Preview the change ↗</button></div>
+  <section class="harmonics"><div class="section-heading"><h2>Chord progression</h2><span class="eyebrow">ESTIMATED</span></div>
+   <div id="chords" aria-label="Chords in the current progression"></div>
+   <div class="readouts"><div><span>Next boundary</span><b id="boundary">—</b></div><div><span>Playback rate</span><b id="rate">1.00×</b></div><div><span>Bass shelf</span><b id="bass">0 dB</b></div></div>
+  </section>
+ </article>
+</main></body></html>
