@@ -428,6 +428,42 @@ public sealed class HangarDeckReview : MonoBehaviour
             yield return new WaitForSeconds(.8f);
             yield return Capture("LitPassage");
             CheckInteriors(-1);
+            var sign = GameObject.Find("ARMORY lift sign").transform;
+            var portJet = sign.Find("Port lift exhaust");
+            var starboardJet = sign.Find("Starboard lift exhaust");
+            Check(portJet.localPosition.x < 0 && starboardJet.localPosition.x > 0 &&
+                portJet.GetComponent<MeshRenderer>().sharedMaterial == ship.GetComponent<PSXShipEffects>().exhaustMaterial,
+                "direction sign has separate port and starboard lift exhausts");
+            float beforeLift = sign.position.y, beforeThrust = portJet.localScale.y;
+            yield return new WaitForSeconds(.2f);
+            Check(Mathf.Abs(beforeLift - sign.position.y) > .0001f && Mathf.Abs(beforeThrust - portJet.localScale.y) > .0001f,
+                "sign hovers and the attached engines pulse");
+            Place(3.35f, 6);
+            for (int speed = 0; speed < 2; speed++)
+            {
+                for (int direction = 1; direction >= -1; direction -= 2)
+                {
+                    Key steer = direction > 0 ? Key.RightArrow : Key.LeftArrow;
+                    if (speed == 1) Press(steer, Key.LeftShift);
+                    else Press(steer);
+                    float started = Time.time, peakPan = 0, furthestOffset = 0;
+                    var camera = UnityEngine.Camera.main;
+                    float previousX = camera.transform.position.x;
+                    while ((direction > 0 ? ship.position.x < 12.2f : ship.position.x > 3.35f) && Time.time - started < 6)
+                    {
+                        yield return null;
+                        float x = camera.transform.position.x;
+                        peakPan = Mathf.Max(peakPan, Mathf.Abs(x - previousX) / Mathf.Max(.001f, Time.deltaTime));
+                        furthestOffset = Mathf.Max(furthestOffset, Mathf.Abs(ship.position.x - x));
+                        previousX = x;
+                    }
+                    Press();
+                    float elapsed = Time.time - started;
+                    Check(elapsed > (speed == 0 ? 1.45f : .75f) && elapsed < 6 && peakPan < 29 &&
+                        furthestOffset < camera.orthographicSize * 405f / 720f,
+                        $"passage speed {speed}, direction {direction}: {elapsed:F2}s, peak pan {peakPan:F1}, ship in view");
+                }
+            }
             Place(-12.75f, 1.6f);
             yield return new WaitForSeconds(.8f);
             yield return Capture("FleetTube");
@@ -519,7 +555,7 @@ public sealed class HangarDeckReview : MonoBehaviour
             {
                 bool released = !ItemCatalog.Get(exhibits[i].key).InRewardPool || MetaProgress.IsUnlocked(exhibits[i].key);
                 bool match = (category == 0 || category - 1 == (int)exhibits[i].category) && (access == 0 || released == (access == 1));
-                bool lampLit = colors[offsets[i + 1] - 1].r > .8f;
+                bool lampLit = colors[offsets[i + 1] - 1].b > .8f;
                 correct &= lampLit == match && platforms[i].HasPropertyBlock() == !match && models[i].HasPropertyBlock() == (released && !match);
             }
             Check(correct, "all 99 case lamps and exhibit finishes follow both filters");
@@ -571,6 +607,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         Press();
         yield return null;
         Check(Field<Mesh>("guideMesh").vertexCount > 0, "matching exhibits linked to bottom console");
+        Check(Field<Mesh>("guideMesh").colors.All(c => c.b > c.g && c.g > c.r), "guide paths carry the directory's blue");
         CheckCaseLighting();
         Call("Navigate", false, 1);
         CheckCaseLighting();
@@ -602,6 +639,13 @@ public sealed class HangarDeckReview : MonoBehaviour
             InputSystem.RemoveDevice(keyboard);
             yield break;
         }
+        int secondary = Array.FindIndex(exhibits, e => e.category == AItem.ItemType.passiveWeapon);
+        MetaProgress.UnlockAll();
+        Call("RefreshGalleryAccess");
+        At(secondary);
+        yield return new WaitForSeconds(.6f);
+        Check(Field<TMPro.TextMeshProUGUI>("cardText").text.Contains(">SECONDARY</color>"), "gallery prints SECONDARY on the item card");
+        yield return Capture("GallerySecondary");
         Place(0, Camera.UpLimit + HangarHub.DeckExtension);
         yield return null;
         Check(Field<bool>("launching"), "entering the departure light launches without a button");

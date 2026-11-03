@@ -84,7 +84,7 @@ public sealed partial class HangarHub
         guideMesh = GallerySurface("Blue inlaid guide lamps", new List<Vector3>(), new List<Color>(), new List<int>(), -10);
         BuildControlDesk((int)Dock.Armory);
         MountReceiver((int)Dock.Armory);
-        HangingSign("CASES >", FilterDesk + new Vector2(2.6f, -2.5f), DockInstrument.Brass, true);
+        HoverSign("CASES >", FilterDesk + new Vector2(2.6f, -2.5f), DockInstrument.Brass);
         cardPanel = MountedPanel("Gallery object label", Vector2.zero, new Vector2(6.6f, 2.4f));
         cardText = WorldLabel(cardPanel, "", Vector2.zero, new Vector2(624, 225), 27, DockInstrument.Paper);
         cardPanel.gameObject.SetActive(false);

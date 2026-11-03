@@ -208,12 +208,12 @@ public sealed partial class HangarHub
         return WorldLabel(panel, text, Vector2.zero, new Vector2(490, 58), Mathf.Max(27, size * 12), color);
     }
 
-    RectTransform MountedPanel(string title, Vector2 position, Vector2 size, bool floatSign = false)
+    RectTransform MountedPanel(string title, Vector2 position, Vector2 size, Transform follow = null)
     {
         var go = new GameObject(title, typeof(RectTransform), typeof(Image));
         var rect = go.GetComponent<RectTransform>();
         rect.sizeDelta = size * 100;
-        readouts.MountAt(rect, Spot(position, 1), .01f, floatSign, installing?.lettering.transform);
+        readouts.MountAt(rect, Spot(position, 1), .01f, installing?.lettering.transform, follow);
         go.GetComponent<Image>().color = new Color(.018f, .034f, .043f);
         return rect;
     }
@@ -282,7 +282,7 @@ public sealed partial class HangarHub
             doorLights.Add(Strip("Entry lamp", new Vector2(side * 4.35f, y + 1.45f), new Vector2(.50f, .13f), lamps[i], -5));
             for (int step = 0; step < 4; step++)
                 Strip("Threshold guide", new Vector2(side * (4.75f + step * .55f), y), new Vector2(.25f, .07f), lamps[i], -6, side < 0 ? 180 : 0);
-            HangingSign(signs[i], new Vector2(side * 3.5f, y + 2), lamps[i], true);
+            HoverSign(signs[i], new Vector2(side * 2.95f, y + 2.25f), lamps[i]);
             PortalLight(new Vector2(side * 4.55f, y), side);
         }
         var walletPanel = MountedPanel("Coin reader", new Vector2(2.7f, 5.3f), new Vector2(2.4f, .7f));
@@ -312,7 +312,7 @@ public sealed partial class HangarHub
         if (index != (int)Dock.Fleet)
             return;
 
-        HangingSign("< BERTHS", new Vector2(-15.7f, b.y - 1.35f), lamps[index], false);
+        HoverSign("< BERTHS", new Vector2(-15.7f, b.y - 1.35f), lamps[index]);
         var plaque = MountedPanel("Berth service plate", b, new Vector2(4.35f, .8f));
         berthNotice = WorldLabel(plaque, "", Vector2.zero, new Vector2(422, 73), 29, DockInstrument.Brass);
         plaque.gameObject.SetActive(false);

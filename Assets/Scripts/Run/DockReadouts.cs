@@ -12,7 +12,7 @@ public sealed class DockReadouts : MonoBehaviour
         public RectTransform panel;
         public Vector3 point;
         public float scale;
-        public bool bob;
+        public Transform follow;
     }
     readonly List<Mount> mounts = new List<Mount>();
     RectTransform aperture;
@@ -38,10 +38,10 @@ public sealed class DockReadouts : MonoBehaviour
         layer.transform.SetParent(aperture, false);
         return layer;
     }
-    public void MountAt(RectTransform panel, Vector3 anchor, float worldScale, bool bob = false, Transform layer = null)
+    public void MountAt(RectTransform panel, Vector3 anchor, float worldScale, Transform layer = null, Transform follow = null)
     {
         panel.SetParent(layer != null ? layer : aperture, false);
-        mounts.Add(new Mount { panel = panel, point = anchor, scale = worldScale, bob = bob });
+        mounts.Add(new Mount { panel = panel, point = anchor, scale = worldScale, follow = follow });
     }
     public void Aim(RectTransform panel, Vector3 point)
     {
@@ -65,9 +65,7 @@ public sealed class DockReadouts : MonoBehaviour
             }
             if (!m.panel.gameObject.activeSelf)
                 continue;
-            var offset = m.point - view.transform.position;
-            if (m.bob)
-                offset.y += Mathf.Sin(Time.time * 1.8f + m.point.y) * .09f;
+            var offset = (m.follow != null ? m.follow.position : m.point) - view.transform.position;
             m.panel.anchoredPosition = new Vector2(offset.x, offset.y) * pixels;
             m.panel.localScale = Vector3.one * (pixels * m.scale);
         }

@@ -1,4 +1,5 @@
 using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -42,17 +43,59 @@ public sealed partial class HangarHub
         pilotLamps[index] = Strip("Console ready lamp", sill, new Vector2(.64f, .06f), lamps[index], -6);
     }
 
-    void HangingSign(string text, Vector2 at, Color color, bool suspended)
+    sealed class LiftSign
     {
-        if (suspended)
+        public Transform body;
+        public Vector3 rest;
+        public readonly Transform[] exhaust = new Transform[2];
+    }
+    readonly List<LiftSign> liftSigns = new List<LiftSign>();
+
+    void HoverSign(string text, Vector2 at, Color color)
+    {
+        var sign = new LiftSign { rest = Spot(at, 1.5f) };
+        sign.body = MountModel("DockHoverSign", sign.rest, 2, "Background");
+        sign.body.name = text + " lift sign";
+        var shipEffects = player.GetComponent<PSXShipEffects>();
+        for (int i = 0; i < sign.exhaust.Length; i++)
         {
-            for (int side = -1; side <= 1; side += 2)
-                Strip("Sign hanger", at + new Vector2(side * .91f, .49f), new Vector2(.045f, .56f), Metal, -7);
+            var jet = new GameObject(i == 0 ? "Port lift exhaust" : "Starboard lift exhaust");
+            jet.transform.SetParent(sign.body, false);
+            jet.transform.localPosition = new Vector3(i == 0 ? -1.55f : 1.55f, -.55f, -.24f);
+            jet.AddComponent<MeshFilter>().sharedMesh = shipEffects.flameMesh;
+            var renderer = jet.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = shipEffects.exhaustMaterial;
+            renderer.sortingLayerName = "Background";
+            renderer.sortingOrder = 1;
+            sign.exhaust[i] = jet.transform;
         }
-        var sign = MountedPanel("Floating " + text, at, new Vector2(2.75f, .74f), suspended);
-        DockInstrument.Block(sign, "Lit lip", new Vector2(0, -34), new Vector2(257, 4), color);
-        var label = WorldLabel(sign, text, Vector2.zero, new Vector2(262, 62), 32, color);
-        label.fontStyle = FontStyles.Bold;
+        liftSigns.Add(sign);
+        var panel = MountedPanel("Lettering " + text, at, new Vector2(2.45f, .76f), sign.body);
+        panel.GetComponent<Image>().enabled = false;
+        var label = WorldLabel(panel, text == "FLIGHT CONTROL" ? "FLIGHT\nCONTROL" : text,
+            Vector2.zero, panel.sizeDelta, 30, color);
+        label.textWrappingMode = TextWrappingModes.NoWrap;
+        label.fontSizeMin = 19;
+        var shadow = Shadow(Spot(at + new Vector2(.12f, -.42f), 58), 1.9f, -7);
+        shadow.localScale = new Vector3(1, .42f, 1);
+    }
+
+    void AnimateSigns()
+    {
+        for (int i = 0; i < liftSigns.Count; i++)
+        {
+            var sign = liftSigns[i];
+            if (!sign.body.gameObject.activeInHierarchy)
+                continue;
+            float phase = Time.time * 1.65f + i * 1.9f;
+            sign.body.position = sign.rest + Vector3.up * (.11f * Mathf.Sin(phase));
+            float thrust = .76f + .14f * Mathf.Cos(phase);
+            for (int side = 0; side < sign.exhaust.Length; side++)
+            {
+                float flicker = Mathf.Sin(Mathf.Floor(Time.time * 15) * 2.39f + i + side * 1.7f);
+                sign.exhaust[side].localScale = new Vector3(1.4f, thrust + .13f * flicker, 1);
+            }
+        }
     }
     void PortalLight(Vector2 at, float side)
     {

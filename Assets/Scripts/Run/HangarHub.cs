@@ -160,6 +160,8 @@ public sealed partial class HangarHub : MonoBehaviour
         IndustrialMeshFactory.TerraMaterial("DockReceiver");
         yield return null;
         IndustrialMeshFactory.TerraMaterial("DockSaddle");
+        yield return null;
+        IndustrialMeshFactory.TerraMaterial("DockHoverSign");
     }
 
     IEnumerator Start()
@@ -390,6 +392,7 @@ public sealed partial class HangarHub : MonoBehaviour
 
     void LateUpdate()
     {
+        AnimateSigns();
         // Fly through the title handoff. A return from combat waits for the cloud curtain.
         bool running = inlet > 0 || !CloudTransition.Busy;
         if (running)

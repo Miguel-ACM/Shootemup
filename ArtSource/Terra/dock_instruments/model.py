@@ -218,6 +218,26 @@ def receiver():
         for j in range(5):
             plate("Heat fin",side*3.91,-.74+j*.36,.20,.17,.35,.15,metal,.04)
 
+def hover_sign():
+    # Enamel direction board carried between two lift engines. The game attaches
+    # the exhaust to the open bells and projects live pixel lettering onto the face.
+    plate("Backing", 0, 0, 2.84, 1.04, 0, .18, metal, .17)
+    plate("Rolled edge", 0, .025, 2.77, .97, .18, .08, brass, .13)
+    plate("Enamel face", 0, .025, 2.65, .85, .26, .06, rubber, .09)
+    for side in (-1, 1):
+        x = side * 1.55
+        plate("Mounting ear", side*1.42, .02, .42, .35, .025, .13, metal)
+        casting("Lift engine", [(x-.20, .24),(x-.11, .48),(x+.10, .48),(x+.21, .24),
+                                (x+.19,-.17),(x+.11,-.31),(x-.11,-.31),(x-.19,-.17)],
+                .08, .31, enamel, .065)
+        plate("Inlet", x, .22, .27, .16, .39, .04, rubber)
+        plate("Collar", x, -.18, .40, .12, .36, .07, brass, .035)
+        casting("Nozzle bell", [(x-.11,-.28),(x+.11,-.28),(x+.19,-.55),(x-.19,-.55)],
+                .12, .18, metal)
+        plate("Hot throat", x, -.55, .28, .055, .28, .04, cream, .012)
+        for y in (-.32, .36):
+            roundel("Face rivet", side*1.24, y, .042, .32, .025, edge, sides=8)
+
 def export(name, build, directory):
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete(use_global=False)
@@ -228,7 +248,10 @@ def export(name, build, directory):
     bpy.ops.wm.obj_export(filepath=str(path),forward_axis='Y',up_axis='Z',export_normals=False,export_uv=False)
     bake(path,name,palette=True)
 
+selected = sys.argv[sys.argv.index("--")+1:] if "--" in sys.argv else []
 with tempfile.TemporaryDirectory() as tmp:
     for name, build in [("DockQuadrant",fleet),("DockReader",catalogue),("DockTrainer",simulator),
-                        ("DockTransport",recorder),("DockScope",flight),("DockSaddle",cradle),("DockReceiver",receiver)]:
-        export(name,build,Path(tmp))
+                        ("DockTransport",recorder),("DockScope",flight),("DockSaddle",cradle),("DockReceiver",receiver),
+                        ("DockHoverSign",hover_sign)]:
+        if not selected or name in selected:
+            export(name,build,Path(tmp))
