@@ -64,8 +64,8 @@ public sealed partial class HangarHub
         {
             caseVertices[i] = colors.Count;
             var at = Case(i);
-            // A fixed pool of red light and an offset contact shadow beneath the levitating base.
-            GalleryWell(floor, colors, indices, at + new Vector2(.17f, -.35f), 1.39f, new Color(.48f, .065f, .045f), GalleryDeck);
+            // A yellow footlight and an offset contact shadow beneath the levitating base.
+            GalleryWell(floor, colors, indices, at + new Vector2(.17f, -.35f), 1.39f, new Color(.58f, .46f, .035f), GalleryDeck);
             GalleryWell(floor, colors, indices, at + new Vector2(.23f, -.76f), .93f, new Color(.012f, .016f, .021f, .86f), Color.clear);
             Bar(at + Vector2.down * 1.12f, new Vector2(.47f, .055f), GalleryLampMatrix.RouteBlue);
         }

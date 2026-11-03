@@ -258,8 +258,8 @@ public sealed partial class HangarHub : MonoBehaviour
             var glowColors = new List<Color>();
             var glowTriangles = new List<int>();
             GalleryWell(glowVertices, glowColors, glowTriangles, plinthSpots[i], 1.22f,
-                new Color(1, .07f, .035f, .88f), new Color(.85f, .025f, .016f, 0));
-            GallerySurface("Outfitter red footlight", glowVertices, glowColors, glowTriangles, -6, plinth.carrier);
+                new Color(1, .82f, .055f, .88f), new Color(.78f, .57f, .035f, 0));
+            GallerySurface("Outfitter yellow footlight", glowVertices, glowColors, glowTriangles, -6, plinth.carrier);
             var plaque = plinth.plaque = MountedPanel("Stock placard", plinthSpots[i] + Vector2.up * PlacardHeight, new Vector2(3.62f, 1.94f), fadeOnReveal: true);
             plaque.GetComponent<Image>().color = Color.black;
             DockInstrument.Block(plaque, "Rarity edge", new Vector2(0, 94), new Vector2(362, 5), AItem.GetRarityColor(plinth.item.rarity));
