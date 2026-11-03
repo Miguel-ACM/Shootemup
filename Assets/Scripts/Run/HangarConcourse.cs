@@ -213,12 +213,12 @@ public sealed partial class HangarHub
         return WorldLabel(panel, text, Vector2.zero, new Vector2(490, 58), Mathf.Max(27, size * 12), color);
     }
 
-    RectTransform MountedPanel(string title, Vector2 position, Vector2 size, Transform follow = null)
+    RectTransform MountedPanel(string title, Vector2 position, Vector2 size, Transform follow = null, bool fadeOnReveal = false)
     {
         var go = new GameObject(title, typeof(RectTransform), typeof(Image));
         var rect = go.GetComponent<RectTransform>();
         rect.sizeDelta = size * 100;
-        readouts.MountAt(rect, Spot(position, 1), .01f, installing?.lettering.transform, follow);
+        readouts.MountAt(rect, Spot(position, 1), .01f, installing?.lettering.transform, follow, fadeOnReveal);
         go.GetComponent<Image>().color = new Color(.018f, .034f, .043f);
         return rect;
     }
@@ -293,7 +293,7 @@ public sealed partial class HangarHub
         walletPanel = MountedPanel("Coin reader", new Vector2(-2.55f, 14.45f), new Vector2(3.1f, .88f));
         walletText = CoinRow(walletPanel, 0, 296);
         walletPanel.gameObject.SetActive(false);
-        stockScreen = MountedPanel("Outfitter display", Vector2.zero, new Vector2(4.35f, 3.08f));
+        stockScreen = MountedPanel("Outfitter display", Vector2.zero, new Vector2(4.35f, 3.08f), fadeOnReveal: true);
         stockInfo = WorldLabel(stockScreen, "", new Vector2(0, 35), new Vector2(395, 195), 28, DockInstrument.Paper);
         stockScreen.gameObject.SetActive(false);
         Stencil("LAUNCH", new Vector2(0, DeckExtension + 6.6f), 2.8f, DockInstrument.Paper);

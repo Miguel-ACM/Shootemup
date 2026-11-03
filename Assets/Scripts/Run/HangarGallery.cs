@@ -84,7 +84,7 @@ public sealed partial class HangarHub
         BuildControlDesk((int)Dock.Armory);
         MountReceiver((int)Dock.Armory);
         HoverSign("CASES >", FilterDesk + new Vector2(2.6f, -2.5f), DockInstrument.Brass);
-        cardPanel = MountedPanel("Gallery object label", Vector2.zero, new Vector2(6.6f, 2.4f));
+        cardPanel = MountedPanel("Gallery object label", Vector2.zero, new Vector2(6.6f, 2.4f), fadeOnReveal: true);
         cardPanel.pivot = new Vector2(.5f, 0);
         var layout = cardPanel.gameObject.AddComponent<VerticalLayoutGroup>();
         layout.padding = new RectOffset(24, 24, 20, 20);
@@ -308,9 +308,11 @@ public sealed partial class HangarHub
         if (i == hoverIndex)
             return;
         hoverIndex = i;
-        cardPanel.gameObject.SetActive(i >= 0);
         if (i < 0)
+        {
+            cardPanel.gameObject.SetActive(false);
             return;
+        }
         var e = exhibits[i];
         bool known = Released(e);
         var trial = FlightTrials.Blueprint(e.key);
@@ -318,6 +320,7 @@ public sealed partial class HangarHub
         cardText.text = known ? e.description : "???";
         cardSource.text = known ? DecisionOverlay.Category(e.category).ToUpperInvariant() : trial != null ? "Certify " + trial.title : "Outfitter  ·  " + MetaProgress.Price(ItemPool.RarityOf(e.key)) + " coins";
         readouts.Aim(cardPanel, Spot(Case(i) + Vector2.up * 1.03f, 0));
+        readouts.Reveal(cardPanel);
     }
     void BuildDirectory()
     {

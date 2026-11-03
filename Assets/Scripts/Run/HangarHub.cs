@@ -271,12 +271,12 @@ public sealed partial class HangarHub : MonoBehaviour
             GalleryWell(glowVertices, glowColors, glowTriangles, plinthSpots[i], 1.22f,
                 new Color(1, .07f, .035f, .88f), new Color(.85f, .025f, .016f, 0));
             GallerySurface("Outfitter red footlight", glowVertices, glowColors, glowTriangles, -6, plinth.carrier);
-            var plaque = plinth.plaque = MountedPanel("Stock placard", plinthSpots[i] + Vector2.up * PlacardHeight, new Vector2(3.62f, 1.94f));
+            var plaque = plinth.plaque = MountedPanel("Stock placard", plinthSpots[i] + Vector2.up * PlacardHeight, new Vector2(3.62f, 1.94f), fadeOnReveal: true);
             plaque.GetComponent<Image>().color = Color.black;
             DockInstrument.Block(plaque, "Rarity edge", new Vector2(0, 94), new Vector2(362, 5), AItem.GetRarityColor(plinth.item.rarity));
             WorldLabel(plaque, plinth.item.GetData()[0], new Vector2(0, 38), new Vector2(338, 91), 34, DockInstrument.Paper);
             plinth.price = CoinRow(plaque, -49, 330);
-            plinth.category = MountedPanel("Equipment class", plinthSpots[i] + Vector2.down * ClassDrop, new Vector2(3.4f, .50f));
+            plinth.category = MountedPanel("Equipment class", plinthSpots[i] + Vector2.down * ClassDrop, new Vector2(3.4f, .50f), fadeOnReveal: true);
             plinth.category.GetComponent<Image>().enabled = false;
             WorldLabel(plinth.category, DecisionOverlay.Category(plinth.item), Vector2.zero, new Vector2(334, 50), 32, DockInstrument.Paper);
             plaque.gameObject.SetActive(false);
@@ -324,16 +324,18 @@ public sealed partial class HangarHub : MonoBehaviour
                 plinths[inspectedStock].category.gameObject.SetActive(false);
             }
             inspectedStock = hovered;
-            stockScreen.gameObject.SetActive(hovered >= 0);
             if (hovered >= 0)
             {
                 var offer = plinths[hovered];
-                offer.plaque.gameObject.SetActive(true);
-                offer.category.gameObject.SetActive(true);
                 stockInfo.text = offer.item.GetData()[2];
                 float displayY = offer.spot.y > center.y + plinthSpots[1].y ? 18.95f : 10.55f;
                 readouts.Aim(stockScreen, Spot(new Vector2(2.35f, displayY), 1));
+                readouts.Reveal(offer.plaque);
+                readouts.Reveal(offer.category);
+                readouts.Reveal(stockScreen);
             }
+            else
+                stockScreen.gameObject.SetActive(false);
         }
         if (hovered >= 0)
         {

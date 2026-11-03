@@ -156,6 +156,27 @@ public sealed class HangarDeckReview : MonoBehaviour
         File.WriteAllBytes(VerifyHangarDeck.Folder + "/" + title + ".png", image.EncodeToPNG());
         Destroy(image);
     }
+    IEnumerator CheckItemReveal(CanvasGroup group, string capture = null)
+    {
+        var frame = new WaitForEndOfFrame();
+        float previous = group.alpha, until = Time.unscaledTime + 1;
+        bool intermediate = false;
+        Check(group.gameObject.activeInHierarchy && previous < .25f, "new description starts transparent");
+        while (group.alpha < 1 && Time.unscaledTime < until)
+        {
+            yield return frame;
+            if (group.alpha < previous)
+                throw new Exception("description restarted during the same hover");
+            previous = group.alpha;
+            if (!intermediate && previous > .2f && previous < .9f)
+            {
+                intermediate = true;
+                if (capture != null)
+                    ScreenCapture.CaptureScreenshot(VerifyHangarDeck.Folder + "/" + capture + ".png");
+            }
+        }
+        Check(intermediate && group.alpha == 1, "description passes through partial opacity and reaches full opacity");
+    }
     IEnumerator ReviewPlatformMotion(MeshRenderer platform, MeshRenderer exhibit)
     {
         var separation = exhibit.bounds.center - platform.bounds.center;
@@ -469,7 +490,8 @@ public sealed class HangarDeckReview : MonoBehaviour
         foreach (var offer in offers)
         {
             Place(offer.transform.position.x, offer.transform.position.y);
-            yield return new WaitForSeconds(.3f);
+            yield return null;
+            yield return CheckItemReveal(details.GetComponent<CanvasGroup>(), offer == offers[1] ? "OutfitterMidFade" : null);
             var row = rows.Single(r => r.isActiveAndEnabled);
             Check(classes.Count(r => r.gameObject.activeInHierarchy) == 1 && details.gameObject.activeSelf &&
                 row.transform.parent.GetComponentsInChildren<TMPro.TMP_Text>().Any(t => t.text == offer.GetData()[0]) &&
@@ -527,6 +549,24 @@ public sealed class HangarDeckReview : MonoBehaviour
         Place(7.7f, 6);
         yield return new WaitForSeconds(.8f);
         yield return Capture("ArmoryThreshold");
+        Place(24.8f, 12.9f);
+        yield return new WaitForSeconds(.8f);
+        var card = Field<RectTransform>("cardPanel").GetComponent<CanvasGroup>();
+        Place(24.8f, 14.8f);
+        yield return null;
+        yield return CheckItemReveal(card, "GalleryMidFade");
+        Place(28.95f, 14.8f);
+        yield return null;
+        yield return CheckItemReveal(card);
+        var dialog = FindAnyObjectByType<Dialog>();
+        var runCard = dialog.Panel.GetComponentInParent<CanvasGroup>();
+        foreach (var item in new[] { offers[0], offers[2] })
+        {
+            var data = item.GetData();
+            dialog.ShowItemDesc(data[0], data[1], data[2], item.rarity);
+            yield return CheckItemReveal(runCard);
+        }
+        dialog.Hide();
         Place(-23.6f, 6);
         yield return new WaitForSeconds(.8f);
         yield return Capture("FleetBerths");

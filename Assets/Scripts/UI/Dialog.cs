@@ -5,6 +5,7 @@ using TMPro;
 /// <summary>Centred screen-space item card; fading never depends on world position.</summary>
 public class Dialog : MonoBehaviour
 {
+    public const float RevealSeconds = .18f;
     public TMP_FontAsset font;
     Canvas canvas;
     CanvasGroup group;
@@ -68,7 +69,7 @@ public class Dialog : MonoBehaviour
     {
         if (group == null)
             return;
-        group.alpha = Mathf.MoveTowards(group.alpha, target, Time.unscaledDeltaTime / .14f);
+        group.alpha = Mathf.MoveTowards(group.alpha, target, Time.unscaledDeltaTime / (target > 0 ? RevealSeconds : .14f));
         canvas.enabled = target > 0 || group.alpha > 0;
         float width = Mathf.Min(340, Screen.width * 720f / Mathf.Max(1, Screen.height) - 24);
         panel.sizeDelta = new Vector2(Mathf.Max(180, width), 100);
@@ -77,6 +78,8 @@ public class Dialog : MonoBehaviour
     public void ShowItemDesc(string name, string detail, string effect, string rarity)
     {
         Build();
+        if (title.text != name || description.text != effect)
+            group.alpha = 0;
         title.text = name;
         flavour.text = detail;
         description.text = effect;

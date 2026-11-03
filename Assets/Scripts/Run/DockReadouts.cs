@@ -13,6 +13,8 @@ public sealed class DockReadouts : MonoBehaviour
         public Vector3 point;
         public float scale;
         public Transform follow;
+        public CanvasGroup fade;
+        public float revealedAt;
     }
     readonly List<Mount> mounts = new List<Mount>();
     RectTransform aperture;
@@ -38,10 +40,25 @@ public sealed class DockReadouts : MonoBehaviour
         layer.transform.SetParent(aperture, false);
         return layer;
     }
-    public void MountAt(RectTransform panel, Vector3 anchor, float worldScale, Transform layer = null, Transform follow = null)
+    public void MountAt(RectTransform panel, Vector3 anchor, float worldScale, Transform layer = null, Transform follow = null, bool fadeOnReveal = false)
     {
         panel.SetParent(layer != null ? layer : aperture, false);
-        mounts.Add(new Mount { panel = panel, point = anchor, scale = worldScale, follow = follow });
+        mounts.Add(new Mount { panel = panel, point = anchor, scale = worldScale, follow = follow,
+            fade = fadeOnReveal ? panel.gameObject.AddComponent<CanvasGroup>() : null });
+    }
+    public void Reveal(RectTransform panel)
+    {
+        foreach (var mount in mounts)
+            if (mount.panel == panel)
+            {
+                if (mount.fade != null)
+                {
+                    mount.revealedAt = Time.unscaledTime;
+                    mount.fade.alpha = 0;
+                }
+                panel.gameObject.SetActive(true);
+                return;
+            }
     }
     public void Aim(RectTransform panel, Vector3 point)
     {
@@ -65,6 +82,8 @@ public sealed class DockReadouts : MonoBehaviour
             }
             if (!m.panel.gameObject.activeSelf)
                 continue;
+            if (m.fade != null && m.fade.alpha < 1)
+                m.fade.alpha = Mathf.SmoothStep(0, 1, (Time.unscaledTime - m.revealedAt) / Dialog.RevealSeconds);
             var offset = (m.follow != null ? m.follow.position : m.point) - view.transform.position;
             m.panel.anchoredPosition = new Vector2(offset.x, offset.y) * pixels;
             m.panel.localScale = Vector3.one * (pixels * m.scale);
