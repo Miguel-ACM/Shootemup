@@ -1032,6 +1032,14 @@ public sealed class HangarDeckReview : MonoBehaviour
         Check(FindAnyObjectByType<HangarHub>() != null, "the return lands in the playable hangar");
     }
 
+    void CheckResultLettering()
+    {
+        var font = FindAnyObjectByType<Dialog>().font;
+        var labels = FindAnyObjectByType<GameOverState>().GetComponentsInChildren<TMPro.TextMeshProUGUI>();
+        Check(labels.Length > 0 && labels.All(label => label.font == font && label.fontStyle == TMPro.FontStyles.Normal
+            && !label.isTextOverflowing), "every flight result label fits in the regular game font");
+    }
+
     IEnumerator CheckPresentation()
     {
         bool endingsOnly = SessionState.GetBool("InspectFlightEndings", false);
@@ -1092,6 +1100,7 @@ public sealed class HangarDeckReview : MonoBehaviour
             yield return null;
         yield return new WaitForSecondsRealtime(3);
         yield return Capture("Victory");
+        CheckResultLettering();
         Check(MetaProgress.LastFlight.outcome == "Victory" && MetaProgress.CanFly(ShipFrame.Lancer), "Hell reward exit ends campaign and releases Lancer");
         yield return DismissResult(GamepadButton.South);
         while (GameOverState.Active || (hub = FindAnyObjectByType<HangarHub>()) == null || CloudTransition.Busy || HangarHub.HoldingShip)
@@ -1112,6 +1121,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         GameOverState.Show();
         yield return new WaitForSecondsRealtime(2);
         yield return Capture("GameOver");
+        CheckResultLettering();
         Check(MetaProgress.LastFlight.outcome == "Lost" && MetaProgress.LastFlight.awards.Count == 1 && !MetaProgress.CanFly(ShipFrame.Ember), "loss files a new boss stamp and preserves hull lock");
         yield return DismissResult(GamepadButton.East);
     }

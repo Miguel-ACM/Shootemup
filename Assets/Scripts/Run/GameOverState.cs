@@ -9,6 +9,7 @@ public sealed class GameOverState : MonoBehaviour
     public static bool Active => instance != null;
     CanvasGroup group;
     RectTransform lettering;
+    TMP_FontAsset font;
     float age;
     bool leaving;
     public static void Show(bool victory = false)
@@ -35,10 +36,13 @@ public sealed class GameOverState : MonoBehaviour
             Destroy(choice.gameObject);
         foreach (var shop in FindObjectsByType<DecisionShop>())
             shop.Abort();
-        var dialog = FindAnyObjectByType<Dialog>();
+        var dialog = FindAnyObjectByType<Dialog>(FindObjectsInactive.Include);
         if (dialog != null)
+        {
             dialog.Hide();
-        instance.Build(dialog != null ? dialog.font : null);
+            instance.font = dialog.font;
+        }
+        instance.Build();
     }
 
     RectTransform playfield;
@@ -47,7 +51,7 @@ public sealed class GameOverState : MonoBehaviour
     bool won;
     int sounded;
     Image wings;
-    void Build(TMP_FontAsset font)
+    void Build()
     {
         log = MetaProgress.LastFlight ?? new FlightLog
         {
@@ -71,17 +75,13 @@ public sealed class GameOverState : MonoBehaviour
         playfield = DockInstrument.Block(transform, "Flight area", Vector2.zero,
             new Vector2(405, 720), new Color(.013f, .025f, .035f, .86f));
         playfield.gameObject.AddComponent<RectMask2D>();
-        var print = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
         string title = won ? (log.contract == null ? "VICTORY" : "CERTIFIED") : "GAME OVER";
-        var headline = Label(title, won ? 220 : 245, won ? 82 : 98, won ? 44 : 72, won ? font : print,
+        var headline = Label(title, won ? 220 : 245, 82, 44,
             won ? accent : new Color(1, .76f, .58f));
+        headline.textWrappingMode = TextWrappingModes.NoWrap;
         lettering = headline.rectTransform;
         if (!won)
-        {
-            headline.fontStyle = FontStyles.Bold | FontStyles.Italic;
-            headline.characterSpacing = -3;
             DockInstrument.Block(playfield, "Debrief rule", new Vector2(0, 193), new Vector2(330, 3), new Color(.75f, .29f, .17f));
-        }
         if (won)
         {
             wings = new GameObject("Pilot wings", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
@@ -92,21 +92,23 @@ public sealed class GameOverState : MonoBehaviour
             wings.raycastTarget = false;
             ItemSound.Play("ready", .21f);
         }
-        Label((log.contract ?? log.frame.ToString()).ToUpperInvariant() + "   /   " + log.difficulty.ToString().ToUpperInvariant()
-            + "   /   " + log.Duration, 151, 35, 18, print, DockInstrument.Paper);
-        Label(log.route, 111, 48, 18, print, DockInstrument.Muted);
-        Label("SCORE", 48, 22, 13, font, accent);
-        score = Label("", 9, 52, won ? 34 : 43, won ? font : print, DockInstrument.Paper);
-        if (!won) score.fontStyle = FontStyles.Bold;
-        coins = Label("", -39, 38, 22, print, DockInstrument.Brass);
-        Label(log.bosses + (log.bosses == 1 ? " boss" : " bosses") + "     " + log.clean + " no-hit     "
-            + log.hits + (log.hits == 1 ? " hit" : " hits") + "     " + log.peak + "× peak", -78, 32, 18, print, DockInstrument.Paper);
-        stamps = Label("", -192, 151, 20, print, accent);
-        footer = Label("", -321, 36, 14, font, DockInstrument.Muted);
+        Label((log.contract ?? log.frame.ToString()).ToUpperInvariant() + " / " + log.difficulty.ToString().ToUpperInvariant()
+            + " / " + log.Duration, 151, 35, 15, DockInstrument.Paper).textWrappingMode = TextWrappingModes.NoWrap;
+        Label(log.route, 111, 48, 15, DockInstrument.Muted);
+        Label("SCORE", 48, 22, 13, accent);
+        score = Label("", 9, 52, 34, DockInstrument.Paper);
+        coins = Label("", -39, 38, 16, DockInstrument.Brass);
+        coins.textWrappingMode = TextWrappingModes.NoWrap;
+        Label(log.bosses + (log.bosses == 1 ? " boss" : " bosses") + "   " + log.clean + " no-hit\n"
+            + log.hits + (log.hits == 1 ? " hit" : " hits") + "   " + log.peak + "x peak", -86, 44, 16, DockInstrument.Paper);
+        stamps = Label("", -192, 151, 16, accent);
+        stamps.textWrappingMode = TextWrappingModes.NoWrap;
+        stamps.lineSpacing = 14;
+        footer = Label("", -321, 36, 14, DockInstrument.Muted);
         group.alpha = 0;
     }
 
-    TextMeshProUGUI Label(string text, float y, float height, float size, TMP_FontAsset font, Color color)
+    TextMeshProUGUI Label(string text, float y, float height, float size, Color color)
     {
         var label = new GameObject("Result lettering", typeof(RectTransform), typeof(TextMeshProUGUI)).GetComponent<TextMeshProUGUI>();
         label.transform.SetParent(playfield, false);
@@ -137,7 +139,7 @@ public sealed class GameOverState : MonoBehaviour
         }
         float t = Mathf.SmoothStep(0, 1, (age - .35f) / 1.1f);
         score.text = Mathf.RoundToInt(log.score * t).ToString("N0");
-        coins.text = "+" + Mathf.RoundToInt(log.earned * t) + " coins    <size=80%>" + log.banked + " banked</size>";
+        coins.text = "+" + Mathf.RoundToInt(log.earned * t) + " coins  <size=80%>" + log.banked + " banked</size>";
         int count = Mathf.Clamp(Mathf.FloorToInt((age - 1.05f) * 3), 0, log.awards.Count);
         if (count > sounded)
         {
