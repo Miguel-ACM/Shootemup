@@ -40,7 +40,7 @@ public sealed partial class CityDuoBoss : DistrictBoss
             ShareEncounterWith(partner);
         }
         // The partner applies its own sturdiness when it starts, a frame later.
-        combinedMaximum = health + (partner != null ? partner.health * (partner.initialHealth > 0 ? 1 : 1.3f) : 0);
+        combinedMaximum = health + (partner != null ? partner.health * (partner.initialHealth > 0 ? 1 : Sturdiness) : 0);
         if (bar != null)
             bar.SetMax(combinedMaximum);
     }

@@ -16,7 +16,7 @@ public abstract class DistrictBoss : DistrictEnemy
         get => encounter.Phase >= 3; set => encounter.Phase = value ? 3 : Mathf.Min(2, encounter.Phase);
     }
 
-    const float Sturdiness = 1.3f;
+    protected static float Sturdiness => Difficulty.Normal ? 1.17f : 1.3f;
     protected ResourceBar bar;
     protected Vector3 station;
     protected float motionAge;
@@ -59,7 +59,6 @@ public abstract class DistrictBoss : DistrictEnemy
     protected override void Start()
     {
         base.Start();
-        // Every boss is 30% sturdier than its authored base (Miguel, 30 October 2026).
         health *= Sturdiness;
         initialHealth = health;
         isBoss = true;
