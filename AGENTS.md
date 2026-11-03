@@ -183,8 +183,8 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 ## Workflow
 
-- District music (3 November 2026) starts on the track's intro and continues into flight. At boss entry, crossfade into a long, energetic passage of that same recording at its original tempo, with a bass boost. At final destruction, crossfade to the outro and gradually release the bass. Time the crossfades to progression endings. Keep Boss (fast) as a pitch-preserving audition option in the local Music Lab. The normal boss mix plays in the game.
-- Use Miguel’s saved Intro, Flight, Boss and Outro markers for each song. Both ends of each section are independently editable on four-beat bar lines in Music Lab. Preserve saved ranges through reanalysis. Crossfade at the next progression ending within the outgoing section or at its chosen end.
+- District music (3 November 2026) starts on the track's intro and continues into flight. At boss entry, crossfade into a long, energetic passage of that same recording at its original tempo, with a bass boost. At final destruction, crossfade to the outro and gradually release the bass. Keep Boss (fast) as a pitch-preserving audition option in the local Music Lab. The normal boss mix plays in the game.
+- Use Miguel’s saved Intro, Flight, Boss and Outro markers for each song. Both ends of each section are independently editable on four-beat bar lines in Music Lab. Preserve saved ranges through reanalysis. For a requested transition, crossfade when the next chord change in the outgoing music matches the opening chord at the destination IN marker. Use the saved OUT if there is no match before it.
 - Layer FL Studio’s Monster Kick 127 on each mapped beat of the boss music. Match the game and Music Lab, including loop downbeats and the faster audition timing.
 
 - Implement each individual feature/enemy/item in its own commit. Commit authorized existing work, but preserve unrelated work being changed by another task.

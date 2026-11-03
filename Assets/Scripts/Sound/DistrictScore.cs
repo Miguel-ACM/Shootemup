@@ -5,14 +5,16 @@ using UnityEngine;
 public sealed class DistrictScore : MonoBehaviour
 {
     [Serializable] public class Span { public float start, end; }
+    [Serializable] public class Chord { public float time; public string name; }
     [Serializable] public class Sections { public Span intro, body, peak, outro; }
-    [Serializable] public class Cues { public float bpm; public float[] beats, boundaries; public Sections sections; }
+    [Serializable] public class Cues { public float bpm; public float[] beats; public Chord[] chords; public Sections sections; }
     enum Part { Intro, Flight, Boss, Outro, Linear }
     sealed class Track
     {
         public AudioClip clip;
         public Cues cues;
-        public Part First => cues == null ? Part.Linear : Part.Intro;
+        public bool adaptive;
+        public Part First => adaptive ? Part.Intro : Part.Linear;
         Span Range(Part section) => section switch
         {
             Part.Intro => cues.sections.intro,
@@ -24,11 +26,27 @@ public sealed class DistrictScore : MonoBehaviour
         public float Start(Part section) => Range(section)?.start ?? 0;
         public float End(Part section) => Mathf.Min(Range(section)?.end ?? clip.length, clip.length);
 
-        // A hand-picked bar ending can fall between the detected phrase boundaries.
-        public float ExitPoint(float start, float end, double earliest)
+        public string OpeningChord(Part section)
         {
-            foreach (float boundary in cues.boundaries)
-                if (boundary > start && boundary >= earliest && boundary < end) return boundary;
+            var chords = cues?.chords;
+            if (chords == null) return null;
+            float start = Start(section), end = End(section);
+            int i = 0;
+            while (i+1 < chords.Length && chords[i+1].time <= start) i++;
+            // The IN marker may fall within a held chord or before the first pitched beat.
+            for (; i < chords.Length && chords[i].time < end; i++)
+                if (!string.IsNullOrEmpty(chords[i].name) && chords[i].name != "N") return chords[i].name;
+            return null;
+        }
+
+        public float ExitPoint(float start, float end, double earliest, string target)
+        {
+            if (target != null && cues?.chords != null)
+                foreach (var chord in cues.chords)
+                {
+                    if (chord.time > end) break;
+                    if (chord.time > start && chord.time >= earliest && chord.name == target) return chord.time;
+                }
             return end;
         }
     }
@@ -52,6 +70,7 @@ public sealed class DistrictScore : MonoBehaviour
             double now = AudioSettings.dspTime;
             if (pendingPart == Part.Boss && !double.IsPositiveInfinity(cut))
                 return (float)Math.Max(0, cut - now);
+            string target = track.OpeningChord(Part.Boss);
             double flightAt = cut;
             if (double.IsPositiveInfinity(cut))
             {
@@ -60,7 +79,7 @@ public sealed class DistrictScore : MonoBehaviour
                 float end = track.End(part);
                 if (after <= active.ClockAt(end))
                 {
-                    float point = track.ExitPoint(active.Offset, end, active.Offset + after - active.StartAt);
+                    float point = track.ExitPoint(active.Offset, end, active.Offset + after - active.StartAt, target);
                     return (float)Math.Max(0, active.ClockAt(point) - now);
                 }
                 flightAt = active.ClockAt(end);
@@ -70,7 +89,7 @@ public sealed class DistrictScore : MonoBehaviour
             double length = finish - start;
             if (length <= 0) return 0;
             flightAt += Math.Max(0, Math.Ceiling((earliestBoss - flightAt) / length) - 1) * length;
-            float exit = track.ExitPoint(start, finish, start + Math.Max(0, earliestBoss - flightAt));
+            float exit = track.ExitPoint(start, finish, start + Math.Max(0, earliestBoss - flightAt), target);
             return (float)Math.Max(0, flightAt + exit - start - now);
         }
     }
@@ -88,9 +107,9 @@ public sealed class DistrictScore : MonoBehaviour
         }
     }
 
-    public void Play(AudioClip clip, Cues cues)
+    public void Play(AudioClip clip, Cues cues, bool adaptive = true)
     {
-        var song = new Track { clip = clip, cues = cues };
+        var song = new Track { clip = clip, cues = cues, adaptive = adaptive && cues != null };
         if (clip.loadState == AudioDataLoadState.Unloaded) clip.LoadAudioData();
         if (WantsOutro)
         {
@@ -131,7 +150,7 @@ public sealed class DistrictScore : MonoBehaviour
 
     public void Boss(float warningSeconds)
     {
-        if (!Active || track.cues == null || wanted == Part.Boss) return;
+        if (!Active || !track.adaptive || wanted == Part.Boss) return;
         wanted = Part.Boss;
         earliestBoss = AudioSettings.dspTime + warningSeconds;
         Replan();
@@ -139,7 +158,7 @@ public sealed class DistrictScore : MonoBehaviour
 
     public void Outro()
     {
-        if (!Active || track.cues == null || wanted == Part.Outro) return;
+        if (!Active || !track.adaptive || wanted == Part.Outro) return;
         wanted = Part.Outro;
         Replan();
     }
@@ -168,13 +187,13 @@ public sealed class DistrictScore : MonoBehaviour
             if (travel) after = Math.Max(after, Math.Min(active.ClockAt(end), active.StartAt + 8 * 60 / track.cues.bpm));
             if (after <= active.ClockAt(end))
             {
-                end = track.ExitPoint(active.Offset, end, active.Offset + after - active.StartAt);
                 pendingTrack = travel ? following : track;
                 pendingPart = travel ? following.First : wanted;
+                end = track.ExitPoint(active.Offset, end, active.Offset + after - active.StartAt, pendingTrack.OpeningChord(pendingPart));
             }
         }
         cut = active.ClockAt(end);
-        double fade = track.cues == null ? .5 : Math.Clamp(120 / track.cues.bpm, .48, 1);
+        double fade = track.adaptive ? Math.Clamp(120 / track.cues.bpm, .48, 1) : .5;
         // Keep playing the outgoing tail behind the incoming downbeat; reclaim its deck after the fade.
         double overlap = pendingTrack == null ? 0 : Math.Min(fade, Math.Max(0, track.clip.length - end));
         if (overlap < .04) overlap = 0;

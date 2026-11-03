@@ -17,6 +17,7 @@ const stamp = t => {
     const ticks = Math.round(t*100);
     return Math.floor(ticks/6000) + ':' + ((ticks%6000)/100).toFixed(2).padStart(5,'0');
 };
+const queued = (title, cut) => title + ' queued · ' + (cut.match?.name ?? 'section end') + ' at ' + stamp(cut.offset);
 
 async function get(url, signal) {
     const res = await fetch(url, { signal });
@@ -137,10 +138,10 @@ async function select(item) {
             const incoming = await openTransport(item.id,value,signal);
             if (signal.aborted) return;
             engine.tick();
-            const cut = engine.current ? engine.plan(null,true) : { at:context.currentTime+.045, fade:.1 };
+            const cut = engine.current ? engine.plan(null,incoming) : { at:context.currentTime+.045, fade:.1 };
             incoming.start(cut.at,cut.fade);
             handoff = { ...cut, engine:incoming, map:value, item };
-            message = item.title + ' queued · next progression ending.';
+            message = cut.offset == null ? 'Starting ' + item.title + '…' : queued(item.title,cut);
             return;
         }
         map = value;
@@ -481,7 +482,7 @@ function draw() {
         b.classList.toggle('queued', s.next === part);
         set(b.lastChild, range && map.adaptive !== false ? fmt(range.start) + ' – ' + fmt(range.end) : '—');
     }
-    set($('status'), message || (s.next ? parts[s.next][0] + ' queued for the next progression ending.' :
+    set($('status'), message || (s.next ? queued(parts[s.next][0],s) :
         pendingSeek ? 'Cued at ' + fmt(s.pos) + '.' : engine?.ended ? 'Recording complete.' : map?.adaptive === false ? 'Short cue · plays straight through.' :
         !engine ? 'Start on Intro. Choose a cue to queue a change.' : !moving ? 'Paused.' :
         s.part === 'fast' ? 'Fast boss loop · original pitch.' : s.part === 'peak' ? 'Boss loop · original tempo.' :
@@ -492,7 +493,8 @@ function draw() {
     set($('bass'), (s.bass > .05 ? '+' + s.bass.toFixed(1) : '0') + ' dB');
     if (map) {
         const idx = lastAt(map.boundaries,s.pos);
-        set($('boundary'), fmt(map.boundaries[idx+1]));
+        const change = map.chords[lastAt(map.chords,s.pos,c => c.time)+1];
+        set($('boundary'), change ? change.name + ' · ' + fmt(change.time) : '—');
         harmonicStrip(s.pos,idx);
         const i = lastAt(map.beats,s.pos), bar = lastAt(map.downbeats,s.pos);
         const first = bar < 0 ? 0 : lastAt(map.beats,map.downbeats[bar]+.025);

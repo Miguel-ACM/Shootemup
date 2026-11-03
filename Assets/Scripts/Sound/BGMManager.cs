@@ -47,8 +47,7 @@ public class BGMManager : MonoBehaviour
         if (score == null) return;
         var clip = Resources.Load<AudioClip>("Music/" + id);
         if (clip == null) { Debug.LogWarning("Missing music track: " + id); return; }
-        DistrictScore.Cues cues = null;
-        if (district && !maps.TryGetValue(id, out cues))
+        if (!maps.TryGetValue(id, out var cues))
         {
             var data = Resources.Load<TextAsset>("MusicAnalysis/" + id);
             if (data != null) cues = JsonUtility.FromJson<DistrictScore.Cues>(data.text);
@@ -57,7 +56,7 @@ public class BGMManager : MonoBehaviour
         }
         fade = 1;
         ApplyVolume();
-        score.Play(clip, cues);
+        score.Play(clip, cues, district);
     }
 
     public static void QueueBoss(float warningSeconds)
