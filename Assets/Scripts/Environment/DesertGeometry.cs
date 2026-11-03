@@ -136,7 +136,7 @@ public static class DesertGeometry
             return true;
         }
 
-        public Mesh Finish(string name)
+        public void Shade()
         {
             for (int i = 0; i < colors.Count; i++)
             {
@@ -147,6 +147,9 @@ public static class DesertGeometry
                 c.a = 1;
                 colors[i] = c;
             }
+        }
+        public Mesh Upload(string name)
+        {
             var m = new Mesh { name = name, indexFormat = IndexFormat.UInt32 };
             m.SetVertices(vertices);
             m.SetColors(colors);
@@ -194,8 +197,12 @@ public static class DesertGeometry
     public static float Height(float x, float y, int seed)
     {
         Layout(seed);
+        return Height(x, y, dunes);
+    }
+    static float Height(float x, float y, Dune[] layout)
+    {
         float height = 0;
-        foreach (var dune in dunes)
+        foreach (var dune in layout)
         {
             float dx = x - dune.x, dy = Mathf.Repeat(y - dune.y + 40, 80) - 40;
             if (Mathf.Abs(dx) > 11 || Mathf.Abs(dy) > 11)
@@ -218,7 +225,25 @@ public static class DesertGeometry
         return .08f + height;
     }
 
-    public static Mesh Ground(int section, int seed)
+    public static System.Collections.IEnumerator BuildSection(int section, int seed, bool background, System.Action<Mesh, Mesh> ready)
+    {
+        Layout(seed);
+        var layout = dunes;
+        var buildings = BuildBuildings(section, seed);
+        (Vector3[] vertices, Color[] colors, int[] indices) Bake()
+        {
+            buildings.Shade();
+            return GroundData(section, seed, layout, buildings);
+        }
+        var job = background ? System.Threading.Tasks.Task.Run(Bake) : null;
+        while (job != null && !job.IsCompleted) yield return null;
+        var data = job == null ? Bake() : job.GetAwaiter().GetResult();
+        var ground = new Mesh { name = "Faceted wind-sculpted dunes " + section, vertices = data.vertices, colors = data.colors, triangles = data.indices };
+        ground.RecalculateNormals();
+        ready(ground, buildings.Upload("Desert silos and compact outposts " + section));
+    }
+
+    static (Vector3[], Color[], int[]) GroundData(int section, int seed, Dune[] layout, MeshBuilder buildings)
     {
         const int columns = 80, rows = 80;
         float origin = (section - 1) * 20;
@@ -228,7 +253,6 @@ public static class DesertGeometry
         var vertices = new Vector3[columns * rows * 6];
         var colors = new Color[vertices.Length];
         var triangles = new int[vertices.Length];
-        var buildings = BuildBuildings(section, seed);
         float Jitter(int x, int y, int salt)
         {
             unchecked
@@ -245,11 +269,11 @@ public static class DesertGeometry
                 float x = -14 + col * (28f / columns) + (col > 0 && col < columns ? Jitter(col, worldRow, 0) * .12f : 0);
                 float y = -10 + row * (20f / rows) + (row > 0 && row < rows ? Jitter(col, worldRow, 71) * .10f : 0);
                 int k = row * (columns + 1) + col;
-                var p = new Vector3(x, y, Height(x, origin + y, seed));
+                var p = new Vector3(x, y, Height(x, origin + y, layout));
                 points[k] = p;
                 const float e = .09f;
-                var normal = new Vector3(-(Height(x + e, origin + y, seed) - Height(x - e, origin + y, seed)) / (2 * e),
-                    -(Height(x, origin + y + e, seed) - Height(x, origin + y - e, seed)) / (2 * e), 1).normalized;
+                var normal = new Vector3(-(Height(x + e, origin + y, layout) - Height(x - e, origin + y, layout)) / (2 * e),
+                    -(Height(x, origin + y + e, layout) - Height(x, origin + y - e, layout)) / (2 * e), 1).normalized;
                 lighting[k] = Mathf.InverseLerp(.28f, .98f, Vector3.Dot(normal, Sun));
                 shadows[k] = buildings.Shadow(p + Vector3.forward * .025f);
             }
@@ -293,16 +317,9 @@ public static class DesertGeometry
                     Triangle(b, c, d);
                 }
             }
-        var mesh = new Mesh { name = "Faceted wind-sculpted dunes " + section };
-        mesh.vertices = vertices;
-        mesh.colors = colors;
-        mesh.triangles = triangles;
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        return mesh;
+        return (vertices, colors, triangles);
     }
 
-    public static Mesh Buildings(int section, int seed) => BuildBuildings(section, seed).Finish("Desert silos and compact outposts " + section);
     static readonly MeshBuilder[] footprints = new MeshBuilder[4];
     static int footprintSeed = -1;
     public static bool ClearSand(int section, int seed, Vector2 projected, float radius)
@@ -425,6 +442,7 @@ public static class DesertGeometry
                 float x = side * (11.8f + .35f * Mathf.Sin(seed + i)), y = -8 + i * 5;
                 b.Face(new Color(.53f, .36f, .19f), new Vector3(x - side * 1.8f, y - 2, 0), new Vector3(x + side * 2, y - 2, 0), new Vector3(x + side * 2, y + 3, 0), new Vector3(x, y + 1, 1.3f));
             }
-        return b.Finish("Near dune crests " + section);
+        b.Shade();
+        return b.Upload("Near dune crests " + section);
     }
 }

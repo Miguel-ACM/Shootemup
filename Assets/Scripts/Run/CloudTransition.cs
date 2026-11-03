@@ -138,6 +138,7 @@ public sealed class CloudTransition : MonoBehaviour
         routesPreparing = true;
         try
         {
+            yield return null; // Present the route choice before starting any scenery work.
             yield return LevelEnvironment.Prepare();
             // Scene objects stay on the main thread, but each build yields in small batches.
             for (int i = 0; i < options.Length; i++)

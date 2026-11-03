@@ -443,12 +443,14 @@ public sealed class LevelEnvironment : MonoBehaviour
                 section.localScale = new Vector3(.8f, 1, 1);
                 if (level == LevelId.Desert)
                 {
-                    var ground = DesertGeometry.Ground(i, LevelRun.Seed);
-                    var detail = DesertGeometry.Buildings(i, LevelRun.Seed);
-                    ownedMeshes.Add(ground);
-                    ownedMeshes.Add(detail);
-                    Add(ground, section, Vector3.zero, -50);
-                    Add(detail, section, Vector3.zero, -40);
+                    var sand = DesertGeometry.BuildSection(i, LevelRun.Seed, background, (ground, detail) =>
+                    {
+                        ownedMeshes.Add(ground);
+                        ownedMeshes.Add(detail);
+                        Add(ground, section, Vector3.zero, -50);
+                        Add(detail, section, Vector3.zero, -40);
+                    });
+                    while (sand.MoveNext()) yield return sand.Current;
                 }
                 else if (level == LevelId.Snow)
                 {
