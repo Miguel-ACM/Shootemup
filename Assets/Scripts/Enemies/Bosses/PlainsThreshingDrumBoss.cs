@@ -27,18 +27,19 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
             side = -side;
             station.x = Lane(side);
             int marks = Mathf.Max(5, Dense(phaseThree ? 18 : phaseTwo ? 15 : 12));
+            float gapX = Lane(-side * .38f);
             for (int mark = 0; mark < marks; mark++)
             {
                 float fraction = mark / (marks - 1f);
                 float x = Mathf.Lerp(start, station.x, fraction);
                 while (side * (x - transform.position.x) > .09f) yield return null;
-                int gap = side > 0 ? marks / 3 : marks * 2 / 3;
-                if (Mathf.Abs(mark - gap) <= 1) continue;
                 float travelLeft = Mathf.Abs(station.x - transform.position.x) / (3.5f * MovementScale * LevelRun.EnemyTempoScale);
                 // The motion program runs in scaled game time independently of the card clock.
                 for (int drum = 1; drum <= 2; drum++)
                 {
-                    var tooth = Fire<NeedleRound>(Muzzle(drum), Vector2.down, 2.5f, .18f);
+                    Vector3 port = Muzzle(drum);
+                    if (Mathf.Abs(port.x - gapX) < .80f) continue;
+                    var tooth = Fire<NeedleRound>(port, Vector2.down, 2.5f, .18f);
                     tooth.Pause(.19f, .25f + travelLeft + (phaseTwo && drum == 2 ? .32f : 0), CombatRound.Turn.Down, speed: 1.35f);
                 }
             }

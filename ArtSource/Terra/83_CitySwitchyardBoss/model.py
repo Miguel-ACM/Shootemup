@@ -221,6 +221,3 @@ cam_data.type = 'PERSP'
 cam_data.lens = 48
 scene.render.filepath = os.path.join(OUT, 'angle.png')
 bpy.ops.render.render(write_still=True)
-
-
-

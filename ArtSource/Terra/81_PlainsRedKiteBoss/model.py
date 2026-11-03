@@ -171,4 +171,3 @@ cam.location=(4.8,-6.5,5.5)
 aim(cam,(0,-.12,.08))
 scene.render.filepath=os.path.join(OUT,'angle.png')
 bpy.ops.render.render(write_still=True)
-

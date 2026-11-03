@@ -22,6 +22,7 @@ public abstract class ArmoredHullBoss : DistrictBoss
 
     void LateUpdate()
     {
+        if (hitbox == null) return;
         for (int i = 0; i < points.Length; i++)
             points[i] = transform.InverseTransformPoint(Hull.TransformPoint(Outline[i]));
         hitbox.SetPath(0, points);
