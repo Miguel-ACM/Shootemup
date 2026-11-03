@@ -175,6 +175,7 @@ public sealed partial class HangarHub : MonoBehaviour
         cameraTravel = -inlet;
         shaker = view != null ? view.GetComponent<EZCameraShake.CameraShaker>() : null;
         scenery = new Material(Resources.Load<Shader>("LevelScenery"));
+        silhouette = new Material(Resources.Load<Shader>("GallerySilhouette"));
         var display = new GameObject("Native dock displays", typeof(RectTransform));
         display.transform.SetParent(transform, false);
         readouts = display.AddComponent<DockReadouts>();

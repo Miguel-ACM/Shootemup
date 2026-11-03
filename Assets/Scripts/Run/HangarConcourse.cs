@@ -316,8 +316,12 @@ public sealed partial class HangarHub
         var plaque = MountedPanel("Berth service plate", b, new Vector2(4.35f, .8f));
         berthNotice = WorldLabel(plaque, "", Vector2.zero, new Vector2(422, 73), 29, DockInstrument.Brass);
         plaque.gameObject.SetActive(false);
+        var washVertices = new List<Vector3>();
+        var washColors = new List<Color>();
+        var washTriangles = new List<int>();
         for (int i = 0; i < ShipFrames.Count; i++)
         {
+            bool locked = !MetaProgress.CanFly((ShipFrame)i);
             Vector2 spot = new Vector2(-21.25f - (i % 2) * 4.8f, b.y + (i < 2 ? 2.85f : -2.75f));
             MountModel("DockSaddle", Spot(spot, 3), -4, "Background");
             var hull = ShipFrames.BuildDisplay(player, ShipFrames.Get((ShipFrame)i));
@@ -329,14 +333,22 @@ public sealed partial class HangarHub
                 renderer.gameObject.layer = 0;
                 renderer.sortingLayerName = "Background";
                 renderer.sortingOrder = -2;
+                if (locked)
+                    renderer.sharedMaterial = silhouette;
             }
             parkedShips.Add(hull.transform);
             berthNames.Add((RectTransform)Stencil(((ShipFrame)i).ToString().ToUpperInvariant(), spot + Vector2.down * 1.2f, 1.8f, DockInstrument.Paper).transform.parent);
             hull.SetActive(i != (int)MetaProgress.Ship);
             berthNames[i].gameObject.SetActive(hull.activeSelf);
-            if (!MetaProgress.CanFly((ShipFrame)i))
+            if (locked)
+            {
+                GalleryWell(washVertices, washColors, washTriangles, spot, 1.42f,
+                    new Color(.40f, .46f, .44f), Color.clear);
                 Strip("Berth interlock", spot + Vector2.down * 1.68f, new Vector2(.32f, .075f), DockInstrument.Brass, -5);
+            }
         }
+        if (washVertices.Count > 0)
+            GallerySurface("Locked berth backlights", washVertices, washColors, washTriangles, -8);
     }
 
     bool UpdateDock(Vector3 p)

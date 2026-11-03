@@ -111,7 +111,10 @@ public sealed partial class HangarHub
     {
         var hull = ShipFrames.Get((ShipFrame)selection);
         var record = MetaProgress.Record(hull.frame, modes[band]);
-        Photo(Resources.Load<Texture2D>("DockArt/Portrait" + hull.frame), new Rect(0, 0, 1, 1), -193, 117, 165, Color.white);
+        bool open = MetaProgress.CanFly(hull.frame);
+        if (!open)
+            Tile(-193, 117, 165, 165, Metal);
+        Photo(Resources.Load<Texture2D>("DockArt/Portrait" + hull.frame), new Rect(0, 0, 1, 1), -193, 117, 165, open ? Color.white : Color.black);
         Legend(hull.frame.ToString().ToUpperInvariant(), 76, 179, 350, 56, 41, DockInstrument.Paper, true);
         Legend(hull.hits + " HP  " + hull.moveSpeed.ToString("0.#") + " SPD", 76, 126, 350, 38, 21, lamps[room]);
         string gun = hull.primary == "BaseWeapon" ? "Twin cannon" : hull.primary == null ? "Unarmed" : FlightTrials.Display(hull.primary);
@@ -120,7 +123,7 @@ public sealed partial class HangarHub
         {
             Legend(modes[band].ToString().ToUpperInvariant(), 0, -30, 558, 42, 24, lamps[room]);
             Legend(record.flights + " flights", 0, -86, 558, 48, 30, DockInstrument.Paper);
-            Legend(MetaProgress.Ship == hull.frame ? "IN FLIGHT" : MetaProgress.CanFly(hull.frame) ? "COMMISSIONED" : "Clear Hell in " + (ShipFrame)(selection - 1),
+            Legend(MetaProgress.Ship == hull.frame ? "IN FLIGHT" : open ? "COMMISSIONED" : "Clear Hell in " + (ShipFrame)(selection - 1),
                 0, -177, 558, 40, 20, DockInstrument.Brass);
             return;
         }
@@ -144,7 +147,6 @@ public sealed partial class HangarHub
             Legend(captions[i], x, -132, 175, 28, 17, DockInstrument.Muted);
             Legend(values[i], x, -162, 175, 36, 24, DockInstrument.Paper, true);
         }
-        bool open = MetaProgress.CanFly(hull.frame);
         string status = !open ? "Clear Hell in " + (ShipFrame)(selection - 1) : MetaProgress.Ship == hull.frame ? "IN FLIGHT" : "READY TO FLY";
         Legend(status, 0, -197, 558, 28, 18, DockInstrument.Brass);
     }

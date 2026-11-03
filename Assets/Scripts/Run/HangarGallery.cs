@@ -38,7 +38,6 @@ public sealed partial class HangarHub
         platforms = new MeshRenderer[exhibits.Length];
         caseVertices = new int[exhibits.Length + 1];
         dimItem = new MaterialPropertyBlock();
-        silhouette = new Material(Resources.Load<Shader>("GallerySilhouette"));
         var floor = new List<Vector3>();
         var colors = new List<Color>();
         var indices = new List<int>();
