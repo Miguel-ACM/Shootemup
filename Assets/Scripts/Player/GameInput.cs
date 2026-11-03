@@ -40,6 +40,7 @@ public static class GameInput
         var controls = actions.PlayerControls;
         controls.FirePrimary.started += ctx => Dispatch(false, 0, ctx);
         controls.FireSecondary.started += ctx => Dispatch(false, 1, ctx);
+        // Slot order follows the keyboard: first A / RT, then S / LT.
         controls.ActiveLeft.started += ctx => Dispatch(true, 0, ctx);
         controls.ActiveRight.started += ctx => Dispatch(true, 1, ctx);
         controls.FirePrimary.canceled += ctx => PrimaryReleased?.Invoke(ctx);

@@ -21,7 +21,7 @@ public sealed class LoadoutHUD : MonoBehaviour
     RectTransform badge;
     Dialog dialog;
     Text[] badgeKeys = new Text[2];
-    static readonly string[] PadKeys = { "RB", "LB", "LT", "RT" }, KeyboardKeys = { "Z", "X", "A", "S" };
+    static readonly string[] PadKeys = { "RB", "LB", "RT", "LT" }, KeyboardKeys = { "Z", "X", "A", "S" };
     static Sprite keycap;
     static readonly Color Amber = new Color(1, .71f, .29f), Cyan = new Color(.4f, .82f, .86f), Steel = new Color(.48f, .59f, .61f);
     public RectTransform[] Panels => panels;
@@ -113,13 +113,13 @@ public sealed class LoadoutHUD : MonoBehaviour
             return;
         bool pad = Gamepad.current != null && (Keyboard.current == null || Gamepad.current.lastUpdateTime > Keyboard.current.lastUpdateTime);
         string[] inputs = pad ? PadKeys : KeyboardKeys;
-        int leftWeapon = pad ? 1 : 0; // LB fires secondary, Z fires primary.
+        int leftSlot = pad ? 1 : 0; // Keep each active beside its corresponding weapon.
         float room = Mathf.Max(0, (Screen.width * 720f / Screen.height - 405) * .5f);
         float scale = Mathf.Min(.64f, Mathf.Max(0, room - 52) / 175f);
         for (int i = 0; i < 4; i++)
         {
             bool active = i >= 2;
-            int side = i == leftWeapon || i == 2 ? -1 : 1;
+            int side = i % 2 == leftSlot ? -1 : 1;
             panels[i].localScale = Vector3.one * scale;
             // Matching 45-degree chamfers meet along a shared edge, without a floating gap.
             float join = .77f * (124 + 74) * .5f;
@@ -153,9 +153,9 @@ public sealed class LoadoutHUD : MonoBehaviour
             badge.anchorMin = badge.anchorMax = new Vector2(.5f, 1);
             badge.pivot = new Vector2(.5f, 0);
             badge.anchoredPosition = new Vector2(0, 10);
-            bool replacingActive = loadout.HoveredItem is AActiveItem;
-            badgeKeys[0].text = inputs[replacingActive ? 2 : leftWeapon];
-            badgeKeys[1].text = inputs[replacingActive ? 3 : 1 - leftWeapon];
+            int offset = loadout.HoveredItem is AActiveItem ? 2 : 0;
+            badgeKeys[0].text = inputs[offset + leftSlot];
+            badgeKeys[1].text = inputs[offset + 1 - leftSlot];
         }
     }
 
