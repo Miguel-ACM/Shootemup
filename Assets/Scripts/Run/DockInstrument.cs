@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 // Brass-edged enamel instruments shared by the dock consoles and the flight receipt.
@@ -64,13 +65,14 @@ public sealed class DockInstrument
         t.rectTransform.anchoredPosition = new Vector2(x, y);
         return t;
     }
+    public static bool UsingGamepad => Gamepad.current != null && Gamepad.current.enabled &&
+        (Keyboard.current == null || !Keyboard.current.enabled || Gamepad.current.lastUpdateTime > Keyboard.current.lastUpdateTime);
+
     public static string FireKey(bool secondary = false)
     {
         var actions = GameInput.Actions.PlayerControls;
         var action = secondary ? actions.FireSecondary : actions.FirePrimary;
-        var padDevice = UnityEngine.InputSystem.Gamepad.current;
-        var keyboard = UnityEngine.InputSystem.Keyboard.current;
-        bool pad = padDevice != null && (keyboard == null || padDevice.lastUpdateTime > keyboard.lastUpdateTime);
+        bool pad = UsingGamepad;
         foreach (var binding in action.bindings)
             if (binding.effectivePath.StartsWith(pad ? "<Gamepad>" : "<Keyboard>", System.StringComparison.OrdinalIgnoreCase))
                 return UnityEngine.InputSystem.InputControlPath.ToHumanReadableString(binding.effectivePath,

@@ -117,6 +117,10 @@ public sealed class HangarDeckReview : MonoBehaviour
         string project = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
         if (!project.Replace('\\', '/').EndsWith("/Temp/DecisionHoverReview", StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("Dock review needs its disposable checkout");
+        // Only the simulated pilot should move or change prompts during these captures.
+        foreach (var device in InputSystem.devices)
+            if (device is Keyboard || device is Gamepad)
+                InputSystem.DisableDevice(device, keepSendingEvents: true);
         var scratch = Directory.CreateDirectory(Path.Combine(project, "Temp", "PilotReview", Guid.NewGuid().ToString("N")));
         MetaProgress.ReviewSaveDirectory = scratch.FullName;
         if (SessionState.GetBool("InspectOutfitter", false))
@@ -391,6 +395,7 @@ public sealed class HangarDeckReview : MonoBehaviour
     }
     IEnumerator OutfitterAndBerths()
     {
+        InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
         InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
         var keys = InputSystem.AddDevice<Keyboard>();
         void Press(params Key[] state)
@@ -425,10 +430,25 @@ public sealed class HangarDeckReview : MonoBehaviour
             offers[0].transform.position.x < -2 && offers[1].transform.position.x > 2 && offers[2].transform.position.x < -2 &&
             offers[1].GetData()[0] == "Lucky Penny", "stock alternates left, right, left between the paired doors");
         yield return Capture("OutfitterSpacing");
-        var rows = hub.GetComponentsInChildren<HorizontalLayoutGroup>().Where(row => row.transform.parent.name == "Stock placard").ToArray();
-        Check(rows.Length == 3, "each stock placard has a dedicated price row");
-        foreach (var row in rows)
+        var rows = hub.GetComponentsInChildren<HorizontalLayoutGroup>(true).Where(row => row.transform.parent.name == "Stock placard").ToArray();
+        var classes = hub.GetComponentsInChildren<RectTransform>(true).Where(r => r.name == "Equipment class").ToArray();
+        var wallet = Field<RectTransform>("walletPanel");
+        var details = Field<RectTransform>("stockScreen");
+        Check(rows.Length == 3 && classes.Length == 3 && rows.All(r => !r.isActiveAndEnabled) &&
+            classes.All(r => !r.gameObject.activeInHierarchy) && !wallet.gameObject.activeSelf && !details.gameObject.activeSelf,
+            "unattended platforms show only the merchandise");
+        Place(offers[0].transform.position.x + 1.6f, offers[0].transform.position.y);
+        yield return null;
+        Check(wallet.gameObject.activeSelf && rows.All(r => !r.isActiveAndEnabled) && !details.gameObject.activeSelf,
+            "approaching lights the bank without revealing an offer");
+        foreach (var offer in offers)
         {
+            Place(offer.transform.position.x, offer.transform.position.y);
+            yield return new WaitForSeconds(.3f);
+            var row = rows.Single(r => r.isActiveAndEnabled);
+            Check(classes.Count(r => r.gameObject.activeInHierarchy) == 1 && details.gameObject.activeSelf &&
+                row.transform.parent.GetComponentsInChildren<TMPro.TMP_Text>().Any(t => t.text == offer.GetData()[0]) &&
+                Field<TMPro.TMP_Text>("stockInfo").text == offer.GetData()[2], "only the hovered offer reveals its identity and details");
             var icon = row.GetComponentInChildren<Image>().rectTransform;
             var number = row.GetComponentInChildren<TMPro.TMP_Text>().rectTransform;
             var a = new Vector3[4];
@@ -438,19 +458,25 @@ public sealed class HangarDeckReview : MonoBehaviour
             Check(icon.GetComponent<Image>().sprite.name == "DockCoin" && a[2].x - a[0].x >= 12 &&
                 b[0].x - a[2].x >= 4 && Mathf.Abs(icon.position.y - number.position.y) < 1,
                 "stamped coin and amount have separate, aligned bounds at gameplay size");
-        }
-        Check(!Field<RectTransform>("walletPanel").gameObject.activeSelf, "wallet stays dark away from stock");
-        var wallet = Field<RectTransform>("walletPanel");
-        foreach (var offer in offers)
-        {
-            Place(offer.transform.position.x, offer.transform.position.y);
-            yield return new WaitForSeconds(.3f);
             Check(wallet.gameObject.activeSelf && wallet.anchoredPosition.x < 0 &&
                 Field<TMPro.TMP_Text>("walletText").text == "9999", "balance lights on the left for this offer");
         }
         yield return Capture("OutfitterPortPrice");
         Place(offers[1].transform.position.x, offers[1].transform.position.y);
+        Press(Key.LeftShift);
+        yield return null;
+        Press();
         yield return Capture("OutfitterPrice");
+        var buy = Field<RawImage>("buyIcon");
+        var pin = Field<RawImage>("pinIcon");
+        bool Glyph(RawImage icon, string art, string key) => icon.texture.name == art && icon.GetComponentInChildren<TMPro.TMP_Text>().text == key;
+        Check(Glyph(buy, "KeyPrompt", "Z") && Glyph(pin, "KeyPrompt", "X"), "buy and pin show their keyboard keycaps");
+        var pad = InputSystem.AddDevice<Gamepad>();
+        InputSystem.QueueStateEvent(pad, new GamepadState { rightStick = new Vector2(.16f, 0) });
+        InputSystem.Update();
+        yield return Capture("OutfitterBumpers");
+        Check(Glyph(buy, "PadPrompt", "RB") && Glyph(pin, "PadPrompt", "LB"), "both action icons switch to the bound controller bumpers while hovering");
+        InputSystem.RemoveDevice(pad);
         Check(Field<RectTransform>("walletPanel").gameObject.activeSelf && Field<TMPro.TMP_Text>("walletText").text == "9999", "nearby wallet reads the full bank");
         Press(Key.X);
         yield return null;
@@ -461,6 +487,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         yield return null;
         Press();
         Check(!MetaProgress.Stock.Contains("LuckyPenny") && MetaProgress.Coins == 9999 - cost, "buying debits the displayed price");
+        Check(rows.All(r => !r.isActiveAndEnabled) && !details.gameObject.activeSelf, "the purchased offer closes immediately");
         var lights = hub.GetComponentsInChildren<MeshFilter>().Where(f => f.name == "Portal illumination").ToArray();
         Check(lights.Length == 5 && lights.All(f => {
             var mesh = f.sharedMesh;
@@ -727,12 +754,16 @@ public sealed class HangarDeckReview : MonoBehaviour
         At(known);
         yield return new WaitForSeconds(.8f);
         yield return Capture("GalleryReleased");
-        Check(Field<TMPro.TextMeshProUGUI>("cardText").text.Contains(exhibits[known].title), "hover shows actual released exhibit");
+        var title = Field<TMPro.TextMeshProUGUI>("cardTitle");
+        var body = Field<TMPro.TextMeshProUGUI>("cardText");
+        var source = Field<TMPro.TextMeshProUGUI>("cardSource");
+        Check(title.text == exhibits[known].title && body.text == exhibits[known].description && title.fontSize > body.fontSize * 1.4f,
+            "the released exhibit has a prominent name above its description");
         At(locked);
         yield return new WaitForSeconds(.8f);
         yield return Capture("GalleryLocked");
-        var unknown = Field<TMPro.TextMeshProUGUI>("cardText").text;
-        Check(unknown.Contains("???") && !unknown.Contains(exhibits[locked].title) && models[locked].sharedMaterial.shader.name == "Shootemup/Gallery silhouette", "locked hull shape and redacted label");
+        Check(title.text == "???" && body.text == "???" && source.text.Length > 0 &&
+            models[locked].sharedMaterial.shader.name == "Shootemup/Gallery silhouette", "locked hull shape, redacted labels and unlock source");
         Place(11.4f, 2.85f);
         yield return new WaitForSeconds(.8f);
         yield return Capture("FilterPrompt");
@@ -741,7 +772,8 @@ public sealed class HangarDeckReview : MonoBehaviour
         InputSystem.Update();
         yield return null;
         yield return Capture("GamepadPrompt");
-        Check(Field<TMPro.TextMeshProUGUI>("binding").text == "RB" && Field<RawImage>("inputPicture").texture.name == "PadPrompt", "controller bumper image matches FirePrimary binding");
+        var roomIcon = Field<RawImage>("inputPicture");
+        Check(roomIcon.GetComponentInChildren<TMPro.TMP_Text>().text == "RB" && roomIcon.texture.name == "PadPrompt", "controller bumper image matches FirePrimary binding");
         InputSystem.RemoveDevice(pad);
         Press(Key.Z);
         yield return null;
@@ -801,8 +833,18 @@ public sealed class HangarDeckReview : MonoBehaviour
         Call("RefreshGalleryAccess");
         At(secondary);
         yield return new WaitForSeconds(.6f);
-        Check(Field<TMPro.TextMeshProUGUI>("cardText").text.Contains(">SECONDARY</color>"), "gallery prints SECONDARY on the item card");
+        Check(source.text == "SECONDARY", "gallery prints SECONDARY on the item card");
         yield return Capture("GallerySecondary");
+        int longest = Array.IndexOf(exhibits, exhibits.OrderByDescending(e => e.description.Length).First());
+        At(longest);
+        yield return new WaitForSeconds(.8f);
+        yield return Capture("GalleryLongDescription");
+        float Gap(RectTransform upper, RectTransform lower) =>
+            upper.anchoredPosition.y - upper.rect.height * upper.pivot.y -
+            (lower.anchoredPosition.y + lower.rect.height * (1 - lower.pivot.y));
+        Check(body.text == exhibits[longest].description && !body.isTextOverflowing &&
+            Gap(title.rectTransform, body.rectTransform) >= 17 && Gap(body.rectTransform, source.rectTransform) >= 17,
+            "the longest description wraps with space above and below");
         Place(0, Camera.UpLimit + HangarHub.DeckExtension);
         yield return null;
         Check(Field<bool>("launching"), "entering the departure light launches without a button");

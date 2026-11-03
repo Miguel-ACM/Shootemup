@@ -1,14 +1,12 @@
 using TMPro;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public sealed partial class HangarHub
 {
     RectTransform hoverPrompt;
-    RawImage inputPicture;
-    TextMeshProUGUI binding;
+    RawImage inputPicture, buyIcon, pinIcon;
     Texture keyPicture, bumperPicture;
     const float DeskReach = 1.9f;
     static readonly string[] stationModels = { "DockQuadrant", "DockReader", "DockTrainer", "DockTransport", "DockScope" };
@@ -135,14 +133,40 @@ public sealed partial class HangarHub
     {
         hoverPrompt = MountedPanel("Control glyph", Vector2.zero, new Vector2(1.25f, .85f));
         hoverPrompt.GetComponent<Image>().enabled = false;
-        inputPicture = new GameObject("Control image", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
-        inputPicture.transform.SetParent(hoverPrompt, false);
-        inputPicture.rectTransform.sizeDelta = new Vector2(118, 82);
-        binding = WorldLabel(hoverPrompt, "", Vector2.up * 4, new Vector2(94, 61), 45, DockInstrument.Ink);
-        binding.fontStyle = FontStyles.Bold;
         keyPicture = Resources.Load<Texture2D>("DockArt/KeyPrompt");
         bumperPicture = Resources.Load<Texture2D>("DockArt/PadPrompt");
+        inputPicture = ButtonIcon(hoverPrompt, Vector2.zero, 1);
+        buyIcon = ButtonIcon(stockScreen, new Vector2(-157, -100), .72f);
+        pinIcon = ButtonIcon(stockScreen, new Vector2(48, -100), .72f);
+        WorldLabel(stockScreen, "BUY", new Vector2(-55, -100), new Vector2(103, 55), 32, DockInstrument.Paper);
+        WorldLabel(stockScreen, "PIN", new Vector2(150, -100), new Vector2(103, 55), 32, DockInstrument.Paper);
         hoverPrompt.gameObject.SetActive(false);
+    }
+    RawImage ButtonIcon(RectTransform parent, Vector2 at, float scale)
+    {
+        var icon = new GameObject("Control image", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
+        icon.rectTransform.SetParent(parent, false);
+        icon.rectTransform.sizeDelta = new Vector2(118, 82);
+        icon.rectTransform.anchoredPosition = at;
+        icon.rectTransform.localScale = Vector3.one * scale;
+        icon.raycastTarget = false;
+        var legend = WorldLabel(icon.rectTransform, "", Vector2.up * 4, new Vector2(94, 61), 45, DockInstrument.Ink);
+        legend.fontStyle = FontStyles.Bold;
+        return icon;
+    }
+    void UpdateButtonIcon(RawImage icon, bool secondary = false)
+    {
+        bool pad = DockInstrument.UsingGamepad;
+        var texture = pad ? bumperPicture : keyPicture;
+        if (icon.texture == texture) return;
+        icon.texture = texture;
+        string key = DockInstrument.FireKey(secondary);
+        bool leftBumper = pad && key == "LEFT SHOULDER";
+        icon.uvRect = leftBumper ? new Rect(1, 0, -1, 1) : new Rect(0, 0, 1, 1);
+        var legend = icon.GetComponentInChildren<TextMeshProUGUI>();
+        legend.fontSizeMax = pad ? 31 : 45;
+        legend.fontSizeMin = legend.fontSizeMax * .75f;
+        legend.text = leftBumper ? "LB" : pad && key == "RIGHT SHOULDER" ? "RB" : key;
     }
     void UpdatePrompt(Vector3 p)
     {
@@ -160,23 +184,13 @@ public sealed partial class HangarHub
                 show = (ShipFrame)selection != MetaProgress.Ship && MetaProgress.CanFly((ShipFrame)selection) && Vector2.Distance(point, p) < 1.3f;
             }
         }
-        if (room < 0)
-        {
-            int shop = NearestPlinth(p);
-            show = shop >= 0;
-            if (show) point = plinths[shop].spot;
-        }
         hoverPrompt.gameObject.SetActive(show);
         if (!show)
             return;
         if (hoverPrompt.GetSiblingIndex() != hoverPrompt.parent.childCount - 1)
             hoverPrompt.SetAsLastSibling();
-        bool pad = Gamepad.current != null && (Keyboard.current == null || Gamepad.current.lastUpdateTime > Keyboard.current.lastUpdateTime);
-        inputPicture.texture = pad ? bumperPicture : keyPicture;
-        string key = DockInstrument.FireKey();
-        binding.text = pad && key.Contains("SHOULDER") ? (key.Contains("RIGHT") ? "RB" : "LB") : key;
-        Vector3 offset = room < 0 ? new Vector3(-Mathf.Sign(point.x - center.x) * 1.35f, .32f) : Vector3.up * 1.63f;
-        readouts.Aim(hoverPrompt, point + offset);
+        UpdateButtonIcon(inputPicture);
+        readouts.Aim(hoverPrompt, point + Vector3.up * 1.63f);
     }
 
     void MountReceiver(int index)

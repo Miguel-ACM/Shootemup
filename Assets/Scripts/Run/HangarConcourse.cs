@@ -294,7 +294,7 @@ public sealed partial class HangarHub
         walletText = CoinRow(walletPanel, 0, 296);
         walletPanel.gameObject.SetActive(false);
         stockScreen = MountedPanel("Outfitter display", Vector2.zero, new Vector2(4.35f, 3.08f));
-        stockInfo = WorldLabel(stockScreen, "", Vector2.zero, new Vector2(413, 286), 25, DockInstrument.Paper);
+        stockInfo = WorldLabel(stockScreen, "", new Vector2(0, 35), new Vector2(395, 195), 28, DockInstrument.Paper);
         stockScreen.gameObject.SetActive(false);
         Stencil("LAUNCH", new Vector2(0, DeckExtension + 6.6f), 2.8f, DockInstrument.Paper);
     }

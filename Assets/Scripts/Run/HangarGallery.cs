@@ -23,7 +23,7 @@ public sealed partial class HangarHub
     static readonly int ItemTint = Shader.PropertyToID("_Tint");
     static readonly Color GalleryDeck = new Color(.075f, .11f, .13f);
     RectTransform cardPanel;
-    TextMeshProUGUI cardText, categoryReadout, availabilityReadout, directoryControls;
+    TextMeshProUGUI cardTitle, cardText, cardSource, categoryReadout, availabilityReadout, directoryControls;
     GalleryLampMatrix caseLeds;
     int hoverIndex = -1, galleryCategory, galleryAvailability;
     bool galleryReady;
@@ -85,7 +85,19 @@ public sealed partial class HangarHub
         MountReceiver((int)Dock.Armory);
         HoverSign("CASES >", FilterDesk + new Vector2(2.6f, -2.5f), DockInstrument.Brass);
         cardPanel = MountedPanel("Gallery object label", Vector2.zero, new Vector2(6.6f, 2.4f));
-        cardText = WorldLabel(cardPanel, "", Vector2.zero, new Vector2(624, 225), 27, DockInstrument.Paper);
+        cardPanel.pivot = new Vector2(.5f, 0);
+        var layout = cardPanel.gameObject.AddComponent<VerticalLayoutGroup>();
+        layout.padding = new RectOffset(24, 24, 20, 20);
+        layout.spacing = 18;
+        layout.childControlWidth = layout.childControlHeight = true;
+        layout.childForceExpandHeight = false;
+        cardPanel.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        cardTitle = WorldLabel(cardPanel, "", Vector2.zero, Vector2.zero, 44, DockInstrument.Paper);
+        cardTitle.fontStyle = FontStyles.Bold;
+        cardText = WorldLabel(cardPanel, "", Vector2.zero, Vector2.zero, 30, DockInstrument.Paper);
+        cardText.paragraphSpacing = 80;
+        cardSource = WorldLabel(cardPanel, "", Vector2.zero, Vector2.zero, 23, DockInstrument.Brass);
+        cardTitle.enableAutoSizing = cardText.enableAutoSizing = cardSource.enableAutoSizing = false;
         cardPanel.gameObject.SetActive(false);
         BuildDirectory();
         StartCoroutine(InstallShelves());
@@ -302,12 +314,10 @@ public sealed partial class HangarHub
         var e = exhibits[i];
         bool known = Released(e);
         var trial = FlightTrials.Blueprint(e.key);
-        string source = known ? DecisionOverlay.Category(e.category).ToUpperInvariant() : trial != null ? "Certify " + trial.title : "Outfitter  ·  " + MetaProgress.Price(ItemPool.RarityOf(e.key)) + " coins";
-        cardText.text = "<b>" + (known ? e.title : "???") + "</b>\n" + (known ? e.description : "???") + "\n<size=78%><color=#E9BC74>" + source + "</color></size>";
-        float height = cardText.GetPreferredValues(cardText.text, 624, Mathf.Infinity).y;
-        cardPanel.sizeDelta = new Vector2(660, height + 36);
-        cardText.rectTransform.sizeDelta = new Vector2(624, height + 4);
-        readouts.Aim(cardPanel, Spot(Case(i) + Vector2.up * (1.03f + .005f * cardPanel.sizeDelta.y), 0));
+        cardTitle.text = known ? e.title : "???";
+        cardText.text = known ? e.description : "???";
+        cardSource.text = known ? DecisionOverlay.Category(e.category).ToUpperInvariant() : trial != null ? "Certify " + trial.title : "Outfitter  ·  " + MetaProgress.Price(ItemPool.RarityOf(e.key)) + " coins";
+        readouts.Aim(cardPanel, Spot(Case(i) + Vector2.up * 1.03f, 0));
     }
     void BuildDirectory()
     {
