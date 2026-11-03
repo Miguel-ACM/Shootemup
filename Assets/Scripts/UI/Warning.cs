@@ -14,7 +14,7 @@ public class Warning : MonoBehaviour
     RectTransform field;
     const int RowCount = 7;
     const float RowHeight = 56, Stripe = 4, FadeIn = .3f, FadeOut = .4f, HalfField = 202.5f;
-    const float HoldUntil = 1.9f;
+    float holdUntil;
     static readonly Color Yellow = new Color(1f, .82f, .16f), YellowTop = new Color(1f, .94f, .5f), YellowBottom = new Color(1f, .7f, .08f);
     float duration;
     Image washImage;
@@ -147,14 +147,17 @@ public class Warning : MonoBehaviour
         canvas.enabled = false;
     }
 
-    public void blink()
+    public void blink() => ShowFor(3f);
+
+    public void ShowFor(float seconds)
     {
         Build();
         elapsed = 0;
         showing = true;
         group.alpha = 1;
         canvas.enabled = true;
-        duration = HoldUntil;
+        holdUntil = Mathf.Max(1.9f, seconds - 1.1f);
+        duration = holdUntil;
         float pitch = 720f / RowCount;
         for (int i = 0; i < rows.Length; i++)
         {
@@ -163,7 +166,7 @@ public class Warning : MonoBehaviour
             exitTimes[i] = Random.Range(.5f, .75f);
             delays[i] = Random.Range(0f, .2f);
             heights[i] = 360 - pitch * (i + .5f);
-            duration = Mathf.Max(duration, HoldUntil + exitTimes[i]);
+            duration = Mathf.Max(duration, holdUntil + exitTimes[i]);
         }
         AnimateRows();
     }
@@ -177,8 +180,8 @@ public class Warning : MonoBehaviour
             float end = leftward[i] ? -HalfField - widths[i] : HalfField;
             float x = elapsed < delays[i] + entryTimes[i]
                 ? Mathf.Lerp(start, center, Mathf.SmoothStep(0, 1, Mathf.Clamp01((elapsed - delays[i]) / entryTimes[i])))
-                : elapsed < HoldUntil ? center
-                : Mathf.Lerp(center, end, Mathf.SmoothStep(0, 1, Mathf.Clamp01((elapsed - HoldUntil) / exitTimes[i])));
+                : elapsed < holdUntil ? center
+                : Mathf.Lerp(center, end, Mathf.SmoothStep(0, 1, Mathf.Clamp01((elapsed - holdUntil) / exitTimes[i])));
             rows[i].anchoredPosition = new Vector2(Mathf.Round(x), heights[i]);
         }
     }

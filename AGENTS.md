@@ -181,6 +181,8 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 ## Workflow
 
+- District music (3 November 2026) starts on the track's intro and continues into flight. At boss entry, crossfade into a long, energetic passage of that same recording at its original tempo, with a bass boost. At final destruction, crossfade to the outro and gradually release the bass. Time the crossfades to progression endings. Keep Boss (fast) as a pitch-preserving audition option in the local Music Lab. The normal boss mix plays in the game.
+
 - Implement each individual feature/enemy/item in its own commit. Commit authorized existing work, but preserve unrelated work being changed by another task.
 - Keep the code free of compiler warnings on the installed Unity version. Update deprecated APIs and remove unused state rather than suppressing diagnostics. For code-only warning cleanup, use the isolated clean-compilation check without starting gameplay.
 - Batch a substantial set of changes before opening the game for testing. Avoid repeated play sessions for every tiny edit.

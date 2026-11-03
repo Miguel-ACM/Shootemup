@@ -207,8 +207,7 @@ public class WaveOrchestrer : MonoBehaviour
     {
         MetaProgress.EngageBoss();
         Phase = RunPhase.Boss;
-        // Camera.WhiteScreenJitter(0.5f);
-        BGMManager.PlayBGM("boss");
+        BGMManager.QueueBoss(0); // Also covers direct simulator and review entry.
         GameObject bossGO = DistrictEnemy.Spawn(DistrictWaves.BossType, new Vector3(0, Camera.UpLimit + 3, 1)).gameObject;
         bossGO.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
         bossGO.transform.position = new Vector3(0f, 11.52f, 1f);
@@ -259,12 +258,7 @@ public class WaveOrchestrer : MonoBehaviour
             // Hold the wave timer while the boss is up; the next wave starts when it dies.
             isWaveComingOut = false;
             Phase = RunPhase.BossWarning;
-            StartCoroutine(BGMManager.FadeOutSong(2.9f));
-            SoundManager.PlaySound("bossWarning", 0.18f);
-            warning.blink();
-            Invoke("SpawnBoss", 3f);
-
-
+            StartCoroutine(BossEntrance());
         }
         else
         {
@@ -292,6 +286,21 @@ public class WaveOrchestrer : MonoBehaviour
         {
             stopingWave = true;
         }
+    }
+
+    IEnumerator BossEntrance()
+    {
+        const float warningSeconds = 3f;
+        BGMManager.QueueBoss(warningSeconds);
+        float lead = Mathf.Max(warningSeconds, BGMManager.BossLead);
+        SoundManager.PlaySound("bossWarning", .18f);
+        warning.ShowFor(lead);
+        // The music owns the downbeat. If audio is disabled the ordinary warning still runs.
+        yield return new WaitForSeconds(warningSeconds);
+        float deadline = Time.unscaledTime + lead;
+        while (Menu.GameplayPaused || (BGMManager.BossLead > 0 && Time.unscaledTime < deadline))
+            yield return null;
+        SpawnBoss();
     }
 
     DecisionShop decision;
@@ -436,7 +445,7 @@ public class WaveOrchestrer : MonoBehaviour
     IEnumerator BossReward(Vector3 position)
     {
         Phase = RunPhase.Decision;
-        // The music has cut on the breakup; let its main blast open before the item falls.
+        // Let the breakup's main blast open before the item falls.
         CombatDecision.Begin();
         yield return new WaitForSeconds(.8f);
         if (GameOverState.Active)
@@ -549,7 +558,5 @@ public class WaveOrchestrer : MonoBehaviour
     public void NotifyBossPhaseChange(int phase)
     {
         SoundManager.PlaySound(SoundManager.HasSynth("explosionLarge") ? "explosionLarge" : "enemyExplosion1", 0.12f);
-        BGMManager.ChangeMood(2);
-        //BGMManager.RestartSong();
     }
 }

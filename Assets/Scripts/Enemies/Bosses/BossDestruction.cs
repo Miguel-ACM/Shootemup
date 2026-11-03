@@ -133,7 +133,7 @@ public sealed class BossDestruction : MonoBehaviour
         }
         Stage = BossDestructionStage.Breakup;
         ShatteredAt = Time.unscaledTime;
-        BGMManager.StopBGM();
+        BGMManager.QueueOutro();
         SoundManager.PlaySound("bossDeath", .12f);
         if (Wreckage != null)
             Wreckage.ReleasePrepared();

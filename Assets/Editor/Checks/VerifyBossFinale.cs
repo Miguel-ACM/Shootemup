@@ -209,6 +209,7 @@ public sealed class BossFinaleReview : MonoBehaviour
         Clear();
         yield return null;
         LevelRun.Reset(level, 17381);
+        BGMManager.PlayLevelMusic(level);
         LevelEnvironment.Apply();
         while (!WavePreparation.Ready || CloudTransition.Busy)
             yield return null;
@@ -279,14 +280,13 @@ public sealed class BossFinaleReview : MonoBehaviour
             Check(death != null && death.Source == boss && boss.gameObject.activeInHierarchy && !boss.enabled && CombatDecision.Active, label + ": lethal damage retains the intact hull while stopping combat");
             Check(death.Wreckage != null && !death.Wreckage.gameObject.activeSelf, label + ": wreckage remains hidden until the shatter accent");
             Check(!WorldTimeStop.Frozen, label + ": active bullet-time effects relinquish the cinematic clock");
-            var music = (AudioSource)typeof(BGMManager).GetField("audioSource", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
             bool preMusic = true, intact = true, noEarlyRoute = true;
             float started = Time.unscaledTime, last = -1;
             int frame = 0;
             while (death != null && death.Stage != BossDestructionStage.Breakup && Time.unscaledTime - started < 6)
             {
                 intact &= boss != null && boss.Hull.GetComponent<MeshRenderer>().enabled;
-                preMusic &= music.isPlaying;
+                preMusic &= BGMManager.Playing;
                 noEarlyRoute &= !LevelChoice.Active && FindAnyObjectByType<DecisionShop>() == null;
                 Check(Time.timeScale == 1 && !BossDestruction.HoldingFrame, label + ": destruction does not insert artificial frame holds");
                 float elapsed = Time.unscaledTime - started;
@@ -297,8 +297,8 @@ public sealed class BossFinaleReview : MonoBehaviour
                 }
                 yield return null;
             }
-            Check(death != null && death.Stage == BossDestructionStage.Breakup && death.PreBlasts == 5 && intact && preMusic && noEarlyRoute, label + ": five explosions play over the held model before any breakup, music cut or route");
-            Check(!music.isPlaying && Time.timeScale == 1, label + ": continuous breakup retains the synchronized music cut");
+            Check(death != null && death.Stage == BossDestructionStage.Breakup && death.PreBlasts == 5 && intact && preMusic && noEarlyRoute, label + ": five explosions play over the held model before breakup or route");
+            Check(BGMManager.Playing && BGMManager.OutroQueued && Time.timeScale == 1, label + ": breakup cues the district outro while the recording keeps playing");
             Check(death.Wreckage != null && death.Wreckage.gameObject.activeSelf, label + ": prepared polygon wreckage releases on the shatter accent");
             if (level == LevelId.Desert)
                 Check(death.Wreckage.GetComponentsInChildren<MeshFilter>(true).Length >= 8, "Desert worm breakup includes the complete articulated body");

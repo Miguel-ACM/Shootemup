@@ -5,148 +5,89 @@ using UnityEngine.SceneManagement;
 
 public class BGMManager : MonoBehaviour
 {
-    static readonly Dictionary<string, AudioClip> tracks = new Dictionary<string, AudioClip>();
-    static AudioSource audioSource;
     const float BaseVolume = .1f;
-    static bool fading;
+    public const string HangarTrack = "hangar";
+    static DistrictScore score;
+    static readonly Dictionary<string, DistrictScore.Cues> maps = new Dictionary<string, DistrictScore.Cues>();
+    static float fade = 1;
+    public static bool Playing => score != null && score.IsPlaying;
+    public static bool OutroQueued => score != null && score.WantsOutro;
+
     void Awake()
     {
         var sceneSource = GetComponent<AudioSource>();
         sceneSource.playOnAwake = false;
         sceneSource.Stop();
-        if (audioSource == null)
-        {
-            // Keep the selected track playing through the cloud curtain and scene load.
-            var music = new GameObject("Persistent level music");
-            DontDestroyOnLoad(music);
-            audioSource = music.AddComponent<AudioSource>();
-            audioSource.playOnAwake = false;
-            audioSource.spatialBlend = 0;
-            audioSource.priority = 1;
-            // The sound option scales the listener; music has its own option.
-            audioSource.ignoreListenerVolume = true;
-        }
+        if (score != null) return;
+        var music = new GameObject("Persistent level music");
+        DontDestroyOnLoad(music);
+        score = music.AddComponent<DistrictScore>();
+        fade = 1;
+        ApplyVolume();
     }
 
     void Start()
     {
-        // The title and the hangar share one track that keeps playing across the transition between them.
         if (SceneManager.GetActiveScene().name == "Title" || HangarHub.Active)
             PlayHangarMusic();
-        else if (!audioSource.isPlaying)
+        else if (!score.Active)
             PlayLevelMusic(LevelRun.Current);
     }
 
-    public static void PlayLevelMusic(LevelId level)
-    {
-        PlayBGM(LevelTrack(level));
-    }
-
-    public const string HangarTrack = "hangar";
+    public static string LevelTrack(LevelId level) => level.ToString().ToLowerInvariant();
+    public static void PlayLevelMusic(LevelId level) => Play(LevelTrack(level), true);
 
     public static void PlayHangarMusic()
     {
-        if (audioSource != null && audioSource.isPlaying && audioSource.clip != null && audioSource.clip.name == HangarTrack)
-            return;
-        PlayBGM(HangarTrack);
+        if (score != null && score.TrackName != HangarTrack) Play(HangarTrack, false);
     }
 
-    public static string LevelTrack(LevelId level) => level.ToString().ToLowerInvariant();
-
-    public static void PlayBGM(string bgm)
+    static void Play(string id, bool district)
     {
-        if (audioSource == null)
-            return;
-        if (!tracks.TryGetValue(bgm, out var clip) || clip == null)
+        if (score == null) return;
+        var clip = Resources.Load<AudioClip>("Music/" + id);
+        if (clip == null) { Debug.LogWarning("Missing music track: " + id); return; }
+        DistrictScore.Cues cues = null;
+        if (district && !maps.TryGetValue(id, out cues))
         {
-            clip = Resources.Load<AudioClip>("Music/" + bgm);
-            if (clip == null)
-            {
-                Debug.LogWarning("Missing music track: Music/" + bgm);
-                return;
-            }
-            tracks[bgm] = clip;
+            var data = Resources.Load<TextAsset>("MusicAnalysis/" + id);
+            if (data != null) cues = JsonUtility.FromJson<DistrictScore.Cues>(data.text);
+            if (cues == null) Debug.LogWarning("Missing music cue sheet: " + id);
+            maps[id] = cues;
         }
-        audioSource.Stop();
-        audioSource.clip = clip;
-        // A fade stopped with its scene must not hold the volume option back.
-        fading = false;
-        audioSource.volume = BaseVolume * GameOptions.MusicVolume;
-        audioSource.pitch = 1f;
-        audioSource.loop = bgm != "stageComplete";
-        audioSource.Play();
+        fade = 1;
+        ApplyVolume();
+        score.Play(clip, cues);
     }
 
+    public static void QueueBoss(float warningSeconds)
+    {
+        if (score != null) score.Boss(warningSeconds);
+    }
+    public static float BossLead => score != null ? score.BossLead : 0;
+    public static void QueueOutro()
+    {
+        if (score != null) score.Outro();
+    }
     public static void ApplyVolume()
     {
-        if (audioSource != null && !fading)
-            audioSource.volume = BaseVolume * GameOptions.MusicVolume;
+        if (score != null) score.Volume(BaseVolume * GameOptions.MusicVolume * fade);
     }
-
     public static void StopBGM()
     {
-        if (audioSource != null)
-            audioSource.Stop();
+        if (score != null) score.Stop();
     }
-
-
-    public static void SetLoop(bool loop)
-    {
-        audioSource.loop = loop;
-    }
-
-
     public static IEnumerator FadeOutSong(float duration)
     {
-        float currentTime = 0;
-        float start = audioSource.volume;
-        fading = true;
-        while (currentTime < duration)
+        if (score == null) yield break;
+        int generation = score.Generation;
+        for (float elapsed = 0; elapsed < duration; elapsed += Time.deltaTime)
         {
-            currentTime += Time.deltaTime;
-            audioSource.volume = Mathf.Lerp(start, 0, currentTime / duration);
+            if (score == null || score.Generation != generation) yield break;
+            fade = 1 - elapsed / duration;
+            ApplyVolume();
             yield return null;
         }
-        fading = false;
-        audioSource.Stop();
-        yield break;
+        if (score != null && score.Generation == generation) score.Stop();
     }
-
-    public static IEnumerator FadeOutSongAndPlay(float duration, string newSong, float pitch = 1.0f)
-    {
-        float currentTime = 0;
-        float start = audioSource.volume;
-        fading = true;
-        while (currentTime < duration)
-        {
-            currentTime += Time.deltaTime;
-            audioSource.volume = Mathf.Lerp(start, 0, currentTime / duration);
-            yield return null;
-        }
-        fading = false;
-        audioSource.pitch = 1f;
-        PlayBGM(newSong);
-        yield break;
-    }
-
-    public static void ChangePitch(float pitch)
-    {
-        audioSource.pitch = pitch;
-    }
-
-    public static void ChangeMood(int semitones)
-    {
-        // Convert semitones to pitch multiplier
-        float pitchMultiplier = Mathf.Pow(2f, semitones / 12f);
-
-        audioSource.pitch = pitchMultiplier;
-    }
-
-    public static void RestartSong()
-    {
-        audioSource.Stop();
-        audioSource.Play();
-    }
-
-
 }
