@@ -303,7 +303,7 @@ public sealed partial class HangarHub
         var e = exhibits[i];
         bool known = Released(e);
         var trial = FlightTrials.Blueprint(e.key);
-        string source = known ? e.category.ToString().ToUpperInvariant() : trial != null ? "Certify " + trial.title : "Outfitter  ·  " + MetaProgress.Price(ItemPool.RarityOf(e.key)) + " coins";
+        string source = known ? DecisionOverlay.Category(e.category).ToUpperInvariant() : trial != null ? "Certify " + trial.title : "Outfitter  ·  " + MetaProgress.Price(ItemPool.RarityOf(e.key)) + " coins";
         cardText.text = "<b>" + (known ? e.title : "???") + "</b>\n" + (known ? e.description : "???") + "\n<size=78%><color=#E9BC74>" + source + "</color></size>";
         float height = cardText.GetPreferredValues(cardText.text, 624, Mathf.Infinity).y;
         cardPanel.sizeDelta = new Vector2(660, height + 36);

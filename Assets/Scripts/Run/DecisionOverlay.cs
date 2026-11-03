@@ -55,7 +55,8 @@ public sealed class DecisionOverlay : MonoBehaviour
         offer.kind.text = category ?? Category(offer.item);
     }
 
-    public static string Category(AItem item) => item is APactItem ? "pact" : item is ASecondaryItem ? "secondary" : item.Kind == AItem.ItemType.active ? "active" : item.Kind == AItem.ItemType.weapon || item.Kind == AItem.ItemType.passiveWeapon ? "weapon" : "passive";
+    public static string Category(AItem.ItemType kind) => kind == AItem.ItemType.passiveWeapon ? "secondary" : kind.ToString();
+    public static string Category(AItem item) => item is APactItem ? "pact" : item.Kind == AItem.ItemType.partner ? "passive" : Category(item.Kind);
 
     public void SetPages(int page, int count, float progress, int direction)
     {
