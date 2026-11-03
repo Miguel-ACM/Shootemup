@@ -52,3 +52,12 @@ Gallery population 29 frames, p95 42,2 ms, max 69,5 ms
 Gallery entry 32 frames, p95 26,8 ms, max 32,8 ms
 Gallery filter 24 frames, p95 9,8 ms, max 13,6 ms
 Dock build Succeeded errors=0 warnings=0
+
+3 November 2026. Live tunnel approach and physical consoles. Isolated editor, 640 x 480.
+Save confirmation defaulted to KEEP SAVE. Cancelling kept the pilot. Confirming restored fresh progress in a disposable save directory.
+Inspected Fleet, Armory, Simulator, Recorder, Flight Control, main-lane stock, both control glyphs and the run pickups.
+Live camera advanced during the title handoff. Stock entered from the left. Entering the departure light launched without a button.
+The Fleet screen survived crossing the doorway. All 99 gallery cases populated. Filtering illuminated matching paths.
+Gallery entry over 32 frames: p95 8.4 ms, max 10.1 ms. Filtering over 24 frames: p95 9.0 ms, max 9.4 ms.
+Final cold deck population over 28 frames: p95 29.3 ms, max 46.6 ms.
+Windows standalone build succeeded with 0 errors and 0 warnings.
