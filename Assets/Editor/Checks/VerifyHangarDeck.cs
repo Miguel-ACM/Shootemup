@@ -194,6 +194,16 @@ public sealed class HangarDeckReview : MonoBehaviour
             pilot.position = new Vector3(11.4f, 4.3f, pilot.position.z);
             yield return new WaitForSeconds(.8f);
             yield return Capture("FilterPrompt");
+            var keys = InputSystem.AddDevice<Keyboard>();
+            InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+            InputSystem.QueueStateEvent(keys, new KeyboardState(Key.UpArrow));
+            InputSystem.Update();
+            float crossBy = Time.realtimeSinceStartup + 3;
+            while (pilot.position.y < 8.9f && Time.realtimeSinceStartup < crossBy)
+                yield return null;
+            InputSystem.RemoveDevice(keys);
+            Check(pilot.position.y >= 8.9f && !HangarHub.HoldingShip, "pilot can fly over the gallery screen");
+            yield return Capture("ScreenFlyover");
             Check(error==null,error ?? "final pressure door and outfitter lettering");
             File.WriteAllText(VerifyHangarDeck.Folder + "/Result.txt","PASS");
             yield break;

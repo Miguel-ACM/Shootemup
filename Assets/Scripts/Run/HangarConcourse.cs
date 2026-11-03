@@ -66,21 +66,6 @@ public sealed partial class HangarHub
                 center.x + (opening && berths[portal].x > 0 ? 15.5f : halfWidth));
             desired.y = Mathf.Clamp(desired.y, Camera.DownLimit, Camera.UpLimit + DeckExtension);
         }
-        // Screens have a footprint on the deck. Slide around their bevels, including at the gallery entrance.
-        if (portal >= 0 && Mathf.Abs(desired.x - center.x) > 6.4f)
-        {
-            Vector2 monitor = portal == (int)Dock.Armory ? FilterDesk + Vector2.up * 3.7f : berths[portal] + Vector2.up * 2.8f;
-            Vector2 from = (Vector2)(previous - center) - monitor;
-            Vector2 to = (Vector2)(desired - center) - monitor;
-            const float halfW = 3.98f, halfH = 3.65f;
-            if (Mathf.Abs(to.x) < halfW && Mathf.Abs(to.y) < halfH)
-            {
-                if (Mathf.Abs(from.x) >= halfW)
-                    desired.x = center.x + monitor.x + Mathf.Sign(from.x) * halfW;
-                else
-                    desired.y = center.y + monitor.y + Mathf.Sign(from.y) * halfH;
-            }
-        }
         return desired;
     }
 
