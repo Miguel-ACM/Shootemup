@@ -33,7 +33,7 @@ public sealed class PopcornHits : MonoBehaviour
             return;
         hits = 0;
         next = Time.time + .12f;
-        ItemSound.Play("popcorn", .16f, 1, .1f);
+        ItemSound.Play("popcorn", .08f, 1, .1f);
         ItemSpark.Emit(enemy.transform.position, new Color(.95f, .77f, .4f), 5, .13f);
         for (int i = 0; i < 3; i++)
         {
