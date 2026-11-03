@@ -6,11 +6,8 @@ using UnityEngine;
 // centre of the arena and fire six beams that swing together through sixty degrees
 // and back; the swing is centred on straight down, so the player can hold the
 // middle and ride the gap. Phase two: an evenly spaced laser lattice, four drones
-// along the top firing down and six down the left wall firing across, with one open
-// column and one open row whose drones point at the sky. The groups take turns to
-// slide half a cell while every beam is dark, the open lanes move on, and every beam
-// charges where it now stands before it fires again. Every drone waits until the
-// whole lattice has arrived, so all beams charge and fire together.
+// along the top firing down and six along the wall firing across. Each bank fires
+// a complete comb, withdraws, then moves while the perpendicular bank takes its turn.
 // Hard phase three: the lattice never goes dark. The top drones sweep across a full
 // cell and back while firing, the wall drones sweep up and down, and the open lanes
 // move on every few seconds, so no column of the screen stays safe.
@@ -88,7 +85,8 @@ public sealed partial class ThunderLanceBoss
             drones.Add(ThunderLaserBot.Deploy(Muzzle(2), GridColumn(i, 0), Vector2.down, 20, .19f).OwnedBy(this).ArmAt(1.6f));
         for (int j = 0; j < Rows; j++)
             drones.Add(ThunderLaserBot.Deploy(Muzzle(2), GridRow(j, 0), Vector2.right, 10.5f, .18f).OwnedBy(this).ArmAt(1.6f));
-        Phrase(MarchGrid());
+        foreach (var drone in drones) drone.Powered = false;
+        if (!phaseThree) Phrase(MarchGrid());
     }
 
     static float ColumnSpacing => (Camera.RightLimit - Camera.LeftLimit) / Columns;
@@ -99,10 +97,6 @@ public sealed partial class ThunderLanceBoss
     static Vector2 GridRow(int j, float shift) =>
         new Vector2(Camera.LeftLimit + .35f, RowTop - Mathf.Repeat(j * RowSpacing + shift, RowSpacing * Rows));
 
-    // The lattice keeps one open column and one open row, whose drones point at the sky.
-    // Every step all beams go dark together while one group slides half a cell (top row
-    // rightward, left column downward, taking turns) and the open lane moves on; then
-    // every beam charges visibly where it now stands before it fires again.
     IEnumerator MarchGrid()
     {
         if (phaseThree)
@@ -111,40 +105,30 @@ public sealed partial class ThunderLanceBoss
             yield break;
         }
         float shiftX = 0, shiftY = 0;
-        int openColumn = 1, openRow = 2;
         for (int turn = 0; ; turn++)
         {
-            float hold = Difficulty.Hard ? 2.6f : 3.3f;
-            // Wait for the whole lattice before any beam powers, so they charge in step.
             yield return Settle();
-            for (int i = 0; i < drones.Count; i++)
-                if (drones[i] != null)
-                    drones[i].Powered = i < Columns ? i != openColumn : i - Columns != openRow;
-            yield return Wait(hold);
+            bool columns = turn % 2 == 0;
+            int first = columns ? 0 : Columns, end = columns ? Columns : drones.Count;
+            for (int i = first; i < end; i++) drones[i].Powered = true;
+            // Each bank gets its full visible charge plus a live sweep before release.
+            yield return Wait(Difficulty.Easy ? 2.05f : 2.4f);
             foreach (var drone in drones)
                 if (drone != null)
                     drone.Powered = false;
             yield return Wait(.3f);
-            if (turn % 2 == 0)
-            {
-                shiftX += ColumnSpacing * .5f;
-                openColumn = (openColumn + 1) % Columns;
-            }
+            if (columns)
+                shiftX = shiftX == 0 ? ColumnSpacing * .45f : 0;
             else
-            {
-                shiftY += RowSpacing * .5f;
-                openRow = (openRow + 2) % Rows;
-            }
-            for (int i = 0; i < drones.Count; i++)
-                if (drones[i] != null)
-                    drones[i].MoveTo(i < Columns ? GridColumn(i, shiftX) : GridRow(i - Columns, shiftY));
-            yield return Wait(.55f);
+                shiftY = shiftY == 0 ? RowSpacing * .45f : 0;
+            for (int i = first; i < end; i++)
+                drones[i].MoveTo(columns ? GridColumn(i, shiftX) : GridRow(i - Columns, shiftY));
         }
     }
 
     IEnumerator Settle()
     {
-        for (float t = 0; t < 3; t += Time.deltaTime)
+        while (true)
         {
             bool all = true;
             foreach (var drone in drones)
