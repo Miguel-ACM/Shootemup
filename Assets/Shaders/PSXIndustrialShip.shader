@@ -5,6 +5,7 @@ Shader "Shootemup/PSX Industrial Ship"
         _MainTex ("Pixel atlas", 2D) = "white" {}
         _Tint ("Damage flash tint", Color) = (1,1,1,1)
         _HitFlash ("Local hit flash", Range(0,1)) = 0
+        [HideInInspector] _HullStatus ("Hull afflictions", Float) = 0
         [HideInInspector] _PlayerDepth ("Player foreground depth", Float) = 0
         _CockpitBlue ("Blue player cockpit", Float) = 0
         _VertexSnap ("Vertex snap amount", Range(0,1)) = 0.35
@@ -23,8 +24,10 @@ Shader "Shootemup/PSX Industrial Ship"
             HLSLPROGRAM
             #pragma vertex Vert
             #pragma fragment Frag
+            #pragma multi_compile_local _ HULL_AFFLICTED
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "CockpitGlass.hlsl"
+            #include "HullAffliction.hlsl"
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
             CBUFFER_START(UnityPerMaterial)
@@ -34,7 +37,7 @@ Shader "Shootemup/PSX Industrial Ship"
                 float _VertexSnap;
                 float _CockpitBlue;
                 float _PlayerDepth;
-                float _HitFlash;
+                float _HitFlash, _HullStatus;
             CBUFFER_END
             struct Attributes
             {
@@ -49,6 +52,9 @@ Shader "Shootemup/PSX Industrial Ship"
                 float2 uv : TEXCOORD0;
                 float light : TEXCOORD1;
                 float3 reflection : TEXCOORD2;
+                #if defined(HULL_AFFLICTED)
+                float2 hullPosition : TEXCOORD3;
+                #endif
             };
             Varyings Vert(Attributes input)
             {
@@ -62,6 +68,9 @@ Shader "Shootemup/PSX Industrial Ship"
                 if (_PlayerDepth > 0.5)
                     output.positionCS.z = lerp(UNITY_NEAR_CLIP_VALUE * output.positionCS.w, output.positionCS.z, 0.001);
                 output.uv = TRANSFORM_TEX(input.uv, _MainTex);
+                #if defined(HULL_AFFLICTED)
+                output.hullPosition = HullSurfacePosition(input.positionOS.xyz);
+                #endif
                 float3 normal = TransformObjectToWorldNormal(input.normalOS);
                 output.reflection = 0;
                 if (input.glazing.x > 1.5)
@@ -74,6 +83,9 @@ Shader "Shootemup/PSX Industrial Ship"
             {
                 half4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
                 if (input.reflection.z > .5) color.rgb = CockpitGlass(color.rgb, input.reflection);
+                #if defined(HULL_AFFLICTED)
+                color.rgb = HullAffliction(color.rgb, input.hullPosition, _HullStatus);
+                #endif
                 color *= _Tint;
                 clip(color.a - 0.01);
                 color.rgb *= input.light;

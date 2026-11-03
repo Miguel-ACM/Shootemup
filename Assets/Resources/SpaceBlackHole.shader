@@ -7,6 +7,7 @@ Shader "Shootemup/Space black hole"
         _CoreOnly("Horizon only", Float) = 0
         _HitFlash("Hit", Float) = 0
         _Feeding("Accretion", Float) = 0
+        [HideInInspector] _HullStatus("Hull afflictions", Float) = 0
     }
     SubShader
     {
@@ -19,10 +20,12 @@ Shader "Shootemup/Space black hole"
             HLSLPROGRAM
             #pragma vertex Vert
             #pragma fragment Frag
+            #pragma multi_compile_local _ HULL_AFFLICTED
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "../Shaders/HullAffliction.hlsl"
             CBUFFER_START(UnityPerMaterial)
             float4 _Tint, _Extent;
-            float _CoreOnly, _HitFlash, _Feeding;
+            float _CoreOnly, _HitFlash, _Feeding, _HullStatus;
             CBUFFER_END
             struct Input { float4 p:POSITION; float2 uv:TEXCOORD0; };
             struct Output { float4 p:SV_POSITION; float2 uv:TEXCOORD0; };
@@ -35,7 +38,11 @@ Shader "Shootemup/Space black hole"
                 if (_CoreOnly>.5)
                 {
                     float edge=smoothstep(.63,.74,r);
-                    float3 shadow = lerp(float3(.001,.002,.004),float3(.8,.5,.2),edge*_HitFlash);
+                    float3 shadow = float3(.001,.002,.004);
+                    #if defined(HULL_AFFLICTED)
+                    shadow = lerp(shadow, HullAffliction(shadow, p, _HullStatus), smoothstep(.44,.71,r));
+                    #endif
+                    shadow = lerp(shadow,float3(.8,.5,.2),edge*_HitFlash);
                     // Two slanted, almond-shaped eyes cut into the event horizon.
                     float2 eye = float2(abs(p.x)-.31, p.y-.065);
                     eye.y -= eye.x*.34;

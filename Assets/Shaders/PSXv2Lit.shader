@@ -15,6 +15,7 @@ Shader "Shootemup/PSXv2 Lit"
         _Tint ("Damage flash tint", Color) = (1,1,1,1)
         [HideInInspector] _PlayerDepth ("Player foreground depth", Float) = 0
         [HideInInspector] _PilotCanopy ("GR-07 canopy finish", Float) = 0
+        [HideInInspector] _HullStatus ("Hull afflictions", Float) = 0
         _SnapResolution ("Fallback virtual resolution", Vector) = (569,320,0,0)
         _VertexSnap ("Vertex snap", Range(0,1)) = 1
         _Affine ("Affine warp", Range(0,1)) = 1
@@ -35,14 +36,16 @@ Shader "Shootemup/PSXv2 Lit"
             HLSLPROGRAM
             #pragma vertex Vert
             #pragma fragment Frag
+            #pragma multi_compile_local _ HULL_AFFLICTED
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "CockpitGlass.hlsl"
+            #include "HullAffliction.hlsl"
             TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
             float4 _PSXSnapResolution;
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST, _Tint, _SnapResolution;
                 float _VertexSnap, _Affine, _Dither, _LightBands, _GlowRow;
-                float _PlayerDepth, _PilotCanopy;
+                float _PlayerDepth, _PilotCanopy, _HullStatus;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; float4 color:COLOR; };
             struct Varyings
@@ -53,6 +56,9 @@ Shader "Shootemup/PSXv2 Lit"
                 nointerpolation float light : TEXCOORD2;
                 float ao          : TEXCOORD3;
                 float3 reflection : TEXCOORD4;
+                #if defined(HULL_AFFLICTED)
+                float2 hullPosition : TEXCOORD5;
+                #endif
             };
             Varyings Vert(Attributes i)
             {
@@ -67,6 +73,9 @@ Shader "Shootemup/PSXv2 Lit"
                 if (_PlayerDepth > 0.5)
                     cs.z = lerp(UNITY_NEAR_CLIP_VALUE * cs.w, cs.z, 0.001);
                 o.positionCS = cs;
+                #if defined(HULL_AFFLICTED)
+                o.hullPosition = HullSurfacePosition(i.positionOS.xyz);
+                #endif
                 float2 uv = TRANSFORM_TEX(i.uv, _MainTex);
                 o.uvw = float3(uv * cs.w, cs.w);
                 o.uvPersp = uv;
@@ -88,6 +97,9 @@ Shader "Shootemup/PSXv2 Lit"
                 float glow = step(0.625, i.uvPersp.y) * step(i.uvPersp.y, 0.75) * _GlowRow;
                 c.rgb *= lerp(i.light * i.ao * 1.15, 1.0, glow);
                 if (i.reflection.z > .5) c.rgb = CockpitGlass(c.rgb, i.reflection);
+                #if defined(HULL_AFFLICTED)
+                c.rgb = HullAffliction(c.rgb, i.hullPosition, _HullStatus);
+                #endif
                 c *= _Tint;
                 uint2 p = (uint2)i.positionCS.xy & 3;
                 const float bayer[16] = {0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5};

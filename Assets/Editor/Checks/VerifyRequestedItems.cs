@@ -293,15 +293,21 @@ public sealed class RequestedItemReview : MonoBehaviour
         yield return null;
         yield return Grant(typeof(GasolineLeak));
         var burnTarget = Target(new Vector3(-1, 2));
+        var originalPaint = burnTarget.Hull.GetComponent<MeshRenderer>().sharedMaterial;
         PlayerRound.Spawn(new Vector3(-1, 0), Vector2.up, 10, 10);
         yield return new WaitForSeconds(.3f);
         Check(burnTarget.GetComponent<BurningHull>() != null, "actual player hit ignites the enemy");
+        Check(burnTarget.Hull.GetComponent<MeshRenderer>().sharedMaterial.GetFloat("_HullStatus") == 1,
+            "fire renders on the struck hull");
         yield return Capture("Burn");
         yield return Grant(typeof(Poison));
         var poisonTarget = Target(new Vector3(1, 2));
         PlayerRound.Spawn(new Vector3(1, 0), Vector2.up, 10, 10);
         yield return new WaitForSeconds(.3f);
         Check(poisonTarget.GetComponent<BurningHull>() != null && poisonTarget.GetComponent<PoisonedHull>() != null, "burn and poison coexist on a projectile hit");
+        var coated = poisonTarget.Hull.GetComponent<MeshRenderer>().sharedMaterial;
+        Check(coated.IsKeywordEnabled("HULL_AFFLICTED") && coated.GetFloat("_HullStatus") == 3
+            && originalPaint.GetFloat("_HullStatus") == 0, "both conditions render together without tinting the fleet paint");
         float health = poisonTarget.health;
         yield return new WaitForSeconds(.7f);
         Check(poisonTarget.health < health, "status damage continues after the projectile is gone");
