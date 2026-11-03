@@ -14,6 +14,13 @@ public sealed partial class HangarHub
     MeshRenderer[] pieces;
     Material silhouette, guidePaint;
     Mesh guideMesh;
+    Mesh platforms;
+    int[] caseVertices;
+    Color[] litPlatformColors;
+    List<Color> platformColors;
+    MaterialPropertyBlock dimItem;
+    static readonly int ItemTint = Shader.PropertyToID("_Tint");
+    static readonly Color GalleryDeck = new Color(.075f, .11f, .13f);
     RectTransform cardPanel;
     TextMeshProUGUI cardText, categoryReadout, availabilityReadout, directoryControls;
     GalleryLampMatrix caseLeds;
@@ -27,12 +34,14 @@ public sealed partial class HangarHub
     {
         exhibits = new GalleryShelf.Exhibit[ItemCatalog.All.Count];
         pieces = new MeshRenderer[exhibits.Length];
+        caseVertices = new int[exhibits.Length + 1];
+        dimItem = new MaterialPropertyBlock();
         silhouette = new Material(Resources.Load<Shader>("GallerySilhouette"));
         var floor = new List<Vector3>();
         var colors = new List<Color>();
         var indices = new List<int>();
         void Bar(Vector2 pos, Vector2 size, Color color) => GalleryQuad(floor, colors, indices, pos, size, color);
-        var decking = new Color(.075f, .11f, .13f);
+        var decking = GalleryDeck;
         Bar(new Vector2((GalleryLeft + GalleryRight) / 2, (GalleryBottom + GalleryVestibuleTop) / 2),
             new Vector2(GalleryRight - GalleryLeft, GalleryVestibuleTop - GalleryBottom), decking);
         Bar(new Vector2((GalleryWing + GalleryRight) / 2, (GalleryVestibuleTop + GalleryTop) / 2),
@@ -57,6 +66,7 @@ public sealed partial class HangarHub
             Bar(new Vector2(FirstX, y), new Vector2(.075f, .23f), DockInstrument.Brass);
         for (int i = 0; i < exhibits.Length; i++)
         {
+            caseVertices[i] = colors.Count;
             var at = Case(i);
             // A lit well, dark inset and retaining clips keep the collectible silhouette clear.
             GalleryWell(floor, colors, indices, at, 1.33f, new Color(.43f, .055f, .045f), new Color(.075f, .11f, .13f));
@@ -69,7 +79,10 @@ public sealed partial class HangarHub
             }
             Bar(at + Vector2.down * .78f, new Vector2(.47f, .055f), new Color(1, .32f, .2f));
         }
-        GallerySurface("Museum cases", floor, colors, indices, -14);
+        caseVertices[exhibits.Length] = colors.Count;
+        platforms = GallerySurface("Museum cases", floor, colors, indices, -14);
+        platformColors = colors;
+        litPlatformColors = colors.ToArray();
         guidePaint = new Material(Resources.Load<Shader>("GalleryGuide"));
         guidePaint.SetVector("_Origin", new Vector4(FilterDesk.x, FilterDesk.y, 0, 0));
         guideMesh = GallerySurface("Red inlaid guide lamps", new List<Vector3>(), new List<Color>(), new List<int>(), -10);
@@ -186,6 +199,22 @@ public sealed partial class HangarHub
         bool released = Released(e);
         return (galleryCategory == 0 || (int)e.category == galleryCategory - 1) && (galleryAvailability == 0 || (galleryAvailability == 1) == released);
     }
+    void LightCase(int i, bool match)
+    {
+        const float dim = .22f;
+        for (int v = caseVertices[i]; v < caseVertices[i + 1]; v++)
+            platformColors[v] = match ? litPlatformColors[v] : Color.Lerp(GalleryDeck, litPlatformColors[v], dim);
+
+        var paint = pieces[i].sharedMaterial;
+        if (match || paint == silhouette)
+        {
+            pieces[i].SetPropertyBlock(null);
+            return;
+        }
+        var tint = paint.GetColor(ItemTint);
+        dimItem.SetColor(ItemTint, new Color(tint.r * dim, tint.g * dim, tint.b * dim, tint.a));
+        pieces[i].SetPropertyBlock(dimItem);
+    }
     void ApplyGalleryFilter()
     {
         if (!galleryReady)
@@ -203,6 +232,7 @@ public sealed partial class HangarHub
             {
                 bool match = Matches(exhibits[i]);
                 caseLeds.matches[i] = match;
+                LightCase(i, match);
                 if (!match)
                     continue;
                 count++;
@@ -220,6 +250,7 @@ public sealed partial class HangarHub
             GalleryQuad(v, c, t, new Vector2((x + FilterDesk.x) / 2, FilterDesk.y), new Vector2(Mathf.Abs(x - FilterDesk.x), .055f), red);
         }
         caseLeds.SetVerticesDirty();
+        platforms.SetColors(platformColors);
         guideMesh.Clear();
         guideMesh.SetVertices(v);
         guideMesh.SetColors(c);
