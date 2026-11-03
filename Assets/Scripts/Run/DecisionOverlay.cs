@@ -52,8 +52,10 @@ public sealed class DecisionOverlay : MonoBehaviour
         offer.name.text = System.Text.RegularExpressions.Regex.Replace(offer.item.GetData()[0], @"\S+", "<nobr>$0</nobr>");
         offer.price.text = price;
         offer.price.color = affordable ? new Color(1, .78f, .4f) : new Color(1, .36f, .3f);
-        offer.kind.text = category ?? (offer.item is APactItem ? "pact" : offer.item is ASecondaryItem ? "secondary" : offer.item.Kind == AItem.ItemType.active ? "active" : offer.item.Kind == AItem.ItemType.weapon || offer.item.Kind == AItem.ItemType.passiveWeapon ? "weapon" : "passive");
+        offer.kind.text = category ?? Category(offer.item);
     }
+
+    public static string Category(AItem item) => item is APactItem ? "pact" : item is ASecondaryItem ? "secondary" : item.Kind == AItem.ItemType.active ? "active" : item.Kind == AItem.ItemType.weapon || item.Kind == AItem.ItemType.passiveWeapon ? "weapon" : "passive";
 
     public void SetPages(int page, int count, float progress, int direction)
     {

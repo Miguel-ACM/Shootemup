@@ -2,6 +2,21 @@ using UnityEngine;
 
 public static partial class IndustrialMeshFactory
 {
+    static Mesh receiver;
+    public static Mesh DockMonitor()
+    {
+        if(receiver!=null)return receiver;
+        var b=new Builder();
+        var shell=new[]{new Vector2(-3.55f,-3.61f),new Vector2(3.55f,-3.61f),new Vector2(3.98f,-3.23f),
+            new Vector2(3.98f,3.16f),new Vector2(3.55f,3.61f),new Vector2(-3.55f,3.61f),
+            new Vector2(-3.98f,3.16f),new Vector2(-3.98f,-3.23f)};
+        b.Prism(shell,.8f,6,Vector3.zero,11);
+        b.Box(new Vector3(0,-3.72f,.22f),new Vector3(5,.24f,.55f),11,6);
+        for(int side=-1;side<=1;side+=2)
+            for(int rib=0;rib<9;rib++)
+                b.Box(new Vector3(side*3.86f,(rib-4)*.47f,-.44f),new Vector3(.17f,.18f,.09f),11);
+        return receiver=b.Finish("Curved monitor housing");
+    }
     static readonly Mesh[] dockMachines = new Mesh[3];
     // Sculpted top-down machinery uses the existing ship trim atlas and shared material.
     public static Mesh DockMachine(int kind)

@@ -96,3 +96,17 @@ for kind in ('GR07','Lancer','Ember','Warden'):
    for y in (31,38,45):box((x,y,x+5,y+3),'#254047',ink);line([(x+1,y),(x+4,y)],'#a9b896')
   for x in (19,41):box((x,50,x+4,61),'#263d3c',ink);box((x+1,58,x+3,62),gold)
  im.save(out/('Portrait'+kind+'.png'))
+
+# Input housings. The current action binding is printed by the game.
+for name in ('KeyPrompt','PadPrompt'):
+    im=Image.new('RGBA',(48,32))
+    d=ImageDraw.Draw(im)
+    if name=='KeyPrompt':
+        d.rounded_rectangle((6,3,41,29),radius=3,fill=ink,outline=edge)
+        d.rounded_rectangle((7,2,40,24),radius=3,fill='#dfebd7',outline=steel)
+        d.line((10,4,37,4),fill='#ffffff')
+    else:
+        d.polygon([(2,16),(7,9),(23,5),(39,3),(45,6),(47,14),(41,23),(17,28),(5,27)],fill=ink,outline=edge)
+        d.polygon([(4,16),(9,10),(25,6),(39,5),(44,8),(44,14),(39,20),(15,25),(5,24)],fill='#dedfbd')
+        d.line([(9,12),(24,8),(38,6)],fill='#ffffff',width=2)
+    im.save(out/(name+'.png'))

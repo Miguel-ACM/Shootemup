@@ -21,7 +21,7 @@ public sealed partial class HangarHub : MonoBehaviour
     // Where the title's tunnel came to rest, so the hangar continues from exactly that view.
     static float tunnelTravel;
     static readonly Vector2[] plinthSpots = { new Vector2(2.7f, -3), new Vector2(2.7f, 0), new Vector2(2.7f, 3) };
-    public const float DeckExtension = 48f;
+    public const float DeckExtension = 32f;
     const float PlinthReach = .95f, GateHalfWidth = 1.55f;
 
     sealed class Plinth
@@ -32,6 +32,9 @@ public sealed partial class HangarHub : MonoBehaviour
         public Transform disc, shadow;
         public bool sent;
         public TextMeshProUGUI label;
+        public RectTransform category;
+        public int lastBank = -1;
+        public bool pinned;
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -107,6 +110,7 @@ public sealed partial class HangarHub : MonoBehaviour
         get; private set;
     }
 
+    public static bool PreparingDeck => current == null || !current.deckReady || current.loadingShelves;
     static Vector3 dockedAt;
 
     readonly List<Plinth> plinths = new List<Plinth>();
@@ -117,14 +121,15 @@ public sealed partial class HangarHub : MonoBehaviour
     EZCameraShake.CameraShaker shaker;
     float cameraTravel;
 
+    DockReadouts readouts;
     Material scenery;
     Transform stockScreen;
     TextMeshProUGUI stockInfo, walletText;
     Dialog dialog;
     readonly List<Mesh> quads = new List<Mesh>();
-    bool launching;
+    bool launching, deckReady;
 
-    void Start()
+    IEnumerator Start()
     {
         current = this;
         var go = GameObject.FindGameObjectWithTag("Player");
@@ -133,15 +138,21 @@ public sealed partial class HangarHub : MonoBehaviour
         center = view != null ? view.transform.position : Vector3.zero;
         shaker = view != null ? view.GetComponent<EZCameraShake.CameraShaker>() : null;
         scenery = new Material(Resources.Load<Shader>("LevelScenery"));
+        var display = new GameObject("Native dock displays", typeof(RectTransform));
+        display.transform.SetParent(transform, false);
+        readouts = display.AddComponent<DockReadouts>();
+        readouts.Initialize(view);
+        parkedAt = dockedAt;
+        arrival = 0;
         BuildHall();
+        yield return null;
         BuildShop();
-        BuildConcourse();
+        yield return null;
+        yield return BuildConcourse();
+        BuildGallery();
+        BuildPrompt();
         BuildGate();
-        if (player != null)
-        {
-            parkedAt = dockedAt;
-            arrival = 0;
-        }
+        deckReady = true;
         input = GameInput.Actions;
         input.PlayerControls.FirePrimary.started += Interact;
         input.PlayerControls.FireSecondary.started += Interact;
@@ -203,17 +214,18 @@ public sealed partial class HangarHub : MonoBehaviour
             var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.spot, Quaternion.identity);
             go.transform.SetParent(transform, true);
             plinth.item = definition.Attach(go);
-            var visual = go.GetComponent<PSXObjectVisual>();
-            if (visual != null)
-                visual.itemKindOverride = definition.Key;
+
             plinth.item.SetRarity(ItemPool.RarityOf(stock[i]));
             // Hidden only after Awake has given the item its name and description.
             go.SetActive(false);
             plinth.disc = Hover("HangarShopPlinth", plinth.spot + new Vector3(0, -.3f, .5f), -4);
             plinth.shadow = Shadow(plinth.spot + new Vector3(0, -.3f, 0), .7f);
             plinths.Add(plinth);
-            var plaque = MountedPanel("Stock placard", new Vector2(2.7f, plinthSpots[i].y + 1.12f), new Vector2(2.7f, 1.35f));
-            plinth.label = WorldLabel(plaque, "", Vector2.zero, new Vector2(254, 121), 31, DockInstrument.Paper);
+            var plaque = MountedPanel("Stock placard", new Vector2(2.7f, plinthSpots[i].y + 1.12f), new Vector2(3.05f, 1.35f));
+            DockInstrument.Block(plaque, "Rarity edge", new Vector2(0, 64), new Vector2(295, 4), AItem.GetRarityColor(plinth.item.rarity));
+            plinth.category = MountedPanel("Equipment class", new Vector2(2.7f, plinthSpots[i].y - .78f), new Vector2(2.25f, .44f));
+            WorldLabel(plinth.category, DecisionOverlay.Category(plinth.item), Vector2.zero, new Vector2(216, 42), 25, DockInstrument.Muted);
+            plinth.label = WorldLabel(plaque, "", Vector2.zero, new Vector2(296, 130), 37, DockInstrument.Paper);
 
         }
     }
@@ -360,7 +372,7 @@ public sealed partial class HangarHub : MonoBehaviour
         float below = center.y - UnityEngine.Camera.main.orthographicSize - ArrivalDepth;
         float t = 1 - Mathf.Pow(1 - Mathf.Clamp01(arrival), 3);
         player.transform.position = new Vector3(parkedAt.x, Mathf.LerpUnclamped(below, parkedAt.y, t), parkedAt.z);
-        if (arrival >= 1)
+        if (arrival >= 1 && deckReady)
         {
             arrival = -1;
             HoldingShip = false;
@@ -369,12 +381,13 @@ public sealed partial class HangarHub : MonoBehaviour
 
     void Update()
     {
-        if (player == null || launching)
+        if (!deckReady || player == null || launching)
             return;
         // Debug: K unlocks every item.
         if (Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
         {
             MetaProgress.UnlockAll();
+            RefreshGalleryAccess();
             ItemSound.Play("itemSalvage", .16f);
         }
         var p = player.transform.position;
@@ -388,11 +401,17 @@ public sealed partial class HangarHub : MonoBehaviour
                 continue;
             if (offer.item.enabled && offer.sent && offer.item.Settled)
                 offer.item.enabled = false;
+            offer.label.transform.parent.gameObject.SetActive(!offer.item.IsDismissing);
+            offer.category.gameObject.SetActive(!offer.item.IsDismissing);
+            bool pinned = MetaProgress.Pin == offer.kind;
+            if (offer.lastBank == MetaProgress.Coins && offer.pinned == pinned)
+                continue;
+            offer.lastBank = MetaProgress.Coins;
+            offer.pinned = pinned;
             int price = MetaProgress.Price(offer.item.rarity);
             string tint = MetaProgress.Coins >= price ? "#F4C16C" : "#EB8A7C";
             offer.label.text = offer.item.GetData()[0] + "\n<size=85%><color=" + tint + ">" +
                 (MetaProgress.Pin == offer.kind ? "PIN  " : "") + price + "  ●</color></size>";
-            offer.label.transform.parent.gameObject.SetActive(!offer.item.IsDismissing);
         }
         UpdateWallet();
     }
@@ -429,7 +448,7 @@ public sealed partial class HangarHub : MonoBehaviour
 
     void Interact(InputAction.CallbackContext context)
     {
-        if (player == null || launching || Arriving || HangarShutter.Active || Menu.GameplayPaused || CloudTransition.Busy)
+        if (!deckReady || player == null || launching || Arriving || HangarShutter.Active || Menu.GameplayPaused || CloudTransition.Busy)
             return;
         var p = player.transform.position;
         if (UseDock(context, p))
@@ -469,6 +488,7 @@ public sealed partial class HangarHub : MonoBehaviour
         PSXImpactEffects.ItemGet(plinth.item.transform.position, AItem.GetRarityColor(plinth.item.rarity));
         ItemSound.Play("itemSalvage", .16f);
         plinth.item.Dismiss();
+        RefreshGalleryAccess();
     }
 
     // The mist takes the ship: controls stop, it is drawn up out of view, and the clouds follow a second later.
@@ -564,6 +584,10 @@ public sealed partial class HangarHub : MonoBehaviour
             input.PlayerControls.ActiveRight.started -= Interact;
         }
         ResetDeckCamera();
+        if (silhouette != null)
+            Destroy(silhouette);
+        if (guidePaint != null)
+            Destroy(guidePaint);
         if (current == this)
             current = null;
         ReleaseExhibit();

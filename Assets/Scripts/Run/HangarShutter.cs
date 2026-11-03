@@ -1,37 +1,35 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-// A pressure door covers the portrait aperture while the title shaft becomes the dock.
+// Preserve the last rendered view across scene activation. The new deck dissolves in
+// when its surfaces and exhibits are ready, including when returning from the simulator.
 public sealed class HangarShutter : MonoBehaviour
 {
-    RectTransform upper, lower;
     public static bool Active
     {
         get; private set;
     }
+    RenderTexture previous;
 
-    public static void Enter(RunDifficulty difficulty)
+    public static void Enter(RunDifficulty difficulty) => Begin(() => HangarHub.Enter(difficulty), true);
+    public static void Depart(Action launch) => Begin(launch, false);
+    static void Begin(Action covered, bool entering)
     {
         if (Active)
             return;
-        var door = new GameObject("Hangar pressure door", typeof(RectTransform)).AddComponent<HangarShutter>();
-        DontDestroyOnLoad(door.gameObject);
-        door.StartCoroutine(door.Transfer(difficulty, null));
+        var transfer = new GameObject("Dock cross dissolve", typeof(RectTransform)).AddComponent<HangarShutter>();
+        DontDestroyOnLoad(transfer.gameObject);
+        transfer.StartCoroutine(transfer.Transfer(covered, entering));
     }
-
-    public static void Depart(System.Action launch)
-    {
-        if (Active)
-            return;
-        var door = new GameObject("Simulator pressure door", typeof(RectTransform)).AddComponent<HangarShutter>();
-        DontDestroyOnLoad(door.gameObject);
-        door.StartCoroutine(door.Transfer(null, launch));
-    }
-
-    IEnumerator Transfer(RunDifficulty? difficulty, System.Action launch)
+    IEnumerator Transfer(Action covered, bool entering)
     {
         Active = true;
+        yield return new WaitForEndOfFrame();
+        int width = Screen.width, height = Screen.height;
+        previous = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.ARGB32);
+        ScreenCapture.CaptureScreenshotIntoRenderTexture(previous);
         var canvas = gameObject.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 32765;
@@ -39,57 +37,32 @@ public sealed class HangarShutter : MonoBehaviour
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1280, 720);
         scaler.matchWidthOrHeight = 1;
-        var aperture = DockInstrument.Block(transform, "Pressure door aperture", Vector2.zero, new Vector2(405, 720), Color.clear);
-        aperture.gameObject.AddComponent<RectMask2D>();
-        upper = Leaf(aperture, "Upper leaf");
-        lower = Leaf(aperture, "Lower leaf");
-        for (float t = 0; t < .65f; t += Time.unscaledDeltaTime)
-        {
-            Place(Mathf.SmoothStep(0, 1, t / .65f));
-            yield return null;
-        }
-        Place(1);
-        if (difficulty.HasValue)
-            HangarHub.Enter(difficulty.Value);
-        else
-            launch();
+        var image = new GameObject("Departing view", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
+        image.transform.SetParent(transform, false);
+        float fraction = Mathf.Min(1, 405f * height / (720 * width));
+        image.uvRect = new Rect((1 - fraction) * .5f, 0, fraction, 1);
+        image.rectTransform.sizeDelta = new Vector2(Mathf.Min(405, width * 720f / height), 720);
+        image.texture = previous;
+        image.raycastTarget = false;
+        covered();
         yield return null;
-        if (!difficulty.HasValue)
+        if (!entering)
             while (HangarHub.Active || HangarHub.Launching)
                 yield return null;
-        while (CloudTransition.Busy)
+        while (CloudTransition.Busy || entering && HangarHub.PreparingDeck)
             yield return null;
-        // The docks finish their arrival behind the closed bulkhead.
-        yield return new WaitForSecondsRealtime(1.6f);
-        for (float t = 0; t < .85f; t += Time.unscaledDeltaTime)
+        for (float t = 0; t < .8f; t += Mathf.Min(Time.unscaledDeltaTime, .05f))
         {
-            Place(1 - Mathf.SmoothStep(0, 1, t / .85f));
+            image.color = new Color(1, 1, 1, 1 - Mathf.SmoothStep(0, 1, t / .8f));
             yield return null;
         }
         Active = false;
         Destroy(gameObject);
     }
-
-    RectTransform Leaf(Transform parent, string title)
-    {
-        var image = new GameObject(title, typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
-        image.transform.SetParent(parent, false);
-        image.texture = Resources.Load<Texture2D>("DockArt/PressureDoor");
-        image.uvRect = new Rect(0, 0, 1, 1);
-        image.color = new Color(.65f, .72f, .73f);
-        image.raycastTarget = false;
-        image.rectTransform.sizeDelta = new Vector2(405, 362);
-        return image.rectTransform;
-    }
-
-    void Place(float closed)
-    {
-        upper.anchoredPosition = new Vector2(0, Mathf.Lerp(542, 180, closed));
-        lower.anchoredPosition = new Vector2(0, -Mathf.Lerp(542, 180, closed));
-    }
-
     void OnDestroy()
     {
+        if (previous != null)
+            RenderTexture.ReleaseTemporary(previous);
         Active = false;
     }
 }

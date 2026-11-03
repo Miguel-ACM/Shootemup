@@ -7,61 +7,28 @@ using UnityEngine.UI;
 
 public sealed partial class HangarHub
 {
-    sealed class Card
-    {
-        public ItemDefinition item;
-        public string name, description;
-        public AItem.ItemType kind;
-        public int portrait;
-    }
-    readonly List<Card> catalog = new List<Card>(), shelf = new List<Card>();
     readonly List<GameObject> pageNodes = new List<GameObject>();
-    ItemPortraitStudio portraits;
     GameObject turntable;
     RenderTexture hullPhoto;
     static readonly string[] categories = { "ALL PARTS", "PASSIVES", "ACTIVES", "PARTNERS", "GUNS", "SECONDARIES" };
     static readonly LevelId[] districts ={LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Desert,
         LevelId.Tunnel,LevelId.Candyland,LevelId.Space,LevelId.Underwater,LevelId.Hell};
     static readonly string[] districtMarks = { "PL", "SN", "CI", "TH", "DE", "TU", "CA", "SP", "UW", "HE" };
-    void PrepareCatalog()
-    {
-        if (catalog.Count == 0)
-        {
-            foreach (var entry in ItemCatalog.All)
-            {
-                var probe = new GameObject("Read equipment card");
-                var item = entry.Attach(probe);
-                item.enabled = false;
-                var data = item.GetData();
-                catalog.Add(new Card { item = entry, name = data[0], description = data[2], kind = item.Kind });
-                Destroy(probe);
-            }
-            catalog.Sort((a, b) => string.Compare(a.name, b.name, StringComparison.OrdinalIgnoreCase));
-            for (int i = 0; i < catalog.Count; i++)
-                catalog[i].portrait = i;
-        }
-        portraits = ItemPortraitStudio.Create(catalog.Select(c => c.item.Key).ToList());
-        FilterShelf();
-    }
-    void FilterShelf()
-    {
-        shelf.Clear();
-        foreach (var c in catalog)
-            if (band == 0 || (int)c.kind == band - 1)
-                shelf.Add(c);
-    }
     static int Cycle(int n, int count) => count == 0 ? 0 : (n % count + count) % count;
     void Navigate(bool horizontal, int step)
     {
+        if (room == (int)Dock.Armory)
+        {
+            if (horizontal)
+                galleryCategory = band = Cycle(band + step, categories.Length);
+            else
+                galleryAvailability = selection = Cycle(selection + step, availability.Length);
+            ApplyGalleryFilter();
+            return;
+        }
         if (!horizontal)
         {
-            if (room == (int)Dock.Armory)
-            {
-                band = Cycle(band + step, categories.Length);
-                selection = 0;
-                FilterShelf();
-            }
-            else if (room == (int)Dock.Fleet)
+            if (room == (int)Dock.Fleet)
                 band = Cycle(band + step, 3);
             else if (room == (int)Dock.Recorder)
             {
@@ -73,7 +40,7 @@ public sealed partial class HangarHub
         }
         else
         {
-            int count = room == (int)Dock.Fleet ? ShipFrames.Count : room == (int)Dock.Armory ? shelf.Count :
+            int count = room == (int)Dock.Fleet ? ShipFrames.Count :
                 room == (int)Dock.Simulator ? FlightTrials.All.Length : room == (int)Dock.Flight ? 3 :
                 MetaProgress.History.Count(f => string.IsNullOrEmpty(f.contract) == (band == 0));
             selection = Cycle(selection + step, count);
@@ -118,8 +85,7 @@ public sealed partial class HangarHub
     void ReleaseExhibit()
     {
         ReleaseHull();
-        if (portraits != null)
-            Destroy(portraits.gameObject);
+
     }
     void HullPortrait(ShipFrame frame, float x, float y, float size)
     {
@@ -158,6 +124,11 @@ public sealed partial class HangarHub
     }
     void RenderPage()
     {
+        if (room == (int)Dock.Armory)
+        {
+            directoryControls.text = operating ? DockInstrument.FireKey(true) + "  RELEASE" : "";
+            return;
+        }
         foreach (var node in pageNodes)
             if (node != null)
             {
@@ -174,9 +145,6 @@ public sealed partial class HangarHub
             case Dock.Fleet:
                 action = FleetPage();
                 break;
-            case Dock.Armory:
-                ArchivePage();
-                break;
             case Dock.Simulator:
                 TrialPage();
                 action = "LAUNCH SIM";
@@ -191,7 +159,7 @@ public sealed partial class HangarHub
         }
         string keys = room == (int)Dock.Fleet ? (action.Length > 0 ? DockInstrument.FireKey() + "  " + action : "") :
             operating ? (action.Length > 0 ? DockInstrument.FireKey() + "  " + action + "   " : "") + DockInstrument.FireKey(true) + " RELEASE" :
-            DockInstrument.FireKey() + "  USE CONSOLE";
+            "";
         Legend(keys, 0, -254, 558, 32, 17, DockInstrument.Paper);
     }
     string FleetPage()
@@ -229,33 +197,6 @@ public sealed partial class HangarHub
         Legend(status, 0, -130, 558, 50, 22, DockInstrument.Brass, true);
         Legend("BOSS SERVICE PLATE     /     GOLD  *  NO-HIT", 0, -189, 558, 33, 15, DockInstrument.Muted);
         return open && MetaProgress.Ship != hull.frame ? "FLY THIS HULL" : "";
-    }
-    void ArchivePage()
-    {
-        if (shelf.Count == 0)
-            return;
-        var c = shelf[selection];
-        Legend(categories[band] + "      /      " + (selection + 1).ToString("00") + " OF " + shelf.Count.ToString("00"), 0, 198, 558, 40, 20, lamps[room], true);
-        for (int i = 0; i < 7; i++)
-        {
-            int index = selection / 7 * 7 + i;
-            if (index >= shelf.Count)
-                break;
-            float x = -237 + i * 79;
-            Tile(x, 116, 70, 73, index == selection ? Metal : DockInstrument.Ink);
-            var part = shelf[index];
-            Photo(portraits.Atlas, portraits.Cell(part.portrait), x, 116, 67, Color.white);
-            if (index == selection)
-                Tile(x, 76, 66, 4, lamps[room]);
-        }
-        Legend(c.name, 0, 37, 558, 53, 34, DockInstrument.Paper, true);
-        Legend(c.description, 0, -35, 558, 87, 22, DockInstrument.Paper);
-        var trial = FlightTrials.Blueprint(c.item.Key);
-        string source = c.item.Rarity == ItemRarity.Pact ? "Pact encounter" : c.item.Id == ItemId.LargeHealthKit ? "Low-hull shop stock" :
-            c.item.Id == ItemId.ExplodingShield ? "Issued at every launch" : MetaProgress.IsUnlocked(c.item.Key) ? "Released  /  Run rewards and shops" :
-            trial != null ? "Locked  /  Certify " + trial.title : "Locked  /  Buy on the launch lane for " + MetaProgress.Price(c.item.RarityKey) + " coins";
-        Legend(source, 0, -131, 558, 56, 19, lamps[room], true);
-        Legend("← →  PART       ↑ ↓  CATEGORY", 0, -189, 558, 33, 15, DockInstrument.Muted);
     }
     void TrialPage()
     {
