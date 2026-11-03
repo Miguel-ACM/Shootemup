@@ -35,7 +35,19 @@ Shader "Shootemup/Space black hole"
                 if (_CoreOnly>.5)
                 {
                     float edge=smoothstep(.63,.74,r);
-                    return half4(lerp(float3(.001,.002,.004),float3(.8,.5,.2),edge*_HitFlash),horizon*_Tint.a);
+                    float3 shadow = lerp(float3(.001,.002,.004),float3(.8,.5,.2),edge*_HitFlash);
+                    // Two slanted, almond-shaped eyes cut into the event horizon.
+                    float2 eye = float2(abs(p.x)-.31, p.y-.065);
+                    eye.y -= eye.x*.34;
+                    float lid = saturate(1 - pow(abs(eye.x)/.25, 1.55));
+                    float blink = smoothstep(0, .12, abs(frac(_Time.y/5.6)-.5)*5.6);
+                    float aperture = .15*lid*lerp(.06, 1, blink) - abs(eye.y);
+                    float mask = (1-smoothstep(.235,.25,abs(eye.x))) * smoothstep(-.008,.008,aperture);
+                    float2 iris = (eye-float2(-.025,-.015))/float2(.106,.14);
+                    float3 gold = lerp(float3(1,.82,.51), float3(.96,.37,.055), 1-smoothstep(.82,1,length(iris)));
+                    gold *= lerp(.045, 1, smoothstep(.28,.48,length(iris*float2(1.18,.64))));
+                    float glint = 1-smoothstep(.019,.035,length(eye-float2(-.068,.035)));
+                    return half4(lerp(shadow,lerp(gold,float3(1,.96,.8),glint),mask)*_Tint.rgb,horizon*_Tint.a);
                 }
                 float t=_Time.y*.32;
                 float diskRadius=length(float2(p.x,p.y/.23));
