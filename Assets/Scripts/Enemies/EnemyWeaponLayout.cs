@@ -18,6 +18,8 @@ public static class EnemyWeaponLayout
             return expansion.ports;
         switch (hull)
         {
+            case 82:
+                return new[] { P(0, -1.10f), P(-1.35f, -.65f), P(1.35f, -.65f) };
             case 81:
                 return new[] { P(0, -1.50f), P(-.93f, -.32f), P(.93f, -.32f) };
             case 0:

@@ -1,0 +1,32 @@
+[
+  {
+    "object": "Drum0",
+    "motion": "spin",
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "pivot": [
+      0,
+      -0.22,
+      0.51
+    ],
+    "speed": 180
+  },
+  {
+    "object": "Drum1",
+    "motion": "spin",
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "pivot": [
+      0,
+      0.4,
+      0.51
+    ],
+    "speed": -180
+  }
+]
