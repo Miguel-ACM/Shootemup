@@ -51,7 +51,7 @@ public sealed class MusicDeck : MonoBehaviour
     }
 
     public void StartCue(AudioClip clip, double at, float position, float mixFrom, float mixTo, float ramp, double fade,
-        float[] beats = null)
+        float[] beats = null, float clipLead = 0)
     {
         Stop();
         StartAt = at;
@@ -63,7 +63,7 @@ public sealed class MusicDeck : MonoBehaviour
         kickBeats = beats;
         Source.clip = clip;
         Source.loop = false;
-        Source.timeSamples = Mathf.Clamp(Mathf.RoundToInt(position * clip.frequency), 0, clip.samples - 1);
+        Source.timeSamples = Mathf.Clamp(Mathf.RoundToInt((position + clipLead) * clip.frequency), 0, clip.samples - 1);
         SetEnvelope(double.PositiveInfinity, .01, double.PositiveInfinity);
         Source.PlayScheduled(at);
     }

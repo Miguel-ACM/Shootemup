@@ -100,7 +100,7 @@ def tempo_map(onset, hint):
         scores.append(score)
     scores = np.asarray(scores)
     profile = np.mean(scores, axis=0)
-    # Tempo metadata / the trailer's independently aligned Plains pulse resolves octave ambiguity.
+    # A known tempo resolves octave ambiguity. Phase still comes from the recording.
     prior = hint or tempos[np.argmax(profile - .045 * np.log2(tempos / 132)**2)]
     allowed = np.abs(np.log2(tempos / prior)) < .32
     global_bpm = tempos[np.argmax(np.where(allowed, profile, -1))]
@@ -146,25 +146,6 @@ def track_beats(flux, hint):
     times = np.array(beats[::-1]) * DT
     # STFT windows are centred; flux peaks usually just precede the audible transient.
     return times, float(np.clip(confidence, 0, 1)), onset
-
-
-def fields_pulse(onset, duration):
-    # The strongest drum subdivision is half a beat away from the checked trailer
-    # downbeats. Keep the checked performance timing and follow that phase onwards.
-    trailer = json.loads((ROOT / "Trailer/music_beats.json").read_text())
-    bars = list(trailer["bar_anchors"])
-    length = trailer["bar_seconds"]
-    while bars[-1] < duration:
-        target = bars[-1] + length
-        frame = round(target / DT)
-        nearby = np.arange(max(0, frame - 4), min(len(onset), frame + 5))
-        if len(nearby):
-            evidence = onset[nearby] - .09 * abs(nearby - target / DT)
-            target += np.clip(nearby[np.argmax(evidence)] * DT - target, -.009, .009)
-        bars.append(target)
-    bars = np.array(bars)
-    beats = (bars[:-1, None] + np.diff(bars)[:, None] * np.arange(4) / 4).ravel()
-    return beats[beats < duration]
 
 
 def aggregate(values, times, step, end, offset=0):
@@ -376,10 +357,8 @@ def score_features(path, samples, duration):
     hints = {"fields": 169, "greenlandsOST": 140, "stage1bossOST": 172}
     beats, pulse_confidence, onset = track_beats(flux, hints.get(path.stem))
     beats = beats[beats < duration]
-    if path.stem == "fields":
-        beats = fields_pulse(onset, duration)
     pc, low = bar_features(samples, beats, duration)
-    offset = 0 if path.stem == "fields" else downbeat_index(beats, pc, low, onset)
+    offset = downbeat_index(beats, pc, low, onset)
     downbeats, phrases, novelty, phrase_confidence = find_phrases(
         beats, offset, pc, low, energies, duration)
     times = np.r_[0, downbeats[phrases], duration]
@@ -415,6 +394,15 @@ def analyze(path, chords_only=False):
     if not segments or segments[0]["time"] != 0:
         raise ValueError(f"{path.stem}: chord analysis did not cover the recording")
     data = None if chords_only else score_features(path, samples, duration)
+    if not chords_only:
+        # Cue times use gapless PCM. Unity's MP3 importer can retain the priming samples.
+        info = json.loads(subprocess.check_output([
+            "ffprobe", "-v", "error", "-select_streams", "a:0", "-read_intervals", "%+#1",
+            "-show_entries", "stream=sample_rate:packet_side_data=skip_samples", "-of", "json", str(path)]))
+        packet = next(iter(info["packets"]), {})
+        skipped = sum(side.get("skip_samples", 0) for side in packet.get("side_data_list", []))
+        if skipped:
+            data["mp3Lead"] = skipped / int(info["streams"][0]["sample_rate"])
     OUTPUT.mkdir(exist_ok=True)
     write_meta(OUTPUT, folder=True)
     dest = OUTPUT / (path.stem + ".json")

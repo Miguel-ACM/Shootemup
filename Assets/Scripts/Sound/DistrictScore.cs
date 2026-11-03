@@ -7,7 +7,7 @@ public sealed class DistrictScore : MonoBehaviour
     [Serializable] public class Span { public float start, end; }
     [Serializable] public class Chord { public float time; public string name; }
     [Serializable] public class Sections { public Span intro, body, peak, outro; }
-    [Serializable] public class Cues { public float bpm; public float[] beats, downbeats, boundaries; public Chord[] chords; public Sections sections; }
+    [Serializable] public class Cues { public float bpm, duration, mp3Lead; public float[] beats, downbeats, boundaries; public Chord[] chords; public Sections sections; }
     enum Part { Intro, Flight, Boss, Outro, Linear }
     sealed class Track
     {
@@ -24,7 +24,12 @@ public sealed class DistrictScore : MonoBehaviour
             _ => null
         };
         public float Start(Part section) => Range(section)?.start ?? 0;
-        public float End(Part section) => Mathf.Min(Range(section)?.end ?? clip.length, clip.length);
+        // Some importers retain the MP3 priming samples. A gapless clip already
+        // matches the analyzed duration (rounded to milliseconds).
+        public float ClipLead => adaptive && cues.mp3Lead > 0 && cues.duration > 0 &&
+            clip.length >= cues.duration + cues.mp3Lead - .001f ? cues.mp3Lead : 0;
+        public float Length => clip.length - ClipLead;
+        public float End(Part section) => Mathf.Min(Range(section)?.end ?? Length, Length);
 
         public string OpeningChord(Part section)
         {
@@ -167,7 +172,8 @@ public sealed class DistrictScore : MonoBehaviour
         if (track.clip.loadState != AudioDataLoadState.Loaded) return;
         part = track.First;
         started = true;
-        decks[index].StartCue(track.clip, AudioSettings.dspTime + Lead, track.Start(part), 0, 0, 0, .04);
+        decks[index].StartCue(track.clip, AudioSettings.dspTime + Lead, track.Start(part), 0, 0, 0, .04,
+            clipLead: track.ClipLead);
         Plan();
     }
 
@@ -223,7 +229,7 @@ public sealed class DistrictScore : MonoBehaviour
         cut = active.ClockAt(end);
         double fade = track.adaptive ? Math.Clamp(120 / track.cues.bpm, .48, 1) : .5;
         // Keep playing the outgoing tail behind the incoming downbeat; reclaim its deck after the fade.
-        double overlap = pendingTrack == null ? 0 : Math.Min(fade, Math.Max(0, track.clip.length - end));
+        double overlap = pendingTrack == null ? 0 : Math.Min(fade, Math.Max(0, track.Length - end));
         if (overlap < .04) overlap = 0;
         tailEnd = cut + overlap;
         active.EndAt(tailEnd, overlap > 0 ? overlap : fade, cut);
@@ -234,7 +240,7 @@ public sealed class DistrictScore : MonoBehaviour
         float beats = to > from ? 1 : 8;
         float ramp = from == to ? 0 : Mathf.Min(beats * 60/track.cues.bpm, pendingTrack.End(pendingPart) - offset);
         next.StartCue(pendingTrack.clip, cut, offset, from, to, ramp, overlap > 0 ? overlap : fade,
-            pendingPart == Part.Boss ? pendingTrack.cues.beats : null);
+            pendingPart == Part.Boss ? pendingTrack.cues.beats : null, pendingTrack.ClipLead);
     }
 
     void Update()

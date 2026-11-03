@@ -14,7 +14,7 @@ Boss adds a hard kick on every beat in the song’s cue sheet. The game and both
 
 ## Cue analysis
 
-With Node 18+, NumPy and FFmpeg installed, run `npm ci --prefix Tools/MusicLab` once. Run `python Tools/MusicLab/analyze.py --chords-only` to refresh the harmony on the existing beat grids and section markers. Append MP3 basenames to analyze individual tracks. Omit `--chords-only` for a full cue analysis. The beat and phrase analysis uses audio onsets and recurring bar sequences. Plains uses the existing trailer downbeat anchors where available.
+With Node 18+, NumPy, FFmpeg and ffprobe installed, run `npm ci --prefix Tools/MusicLab` once. Run `python Tools/MusicLab/analyze.py --chords-only` to refresh the harmony on the existing beat grids and section markers. Append MP3 basenames to analyze individual tracks. Omit `--chords-only` for a full cue analysis. The beat and phrase analysis uses audio onsets and recurring bar sequences. Plains uses a 169 BPM hint and follows the pulse of the shipped recording. Full analysis also records the MP3 lead-in so Unity can seek on the same timeline when its importer retains the encoder padding.
 
 Chordino estimates tuning, separates note fundamentals from their overtones, and decodes a sequence of chords from bass and treble evidence. The cue sheets retain sevenths, inversions and unpitched gaps. Changes within 100 ms and 23% of a beat of the measured pulse can align to it. Offbeat changes retain their detected times. The detector runs offline when generating the cue sheets. [Chordino method](https://isophonics.net/nnls-chroma) · [Music Lab's Chordino implementation](https://www.npmjs.com/package/@audio/mir-chordino)
 
