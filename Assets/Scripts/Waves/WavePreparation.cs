@@ -33,6 +33,7 @@ public sealed class WavePreparation : MonoBehaviour
         {
             projectileShaders = new ShaderVariantCollection();
             projectileShaders.Add(new ShaderVariantCollection.ShaderVariant(CombatVisuals.ProjectileMaterial.shader, UnityEngine.Rendering.PassType.ScriptableRenderPipeline));
+            projectileShaders.Add(new ShaderVariantCollection.ShaderVariant(Resources.Load<Shader>("ChargeDetonation"), UnityEngine.Rendering.PassType.ScriptableRenderPipeline));
             projectileShaders.WarmUp();
         }
         foreach (PlayerDelivery delivery in System.Enum.GetValues(typeof(PlayerDelivery)))
