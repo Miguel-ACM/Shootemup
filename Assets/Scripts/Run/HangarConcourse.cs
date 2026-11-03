@@ -46,6 +46,8 @@ public sealed partial class HangarHub
     Interior installing;
     Transform FixtureParent => installing != null ? installing.fixtures.transform : transform;
     float repeatAt, cameraAcross, baseViewSize;
+    float roomFocusX;
+    int focusPortal = -1;
     int room = -1, selection, band;
     bool operating;
     DockInstrument instrument;
@@ -58,13 +60,23 @@ public sealed partial class HangarHub
     }
 
     const float RoomThreshold = 6.5f;
+    const float PassageEnd = 12.2f;
     static float FarWall(int dock) => dock == (int)Dock.Fleet ? 28.5f : 20.5f;
+    static float DoorAlignment(int portal, float y) => portal < 0 ? 0 :
+        1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(1.05f, 2.25f, Mathf.Abs(y - berths[portal].y)));
 
     Vector3 ConstrainDeck(Vector3 previous, Vector3 desired)
     {
         float x = previous.x - center.x, y = previous.y - center.y;
         int portal = Portal(previous);
         float halfWidth = Camera.RightLimit;
+        float lateral = Mathf.Abs(x);
+        // Ease only the crossing component of the pilot's movement. Releasing or
+        // reversing the stick works throughout, and Focus retains its speed ratio.
+        float approach = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(halfWidth - 1.5f, halfWidth, lateral));
+        float departure = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(9.8f, PassageEnd, lateral));
+        float crossingWeight = approach * (1 - departure) * DoorAlignment(portal, y);
+        desired.x = Mathf.Lerp(previous.x, desired.x, Mathf.Lerp(1, .38f, crossingWeight));
         if (Mathf.Abs(x) > halfWidth + .01f && portal >= 0)
         {
             float side = Mathf.Sign(berths[portal].x);
@@ -116,11 +128,12 @@ public sealed partial class HangarHub
         float zoom = operating ? 7.5f * MonitorScale(room) + .15f : baseViewSize;
         view.orthographicSize = Mathf.Lerp(view.orthographicSize, zoom, 1 - Mathf.Exp(-6 * Time.deltaTime));
         float lateral = Mathf.Abs(p.x - center.x);
-        int portal = lateral > Camera.RightLimit ? Portal(p) : -1;
-        if (portal != room)
+        int portal = Portal(p);
+        int entered = lateral > Camera.RightLimit ? portal : -1;
+        if (entered != room)
         {
-            if (portal >= 0)
-                OpenDock(portal);
+            if (entered >= 0)
+                OpenDock(entered);
             else
                 CloseDock();
         }
@@ -128,7 +141,11 @@ public sealed partial class HangarHub
         float along = Mathf.Clamp(p.y - center.y, 0, DeckExtension);
         if (portal >= 0)
         {
-            float enter = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(Camera.RightLimit, 7.5f, lateral));
+            // The same spatial curve runs in reverse on exit. At the lane edge
+            // the interior is still outside the portrait aperture in both directions.
+            float enter = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(Camera.RightLimit - 1.5f, PassageEnd, lateral));
+            if (entered < 0)
+                enter *= DoorAlignment(portal, p.y - center.y);
             Vector2 target = berths[portal];
             if (operating)
             {
@@ -144,16 +161,15 @@ public sealed partial class HangarHub
                 target.x = Mathf.Sign(target.x) * Mathf.Clamp(lateral, Mathf.Max(RoomThreshold + halfView, Mathf.Abs(MonitorAt(portal).x) - .65f), FarWall(portal) - halfView);
                 target.y += Mathf.Clamp((p.y - center.y - target.y) * .18f, -.5f, .5f);
             }
-            across = target.x * enter;
+            roomFocusX = portal == focusPortal
+                ? Mathf.Lerp(roomFocusX, target.x, 1 - Mathf.Exp(-7 * Time.deltaTime)) : target.x;
+            across = roomFocusX * enter;
             along = Mathf.Lerp(along, target.y, enter);
         }
         SetCameraTravel(Mathf.Lerp(cameraTravel, along, 1 - Mathf.Exp(-7 * Time.deltaTime)));
-        float next = Mathf.Lerp(cameraAcross, across, 1 - Mathf.Exp(-7 * Time.deltaTime));
-        // Bring the portrait aperture back over the lane before the outgoing interior is hidden.
-        float passagePan = Mathf.Max(0, lateral - Camera.RightLimit) * 5;
-        next = Mathf.Clamp(next, -passagePan, passagePan);
-        MoveCamera(Vector3.right * (next - cameraAcross));
-        cameraAcross = next;
+        focusPortal = portal;
+        MoveCamera(Vector3.right * (across - cameraAcross));
+        cameraAcross = across;
     }
 
     void MoveCamera(Vector3 delta)
@@ -170,6 +186,7 @@ public sealed partial class HangarHub
         SetCameraTravel(0);
         MoveCamera(Vector3.left * cameraAcross);
         cameraAcross = 0;
+        focusPortal = -1;
         if (view != null && baseViewSize > 0)
             view.orthographicSize = baseViewSize;
     }
