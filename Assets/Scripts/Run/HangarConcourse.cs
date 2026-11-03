@@ -242,16 +242,6 @@ public sealed partial class HangarHub
         return t;
     }
 
-    void BuildRunway()
-    {
-        for (int side = -1; side <= 1; side += 2)
-        {
-            Strip("Runway channel", new Vector2(side * 1.3f, DeckExtension * .5f), new Vector2(.11f, 16 + DeckExtension), Deck, -12);
-            for (int y = -7; y <= 7 + DeckExtension; y += 2)
-                Strip("Inset runway lamp", new Vector2(side * 1.3f, y), new Vector2(.055f, .32f), DockInstrument.Sea, -11);
-        }
-    }
-
     IEnumerator BuildConcourse()
     {
         for (int i = 0; i < berths.Length; i++)

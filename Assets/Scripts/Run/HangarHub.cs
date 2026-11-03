@@ -178,7 +178,6 @@ public sealed partial class HangarHub : MonoBehaviour
         parkedAt = dockedAt;
         Arriving = true;
         BuildHall(tunnelTravel);
-        BuildRunway();
         yield return null;
         yield return BuildShop();
         yield return BuildConcourse();
