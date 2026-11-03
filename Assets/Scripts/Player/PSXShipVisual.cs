@@ -33,7 +33,6 @@ public sealed class PSXShipVisual : MonoBehaviour
     MeshRenderer defaultRenderer;
     MeshRenderer[] defaultParts;
     bool defaultPoseCaptured;
-    Matrix4x4 defaultPose;
     Quaternion RestRotation => customOrientation ? baseRotation : Quaternion.Euler(-75f, 0f, 0f) * Quaternion.Euler(0f, 180f, 0f);
 
     /// <summary>Shows a Terra hull (authored in ship-root space, nose +Y), or the authored hull for null or a missing model.</summary>
@@ -79,15 +78,22 @@ public sealed class PSXShipVisual : MonoBehaviour
             BuildTerraHull(terraModel, mesh, root.transform);
             return root;
         }
-        var hull = new GameObject("GR-07 hull");
-        hull.transform.SetParent(root.transform, false);
-        hull.transform.localPosition = defaultPose.GetColumn(3);
-        hull.transform.localRotation = defaultPose.rotation;
-        hull.transform.localScale = defaultPose.lossyScale;
-        hull.AddComponent<MeshFilter>().sharedMesh = defaultRenderer.GetComponent<MeshFilter>().sharedMesh;
-        var renderer = hull.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = defaultRenderer.sharedMaterial;
-        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        var saved = model.localRotation;
+        model.localRotation = RestRotation;
+        foreach (var part in DefaultRenderers())
+        {
+            var hull = new GameObject(part.name);
+            hull.transform.SetParent(root.transform, false);
+            var pose = transform.worldToLocalMatrix * part.transform.localToWorldMatrix;
+            hull.transform.localPosition = pose.GetColumn(3);
+            hull.transform.localRotation = pose.rotation;
+            hull.transform.localScale = pose.lossyScale;
+            hull.AddComponent<MeshFilter>().sharedMesh = part.GetComponent<MeshFilter>().sharedMesh;
+            var renderer = hull.AddComponent<MeshRenderer>();
+            renderer.sharedMaterials = part.sharedMaterials;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+        model.localRotation = saved;
         return root;
     }
 
@@ -118,10 +124,6 @@ public sealed class PSXShipVisual : MonoBehaviour
         defaultPoseCaptured = true;
         defaultRenderer = modelRenderer;
         defaultParts = partRenderers;
-        var saved = model.localRotation;
-        model.localRotation = RestRotation;
-        defaultPose = transform.worldToLocalMatrix * defaultRenderer.transform.localToWorldMatrix;
-        model.localRotation = saved;
     }
 
     static readonly int Tint = Shader.PropertyToID("_Tint");
