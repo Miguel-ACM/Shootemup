@@ -56,6 +56,11 @@ public static class VerifyHangarDeck
         SessionState.SetBool("InspectPhysicalRooms", true);
         Run();
     }
+    public static void Stations()
+    {
+        SessionState.SetBool("StationArtOnly", true);
+        Rooms();
+    }
     public static void Lane()
     {
         SessionState.SetBool("InspectDockLane", true);
@@ -144,7 +149,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         yield return new WaitForSecondsRealtime(1);
         if (SessionState.GetBool("InspectPhysicalRooms", false) || SessionState.GetBool("InspectPressureDoor", false))
             StartCoroutine(MeasurePopulation());
-        if (SessionState.GetBool("InspectPhysicalRooms", false))
+        if (SessionState.GetBool("InspectPhysicalRooms", false) && !SessionState.GetBool("StationArtOnly", false))
         {
             var entry = FindAnyObjectByType<SettingsEntry>();
             var menu = entry.GetComponentInParent<Menu>();
@@ -188,10 +193,10 @@ public sealed class HangarDeckReview : MonoBehaviour
             SessionState.SetBool("InspectPressureDoor",false);
             yield return Capture("PhysicalLane");
             var pilot = FindAnyObjectByType<Shipcontroller>().transform;
-            pilot.position = new Vector3(-11, 3.8f, pilot.position.z);
+            pilot.position = new Vector3(-12.75f, 1.6f, pilot.position.z);
             yield return new WaitForSeconds(.8f);
             yield return Capture("FleetTube");
-            pilot.position = new Vector3(11.4f, 4.3f, pilot.position.z);
+            pilot.position = new Vector3(11.4f, 2.85f, pilot.position.z);
             yield return new WaitForSeconds(.8f);
             yield return Capture("FilterPrompt");
             var keys = InputSystem.AddDevice<Keyboard>();
@@ -199,10 +204,10 @@ public sealed class HangarDeckReview : MonoBehaviour
             InputSystem.QueueStateEvent(keys, new KeyboardState(Key.UpArrow));
             InputSystem.Update();
             float crossBy = Time.realtimeSinceStartup + 3;
-            while (pilot.position.y < 8.9f && Time.realtimeSinceStartup < crossBy)
+            while (pilot.position.y < 10.15f && Time.realtimeSinceStartup < crossBy)
                 yield return null;
             InputSystem.RemoveDevice(keys);
-            Check(pilot.position.y >= 8.9f && !HangarHub.HoldingShip, "pilot can fly over the gallery screen");
+            Check(pilot.position.y >= 10.15f && !HangarHub.HoldingShip, "pilot can fly over the gallery screen");
             yield return Capture("ScreenFlyover");
             Check(error==null,error ?? "final pressure door and outfitter lettering");
             File.WriteAllText(VerifyHangarDeck.Folder + "/Result.txt","PASS");
@@ -396,10 +401,30 @@ public sealed class HangarDeckReview : MonoBehaviour
             yield return new WaitForSeconds(.8f);
             yield return Capture("LitPassage");
             CheckInteriors(-1);
-            Place(-11, 3.8f);
+            Place(-12.75f, 1.6f);
             yield return new WaitForSeconds(.8f);
             yield return Capture("FleetTube");
             CheckInteriors(0);
+            Press(Key.Z);
+            yield return null;
+            Press();
+            Check(HangarHub.HoldingShip && GameObject.Find("FLEET mounted screen").GetComponentsInChildren<TMPro.TMP_Text>()
+                .Any(t => t.text.Contains("BOSS RECORD")), "throttle opens the full fleet service record");
+            yield return new WaitForSeconds(.65f);
+            yield return Capture("FleetService");
+            Press(Key.X);
+            yield return null;
+            Press();
+            // Fly the length of the new apron through the normal controller.
+            Press(Key.LeftArrow, Key.LeftShift);
+            float untilBerths = Time.realtimeSinceStartup + 4;
+            while (ship.position.x > -23.55f && Time.realtimeSinceStartup < untilBerths)
+                yield return null;
+            Press();
+            Check(ship.position.x <= -23.55f && Field<int>("room") == 0, "fleet apron reachable from control desk");
+            Place(-23.65f, 6);
+            yield return new WaitForSeconds(.8f);
+            yield return Capture("FleetBerths");
             var screen = GameObject.Find("FLEET mounted screen");
             Check(screen != null && !Field<System.Collections.Generic.List<Transform>>("parkedShips")[(int)MetaProgress.Ship].gameObject.activeSelf, "flown hull has no duplicate on the pad");
             Place(0, 6);
@@ -408,12 +433,35 @@ public sealed class HangarDeckReview : MonoBehaviour
             CheckInteriors(-1);
             foreach (var berth in new[] { new Vector2(-11, 20), new Vector2(11, 20), new Vector2(11, 34) })
             {
-                Place(berth.x, berth.y - 2.1f);
+                Place(Mathf.Sign(berth.x) * 12.75f, berth.y - 4.4f);
                 yield return new WaitForSeconds(.7f);
                 Check(Field<int>("room") == (berth.x < 0 ? 2 : berth.y == 20 ? 3 : 4), "reached the marked control room");
                 CheckInteriors(Field<int>("room"));
                 yield return Capture(berth.x < 0 ? "SimulatorRoom" : berth.y == 20 ? "RecorderRoom" : "FlightRoom");
+                Press(Key.Z);
+                yield return null;
+                Press();
+                Check(HangarHub.HoldingShip, "room instrument accepts control at its physical station");
+                Press(Key.X);
+                yield return null;
+                Press();
+                Check(!HangarHub.HoldingShip, "pilot can leave the station");
             }
+        }
+        if (SessionState.GetBool("StationArtOnly", false))
+        {
+            SessionState.SetBool("StationArtOnly", false);
+            Place(11.4f, 2.85f);
+            yield return new WaitForSeconds(.7f);
+            yield return Capture("FilterPrompt");
+            Press(Key.Z);
+            yield return null;
+            Press();
+            Call("Navigate", true, 1);
+            yield return new WaitForSeconds(.7f);
+            yield return Capture("FilterScreen");
+            InputSystem.RemoveDevice(keyboard);
+            yield break;
         }
         yield return null;
         yield return null; // Keep screenshot readback out of the flight sample.
@@ -449,7 +497,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         int locked = System.Array.FindIndex(exhibits, e => ItemCatalog.Get(e.key).InRewardPool && !MetaProgress.IsUnlocked(e.key));
         void At(int i)
         {
-            Place(19.4f + i % GalleryShelf.Columns * 2.85f, 14 + i / GalleryShelf.Columns * 2.48f);
+            Place(24.8f + i % GalleryShelf.Columns * 4.15f, 14.8f + i / GalleryShelf.Columns * 3.8f);
         }
         At(known);
         yield return new WaitForSeconds(.8f);
@@ -460,7 +508,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         yield return Capture("GalleryLocked");
         var unknown = Field<TMPro.TextMeshProUGUI>("cardText").text;
         Check(unknown.Contains("???") && !unknown.Contains(exhibits[locked].title) && models[locked].sharedMaterial.shader.name == "Shootemup/Gallery silhouette", "locked hull shape and redacted label");
-        Place(11.4f, 4.3f);
+        Place(11.4f, 2.85f);
         yield return new WaitForSeconds(.8f);
         yield return Capture("FilterPrompt");
         var pad = InputSystem.AddDevice<Gamepad>();
@@ -499,13 +547,13 @@ public sealed class HangarDeckReview : MonoBehaviour
         Press(Key.X);
         yield return null;
         Press();
-        Place(25.1f, 18.96f);
+        Place(33.1f, 22.4f);
         yield return new WaitForSeconds(.8f);
         yield return Capture("GalleryGuides");
         Place(0, 6);
         yield return null;
         CheckInteriors(-1);
-        Place(11.4f, 4.3f);
+        Place(11.4f, 2.85f);
         yield return null;
         CheckInteriors(1);
         CheckCaseLighting();

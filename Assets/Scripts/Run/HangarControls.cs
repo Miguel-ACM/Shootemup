@@ -9,23 +9,38 @@ public sealed partial class HangarHub
     RawImage inputPicture;
     TextMeshProUGUI binding;
     Texture keyPicture, bumperPicture;
-    const float DeskReach = 1.55f;
+    const float DeskReach = 1.9f;
+    static readonly string[] stationModels = { "DockQuadrant", "DockReader", "DockTrainer", "DockTransport", "DockScope" };
     readonly Transform[] pilotLamps = new Transform[5];
 
-    void BuildControlDesk(Vector2 at, int index)
+    static Vector2 StationAt(int index)
     {
-        var pedestal = new GameObject("Pilot control pedestal");
-        pedestal.transform.SetParent(FixtureParent, false);
-        pedestal.transform.position = Spot(at, 1);
-        pedestal.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.DockKeyboard();
-        var r = pedestal.AddComponent<MeshRenderer>();
-        r.sharedMaterial = CombatMaterials.Fleet;
-        r.sortingLayerName = "Background";
-        r.sortingOrder = -2;
-        pilotLamps[index] = Strip("Console ready lamp", at + new Vector2(-.75f, .29f), new Vector2(.52f, .11f), lamps[index], -2);
+        if (index == (int)Dock.Armory) return FilterDesk;
+        Vector2 door = berths[index];
+        return new Vector2(Mathf.Sign(door.x) * 12.4f, door.y - 2.65f);
     }
 
-    Vector2 Desk() => room == (int)Dock.Armory ? FilterDesk : berths[room] + Vector2.down * 1.25f;
+    static Vector2 MonitorAt(int index)
+    {
+        if (index == (int)Dock.Armory) return FilterDesk + new Vector2(1.1f, 5.65f);
+        Vector2 door = berths[index];
+        return new Vector2(Mathf.Sign(door.x) * 13.8f, door.y + 3.25f);
+    }
+
+    static float MonitorScale(int index) => index == (int)Dock.Fleet ? .94f : .82f;
+    Vector2 Desk() => StationAt(room);
+
+    void BuildControlDesk(int index)
+    {
+        Vector2 at = StationAt(index);
+        var station = MountModel(stationModels[index], Spot(at, 1), -2, "Background");
+        station.localRotation = Quaternion.Euler(19, -9, 0);
+        Shadow(Spot(at + new Vector2(.16f, -.25f), 57), 1.93f, -9);
+        // The status lamp is set into the approach sill, clear of the instrument itself.
+        var sill = at + new Vector2(0, -1.7f);
+        Strip("Docking sill", sill, new Vector2(1.35f, .12f), Metal, -7);
+        pilotLamps[index] = Strip("Console ready lamp", sill, new Vector2(.64f, .06f), lamps[index], -6);
+    }
 
     void HangingSign(string text, Vector2 at, Color color, bool suspended)
     {
@@ -80,7 +95,7 @@ public sealed partial class HangarHub
             point = Spot(Desk(), 0);
             show = !operating && Vector2.Distance(p, point) < DeskReach;
             var lamp = pilotLamps[room];
-            lamp.localScale = new Vector3(operating ? 3.4f : 2.05f, .44f + .19f * Mathf.Sin(Time.time * (operating ? 7 : 3)), 1);
+            lamp.localScale = new Vector3(operating ? 3.4f : 2.55f, .25f + .09f * Mathf.Sin(Time.time * (operating ? 7 : 3)), 1);
             if (!show && !operating && room == (int)Dock.Fleet)
             {
                 point = parkedShips[selection].position;
@@ -98,19 +113,13 @@ public sealed partial class HangarHub
         inputPicture.texture = pad ? bumperPicture : keyPicture;
         string key = DockInstrument.FireKey();
         binding.text = pad && key.Contains("SHOULDER") ? (key.Contains("RIGHT") ? "RB" : "LB") : key;
-        Vector3 offset = room < 0 ? new Vector3(-1.25f, .32f) : Vector3.up * 1.12f;
+        Vector3 offset = room < 0 ? new Vector3(-1.25f, .32f) : Vector3.up * 1.63f;
         readouts.Aim(hoverPrompt, point + offset);
     }
 
-    void MountReceiver(Vector2 at)
+    void MountReceiver(int index)
     {
-        var go = new GameObject("Cast monitor housing");
-        go.transform.SetParent(FixtureParent, false);
-        go.transform.position = Spot(at, 2);
-        go.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.DockMonitor();
-        var r = go.AddComponent<MeshRenderer>();
-        r.sharedMaterial = CombatMaterials.Fleet;
-        r.sortingLayerName = "Background";
-        r.sortingOrder = -4;
+        var shell = MountModel("DockReceiver", Spot(MonitorAt(index), 2), -4, "Background");
+        shell.localScale = Vector3.one * MonitorScale(index);
     }
 }

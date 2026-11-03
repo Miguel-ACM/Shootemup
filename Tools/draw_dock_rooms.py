@@ -3,33 +3,57 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 out=Path(__file__).resolve().parents[1]/'Assets/Resources/DockArt'
 ink='#09161e'; deep='#142a33'; mid='#2d4650'; steel='#536c72'; edge='#849993'; pale='#c6d4c3'; gold='#e2af62'
-# Floor panels form a continuous room with a machinery pit and reinforced wall frame.
-im=Image.new('RGBA',(144,256),'#17282e');d=ImageDraw.Draw(im)
-d.rectangle((3,3,140,252),fill='#23353a',outline=steel,width=2)
-d.rectangle((8,8,135,247),fill='#14272e',outline=ink,width=2)
-for y in range(13,247,24):
- d.line((10,y,133,y),fill='#2e4449')
- for x in (12,128):
-  d.rectangle((x,y+3,x+3,y+6),fill=ink);d.point((x,y+3),fill=edge)
-for x in (18,123):
- d.line((x,16,x,242),fill=ink,width=3)
- d.line((x+1,16,x+1,242),fill='#3d5659')
-for y in range(25,240,32):
- for x in (8,130):
-  d.rectangle((x,y,x+5,y+14),fill='#3c5053',outline=ink)
-  for yy in range(y+3,y+12,3):d.line((x+1,yy,x+4,yy),fill=ink)
-# Lower apron and the screen's wall mount above.
-for x in (32,82):
- for y in (155,209):
-  d.polygon([(x,y),(x+5,y-6),(x+30,y-6),(x+35,y),(x+35,y+24),(x+30,y+30),(x+5,y+30),(x,y+24)],fill='#1e363d',outline='#4d6569')
-  d.line((x+3,y+1,x+3,y+22),fill='#7a8c7d')
-d.rectangle((28,19,115,108),fill=ink,outline='#415960',width=2)
-for y in (14,113):
- d.rectangle((27,y,116,y+3),fill='#526365')
-im.save(out/'RoomDeckFleet.png')
-d.rectangle((24,136,120,244),fill='#14272e')
-for y in range(157,244,24):d.line((24,y,120,y),fill='#2e4449')
-im.save(out/'RoomDeck.png')
+# The room floor is a wide sheet of steel. Berth saddles, the CRT and the
+# working instrument are separate meshes; their shapes are never baked into it.
+def workshop_floor(w, fleet):
+    h = 270
+    im = Image.new('RGBA', (w, h), '#19252a')
+    d = ImageDraw.Draw(im)
+    d.rounded_rectangle((1, 2, w-2, h-3), radius=11, fill='#394748', outline='#70807a', width=2)
+    d.rounded_rectangle((5, 7, w-6, h-8), radius=8, fill='#28373a', outline='#19272c', width=2)
+    # Sparse, staggered welds. Broad plates carry the light, with small worn corners.
+    tones = ['#304044', '#2a3b3e', '#2d3e41', '#29393d']
+    for row in range(5):
+        top = 14+row*49
+        for col in range(-1, w//87+1):
+            x = 12+col*87+(row%2)*37
+            left, right = max(11,x), min(w-12,x+85)
+            if right <= left: continue
+            d.rectangle((left,top,right,top+46),fill=tones[(col+2*row)%4])
+            if right-left > 23:
+                d.line((left+3,top+2,left+18,top+2), fill='#455457')
+                d.point((right-3,top+42),fill='#71817b')
+    # One service gutter runs around the far perimeter, away from the clear entry.
+    d.line([(12,h-25),(24,h-13),(w-31,h-13)], fill='#19282d', width=4)
+    for x in range(30,w-30,70):
+        d.rectangle((x,h-16,x+10,h-14),fill='#606d68')
+    # Door at the right edge; the game mirrors this plate for starboard rooms.
+    d.rectangle((w-12,h//2-22,w-1,h//2+22),fill='#304044')
+    for y in (h//2-25,h//2+24):
+        d.line((w-19,y,w-1,y), fill='#a58b5b', width=2)
+    # The umbilical is drawn on the same plate as its anchor clips. Map the
+    # hardware positions to the canonical port room; starboard mirrors both.
+    far = 28.5 if fleet else 20.5
+    midpoint = (6.5 + far) / 2
+    sx = round(w * (.5 + (midpoint - 12.4) / (far - 6.5 + .9)))
+    mx = round(w * (.5 + (midpoint - 13.8) / (far - 6.5 + .9)))
+    lead = [(sx+13,186), (sx+29,174), (sx+29,152), (mx+46,137), (mx+46,116)]
+    d.line([(x+1,y+2) for x,y in lead], fill='#223034', width=5)
+    d.line(lead, fill='#17272a', width=4)
+    d.line([(x-1,y) for x,y in lead], fill='#6b756c', width=1)
+    for x,y in [(sx+29,162),(mx+46,128)]:
+        d.rectangle((x-3,y-1,x+3,y+1), fill='#938a70')
+    if fleet:
+        # The yellow tramline joins the open saddle apron to the flight desk.
+        d.line((22,h//2,w//2+4,h//2),fill='#6b6651',width=2)
+        for x in range(38,w//2-8,47):
+            d.line([(x+4,h//2-3),(x,h//2),(x+4,h//2+3)],fill='#b59d71',width=1)
+    # Lift the lower steel tones so the welds survive the game's 5-bit compositor.
+    rgb = im.convert('RGB').point(lambda value: round(255 * (value / 255) ** .70))
+    rgb.save(out/('RoomDeckFleet.png' if fleet else 'RoomDeck.png'))
+
+workshop_floor(295, False)
+workshop_floor(454, True)
 # Alternating steel shutter slats, fixed highlights and worn brass latch.
 im=Image.new('RGBA',(128,128),deep);d=ImageDraw.Draw(im)
 for y in range(0,128,16):

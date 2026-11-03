@@ -6,9 +6,9 @@ using UnityEngine.UI;
 
 public sealed partial class HangarHub
 {
-    const float GalleryLeft = 6.5f, GalleryRight = 50, GalleryBottom = .2f, GalleryTop = 36, GalleryWing = 16.9f, GalleryVestibuleTop = 12;
-    static readonly Vector2 FilterDesk = new Vector2(11.4f, 5.2f);
-    const float FirstX = 19.4f, FirstY = 14, ColumnStep = 2.85f, RowStep = 2.48f;
+    const float GalleryLeft = 6.5f, GalleryRight = 69, GalleryBottom = .2f, GalleryTop = 48, GalleryWing = 22, GalleryVestibuleTop = 12;
+    static readonly Vector2 FilterDesk = new Vector2(11.4f, 4.5f);
+    const float FirstX = 24.8f, FirstY = 14.8f, ColumnStep = 4.15f, RowStep = 3.8f;
     static readonly string[] availability = { "EVERY ITEM", "RELEASED", "LOCKED" };
     GalleryShelf.Exhibit[] exhibits;
     MeshRenderer[] pieces;
@@ -68,14 +68,15 @@ public sealed partial class HangarHub
         {
             caseVertices[i] = colors.Count;
             var at = Case(i);
-            // A lit well, dark inset and retaining clips keep the collectible silhouette clear.
+            // A shallow enamel saddle leaves the object open at the front; the warm halo
+            // and two inset lamps follow the same filter as the exhibit.
             GalleryWell(floor, colors, indices, at, 1.33f, new Color(.43f, .055f, .045f), new Color(.075f, .11f, .13f));
-            GalleryWell(floor, colors, indices, at, .87f, new Color(.38f, .105f, .09f), new Color(.16f, .20f, .21f));
-            GalleryWell(floor, colors, indices, at, .73f, new Color(.21f, .23f, .23f), new Color(.12f, .14f, .15f));
+            GalleryWell(floor, colors, indices, at, .84f, new Color(.27f, .28f, .26f), new Color(.14f, .17f, .18f));
             for (int side = -1; side <= 1; side += 2)
             {
-                Bar(at + Vector2.right * side * .83f, new Vector2(.08f, .34f), new Color(.88f, .16f, .095f));
-                Bar(at + new Vector2(side * .55f, -.59f), new Vector2(.17f, .07f), Metal);
+                Bar(at + new Vector2(side * .83f, -.03f), new Vector2(.14f, 1.03f), Metal);
+                Bar(at + new Vector2(side * .69f, .49f), new Vector2(.41f, .10f), new Color(.37f, .41f, .39f));
+                Bar(at + new Vector2(side * .83f, -.42f), new Vector2(.10f, .19f), new Color(.88f, .16f, .095f));
             }
             Bar(at + Vector2.down * .78f, new Vector2(.47f, .055f), new Color(1, .32f, .2f));
         }
@@ -86,8 +87,8 @@ public sealed partial class HangarHub
         guidePaint = new Material(Resources.Load<Shader>("GalleryGuide"));
         guidePaint.SetVector("_Origin", new Vector4(FilterDesk.x, FilterDesk.y, 0, 0));
         guideMesh = GallerySurface("Red inlaid guide lamps", new List<Vector3>(), new List<Color>(), new List<int>(), -10);
-        BuildControlDesk(FilterDesk, (int)Dock.Armory);
-        MountReceiver(FilterDesk + Vector2.up * 3.7f);
+        BuildControlDesk((int)Dock.Armory);
+        MountReceiver((int)Dock.Armory);
         HangingSign("CASES >", FilterDesk + new Vector2(2.6f, -2.5f), DockInstrument.Brass, true);
         cardPanel = MountedPanel("Gallery object label", Vector2.zero, new Vector2(6.6f, 2.4f));
         cardText = WorldLabel(cardPanel, "", Vector2.zero, new Vector2(624, 225), 27, DockInstrument.Paper);
@@ -288,7 +289,7 @@ public sealed partial class HangarHub
     {
         var root = new GameObject("Gallery directory tube", typeof(RectTransform));
         var display = new DockInstrument(root, dialog?.font, DockInstrument.Brass);
-        readouts.MountAt((RectTransform)root.transform, Spot(FilterDesk + Vector2.up * 3.7f, 1), .012f, layer: installing.lettering.transform);
+        readouts.MountAt((RectTransform)root.transform, Spot(MonitorAt((int)Dock.Armory), 1), .012f * MonitorScale((int)Dock.Armory), layer: installing.lettering.transform);
         display.Label("02   /   GALLERY", -41, 255, 476, 34, 19, DockInstrument.Brass, true);
         display.Label("Directory", 0, 167, 550, 74, 38, DockInstrument.Paper, true);
         categoryReadout = display.Label(categories[0], 0, 86, 550, 48, 27, DockInstrument.Brass, true);

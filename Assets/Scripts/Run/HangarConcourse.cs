@@ -29,6 +29,8 @@ public sealed partial class HangarHub
     readonly List<GameObject>[] pages = new List<GameObject>[5];
     readonly int[] savedSelection = new int[5], savedBand = new int[5];
     readonly List<RectTransform> berthNames = new List<RectTransform>();
+    TextMeshProUGUI berthNotice;
+    int inspectedBerth = -1;
     sealed class Interior
     {
         public GameObject fixtures;
@@ -55,6 +57,9 @@ public sealed partial class HangarHub
         return current.ConstrainDeck(previous, desired);
     }
 
+    const float RoomThreshold = 6.5f;
+    static float FarWall(int dock) => dock == (int)Dock.Fleet ? 28.5f : 20.5f;
+
     Vector3 ConstrainDeck(Vector3 previous, Vector3 desired)
     {
         float x = previous.x - center.x, y = previous.y - center.y;
@@ -67,10 +72,10 @@ public sealed partial class HangarHub
             float roomY = berths[portal].y;
             bool crossing = Mathf.Abs(y - roomY) < 1.05f;
             bool gallery = portal == (int)Dock.Armory;
-            float minX = crossing ? 0 : gallery && y > GalleryVestibuleTop ? GalleryWing : 6.5f;
-            desired.x = center.x + side * Mathf.Clamp(next, minX, gallery ? GalleryRight : 15.5f);
-            float height = next < 6.5f ? .95f : 6.5f;
-            desired.y = center.y + (gallery && next >= 6.5f ?
+            float minX = crossing ? 0 : gallery && y > GalleryVestibuleTop ? GalleryWing : RoomThreshold;
+            desired.x = center.x + side * Mathf.Clamp(next, minX, gallery ? GalleryRight : FarWall(portal));
+            float height = next < RoomThreshold ? .95f : 6.5f;
+            desired.y = center.y + (gallery && next >= RoomThreshold ?
                 Mathf.Clamp(desired.y - center.y, GalleryBottom, desired.x - center.x < GalleryWing ? GalleryVestibuleTop : GalleryTop) : Mathf.Clamp(desired.y - center.y, roomY - height, roomY + height));
         }
         else
@@ -108,7 +113,7 @@ public sealed partial class HangarHub
     {
         if (baseViewSize <= 0)
             baseViewSize = view.orthographicSize;
-        float zoom = operating || room >= 0 && room != (int)Dock.Armory ? 7.05f : baseViewSize;
+        float zoom = operating ? 7.5f * MonitorScale(room) + .15f : baseViewSize;
         view.orthographicSize = Mathf.Lerp(view.orthographicSize, zoom, 1 - Mathf.Exp(-6 * Time.deltaTime));
         float lateral = Mathf.Abs(p.x - center.x);
         int portal = lateral > Camera.RightLimit ? Portal(p) : -1;
@@ -125,10 +130,20 @@ public sealed partial class HangarHub
         {
             float enter = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(Camera.RightLimit, 7.5f, lateral));
             Vector2 target = berths[portal];
-            if (portal == (int)Dock.Armory)
-                target = operating ? new Vector2(FilterDesk.x, FilterDesk.y + 2.7f) : new Vector2(Mathf.Clamp(p.x - center.x, 10, GalleryRight - 2), Mathf.Clamp(p.y - center.y, FilterDesk.y + 1.7f, GalleryTop - 3));
-            else if (operating)
-                target.y += 2.6f;
+            if (operating)
+            {
+                target = MonitorAt(portal);
+                target.y = (target.y + 3.8f * MonitorScale(portal) + StationAt(portal).y - 3.1f) * .5f;
+            }
+            else if (portal == (int)Dock.Armory)
+                target = new Vector2(Mathf.Clamp(p.x - center.x, 11.6f, GalleryRight - 2.6f), Mathf.Clamp(p.y - center.y, FilterDesk.y + 1.7f, GalleryTop - 3));
+            else
+            {
+                // Pan along the room, including the separate berthing apron beyond the fleet desk.
+                float halfView = view.orthographicSize * (405f / 720f);
+                target.x = Mathf.Sign(target.x) * Mathf.Clamp(lateral, Mathf.Max(RoomThreshold + halfView, Mathf.Abs(MonitorAt(portal).x) - .65f), FarWall(portal) - halfView);
+                target.y += Mathf.Clamp((p.y - center.y - target.y) * .18f, -.5f, .5f);
+            }
             across = target.x * enter;
             along = Mathf.Lerp(along, target.y, enter);
         }
@@ -231,7 +246,7 @@ public sealed partial class HangarHub
                 band = i == (int)Dock.Fleet ? System.Array.IndexOf(modes, difficulty) : 0;
                 var screen = new GameObject(signs[i] + " mounted screen", typeof(RectTransform));
                 instrument = screens[i] = new DockInstrument(screen, dialog?.font, lamps[i]);
-                readouts.MountAt((RectTransform)screen.transform, Spot(berths[i] + Vector2.up * 2.8f, 1), .012f, layer: installing.lettering.transform);
+                readouts.MountAt((RectTransform)screen.transform, Spot(MonitorAt(i), 1), .012f * MonitorScale(i), layer: installing.lettering.transform);
                 pages[i] = new List<GameObject>();
                 RenderPage();
                 savedSelection[i] = selection;
@@ -264,32 +279,30 @@ public sealed partial class HangarHub
     void BuildRoom(int index)
     {
         Vector2 b = berths[index];
-        // The workshop floor has its own walls, cable trenches and machinery apron.
+        float width = FarWall(index) - RoomThreshold + .9f;
+        float side = Mathf.Sign(b.x);
+        var mid = new Vector2(side * (RoomThreshold + FarWall(index)) * .5f, b.y);
         var floor = new GameObject(signs[index] + " deck").AddComponent<SpriteRenderer>();
         floor.transform.SetParent(FixtureParent, false);
-        floor.transform.position = Spot(b, 80);
+        floor.transform.position = Spot(mid, 80);
         floor.sprite = Resources.Load<Sprite>(index == (int)Dock.Fleet ? "DockArt/RoomDeckFleet" : "DockArt/RoomDeck");
-        floor.drawMode = SpriteDrawMode.Simple;
-        floor.transform.localScale = new Vector3(9.6f / floor.sprite.bounds.size.x, 13.8f / floor.sprite.bounds.size.y, 1);
+        floor.flipX = side > 0;
+        floor.transform.localScale = new Vector3(width / floor.sprite.bounds.size.x, 13.8f / floor.sprite.bounds.size.y, 1);
         floor.sortingLayerName = "Background";
         floor.sortingOrder = -15;
-        for (int side = -1; side <= 1; side += 2)
-        {
-            Strip("Recessed wall", b + Vector2.right * side * 4.7f, new Vector2(.28f, 13.8f), Metal, -10);
-            for (int rib = -6; rib <= 6; rib += 2)
-                Strip("Wall rib", b + new Vector2(side * 4.5f, rib), new Vector2(.42f, .18f), Metal, -8);
-        }
-        MountReceiver(b + Vector2.up * 2.8f);
-        BuildControlDesk(b + Vector2.down * 1.25f, index);
+        MountReceiver(index);
+        BuildControlDesk(index);
         if (index != (int)Dock.Fleet)
-        {
-            BuildRoomEquipment(index, b);
             return;
-        }
+
+        HangingSign("< BERTHS", new Vector2(-15.7f, b.y - 1.35f), lamps[index], false);
+        var plaque = MountedPanel("Berth service plate", b, new Vector2(4.35f, .8f));
+        berthNotice = WorldLabel(plaque, "", Vector2.zero, new Vector2(422, 73), 29, DockInstrument.Brass);
+        plaque.gameObject.SetActive(false);
         for (int i = 0; i < ShipFrames.Count; i++)
         {
-            Vector2 spot = b + new Vector2(i % 2 == 0 ? -2.15f : 2.15f, -2.3f - i / 2 * 2.65f);
-            Hover("HangarDockPad", Spot(spot, 3), -4);
+            Vector2 spot = new Vector2(-21.25f - (i % 2) * 4.8f, b.y + (i < 2 ? 2.85f : -2.75f));
+            MountModel("DockSaddle", Spot(spot, 3), -4, "Background");
             var hull = ShipFrames.BuildDisplay(player, ShipFrames.Get((ShipFrame)i));
             hull.transform.SetParent(FixtureParent, true);
             hull.transform.position = Spot(spot, 1);
@@ -305,42 +318,7 @@ public sealed partial class HangarHub
             hull.SetActive(i != (int)MetaProgress.Ship);
             berthNames[i].gameObject.SetActive(hull.activeSelf);
             if (!MetaProgress.CanFly((ShipFrame)i))
-                Stencil("LOCKED", spot + Vector2.up * 1.05f, 1.7f, DockInstrument.Brass);
-        }
-    }
-
-    void DisplayEquipment(string key, Vector2 position)
-    {
-        var go = new GameObject(key + " rack display");
-        go.transform.SetParent(FixtureParent, false);
-        go.transform.position = Spot(position, 1);
-        go.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.ExpansionItem(key);
-        var renderer = go.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = EverydayItemMaterials.For(key);
-        renderer.sortingLayerName = "Background";
-        renderer.sortingOrder = -2;
-        var mesh = go.GetComponent<MeshFilter>().sharedMesh;
-        go.transform.localScale = Vector3.one * (1.05f / Mathf.Max(mesh.bounds.size.x, mesh.bounds.size.y, mesh.bounds.size.z));
-        go.transform.rotation = Quaternion.Euler(-12, 20, -12);
-    }
-
-    void BuildRoomEquipment(int index, Vector2 b)
-    {
-        int kind = index == (int)Dock.Simulator ? 0 : index == (int)Dock.Recorder ? 1 : 2;
-        var mesh = IndustrialMeshFactory.DockMachine(kind);
-        var go = new GameObject(signs[index] + " machinery");
-        go.transform.SetParent(FixtureParent, false);
-        go.transform.position = Spot(b + Vector2.down * 4.6f, 2);
-        go.AddComponent<MeshFilter>().sharedMesh = mesh;
-        var renderer = go.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = CombatMaterials.Fleet;
-        renderer.sortingLayerName = "Background";
-        renderer.sortingOrder = -2;
-        go.transform.localScale = Vector3.one * 1.25f;
-        if (index == (int)Dock.Recorder)
-        {
-            DisplayEquipment("RibbonSpool", b + new Vector2(-2.6f, -6));
-            DisplayEquipment("ClockworkSpring", b + new Vector2(2.6f, -6));
+                Strip("Berth interlock", spot + Vector2.down * 1.68f, new Vector2(.32f, .075f), DockInstrument.Brass, -5);
         }
     }
 
@@ -357,6 +335,7 @@ public sealed partial class HangarHub
                 GalleryHover(p);
             if (room == (int)Dock.Fleet && !operating)
             {
+                int atBerth = -1;
                 for (int i = 0; i < parkedShips.Count; i++)
                 {
                     var hull = parkedShips[i];
@@ -364,16 +343,30 @@ public sealed partial class HangarHub
                         continue;
                     float distance = Vector2.Distance(p, hull.position);
                     hull.rotation = Quaternion.Euler(0, Mathf.Sin(Time.time * .7f + i) * 8, 0);
-                    if (distance < 1.25f && selection != i)
+                    if (distance < 1.25f)
+                        atBerth = i;
+                }
+                if (atBerth != inspectedBerth)
+                {
+                    inspectedBerth = atBerth;
+                    var plaque = (RectTransform)berthNotice.transform.parent;
+                    bool locked = atBerth >= 0 && !MetaProgress.CanFly((ShipFrame)atBerth);
+                    plaque.gameObject.SetActive(locked);
+                    if (locked)
                     {
-                        selection = i;
+                        berthNotice.text = "Clear Hell in " + (ShipFrame)(atBerth - 1);
+                        readouts.Aim(plaque, parkedShips[atBerth].position + Vector3.up * 1.65f);
+                    }
+                    if (atBerth >= 0 && selection != atBerth)
+                    {
+                        selection = atBerth;
                         RenderPage();
                     }
                 }
             }
             if (operating && !Menu.GameplayPaused)
             {
-                var seat = Spot(Desk() + Vector2.down * .98f, p.z);
+                var seat = Spot(Desk() + Vector2.down * 2.17f, p.z);
                 player.transform.position = Vector3.Lerp(p, seat, 1 - Mathf.Exp(-9 * Time.deltaTime));
                 var move = GameInput.Snapshot.Move;
                 if (move.sqrMagnitude < .24f)

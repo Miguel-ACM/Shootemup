@@ -87,8 +87,7 @@ public sealed partial class HangarHub
         switch ((Dock)room)
         {
             case Dock.Fleet:
-                action = FleetPage();
-                if (operating) action = "";
+                FleetPage();
                 break;
             case Dock.Simulator:
                 TrialPage();
@@ -102,14 +101,13 @@ public sealed partial class HangarHub
                 action = "SET";
                 break;
         }
-        string keys = room == (int)Dock.Fleet && !operating ? (action.Length > 0 ? DockInstrument.FireKey() + "  " + action : "") :
-            operating ? (action.Length > 0 ? DockInstrument.FireKey() + "  " + action + "   " : "") + DockInstrument.FireKey(true) + " RELEASE" :
+        string keys = operating ? (action.Length > 0 ? DockInstrument.FireKey() + "  " + action + "   " : "") + DockInstrument.FireKey(true) + " RELEASE" :
             "";
         if (operating && room == (int)Dock.Fleet)
             keys = "< > HULL   ^ v MODE   " + DockInstrument.FireKey(true) + " EXIT";
         Legend(keys, 0, -254, 558, 32, 17, DockInstrument.Paper);
     }
-    string FleetPage()
+    void FleetPage()
     {
         var hull = ShipFrames.Get((ShipFrame)selection);
         var record = MetaProgress.Record(hull.frame, modes[band]);
@@ -118,6 +116,14 @@ public sealed partial class HangarHub
         Legend(hull.hits + " HP  " + hull.moveSpeed.ToString("0.#") + " SPD", 76, 126, 350, 38, 21, lamps[room]);
         string gun = hull.primary == "BaseWeapon" ? "Twin cannon" : hull.primary == null ? "Unarmed" : FlightTrials.Display(hull.primary);
         Legend(gun + (hull.starters.Length > 0 ? "   /   " + string.Join(", ", hull.starters.Select(FlightTrials.Display)) : ""), 76, 80, 350, 60, 18, DockInstrument.Muted);
+        if (!operating)
+        {
+            Legend(modes[band].ToString().ToUpperInvariant(), 0, -30, 558, 42, 24, lamps[room]);
+            Legend(record.flights + " flights", 0, -86, 558, 48, 30, DockInstrument.Paper);
+            Legend(MetaProgress.Ship == hull.frame ? "IN FLIGHT" : MetaProgress.CanFly(hull.frame) ? "COMMISSIONED" : "Clear Hell in " + (ShipFrame)(selection - 1),
+                0, -177, 558, 40, 20, DockInstrument.Brass);
+            return;
+        }
         Legend(modes[band].ToString().ToUpperInvariant() + "  /  BOSS RECORD", 0, 26, 558, 36, 21, lamps[room], true);
         for (int i = 0; i < districts.Length; i++)
         {
@@ -141,7 +147,6 @@ public sealed partial class HangarHub
         bool open = MetaProgress.CanFly(hull.frame);
         string status = !open ? "Clear Hell in " + (ShipFrame)(selection - 1) : MetaProgress.Ship == hull.frame ? "IN FLIGHT" : "READY TO FLY";
         Legend(status, 0, -197, 558, 28, 18, DockInstrument.Brass);
-        return open && MetaProgress.Ship != hull.frame ? "FLY THIS HULL" : "";
     }
     void TrialPage()
     {
@@ -150,7 +155,9 @@ public sealed partial class HangarHub
         Legend("TAPE " + (selection + 1).ToString("00") + " / " + FlightTrials.All.Length.ToString("00"), 80, 196, 354, 29, 16, lamps[room], true);
         Legend(trial.title, 80, 145, 354, 76, 35, DockInstrument.Paper, true);
         Legend(trial.frame + "    /    " + trial.difficulty, 80, 78, 354, 34, 21, DockInstrument.Muted);
-        Legend(trial.objective, 0, 16, 558, 57, 25, DockInstrument.Paper);
+        Legend(trial.objective, 0, operating ? 16 : -49, 558, 57, 25, DockInstrument.Paper);
+        if (!operating)
+            return;
         Legend("KIT  " + string.Join(" + ", trial.kit.Select(FlightTrials.Display)), 0, -54, 558, 58, 19, DockInstrument.Muted);
         Legend((MetaProgress.ContractClear(trial.title) ? "CERTIFIED" : "REWARD") + "  " + FlightTrials.Display(trial.reward), 0, -129, 558, 54, 21, lamps[room], true);
         Legend("< >  CONTRACT", 0, -189, 558, 33, 15, DockInstrument.Muted);
@@ -181,6 +188,8 @@ public sealed partial class HangarHub
             Legend(f.outcome.ToUpperInvariant() + "   /   " + (sim ? f.contract : f.frame.ToString()), 0, 140, 558, 62, 32, DockInstrument.Paper, true);
             Legend(f.difficulty + "    /    " + f.Duration + "    /    " + f.score.ToString("N0") + " pts", 0, 83, 558, 36, 21, lamps[room]);
             Legend(f.route, 0, 35, 558, 51, 20, DockInstrument.Paper);
+            if (!operating)
+                return;
             Legend(f.bosses + " bosses    " + f.clean + " no-hit    " + f.hits + " hits    +" + f.earned + " coins", 0, -27, 558, 46, 20, DockInstrument.Paper);
             var r = MetaProgress.Record(f.frame, f.difficulty);
             string details = sim ? "Blueprint   /   " + FlightTrials.Display(FlightTrials.All.First(t => t.title == f.contract).reward) :
@@ -189,12 +198,19 @@ public sealed partial class HangarHub
             if (f.awards != null && f.awards.Count > 0)
                 Legend(string.Join("   ·   ", f.awards), 0, -143, 558, 60, 15, DockInstrument.Brass);
         }
-        Legend("< > FLIGHT    ^ v LOG", 0, -189, 558, 33, 15, DockInstrument.Muted);
+        if (operating)
+            Legend("< > FLIGHT    ^ v LOG", 0, -189, 558, 33, 15, DockInstrument.Muted);
     }
     void FlightPage()
     {
         Legend("Flight plan", 0, 174, 558, 72, 40, DockInstrument.Paper, true);
         Legend(MetaProgress.Ship + "  /  PLAINS", 0, 100, 558, 42, 23, DockInstrument.Muted);
+        if (!operating)
+        {
+            Legend(difficulty.ToString().ToUpperInvariant(), 0, -16, 558, 72, 38, lamps[room], true);
+            Legend(factors[Array.IndexOf(modes, difficulty)] + " SCORE", 0, -87, 558, 42, 23, DockInstrument.Paper);
+            return;
+        }
         for (int i = 0; i < 3; i++)
         {
             float x = (i - 1) * 184;

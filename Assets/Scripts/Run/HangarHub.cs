@@ -143,18 +143,19 @@ public sealed partial class HangarHub : MonoBehaviour
     {
         yield return GalleryShelf.Warm();
         // Terra palettes and hull geometry are shared with the actual parked craft.
-        foreach (string model in new[] { "HangarShopPlinth", "HangarDockPad", "ShipLancer", "ShipEmber", "ShipWarden" })
+        foreach (string model in new[] { "HangarShopPlinth", "ShipLancer", "ShipEmber", "ShipWarden" })
         {
             IndustrialMeshFactory.TerraMaterial(model);
             yield return null;
         }
-        IndustrialMeshFactory.DockMonitor();
-        IndustrialMeshFactory.DockKeyboard();
-        for (int i = 0; i < 3; i++)
+        foreach (var model in stationModels)
         {
-            IndustrialMeshFactory.DockMachine(i);
+            IndustrialMeshFactory.TerraMaterial(model);
             yield return null;
         }
+        IndustrialMeshFactory.TerraMaterial("DockReceiver");
+        yield return null;
+        IndustrialMeshFactory.TerraMaterial("DockSaddle");
     }
 
     IEnumerator Start()
@@ -249,8 +250,8 @@ public sealed partial class HangarHub : MonoBehaviour
             plinth.item.SetRarity(ItemPool.RarityOf(stock[i]));
             // Hidden only after Awake has given the item its name and description.
             go.SetActive(false);
-            plinth.disc = Hover("HangarShopPlinth", plinth.spot + new Vector3(0, -.3f, .5f), -4);
-            plinth.shadow = Shadow(plinth.spot + new Vector3(0, -.3f, 0), .7f);
+            plinth.disc = MountModel("HangarShopPlinth", plinth.spot + new Vector3(0, -.3f, .5f), -4);
+            plinth.shadow = Shadow(new Vector3(plinth.spot.x + .35f, plinth.spot.y - .85f, 87), .7f, -20);
             plinths.Add(plinth);
             GalleryWell(glowVertices, glowColors, glowTriangles, plinthSpots[i], 1.22f,
                 new Color(1, .07f, .035f, .88f), new Color(.85f, .025f, .016f, 0));
@@ -306,7 +307,7 @@ public sealed partial class HangarHub : MonoBehaviour
     }
 
     // Docks and plinths hover over the Tunnel floor, with a soft shadow below and behind them.
-    Transform Hover(string model, Vector3 position, int order)
+    Transform MountModel(string model, Vector3 position, int order, string layer = "Player")
     {
         var mesh = IndustrialMeshFactory.TerraModel(model);
         if (mesh == null)
@@ -317,12 +318,13 @@ public sealed partial class HangarHub : MonoBehaviour
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var renderer = go.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = IndustrialMeshFactory.TerraMaterial(model) ?? CombatMaterials.Fleet;
-        renderer.sortingLayerName = "Player";
+        renderer.sortingLayerName = layer;
         renderer.sortingOrder = order;
+        IndustrialMeshFactory.AttachTerraParts(model, go.transform, renderer.sharedMaterial);
         return go.transform;
     }
 
-    Transform Shadow(Vector3 spot, float radius)
+    Transform Shadow(Vector3 spot, float radius, int order)
     {
         const int Sides = 20;
         var vertices = new Vector3[Sides + 1];
@@ -341,13 +343,13 @@ public sealed partial class HangarHub : MonoBehaviour
         var mesh = new Mesh { name = "Hover shadow", vertices = vertices, colors = colors, triangles = triangles };
         quads.Add(mesh);
         var go = new GameObject("Hover shadow");
-        go.transform.SetParent(transform, false);
-        go.transform.position = new Vector3(spot.x + .35f, spot.y - .55f, 87);
+        go.transform.SetParent(FixtureParent, false);
+        go.transform.position = spot;
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var renderer = go.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = scenery;
         renderer.sortingLayerName = "Background";
-        renderer.sortingOrder = -20;
+        renderer.sortingOrder = order;
         return go.transform;
     }
 
