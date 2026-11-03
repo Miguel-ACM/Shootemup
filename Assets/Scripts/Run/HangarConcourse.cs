@@ -288,9 +288,9 @@ public sealed partial class HangarHub
             for (int step = 0; step < 4; step++)
                 Strip("Threshold guide", new Vector2(side * (4.75f + step * .55f), y), new Vector2(.25f, .07f), lamps[i], -6, side < 0 ? 180 : 0);
             HoverSign(signs[i], new Vector2(side * 2.95f, y + 2.25f), lamps[i]);
-            PortalLight(new Vector2(side * 4.55f, y), side);
+            PortalLight(new Vector2(side * 5.25f, y));
         }
-        walletPanel = MountedPanel("Coin reader", Vector2.zero, new Vector2(3.1f, .88f));
+        walletPanel = MountedPanel("Coin reader", new Vector2(-2.55f, 14.45f), new Vector2(3.1f, .88f));
         walletText = CoinRow(walletPanel, 0, 296);
         walletPanel.gameObject.SetActive(false);
         stockScreen = MountedPanel("Outfitter display", Vector2.zero, new Vector2(4.35f, 3.08f));

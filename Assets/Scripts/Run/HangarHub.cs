@@ -20,7 +20,8 @@ public sealed partial class HangarHub : MonoBehaviour
     static RunDifficulty difficulty = RunDifficulty.Normal;
     // The tunnel phase on the frame its motion transfers to the incoming dock camera.
     static float tunnelTravel;
-    static readonly Vector2[] plinthSpots = { new Vector2(2.7f, -6.8f), new Vector2(2.7f, -1.4f), new Vector2(2.7f, 4) };
+    static readonly Vector2[] plinthSpots = { new Vector2(-2.55f, 10.9f), new Vector2(2.55f, 14.25f), new Vector2(-2.55f, 17.3f) };
+    const float LoadingBayX = -8f;
     const float PlacardHeight = 1.84f, ClassDrop = 1.54f;
     public const float DeckExtension = 32f;
     const float PlinthReach = .95f, GateHalfWidth = 1.55f;
@@ -30,8 +31,8 @@ public sealed partial class HangarHub : MonoBehaviour
         public string kind;
         public AItem item;
         public Vector3 spot;
-        public Transform disc, shadow;
-        public bool sent, positioned;
+        public Transform carrier, disc, shadow;
+        public float arrivalProgress = -1;
         public TextMeshProUGUI price;
         public RectTransform plaque, category;
         public int lastBank = -1;
@@ -244,30 +245,31 @@ public sealed partial class HangarHub : MonoBehaviour
         dialog = GameObject.FindGameObjectWithTag("Dialog")?.GetComponent<Dialog>();
         coinStamp = Resources.Load<Sprite>("DockArt/DockCoin");
         var stock = MetaProgress.Stock;
-        var glowVertices = new List<Vector3>();
-        var glowColors = new List<Color>();
-        var glowTriangles = new List<int>();
         for (int i = 0; i < stock.Count && i < plinthSpots.Length; i++)
         {
             ItemCatalog.TryGet(stock[i], out var definition);
             if (definition == null)
                 continue;
             var plinth = new Plinth { kind = stock[i], spot = Spot(plinthSpots[i], 1) };
-            // The outfitter feeds stock across the lane from its port-side loading bay.
-            var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.spot + Vector3.left * 9, Quaternion.identity);
-            go.transform.SetParent(transform, true);
+            plinth.carrier = new GameObject("Loaded outfitter platform").transform;
+            plinth.carrier.SetParent(transform, false);
+            plinth.carrier.position = plinth.spot;
+            var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.spot, Quaternion.identity, plinth.carrier);
             plinth.item = definition.Attach(go);
 
             plinth.item.SetRarity(ItemPool.RarityOf(stock[i]));
-            // Hidden only after Awake has given the item its name and description.
-            go.SetActive(false);
-            plinth.disc = MountModel("HangarShopPlinth", plinth.spot + new Vector3(0, -.27f, 1.3f), -4);
+            plinth.disc = MountModel("HangarShopPlinth", plinth.spot + new Vector3(0, -.27f, 1.3f), -4, parent: plinth.carrier);
             plinth.disc.localScale = Vector3.one * 1.72f;
             plinth.disc.localRotation = PlatformTilt;
             plinth.shadow = Shadow(new Vector3(plinth.spot.x + .35f, plinth.spot.y - .85f, 87), .7f, -20);
+            plinth.shadow.SetParent(plinth.carrier, true);
             plinths.Add(plinth);
+            var glowVertices = new List<Vector3>();
+            var glowColors = new List<Color>();
+            var glowTriangles = new List<int>();
             GalleryWell(glowVertices, glowColors, glowTriangles, plinthSpots[i], 1.22f,
                 new Color(1, .07f, .035f, .88f), new Color(.85f, .025f, .016f, 0));
+            GallerySurface("Outfitter red footlight", glowVertices, glowColors, glowTriangles, -6, plinth.carrier);
             var plaque = plinth.plaque = MountedPanel("Stock placard", plinthSpots[i] + Vector2.up * PlacardHeight, new Vector2(3.62f, 1.94f));
             plaque.GetComponent<Image>().color = Color.black;
             DockInstrument.Block(plaque, "Rarity edge", new Vector2(0, 94), new Vector2(362, 5), AItem.GetRarityColor(plinth.item.rarity));
@@ -278,8 +280,9 @@ public sealed partial class HangarHub : MonoBehaviour
             WorldLabel(plinth.category, DecisionOverlay.Category(plinth.item), Vector2.zero, new Vector2(334, 50), 32, DockInstrument.Paper);
             plaque.gameObject.SetActive(false);
             plinth.category.gameObject.SetActive(false);
+            plinth.carrier.position = new Vector3(center.x + LoadingBayX, plinth.spot.y, plinth.spot.z);
+            plinth.carrier.gameObject.SetActive(false);
         }
-        GallerySurface("Outfitter red footlights", glowVertices, glowColors, glowTriangles, -6);
     }
 
     TextMeshProUGUI CoinRow(RectTransform face, float y, float width)
@@ -311,14 +314,15 @@ public sealed partial class HangarHub : MonoBehaviour
         walletPanel.gameObject.SetActive(near >= 0);
         if (near >= 0)
         {
-            readouts.Aim(walletPanel, plinths[near].spot + new Vector3(-4.22f, 2.24f));
             walletText.text = MetaProgress.Coins.ToString();
         }
         int closest = near >= 0 ? NearestPlinth(player.transform.position) : -1;
         stockScreen.gameObject.SetActive(closest >= 0);
         if (closest >= 0)
         {
-            readouts.Aim(stockScreen, plinths[closest].spot + Vector3.left * 4.22f);
+            // The two clear spaces on the right sit below and above the middle offer.
+            float displayY = plinths[closest].spot.y > center.y + plinthSpots[1].y ? 18.95f : 10.55f;
+            readouts.Aim(stockScreen, Spot(new Vector2(2.35f, displayY), 1));
             var data = plinths[closest].item.GetData();
             stockInfo.text = data[2] + "\n\n<size=80%>" +
                 DockInstrument.FireKey() + " BUY  " + DockInstrument.FireKey(true) + " PIN</size>";
@@ -447,17 +451,27 @@ public sealed partial class HangarHub : MonoBehaviour
         for (int i = 0; i < plinths.Count; i++)
         {
             var offer = plinths[i];
-            float lift = PlatformLift(i);
-            offer.disc.position = offer.spot + new Vector3(0, -.27f + lift, 1.3f);
-            offer.shadow.localScale = Vector3.one * (1 - lift * .6f);
-            if (offer.positioned && offer.item != null && !offer.item.IsDismissing)
-                offer.item.transform.position = offer.spot + Vector3.up * lift;
-            if (!offer.sent && offer.item != null && introTime > (inlet > 0 ? 1.7f : .25f) + i * .18f)
+            if (offer.arrivalProgress < 0)
             {
-                offer.sent = true;
-                offer.item.gameObject.SetActive(true);
-                offer.item.GoToPosition(offer.spot);
+                if (Arriving || launching || room >= 0 || Mathf.Abs(offer.spot.y - view.transform.position.y) > view.orthographicSize - 1.5f)
+                    continue;
+                offer.arrivalProgress = 0;
+                offer.carrier.gameObject.SetActive(true);
             }
+            if (offer.arrivalProgress < 1)
+            {
+                offer.arrivalProgress = Mathf.Min(1, offer.arrivalProgress + Time.deltaTime / 1.5f);
+                var at = offer.spot;
+                at.x = Mathf.SmoothStep(center.x + LoadingBayX, at.x, offer.arrivalProgress);
+                offer.carrier.position = at;
+                readouts.Aim(offer.plaque, at + Vector3.up * PlacardHeight);
+                readouts.Aim(offer.category, at + Vector3.down * ClassDrop);
+            }
+            float lift = PlatformLift(i);
+            offer.disc.localPosition = new Vector3(0, -.27f + lift, 1.3f);
+            offer.shadow.localScale = Vector3.one * (1 - lift * .6f);
+            if (offer.item != null && !offer.item.IsDismissing)
+                offer.item.transform.localPosition = Vector3.up * lift;
         }
         if (!Arriving || player == null)
             return;
@@ -493,16 +507,10 @@ public sealed partial class HangarHub : MonoBehaviour
             var offer = plinths[i];
             if (offer.item == null)
                 continue;
-            if (offer.item.enabled && offer.sent && offer.item.Settled)
+            if (offer.item.enabled && offer.item.Settled)
                 offer.item.enabled = false;
-            offer.plaque.gameObject.SetActive(offer.sent && !offer.item.IsDismissing);
-            offer.category.gameObject.SetActive(offer.sent && !offer.item.IsDismissing);
-            if (offer.sent && !offer.positioned)
-            {
-                readouts.Aim(offer.plaque, offer.item.transform.position + Vector3.up * PlacardHeight);
-                readouts.Aim(offer.category, offer.item.transform.position + Vector3.down * ClassDrop);
-                offer.positioned = offer.item.Settled;
-            }
+            offer.plaque.gameObject.SetActive(offer.arrivalProgress >= 0 && !offer.item.IsDismissing);
+            offer.category.gameObject.SetActive(offer.arrivalProgress >= 0 && !offer.item.IsDismissing);
             bool pinned = MetaProgress.Pin == offer.kind;
             if (offer.lastBank == MetaProgress.Coins && offer.pinned == pinned)
                 continue;
@@ -533,7 +541,7 @@ public sealed partial class HangarHub : MonoBehaviour
         float closest = reach;
         for (int i = 0; i < plinths.Count; i++)
         {
-            if (plinths[i].item == null || plinths[i].item.IsDismissing)
+            if (plinths[i].arrivalProgress < 1 || plinths[i].item == null || plinths[i].item.IsDismissing)
                 continue;
             float d = Vector2.Distance(p, plinths[i].spot);
             if (d < closest)

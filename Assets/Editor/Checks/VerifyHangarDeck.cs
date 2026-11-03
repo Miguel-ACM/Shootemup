@@ -206,14 +206,6 @@ public sealed class HangarDeckReview : MonoBehaviour
             float enteringY = camera.transform.position.y;
             yield return new WaitForSecondsRealtime(.6f);
             Check(camera.transform.position.y > enteringY + .5f, "live camera travels from the title into the dock");
-            float untilStock = Time.realtimeSinceStartup + 5;
-            bool fromLeft = false;
-            while (!fromLeft && Time.realtimeSinceStartup < untilStock)
-            {
-                fromLeft = FindObjectsByType<AItem>().Any(item => item.transform.position.x < -1);
-                yield return null;
-            }
-            Check(fromLeft, "outfitter items fly in from port");
         }
         while ((hub = FindAnyObjectByType<HangarHub>()) == null || CloudTransition.Busy || HangarHub.HoldingShip)
             yield return null;
@@ -409,12 +401,30 @@ public sealed class HangarDeckReview : MonoBehaviour
         var ship = FindAnyObjectByType<Shipcontroller>().transform;
         void Place(float x, float y) => ship.position = new Vector3(x, y, ship.position.z);
         T Field<T>(string name) => (T)typeof(HangarHub).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(hub);
-        Place(0, 0);
+        var offers = hub.GetComponentsInChildren<AItem>(true).OrderBy(o => o.transform.position.y).ToArray();
+        Check(offers.Length == 3 && offers.All(o => !o.gameObject.activeInHierarchy && o.transform.position.x < -6),
+            "loaded platforms wait in the port bay before the shop comes into view");
+        Place(0, 14.25f);
+        var discs = offers.Select(o => o.transform.parent.Find("HangarShopPlinth")).ToArray();
+        var inFlight = new bool[3];
+        float finish = Time.time + 2.5f;
+        while (Time.time < finish)
+        {
+            yield return new WaitForEndOfFrame();
+            for (int i = 0; i < offers.Length; i++)
+            {
+                if (!offers[i].gameObject.activeInHierarchy) continue;
+                var at = offers[i].transform.position;
+                if ((discs[i].position - at - new Vector3(0, -.27f, 1.3f)).sqrMagnitude > .0001f)
+                    throw new Exception("item slipped off its platform during delivery");
+                if (at.x > -7.5f && at.x < -4) inFlight[i] = true;
+            }
+        }
+        Check(inFlight.All(seen => seen), "all three platforms carried their items in from the left");
+        Check(offers[0].transform.position.y > 6 && offers[2].transform.position.y < 20 &&
+            offers[0].transform.position.x < -2 && offers[1].transform.position.x > 2 && offers[2].transform.position.x < -2 &&
+            offers[1].GetData()[0] == "Lucky Penny", "stock alternates left, right, left between the paired doors");
         yield return Capture("OutfitterSpacing");
-        var offers = hub.GetComponentsInChildren<AItem>().OrderBy(o => o.transform.position.y).ToArray();
-        Check(offers.Length == 3 && offers[1].GetData()[0] == "Lucky Penny" &&
-            offers[1].transform.position.y - offers[0].transform.position.y > 5 &&
-            offers[2].transform.position.y - offers[1].transform.position.y > 5, "three separated right-lane offers from the reference");
         var rows = hub.GetComponentsInChildren<HorizontalLayoutGroup>().Where(row => row.transform.parent.name == "Stock placard").ToArray();
         Check(rows.Length == 3, "each stock placard has a dedicated price row");
         foreach (var row in rows)
@@ -430,7 +440,16 @@ public sealed class HangarDeckReview : MonoBehaviour
                 "stamped coin and amount have separate, aligned bounds at gameplay size");
         }
         Check(!Field<RectTransform>("walletPanel").gameObject.activeSelf, "wallet stays dark away from stock");
-        Place(2.7f, -1.4f);
+        var wallet = Field<RectTransform>("walletPanel");
+        foreach (var offer in offers)
+        {
+            Place(offer.transform.position.x, offer.transform.position.y);
+            yield return new WaitForSeconds(.3f);
+            Check(wallet.gameObject.activeSelf && wallet.anchoredPosition.x < 0 &&
+                Field<TMPro.TMP_Text>("walletText").text == "9999", "balance lights on the left for this offer");
+        }
+        yield return Capture("OutfitterPortPrice");
+        Place(offers[1].transform.position.x, offers[1].transform.position.y);
         yield return Capture("OutfitterPrice");
         Check(Field<RectTransform>("walletPanel").gameObject.activeSelf && Field<TMPro.TMP_Text>("walletText").text == "9999", "nearby wallet reads the full bank");
         Press(Key.X);
@@ -442,6 +461,20 @@ public sealed class HangarDeckReview : MonoBehaviour
         yield return null;
         Press();
         Check(!MetaProgress.Stock.Contains("LuckyPenny") && MetaProgress.Coins == 9999 - cost, "buying debits the displayed price");
+        var lights = hub.GetComponentsInChildren<MeshFilter>().Where(f => f.name == "Portal illumination").ToArray();
+        Check(lights.Length == 5 && lights.All(f => {
+            var mesh = f.sharedMesh;
+            var vertices = mesh.vertices;
+            var colors = mesh.colors;
+            return Enumerable.Range(0, vertices.Length).All(i => Mathf.Abs(vertices[i].x) < mesh.bounds.extents.x - .01f || colors[i].a == 0) &&
+                colors.Any(c => c.a > .8f);
+        }), "every threshold has a luminous core and transparent ends on both sides");
+        Place(-7.7f, 6);
+        yield return new WaitForSeconds(.8f);
+        yield return Capture("FleetThreshold");
+        Place(7.7f, 6);
+        yield return new WaitForSeconds(.8f);
+        yield return Capture("ArmoryThreshold");
         Place(-23.6f, 6);
         yield return new WaitForSeconds(.8f);
         yield return Capture("FleetBerths");
@@ -512,12 +545,14 @@ public sealed class HangarDeckReview : MonoBehaviour
         SessionState.SetBool("DirectoryOnly", false);
         if (directoryOnly)
         {
-            Place(0, 0);
+            Place(0, 14.25f);
+            yield return new WaitForSeconds(2);
             yield return Capture("HexOutfitter");
         }
         if (!directoryOnly)
         {
-            Place(2.7f, -1.4f);
+            Place(2.55f, 14.25f);
+            yield return new WaitForSeconds(2);
             yield return Capture("CRTOutfitter");
             Place(0, 6);
             yield return new WaitForSeconds(.8f);
@@ -661,7 +696,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         var exhibits = Field<GalleryShelf.Exhibit[]>("exhibits");
         var models = Field<MeshRenderer[]>("pieces");
         var platforms = Field<MeshRenderer[]>("platforms");
-        var shopMesh = hub.transform.Find("HangarShopPlinth").GetComponent<MeshFilter>().sharedMesh;
+        var shopMesh = hub.transform.Find("Loaded outfitter platform/HangarShopPlinth").GetComponent<MeshFilter>().sharedMesh;
         var outerCorners = shopMesh.vertices.Select(v => (Vector2)v).Where(p => Mathf.Abs(p.sqrMagnitude - .25f) < .0001f).Distinct().Count();
         Check(outerCorners == 6 && platforms.All(p => p.GetComponent<MeshFilter>().sharedMesh == shopMesh),
             "gallery and outfitter share the six-sided floating plinth");

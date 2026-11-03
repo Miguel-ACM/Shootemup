@@ -122,7 +122,7 @@ public sealed partial class HangarHub
         indices.Add(n + 2);
         indices.Add(n + 3);
     }
-    Mesh GallerySurface(string name, List<Vector3> vertices, List<Color> colors, List<int> triangles, int order)
+    Mesh GallerySurface(string name, List<Vector3> vertices, List<Color> colors, List<int> triangles, int order, Transform parent = null)
     {
         var mesh = new Mesh { name = name };
         mesh.SetVertices(vertices);
@@ -130,7 +130,7 @@ public sealed partial class HangarHub
         mesh.SetTriangles(triangles, 0);
         quads.Add(mesh);
         var go = new GameObject(name);
-        go.transform.SetParent(FixtureParent, false);
+        go.transform.SetParent(parent != null ? parent : FixtureParent, false);
         go.transform.position = Spot(Vector2.zero, order == -14 ? 65 : 60);
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var r = go.AddComponent<MeshRenderer>();

@@ -97,15 +97,30 @@ public sealed partial class HangarHub
             }
         }
     }
-    void PortalLight(Vector2 at, float side)
+    void PortalLight(Vector2 at)
     {
-        // The same pale, continuous mist as the departure aperture, turned into the side corridor.
-        var mesh = new Mesh { name = "Threshold light" };
-        mesh.vertices = new[] { new Vector3(-1.5f * side, -1), new Vector3(-1.5f * side, 1), new Vector3(.8f * side, 1), new Vector3(.8f * side, -1) };
-        var clear = new Color(.62f, .74f, .8f, 0);
-        var lit = new Color(.7f, .8f, .86f, .82f);
-        mesh.colors = new[] { clear, clear, lit, lit };
-        mesh.triangles = new[] { 0, 1, 2, 0, 2, 3 };
+        // One continuous pool of light through the sill, feathered against both jambs.
+        const int columns = 13, rows = 5;
+        var vertices = new Vector3[columns * rows];
+        var colors = new Color[vertices.Length];
+        var triangles = new int[(columns - 1) * (rows - 1) * 6];
+        int t = 0;
+        for (int x = 0; x < columns; x++)
+        {
+            float u = 2f * x / (columns - 1) - 1;
+            float glow = Mathf.SmoothStep(0, .82f, 1 - Mathf.Abs(u));
+            for (int y = 0; y < rows; y++)
+            {
+                int i = x * rows + y;
+                float v = (y - 2) * .5f;
+                vertices[i] = new Vector3(u * 2.35f, Mathf.Sign(v) * Mathf.Sqrt(Mathf.Abs(v)) * 1.06f);
+                colors[i] = new Color(.7f, .8f, .86f, y == 0 || y == rows - 1 ? 0 : glow);
+                if (x == 0 || y == 0) continue;
+                triangles[t++] = i - rows - 1; triangles[t++] = i - rows; triangles[t++] = i;
+                triangles[t++] = i - rows - 1; triangles[t++] = i; triangles[t++] = i - 1;
+            }
+        }
+        var mesh = new Mesh { name = "Threshold light", vertices = vertices, colors = colors, triangles = triangles };
         quads.Add(mesh);
         var go = new GameObject("Portal illumination");
         go.transform.SetParent(transform, false);
@@ -145,8 +160,12 @@ public sealed partial class HangarHub
                 show = (ShipFrame)selection != MetaProgress.Ship && MetaProgress.CanFly((ShipFrame)selection) && Vector2.Distance(point, p) < 1.3f;
             }
         }
-        if (room < 0 && NearestPlinth(p) >= 0)
-            show = true;
+        if (room < 0)
+        {
+            int shop = NearestPlinth(p);
+            show = shop >= 0;
+            if (show) point = plinths[shop].spot;
+        }
         hoverPrompt.gameObject.SetActive(show);
         if (!show)
             return;
@@ -156,7 +175,7 @@ public sealed partial class HangarHub
         inputPicture.texture = pad ? bumperPicture : keyPicture;
         string key = DockInstrument.FireKey();
         binding.text = pad && key.Contains("SHOULDER") ? (key.Contains("RIGHT") ? "RB" : "LB") : key;
-        Vector3 offset = room < 0 ? new Vector3(-1.25f, .32f) : Vector3.up * 1.63f;
+        Vector3 offset = room < 0 ? new Vector3(-Mathf.Sign(point.x - center.x) * 1.35f, .32f) : Vector3.up * 1.63f;
         readouts.Aim(hoverPrompt, point + offset);
     }
 
