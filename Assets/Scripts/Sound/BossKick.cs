@@ -17,7 +17,7 @@ public sealed class BossKick
         // Peak-follow the actual kick with a 2 ms attack and 55 ms release.
         // Return fully to unity at the end of this short one-shot.
         double attack = Math.Exp(-1/(.002*rate)), release = Math.Exp(-1/(.055*rate));
-        double envelope = 0, depth = 1 - Math.Pow(10,-5.0/20);
+        double envelope = 0, depth = 1 - Math.Pow(10,-1.0/20);
         for (int i = 0; i < pcm.Length; i++)
         {
             double peak = Math.Abs(pcm[i]);

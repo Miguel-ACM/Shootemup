@@ -21,7 +21,7 @@ function bassAt(d, at) {
 export function prepareKick(pcm, rate) {
     const duck = new Float32Array(pcm.length);
     const attack = Math.exp(-1/(.002*rate)), release = Math.exp(-1/(.055*rate));
-    const depth = 1 - 10**(-5/20);
+    const depth = 1 - 10**(-1/20);
     let envelope = 0;
     for (let i = 0; i < pcm.length; i++) {
         const peak = Math.abs(pcm[i]);
