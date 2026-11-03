@@ -252,6 +252,19 @@ public sealed class CloudTransition : MonoBehaviour
             {
                 while (scenePreparing)
                     yield return null;
+                if (preparedScene == "L1" && SceneManager.GetActiveScene().name == "Title")
+                {
+                    // Keep the live title camera rendering until sceneLoaded switches views.
+                    // Its named shaker and global lights must retire before the next rig's Awake.
+                    foreach (var root in SceneManager.GetActiveScene().GetRootGameObjects())
+                    {
+                        foreach (var light in root.GetComponentsInChildren<UnityEngine.Rendering.Universal.Light2D>())
+                            light.enabled = false;
+                        foreach (var shake in root.GetComponentsInChildren<EZCameraShake.CameraShaker>())
+                            Destroy(shake);
+                    }
+                    yield return null;
+                }
                 // A speculative load cannot be cancelled. Drain it under cover if the target changed.
                 if (preparedScene != scene)
                 {
