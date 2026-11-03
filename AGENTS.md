@@ -183,7 +183,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 ## Workflow
 
 - District music (3 November 2026) starts on the track's intro and continues into flight. At boss entry, crossfade into a long, energetic passage of that same recording at its original tempo, with a bass boost. At final destruction, crossfade to the outro and gradually release the bass. Time the crossfades to progression endings. Keep Boss (fast) as a pitch-preserving audition option in the local Music Lab. The normal boss mix plays in the game.
-- Use the boss loop Miguel saves for each song in Music Lab. Its start and end snap to progression boundaries, and reanalysis preserves his selection.
+- Use Miguel’s saved Intro, Flight, Boss and Outro markers for each song. Both ends of each section are independently editable on four-beat bar lines in Music Lab. Preserve saved ranges through reanalysis. Crossfade at the next progression ending within the outgoing section or at its chosen end.
 
 - Implement each individual feature/enemy/item in its own commit. Commit authorized existing work, but preserve unrelated work being changed by another task.
 - Keep the code free of compiler warnings on the installed Unity version. Update deprecated APIs and remove unused state rather than suppressing diagnostics. For code-only warning cleanup, use the isolated clean-compilation check without starting gameplay.

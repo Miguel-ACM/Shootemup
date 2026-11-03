@@ -1,4 +1,5 @@
 import { Transport } from './transport.js';
+import { barGrid, markerLimits, sameSpan, sectionKeys, validSpan } from './markers.mjs';
 
 const $ = id => document.getElementById(id);
 const parts = { intro: ['Intro','↗'], body: ['Flight','≋'], peak: ['Boss','▲'], fast: ['Boss (fast)','▲▲'], outro: ['Outro','↘'] };
@@ -9,7 +10,8 @@ let tracks = [], track, map, engine, context, controller, loadingAudio = false, 
 let fastLoad, cueRequest = 0, selection, handoff;
 const padNodes = {};
 const drafts = new Map(), saving = new Set();
-const sameLoop = (a,b) => a?.start === b?.start && a?.end === b?.end;
+let editSection = 'peak';
+const dirtySections = sheet => sectionKeys.filter(k => !sameSpan(sheet.sections[k],sheet.savedSections[k]));
 const stamp = t => {
     const ticks = Math.round(t*100);
     return Math.floor(ticks/6000) + ':' + ((ticks%6000)/100).toFixed(2).padStart(5,'0');
@@ -107,10 +109,13 @@ async function select(item) {
     try {
         const value = await (await get('/cues/' + item.id, signal)).json();
         if (signal.aborted) return;
-        value.savedPeak = value.sections.peak;
-        const draft = drafts.get(item.id);
-        if (draft && value.boundaries.includes(draft.start) && value.boundaries.includes(draft.end))
-            value.sections.peak = draft;
+        value.savedSections = { ...value.sections };
+        value.grid = barGrid(value);
+        for (const [key,edit] of Object.entries(drafts.get(item.id) ?? {})) {
+            if (!validSpan(value,value.grid,edit.span) || sameSpan(value.sections[key],edit.span)) continue;
+            value.savedSections[key] = edit.previous;
+            value.sections[key] = edit.span;
+        }
         if (switching) {
             const data = await (await get('/audio/' + item.id, signal)).arrayBuffer();
             if (signal.aborted) return;
@@ -211,76 +216,99 @@ function populateLoopEditor() {
         const select = $('loop-' + side);
         select.replaceChildren();
         if (map?.adaptive) {
-            for (const [i,time] of map.boundaries.entries()) select.add(new Option(stamp(time), i));
+            for (const [i,time] of map.grid.entries()) select.add(new Option(stamp(time), i));
         }
     }
     if (map?.adaptive) refreshLoopEditor();
 }
 
 function refreshLoopEditor(note) {
-    const peak = map.sections.peak, bounds = map.boundaries;
+    const span = map.sections[editSection], bounds = map.grid, label = parts[editSection][0];
     for (const side of ['start','end']) {
-        const t = peak[side], select = $('loop-' + side), handle = $('handle-' + side);
-        const lo = side === 'start' ? 0 : bounds.indexOf(peak.start)+1;
-        const hi = side === 'end' ? bounds.length-1 : bounds.indexOf(peak.end)-1;
-        select.value = bounds.indexOf(t);
+        const t = span[side], select = $('loop-' + side), handle = $('handle-' + side);
+        const [lo,hi] = markerLimits(map,bounds,span,side);
+        const index = bounds.indexOf(t);
+        select.value = index;
         select.disabled = handle.disabled = saving.has(track.id);
+        $(side + '-back').disabled = select.disabled || index <= lo;
+        $(side + '-forward').disabled = select.disabled || index >= hi;
         for (const opt of select.options) opt.disabled = opt.index < lo || opt.index > hi;
         handle.style.left = 'clamp(15px,' + 100*t/map.duration + '%,calc(100% - 15px))';
         handle.setAttribute('aria-valuemin',bounds[lo]);
         handle.setAttribute('aria-valuemax',bounds[hi]);
         handle.setAttribute('aria-valuenow',t);
         handle.setAttribute('aria-valuetext',stamp(t));
-        handle.title = (side === 'start' ? 'Loop start ' : 'Loop end ') + stamp(t);
+        handle.setAttribute('aria-label',label + ' ' + side);
+        handle.title = label + ' ' + side + ' ' + stamp(t);
     }
-    const dirty = !sameLoop(peak,map.savedPeak);
+    const dirty = dirtySections(map).length > 0;
+    const saved = map.editedSections?.includes(editSection) || (editSection === 'peak' && map.peakEdited);
     $('save-loop').disabled = !dirty || saving.has(track.id);
-    set($('loop-note'),note ?? (saving.has(track.id) ? 'Saving…' : dirty ? 'Unsaved' : map.peakEdited ? 'Saved for game' : 'Analyzed'));
+    set($('loop-note'),note ?? (saving.has(track.id) ? 'Saving…' : dirty ? 'Unsaved' : saved ? 'Saved for game' : 'Analyzed'));
 }
+
+$('edit-section').onchange = e => {
+    editSection = e.target.value;
+    refreshLoopEditor();
+};
 
 function editBoundary(side, index) {
     if (!map?.adaptive) return;
-    const bounds = map.boundaries, peak = map.sections.peak;
-    const lo = side === 'start' ? 0 : bounds.indexOf(peak.start)+1;
-    const hi = side === 'end' ? bounds.length-1 : bounds.indexOf(peak.end)-1;
+    const bounds = map.grid, span = map.sections[editSection];
+    const [lo,hi] = markerLimits(map,bounds,span,side);
     const t = bounds[Math.max(lo,Math.min(hi,index))];
-    if (peak[side] === t) return;
-    const revised = { ...peak, [side]:t };
-    map.sections.peak = revised;
-    if (sameLoop(revised,map.savedPeak)) drafts.delete(track.id);
-    else drafts.set(track.id,revised);
+    if (span[side] === t) return;
+    map.sections[editSection] = { ...span, [side]:t };
+    drafts.set(track.id,Object.fromEntries(dirtySections(map).map(k =>
+        [k,{span:map.sections[k],previous:map.savedSections[k]}])));
     refreshLoopEditor();
 }
 
 for (const side of ['start','end']) {
     const select = $('loop-' + side), handle = $('handle-' + side);
+    let grabX, grabTime;
+    function stepBar(delta) {
+        const grid = map.grid, i = Number(select.value), last = grid.length-1;
+        // At a file edge, step about one bar even if a downbeat is only milliseconds away.
+        if (i === 0 && delta > 0 && grid[1] < (grid[2]-grid[1])/2) return 2;
+        if (i === last && delta < 0 && grid[last]-grid[last-1] < (grid[last-1]-grid[last-2])/2) return last-2;
+        return i + delta;
+    }
+    for (const [direction,delta] of [['back',-1],['forward',1]]) {
+        $(side + '-' + direction).onclick = () => {
+            cancelSelection();
+            editBoundary(side,stepBar(delta));
+            engine?.updateSections();
+        };
+    }
     select.onchange = () => {
         cancelSelection();
         editBoundary(side,Number(select.value));
-        engine?.updateLoop();
+        engine?.updateSections();
     };
     handle.onpointerdown = e => {
         if (e.button !== 0) return;
         cancelSelection();
+        grabX = e.clientX;
+        grabTime = map.sections[editSection][side];
         handle.setPointerCapture(e.pointerId);
     };
     handle.onpointermove = e => {
         if (!handle.hasPointerCapture(e.pointerId) || !map?.adaptive) return;
         const box = $('wave').getBoundingClientRect();
-        const t = (e.clientX-box.left)/box.width*map.duration;
-        const bounds = map.boundaries;
+        const t = grabTime + (e.clientX-grabX)/box.width*map.duration;
+        const bounds = map.grid;
         const i = Math.max(0,lastAt(bounds,t));
         editBoundary(side, i+1 < bounds.length && bounds[i+1]-t < t-bounds[i] ? i+1 : i);
     };
-    handle.onlostpointercapture = () => engine?.updateLoop();
+    handle.onlostpointercapture = () => engine?.updateSections();
     handle.onkeydown = e => {
-        const i = map.boundaries.indexOf(map.sections.peak[side]);
-        const indices = {ArrowLeft:i-1,ArrowDown:i-1,ArrowRight:i+1,ArrowUp:i+1,Home:0,End:map.boundaries.length-1};
+        const indices = {ArrowLeft:stepBar(-1),ArrowDown:stepBar(-1),ArrowRight:stepBar(1),ArrowUp:stepBar(1),Home:0,End:map.grid.length-1};
         if (!(e.key in indices)) return;
         e.preventDefault();
         cancelSelection();
         editBoundary(side,indices[e.key]);
-        engine?.updateLoop();
+        engine?.updateSections();
     };
 }
 $('hear-loop').onclick = async () => {
@@ -289,22 +317,28 @@ $('hear-loop').onclick = async () => {
     ++cueRequest;
     message = '';
     if (!engine?.playing) await play();
-    if (map === chosen && engine?.playing) engine.auditionSeam();
+    if (map === chosen && engine?.playing) engine.auditionEnding(editSection);
 };
 $('save-loop').onclick = async () => {
-    const sheet = map, id = sheet.id, peak = sheet.sections.peak;
+    const sheet = map, id = sheet.id;
+    const edits = dirtySections(sheet).map(section => ({section,...sheet.sections[section],previous:sheet.savedSections[section]}));
     if (saving.has(id)) return;
     saving.add(id);
     refreshLoopEditor();
     let error = '';
     try {
         const res = await fetch('/cues/' + id, { method:'PUT', headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({ ...peak, previous:sheet.savedPeak }) });
+            body:JSON.stringify({ edits }) });
         if (!res.ok) throw new Error((await res.text()) || 'Save failed. Try again.');
-        sheet.savedPeak = peak;
-        sheet.peakEdited = true;
-        if (map?.id === id) { map.savedPeak = peak; map.peakEdited = true; }
-        if (sameLoop(drafts.get(id),peak)) drafts.delete(id);
+        for (const target of new Set([sheet,map?.id === id ? map : sheet])) {
+            const edited = new Set(target.editedSections);
+            for (const {section,start,end} of edits) {
+                target.savedSections[section] = {start,end};
+                edited.add(section);
+            }
+            target.editedSections = [...edited];
+        }
+        drafts.delete(id);
     } catch (err) { error = err.message; }
     finally {
         saving.delete(id);
@@ -366,7 +400,9 @@ function waveform(s) {
         g.fillRect(i, mid-size, 2, size*2);
     }
     if (map.adaptive) {
-        const { start, end } = map.sections.peak;
+        g.fillStyle = '#6b7972';
+        for (const bar of map.downbeats) g.fillRect(x(bar),h-20,1,4);
+        const { start, end } = map.sections[editSection];
         g.fillStyle = '#e6a473';
         g.fillRect(x(start),10,Math.max(1,x(end-start)),2);
         for (const t of [start,end]) g.fillRect(Math.min(w-1,x(t)),10,1,h-27);
@@ -384,7 +420,7 @@ function waveform(s) {
 
 function draw() {
     finishHandoff();
-    const s = engine?.state() ?? { part:'intro',pos:0,rate:1,bass:0 };
+    const s = engine?.state() ?? { part:'intro',pos:map?.sections.intro.start ?? 0,rate:1,bass:0 };
     const moving = !!engine?.playing;
     $('play').disabled = !map || loadingAudio;
     $('hear-loop').disabled = !map?.adaptive || loadingAudio;

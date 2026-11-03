@@ -63,7 +63,7 @@ export class Transport {
         this.disposeDecks();
         this.ended = false;
         this.playing = true;
-        this.current = this.deck('intro', at, 0, 0, fadeIn);
+        this.current = this.deck('intro', at, this.range('intro').start, 0, fadeIn);
         this.plan();
     }
     plan(request = null, exit = false) {
@@ -96,7 +96,7 @@ export class Transport {
         this.next = this.cut = this.requested = null;
         if (this.current) {
             this.plan();
-            if (this.editPending) { this.editPending = false; this.updateLoop(); }
+            if (this.editPending) { this.editPending = false; this.updateSections(); }
         }
         else { this.ended = true; this.playing = false; }
     }
@@ -109,28 +109,26 @@ export class Transport {
         }
         this.plan(part === this.current.part ? null : part);
     }
-    updateLoop() {
+    updateSections() {
         this.tick();
         const d = this.current;
         if (!d) return;
         if (this.cut - this.ctx.currentTime < lead) { this.editPending = true; return; }
-        if (boss(this.requested)) { this.plan(this.requested); return; }
-        if (!boss(d.part) || this.requested) return;
         const { start, end } = this.range(d.part);
         const pos = position(d, this.ctx.currentTime + lead);
         if (pos >= start && pos < end) {
             d.end = end;
-            this.plan();
-        } else this.plan(d.part); // Finish the current progression before entering the revised span.
+            this.plan(this.requested);
+        } else this.plan(this.requested ?? d.part); // Finish the outgoing progression before the jump.
     }
-    auditionSeam() {
-        const part = this.current?.part === 'fast' ? 'fast' : 'peak';
+    auditionEnding(selected) {
+        const part = selected === 'peak' && this.current?.part === 'fast' ? 'fast' : selected;
         const { start, end } = this.range(part);
         this.disposeDecks();
         this.playing = true;
         this.ended = false;
         const offset = Math.max(start, end - 2*60/this.map.bpm);
-        this.current = this.deck(part,this.ctx.currentTime+lead,offset,bassDb,.04);
+        this.current = this.deck(part,this.ctx.currentTime+lead,offset,boss(part) ? bassDb : 0,.04);
         this.plan();
     }
     previewChange() {
@@ -154,7 +152,7 @@ export class Transport {
         }
         const d = this.current;
         if (!d) return { part:this.ended && this.map.adaptive !== false ? 'outro' : 'intro',
-            pos:this.ended ? this.map.duration : 0, rate:1, bass:0 };
+            pos:this.ended ? this.range('outro').end : this.range('intro').start, rate:1, bass:0 };
         return { part:d.part, pos:position(d,this.ctx.currentTime), rate:d.speed,
             bass:bassAt(d,this.ctx.currentTime), next:this.requested, remaining:this.cut-this.ctx.currentTime };
     }

@@ -5,6 +5,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { barGrid, sameSpan, sectionKeys, validSpan } from './dist/markers.mjs';
 
 const lab = path.dirname(fileURLToPath(import.meta.url));
 const resources = path.resolve(lab, '../../Assets/Resources');
@@ -15,7 +16,8 @@ const tracks = [...new Set([...districts, ...files.map(file => path.basename(fil
     .filter(id => files.includes(id + '.mp3'))
     .map(id => ({ id, title: names[id] ?? id[0].toUpperCase() + id.slice(1), district: districts.includes(id) }));
 const routes = new Map([['/', ['dist/index.html', 'text/html']], ['/style.css', ['dist/style.css', 'text/css']],
-    ['/app.js', ['dist/app.js', 'text/javascript']], ['/transport.js', ['dist/transport.js', 'text/javascript']]]);
+    ['/app.js', ['dist/app.js', 'text/javascript']], ['/transport.js', ['dist/transport.js', 'text/javascript']],
+    ['/markers.mjs', ['dist/markers.mjs', 'text/javascript']]]);
 for (const { id } of tracks) {
     routes.set('/audio/' + id, [path.join(resources, 'Music', id + '.mp3'), 'audio/mpeg']);
     routes.set('/cues/' + id, [path.join(resources, 'MusicAnalysis', id + '.json'), 'application/json']);
@@ -51,20 +53,30 @@ async function fastFile(id, full) {
 
 const port = Number(process.argv[2] ?? 8766);
 
-function saveLoop(file, input) {
+function saveMarkers(file, input) {
     const lock = file + '.lock~', tmp = file + '.new~';
     let handle;
     try {
         handle = openSync(lock, 'wx');
         const cue = JSON.parse(readFileSync(file, 'utf8'));
-        const { start, end, previous } = input ?? {};
-        if (!cue.adaptive || !cue.boundaries.includes(start) || !cue.boundaries.includes(end) || start >= end)
-            return [400, 'Choose two ordered progression boundaries.'];
-        const peak = cue.sections.peak;
-        if (!(peak.start === start && peak.end === end) && (previous?.start !== peak.start || previous?.end !== peak.end))
-            return [409, 'This song was edited elsewhere. Reload to use the latest loop.'];
-        cue.sections.peak = { start, end };
-        cue.peakEdited = true;
+        // An already-open boss-only editor still sends a single span.
+        const edits = input?.edits ?? [{ ...input, section:'peak' }];
+        if (!cue.adaptive || !Array.isArray(edits) || !edits.length || edits.length > sectionKeys.length)
+            return [400, 'Invalid section selection.'];
+        const grid = barGrid(cue);
+        const edited = new Set(cue.editedSections ?? []);
+        if (cue.peakEdited) edited.add('peak');
+        for (const change of edits) {
+            if (!sectionKeys.includes(change?.section) || !validSpan(cue, grid, change))
+                return [400, 'Choose bar boundaries enclosing at least four beats.'];
+            const current = cue.sections[change.section];
+            if (!sameSpan(change,current) && !sameSpan(change.previous,current))
+                return [409, 'This section was edited elsewhere. Reload to use its latest markers.'];
+            cue.sections[change.section] = { start:change.start, end:change.end };
+            edited.add(change.section);
+        }
+        cue.editedSections = sectionKeys.filter(k => edited.has(k));
+        if (edited.has('peak')) cue.peakEdited = true;
         writeFileSync(tmp, JSON.stringify(cue) + '\n');
         renameSync(tmp, file);
         return [200, 'Saved'];
@@ -95,7 +107,7 @@ const server = createServer(async (req, res) => {
                 body += chunk.toString();
                 if (body.length > 1024) { res.writeHead(413).end(); return; }
             }
-            const [status, message] = saveLoop(routes.get(url)[0], JSON.parse(body));
+            const [status, message] = saveMarkers(routes.get(url)[0], JSON.parse(body));
             res.writeHead(status, { 'Content-Type':'text/plain; charset=utf-8' }).end(message);
         } catch { res.writeHead(400).end('Invalid save request.'); }
         return;

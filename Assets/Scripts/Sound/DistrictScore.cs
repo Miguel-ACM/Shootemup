@@ -1,18 +1,36 @@
 using System;
 using UnityEngine;
 
-// The intro is contiguous with Flight in the recording. Fly through it once, then loop Flight.
+// Play Intro once, loop Flight or Boss, then play out the selected Outro.
 public sealed class DistrictScore : MonoBehaviour
 {
     [Serializable] public class Span { public float start, end; }
-    [Serializable] public class Sections { public Span body, peak, outro; }
+    [Serializable] public class Sections { public Span intro, body, peak, outro; }
     [Serializable] public class Cues { public float bpm; public float[] boundaries; public Sections sections; }
-    enum Part { Flight, Boss, Outro, Linear }
+    enum Part { Intro, Flight, Boss, Outro, Linear }
     sealed class Track
     {
         public AudioClip clip;
         public Cues cues;
-        public Part First => cues == null ? Part.Linear : Part.Flight;
+        public Part First => cues == null ? Part.Linear : Part.Intro;
+        Span Range(Part section) => section switch
+        {
+            Part.Intro => cues.sections.intro,
+            Part.Flight => cues.sections.body,
+            Part.Boss => cues.sections.peak,
+            Part.Outro => cues.sections.outro,
+            _ => null
+        };
+        public float Start(Part section) => Range(section)?.start ?? 0;
+        public float End(Part section) => Mathf.Min(Range(section)?.end ?? clip.length, clip.length);
+
+        // A hand-picked bar ending can fall between the detected phrase boundaries.
+        public float ExitPoint(float start, float end, double earliest)
+        {
+            foreach (float boundary in cues.boundaries)
+                if (boundary > start && boundary >= earliest && boundary < end) return boundary;
+            return end;
+        }
     }
 
     readonly MusicDeck[] decks = new MusicDeck[2];
@@ -31,23 +49,29 @@ public sealed class DistrictScore : MonoBehaviour
         get
         {
             if (!started || wanted != Part.Boss || part == Part.Boss || !decks[index].Source.isPlaying) return 0;
-            double arrival = cut;
+            double now = AudioSettings.dspTime;
+            if (pendingPart == Part.Boss && !double.IsPositiveInfinity(cut))
+                return (float)Math.Max(0, cut - now);
+            double flightAt = cut;
             if (double.IsPositiveInfinity(cut))
             {
-                foreach (float b in track.cues.boundaries)
-                    if (b > decks[index].Offset && decks[index].ClockAt(b) >= earliestBoss)
-                        return (float)Math.Max(0, decks[index].ClockAt(b) - AudioSettings.dspTime);
-                return 0;
+                var active = decks[index];
+                double after = Math.Max(earliestBoss, Math.Max(now, reuseAt) + Lead);
+                float end = track.End(part);
+                if (after <= active.ClockAt(end))
+                {
+                    float point = track.ExitPoint(active.Offset, end, active.Offset + after - active.StartAt);
+                    return (float)Math.Max(0, active.ClockAt(point) - now);
+                }
+                flightAt = active.ClockAt(end);
             }
-            if (pendingPart != Part.Boss && pendingTrack != null)
-            {
-                // The flight loop wrapped inside the warning. Look one deck ahead for its first cadence.
-                var next = decks[1-index];
-                foreach (float b in track.cues.boundaries)
-                    if (b > track.cues.sections.body.start && next.ClockAt(b) >= earliestBoss)
-                    { arrival = next.ClockAt(b); break; }
-            }
-            return (float)Math.Max(0, arrival - AudioSettings.dspTime);
+            // A one-bar Flight may repeat several times during the three-second warning.
+            float start = track.Start(Part.Flight), finish = track.End(Part.Flight);
+            double length = finish - start;
+            if (length <= 0) return 0;
+            flightAt += Math.Max(0, Math.Ceiling((earliestBoss - flightAt) / length) - 1) * length;
+            float exit = track.ExitPoint(start, finish, start + Math.Max(0, earliestBoss - flightAt));
+            return (float)Math.Max(0, flightAt + exit - start - now);
         }
     }
     public int Generation { get; private set; }
@@ -99,7 +123,7 @@ public sealed class DistrictScore : MonoBehaviour
         if (track.clip.loadState != AudioDataLoadState.Loaded) return;
         part = track.First;
         started = true;
-        decks[index].StartCue(track.clip, AudioSettings.dspTime + Lead, 0, 0, 0, 0, .04);
+        decks[index].StartCue(track.clip, AudioSettings.dspTime + Lead, track.Start(part), 0, 0, 0, .04);
         Plan();
     }
 
@@ -125,24 +149,13 @@ public sealed class DistrictScore : MonoBehaviour
         if (started && now >= reuseAt && cut > now + Lead) Plan();
     }
 
-    float SectionEnd()
-    {
-        if (part == Part.Flight) return track.cues.sections.body.end;
-        if (part == Part.Boss) return track.cues.sections.peak.end;
-        return track.clip.length;
-    }
-
     void Plan()
     {
         MusicDeck active = decks[index], next = decks[1-index];
         next.Source.Stop();
-        float end = Mathf.Min(SectionEnd(), track.clip.length);
-        float offset = 0;
-        pendingTrack = track;
-        pendingPart = part;
-        if (part == Part.Outro) pendingTrack = null;
-        if (part == Part.Boss) offset = track.cues.sections.peak.start;
-        if (part == Part.Flight) offset = track.cues.sections.body.start;
+        float end = track.End(part);
+        pendingTrack = part == Part.Outro ? null : track;
+        pendingPart = part == Part.Intro ? Part.Flight : part;
 
         bool travel = part == Part.Outro && following != null && following.clip.loadState == AudioDataLoadState.Loaded;
         waitingForLoad = part == Part.Outro && following != null && !travel;
@@ -150,23 +163,12 @@ public sealed class DistrictScore : MonoBehaviour
         {
             double after = AudioSettings.dspTime + Lead;
             if (wanted == Part.Boss) after = Math.Max(after, earliestBoss);
-            if (travel) after = Math.Max(after, active.StartAt + 8 * 60 / track.cues.bpm);
-            foreach (float boundary in track.cues.boundaries)
+            if (travel) after = Math.Max(after, Math.Min(active.ClockAt(end), active.StartAt + 8 * 60 / track.cues.bpm));
+            if (after <= active.ClockAt(end))
             {
-                if (boundary <= active.Offset || boundary > end + .002f || active.ClockAt(boundary) < after) continue;
-                end = Mathf.Min(end, boundary);
-                if (travel)
-                {
-                    pendingTrack = following;
-                    pendingPart = following.First;
-                    offset = 0;
-                }
-                else
-                {
-                    pendingPart = wanted;
-                    offset = wanted == Part.Boss ? track.cues.sections.peak.start : track.cues.sections.outro.start;
-                }
-                break;
+                end = track.ExitPoint(active.Offset, end, active.Offset + after - active.StartAt);
+                pendingTrack = travel ? following : track;
+                pendingPart = travel ? following.First : wanted;
             }
         }
         cut = active.ClockAt(end);
@@ -177,10 +179,11 @@ public sealed class DistrictScore : MonoBehaviour
         tailEnd = cut + overlap;
         active.EndAt(tailEnd, overlap > 0 ? overlap : fade);
         if (pendingTrack == null) return;
+        float offset = pendingTrack.Start(pendingPart);
         float from = pendingTrack == track ? active.MixAt(cut) : 0;
         float to = pendingPart == Part.Boss ? 1 : 0;
         float beats = to > from ? 1 : 8;
-        float ramp = from == to ? 0 : Mathf.Min(beats * 60/track.cues.bpm, pendingTrack.clip.length - offset);
+        float ramp = from == to ? 0 : Mathf.Min(beats * 60/track.cues.bpm, pendingTrack.End(pendingPart) - offset);
         next.StartCue(pendingTrack.clip, cut, offset, from, to, ramp, overlap > 0 ? overlap : fade);
     }
 
@@ -199,6 +202,7 @@ public sealed class DistrictScore : MonoBehaviour
                 return;
             }
             index = 1-index;
+            if (wanted == part) wanted = pendingPart;
             if (pendingTrack == following)
             {
                 following = null;

@@ -411,13 +411,20 @@ def analyze(path):
         pass
     try:
         previous = json.loads(dest.read_text(encoding="utf-8")) if dest.exists() else {}
+        edited = set(previous.get("editedSections", []))
         if previous.get("peakEdited"):
-            peak = previous["sections"]["peak"]
-            start, end = (min(data["boundaries"], key=lambda b: abs(b - peak[k])) for k in ("start", "end"))
-            if not adaptive or start >= end:
-                raise ValueError(f"{path.stem}: new progression grid cannot fit the saved loop; kept the original sheet")
-            data["sections"]["peak"] = {"start": start, "end": end}
-            data["peakEdited"] = True
+            edited.add("peak")
+        if edited:
+            grid = sorted({0, *data["downbeats"], data["duration"]})
+            for name in edited:
+                span = previous["sections"][name]
+                start, end = (min(grid, key=lambda b: abs(b - span[k])) for k in ("start", "end"))
+                if not adaptive or sum(start <= b <= end for b in data["downbeats"]) < 2:
+                    raise ValueError(f"{path.stem}: new bar grid cannot fit the saved {name}; kept the original sheet")
+                data["sections"][name] = {"start": start, "end": end}
+            data["editedSections"] = [name for name in sections if name in edited]
+            if "peak" in edited:
+                data["peakEdited"] = True
         tmp.write_text(json.dumps(data, separators=(",", ":"), allow_nan=False) + "\n", encoding="utf-8")
         tmp.replace(dest)
     finally:

@@ -21,11 +21,15 @@
     <label class="volume"><span>VOL</span><input id="volume" type="range" min="0" max="100" value="56" aria-label="Volume"></label>
    </div>
   </section>
-  <section id="loop-editor" aria-label="Boss loop editor" hidden>
-   <div class="loop-heading"><h2>Boss loop</h2><span id="loop-note" role="status"></span></div>
-   <div class="loop-controls"><label>Start <select id="loop-start" aria-label="Boss start progression"></select></label>
-    <label>End <select id="loop-end" aria-label="Boss end progression"></select></label>
-    <button id="hear-loop" title="Hear the last two beats wrap to the start">Hear loop seam ↻</button>
+  <section id="loop-editor" aria-label="Section marker editor" hidden>
+   <div class="loop-heading"><h2>Section markers <small class="eyebrow">4-BEAT SNAP</small></h2><span id="loop-note" role="status"></span></div>
+   <div class="loop-controls"><label>Section <select id="edit-section" aria-label="Section to edit">
+    <option value="intro">Intro</option><option value="body">Flight</option><option value="peak" selected>Boss</option><option value="outro">Outro</option></select></label>
+    <div class="marker-step"><label>Start <select id="loop-start" aria-label="Start bar"></select></label>
+     <button id="start-back" aria-label="Move start back one bar" title="Back one bar">‹</button><button id="start-forward" aria-label="Move start forward one bar" title="Forward one bar">›</button></div>
+    <div class="marker-step"><label>End <select id="loop-end" aria-label="End bar"></select></label>
+     <button id="end-back" aria-label="Move end back one bar" title="Back one bar">‹</button><button id="end-forward" aria-label="Move end forward one bar" title="Forward one bar">›</button></div>
+    <button id="hear-loop" title="Hear the last two beats and the handoff">Hear ending ↗</button>
     <button id="save-loop" disabled>Save for game</button></div>
   </section>
   <div class="section-heading"><h2>Section cues</h2><span class="eyebrow">PROGRESSION SYNC</span></div>
