@@ -373,6 +373,19 @@ public sealed class HangarDeckReview : MonoBehaviour
         while (!Field<bool>("galleryReady"))
             yield return null;
         Check(Field<int>("loadedItems") == ItemCatalog.All.Count, "every catalog entry installed");
+        string[] roomSigns = { "FLEET", "ARMORY", "SIMULATOR", "RECORDER", "FLIGHT CONTROL" };
+        void CheckInteriors(int entered)
+        {
+            bool correct = true;
+            for (int i = 0; i < roomSigns.Length; i++)
+            {
+                bool visible = i == entered;
+                var world = hub.transform.Find(roomSigns[i] + " interior");
+                var displays = GameObject.Find(roomSigns[i] + " displays").GetComponent<CanvasGroup>();
+                correct &= world.gameObject.activeInHierarchy == visible && displays.alpha == (visible ? 1 : 0);
+            }
+            Check(correct, entered < 0 ? "main lane hides every side room" : "only the entered interior and its glass are visible");
+        }
         bool directoryOnly = SessionState.GetBool("DirectoryOnly", false);
         SessionState.SetBool("DirectoryOnly", false);
         if (!directoryOnly)
@@ -382,19 +395,23 @@ public sealed class HangarDeckReview : MonoBehaviour
             Place(0, 6);
             yield return new WaitForSeconds(.8f);
             yield return Capture("LitPassage");
+            CheckInteriors(-1);
             Place(-11, 3.8f);
             yield return new WaitForSeconds(.8f);
             yield return Capture("FleetTube");
+            CheckInteriors(0);
             var screen = GameObject.Find("FLEET mounted screen");
             Check(screen != null && !Field<System.Collections.Generic.List<Transform>>("parkedShips")[(int)MetaProgress.Ship].gameObject.activeSelf, "flown hull has no duplicate on the pad");
             Place(0, 6);
             yield return new WaitForSeconds(.4f);
             Check(screen.activeInHierarchy, "the fleet screen remains mounted after exit");
+            CheckInteriors(-1);
             foreach (var berth in new[] { new Vector2(-11, 20), new Vector2(11, 20), new Vector2(11, 34) })
             {
                 Place(berth.x, berth.y - 2.1f);
                 yield return new WaitForSeconds(.7f);
                 Check(Field<int>("room") == (berth.x < 0 ? 2 : berth.y == 20 ? 3 : 4), "reached the marked control room");
+                CheckInteriors(Field<int>("room"));
                 yield return Capture(berth.x < 0 ? "SimulatorRoom" : berth.y == 20 ? "RecorderRoom" : "FlightRoom");
             }
         }
@@ -410,6 +427,24 @@ public sealed class HangarDeckReview : MonoBehaviour
         Debug.Log("Gallery entry " + Frames(entryFrames));
         var exhibits = Field<GalleryShelf.Exhibit[]>("exhibits");
         var models = Field<MeshRenderer[]>("pieces");
+        CheckInteriors(1);
+        void CheckCaseLighting()
+        {
+            var offsets = Field<int[]>("caseVertices");
+            var colors = Field<Mesh>("platforms").colors;
+            var category = Field<int>("galleryCategory");
+            var access = Field<int>("galleryAvailability");
+            bool correct = true;
+            for (int i = 0; i < exhibits.Length; i++)
+            {
+                bool released = !ItemCatalog.Get(exhibits[i].key).InRewardPool || MetaProgress.IsUnlocked(exhibits[i].key);
+                bool match = (category == 0 || category - 1 == (int)exhibits[i].category) && (access == 0 || released == (access == 1));
+                bool lampLit = colors[offsets[i + 1] - 1].r > .8f;
+                correct &= lampLit == match && models[i].HasPropertyBlock() == (released && !match);
+            }
+            Check(correct, "all 99 case lamps and exhibit finishes follow both filters");
+        }
+        CheckCaseLighting();
         int known = System.Array.FindIndex(exhibits, e => MetaProgress.IsUnlocked(e.key));
         int locked = System.Array.FindIndex(exhibits, e => ItemCatalog.Get(e.key).InRewardPool && !MetaProgress.IsUnlocked(e.key));
         void At(int i)
@@ -456,6 +491,10 @@ public sealed class HangarDeckReview : MonoBehaviour
         Press();
         yield return null;
         Check(Field<Mesh>("guideMesh").vertexCount > 0, "matching exhibits linked to bottom console");
+        CheckCaseLighting();
+        Call("Navigate", false, 1);
+        CheckCaseLighting();
+        Call("Navigate", false, -1);
         yield return Capture("FilterScreen");
         Press(Key.X);
         yield return null;
@@ -463,6 +502,17 @@ public sealed class HangarDeckReview : MonoBehaviour
         Place(25.1f, 18.96f);
         yield return new WaitForSeconds(.8f);
         yield return Capture("GalleryGuides");
+        Place(0, 6);
+        yield return null;
+        CheckInteriors(-1);
+        Place(11.4f, 4.3f);
+        yield return null;
+        CheckInteriors(1);
+        CheckCaseLighting();
+        while (Field<int>("galleryCategory") != 0)
+            Call("Navigate", true, -1);
+        Check(Field<Mesh>("guideMesh").vertexCount == 0, "clearing the filters removes the routes");
+        CheckCaseLighting();
         if (directoryOnly)
         {
             InputSystem.RemoveDevice(keyboard);

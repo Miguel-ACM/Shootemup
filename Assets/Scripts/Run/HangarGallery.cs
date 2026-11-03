@@ -135,7 +135,7 @@ public sealed partial class HangarHub
         mesh.SetTriangles(triangles, 0);
         quads.Add(mesh);
         var go = new GameObject(name);
-        go.transform.SetParent(transform, false);
+        go.transform.SetParent(FixtureParent, false);
         go.transform.position = Spot(Vector2.zero, order == -14 ? 65 : 60);
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var r = go.AddComponent<MeshRenderer>();
@@ -164,7 +164,7 @@ public sealed partial class HangarHub
                 int i = first + j;
                 var e = exhibits[i] = shelf.exhibits[j];
                 var go = new GameObject("Museum exhibit " + i);
-                go.transform.SetParent(transform, false);
+                go.transform.SetParent(interiors[(int)Dock.Armory].fixtures.transform, false);
                 var bounds = e.mesh.bounds;
                 var rotation = Quaternion.Euler(-18, 28, -9);
                 float scale = 1.24f / Mathf.Max(.01f, bounds.size.x, bounds.size.y, bounds.size.z);
@@ -288,7 +288,7 @@ public sealed partial class HangarHub
     {
         var root = new GameObject("Gallery directory tube", typeof(RectTransform));
         var display = new DockInstrument(root, dialog?.font, DockInstrument.Brass);
-        readouts.MountAt((RectTransform)root.transform, Spot(FilterDesk + Vector2.up * 3.7f, 1), .012f);
+        readouts.MountAt((RectTransform)root.transform, Spot(FilterDesk + Vector2.up * 3.7f, 1), .012f, layer: installing.lettering.transform);
         display.Label("02   /   GALLERY", -41, 255, 476, 34, 19, DockInstrument.Brass, true);
         display.Label("Directory", 0, 167, 550, 74, 38, DockInstrument.Paper, true);
         categoryReadout = display.Label(categories[0], 0, 86, 550, 48, 27, DockInstrument.Brass, true);

@@ -15,7 +15,7 @@ public sealed partial class HangarHub
     void BuildControlDesk(Vector2 at, int index)
     {
         var pedestal = new GameObject("Pilot control pedestal");
-        pedestal.transform.SetParent(transform, false);
+        pedestal.transform.SetParent(FixtureParent, false);
         pedestal.transform.position = Spot(at, 1);
         pedestal.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.DockKeyboard();
         var r = pedestal.AddComponent<MeshRenderer>();
@@ -105,7 +105,7 @@ public sealed partial class HangarHub
     void MountReceiver(Vector2 at)
     {
         var go = new GameObject("Cast monitor housing");
-        go.transform.SetParent(transform, false);
+        go.transform.SetParent(FixtureParent, false);
         go.transform.position = Spot(at, 2);
         go.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.DockMonitor();
         var r = go.AddComponent<MeshRenderer>();

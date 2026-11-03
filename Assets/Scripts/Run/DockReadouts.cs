@@ -32,9 +32,15 @@ public sealed class DockReadouts : MonoBehaviour
         aperture.SetParent(transform, false);
         aperture.sizeDelta = new Vector2(405, 720);
     }
-    public void MountAt(RectTransform panel, Vector3 anchor, float worldScale, bool bob = false)
+    public CanvasGroup CreateRoomLayer(string name)
     {
-        panel.SetParent(aperture, false);
+        var layer = new GameObject(name, typeof(RectTransform), typeof(CanvasGroup)).GetComponent<CanvasGroup>();
+        layer.transform.SetParent(aperture, false);
+        return layer;
+    }
+    public void MountAt(RectTransform panel, Vector3 anchor, float worldScale, bool bob = false, Transform layer = null)
+    {
+        panel.SetParent(layer != null ? layer : aperture, false);
         mounts.Add(new Mount { panel = panel, point = anchor, scale = worldScale, bob = bob });
     }
     public void Aim(RectTransform panel, Vector3 point)

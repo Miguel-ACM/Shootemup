@@ -179,7 +179,6 @@ public sealed partial class HangarHub : MonoBehaviour
         BuildShop();
         yield return null;
         yield return BuildConcourse();
-        BuildGallery();
         BuildPrompt();
         BuildGate();
         deckReady = true;
@@ -313,7 +312,7 @@ public sealed partial class HangarHub : MonoBehaviour
         if (mesh == null)
             return null;
         var go = new GameObject(model);
-        go.transform.SetParent(transform, false);
+        go.transform.SetParent(FixtureParent, false);
         go.transform.position = position;
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var renderer = go.AddComponent<MeshRenderer>();

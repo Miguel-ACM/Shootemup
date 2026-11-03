@@ -29,6 +29,20 @@ public sealed partial class HangarHub
     readonly List<GameObject>[] pages = new List<GameObject>[5];
     readonly int[] savedSelection = new int[5], savedBand = new int[5];
     readonly List<RectTransform> berthNames = new List<RectTransform>();
+    sealed class Interior
+    {
+        public GameObject fixtures;
+        public CanvasGroup lettering;
+
+        public void Show(bool visible)
+        {
+            fixtures.SetActive(visible);
+            lettering.alpha = visible ? 1 : 0;
+        }
+    }
+    readonly Interior[] interiors = new Interior[berths.Length];
+    Interior installing;
+    Transform FixtureParent => installing != null ? installing.fixtures.transform : transform;
     float repeatAt, cameraAcross, baseViewSize;
     int room = -1, selection, band;
     bool operating;
@@ -96,13 +110,20 @@ public sealed partial class HangarHub
             baseViewSize = view.orthographicSize;
         float zoom = operating || room >= 0 && room != (int)Dock.Armory ? 7.05f : baseViewSize;
         view.orthographicSize = Mathf.Lerp(view.orthographicSize, zoom, 1 - Mathf.Exp(-6 * Time.deltaTime));
-        int portal = Portal(p);
+        float lateral = Mathf.Abs(p.x - center.x);
+        int portal = lateral > Camera.RightLimit ? Portal(p) : -1;
+        if (portal != room)
+        {
+            if (portal >= 0)
+                OpenDock(portal);
+            else
+                CloseDock();
+        }
         float across = 0;
         float along = Mathf.Clamp(p.y - center.y, 0, DeckExtension);
-        if (portal >= 0 && Mathf.Abs(p.x - center.x) > 4 &&
-            (Mathf.Abs(p.x - center.x) > Camera.RightLimit + .01f || Mathf.Abs(p.y - center.y - berths[portal].y) < 1))
+        if (portal >= 0)
         {
-            float enter = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(4, 7.5f, Mathf.Abs(p.x - center.x)));
+            float enter = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(Camera.RightLimit, 7.5f, lateral));
             Vector2 target = berths[portal];
             if (portal == (int)Dock.Armory)
                 target = operating ? new Vector2(FilterDesk.x, FilterDesk.y + 2.7f) : new Vector2(Mathf.Clamp(p.x - center.x, 10, GalleryRight - 2), Mathf.Clamp(p.y - center.y, FilterDesk.y + 1.7f, GalleryTop - 3));
@@ -113,12 +134,11 @@ public sealed partial class HangarHub
         }
         SetCameraTravel(Mathf.Lerp(cameraTravel, along, 1 - Mathf.Exp(-7 * Time.deltaTime)));
         float next = Mathf.Lerp(cameraAcross, across, 1 - Mathf.Exp(-7 * Time.deltaTime));
+        // Bring the portrait aperture back over the lane before the outgoing interior is hidden.
+        float passagePan = Mathf.Max(0, lateral - Camera.RightLimit) * 5;
+        next = Mathf.Clamp(next, -passagePan, passagePan);
         MoveCamera(Vector3.right * (next - cameraAcross));
         cameraAcross = next;
-        if (Mathf.Abs(p.x - center.x) >= 6.5f && portal != room)
-            OpenDock(portal);
-        else if (room >= 0 && Mathf.Abs(p.x - center.x) < 6.4f)
-            CloseDock();
     }
 
     void MoveCamera(Vector3 delta)
@@ -142,7 +162,7 @@ public sealed partial class HangarHub
     Transform Strip(string title, Vector2 pos, Vector2 size, Color tint, int order = -7, float angle = 0)
     {
         var t = Quad(title, tint, order);
-        t.SetParent(transform, false);
+        t.SetParent(FixtureParent, false);
         t.position = Spot(pos, 4 - (order + 10) * .035f);
         t.localScale = new Vector3(size.x * 4, size.y * 4, 1);
         t.localRotation = Quaternion.Euler(0, 0, angle);
@@ -161,7 +181,7 @@ public sealed partial class HangarHub
         var go = new GameObject(title, typeof(RectTransform), typeof(Image));
         var rect = go.GetComponent<RectTransform>();
         rect.sizeDelta = size * 100;
-        readouts.MountAt(rect, Spot(position, 1), .01f, floatSign);
+        readouts.MountAt(rect, Spot(position, 1), .01f, floatSign, installing?.lettering.transform);
         go.GetComponent<Image>().color = new Color(.018f, .034f, .043f);
         return rect;
     }
@@ -195,21 +215,31 @@ public sealed partial class HangarHub
         }
         for (int i = 0; i < berths.Length; i++)
         {
-            BuildRoom(i);
-            if (i != (int)Dock.Armory)
+            installing = interiors[i] = new Interior
             {
+                fixtures = new GameObject(signs[i] + " interior"),
+                lettering = readouts.CreateRoomLayer(signs[i] + " displays")
+            };
+            installing.fixtures.transform.SetParent(transform, false);
+            if (i == (int)Dock.Armory)
+                BuildGallery();
+            else
+            {
+                BuildRoom(i);
                 room = i;
                 selection = i == (int)Dock.Fleet ? (int)MetaProgress.Ship : i == (int)Dock.Flight ? System.Array.IndexOf(modes, difficulty) : 0;
                 band = i == (int)Dock.Fleet ? System.Array.IndexOf(modes, difficulty) : 0;
                 var screen = new GameObject(signs[i] + " mounted screen", typeof(RectTransform));
                 instrument = screens[i] = new DockInstrument(screen, dialog?.font, lamps[i]);
-                readouts.MountAt((RectTransform)screen.transform, Spot(berths[i] + Vector2.up * 2.8f, 1), .012f);
+                readouts.MountAt((RectTransform)screen.transform, Spot(berths[i] + Vector2.up * 2.8f, 1), .012f, layer: installing.lettering.transform);
                 pages[i] = new List<GameObject>();
                 RenderPage();
                 savedSelection[i] = selection;
                 savedBand[i] = band;
                 room = -1;
             }
+            installing.Show(false);
+            installing = null;
             yield return null;
             float side = Mathf.Sign(berths[i].x), y = berths[i].y;
             Strip("Cross-passage floor", new Vector2(side * 5.7f, y), new Vector2(2.8f, 2.5f), Deck, -14);
@@ -234,11 +264,9 @@ public sealed partial class HangarHub
     void BuildRoom(int index)
     {
         Vector2 b = berths[index];
-        if (index == (int)Dock.Armory)
-            return;
         // The workshop floor has its own walls, cable trenches and machinery apron.
         var floor = new GameObject(signs[index] + " deck").AddComponent<SpriteRenderer>();
-        floor.transform.SetParent(transform, false);
+        floor.transform.SetParent(FixtureParent, false);
         floor.transform.position = Spot(b, 80);
         floor.sprite = Resources.Load<Sprite>(index == (int)Dock.Fleet ? "DockArt/RoomDeckFleet" : "DockArt/RoomDeck");
         floor.drawMode = SpriteDrawMode.Simple;
@@ -263,7 +291,7 @@ public sealed partial class HangarHub
             Vector2 spot = b + new Vector2(i % 2 == 0 ? -2.15f : 2.15f, -2.3f - i / 2 * 2.65f);
             Hover("HangarDockPad", Spot(spot, 3), -4);
             var hull = ShipFrames.BuildDisplay(player, ShipFrames.Get((ShipFrame)i));
-            hull.transform.SetParent(transform, true);
+            hull.transform.SetParent(FixtureParent, true);
             hull.transform.position = Spot(spot, 1);
             hull.transform.localScale *= .95f;
             foreach (var renderer in hull.GetComponentsInChildren<MeshRenderer>())
@@ -284,7 +312,7 @@ public sealed partial class HangarHub
     void DisplayEquipment(string key, Vector2 position)
     {
         var go = new GameObject(key + " rack display");
-        go.transform.SetParent(transform, false);
+        go.transform.SetParent(FixtureParent, false);
         go.transform.position = Spot(position, 1);
         go.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.ExpansionItem(key);
         var renderer = go.AddComponent<MeshRenderer>();
@@ -301,7 +329,7 @@ public sealed partial class HangarHub
         int kind = index == (int)Dock.Simulator ? 0 : index == (int)Dock.Recorder ? 1 : 2;
         var mesh = IndustrialMeshFactory.DockMachine(kind);
         var go = new GameObject(signs[index] + " machinery");
-        go.transform.SetParent(transform, false);
+        go.transform.SetParent(FixtureParent, false);
         go.transform.position = Spot(b + Vector2.down * 4.6f, 2);
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var renderer = go.AddComponent<MeshRenderer>();
@@ -425,6 +453,7 @@ public sealed partial class HangarHub
         if (room >= 0)
             CloseDock();
         room = index;
+        interiors[index].Show(true);
         operating = false;
         selection = index == (int)Dock.Armory ? galleryAvailability : savedSelection[index];
         band = index == (int)Dock.Armory ? galleryCategory : savedBand[index];
@@ -448,6 +477,7 @@ public sealed partial class HangarHub
             operating = false;
             RenderPage();
         }
+        interiors[room].Show(false);
         room = -1;
         HoldingShip = false;
         instrument = null;
