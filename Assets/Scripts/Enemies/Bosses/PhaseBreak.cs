@@ -1,12 +1,11 @@
 using UnityEngine;
 
-// A boss's spell break: a white flash, three bright rings racing out across the
-// arena, a starburst of light and a short camera shake. Purely visual.
+// The bullet clear travels out from an opening starburst in three tapering arcs.
 public sealed class PhaseBreak : MonoBehaviour
 {
     const float Duration = 1.1f;
-    readonly LineRenderer[] rings = new LineRenderer[3];
-    SpriteRenderer flash;
+    readonly LineRenderer[] arcs = new LineRenderer[3];
+    const int ArcPoints = 24;
     float age;
 
     public static void Play(Vector3 at)
@@ -14,21 +13,14 @@ public sealed class PhaseBreak : MonoBehaviour
         var go = new GameObject("Phase break");
         go.transform.position = new Vector3(at.x, at.y, -.8f);
         var effect = go.AddComponent<PhaseBreak>();
-        for (int i = 0; i < effect.rings.Length; i++)
-            effect.rings[i] = CombatVisuals.Line(go.transform, Color.white, .3f);
-        var disc = new GameObject("Flash");
-        disc.transform.SetParent(go.transform, false);
-        effect.flash = disc.AddComponent<SpriteRenderer>();
-        effect.flash.sprite = CombatVisuals.Disc;
-        effect.flash.sharedMaterial = CombatVisuals.ProjectileMaterial;
-        effect.flash.sortingLayerName = "Bullet";
-        effect.flash.sortingOrder = 40;
-        for (int i = 0; i < 24; i++)
+        for (int i = 0; i < effect.arcs.Length; i++)
         {
-            var direction = CombatVisuals.Rotate(Vector2.up, i * 15);
-            PSXImpactEffects.Vanish(at + (Vector3)direction * (.6f + (i % 3) * .5f), Color.white, .7f);
+            var arc = effect.arcs[i] = CombatVisuals.Line(go.transform, Color.white, .16f);
+            arc.useWorldSpace = false;
+            arc.positionCount = ArcPoints;
+            arc.enabled = false;
         }
-        PSXImpactEffects.Burst(at, Color.white, true);
+        PSXImpactEffects.SpellBreak(go.transform.position);
         if (EZCameraShake.CameraShaker.Instance != null)
             EZCameraShake.CameraShaker.Instance.ShakeOnce(4, 6, .05f, .8f);
     }
@@ -42,21 +34,26 @@ public sealed class PhaseBreak : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        float glow = 1 - t;
-        flash.transform.localScale = Vector3.one * Mathf.Lerp(1.5f, 9, Mathf.Sqrt(Mathf.Min(1, t * 2.5f)));
-        flash.color = new Color(1, 1, 1, Mathf.Max(0, 1 - t * 2.5f) * .9f);
-        for (int i = 0; i < rings.Length; i++)
+        for (int i = 0; i < arcs.Length; i++)
         {
-            float local = Mathf.Clamp01(t * 1.4f - i * .15f);
-            var ring = rings[i];
-            ring.enabled = local > 0 && local < 1;
-            if (!ring.enabled)
+            float local = Mathf.Clamp01(t * 1.3f - i * .09f);
+            var arc = arcs[i];
+            arc.enabled = local > 0 && local < 1;
+            if (!arc.enabled)
                 continue;
-            float width = Mathf.Lerp(.42f, .04f, local);
-            ring.startWidth = ring.endWidth = width;
-            var color = new Color(1, 1, 1, glow * (1 - local));
-            ring.startColor = ring.endColor = color;
-            CombatVisuals.Ring(ring, transform.position, Mathf.Lerp(.4f, 11, 1 - (1 - local) * (1 - local)));
+            float remaining = 1 - local;
+            float radius = Mathf.Lerp(.45f, 11, 1 - remaining * remaining);
+            arc.startWidth = .16f * remaining;
+            arc.endWidth = .035f * remaining;
+            arc.startColor = new Color(.9f, .96f, 1, .85f * remaining * remaining);
+            arc.endColor = new Color(.76f, .86f, 1, .12f * remaining);
+            float start = i * 120 + 24 * local;
+            float sweep = Mathf.Lerp(108, 48, local);
+            for (int point = 0; point < ArcPoints; point++)
+            {
+                float angle = (start + sweep * point / (ArcPoints - 1)) * Mathf.Deg2Rad;
+                arc.SetPosition(point, new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0));
+            }
         }
     }
 }

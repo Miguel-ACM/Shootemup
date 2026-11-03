@@ -209,6 +209,27 @@ public static class PSXImpactEffects
         }
     }
 
+    public static void SpellBreak(Vector3 position)
+    {
+        Burst(position, Color.white, true);
+        for (int ray = 0; ray < 16; ray++)
+        {
+            float angle = ray * 22.5f;
+            Vector3 direction = CombatVisuals.Rotate(Vector2.right, angle);
+            bool longRay = ray % 2 == 0;
+            var spark = new ParticleSystem.EmitParams
+            {
+                position = position + direction * .16f,
+                velocity = direction * (longRay ? 9 : 6),
+                rotation3D = Vector3.forward * angle,
+                startSize3D = new Vector3(longRay ? .64f : .32f, .065f, .065f),
+                startColor = Color.white,
+                startLifetime = longRay ? .42f : .28f
+            };
+            buffer.Emit(spark, 1);
+        }
+    }
+
     /// <summary>Collecting an item: the usual pickup burst plus a fountain of sparkles in its rarity
     /// colour that float up and fade, with a few white glints among them.</summary>
     public static void ItemGet(Vector3 position, Color color)
