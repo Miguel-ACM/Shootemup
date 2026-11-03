@@ -46,6 +46,11 @@ public static class VerifyHangarDeck
         SessionState.SetBool("InspectPressureDoor",true);
         Run();
     }
+    public static void FilterPass()
+    {
+        SessionState.SetBool("DirectoryOnly",true);
+        Rooms();
+    }
     public static void Rooms()
     {
         SessionState.SetBool("InspectPhysicalRooms", true);
@@ -129,11 +134,12 @@ public sealed class HangarDeckReview : MonoBehaviour
     IEnumerator Start()
     {
         yield return new WaitForSecondsRealtime(1);
+        if(SessionState.GetBool("InspectPhysicalRooms",false)) StartCoroutine(MeasurePopulation());
         FindAnyObjectByType<NewGame>().OnAccept();
         if(SessionState.GetBool("InspectPhysicalRooms",false) || SessionState.GetBool("InspectPressureDoor",false))
         {
             while(!HangarShutter.Active)yield return null;
-            yield return Capture("TitlePressureDoor");
+            yield return Capture("DockDissolve");
         }
         while ((hub = FindAnyObjectByType<HangarHub>()) == null || CloudTransition.Busy || HangarHub.HoldingShip || HangarShutter.Active)
             yield return null;
@@ -272,72 +278,147 @@ public sealed class HangarDeckReview : MonoBehaviour
         InputSystem.RemoveDevice(keys);
     }
 
+    static string Frames(System.Collections.Generic.List<float> samples)
+    {
+        if (samples.Count == 0)
+            return "no samples";
+        samples.Sort();
+        return samples.Count + " frames, p95 " + samples[Mathf.CeilToInt(samples.Count * .95f) - 1].ToString("F1") + " ms, max " + samples[samples.Count - 1].ToString("F1") + " ms";
+    }
+    IEnumerator MeasurePopulation()
+    {
+        HangarHub deck;
+        while ((deck = FindAnyObjectByType<HangarHub>()) == null)
+            yield return null;
+        var ready = typeof(HangarHub).GetField("galleryReady", BindingFlags.Instance | BindingFlags.NonPublic);
+        var timings = new System.Collections.Generic.List<float>();
+        while (!(bool)ready.GetValue(deck))
+        {
+            yield return null;
+            timings.Add(Time.unscaledDeltaTime * 1000);
+        }
+        Debug.Log("Gallery population " + Frames(timings));
+    }
     IEnumerator PhysicalRooms()
     {
         InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
         InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
         var keyboard = InputSystem.AddDevice<Keyboard>();
-        void Press(params Key[] keys) { InputSystem.QueueStateEvent(keyboard, new KeyboardState(keys)); InputSystem.Update(); }
-        var ship = FindAnyObjectByType<Shipcontroller>().transform;
-        var camera = UnityEngine.Camera.main.transform;
-        var origin = camera.position;
-        float deadline;
-        yield return Capture("PhysicalLane");
-        var coinReader = GameObject.Find("Coin reader");
-        Check(coinReader==null || !coinReader.activeSelf, "wallet hidden away from outfitter");
-        ship.position = new Vector3(2.7f,0,ship.position.z);
-        yield return Capture("GroupedShop");
-        Check(FindObjectsByType<Canvas>().Count(c=>c.renderMode==RenderMode.ScreenSpaceOverlay && c.name.Contains("shop"))==0,"shop labels are mounted in the world");
-        var overlays=FindObjectsByType<RawImage>().Where(i=>i.name=="Ships").ToArray();
-        Check(overlays.All(i=>!i.enabled),"ship overlay stays behind side guards in hangar");
-        ship.position = new Vector3(0,12,ship.position.z);
-        yield return new WaitForSeconds(.7f);
-        Press(Key.LeftArrow);
-        deadline=Time.realtimeSinceStartup+5;
-        while(ship.position.x > -14 && Time.realtimeSinceStartup<deadline) yield return null;
-        Press();
-        yield return new WaitForSeconds(.7f);
-        Check(ship.position.x < -13 && camera.position.x < -13,"fly through lit left portal into fleet room");
-        yield return Capture("FleetRoom");
-        Check(FindObjectsByType<Canvas>().Any(c=>c.name=="FLEET mounted screen" && c.renderMode==RenderMode.WorldSpace),"fleet giant screen is mounted inside room");
-        ship.position = new Vector3(-16.15f,9.4f,ship.position.z);
-        yield return Capture("FleetPad");
-        ship.position = new Vector3(-11.85f,9.4f,ship.position.z);
-        Press(Key.Z);yield return null;Press();
-        Check(MetaProgress.Ship==ShipFrame.GR07,"locked Lancer cannot be selected at its pad");
-        ship.position = new Vector3(-14,12,ship.position.z);
-        Press(Key.RightArrow);
-        deadline=Time.realtimeSinceStartup+7;
-        while(ship.position.x < 14 && Time.realtimeSinceStartup<deadline)yield return null;
-        Press();
-        yield return new WaitForSeconds(.8f);
-        Check(ship.position.x>13 && camera.position.x>13,"cross hallway into opposite armory");
-        ship.position = new Vector3(14,10.75f,ship.position.z);
-        Press(Key.Z);yield return null;Press();
-        yield return Capture("ArmoryRoom");
-        Check(HangarHub.HoldingShip,"armory console receives controls only at physical desk");
-        Press(Key.RightArrow);yield return null;Press();yield return Capture("ArmoryCatalog");
-        Press(Key.X);yield return null;Press();
-        Check(!HangarHub.HoldingShip,"release console to fly freely inside armory");
-        for(int index=2;index<5;index++)
+        void Press(params Key[] keys)
         {
-            ship.position = new Vector3(index==2?-14:14,index<4?30:48,ship.position.z);
-            yield return new WaitForSeconds(.9f);
-            yield return Capture(new[]{"SimulatorRoom","RecorderRoom","FlightRoom"}[index-2]);
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(keys));
+            InputSystem.Update();
         }
-        ship.position=new Vector3(-14,28.75f,ship.position.z);
+        var ship = FindAnyObjectByType<Shipcontroller>().transform;
+        void Place(float x, float y)
+        {
+            ship.position = new Vector3(x, y, ship.position.z);
+        }
+        T Field<T>(string name) => (T)typeof(HangarHub).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(hub);
+        while (!Field<bool>("galleryReady"))
+            yield return null;
+        Check(Field<int>("loadedItems") == ItemCatalog.All.Count, "every catalog entry installed");
+        bool directoryOnly = SessionState.GetBool("DirectoryOnly", false);
+        SessionState.SetBool("DirectoryOnly", false);
+        if (!directoryOnly)
+        {
+            Place(2.7f, 0);
+            yield return Capture("CRTOutfitter");
+            Place(0, 6);
+            yield return new WaitForSeconds(.8f);
+            yield return Capture("LitPassage");
+            Place(-11, 5);
+            yield return new WaitForSeconds(.8f);
+            yield return Capture("FleetTube");
+        }
+        yield return null;
+        yield return null; // Keep screenshot readback out of the flight sample.
+        var entryFrames = new System.Collections.Generic.List<float>();
+        Place(8, 6);
+        for (int frame = 0; frame < 32; frame++)
+        {
+            yield return null;
+            entryFrames.Add(Time.unscaledDeltaTime * 1000);
+        }
+        Debug.Log("Gallery entry " + Frames(entryFrames));
+        var exhibits = Field<GalleryShelf.Exhibit[]>("exhibits");
+        var models = Field<MeshRenderer[]>("pieces");
+        int known = System.Array.FindIndex(exhibits, e => MetaProgress.IsUnlocked(e.key));
+        int locked = System.Array.FindIndex(exhibits, e => ItemCatalog.Get(e.key).InRewardPool && !MetaProgress.IsUnlocked(e.key));
+        void At(int i)
+        {
+            Place(10.5f + i % GalleryShelf.Columns * 2.85f, -10 + i / GalleryShelf.Columns * 2.48f);
+        }
+        At(known);
         yield return new WaitForSeconds(.8f);
-        Press(Key.Z); yield return null; Press();
-        Press(Key.RightArrow); yield return null; Press();
+        yield return Capture("GalleryReleased");
+        Check(Field<TMPro.TextMeshProUGUI>("cardText").text.Contains(exhibits[known].title), "hover shows actual released exhibit");
+        At(locked);
+        yield return new WaitForSeconds(.8f);
+        yield return Capture("GalleryLocked");
+        var unknown = Field<TMPro.TextMeshProUGUI>("cardText").text;
+        Check(unknown.Contains("???") && !unknown.Contains(exhibits[locked].title) && models[locked].sharedMaterial.shader.name == "Shootemup/Gallery silhouette", "locked hull shape and redacted label");
+        Place(23, -22);
+        yield return new WaitForSeconds(.8f);
+        yield return Capture("FilterPrompt");
+        var pad = InputSystem.AddDevice<Gamepad>();
+        InputSystem.QueueStateEvent(pad, new GamepadState { rightStick = new Vector2(.16f, 0) });
+        InputSystem.Update();
+        yield return null;
+        yield return Capture("GamepadPrompt");
+        Check(Field<TMPro.TextMeshProUGUI>("binding").text == "RB" && Field<RawImage>("inputPicture").texture.name == "PadPrompt", "controller bumper image matches FirePrimary binding");
+        InputSystem.RemoveDevice(pad);
         Press(Key.Z);
         yield return null;
         Press();
-        Check(HangarShutter.Active,"simulator closes a pressure door before changing space");
-        yield return Capture("SimulatorPressureDoor");
-        deadline=Time.realtimeSinceStartup+25;
-        while((HangarHub.Active || HangarHub.Launching || CloudTransition.Busy || HangarShutter.Active) && Time.realtimeSinceStartup<deadline)yield return null;
-        Check(!HangarHub.Active && !HangarHub.Launching && Mathf.Abs(camera.position.x-origin.x)<.05f && Mathf.Abs(camera.position.y-origin.y)<.05f,"simulator launch restores combat camera");
-        Check(FlightTrials.Active==FlightTrials.All[1] && LevelRun.Current==LevelId.Snow && MetaProgress.Ship==ShipFrame.GR07,"physical simulator console launches selected loaned flight");
+        Check(HangarHub.HoldingShip, "filter console accepts bound key");
+        var timings = new System.Collections.Generic.List<float>();
+        for (int i = 0; i < 24; i++)
+        {
+            if (i % 4 == 0)
+                Press(Key.RightArrow);
+            if (i % 4 == 2)
+                Press();
+            yield return null;
+            timings.Add(Time.unscaledDeltaTime * 1000);
+        }
+        Press();
+        Debug.Log("Gallery filter " + Frames(timings));
+        Press(Key.RightArrow);
+        yield return null;
+        Press();
+        yield return null;
+        Check(Field<Mesh>("guideMesh").vertexCount > 0, "matching exhibits linked to bottom console");
+        yield return Capture("FilterScreen");
+        Press(Key.X);
+        yield return null;
+        Press();
+        Place(22, -6);
+        yield return new WaitForSeconds(.8f);
+        yield return Capture("GalleryGuides");
+        if (directoryOnly)
+        {
+            InputSystem.RemoveDevice(keyboard);
+            yield break;
+        }
+        Place(0, Camera.UpLimit + HangarHub.DeckExtension);
+        yield return new WaitForSeconds(.5f);
+        Press(Key.Z);
+        float until = Time.realtimeSinceStartup + 35;
+        while ((HangarHub.Active || CloudTransition.Busy || HangarHub.Launching) && Time.realtimeSinceStartup < until)
+            yield return null;
+        Press();
+        while (!FindObjectsByType<AItem>().Any(a => a.Settled) && Time.realtimeSinceStartup < until)
+            yield return null;
+        var offers = FindObjectsByType<AItem>().Where(a => a.Settled && !a.Collected).ToArray();
+        Check(offers.Length >= 1, "normal run starts with actual reward offers");
+        foreach (var item in offers)
+        {
+            var visual = item.GetComponent<PSXObjectVisual>();
+            Check(GalleryShelf.TryGet(item.GetType().Name, out var actual) && visual != null && visual.model.GetComponent<MeshFilter>().sharedMesh == actual.mesh,
+                "run pickup displays its authored " + item.GetType().Name + " mesh");
+        }
+        yield return Capture("RunPickupModels");
         InputSystem.RemoveDevice(keyboard);
     }
 

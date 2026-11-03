@@ -35,3 +35,20 @@ Dock review  simulator launch restores combat camera
 Dock review  physical simulator console launches selected loaned flight
 Dock review  no gameplay errors in connected rooms
 Dock build Succeeded errors=0 warnings=0
+Dock review  every catalog entry installed
+Dock review  hover shows actual released exhibit
+Dock review  locked hull shape and redacted label
+Dock review  controller bumper image matches FirePrimary binding
+Dock review  filter console accepts bound key
+Dock review  matching exhibits linked to bottom console
+Dock review  normal run starts with actual reward offers
+Dock review  run pickup displays its authored Poison mesh
+Dock review  run pickup displays its authored BouncingBall mesh
+Dock review  no gameplay errors in connected rooms
+STANDALONE GALLERY 640x480 NVIDIA GeForce RTX 2060
+Traversal 300 frames: median 0,5, p95 0,8, max 2,7 ms
+Filtering 180 frames: median 0,7, p95 1,3, max 5,5 ms
+Gallery population 29 frames, p95 42,2 ms, max 69,5 ms
+Gallery entry 32 frames, p95 26,8 ms, max 32,8 ms
+Gallery filter 24 frames, p95 9,8 ms, max 13,6 ms
+Dock build Succeeded errors=0 warnings=0
