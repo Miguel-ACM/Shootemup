@@ -8,7 +8,6 @@ public class NewGame : AMenuElement
     protected override void Start()
     {
         base.Start();
-        menu.StartCoroutine(GalleryShelf.Warm());
         if (textElement != null)
             textElement.text = "CONTINUE";
     }
@@ -31,15 +30,16 @@ public class NewGame : AMenuElement
         menu.StartCoroutine(IntoHangar(difficulty));
     }
 
-    // The menu fades away while the title's tunnel slows to a stop; the hangar then continues from that same view.
+    // Fade the menu while its tunnel is still moving. The camera carries the flight into the dock.
     System.Collections.IEnumerator IntoHangar(RunDifficulty difficulty)
     {
-        const float Seconds = 2.1f;
+        const float Seconds = .65f;
         menu.Suspended = true;
+        while (!LevelEnvironment.TitleReady)
+            yield return null;
         var group = menu.GetComponent<CanvasGroup>();
         var panel = menu.transform.parent.GetComponent<Image>();
         var shade = panel != null ? panel.color : Color.clear;
-        var halt = menu.StartCoroutine(LevelEnvironment.HaltTitle(Seconds));
         for (float t = 0; t < Seconds; t += Time.unscaledDeltaTime)
         {
             float fade = Mathf.Clamp01(t / .4f);
@@ -49,9 +49,8 @@ public class NewGame : AMenuElement
                 panel.color = new Color(shade.r, shade.g, shade.b, shade.a * (1 - Mathf.Clamp01(t / Seconds)));
             yield return null;
         }
-        yield return halt;
         LevelEnvironment.CarryTitle();
-        HangarShutter.Enter(difficulty);
+        HangarHub.Enter(difficulty);
     }
 }
 

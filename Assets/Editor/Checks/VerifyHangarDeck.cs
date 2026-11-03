@@ -104,6 +104,11 @@ public sealed class HangarDeckReview : MonoBehaviour
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
+        string project = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+        if (!project.Replace('\\', '/').EndsWith("/Temp/DecisionHoverReview", StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("Dock review needs its disposable checkout");
+        var scratch = Directory.CreateDirectory(Path.Combine(project, "Temp", "PilotReview", Guid.NewGuid().ToString("N")));
+        MetaProgress.ReviewSaveDirectory = scratch.FullName;
         Application.runInBackground = true;
         Application.logMessageReceived += OnLog;
     }
@@ -114,7 +119,10 @@ public sealed class HangarDeckReview : MonoBehaviour
     void OnLog(string message, string stack, LogType type)
     {
         if ((type == LogType.Error || type == LogType.Exception) && !stack.Contains("UnityEditor.Search"))
+        {
             error = message;
+            File.WriteAllText(VerifyHangarDeck.Folder + "/Result.txt", "FAIL " + message);
+        }
     }
     void Check(bool ok, string message)
     {
@@ -134,20 +142,58 @@ public sealed class HangarDeckReview : MonoBehaviour
     IEnumerator Start()
     {
         yield return new WaitForSecondsRealtime(1);
-        if(SessionState.GetBool("InspectPhysicalRooms",false)) StartCoroutine(MeasurePopulation());
+        if (SessionState.GetBool("InspectPhysicalRooms", false) || SessionState.GetBool("InspectPressureDoor", false))
+            StartCoroutine(MeasurePopulation());
+        if (SessionState.GetBool("InspectPhysicalRooms", false))
+        {
+            var entry = FindAnyObjectByType<SettingsEntry>();
+            var menu = entry.GetComponentInParent<Menu>();
+            MetaProgress.FlightSetting = RunDifficulty.Hard;
+            menu.TryAccept(entry);
+            yield return null;
+            var erase = FindObjectsByType<SettingsErase>().Single(row => row.choice == 0);
+            menu.TryAccept(erase);
+            yield return null;
+            Check(menu.CurrentElement.name == "KEEP SAVE", "erasure defaults to keeping the save");
+            menu.TryAccept(menu.CurrentElement);
+            Check(MetaProgress.FlightSetting == RunDifficulty.Hard, "cancelling keeps progress");
+            menu.TryAccept(erase);
+            yield return null;
+            menu.TryAccept(FindObjectsByType<SettingsErase>().Single(row => row.choice == 2));
+            Check(MetaProgress.FlightSetting == RunDifficulty.Normal && MetaProgress.Stock.Count == 3, "confirmed erase resets the isolated pilot");
+        }
         FindAnyObjectByType<NewGame>().OnAccept();
         if(SessionState.GetBool("InspectPhysicalRooms",false) || SessionState.GetBool("InspectPressureDoor",false))
         {
-            while(!HangarShutter.Active)yield return null;
-            yield return Capture("DockDissolve");
+            while (!HangarHub.Approaching) yield return null;
+            yield return Capture("DockApproach");
+            var camera = UnityEngine.Camera.main;
+            float enteringY = camera.transform.position.y;
+            yield return new WaitForSecondsRealtime(.6f);
+            Check(camera.transform.position.y > enteringY + .5f, "live camera travels from the title into the dock");
+            float untilStock = Time.realtimeSinceStartup + 5;
+            bool fromLeft = false;
+            while (!fromLeft && Time.realtimeSinceStartup < untilStock)
+            {
+                fromLeft = FindObjectsByType<AItem>().Any(item => item.transform.position.x < -1);
+                yield return null;
+            }
+            Check(fromLeft, "outfitter items fly in from port");
         }
-        while ((hub = FindAnyObjectByType<HangarHub>()) == null || CloudTransition.Busy || HangarHub.HoldingShip || HangarShutter.Active)
+        while ((hub = FindAnyObjectByType<HangarHub>()) == null || CloudTransition.Busy || HangarHub.HoldingShip)
             yield return null;
         yield return new WaitForSecondsRealtime(2);
         if(SessionState.GetBool("InspectPressureDoor",false))
         {
             SessionState.SetBool("InspectPressureDoor",false);
             yield return Capture("PhysicalLane");
+            var pilot = FindAnyObjectByType<Shipcontroller>().transform;
+            pilot.position = new Vector3(-11, 3.8f, pilot.position.z);
+            yield return new WaitForSeconds(.8f);
+            yield return Capture("FleetTube");
+            pilot.position = new Vector3(11.4f, 4.3f, pilot.position.z);
+            yield return new WaitForSeconds(.8f);
+            yield return Capture("FilterPrompt");
             Check(error==null,error ?? "final pressure door and outfitter lettering");
             File.WriteAllText(VerifyHangarDeck.Folder + "/Result.txt","PASS");
             yield break;
@@ -239,7 +285,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         }
         var ship = FindAnyObjectByType<Shipcontroller>().transform;
         var view = UnityEngine.Camera.main.transform;
-        float cameraOrigin = view.position.y, spawn = ship.position.y;
+        float cameraOrigin = 0, spawn = ship.position.y;
         yield return Capture("Concourse");
         Press(Key.UpArrow);
         yield return null;
@@ -271,7 +317,6 @@ public sealed class HangarDeckReview : MonoBehaviour
         yield return new WaitForSeconds(.5f);
         Check(!CloudTransition.Busy && Mathf.Abs(view.position.y - cameraOrigin - HangarHub.DeckExtension) < .3f, "gate reachable and camera stops at far end");
         yield return Capture("DepartureLane");
-        Press(Key.Z);
         while (HangarHub.Active || HangarHub.Launching || CloudTransition.Busy) yield return null;
         Press();
         Check(Mathf.Abs(view.position.y - cameraOrigin) < .05f && Mathf.Abs(ship.position.y - spawn) < .1f, "launch restores combat camera and ship position");
@@ -327,9 +372,21 @@ public sealed class HangarDeckReview : MonoBehaviour
             Place(0, 6);
             yield return new WaitForSeconds(.8f);
             yield return Capture("LitPassage");
-            Place(-11, 5);
+            Place(-11, 3.8f);
             yield return new WaitForSeconds(.8f);
             yield return Capture("FleetTube");
+            var screen = GameObject.Find("FLEET mounted screen");
+            Check(screen != null && !Field<System.Collections.Generic.List<Transform>>("parkedShips")[(int)MetaProgress.Ship].gameObject.activeSelf, "flown hull has no duplicate on the pad");
+            Place(0, 6);
+            yield return new WaitForSeconds(.4f);
+            Check(screen.activeInHierarchy, "the fleet screen remains mounted after exit");
+            foreach (var berth in new[] { new Vector2(-11, 20), new Vector2(11, 20), new Vector2(11, 34) })
+            {
+                Place(berth.x, berth.y - 2.1f);
+                yield return new WaitForSeconds(.7f);
+                Check(Field<int>("room") == (berth.x < 0 ? 2 : berth.y == 20 ? 3 : 4), "reached the marked control room");
+                yield return Capture(berth.x < 0 ? "SimulatorRoom" : berth.y == 20 ? "RecorderRoom" : "FlightRoom");
+            }
         }
         yield return null;
         yield return null; // Keep screenshot readback out of the flight sample.
@@ -347,7 +404,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         int locked = System.Array.FindIndex(exhibits, e => ItemCatalog.Get(e.key).InRewardPool && !MetaProgress.IsUnlocked(e.key));
         void At(int i)
         {
-            Place(10.5f + i % GalleryShelf.Columns * 2.85f, -10 + i / GalleryShelf.Columns * 2.48f);
+            Place(19.4f + i % GalleryShelf.Columns * 2.85f, 14 + i / GalleryShelf.Columns * 2.48f);
         }
         At(known);
         yield return new WaitForSeconds(.8f);
@@ -358,7 +415,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         yield return Capture("GalleryLocked");
         var unknown = Field<TMPro.TextMeshProUGUI>("cardText").text;
         Check(unknown.Contains("???") && !unknown.Contains(exhibits[locked].title) && models[locked].sharedMaterial.shader.name == "Shootemup/Gallery silhouette", "locked hull shape and redacted label");
-        Place(23, -22);
+        Place(11.4f, 4.3f);
         yield return new WaitForSeconds(.8f);
         yield return Capture("FilterPrompt");
         var pad = InputSystem.AddDevice<Gamepad>();
@@ -393,7 +450,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         Press(Key.X);
         yield return null;
         Press();
-        Place(22, -6);
+        Place(25.1f, 18.96f);
         yield return new WaitForSeconds(.8f);
         yield return Capture("GalleryGuides");
         if (directoryOnly)
@@ -402,8 +459,8 @@ public sealed class HangarDeckReview : MonoBehaviour
             yield break;
         }
         Place(0, Camera.UpLimit + HangarHub.DeckExtension);
-        yield return new WaitForSeconds(.5f);
-        Press(Key.Z);
+        yield return null;
+        Check(Field<bool>("launching"), "entering the departure light launches without a button");
         float until = Time.realtimeSinceStartup + 35;
         while ((HangarHub.Active || CloudTransition.Busy || HangarHub.Launching) && Time.realtimeSinceStartup < until)
             yield return null;
@@ -457,7 +514,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         yield return new WaitForSecondsRealtime(3);
         yield return Capture("Victory");
         Check(MetaProgress.LastFlight.outcome == "Victory" && MetaProgress.CanFly(ShipFrame.Lancer), "Hell reward exit ends campaign and releases Lancer");
-        while (GameOverState.Active || (hub = FindAnyObjectByType<HangarHub>()) == null || CloudTransition.Busy || HangarHub.HoldingShip || HangarShutter.Active)
+        while (GameOverState.Active || (hub = FindAnyObjectByType<HangarHub>()) == null || CloudTransition.Busy || HangarHub.HoldingShip)
             yield return null;
         if (!endingsOnly)
         {

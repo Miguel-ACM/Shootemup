@@ -13,11 +13,8 @@ public sealed class DockReadouts : MonoBehaviour
         public Vector3 point;
         public float scale;
         public bool bob;
-        public int region;
-        public CanvasGroup regionVisibility;
     }
     readonly List<Mount> mounts = new List<Mount>();
-    public int BuildingRoom { get; set; } = -1;
     RectTransform aperture;
     UnityEngine.Camera view;
 
@@ -38,13 +35,7 @@ public sealed class DockReadouts : MonoBehaviour
     public void MountAt(RectTransform panel, Vector3 anchor, float worldScale, bool bob = false)
     {
         panel.SetParent(aperture, false);
-        mounts.Add(new Mount { panel = panel, point = anchor, scale = worldScale, bob = bob, region = BuildingRoom, regionVisibility = BuildingRoom >= 0 ? panel.gameObject.AddComponent<CanvasGroup>() : null });
-    }
-    public void ShowRoom(int room)
-    {
-        foreach (var mount in mounts)
-            if (mount.regionVisibility != null)
-                mount.regionVisibility.alpha = room < 0 || mount.region == room ? 1 : 0;
+        mounts.Add(new Mount { panel = panel, point = anchor, scale = worldScale, bob = bob });
     }
     public void Aim(RectTransform panel, Vector3 point)
     {
@@ -85,7 +76,7 @@ public sealed class DockTubeGlass : MaskableGraphic
     {
         vh.Clear();
         var size = rectTransform.rect.size;
-        const int cols = 20, rows = 160;
+        const int cols = 8, rows = 160;
         for (int y = 0; y <= rows; y++)
         {
             float v = y * 2f / rows - 1;
@@ -103,6 +94,30 @@ public sealed class DockTubeGlass : MaskableGraphic
                     vh.AddTriangle(n - cols - 2, n, n - cols - 1);
                 }
             }
+        }
+    }
+}
+
+// A single phosphor matrix mirrors the arrangement of the cases on the floor.
+public sealed class GalleryLampMatrix : MaskableGraphic
+{
+    public bool[] matches;
+
+    protected override void OnPopulateMesh(VertexHelper vh)
+    {
+        vh.Clear();
+        if (matches == null) return;
+        for (int i = 0; i < matches.Length; i++)
+        {
+            var color = matches[i] ? new Color(.95f, .24f, .14f) : new Color(.17f, .20f, .20f);
+            var at = new Vector2(6 + i % GalleryShelf.Columns * 19, 5 + i / GalleryShelf.Columns * 18) - rectTransform.rect.size * .5f;
+            int first = vh.currentVertCount;
+            vh.AddVert(at + new Vector2(-6, -5), color, Vector2.zero);
+            vh.AddVert(at + new Vector2(-6, 5), color, Vector2.zero);
+            vh.AddVert(at + new Vector2(6, 5), color, Vector2.zero);
+            vh.AddVert(at + new Vector2(6, -5), color, Vector2.zero);
+            vh.AddTriangle(first, first + 1, first + 2);
+            vh.AddTriangle(first, first + 2, first + 3);
         }
     }
 }

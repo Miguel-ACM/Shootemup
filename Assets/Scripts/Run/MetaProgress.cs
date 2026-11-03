@@ -41,7 +41,13 @@ public static partial class MetaProgress
     }
 
     static SaveData data;
+#if UNITY_EDITOR
+    // Play-mode reviews can route all reads, recovery and writes to their disposable checkout.
+    public static string ReviewSaveDirectory { private get; set; }
+    static string FilePath => Path.Combine(ReviewSaveDirectory ?? Application.persistentDataPath, "hangar.json");
+#else
     static string FilePath => Path.Combine(Application.persistentDataPath, "hangar.json");
+#endif
     static SaveData Data
     {
         get

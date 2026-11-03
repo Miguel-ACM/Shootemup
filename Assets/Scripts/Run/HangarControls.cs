@@ -9,6 +9,22 @@ public sealed partial class HangarHub
     RawImage inputPicture;
     TextMeshProUGUI binding;
     Texture keyPicture, bumperPicture;
+    const float DeskReach = 1.55f;
+    readonly Transform[] pilotLamps = new Transform[5];
+
+    void BuildControlDesk(Vector2 at, int index)
+    {
+        var pedestal = new GameObject("Pilot control pedestal");
+        pedestal.transform.SetParent(transform, false);
+        pedestal.transform.position = Spot(at, 1);
+        pedestal.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.DockKeyboard();
+        var r = pedestal.AddComponent<MeshRenderer>();
+        r.sharedMaterial = CombatMaterials.Fleet;
+        r.sortingLayerName = "Background";
+        r.sortingOrder = -2;
+        pilotLamps[index] = Strip("Console ready lamp", at + new Vector2(-.75f, .29f), new Vector2(.52f, .11f), lamps[index], -2);
+    }
+
     Vector2 Desk() => room == (int)Dock.Armory ? FilterDesk : berths[room] + Vector2.down * 1.25f;
 
     void HangingSign(string text, Vector2 at, Color color, bool suspended)
@@ -59,17 +75,16 @@ public sealed partial class HangarHub
     {
         Vector3 point = p;
         bool show = false;
-        if (room >= 0 && !operating)
+        if (room >= 0)
         {
-            if (room == (int)Dock.Fleet)
+            point = Spot(Desk(), 0);
+            show = !operating && Vector2.Distance(p, point) < DeskReach;
+            var lamp = pilotLamps[room];
+            lamp.localScale = new Vector3(operating ? 3.4f : 2.05f, .44f + .19f * Mathf.Sin(Time.time * (operating ? 7 : 3)), 1);
+            if (!show && !operating && room == (int)Dock.Fleet)
             {
                 point = parkedShips[selection].position;
-                show = MetaProgress.CanFly((ShipFrame)selection) && Vector2.Distance(point, p) < 1.3f;
-            }
-            else
-            {
-                point = Spot(Desk(), 0);
-                show = Vector2.Distance(p, point) < 1.6f;
+                show = (ShipFrame)selection != MetaProgress.Ship && MetaProgress.CanFly((ShipFrame)selection) && Vector2.Distance(point, p) < 1.3f;
             }
         }
         if (room < 0 && NearestPlinth(p) >= 0)
@@ -83,7 +98,8 @@ public sealed partial class HangarHub
         inputPicture.texture = pad ? bumperPicture : keyPicture;
         string key = DockInstrument.FireKey();
         binding.text = pad && key.Contains("SHOULDER") ? (key.Contains("RIGHT") ? "RB" : "LB") : key;
-        readouts.Aim(hoverPrompt, point + Vector3.up * (room < 0 ? 1.92f : 1.12f));
+        Vector3 offset = room < 0 ? new Vector3(-1.25f, .32f) : Vector3.up * 1.12f;
+        readouts.Aim(hoverPrompt, point + offset);
     }
 
     void MountReceiver(Vector2 at)

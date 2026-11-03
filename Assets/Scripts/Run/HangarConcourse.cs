@@ -25,15 +25,14 @@ public sealed partial class HangarHub
     static HangarHub current;
     readonly List<Transform> doorLights = new List<Transform>();
     readonly List<Transform> parkedShips = new List<Transform>();
-    TextMeshProUGUI dockHint;
-    Transform gateGauge;
-    float gateHold, repeatAt, cameraAcross, baseViewSize;
-    readonly GameObject[] interiors = new GameObject[5];
+    readonly DockInstrument[] screens = new DockInstrument[5];
+    readonly List<GameObject>[] pages = new List<GameObject>[5];
+    readonly int[] savedSelection = new int[5], savedBand = new int[5];
+    readonly List<RectTransform> berthNames = new List<RectTransform>();
+    float repeatAt, cameraAcross, baseViewSize;
     int room = -1, selection, band;
     bool operating;
-    GameObject console;
     DockInstrument instrument;
-    TMP_FontAsset panelFont;
 
     public static Vector3 ConstrainTravel(Vector3 previous, Vector3 desired)
     {
@@ -54,11 +53,11 @@ public sealed partial class HangarHub
             float roomY = berths[portal].y;
             bool crossing = Mathf.Abs(y - roomY) < 1.05f;
             bool gallery = portal == (int)Dock.Armory;
-            float minX = crossing ? 0 : 6.5f;
+            float minX = crossing ? 0 : gallery && y > GalleryVestibuleTop ? GalleryWing : 6.5f;
             desired.x = center.x + side * Mathf.Clamp(next, minX, gallery ? GalleryRight : 15.5f);
             float height = next < 6.5f ? .95f : 6.5f;
             desired.y = center.y + (gallery && next >= 6.5f ?
-                Mathf.Clamp(desired.y - center.y, GalleryBottom, GalleryTop) : Mathf.Clamp(desired.y - center.y, roomY - height, roomY + height));
+                Mathf.Clamp(desired.y - center.y, GalleryBottom, desired.x - center.x < GalleryWing ? GalleryVestibuleTop : GalleryTop) : Mathf.Clamp(desired.y - center.y, roomY - height, roomY + height));
         }
         else
         {
@@ -67,12 +66,28 @@ public sealed partial class HangarHub
                 center.x + (opening && berths[portal].x > 0 ? 15.5f : halfWidth));
             desired.y = Mathf.Clamp(desired.y, Camera.DownLimit, Camera.UpLimit + DeckExtension);
         }
+        // Screens have a footprint on the deck. Slide around their bevels, including at the gallery entrance.
+        if (portal >= 0 && Mathf.Abs(desired.x - center.x) > 6.4f)
+        {
+            Vector2 monitor = portal == (int)Dock.Armory ? FilterDesk + Vector2.up * 3.7f : berths[portal] + Vector2.up * 2.8f;
+            Vector2 from = (Vector2)(previous - center) - monitor;
+            Vector2 to = (Vector2)(desired - center) - monitor;
+            const float halfW = 3.98f, halfH = 3.65f;
+            if (Mathf.Abs(to.x) < halfW && Mathf.Abs(to.y) < halfH)
+            {
+                if (Mathf.Abs(from.x) >= halfW)
+                    desired.x = center.x + monitor.x + Mathf.Sign(from.x) * halfW;
+                else
+                    desired.y = center.y + monitor.y + Mathf.Sign(from.y) * halfH;
+            }
+        }
         return desired;
     }
 
     int Portal(Vector3 p)
     {
-        if (p.x - center.x >= 6.4f && p.y - center.y <= GalleryTop && p.y - center.y >= GalleryBottom)
+        float x = p.x - center.x, y = p.y - center.y;
+        if (x >= 6.4f && y >= GalleryBottom && y <= (x >= GalleryWing ? GalleryTop : GalleryVestibuleTop))
             return (int)Dock.Armory;
         int nearest = -1;
         float distance = 8;
@@ -94,7 +109,7 @@ public sealed partial class HangarHub
     {
         if (baseViewSize <= 0)
             baseViewSize = view.orthographicSize;
-        float zoom = operating ? 7.05f : baseViewSize;
+        float zoom = operating || room >= 0 && room != (int)Dock.Armory ? 7.05f : baseViewSize;
         view.orthographicSize = Mathf.Lerp(view.orthographicSize, zoom, 1 - Mathf.Exp(-6 * Time.deltaTime));
         int portal = Portal(p);
         float across = 0;
@@ -105,7 +120,7 @@ public sealed partial class HangarHub
             float enter = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(4, 7.5f, Mathf.Abs(p.x - center.x)));
             Vector2 target = berths[portal];
             if (portal == (int)Dock.Armory)
-                target = operating ? new Vector2(FilterDesk.x, Mathf.Max(GalleryBottom + view.orthographicSize, FilterDesk.y + 2.8f)) : new Vector2(Mathf.Clamp(p.x - center.x, 10, GalleryRight - 2), Mathf.Clamp(p.y - center.y, GalleryBottom + view.orthographicSize, GalleryTop - view.orthographicSize));
+                target = operating ? new Vector2(FilterDesk.x, FilterDesk.y + 2.7f) : new Vector2(Mathf.Clamp(p.x - center.x, 10, GalleryRight - 2), Mathf.Clamp(p.y - center.y, FilterDesk.y + 1.7f, GalleryTop - 3));
             else if (operating)
                 target.y += 2.6f;
             across = target.x * enter;
@@ -172,9 +187,8 @@ public sealed partial class HangarHub
         t.transform.SetParent(face, false);
         t.rectTransform.sizeDelta = size;
         t.rectTransform.anchoredPosition = position;
-        if (panelFont == null)
-            panelFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
-        t.font = panelFont;
+        if (dialog != null && dialog.font != null)
+            t.font = dialog.font;
         t.text = text;
         t.fontSize = fontSize;
         t.fontSizeMin = fontSize * .8f;
@@ -196,16 +210,21 @@ public sealed partial class HangarHub
         }
         for (int i = 0; i < berths.Length; i++)
         {
-            int firstChild = transform.childCount;
-            readouts.BuildingRoom = i;
             BuildRoom(i);
-            readouts.BuildingRoom = -1;
-            var interior = new GameObject(signs[i] + " interior");
-            int end = transform.childCount;
-            for (int part = end - 1; part >= firstChild; part--)
-                transform.GetChild(part).SetParent(interior.transform, true);
-            interior.transform.SetParent(transform, false);
-            interiors[i] = interior;
+            if (i != (int)Dock.Armory)
+            {
+                room = i;
+                selection = i == (int)Dock.Fleet ? (int)MetaProgress.Ship : i == (int)Dock.Flight ? System.Array.IndexOf(modes, difficulty) : 0;
+                band = i == (int)Dock.Fleet ? System.Array.IndexOf(modes, difficulty) : 0;
+                var screen = new GameObject(signs[i] + " mounted screen", typeof(RectTransform));
+                instrument = screens[i] = new DockInstrument(screen, dialog?.font, lamps[i]);
+                readouts.MountAt((RectTransform)screen.transform, Spot(berths[i] + Vector2.up * 2.8f, 1), .012f);
+                pages[i] = new List<GameObject>();
+                RenderPage();
+                savedSelection[i] = selection;
+                savedBand[i] = band;
+                room = -1;
+            }
             yield return null;
             float side = Mathf.Sign(berths[i].x), y = berths[i].y;
             Strip("Cross-passage floor", new Vector2(side * 5.7f, y), new Vector2(2.8f, 2.5f), Deck, -14);
@@ -221,13 +240,10 @@ public sealed partial class HangarHub
         }
         var walletPanel = MountedPanel("Coin reader", new Vector2(2.7f, 5.3f), new Vector2(2.4f, .7f));
         walletText = WorldLabel(walletPanel, "", Vector2.zero, new Vector2(228, 60), 36, DockInstrument.Brass);
-        stockScreen = MountedPanel("Outfitter display", new Vector2(-.75f, 0), new Vector2(3.8f, 4.6f));
-        stockInfo = WorldLabel((RectTransform)stockScreen, "", Vector2.zero, new Vector2(350, 420), 30, DockInstrument.Paper);
+        stockScreen = MountedPanel("Outfitter display", new Vector2(-1.42f, 0), new Vector2(4.9f, 3.3f));
+        stockInfo = WorldLabel((RectTransform)stockScreen, "", Vector2.zero, new Vector2(466, 300), 25, DockInstrument.Paper);
         stockScreen.gameObject.SetActive(false);
-        Strip("Departure latch", new Vector2(0, DeckExtension + 6.65f), new Vector2(2.1f, .12f), Metal);
-        gateGauge = Strip("Launch charge", new Vector2(0, DeckExtension + 6.65f), new Vector2(.001f, .12f), DockInstrument.Brass, -5);
-        Stencil("LAUNCH", new Vector2(0, DeckExtension + 7.05f), 2.8f, DockInstrument.Paper);
-        dockHint = Stencil("", new Vector2(0, -6.15f), 2.2f, DockInstrument.Paper);
+        Stencil("LAUNCH", new Vector2(0, DeckExtension + 6.6f), 2.8f, DockInstrument.Paper);
     }
 
     void BuildRoom(int index)
@@ -251,12 +267,7 @@ public sealed partial class HangarHub
                 Strip("Wall rib", b + new Vector2(side * 4.5f, rib), new Vector2(.42f, .18f), Metal, -8);
         }
         MountReceiver(b + Vector2.up * 2.8f);
-        HangingSign(signs[index], b + Vector2.up * 6.25f, lamps[index], false);
-        // A low physical control desk is below the wall screen.
-        Strip("Console footing", b + Vector2.down * .5f, new Vector2(3, .7f), Metal, -6);
-        Strip("Console keys", b + Vector2.down * .5f, new Vector2(2.6f, .29f), Deck, -5);
-        for (int k = -2; k <= 2; k++)
-            Strip("Console key", b + new Vector2(k * .39f, -.5f), new Vector2(.23f, .08f), lamps[index], -4);
+        BuildControlDesk(b + Vector2.down * 1.25f, index);
         if (index != (int)Dock.Fleet)
         {
             BuildRoomEquipment(index, b);
@@ -277,7 +288,9 @@ public sealed partial class HangarHub
                 renderer.sortingOrder = -2;
             }
             parkedShips.Add(hull.transform);
-            Stencil(((ShipFrame)i).ToString().ToUpperInvariant(), spot + Vector2.down * 1.25f, 1.8f, DockInstrument.Paper);
+            berthNames.Add((RectTransform)Stencil(((ShipFrame)i).ToString().ToUpperInvariant(), spot + Vector2.down * 1.2f, 1.8f, DockInstrument.Paper).transform.parent);
+            hull.SetActive(i != (int)MetaProgress.Ship);
+            berthNames[i].gameObject.SetActive(hull.activeSelf);
             if (!MetaProgress.CanFly((ShipFrame)i))
                 Stencil("LOCKED", spot + Vector2.up * 1.05f, 1.7f, DockInstrument.Brass);
         }
@@ -329,11 +342,13 @@ public sealed partial class HangarHub
         {
             if (room == (int)Dock.Armory)
                 GalleryHover(p);
-            if (room == (int)Dock.Fleet)
+            if (room == (int)Dock.Fleet && !operating)
             {
                 for (int i = 0; i < parkedShips.Count; i++)
                 {
                     var hull = parkedShips[i];
+                    if (!hull.gameObject.activeSelf)
+                        continue;
                     float distance = Vector2.Distance(p, hull.position);
                     hull.rotation = Quaternion.Euler(0, Mathf.Sin(Time.time * .7f + i) * 8, 0);
                     if (distance < 1.25f && selection != i)
@@ -345,6 +360,8 @@ public sealed partial class HangarHub
             }
             if (operating && !Menu.GameplayPaused)
             {
+                var seat = Spot(Desk() + Vector2.down * .98f, p.z);
+                player.transform.position = Vector3.Lerp(p, seat, 1 - Mathf.Exp(-9 * Time.deltaTime));
                 var move = GameInput.Snapshot.Move;
                 if (move.sqrMagnitude < .24f)
                     repeatAt = 0;
@@ -358,12 +375,7 @@ public sealed partial class HangarHub
         }
         UpdatePrompt(p);
         bool gate = room < 0 && p.y >= GateY - .42f && Mathf.Abs(p.x - center.x) < GateHalfWidth;
-        readouts.Aim((RectTransform)dockHint.transform.parent, Spot(new Vector2(cameraAcross, cameraTravel - 6.15f), 2));
-        dockHint.text = gate ? "HOLD " + DockInstrument.FireKey() + "  /  LAUNCH" : "";
-        gateHold = gate && !Arriving && !CloudTransition.Busy && !Menu.GameplayPaused && GameInput.Snapshot.Primary ?
-            Mathf.Min(1, gateHold + Time.deltaTime) : 0;
-        gateGauge.localScale = new Vector3(Mathf.Max(.001f, gateHold) * 8.4f, .48f, 1);
-        if (gateHold >= 1)
+        if (gate && !Arriving && !CloudTransition.Busy && !Menu.GameplayPaused)
             StartCoroutine(Launch());
         return room >= 0;
     }
@@ -381,20 +393,21 @@ public sealed partial class HangarHub
             RenderPage();
             return true;
         }
-        if (room == (int)Dock.Fleet)
+        bool atDesk = Vector2.Distance(p, Spot(Desk(), 0)) < DeskReach;
+        if (room == (int)Dock.Fleet && !operating && !atDesk)
         {
-            if (primary && Vector2.Distance(p, parkedShips[selection].position) < 1.3f && MetaProgress.CanFly((ShipFrame)selection))
+            if (primary && (ShipFrame)selection != MetaProgress.Ship && Vector2.Distance(p, parkedShips[selection].position) < 1.3f && MetaProgress.CanFly((ShipFrame)selection))
             {
                 Switch((ShipFrame)selection);
                 RenderPage();
             }
             return true;
         }
-        bool atDesk = Vector2.Distance(p, Spot(Desk(), 0)) < 1.6f;
         if (!operating)
         {
             if (primary && atDesk)
             {
+                ItemSound.Play("ready", .12f);
                 operating = true;
                 HoldingShip = true;
                 repeatAt = Time.unscaledTime + .3f;
@@ -415,13 +428,7 @@ public sealed partial class HangarHub
             FlightTrials.Active = FlightTrials.All[selection];
             operating = false;
             HoldingShip = true;
-            HangarShutter.Depart(() =>
-            {
-                CloseDock();
-                ResetDeckCamera();
-                player.transform.position = parkedAt;
-                StartCoroutine(Launch());
-            });
+            StartCoroutine(Launch());
         }
         return true;
     }
@@ -433,43 +440,31 @@ public sealed partial class HangarHub
         if (room >= 0)
             CloseDock();
         room = index;
-        readouts.ShowRoom(room);
-        for (int i = 0; i < interiors.Length; i++)
-            interiors[i].SetActive(i == room);
-        selection = index == (int)Dock.Fleet ? (int)MetaProgress.Ship : index == (int)Dock.Flight ? System.Array.IndexOf(modes, difficulty) : 0;
-        band = index == (int)Dock.Fleet ? System.Array.IndexOf(modes, difficulty) : index == (int)Dock.Armory ? galleryCategory : 0;
-        if (index == (int)Dock.Armory)
-            selection = galleryAvailability;
         operating = false;
-        if (index == (int)Dock.Armory)
-            return;
-        console = new GameObject(signs[index] + " mounted screen", typeof(RectTransform));
-        console.transform.SetParent(transform, false);
-        instrument = new DockInstrument(console, dialog?.font, lamps[index]);
-        console.transform.position = Spot(berths[index] + Vector2.up * 3.3f, 2);
-        console.transform.localScale = Vector3.one * .012f;
-        readouts.MountAt((RectTransform)console.transform, Spot(berths[index] + Vector2.up * 2.8f, 1), .012f);
-        RenderPage();
-        ItemSound.Play("ready", .08f);
+        selection = index == (int)Dock.Armory ? galleryAvailability : savedSelection[index];
+        band = index == (int)Dock.Armory ? galleryCategory : savedBand[index];
+        instrument = screens[index];
+        // A manifest can change while the pilot is shopping or switching hulls.
+        if (index == (int)Dock.Flight)
+            RenderPage();
     }
 
     void CloseDock()
     {
-        ReleaseExhibit();
+        if (room < 0)
+            return;
+        savedSelection[room] = selection;
+        savedBand[room] = band;
         hoverIndex = -1;
         if (cardPanel != null)
             cardPanel.gameObject.SetActive(false);
-        if (room == (int)Dock.Armory)
-            directoryControls.text = "";
+        if (operating)
+        {
+            operating = false;
+            RenderPage();
+        }
         room = -1;
-        readouts.ShowRoom(room);
-        for (int i = 0; i < interiors.Length; i++)
-            interiors[i].SetActive(true);
-        operating = false;
         HoldingShip = false;
-        if (console != null)
-            Destroy(console);
-        pageNodes.Clear();
         instrument = null;
     }
 }

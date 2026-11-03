@@ -82,7 +82,7 @@ public class WaveOrchestrer : MonoBehaviour
         {
             // Keep the first phrase clock at zero until the whole arena is visible.
             // This also covers route changes and the loop back to Plains.
-            if (CloudTransition.Busy || HangarShutter.Active || !WavePreparation.Ready)
+            if (CloudTransition.Busy || !WavePreparation.Ready)
             {
                 openingStartsAt = -1;
                 return;

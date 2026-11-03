@@ -2,6 +2,29 @@ using UnityEngine;
 
 public static partial class IndustrialMeshFactory
 {
+    static Mesh keyboard;
+    public static Mesh DockKeyboard()
+    {
+        if (keyboard != null) return keyboard;
+        var b = new Builder();
+        // Splayed feet, a bevelled enamel worktop and a raised instrument bridge.
+        for (int side = -1; side <= 1; side += 2)
+        {
+            b.Box(new Vector3(side * 1.14f, -.22f, .18f), new Vector3(.42f, 1.08f, .36f), 11, 6);
+            b.Box(new Vector3(side * 1.14f, -.59f, -.02f), new Vector3(.54f, .18f, .24f), 6, 11);
+        }
+        b.Prism(new[] { new Vector2(-1.6f, .33f), new Vector2(-1.37f, .63f), new Vector2(1.37f, .63f),
+            new Vector2(1.6f, .33f), new Vector2(1.42f, -.45f), new Vector2(-1.42f, -.45f) }, .45f, 6, Vector3.zero, 11);
+        b.Box(new Vector3(0, .32f, -.29f), new Vector3(2.65f, .3f, .16f), 11, 6);
+        b.Box(new Vector3(-.35f, -.08f, -.29f), new Vector3(1.55f, .48f, .13f), 11);
+        for (int row = 0; row < 3; row++)
+            for (int key = 0; key < 7; key++)
+                b.Box(new Vector3(-.93f + key * .19f, -.23f + row * .14f, -.39f), new Vector3(.14f, .09f, .05f), row == 0 ? 11 : 6);
+        b.Drum(new Vector3(.91f, -.01f, -.31f), .25f, .16f, 11, 12);
+        b.Drum(new Vector3(.91f, -.01f, -.46f), .16f, .15f, 10, 12);
+        return keyboard = b.Finish("Flight deck keyboard");
+    }
+
     static Mesh receiver;
     public static Mesh DockMonitor()
     {

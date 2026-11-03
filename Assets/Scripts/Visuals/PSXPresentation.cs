@@ -26,6 +26,7 @@ public sealed class PSXPresentation : MonoBehaviour
     public static int LabelsShown;
     UnityEngine.Camera shipCamera;
     RenderTexture shipPixels;
+    Canvas shipCanvas;
     RawImage shipImage;
     Material shipComposite;
     public RenderTexture SceneTexture => pixels;
@@ -95,7 +96,7 @@ public sealed class PSXPresentation : MonoBehaviour
         shipComposite.SetFloat("_GlowStrength", 0);
         var shipCanvasObject = new GameObject("PSX ships over labels", typeof(RectTransform), typeof(Canvas));
         shipCanvasObject.transform.SetParent(transform, false);
-        var shipCanvas = shipCanvasObject.GetComponent<Canvas>();
+        shipCanvas = shipCanvasObject.GetComponent<Canvas>();
         shipCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
         // Just above the labels (16-17), under the side covers, pause menu and fades (UI canvas, 20) and every curtain.
         shipCanvas.sortingOrder = 18;
@@ -179,7 +180,8 @@ public sealed class PSXPresentation : MonoBehaviour
             GameOptions.SetPsxFilter(!filterEnabled);
         if (width != Screen.width || height != Screen.height)
             Resize();
-        bool ships = LabelsShown > 0 && !HangarHub.Active;
+        bool ships = LabelsShown > 0 || HangarHub.Active;
+        shipCanvas.sortingOrder = HangarHub.Active ? 4 : 18;
         shipCamera.enabled = shipImage.enabled = ships;
         if (ships)
         {

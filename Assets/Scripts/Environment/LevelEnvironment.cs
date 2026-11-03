@@ -156,7 +156,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     // The title's tunnel can be brought to a stop, so the hangar can take over from the very same view.
     static LevelEnvironment title;
     float travelRate = 1;
-    public static float TitleTravel => title != null ? title.travel : 0;
+    public static bool TitleReady => title != null && title.sections.Count == 4;
     static LevelEnvironment carried;
     public static bool CarriesTitle => carried != null;
 
@@ -176,15 +176,15 @@ public sealed class LevelEnvironment : MonoBehaviour
         carried = null;
     }
 
-    public static IEnumerator HaltTitle(float seconds)
+    // Match the live tunnel on the activation frame. The incoming camera takes over
+    // its northbound velocity and eases to rest as the dock comes into view.
+    public static float MoorTitle(float approach)
     {
-        for (float t = 0; t < seconds && title != null; t += Time.unscaledDeltaTime)
-        {
-            title.travelRate = 1 - Mathf.SmoothStep(0, 1, t / seconds);
-            yield return null;
-        }
-        if (title != null)
-            title.travelRate = 0;
+        if (carried == null)
+            return 0;
+        carried.travelRate = 0;
+        carried.transform.position = Vector3.down * approach;
+        return carried.travel;
     }
     const float StormFadeSeconds = 3.5f;
     readonly LineRenderer[] bolts = new LineRenderer[3];

@@ -18,7 +18,7 @@ public sealed partial class HangarHub : MonoBehaviour
     }
 
     static RunDifficulty difficulty = RunDifficulty.Normal;
-    // Where the title's tunnel came to rest, so the hangar continues from exactly that view.
+    // The tunnel phase on the frame its motion transfers to the incoming dock camera.
     static float tunnelTravel;
     static readonly Vector2[] plinthSpots = { new Vector2(2.7f, -3), new Vector2(2.7f, 0), new Vector2(2.7f, 3) };
     public const float DeckExtension = 32f;
@@ -30,7 +30,7 @@ public sealed partial class HangarHub : MonoBehaviour
         public AItem item;
         public Vector3 spot;
         public Transform disc, shadow;
-        public bool sent;
+        public bool sent, positioned;
         public TextMeshProUGUI label;
         public RectTransform category;
         public int lastBank = -1;
@@ -49,7 +49,6 @@ public sealed partial class HangarHub : MonoBehaviour
     {
         FlightTrials.Active = null;
         difficulty = chosen;
-        tunnelTravel = LevelEnvironment.TitleTravel;
         Active = true;
         GameRules.StartNewRun(chosen);
         LevelRun.Reset();
@@ -85,6 +84,16 @@ public sealed partial class HangarHub : MonoBehaviour
         // The ship waits below the screen from the very first frame, then flies up into place.
         var ship = GameObject.FindGameObjectWithTag("Player");
         var camera = UnityEngine.Camera.main;
+        inlet = LevelEnvironment.CarriesTitle ? ApproachDepth : 0;
+        tunnelTravel = LevelEnvironment.MoorTitle(inlet);
+        if (camera != null && inlet > 0)
+        {
+            Vector3 delta = Vector3.down * inlet;
+            camera.transform.position += delta;
+            var shake = camera.GetComponent<EZCameraShake.CameraShaker>();
+            if (shake != null)
+                shake.RestPositionOffset += camera.transform.parent == null ? delta : camera.transform.parent.InverseTransformVector(delta);
+        }
         if (ship != null && camera != null)
         {
             dockedAt = ship.transform.position;
@@ -96,7 +105,8 @@ public sealed partial class HangarHub : MonoBehaviour
     }
 
     // Far enough below the screen that the ship and its thrusters are fully hidden before the entrance.
-    const float ArrivalDepth = 2.6f;
+    const float ArrivalDepth = 2.6f, ApproachDepth = 18;
+    static float inlet;
 
     /// <summary>The hangar is placing the ship itself (its entrance); the controller leaves its position alone.</summary>
     public static bool HoldingShip
@@ -110,7 +120,7 @@ public sealed partial class HangarHub : MonoBehaviour
         get; private set;
     }
 
-    public static bool PreparingDeck => current == null || !current.deckReady || current.loadingShelves;
+    public static bool Approaching => Active && HoldingShip && (current == null || current.Arriving);
     static Vector3 dockedAt;
 
     readonly List<Plinth> plinths = new List<Plinth>();
@@ -129,6 +139,24 @@ public sealed partial class HangarHub : MonoBehaviour
     readonly List<Mesh> quads = new List<Mesh>();
     bool launching, deckReady;
 
+    public static IEnumerator WarmDock()
+    {
+        yield return GalleryShelf.Warm();
+        // Terra palettes and hull geometry are shared with the actual parked craft.
+        foreach (string model in new[] { "HangarShopPlinth", "HangarDockPad", "ShipLancer", "ShipEmber", "ShipWarden" })
+        {
+            IndustrialMeshFactory.TerraMaterial(model);
+            yield return null;
+        }
+        IndustrialMeshFactory.DockMonitor();
+        IndustrialMeshFactory.DockKeyboard();
+        for (int i = 0; i < 3; i++)
+        {
+            IndustrialMeshFactory.DockMachine(i);
+            yield return null;
+        }
+    }
+
     IEnumerator Start()
     {
         current = this;
@@ -136,6 +164,8 @@ public sealed partial class HangarHub : MonoBehaviour
         player = go != null ? go.GetComponent<Shipcontroller>() : null;
         view = UnityEngine.Camera.main;
         center = view != null ? view.transform.position : Vector3.zero;
+        center.y += inlet;
+        cameraTravel = -inlet;
         shaker = view != null ? view.GetComponent<EZCameraShake.CameraShaker>() : null;
         scenery = new Material(Resources.Load<Shader>("LevelScenery"));
         var display = new GameObject("Native dock displays", typeof(RectTransform));
@@ -167,14 +197,13 @@ public sealed partial class HangarHub : MonoBehaviour
         // Normally the title's own tunnel came along; build a matching one only when it did not.
         for (int i = 0; i < 4; i++)
         {
-            // The title's camera sits at the origin; keep each section at the same place on screen.
-            float y = center.y + LevelEnvironment.SectionY(i, tunnelTravel);
+            // Anchor the carried section to the beginning of the approach.
+            float y = center.y - inlet + LevelEnvironment.SectionY(i, tunnelTravel);
             if (!LevelEnvironment.CarriesTitle)
                 HallSection(i, y);
-            // Continue the same four-section tunnel beyond the carried title scenery.
-            float next = center.y + LevelEnvironment.SectionY(i, tunnelTravel + DeckExtension) + DeckExtension;
-            if (next > y + 1f)
-                HallSection(i, next);
+            // Extend the same sequence of twenty-unit sections past the far gate.
+            if (y + 80 <= center.y + DeckExtension + 20)
+                HallSection(i, y + 80);
         }
     }
 
@@ -204,14 +233,17 @@ public sealed partial class HangarHub : MonoBehaviour
     {
         dialog = GameObject.FindGameObjectWithTag("Dialog")?.GetComponent<Dialog>();
         var stock = MetaProgress.Stock;
+        var glowVertices = new List<Vector3>();
+        var glowColors = new List<Color>();
+        var glowTriangles = new List<int>();
         for (int i = 0; i < stock.Count && i < plinthSpots.Length; i++)
         {
             ItemCatalog.TryGet(stock[i], out var definition);
             if (definition == null)
                 continue;
             var plinth = new Plinth { kind = stock[i], spot = Spot(plinthSpots[i], 1) };
-            // Waits off the right edge, then glides onto its plinth during the arrival.
-            var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.spot, Quaternion.identity);
+            // The outfitter feeds stock across the lane from its port-side loading bay.
+            var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.spot + Vector3.left * 9, Quaternion.identity);
             go.transform.SetParent(transform, true);
             plinth.item = definition.Attach(go);
 
@@ -221,13 +253,19 @@ public sealed partial class HangarHub : MonoBehaviour
             plinth.disc = Hover("HangarShopPlinth", plinth.spot + new Vector3(0, -.3f, .5f), -4);
             plinth.shadow = Shadow(plinth.spot + new Vector3(0, -.3f, 0), .7f);
             plinths.Add(plinth);
-            var plaque = MountedPanel("Stock placard", new Vector2(2.7f, plinthSpots[i].y + 1.12f), new Vector2(3.05f, 1.35f));
-            DockInstrument.Block(plaque, "Rarity edge", new Vector2(0, 64), new Vector2(295, 4), AItem.GetRarityColor(plinth.item.rarity));
-            plinth.category = MountedPanel("Equipment class", new Vector2(2.7f, plinthSpots[i].y - .78f), new Vector2(2.25f, .44f));
-            WorldLabel(plinth.category, DecisionOverlay.Category(plinth.item), Vector2.zero, new Vector2(216, 42), 25, DockInstrument.Muted);
-            plinth.label = WorldLabel(plaque, "", Vector2.zero, new Vector2(296, 130), 37, DockInstrument.Paper);
-
+            GalleryWell(glowVertices, glowColors, glowTriangles, plinthSpots[i], 1.22f,
+                new Color(1, .07f, .035f, .88f), new Color(.85f, .025f, .016f, 0));
+            var plaque = MountedPanel("Stock placard", plinthSpots[i] + Vector2.up * 1.11f, new Vector2(3, 1.23f));
+            plaque.GetComponent<Image>().color = Color.black;
+            DockInstrument.Block(plaque, "Rarity edge", new Vector2(0, 59), new Vector2(300, 5), AItem.GetRarityColor(plinth.item.rarity));
+            plinth.category = MountedPanel("Equipment class", plinthSpots[i] + Vector2.down * .85f, new Vector2(3, .45f));
+            plinth.category.GetComponent<Image>().enabled = false;
+            WorldLabel(plinth.category, DecisionOverlay.Category(plinth.item), Vector2.zero, new Vector2(286, 47), 34, DockInstrument.Paper);
+            plinth.label = WorldLabel(plaque, "", Vector2.zero, new Vector2(289, 115), 35, DockInstrument.Paper);
+            plaque.gameObject.SetActive(false);
+            plinth.category.gameObject.SetActive(false);
         }
+        GallerySurface("Outfitter red footlights", glowVertices, glowColors, glowTriangles, -6);
     }
 
     void UpdateWallet()
@@ -241,8 +279,8 @@ public sealed partial class HangarHub : MonoBehaviour
         if (closest >= 0)
         {
             var data = plinths[closest].item.GetData();
-            stockInfo.text = "<b>" + data[0] + "</b>\n\n" + data[2] + "\n\n<size=75%>" +
-                DockInstrument.FireKey() + "  BUY    " + DockInstrument.FireKey(true) + "  PIN</size>";
+            stockInfo.text = data[2] + "\n\n<size=80%>" +
+                DockInstrument.FireKey() + " BUY  " + DockInstrument.FireKey(true) + " PIN</size>";
         }
     }
 
@@ -337,20 +375,23 @@ public sealed partial class HangarHub : MonoBehaviour
 
     // Arrival: the ship rises from below, the docks and plinths slide in from the sides and the light
     // at the top grows. Applied after the controller's own update, which would otherwise clamp the ship.
-    const float ArrivalSeconds = 1.8f, SlideSeconds = .9f, LightSeconds = 2.6f;
+    const float ArrivalSeconds = 1.8f, LightSeconds = 2.6f;
     Vector3 parkedAt;
     float arrival = -1, introTime;
     bool Arriving => arrival >= 0;
     Mesh mist;
 
-    float Slide(int order) => 1 - Mathf.SmoothStep(0, 1, (introTime - .25f - order * .12f) / SlideSeconds);
-
     void LateUpdate()
     {
-        // Everything holds its starting pose until the transition has finished.
-        bool running = !CloudTransition.Busy;
+        // Fly through the title handoff. A return from combat waits for the cloud curtain.
+        bool running = inlet > 0 || !CloudTransition.Busy;
         if (running)
-            introTime += Time.deltaTime;
+            introTime += Mathf.Min(Time.deltaTime, .08f);
+        if (inlet > 0 && Arriving)
+        {
+            float distance = Mathf.Clamp01(1 - introTime / (2 * inlet / 10.2f));
+            SetCameraTravel(-inlet * distance * distance);
+        }
         if (mist != null && introTime < LightSeconds + .5f)
         {
             float glow = Mathf.SmoothStep(0, 1, (introTime - .2f) / LightSeconds) * .85f;
@@ -359,7 +400,7 @@ public sealed partial class HangarHub : MonoBehaviour
             mist.colors = new[] { bottom, top, top, bottom };
         }
         for (int i = 0; i < plinths.Count; i++)
-            if (!plinths[i].sent && plinths[i].item != null && Slide(i) < .999f)
+            if (!plinths[i].sent && plinths[i].item != null && introTime > (inlet > 0 ? 1.7f : .25f) + i * .18f)
             {
                 plinths[i].sent = true;
                 plinths[i].item.gameObject.SetActive(true);
@@ -369,10 +410,10 @@ public sealed partial class HangarHub : MonoBehaviour
             return;
         if (running)
             arrival += Time.deltaTime / ArrivalSeconds;
-        float below = center.y - UnityEngine.Camera.main.orthographicSize - ArrivalDepth;
+        float below = center.y + cameraTravel - view.orthographicSize - ArrivalDepth;
         float t = 1 - Mathf.Pow(1 - Mathf.Clamp01(arrival), 3);
         player.transform.position = new Vector3(parkedAt.x, Mathf.LerpUnclamped(below, parkedAt.y, t), parkedAt.z);
-        if (arrival >= 1 && deckReady)
+        if (arrival >= 1 && deckReady && Mathf.Abs(cameraTravel) < .001f)
         {
             arrival = -1;
             HoldingShip = false;
@@ -401,8 +442,14 @@ public sealed partial class HangarHub : MonoBehaviour
                 continue;
             if (offer.item.enabled && offer.sent && offer.item.Settled)
                 offer.item.enabled = false;
-            offer.label.transform.parent.gameObject.SetActive(!offer.item.IsDismissing);
-            offer.category.gameObject.SetActive(!offer.item.IsDismissing);
+            offer.label.transform.parent.gameObject.SetActive(offer.sent && !offer.item.IsDismissing);
+            offer.category.gameObject.SetActive(offer.sent && !offer.item.IsDismissing);
+            if (offer.sent && !offer.positioned)
+            {
+                readouts.Aim((RectTransform)offer.label.transform.parent, offer.item.transform.position + Vector3.up * 1.11f);
+                readouts.Aim(offer.category, offer.item.transform.position + Vector3.down * .85f);
+                offer.positioned = offer.item.Settled;
+            }
             bool pinned = MetaProgress.Pin == offer.kind;
             if (offer.lastBank == MetaProgress.Coins && offer.pinned == pinned)
                 continue;
@@ -448,7 +495,7 @@ public sealed partial class HangarHub : MonoBehaviour
 
     void Interact(InputAction.CallbackContext context)
     {
-        if (!deckReady || player == null || launching || Arriving || HangarShutter.Active || Menu.GameplayPaused || CloudTransition.Busy)
+        if (!deckReady || player == null || launching || Arriving || Menu.GameplayPaused || CloudTransition.Busy)
             return;
         var p = player.transform.position;
         if (UseDock(context, p))
@@ -467,6 +514,11 @@ public sealed partial class HangarHub : MonoBehaviour
         if (!MetaProgress.CanFly(frame))
             return;
         MetaProgress.Ship = frame;
+        for (int i = 0; i < parkedShips.Count; i++)
+        {
+            parkedShips[i].gameObject.SetActive(i != (int)frame);
+            berthNames[i].gameObject.SetActive(i != (int)frame);
+        }
         var definition = ShipFrames.Get(frame);
         ShipFrames.ApplyStats(definition);
         player.SetMaxHits(definition.hits);
@@ -514,7 +566,7 @@ public sealed partial class HangarHub : MonoBehaviour
         {
             speed += Time.deltaTime * 6;
             var p = ship.position;
-            p.x = Mathf.Lerp(p.x, center.x, 1 - Mathf.Exp(-.8f * Time.deltaTime));
+            p.x = Mathf.Lerp(p.x, view.transform.position.x, 1 - Mathf.Exp(-.8f * Time.deltaTime));
             p.y += speed * Time.deltaTime;
             ship.position = p;
             yield return null;
@@ -530,6 +582,7 @@ public sealed partial class HangarHub : MonoBehaviour
     IEnumerator StartRun(Shipcontroller player, Vector3 parkedAt, Dialog dialog, AsyncOperation runLoad)
     {
         Launching = true;
+        HoldingShip = false;
         while (runLoad.progress < .9f)
             yield return null;
         ResetDeckCamera();
@@ -590,7 +643,7 @@ public sealed partial class HangarHub : MonoBehaviour
             Destroy(guidePaint);
         if (current == this)
             current = null;
-        ReleaseExhibit();
+
         if (scenery != null)
             Destroy(scenery);
         foreach (var mesh in quads)

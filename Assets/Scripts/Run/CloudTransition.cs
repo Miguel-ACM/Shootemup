@@ -90,6 +90,19 @@ public sealed class CloudTransition : MonoBehaviour
 
     void SceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        // The title parks its successor additively. Switch cameras on the activation frame,
+        // then release the old menu asynchronously without sweeping the carried tunnel assets.
+        if (scene.name == "L1" && mode == LoadSceneMode.Additive)
+        {
+            var outgoing = SceneManager.GetSceneByName("Title");
+            if (outgoing.isLoaded)
+            {
+                SceneManager.SetActiveScene(scene);
+                foreach (var root in outgoing.GetRootGameObjects())
+                    root.SetActive(false);
+                SceneManager.UnloadSceneAsync(outgoing);
+            }
+        }
         // L1 is the persistent core. Its content comes in additive scenes: the hangar's, or a run's.
         if (scene.name == "L1" && HangarHub.Active)
             HangarHub.PrepareCore();
@@ -310,7 +323,10 @@ public sealed class CloudTransition : MonoBehaviour
         {
             // A parked scene blocks Unity's async queue. Finish shared asset preparation first.
             yield return LevelEnvironment.Prepare();
-            var load = SceneManager.LoadSceneAsync(scene);
+            bool fromTitle = scene == "L1" && SceneManager.GetActiveScene().name == "Title";
+            if (fromTitle)
+                yield return HangarHub.WarmDock();
+            var load = SceneManager.LoadSceneAsync(scene, fromTitle ? LoadSceneMode.Additive : LoadSceneMode.Single);
             load.allowSceneActivation = false;
             load.priority = -1;
             preparedScene = scene;

@@ -8,14 +8,11 @@ public sealed class DockInstrument
     public readonly RectTransform face;
     public readonly CanvasGroup group;
     readonly TMP_FontAsset font;
-    static TMP_FontAsset print;
     public static readonly Color Ink = new Color(.035f, .073f, .09f), Sea = new Color(.50f, .88f, .83f),
         Paper = new Color(.90f, .94f, .89f), Brass = new Color(.98f, .74f, .38f), Muted = new Color(.59f, .70f, .72f);
     public DockInstrument(GameObject root, TMP_FontAsset typeface, Color accent)
     {
         font = typeface;
-        if (print == null)
-            print = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
         root.GetComponent<RectTransform>().sizeDelta = new Vector2(622, 574);
         group = root.AddComponent<CanvasGroup>();
         face = Block(root.transform, "Cast metal frame", Vector2.zero, new Vector2(622, 574), new Color(.18f, .26f, .27f));
@@ -51,10 +48,8 @@ public sealed class DockInstrument
         var go = new GameObject("Legend", typeof(RectTransform), typeof(TextMeshProUGUI));
         go.transform.SetParent(face, false);
         var t = go.GetComponent<TextMeshProUGUI>();
-        var faceFont = size >= 30 || y > 230 || y < -225 ? font : print;
-        if (faceFont != null)
-            t.font = faceFont;
-        size = Mathf.Max(size, 22);
+        if (font != null)
+            t.font = font;
         t.text = value;
         t.fontSize = size;
         t.enableAutoSizing = true;

@@ -7,9 +7,7 @@ using UnityEngine.UI;
 
 public sealed partial class HangarHub
 {
-    readonly List<GameObject> pageNodes = new List<GameObject>();
-    GameObject turntable;
-    RenderTexture hullPhoto;
+    List<GameObject> pageNodes => pages[room];
     static readonly string[] categories = { "ALL PARTS", "PASSIVES", "ACTIVES", "PARTNERS", "GUNS", "SECONDARIES" };
     static readonly LevelId[] districts ={LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Desert,
         LevelId.Tunnel,LevelId.Candyland,LevelId.Space,LevelId.Underwater,LevelId.Hell};
@@ -69,59 +67,6 @@ public sealed partial class HangarHub
         image.raycastTarget = false;
         pageNodes.Add(image.gameObject);
     }
-    void ReleaseHull()
-    {
-        if (turntable != null)
-        {
-            turntable.SetActive(false);
-            Destroy(turntable);
-        }
-        if (hullPhoto != null)
-        {
-            hullPhoto.Release();
-            Destroy(hullPhoto);
-        }
-    }
-    void ReleaseExhibit()
-    {
-        ReleaseHull();
-
-    }
-    void HullPortrait(ShipFrame frame, float x, float y, float size)
-    {
-        turntable = new GameObject("Inspection turntable");
-        turntable.transform.position = new Vector3(-1060, 0, 0);
-        var hull = ShipFrames.BuildDisplay(player, ShipFrames.Get(frame));
-        if (hull == null)
-            return;
-        hull.transform.SetParent(turntable.transform, false);
-        hull.transform.localPosition = Vector3.zero;
-        hull.transform.localRotation = Quaternion.Euler(-12, 12, -12);
-        var bounds = new Bounds();
-        bool first = true;
-        foreach (var r in hull.GetComponentsInChildren<MeshRenderer>())
-        {
-            if (first)
-                bounds = r.bounds;
-            else
-                bounds.Encapsulate(r.bounds);
-            first = false;
-        }
-        var c = new GameObject("Inspection lens").AddComponent<UnityEngine.Camera>();
-        c.transform.SetParent(turntable.transform, false);
-        c.transform.position = bounds.center + Vector3.back * 10;
-        c.orthographic = true;
-        c.orthographicSize = Mathf.Max(.15f, Mathf.Max(bounds.size.x, bounds.size.y) * .59f);
-        c.aspect = 1;
-        c.nearClipPlane = .1f;
-        c.farClipPlane = 24;
-        c.backgroundColor = Color.clear;
-        c.clearFlags = CameraClearFlags.SolidColor;
-        hullPhoto = new RenderTexture(192, 192, 16, RenderTextureFormat.ARGB32) { filterMode = FilterMode.Point };
-        c.targetTexture = hullPhoto;
-        c.depth = -48;
-        Photo(hullPhoto, new Rect(0, 0, 1, 1), x, y, size, Color.white);
-    }
     void RenderPage()
     {
         if (room == (int)Dock.Armory)
@@ -136,7 +81,6 @@ public sealed partial class HangarHub
                 Destroy(node);
             }
         pageNodes.Clear();
-        ReleaseHull();
         Color accent = lamps[room];
         Legend((room + 1).ToString("00") + "  /  " + signs[room], -41, 255, 476, 34, 17, accent, true);
         string action = "";
@@ -144,6 +88,7 @@ public sealed partial class HangarHub
         {
             case Dock.Fleet:
                 action = FleetPage();
+                if (operating) action = "";
                 break;
             case Dock.Simulator:
                 TrialPage();
@@ -157,9 +102,11 @@ public sealed partial class HangarHub
                 action = "SET";
                 break;
         }
-        string keys = room == (int)Dock.Fleet ? (action.Length > 0 ? DockInstrument.FireKey() + "  " + action : "") :
+        string keys = room == (int)Dock.Fleet && !operating ? (action.Length > 0 ? DockInstrument.FireKey() + "  " + action : "") :
             operating ? (action.Length > 0 ? DockInstrument.FireKey() + "  " + action + "   " : "") + DockInstrument.FireKey(true) + " RELEASE" :
             "";
+        if (operating && room == (int)Dock.Fleet)
+            keys = "< > HULL   ^ v MODE   " + DockInstrument.FireKey(true) + " EXIT";
         Legend(keys, 0, -254, 558, 32, 17, DockInstrument.Paper);
     }
     string FleetPage()
@@ -168,47 +115,45 @@ public sealed partial class HangarHub
         var record = MetaProgress.Record(hull.frame, modes[band]);
         Photo(Resources.Load<Texture2D>("DockArt/Portrait" + hull.frame), new Rect(0, 0, 1, 1), -193, 117, 165, Color.white);
         Legend(hull.frame.ToString().ToUpperInvariant(), 76, 179, 350, 56, 41, DockInstrument.Paper, true);
-        Legend(hull.hits + " HULL     " + hull.moveSpeed.ToString("0.#") + " SPEED", 76, 126, 350, 38, 21, lamps[room]);
+        Legend(hull.hits + " HP  " + hull.moveSpeed.ToString("0.#") + " SPD", 76, 126, 350, 38, 21, lamps[room]);
         string gun = hull.primary == "BaseWeapon" ? "Twin cannon" : hull.primary == null ? "Unarmed" : FlightTrials.Display(hull.primary);
         Legend(gun + (hull.starters.Length > 0 ? "   /   " + string.Join(", ", hull.starters.Select(FlightTrials.Display)) : ""), 76, 80, 350, 60, 18, DockInstrument.Muted);
-        var rows = modes.Select(mode => MetaProgress.Record(hull.frame, mode)).ToArray();
+        Legend(modes[band].ToString().ToUpperInvariant() + "  /  BOSS RECORD", 0, 26, 558, 36, 21, lamps[room], true);
         for (int i = 0; i < districts.Length; i++)
         {
-            float x = -168 + i * 48;
-            Legend(districtMarks[i], x, 29, 43, 22, 15, DockInstrument.Muted, true).alignment = TextAlignmentOptions.Center;
-            var stamp = Resources.Load<Texture2D>("DockArt/Stamp" + districts[i]);
-            for (int m = 0; m < modes.Length; m++)
-            {
-                var row = rows[m];
-                int bit = 1 << (int)districts[i];
-                float y = 2 - m * 24;
-                bool clear = (row.clears & bit) != 0, clean = (row.flawless & bit) != 0;
-                if (i == 0)
-                    Legend(modes[m].ToString(), -233, y, 88, 24, 16, m == band ? lamps[room] : DockInstrument.Muted, true);
-                Tile(x, y, 40, 21, m == band ? Metal : DockInstrument.Ink);
-                Photo(stamp, new Rect(0, 0, 1, 1), x, y, 22, clean ? DockInstrument.Brass : clear ? DockInstrument.Sea : new Color(.34f, .41f, .43f));
-                if (clean)
-                    Legend("*", x + 14, y, 13, 20, 15, DockInstrument.Brass, true);
-            }
+            float x = -250 + i * 55.5f;
+            int bit = 1 << (int)districts[i];
+            bool clear = (record.clears & bit) != 0, clean = (record.flawless & bit) != 0;
+            Tile(x, -22, 48, 46, DockInstrument.Ink);
+            Photo(Resources.Load<Texture2D>("DockArt/Stamp" + districts[i]), new Rect(0, 0, 1, 1), x, -22, 39,
+                clean ? DockInstrument.Brass : clear ? DockInstrument.Sea : new Color(.40f, .47f, .48f));
+            Legend(districtMarks[i], x, -60, 50, 24, 17, DockInstrument.Paper).alignment = TextAlignmentOptions.Center;
         }
-        Legend(record.flights + " flights     " + record.victories + " victories     Best  " + record.best.ToString("N0"), 0, -86, 558, 34, 20, DockInstrument.Paper);
+        Legend("GOLD = NO HIT", 0, -92, 558, 26, 15, DockInstrument.Brass);
+        var captions = new[] { "FLIGHTS", "WINS", "BEST" };
+        var values = new[] { record.flights.ToString(), record.victories.ToString(), record.best.ToString("N0") };
+        for (int i = 0; i < captions.Length; i++)
+        {
+            float x = -184 + i * 184;
+            Legend(captions[i], x, -132, 175, 28, 17, DockInstrument.Muted);
+            Legend(values[i], x, -162, 175, 36, 24, DockInstrument.Paper, true);
+        }
         bool open = MetaProgress.CanFly(hull.frame);
-        string status = !open ? "LOCKED    /    Clear Hell with " + (ShipFrame)(selection - 1) : MetaProgress.Ship == hull.frame ? "ON THE LAUNCH LINE" : "CLEARED FOR FLIGHT";
-        Legend(status, 0, -130, 558, 50, 22, DockInstrument.Brass, true);
-        Legend("BOSS SERVICE PLATE     /     GOLD  *  NO-HIT", 0, -189, 558, 33, 15, DockInstrument.Muted);
+        string status = !open ? "Clear Hell in " + (ShipFrame)(selection - 1) : MetaProgress.Ship == hull.frame ? "IN FLIGHT" : "READY TO FLY";
+        Legend(status, 0, -197, 558, 28, 18, DockInstrument.Brass);
         return open && MetaProgress.Ship != hull.frame ? "FLY THIS HULL" : "";
     }
     void TrialPage()
     {
         var trial = FlightTrials.All[selection];
-        HullPortrait(trial.frame, -198, 113, 153);
-        Legend("SIM TAPE   " + (selection + 1).ToString("00") + " / 04", 80, 196, 354, 29, 16, lamps[room], true);
+        Photo(Resources.Load<Texture2D>("DockArt/Portrait" + trial.frame), new Rect(0, 0, 1, 1), -198, 113, 153, Color.white);
+        Legend("TAPE " + (selection + 1).ToString("00") + " / " + FlightTrials.All.Length.ToString("00"), 80, 196, 354, 29, 16, lamps[room], true);
         Legend(trial.title, 80, 145, 354, 76, 35, DockInstrument.Paper, true);
         Legend(trial.frame + "    /    " + trial.difficulty, 80, 78, 354, 34, 21, DockInstrument.Muted);
         Legend(trial.objective, 0, 16, 558, 57, 25, DockInstrument.Paper);
-        Legend("LOAN KIT     " + string.Join("  /  ", trial.kit.Select(FlightTrials.Display)), 0, -54, 558, 58, 19, DockInstrument.Muted);
-        Legend((MetaProgress.ContractClear(trial.title) ? "CERTIFIED" : "FIRST CLEAR") + "     /     " + FlightTrials.Display(trial.reward), 0, -129, 558, 54, 21, lamps[room], true);
-        Legend("← →  CONTRACT", 0, -189, 558, 33, 15, DockInstrument.Muted);
+        Legend("KIT  " + string.Join(" + ", trial.kit.Select(FlightTrials.Display)), 0, -54, 558, 58, 19, DockInstrument.Muted);
+        Legend((MetaProgress.ContractClear(trial.title) ? "CERTIFIED" : "REWARD") + "  " + FlightTrials.Display(trial.reward), 0, -129, 558, 54, 21, lamps[room], true);
+        Legend("< >  CONTRACT", 0, -189, 558, 33, 15, DockInstrument.Muted);
     }
     void HistoryPage()
     {
@@ -216,7 +161,20 @@ public sealed partial class HangarHub
         var logs = MetaProgress.History.Where(f => string.IsNullOrEmpty(f.contract) != sim).ToList();
         Legend(sim ? "SIMULATOR TAPES" : "CAMPAIGN TAPES", 0, 196, 558, 39, 24, lamps[room], true);
         if (logs.Count == 0)
-            Legend("Awaiting first flight", 0, 48, 558, 80, 32, DockInstrument.Paper);
+        {
+            // The deck recorder's empty tape echoes the twin spools on the physical machine.
+            Tile(0, 75, 212, 116, Metal);
+            Tile(0, 77, 198, 103, DockInstrument.Ink);
+            Tile(0, 84, 164, 43, Metal);
+            for (int side = -1; side <= 1; side += 2)
+            {
+                Tile(58 * side, 84, 34, 29, lamps[room]);
+                Tile(58 * side, 84, 16, 14, DockInstrument.Ink);
+            }
+            Tile(0, 44, 120, 8, DockInstrument.Muted);
+            Legend("Blank tape", 0, -33, 558, 60, 35, DockInstrument.Paper).alignment = TextAlignmentOptions.Center;
+            Legend("00:00:00", 0, -96, 558, 38, 21, lamps[room]).alignment = TextAlignmentOptions.Center;
+        }
         else
         {
             var f = logs[selection];
@@ -231,12 +189,12 @@ public sealed partial class HangarHub
             if (f.awards != null && f.awards.Count > 0)
                 Legend(string.Join("   ·   ", f.awards), 0, -143, 558, 60, 15, DockInstrument.Brass);
         }
-        Legend("← →  FLIGHT       ↑ ↓  CAMPAIGN / SIM", 0, -189, 558, 33, 15, DockInstrument.Muted);
+        Legend("< > FLIGHT    ^ v LOG", 0, -189, 558, 33, 15, DockInstrument.Muted);
     }
     void FlightPage()
     {
-        Legend("Departure manifest", 0, 174, 558, 72, 40, DockInstrument.Paper, true);
-        Legend("HULL     " + MetaProgress.Ship + "       /       PLAINS", 0, 100, 558, 42, 23, DockInstrument.Muted);
+        Legend("Flight plan", 0, 174, 558, 72, 40, DockInstrument.Paper, true);
+        Legend(MetaProgress.Ship + "  /  PLAINS", 0, 100, 558, 42, 23, DockInstrument.Muted);
         for (int i = 0; i < 3; i++)
         {
             float x = (i - 1) * 184;
@@ -246,9 +204,9 @@ public sealed partial class HangarHub
             if (i == selection)
                 Tile(x, -63, 160, 4, lamps[room]);
         }
-        Legend("FILED   " + difficulty.ToString().ToUpperInvariant() + "     /     " + MetaProgress.Coins + " banked", 0, -107, 558, 36, 18, lamps[room]);
+        Legend("FILED " + difficulty.ToString().ToUpperInvariant() + "  /  " + MetaProgress.Coins + " banked", 0, -107, 558, 36, 18, lamps[room]);
         string kit = string.Join(", ", MetaProgress.Outbound.Select(FlightTrials.Display));
-        Legend("Outbound kit   /   " + (kit.Length == 0 ? "Standard issue" : kit), 0, -150, 558, 42, 19, DockInstrument.Paper);
-        Legend("← →  DIFFICULTY", 0, -189, 558, 33, 15, DockInstrument.Muted);
+        Legend("KIT  " + (kit.Length == 0 ? "Standard issue" : kit), 0, -150, 558, 42, 19, DockInstrument.Paper);
+        Legend("< > DIFFICULTY", 0, -189, 558, 33, 15, DockInstrument.Muted);
     }
 }

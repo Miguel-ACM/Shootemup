@@ -284,7 +284,7 @@ public class Shipcontroller : MonoBehaviour
         move = GameInput.Snapshot.Move;
         Firing = !GameRules.playerDisabled && (GameInput.Snapshot.Primary || GameInput.Snapshot.Secondary);
         // The hangar flies the ship in from below the screen; clamping it into the arena would show it early.
-        if (HangarHub.HoldingShip || HangarShutter.Active)
+        if (HangarHub.HoldingShip)
             return;
         // Debug: K repairs the hull to full during a run (in the hangar K unlocks every item).
         if (!HangarHub.Active && health > 0 && Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
