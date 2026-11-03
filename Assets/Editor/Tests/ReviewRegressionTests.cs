@@ -65,7 +65,8 @@ public class ReviewRegressionTests
             Assert.AreEqual(0, space.PhaseFraction, .0001f);
             EnterTestPhase(space, 2);
             Assert.AreEqual(1, space.PhaseFraction, .0001f);
-            if (Difficulty.Hard)
+            Assert.AreEqual(difficulty == RunDifficulty.Easy ? 2 : 3, space.PhaseCount);
+            if (!Difficulty.Easy)
             {
                 space.health = 250;
                 Assert.AreEqual(0, space.PhaseFraction, .0001f);
@@ -99,7 +100,7 @@ public class ReviewRegressionTests
                 survivor.partner = null;
                 EnterTestPhase(survivor, 2);
                 Assert.AreEqual(1, survivor.PhaseFraction, .0001f);
-                survivor.health *= Difficulty.Hard ? .45f : 0;
+                survivor.health *= Difficulty.Easy ? 0 : .45f;
                 Assert.AreEqual(0, survivor.PhaseFraction, .0001f);
             }
         }

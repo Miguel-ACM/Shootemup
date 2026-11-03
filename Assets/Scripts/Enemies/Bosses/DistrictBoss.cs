@@ -45,10 +45,9 @@ public abstract class DistrictBoss : DistrictEnemy
     public virtual float DisplayFraction => HealthFraction;
     public float HealthFraction => health / Mathf.Max(1, initialHealth);
 
-    // One life bar per phase. Hard adds a third, harder phase to every boss; the
-    // Wave Watcher reviews that phase on either difficulty.
+    // Normal and Hard fight the full score. Wave Watcher can preview it on Easy too.
     public static bool PreviewThirdPhase;
-    protected static bool HasThirdPhase => Difficulty.Hard || PreviewThirdPhase;
+    protected static bool HasThirdPhase => !Difficulty.Easy || PreviewThirdPhase;
     public int PhaseCount => HasThirdPhase ? 3 : 2;
     public int CurrentPhase => encounter.Phase;
     float phaseStart
