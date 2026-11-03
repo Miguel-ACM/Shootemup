@@ -110,6 +110,7 @@ public static class VerifyHangarDeck
 public sealed class HangarDeckReview : MonoBehaviour
 {
     HangarHub hub;
+    Gamepad menuPad;
     string error;
     void Awake()
     {
@@ -123,7 +124,7 @@ public sealed class HangarDeckReview : MonoBehaviour
                 InputSystem.DisableDevice(device, keepSendingEvents: true);
         var scratch = Directory.CreateDirectory(Path.Combine(project, "Temp", "PilotReview", Guid.NewGuid().ToString("N")));
         MetaProgress.ReviewSaveDirectory = scratch.FullName;
-        if (SessionState.GetBool("InspectOutfitter", false))
+        if (SessionState.GetBool("InspectOutfitter", false) || SessionState.GetBool("InspectFlightEndings", false))
             File.WriteAllText(Path.Combine(scratch.FullName, "hangar.json"),
                 "{\"version\":2,\"lastFrame\":1,\"coins\":9999,\"ship\":\"GR07\",\"unlocked\":[\"Popcorn\"],\"stock\":[\"SaltShaker\",\"LuckyPenny\",\"RollerBearings\"],\"loadout\":[]}");
         Application.runInBackground = true;
@@ -222,7 +223,24 @@ public sealed class HangarDeckReview : MonoBehaviour
             menu.TryAccept(FindObjectsByType<SettingsErase>().Single(row => row.choice == 2));
             Check(MetaProgress.FlightSetting == RunDifficulty.Normal && MetaProgress.Stock.Count == 3, "confirmed erase resets the isolated pilot");
         }
-        FindAnyObjectByType<NewGame>().OnAccept();
+        if (SessionState.GetBool("InspectFlightEndings", false))
+        {
+            var entry = FindAnyObjectByType<SettingsEntry>();
+            var menu = entry.GetComponentInParent<Menu>();
+            menu.setCurrentElement(entry);
+            yield return TapMenuButton(GamepadButton.South);
+            var erase = FindObjectsByType<SettingsErase>().Single(row => row.choice == 0);
+            menu.setCurrentElement(erase);
+            yield return TapMenuButton(GamepadButton.South);
+            menu.setCurrentElement(FindObjectsByType<SettingsErase>().Single(row => row.choice == 2));
+            yield return TapMenuButton(GamepadButton.East);
+            Check(menu.CurrentElement == erase, "Circle cancels erase even when the destructive row is selected");
+            yield return TapMenuButton(GamepadButton.East);
+            Check(menu.CurrentElement == entry && menu.IsOpen, "Circle leaves Settings one level at a time");
+            menu.setCurrentElement(FindAnyObjectByType<NewGame>());
+            yield return TapMenuButton(GamepadButton.South);
+        }
+        else FindAnyObjectByType<NewGame>().OnAccept();
         if(SessionState.GetBool("InspectPhysicalRooms",false) || SessionState.GetBool("InspectPressureDoor",false))
         {
             while (!HangarHub.Approaching) yield return null;
@@ -322,6 +340,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         Check(MetaProgress.Coins == 69 && MetaProgress.LastFlight.earned == 81 && MetaProgress.Stock.Contains(pin), "gross, net and held stock");
         Check((MetaProgress.Record(ShipFrame.GR07, RunDifficulty.Normal).flawless & 1 << (int)LevelId.Hell) != 0, "clean boss stamp");
         var old = hub;
+        yield return DismissResult(GamepadButton.South);
         while (hub == old || hub == null || CloudTransition.Busy || HangarHub.HoldingShip)
         {
             hub = FindAnyObjectByType<HangarHub>();
@@ -522,7 +541,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         InputSystem.QueueStateEvent(pad, new GamepadState { rightStick = new Vector2(.16f, 0) });
         InputSystem.Update();
         yield return Capture("OutfitterBumpers");
-        Check(Glyph(buy, "PadPrompt", "RB") && Glyph(pin, "PadPrompt", "LB"), "both action icons switch to the bound controller bumpers while hovering");
+        Check(Glyph(buy, "FacePrompt", "X") && Glyph(pin, "PadPrompt", "LB"), "hover shows Cross to buy and the left bumper to pin");
         InputSystem.RemoveDevice(pad);
         Check(Field<RectTransform>("walletPanel").gameObject.activeSelf && Field<TMPro.TMP_Text>("walletText").text == "9999", "nearby wallet reads the full bank");
         Press(Key.X);
@@ -838,7 +857,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         yield return null;
         yield return Capture("GamepadPrompt");
         var roomIcon = Field<RawImage>("inputPicture");
-        Check(roomIcon.GetComponentInChildren<TMPro.TMP_Text>().text == "RB" && roomIcon.texture.name == "PadPrompt", "controller bumper image matches FirePrimary binding");
+        Check(roomIcon.GetComponentInChildren<TMPro.TMP_Text>().text == "X" && roomIcon.texture.name == "FacePrompt", "room console shows the confirm face button");
         InputSystem.RemoveDevice(pad);
         Press(Key.Z);
         yield return null;
@@ -931,6 +950,28 @@ public sealed class HangarDeckReview : MonoBehaviour
         InputSystem.RemoveDevice(keyboard);
     }
 
+    IEnumerator TapMenuButton(GamepadButton button)
+    {
+        InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+        InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+        if (menuPad == null) menuPad = InputSystem.AddDevice<Gamepad>();
+        InputSystem.QueueStateEvent(menuPad, new GamepadState().WithButton(button));
+        yield return null;
+        InputSystem.QueueStateEvent(menuPad, new GamepadState());
+        yield return null;
+    }
+
+    IEnumerator DismissResult(GamepadButton button)
+    {
+        yield return new WaitForSecondsRealtime(Mathf.Max(13, 6 + MetaProgress.LastFlight.awards.Count * 1.4f));
+        Check(GameOverState.Active && !CloudTransition.Busy, "flight tally remains open past its former timeout");
+        yield return TapMenuButton(button);
+        Check(CloudTransition.Busy, "a fresh face-button press returns to the hangar");
+        while (GameOverState.Active || CloudTransition.Busy || !HangarHub.Active || HangarHub.HoldingShip)
+            yield return null;
+        Check(FindAnyObjectByType<HangarHub>() != null, "the return lands in the playable hangar");
+    }
+
     IEnumerator CheckPresentation()
     {
         bool endingsOnly = SessionState.GetBool("InspectFlightEndings", false);
@@ -948,8 +989,34 @@ public sealed class HangarDeckReview : MonoBehaviour
                 yield return null;
             }
         }
-        // Exercise the regular departure and terminal routing callback with a post-boss fixture.
-        hub.StartCoroutine((IEnumerator)typeof(HangarHub).GetMethod("Launch", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(hub, null));
+        var craft = FindAnyObjectByType<Shipcontroller>().transform;
+        if (endingsOnly)
+        {
+            craft.position = new Vector3(2.55f, 14.25f, craft.position.z);
+            yield return new WaitForSeconds(2);
+            int balance = MetaProgress.Coins;
+            yield return TapMenuButton(GamepadButton.East);
+            Check(MetaProgress.Coins == balance && MetaProgress.Pin == null, "Circle cannot purchase or pin stock");
+            yield return TapMenuButton(GamepadButton.LeftShoulder);
+            Check(MetaProgress.Pin == "LuckyPenny", "the secondary button pins the hovered item");
+            yield return Capture("ShopControllerButtons");
+            yield return TapMenuButton(GamepadButton.South);
+            Check(MetaProgress.Coins < balance && !MetaProgress.Stock.Contains("LuckyPenny"), "Cross buys the hovered item once");
+        }
+        craft.position = new Vector3(-12.4f, 3.35f, craft.position.z);
+        yield return new WaitForSeconds(.5f);
+        yield return TapMenuButton(GamepadButton.South);
+        Check(HangarHub.HoldingShip, "Cross takes control of the Fleet console");
+        yield return TapMenuButton(GamepadButton.Start);
+        yield return TapMenuButton(GamepadButton.East);
+        Check(!Menu.GameplayPaused && HangarHub.HoldingShip, "Circle closes pause without releasing the console underneath");
+        yield return TapMenuButton(GamepadButton.East);
+        Check(!HangarHub.HoldingShip, "a second Circle press releases the console");
+        float gateY = Camera.UpLimit + HangarHub.DeckExtension - .1f;
+        craft.position = new Vector3(3.2f, gateY - 3, craft.position.z);
+        yield return new WaitForSeconds(.8f);
+        yield return Capture("WideLaunchGate");
+        craft.position = new Vector3(3.2f, gateY, craft.position.z);
         WaveOrchestrer flow;
         while ((flow = FindAnyObjectByType<WaveOrchestrer>()) == null || HangarHub.Launching || CloudTransition.Busy)
             yield return null;
@@ -966,6 +1033,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         yield return new WaitForSecondsRealtime(3);
         yield return Capture("Victory");
         Check(MetaProgress.LastFlight.outcome == "Victory" && MetaProgress.CanFly(ShipFrame.Lancer), "Hell reward exit ends campaign and releases Lancer");
+        yield return DismissResult(GamepadButton.South);
         while (GameOverState.Active || (hub = FindAnyObjectByType<HangarHub>()) == null || CloudTransition.Busy || HangarHub.HoldingShip)
             yield return null;
         if (!endingsOnly)
@@ -985,6 +1053,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         yield return new WaitForSecondsRealtime(2);
         yield return Capture("GameOver");
         Check(MetaProgress.LastFlight.outcome == "Lost" && MetaProgress.LastFlight.awards.Count == 1 && !MetaProgress.CanFly(ShipFrame.Ember), "loss files a new boss stamp and preserves hull lock");
+        yield return DismissResult(GamepadButton.East);
     }
 
 }

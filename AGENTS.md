@@ -186,6 +186,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - GR07 is the only starting hull. Campaign Hell clears commission Lancer, Ember and Warden in sequence, each with its predecessor. Simulator loans and victories are separate from campaign ship progression. Keep boss and no-hit marks per hull and difficulty.
 - A Hell campaign clear now ends the run after its boss reward. Show the victory receipt, coins collected and banked, run stats and new unlocks, then return to the hangar. A loss also files a receipt and reveals its unlocks.
 - Show victory and game over directly over the vertical flight area. Fit the title, tally and unlocks within its edges and keep the side margins clear.
+- Keep victory, simulator results and game over on screen until a fresh confirm or back press. In menus, hangar consoles and results, PlayStation Cross confirms and Circle goes back one level. Combat and in-run spatial decisions keep their flight controls. The departure gradient spans most of the hangar lane and launches the pilot anywhere in its bright opening.
 
 ## Workflow
 

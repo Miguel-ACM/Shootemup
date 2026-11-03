@@ -153,9 +153,9 @@ public sealed class GameOverState : MonoBehaviour
         else
             stamps.text = age > 1.2f && log.awards.Count == 0 ? "FLIGHT LOG FILED" : "";
         bool ready = age > 1.6f + log.awards.Count / 3f;
-        footer.text = ready ? DockInstrument.FireKey() + "   RETURN TO HANGAR" : "";
-        if (ready && !leaving && !CloudTransition.Busy && (GameInput.Actions.PlayerControls.FirePrimary.WasPressedThisFrame()
-            || age > Mathf.Max(12, 5 + log.awards.Count * 1.4f)))
+        footer.text = ready ? DockInstrument.MenuKey() + "   RETURN TO HANGAR" : "";
+        var controls = GameInput.Actions.PlayerControls;
+        if (ready && !leaving && !CloudTransition.Busy && (controls.Accept.WasPressedThisFrame() || controls.Back.WasPressedThisFrame()))
         {
             leaving = true;
             CloudTransition.Load("L1", HangarHub.Return);
