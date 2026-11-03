@@ -291,6 +291,8 @@ public sealed partial class HangarHub
             PortalLight(new Vector2(side * 5.25f, y));
         }
         walletPanel = MountedPanel("Coin reader", new Vector2(-2.55f, 14.45f), new Vector2(3.1f, .88f));
+        walletFade = walletPanel.gameObject.AddComponent<CanvasGroup>();
+        walletFade.alpha = 0;
         walletText = CoinRow(walletPanel, 0, 296);
         walletPanel.gameObject.SetActive(false);
         stockScreen = MountedPanel("Outfitter display", Vector2.zero, new Vector2(4.35f, 3.08f), fadeOnReveal: true);

@@ -481,8 +481,8 @@ public sealed class HangarDeckReview : MonoBehaviour
         var wallet = Field<RectTransform>("walletPanel");
         var details = Field<RectTransform>("stockScreen");
         Check(rows.Length == 3 && classes.Length == 3 && rows.All(r => !r.isActiveAndEnabled) &&
-            classes.All(r => !r.gameObject.activeInHierarchy) && !wallet.gameObject.activeSelf && !details.gameObject.activeSelf,
-            "unattended platforms show only the merchandise");
+            classes.All(r => !r.gameObject.activeInHierarchy) && wallet.gameObject.activeSelf && !details.gameObject.activeSelf,
+            "the whole outfitter lane shows the balance while unattended platforms show only merchandise");
         Place(offers[0].transform.position.x + 1.6f, offers[0].transform.position.y);
         yield return null;
         Check(wallet.gameObject.activeSelf && rows.All(r => !r.isActiveAndEnabled) && !details.gameObject.activeSelf,

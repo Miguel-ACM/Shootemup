@@ -143,6 +143,7 @@ public sealed partial class HangarHub : MonoBehaviour
     TextMeshProUGUI stockInfo, walletText;
     int inspectedStock = -1;
     RectTransform walletPanel;
+    CanvasGroup walletFade;
     Sprite coinStamp;
     Dialog dialog;
     readonly List<Mesh> quads = new List<Mesh>();
@@ -311,11 +312,12 @@ public sealed partial class HangarHub : MonoBehaviour
 
     void UpdateShopReadouts(Vector3 p)
     {
-        int near = room < 0 ? NearestPlinth(p, 2.45f) : -1;
-        walletPanel.gameObject.SetActive(near >= 0);
-        if (near >= 0)
-            walletText.text = MetaProgress.Coins.ToString();
-        int hovered = near >= 0 ? NearestPlinth(p) : -1;
+        float y = p.y - center.y;
+        bool inShopLane = room < 0 && y >= berths[(int)Dock.Fleet].y && y <= berths[(int)Dock.Simulator].y;
+        walletFade.alpha = Mathf.MoveTowards(walletFade.alpha, inShopLane ? 1 : 0, Time.unscaledDeltaTime / Dialog.RevealSeconds);
+        walletPanel.gameObject.SetActive(walletFade.alpha > 0);
+        if (inShopLane) walletText.SetText("{0}", MetaProgress.Coins);
+        int hovered = room < 0 ? NearestPlinth(p) : -1;
         if (hovered != inspectedStock)
         {
             if (inspectedStock >= 0)
