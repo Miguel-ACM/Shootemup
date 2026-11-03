@@ -78,7 +78,7 @@ public sealed class DistrictScore : MonoBehaviour
     Part part, wanted, pendingPart;
     double cut = double.PositiveInfinity, earliestBoss, reuseAt, tailEnd;
     double requestDeadline, travelDeadline;
-    const double MaxWait = 10, OutroWait = 4;
+    const double OutroWait = 4;
     bool started, waitingForLoad;
     const double Lead = .1;
     public bool Active => track != null;
@@ -141,7 +141,7 @@ public sealed class DistrictScore : MonoBehaviour
         if (WantsOutro)
         {
             following = song;
-            travelDeadline = AudioSettings.dspTime + MaxWait;
+            travelDeadline = AudioSettings.dspTime + .45;
             Replan();
             return;
         }
@@ -183,7 +183,7 @@ public sealed class DistrictScore : MonoBehaviour
         wanted = Part.Boss;
         double now = AudioSettings.dspTime;
         earliestBoss = now + warningSeconds;
-        requestDeadline = now + MaxWait;
+        requestDeadline = earliestBoss + .35;
         Replan();
     }
 
@@ -210,13 +210,12 @@ public sealed class DistrictScore : MonoBehaviour
         pendingTrack = part == Part.Outro ? null : track;
         pendingPart = part == Part.Intro ? Part.Flight : part;
 
-        bool travel = part == Part.Outro && following != null && following.clip.loadState == AudioDataLoadState.Loaded;
-        waitingForLoad = part == Part.Outro && following != null && !travel;
+        bool travel = following != null && following.clip.loadState == AudioDataLoadState.Loaded;
+        waitingForLoad = following != null && !travel;
         if (wanted != part || travel)
         {
             double after = AudioSettings.dspTime + Lead;
             if (wanted == Part.Boss) after = Math.Max(after, earliestBoss);
-            if (travel) after = Math.Max(after, Math.Min(active.ClockAt(end), active.StartAt + 8 * 60 / track.cues.bpm));
             if (after <= active.ClockAt(end))
             {
                 pendingTrack = travel ? following : track;
@@ -227,7 +226,7 @@ public sealed class DistrictScore : MonoBehaviour
             }
         }
         cut = active.ClockAt(end);
-        double fade = track.adaptive ? Math.Clamp(120 / track.cues.bpm, .48, 1) : .5;
+        double fade = travel || pendingPart == Part.Boss && part != Part.Boss ? .35 : track.adaptive ? Math.Clamp(120 / track.cues.bpm, .48, 1) : .5;
         // Keep playing the outgoing tail behind the incoming downbeat; reclaim its deck after the fade.
         double overlap = pendingTrack == null ? 0 : Math.Min(fade, Math.Max(0, track.Length - end));
         if (overlap < .04) overlap = 0;

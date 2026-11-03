@@ -25,6 +25,7 @@ public sealed class LevelChoice : MonoBehaviour
     public RouteCharge Charge { get; } = new RouteCharge();
     Transform player;
     Action<LevelId> picked;
+    Action<LevelId> locked;
     Action<int> encounterPicked;
     string[] captions;
     Color[] accents;
@@ -46,11 +47,12 @@ public sealed class LevelChoice : MonoBehaviour
     bool committed;
     public const float ExitSeconds = .45f;
 
-    public static LevelChoice Open(Transform player, Action<LevelId> picked)
+    public static LevelChoice Open(Transform player, Action<LevelId> picked, Action<LevelId> locked = null)
     {
         var choice = new GameObject("Choose the next route").AddComponent<LevelChoice>();
         choice.player = player;
         choice.picked = picked;
+        choice.locked = locked;
         LevelRun.GetChoices(out var left, out var right);
         choice.Left = left;
         choice.Right = right;
@@ -199,8 +201,9 @@ public sealed class LevelChoice : MonoBehaviour
 
     IEnumerator Commit()
     {
-        yield return new WaitForSeconds(.1f);
         int index = captions.Length == 2 ? (Charge.Side < 0 ? 0 : 1) : Charge.Side - 1;
+        if (locked != null) locked(Options[index]);
+        yield return new WaitForSeconds(.1f);
         for (float elapsed = 0; elapsed < ExitSeconds; elapsed += Time.deltaTime)
         {
             AnimateExit(index, Mathf.Clamp01(elapsed / ExitSeconds));

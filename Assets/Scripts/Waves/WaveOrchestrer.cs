@@ -293,16 +293,10 @@ public class WaveOrchestrer : MonoBehaviour
 
     IEnumerator BossEntrance()
     {
-        const float warningSeconds = 3f;
-        BGMManager.QueueBoss(warningSeconds);
-        float lead = Mathf.Max(warningSeconds, BGMManager.BossLead);
+        BGMManager.QueueBoss(Warning.Duration - .4f);
         SoundManager.PlaySound("bossWarning", .18f);
-        warning.ShowFor(lead);
-        // The music owns the downbeat. If audio is disabled the ordinary warning still runs.
-        yield return new WaitForSeconds(warningSeconds);
-        float deadline = Time.unscaledTime + lead;
-        while (Menu.GameplayPaused || (BGMManager.BossLead > 0 && Time.unscaledTime < deadline))
-            yield return null;
+        warning.ShowFor(Warning.Duration);
+        yield return new WaitForSeconds(Warning.Duration);
         SpawnBoss();
     }
 
@@ -505,15 +499,15 @@ public class WaveOrchestrer : MonoBehaviour
         }
         if (LevelRun.AutomaticNext.HasValue)
         {
+            BGMManager.PlayLevelMusic(LevelRun.AutomaticNext.Value);
             TravelToLevel(LevelRun.AutomaticNext.Value);
             yield break;
         }
-        routeChoice = LevelChoice.Open(ship.transform, TravelToLevel);
+        routeChoice = LevelChoice.Open(ship.transform, TravelToLevel, BGMManager.PlayLevelMusic);
     }
 
     void TravelToLevel(LevelId next)
     {
-        BGMManager.PlayLevelMusic(next);
         CombatDecision.End();
         CloudTransition.Change(() => ResetDistrict(next));
     }

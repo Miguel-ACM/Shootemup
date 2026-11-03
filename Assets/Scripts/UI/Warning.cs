@@ -13,6 +13,7 @@ public class Warning : MonoBehaviour
     CanvasGroup group;
     RectTransform field;
     const int RowCount = 7;
+    public const float Duration = 1.75f;
     const float RowHeight = 56, Stripe = 4, FadeIn = .3f, FadeOut = .4f, HalfField = 202.5f;
     float holdUntil;
     static readonly Color Yellow = new Color(1f, .82f, .16f), YellowTop = new Color(1f, .94f, .5f), YellowBottom = new Color(1f, .7f, .08f);
@@ -147,7 +148,7 @@ public class Warning : MonoBehaviour
         canvas.enabled = false;
     }
 
-    public void blink() => ShowFor(3f);
+    public void blink() => ShowFor(Duration);
 
     public void ShowFor(float seconds)
     {
@@ -156,17 +157,17 @@ public class Warning : MonoBehaviour
         showing = true;
         group.alpha = 1;
         canvas.enabled = true;
-        holdUntil = Mathf.Max(1.9f, seconds - 1.1f);
-        duration = holdUntil;
+        duration = Mathf.Max(.8f, seconds);
+        holdUntil = duration * .74f;
         float pitch = 720f / RowCount;
         for (int i = 0; i < rows.Length; i++)
         {
-            leftward[i] = Random.value < .5f;
-            entryTimes[i] = Random.Range(.45f, .65f);
-            exitTimes[i] = Random.Range(.5f, .75f);
-            delays[i] = Random.Range(0f, .2f);
+            int distance = Mathf.Abs(i - RowCount / 2);
+            leftward[i] = i % 2 == 0;
+            entryTimes[i] = duration * .21f;
+            exitTimes[i] = duration * (.26f - distance * .025f);
+            delays[i] = duration * distance * .035f;
             heights[i] = 360 - pitch * (i + .5f);
-            duration = Mathf.Max(duration, holdUntil + exitTimes[i]);
         }
         AnimateRows();
     }
@@ -183,6 +184,10 @@ public class Warning : MonoBehaviour
                 : elapsed < holdUntil ? center
                 : Mathf.Lerp(center, end, Mathf.SmoothStep(0, 1, Mathf.Clamp01((elapsed - holdUntil) / exitTimes[i])));
             rows[i].anchoredPosition = new Vector2(Mathf.Round(x), heights[i]);
+            float impact = Mathf.Clamp01(1 - (elapsed - delays[i] - entryTimes[i]) / .18f);
+            if (elapsed < delays[i] + entryTimes[i]) impact = 0;
+            rows[i].localScale = Vector3.one * (1 + .1f * impact);
+            rows[i].localRotation = Quaternion.Euler(0, 0, i == RowCount / 2 ? 0 : leftward[i] ? 3 : -3);
         }
     }
 
@@ -193,7 +198,8 @@ public class Warning : MonoBehaviour
         elapsed += Time.deltaTime;
         AnimateRows();
         var wash = washImage.color;
-        wash.a = .35f * Mathf.SmoothStep(0, 1, elapsed / FadeIn) * Mathf.SmoothStep(0, 1, (duration - elapsed) / FadeOut);
+        float pulse = Mathf.Max(0, 1 - Mathf.Abs(elapsed - entryTimes[RowCount / 2]) / .12f);
+        wash.a = (.35f + .3f * pulse) * Mathf.SmoothStep(0, 1, elapsed / FadeIn) * Mathf.SmoothStep(0, 1, (duration - elapsed) / FadeOut);
         washImage.color = wash;
         if (elapsed >= duration)
         {
