@@ -78,7 +78,7 @@ public sealed class DistrictScore : MonoBehaviour
     Part part, wanted, pendingPart;
     double cut = double.PositiveInfinity, earliestBoss, reuseAt, tailEnd;
     double requestDeadline, travelDeadline;
-    const double OutroWait = 4;
+    const double OutroWait = .35;
     bool started, waitingForLoad;
     const double Lead = .1;
     public bool Active => track != null;
@@ -226,7 +226,8 @@ public sealed class DistrictScore : MonoBehaviour
             }
         }
         cut = active.ClockAt(end);
-        double fade = travel || pendingPart == Part.Boss && part != Part.Boss ? .35 : track.adaptive ? Math.Clamp(120 / track.cues.bpm, .48, 1) : .5;
+        bool enteringOutro = pendingPart == Part.Outro && part != Part.Outro;
+        double fade = enteringOutro ? .24 : travel || pendingPart == Part.Boss && part != Part.Boss ? .35 : track.adaptive ? Math.Clamp(120 / track.cues.bpm, .48, 1) : .5;
         // Keep playing the outgoing tail behind the incoming downbeat; reclaim its deck after the fade.
         double overlap = pendingTrack == null ? 0 : Math.Min(fade, Math.Max(0, track.Length - end));
         if (overlap < .04) overlap = 0;
@@ -236,7 +237,7 @@ public sealed class DistrictScore : MonoBehaviour
         float offset = pendingTrack.Start(pendingPart);
         float from = pendingTrack == track ? active.MixAt(cut) : 0;
         float to = pendingPart == Part.Boss ? 1 : 0;
-        float beats = to > from ? 1 : 8;
+        float beats = enteringOutro || to > from ? 1 : 8;
         float ramp = from == to ? 0 : Mathf.Min(beats * 60/track.cues.bpm, pendingTrack.End(pendingPart) - offset);
         next.StartCue(pendingTrack.clip, cut, offset, from, to, ramp, overlap > 0 ? overlap : fade,
             pendingPart == Part.Boss ? pendingTrack.cues.beats : null, pendingTrack.ClipLead);

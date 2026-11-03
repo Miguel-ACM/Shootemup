@@ -1,5 +1,5 @@
 // Cue coordinates are seconds in the original recording. The fast audition is already time-stretched.
-const bassDb = 4.5, shelfHz = 145, lead = .045, maxWait = 10, outroWait = 4;
+const bassDb = 4.5, shelfHz = 145, lead = .045, maxWait = 10, outroWait = .35;
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const position = (d, at) => d.offset + Math.max(0, at - d.at)*d.speed;
 const clockAt = (d, offset) => d.at + (offset - d.offset)/d.speed;
@@ -80,7 +80,7 @@ export class Transport {
         shelf.frequency.value = shelfHz;
         source.connect(shelf).connect(gain).connect(this.backing);
         const to = boss(part) ? bassDb : 0;
-        const ramp = from === to ? 0 : Math.min((to > from ? 1 : 8)*60/this.map.bpm, Math.max(0,end-offset)/speed);
+        const ramp = from === to ? 0 : Math.min((to > from || part === 'outro' ? 1 : 8)*60/this.map.bpm, Math.max(0,end-offset)/speed);
         shelf.gain.setValueAtTime(from, at);
         if (ramp) shelf.gain.linearRampToValueAtTime(to, at+ramp);
         gain.gain.setValueAtTime(0, at);
@@ -194,7 +194,7 @@ export class Transport {
         }
         this.requested = request;
         const part = incoming ? null : request ?? (this.map.adaptive === false || d.part === 'outro' || d.part === 'recording' ? null : d.part === 'intro' ? 'body' : d.part);
-        const fade = clamp(2*60/this.map.bpm, .48, 1);
+        const fade = part === 'outro' && d.part !== 'outro' ? .24 : clamp(2*60/this.map.bpm, .48, 1);
         // An outgoing deck plays beyond the cut while the incoming downbeat lands exactly on it.
         // At the physical end of a recording, use its final tail for the fade instead.
         const tail = Math.max(0, Math.min(fade, d.availableUntil - this.cut));
