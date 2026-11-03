@@ -1,5 +1,5 @@
 import { createServer } from 'node:http';
-import { createReadStream } from 'node:fs';
+import { closeSync, createReadStream, openSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { mkdir, readFile, readdir, rename, stat } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
@@ -24,11 +24,11 @@ for (const { id } of tracks) {
 // Render only on first audition. atempo keeps pitch intact; the extra source tail supplies the crossfade.
 const render = promisify(execFile);
 const jobs = new Map();
-async function fastFile(id) {
+async function fastFile(id, full) {
     const original = path.join(resources, 'Music', id + '.mp3');
     const cue = JSON.parse(await readFile(path.join(resources, 'MusicAnalysis', id + '.json'), 'utf8'));
     if (!cue.adaptive) throw new Error('Linear cue');
-    const { start, end } = cue.sections.peak;
+    const { start, end } = full ? { start:0, end:cue.duration } : cue.sections.peak;
     const dir = path.resolve(lab, '../../Build/MusicLabCache');
     const stamp = Math.round((await stat(original)).mtimeMs);
     const file = path.join(dir, [id, stamp, start, end, '1.06'].join('-') + '.mp3');
@@ -50,19 +50,67 @@ async function fastFile(id) {
 }
 
 const port = Number(process.argv[2] ?? 8766);
+
+function saveLoop(file, input) {
+    const lock = file + '.lock~', tmp = file + '.new~';
+    let handle;
+    try {
+        handle = openSync(lock, 'wx');
+        const cue = JSON.parse(readFileSync(file, 'utf8'));
+        const { start, end, previous } = input ?? {};
+        if (!cue.adaptive || !cue.boundaries.includes(start) || !cue.boundaries.includes(end) || start >= end)
+            return [400, 'Choose two ordered progression boundaries.'];
+        const peak = cue.sections.peak;
+        if (!(peak.start === start && peak.end === end) && (previous?.start !== peak.start || previous?.end !== peak.end))
+            return [409, 'This song was edited elsewhere. Reload to use the latest loop.'];
+        cue.sections.peak = { start, end };
+        cue.peakEdited = true;
+        writeFileSync(tmp, JSON.stringify(cue) + '\n');
+        renameSync(tmp, file);
+        return [200, 'Saved'];
+    } catch (err) {
+        return err.code === 'EEXIST' ? [409, 'Song is being written. Try again.'] : [500, 'Could not write the game cue sheet.'];
+    } finally {
+        if (handle !== undefined) {
+            try { rmSync(tmp, {force:true}); }
+            finally { closeSync(handle); rmSync(lock, {force:true}); }
+        }
+    }
+}
+
 const server = createServer(async (req, res) => {
-    if (req.method !== 'GET' && req.method !== 'HEAD') {
-        res.writeHead(405, { Allow: 'GET, HEAD' }).end();
+    const url = req.url.split('?')[0];
+    if (req.method === 'PUT' && url.startsWith('/cues/') && routes.has(url)) {
+        const host = req.headers.host, localPort = server.address().port;
+        if (!['127.0.0.1:' + localPort, 'localhost:' + localPort].includes(host) ||
+            (req.headers.origin && req.headers.origin !== 'http://' + host)) {
+            res.writeHead(403).end(); return;
+        }
+        if (req.headers['content-type']?.split(';')[0] !== 'application/json') {
+            res.writeHead(415).end(); return;
+        }
+        try {
+            let body = '';
+            for await (const chunk of req) {
+                body += chunk.toString();
+                if (body.length > 1024) { res.writeHead(413).end(); return; }
+            }
+            const [status, message] = saveLoop(routes.get(url)[0], JSON.parse(body));
+            res.writeHead(status, { 'Content-Type':'text/plain; charset=utf-8' }).end(message);
+        } catch { res.writeHead(400).end('Invalid save request.'); }
         return;
     }
-    const url = req.url.split('?')[0];
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+        res.writeHead(405, { Allow: url.startsWith('/cues/') && routes.has(url) ? 'GET, HEAD, PUT' : 'GET, HEAD' }).end();
+        return;
+    }
     if (url === '/tracks') {
         res.writeHead(200, { 'Content-Type': 'application/json' }).end(JSON.stringify(tracks));
         return;
     }
     let route = routes.get(url);
     if (url.startsWith('/fast/') && tracks.some(t => t.id === url.slice(6))) {
-        try { route = [await fastFile(url.slice(6)), 'audio/mpeg']; }
+        try { route = [await fastFile(url.slice(6), req.url.endsWith('?full=1')), 'audio/mpeg']; }
         catch { res.writeHead(503).end('Fast audition requires FFmpeg.'); return; }
     }
     if (!route) {

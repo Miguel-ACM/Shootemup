@@ -404,7 +404,25 @@ def analyze(path):
     OUTPUT.mkdir(exist_ok=True)
     write_meta(OUTPUT, folder=True)
     dest = OUTPUT / (path.stem + ".json")
-    dest.write_text(json.dumps(data, separators=(",", ":"), allow_nan=False) + "\n", encoding="utf-8")
+    # Share the publication lock with the previewer. A save made while FFT analysis
+    # was running must survive the final write.
+    lock, tmp = Path(str(dest) + ".lock~"), Path(str(dest) + ".new~")
+    with lock.open("x"):
+        pass
+    try:
+        previous = json.loads(dest.read_text(encoding="utf-8")) if dest.exists() else {}
+        if previous.get("peakEdited"):
+            peak = previous["sections"]["peak"]
+            start, end = (min(data["boundaries"], key=lambda b: abs(b - peak[k])) for k in ("start", "end"))
+            if not adaptive or start >= end:
+                raise ValueError(f"{path.stem}: new progression grid cannot fit the saved loop; kept the original sheet")
+            data["sections"]["peak"] = {"start": start, "end": end}
+            data["peakEdited"] = True
+        tmp.write_text(json.dumps(data, separators=(",", ":"), allow_nan=False) + "\n", encoding="utf-8")
+        tmp.replace(dest)
+    finally:
+        tmp.unlink(missing_ok=True)
+        lock.unlink()
     write_meta(dest)
     print(f"{path.stem:15} {bpm:5.1f} BPM, {len(beats):3} beats, {len(times) - 1:2} phrases; "
           f"sections {sections}, confidence {data['confidence']}", flush=True)

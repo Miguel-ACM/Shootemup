@@ -8,6 +8,12 @@ const volume = () => Number($('volume').value) / 100 * .65;
 let tracks = [], track, map, engine, context, controller, loadingAudio = false, message = '', chordKey = '';
 let fastLoad, cueRequest = 0, selection, handoff;
 const padNodes = {};
+const drafts = new Map(), saving = new Set();
+const sameLoop = (a,b) => a?.start === b?.start && a?.end === b?.end;
+const stamp = t => {
+    const ticks = Math.round(t*100);
+    return Math.floor(ticks/6000) + ':' + ((ticks%6000)/100).toFixed(2).padStart(5,'0');
+};
 
 async function get(url, signal) {
     const res = await fetch(url, { signal });
@@ -49,6 +55,7 @@ function showTrack(item) {
     $('track-no').textContent = (item.district ? 'DISTRICT' : 'RECORDING') + ' / ' + String(tracks.indexOf(item)+1).padStart(2,'0');
     $('track-picker').value = item.id;
     for (const b of document.querySelectorAll('.track')) b.setAttribute('aria-current', b.dataset.id === item.id);
+    populateLoopEditor();
 }
 
 function finishHandoff() {
@@ -68,6 +75,7 @@ function finishHandoff() {
 
 function cancelSelection() {
     finishHandoff();
+    if (selection || handoff) message = '';
     selection?.abort();
     selection = null;
     if (!handoff) return;
@@ -99,6 +107,10 @@ async function select(item) {
     try {
         const value = await (await get('/cues/' + item.id, signal)).json();
         if (signal.aborted) return;
+        value.savedPeak = value.sections.peak;
+        const draft = drafts.get(item.id);
+        if (draft && value.boundaries.includes(draft.start) && value.boundaries.includes(draft.end))
+            value.sections.peak = draft;
         if (switching) {
             const data = await (await get('/audio/' + item.id, signal)).arrayBuffer();
             if (signal.aborted) return;
@@ -113,6 +125,7 @@ async function select(item) {
             return;
         }
         map = value;
+        populateLoopEditor();
         message = '';
         $('bpm').textContent = map.bpm ? Number(map.bpm.toFixed(1)) : '—';
         if (keepPlaying) await play();
@@ -171,7 +184,7 @@ for (const [part,[label,icon]] of Object.entries(parts)) {
             const signal = controller.signal;
             message = 'Preparing pitch-preserved fast mix…';
             try {
-                fastLoad ??= get('/fast/' + track.id, signal).then(r => r.arrayBuffer()).then(data => context.decodeAudioData(data));
+                fastLoad ??= get('/fast/' + track.id + '?full=1', signal).then(r => r.arrayBuffer()).then(data => context.decodeAudioData(data));
                 const buffer = await fastLoad;
                 if (signal.aborted) return;
                 engine.fastBuffer = buffer;
@@ -190,6 +203,114 @@ for (const [part,[label,icon]] of Object.entries(parts)) {
     padNodes[part] = b;
     $('pads').append(b);
 }
+
+function populateLoopEditor() {
+    $('loop-editor').hidden = !map?.adaptive;
+    for (const side of ['start','end']) {
+        $('handle-' + side).hidden = !map?.adaptive;
+        const select = $('loop-' + side);
+        select.replaceChildren();
+        if (map?.adaptive) {
+            for (const [i,time] of map.boundaries.entries()) select.add(new Option(stamp(time), i));
+        }
+    }
+    if (map?.adaptive) refreshLoopEditor();
+}
+
+function refreshLoopEditor(note) {
+    const peak = map.sections.peak, bounds = map.boundaries;
+    for (const side of ['start','end']) {
+        const t = peak[side], select = $('loop-' + side), handle = $('handle-' + side);
+        const lo = side === 'start' ? 0 : bounds.indexOf(peak.start)+1;
+        const hi = side === 'end' ? bounds.length-1 : bounds.indexOf(peak.end)-1;
+        select.value = bounds.indexOf(t);
+        select.disabled = handle.disabled = saving.has(track.id);
+        for (const opt of select.options) opt.disabled = opt.index < lo || opt.index > hi;
+        handle.style.left = 'clamp(15px,' + 100*t/map.duration + '%,calc(100% - 15px))';
+        handle.setAttribute('aria-valuemin',bounds[lo]);
+        handle.setAttribute('aria-valuemax',bounds[hi]);
+        handle.setAttribute('aria-valuenow',t);
+        handle.setAttribute('aria-valuetext',stamp(t));
+        handle.title = (side === 'start' ? 'Loop start ' : 'Loop end ') + stamp(t);
+    }
+    const dirty = !sameLoop(peak,map.savedPeak);
+    $('save-loop').disabled = !dirty || saving.has(track.id);
+    set($('loop-note'),note ?? (saving.has(track.id) ? 'Saving…' : dirty ? 'Unsaved' : map.peakEdited ? 'Saved for game' : 'Analyzed'));
+}
+
+function editBoundary(side, index) {
+    if (!map?.adaptive) return;
+    const bounds = map.boundaries, peak = map.sections.peak;
+    const lo = side === 'start' ? 0 : bounds.indexOf(peak.start)+1;
+    const hi = side === 'end' ? bounds.length-1 : bounds.indexOf(peak.end)-1;
+    const t = bounds[Math.max(lo,Math.min(hi,index))];
+    if (peak[side] === t) return;
+    const revised = { ...peak, [side]:t };
+    map.sections.peak = revised;
+    if (sameLoop(revised,map.savedPeak)) drafts.delete(track.id);
+    else drafts.set(track.id,revised);
+    refreshLoopEditor();
+}
+
+for (const side of ['start','end']) {
+    const select = $('loop-' + side), handle = $('handle-' + side);
+    select.onchange = () => {
+        cancelSelection();
+        editBoundary(side,Number(select.value));
+        engine?.updateLoop();
+    };
+    handle.onpointerdown = e => {
+        if (e.button !== 0) return;
+        cancelSelection();
+        handle.setPointerCapture(e.pointerId);
+    };
+    handle.onpointermove = e => {
+        if (!handle.hasPointerCapture(e.pointerId) || !map?.adaptive) return;
+        const box = $('wave').getBoundingClientRect();
+        const t = (e.clientX-box.left)/box.width*map.duration;
+        const bounds = map.boundaries;
+        const i = Math.max(0,lastAt(bounds,t));
+        editBoundary(side, i+1 < bounds.length && bounds[i+1]-t < t-bounds[i] ? i+1 : i);
+    };
+    handle.onlostpointercapture = () => engine?.updateLoop();
+    handle.onkeydown = e => {
+        const i = map.boundaries.indexOf(map.sections.peak[side]);
+        const indices = {ArrowLeft:i-1,ArrowDown:i-1,ArrowRight:i+1,ArrowUp:i+1,Home:0,End:map.boundaries.length-1};
+        if (!(e.key in indices)) return;
+        e.preventDefault();
+        cancelSelection();
+        editBoundary(side,indices[e.key]);
+        engine?.updateLoop();
+    };
+}
+$('hear-loop').onclick = async () => {
+    cancelSelection();
+    const chosen = map;
+    ++cueRequest;
+    message = '';
+    if (!engine?.playing) await play();
+    if (map === chosen && engine?.playing) engine.auditionSeam();
+};
+$('save-loop').onclick = async () => {
+    const sheet = map, id = sheet.id, peak = sheet.sections.peak;
+    if (saving.has(id)) return;
+    saving.add(id);
+    refreshLoopEditor();
+    let error = '';
+    try {
+        const res = await fetch('/cues/' + id, { method:'PUT', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({ ...peak, previous:sheet.savedPeak }) });
+        if (!res.ok) throw new Error((await res.text()) || 'Save failed. Try again.');
+        sheet.savedPeak = peak;
+        sheet.peakEdited = true;
+        if (map?.id === id) { map.savedPeak = peak; map.peakEdited = true; }
+        if (sameLoop(drafts.get(id),peak)) drafts.delete(id);
+    } catch (err) { error = err.message; }
+    finally {
+        saving.delete(id);
+        if (map?.id === id) refreshLoopEditor(error || undefined);
+    }
+};
 
 // Last timestamp at or before the playhead.
 function lastAt(list, time, value = x => x) {
@@ -244,6 +365,12 @@ function waveform(s) {
         g.fillStyle = i < x(s.pos) ? '#c3f4c3' : rect && i >= x(rect.start) && i < x(rect.end) ? boss ? '#ebb486' : '#88bc95' : '#52655e';
         g.fillRect(i, mid-size, 2, size*2);
     }
+    if (map.adaptive) {
+        const { start, end } = map.sections.peak;
+        g.fillStyle = '#e6a473';
+        g.fillRect(x(start),10,Math.max(1,x(end-start)),2);
+        for (const t of [start,end]) g.fillRect(Math.min(w-1,x(t)),10,1,h-27);
+    }
     g.fillStyle = '#e4f9d7';
     const head = Math.max(1,Math.min(w-2,x(s.pos)));
     g.fillRect(head,6,1,h-20);
@@ -260,6 +387,7 @@ function draw() {
     const s = engine?.state() ?? { part:'intro',pos:0,rate:1,bass:0 };
     const moving = !!engine?.playing;
     $('play').disabled = !map || loadingAudio;
+    $('hear-loop').disabled = !map?.adaptive || loadingAudio;
     const label = moving ? 'Ⅱ  Pause' : engine?.ended ? '↺  Replay' : '▶  Play';
     set($('play'), label);
     set($('clock'), fmt(s.pos) + ' / ' + fmt(map?.duration));
