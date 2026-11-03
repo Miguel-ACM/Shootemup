@@ -7,7 +7,7 @@ const fmt = s => Number.isFinite(s) ? Math.floor(s/60) + ':' + String(Math.floor
 const set = (node, value) => { if (node.textContent !== value) node.textContent = value; };
 const volume = () => Number($('volume').value) / 100 * .65;
 let tracks = [], track, map, engine, context, controller, loadingAudio = false, message = '', chordKey = '';
-let fastLoad, cueRequest = 0, selection, handoff;
+let fastLoad, kickLoad, cueRequest = 0, selection, handoff;
 let pendingSeek = null;
 const padNodes = {};
 const drafts = new Map(), saving = new Set();
@@ -22,6 +22,21 @@ async function get(url, signal) {
     const res = await fetch(url, { signal });
     if (!res.ok) throw new Error('Could not load ' + url);
     return res;
+}
+
+async function decode(url, signal) {
+    const data = await (await get(url,signal)).arrayBuffer();
+    return context.decodeAudioData(data);
+}
+
+async function openTransport(id, sheet, signal) {
+    if (sheet.adaptive && !kickLoad) {
+        kickLoad = Promise.all([context.audioWorklet.addModule('/boss-kick.js'), decode('/boss-kick.wav')])
+            .then(([,buffer]) => buffer.getChannelData(0))
+            .catch(err => { kickLoad = null; throw err; });
+    }
+    const [audio,kick] = await Promise.all([decode('/audio/' + id,signal),sheet.adaptive ? kickLoad : null]);
+    return signal.aborted ? null : new Transport(context,audio,sheet,volume(),kick);
 }
 
 function library() {
@@ -119,13 +134,10 @@ async function select(item) {
             value.sections[key] = edit.span;
         }
         if (switching) {
-            const data = await (await get('/audio/' + item.id, signal)).arrayBuffer();
-            if (signal.aborted) return;
-            const audio = await context.decodeAudioData(data);
+            const incoming = await openTransport(item.id,value,signal);
             if (signal.aborted) return;
             engine.tick();
             const cut = engine.current ? engine.plan(null,true) : { at:context.currentTime+.045, fade:.1 };
-            const incoming = new Transport(context,audio,value,volume());
             incoming.start(cut.at,cut.fade);
             handoff = { ...cut, engine:incoming, map:value, item };
             message = item.title + ' queued · next progression ending.';
@@ -157,11 +169,9 @@ async function play() {
         if (!engine) {
             loadingAudio = true;
             message = 'Opening recording…';
-            const data = await (await get('/audio/' + track.id, signal)).arrayBuffer();
+            const loaded = await openTransport(track.id,map,signal);
             if (signal.aborted) return;
-            const buffer = await context.decodeAudioData(data);
-            if (signal.aborted) return;
-            engine = new Transport(context, buffer, map, volume());
+            engine = loaded;
         }
         if (pendingSeek) {
             engine.seek(pendingSeek);

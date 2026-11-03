@@ -10,6 +10,9 @@ public sealed class MusicDeck : MonoBehaviour
     public AudioSource Source { get; private set; }
     public double StartAt { get; private set; }
     public float Offset => offset;
+    public BossKick Kick { private get; set; }
+    float[] kickBeats;
+    volatile float kickVolume = 1;
     float offset, from, to, seconds;
     double fadeIn;
     readonly double[] z1 = new double[8], z2 = new double[8];
@@ -19,8 +22,9 @@ public sealed class MusicDeck : MonoBehaviour
     // Publish an immutable envelope to the audio thread. Filter memory belongs to that thread.
     sealed class Envelope
     {
-        public double start, stop, fadeIn, fadeOut;
-        public float from, to, duration;
+        public double start, stop, fadeIn, fadeOut, kickCut;
+        public float from, to, duration, offset;
+        public float[] beats;
     }
     volatile Envelope envelope;
     Envelope previous;
@@ -45,7 +49,8 @@ public sealed class MusicDeck : MonoBehaviour
         a2 = ((a+1) + (a-1)*c - s)/norm;
     }
 
-    public void StartCue(AudioClip clip, double at, float position, float mixFrom, float mixTo, float ramp, double fade)
+    public void StartCue(AudioClip clip, double at, float position, float mixFrom, float mixTo, float ramp, double fade,
+        float[] beats = null)
     {
         Source.Stop();
         StartAt = at;
@@ -54,27 +59,35 @@ public sealed class MusicDeck : MonoBehaviour
         to = mixTo;
         seconds = ramp;
         fadeIn = fade;
+        kickBeats = beats;
         Source.clip = clip;
         Source.loop = false;
         Source.timeSamples = Mathf.Clamp(Mathf.RoundToInt(position * clip.frequency), 0, clip.samples - 1);
-        SetEnvelope(double.PositiveInfinity, .01);
+        SetEnvelope(double.PositiveInfinity, .01, double.PositiveInfinity);
         Source.PlayScheduled(at);
     }
 
-    void SetEnvelope(double end, double fadeOut)
+    void SetEnvelope(double end, double fadeOut, double cut)
     {
         envelope = new Envelope { start = StartAt, stop = end, from = from, to = to, duration = seconds,
-            fadeIn = fadeIn, fadeOut = fadeOut };
+            fadeIn = fadeIn, fadeOut = fadeOut, offset = offset, beats = kickBeats, kickCut = cut };
     }
 
-    public void EndAt(double at, double fade)
+    public void EndAt(double at, double fade, double cut)
     {
-        SetEnvelope(at, fade);
+        SetEnvelope(at, fade, cut);
         Source.SetScheduledEndTime(at);
     }
 
     public float MixAt(double at) => seconds <= 0 ? to : Mathf.Lerp(from, to, (float)(at - StartAt)/seconds);
     public double ClockAt(float position) => StartAt + position - offset;
+
+    public void SetVolume(float volume)
+    {
+        Source.volume = volume;
+        // The source fader has already scaled the recording when this filter adds the kick.
+        kickVolume = volume;
+    }
 
     void OnAudioFilterRead(float[] samples, int channels)
     {
@@ -86,8 +99,8 @@ public sealed class MusicDeck : MonoBehaviour
             Array.Clear(z2, 0, z2.Length);
         }
         previous = env;
-        double now = AudioSettings.dspTime, step = 1.0 / sampleRate;
-        if (env.from == 0 && env.to == 0 && now >= env.start + env.fadeIn &&
+        double blockAt = AudioSettings.dspTime, now = blockAt, step = 1.0 / sampleRate;
+        if (env.beats == null && env.from == 0 && env.to == 0 && now >= env.start + env.fadeIn &&
             now + samples.Length*step/channels <= env.stop - env.fadeOut) return;
         for (int i = 0; i < samples.Length; now += step)
         {
@@ -102,5 +115,7 @@ public sealed class MusicDeck : MonoBehaviour
                 samples[i] = (float)(gain * (dry + mix*(wet-dry)));
             }
         }
+        if (env.beats != null && kickVolume > 0)
+            Kick?.Mix(samples, channels, sampleRate, blockAt, env.beats, env.start, env.offset, env.kickCut, kickVolume);
     }
 }

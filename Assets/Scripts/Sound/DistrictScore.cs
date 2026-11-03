@@ -6,7 +6,7 @@ public sealed class DistrictScore : MonoBehaviour
 {
     [Serializable] public class Span { public float start, end; }
     [Serializable] public class Sections { public Span intro, body, peak, outro; }
-    [Serializable] public class Cues { public float bpm; public float[] boundaries; public Sections sections; }
+    [Serializable] public class Cues { public float bpm; public float[] beats, boundaries; public Sections sections; }
     enum Part { Intro, Flight, Boss, Outro, Linear }
     sealed class Track
     {
@@ -78,11 +78,13 @@ public sealed class DistrictScore : MonoBehaviour
 
     void Awake()
     {
+        var kick = BossKick.Load();
         for (int i = 0; i < decks.Length; i++)
         {
             var child = new GameObject("Music deck " + (i + 1));
             child.transform.SetParent(transform, false);
             decks[i] = child.AddComponent<MusicDeck>();
+            decks[i].Kick = kick;
         }
     }
 
@@ -177,14 +179,15 @@ public sealed class DistrictScore : MonoBehaviour
         double overlap = pendingTrack == null ? 0 : Math.Min(fade, Math.Max(0, track.clip.length - end));
         if (overlap < .04) overlap = 0;
         tailEnd = cut + overlap;
-        active.EndAt(tailEnd, overlap > 0 ? overlap : fade);
+        active.EndAt(tailEnd, overlap > 0 ? overlap : fade, cut);
         if (pendingTrack == null) return;
         float offset = pendingTrack.Start(pendingPart);
         float from = pendingTrack == track ? active.MixAt(cut) : 0;
         float to = pendingPart == Part.Boss ? 1 : 0;
         float beats = to > from ? 1 : 8;
         float ramp = from == to ? 0 : Mathf.Min(beats * 60/track.cues.bpm, pendingTrack.End(pendingPart) - offset);
-        next.StartCue(pendingTrack.clip, cut, offset, from, to, ramp, overlap > 0 ? overlap : fade);
+        next.StartCue(pendingTrack.clip, cut, offset, from, to, ramp, overlap > 0 ? overlap : fade,
+            pendingPart == Part.Boss ? pendingTrack.cues.beats : null);
     }
 
     void Update()
@@ -222,6 +225,6 @@ public sealed class DistrictScore : MonoBehaviour
 
     public void Volume(float volume)
     {
-        foreach (var deck in decks) deck.Source.volume = volume;
+        foreach (var deck in decks) deck.SetVolume(volume);
     }
 }

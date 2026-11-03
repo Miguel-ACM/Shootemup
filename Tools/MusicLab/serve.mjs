@@ -17,7 +17,8 @@ const tracks = [...new Set([...districts, ...files.map(file => path.basename(fil
     .map(id => ({ id, title: names[id] ?? id[0].toUpperCase() + id.slice(1), district: districts.includes(id) }));
 const routes = new Map([['/', ['dist/index.html', 'text/html']], ['/style.css', ['dist/style.css', 'text/css']],
     ['/app.js', ['dist/app.js', 'text/javascript']], ['/transport.js', ['dist/transport.js', 'text/javascript']],
-    ['/markers.mjs', ['dist/markers.mjs', 'text/javascript']]]);
+    ['/markers.mjs', ['dist/markers.mjs', 'text/javascript']], ['/boss-kick.js', ['dist/boss-kick.js','text/javascript']],
+    ['/boss-kick.wav', [path.join(resources,'Sounds','BossKick.wav'),'audio/wav']]]);
 for (const { id } of tracks) {
     routes.set('/audio/' + id, [path.join(resources, 'Music', id + '.mp3'), 'audio/mpeg']);
     routes.set('/cues/' + id, [path.join(resources, 'MusicAnalysis', id + '.json'), 'application/json']);

@@ -10,6 +10,8 @@ Choose **Intro**, **Flight**, **Boss** or **Outro** under **Section markers**. D
 
 **Boss (fast)** is an audition-only 6% tempo lift at the original pitch. On first use the server renders and caches a fast copy of the recording so both boss modes can audition edits immediately. Both crossfade into the original outro with no speed ramp.
 
+Boss adds a hard kick on every beat in the song’s cue sheet. The game and both boss previews use the same mono mix of **Monster Kick 127** from FL Studio 20’s `Data/Patches/Packs/Drums/Kicks` folder. In the fast preview the hits move closer together and keep their original pitch.
+
 ## Cue analysis
 
 Run `python Tools/MusicLab/analyze.py` with NumPy and FFmpeg installed to regenerate the cue sheets. Append MP3 basenames to analyze individual tracks. The analysis uses audio onsets for pulse, bass and upper pitch classes for major/minor chord estimates, and recurring bar sequences for progression endings. The boss cue favors sustained rhythmic activity over isolated loud hits. Plains uses the existing trailer downbeat anchors where available.

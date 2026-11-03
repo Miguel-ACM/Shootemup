@@ -19,8 +19,8 @@ function bassAt(d, at) {
 }
 
 export class Transport {
-    constructor(ctx, buffer, map, volume) {
-        Object.assign(this, { ctx, buffer, map, playing:false, ended:false });
+    constructor(ctx, buffer, map, volume, kickPCM) {
+        Object.assign(this, { ctx, buffer, map, kickPCM, playing:false, ended:false });
         this.voices = new Set();
         this.master = ctx.createGain();
         this.master.gain.value = volume;
@@ -46,12 +46,21 @@ export class Transport {
         gain.gain.linearRampToValueAtTime(1, at+fadeIn);
         const deck = { part, at, offset, end, speed, from, to, ramp, source, shelf, gain,
             availableUntil:at + source.buffer.duration - start };
+        if (boss(part) && this.kickPCM && this.map.beats.length) {
+            const hits = this.map.beats.filter(t => t >= offset)
+                .map(t => Math.round(clockAt(deck,t)*this.ctx.sampleRate));
+            deck.kick = new AudioWorkletNode(this.ctx,'boss-kick',{numberOfInputs:0, outputChannelCount:[1],
+                processorOptions:{hits,pcm:this.kickPCM}});
+            deck.kick.connect(this.master);
+            deck.kickLevel = deck.kick.parameters.get('level');
+        }
         this.voices.add(deck);
         source.onended = () => { this.disconnect(deck); this.tick(); };
         source.start(at, start);
         return deck;
     }
     disconnect(d) {
+        if (d.kick) { d.kick.disconnect(); d.kick.port.postMessage('stop'); d.kick.port.close(); }
         d.source.disconnect(); d.shelf.disconnect(); d.gain.disconnect();
         this.voices.delete(d);
         if (this.retired && !this.voices.size) this.master.disconnect();
@@ -84,6 +93,12 @@ export class Transport {
                 gain.cancelScheduledValues(now);
                 gain.setValueAtTime(level,now);
                 gain.linearRampToValueAtTime(0,at);
+                if (d.kickLevel) {
+                    const level = d.kickLevel.value;
+                    d.kickLevel.cancelScheduledValues(now);
+                    d.kickLevel.setValueAtTime(level,now);
+                    d.kickLevel.linearRampToValueAtTime(0,at);
+                }
                 d.source.stop(at);
             }
         }
@@ -105,6 +120,14 @@ export class Transport {
         const pos = position(d, this.ctx.currentTime + lead);
         this.cutOffset = request || exit ? this.map.boundaries.find(b => b > pos && b <= end) ?? end : end;
         this.cut = clockAt(d, this.cutOffset);
+        // Only the incoming deck owns the downbeat at the cut, including on a boss loop.
+        if (d.kickLevel) {
+            d.kickLevel.cancelScheduledValues(this.ctx.currentTime);
+            // Beat onsets are rounded to sample frames. Close just before that frame
+            // so a fractional clock time cannot leak the outgoing kick's first sample.
+            d.kickLevel.setValueAtTime(1,Math.max(d.at,this.cut-.003));
+            d.kickLevel.linearRampToValueAtTime(0,Math.max(d.at,this.cut-1/this.ctx.sampleRate));
+        }
         this.requested = request;
         const part = exit ? null : request ?? (this.map.adaptive === false || d.part === 'outro' || d.part === 'recording' ? null : d.part === 'intro' ? 'body' : d.part);
         const fade = clamp(2*60/this.map.bpm, .48, 1);
