@@ -60,11 +60,6 @@ public sealed partial class HangarHub
         Bar(new Vector2((GalleryLeft + GalleryWing) / 2, GalleryVestibuleTop), new Vector2(GalleryWing - GalleryLeft, .21f), edge);
         Bar(new Vector2(GalleryWing, (GalleryTop + GalleryVestibuleTop) / 2), new Vector2(.18f, GalleryTop - GalleryVestibuleTop), edge);
         Bar(new Vector2((GalleryLeft + GalleryRight) / 2, GalleryBottom), new Vector2(GalleryRight - GalleryLeft, .25f), edge);
-        // Paired marker lights lead around the directory to the north exhibition hall.
-        for (float x = FilterDesk.x + 2; x < FirstX + 1; x += .8f)
-            Bar(new Vector2(x, FilterDesk.y), new Vector2(.23f, .075f), DockInstrument.Brass);
-        for (float y = FilterDesk.y + .8f; y < FirstY - 1; y += .8f)
-            Bar(new Vector2(FirstX, y), new Vector2(.075f, .23f), DockInstrument.Brass);
         for (int i = 0; i < exhibits.Length; i++)
         {
             caseVertices[i] = colors.Count;

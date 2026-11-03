@@ -296,7 +296,6 @@ public sealed partial class HangarHub
         stockScreen = MountedPanel("Outfitter display", Vector2.zero, new Vector2(4.35f, 3.08f), fadeOnReveal: true);
         stockInfo = WorldLabel(stockScreen, "", new Vector2(0, 35), new Vector2(395, 195), 28, DockInstrument.Paper);
         stockScreen.gameObject.SetActive(false);
-        Stencil("LAUNCH", new Vector2(0, DeckExtension + 6.6f), 2.8f, DockInstrument.Paper);
     }
 
     void BuildRoom(int index)
