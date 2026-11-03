@@ -354,7 +354,10 @@ def write_meta(path, folder=False):
 
 def score_features(path, samples, duration):
     flux, energies = extract(samples)
-    hints = {"fields": 169, "greenlandsOST": 140, "stage1bossOST": 172}
+    # Space and Tunnel both have a strong dotted-quarter rhythm. Their drum bars
+    # repeat at four quarters of roughly 346 ms and 353 ms respectively.
+    hints = {"fields": 169, "greenlandsOST": 140, "stage1bossOST": 172,
+             "space": 173.5, "tunnel": 170}
     beats, pulse_confidence, onset = track_beats(flux, hints.get(path.stem))
     beats = beats[beats < duration]
     pc, low = bar_features(samples, beats, duration)
