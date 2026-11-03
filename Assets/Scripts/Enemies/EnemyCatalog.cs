@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-public enum EnemyId { ScoutInterceptor, PatrolGunship, HeavyBomber, WallTurret, MaintenanceDrone, ArmoredCarrier, ColdWeatherFighter, SiegeGunship, ShieldTransport, BeamDrone, RelayDrone, StormSkimmer, PursuitFighter, AttackDrone, CommandGunship, CourierDiver, AvalancheBomber, ArcLancer, FieldsHeavyWing, TunnelDefensePlatform, SnowSiegeCraft, StormReactor, CityCommandCarrier, SandEmitter, SandStriker, SandWorm, BonbonSkirmisher, WaferDart, MintSpinner, MeadowTank, FrostAuger, OrbitalScout, LaserSatellite, OrbitalCarrier, OrbitalMoonlet, SkullRevenant, GhostGalleon, CinderImp, ReefDart, MantaRay, Bathysphere, ScarabDredger, TaffyDuelist, OrbitalWarden, ReefLeviathan, InfernalFerryman, BoneHarrier, AshCenser, JetSquid, NautilusBell, CometTug, EclipseSail, GumdropMortar, RibbonGlider, MirageObelisk, DuneMoth, StormOrgan, CapacitorKite, RivetMantis, BaffleSpinner, TerraceGunboat, MetroLancer, HailLantern, IcicleWeaver, HarrowBomber, ReedSkimmer, HellCrabBoss, AbyssSubmarineBoss, SpaceCitadelBoss, CandyRegentBoss, DesertWormBoss, TunnelSawBoss, SnowSiegeBoss, ThunderLanceBoss, CityDuoBoss, FieldsBomberBoss, PlainsRedKiteBoss, PlainsThreshingDrumBoss, CitySwitchyardBoss }
+public enum EnemyId { ScoutInterceptor, PatrolGunship, HeavyBomber, WallTurret, MaintenanceDrone, ArmoredCarrier, ColdWeatherFighter, SiegeGunship, ShieldTransport, BeamDrone, RelayDrone, StormSkimmer, PursuitFighter, AttackDrone, CommandGunship, CourierDiver, AvalancheBomber, ArcLancer, FieldsHeavyWing, TunnelDefensePlatform, SnowSiegeCraft, StormReactor, CityCommandCarrier, SandEmitter, SandStriker, SandWorm, BonbonSkirmisher, WaferDart, MintSpinner, MeadowTank, FrostAuger, OrbitalScout, LaserSatellite, OrbitalCarrier, OrbitalMoonlet, SkullRevenant, GhostGalleon, CinderImp, ReefDart, MantaRay, Bathysphere, ScarabDredger, TaffyDuelist, OrbitalWarden, ReefLeviathan, InfernalFerryman, BoneHarrier, AshCenser, JetSquid, NautilusBell, CometTug, EclipseSail, GumdropMortar, RibbonGlider, MirageObelisk, DuneMoth, StormOrgan, CapacitorKite, RivetMantis, BaffleSpinner, TerraceGunboat, MetroLancer, HailLantern, IcicleWeaver, HarrowBomber, ReedSkimmer, HellCrabBoss, AbyssSubmarineBoss, SpaceCitadelBoss, CandyRegentBoss, DesertWormBoss, TunnelSawBoss, SnowSiegeBoss, ThunderLanceBoss, CityDuoBoss, FieldsBomberBoss, PlainsRedKiteBoss, PlainsThreshingDrumBoss, CitySwitchyardBoss, SnowIcebreakerBoss }
 public enum CombatHullId
 {
     ScoutInterceptor = 0,
@@ -80,6 +80,7 @@ public enum CombatHullId
     ThunderLanceBoss = 22,
     CityDuoBoss = 12,
     FieldsBomberBoss = 23,
+    SnowIcebreakerBoss = 84,
     CitySwitchyardBoss = 83,
     PlainsThreshingDrumBoss = 82,
     PlainsRedKiteBoss = 81,
@@ -172,6 +173,7 @@ public static class EnemyCatalog
         new EnemyDefinition(EnemyId.ThunderLanceBoss, typeof(ThunderLanceBoss), CombatHullId.ThunderLanceBoss, true),
         new EnemyDefinition(EnemyId.CityDuoBoss, typeof(CityDuoBoss), CombatHullId.CityDuoBoss, true),
         new EnemyDefinition(EnemyId.FieldsBomberBoss, typeof(FieldsBomberBoss), CombatHullId.FieldsBomberBoss, true),
+        new EnemyDefinition(EnemyId.SnowIcebreakerBoss, typeof(SnowIcebreakerBoss), CombatHullId.SnowIcebreakerBoss, true),
         new EnemyDefinition(EnemyId.CitySwitchyardBoss, typeof(CitySwitchyardBoss), CombatHullId.CitySwitchyardBoss, true),
         new EnemyDefinition(EnemyId.PlainsThreshingDrumBoss, typeof(PlainsThreshingDrumBoss), CombatHullId.PlainsThreshingDrumBoss, true),
         new EnemyDefinition(EnemyId.PlainsRedKiteBoss, typeof(PlainsRedKiteBoss), CombatHullId.PlainsRedKiteBoss, true),

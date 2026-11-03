@@ -6,6 +6,8 @@ public static partial class IndustrialMeshFactory
     static readonly Dictionary<int, Mesh> combatHulls = new Dictionary<int, Mesh>();
     public static Vector3[] CombatEngineSockets(int kind)
     {
+        if (kind == 84)
+            return new[] { new Vector3(-.52f, 1.06f, 0), new Vector3(.52f, 1.06f, 0) };
         if (kind == 83)
             return new[] { new Vector3(-.67f, 1.04f, 0), new Vector3(.67f, 1.04f, 0) };
         if (kind == 82)
