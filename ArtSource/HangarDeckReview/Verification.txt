@@ -61,3 +61,9 @@ The Fleet screen survived crossing the doorway. All 99 gallery cases populated. 
 Gallery entry over 32 frames: p95 8.4 ms, max 10.1 ms. Filtering over 24 frames: p95 9.0 ms, max 9.4 ms.
 Final cold deck population over 28 frames: p95 29.3 ms, max 46.6 ms.
 Windows standalone build succeeded with 0 errors and 0 warnings.
+
+3 November 2026. Widened rooms and modeled control instruments. Isolated editor, 640 x 480.
+Flew from the Fleet throttle to the far parking apron using the normal movement controls. The equipped hull occupied no display saddle. Taking the throttle opened the detailed boss service record.
+Took and released control at the simulator cockpit, recorder transport and radar scope. The gallery reader accepted its keyboard and controller bindings. All 99 exhibits and their filter lighting passed, and the departure gate reached the opening run rewards.
+Inspected all five rooms, the ship berths and the engaged CRTs. Revised the deck contrast, console contact shadows and operating camera, then captured the stations again.
+Dock build Succeeded errors=0 warnings=0
