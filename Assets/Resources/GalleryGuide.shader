@@ -13,18 +13,19 @@ Shader "Shootemup/Gallery guide"
             #pragma fragment frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             float4 _Origin;
-            struct Varyings {float4 position:SV_POSITION;float travel:TEXCOORD0;};
-            Varyings vert(float4 position:POSITION)
+            struct Varyings {float4 position:SV_POSITION;float travel:TEXCOORD0;half3 color:COLOR;};
+            Varyings vert(float4 position:POSITION, half4 color:COLOR)
             {
                 Varyings o;
                 o.position=TransformObjectToHClip(position.xyz);
                 o.travel=abs(position.x-_Origin.x)+abs(position.y-_Origin.y);
+                o.color=color.rgb;
                 return o;
             }
             half4 frag(Varyings i):SV_Target
             {
                 half pulse=pow(saturate(1-abs(frac(i.travel*.19-_Time.y*.72)-.5)*2),5);
-                return half4(.64+.36*pulse,.035+.28*pulse,.018+.12*pulse,1);
+                return half4(lerp(i.color*.78,half3(.40,.75,1),pulse),1);
             }
             ENDHLSL
         }

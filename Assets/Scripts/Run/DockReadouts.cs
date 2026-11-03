@@ -107,6 +107,7 @@ public sealed class DockTubeGlass : MaskableGraphic
 // A single phosphor matrix mirrors the arrangement of the cases on the floor.
 public sealed class GalleryLampMatrix : MaskableGraphic
 {
+    public static readonly Color RouteBlue = new Color(.12f, .49f, 1f);
     public bool[] matches;
 
     protected override void OnPopulateMesh(VertexHelper vh)
@@ -115,7 +116,7 @@ public sealed class GalleryLampMatrix : MaskableGraphic
         if (matches == null) return;
         for (int i = 0; i < matches.Length; i++)
         {
-            var color = matches[i] ? new Color(.95f, .24f, .14f) : new Color(.17f, .20f, .20f);
+            var color = matches[i] ? RouteBlue : new Color(.17f, .20f, .20f);
             var at = new Vector2(6 + i % GalleryShelf.Columns * 19, 5 + i / GalleryShelf.Columns * 18) - rectTransform.rect.size * .5f;
             int first = vh.currentVertCount;
             vh.AddVert(at + new Vector2(-6, -5), color, Vector2.zero);

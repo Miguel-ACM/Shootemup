@@ -73,7 +73,7 @@ public sealed partial class HangarHub
             // A fixed pool of red light and an offset contact shadow beneath the levitating base.
             GalleryWell(floor, colors, indices, at + new Vector2(.17f, -.35f), 1.39f, new Color(.48f, .065f, .045f), GalleryDeck);
             GalleryWell(floor, colors, indices, at + new Vector2(.23f, -.76f), .93f, new Color(.012f, .016f, .021f, .86f), Color.clear);
-            Bar(at + Vector2.down * 1.12f, new Vector2(.47f, .055f), new Color(1, .32f, .2f));
+            Bar(at + Vector2.down * 1.12f, new Vector2(.47f, .055f), GalleryLampMatrix.RouteBlue);
         }
         caseVertices[exhibits.Length] = colors.Count;
         floorLights = GallerySurface("Gallery floor and footlights", floor, colors, indices, -14);
@@ -81,7 +81,7 @@ public sealed partial class HangarHub
         litFloorColors = colors.ToArray();
         guidePaint = new Material(Resources.Load<Shader>("GalleryGuide"));
         guidePaint.SetVector("_Origin", new Vector4(FilterDesk.x, FilterDesk.y, 0, 0));
-        guideMesh = GallerySurface("Red inlaid guide lamps", new List<Vector3>(), new List<Color>(), new List<int>(), -10);
+        guideMesh = GallerySurface("Blue inlaid guide lamps", new List<Vector3>(), new List<Color>(), new List<int>(), -10);
         BuildControlDesk((int)Dock.Armory);
         MountReceiver((int)Dock.Armory);
         HangingSign("CASES >", FilterDesk + new Vector2(2.6f, -2.5f), DockInstrument.Brass, true);
@@ -249,7 +249,7 @@ public sealed partial class HangarHub
         var v = new List<Vector3>();
         var c = new List<Color>();
         var t = new List<int>();
-        var red = new Color(1, .14f, .085f);
+        var blue = GalleryLampMatrix.RouteBlue;
         int count = 0;
         for (int column = 0; column < GalleryShelf.Columns; column++)
         {
@@ -266,14 +266,14 @@ public sealed partial class HangarHub
                 if (band == 0 && galleryAvailability == 0)
                     continue;
                 highest = at.y;
-                GalleryQuad(v, c, t, at + Vector2.left * .94f, new Vector2(.45f, .055f), red);
-                GalleryQuad(v, c, t, at + Vector2.down * 1.12f, new Vector2(.55f, .10f), red);
+                GalleryQuad(v, c, t, at + Vector2.left * .94f, new Vector2(.45f, .055f), blue);
+                GalleryQuad(v, c, t, at + Vector2.down * 1.12f, new Vector2(.55f, .10f), blue);
             }
             if (highest <= FilterDesk.y)
                 continue;
             float x = Case(column).x - 1.14f;
-            GalleryQuad(v, c, t, new Vector2(x, (highest + FilterDesk.y) / 2), new Vector2(.055f, highest - FilterDesk.y), red);
-            GalleryQuad(v, c, t, new Vector2((x + FilterDesk.x) / 2, FilterDesk.y), new Vector2(Mathf.Abs(x - FilterDesk.x), .055f), red);
+            GalleryQuad(v, c, t, new Vector2(x, (highest + FilterDesk.y) / 2), new Vector2(.055f, highest - FilterDesk.y), blue);
+            GalleryQuad(v, c, t, new Vector2((x + FilterDesk.x) / 2, FilterDesk.y), new Vector2(Mathf.Abs(x - FilterDesk.x), .055f), blue);
         }
         caseLeds.SetVerticesDirty();
         floorLights.SetColors(floorColors);
