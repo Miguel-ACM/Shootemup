@@ -73,15 +73,16 @@ public static class EnemyEditorPlaytest
         }
         bool boss = SessionState.GetBool(Key + "Boss", false);
         watcher.SelectView(boss ? WatcherView.Bosses : WatcherView.Enemies);
-        if (boss)
-            watcher.SelectEncounter(SessionState.GetBool(Key + "Phase", false) ? WaveWatcher.BossTwo : WaveWatcher.BossOne);
-        else
-            for (int i = 0; i < watcher.Entries.Count; i++)
-                if (watcher.Entries[i].Enemy?.Name == name)
-                {
-                    watcher.SelectEntry(i);
-                    break;
-                }
+        int phase = SessionState.GetBool(Key + "Phase", false) ? WaveWatcher.BossTwo : WaveWatcher.BossOne;
+        for (int i = 0; i < watcher.Entries.Count; i++)
+        {
+            var entry = watcher.Entries[i];
+            if (boss && entry.Encounter != phase) continue;
+            var type = entry.Enemy ?? (boss ? DistrictWaves.Bosses(watcher.Level)[0] : null);
+            if (type?.Name != name) continue;
+            watcher.SelectEntry(i);
+            break;
+        }
         RestoreStartScene();
         SessionState.EraseString(Key);
     }

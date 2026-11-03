@@ -79,6 +79,15 @@ public static class WatcherCatalog
                 entries.Add(new Entry { Id = "boss/phase-3", Name = level == LevelId.City ? "HEAVY SURVIVOR / PHASE 3" : "BOSS / PHASE 3", Encounter = WaveWatcher.BossThree });
                 if (level == LevelId.City)
                     entries.Add(new Entry { Id = "boss/fast-survivor", Name = "FAST SURVIVOR", Encounter = WaveWatcher.BossOther });
+                var bosses = DistrictWaves.Bosses(level);
+                for (int i = 1; i < bosses.Count; i++)
+                {
+                    var type = bosses[i];
+                    string name = Pretty(type.Name).Replace(" Boss", "").ToUpperInvariant();
+                    foreach (int phase in new[] { 1, 2, 3 })
+                        entries.Add(new Entry { Id = $"boss/{type.Name}/{phase}", Name = $"{name} / {phase}", Enemy = type,
+                            Encounter = phase == 1 ? WaveWatcher.BossOne : phase == 2 ? WaveWatcher.BossTwo : WaveWatcher.BossThree });
+                }
                 break;
             case WatcherView.Projectiles:
                 Add<SimpleRound>(entries);

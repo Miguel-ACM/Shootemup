@@ -111,10 +111,19 @@ public class RefactorTests
             Assert.AreEqual(item.Key, item.ComponentType.Name);
         }
         foreach (var type in typeof(AItem).Assembly.GetTypes())
-            if (!type.IsAbstract && typeof(AItem).IsAssignableFrom(type))
+            // A trade offer displays an existing inventory entry rather than granting a catalog item.
+            if (!type.IsAbstract && type != typeof(ItemExchangeOffer) && typeof(AItem).IsAssignableFrom(type))
                 Assert.IsTrue(keys.Contains(type.Name), "Unregistered item " + type.Name);
         Assert.AreEqual(66, EnemyCatalog.WaveTypes.Length);
-        Assert.AreEqual(76, EnemyCatalog.All.Length);
+        Assert.AreEqual(80, EnemyCatalog.All.Length);
+        var bosses = new System.Collections.Generic.HashSet<System.Type>();
+        foreach (LevelId district in System.Enum.GetValues(typeof(LevelId)))
+            foreach (var type in DistrictWaves.Bosses(district))
+            {
+                Assert.IsTrue(EnemyCatalog.Get(type).Boss);
+                Assert.IsTrue(bosses.Add(type));
+            }
+        Assert.AreEqual(14, bosses.Count);
         foreach (var actor in EnemyCatalog.All)
         {
             Assert.AreSame(actor.ComponentType, EnemyCatalog.Resolve(actor.Key));

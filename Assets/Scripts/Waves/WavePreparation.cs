@@ -45,6 +45,11 @@ public sealed class WavePreparation : MonoBehaviour
         yield return PSXFireballs.Warm();
         yield return null;
         yield return CombatRound.PrepareBursts();
+        foreach (var boss in DistrictWaves.Bosses(LevelRun.Current))
+        {
+            IndustrialMeshFactory.CombatHull((int)EnemyCatalog.Get(boss).Hull);
+            yield return null;
+        }
         yield return WaveComposer.Prepare();
         // Complete the seeded plan before the opening breather, keeping combat cache-only.
         for (int budget = 2; budget <= 20; budget++)

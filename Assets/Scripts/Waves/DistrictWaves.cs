@@ -6,35 +6,22 @@ public static class DistrictWaves
 {
     public static readonly Type[] EnemyTypes = EnemyCatalog.WaveTypes;
     public static Type EnemyType(string name) => EnemyCatalog.Resolve(name);
-    public static Type BossType
+    // Indexed by LevelId. Fixed simulator contracts use the original boss in slot zero.
+    static readonly Type[][] bosses =
     {
-        get
-        {
-            switch (LevelRun.Current)
-            {
-                case LevelId.Hell:
-                    return typeof(HellCrabBoss);
-                case LevelId.Underwater:
-                    return typeof(AbyssSubmarineBoss);
-                case LevelId.Space:
-                    return typeof(SpaceCitadelBoss);
-                case LevelId.Candyland:
-                    return typeof(CandyRegentBoss);
-                case LevelId.Desert:
-                    return typeof(DesertWormBoss);
-                case LevelId.Tunnel:
-                    return typeof(TunnelSawBoss);
-                case LevelId.Snow:
-                    return typeof(SnowSiegeBoss);
-                case LevelId.Thunder:
-                    return typeof(ThunderLanceBoss);
-                case LevelId.City:
-                    return typeof(CityDuoBoss);
-                default:
-                    return typeof(FieldsBomberBoss);
-            }
-        }
-    }
+        new[] { typeof(FieldsBomberBoss), typeof(PlainsRedKiteBoss), typeof(PlainsThreshingDrumBoss) },
+        new[] { typeof(TunnelSawBoss) },
+        new[] { typeof(SnowSiegeBoss), typeof(SnowIcebreakerBoss) },
+        new[] { typeof(ThunderLanceBoss) },
+        new[] { typeof(CityDuoBoss), typeof(CitySwitchyardBoss) },
+        new[] { typeof(DesertWormBoss) },
+        new[] { typeof(CandyRegentBoss) },
+        new[] { typeof(SpaceCitadelBoss) },
+        new[] { typeof(AbyssSubmarineBoss) },
+        new[] { typeof(HellCrabBoss) }
+    };
+    public static IReadOnlyList<Type> Bosses(LevelId district) => bosses[(int)district];
+    public static Type BossType => Bosses(LevelRun.Current)[0];
 
     public static string[] Sequence() => new[] { "reward", "2", "3", "4", "encounterChoice", "6", "8", "10", "miniboss", "12", "14", "minibossChoice", "encounterChoice", "16", "20", "boss" };
     public static Wave Miniboss()

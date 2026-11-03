@@ -40,12 +40,12 @@ public sealed class EnemyEditorWindow : EditorWindow
             if (catalog != null)
                 return catalog;
             catalog = new List<EnemyInfo>();
-            var bosses = new[] { typeof(FieldsBomberBoss), typeof(TunnelSawBoss), typeof(SnowSiegeBoss), typeof(ThunderLanceBoss), typeof(CityDuoBoss), typeof(DesertWormBoss), typeof(CandyRegentBoss), typeof(SpaceCitadelBoss), typeof(AbyssSubmarineBoss), typeof(HellCrabBoss) };
             foreach (LevelId level in Enum.GetValues(typeof(LevelId)))
             {
                 foreach (var type in WatcherCatalog.Enemies(level))
                     catalog.Add(new EnemyInfo { type = type, level = level });
-                catalog.Add(new EnemyInfo { type = bosses[(int)level], level = level, boss = true });
+                foreach (var type in DistrictWaves.Bosses(level))
+                    catalog.Add(new EnemyInfo { type = type, level = level, boss = true });
             }
             return catalog;
         }

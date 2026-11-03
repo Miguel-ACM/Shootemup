@@ -208,10 +208,10 @@ public class WaveOrchestrer : MonoBehaviour
 
     private void SpawnBoss()
     {
-        MetaProgress.EngageBoss();
+        var bossType = MetaProgress.EngageBoss();
         Phase = RunPhase.Boss;
         BGMManager.QueueBoss(0); // Also covers direct simulator and review entry.
-        GameObject bossGO = DistrictEnemy.Spawn(DistrictWaves.BossType, new Vector3(0, Camera.UpLimit + 3, 1)).gameObject;
+        GameObject bossGO = DistrictEnemy.Spawn(bossType, new Vector3(0, Camera.UpLimit + 3, 1)).gameObject;
         bossGO.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
         bossGO.transform.position = new Vector3(0f, 11.52f, 1f);
         EraseAllBullets();

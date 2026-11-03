@@ -555,7 +555,8 @@ public sealed partial class WaveWatcher : MonoBehaviour
         }
         if (View == WatcherView.Bosses && Encounter >= BossOne)
         {
-            var boss = (DistrictBoss)DistrictEnemy.Spawn(DistrictWaves.BossType, new Vector3(0, Camera.UpLimit + 3, 1));
+            var bossType = entry.Enemy ?? DistrictWaves.BossType;
+            var boss = (DistrictBoss)DistrictEnemy.Spawn(bossType, new Vector3(0, Camera.UpLimit + 3, 1));
             Spawned = 1;
             yield return null;
             yield return null; // Both City hulls finish Start before selecting the survivor phase.
@@ -566,7 +567,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
                 victim = Encounter == BossOther ? duo.partner : duo;
                 survivor = Encounter == BossOther ? duo : duo.partner;
             }
-            recipe = WatcherCatalog.Pretty(DistrictWaves.BossType.Name);
+            recipe = WatcherCatalog.Pretty(bossType.Name);
             Refresh();
             float nextPush = 1;
             while (true)

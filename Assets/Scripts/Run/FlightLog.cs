@@ -73,10 +73,49 @@ public static partial class MetaProgress
         if (flight != null)
             flight.route += " / " + LevelRun.CurrentName;
     }
-    public static void EngageBoss()
+    [Serializable]
+    sealed class BossRotation
+    {
+        public LevelId district;
+        public int played, last = -1, seed, stage;
+    }
+
+    public static Type EngageBoss()
     {
         if (flight != null)
             bossHits = flight.hits;
+        var roster = DistrictWaves.Bosses(LevelRun.Current);
+        if (roster.Count == 1 || FlightTrials.Active != null)
+            return roster[0];
+        var random = new System.Random(unchecked(LevelRun.Seed + 397 * LevelRun.Stage + 7919 * (int)LevelRun.Current));
+        if (flight == null) return roster[random.Next(roster.Count)];
+
+        // Draw only when the pilot actually reaches the boss. Reloading the same district
+        // (including a Warp Core retry) must reproduce its encounter without spending another draw.
+        var bag = Data.bossRotations.Find(b => b.district == LevelRun.Current);
+        if (bag == null)
+        {
+            bag = new BossRotation { district = LevelRun.Current };
+            Data.bossRotations.Add(bag);
+        }
+        if (bag.seed == LevelRun.Seed && bag.stage == LevelRun.Stage && bag.last >= 0 && bag.last < roster.Count)
+            return roster[bag.last];
+        int all = (1 << roster.Count) - 1;
+        int available = all & ~bag.played;
+        if (available == 0)
+        {
+            bag.played = 0;
+            available = all & ~(1 << bag.last);
+        }
+        var choices = new List<int>(roster.Count);
+        for (int i = 0; i < roster.Count; i++)
+            if ((available & (1 << i)) != 0) choices.Add(i);
+        bag.last = choices[random.Next(choices.Count)];
+        bag.played |= 1 << bag.last;
+        bag.seed = LevelRun.Seed;
+        bag.stage = LevelRun.Stage;
+        Save();
+        return roster[bag.last];
     }
     public static void DefeatBoss()
     {

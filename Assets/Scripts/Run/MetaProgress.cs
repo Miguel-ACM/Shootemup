@@ -30,6 +30,7 @@ public static partial class MetaProgress
         public string pin;
         public List<FlightLog> history = new List<FlightLog>();
         public List<ServiceRecord> records = new List<ServiceRecord>();
+        public List<BossRotation> bossRotations = new List<BossRotation>();
         public List<string> completed = new List<string>();
         public int coins;
         public string ship = nameof(ShipFrame.GR07);
@@ -190,6 +191,7 @@ public static partial class MetaProgress
         data.history ??= new List<FlightLog>();
         data.records ??= new List<ServiceRecord>();
         data.completed ??= new List<string>();
+        data.bossRotations ??= new List<BossRotation>();
         if (data.version < 2)
         {
             data.version = 2;
