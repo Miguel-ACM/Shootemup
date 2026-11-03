@@ -13,7 +13,7 @@
   <div class="deck-head"><div><div class="eyebrow" id="track-no">DISTRICT / 01</div><h1 id="title">Plains</h1></div>
    <div class="tempo"><span class="eyebrow">TRACK TEMPO</span><strong id="bpm">—</strong><span class="unit"> BPM</span></div></div>
   <section class="scope" aria-label="Waveform and transport"><div class="scope-top"><span class="eyebrow"><i class="led"></i> SIGNAL</span><span id="clock">0:00 / —</span></div>
-   <div class="plot"><canvas id="wave" aria-label="Waveform with progression boundaries and the active section"></canvas>
+   <div class="plot"><canvas id="wave" role="slider" tabindex="0" aria-label="Playback position" aria-valuemin="0" aria-valuenow="0" title="Click to seek"></canvas>
     <button id="handle-start" class="loop-handle" role="slider" aria-label="Boss loop start" hidden>IN</button>
     <button id="handle-end" class="loop-handle" role="slider" aria-label="Boss loop end" hidden>OUT</button></div>
    <div class="transport"><button id="play" class="play" disabled><span aria-hidden="true">▶</span> Play</button>

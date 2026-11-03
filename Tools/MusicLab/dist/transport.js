@@ -4,6 +4,15 @@ const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const position = (d, at) => d.offset + Math.max(0, at - d.at)*d.speed;
 const clockAt = (d, offset) => d.at + (offset - d.offset)/d.speed;
 const boss = part => part === 'peak' || part === 'fast';
+export function seekTarget(map, time, preferred = 'intro') {
+    const pos = clamp(time, 0, map.duration);
+    // Flight and Boss often overlap. Keep the active mix when the click falls inside it.
+    const selected = [preferred, 'intro', 'body', 'outro', 'peak'].find(key => {
+        const range = map.sections[key === 'fast' ? 'peak' : key];
+        return range && range.start <= pos && pos < range.end;
+    }) ?? 'recording';
+    return { part:selected, pos, rate:selected === 'fast' ? 1.06 : 1, bass:boss(selected) ? bassDb : 0 };
+}
 function bassAt(d, at) {
     const t = d.ramp ? clamp((at - d.at)/d.ramp, 0, 1) : 1;
     return d.from + (d.to - d.from)*t;
@@ -18,7 +27,7 @@ export class Transport {
         this.master.connect(ctx.destination);
     }
     range(part) {
-        return this.map.adaptive === false ? { start:0, end:this.map.duration } :
+        return this.map.adaptive === false || part === 'recording' ? { start:0, end:this.map.duration } :
             this.map.sections[part === 'fast' ? 'peak' : part];
     }
     deck(part, at, offset, from, fadeIn, end = this.range(part).end) {
@@ -66,6 +75,27 @@ export class Transport {
         this.current = this.deck('intro', at, this.range('intro').start, 0, fadeIn);
         this.plan();
     }
+    seek({part, pos, bass}) {
+        const now = this.ctx.currentTime, at = now + .012;
+        for (const d of this.voices) {
+            if (d.at >= now) this.discard(d);
+            else {
+                const gain = d.gain.gain, level = gain.value;
+                gain.cancelScheduledValues(now);
+                gain.setValueAtTime(level,now);
+                gain.linearRampToValueAtTime(0,at);
+                d.source.stop(at);
+            }
+        }
+        this.current = this.next = this.cut = this.requested = this.afterCut = null;
+        this.editPending = false;
+        this.ended = pos >= this.map.duration;
+        this.playing = !this.ended;
+        this.cutOffset = pos;
+        if (this.ended) return;
+        this.current = this.deck(part, at, pos, bass, .012);
+        this.plan();
+    }
     plan(request = null, exit = false) {
         const d = this.current;
         if (this.next) this.discard(this.next);
@@ -76,13 +106,13 @@ export class Transport {
         this.cutOffset = request || exit ? this.map.boundaries.find(b => b > pos && b <= end) ?? end : end;
         this.cut = clockAt(d, this.cutOffset);
         this.requested = request;
-        const part = exit ? null : request ?? (this.map.adaptive === false || d.part === 'outro' ? null : d.part === 'intro' ? 'body' : d.part);
+        const part = exit ? null : request ?? (this.map.adaptive === false || d.part === 'outro' || d.part === 'recording' ? null : d.part === 'intro' ? 'body' : d.part);
         const fade = clamp(2*60/this.map.bpm, .48, 1);
         // An outgoing deck plays beyond the cut while the incoming downbeat lands exactly on it.
         // At the physical end of a recording, use its final tail for the fade instead.
         const tail = Math.max(0, Math.min(fade, d.availableUntil - this.cut));
         const overlap = (part || exit) && tail >= .04 ? tail : 0;
-        this.fadeAt = overlap ? this.cut : Math.max(d.at+.05, this.cut-fade);
+        this.fadeAt = overlap ? this.cut : Math.max(d.at, this.cut-fade);
         const stop = this.cut + overlap;
         d.gain.gain.setValueAtTime(1, this.fadeAt);
         d.gain.gain.linearRampToValueAtTime(0, stop);
@@ -152,7 +182,7 @@ export class Transport {
         }
         const d = this.current;
         if (!d) return { part:this.ended && this.map.adaptive !== false ? 'outro' : 'intro',
-            pos:this.ended ? this.range('outro').end : this.range('intro').start, rate:1, bass:0 };
+            pos:this.ended ? this.cutOffset : this.range('intro').start, rate:1, bass:0 };
         return { part:d.part, pos:position(d,this.ctx.currentTime), rate:d.speed,
             bass:bassAt(d,this.ctx.currentTime), next:this.requested, remaining:this.cut-this.ctx.currentTime };
     }

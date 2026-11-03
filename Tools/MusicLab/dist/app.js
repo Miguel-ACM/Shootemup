@@ -1,4 +1,4 @@
-import { Transport } from './transport.js';
+import { Transport, seekTarget } from './transport.js';
 import { barGrid, markerLimits, sameSpan, sectionKeys, validSpan } from './markers.mjs';
 
 const $ = id => document.getElementById(id);
@@ -8,6 +8,7 @@ const set = (node, value) => { if (node.textContent !== value) node.textContent 
 const volume = () => Number($('volume').value) / 100 * .65;
 let tracks = [], track, map, engine, context, controller, loadingAudio = false, message = '', chordKey = '';
 let fastLoad, cueRequest = 0, selection, handoff;
+let pendingSeek = null;
 const padNodes = {};
 const drafts = new Map(), saving = new Set();
 let editSection = 'peak';
@@ -52,6 +53,7 @@ function library() {
 
 function showTrack(item) {
     track = item;
+    pendingSeek = null;
     chordKey = '';
     $('title').textContent = item.title;
     $('track-no').textContent = (item.district ? 'DISTRICT' : 'RECORDING') + ' / ' + String(tracks.indexOf(item)+1).padStart(2,'0');
@@ -151,7 +153,7 @@ async function play() {
         }
         await context.resume();
         if (signal.aborted) return;
-        if (engine && !engine.ended) { engine.playing = true; return; }
+        if (engine && !engine.ended && !pendingSeek) { engine.playing = true; return; }
         if (!engine) {
             loadingAudio = true;
             message = 'Opening recording…';
@@ -161,7 +163,10 @@ async function play() {
             if (signal.aborted) return;
             engine = new Transport(context, buffer, map, volume());
         }
-        engine.start();
+        if (pendingSeek) {
+            engine.seek(pendingSeek);
+            pendingSeek = null;
+        } else engine.start();
         message = '';
     } catch (error) {
         if (!signal.aborted) message = 'Playback failed · ' + error.message;
@@ -172,6 +177,34 @@ async function play() {
 $('play').onclick = play;
 $('volume').oninput = () => { if (engine) engine.master.gain.setTargetAtTime(volume(), context.currentTime, .015); };
 $('preview').onclick = () => engine?.previewChange();
+
+function seekTo(time) {
+    cancelSelection();
+    if (!map) return;
+    ++cueRequest;
+    message = '';
+    const target = seekTarget(map,time,pendingSeek?.part ?? engine?.state().part);
+    if (engine?.playing) engine.seek(target);
+    else {
+        engine?.disposeDecks();
+        pendingSeek = target;
+    }
+    draw();
+}
+const wave = $('wave');
+wave.onclick = e => {
+    if (!map) return;
+    const rect = wave.getBoundingClientRect();
+    seekTo((e.clientX - rect.left) / rect.width * map.duration);
+};
+wave.onkeydown = e => {
+    if (!map) return;
+    const pos = pendingSeek?.pos ?? engine?.state().pos ?? map.sections.intro.start;
+    const targets = { ArrowLeft:pos-1, ArrowRight:pos+1, Home:0, End:map.duration };
+    if (!(e.key in targets)) return;
+    e.preventDefault();
+    seekTo(targets[e.key]);
+};
 for (const [part,[label,icon]] of Object.entries(parts)) {
     const b = document.createElement('button');
     b.className = 'pad';
@@ -314,10 +347,10 @@ for (const side of ['start','end']) {
 $('hear-loop').onclick = async () => {
     cancelSelection();
     const chosen = map;
-    ++cueRequest;
+    const ticket = ++cueRequest;
     message = '';
     if (!engine?.playing) await play();
-    if (map === chosen && engine?.playing) engine.auditionEnding(editSection);
+    if (map === chosen && ticket === cueRequest && engine?.playing) engine.auditionEnding(editSection);
 };
 $('save-loop').onclick = async () => {
     const sheet = map, id = sheet.id;
@@ -420,13 +453,16 @@ function waveform(s) {
 
 function draw() {
     finishHandoff();
-    const s = engine?.state() ?? { part:'intro',pos:map?.sections.intro.start ?? 0,rate:1,bass:0 };
+    const s = pendingSeek ?? engine?.state() ?? { part:'intro',pos:map?.sections.intro.start ?? 0,rate:1,bass:0 };
     const moving = !!engine?.playing;
     $('play').disabled = !map || loadingAudio;
     $('hear-loop').disabled = !map?.adaptive || loadingAudio;
-    const label = moving ? 'Ⅱ  Pause' : engine?.ended ? '↺  Replay' : '▶  Play';
+    const label = moving ? 'Ⅱ  Pause' : engine?.ended && !pendingSeek ? '↺  Replay' : '▶  Play';
     set($('play'), label);
     set($('clock'), fmt(s.pos) + ' / ' + fmt(map?.duration));
+    wave.setAttribute('aria-valuemax', map?.duration ?? 0);
+    wave.setAttribute('aria-valuenow', Math.floor(s.pos));
+    wave.setAttribute('aria-valuetext', fmt(s.pos));
     set($('bpm'), map?.bpm ? String(Number(map.bpm.toFixed(1))) : '—');
     for (const [part,b] of Object.entries(padNodes)) {
         const range = map?.sections[part === 'fast' ? 'peak' : part];
@@ -436,10 +472,11 @@ function draw() {
         set(b.lastChild, range && map.adaptive !== false ? fmt(range.start) + ' – ' + fmt(range.end) : '—');
     }
     set($('status'), message || (s.next ? parts[s.next][0] + ' queued for the next progression ending.' :
-        engine?.ended ? 'Recording complete.' : map?.adaptive === false ? 'Short cue · plays straight through.' :
+        pendingSeek ? 'Cued at ' + fmt(s.pos) + '.' : engine?.ended ? 'Recording complete.' : map?.adaptive === false ? 'Short cue · plays straight through.' :
         !engine ? 'Start on Intro. Choose a cue to queue a change.' : !moving ? 'Paused.' :
         s.part === 'fast' ? 'Fast boss loop · original pitch.' : s.part === 'peak' ? 'Boss loop · original tempo.' :
-        s.part === 'body' ? 'Flight section looping.' : s.part === 'outro' ? 'Playing out.' : 'Flight follows the intro.'));
+        s.part === 'body' ? 'Flight section looping.' : s.part === 'outro' ? 'Playing out.' :
+        s.part === 'recording' ? 'Playing recording.' : 'Flight follows the intro.'));
     $('preview').hidden = !s.next || !moving || s.remaining < 2*60/(map?.bpm || 120) + .1;
     set($('rate'), s.rate.toFixed(2) + '×');
     set($('bass'), (s.bass > .05 ? '+' + s.bass.toFixed(1) : '0') + ' dB');

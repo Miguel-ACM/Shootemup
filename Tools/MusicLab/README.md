@@ -2,6 +2,8 @@
 
 From the project root, run `node Tools/MusicLab/serve.mjs` and open [Music Lab](http://127.0.0.1:8766/). The server reads the game's MP3s and cue sheets directly. An optional numeric argument selects another local port.
 
+Click the waveform to seek to that time. While paused, the click sets the start point for Play. With the waveform focused, the left and right arrow keys move the playhead by one second.
+
 Choose a track and press Play. Intro runs into Flight. Select Boss or Outro to queue a crossfade at a detected progression ending. **Preview the change** moves the audition playhead to two beats before that cut. Boss repeats a long high-energy passage at its original tempo with a 4.5 dB low shelf at 145 Hz. The outro releases the bass over eight beats. The short Stage Complete cue plays through once.
 
 Choose **Intro**, **Flight**, **Boss** or **Outro** under **Section markers**. Drag either waveform handle or use the arrows beside **Start** and **End** to step one four-beat bar. The file edges are available for pickups and tails. Each section must include one full bar. **Hear ending** auditions the last two beats and what follows them. Intro hands off to Flight, Flight and Boss loop, and Outro plays out. **Save for game** writes all edited sections for the song together. The next Unity play session and future builds read those markers.
