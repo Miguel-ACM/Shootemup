@@ -133,6 +133,16 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""priority"": 0
                 },
                 {
+                    ""name"": ""FlightFocus"",
+                    ""type"": ""Button"",
+                    ""id"": ""5dfc6b5b-e824-4258-a05a-67070b63919b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
                     ""name"": ""ActiveRight"",
                     ""type"": ""Button"",
                     ""id"": ""e7a30099-fa65-4fdb-9125-f302b219a0e2"",
@@ -247,6 +257,28 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Focus"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5f583747-d067-43f6-abf0-c6162dd28343"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FlightFocus"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""856dc1fa-cb7e-4724-98a8-f124d7232105"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FlightFocus"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -525,6 +557,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         m_PlayerControls_FireSecondary = m_PlayerControls.FindAction("FireSecondary", throwIfNotFound: true);
         m_PlayerControls_Move = m_PlayerControls.FindAction("Move", throwIfNotFound: true);
         m_PlayerControls_Focus = m_PlayerControls.FindAction("Focus", throwIfNotFound: true);
+        m_PlayerControls_FlightFocus = m_PlayerControls.FindAction("FlightFocus", throwIfNotFound: true);
         m_PlayerControls_ActiveRight = m_PlayerControls.FindAction("ActiveRight", throwIfNotFound: true);
         m_PlayerControls_ActiveLeft = m_PlayerControls.FindAction("ActiveLeft", throwIfNotFound: true);
         m_PlayerControls_Start = m_PlayerControls.FindAction("Start", throwIfNotFound: true);
@@ -614,6 +647,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerControls_FireSecondary;
     private readonly InputAction m_PlayerControls_Move;
     private readonly InputAction m_PlayerControls_Focus;
+    private readonly InputAction m_PlayerControls_FlightFocus;
     private readonly InputAction m_PlayerControls_ActiveRight;
     private readonly InputAction m_PlayerControls_ActiveLeft;
     private readonly InputAction m_PlayerControls_Start;
@@ -646,6 +680,10 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "PlayerControls/Focus".
         /// </summary>
         public InputAction @Focus => m_Wrapper.m_PlayerControls_Focus;
+        /// <summary>
+        /// Provides access to the underlying input action "PlayerControls/FlightFocus".
+        /// </summary>
+        public InputAction @FlightFocus => m_Wrapper.m_PlayerControls_FlightFocus;
         /// <summary>
         /// Provides access to the underlying input action "PlayerControls/ActiveRight".
         /// </summary>
@@ -704,6 +742,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Focus.started += instance.OnFocus;
             @Focus.performed += instance.OnFocus;
             @Focus.canceled += instance.OnFocus;
+            @FlightFocus.started += instance.OnFlightFocus;
+            @FlightFocus.performed += instance.OnFlightFocus;
+            @FlightFocus.canceled += instance.OnFlightFocus;
             @ActiveRight.started += instance.OnActiveRight;
             @ActiveRight.performed += instance.OnActiveRight;
             @ActiveRight.canceled += instance.OnActiveRight;
@@ -742,6 +783,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Focus.started -= instance.OnFocus;
             @Focus.performed -= instance.OnFocus;
             @Focus.canceled -= instance.OnFocus;
+            @FlightFocus.started -= instance.OnFlightFocus;
+            @FlightFocus.performed -= instance.OnFlightFocus;
+            @FlightFocus.canceled -= instance.OnFlightFocus;
             @ActiveRight.started -= instance.OnActiveRight;
             @ActiveRight.performed -= instance.OnActiveRight;
             @ActiveRight.canceled -= instance.OnActiveRight;
@@ -838,6 +882,13 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnFocus(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "FlightFocus" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFlightFocus(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "ActiveRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

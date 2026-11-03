@@ -69,7 +69,8 @@ public static class GameInput
     {
         if (actions == null) return;
         var controls = actions.PlayerControls;
-        Snapshot = new PlayerInputSnapshot(controls.Move.ReadValue<Vector2>(), controls.Focus.IsPressed(),
+        bool focus = controls.Focus.IsPressed() || (!HangarHub.Active && controls.FlightFocus.IsPressed());
+        Snapshot = new PlayerInputSnapshot(controls.Move.ReadValue<Vector2>(), focus,
             controls.FirePrimary.IsPressed(), controls.FireSecondary.IsPressed());
     }
 }
