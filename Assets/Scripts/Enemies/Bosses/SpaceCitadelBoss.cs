@@ -33,7 +33,17 @@ public sealed partial class SpaceCitadelBoss : DistrictBoss
     {
         var target = new Vector3(centralLaser != null && centralLaser.IsAttachedTo(Hull) ? transform.position.x : Mathf.Sin(motionAge * .43f) * .82f,
             Camera.UpLimit - 3 + Mathf.Sin(motionAge * .31f) * .32f, 1);
+        bool drawingIn = accretionOrbit != null && accretionOrbit.enabled;
+        if (drawingIn)
+        {
+            // Carry the orbit through the dodge lanes and return to the upper firing station.
+            float t = Mathf.Clamp01((motionAge - orbitStarted) / Rest(phaseThree ? 10 : 8));
+            float dive = Mathf.Sin(t * Mathf.PI);
+            target.y = Mathf.Lerp(target.y, CombatRound.Border.yMin + 4.1f, dive * dive);
+        }
         transform.position = Vector3.MoveTowards(transform.position, target, dt * 3.2f);
+        if (drawingIn)
+            UpdateOrbitTell();
     }
 
     protected override void OnPhaseTwo()
@@ -49,6 +59,7 @@ public sealed partial class SpaceCitadelBoss : DistrictBoss
         health = Mathf.Max(0, Reactor.health);
         if (health > 0) return;
         completing = true;
+        CloseWell();
         health = 1;
         base.damage(2 / Mathf.Max(.001f, GameRules.enemyDamageReceived));
     }

@@ -252,9 +252,22 @@ public sealed class BossRefitReview : MonoBehaviour
         yield return new WaitForSeconds(.25f);
         Check(part.health < before && Mathf.Abs(part.health - boss.health) < .01f, mode + " " + level + " native hits update the shared boss health");
         Check(CombatUpgrades.Nearest(part.transform.position, null, 1) == part, "homing targets the actual weakpoint");
-        yield return new WaitForSeconds(3);
+        if (boss is SpaceCitadelBoss hole)
+        {
+            yield return VerifyOrbit<NeedleRound>(hole, 2 * Difficulty.Dense(18), .19f);
+            yield return VerifyOrbit<GiantOrb>(hole, 2 * Difficulty.Dense(4), .75f);
+        }
+        else yield return new WaitForSeconds(3);
         Check(CombatRound.Live.Count > 0 && CombatRound.Live.Count <= CombatRound.Limit, mode + " " + level + " phase one fires within the existing pool");
         yield return Capture(level.ToString() + mode + "Phase1");
+        if (level == LevelId.Space && mode == RunDifficulty.Normal)
+        {
+            float until = Time.time + 12;
+            float lowLane = CombatRound.Border.yMin + 1.5f;
+            while (!CombatRound.Live.Any(s => s.transform.position.y < lowLane) && Time.time < until) yield return null;
+            Check(CombatRound.Live.Any(s => s.transform.position.y < lowLane), "The inward orbit reaches the lower dodge lanes");
+            yield return Capture("SpaceOrbitLow");
+        }
         part.damage(boss.health * .56f); yield return null;
         Check(boss.CurrentPhase == 2 && boss.Invulnerable, "shared health triggers a protected second phase");
         int score = Score.CurrentScore; before = part.health;
@@ -279,6 +292,26 @@ public sealed class BossRefitReview : MonoBehaviour
             yield return new WaitForSeconds(.8f);
         }
         Clear(); yield return null;
+    }
+
+    IEnumerator VerifyOrbit<T>(SpaceCitadelBoss boss, int count, float margin) where T : CombatRound
+    {
+        float until = Time.time + 6;
+        while (!CombatRound.Live.OfType<T>().Any() && Time.time < until) yield return null;
+        var origins = CombatRound.Live.OfType<T>().Select(s => (Vector2)(Vector3)ProbeAccess.Get(s, "origin")).ToArray();
+        Check(origins.Length == count, Difficulty.Current + " launches a complete " + typeof(T).Name + " volley");
+        var center = origins.Aggregate(Vector2.zero, (sum, p) => sum + p) / count;
+        float radius = Vector2.Distance(center, origins[0]);
+        Check(Vector2.Distance(center, boss.Reactor.transform.position) < .15f && radius > 2,
+            "Accretion surrounds the moving event horizon");
+        var view = CombatRound.Border;
+        Check(origins.All(p => Mathf.Abs(Vector2.Distance(p, center) - radius) < .01f &&
+            p.x >= view.xMin + margin - .01f && p.x <= view.xMax - margin + .01f &&
+            p.y >= view.yMin + margin - .01f && p.y <= view.yMax - margin + .01f), "Every orbit spawn fits on screen at one radius");
+        var angles = origins.Select(p => Mathf.Atan2(p.y - center.y, p.x - center.x) * Mathf.Rad2Deg).OrderBy(a => a).ToArray();
+        for (int i = 0; i < count; i++)
+            if (Mathf.Abs(Mathf.Repeat(angles[(i + 1) % count] - angles[i], 360) - 360f / count) > .1f)
+                throw new Exception("Uneven angular spacing in the " + typeof(T).Name + " orbit");
     }
 }
 #endif

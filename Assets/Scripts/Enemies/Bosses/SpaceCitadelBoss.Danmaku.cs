@@ -1,12 +1,10 @@
 using UnityEngine;
 using System.Collections;
 
-// Space citadel: gravity is the weapon. Rounds come from the edges of space or the
-// station's own core.
+// The black hole draws rounds in from a visible orbit and flings them out of its core.
 // Phase one (central reactor open)
-//   Accretion: mirrored rings of arrows appear just outside every edge of the screen
-//     and spiral in, accelerating, until the core swallows them; swarms of dark stars
-//     (giant orbs) drift in from the edges among them.
+//   Accretion: arrows appear around the disk and spiral in until the core swallows
+//     them. Dark stars (giant orbs) curl in from the same orbit on alternate beats.
 //   Supernova: the core throws rings of arrows outward; each ring stops, holds, then
 //     collapses back through the core and bursts out the other side. The centre
 //     laser cuts the middle at the end.
@@ -17,12 +15,14 @@ using System.Collections;
 //   Binary Collapse: two supernova rings at once, counter-rotating offsets, with the
 //     laser between them.
 // Phase three (Hard)
-//   Big Crunch: the core breathes, swallowing accretion rings from the edges and
+//   Big Crunch: the core breathes, swallowing accretion rings from its orbit and
 //     flinging spiral arms back out, both always running and trading dominance.
 public sealed partial class SpaceCitadelBoss
 {
     Vector3 Core => Reactor != null ? Reactor.transform.position : transform.position;
     MaterialPropertyBlock wellInk;
+    LineRenderer accretionOrbit;
+    float orbitStarted;
     protected override void Attack()
     {
         if (Reactor != null)
@@ -55,8 +55,32 @@ public sealed partial class SpaceCitadelBoss
     Transform CoreBody => Reactor != null ? Reactor.transform : transform;
 
     // Accretion brightens the disk itself; the singularity stays dark.
-    void OpenWell() => SetAccretion(1);
-    void CloseWell() => SetAccretion(0);
+    void OpenWell(bool inward)
+    {
+        if (inward)
+        {
+            orbitStarted = motionAge;
+            if (accretionOrbit == null)
+            {
+                var tint = LevelProjectilePalette.Accent(LevelId.Space);
+                tint.a = .32f;
+                accretionOrbit = CombatVisuals.Line(transform, tint, .023f);
+                accretionOrbit.useWorldSpace = false;
+                accretionOrbit.sortingLayerName = "Enemy";
+                CombatVisuals.Ring(accretionOrbit, Vector3.zero, 1);
+            }
+            UpdateOrbitTell();
+            accretionOrbit.enabled = true;
+        }
+        SetAccretion(1);
+    }
+
+    void CloseWell()
+    {
+        if (accretionOrbit != null)
+            accretionOrbit.enabled = false;
+        SetAccretion(0);
+    }
     void SetAccretion(float strength)
     {
         if (Hull == null) return;
@@ -67,57 +91,45 @@ public sealed partial class SpaceCitadelBoss
         renderer.SetPropertyBlock(wellInk);
     }
 
-    // A point just outside the screen, walking its edge clockwise from the top centre.
-    static Vector2 EdgePoint(float u)
+    // Fit the entire orbit, including the outer half of the largest star, in view.
+    static float AccretionRadius(Vector3 center)
     {
-        const float Margin = .7f;
-        float left = Camera.LeftLimit - Margin, right = Camera.RightLimit + Margin, bottom = Camera.DownLimit - Margin, top = Camera.UpLimit + Margin;
-        float width = right - left, height = top - bottom;
-        float d = Mathf.Repeat(Mathf.Repeat(u, 1) * 2 * (width + height) + width * .5f, 2 * (width + height));
-        if (d < width)
-            return new Vector2(left + d, top);
-        d -= width;
-        if (d < height)
-            return new Vector2(right, top - d);
-        d -= height;
-        if (d < width)
-            return new Vector2(right - d, bottom);
-        return new Vector2(left, bottom + d - width);
+        Rect view = CombatRound.Border;
+        float clearance = Mathf.Min(Mathf.Min(center.x - view.xMin, view.xMax - center.x),
+                                    Mathf.Min(center.y - view.yMin, view.yMax - center.y));
+        return Mathf.Clamp(clearance - .75f, 0, 3.6f);
     }
 
-    // A mirrored ring around the whole screen edge that spirals in to the core.
-    void AccretionRing(int n, int beads, float spin)
+    void UpdateOrbitTell()
     {
-        var into = CoreBody;
-        for (int i = 0; i < beads; i++)
+        var center = Core;
+        accretionOrbit.transform.position = center;
+        accretionOrbit.transform.localScale = Vector3.one * AccretionRadius(center);
+    }
+
+    void AccretionRing(int n, int pairs)
+    {
+        var center = Core;
+        float radius = AccretionRadius(center);
+        for (int i = 0; i < pairs * 2; i++)
         {
-            // The ring creeps round the edge every time, so no stretch of it stays empty.
-            var p = EdgePoint((i + Mathf.Repeat(n * .37f, 1)) / (beads * 2f));
-            foreach (int mirror in new[] { 1, -1 })
-            {
-                var from = new Vector2(p.x * mirror, p.y);
-                var toward = (Vector2)Core - from;
-                // Far rounds (the bottom edge) start faster, so the whole ring arrives together.
-                Fire<NeedleRound>(new Vector3(from.x, from.y, 1), CombatVisuals.Rotate(toward.normalized, mirror * spin), .6f + toward.magnitude * .22f, .19f)
-                    .Absorb(into, 7, .6f).LivesFor(12);
-            }
+            var radial = CombatVisuals.Rotate(Vector2.up, (i + .5f + n * .37f) * 180f / pairs);
+            var heading = CombatVisuals.Rotate(-radial, radial.x < 0 ? 28 : -28);
+            Fire<NeedleRound>(center + (Vector3)radial * radius, heading, .6f + radius * .22f, .19f)
+                .Absorb(CoreBody, 7, .6f).LivesFor(12);
         }
     }
 
-    // Dark stars drifting in from mirrored points on the edge.
     void AccretionStars(int n, int pairs)
     {
-        var into = CoreBody;
-        for (int k = 0; k < pairs; k++)
+        var center = Core;
+        float radius = AccretionRadius(center);
+        for (int i = 0; i < pairs * 2; i++)
         {
-            var p = EdgePoint(Mathf.Repeat(n * .137f + k * .5f / pairs, .5f));
-            foreach (int mirror in new[] { 1, -1 })
-            {
-                var from = new Vector2(p.x * mirror, p.y);
-                var toward = (Vector2)Core - from;
-                Fire<GiantOrb>(new Vector3(from.x, from.y, 1), CombatVisuals.Rotate(toward.normalized, mirror * 20), .4f + toward.magnitude * .14f, .75f)
-                    .Absorb(into, 4, 1).LivesFor(14);
-            }
+            var radial = CombatVisuals.Rotate(Vector2.up, (i + .5f + n * .137f) * 180f / pairs);
+            var heading = CombatVisuals.Rotate(-radial, radial.x < 0 ? -20 : 20);
+            Fire<GiantOrb>(center + (Vector3)radial * radius, heading, .4f + radius * .14f, .75f)
+                .Absorb(CoreBody, 4, 1).LivesFor(14);
         }
     }
 
@@ -147,11 +159,11 @@ public sealed partial class SpaceCitadelBoss
 
     IEnumerator Accretion()
     {
-        OpenWell();
+        OpenWell(inward: true);
         yield return Wait(.6f);
         yield return Every(8, Rest(.4f), n =>
         {
-            AccretionRing(n, Dense(18), 28);
+            AccretionRing(n, Dense(18));
             if (n % 2 == 1)
                 AccretionStars(n, Dense(4));
         });
@@ -187,7 +199,7 @@ public sealed partial class SpaceCitadelBoss
 
     IEnumerator Expulsion()
     {
-        OpenWell();
+        OpenWell(inward: false);
         yield return Charge(Hull, WeaponPort(), .5f);
         yield return Every(8, Rest(.09f), n =>
         {
@@ -217,13 +229,13 @@ public sealed partial class SpaceCitadelBoss
     // spiral arms with sparse rings, dark stars travelling both ways.
     IEnumerator FinalSpell()
     {
-        OpenWell();
+        OpenWell(inward: true);
         yield return Wait(.5f);
         yield return Every(10, .1f, n =>
         {
             bool inward = n / 25 % 2 == 0;
             if (n % (inward ? 4 : 8) == 0)
-                AccretionRing(n / 4, Dense(inward ? 16 : 10), 28);
+                AccretionRing(n / 4, Dense(inward ? 16 : 10));
             if (!inward || n % 3 == 0)
                 Expel(n, inward ? 2 : 4, 55);
             if (!inward && n % 15 == 5)
