@@ -72,9 +72,16 @@ public sealed class GameOverState : MonoBehaviour
             new Vector2(405, 720), new Color(.013f, .025f, .035f, .86f));
         playfield.gameObject.AddComponent<RectMask2D>();
         var print = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
-        string title = won ? (log.contract == null ? "VICTORY" : "CERTIFIED") : "GAME\nOVER";
-        lettering = Label(title, won ? 220 : 247, won ? 82 : 145, won ? 44 : 63, font,
-            won ? accent : DockInstrument.Paper).rectTransform;
+        string title = won ? (log.contract == null ? "VICTORY" : "CERTIFIED") : "GAME OVER";
+        var headline = Label(title, won ? 220 : 245, won ? 82 : 98, won ? 44 : 72, won ? font : print,
+            won ? accent : new Color(1, .76f, .58f));
+        lettering = headline.rectTransform;
+        if (!won)
+        {
+            headline.fontStyle = FontStyles.Bold | FontStyles.Italic;
+            headline.characterSpacing = -3;
+            DockInstrument.Block(playfield, "Debrief rule", new Vector2(0, 193), new Vector2(330, 3), new Color(.75f, .29f, .17f));
+        }
         if (won)
         {
             wings = new GameObject("Pilot wings", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
@@ -89,7 +96,8 @@ public sealed class GameOverState : MonoBehaviour
             + "   /   " + log.Duration, 151, 35, 18, print, DockInstrument.Paper);
         Label(log.route, 111, 48, 18, print, DockInstrument.Muted);
         Label("SCORE", 48, 22, 13, font, accent);
-        score = Label("", 9, 52, 34, font, DockInstrument.Paper);
+        score = Label("", 9, 52, won ? 34 : 43, won ? font : print, DockInstrument.Paper);
+        if (!won) score.fontStyle = FontStyles.Bold;
         coins = Label("", -39, 38, 22, print, DockInstrument.Brass);
         Label(log.bosses + (log.bosses == 1 ? " boss" : " bosses") + "     " + log.clean + " no-hit     "
             + log.hits + (log.hits == 1 ? " hit" : " hits") + "     " + log.peak + "× peak", -78, 32, 18, print, DockInstrument.Paper);
