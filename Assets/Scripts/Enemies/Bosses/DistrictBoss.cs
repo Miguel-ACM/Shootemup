@@ -27,8 +27,12 @@ public abstract class DistrictBoss : DistrictEnemy
     }
 
     protected bool PhaseTransitioning => encounter.Transitioning(age);
-    // While a phase breaks the boss repositions and cannot be hurt.
-    public bool Invulnerable => PhaseTransitioning;
+    const float PhaseGraceSeconds = .65f;
+    protected bool openingComplete;
+    protected virtual bool AtOpeningStation => transform.position.y <= station.y + .025f;
+    public bool Invulnerable => !openingComplete ||
+        (phaseEntryUntil > 0 && age < phaseEntryUntil + PhaseGraceSeconds * LevelRun.EnemyTempoScale);
+    public override bool CanBeTargeted => base.CanBeTargeted && !Invulnerable;
     public override bool CanReceiveDamage => base.CanReceiveDamage && !Invulnerable;
     protected virtual bool RepositionsOnPhase => true;
     protected virtual bool PatternEmissionAllowed => true;
@@ -106,6 +110,9 @@ public abstract class DistrictBoss : DistrictEnemy
             motionAge += motionDelta;
             MoveBoss(motionDelta);
         }
+        // Latch once. A later dive or orbit across the entry lane is part of the fight.
+        if (!openingComplete && AtOpeningStation)
+            openingComplete = true;
         if (!enteredFight && transform.position.y < Camera.UpLimit - 1)
         {
             enteredFight = true;

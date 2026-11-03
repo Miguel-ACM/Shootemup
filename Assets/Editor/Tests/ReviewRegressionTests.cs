@@ -173,6 +173,7 @@ public class ReviewRegressionTests
         var hull = hullObject.AddComponent<SpaceCitadelBoss>();
         var core = hullObject.AddComponent<SpaceBossPart>();
         var target = targetObject.AddComponent<ThunderLanceBoss>();
+        ProbeAccess.Set(target, "openingComplete", true);
         targetObject.transform.position = UnityEngine.Vector3.up * 2;
         AEnemy.Live.Add(hull);
         AEnemy.Live.Add(core);
@@ -196,12 +197,22 @@ public class ReviewRegressionTests
         try
         {
             var boss = go.AddComponent<ThunderLanceBoss>();
-            ProbeAccess.Set(boss, "phaseEntryUntil", 1.5f);
             float health = boss.health;
+            Assert.IsFalse(boss.CanBeTargeted);
+            boss.damage(10);
+            Assert.AreEqual(health, boss.health);
+            ProbeAccess.Set(boss, "openingComplete", true);
+            Assert.IsTrue(boss.CanReceiveDamage);
+            ProbeAccess.Set(boss, "phaseEntryUntil", 1.5f);
             Assert.IsFalse(boss.CanReceiveDamage);
             Assert.AreEqual(0, CombatHit.Apply(boss, 10, UnityEngine.Vector3.zero, UnityEngine.Vector2.up, fire: true));
             Assert.AreEqual(health, boss.health);
             Assert.IsNull(go.GetComponent<BurningHull>());
+            ProbeAccess.Set(boss, "age", 1.5f + .3f * LevelRun.EnemyTempoScale);
+            Assert.IsTrue(boss.EmissionAllowed);
+            Assert.IsFalse(boss.CanReceiveDamage);
+            ProbeAccess.Set(boss, "age", 1.5f + .7f * LevelRun.EnemyTempoScale);
+            Assert.IsTrue(boss.CanReceiveDamage);
             foreach (Type type in new[] { typeof(SpaceBossPart), typeof(HellCrabHead), typeof(DesertWormCore) })
             {
                 var part = (AEnemy)go.AddComponent(type);

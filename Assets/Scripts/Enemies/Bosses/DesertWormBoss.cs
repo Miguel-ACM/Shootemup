@@ -6,6 +6,7 @@ public sealed partial class DesertWormBoss : DistrictBoss
     public const int BodyCount = 7;
     readonly DesertWormCore[] cores = new DesertWormCore[BodyCount + 1];
     readonly Transform[] sections = new Transform[BodyCount];
+    protected override bool AtOpeningStation => sections[BodyCount - 1].position.y <= Camera.UpLimit - .5f;
     SandSpine spine;
     Vector3 previous;
     float routeWidth;
@@ -145,6 +146,7 @@ public sealed partial class DesertWormBoss : DistrictBoss
 public sealed class DesertWormCore : AEnemy
 {
     DesertWormBoss owner;
+    public override bool CanBeTargeted => base.CanBeTargeted && owner != null && !owner.Invulnerable;
     public override bool CanReceiveDamage => base.CanReceiveDamage && owner != null && !owner.Invulnerable;
     MeshRenderer mesh;
     public static DesertWormCore Create(DesertWormBoss owner, Transform parent, bool head, float health, Vector3 local)

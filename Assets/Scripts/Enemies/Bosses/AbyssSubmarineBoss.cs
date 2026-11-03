@@ -35,7 +35,7 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
         get; private set;
     }
 
-    public override bool CanBeTargeted => !Submerged && health > 0;
+    public override bool CanBeTargeted => !Submerged && base.CanBeTargeted;
     // The charge winds up for 0.6 s after it settles at the top.
     const float ChargeStart = 10.9f;
     // The dive cycle owns the hull's position, including through a phase break.

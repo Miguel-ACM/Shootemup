@@ -31,7 +31,7 @@ public sealed partial class SpaceCitadelBoss : DistrictBoss
     protected override void PressureAttack() { }
     protected override void MoveBoss(float dt)
     {
-        var target = new Vector3(centralLaser != null && centralLaser.IsAttachedTo(Hull) ? transform.position.x : Mathf.Sin(motionAge * .43f) * .82f,
+        station = new Vector3(centralLaser != null && centralLaser.IsAttachedTo(Hull) ? transform.position.x : Mathf.Sin(motionAge * .43f) * .82f,
             Camera.UpLimit - 3 + Mathf.Sin(motionAge * .31f) * .32f, 1);
         bool drawingIn = accretionOrbit != null && accretionOrbit.enabled;
         if (drawingIn)
@@ -39,9 +39,9 @@ public sealed partial class SpaceCitadelBoss : DistrictBoss
             // Carry the orbit through the dodge lanes and return to the upper firing station.
             float t = Mathf.Clamp01((motionAge - orbitStarted) / Rest(phaseThree ? 10 : 8));
             float dive = Mathf.Sin(t * Mathf.PI);
-            target.y = Mathf.Lerp(target.y, CombatRound.Border.yMin + 4.1f, dive * dive);
+            station.y = Mathf.Lerp(station.y, CombatRound.Border.yMin + 4.1f, dive * dive);
         }
-        transform.position = Vector3.MoveTowards(transform.position, target, dt * 3.2f);
+        transform.position = Vector3.MoveTowards(transform.position, station, dt * 3.2f);
         if (drawingIn)
             UpdateOrbitTell();
     }

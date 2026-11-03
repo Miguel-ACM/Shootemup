@@ -274,11 +274,13 @@ public sealed class BossRefitReview : MonoBehaviour
         Check(CombatHit.Apply(part, 50, part.transform.position, Vector2.up, fire: true) == 0 && part.health == before && Score.CurrentScore == score && part.GetComponent<BurningHull>() == null,
             "phase break rejects weakpoint damage, coatings and score");
         yield return new WaitForSeconds(1.8f);
+        Check(boss.Invulnerable && !part.CanBeTargeted, "weakpoint stays protected briefly after the phase resumes");
+        yield return new WaitForSeconds(.5f);
         Check(!boss.Invulnerable && part.CanReceiveDamage && boss.PhaseCount == (mode == RunDifficulty.Hard ? 3 : 2), mode + " has the correct phase count and resumes taking hits");
         yield return new WaitForSeconds(3); yield return Capture(level.ToString() + mode + "Phase2");
         if (mode == RunDifficulty.Hard)
         {
-            part.damage(boss.health * .51f); yield return null; yield return new WaitForSeconds(1.8f);
+            part.damage(boss.health * .51f); yield return null; yield return new WaitForSeconds(2.3f);
             Check(boss.CurrentPhase == 3 && part.CanReceiveDamage, level + " retains its Hard-only third phase");
             yield return new WaitForSeconds(2); yield return Capture(level + "HardPhase3");
         }

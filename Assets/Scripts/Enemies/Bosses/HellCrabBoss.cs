@@ -59,8 +59,8 @@ public sealed partial class HellCrabBoss : DistrictBoss
 
     protected override void MoveBoss(float dt)
     {
-        var target = new Vector3(Mathf.Sin(motionAge * .58f) * .70f, Camera.UpLimit - 2.55f, 1);
-        transform.position = Vector3.MoveTowards(transform.position, target, dt * 3.4f);
+        station = new Vector3(Mathf.Sin(motionAge * .58f) * .70f, Camera.UpLimit - 2.55f, 1);
+        transform.position = Vector3.MoveTowards(transform.position, station, dt * 3.4f);
         if (claws[0] == null)
             return;
         float before = clawClock;

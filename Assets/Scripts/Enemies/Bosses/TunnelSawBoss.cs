@@ -11,6 +11,7 @@ public sealed partial class TunnelSawBoss : DistrictBoss
     Rect arena;
     float Radius => Hull.GetComponent<MeshFilter>().sharedMesh.bounds.extents.x * Hull.localScale.x;
     bool entered;
+    protected override bool AtOpeningStation => entered;
     int impacts;
     protected override void Configure()
     {

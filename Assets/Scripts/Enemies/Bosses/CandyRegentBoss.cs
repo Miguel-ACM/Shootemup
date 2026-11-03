@@ -5,6 +5,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed partial class CandyRegentBoss : DistrictBoss
 {
+    protected override bool AtOpeningStation => arrived;
     float nextBrood = 2.8f, legClock, legDuration, rest;
     int dash;
     Vector3 legStart, legEnd, legControl;

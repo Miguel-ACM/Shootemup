@@ -17,7 +17,7 @@ public abstract class DistrictMiniboss : DistrictEnemy
 
     public float Remaining { get; private set; } = 20;
     public float HealthFraction => health / Mathf.Max(1, maximum);
-    public override bool CanBeTargeted => !Retreating && health > 0;
+    public override bool CanBeTargeted => Engaged && !Retreating && base.CanBeTargeted;
     protected bool Enraged => health < maximum * .5f;
     protected override void Start()
     {
@@ -175,9 +175,8 @@ public abstract class DistrictMiniboss : DistrictEnemy
 
     public override void damage(float amount)
     {
-        if (!Retreating)
+        if (CanReceiveDamage)
             base.damage(amount);
     }
 
-    public override bool CanReceiveDamage => base.CanReceiveDamage && !Retreating;
 }

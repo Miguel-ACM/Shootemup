@@ -4,6 +4,7 @@ public sealed partial class CityDuoBoss : DistrictBoss
 {
     public bool heavy;
     public CityDuoBoss partner;
+    protected override bool AtOpeningStation => base.AtOpeningStation && (heavy || partner == null || partner.openingComplete);
     [EnemyTunable("Heavy hull / Base health", 1, 50000)] public float heavyBaseHealth = 1400;
     bool enraged;
     float combinedMaximum;
