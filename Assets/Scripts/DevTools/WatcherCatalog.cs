@@ -29,6 +29,7 @@ public static class WatcherCatalog
         switch (level)
         {
             case LevelId.Heaven:
+                return new[] { typeof(DawnGatekeeper) };
             case LevelId.Void:
                 return Array.Empty<Type>();
             case LevelId.Hell:

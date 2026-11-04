@@ -26,7 +26,7 @@ public static class DistrictWaves
     public static string[] Sequence() => LevelRun.Current == LevelId.Void ? new[] { "boss" } : new[] { "reward", "2", "3", "4", "encounterChoice", "6", "8", "10", "miniboss", "12", "14", "minibossChoice", "encounterChoice", "16", "20", "boss" };
     public static Wave Miniboss()
     {
-        string[] types = { nameof(FieldsHeavyWing), nameof(TunnelDefensePlatform), nameof(SnowSiegeCraft), nameof(StormReactor), nameof(CityCommandCarrier), nameof(ScarabDredger), nameof(TaffyDuelist), nameof(OrbitalWarden), nameof(ReefLeviathan), nameof(InfernalFerryman) };
+        string[] types = { nameof(FieldsHeavyWing), nameof(TunnelDefensePlatform), nameof(SnowSiegeCraft), nameof(StormReactor), nameof(CityCommandCarrier), nameof(ScarabDredger), nameof(TaffyDuelist), nameof(OrbitalWarden), nameof(ReefLeviathan), nameof(InfernalFerryman), nameof(DawnGatekeeper) };
         return new Wave(6, 23, 1, ConflictGroup.cg.center, new List<WaveUnit> { new WaveUnit(types[(int)LevelRun.Current], 0, new Vector3(0, 1.2f, 1)) { miniboss = true } }) { parts = new[] { types[(int)LevelRun.Current] } };
     }
 
