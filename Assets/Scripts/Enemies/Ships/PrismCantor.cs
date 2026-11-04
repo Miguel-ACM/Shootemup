@@ -26,14 +26,16 @@ public static partial class IndustrialMeshFactory
     public static Mesh PrismCantorMesh()
     {
         if(prismCantor!=null)return prismCantor;var b=new Builder();
-        BevelArmor(b,new[]{V(0,-.86f),V(-.44f,0),V(0,1.05f),V(.44f,0)},.5f,9);
+        b.Surface(6,8,(u,v)=>{float a=u*Mathf.PI*2,r=Mathf.Sin(v*Mathf.PI)*.43f;return new Vector3(Mathf.Cos(a)*r,(v-.5f)*2.1f,Mathf.Sin(a)*r-.1f);},9);
         for(int s=-1;s<=1;s+=2)
         {
-            b.Prism(new[]{V(s*.26f,.6f),V(s*1.05f,.3f),V(s*.78f,-.85f),V(s*.5f,-.55f)},.24f,3,Vector3.zero,7);
-            b.Drum(new Vector3(s*.68f,-.6f,-.18f),.21f,.19f,11,8,2);
-            b.Drum(new Vector3(s*.68f,-.6f,-.3f),.13f,.04f,8,8,3);
+            b.Sweep(new Vector3(0,.83f,.1f),new Vector3(s*1.28f,.84f,.05f),new Vector3(s*1.23f,-.26f,-.1f),new Vector3(s*.68f,-.62f,-.23f),.19f,.15f,3);
+            b.Sweep(new Vector3(s*.18f,.48f,-.25f),new Vector3(s*.73f,.33f,-.4f),new Vector3(s*.8f,-.20f,-.4f),new Vector3(s*.68f,-.60f,-.3f),.11f,.12f,15);
+            b.Halo(new Vector3(s*.68f,-.6f,-.26f),.22f,.055f,Vector3.one,Quaternion.identity,7,32);
+            b.Pearl(new Vector3(s*.68f,-.6f,-.31f),new Vector3(.13f,.13f,.10f),8);
         }
-        b.Prism(new[]{V(-.13f,.6f),V(0,1.2f),V(.13f,.6f)},.2f,8,new Vector3(0,0,-.1f),7);
-        return prismCantor=b.Finish("Prism cantor / diamond crystal between open golden forks");
+        b.Halo(new Vector3(0,.05f,0),.72f,.026f,Vector3.one,Quaternion.Euler(58,0,0),3);
+        b.Pearl(new Vector3(0,1.2f,-.1f),new Vector3(.09f,.16f,.09f),8);
+        return prismCantor=b.Finish("Cantor / suspended crystal and arched prismatic cradle");
     }
 }
