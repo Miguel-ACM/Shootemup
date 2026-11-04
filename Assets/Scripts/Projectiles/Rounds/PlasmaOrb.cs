@@ -1,9 +1,9 @@
 using UnityEngine;
 public sealed class PlasmaOrb : CombatRound, ICombatDamageable
 {
-    // Destructible plasma is sturdy: it takes a sustained stream to burst it.
+    // A short burst clears destructible plasma without soaking up sustained fire.
     // Its outline is a life ring that shrinks to an arc as it loses health.
-    const float Sturdiness = 60;
+    const float Sturdiness = 25;
     float health;
     public bool CanReceiveDamage => !ended && health > 0 && gameObject.activeInHierarchy;
     LineRenderer outline;
