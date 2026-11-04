@@ -31,6 +31,7 @@ public static class EnemyExpansion
     }
 
     public static readonly Entry[] All = {
+        new Entry(LevelId.Heaven, typeof(PrismCantor), 87, .56f, false, IndustrialMeshFactory.PrismCantorMesh, new[] { new Vector3(-.68f,-.6f,-.3f), new Vector3(.68f,-.6f,-.3f), new Vector3(0,1.2f,-.1f) }, System.Array.Empty<Vector3>(), WavePartLibrary.PrismCantorParts),
         new Entry(LevelId.Heaven, typeof(AegisReliquary), 86, .66f, false, IndustrialMeshFactory.AegisReliquaryMesh, new[] { new Vector3(-.72f,-.96f,-.25f), new Vector3(.72f,-.96f,-.25f) }, new[] { new Vector3(-.5f,.85f,0), new Vector3(.5f,.85f,0) }, WavePartLibrary.AegisReliquaryParts),
         new Entry(LevelId.Heaven, typeof(ChoirLancer), 85, .52f, false, IndustrialMeshFactory.ChoirLancerMesh, new[] { new Vector3(0,-1.0f,-.23f) }, new[] { new Vector3(0,.85f,0) }, WavePartLibrary.ChoirLancerParts),
         // Individual enemies are registered here with their own content commits.
