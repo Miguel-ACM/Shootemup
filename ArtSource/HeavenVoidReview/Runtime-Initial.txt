@@ -1,0 +1,203 @@
+FAIL
+PASS Space offers Hell / Heaven
+PASS Hell automatically continues to Void
+PASS Void preserves seed and contains only boss
+PASS Space offers Hell / Heaven
+PASS Heaven automatically continues to Void
+PASS Void preserves seed and contains only boss
+PASS Underwater offers Hell / Heaven
+PASS Hell automatically continues to Void
+PASS Void preserves seed and contains only boss
+PASS Underwater offers Hell / Heaven
+PASS Heaven automatically continues to Void
+PASS Void preserves seed and contains only boss
+PASS Heaven authored score 17381 / 2
+PASS Heaven authored score 17381 / 3
+PASS Heaven authored score 17381 / 4
+PASS Heaven authored score 17381 / 5
+PASS Heaven authored score 17381 / 6
+PASS Heaven authored score 17381 / 7
+PASS Heaven authored score 17381 / 8
+PASS Heaven authored score 17381 / 9
+PASS Heaven authored score 17381 / 10
+PASS Heaven authored score 17381 / 11
+PASS Heaven authored score 17381 / 12
+PASS Heaven authored score 17381 / 13
+PASS Heaven authored score 17381 / 14
+PASS Heaven authored score 17381 / 15
+PASS Heaven authored score 17381 / 16
+PASS Heaven authored score 17381 / 17
+PASS Heaven authored score 17381 / 18
+PASS Heaven authored score 17381 / 19
+PASS Heaven authored score 17381 / 20
+PASS Heaven authored score 221113 / 2
+PASS Heaven authored score 221113 / 3
+PASS Heaven authored score 221113 / 4
+PASS Heaven authored score 221113 / 5
+PASS Heaven authored score 221113 / 6
+PASS Heaven authored score 221113 / 7
+PASS Heaven authored score 221113 / 8
+PASS Heaven authored score 221113 / 9
+PASS Heaven authored score 221113 / 10
+PASS Heaven authored score 221113 / 11
+PASS Heaven authored score 221113 / 12
+PASS Heaven authored score 221113 / 13
+PASS Heaven authored score 221113 / 14
+PASS Heaven authored score 221113 / 15
+PASS Heaven authored score 221113 / 16
+PASS Heaven authored score 221113 / 17
+PASS Heaven authored score 221113 / 18
+PASS Heaven authored score 221113 / 19
+PASS Heaven authored score 221113 / 20
+PASS Heaven authored score 83019 / 2
+FAIL Heaven authored score 83019 / 3
+FAIL Heaven authored score 83019 / 4
+FAIL Heaven authored score 83019 / 5
+FAIL Heaven authored score 83019 / 6
+FAIL Heaven authored score 83019 / 7
+FAIL Heaven authored score 83019 / 8
+FAIL Heaven authored score 83019 / 9
+FAIL Heaven authored score 83019 / 10
+FAIL Heaven authored score 83019 / 11
+FAIL Heaven authored score 83019 / 12
+FAIL Heaven authored score 83019 / 13
+FAIL Heaven authored score 83019 / 14
+FAIL Heaven authored score 83019 / 15
+FAIL Heaven authored score 83019 / 16
+FAIL Heaven authored score 83019 / 17
+FAIL Heaven authored score 83019 / 18
+FAIL Heaven authored score 83019 / 19
+FAIL Heaven authored score 83019 / 20
+PASS Normal Void phase count
+PASS Burst damage cannot skip Void phase 1
+PASS Hidden boss rejects damage and homing
+PASS 15 second absence / Normal / 1
+PASS Interlude timing independent of difficulty tempo
+PASS Burst damage cannot skip Void phase 2
+PASS Hidden boss rejects damage and homing
+PASS 15 second absence / Normal / 2
+PASS Interlude timing independent of difficulty tempo
+PASS Burst damage cannot skip Void phase 3
+PASS Hidden boss rejects damage and homing
+PASS 15 second absence / Normal / 3
+PASS Interlude timing independent of difficulty tempo
+PASS Normal dense phases retain live budget; sampled peak 241
+Normal pooled objects created during fight: 0
+PASS Hard Void phase count
+PASS Burst damage cannot skip Void phase 1
+PASS Hidden boss rejects damage and homing
+PASS 15 second absence / Hard / 1
+PASS Interlude timing independent of difficulty tempo
+PASS Burst damage cannot skip Void phase 2
+PASS Hidden boss rejects damage and homing
+PASS 15 second absence / Hard / 2
+PASS Interlude timing independent of difficulty tempo
+PASS Burst damage cannot skip Void phase 3
+PASS Hidden boss rejects damage and homing
+PASS 15 second absence / Hard / 3
+PASS Interlude timing independent of difficulty tempo
+PASS Hard dense phases retain live budget; sampled peak 623
+Hard pooled objects created during fight: 0
+PASS Easy Void phase count
+PASS Burst damage cannot skip Void phase 1
+PASS Hidden boss rejects damage and homing
+PASS 15 second absence / Easy / 1
+PASS Interlude timing independent of difficulty tempo
+PASS Burst damage cannot skip Void phase 2
+PASS Hidden boss rejects damage and homing
+PASS 15 second absence / Easy / 2
+PASS Interlude timing independent of difficulty tempo
+PASS Easy dense phases retain live budget; sampled peak 196
+Easy pooled objects created during fight: 0
+Hard Void full-frame main thread ms: median=4,88 p99=8,66 max=12,09
+PASS Void final phase starts continuous boss finale
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 3
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 4
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 5
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 6
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 7
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 8
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 9
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 10
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 11
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 12
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 13
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 14
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 15
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 16
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 17
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 18
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 19
+System.InvalidOperationException: No paced composition for Heaven / 83019 / 3
+  at WaveComposer.Build (System.Int32 budget) [0x00035] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:132 
+  at WaveComposer.Create (System.Int32 budget) [0x00021] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Scripts\Waves\WaveComposer.cs:114 
+  at HeavenVoidReview+<Start>d__7.MoveNext () [0x00316] in C:\Users\Miguel\Shootemup\Build\ReviewCache\Temp\DecisionHoverReview\Assets\Editor\Checks\VerifyHeavenVoid.cs:125 
+Heaven authored score 83019 / 20

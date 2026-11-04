@@ -1,0 +1,9 @@
+PASS
+PASS Form 1 charge and release sprites follow every anatomical port
+PASS Form 1 reuses four prepared cues
+PASS Form 2 charge and release sprites follow every anatomical port
+PASS Form 2 reuses four prepared cues
+PASS Form 3 charge and release sprites follow every anatomical port
+PASS Form 3 reuses four prepared cues
+PASS Form 4 charge and release sprites follow every anatomical port
+PASS Form 4 reuses four prepared cues
