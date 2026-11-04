@@ -16,8 +16,9 @@ public sealed class SnowIcebreakerBoss : ArmoredHullBoss
         int side = 1;
         while (true)
         {
-            // Sounding Line: plant a diagonal seam of ice. Each heavy floe stops
-            // in place and fractures in a forward cone; successive cracks chase the bow.
+            // Sounding Line: tusks of ice rise inward from the shoulders, freeze,
+            // then crack sideways across each other. The upper arena belongs to
+            // this seam too; it is not another downward shell fan.
             station = new Vector3(Lane(-side), Camera.UpLimit - 2.3f, 1);
             while (Vector2.Distance(transform.position, station) > .1f) yield return null;
             yield return Charge(Hull, WeaponPort(), .52f);
@@ -27,8 +28,9 @@ public sealed class SnowIcebreakerBoss : ArmoredHullBoss
                 float heading = Mathf.Lerp(8, 52, i / (floes - 1f));
                 float stop = .38f + .10f * i;
                 for (int mirror = -1; mirror <= 1; mirror += 2)
-                    Fire<SimpleRound>(Muzzle(mirror < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.down, mirror * heading), 3.7f, .37f)
-                        .Pause(stop, .64f).SplitAt(stop + .60f, Dense(phaseThree ? 15 : 13), 11, 2.7f, .16f);
+                    Fire<SimpleRound>(Muzzle(mirror < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.up, mirror * heading), 3.7f, .37f)
+                        .Pause(stop, .64f, CombatRound.Turn.Rotate, mirror * (90 - heading), .72f)
+                        .SplitAt(stop + .70f, Dense(phaseThree ? 15 : 13), 11, 2.7f, .16f);
                 yield return Wait(Rest(.18f));
             }
             // Cut Channel: the prow commits to one shallow diagonal run. Its
@@ -43,7 +45,9 @@ public sealed class SnowIcebreakerBoss : ArmoredHullBoss
                 {
                     float cant = 24 + 20 * Mathf.Sin(i * .38f);
                     for (int shard = 0; shard < shards; shard++)
-                        Fire<NeedleRound>(Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.down,
+                        // Outward upthrust describes a breaking bow wave. Gravity
+                        // curls it back over the pilot while the prow changes sides.
+                        Fire<NeedleRound>(Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.right * sign,
                             sign * (cant + (shard - (shards - 1) * .5f) * 9)), 2.9f, .18f)
                             .Ramp(.38f, .38f).Fall(new Vector2(0,-.95f));
                     if (phaseTwo && i % 3 == 0)
@@ -61,8 +65,9 @@ public sealed class SnowIcebreakerBoss : ArmoredHullBoss
                 for (int i = 0; i < floes; i++)
                 {
                     for (int mirror = -1; mirror <= 1; mirror += 2)
-                        Fire<SimpleRound>(Muzzle(mirror < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.down, mirror * (8 + i * 8)), 2.9f, .27f)
-                            .SplitAt(.55f + .10f * i, Dense(11), 12, 2.6f, .16f);
+                        Fire<SimpleRound>(Muzzle(mirror < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.up, mirror * (8 + i * 8)), 2.9f, .27f)
+                            .Pause(.35f, .30f, CombatRound.Turn.Rotate, -mirror * 120, .85f)
+                            .SplitAt(.72f + .10f * i, Dense(11), 12, 2.6f, .16f);
                     yield return Wait(Rest(.12f));
                 }
             }
