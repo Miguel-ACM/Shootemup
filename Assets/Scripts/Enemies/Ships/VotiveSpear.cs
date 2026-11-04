@@ -25,14 +25,15 @@ public static partial class IndustrialMeshFactory
     public static Mesh VotiveSpearMesh()
     {
         if(votiveSpear!=null)return votiveSpear;var b=new Builder();
-        BevelArmor(b,new[]{V(0,-1.45f),V(-.24f,-.52f),V(-.2f,.72f),V(0,.96f),V(.2f,.72f),V(.24f,-.52f)},.25f,15);
+        CelestialKeel(b,.23f,2.8f,.22f);
         for(int s=-1;s<=1;s+=2)
         {
-            b.Prism(new[]{V(s*.15f,.5f),V(s*.84f,.95f),V(s*.70f,.32f),V(s*.24f,-.5f)},.13f,3,Vector3.zero,7);
-            Barrel(b,s*.24f,-.55f,.57f,.1f,-.17f);
-            b.Prism(new[]{V(s*.2f,.6f),V(s*.47f,.85f),V(s*.38f,1.15f)},.07f,1,new Vector3(0,0,-.12f),2);
+            Feather(b,new Vector3(s*.12f,-.2f,0),new Vector3(s*.97f,1.08f,.15f),.25f,-s*.20f);
+            Feather(b,new Vector3(s*.12f,.30f,-.03f),new Vector3(s*.45f,1.35f,.1f),.13f,-s*.09f,3);
+            b.Sweep(new Vector3(s*.1f,.35f,-.14f),new Vector3(s*.37f,.1f,-.25f),new Vector3(s*.25f,-.55f,-.24f),new Vector3(s*.24f,-.835f,-.17f),.08f,.09f,7,false,16);
+            CelestialMuzzle(b,new Vector3(s*.24f,-.835f,-.17f),.085f);
         }
-        b.Drum(new Vector3(0,.14f,-.18f),.16f,.10f,9,8,7);
-        return votiveSpear=b.Finish("Votive spear / elongated lance and swept pennant wings");
+        b.Pearl(new Vector3(0,.21f,-.22f),new Vector3(.10f,.34f,.07f),9);
+        return votiveSpear=b.Finish("Votive / needle prow and curved pennant blades");
     }
 }
