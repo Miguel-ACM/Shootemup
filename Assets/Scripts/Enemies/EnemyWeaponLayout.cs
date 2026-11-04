@@ -18,6 +18,7 @@ public static class EnemyWeaponLayout
             return expansion.ports;
         switch (hull)
         {
+            case 91: return new[] { new Vector3(0,-1.36f,-.32f), new Vector3(-1.5f,-1.055f,-.3f), new Vector3(1.5f,-1.055f,-.3f), new Vector3(-1.05f,.67f,-.4f), new Vector3(1.05f,.67f,-.4f) };
             case 90: return new[] { new Vector3(-1.25f,-1.025f,-.28f), new Vector3(1.25f,-1.025f,-.28f), new Vector3(0,-.95f,-.25f) };
             case 84:
                 return new[] { P(0, -1.53f), P(-.83f, -.56f), P(.83f, -.56f) };

@@ -92,6 +92,7 @@ public static partial class IndustrialMeshFactory
 
     public static Mesh CombatHull(int kind)
     {
+        if (kind == 91) return SeraphJudicatorBossMesh();
         if (kind == 90) return DawnGatekeeperMesh();
         if (kind == 45) return CitadelRefit();
         var authored = TerraModel("Hull" + kind);
