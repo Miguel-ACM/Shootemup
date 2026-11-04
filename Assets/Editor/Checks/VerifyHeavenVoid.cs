@@ -20,7 +20,7 @@ public static class VerifyHeavenVoid
         EditorApplication.playModeStateChanged+=state=>
         {
             if(state!=PlayModeStateChange.EnteredPlayMode||!SessionState.GetBool("HeavenVoidReview",false))return;
-            deadline=EditorApplication.timeSinceStartup+900;
+            deadline=EditorApplication.timeSinceStartup+(SessionState.GetBool("CelestialPolish",false)?1800:900);
             new GameObject("Heaven and Void review").AddComponent<HeavenVoidReview>();
         };
         EditorApplication.update+=()=>
@@ -35,7 +35,9 @@ public static class VerifyHeavenVoid
         Directory.CreateDirectory(Folder+"/Models");Directory.CreateDirectory(Folder+"/Frames");
         PlayerSettings.companyName="ShootemupReview";PlayerSettings.productName="HeavenVoidReview";
         EditorSceneManager.OpenScene("Assets/Scenes/Title.unity");
-        if(SessionState.GetBool("HeavenAngelReview",false))AngelGallery();else Gallery();
+        if(SessionState.GetBool("CelestialPolish",false))Gallery(CelestialPolishReview.Folder);else if(SessionState.GetBool("HeavenAngelReview",false))AngelGallery();else Gallery();
+        if(!Application.isBatchMode)
+        {
         var assembly=typeof(EditorWindow).Assembly;
         var view=EditorWindow.GetWindow(assembly.GetType("UnityEditor.GameView"));
         var sizesType=assembly.GetType("UnityEditor.GameViewSizes");
@@ -46,6 +48,7 @@ public static class VerifyHeavenVoid
         int count=(int)group.GetType().GetMethod("GetTotalCount").Invoke(group,null);
         view.GetType().GetProperty("selectedSizeIndex",BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic).SetValue(view,count-1);
         view.Show();
+        }
         SessionState.SetBool("HeavenVoidReview",true);
         EditorSceneManager.playModeStartScene=AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/Scenes/Title.unity");
         EditorApplication.isPlaying=true;
@@ -54,6 +57,29 @@ public static class VerifyHeavenVoid
     {
         SessionState.SetBool("HeavenVoidFixes",true);
         Run();
+    }
+    public static void RunPolish()
+    {
+        SessionState.SetBool("CelestialPolish",true);
+        SessionState.SetBool("HeavenAngelReview",false);SessionState.SetBool("HeavenVoidPorts",false);SessionState.SetBool("HeavenVoidFixes",false);
+        Run();
+    }
+    public static void RunPolishFixes()
+    {
+        SessionState.SetBool("CelestialPolishFixes",true);RunPolish();
+    }
+    public static void RunPolishFinalArt()
+    {
+        SessionState.SetBool("CelestialPolishFinalArt",true);RunPolish();
+    }
+    public static void BuildPolish()
+    {
+        if(!File.ReadAllText(CelestialPolishReview.Folder+"/Runtime.txt").StartsWith("PASS"))throw new Exception("Polish review has not passed");
+        if(!File.ReadAllText(CelestialPolishReview.Folder+"/Runtime-Hard.txt").StartsWith("PASS"))throw new Exception("Targeted Hard review has not passed");
+        if(!File.ReadAllText(CelestialPolishReview.Folder+"/Final-Art.txt").StartsWith("PASS"))throw new Exception("Final art review has not passed");
+        Gallery(CelestialPolishReview.Folder);
+        SessionState.SetBool("CelestialPolishBuild",true);
+        Build();
     }
     public static void RunAngel()
     {
@@ -80,10 +106,11 @@ public static class VerifyHeavenVoid
         UnityEngine.Object.DestroyImmediate(go);UnityEngine.Object.DestroyImmediate(camera.gameObject);UnityEngine.Object.DestroyImmediate(target);
         if(ShaderUtil.ShaderHasError(Resources.Load<Shader>("HeavenAngel")))throw new Exception("Heaven angel shader did not compile");
     }
-    static void Gallery()
+    static void Gallery(string output=null)
     {
+        output??=Folder;Directory.CreateDirectory(output+"/Models");
         var camera=new GameObject("Model review camera").AddComponent<UnityEngine.Camera>();
-        camera.transform.position=new Vector3(1000,0,-10);camera.orthographic=true;camera.orthographicSize=2.7f;
+        camera.transform.position=new Vector3(1000,0,-10);camera.orthographic=true;camera.orthographicSize=2.7f;camera.aspect=1;
         camera.cullingMask=1<<31;camera.backgroundColor=new Color(.07f,.08f,.11f);camera.clearFlags=CameraClearFlags.SolidColor;
         var target=new RenderTexture(480,480,24);camera.targetTexture=target;
         var models=new[]{typeof(ChoirLancer),typeof(AegisReliquary),typeof(PrismCantor),typeof(VotiveSpear),typeof(ThroneBarge),typeof(DawnGatekeeper),typeof(SeraphJudicatorBoss),typeof(VoidSovereignBoss)};
@@ -94,21 +121,24 @@ public static class VerifyHeavenVoid
             {
                 var go=new GameObject(type.Name){layer=31};go.transform.position=new Vector3(1000,0,0);
                 var mesh=type==typeof(VoidSovereignBoss)?IndustrialMeshFactory.VoidForm(form):IndustrialMeshFactory.CombatHull((int)EnemyCatalog.Get(type).Hull);
-                go.AddComponent<MeshFilter>().sharedMesh=mesh;go.AddComponent<MeshRenderer>().sharedMaterial=type==typeof(VoidSovereignBoss)?VoidSovereignBoss.Body:HeavenMaterials.Ivory;
+                go.AddComponent<MeshFilter>().sharedMesh=mesh;go.AddComponent<MeshRenderer>().sharedMaterial=type==typeof(VoidSovereignBoss)?VoidSovereignBoss.Body:type==typeof(SeraphJudicatorBoss)?HeavenAngelVisual.Surface:HeavenMaterials.Ivory;
+                foreach(var vertex in mesh.vertices)
+                    if(float.IsNaN(vertex.x)||float.IsNaN(vertex.y)||float.IsNaN(vertex.z)||float.IsInfinity(vertex.sqrMagnitude))throw new Exception("Invalid vertex in "+mesh.name);
                 camera.orthographicSize=Mathf.Max(mesh.bounds.size.x,mesh.bounds.size.y)*.65f;
+                camera.transform.position=new Vector3(1000+mesh.bounds.center.x,mesh.bounds.center.y,-10);
                 for(int angle=0;angle<2;angle++)
                 {
                     go.transform.rotation=Quaternion.Euler(angle==0?0:22,angle==0?0:24,0);camera.Render();
                     var previous=RenderTexture.active;RenderTexture.active=target;
                     var png=new Texture2D(480,480,TextureFormat.RGB24,false);png.ReadPixels(new Rect(0,0,480,480),0,0);png.Apply();
-                    File.WriteAllBytes(Folder+"/Models/"+type.Name+"-"+form+"-"+angle+".png",png.EncodeToPNG());
+                    File.WriteAllBytes(output+"/Models/"+type.Name+"-"+form+"-"+angle+".png",png.EncodeToPNG());
                     UnityEngine.Object.DestroyImmediate(png);RenderTexture.active=previous;
                 }
                 UnityEngine.Object.DestroyImmediate(go);
             }
         }
         UnityEngine.Object.DestroyImmediate(camera.gameObject);UnityEngine.Object.DestroyImmediate(target);
-        foreach(string shader in new[]{"HeavenClouds","HeavenMist","VoidFalls","VoidBody"})
+        foreach(string shader in new[]{"HeavenClouds","HeavenMist","HeavenSurface","HeavenAngel","VoidFalls","VoidBody"})
             if(ShaderUtil.ShaderHasError(Resources.Load<Shader>(shader)))throw new Exception("Shader error "+shader);
     }
     public static void Build()
@@ -120,7 +150,9 @@ public static class VerifyHeavenVoid
         Directory.CreateDirectory(Path.GetDirectoryName(path));
         var result=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=EditorBuildSettings.scenes.Where(s=>s.enabled).Select(s=>s.path).ToArray(),target=BuildTarget.StandaloneWindows64,locationPathName=path});
         bool ok=result.summary.result==UnityEditor.Build.Reporting.BuildResult.Succeeded;
-        File.WriteAllText(Folder+"/Build.txt",(ok?"PASS":"FAIL")+"\n"+path+"\nErrors="+result.summary.totalErrors+"; warnings="+result.summary.totalWarnings+"\n");
+        string report=SessionState.GetBool("CelestialPolishBuild",false)?CelestialPolishReview.Folder:Folder;
+        File.WriteAllText(report+"/Build.txt",(ok?"PASS":"FAIL")+"\n"+path+"\nErrors="+result.summary.totalErrors+"; warnings="+result.summary.totalWarnings+"\n");
+        SessionState.SetBool("CelestialPolishBuild",false);
         EditorApplication.Exit(ok?0:1);
     }
     public static void RunPorts()
@@ -145,6 +177,10 @@ public sealed class HeavenVoidReview:MonoBehaviour
         while(WaveWatcher.Current==null||!WaveWatcher.Current.Ready||CloudTransition.Busy||!WavePreparation.Ready)yield return null;
         watcher=WaveWatcher.Current;if(watcher.Looping)watcher.ToggleLoop();
         Time.captureDeltaTime=1f/30;
+        if(SessionState.GetBool("CelestialPolish",false))
+        {
+            yield return new CelestialPolishReview().Review(watcher);yield break;
+        }
         if(SessionState.GetBool("HeavenAngelReview",false))
         {
             yield return Angel();yield break;
@@ -248,7 +284,7 @@ public sealed class HeavenVoidReview:MonoBehaviour
             while(Time.time<until)
             {
                 yield return new WaitForEndOfFrame();
-                foreach(var beam in FindObjectsByType<PulseLaser>(FindObjectsSortMode.None))
+                foreach(var beam in FindObjectsByType<PulseLaser>())
                 {
                     var eye=(Transform)source.GetValue(beam);
                     attached&=eye!=null&&eye.IsChildOf(boss.Hull)&&(eye.name.StartsWith("Living eye")||eye.name=="Central living eye")&&Vector3.Distance(beam.transform.position,eye.position)<.15f;
