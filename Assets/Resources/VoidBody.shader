@@ -23,7 +23,7 @@ Shader "Shootemup/Void Body"
                 float tile=floor(i.uv.x*4)+4*floor(i.uv.y*4);
                 float3 normal=normalize(i.n),lamp=normalize(float3(-.4,.65,-1));
                 float light=saturate(dot(normal,lamp));
-                float rim=pow(1-abs(normal.z),2.5);
+                float rim=pow(saturate(1-abs(normal.z)),2.5);
                 float eye=(abs(tile-8)<.1||abs(tile-9)<.1)?1:0;
                 float vein=abs(tile-3)<.1?1:0;
                 float pulse=.76+.24*sin(_Time.y*2.4+i.p.y*3);
