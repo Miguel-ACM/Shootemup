@@ -50,6 +50,17 @@ public sealed class WavePreparation : MonoBehaviour
             IndustrialMeshFactory.CombatHull((int)EnemyCatalog.Get(boss).Hull);
             yield return null;
         }
+        if (LevelRun.Current == LevelId.Void)
+        {
+            for (int form = 0; form < 4; form++)
+            {
+                IndustrialMeshFactory.VoidForm(form);
+                yield return null;
+            }
+            _ = VoidSovereignBoss.Body;
+            job = null;
+            yield break;
+        }
         yield return WaveComposer.Prepare();
         // Complete the seeded plan before the opening breather, keeping combat cache-only.
         for (int budget = 2; budget <= 20; budget++)

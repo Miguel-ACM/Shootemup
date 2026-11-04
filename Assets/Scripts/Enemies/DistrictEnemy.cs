@@ -135,6 +135,8 @@ public abstract class DistrictEnemy : AEnemy
             renderer.sharedMaterial = EnemyExpansion.Material(enemy.hull);
         if (enemy.hull == 90 || enemy.hull == 91)
             renderer.sharedMaterial = HeavenMaterials.Ivory;
+        if (enemy.hull == 92)
+            renderer.sharedMaterial = VoidSovereignBoss.Body;
         if (!(enemy is SpaceCitadelBoss))
             IndustrialMeshFactory.AttachTerraParts("Hull" + enemy.hull, model.transform, renderer.sharedMaterial);
         enemy.Hull = model.transform;

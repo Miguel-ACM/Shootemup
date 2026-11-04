@@ -19,7 +19,8 @@ public static class DistrictWaves
         new[] { typeof(SpaceCitadelBoss) },
         new[] { typeof(AbyssSubmarineBoss) },
         new[] { typeof(HellCrabBoss) },
-        new[] { typeof(SeraphJudicatorBoss) }
+        new[] { typeof(SeraphJudicatorBoss) },
+        new[] { typeof(VoidSovereignBoss) }
     };
     public static IReadOnlyList<Type> Bosses(LevelId district) => bosses[(int)district];
     public static Type BossType => Bosses(LevelRun.Current)[0];
