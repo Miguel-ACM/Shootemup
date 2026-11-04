@@ -1,0 +1,80 @@
+FAIL
+PASS Normal retains phase count
+PASS Normal form 1 completes both distinct cards
+PASS Normal form 1 attacks the top on both cards: 4552 / 3288
+PASS Form break is invulnerable and untargetable
+PASS Fifteen-second barrage / Normal / 1
+PASS Normal form 2 completes both distinct cards
+PASS Normal form 2 attacks the top on both cards: 3534 / 1431
+PASS Form break is invulnerable and untargetable
+PASS Fifteen-second barrage / Normal / 2
+PASS Normal form 3 completes both distinct cards
+PASS Normal form 3 attacks the top on both cards: 3835 / 3445
+PASS Form break is invulnerable and untargetable
+PASS Fifteen-second barrage / Normal / 3
+PASS Normal form 4 completes both distinct cards
+PASS Normal form 4 attacks the top on both cards: 13772 / 10224
+Normal observed live peak: 304
+PASS Normal retains live budget headroom
+PASS Normal performs no projectile construction during the fight (0)
+PASS Easy retains phase count
+PASS Easy form 1 completes both distinct cards
+PASS Easy form 1 attacks the top on both cards: 4794 / 2622
+PASS Form break is invulnerable and untargetable
+PASS Fifteen-second barrage / Easy / 1
+PASS Easy form 2 completes both distinct cards
+PASS Easy form 2 attacks the top on both cards: 2628 / 889
+PASS Form break is invulnerable and untargetable
+PASS Fifteen-second barrage / Easy / 2
+PASS Easy form 4 completes both distinct cards
+PASS Easy form 4 attacks the top on both cards: 12121 / 8153
+Easy observed live peak: 167
+PASS Easy retains live budget headroom
+PASS Easy performs no projectile construction during the fight (0)
+PASS Hard retains phase count
+PASS Hard form 1 completes both distinct cards
+PASS Hard form 1 attacks the top on both cards: 4432 / 3400
+PASS Form break is invulnerable and untargetable
+PASS Fifteen-second barrage / Hard / 1
+PASS Hard form 2 completes both distinct cards
+PASS Hard form 2 attacks the top on both cards: 3403 / 2415
+PASS Form break is invulnerable and untargetable
+PASS Fifteen-second barrage / Hard / 2
+PASS Hard form 3 completes both distinct cards
+PASS Hard form 3 attacks the top on both cards: 3680 / 3741
+PASS Form break is invulnerable and untargetable
+PASS Fifteen-second barrage / Hard / 3
+PASS Hard form 4 completes both distinct cards
+PASS Hard form 4 attacks the top on both cards: 17232 / 14598
+Hard full-frame main thread: median=9,07 ms; p99=19,27 ms; max=20,63 ms
+Hard observed live peak: 598
+PASS Hard retains live budget headroom
+FAIL Hard performs no projectile construction during the fight (32)
+PASS Final form enters the shared finale
+PASS Score uses SimpleRound
+PASS Score uses NeedleRound
+PASS Score uses BurstShell
+PASS Score uses SuspendedRound
+PASS Score uses GiantOrb
+PASS Score uses ReturningDisc
+PASS Score uses RicochetBolt
+PASS Score uses HelixRound
+PASS Score uses PulseLaser
+PASS Score uses PlasmaOrb
+PASS Score uses GuidedMissile
+PASS Score uses ScatterCarrier
+PASS Score uses ProximityMine
+NeedleRound observed peak: 436
+SimpleRound observed peak: 158
+BurstShell observed peak: 4
+SuspendedRound observed peak: 86
+GiantOrb observed peak: 8
+ReturningDisc observed peak: 48
+RicochetBolt observed peak: 192
+HelixRound observed peak: 56
+PulseLaser observed peak: 4
+PlasmaOrb observed peak: 36
+GuidedMissile observed peak: 23
+ScatterCarrier observed peak: 12
+ProximityMine observed peak: 10
+Hard performs no projectile construction during the fight (32)

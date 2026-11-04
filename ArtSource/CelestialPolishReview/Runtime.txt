@@ -1,0 +1,19 @@
+PASS — full batch plus targeted Hard regression
+
+Runtime-Batch.txt preserves the original complete review: every Heaven addition,
+Normal/Easy/Hard Void phases, both cards of every form, upper-screen coverage,
+all 15-second transitions, invulnerability, all thirteen projectile deliveries,
+and the shared finale. Its sole failure was 32 new ricochet objects on Hard.
+
+The reserve was redistributed within the existing global pool budget.
+Runtime-Hard.txt reruns the affected complete Hard fight and passes:
+zero projectile construction, both cards reaching the top in every form,
+three fifteen-second interludes, all thirteen delivery types and the finale.
+Peak live rounds: Easy 167, Normal 304, Hard 598.
+
+The targeted run uses command-line Unity batch mode. It records complete main
+thread frames without screenshot I/O for the timing window: median 6.20 ms,
+p99 12.88 ms, maximum 16.27 ms. These are isolated Wave Watcher measurements,
+not a claim about performance on every machine or with every player loadout.
+
+See Final-Art.txt for the last eye-socket correction and Build.txt for the build.
