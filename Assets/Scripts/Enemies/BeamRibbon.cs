@@ -10,6 +10,8 @@ public sealed class BeamRibbon : MonoBehaviour
     SpriteRenderer mouth;
     Color hot, cool;
     bool playerBeam;
+    public bool Siege { get; set; }
+    LineRenderer leftBoundary, rightBoundary;
     public void Build(bool friendly = false)
     {
         playerBeam = friendly;
@@ -30,6 +32,9 @@ public sealed class BeamRibbon : MonoBehaviour
         collar.sortingOrder = 22;
         intake = CombatVisuals.Line(transform, hot, .025f);
         intake.sortingOrder = 22;
+        leftBoundary = CombatVisuals.Line(transform, hot, .025f);
+        rightBoundary = CombatVisuals.Line(transform, hot, .025f);
+        leftBoundary.enabled = rightBoundary.enabled = false;
         var go = new GameObject("Emitter plasma");
         go.transform.SetParent(transform, false);
         mouth = go.AddComponent<SpriteRenderer>();
@@ -83,6 +88,17 @@ public sealed class BeamRibbon : MonoBehaviour
         var end = p + (Vector3)direction * length;
         float flutter = .96f + .025f * Mathf.Sin(Time.time * 53) + .015f * Mathf.Sin(Time.time * 31);
         bool charging = charge < 1 && release <= 0;
+        // The fine outer rails show the final footprint throughout the charge.
+        leftBoundary.enabled = rightBoundary.enabled = Siege && charging;
+        if (Siege && charging)
+        {
+            Vector3 side = new Vector3(-direction.y, direction.x) * width * .5f;
+            leftBoundary.positionCount = rightBoundary.positionCount = 2;
+            leftBoundary.SetPosition(0, p-side); leftBoundary.SetPosition(1, end-side);
+            rightBoundary.SetPosition(0, p+side); rightBoundary.SetPosition(1, end+side);
+            var rim = new Color(hot.r,hot.g,hot.b,.18f+charge*.24f);
+            leftBoundary.startColor = leftBoundary.endColor = rightBoundary.startColor = rightBoundary.endColor = rim;
+        }
         tell.enabled = charging;
         if (charging)
         {
@@ -104,7 +120,7 @@ public sealed class BeamRibbon : MonoBehaviour
         float heat = charging ? charge * .65f : power;
         mouth.enabled = heat > .015f;
         mouth.transform.position = p;
-        mouth.transform.localScale = Vector3.one * Mathf.Min(.36f, .08f + width * heat * .95f) * (1 + .04f * heat * Mathf.Sin(Time.time * 19));
+        mouth.transform.localScale = Vector3.one * Mathf.Min(Siege ? 1.1f : .36f, .08f + width * heat * .95f) * (1 + .04f * heat * Mathf.Sin(Time.time * 19));
         var glow = Color.Lerp(hot, Color.white, heat * .18f);
         glow.a = heat * .9f;
         mouth.color = glow;

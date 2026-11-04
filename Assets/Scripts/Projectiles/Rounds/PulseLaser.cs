@@ -13,6 +13,9 @@ public class PulseLaser : CombatRound
     AEnemy owner;
     public float warning = .9f, activeTime = .65f, length = 22, width = .25f, sweep;
     public bool sideShots;
+    // Siege beams unfold gradually. Damage uses exactly the same widening envelope.
+    public float widthRise = .07f;
+    public bool celestial;
     float nextSide, clockRate = 1;
     protected override float ClockRate => clockRate;
     const float Cooldown = .22f;
@@ -21,7 +24,7 @@ public class PulseLaser : CombatRound
     public bool IsAttachedTo(Transform source) => attached && emitter == source && isActiveAndEnabled;
     public bool IsSustained => sustained;
     public float reversalArc;
-    public float Power => Active ? Mathf.Min(Mathf.Clamp01((age - warning) / .07f), sustained ? 1 : Mathf.Lerp(.4f, 1, Mathf.Clamp01((warning + activeTime - age) / .09f))) :
+    public float Power => Active ? Mathf.Min(Mathf.SmoothStep(0, 1, Mathf.Clamp01((age - warning) / Mathf.Max(.01f, widthRise))), sustained ? 1 : Mathf.Lerp(.4f, 1, Mathf.Clamp01((warning + activeTime - age) / .16f))) :
         age >= warning + activeTime ? Mathf.Pow(Mathf.Clamp01(1 - (age - warning - activeTime) / Cooldown), 2) * .4f : 0;
     protected override void Initialize()
     {
@@ -31,6 +34,8 @@ public class PulseLaser : CombatRound
         width = .25f;
         sweep = 0;
         sideShots = false;
+        widthRise = .07f;
+        celestial = false;
         nextSide = 0;
         emitter = null;
         owner = null;
@@ -99,7 +104,7 @@ public class PulseLaser : CombatRound
         if (!startedSound)
         {
             startedSound = true;
-            sound.Charge(warning / clockRate);
+            sound.Charge(warning / clockRate, false, celestial);
         }
         if (attached)
         {
@@ -130,6 +135,7 @@ public class PulseLaser : CombatRound
         if (owner is DistrictEnemy ship)
             ship.PointWeapon(transform.position, heading);
         sound.Drive(power, Active);
+        ribbon.Siege = celestial;
         ribbon.Draw(transform.position, heading, length, width, Charge, power, Mathf.Max(0, age - warning - activeTime) / Cooldown);
         var player = CombatVisuals.Player;
         if (Active && power > .15f && player != null)

@@ -11,7 +11,8 @@ public sealed class LaserSound : MonoBehaviour
     // The held hum sits lower than its source clip; at its original pitch it grated over long beams.
     const float SustainPitch = .7f;
     AudioSource transient, bed;
-    bool ignited, cooling, counted, friendly;
+    bool ignited, cooling, counted, friendly, celestial;
+    static AudioClip heavenCharge, heavenIgnition;
     public bool Sustaining => bed != null && bed.isPlaying;
     public static int SustainingCount => sustaining;
     void Prepare()
@@ -24,6 +25,8 @@ public sealed class LaserSound : MonoBehaviour
             releaseClip = Resources.Load<AudioClip>("Sounds/Beam/release");
             playerIgnitionClip = Resources.Load<AudioClip>("Sounds/Beam/player_ignite");
             playerSustainClip = Resources.Load<AudioClip>("Sounds/Beam/player_sustain");
+            heavenCharge = Resources.Load<AudioClip>("Sounds/Heaven/charge");
+            heavenIgnition = Resources.Load<AudioClip>("Sounds/Heaven/ignite");
         }
         if (transient != null)
             return;
@@ -43,16 +46,17 @@ public sealed class LaserSound : MonoBehaviour
         bed.clip = sustainClip;
     }
 
-    public void Charge(float seconds, bool player = false)
+    public void Charge(float seconds, bool player = false, bool siege = false)
     {
         Prepare();
         Stop();
         friendly = player;
+        celestial = siege;
         ignited = cooling = false;
         if (Time.time - lastCharge < .11f || AudioListener.pause)
             return;
         lastCharge = Time.time;
-        transient.clip = chargeClip;
+        transient.clip = celestial && heavenCharge != null ? heavenCharge : chargeClip;
         transient.pitch = Mathf.Clamp(.8f / Mathf.Max(.1f, seconds), .5f, 2f);
         transient.volume = player ? .16f : .20f;
         transient.Play();
@@ -69,14 +73,14 @@ public sealed class LaserSound : MonoBehaviour
             if (Time.time - lastIgnition > .075f)
             {
                 lastIgnition = Time.time;
-                transient.pitch = 1;
+                transient.pitch = celestial ? .78f : 1;
                 transient.volume = friendly ? .18f : .24f;
-                transient.PlayOneShot(friendly && playerIgnitionClip != null ? playerIgnitionClip : ignitionClip);
+                transient.PlayOneShot(celestial && heavenIgnition != null ? heavenIgnition : friendly && playerIgnitionClip != null ? playerIgnitionClip : ignitionClip);
             }
             bed.clip = friendly && playerSustainClip != null ? playerSustainClip : sustainClip;
             if (bed.clip != null)
             {
-                bed.pitch = SustainPitch;
+                bed.pitch = celestial ? .55f : SustainPitch;
                 bed.time = (((GetEntityId().GetHashCode() & 0x7fffffff) % 7) * .071f) % bed.clip.length;
                 bed.Play();
                 counted = true;
