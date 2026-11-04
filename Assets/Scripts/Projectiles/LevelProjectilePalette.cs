@@ -29,6 +29,10 @@ public static class LevelProjectilePalette
                 return new Color(1, .63f, .22f);
             case LevelId.Hell:
                 return new Color(.30f, 1, .78f);
+            case LevelId.Heaven:
+                return new Color(1, .48f, .08f);
+            case LevelId.Void:
+                return new Color(.72f, .25f, 1);
             default:
                 return new Color(1, .28f, .20f);
         }

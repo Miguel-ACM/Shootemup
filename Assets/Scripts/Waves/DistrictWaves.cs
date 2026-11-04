@@ -23,7 +23,7 @@ public static class DistrictWaves
     public static IReadOnlyList<Type> Bosses(LevelId district) => bosses[(int)district];
     public static Type BossType => Bosses(LevelRun.Current)[0];
 
-    public static string[] Sequence() => new[] { "reward", "2", "3", "4", "encounterChoice", "6", "8", "10", "miniboss", "12", "14", "minibossChoice", "encounterChoice", "16", "20", "boss" };
+    public static string[] Sequence() => LevelRun.Current == LevelId.Void ? new[] { "boss" } : new[] { "reward", "2", "3", "4", "encounterChoice", "6", "8", "10", "miniboss", "12", "14", "minibossChoice", "encounterChoice", "16", "20", "boss" };
     public static Wave Miniboss()
     {
         string[] types = { nameof(FieldsHeavyWing), nameof(TunnelDefensePlatform), nameof(SnowSiegeCraft), nameof(StormReactor), nameof(CityCommandCarrier), nameof(ScarabDredger), nameof(TaffyDuelist), nameof(OrbitalWarden), nameof(ReefLeviathan), nameof(InfernalFerryman) };

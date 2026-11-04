@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum LevelId
 {
-    Fields, Tunnel, Snow, Thunder, City, Desert, Candyland, Space, Underwater, Hell
+    Fields, Tunnel, Snow, Thunder, City, Desert, Candyland, Space, Underwater, Hell, Heaven, Void
 }
 
 public static class LevelRun
@@ -12,8 +12,9 @@ public static class LevelRun
     public static int Seed { get; private set; } = 17381;
     public static int Stage { get; private set; } = 1;
     public static int Loop { get; private set; } = 1;
-    public static bool ReturnsToPlains => Current == LevelId.Hell;
-    public static LevelId? AutomaticNext => Tier(Current) == 4 ? LevelId.Hell : (LevelId?)null;
+    public static bool ReturnsToPlains => false;
+    public static bool FinalDistrict => Current == LevelId.Void;
+    public static LevelId? AutomaticNext => Tier(Current) == 5 ? LevelId.Void : (LevelId?)null;
     // Health keeps growing after the speed caps preserve readable patterns.
     public static float EnemyHealthScale => (1 + (Tier(Current) - 1) * .16f + (Loop - 1) * .48f) * Difficulty.Health;
     public static float EnemyTempoScale => Mathf.Min(1.3f, 1 + (Tier(Current) - 1) * .025f + (Loop - 1) * .05f) * Difficulty.Tempo;
@@ -36,7 +37,10 @@ public static class LevelRun
             case LevelId.Underwater:
                 return 4;
             case LevelId.Hell:
+            case LevelId.Heaven:
                 return 5;
+            case LevelId.Void:
+                return 6;
             default:
                 throw new System.ArgumentOutOfRangeException(nameof(level));
         }
@@ -77,10 +81,12 @@ public static class LevelRun
 
     public static LevelId[] GetOptions()
     {
-        if (ReturnsToPlains)
-            return new[] { LevelId.Fields };
+        if (FinalDistrict)
+            return System.Array.Empty<LevelId>();
+        if (Tier(Current) == 5)
+            return new[] { LevelId.Void };
         if (Tier(Current) == 4)
-            return new[] { LevelId.Hell };
+            return new[] { LevelId.Hell, LevelId.Heaven };
         if (Tier(Current) == 3)
             return new[] { LevelId.Space, LevelId.Underwater };
         if (Current == LevelId.Snow)
@@ -112,6 +118,10 @@ public static class LevelRun
                 return new Color(.20f, .71f, .84f);
             case LevelId.Hell:
                 return new Color(.96f, .28f, .17f);
+            case LevelId.Heaven:
+                return new Color(1, .79f, .29f);
+            case LevelId.Void:
+                return new Color(.66f, .32f, .97f);
             default:
                 return new Color(.95f, .76f, .42f);
         }
@@ -139,6 +149,10 @@ public static class LevelRun
                 return "THE SUNKEN FLEET";
             case LevelId.Hell:
                 return "THE LAST DESCENT";
+            case LevelId.Heaven:
+                return "THE SHATTERED FIRMAMENT";
+            case LevelId.Void:
+                return "BEYOND THE LAST LIGHT";
             default:
                 return "THE CONCRETE CANYONS";
         }
