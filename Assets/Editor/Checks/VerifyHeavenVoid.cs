@@ -98,6 +98,11 @@ public static class VerifyHeavenVoid
         File.WriteAllText(Folder+"/Build.txt",(ok?"PASS":"FAIL")+"\n"+path+"\nErrors="+result.summary.totalErrors+"; warnings="+result.summary.totalWarnings+"\n");
         EditorApplication.Exit(ok?0:1);
     }
+    public static void RunPorts()
+    {
+        SessionState.SetBool("HeavenVoidPorts",true);
+        Run();
+    }
 }
 
 public sealed class HeavenVoidReview:MonoBehaviour
@@ -115,6 +120,10 @@ public sealed class HeavenVoidReview:MonoBehaviour
         while(WaveWatcher.Current==null||!WaveWatcher.Current.Ready||CloudTransition.Busy||!WavePreparation.Ready)yield return null;
         watcher=WaveWatcher.Current;if(watcher.Looping)watcher.ToggleLoop();
         Time.captureDeltaTime=1f/30;
+        if(SessionState.GetBool("HeavenVoidPorts",false))
+        {
+            yield return Ports();yield break;
+        }
         if(SessionState.GetBool("HeavenVoidFixes",false))
         {
             yield return Fixes();yield break;
@@ -192,6 +201,46 @@ public sealed class HeavenVoidReview:MonoBehaviour
         SessionState.SetBool("HeavenVoidReview",false);EditorApplication.Exit(errors.Count==0?0:1);
     }
     IEnumerator Ready(){yield return null;while(CloudTransition.Busy||!WavePreparation.Ready)yield return null;yield return null;}
+    IEnumerator Ports()
+    {
+        watcher.SelectDifficulty(RunDifficulty.Normal);watcher.SelectLevel(LevelId.Void);yield return Ready();
+        watcher.SelectEncounter(WaveWatcher.BossOne);yield return null;
+        VoidSovereignBoss boss=null;
+        while(boss==null){boss=FindAnyObjectByType<VoidSovereignBoss>();yield return null;}
+        var position=typeof(VoidSovereignBoss).GetMethod("Port",BindingFlags.Instance|BindingFlags.NonPublic);
+        for(int phase=1;phase<=4;phase++)
+        {
+            while(boss.Invulnerable)yield return null;
+            var seen=new HashSet<int>();bool aligned=true;float until=Time.time+8;int frame=0;
+            string path=folder+"/Frames/Void-Cues-"+phase;Directory.CreateDirectory(path);
+            while(Time.time<until)
+            {
+                yield return new WaitForEndOfFrame();
+                foreach(var sprite in boss.GetComponentsInChildren<SpriteRenderer>())
+                {
+                    if(!sprite.enabled||sprite.name!="Weapon charge and release")continue;
+                    float nearest=float.PositiveInfinity;int closest=-1;
+                    for(int i=0;i<(boss.Form==4?4:2);i++)
+                    {
+                        var expected=(Vector3)position.Invoke(boss,new object[]{i})+Vector3.back*.08f;
+                        float distance=Vector3.Distance(sprite.transform.position,expected);
+                        if(distance<nearest){nearest=distance;closest=i;}
+                    }
+                    aligned&=nearest<.01f;seen.Add(closest);
+                }
+                if(frame++%6==0)
+                {
+                    var capture=ScreenCapture.CaptureScreenshotAsTexture();
+                    File.WriteAllBytes(path+"/"+(frame/6).ToString("D4")+".jpg",capture.EncodeToJPG(88));Destroy(capture);
+                }
+            }
+            Check(aligned&&seen.Count==(boss.Form==4?4:2),"Form "+boss.Form+" charge and release sprites follow every anatomical port");
+            Check(boss.GetComponent<EnemyFiringCue>().PortCount==4,"Form "+boss.Form+" reuses four prepared cues");
+            if(phase<4){boss.damage(10000000);while(boss.CurrentPhase==phase)yield return null;}
+        }
+        File.WriteAllText(folder+"/Ports.txt",(errors.Count==0?"PASS":"FAIL")+"\n"+string.Join("\n",notes)+"\n"+string.Join("\n",errors));
+        SessionState.SetBool("HeavenVoidPorts",false);SessionState.SetBool("HeavenVoidReview",false);EditorApplication.Exit(errors.Count==0?0:1);
+    }
     IEnumerator Fixes()
     {
         watcher.SelectLevel(LevelId.Heaven);yield return Ready();

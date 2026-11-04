@@ -11,6 +11,7 @@ public sealed class EnemyFiringCue : MonoBehaviour
         public Transform lip;
         public Vector2 direction = Vector2.down, releaseAxis;
         public float heat, flash;
+        public bool active = true;
     }
 
     readonly System.Collections.Generic.List<Port> ports = new System.Collections.Generic.List<Port>(24);
@@ -53,6 +54,17 @@ public sealed class EnemyFiringCue : MonoBehaviour
     }
 
     static float Heat(float seconds) => seconds >= 0 && seconds < .48f ? 1 - seconds / .48f : 0;
+    // Shape-changing bosses keep the same small cue pool while moving their firing anatomy.
+    public void PlacePort(int index, Vector3 local, bool active, bool modeledLip)
+    {
+        var port = ports[index];
+        port.local = local;
+        port.active = active;
+        port.heat = port.flash = 0;
+        port.sprite.enabled = false;
+        port.lip.localPosition = local;
+        port.lip.gameObject.SetActive(active && modeledLip);
+    }
     public void Warn(float seconds)
     {
         foreach (var port in ports)
@@ -91,7 +103,7 @@ public sealed class EnemyFiringCue : MonoBehaviour
         float distance = float.PositiveInfinity;
         foreach (var port in ports)
         {
-            if (port.anchor == null)
+            if (!port.active || port.anchor == null)
                 continue;
             float d = (port.anchor.TransformPoint(port.local) - position).sqrMagnitude;
             if (d < distance)
@@ -127,7 +139,7 @@ public sealed class EnemyFiringCue : MonoBehaviour
                 port.lip.rotation = Quaternion.RotateTowards(port.lip.rotation, target, Time.deltaTime * 540);
             }
             port.flash = Mathf.Max(0, port.flash - Time.deltaTime);
-            bool show = !GameRules.playerDisabled && port.anchor != null && port.anchor.gameObject.activeInHierarchy && (port.heat > 0 || port.flash > 0);
+            bool show = port.active && !GameRules.playerDisabled && port.anchor != null && port.anchor.gameObject.activeInHierarchy && (port.heat > 0 || port.flash > 0);
             port.sprite.enabled = show;
             if (!show)
                 continue;

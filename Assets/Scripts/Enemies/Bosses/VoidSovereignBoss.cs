@@ -33,6 +33,7 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
         mesh.sharedMesh=IndustrialMeshFactory.VoidForm(Form-1);
         contact.radius=Form==1?.68f:Form==2?.88f:Form==3?1.0f:.74f;
         Hull.localRotation=Quaternion.identity;
+        for(int i=0;i<4;i++)firingCue.PlacePort(i,LocalPort(i),i<(Form==4?4:2),false);
     }
     protected override void Update(){if(WorldTimeStop.Frozen)return;base.Update();}
     protected override void MoveBoss(float dt)
@@ -55,14 +56,15 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
     protected override void Die(){foreach(var line in edgeTell)if(line!=null)line.enabled=false;base.Die();}
 
     // Ports move with the currently visible anatomy: eyes, mantis blades, jaw lips, then star points.
-    Vector3 Port(int index)
+    Vector3 Port(int index)=>Hull.TransformPoint(LocalPort(index));
+    Vector3 LocalPort(int index)
     {
         Vector3 local;
         if(Form==1)local=new Vector3(index%2==0?-.32f:.32f,-.18f,-.44f);
         else if(Form==2)local=new Vector3(index%2==0?-1.65f:1.65f,-.46f,-.22f);
         else if(Form==3)local=new Vector3(index%2==0?-.75f:.75f,-.85f,-.32f);
         else local=index%4==0?new Vector3(-1.65f,0,-.22f):index%4==1?new Vector3(1.65f,0,-.22f):index%4==2?new Vector3(0,1.65f,-.22f):new Vector3(0,-1.65f,-.22f);
-        return Hull.TransformPoint(local);
+        return local;
     }
     IEnumerator Prime(float seconds)
     {
