@@ -72,11 +72,19 @@ public static class LevelRun
 
     public static void GetChoices(out LevelId left, out LevelId right)
     {
-        if (ReturnsToPlains)
-            throw new System.InvalidOperationException("Final districts return directly to Plains");
+        if (FinalDistrict)
+            throw new System.InvalidOperationException("Void completes the campaign");
         var options = GetOptions();
         left = options[0];
         right = options[options.Length - 1];
+    }
+
+    // Tooling can inspect later-loop scaling without inventing a campaign route past the finale.
+    public static void Preview(LevelId level, int seed, int loop)
+    {
+        Reset(level, seed);
+        Loop = Mathf.Max(1, loop);
+        Stage = Tier(level) + (Loop - 1) * 6;
     }
 
     public static LevelId[] GetOptions()

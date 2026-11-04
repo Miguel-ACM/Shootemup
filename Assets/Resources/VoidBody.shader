@@ -1,6 +1,6 @@
 Shader "Shootemup/Void Body"
 {
-    Properties { _Tint("Tint",Color)=(1,1,1,1) _Hit("Hit",Range(0,1))=0 }
+    Properties { _Tint("Tint",Color)=(1,1,1,1) _HitFlash("Hit",Range(0,1))=0 }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" }
@@ -13,7 +13,7 @@ Shader "Shootemup/Void Body"
             #pragma fragment Frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             CBUFFER_START(UnityPerMaterial)
-            float4 _Tint;float _Hit;
+            float4 _Tint;float _HitFlash;
             CBUFFER_END
             struct I{float4 positionOS:POSITION;float3 normalOS:NORMAL;float2 uv:TEXCOORD0;};
             struct O{float4 positionCS:SV_POSITION;float3 n:TEXCOORD0;float2 uv:TEXCOORD1;float3 p:TEXCOORD2;};
@@ -29,9 +29,10 @@ Shader "Shootemup/Void Body"
                 float3 c=lerp(float3(.013,.009,.024),float3(.16,.09,.23),light)+rim*float3(.16,.06,.28);
                 c=lerp(c,float3(.72,.25,1)*pulse,vein*.65);
                 c=lerp(c,float3(.90,.56,1)*(.8+.2*light),eye);
-                return half4(lerp(c*_Tint.rgb,1,saturate(_Hit)),1);
+                return half4(lerp(c*_Tint.rgb,1,saturate(_HitFlash)),1);
             }
             ENDHLSL
         }
     }
 }
+

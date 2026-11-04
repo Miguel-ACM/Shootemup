@@ -22,6 +22,7 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
     {
         base.Start();mesh=Hull.GetComponent<MeshFilter>();contact=GetComponent<CircleCollider2D>();
         Hull.GetComponent<MeshRenderer>().sharedMaterial=Body;
+        PartHitFeedback.Bind(Hull);
         // The source has no engines. Every form has a coherent solid central target.
         GetComponent<CombatHullVisual>().enabled=false;
         for(int i=0;i<4;i++){edgeTell[i]=CombatVisuals.Line(transform,LevelProjectilePalette.Accent(LevelId.Void),.06f);edgeTell[i].positionCount=2;edgeTell[i].enabled=false;}
@@ -46,7 +47,7 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
     }
     public override void damage(float amount)
     {
-        if(CurrentPhase<PhaseCount)amount=Mathf.Min(amount,Mathf.Max(0,health-initialHealth*PhaseEnd(CurrentPhase)));
+        if(CurrentPhase<PhaseCount)amount=Mathf.Min(amount,Mathf.Max(0,health-initialHealth*PhaseEnd(CurrentPhase))/Mathf.Max(.0001f,GameRules.enemyDamageReceived));
         if(amount>0)base.damage(amount);
     }
     protected override void Attack(){if(openingComplete&&!Hidden)OpenCards();}

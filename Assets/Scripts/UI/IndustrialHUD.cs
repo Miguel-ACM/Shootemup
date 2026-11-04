@@ -272,7 +272,7 @@ public sealed class IndustrialHUD : MonoBehaviour
             Fill(bossCells, boss.HealthFraction, Amber);
     }
 
-    static Color PhaseColor(int phase) => phase == 1 ? Amber : phase == 2 ? new Color(1, .45f, .18f) : Alarm;
+    static Color PhaseColor(int phase) => phase == 1 ? Amber : phase == 2 ? new Color(1, .45f, .18f) : phase == 3 ? Alarm : new Color(.72f, .35f, 1);
 
     static void Fill(Image[] cells, float value, Color color, int limit = int.MaxValue) => Fill(cells, value, color, limit, Unlit);
 

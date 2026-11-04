@@ -24,7 +24,8 @@ public class PulseLaser : CombatRound
     public bool IsAttachedTo(Transform source) => attached && emitter == source && isActiveAndEnabled;
     public bool IsSustained => sustained;
     public float reversalArc;
-    public float Power => Active ? Mathf.Min(Mathf.SmoothStep(0, 1, Mathf.Clamp01((age - warning) / Mathf.Max(.01f, widthRise))), sustained ? 1 : Mathf.Lerp(.4f, 1, Mathf.Clamp01((warning + activeTime - age) / .16f))) :
+    float Expansion => celestial ? Mathf.SmoothStep(0, 1, Mathf.Clamp01((age - warning) / Mathf.Max(.01f, widthRise))) : Mathf.Clamp01((age-warning)/.07f);
+    public float Power => Active ? Mathf.Min(Expansion, sustained ? 1 : Mathf.Lerp(.4f, 1, Mathf.Clamp01((warning + activeTime - age) / (celestial ? .16f : .09f)))) :
         age >= warning + activeTime ? Mathf.Pow(Mathf.Clamp01(1 - (age - warning - activeTime) / Cooldown), 2) * .4f : 0;
     protected override void Initialize()
     {

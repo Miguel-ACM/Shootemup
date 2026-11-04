@@ -46,7 +46,12 @@ public class BGMManager : MonoBehaviour
     {
         if (score == null) return;
         var clip = Resources.Load<AudioClip>("Music/" + id);
-        if (clip == null) { Debug.LogWarning("Missing music track: " + id); return; }
+        if (clip == null)
+        {
+            // New districts await Miguel's tracks; never carry the previous district's song into them.
+            if (id == "heaven" || id == "void") { score.Stop(); return; }
+            Debug.LogWarning("Missing music track: " + id); return;
+        }
         if (!maps.TryGetValue(id, out var cues))
         {
             var data = Resources.Load<TextAsset>("MusicAnalysis/" + id);

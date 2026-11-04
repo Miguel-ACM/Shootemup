@@ -10,7 +10,7 @@ using UnityEngine.UI;
 // A build-accessible pattern viewer. Enemies, movement, aim and projectiles are the real combat code.
 public sealed partial class WaveWatcher : MonoBehaviour
 {
-    public const int FirstWave = 2, LastWave = 20, Miniboss = 21, BossOne = 22, BossTwo = 23, BossOther = 24, BossThree = 25;
+    public const int FirstWave = 2, LastWave = 20, Miniboss = 21, BossOne = 22, BossTwo = 23, BossOther = 24, BossThree = 25, BossFour = 26;
     const string DifficultyPreference = "WaveWatcher.Difficulty.v2";
     static bool requested;
     public static WaveWatcher Current
@@ -283,6 +283,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
         SetContext(level, LevelRun.Seed);
         LevelEnvironment.Apply();
         BGMManager.PlayLevelMusic(level);
+        if (level == LevelId.Void && View != WatcherView.Projectiles) View = WatcherView.Bosses;
         catalog = WatcherCatalog.For(View, level);
         Selection = Mathf.Min(Selection, catalog.Count - 1);
         RebuildCatalog();
@@ -292,7 +293,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
 
     public void SelectEncounter(int encounter)
     {
-        if (!Ready || encounter < FirstWave || encounter > BossThree)
+        if (!Ready || encounter < FirstWave || encounter > BossFour)
             return;
         var view = encounter <= LastWave ? WatcherView.Waves : WatcherView.Bosses;
         var entries = WatcherCatalog.For(view, Level);
@@ -352,23 +353,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
 
     void SetContext(LevelId level, int seed)
     {
-        LevelRun.Reset(LevelId.Fields, seed);
-        for (int i = 1; i < ReviewLoop; i++)
-        {
-            LevelRun.Advance(LevelId.Snow);
-            LevelRun.Advance(LevelId.Thunder);
-            LevelRun.Advance(LevelId.Space);
-            LevelRun.Advance(LevelId.Hell);
-            LevelRun.Advance(LevelId.Fields);
-        }
-        if (LevelRun.Tier(level) >= 2)
-            LevelRun.Advance(LevelRun.Tier(level) == 2 ? level : level == LevelId.Tunnel || level == LevelId.Candyland ? LevelId.City : LevelId.Snow);
-        if (LevelRun.Tier(level) >= 3)
-            LevelRun.Advance(LevelRun.Tier(level) == 3 ? level : LevelId.Thunder);
-        if (LevelRun.Tier(level) >= 4)
-            LevelRun.Advance(LevelRun.Tier(level) == 4 ? level : LevelId.Space);
-        if (LevelRun.Tier(level) == 5)
-            LevelRun.Advance(LevelId.Hell);
+        LevelRun.Preview(level, seed, ReviewLoop);
     }
 
     public void SelectLoop(int loop)
@@ -398,6 +383,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
     {
         if (!Ready)
             return;
+        if (Level == LevelId.Void && view != WatcherView.Projectiles) view = WatcherView.Bosses;
         View = view;
         Selection = 0;
         catalog = WatcherCatalog.For(view, Level);
@@ -560,7 +546,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
             Spawned = 1;
             yield return null;
             yield return null; // Both City hulls finish Start before selecting the survivor phase.
-            int targetPhase = Encounter == BossThree ? 3 : Encounter == BossOne ? 1 : 2;
+            int targetPhase = Mathf.Min(boss.PhaseCount, Encounter == BossFour ? 4 : Encounter == BossThree ? 3 : Encounter == BossOne ? 1 : 2);
             DistrictBoss survivor = boss, victim = null;
             if (boss is CityDuoBoss duo && duo.partner != null && targetPhase > 1)
             {
@@ -581,7 +567,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
                     PushToPhase(survivor, victim, survivor.CurrentPhase + 1);
                     nextPush = Elapsed + .5f;
                 }
-                if (Elapsed >= 24 && (Touring || Looping))
+                if (Elapsed >= (boss is VoidSovereignBoss ? 24 + 18 * (targetPhase - 1) : 24) && (Touring || Looping))
                 {
                     if (Touring)
                         NextEntry(1);
@@ -662,6 +648,11 @@ public sealed partial class WaveWatcher : MonoBehaviour
     // encounters, its hull health otherwise.
     static void PushToPhase(DistrictBoss boss, DistrictBoss victim, int phase)
     {
+        if (boss is VoidSovereignBoss)
+        {
+            boss.damage(float.MaxValue / 1024);
+            return;
+        }
         if (phase == 2)
         {
             if (victim != null)

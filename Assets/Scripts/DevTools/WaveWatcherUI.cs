@@ -96,7 +96,7 @@ public sealed partial class WaveWatcher
         Label(leftPanel, "WAVE WATCHER", 22, new Vector2(0, 307), new Vector2(250, 36)).color = Accent;
         Rule(leftPanel, 286);
         // Districts in route order, two per row: early tiers on top, Hell last.
-        foreach (var level in new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Desert, LevelId.Thunder, LevelId.Tunnel, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell })
+        foreach (var level in new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Desert, LevelId.Thunder, LevelId.Tunnel, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell, LevelId.Heaven, LevelId.Void })
         {
             int index = levels.Count;
             var chosen = level;
@@ -248,3 +248,4 @@ public sealed partial class WaveWatcher
         SetAim(aim);
     }
 }
+

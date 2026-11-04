@@ -57,6 +57,7 @@ public sealed class BossPositionShadow : MonoBehaviour
             }
             var point = camera.WorldToViewportPoint(enemy.transform.position);
             bool visible = point.y >= 0 && point.y <= 1 && !GameOverState.Active &&
+                !(enemy is VoidSovereignBoss abyss && abyss.Hidden) &&
                 !(enemy is DistrictMiniboss mini && mini.Retreating);
             pair.Value.gameObject.SetActive(visible);
             float width = Screen.width * 720f / Mathf.Max(1, Screen.height);

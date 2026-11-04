@@ -123,7 +123,7 @@ public sealed class DebugRunMenu : AMenuElement
         Label(panel, "DEBUG RUN", 30, new Vector2(-330, 300), new Vector2(320, 48)).color = Gold;
         ButtonAt(panel, "BACK", new Vector2(418, 300), new Vector2(150, 38), Close);
         pactButton = ButtonAt(panel, "PACT", new Vector2(258, 300), new Vector2(150, 38), () => { forcePact = !forcePact; Refresh(); }).GetComponent<Image>();
-        var levels = new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Thunder, LevelId.Tunnel, LevelId.Desert, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell };
+        var levels = new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Thunder, LevelId.Tunnel, LevelId.Desert, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell, LevelId.Heaven, LevelId.Void };
         for (int i = 0; i < levels.Length; i++)
         {
             var level = levels[i];
@@ -435,3 +435,4 @@ public sealed class DebugLoadoutGrant : MonoBehaviour
         Destroy(gameObject);
     }
 }
+
