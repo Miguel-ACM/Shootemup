@@ -31,6 +31,7 @@ public static class EnemyExpansion
     }
 
     public static readonly Entry[] All = {
+        new Entry(LevelId.Heaven, typeof(ThroneBarge), 89, .79f, false, IndustrialMeshFactory.ThroneBargeMesh, new[] { new Vector3(0,-1.03f,-.23f), new Vector3(-.9f,-.87f,-.27f), new Vector3(.9f,-.87f,-.27f) }, new[] { new Vector3(-.7f,.8f,0), new Vector3(.7f,.8f,0) }, WavePartLibrary.ThroneBargeParts),
         new Entry(LevelId.Heaven, typeof(VotiveSpear), 88, .43f, true, IndustrialMeshFactory.VotiveSpearMesh, new[] { new Vector3(-.24f,-.835f,-.17f), new Vector3(.24f,-.835f,-.17f) }, new[] { new Vector3(0,.84f,0) }, WavePartLibrary.VotiveSpearParts),
         new Entry(LevelId.Heaven, typeof(PrismCantor), 87, .56f, false, IndustrialMeshFactory.PrismCantorMesh, new[] { new Vector3(-.68f,-.6f,-.3f), new Vector3(.68f,-.6f,-.3f), new Vector3(0,1.2f,-.1f) }, System.Array.Empty<Vector3>(), WavePartLibrary.PrismCantorParts),
         new Entry(LevelId.Heaven, typeof(AegisReliquary), 86, .66f, false, IndustrialMeshFactory.AegisReliquaryMesh, new[] { new Vector3(-.72f,-.96f,-.25f), new Vector3(.72f,-.96f,-.25f) }, new[] { new Vector3(-.5f,.85f,0), new Vector3(.5f,.85f,0) }, WavePartLibrary.AegisReliquaryParts),
