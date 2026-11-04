@@ -26,7 +26,7 @@ public static class ShipFrames
     {
         new Definition { frame = ShipFrame.GR07, hits = 6 },
         // Long and slow: a continuous laser instead of the twin cannon, more hull and a barrel roll.
-        new Definition { frame = ShipFrame.Lancer, model = "ShipLancer", hits = 5, moveSpeed = 6.8f, primary = "BeamEmitter", starters = new[] { "BarrelRoll" }, exhaust = new Vector2(.11f, -.40f), exhaustScale = .32f },
+        new Definition { frame = ShipFrame.Lancer, model = "ShipLancer", hits = 5, moveSpeed = 6.8f, shootNumber = 1, primary = "BeamEmitter", starters = new[] { "BarrelRoll" }, exhaust = new Vector2(.11f, -.40f), exhaustScale = .32f },
         // Glass cannon: three harder-hitting rounds that ignite, three hits.
         new Definition { frame = ShipFrame.Ember, model = "ShipEmber", hits = 3, moveSpeed = 9.2f, shootNumber = 3, shootDamage = 2.4f, starters = new[] { "Lighter" }, exhaust = new Vector2(.15f, -.30f), exhaustScale = .34f },
         // Unarmed carrier: two laser drones do the fighting.
