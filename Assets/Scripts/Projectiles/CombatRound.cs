@@ -204,18 +204,18 @@ public abstract class CombatRound : AEnemyBullet
     {
         if (LevelRun.Current == LevelId.Void)
         {
-            // The final encounter uses arrows and split seeds only. Reassign the existing
-            // pool budget behind the curtain so its first dense sheet cannot allocate a volley.
-            foreach (var pair in pools)
-                if (pair.Key != typeof(SimpleRound) && pair.Key != typeof(NeedleRound))
-                    while (pair.Value.Count > 0)
-                    {
-                        var spare = pair.Value.Pop();
-                        pooled--;
-                        if (spare != null) Destroy(spare.gameObject);
-                    }
-            yield return Warm<SimpleRound>(800);
-            yield return Warm<NeedleRound>(900);
+            // Reserve every authored delivery behind the curtain, including its special
+            // renderer and collider. The final score shares the existing global budget.
+            TrimReserve<SimpleRound>(1200);TrimReserve<NeedleRound>(800);
+            TrimReserve<RicochetBolt>(160);TrimReserve<BurstShell>(48);TrimReserve<SuspendedRound>(160);
+            TrimReserve<GuidedMissile>(36);TrimReserve<ScatterCarrier>(24);TrimReserve<HelixRound>(80);
+            TrimReserve<PlasmaOrb>(40);TrimReserve<ProximityMine>(24);TrimReserve<ReturningDisc>(96);
+            TrimReserve<PulseLaser>(24);TrimReserve<LaserSideRound>(16);TrimReserve<GiantOrb>(200);
+            yield return Warm<SimpleRound>(1200);yield return Warm<NeedleRound>(800);
+            yield return Warm<RicochetBolt>(160);yield return Warm<BurstShell>(48);yield return Warm<SuspendedRound>(160);
+            yield return Warm<GuidedMissile>(36);yield return Warm<ScatterCarrier>(24);yield return Warm<HelixRound>(80);
+            yield return Warm<PlasmaOrb>(40);yield return Warm<ProximityMine>(24);yield return Warm<ReturningDisc>(96);
+            yield return Warm<PulseLaser>(24);yield return Warm<LaserSideRound>(16);yield return Warm<GiantOrb>(200);
             yield break;
         }
         // These districts now sustain arrow-heavy boss scores. Give their unused
