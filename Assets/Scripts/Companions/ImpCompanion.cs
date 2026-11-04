@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// The Devil Imp pact's familiar: circles the ship and snaps needles at enemies that come close.
+// The Devil Imp pact's familiar: circles the ship, aiming at nearby enemies or firing forward.
 public sealed class ImpCompanion : MonoBehaviour
 {
     const float Orbit = 1.15f, Reach = 5.5f, Interval = .32f;
@@ -35,10 +35,9 @@ public sealed class ImpCompanion : MonoBehaviour
         if (GameRules.playerDisabled || !Shipcontroller.Firing || Time.time < nextShot)
             return;
         var target = CombatUpgrades.Nearest(model.position, null, Reach);
-        if (target == null)
-            return;
         nextShot = Time.time + Interval;
-        var shot = PlayerRound.Spawn(model.position, ((Vector2)(target.transform.position - model.position)).normalized, GameRules.playerShootDamage * .9f, 14, PlayerDelivery.Needle);
+        Vector2 direction = target != null ? ((Vector2)(target.transform.position - model.position)).normalized : Vector2.up;
+        var shot = PlayerRound.Spawn(model.position, direction, GameRules.playerShootDamage * .9f, 14, PlayerDelivery.Needle);
         if (shot != null)
             shot.companion = true;
     }

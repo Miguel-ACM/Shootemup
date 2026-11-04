@@ -28,12 +28,11 @@ public sealed class SupportDrone : MonoBehaviour
             return;
         nextShot = Time.time + .55f;
         var target = CombatUpgrades.Nearest(model.position, null, 12);
-        if (target == null)
-            return;
+        Vector2 direction = target != null ? ((Vector2)(target.transform.position - model.position)).normalized : Vector2.up;
         int count = Mathf.Min(3, GameRules.playerShootNumber - 1);
         for (int i = 0; i < count; i++)
         {
-            var b = PlayerRound.Spawn(model.position, CombatVisuals.Rotate(((Vector2)(target.transform.position - model.position)).normalized, (i - (count - 1) * .5f) * 9), GameRules.playerShootDamage * .55f, 12);
+            var b = PlayerRound.Spawn(model.position, CombatVisuals.Rotate(direction, (i - (count - 1) * .5f) * 9), GameRules.playerShootDamage * .55f, 12);
             if (b != null)
                 b.companion = true;
         }
