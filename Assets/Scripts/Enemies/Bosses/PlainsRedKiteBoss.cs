@@ -22,8 +22,8 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
             // Sightline: commit to an aim, fire a tight walking burst, then break away.
             yield return Charge(Hull, WeaponPort(), .50f);
             Vector2 sight = CombatVisuals.Aim(Muzzle());
-            int bursts = Dense(phaseThree ? 12 : phaseTwo ? 11 : 10);
-            int feathers = Dense(6);
+            int bursts = Dense(phaseThree ? 14 : phaseTwo ? 12 : 10);
+            int feathers = Dense(7);
             for (int i = 0; i < bursts; i++)
             {
                 // Two gun ribbons bracket the committed sightline. The pilot must leave
@@ -57,8 +57,8 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
     {
         yield return PrimePair(.32f);
         Vector3 start = transform.position, end = new Vector3(Lane(side), Camera.UpLimit - 2.4f, start.z);
-        int beats = Mathf.Max(3, Dense(phaseThree ? 24 : phaseTwo ? 22 : 20)), emitted = 0;
-        int feathers = Dense(6);
+        int beats = Mathf.Max(3, Dense(phaseThree ? 30 : phaseTwo ? 26 : 22)), emitted = 0;
+        int feathers = Dense(7);
         float duration = phaseThree ? 1.55f : 2.05f;
         for (float t = 0; t < 1;)
         {
@@ -68,16 +68,25 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
                 transform.position = Vector3.Lerp(start, end, Mathf.SmoothStep(0, 1, t)) + Vector3.down * (Mathf.Sin(t * Mathf.PI) * depth);
                 while (emitted < beats && t >= (emitted + .5f) / beats)
                 {
+                    // Follow the bank's tangent, not the screen's down axis. The
+                    // contrails peel above and beside the aircraft, then hook across
+                    // its old flight lane after a visible braking interval.
+                    Vector2 tangent = new Vector2((end.x - start.x) * 6 * t * (1 - t),
+                        -Mathf.Cos(t * Mathf.PI) * Mathf.PI * depth).normalized;
                     for (int wing = 0; wing < 2; wing++)
                     {
-                        float cant = (wing == 0 ? -1 : 1) * (12 + 32 * t);
+                        int mirror = wing == 0 ? -1 : 1;
+                        float cant = mirror * (64 + 24 * t);
                         for (int feather = 0; feather < feathers; feather++)
-                            Fire<NeedleRound>(Muzzle(1 + wing), CombatVisuals.Rotate(Vector2.down, cant +
-                                (feather - (feathers - 1) * .5f) * 7), 2.7f, .17f).Ramp(1.35f, .9f, .5f);
+                            Fire<NeedleRound>(Muzzle(1 + wing), CombatVisuals.Rotate(tangent, cant +
+                                (feather - (feathers - 1) * .5f) * 7), 2.7f, .17f)
+                                .Pause(.70f, .26f + feather * .035f, CombatRound.Turn.Rotate,
+                                    -mirror * side * (phaseThree ? 110 : 75), .85f)
+                                .Ramp(1.35f, .9f, 1.1f);
                     }
                     if (emitted % (phaseThree ? 4 : 6) == 0)
                         // Nose payloads open flat across the wake, never into circles.
-                        Fire<SimpleRound>(Muzzle(), Vector2.down, 2.6f, .32f)
+                        Fire<SimpleRound>(Muzzle(), -tangent, 2.6f, .32f)
                             .Pause(.48f, .28f).SplitAt(.76f, Dense(13), 12, 2.7f, .16f);
                     emitted++;
                 }
