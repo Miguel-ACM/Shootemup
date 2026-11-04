@@ -21,14 +21,18 @@ Shader "Shootemup/Void Body"
             half4 Frag(O i):SV_Target
             {
                 float tile=floor(i.uv.x*4)+4*floor(i.uv.y*4);
-                float light=saturate(dot(normalize(i.n),normalize(float3(-.4,.65,-1))));
-                float rim=pow(1-abs(normalize(i.n).z),2);
+                float3 normal=normalize(i.n),lamp=normalize(float3(-.4,.65,-1));
+                float light=saturate(dot(normal,lamp));
+                float rim=pow(1-abs(normal.z),2.5);
                 float eye=(abs(tile-8)<.1||abs(tile-9)<.1)?1:0;
                 float vein=abs(tile-3)<.1?1:0;
                 float pulse=.76+.24*sin(_Time.y*2.4+i.p.y*3);
-                float3 c=lerp(float3(.013,.009,.024),float3(.16,.09,.23),light)+rim*float3(.16,.06,.28);
-                c=lerp(c,float3(.72,.25,1)*pulse,vein*.65);
-                c=lerp(c,float3(.90,.56,1)*(.8+.2*light),eye);
+                float spec=pow(saturate(dot(reflect(-lamp,normal),float3(0,0,-1))),34);
+                float plate=abs(tile-14)<.1?1:0;
+                float3 c=lerp(float3(.009,.006,.018),float3(.10,.055,.17),light)*(.65+plate*.55)+rim*float3(.20,.11,.32);
+                c+=spec*float3(.30,.22,.43);
+                c=lerp(c,float3(.43,.16,.68)*pulse,vein*.72);
+                c=lerp(c,float3(.85,.53,1)*(.8+.2*light),eye);
                 return half4(lerp(c*_Tint.rgb,1,saturate(_HitFlash)),1);
             }
             ENDHLSL
