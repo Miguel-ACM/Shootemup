@@ -1,0 +1,3 @@
+PASS
+C:/Users/Miguel/Shootemup/Build/HeavenVoid/Shootemup.exe
+Errors=0; warnings=0

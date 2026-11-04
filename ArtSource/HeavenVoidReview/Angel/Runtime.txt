@@ -1,0 +1,14 @@
+PASS
+PASS 37 sculpted eyes with core and eye damage paths
+PASS Angel has no engines
+PASS Phase 1 central eye remains hittable
+PASS Phase 1 moving eye contacts follow the wheels
+PASS Phase 2 central eye remains hittable
+PASS Phase 2 moving eye contacts follow the wheels
+PASS Phase 3 central eye remains hittable
+PASS Phase 3 moving eye contacts follow the wheels
+PASS Charging and firing lasers stay attached to modeled eyes across all phases
+PASS Wheel 0 rotates independently
+PASS Wheel 1 rotates independently
+PASS Wheel 2 rotates independently
+PASS Angel keeps the shared continuous boss finale
