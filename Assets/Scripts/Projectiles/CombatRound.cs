@@ -216,23 +216,62 @@ public abstract class CombatRound : AEnemyBullet
             yield return Warm<NeedleRound>(900);
             yield break;
         }
+        // These districts now sustain arrow-heavy boss scores. Give their unused
+        // specialist reserves to needles behind the curtain, not during a finale.
+        // Retain 800 standard rounds, 200 giant orbs and at least eight of every
+        // delivery; the complete district profile still fits the 1850-object budget.
+        bool arrowDistrict = LevelRun.Current == LevelId.Fields || LevelRun.Current == LevelId.Snow || LevelRun.Current == LevelId.City;
+        int ricochets = arrowDistrict ? 8 : 96;
+        int shells = arrowDistrict ? (LevelRun.Current == LevelId.Snow ? 40 : 8) : 40;
+        int suspended = arrowDistrict ? 8 : 48;
+        int missiles = arrowDistrict ? 8 : 24;
+        int carriers = arrowDistrict ? (LevelRun.Current == LevelId.Fields ? 24 : 8) : 24;
+        int helixes = arrowDistrict ? 8 : 32;
+        int plasma = arrowDistrict ? (LevelRun.Current == LevelId.Snow ? 24 : 8) : 24;
+        int mines = arrowDistrict ? 8 : 16;
+        int discs = arrowDistrict ? (LevelRun.Current == LevelId.City ? 24 : 8) : 24;
+        int sideRounds = arrowDistrict ? 8 : 16;
+        int lasers = arrowDistrict ? (LevelRun.Current == LevelId.City ? 16 : 8) : 16;
+        // Return this space on district changes so later districts can warm all
+        // of their specialist deliveries within the same bounded cache.
+        TrimReserve<NeedleRound>(arrowDistrict ? 700 : 300);
+        if (arrowDistrict)
+        {
+            TrimReserve<RicochetBolt>(ricochets); TrimReserve<BurstShell>(shells);
+            TrimReserve<SuspendedRound>(suspended); TrimReserve<GuidedMissile>(missiles);
+            TrimReserve<ScatterCarrier>(carriers); TrimReserve<HelixRound>(helixes);
+            TrimReserve<PlasmaOrb>(plasma); TrimReserve<ProximityMine>(mines);
+            TrimReserve<ReturningDisc>(discs); TrimReserve<LaserSideRound>(sideRounds);
+            TrimReserve<PulseLaser>(lasers);
+        }
         // Reserve the pool budget across every delivery.
         // Previously only SimpleRound was ready: a first needle/ricochet volley
         // constructed its GameObjects, pixel colliders and special effects in combat.
         yield return Warm<SimpleRound>(800);
-        yield return Warm<NeedleRound>(300);
-        yield return Warm<RicochetBolt>(96);
-        yield return Warm<BurstShell>(40);
-        yield return Warm<SuspendedRound>(48);
-        yield return Warm<GuidedMissile>(24);
-        yield return Warm<ScatterCarrier>(24);
-        yield return Warm<HelixRound>(32);
-        yield return Warm<PlasmaOrb>(24);
+        yield return Warm<NeedleRound>(arrowDistrict ? 700 : 300);
+        yield return Warm<RicochetBolt>(ricochets);
+        yield return Warm<BurstShell>(shells);
+        yield return Warm<SuspendedRound>(suspended);
+        yield return Warm<GuidedMissile>(missiles);
+        yield return Warm<ScatterCarrier>(carriers);
+        yield return Warm<HelixRound>(helixes);
+        yield return Warm<PlasmaOrb>(plasma);
         yield return Warm<GiantOrb>(200);
-        yield return Warm<ProximityMine>(16);
-        yield return Warm<ReturningDisc>(24);
-        yield return Warm<LaserSideRound>(16);
-        yield return Warm<PulseLaser>(16);
+        yield return Warm<ProximityMine>(mines);
+        yield return Warm<ReturningDisc>(discs);
+        yield return Warm<LaserSideRound>(sideRounds);
+        yield return Warm<PulseLaser>(lasers);
+    }
+
+    static void TrimReserve<T>(int count) where T : CombatRound
+    {
+        if (!pools.TryGetValue(typeof(T), out var pool)) return;
+        while (pool.Count > count)
+        {
+            var spare = pool.Pop();
+            pooled--;
+            if (spare != null) Destroy(spare.gameObject);
+        }
     }
 
     static IEnumerator Warm<T>(int count) where T : CombatRound
