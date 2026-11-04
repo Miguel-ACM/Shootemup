@@ -4,10 +4,28 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class SeraphJudicatorBoss : ArmoredHullBoss
 {
-    static readonly Vector2[] outline={new(0,-1.52f),new(-.62f,-.8f),new(-1.75f,-.65f),new(-2.35f,.55f),new(-1.35f,1.25f),new(0,1.5f),new(1.35f,1.25f),new(2.35f,.55f),new(1.75f,-.65f),new(.62f,-.8f)};
+    static readonly Vector2[] outline={new(0,-.82f),new(-.6f,-.6f),new(-.91f,0),new(-.6f,.6f),new(0,.82f),new(.6f,.6f),new(.91f,0),new(.6f,-.6f)};
     protected override Vector2[] Outline=>outline;
+    public HeavenAngelVisual Angel { get; private set; }
     bool anchored;
     protected override void Configure(){health=2850;hullScale=1.05f;attackInterval=.7f;}
+    protected override void Start()
+    {
+        base.Start();
+        GetComponent<CombatHullVisual>().enabled=false;
+        Angel=Hull.gameObject.AddComponent<HeavenAngelVisual>();
+        Angel.Build(GetComponent<PolygonCollider2D>());
+        PartHitFeedback.Bind(Hull);
+        FollowEyes();
+    }
+    protected override void Update()
+    {
+        if(WorldTimeStop.Frozen)return;
+        if(Angel!=null&&!GameRules.playerDisabled){Angel.Step(Time.deltaTime*LevelRun.EnemyTempoScale);FollowEyes();}
+        base.Update();
+    }
+    void FollowEyes(){for(int i=0;i<5;i++)firingCue.FollowPort(i,Angel.Emitter(i));}
+    Vector3 Eye(int index)=>Angel.Emitter(index).position;
     protected override void MoveBoss(float dt)
     {
         station=new Vector3(0,Camera.UpLimit-3.1f,1);
@@ -15,7 +33,7 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
         if(!anchored)transform.position=Vector3.MoveTowards(transform.position,station+new Vector3(Mathf.Sin(motionAge*.4f)*1.1f,Mathf.Cos(motionAge*.6f)*.35f),dt*1.2f);
     }
     PulseLaser Beam(int port,float angle,float width,float hold,float charge=1.4f)
-        =>HeavenArmory.Lance(Hull,WeaponPort(port),CombatVisuals.Rotate(Vector2.down,angle),width,hold,charge);
+        =>HeavenArmory.Lance(Angel.Emitter(port),Vector3.zero,CombatVisuals.Rotate(Vector2.down,angle),width,hold,charge);
     protected override void OnPhaseEntered(int phase){anchored=false;}
     protected override IEnumerator Cards()
     {
@@ -64,7 +82,7 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
         for(int s=-1;s<=1;s+=2)for(int i=0;i<n;i++)
         {
             float a=s*(30+i*7+Mathf.Sin(beat*.6f)*15);
-            var shot=Fire<NeedleRound>(Muzzle(s<0?3:4),CombatVisuals.Rotate(Vector2.down,a),speed,.18f).Ramp(1.5f,.8f,.9f);
+            var shot=Fire<NeedleRound>(Eye(s<0?3:4),CombatVisuals.Rotate(Vector2.down,a),speed,.18f).Ramp(1.5f,.8f,.9f);
             if(returnFire&&i%3==0)shot.Bounce(1);
         }
     }
@@ -72,34 +90,6 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
     {
         int n=Dense(count);
         for(int s=-1;s<=1;s+=2)for(int i=0;i<n;i++)
-            Fire<NeedleRound>(Muzzle(s<0?3:4),CombatVisuals.Rotate(Vector2.up,s*(15+i*8+beat%2*4)),2.6f,.19f).Bounce(1).FadeAt(8);
-    }
-}
-
-public static partial class IndustrialMeshFactory
-{
-    static Mesh seraphJudicator;
-    public static Mesh SeraphJudicatorBossMesh()
-    {
-        if(seraphJudicator!=null)return seraphJudicator;var b=new Builder();
-        BevelArmor(b,new[]{V(0,-1.52f),V(-.55f,-.8f),V(-.65f,.8f),V(0,1.45f),V(.65f,.8f),V(.55f,-.8f)},.65f,15);
-        BevelArmor(b,new[]{V(0,-1.15f),V(-.32f,-.4f),V(-.38f,.6f),V(0,1.0f),V(.38f,.6f),V(.32f,-.4f)},.24f,7,-.42f);
-        for(int s=-1;s<=1;s+=2)
-        {
-            for(int row=0;row<3;row++)
-            {
-                float y=.9f-row*.58f;
-                BevelArmor(b,new[]{V(s*.48f,y),V(s*(1.9f+row*.18f),y+.6f),V(s*(2.35f-row*.18f),y+.13f),V(s*1.35f,y-.38f)},.20f,row%2==0?1:15,-.09f-row*.05f);
-                b.Prism(new[]{V(s*.68f,y+.04f),V(s*2.04f,y+.37f),V(s*1.35f,y-.15f)},.06f,3,new Vector3(0,0,-.25f-row*.05f),7);
-            }
-            b.Box(new Vector3(s*1.5f,-.6f,-.28f),new Vector3(.52f,.7f,.47f),7,2);
-            Barrel(b,s*1.5f,-.83f,.45f,.39f,-.3f);
-            b.Drum(new Vector3(s*1.05f,.67f,-.32f),.24f,.12f,8,12,7);
-        }
-        b.Drum(new Vector3(0,-.65f,-.5f),.42f,.20f,7,16,2);
-        b.Drum(new Vector3(0,-.65f,-.64f),.29f,.07f,8,16,11);
-        Barrel(b,0,-1.12f,.48f,.54f,-.32f);
-        b.Prism(new[]{V(-.24f,.5f),V(0,.12f),V(.24f,.5f),V(0,.87f)},.14f,9,new Vector3(0,0,-.64f),3);
-        return seraphJudicator=b.Finish("Seraph Judicator / six sculpted wings and three giant lance emitters");
+            Fire<NeedleRound>(Eye(s<0?3:4),CombatVisuals.Rotate(Vector2.up,s*(15+i*8+beat%2*4)),2.6f,.19f).Bounce(1).FadeAt(8);
     }
 }

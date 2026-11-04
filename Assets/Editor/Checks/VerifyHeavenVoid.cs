@@ -35,7 +35,7 @@ public static class VerifyHeavenVoid
         Directory.CreateDirectory(Folder+"/Models");Directory.CreateDirectory(Folder+"/Frames");
         PlayerSettings.companyName="ShootemupReview";PlayerSettings.productName="HeavenVoidReview";
         EditorSceneManager.OpenScene("Assets/Scenes/Title.unity");
-        Gallery();
+        if(SessionState.GetBool("HeavenAngelReview",false))AngelGallery();else Gallery();
         var assembly=typeof(EditorWindow).Assembly;
         var view=EditorWindow.GetWindow(assembly.GetType("UnityEditor.GameView"));
         var sizesType=assembly.GetType("UnityEditor.GameViewSizes");
@@ -54,6 +54,31 @@ public static class VerifyHeavenVoid
     {
         SessionState.SetBool("HeavenVoidFixes",true);
         Run();
+    }
+    public static void RunAngel()
+    {
+        SessionState.SetBool("HeavenAngelReview",true);
+        Run();
+    }
+    static void AngelGallery()
+    {
+        Directory.CreateDirectory(Folder+"/Angel");
+        var camera=new GameObject("Angel gallery camera").AddComponent<UnityEngine.Camera>();
+        camera.transform.position=new Vector3(1000,0,-12);camera.orthographic=true;camera.orthographicSize=3.2f;
+        camera.cullingMask=1<<31;camera.backgroundColor=new Color(.075f,.085f,.115f);camera.clearFlags=CameraClearFlags.SolidColor;
+        var target=new RenderTexture(720,720,24);camera.targetTexture=target;
+        var go=new GameObject("Ophanim review"){layer=31};go.transform.position=new Vector3(1000,0,0);
+        go.AddComponent<MeshFilter>();go.AddComponent<MeshRenderer>().sortingLayerName="Enemy";
+        var angel=go.AddComponent<HeavenAngelVisual>();angel.Build();
+        for(int view=0;view<8;view++)
+        {
+            angel.Pose((view%4)*5);go.transform.rotation=view<4?Quaternion.identity:Quaternion.Euler(18,-22,0);camera.Render();
+            var before=RenderTexture.active;RenderTexture.active=target;
+            var capture=new Texture2D(720,720,TextureFormat.RGB24,false);capture.ReadPixels(new Rect(0,0,720,720),0,0);capture.Apply();
+            File.WriteAllBytes(Folder+"/Angel/Model-"+view+".png",capture.EncodeToPNG());UnityEngine.Object.DestroyImmediate(capture);RenderTexture.active=before;
+        }
+        UnityEngine.Object.DestroyImmediate(go);UnityEngine.Object.DestroyImmediate(camera.gameObject);UnityEngine.Object.DestroyImmediate(target);
+        if(ShaderUtil.ShaderHasError(Resources.Load<Shader>("HeavenAngel")))throw new Exception("Heaven angel shader did not compile");
     }
     static void Gallery()
     {
@@ -120,6 +145,10 @@ public sealed class HeavenVoidReview:MonoBehaviour
         while(WaveWatcher.Current==null||!WaveWatcher.Current.Ready||CloudTransition.Busy||!WavePreparation.Ready)yield return null;
         watcher=WaveWatcher.Current;if(watcher.Looping)watcher.ToggleLoop();
         Time.captureDeltaTime=1f/30;
+        if(SessionState.GetBool("HeavenAngelReview",false))
+        {
+            yield return Angel();yield break;
+        }
         if(SessionState.GetBool("HeavenVoidPorts",false))
         {
             yield return Ports();yield break;
@@ -201,6 +230,47 @@ public sealed class HeavenVoidReview:MonoBehaviour
         SessionState.SetBool("HeavenVoidReview",false);EditorApplication.Exit(errors.Count==0?0:1);
     }
     IEnumerator Ready(){yield return null;while(CloudTransition.Busy||!WavePreparation.Ready)yield return null;yield return null;}
+    IEnumerator Angel()
+    {
+        watcher.SelectDifficulty(RunDifficulty.Normal);watcher.SelectLevel(LevelId.Heaven);yield return Ready();
+        watcher.SelectView(WatcherView.Bosses);watcher.SelectEncounter(WaveWatcher.BossOne);yield return null;
+        SeraphJudicatorBoss boss=null;while(boss==null||boss.Angel==null){boss=FindAnyObjectByType<SeraphJudicatorBoss>();yield return null;}
+        var collider=boss.GetComponent<PolygonCollider2D>();var visual=boss.Angel;
+        Check(visual.TotalEyes==37&&collider.pathCount==37,"37 sculpted eyes with core and eye damage paths");
+        Check(boss.GetComponent<EnemyThrusters>()==null,"Angel has no engines");
+        var rotations=new[]{visual.Wheel(0).localRotation,visual.Wheel(1).localRotation,visual.Wheel(2).localRotation};
+        bool attached=true;int beams=0;
+        var source=typeof(PulseLaser).GetField("emitter",BindingFlags.NonPublic|BindingFlags.Instance);
+        for(int phase=1;phase<=3;phase++)
+        {
+            while(boss.Invulnerable)yield return null;
+            string path=folder+"/Frames/Heaven-Angel-"+phase;Directory.CreateDirectory(path);float until=Time.time+15,next=0;int frame=0;
+            while(Time.time<until)
+            {
+                yield return new WaitForEndOfFrame();
+                foreach(var beam in FindObjectsByType<PulseLaser>(FindObjectsSortMode.None))
+                {
+                    var eye=(Transform)source.GetValue(beam);
+                    attached&=eye!=null&&eye.IsChildOf(boss.Hull)&&(eye.name.StartsWith("Living eye")||eye.name=="Central living eye")&&Vector3.Distance(beam.transform.position,eye.position)<.15f;
+                    beams++;
+                }
+                if(Time.time>=next)
+                {
+                    next=Time.time+.20f;var capture=ScreenCapture.CaptureScreenshotAsTexture();
+                    File.WriteAllBytes(path+"/"+(frame++).ToString("D4")+".jpg",capture.EncodeToJPG(88));Destroy(capture);
+                }
+            }
+            Check(collider.OverlapPoint(boss.transform.position),"Phase "+phase+" central eye remains hittable");
+            Check(collider.OverlapPoint(visual.Emitter(1).position)&&collider.OverlapPoint(visual.Emitter(2).position),"Phase "+phase+" moving eye contacts follow the wheels");
+            if(phase<3){boss.health*=phase==1?.49f:.45f;while(boss.CurrentPhase==phase)yield return null;}
+        }
+        Check(attached&&beams>0,"Charging and firing lasers stay attached to modeled eyes across all phases");
+        for(int ring=0;ring<3;ring++)Check(Quaternion.Angle(rotations[ring],visual.Wheel(ring).localRotation)>5,"Wheel "+ring+" rotates independently");
+        boss.damage(10000000);yield return null;Check(BossDestruction.Current!=null,"Angel keeps the shared continuous boss finale");
+        yield return Clip("Heaven-Angel-Finale",4);
+        File.WriteAllText(folder+"/Angel/Runtime.txt",(errors.Count==0?"PASS":"FAIL")+"\n"+string.Join("\n",notes)+"\n"+string.Join("\n",errors));
+        SessionState.SetBool("HeavenAngelReview",false);SessionState.SetBool("HeavenVoidReview",false);EditorApplication.Exit(errors.Count==0?0:1);
+    }
     IEnumerator Ports()
     {
         watcher.SelectDifficulty(RunDifficulty.Normal);watcher.SelectLevel(LevelId.Void);yield return Ready();

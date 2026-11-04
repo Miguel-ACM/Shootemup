@@ -65,6 +65,13 @@ public sealed class EnemyFiringCue : MonoBehaviour
         port.lip.localPosition = local;
         port.lip.gameObject.SetActive(active && modeledLip);
     }
+    public void FollowPort(int index, Transform anchor)
+    {
+        var port = ports[index];
+        port.anchor = anchor;
+        port.local = Vector3.zero;
+        port.lip.gameObject.SetActive(false);
+    }
     public void Warn(float seconds)
     {
         foreach (var port in ports)

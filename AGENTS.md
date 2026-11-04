@@ -195,6 +195,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 - Heaven is Hell's alternative after Space or Underwater. Both Hell and Heaven continue into Void; Void's mandatory boss reward precedes campaign victory. Preserve run equipment, wallet, score and seed throughout.
 - Heaven has white clouds, yellow and golden details, fences and planted lances evoking a war in Heaven. Give it its own enemies, formations, miniboss and boss. Its defining weapons are giant attached lasers with visible anticipation, graceful widening, beautiful VFX and SFX.
+- Latest Heaven boss direction (4 November 2026): make it a biblical angel with eye-covered rings rotating around its core. Use interlocking golden wheels and a living central eye, with attacks attached to the eyes; replace the winged spacecraft model.
 - Void is a beautiful black area framed by falling black liquids, with purple hostile bullets. It contains no ordinary enemies or opening decision: go straight to its boss.
 - Void has four phases on Normal and Hard, three on Easy. Its shape changes every phase, and each form has distinct difficult attacks. Between phases it disappears for fifteen active-play seconds and attacks from all sides with a different survival barrage each time.
 - Commit each feature and enemy individually. Use isolated review tooling and target only failed or revised cases after the batch review.

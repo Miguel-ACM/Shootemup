@@ -12,9 +12,11 @@ Heaven retains the ten-wave district structure, opening item, two encounter deci
 | Votive Spear | Fast escort; stacked, diverging aimed arrows |
 | Throne Barge | Heavy crown-shaped siege platform; giant central beam and shoulder canopy |
 | Dawn Gatekeeper | Timed miniboss; three mirrored moves using separate lance banks |
-| Seraph Judicator | Six-winged boss; Gates of Dawn, First Trumpet, Firmament, Judgment Pendulum, Last Trumpet and Broken Covenant |
+| Seraph Judicator | Ophanim angel: a living central eye inside three independently rotating golden wheels covered with eyes; Gates of Dawn, First Trumpet, Firmament, Judgment Pendulum, Last Trumpet and Broken Covenant |
 
 Siege lasers reuse the existing pooled PulseLaser, continuous beam shader, shared bloom and analytic contact check. Their final footprint is visible during charging; width expands over 0.65 enemy-tempo seconds and damage follows the same envelope. Existing laser envelopes remain unchanged. Heaven's warm amber-orange fire contrasts against ivory cloud banks and golden ramparts.
+
+Miguel's later Heaven-boss direction replaces the winged spacecraft with an eye-covered, ringed angel. Its three interlocking gold wheels carry 36 sculpted eyes around a larger pearl-white central eye. The wheels turn in different directions with slow precession; lasers remain attached to their chosen eye for the entire charge and release, while needle volleys leave the outer eyes. The core and individual eyes share boss health, with open collision space between them. The health tuning, phase count, card scores and approved laser sounds are preserved. `VerifyHeavenVoid.RunAngel` reviews the revised model and all three phases in isolation, including moving contacts, attached beams and the continuous finale.
 
 Void contains only its boss. Normal and Hard have four forms; Easy uses the mask, mantis and final wound. Each form has two distinct attack phrases. The normal round programs provide gravity, splits, speed changes, stop-turns, ricochets, zigzags and wall runners; no projectile sprite was replaced. The boss retains a target at its body and uses violet fire throughout.
 

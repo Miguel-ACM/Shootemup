@@ -75,6 +75,7 @@ public static class EnemyExpansion
     public static Mesh Mesh(int hull) => Find(hull)?.model() ?? throw new ArgumentException("Missing authored hull " + hull);
     public static Material Material(int hull)
     {
+        if(hull==91)return HeavenAngelVisual.Surface;
         var entry = Find(hull);
         return entry != null && entry.level == LevelId.Heaven ? HeavenMaterials.Ivory : entry != null && entry.level == LevelId.Space ? SpaceMaterials.Fleet : entry != null && entry.level == LevelId.Candyland ? CandyMaterials.Glaze : CombatMaterials.Fleet;
     }
