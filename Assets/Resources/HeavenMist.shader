@@ -18,9 +18,9 @@ Shader "Shootemup/Heaven Mist"
             {
                 float3 n=normalize(i.n);
                 float sun=saturate(dot(n,normalize(float3(-.3,.6,-1)))*.5+.5);
-                float scallop=.5+.5*sin(i.p.x*3.1+sin(i.p.y*3.7)*.6);
-                float3 shade=lerp(float3(.64,.73,.82),float3(1,.985,.94),sun);
-                shade+=scallop*.017;
+                float scallop=.5+.5*sin(i.p.x*5.1+sin(i.p.y*4.7+i.p.z)*1.6);
+                float3 shade=lerp(float3(.55,.69,.81),float3(1,.99,.955),sun);
+                shade+=scallop*.025;
                 return half4(shade,1);
             }
             ENDHLSL

@@ -48,18 +48,20 @@ Shader "Shootemup/Heaven Clouds"
             }
             half4 Frag(Output i):SV_Target
             {
-                float2 p=i.p*float2(.22,.18)+float2(_Seed,_Clock*.105);
+                float2 p=i.p*float2(.17,.14)+float2(_Seed,_Clock*.072);
                 float glow=saturate(1-abs(i.p.x)*.07);
-                float3 color=lerp(float3(.35,.47,.61),float3(.64,.73,.80),glow);
+                float3 color=lerp(float3(.42,.60,.74),float3(.60,.75,.84),glow);
                 float farAlpha,nearAlpha;
-                float3 far=Cotton(p*.78+float2(14,_Clock*.023),float3(.56,.65,.75),float3(.88,.90,.91),farAlpha);
-                color=lerp(color,far,farAlpha*.78);
+                float3 far=Cotton(p*.78+float2(14,_Clock*.023),float3(.60,.73,.83),float3(.92,.96,.98),farAlpha);
+                color=lerp(color,far,farAlpha*.72);
                 float2 nearP=p*1.27+float2(sin(p.y*.9)*.17+_Clock*.015,9);
-                float3 near=Cotton(nearP,float3(.68,.73,.77),float3(1,.98,.90),nearAlpha);
-                float banks=.55+.25*smoothstep(1,6,abs(i.p.x));
+                float3 near=Cotton(nearP,float3(.66,.78,.87),float3(1,.99,.94),nearAlpha);
+                float banks=.32+.55*smoothstep(1.5,5,abs(i.p.x));
                 color=lerp(color,near,nearAlpha*banks);
                 // Sunlit ivory tops above blue-grey hollows.
-                color+=float3(.045,.025,.005)*Billow(p*1.4+31)*glow;
+                color+=float3(.06,.045,.018)*Billow(p*1.4+31)*glow;
+                float shafts=pow(saturate(.5+.5*sin(i.p.x*.72+i.p.y*.18+_Clock*.014)),14);
+                color+=float3(.045,.038,.02)*shafts;
                 return half4(color,1);
             }
             ENDHLSL

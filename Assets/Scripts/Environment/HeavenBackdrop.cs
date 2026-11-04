@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 
 public sealed class HeavenBackdrop : MonoBehaviour
 {
-    readonly Transform[] islands = new Transform[16];
+    readonly Transform[] islands = new Transform[12];
     Material sky, mist;
     Mesh plane;
     float clock;
@@ -19,13 +19,13 @@ public sealed class HeavenBackdrop : MonoBehaviour
         var random=new System.Random(LevelRun.Seed+19191);
         for(int i=0;i<islands.Length;i++)
         {
-            float side=i%2==0?-1:1, x=side*Mathf.Lerp(3.15f,6.7f,(float)random.NextDouble());
+            float side=i%2==0?-1:1, x=side*Mathf.Lerp(4.15f,6.8f,(float)random.NextDouble());
             var root=new GameObject("Cloud redoubt / broken palisade "+i).transform;
-            root.SetParent(transform,false); root.localPosition=new Vector3(x,-23+i*3.05f,79);
-            root.localScale=Vector3.one*Mathf.Lerp(.72f,1.15f,(float)random.NextDouble());
-            root.localRotation=Quaternion.Euler(12,side*9,side*(8+i%3*7));
+            root.SetParent(transform,false); root.localPosition=new Vector3(x,-29+i*5f,79);
+            root.localScale=Vector3.one*Mathf.Lerp(.95f,1.35f,(float)random.NextDouble());
+            root.localRotation=Quaternion.Euler(14,side*11,side*(4+i%3*5));
             islands[i]=root;
-            var cloud=Add("Soft white cloud billows",IndustrialMeshFactory.HeavenCloudIsland(),mist,Vector3.zero,-36);
+            var cloud=Add("Deep sculpted cumulus",IndustrialMeshFactory.HeavenCloudIsland(i%3),mist,Vector3.zero,-36);
             cloud.SetParent(root,false);
             var prop=Add("Scalloped cloud and planted lances",IndustrialMeshFactory.HeavenRedoubt(i%4),HeavenMaterials.Ivory,Vector3.zero,-35);
             prop.SetParent(root,false);
@@ -46,7 +46,7 @@ public sealed class HeavenBackdrop : MonoBehaviour
         {
             if(island==null) continue;
             var p=island.localPosition; p.y-=Time.deltaTime*.95f;
-            if(p.y < -25) p.y+=50;
+            if(p.y < -30) p.y+=60;
             island.localPosition=p;
         }
     }
@@ -55,50 +55,73 @@ public sealed class HeavenBackdrop : MonoBehaviour
 
 public static partial class IndustrialMeshFactory
 {
-    static readonly Mesh[] redoubts=new Mesh[4];
+    static readonly Mesh[] redoubts=new Mesh[4],heavenIslands=new Mesh[3];
+    static void HeavenArch(Builder b,Vector3 foot,float width,float height,bool broken)
+    {
+        for(int s=-1;s<=1;s+=2)
+        {
+            var a=foot+Vector3.right*s*width*.5f;var d=foot+Vector3.up*height;
+            if(broken&&s>0)d=foot+new Vector3(width*.46f,height*.55f,0);
+            b.Sweep(a,a+Vector3.up*height*.65f,foot+new Vector3(s*width*.42f,height*.9f,0),d,.13f,.19f,15,false);
+            b.Sweep(a+Vector3.back*.21f,a+new Vector3(0,height*.65f,-.21f),foot+new Vector3(s*width*.39f,height*.86f,-.21f),d+Vector3.back*.21f,.028f,.032f,3,false);
+            b.Pearl(a+Vector3.down*.02f,new Vector3(.23f,.13f,.25f),7,20,10);
+            b.Halo(a+Vector3.up*.19f,.16f,.025f,Vector3.one,Quaternion.Euler(90,0,0),3,24);
+        }
+    }
     public static Mesh HeavenRedoubt(int variant)
     {
-        if(redoubts[variant]!=null) return redoubts[variant];
-        var b=new Builder();
-        // Marble fragments, bent palisades and spearheads embedded in the clouds.
-        b.Prism(new[]{V(-1.3f,-.4f),V(1.4f,-.35f),V(1.1f,.5f),V(-1,.65f)},.18f,1,new Vector3(0,0,-.45f),14);
-        for(int i=0;i<6;i++)
+        if(redoubts[variant]!=null)return redoubts[variant];var b=new Builder();
+        // Interlocked marble terraces sit in the clouds; ruins have volume and visible broken ends.
+        for(int slab=0;slab<5;slab++)
         {
-            if(i==variant+1) continue;
-            float x=-1.2f+i*.48f, y=.25f+(i%2)*.12f;
-            b.Box(new Vector3(x,y,-.9f),new Vector3(.07f,.09f,.9f),7,2);
-            b.Prism(new[]{V(-.13f,0),V(0,.36f),V(.13f,0)},.07f,3,new Vector3(x,y+.12f,-1.34f),7);
-            if(i<4) b.Box(new Vector3(x+.22f,y,-1.03f),new Vector3(.5f,.065f,.065f),3,7);
+            var offset=V(-1.3f+slab*.65f,-.2f+(slab%2)*.12f);
+            BevelArmor(b,new[]{V(-.38f,-.28f)+offset,V(.35f,-.34f)+offset,V(.4f,.26f)+offset,V(-.36f,.35f)+offset},.24f,slab%2==0?15:1,0);
         }
-        for(int i=0;i<3;i++)
+        b.Pearl(new Vector3(0,-.15f,.38f),new Vector3(2.05f,.70f,.32f),1);
+        if(variant==0||variant==1)
         {
-            float x=-.8f+i*.77f, y=-.45f+i*.13f;
-            b.Box(new Vector3(x,y,-.85f),new Vector3(.055f,.9f,.06f),7,2);
-            b.Prism(new[]{V(-.12f,0),V(0,-.43f),V(.12f,0)},.06f,8,new Vector3(x,y-.43f,-.85f),2);
+            HeavenArch(b,new Vector3(0,.1f,-.10f),2.4f,2.15f,variant==1);
+            HeavenArch(b,new Vector3(-1.55f,.12f,.08f),.78f,1.4f,false);
+            if(variant==0)HeavenArch(b,new Vector3(1.55f,.12f,.08f),.78f,1.4f,false);
+            for(int s=-1;s<=1;s+=2)
+                b.Sweep(new Vector3(s*1.8f,.1f,.1f),new Vector3(s*2,.6f,.1f),new Vector3(s*1.5f,1.1f,.2f),new Vector3(s*1.2f,1.35f,.2f),.09f,.12f,7,false);
         }
-        return redoubts[variant]=b.Finish("War in Heaven / cloud redoubt "+variant);
-    }
-
-    static Mesh heavenIsland;
-    public static Mesh HeavenCloudIsland()
-    {
-        if(heavenIsland!=null)return heavenIsland;
-        var vertices=new System.Collections.Generic.List<Vector3>();var normals=new System.Collections.Generic.List<Vector3>();var triangles=new System.Collections.Generic.List<int>();
-        const int rings=12,sides=24;
-        for(int lobe=0;lobe<8;lobe++)
+        else
         {
-            float a=lobe*Mathf.PI*2/7;
-            Vector3 center=lobe==7?new Vector3(0,0,.18f):new Vector3(Mathf.Cos(a)*1.23f,Mathf.Sin(a)*.65f,.22f);
-            Vector3 radius=lobe==7?new Vector3(1.7f,1.05f,.48f):new Vector3(.92f,.72f,.54f);
-            int start=vertices.Count;
-            for(int y=0;y<=rings;y++)for(int x=0;x<=sides;x++)
+            for(int pillar=0;pillar<5;pillar++)
             {
-                float lat=-Mathf.PI*.5f+y*Mathf.PI/rings,lon=x*Mathf.PI*2/sides;
-                Vector3 unit=new Vector3(Mathf.Cos(lat)*Mathf.Cos(lon),Mathf.Sin(lat),Mathf.Cos(lat)*Mathf.Sin(lon));
-                vertices.Add(center+Vector3.Scale(unit,radius));normals.Add(new Vector3(unit.x/radius.x,unit.y/radius.y,unit.z/radius.z).normalized);
-                if(x<sides&&y<rings){int k=start+y*(sides+1)+x;triangles.Add(k);triangles.Add(k+sides+1);triangles.Add(k+1);triangles.Add(k+1);triangles.Add(k+sides+1);triangles.Add(k+sides+2);}
+                float x=-1.55f+pillar*.78f,h=pillar==variant? .55f:1.15f+(pillar%2)*.4f;
+                b.Sweep(new Vector3(x,0,0),new Vector3(x,.4f,0),new Vector3(x,h-.2f,0),new Vector3(x+(pillar==2?.3f:0),h,.04f),.15f,.19f,15,false);
+                b.Halo(new Vector3(x,.18f,0),.18f,.036f,Vector3.one,Quaternion.Euler(90,0,0),3,24);
+                if(pillar<4&&pillar!=variant)HeavenArch(b,new Vector3(x+.39f,0,-.06f),.64f,.87f,false);
             }
+            // A fallen length of carved cornice and exposed ribs.
+            b.Sweep(new Vector3(-1.5f,-.33f,-.27f),new Vector3(-.7f,-.58f,-.23f),new Vector3(.3f,-.13f,-.15f),new Vector3(1.4f,-.43f,-.16f),.18f,.16f,1,false);
         }
-        heavenIsland=new Mesh{name="Smooth layered cloud island"};heavenIsland.SetVertices(vertices);heavenIsland.SetNormals(normals);heavenIsland.SetTriangles(triangles,0);heavenIsland.RecalculateBounds();return heavenIsland;
+        for(int spear=0;spear<5;spear++)
+        {
+            float x=-1.7f+spear*.79f;var root=new Vector3(x,-.25f,-.35f);
+            var tip=root+new Vector3((spear%2==0?-.22f:.24f),.82f+(spear%3)*.17f,-.15f);
+            b.Sweep(root,Vector3.Lerp(root,tip,.3f),Vector3.Lerp(root,tip,.7f),tip,.027f,.027f,7,false,12);
+            Feather(b,tip-Vector3.up*.12f,tip+Vector3.up*.29f,.095f,.02f,3);
+        }
+        // A torn pennant on each surviving ruin, with a real curled cloth surface.
+        float bx=variant%2==0?-1.2f:1.2f;
+        b.Surface(10,12,(u,v)=>new Vector3(bx+(u-.5f)*.48f,1.6f-v*(.87f+.13f*Mathf.Cos(u*19)), -.3f+Mathf.Sin(v*5+u*2)*.12f),1);
+        return redoubts[variant]=b.Finish("Heaven / ruined gilded sanctuary "+variant);
+    }
+    public static Mesh HeavenCloudIsland(int variant=0)
+    {
+        if(heavenIslands[variant]!=null)return heavenIslands[variant];var b=new Builder();
+        var random=new System.Random(4711+variant*173);
+        b.Pearl(new Vector3(0,-.28f,.48f),new Vector3(2.6f,1.12f,.75f),15);
+        for(int puff=0;puff<16;puff++)
+        {
+            float a=puff*Mathf.PI*2/16;
+            float size=.55f+(float)random.NextDouble()*.42f;
+            var center=new Vector3(Mathf.Cos(a)*(1.7f+(float)random.NextDouble()*.5f),Mathf.Sin(a)*.72f-.35f,.35f+(float)random.NextDouble()*.45f);
+            b.Pearl(center,new Vector3(size,size*.65f,size*.74f),15,24,12);
+        }
+        return heavenIslands[variant]=b.Finish("Asymmetric deep cumulus bank "+variant);
     }
 }
