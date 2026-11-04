@@ -1,0 +1,32 @@
+[
+  {
+    "cue": "charge",
+    "ref": "20261104-211008-5452:4122",
+    "seed": 4122,
+    "status": "budget_exhausted",
+    "session": "ArtSource/HeavenVoidReview/AudioCharge/iteration-20261104-210956-a80d/session.json",
+    "human_approved": false,
+    "runtime_imported": false,
+    "original_candidates": [
+      "ArtSource/HeavenVoidReview/Candidates/heavenSiegeCharge/AMBMisc_HeavenTake_v01.wav",
+      "ArtSource/HeavenVoidReview/Candidates/heavenSiegeCharge/AMBMisc_HeavenTake_v02.wav",
+      "ArtSource/HeavenVoidReview/Candidates/heavenSiegeCharge/MAGSpel_HeavenTake_v01.wav",
+      "ArtSource/HeavenVoidReview/Candidates/heavenSiegeCharge/MAGSpel_HeavenTake_v02.wav"
+    ]
+  },
+  {
+    "cue": "ignite",
+    "ref": "20261104-211344-6f93:5129",
+    "seed": 5129,
+    "status": "budget_exhausted",
+    "session": "ArtSource/HeavenVoidReview/AudioIgnite/iteration-20261104-211344-9b91/session.json",
+    "human_approved": false,
+    "runtime_imported": false,
+    "original_candidates": [
+      "ArtSource/HeavenVoidReview/Candidates/heavenSiegeIgnite/SCIMach_HeavenTake_v01.wav",
+      "ArtSource/HeavenVoidReview/Candidates/heavenSiegeIgnite/SCIMach_HeavenTake_v02.wav",
+      "ArtSource/HeavenVoidReview/Candidates/heavenSiegeIgnite/SCIMach_HeavenTake_v03.wav",
+      "ArtSource/HeavenVoidReview/Candidates/heavenSiegeIgnite/SCIMach_HeavenTake_v04.wav"
+    ]
+  }
+]

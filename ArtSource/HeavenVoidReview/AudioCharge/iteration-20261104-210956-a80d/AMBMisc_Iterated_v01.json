@@ -1,0 +1,86 @@
+{
+  "request": "20261104-211008-5452",
+  "ref": "20261104-211008-5452:4122",
+  "text": "TrackType: SFX, A majestic science fiction siege laser capacitor charging: one rising crystalline metallic shimmer with deep gathering energy, luminous and powerful, ending cleanly before the blast. TrackType: SFX. No melody, music, voice or speech.. Required acoustic properties: Is there one continuous rising energy charge?; Is the sound free of music and speech?; Does it have a clean ending without an abrupt cut?",
+  "prompt": "TrackType: SFX, A majestic science fiction siege laser capacitor charging: one rising crystalline metallic shimmer with deep gathering energy, luminous and powerful, ending cleanly before the blast. TrackType: SFX. No melody, music, voice or speech.. Required acoustic properties: Is there one continuous rising energy charge?; Is the sound free of music and speech?; Does it have a clean ending without an abrupt cut?",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "ambience",
+  "seed": 4122,
+  "rank": 1,
+  "rank_score": 0.451,
+  "clap": 0.7667,
+  "clap_cos": 0.2467,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.05,
+    "CU": 5.11,
+    "PC": 2.26,
+    "PQ": 5.23
+  },
+  "fails": [],
+  "warnings": [
+    "so-so production quality (Audiobox PQ 5.2)",
+    "cut at the requested duration while still 13 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 6.14,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 1.5,
+    "length_frames": 36.0,
+    "channels": 1,
+    "cut_db": -13.3
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -12.3
+  },
+  "signal": {
+    "duration_s": 3.0,
+    "peak_dbfs": -4.9,
+    "true_peak_dbtp": -4.41,
+    "clipped_fraction": 0.0,
+    "dc_offset": 6e-05,
+    "active_s": 1.95,
+    "noise_floor_db": -79.0,
+    "onset_s": 0.0279,
+    "tail_db": -76.8,
+    "stereo_correlation": 0.211,
+    "lufs": -14.0,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "3e00051cd30c58dea8d7e366a68ae6564c42670ae6633323bfee4100c795c7e7",
+    "blind_caption": "A bird chirping",
+    "requirements": [
+      {
+        "question": "Is there one continuous rising energy charge?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound free of music and speech?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Does it have a clean ending without an abrupt cut?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.3093
+  },
+  "iteration_session": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\HeavenVoidReview\\AudioCharge\\iteration-20261104-210956-a80d\\session.json",
+  "human_approved": false
+}

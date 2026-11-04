@@ -1,0 +1,475 @@
+{
+  "brief": {
+    "description": "One enormous celestial laser ignition, crystalline metallic attack with a deep powerful energy surge and smooth decaying plasma tail. Beautiful luminous science fiction siege weapon, low harshness, no melody, no music, no voices. TrackType: SFX.",
+    "requirements": [
+      "Is there one clear energy blast onset?",
+      "Is the sound free of music and speech?",
+      "Does the energy tail decay smoothly?"
+    ]
+  },
+  "brief_id": "fdab5ac258a32ee44f7f8ddf1b4f0002c0aba9be0a99cb19a5a55003b4f6fed1",
+  "options": {
+    "duration": 1.1,
+    "mode": "oneshot",
+    "engine": "sa3"
+  },
+  "seed": 5129,
+  "budget": 4,
+  "generated": 4,
+  "baseline_generated": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "action": "REGENERATE",
+      "request": "20261104-211344-6f93",
+      "prompt": "TrackType: SFX, One enormous celestial laser ignition, crystalline metallic attack with a deep powerful energy surge and smooth decaying plasma tail. Beautiful luminous science fiction siege weapon, low harshness, no melody, no music, no voices. TrackType: SFX",
+      "takes": [
+        "20261104-211344-6f93:5129",
+        "20261104-211344-6f93:5130"
+      ]
+    },
+    {
+      "round": 1,
+      "action": "REGENERATE",
+      "request": "20261104-211352-f47c",
+      "prompt": "TrackType: SFX, One enormous celestial laser ignition, crystalline metallic attack with a deep powerful energy surge and smooth decaying plasma tail. Beautiful luminous science fiction siege weapon, low harshness, no melody, no music, no voices. TrackType: SFX.. Required acoustic properties: Is there one clear energy blast onset?; Is the sound free of music and speech?; Does the energy tail decay smoothly?",
+      "takes": [
+        "20261104-211352-f47c:5132",
+        "20261104-211352-f47c:5131"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "seed": 5129,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -1.19,
+        "true_peak_dbtp": -0.86,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00117,
+        "active_s": 1.41,
+        "noise_floor_db": -80.5,
+        "onset_s": 0.0,
+        "tail_db": -84.4,
+        "stereo_correlation": 0.862,
+        "lufs": -19.2,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 1.4,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 1.125,
+        "length_frames": 27.0,
+        "channels": 1
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -20.5
+      },
+      "clap": 0.6892,
+      "clap_cos": 0.2014,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.35,
+        "CU": 7.21,
+        "PC": 2.64,
+        "PQ": 6.24
+      },
+      "fails": [],
+      "warnings": [],
+      "rejected": false,
+      "rank_score": 0.5761,
+      "rank": 1,
+      "ref": "20261104-211344-6f93:5129",
+      "files": {
+        "wav": "20261104-211344-6f93/5129.wav",
+        "png": "20261104-211344-6f93/5129.png",
+        "raw": "20261104-211344-6f93/5129_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261104-211344-6f93\\5129.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261104-211344-6f93\\5129.png"
+      },
+      "review": {
+        "brief_id": "fdab5ac258a32ee44f7f8ddf1b4f0002c0aba9be0a99cb19a5a55003b4f6fed1",
+        "blind_caption": "A gun fire",
+        "requirements": [
+          {
+            "question": "Is there one clear energy blast onset?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound free of music and speech?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Does the energy tail decay smoothly?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3297
+      }
+    },
+    {
+      "seed": 5130,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -4.48,
+        "true_peak_dbtp": -4.25,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00207,
+        "active_s": 1.355,
+        "noise_floor_db": -84.6,
+        "onset_s": 0.013,
+        "tail_db": -84.3,
+        "stereo_correlation": 0.904,
+        "lufs": -20.2,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 1.78,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 1.125,
+        "length_frames": 27.0,
+        "channels": 1,
+        "cut_db": -18.4
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.0
+      },
+      "clap": 0.6863,
+      "clap_cos": 0.1946,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.04,
+        "CU": 5.44,
+        "PC": 2.69,
+        "PQ": 5.53
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 18 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.4626,
+      "rank": 2,
+      "ref": "20261104-211344-6f93:5130",
+      "files": {
+        "wav": "20261104-211344-6f93/5130.wav",
+        "png": "20261104-211344-6f93/5130.png",
+        "raw": "20261104-211344-6f93/5130_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261104-211344-6f93\\5130.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261104-211344-6f93\\5130.png"
+      },
+      "review": {
+        "brief_id": "fdab5ac258a32ee44f7f8ddf1b4f0002c0aba9be0a99cb19a5a55003b4f6fed1",
+        "blind_caption": "A person sneezing",
+        "requirements": [
+          {
+            "question": "Is there one clear energy blast onset?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound free of music and speech?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Does the energy tail decay smoothly?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2746
+      }
+    },
+    {
+      "seed": 5132,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -0.44,
+        "true_peak_dbtp": -0.21,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.00154,
+        "active_s": 1.64,
+        "noise_floor_db": -69.2,
+        "onset_s": 0.0,
+        "tail_db": -85.7,
+        "stereo_correlation": 0.961,
+        "lufs": -17.4,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": 0.77,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 1.125,
+        "length_frames": 27.0,
+        "channels": 1,
+        "cut_db": -19.9
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -19.1
+      },
+      "clap": 0.8438,
+      "clap_cos": 0.1631,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.07,
+        "CU": 6.8,
+        "PC": 2.56,
+        "PQ": 6.61
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 20 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.5525,
+      "rank": 1,
+      "ref": "20261104-211352-f47c:5132",
+      "files": {
+        "wav": "20261104-211352-f47c/5132.wav",
+        "png": "20261104-211352-f47c/5132.png",
+        "raw": "20261104-211352-f47c/5132_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261104-211352-f47c\\5132.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261104-211352-f47c\\5132.png"
+      },
+      "review": {
+        "brief_id": "fdab5ac258a32ee44f7f8ddf1b4f0002c0aba9be0a99cb19a5a55003b4f6fed1",
+        "blind_caption": "A door is opened.",
+        "requirements": [
+          {
+            "question": "Is there one clear energy blast onset?",
+            "answer": "uncertain",
+            "evidence": "NO"
+          },
+          {
+            "question": "Is the sound free of music and speech?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Does the energy tail decay smoothly?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.2716
+      }
+    },
+    {
+      "seed": 5131,
+      "signal": {
+        "duration_s": 2.0,
+        "peak_dbfs": -0.5,
+        "true_peak_dbtp": -0.5,
+        "clipped_fraction": 0.0,
+        "dc_offset": 0.0018,
+        "active_s": 1.61,
+        "noise_floor_db": -67.8,
+        "onset_s": 0.0,
+        "tail_db": -84.7,
+        "stereo_correlation": 0.778,
+        "lufs": -18.2,
+        "fails": [],
+        "warnings": []
+      },
+      "post": {
+        "gain_db": -0.2,
+        "onset_s": 0.003,
+        "onset_frame": 0.072,
+        "length_s": 1.125,
+        "length_frames": 27.0,
+        "channels": 1,
+        "cut_db": -18.5
+      },
+      "final": {
+        "true_peak_dbtp": -1.0,
+        "lufs": -21.0
+      },
+      "clap": 0.7283,
+      "clap_cos": 0.1986,
+      "clap_top": null,
+      "aes": {
+        "CE": 3.28,
+        "CU": 7.06,
+        "PC": 2.85,
+        "PQ": 6.46
+      },
+      "fails": [],
+      "warnings": [
+        "cut at the requested duration while still 18 dB below its peak: the tail is chopped, ask for a longer --duration"
+      ],
+      "rejected": false,
+      "rank_score": 0.549,
+      "rank": 2,
+      "ref": "20261104-211352-f47c:5131",
+      "files": {
+        "wav": "20261104-211352-f47c/5131.wav",
+        "png": "20261104-211352-f47c/5131.png",
+        "raw": "20261104-211352-f47c/5131_raw.wav"
+      },
+      "paths": {
+        "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261104-211352-f47c\\5131.wav",
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261104-211352-f47c\\5131.png"
+      },
+      "review": {
+        "brief_id": "fdab5ac258a32ee44f7f8ddf1b4f0002c0aba9be0a99cb19a5a55003b4f6fed1",
+        "blind_caption": "A door is opened.",
+        "requirements": [
+          {
+            "question": "Is there one clear energy blast onset?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Is the sound free of music and speech?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          },
+          {
+            "question": "Does the energy tail decay smoothly?",
+            "answer": "uncertain",
+            "evidence": "YES"
+          }
+        ],
+        "action": "KEEP",
+        "suggestion": "Keep (meets target)",
+        "listener": "midashenglm-0.6b",
+        "human_approved": false,
+        "warnings": [
+          "listener gave unsupported or uncertain answers"
+        ],
+        "fixed_clap_cos": 0.3144
+      }
+    }
+  ],
+  "baseline_candidates": [],
+  "best": {
+    "seed": 5129,
+    "signal": {
+      "duration_s": 2.0,
+      "peak_dbfs": -1.19,
+      "true_peak_dbtp": -0.86,
+      "clipped_fraction": 0.0,
+      "dc_offset": 0.00117,
+      "active_s": 1.41,
+      "noise_floor_db": -80.5,
+      "onset_s": 0.0,
+      "tail_db": -84.4,
+      "stereo_correlation": 0.862,
+      "lufs": -19.2,
+      "fails": [],
+      "warnings": []
+    },
+    "post": {
+      "gain_db": 1.4,
+      "onset_s": 0.003,
+      "onset_frame": 0.072,
+      "length_s": 1.125,
+      "length_frames": 27.0,
+      "channels": 1
+    },
+    "final": {
+      "true_peak_dbtp": -1.0,
+      "lufs": -20.5
+    },
+    "clap": 0.6892,
+    "clap_cos": 0.2014,
+    "clap_top": null,
+    "aes": {
+      "CE": 3.35,
+      "CU": 7.21,
+      "PC": 2.64,
+      "PQ": 6.24
+    },
+    "fails": [],
+    "warnings": [],
+    "rejected": false,
+    "rank_score": 0.5761,
+    "rank": 1,
+    "ref": "20261104-211344-6f93:5129",
+    "files": {
+      "wav": "20261104-211344-6f93/5129.wav",
+      "png": "20261104-211344-6f93/5129.png",
+      "raw": "20261104-211344-6f93/5129_raw.wav"
+    },
+    "paths": {
+      "wav": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261104-211344-6f93\\5129.wav",
+      "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261104-211344-6f93\\5129.png"
+    },
+    "review": {
+      "brief_id": "fdab5ac258a32ee44f7f8ddf1b4f0002c0aba9be0a99cb19a5a55003b4f6fed1",
+      "blind_caption": "A gun fire",
+      "requirements": [
+        {
+          "question": "Is there one clear energy blast onset?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Is the sound free of music and speech?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        },
+        {
+          "question": "Does the energy tail decay smoothly?",
+          "answer": "uncertain",
+          "evidence": "YES"
+        }
+      ],
+      "action": "KEEP",
+      "suggestion": "Keep (meets target)",
+      "listener": "midashenglm-0.6b",
+      "human_approved": false,
+      "warnings": [
+        "listener gave unsupported or uncertain answers"
+      ],
+      "fixed_clap_cos": 0.3297
+    }
+  },
+  "baseline_best": null,
+  "status": "budget_exhausted",
+  "human_approved": false,
+  "delivered": [
+    "C:\\Users\\Miguel\\Shootemup\\ArtSource\\HeavenVoidReview\\AudioIgnite\\iteration-20261104-211344-9b91\\SCIMach_Iterated_v01.wav"
+  ]
+}

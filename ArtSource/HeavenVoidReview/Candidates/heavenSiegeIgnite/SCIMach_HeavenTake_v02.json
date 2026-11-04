@@ -1,0 +1,84 @@
+{
+  "request": "20261104-211344-6f93",
+  "ref": "20261104-211344-6f93:5130",
+  "text": "TrackType: SFX, One enormous celestial laser ignition, crystalline metallic attack with a deep powerful energy surge and smooth decaying plasma tail. Beautiful luminous science fiction siege weapon, low harshness, no melody, no music, no voices. TrackType: SFX.",
+  "prompt": "TrackType: SFX, One enormous celestial laser ignition, crystalline metallic attack with a deep powerful energy surge and smooth decaying plasma tail. Beautiful luminous science fiction siege weapon, low harshness, no melody, no music, no voices. TrackType: SFX",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "scifi-machine",
+  "seed": 5130,
+  "rank": 2,
+  "rank_score": 0.4626,
+  "clap": 0.6863,
+  "clap_cos": 0.1946,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.04,
+    "CU": 5.44,
+    "PC": 2.69,
+    "PQ": 5.53
+  },
+  "fails": [],
+  "warnings": [
+    "cut at the requested duration while still 18 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 1.78,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 1.125,
+    "length_frames": 27.0,
+    "channels": 1,
+    "cut_db": -18.4
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -21.0
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -4.48,
+    "true_peak_dbtp": -4.25,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00207,
+    "active_s": 1.355,
+    "noise_floor_db": -84.6,
+    "onset_s": 0.013,
+    "tail_db": -84.3,
+    "stereo_correlation": 0.904,
+    "lufs": -20.2,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "fdab5ac258a32ee44f7f8ddf1b4f0002c0aba9be0a99cb19a5a55003b4f6fed1",
+    "blind_caption": "A person sneezing",
+    "requirements": [
+      {
+        "question": "Is there one clear energy blast onset?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound free of music and speech?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Does the energy tail decay smoothly?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2746
+  },
+  "human_approved": false
+}

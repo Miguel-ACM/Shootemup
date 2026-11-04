@@ -1,0 +1,83 @@
+{
+  "request": "20261104-211008-5452",
+  "ref": "20261104-211008-5452:4121",
+  "text": "TrackType: SFX, A majestic science fiction siege laser capacitor charging: one rising crystalline metallic shimmer with deep gathering energy, luminous and powerful, ending cleanly before the blast. TrackType: SFX. No melody, music, voice or speech.. Required acoustic properties: Is there one continuous rising energy charge?; Is the sound free of music and speech?; Does it have a clean ending without an abrupt cut?",
+  "prompt": "TrackType: SFX, A majestic science fiction siege laser capacitor charging: one rising crystalline metallic shimmer with deep gathering energy, luminous and powerful, ending cleanly before the blast. TrackType: SFX. No melody, music, voice or speech.. Required acoustic properties: Is there one continuous rising energy charge?; Is the sound free of music and speech?; Does it have a clean ending without an abrupt cut?",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "ambience",
+  "seed": 4121,
+  "rank": 2,
+  "rank_score": 0.4393,
+  "clap": 0.7898,
+  "clap_cos": 0.1964,
+  "clap_top": null,
+  "aes": {
+    "CE": 2.67,
+    "CU": 5.28,
+    "PC": 2.23,
+    "PQ": 4.96
+  },
+  "fails": [],
+  "warnings": [
+    "so-so production quality (Audiobox PQ 5.0)"
+  ],
+  "post": {
+    "gain_db": 4.35,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 1.5,
+    "length_frames": 36.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -12.8
+  },
+  "signal": {
+    "duration_s": 3.0,
+    "peak_dbfs": -4.31,
+    "true_peak_dbtp": -3.33,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00012,
+    "active_s": 1.805,
+    "noise_floor_db": -80.7,
+    "onset_s": 0.1018,
+    "tail_db": -74.8,
+    "stereo_correlation": 0.716,
+    "lufs": -13.8,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "3e00051cd30c58dea8d7e366a68ae6564c42670ae6633323bfee4100c795c7e7",
+    "blind_caption": "A person is dialing a phone.",
+    "requirements": [
+      {
+        "question": "Is there one continuous rising energy charge?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound free of music and speech?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Does it have a clean ending without an abrupt cut?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2742
+  },
+  "human_approved": false
+}

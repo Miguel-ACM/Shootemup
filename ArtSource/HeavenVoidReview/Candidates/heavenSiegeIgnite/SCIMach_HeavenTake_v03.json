@@ -1,0 +1,84 @@
+{
+  "request": "20261104-211352-f47c",
+  "ref": "20261104-211352-f47c:5132",
+  "text": "TrackType: SFX, One enormous celestial laser ignition, crystalline metallic attack with a deep powerful energy surge and smooth decaying plasma tail. Beautiful luminous science fiction siege weapon, low harshness, no melody, no music, no voices. TrackType: SFX.. Required acoustic properties: Is there one clear energy blast onset?; Is the sound free of music and speech?; Does the energy tail decay smoothly?",
+  "prompt": "TrackType: SFX, One enormous celestial laser ignition, crystalline metallic attack with a deep powerful energy surge and smooth decaying plasma tail. Beautiful luminous science fiction siege weapon, low harshness, no melody, no music, no voices. TrackType: SFX.. Required acoustic properties: Is there one clear energy blast onset?; Is the sound free of music and speech?; Does the energy tail decay smoothly?",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "scifi-machine",
+  "seed": 5132,
+  "rank": 1,
+  "rank_score": 0.5525,
+  "clap": 0.8438,
+  "clap_cos": 0.1631,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.07,
+    "CU": 6.8,
+    "PC": 2.56,
+    "PQ": 6.61
+  },
+  "fails": [],
+  "warnings": [
+    "cut at the requested duration while still 20 dB below its peak: the tail is chopped, ask for a longer --duration"
+  ],
+  "post": {
+    "gain_db": 0.77,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 1.125,
+    "length_frames": 27.0,
+    "channels": 1,
+    "cut_db": -19.9
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -19.1
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -0.44,
+    "true_peak_dbtp": -0.21,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00154,
+    "active_s": 1.64,
+    "noise_floor_db": -69.2,
+    "onset_s": 0.0,
+    "tail_db": -85.7,
+    "stereo_correlation": 0.961,
+    "lufs": -17.4,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "fdab5ac258a32ee44f7f8ddf1b4f0002c0aba9be0a99cb19a5a55003b4f6fed1",
+    "blind_caption": "A door is opened.",
+    "requirements": [
+      {
+        "question": "Is there one clear energy blast onset?",
+        "answer": "uncertain",
+        "evidence": "NO"
+      },
+      {
+        "question": "Is the sound free of music and speech?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Does the energy tail decay smoothly?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2716
+  },
+  "human_approved": false
+}

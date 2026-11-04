@@ -1,0 +1,81 @@
+{
+  "request": "20261104-210956-a4e1",
+  "ref": "20261104-210956-a4e1:4120",
+  "text": "TrackType: SFX, A majestic science fiction siege laser capacitor charging: one rising crystalline metallic shimmer with deep gathering energy, luminous and powerful, ending cleanly before the blast. TrackType: SFX. No melody, music, voice or speech.",
+  "prompt": "TrackType: SFX, A majestic science fiction siege laser capacitor charging: one rising crystalline metallic shimmer with deep gathering energy, luminous and powerful, ending cleanly before the blast. TrackType: SFX. No melody, music, voice or speech",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "magic",
+  "seed": 4120,
+  "rank": 1,
+  "rank_score": 0.4581,
+  "clap": 0.4849,
+  "clap_cos": 0.1687,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.28,
+    "CU": 6.59,
+    "PC": 2.16,
+    "PQ": 5.64
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 5.29,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 1.5,
+    "length_frames": 36.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -14.8
+  },
+  "signal": {
+    "duration_s": 3.0,
+    "peak_dbfs": -6.23,
+    "true_peak_dbtp": -5.62,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00035,
+    "active_s": 2.0,
+    "noise_floor_db": -76.5,
+    "onset_s": 0.0808,
+    "tail_db": -75.9,
+    "stereo_correlation": 0.604,
+    "lufs": -16.7,
+    "fails": [],
+    "warnings": []
+  },
+  "review": {
+    "brief_id": "3e00051cd30c58dea8d7e366a68ae6564c42670ae6633323bfee4100c795c7e7",
+    "blind_caption": "A door is opened or closed.",
+    "requirements": [
+      {
+        "question": "Is there one continuous rising energy charge?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Is the sound free of music and speech?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      },
+      {
+        "question": "Does it have a clean ending without an abrupt cut?",
+        "answer": "uncertain",
+        "evidence": "YES"
+      }
+    ],
+    "action": "KEEP",
+    "suggestion": "Keep (meets target)",
+    "listener": "midashenglm-0.6b",
+    "human_approved": false,
+    "warnings": [
+      "listener gave unsupported or uncertain answers"
+    ],
+    "fixed_clap_cos": 0.2254
+  },
+  "human_approved": false
+}
