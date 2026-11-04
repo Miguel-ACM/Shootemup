@@ -8,7 +8,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
         new(1.26f,.27f),new(1.26f,-.46f),new(1,-.46f),new(1.05f,-1.2f),new(.66f,-1.30f),new(-.66f,-1.30f),new(-1.05f,-1.20f),
         new(-1,-.46f),new(-1.26f,-.46f),new(-1.26f,.29f),new(-1.32f,.33f),new(-1.32f,.66f) };
     protected override Vector2[] Outline => shape;
-    protected override void Configure() { health = 1930; hullScale = 1.12f; attackInterval = .9f; }
+    protected override void Configure() { health = 2600; hullScale = 1.12f; attackInterval = .9f; }
 
     protected override void MoveBoss(float dt)
     {
@@ -25,18 +25,23 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
             // Red Signal: pairs fan out, park, then switch onto vertical tracks.
             // Later phrases stagger the green lights and throw the points across the junction.
             yield return PrimePair(.52f);
-            int cars = Mathf.Max(3, Dense(phaseThree ? 11 : 8));
+            int cars = Mathf.Max(3, Dense(phaseThree ? 24 : phaseTwo ? 21 : 18));
+            int tracks = Dense(phaseThree ? 7 : 5);
             for (int pair = 0; pair < cars; pair++)
             {
                 float turnout = Mathf.Lerp(12, 66, pair / (cars - 1f));
                 for (int sign = -1; sign <= 1; sign += 2)
                 {
                     float hold = .42f + .10f * (cars - pair) + (phaseTwo && sign == side ? .36f : 0);
-                    var car = Fire<NeedleRound>(Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.down, sign * turnout), 3.3f, .20f);
-                    if (phaseThree && pair % 2 == 0)
-                        car.Pause(.62f, hold, CombatRound.Turn.Rotate, -sign * (turnout + 24), 1.24f);
-                    else
-                        car.Pause(.62f, hold, CombatRound.Turn.Down, speed: 1.08f);
+                    for (int track = 0; track < tracks; track++)
+                    {
+                        var car = Fire<NeedleRound>(Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.down, sign * turnout),
+                            2.8f + track * .7f, .18f);
+                        if (phaseThree && pair % 2 == 0)
+                            car.Pause(.62f, hold + track * .10f, CombatRound.Turn.Rotate, -sign * (turnout + 24), 1.05f);
+                        else
+                            car.Pause(.62f, hold + track * .10f, CombatRound.Turn.Down, speed: .94f);
+                    }
                 }
                 yield return Wait(Rest(.10f));
             }
@@ -44,25 +49,34 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
             // changes platforms. Each train has a faster headlight and slower carriages.
             station.x = Lane(side);
             station.y = Camera.UpLimit - (side > 0 ? 2.2f : 3.55f);
-            int trains = phaseThree ? 4 : phaseTwo ? 3 : 2;
+            int trains = Dense(phaseThree ? 8 : phaseTwo ? 7 : 5);
             for (int train = 0; train < trains; train++)
             {
                 yield return Charge(Hull, WeaponPort(), .28f);
                 Vector2 track = CombatVisuals.Aim(Muzzle());
-                Fire<SimpleRound>(Muzzle(), track, 4.8f, .28f);
-                for (int car = 0; car < Dense(5); car++)
+                int rails = Dense(5);
+                for (int rail = 0; rail < rails; rail++)
+                    Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(track, (rail - (rails - 1) * .5f) * 17), 4.8f, .28f);
+                for (int car = 0; car < Dense(10); car++)
                 {
                     yield return Wait(Rest(.105f));
-                    Fire<NeedleRound>(Muzzle(), track, 3.65f, .17f);
+                    for (int rail = 0; rail < rails; rail++)
+                        Fire<NeedleRound>(Muzzle(), CombatVisuals.Rotate(track, (rail - (rails - 1) * .5f) * 17), 3.65f - car * .12f, .17f);
                 }
-                if (phaseTwo)
+                // Rebounding signal fans cross the vertical tracks, forcing a planned
+                // junction crossing instead of letting the pilot park beside the engine.
+                for (int sign = -1; sign <= 1; sign += 2)
                 {
-                    int signal = train % 2 + 1;
-                    Fire<SimpleRound>(Muzzle(signal), CombatVisuals.Rotate(Vector2.up, signal == 1 ? -28 : 28), 3, .22f).Bounce(1);
+                    int signals = Dense(phaseThree ? 15 : phaseTwo ? 13 : 11);
+                    for (int signal = 0; signal < signals; signal++)
+                    {
+                        float angle = Mathf.Lerp(48, 112, signal / Mathf.Max(1f, signals - 1));
+                        Fire<SimpleRound>(Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.down, sign * angle), 2.6f, .20f).Bounce(1);
+                    }
                 }
             }
             side = -side;
-            yield return Wait(Rest(.85f));
+            yield return Wait(Rest(.48f));
         }
     }
 }
