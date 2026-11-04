@@ -32,15 +32,18 @@ public static partial class IndustrialMeshFactory
     public static Mesh DawnGatekeeperMesh()
     {
         if(dawnGatekeeper!=null)return dawnGatekeeper;var b=new Builder();
-        BevelArmor(b,new[]{V(-.6f,-.75f),V(-.72f,.65f),V(0,1.1f),V(.72f,.65f),V(.6f,-.75f)},.55f,15);
+        CelestialKeel(b,.52f,2.25f,.39f);
         for(int s=-1;s<=1;s+=2)
         {
-            b.Prism(new[]{V(s*.5f,-.55f),V(s*1.7f,-.75f),V(s*1.5f,.8f),V(s*.7f,1.2f)},.32f,1,Vector3.zero,7);
-            b.Box(new Vector3(s*1.25f,-.5f,-.26f),new Vector3(.4f,.9f,.42f),7,2);Barrel(b,s*1.25f,-.8f,.45f,.3f,-.28f);
-            for(int f=0;f<3;f++)b.Prism(new[]{V(s*(.85f+f*.2f),.4f),V(s*(1.3f+f*.25f),1.32f),V(s*(1.45f+f*.25f),.65f)},.15f,3,new Vector3(0,0,-.12f),7);
+            b.Sweep(new Vector3(s*.45f,-.45f,0),new Vector3(s*2.0f,-1.0f,.07f),new Vector3(s*2.05f,.8f,.07f),new Vector3(s*.48f,1.5f,.05f),.3f,.26f,7);
+            for(int f=0;f<5;f++)Feather(b,new Vector3(s*(.54f+f*.17f),.62f-f*.11f,-.08f),new Vector3(s*(1.25f+f*.22f),1.58f-f*.43f,.09f),.25f,-s*.16f);
+            b.Sweep(new Vector3(s*.74f,.64f,0),new Vector3(s*1.6f,.52f,-.05f),new Vector3(s*1.54f,-.5f,-.12f),new Vector3(s*1.25f,-1.025f,-.28f),.28f,.24f,15);
+            CelestialMuzzle(b,new Vector3(s*1.25f,-1.025f,-.28f),.24f);
         }
-        b.Drum(new Vector3(0,-.3f,-.4f),.45f,.18f,7,12,2);b.Drum(new Vector3(0,-.3f,-.52f),.31f,.06f,8,12,11);
-        Barrel(b,0,-.75f,.4f,.4f,-.25f);
-        return dawnGatekeeper=b.Finish("Dawn gatekeeper / winged arch and three lance batteries");
+        b.Halo(new Vector3(0,.25f,-.40f),.43f,.075f,Vector3.one,Quaternion.identity,3);
+        b.Pearl(new Vector3(0,.25f,-.41f),new Vector3(.32f,.32f,.16f),9);
+        b.Pearl(new Vector3(0,.25f,-.56f),new Vector3(.13f,.19f,.06f),8);
+        CelestialMuzzle(b,new Vector3(0,-.95f,-.25f),.24f);
+        return dawnGatekeeper=b.Finish("Dawn / vaulted paladin with layered pinions and three siege mouths");
     }
 }
