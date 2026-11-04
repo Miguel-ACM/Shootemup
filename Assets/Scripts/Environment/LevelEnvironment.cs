@@ -403,7 +403,13 @@ public sealed class LevelEnvironment : MonoBehaviour
         if (go != null)
             player = go.transform;
         yield return null;
-        if (level == LevelId.Heaven)
+        if (level == LevelId.Void)
+        {
+            var abyss = new GameObject("Void / black liquid falls");
+            abyss.transform.SetParent(transform, false);
+            abyss.AddComponent<VoidBackdrop>();
+        }
+        else if (level == LevelId.Heaven)
         {
             var heaven = new GameObject("Heaven / the shattered firmament");
             heaven.transform.SetParent(transform, false);
