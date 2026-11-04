@@ -11,7 +11,7 @@ public static partial class IndustrialMeshFactory
     }
     static void VoidEye(Builder b,Vector3 p,Vector3 size)
     {
-        b.Pearl(p+Vector3.forward*.035f,size*1.3f,11,24,12);
+        b.Pearl(p+Vector3.forward*.035f,Vector3.Scale(size,new Vector3(1.3f,1.3f,.65f)),11,24,12);
         b.Pearl(p,size,8,28,14);
         b.Pearl(p+Vector3.back*size.z*.9f,new Vector3(size.x*.18f,size.y*.82f,size.z*.2f),11,16,10);
     }
@@ -85,7 +85,8 @@ public static partial class IndustrialMeshFactory
             }
             for(int s=-1;s<=1;s+=2)
                 VoidRib(b,new Vector3(0,.84f,-.14f),new Vector3(s*.58f,.6f,-.4f),new Vector3(s*.38f,-.65f,-.4f),new Vector3(0,-1.04f,-.14f),.16f,.14f);
-            VoidEye(b,new Vector3(0,0,-.34f),new Vector3(.25f,.63f,.14f));
+            // The final wound sits ahead of its curled lips, readable even during the bank.
+            VoidEye(b,new Vector3(0,0,-.62f),new Vector3(.23f,.63f,.16f));
         }
         return voidForms[form]=b.Finish(new[]{"Void / Veiled Monarch","Void / Severing Saint","Void / Devourer","Void / Unmade"}[form]);
     }

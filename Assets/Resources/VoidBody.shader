@@ -29,10 +29,12 @@ Shader "Shootemup/Void Body"
                 float pulse=.76+.24*sin(_Time.y*2.4+i.p.y*3);
                 float spec=pow(saturate(dot(reflect(-lamp,normal),float3(0,0,-1))),34);
                 float plate=abs(tile-14)<.1?1:0;
-                float3 c=lerp(float3(.009,.006,.018),float3(.10,.055,.17),light)*(.65+plate*.55)+rim*float3(.20,.11,.32);
+                float3 c=lerp(float3(.018,.012,.030),float3(.14,.080,.22),light)*(.65+plate*.55)+rim*float3(.24,.14,.39);
                 c+=spec*float3(.30,.22,.43);
                 c=lerp(c,float3(.43,.16,.68)*pulse,vein*.72);
-                c=lerp(c,float3(.85,.53,1)*(.8+.2*light),eye);
+                float3 iris=lerp(float3(.35,.09,.54),float3(.88,.58,1),pow(light,.45));
+                iris=iris*(.94+.06*sin(_Time.y*1.8+i.p.y*2))+spec*.22;
+                c=lerp(c,iris,eye);
                 return half4(lerp(c*_Tint.rgb,1,saturate(_HitFlash)),1);
             }
             ENDHLSL
