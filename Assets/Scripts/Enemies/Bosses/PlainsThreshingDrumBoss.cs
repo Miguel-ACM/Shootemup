@@ -26,7 +26,8 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
             float start = station.x;
             side = -side;
             station.x = Lane(side);
-            int marks = Mathf.Max(5, Dense(phaseThree ? 18 : phaseTwo ? 15 : 12));
+            int marks = Mathf.Max(5, Dense(phaseThree ? 30 : phaseTwo ? 26 : 22));
+            int rows = Dense(phaseThree ? 7 : 5);
             float gapX = Lane(-side * .38f);
             for (int mark = 0; mark < marks; mark++)
             {
@@ -39,34 +40,46 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
                 {
                     Vector3 port = Muzzle(drum);
                     if (Mathf.Abs(port.x - gapX) < .80f) continue;
-                    var tooth = Fire<NeedleRound>(port, Vector2.down, 2.5f, .18f);
-                    tooth.Pause(.19f, .25f + travelLeft + (phaseTwo && drum == 2 ? .32f : 0), CombatRound.Turn.Down, speed: 1.35f);
+                    for (int row = 0; row < rows; row++)
+                    {
+                        float plant = .19f + row * .23f;
+                        // Stacked windrows share a release accent but occupy separate depths.
+                        // Keep the clear furrow through every row and both drum banks.
+                        Fire<NeedleRound>(port, Vector2.down, 3.2f, .18f)
+                            .Pause(plant, Mathf.Max(.12f, .70f + travelLeft - plant) +
+                                (phaseTwo && drum == 2 ? .32f : 0), CombatRound.Turn.Down, speed: 1.05f + row * .07f);
+                    }
                 }
             }
-            yield return Wait(Rest(.68f));
+            yield return Wait(Rest(.38f));
             // Winnower: pods from the middle chute open sideways over the advancing rows.
             yield return Charge(Hull, WeaponPort(), .44f);
-            int pods = phaseThree ? 3 : phaseTwo ? 2 : 1;
+            int pods = Dense(phaseThree ? 7 : phaseTwo ? 6 : 5);
             for (int pod = 0; pod < pods; pod++)
             {
-                float tilt = -side * (22 + pod * 12);
-                Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Vector2.down, tilt), 2.7f, .33f)
-                    .SplitAt(.75f + .12f * pod, Dense(11), 13, 2.5f, .16f);
-                yield return Wait(Rest(.34f));
+                for (int mirror = -1; mirror <= 1; mirror += 2)
+                    Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Vector2.down, mirror * (10 + pod * 9)), 2.7f, .33f)
+                        .Pause(.62f, .24f).SplitAt(.86f, Dense(17), 10, 2.5f, .16f);
+                yield return Wait(Rest(.26f));
             }
-            if (phaseThree)
+            if (phaseTwo)
             {
                 // Return stroke: the two drums counter-turn, combing the open furrow from opposite edges.
                 yield return PrimePair(.35f);
-                for (int tooth = 0; tooth < Dense(8); tooth++)
+                int teeth = Dense(phaseThree ? 24 : 18);
+                for (int tooth = 0; tooth < teeth; tooth++)
                 {
-                    float spread = 44 - 7 * tooth;
-                    Fire<NeedleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.down, spread), 3.3f);
-                    Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(Vector2.down, -spread), 3.3f);
+                    float spread = Mathf.Lerp(58, -30, tooth / Mathf.Max(1f, teeth - 1));
+                    for (int tine = 0; tine < Dense(5); tine++)
+                    {
+                        float offset = (tine - (Dense(5) - 1) * .5f) * 9;
+                        Fire<NeedleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.down, spread + offset), 3.3f);
+                        Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(Vector2.down, -spread - offset), 3.3f);
+                    }
                     yield return Wait(Rest(.11f));
                 }
             }
-            yield return Wait(Rest(.8f));
+            yield return Wait(Rest(.50f));
         }
     }
 }
