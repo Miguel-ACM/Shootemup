@@ -18,7 +18,7 @@ public static partial class IndustrialMeshFactory
         b.Halo(Vector3.zero,.79f,.035f,new Vector3(1,1.1f,1),Quaternion.identity,3);
         for(int i=0;i<12;i++)
         {
-            float angle=i*Mathf.PI/6;var axis=new Vector2(Mathf.Cos(angle),Mathf.Sin(angle));var tangent=new Vector2(-axis.y,axis.x);
+            float angle=i*Mathf.PI/6;var axis=new Vector2(Mathf.Cos(angle),Mathf.Sin(angle));
             float length=i%3==0?1.23f:1.07f;
             Feather(b,(Vector3)(axis*.55f)+Vector3.forward*.18f,(Vector3)(axis*length)+Vector3.forward*.05f,.14f,.08f,i%2==0?15:3);
         }

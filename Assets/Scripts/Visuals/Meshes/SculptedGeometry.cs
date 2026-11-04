@@ -33,7 +33,7 @@ public static partial class IndustrialMeshFactory
                 Vector3 side=Vector3.Cross(tangent,Vector3.forward).normalized;
                 if(side.sqrMagnitude<.1f)side=Vector3.right;
                 Vector3 normal=Vector3.Cross(side,tangent).normalized;
-                float envelope=taper?Mathf.Max(.008f,Mathf.Pow(Mathf.Sin(Mathf.PI*t),.65f)*(1-.55f*t)):1;
+                float envelope=taper?Mathf.Max(.008f,Mathf.Pow(Mathf.Max(0,Mathf.Sin(Mathf.PI*t)),.65f)*(1-.55f*t)):1;
                 float angle=u*Mathf.PI*2;
                 return p+side*(Mathf.Cos(angle)*width*envelope)+normal*(Mathf.Sin(angle)*depth*envelope);
             },tile);
