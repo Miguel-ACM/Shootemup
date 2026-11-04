@@ -48,7 +48,7 @@ public abstract class DistrictBoss : DistrictEnemy
     // Normal and Hard fight the full score. Wave Watcher can preview it on Easy too.
     public static bool PreviewThirdPhase;
     protected static bool HasThirdPhase => !Difficulty.Easy || PreviewThirdPhase;
-    public int PhaseCount => HasThirdPhase ? 3 : 2;
+    public virtual int PhaseCount => HasThirdPhase ? 3 : 2;
     public int CurrentPhase => encounter.Phase;
     float phaseStart
     {
@@ -59,6 +59,8 @@ public abstract class DistrictBoss : DistrictEnemy
     protected virtual float PhaseEnd(int phase) => phase == 1 ? .5f : phase == 2 && HasThirdPhase ? .25f : 0;
     public float PhaseFraction => encounter.Fraction(PhaseMeterValue, PhaseEnd(CurrentPhase));
     protected virtual bool PhaseThreeReady => HasThirdPhase && HealthFraction <= .25f;
+    protected virtual bool NextPhaseReady => CurrentPhase == 1 ? PhaseTwoReady : CurrentPhase == 2 && PhaseThreeReady;
+    protected virtual float PhaseBreakSeconds => 1.5f;
     protected override void Start()
     {
         base.Start();
@@ -93,14 +95,8 @@ public abstract class DistrictBoss : DistrictEnemy
         base.PrepareFire(warning);
         firingCue.ClearWarning();
         PrepareScore(warning);
-        if (!phaseTwo && PhaseTwoReady)
-        {
-            EnterPhase(2);
-        }
-        else if (phaseTwo && !phaseThree && !PhaseTransitioning && PhaseThreeReady)
-        {
-            EnterPhase(3);
-        }
+        if (CurrentPhase < PhaseCount && !PhaseTransitioning && NextPhaseReady)
+            EnterPhase(CurrentPhase + 1);
         float motionDelta = Time.deltaTime * LevelRun.EnemyTempoScale * MovementScale;
         if (PhaseTransitioning && RepositionsOnPhase)
             transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.UpLimit - 2.5f, transform.position.z), motionDelta * 6);
@@ -144,15 +140,16 @@ public abstract class DistrictBoss : DistrictEnemy
         NotifyBossPhaseChange(phase);
         if (phase == 2)
             OnPhaseTwo();
-        else
+        else if (phase == 3)
             OnPhaseThree();
         PresentPhaseTwo();
+        OnPhaseEntered(phase);
     }
 
     protected virtual float AttackPace => phaseTwo ? (.87f) : 1;
     protected void PresentPhaseTwo()
     {
-        encounter.BeginBreak(age, 1.5f * LevelRun.EnemyTempoScale, PhaseMeterValue);
+        encounter.BeginBreak(age, PhaseBreakSeconds * LevelRun.EnemyTempoScale, PhaseMeterValue);
         nextAttack = Mathf.Max(nextAttack, phaseEntryUntil);
         nextPressure = Mathf.Max(nextPressure, phaseEntryUntil);
         firingCue.ClearWarning();
@@ -183,6 +180,8 @@ public abstract class DistrictBoss : DistrictEnemy
     protected virtual void OnPhaseThree()
     {
     }
+
+    protected virtual void OnPhaseEntered(int phase) { }
 
     protected virtual void PrepareScore(float seconds)
     {
