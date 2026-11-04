@@ -43,11 +43,14 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
                     for (int row = 0; row < rows; row++)
                     {
                         float plant = .19f + row * .23f;
-                        // Stacked windrows share a release accent but occupy separate depths.
-                        // Keep the clear furrow through every row and both drum banks.
-                        Fire<NeedleRound>(port, Vector2.down, 3.2f, .18f)
+                        // Counter-feeding drums release alternating rows toward the
+                        // ceiling and the floor. Rising stubble rebounds into the next
+                        // descending row; the open furrow crosses both directions.
+                        var tooth = Fire<NeedleRound>(port, Vector2.down, 3.2f, .18f)
                             .Pause(plant, Mathf.Max(.12f, .70f + travelLeft - plant) +
-                                (phaseTwo && drum == 2 ? .32f : 0), CombatRound.Turn.Down, speed: 1.05f + row * .07f);
+                                (phaseTwo && drum == 2 ? .32f : 0), CombatRound.Turn.Rotate,
+                                row % 2 == 0 ? 0 : 180, 1.05f + row * .07f);
+                        if (row % 2 != 0) tooth.Bounce(1);
                     }
                 }
             }
@@ -58,8 +61,12 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
             for (int pod = 0; pod < pods; pod++)
             {
                 for (int mirror = -1; mirror <= 1; mirror += 2)
-                    Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Vector2.down, mirror * (10 + pod * 9)), 2.7f, .33f)
-                        .Pause(.62f, .24f).SplitAt(.86f, Dense(17), 10, 2.5f, .16f);
+                    // The chute throws chaff sideways. Alternating pods turn into
+                    // ascending and descending diagonal combs rather than another rain.
+                    Fire<SimpleRound>(Muzzle(), new Vector2(mirror, 0), 2.7f, .33f)
+                        .Pause(.62f, .24f, CombatRound.Turn.Rotate,
+                            mirror * (pod % 2 == 0 ? -55 : 55), .85f)
+                        .SplitAt(.92f, Dense(17), 10, 2.5f, .16f);
                 yield return Wait(Rest(.26f));
             }
             if (phaseTwo)
@@ -73,8 +80,8 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
                     for (int tine = 0; tine < Dense(5); tine++)
                     {
                         float offset = (tine - (Dense(5) - 1) * .5f) * 9;
-                        Fire<NeedleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.down, spread + offset), 3.3f);
-                        Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(Vector2.down, -spread - offset), 3.3f);
+                        Fire<NeedleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.right, spread + offset), 3.3f).Bounce(1, false);
+                        Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(Vector2.left, -spread - offset), 3.3f).Bounce(1, false);
                     }
                     yield return Wait(Rest(.11f));
                 }
