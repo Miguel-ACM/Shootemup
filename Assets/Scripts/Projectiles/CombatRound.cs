@@ -10,12 +10,12 @@ public abstract class CombatRound : AEnemyBullet
     static readonly Unity.Profiling.ProfilerMarker createMarker = new Unity.Profiling.ProfilerMarker("CombatRound.Create");
     // Dense late-phase cards (bomb shards, laces and curtains together) outgrew 420
     // live rounds; at the cap Launch drops rounds and rings and rows open holes.
-    public const int Limit = 1800;
+    public const int Limit = 3600;
     public static readonly HashSet<CombatRound> Live = new HashSet<CombatRound>();
     static readonly Dictionary<Type, Stack<CombatRound>> pools = new Dictionary<Type, Stack<CombatRound>>();
     static int pooled;
-    const int PoolBudget = 3700;
-    const int ReserveScale = 2;
+    const int PoolBudget = 7400;
+    const int ReserveScale = 4;
     const int StandardReserve = 800 * ReserveScale;
     // Older rounds always draw above rounds launched after them: each launch, reused
     // or new, sits a hair further from the camera than the previous one. The sequence
@@ -221,8 +221,8 @@ public abstract class CombatRound : AEnemyBullet
         }
         // These districts now sustain arrow-heavy boss scores. Give their unused
         // specialist reserves to needles behind the curtain, not during a finale.
-        // Scaled reserves retain 1600 standard rounds, 400 giant orbs and at least
-        // sixteen of every delivery within the 3700-object budget.
+        // Scaled reserves retain 3200 standard rounds, 800 giant orbs and at least
+        // thirty-two of every delivery within the 7400-object budget.
         bool arrowDistrict = LevelRun.Current == LevelId.Fields || LevelRun.Current == LevelId.Snow || LevelRun.Current == LevelId.City;
         int ricochets = arrowDistrict ? 8 : 96;
         int shells = arrowDistrict ? (LevelRun.Current == LevelId.Snow ? 40 : 8) : 40;

@@ -10,7 +10,7 @@ public sealed class PlayerRound : ABullet
     static readonly Unity.Profiling.ProfilerMarker spawnMarker = new Unity.Profiling.ProfilerMarker("PlayerRound.Spawn");
     static readonly Unity.Profiling.ProfilerMarker createMarker = new Unity.Profiling.ProfilerMarker("PlayerRound.Create");
     public static int CreatedCount { get; private set; }
-    public const int Limit = 180;
+    public const int Limit = 360;
     static readonly Queue<PlayerRound> pool = new Queue<PlayerRound>(Limit);
     static Transform poolRoot;
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
