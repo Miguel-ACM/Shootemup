@@ -313,7 +313,7 @@ public class WaveOrchestrer : MonoBehaviour
         var tradeable = RunInventory.For(player).Tradeable();
         bool canReforge = tradeable.Exists(entry => ItemPool.ReforgeAlternatives(entry.key, entry.rarity).Count >= 2);
         var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth,
-            pactAvailable, GameRules.luck, tradeable.Count > 0, canReforge, cargo == null && remaining >= 2);
+            pactAvailable, GameRules.luck, tradeable.Count > 0, canReforge, cargo == null && remaining >= 2, !PactPool.GlassHull);
         if (Array.IndexOf(options, EncounterKind.Pact) >= 0)
             PactPool.HexStage = LevelRun.Stage;
         EncounterOptions = options;
@@ -341,8 +341,15 @@ public class WaveOrchestrer : MonoBehaviour
         if (GameOverState.Active)
             return;
         DismissOffer();
-        encounterExpiry[(int)kind] = kind == EncounterKind.Health || kind == EncounterKind.Salvage
+        encounterExpiry[(int)kind] = kind == EncounterKind.Health || kind == EncounterKind.Salvage || EncounterChoice.IsStatReward(kind)
             ? Time.time + 5 : float.PositiveInfinity;
+        if (EncounterChoice.IsStatReward(kind))
+        {
+            EncounterChoice.ApplyStatReward(kind, ship.GetComponent<Shipcontroller>());
+            ItemSound.Play("ready", .18f);
+            PSXImpactEffects.Burst(ship.transform.position, EncounterChoice.Accent(kind));
+            return;
+        }
         if (kind == EncounterKind.Salvage)
         {
             RunCoins.Add(EncounterChoice.SalvageCoins(LevelRun.Tier(LevelRun.Current), GameRules.luck));

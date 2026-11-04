@@ -104,6 +104,22 @@ public sealed class RunInventory : MonoBehaviour
     {
         return entries.FindAll(entry => entry.tradeable);
     }
+
+    // Keep permanent hex bonuses in the stat history so trading an earlier multiplier
+    // cannot divide away a bonus earned later. These are never inventory/trade items.
+    public void RecordStatBonus(Pickup before)
+    {
+        var after = ReadStats();
+        var entry = new Entry { changes = new float[after.Length] };
+        bool changed = false;
+        for (int i = 0; i < after.Length; i++)
+        {
+            entry.changes[i] = after[i] - before.stats[i];
+            changed |= Mathf.Abs(entry.changes[i]) > .000001f;
+        }
+        if (changed)
+            entries.Add(entry);
+    }
     public bool Contains(Entry entry) => entry != null && entries.Contains(entry);
 
     public bool Remove(Entry entry)

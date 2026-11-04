@@ -4,7 +4,8 @@ using UnityEngine;
 
 public enum EncounterKind
 {
-    Shop, MultShop, Item, Health, Challenge, Pact, Salvage, HealthTrade, Reforge, Cargo
+    Shop, MultShop, Item, Health, Challenge, Pact, Salvage, HealthTrade, Reforge, Cargo,
+    AttackSpeed, AttackDamage, MaxHealth, ExtraShot
 }
 public static class EncounterChoice
 {
@@ -24,10 +25,13 @@ public static class EncounterChoice
     public static int SalvageCoins(int tier, float luck) => 12 + Mathf.Max(0, tier - 1) * 4 + Mathf.FloorToInt(Mathf.Clamp(luck, 0, 2) * 12);
 
     public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false,
-        float luck = 0, bool canTrade = false, bool canReforge = false, bool cargoAvailable = true)
+        float luck = 0, bool canTrade = false, bool canReforge = false, bool cargoAvailable = true, bool canGrowHull = true)
     {
         // Shops are no longer offered mid-run; the hangar shop between runs replaces them.
-        var bag = new List<EncounterKind> { EncounterKind.Item, EncounterKind.Salvage };
+        var bag = new List<EncounterKind> { EncounterKind.Item, EncounterKind.Salvage,
+            EncounterKind.AttackSpeed, EncounterKind.AttackDamage, EncounterKind.ExtraShot };
+        if (canGrowHull)
+            bag.Add(EncounterKind.MaxHealth);
         // Integer factors keep the exact 70/100 boundary inclusive on Unity's runtime.
         if (maxHealth > 0 && health * 10f <= maxHealth * 7f)
             bag.Add(EncounterKind.Health);
@@ -70,8 +74,48 @@ public static class EncounterChoice
             a == EncounterKind.Health && b == EncounterKind.HealthTrade || a == EncounterKind.HealthTrade && b == EncounterKind.Health;
     }
 
-    public static string Label(EncounterKind kind) => kind == EncounterKind.MultShop ? "MULT SHOP" :
-        kind == EncounterKind.HealthTrade ? "HEALTH TRADE" : kind.ToString().ToUpperInvariant();
+    public static bool IsStatReward(EncounterKind kind) => kind == EncounterKind.AttackSpeed ||
+        kind == EncounterKind.AttackDamage || kind == EncounterKind.MaxHealth || kind == EncounterKind.ExtraShot;
+
+    // Slotless run bonuses, independent of the item catalog and its availability pool.
+    public static void ApplyStatReward(EncounterKind kind, Shipcontroller ship)
+    {
+        if (!IsStatReward(kind))
+            throw new ArgumentException("Not a stat reward", nameof(kind));
+        var inventory = RunInventory.For(ship);
+        var before = inventory.Capture();
+        switch (kind)
+        {
+            case EncounterKind.AttackSpeed:
+                GameRules.playerShootSpeed += .8f;
+                break;
+            case EncounterKind.AttackDamage:
+                GameRules.playerShootDamage += .25f * (ship.GetComponent<OverdriveBoost>() != null ? 2 : 1);
+                break;
+            case EncounterKind.MaxHealth:
+                ship.AddMaxHits(1);
+                break;
+            case EncounterKind.ExtraShot:
+                GameRules.playerShootNumber++;
+                ship.updateBulletSpawnPoints();
+                break;
+        }
+        inventory.RecordStatBonus(before);
+    }
+
+    public static string Label(EncounterKind kind)
+    {
+        switch (kind)
+        {
+            case EncounterKind.MultShop: return "MULT SHOP";
+            case EncounterKind.HealthTrade: return "HEALTH TRADE";
+            case EncounterKind.AttackSpeed: return "FIRE RATE +0.8";
+            case EncounterKind.AttackDamage: return "DAMAGE +0.25";
+            case EncounterKind.MaxHealth: return "MAX HEALTH +1";
+            case EncounterKind.ExtraShot: return "SHOTS +1";
+            default: return kind.ToString().ToUpperInvariant();
+        }
+    }
     public static Color Accent(EncounterKind kind)
     {
         switch (kind)
@@ -94,6 +138,14 @@ public static class EncounterChoice
                 return new Color(.5f, .8f, .95f);
             case EncounterKind.Cargo:
                 return new Color(.96f, .63f, .33f);
+            case EncounterKind.AttackSpeed:
+                return new Color(.36f, .86f, .95f);
+            case EncounterKind.AttackDamage:
+                return new Color(1, .62f, .26f);
+            case EncounterKind.MaxHealth:
+                return new Color(.96f, .46f, .58f);
+            case EncounterKind.ExtraShot:
+                return new Color(.76f, .63f, 1);
             default:
                 return new Color(.76f, .48f, .95f);
         }

@@ -1,0 +1,8 @@
+PASS
+Isolated editor checks and production RewardHexes rendering; no Play mode.
+1024 seeds: all four rewards reachable, unique compatible offers, deterministic draws, Glass Hull exclusion.
+Actual hex selection resolves all four rewards immediately, expires receipts after five seconds, adds no decision waves.
+Repeated grants stack; extra-shot rebuilds both weapon spawn arrays; Overdrive expiry preserves damage bonus.
+Health grows by one and queues one repair; Glass Hull blocks growth. Trading an older item preserves later bonuses.
+Two pairs and a hovered triple rendered at 960x720 with point-sampled icons, solid charge and faded face.
+Fresh Unity 6000.6.2f1 compilation: zero compiler warnings and errors.
