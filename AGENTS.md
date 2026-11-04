@@ -189,8 +189,6 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Show victory and game over directly over the vertical flight area. Fit the title, tally and unlocks within its edges and keep the side margins clear.
 - Keep victory, simulator results and game over on screen until a fresh confirm or back press. In menus, hangar consoles and results, PlayStation Cross confirms and Circle goes back one level. Combat and in-run spatial decisions keep their flight controls. The departure gradient spans most of the hangar lane and launches the pilot anywhere in its bright opening.
 
-## Workflow
-
 ## Heaven and Void expansion (4 November 2026)
 
 - Heaven is Hell's alternative after Space or Underwater. Both Hell and Heaven continue into Void; Void's mandatory boss reward precedes campaign victory. Preserve run equipment, wallet, score and seed throughout.
@@ -199,7 +197,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Void has four phases on Normal and Hard, three on Easy. Its shape changes every phase, and each form has distinct difficult attacks. Between phases it disappears for fifteen active-play seconds and attacks from all sides with a different survival barrage each time.
 - Commit each feature and enemy individually. Use isolated review tooling and target only failed or revised cases after the batch review.
 
-## Workflow (continued)
+## Workflow
 
 - District music (3 November 2026) starts on the track's intro and continues into flight. At boss entry, crossfade into a long, energetic passage of that same recording at its original tempo, with a bass boost. At final destruction, crossfade to the outro and gradually release the bass. Keep Boss (fast) as a pitch-preserving audition option in the local Music Lab. The normal boss mix plays in the game.
 - Use Miguel’s saved Intro, Flight, Boss and Outro markers for each song. Both ends of each section are independently editable on four-beat bar lines in Music Lab. Preserve saved ranges through reanalysis. Switch immediately at the current playhead between Boss and Boss (fast) in Music Lab. Other changes match the opening chord at the destination IN within ten seconds, with a four-second limit for Outro from the shatter accent. Otherwise use the previous progression-ending rule, with a bar or beat inside the applicable limit if the progression and OUT are both farther away.

@@ -50,6 +50,11 @@ public static class VerifyHeavenVoid
         EditorSceneManager.playModeStartScene=AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/Scenes/Title.unity");
         EditorApplication.isPlaying=true;
     }
+    public static void RunFixes()
+    {
+        SessionState.SetBool("HeavenVoidFixes",true);
+        Run();
+    }
     static void Gallery()
     {
         var camera=new GameObject("Model review camera").AddComponent<UnityEngine.Camera>();
@@ -78,7 +83,7 @@ public static class VerifyHeavenVoid
             }
         }
         UnityEngine.Object.DestroyImmediate(camera.gameObject);UnityEngine.Object.DestroyImmediate(target);
-        foreach(string shader in new[]{"HeavenClouds","VoidFalls","VoidBody"})
+        foreach(string shader in new[]{"HeavenClouds","HeavenMist","VoidFalls","VoidBody"})
             if(ShaderUtil.ShaderHasError(Resources.Load<Shader>(shader)))throw new Exception("Shader error "+shader);
     }
     public static void Build()
@@ -110,6 +115,10 @@ public sealed class HeavenVoidReview:MonoBehaviour
         while(WaveWatcher.Current==null||!WaveWatcher.Current.Ready||CloudTransition.Busy||!WavePreparation.Ready)yield return null;
         watcher=WaveWatcher.Current;if(watcher.Looping)watcher.ToggleLoop();
         Time.captureDeltaTime=1f/30;
+        if(SessionState.GetBool("HeavenVoidFixes",false))
+        {
+            yield return Fixes();yield break;
+        }
         foreach(var from in new[]{LevelId.Space,LevelId.Underwater})foreach(var next in new[]{LevelId.Hell,LevelId.Heaven})
         {
             LevelRun.Reset(from,17381);Check(LevelRun.GetOptions().SequenceEqual(new[]{LevelId.Hell,LevelId.Heaven}),from+" offers Hell / Heaven");
@@ -183,6 +192,31 @@ public sealed class HeavenVoidReview:MonoBehaviour
         SessionState.SetBool("HeavenVoidReview",false);EditorApplication.Exit(errors.Count==0?0:1);
     }
     IEnumerator Ready(){yield return null;while(CloudTransition.Busy||!WavePreparation.Ready)yield return null;yield return null;}
+    IEnumerator Fixes()
+    {
+        watcher.SelectLevel(LevelId.Heaven);yield return Ready();
+        foreach(var difficulty in new[]{RunDifficulty.Normal,RunDifficulty.Hard,RunDifficulty.Easy})
+        {
+            Difficulty.Select(difficulty);
+            foreach(int seed in new[]{17381,221113,83019,1,789321,94367,20261104})
+            {
+                LevelRun.Reset(LevelId.Heaven,seed);yield return WaveComposer.Prepare();
+                for(int budget=2;budget<=20;budget++)
+                {
+                    Wave wave=null;try{wave=WaveComposer.Create(budget);}catch(Exception e){errors.Add(e.ToString());}
+                    Check(wave!=null&&wave.units.Count>=5,"Revised Heaven score / "+difficulty+" / "+seed+" / "+budget);
+                    yield return null;
+                }
+            }
+        }
+        watcher.SelectDifficulty(RunDifficulty.Normal);watcher.SetSeed(83019);yield return Ready();
+        watcher.SelectView(WatcherView.Waves);watcher.SelectEncounter(3);yield return Clip("Heaven-Revised-Clouds-Wave",18);
+        watcher.SelectEncounter(WaveWatcher.BossOne);yield return Clip("Heaven-Revised-Lasers",14);
+        string original=File.ReadAllText(folder+"/Runtime-Initial.txt");
+        Check(original.Contains("PASS Void final phase starts continuous boss finale")&&original.Contains("Hard pooled objects created during fight: 0"),"Original Void lifecycle and pool review remains valid");
+        File.WriteAllText(folder+"/Runtime.txt",(errors.Count==0?"PASS":"FAIL")+"\nTargeted recheck of Heaven's failed seeds and revised scenery. Full Void results: Runtime-Initial.txt\n"+string.Join("\n",notes)+"\n"+string.Join("\n",errors));
+        SessionState.SetBool("HeavenVoidFixes",false);SessionState.SetBool("HeavenVoidReview",false);EditorApplication.Exit(errors.Count==0?0:1);
+    }
     IEnumerator Clip(string name,float seconds)
     {
         string path=folder+"/Frames/"+name;Directory.CreateDirectory(path);int frame=0;float start=Time.time,next=0;

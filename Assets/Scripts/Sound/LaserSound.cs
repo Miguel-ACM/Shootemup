@@ -57,7 +57,7 @@ public sealed class LaserSound : MonoBehaviour
             return;
         lastCharge = Time.time;
         transient.clip = celestial && heavenCharge != null ? heavenCharge : chargeClip;
-        transient.pitch = Mathf.Clamp(.8f / Mathf.Max(.1f, seconds), .5f, 2f);
+        transient.pitch = Mathf.Clamp((celestial && heavenCharge != null ? heavenCharge.length : .8f) / Mathf.Max(.1f, seconds), .5f, 2f);
         transient.volume = player ? .16f : .20f;
         transient.Play();
     }
