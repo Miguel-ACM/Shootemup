@@ -22,8 +22,8 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
             // Sightline: commit to an aim, fire a tight walking burst, then break away.
             yield return Charge(Hull, WeaponPort(), .50f);
             Vector2 sight = CombatVisuals.Aim(Muzzle());
-            int bursts = Dense(phaseThree ? 14 : phaseTwo ? 12 : 10);
-            int feathers = Dense(7);
+            int bursts = Dense(phaseThree ? 12 : phaseTwo ? 11 : 10);
+            int feathers = Dense(6);
             for (int i = 0; i < bursts; i++)
             {
                 // Two gun ribbons bracket the committed sightline. The pilot must leave
@@ -57,8 +57,8 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
     {
         yield return PrimePair(.32f);
         Vector3 start = transform.position, end = new Vector3(Lane(side), Camera.UpLimit - 2.4f, start.z);
-        int beats = Mathf.Max(3, Dense(phaseThree ? 30 : phaseTwo ? 26 : 22)), emitted = 0;
-        int feathers = Dense(7);
+        int beats = Mathf.Max(3, Dense(phaseThree ? 24 : phaseTwo ? 22 : 20)), emitted = 0;
+        int feathers = Dense(6);
         float duration = phaseThree ? 1.55f : 2.05f;
         for (float t = 0; t < 1;)
         {
