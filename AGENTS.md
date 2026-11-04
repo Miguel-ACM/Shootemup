@@ -191,6 +191,16 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 ## Workflow
 
+## Heaven and Void expansion (4 November 2026)
+
+- Heaven is Hell's alternative after Space or Underwater. Both Hell and Heaven continue into Void; Void's mandatory boss reward precedes campaign victory. Preserve run equipment, wallet, score and seed throughout.
+- Heaven has white clouds, yellow and golden details, fences and planted lances evoking a war in Heaven. Give it its own enemies, formations, miniboss and boss. Its defining weapons are giant attached lasers with visible anticipation, graceful widening, beautiful VFX and SFX.
+- Void is a beautiful black area framed by falling black liquids, with purple hostile bullets. It contains no ordinary enemies or opening decision: go straight to its boss.
+- Void has four phases on Normal and Hard, three on Easy. Its shape changes every phase, and each form has distinct difficult attacks. Between phases it disappears for fifteen active-play seconds and attacks from all sides with a different survival barrage each time.
+- Commit each feature and enemy individually. Use isolated review tooling and target only failed or revised cases after the batch review.
+
+## Workflow (continued)
+
 - District music (3 November 2026) starts on the track's intro and continues into flight. At boss entry, crossfade into a long, energetic passage of that same recording at its original tempo, with a bass boost. At final destruction, crossfade to the outro and gradually release the bass. Keep Boss (fast) as a pitch-preserving audition option in the local Music Lab. The normal boss mix plays in the game.
 - Use Miguel’s saved Intro, Flight, Boss and Outro markers for each song. Both ends of each section are independently editable on four-beat bar lines in Music Lab. Preserve saved ranges through reanalysis. Switch immediately at the current playhead between Boss and Boss (fast) in Music Lab. Other changes match the opening chord at the destination IN within ten seconds, with a four-second limit for Outro from the shatter accent. Otherwise use the previous progression-ending rule, with a bar or beat inside the applicable limit if the progression and OUT are both farther away.
 - Layer FL Studio’s Monster Kick 127 on each mapped boss beat. Raise the kick 4 dB above its initial mix and keep the sidechain subtle, dipping the backing music by at most 1 dB per hit. Match the game and Music Lab, including loop downbeats and the faster audition timing.

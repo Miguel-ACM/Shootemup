@@ -386,7 +386,7 @@ public sealed partial class HangarHub
                     plaque.gameObject.SetActive(locked);
                     if (locked)
                     {
-                        berthNotice.text = "Clear Hell in " + (ShipFrame)(atBerth - 1);
+                        berthNotice.text = "Clear Void in " + (ShipFrame)(atBerth - 1);
                         readouts.Aim(plaque, parkedShips[atBerth].position + Vector3.up * 1.65f);
                     }
                     if (atBerth >= 0 && selection != atBerth)

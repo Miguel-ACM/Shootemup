@@ -134,7 +134,7 @@ public sealed partial class HangarHub
         {
             Legend(modes[band].ToString().ToUpperInvariant(), 0, -30, 558, 42, 24, lamps[room]);
             Legend(record.flights + " flights", 0, -86, 558, 48, 30, DockInstrument.Paper);
-            Legend(MetaProgress.Ship == hull.frame ? "IN FLIGHT" : open ? "COMMISSIONED" : "Clear Hell in " + (ShipFrame)(selection - 1),
+            Legend(MetaProgress.Ship == hull.frame ? "IN FLIGHT" : open ? "COMMISSIONED" : "Clear Void in " + (ShipFrame)(selection - 1),
                 0, -177, 558, 40, 20, DockInstrument.Brass);
             return;
         }
@@ -158,7 +158,7 @@ public sealed partial class HangarHub
             Legend(captions[i], x, -132, 175, 28, 17, DockInstrument.Muted);
             Legend(values[i], x, -162, 175, 36, 24, DockInstrument.Paper, true);
         }
-        string status = !open ? "Clear Hell in " + (ShipFrame)(selection - 1) : MetaProgress.Ship == hull.frame ? "IN FLIGHT" : "READY TO FLY";
+        string status = !open ? "Clear Void in " + (ShipFrame)(selection - 1) : MetaProgress.Ship == hull.frame ? "IN FLIGHT" : "READY TO FLY";
         Legend(status, 0, -197, 558, 28, 18, DockInstrument.Brass);
     }
     void TrialPage()
