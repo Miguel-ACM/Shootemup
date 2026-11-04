@@ -200,6 +200,22 @@ public abstract class CombatRound : AEnemyBullet
 
     public static IEnumerator PrepareBursts()
     {
+        if (LevelRun.Current == LevelId.Void)
+        {
+            // The final encounter uses arrows and split seeds only. Reassign the existing
+            // pool budget behind the curtain so its first dense sheet cannot allocate a volley.
+            foreach (var pair in pools)
+                if (pair.Key != typeof(SimpleRound) && pair.Key != typeof(NeedleRound))
+                    while (pair.Value.Count > 0)
+                    {
+                        var spare = pair.Value.Pop();
+                        pooled--;
+                        if (spare != null) Destroy(spare.gameObject);
+                    }
+            yield return Warm<SimpleRound>(800);
+            yield return Warm<NeedleRound>(900);
+            yield break;
+        }
         // Reserve the pool budget across every delivery.
         // Previously only SimpleRound was ready: a first needle/ricochet volley
         // constructed its GameObjects, pixel colliders and special effects in combat.
