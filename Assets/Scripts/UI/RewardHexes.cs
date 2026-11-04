@@ -23,10 +23,14 @@ public sealed class RewardHexes : MonoBehaviour
         public HexagonGraphic hover, track, charge;
         public Image icon;
         public float progress;
+        public RewardHexShatter shatter;
+        public bool broken;
+        public float breakAge;
     }
 
     Zone[] zones;
     Transform player;
+    Shipcontroller ship;
     Action<int> picked;
     CanvasGroup prompt;
     float age, exitAge;
@@ -41,6 +45,9 @@ public sealed class RewardHexes : MonoBehaviour
         hexes.player = player;
         hexes.picked = picked;
         hexes.Build(options, seed);
+        hexes.ship = player != null ? player.GetComponent<Shipcontroller>() : null;
+        if (hexes.ship != null)
+            hexes.ship.HitTaken += hexes.OnHit;
         current = hexes;
         return hexes;
     }
@@ -53,6 +60,8 @@ public sealed class RewardHexes : MonoBehaviour
         leaving = true;
         chosen = -1;
         picked = null;
+        if (ship != null)
+            ship.HitTaken -= OnHit;
         if (current == this)
             current = null;
     }
@@ -185,6 +194,14 @@ public sealed class RewardHexes : MonoBehaviour
             // Keep the filling border above, and outside, the body that fades on hover.
             zone.charge = Hex(zone.root, "Charge", accent, .07f, 3);
             zone.charge.progress = 0;
+            var shards = Rect(zone.root, "Fractured glass", Vector2.zero);
+            shards.anchorMin = Vector2.zero;
+            shards.anchorMax = Vector2.one;
+            shards.offsetMin = shards.offsetMax = Vector2.zero;
+            zone.shatter = shards.gameObject.AddComponent<RewardHexShatter>();
+            zone.shatter.color = accent;
+            zone.shatter.raycastTarget = false;
+            zone.shatter.enabled = false;
         }
         BuildPrompt(Array.IndexOf(options, EncounterKind.Item) >= 0 ? "Choose an item" : "Choose a reward");
         LateUpdate();
@@ -237,6 +254,8 @@ public sealed class RewardHexes : MonoBehaviour
         for (int i = 0; i < zones.Length; i++)
         {
             var zone = zones[i];
+            if (zone.broken)
+                continue;
             bool inside = counting && HexagonGraphic.Contains((Vector2)player.position - zone.centre, Radius);
             // Leaving drains the charge, so the reward goes to whoever holds the area.
             zone.progress = Mathf.Clamp01(zone.progress + Time.deltaTime / FillSeconds * (inside ? 1 : -1.5f));
@@ -261,6 +280,8 @@ public sealed class RewardHexes : MonoBehaviour
 
     void Choose(int index)
     {
+        if (leaving || zones[index].broken)
+            return;
         var callback = picked;
         Dismiss();
         chosen = index;
@@ -272,6 +293,35 @@ public sealed class RewardHexes : MonoBehaviour
         callback?.Invoke(index);
     }
 
+    void OnHit()
+    {
+        if (leaving || player == null || Time.timeScale == 0 || CloudTransition.Busy)
+            return;
+        bool any = false;
+        foreach (var zone in zones)
+        {
+            if (zone.broken)
+                continue;
+            if (zone.group.alpha > 0 && HexagonGraphic.Contains((Vector2)player.position - zone.centre, Radius))
+            {
+                zone.broken = true;
+                zone.progress = 0;
+                zone.body.gameObject.SetActive(false);
+                zone.charge.gameObject.SetActive(false);
+                zone.shatter.impact = ((Vector2)player.position - zone.centre) / Radius;
+                zone.shatter.enabled = true;
+            }
+            else
+                any = true;
+        }
+        if (!any)
+        {
+            var callback = picked;
+            Dismiss();
+            callback?.Invoke(-1);
+        }
+    }
+
     void LateUpdate()
     {
         var camera = UnityEngine.Camera.main;
@@ -279,12 +329,27 @@ public sealed class RewardHexes : MonoBehaviour
             return;
         var canvas = (RectTransform)transform;
         float size = Radius * 2 * canvas.rect.height / (camera.orthographicSize * 2);
-        float exit = leaving ? Mathf.SmoothStep(0, 1, Mathf.Clamp01((exitAge += Time.deltaTime) / ExitSeconds)) : 0;
+        float delta = Time.timeScale > 0 ? Time.deltaTime : 0;
+        float exit = leaving ? Mathf.SmoothStep(0, 1, Mathf.Clamp01((exitAge += delta) / ExitSeconds)) : 0;
+        bool shardsAlive = false;
         for (int i = 0; i < zones.Length; i++)
         {
             var zone = zones[i];
             var viewport = camera.WorldToViewportPoint(new Vector3(zone.centre.x, zone.centre.y, 0));
             zone.root.anchoredPosition = new Vector2((viewport.x - .5f) * canvas.rect.width, (viewport.y - .5f) * canvas.rect.height);
+            if (zone.broken)
+            {
+                zone.breakAge += delta;
+                zone.shatter.elapsed = zone.breakAge;
+                zone.shatter.SetVerticesDirty();
+                zone.root.sizeDelta = Vector2.one * size;
+                zone.root.localScale = Vector3.one;
+                zone.group.alpha = 1;
+                bool visible = zone.breakAge < RewardHexShatter.Duration;
+                zone.shatter.enabled = visible;
+                shardsAlive |= visible;
+                continue;
+            }
             float enter = Mathf.Clamp01((age - i * Stagger) / EnterSeconds);
             // A slight overshoot, so the hexagon lands rather than fades.
             float grow = enter < 1 ? 1 - Mathf.Pow(1 - enter, 3) * Mathf.Cos(enter * 5) : 1;
@@ -305,7 +370,7 @@ public sealed class RewardHexes : MonoBehaviour
             zone.group.alpha = alpha;
         }
         prompt.alpha = leaving ? 1 - exit : Mathf.SmoothStep(0, 1, age / EnterSeconds);
-        if (leaving && exitAge >= ExitSeconds)
+        if (leaving && exitAge >= ExitSeconds && !shardsAlive)
             Destroy(gameObject);
     }
 
@@ -335,6 +400,8 @@ public sealed class RewardHexes : MonoBehaviour
 
     void OnDestroy()
     {
+        if (ship != null)
+            ship.HitTaken -= OnHit;
         if (current == this)
             current = null;
     }

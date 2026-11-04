@@ -1,0 +1,33 @@
+PASS
+One isolated gameplay batch, followed by a focused check of the repaired renderer, pause and remaining cleanup cases.
+
+Initially passed behavior:
+additive Run scene loads before reviewing its orchestrator
+opening preparation completes in the isolated review
+damage outside the hexagonal boundary leaves every choice intact
+invulnerable contacts inside a hexagon do not break it
+hover is partly charged before the impact
+hostile projectile overlaps the actual ship pixels
+real hostile projectile hit shatters the occupied hexagon immediately
+the other three choices remain available and no reward is paid
+hit discards the broken choice's charge
+shards finish and disappear within a second
+a broken option cannot grant its reward
+holding a surviving option still collects it exactly once
+selected offer cleans up its canvas and hit subscription
+hazards use the same confirmed-hit break path
+
+Final focused check:
+PASS
+additive Run scene loads before reviewing its orchestrator
+opening preparation completes in the isolated review
+hazards use the same confirmed-hit break path
+pause freezes the shatter animation
+breaking the final choice skips the offer exactly once
+the last shatter survives normal offer fade-out
+all-broken offer cleans up after its final shards
+dismissed offers ignore subsequent damage
+no runtime errors during the hexagon break review
+
+Visual: inspected native gameplay and twelve production UI frames over a prior gameplay backdrop.
+No C# compiler diagnostics. Unity Editor Search startup indexing exception is unrelated to gameplay.

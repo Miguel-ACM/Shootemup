@@ -19,6 +19,15 @@ public static class ReviewStatHexes
 
     public static void Run() => Review(false);
     public static void Offers() => Review(true);
+    public static void Shatter()
+    {
+        if (!Application.dataPath.Replace('\\', '/').Contains("/Temp/StatHexReview/"))
+            throw new Exception("Use the isolated Temp/StatHexReview project");
+        Directory.CreateDirectory(Folder);
+        EditorSceneManager.OpenScene("Assets/Scenes/L1.unity");
+        Render(UnityEngine.Object.FindAnyObjectByType<Shipcontroller>(), true);
+        EditorApplication.Exit(0);
+    }
 
     static void Review(bool offersOnly)
     {
@@ -166,7 +175,7 @@ public static class ReviewStatHexes
         Check(GameRules.playerShootDamage == 2 && GameRules.playerShootSpeed == 10 && GameRules.playerShootNumber == 2, "Run bonuses survived stat reset");
     }
 
-    static void Render(Shipcontroller ship)
+    static void Render(Shipcontroller ship, bool shatter = false)
     {
         foreach (var canvas in UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include)) canvas.enabled = false;
         foreach (var old in UnityEngine.Object.FindObjectsByType<UnityEngine.Camera>(FindObjectsInactive.Include)) old.tag = "Untagged";
@@ -203,10 +212,16 @@ public static class ReviewStatHexes
             new[] { EncounterKind.AttackSpeed, EncounterKind.AttackDamage, EncounterKind.MaxHealth, EncounterKind.ExtraShot },
             new[] { EncounterKind.AttackSpeed, EncounterKind.AttackDamage, EncounterKind.MaxHealth, EncounterKind.ExtraShot } };
         string[] names = { "Speed-Damage", "Health-Shots", "Three-Hover", "Four-Open", "Four-Hover" };
+        if (shatter)
+        {
+            groups = Enumerable.Range(0, 12).Select(_ => new[] { EncounterKind.AttackSpeed,
+                EncounterKind.AttackDamage, EncounterKind.MaxHealth, EncounterKind.ExtraShot }).ToArray();
+            names = Enumerable.Range(0, 12).Select(i => "Shatter-" + i.ToString("D2")).ToArray();
+        }
         for (int n = 0; n < groups.Length; n++)
         {
             ship.transform.position = new Vector3(0, Camera.DownLimit + 1, 0);
-            if (n == 4) ship.transform.position = new Vector3(-2.6f, -6, 0);
+            if (!shatter && n == 4) ship.transform.position = new Vector3(-2.6f, -6, 0);
             var hex = RewardHexes.Open(groups[n], ship.transform, 123, _ => { });
             var canvas = hex.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
@@ -216,7 +231,7 @@ public static class ReviewStatHexes
             Set(hex, "age", 1f);
             Canvas.ForceUpdateCanvases();
             Call(hex, "LateUpdate");
-            if (n == 2 || n == 4)
+            if (!shatter && (n == 2 || n == 4))
             {
                 var zone = ((Array)typeof(RewardHexes).GetField("zones", Hidden).GetValue(hex)).GetValue(1);
                 var zoneType = zone.GetType();
@@ -224,6 +239,20 @@ public static class ReviewStatHexes
                 var charge = (HexagonGraphic)zoneType.GetField("charge").GetValue(zone);
                 charge.progress = .65f;
                 charge.SetVerticesDirty();
+            }
+            if (shatter)
+            {
+                var zone = ((Array)typeof(RewardHexes).GetField("zones", Hidden).GetValue(hex)).GetValue(0);
+                var zoneType = zone.GetType();
+                ship.transform.position = (Vector2)zoneType.GetField("centre").GetValue(zone) + new Vector2(.25f, -.15f);
+                Call(hex, "OnHit");
+                zoneType.GetField("breakAge").SetValue(zone, n * .065f - Time.deltaTime);
+                Call(hex, "LateUpdate");
+                var shards = (RewardHexShatter)zoneType.GetField("shatter").GetValue(zone);
+                Canvas.ForceUpdateCanvases();
+                Debug.Log("SHATTER " + n + " rect=" + shards.rectTransform.rect + " elapsed=" + shards.elapsed +
+                    " enabled=" + shards.enabled + " alpha=" + shards.canvasRenderer.GetInheritedAlpha() +
+                    " vertices=" + shards.canvasRenderer.GetMesh().vertexCount);
             }
             Canvas.ForceUpdateCanvases();
             camera.Render();

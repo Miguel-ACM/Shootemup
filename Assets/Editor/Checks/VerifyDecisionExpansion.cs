@@ -205,6 +205,12 @@ public sealed class DecisionExpansionReview : MonoBehaviour
         ship.transform.position = new Vector3(0, -3, -1);
         yield return null;
         string focus = SessionState.GetString("DecisionExpansionReviewFocus", "all");
+        if (focus == "hex-break")
+        {
+            yield return HexBreakChecks();
+            Check(errors.Count == 0, "no runtime errors during the hexagon break review");
+            yield break;
+        }
         if (focus == "all" || focus == "inventory")
         {
             PureChecks();
@@ -242,6 +248,106 @@ public sealed class DecisionExpansionReview : MonoBehaviour
         yield return Capture("Hover");
         hexes.Dismiss();
         Check(errors.Count == 0, "no runtime errors during the combined decision review");
+    }
+
+    IEnumerator HexBreakChecks()
+    {
+        ship.ObserverMode = false;
+        ship.enabled = false;
+        GameRules.playerDisabled = false;
+        ship.health = ship.maxHealth = 20;
+        Set(ship, "invulnerable", false);
+        int callbacks = 0, selected = -2;
+        bool remaining = VerifyCombatRework.Argument("--hex-continuation", "false") == "true";
+        var hex = remaining ? null : RewardHexes.Open(new[] { EncounterKind.AttackSpeed, EncounterKind.AttackDamage,
+            EncounterKind.MaxHealth, EncounterKind.ExtraShot }, ship.transform, 123,
+            index => { callbacks++; selected = index; });
+        var zones = hex != null ? (Array)Get(hex, "zones") : null;
+        object Zone(int i) => zones.GetValue(i);
+        object Field(int i, string name) => Zone(i).GetType().GetField(name).GetValue(Zone(i));
+        Vector3 Centre(int i) { var p = (Vector2)Field(i, "centre"); return new Vector3(p.x, p.y, -1); }
+        bool Broken(int i) => (bool)Field(i, "broken");
+        if (!remaining)
+        {
+            yield return new WaitForSeconds(1);
+            // A point inside the bounding square but outside the actual hexagonal corner.
+            ship.transform.position = Centre(0) + new Vector3(RewardHexes.Radius * .8f, RewardHexes.Radius * .8f);
+            ship.ReceiveHazardDamage(1);
+            Check(!Broken(0) && callbacks == 0, "damage outside the hexagonal boundary leaves every choice intact");
+            ship.transform.position = Centre(0);
+            ship.ReceiveHazardDamage(1);
+            Check(!Broken(0), "invulnerable contacts inside a hexagon do not break it");
+            // Let the starter shield's clearing window finish before testing an actual round.
+            ship.transform.position = new Vector3(0, Camera.DownLimit + .1f, -1);
+            yield return new WaitForSeconds(2.2f);
+            ship.transform.position = Centre(0) + new Vector3(.25f, -.15f);
+            yield return new WaitForSeconds(.4f);
+            Check((float)Field(0, "progress") > 0, "hover is partly charged before the impact");
+            yield return Capture("Hex-Before");
+            float health = ship.health;
+            var bullet = CombatRound.Launch<SimpleRound>(ship.transform.position, Vector2.down, 0);
+            Check(bullet != null && bullet.PixelOverlaps(ship.GetComponent<Collider2D>()), "hostile projectile overlaps the actual ship pixels");
+            float until = Time.time + .5f;
+            while (!Broken(0) && Time.time < until) yield return new WaitForFixedUpdate();
+            Check(Broken(0) && ship.health == health - 1, "real hostile projectile hit shatters the occupied hexagon immediately");
+            Check(!Broken(1) && !Broken(2) && !Broken(3) && callbacks == 0 && RewardHexes.Active,
+                "the other three choices remain available and no reward is paid");
+            Check((float)Field(0, "progress") == 0, "hit discards the broken choice's charge");
+            yield return Capture("Hex-Crack");
+            for (int frame = 0; frame < 9; frame++)
+            {
+                yield return new WaitForSeconds(.07f);
+                yield return Capture("Hex-Shards-" + frame);
+            }
+            yield return new WaitForSeconds(.2f);
+            Check(!((RewardHexShatter)Field(0, "shatter")).enabled, "shards finish and disappear within a second");
+            Call(hex, "Choose", 0);
+            Check(callbacks == 0, "a broken option cannot grant its reward");
+            ship.transform.position = Centre(1);
+            yield return new WaitForSeconds(RewardHexes.FillSeconds + .15f);
+            Check(callbacks == 1 && selected == 1, "holding a surviving option still collects it exactly once");
+            yield return new WaitForSeconds(.5f);
+            Check(hex == null && !RewardHexes.Active, "selected offer cleans up its canvas and hit subscription");
+        }
+
+        callbacks = 0; selected = -2;
+        ship.transform.position = new Vector3(0, Camera.DownLimit, -1);
+        hex = RewardHexes.Open(new[] { EncounterKind.Salvage, EncounterKind.AttackDamage }, ship.transform, 42,
+            index => { callbacks++; selected = index; });
+        zones = (Array)Get(hex, "zones");
+        yield return new WaitForSeconds(.8f);
+        ship.transform.position = Centre(0);
+        Set(ship, "invulnerable", false);
+        ship.ReceiveHazardDamage(1);
+        Check(Broken(0) && !Broken(1), "hazards use the same confirmed-hit break path");
+        yield return Capture("Hex-Revised-Crack");
+        float frozenAge = (float)Field(0, "breakAge");
+        Time.timeScale = 0;
+        yield return new WaitForSecondsRealtime(.15f);
+        Check(Mathf.Approximately((float)Field(0, "breakAge"), frozenAge), "pause freezes the shatter animation");
+        Time.timeScale = 1;
+        yield return new WaitForSeconds(.12f);
+        yield return Capture("Hex-Revised-Shards");
+        ship.transform.position = Centre(1);
+        Set(ship, "invulnerable", false);
+        ship.ReceiveHazardDamage(1);
+        Check(callbacks == 1 && selected == -1 && !RewardHexes.Active, "breaking the final choice skips the offer exactly once");
+        yield return new WaitForSeconds(.45f);
+        Check(hex != null && ((RewardHexShatter)Field(1, "shatter")).enabled, "the last shatter survives normal offer fade-out");
+        yield return new WaitForSeconds(.4f);
+        Check(hex == null && callbacks == 1, "all-broken offer cleans up after its final shards");
+
+        hex = RewardHexes.Open(new[] { EncounterKind.Salvage, EncounterKind.AttackDamage }, ship.transform, 42, _ => callbacks++);
+        zones = (Array)Get(hex, "zones");
+        yield return new WaitForSeconds(.8f);
+        ship.transform.position = Centre(0);
+        hex.Dismiss();
+        Set(ship, "invulnerable", false);
+        ship.ReceiveHazardDamage(1);
+        Check(!Broken(0) && callbacks == 1, "dismissed offers ignore subsequent damage");
+        yield return new WaitForSeconds(.5f);
+        ship.ObserverMode = true;
+        ship.enabled = true;
     }
 
     void PureChecks()

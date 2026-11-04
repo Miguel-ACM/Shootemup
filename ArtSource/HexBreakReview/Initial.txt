@@ -1,0 +1,19 @@
+FAIL
+additive Run scene loads before reviewing its orchestrator
+opening preparation completes in the isolated review
+damage outside the hexagonal boundary leaves every choice intact
+invulnerable contacts inside a hexagon do not break it
+hover is partly charged before the impact
+hostile projectile overlaps the actual ship pixels
+real hostile projectile hit shatters the occupied hexagon immediately
+the other three choices remain available and no reward is paid
+hit discards the broken choice's charge
+shards finish and disappear within a second
+a broken option cannot grant its reward
+holding a surviving option still collects it exactly once
+selected offer cleans up its canvas and hit subscription
+hazards use the same confirmed-hit break path
+System.Exception: pause freezes the shatter animation
+  at DecisionExpansionReview.Check (System.Boolean ok, System.String message) [0x00026] in C:\Users\Miguel\Shootemup\Temp\StatHexReview\Assets\Editor\Checks\VerifyDecisionExpansion.cs:104 
+  at DecisionExpansionReview+<HexBreakChecks>d__25.MoveNext () [0x00765] in C:\Users\Miguel\Shootemup\Temp\StatHexReview\Assets\Editor\Checks\VerifyDecisionExpansion.cs:322 
+  at DecisionExpansionReview+<Start>d__18.MoveNext () [0x00049] in C:\Users\Miguel\Shootemup\Temp\StatHexReview\Assets\Editor\Checks\VerifyDecisionExpansion.cs:120 
