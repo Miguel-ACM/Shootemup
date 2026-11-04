@@ -295,6 +295,9 @@ public static partial class WavePartLibrary
     {
         switch (level)
         {
+            case LevelId.Heaven:
+            case LevelId.Void:
+                return Array.Empty<WavePart>();
             case LevelId.Fields:
                 return plainsWithGround ?? (plainsWithGround = WithGround(Plains, PlainsGround));
             case LevelId.Snow:

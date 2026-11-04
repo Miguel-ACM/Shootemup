@@ -1,0 +1,14 @@
+using UnityEngine;
+
+public static class HeavenArmory
+{
+    // Existing pooled delivery, bloom and hit logic; no new projectile sprites or lights.
+    public static PulseLaser Lance(Transform source, Vector3 local, Vector2 axis, float width, float hold, float charge = 1.25f)
+    {
+        var beam=CombatRound.Launch<PulseLaser>(source.TransformPoint(local),axis,0);
+        if(beam==null) return null;
+        beam.Bind(source,local);beam.width=width;beam.widthRise=.65f;beam.warning=Difficulty.Rest(charge);
+        beam.activeTime=hold;beam.celestial=true;
+        return beam;
+    }
+}

@@ -28,6 +28,9 @@ public static class WatcherCatalog
     {
         switch (level)
         {
+            case LevelId.Heaven:
+            case LevelId.Void:
+                return Array.Empty<Type>();
             case LevelId.Hell:
                 return new[] { typeof(SkullRevenant), typeof(GhostGalleon), typeof(CinderImp), typeof(InfernalFerryman) };
             case LevelId.Underwater:
