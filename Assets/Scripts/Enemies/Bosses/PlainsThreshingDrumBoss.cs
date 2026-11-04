@@ -27,7 +27,9 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
             side = -side;
             station.x = Lane(side);
             int marks = Mathf.Max(5, Dense(phaseThree ? 30 : phaseTwo ? 26 : 22));
-            int rows = Dense(phaseThree ? 7 : 5);
+            int rows = Dense(phaseThree ? 12 : 10);
+            const float PlantStep = .24f, FirstPlant = .35f;
+            float lastPlant = FirstPlant + (rows - 1) * PlantStep;
             float gapX = Lane(-side * .38f);
             for (int mark = 0; mark < marks; mark++)
             {
@@ -40,17 +42,18 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
                 {
                     Vector3 port = Muzzle(drum);
                     if (Mathf.Abs(port.x - gapX) < .80f) continue;
+                    // Both banks share one field. The first bank covers the left
+                    // half and the second the right, avoiding superimposed columns.
+                    if (drum == 1 ? port.x > gapX : port.x < gapX) continue;
                     for (int row = 0; row < rows; row++)
                     {
-                        float plant = .19f + row * .23f;
-                        // Counter-feeding drums release alternating rows toward the
-                        // ceiling and the floor. Rising stubble rebounds into the next
-                        // descending row; the open furrow crosses both directions.
-                        var tooth = Fire<NeedleRound>(port, Vector2.down, 3.2f, .18f)
-                            .Pause(plant, Mathf.Max(.12f, .70f + travelLeft - plant) +
-                                (phaseTwo && drum == 2 ? .32f : 0), CombatRound.Turn.Rotate,
-                                row % 2 == 0 ? 0 : 180, 1.05f + row * .07f);
-                        if (row % 2 != 0) tooth.Bounce(1);
+                        // Equal planting intervals past the fixed braking ramp give
+                        // equal row depths. Even the last planted row finishes before
+                        // the shared release; no reversals or faster rows catching up.
+                        float plant = FirstPlant + row * PlantStep;
+                        Fire<NeedleRound>(port, Vector2.down, 3.2f, .18f)
+                            .Pause(plant, travelLeft + lastPlant + .30f - plant,
+                                CombatRound.Turn.Down, speed: 1.05f);
                     }
                 }
             }
