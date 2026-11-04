@@ -254,7 +254,7 @@ public sealed class DecisionExpansionReview : MonoBehaviour
             var lucky = EncounterChoice.Draw(seed, true, 6, 6, false, 1);
             if (ordinary.Length == 3) baseTriples++;
             if (lucky.Length == 3) luckyTriples++;
-            if (ordinary.Length < 2 || ordinary.Length > 3 || ordinary.Distinct().Count() != ordinary.Length ||
+            if (ordinary.Length < 2 || ordinary.Length > 4 || ordinary.Distinct().Count() != ordinary.Length ||
                 ordinary.Contains(EncounterKind.Health) || ordinary.Contains(EncounterKind.HealthTrade) ||
                 ordinary.Contains(EncounterKind.Item) && ordinary.Contains(EncounterKind.Challenge))
                 throw new Exception("Invalid healthy offer: " + seed);
@@ -273,7 +273,7 @@ public sealed class DecisionExpansionReview : MonoBehaviour
                         throw new Exception("Overlapping three-zone offer: " + seed);
             }
         }
-        Check(luckyTriples > baseTriples && baseTriples > 0, "512 seeds: healthy offers have 2-3 compatible hexagons; luck raises third-zone frequency from " + baseTriples + " to " + luckyTriples);
+        Check(luckyTriples > baseTriples && baseTriples > 0, "512 seeds: healthy offers have 2-4 compatible hexagons; luck raises three-zone frequency from " + baseTriples + " to " + luckyTriples);
         Check(DistrictWaves.Sequence().Count(key => key == "encounterChoice") == 2 && DistrictWaves.Sequence().Count(key => int.TryParse(key, out _)) == 10 &&
             DistrictWaves.Sequence().Contains("minibossChoice"), "two unconditional selections preserve ten combat waves and a separate earned miniboss reward");
         foreach (var kind in new[] { EncounterKind.Salvage, EncounterKind.HealthTrade, EncounterKind.Reforge, EncounterKind.Cargo })

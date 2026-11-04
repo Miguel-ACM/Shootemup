@@ -1,0 +1,6 @@
+PASS
+Isolated editor checks and production RewardHexes rendering; no Play mode.
+1024 seeds: two/three/four choices, unique compatible offers, deterministic draws, Glass Hull exclusion and guaranteed due pacts.
+Four-zone layouts stay inside the arena, keep separate flight corridors and avoid the ship across 1024 seeds/positions.
+10000 evenly spaced rolls: zero luck gives 75/20/5 percent; high luck caps at 35/45/20 percent.
+Rendered two, three and four choices, including the four-zone hover and diamond layout.

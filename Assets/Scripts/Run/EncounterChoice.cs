@@ -21,7 +21,13 @@ public static class EncounterChoice
         return icons[index] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 32, 0, SpriteMeshType.FullRect);
     }
 
-    public static int OptionCount(float luck, float roll) => roll < Mathf.Clamp(.08f + Mathf.Max(0, luck) * .35f, .08f, .65f) ? 3 : 2;
+    public static int OptionCount(float luck, float roll)
+    {
+        luck = Mathf.Max(0, luck);
+        float four = Mathf.Min(.20f, .05f + luck * .10f);
+        float three = Mathf.Min(.45f, .20f + luck * .25f);
+        return roll < four ? 4 : roll < four + three ? 3 : 2;
+    }
     public static int SalvageCoins(int tier, float luck) => 12 + Mathf.Max(0, tier - 1) * 4 + Mathf.FloorToInt(Mathf.Clamp(luck, 0, 2) * 12);
 
     public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false,
