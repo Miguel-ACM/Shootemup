@@ -31,6 +31,7 @@ public static class EnemyExpansion
     }
 
     public static readonly Entry[] All = {
+        new Entry(LevelId.Heaven, typeof(AegisReliquary), 86, .66f, false, IndustrialMeshFactory.AegisReliquaryMesh, new[] { new Vector3(-.72f,-.96f,-.25f), new Vector3(.72f,-.96f,-.25f) }, new[] { new Vector3(-.5f,.85f,0), new Vector3(.5f,.85f,0) }, WavePartLibrary.AegisReliquaryParts),
         new Entry(LevelId.Heaven, typeof(ChoirLancer), 85, .52f, false, IndustrialMeshFactory.ChoirLancerMesh, new[] { new Vector3(0,-1.0f,-.23f) }, new[] { new Vector3(0,.85f,0) }, WavePartLibrary.ChoirLancerParts),
         // Individual enemies are registered here with their own content commits.
         new Entry(LevelId.Hell, typeof(BoneHarrier), (int)CombatHullId.BoneHarrier, 0.49f, true, IndustrialMeshFactory.BoneHarrierMesh, new[] { new Vector3(0,-.96f,-.23f) }, System.Array.Empty<Vector3>(), WavePartLibrary.BoneHarrierParts),
