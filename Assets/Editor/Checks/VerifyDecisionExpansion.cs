@@ -42,7 +42,8 @@ public static class VerifyDecisionExpansion
 
     public static void Run()
     {
-        if (!Application.dataPath.Replace('\\', '/').Contains("/Temp/DecisionHoverReview/"))
+        string project = Application.dataPath.Replace('\\', '/');
+        if (!project.Contains("/Temp/DecisionHoverReview/") && !project.Contains("/Temp/StatHexReview/"))
             throw new Exception("Run from the isolated decision review project");
         Directory.CreateDirectory(Folder);
         File.Delete(Folder + "/Verification.txt");
@@ -393,23 +394,96 @@ public sealed class DecisionExpansionReview : MonoBehaviour
     {
         CombatDecision.End();
         ship.transform.position = new Vector3(0, -3, -1);
+        // Exercise the actual offer gate on both sides of the five-wave boundary.
+        flow.waves = new[] { "2", "2", "2", "2", "2", "boss" };
+        bool offeredAtFive = false;
+        for (int seed = 1; seed <= 64; seed++)
+        {
+            LevelRun.Reset(LevelId.Fields, seed);
+            Set(flow, "currentWaveNumber", 1);
+            Call(flow, "OpenEncounterChoice");
+            offeredAtFive |= flow.EncounterOptions.Contains(EncounterKind.Cargo);
+            Call(flow, "DismissOffer");
+            Set(flow, "currentWaveNumber", 2);
+            Call(flow, "OpenEncounterChoice");
+            Check(!flow.EncounterOptions.Contains(EncounterKind.Cargo), "four remaining waves exclude cargo: " + seed);
+            Call(flow, "DismissOffer");
+        }
+        Check(offeredAtFive, "cargo is eligible with exactly five ordinary waves remaining");
+        LevelRun.Reset(LevelId.Fields, 17381);
+        flow.waves = Array.Empty<string>();
+        Set(flow, "currentWaveNumber", 0);
         Call(flow, "ResolveEncounter", EncounterKind.Cargo);
         var cargo = flow.Cargo;
         yield return new WaitForSeconds(1.2f);
-        yield return Capture("CargoEscort");
+        Check(cargo.Quality == ItemRarity.Common && Vector2.Distance(cargo.transform.position, ship.transform.position) < .8f,
+            "cargo begins common and sits close behind the ship");
+        yield return Capture("Cargo-Common");
         var bullet = CombatRound.Launch<SimpleRound>(cargo.transform.position, Vector2.down, 0);
         Check(bullet != null && bullet.PixelOverlaps(cargo.GetComponent<Collider2D>()), "cargo uses actual opaque-pixel projectile contact");
         yield return new WaitForSeconds(.16f);
         Check(cargo.Hits == 2, "a real hostile round damages the crate through native physics");
-        int wallet = RunCoins.Count;
-        Call(flow, "FinishCargoWave");
-        Check(flow.Cargo != null && flow.Cargo.WavesRemaining == 1 && RunCoins.Count == wallet, "cargo pays nothing after its first ordinary wave");
-        Call(flow, "FinishCargoWave");
-        Check(flow.Cargo == null && RunCoins.Count == wallet + EncounterChoice.SalvageCoins(1, GameRules.luck) * 2 && flow.waves.Contains("cargoreward"),
-            "two-wave delivery pays coins once and schedules the enhanced item reward");
-        yield return null;
-        flow.waves = Array.Empty<string>();
-        Set(flow, "currentWaveNumber", 0);
+        for (int tier = 0; tier < 4; tier++)
+        {
+            if (tier > 0)
+            {
+                Call(flow, "ResolveEncounter", EncounterKind.Cargo);
+                cargo = flow.Cargo;
+                for (int wave = 0; wave < tier; wave++) Call(flow, "FinishCargoWave");
+                yield return new WaitForSeconds(1.1f);
+                yield return Capture("Cargo-" + cargo.Quality);
+            }
+            Check((int)cargo.Quality == tier && flow.waves.Length == 0, "cargo improves in order without scheduling decisions: " + tier);
+            var outline = cargo.GetComponentsInChildren<LineRenderer>().First(line => line.name == "Cargo rarity outline");
+            Check(Vector4.Distance(outline.startColor, AItem.GetRarityColor(cargo.Rarity)) < .01f, "outline matches the real reward tier: " + tier);
+            if (tier == 3)
+            {
+                Call(flow, "FinishCargoWave");
+                Check(cargo.Quality == ItemRarity.Legendary && !cargo.Finished, "legendary cargo stays available until opened");
+                float until = Time.time + .6f;
+                while (Time.time < until)
+                {
+                    ship.transform.position = new Vector3(Mathf.Sin(Time.time * 14) * 2.5f, -3, -1);
+                    yield return null;
+                    Check(Vector2.Distance(cargo.transform.position, ship.transform.position) <= 1.03f, "hard turns keep cargo close");
+                }
+                ship.transform.position = new Vector3(0, -3, -1);
+                yield return new WaitForSeconds(.3f);
+                Call(flow, "ResetDistrict", (LevelId?)null);
+                Check(flow.Cargo == cargo && cargo.Quality == ItemRarity.Legendary, "unopened cargo and its quality survive district reset");
+                flow.waves = Array.Empty<string>();
+            }
+            int wallet = RunCoins.Count;
+            CombatDecision.Begin();
+            Check(!cargo.TryClaim(), "decisions cannot accidentally open cargo");
+            yield return null;
+            CombatDecision.End();
+            if (tier < 3)
+                Check(cargo.TryClaim(), "cargo can be opened immediately at tier " + tier);
+            else
+            {
+                var keyboard = UnityEngine.InputSystem.InputSystem.AddDevice<UnityEngine.InputSystem.Keyboard>();
+                yield return null;
+                UnityEngine.InputSystem.InputSystem.QueueStateEvent(keyboard,
+                    new UnityEngine.InputSystem.LowLevel.KeyboardState(UnityEngine.InputSystem.Key.C));
+                yield return new WaitForSeconds(.3f);
+                Check(!cargo.Finished && cargo.ClaimProgress > .1f, "collect needs a deliberate hold");
+                yield return Capture("Cargo-Opening");
+                yield return new WaitForSeconds(.4f);
+                UnityEngine.InputSystem.InputSystem.RemoveDevice(keyboard);
+                Check(flow.Cargo == null, "holding C opens cargo during active flight");
+            }
+            Check(flow.Cargo == null && RunCoins.Count == wallet + EncounterChoice.SalvageCoins(1, GameRules.luck) * 2,
+                "cash-in pays the existing coins once: " + tier);
+            var drops = (List<GameObject>)Get(flow, "items");
+            var reward = drops.Last().GetComponent<AItem>();
+            Check(reward.rarity == ((ItemRarity)tier).ToString().ToLowerInvariant() && flow.waves.Length == 0 && Shop == null && !CombatDecision.Active,
+                "cash-in drops the exact rarity immediately without pausing combat: " + tier);
+            if (cargo != null) Check(!cargo.TryClaim(), "a claimed crate cannot pay twice");
+            yield return null;
+            reward.Dismiss();
+            yield return new WaitForSeconds(.5f);
+        }
         Call(flow, "ResolveEncounter", EncounterKind.Cargo);
         cargo = flow.Cargo;
         Set(cargo, "grace", 0f);
@@ -418,10 +492,25 @@ public sealed class DecisionExpansionReview : MonoBehaviour
         cargo.Hit();
         Set(cargo, "grace", 0f);
         cargo.Hit();
+        Check(!cargo.TryClaim(), "a destroyed crate cannot be cashed in");
         yield return null;
-        wallet = RunCoins.Count;
+        int lostWallet = RunCoins.Count;
         Call(flow, "FinishCargoWave");
-        Check(flow.Cargo == null && RunCoins.Count == wallet && !flow.waves.Contains("cargoreward"), "a destroyed crate grants no coins or item reward");
+        Check(flow.Cargo == null && RunCoins.Count == lostWallet && !flow.waves.Contains("cargoreward"), "a destroyed crate grants no coins or item reward");
+        FlightTrials.Active = FlightTrials.All[1];
+        var trial = CargoEscort.Create(ship);
+        Check(!trial.TryClaim() && !trial.FinishWave() && trial.FinishWave(), "Cold Delivery still requires two complete waves and cannot be cashed early");
+        trial.Deliver();
+        FlightTrials.Active = null;
+        GameRules.luck = 2;
+        PactPool.BindCursedCoin();
+        for (int tier = 0; tier < 4; tier++)
+        {
+            string key = ItemPool.GetCargoReward(out var rarity, (ItemRarity)tier);
+            Check(key != null && ItemCatalog.Get(key).Rarity == (ItemRarity)tier, "luck and pacts cannot change the displayed cargo rarity: " + rarity);
+        }
+        GameRules.luck = 0;
+        PactPool.ResetRun();
     }
 
     IEnumerator CadenceChecks()

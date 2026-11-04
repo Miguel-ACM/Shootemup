@@ -1,0 +1,181 @@
+PASS
+additive Run scene loads before reviewing its orchestrator
+opening preparation completes in the isolated review
+four remaining waves exclude cargo: 1
+four remaining waves exclude cargo: 2
+four remaining waves exclude cargo: 3
+four remaining waves exclude cargo: 4
+four remaining waves exclude cargo: 5
+four remaining waves exclude cargo: 6
+four remaining waves exclude cargo: 7
+four remaining waves exclude cargo: 8
+four remaining waves exclude cargo: 9
+four remaining waves exclude cargo: 10
+four remaining waves exclude cargo: 11
+four remaining waves exclude cargo: 12
+four remaining waves exclude cargo: 13
+four remaining waves exclude cargo: 14
+four remaining waves exclude cargo: 15
+four remaining waves exclude cargo: 16
+four remaining waves exclude cargo: 17
+four remaining waves exclude cargo: 18
+four remaining waves exclude cargo: 19
+four remaining waves exclude cargo: 20
+four remaining waves exclude cargo: 21
+four remaining waves exclude cargo: 22
+four remaining waves exclude cargo: 23
+four remaining waves exclude cargo: 24
+four remaining waves exclude cargo: 25
+four remaining waves exclude cargo: 26
+four remaining waves exclude cargo: 27
+four remaining waves exclude cargo: 28
+four remaining waves exclude cargo: 29
+four remaining waves exclude cargo: 30
+four remaining waves exclude cargo: 31
+four remaining waves exclude cargo: 32
+four remaining waves exclude cargo: 33
+four remaining waves exclude cargo: 34
+four remaining waves exclude cargo: 35
+four remaining waves exclude cargo: 36
+four remaining waves exclude cargo: 37
+four remaining waves exclude cargo: 38
+four remaining waves exclude cargo: 39
+four remaining waves exclude cargo: 40
+four remaining waves exclude cargo: 41
+four remaining waves exclude cargo: 42
+four remaining waves exclude cargo: 43
+four remaining waves exclude cargo: 44
+four remaining waves exclude cargo: 45
+four remaining waves exclude cargo: 46
+four remaining waves exclude cargo: 47
+four remaining waves exclude cargo: 48
+four remaining waves exclude cargo: 49
+four remaining waves exclude cargo: 50
+four remaining waves exclude cargo: 51
+four remaining waves exclude cargo: 52
+four remaining waves exclude cargo: 53
+four remaining waves exclude cargo: 54
+four remaining waves exclude cargo: 55
+four remaining waves exclude cargo: 56
+four remaining waves exclude cargo: 57
+four remaining waves exclude cargo: 58
+four remaining waves exclude cargo: 59
+four remaining waves exclude cargo: 60
+four remaining waves exclude cargo: 61
+four remaining waves exclude cargo: 62
+four remaining waves exclude cargo: 63
+four remaining waves exclude cargo: 64
+cargo is eligible with exactly five ordinary waves remaining
+cargo begins common and sits close behind the ship
+cargo uses actual opaque-pixel projectile contact
+a real hostile round damages the crate through native physics
+cargo improves in order without scheduling decisions: 0
+outline matches the real reward tier: 0
+decisions cannot accidentally open cargo
+cargo can be opened immediately at tier 0
+cash-in pays the existing coins once: 0
+cash-in drops the exact rarity immediately without pausing combat: 0
+a claimed crate cannot pay twice
+cargo improves in order without scheduling decisions: 1
+outline matches the real reward tier: 1
+decisions cannot accidentally open cargo
+cargo can be opened immediately at tier 1
+cash-in pays the existing coins once: 1
+cash-in drops the exact rarity immediately without pausing combat: 1
+a claimed crate cannot pay twice
+cargo improves in order without scheduling decisions: 2
+outline matches the real reward tier: 2
+decisions cannot accidentally open cargo
+cargo can be opened immediately at tier 2
+cash-in pays the existing coins once: 2
+cash-in drops the exact rarity immediately without pausing combat: 2
+a claimed crate cannot pay twice
+cargo improves in order without scheduling decisions: 3
+outline matches the real reward tier: 3
+legendary cargo stays available until opened
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+hard turns keep cargo close
+unopened cargo and its quality survive district reset
+decisions cannot accidentally open cargo
+collect needs a deliberate hold
+holding C opens cargo during active flight
+cash-in pays the existing coins once: 3
+cash-in drops the exact rarity immediately without pausing combat: 3
+a destroyed crate cannot be cashed in
+a destroyed crate grants no coins or item reward
+Cold Delivery still requires two complete waves and cannot be cashed early
+luck and pacts cannot change the displayed cargo rarity: common
+luck and pacts cannot change the displayed cargo rarity: rare
+luck and pacts cannot change the displayed cargo rarity: epic
+luck and pacts cannot change the displayed cargo rarity: legendary
+three-zone hover retains the 10% body and solid filling border
+no runtime errors during the combined decision review

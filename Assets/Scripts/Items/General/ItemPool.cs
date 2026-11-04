@@ -86,11 +86,12 @@ public static class ItemPool
         return key;
     }
 
-    public static string GetCargoReward(out string rarity)
+    public static string GetCargoReward(out string rarity, ItemRarity quality = ItemRarity.Common)
     {
-        float roll = Random.value + Mathf.Max(0, GameRules.luck);
-        int tier = roll >= .98f ? 3 : roll >= .88f ? 2 : 1;
-        return DrawTier(Mathf.Min(3, tier + (PactPool.RarityUpgrade ? 1 : 0)), out rarity);
+        int tier = Mathf.Clamp((int)quality, 0, 3);
+        rarity = ((ItemRarity)tier).ToString().ToLowerInvariant();
+        // The box's outline is a promise: luck and pact rarity boosts cannot reroll it.
+        return remaining[tier].Count > 0 ? Draw(remaining[tier]) : null;
     }
 
     public static string GetItem(out string rarity)

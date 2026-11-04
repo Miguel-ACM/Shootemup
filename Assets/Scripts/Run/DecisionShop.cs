@@ -78,6 +78,11 @@ public sealed class DecisionShop : MonoBehaviour
             string rarity = pact ? PactPool.Rarity : "common";
             string itemKind = pact ? pacts[i] : healthKit && i == count - 1 ? "LargeHealthKit" :
                 kind == RunSlotKind.CargoReward ? ItemPool.GetCargoReward(out rarity) : ItemPool.GetItem(out rarity);
+            if (itemKind == null)
+            {
+                RunCoins.Add(8);
+                continue;
+            }
             var target = dropPosition ?? new Vector3(Mathf.Lerp(Camera.LeftLimit + 1, Camera.RightLimit - 1, count == 1 ? .5f : i / (float)(count - 1)), Camera.UpLimit * .5f, 1);
             var entrance = dropPosition.HasValue ? target + Vector3.up * .9f : new Vector3(target.x, Camera.UpLimit + 3, 1);
             var go = Instantiate(Resources.Load<GameObject>("Items/Item"), entrance, Quaternion.identity);

@@ -126,7 +126,7 @@ public class WaveOrchestrer : MonoBehaviour
             // Decisions and bosses wait for enemies to finish, then explicitly clear hazards.
             var next = plan.Following(currentWaveNumber);
             bool nextCombat = next.Kind == RunSlotKind.Combat && !(challengeWave && challengeWavesRemaining == 1) &&
-                !(cargo != null && cargo.WavesRemaining == 1);
+                !(FlightTrials.EscortsCargo && cargo != null && cargo.WavesRemaining == 1);
             bool empty = currentUnit == null && AEnemy.Live.Count == 0;
             clearTime = empty ? clearTime + Time.deltaTime : 0;
             bool miniboss = currentWave.units.Exists(unit => unit.miniboss);
@@ -186,11 +186,38 @@ public class WaveOrchestrer : MonoBehaviour
     {
         if (cargo == null || !cargo.FinishWave())
             return;
+        // The simulator still requires its full two-wave delivery, with no early claim.
         RunCoins.Add(EncounterChoice.SalvageCoins(LevelRun.Tier(LevelRun.Current), GameRules.luck) * 2);
         cargo.Deliver();
         cargo = null;
-        if (FlightTrials.EscortsCargo) GameOverState.Show(true);
-        else plan.Insert(currentWaveNumber, RunSlotKind.CargoReward);
+        GameOverState.Show(true);
+    }
+
+    void CashInCargo(CargoEscort delivery)
+    {
+        if (delivery == null || delivery != cargo || !GameClock.ActivePlay)
+            return;
+        var quality = delivery.Quality;
+        var position = delivery.transform.position;
+        if (!delivery.Deliver()) return;
+        cargo = null;
+        RunCoins.Add(EncounterChoice.SalvageCoins(LevelRun.Tier(LevelRun.Current), GameRules.luck) * 2);
+        string key = ItemPool.GetCargoReward(out var rarity, quality);
+        if (key == null)
+        {
+            // An exhausted rarity pays salvage instead of silently substituting another tier.
+            RunCoins.Add(8 * (1 + (int)quality));
+            encounterExpiry[(int)EncounterKind.Salvage] = Time.time + 5;
+            return;
+        }
+        // A normal close-contact pickup released immediately, without interrupting the wave.
+        // Leaving it unregistered keeps decision-shop ownership separate from this loose drop.
+        position.z = 1;
+        var go = Instantiate(Resources.Load<GameObject>("Items/Item"), position + Vector3.up * .35f, Quaternion.identity);
+        var item = ItemCatalog.Get(key).Attach(go);
+        item.SetRarity(rarity);
+        item.GoToPosition(position);
+        items.Add(go);
     }
 
     public void BeginWaves()
@@ -313,7 +340,8 @@ public class WaveOrchestrer : MonoBehaviour
         var tradeable = RunInventory.For(player).Tradeable();
         bool canReforge = tradeable.Exists(entry => ItemPool.ReforgeAlternatives(entry.key, entry.rarity).Count >= 2);
         var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth,
-            pactAvailable, GameRules.luck, tradeable.Count > 0, canReforge, cargo == null && remaining >= 2, !PactPool.GlassHull);
+            pactAvailable, GameRules.luck, tradeable.Count > 0, canReforge,
+            cargo == null && remaining >= CargoEscort.MinimumOfferWaves, !PactPool.GlassHull);
         if (Array.IndexOf(options, EncounterKind.Pact) >= 0)
             PactPool.HexStage = LevelRun.Stage;
         EncounterOptions = options;
@@ -360,7 +388,7 @@ public class WaveOrchestrer : MonoBehaviour
         if (kind == EncounterKind.Cargo)
         {
             if (cargo == null)
-                cargo = CargoEscort.Create(ship.GetComponent<Shipcontroller>());
+                cargo = CargoEscort.Create(ship.GetComponent<Shipcontroller>(), CashInCargo);
             return;
         }
         if (kind == EncounterKind.HealthTrade || kind == EncounterKind.Reforge)
@@ -550,7 +578,7 @@ public class WaveOrchestrer : MonoBehaviour
         foreach (var pickup in FindObjectsByType<APickable>())
             Destroy(pickup.gameObject);
         foreach (var item in items)
-            if (item != null)
+            if (item != null && !(item.GetComponent<AItem>()?.Collected ?? false))
                 Destroy(item);
         items.Clear();
         dialog.Hide();
@@ -560,9 +588,9 @@ public class WaveOrchestrer : MonoBehaviour
         currentWaveKilledEnemies = 0;
         challenge.Reset();
         Array.Clear(encounterExpiry, 0, encounterExpiry.Length);
+        // Unopened cargo follows the pilot across districts until claimed or destroyed.
         if (cargo != null)
-            Destroy(cargo.gameObject);
-        cargo = null;
+            encounterExpiry[(int)EncounterKind.Cargo] = float.PositiveInfinity;
         DismissOffer();
         waveTime = clearTime = 0;
         currentUnit = null;
