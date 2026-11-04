@@ -63,13 +63,21 @@ public sealed partial class VoidSovereignBoss
                 if(CombatVisuals.Player!=null&&Vector2.Distance(p,CombatVisuals.Player.position)<1.6f)continue;
                 Vector2 inward=horizontal?Vector2.down*sign:Vector2.right*sign;
                 if(chapter==1)
-                    CombatRound.Launch<NeedleRound>(p,CombatVisuals.Rotate(inward,sign*(beat%2==0?10:-10)),2.5f,.17f).FadeAt(7);
+                {
+                    if(i%3==0)CombatRound.Launch<SuspendedRound>(p,inward,2.4f,.23f).FadeAt(6);
+                    else CombatRound.Launch<NeedleRound>(p,CombatVisuals.Rotate(inward,sign*(beat%2==0?12:-12)),2.5f,.17f).Ramp(1.25f,1.0f,.7f).FadeAt(7);
+                }
                 else if(chapter==2)
-                    CombatRound.Launch<NeedleRound>(p,inward,1.9f,.18f).Pause(.9f,.32f,CombatRound.Turn.Rotate,(i%2==0?1:-1)*38,1.6f).FadeAt(7);
+                {
+                    if(i%3==0)CombatRound.Launch<ReturningDisc>(p,CombatVisuals.Rotate(inward,(i%2==0?1:-1)*18),2.5f,.23f).FadeAt(5.5f);
+                    else CombatRound.Launch<RicochetBolt>(p,inward,2.0f,.18f).Pause(.9f,.32f,CombatRound.Turn.Rotate,(i%2==0?1:-1)*38,1.6f).FadeAt(6);
+                }
                 else
                 {
-                    var shot=CombatRound.Launch<NeedleRound>(p,CombatVisuals.Rotate(inward,Mathf.Sin(u*6.28f+beat*.7f)*22),i%3==0?2.8f:1.65f,.17f).FadeAt(6.5f);
-                    if(i%3!=0)shot.Zigzag(1.1f,9);
+                    var axis=CombatVisuals.Rotate(inward,Mathf.Sin(u*6.28f+beat*.7f)*22);
+                    if(i%7==0&&beat%3==0)CombatRound.Launch<PlasmaOrb>(p,axis,1.4f,.32f).FadeAt(6);
+                    else if(i%3==0)CombatRound.Launch<SimpleRound>(p,axis,2.8f,.23f).Pause(1.1f,.3f,CombatRound.Turn.Rotate,sign*28,1.3f).FadeAt(6);
+                    else CombatRound.Launch<NeedleRound>(p,axis,1.8f,.17f).Zigzag(1.1f,12).FadeAt(6.5f);
                 }
             }
         }
