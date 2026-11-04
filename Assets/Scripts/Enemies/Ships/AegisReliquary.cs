@@ -26,11 +26,17 @@ public static partial class IndustrialMeshFactory
     public static Mesh AegisReliquaryMesh()
     {
         if(aegisReliquary!=null)return aegisReliquary;var b=new Builder();
-        BevelArmor(b,new[]{V(0,-1.0f),V(-.82f,-.52f),V(-.88f,.70f),V(-.50f,1),V(.5f,1),V(.88f,.70f),V(.82f,-.52f)},.46f,1);
-        BevelArmor(b,new[]{V(0,-.8f),V(-.57f,-.38f),V(-.6f,.62f),V(.6f,.62f),V(.57f,-.38f)},.12f,7,-.3f);
-        b.Box(new Vector3(0,.1f,-.45f),new Vector3(.11f,1.25f,.08f),3,8);
-        b.Box(new Vector3(0,.35f,-.45f),new Vector3(.9f,.11f,.08f),3,8);
-        for(int s=-1;s<=1;s+=2){b.Box(new Vector3(s*.72f,-.38f,-.24f),new Vector3(.28f,.82f,.32f),15,7);Barrel(b,s*.72f,-.78f,.36f,.23f,-.25f);b.Drum(new Vector3(s*.72f,.3f,-.3f),.21f,.12f,8,8,2);}
-        return aegisReliquary=b.Finish("Aegis reliquary / armored shield and twin siege batteries");
+        b.Pearl(new Vector3(0,.12f,.04f),new Vector3(.77f,.95f,.38f),7);
+        for(int s=-1;s<=1;s+=2)
+        {
+            b.Sweep(new Vector3(0,.96f,-.1f),new Vector3(s*1.1f,.85f,-.1f),new Vector3(s*.9f,-.52f,-.23f),new Vector3(0,-1.08f,-.06f),.32f,.28f,15);
+            b.Sweep(new Vector3(0,.83f,-.3f),new Vector3(s*.72f,.72f,-.43f),new Vector3(s*.65f,-.38f,-.42f),new Vector3(0,-.87f,-.24f),.035f,.035f,3,false);
+            Feather(b,new Vector3(s*.6f,.27f,.06f),new Vector3(s*1.12f,.88f,.12f),.23f,s*.13f);
+            b.Pearl(new Vector3(s*.72f,-.4f,-.10f),new Vector3(.29f,.58f,.27f),1);
+            CelestialMuzzle(b,new Vector3(s*.72f,-.96f,-.25f),.19f);
+        }
+        b.Pearl(new Vector3(0,.14f,-.37f),new Vector3(.28f,.46f,.12f),11);
+        b.Pearl(new Vector3(0,.18f,-.48f),new Vector3(.14f,.31f,.10f),8);
+        return aegisReliquary=b.Finish("Aegis / curved shield shells and twin vaulted batteries");
     }
 }
