@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 
-public enum EnemyId { ScoutInterceptor, PatrolGunship, HeavyBomber, WallTurret, MaintenanceDrone, ArmoredCarrier, ColdWeatherFighter, SiegeGunship, ShieldTransport, BeamDrone, RelayDrone, StormSkimmer, PursuitFighter, AttackDrone, CommandGunship, CourierDiver, AvalancheBomber, ArcLancer, FieldsHeavyWing, TunnelDefensePlatform, SnowSiegeCraft, StormReactor, CityCommandCarrier, SandEmitter, SandStriker, SandWorm, BonbonSkirmisher, WaferDart, MintSpinner, MeadowTank, FrostAuger, OrbitalScout, LaserSatellite, OrbitalCarrier, OrbitalMoonlet, SkullRevenant, GhostGalleon, CinderImp, ReefDart, MantaRay, Bathysphere, ScarabDredger, TaffyDuelist, OrbitalWarden, ReefLeviathan, InfernalFerryman, BoneHarrier, AshCenser, JetSquid, NautilusBell, CometTug, EclipseSail, GumdropMortar, RibbonGlider, MirageObelisk, DuneMoth, StormOrgan, CapacitorKite, RivetMantis, BaffleSpinner, TerraceGunboat, MetroLancer, HailLantern, IcicleWeaver, HarrowBomber, ReedSkimmer, HellCrabBoss, AbyssSubmarineBoss, SpaceCitadelBoss, CandyRegentBoss, DesertWormBoss, TunnelSawBoss, SnowSiegeBoss, ThunderLanceBoss, CityDuoBoss, FieldsBomberBoss, PlainsRedKiteBoss, PlainsThreshingDrumBoss, CitySwitchyardBoss, SnowIcebreakerBoss, ChoirLancer, AegisReliquary, PrismCantor }
+public enum EnemyId { ScoutInterceptor, PatrolGunship, HeavyBomber, WallTurret, MaintenanceDrone, ArmoredCarrier, ColdWeatherFighter, SiegeGunship, ShieldTransport, BeamDrone, RelayDrone, StormSkimmer, PursuitFighter, AttackDrone, CommandGunship, CourierDiver, AvalancheBomber, ArcLancer, FieldsHeavyWing, TunnelDefensePlatform, SnowSiegeCraft, StormReactor, CityCommandCarrier, SandEmitter, SandStriker, SandWorm, BonbonSkirmisher, WaferDart, MintSpinner, MeadowTank, FrostAuger, OrbitalScout, LaserSatellite, OrbitalCarrier, OrbitalMoonlet, SkullRevenant, GhostGalleon, CinderImp, ReefDart, MantaRay, Bathysphere, ScarabDredger, TaffyDuelist, OrbitalWarden, ReefLeviathan, InfernalFerryman, BoneHarrier, AshCenser, JetSquid, NautilusBell, CometTug, EclipseSail, GumdropMortar, RibbonGlider, MirageObelisk, DuneMoth, StormOrgan, CapacitorKite, RivetMantis, BaffleSpinner, TerraceGunboat, MetroLancer, HailLantern, IcicleWeaver, HarrowBomber, ReedSkimmer, HellCrabBoss, AbyssSubmarineBoss, SpaceCitadelBoss, CandyRegentBoss, DesertWormBoss, TunnelSawBoss, SnowSiegeBoss, ThunderLanceBoss, CityDuoBoss, FieldsBomberBoss, PlainsRedKiteBoss, PlainsThreshingDrumBoss, CitySwitchyardBoss, SnowIcebreakerBoss, ChoirLancer, AegisReliquary, PrismCantor, VotiveSpear }
 public enum CombatHullId
 {
+    VotiveSpear = 88,
     PrismCantor = 87,
     AegisReliquary = 86,
     ChoirLancer = 85,
@@ -100,6 +101,7 @@ public sealed class EnemyDefinition
 public static class EnemyCatalog
 {
     public static readonly EnemyDefinition[] All = {
+        new EnemyDefinition(EnemyId.VotiveSpear, typeof(VotiveSpear), CombatHullId.VotiveSpear),
         new EnemyDefinition(EnemyId.PrismCantor, typeof(PrismCantor), CombatHullId.PrismCantor),
         new EnemyDefinition(EnemyId.AegisReliquary, typeof(AegisReliquary), CombatHullId.AegisReliquary),
         new EnemyDefinition(EnemyId.ChoirLancer, typeof(ChoirLancer), CombatHullId.ChoirLancer),
