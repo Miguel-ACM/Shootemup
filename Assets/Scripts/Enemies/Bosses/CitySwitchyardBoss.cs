@@ -22,8 +22,9 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
         int side = -1;
         while (true)
         {
-            // Red Signal: pairs fan out, park, then switch onto vertical tracks.
-            // Later phrases stagger the green lights and throw the points across the junction.
+            // Red Signal: traffic climbs toward the ceiling and parks. Green lights
+            // turn both banks inward onto horizontal tracks; phase three switches
+            // alternating banks through a vertical junction instead.
             yield return PrimePair(.52f);
             int cars = Mathf.Max(3, Dense(phaseThree ? 24 : phaseTwo ? 21 : 18));
             int tracks = Dense(phaseThree ? 7 : 5);
@@ -35,12 +36,12 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
                     float hold = .42f + .10f * (cars - pair) + (phaseTwo && sign == side ? .36f : 0);
                     for (int track = 0; track < tracks; track++)
                     {
-                        var car = Fire<NeedleRound>(Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.down, sign * turnout),
+                        var car = Fire<NeedleRound>(Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.up, sign * turnout),
                             2.8f + track * .7f, .18f);
                         if (phaseThree && pair % 2 == 0)
-                            car.Pause(.62f, hold + track * .10f, CombatRound.Turn.Rotate, -sign * (turnout + 24), 1.05f);
+                            car.Pause(.62f, hold + track * .10f, CombatRound.Turn.Rotate, sign * (180 - turnout), 1.05f);
                         else
-                            car.Pause(.62f, hold + track * .10f, CombatRound.Turn.Down, speed: .94f);
+                            car.Pause(.62f, hold + track * .10f, CombatRound.Turn.Rotate, sign * (90 - turnout), .94f);
                     }
                 }
                 yield return Wait(Rest(.10f));
@@ -52,16 +53,27 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
             int trains = Dense(phaseThree ? 8 : phaseTwo ? 7 : 5);
             for (int train = 0; train < trains; train++)
             {
+                bool express = train % 3 == 0;
+                Vector2 track = express ? CombatVisuals.Aim(Muzzle()) :
+                    CombatVisuals.Rotate(Vector2.right * side, (train % 2 == 0 ? 1 : -1) * (phaseTwo ? 35 : 22));
+                PointWeapon(Muzzle(), track);
                 yield return Charge(Hull, WeaponPort(), .28f);
-                Vector2 track = CombatVisuals.Aim(Muzzle());
                 int rails = Dense(5);
                 for (int rail = 0; rail < rails; rail++)
-                    Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(track, (rail - (rails - 1) * .5f) * 17), 4.8f, .28f);
+                {
+                    var headlight = Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(track, (rail - (rails - 1) * .5f) * 17), 4.8f, .28f);
+                    if (!express) headlight.Bounce(1);
+                }
                 for (int car = 0; car < Dense(10); car++)
                 {
                     yield return Wait(Rest(.105f));
                     for (int rail = 0; rail < rails; rail++)
-                        Fire<NeedleRound>(Muzzle(), CombatVisuals.Rotate(track, (rail - (rails - 1) * .5f) * 17), 3.65f - car * .12f, .17f);
+                    {
+                        var carriage = Fire<NeedleRound>(Muzzle(), CombatVisuals.Rotate(track, (rail - (rails - 1) * .5f) * 17), 3.65f - car * .12f, .17f);
+                        if (!express && phaseThree && car % 3 == 0)
+                            carriage.RunWalls(2.4f, side);
+                        else if (!express) carriage.Bounce(1);
+                    }
                 }
                 // Rebounding signal fans cross the vertical tracks, forcing a planned
                 // junction crossing instead of letting the pilot park beside the engine.
