@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>Small, explicit low-poly meshes with trim UVs into the ship's atlas.</summary>
 public static partial class IndustrialMeshFactory
 {
-    sealed class Builder
+    sealed partial class Builder
     {
         readonly List<Vector3> vertices = new List<Vector3>();
         readonly List<int> indices = new List<int>();
