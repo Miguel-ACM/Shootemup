@@ -104,7 +104,7 @@ public sealed partial class VoidSovereignBoss
         for(int p=0;p<2;p++)
         {
             int s=p==0?-1:1;var jaw=Port(p);
-            Fire<ProximityMine>(jaw,CombatVisuals.Rotate(Vector2.up,s*(18+n%3*16)),4.8f,.24f);
+            Fire<ProximityMine>(jaw,CombatVisuals.Rotate(Vector2.up,s*(18+n%3*16)),6.8f,.24f);
             Fire<ScatterCarrier>(jaw,CombatVisuals.Rotate(Vector2.down,s*(20+n%2*24)),1.55f,.31f).FadeAt(7);
             if(n%2==0)Fire<GiantOrb>(jaw,CombatVisuals.Rotate(Vector2.up,s*(50+n*8)),1.4f,.48f).Pause(.95f,.55f,CombatRound.Turn.Rotate,s*80,2.0f).SplitAt(3.2f,Dense(9),120,2.4f,.16f);
         }

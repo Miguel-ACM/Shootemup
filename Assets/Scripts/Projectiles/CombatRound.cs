@@ -206,16 +206,17 @@ public abstract class CombatRound : AEnemyBullet
         {
             // Reserve every authored delivery behind the curtain, including its special
             // renderer and collider. The final score shares the existing global budget.
-            TrimReserve<SimpleRound>(1200);TrimReserve<NeedleRound>(800);
-            TrimReserve<RicochetBolt>(160);TrimReserve<BurstShell>(48);TrimReserve<SuspendedRound>(160);
-            TrimReserve<GuidedMissile>(36);TrimReserve<ScatterCarrier>(24);TrimReserve<HelixRound>(80);
-            TrimReserve<PlasmaOrb>(40);TrimReserve<ProximityMine>(24);TrimReserve<ReturningDisc>(96);
-            TrimReserve<PulseLaser>(24);TrimReserve<LaserSideRound>(16);TrimReserve<GiantOrb>(200);
-            yield return Warm<SimpleRound>(1200);yield return Warm<NeedleRound>(800);
-            yield return Warm<RicochetBolt>(160);yield return Warm<BurstShell>(48);yield return Warm<SuspendedRound>(160);
-            yield return Warm<GuidedMissile>(36);yield return Warm<ScatterCarrier>(24);yield return Warm<HelixRound>(80);
-            yield return Warm<PlasmaOrb>(40);yield return Warm<ProximityMine>(24);yield return Warm<ReturningDisc>(96);
-            yield return Warm<PulseLaser>(24);yield return Warm<LaserSideRound>(16);yield return Warm<GiantOrb>(200);
+            // Counts are multiplied by ReserveScale inside both helpers: 1850 base slots.
+            TrimReserve<SimpleRound>(800);TrimReserve<NeedleRound>(500);
+            TrimReserve<RicochetBolt>(80);TrimReserve<BurstShell>(24);TrimReserve<SuspendedRound>(80);
+            TrimReserve<GuidedMissile>(18);TrimReserve<ScatterCarrier>(12);TrimReserve<HelixRound>(40);
+            TrimReserve<PlasmaOrb>(20);TrimReserve<ProximityMine>(12);TrimReserve<ReturningDisc>(48);
+            TrimReserve<PulseLaser>(12);TrimReserve<LaserSideRound>(4);TrimReserve<GiantOrb>(200);
+            yield return Warm<SimpleRound>(800);yield return Warm<NeedleRound>(500);
+            yield return Warm<RicochetBolt>(80);yield return Warm<BurstShell>(24);yield return Warm<SuspendedRound>(80);
+            yield return Warm<GuidedMissile>(18);yield return Warm<ScatterCarrier>(12);yield return Warm<HelixRound>(40);
+            yield return Warm<PlasmaOrb>(20);yield return Warm<ProximityMine>(12);yield return Warm<ReturningDisc>(48);
+            yield return Warm<PulseLaser>(12);yield return Warm<LaserSideRound>(4);yield return Warm<GiantOrb>(200);
             yield break;
         }
         // These districts now sustain arrow-heavy boss scores. Give their unused

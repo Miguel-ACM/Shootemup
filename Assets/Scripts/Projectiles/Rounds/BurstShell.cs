@@ -20,6 +20,7 @@ public sealed class BurstShell : CombatRound
         visual.color = Color.white;
         nextSpark = 0;
         SetTravelDistance(3.8f);
+        PrepareIgnition();
     }
 
     public BurstShell SetTravelDistance(float distance)
@@ -39,13 +40,17 @@ public sealed class BurstShell : CombatRound
         return speed * (coast + slow - slow * slow / (2 * brake));
     }
 
-    void Spark(float charge)
+    static void PrepareIgnition()
     {
         if (ignition == null)
         {
             ignition = PSXImpactEffects.Create(null, "Shared shell ignition sparks", 384);
             ignition.GetComponent<ParticleSystemRenderer>().sortingOrder = 14;
         }
+    }
+    void Spark(float charge)
+    {
+        PrepareIgnition();
         float shellRadius = transform.localScale.x * .5f;
         float radius = Mathf.Lerp(shellRadius * 2.3f + .2f, shellRadius * 1.1f + .025f, Mathf.SmoothStep(0, 1, charge));
         for (int i = 0; i < 3; i++)
