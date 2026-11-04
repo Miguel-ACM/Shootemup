@@ -147,7 +147,13 @@ public static class WaveComposer
             count = budget < 5 || compact ? 3 : 4;
         if (level == LevelId.Space)
             count = budget < 5 || compact ? 3 : 4;
+        if (level == LevelId.Heaven)
+            count = compact ? 2 : 3;
         float window = compact ? 12.5f : budget < 5 ? 8.6f : 11.5f;
+        // Siege formations need time for their full charge and smooth exit. Start with
+        // three interleaved motifs rather than excluding every long laser formation.
+        if (level == LevelId.Heaven)
+            window = compact ? 14 : 12.5f;
         float slowest = 1;
         foreach (var part in WavePartLibrary.For(level))
             slowest = Mathf.Min(slowest, EnemyTuning.MovementFor(part.Enemy));
@@ -179,7 +185,7 @@ public static class WaveComposer
                     var motion = Make(option.part, variant + variation, variation == 0 ? side : -side);
                     if (motion == null)
                         continue;
-                    if (motion.Span > window || (compact && motion.Span > 6.2f / slowest))
+                    if (motion.Span > window || (compact && motion.Span > (level == LevelId.Heaven ? 9.5f : 6.2f) / slowest))
                         continue;
                     if (slot == 0)
                     {

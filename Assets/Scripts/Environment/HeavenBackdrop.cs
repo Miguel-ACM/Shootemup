@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 public sealed class HeavenBackdrop : MonoBehaviour
 {
     readonly Transform[] islands = new Transform[16];
-    Material sky;
+    Material sky, mist;
     Mesh plane;
     float clock;
     void Start()
@@ -14,6 +14,7 @@ public sealed class HeavenBackdrop : MonoBehaviour
         plane.triangles=new[]{0,2,1,0,3,2}; plane.RecalculateBounds();
         sky=new Material(Resources.Load<Shader>("HeavenClouds"));
         sky.SetFloat("_Seed",(LevelRun.Seed%997)*.037f);
+        mist=new Material(Resources.Load<Shader>("HeavenMist"));
         Add("White cloud ocean",plane,sky,new Vector3(0,0,110),-60);
         var random=new System.Random(LevelRun.Seed+19191);
         for(int i=0;i<islands.Length;i++)
@@ -24,6 +25,8 @@ public sealed class HeavenBackdrop : MonoBehaviour
             root.localScale=Vector3.one*Mathf.Lerp(.72f,1.15f,(float)random.NextDouble());
             root.localRotation=Quaternion.Euler(12,side*9,side*(8+i%3*7));
             islands[i]=root;
+            var cloud=Add("Soft white cloud billows",IndustrialMeshFactory.HeavenCloudIsland(),mist,Vector3.zero,-36);
+            cloud.SetParent(root,false);
             var prop=Add("Scalloped cloud and planted lances",IndustrialMeshFactory.HeavenRedoubt(i%4),HeavenMaterials.Ivory,Vector3.zero,-35);
             prop.SetParent(root,false);
         }
@@ -47,7 +50,7 @@ public sealed class HeavenBackdrop : MonoBehaviour
             island.localPosition=p;
         }
     }
-    void OnDestroy(){ if(sky!=null) Destroy(sky); if(plane!=null) Destroy(plane); }
+    void OnDestroy(){ if(sky!=null) Destroy(sky); if(mist!=null)Destroy(mist); if(plane!=null) Destroy(plane); }
 }
 
 public static partial class IndustrialMeshFactory
@@ -57,13 +60,6 @@ public static partial class IndustrialMeshFactory
     {
         if(redoubts[variant]!=null) return redoubts[variant];
         var b=new Builder();
-        // Broad overlapping billows form one cloud foundation, with deep blue-grey undersides.
-        b.Ball(new Vector3(0,0,.35f),new Vector3(3.8f,2.3f,.9f),0);
-        for(int i=0;i<7;i++)
-        {
-            float a=i*Mathf.PI*2/7;
-            b.Ball(new Vector3(Mathf.Cos(a)*1.35f,Mathf.Sin(a)*.75f,.08f),new Vector3(1.45f,1.2f,.72f),15);
-        }
         // Marble fragments, bent palisades and spearheads embedded in the clouds.
         b.Prism(new[]{V(-1.3f,-.4f),V(1.4f,-.35f),V(1.1f,.5f),V(-1,.65f)},.18f,1,new Vector3(0,0,-.45f),14);
         for(int i=0;i<6;i++)
@@ -81,5 +77,28 @@ public static partial class IndustrialMeshFactory
             b.Prism(new[]{V(-.12f,0),V(0,-.43f),V(.12f,0)},.06f,8,new Vector3(x,y-.43f,-.85f),2);
         }
         return redoubts[variant]=b.Finish("War in Heaven / cloud redoubt "+variant);
+    }
+
+    static Mesh heavenIsland;
+    public static Mesh HeavenCloudIsland()
+    {
+        if(heavenIsland!=null)return heavenIsland;
+        var vertices=new System.Collections.Generic.List<Vector3>();var normals=new System.Collections.Generic.List<Vector3>();var triangles=new System.Collections.Generic.List<int>();
+        const int rings=12,sides=24;
+        for(int lobe=0;lobe<8;lobe++)
+        {
+            float a=lobe*Mathf.PI*2/7;
+            Vector3 center=lobe==7?new Vector3(0,0,.18f):new Vector3(Mathf.Cos(a)*1.23f,Mathf.Sin(a)*.65f,.22f);
+            Vector3 radius=lobe==7?new Vector3(1.7f,1.05f,.48f):new Vector3(.92f,.72f,.54f);
+            int start=vertices.Count;
+            for(int y=0;y<=rings;y++)for(int x=0;x<=sides;x++)
+            {
+                float lat=-Mathf.PI*.5f+y*Mathf.PI/rings,lon=x*Mathf.PI*2/sides;
+                Vector3 unit=new Vector3(Mathf.Cos(lat)*Mathf.Cos(lon),Mathf.Sin(lat),Mathf.Cos(lat)*Mathf.Sin(lon));
+                vertices.Add(center+Vector3.Scale(unit,radius));normals.Add(new Vector3(unit.x/radius.x,unit.y/radius.y,unit.z/radius.z).normalized);
+                if(x<sides&&y<rings){int k=start+y*(sides+1)+x;triangles.Add(k);triangles.Add(k+sides+1);triangles.Add(k+1);triangles.Add(k+1);triangles.Add(k+sides+1);triangles.Add(k+sides+2);}
+            }
+        }
+        heavenIsland=new Mesh{name="Smooth layered cloud island"};heavenIsland.SetVertices(vertices);heavenIsland.SetNormals(normals);heavenIsland.SetTriangles(triangles,0);heavenIsland.RecalculateBounds();return heavenIsland;
     }
 }
