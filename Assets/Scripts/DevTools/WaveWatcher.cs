@@ -375,6 +375,12 @@ public sealed partial class WaveWatcher : MonoBehaviour
         GameRules.enemyDamage = Difficulty.Damage;
         PlayerPrefs.SetInt(DifficultyPreference, (int)difficulty);
         PlayerPrefs.Save();
+        if (Level == LevelId.Void)
+        {
+            catalog = WatcherCatalog.For(View, Level);
+            Selection = Mathf.Clamp(Selection, 0, catalog.Count - 1);
+            RebuildCatalog();
+        }
         WavePreparation.Begin();
         Replay();
     }

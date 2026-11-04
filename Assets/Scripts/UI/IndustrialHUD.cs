@@ -152,7 +152,7 @@ public sealed class IndustrialHUD : MonoBehaviour
         bossCells = VerticalCells(bossPanel, 7, 17, 32, 14, 5, Amber);
         bossPanel.gameObject.SetActive(false);
         // One pip per boss life bar still to come after the current one.
-        phasePips = new Image[2];
+        phasePips = new Image[3];
         for (int i = 0; i < phasePips.Length; i++)
         {
             var pip = Panel(bossPanel, "Phase pip " + i, Amber);

@@ -100,7 +100,7 @@ public sealed partial class WaveWatcher
         {
             int index = levels.Count;
             var chosen = level;
-            levels[level] = Button(leftPanel, level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(), new Vector2(index % 2 == 0 ? -58 : 58, 266 - index / 2 * 30), new Vector2(112, 26), () => SelectLevel(chosen)).GetComponent<Image>();
+            levels[level] = Button(leftPanel, level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(), new Vector2(index % 2 == 0 ? -58 : 58, 266 - index / 2 * 25), new Vector2(112, 22), () => SelectLevel(chosen)).GetComponent<Image>();
         }
         foreach (var difficulty in new[] { RunDifficulty.Easy, RunDifficulty.Normal, RunDifficulty.Hard })
         {

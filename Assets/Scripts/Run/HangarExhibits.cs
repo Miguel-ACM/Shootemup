@@ -10,8 +10,8 @@ public sealed partial class HangarHub
     List<GameObject> pageNodes => pages[room];
     static readonly string[] categories = { "ALL PARTS", "PASSIVES", "ACTIVES", "PARTNERS", "GUNS", "SECONDARIES" };
     static readonly LevelId[] districts ={LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Desert,
-        LevelId.Tunnel,LevelId.Candyland,LevelId.Space,LevelId.Underwater,LevelId.Hell};
-    static readonly string[] districtMarks = { "PL", "SN", "CI", "TH", "DE", "TU", "CA", "SP", "UW", "HE" };
+        LevelId.Tunnel,LevelId.Candyland,LevelId.Space,LevelId.Underwater,LevelId.Hell,LevelId.Heaven,LevelId.Void};
+    static readonly string[] districtMarks = { "PL", "SN", "CI", "TH", "DE", "TU", "CA", "SP", "UW", "HL", "HV", "VO" };
     static int Cycle(int n, int count) => count == 0 ? 0 : (n % count + count) % count;
     void Navigate(bool horizontal, int step)
     {
@@ -141,10 +141,10 @@ public sealed partial class HangarHub
         Legend(modes[band].ToString().ToUpperInvariant() + "  /  BOSS RECORD", 0, 26, 558, 36, 21, lamps[room], true);
         for (int i = 0; i < districts.Length; i++)
         {
-            float x = -250 + i * 55.5f;
+            float x = -250 + i * (500f / (districts.Length - 1));
             int bit = 1 << (int)districts[i];
             bool clear = (record.clears & bit) != 0, clean = (record.flawless & bit) != 0;
-            Tile(x, -22, 48, 46, DockInstrument.Ink);
+            Tile(x, -22, 42, 46, DockInstrument.Ink);
             Photo(Resources.Load<Texture2D>("DockArt/Stamp" + districts[i]), new Rect(0, 0, 1, 1), x, -22, 39,
                 clean ? DockInstrument.Brass : clear ? DockInstrument.Sea : new Color(.40f, .47f, .48f));
             Legend(districtMarks[i], x, -60, 50, 24, 17, DockInstrument.Paper).alignment = TextAlignmentOptions.Center;
