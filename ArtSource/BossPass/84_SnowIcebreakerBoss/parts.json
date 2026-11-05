@@ -1,0 +1,34 @@
+[
+  {
+    "object": "IceFin_-1",
+    "motion": "swing",
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "pivot": [
+      -1.04,
+      0.11,
+      0.05
+    ],
+    "speed": 0.31,
+    "amplitude": -9
+  },
+  {
+    "object": "IceFin_1",
+    "motion": "swing",
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "pivot": [
+      1.04,
+      0.11,
+      0.05
+    ],
+    "speed": 0.31,
+    "amplitude": 9
+  }
+]
