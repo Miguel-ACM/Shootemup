@@ -1,5 +1,6 @@
 // Cue coordinates are seconds in the original recording. The fast audition is already time-stretched.
-const bassDb = 4.5, shelfHz = 145, lead = .045, maxWait = 10, outroWait = .35;
+const bassDb = map => map.id === 'tunnel' ? 5.5 : 4.5;
+const shelfHz = 145, lead = .045, maxWait = 10, outroWait = .35;
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const position = (d, at) => d.offset + Math.max(0, at - d.at)*d.speed;
 const clockAt = (d, offset) => d.at + (offset - d.offset)/d.speed;
@@ -11,7 +12,7 @@ export function seekTarget(map, time, preferred = 'intro') {
         const range = map.sections[key === 'fast' ? 'peak' : key];
         return range && range.start <= pos && pos < range.end;
     }) ?? 'recording';
-    return { part:selected, pos, rate:selected === 'fast' ? 1.06 : 1, bass:boss(selected) ? bassDb : 0 };
+    return { part:selected, pos, rate:selected === 'fast' ? 1.06 : 1, bass:boss(selected) ? bassDb(map) : 0 };
 }
 function bassAt(d, at) {
     const t = d.ramp ? clamp((at - d.at)/d.ramp, 0, 1) : 1;
@@ -79,7 +80,7 @@ export class Transport {
         shelf.type = 'lowshelf';
         shelf.frequency.value = shelfHz;
         source.connect(shelf).connect(gain).connect(this.backing);
-        const to = boss(part) ? bassDb : 0;
+        const to = boss(part) ? bassDb(this.map) : 0;
         const ramp = from === to ? 0 : Math.min((to > from || part === 'outro' ? 1 : 8)*60/this.map.bpm, Math.max(0,end-offset)/speed);
         shelf.gain.setValueAtTime(from, at);
         if (ramp) shelf.gain.linearRampToValueAtTime(to, at+ramp);
@@ -251,7 +252,7 @@ export class Transport {
         this.playing = true;
         this.ended = false;
         const offset = Math.max(start, end - 2*60/this.map.bpm);
-        this.current = this.deck(part,this.ctx.currentTime+lead,offset,boss(part) ? bassDb : 0,.04);
+        this.current = this.deck(part,this.ctx.currentTime+lead,offset,boss(part) ? bassDb(this.map) : 0,.04);
         this.plan();
     }
     previewChange() {

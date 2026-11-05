@@ -6,6 +6,7 @@ using UnityEngine;
 public sealed class MusicDeck : MonoBehaviour
 {
     public const float BassDb = 4.5f;
+    public static float BossBassDb(string track) => track == "tunnel" ? 5.5f : BassDb;
     const double ShelfHz = 145;
     public AudioSource Source { get; private set; }
     public double StartAt { get; private set; }
@@ -26,6 +27,7 @@ public sealed class MusicDeck : MonoBehaviour
         public double start, stop, fadeIn, fadeOut, kickCut;
         public float from, to, duration, offset;
         public float[] beats;
+        public double b0, b1, b2, a1, a2;
     }
     volatile Envelope envelope;
     Envelope previous;
@@ -38,8 +40,13 @@ public sealed class MusicDeck : MonoBehaviour
         Source.priority = 1;
         Source.ignoreListenerVolume = true;
         sampleRate = Math.Max(8000, AudioSettings.outputSampleRate);
+        SetBass(BassDb);
+    }
+
+    void SetBass(float decibels)
+    {
         // RBJ low shelf, unity shelf slope. Dry/wet interpolation releases to a true bypass.
-        double a = Math.Pow(10, BassDb / 40.0);
+        double a = Math.Pow(10, decibels / 40.0);
         double w = 2 * Math.PI * ShelfHz / sampleRate;
         double c = Math.Cos(w), s = Math.Sqrt(2 * a) * Math.Sin(w);
         double norm = (a+1) + (a-1)*c + s;
@@ -54,6 +61,7 @@ public sealed class MusicDeck : MonoBehaviour
         float[] beats = null, float clipLead = 0)
     {
         Stop();
+        SetBass(BossBassDb(clip.name));
         StartAt = at;
         offset = position;
         from = mixFrom;
@@ -71,7 +79,8 @@ public sealed class MusicDeck : MonoBehaviour
     void SetEnvelope(double end, double fadeOut, double cut)
     {
         envelope = new Envelope { start = StartAt, stop = end, from = from, to = to, duration = seconds,
-            fadeIn = fadeIn, fadeOut = fadeOut, offset = offset, beats = kickBeats, kickCut = cut };
+            fadeIn = fadeIn, fadeOut = fadeOut, offset = offset, beats = kickBeats, kickCut = cut,
+            b0 = b0, b1 = b1, b2 = b2, a1 = a1, a2 = a2 };
     }
 
     public void EndAt(double at, double fade, double cut)
@@ -117,9 +126,11 @@ public sealed class MusicDeck : MonoBehaviour
             double gain = Math.Clamp(Math.Min((now - env.start)/env.fadeIn, (env.stop - now)/env.fadeOut), 0, 1);
             for (int ch = 0; ch < channels; ch++, i++)
             {
-                double dry = samples[i], wet = b0*dry + z1[ch];
-                z1[ch] = b1*dry - a1*wet + z2[ch];
-                z2[ch] = b2*dry - a2*wet;
+                // Coefficients travel with the immutable cue, so changing tracks
+                // cannot alter a block already being processed by the audio thread.
+                double dry = samples[i], wet = env.b0*dry + z1[ch];
+                z1[ch] = env.b1*dry - env.a1*wet + z2[ch];
+                z2[ch] = env.b2*dry - env.a2*wet;
                 samples[i] = (float)(gain * (dry + mix*(wet-dry)));
             }
         }
