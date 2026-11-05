@@ -1,0 +1,29 @@
+PASS Projectile catalog exposes chevrons and no returning disc.
+PASS CommandGunship Easy: ChevronRound peak=4, all shots=97, newly constructed=0.
+PASS CommandGunship Normal: ChevronRound peak=4, all shots=90, newly constructed=0.
+PASS CommandGunship Hard: ChevronRound peak=9, all shots=132, newly constructed=0.
+PASS BaffleSpinner Easy: RicochetBolt peak=8, all shots=12, newly constructed=0.
+PASS BaffleSpinner Normal: RicochetBolt peak=8, all shots=12, newly constructed=0.
+PASS BaffleSpinner Hard: RicochetBolt peak=9, all shots=12, newly constructed=0.
+PASS ColdWeatherFighter Easy: ChevronRound peak=4, all shots=4, newly constructed=0.
+PASS ColdWeatherFighter Normal: ChevronRound peak=8, all shots=8, newly constructed=0.
+PASS ColdWeatherFighter Hard: ChevronRound peak=15, all shots=15, newly constructed=0.
+PASS DuneMoth Easy: ChevronRound peak=4, all shots=4, newly constructed=0.
+PASS DuneMoth Normal: ChevronRound peak=8, all shots=8, newly constructed=0.
+PASS DuneMoth Hard: ChevronRound peak=12, all shots=12, newly constructed=0.
+PASS ReefDart Easy: ChevronRound peak=8, all shots=8, newly constructed=0.
+PASS ReefDart Normal: ChevronRound peak=8, all shots=8, newly constructed=0.
+PASS ReefDart Hard: ChevronRound peak=12, all shots=12, newly constructed=0.
+PASS City-boss-22: ChevronRound peak=121, all shots=660, newly constructed=0.
+PASS City-boss-25: ChevronRound peak=82, all shots=662, newly constructed=0.
+PASS City-boss-24: ChevronRound peak=137, all shots=268, newly constructed=0.
+PASS Void interlude 1: chevron peak=126, newly constructed=0.
+PASS Void-scythe-ribbons: ChevronRound peak=349, all shots=845, newly constructed=0.
+PASS Void interlude 2: chevron peak=160, newly constructed=0.
+PASS Void interlude 3: chevron peak=192, newly constructed=0.
+PASS Chevrons hold during an authored pause.
+PASS Chevrons resume along the authored new heading.
+PASS Pool reuse clears the chevron's previous motion program.
+PASS The chevron's transparent central gap does not damage the production ship.
+PASS 1200 rotated/scaled chevron contacts match the native pixel mask; mismatches=0.
+PASS Screen clearing removes the new chevron volleys.

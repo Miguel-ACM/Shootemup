@@ -1,0 +1,46 @@
+Returning-disc retirement and chevron pass — 6 November 2026
+
+ReturningDisc is removed from combat, Wave Watcher, warm reserves, runtime sound
+registration and the sound-generation lists. Its code is removed. Its source
+PNG and importer settings are preserved in ArtSource/RetiredProjectiles, outside
+Unity Resources. Saved Sound Lab choices and existing recordings are retained.
+Source and serialized-reference scans found no remaining active class or asset
+references.
+
+Command Gunship's disc fan becomes forward chevron headlights. Baffle Spinner's
+two discs become mirrored ricochets; its separate wall-running volleys remain.
+The approved delayed.png silhouette now belongs to ChevronRound, with its
+original script GUID retained. It uses the common authored motion programs
+instead of imposing one fixed stop-and-go behavior on every attack. Wave Watcher
+offers both its plain flight and an explicitly programmed stop-and-go example.
+The existing enemySuspended sound ID is kept for saved chevron sound selections.
+
+Additional chevron uses:
+- Cold Weather Fighter: the existing freeze, re-aim and slow restart.
+- Dune Moth: the existing mirrored swaying dust and staggered fade.
+- Reef Dart: the existing narrow forward fan.
+- City duo: chevrons between circular beads in its mixed-speed headlights.
+- Void: scythe ribbons and one family in each one-sided interlude.
+
+Shot geometry, counts, timing, firing ports, approved pixels and district hues
+are preserved except for the explicitly retired returning trajectory. Other
+bullet families, including the newly increased Void giants, remain present.
+Retired reserves and a share of needle capacity warm the chevrons; the total
+pool budget remains 7400, with 3600 live rounds and 800 warmed giants.
+
+One isolated command-line gameplay batch checked the five changed ordinary
+enemies on Easy, Normal and Hard; City Hard's duo, heavy third phase and fast
+survivor; Void Hard's scythe cards and all three transitions. Every case passed
+without constructing additional projectile objects after preparation. Peak
+chevrons were 349 in the Void scythe cards, within its 448 prepared slots.
+
+1200 rotated/scaled contacts against the real player collider and a companion
+circle matched the native scaled pixel mask, including the chevron's transparent
+central gap. Authored pause/restart, heading change, pooled-program reset and
+screen clearing passed. All twelve native offscreen captures were inspected.
+No new projectile art was generated or substituted.
+
+The Windows player build passed with zero errors and zero warnings. Three edited
+Python tooling files also passed syntax parsing. Review and build used the
+isolated Build/ReviewCache/Temp/UnlockReview checkout and isolated save files,
+without touching the live editor. See Checks.txt and Build.txt for results.
