@@ -30,10 +30,10 @@ public static partial class IndustrialMeshFactory
         {
             Feather(b,new Vector3(s*.12f,-.2f,0),new Vector3(s*.97f,1.08f,.15f),.25f,-s*.20f);
             Feather(b,new Vector3(s*.12f,.30f,-.03f),new Vector3(s*.45f,1.35f,.1f),.13f,-s*.09f,3);
-            b.Sweep(new Vector3(s*.1f,.35f,-.14f),new Vector3(s*.37f,.1f,-.25f),new Vector3(s*.25f,-.55f,-.24f),new Vector3(s*.24f,-.835f,-.17f),.08f,.09f,7,false,16);
+            CutCurve(b,new Vector3(s*.1f,.35f,-.14f),new Vector3(s*.37f,.1f,-.25f),new Vector3(s*.25f,-.55f,-.24f),new Vector3(s*.24f,-.835f,-.17f),.08f,.09f,7,false,16);
             CelestialMuzzle(b,new Vector3(s*.24f,-.835f,-.17f),.085f);
         }
-        b.Pearl(new Vector3(0,.21f,-.22f),new Vector3(.10f,.34f,.07f),9);
+        CutStone(b,new Vector3(0,.21f,-.22f),new Vector3(.10f,.34f,.07f),9);
         return votiveSpear=b.Finish("Votive / needle prow and curved pennant blades");
     }
 }
