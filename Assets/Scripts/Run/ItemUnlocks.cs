@@ -14,8 +14,11 @@ public sealed class ItemUnlock
     public readonly string Title, BossTitle;
     public string Key => Item.ToString();
     public string AreaName => Area == LevelId.Fields ? "Plains" : Area.ToString();
-    public string Requirement => Condition == ItemUnlockCondition.Clear ? AreaName + " / Clear" :
-        Condition == ItemUnlockCondition.NoHitBoss ? BossTitle + " / No-hit boss / Normal+" : AreaName + " / No-hit area / Normal+";
+    string BossName => DistrictWaves.Bosses(Area).Count == 1 ? AreaName + " boss" :
+        BossTitle.StartsWith(AreaName, StringComparison.Ordinal) ? BossTitle : BossTitle + " in " + AreaName;
+    public string Requirement => Condition == ItemUnlockCondition.Clear ? "Clear " + AreaName + " on any difficulty." :
+        Condition == ItemUnlockCondition.NoHitBoss ? "No-hit " + BossName + " on Normal+ difficulty." :
+        "No-hit the full " + AreaName + " level on Normal+ difficulty.";
 
     public ItemUnlock(LevelId area, ItemId item, string title, ItemUnlockCondition condition = ItemUnlockCondition.Clear,
         Type boss = null, string bossTitle = null)
@@ -30,6 +33,8 @@ public sealed class ItemUnlockNotice
     public string key, title, source;
     public LevelId area;
     public ItemUnlockCondition condition;
+    // Resolve the current wording for old saved tags too, without changing their rewards.
+    public string Requirement => ItemUnlocks.For(key)?.Requirement ?? FlightTrials.Blueprint(key)?.Requirement ?? source;
 }
 
 public static class ItemUnlocks

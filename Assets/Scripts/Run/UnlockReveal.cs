@@ -62,7 +62,7 @@ public sealed class UnlockReveal : MonoBehaviour
     {
         var notice = MetaProgress.PendingUnlocks[0];
         title.text = notice.title;
-        source.text = notice.source;
+        source.text = notice.Requirement;
         portrait.uvRect = studio.Cell(index);
         stamp.sprite = Resources.Load<Sprite>("DockArt/Stamp" + notice.area);
         stamp.enabled = stamp.sprite != null;

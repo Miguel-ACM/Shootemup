@@ -315,7 +315,7 @@ public sealed partial class HangarHub
         cardTitle.text = known ? e.title : "???";
         cardText.text = known ? e.description : "???";
         cardSource.text = known ? DecisionOverlay.Category(e.category).ToUpperInvariant() : achievement != null ? achievement.Requirement :
-            trial != null ? "Certify " + trial.title : "Outfitter  ·  " + MetaProgress.Price(ItemPool.RarityOf(e.key)) + " coins";
+            trial != null ? trial.Requirement : "Buy from the outfitter for " + MetaProgress.Price(ItemPool.RarityOf(e.key)) + " coins.";
         readouts.Aim(cardPanel, Spot(Case(i) + Vector2.up * 1.03f, 0));
         readouts.Reveal(cardPanel);
     }

@@ -212,7 +212,7 @@ public static partial class MetaProgress
             Data.completed.Add(flight.contract);
             string key = FlightTrials.Active.reward;
             UnlockItem(key, GalleryShelf.TryGet(key, out var exhibit) ? exhibit.title : FlightTrials.Display(key),
-                "Simulator / " + flight.contract, FlightTrials.Active.district);
+                FlightTrials.Active.Requirement, FlightTrials.Active.district);
             flight.awards.Add("Blueprint  /  " + FlightTrials.Display(key));
         }
         Data.history.Insert(0, flight);

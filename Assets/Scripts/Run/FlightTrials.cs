@@ -9,6 +9,7 @@ public sealed class FlightTrials
     public readonly RunDifficulty difficulty;
     public readonly LevelId district;
     public readonly string[] kit;
+    public string Requirement => "Complete " + title + " in the simulator.";
     FlightTrials(string name, string goal, ShipFrame ship, LevelId level, RunDifficulty mode, string blueprint, params string[] items)
     {
         title = name;
