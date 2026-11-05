@@ -1,0 +1,188 @@
+PASS Normal-Heaven-1 live peak 700
+PASS Normal-Heaven-1 constructs no rounds in combat (0)
+PASS Normal-Heaven-1 reaches all four screen bands
+PASS Normal-Heaven-1 both cards; upward=1384 direct downward=1345
+PASS Normal-Heaven-1 empty-air choir emissions=602
+PASS Normal-Heaven-1 continuous phase-scaled wheel rotation=715
+PASS Normal-Heaven-1 eye collision paths retained
+Normal-Heaven-1 CPU main-thread p95=14,18ms max=30,29ms (headless)
+PASS Normal-Heaven-2 live peak 1025
+PASS Normal-Heaven-2 constructs no rounds in combat (0)
+PASS Normal-Heaven-2 reaches all four screen bands
+PASS Normal-Heaven-2 both cards; upward=1868 direct downward=1879
+PASS Normal-Heaven-2 empty-air choir emissions=608
+PASS Normal-Heaven-2 continuous phase-scaled wheel rotation=1107
+PASS Normal-Heaven-2 eye collision paths retained
+Normal-Heaven-2 CPU main-thread p95=16,11ms max=26,70ms (headless)
+PASS Normal-Heaven-3 live peak 1240
+PASS Normal-Heaven-3 constructs no rounds in combat (0)
+PASS Normal-Heaven-3 reaches all four screen bands
+PASS Normal-Heaven-3 both cards; upward=2239 direct downward=2470
+PASS Normal-Heaven-3 empty-air choir emissions=640
+PASS Normal-Heaven-3 continuous phase-scaled wheel rotation=1502
+PASS Normal-Heaven-3 eye collision paths retained
+Normal-Heaven-3 CPU main-thread p95=17,64ms max=31,56ms (headless)
+PASS Normal-Void-1 live peak 708
+PASS Normal-Void-1 constructs no rounds in combat (0)
+PASS Normal-Void-1 reaches all four screen bands
+PASS Normal-Void-1 both form-specific cards
+Normal-Void-1 CPU main-thread p95=7,45ms max=15,77ms (headless)
+PASS Normal-Void-Interlude-1 exactly fifteen active seconds
+PASS Normal-Void-Interlude-1 single charged edge, births=718 wrong edge=0
+PASS Normal-Void-Interlude-1 prepared pool; peak=290 new=0
+PASS Normal-Void-Interlude-1 clears at reappearance
+PASS Normal-Void-2 live peak 507
+PASS Normal-Void-2 constructs no rounds in combat (0)
+PASS Normal-Void-2 reaches all four screen bands
+PASS Normal-Void-2 both form-specific cards
+Normal-Void-2 CPU main-thread p95=7,31ms max=18,66ms (headless)
+PASS Normal-Void-Interlude-2 exactly fifteen active seconds
+PASS Normal-Void-Interlude-2 single charged edge, births=820 wrong edge=0
+PASS Normal-Void-Interlude-2 prepared pool; peak=395 new=0
+PASS Normal-Void-Interlude-2 clears at reappearance
+PASS Normal-Void-3 live peak 698
+PASS Normal-Void-3 constructs no rounds in combat (0)
+PASS Normal-Void-3 reaches all four screen bands
+PASS Normal-Void-3 both form-specific cards
+Normal-Void-3 CPU main-thread p95=7,90ms max=25,23ms (headless)
+PASS Normal-Void-Interlude-3 exactly fifteen active seconds
+PASS Normal-Void-Interlude-3 single charged edge, births=1027 wrong edge=0
+PASS Normal-Void-Interlude-3 prepared pool; peak=466 new=0
+PASS Normal-Void-Interlude-3 clears at reappearance
+PASS Normal-Void-4 live peak 839
+PASS Normal-Void-4 constructs no rounds in combat (0)
+PASS Normal-Void-4 reaches all four screen bands
+PASS Normal-Void-4 both form-specific cards
+Normal-Void-4 CPU main-thread p95=7,57ms max=21,97ms (headless)
+PASS Hard-Void-1 live peak 1407
+PASS Hard-Void-1 constructs no rounds in combat (0)
+PASS Hard-Void-1 reaches all four screen bands
+PASS Hard-Void-1 both form-specific cards
+Hard-Void-1 CPU main-thread p95=10,56ms max=31,36ms (headless)
+PASS Hard-Void-Interlude-1 exactly fifteen active seconds
+PASS Hard-Void-Interlude-1 single charged edge, births=1430 wrong edge=0
+PASS Hard-Void-Interlude-1 prepared pool; peak=560 new=0
+PASS Hard-Void-Interlude-1 clears at reappearance
+PASS Hard-Void-2 live peak 858
+PASS Hard-Void-2 constructs no rounds in combat (0)
+PASS Hard-Void-2 reaches all four screen bands
+PASS Hard-Void-2 both form-specific cards
+Hard-Void-2 CPU main-thread p95=8,79ms max=18,20ms (headless)
+PASS Hard-Void-Interlude-2 exactly fifteen active seconds
+PASS Hard-Void-Interlude-2 single charged edge, births=1695 wrong edge=0
+PASS Hard-Void-Interlude-2 prepared pool; peak=738 new=0
+PASS Hard-Void-Interlude-2 clears at reappearance
+PASS Hard-Void-3 live peak 1291
+PASS Hard-Void-3 constructs no rounds in combat (0)
+PASS Hard-Void-3 reaches all four screen bands
+PASS Hard-Void-3 both form-specific cards
+Hard-Void-3 CPU main-thread p95=10,86ms max=25,93ms (headless)
+PASS Hard-Void-Interlude-3 exactly fifteen active seconds
+PASS Hard-Void-Interlude-3 single charged edge, births=1990 wrong edge=0
+PASS Hard-Void-Interlude-3 prepared pool; peak=857 new=0
+PASS Hard-Void-Interlude-3 clears at reappearance
+PASS Easy-Heaven-1 live peak 424
+PASS Easy-Heaven-1 constructs no rounds in combat (0)
+PASS Easy-Heaven-1 reaches all four screen bands
+PASS Easy-Heaven-1 both cards; upward=632 direct downward=615
+PASS Easy-Heaven-1 empty-air choir emissions=300
+PASS Easy-Heaven-1 continuous phase-scaled wheel rotation=672
+PASS Easy-Heaven-1 eye collision paths retained
+Easy-Heaven-1 CPU main-thread p95=13,20ms max=32,06ms (headless)
+PASS Easy-Heaven-2 live peak 603
+PASS Easy-Heaven-2 constructs no rounds in combat (0)
+PASS Easy-Heaven-2 reaches all four screen bands
+PASS Easy-Heaven-2 both cards; upward=880 direct downward=907
+PASS Easy-Heaven-2 empty-air choir emissions=236
+PASS Easy-Heaven-2 continuous phase-scaled wheel rotation=1042
+PASS Easy-Heaven-2 eye collision paths retained
+Easy-Heaven-2 CPU main-thread p95=14,28ms max=25,44ms (headless)
+PASS Easy-Heaven-3 live peak 734
+PASS Easy-Heaven-3 constructs no rounds in combat (0)
+PASS Easy-Heaven-3 reaches all four screen bands
+PASS Easy-Heaven-3 both cards; upward=1070 direct downward=1203
+PASS Easy-Heaven-3 empty-air choir emissions=288
+PASS Easy-Heaven-3 continuous phase-scaled wheel rotation=1413
+PASS Easy-Heaven-3 eye collision paths retained
+Easy-Heaven-3 CPU main-thread p95=15,05ms max=26,44ms (headless)
+PASS Easy-Void-1 live peak 391
+PASS Easy-Void-1 constructs no rounds in combat (0)
+PASS Easy-Void-1 reaches all four screen bands
+PASS Easy-Void-1 both form-specific cards
+Easy-Void-1 CPU main-thread p95=5,41ms max=14,98ms (headless)
+PASS Easy-Void-Interlude-1 exactly fifteen active seconds
+PASS Easy-Void-Interlude-1 single charged edge, births=386 wrong edge=0
+PASS Easy-Void-Interlude-1 prepared pool; peak=172 new=0
+PASS Easy-Void-Interlude-1 clears at reappearance
+PASS Easy-Void-2 live peak 275
+PASS Easy-Void-2 constructs no rounds in combat (0)
+PASS Easy-Void-2 reaches all four screen bands
+PASS Easy-Void-2 both form-specific cards
+Easy-Void-2 CPU main-thread p95=5,00ms max=13,69ms (headless)
+PASS Easy-Void-Interlude-2 exactly fifteen active seconds
+PASS Easy-Void-Interlude-2 single charged edge, births=438 wrong edge=0
+PASS Easy-Void-Interlude-2 prepared pool; peak=242 new=0
+PASS Easy-Void-Interlude-2 clears at reappearance
+PASS Easy-Void-3 live peak 440
+PASS Easy-Void-3 constructs no rounds in combat (0)
+PASS Easy-Void-3 reaches all four screen bands
+PASS Easy-Void-3 both form-specific cards
+Easy-Void-3 CPU main-thread p95=5,69ms max=14,46ms (headless)
+PASS Normal-Space-1 live peak 750
+PASS Normal-Space-1 constructs no rounds in combat (0)
+PASS Normal-Space-1 reaches all four screen bands
+PASS Normal-Space-1 arena-wide circular births; distant=759 bands=15
+Normal-Space-1 CPU main-thread p95=6,85ms max=14,94ms (headless)
+PASS Normal-Space-3 live peak 697
+PASS Normal-Space-3 constructs no rounds in combat (0)
+PASS Normal-Space-3 reaches all four screen bands
+PASS Normal-Space-3 arena-wide circular births; distant=824 bands=15
+Normal-Space-3 CPU main-thread p95=8,34ms max=17,83ms (headless)
+PASS Hard-Heaven-1 live peak 1314
+PASS Hard-Heaven-1 constructs no rounds in combat (0)
+PASS Hard-Heaven-1 reaches all four screen bands
+PASS Hard-Heaven-1 both cards; upward=2898 direct downward=2742
+PASS Hard-Heaven-1 empty-air choir emissions=1188
+PASS Hard-Heaven-1 continuous phase-scaled wheel rotation=773
+PASS Hard-Heaven-1 eye collision paths retained
+Hard-Heaven-1 CPU main-thread p95=16,06ms max=25,37ms (headless)
+PASS Hard-Heaven-2 live peak 1854
+PASS Hard-Heaven-2 constructs no rounds in combat (0)
+PASS Hard-Heaven-2 reaches all four screen bands
+PASS Hard-Heaven-2 both cards; upward=4091 direct downward=3925
+PASS Hard-Heaven-2 empty-air choir emissions=1326
+PASS Hard-Heaven-2 continuous phase-scaled wheel rotation=1191
+PASS Hard-Heaven-2 eye collision paths retained
+Hard-Heaven-2 CPU main-thread p95=19,58ms max=36,96ms (headless)
+PASS Hard-Heaven-3 live peak 2232
+PASS Hard-Heaven-3 constructs no rounds in combat (0)
+PASS Hard-Heaven-3 reaches all four screen bands
+PASS Hard-Heaven-3 both cards; upward=4808 direct downward=5063
+PASS Hard-Heaven-3 empty-air choir emissions=1470
+PASS Hard-Heaven-3 continuous phase-scaled wheel rotation=1614
+PASS Hard-Heaven-3 eye collision paths retained
+Hard-Heaven-3 CPU main-thread p95=21,51ms max=33,26ms (headless)
+PASS Hard-Void-4 live peak 1400
+PASS Hard-Void-4 constructs no rounds in combat (0)
+PASS Hard-Void-4 reaches all four screen bands
+PASS Hard-Void-4 both form-specific cards
+Hard-Void-4 CPU main-thread p95=9,86ms max=17,47ms (headless)
+PASS Hard-Space-1 live peak 1785
+PASS Hard-Space-1 constructs no rounds in combat (0)
+PASS Hard-Space-1 reaches all four screen bands
+PASS Hard-Space-1 arena-wide circular births; distant=1127 bands=15
+Hard-Space-1 CPU main-thread p95=15,29ms max=30,97ms (headless)
+PASS Hard-Space-3 live peak 1415
+PASS Hard-Space-3 constructs no rounds in combat (0)
+PASS Hard-Space-3 reaches all four screen bands
+PASS Hard-Space-3 arena-wide circular births; distant=1646 bands=15
+Hard-Space-3 CPU main-thread p95=13,78ms max=27,66ms (headless)
+PASS Easy-Space-1 live peak 364
+PASS Easy-Space-1 constructs no rounds in combat (0)
+PASS Easy-Space-1 reaches all four screen bands
+PASS Easy-Space-1 arena-wide circular births; distant=483 bands=15
+Easy-Space-1 CPU main-thread p95=6,63ms max=22,41ms (headless)
+PASS Easy-Space-3 live peak 363
+PASS Easy-Space-3 constructs no rounds in combat (0)
+PASS Easy-Space-3 reaches all four screen bands
+PASS Easy-Space-3 arena-wide circular births; distant=428 bands=15

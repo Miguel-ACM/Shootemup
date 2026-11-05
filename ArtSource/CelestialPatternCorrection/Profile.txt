@@ -1,0 +1,3 @@
+Complete native CPU frames, no trajectory capture, no rendering.
+Heaven phase 3: peak=2227 created=0 CPU p50=13,22ms p95=18,70ms max=30,10ms
+Space phase 3: peak=1494 created=0 CPU p50=6,67ms p95=10,55ms max=19,75ms
