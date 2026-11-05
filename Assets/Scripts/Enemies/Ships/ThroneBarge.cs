@@ -26,21 +26,21 @@ public static partial class IndustrialMeshFactory
     public static Mesh ThroneBargeMesh()
     {
         if(throneBarge!=null)return throneBarge;var b=new Builder();
-        b.Pearl(new Vector3(0,.02f,.09f),new Vector3(1.08f,.9f,.44f),7);
+        CutStone(b,new Vector3(0,.02f,.09f),new Vector3(1.08f,.9f,.44f),7);
         for(int s=-1;s<=1;s+=2)
         {
-            b.Sweep(new Vector3(s*.18f,-.7f,-.08f),new Vector3(s*1.5f,-.7f,-.16f),new Vector3(s*1.46f,.72f,-.14f),new Vector3(s*.68f,1.2f,0),.32f,.26f,15);
+            CutCurve(b,new Vector3(s*.18f,-.7f,-.08f),new Vector3(s*1.5f,-.7f,-.16f),new Vector3(s*1.46f,.72f,-.14f),new Vector3(s*.68f,1.2f,0),.32f,.26f,15);
             for(int rib=0;rib<4;rib++)
             {
                 float x=s*(.36f+rib*.26f),top=1.48f-rib*.16f;
-                b.Sweep(new Vector3(x,-.35f,-.20f),new Vector3(x*.85f,.28f,-.40f),new Vector3(x,top-.2f,-.12f),new Vector3(x*1.1f,top,.10f),.09f,.11f,rib%2==0?3:15);
+                CutCurve(b,new Vector3(x,-.35f,-.20f),new Vector3(x*.85f,.28f,-.40f),new Vector3(x,top-.2f,-.12f),new Vector3(x*1.1f,top,.10f),.09f,.11f,rib%2==0?3:15);
             }
-            b.Pearl(new Vector3(s*.9f,-.45f,-.12f),new Vector3(.30f,.4f,.29f),1);
+            CutStone(b,new Vector3(s*.9f,-.45f,-.12f),new Vector3(.30f,.4f,.29f),1);
             CelestialMuzzle(b,new Vector3(s*.9f,-.87f,-.27f),.18f);
         }
-        b.Halo(new Vector3(0,-.14f,-.44f),.46f,.09f,new Vector3(1,1.15f,1),Quaternion.identity,3);
-        b.Pearl(new Vector3(0,-.14f,-.46f),new Vector3(.31f,.36f,.13f),11);
-        b.Pearl(new Vector3(0,-.14f,-.58f),new Vector3(.18f,.23f,.07f),8);
+        CutHalo(b,new Vector3(0,-.14f,-.44f),.46f,.09f,new Vector3(1,1.15f,1),Quaternion.identity,3);
+        CutStone(b,new Vector3(0,-.14f,-.46f),new Vector3(.31f,.36f,.13f),11);
+        CutStone(b,new Vector3(0,-.14f,-.58f),new Vector3(.18f,.23f,.07f),8);
         CelestialMuzzle(b,new Vector3(0,-1.03f,-.23f),.28f);
         return throneBarge=b.Finish("Throne / sculpted cathedral crown and siege aperture");
     }
