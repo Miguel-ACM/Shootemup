@@ -1,0 +1,53 @@
+PASS: eight-item batch plus targeted corrections
+isolated Plains scene loaded
+all eight items registered for progression and reward pools
+RocketBouquet equips through the real active slot
+RocketBouquet rejects insufficient energy without casting
+RocketBouquet spends energy once and starts its cast
+Rocket Bouquet releases exactly twelve pooled missiles
+bouquet missiles hit an offset moving target through native contacts
+FirecrackerBelt equips through the real active slot
+FirecrackerBelt rejects insufficient energy without casting
+FirecrackerBelt spends energy once and starts its cast
+Firecracker barrage stays straight
+Firecracker barrage finishes after eighteen releases
+NailBomb equips through the real active slot
+NailBomb rejects insufficient energy without casting
+NailBomb spends energy once and starts its cast
+Nail Bomb can detonate with no remaining energy before cooldown
+Nail Bomb emits eighteen piercing nails
+detonating does not bypass the next bomb's cooldown
+CanOpener equips through the real active slot
+CanOpener rejects insufficient energy without casting
+CanOpener spends energy once and starts its cast
+Can Opener contacts and grinds a moving target
+offensive duration and damage freeze during decisions
+drill releases an invulnerable target without bypassing its gate
+Thunderhead equips through the real active slot
+Thunderhead rejects insufficient energy without casting
+Thunderhead spends energy once and starts its cast
+a lone Thunderhead target takes all three links of one pulse
+coil respects invulnerable targets
+DemolitionPlunger equips through the real active slot
+DemolitionPlunger rejects insufficient energy without casting
+DemolitionPlunger spends energy once and starts its cast
+actual weapon contacts plant demolition charges
+plunger re-press detonates planted charges without another energy cost
+Redline equips through the real active slot
+Redline rejects insufficient energy without casting
+Redline spends energy once and starts its cast
+Redline fires both equipped guns without held fire
+Redline accelerates actual projectile output
+Redline automatically releases fully charged cannon shots after weapon replacement
+Redline also drives continuous beam weapons
+Redline restores controls and leaves permanent rate untouched
+CarbonPaper equips through the real active slot
+CarbonPaper rejects insufficient energy without casting
+CarbonPaper spends energy once and starts its cast
+Carbon Paper makes two copies of both actual equipped weapon types
+Carbon Paper copies attached continuous beams
+Carbon copies follow equipment replacement and remove old guns
+copied scatter guns emit their actual projectile pattern
+Carbon Paper removes copies and their weapons at expiry
+all new projectile attacks reuse the 360-round pool
+Carbon Paper targeted correction: no runtime errors.

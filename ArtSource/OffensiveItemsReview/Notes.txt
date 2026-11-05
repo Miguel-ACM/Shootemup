@@ -1,0 +1,9 @@
+Offensive active items, 5 November 2026
+
+Eight separate implementation commits. Terra xhigh authored all eight pickup models. Both actual rendered views of every pickup were inspected; Can Opener received a targeted thicker bit, chuck and motor-vent refinement. Gameplay effect captures were inspected, including the transparent copies and their attached beams. Existing projectile sprites and sounds are reused.
+
+Validation used a separate Build/OffensiveItemsReview Unity project, command-line batch mode and offscreen renders. No live editor or graphical gameplay session was opened. Initial batch covered all simple attacks and Redline output; targeted checks covered the revised drill, charge/beam control, and Carbon Paper. Redline charge verification now observes the full interval so fast rounds cannot escape before a single sample. Carbon Paper material-property initialization was moved out of the MonoBehaviour constructor; its final targeted run has no runtime errors. A UnityEditor.Search first-import indexing exception was retained in the isolated logs separately from game errors.
+
+Verified energy rejection/spending, free re-press detonation, actual projectile contacts, invulnerability gates, pause during decisions, real charge/beam/scatter weapon copies, equipment replacement, effect expiry and unchanged player projectile pool allocation. These are functional checks, not a claim of final player-approved balance or listening approval.
+
+Reproduce with Unity -batchmode -projectPath <isolated copy> -executeMethod VerifyOffensiveItems.Run. Follow-up flags: -offensiveFollowup (drill/Redline/Carbon), -offensiveCarbon (Carbon only). Models: VerifyOffensiveItemModels.RenderModels; optional -offensiveModel CanOpener. Build: VerifyOffensiveItems.Build after a passing report.

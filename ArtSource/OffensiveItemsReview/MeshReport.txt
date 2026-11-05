@@ -1,0 +1,8 @@
+RocketBouquet: 408 vertices, 204 triangles, bounds (0.660, 0.760, 0.323)
+Redline: 528 vertices, 300 triangles, bounds (0.680, 0.858, 0.330)
+NailBomb: 816 vertices, 452 triangles, bounds (0.720, 0.714, 0.720)
+CanOpener: 792 vertices, 428 triangles, bounds (0.640, 1.080, 0.303)
+FirecrackerBelt: 1008 vertices, 548 triangles, bounds (0.746, 0.789, 0.171)
+CarbonPaper: 234 vertices, 120 triangles, bounds (0.635, 0.778, 0.210)
+Thunderhead: 1224 vertices, 680 triangles, bounds (0.660, 0.886, 0.320)
+DemolitionPlunger: 476 vertices, 228 triangles, bounds (0.658, 0.794, 0.383)
