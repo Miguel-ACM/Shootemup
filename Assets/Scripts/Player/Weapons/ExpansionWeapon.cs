@@ -12,7 +12,11 @@ public abstract class ExpansionWeapon : AWeaponAutomatic
     protected virtual Vector2 FireDirection => Vector2.up;
     protected virtual void ShotFeedback()
     {
-        SoundManager.PlaySound("shot1", .07f);
+        string cue = this is RailDriver ? "shotRail" : this is ScatterCannon ? "shotScatter" :
+            Delivery == PlayerDelivery.Needle ? "shotNeedle" : Delivery == PlayerDelivery.Shell ? "shotShell" :
+            Delivery == PlayerDelivery.Disc ? "shotDisc" : Delivery == PlayerDelivery.Missile ? "shotMissile" :
+            Delivery == PlayerDelivery.Flame ? "shotFlame" : "shot1";
+        SoundManager.PlaySound(cue, .07f);
     }
 
     protected virtual void Awake()

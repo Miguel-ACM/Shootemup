@@ -126,7 +126,7 @@ public sealed class TrailDrone : ACompanion
         var target = CombatUpgrades.Nearest(Muzzle, null, 18);
         clock = -.55f;
         effects?.Shot();
-        SoundManager.PlaySound("shot1", .045f);
+        SoundManager.PlaySound("shotCompanion", .045f);
         Vector2 direction = target != null ? ((Vector2)(target.transform.position - Muzzle)).normalized : Vector2.up;
         foreach (int side in new[] { -1, 1 })
         {

@@ -82,7 +82,10 @@ public sealed class BurstShell : CombatRound
             nextSpark = age + Mathf.Lerp(.10f, .05f, charge);
         }
         if (age >= stop + .85f && Burst())
+        {
+            SoundManager.PlayEnemyEvent("shellBurst");
             Release();
+        }
     }
 
     // Plains and Space shells explode in a full 360-degree ring (Miguel).

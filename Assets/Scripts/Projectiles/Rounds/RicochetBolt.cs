@@ -25,6 +25,7 @@ public sealed class RicochetBolt : CombatRound
             p.x = Mathf.Clamp(p.x, border.xMin + reach, border.xMax - reach);
             transform.position = p;
             PSXImpactEffects.Vanish(p, Accent, .3f);
+            SoundManager.PlayEnemyEvent("ricochetHit");
             Orient();
         }
     }

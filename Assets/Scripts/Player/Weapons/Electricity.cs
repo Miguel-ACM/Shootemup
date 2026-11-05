@@ -14,7 +14,7 @@ public class Electricity : AWeaponAutomatic
         if (!KeepFiring())
             return;
 
-        SoundManager.PlaySound("shot1", 0.1f);
+        SoundManager.PlaySound("shotElectric", 0.1f);
         for (int i = 0; i < GameRules.playerShootNumber; i++)
         {
             ABullet b = Instantiate(bullet, spawnPoints[i] + transform.position, Quaternion.identity).GetComponent<ABullet>();

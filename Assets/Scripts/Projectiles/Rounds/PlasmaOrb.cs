@@ -69,7 +69,10 @@ public sealed class PlasmaOrb : CombatRound, ICombatDamageable
         health -= amount;
         visual.color = Color.white * 1.6f;
         if (health <= 0)
+        {
+            SoundManager.PlayEnemyEvent("plasmaBreak");
             Vanish();
+        }
         return new DamageResult(true, amount, applied);
     }
 

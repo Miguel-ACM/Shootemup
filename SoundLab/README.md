@@ -1,5 +1,45 @@
 # Shootemup Sound Lab
 
+## Unity preview and game mix
+
+Open **Tools > Shootemup > SFX Preview**. Search or filter the sound list, then
+play once or repeat for six seconds (1–20 shots per second). Volume and mute
+update the preview as you adjust them. Escape or **Stop** ends playback.
+The window works outside Play mode and does not change the open scene.
+
+Each event has its own saved level: **100% preserves its authored volume**.
+Settings save to `Assets/Resources/SfxMix.asset`, survive Play mode and ship in
+builds. Existing shot pitch, laser envelopes and simultaneous-beam attenuation
+still apply in combat. Repeat previews deliberately omit combat voice gating;
+the peak readout checks the rendered preview, not the complete game mix.
+
+The window reads the browser library below. Auditioning a take does not import
+it. **Use** imports only that take into `Assets/Resources/Sounds/Selected/` and
+assigns it to the event. Drag any project AudioClip into **Current sound** to
+use your own recording. **Use default sound** clears the replacement, keeping
+the volume. Undo works for assignments and levels. Selected clips take priority
+over the existing F9 bank. An unassigned item cue can remain silent.
+
+**Import saved Sound Lab picks** reads existing chosen takes and gains; pending
+and rejected choices are skipped. It never overwrites `selections.json` or its
+backup. The browser and Unity mixers save separately after import.
+
+Enemy projectile launches now have thirteen event controls. Shell/mine bursts,
+wall bounces, destroyed plasma and electricity impacts also have playback hooks.
+They initially reuse quiet existing game recordings; no unapproved generated
+take is selected. Launches share an accent gate and six fixed voices, so a large
+volley does not create one audio voice per bullet. Lasers have separate enemy,
+player and Heaven charge/ignition/sustain controls. Weapon families and companion
+fire are independently adjustable too.
+
+Command-line regression: run `VerifySfxPreview.Run`, then `VerifySfxPreview.Build`
+in the disposable `Build/ReviewCache/Temp/SfxPreviewReview` project with Unity's
+`-batchmode -nographics` flags. Results go to its `ReviewOutput/SfxPreview` folder.
+These checks verify decoding, persistence, routing and voice limits; listening
+approval remains Miguel's.
+
+## Browser Sound Lab
+
 Run `./SoundLab/Start-SoundLab.ps1` in PowerShell from the game project, then open
 the printed localhost address. Alternatively run `python SoundLab/server.py`.
 The server binds only to `127.0.0.1`; there are no accounts or network services.

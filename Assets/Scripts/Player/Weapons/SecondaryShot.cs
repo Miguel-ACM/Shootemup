@@ -124,7 +124,7 @@ public sealed class SecondaryShot : AWeapon
         if (Time.unscaledTime >= nextSound)
         {
             nextSound = Time.unscaledTime + .15f;
-            SoundManager.PlaySound("shot1", .025f);
+            SoundManager.PlaySound("shotSecondary", .025f);
         }
     }
 

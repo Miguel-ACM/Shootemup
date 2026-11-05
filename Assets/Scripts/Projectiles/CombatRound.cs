@@ -154,6 +154,7 @@ public abstract class CombatRound : AEnemyBullet
         if (shot.UsesPixelContact && shot.collision is CircleCollider2D proxy)
             proxy.radius = shot.localCollisionRadius + ProjectilePixelContact.PolygonSkin / Mathf.Max(.00001f, Mathf.Abs(shot.transform.localScale.x));
         shot.UpdateSimulation();
+        SoundManager.PlayEnemyLaunch(typeof(T), p);
         return shot;
     }
 
@@ -533,6 +534,7 @@ public abstract class CombatRound : AEnemyBullet
         if (!side && !ceiling)
             return;
         bounces--;
+        SoundManager.PlayEnemyEvent("ricochetHit");
         if (side)
             heading.x = -heading.x;
         if (ceiling)

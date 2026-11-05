@@ -12,7 +12,7 @@ public class AK45 : AWeaponAutomatic
         if (!KeepFiring())
             return;
 
-        SoundManager.PlaySound("shot1", 0.1f);
+        SoundManager.PlaySound("shotAK45", 0.1f);
         for (int i = 0; i < GameRules.playerShootNumber; i++)
         {
             ABullet b = Instantiate(bullet, transform.position, Quaternion.identity).GetComponent<ABullet>();

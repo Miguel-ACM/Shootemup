@@ -33,7 +33,8 @@ public class ElectricityBullet : ABullet
                     continue;
                 int point = path.IndexOf((Vector2)enemy.transform.position);
                 Vector2 incoming = point > 0 ? path[point] - path[point - 1] : Vector2.up;
-                CombatHit.Apply(enemy, damage, enemy.transform.position, incoming, score: false);
+                if (CombatHit.Apply(enemy, damage, enemy.transform.position, incoming, score: false) > 0)
+                    SoundManager.PlayGated("hitElectric", .025f, .1f);
             }
             shoot = true;
             Invoke("Delete", 0.1f);

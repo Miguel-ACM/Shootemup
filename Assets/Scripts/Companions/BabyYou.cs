@@ -48,7 +48,7 @@ public class BabyYou : ACompanion
             return;
         }
 
-        SoundManager.PlaySound("shot1", 0.1f);
+        SoundManager.PlaySound("shotCompanion", 0.1f);
         for (int i = 0; i < spawnPoints.Length; i++)
         {
             Bullet b = Instantiate(bullet, spawnPoints[i] + transform.position, Quaternion.identity).GetComponent<Bullet>();
