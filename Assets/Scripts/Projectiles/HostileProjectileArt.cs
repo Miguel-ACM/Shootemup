@@ -6,7 +6,7 @@ public static class HostileProjectileArt
 {
     enum Shape
     {
-        Needle, Helix, Shell, Ricochet, Suspended, Missile, Plasma, Mine, Disc, Carrier, Side
+        Needle, Helix, Shell, Ricochet, Chevron, Missile, Plasma, Mine, Carrier, Side
     }
 
     static Shape Kind(Type type)
@@ -19,16 +19,14 @@ public static class HostileProjectileArt
             return Shape.Shell;
         if (type == typeof(RicochetBolt))
             return Shape.Ricochet;
-        if (type == typeof(SuspendedRound))
-            return Shape.Suspended;
+        if (type == typeof(ChevronRound))
+            return Shape.Chevron;
         if (type == typeof(GuidedMissile))
             return Shape.Missile;
         if (type == typeof(PlasmaOrb))
             return Shape.Plasma;
         if (type == typeof(ProximityMine))
             return Shape.Mine;
-        if (type == typeof(ReturningDisc))
-            return Shape.Disc;
         if (type == typeof(ScatterCarrier))
             return Shape.Carrier;
         return Shape.Side;
@@ -56,7 +54,7 @@ public static class HostileProjectileArt
                 return "burst_shell";
             case Shape.Ricochet:
                 return "ricochet";
-            case Shape.Suspended:
+            case Shape.Chevron:
                 return "delayed";
             case Shape.Missile:
                 return "missile";
@@ -64,8 +62,6 @@ public static class HostileProjectileArt
                 return "plasma";
             case Shape.Mine:
                 return "mine";
-            case Shape.Disc:
-                return "returning_disc";
             case Shape.Carrier:
                 return "side_carrier";
             default:

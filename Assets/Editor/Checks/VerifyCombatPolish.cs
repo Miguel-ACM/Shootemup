@@ -44,24 +44,6 @@ public static class VerifyCombatPolish
 
     public static void RunBaseline() => Begin(true);
     public static void Run() => Begin(false);
-    public static void CheckDiscRotation()
-    {
-        try
-        {
-            var round = CombatRound.Launch<ReturningDisc>(Vector3.zero, Vector2.down, 0);
-            typeof(CombatRound).GetField("age", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(round, .6f);
-            round.SendMessage("Tick", 0f);
-            var first = round.transform.rotation;
-            round.SendMessage("Tick", 0f);
-            if (Quaternion.Angle(first, round.transform.rotation) > .01f)
-                throw new Exception("Disc spin changed with orientation caching");
-            UnityEngine.Object.DestroyImmediate(round.gameObject);
-            File.WriteAllText(Folder + "/DiscRotation.txt", "PASS cached orientation preserves the returning disc's authored spin");
-            CheckHarness.Exit(0);
-        }
-        catch (Exception e) { File.WriteAllText(Folder + "/DiscRotation.txt", "FAIL " + e); CheckHarness.Exit(1); }
-    }
-
     static void Begin(bool baseline)
     {
         Directory.CreateDirectory(Folder + "/Frames");
@@ -77,7 +59,7 @@ public sealed class CombatPolishReview : MonoBehaviour
 {
     const string Folder = VerifyCombatPolish.Folder;
     readonly List<string> checks = new List<string>(), errors = new List<string>();
-    readonly Type[] kinds = { typeof(SimpleRound), typeof(NeedleRound), typeof(BurstShell), typeof(SuspendedRound), typeof(HelixRound), typeof(RicochetBolt), typeof(GuidedMissile), typeof(PlasmaOrb), typeof(ProximityMine), typeof(ReturningDisc), typeof(ScatterCarrier), typeof(LaserSideRound) };
+    readonly Type[] kinds = { typeof(SimpleRound), typeof(NeedleRound), typeof(BurstShell), typeof(ChevronRound), typeof(HelixRound), typeof(RicochetBolt), typeof(GuidedMissile), typeof(PlasmaOrb), typeof(ProximityMine), typeof(ScatterCarrier), typeof(LaserSideRound) };
     static readonly MethodInfo release = typeof(CombatRound).GetMethod("Release", BindingFlags.Instance | BindingFlags.NonPublic);
     SimulationMode2D previousSimulation;
     Shipcontroller ship;
@@ -210,7 +192,7 @@ public sealed class CombatPolishReview : MonoBehaviour
         var shots = new CombatRound[CombatRound.Limit];
         for (int i = 0; i < shots.Length; i++)
         {
-            var type = i >= 268 ? typeof(PlasmaOrb) : i % 10 < 5 ? typeof(SimpleRound) : i % 10 < 8 ? typeof(NeedleRound) : i % 10 == 8 ? typeof(SuspendedRound) : typeof(BurstShell);
+            var type = i >= 268 ? typeof(PlasmaOrb) : i % 10 < 5 ? typeof(SimpleRound) : i % 10 < 8 ? typeof(NeedleRound) : i % 10 == 8 ? typeof(ChevronRound) : typeof(BurstShell);
             shots[i] = Launch(type, Vector3.zero);
             shots[i].enabled = false;
             CombatRound.Live.Add(shots[i]);

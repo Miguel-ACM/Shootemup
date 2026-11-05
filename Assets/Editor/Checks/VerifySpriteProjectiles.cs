@@ -53,7 +53,7 @@ public static class VerifySpriteProjectiles
 public sealed class SpriteProjectileReview : MonoBehaviour
 {
     const string Folder = "ArtSource/SpriteProjectileReview/";
-    static readonly Type[] Kinds = { typeof(SimpleRound), typeof(NeedleRound), typeof(HelixRound), typeof(BurstShell), typeof(RicochetBolt), typeof(SuspendedRound), typeof(GuidedMissile), typeof(PlasmaOrb), typeof(ProximityMine), typeof(ReturningDisc), typeof(ScatterCarrier), typeof(LaserSideRound) };
+    static readonly Type[] Kinds = { typeof(SimpleRound), typeof(NeedleRound), typeof(HelixRound), typeof(BurstShell), typeof(RicochetBolt), typeof(ChevronRound), typeof(GuidedMissile), typeof(PlasmaOrb), typeof(ProximityMine), typeof(ScatterCarrier), typeof(LaserSideRound) };
     readonly List<string> checks = new List<string>(), errors = new List<string>();
     void Awake()
     {

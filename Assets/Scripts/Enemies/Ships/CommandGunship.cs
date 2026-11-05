@@ -17,11 +17,11 @@ public sealed class CommandGunship : DistrictEnemy
         firingCue.Warn(seconds);
     }
 
-    // Returning discs, then a small street lattice of two crossing families.
+    // Broad chevron headlights, then a street lattice of two crossing families.
     protected override void Attack()
     {
         if (volley % 2 == 0)
-            Fan<ReturningDisc>(4, 30, 2.9f, .29f);
+            Fan<ChevronRound>(4, 30, 2.9f, .24f);
         else
         {
             int lanes = Dense(4);

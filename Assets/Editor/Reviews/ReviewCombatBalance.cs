@@ -187,22 +187,22 @@ public sealed class CombatBalanceReview : MonoBehaviour
         ship.StopCoroutine("Invulnerability");
         Set(ship, "invulnerable", false);
         health = ship.health;
-        var ring = CombatRound.Launch<ReturningDisc>(hitbox.bounds.center, Vector2.up, 0, .85f);
+        var cutout = CombatRound.Launch<ChevronRound>(hitbox.bounds.center, Vector2.up, 0, 1.4f);
         yield return new WaitForSeconds(.06f);
-        Check(!ring.PixelOverlaps(hitbox) && ship.health == health, "Transparent centre of the original ring cannot damage the player");
+        Check(!cutout.PixelOverlaps(hitbox) && ship.health == health, "Transparent chevron cutout cannot damage the player");
         bool found = false;
         for (float x = .05f; x < 1.5f; x += .025f)
         {
-            ring.transform.position = hitbox.bounds.center + Vector3.right * x;
-            if (ring.PixelOverlaps(hitbox))
+            cutout.transform.position = hitbox.bounds.center + Vector3.right * x;
+            if (cutout.PixelOverlaps(hitbox))
             {
                 found = true;
                 break;
             }
         }
-        Check(found, "Found the ring's opaque rim after its transparent centre");
+        Check(found, "Found the chevron's opaque edge after its transparent cutout");
         yield return new WaitForSeconds(.07f);
-        Check(ship.health < health && !ring.gameObject.activeSelf, "A later opaque contact inside an existing broad trigger damages correctly");
+        Check(ship.health < health && !cutout.gameObject.activeSelf, "A later opaque contact inside an existing broad trigger damages correctly");
         ship.ObserverMode = true;
         CombatRound.ClearAll();
         var moon = Instantiate(Resources.Load<GameObject>("Companions/AMoon"), new Vector3(-3, 2, -1), Quaternion.identity);

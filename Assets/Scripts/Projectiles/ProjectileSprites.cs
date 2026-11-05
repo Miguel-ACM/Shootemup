@@ -28,7 +28,7 @@ public static class ProjectileSprites
             int width = sprite.texture.width, height = sprite.texture.height;
             var rectangles = new List<RectInt>();
             // Merge identical horizontal runs. Separate rectangles retain real holes and gaps;
-            // a convex hull would fill the delayed arrow/disc and hide collision outside the ink.
+            // a convex hull would fill the chevron's gaps and hide collision outside the ink.
             for (int y = 0; y < height; y++)
                 for (int x = 0; x < width;)
                 {

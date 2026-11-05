@@ -130,7 +130,7 @@ public sealed class CelestialPolishReview
             Check(CombatRound.CreatedCount==created,difficulty+" performs no projectile construction during the fight ("+(CombatRound.CreatedCount-created)+")");
             if(difficulty==RunDifficulty.Hard){boss.damage(10000000);yield return null;Check(BossDestruction.Current!=null,"Final form enters the shared finale");yield return Clip("Void-Finale",4);}
         }
-        foreach(var type in new[]{typeof(SimpleRound),typeof(NeedleRound),typeof(BurstShell),typeof(SuspendedRound),typeof(GiantOrb),typeof(ReturningDisc),typeof(RicochetBolt),typeof(HelixRound),typeof(PulseLaser),typeof(PlasmaOrb),typeof(GuidedMissile),typeof(ScatterCarrier),typeof(ProximityMine)})
+        foreach(var type in new[]{typeof(SimpleRound),typeof(NeedleRound),typeof(BurstShell),typeof(ChevronRound),typeof(GiantOrb),typeof(RicochetBolt),typeof(HelixRound),typeof(PulseLaser),typeof(PlasmaOrb),typeof(GuidedMissile),typeof(ScatterCarrier),typeof(ProximityMine)})
             Check(deliveries.Contains(type),"Score uses "+type.Name);
         foreach(var pair in peaks)notes.Add(pair.Key.Name+" observed peak: "+pair.Value);
         File.WriteAllText(Folder+(fixes?"/Runtime-Hard.txt":"/Runtime-Batch.txt"),(errors.Count==0?"PASS":"FAIL")+"\n"+string.Join("\n",notes)+"\n"+string.Join("\n",errors));

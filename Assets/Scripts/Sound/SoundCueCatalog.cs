@@ -31,10 +31,9 @@ public static class SoundCueCatalog
         new Cue("enemyPlasma", "Plasma launch", Enemy, "Sounds/Items/static", .035f, .8f, .12f),
         new Cue("enemyMissile", "Missile launch", Enemy, "Sounds/Items/fan", .04f, 1.2f, .13f),
         new Cue("enemyBurst", "Shell launch", Enemy, "Sounds/Items/cannon", .045f, .9f, .11f),
-        new Cue("enemyDisc", "Returning disc launch", Enemy, "Sounds/Items/roll", .035f, 1.3f, .1f),
         new Cue("enemyRicochet", "Ricochet launch", Enemy, "Sounds/shot1", .03f, 1.1f, .09f),
         new Cue("enemyHelix", "Helix launch", Enemy, "Sounds/Items/fan", .03f, 1.55f, .1f),
-        new Cue("enemySuspended", "Delayed bullet launch", Enemy, "Sounds/Items/capacitor", .03f, .9f, .11f),
+        new Cue("enemySuspended", "Chevron launch", Enemy, "Sounds/Items/capacitor", .03f, .9f, .11f),
         new Cue("enemyScatter", "Carrier launch", Enemy, "Sounds/Items/cannon", .04f, .75f, .11f),
         new Cue("enemyMine", "Mine deployment", Enemy, "Sounds/Items/capacitor", .035f, .7f, .13f),
         new Cue("enemyWave", "Side shot launch", Enemy, "Sounds/Items/static", .03f, 1.3f, .12f),
@@ -100,10 +99,9 @@ public static class SoundCueCatalog
         if (type == typeof(PlasmaOrb)) return "enemyPlasma";
         if (type == typeof(GuidedMissile)) return "enemyMissile";
         if (type == typeof(BurstShell)) return "enemyBurst";
-        if (type == typeof(ReturningDisc)) return "enemyDisc";
         if (type == typeof(RicochetBolt)) return "enemyRicochet";
         if (type == typeof(HelixRound)) return "enemyHelix";
-        if (type == typeof(SuspendedRound)) return "enemySuspended";
+        if (type == typeof(ChevronRound)) return "enemySuspended";
         if (type == typeof(ScatterCarrier)) return "enemyScatter";
         if (type == typeof(ProximityMine)) return "enemyMine";
         if (type == typeof(LaserSideRound)) return "enemyWave";

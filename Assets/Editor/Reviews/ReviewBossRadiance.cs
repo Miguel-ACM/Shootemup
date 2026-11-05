@@ -104,9 +104,9 @@ public static class ReviewBossRadiance
             camera.targetTexture = target;
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(.035f, .045f, .07f);
-            var kinds = new[] { typeof(SimpleRound), typeof(NeedleRound), typeof(BurstShell), typeof(RicochetBolt), typeof(SuspendedRound), typeof(GuidedMissile), typeof(PlasmaOrb), typeof(ProximityMine), typeof(ReturningDisc), typeof(ScatterCarrier), typeof(LaserSideRound), typeof(HelixRound) };
+            var kinds = new[] { typeof(SimpleRound), typeof(NeedleRound), typeof(BurstShell), typeof(RicochetBolt), typeof(ChevronRound), typeof(GuidedMissile), typeof(PlasmaOrb), typeof(ProximityMine), typeof(ScatterCarrier), typeof(LaserSideRound), typeof(HelixRound) };
             for (int row = 0; row < 9; row++)
-                for (int col = 0; col < 12; col++)
+                for (int col = 0; col < kinds.Length; col++)
                 {
                     var obj = new GameObject("Approved sprite " + row + " / " + col);
                     SceneManager.MoveGameObjectToScene(obj, scene);
@@ -114,7 +114,7 @@ public static class ReviewBossRadiance
                     sr.sprite = row == 8 ? PlayerProjectileArt.For((PlayerDelivery)(col % 6)) : HostileProjectileArt.Sprite(kinds[col]);
                     sr.sharedMaterial = material;
                     sr.sortingLayerName = "Bullet";
-                    sr.transform.position = new Vector3((col - 5.5f) * 1.15f, 4.3f - row * .92f, 0);
+                    sr.transform.position = new Vector3((col - (kinds.Length - 1) * .5f) * 1.15f, 4.3f - row * .92f, 0);
                     sr.transform.localScale = Vector3.one * .55f;
                     var block = new MaterialPropertyBlock();
                     block.SetColor("_SpriteTint", row == 8 ? new Color(.32f, .72f, .85f) : LevelProjectilePalette.Accent((LevelId)row));

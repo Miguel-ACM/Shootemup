@@ -346,7 +346,8 @@ public sealed class CombatExpansionProbe : MonoBehaviour
         Check(!orb.gameObject.activeSelf, "player fire destroys plasma orbs through real physics");
         Clear();
         yield return null;
-        var suspended = CombatRound.Launch<SuspendedRound>(new Vector3(-2, 5), Vector2.down, 3);
+        var suspended = CombatRound.Launch<ChevronRound>(new Vector3(-2, 5), Vector2.down, 3)
+            .Pause(.8f, .9f, CombatRound.Turn.Keep, 0, 1.5f);
         yield return new WaitForSeconds(.95f);
         float hanging = suspended.transform.position.y;
         yield return new WaitForSeconds(.5f);
@@ -369,11 +370,6 @@ public sealed class CombatExpansionProbe : MonoBehaviour
         Check(CombatRound.Live.OfType<NeedleRound>().Count() == 6, "scatter carriers keep their original opening three lateral pairs");
         yield return new WaitForSeconds(.7f);
         Check(CombatRound.Live.OfType<NeedleRound>().Count() >= 8, "scatter carriers keep releasing lateral pairs beyond the third volley");
-        Clear();
-        yield return null;
-        var disc = CombatRound.Launch<ReturningDisc>(new Vector3(0, 5), Vector2.down, 2);
-        yield return new WaitForSeconds(2.3f);
-        Check(disc.Heading.y > 0, "returning discs curve back toward their launch point");
         Clear();
         yield return null;
         var mine = CombatRound.Launch<ProximityMine>(ship.transform.position, Vector2.down, 0);

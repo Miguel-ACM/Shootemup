@@ -34,7 +34,6 @@ public static class SfxCatalog
         new Cue("enemyPlasma", 0.055f, 0.11f, 1),
         new Cue("enemyMissile", 0.06f, 0.13f, 1),
         new Cue("enemyBurst", 0.055f, 0.11f, 1),
-        new Cue("enemyDisc", 0.045f, 0.1f, 1),
         new Cue("enemyRicochet", 0.045f, 0.09f, 1),
         new Cue("enemyHelix", 0.045f, 0.1f, 1),
         new Cue("enemySuspended", 0.05f, 0.11f, 1),

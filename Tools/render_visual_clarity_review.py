@@ -12,8 +12,8 @@ DEST = ROOT / "ArtSource/VisualClarityReview"
 FONT = "C:/Windows/Fonts/consola.ttf"
 STYLES = [
     ("SimpleRound", "SHOT"), ("NeedleRound", "NEEDLE"), ("HelixRound", "HELIX"), ("BurstShell", "BURST"),
-    ("RicochetBolt", "BOUNCE"), ("SuspendedRound", "DELAY"), ("GuidedMissile", "GUIDED"), ("PlasmaOrb", "PLASMA"),
-    ("ProximityMine", "MINE"), ("ReturningDisc", "RETURN"), ("ScatterCarrier", "SCATTER"), ("LaserSideRound", "LASER SIDE"),
+    ("RicochetBolt", "BOUNCE"), ("ChevronRound", "CHEVRON"), ("GuidedMissile", "GUIDED"), ("PlasmaOrb", "PLASMA"),
+    ("ProximityMine", "MINE"), ("ScatterCarrier", "SCATTER"), ("LaserSideRound", "LASER SIDE"),
 ]
 
 

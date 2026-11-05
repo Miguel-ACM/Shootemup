@@ -33,7 +33,7 @@ public static class VerifyProjectileContacts
         var random = new System.Random(29117);
         int checkedCases = 0, mismatches = 0;
         float mismatchDepth = 0;
-        var kinds = new[] { typeof(SimpleRound), typeof(NeedleRound), typeof(BurstShell), typeof(RicochetBolt), typeof(SuspendedRound), typeof(GuidedMissile), typeof(PlasmaOrb), typeof(ProximityMine), typeof(ReturningDisc), typeof(ScatterCarrier), typeof(LaserSideRound), typeof(HelixRound) };
+        var kinds = new[] { typeof(SimpleRound), typeof(NeedleRound), typeof(BurstShell), typeof(RicochetBolt), typeof(ChevronRound), typeof(GuidedMissile), typeof(PlasmaOrb), typeof(ProximityMine), typeof(ScatterCarrier), typeof(LaserSideRound), typeof(HelixRound) };
         foreach (var kind in kinds)
         {
             var obj = new GameObject("Exact authored pixel reference");

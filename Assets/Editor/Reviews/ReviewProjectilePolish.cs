@@ -117,21 +117,21 @@ public static class ReviewProjectilePolish
         camera.backgroundColor = new Color(.065f, .08f, .12f);
         var target = new RenderTexture(640, 480, 24);
         camera.targetTexture = target;
-        var kinds = new[] { typeof(SimpleRound), typeof(NeedleRound), typeof(BurstShell), typeof(RicochetBolt), typeof(SuspendedRound), typeof(GuidedMissile), typeof(PlasmaOrb), typeof(ProximityMine), typeof(ReturningDisc), typeof(ScatterCarrier), typeof(LaserSideRound), typeof(HelixRound) };
+        var kinds = new[] { typeof(SimpleRound), typeof(NeedleRound), typeof(BurstShell), typeof(RicochetBolt), typeof(ChevronRound), typeof(GuidedMissile), typeof(PlasmaOrb), typeof(ProximityMine), typeof(ScatterCarrier), typeof(LaserSideRound), typeof(HelixRound) };
         var material = new Material(CombatVisuals.ProjectileMaterial);
         material.SetFloat("_Neutralize", 1);
         Check(material.shader.name == "Shootemup/Combat Projectile" && !ShaderUtil.ShaderHasError(material.shader), "Production projectile shader compiles");
         Check(Mathf.Approximately(material.GetFloat("_Gloss"), .7f), "Existing projectile material receives the enamel highlight default");
         var visuals = new List<SpriteRenderer>();
         for (int row = 0; row < 8; row++)
-            for (int col = 0; col < 12; col++)
+            for (int col = 0; col < kinds.Length; col++)
             {
                 var sprite = row == 7 ? PlayerProjectileArt.For((PlayerDelivery)(col % 6)) : HostileProjectileArt.Sprite(kinds[col]);
                 var sr = new GameObject("Approved projectile " + row + " / " + col).AddComponent<SpriteRenderer>();
                 sr.sprite = sprite;
                 sr.sharedMaterial = material;
                 sr.sortingLayerName = "Bullet";
-                sr.transform.position = new Vector3((col - 5.5f) * 1.52f, 5.9f - row * 1.7f, 0);
+                sr.transform.position = new Vector3((col - (kinds.Length - 1) * .5f) * 1.52f, 5.9f - row * 1.7f, 0);
                 sr.transform.localScale = Vector3.one * .8f;
                 var block = new MaterialPropertyBlock();
                 block.SetColor("_SpriteTint", row == 7 ? new Color(.46f, .9f, 1) : LevelProjectilePalette.Accent((LevelId)row));

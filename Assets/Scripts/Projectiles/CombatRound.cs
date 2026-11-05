@@ -212,17 +212,17 @@ public abstract class CombatRound : AEnemyBullet
             // Reserve every authored delivery behind the curtain, including its special
             // renderer and collider. The final score shares the existing global budget.
             // Counts are multiplied by ReserveScale inside both helpers: 1850 base slots.
-            // Fracture lattice needs more ricochets; the new one-side interludes
-            // release unused suspended/disc reserves without changing total capacity.
-            TrimReserve<SimpleRound>(800);TrimReserve<NeedleRound>(416);
-            TrimReserve<RicochetBolt>(304);TrimReserve<BurstShell>(8);TrimReserve<SuspendedRound>(32);
+            // Fracture lattice needs ricochets; scythe ribbons and one-side
+            // interludes share warmed chevrons without changing total capacity.
+            TrimReserve<SimpleRound>(800);TrimReserve<NeedleRound>(352);
+            TrimReserve<RicochetBolt>(304);TrimReserve<BurstShell>(8);TrimReserve<ChevronRound>(112);
             TrimReserve<GuidedMissile>(8);TrimReserve<ScatterCarrier>(4);TrimReserve<HelixRound>(20);
-            TrimReserve<PlasmaOrb>(20);TrimReserve<ProximityMine>(6);TrimReserve<ReturningDisc>(16);
+            TrimReserve<PlasmaOrb>(20);TrimReserve<ProximityMine>(6);
             TrimReserve<PulseLaser>(12);TrimReserve<LaserSideRound>(4);TrimReserve<GiantOrb>(200);
-            yield return Warm<SimpleRound>(800);yield return Warm<NeedleRound>(416);
-            yield return Warm<RicochetBolt>(304);yield return Warm<BurstShell>(8);yield return Warm<SuspendedRound>(32);
+            yield return Warm<SimpleRound>(800);yield return Warm<NeedleRound>(352);
+            yield return Warm<RicochetBolt>(304);yield return Warm<BurstShell>(8);yield return Warm<ChevronRound>(112);
             yield return Warm<GuidedMissile>(8);yield return Warm<ScatterCarrier>(4);yield return Warm<HelixRound>(20);
-            yield return Warm<PlasmaOrb>(20);yield return Warm<ProximityMine>(6);yield return Warm<ReturningDisc>(16);
+            yield return Warm<PlasmaOrb>(20);yield return Warm<ProximityMine>(6);
             yield return Warm<PulseLaser>(12);yield return Warm<LaserSideRound>(4);yield return Warm<GiantOrb>(200);
             yield break;
         }
@@ -237,13 +237,16 @@ public abstract class CombatRound : AEnemyBullet
         int needles = LevelRun.Current == LevelId.Space ? 560 : arrowDistrict ? 700 : 300;
         int ricochets = LevelRun.Current == LevelId.Space ? 96 : arrowDistrict ? 8 : 96;
         int shells = arrowDistrict ? (LevelRun.Current == LevelId.Snow ? 40 : 8) : 40;
-        int suspended = arrowDistrict ? 8 : 48;
+        // Chevron volleys reuse the retired disc reserve and a small share of
+        // City/Snow's needles. Total warm capacity stays unchanged.
+        bool chevronDistrict = LevelRun.Current == LevelId.City || LevelRun.Current == LevelId.Snow;
+        int chevrons = arrowDistrict ? (LevelRun.Current == LevelId.City ? 32 : 16) : 72;
+        if (chevronDistrict) { needles -= 32; chevrons += 32; }
         int missiles = arrowDistrict ? 8 : 24;
         int carriers = arrowDistrict ? (LevelRun.Current == LevelId.Fields ? 24 : 8) : 24;
         int helixes = arrowDistrict ? 8 : 32;
         int plasma = arrowDistrict ? (LevelRun.Current == LevelId.Snow ? 24 : 8) : 24;
         int mines = arrowDistrict ? 8 : 16;
-        int discs = arrowDistrict ? (LevelRun.Current == LevelId.City ? 24 : 8) : 24;
         int sideRounds = arrowDistrict ? 8 : 16;
         int lasers = arrowDistrict ? (LevelRun.Current == LevelId.City ? 16 : 8) : 16;
         // Return this space on district changes so later districts can warm all
@@ -252,10 +255,10 @@ public abstract class CombatRound : AEnemyBullet
         if (arrowDistrict)
         {
             TrimReserve<RicochetBolt>(ricochets); TrimReserve<BurstShell>(shells);
-            TrimReserve<SuspendedRound>(suspended); TrimReserve<GuidedMissile>(missiles);
+            TrimReserve<ChevronRound>(chevrons); TrimReserve<GuidedMissile>(missiles);
             TrimReserve<ScatterCarrier>(carriers); TrimReserve<HelixRound>(helixes);
             TrimReserve<PlasmaOrb>(plasma); TrimReserve<ProximityMine>(mines);
-            TrimReserve<ReturningDisc>(discs); TrimReserve<LaserSideRound>(sideRounds);
+            TrimReserve<LaserSideRound>(sideRounds);
             TrimReserve<PulseLaser>(lasers);
         }
         // Reserve the pool budget across every delivery.
@@ -265,14 +268,13 @@ public abstract class CombatRound : AEnemyBullet
         yield return Warm<NeedleRound>(needles);
         yield return Warm<RicochetBolt>(ricochets);
         yield return Warm<BurstShell>(shells);
-        yield return Warm<SuspendedRound>(suspended);
+        yield return Warm<ChevronRound>(chevrons);
         yield return Warm<GuidedMissile>(missiles);
         yield return Warm<ScatterCarrier>(carriers);
         yield return Warm<HelixRound>(helixes);
         yield return Warm<PlasmaOrb>(plasma);
         yield return Warm<GiantOrb>(200);
         yield return Warm<ProximityMine>(mines);
-        yield return Warm<ReturningDisc>(discs);
         yield return Warm<LaserSideRound>(sideRounds);
         yield return Warm<PulseLaser>(lasers);
     }
@@ -643,7 +645,7 @@ public abstract class CombatRound : AEnemyBullet
     {
         // Arrows under gravity or sway point along their actual path, not their launch heading.
         Vector2 facing = gravity != Vector2.zero || pull != 0 || swayAmplitude != 0 ? travel : heading;
-        if (!needsOrientation && facing == orientedHeading && !(this is ReturningDisc))
+        if (!needsOrientation && facing == orientedHeading)
             return;
         if (facing.sqrMagnitude > .001f)
         {

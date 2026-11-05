@@ -108,10 +108,15 @@ public static class WatcherCatalog
                 Add<GuidedMissile>(entries);
                 Add<HelixRound>(entries);
                 Add<PlasmaOrb>(entries, .3f);
-                Add<ReturningDisc>(entries, .28f);
                 Add<ProximityMine>(entries, .3f);
                 Add<RicochetBolt>(entries);
-                Add<SuspendedRound>(entries);
+                Add<ChevronRound>(entries);
+                entries.Add(new Entry
+                {
+                    Id = "projectile/chevron-stop-go", Name = "CHEVRON / STOP AND GO",
+                    Fire = (p, emitter) => CombatRound.Launch<ChevronRound>(p, Vector2.down, 3, .2f)
+                        .Pause(.8f, .9f, CombatRound.Turn.Keep, 0, 1.5f)
+                });
                 Add<LaserSideRound>(entries);
                 Beam(entries, "beam", "ATTACHED BEAM", 0, false);
                 Beam(entries, "sweep", "SWEEPING BEAM", 28, false);

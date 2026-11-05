@@ -64,7 +64,7 @@ public sealed class VisualClarityReview : MonoBehaviour
     const string Folder = "ArtSource/VisualClarityReview/";
     const BindingFlags Hidden = BindingFlags.Instance | BindingFlags.NonPublic;
     readonly List<string> checks = new List<string>(), errors = new List<string>();
-    static readonly Type[] Types = { typeof(SimpleRound), typeof(NeedleRound), typeof(HelixRound), typeof(BurstShell), typeof(RicochetBolt), typeof(SuspendedRound), typeof(GuidedMissile), typeof(PlasmaOrb), typeof(ProximityMine), typeof(ReturningDisc), typeof(ScatterCarrier), typeof(LaserSideRound) };
+    static readonly Type[] Types = { typeof(SimpleRound), typeof(NeedleRound), typeof(HelixRound), typeof(BurstShell), typeof(RicochetBolt), typeof(ChevronRound), typeof(GuidedMissile), typeof(PlasmaOrb), typeof(ProximityMine), typeof(ScatterCarrier), typeof(LaserSideRound) };
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
