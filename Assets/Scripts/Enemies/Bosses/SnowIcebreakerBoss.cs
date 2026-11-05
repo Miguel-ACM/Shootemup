@@ -25,6 +25,9 @@ public sealed class SnowIcebreakerBoss : ArmoredHullBoss
             int floes = Mathf.Max(2, Dense(phaseThree ? 11 : phaseTwo ? 9 : 8));
             for (int i = 0; i < floes; i++)
             {
+                if(i%3==0)
+                    Fire<SimpleRound>(Muzzle(),CombatVisuals.Aim(Muzzle()),1.2f,.24f)
+                        .Pause(.4f,.45f,CombatRound.Turn.Aim,0,2.4f);
                 float heading = Mathf.Lerp(8, 52, i / (floes - 1f));
                 float stop = .38f + .10f * i;
                 for (int mirror = -1; mirror <= 1; mirror += 2)
@@ -47,7 +50,7 @@ public sealed class SnowIcebreakerBoss : ArmoredHullBoss
                     for (int shard = 0; shard < shards; shard++)
                         // Outward upthrust describes a breaking bow wave. Gravity
                         // curls it back over the pilot while the prow changes sides.
-                        Fire<NeedleRound>(Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.right * sign,
+                        ScoredShot(i%3==0,Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.right * sign,
                             sign * (cant + (shard - (shards - 1) * .5f) * 9)), 2.9f, .18f)
                             .Ramp(.38f, .38f).Fall(new Vector2(0,-.95f));
                     if (phaseTwo && i % 3 == 0)
