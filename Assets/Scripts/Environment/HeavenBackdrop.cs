@@ -3,8 +3,15 @@ using UnityEngine.Rendering;
 
 public sealed class HeavenBackdrop : MonoBehaviour
 {
-    readonly Transform[] islands = new Transform[16];
-    Material sky, mist;
+    struct Island
+    {
+        public Transform root;
+        public Vector3 origin;
+        public Quaternion tilt;
+        public float speed, phase, loop;
+    }
+    readonly Island[] islands = new Island[18];
+    Material sky, mist, distantMist, ruins, distantRuins;
     Mesh plane;
     float clock;
     void Start()
@@ -16,19 +23,26 @@ public sealed class HeavenBackdrop : MonoBehaviour
         sky.SetTexture("_CloudAtlas",Resources.Load<Texture2D>("HeavenCloudRelief"));
         sky.SetFloat("_Seed",(LevelRun.Seed%997)*.037f);
         mist=new Material(Resources.Load<Shader>("HeavenMist"));
+        distantMist=new Material(mist); distantMist.SetFloat("_Distance", .5f);
+        ruins=new Material(Resources.Load<Shader>("HeavenRuins"));
+        distantRuins=new Material(ruins); distantRuins.SetFloat("_Distance", .6f);
         Add("White cloud ocean",plane,sky,new Vector3(0,0,110),-60);
         var random=new System.Random(LevelRun.Seed+19191);
         for(int i=0;i<islands.Length;i++)
         {
-            float side=i%2==0?-1:1, x=side*Mathf.Lerp(4.1f,7.4f,(float)random.NextDouble());
-            var root=new GameObject("Cloud redoubt / broken palisade "+i).transform;
-            root.SetParent(transform,false); root.localPosition=new Vector3(x,-39+i*5.2f,79+i%3*3);
-            root.localScale=Vector3.one*Mathf.Lerp(.88f,1.24f,(float)random.NextDouble());
-            root.localRotation=Quaternion.Euler(28,side*18,side*(3+i%3*4));
-            islands[i]=root;
-            var cloud=Add("Deep sculpted cumulus",IndustrialMeshFactory.HeavenCloudIsland(i%3),mist,Vector3.zero,-36);
+            bool far=i>=12;
+            float R(float a,float b)=>Mathf.Lerp(a,b,(float)random.NextDouble());
+            float side=i%2==0?-1:1, x=side*(far?R(3.0f,4.7f):R(4.05f,4.85f));
+            var root=new GameObject((far?"Distant sanctuary / ":"Cloud sanctuary / ")+i).transform;
+            root.SetParent(transform,false);
+            root.localPosition=new Vector3(x,far?-27+(i-12)*9:-30+(i/2)*10+(i%2)*4.5f,far?94:78);
+            root.localScale=Vector3.one*(far?R(.42f,.60f):R(.94f,1.14f));
+            root.localRotation=Quaternion.Euler(R(17,24),side*R(8,17),side*R(-4,4));
+            islands[i]=new Island{root=root,origin=root.localPosition,tilt=root.localRotation,
+                speed=far?R(.34f,.46f):R(.86f,1.04f),phase=R(0,6.28f),loop=far?54:60};
+            var cloud=Add("Layered wind-sculpted cumulus",IndustrialMeshFactory.HeavenCloudIsland(i%3),far?distantMist:mist,Vector3.zero,far?-48:-36);
             cloud.SetParent(root,false);
-            var prop=Add("Ruined marble bastion and golden palisade",IndustrialMeshFactory.HeavenBastion(i%6),HeavenMaterials.Ivory,Vector3.zero,-35);
+            var prop=Add("Gilded sanctuary and broken lances",IndustrialMeshFactory.HeavenBastion((i+i/6)%6),far?distantRuins:ruins,Vector3.zero,far?-47:-35);
             prop.SetParent(root,false);
         }
     }
@@ -42,16 +56,29 @@ public sealed class HeavenBackdrop : MonoBehaviour
     }
     void Update()
     {
-        clock+=Time.deltaTime; if(sky!=null) sky.SetFloat("_Clock",clock);
+        clock+=Time.deltaTime; Pose(clock);
+    }
+    void Pose(float time)
+    {
+        if(sky!=null) sky.SetFloat("_Clock",time);
+        if(ruins!=null) ruins.SetFloat("_Clock",time);
+        if(distantRuins!=null) distantRuins.SetFloat("_Clock",time);
         foreach(var island in islands)
         {
-            if(island==null) continue;
-            var p=island.localPosition; p.y-=Time.deltaTime*.95f;
-            if(p.y < -42) p.y+=83.2f;
-            island.localPosition=p;
+            if(island.root==null) continue;
+            var p=island.origin;
+            p.x+=Mathf.Sin(time*.19f+island.phase)*.09f;
+            p.y=Mathf.Repeat(p.y+island.loop*.5f-time*island.speed,island.loop)-island.loop*.5f;
+            p.y+=Mathf.Sin(time*.28f+island.phase)*.08f;
+            island.root.localPosition=p;
+            island.root.localRotation=island.tilt*Quaternion.Euler(0,0,Mathf.Sin(time*.21f+island.phase)*.65f);
         }
     }
-    void OnDestroy(){ if(sky!=null) Destroy(sky); if(mist!=null)Destroy(mist); if(plane!=null) Destroy(plane); }
+    void OnDestroy()
+    {
+        if(sky!=null)Destroy(sky); if(mist!=null)Destroy(mist); if(distantMist!=null)Destroy(distantMist);
+        if(ruins!=null)Destroy(ruins); if(distantRuins!=null)Destroy(distantRuins); if(plane!=null)Destroy(plane);
+    }
 }
 
 public static partial class IndustrialMeshFactory
@@ -115,13 +142,28 @@ public static partial class IndustrialMeshFactory
     {
         if(heavenIslands[variant]!=null)return heavenIslands[variant];var b=new Builder();
         var random=new System.Random(4711+variant*173);
-        CutStone(b,new Vector3(0,-.28f,.48f),new Vector3(2.6f,1.12f,.75f),15,8);
-        for(int puff=0;puff<16;puff++)
+        // Overlapping broad lobes form a deep bank, with smaller wind-torn curls
+        // underneath. They have low-poly silhouettes without stone's flat caps.
+        void Lobe(Vector3 center,Vector3 radius,float phase)
         {
-            float a=puff*Mathf.PI*2/16;
-            float size=.55f+(float)random.NextDouble()*.42f;
-            var center=new Vector3(Mathf.Cos(a)*(1.7f+(float)random.NextDouble()*.5f),Mathf.Sin(a)*.72f-.35f,.35f+(float)random.NextDouble()*.45f);
-            CutStone(b,center,new Vector3(size,size*.65f,size*.74f),15,7,a);
+            b.Surface(14,9,(u,v)=>{
+                float a=u*Mathf.PI*2, t=v*Mathf.PI, ring=Mathf.Sin(t);
+                float billow=1+.075f*Mathf.Sin(a*3+phase)*ring+.04f*Mathf.Cos(t*4+a*2+phase);
+                return center+Vector3.Scale(new Vector3(Mathf.Cos(a)*ring,Mathf.Sin(a)*ring,Mathf.Cos(t))*billow,radius);
+            },15);
+        }
+        Lobe(new Vector3(0,-.52f,.66f),new Vector3(2.25f,.84f,.67f),variant);
+        for(int puff=0;puff<12;puff++)
+        {
+            float a=puff*Mathf.PI*2/12, size=.62f+(float)random.NextDouble()*.35f;
+            var center=new Vector3(Mathf.Cos(a)*1.90f,Mathf.Sin(a)*.59f-.55f,.33f+(float)random.NextDouble()*.38f);
+            Lobe(center,new Vector3(size,size*.72f,size*.70f),puff*1.7f+variant);
+        }
+        for(int curl=0;curl<7;curl++)
+        {
+            float size=.25f+(float)random.NextDouble()*.20f;
+            Lobe(new Vector3(-1.9f+curl*.58f,-1.11f-(float)random.NextDouble()*.18f,-.12f),
+                new Vector3(size*1.55f,size*.63f,size*.80f),curl);
         }
         return heavenIslands[variant]=b.Finish("Asymmetric deep cumulus bank "+variant);
     }

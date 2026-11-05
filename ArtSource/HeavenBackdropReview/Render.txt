@@ -1,0 +1,2 @@
+PASS native-shader offscreen renders at 405x720, times 0/13/26/39 seconds.
+37 renderers; 118106 triangles; 0 colliders; 0 lights.

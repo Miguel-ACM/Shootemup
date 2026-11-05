@@ -1,0 +1,30 @@
+Heaven scenery, 6 November 2026
+
+Cloud islands now have deep, irregular overlapping billows and smaller wind-torn
+curls instead of capped stone chunks. Warm upper lighting, blue undersides and
+restrained contact shading connect the bank to its architecture.
+
+Six separate landmarks replace the closely related arch variants: a crowned
+processional gate, breached arch, roofless cloister, gilded spire shrine, winged
+war memorial and broken arcade. Terraces have paving, inset stairs, column bases
+and capitals. Spear-point railings flank the stairs. Broken lances and masonry
+preserve the war-in-Heaven identity. The two pennants move in the material shader.
+
+Twelve near and six distant islands use seeded placements, scale, tilt and scroll
+speeds. The centre remains open. The cloud ocean uses three gently drifting
+relief layers, mip-filtered and uncompressed to remove noisy normal lighting and
+block artifacts. Heaven's enemy materials and projectile artwork are unchanged.
+
+Review: offscreen native Unity renders at 405x720, four scroll positions and all
+six landmark closeups. The first review exposed excessive grain in the distant
+cloud layer; only that visual was revised before the final capture. The final
+images and moving sequence were inspected for shape, depth and central space.
+No visible gameplay session or desktop controls were used.
+
+Budget: 37 scenery renderers in the entire looping scene (including offscreen
+islands), 118106 total triangles, zero lights and zero colliders. Meshes are
+created once and shared; scrolling updates only the 18 roots and three material
+clocks. No runtime noise baking, mesh uploads or per-prop Update components.
+
+Heaven-motion.mp4 shows six seconds of the final native-shader backdrop.
+Build.txt records the isolated Windows player build result.
