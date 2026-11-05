@@ -69,7 +69,8 @@ public abstract class CombatRound : AEnemyBullet
         get; private set;
     }
 
-    public bool PixelOverlaps(Collider2D target) => !UsesPixelContact || ProjectilePixelContact.Overlap(transform, pixelBoxes, target);
+    public virtual float HitboxScale => ProjectilePixelContact.HitboxScale;
+    public bool PixelOverlaps(Collider2D target) => !UsesPixelContact || ProjectilePixelContact.Overlap(transform, pixelBoxes, target, HitboxScale);
     protected float lifetime = 9;
     internal void SetLifetime(float seconds) => lifetime = seconds;
     protected bool ended;
@@ -183,6 +184,9 @@ public abstract class CombatRound : AEnemyBullet
         shot.visual = sr;
         shot.collision = collider;
         shot.localCollisionRadius = sr.sprite.bounds.extents.magnitude;
+        // Giant orbs have a deliberately small damaging core. Keep their native
+        // broad phase compact too, while retaining the exact scaled pixel mask.
+        if (shot is GiantOrb) shot.localCollisionRadius *= shot.HitboxScale;
         shot.pixelBoxes = ProjectileSprites.Boxes(sr.sprite);
         if (!(shot is PlasmaOrb))
         {

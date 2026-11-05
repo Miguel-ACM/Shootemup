@@ -23,14 +23,14 @@ public static class ProjectilePixelContact
         shapes.Clear();
     }
 
-    public static bool Overlap(Transform bullet, Rect[] boxes, Collider2D target)
+    public static bool Overlap(Transform bullet, Rect[] boxes, Collider2D target, float hitboxScale = HitboxScale)
     {
         if (target == null || !target.enabled || !target.gameObject.activeInHierarchy)
             return false;
-        float bulletScale = Mathf.Max(.00001f, Mathf.Abs(bullet.lossyScale.x)) * HitboxScale;
+        float bulletScale = Mathf.Max(.00001f, Mathf.Abs(bullet.lossyScale.x)) * hitboxScale;
         if (target is CircleCollider2D circle)
         {
-            Vector2 centre = (Vector2)bullet.InverseTransformPoint(circle.transform.TransformPoint(circle.offset)) / HitboxScale;
+            Vector2 centre = (Vector2)bullet.InverseTransformPoint(circle.transform.TransformPoint(circle.offset)) / hitboxScale;
             var scale = circle.transform.lossyScale;
             float radius = (circle.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y)) + PolygonSkin) / bulletScale;
             foreach (var box in boxes)
@@ -56,7 +56,7 @@ public static class ProjectilePixelContact
             shape.projected = new Vector2[shape.local.Length];
             shapes[target] = shape;
         }
-        Matrix4x4 matrix = Matrix4x4.Scale(Vector3.one / HitboxScale) * bullet.worldToLocalMatrix * target.transform.localToWorldMatrix;
+        Matrix4x4 matrix = Matrix4x4.Scale(Vector3.one / hitboxScale) * bullet.worldToLocalMatrix * target.transform.localToWorldMatrix;
         float skin = 2 * PolygonSkin / bulletScale;
         float minX = float.MaxValue, minY = float.MaxValue, maxX = float.MinValue, maxY = float.MinValue;
         for (int i = 0; i < shape.local.Length; i++)

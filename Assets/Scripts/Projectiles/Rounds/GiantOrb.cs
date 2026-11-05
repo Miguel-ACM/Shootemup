@@ -4,6 +4,7 @@ using UnityEngine;
 // behaviour of an ordinary round and slowly turns so the spikes read as alive.
 public sealed class GiantOrb : CombatRound
 {
+    public override float HitboxScale => .25f;
     const float WarningTime = .24f;
     int sideCount;
     float sideSpeed, nextRelease;
@@ -15,6 +16,8 @@ public sealed class GiantOrb : CombatRound
         sideCount = 0;
         sideSpeed = nextRelease = 0;
         sprayRandom = 0;
+        // Large glows sit behind the smaller hostile sprites, above the hull.
+        visual.sortingOrder = 16;
     }
 
     internal void EnableSideSpray(float velocity)
