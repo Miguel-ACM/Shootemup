@@ -26,16 +26,16 @@ public static partial class IndustrialMeshFactory
     public static Mesh PrismCantorMesh()
     {
         if(prismCantor!=null)return prismCantor;var b=new Builder();
-        b.Surface(6,8,(u,v)=>{float a=u*Mathf.PI*2,r=Mathf.Sin(v*Mathf.PI)*.43f;return new Vector3(Mathf.Cos(a)*r,(v-.5f)*2.1f,Mathf.Sin(a)*r-.1f);},9);
+        CutStone(b,new Vector3(0,0,-.1f),new Vector3(.43f,1.05f,.34f),9,6,Mathf.PI/6);
         for(int s=-1;s<=1;s+=2)
         {
-            b.Sweep(new Vector3(0,.83f,.1f),new Vector3(s*1.28f,.84f,.05f),new Vector3(s*1.23f,-.26f,-.1f),new Vector3(s*.68f,-.62f,-.23f),.19f,.15f,3);
-            b.Sweep(new Vector3(s*.18f,.48f,-.25f),new Vector3(s*.73f,.33f,-.4f),new Vector3(s*.8f,-.20f,-.4f),new Vector3(s*.68f,-.60f,-.3f),.11f,.12f,15);
-            b.Halo(new Vector3(s*.68f,-.6f,-.26f),.22f,.055f,Vector3.one,Quaternion.identity,7,32);
-            b.Pearl(new Vector3(s*.68f,-.6f,-.31f),new Vector3(.13f,.13f,.10f),8);
+            CutCurve(b,new Vector3(0,.83f,.1f),new Vector3(s*1.28f,.84f,.05f),new Vector3(s*1.23f,-.26f,-.1f),new Vector3(s*.68f,-.62f,-.23f),.19f,.15f,3);
+            CutCurve(b,new Vector3(s*.18f,.48f,-.25f),new Vector3(s*.73f,.33f,-.4f),new Vector3(s*.8f,-.20f,-.4f),new Vector3(s*.68f,-.60f,-.3f),.11f,.12f,15);
+            CutHalo(b,new Vector3(s*.68f,-.6f,-.26f),.22f,.055f,Vector3.one,Quaternion.identity,7,32);
+            CutStone(b,new Vector3(s*.68f,-.6f,-.31f),new Vector3(.13f,.13f,.10f),8);
         }
-        b.Halo(new Vector3(0,.05f,0),.72f,.026f,Vector3.one,Quaternion.Euler(58,0,0),3);
-        b.Pearl(new Vector3(0,1.2f,-.1f),new Vector3(.09f,.16f,.09f),8);
+        CutHalo(b,new Vector3(0,.05f,0),.72f,.026f,Vector3.one,Quaternion.Euler(58,0,0),3);
+        CutStone(b,new Vector3(0,1.2f,-.1f),new Vector3(.09f,.16f,.09f),8);
         return prismCantor=b.Finish("Cantor / suspended crystal and arched prismatic cradle");
     }
 }
