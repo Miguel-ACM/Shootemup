@@ -22,7 +22,7 @@ public sealed class SecondaryShot : AWeapon
         SecondaryPattern.Firefly => 1.2f,
         SecondaryPattern.Salt => 2.2f,
         SecondaryPattern.Mortar => .65f,
-        SecondaryPattern.Teeth => 3.5f,
+        SecondaryPattern.Teeth => 7f,
         SecondaryPattern.Ribbon => 5f,
         _ => 7f
     };
@@ -74,14 +74,15 @@ public sealed class SecondaryShot : AWeapon
             if (battery.transform.parent != transform.parent) continue;
             if (battery == this) break;
             if (battery.Pattern == Pattern) first = false;
-            else mask |= 1 << (int)battery.Pattern;
+            else if (battery.Pattern != SecondaryPattern.Teeth) mask |= 1 << (int)battery.Pattern;
         }
         for (int i = 0; i < 7; i++)
             if ((mask & 1 << i) != 0) rank++;
         option.gameObject.SetActive(first);
         bool focus = GameInput.Snapshot.Focus;
         int flank = rank % 2 == 0 ? -1 : 1;
-        Vector3 offset = new Vector3(flank * (focus ? .34f : .65f + rank / 2 * .12f),
+        Vector3 offset = Pattern == SecondaryPattern.Teeth ? new Vector3(0, .30f, -1.2f) :
+            new Vector3(flank * (focus ? .34f : .65f + rank / 2 * .12f),
             .1f - rank / 2 * .20f, -1.2f);
         option.localPosition = Vector3.Lerp(option.localPosition, offset, 1 - Mathf.Exp(-GameClock.PlayerDelta * 16));
         option.localRotation = Quaternion.Euler(-18, Time.time * 28, 8);
@@ -93,6 +94,8 @@ public sealed class SecondaryShot : AWeapon
         side = -side;
         Vector3 origin = option != null ? option.position : transform.position;
         origin += Vector3.up * .14f;
+        // The teeth are a nose-mounted burst, independent of the flanking options.
+        if (Pattern == SecondaryPattern.Teeth) origin = transform.position + Vector3.up * .42f;
         Vector2 forward = focus ? ((Vector2)(transform.position + Vector3.up * 5 - origin)).normalized : Vector2.up;
         Vector2 rear = focus ? ((Vector2)(transform.position + Vector3.down * 4 - origin)).normalized : Vector2.down;
         switch (Pattern)
@@ -111,7 +114,9 @@ public sealed class SecondaryShot : AWeapon
                 Fire(origin, forward, 1.25f, 1, PlayerDelivery.Shell);
                 break;
             case SecondaryPattern.Teeth:
-                Fire(origin, CombatVisuals.Rotate(forward, side * (focus ? 10 : 55)), .34f, 1, PlayerDelivery.Pulse);
+                for (int i = -2; i <= 2; i++)
+                    Fire(origin, CombatVisuals.Rotate(Vector2.up, i * (focus ? 3 : 7) + (focus ? 0 : side * 2)),
+                        .34f, 1.35f, PlayerDelivery.Pulse);
                 break;
             case SecondaryPattern.Ribbon:
                 Fire(origin, CombatVisuals.Rotate(forward, Mathf.Sin(Releases * .8f) * (focus ? 4 : 24)), .22f, 1, PlayerDelivery.Pulse);
