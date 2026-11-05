@@ -1,0 +1,4 @@
+PASS
+101 checks.
+Reproduced the old timestamp failure with a newer neutral keyboard report. Verified stable controller prompts through idle reports, releases and small stick motion; deliberate buttons/stick/dpad/triggers, rebinding, PlayStation identity despite another pad becoming current, disabled/removed devices and shared HUD selection.
+Headless synthetic-device checks only; no desktop input or gameplay session.
