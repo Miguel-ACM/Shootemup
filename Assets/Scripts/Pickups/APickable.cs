@@ -74,17 +74,21 @@ public abstract class APickable : MonoBehaviour
             rb.linearVelocity = direction * moveSpeed / 2;
         }
         if (distance <= pickDist)
-        {
-            collected = true;
-            PSXImpactEffects.Burst(transform.position, PSXImpactEffects.PickupColor(this), true);
-            PickUp();
-        }
+            Collect();
         if (destroying)
         {
             destroyingTime += Time.deltaTime;
             if (destroyingTime > 2)
                 Destroy(gameObject);
         }
+    }
+
+    public void Collect()
+    {
+        if (collected) return;
+        collected = true;
+        PSXImpactEffects.Burst(transform.position, PSXImpactEffects.PickupColor(this), true);
+        PickUp();
     }
 
     protected virtual void PickUp()

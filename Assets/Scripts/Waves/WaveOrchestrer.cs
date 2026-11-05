@@ -536,6 +536,15 @@ public class WaveOrchestrer : MonoBehaviour
         foreach (var enemy in FindObjectsByType<AEnemy>())
             Destroy(enemy.gameObject);
         EraseAllBullets();
+        if (LevelRun.FinalDistrict)
+        {
+            // The last shatter ends the campaign; there is no equipment decision after it.
+            // Leave a moment for its coin burst to return before banking the run.
+            yield return new WaitForSeconds(2);
+            foreach (var coin in FindObjectsByType<Money>()) coin.Collect();
+            GameOverState.Show(true);
+            yield break;
+        }
         if (cargoRewardKey != null)
         {
             yield return OpenCargoReward(null);
@@ -561,7 +570,7 @@ public class WaveOrchestrer : MonoBehaviour
     {
         Phase = RunPhase.Routing;
         CombatDecision.Begin();
-        // This coroutine is reached only through the mandatory item's actual pickup callback.
+        // Non-final districts continue after collecting or skipping their boss reward.
         yield return new WaitForSeconds(.2f);
         foreach (var enemy in FindObjectsByType<AEnemy>())
             Destroy(enemy.gameObject);
