@@ -105,14 +105,15 @@ public sealed partial class CityDuoBoss
                 Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.up, mirror * (66 + i * 8 + (n % 2) * 4)), 3.0f, .2f).Bounce(2, false);
     }
 
-    // Three mirrored rays, each a line of arrows at falling speeds.
+    // Three mirrored headlight rays: chevrons and round beads at falling speeds.
     void Headlights(Vector3 port)
     {
         int beads = Dense(enraged ? 9 : 7);
         var aim = CombatVisuals.Aim(port);
         foreach (float ray in new[] { -22f, 0f, 22f })
             for (int b = 0; b < beads; b++)
-                ScoredShot(b%3==0,port, CombatVisuals.Rotate(aim, ray), 5.4f - b * .45f, .18f);
+                if(b%3==0)Fire<SimpleRound>(port,CombatVisuals.Rotate(aim,ray),5.4f-b*.45f,.18f);
+                else Fire<ChevronRound>(port,CombatVisuals.Rotate(aim,ray),5.4f-b*.45f,.18f);
     }
 
     // Two mirrored diagonal families in front, and the same grid behind that
