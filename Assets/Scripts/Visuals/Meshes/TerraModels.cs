@@ -197,14 +197,25 @@ public sealed class TerraPartMotion : MonoBehaviour
     [System.NonSerialized]
     public IndustrialMeshFactory.TerraPart part;
     float phase;
+    float clock;
+    DistrictBoss owner;
+    EnemyFiringCue cue;
 
     // Mirrored fins on one craft share a phase; separate craft do not move in lockstep.
-    void Start() => phase = Mathf.Abs(transform.parent.GetHashCode() % 997) * .013f;
+    void Start()
+    {
+        phase = Mathf.Abs(transform.parent.GetHashCode() % 997) * .013f;
+        owner=GetComponentInParent<DistrictBoss>();
+        if(owner!=null)cue=owner.GetComponent<EnemyFiringCue>();
+    }
 
     void Update()
     {
-        float t = Time.time + phase;
+        if(WorldTimeStop.Frozen||GameRules.playerDisabled||(owner!=null&&!owner.enabled))return;
+        clock+=Time.deltaTime*(owner!=null?1+(owner.CurrentPhase-1)*.16f:1);
+        float t = clock + phase;
         float angle = part.spin ? t * part.speed : part.amplitude * Mathf.Sin(t * part.speed * Mathf.PI * 2);
+        if(!part.spin&&cue!=null)angle+=part.amplitude*.65f*cue.ChargeLevel;
         transform.localRotation = Quaternion.AngleAxis(angle, part.axis);
     }
 }

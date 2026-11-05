@@ -610,7 +610,7 @@ public sealed class CombatHullVisual : MonoBehaviour
 
     void LateUpdate()
     {
-        if (model == null)
+        if (model == null || WorldTimeStop.Frozen || GameRules.playerDisabled)
             return;
         var flight = GetComponent<FormationFlight>();
         float target = flight != null && flight.phrase != FlightPhrase.Battery && flight.phrase != FlightPhrase.Chevron ? Vector2.SignedAngle(Vector2.down, flight.Tangent) : 0;

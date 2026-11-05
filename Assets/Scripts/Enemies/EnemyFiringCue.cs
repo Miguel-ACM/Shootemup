@@ -17,6 +17,8 @@ public sealed class EnemyFiringCue : MonoBehaviour
     readonly System.Collections.Generic.List<Port> ports = new System.Collections.Generic.List<Port>(24);
     Transform hull;
     public int PortCount => ports.Count;
+    public float ChargeLevel { get { float level=0;foreach(var p in ports)if(p.active)level=Mathf.Max(level,p.heat);return level; } }
+    public float ReleaseLevel { get { float level=0;foreach(var p in ports)if(p.active)level=Mathf.Max(level,p.flash/.12f);return level; } }
     public void Build(Transform model)
     {
         foreach (var port in ports)
