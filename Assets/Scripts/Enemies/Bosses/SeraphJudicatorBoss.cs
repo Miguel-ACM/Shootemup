@@ -9,6 +9,7 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
     public HeavenAngelVisual Angel { get; private set; }
     public int CardIndex { get; private set; }
     bool anchored;
+    readonly SpriteRenderer[] apparitions=new SpriteRenderer[6];
     protected override void Configure(){health=2850;hullScale=1.05f;attackInterval=.7f;}
     protected override void Start()
     {
@@ -18,6 +19,13 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
         Angel.Build(GetComponent<PolygonCollider2D>());
         PartHitFeedback.Bind(Hull);
         FollowEyes();
+        for(int i=0;i<apparitions.Length;i++)
+        {
+            var go=new GameObject("Unbodied choir charge");go.transform.SetParent(transform,false);
+            var glow=go.AddComponent<SpriteRenderer>();glow.sprite=CombatVisuals.Disc;
+            glow.sharedMaterial=CombatVisuals.ProjectileMaterial;glow.sortingLayerName="Bullet";
+            glow.enabled=false;apparitions[i]=glow;
+        }
     }
     protected override void Update()
     {
@@ -36,13 +44,18 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
     void Pray(bool value){anchored=value;Angel.Pray(value);}
     PulseLaser Beam(int port,float angle,float width,float hold,float charge=1.4f)
         =>HeavenArmory.Lance(Angel.Emitter(port),Vector3.zero,CombatVisuals.Rotate(Vector2.down,angle),width,hold,charge);
-    protected override void OnPhaseEntered(int phase){Pray(false);}
+    protected override void OnPhaseEntered(int phase)
+    {
+        Pray(false);Angel.Phase=phase;
+        foreach(var glow in apparitions)glow.enabled=false;
+    }
     protected override IEnumerator Cards()
     {
         while(true)
         {
             CardIndex=0;Pray(true);
             yield return Charge(Angel.Emitter(0),Vector3.zero,.65f);
+            Phrase(UnbodiedChoir(0));
             if(CurrentPhase==1)
             {
                 // Dawn Liturgy: a golden nave between two lances, feather-vaults above it.
@@ -65,6 +78,7 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
             Pray(false);yield return Wait(Rest(1.25f));
             CardIndex=1;Pray(true);
             yield return Charge(Angel.Emitter(0),Vector3.zero,.65f);
+            Phrase(UnbodiedChoir(1));
             if(CurrentPhase==1)
             {
                 // Cathedral of Eyes: fixed, reflected arches over a slow central lance.
@@ -95,28 +109,74 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
     void Vault(int beat,int count,float opening,bool pearls)
     {
         int n=Dense(count);
-        float breath=Mathf.Sin(beat*.18f)*12;
-        for(int s=-1;s<=1;s+=2)for(int i=0;i<n;i++)
+        float breath=Mathf.Sin(beat*.18f)*18;
+        for(int s=-1;s<=1;s+=2)for(int bank=-1;bank<=1;bank+=2)for(int i=0;i<n;i++)
         {
-            float u=Across(i,n),angle=s*(opening+breath+u*17);
-            // Speed curvature makes a pointed arch in space rather than a straight fan.
-            float speed=2.15f+.7f*(1-u*u);
-            Fire<NeedleRound>(Eye(s<0?3:4),CombatVisuals.Rotate(Vector2.up,angle),speed,.17f).Bounce(1).FadeAt(8);
-            if(pearls&&beat%4==0&&i%3==0)
+            float u=Across(i,n),angle=s*(opening+breath+u*38);
+            // Four feathered lobes: the lower pair reaches the pilot immediately,
+            // while the upper pair returns from the ceiling. The same seams breathe together.
+            float speed=2.35f+.85f*(1-u*u)+(CurrentPhase-1)*.12f;
+            var axis=bank>0?Vector2.up:Vector2.down;
+            Fire<NeedleRound>(Eye(s<0?3:4),CombatVisuals.Rotate(axis,angle),speed,.17f)
+                .Bounce(bank>0?1:0).FadeAt(8);
+            if(pearls&&bank<0&&beat%4==0&&i%3==0)
                 Fire<SimpleRound>(Eye(s<0?1:2),CombatVisuals.Rotate(Vector2.down,s*(48+u*23)),1.55f,.22f).FadeAt(7.8f);
         }
     }
     void Window(int beat,int count,float speed)
     {
         int n=Dense(count);
-        for(int s=-1;s<=1;s+=2)for(int i=0;i<n;i++)
+        for(int s=-1;s<=1;s+=2)for(int bank=-1;bank<=1;bank+=2)for(int i=0;i<n;i++)
         {
             float u=Across(i,n);
-            float a=s*(46+u*31+(beat%2==0?6:-6));
-            Fire<NeedleRound>(Eye(s<0?3:4),CombatVisuals.Rotate(Vector2.up,a),speed+.85f*(1-u*u),.18f)
-                .Bounce(1).Ramp(1.25f,1.4f,2).FadeAt(8);
-            if(CurrentPhase==3&&i%3==0)
+            float a=s*(45+u*43+Mathf.Sin(beat*.43f)*14);
+            Fire<NeedleRound>(Eye(s<0?3:4),CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,a),speed+.85f*(1-u*u),.18f)
+                .Bounce(bank>0?1:0).Ramp(1.25f,1.4f,2).FadeAt(8);
+            if(CurrentPhase==3&&bank<0&&i%3==0)
                 Fire<SimpleRound>(Eye(s<0?1:2),CombatVisuals.Rotate(Vector2.down,s*(54+u*26)),1.6f+.3f*u*u,.22f).FadeAt(8);
+        }
+    }
+
+    // The angel may create fire in empty air. Six fixed, charged points draw a
+    // mirrored chevron before releasing interleaved petals above and below it.
+    IEnumerator UnbodiedChoir(int card)
+    {
+        for(int verse=0;verse<3;verse++)
+        {
+            Rect r=CombatRound.Border;
+            for(int i=0;i<apparitions.Length;i++)
+            {
+                int side=i<3?-1:1,lane=i%3;
+                float x=r.center.x+side*(.9f+lane*(r.width*.5f-1.65f)/2);
+                float y=r.yMax-2.0f-lane*.95f-verse*.8f;
+                if(card==1)y-=.8f;
+                apparitions[i].transform.position=new Vector3(x,y,-.8f);
+            }
+            for(float t=0;t<.8f;)
+            {
+                if(!Holding)t+=Time.deltaTime*LevelRun.EnemyTempoScale;
+                foreach(var glow in apparitions)
+                {
+                    glow.enabled=true;
+                    glow.transform.localScale=Vector3.one*Mathf.Lerp(.65f,.15f,Mathf.Clamp01(t/.8f));
+                    var ink=LevelProjectilePalette.Accent(LevelId.Heaven);ink.a=.2f+t*.55f;glow.color=ink;
+                }
+                yield return null;
+            }
+            int count=Dense(9+CurrentPhase*2);
+            for(int i=0;i<apparitions.Length;i++)
+            {
+                var p=apparitions[i].transform.position;apparitions[i].enabled=false;
+                if(player!=null&&Vector2.Distance(p,player.position)<1.6f)continue;
+                int side=i<3?-1:1;
+                for(int bank=-1;bank<=1;bank+=2)for(int k=0;k<count;k++)
+                {
+                    float u=Across(k,count),turn=side*(verse%2==0?22:-22);
+                    Fire<NeedleRound>(p,CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,u*62+turn),
+                        1.7f+.5f*(1-u*u),.16f).Ramp(1.35f,1.5f,1).FadeAt(6.8f);
+                }
+            }
+            yield return Wait(Rest(.75f));
         }
     }
 }

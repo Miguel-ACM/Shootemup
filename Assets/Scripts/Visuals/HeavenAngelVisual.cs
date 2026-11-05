@@ -5,7 +5,7 @@ public sealed class HeavenAngelVisual : MonoBehaviour
 {
     public static readonly float[] Radii={2.3f,1.93f,1.55f};
     public static readonly int[] EyeCounts={14,12,10};
-    static readonly float[] Speeds={8,-11,15};
+    static readonly float[] Speeds={24,-31,39};
     static Material material;
     public static Material Surface=>material!=null?material:material=new Material(Resources.Load<Shader>("HeavenAngel")){name="Living pearl and celestial gold"};
     readonly Transform[] wheels=new Transform[3];
@@ -17,15 +17,19 @@ public sealed class HeavenAngelVisual : MonoBehaviour
     float prayer,wheelClock;
     PolygonCollider2D hitbox;
     float clock;
+    public int Phase { get; set; } = 1;
     public Transform Wheel(int index)=>wheels[index];
     public int TotalEyes=>37;
 
     public static Quaternion Orientation(int wheel,float seconds)
     {
         var tilt=wheel==0?new Vector3(25,12,-12):wheel==1?new Vector3(59,-18,55):new Vector3(-49,24,-38);
-        // Slow precession makes the overlapping wheels unmistakably three-dimensional.
-        tilt.y+=Mathf.Sin(seconds*.12f+wheel*2)*7;
-        return Quaternion.Euler(tilt)*Quaternion.AngleAxis(seconds*Speeds[wheel],Vector3.forward);
+        // Each wheel tumbles through the others as well as turning around its own axle.
+        // Opposed world axes prevent three flat discs merely chasing their own eyes.
+        Vector3 axis=wheel==0?Vector3.up:wheel==1?Vector3.right:new Vector3(1,1,0).normalized;
+        float tumble=seconds*(wheel==1?-19:14+wheel*5);
+        return Quaternion.AngleAxis(tumble,axis)*Quaternion.Euler(tilt)*
+            Quaternion.AngleAxis(seconds*Speeds[wheel],Vector3.forward);
     }
     public static Vector3 EyePosition(int wheel,int index)
     {
@@ -67,7 +71,7 @@ public sealed class HeavenAngelVisual : MonoBehaviour
     {
         clock+=delta;
         prayer=Mathf.MoveTowards(prayer,praying?1:0,delta*2);
-        wheelClock+=delta*Mathf.Lerp(1,.08f,prayer);
+        wheelClock+=delta*(1+(Phase-1)*.55f)*Mathf.Lerp(1,.78f,prayer);
         Pose(wheelClock);
         if(iris!=null)
         {
