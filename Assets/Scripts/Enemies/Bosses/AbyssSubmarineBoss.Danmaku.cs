@@ -33,7 +33,7 @@ public sealed partial class AbyssSubmarineBoss
                 Phrase(MirrorLace(Hull, new Vector3(-1.02f, .3f, -.3f), new Vector3(1.02f, .3f, -.3f), Dense(30), 3, 60, 18, 3.4f, .06f, volley % 2 == 0 ? 1 : -1));
             }
             else
-                ArrowWavefront(Muzzle(), Aim, Dense(21), 100, 3, 2.8f, .8f);
+                ArrowWavefront(Muzzle(), Aim, Dense(21)|1, 100, 3, 2.8f, .8f);
             return;
         }
         if (beat == 0)
@@ -45,7 +45,7 @@ public sealed partial class AbyssSubmarineBoss
         else if (beat == 1)
             Phrase(MirrorLace(Hull, new Vector3(-1.02f, .3f, -.3f), new Vector3(1.02f, .3f, -.3f), Dense(30), 3, 60, 18, 3.4f, .06f, volley % 2 == 0 ? 1 : -1));
         else
-            ArrowWavefront(Muzzle(), Aim, Dense(19), 90, 3, 2.8f, .8f);
+            ArrowWavefront(Muzzle(), Aim, Dense(19)|1, 90, 3, 2.8f, .8f);
     }
 
     // Big slow torpedoes that wind up to full speed along their aim.
@@ -70,7 +70,7 @@ public sealed partial class AbyssSubmarineBoss
         {
             float lane = i / (shots - 1f) * 2 - 1;
             for (int mirror = -1; mirror <= 1; mirror += 2)
-                Fire<NeedleRound>(Muzzle(mirror < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.down, mirror * sign * (12 + lane * 20)), 2.8f, .19f)
+                ScoredShot(i%3==0,Muzzle(mirror < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.down, mirror * sign * (12 + lane * 20)), 2.8f)
                     .Fall(new Vector2(-mirror * sign * 1.5f, 0));
             yield return Wait(Rest(.06f));
             // A dive pauses the phrase; abandon it rather than finish on the next surfacing.
@@ -92,7 +92,7 @@ public sealed partial class AbyssSubmarineBoss
                 float lane = i - (lanes - 1) * .5f;
                 float angle = tilt + lane * 150f / (lanes - 1) + (layer == 1 ? 75f / (lanes - 1) : 0);
                 var port = Hull.TransformPoint(new Vector3(Mathf.Sign(lane) * 1.02f * Mathf.Min(1, Mathf.Abs(lane)), .3f, -.3f));
-                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.up, angle), 3.0f + layer * .9f, .19f)
+                ScoredShot(layer==0,port, CombatVisuals.Rotate(Vector2.up, angle), 3.0f + layer * .9f)
                     .Fall(new Vector2(0, -2.6f));
             }
     }
@@ -109,7 +109,7 @@ public sealed partial class AbyssSubmarineBoss
             for (int i = 0; i < beads; i++)
             {
                 var axis = CombatVisuals.Rotate(Vector2.down, offset * beads + (i + ring * .5f) * 360f / beads + emergences * 5);
-                Fire<NeedleRound>(transform.position + (Vector3)axis * .8f, axis, speed + .6f + ring * .8f, .19f);
+                ScoredShot(ring==0,transform.position + (Vector3)axis * .8f, axis, speed + .6f + ring * .8f);
             }
         if (!phaseTwo)
             return;
@@ -140,7 +140,7 @@ public sealed partial class AbyssSubmarineBoss
                 if (!Difficulty.Hard && (lane + tick) % 2 != 0 || Difficulty.Easy && Mathf.Abs(lane) == 2)
                     continue;
                 var port = Hull.TransformPoint(new Vector3(side * 1.02f, .3f + lane * .3f, -.3f));
-                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.right * side, lane * 14 + (tick % 2) * 7), 2.4f + Mathf.Abs(lane) * .3f, .19f);
+                ScoredShot(tick%3==0,port, CombatVisuals.Rotate(Vector2.right * side, lane * 14 + (tick % 2) * 7), 2.4f + Mathf.Abs(lane) * .3f);
             }
         }
         if (tick % 3 == 0)
