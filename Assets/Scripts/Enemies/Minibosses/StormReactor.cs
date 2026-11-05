@@ -35,7 +35,7 @@ public sealed class StormReactor : DistrictMiniboss
             {
                 laser.Bind(Hull, new Vector3(0, -.35f, -.4f));
                 laser.warning = 1.0f;
-                laser.activeTime = 1.2f;
+                laser.activeTime = .7f;
             }
             for (int side = -1; side <= 1; side += 2)
                 MirrorFan(transform.position, CombatVisuals.Rotate(Vector2.down, side * 50), Dense(5), 12, 3.4f);

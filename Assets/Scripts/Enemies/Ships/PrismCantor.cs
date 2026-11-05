@@ -9,7 +9,7 @@ public sealed class PrismCantor : DistrictEnemy
     {
         // Outward prismatic forks leave a navigable aisle under the central crystal.
         for(int side=-1;side<=1;side+=2)
-            HeavenArmory.Lance(Hull,EnemyWeaponLayout.Ports(hull)[side<0?0:1],CombatVisuals.Rotate(Vector2.down,side*28),.74f,1.5f,1.4f);
+            HeavenArmory.Lance(Hull,EnemyWeaponLayout.Ports(hull)[side<0?0:1],CombatVisuals.Rotate(Vector2.down,side*28),.74f,.85f,1.4f);
         for(int i=0;i<Dense(4);i++)Fire<NeedleRound>(Muzzle(2),Vector2.up,2.0f+i*.4f,.17f).Bounce(1).FadeAt(7);
     }
 }

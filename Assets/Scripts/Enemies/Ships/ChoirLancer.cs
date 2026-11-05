@@ -5,7 +5,7 @@ public sealed class ChoirLancer : DistrictEnemy
 {
     protected override Vector2 CueAxis => Vector2.down;
     protected override void Configure(){hullScale=.52f;health=38;attackInterval=3.2f;nextAttack=1.3f;Mover<Slalom>();}
-    protected override void Attack(){HeavenArmory.Lance(Hull,EnemyWeaponLayout.Ports(hull)[0],Vector2.down,.62f,1.15f);}
+    protected override void Attack(){HeavenArmory.Lance(Hull,EnemyWeaponLayout.Ports(hull)[0],Vector2.down,.62f,.65f);}
 }
 public static partial class WavePartLibrary
 {

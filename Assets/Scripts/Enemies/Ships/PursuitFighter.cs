@@ -30,7 +30,7 @@ public sealed class PursuitFighter : DistrictEnemy
         {
             beam.Bind(Hull, new Vector3(0, -1.38f, -.15f));
             beam.warning = (1.0f);
-            beam.activeTime = (.55f);
+            beam.activeTime = .35f;
             beam.width = .19f;
         }
     }

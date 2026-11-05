@@ -21,7 +21,7 @@ public sealed class StormOrgan : DistrictEnemy
         {
             beam.Bind(Hull, local);
             beam.warning = (1.05f);
-            beam.activeTime = (.95f);
+            beam.activeTime = .55f;
             beam.width = .22f;
         }
     }

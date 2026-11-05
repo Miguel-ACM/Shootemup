@@ -7,7 +7,7 @@ public static class HeavenArmory
     {
         var beam=CombatRound.Launch<PulseLaser>(source.TransformPoint(local),axis,0);
         if(beam==null) return null;
-        beam.Bind(source,local);beam.width=width;beam.widthRise=.65f;beam.warning=Difficulty.Rest(charge);
+        beam.Bind(source,local);beam.width=width;beam.widthRise=Mathf.Min(.65f,hold*.4f);beam.warning=Difficulty.Rest(charge);
         beam.activeTime=hold;beam.celestial=true;
         return beam;
     }

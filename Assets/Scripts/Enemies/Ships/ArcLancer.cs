@@ -22,7 +22,7 @@ public sealed class ArcLancer : DistrictEnemy
         {
             beam.Bind(Hull, new Vector3(.52f, -1.45f, -.2f));
             beam.warning = (1.15f);
-            beam.activeTime = (1.05f);
+            beam.activeTime = .6f;
             beam.width = .24f;
         }
     }

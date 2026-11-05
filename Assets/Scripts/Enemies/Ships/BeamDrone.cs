@@ -23,7 +23,7 @@ public sealed class BeamDrone : DistrictEnemy
         {
             beam.Bind(Hull, new Vector3(0, -.28f, -.24f));
             beam.warning = (1.05f);
-            beam.activeTime = (.85f);
+            beam.activeTime = .5f;
             beam.width = .21f;
         }
     }

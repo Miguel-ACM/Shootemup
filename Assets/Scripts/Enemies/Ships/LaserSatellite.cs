@@ -20,7 +20,7 @@ public sealed class LaserSatellite : SpaceSatellite
         {
             beam.Bind(Hull, new Vector3(0, -1.05f, -.24f));
             beam.warning = (1.2f);
-            beam.activeTime = (1.15f);
+            beam.activeTime = .65f;
             beam.width = .23f;
         }
     }

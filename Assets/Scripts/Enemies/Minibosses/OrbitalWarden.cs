@@ -52,7 +52,7 @@ public sealed class OrbitalWarden : DistrictMiniboss
                 {
                     beam.Bind(Hull, local);
                     beam.warning = 1.0f;
-                    beam.activeTime = 1.2f;
+                    beam.activeTime = .7f;
                     beam.sweep = side * 14;
                     beam.width = .2f;
                 }

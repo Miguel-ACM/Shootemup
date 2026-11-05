@@ -11,17 +11,17 @@ public sealed class DawnGatekeeper : DistrictMiniboss
         var ports=EnemyWeaponLayout.Ports(hull);
         if(volley%3==1)
         {
-            for(int i=0;i<2;i++)HeavenArmory.Lance(Hull,ports[i],Vector2.down,1.0f,2.1f,1.35f);
+            for(int i=0;i<2;i++)HeavenArmory.Lance(Hull,ports[i],Vector2.down,1.0f,1.15f,1.35f);
             Stream(Dense(8),.20f,n=>MirrorFan(Muzzle(2),Vector2.down,Dense(7),12,2.0f+n*.10f));
         }
         else if(volley%3==2)
         {
-            for(int i=0;i<2;i++)HeavenArmory.Lance(Hull,ports[i],CombatVisuals.Rotate(Vector2.down,i==0?-34:34),1.25f,1.7f,1.4f);
+            for(int i=0;i<2;i++)HeavenArmory.Lance(Hull,ports[i],CombatVisuals.Rotate(Vector2.down,i==0?-34:34),1.25f,.95f,1.4f);
             Stream(Dense(9),.17f,n=>{for(int s=-1;s<=1;s+=2)Fire<NeedleRound>(Muzzle(s<0?0:1),CombatVisuals.Rotate(Vector2.up,s*(20+n*6)),2.8f,.19f).Bounce(1);});
         }
         else
         {
-            HeavenArmory.Lance(Hull,ports[2],Vector2.down,2.1f,1.9f,1.6f);
+            HeavenArmory.Lance(Hull,ports[2],Vector2.down,2.1f,1.05f,1.6f);
             Stream(Dense(8),.18f,n=>{for(int s=-1;s<=1;s+=2)MirrorFan(Muzzle(s<0?0:1),CombatVisuals.Rotate(Vector2.down,s*(45-n*4)),Dense(5),8,2.4f);});
         }
     }
