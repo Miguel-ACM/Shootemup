@@ -1,0 +1,4 @@
+PASS
+216 checks.
+Actual laser hits, overlapping beams, plasma, damage guards and firing-rate upgrades; Snow miniboss launch positions; boss-clear events and saved unlocks; end-screen reason layout and stacked no-hit labels.
+Headless checks only; no gameplay or visual review.
