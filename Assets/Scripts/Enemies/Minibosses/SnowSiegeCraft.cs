@@ -14,10 +14,12 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
 
     // Snow siege craft: it hurls a spray of shards straight up and out of sight, then
     // the snow falls back from the top of the screen across the whole width; between
-    // storms it fires mirrored arrow fans that freeze and re-aim.
+    // storms it fires mirrored arrow fans that freeze and re-aim, then rolls out
+    // giant snowballs that shed irregular sideways sprays as they descend.
     protected override void Attack()
     {
-        if (volley % 2 == 0)
+        int beat = volley % 3;
+        if (beat == 0)
         {
             int flakes = Dense(Enraged ? 22 : 18);
             var p = Hull.TransformPoint(ports[0]);
@@ -25,13 +27,13 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
             {
                 float lane = i - (flakes - 1) * .5f;
                 Fire<SimpleRound>(p, CombatVisuals.Rotate(Vector2.up, lane * 4), 9 + (i % 3), .16f).FadeAt(.45f);
-                float x = Mathf.Lerp(Camera.LeftLimit + .3f, Camera.RightLimit - .3f, (i + (volley / 2 % 2) * .5f) / flakes);
+                float x = Mathf.Lerp(Camera.LeftLimit + .3f, Camera.RightLimit - .3f, (i + (volley / 3 % 2) * .5f) / flakes);
                 CombatRound.Launch<SimpleRound>(new Vector3(x, CombatRound.Border.yMax + .8f), Vector2.down, 1.5f + (i % 3) * .3f, .19f)
                     .Pause(.05f, .6f + (i % 4) * .15f, CombatRound.Turn.Down, lane, 1)
                     .Sway(i % 2 == 0 ? .35f : -.35f, .45f);
             }
         }
-        else
+        else if (beat == 1)
         {
             int count = Dense(Enraged ? 13 : 11);
             for (int mirror = -1; mirror <= 1; mirror += 2)
@@ -43,6 +45,10 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
                         .Ramp(4.5f, 1.2f, 1.25f);
                 }
         }
+        else
+            for (int mirror = -1; mirror <= 1; mirror += 2)
+                Fire<GiantOrb>(Hull.TransformPoint(ports[0]), CombatVisuals.Rotate(Vector2.down, mirror * 16), 1.65f, Enraged ? .72f : .66f)
+                    .SideSpray(3.1f);
     }
     // The bays are exposed during firing and reload; armor still accepts every weapon.
     public override void damage(float amount)
