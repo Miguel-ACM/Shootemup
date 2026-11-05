@@ -11,8 +11,9 @@ public sealed partial class VoidSovereignBoss
         return beam;
     }
     static float Across(int i,int count)=>count<=1?0:i/(count-1f)*2-1;
-    CombatRound CrownedShot(bool giant,bool circular,Vector3 port,Vector2 axis,float speed,float radius=.17f,float crown=.60f)
-        =>giant?(CombatRound)Fire<GiantOrb>(port,axis,speed*.72f,crown):ScoredShot(circular,port,axis,speed,radius);
+    CombatRound CrownedShot(bool giant,bool circular,Vector3 port,Vector2 axis,float speed,float radius=.17f,float crown=.60f,bool chevron=false)
+        =>giant?(CombatRound)Fire<GiantOrb>(port,axis,speed*.72f,crown):
+            chevron&&!circular?Fire<ChevronRound>(port,axis,speed,radius):ScoredShot(circular,port,axis,speed,radius);
     static int BankCount(int count,int bank)
     {
         int upper=Mathf.Max(1,Mathf.RoundToInt(count*.55f));
@@ -108,7 +109,7 @@ public sealed partial class VoidSovereignBoss
             {
                 float u=Across(i,count),pleat=9*Mathf.Sin(beat*.35f);
                 CrownedShot(beat%2==0&&i%4==1,i%3==0,Port(side<0?0:1),CombatVisuals.Rotate(Vector2.down,side*(38+u*27+pleat)),
-                    2.1f+.35f*(1-u*u),.17f,.60f)
+                    2.1f+.35f*(1-u*u),.17f,.60f,true)
                     .Pause(1.2f,.22f,i==count/2?CombatRound.Turn.Aim:CombatRound.Turn.Rotate,i==count/2?0:-side*24,1.25f).FadeAt(8);
             }
         });

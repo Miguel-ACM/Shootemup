@@ -106,6 +106,8 @@ public sealed partial class VoidSovereignBoss
     {
         if(beat%2==0&&(lane+beat/2)%4==1)
             return CombatRound.Launch<GiantOrb>(p,axis,speed*.72f,chapter==3?.72f:.62f);
+        if(lane%4==2)
+            return CombatRound.Launch<ChevronRound>(p,axis,speed,.19f);
         return lane%4==0?(CombatRound)CombatRound.Launch<SimpleRound>(p,axis,speed,.19f):CombatRound.Launch<NeedleRound>(p,axis,speed,.17f);
     }
 }
