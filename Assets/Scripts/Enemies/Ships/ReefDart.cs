@@ -20,6 +20,6 @@ public sealed class ReefDart : OceanEnemy
 
     protected override void Attack()
     {
-        Fan<NeedleRound>((2), 17, 3.7f, .2f);
+        Fan<ChevronRound>((2), 17, 3.7f, .2f);
     }
 }
