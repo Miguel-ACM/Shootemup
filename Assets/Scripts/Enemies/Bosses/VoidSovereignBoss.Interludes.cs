@@ -13,11 +13,11 @@ public sealed partial class VoidSovereignBoss
             if(!GameRules.playerDisabled&&!WorldTimeStop.Frozen)
             {
                 InterludeElapsed=Mathf.Min(15,InterludeElapsed+Time.deltaTime);
-                DrawEdgeTell(chapter,beat,Mathf.Clamp01(1-(beatAt-InterludeElapsed)/.7f));
+                DrawEdgeTell(chapter,Mathf.Clamp01(InterludeElapsed/.9f));
                 if(InterludeElapsed>=beatAt&&InterludeElapsed<13.8f)
                 {
                     PerimeterBarrage(chapter,beat++);
-                    beatAt+=Difficulty.Rest(chapter==1?.86f:chapter==2?.70f:.62f);
+                    beatAt+=Difficulty.Rest(chapter==1?.30f:chapter==2?.28f:.26f);
                 }
             }
             yield return null;
@@ -32,53 +32,70 @@ public sealed partial class VoidSovereignBoss
         while(settle<1.1f){if(!GameRules.playerDisabled&&!WorldTimeStop.Frozen)settle+=Time.deltaTime;yield return null;}
         contact.enabled=true;
     }
-    void DrawEdgeTell(int chapter,int beat,float charge)
+    // One side owns the entire disappearance. The next disappearance takes the
+    // next side clockwise; old rounds are cleared before that new phrase begins.
+    static int SourceEdge(int chapter)=>(chapter-1)%4;
+    static Vector2 Inward(int edge)=>edge==0?Vector2.down:edge==1?Vector2.left:edge==2?Vector2.up:Vector2.right;
+    static Vector3 Source(int edge,int side)
     {
-        Rect r=CombatRound.Border;
-        Vector3 P(float x,float y)=>new Vector3(x,y,-1.1f);
+        Rect r=CombatRound.Border;float u=side<0?.27f:.73f;
+        if(edge==0||edge==2)return new Vector3(Mathf.Lerp(r.xMin,r.xMax,u),edge==0?r.yMax-.3f:r.yMin+.3f,1);
+        return new Vector3(edge==1?r.xMax-.3f:r.xMin+.3f,Mathf.Lerp(r.yMin,r.yMax,u),1);
+    }
+    void DrawEdgeTell(int chapter,float charge)
+    {
         var ink=LevelProjectilePalette.Accent(LevelId.Void);ink.a=.12f+charge*.62f;
+        int edge=SourceEdge(chapter);Vector2 inward=Inward(edge);
+        Vector3 tangent=new Vector3(-inward.y,inward.x,0);
         for(int i=0;i<4;i++)
         {
-            var line=edgeTell[i];line.enabled=chapter==3||i/2==beat%2;
+            // Two small chevrons identify the exact mouths, rather than lighting
+            // unrelated margins. Both mouths always belong to the same edge.
+            var line=edgeTell[i];line.enabled=true;
             line.startColor=line.endColor=ink;
-            if(i<2){float y=i==0?r.yMax-.12f:r.yMin+.12f;line.SetPosition(0,P(r.xMin,y));line.SetPosition(1,P(r.xMax,y));}
-            else {float x=i==2?r.xMin+.12f:r.xMax-.12f;line.SetPosition(0,P(x,r.yMin));line.SetPosition(1,P(x,r.yMax));}
+            Vector3 p=Source(edge,i<2?-1:1);p.z=-1.1f;
+            line.SetPosition(0,p+tangent*(i%2==0?-.6f:.6f));
+            line.SetPosition(1,p+(Vector3)inward*(.2f+charge*.45f));
         }
     }
     void PerimeterBarrage(int chapter,int beat)
     {
-        Rect r=CombatRound.Border;int count=Dense(chapter==3?18:15);
-        // Sources are the visibly charged margins while the creature is absent.
-        for(int edge=0;edge<4;edge++)
+        int edge=SourceEdge(chapter),count=Dense(chapter==3?23:19);
+        Vector2 inward=Inward(edge);
+        for(int side=-1;side<=1;side+=2)
         {
-            if(chapter<3&&edge/2!=beat%2)continue;
-            bool horizontal=edge<2;int sign=edge%2==0?1:-1;
-            float gap=.5f+.28f*Mathf.Sin(beat*.67f+(horizontal?0:1.6f));
+            Vector3 p=Source(edge,side);
+            if(CombatVisuals.Player!=null&&Vector2.Distance(p,CombatVisuals.Player.position)<1.6f)continue;
             for(int i=0;i<count;i++)
             {
-                float u=(i+.5f)/count;
-                if(Mathf.Abs(u-gap)<(chapter==3?.13f:.115f))continue;
-                Vector3 p=horizontal?new Vector3(Mathf.Lerp(r.xMin+.2f,r.xMax-.2f,u),edge==0?r.yMax-.15f:r.yMin+.15f,1):
-                    new Vector3(edge==2?r.xMin+.15f:r.xMax-.15f,Mathf.Lerp(r.yMin+.3f,r.yMax-.3f,u),1);
-                // Never materialize a bullet on a pilot hugging an edge.
-                if(CombatVisuals.Player!=null&&Vector2.Distance(p,CombatVisuals.Player.position)<1.6f)continue;
-                Vector2 inward=horizontal?Vector2.down*sign:Vector2.right*sign;
+                float u=Across(i,count);
+                // A continuous slit travels with the fabric, not a random omitted round.
+                float seam=.34f*Mathf.Sin(beat*.19f);
+                if(Mathf.Abs(u-seam)<.105f)continue;
                 if(chapter==1)
                 {
-                    if(i%3==0)CombatRound.Launch<SuspendedRound>(p,inward,2.4f,.23f).FadeAt(6);
-                    else CombatRound.Launch<NeedleRound>(p,CombatVisuals.Rotate(inward,sign*(beat%2==0?12:-12)),2.5f,.17f).Ramp(1.25f,1.0f,.7f).FadeAt(7);
+                    // Funeral fans: mirrored peacock feathers open as one moving wavefront.
+                    float angle=side*(u*57+Mathf.Sin(beat*.16f)*22);
+                    CombatRound.Launch<NeedleRound>(p,CombatVisuals.Rotate(inward,angle),
+                        3.0f+.9f*(1-u*u),.17f).Ramp(1.25f,1.1f,1).FadeAt(10);
                 }
                 else if(chapter==2)
                 {
-                    if(i%3==0)CombatRound.Launch<ReturningDisc>(p,CombatVisuals.Rotate(inward,(i%2==0?1:-1)*18),2.5f,.23f).FadeAt(5.5f);
-                    else CombatRound.Launch<RicochetBolt>(p,inward,2.0f,.18f).Pause(.9f,.32f,CombatRound.Turn.Rotate,(i%2==0?1:-1)*38,1.6f).FadeAt(6);
+                    // Scissor brocade: all strands hinge together, preserving the ordered comb.
+                    float angle=side*(u*51+24*Mathf.Sin(beat*.21f));
+                    CombatRound.Launch<NeedleRound>(p,CombatVisuals.Rotate(inward,angle),
+                        2.7f+.6f*(1-u*u),.17f)
+                        .Pause(.85f,.20f,CombatRound.Turn.Rotate,-side*26,1.2f).FadeAt(10);
+                    if(beat%3==0&&i%4==0)
+                        CombatRound.Launch<SimpleRound>(p,CombatVisuals.Rotate(inward,angle),1.65f,.22f).FadeAt(10);
                 }
                 else
                 {
-                    var axis=CombatVisuals.Rotate(inward,Mathf.Sin(u*6.28f+beat*.7f)*22);
-                    if(i%7==0&&beat%3==0)CombatRound.Launch<PlasmaOrb>(p,axis,1.4f,.32f).FadeAt(6);
-                    else if(i%3==0)CombatRound.Launch<SimpleRound>(p,axis,2.8f,.23f).Pause(1.1f,.3f,CombatRound.Turn.Rotate,sign*28,1.3f).FadeAt(6);
-                    else CombatRound.Launch<NeedleRound>(p,axis,1.8f,.17f).Zigzag(1.1f,12).FadeAt(6.5f);
+                    // Unmaking: opposed, scalloped fronts interleave fast crests and slow troughs.
+                    float angle=side*(u*64+18*Mathf.Sin(beat*.2f));
+                    float speed=3.0f+.75f*Mathf.Cos(u*Mathf.PI*2+beat*.22f);
+                    CombatRound.Launch<NeedleRound>(p,CombatVisuals.Rotate(inward,angle),speed,.17f)
+                        .Sway(.16f,.5f).Ramp(1.3f,1,1).FadeAt(10);
                 }
             }
         }
