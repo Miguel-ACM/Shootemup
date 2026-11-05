@@ -57,6 +57,9 @@ Shader "Shootemup/Space black hole"
                     return half4(lerp(shadow,lerp(gold,float3(1,.96,.8),glint),mask)*_Tint.rgb,horizon*_Tint.a);
                 }
                 float t=_Time.y*.32;
+                // The accretion plane slowly precesses while the horizon and target remain fixed.
+                float tilt=.10*sin(t*.55),cs=cos(tilt),sn=sin(tilt);
+                p=float2(cs*p.x-sn*p.y,sn*p.x+cs*p.y);
                 float diskRadius=length(float2(p.x,p.y/.23));
                 float angle=atan2(p.y/.23,p.x);
                 float disk=smoothstep(.85,1.08,diskRadius)*(1-smoothstep(2.05,2.85,diskRadius));
