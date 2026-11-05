@@ -183,6 +183,7 @@ public abstract class DistrictEnemy : AEnemy
         flight.duration = unit.flightDuration;
         flight.fireEvery = unit.fireEvery;
         flight.curve = unit.curve;
+        flight.passageRoute = unit.passageRoute;
         flight.syncFire = unit.syncFire;
         flight.firePhase = unit.firePhase;
         flight.fireTimes = unit.fireTimes;

@@ -12,6 +12,7 @@ public sealed class FormationFlight : PatternMover
     public FlightPhrase phrase;
     [System.NonSerialized] public FlightCurve curve;
     public bool syncFire;
+    public bool passageRoute;
     public float firePhase;
     [System.NonSerialized] public float[] fireTimes;
     public float formationDepth;
@@ -115,6 +116,8 @@ public sealed class FormationFlight : PatternMover
         }
         var p = PositionAt(TravelParameter(t));
         var next = new Vector3(p.x * Camera.RightLimit, Mathf.LerpUnclamped(Camera.DownLimit, Camera.UpLimit, p.y), origin.z);
+        if (passageRoute)
+            next.x += TunnelPassage.CenterAt(next.y);
         if (ground != null)
         {
             next = ground.TransformPoint(groundPoint);

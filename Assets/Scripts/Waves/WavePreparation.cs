@@ -42,12 +42,11 @@ public sealed class WavePreparation : MonoBehaviour
         if (LevelRun.Current == LevelId.Space)
             _ = SpaceMaterials.Fleet;
         if (LevelRun.Current == LevelId.Tunnel)
-            for (int layout = 1; layout <= 3; layout++)
-                foreach (var wall in TunnelPassage.Sections(layout))
-                {
-                    _ = IndustrialMeshFactory.TunnelWallMesh(wall.width);
-                    yield return null;
-                }
+            for (int layout = 1; layout <= TunnelPassage.LayoutCount; layout++)
+            {
+                _ = IndustrialMeshFactory.TunnelPassageMesh(layout);
+                yield return null;
+            }
         PSXImpactEffects.Warm();
         PhaseBreak.Warm();
         yield return PSXFireballs.Warm();

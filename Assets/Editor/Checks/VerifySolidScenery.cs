@@ -113,11 +113,7 @@ public sealed class SolidSceneryRuntime : MonoBehaviour
                     {
                         float radius=WaveGeometry.Radius(enemy.GetType().Name);
                         Vector2 p=enemy.transform.position;
-                        foreach(var wall in CombatWalls.Solid)
-                        {
-                            Vector2 nearest=new Vector2(Mathf.Clamp(p.x,wall.xMin,wall.xMax),Mathf.Clamp(p.y,wall.yMin,wall.yMax));
-                            if((nearest-p).sqrMagnitude<radius*radius)penetrations++;
-                        }
+                        if(CombatWalls.Overlaps(p,radius))penetrations++;
                     }
                     if(mode==RunDifficulty.Normal&&!captured&&Time.time-start>3.5f){ExportScene("Tunnel-"+budget);captured=true;}
                 }
@@ -207,14 +203,13 @@ public sealed class SolidSceneryRuntime : MonoBehaviour
             for(float travel=0;travel<60;travel+=.5f)
             {
                 CombatWalls.Solid.Clear();
-                foreach(var r in TunnelPassage.Sections(layout))CombatWalls.Solid.Add(new Rect(r.x,r.y-travel,r.width,r.height));
+                foreach(var r in TunnelPassage.Sections(layout))CombatWalls.Solid.Add(r.Translated(-travel));
                 for(float x=Camera.LeftLimit;x<=Camera.RightLimit;x+=.4f)
                     for(float y=Camera.DownLimit;y<=Camera.UpLimit;y+=.7f)
                     {
                         Vector3 p=CombatWalls.Constrain(new Vector3(x,y),new Vector3(x,y));cases++;
                         if(p.x<Camera.LeftLimit||p.x>Camera.RightLimit||p.y<Camera.DownLimit||p.y>Camera.UpLimit)trapped++;
-                        foreach(var r in CombatWalls.Solid)
-                            if(Rect.MinMaxRect(r.xMin-CombatWalls.HullRadius+.001f,r.yMin-CombatWalls.HullRadius+.001f,r.xMax+CombatWalls.HullRadius-.001f,r.yMax+CombatWalls.HullRadius-.001f).Contains(p))trapped++;
+                        if(CombatWalls.Overlaps(p,CombatWalls.HullRadius-.001f))trapped++;
                     }
             }
         Check(trapped==0,"moving wall recovery stays inside arena and outside masonry, including bottom corners: "+cases+" samples, "+trapped+" trapped");
