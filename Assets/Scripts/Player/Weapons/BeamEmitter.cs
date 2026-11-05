@@ -15,6 +15,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
     bool releasing;
     Vector3 attraction;
     bool hasAttraction;
+    float TickInterval => .12f / Mathf.Max(.1f, GameRules.playerShootSpeed / 10f * MagnifyingLens.Rate * ActiveRate);
 
     void Awake()
     {
@@ -90,22 +91,51 @@ public sealed class BeamEmitter : AWeaponAutomatic
         }
     }
 
-    bool Touches(Collider2D collider, float radius, out Vector2 point, out Vector2 direction)
+    int CountBeamContacts(Collider2D collider, float radius, out Vector2 point, out Vector2 direction)
     {
         point = transform.position;
         direction = Vector2.up;
-        if (collider == null || !collider.enabled)
-            return false;
+        if (collider == null || !collider.enabled || paths == null)
+            return 0;
+        int contacts = 0;
         foreach (var path in paths)
             for (int step = 1; step < path.Length; step++)
             {
-                if (BeamContact.Touches(collider, path[step - 1], path[step], radius, out point))
+                if (BeamContact.Touches(collider, path[step - 1], path[step], radius, out var hit))
                 {
-                    direction = (path[step] - path[step - 1]).normalized;
-                    return true;
+                    if (contacts == 0)
+                    {
+                        point = hit;
+                        direction = (path[step] - path[step - 1]).normalized;
+                    }
+                    contacts++;
+                    break; // One hit per beam, regardless of how many sampled segments overlap.
                 }
             }
-        return false;
+        return contacts;
+    }
+
+    void DamageTick(float width, float charge)
+    {
+        float damage = GameRules.playerShootDamage * 1.2f * charge * MagnifyingLens.Power;
+        targets.Clear();
+        targets.AddRange(AEnemy.Live);
+        foreach (var enemy in targets)
+        {
+            if (enemy == null || !enemy.CanBeTargeted) continue;
+            int contacts = CountBeamContacts(enemy.GetComponent<Collider2D>(), width * .5f, out var point, out var direction);
+            if (contacts > 0) CombatHit.Apply(enemy, damage * contacts, point, direction);
+        }
+        // Snapshot before damaging: a destroyed orb returns to its pool and leaves Live.
+        plasmaTargets.Clear();
+        foreach (var round in CombatRound.Live)
+            if (round is PlasmaOrb orb) plasmaTargets.Add(orb);
+        foreach (var orb in plasmaTargets)
+        {
+            if (orb == null) continue;
+            int contacts = CountBeamContacts(orb.GetComponent<Collider2D>(), width * .5f, out _, out _);
+            if (contacts > 0) orb.Hit(damage * contacts);
+        }
     }
 
     IEnumerator Fire()
@@ -168,24 +198,8 @@ public sealed class BeamEmitter : AWeaponAutomatic
             }
             if (active && t >= nextTick)
             {
-                nextTick = t + .12f / ActiveRate;
-                targets.Clear();
-                targets.AddRange(AEnemy.Live);
-                foreach (var enemy in targets)
-                {
-                    if (enemy == null || !enemy.CanBeTargeted || !Touches(enemy.GetComponent<Collider2D>(), width * .5f, out var point, out var direction))
-                        continue;
-                    float amount = GameRules.playerShootDamage * 1.2f * charge * MagnifyingLens.Power;
-                    CombatHit.Apply(enemy, amount, point, direction);
-                }
-                // Snapshot before damaging: a destroyed orb returns to its pool and leaves Live.
-                plasmaTargets.Clear();
-                foreach (var round in CombatRound.Live)
-                    if (round is PlasmaOrb orb)
-                        plasmaTargets.Add(orb);
-                foreach (var orb in plasmaTargets)
-                    if (orb != null && Touches(orb.GetComponent<Collider2D>(), width * .5f, out _, out _))
-                        orb.Hit(GameRules.playerShootDamage * 1.2f * charge * MagnifyingLens.Power);
+                nextTick = t + TickInterval;
+                DamageTick(width, charge);
             }
             yield return null;
         }
