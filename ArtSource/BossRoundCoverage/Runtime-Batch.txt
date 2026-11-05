@@ -1,0 +1,170 @@
+FAIL
+Native headless simulation. Nine fixed target positions, exact approved sprite contacts and live beam footprints. No rendering.
+START Normal-FieldsBomberBoss-1 native fixed-target audit
+PASS Normal-FieldsBomberBoss-1 contacts=9/9 simple=855 needle=909 peak=346 constructed=0
+START Normal-FieldsBomberBoss-2 native fixed-target audit
+PASS Normal-FieldsBomberBoss-2 contacts=9/9 simple=412 needle=204 peak=320 constructed=0
+START Normal-FieldsBomberBoss-3 native fixed-target audit
+PASS Normal-FieldsBomberBoss-3 contacts=9/9 simple=1511 needle=908 peak=457 constructed=0
+START Normal-PlainsRedKiteBoss-1 native fixed-target audit
+PASS Normal-PlainsRedKiteBoss-1 contacts=9/9 simple=684 needle=888 peak=283 constructed=0
+START Normal-PlainsRedKiteBoss-2 native fixed-target audit
+PASS Normal-PlainsRedKiteBoss-2 contacts=9/9 simple=794 needle=1040 peak=342 constructed=0
+START Normal-PlainsRedKiteBoss-3 native fixed-target audit
+PASS Normal-PlainsRedKiteBoss-3 contacts=9/9 simple=1262 needle=1503 peak=531 constructed=0
+START Normal-PlainsThreshingDrumBoss-1 native fixed-target audit
+PASS Normal-PlainsThreshingDrumBoss-1 contacts=9/9 simple=708 needle=468 peak=270 constructed=0
+START Normal-PlainsThreshingDrumBoss-2 native fixed-target audit
+PASS Normal-PlainsThreshingDrumBoss-2 contacts=9/9 simple=763 needle=593 peak=325 constructed=0
+START Normal-PlainsThreshingDrumBoss-3 native fixed-target audit
+PASS Normal-PlainsThreshingDrumBoss-3 contacts=9/9 simple=906 needle=778 peak=391 constructed=0
+START Normal-TunnelSawBoss-1 native fixed-target audit
+PASS Normal-TunnelSawBoss-1 contacts=9/9 simple=648 needle=0 peak=128 constructed=0
+START Normal-TunnelSawBoss-2 native fixed-target audit
+PASS Normal-TunnelSawBoss-2 contacts=9/9 simple=638 needle=308 peak=229 constructed=0
+START Normal-TunnelSawBoss-3 native fixed-target audit
+PASS Normal-TunnelSawBoss-3 contacts=9/9 simple=300 needle=491 peak=152 constructed=0
+START Normal-SnowSiegeBoss-1 native fixed-target audit
+PASS Normal-SnowSiegeBoss-1 contacts=9/9 simple=58 needle=334 peak=102 constructed=0
+START Normal-SnowSiegeBoss-2 native fixed-target audit
+PASS Normal-SnowSiegeBoss-2 contacts=9/9 simple=1317 needle=218 peak=425 constructed=0
+START Normal-SnowSiegeBoss-3 native fixed-target audit
+PASS Normal-SnowSiegeBoss-3 contacts=9/9 simple=225 needle=636 peak=212 constructed=0
+START Normal-SnowIcebreakerBoss-1 native fixed-target audit
+PASS Normal-SnowIcebreakerBoss-1 contacts=9/9 simple=729 needle=455 peak=202 constructed=0
+START Normal-SnowIcebreakerBoss-2 native fixed-target audit
+PASS Normal-SnowIcebreakerBoss-2 contacts=9/9 simple=1139 needle=465 peak=264 constructed=0
+START Normal-SnowIcebreakerBoss-3 native fixed-target audit
+PASS Normal-SnowIcebreakerBoss-3 contacts=9/9 simple=1313 needle=400 peak=317 constructed=0
+START Normal-ThunderLanceBoss-1 native fixed-target audit
+PASS Normal-ThunderLanceBoss-1 contacts=9/9 simple=252 needle=562 peak=162 constructed=0
+START Normal-ThunderLanceBoss-2 native fixed-target audit
+PASS Normal-ThunderLanceBoss-2 contacts=9/9 simple=144 needle=358 peak=87 constructed=0
+START Normal-ThunderLanceBoss-3 native fixed-target audit
+PASS Normal-ThunderLanceBoss-3 contacts=9/9 simple=240 needle=336 peak=103 constructed=0
+START Normal-CityDuoBoss-1 native fixed-target audit
+PASS Normal-CityDuoBoss-1 contacts=9/9 simple=873 needle=622 peak=322 constructed=0
+START Normal-CityDuoBoss-2 native fixed-target audit
+PASS Normal-CityDuoBoss-2 contacts=9/9 simple=703 needle=273 peak=212 constructed=0
+START Normal-CityDuoBoss-3 native fixed-target audit
+PASS Normal-CityDuoBoss-3 contacts=9/9 simple=1362 needle=165 peak=338 constructed=0
+START Normal-CityDuoBoss-2-Fast native fixed-target audit
+PASS Normal-CityDuoBoss-2-Fast contacts=9/9 simple=371 needle=666 peak=169 constructed=0
+START Normal-CitySwitchyardBoss-1 native fixed-target audit
+FAIL Normal-CitySwitchyardBoss-1 contacts=8/9 simple=867 needle=796 peak=208 constructed=0
+START Normal-CitySwitchyardBoss-2 native fixed-target audit
+PASS Normal-CitySwitchyardBoss-2 contacts=9/9 simple=656 needle=520 peak=247 constructed=0
+START Normal-CitySwitchyardBoss-3 native fixed-target audit
+PASS Normal-CitySwitchyardBoss-3 contacts=9/9 simple=1445 needle=1077 peak=319 constructed=0
+START Normal-DesertWormBoss-1 native fixed-target audit
+PASS Normal-DesertWormBoss-1 contacts=9/9 simple=457 needle=96 peak=185 constructed=0
+START Normal-DesertWormBoss-2 native fixed-target audit
+PASS Normal-DesertWormBoss-2 contacts=9/9 simple=314 needle=295 peak=79 constructed=0
+START Normal-DesertWormBoss-3 native fixed-target audit
+PASS Normal-DesertWormBoss-3 contacts=9/9 simple=473 needle=209 peak=101 constructed=0
+START Normal-CandyRegentBoss-1 native fixed-target audit
+PASS Normal-CandyRegentBoss-1 contacts=9/9 simple=772 needle=72 peak=211 constructed=0
+START Normal-CandyRegentBoss-2 native fixed-target audit
+PASS Normal-CandyRegentBoss-2 contacts=9/9 simple=640 needle=276 peak=210 constructed=0
+START Normal-CandyRegentBoss-3 native fixed-target audit
+PASS Normal-CandyRegentBoss-3 contacts=9/9 simple=721 needle=634 peak=336 constructed=0
+START Normal-SpaceCitadelBoss-1 native fixed-target audit
+PASS Normal-SpaceCitadelBoss-1 contacts=9/9 simple=1808 needle=2768 peak=758 constructed=0
+START Normal-SpaceCitadelBoss-2 native fixed-target audit
+PASS Normal-SpaceCitadelBoss-2 contacts=9/9 simple=529 needle=932 peak=191 constructed=0
+START Normal-SpaceCitadelBoss-3 native fixed-target audit
+PASS Normal-SpaceCitadelBoss-3 contacts=9/9 simple=2730 needle=4504 peak=734 constructed=0
+START Normal-AbyssSubmarineBoss-1 native fixed-target audit
+PASS Normal-AbyssSubmarineBoss-1 contacts=9/9 simple=348 needle=424 peak=137 constructed=0
+START Normal-AbyssSubmarineBoss-2 native fixed-target audit
+PASS Normal-AbyssSubmarineBoss-2 contacts=9/9 simple=692 needle=899 peak=340 constructed=0
+START Normal-AbyssSubmarineBoss-3 native fixed-target audit
+PASS Normal-AbyssSubmarineBoss-3 contacts=9/9 simple=914 needle=1294 peak=445 constructed=0
+START Normal-HellCrabBoss-1 native fixed-target audit
+PASS Normal-HellCrabBoss-1 contacts=9/9 simple=114 needle=203 peak=78 constructed=0
+START Normal-HellCrabBoss-2 native fixed-target audit
+PASS Normal-HellCrabBoss-2 contacts=9/9 simple=358 needle=651 peak=243 constructed=0
+START Normal-HellCrabBoss-3 native fixed-target audit
+PASS Normal-HellCrabBoss-3 contacts=9/9 simple=861 needle=1555 peak=403 constructed=0
+START Normal-SeraphJudicatorBoss-1 native fixed-target audit
+PASS Normal-SeraphJudicatorBoss-1 contacts=9/9 simple=1326 needle=1955 peak=708 constructed=0
+START Normal-SeraphJudicatorBoss-2 native fixed-target audit
+PASS Normal-SeraphJudicatorBoss-2 contacts=9/9 simple=1828 needle=2763 peak=1017 constructed=0
+START Normal-SeraphJudicatorBoss-3 native fixed-target audit
+PASS Normal-SeraphJudicatorBoss-3 contacts=9/9 simple=2316 needle=3510 peak=1230 constructed=0
+START Normal-VoidSovereignBoss-1 native fixed-target audit
+PASS Normal-VoidSovereignBoss-1 contacts=9/9 simple=1299 needle=1598 peak=718 constructed=0
+START Normal-VoidSovereignBoss-2 native fixed-target audit
+PASS Normal-VoidSovereignBoss-2 contacts=9/9 simple=573 needle=1071 peak=518 constructed=0
+START Normal-VoidSovereignBoss-3 native fixed-target audit
+PASS Normal-VoidSovereignBoss-3 contacts=9/9 simple=1574 needle=1226 peak=703 constructed=0
+START Normal-VoidSovereignBoss-4 native fixed-target audit
+PASS Normal-VoidSovereignBoss-4 contacts=9/9 simple=958 needle=1227 peak=870 constructed=0
+START Hard-FieldsBomberBoss-3 native fixed-target audit
+PASS Hard-FieldsBomberBoss-3 contacts=9/9 simple=3989 needle=1635 peak=960 constructed=0
+START Hard-PlainsRedKiteBoss-3 native fixed-target audit
+PASS Hard-PlainsRedKiteBoss-3 contacts=9/9 simple=2694 needle=3159 peak=1151 constructed=0
+START Hard-PlainsThreshingDrumBoss-3 native fixed-target audit
+PASS Hard-PlainsThreshingDrumBoss-3 contacts=9/9 simple=1853 needle=1867 peak=849 constructed=0
+START Hard-TunnelSawBoss-3 native fixed-target audit
+PASS Hard-TunnelSawBoss-3 contacts=9/9 simple=676 needle=1213 peak=341 constructed=0
+START Hard-SnowSiegeBoss-3 native fixed-target audit
+PASS Hard-SnowSiegeBoss-3 contacts=9/9 simple=538 needle=1307 peak=394 constructed=0
+START Hard-SnowIcebreakerBoss-3 native fixed-target audit
+PASS Hard-SnowIcebreakerBoss-3 contacts=9/9 simple=2873 needle=896 peak=638 constructed=0
+START Hard-ThunderLanceBoss-3 native fixed-target audit
+PASS Hard-ThunderLanceBoss-3 contacts=9/9 simple=354 needle=508 peak=137 constructed=0
+START Hard-CityDuoBoss-3 native fixed-target audit
+PASS Hard-CityDuoBoss-3 contacts=9/9 simple=2825 needle=360 peak=652 constructed=0
+START Hard-CityDuoBoss-2-Fast native fixed-target audit
+PASS Hard-CityDuoBoss-2-Fast contacts=9/9 simple=589 needle=1107 peak=259 constructed=0
+START Hard-CityDuoBoss-3-Fast native fixed-target audit
+PASS Hard-CityDuoBoss-3-Fast contacts=9/9 simple=1255 needle=2312 peak=461 constructed=0
+START Hard-CitySwitchyardBoss-3 native fixed-target audit
+PASS Hard-CitySwitchyardBoss-3 contacts=9/9 simple=1493 needle=1132 peak=592 constructed=0
+START Hard-DesertWormBoss-3 native fixed-target audit
+PASS Hard-DesertWormBoss-3 contacts=9/9 simple=754 needle=290 peak=166 constructed=0
+START Hard-CandyRegentBoss-3 native fixed-target audit
+PASS Hard-CandyRegentBoss-3 contacts=9/9 simple=1185 needle=953 peak=481 constructed=0
+START Hard-SpaceCitadelBoss-3 native fixed-target audit
+PASS Hard-SpaceCitadelBoss-3 contacts=9/9 simple=4891 needle=7808 peak=1541 constructed=0
+START Hard-AbyssSubmarineBoss-3 native fixed-target audit
+PASS Hard-AbyssSubmarineBoss-3 contacts=9/9 simple=1405 needle=2050 peak=614 constructed=0
+START Hard-HellCrabBoss-3 native fixed-target audit
+PASS Hard-HellCrabBoss-3 contacts=9/9 simple=962 needle=1784 peak=458 constructed=0
+START Hard-SeraphJudicatorBoss-3 native fixed-target audit
+PASS Hard-SeraphJudicatorBoss-3 contacts=9/9 simple=4978 needle=7433 peak=2257 constructed=0
+START Hard-VoidSovereignBoss-4 native fixed-target audit
+PASS Hard-VoidSovereignBoss-4 contacts=9/9 simple=1765 needle=1965 peak=1407 constructed=0
+START Easy-FieldsBomberBoss-1 native fixed-target audit
+PASS Easy-FieldsBomberBoss-1 contacts=9/9 simple=584 needle=683 peak=291 constructed=0
+START Easy-PlainsRedKiteBoss-1 native fixed-target audit
+PASS Easy-PlainsRedKiteBoss-1 contacts=9/9 simple=316 needle=345 peak=127 constructed=0
+START Easy-PlainsThreshingDrumBoss-1 native fixed-target audit
+PASS Easy-PlainsThreshingDrumBoss-1 contacts=9/9 simple=315 needle=140 peak=115 constructed=0
+START Easy-TunnelSawBoss-1 native fixed-target audit
+PASS Easy-TunnelSawBoss-1 contacts=9/9 simple=310 needle=0 peak=63 constructed=0
+START Easy-SnowSiegeBoss-1 native fixed-target audit
+PASS Easy-SnowSiegeBoss-1 contacts=9/9 simple=60 needle=179 peak=57 constructed=0
+START Easy-SnowIcebreakerBoss-1 native fixed-target audit
+PASS Easy-SnowIcebreakerBoss-1 contacts=9/9 simple=400 needle=214 peak=91 constructed=0
+START Easy-ThunderLanceBoss-1 native fixed-target audit
+PASS Easy-ThunderLanceBoss-1 contacts=9/9 simple=193 needle=308 peak=112 constructed=0
+START Easy-CityDuoBoss-1 native fixed-target audit
+PASS Easy-CityDuoBoss-1 contacts=9/9 simple=490 needle=402 peak=204 constructed=0
+START Easy-CitySwitchyardBoss-1 native fixed-target audit
+FAIL Easy-CitySwitchyardBoss-1 contacts=7/9 simple=950 needle=473 peak=144 constructed=0
+START Easy-DesertWormBoss-1 native fixed-target audit
+PASS Easy-DesertWormBoss-1 contacts=9/9 simple=264 needle=136 peak=168 constructed=0
+START Easy-CandyRegentBoss-1 native fixed-target audit
+PASS Easy-CandyRegentBoss-1 contacts=9/9 simple=462 needle=44 peak=127 constructed=0
+START Easy-SpaceCitadelBoss-1 native fixed-target audit
+PASS Easy-SpaceCitadelBoss-1 contacts=9/9 simple=1164 needle=1764 peak=372 constructed=0
+START Easy-AbyssSubmarineBoss-1 native fixed-target audit
+PASS Easy-AbyssSubmarineBoss-1 contacts=9/9 simple=376 needle=483 peak=87 constructed=0
+START Easy-HellCrabBoss-1 native fixed-target audit
+PASS Easy-HellCrabBoss-1 contacts=9/9 simple=48 needle=118 peak=47 constructed=0
+START Easy-SeraphJudicatorBoss-1 native fixed-target audit
+PASS Easy-SeraphJudicatorBoss-1 contacts=9/9 simple=648 needle=957 peak=436 constructed=0
+START Easy-VoidSovereignBoss-1 native fixed-target audit
+PASS Easy-VoidSovereignBoss-1 contacts=9/9 simple=767 needle=920 peak=399 constructed=0
