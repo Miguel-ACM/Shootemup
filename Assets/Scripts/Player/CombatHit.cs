@@ -3,6 +3,9 @@ using UnityEngine;
 // All direct player hits agree on damage eligibility before effects, feedback or score.
 public static class CombatHit
 {
+    public static event System.Action<AEnemy> PlayerHit;
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetObservers() => PlayerHit = null;
     public static float Apply(AEnemy enemy, float amount, Vector3 point, Vector2 incoming,
         int generation = 0, bool companion = false, bool fire = false, bool score = true)
     {
@@ -23,6 +26,8 @@ public static class CombatHit
         var result = dealt > 0 ? enemy.ReceiveDamage(dealt) : new DamageResult(true, 0, 0);
         if (score && result.Accepted)
             Score.IncreaseScore(Mathf.RoundToInt(dealt));
+        if (result.Accepted && generation == 0 && !companion && enemy != null && enemy.CanReceiveDamage)
+            PlayerHit?.Invoke(enemy);
         return result;
     }
 
