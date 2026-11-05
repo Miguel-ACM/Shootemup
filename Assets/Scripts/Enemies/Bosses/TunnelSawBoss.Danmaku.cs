@@ -56,7 +56,7 @@ public sealed partial class TunnelSawBoss
         for (int i = 0; i < rays; i++)
         {
             var axis = CombatVisuals.Rotate(inward, i * step + impacts * 7);
-            Fire<NeedleRound>(transform.position, axis, 4.8f, .19f);
+            ScoredShot(i%3==0,transform.position, axis, 4.8f);
             var tooth = Fire<SimpleRound>(transform.position, CombatVisuals.Rotate(axis, step * .5f), 1.6f, .3f);
             if (i % 2 == 0)
                 tooth.Bounce(2);
@@ -65,8 +65,9 @@ public sealed partial class TunnelSawBoss
         {
             // An aimed shotgun out of every impact, so a bounce near the player is a threat.
             var aim = CombatVisuals.Aim(transform.position);
-            for (int i = 0; i < Dense(5); i++)
-                Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(aim, (i - 2) * 9), 5.6f, .19f);
+            int aimedLanes = Dense(5) | 1;
+            for (int i = 0; i < aimedLanes; i++)
+                ScoredShot(i == aimedLanes / 2, transform.position, CombatVisuals.Rotate(aim, (i - (aimedLanes - 1) * .5f) * 9), 5.0f);
         }
         if (!runners)
             return;
@@ -112,6 +113,8 @@ public sealed partial class TunnelSawBoss
         int teeth = Dense(30);
         for (int ring = 0; ring < 6; ring++)
         {
+            if(ring%2==0)
+                Fire<SimpleRound>(transform.position,CombatVisuals.Aim(transform.position),2.8f,.23f);
             int sign = ring % 2 == 0 ? 1 : -1;
             int gap = (ring * 9) % teeth;
             for (int i = 0; i < teeth; i++)
@@ -161,7 +164,9 @@ public sealed partial class TunnelSawBoss
         Fire<GiantOrb>(embeddedAt[slot], inward, 0, .6f).LivesFor(4.2f);
         int rays = Dense(16);
         for (int i = 0; i < rays; i++)
-            Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(inward, i * 360f / rays + impacts * 11), 4.4f, .19f);
+            ScoredShot(i%3==0,transform.position, CombatVisuals.Rotate(inward, i * 360f / rays + impacts * 11), 4.4f);
+        // Only the impact may release this aimed tooth; travel remains silent.
+        Fire<SimpleRound>(transform.position,CombatVisuals.Aim(transform.position),3.0f,.23f);
     }
 
     IEnumerator FinalSpell()
@@ -179,7 +184,7 @@ public sealed partial class TunnelSawBoss
                 var axis = CombatVisuals.Rotate(embeddedFacing[slot], Mathf.Sin(n * .45f + slot * 1.7f) * 40);
                 int fan = Dense(5);
                 for (int i = 0; i < fan; i++)
-                    Fire<NeedleRound>(embeddedAt[slot], CombatVisuals.Rotate(axis, (i - (fan - 1) * .5f) * 13), 3.1f, .19f);
+                    ScoredShot(n%3==0,embeddedAt[slot], CombatVisuals.Rotate(axis, (i - (fan - 1) * .5f) * 13), 3.1f);
             }
         });
         overdrive = false;
