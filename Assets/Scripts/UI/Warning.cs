@@ -153,6 +153,7 @@ public class Warning : MonoBehaviour
 
     public void ShowFor(float seconds)
     {
+        ClearField();
         Prepare();
         elapsed = 0;
         showing = true;
@@ -171,6 +172,15 @@ public class Warning : MonoBehaviour
             heights[i] = 360 - pitch * (i + .5f);
         }
         AnimateRows();
+    }
+
+    public static void ClearField()
+    {
+        CombatRound.ClearAll();
+        foreach (var go in GameObject.FindGameObjectsWithTag("EnemyBullet"))
+            if (go.TryGetComponent<AEnemyBullet>(out var bullet)) bullet.Vanish();
+        // Always show the full-field wipe, including an already empty arena.
+        ClearEffects.ScreenClear();
     }
 
     void AnimateRows()

@@ -320,10 +320,16 @@ public class WaveOrchestrer : MonoBehaviour
 
     IEnumerator BossEntrance()
     {
-        BGMManager.QueueBoss(Warning.Duration - .4f);
-        SoundManager.PlaySound("bossWarning", .18f);
-        warning.ShowFor(Warning.Duration);
-        yield return new WaitForSeconds(Warning.Duration);
+        CombatDecision.Begin();
+        try
+        {
+            BGMManager.QueueBoss(Warning.Duration - .4f);
+            SoundManager.PlaySound("bossWarning", .18f);
+            warning.ShowFor(Warning.Duration);
+            yield return new WaitForSeconds(Warning.Duration);
+        }
+        finally { CombatDecision.End(); }
+        if (GameOverState.Active) yield break;
         SpawnBoss();
     }
 
