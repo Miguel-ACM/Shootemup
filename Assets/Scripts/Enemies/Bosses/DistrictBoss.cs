@@ -268,8 +268,13 @@ public abstract class DistrictBoss : DistrictEnemy
         }
     }
 
-    // Shared symmetric geometry. Every helper fires mirrored arrows around a centre
-    // line, so a boss's own mechanics stay distinct while its fire stays orderly.
+    // The score chooses the silhouette; both deliveries retain the same authored
+    // trajectory, district tint, pool and exact pixel contact path.
+    protected CombatRound ScoredShot(bool circular, Vector3 port, Vector2 axis, float speed, float radius = .19f)
+        => circular ? (CombatRound)Fire<SimpleRound>(port, axis, speed, radius) : Fire<NeedleRound>(port, axis, speed, radius);
+
+    // Shared symmetric geometry mixes arrow ribbons with circular accents around
+    // a centre line; the owner's score controls their direction and timing.
 
     // Mirrored pendulum streams from two ports: a lace that opens and folds.
     protected IEnumerator MirrorLace(Transform anchor, Vector3 leftLocal, Vector3 rightLocal, int steps, int arms, float swing, float armGap, float speed, float interval, int sign = 1)
@@ -284,8 +289,9 @@ public abstract class DistrictBoss : DistrictEnemy
             for (int arm = 0; arm < arms; arm++)
             {
                 float a = angle + (arm - (arms - 1) * .5f) * armGap;
-                Fire<NeedleRound>(left.TransformPoint(leftLocal), CombatVisuals.Rotate(Vector2.down, -a), speed, .19f);
-                Fire<NeedleRound>(right.TransformPoint(rightLocal), CombatVisuals.Rotate(Vector2.down, a), speed, .19f);
+                bool circular=(i/4+arm)%3==0;
+                ScoredShot(circular,left.TransformPoint(leftLocal), CombatVisuals.Rotate(Vector2.down, -a), speed);
+                ScoredShot(circular,right.TransformPoint(rightLocal), CombatVisuals.Rotate(Vector2.down, a), speed);
             }
             yield return Wait(Rest(interval));
         }
@@ -297,7 +303,7 @@ public abstract class DistrictBoss : DistrictEnemy
         float step = arc / Mathf.Max(1, lanes - 1);
         for (int layer = 0; layer < layers; layer++)
             for (int i = 0; i < lanes; i++)
-                Fire<NeedleRound>(port, CombatVisuals.Rotate(axis, (i - (lanes - 1) * .5f) * step + (layer % 2) * step * .5f), speed + layer * layerStep, .19f);
+                ScoredShot(layer==0,port, CombatVisuals.Rotate(axis, (i - (lanes - 1) * .5f) * step + (layer % 2) * step * .5f), speed + layer * layerStep);
     }
 
     // Rows of arrow chevrons aimed at the player, each row a wider V.
@@ -307,7 +313,7 @@ public abstract class DistrictBoss : DistrictEnemy
         for (int row = 0; row < rows && anchor != null; row++)
         {
             var port = anchor.TransformPoint(local);
-            Fire<NeedleRound>(port, aim, speed, .19f);
+            Fire<SimpleRound>(port, aim, speed, .21f);
             for (int k = 1; k <= 2 + row; k++)
                 for (int mirror = -1; mirror <= 1; mirror += 2)
                     Fire<NeedleRound>(port, CombatVisuals.Rotate(aim, mirror * k * 7), speed - k * .12f, .19f);
