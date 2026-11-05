@@ -26,7 +26,7 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
                 float lane = i - (flakes - 1) * .5f;
                 Fire<SimpleRound>(p, CombatVisuals.Rotate(Vector2.up, lane * 4), 9 + (i % 3), .16f).FadeAt(.45f);
                 float x = Mathf.Lerp(Camera.LeftLimit + .3f, Camera.RightLimit - .3f, (i + (volley / 2 % 2) * .5f) / flakes);
-                CombatRound.Launch<SimpleRound>(new Vector3(x, Camera.UpLimit + .4f), Vector2.down, 1.5f + (i % 3) * .3f, .19f)
+                CombatRound.Launch<SimpleRound>(new Vector3(x, CombatRound.Border.yMax + .8f), Vector2.down, 1.5f + (i % 3) * .3f, .19f)
                     .Pause(.05f, .6f + (i % 4) * .15f, CombatRound.Turn.Down, lane, 1)
                     .Sway(i % 2 == 0 ? .35f : -.35f, .45f);
             }
