@@ -94,14 +94,14 @@ public class Menu : MonoBehaviour
 
     void ToggleMenu(InputAction.CallbackContext context)
     {
-        if (!isActiveAndEnabled || Suspended || CloudTransition.Busy || GameOverState.Active) return;
+        if (!isActiveAndEnabled || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput) return;
         handledFrame = Time.frameCount;
         if (menuOpen && context.control.device is Keyboard && settings != null && settings.TryBack()) return;
         setMenuOpen(!menuOpen);
     }
     void OnBack(InputAction.CallbackContext context)
     {
-        if (!isActiveAndEnabled || !menuOpen || Suspended || CloudTransition.Busy || GameOverState.Active) return;
+        if (!isActiveAndEnabled || !menuOpen || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput) return;
         handledFrame = Time.frameCount;
         if (settings != null && settings.TryBack()) return;
         if (!alwaysOpen)
@@ -177,7 +177,7 @@ public class Menu : MonoBehaviour
 
     public void TryAccept(AMenuElement element)
     {
-        if (!isActiveAndEnabled || !menuOpen || Suspended || CloudTransition.Busy || GameOverState.Active || element == null || Array.IndexOf(menuElements, element) < 0)
+        if (!isActiveAndEnabled || !menuOpen || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput || element == null || Array.IndexOf(menuElements, element) < 0)
             return;
         handledFrame = Time.frameCount;
         setCurrentElement(element);

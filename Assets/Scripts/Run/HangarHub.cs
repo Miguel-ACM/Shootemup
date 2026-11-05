@@ -103,9 +103,11 @@ public sealed partial class HangarHub : MonoBehaviour
     float inlet;
 
     /// <summary>The hangar is placing the ship itself (its entrance); the controller leaves its position alone.</summary>
+    static bool holdingShip;
     public static bool HoldingShip
     {
-        get; private set;
+        get => holdingShip || UnlockReveal.BlocksInput;
+        private set => holdingShip = value;
     }
 
     /// <summary>True from the launch until the run's content has started, so the core skips its own setup.</summary>
@@ -487,16 +489,17 @@ public sealed partial class HangarHub : MonoBehaviour
         float below = center.y - view.orthographicSize - ArrivalDepth;
         float t = 1 - Mathf.Pow(1 - flight, 3);
         player.transform.position = new Vector3(parkedAt.x, cameraTravel + Mathf.Lerp(below, parkedAt.y, t), parkedAt.z);
-        if (flight >= 1 && deckReady)
+        if (flight >= 1 && deckReady && !Menu.GameplayPaused && !CloudTransition.Busy)
         {
             Arriving = false;
             HoldingShip = false;
+            UnlockReveal.Show(transform, dialog?.font);
         }
     }
 
     void Update()
     {
-        if (!deckReady || player == null || launching || Menu.GameplayPaused)
+        if (!deckReady || player == null || launching || Menu.GameplayPaused || UnlockReveal.BlocksInput)
             return;
         // Debug: K unlocks every item.
         if (Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
@@ -560,7 +563,7 @@ public sealed partial class HangarHub : MonoBehaviour
 
     void Interact(InputAction.CallbackContext context)
     {
-        if (!deckReady || player == null || launching || Arriving || Menu.GameplayPaused || Menu.HandledInputThisFrame || GameOverState.Active || CloudTransition.Busy)
+        if (!deckReady || player == null || launching || Arriving || Menu.GameplayPaused || Menu.HandledInputThisFrame || GameOverState.Active || CloudTransition.Busy || UnlockReveal.BlocksInput)
             return;
         var p = player.transform.position;
         if (UseDock(context, p))
