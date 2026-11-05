@@ -51,7 +51,7 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
                         // equal row depths. Even the last planted row finishes before
                         // the shared release; no reversals or faster rows catching up.
                         float plant = FirstPlant + row * PlantStep;
-                        Fire<NeedleRound>(port, Vector2.down, 3.2f, .18f)
+                        ScoredShot(row%3==0,port, Vector2.down, 3.2f, .18f)
                             .Pause(plant, travelLeft + lastPlant + .30f - plant,
                                 CombatRound.Turn.Down, speed: 1.05f);
                     }
@@ -63,6 +63,8 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
             int pods = Dense(phaseThree ? 7 : phaseTwo ? 6 : 5);
             for (int pod = 0; pod < pods; pod++)
             {
+                // The chute's kernels cross the old furrow between windrow releases.
+                if(pod%2==0)Fire<SimpleRound>(Muzzle(),CombatVisuals.Aim(Muzzle()),3.1f,.22f);
                 for (int mirror = -1; mirror <= 1; mirror += 2)
                     // The chute throws chaff sideways. Alternating pods turn into
                     // ascending and descending diagonal combs rather than another rain.
@@ -83,8 +85,8 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
                     for (int tine = 0; tine < Dense(5); tine++)
                     {
                         float offset = (tine - (Dense(5) - 1) * .5f) * 9;
-                        Fire<NeedleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.right, spread + offset), 3.3f).Bounce(1, false);
-                        Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(Vector2.left, -spread - offset), 3.3f).Bounce(1, false);
+                        ScoredShot(tooth%3==0,Muzzle(1), CombatVisuals.Rotate(Vector2.right, spread + offset), 3.3f).Bounce(1, false);
+                        ScoredShot(tooth%3==0,Muzzle(2), CombatVisuals.Rotate(Vector2.left, -spread - offset), 3.3f).Bounce(1, false);
                     }
                     yield return Wait(Rest(.11f));
                 }
