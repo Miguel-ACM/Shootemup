@@ -1,0 +1,43 @@
+PASS FieldsBomberBoss catalog entry
+PASS FieldsBomberBoss visible part animation
+PASS FieldsBomberBoss authored mechanism rig
+PASS PlainsRedKiteBoss catalog entry
+PASS PlainsRedKiteBoss visible part animation
+PASS PlainsRedKiteBoss authored mechanism rig
+PASS PlainsThreshingDrumBoss catalog entry
+PASS PlainsThreshingDrumBoss visible part animation
+PASS PlainsThreshingDrumBoss authored mechanism rig
+PASS TunnelSawBoss catalog entry
+PASS TunnelSawBoss visible part animation
+PASS TunnelSawBoss authored mechanism rig
+PASS SnowSiegeBoss catalog entry
+PASS SnowSiegeBoss visible part animation
+PASS SnowSiegeBoss authored mechanism rig
+PASS SnowIcebreakerBoss catalog entry
+PASS SnowIcebreakerBoss visible part animation
+PASS SnowIcebreakerBoss authored mechanism rig
+PASS ThunderLanceBoss catalog entry
+PASS ThunderLanceBoss visible part animation
+PASS ThunderLanceBoss authored mechanism rig
+PASS CityDuoBoss catalog entry
+PASS CityDuoBoss visible part animation
+PASS CityDuoBoss authored mechanism rig
+PASS CitySwitchyardBoss catalog entry
+PASS CitySwitchyardBoss visible part animation
+PASS CitySwitchyardBoss authored mechanism rig
+PASS DesertWormBoss catalog entry
+PASS DesertWormBoss visible part animation
+PASS DesertWormBoss authored mechanism rig
+PASS CandyRegentBoss catalog entry
+PASS CandyRegentBoss visible part animation
+PASS CandyRegentBoss authored mechanism rig
+PASS SpaceCitadelBoss catalog entry
+PASS SpaceCitadelBoss authored mechanism rig
+PASS AbyssSubmarineBoss catalog entry
+PASS AbyssSubmarineBoss visible part animation
+PASS AbyssSubmarineBoss authored mechanism rig
+PASS HellCrabBoss catalog entry
+PASS HellCrabBoss visible part animation
+PASS HellCrabBoss authored mechanism rig
+PASS Heaven three-phase review retained from initial batch
+PASS VoidSovereignBoss catalog entry

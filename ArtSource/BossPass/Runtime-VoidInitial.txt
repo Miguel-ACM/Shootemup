@@ -1,0 +1,29 @@
+FAIL
+Headless simulation; meshes exported for offline rendered review.
+PASS VoidSovereignBoss catalog entry
+PASS Void-1 both authored cards play
+PASS Void-1 live round peak 921
+PASS Void-1 uses prepared bullet pool
+PASS Void-1 teleports with damage, targeting and contact disabled
+PASS Void-1 white spell break
+PASS Void-1 15 active second survival interlude
+PASS Void-2 both authored cards play
+PASS Void-2 live round peak 707
+PASS Void-2 uses prepared bullet pool
+PASS Void-2 teleports with damage, targeting and contact disabled
+PASS Void-2 white spell break
+PASS Void-2 15 active second survival interlude
+PASS Void-3 both authored cards play
+PASS Void-3 live round peak 878
+PASS Void-3 uses prepared bullet pool
+PASS Void-3 teleports with damage, targeting and contact disabled
+PASS Void-3 white spell break
+PASS Void-3 15 active second survival interlude
+PASS Void-4 both authored cards play
+PASS Void-4 live round peak 877
+FAIL Void-4 uses prepared bullet pool
+PASS Void-4 teleports with damage, targeting and contact disabled
+PASS Completed mechanical and Heaven checks retained
+FAIL No runtime exceptions in completed cases
+Void-4 uses prepared bullet pool
+No runtime exceptions in completed cases

@@ -1,0 +1,10 @@
+PASS
+Headless simulation; meshes exported for offline rendered review.
+PASS VoidSovereignBoss catalog entry
+PASS Void-4 both authored cards play
+PASS Void-4 live round peak 880
+PASS Void-4 uses prepared bullet pool (created 0)
+PASS Void-4 teleports with damage, targeting and contact disabled
+PASS Completed mechanical and Heaven checks retained
+PASS Completed Void form, teleport and interlude checks retained
+PASS All completed runtime assertions passed
