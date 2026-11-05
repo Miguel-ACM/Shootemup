@@ -141,7 +141,7 @@ public sealed partial class SpaceCitadelBoss
                 var point=center+(Vector3)radial*radius;
                 if(!SafeAccretionPoint(point,.25f))continue;
                 var heading=CombatVisuals.Rotate(-radial,ring%2==0?23:-23);
-                Fire<NeedleRound>(point,heading,1.05f+radius*.055f,.19f)
+                ScoredShot(ring%3==0,point,heading,1.05f+radius*.055f)
                     .Absorb(CoreBody,5.2f,.6f).LivesFor(14);
             }
         }
@@ -174,15 +174,17 @@ public sealed partial class SpaceCitadelBoss
             for(int mirror=-1;mirror<=1;mirror+=2)
             {
                 var radial = CombatVisuals.Rotate(Vector2.down, mirror * (n * 9 + arm * 360f / arms));
-                Fire<NeedleRound>(Core, CombatVisuals.Rotate(radial, mirror * twist), .5f, .19f).Repel(Core, 7).LivesFor(9);
+                ScoredShot(n%9<3,Core, CombatVisuals.Rotate(radial, mirror * twist), .5f).Repel(Core, 7).LivesFor(9);
             }
     }
 
     // A full ring flung out between the arms, offset every time.
     void ExpelRing(int n, int beads)
     {
+        // A comet down the pilot's current line keeps the rotating seam transient.
+        Fire<SimpleRound>(Core,CombatVisuals.Aim(Core),2.7f,.24f).Repel(Core,1.2f).LivesFor(10);
         for (int i = 0; i < beads; i++)
-            Fire<NeedleRound>(Core, CombatVisuals.Rotate(Vector2.down, n * 7.3f + i * 360f / beads), .7f, .19f).Repel(Core, 6).LivesFor(9);
+            ScoredShot(i%3==0,Core, CombatVisuals.Rotate(Vector2.down, n * 7.3f + i * 360f / beads), .7f).Repel(Core, 6).LivesFor(9);
     }
 
     void ExpelStars(int n, int count)
@@ -214,7 +216,7 @@ public sealed partial class SpaceCitadelBoss
         float travel = .9f;
         float speed = radius / (travel - .175f);
         for (int i = 0; i < beads; i++)
-            Fire<NeedleRound>(Core, CombatVisuals.Rotate(Vector2.down, offset + i * 360f / beads), WorldSpeed(speed), .19f)
+            ScoredShot(i%3==0,Core, CombatVisuals.Rotate(Vector2.down, offset + i * 360f / beads), WorldSpeed(speed))
                 .Pause(travel, .7f, CombatRound.Turn.Rotate, 180, 2.6f / speed)
                 .LivesFor(9);
     }
