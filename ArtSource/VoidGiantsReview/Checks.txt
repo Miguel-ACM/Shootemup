@@ -1,0 +1,47 @@
+PASS Easy form 1: both cards complete with giant peaks 71/61.
+PASS Easy form 1: total peak 410, giant peak 71; warmed reserves only.
+Easy form 1: complete CPU frames p95=2,807ms, max=6,338ms; physics max=0,384ms. Rendering/capture frames excluded.
+PASS Easy interlude 1 giant peak=28; no projectile construction.
+PASS Easy form 2: both cards complete with giant peaks 16/33.
+PASS Easy form 2: total peak 260, giant peak 33; warmed reserves only.
+Easy form 2: complete CPU frames p95=3,314ms, max=12,392ms; physics max=0,601ms. Rendering/capture frames excluded.
+PASS Easy interlude 2 giant peak=36; no projectile construction.
+PASS Easy form 4: both cards complete with giant peaks 53/72.
+PASS Easy form 4: total peak 444, giant peak 72; warmed reserves only.
+Easy form 4: complete CPU frames p95=3,335ms, max=12,146ms; physics max=0,810ms. Rendering/capture frames excluded.
+PASS Normal form 1: both cards complete with giant peaks 126/120.
+PASS Normal form 1: total peak 738, giant peak 126; warmed reserves only.
+Normal form 1: complete CPU frames p95=3,744ms, max=9,210ms; physics max=3,527ms. Rendering/capture frames excluded.
+PASS Normal interlude 1 giant peak=52; no projectile construction.
+PASS Normal form 2: both cards complete with giant peaks 36/51.
+PASS Normal form 2: total peak 478, giant peak 51; warmed reserves only.
+Normal form 2: complete CPU frames p95=3,279ms, max=10,058ms; physics max=0,797ms. Rendering/capture frames excluded.
+PASS Normal interlude 2 giant peak=61; no projectile construction.
+PASS Normal form 3: both cards complete with giant peaks 171/142.
+PASS Normal form 3: total peak 732, giant peak 171; warmed reserves only.
+Normal form 3: complete CPU frames p95=3,964ms, max=10,637ms; physics max=3,601ms. Rendering/capture frames excluded.
+PASS Normal interlude 3 giant peak=78; no projectile construction.
+PASS Normal form 4: both cards complete with giant peaks 93/180.
+PASS Normal form 4: total peak 849, giant peak 180; warmed reserves only.
+Normal form 4: complete CPU frames p95=4,561ms, max=13,676ms; physics max=3,983ms. Rendering/capture frames excluded.
+PASS Hard form 1: both cards complete with giant peaks 189/198.
+PASS Hard form 1: total peak 1440, giant peak 198; warmed reserves only.
+Hard form 1: complete CPU frames p95=5,888ms, max=13,013ms; physics max=1,491ms. Rendering/capture frames excluded.
+PASS Hard interlude 1 giant peak=96; no projectile construction.
+PASS Hard form 2: both cards complete with giant peaks 58/94.
+PASS Hard form 2: total peak 836, giant peak 94; warmed reserves only.
+Hard form 2: complete CPU frames p95=5,345ms, max=10,894ms; physics max=4,063ms. Rendering/capture frames excluded.
+PASS Hard interlude 2 giant peak=100; no projectile construction.
+PASS Hard form 3: both cards complete with giant peaks 279/264.
+PASS Hard form 3: total peak 1328, giant peak 279; warmed reserves only.
+Hard form 3: complete CPU frames p95=6,714ms, max=16,806ms; physics max=5,715ms. Rendering/capture frames excluded.
+PASS Hard interlude 3 giant peak=144; no projectile construction.
+PASS Hard form 4: both cards complete with giant peaks 154/273.
+PASS Hard form 4: total peak 1406, giant peak 273; warmed reserves only.
+Hard form 4: complete CPU frames p95=6,729ms, max=12,232ms; physics max=4,425ms. Rendering/capture frames excluded.
+PASS Giant hitboxes use 25% of artwork size; ordinary rounds retain 60%.
+PASS Giant artwork sits behind smaller hostile rounds, still above the player hull.
+PASS 1800 rotated/scaled giant contacts match native scaled opaque pixels; broad-phase misses=0, mismatches=0.
+PASS Generous giant graze margin: 437 contact poses versus 1341 with the old hitbox.
+PASS Pooled giants retain the compact native broad phase and exact small hitbox.
+PASS Screen clearing removes giant orbs and other rounds.

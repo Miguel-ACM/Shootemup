@@ -1,0 +1,41 @@
+Void giant bullets — 6 November 2026
+
+Giant orbs now appear in every Void spell card and each one-sided interlude.
+Selected existing lanes become slower large crowns, preserving each form's
+mirrored geometry, firing ports, moving gaps, and downward pressure. False Stars
+uses mirrored comet clusters; the existing split-shard budget is divided among
+the comets rather than multiplied. The final form's charged anti-camping fire
+remains intact.
+
+All GiantOrb instances use a 0.25 scaled opaque-pixel mask, down from the default
+0.60. This is approximately 83% less authored mask area, before the unchanged
+native polygon skin. Transparent holes remain transparent to contact. Other
+bullet hitboxes retain their previous size. Giants' native broad-phase contacts
+are compact too, and smaller hostile sprites draw above their large visuals.
+
+One isolated command-line review covered both cards of every available form
+and every transition on Easy, Normal, and Hard. All passed. Peak live count was
+1440, including a maximum of 279 giants in one form; no new projectile objects
+were created after preparation. The 3600-live/7400-pool budgets and 800 warmed
+giants are unchanged.
+
+1800 random rotated/scaled contacts against circle, player-hexagon, and box
+targets matched native scaled opaque-pixel colliders, with zero broad-phase
+misses. Pool reuse, screen clearing, ordinary hitbox size, and render order
+also passed. See Checks.txt for individual results.
+
+Complete CPU frame sampling includes gameplay updates and subsequent physics;
+the highest form p95 was 6.729 ms. Rendering was disabled between captures, and
+capture frames plus the following three frames were excluded. These are CPU
+simulation measurements, not a rendered-frame or GPU performance guarantee.
+
+Reviewed all eight card captures, all three interlude captures, and sampled
+motion frames from the final lattice. The enlarged crowns repeat along the
+authored seams and their rims deliberately overlap. Small shots remain layered
+above them. Void-giants.mp4 contains 4.8 seconds of native offscreen capture at
+15 fps. Existing projectile artwork, colors, and bloom remain unchanged.
+
+Windows player build succeeded with zero errors and zero warnings. Review ran
+in Build/ReviewCache/Temp/UnlockReview with isolated saves and no live editor
+interaction. The build overwrites that checkout's existing Build/VoidBackdrop
+player. Player feel remains for Miguel's own play review.

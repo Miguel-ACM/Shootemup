@@ -78,14 +78,14 @@ public sealed partial class VoidSovereignBoss
                 {
                     // Funeral fans: mirrored peacock feathers open as one moving wavefront.
                     float angle=side*(u*57+Mathf.Sin(beat*.16f)*22);
-                    WovenShot(i,p,CombatVisuals.Rotate(inward,angle),
+                    WovenShot(i,beat,chapter,p,CombatVisuals.Rotate(inward,angle),
                         3.0f+.9f*(1-u*u)).Ramp(1.25f,1.1f,1).FadeAt(10);
                 }
                 else if(chapter==2)
                 {
                     // Scissor brocade: all strands hinge together, preserving the ordered comb.
                     float angle=side*(u*51+24*Mathf.Sin(beat*.21f));
-                    WovenShot(i,p,CombatVisuals.Rotate(inward,angle),
+                    WovenShot(i,beat,chapter,p,CombatVisuals.Rotate(inward,angle),
                         2.7f+.6f*(1-u*u))
                         .Pause(.85f,.20f,CombatRound.Turn.Rotate,-side*26,1.2f).FadeAt(10);
                     if(beat%3==0&&i%4==0)
@@ -96,12 +96,16 @@ public sealed partial class VoidSovereignBoss
                     // Unmaking: opposed, scalloped fronts interleave fast crests and slow troughs.
                     float angle=side*(u*64+18*Mathf.Sin(beat*.2f));
                     float speed=3.0f+.75f*Mathf.Cos(u*Mathf.PI*2+beat*.22f);
-                    WovenShot(i,p,CombatVisuals.Rotate(inward,angle),speed)
+                    WovenShot(i,beat,chapter,p,CombatVisuals.Rotate(inward,angle),speed)
                         .Sway(.16f,.5f).Ramp(1.3f,1,1).FadeAt(10);
                 }
             }
         }
     }
-    static CombatRound WovenShot(int lane,Vector3 p,Vector2 axis,float speed)
-        =>lane%4==0?(CombatRound)CombatRound.Launch<SimpleRound>(p,axis,speed,.19f):CombatRound.Launch<NeedleRound>(p,axis,speed,.17f);
+    static CombatRound WovenShot(int lane,int beat,int chapter,Vector3 p,Vector2 axis,float speed)
+    {
+        if(beat%2==0&&(lane+beat/2)%4==1)
+            return CombatRound.Launch<GiantOrb>(p,axis,speed*.72f,chapter==3?.72f:.62f);
+        return lane%4==0?(CombatRound)CombatRound.Launch<SimpleRound>(p,axis,speed,.19f):CombatRound.Launch<NeedleRound>(p,axis,speed,.17f);
+    }
 }

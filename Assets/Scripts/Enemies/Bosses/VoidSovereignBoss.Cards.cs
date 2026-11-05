@@ -11,6 +11,8 @@ public sealed partial class VoidSovereignBoss
         return beam;
     }
     static float Across(int i,int count)=>count<=1?0:i/(count-1f)*2-1;
+    CombatRound CrownedShot(bool giant,bool circular,Vector3 port,Vector2 axis,float speed,float radius=.17f,float crown=.60f)
+        =>giant?(CombatRound)Fire<GiantOrb>(port,axis,speed*.72f,crown):ScoredShot(circular,port,axis,speed,radius);
     static int BankCount(int count,int bank)
     {
         int upper=Mathf.Max(1,Mathf.RoundToInt(count*.55f));
@@ -49,8 +51,8 @@ public sealed partial class VoidSovereignBoss
                 {
                     float u=Across(i,BankCount(count,bank)),angle=side*(fold+u*25);
                     Vector2 axis=bank>0?Vector2.up:Vector2.down;
-                    ScoredShot(beat%3==0,Port(side<0?0:1),CombatVisuals.Rotate(axis,angle),
-                        2.0f+.6f*(1-u*u),.17f).Ramp(1.35f,1.6f,1.2f).FadeAt(7.8f);
+                    CrownedShot(beat%2==0&&i%4==1,beat%3==0,Port(side<0?0:1),CombatVisuals.Rotate(axis,angle),
+                        2.0f+.6f*(1-u*u),.17f,.58f).Ramp(1.35f,1.6f,1.2f).FadeAt(7.8f);
                 }
     });
 
@@ -67,8 +69,8 @@ public sealed partial class VoidSovereignBoss
                 {
                     float u=Across(i,BankCount(count,bank));
                     Vector2 axis=bank>0?Vector2.up:Vector2.down;
-                    Fire<SimpleRound>(Port(side<0?0:1),CombatVisuals.Rotate(axis,side*(42+u*30)),
-                        2.5f+.7f*(1-u*u),.22f)
+                    CrownedShot((i+beat)%4==1,true,Port(side<0?0:1),CombatVisuals.Rotate(axis,side*(42+u*30)),
+                        2.5f+.7f*(1-u*u),.22f,.64f)
                         .Pause(.76f,.48f,CombatRound.Turn.Rotate,side*bank*(beat%2==0?24:-24),.9f).FadeAt(8);
                     // The choir's short answer follows the empty crease between pearl ribs.
                     if(i%3==0)
@@ -89,7 +91,7 @@ public sealed partial class VoidSovereignBoss
             {
                 float u=Across(i,count);
                 var axis=CombatVisuals.Rotate(Vector2.down,side*(stroke+u*14));
-                ScoredShot(beat%3==0,Port(side<0?0:1),axis,2.35f+.42f*u,.17f).FadeAt(7.4f);
+                CrownedShot(beat%4==0&&i%3==1,beat%3==0,Port(side<0?0:1),axis,2.35f+.42f*u,.17f,.56f).FadeAt(7.4f);
                 if(beat%3==0)Fire<RicochetBolt>(Port(side<0?0:1),-axis,2.15f,.19f).Bounce(1).FadeAt(6.6f);
             }
     });
@@ -105,8 +107,8 @@ public sealed partial class VoidSovereignBoss
             for(int side=-1;side<=1;side+=2)for(int i=0;i<count;i++)
             {
                 float u=Across(i,count),pleat=9*Mathf.Sin(beat*.35f);
-                ScoredShot(i%3==0,Port(side<0?0:1),CombatVisuals.Rotate(Vector2.down,side*(38+u*27+pleat)),
-                    2.1f+.35f*(1-u*u),.17f)
+                CrownedShot(beat%2==0&&i%4==1,i%3==0,Port(side<0?0:1),CombatVisuals.Rotate(Vector2.down,side*(38+u*27+pleat)),
+                    2.1f+.35f*(1-u*u),.17f,.60f)
                     .Pause(1.2f,.22f,i==count/2?CombatRound.Turn.Aim:CombatRound.Turn.Rotate,i==count/2?0:-side*24,1.25f).FadeAt(8);
             }
         });
@@ -124,7 +126,8 @@ public sealed partial class VoidSovereignBoss
             {
                 float u=Across(i,BankCount(count,bank));
                 var axis=CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,side*(24+u*32+Mathf.Sin(beat*.3f)*8));
-                ScoredShot(beat%3==0,Port(side<0?0:1),axis,1.8f+.95f*(1-u*u),.18f).Ramp(1.4f,1.5f,1.4f).FadeAt(8);
+                CrownedShot((i+beat)%5==2,beat%3==0,Port(side<0?0:1),axis,1.8f+.95f*(1-u*u),.18f,.70f)
+                    .Ramp(1.4f,1.5f,1.4f).FadeAt(8);
             }
         if(beat%3==0)for(int side=-1;side<=1;side+=2)
             Fire<PlasmaOrb>(Port(side<0?0:1),CombatVisuals.Rotate(Vector2.down,side*58),1.2f,.36f).FadeAt(7);
@@ -134,16 +137,22 @@ public sealed partial class VoidSovereignBoss
     {
         for(int port=0;port<2;port++)
             Fire<SimpleRound>(Port(port),CombatVisuals.Aim(Port(port)),2.8f,.23f);
-        // Four crowned comets unfurl matching arrow fans, rather than unrelated mines and carriers.
+        // Mirrored comet triplets unfurl matching fans. Split the existing shard
+        // budget between their large crowns rather than tripling the small shots.
         for(int side=-1;side<=1;side+=2)for(int bank=-1;bank<=1;bank+=2)
         {
             var axis=CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,side*(38+beat%2*12));
             int shards=BankCount(Dense(29),bank);
-            Fire<GiantOrb>(Port(side<0?0:1),axis,1.8f,.44f)
-                .Ramp(.65f,.7f).SplitAt(1.7f,shards,82f/Mathf.Max(1,shards-1),2.3f,.16f).FadeAt(6);
+            int comets=Dense(3);
+            for(int comet=0;comet<comets;comet++)
+            {
+                int pieces=shards/comets+(comet<shards%comets?1:0);
+                Fire<GiantOrb>(Port(side<0?0:1),CombatVisuals.Rotate(axis,Across(comet,comets)*13),1.8f,.72f)
+                    .Ramp(.65f,.7f).SplitAt(1.9f+comet*.12f,pieces,82f/Mathf.Max(1,pieces-1),2.3f,.16f).FadeAt(6);
+            }
             int count=BankCount(Dense(11),bank);
             for(int i=0;i<count;i++)
-                Fire<SimpleRound>(Port(side<0?0:1),CombatVisuals.Rotate(axis,Across(i,count)*26),1.2f,.21f).FadeAt(8);
+                CrownedShot((i+beat)%4==1,true,Port(side<0?0:1),CombatVisuals.Rotate(axis,Across(i,count)*26),1.2f,.21f,.56f).FadeAt(8);
         }
     });
 
@@ -156,8 +165,8 @@ public sealed partial class VoidSovereignBoss
         {
             Vector2 axis=FractureAxis(port);
             float u=Across(i,FractureCount(count,port)),sign=port%2==0?-1:1;
-            ScoredShot(beat%3==0,Port(port),CombatVisuals.Rotate(axis,u*36+sign*Mathf.Sin(beat*.25f)*19),
-                2.0f+.48f*(1-u*u),.17f).Pause(.95f,.22f,CombatRound.Turn.Rotate,-sign*24,1.0f).FadeAt(7.6f);
+            CrownedShot(beat%2==0&&(i+port)%5==2,beat%3==0,Port(port),CombatVisuals.Rotate(axis,u*36+sign*Mathf.Sin(beat*.25f)*19),
+                2.0f+.48f*(1-u*u),.17f,.64f).Pause(.95f,.22f,CombatRound.Turn.Rotate,-sign*24,1.0f).FadeAt(7.6f);
         }
     });
 
@@ -170,8 +179,11 @@ public sealed partial class VoidSovereignBoss
             Vector2 axis=FractureAxis(port);
             float u=Across(i,FractureCount(count,port)),sign=port%2==0?-1:1;
             // Equal angular extent preserves moving seams on every difficulty.
-            Fire<RicochetBolt>(Port(port),CombatVisuals.Rotate(axis,u*33+sign*(beat%2==0?9:-9)),
-                1.8f+.8f*Mathf.Abs(u),.18f).Bounce(1).Ramp(1.3f,1.8f,1.4f).FadeAt(6.8f);
+            var direction=CombatVisuals.Rotate(axis,u*33+sign*(beat%2==0?9:-9));
+            float speed=1.8f+.8f*Mathf.Abs(u);
+            CombatRound stone=i%4==1?(CombatRound)Fire<GiantOrb>(Port(port),direction,speed*.72f,.66f):
+                Fire<RicochetBolt>(Port(port),direction,speed,.18f);
+            stone.Bounce(1).Ramp(1.3f,1.8f,1.4f).FadeAt(6.8f);
             if(i%4==0)Fire<SimpleRound>(Port(port),CombatVisuals.Rotate(axis,u*33),1.1f,.25f).FadeAt(7.5f);
         }
     });
