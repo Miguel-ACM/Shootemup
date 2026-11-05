@@ -50,22 +50,23 @@ public static partial class IndustrialMeshFactory
     {
         var delta=tip-root;var side=new Vector3(-delta.y,delta.x,0).normalized*bend;
         var p=root+delta*.30f+side+Vector3.back*.12f;var q=root+delta*.77f+side+Vector3.back*.19f;
-        b.Sweep(root,p,q,tip,width,.095f,tile);
-        b.Sweep(root,p+Vector3.back*.10f,q+Vector3.back*.07f,tip,.022f,.024f,3);
+        CutBlade(b,new[]{root,p,q,tip},width,.095f,tile);
+        CutBlade(b,new[]{root,p+Vector3.back*.10f,q+Vector3.back*.07f,tip},.018f,.018f,3);
     }
     static void CelestialMuzzle(Builder b,Vector3 lip,float radius)
     {
         var rear=lip+Vector3.up*.62f;
-        b.Sweep(rear,rear+Vector3.down*.16f,lip+Vector3.up*.2f,lip,radius,radius,7,false,10);
-        b.Halo(lip,radius,.04f,Vector3.one,Quaternion.Euler(90,0,0),3,24);
-        b.Pearl(lip+new Vector3(0,.045f,-.045f),new Vector3(radius*.68f,.045f,radius*.68f),8,20,8);
+        BevelArmor(b,new[]{V(rear.x-radius*.7f,rear.y),V(rear.x+radius*.7f,rear.y),V(lip.x+radius,lip.y),V(lip.x-radius,lip.y)},radius*1.6f,15,lip.z,.18f);
+        b.Box(lip,new Vector3(radius*1.7f,.075f,radius*1.5f),7,3);
+        b.Box(lip+Vector3.down*.043f,new Vector3(radius*1.2f,.025f,radius),11,11);
+        CutStone(b,lip+new Vector3(0,.04f,-radius*.85f),new Vector3(radius*.58f,.11f,.035f),8,4);
         for(int side=-1;side<=1;side+=2)
-            b.Sweep(rear+Vector3.right*side*radius,rear+new Vector3(side*radius*1.35f,-.2f,-.1f),lip+new Vector3(side*radius*1.2f,.15f,-.08f),lip+Vector3.right*side*radius,.035f,.03f,3,false,12);
+            CutBlade(b,new[]{rear+Vector3.right*side*radius,rear+new Vector3(side*radius*1.35f,-.2f,-.1f),lip+new Vector3(side*radius*1.2f,.15f,-.08f),lip+Vector3.right*side*radius},.035f,.03f,3);
     }
     static void CelestialKeel(Builder b,float width,float length,float depth)
     {
-        b.Sweep(new Vector3(0,length*.52f,0),new Vector3(0,length*.12f,-.15f),new Vector3(0,-length*.3f,-.06f),new Vector3(0,-length*.55f,0),width,depth,15);
+        BevelArmor(b,new[]{V(0,length*.52f),V(width,length*.20f),V(width*.7f,-length*.24f),V(0,-length*.55f),V(-width*.7f,-length*.24f),V(-width,length*.20f)},depth*1.7f,15,0,.38f);
         for(int s=-1;s<=1;s+=2)
-            b.Sweep(new Vector3(0,length*.45f,-.12f),new Vector3(s*width*.88f,length*.16f,-depth*.8f),new Vector3(s*width*.72f,-length*.18f,-depth*.8f),new Vector3(0,-length*.5f,-.08f),.025f,.025f,3,false);
+            CutBlade(b,new[]{new Vector3(0,length*.45f,-.12f),new Vector3(s*width*.88f,length*.16f,-depth*.8f),new Vector3(s*width*.72f,-length*.18f,-depth*.8f),new Vector3(0,-length*.5f,-.08f)},.025f,.025f,3);
     }
 }
