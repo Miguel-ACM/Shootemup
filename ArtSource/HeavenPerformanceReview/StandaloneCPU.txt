@@ -1,0 +1,3 @@
+Standalone development player, complete native CPU frames, 60 simulation Hz; no rendering, profiler overhead included.
+Heaven Hard phase 3: frames=1800, peak=2336, new bullet objects=0; CPU mean=4,795 p50=4,512 p95=7,430 max=12,549 ms; physics p95=2,219 ms.
+3600-round bouncing stress: frames=600, peak=3600, new bullet objects=0; CPU mean=10,569 p50=10,217 p95=14,879 max=21,052 ms; physics p95=4,178 ms.

@@ -1,0 +1,4 @@
+PASS A beam hits an outer moving eye even when it misses the core.
+PASS Area damage and burning trails reach an outer eye.
+PASS Three beams each damage once even when they intersect multiple eye shapes.
+PASS The drill reaches an outer eye without touching the core.

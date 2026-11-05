@@ -1,0 +1,21 @@
+PASS 37 independent single-path eye/core colliders retain the same damage owner.
+PASS All moving eye vertices match their previous outlines through 120 tumbling poses; max error=9,702933E-07
+PASS Full 3600-round field uses the warmed pool without new bullet objects.
+FAIL 3600 moving bouncing rounds retained for 600 native frames: CPU p50=14,619, p95=20,419, max=26,415 ms (no rendering).
+PASS Final star's charged crossfire reaches stationary pilot 0,9 units above its centre (closest=0,004).
+PASS Final star's charged crossfire reaches stationary pilot 1,3 units above its centre (closest=0,009).
+PASS Final star's charged crossfire reaches stationary pilot 1,8 units above its centre (closest=0,005).
+PASS Final star's charged crossfire reaches stationary pilot 2,5 units above its centre (closest=0,012).
+PASS ArcLancer: shortened live laser duration, full warning and completed width rise.
+PASS BeamDrone: shortened live laser duration, full warning and completed width rise.
+PASS LaserSatellite: shortened live laser duration, full warning and completed width rise.
+PASS PursuitFighter: shortened live laser duration, full warning and completed width rise.
+PASS StormOrgan: shortened live laser duration, full warning and completed width rise.
+PASS ChoirLancer: shortened live laser duration, full warning and completed width rise.
+PASS AegisReliquary: shortened live laser duration, full warning and completed width rise.
+PASS PrismCantor: shortened live laser duration, full warning and completed width rise.
+PASS ThroneBarge: shortened live laser duration, full warning and completed width rise.
+PASS Void is the final district.
+PASS Void ends at victory without opening a boss item decision.
+PASS Victory collects and banks all remaining boss coins exactly once.
+3600 moving bouncing rounds retained for 600 native frames: CPU p50=14,619, p95=20,419, max=26,415 ms (no rendering).

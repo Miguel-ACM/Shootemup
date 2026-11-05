@@ -1,0 +1,5 @@
+PASS 37 independent single-path eye/core colliders retain the same damage owner.
+PASS All moving eye vertices match their previous outlines through 120 tumbling poses; max error=9,61096E-07
+PASS Full 3600-round field uses the warmed pool without new bullet objects.
+PASS 10,000 projectile contact-speed calculations allocate 0 managed bytes.
+PASS 3600-round bouncing stress, 600 native frames (minimum before refill=3594, new objects=0): CPU p50=15,654, p95=21,968, max=29,725 ms (no rendering).

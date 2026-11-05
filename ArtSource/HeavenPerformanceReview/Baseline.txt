@@ -1,0 +1,11 @@
+Heaven Hard phase 3: 1800 complete frames at 60 simulation Hz, native physics included; rendering excluded.
+Peak rounds=2259; new rounds allocated=0
+PlayerLoop: mean=17,776 p50=16,931 p95=27,235 max=71,650 ms
+Main Thread: mean=18,934 p50=18,070 p95=28,752 max=73,016 ms
+Physics2D.SyncTransformChanges: mean=2,609 p50=2,807 p95=4,562 max=22,753 ms
+Physics2D.Simulate: mean=2,876 p50=3,078 p95=5,047 max=23,668 ms
+Physics2D.PolygonColliderPrepareShapesDecomposition: mean=5,794 p50=5,384 p95=8,100 max=20,617 ms
+Physics2D.Collider2D.CreateShapes: mean=6,464 p50=6,012 p95=9,045 max=21,600 ms
+GC Allocated In Frame: mean=497908,914 p50=516894,000 p95=675521,000 max=1687630,000 bytes
+Update.ScriptRunBehaviourUpdate: mean=12,936 p50=12,223 p95=19,388 max=42,473 ms
+Heaven.EyeColliders: mean=6,628 p50=6,141 p95=9,364 max=21,958 ms
