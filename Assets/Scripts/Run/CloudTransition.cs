@@ -259,6 +259,11 @@ public sealed class CloudTransition : MonoBehaviour
                     // Its named shaker and global lights must retire before the next rig's Awake.
                     foreach (var root in SceneManager.GetActiveScene().GetRootGameObjects())
                     {
+                        // Both scenes use the UI module's shared default actions. Retire the
+                        // title's module before L1 enables its own: disabling the old module
+                        // afterwards disposes the incoming scene's pointer/navigation actions.
+                        foreach (var input in root.GetComponentsInChildren<UnityEngine.InputSystem.UI.InputSystemUIInputModule>())
+                            input.enabled = false;
                         foreach (var light in root.GetComponentsInChildren<UnityEngine.Rendering.Universal.Light2D>())
                             light.enabled = false;
                         foreach (var shake in root.GetComponentsInChildren<EZCameraShake.CameraShaker>())
