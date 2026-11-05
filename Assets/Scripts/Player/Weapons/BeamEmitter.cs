@@ -168,7 +168,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
             }
             if (active && t >= nextTick)
             {
-                nextTick = t + .12f;
+                nextTick = t + .12f / ActiveRate;
                 targets.Clear();
                 targets.AddRange(AEnemy.Live);
                 foreach (var enemy in targets)
