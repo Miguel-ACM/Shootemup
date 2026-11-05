@@ -10,7 +10,7 @@ public sealed class ColdWeatherFighter : DistrictEnemy
         Mover<Slalom>();
     }
 
-    // Three rounds that freeze in place, then crawl back toward the player.
+    // Three chevrons freeze in place, then re-aim and crawl toward the player.
     protected override void Attack()
     {
         int count = Dense(3);
@@ -18,7 +18,7 @@ public sealed class ColdWeatherFighter : DistrictEnemy
         for (int i = 0; i < count; i++)
         {
             float lane = i - (count - 1) * .5f;
-            Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(aim, lane * 24), 3.8f, .19f)
+            Fire<ChevronRound>(Muzzle(i), CombatVisuals.Rotate(aim, lane * 24), 3.8f, .19f)
                 .Pause(.5f, .55f, CombatRound.Turn.Aim, lane * 8, .7f);
         }
     }
