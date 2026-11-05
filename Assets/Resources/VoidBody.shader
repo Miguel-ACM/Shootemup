@@ -1,6 +1,6 @@
 Shader "Shootemup/Void Body"
 {
-    Properties { _Tint("Tint",Color)=(1,1,1,1) _HitFlash("Hit",Range(0,1))=0 }
+    Properties { _Tint("Tint",Color)=(1,1,1,1) _HitFlash("Hit",Range(0,1))=0 _Rift("Rift",Range(0,1))=0 }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" }
@@ -13,13 +13,15 @@ Shader "Shootemup/Void Body"
             #pragma fragment Frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             CBUFFER_START(UnityPerMaterial)
-            float4 _Tint;float _HitFlash;
+            float4 _Tint;float _HitFlash,_Rift;
             CBUFFER_END
             struct I{float4 positionOS:POSITION;float3 normalOS:NORMAL;float2 uv:TEXCOORD0;};
             struct O{float4 positionCS:SV_POSITION;float3 n:TEXCOORD0;float2 uv:TEXCOORD1;float3 p:TEXCOORD2;};
             O Vert(I i){O o;o.positionCS=TransformObjectToHClip(i.positionOS.xyz);o.n=TransformObjectToWorldNormal(i.normalOS);o.uv=i.uv;o.p=i.positionOS.xyz;return o;}
             half4 Frag(O i):SV_Target
             {
+                float cut=frac(sin(dot(floor(i.p.xy*18),float2(37.1,91.7)))*17341.17);
+                clip(cut-_Rift*1.01);
                 float tile=floor(i.uv.x*4)+4*floor(i.uv.y*4);
                 float3 normal=normalize(i.n),lamp=normalize(float3(-.4,.65,-1));
                 float light=saturate(dot(normal,lamp));
@@ -35,6 +37,7 @@ Shader "Shootemup/Void Body"
                 float3 iris=lerp(float3(.35,.09,.54),float3(.88,.58,1),pow(light,.45));
                 iris=iris*(.94+.06*sin(_Time.y*1.8+i.p.y*2))+spec*.22;
                 c=lerp(c,iris,eye);
+                c+=float3(.54,.15,.9)*saturate(1-abs(cut-_Rift)*12)*_Rift*2;
                 return half4(lerp(c*_Tint.rgb,1,saturate(_HitFlash)),1);
             }
             ENDHLSL

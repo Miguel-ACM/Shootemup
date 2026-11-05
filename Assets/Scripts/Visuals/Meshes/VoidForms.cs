@@ -2,93 +2,105 @@ using UnityEngine;
 
 public static partial class IndustrialMeshFactory
 {
-    static readonly Mesh[] voidForms=new Mesh[4];
+    static readonly Mesh[] voidForms=new Mesh[4],voidCores=new Mesh[4];
+    static readonly Mesh[,] voidLimbs=new Mesh[4,4];
     public static Mesh VoidSovereignBossMesh()=>VoidForm(0);
-    static void VoidRib(Builder b,Vector3 a,Vector3 p,Vector3 q,Vector3 end,float width,float depth,int tile=14)
+    public static Mesh VoidForm(int form)
     {
-        b.Sweep(a,p,q,end,width,depth,tile);
-        b.Sweep(a+Vector3.back*depth,p+Vector3.back*depth*.7f,q+Vector3.back*depth*.55f,end,.014f,.018f,3);
+        if(voidForms[form]!=null)return voidForms[form];
+        int count=form==3?4:2;var parts=new CombineInstance[count+1];
+        parts[0]=new CombineInstance{mesh=VoidCore(form),transform=Matrix4x4.identity};
+        for(int i=0;i<count;i++)parts[i+1]=new CombineInstance{mesh=VoidLimb(form,i),transform=Matrix4x4.identity};
+        var mesh=new Mesh{name="Void / fractured obsidian form "+form};mesh.CombineMeshes(parts);return voidForms[form]=mesh;
     }
     static void VoidEye(Builder b,Vector3 p,Vector3 size)
     {
-        b.Pearl(p+Vector3.forward*.035f,Vector3.Scale(size,new Vector3(1.3f,1.3f,.65f)),11,24,12);
-        b.Pearl(p,size,8,28,14);
-        b.Pearl(p+Vector3.back*size.z*.9f,new Vector3(size.x*.18f,size.y*.82f,size.z*.2f),11,16,10);
+        CutStone(b,p+Vector3.forward*.035f,Vector3.Scale(size,new Vector3(1.45f,1.45f,.65f)),11,6);
+        CutStone(b,p,size,8,6);
+        CutStone(b,p+Vector3.back*size.z,new Vector3(size.x*.18f,size.y*.85f,.012f),11,4);
     }
-    public static Mesh VoidForm(int form)
+    public static Mesh VoidCore(int form)
     {
-        if(voidForms[form]!=null)return voidForms[form];var b=new Builder();
+        if(voidCores[form]!=null)return voidCores[form];var b=new Builder();
         if(form==0)
         {
-            // The Veiled Monarch: a carved living mask inside a crown of swept obsidian horns.
-            b.Pearl(new Vector3(0,.18f,.12f),new Vector3(.75f,.91f,.48f),11,36,22);
+            CutStone(b,new Vector3(0,.15f,.12f),new Vector3(.68f,.88f,.40f),11,6,Mathf.PI/6);
             for(int s=-1;s<=1;s+=2)
             {
-                VoidRib(b,new Vector3(s*.13f,1.0f,0),new Vector3(s*1.06f,.75f,-.1f),new Vector3(s*.7f,-.82f,-.3f),new Vector3(0,-1.45f,-.1f),.31f,.23f);
-                VoidRib(b,new Vector3(s*.1f,.25f,-.39f),new Vector3(s*.43f,.35f,-.55f),new Vector3(s*.62f,.1f,-.43f),new Vector3(s*.64f,-.42f,-.25f),.11f,.11f);
-                VoidEye(b,new Vector3(s*.32f,-.18f,-.44f),new Vector3(.21f,.11f,.085f));
-                for(int horn=0;horn<3;horn++)
-                {
-                    float x=s*(.4f+horn*.23f);
-                    VoidRib(b,new Vector3(x,.5f,.1f),new Vector3(s*(1.25f+horn*.24f),.72f+horn*.22f,.1f),new Vector3(s*(.9f+horn*.3f),1.65f+horn*.10f,.0f),new Vector3(s*(.45f+horn*.31f),1.75f+horn*.12f,-.05f),.18f-horn*.025f,.14f);
-                }
-                b.Sweep(new Vector3(s*.08f,-.4f,-.4f),new Vector3(s*.23f,-.58f,-.5f),new Vector3(s*.13f,-.91f,-.38f),new Vector3(0,-1.15f,-.17f),.09f,.09f,14);
+                BevelArmor(b,new[]{V(s*.05f,.65f),V(s*.57f,.46f),V(s*.67f,-.31f),V(s*.17f,-1.15f),V(0,-1.38f)},.27f,14,-.12f,.22f);
+                CutBlade(b,new[]{new Vector3(s*.06f,.08f,-.38f),new Vector3(s*.49f,.08f,-.40f),new Vector3(s*.65f,-.34f,-.20f)},.095f,.09f,14);
+                VoidEye(b,new Vector3(s*.32f,-.18f,-.44f),new Vector3(.21f,.10f,.055f));
             }
-            VoidEye(b,new Vector3(0,-.54f,-.41f),new Vector3(.065f,.21f,.045f));
+            VoidEye(b,new Vector3(0,-.65f,-.36f),new Vector3(.055f,.19f,.035f));
         }
         else if(form==1)
         {
-            // The Severing Saint: a narrow thorax carried by two huge hooked scythes.
-            b.Pearl(new Vector3(0,.1f,.02f),new Vector3(.47f,.92f,.40f),11,32,20);
-            for(int s=-1;s<=1;s+=2)
+            CutStone(b,Vector3.zero,new Vector3(.42f,.94f,.34f),11,6,Mathf.PI/6);
+            for(int s=-1;s<=1;s+=2)for(int rib=0;rib<4;rib++)
             {
-                VoidRib(b,new Vector3(s*.3f,.48f,0),new Vector3(s*2.65f,1.65f,.12f),new Vector3(s*2.4f,-1.28f,-.05f),new Vector3(s*1.65f,-.46f,-.22f),.32f,.25f);
-                VoidEye(b,new Vector3(s*1.65f,-.46f,-.22f),new Vector3(.09f,.15f,.065f));
-                VoidRib(b,new Vector3(s*.3f,-.3f,.12f),new Vector3(s*1.65f,-.6f,.05f),new Vector3(s*1.65f,-1.6f,-.08f),new Vector3(s*.58f,-1.64f,-.07f),.19f,.16f);
-                for(int rib=0;rib<5;rib++)
-                    VoidRib(b,new Vector3(s*.12f,.65f-rib*.23f,-.28f),new Vector3(s*.68f,.61f-rib*.23f,-.32f),new Vector3(s*.65f,.20f-rib*.22f,-.18f),new Vector3(s*.22f,.14f-rib*.23f,-.12f),.08f,.08f);
-                VoidRib(b,new Vector3(s*.22f,.65f,0),new Vector3(s*.62f,1.1f,0),new Vector3(s*.45f,1.48f,-.1f),new Vector3(s*.11f,1.62f,-.1f),.15f,.13f);
+                float y=.6f-rib*.29f;
+                CutBlade(b,new[]{new Vector3(s*.04f,y,-.32f),new Vector3(s*.48f,y-.13f,-.26f),new Vector3(s*.23f,y-.35f,-.13f)},.095f,.10f,14);
             }
-            VoidEye(b,new Vector3(0,.44f,-.44f),new Vector3(.19f,.26f,.08f));
+            CutBlade(b,new[]{new Vector3(0,.60f,0),new Vector3(-.26f,1.13f,-.06f),new Vector3(0,1.63f,-.10f)},.14f,.13f,14);
+            VoidEye(b,new Vector3(0,.44f,-.44f),new Vector3(.17f,.24f,.06f));
         }
         else if(form==2)
         {
-            // The Devourer: a deep living mouth, three nested jaws and a flared rib-cage.
-            b.Pearl(new Vector3(0,0,.35f),new Vector3(.82f,.92f,.14f),11,32,18);
-            b.Halo(Vector3.zero,.92f,.23f,new Vector3(1,1.15f,1),Quaternion.identity,14);
-            b.Halo(new Vector3(0,0,-.10f),.70f,.09f,new Vector3(1,1.15f,1),Quaternion.identity,11);
-            VoidEye(b,new Vector3(0,0,.16f),new Vector3(.28f,.4f,.08f));
-            for(int tooth=0;tooth<18;tooth++)
+            // A deep octagonal throat with jagged ivory-black teeth, not a torus.
+            CutStone(b,new Vector3(0,0,.25f),new Vector3(.91f,1.03f,.11f),11,8);
+            for(int i=0;i<8;i++)
             {
-                float a=tooth*Mathf.PI*2/18;var axis=new Vector3(Mathf.Cos(a),Mathf.Sin(a)*1.15f,0);
-                b.Sweep(axis*.83f,axis*.69f+Vector3.back*.14f,axis*.53f+Vector3.back*.20f,axis*(tooth%2==0?.40f:.50f)+Vector3.back*.05f,.10f,.08f,tooth%2==0?14:3);
+                float a=i*Mathf.PI/4;var u=new Vector3(Mathf.Cos(a),Mathf.Sin(a)*1.15f,0);var v=new Vector3(-Mathf.Sin(a),Mathf.Cos(a),0);
+                CutBlade(b,new[]{u*.89f+v*.28f,u*.98f,u*.89f-v*.28f},.13f,.16f,14);
+                CutBlade(b,new[]{u*.81f,u*.62f+Vector3.back*.16f,u*.43f+Vector3.back*.05f},.11f,.10f,3);
             }
-            for(int s=-1;s<=1;s+=2)
-            {
-                for(int wing=0;wing<4;wing++)
-                    VoidRib(b,new Vector3(s*.68f,.72f-wing*.38f,.15f),new Vector3(s*(1.65f+wing*.16f),1.4f-wing*.43f,.10f),new Vector3(s*(2.2f-wing*.10f),.65f-wing*.55f,.05f),new Vector3(s*(1.2f+wing*.15f),-.2f-wing*.43f,-.12f),.19f,.14f);
-                VoidEye(b,new Vector3(s*.75f,-.85f,-.32f),new Vector3(.15f,.16f,.09f));
-                VoidRib(b,new Vector3(s*.55f,-.72f,.12f),new Vector3(s*1.0f,-1.7f,.20f),new Vector3(s*.1f,-2.2f,.08f),new Vector3(s*.2f,-1.45f,-.05f),.13f,.10f);
-            }
+            VoidEye(b,new Vector3(0,0,.06f),new Vector3(.23f,.33f,.055f));
         }
         else
         {
-            // The Unmade: eight curved fracture-wings around a luminous wound, not a flat star.
-            b.Pearl(new Vector3(0,0,.1f),new Vector3(.58f,.85f,.38f),11,36,22);
-            for(int wing=0;wing<8;wing++)
-            {
-                float a=wing*Mathf.PI/4;var axis=new Vector3(Mathf.Cos(a),Mathf.Sin(a),0);var side=new Vector3(-axis.y,axis.x,0);
-                float length=wing%2==0?2.15f:1.73f;
-                VoidRib(b,axis*.32f,axis*.82f+side*.68f+Vector3.forward*.12f,axis*length+side*.55f,axis*length-side*.09f,.26f,.20f);
-                VoidRib(b,axis*.5f,axis*.9f-side*.16f+Vector3.back*.10f,axis*1.5f-side*.25f+Vector3.back*.08f,axis*1.65f,.11f,.10f);
-                if(wing%2==0)VoidEye(b,axis*1.65f+Vector3.back*.22f,new Vector3(.095f,.095f,.07f));
-            }
+            CutStone(b,new Vector3(0,0,.08f),new Vector3(.59f,.88f,.28f),11,6);
             for(int s=-1;s<=1;s+=2)
-                VoidRib(b,new Vector3(0,.84f,-.14f),new Vector3(s*.58f,.6f,-.4f),new Vector3(s*.38f,-.65f,-.4f),new Vector3(0,-1.04f,-.14f),.16f,.14f);
-            // The final wound sits ahead of its curled lips, readable even during the bank.
-            VoidEye(b,new Vector3(0,0,-.62f),new Vector3(.23f,.63f,.16f));
+                CutBlade(b,new[]{new Vector3(0,.92f,-.10f),new Vector3(s*.48f,.33f,-.32f),new Vector3(s*.34f,-.54f,-.34f),new Vector3(0,-1.06f,-.1f)},.16f,.17f,14);
+            VoidEye(b,new Vector3(0,0,-.56f),new Vector3(.20f,.61f,.10f));
         }
-        return voidForms[form]=b.Finish(new[]{"Void / Veiled Monarch","Void / Severing Saint","Void / Devourer","Void / Unmade"}[form]);
+        return voidCores[form]=b.Finish("Void / carved central target "+form);
+    }
+    public static Mesh VoidLimb(int form,int index)
+    {
+        if(voidLimbs[form,index]!=null)return voidLimbs[form,index];var b=new Builder();int s=index==0?-1:1;
+        Vector3 P(float x,float y,float z=0)=>new Vector3(s*x,y,z);
+        if(form==0)
+        {
+            for(int horn=0;horn<3;horn++)
+            {
+                float x=.39f+horn*.22f;
+                CutBlade(b,new[]{P(x,.47f,.08f),P(1.03f+horn*.22f,.91f+horn*.10f),P(.92f+horn*.27f,1.51f+horn*.15f),P(.47f+horn*.31f,1.78f+horn*.14f,-.06f)},.18f-horn*.025f,.16f,14);
+                CutBlade(b,new[]{P(x,.49f,-.09f),P(1.03f+horn*.22f,.91f+horn*.10f,-.15f),P(.92f+horn*.27f,1.51f+horn*.15f,-.09f)},.014f,.012f,3);
+            }
+        }
+        else if(form==1)
+        {
+            CutBlade(b,new[]{P(.30f,.42f),P(1.60f,1.13f,.08f),P(2.22f,.65f),P(2.10f,-.63f,-.06f),P(1.65f,-.46f,-.22f)},.30f,.24f,14);
+            CutBlade(b,new[]{P(.30f,-.33f,.12f),P(1.32f,-.66f),P(1.40f,-1.37f),P(.59f,-1.68f,-.08f)},.17f,.15f,14);
+            VoidEye(b,P(1.65f,-.46f,-.22f),new Vector3(.085f,.14f,.045f));
+            CutStone(b,P(.45f,.46f,-.15f),new Vector3(.20f,.22f,.12f),14,6);
+        }
+        else if(form==2)
+        {
+            for(int rib=0;rib<4;rib++)
+                CutBlade(b,new[]{P(.68f,.74f-rib*.38f,.14f),P(1.44f+rib*.14f,1.10f-rib*.42f,.07f),P(2.02f-rib*.08f,.54f-rib*.51f),P(1.24f+rib*.12f,-.16f-rib*.42f,-.12f)},.17f,.15f,14);
+            CutBlade(b,new[]{P(.52f,-.66f,.10f),P(.92f,-1.47f),P(.22f,-1.97f,-.05f)},.16f,.13f,14);
+            VoidEye(b,P(.75f,-.85f,-.32f),new Vector3(.14f,.16f,.065f));
+        }
+        else
+        {
+            float a=index==0?Mathf.PI:index==1?0:index==2?Mathf.PI*.5f:-Mathf.PI*.5f;
+            var u=new Vector3(Mathf.Cos(a),Mathf.Sin(a),0);var v=new Vector3(-u.y,u.x,0);
+            CutBlade(b,new[]{u*.31f,u*.94f+v*.42f+Vector3.forward*.08f,u*1.85f+v*.40f,u*2.22f-v*.10f},.24f,.22f,14);
+            CutBlade(b,new[]{u*.49f,u*.88f-v*.34f,u*1.38f-v*.64f,u*1.54f-v*.38f},.14f,.16f,14);
+            CutBlade(b,new[]{u*.40f+Vector3.back*.1f,u*1.19f+Vector3.back*.12f,u*1.65f+Vector3.back*.20f},.08f,.1f,14);
+            VoidEye(b,u*1.65f+Vector3.back*.22f,new Vector3(.09f,.09f,.05f));
+        }
+        return voidLimbs[form,index]=b.Finish("Void / articulated fracture "+form+" / "+index);
     }
 }
-

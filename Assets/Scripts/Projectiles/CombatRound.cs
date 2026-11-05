@@ -208,15 +208,16 @@ public abstract class CombatRound : AEnemyBullet
             // Reserve every authored delivery behind the curtain, including its special
             // renderer and collider. The final score shares the existing global budget.
             // Counts are multiplied by ReserveScale inside both helpers: 1850 base slots.
-            TrimReserve<SimpleRound>(800);TrimReserve<NeedleRound>(460);
-            TrimReserve<RicochetBolt>(120);TrimReserve<BurstShell>(24);TrimReserve<SuspendedRound>(80);
-            TrimReserve<GuidedMissile>(18);TrimReserve<ScatterCarrier>(12);TrimReserve<HelixRound>(40);
-            TrimReserve<PlasmaOrb>(20);TrimReserve<ProximityMine>(12);TrimReserve<ReturningDisc>(48);
+            // Fracture lattice needs 896 ricochets. Trade unused deliveries, not total capacity.
+            TrimReserve<SimpleRound>(800);TrimReserve<NeedleRound>(416);
+            TrimReserve<RicochetBolt>(224);TrimReserve<BurstShell>(8);TrimReserve<SuspendedRound>(80);
+            TrimReserve<GuidedMissile>(8);TrimReserve<ScatterCarrier>(4);TrimReserve<HelixRound>(20);
+            TrimReserve<PlasmaOrb>(20);TrimReserve<ProximityMine>(6);TrimReserve<ReturningDisc>(48);
             TrimReserve<PulseLaser>(12);TrimReserve<LaserSideRound>(4);TrimReserve<GiantOrb>(200);
-            yield return Warm<SimpleRound>(800);yield return Warm<NeedleRound>(460);
-            yield return Warm<RicochetBolt>(120);yield return Warm<BurstShell>(24);yield return Warm<SuspendedRound>(80);
-            yield return Warm<GuidedMissile>(18);yield return Warm<ScatterCarrier>(12);yield return Warm<HelixRound>(40);
-            yield return Warm<PlasmaOrb>(20);yield return Warm<ProximityMine>(12);yield return Warm<ReturningDisc>(48);
+            yield return Warm<SimpleRound>(800);yield return Warm<NeedleRound>(416);
+            yield return Warm<RicochetBolt>(224);yield return Warm<BurstShell>(8);yield return Warm<SuspendedRound>(80);
+            yield return Warm<GuidedMissile>(8);yield return Warm<ScatterCarrier>(4);yield return Warm<HelixRound>(20);
+            yield return Warm<PlasmaOrb>(20);yield return Warm<ProximityMine>(6);yield return Warm<ReturningDisc>(48);
             yield return Warm<PulseLaser>(12);yield return Warm<LaserSideRound>(4);yield return Warm<GiantOrb>(200);
             yield break;
         }

@@ -25,6 +25,7 @@ public sealed partial class VoidSovereignBoss
         foreach(var tell in edgeTell)tell.enabled=false;
         CombatRound.ClearAll();
         transform.position=new Vector3(0,Camera.UpLimit-3.25f,1);
+        perch=transform.position;
         SetForm();Hull.gameObject.SetActive(true);Hidden=false;
         PhaseBreak.Play(transform.position);
         float settle=0;
