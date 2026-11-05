@@ -1,0 +1,3 @@
+PASS offscreen 405x720 native-shader renders at 1, 4, 7, 10 seconds.
+6 scenery renderers, 36098 triangles, 0 colliders.
+No gameplay session or desktop controls used.

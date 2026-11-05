@@ -1,0 +1,21 @@
+Void background — 5 November 2026
+
+48 seeded, beveled obsidian cubes tumble and descend at different speeds/depths.
+Three overlapping curtains on each side have moving shores, broad liquid folds,
+wet highlights and 44 falling teardrops. The central field stays dark.
+
+All movement is performed in the vertex shaders from six shared material clocks.
+The scenery has six mesh renderers, four owned meshes, 36,098 triangles, no lights,
+no colliders, no per-prop MonoBehaviour updates and no mesh uploads during combat.
+This is an implementation budget, not a measured GPU frame-time guarantee.
+
+Inspected native Unity offscreen renders at 405x720 at 1, 4, 7 and 10 seconds,
+plus a 72-frame falling/tumbling sequence. Before.png preserves the old scenery;
+Sequence.png shows the revised motion at those four timestamps. Void-motion.mp4
+contains four seconds at 18 fps. Shader compilation reported no errors.
+
+Capture: isolated UnlockReview checkout, ReviewVoidBackdrop.Run, batchmode D3D11.
+No gameplay session or desktop controls were used. The player's live editor and
+save were not used for review. The production build result is in Build.txt.
+
+The first package attempt ran out of disk space. Obsolete builds created in the isolated review cache were removed, its resources were reimported, and the retry succeeded with zero errors and warnings.
