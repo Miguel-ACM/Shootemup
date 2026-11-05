@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 
 public sealed class HeavenBackdrop : MonoBehaviour
 {
-    readonly Transform[] islands = new Transform[12];
+    readonly Transform[] islands = new Transform[16];
     Material sky, mist;
     Mesh plane;
     float clock;
@@ -13,21 +13,22 @@ public sealed class HeavenBackdrop : MonoBehaviour
         plane.vertices=new[]{new Vector3(-18,-24),new Vector3(18,-24),new Vector3(18,24),new Vector3(-18,24)};
         plane.triangles=new[]{0,2,1,0,3,2}; plane.RecalculateBounds();
         sky=new Material(Resources.Load<Shader>("HeavenClouds"));
+        sky.SetTexture("_CloudAtlas",Resources.Load<Texture2D>("HeavenCloudRelief"));
         sky.SetFloat("_Seed",(LevelRun.Seed%997)*.037f);
         mist=new Material(Resources.Load<Shader>("HeavenMist"));
         Add("White cloud ocean",plane,sky,new Vector3(0,0,110),-60);
         var random=new System.Random(LevelRun.Seed+19191);
         for(int i=0;i<islands.Length;i++)
         {
-            float side=i%2==0?-1:1, x=side*Mathf.Lerp(4.15f,6.8f,(float)random.NextDouble());
+            float side=i%2==0?-1:1, x=side*Mathf.Lerp(4.1f,7.4f,(float)random.NextDouble());
             var root=new GameObject("Cloud redoubt / broken palisade "+i).transform;
-            root.SetParent(transform,false); root.localPosition=new Vector3(x,-29+i*5f,79);
-            root.localScale=Vector3.one*Mathf.Lerp(.95f,1.35f,(float)random.NextDouble());
-            root.localRotation=Quaternion.Euler(14,side*11,side*(4+i%3*5));
+            root.SetParent(transform,false); root.localPosition=new Vector3(x,-39+i*5.2f,79+i%3*3);
+            root.localScale=Vector3.one*Mathf.Lerp(.88f,1.24f,(float)random.NextDouble());
+            root.localRotation=Quaternion.Euler(28,side*18,side*(3+i%3*4));
             islands[i]=root;
             var cloud=Add("Deep sculpted cumulus",IndustrialMeshFactory.HeavenCloudIsland(i%3),mist,Vector3.zero,-36);
             cloud.SetParent(root,false);
-            var prop=Add("Scalloped cloud and planted lances",IndustrialMeshFactory.HeavenRedoubt(i%4),HeavenMaterials.Ivory,Vector3.zero,-35);
+            var prop=Add("Ruined marble bastion and golden palisade",IndustrialMeshFactory.HeavenBastion(i%6),HeavenMaterials.Ivory,Vector3.zero,-35);
             prop.SetParent(root,false);
         }
     }
@@ -46,7 +47,7 @@ public sealed class HeavenBackdrop : MonoBehaviour
         {
             if(island==null) continue;
             var p=island.localPosition; p.y-=Time.deltaTime*.95f;
-            if(p.y < -30) p.y+=60;
+            if(p.y < -42) p.y+=83.2f;
             island.localPosition=p;
         }
     }
@@ -114,13 +115,13 @@ public static partial class IndustrialMeshFactory
     {
         if(heavenIslands[variant]!=null)return heavenIslands[variant];var b=new Builder();
         var random=new System.Random(4711+variant*173);
-        b.Pearl(new Vector3(0,-.28f,.48f),new Vector3(2.6f,1.12f,.75f),15);
+        CutStone(b,new Vector3(0,-.28f,.48f),new Vector3(2.6f,1.12f,.75f),15,8);
         for(int puff=0;puff<16;puff++)
         {
             float a=puff*Mathf.PI*2/16;
             float size=.55f+(float)random.NextDouble()*.42f;
             var center=new Vector3(Mathf.Cos(a)*(1.7f+(float)random.NextDouble()*.5f),Mathf.Sin(a)*.72f-.35f,.35f+(float)random.NextDouble()*.45f);
-            b.Pearl(center,new Vector3(size,size*.65f,size*.74f),15,24,12);
+            CutStone(b,center,new Vector3(size,size*.65f,size*.74f),15,7,a);
         }
         return heavenIslands[variant]=b.Finish("Asymmetric deep cumulus bank "+variant);
     }

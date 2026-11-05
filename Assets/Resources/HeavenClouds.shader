@@ -1,9 +1,9 @@
 Shader "Shootemup/Heaven Clouds"
 {
-    Properties { _Clock("Cloud time",Float)=0 _Seed("Cloud seed",Float)=0 }
+    Properties { _CloudAtlas("Cloud relief",2D)="gray" {} _Clock("Cloud time",Float)=0 _Seed("Cloud seed",Float)=0 }
     SubShader
     {
-        Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Transparent" "Queue"="Transparent" }
+        Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" }
         Pass
         {
             Tags { "LightMode"="Universal2D" }
@@ -12,60 +12,34 @@ Shader "Shootemup/Heaven Clouds"
             #pragma vertex Vert
             #pragma fragment Frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            TEXTURE2D(_CloudAtlas);SAMPLER(sampler_CloudAtlas);
             CBUFFER_START(UnityPerMaterial)
             float _Clock,_Seed;
             CBUFFER_END
-            struct Input { float4 positionOS:POSITION; };
-            struct Output {float4 positionCS:SV_POSITION;float2 p:TEXCOORD0;};
-            Output Vert(Input i){Output o;o.positionCS=TransformObjectToHClip(i.positionOS.xyz);o.p=i.positionOS.xy;return o;}
-            float Hash(float2 p){return frac(sin(dot(p,float2(127.1,311.7)))*43758.5453);}
-            float Noise(float2 p)
+            struct I{float4 p:POSITION;};
+            struct O{float4 p:SV_POSITION;float2 xy:TEXCOORD0;};
+            O Vert(I i){O o;o.p=TransformObjectToHClip(i.p.xyz);o.xy=i.p.xy;return o;}
+            float3 Cotton(float4 relief,float nearLayer)
             {
-                float2 a=floor(p),f=frac(p);f=f*f*(3-2*f);
-                return lerp(lerp(Hash(a),Hash(a+float2(1,0)),f.x),lerp(Hash(a+float2(0,1)),Hash(a+1),f.x),f.y);
+                float lighting=saturate(.61+(relief.g-.5)*.85+(relief.b-.5)*1.15);
+                float crest=smoothstep(.40,.77,relief.r);
+                float3 shadow=lerp(float3(.38,.50,.66),float3(.52,.63,.76),nearLayer);
+                return lerp(shadow,float3(.98,.95,.85),saturate(lighting*.68+crest*.38))+relief.a*.018;
             }
-            float Billow(float2 p){return .7*Noise(p)+.23*Noise(p*2.03+11)+.07*Noise(p*4.1+23);}
-            float Puffs(float2 p)
+            half4 Frag(O i):SV_Target
             {
-                float2 cell=floor(p),f=frac(p);float d=4;
-                for(int y=-1;y<=1;y++)for(int x=-1;x<=1;x++)
-                {
-                    float2 o=float2(x,y),key=cell+o;
-                    float2 center=.5+.31*float2(sin(Hash(key)*6.28),cos(Hash(key+17)*6.28));
-                    float circle=length(f-o-center)-lerp(.37,.66,Hash(key+37));
-                    float h=saturate(.5+.5*(circle-d)/.24);
-                    d=lerp(circle,d,h)-.24*h*(1-h);
-                }
-                return d+(Noise(p*3.1)-.5)*.045;
-            }
-            float3 Cotton(float2 p,float3 shadow,float3 cream,out float alpha)
-            {
-                float d=Puffs(p);
-                float light=saturate(.52+(Puffs(p+float2(-.055,.075))-d)*5.2);
-                float height=smoothstep(.14,-.32,d);
-                alpha=smoothstep(.20,-.10,d);
-                return lerp(shadow,cream,saturate(light*.62+height*.38));
-            }
-            half4 Frag(Output i):SV_Target
-            {
-                float2 p=i.p*float2(.17,.14)+float2(_Seed,_Clock*.072);
-                float glow=saturate(1-abs(i.p.x)*.07);
-                float3 color=lerp(float3(.42,.60,.74),float3(.60,.75,.84),glow);
-                float farAlpha,nearAlpha;
-                float3 far=Cotton(p*.78+float2(14,_Clock*.023),float3(.60,.73,.83),float3(.92,.96,.98),farAlpha);
-                color=lerp(color,far,farAlpha*.72);
-                float2 nearP=p*1.27+float2(sin(p.y*.9)*.17+_Clock*.015,9);
-                float3 near=Cotton(nearP,float3(.66,.78,.87),float3(1,.99,.94),nearAlpha);
-                float banks=.32+.55*smoothstep(1.5,5,abs(i.p.x));
-                color=lerp(color,near,nearAlpha*banks);
-                // Sunlit ivory tops above blue-grey hollows.
-                color+=float3(.06,.045,.018)*Billow(p*1.4+31)*glow;
-                float shafts=pow(saturate(.5+.5*sin(i.p.x*.72+i.p.y*.18+_Clock*.014)),14);
-                color+=float3(.045,.038,.02)*shafts;
+                float2 p=i.xy*.027+float2(_Seed,_Clock*.009);
+                float4 far=SAMPLE_TEXTURE2D(_CloudAtlas,sampler_CloudAtlas,p);
+                float4 near=SAMPLE_TEXTURE2D(_CloudAtlas,sampler_CloudAtlas,p*1.73+float2(.31+_Clock*.0017,.43+_Clock*.005));
+                float central=1-smoothstep(1.2,6,abs(i.xy.x));
+                float3 color=lerp(float3(.29,.43,.62),Cotton(far,0),smoothstep(.30,.59,far.r));
+                float mask=smoothstep(.38,.64,near.r)*(1-central*.38);
+                color=lerp(color,Cotton(near,1),mask);
+                float shaft=pow(saturate(.5+.5*sin(i.xy.x*.67+i.xy.y*.19)),26);
+                color+=float3(.11,.09,.045)*shaft*.42;
                 return half4(color,1);
             }
             ENDHLSL
         }
     }
 }
-
