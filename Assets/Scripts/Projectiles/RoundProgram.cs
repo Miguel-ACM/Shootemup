@@ -4,6 +4,14 @@ using UnityEngine;
 // live budget returns null, and every step below simply passes that through.
 public static class RoundProgram
 {
+    // A giant carrier that keeps flying while shedding irregular mirrored side bursts.
+    public static GiantOrb SideSpray(this GiantOrb shot, float velocity = 3.2f)
+    {
+        if (shot != null)
+            shot.EnableSideSpray(velocity);
+        return shot;
+    }
+
     // Change speed by a multiplier, beginning after a delay and easing over a duration.
     public static T Ramp<T>(this T shot, float multiplier, float over, float after = 0) where T : CombatRound
     {

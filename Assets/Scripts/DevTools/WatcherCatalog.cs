@@ -97,6 +97,11 @@ public static class WatcherCatalog
                 break;
             case WatcherView.Projectiles:
                 Add<SimpleRound>(entries);
+                entries.Add(new Entry
+                {
+                    Id = "projectile/giant-side-spray", Name = "GIANT ORB / SIDE SPRAY",
+                    Fire = (p, emitter) => CombatRound.Launch<GiantOrb>(p, Vector2.down, 1.65f, .66f).SideSpray(3.1f)
+                });
                 Add<NeedleRound>(entries);
                 Add<BurstShell>(entries, .38f);
                 Add<ScatterCarrier>(entries, .3f);
