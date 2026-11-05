@@ -1,0 +1,29 @@
+PASS Snow Easy miniboss engages.
+PASS Snow Easy: giant peak 6, side-round peak 27.
+PASS Snow Easy uses warmed projectile objects only.
+PASS Snow Normal miniboss engages.
+PASS Snow Normal: giant peak 8, side-round peak 58.
+PASS Snow Normal uses warmed projectile objects only.
+PASS Snow Hard miniboss engages.
+PASS Snow Hard: giant peak 8, side-round peak 108.
+PASS Snow Hard uses warmed projectile objects only.
+PASS Candyland Easy miniboss engages.
+PASS Candyland Easy: giant peak 8, side-round peak 23.
+PASS Candyland Easy uses warmed projectile objects only.
+PASS Candyland Normal miniboss engages.
+PASS Candyland Normal: giant peak 6, side-round peak 43.
+PASS Candyland Normal uses warmed projectile objects only.
+PASS Candyland Hard miniboss engages.
+PASS Candyland Hard: giant peak 6, side-round peak 90.
+PASS Candyland Hard uses warmed projectile objects only.
+PASS Each spray has an initial warning; repeat bursts continue while the orb survives.
+PASS Side releases occur at irregular intervals.
+PASS Children leave both rims sideways, retain damage/generation and exact pixel contacts.
+PASS The same pooled object is reused as an ordinary orb.
+PASS An ordinary reused orb never inherits side fire.
+PASS An offscreen orb does not release unseen side shots.
+PASS A full clear leaves no delayed side releases.
+PASS A launch refused by the live cap remains null-safe.
+PASS Dense side-spray stress respects the 3600-round cap; peak=3600.
+PASS Dense stress creates no projectile objects after preparation.
+600 complete editor frames, 128 spraying giants / 800 total giants with 2400 ordinary rounds: CPU p95=9,191ms, max=19,715ms; native physics p95=1,507ms. Rendering excluded.

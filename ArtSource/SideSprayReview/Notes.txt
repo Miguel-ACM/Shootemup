@@ -1,0 +1,33 @@
+Giant side-spray rounds, 6 November 2026
+
+The approved GiantOrb gains an opt-in SideSpray program. It survives each burst
+and sends small circular rounds out from both rims, perpendicular to its travel.
+The release delay, flank angle and shot speed vary locally. A 0.24-second pulse
+precedes each burst; the source artwork, collision shape and district tint stay
+unchanged. Easy/Normal/Hard release 1/2/3 rounds per side with the existing Rest
+scaling. Children inherit damage. Offscreen, held, fading and cleared orbs do not
+continue side fire. The state resets when an ordinary orb reuses the same object.
+
+SnowSiegeCraft now rotates snow rain, freezing fans and paired giant snowballs.
+Its snow still begins above the visible screen. TaffyDuelist replaces its popping
+gumdrop move with two side-spraying giant gumdrops; both launch ports now warn.
+Wave Watcher includes GIANT ORB / SIDE SPRAY under Projectiles.
+
+One isolated command-line review covered both actual minibosses on all three
+difficulties, pooled state reset, irregular mirrored side releases, inherited
+damage and pixel contacts, offscreen suppression, clearing and the live cap.
+All checks passed without creating projectile objects during the encounters.
+
+Stress: 128 spraying giants among 800 giants plus 2400 standard rounds, 600
+complete editor frames at 60 simulation Hz, native physics enabled. Peak 3600
+rounds; zero new projectile objects after preparation. CPU frame p95 9.191 ms,
+maximum 19.715 ms; physics p95 1.507 ms. Rendering was excluded from timing.
+
+Side-spray.mp4 is a six-second offscreen native-shader preview of the actual
+GiantOrb and SimpleRound sprites and Tick behavior at Normal difficulty.
+The still frames were inspected for circular silhouette, rim origins and
+readable side-shot separation. No artwork was replaced and no desktop controls
+or visible Unity review sessions were used.
+
+Windows player build succeeded with zero errors and zero warnings. The isolated
+review reused its existing Build/VoidBackdrop output to avoid duplicate builds.
