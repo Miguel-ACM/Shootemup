@@ -194,6 +194,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
             for (int i = 0; i < count; i++)
             {
                 Trace(transform.position + spawnPoints[i], paths[i]);
+                CombatWalls.ClipPath(paths[i], width * .5f);
                 beams[i].DrawPath(paths[i], width, Mathf.Clamp01(t / warning), power, releasedFor / .18f);
             }
             if (active && t >= nextTick)

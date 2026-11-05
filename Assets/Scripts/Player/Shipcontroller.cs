@@ -332,7 +332,7 @@ public class Shipcontroller : MonoBehaviour
         float upperLimit = limits[0];
         var destination = transform.position + new Vector3(horizontalMove, verticalMove);
         transform.position = HangarHub.Active ? HangarHub.ConstrainTravel(transform.position, destination) :
-            new Vector3(Mathf.Clamp(destination.x, limits[2], limits[3]), Mathf.Clamp(destination.y, limits[1], upperLimit), transform.position.z);
+            CombatWalls.Constrain(transform.position, new Vector3(Mathf.Clamp(destination.x, limits[2], limits[3]), Mathf.Clamp(destination.y, limits[1], upperLimit), transform.position.z));
         if (transform.position.x == limits[2] || transform.position.x == limits[3])
             waterVelocity.x = 0;
         if (transform.position.y == limits[1] || transform.position.y == upperLimit)

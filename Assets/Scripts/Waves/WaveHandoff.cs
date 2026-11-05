@@ -6,6 +6,8 @@ public static class WaveHandoff
     public const float VisibleOverlap = .35f;
     public static float At(Wave outgoing, Wave incoming)
     {
+        if (outgoing.units.Exists(u => u.passage != 0) || incoming.units.Exists(u => u.passage != 0))
+            return outgoing.duration;
         float last = Boundary(outgoing, true), first = Boundary(incoming, false), allLaunched = 0;
         foreach (var unit in outgoing.units)
             allLaunched = Mathf.Max(allLaunched, unit.time + .05f);

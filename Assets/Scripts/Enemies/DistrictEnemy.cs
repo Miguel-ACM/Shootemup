@@ -166,6 +166,7 @@ public abstract class DistrictEnemy : AEnemy
 
     public virtual void FlyPhrase(WaveUnit unit)
     {
+        if (unit.passage != 0) TunnelPassage.Begin(unit.passage);
         if (unit.miniboss)
             MakeMiniboss();
         if (unit.phrase == FlightPhrase.None)

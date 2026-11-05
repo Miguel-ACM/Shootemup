@@ -122,14 +122,14 @@ public class WaveOrchestrer : MonoBehaviour
                 enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
                 currentUnit = currentWave.getNext();
             }
-            if (offerPending && (waveTime >= offerAt || currentUnit == null && AEnemy.Live.Count == 0))
+            if (offerPending && !TunnelPassage.Active && (waveTime >= offerAt || currentUnit == null && AEnemy.Live.Count == 0))
                 OpenEncounterChoice();
             // Consecutive phrases overlap their exits: old bullets are part of the rhythm.
             // Decisions and bosses wait for enemies to finish, then explicitly clear hazards.
             var next = plan.Following(currentWaveNumber);
             bool nextCombat = next.Kind == RunSlotKind.Combat && !(challengeWave && challengeWavesRemaining == 1) &&
                 !(FlightTrials.EscortsCargo && cargo != null && cargo.WavesRemaining == 1);
-            bool empty = currentUnit == null && AEnemy.Live.Count == 0;
+            bool empty = currentUnit == null && AEnemy.Live.Count == 0 && !TunnelPassage.Active;
             clearTime = empty ? clearTime + Time.deltaTime : 0;
             bool miniboss = currentWave.units.Exists(unit => unit.miniboss);
             if (miniboss && activeMiniboss != null && activeMiniboss.Engaged && !activeMiniboss.Retreating)
@@ -140,7 +140,7 @@ public class WaveOrchestrer : MonoBehaviour
                 if (MinibossRemaining <= 0)
                     activeMiniboss.Retreat();
             }
-            bool phraseComplete = currentUnit == null && !miniboss && waveTime >= handoffAt && AEnemy.Live.Count < 22;
+            bool phraseComplete = currentUnit == null && !miniboss && waveTime >= handoffAt && AEnemy.Live.Count < 22 && !TunnelPassage.Active;
             if (currentUnit == null && ((nextCombat && phraseComplete) || clearTime >= .12f) && (nextCombat || rewardOffer == null))
             {
 

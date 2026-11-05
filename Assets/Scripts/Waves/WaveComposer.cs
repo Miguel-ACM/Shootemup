@@ -117,6 +117,7 @@ public static class WaveComposer
 
     static Wave Build(int budget)
     {
+        if (level == LevelId.Tunnel && TunnelPassageWaves.HasPassage(budget)) return TunnelPassageWaves.Create(budget);
         for (int attempt = 0; attempt < 8; attempt++)
         {
             var wave = TryBuild(budget, attempt, false);

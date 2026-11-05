@@ -338,11 +338,17 @@ public abstract class CombatRound : AEnemyBullet
             Release();
             return;
         }
+        Vector3 wallFrom = transform.position;
         Tick(dt);
         if (!ended)
             Program();
         if (!ended && !(this is PulseLaser) && PocketWind.Current != null)
             transform.position += PocketWind.Velocity(transform.position) * Time.deltaTime;
+        if (!ended && !(this is PulseLaser) && collision.enabled && CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _))
+        {
+            Release();
+            return;
+        }
         if (!ended)
             UpdateSimulation();
         if (!ended && Erratic && visual.enabled)

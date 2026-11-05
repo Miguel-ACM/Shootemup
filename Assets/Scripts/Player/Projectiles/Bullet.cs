@@ -6,6 +6,7 @@ public class Bullet : ABullet
 {
     Rigidbody2D rigidBody;
     bool rubberReturned;
+    Vector2 wallFrom;
     // Shared by all bullets so the scene is searched once, not on every trigger contact.
     static Shipcontroller player;
 
@@ -14,6 +15,7 @@ public class Bullet : ABullet
         ProjectileSpriteTint.Friendly(gameObject);
         direction.z = transform.position.z;
         rigidBody = GetComponent<Rigidbody2D>();
+        wallFrom = transform.position;
         Move();
     }
 
@@ -22,6 +24,12 @@ public class Bullet : ABullet
     {
         if (Time.deltaTime <= 0 || WorldTimeStop.Frozen)
             return;
+        if (CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _))
+        {
+            Despawn();
+            return;
+        }
+        wallFrom = transform.position;
         if (!rubberReturned && transform.up.y > 0 && RubberReturn.AtTop(transform.position))
         {
             rubberReturned = true;
@@ -66,6 +74,7 @@ public class Bullet : ABullet
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        if (CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _)) { Despawn(); return; }
         if (collision.CompareTag("Enemy"))
         {
             AEnemy en = collision.gameObject.GetComponent<AEnemy>();

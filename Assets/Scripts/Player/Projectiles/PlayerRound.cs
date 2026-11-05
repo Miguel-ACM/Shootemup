@@ -231,7 +231,13 @@ public sealed class PlayerRound : ABullet
     Time.deltaTime * (delivery == PlayerDelivery.Missile ? 3 : Mathf.Min(3, GameRules.playerShootFollowness)), 0);
         }
         float brake = delivery == PlayerDelivery.Shell ? Mathf.Clamp01(1 - age / .7f) : 1;
+        Vector3 wallFrom = transform.position;
         transform.position += (Vector3)heading * speed * brake * Time.deltaTime;
+        if (CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _))
+        {
+            Despawn();
+            return;
+        }
         transform.rotation = Quaternion.FromToRotation(Vector3.up, heading);
         if (delivery == PlayerDelivery.Disc)
             transform.Rotate(0, 0, age * 540);

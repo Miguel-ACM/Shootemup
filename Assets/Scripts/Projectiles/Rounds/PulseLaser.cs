@@ -137,14 +137,15 @@ public class PulseLaser : CombatRound
             ship.PointWeapon(transform.position, heading);
         sound.Drive(power, Active);
         ribbon.Siege = celestial;
-        ribbon.Draw(transform.position, heading, length, width, Charge, power, Mathf.Max(0, age - warning - activeTime) / Cooldown);
+        float visibleLength = CombatWalls.BeamLength(transform.position, heading, length, width * power * .5f);
+        ribbon.Draw(transform.position, heading, visibleLength, width, Charge, power, Mathf.Max(0, age - warning - activeTime) / Cooldown);
         var player = CombatVisuals.Player;
         if (Active && power > .15f && player != null)
         {
             Vector2 delta = player.position - transform.position;
             float along = Vector2.Dot(delta, heading), across = Mathf.Abs(delta.x * heading.y - delta.y * heading.x);
             // Like the rounds, a beam hurts only within the inner part of its glow.
-            if (along >= 0 && along <= length && across < width * power * .5f * ProjectilePixelContact.HitboxScale + .1f)
+            if (along >= 0 && along <= visibleLength && across < width * power * .5f * ProjectilePixelContact.HitboxScale + .1f)
                 player.SendMessage("ReceiveHazardDamage", damage, SendMessageOptions.DontRequireReceiver);
         }
         if (sideShots)
@@ -156,7 +157,7 @@ public class PulseLaser : CombatRound
             }
             if (nextSide == 0)
                 nextSide = warning;
-            var layout = LaserSidePorts.VisibleLayout(transform.position, heading, length);
+            var layout = LaserSidePorts.VisibleLayout(transform.position, heading, visibleLength);
             bool cue = age >= nextSide - .32f && age < warning + activeTime;
             ports.Draw(transform.position, heading, width, layout, Mathf.InverseLerp(nextSide - .32f, nextSide, age), cue);
             if (Active && age >= nextSide && Live.Count + layout.Count * 2 <= Limit)

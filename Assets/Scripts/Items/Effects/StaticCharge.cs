@@ -58,6 +58,8 @@ public sealed class StaticCharge : MonoBehaviour
             var next = CombatUpgrades.Nearest(point, used, 4.5f);
             if (next == null)
                 break;
+            if (CombatWalls.Sweep(point, next.transform.position, .04f, out _, out _))
+                break;
             used.Add(next);
             StaticArc.Draw(point, next.transform.position, .22f);
             CombatHit.Apply(next, damage * .7f * Mathf.Pow(.8f, i), next.transform.position,

@@ -493,6 +493,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
 
     static void ClearArena()
     {
+        TunnelPassage.Clear();
         foreach (var enemy in FindObjectsByType<AEnemy>())
         {
             enemy.enabled = false;

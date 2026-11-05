@@ -12,6 +12,7 @@ public class WaveUnit : ICloneable
     public FlightCurve curve;
     public bool syncFire;
     public bool miniboss;
+    public int passage;
     public float firePhase;
     public float[] fireTimes;
     public float formationDepth;
@@ -28,7 +29,7 @@ public class WaveUnit : ICloneable
 
     public object Clone()
     {
-        return new WaveUnit(enemy, time, position) { phrase = phrase, curve = curve, syncFire = syncFire, miniboss = miniboss, firePhase = firePhase, fireTimes = fireTimes, formationDepth = formationDepth, fixedDepth = fixedDepth, part = part, side = side, lane = lane, flightDuration = flightDuration, fireEvery = fireEvery };
+        return new WaveUnit(enemy, time, position) { phrase = phrase, curve = curve, syncFire = syncFire, miniboss = miniboss, passage = passage, firePhase = firePhase, fireTimes = fireTimes, formationDepth = formationDepth, fixedDepth = fixedDepth, part = part, side = side, lane = lane, flightDuration = flightDuration, fireEvery = fireEvery };
     }
 
     override public string ToString()

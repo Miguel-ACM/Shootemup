@@ -8,6 +8,7 @@ public abstract class AEnemyBullet : MonoBehaviour
     public float damage;
     public float speed;
     Rigidbody2D rigidBody;
+    Vector2 wallFrom;
     protected bool moveOnUpdate = false;
     protected bool dieOnTrigger = true;
 
@@ -16,6 +17,7 @@ public abstract class AEnemyBullet : MonoBehaviour
         ProjectileSpriteTint.LegacyEnemy(gameObject);
         PolarityEngine.Assign(GetComponent<ProjectileSpriteTint>());
         rigidBody = GetComponent<Rigidbody2D>();
+        wallFrom = transform.position;
     }
 
     protected virtual void Update()
@@ -25,6 +27,8 @@ public abstract class AEnemyBullet : MonoBehaviour
             Destroy(gameObject);
         Move();
         transform.position += PocketWind.Velocity(transform.position) * Time.deltaTime;
+        if (CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _)) Vanish();
+        wallFrom = transform.position;
     }
 
     protected virtual void Move()

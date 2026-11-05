@@ -162,7 +162,7 @@ public sealed class TrailDrone : ACompanion
             beam.gameObject.SetActive(true);
             sound.Charge(.25f, true);
         }
-        float length = BeamReach;
+        float length = CombatWalls.BeamLength(origin, Vector2.up, BeamReach, .06f);
         AEnemy struck = null;
         foreach (var enemy in AEnemy.Live)
         {
