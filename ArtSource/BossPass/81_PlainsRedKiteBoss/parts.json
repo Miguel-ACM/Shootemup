@@ -1,0 +1,34 @@
+[
+  {
+    "object": "Elevator_-1",
+    "motion": "swing",
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "pivot": [
+      -0.57,
+      0.64,
+      0.26
+    ],
+    "speed": 0.55,
+    "amplitude": -14
+  },
+  {
+    "object": "Elevator_1",
+    "motion": "swing",
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "pivot": [
+      0.57,
+      0.64,
+      0.26
+    ],
+    "speed": 0.55,
+    "amplitude": 14
+  }
+]
