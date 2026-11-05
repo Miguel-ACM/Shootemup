@@ -36,6 +36,20 @@ class MusicPulseTest(unittest.TestCase):
         self.check_recording("tunnel", 170, (45.664, 46.020, 46.380, 113.784, 149.084, 179.794),
                              (45.310, 56.609, 135.667, 180.854))
 
+    def test_heaven(self):
+        self.check_recording("heaven", 170, (45.710, 46.063, 47.478, 48.182, 81.367, 121.616, 160.152),
+                             (45.710,))
+
+    def test_replacement_hell(self):
+        self.check_recording("hell", 178, (45.119, 46.129, 47.482, 80.174, 81.521, 121.646, 162.435),
+                             (46.129, 83.881, 121.646))
+
+    def test_void(self):
+        # A dotted-quarter accent also fits 113 BPM; the actual quarter grid must
+        # include the intervening drum attacks rather than alternating off beat.
+        self.check_recording("void", 170, (45.289, 45.642, 46.700, 80.581, 81.994, 120.464, 161.050),
+                             (45.289,))
+
 
 if __name__ == "__main__":
     unittest.main()
