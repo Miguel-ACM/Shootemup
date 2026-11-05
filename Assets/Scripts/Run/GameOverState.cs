@@ -104,6 +104,11 @@ public sealed class GameOverState : MonoBehaviour
         stamps = Label("", -192, 151, 16, accent);
         stamps.textWrappingMode = TextWrappingModes.NoWrap;
         stamps.lineSpacing = 14;
+        if (log.unlocks != null && log.unlocks.Count > 0)
+        {
+            stamps.gameObject.SetActive(false);
+            UnlockReceipt.Show(playfield, log.unlocks, font, log.awards.Find(a => a.StartsWith("Hull released")));
+        }
         footer = Label("", -321, 36, 14, DockInstrument.Muted);
         group.alpha = 0;
     }
@@ -154,7 +159,7 @@ public sealed class GameOverState : MonoBehaviour
         }
         else
             stamps.text = age > 1.2f && log.awards.Count == 0 ? "FLIGHT LOG FILED" : "";
-        bool ready = age > 1.6f + log.awards.Count / 3f;
+        bool ready = age > 1.6f;
         footer.text = ready ? DockInstrument.MenuKey() + "   RETURN TO HANGAR" : "";
         var controls = GameInput.Actions.PlayerControls;
         if (ready && !leaving && !CloudTransition.Busy && (controls.Accept.WasPressedThisFrame() || controls.Back.WasPressedThisFrame()))

@@ -16,19 +16,19 @@ public sealed class ItemPortraitStudio : MonoBehaviour
     int columns, rows;
     public Texture Atlas => atlas;
 
-    public static ItemPortraitStudio Create(IList<string> kinds)
+    public static ItemPortraitStudio Create(IList<string> kinds, int cellPixels = CellPixels)
     {
         var studio = new GameObject("Item portrait studio").AddComponent<ItemPortraitStudio>();
-        studio.Build(kinds);
+        studio.Build(kinds, cellPixels);
         return studio;
     }
 
-    void Build(IList<string> kinds)
+    void Build(IList<string> kinds, int cellPixels)
     {
         transform.position = Origin;
         columns = Mathf.Max(1, Mathf.Min(10, kinds.Count));
         rows = Mathf.Max(1, Mathf.CeilToInt(kinds.Count / (float)columns));
-        atlas = new RenderTexture(columns * CellPixels, rows * CellPixels, 16, RenderTextureFormat.ARGB32) { name = "Item portraits", filterMode = FilterMode.Point };
+        atlas = new RenderTexture(columns * cellPixels, rows * cellPixels, 16, RenderTextureFormat.ARGB32) { name = "Item portraits", filterMode = FilterMode.Point };
         var go = new GameObject("Item portrait camera");
         go.transform.SetParent(transform, false);
         go.transform.localPosition = new Vector3(0, 0, -10);
