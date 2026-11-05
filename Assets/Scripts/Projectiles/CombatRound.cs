@@ -325,7 +325,9 @@ public abstract class CombatRound : AEnemyBullet
     }
 
     protected virtual float ClockRate => 1;
-    protected virtual float ContactSpeed => speed * Mathf.Max(1, rampTo, resumeSpeed) + drift.magnitude + Mathf.Abs(swayAmplitude) * swayRate * 6.3f;
+    // The three-argument params overload allocated an array for every live round,
+    // every frame. Keep the same conservative contact horizon without that churn.
+    protected virtual float ContactSpeed => speed * Mathf.Max(1, Mathf.Max(rampTo, resumeSpeed)) + drift.magnitude + Mathf.Abs(swayAmplitude) * swayRate * 6.3f;
     protected override void Update()
     {
         if (ended || WorldTimeStop.Frozen || Time.deltaTime <= 0)
