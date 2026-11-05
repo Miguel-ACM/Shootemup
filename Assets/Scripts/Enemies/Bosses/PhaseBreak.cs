@@ -1,59 +1,58 @@
 using UnityEngine;
 
-// The bullet clear travels out from an opening starburst in three tapering arcs.
+// A hard white ignition, a broad pressure front, then tapered rays and delayed rings.
+// One shared quad and one pass, with no per-ray objects or lights.
 public sealed class PhaseBreak : MonoBehaviour
 {
-    const float Duration = 1.1f;
-    readonly LineRenderer[] arcs = new LineRenderer[3];
-    const int ArcPoints = 24;
+    public const float Duration = 1.35f;
+    static Mesh quad;
+    static Material surface;
+    MaterialPropertyBlock ink;
+    MeshRenderer visual;
     float age;
+
+    public static void Warm()
+    {
+        if (quad == null)
+        {
+            quad = new Mesh { name = "Spell break / shared arena quad" };
+            quad.vertices = new[] { new Vector3(-24,-24), new Vector3(24,-24), new Vector3(24,24), new Vector3(-24,24) };
+            quad.uv = new[] { Vector2.zero, Vector2.right, Vector2.one, Vector2.up };
+            quad.triangles = new[] { 0,2,1,0,3,2 };
+            quad.RecalculateBounds();
+        }
+        if (surface == null) surface = new Material(Resources.Load<Shader>("BossSpellBreak"));
+    }
 
     public static void Play(Vector3 at)
     {
-        var go = new GameObject("Phase break");
-        go.transform.position = new Vector3(at.x, at.y, -.8f);
+        Warm();
+        var go = new GameObject("White spell rupture");
+        go.transform.position = new Vector3(at.x, at.y, -3);
+        go.AddComponent<MeshFilter>().sharedMesh = quad;
         var effect = go.AddComponent<PhaseBreak>();
-        for (int i = 0; i < effect.arcs.Length; i++)
-        {
-            var arc = effect.arcs[i] = CombatVisuals.Line(go.transform, Color.white, .16f);
-            arc.useWorldSpace = false;
-            arc.positionCount = ArcPoints;
-            arc.enabled = false;
-        }
+        effect.visual = go.AddComponent<MeshRenderer>();
+        effect.visual.sharedMaterial = surface;
+        effect.visual.sortingLayerName = "Bullet";
+        effect.visual.sortingOrder = 80;
+        effect.ink = new MaterialPropertyBlock();
+        effect.Pose(0);
         PSXImpactEffects.SpellBreak(go.transform.position);
         if (EZCameraShake.CameraShaker.Instance != null)
-            EZCameraShake.CameraShaker.Instance.ShakeOnce(4, 6, .05f, .8f);
+            EZCameraShake.CameraShaker.Instance.ShakeOnce(5.2f, 8, .035f, .85f);
+    }
+
+    public void Pose(float seconds)
+    {
+        ink.SetFloat("_Age", seconds);
+        visual.SetPropertyBlock(ink);
     }
 
     void Update()
     {
+        if (WorldTimeStop.Frozen || GameRules.playerDisabled) return;
         age += Time.deltaTime;
-        float t = age / Duration;
-        if (t >= 1)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        for (int i = 0; i < arcs.Length; i++)
-        {
-            float local = Mathf.Clamp01(t * 1.3f - i * .09f);
-            var arc = arcs[i];
-            arc.enabled = local > 0 && local < 1;
-            if (!arc.enabled)
-                continue;
-            float remaining = 1 - local;
-            float radius = Mathf.Lerp(.45f, 11, 1 - remaining * remaining);
-            arc.startWidth = .16f * remaining;
-            arc.endWidth = .035f * remaining;
-            arc.startColor = new Color(.9f, .96f, 1, .85f * remaining * remaining);
-            arc.endColor = new Color(.76f, .86f, 1, .12f * remaining);
-            float start = i * 120 + 24 * local;
-            float sweep = Mathf.Lerp(108, 48, local);
-            for (int point = 0; point < ArcPoints; point++)
-            {
-                float angle = (start + sweep * point / (ArcPoints - 1)) * Mathf.Deg2Rad;
-                arc.SetPosition(point, new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0));
-            }
-        }
+        if (age >= Duration) Destroy(gameObject);
+        else Pose(age);
     }
 }

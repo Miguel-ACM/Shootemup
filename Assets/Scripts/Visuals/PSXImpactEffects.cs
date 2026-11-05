@@ -251,8 +251,10 @@ public static class PSXImpactEffects
     /// <summary>A bullet dissolving: its core shrinks to a sparkle while a ring of sparks expands from
     /// its rim. Every part scales with the bullet's own world size, so a giant orb pops widely and a
     /// needle barely flickers. Mass clears share one bounded buffer apart from the hit sparks.</summary>
+    public static bool WhiteSpellClear { get; set; }
     public static void Vanish(Vector3 position, Color color, float size)
     {
+        if(WhiteSpellClear)color=Color.white;
         using var sample = vanishMarker.Auto();
         if (dissolves == null)
             dissolves = Create(null, "PSX bullet dissolves", 3200);

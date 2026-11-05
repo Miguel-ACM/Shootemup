@@ -158,9 +158,13 @@ public abstract class DistrictBoss : DistrictEnemy
         StopPhrases();
         cardsRunning = false;
         // Spell break: every hostile round bursts into light and a white blast spreads out.
-        foreach (var round in new List<CombatRound>(CombatRound.Live))
-            if (round != null)
-                round.Vanish();
+        PSXImpactEffects.WhiteSpellClear=true;
+        try
+        {
+            foreach (var round in new List<CombatRound>(CombatRound.Live))
+                if (round != null)round.Vanish();
+        }
+        finally { PSXImpactEffects.WhiteSpellClear=false; }
         PhaseBreak.Play(transform.position);
     }
 

@@ -42,6 +42,7 @@ public sealed class WavePreparation : MonoBehaviour
         if (LevelRun.Current == LevelId.Space)
             _ = SpaceMaterials.Fleet;
         PSXImpactEffects.Warm();
+        PhaseBreak.Warm();
         yield return PSXFireballs.Warm();
         yield return null;
         yield return CombatRound.PrepareBursts();
