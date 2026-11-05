@@ -32,8 +32,9 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
                     for (int feather = 0; feather < feathers; feather++)
                     {
                         float spread = (feather - (feathers - 1) * .5f) * 8;
-                        Fire<NeedleRound>(Muzzle(wing), CombatVisuals.Rotate(sight, spread), 4.1f + .18f * (i % 4), .17f);
+                        ScoredShot(i%3==0,Muzzle(wing), CombatVisuals.Rotate(sight, spread), 4.1f + .18f * (i % 4), .17f);
                     }
+                if(i%3==0)Fire<SimpleRound>(Muzzle(),CombatVisuals.Aim(Muzzle()),3.4f,.21f);
                 if (phaseTwo && i % 2 == 0)
                     Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Vector2.up, side * (24 + i * 3)), 2.6f, .25f).Bounce(1);
                 yield return Wait(Rest(.15f));
@@ -78,7 +79,7 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
                         int mirror = wing == 0 ? -1 : 1;
                         float cant = mirror * (64 + 24 * t);
                         for (int feather = 0; feather < feathers; feather++)
-                            Fire<NeedleRound>(Muzzle(1 + wing), CombatVisuals.Rotate(tangent, cant +
+                            ScoredShot(emitted%3==0,Muzzle(1 + wing), CombatVisuals.Rotate(tangent, cant +
                                 (feather - (feathers - 1) * .5f) * 7), 2.7f, .17f)
                                 .Pause(.70f, .26f + feather * .035f, CombatRound.Turn.Rotate,
                                     -mirror * side * (phaseThree ? 110 : 75), .85f)
