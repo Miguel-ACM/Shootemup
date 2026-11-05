@@ -1,0 +1,2 @@
+PASS
+33 feature source/meta files match isolated build checkout (line endings normalized).

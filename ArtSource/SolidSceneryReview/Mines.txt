@@ -1,0 +1,14 @@
+PASS
+Native headless simulation; offline mesh previews exclude the game renderer.
+PASS Normal standalone mine drifts without shooting
+PASS Normal loop 12 moving mine responds to one weak .01-damage player round
+PASS Normal mine holds position throughout its fuse
+PASS Normal revised mine stops for fuse and releases one complete burst from (0.00, 1.33, 1.00)
+PASS Hard standalone mine drifts without shooting
+PASS Hard loop 12 moving mine responds to one weak .01-damage player round
+PASS Hard mine holds position throughout its fuse
+PASS Hard revised mine stops for fuse and releases one complete burst from (0.00, 1.28, 1.00)
+PASS Easy standalone mine drifts without shooting
+PASS Easy loop 12 moving mine responds to one weak .01-damage player round
+PASS Easy mine holds position throughout its fuse
+PASS Easy revised mine stops for fuse and releases one complete burst from (0.00, 1.35, 1.00)

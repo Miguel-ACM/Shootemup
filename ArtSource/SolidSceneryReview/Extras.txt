@@ -1,0 +1,17 @@
+PASS
+Native headless simulation; offline mesh previews exclude the game renderer.
+PASS moving wall recovery stays inside arena and outside masonry, including bottom corners: 225000 samples, 0 trapped
+Measured headless main-thread maximum around wall creation and following physics frames: 3,70 ms (no graphics rendering)
+PASS decisions clear foreground passages
+PASS seed 17381 includes mines in ordinary underwater waves: 8
+PASS seed 42042 includes mines in ordinary underwater waves: 9
+PASS seed 86753 includes mines in ordinary underwater waves: 19
+PASS Normal standalone mine drifts without shooting
+PASS Normal moving mine responds to an actual player round
+PASS Normal revised mine stops for fuse and releases one complete burst from (0.00, 1.45, 1.00)
+PASS Hard standalone mine drifts without shooting
+PASS Hard moving mine responds to an actual player round
+PASS Hard revised mine stops for fuse and releases one complete burst from (0.00, 1.40, 1.00)
+PASS Easy standalone mine drifts without shooting
+PASS Easy moving mine responds to an actual player round
+PASS Easy revised mine stops for fuse and releases one complete burst from (0.00, 1.47, 1.00)

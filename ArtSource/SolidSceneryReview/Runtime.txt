@@ -1,0 +1,58 @@
+PASS
+Native headless simulation; offline mesh previews exclude the game renderer.
+PASS Normal passage 6 enters from above and scrolls fully out
+PASS Normal passage 6 enemy envelopes clear masonry (0)
+PASS Normal passage 6 sustained fire and warmed rounds; peak=39
+PASS Normal passage 10 enters from above and scrolls fully out
+PASS Normal passage 10 enemy envelopes clear masonry (0)
+PASS Normal passage 10 sustained fire and warmed rounds; peak=44
+PASS Normal passage 16 enters from above and scrolls fully out
+PASS Normal passage 16 enemy envelopes clear masonry (0)
+PASS Normal passage 16 sustained fire and warmed rounds; peak=44
+PASS Normal mine remains inert without a shot
+PASS Normal player projectile starts visible fuse before the burst
+PASS Normal shot mine bursts once in all directions; rounds=16
+PASS Normal mine burst reuses prepared rounds
+PASS Normal clearing an unshot mine causes no explosion
+PASS Hard passage 6 enters from above and scrolls fully out
+PASS Hard passage 6 enemy envelopes clear masonry (0)
+PASS Hard passage 6 sustained fire and warmed rounds; peak=47
+PASS Hard passage 10 enters from above and scrolls fully out
+PASS Hard passage 10 enemy envelopes clear masonry (0)
+PASS Hard passage 10 sustained fire and warmed rounds; peak=66
+PASS Hard passage 16 enters from above and scrolls fully out
+PASS Hard passage 16 enemy envelopes clear masonry (0)
+PASS Hard passage 16 sustained fire and warmed rounds; peak=66
+PASS Hard mine remains inert without a shot
+PASS Hard player projectile starts visible fuse before the burst
+PASS Hard shot mine bursts once in all directions; rounds=24
+PASS Hard mine burst reuses prepared rounds
+PASS Hard clearing an unshot mine causes no explosion
+PASS Easy passage 6 enters from above and scrolls fully out
+PASS Easy passage 6 enemy envelopes clear masonry (0)
+PASS Easy passage 6 sustained fire and warmed rounds; peak=33
+PASS Easy passage 10 enters from above and scrolls fully out
+PASS Easy passage 10 enemy envelopes clear masonry (0)
+PASS Easy passage 10 sustained fire and warmed rounds; peak=30
+PASS Easy passage 16 enters from above and scrolls fully out
+PASS Easy passage 16 enemy envelopes clear masonry (0)
+PASS Easy passage 16 sustained fire and warmed rounds; peak=30
+PASS Easy mine remains inert without a shot
+PASS Easy player projectile starts visible fuse before the burst
+PASS Easy shot mine bursts once in all directions; rounds=10
+PASS Easy mine burst reuses prepared rounds
+PASS Easy clearing an unshot mine causes no explosion
+PASS fast segment cannot tunnel through wall
+PASS pilot slides along the solid face
+PASS continuous beam stops at solid face
+PASS curved player beam has no damage path beyond wall
+PASS Pulse player shot is absorbed by wall
+PASS Needle player shot is absorbed by wall
+PASS Shell player shot is absorbed by wall
+PASS Disc player shot is absorbed by wall
+PASS Missile player shot is absorbed by wall
+PASS Flame player shot is absorbed by wall
+PASS hostile projectile is absorbed by wall
+PASS wall shelters pilot from hostile continuous beam
+PASS same hostile beam damages the unsheltered pilot
+PASS projectiles travel normally when walls are absent
