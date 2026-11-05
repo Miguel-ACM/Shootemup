@@ -53,7 +53,7 @@ public sealed partial class FieldsBomberBoss
                 var port = Muzzle(side);
                 var axis = CombatVisuals.Aim(port);
                 foreach (float spread in new[] { -10f, 0f, 10f })
-                    Fire<NeedleRound>(port, CombatVisuals.Rotate(axis, spread), 4.6f, .19f);
+                    ScoredShot(spread==0,port, CombatVisuals.Rotate(axis, spread), 4.6f);
             }
             if (n % 12 == 6)
                 CarpetBombs(2);
@@ -69,6 +69,7 @@ public sealed partial class FieldsBomberBoss
     // Two layers of slow orbs from the nose: an arc that rolls under the lace.
     void OrbWave(int n)
     {
+        Fire<SimpleRound>(Muzzle(4),CombatVisuals.Aim(Muzzle(4)),2.8f,.23f);
         int lanes = Dense(15);
         for (int layer = 0; layer < 2; layer++)
             for (int i = 0; i < lanes; i++)
@@ -81,6 +82,8 @@ public sealed partial class FieldsBomberBoss
     // Mirrored bombs brake at matching distances, glint, then explode in a full ring.
     void CarpetBombs(int pairs)
     {
+        // A nose tracer punctuates each payload release, including above the wings.
+        Fire<SimpleRound>(Muzzle(4),CombatVisuals.Aim(Muzzle(4)),2.9f,.22f);
         int shards = Dense(16);
         for (int i = 0; i < Dense(pairs); i++)
             for (int mirror = 0; mirror < 2; mirror++)
@@ -103,7 +106,7 @@ public sealed partial class FieldsBomberBoss
             {
                 if (n % 2 == 0)
                     for (int side = 0; side < 2; side++)
-                        Fire<NeedleRound>(Muzzle(side), CombatVisuals.Aim(Muzzle(side)), 4.8f, .19f);
+                        ScoredShot(n%6==0,Muzzle(side), CombatVisuals.Aim(Muzzle(side)), 4.8f);
             });
         }
     }
