@@ -14,13 +14,12 @@ public sealed class TaffyDuelist : DistrictMiniboss
     {
         base.PrepareFire(seconds);
         firingCue.ClearWarning();
-        int beat = volley % 10;
-        if (beat != 3 && beat != 4 && beat != 9)
-            Cue(Muzzle(beat % 2), seconds);
+        Cue(Muzzle(0), seconds);
+        Cue(Muzzle(1), seconds);
     }
 
     // Candy taffy duelist: taffy pulls that curl in mirror, mirrored ricocheting
-    // sprinkles, gumdrops that pop at the player, and a canopy over the ceiling.
+    // sprinkles, giant gumdrops shedding sideways sprinkles, and a ceiling canopy.
     protected override void Attack()
     {
         int beat = volley % 4;
@@ -48,11 +47,9 @@ public sealed class TaffyDuelist : DistrictMiniboss
         }
         else if (beat == 2)
         {
-            var aim = Aim;
-            for (int i = 0; i < 3; i++)
-                Fire<SimpleRound>(Muzzle(i % 2), CombatVisuals.Rotate(aim, (i - 1) * 32), 3.2f, .38f)
-                    .Ramp(.15f, .6f)
-                    .SplitAt(.85f, Dense(7), 9, 4.6f, .18f, true);
+            for (int mirror = -1; mirror <= 1; mirror += 2)
+                Fire<GiantOrb>(Muzzle(mirror < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, mirror * 20), 2.2f, .59f)
+                    .SideSpray(3.4f);
         }
         else
         {
