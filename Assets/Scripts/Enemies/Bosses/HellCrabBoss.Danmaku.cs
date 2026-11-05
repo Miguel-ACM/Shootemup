@@ -81,13 +81,13 @@ public sealed partial class HellCrabBoss
         var mouth = Hull.TransformPoint(Mouth);
         for (int i = 0; i < count; i++)
             for (int mirror = -1; mirror <= 1; mirror += 2)
-                Fire<NeedleRound>(mouth, CombatVisuals.Rotate(Vector2.up, mirror * (6 + i * 9 + (n % 2) * 4)), 3.6f, .19f).Bounce(1);
+                ScoredShot(i%3==0,mouth, CombatVisuals.Rotate(Vector2.up, mirror * (6 + i * 9 + (n % 2) * 4)), 3.6f).Bounce(1);
     }
 
     // Each pincer sweeps its stream across the player's position, so the two lines cross and close.
     IEnumerator Scissors(int sign)
     {
-        int shots = Dense(phaseTwo ? 15 : 12);
+        int shots = Dense(phaseTwo ? 15 : 12)|1;
         for (int i = 0; i < shots; i++)
         {
             float t = i / (shots - 1f);
@@ -99,7 +99,7 @@ public sealed partial class HellCrabBoss
                 if (player != null && Vector2.Distance(port, player.position) < 1.8f)
                     continue;
                 float sweep = Mathf.Lerp(22, -22, t) * (side == 0 ? 1 : -1) * sign;
-                Fire<NeedleRound>(port, CombatVisuals.Rotate(CombatVisuals.Aim(port), sweep), 4.3f, .19f);
+                ScoredShot(i%3==shots/2%3,port, CombatVisuals.Rotate(CombatVisuals.Aim(port), sweep), 4.3f);
             }
             yield return Wait(Rest(.075f));
         }
