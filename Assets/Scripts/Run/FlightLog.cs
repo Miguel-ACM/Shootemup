@@ -32,6 +32,7 @@ public static partial class MetaProgress
     static int bossHits, districtHits;
     static Type engagedBoss;
     static bool districtDefeated;
+    public static event Action<BossClearNotice> BossCleared;
     public static FlightLog LastFlight
     {
         get; private set;
@@ -151,8 +152,12 @@ public static partial class MetaProgress
             flight.awards.Add(LevelRun.CurrentName + "  /  no-hit star");
         if (clean)
             record.flawless |= mark;
+        int previousUnlocks = flight.unlocks.Count;
         AwardDistrictItems(clean);
         Save();
+        bool noHitEligible = ItemUnlocks.AllowsNoHit(flight.difficulty);
+        BossCleared?.Invoke(new BossClearNotice(noHitEligible && flight.hits == districtHits,
+            noHitEligible && clean, flight.unlocks.GetRange(previousUnlocks, flight.unlocks.Count - previousUnlocks)));
     }
     static ServiceRecord StoredRecord()
     {
