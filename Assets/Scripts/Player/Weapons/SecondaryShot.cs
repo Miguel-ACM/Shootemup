@@ -11,6 +11,7 @@ public sealed class SecondaryShot : AWeapon
     static float nextSound;
     public SecondaryPattern Pattern { get; private set; }
     public int Releases { get; private set; }
+    bool NoseMounted => Pattern == SecondaryPattern.Teeth || Pattern == SecondaryPattern.Sewing;
     float clock;
     int side = -1;
     Transform option;
@@ -74,14 +75,14 @@ public sealed class SecondaryShot : AWeapon
             if (battery.transform.parent != transform.parent) continue;
             if (battery == this) break;
             if (battery.Pattern == Pattern) first = false;
-            else if (battery.Pattern != SecondaryPattern.Teeth) mask |= 1 << (int)battery.Pattern;
+            else if (!battery.NoseMounted) mask |= 1 << (int)battery.Pattern;
         }
         for (int i = 0; i < 7; i++)
             if ((mask & 1 << i) != 0) rank++;
         option.gameObject.SetActive(first);
         bool focus = GameInput.Snapshot.Focus;
         int flank = rank % 2 == 0 ? -1 : 1;
-        Vector3 offset = Pattern == SecondaryPattern.Teeth ? new Vector3(0, .30f, -1.2f) :
+        Vector3 offset = NoseMounted ? new Vector3(0, Pattern == SecondaryPattern.Sewing ? .02f : .30f, -1.2f) :
             new Vector3(flank * (focus ? .34f : .65f + rank / 2 * .12f),
             .1f - rank / 2 * .20f, -1.2f);
         option.localPosition = Vector3.Lerp(option.localPosition, offset, 1 - Mathf.Exp(-GameClock.PlayerDelta * 16));
@@ -94,8 +95,8 @@ public sealed class SecondaryShot : AWeapon
         side = -side;
         Vector3 origin = option != null ? option.position : transform.position;
         origin += Vector3.up * .14f;
-        // The teeth are a nose-mounted burst, independent of the flanking options.
-        if (Pattern == SecondaryPattern.Teeth) origin = transform.position + Vector3.up * .42f;
+        // Centre-mounted batteries share the ship's nose, independent of the flanking options.
+        if (NoseMounted) origin = transform.position + Vector3.up * .42f;
         Vector2 forward = focus ? ((Vector2)(transform.position + Vector3.up * 5 - origin)).normalized : Vector2.up;
         Vector2 rear = focus ? ((Vector2)(transform.position + Vector3.down * 4 - origin)).normalized : Vector2.down;
         switch (Pattern)
