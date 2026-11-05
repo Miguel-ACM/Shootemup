@@ -35,14 +35,14 @@ public static partial class IndustrialMeshFactory
         CelestialKeel(b,.52f,2.25f,.39f);
         for(int s=-1;s<=1;s+=2)
         {
-            b.Sweep(new Vector3(s*.45f,-.45f,0),new Vector3(s*2.0f,-1.0f,.07f),new Vector3(s*2.05f,.8f,.07f),new Vector3(s*.48f,1.5f,.05f),.3f,.26f,7);
+            CutBlade(b,new[]{new Vector3(s*.45f,-.45f,0),new Vector3(s*1.75f,-.72f,.07f),new Vector3(s*1.86f,.68f,.07f),new Vector3(s*.48f,1.5f,.05f)},.26f,.26f,7);
             for(int f=0;f<5;f++)Feather(b,new Vector3(s*(.54f+f*.17f),.62f-f*.11f,-.08f),new Vector3(s*(1.25f+f*.22f),1.58f-f*.43f,.09f),.25f,-s*.16f);
-            b.Sweep(new Vector3(s*.74f,.64f,0),new Vector3(s*1.6f,.52f,-.05f),new Vector3(s*1.54f,-.5f,-.12f),new Vector3(s*1.25f,-1.025f,-.28f),.28f,.24f,15);
+            CutBlade(b,new[]{new Vector3(s*.74f,.64f,0),new Vector3(s*1.50f,.38f,-.05f),new Vector3(s*1.43f,-.52f,-.12f),new Vector3(s*1.25f,-1.025f,-.28f)},.28f,.24f,15);
             CelestialMuzzle(b,new Vector3(s*1.25f,-1.025f,-.28f),.24f);
         }
-        b.Halo(new Vector3(0,.25f,-.40f),.43f,.075f,Vector3.one,Quaternion.identity,3);
-        b.Pearl(new Vector3(0,.25f,-.41f),new Vector3(.32f,.32f,.16f),9);
-        b.Pearl(new Vector3(0,.25f,-.56f),new Vector3(.13f,.19f,.06f),8);
+        CutStone(b,new Vector3(0,.25f,-.32f),new Vector3(.44f,.48f,.16f),3,6);
+        CutStone(b,new Vector3(0,.25f,-.44f),new Vector3(.31f,.34f,.10f),9,6);
+        CutStone(b,new Vector3(0,.25f,-.55f),new Vector3(.10f,.19f,.025f),8,4);
         CelestialMuzzle(b,new Vector3(0,-.95f,-.25f),.24f);
         return dawnGatekeeper=b.Finish("Dawn / vaulted paladin with layered pinions and three siege mouths");
     }
