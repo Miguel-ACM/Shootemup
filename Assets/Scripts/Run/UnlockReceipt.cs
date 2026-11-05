@@ -69,6 +69,7 @@ public sealed class UnlockReceipt : MonoBehaviour
         label.rectTransform.anchoredPosition = at;
         label.rectTransform.sizeDelta = size;
         if (font != null) label.font = font;
+        label.spriteAsset = InputPrompts.InlineAsset;
         label.text = text;
         label.fontSizeMax = points;
         label.fontSizeMin = points * .8f;

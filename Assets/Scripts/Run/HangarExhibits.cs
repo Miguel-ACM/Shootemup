@@ -68,16 +68,14 @@ public sealed partial class HangarHub
         pageNodes.Add(image.gameObject);
     }
     TextMeshProUGUI consoleFooter;
-    bool footerUsesPad;
 
     void RefreshConsoleFooter()
     {
-        footerUsesPad = DockInstrument.UsingGamepad;
         if (!operating) { consoleFooter.text = ""; return; }
         string back = DockInstrument.MenuKey(true);
         consoleFooter.text = (Dock)room switch
         {
-            Dock.Fleet => "< > HULL   ^ v MODE   " + back + " EXIT",
+            Dock.Fleet => InputPrompts.Navigation(false) + " HULL   " + InputPrompts.Navigation(true) + " MODE   " + back + " EXIT",
             Dock.Simulator => DockInstrument.MenuKey() + "  LAUNCH SIM   " + back + " RELEASE",
             Dock.Flight => DockInstrument.MenuKey() + "  SET   " + back + " RELEASE",
             _ => back + "  RELEASE"
@@ -212,7 +210,7 @@ public sealed partial class HangarHub
                 Legend(string.Join("   ·   ", f.awards), 0, -143, 558, 60, 15, DockInstrument.Brass);
         }
         if (operating)
-            Legend("< > FLIGHT    ^ v LOG", 0, -189, 558, 33, 15, DockInstrument.Muted);
+            Legend(InputPrompts.Navigation(false) + " FLIGHT    " + InputPrompts.Navigation(true) + " LOG", 0, -189, 558, 33, 15, DockInstrument.Muted);
     }
     void FlightPage()
     {
@@ -236,6 +234,6 @@ public sealed partial class HangarHub
         Legend("FILED " + difficulty.ToString().ToUpperInvariant() + "  /  " + MetaProgress.Coins + " banked", 0, -107, 558, 36, 18, lamps[room]);
         string kit = string.Join(", ", MetaProgress.Outbound.Select(FlightTrials.Display));
         Legend("KIT  " + (kit.Length == 0 ? "Standard issue" : kit), 0, -150, 558, 42, 19, DockInstrument.Paper);
-        Legend("< > DIFFICULTY", 0, -189, 558, 33, 15, DockInstrument.Muted);
+        Legend(InputPrompts.Navigation(false) + " DIFFICULTY", 0, -189, 558, 33, 15, DockInstrument.Muted);
     }
 }

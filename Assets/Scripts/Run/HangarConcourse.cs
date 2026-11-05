@@ -231,6 +231,7 @@ public sealed partial class HangarHub
         t.rectTransform.anchoredPosition = position;
         if (dialog != null && dialog.font != null)
             t.font = dialog.font;
+        t.spriteAsset = InputPrompts.InlineAsset;
         t.text = text;
         t.fontSize = fontSize;
         t.fontSizeMin = fontSize * .8f;
@@ -398,7 +399,7 @@ public sealed partial class HangarHub
             }
             if (operating && !Menu.GameplayPaused)
             {
-                if (footerUsesPad != DockInstrument.UsingGamepad) RefreshConsoleFooter();
+                RefreshConsoleFooter();
                 var seat = Spot(Desk() + Vector2.down * 2.17f, p.z);
                 player.transform.position = Vector3.Lerp(p, seat, 1 - Mathf.Exp(-9 * Time.deltaTime));
                 var move = GameInput.Snapshot.Move;

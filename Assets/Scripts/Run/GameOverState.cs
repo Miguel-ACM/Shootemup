@@ -121,6 +121,7 @@ public sealed class GameOverState : MonoBehaviour
         label.rectTransform.anchoredPosition = new Vector2(0, y);
         if (font != null)
             label.font = font;
+        label.spriteAsset = InputPrompts.InlineAsset;
         label.fontSizeMax = size;
         label.fontSizeMin = size * .65f;
         label.enableAutoSizing = true;

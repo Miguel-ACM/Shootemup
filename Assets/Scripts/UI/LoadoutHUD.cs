@@ -14,15 +14,14 @@ public sealed class LoadoutHUD : MonoBehaviour
     Transform studio;
     RectTransform[] panels = new RectTransform[4];
     OctagonGraphic[] rims = new OctagonGraphic[4];
-    Text[] names = new Text[4], keys = new Text[4];
+    Text[] names = new Text[4];
+    Image[] keys = new Image[4];
     CooldownDial[] dials = new CooldownDial[4];
     Transform[] models = new Transform[4];
     string[] displayed = new string[4];
     RectTransform badge;
     Dialog dialog;
-    Text[] badgeKeys = new Text[2];
-    static readonly string[] PadKeys = { "RB", "LB", "RT", "LT" }, KeyboardKeys = { "Z", "X", "A", "S" };
-    static Sprite keycap;
+    Image[] badgeKeys = new Image[2];
     static readonly Color Amber = new Color(1, .71f, .29f), Cyan = new Color(.4f, .82f, .86f), Steel = new Color(.48f, .59f, .61f);
     public RectTransform[] Panels => panels;
     void Start()
@@ -111,8 +110,7 @@ public sealed class LoadoutHUD : MonoBehaviour
     {
         if (loadout == null || panels[0] == null)
             return;
-        bool pad = Gamepad.current != null && (Keyboard.current == null || Gamepad.current.lastUpdateTime > Keyboard.current.lastUpdateTime);
-        string[] inputs = pad ? PadKeys : KeyboardKeys;
+        bool pad = DockInstrument.UsingGamepad;
         int leftSlot = pad ? 1 : 0; // Keep each active beside its corresponding weapon.
         float room = Mathf.Max(0, (Screen.width * 720f / Screen.height - 405) * .5f);
         float scale = Mathf.Min(.64f, Mathf.Max(0, room - 52) / 175f);
@@ -127,7 +125,7 @@ public sealed class LoadoutHUD : MonoBehaviour
             string type = active ? (loadout.Actives[i - 2] != null ? loadout.Actives[i - 2].GetType().Name : "") : (loadout.Weapons[i] != null ? loadout.Weapons[i].GetType().Name : "");
             if (displayed[i] != type)
                 SetModel(i, type);
-            keys[i].text = inputs[i];
+            keys[i].sprite = InputPrompts.For(InputPrompts.Equipment(i));
             bool selected = loadout.HoveredItem != null && active == (loadout.HoveredItem is AActiveItem);
             rims[i].color = selected ? Color.Lerp(Steel, Amber, .5f + .5f * Mathf.Sin(Time.unscaledTime * 12)) : active ? Cyan * .8f : Steel;
             if (!selected && active && loadout.Actives[i - 2] is Overdrive && GetComponent<OverdriveBoost>() != null)
@@ -154,8 +152,8 @@ public sealed class LoadoutHUD : MonoBehaviour
             badge.pivot = new Vector2(.5f, 0);
             badge.anchoredPosition = new Vector2(0, 10);
             int offset = loadout.HoveredItem is AActiveItem ? 2 : 0;
-            badgeKeys[0].text = inputs[offset + leftSlot];
-            badgeKeys[1].text = inputs[offset + 1 - leftSlot];
+            badgeKeys[0].sprite = InputPrompts.For(InputPrompts.Equipment(offset + leftSlot));
+            badgeKeys[1].sprite = InputPrompts.For(InputPrompts.Equipment(offset + 1 - leftSlot));
         }
     }
 
@@ -207,30 +205,17 @@ public sealed class LoadoutHUD : MonoBehaviour
         return t;
     }
 
-    Text Key(Transform parent, Vector2 at)
+    Image Key(Transform parent, Vector2 at)
     {
-        if (keycap == null)
-        {
-            var texture = new Texture2D(32, 24, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point };
-            var pixels = new Color[32 * 24];
-            for (int y = 0; y < 24; y++)
-                for (int x = 0; x < 32; x++)
-                {
-                    bool corner = (x < 3 || x > 28) && (y < 3 || y > 20);
-                    pixels[y * 32 + x] = corner ? Color.clear : x < 2 || x > 29 || y < 2 ? new Color(.12f, .19f, .2f) : y > 21 ? new Color(.83f, .9f, .86f) : y < 5 ? new Color(.29f, .39f, .39f) : new Color(.65f, .74f, .71f);
-                }
-            texture.SetPixels(pixels);
-            texture.Apply();
-            keycap = Sprite.Create(texture, new Rect(0, 0, 32, 24), new Vector2(.5f, .5f), 32);
-        }
-        var go = new GameObject("Control keycap sprite", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        var go = new GameObject("Bound control icon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         go.transform.SetParent(parent, false);
-        go.GetComponent<Image>().sprite = keycap;
-        go.GetComponent<Image>().raycastTarget = false;
+        var image = go.GetComponent<Image>();
+        image.preserveAspect = true;
+        image.raycastTarget = false;
         var rect = (RectTransform)go.transform;
-        rect.sizeDelta = new Vector2(32, 24);
+        rect.sizeDelta = new Vector2(38, 32);
         rect.anchoredPosition = at;
-        return Label(rect, "", 12, new Vector2(0, 1), new Vector2(32, 24), new Color(.04f, .09f, .1f));
+        return image;
     }
 
     void OnDestroy()

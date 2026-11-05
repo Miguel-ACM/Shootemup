@@ -1,0 +1,8 @@
+Xelu controller and keyboard prompts
+Author: Nicolae (XELU) Berbece; 2021 update by Paul Paun
+License: CC0 (see Xelu-Readme.txt)
+Publisher: https://thoseawesomeguys.com/prompts/
+Download: https://thoseawesomeguys.com/prompts/Xelu_Free_Controller%26Key_Prompts.zip
+Imported: 2026-11-05
+Included: classic coloured PlayStation PS3 controls, Xbox Series controls, light keyboard/mouse keys.
+Original PNG pixels are preserved. Filenames are normalized for the Unity binding resolver.

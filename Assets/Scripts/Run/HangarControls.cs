@@ -6,8 +6,7 @@ using UnityEngine.UI;
 public sealed partial class HangarHub
 {
     RectTransform hoverPrompt;
-    RawImage inputPicture, buyIcon, pinIcon;
-    Texture keyPicture, bumperPicture, facePicture;
+    Image inputPicture, buyIcon, pinIcon;
     const float DeskReach = 1.9f;
     static readonly string[] stationModels = { "DockQuadrant", "DockReader", "DockTrainer", "DockTransport", "DockScope" };
     readonly Transform[] pilotLamps = new Transform[5];
@@ -133,9 +132,6 @@ public sealed partial class HangarHub
     {
         hoverPrompt = MountedPanel("Control glyph", Vector2.zero, new Vector2(1.25f, .85f));
         hoverPrompt.GetComponent<Image>().enabled = false;
-        keyPicture = Resources.Load<Texture2D>("DockArt/KeyPrompt");
-        bumperPicture = Resources.Load<Texture2D>("DockArt/PadPrompt");
-        facePicture = Resources.Load<Texture2D>("DockArt/FacePrompt");
         inputPicture = ButtonIcon(hoverPrompt, Vector2.zero, 1);
         buyIcon = ButtonIcon(stockScreen, new Vector2(-157, -100), .72f);
         pinIcon = ButtonIcon(stockScreen, new Vector2(48, -100), .72f);
@@ -143,31 +139,21 @@ public sealed partial class HangarHub
         WorldLabel(stockScreen, "PIN", new Vector2(150, -100), new Vector2(103, 55), 32, DockInstrument.Paper);
         hoverPrompt.gameObject.SetActive(false);
     }
-    RawImage ButtonIcon(RectTransform parent, Vector2 at, float scale)
+    Image ButtonIcon(RectTransform parent, Vector2 at, float scale)
     {
-        var icon = new GameObject("Control image", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
+        var icon = new GameObject("Control image", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
         icon.rectTransform.SetParent(parent, false);
         icon.rectTransform.sizeDelta = new Vector2(118, 82);
         icon.rectTransform.anchoredPosition = at;
         icon.rectTransform.localScale = Vector3.one * scale;
         icon.raycastTarget = false;
-        var legend = WorldLabel(icon.rectTransform, "", Vector2.up * 4, new Vector2(94, 61), 45, DockInstrument.Ink);
-        legend.fontStyle = FontStyles.Bold;
+        icon.preserveAspect = true;
         return icon;
     }
-    void UpdateButtonIcon(RawImage icon, bool secondary = false)
+    void UpdateButtonIcon(Image icon, bool secondary = false)
     {
-        bool pad = DockInstrument.UsingGamepad;
-        var texture = !pad ? keyPicture : secondary ? bumperPicture : facePicture;
-        if (icon.texture == texture) return;
-        icon.texture = texture;
-        string key = secondary ? DockInstrument.FireKey(true) : DockInstrument.MenuKey();
-        bool leftBumper = pad && key == "LEFT SHOULDER";
-        icon.uvRect = leftBumper ? new Rect(1, 0, -1, 1) : new Rect(0, 0, 1, 1);
-        var legend = icon.GetComponentInChildren<TextMeshProUGUI>();
-        legend.fontSizeMax = pad && secondary ? 31 : 45;
-        legend.fontSizeMin = legend.fontSizeMax * .75f;
-        legend.text = leftBumper ? "LB" : pad && key == "RIGHT SHOULDER" ? "RB" : key;
+        var controls = GameInput.Actions.PlayerControls;
+        icon.sprite = InputPrompts.For(secondary ? controls.FireSecondary : controls.Accept);
     }
     void UpdatePrompt(Vector3 p)
     {

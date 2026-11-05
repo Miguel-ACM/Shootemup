@@ -51,6 +51,7 @@ public sealed class DockInstrument
         var t = go.GetComponent<TextMeshProUGUI>();
         if (font != null)
             t.font = font;
+        t.spriteAsset = InputPrompts.InlineAsset;
         t.text = value;
         t.fontSize = size;
         t.enableAutoSizing = true;
@@ -72,27 +73,12 @@ public sealed class DockInstrument
     {
         var actions = GameInput.Actions.PlayerControls;
         var action = secondary ? actions.FireSecondary : actions.FirePrimary;
-        return BindingLabel(action, secondary ? "SECONDARY" : "FIRE");
+        return InputPrompts.Inline(action);
     }
 
     public static string MenuKey(bool back = false)
     {
-        if (UsingGamepad)
-        {
-            if (Gamepad.current is UnityEngine.InputSystem.XInput.XInputController) return back ? "B" : "A";
-            return back ? "O" : "X";
-        }
         var controls = GameInput.Actions.PlayerControls;
-        return BindingLabel(back ? controls.Back : controls.Accept, back ? "BACK" : "ENTER");
-    }
-
-    static string BindingLabel(InputAction action, string fallback)
-    {
-        bool pad = UsingGamepad;
-        foreach (var binding in action.bindings)
-            if (binding.effectivePath.StartsWith(pad ? "<Gamepad>" : "<Keyboard>", System.StringComparison.OrdinalIgnoreCase))
-                return UnityEngine.InputSystem.InputControlPath.ToHumanReadableString(binding.effectivePath,
-                    UnityEngine.InputSystem.InputControlPath.HumanReadableStringOptions.OmitDevice).ToUpperInvariant();
-        return fallback;
+        return InputPrompts.Inline(back ? controls.Back : controls.Accept);
     }
 }
