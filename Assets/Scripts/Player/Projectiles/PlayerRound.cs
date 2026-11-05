@@ -57,6 +57,11 @@ public sealed class PlayerRound : ABullet
     bool detonated, returning, rebounded, rubberReturned;
     int chargeLevel;
     float blastDamage;
+    AEnemy guidedTarget;
+    float guidanceDelay;
+    bool headingLocked;
+    public void GuideTo(AEnemy target, float delay) { guidedTarget = target; guidanceDelay = Mathf.Max(0, delay); }
+    public void LockHeading() { headingLocked = true; }
     readonly HashSet<AEnemy> hit = new HashSet<AEnemy>();
     SpriteRenderer visual;
     public void ArmChargeBlast(int level)
@@ -133,6 +138,9 @@ public sealed class PlayerRound : ABullet
         lifetime = float.PositiveInfinity;
         chargeLevel = 0;
         blastDamage = 0;
+        guidedTarget = null;
+        guidanceDelay = 0;
+        headingLocked = false;
         detonated = returning = rebounded = rubberReturned = false;
         companion = companionShot = false;
         this.size = 1;
@@ -214,9 +222,10 @@ public sealed class PlayerRound : ABullet
                 return;
             }
         }
-        else if (!rubberReturned && (delivery == PlayerDelivery.Missile || GameRules.playerShootFollowness > 0))
+        else if (!headingLocked && !rubberReturned && age >= guidanceDelay && (delivery == PlayerDelivery.Missile || GameRules.playerShootFollowness > 0))
         {
-            var target = CombatUpgrades.Nearest(transform.position, hit, 7);
+            var target = guidedTarget != null && guidedTarget.CanBeTargeted && guidedTarget.CanReceiveDamage && !hit.Contains(guidedTarget)
+                ? guidedTarget : CombatUpgrades.Nearest(transform.position, hit, 7);
             if (target != null)
                 heading = Vector3.RotateTowards(heading, ((Vector2)(target.transform.position - transform.position)).normalized,
     Time.deltaTime * (delivery == PlayerDelivery.Missile ? 3 : Mathf.Min(3, GameRules.playerShootFollowness)), 0);
