@@ -1,0 +1,64 @@
+[
+  {
+    "object": "Drum0",
+    "motion": "spin",
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "pivot": [
+      0,
+      -0.22,
+      0.51
+    ],
+    "speed": 180
+  },
+  {
+    "object": "Drum1",
+    "motion": "spin",
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "pivot": [
+      0,
+      0.4,
+      0.51
+    ],
+    "speed": -180
+  },
+  {
+    "object": "ChaffGuard_-1",
+    "motion": "swing",
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "pivot": [
+      -0.95,
+      -0.5,
+      0.43
+    ],
+    "speed": 0.48,
+    "amplitude": 12
+  },
+  {
+    "object": "ChaffGuard_1",
+    "motion": "swing",
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "pivot": [
+      0.95,
+      -0.5,
+      0.43
+    ],
+    "speed": 0.48,
+    "amplitude": 12
+  }
+]
