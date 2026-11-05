@@ -1,0 +1,34 @@
+[
+  {
+    "object": "Semaphore_-1",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "pivot": [
+      -0.83,
+      0.76,
+      0.55
+    ],
+    "speed": 0.25,
+    "amplitude": -24
+  },
+  {
+    "object": "Semaphore_1",
+    "motion": "swing",
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "pivot": [
+      0.83,
+      0.76,
+      0.55
+    ],
+    "speed": 0.25,
+    "amplitude": 24
+  }
+]
