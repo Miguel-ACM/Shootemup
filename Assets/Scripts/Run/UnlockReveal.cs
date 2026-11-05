@@ -7,17 +7,20 @@ using UnityEngine.UI;
 // The key that closes one tag never buys an item or launches the ship underneath it.
 public sealed class UnlockReveal : MonoBehaviour
 {
+    const float EnterDuration = .22f, ExitDuration = .14f;
     static UnlockReveal instance;
     static int closedFrame = -1;
     public static bool BlocksInput => instance != null || closedFrame == Time.frameCount;
     ItemPortraitStudio studio;
     RawImage portrait;
     Image stamp;
-    TextMeshProUGUI title, source, footer;
+    TextMeshProUGUI title, category, description, source, counter, footer;
     RectTransform card;
     CanvasGroup fade;
     int index, total, shownFrame;
-    float age;
+    float age, visibility, closingFrom;
+    bool closing;
+    string currentKey;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetState() { instance = null; closedFrame = -1; }
@@ -41,46 +44,84 @@ public sealed class UnlockReveal : MonoBehaviour
         scaler.matchWidthOrHeight = 1;
         var aperture = DockInstrument.Block(transform, "Hangar aperture", Vector2.zero, new Vector2(405, 720), new Color(.01f, .025f, .03f, .48f));
         aperture.gameObject.AddComponent<RectMask2D>();
-        card = DockInstrument.Block(aperture, "Unlock tag", Vector2.zero, new Vector2(364, 432), DockInstrument.Brass);
-        var face = DockInstrument.Block(card, "Enamel", Vector2.zero, new Vector2(358, 426), DockInstrument.Ink);
-        DockInstrument.Block(face, "Tag slot", new Vector2(0, 200), new Vector2(35, 5), new Color(.01f, .02f, .025f));
-        fade = card.gameObject.AddComponent<CanvasGroup>();
+        card = DockInstrument.Block(aperture, "Unlock tag", Vector2.zero, new Vector2(364, 592), DockInstrument.Brass);
+        var face = DockInstrument.Block(card, "Enamel", Vector2.zero, new Vector2(358, 586), DockInstrument.Ink);
+        DockInstrument.Block(face, "Tag slot", new Vector2(0, 280), new Vector2(35, 5), new Color(.01f, .02f, .025f));
+        fade = aperture.gameObject.AddComponent<CanvasGroup>();
         fade.blocksRaycasts = false;
-        UnlockReceipt.Label(face, "UNLOCKED", new Vector2(0, 170), new Vector2(300, 30), 17, DockInstrument.Brass, font);
+        UnlockReceipt.Label(face, "UNLOCKED", new Vector2(0, 254), new Vector2(240, 30), 17, DockInstrument.Brass, font);
+        counter = UnlockReceipt.Label(face, "", new Vector2(135, 254), new Vector2(56, 20), 11, DockInstrument.Muted, font);
         var keys = new List<string>();
         foreach (var notice in MetaProgress.PendingUnlocks) keys.Add(notice.key);
         total = keys.Count;
         studio = ItemPortraitStudio.Create(keys, 192);
-        portrait = UnlockReceipt.Picture(face, studio, 0, new Vector2(0, 26), 192);
-        stamp = UnlockReceipt.Stamp(face, MetaProgress.PendingUnlocks[0], new Vector2(-136, 120), 35);
-        title = UnlockReceipt.Label(face, "", new Vector2(0, -102), new Vector2(330, 44), 26, DockInstrument.Paper, font);
-        source = UnlockReceipt.Label(face, "", new Vector2(0, -151), new Vector2(324, 38), 14, DockInstrument.Muted, font);
-        footer = UnlockReceipt.Label(face, "", new Vector2(0, -194), new Vector2(320, 24), 13, DockInstrument.Brass, font);
+        portrait = UnlockReceipt.Picture(face, studio, 0, new Vector2(0, 140), 192);
+        stamp = UnlockReceipt.Stamp(face, MetaProgress.PendingUnlocks[0], new Vector2(-136, 202), 35);
+        title = UnlockReceipt.Label(face, "", new Vector2(0, 13), new Vector2(330, 54), 26, DockInstrument.Paper, font);
+        category = UnlockReceipt.Label(face, "", new Vector2(0, -31), new Vector2(324, 20), 13, DockInstrument.Sea, font);
+        description = UnlockReceipt.Label(face, "", new Vector2(0, -101), new Vector2(324, 100), 16, DockInstrument.Paper, font);
+        description.textWrappingMode = TextWrappingModes.Normal;
+        source = UnlockReceipt.Label(face, "", new Vector2(0, -198), new Vector2(324, 56), 14, DockInstrument.Muted, font);
+        source.textWrappingMode = TextWrappingModes.Normal;
+        footer = UnlockReceipt.Label(face, "", new Vector2(0, -264), new Vector2(80, 32), 24, DockInstrument.Brass, font);
         ShowCurrent();
     }
     void ShowCurrent()
     {
         var notice = MetaProgress.PendingUnlocks[0];
+        currentKey = notice.key;
         title.text = notice.title;
+        bool known = GalleryShelf.TryGet(notice.key, out var item);
+        category.text = known ? DecisionOverlay.Category(item.category).ToUpperInvariant() : "";
+        description.text = known ? item.description : "";
         source.text = notice.Requirement;
+        counter.text = (index + 1) + " / " + total;
+        footer.text = DockInstrument.MenuKey();
         portrait.uvRect = studio.Cell(index);
         stamp.sprite = Resources.Load<Sprite>("DockArt/Stamp" + notice.area);
         stamp.enabled = stamp.sprite != null;
         age = 0;
+        closing = false;
         shownFrame = Time.frameCount;
-        // Immediate, readable identity; only the tag's small settling motion is animated.
-        fade.alpha = 1;
+        Present(0);
         ItemSound.Play("ready", .16f);
     }
     void Update()
     {
-        age += Time.unscaledDeltaTime;
-        card.anchoredPosition = Vector2.up * (12 * (1 - Mathf.SmoothStep(0, 1, age / .16f)));
-        footer.text = (index + 1) + " / " + total + "     " + DockInstrument.MenuKey() + "  /  " + DockInstrument.MenuKey(true);
+        footer.text = DockInstrument.MenuKey();
+        if (Menu.GameplayPaused || CloudTransition.Busy) return;
+        Animate(Time.unscaledDeltaTime);
         var controls = GameInput.Actions.PlayerControls;
-        if (Time.frameCount <= shownFrame || Menu.GameplayPaused || Menu.HandledInputThisFrame || CloudTransition.Busy ||
+        if (closing || Time.frameCount <= shownFrame || Menu.HandledInputThisFrame ||
             !(controls.Accept.WasPressedThisFrame() || controls.Back.WasPressedThisFrame())) return;
-        MetaProgress.DismissUnlock(MetaProgress.PendingUnlocks[0].key);
+        Dismiss();
+    }
+    void Dismiss()
+    {
+        if (closing) return;
+        // Persist the acknowledgement immediately, but keep the hangar blocked through the exit.
+        MetaProgress.DismissUnlock(currentKey);
+        closing = true;
+        closingFrom = visibility;
+        age = 0;
+    }
+    void Present(float value)
+    {
+        visibility = value;
+        fade.alpha = value;
+        card.anchoredPosition = Vector2.down * (28 * (1 - value));
+        card.localScale = Vector3.one * Mathf.Lerp(.92f, 1, value);
+    }
+    void Animate(float delta)
+    {
+        age += delta;
+        if (!closing)
+        {
+            Present(1 - Mathf.Pow(1 - Mathf.Clamp01(age / EnterDuration), 3));
+            return;
+        }
+        Present(closingFrom * (1 - Mathf.SmoothStep(0, 1, age / ExitDuration)));
+        if (age < ExitDuration) return;
         index++;
         if (MetaProgress.PendingUnlocks.Count == 0)
         {
