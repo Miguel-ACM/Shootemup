@@ -7,6 +7,7 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
     static readonly Vector2[] outline={new(0,-.82f),new(-.6f,-.6f),new(-.91f,0),new(-.6f,.6f),new(0,.82f),new(.6f,.6f),new(.91f,0),new(.6f,-.6f)};
     protected override Vector2[] Outline=>outline;
     public HeavenAngelVisual Angel { get; private set; }
+    public int CardIndex { get; private set; }
     bool anchored;
     protected override void Configure(){health=2850;hullScale=1.05f;attackInterval=.7f;}
     protected override void Start()
@@ -30,66 +31,92 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
     {
         station=new Vector3(0,Camera.UpLimit-3.1f,1);
         if(!openingComplete){base.MoveBoss(dt*2);return;}
-        if(!anchored)transform.position=Vector3.MoveTowards(transform.position,station+new Vector3(Mathf.Sin(motionAge*.4f)*1.1f,Mathf.Cos(motionAge*.6f)*.35f),dt*1.2f);
+        if(!anchored)transform.position=Vector3.MoveTowards(transform.position,station+new Vector3(Mathf.Sin(motionAge*.4f)*1.35f,Mathf.Cos(motionAge*.6f)*.35f),dt*1.2f);
     }
+    void Pray(bool value){anchored=value;Angel.Pray(value);}
     PulseLaser Beam(int port,float angle,float width,float hold,float charge=1.4f)
         =>HeavenArmory.Lance(Angel.Emitter(port),Vector3.zero,CombatVisuals.Rotate(Vector2.down,angle),width,hold,charge);
-    protected override void OnPhaseEntered(int phase){anchored=false;}
+    protected override void OnPhaseEntered(int phase){Pray(false);}
     protected override IEnumerator Cards()
     {
         while(true)
         {
+            CardIndex=0;Pray(true);
+            yield return Charge(Angel.Emitter(0),Vector3.zero,.65f);
             if(CurrentPhase==1)
             {
-                // Gates of Dawn: open outward from a safe central aisle, then force a side change.
-                anchored=true;Beam(1,-8,1.25f,2.6f);Beam(2,8,1.25f,2.6f);
-                yield return Every(3.8f,.47f,n=>Feathers(n,6,2.5f,false));
-                anchored=false;yield return Wait(Rest(1.0f));
-                // The First Trumpet: a broad centre lance with a refracted ceiling canopy.
-                anchored=true;Beam(0,0,2.0f,2.7f,1.65f);
-                yield return Every(4.3f,.55f,n=>Canopy(n,7));
+                // Dawn Liturgy: a golden nave between two lances, feather-vaults above it.
+                Beam(1,-14,.92f,2.7f);Beam(2,14,.92f,2.7f);
+                yield return Every(4.4f,.28f,n=>Vault(n,13,29,false));
             }
             else if(CurrentPhase==2)
             {
-                // Spear of the Firmament: sequential banks, never an instantaneous full-width wall.
-                anchored=true;Beam(1,-16,1.5f,2.4f);Beam(2,16,1.5f,2.4f);
-                yield return Wait(Rest(1.8f));
-                Beam(0,0,1.75f,2.1f,1.5f);
-                yield return Every(3.9f,.36f,n=>Feathers(n,8,2.6f,true));
-                anchored=false;yield return Wait(Rest(1.1f));
-                // Judgment Pendulum: the entire beam swings after a long, stationary charge.
-                anchored=true;var beam=Beam(0,-24,1.45f,4.5f,1.7f);
-                if(beam!=null){beam.sweep=12;beam.reversalArc=48;}
-                yield return Every(6.2f,.64f,n=>Canopy(n,8));
+                // Sevenfold Procession: the entire lace opens and closes around a moving aisle.
+                Beam(1,-22,1.05f,3.0f);Beam(2,22,1.05f,3.0f);
+                yield return Every(4.7f,.24f,n=>Vault(n,17,38,true));
             }
             else
             {
-                // Last Trumpet: a wide centre blast between outward wing lances.
-                anchored=true;Beam(0,0,2.45f,3.1f,1.8f);Beam(1,-38,1.0f,2.8f,1.8f);Beam(2,38,1.0f,2.8f,1.8f);
-                yield return Every(5.0f,.44f,n=>Canopy(n,10));
-                anchored=false;yield return Wait(Rest(1.2f));
-                // Broken Covenant: opposing scythes of light fold inward, then leave a dark interval.
-                anchored=true;
-                for(int s=-1;s<=1;s+=2){var beam=Beam(s<0?1:2,s*27,1.25f,3.8f,1.65f);if(beam!=null)beam.sweep=-s*7;}
-                yield return Every(5.4f,.29f,n=>Feathers(n,10,2.8f,true));
+                // Last Trumpet: a central column framed by symmetrical upward lancets.
+                Beam(0,0,2.1f,3.1f,1.7f);
+                Beam(1,-47,.85f,2.8f,1.7f);Beam(2,47,.85f,2.8f,1.7f);
+                yield return Every(5.2f,.22f,n=>Vault(n,19,52,true));
             }
-            anchored=false;yield return Wait(Rest(1.4f));
+            Pray(false);yield return Wait(Rest(1.25f));
+            CardIndex=1;Pray(true);
+            yield return Charge(Angel.Emitter(0),Vector3.zero,.65f);
+            if(CurrentPhase==1)
+            {
+                // Cathedral of Eyes: fixed, reflected arches over a slow central lance.
+                Beam(0,0,1.7f,2.8f,1.6f);
+                yield return Every(4.8f,.66f,n=>Window(n,19,2.15f));
+            }
+            else if(CurrentPhase==2)
+            {
+                // Judgment Pendulum: a single deliberate sweep and pearled arch ribs.
+                var beam=Beam(0,-22,1.12f,3.6f,1.65f);
+                if(beam!=null){beam.sweep=10;beam.reversalArc=44;}
+                yield return Every(5.6f,.56f,n=>Window(n,23,2.2f));
+            }
+            else
+            {
+                // Covenant: two opposed slow scythes; the same windows now have an inner rib.
+                for(int s=-1;s<=1;s+=2)
+                {
+                    var beam=Beam(s<0?1:2,s*30,1.0f,3.5f,1.7f);
+                    if(beam!=null)beam.sweep=-s*6;
+                }
+                yield return Every(5.6f,.48f,n=>Window(n,27,2.3f));
+            }
+            Pray(false);yield return Wait(Rest(1.45f));
         }
     }
-    void Feathers(int beat,int count,float speed,bool returnFire)
+    static float Across(int i,int count)=>count<=1?0:i/(count-1f)*2-1;
+    void Vault(int beat,int count,float opening,bool pearls)
+    {
+        int n=Dense(count);
+        float breath=Mathf.Sin(beat*.18f)*12;
+        for(int s=-1;s<=1;s+=2)for(int i=0;i<n;i++)
+        {
+            float u=Across(i,n),angle=s*(opening+breath+u*17);
+            // Speed curvature makes a pointed arch in space rather than a straight fan.
+            float speed=2.15f+.7f*(1-u*u);
+            Fire<NeedleRound>(Eye(s<0?3:4),CombatVisuals.Rotate(Vector2.up,angle),speed,.17f).Bounce(1).FadeAt(8);
+            if(pearls&&beat%4==0&&i%3==0)
+                Fire<SimpleRound>(Eye(s<0?1:2),CombatVisuals.Rotate(Vector2.down,s*(48+u*23)),1.55f,.22f).FadeAt(7.8f);
+        }
+    }
+    void Window(int beat,int count,float speed)
     {
         int n=Dense(count);
         for(int s=-1;s<=1;s+=2)for(int i=0;i<n;i++)
         {
-            float a=s*(30+i*7+Mathf.Sin(beat*.6f)*15);
-            var shot=Fire<NeedleRound>(Eye(s<0?3:4),CombatVisuals.Rotate(Vector2.down,a),speed,.18f).Ramp(1.5f,.8f,.9f);
-            if(returnFire&&i%3==0)shot.Bounce(1);
+            float u=Across(i,n);
+            float a=s*(46+u*31+(beat%2==0?6:-6));
+            Fire<NeedleRound>(Eye(s<0?3:4),CombatVisuals.Rotate(Vector2.up,a),speed+.85f*(1-u*u),.18f)
+                .Bounce(1).Ramp(1.25f,1.4f,2).FadeAt(8);
+            if(CurrentPhase==3&&i%3==0)
+                Fire<SimpleRound>(Eye(s<0?1:2),CombatVisuals.Rotate(Vector2.down,s*(54+u*26)),1.6f+.3f*u*u,.22f).FadeAt(8);
         }
-    }
-    void Canopy(int beat,int count)
-    {
-        int n=Dense(count);
-        for(int s=-1;s<=1;s+=2)for(int i=0;i<n;i++)
-            Fire<NeedleRound>(Eye(s<0?3:4),CombatVisuals.Rotate(Vector2.up,s*(15+i*8+beat%2*4)),2.6f,.19f).Bounce(1).FadeAt(8);
     }
 }

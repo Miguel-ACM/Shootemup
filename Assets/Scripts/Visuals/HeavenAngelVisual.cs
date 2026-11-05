@@ -11,7 +11,10 @@ public sealed class HeavenAngelVisual : MonoBehaviour
     readonly Transform[] wheels=new Transform[3];
     readonly Transform[][] eyes=new Transform[3][];
     readonly Vector2[] contactPoints=new Vector2[8];
-    Transform coreEye;
+    Transform coreEye,iris;
+    readonly Transform[] committed=new Transform[5];
+    bool praying;
+    float prayer,wheelClock;
     PolygonCollider2D hitbox;
     float clock;
     public Transform Wheel(int index)=>wheels[index];
@@ -35,6 +38,9 @@ public sealed class HeavenAngelVisual : MonoBehaviour
         GetComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.HeavenAngelCore();
         GetComponent<MeshRenderer>().sharedMaterial=Surface;
         coreEye=new GameObject("Central living eye").transform;coreEye.SetParent(transform,false);coreEye.localPosition=new Vector3(0,0,-.8f);
+        iris=new GameObject("Tracking iris").transform;iris.SetParent(transform,false);iris.localPosition=new Vector3(0,0,-.77f);
+        iris.gameObject.AddComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.HeavenAngelIris();
+        var irisRenderer=iris.gameObject.AddComponent<MeshRenderer>();irisRenderer.sharedMaterial=Surface;irisRenderer.sortingLayerName="Enemy";
         for(int ring=0;ring<3;ring++)
         {
             var wheel=new GameObject("Eye-covered golden wheel "+(ring+1));wheel.layer=gameObject.layer;
@@ -51,7 +57,27 @@ public sealed class HeavenAngelVisual : MonoBehaviour
         if(hitbox!=null)hitbox.pathCount=TotalEyes;
         Pose(0);
     }
-    public void Step(float delta){clock+=delta;Pose(clock);}
+    public void Pray(bool active)
+    {
+        if(active&&!praying)for(int i=0;i<5;i++)committed[i]=Emitter(i);
+        praying=active;
+        if(!active)for(int i=0;i<5;i++)committed[i]=null;
+    }
+    public void Step(float delta)
+    {
+        clock+=delta;
+        prayer=Mathf.MoveTowards(prayer,praying?1:0,delta*2);
+        wheelClock+=delta*Mathf.Lerp(1,.08f,prayer);
+        Pose(wheelClock);
+        if(iris!=null)
+        {
+            Vector3 gaze=CombatVisuals.Player!=null?transform.InverseTransformPoint(CombatVisuals.Player.position):Vector3.down;
+            var look=Vector2.ClampMagnitude(gaze,.12f);
+            iris.localPosition=new Vector3(look.x,look.y*.65f,-.77f);
+            float blink=Mathf.Pow(Mathf.Max(0,Mathf.Cos(clock*.88f)),48)*(.8f-prayer*.7f);
+            iris.localScale=new Vector3(1+prayer*.12f,1-blink,1);
+        }
+    }
     public void Pose(float seconds)
     {
         for(int ring=0;ring<3;ring++)wheels[ring].localRotation=Orientation(ring,seconds);
@@ -69,6 +95,7 @@ public sealed class HeavenAngelVisual : MonoBehaviour
     }
     public Transform Emitter(int slot)
     {
+        if(praying&&committed[slot]!=null)return committed[slot];
         if(slot==0)return coreEye;
         var bank=eyes[slot<=2?1:0];bool left=slot==1||slot==3;
         Transform chosen=bank[0];float best=float.NegativeInfinity;
