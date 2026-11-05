@@ -76,7 +76,8 @@ public sealed partial class CityDuoBoss
             if (outward.sqrMagnitude < .01f)
                 outward = Vector2.down;
             foreach (float spread in new[] { -9f, 9f })
-                Fire<NeedleRound>(Muzzle(), CombatVisuals.Rotate(outward, spread), 3.6f, .19f);
+                ScoredShot(i%9<3,Muzzle(), CombatVisuals.Rotate(outward, spread), 3.6f);
+            if(i%24==0)Headlights(Muzzle());
             yield return Wait(Rest(.055f));
         }
     }
@@ -88,7 +89,7 @@ public sealed partial class CityDuoBoss
         for (int i = 0; i < steps; i++)
         {
             for (int arm = 0; arm < 4; arm++)
-                Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, arm * 90 + i * 11), 3.4f, .19f);
+                ScoredShot(i%9<3,transform.position, CombatVisuals.Rotate(Vector2.down, arm * 90 + i * 11), 3.4f);
             yield return Wait(Rest(.07f));
         }
     }
@@ -97,6 +98,7 @@ public sealed partial class CityDuoBoss
     // the side walls and cross back behind and below it.
     void RearGuard(int n)
     {
+        if(n%3==0)Headlights(Muzzle(1));
         int lanes = Dense(7);
         foreach (int mirror in new[] { -1, 1 })
             for (int i = 0; i < lanes; i++)
@@ -110,7 +112,7 @@ public sealed partial class CityDuoBoss
         var aim = CombatVisuals.Aim(port);
         foreach (float ray in new[] { -22f, 0f, 22f })
             for (int b = 0; b < beads; b++)
-                Fire<NeedleRound>(port, CombatVisuals.Rotate(aim, ray), 5.4f - b * .45f, .18f);
+                ScoredShot(b%3==0,port, CombatVisuals.Rotate(aim, ray), 5.4f - b * .45f, .18f);
     }
 
     // Two mirrored diagonal families in front, and the same grid behind that
@@ -118,6 +120,7 @@ public sealed partial class CityDuoBoss
     // are the streets.
     void Gridlock(int row)
     {
+        if(row%4==2)Headlights(Muzzle(1));
         int lanes = Dense(enraged ? 11 : 9);
         foreach (int family in new[] { -1, 1 })
         {
@@ -160,7 +163,7 @@ public sealed partial class CityDuoBoss
             yield return Every(8, .07f, n =>
             {
                 for (int arm = 0; arm < 6; arm++)
-                    Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, arm * 60 + n * 9), 3.5f, .19f);
+                    ScoredShot(n%9<3,transform.position, CombatVisuals.Rotate(Vector2.down, arm * 60 + n * 9), 3.5f);
                 if (n % 17 == 8)
                     Headlights(Muzzle());
             });
