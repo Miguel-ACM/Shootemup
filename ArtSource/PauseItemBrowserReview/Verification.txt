@@ -1,0 +1,22 @@
+PASS
+PASS pause includes DEBUG ITEMS
+PASS catalogue includes every item, including pacts and special pickups
+PASS browser keeps combat paused
+PASS case-insensitive multiword name search
+PASS repeat passive grants apply immediately while paused
+PASS search matches effects
+PASS empty search result
+PASS weapon category filter
+PASS type and rarity filters combine
+PASS grant replaces selected weapon slot
+PASS active grants use both slots and initialize while paused
+PASS collected filter follows inventory and equipment
+PASS not-collected filter excludes granted items
+PASS Z-A sorting reorders cards
+PASS sort popup opens
+PASS back closes dropdown only
+PASS back returns to paused menu
+PASS reopening restores browser with complete catalogue
+PASS normal resume works after grants
+PASS grants persist after resuming
+

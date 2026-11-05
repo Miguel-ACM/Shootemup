@@ -1,0 +1,8 @@
+Pause item browser - 5 November 2026
+
+Entry: pause > DEBUG ITEMS. Give items immediately while paused; selected slot receives weapons and actives. Repeated passive grants stack through the normal GrantTo pickup path.
+Search matches authored names, descriptions and internal keys, case-insensitively, with multiple words. Combine type, rarity and collected/not-collected filters. Order by name A-Z/Z-A, rarity or type. Shows actual item-model portraits and pickup counts. BACK/Escape/Circle returns to pause; dropdown back closes only its popup.
+
+Verification: 20 checks passed in an isolated Unity 6000.6.2f1 project using VerifyPauseItemBrowser.Run, -batchmode -nographics. No C# warnings or errors in the final review compilation. Cameras were prevented from submitting geometry because Unity's null graphics device crashes on particles/trails. This is behavior verification, not visual approval. No graphical review or live editor control was used.
+
+Isolation limitation: current unrelated HeavenBastions.cs calls BevelArmor with Vector3 arrays although it expects Vector2 arrays (lines 14 and 38). The review copy converted those two arrays to Vector2 to allow the browser test to compile. The working project's Heaven scenery files were not changed. Initial headless scene shader-warmup/editor-index errors occur outside the browser; error collection covers opening the browser through resume. No errors occurred in that scope.

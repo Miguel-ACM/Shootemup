@@ -20,6 +20,12 @@ public static class MenuLayout
         var font = first.GetComponentInChildren<TextMeshProUGUI>(true).font;
         float centre = title ? -60 : 0;
         SettingsEntry.Create(first.parent, font, centre).transform.SetSiblingIndex(first.GetSiblingIndex() + 1);
+        if (!title && menu.GetComponentInChildren<DebugRunMenu>(true) == null)
+        {
+            var debug = Row(first.parent, "DEBUG ITEMS", font).gameObject.AddComponent<DebugRunMenu>();
+            debug.InRun = true;
+            debug.transform.SetSiblingIndex(first.GetSiblingIndex() + 2);
+        }
         Arrange(menu, centre);
     }
 

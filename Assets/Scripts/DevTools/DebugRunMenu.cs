@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 // Available in builds too: debug runs are explicit, normal START always stays clean.
-public sealed class DebugRunMenu : AMenuElement
+public sealed partial class DebugRunMenu : AMenuElement
 {
     sealed class Entry
     {
@@ -21,6 +21,8 @@ public sealed class DebugRunMenu : AMenuElement
         public int portrait;
         public Image card;
         public TextMeshProUGUI badge;
+        public string description, weaponName;
+        public ItemRarity rarity;
     }
 
     sealed class SlotCard
@@ -102,6 +104,8 @@ public sealed class DebugRunMenu : AMenuElement
     {
         if (overlay != null)
             return;
+        if (InRun && (FindAnyObjectByType<Shipcontroller>() == null || !Menu.GameplayPaused))
+            return;
         menu.Suspended = true;
         openedFrame = Time.frameCount;
         Build();
@@ -118,17 +122,21 @@ public sealed class DebugRunMenu : AMenuElement
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1280, 720);
         scaler.matchWidthOrHeight = 1;
+        if (InRun) scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
         var panel = Box(overlay.transform, "Debug panel", new Vector2(0, 0), new Vector2(1040, 672), Ink);
         Box(panel, "Header rule", new Vector2(0, 268), new Vector2(980, 2), new Color(.2f, .27f, .27f));
-        Label(panel, "DEBUG RUN", 30, new Vector2(-330, 300), new Vector2(320, 48)).color = Gold;
+        Label(panel, InRun ? "DEBUG ITEMS" : "DEBUG RUN", 30, new Vector2(-330, 300), new Vector2(320, 48)).color = Gold;
         ButtonAt(panel, "BACK", new Vector2(418, 300), new Vector2(150, 38), Close);
-        pactButton = ButtonAt(panel, "PACT", new Vector2(258, 300), new Vector2(150, 38), () => { forcePact = !forcePact; Refresh(); }).GetComponent<Image>();
-        var levels = new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Thunder, LevelId.Tunnel, LevelId.Desert, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell, LevelId.Heaven, LevelId.Void };
-        for (int i = 0; i < levels.Length; i++)
+        if (!InRun)
         {
-            var level = levels[i];
-            var button = ButtonAt(panel, level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(), new Vector2(-441 + i * 98, 238), new Vector2(92, 34), () => { first = level; Refresh(); }, 14);
-            levelButtons[level] = button.GetComponent<Image>();
+            pactButton = ButtonAt(panel, "PACT", new Vector2(258, 300), new Vector2(150, 38), () => { forcePact = !forcePact; Refresh(); }).GetComponent<Image>();
+            var levels = new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Thunder, LevelId.Tunnel, LevelId.Desert, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell, LevelId.Heaven, LevelId.Void };
+            for (int i = 0; i < levels.Length; i++)
+            {
+                var level = levels[i];
+                var button = ButtonAt(panel, level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(), new Vector2(-441 + i * 98, 238), new Vector2(92, 34), () => { first = level; Refresh(); }, 14);
+                levelButtons[level] = button.GetComponent<Image>();
+            }
         }
         foreach (var type in typeof(AItem).Assembly.GetTypes().Where(t => !t.IsAbstract && typeof(AItem).IsAssignableFrom(t)))
         {
@@ -136,7 +144,9 @@ public sealed class DebugRunMenu : AMenuElement
             var probe = new GameObject("Catalogue metadata");
             var item = (AItem)probe.AddComponent(type);
             item.enabled = false;
-            entries.Add(new Entry { type = type, name = item.GetData()[0], kind = item.Kind });
+            entries.Add(new Entry { type = type, name = item.GetData()[0] ?? type.Name, kind = item.Kind,
+                description = item.GetData()[2] ?? "", weaponName = (item as AWeaponItem)?.weaponName,
+                rarity = ItemCatalog.TryGet(type.Name, out var definition) ? definition.Rarity : ItemRarity.Special });
             Destroy(probe);
         }
         entries.Sort((a, b) => { int c = a.kind.CompareTo(b.kind); return c != 0 ? c : string.Compare(a.name, b.name, StringComparison.Ordinal); });
@@ -147,7 +157,7 @@ public sealed class DebugRunMenu : AMenuElement
             entries[i].portrait = i;
         for (int i = 0; i < 2; i++)
             slots[i] = SlotCardAt(panel, i);
-        var viewport = Box(panel, "Items", new Vector2(0, -52), new Vector2(980, ViewHeight), new Color(.05f, .075f, .08f, 1));
+        var viewport = Box(panel, "Items", new Vector2(0, InRun ? -88 : -52), new Vector2(980, ViewHeight), new Color(.05f, .075f, .08f, 1));
         viewport.gameObject.AddComponent<RectMask2D>();
         scroll = viewport.gameObject.AddComponent<ScrollRect>();
         scroll.viewport = viewport;
@@ -163,15 +173,20 @@ public sealed class DebugRunMenu : AMenuElement
         content.sizeDelta = new Vector2(0, Mathf.CeilToInt(entries.Count / (float)Columns) * CardStep + 8);
         for (int i = 0; i < entries.Count; i++)
             ItemCard(entries[i], new Vector2((i % Columns - (Columns - 1) * .5f) * 160, -8 - CardHeight * .5f - i / Columns * CardStep));
-        ButtonAt(panel, "CLEAR", new Vector2(-390, -294), new Vector2(190, 42), Clear);
-        ButtonAt(panel, "START DEBUG RUN", new Vector2(240, -294), new Vector2(490, 42), StartRun);
+        if (InRun)
+            BuildBrowser(panel);
+        else
+        {
+            ButtonAt(panel, "CLEAR", new Vector2(-390, -294), new Vector2(190, 42), Clear);
+            ButtonAt(panel, "START DEBUG RUN", new Vector2(240, -294), new Vector2(490, 42), StartRun);
+        }
         Refresh();
     }
 
     SlotCard SlotCardAt(Transform panel, int index)
     {
         var card = new SlotCard();
-        var button = ButtonAt(panel, "SLOT " + (index + 1), new Vector2(index == 0 ? -245 : 245, 166), new Vector2(470, 76), () => { slot = index; Refresh(); }, 0);
+        var button = ButtonAt(panel, "SLOT " + (index + 1), new Vector2(index == 0 ? -245 : 245, InRun ? 224 : 166), new Vector2(470, 76), () => { slot = index; Refresh(); }, 0);
         card.card = button.GetComponent<Image>();
         Label(button.transform, (index + 1).ToString(), 30, new Vector2(-200, 0), new Vector2(50, 60)).color = Gold;
         card.weapon = Portrait(button.transform, new Vector2(-140, 0), 64);
@@ -215,6 +230,11 @@ public sealed class DebugRunMenu : AMenuElement
 
     void Add(Entry entry)
     {
+        if (InRun)
+        {
+            if (!granting) StartCoroutine(GrantItem(entry, slot));
+            return;
+        }
         if (entry.kind == AItem.ItemType.weapon)
             weapons[slot] = entry;
         else if (entry.kind == AItem.ItemType.active)
@@ -235,13 +255,15 @@ public sealed class DebugRunMenu : AMenuElement
 
     void Refresh()
     {
+        if (InRun) SyncInventory();
         foreach (var level in levelButtons)
             level.Value.color = level.Key == first ? ChosenCard : CardColor;
-        pactButton.color = forcePact ? ChosenCard : CardColor;
+        if (pactButton != null) pactButton.color = forcePact ? ChosenCard : CardColor;
         for (int i = 0; i < 2; i++)
         {
             slots[i].card.color = i == slot ? ChosenCard : CardColor;
-            Show(slots[i].weapon, slots[i].weaponName, weapons[i], i == 0 ? "Base gun" : "", i == 0);
+            bool baseGun = InRun ? HasBaseGun(i) : i == 0;
+            Show(slots[i].weapon, slots[i].weaponName, weapons[i], baseGun ? "Base gun" : "", baseGun);
             Show(slots[i].active, slots[i].activeName, actives[i], "", false);
         }
         foreach (var entry in entries)
@@ -254,6 +276,7 @@ public sealed class DebugRunMenu : AMenuElement
             entry.badge.text = badge;
             entry.card.color = badge.Length > 0 ? ChosenCard : CardColor;
         }
+        if (InRun) FilterBrowser(false);
     }
 
     // An empty first weapon slot shows the ship's base gun.
@@ -290,6 +313,11 @@ public sealed class DebugRunMenu : AMenuElement
 
     void Close()
     {
+        if (granting) return;
+        search = null;
+        status = null;
+        previousSelection = null;
+        visibleEntries.Clear();
         Destroy(overlay);
         overlay = null;
         if (studio != null)
@@ -300,13 +328,16 @@ public sealed class DebugRunMenu : AMenuElement
         Array.Clear(weapons, 0, 2);
         Array.Clear(actives, 0, 2);
         menu.Suspended = false;
-        EventSystem.current.SetSelectedGameObject(null);
+        if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
+        menu.setCurrentElement(this);
     }
 
     void Update()
     {
         if (overlay == null || starting)
             return;
+        if (InRun && !menu.IsOpen) { Close(); return; }
+        if (BrowserHandlesBack()) return;
         if (Time.frameCount > openedFrame && ((Keyboard.current?.escapeKey.wasPressedThisFrame ?? false) || (Gamepad.current?.buttonEast.wasPressedThisFrame ?? false)))
         {
             Close();
