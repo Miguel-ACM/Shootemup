@@ -11,6 +11,11 @@ public sealed partial class VoidSovereignBoss
         return beam;
     }
     static float Across(int i,int count)=>count<=1?0:i/(count-1f)*2-1;
+    static int BankCount(int count,int bank)
+    {
+        int upper=Mathf.Max(1,Mathf.RoundToInt(count*.55f));
+        return bank>0?upper:2*count-upper;
+    }
     protected override IEnumerator Cards()
     {
         while(true)
@@ -40,9 +45,9 @@ public sealed partial class VoidSovereignBoss
         float fold=30+23*Mathf.Sin(beat*.22f);
         for(int side=-1;side<=1;side+=2)
             for(int bank=-1;bank<=1;bank+=2)
-                for(int i=0;i<count;i++)
+                for(int i=0;i<BankCount(count,bank);i++)
                 {
-                    float u=Across(i,count),angle=side*(fold+u*25);
+                    float u=Across(i,BankCount(count,bank)),angle=side*(fold+u*25);
                     Vector2 axis=bank>0?Vector2.up:Vector2.down;
                     ScoredShot(beat%3==0,Port(side<0?0:1),CombatVisuals.Rotate(axis,angle),
                         2.0f+.6f*(1-u*u),.17f).Ramp(1.35f,1.6f,1.2f).FadeAt(7.8f);
@@ -58,9 +63,9 @@ public sealed partial class VoidSovereignBoss
         int count=Dense(25);
         for(int side=-1;side<=1;side+=2)
             for(int bank=-1;bank<=1;bank+=2)
-                for(int i=0;i<count;i++)
+                for(int i=0;i<BankCount(count,bank);i++)
                 {
-                    float u=Across(i,count);
+                    float u=Across(i,BankCount(count,bank));
                     Vector2 axis=bank>0?Vector2.up:Vector2.down;
                     Fire<SimpleRound>(Port(side<0?0:1),CombatVisuals.Rotate(axis,side*(42+u*30)),
                         2.5f+.7f*(1-u*u),.22f)
@@ -93,7 +98,7 @@ public sealed partial class VoidSovereignBoss
     {
         // The blades hold their axes for the entire charge; the teleport only follows release.
         for(int side=-1;side<=1;side+=2)
-            VoidRay(side<0?0:1,CombatVisuals.Rotate(Vector2.up,side*38),.48f,2.8f,-side*5);
+            VoidRay(side<0?0:1,CombatVisuals.Rotate(Vector2.down,side*38),.48f,2.8f,-side*5);
         yield return Every(5.4f,.30f,beat=>
         {
             int count=Dense(19);
@@ -115,14 +120,14 @@ public sealed partial class VoidSovereignBoss
             Fire<SimpleRound>(Port(port),CombatVisuals.Aim(Port(port)),2.6f,.25f).Ramp(1.2f,1.2f);
         int count=Dense(21);
         for(int side=-1;side<=1;side+=2)for(int bank=-1;bank<=1;bank+=2)
-            for(int i=0;i<count;i++)
+            for(int i=0;i<BankCount(count,bank);i++)
             {
-                float u=Across(i,count);
+                float u=Across(i,BankCount(count,bank));
                 var axis=CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,side*(24+u*32+Mathf.Sin(beat*.3f)*8));
                 ScoredShot(beat%3==0,Port(side<0?0:1),axis,1.8f+.95f*(1-u*u),.18f).Ramp(1.4f,1.5f,1.4f).FadeAt(8);
             }
         if(beat%3==0)for(int side=-1;side<=1;side+=2)
-            Fire<PlasmaOrb>(Port(side<0?0:1),CombatVisuals.Rotate(Vector2.up,side*58),1.2f,.36f).FadeAt(7);
+            Fire<PlasmaOrb>(Port(side<0?0:1),CombatVisuals.Rotate(Vector2.down,side*58),1.2f,.36f).FadeAt(7);
     });
 
     IEnumerator FalseStars()=>Every(6.2f,.85f,beat=>
@@ -133,10 +138,10 @@ public sealed partial class VoidSovereignBoss
         for(int side=-1;side<=1;side+=2)for(int bank=-1;bank<=1;bank+=2)
         {
             var axis=CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,side*(38+beat%2*12));
-            int shards=Dense(29);
+            int shards=BankCount(Dense(29),bank);
             Fire<GiantOrb>(Port(side<0?0:1),axis,1.8f,.44f)
                 .Ramp(.65f,.7f).SplitAt(1.7f,shards,82f/Mathf.Max(1,shards-1),2.3f,.16f).FadeAt(6);
-            int count=Dense(11);
+            int count=BankCount(Dense(11),bank);
             for(int i=0;i<count;i++)
                 Fire<SimpleRound>(Port(side<0?0:1),CombatVisuals.Rotate(axis,Across(i,count)*26),1.2f,.21f).FadeAt(8);
         }
@@ -145,37 +150,55 @@ public sealed partial class VoidSovereignBoss
     // Four fracture points stitch a square brocade. Its arms fold together on a single beat.
     IEnumerator WorldWithoutEdges()=>Every(6.2f,.29f,beat=>
     {
-        if(beat%4==0)
-        {
-            var p=Port(beat/4%4);
-            Fire<SimpleRound>(p,CombatVisuals.Aim(p),2.8f,.23f);
-        }
+        if(beat%5==0)Phrase(CrossedGaze());
         int count=Dense(17);
-        for(int port=0;port<4;port++)for(int i=0;i<count;i++)
+        for(int port=0;port<4;port++)for(int i=0;i<FractureCount(count,port);i++)
         {
-            Vector2 axis=port==0?Vector2.left:port==1?Vector2.right:port==2?Vector2.up:Vector2.down;
-            float u=Across(i,count),sign=port%2==0?-1:1;
+            Vector2 axis=FractureAxis(port);
+            float u=Across(i,FractureCount(count,port)),sign=port%2==0?-1:1;
             ScoredShot(beat%3==0,Port(port),CombatVisuals.Rotate(axis,u*36+sign*Mathf.Sin(beat*.25f)*19),
-                2.0f+.48f*(1-u*u),.17f).Pause(.95f,.22f,CombatRound.Turn.Rotate,sign*34,1.0f).FadeAt(7.6f);
+                2.0f+.48f*(1-u*u),.17f).Pause(.95f,.22f,CombatRound.Turn.Rotate,-sign*24,1.0f).FadeAt(7.6f);
         }
     });
 
     IEnumerator LastEquation()=>Every(6.2f,.51f,beat=>
     {
-        if(beat%2==0)
-        {
-            var p=Port(beat/2%4);
-            Fire<SimpleRound>(p,CombatVisuals.Aim(p),2.8f,.23f).Bounce(1);
-        }
+        if(beat%3==0)Phrase(CrossedGaze());
         int count=Dense(21);
-        for(int port=0;port<4;port++)for(int i=0;i<count;i++)
+        for(int port=0;port<4;port++)for(int i=0;i<FractureCount(count,port);i++)
         {
-            Vector2 axis=port==0?Vector2.left:port==1?Vector2.right:port==2?Vector2.up:Vector2.down;
-            float u=Across(i,count),sign=port%2==0?-1:1;
-            // Equal angular extent at every difficulty preserves the four open diamond corners.
+            Vector2 axis=FractureAxis(port);
+            float u=Across(i,FractureCount(count,port)),sign=port%2==0?-1:1;
+            // Equal angular extent preserves moving seams on every difficulty.
             Fire<RicochetBolt>(Port(port),CombatVisuals.Rotate(axis,u*33+sign*(beat%2==0?9:-9)),
                 1.8f+.8f*Mathf.Abs(u),.18f).Bounce(1).Ramp(1.3f,1.8f,1.4f).FadeAt(6.8f);
             if(i%4==0)Fire<SimpleRound>(Port(port),CombatVisuals.Rotate(axis,u*33),1.1f,.25f).FadeAt(7.5f);
         }
     });
+
+    static int FractureCount(int count,int port)=>port<2?count:BankCount(count,port==2?1:-1);
+    static Vector2 FractureAxis(int port)=>port==0?CombatVisuals.Rotate(Vector2.down,-42):
+        port==1?CombatVisuals.Rotate(Vector2.down,42):port==2?Vector2.up:Vector2.down;
+
+    IEnumerator CrossedGaze()
+    {
+        // Outward-facing star tips left the space inside/above the star untouched.
+        // The opposite side tips visibly charge, then cross through the pilot's
+        // recorded position. Moving after the charge opens a clear escape.
+        Vector3 target=player!=null?player.position:transform.position+Vector3.down*5;
+        for(float t=0;t<.45f;)
+        {
+            if(!Holding)t+=Time.deltaTime*LevelRun.EnemyTempoScale;
+            Cue(Port(0),.45f-t);Cue(Port(1),.45f-t);
+            yield return null;
+        }
+        int count=Dense(3)|1;
+        for(int port=0;port<2;port++)
+        {
+            Vector3 p=Port(port);
+            Vector2 aim=((Vector2)(target-p)).normalized;
+            for(int i=0;i<count;i++)
+                Fire<SimpleRound>(p,CombatVisuals.Rotate(aim,Across(i,count)*8),2.8f,.22f).FadeAt(6);
+        }
+    }
 }
