@@ -1,0 +1,5 @@
+PASS
+362 checks.
+Authored button assets, all default bindings, keyboard/controller overrides, TMP inline sprites, warning beam/round clear, restored tow, cargo rarity and reserved decision ownership.
+No gameplay or visual review was started.
+All 135 imported PNGs match the publisher originals byte-for-byte (SHA-256). Source and CC0 license: ThirdParty/InputPrompts.

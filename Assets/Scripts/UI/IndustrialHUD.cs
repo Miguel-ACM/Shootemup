@@ -12,6 +12,8 @@ public sealed class IndustrialHUD : MonoBehaviour
     WaveOrchestrer waves;
     Image[] challengeCells;
     readonly RectTransform[] encounterRows = new RectTransform[System.Enum.GetValues(typeof(EncounterKind)).Length];
+    Image cargoControl;
+    RectTransform cargoCharge;
     Image[] healthCells, manaCells, bossCells;
     Image[] meterCasing;
     OctagonGraphic shieldGlow, shieldRing;
@@ -439,12 +441,28 @@ public sealed class IndustrialHUD : MonoBehaviour
                 icon.GetComponent<Image>().sprite = EncounterChoice.Icon(kind);
                 icon.GetComponent<Image>().preserveAspect = true;
                 var label = TextAt(row, caption, 33, 3, 12, Steel);
-                label.rectTransform.sizeDelta = new Vector2(96, 24);
+                label.rectTransform.sizeDelta = new Vector2(kind == EncounterKind.Cargo ? 65 : 96, 24);
                 label.alignment = TextAnchor.MiddleLeft;
                 label.horizontalOverflow = HorizontalWrapMode.Wrap;
                 label.resizeTextForBestFit = true;
                 label.resizeTextMinSize = 8;
                 label.resizeTextMaxSize = 12;
+                if (kind == EncounterKind.Cargo)
+                {
+                    var control = Panel(row, "Open cargo control", Color.white);
+                    Place(control, 101, 1, 30, 27);
+                    cargoControl = control.GetComponent<Image>();
+                    cargoControl.preserveAspect = true;
+                    cargoCharge = Panel(row, "Cargo opening hold", Color.white);
+                    Place(cargoCharge, 105, 27, 0, 2);
+                }
+            }
+            if (kind == EncounterKind.Cargo && cargoControl != null)
+            {
+                var action = waves.Cargo.OpenControl;
+                cargoControl.enabled = action != null && GameClock.ActivePlay;
+                cargoControl.sprite = InputPrompts.For(action);
+                cargoCharge.sizeDelta = new Vector2(22 * Mathf.Clamp01(waves.Cargo.ClaimProgress), 2);
             }
             Place(row, 0, 88 + visible++ * 32, 132, 30);
             if (!row.gameObject.activeSelf) row.gameObject.SetActive(true);

@@ -37,7 +37,8 @@ public sealed class DecisionShop : MonoBehaviour
     public void Open(WaveOrchestrer orchestrer, Shipcontroller ship, string kind, Action completed, Vector3? dropPosition = null)
         => Open(orchestrer, ship, RunSlot.Parse(kind).Kind, completed, dropPosition);
 
-    public void Open(WaveOrchestrer orchestrer, Shipcontroller ship, RunSlotKind kind, Action completed, Vector3? dropPosition = null)
+    public void Open(WaveOrchestrer orchestrer, Shipcontroller ship, RunSlotKind kind, Action completed, Vector3? dropPosition = null,
+        string reservedKey = null, string reservedRarity = null)
     {
         mandatory = kind == RunSlotKind.BossReward;
         bool singleReward = mandatory || kind == RunSlotKind.ChallengeReward || kind == RunSlotKind.CargoReward;
@@ -69,15 +70,15 @@ public sealed class DecisionShop : MonoBehaviour
         var pacts = pact ? PactPool.Draw(player, 2) : null;
         int count = pact ? pacts.Count : singleReward ? 1 : paid ? (UnityEngine.Random.value < .35f ? 4 : 3) : RewardCount(GameRules.luck, UnityEngine.Random.value);
         bool healthKit = paid && player.health < player.maxHealth * .45f && ItemPool.ReserveHealthKit();
-        if (!pact)
+        if (!pact && reservedKey == null)
             count = Mathf.Min(count, ItemPool.RemainingCount + (healthKit ? 1 : 0));
         if (count == 0 && !paid && !pact)
             RunCoins.Add(8);
         for (int i = 0; i < count; i++)
         {
-            string rarity = pact ? PactPool.Rarity : "common";
-            string itemKind = pact ? pacts[i] : healthKit && i == count - 1 ? "LargeHealthKit" :
-                kind == RunSlotKind.CargoReward ? ItemPool.GetCargoReward(out rarity) : ItemPool.GetItem(out rarity);
+            string rarity = reservedRarity ?? (pact ? PactPool.Rarity : "common");
+            string itemKind = reservedKey ?? (pact ? pacts[i] : healthKit && i == count - 1 ? "LargeHealthKit" :
+                kind == RunSlotKind.CargoReward ? ItemPool.GetCargoReward(out rarity) : ItemPool.GetItem(out rarity));
             if (itemKind == null)
             {
                 RunCoins.Add(8);

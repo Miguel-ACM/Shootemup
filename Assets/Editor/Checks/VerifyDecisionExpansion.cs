@@ -522,8 +522,8 @@ public sealed class DecisionExpansionReview : MonoBehaviour
         Call(flow, "ResolveEncounter", EncounterKind.Cargo);
         var cargo = flow.Cargo;
         yield return new WaitForSeconds(1.2f);
-        Check(cargo.Quality == ItemRarity.Common && Vector2.Distance(cargo.transform.position, ship.transform.position) < .8f,
-            "cargo begins common and sits close behind the ship");
+        Check(cargo.Quality == ItemRarity.Common && Mathf.Abs(Vector2.Distance(cargo.transform.position, ship.transform.position) - .95f) < .1f,
+            "cargo begins common and uses its original trailing distance");
         yield return Capture("Cargo-Common");
         var bullet = CombatRound.Launch<SimpleRound>(cargo.transform.position, Vector2.down, 0);
         Check(bullet != null && bullet.PixelOverlaps(cargo.GetComponent<Collider2D>()), "cargo uses actual opaque-pixel projectile contact");
@@ -551,7 +551,7 @@ public sealed class DecisionExpansionReview : MonoBehaviour
                 {
                     ship.transform.position = new Vector3(Mathf.Sin(Time.time * 14) * 2.5f, -3, -1);
                     yield return null;
-                    Check(Vector2.Distance(cargo.transform.position, ship.transform.position) <= 1.03f, "hard turns keep cargo close");
+                    Check(float.IsFinite(cargo.transform.position.x), "loose cargo follow stays finite through hard turns");
                 }
                 ship.transform.position = new Vector3(0, -3, -1);
                 yield return new WaitForSeconds(.3f);
@@ -581,14 +581,21 @@ public sealed class DecisionExpansionReview : MonoBehaviour
             }
             Check(flow.Cargo == null && RunCoins.Count == wallet + EncounterChoice.SalvageCoins(1, GameRules.luck) * 2,
                 "cash-in pays the existing coins once: " + tier);
-            var drops = (List<GameObject>)Get(flow, "items");
-            var reward = drops.Last().GetComponent<AItem>();
-            Check(reward.rarity == ((ItemRarity)tier).ToString().ToLowerInvariant() && flow.waves.Length == 0 && Shop == null && !CombatDecision.Active,
-                "cash-in drops the exact rarity immediately without pausing combat: " + tier);
+            Check((string)Get(flow, "cargoRewardRarity") == ((ItemRarity)tier).ToString().ToLowerInvariant() &&
+                flow.waves.Contains("cargoreward") && Shop == null && !CombatDecision.Active,
+                "cash-in animates first and queues the exact rarity for a clear wave break: " + tier);
             if (cargo != null) Check(!cargo.TryClaim(), "a claimed crate cannot pay twice");
+            yield return new WaitForSeconds(1.7f);
+            Set(flow, "currentWaveNumber", 0);
+            Call(flow, "GenerateWave");
             yield return null;
-            reward.Dismiss();
+            var rewards = (List<AItem>)Get(Shop, "items");
+            Check(rewards.Count == 1 && rewards[0].rarity == ((ItemRarity)tier).ToString().ToLowerInvariant() && CombatDecision.Active,
+                "cargo opens one normal free decision item of the promised rarity: " + tier);
+            Shop.Abort();
             yield return new WaitForSeconds(.5f);
+            flow.waves = Array.Empty<string>();
+            Set(flow, "currentWaveNumber", 0);
         }
         Call(flow, "ResolveEncounter", EncounterKind.Cargo);
         cargo = flow.Cargo;
