@@ -108,6 +108,7 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
     static float Across(int i,int count)=>count<=1?0:i/(count-1f)*2-1;
     void Vault(int beat,int count,float opening,bool pearls)
     {
+        if(beat%4==0)Gaze();
         int n=Dense(count);
         float breath=Mathf.Sin(beat*.18f)*18;
         for(int s=-1;s<=1;s+=2)for(int bank=-1;bank<=1;bank+=2)for(int i=0;i<n;i++)
@@ -117,7 +118,7 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
             // while the upper pair returns from the ceiling. The same seams breathe together.
             float speed=2.35f+.85f*(1-u*u)+(CurrentPhase-1)*.12f;
             var axis=bank>0?Vector2.up:Vector2.down;
-            Fire<NeedleRound>(Eye(s<0?3:4),CombatVisuals.Rotate(axis,angle),speed,.17f)
+            ScoredShot(i%3==0,Eye(s<0?3:4),CombatVisuals.Rotate(axis,angle),speed,.17f)
                 .Bounce(bank>0?1:0).FadeAt(8);
             if(pearls&&bank<0&&beat%4==0&&i%3==0)
                 Fire<SimpleRound>(Eye(s<0?1:2),CombatVisuals.Rotate(Vector2.down,s*(48+u*23)),1.55f,.22f).FadeAt(7.8f);
@@ -125,16 +126,25 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
     }
     void Window(int beat,int count,float speed)
     {
+        if(beat%2==0)Gaze();
         int n=Dense(count);
         for(int s=-1;s<=1;s+=2)for(int bank=-1;bank<=1;bank+=2)for(int i=0;i<n;i++)
         {
             float u=Across(i,n);
             float a=s*(45+u*43+Mathf.Sin(beat*.43f)*14);
-            Fire<NeedleRound>(Eye(s<0?3:4),CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,a),speed+.85f*(1-u*u),.18f)
+            ScoredShot(beat%3==0,Eye(s<0?3:4),CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,a),speed+.85f*(1-u*u),.18f)
                 .Bounce(bank>0?1:0).Ramp(1.25f,1.4f,2).FadeAt(8);
             if(CurrentPhase==3&&bank<0&&i%3==0)
                 Fire<SimpleRound>(Eye(s<0?1:2),CombatVisuals.Rotate(Vector2.down,s*(54+u*26)),1.6f+.3f*u*u,.22f).FadeAt(8);
         }
+    }
+
+    void Gaze()
+    {
+        // The central eye looks through the moving aisle, including above the angel.
+        Vector3 p=Eye(0);Vector2 aim=CombatVisuals.Aim(p);int count=Dense(5)|1;
+        for(int i=0;i<count;i++)
+            Fire<SimpleRound>(p,CombatVisuals.Rotate(aim,(i-(count-1)*.5f)*11),2.6f,.22f).Ramp(1.2f,1.3f);
     }
 
     // The angel may create fire in empty air. Six fixed, charged points draw a
@@ -172,7 +182,7 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
                 for(int bank=-1;bank<=1;bank+=2)for(int k=0;k<count;k++)
                 {
                     float u=Across(k,count),turn=side*(verse%2==0?22:-22);
-                    Fire<NeedleRound>(p,CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,u*62+turn),
+                    ScoredShot(k%3==0,p,CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,u*62+turn),
                         1.7f+.5f*(1-u*u),.16f).Ramp(1.35f,1.5f,1).FadeAt(6.8f);
                 }
             }
