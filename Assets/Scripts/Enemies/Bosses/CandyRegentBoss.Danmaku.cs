@@ -48,6 +48,7 @@ public sealed partial class CandyRegentBoss
             }
             else
             {
+                Phrase(Every(5,1.4f,n=>TaffyPull(n%2==0?1:-1)));
                 yield return MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(64), 2, 66, 22, 3.4f, .07f);
                 yield return Wait(.7f);
                 yield return CandyWorms(56);
@@ -73,8 +74,8 @@ public sealed partial class CandyRegentBoss
             int bend = (hatch == 0 ? 1 : -1) * sign;
             for (int i = 0; i < beads; i++)
             {
-                var bead = Fire<SimpleRound>(port, axis, Mathf.Lerp(1.4f, 4.6f, i / (beads - 1f)), .2f);
-                if (bead != null)
+                var bead = Fire<SimpleRound>(port, i==0?CombatVisuals.Aim(port):axis, Mathf.Lerp(1.8f, 4.6f, i / (beads - 1f)), .2f);
+                if (bead != null&&i>0)
                     bead.Curl(bend * 26, 1.4f);
             }
         }
@@ -87,7 +88,7 @@ public sealed partial class CandyRegentBoss
         int count = Dense(7);
         for (int i = 0; i < count; i++)
             for (int mirror = -1; mirror <= 1; mirror += 2)
-                Fire<NeedleRound>(Muzzle(mirror < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.right * mirror, mirror * (-15 + i * 9)), 3.4f, .19f).Bounce(3);
+                ScoredShot(i%3==0,Muzzle(mirror < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.right * mirror, mirror * (-15 + i * 9)), 3.4f).Bounce(3);
     }
 
     // Mirrored sprinkles thrown in a wide spread, ricocheting off the walls and ceiling.
@@ -123,6 +124,8 @@ public sealed partial class CandyRegentBoss
         length = Dense(length);
         for (int i = 0; i < length; i++)
         {
+            if(i%12==0&&Clear)
+                Fire<SimpleRound>(Muzzle(i%2),CombatVisuals.Aim(Muzzle(i%2)),2.9f,.23f);
             for (int hatch = 0; hatch < 2; hatch++)
                 Fire<SimpleRound>(Muzzle(hatch), CombatVisuals.Rotate(Vector2.down, (hatch == 0 ? -1 : 1) * 18), 2.9f, .19f)
                     .Sway(hatch == 0 ? .45f : -.45f, .8f);
