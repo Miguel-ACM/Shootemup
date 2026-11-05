@@ -109,7 +109,7 @@ public sealed class GameOverState : MonoBehaviour
             stamps.gameObject.SetActive(false);
             UnlockReceipt.Show(playfield, log.unlocks, font, log.awards.Find(a => a.StartsWith("Hull released")));
         }
-        footer = Label("", -321, 36, 14, DockInstrument.Muted);
+        footer = Label("", -340, 24, 14, DockInstrument.Muted);
         group.alpha = 0;
     }
 

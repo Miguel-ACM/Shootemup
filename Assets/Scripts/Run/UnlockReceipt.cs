@@ -3,11 +3,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Six compact portraits fit beneath the flight statistics. Long runs page automatically;
+// Each item gets a portrait, name and reason beneath the flight statistics. Long runs page automatically;
 // the pilot can return immediately and inspect each release on the hangar turntable.
 public sealed class UnlockReceipt : MonoBehaviour
 {
-    const int PageSize = 6;
+    const int PageSize = 3;
     readonly List<GameObject> tiles = new List<GameObject>();
     ItemPortraitStudio studio;
     TextMeshProUGUI pagination;
@@ -28,20 +28,24 @@ public sealed class UnlockReceipt : MonoBehaviour
         foreach (var notice in notices) keys.Add(notice.key);
         studio = ItemPortraitStudio.Create(keys);
         Label(transform, "NEW ITEMS" + (hullRelease == null ? "" : "  /  " + hullRelease.Replace("Hull released", "NEW HULL")),
-            new Vector2(0, -130), new Vector2(350, 22), 13, DockInstrument.Brass, font);
+            new Vector2(0, -125), new Vector2(350, 22), 13, DockInstrument.Brass, font);
         pages = Mathf.CeilToInt(notices.Count / (float)PageSize);
         for (int i = 0; i < notices.Count; i++)
         {
             int slot = i % PageSize;
             var tile = DockInstrument.Block(transform, notices[i].title,
-                new Vector2((slot % 3 - 1) * 116, -180 - slot / 3 * 74), new Vector2(108, 70), DockInstrument.Ink);
-            Picture(tile, studio, i, new Vector2(0, 12), 43);
-            Label(tile, notices[i].title, new Vector2(0, -22), new Vector2(102, 25), 12, DockInstrument.Paper, font);
-            Stamp(tile, notices[i], new Vector2(-41, 24), 16);
-            Mark(tile, notices[i], new Vector2(40, 26));
+                new Vector2(0, -166 - slot * 57), new Vector2(360, 54), DockInstrument.Ink);
+            Picture(tile, studio, i, new Vector2(-151, 0), 44);
+            Label(tile, notices[i].title, new Vector2(26, 15), new Vector2(292, 18), 13, DockInstrument.Paper, font)
+                .alignment = TextAlignmentOptions.MidlineLeft;
+            var reason = Label(tile, notices[i].Requirement, new Vector2(26, -9), new Vector2(292, 30), 12, DockInstrument.Muted, font);
+            reason.name = "Unlock reason";
+            reason.alignment = TextAlignmentOptions.MidlineLeft;
+            reason.textWrappingMode = TextWrappingModes.Normal;
+            Stamp(tile, notices[i], new Vector2(-170, 19), 12);
             tiles.Add(tile.gameObject);
         }
-        pagination = Label(transform, "", new Vector2(0, -298), new Vector2(340, 18), 11, DockInstrument.Muted, font);
+        pagination = Label(transform, "", new Vector2(0, -317), new Vector2(340, 12), 10, DockInstrument.Muted, font);
         SetPage(0);
     }
 
@@ -54,7 +58,7 @@ public sealed class UnlockReceipt : MonoBehaviour
     void Update()
     {
         age += Time.unscaledDeltaTime;
-        int next = Mathf.FloorToInt(age / 4) % pages;
+        int next = Mathf.FloorToInt(age / 6) % pages;
         if (next != page) SetPage(next);
     }
     void OnDestroy()
@@ -100,12 +104,5 @@ public sealed class UnlockReceipt : MonoBehaviour
         image.rectTransform.sizeDelta = Vector2.one * size;
         image.raycastTarget = false;
         return image;
-    }
-    static void Mark(Transform parent, ItemUnlockNotice notice, Vector2 at)
-    {
-        int diamonds = notice.condition == ItemUnlockCondition.NoHitArea ? 2 : notice.condition == ItemUnlockCondition.NoHitBoss ? 1 : 0;
-        for (int i = 0; i < diamonds; i++)
-            DockInstrument.Block(parent, "No-hit mark", at - Vector2.right * (i * 10), Vector2.one * 5, DockInstrument.Brass)
-                .localRotation = Quaternion.Euler(0, 0, 45);
     }
 }
