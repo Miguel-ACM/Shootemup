@@ -7,12 +7,12 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[1] / 'ArtSource/SolidSceneryReview'
 
 
-def render(meshes, size, scale, center, angles=(0, 0)):
+def render(meshes, size, scale, center, angles=(0, 0), atlas_path=None):
     width, height = size
     color = np.zeros((height, width, 3), dtype=np.uint8)
     color[:] = (12, 19, 26)
     depth = np.full((height, width), np.inf)
-    atlas = np.asarray(Image.open(ROOT / 'Atlas.png').convert('RGB'))
+    atlas = np.asarray(Image.open(atlas_path or ROOT / 'Atlas.png').convert('RGB'))
     a, b = np.deg2rad(angles)
     rx = np.array([[1, 0, 0], [0, np.cos(a), -np.sin(a)], [0, np.sin(a), np.cos(a)]])
     ry = np.array([[np.cos(b), 0, np.sin(b)], [0, 1, 0], [-np.sin(b), 0, np.cos(b)]])
@@ -48,45 +48,50 @@ def render(meshes, size, scale, center, angles=(0, 0)):
     return Image.fromarray(color)
 
 
-mine = json.loads((ROOT/'Mine.json').read_text())
-sheet = Image.new('RGB', (1080, 400), '#0c131a')
-draw = ImageDraw.Draw(sheet)
-for i, angles in enumerate(((0, 0), (20, 30), (-15, -35))):
-    sheet.paste(render([mine], (360, 350), 150, (0, -.1), angles), (360*i, 25))
-    draw.text((360*i+14, 12), ['Front', 'Raised view', 'Opposite view'][i], fill='#e2c58e')
-draw.text((14, 380), 'Exported Unity mesh and atlas - CPU lighting preview', fill='#9eb0b8')
-sheet.save(ROOT/'Mine-Views.png')
+def main():
+    mine = json.loads((ROOT/'Mine.json').read_text())
+    sheet = Image.new('RGB', (1080, 400), '#0c131a')
+    draw = ImageDraw.Draw(sheet)
+    for i, angles in enumerate(((0, 0), (20, 30), (-15, -35))):
+        sheet.paste(render([mine], (360, 350), 150, (0, -.1), angles), (360*i, 25))
+        draw.text((360*i+14, 12), ['Front', 'Raised view', 'Opposite view'][i], fill='#e2c58e')
+    draw.text((14, 380), 'Exported Unity mesh and atlas - CPU lighting preview', fill='#9eb0b8')
+    sheet.save(ROOT/'Mine-Views.png')
 
-sheet = Image.new('RGB', (972, 620), '#0c131a')
-draw = ImageDraw.Draw(sheet)
-for i, budget in enumerate((6, 10, 16)):
-    data = json.loads((ROOT/f'Tunnel-{budget}.json').read_text())
-    view = render(data['meshes'], (324, 576), 32, (0, -.6))
-    ink = ImageDraw.Draw(view)
-    for shot in data['rounds']:
-        x, y = 162+shot['x']*32, 288-(shot['y']+.6)*32
-        ink.ellipse((x-2, y-2, x+2, y+2), fill='#e6ac75')
-    sheet.paste(view, (324*i, 24))
-    draw.text((324*i+10, 7), f'Passage {budget} - native positions', fill='#e2c58e')
-draw.text((10, 605), 'CPU mesh preview; dots mark projectile positions, not projectile artwork', fill='#9eb0b8')
-sheet.save(ROOT/'Passages.png')
-frames = []
-for path in sorted(ROOT.glob('Motion-*.json')):
-    data = json.loads(path.read_text())
-    view = render(data['meshes'], (324, 576), 32, (0, -.6))
-    ink = ImageDraw.Draw(view)
-    for shot in data['rounds']:
-        x, y = 162+shot['x']*32, 288-(shot['y']+.6)*32
-        ink.ellipse((x-2, y-2, x+2, y+2), fill='#e6ac75')
-    ink.text((8, 560), 'Native positions / CPU mesh preview', fill='#e2c58e')
-    frames.append(view)
-if frames:
-    frames[0].save(ROOT/'Passage-Motion.gif', save_all=True, append_images=frames[1:], duration=250, loop=0)
-    strip = Image.new('RGB', (324*6, 600), '#0c131a')
-    draw = ImageDraw.Draw(strip)
-    for column, index in enumerate((0, 4, 8, 12, 16, 20)):
-        if index < len(frames):
-            strip.paste(frames[index], (column*324, 24))
-            draw.text((column*324+12, 6), f'{index*.25:.1f}s - recorded formation', fill='#e2c58e')
-    strip.save(ROOT/'Passage-Sequence.png')
-print('Rendered mine views, passage geometry and recorded formation motion.')
+    sheet = Image.new('RGB', (972, 620), '#0c131a')
+    draw = ImageDraw.Draw(sheet)
+    for i, budget in enumerate((6, 10, 16)):
+        data = json.loads((ROOT/f'Tunnel-{budget}.json').read_text())
+        view = render(data['meshes'], (324, 576), 32, (0, -.6))
+        ink = ImageDraw.Draw(view)
+        for shot in data['rounds']:
+            x, y = 162+shot['x']*32, 288-(shot['y']+.6)*32
+            ink.ellipse((x-2, y-2, x+2, y+2), fill='#e6ac75')
+        sheet.paste(view, (324*i, 24))
+        draw.text((324*i+10, 7), f'Passage {budget} - native positions', fill='#e2c58e')
+    draw.text((10, 605), 'CPU mesh preview; dots mark projectile positions, not projectile artwork', fill='#9eb0b8')
+    sheet.save(ROOT/'Passages.png')
+    frames = []
+    for path in sorted(ROOT.glob('Motion-*.json')):
+        data = json.loads(path.read_text())
+        view = render(data['meshes'], (324, 576), 32, (0, -.6))
+        ink = ImageDraw.Draw(view)
+        for shot in data['rounds']:
+            x, y = 162+shot['x']*32, 288-(shot['y']+.6)*32
+            ink.ellipse((x-2, y-2, x+2, y+2), fill='#e6ac75')
+        ink.text((8, 560), 'Native positions / CPU mesh preview', fill='#e2c58e')
+        frames.append(view)
+    if frames:
+        frames[0].save(ROOT/'Passage-Motion.gif', save_all=True, append_images=frames[1:], duration=250, loop=0)
+        strip = Image.new('RGB', (324*6, 600), '#0c131a')
+        draw = ImageDraw.Draw(strip)
+        for column, index in enumerate((0, 4, 8, 12, 16, 20)):
+            if index < len(frames):
+                strip.paste(frames[index], (column*324, 24))
+                draw.text((column*324+12, 6), f'{index*.25:.1f}s - recorded formation', fill='#e2c58e')
+        strip.save(ROOT/'Passage-Sequence.png')
+    print('Rendered mine views, passage geometry and recorded formation motion.')
+
+
+if __name__ == '__main__':
+    main()

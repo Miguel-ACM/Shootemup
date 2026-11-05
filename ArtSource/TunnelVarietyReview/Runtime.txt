@@ -1,0 +1,66 @@
+FAIL
+Native headless review; CPU previews exclude the gameplay renderer.
+PASS Normal layout 1 scrolls out after 7,55 seconds
+PASS Normal layout 1 enemy envelopes clear sloped walls: 0
+PASS Normal layout 1 sustained warmed fire, peak 56
+PASS Normal layout 2 scrolls out after 8,48 seconds
+PASS Normal layout 2 enemy envelopes clear sloped walls: 0
+PASS Normal layout 2 sustained warmed fire, peak 51
+PASS Normal layout 3 scrolls out after 10,35 seconds
+PASS Normal layout 3 enemy envelopes clear sloped walls: 0
+PASS Normal layout 3 sustained warmed fire, peak 48
+PASS Normal layout 4 scrolls out after 8,48 seconds
+PASS Normal layout 4 enemy envelopes clear sloped walls: 0
+PASS Normal layout 4 sustained warmed fire, peak 53
+PASS Normal layout 5 scrolls out after 9,42 seconds
+PASS Normal layout 5 enemy envelopes clear sloped walls: 0
+PASS Normal layout 5 sustained warmed fire, peak 54
+PASS Normal layout 6 scrolls out after 11,28 seconds
+PASS Normal layout 6 enemy envelopes clear sloped walls: 0
+PASS Normal layout 6 sustained warmed fire, peak 44
+PASS Hard layout 1 scrolls out after 7,55 seconds
+PASS Hard layout 1 enemy envelopes clear sloped walls: 0
+PASS Hard layout 1 sustained warmed fire, peak 83
+PASS Hard layout 2 scrolls out after 8,48 seconds
+PASS Hard layout 2 enemy envelopes clear sloped walls: 0
+PASS Hard layout 2 sustained warmed fire, peak 80
+PASS Hard layout 3 scrolls out after 10,35 seconds
+PASS Hard layout 3 enemy envelopes clear sloped walls: 0
+PASS Hard layout 3 sustained warmed fire, peak 72
+PASS Hard layout 4 scrolls out after 8,48 seconds
+PASS Hard layout 4 enemy envelopes clear sloped walls: 0
+PASS Hard layout 4 sustained warmed fire, peak 80
+PASS Hard layout 5 scrolls out after 9,42 seconds
+PASS Hard layout 5 enemy envelopes clear sloped walls: 0
+PASS Hard layout 5 sustained warmed fire, peak 76
+PASS Hard layout 6 scrolls out after 11,28 seconds
+PASS Hard layout 6 enemy envelopes clear sloped walls: 0
+PASS Hard layout 6 sustained warmed fire, peak 60
+PASS Easy layout 1 scrolls out after 7,55 seconds
+PASS Easy layout 1 enemy envelopes clear sloped walls: 0
+PASS Easy layout 1 sustained warmed fire, peak 41
+PASS Easy layout 2 scrolls out after 8,48 seconds
+PASS Easy layout 2 enemy envelopes clear sloped walls: 0
+PASS Easy layout 2 sustained warmed fire, peak 39
+PASS Easy layout 3 scrolls out after 10,35 seconds
+PASS Easy layout 3 enemy envelopes clear sloped walls: 0
+PASS Easy layout 3 sustained warmed fire, peak 37
+PASS Easy layout 4 scrolls out after 8,48 seconds
+PASS Easy layout 4 enemy envelopes clear sloped walls: 0
+PASS Easy layout 4 sustained warmed fire, peak 39
+PASS Easy layout 5 scrolls out after 9,42 seconds
+PASS Easy layout 5 enemy envelopes clear sloped walls: 0
+PASS Easy layout 5 sustained warmed fire, peak 40
+PASS Easy layout 6 scrolls out after 11,28 seconds
+PASS Easy layout 6 enemy envelopes clear sloped walls: 0
+PASS Easy layout 6 sustained warmed fire, peak 33
+PASS sloped joins and bottom corners release pilot: 86564 samples, 0 trapped
+PASS fast shot meets exact diagonal face
+PASS empty space inside diagonal bounding box stays open
+FAIL actual scrolling-wall contact costs one segment and releases ship
+FAIL wall contact respects normal hit invulnerability
+Measured headless main-thread maximum around 3000-round wall burst and following physics: 60,50 ms (no graphics)
+PASS dense diagonal-wall burst creates no new rounds
+PASS decisions still clear all passage geometry
+actual scrolling-wall contact costs one segment and releases ship
+wall contact respects normal hit invulnerability

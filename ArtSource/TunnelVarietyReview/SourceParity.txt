@@ -1,0 +1,2 @@
+PASS
+12 source/meta files match the isolated build checkout.

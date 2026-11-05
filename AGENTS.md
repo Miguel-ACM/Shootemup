@@ -218,6 +218,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 ## Workflow
 
 - Latest scenery request (5 November 2026): add solid Tunnel walls that block the player's movement and bullets. The walls are anchored to the tunnel and scroll downward with it, forming passages to fly through; coordinate the enemy waves with those passages.
+- Latest passage correction: add more varied and longer routes, including zigzags. Being caught by a wall causes damage with the normal hit invulnerability; keep a navigable opening and coordinate enemies with the bends.
 - Underwater has shootable mines that explode into hostile bullets. Keep the existing approved projectile sprites and amber district palette.
 
 - District music (3 November 2026) starts on the track's intro and continues into flight. At boss entry, crossfade into a long, energetic passage of that same recording at its original tempo, with a bass boost. At final destruction, crossfade to the outro and gradually release the bass. Keep Boss (fast) as a pitch-preserving audition option in the local Music Lab. The normal boss mix plays in the game.

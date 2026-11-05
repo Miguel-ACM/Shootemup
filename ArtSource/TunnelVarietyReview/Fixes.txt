@@ -1,0 +1,11 @@
+PASS
+Native headless review; CPU previews exclude the gameplay renderer.
+PASS fast shot meets exact diagonal face
+PASS empty space inside diagonal bounding box stays open
+PASS actual scrolling-wall contact costs one segment and releases ship
+PASS wall contact respects normal hit invulnerability
+PASS a scrolling passage catches and damages a stationary pilot
+Baseline headless complete frames around 3000-round burst: max 33,42 ms, p95 12,57 ms (no graphics)
+Walls headless complete frames around 3000-round burst: max 29,06 ms, p95 13,81 ms (no graphics)
+PASS dense diagonal-wall burst creates no new rounds
+PASS decisions still clear all passage geometry
