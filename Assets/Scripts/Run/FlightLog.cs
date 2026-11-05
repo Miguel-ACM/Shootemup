@@ -10,6 +10,7 @@ public sealed class FlightLog
     public string contract, outcome, route;
     public int score, earned, banked, bosses, clean, hits, peak = 1, seconds;
     public List<string> awards = new List<string>();
+    public List<ItemUnlockNotice> unlocks = new List<ItemUnlockNotice>();
     public string Duration => TimeSpan.FromSeconds(seconds).ToString(@"hh\:mm\:ss");
 }
 
@@ -28,7 +29,9 @@ public static partial class MetaProgress
 {
     static FlightLog flight;
     static float departed;
-    static int bossHits;
+    static int bossHits, districtHits;
+    static Type engagedBoss;
+    static bool districtDefeated;
     public static FlightLog LastFlight
     {
         get; private set;
@@ -71,7 +74,12 @@ public static partial class MetaProgress
     public static void EnterDistrict()
     {
         if (flight != null)
+        {
             flight.route += " / " + LevelRun.CurrentName;
+            districtHits = flight.hits;
+            engagedBoss = null;
+            districtDefeated = false;
+        }
     }
     [Serializable]
     sealed class BossRotation
@@ -84,6 +92,12 @@ public static partial class MetaProgress
     {
         if (flight != null)
             bossHits = flight.hits;
+        engagedBoss = SelectBoss();
+        return engagedBoss;
+    }
+
+    static Type SelectBoss()
+    {
         var roster = DistrictWaves.Bosses(LevelRun.Current);
         if (roster.Count == 1 || FlightTrials.Active != null)
             return roster[0];
@@ -119,8 +133,9 @@ public static partial class MetaProgress
     }
     public static void DefeatBoss()
     {
-        if (flight == null)
+        if (flight == null || engagedBoss == null || districtDefeated)
             return;
+        districtDefeated = true;
         flight.bosses++;
         bool clean = bossHits == flight.hits;
         if (clean)
@@ -136,6 +151,7 @@ public static partial class MetaProgress
             flight.awards.Add(LevelRun.CurrentName + "  /  no-hit star");
         if (clean)
             record.flawless |= mark;
+        AwardDistrictItems(clean);
         Save();
     }
     static ServiceRecord StoredRecord()
@@ -156,6 +172,9 @@ public static partial class MetaProgress
             contract = FlightTrials.Active?.title
         };
         LastFlight = null;
+        bossHits = districtHits = 0;
+        engagedBoss = null;
+        districtDefeated = false;
         departed = Time.time;
         Save();
     }
@@ -192,8 +211,8 @@ public static partial class MetaProgress
         {
             Data.completed.Add(flight.contract);
             string key = FlightTrials.Active.reward;
-            if (!IsUnlocked(key))
-                Data.unlocked.Add(key);
+            UnlockItem(key, GalleryShelf.TryGet(key, out var exhibit) ? exhibit.title : FlightTrials.Display(key),
+                "Simulator / " + flight.contract, FlightTrials.Active.district);
             flight.awards.Add("Blueprint  /  " + FlightTrials.Display(key));
         }
         Data.history.Insert(0, flight);

@@ -12,19 +12,17 @@ public static partial class MetaProgress
     public const int ShopSize = 3;
     // The hangar counter shows four digits.
     public const int MaxCoins = 9999;
-    // A deliberately small first pool; everything else is bought in the hangar.
+    // A small first pool; the rest comes from achievements, simulator blueprints or the outfitter.
     static readonly string[] startingPool =
     {
         "Popcorn", "PocketFan", "HotSauce", "BulletDroneItem", "BadGlasses", "ScatterCannonItem", "Magnet", "SparePlating",
-        "Icicle", "LaserDroneItem", "Poison", "BouncingBall", "ChewingGum", "WindUpCannonItem",
-        "AnotherArm", "BulletTime",
-        "ThreeMoonsItem", "BlankBullet",
+        "LaserDroneItem", "Poison", "BouncingBall", "WindUpCannonItem", "AnotherArm", "BlankBullet",
     };
 
     [Serializable]
     sealed class SaveData
     {
-        public int version = 2;
+        public int version = 3;
         public int lastFrame;
         public RunDifficulty difficulty = RunDifficulty.Normal;
         public string pin;
@@ -36,6 +34,7 @@ public static partial class MetaProgress
         public string ship = nameof(ShipFrame.GR07);
         public bool runActive;
         public List<string> unlocked = new List<string>();
+        public List<ItemUnlockNotice> pendingUnlocks = new List<ItemUnlockNotice>();
         public List<string> stock = new List<string>();
         // Bought in the hangar: equipped at the start of the next run, then gone.
         public List<string> loadout = new List<string>();
@@ -92,7 +91,7 @@ public static partial class MetaProgress
 
     public static bool TryBuy(string item)
     {
-        if (!Data.stock.Contains(item))
+        if (!Data.stock.Contains(item) || !CanStock(item))
             return false;
         int price = Price(ItemPool.RarityOf(item));
         if (Data.coins < price)
@@ -131,10 +130,11 @@ public static partial class MetaProgress
         var locked = new List<string>();
         var owned = new List<string>();
         foreach (var item in ItemPool.AllItems)
-            if (item != Pin && (IsUnlocked(item) || FlightTrials.Blueprint(item) == null))
+            if (item != Pin && CanStock(item))
                 (IsUnlocked(item) ? owned : locked).Add(item);
         Data.stock.Clear();
-        if (!string.IsNullOrEmpty(Pin)) Data.stock.Add(Pin);
+        if (CanStock(Pin)) Data.stock.Add(Pin);
+        else Data.pin = null;
         foreach (var pool in new[] { locked, owned })
             while (Data.stock.Count < ShopSize && pool.Count > 0)
             {
@@ -192,12 +192,22 @@ public static partial class MetaProgress
         data.records ??= new List<ServiceRecord>();
         data.completed ??= new List<string>();
         data.bossRotations ??= new List<BossRotation>();
+        data.pendingUnlocks ??= new List<ItemUnlockNotice>();
+        foreach (var log in data.history) log.unlocks ??= new List<ItemUnlockNotice>();
         if (data.version < 2)
         {
             data.version = 2;
             data.difficulty = RunDifficulty.Normal;
             data.ship = nameof(ShipFrame.GR07);
             if (data.stock.Exists(k => !IsUnlocked(k) && FlightTrials.Blueprint(k) != null)) Restock();
+            Save();
+        }
+        if (data.version < 3)
+        {
+            // Grandfather every owned item. Only remove unearned offers, including pinned ones.
+            data.version = 3;
+            if (!CanStock(Pin)) data.pin = null;
+            if (data.stock.Exists(k => !CanStock(k))) Restock();
             Save();
         }
         // A run that never reached its end (the game was closed) still earns a fresh shop.
