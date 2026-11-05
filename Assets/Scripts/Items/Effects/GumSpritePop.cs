@@ -33,7 +33,8 @@ public sealed class GumSpritePop : MonoBehaviour
             part.transform.SetParent(go.transform, false);
             var sprite = part.AddComponent<SpriteRenderer>();
             sprite.sprite = ProjectileSprites.Load("standard");
-            ProjectileSpriteTint.Apply(part, new Color(.95f, .35f, .65f));
+            ProjectileSpriteTint.Friendly(part);
+            sprite.sortingLayerName = "Bullet";
             sprite.sortingOrder = 25;
             part.transform.localScale = Vector3.one * (i == 0 ? .39f : .075f);
             pop.sprites[i] = sprite;

@@ -29,7 +29,9 @@ public sealed class StickyGum : MonoBehaviour
         go.transform.localPosition = new Vector3(Mathf.Cos(angle) * enemy.size * .4f, Mathf.Sin(angle) * enemy.size * .4f, -.65f);
         var r = go.AddComponent<SpriteRenderer>();
         r.sprite = ProjectileSprites.Load("standard");
-        ProjectileSpriteTint.Apply(go, new Color(.95f, .35f, .65f));
+        ProjectileSpriteTint.Friendly(go);
+        // Keep the attached gum above its target hull while using the player's ink.
+        r.sortingLayerName = "Bullet";
         r.sortingOrder = 24;
         go.transform.localScale = Vector3.one * .13f;
         go.transform.rotation = Quaternion.identity;
