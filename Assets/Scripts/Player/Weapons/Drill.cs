@@ -78,18 +78,23 @@ public sealed class Drill : AWeaponAutomatic
     bool Touches(AEnemy enemy, Vector2 start, Vector2 tip, out Vector2 point)
     {
         point = enemy.transform.position;
-        var collider = enemy.GetComponent<Collider2D>();
-        if (collider == null || !collider.enabled)
-            return false;
         Vector2 axis = tip - start;
         float lengthSquared = Mathf.Max(.0001f, axis.sqrMagnitude);
-        Vector2 probe = start + axis * Mathf.Clamp01(Vector2.Dot((Vector2)collider.bounds.center - start, axis) / lengthSquared);
-        for (int i = 0; i < 3; i++)
-            probe = start + axis * Mathf.Clamp01(Vector2.Dot(collider.ClosestPoint(probe) - start, axis) / lengthSquared);
-        // The drill tapers: full width at its collar, a point at the tip.
-        float taper = 1 - Vector2.Dot(probe - start, axis) / lengthSquared * .7f;
-        point = probe;
-        return (collider.ClosestPoint(probe) - probe).sqrMagnitude <= Mathf.Pow(Width * .5f * taper, 2);
+        var shapes = enemy.DamageShapes;
+        for (int shape = 0; shape < shapes.Count; shape++)
+        {
+            var collider = shapes[shape];
+            if (collider == null || !collider.enabled) continue;
+            Vector2 probe = start + axis * Mathf.Clamp01(Vector2.Dot((Vector2)collider.bounds.center - start, axis) / lengthSquared);
+            for (int i = 0; i < 3; i++)
+                probe = start + axis * Mathf.Clamp01(Vector2.Dot(collider.ClosestPoint(probe) - start, axis) / lengthSquared);
+            // The drill tapers: full width at its collar, a point at the tip.
+            float taper = 1 - Vector2.Dot(probe - start, axis) / lengthSquared * .7f;
+            if ((collider.ClosestPoint(probe) - probe).sqrMagnitude > Mathf.Pow(Width * .5f * taper, 2)) continue;
+            point = probe;
+            return true;
+        }
+        return false;
     }
 
     void LateUpdate()

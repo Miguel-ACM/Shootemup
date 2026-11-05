@@ -109,8 +109,6 @@ public abstract class OffensiveCast : MonoBehaviour
 
     protected static bool Contact(AEnemy enemy, Vector2 from, Vector2 to, float radius, out Vector2 point)
     {
-        point = to;
-        var collider = enemy.GetComponent<Collider2D>();
-        return collider != null && collider.enabled && BeamContact.Touches(collider, from, to, radius, out point);
+        return BeamContact.Touches(enemy, from, to, radius, out point);
     }
 }

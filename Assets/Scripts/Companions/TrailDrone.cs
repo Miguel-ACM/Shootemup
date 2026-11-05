@@ -168,17 +168,19 @@ public sealed class TrailDrone : ACompanion
         {
             if (enemy == null || !enemy.CanBeTargeted)
                 continue;
-            var collider = enemy.GetComponent<Collider2D>();
-            if (collider == null)
-                continue;
-            var bounds = collider.bounds;
-            if (Mathf.Abs(bounds.center.x - origin.x) > bounds.extents.x + .06f)
-                continue;
-            float along = bounds.min.y - origin.y;
-            if (along < length && bounds.max.y > origin.y)
+            var shapes = enemy.DamageShapes;
+            for (int shape = 0; shape < shapes.Count; shape++)
             {
-                length = Mathf.Max(0, along);
-                struck = enemy;
+                var collider = shapes[shape];
+                if (collider == null || !collider.enabled) continue;
+                var bounds = collider.bounds;
+                if (Mathf.Abs(bounds.center.x - origin.x) > bounds.extents.x + .06f) continue;
+                float along = bounds.min.y - origin.y;
+                if (along < length && bounds.max.y > origin.y)
+                {
+                    length = Mathf.Max(0, along);
+                    struck = enemy;
+                }
             }
         }
         if (plasma != null && plasmaPoint.y - origin.y <= length)

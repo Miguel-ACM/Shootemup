@@ -73,8 +73,7 @@ public sealed class HotSauceTrail : MonoBehaviour
         {
             if (target == null || target == source || !target.CanBeTargeted || touched.Contains(target))
                 continue;
-            var collider = target.GetComponent<Collider2D>();
-            Vector2 closest = collider != null ? collider.ClosestPoint(transform.position) : (Vector2)target.transform.position;
+            target.ClosestDamagePoint(transform.position, out Vector2 closest);
             if (Vector2.Distance(closest, transform.position) > .32f)
                 continue;
             touched.Add(target);

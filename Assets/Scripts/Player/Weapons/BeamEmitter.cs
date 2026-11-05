@@ -97,11 +97,16 @@ public sealed class BeamEmitter : AWeaponAutomatic
         direction = Vector2.up;
         if (collider == null || !collider.enabled || paths == null)
             return 0;
+        var owner = collider.GetComponent<AEnemy>();
         int contacts = 0;
         foreach (var path in paths)
             for (int step = 1; step < path.Length; step++)
             {
-                if (BeamContact.Touches(collider, path[step - 1], path[step], radius, out var hit))
+                Vector2 hit;
+                bool touches = owner != null
+                    ? BeamContact.Touches(owner, path[step - 1], path[step], radius, out hit)
+                    : BeamContact.Touches(collider, path[step - 1], path[step], radius, out hit);
+                if (touches)
                 {
                     if (contacts == 0)
                     {

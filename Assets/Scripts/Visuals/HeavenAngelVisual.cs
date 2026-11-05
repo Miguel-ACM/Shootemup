@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.Profiling;
 
 // Ophanim: three independently turning, eye-covered wheels surrounding one living core.
 public sealed class HeavenAngelVisual : MonoBehaviour
@@ -11,6 +12,9 @@ public sealed class HeavenAngelVisual : MonoBehaviour
     readonly Transform[] wheels=new Transform[3];
     readonly Transform[][] eyes=new Transform[3][];
     readonly Vector2[] contactPoints=new Vector2[8];
+    static readonly Vector3[] eyeOutline=EyeOutline();
+    static readonly ProfilerMarker eyeContactsMarker=new ProfilerMarker("Heaven.EyeColliders");
+    readonly PolygonCollider2D[] eyeContacts=new PolygonCollider2D[36];
     Transform coreEye,iris;
     readonly Transform[] committed=new Transform[5];
     bool praying;
@@ -58,8 +62,29 @@ public sealed class HeavenAngelVisual : MonoBehaviour
                 port.localRotation=Quaternion.Euler(0,0,eye*360f/EyeCounts[ring]+90);eyes[ring][eye]=port;
             }
         }
-        if(hitbox!=null)hitbox.pathCount=TotalEyes;
+        if(hitbox!=null)
+        {
+            // SetPath rebuilds ALL shapes on that collider. Keeping 37 paths in one
+            // collider rebuilt the entire angel 36 times each frame. Independent
+            // single-path colliders retain the exact moving eye outlines and owner.
+            for(int i=0;i<eyeContacts.Length;i++)
+            {
+                var contact=hitbox.gameObject.AddComponent<PolygonCollider2D>();
+                contact.isTrigger=hitbox.isTrigger;
+                eyeContacts[i]=contact;
+            }
+        }
         Pose(0);
+    }
+    static Vector3[] EyeOutline()
+    {
+        var points=new Vector3[8];
+        for(int i=0;i<points.Length;i++)
+        {
+            float angle=i*Mathf.PI*2/points.Length;
+            points[i]=new Vector3(Mathf.Cos(angle)*.27f,Mathf.Sin(angle)*.14f,0);
+        }
+        return points;
     }
     public void Pray(bool active)
     {
@@ -86,15 +111,15 @@ public sealed class HeavenAngelVisual : MonoBehaviour
     {
         for(int ring=0;ring<3;ring++)wheels[ring].localRotation=Orientation(ring,seconds);
         if(hitbox==null)return;
-        int path=1;
+        using var sample=eyeContactsMarker.Auto();
+        var worldToHull=hitbox.transform.worldToLocalMatrix;
+        int path=0;
         foreach(var bank in eyes)foreach(var eye in bank)
         {
+            var projection=worldToHull*eye.localToWorldMatrix;
             for(int vertex=0;vertex<contactPoints.Length;vertex++)
-            {
-                float angle=vertex*Mathf.PI*2/contactPoints.Length;
-                contactPoints[vertex]=hitbox.transform.InverseTransformPoint(eye.TransformPoint(new Vector3(Mathf.Cos(angle)*.27f,Mathf.Sin(angle)*.14f,0)));
-            }
-            hitbox.SetPath(path++,contactPoints);
+                contactPoints[vertex]=projection.MultiplyPoint3x4(eyeOutline[vertex]);
+            eyeContacts[path++].SetPath(0,contactPoints);
         }
     }
     public Transform Emitter(int slot)

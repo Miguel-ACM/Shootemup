@@ -272,7 +272,7 @@ public sealed class HeavenVoidReview:MonoBehaviour
         watcher.SelectView(WatcherView.Bosses);watcher.SelectEncounter(WaveWatcher.BossOne);yield return null;
         SeraphJudicatorBoss boss=null;while(boss==null||boss.Angel==null){boss=FindAnyObjectByType<SeraphJudicatorBoss>();yield return null;}
         var collider=boss.GetComponent<PolygonCollider2D>();var visual=boss.Angel;
-        Check(visual.TotalEyes==37&&collider.pathCount==37,"37 sculpted eyes with core and eye damage paths");
+        Check(visual.TotalEyes==37&&boss.GetComponents<PolygonCollider2D>().Sum(c=>c.pathCount)==37,"37 sculpted eyes with core and eye damage paths");
         Check(boss.GetComponent<EnemyThrusters>()==null,"Angel has no engines");
         var rotations=new[]{visual.Wheel(0).localRotation,visual.Wheel(1).localRotation,visual.Wheel(2).localRotation};
         bool attached=true;int beams=0;
@@ -297,7 +297,8 @@ public sealed class HeavenVoidReview:MonoBehaviour
                 }
             }
             Check(collider.OverlapPoint(boss.transform.position),"Phase "+phase+" central eye remains hittable");
-            Check(collider.OverlapPoint(visual.Emitter(1).position)&&collider.OverlapPoint(visual.Emitter(2).position),"Phase "+phase+" moving eye contacts follow the wheels");
+            var contacts=boss.GetComponents<PolygonCollider2D>();
+            Check(contacts.Any(c=>c.OverlapPoint(visual.Emitter(1).position))&&contacts.Any(c=>c.OverlapPoint(visual.Emitter(2).position)),"Phase "+phase+" moving eye contacts follow the wheels");
             if(phase<3){boss.health*=phase==1?.49f:.45f;while(boss.CurrentPhase==phase)yield return null;}
         }
         Check(attached&&beams>0,"Charging and firing lasers stay attached to modeled eyes across all phases");

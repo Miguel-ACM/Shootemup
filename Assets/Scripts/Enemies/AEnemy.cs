@@ -4,6 +4,36 @@ using System.Collections;
 
 public abstract class AEnemy : MonoBehaviour, ICombatDamageable
 {
+    readonly List<Collider2D> damageShapes = new List<Collider2D>(1);
+    int damageShapesFrame = -1;
+    public IReadOnlyList<Collider2D> DamageShapes
+    {
+        get
+        {
+            if (damageShapesFrame != Time.frameCount)
+            {
+                GetComponents(damageShapes);
+                damageShapesFrame = Time.frameCount;
+            }
+            return damageShapes;
+        }
+    }
+    public bool ClosestDamagePoint(Vector2 origin, out Vector2 point)
+    {
+        point = transform.position;
+        float nearest = float.PositiveInfinity;
+        var shapes = DamageShapes;
+        for (int i = 0; i < shapes.Count; i++)
+        {
+            var shape = shapes[i];
+            if (shape == null || !shape.enabled) continue;
+            Vector2 candidate = shape.ClosestPoint(origin);
+            float distance = (candidate-origin).sqrMagnitude;
+            if (distance >= nearest) continue;
+            nearest = distance; point = candidate;
+        }
+        return !float.IsPositiveInfinity(nearest);
+    }
 
     public static readonly HashSet<AEnemy> Live = new HashSet<AEnemy>();
     protected virtual void OnEnable()
