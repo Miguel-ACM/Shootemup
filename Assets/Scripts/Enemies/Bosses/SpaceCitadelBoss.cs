@@ -26,6 +26,7 @@ public sealed partial class SpaceCitadelBoss : DistrictBoss
         GetComponent<CombatHullVisual>().enabled = false;
         parts[0] = SpaceBossPart.Create(this, Hull, health);
         firingCue.Register(parts[0].transform, Vector3.back * .25f);
+        BuildOrbitTell();
     }
 
     protected override void PressureAttack() { }
@@ -33,7 +34,6 @@ public sealed partial class SpaceCitadelBoss : DistrictBoss
     {
         station = new Vector3(centralLaser != null && centralLaser.IsAttachedTo(Hull) ? transform.position.x : Mathf.Sin(motionAge * .43f) * .82f,
             Camera.UpLimit - 3 + Mathf.Sin(motionAge * .31f) * .32f, 1);
-        bool drawingIn = accretionOrbit != null && accretionOrbit.enabled;
         if (drawingIn)
         {
             // Carry the orbit through the dodge lanes and return to the upper firing station.
