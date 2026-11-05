@@ -60,7 +60,7 @@ public sealed partial class SnowSiegeBoss
     // at the player and crawls before accelerating. The re-aimed fans keep their spacing.
     void FreezeFrame(int sign)
     {
-        int count = Dense(phaseTwo ? (Difficulty.Normal ? 15 : 21) : 17);
+        int count = Dense(phaseTwo ? (Difficulty.Normal ? 15 : 21) : 17) | 1;
         float spread = 130f / (count - 1);
         for (int mirror = -1; mirror <= 1; mirror += 2)
         {
@@ -68,7 +68,7 @@ public sealed partial class SnowSiegeBoss
             for (int i = 0; i < count; i++)
             {
                 float lane = i - (count - 1) * .5f;
-                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.down, mirror * (35 + sign * 6 + lane * spread * .5f)), 4.4f - Mathf.Abs(lane) * .06f, .19f)
+                ScoredShot(i%3==count/2%3,port, CombatVisuals.Rotate(Vector2.down, mirror * (35 + sign * 6 + lane * spread * .5f)), 4.4f - Mathf.Abs(lane) * .06f)
                     .Pause(.7f, .7f + Mathf.Abs(lane) * .03f, CombatRound.Turn.Aim, mirror * lane * 3.5f, .22f)
                     .Ramp(4.5f, 1.4f, 1.45f);
             }
@@ -96,6 +96,9 @@ public sealed partial class SnowSiegeBoss
         {
             for (int k = 0; k < 10; k++)
             {
+                if(k==0||k==5)
+                    Fire<SimpleRound>(Mouth,CombatVisuals.Aim(Mouth),1.3f,.23f)
+                        .Pause(.35f,.45f,CombatRound.Turn.Aim,0,2.2f);
                 for (int i = 0; i < combCount; i++)
                 {
                     if (i % 2 != k % 2 || !Difficulty.Hard && i % 3 == 2 || Difficulty.Easy && i % 3 == 1)
@@ -143,7 +146,7 @@ public sealed partial class SnowSiegeBoss
             for (int side = -1; side <= 1; side += 2)
             {
                 var port = Hull.TransformPoint(new Vector3(side * .9f, -.3f, -.25f));
-                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.right * side, -side * lift), 3.0f + (g % 3) * .3f, .19f)
+                ScoredShot(g%3==0,port, CombatVisuals.Rotate(Vector2.right * side, -side * lift), 3.0f + (g % 3) * .3f)
                     .Pause(.6f, .35f, CombatRound.Turn.Rotate, -side * (100 + (g % 3) * 10), .8f);
             }
             yield return Wait(Rest(Difficulty.Normal ? .16f : .11f));
@@ -199,7 +202,7 @@ public sealed partial class SnowSiegeBoss
                 else if (!woven && n % 2 == 0)
                 {
                     Fire<NeedleRound>(p, Vector2.down, 3.6f, .19f);
-                    Fire<NeedleRound>(p, Vector2.down, 2.4f, .19f);
+                    Fire<SimpleRound>(p, Vector2.down, 2.4f, .21f);
                     releases[i] = .1f;
                 }
             }
