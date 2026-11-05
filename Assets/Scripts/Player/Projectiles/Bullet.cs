@@ -6,6 +6,7 @@ public class Bullet : ABullet
 {
     Rigidbody2D rigidBody;
     bool rubberReturned;
+    bool hitResolved;
     Vector2 wallFrom;
     // Shared by all bullets so the scene is searched once, not on every trigger contact.
     static Shipcontroller player;
@@ -74,12 +75,15 @@ public class Bullet : ABullet
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        // A moving multipart hull can queue several contacts before Destroy runs.
+        if (hitResolved) return;
         if (CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _)) { Despawn(); return; }
         if (collision.CompareTag("Enemy"))
         {
             AEnemy en = collision.gameObject.GetComponent<AEnemy>();
             if (en == null || !en.CanReceiveDamage)
                 return;
+            hitResolved = true;
             if (player == null)
                 player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
             player.PlayHitSound("hit1");
