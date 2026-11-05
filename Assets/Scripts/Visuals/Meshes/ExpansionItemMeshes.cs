@@ -30,6 +30,7 @@ public static partial class IndustrialMeshFactory
         if (kind == "CanOpener") { CanOpenerModel(b); return expansionItems[kind] = b.Finish(kind + " equipment"); }
         if (kind == "FirecrackerBelt") { FirecrackerBeltModel(b); return expansionItems[kind] = b.Finish(kind + " equipment"); }
         if (kind == "CarbonPaper") { CarbonPaperModel(b); return expansionItems[kind] = b.Finish(kind + " equipment"); }
+        if (kind == "Thunderhead") { ThunderheadModel(b); return expansionItems[kind] = b.Finish(kind + " equipment"); }
         if (TrySecondaryItem(b, kind))
             return expansionItems[kind] = b.Finish(kind + " equipment");
         if (DistinctEquipment(b, kind))
