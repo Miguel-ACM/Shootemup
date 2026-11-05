@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 public enum PromptDevice { Keyboard, PlayStation, Xbox }
 
@@ -12,8 +13,67 @@ public static class InputPrompts
 {
     static readonly Dictionary<string, Sprite> sprites = new Dictionary<string, Sprite>();
     static TMP_SpriteAsset inline;
+    static bool trackingDevice;
+    static PromptDevice device;
+    static Gamepad activePad;
     public static TMP_SpriteAsset InlineAsset => inline != null ? inline : inline = Resources.Load<TMP_SpriteAsset>("InputPrompts/Inline");
-    public static PromptDevice Device => !DockInstrument.UsingGamepad ? PromptDevice.Keyboard : IsPlayStation(Gamepad.current) ? PromptDevice.PlayStation : PromptDevice.Xbox;
+    public static PromptDevice Device { get { TrackDevice(); return device; } }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetDevice()
+    {
+        InputSystem.onActionChange -= ActionChanged;
+        InputSystem.onDeviceChange -= DeviceChanged;
+        trackingDevice = false;
+        activePad = null;
+        device = PromptDevice.Keyboard;
+    }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    static void TrackDevice()
+    {
+        if (trackingDevice) return;
+        trackingDevice = true;
+        if (Gamepad.current != null && Gamepad.current.enabled) SelectPad(Gamepad.current);
+        InputSystem.onActionChange += ActionChanged;
+        InputSystem.onDeviceChange += DeviceChanged;
+    }
+
+    static void SelectPad(Gamepad pad)
+    {
+        activePad = pad;
+        device = IsPlayStation(pad) ? PromptDevice.PlayStation : PromptDevice.Xbox;
+    }
+
+    static void ActionChanged(object changed, InputActionChange change)
+    {
+        if (change != InputActionChange.ActionPerformed || !(changed is InputAction action)) return;
+        var control = action.activeControl;
+        if (control == null || !control.device.enabled || control.noisy) return;
+        // Hardware timestamps advance even for unchanged state reports. Only a real
+        // bound action changes the prompts; releases and passive device polling do not.
+        if (control.device is Keyboard && control is ButtonControl key && key.isPressed)
+        {
+            activePad = null;
+            device = PromptDevice.Keyboard;
+        }
+        else if (control.device is Gamepad pad)
+        {
+            // Movement uses stick-direction composites, so inspect the processed
+            // whole stick rather than treating its synthetic directions as buttons.
+            var stick = control as StickControl ?? control.parent as StickControl;
+            bool intended = stick != null ? stick.ReadValue().sqrMagnitude >= .0625f :
+                control is ButtonControl button ? button.isPressed : control.EvaluateMagnitude() >= .25f;
+            if (intended) SelectPad(pad);
+        }
+    }
+
+    static void DeviceChanged(InputDevice changed, InputDeviceChange change)
+    {
+        if (changed != activePad || (change != InputDeviceChange.Removed && change != InputDeviceChange.Disconnected && change != InputDeviceChange.Disabled)) return;
+        activePad = null;
+        device = PromptDevice.Keyboard;
+    }
 
     public static bool IsPlayStation(Gamepad pad) => pad != null &&
         (pad is UnityEngine.InputSystem.DualShock.DualShockGamepad ||
