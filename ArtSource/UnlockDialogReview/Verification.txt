@@ -1,0 +1,4 @@
+PASS
+838 checks across 44 unlocks.
+Actual type/description/reason, single bottom prompt, text fit, opening/closing interpolation and one-item acknowledgements.
+Headless checks only; no gameplay or visual review.
