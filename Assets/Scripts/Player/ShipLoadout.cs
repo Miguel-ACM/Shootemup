@@ -115,8 +115,14 @@ public sealed class ShipLoadout : MonoBehaviour
         Weapons[0] = gun;
     }
 
+    public void ClearWeapon(int slot)
+    {
+        RemoveWeapon(Mathf.Clamp(slot, 0, 1));
+    }
+
     void RemoveWeapon(int slot)
     {
+        GetComponent<RunInventory>()?.ForgetEquipment(AItem.ItemType.weapon, slot);
         var old = Weapons[slot];
         Weapons[slot] = null;
         if (old == null)
@@ -133,6 +139,7 @@ public sealed class ShipLoadout : MonoBehaviour
     {
         slot = Mathf.Clamp(slot, 0, 1);
         var old = Actives[slot];
+        if (old != item) GetComponent<RunInventory>()?.ForgetEquipment(AItem.ItemType.active, slot);
         Actives[slot] = item;
         var ship = GetComponent<Shipcontroller>();
         if (slot == 0)

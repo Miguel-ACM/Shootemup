@@ -62,6 +62,7 @@ public sealed partial class DebugRunMenu : AMenuElement
     static void ResetPending()
     {
         pending.Clear();
+        browserMemory = null;
         forcePact = false;
         SceneManager.sceneLoaded -= SceneReady;
     }
@@ -109,7 +110,8 @@ public sealed partial class DebugRunMenu : AMenuElement
         menu.Suspended = true;
         openedFrame = Time.frameCount;
         Build();
-        EventSystem.current.SetSelectedGameObject(buttons[0].gameObject);
+        if (InRun) RestoreBrowser();
+        else EventSystem.current.SetSelectedGameObject(buttons[0].gameObject);
     }
 
     void Build()
@@ -200,7 +202,9 @@ public sealed partial class DebugRunMenu : AMenuElement
 
     void ItemCard(Entry entry, Vector2 position)
     {
-        var button = ButtonAt(content, entry.name, position, new Vector2(CardWidth, CardHeight), () => Add(entry), 0);
+        var button = ButtonAt(content, entry.name, position, new Vector2(CardWidth, CardHeight), () => Add(entry), 0, InRun);
+        if (button is DebugItemButton itemButton)
+            itemButton.Remove = () => { if (Time.frameCount > openedFrame && !granting) StartCoroutine(RemoveItem(entry)); };
         var rect = button.GetComponent<RectTransform>();
         rect.anchorMin = rect.anchorMax = new Vector2(.5f, 1);
         entry.card = button.GetComponent<Image>();
@@ -314,6 +318,7 @@ public sealed partial class DebugRunMenu : AMenuElement
     void Close()
     {
         if (granting) return;
+        RememberBrowser();
         search = null;
         status = null;
         previousSelection = null;
@@ -344,6 +349,9 @@ public sealed partial class DebugRunMenu : AMenuElement
             return;
         }
         var selected = EventSystem.current.currentSelectedGameObject;
+        if (InRun && !search.isFocused && ((Keyboard.current?.deleteKey.wasPressedThisFrame ?? false) ||
+            (Gamepad.current?.buttonWest.wasPressedThisFrame ?? false)))
+            selected?.GetComponent<DebugItemButton>()?.Remove?.Invoke();
         if (selected == previousSelection)
             return;
         previousSelection = selected;
@@ -369,6 +377,7 @@ public sealed partial class DebugRunMenu : AMenuElement
 
     void OnDestroy()
     {
+        RememberBrowser();
         if (overlay != null)
             Destroy(overlay);
         if (studio != null)
@@ -408,10 +417,10 @@ public sealed partial class DebugRunMenu : AMenuElement
     }
 
     // A text size of 0 leaves the label out, for cards that lay out their own contents.
-    Button ButtonAt(Transform parent, string label, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action, float textSize = 20)
+    Button ButtonAt(Transform parent, string label, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action, float textSize = 20, bool itemCard = false)
     {
         var rect = Box(parent, label, position, size, CardColor);
-        var button = rect.gameObject.AddComponent<Button>();
+        Button button = itemCard ? rect.gameObject.AddComponent<DebugItemButton>() : rect.gameObject.AddComponent<Button>();
         button.targetGraphic = rect.GetComponent<Image>();
         var colors = button.colors;
         // Focus lights the card's own colour, so chosen cards stay distinct while focused.

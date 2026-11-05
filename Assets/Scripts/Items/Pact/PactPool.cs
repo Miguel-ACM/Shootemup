@@ -41,6 +41,12 @@ public static class PactPool
     }
 
     public static void BindGlassHull() => GlassHull = true;
+    public static void UnbindGlassHull() => GlassHull = false;
+    public static void UnbindCursedCoin(bool anotherCopy)
+    {
+        RarityUpgrade = anotherCopy;
+        EnemyHealth = anotherCopy ? EnemyHealth / 1.25f : 1;
+    }
     public static void BindCursedCoin()
     {
         RarityUpgrade = true;

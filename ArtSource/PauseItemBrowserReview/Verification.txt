@@ -4,19 +4,32 @@ PASS catalogue includes every item, including pacts and special pickups
 PASS browser keeps combat paused
 PASS case-insensitive multiword name search
 PASS repeat passive grants apply immediately while paused
+PASS left click removes exactly one passive copy and its stats
+PASS right click gives a copy without removing it
 PASS search matches effects
 PASS empty search result
 PASS weapon category filter
 PASS type and rarity filters combine
 PASS grant replaces selected weapon slot
+PASS replacement removes only the old slot's pickup and icon, preserving the other copy
+PASS left click unequips a weapon and removes its inventory entry
+PASS companion pickup creates its full group
+PASS removing a companion item removes its group
+PASS removing hull equipment restores maximum health
+PASS pact removal reverses both benefit and cost
+PASS shrinker removal restores the original hitbox
 PASS active grants use both slots and initialize while paused
+PASS left click removes an active from equipment and inventory
 PASS collected filter follows inventory and equipment
 PASS not-collected filter excludes granted items
 PASS Z-A sorting reorders cards
 PASS sort popup opens
 PASS back closes dropdown only
 PASS back returns to paused menu
-PASS reopening restores browser with complete catalogue
+PASS reopening remembers sort order
+PASS search and combined filters persist within the run
+PASS scroll position persists within the run
 PASS normal resume works after grants
 PASS grants persist after resuming
+PASS new run resets browser state
 

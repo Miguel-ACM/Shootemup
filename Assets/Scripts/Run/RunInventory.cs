@@ -11,7 +11,11 @@ public sealed class RunInventory : MonoBehaviour
         public string key, name, rarity;
         public Transform display;
         public bool tradeable, multiply;
+        public AItem.ItemType kind;
+        public int slot;
         internal float[] changes;
+        internal readonly List<ACompanion> companions = new List<ACompanion>();
+        internal readonly List<ImpCompanion> imps = new List<ImpCompanion>();
         internal readonly List<UpgradeKind> upgrades = new List<UpgradeKind>();
         internal readonly List<MonoBehaviour> effects = new List<MonoBehaviour>();
         internal readonly List<AWeapon> guns = new List<AWeapon>();
@@ -23,6 +27,8 @@ public sealed class RunInventory : MonoBehaviour
         internal int[] upgrades;
         internal MonoBehaviour[] effects;
         internal AWeapon[] guns;
+        internal ACompanion[] companions;
+        internal ImpCompanion[] imps;
     }
 
     readonly List<Entry> entries = new List<Entry>();
@@ -43,7 +49,7 @@ public sealed class RunInventory : MonoBehaviour
         GameRules.playerShootTravelSpeed, GameRules.playerShootSize, GameRules.playerShootNumber,
         GameRules.playerMoveSpeed, GameRules.playerShootFollowness, GameRules.pickDistance,
         GameRules.luck, GameRules.manaDropMultiplier, ship.slowMultiplier,
-        GameRules.activeEnergyCost, ship.maxMana };
+        GameRules.activeEnergyCost, ship.maxMana, ship.maxHealth };
     void WriteStats(float[] values)
     {
         GameRules.playerShootDamage = values[0] * DamageScale;
@@ -59,6 +65,7 @@ public sealed class RunInventory : MonoBehaviour
         ship.slowMultiplier = values[10];
         GameRules.activeEnergyCost = values[11];
         ship.SetMaxEnergy(values[12]);
+        ship.SetMaxHits(Mathf.RoundToInt(values[13]));
         ship.updateBulletSpawnPoints();
     }
 
@@ -69,7 +76,16 @@ public sealed class RunInventory : MonoBehaviour
         for (int i = 0; i < counts.Length; i++)
             counts[i] = upgrades.Count(upgradeKinds[i]);
         return new Pickup { stats = ReadStats(), upgrades = counts,
-            effects = ship.GetComponents<MonoBehaviour>(), guns = ship.GetComponentsInChildren<AWeapon>() };
+            effects = ship.GetComponents<MonoBehaviour>(), guns = ship.GetComponentsInChildren<AWeapon>(),
+            companions = OwnedCompanions(), imps = ship.GetComponentsInChildren<ImpCompanion>() };
+    }
+
+    ACompanion[] OwnedCompanions()
+    {
+        var result = new List<ACompanion>(ship.Companions);
+        foreach (var companion in ship.GetComponentsInChildren<ACompanion>())
+            if (!result.Contains(companion)) result.Add(companion);
+        return result.ToArray();
     }
 
     public void Record(AItem item, Pickup before, Transform display)
@@ -78,6 +94,7 @@ public sealed class RunInventory : MonoBehaviour
             return;
         var data = item.GetData();
         var entry = new Entry { key = item.GetType().Name, name = data[0], rarity = item.rarity, display = display,
+            kind = item.Kind, slot = item.ReplacementSlot,
             multiply = item is APactItem || item is EarlyRise || item is FocusTime || item is HeatSink,
             tradeable = (item.Kind == AItem.ItemType.passive || item.Kind == AItem.ItemType.passiveWeapon) &&
                 !(item is APactItem) && !(item is ExplodingShield) && !(item is LargeHealthKit) &&
@@ -97,6 +114,10 @@ public sealed class RunInventory : MonoBehaviour
         foreach (var gun in ship.GetComponentsInChildren<AWeapon>())
             if (Array.IndexOf(before.guns, gun) < 0)
                 entry.guns.Add(gun);
+        foreach (var companion in OwnedCompanions())
+            if (Array.IndexOf(before.companions, companion) < 0) entry.companions.Add(companion);
+        foreach (var imp in ship.GetComponentsInChildren<ImpCompanion>())
+            if (Array.IndexOf(before.imps, imp) < 0) entry.imps.Add(imp);
         entries.Add(entry);
     }
 
@@ -122,10 +143,41 @@ public sealed class RunInventory : MonoBehaviour
     }
     public bool Contains(Entry entry) => entry != null && entries.Contains(entry);
 
-    public bool Remove(Entry entry)
+    // Equipment has already been detached by the loadout; discard only its pickup/icon.
+    public void ForgetEquipment(AItem.ItemType kind, int slot)
+    {
+        for (int i = entries.Count - 1; i >= 0; i--)
+            if (entries[i].kind == kind && entries[i].slot == slot)
+            {
+                PSXInventoryDisplay.Remove(entries[i].display);
+                entries.RemoveAt(i);
+            }
+    }
+
+    public bool DebugRemove(string key, int preferredSlot)
+    {
+        var entry = entries.FindLast(e => e.key == key && e.slot == preferredSlot) ?? entries.FindLast(e => e.key == key);
+        if (entry == null) return false;
+        var loadout = ship.GetComponent<ShipLoadout>();
+        if (entry.kind == AItem.ItemType.weapon)
+        {
+            loadout.ClearWeapon(entry.slot);
+            return true;
+        }
+        if (entry.kind == AItem.ItemType.active)
+        {
+            loadout.EquipActive(null, entry.slot);
+            return true;
+        }
+        return Remove(entry, true);
+    }
+
+    public bool Remove(Entry entry) => Remove(entry, false);
+
+    bool Remove(Entry entry, bool debug)
     {
         int index = entries.IndexOf(entry);
-        if (index < 0 || !entry.tradeable)
+        if (index < 0 || (!debug && !entry.tradeable))
             return false;
         var successor = entries.Find(other => other != entry && other.key == entry.key);
         // Focus Brake applies its handling change once, even with several copies.
@@ -176,8 +228,15 @@ public sealed class RunInventory : MonoBehaviour
             {
                 gun.StopFiring();
                 gun.enabled = false;
-                Destroy(gun.gameObject);
+                if (gun.gameObject == ship.gameObject) Destroy(gun);
+                else Destroy(gun.gameObject);
             }
+        foreach (var companion in entry.companions)
+            if (companion != null) ship.RemoveCompanion(companion);
+        foreach (var imp in entry.imps)
+            if (imp != null) { imp.gameObject.SetActive(false); Destroy(imp.gameObject); }
+        if (entry.key == nameof(CursedCoin)) PactPool.UnbindCursedCoin(successor != null);
+        if (entry.key == nameof(GlassHull) && successor == null) PactPool.UnbindGlassHull();
         PSXInventoryDisplay.Remove(entry.display);
         entries.RemoveAt(index);
         return true;

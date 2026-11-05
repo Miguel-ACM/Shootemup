@@ -57,6 +57,7 @@ public class Shipcontroller : MonoBehaviour
     Vector3 lastPosition = Vector3.zero;
 
     List<ACompanion> companions = new List<ACompanion>();
+    public IReadOnlyList<ACompanion> Companions => companions;
     Dictionary<string, int> numCompanionsPerType = new Dictionary<string, int>(){
             {"sides", 0},
             {"orbital", 0},
@@ -135,6 +136,30 @@ public class Shipcontroller : MonoBehaviour
                 RedistributeOrbitals(numCompanionsPerType[ctypestr]);
             }
         }
+    }
+
+    public void RemoveCompanion(ACompanion companion)
+    {
+        if (companion == null) return;
+        companions.Remove(companion);
+        companion.gameObject.SetActive(false);
+        Destroy(companion.gameObject);
+        int followers = 0, orbitals = 0, sides = 0;
+        foreach (var remaining in companions)
+        {
+            if (remaining == null) continue;
+            switch (remaining.GetCompanionType())
+            {
+                case ACompanion.CompanionType.follower: remaining.GetComponent<FollowPlayer>().SetIndex(++followers); break;
+                case ACompanion.CompanionType.orbital: remaining.GetComponent<OrbitPlayer>().SetIndex(++orbitals, 1); break;
+                default: sides++; break;
+            }
+        }
+        numCompanionsPerType["follower"] = followers;
+        numCompanionsPerType["orbital"] = orbitals;
+        numCompanionsPerType["sides"] = sides;
+        if (followers > 0) previousPositions.ChangeSize(GameRules.followCompanionDelay * followers, transform.position);
+        RedistributeOrbitals(orbitals);
     }
 
     public Vector2 GetPreviousPosition(int index)

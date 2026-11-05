@@ -122,6 +122,12 @@ public sealed class PauseItemBrowserProbe : MonoBehaviour
         InputSystem.QueueStateEvent(keyboard, new KeyboardState());
         yield return null;
     }
+    IEnumerator Pointer(string name, PointerEventData.InputButton button)
+    {
+        ExecuteEvents.Execute(Button(name).gameObject, new PointerEventData(EventSystem.current) { button = button }, ExecuteEvents.pointerClickHandler);
+        yield return null;
+        yield return null;
+    }
     IEnumerator Run()
     {
         InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
@@ -154,6 +160,10 @@ public sealed class PauseItemBrowserProbe : MonoBehaviour
         yield return Click("Another arm");
         yield return Click("Another arm");
         Check(GameRules.playerShootNumber == shots + 2, "repeat passive grants apply immediately while paused");
+        yield return Pointer("Another arm", PointerEventData.InputButton.Left);
+        Check(GameRules.playerShootNumber == shots + 1, "left click removes exactly one passive copy and its stats");
+        yield return Pointer("Another arm", PointerEventData.InputButton.Right);
+        Check(GameRules.playerShootNumber == shots + 2, "right click gives a copy without removing it");
         search.text = "telekinesis bends";
         Check(Items().Any(b => b.name == "Beam Emitter"), "search matches effects");
         search.text = "no-such-item-xyz";
@@ -167,12 +177,47 @@ public sealed class PauseItemBrowserProbe : MonoBehaviour
         yield return Click("Rail Driver");
         Check(ship.GetComponent<ShipLoadout>().Weapons[1] is RailDriver, "grant replaces selected weapon slot");
         yield return Click("RESET FILTERS");
+        var inventory = RunInventory.For(ship);
+        yield return Click("SLOT 1");
+        yield return Click("Rail Driver");
+        yield return Click("SLOT 2");
+        var replaced = inventory.Entries.Single(e => e.key == nameof(RailDriverItem) && e.slot == 1);
+        yield return Click("Scatter Cannon");
+        Check(ship.GetComponent<ShipLoadout>().Weapons[0] is RailDriver && ship.GetComponent<ShipLoadout>().Weapons[1] is ScatterCannon &&
+            inventory.Entries.Count(e => e.key == nameof(RailDriverItem)) == 1 && replaced.display == null,
+            "replacement removes only the old slot's pickup and icon, preserving the other copy");
+        yield return Pointer("Scatter Cannon", PointerEventData.InputButton.Left);
+        Check(ship.GetComponent<ShipLoadout>().Weapons[1] == null && !inventory.Entries.Any(e => e.key == nameof(ScatterCannonItem)),
+            "left click unequips a weapon and removes its inventory entry");
+        yield return Pointer("Rail Driver", PointerEventData.InputButton.Right);
+        int companions = ship.Companions.Count;
+        yield return Click("Three Moons");
+        Check(ship.Companions.Count == companions + 3, "companion pickup creates its full group");
+        yield return Pointer("Three Moons", PointerEventData.InputButton.Left);
+        Check(ship.Companions.Count == companions, "removing a companion item removes its group");
+        float health = ship.maxHealth;
+        yield return Click("Spare Plating");
+        yield return Pointer("Spare Plating", PointerEventData.InputButton.Left);
+        Check(ship.maxHealth == health, "removing hull equipment restores maximum health");
+        float damage = GameRules.playerShootDamage, rate = GameRules.playerShootSpeed;
+        yield return Click("Blood Price");
+        yield return Pointer("Blood Price", PointerEventData.InputButton.Left);
+        Check(Mathf.Approximately(GameRules.playerShootDamage, damage) && Mathf.Approximately(GameRules.playerShootSpeed, rate),
+            "pact removal reverses both benefit and cost");
+        var hull = ship.GetComponent<PolygonCollider2D>();
+        Vector2 hullPoint = hull.GetPath(0)[0];
+        yield return Click("Shrinker juice");
+        yield return Pointer("Shrinker juice", PointerEventData.InputButton.Left);
+        Check(Vector2.Distance(hull.GetPath(0)[0], hullPoint) < .00001f, "shrinker removal restores the original hitbox");
         yield return Click("SLOT 1");
         yield return Click("Stasis Well");
         yield return Click("SLOT 2");
         yield return Click("Mirror Burst");
         var loadout = ship.GetComponent<ShipLoadout>();
         Check(loadout.Actives[0] is GravityWell && loadout.Actives[1] is MirrorBurst, "active grants use both slots and initialize while paused");
+        yield return Pointer("Mirror Burst", PointerEventData.InputButton.Left);
+        Check(loadout.Actives[1] == null && !inventory.Entries.Any(e => e.key == nameof(MirrorBurst)), "left click removes an active from equipment and inventory");
+        yield return Click("Mirror Burst");
         Dropdown("Collection").value = 1;
         Check(Items().Any(b => b.name == "Another arm") && Items().Any(b => b.name == "Rail Driver"), "collected filter follows inventory and equipment");
         Dropdown("Collection").value = 2;
@@ -192,11 +237,41 @@ public sealed class PauseItemBrowserProbe : MonoBehaviour
         menu.TryAccept(browser);
         yield return null;
         panel = GameObject.Find("Debug panel").transform;
-        Check(Items().Length == total, "reopening restores browser with complete catalogue");
+        Check(Items().Length == total && Dropdown("Order").value == 1, "reopening remembers sort order");
+        search = panel.GetComponentInChildren<TMP_InputField>();
+        search.text = "rail";
+        Dropdown("Type").value = 2;
+        Dropdown("Rarity").value = 3;
+        Dropdown("Collection").value = 1;
+        yield return Click("SLOT 1");
+        yield return Click("BACK");
+        menu.TryAccept(browser);
+        yield return null;
+        panel = GameObject.Find("Debug panel").transform;
+        Check(panel.GetComponentInChildren<TMP_InputField>().text == "rail" && Dropdown("Type").value == 2 &&
+            Dropdown("Rarity").value == 3 && Dropdown("Collection").value == 1 && Dropdown("Order").value == 1,
+            "search and combined filters persist within the run");
+        yield return Click("RESET FILTERS");
+        var catalogue = (RectTransform)panel.Find("Items/Catalogue");
+        catalogue.anchoredPosition = new Vector2(0, 448);
+        yield return Click("BACK");
+        menu.TryAccept(browser);
+        yield return null;
+        panel = GameObject.Find("Debug panel").transform;
+        Check(Mathf.Abs(((RectTransform)panel.Find("Items/Catalogue")).anchoredPosition.y - 448) < 1,
+            "scroll position persists within the run");
         yield return Click("BACK");
         menu.setMenuOpen(false);
         Check(Time.timeScale == 1 && !Menu.GameplayPaused, "normal resume works after grants");
         Check(loadout.Weapons[1] is RailDriver && loadout.Actives[1] is MirrorBurst, "grants persist after resuming");
+        GameRules.StartNewRun();
+        menu.setMenuOpen(true);
+        menu.TryAccept(browser);
+        yield return null;
+        panel = GameObject.Find("Debug panel").transform;
+        Check(panel.GetComponentInChildren<TMP_InputField>().text == "" && Dropdown("Order").value == 0 &&
+            ((RectTransform)panel.Find("Items/Catalogue")).anchoredPosition.y == 0, "new run resets browser state");
+        yield return Click("BACK");
     }
 }
 #endif

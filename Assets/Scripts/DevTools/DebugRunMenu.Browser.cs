@@ -15,7 +15,43 @@ public sealed partial class DebugRunMenu
     TextMeshProUGUI status, resultCount;
     readonly List<Entry> visibleEntries = new List<Entry>();
     bool granting;
+    const string BrowserControls = "Left click −    Right click +    Enter / Cross +    Delete / Square −";
     bool popupWasOpen;
+    int browserRun;
+    sealed class BrowserMemory
+    {
+        public int run, type, rarity, collection, order, slot;
+        public float scroll;
+        public string query, focus;
+    }
+    static BrowserMemory browserMemory;
+
+    void RememberBrowser()
+    {
+        if (!InRun || search == null || content == null) return;
+        browserMemory = new BrowserMemory { run = browserRun, query = search.text,
+            type = typeFilter.value, rarity = rarityFilter.value, collection = collectedFilter.value,
+            order = ordering.value, slot = slot, scroll = content.anchoredPosition.y,
+            focus = EventSystem.current?.currentSelectedGameObject?.name };
+    }
+
+    void RestoreBrowser()
+    {
+        popupWasOpen = false;
+        browserRun = GameRules.RunSerial;
+        var memory = browserMemory != null && browserMemory.run == GameRules.RunSerial ? browserMemory : null;
+        slot = memory?.slot ?? 0;
+        search.SetTextWithoutNotify(memory?.query ?? "");
+        typeFilter.SetValueWithoutNotify(memory?.type ?? 0);
+        rarityFilter.SetValueWithoutNotify(memory?.rarity ?? 0);
+        collectedFilter.SetValueWithoutNotify(memory?.collection ?? 0);
+        ordering.SetValueWithoutNotify(memory?.order ?? 0);
+        Refresh();
+        var focus = overlay.GetComponentsInChildren<Selectable>().FirstOrDefault(control => control.name == memory?.focus);
+        previousSelection = focus != null ? focus.gameObject : buttons[0].gameObject;
+        EventSystem.current.SetSelectedGameObject(previousSelection);
+        content.anchoredPosition = new Vector2(0, Mathf.Clamp(memory?.scroll ?? 0, 0, Mathf.Max(0, content.sizeDelta.y - ViewHeight)));
+    }
 
     bool BrowserHandlesBack()
     {
@@ -67,7 +103,7 @@ public sealed partial class DebugRunMenu
             new[] { "ALL ITEMS", "COLLECTED", "NOT COLLECTED" });
         ButtonAt(panel, "RESET FILTERS", new Vector2(285, 108), new Vector2(170, 36), ResetFilters, 15);
         resultCount = Label(panel, "", 15, new Vector2(435, 108), new Vector2(110, 36));
-        status = Label(panel, "Select an item to give it. Weapons / actives use the selected slot.", 16,
+        status = Label(panel, BrowserControls, 16,
             new Vector2(0, -288), new Vector2(980, 44));
         status.textWrappingMode = TextWrappingModes.Normal;
         foreach (var entry in entries)
@@ -173,7 +209,7 @@ public sealed partial class DebugRunMenu
         content.anchoredPosition = new Vector2(0, resetScroll ? 0 : Mathf.Clamp(content.anchoredPosition.y, 0, Mathf.Max(0, content.sizeDelta.y - ViewHeight)));
         resultCount.text = visibleEntries.Count + " / " + entries.Count;
         if (visibleEntries.Count == 0) status.text = "No matching items";
-        else if (status.text == "No matching items") status.text = "Select an item to give it.";
+        else if (status.text == "No matching items") status.text = BrowserControls;
         var selected = EventSystem.current?.currentSelectedGameObject;
         if (selected != null && !selected.activeInHierarchy)
             EventSystem.current.SetSelectedGameObject(search.gameObject);
@@ -202,6 +238,22 @@ public sealed partial class DebugRunMenu
         return ship != null && ship.GetComponent<ShipLoadout>().Weapons[index] is BaseWeapon;
     }
 
+    IEnumerator RemoveItem(Entry entry)
+    {
+        var ship = FindAnyObjectByType<Shipcontroller>();
+        if (ship == null || !Menu.GameplayPaused) yield break;
+        granting = true;
+        try
+        {
+            bool removed = RunInventory.For(ship).DebugRemove(entry.type.Name, slot);
+            // Let removed components finish OnDestroy before accepting another grant.
+            yield return null;
+            Refresh();
+            status.text = (removed ? "REMOVED: " : "NOT COLLECTED: ") + entry.name;
+        }
+        finally { granting = false; }
+    }
+
     IEnumerator GrantItem(Entry entry, int targetSlot)
     {
         var ship = FindAnyObjectByType<Shipcontroller>();
@@ -225,6 +277,22 @@ public sealed partial class DebugRunMenu
             else if (go != null) Destroy(go);
         }
         finally { granting = false; }
+    }
+}
+
+// Keep normal Submit for keyboard/pad grants; only the item cards change mouse semantics.
+public sealed class DebugItemButton : Button
+{
+    public Action Remove;
+    public override void OnPointerClick(PointerEventData eventData)
+    {
+        if (!IsActive() || !IsInteractable()) return;
+        if (eventData.button == PointerEventData.InputButton.Left) Remove?.Invoke();
+        else if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            Select();
+            onClick.Invoke();
+        }
     }
 }
 

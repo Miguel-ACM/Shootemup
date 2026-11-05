@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameRules : MonoBehaviour
 {
+    public static int RunSerial { get; private set; }
     public static float enemySpeed;
     public static float enemyBulletSpeed; // More is faster
     public static float enemyShootSpeed; // More is faster
@@ -81,6 +82,7 @@ public class GameRules : MonoBehaviour
     // Resets everything a run accumulates: player stats, score and the shop's item pools.
     public static void StartNewRun(RunDifficulty difficulty = RunDifficulty.Normal)
     {
+        RunSerial++;
         CombatDecision.End();
         ResetRun();
         Difficulty.Select(difficulty);
