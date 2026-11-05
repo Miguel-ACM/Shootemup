@@ -110,7 +110,7 @@ public sealed partial class TunnelSawBoss
         spinner.spin = 720;
         yield return Centre(Stations[nextStation++ % Stations.Length]);
         yield return Charge(Hull, Vector3.zero, .5f);
-        int teeth = Dense(30);
+        int teeth = Dense(36);
         for (int ring = 0; ring < 6; ring++)
         {
             if(ring%2==0)
@@ -119,11 +119,11 @@ public sealed partial class TunnelSawBoss
             int gap = (ring * 9) % teeth;
             for (int i = 0; i < teeth; i++)
             {
-                if ((i - gap + teeth) % teeth < 3)
+                if ((i - gap + teeth) % teeth < 4)
                     continue;
                 var tooth = Fire<SimpleRound>(transform.position, Vector2.down, 0, ring % 2 == 0 ? .2f : .26f);
                 if (tooth != null)
-                    tooth.Orbit(Radius * .9f, i * 360f / teeth, sign * 48, 10, 0, 0, 0, .05f).Expand(1.3f);
+                    tooth.Orbit(Radius * .9f, i * 360f / teeth, sign * 30, 10, 0, 0, 0, .05f).Expand(1.3f, 2.8f);
             }
             yield return Wait(Rest(.55f));
         }

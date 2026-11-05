@@ -1,0 +1,15 @@
+PASS Easy enters phase one.
+PASS Easy: 17 complete ring releases, radius up to 14,02, tangential speed <= 2,799.
+PASS Easy performs no projectile construction during phase one.
+Easy: 11 teeth per ring (previously 10); peak rounds=72; full CPU frame p95=2,197ms, max=7,654ms, physics max=0,134ms. Rendering excluded.
+PASS Normal enters phase one.
+PASS Normal: 20 complete ring releases, radius up to 14,48, tangential speed <= 2,799.
+PASS Normal performs no projectile construction during phase one.
+Normal: 19 teeth per ring (previously 17); peak rounds=160; full CPU frame p95=2,214ms, max=6,033ms, physics max=0,192ms. Rendering excluded.
+PASS Hard enters phase one.
+PASS Hard: 15 complete ring releases, radius up to 14,50, tangential speed <= 2,799.
+PASS Hard performs no projectile construction during phase one.
+Hard: 32 teeth per ring (previously 27); peak rounds=336; full CPU frame p95=2,870ms, max=6,117ms, physics max=3,057ms. Rendering excluded.
+PASS Both rotation directions stay within 3.10 units/s combined radial/tangential speed after the initial launch.
+PASS Motion regression reuses the same pooled projectile.
+PASS Other orbit programs retain their exact original trajectory, with no speed cap inherited from the pool.

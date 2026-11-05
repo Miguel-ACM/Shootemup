@@ -18,7 +18,7 @@ public sealed class SimpleRound : CombatRound
     Delivery delivery;
     float turn, turnUntil, nextRelease, releaseUntil, releaseEvery, seedAt;
     float orbitRadius, orbitPhase, orbitRate, grow, satelliteRadius, satellitePhase, satelliteRate;
-    float expand, breathe, breatheRate, slingAt, slingSpeed;
+    float expand, orbitSpeedLimit, breathe, breatheRate, slingAt, slingSpeed;
     int seedCount, seedGap;
     float seedRadius, seedRate, seedDrift, seedPhase;
     Vector2 center, lastOrbitPosition;
@@ -29,8 +29,10 @@ public sealed class SimpleRound : CombatRound
     public bool ChargingSeed => delivery == Delivery.Seed;
     public float OrbitRadius => orbitRadius + satelliteRadius;
     protected override float ContactSpeed => base.ContactSpeed + (motion == Motion.Orbit ?
-        Mathf.Abs(orbitRate) * Mathf.Deg2Rad * CurrentRadius + Mathf.Abs(satelliteRate) * Mathf.Deg2Rad * satelliteRadius + OrbitRadius * 2 / Mathf.Max(.1f, grow) + expand + breathe * breatheRate * 6.3f : 0);
+        OrbitContactSpeed + Mathf.Abs(satelliteRate) * Mathf.Deg2Rad * satelliteRadius + OrbitRadius * 2 / Mathf.Max(.1f, grow) + expand + breathe * breatheRate * 6.3f : 0);
     float CurrentRadius => orbitRadius + expand * age + breathe;
+    float OrbitContactSpeed => orbitSpeedLimit > 0 && expand > 0 && breathe == 0 ?
+        Mathf.Min(orbitSpeedLimit, Mathf.Abs(orbitRate) * Mathf.Deg2Rad * CurrentRadius) : Mathf.Abs(orbitRate) * Mathf.Deg2Rad * CurrentRadius;
 
     protected override void Initialize()
     {
@@ -40,7 +42,7 @@ public sealed class SimpleRound : CombatRound
         orbitRadius = orbitPhase = orbitRate = satelliteRadius = satellitePhase = satelliteRate = 0;
         seedCount = seedGap = 0;
         seedRadius = seedRate = seedDrift = seedPhase = 0;
-        expand = breathe = breatheRate = slingSpeed = 0;
+        expand = orbitSpeedLimit = breathe = breatheRate = slingSpeed = 0;
         slingAt = -1;
         grow = 1;
         center = lastOrbitPosition = transform.position;
@@ -71,9 +73,12 @@ public sealed class SimpleRound : CombatRound
     }
     // Orbit extensions: a radius that keeps growing (spinning rings), a breathing
     // radius, and a slingshot release along the tangent at a chosen age.
-    public SimpleRound Expand(float unitsPerSecond)
+    // The optional rim-speed limit applies to linear expansion; breathing orbits
+    // retain their authored angular motion. No existing orbit opts in implicitly.
+    public SimpleRound Expand(float unitsPerSecond, float maxTangentialSpeed = 0)
     {
         expand = unitsPerSecond;
+        orbitSpeedLimit = Mathf.Max(0, maxTangentialSpeed);
         return this;
     }
 
@@ -128,8 +133,22 @@ public sealed class SimpleRound : CombatRound
             CombatVisuals.Rotate(Vector2.down, innerPhase + innerRate * t) * innerRadius) * expansion;
     }
 
+    float OrbitTurn(float t)
+    {
+        float angular = Mathf.Abs(orbitRate) * Mathf.Deg2Rad;
+        if (orbitSpeedLimit <= 0 || expand <= 0 || breathe != 0 || angular < .00001f)
+            return orbitRate * t;
+        float radius = Mathf.Max(.01f, orbitRadius);
+        float cappedAt = Mathf.Max(0, (orbitSpeedLimit / angular - radius) / expand);
+        if (t <= cappedAt) return orbitRate * t;
+        // Integral of speed/radius: the expanding ring slows its angular turn
+        // continuously instead of accelerating its outer bullets across the arena.
+        float tail = orbitSpeedLimit / expand * Mathf.Log((radius + expand * t) / (radius + expand * cappedAt));
+        return orbitRate * cappedAt + Mathf.Sign(orbitRate) * tail * Mathf.Rad2Deg;
+    }
+
     Vector2 OrbitAt(float t) => OrbitOffset(t, orbitRadius + expand * t + breathe * Mathf.Sin(t * breatheRate * Mathf.PI * 2),
-        orbitPhase, orbitRate, satelliteRadius, satellitePhase, satelliteRate, grow);
+        orbitPhase + OrbitTurn(t), 0, satelliteRadius, satellitePhase, satelliteRate, grow);
     protected override void Tick(float dt)
     {
         if (motion == Motion.Orbit)

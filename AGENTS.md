@@ -126,6 +126,7 @@ These are the player's instructions. Preserve them across sessions and apply the
   - City: the small ship orbits the big one; both cover behind themselves (fans rebounding off the ceiling).
   - Thunder: phase one six drones in a centre hexagon, beams swinging sixty degrees around straight down so the middle is mostly safe. Phase two four top and eight left drones start in the top-left corner and take turns stepping across (top row rightward, left column downward); every beam shuts down and turns up while any group moves. Zigzag lightning from the boss.
   - Tunnel: every round leaves the saw's centre. Phase one repeats the widening frogger rings from new stations (no bouncing); phase two bounces with 360 bursts including bouncing teeth, wall runners and the gearbox; no minions.
+  - Latest Tunnel phase-one correction (6 November 2026): slow the widening rings from 48 to 30 degrees per second and cap their tangential travel at 2.8 world units per second as they expand. Compensate with 36 authored positions per ring instead of 30 and four missing positions for the crossing gap. Preserve difficulty density/rest scaling, six alternating rings, outward expansion and later phases.
   - Desert: predictable route rising from the bottom edge to the top lane by lane; spread fire out instead of converging on the player; little falling fire.
   - Candyland: a ricocheting canopy covers the top; no minions in phase two.
   - Space: gravity wells and supernova rings that stop and collapse back through the core.

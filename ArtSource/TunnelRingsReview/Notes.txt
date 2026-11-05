@@ -1,0 +1,30 @@
+Tunnel phase-one ring correction, 6 November 2026
+
+Frogger Crossing previously kept every ring at 48 degrees per second regardless
+of radius. At radius 14.5, that produces about 12.15 world units per second of
+tangential travel, in addition to the outward expansion.
+
+The initial angular rate is now 30 degrees per second. The optional linear
+expansion cap smoothly reduces angular speed once tangential travel reaches
+2.8 units per second. Its angle uses the exact integral of speed/radius, making
+the trajectory independent of frame rate and preserving the slingshot tangent.
+The outward expansion stays at 1.3 units per second. The initial launch from the
+boss centre, alternating directions, six rings, stations and later phases stay.
+
+Density increases from 30 to 36 authored positions, with four missing positions
+instead of three to preserve readable crossings. Actual teeth per ring:
+Easy 10 -> 11; Normal 17 -> 19; Hard 27 -> 32.
+
+The cap is opt-in. Existing Space and other orbit programs retain their original
+trajectories, and pooled reuse resets the cap. Pixel sprites and collision
+geometry are unchanged. The collision activation speed remains conservative.
+
+One isolated command-line gameplay batch checked phase one on all three tiers,
+1200 complete frames each at 60 Hz, with native physics and rendering excluded.
+All three reached radii over 14 while remaining below 2.8 tangential units/s.
+No projectile objects were constructed during the checked phases. Hard peaked
+at 336 rounds; complete CPU frame p95 was 2.870 ms, maximum 6.117 ms.
+Both rotation directions stayed below 3.10 combined radial/tangential units/s
+after the initial launch. Pooled reuse and unchanged default orbit paths passed.
+
+See Checks.txt for measurements and Build.txt for the Windows player build.
