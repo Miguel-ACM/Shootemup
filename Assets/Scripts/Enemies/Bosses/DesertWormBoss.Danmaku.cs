@@ -72,8 +72,10 @@ public sealed partial class DesertWormBoss
             {
                 var axis = CombatVisuals.Rotate(flank * side, (i - (mines - 1) * .5f) * 14);
                 float hold = 1.0f + i * .08f;
-                var mine = Fire<SimpleRound>(t.position, axis, 2.3f + (i % 2) * .5f, .22f).Pause(.5f, hold, CombatRound.Turn.Keep, 0, 1.2f);
-                if (i % 2 == 1)
+                bool lunges=i==mines/2;
+                var mine = Fire<SimpleRound>(t.position, axis, 2.3f + (i % 2) * .5f, .22f)
+                    .Pause(.5f, hold, lunges?CombatRound.Turn.Aim:CombatRound.Turn.Keep, 0, 1.2f);
+                if (i % 2 == 1&&!lunges)
                     mine.FadeAt(.5f + hold);
             }
     }
@@ -86,10 +88,11 @@ public sealed partial class DesertWormBoss
         for (int i = 0; i < shots && CanShoot(cores[0]); i++)
         {
             Vector2 heading = CombatVisuals.Aim(Muzzle());
+            if(i%8==0)Fire<SimpleRound>(Muzzle(),heading,3.0f,.22f);
             float open = 12 + Mathf.Abs(Mathf.Sin(i / 30f * Mathf.PI * 2)) * 34;
             foreach (int mirror in new[] { -1, 1 })
                 foreach (float arm in new[] { 0f, 14f })
-                    Fire<NeedleRound>(Muzzle(), CombatVisuals.Rotate(heading, mirror * (open + arm)), 3.4f, .19f);
+                    ScoredShot(i%9<3,Muzzle(), CombatVisuals.Rotate(heading, mirror * (open + arm)), 3.4f);
             yield return Wait(Rest(.065f));
         }
     }
@@ -109,13 +112,14 @@ public sealed partial class DesertWormBoss
     // Arrows straight out of both flanks of every reactor: the body draws ribbons.
     void Sidewinder(int n)
     {
+        if(n%7==3)QuicksandMines(TailToHead(n/7));
         for (int i = n % 2; i < cores.Length; i += 2)
         {
             if (!CanShoot(cores[i]))
                 continue;
             var t = cores[i].transform;
             for (int side = -1; side <= 1; side += 2)
-                Fire<NeedleRound>(t.position, (Vector2)t.right * side, 2.6f, .19f);
+                ScoredShot(n%3==0,t.position, (Vector2)t.right * side, 2.6f);
         }
     }
 
@@ -130,7 +134,7 @@ public sealed partial class DesertWormBoss
             for (int i = 0; i < lanes; i++)
             {
                 float lane = i - (lanes - 1) * .5f;
-                Fire<NeedleRound>(p, CombatVisuals.Rotate(Vector2.up, lane * 100f / (lanes - 1)), 3.6f + layer * 1.1f, .19f)
+                ScoredShot(i%3==0,p, CombatVisuals.Rotate(Vector2.up, lane * 100f / (lanes - 1)), 3.6f + layer * 1.1f)
                     .Fall(new Vector2(0, -2.8f));
             }
     }
