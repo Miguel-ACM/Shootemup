@@ -34,6 +34,8 @@ public sealed partial class VoidSovereignBoss
     // Every row has the same travel clock; the gaps breathe as one shape.
     IEnumerator Witnesses()=>Every(6.2f,.26f,beat=>
     {
+        if(beat%5==0)for(int port=0;port<2;port++)
+            Fire<SimpleRound>(Port(port),CombatVisuals.Aim(Port(port)),2.7f,.23f);
         int count=Dense(17);
         float fold=30+23*Mathf.Sin(beat*.22f);
         for(int side=-1;side<=1;side+=2)
@@ -42,7 +44,7 @@ public sealed partial class VoidSovereignBoss
                 {
                     float u=Across(i,count),angle=side*(fold+u*25);
                     Vector2 axis=bank>0?Vector2.up:Vector2.down;
-                    Fire<NeedleRound>(Port(side<0?0:1),CombatVisuals.Rotate(axis,angle),
+                    ScoredShot(beat%3==0,Port(side<0?0:1),CombatVisuals.Rotate(axis,angle),
                         2.0f+.6f*(1-u*u),.17f).Ramp(1.35f,1.6f,1.2f).FadeAt(7.8f);
                 }
     });
@@ -50,6 +52,9 @@ public sealed partial class VoidSovereignBoss
     // A pearl pall is laid outward, hangs intact, then folds into four diagonal aisles.
     IEnumerator FuneralPsalm()=>Every(6.2f,.88f,beat=>
     {
+        for(int port=0;port<2;port++)
+            Fire<SimpleRound>(Port(port),CombatVisuals.Aim(Port(port)),1.5f,.23f)
+                .Pause(.4f,.35f,CombatRound.Turn.Aim,0,1.8f);
         int count=Dense(25);
         for(int side=-1;side<=1;side+=2)
             for(int bank=-1;bank<=1;bank+=2)
@@ -70,6 +75,8 @@ public sealed partial class VoidSovereignBoss
     // Two scythes draw continuous opposed ribbons, with visible spacing between teeth.
     IEnumerator Severing()=>Every(5.6f,.14f,beat=>
     {
+        if(beat%10==0)for(int port=0;port<2;port++)
+            Fire<SimpleRound>(Port(port),CombatVisuals.Aim(Port(port)),3.0f,.22f);
         int count=Dense(9);
         float stroke=74*Mathf.Sin(beat*.105f);
         for(int side=-1;side<=1;side+=2)
@@ -77,7 +84,7 @@ public sealed partial class VoidSovereignBoss
             {
                 float u=Across(i,count);
                 var axis=CombatVisuals.Rotate(Vector2.down,side*(stroke+u*14));
-                Fire<NeedleRound>(Port(side<0?0:1),axis,2.35f+.42f*u,.17f).FadeAt(7.4f);
+                ScoredShot(beat%3==0,Port(side<0?0:1),axis,2.35f+.42f*u,.17f).FadeAt(7.4f);
                 if(beat%3==0)Fire<RicochetBolt>(Port(side<0?0:1),-axis,2.15f,.19f).Bounce(1).FadeAt(6.6f);
             }
     });
@@ -93,9 +100,9 @@ public sealed partial class VoidSovereignBoss
             for(int side=-1;side<=1;side+=2)for(int i=0;i<count;i++)
             {
                 float u=Across(i,count),pleat=9*Mathf.Sin(beat*.35f);
-                Fire<NeedleRound>(Port(side<0?0:1),CombatVisuals.Rotate(Vector2.down,side*(38+u*27+pleat)),
+                ScoredShot(i%3==0,Port(side<0?0:1),CombatVisuals.Rotate(Vector2.down,side*(38+u*27+pleat)),
                     2.1f+.35f*(1-u*u),.17f)
-                    .Pause(1.2f,.22f,CombatRound.Turn.Rotate,-side*24,1.25f).FadeAt(8);
+                    .Pause(1.2f,.22f,i==count/2?CombatRound.Turn.Aim:CombatRound.Turn.Rotate,i==count/2?0:-side*24,1.25f).FadeAt(8);
             }
         });
         yield return Wait(Rest(.9f));
@@ -104,13 +111,15 @@ public sealed partial class VoidSovereignBoss
     // The jaws open: nested parabolic teeth flare above and below the mouth.
     IEnumerator Hunger()=>Every(6.2f,.38f,beat=>
     {
+        if(beat%4==0)for(int port=0;port<2;port++)
+            Fire<SimpleRound>(Port(port),CombatVisuals.Aim(Port(port)),2.6f,.25f).Ramp(1.2f,1.2f);
         int count=Dense(21);
         for(int side=-1;side<=1;side+=2)for(int bank=-1;bank<=1;bank+=2)
             for(int i=0;i<count;i++)
             {
                 float u=Across(i,count);
                 var axis=CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,side*(24+u*32+Mathf.Sin(beat*.3f)*8));
-                Fire<NeedleRound>(Port(side<0?0:1),axis,1.8f+.95f*(1-u*u),.18f).Ramp(1.4f,1.5f,1.4f).FadeAt(8);
+                ScoredShot(beat%3==0,Port(side<0?0:1),axis,1.8f+.95f*(1-u*u),.18f).Ramp(1.4f,1.5f,1.4f).FadeAt(8);
             }
         if(beat%3==0)for(int side=-1;side<=1;side+=2)
             Fire<PlasmaOrb>(Port(side<0?0:1),CombatVisuals.Rotate(Vector2.up,side*58),1.2f,.36f).FadeAt(7);
@@ -118,6 +127,8 @@ public sealed partial class VoidSovereignBoss
 
     IEnumerator FalseStars()=>Every(6.2f,.85f,beat=>
     {
+        for(int port=0;port<2;port++)
+            Fire<SimpleRound>(Port(port),CombatVisuals.Aim(Port(port)),2.8f,.23f);
         // Four crowned comets unfurl matching arrow fans, rather than unrelated mines and carriers.
         for(int side=-1;side<=1;side+=2)for(int bank=-1;bank<=1;bank+=2)
         {
@@ -134,18 +145,28 @@ public sealed partial class VoidSovereignBoss
     // Four fracture points stitch a square brocade. Its arms fold together on a single beat.
     IEnumerator WorldWithoutEdges()=>Every(6.2f,.29f,beat=>
     {
+        if(beat%4==0)
+        {
+            var p=Port(beat/4%4);
+            Fire<SimpleRound>(p,CombatVisuals.Aim(p),2.8f,.23f);
+        }
         int count=Dense(17);
         for(int port=0;port<4;port++)for(int i=0;i<count;i++)
         {
             Vector2 axis=port==0?Vector2.left:port==1?Vector2.right:port==2?Vector2.up:Vector2.down;
             float u=Across(i,count),sign=port%2==0?-1:1;
-            Fire<NeedleRound>(Port(port),CombatVisuals.Rotate(axis,u*36+sign*Mathf.Sin(beat*.25f)*19),
+            ScoredShot(beat%3==0,Port(port),CombatVisuals.Rotate(axis,u*36+sign*Mathf.Sin(beat*.25f)*19),
                 2.0f+.48f*(1-u*u),.17f).Pause(.95f,.22f,CombatRound.Turn.Rotate,sign*34,1.0f).FadeAt(7.6f);
         }
     });
 
     IEnumerator LastEquation()=>Every(6.2f,.51f,beat=>
     {
+        if(beat%2==0)
+        {
+            var p=Port(beat/2%4);
+            Fire<SimpleRound>(p,CombatVisuals.Aim(p),2.8f,.23f).Bounce(1);
+        }
         int count=Dense(21);
         for(int port=0;port<4;port++)for(int i=0;i<count;i++)
         {

@@ -66,6 +66,8 @@ public sealed partial class VoidSovereignBoss
         {
             Vector3 p=Source(edge,side);
             if(CombatVisuals.Player!=null&&Vector2.Distance(p,CombatVisuals.Player.position)<1.6f)continue;
+            if(beat%5==0)
+                CombatRound.Launch<SimpleRound>(p,CombatVisuals.Aim(p),2.8f,.22f).LivesFor(12);
             for(int i=0;i<count;i++)
             {
                 float u=Across(i,count);
@@ -76,15 +78,15 @@ public sealed partial class VoidSovereignBoss
                 {
                     // Funeral fans: mirrored peacock feathers open as one moving wavefront.
                     float angle=side*(u*57+Mathf.Sin(beat*.16f)*22);
-                    CombatRound.Launch<NeedleRound>(p,CombatVisuals.Rotate(inward,angle),
-                        3.0f+.9f*(1-u*u),.17f).Ramp(1.25f,1.1f,1).FadeAt(10);
+                    WovenShot(i,p,CombatVisuals.Rotate(inward,angle),
+                        3.0f+.9f*(1-u*u)).Ramp(1.25f,1.1f,1).FadeAt(10);
                 }
                 else if(chapter==2)
                 {
                     // Scissor brocade: all strands hinge together, preserving the ordered comb.
                     float angle=side*(u*51+24*Mathf.Sin(beat*.21f));
-                    CombatRound.Launch<NeedleRound>(p,CombatVisuals.Rotate(inward,angle),
-                        2.7f+.6f*(1-u*u),.17f)
+                    WovenShot(i,p,CombatVisuals.Rotate(inward,angle),
+                        2.7f+.6f*(1-u*u))
                         .Pause(.85f,.20f,CombatRound.Turn.Rotate,-side*26,1.2f).FadeAt(10);
                     if(beat%3==0&&i%4==0)
                         CombatRound.Launch<SimpleRound>(p,CombatVisuals.Rotate(inward,angle),1.65f,.22f).FadeAt(10);
@@ -94,10 +96,12 @@ public sealed partial class VoidSovereignBoss
                     // Unmaking: opposed, scalloped fronts interleave fast crests and slow troughs.
                     float angle=side*(u*64+18*Mathf.Sin(beat*.2f));
                     float speed=3.0f+.75f*Mathf.Cos(u*Mathf.PI*2+beat*.22f);
-                    CombatRound.Launch<NeedleRound>(p,CombatVisuals.Rotate(inward,angle),speed,.17f)
+                    WovenShot(i,p,CombatVisuals.Rotate(inward,angle),speed)
                         .Sway(.16f,.5f).Ramp(1.3f,1,1).FadeAt(10);
                 }
             }
         }
     }
+    static CombatRound WovenShot(int lane,Vector3 p,Vector2 axis,float speed)
+        =>lane%4==0?(CombatRound)CombatRound.Launch<SimpleRound>(p,axis,speed,.19f):CombatRound.Launch<NeedleRound>(p,axis,speed,.17f);
 }
