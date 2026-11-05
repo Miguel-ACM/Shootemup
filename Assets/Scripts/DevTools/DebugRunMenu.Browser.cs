@@ -15,7 +15,7 @@ public sealed partial class DebugRunMenu
     TextMeshProUGUI status, resultCount;
     readonly List<Entry> visibleEntries = new List<Entry>();
     bool granting;
-    const string BrowserControls = "Left click −    Right click +    Enter / Cross +    Delete / Square −";
+    const string BrowserControls = "Left click +    Right click −    Enter / Cross +    Delete / Square −";
     bool popupWasOpen;
     int browserRun;
     sealed class BrowserMemory
@@ -287,8 +287,8 @@ public sealed class DebugItemButton : Button
     public override void OnPointerClick(PointerEventData eventData)
     {
         if (!IsActive() || !IsInteractable()) return;
-        if (eventData.button == PointerEventData.InputButton.Left) Remove?.Invoke();
-        else if (eventData.button == PointerEventData.InputButton.Right)
+        if (eventData.button == PointerEventData.InputButton.Right) Remove?.Invoke();
+        else if (eventData.button == PointerEventData.InputButton.Left)
         {
             Select();
             onClick.Invoke();

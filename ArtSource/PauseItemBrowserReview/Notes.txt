@@ -1,6 +1,6 @@
 Pause item browser - 5 November 2026, inventory revision
 
-Pause > DEBUG ITEMS. Left click removes one collected copy; right click grants one. Keyboard/controller Submit still grants; Delete/Square removes the focused item. Weapons and actives use the selected slot. If the selected slot does not hold the clicked item, removal finds the other owned copy. Replacements discard the outgoing slot's inventory record and HUD icon, preserving the same item in the other slot.
+Pause > DEBUG ITEMS. Left click grants one copy; right click removes one collected copy. Keyboard/controller Submit still grants; Delete/Square removes the focused item. Weapons and actives use the selected slot. If the selected slot does not hold the clicked item, removal finds the other owned copy. Replacements discard the outgoing slot's inventory record and HUD icon, preserving the same item in the other slot.
 
 Removal reverses recorded stats and upgrades, removes attached companions/effects, restores maximum health and the shrunken hitbox, and unbinds applicable pact state. Already consumed repairs, damage and fired active effects are not rewound. Normal trade eligibility is unchanged.
 
@@ -9,3 +9,5 @@ Search, type/rarity/collection filters, sorting, selected equipment slot, focus 
 33 focused checks passed using VerifyPauseItemBrowser.Run in the isolated Unity 6000.6.2f1 review copy with -batchmode -nographics. Includes actual left/right pointer handlers, duplicate equipment replacement, companion-group removal, passive/pact reversal, hitbox restoration, active unequip, state restoration and new-run reset. No C# compiler diagnostics in the review log. Cameras submit no geometry to avoid Unity null-device particle/trail crashes; this is behavior verification, not a visual review. No live editor was controlled.
 
 The cached review copy retains the prior review-only HeavenBastions Vector2 conversion. Only the files for this revision were refreshed; this is not a clean build of other ongoing work. Headless scene warmup reports unrelated missing projectile/shader assets before the browser opens. Error collection covers opening the browser through the tested interactions; that scope passed without errors.
+
+Mouse correction: swapped left/right per Miguel's clarification. Updated the UI hint and regression expectations. Verification.txt records the preceding 33-check run with the former mapping; this two-branch correction was reviewed without another gameplay run.

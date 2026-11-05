@@ -160,10 +160,10 @@ public sealed class PauseItemBrowserProbe : MonoBehaviour
         yield return Click("Another arm");
         yield return Click("Another arm");
         Check(GameRules.playerShootNumber == shots + 2, "repeat passive grants apply immediately while paused");
-        yield return Pointer("Another arm", PointerEventData.InputButton.Left);
-        Check(GameRules.playerShootNumber == shots + 1, "left click removes exactly one passive copy and its stats");
         yield return Pointer("Another arm", PointerEventData.InputButton.Right);
-        Check(GameRules.playerShootNumber == shots + 2, "right click gives a copy without removing it");
+        Check(GameRules.playerShootNumber == shots + 1, "right click removes exactly one passive copy and its stats");
+        yield return Pointer("Another arm", PointerEventData.InputButton.Left);
+        Check(GameRules.playerShootNumber == shots + 2, "left click gives a copy without removing it");
         search.text = "telekinesis bends";
         Check(Items().Any(b => b.name == "Beam Emitter"), "search matches effects");
         search.text = "no-such-item-xyz";
@@ -186,28 +186,28 @@ public sealed class PauseItemBrowserProbe : MonoBehaviour
         Check(ship.GetComponent<ShipLoadout>().Weapons[0] is RailDriver && ship.GetComponent<ShipLoadout>().Weapons[1] is ScatterCannon &&
             inventory.Entries.Count(e => e.key == nameof(RailDriverItem)) == 1 && replaced.display == null,
             "replacement removes only the old slot's pickup and icon, preserving the other copy");
-        yield return Pointer("Scatter Cannon", PointerEventData.InputButton.Left);
+        yield return Pointer("Scatter Cannon", PointerEventData.InputButton.Right);
         Check(ship.GetComponent<ShipLoadout>().Weapons[1] == null && !inventory.Entries.Any(e => e.key == nameof(ScatterCannonItem)),
-            "left click unequips a weapon and removes its inventory entry");
-        yield return Pointer("Rail Driver", PointerEventData.InputButton.Right);
+            "right click unequips a weapon and removes its inventory entry");
+        yield return Pointer("Rail Driver", PointerEventData.InputButton.Left);
         int companions = ship.Companions.Count;
         yield return Click("Three Moons");
         Check(ship.Companions.Count == companions + 3, "companion pickup creates its full group");
-        yield return Pointer("Three Moons", PointerEventData.InputButton.Left);
+        yield return Pointer("Three Moons", PointerEventData.InputButton.Right);
         Check(ship.Companions.Count == companions, "removing a companion item removes its group");
         float health = ship.maxHealth;
         yield return Click("Spare Plating");
-        yield return Pointer("Spare Plating", PointerEventData.InputButton.Left);
+        yield return Pointer("Spare Plating", PointerEventData.InputButton.Right);
         Check(ship.maxHealth == health, "removing hull equipment restores maximum health");
         float damage = GameRules.playerShootDamage, rate = GameRules.playerShootSpeed;
         yield return Click("Blood Price");
-        yield return Pointer("Blood Price", PointerEventData.InputButton.Left);
+        yield return Pointer("Blood Price", PointerEventData.InputButton.Right);
         Check(Mathf.Approximately(GameRules.playerShootDamage, damage) && Mathf.Approximately(GameRules.playerShootSpeed, rate),
             "pact removal reverses both benefit and cost");
         var hull = ship.GetComponent<PolygonCollider2D>();
         Vector2 hullPoint = hull.GetPath(0)[0];
         yield return Click("Shrinker juice");
-        yield return Pointer("Shrinker juice", PointerEventData.InputButton.Left);
+        yield return Pointer("Shrinker juice", PointerEventData.InputButton.Right);
         Check(Vector2.Distance(hull.GetPath(0)[0], hullPoint) < .00001f, "shrinker removal restores the original hitbox");
         yield return Click("SLOT 1");
         yield return Click("Stasis Well");
@@ -215,8 +215,8 @@ public sealed class PauseItemBrowserProbe : MonoBehaviour
         yield return Click("Mirror Burst");
         var loadout = ship.GetComponent<ShipLoadout>();
         Check(loadout.Actives[0] is GravityWell && loadout.Actives[1] is MirrorBurst, "active grants use both slots and initialize while paused");
-        yield return Pointer("Mirror Burst", PointerEventData.InputButton.Left);
-        Check(loadout.Actives[1] == null && !inventory.Entries.Any(e => e.key == nameof(MirrorBurst)), "left click removes an active from equipment and inventory");
+        yield return Pointer("Mirror Burst", PointerEventData.InputButton.Right);
+        Check(loadout.Actives[1] == null && !inventory.Entries.Any(e => e.key == nameof(MirrorBurst)), "right click removes an active from equipment and inventory");
         yield return Click("Mirror Burst");
         Dropdown("Collection").value = 1;
         Check(Items().Any(b => b.name == "Another arm") && Items().Any(b => b.name == "Rail Driver"), "collected filter follows inventory and equipment");
