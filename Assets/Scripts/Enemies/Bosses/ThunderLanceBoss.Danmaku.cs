@@ -185,7 +185,7 @@ public sealed partial class ThunderLanceBoss
     {
         int bolts = Dense(24);
         for (int i = 0; i < bolts; i++)
-            Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(Vector2.down, (i + (n % 2) * .5f) * 360f / bolts), 3.2f, .19f).Zigzag(.22f, 22);
+            ScoredShot(i%3==0,Muzzle(2), CombatVisuals.Rotate(Vector2.down, (i + (n % 2) * .5f) * 360f / bolts), 3.2f).Zigzag(.22f, 22);
     }
 
     protected override void OnPhaseThree()
@@ -197,13 +197,15 @@ public sealed partial class ThunderLanceBoss
     // Zigzag lightning from both shoulders and the front, in mirrored fans.
     void Lightning(int n)
     {
+        // A straight capacitor bead interrupts the stationary cells between zigzags.
+        Fire<SimpleRound>(Muzzle(2),CombatVisuals.Aim(Muzzle(2)),3.0f,.22f).Ramp(1.2f,1);
         int bolts = Dense(7);
         for (int port = 0; port < 3; port++)
         {
             var origin = Muzzle(port);
             var aim = port == 2 ? CombatVisuals.Aim(origin) : CombatVisuals.Rotate(Vector2.down, port == 0 ? 20 : -20);
             for (int i = 0; i < bolts; i++)
-                Fire<NeedleRound>(origin, CombatVisuals.Rotate(aim, (i - (bolts - 1) * .5f) * 14 + (n % 2) * 7), 3.6f, .19f)
+                ScoredShot(i%3==0,origin, CombatVisuals.Rotate(aim, (i - (bolts - 1) * .5f) * 14 + (n % 2) * 7), 3.6f)
                     .Zigzag(.2f, 26);
         }
     }
@@ -219,7 +221,7 @@ public sealed partial class ThunderLanceBoss
             {
                 float angle = swing + (arm - (arms - 1) * .5f) * 24;
                 for (int mirror = -1; mirror <= 1; mirror += 2)
-                    Fire<NeedleRound>(Muzzle(mirror < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, mirror * angle), 3.5f, .19f);
+                    ScoredShot(i%9<3,Muzzle(mirror < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, mirror * angle), 3.5f);
             }
             yield return Wait(Rest(.075f));
         }
@@ -233,7 +235,7 @@ public sealed partial class ThunderLanceBoss
         for (int row = 0; row < rows; row++)
         {
             int wing = 2 + row;
-            Fire<NeedleRound>(Muzzle(2), aim, 4.4f, .19f);
+            Fire<SimpleRound>(Muzzle(2), aim, 4.4f, .21f);
             for (int k = 1; k <= wing; k++)
                 for (int mirror = -1; mirror <= 1; mirror += 2)
                     Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(aim, mirror * k * 7), 4.4f - k * .12f, .19f);
@@ -249,7 +251,7 @@ public sealed partial class ThunderLanceBoss
             for (int i = 0; i < lanes; i++)
             {
                 float lane = i - (lanes - 1) * .5f;
-                Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(Vector2.down, lane * 150f / (lanes - 1) + (layer % 2) * 150f / (lanes - 1) * .5f),
+                ScoredShot(layer==0,Muzzle(2), CombatVisuals.Rotate(Vector2.down, lane * 150f / (lanes - 1) + (layer % 2) * 150f / (lanes - 1) * .5f),
                     2.5f + layer * .7f, .19f);
             }
     }
