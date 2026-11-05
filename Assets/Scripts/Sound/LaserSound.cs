@@ -15,6 +15,9 @@ public sealed class LaserSound : MonoBehaviour
     static AudioClip heavenCharge, heavenIgnition;
     public bool Sustaining => bed != null && bed.isPlaying;
     public static int SustainingCount => sustaining;
+    string ChargeCue => celestial ? "heavenBeamCharge" : friendly ? "playerBeamCharge" : "beamCharge";
+    string FireCue => celestial ? "heavenBeamFire" : friendly ? "shotBeam" : "beamFire";
+    string SustainCue => celestial ? "heavenBeamSustain" : friendly ? "playerBeamSustain" : "beamSustain";
     void Prepare()
     {
         if (chargeClip == null)
@@ -56,9 +59,9 @@ public sealed class LaserSound : MonoBehaviour
         if (Time.time - lastCharge < .11f || AudioListener.pause)
             return;
         lastCharge = Time.time;
-        transient.clip = celestial && heavenCharge != null ? heavenCharge : chargeClip;
+        transient.clip = SfxMix.Resolve(ChargeCue, celestial && heavenCharge != null ? heavenCharge : chargeClip);
         transient.pitch = Mathf.Clamp((celestial && heavenCharge != null ? heavenCharge.length : .8f) / Mathf.Max(.1f, seconds), .5f, 2f);
-        transient.volume = player ? .16f : .20f;
+        transient.volume = (player ? .16f : .20f) * SfxMix.Gain(ChargeCue);
         transient.Play();
     }
 
@@ -74,10 +77,11 @@ public sealed class LaserSound : MonoBehaviour
             {
                 lastIgnition = Time.time;
                 transient.pitch = celestial ? .78f : 1;
-                transient.volume = friendly ? .18f : .24f;
-                transient.PlayOneShot(celestial && heavenIgnition != null ? heavenIgnition : friendly && playerIgnitionClip != null ? playerIgnitionClip : ignitionClip);
+                transient.volume = (friendly ? .18f : .24f) * SfxMix.Gain(FireCue);
+                var ignition = SfxMix.Resolve(FireCue, celestial && heavenIgnition != null ? heavenIgnition : friendly && playerIgnitionClip != null ? playerIgnitionClip : ignitionClip);
+                if (ignition != null) transient.PlayOneShot(ignition);
             }
-            bed.clip = friendly && playerSustainClip != null ? playerSustainClip : sustainClip;
+            bed.clip = SfxMix.Resolve(SustainCue, friendly && playerSustainClip != null ? playerSustainClip : sustainClip);
             if (bed.clip != null)
             {
                 bed.pitch = celestial ? .55f : SustainPitch;
@@ -94,15 +98,16 @@ public sealed class LaserSound : MonoBehaviour
             {
                 lastRelease = Time.time;
                 transient.pitch = 1;
-                transient.volume = .14f;
-                transient.PlayOneShot(releaseClip);
+                transient.volume = .14f * SfxMix.Gain("beamRelease");
+                var release = SfxMix.Resolve("beamRelease", releaseClip);
+                if (release != null) transient.PlayOneShot(release);
             }
         }
         // The emitter can cool faster on later loops. Fade the release with that
         // same envelope so pooling never cuts an audible sample in mid-waveform.
         if (cooling)
-            transient.volume = .14f * Mathf.Clamp01(power / .4f);
-        bed.volume = (friendly ? .11f : .15f) * Mathf.Clamp01(power) / Mathf.Sqrt(Mathf.Max(1, sustaining));
+            transient.volume = .14f * SfxMix.Gain("beamRelease") * Mathf.Clamp01(power / .4f);
+        bed.volume = (friendly ? .11f : .15f) * SfxMix.Gain(SustainCue) * Mathf.Clamp01(power) / Mathf.Sqrt(Mathf.Max(1, sustaining));
         if (cooling && power <= .005f)
             StopBed();
     }

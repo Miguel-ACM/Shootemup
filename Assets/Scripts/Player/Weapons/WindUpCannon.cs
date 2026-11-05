@@ -10,7 +10,7 @@ public sealed class WindUpCannon : AWeapon
 
     public int Level => Charge >= 1.2f ? 3 : Charge >= .45f ? 2 : 1;
     public bool Charging => isShootingPrimary || isShootingSecondary;
-    public float SecondsToFullCharge => 1.2f / Mathf.Max(.01f, MagnifyingLens.Rate * GameRules.playerShootSpeed / 10f);
+    public float SecondsToFullCharge => 1.2f / Mathf.Max(.01f, MagnifyingLens.Rate * GameRules.playerShootSpeed / 10f * ActiveRate);
     int previousLevel;
     SpriteRenderer core;
     AudioSource winding;
@@ -45,6 +45,8 @@ public sealed class WindUpCannon : AWeapon
             winding.clip = ItemSound.Clip("windup");
         }
         winding.pitch = .8f;
+        winding.clip = ItemSound.Clip("windup");
+        winding.volume = .18f * ItemSound.Gain("windup");
         winding.Play();
     }
 
@@ -75,6 +77,7 @@ public sealed class WindUpCannon : AWeapon
         Charge = Mathf.Min(1.2f, Charge + 1.2f * dt / SecondsToFullCharge);
         winding.UnPause();
         winding.pitch = .8f + Charge * .4f;
+        winding.volume = .18f * ItemSound.Gain("windup");
         core.transform.position = transform.position + new Vector3(0, .5f, -2);
         float worldSize = .1f + .16f * Charge / 1.2f;
         core.transform.localScale = new Vector3(worldSize / transform.lossyScale.x, worldSize / transform.lossyScale.y, 1);

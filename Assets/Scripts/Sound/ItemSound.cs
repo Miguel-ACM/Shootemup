@@ -47,12 +47,15 @@ public sealed class ItemSound : MonoBehaviour
                     if (entry != null && !string.IsNullOrEmpty(entry.cue))
                         levels[entry.cue] = Mathf.Clamp(entry.gain, 0, 1.5f);
         }
-        return levels.TryGetValue(cue, out float gain) ? gain : 1;
+        return (levels.TryGetValue(cue, out float gain) ? gain : 1) * SfxMix.Gain(cue);
     }
 
     // Approved sample picks win; otherwise the procedural bank (F9 toggles it) replaces the older takes.
     public static AudioClip Clip(string cue)
     {
+        var selected = SfxMix.Override(cue);
+        if (selected != null)
+            return selected;
         if (!approved.TryGetValue(cue, out var pick))
             approved[cue] = pick = Resources.Load<AudioClip>("Sounds/ItemApproved/" + cue);
         if (pick != null)
@@ -70,7 +73,7 @@ public sealed class ItemSound : MonoBehaviour
     {
         string selected = Clip(cue) != null ? cue : fallback;
         if (!string.IsNullOrEmpty(selected))
-            Play(selected, volume, pitch, cooldown);
+            Play(selected, volume * (selected != cue ? SfxMix.Gain(cue) : 1), pitch, cooldown);
     }
 
     public static void Play(string cue, float volume = .18f, float pitch = 1, float cooldown = .08f)

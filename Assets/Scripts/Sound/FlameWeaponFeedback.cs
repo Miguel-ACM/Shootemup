@@ -39,6 +39,7 @@ public sealed class FlameWeaponFeedback : MonoBehaviour
     {
         if (!lit)
         {
+            bed.clip = ItemSound.Clip("itemFlameSustain");
             lit = true;
             ItemSound.Cue("itemFlameIgnite", volume: .1f, cooldown: .1f);
             if (HasApprovedLoop && !bed.isPlaying)
