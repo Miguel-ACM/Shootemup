@@ -127,7 +127,7 @@ public sealed class VoidGiantsReviewRuntime : MonoBehaviour
                     if (Time.frameCount > capturedAt + 3) samples.Add(frameTimer.LastValue / 1000000.0);
                     physicsPeak = Math.Max(physicsPeak, physicsTimer.LastValue / 1000000.0);
                 }
-                Check(complete && byCard[0] >= 8 && byCard[1] >= 8,
+                Check(complete && byCard[0] >= 2 && byCard[1] >= 2,
                     $"{difficulty} form {boss.Form}: both cards complete with giant peaks {byCard[0]}/{byCard[1]}.");
                 Check(peak < CombatRound.Limit && giantPeak < 800 && CombatRound.CreatedCount == created,
                     $"{difficulty} form {boss.Form}: total peak {peak}, giant peak {giantPeak}; warmed reserves only.");
@@ -146,7 +146,7 @@ public sealed class VoidGiantsReviewRuntime : MonoBehaviour
                     if (difficulty == RunDifficulty.Hard && boss.InterludeElapsed > 8 && !shot)
                     { Capture(ReviewVoidGiants.Folder + "/Interlude-" + phase); shot = true; }
                 }
-                Check(interludePeak >= 8 && CombatRound.CreatedCount == created,
+                Check(interludePeak >= 2 && CombatRound.CreatedCount == created,
                     difficulty + " interlude " + phase + " giant peak=" + interludePeak + "; no projectile construction.");
             }
         }

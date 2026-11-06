@@ -1,0 +1,48 @@
+Void passage correction — 6 November 2026
+
+Miguel rejected the overlapping giant-bullet carpet. The earlier review accepted
+projectile counts, pooling and small hitboxes without rejecting the visibly
+blocked playfield. This pass corrects the attack composition itself.
+
+Giants now occupy sparse outer accents with two neighbouring lanes omitted.
+The cards use wider moving openings, longer release spacing, deliberate rests
+and shorter projectile residency. The scythe keeps its chevrons and charged
+lasers; the jaws retain their mirrored teeth and separated splitting comets.
+Comet shards open narrower, separated fans instead of overlapping broad fans.
+
+The final form alternates opposing emitter banks rather than firing all four
+together. Its giants travel outward without bouncing; its smaller ricochets and
+charged aimed replies remain. The slow secondary carpet is removed. All three
+one-sided survival barrages have wider moving slits, rested phrases and spaced
+giants. Existing artwork, colors, giant hitboxes, health and pool sizes remain.
+
+One isolated native gameplay batch reviewed both cards of all available forms
+and every interlude on Easy, Normal and Hard. All completed without constructing
+additional projectile objects. The Hard final form peaked at 119 total rounds
+and 6 giants in this review, versus 1406 total and 273 giants in the earlier
+VoidGiantsReview. Across the new Hard fight the highest peaks were 322 rounds
+and 16 giants. These are recorded encounter peaks, not universal caps.
+
+The additional route check samples full sprite bounds, swept over 0.1 seconds,
+with 0.12 world units of padding. It includes active beams and the boss contact
+body. A 0.2-unit grid tracks reachable positions at 4 units/second inside the
+lower 68% of the playable arena, starting separately at bottom-left, centre and
+right. All three starts retained continuous sampled routes through every tested
+form and interlude. The 7/7 value in Checks.txt is the three-start bit mask.
+Worst Hard visual occupancy in this conservative model was 55.0% during the
+third interlude; the final form reached 44.8%.
+
+This is a conservative sampled-space check of the recorded firing field, with
+the production watcher's aim target fixed at its usual position. It is not a
+reactive automated pilot, an exact continuous solver, or proof of a human
+no-hit clear. Actual crowded captures for all eight cards and three interludes,
+plus sampled final-phase motion, were also inspected for readable open space.
+
+Before-after.png compares the prior final-card capture on the left with a new
+crowded final-card capture on the right. Void-passages.mp4 shows 86 actual
+offscreen gameplay frames at 15 fps. No projectile pixels were changed.
+
+Windows player build succeeded with zero errors and zero warnings. Review and
+build used Build/ReviewCache/Temp/UnlockReview, isolated saves and no interaction
+with the live Unity editor. The earlier giant-usage review now checks for spaced
+giant presence rather than the eight-orb minimum used for the former composition.

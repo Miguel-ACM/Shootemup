@@ -1,0 +1,38 @@
+PASS Hard form 1: both cards, peak=322, giants=14, no projectile construction.
+PASS Hard form 1: full-sprite routes from left/centre/right starts=7/7; worst visual coverage=52,3 %.
+PASS Hard interlude 1: giant peak=4; warmed pool only.
+PASS Hard interlude 1: full-sprite routes=7/7; worst visual coverage=35,7 %.
+PASS Hard form 2: both cards, peak=208, giants=6, no projectile construction.
+PASS Hard form 2: full-sprite routes from left/centre/right starts=7/7; worst visual coverage=41,4 %.
+PASS Hard interlude 2: giant peak=6; warmed pool only.
+PASS Hard interlude 2: full-sprite routes=7/7; worst visual coverage=52,4 %.
+PASS Hard form 3: both cards, peak=284, giants=16, no projectile construction.
+PASS Hard form 3: full-sprite routes from left/centre/right starts=7/7; worst visual coverage=52,6 %.
+PASS Hard interlude 3: giant peak=6; warmed pool only.
+PASS Hard interlude 3: full-sprite routes=7/7; worst visual coverage=55,0 %.
+PASS Hard form 4: both cards, peak=119, giants=6, no projectile construction.
+PASS Hard form 4: full-sprite routes from left/centre/right starts=7/7; worst visual coverage=44,8 %.
+PASS Normal form 1: both cards, peak=185, giants=11, no projectile construction.
+PASS Normal form 1: full-sprite routes from left/centre/right starts=7/7; worst visual coverage=38,8 %.
+PASS Normal interlude 1: giant peak=2; warmed pool only.
+PASS Normal interlude 1: full-sprite routes=7/7; worst visual coverage=21,3 %.
+PASS Normal form 2: both cards, peak=104, giants=5, no projectile construction.
+PASS Normal form 2: full-sprite routes from left/centre/right starts=7/7; worst visual coverage=32,1 %.
+PASS Normal interlude 2: giant peak=6; warmed pool only.
+PASS Normal interlude 2: full-sprite routes=7/7; worst visual coverage=37,1 %.
+PASS Normal form 3: both cards, peak=175, giants=11, no projectile construction.
+PASS Normal form 3: full-sprite routes from left/centre/right starts=7/7; worst visual coverage=40,4 %.
+PASS Normal interlude 3: giant peak=4; warmed pool only.
+PASS Normal interlude 3: full-sprite routes=7/7; worst visual coverage=41,5 %.
+PASS Normal form 4: both cards, peak=71, giants=5, no projectile construction.
+PASS Normal form 4: full-sprite routes from left/centre/right starts=7/7; worst visual coverage=33,9 %.
+PASS Easy form 1: both cards, peak=95, giants=8, no projectile construction.
+PASS Easy form 1: full-sprite routes from left/centre/right starts=7/7; worst visual coverage=30,1 %.
+PASS Easy interlude 1: giant peak=2; warmed pool only.
+PASS Easy interlude 1: full-sprite routes=7/7; worst visual coverage=11,0 %.
+PASS Easy form 2: both cards, peak=59, giants=5, no projectile construction.
+PASS Easy form 2: full-sprite routes from left/centre/right starts=7/7; worst visual coverage=25,6 %.
+PASS Easy interlude 2: giant peak=4; warmed pool only.
+PASS Easy interlude 2: full-sprite routes=7/7; worst visual coverage=29,1 %.
+PASS Easy form 4: both cards, peak=38, giants=4, no projectile construction.
+PASS Easy form 4: full-sprite routes from left/centre/right starts=7/7; worst visual coverage=25,4 %.
