@@ -69,13 +69,13 @@ public static class ProfileHeaven
         var target=new GameObject("Moving eye weapon regression",typeof(MeshFilter),typeof(MeshRenderer));
         var enemy=target.AddComponent<HeavenWeaponTarget>();
         var hull=target.AddComponent<PolygonCollider2D>();hull.isTrigger=true;
-        hull.points=new[]{new Vector2(-.7f,-.7f),new Vector2(-.7f,.7f),new Vector2(.7f,.7f),new Vector2(.7f,-.7f)};
-        var angel=target.AddComponent<HeavenAngelVisual>();angel.Build(hull);angel.Pose(2.3f);
+        hull.points=Enumerable.Range(0,32).Select(i=>new Vector2(Mathf.Cos(i*Mathf.PI/16),Mathf.Sin(i*Mathf.PI/16))*2.7f).ToArray();
+        var angel=target.AddComponent<HeavenAngelVisual>();angel.Build();angel.Pose(2.3f);
         Physics2D.SyncTransforms();
         var eye=Enumerable.Range(0,HeavenAngelVisual.EyeCounts[0]).Select(i=>angel.Wheel(0).GetChild(i).position).OrderByDescending(p=>Mathf.Abs(p.x)).First();
         Vector2 a=(Vector2)eye+Vector2.down*.4f,b=(Vector2)eye+Vector2.up*.4f;
         void Check(bool okay,string label){notes.Add((okay?"PASS ":"FAIL ")+label);if(!okay)throw new Exception(label);}
-        Check(!BeamContact.Touches(hull,a,b,.02f,out _) && BeamContact.Touches(enemy,a,b,.02f,out _),"A beam hits an outer moving eye even when it misses the core.");
+        Check(BeamContact.Touches(hull,a,b,.02f,out _) && BeamContact.Touches(enemy,a,b,.02f,out _),"A beam hits the shared body at an outer eye.");
         Check(enemy.ClosestDamagePoint(eye,out var closest)&&Vector2.Distance(closest,eye)<.001f,"Area damage and burning trails reach an outer eye.");
         var weapon=new GameObject("Beam and drill probe");var beam=weapon.AddComponent<BeamEmitter>();
         var path=new[]{new Vector3(eye.x,-4,0),new Vector3(eye.x,4,0)};
@@ -170,27 +170,8 @@ public sealed class HeavenProfileRuntime : MonoBehaviour
         boss.StopAllCoroutines();
         Clear();
         var colliders = boss.GetComponents<PolygonCollider2D>();
-        Check(colliders.Length == 37 && colliders.All(c => c.pathCount == 1 && c.GetComponent<AEnemy>() == boss),
-            "37 independent single-path eye/core colliders retain the same damage owner.");
-        float error = 0;
-        for (int pose = 0; pose < 120; pose++)
-        {
-            boss.Angel.Pose(pose * .37f);
-            int collider = 1;
-            for (int bank = 0; bank < 3; bank++)
-                for (int eye = 0; eye < HeavenAngelVisual.EyeCounts[bank]; eye++)
-                {
-                    var anchor = boss.Angel.Wheel(bank).GetChild(eye);
-                    var points = colliders[collider++].GetPath(0);
-                    for (int i = 0; i < 8; i++)
-                    {
-                        float angle = i * Mathf.PI * 2 / 8;
-                        Vector2 expected = boss.transform.InverseTransformPoint(anchor.TransformPoint(new Vector3(Mathf.Cos(angle)*.27f, Mathf.Sin(angle)*.14f, 0)));
-                        error = Mathf.Max(error, Vector2.Distance(expected, points[i]));
-                    }
-                }
-        }
-        Check(error < .00001f, "All moving eye vertices match their previous outlines through 120 tumbling poses; max error=" + error);
+        Check(colliders.Length == 1 && colliders[0].pathCount == 1 && colliders[0].GetComponent<AEnemy>() == boss,
+            "One continuous whole-body collider owns all Heaven damage.");
         int allocated = CombatRound.CreatedCount;
         var border = CombatRound.Border;
         for (int i = 0; i < 3600; i++)

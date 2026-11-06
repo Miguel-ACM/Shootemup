@@ -83,10 +83,7 @@ public class ReviewRegressionTests
             Assert.AreEqual(0, hell.PhaseFraction, .0001f);
 
             var desert = TestEnemy<DesertWormBoss>(root.transform, 2700);
-            for (int i = 0; i < desert.Cores.Length; i++)
-                desert.Cores[i] = TestEnemy<DesertWormCore>(root.transform, i == 0 ? 670 : 290);
-            for (int i = 0; i < 4; i++)
-                desert.Cores[i].health = 0;
+            desert.health *= .5f;
             Assert.AreEqual(0, desert.PhaseFraction, .0001f);
 
             foreach (bool heavyFirst in new[] { false, true })
@@ -165,25 +162,22 @@ public class ReviewRegressionTests
     }
 
     [Test]
-    public void HomingSkipsProtectedHullAndCore()
+    public void HomingSkipsProtectedBossHull()
     {
         var hullObject = new UnityEngine.GameObject("Protected hull");
         var targetObject = new UnityEngine.GameObject("Eligible target");
         hullObject.SetActive(false);
         targetObject.SetActive(false);
         var hull = hullObject.AddComponent<SpaceCitadelBoss>();
-        var core = hullObject.AddComponent<SpaceBossPart>();
         var target = targetObject.AddComponent<ThunderLanceBoss>();
         ProbeAccess.Set(target, "openingComplete", true);
         targetObject.transform.position = UnityEngine.Vector3.up * 2;
         AEnemy.Live.Add(hull);
-        AEnemy.Live.Add(core);
         AEnemy.Live.Add(target);
         try { Assert.AreSame(target, CombatUpgrades.Nearest(UnityEngine.Vector3.zero, null, 5)); }
         finally
         {
             AEnemy.Live.Remove(hull);
-            AEnemy.Live.Remove(core);
             AEnemy.Live.Remove(target);
             UnityEngine.Object.DestroyImmediate(hullObject);
             UnityEngine.Object.DestroyImmediate(targetObject);
@@ -214,12 +208,6 @@ public class ReviewRegressionTests
             Assert.IsFalse(boss.CanReceiveDamage);
             ProbeAccess.Set(boss, "age", 1.5f + .7f * LevelRun.EnemyTempoScale);
             Assert.IsTrue(boss.CanReceiveDamage);
-            foreach (Type type in new[] { typeof(SpaceBossPart), typeof(HellCrabHead), typeof(DesertWormCore) })
-            {
-                var part = (AEnemy)go.AddComponent(type);
-                Assert.IsFalse(part.CanReceiveDamage); // Detached parts cannot accept hits either.
-                Assert.AreEqual(0, CombatHit.Apply(part, 10, UnityEngine.Vector3.zero, UnityEngine.Vector2.up));
-            }
         }
         finally { UnityEngine.Object.DestroyImmediate(go); }
     }

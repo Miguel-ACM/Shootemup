@@ -1,0 +1,379 @@
+PASS FieldsBomberBoss-1 has exactly one root collider with one continuous path.
+PASS FieldsBomberBoss-1 has one shared damage owner.
+PASS FieldsBomberBoss-1 body contact is shared by bullets, beams and area effects.
+PASS FieldsBomberBoss-1 homing can select the nearby body.
+PASS FieldsBomberBoss-1 a native projectile damages shared health exactly once.
+PASS FieldsBomberBoss-1 advances through shared health and protects its phase break.
+PASS FieldsBomberBoss-1 rejects damage and coatings during the break.
+PASS FieldsBomberBoss-2 has exactly one root collider with one continuous path.
+PASS FieldsBomberBoss-2 has one shared damage owner.
+PASS FieldsBomberBoss-2 body contact is shared by bullets, beams and area effects.
+PASS FieldsBomberBoss-2 homing can select the nearby body.
+PASS FieldsBomberBoss-2 a native projectile damages shared health exactly once.
+PASS FieldsBomberBoss-2 advances through shared health and protects its phase break.
+PASS FieldsBomberBoss-2 rejects damage and coatings during the break.
+PASS FieldsBomberBoss-3 has exactly one root collider with one continuous path.
+PASS FieldsBomberBoss-3 has one shared damage owner.
+PASS FieldsBomberBoss-3 body contact is shared by bullets, beams and area effects.
+PASS FieldsBomberBoss-3 homing can select the nearby body.
+PASS FieldsBomberBoss-3 a native projectile damages shared health exactly once.
+PASS FieldsBomberBoss has one whole-body death and disables contact.
+PASS PlainsRedKiteBoss-1 has exactly one root collider with one continuous path.
+PASS PlainsRedKiteBoss-1 has one shared damage owner.
+PASS PlainsRedKiteBoss-1 body contact is shared by bullets, beams and area effects.
+PASS PlainsRedKiteBoss-1 homing can select the nearby body.
+PASS PlainsRedKiteBoss-1 a native projectile damages shared health exactly once.
+PASS PlainsRedKiteBoss-1 advances through shared health and protects its phase break.
+PASS PlainsRedKiteBoss-1 rejects damage and coatings during the break.
+PASS PlainsRedKiteBoss-2 has exactly one root collider with one continuous path.
+PASS PlainsRedKiteBoss-2 has one shared damage owner.
+PASS PlainsRedKiteBoss-2 body contact is shared by bullets, beams and area effects.
+PASS PlainsRedKiteBoss-2 homing can select the nearby body.
+PASS PlainsRedKiteBoss-2 a native projectile damages shared health exactly once.
+PASS PlainsRedKiteBoss-2 advances through shared health and protects its phase break.
+PASS PlainsRedKiteBoss-2 rejects damage and coatings during the break.
+PASS PlainsRedKiteBoss-3 has exactly one root collider with one continuous path.
+PASS PlainsRedKiteBoss-3 has one shared damage owner.
+PASS PlainsRedKiteBoss-3 body contact is shared by bullets, beams and area effects.
+PASS PlainsRedKiteBoss-3 homing can select the nearby body.
+PASS PlainsRedKiteBoss-3 a native projectile damages shared health exactly once.
+PASS PlainsRedKiteBoss has one whole-body death and disables contact.
+PASS PlainsRedKiteBoss completes its finale and removes the shared damage owner.
+PASS PlainsThreshingDrumBoss-1 has exactly one root collider with one continuous path.
+PASS PlainsThreshingDrumBoss-1 has one shared damage owner.
+PASS PlainsThreshingDrumBoss-1 body contact is shared by bullets, beams and area effects.
+PASS PlainsThreshingDrumBoss-1 homing can select the nearby body.
+PASS PlainsThreshingDrumBoss-1 a native projectile damages shared health exactly once.
+PASS PlainsThreshingDrumBoss-1 advances through shared health and protects its phase break.
+PASS PlainsThreshingDrumBoss-1 rejects damage and coatings during the break.
+PASS PlainsThreshingDrumBoss-2 has exactly one root collider with one continuous path.
+PASS PlainsThreshingDrumBoss-2 has one shared damage owner.
+PASS PlainsThreshingDrumBoss-2 body contact is shared by bullets, beams and area effects.
+PASS PlainsThreshingDrumBoss-2 homing can select the nearby body.
+PASS PlainsThreshingDrumBoss-2 a native projectile damages shared health exactly once.
+PASS PlainsThreshingDrumBoss-2 advances through shared health and protects its phase break.
+PASS PlainsThreshingDrumBoss-2 rejects damage and coatings during the break.
+PASS PlainsThreshingDrumBoss-3 has exactly one root collider with one continuous path.
+PASS PlainsThreshingDrumBoss-3 has one shared damage owner.
+PASS PlainsThreshingDrumBoss-3 body contact is shared by bullets, beams and area effects.
+PASS PlainsThreshingDrumBoss-3 homing can select the nearby body.
+PASS PlainsThreshingDrumBoss-3 a native projectile damages shared health exactly once.
+PASS PlainsThreshingDrumBoss has one whole-body death and disables contact.
+PASS PlainsThreshingDrumBoss completes its finale and removes the shared damage owner.
+PASS Fields miniboss retains one body collider and damage owner.
+PASS TunnelSawBoss-1 has exactly one root collider with one continuous path.
+PASS TunnelSawBoss-1 has one shared damage owner.
+PASS TunnelSawBoss-1 body contact is shared by bullets, beams and area effects.
+PASS TunnelSawBoss-1 homing can select the nearby body.
+PASS TunnelSawBoss-1 a native projectile damages shared health exactly once.
+PASS TunnelSawBoss-1 advances through shared health and protects its phase break.
+PASS TunnelSawBoss-1 rejects damage and coatings during the break.
+PASS TunnelSawBoss-2 has exactly one root collider with one continuous path.
+PASS TunnelSawBoss-2 has one shared damage owner.
+PASS TunnelSawBoss-2 body contact is shared by bullets, beams and area effects.
+PASS TunnelSawBoss-2 homing can select the nearby body.
+PASS TunnelSawBoss-2 a native projectile damages shared health exactly once.
+PASS TunnelSawBoss-2 advances through shared health and protects its phase break.
+PASS TunnelSawBoss-2 rejects damage and coatings during the break.
+PASS TunnelSawBoss-3 has exactly one root collider with one continuous path.
+PASS TunnelSawBoss-3 has one shared damage owner.
+PASS TunnelSawBoss-3 body contact is shared by bullets, beams and area effects.
+PASS TunnelSawBoss-3 homing can select the nearby body.
+PASS TunnelSawBoss-3 a native projectile damages shared health exactly once.
+PASS TunnelSawBoss has one whole-body death and disables contact.
+PASS TunnelSawBoss completes its finale and removes the shared damage owner.
+PASS Tunnel miniboss retains one body collider and damage owner.
+PASS SnowIcebreakerBoss-1 has exactly one root collider with one continuous path.
+PASS SnowIcebreakerBoss-1 has one shared damage owner.
+PASS SnowIcebreakerBoss-1 body contact is shared by bullets, beams and area effects.
+PASS SnowIcebreakerBoss-1 homing can select the nearby body.
+PASS SnowIcebreakerBoss-1 a native projectile damages shared health exactly once.
+PASS SnowIcebreakerBoss-1 advances through shared health and protects its phase break.
+PASS SnowIcebreakerBoss-1 rejects damage and coatings during the break.
+PASS SnowIcebreakerBoss-2 has exactly one root collider with one continuous path.
+PASS SnowIcebreakerBoss-2 has one shared damage owner.
+PASS SnowIcebreakerBoss-2 body contact is shared by bullets, beams and area effects.
+PASS SnowIcebreakerBoss-2 homing can select the nearby body.
+PASS SnowIcebreakerBoss-2 a native projectile damages shared health exactly once.
+PASS SnowIcebreakerBoss-2 advances through shared health and protects its phase break.
+PASS SnowIcebreakerBoss-2 rejects damage and coatings during the break.
+PASS SnowIcebreakerBoss-3 has exactly one root collider with one continuous path.
+PASS SnowIcebreakerBoss-3 has one shared damage owner.
+PASS SnowIcebreakerBoss-3 body contact is shared by bullets, beams and area effects.
+PASS SnowIcebreakerBoss-3 homing can select the nearby body.
+PASS SnowIcebreakerBoss-3 a native projectile damages shared health exactly once.
+PASS SnowIcebreakerBoss has one whole-body death and disables contact.
+PASS SnowIcebreakerBoss completes its finale and removes the shared damage owner.
+PASS Snow miniboss retains one body collider and damage owner.
+PASS Thunder miniboss retains one body collider and damage owner.
+PASS CitySwitchyardBoss-1 has exactly one root collider with one continuous path.
+PASS CitySwitchyardBoss-1 has one shared damage owner.
+PASS CitySwitchyardBoss-1 body contact is shared by bullets, beams and area effects.
+PASS CitySwitchyardBoss-1 homing can select the nearby body.
+PASS CitySwitchyardBoss-1 a native projectile damages shared health exactly once.
+PASS CitySwitchyardBoss-1 advances through shared health and protects its phase break.
+PASS CitySwitchyardBoss-1 rejects damage and coatings during the break.
+PASS CitySwitchyardBoss-2 has exactly one root collider with one continuous path.
+PASS CitySwitchyardBoss-2 has one shared damage owner.
+PASS CitySwitchyardBoss-2 body contact is shared by bullets, beams and area effects.
+PASS CitySwitchyardBoss-2 homing can select the nearby body.
+PASS CitySwitchyardBoss-2 a native projectile damages shared health exactly once.
+PASS CitySwitchyardBoss-2 advances through shared health and protects its phase break.
+PASS CitySwitchyardBoss-2 rejects damage and coatings during the break.
+PASS CitySwitchyardBoss-3 has exactly one root collider with one continuous path.
+PASS CitySwitchyardBoss-3 has one shared damage owner.
+PASS CitySwitchyardBoss-3 body contact is shared by bullets, beams and area effects.
+PASS CitySwitchyardBoss-3 homing can select the nearby body.
+PASS CitySwitchyardBoss-3 a native projectile damages shared health exactly once.
+PASS CitySwitchyardBoss has one whole-body death and disables contact.
+PASS CitySwitchyardBoss completes its finale and removes the shared damage owner.
+PASS City miniboss retains one body collider and damage owner.
+PASS DesertWormBoss-1 has exactly one root collider with one continuous path.
+PASS DesertWormBoss-1 has one shared damage owner.
+PASS DesertWormBoss-1 continuous outline contains every articulated section.
+PASS DesertWormBoss-1 body contact is shared by bullets, beams and area effects.
+PASS DesertWormBoss-1 homing can select the nearby body.
+PASS DesertWormBoss-1 a native projectile damages shared health exactly once.
+PASS DesertWormBoss-1 advances through shared health and protects its phase break.
+PASS DesertWormBoss-1 rejects damage and coatings during the break.
+PASS DesertWormBoss-2 has exactly one root collider with one continuous path.
+PASS DesertWormBoss-2 has one shared damage owner.
+PASS DesertWormBoss-2 continuous outline contains every articulated section.
+PASS DesertWormBoss-2 body contact is shared by bullets, beams and area effects.
+PASS DesertWormBoss-2 homing can select the nearby body.
+PASS DesertWormBoss-2 a native projectile damages shared health exactly once.
+PASS DesertWormBoss-2 advances through shared health and protects its phase break.
+PASS DesertWormBoss-2 rejects damage and coatings during the break.
+PASS DesertWormBoss-3 has exactly one root collider with one continuous path.
+PASS DesertWormBoss-3 has one shared damage owner.
+PASS DesertWormBoss-3 continuous outline contains every articulated section.
+PASS DesertWormBoss-3 body contact is shared by bullets, beams and area effects.
+PASS DesertWormBoss-3 homing can select the nearby body.
+PASS DesertWormBoss-3 a native projectile damages shared health exactly once.
+PASS DesertWormBoss has one whole-body death and disables contact.
+PASS DesertWormBoss completes its finale and removes the shared damage owner.
+PASS Desert miniboss retains one body collider and damage owner.
+PASS Candyland miniboss retains one body collider and damage owner.
+PASS SpaceCitadelBoss-1 has exactly one root collider with one continuous path.
+PASS SpaceCitadelBoss-1 has one shared damage owner.
+PASS SpaceCitadelBoss-1 body contact is shared by bullets, beams and area effects.
+PASS SpaceCitadelBoss-1 homing can select the nearby body.
+PASS SpaceCitadelBoss-1 a native projectile damages shared health exactly once.
+PASS SpaceCitadelBoss-1 advances through shared health and protects its phase break.
+PASS SpaceCitadelBoss-1 rejects damage and coatings during the break.
+PASS SpaceCitadelBoss-2 has exactly one root collider with one continuous path.
+PASS SpaceCitadelBoss-2 has one shared damage owner.
+PASS SpaceCitadelBoss-2 body contact is shared by bullets, beams and area effects.
+PASS SpaceCitadelBoss-2 homing can select the nearby body.
+PASS SpaceCitadelBoss-2 a native projectile damages shared health exactly once.
+PASS SpaceCitadelBoss-2 advances through shared health and protects its phase break.
+PASS SpaceCitadelBoss-2 rejects damage and coatings during the break.
+PASS SpaceCitadelBoss-3 has exactly one root collider with one continuous path.
+PASS SpaceCitadelBoss-3 has one shared damage owner.
+PASS SpaceCitadelBoss-3 body contact is shared by bullets, beams and area effects.
+PASS SpaceCitadelBoss-3 homing can select the nearby body.
+PASS SpaceCitadelBoss-3 a native projectile damages shared health exactly once.
+PASS SpaceCitadelBoss has one whole-body death and disables contact.
+PASS SpaceCitadelBoss completes its finale and removes the shared damage owner.
+PASS Space miniboss retains one body collider and damage owner.
+PASS Underwater miniboss retains one body collider and damage owner.
+PASS HellCrabBoss-1 has exactly one root collider with one continuous path.
+PASS HellCrabBoss-1 has one shared damage owner.
+PASS HellCrabBoss-1 body contact is shared by bullets, beams and area effects.
+PASS HellCrabBoss-1 homing can select the nearby body.
+PASS HellCrabBoss-1 a native projectile damages shared health exactly once.
+PASS HellCrabBoss-1 advances through shared health and protects its phase break.
+PASS HellCrabBoss-1 rejects damage and coatings during the break.
+PASS HellCrabBoss-2 has exactly one root collider with one continuous path.
+PASS HellCrabBoss-2 has one shared damage owner.
+PASS HellCrabBoss-2 body contact is shared by bullets, beams and area effects.
+PASS HellCrabBoss-2 homing can select the nearby body.
+PASS HellCrabBoss-2 a native projectile damages shared health exactly once.
+PASS HellCrabBoss-2 advances through shared health and protects its phase break.
+PASS HellCrabBoss-2 rejects damage and coatings during the break.
+PASS HellCrabBoss-3 has exactly one root collider with one continuous path.
+PASS HellCrabBoss-3 has one shared damage owner.
+PASS HellCrabBoss-3 body contact is shared by bullets, beams and area effects.
+PASS HellCrabBoss-3 homing can select the nearby body.
+PASS HellCrabBoss-3 a native projectile damages shared health exactly once.
+PASS HellCrabBoss has one whole-body death and disables contact.
+PASS HellCrabBoss completes its finale and removes the shared damage owner.
+PASS Hell miniboss retains one body collider and damage owner.
+PASS SeraphJudicatorBoss-1 has exactly one root collider with one continuous path.
+PASS SeraphJudicatorBoss-1 has one shared damage owner.
+PASS SeraphJudicatorBoss-1 the single body contains every moving eye.
+PASS SeraphJudicatorBoss-1 body contact is shared by bullets, beams and area effects.
+PASS SeraphJudicatorBoss-1 homing can select the nearby body.
+PASS SeraphJudicatorBoss-1 a native projectile damages shared health exactly once.
+PASS Dense Heaven frame/physics review uses one boss collider and warmed bullets.
+Heaven, 3600-round stress, 600 complete frames: CPU p95=10,714ms max=22,643ms; physics p95=0,933ms. Rendering excluded.
+PASS SeraphJudicatorBoss-1 advances through shared health and protects its phase break.
+PASS SeraphJudicatorBoss-1 rejects damage and coatings during the break.
+PASS SeraphJudicatorBoss-2 has exactly one root collider with one continuous path.
+PASS SeraphJudicatorBoss-2 has one shared damage owner.
+PASS SeraphJudicatorBoss-2 the single body contains every moving eye.
+PASS SeraphJudicatorBoss-2 body contact is shared by bullets, beams and area effects.
+PASS SeraphJudicatorBoss-2 homing can select the nearby body.
+PASS SeraphJudicatorBoss-2 a native projectile damages shared health exactly once.
+PASS SeraphJudicatorBoss-2 advances through shared health and protects its phase break.
+PASS SeraphJudicatorBoss-2 rejects damage and coatings during the break.
+PASS SeraphJudicatorBoss-3 has exactly one root collider with one continuous path.
+PASS SeraphJudicatorBoss-3 has one shared damage owner.
+PASS SeraphJudicatorBoss-3 the single body contains every moving eye.
+PASS SeraphJudicatorBoss-3 body contact is shared by bullets, beams and area effects.
+PASS SeraphJudicatorBoss-3 homing can select the nearby body.
+PASS SeraphJudicatorBoss-3 a native projectile damages shared health exactly once.
+PASS SeraphJudicatorBoss has one whole-body death and disables contact.
+PASS SeraphJudicatorBoss completes its finale and removes the shared damage owner.
+PASS Heaven miniboss retains one body collider and damage owner.
+PASS VoidSovereignBoss-1 has exactly one root collider with one continuous path.
+PASS VoidSovereignBoss-1 has one shared damage owner.
+PASS VoidSovereignBoss-1 body contact is shared by bullets, beams and area effects.
+PASS VoidSovereignBoss-1 homing can select the nearby body.
+PASS VoidSovereignBoss-1 a native projectile damages shared health exactly once.
+PASS VoidSovereignBoss-1 advances through shared health and protects its phase break.
+PASS VoidSovereignBoss-1 rejects damage and coatings during the break.
+PASS VoidSovereignBoss-2 has exactly one root collider with one continuous path.
+PASS VoidSovereignBoss-2 has one shared damage owner.
+PASS VoidSovereignBoss-2 body contact is shared by bullets, beams and area effects.
+PASS VoidSovereignBoss-2 homing can select the nearby body.
+PASS VoidSovereignBoss-2 a native projectile damages shared health exactly once.
+PASS VoidSovereignBoss-2 advances through shared health and protects its phase break.
+PASS VoidSovereignBoss-2 rejects damage and coatings during the break.
+PASS VoidSovereignBoss-3 has exactly one root collider with one continuous path.
+PASS VoidSovereignBoss-3 has one shared damage owner.
+PASS VoidSovereignBoss-3 body contact is shared by bullets, beams and area effects.
+PASS VoidSovereignBoss-3 homing can select the nearby body.
+PASS VoidSovereignBoss-3 a native projectile damages shared health exactly once.
+PASS VoidSovereignBoss-3 advances through shared health and protects its phase break.
+PASS VoidSovereignBoss-3 rejects damage and coatings during the break.
+PASS VoidSovereignBoss-4 has exactly one root collider with one continuous path.
+PASS VoidSovereignBoss-4 has one shared damage owner.
+PASS VoidSovereignBoss-4 body contact is shared by bullets, beams and area effects.
+PASS VoidSovereignBoss-4 homing can select the nearby body.
+PASS VoidSovereignBoss-4 a native projectile damages shared health exactly once.
+PASS VoidSovereignBoss has one whole-body death and disables contact.
+PASS VoidSovereignBoss completes its finale and removes the shared damage owner.
+PASS AbyssSubmarineBoss-1 has exactly one root collider with one continuous path.
+PASS AbyssSubmarineBoss-1 has one shared damage owner.
+PASS AbyssSubmarineBoss-1 body contact is shared by bullets, beams and area effects.
+PASS AbyssSubmarineBoss-1 homing can select the nearby body.
+PASS AbyssSubmarineBoss-1 a native projectile damages shared health exactly once.
+PASS AbyssSubmarineBoss-1 advances through shared health and protects its phase break.
+PASS AbyssSubmarineBoss-1 rejects damage and coatings during the break.
+PASS AbyssSubmarineBoss-2 has exactly one root collider with one continuous path.
+PASS AbyssSubmarineBoss-2 has one shared damage owner.
+PASS AbyssSubmarineBoss-2 body contact is shared by bullets, beams and area effects.
+PASS AbyssSubmarineBoss-2 homing can select the nearby body.
+PASS AbyssSubmarineBoss-2 a native projectile damages shared health exactly once.
+PASS AbyssSubmarineBoss-2 advances through shared health and protects its phase break.
+PASS AbyssSubmarineBoss-2 rejects damage and coatings during the break.
+PASS AbyssSubmarineBoss-3 has exactly one root collider with one continuous path.
+PASS AbyssSubmarineBoss-3 has one shared damage owner.
+PASS AbyssSubmarineBoss-3 body contact is shared by bullets, beams and area effects.
+PASS AbyssSubmarineBoss-3 homing can select the nearby body.
+PASS AbyssSubmarineBoss-3 a native projectile damages shared health exactly once.
+PASS AbyssSubmarineBoss has one whole-body death and disables contact.
+PASS AbyssSubmarineBoss completes its finale and removes the shared damage owner.
+PASS SnowSiegeBoss-1 has exactly one root collider with one continuous path.
+PASS SnowSiegeBoss-1 has one shared damage owner.
+PASS SnowSiegeBoss-1 engine flames remain outside the damage body.
+PASS SnowSiegeBoss-1 body contact is shared by bullets, beams and area effects.
+PASS SnowSiegeBoss-1 homing can select the nearby body.
+PASS SnowSiegeBoss-1 a native projectile damages shared health exactly once.
+PASS SnowSiegeBoss-1 advances through shared health and protects its phase break.
+PASS SnowSiegeBoss-1 rejects damage and coatings during the break.
+PASS SnowSiegeBoss-2 has exactly one root collider with one continuous path.
+PASS SnowSiegeBoss-2 has one shared damage owner.
+PASS SnowSiegeBoss-2 engine flames remain outside the damage body.
+PASS SnowSiegeBoss-2 body contact is shared by bullets, beams and area effects.
+PASS SnowSiegeBoss-2 homing can select the nearby body.
+PASS SnowSiegeBoss-2 a native projectile damages shared health exactly once.
+PASS SnowSiegeBoss-2 advances through shared health and protects its phase break.
+PASS SnowSiegeBoss-2 rejects damage and coatings during the break.
+PASS SnowSiegeBoss-3 has exactly one root collider with one continuous path.
+PASS SnowSiegeBoss-3 has one shared damage owner.
+PASS SnowSiegeBoss-3 engine flames remain outside the damage body.
+PASS SnowSiegeBoss-3 body contact is shared by bullets, beams and area effects.
+PASS SnowSiegeBoss-3 homing can select the nearby body.
+PASS SnowSiegeBoss-3 a native projectile damages shared health exactly once.
+PASS SnowSiegeBoss has one whole-body death and disables contact.
+PASS SnowSiegeBoss completes its finale and removes the shared damage owner.
+PASS ThunderLanceBoss-1 has exactly one root collider with one continuous path.
+PASS ThunderLanceBoss-1 has one shared damage owner.
+PASS ThunderLanceBoss-1 engine flames remain outside the damage body.
+PASS ThunderLanceBoss-1 body contact is shared by bullets, beams and area effects.
+PASS ThunderLanceBoss-1 homing can select the nearby body.
+PASS ThunderLanceBoss-1 a native projectile damages shared health exactly once.
+PASS ThunderLanceBoss-1 advances through shared health and protects its phase break.
+PASS ThunderLanceBoss-1 rejects damage and coatings during the break.
+PASS ThunderLanceBoss-2 has exactly one root collider with one continuous path.
+PASS ThunderLanceBoss-2 has one shared damage owner.
+PASS ThunderLanceBoss-2 engine flames remain outside the damage body.
+PASS ThunderLanceBoss-2 body contact is shared by bullets, beams and area effects.
+PASS ThunderLanceBoss-2 homing can select the nearby body.
+PASS ThunderLanceBoss-2 a native projectile damages shared health exactly once.
+PASS ThunderLanceBoss-2 advances through shared health and protects its phase break.
+PASS ThunderLanceBoss-2 rejects damage and coatings during the break.
+PASS ThunderLanceBoss-3 has exactly one root collider with one continuous path.
+PASS ThunderLanceBoss-3 has one shared damage owner.
+PASS ThunderLanceBoss-3 engine flames remain outside the damage body.
+PASS ThunderLanceBoss-3 body contact is shared by bullets, beams and area effects.
+PASS ThunderLanceBoss-3 homing can select the nearby body.
+PASS ThunderLanceBoss-3 a native projectile damages shared health exactly once.
+PASS ThunderLanceBoss has one whole-body death and disables contact.
+PASS ThunderLanceBoss completes its finale and removes the shared damage owner.
+PASS CityHeavy-1 has exactly one root collider with one continuous path.
+PASS CityHeavy-1 has one shared damage owner.
+PASS CityHeavy-1 engine flames remain outside the damage body.
+PASS CityHeavy-1 body contact is shared by bullets, beams and area effects.
+PASS CityHeavy-1 homing can select the nearby body.
+PASS CityHeavy-1 a native projectile damages shared health exactly once.
+PASS CityDuoBoss-1 has exactly one root collider with one continuous path.
+PASS CityDuoBoss-1 has one shared damage owner.
+PASS CityDuoBoss-1 engine flames remain outside the damage body.
+PASS CityDuoBoss-1 body contact is shared by bullets, beams and area effects.
+PASS CityDuoBoss-1 homing can select the nearby body.
+PASS CityDuoBoss-1 a native projectile damages shared health exactly once.
+PASS CityDuoBoss-1 advances through shared health and protects its phase break.
+PASS CityDuoBoss-1 rejects damage and coatings during the break.
+PASS CityDuoBoss-2 has exactly one root collider with one continuous path.
+PASS CityDuoBoss-2 has one shared damage owner.
+PASS CityDuoBoss-2 engine flames remain outside the damage body.
+PASS CityDuoBoss-2 body contact is shared by bullets, beams and area effects.
+PASS CityDuoBoss-2 homing can select the nearby body.
+PASS CityDuoBoss-2 a native projectile damages shared health exactly once.
+PASS CityDuoBoss-2 advances through shared health and protects its phase break.
+PASS CityDuoBoss-2 rejects damage and coatings during the break.
+PASS CityDuoBoss-3 has exactly one root collider with one continuous path.
+PASS CityDuoBoss-3 has one shared damage owner.
+PASS CityDuoBoss-3 engine flames remain outside the damage body.
+PASS CityDuoBoss-3 body contact is shared by bullets, beams and area effects.
+PASS CityDuoBoss-3 homing can select the nearby body.
+PASS CityDuoBoss-3 a native projectile damages shared health exactly once.
+PASS CityDuoBoss has one whole-body death and disables contact.
+PASS CityDuoBoss completes its finale and removes the shared damage owner.
+PASS CandyRegentBoss-1 has exactly one root collider with one continuous path.
+PASS CandyRegentBoss-1 has one shared damage owner.
+PASS CandyRegentBoss-1 engine flames remain outside the damage body.
+PASS CandyRegentBoss-1 body contact is shared by bullets, beams and area effects.
+PASS CandyRegentBoss-1 homing can select the nearby body.
+PASS CandyRegentBoss-1 a native projectile damages shared health exactly once.
+PASS CandyRegentBoss-1 advances through shared health and protects its phase break.
+PASS CandyRegentBoss-1 rejects damage and coatings during the break.
+PASS CandyRegentBoss-2 has exactly one root collider with one continuous path.
+PASS CandyRegentBoss-2 has one shared damage owner.
+PASS CandyRegentBoss-2 engine flames remain outside the damage body.
+PASS CandyRegentBoss-2 body contact is shared by bullets, beams and area effects.
+PASS CandyRegentBoss-2 homing can select the nearby body.
+PASS CandyRegentBoss-2 a native projectile damages shared health exactly once.
+PASS CandyRegentBoss-2 advances through shared health and protects its phase break.
+PASS CandyRegentBoss-2 rejects damage and coatings during the break.
+PASS CandyRegentBoss-3 has exactly one root collider with one continuous path.
+PASS CandyRegentBoss-3 has one shared damage owner.
+PASS CandyRegentBoss-3 engine flames remain outside the damage body.
+PASS CandyRegentBoss-3 body contact is shared by bullets, beams and area effects.
+PASS CandyRegentBoss-3 homing can select the nearby body.
+PASS CandyRegentBoss-3 a native projectile damages shared health exactly once.
+PASS CandyRegentBoss has one whole-body death and disables contact.
+PASS CandyRegentBoss completes its finale and removes the shared damage owner.

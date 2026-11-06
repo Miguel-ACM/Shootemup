@@ -1,5 +1,4 @@
 using UnityEngine;
-using Unity.Profiling;
 
 // Ophanim: three independently turning, eye-covered wheels surrounding one living core.
 public sealed class HeavenAngelVisual : MonoBehaviour
@@ -11,15 +10,10 @@ public sealed class HeavenAngelVisual : MonoBehaviour
     public static Material Surface=>material!=null?material:material=new Material(Resources.Load<Shader>("HeavenAngel")){name="Living pearl and celestial gold"};
     readonly Transform[] wheels=new Transform[3];
     readonly Transform[][] eyes=new Transform[3][];
-    readonly Vector2[] contactPoints=new Vector2[8];
-    static readonly Vector3[] eyeOutline=EyeOutline();
-    static readonly ProfilerMarker eyeContactsMarker=new ProfilerMarker("Heaven.EyeColliders");
-    readonly PolygonCollider2D[] eyeContacts=new PolygonCollider2D[36];
     Transform coreEye,iris;
     readonly Transform[] committed=new Transform[5];
     bool praying;
     float prayer,wheelClock;
-    PolygonCollider2D hitbox;
     float clock;
     public int Phase { get; set; } = 1;
     public Transform Wheel(int index)=>wheels[index];
@@ -40,9 +34,8 @@ public sealed class HeavenAngelVisual : MonoBehaviour
         float angle=index*Mathf.PI*2/EyeCounts[wheel];
         return new Vector3(Mathf.Cos(angle)*Radii[wheel],Mathf.Sin(angle)*Radii[wheel],-.23f);
     }
-    public void Build(PolygonCollider2D damageHull=null)
+    public void Build()
     {
-        hitbox=damageHull;
         GetComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.HeavenAngelCore();
         GetComponent<MeshRenderer>().sharedMaterial=Surface;
         coreEye=new GameObject("Central living eye").transform;coreEye.SetParent(transform,false);coreEye.localPosition=new Vector3(0,0,-.8f);
@@ -62,29 +55,7 @@ public sealed class HeavenAngelVisual : MonoBehaviour
                 port.localRotation=Quaternion.Euler(0,0,eye*360f/EyeCounts[ring]+90);eyes[ring][eye]=port;
             }
         }
-        if(hitbox!=null)
-        {
-            // SetPath rebuilds ALL shapes on that collider. Keeping 37 paths in one
-            // collider rebuilt the entire angel 36 times each frame. Independent
-            // single-path colliders retain the exact moving eye outlines and owner.
-            for(int i=0;i<eyeContacts.Length;i++)
-            {
-                var contact=hitbox.gameObject.AddComponent<PolygonCollider2D>();
-                contact.isTrigger=hitbox.isTrigger;
-                eyeContacts[i]=contact;
-            }
-        }
         Pose(0);
-    }
-    static Vector3[] EyeOutline()
-    {
-        var points=new Vector3[8];
-        for(int i=0;i<points.Length;i++)
-        {
-            float angle=i*Mathf.PI*2/points.Length;
-            points[i]=new Vector3(Mathf.Cos(angle)*.27f,Mathf.Sin(angle)*.14f,0);
-        }
-        return points;
     }
     public void Pray(bool active)
     {
@@ -110,17 +81,6 @@ public sealed class HeavenAngelVisual : MonoBehaviour
     public void Pose(float seconds)
     {
         for(int ring=0;ring<3;ring++)wheels[ring].localRotation=Orientation(ring,seconds);
-        if(hitbox==null)return;
-        using var sample=eyeContactsMarker.Auto();
-        var worldToHull=hitbox.transform.worldToLocalMatrix;
-        int path=0;
-        foreach(var bank in eyes)foreach(var eye in bank)
-        {
-            var projection=worldToHull*eye.localToWorldMatrix;
-            for(int vertex=0;vertex<contactPoints.Length;vertex++)
-                contactPoints[vertex]=projection.MultiplyPoint3x4(eyeOutline[vertex]);
-            eyeContacts[path++].SetPath(0,contactPoints);
-        }
     }
     public Transform Emitter(int slot)
     {

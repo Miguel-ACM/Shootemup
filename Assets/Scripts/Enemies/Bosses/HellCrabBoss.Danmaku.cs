@@ -108,7 +108,7 @@ public sealed partial class HellCrabBoss
     // Slow souls that stop, stare, then dart at the player one after another.
     void SoulSnipe(int eye)
     {
-        if (eye < 0 || eyes[eye] == null || Head == null || Head.health <= 0)
+        if (eye < 0 || eyes[eye] == null || health <= 0)
             return;
         int souls = Dense(phaseTwo ? 9 : 7);
         var port = eyes[eye].position;

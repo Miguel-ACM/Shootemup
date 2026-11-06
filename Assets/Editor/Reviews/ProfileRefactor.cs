@@ -148,8 +148,7 @@ public sealed class RefactorFrameProfile : MonoBehaviour
                 {
                     if (boss is SpaceCitadelBoss citadel && frame == 600)
                     {
-                        citadel.Reactor.health = citadel.health * .49f;
-                        citadel.PartChanged();
+                        citadel.health = citadel.health * .49f;
                     }
                     typeof(DistrictBoss).GetMethod("EnterPhase", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(boss, new object[] { frame == 600 ? 2 : 3 });
                 }

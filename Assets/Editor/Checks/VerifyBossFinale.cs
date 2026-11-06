@@ -271,11 +271,7 @@ public sealed class BossFinaleReview : MonoBehaviour
                 var stop = ship.gameObject.AddComponent<WorldTimeStop>();
                 stop.Begin(2);
             }
-            if (boss is DesertWormBoss worm)
-                foreach (var core in worm.Cores)
-                    Kill(core);
-            else
-                Kill(boss);
+            Kill(boss);
             var death = BossDestruction.Current;
             Check(death != null && death.Source == boss && boss.gameObject.activeInHierarchy && !boss.enabled && CombatDecision.Active, label + ": lethal damage retains the intact hull while stopping combat");
             Check(death.Wreckage != null && !death.Wreckage.gameObject.activeSelf, label + ": wreckage remains hidden until the shatter accent");

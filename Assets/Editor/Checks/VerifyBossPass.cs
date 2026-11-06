@@ -127,7 +127,7 @@ public sealed class BossPassRuntime : MonoBehaviour
         {
             if(level!=LevelId.Void&&SessionState.GetBool("BossPassVoidOnly",false))continue;
             if(level==LevelId.Heaven&&SessionState.GetBool("BossPassFixes",false))
-            {Check(File.ReadAllText(VerifyBossPass.Folder+"/Progress-Initial.txt").Contains("PASS Heaven-3 retains central and eye damage paths"),"Heaven three-phase review retained from initial batch");continue;}
+            {Check(File.ReadAllText(VerifyBossPass.Folder+"/Progress-Initial.txt").Contains("PASS Heaven-3 retains one whole-body damage path"),"Heaven three-phase review retained from initial batch");continue;}
             watcher.SelectLevel(level);yield return Ready();
             var entries=WatcherCatalog.For(WatcherView.Bosses,level);
             foreach(var type in DistrictWaves.Bosses(level))
@@ -182,7 +182,7 @@ public sealed class BossPassRuntime : MonoBehaviour
                 if(voidBoss!=null&&voidBoss.Teleporting)
                 {
                     teleport=true;moved|=Vector3.Distance(start,boss.transform.position)>2;
-                    if(voidBoss.CanBeTargeted||voidBoss.CanReceiveDamage||voidBoss.GetComponent<CircleCollider2D>().enabled)errors.Add(label+" vulnerable during teleport");
+                    if(voidBoss.CanBeTargeted||voidBoss.CanReceiveDamage||voidBoss.GetComponent<Collider2D>().enabled)errors.Add(label+" vulnerable during teleport");
                 }
                 if(Time.time<next)continue;next=Time.time+.5f;frame++;
                 foreach(var round in CombatRound.Live)
@@ -197,7 +197,7 @@ public sealed class BossPassRuntime : MonoBehaviour
             Check(peak>25&&peak<CombatRound.Limit,label+" live round peak "+peak);
             Check(CombatRound.CreatedCount==created,label+" uses prepared bullet pool (created "+(CombatRound.CreatedCount-created)+")");
             if(voidBoss!=null)Check(teleport&&moved,label+" teleports with damage, targeting and contact disabled");
-            if(angel!=null)Check(angel.GetComponent<PolygonCollider2D>().pathCount==37,label+" retains central and eye damage paths");
+            if(angel!=null)Check(angel.GetComponent<PolygonCollider2D>().pathCount==1,label+" retains one whole-body damage path");
             if(phase==boss.PhaseCount)continue;
             while(!boss.CanReceiveDamage)yield return null;
             boss.damage(boss.health*.51f);yield return null;

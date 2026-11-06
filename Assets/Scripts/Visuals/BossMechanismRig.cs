@@ -74,8 +74,7 @@ public sealed class BossMechanismRig : MonoBehaviour
             Pair(hull,"Pressure tube ventilation",0,.69f,.35f,-.62f,.27f,6,35);
         else if(boss is HellCrabBoss crab)
         {
-            for(int i=0;i<3;i++)Pair(crab.Head.Visual,"Breathing carapace gill",3,.92f-i*.10f,.48f-i*.27f,-.68f,.45f+i*.06f,7,13);
-            PartHitFeedback.Bind(crab.Head.Visual);
+            for(int i=0;i<3;i++)Pair(crab.Hull,"Breathing carapace gill",3,.92f-i*.10f,.48f-i*.27f,-.68f,.45f+i*.06f,7,13);
         }
         else if(boss is DesertWormBoss worm)
         {

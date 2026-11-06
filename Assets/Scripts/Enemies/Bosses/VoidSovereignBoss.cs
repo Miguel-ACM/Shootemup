@@ -16,15 +16,14 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
     public int Form=>Difficulty.Easy && CurrentPhase==3 ? 4 : CurrentPhase;
     MeshFilter mesh;
     VoidAnatomyVisual body;
-    CircleCollider2D contact;
+    Collider2D contact;
     readonly LineRenderer[] edgeTell=new LineRenderer[4];
     protected override void Configure(){health=3900;hullScale=1.1f;attackInterval=.5f;nextAttack=1;}
     protected override void Start()
     {
-        base.Start();mesh=Hull.GetComponent<MeshFilter>();contact=GetComponent<CircleCollider2D>();
+        base.Start();mesh=Hull.GetComponent<MeshFilter>();contact=GetComponent<PolygonCollider2D>();
         Hull.GetComponent<MeshRenderer>().sharedMaterial=Body;
         body=Hull.gameObject.AddComponent<VoidAnatomyVisual>();body.Build(this);
-        PartHitFeedback.Bind(Hull);
         // The source has no engines. Every form has a coherent solid central target.
         GetComponent<CombatHullVisual>().enabled=false;
         for(int i=0;i<4;i++){edgeTell[i]=CombatVisuals.Line(transform,LevelProjectilePalette.Accent(LevelId.Void),.06f);edgeTell[i].positionCount=2;edgeTell[i].enabled=false;}
@@ -33,7 +32,6 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
     void SetForm()
     {
         body.SetForm(Form-1);
-        contact.radius=Form==1?.68f:Form==2?.88f:Form==3?1.0f:.74f;
         Hull.localRotation=Quaternion.identity;
         for(int i=0;i<4;i++)
         {

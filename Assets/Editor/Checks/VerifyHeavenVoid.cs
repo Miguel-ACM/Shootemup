@@ -272,7 +272,7 @@ public sealed class HeavenVoidReview:MonoBehaviour
         watcher.SelectView(WatcherView.Bosses);watcher.SelectEncounter(WaveWatcher.BossOne);yield return null;
         SeraphJudicatorBoss boss=null;while(boss==null||boss.Angel==null){boss=FindAnyObjectByType<SeraphJudicatorBoss>();yield return null;}
         var collider=boss.GetComponent<PolygonCollider2D>();var visual=boss.Angel;
-        Check(visual.TotalEyes==37&&boss.GetComponents<PolygonCollider2D>().Sum(c=>c.pathCount)==37,"37 sculpted eyes with core and eye damage paths");
+        Check(visual.TotalEyes==37&&boss.GetComponents<PolygonCollider2D>().Sum(c=>c.pathCount)==1,"37 sculpted eyes share one body collider");
         Check(boss.GetComponent<EnemyThrusters>()==null,"Angel has no engines");
         var rotations=new[]{visual.Wheel(0).localRotation,visual.Wheel(1).localRotation,visual.Wheel(2).localRotation};
         bool attached=true;int beams=0;

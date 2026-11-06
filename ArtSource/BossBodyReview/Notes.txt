@@ -1,0 +1,44 @@
+One body collider per boss - 6 November 2026
+
+Every active boss now owns one root Collider2D and one shared damage target.
+Heaven's 37 eye/core colliders are replaced with one continuous body outline.
+Desert's reactors, Hell's head and Space's event horizon no longer own separate
+health or damage components. The whole worm, crab pincers and accretion disk can
+be shot. Each of City's two independent ships retains its own collider and health.
+
+Existing authored outlines and the submarine capsule are retained. Other hulls
+use cached mesh outlines, projected with their moving anatomy into one polygon.
+Exhaust effects and hidden meshes are excluded. Void preloads every form's outline.
+The worm uses one ribbon following its articulated sections; its reactors retire
+visually and stop firing with shared health loss. Total starting health is unchanged.
+Shared body hit flashes do not move the collider. Homing measures boss proximity
+from the damage body, allowing selection beside a wing, pincer or worm section.
+
+Review: 378 passing assertions, all 16 active boss types, 50 phase/body cases,
+and the 11 district minibosses. Native gameplay used Normal; phase meter and
+invulnerability/targeting regressions separately covered Easy, Normal and Hard.
+Verified one collider/one polygon path, one damage owner, native projectile hits
+applied once, beam and area contact, nearby-body targeting, phase protection,
+and whole-body death cleanup. City was checked with both ships present.
+
+The batch retained completed cases while correcting specific failures: the review
+needed to release its suspended campaign decision after deaths; cached body parts
+needed a destroyed-mesh guard; the worm's material block needed Start initialization;
+and the submarine probe needed to strike before another frame could submerge it.
+Only affected or unfinished cases were resumed. Offscreen visual inspection caught
+engine flames extending four hull outlines; those effects were excluded and only
+Snow Siege, City Duo, Thunder Lance and Candy Regent were rechecked.
+
+Heaven stress: 3600 pooled rounds, 600 complete editor frames including physics.
+CPU p95 10.714 ms, maximum 22.643 ms; native physics p95 0.933 ms. No additional
+projectile objects were created. Rendering was excluded from this timing sample;
+this is not a full rendered gameplay frame-rate measurement.
+
+Collider-sheet.png contains native offscreen previews with cyan debug outlines.
+Rows, left to right:
+1: Submarine, Candy, City duo, Switchyard, Desert worm.
+2: Bomber, Hell crab, Red Kite, Threshing Drum, Heaven.
+3: Icebreaker, Snow Siege, Space, Thunder, Tunnel.
+4: Void forms 1-4, City's other ship.
+The cyan lines are review overlays only. Individual Heaven, worm, crab and Space
+captures are included. Build.txt records the final isolated Windows build result.

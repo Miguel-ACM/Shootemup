@@ -309,12 +309,11 @@ public sealed class BossRadianceReview : MonoBehaviour
                     CombatRound.ClearAll();
                     if (boss is DesertWormBoss worm)
                     {
-                        for (int i = 1; i <= 4; i++)
-                            worm.Cores[i].damage(100000);
+                        worm.damage(worm.health * .55f);
                     }
                     else if (boss is SpaceCitadelBoss station)
                     {
-                        station.Reactor.damage(station.health * .55f);
+                        station.damage(station.health * .55f);
                     }
                     else if (boss is CityDuoBoss duo)
                     {

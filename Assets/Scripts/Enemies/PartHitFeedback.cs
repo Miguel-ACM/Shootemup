@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Only the struck module flashes and recoils. Never move its parent hull or collider.
+// Recoil an independent visual module, or flash a shared boss body without moving its collider.
 [DefaultExecutionOrder(150)]
 public sealed class PartHitFeedback : MonoBehaviour
 {
@@ -10,16 +10,18 @@ public sealed class PartHitFeedback : MonoBehaviour
     Vector2 kick;
     float heat;
     MaterialPropertyBlock ink;
+    bool recoil = true;
     void Awake()
     {
         ink = new MaterialPropertyBlock();
     }
 
     public float Heat => heat;
-    public static PartHitFeedback Bind(Transform visual)
+    public static PartHitFeedback Bind(Transform visual, bool recoil = true)
     {
         var hit = visual.gameObject.AddComponent<PartHitFeedback>();
         hit.visual = visual;
+        hit.recoil = recoil;
         hit.rest = visual.localPosition;
         hit.scale = visual.localScale;
         hit.meshes = visual.GetComponentsInChildren<MeshRenderer>();
@@ -35,8 +37,11 @@ public sealed class PartHitFeedback : MonoBehaviour
     void LateUpdate()
     {
         heat = Mathf.Max(0, heat - Time.deltaTime * 7.5f);
-        visual.localPosition = rest + (Vector3)kick * (Mathf.Sin(heat * Mathf.PI) * .055f);
-        visual.localScale = scale * (1 + Mathf.Sin(heat * Mathf.PI) * .10f);
+        if (recoil)
+        {
+            visual.localPosition = rest + (Vector3)kick * (Mathf.Sin(heat * Mathf.PI) * .055f);
+            visual.localScale = scale * (1 + Mathf.Sin(heat * Mathf.PI) * .10f);
+        }
         foreach (var mesh in meshes)
             if (mesh != null && mesh.enabled)
             {

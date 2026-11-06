@@ -239,7 +239,7 @@ public sealed class DesertReview : MonoBehaviour
         var worm = (DesertWormBoss)DistrictEnemy.Spawn(typeof(DesertWormBoss), new Vector3(0, Camera.UpLimit + 3, 1));
         yield return null;
         yield return null;
-        Check(worm.Cores.Length == 8 && worm.RemainingParts == 8, "eight independently targetable boss reactors");
+        Check(worm.Cores.Length == 8 && worm.GetComponentsInChildren<AEnemy>().Length == 1, "eight visual firing reactors share one boss damage target");
         float health = worm.health;
         worm.damage(1000000);
         Check(Mathf.Approximately(worm.health, health), "armor cannot bypass the reactors");
@@ -263,31 +263,22 @@ public sealed class DesertReview : MonoBehaviour
         Check(allReactorsVisible, "all moving reactors stay within the visible arena throughout the full patrol");
         Check(right - left > 2 * (half - 1.25f) * .85f && bottom < view.transform.position.y - view.orthographicSize * .70f && top > view.transform.position.y + view.orthographicSize * .70f, "worm patrols both sides, the lower corners and the top of the full arena");
         Check(worm.Cores.All(c => Mathf.Abs(c.transform.position.x) < half - .45f), "all boss weakpoints fit inside the visible playfield");
-        // Physics-driven stock rounds must reach an actual moving red weakpoint.
+        // Physics-driven stock rounds reach the continuous moving body.
         var target = worm.Cores[2];
-        float before = target.health;
+        float before = worm.health;
         for (int shot = 0; shot < 8; shot++)
         {
-            PlayerRound.Spawn(target.transform.position + Vector3.down * .5f, Vector2.up, 20, 12, PlayerDelivery.Pulse, 0);
+            PlayerRound.Spawn(target.position + Vector3.down * .5f, Vector2.up, 20, 12, PlayerDelivery.Pulse, 0);
             yield return new WaitForSeconds(.08f);
         }
-        Check(target.health < before, "real player projectiles damage a moving body reactor");
-        worm.Cores[0].damage(1000000);
-        yield return null;
-        Check(worm != null && worm.RemainingParts == 7, "head destruction alone cannot kill the boss");
-        worm.Cores[0].damage(1000000);
-        Check(worm.RemainingParts == 7, "destroyed cores ignore repeated damage");
-        for (int i = 1; i <= 5; i++)
-            worm.Cores[i].damage(1000000);
-        yield return new WaitForSeconds(1);
+        Check(worm.health < before, "real player projectiles damage the shared moving body");
+        worm.damage(worm.health * .55f);
+        yield return new WaitForSeconds(2.4f);
+        Check(worm != null && worm.CurrentPhase >= 2, "shared health advances the worm phase");
         Capture("DamagedBoss");
-        Check(worm != null && worm.RemainingParts == 2, "all remaining body parts are required");
-        for (int i = 6; i < 8; i++)
-            worm.Cores[i].damage(1000000);
-        yield return null;
-        yield return null;
-        Check(worm == null, "final core triggers normal boss death");
-        Check(!AEnemy.Live.OfType<DesertWormCore>().Any(), "boss cleanup removes all reactor targets");
+        worm.damage(1000000);
+        yield return new WaitForSeconds(5);
+        Check(worm == null, "shared hull depletion completes the boss finale");
         LevelRun.Reset(LevelId.Thunder, 17381);
         LevelRun.GetChoices(out var routeLeft, out var routeRight);
         Check(routeLeft == LevelId.Desert && routeRight == LevelId.Candyland, "third district offers Desert or Candyland");

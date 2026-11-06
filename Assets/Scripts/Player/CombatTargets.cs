@@ -12,7 +12,9 @@ public static class CombatTargets
         {
             if (enemy == null || !enemy.CanBeTargeted || excluded != null && excluded.Contains(enemy))
                 continue;
-            float distance = ((Vector2)(enemy.transform.position - position)).sqrMagnitude;
+            Vector2 target = enemy.transform.position;
+            if (enemy is DistrictBoss && enemy.ClosestDamagePoint(position, out var body)) target = body;
+            float distance = (target - (Vector2)position).sqrMagnitude;
             if (distance < nearest)
             {
                 nearest = distance;

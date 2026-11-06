@@ -19,7 +19,7 @@ using System.Collections;
 //     flinging spiral arms back out, both always running and trading dominance.
 public sealed partial class SpaceCitadelBoss
 {
-    Vector3 Core => Reactor != null ? Reactor.transform.position : transform.position;
+    Vector3 Core => CoreVisual != null ? CoreVisual.position : transform.position;
     MaterialPropertyBlock wellInk;
     bool drawingIn;
     readonly LineRenderer[] orbitArcs=new LineRenderer[28];
@@ -27,7 +27,7 @@ public sealed partial class SpaceCitadelBoss
     const float OrbitStep=2.6f;
     protected override void Attack()
     {
-        if (Reactor != null)
+        if (CoreVisual != null)
             OpenCards();
     }
 
@@ -54,7 +54,7 @@ public sealed partial class SpaceCitadelBoss
         }
     }
 
-    Transform CoreBody => Reactor != null ? Reactor.transform : transform;
+    Transform CoreBody => CoreVisual != null ? CoreVisual : transform;
 
     // Accretion brightens the disk itself; the singularity stays dark.
     void OpenWell(bool inward)

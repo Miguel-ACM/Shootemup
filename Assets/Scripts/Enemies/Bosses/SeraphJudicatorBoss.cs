@@ -2,10 +2,8 @@ using System.Collections;
 using UnityEngine;
 
 [UnityEngine.Scripting.Preserve]
-public sealed class SeraphJudicatorBoss : ArmoredHullBoss
+public sealed class SeraphJudicatorBoss : DistrictBoss
 {
-    static readonly Vector2[] outline={new(0,-.82f),new(-.6f,-.6f),new(-.91f,0),new(-.6f,.6f),new(0,.82f),new(.6f,.6f),new(.91f,0),new(.6f,-.6f)};
-    protected override Vector2[] Outline=>outline;
     public HeavenAngelVisual Angel { get; private set; }
     public int CardIndex { get; private set; }
     bool anchored;
@@ -16,8 +14,7 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
         base.Start();
         GetComponent<CombatHullVisual>().enabled=false;
         Angel=Hull.gameObject.AddComponent<HeavenAngelVisual>();
-        Angel.Build(GetComponent<PolygonCollider2D>());
-        PartHitFeedback.Bind(Hull);
+        Angel.Build();
         FollowEyes();
         for(int i=0;i<apparitions.Length;i++)
         {
@@ -49,6 +46,7 @@ public sealed class SeraphJudicatorBoss : ArmoredHullBoss
         Pray(false);Angel.Phase=phase;
         foreach(var glow in apparitions)glow.enabled=false;
     }
+    protected override void Attack() { if(openingComplete)OpenCards(); }
     protected override IEnumerator Cards()
     {
         while(true)

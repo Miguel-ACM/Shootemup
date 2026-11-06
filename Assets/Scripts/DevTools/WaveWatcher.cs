@@ -651,8 +651,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
         }
     }
 
-    // Deals the damage that opens the next phase: the boss's own objectives for multipart
-    // encounters, its hull health otherwise.
+    // Advance the shared hull health; City still advances when its partner dies.
     static void PushToPhase(DistrictBoss boss, DistrictBoss victim, int phase)
     {
         if (boss is VoidSovereignBoss)
@@ -670,52 +669,20 @@ public sealed partial class WaveWatcher : MonoBehaviour
                     victim.damage(1000000);
                 }
             }
-            else if (boss is DesertWormBoss worm)
-            {
-                for (int i = 1; i <= 4; i++)
-                    worm.Cores[i].damage(1000000);
-            }
-            else if (boss is SpaceCitadelBoss station)
-            {
-                ThinParts(boss, station.Parts, .49f);
-            }
             else if (boss is ThunderLanceBoss thunder)
                 ThinHull(boss, thunder.phaseTwoThreshold * .95f);
-            else if (boss is HellCrabBoss crab)
-                ThinParts(boss, crab.HeadParts, .49f);
             else
                 ThinHull(boss, .49f);
             return;
         }
         float goal = boss is CityDuoBoss ? .43f : .23f;
-        if (boss is DesertWormBoss desert)
-            ThinParts(boss, desert.Cores, goal);
-        else if (boss is SpaceCitadelBoss citadel)
-            ThinParts(boss, citadel.Parts, goal);
-        else if (boss is HellCrabBoss hell)
-            ThinParts(boss, hell.HeadParts, goal);
-        else
-            ThinHull(boss, goal);
+        ThinHull(boss, goal);
     }
 
     static void ThinHull(DistrictBoss boss, float fraction)
     {
         if (boss.HealthFraction > fraction)
             boss.health *= fraction / boss.HealthFraction;
-    }
-
-    static void ThinParts(DistrictBoss boss, IEnumerable<AEnemy> parts, float fraction)
-    {
-        float total = 0;
-        foreach (var part in parts)
-            if (part != null && part.health > 0)
-                total += part.health;
-        float initial = boss.health / Mathf.Max(.0001f, boss.HealthFraction), keep = fraction * initial / Mathf.Max(1, total);
-        if (keep >= 1)
-            return;
-        foreach (var part in parts)
-            if (part != null && part.health > 0)
-                part.damage(part.health * (1 - keep) / Mathf.Max(.001f, GameRules.enemyDamageReceived));
     }
 
     RectTransform Box(Transform parent, string name, Vector2 position, Vector2 size, Color color)

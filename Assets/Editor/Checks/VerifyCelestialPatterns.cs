@@ -205,7 +205,7 @@ public sealed class CelestialPatternRuntime : MonoBehaviour
                         if(angel!=null&&Vector2.Distance(p,boss.transform.position)>2.8f)remote++;
                         if(space!=null&&sink.GetValue(shot)!=null)
                         {
-                            if(Vector2.Distance(p,space.Reactor.transform.position)>6)far++;
+                            if(Vector2.Distance(p,space.transform.position)>6)far++;
                             if(r.Contains(p))spawnBands|=1<<Mathf.Clamp((int)((p.y-r.yMin)/r.height*4),0,3);
                         }
                     }
@@ -227,15 +227,15 @@ public sealed class CelestialPatternRuntime : MonoBehaviour
                     Check(first&&second&&up>30&&down>80,label+" both cards; upward="+up+" direct downward="+down);
                     Check(remote>40,label+" empty-air choir emissions="+remote);
                     Check(rotation>300&&angel.Angel.Phase==phase,label+" continuous phase-scaled wheel rotation="+rotation.ToString("F0"));
-                    Check(angel.GetComponent<PolygonCollider2D>().pathCount==37,label+" eye collision paths retained");
+                    Check(angel.GetComponent<PolygonCollider2D>().pathCount==1,label+" single whole-body collision path retained");
                 }
                 if(sovereign!=null)Check(first&&second,label+" both form-specific cards");
                 if(space!=null)Check(far>40&&spawnBands==15,label+" arena-wide circular births; distant="+far+" bands="+spawnBands);
                 frames.Sort();if(frames.Count>0)notes.Add(label+" CPU main-thread p95="+frames[(int)(frames.Count*.95)].ToString("F2")+"ms max="+frames[^1].ToString("F2")+"ms (headless)");
             }
             if(phase==boss.PhaseCount)continue;
-            while(!(space!=null?space.Reactor.CanReceiveDamage:boss.CanReceiveDamage)||(sovereign!=null&&sovereign.Teleporting))yield return null;
-            if(space!=null)space.Reactor.damage(space.Reactor.health*(phase==1?.51f:.55f));else boss.damage(boss.health*(sovereign!=null?.6f:phase==1?.51f:.55f));
+            while(!(space!=null?space.CanReceiveDamage:boss.CanReceiveDamage)||(sovereign!=null&&sovereign.Teleporting))yield return null;
+            if(space!=null)space.damage(space.health*(phase==1?.51f:.55f));else boss.damage(boss.health*(sovereign!=null?.6f:phase==1?.51f:.55f));
             while(boss.CurrentPhase==phase)yield return null;
             if(sovereign!=null)yield return Interlude(sovereign,mode,phase);
         }

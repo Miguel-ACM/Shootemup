@@ -209,7 +209,7 @@ public sealed class VoidVisualRoutes
             {bounds.Encapsulate(prior.bounds.min);bounds.Encapsulate(prior.bounds.max);}
             previous[shot]=(sprite.bounds,currentAge,sample);Fill(bounds);
         }
-        var body=boss.GetComponent<CircleCollider2D>();if(body.enabled)Fill(body.bounds);
+        var body=boss.GetComponent<Collider2D>();if(body.enabled)Fill(body.bounds);
         int occupied=0;foreach(bool hit in blocked)if(hit)occupied++;
         Coverage=occupied/(float)blocked.Length;WorstCoverage=Mathf.Max(WorstCoverage,Coverage);
         Array.Clear(next,0,next.Length);int flags=0;

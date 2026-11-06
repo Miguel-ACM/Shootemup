@@ -363,15 +363,14 @@ public sealed class CombatReworkReview : MonoBehaviour
         }
         else if (boss is DesertWormBoss worm)
         {
-            for (int i = 1; i <= 4; i++)
-                worm.Cores[i].damage(1000000);
+            worm.damage(worm.health * .55f);
         }
         else if (boss is SpaceCitadelBoss station)
         {
-            station.Reactor.damage(station.health * .55f);
+            station.damage(station.health * .55f);
         }
         else if (boss is HellCrabBoss crab)
-            crab.Head.damage(crab.health * .55f);
+            crab.damage(crab.health * .55f);
         else
             boss.health *= .49f;
     }

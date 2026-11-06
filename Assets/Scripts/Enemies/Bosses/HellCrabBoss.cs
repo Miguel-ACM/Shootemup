@@ -7,14 +7,9 @@ public sealed partial class HellCrabBoss : DistrictBoss
     const int ArmSections = 4;
     readonly Transform[,] arms = new Transform[2, ArmSections];
     readonly Transform[] eyes = new Transform[2];
-    readonly HellCrabHead[] headParts = new HellCrabHead[1];
     float clawClock, lockedY;
-    bool completing;
     [EnemyTunable("Claws / Cycle seconds", 5, 12)] public float clawPeriod = 7.4f;
     [EnemyTunable("Claws / Fan count", 3, 9)] public int clawShots = 7;
-    public HellCrabHead Head => headParts[0];
-    public HellCrabHead[] HeadParts => headParts;
-    public override bool CanBeTargeted => false;
     protected override void Configure()
     {
         hullScale = 1;
@@ -26,13 +21,11 @@ public sealed partial class HellCrabBoss : DistrictBoss
     protected override void Start()
     {
         base.Start();
-        GetComponent<Collider2D>().enabled = false;
         GetComponent<CombatHullVisual>().enabled = false;
-        headParts[0] = HellCrabHead.Create(this, Hull, health);
         for (int i = 0; i < 2; i++)
         {
             int side = i == 0 ? -1 : 1;
-            eyes[i] = Model("Amber firing eye", IndustrialMeshFactory.CombatHull(55), Head.Visual);
+            eyes[i] = Model("Amber firing eye", IndustrialMeshFactory.CombatHull(55), Hull);
             eyes[i].localPosition = new Vector3(side * .67f, -.52f, -.96f);
             claws[i] = Model("Jointed side pincer", IndustrialMeshFactory.CombatHull(54), Hull);
             claws[i].localScale = Vector3.one * 1.75f;
@@ -43,7 +36,6 @@ public sealed partial class HellCrabBoss : DistrictBoss
             for (int segment = 0; segment < ArmSections; segment++)
                 arms[i, segment] = Model("Articulated pincer vertebra " + segment, IndustrialMeshFactory.CrabArm(), Hull);
         }
-        PartHitFeedback.Bind(Head.Visual);
     }
 
     static Transform Model(string name, Mesh mesh, Transform parent)
@@ -114,75 +106,4 @@ public sealed partial class HellCrabBoss : DistrictBoss
         nextAttack = age + 1.5f;
     }
 
-    public void HeadChanged()
-    {
-        if (completing)
-            return;
-        health = Mathf.Max(0, Head.health);
-        if (health <= 0)
-        {
-            completing = true;
-            health = 1;
-            base.damage(2 / Mathf.Max(.001f, GameRules.enemyDamageReceived));
-        }
-    }
-
-    public override void damage(float amount)
-    {
-    }
-}
-
-public sealed class HellCrabHead : AEnemy
-{
-    HellCrabBoss owner;
-    public Transform Visual { get; private set; }
-    public override bool CanBeTargeted => health > 0 && owner != null && owner.health > 0 && !owner.Invulnerable;
-    public override bool CanReceiveDamage => base.CanReceiveDamage && owner != null && !owner.Invulnerable;
-    public static HellCrabHead Create(HellCrabBoss owner, Transform parent, float health)
-    {
-        var go = new GameObject("Whole crab head weakpoint");
-        go.transform.SetParent(parent, false);
-        go.tag = "Enemy";
-        go.layer = 8;
-        go.AddComponent<SpriteRenderer>().enabled = false;
-        var hit = go.AddComponent<PolygonCollider2D>();
-        hit.isTrigger = true;
-        hit.points = new[] { new Vector2(-1.70f, .10f), new Vector2(-1.32f, 1.05f), new Vector2(-.55f, 1.43f),
-            new Vector2(.55f, 1.43f), new Vector2(1.32f, 1.05f), new Vector2(1.70f, .10f), new Vector2(1.15f, -.95f),
-            new Vector2(.52f, -1.35f), new Vector2(-.52f, -1.35f), new Vector2(-1.15f, -.95f) };
-        var visual = new GameObject("Struck head carapace");
-        visual.transform.SetParent(go.transform, false);
-        visual.AddComponent<MeshFilter>().sharedMesh = parent.GetComponent<MeshFilter>().sharedMesh;
-        var renderer = visual.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = parent.GetComponent<MeshRenderer>().sharedMaterial;
-        renderer.sortingLayerName = "Enemy";
-        parent.GetComponent<MeshFilter>().sharedMesh = null;
-        parent.GetComponent<MeshRenderer>().enabled = false;
-        var part = go.AddComponent<HellCrabHead>();
-        part.health = health;
-        part.owner = owner;
-        part.Visual = visual.transform;
-        part.lifeDropChance = part.manaDropChance = part.moneyDropChance = 0;
-        part.scoreOnKill = 0;
-        return part;
-    }
-
-    public override void damage(float amount)
-    {
-        if (health <= 0 || owner == null || owner.Invulnerable)
-            return;
-        base.damage(amount);
-        owner.HeadChanged();
-    }
-
-    protected override void Die()
-    {
-        health = 0;
-        GetComponent<Collider2D>().enabled = false;
-        enabled = false;
-    }
-
-    protected override void OnBecameInvisible()
-    {
-    }
 }

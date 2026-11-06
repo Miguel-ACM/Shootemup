@@ -295,13 +295,12 @@ public sealed class DepthExpansionReview : MonoBehaviour
             yield return null;
             yield return new WaitForSeconds(1.7f);
             var core = target.Cores[2];
-            var neighbor = target.Cores[3];
-            core.HitAt(core.transform.position, Vector2.up);
-            core.damage(2);
+            target.HitAt(core.transform.position, Vector2.up);
+            target.damage(2);
             yield return null;
             var block = new MaterialPropertyBlock();
             core.GetComponentInChildren<MeshRenderer>().GetPropertyBlock(block);
-            Check(block.GetFloat("_HitFlash") > .3f && neighbor.GetComponentInChildren<PartHitFeedback>().Heat == 0, "Actual weakpoint renderer receives a strong local flash while its neighbor stays steady");
+            Check(block.GetFloat("_HitFlash") > .3f && target.GetComponent<PartHitFeedback>().Heat > 0, "The shared worm body flashes without moving its collider");
             DesertReview.Capture("Worm-LocalHit", Folder);
             File.WriteAllText(Folder + "/Feedback.txt", "PASS\n" + string.Join("\n", checks));
             yield break;
@@ -309,12 +308,12 @@ public sealed class DepthExpansionReview : MonoBehaviour
         yield return Formation(LevelId.Hell);
         var crab = (HellCrabBoss)DistrictEnemy.Spawn(typeof(HellCrabBoss), new Vector3(0, Camera.UpLimit + 1, 1));
         yield return null;
-        Check(crab.Head != null && crab.Head.health == crab.health, "Crab has one shared whole-head weakpoint");
+        Check(crab != null && crab.GetComponentsInChildren<AEnemy>().Length == 1, "Crab has one shared whole-body damage target");
         float health = crab.health;
         crab.damage(100);
-        Check(crab.health == health, "Claws and exterior armor cannot bypass the head weakpoint");
+        Check(crab.health == health, "Opening invulnerability protects the shared body");
         yield return new WaitForSeconds(3);
-        var eye = crab.Head;
+        var eye = crab;
         var before = crab.Hull.localPosition;
         eye.HitAt(eye.transform.position, Vector2.up);
         eye.damage(5);
@@ -379,9 +378,9 @@ public sealed class DepthExpansionReview : MonoBehaviour
         var worm = (DesertWormBoss)DistrictEnemy.Spawn(typeof(DesertWormBoss), new Vector3(0, 3, 1));
         yield return null;
         yield return new WaitForSeconds(2);
-        worm.Cores[2].HitAt(worm.Cores[2].transform.position, Vector2.up);
-        worm.Cores[2].damage(2);
-        Check(worm.Cores[2].GetComponentInChildren<PartHitFeedback>().Heat > 0 && worm.Cores[3].GetComponentInChildren<PartHitFeedback>().Heat == 0, "Worm feedback flashes and recoils only the struck reactor");
+        worm.HitAt(worm.Cores[2].position, Vector2.up);
+        worm.damage(2);
+        Check(worm.GetComponent<PartHitFeedback>().Heat > 0, "Worm body receives shared damage feedback");
         DesertReview.Capture("Worm-LocalHit", Folder);
         Check(!ShaderUtil.ShaderHasError(Resources.Load<Shader>("DepthWorld")), "Native depth-world shader compiles without errors");
     }

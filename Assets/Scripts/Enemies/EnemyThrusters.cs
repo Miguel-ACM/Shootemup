@@ -9,6 +9,13 @@ public sealed class EnemyThrusters : MonoBehaviour
     Transform[] flames;
     Vector3 previous;
     float phase;
+    public bool IsExhaust(Transform part)
+    {
+        if (flames == null) return false;
+        foreach (var flame in flames)
+            if (flame == part) return true;
+        return false;
+    }
     public void Extinguish()
     {
         if (flames != null)

@@ -269,11 +269,11 @@ public sealed class SpaceGameplayReview : MonoBehaviour
         Call(flow, "SpawnBoss");
         yield return new WaitForSeconds(2.6f);
         var boss = FindAnyObjectByType<SpaceCitadelBoss>();
-        Check(boss != null && boss.Parts.Length == 1 && boss.Reactor != null, "Orbital station has one central damageable reactor");
-        var core = boss.Reactor;
+        Check(boss != null && boss.GetComponentsInChildren<AEnemy>().Length == 1 && boss != null, "Black hole has one whole-body damage target");
+        var core = boss;
         float hp = core.health, total = boss.health;
-        boss.damage(100000);
-        Check(core.health == hp && boss.health == total && core.CanBeTargeted && core.GetComponent<Collider2D>().enabled, "Armored hull rejects damage while the central reactor remains exposed");
+        boss.damage(3);
+        Check(core.health < hp && boss.health < total && core.CanBeTargeted && core.GetComponent<Collider2D>().enabled, "The whole black hole accepts shared damage");
         Capture("Boss-Shielded");
         bool beam = false;
         float until = Time.time + 6.5f;
@@ -298,9 +298,9 @@ public sealed class SpaceGameplayReview : MonoBehaviour
         Check(beam && bounced, "Boss uses an attached charged center laser and genuinely bouncing bullets");
         core.damage(total * .55f);
         yield return new WaitForSeconds(1.8f);
-        Check(boss.CoreExposed && core.CanBeTargeted && core.GetComponent<Collider2D>().enabled, "Central reactor resumes taking damage after its phase break");
+        Check(boss.CanBeTargeted && core.CanBeTargeted && core.GetComponent<Collider2D>().enabled, "Central reactor resumes taking damage after its phase break");
         Capture("Boss-Exposed");
-        Check(boss.Parts.Length == 1, "No exterior gun or generator weakpoints remain");
+        Check(boss.GetComponentsInChildren<AEnemy>().Length == 1, "No exterior gun or generator weakpoints remain");
         core.damage(20);
         Check(core.health < hp, "Exposed reactor accepts damage");
         yield return new WaitForSeconds(1.4f);

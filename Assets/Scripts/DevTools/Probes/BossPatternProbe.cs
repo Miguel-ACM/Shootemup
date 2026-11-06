@@ -350,19 +350,17 @@ public sealed class BossPatternProbe : MonoBehaviour
             yield return null;
             // Long enough for both phase-one spell cards.
             yield return Clip(entry.Item1 + "One", 17);
-            float lethal = 1e6f;
             if (boss is CityDuoBoss duo)
             {
                 if (duo.partner != null)
                     duo.partner.damage(duo.partner.health + 1);
             }
             else if (boss is DesertWormBoss worm)
-                for (int i = 1; i <= 4; i++)
-                    worm.Cores[i].damage(lethal);
+                worm.damage(worm.health * .55f);
             else if (boss is SpaceCitadelBoss citadel)
-                citadel.Reactor.damage(citadel.health * .55f);
+                citadel.damage(citadel.health * .55f);
             else if (boss is HellCrabBoss crab)
-                crab.Head.damage(crab.health * .55f);
+                crab.damage(crab.health * .55f);
             else
                 boss.damage(boss.health * .55f);
             yield return Clip(entry.Item1 + "Two", 17);

@@ -66,6 +66,8 @@ public abstract class DistrictBoss : DistrictEnemy
         base.Start();
         health *= Sturdiness;
         initialHealth = health;
+        if (!(this is ArmoredHullBoss) && !(this is AbyssSubmarineBoss) && !(this is DesertWormBoss))
+            BossHullCollider.Attach(this);
         if(!(this is SeraphJudicatorBoss)&&!(this is VoidSovereignBoss)&&!(this is SpaceCitadelBoss))
             gameObject.AddComponent<BossMechanismRig>();
         isBoss = true;

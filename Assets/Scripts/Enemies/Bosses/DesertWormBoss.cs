@@ -4,31 +4,18 @@ using UnityEngine;
 public sealed partial class DesertWormBoss : DistrictBoss
 {
     public const int BodyCount = 7;
-    readonly DesertWormCore[] cores = new DesertWormCore[BodyCount + 1];
+    readonly Transform[] cores = new Transform[BodyCount + 1];
     readonly Transform[] sections = new Transform[BodyCount];
     protected override bool AtOpeningStation => sections[BodyCount - 1].position.y <= Camera.UpLimit - .5f;
     SandSpine spine;
     Vector3 previous;
     float routeWidth;
-    bool completing;
-    public int RemainingParts { get; private set; } = BodyCount + 1;
-    public DesertWormCore[] Cores => cores;
-    readonly float[] reactorProgress = new float[BodyCount + 1];
-    protected override float PhaseMeterValue
-    {
-        get
-        {
-            if (phaseTwo)
-                return base.PhaseMeterValue;
-            // Phase one ends at four destroyed reactors, in any order.
-            for (int i = 0; i < cores.Length; i++)
-                reactorProgress[i] = cores[i] == null ? 1 : Mathf.Clamp01(cores[i].health /
-                    Mathf.Max(1, initialHealth * (i == 0 ? 670f : 290f) / 2700));
-            System.Array.Sort(reactorProgress);
-            return (reactorProgress[0] + reactorProgress[1] + reactorProgress[2] + reactorProgress[3]) * .25f;
-        }
-    }
-    protected override float PhaseEnd(int phase) => phase == 1 ? 0 : base.PhaseEnd(phase);
+    public Transform[] Cores => cores;
+    PolygonCollider2D bodyContact;
+    readonly Vector2[] bodyOutline = new Vector2[(BodyCount + 1) * 2 + 2];
+    readonly MeshRenderer[] reactors = new MeshRenderer[BodyCount + 1];
+    MaterialPropertyBlock reactorInk;
+    int darkReactors;
     protected override void Configure()
     {
         hullScale = 1.10f;
@@ -40,15 +27,18 @@ public sealed partial class DesertWormBoss : DistrictBoss
     protected override void Start()
     {
         base.Start();
-        GetComponent<Collider2D>().enabled = false;
+        reactorInk = new MaterialPropertyBlock();
+        var old = GetComponent<CircleCollider2D>();
+        old.enabled = false;
+        Destroy(old);
+        bodyContact = gameObject.AddComponent<PolygonCollider2D>();
+        bodyContact.isTrigger = true;
         GetComponent<CombatHullVisual>().enabled = false;
-        // Only the red reactors are damage targets, including homing, burn and chain weapons.
-        Live.Remove(this);
         previous = transform.position;
         var camera = UnityEngine.Camera.main;
         routeWidth = Mathf.Max(.6f, camera.orthographicSize * 405f / 720f - 1.25f);
         Hull.GetComponent<MeshRenderer>().sharedMaterial = IndustrialMeshFactory.WhiteWormMaterial;
-        cores[0] = DesertWormCore.Create(this, Hull, true, health * 670 / 2700, new Vector3(0, .05f, -.44f));
+        cores[0] = Reactor(Hull, true, 0, new Vector3(0, .05f, -.44f));
         firingCue.Register(cores[0].transform, Vector3.zero);
         spine = new SandSpine(transform.position, 1.04f, BodyCount);
         for (int i = 0; i < BodyCount; i++)
@@ -56,9 +46,10 @@ public sealed partial class DesertWormBoss : DistrictBoss
             sections[i] = SandSpine.Model("White armored vertebra " + (i + 1), transform, IndustrialMeshFactory.WhiteWormSection(), .91f - i * .018f);
             sections[i].GetComponent<MeshRenderer>().sharedMaterial = IndustrialMeshFactory.WhiteWormMaterial;
             sections[i].position = transform.position + Vector3.up * (i + 1) * 1.04f;
-            cores[i + 1] = DesertWormCore.Create(this, sections[i], false, health * 290 / 2700, new Vector3(0, 0, -.44f));
+            cores[i + 1] = Reactor(sections[i], false, i + 1, new Vector3(0, 0, -.44f));
             firingCue.Register(cores[i + 1].transform, Vector3.zero);
         }
+        PartHitFeedback.Bind(transform, false);
     }
 
     // A predictable route: after one dive down through the arena, the worm keeps rising
@@ -105,7 +96,6 @@ public sealed partial class DesertWormBoss : DistrictBoss
         spine?.Follow(transform.position, sections);
     }
 
-    protected override bool PhaseTwoReady => RemainingParts <= 4;
     // The body keeps winding through a phase break; only its fire and damage pause.
     protected override bool RepositionsOnPhase => false;
     protected override void OnPhaseTwo()
@@ -114,86 +104,48 @@ public sealed partial class DesertWormBoss : DistrictBoss
         volley = 0;
     }
 
-    bool CanShoot(DesertWormCore core) => core != null && core.health > 0 && core.transform.position.y < Camera.UpLimit - .7f &&
-        core.transform.position.y > Camera.DownLimit + 1 && (player == null || Vector2.Distance(core.transform.position, player.position) > 2.4f);
-    public void PartDamaged()
+    Transform Reactor(Transform parent, bool head, int index, Vector3 local)
     {
-        if (completing)
-            return;
-        float sum = 0;
-        RemainingParts = 0;
-        foreach (var core in cores)
-            if (core != null && core.health > 0)
-            {
-                sum += core.health;
-                RemainingParts++;
-            }
-        if (RemainingParts == 0)
+        var port = new GameObject(head ? "Head reactor" : "Body reactor").transform;
+        port.SetParent(parent, false);
+        port.localPosition = local;
+        var visual = SandSpine.Model("Exposed red reactor", port, IndustrialMeshFactory.WhiteWormCore(head), 1);
+        reactors[index] = visual.GetComponent<MeshRenderer>();
+        reactors[index].sharedMaterial = IndustrialMeshFactory.WhiteWormMaterial;
+        return port;
+    }
+
+    bool CanShoot(Transform core) => core != null && (core == cores[0] || System.Array.IndexOf(cores, core) > darkReactors) &&
+        core.position.y < Camera.UpLimit - .7f && core.position.y > Camera.DownLimit + 1 &&
+        (player == null || Vector2.Distance(core.position, player.position) > 2.4f);
+
+    void LateUpdate()
+    {
+        if (bodyContact == null || health <= 0) return;
+        // A single ribbon follows the articulated body, keeping the gaps outside its bends empty.
+        int count = 0;
+        bodyOutline[count++] = transform.InverseTransformPoint(Hull.TransformPoint(new Vector3(0, -1, 0)));
+        for (int i = 0; i <= BodyCount; i++)
         {
-            completing = true;
-            // Use the ordinary boss death path exactly once: score, drops, health-bar teardown and route completion.
-            base.damage(health / Mathf.Max(.001f, GameRules.enemyDamageReceived) + 1);
+            var section = i == 0 ? Hull : sections[i-1];
+            float width = section.GetComponent<MeshFilter>().sharedMesh.bounds.extents.x;
+            bodyOutline[count++] = transform.InverseTransformPoint(section.TransformPoint(new Vector3(width, 0, 0)));
         }
-        else
-            health = sum;
-    }
-
-    public override void damage(float amount)
-    {
-    } // Armor and the aggregate health object cannot bypass the reactors.
-}
-
-public sealed class DesertWormCore : AEnemy
-{
-    DesertWormBoss owner;
-    public override bool CanBeTargeted => base.CanBeTargeted && owner != null && !owner.Invulnerable;
-    public override bool CanReceiveDamage => base.CanReceiveDamage && owner != null && !owner.Invulnerable;
-    MeshRenderer mesh;
-    public static DesertWormCore Create(DesertWormBoss owner, Transform parent, bool head, float health, Vector3 local)
-    {
-        var t = new GameObject(head ? "Head weakpoint" : "Body weakpoint").transform;
-        t.SetParent(parent, false);
-        var visual = SandSpine.Model("Exposed red reactor", t, IndustrialMeshFactory.WhiteWormCore(head), 1);
-        t.localPosition = local;
-        t.gameObject.layer = 8;
-        t.gameObject.tag = "Enemy";
-        var sprite = t.gameObject.AddComponent<SpriteRenderer>();
-        sprite.enabled = false;
-        var hit = t.gameObject.AddComponent<CircleCollider2D>();
-        hit.isTrigger = true;
-        hit.radius = head ? .51f : .35f;
-        var part = t.gameObject.AddComponent<DesertWormCore>();
-        part.owner = owner;
-        part.health = health;
-        part.mesh = visual.GetComponent<MeshRenderer>();
-        part.mesh.sharedMaterial = IndustrialMeshFactory.WhiteWormMaterial;
-        PartHitFeedback.Bind(visual);
-        part.scoreOnKill = 0;
-        part.lifeDropChance = part.manaDropChance = part.moneyDropChance = 0;
-        return part;
-    }
-
-    public override void damage(float amount)
-    {
-        if (health <= 0 || owner == null || owner.Invulnerable)
-            return;
-        base.damage(amount);
-        if (owner != null)
-            owner.PartDamaged();
-    }
-
-    protected override void Die()
-    {
-        health = 0;
-        GetComponent<Collider2D>().enabled = false;
-        PSXImpactEffects.Burst(transform.position, new Color(1, .25f, .08f), true, Vector2.up);
-        var tint = new MaterialPropertyBlock();
-        tint.SetColor("_Tint", new Color(.12f, .13f, .14f));
-        mesh.SetPropertyBlock(tint);
-        enabled = false; // Keep the dead, dark reactor attached to the articulated wreck.
-    }
-
-    protected override void OnBecameInvisible()
-    {
+        bodyOutline[count++] = transform.InverseTransformPoint(sections[BodyCount-1].TransformPoint(new Vector3(0, .6f, 0)));
+        for (int i = BodyCount; i >= 0; i--)
+        {
+            var section = i == 0 ? Hull : sections[i-1];
+            float width = section.GetComponent<MeshFilter>().sharedMesh.bounds.extents.x;
+            bodyOutline[count++] = transform.InverseTransformPoint(section.TransformPoint(new Vector3(-width, 0, 0)));
+        }
+        bodyContact.SetPath(0, bodyOutline);
+        int lost = Mathf.Clamp(Mathf.FloorToInt((1-HealthFraction)*(BodyCount+1)), 0, BodyCount);
+        if (lost == darkReactors) return;
+        darkReactors = lost;
+        for (int i = 1; i <= BodyCount; i++)
+        {
+            reactorInk.SetColor("_Tint", i <= lost ? new Color(.12f,.13f,.14f) : Color.white);
+            reactors[i].SetPropertyBlock(reactorInk);
+        }
     }
 }

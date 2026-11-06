@@ -60,7 +60,7 @@ public static class VerifyBossRefit
             foreach (var mode in new[] { RunDifficulty.Easy, RunDifficulty.Normal, RunDifficulty.Hard })
                 regressions.MultipartMetersTrackPhaseObjectives(mode);
             regressions.PhaseInvulnerabilityRejectsDirectHitsBeforeEffectsAndScore();
-            regressions.HomingSkipsProtectedHullAndCore();
+            regressions.HomingSkipsProtectedBossHull();
             File.WriteAllText(Folder + "/Regression.txt", "PASS\nUpdated multipart meter cases on all three tiers, phase damage eligibility and detached-target homing regressions.\n");
             RenderStations();
             GameRules.StartNewRun(); LevelRun.Reset(LevelId.Fields, 17381);
@@ -232,15 +232,19 @@ public sealed class BossRefitReview : MonoBehaviour
         AEnemy part;
         if (boss is SpaceCitadelBoss station)
         {
-            part = station.Reactor;
-            Check(station.Parts.Length == 1 && part != null && station.GetComponentsInChildren<AEnemy>().Length == 2, mode + " Space has exactly one central weakpoint");
-            float hp = station.health; station.damage(100); Check(station.health == hp, "Space outer armor cannot bypass the reactor");
-            PlayerRound.Spawn(station.Hull.TransformPoint(new Vector3(1.8f, -.7f, 0)), Vector2.up, 5, 8);
-            yield return new WaitForSeconds(.15f); Check(station.health == hp, "native shots at exterior station armor do no damage");
+            part = station;
+            Check(station.GetComponentsInChildren<AEnemy>().Length == 1 && part != null && station.GetComponentsInChildren<AEnemy>().Length == 1, mode + " Space has exactly one whole-body damage target");
+            while (!station.CanReceiveDamage) yield return null;
+            float hp = station.health; station.damage(3);
+            Check(station.health < hp, "The shared Space body accepts damage");
+            hp = station.health;
+            PlayerRound.Spawn(station.Hull.TransformPoint(new Vector3(1.8f, -.1f, 0)), Vector2.up, 5, 8);
+            yield return new WaitForSeconds(.15f);
+            Check(station.health < hp, "Native shots reach the accretion disk");
         }
         else
         {
-            var crab = (HellCrabBoss)boss; part = crab.Head;
+            var crab = (HellCrabBoss)boss; part = crab;
             var hit = part.GetComponent<PolygonCollider2D>();
             foreach (float x in new[] { -1.1f, 0, 1.1f })
                 Check(hit.OverlapPoint(crab.Hull.TransformPoint(new Vector3(x, .1f, 0))), mode + " crab head covers cheek/center x=" + x);
@@ -251,7 +255,7 @@ public sealed class BossRefitReview : MonoBehaviour
             PlayerRound.Spawn(part.transform.position + new Vector3(i * (level == LevelId.Hell ? .95f : .2f), -.7f, 0), Vector2.up, 3, 10);
         yield return new WaitForSeconds(.25f);
         Check(part.health < before && Mathf.Abs(part.health - boss.health) < .01f, mode + " " + level + " native hits update the shared boss health");
-        Check(CombatUpgrades.Nearest(part.transform.position, null, 1) == part, "homing targets the actual weakpoint");
+        Check(CombatUpgrades.Nearest(part.transform.position, null, 1) == part, "homing targets the shared body");
         if (boss is SpaceCitadelBoss hole)
         {
             yield return VerifyOrbit<NeedleRound>(hole, 2 * Difficulty.Dense(18), .19f);
@@ -272,9 +276,9 @@ public sealed class BossRefitReview : MonoBehaviour
         Check(boss.CurrentPhase == 2 && boss.Invulnerable, "shared health triggers a protected second phase");
         int score = Score.CurrentScore; before = part.health;
         Check(CombatHit.Apply(part, 50, part.transform.position, Vector2.up, fire: true) == 0 && part.health == before && Score.CurrentScore == score && part.GetComponent<BurningHull>() == null,
-            "phase break rejects weakpoint damage, coatings and score");
+            "phase break rejects body damage, coatings and score");
         yield return new WaitForSeconds(1.8f);
-        Check(boss.Invulnerable && !part.CanBeTargeted, "weakpoint stays protected briefly after the phase resumes");
+        Check(boss.Invulnerable && !part.CanBeTargeted, "body stays protected briefly after the phase resumes");
         yield return new WaitForSeconds(.5f);
         Check(!boss.Invulnerable && part.CanReceiveDamage && boss.PhaseCount == (mode == RunDifficulty.Easy ? 2 : 3), mode + " has the correct phase count and resumes taking hits");
         yield return new WaitForSeconds(3); yield return Capture(level.ToString() + mode + "Phase2");
@@ -304,7 +308,7 @@ public sealed class BossRefitReview : MonoBehaviour
         Check(origins.Length == count, Difficulty.Current + " launches a complete " + typeof(T).Name + " volley");
         var center = origins.Aggregate(Vector2.zero, (sum, p) => sum + p) / count;
         float radius = Vector2.Distance(center, origins[0]);
-        Check(Vector2.Distance(center, boss.Reactor.transform.position) < .15f && radius > 2,
+        Check(Vector2.Distance(center, boss.transform.position) < .15f && radius > 2,
             "Accretion surrounds the moving event horizon");
         var view = CombatRound.Border;
         Check(origins.All(p => Mathf.Abs(Vector2.Distance(p, center) - radius) < .01f &&
