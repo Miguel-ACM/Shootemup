@@ -49,7 +49,7 @@ public sealed class TaffyDuelist : DistrictMiniboss
         {
             for (int mirror = -1; mirror <= 1; mirror += 2)
                 Fire<GiantOrb>(Muzzle(mirror < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, mirror * 20), 2.2f, .59f)
-                    .SideSpray(3.4f);
+                    .SideSpray(1.3f);
         }
         else
         {

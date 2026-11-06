@@ -73,7 +73,10 @@ public sealed class GiantOrb : CombatRound
         float lean = Between(-9, 9), velocity = sideSpeed * Between(.9f, 1.1f);
         float rim = visual.sprite.bounds.extents.x * Mathf.Abs(transform.localScale.x);
         var direction = CombatVisuals.Rotate(side * flank, lean);
-        var shard = Launch<SimpleRound>(p + (Vector3)direction * (rim + .07f), direction, velocity, .14f);
+        // A short sideways push settles into a slow drift, then clears before
+        // repeated carriers can leave stationary walls across the arena.
+        var shard = Launch<SimpleRound>(p + (Vector3)direction * (rim + .07f), direction, velocity, .14f)
+            .Ramp(.3f, 1.25f).FadeAt(5f);
         if (shard != null)
         {
             shard.damage = damage;

@@ -5,7 +5,7 @@ using UnityEngine;
 public static class RoundProgram
 {
     // A giant carrier that keeps flying while rapidly firing from either flank.
-    public static GiantOrb SideSpray(this GiantOrb shot, float velocity = 3.2f)
+    public static GiantOrb SideSpray(this GiantOrb shot, float velocity = 1.25f)
     {
         if (shot != null)
             shot.EnableSideSpray(velocity);

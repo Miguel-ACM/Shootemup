@@ -48,7 +48,7 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
         else
             for (int mirror = -1; mirror <= 1; mirror += 2)
                 Fire<GiantOrb>(Hull.TransformPoint(ports[0]), CombatVisuals.Rotate(Vector2.down, mirror * 16), 1.65f, Enraged ? .72f : .66f)
-                    .SideSpray(3.1f);
+                    .SideSpray(1.2f);
     }
     // The bays are exposed during firing and reload; armor still accepts every weapon.
     public override void damage(float amount)

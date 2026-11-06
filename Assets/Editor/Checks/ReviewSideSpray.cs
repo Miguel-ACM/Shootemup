@@ -71,11 +71,12 @@ public static class ReviewSideSpray
         var age = typeof(CombatRound).GetField("age", BindingFlags.Instance | BindingFlags.NonPublic);
         var giantTick = typeof(GiantOrb).GetMethod("Tick", BindingFlags.Instance | BindingFlags.NonPublic);
         var simpleTick = typeof(CombatRound).GetMethod("Tick", BindingFlags.Instance | BindingFlags.NonPublic);
+        var program = typeof(CombatRound).GetMethod("Program", BindingFlags.Instance | BindingFlags.NonPublic);
         var shots = new List<CombatRound>();
         var pixels = new Texture2D(405, 720, TextureFormat.RGB24, false);
         Directory.CreateDirectory(Folder + "/Motion");
         UnityEngine.Random.InitState(20261106);
-        CombatRound.Launch<GiantOrb>(new Vector3(0, 6.7f), Vector2.down, 1.65f, .66f).SideSpray(3.1f);
+        CombatRound.Launch<GiantOrb>(new Vector3(0, 6.7f), Vector2.down, 1.65f, .66f).SideSpray(1.2f);
         for (int frame = 0; frame < 90; frame++)
         {
             for (int step = 0; step < 4; step++)
@@ -85,6 +86,7 @@ public static class ReviewSideSpray
                 {
                     age.SetValue(shot, (float)age.GetValue(shot) + 1f / 60);
                     (shot is GiantOrb ? giantTick : simpleTick).Invoke(shot, new object[] { 1f / 60 });
+                    program.Invoke(shot, null);
                 }
             }
             foreach (var shot in CombatRound.Live) shot.gameObject.layer = 31;
@@ -201,7 +203,7 @@ public sealed class SideSprayReviewRuntime : MonoBehaviour
                     if (flank < 0) left++; else right++;
                     sameSide |= lastSide == flank; lastSide = flank;
                     float lean = Vector2.SignedAngle(side * flank, round.Heading);
-                    float velocity = round.speed / (3.2f * GameRules.enemyBulletSpeed * LevelRun.EnemyShotSpeedScale);
+                    float velocity = round.speed / (1.25f * GameRules.enemyBulletSpeed * LevelRun.EnemyShotSpeedScale);
                     lowAngle = Mathf.Min(lowAngle, lean); highAngle = Mathf.Max(highAngle, lean);
                     lowSpeed = Mathf.Min(lowSpeed, velocity); highSpeed = Mathf.Max(highSpeed, velocity);
                     inherited &= round.generation == 3 && round.damage == 27 && round.UsesPixelContact;

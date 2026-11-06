@@ -100,7 +100,7 @@ public static class WatcherCatalog
                 entries.Add(new Entry
                 {
                     Id = "projectile/giant-side-spray", Name = "GIANT ORB / SIDE SPRAY",
-                    Fire = (p, emitter) => CombatRound.Launch<GiantOrb>(p, Vector2.down, 1.65f, .66f).SideSpray(3.1f)
+                    Fire = (p, emitter) => CombatRound.Launch<GiantOrb>(p, Vector2.down, 1.65f, .66f).SideSpray(1.2f)
                 });
                 Add<NeedleRound>(entries);
                 Add<BurstShell>(entries, .38f);
