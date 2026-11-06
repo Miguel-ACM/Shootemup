@@ -21,7 +21,7 @@ colors = [
     (0.12, 0.27, 0.65, 1), (0.25, 0.43, 0.76, 1),
     (0.53, 0.72, 0.87, 1), (0.62, 0.70, 0.75, 1),
     (0.30, 0.39, 0.49, 1), (0.045, 0.065, 0.10, 1),
-    (0.47, 0.08, 0.78, 1), (0.69, 0.26, 0.95, 1),
+    (0.95, 0.32, 0.045, 1), (1.0, 0.62, 0.18, 1),
     (0.29, 0.055, 0.49, 1), (0.76, 0.83, 0.86, 1),
     (0.18, 0.25, 0.33, 1), (0.17, 0.35, 0.68, 1),
     (0.89, 0.68, 0.27, 1), (0.56, 0.22, 0.84, 1),
@@ -140,7 +140,7 @@ for y in (.22,.34,.45):
     plate('Barrel coupling',[(-.021,y),(.021,y),(.021,y+.012),(-.021,y+.012)],.041,.050,6)
 ring_y('Laser emitter',0,.52,.49,.008,.017,.010,11,15)
 
-# Small, centred round violet dome. Highest point is exactly z=.079.
+# Small, centred round orange dome. Highest point is exactly z=.079.
 n=12
 angles=[2*math.pi*i/n for i in range(n)]
 outline=[(.052*math.cos(a),.08+.052*math.sin(a)) for a in angles]
@@ -157,7 +157,7 @@ for j in range(2):
 for i in range(n):
     faces.append((2*n+i,2*n+(i+1)%n,3*n))
     ids.append(9 if i in (3,4,5) else 8)
-mesh('Violet canopy',verts,faces,8,ids)
+mesh('Orange canopy',verts,faces,8,ids)
 
 # Collapse all body geometry into one mesh with applied transforms.
 bpy.ops.object.select_all(action='DESELECT')

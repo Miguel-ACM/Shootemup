@@ -201,6 +201,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Hangar unlock dialogs show the item's type and actual description alongside its spinning model and unlock reason. Show only one confirm-button sprite at the bottom, with the item counter separate. Animate both appearance and disappearance with a quick fade, slide and scale; preserve one fresh press per item and block hangar interactions until the exit finishes.
 - Show the reason beside every newly unlocked item on the end screen. At a campaign boss victory, briefly show new item models in the centre of the flight area; stack blinking "No-hit level" and "No-hit boss" lines above them when earned on Normal+. Preserve the boss pickup flow and the later hangar tags.
 - Lancer, the second blue ship, needs stronger sustained damage: its base shot damage is 4. Every laser contacting a target contributes its own damage, and firing-speed upgrades affect the continuous beam's damage cadence.
+- Lancer's cockpit glass is orange with warm amber highlights, including its hangar portrait. Keep the blue hull and violet laser lens.
 - The Snow miniboss's falling snow starts above the actual visible top edge, not inside the screen at the gameplay boundary. Preserve its upward muzzle spray and falling pattern.
 
 ## Heaven and Void expansion (4 November 2026)

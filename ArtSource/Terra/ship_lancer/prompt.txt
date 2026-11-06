@@ -26,7 +26,7 @@ If the ship naturally has a moving part (a spinning radar dish, turning sensor, 
 ## This ship: LANCER
 
 A long, slender lance-like heavy interceptor. Its main gun is a continuous LASER, and the ship is slower and sturdier than the others (5 hits), so it should look long, heavy-nosed and armoured, like a spear or a needle-nosed racing hull with a long forward emitter spine.
-Colours: deep royal blue hull with lighter cobalt/ice-blue panel plates and a few pale steel details; the cockpit canopy is PURPLE (a clear, saturated violet, the most noticeable accent). A small amount of violet on the laser lens is fine.
+Colours: deep royal blue hull with lighter cobalt/ice-blue panel plates and a few pale steel details; the cockpit canopy is ORANGE (a clear, saturated orange with warm amber highlights, the most noticeable accent). A small amount of violet on the laser lens is fine.
 Footprint: about 0.46 wide and 0.92 long, from y = -0.40 to y = +0.52. Narrow overall, slightly wider at the rear engine section with short swept stabiliser wings.
 Muzzle: one laser emitter lens at the very nose, (0, +0.52), a ring-shaped lens housing at the tip of the forward spine.
 Engines: two nozzles at (-0.11, -0.40) and (+0.11, -0.40).
