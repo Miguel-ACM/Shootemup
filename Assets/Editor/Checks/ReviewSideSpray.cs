@@ -13,7 +13,7 @@ using Unity.Profiling;
 [InitializeOnLoad]
 public static class ReviewSideSpray
 {
-    public static string Folder => Path.GetFullPath("ReviewOutput/SideSpray");
+    public static string Folder => Path.GetFullPath("ReviewOutput/RapidSideSpray");
     static ReviewSideSpray()
     {
         EditorApplication.playModeStateChanged += state =>
@@ -29,11 +29,14 @@ public static class ReviewSideSpray
             throw new Exception("Use the isolated command-line review checkout.");
         Directory.CreateDirectory(Folder);
     }
-    public static void Run()
+    public static void Run() => StartReview(false);
+    public static void RunProbes() => StartReview(true);
+    static void StartReview(bool probesOnly)
     {
         Guard();
+        SessionState.SetBool("ReviewSideSpray.ProbesOnly", probesOnly);
         PlayerSettings.companyName = "ShootemupReview";
-        PlayerSettings.productName = "SideSprayReview";
+        PlayerSettings.productName = "RapidSideSprayReview";
         MetaProgress.ReviewSaveDirectory = Folder;
         EditorSceneManager.OpenScene("Assets/Scenes/Title.unity");
         SessionState.SetBool("ReviewSideSpray", true);
@@ -108,6 +111,7 @@ public sealed class SideSprayReviewRuntime : MonoBehaviour
     {
         report.Add((okay ? "PASS " : "FAIL ") + message);
         if (!okay) errors.Add(message);
+        File.WriteAllLines(ReviewSideSpray.Folder + "/Progress.txt", report);
     }
     void Log(string message, string stack, LogType type)
     {
@@ -127,6 +131,8 @@ public sealed class SideSprayReviewRuntime : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
         Application.logMessageReceived += Log;
+        bool probesOnly = SessionState.GetBool("ReviewSideSpray.ProbesOnly", false);
+        if (probesOnly) report.AddRange(File.ReadAllLines(ReviewSideSpray.Folder + "/EncounterChecks.txt"));
         QualitySettings.renderPipeline = ScriptableObject.CreateInstance<CelestialNoRenderAsset>();
         AudioListener.pause = true;
         Time.captureDeltaTime = 1f / 60;
@@ -136,7 +142,7 @@ public sealed class SideSprayReviewRuntime : MonoBehaviour
         var watcher = WaveWatcher.Current;
         if (watcher.Looping) watcher.ToggleLoop();
         watcher.SelectView(WatcherView.Bosses); yield return Ready();
-        foreach (var level in new[] { LevelId.Snow, LevelId.Candyland })
+        foreach (var level in probesOnly ? Array.Empty<LevelId>() : new[] { LevelId.Snow, LevelId.Candyland })
         {
             watcher.SelectLevel(level); yield return Ready();
             watcher.SelectEncounter(WaveWatcher.Miniboss); yield return Ready();
@@ -168,37 +174,64 @@ public sealed class SideSprayReviewRuntime : MonoBehaviour
         yield return null;
         Clear(); Difficulty.Select(RunDifficulty.Hard);
 
-        var orb = CombatRound.Launch<GiantOrb>(new Vector3(0, 2), Vector2.down, 0, .66f).SideSpray();
-        orb.damage = 27;
-        bool warned = false, mirrored = true, inherited = true, onRim = true;
-        var timings = new List<int>();
-        for (int frame = 0; frame < 300; frame++)
+        GiantOrb orb = null;
+        var rates = new Dictionary<RunDifficulty,int>();
+        foreach (var difficulty in new[] { RunDifficulty.Hard, RunDifficulty.Normal, RunDifficulty.Easy })
         {
-            yield return null;
-            warned |= orb.GetComponent<SpriteRenderer>().color.r > 1.1f;
-            scratch.Clear();
-            foreach (var round in CombatRound.Live) if (round != orb) scratch.Add(round);
-            if (scratch.Count == 0) continue;
-            timings.Add(frame);
-            int left = 0, right = 0;
-            foreach (var round in scratch)
+            Difficulty.Select(difficulty); UnityEngine.Random.InitState(6110603 + (int)difficulty);
+            Vector2 heading = CombatVisuals.Rotate(Vector2.down, difficulty == RunDifficulty.Normal ? 16 : 0);
+            Vector2 side = new Vector2(-heading.y, heading.x);
+            orb = CombatRound.Launch<GiantOrb>(new Vector3(0, 2), heading, 0, .66f).SideSpray();
+            orb.damage = 27; orb.generation = 2;
+            bool warned = false, single = true, inherited = true, onRim = true, sameSide = false;
+            int left = 0, right = 0, lastSide = 0;
+            float lowAngle = 100, highAngle = -100, lowSpeed = 100, highSpeed = 0;
+            var timings = new List<int>();
+            for (int frame = 0; frame < 300; frame++)
             {
-                if (round.Heading.x < 0) left++; else right++;
-                mirrored &= Mathf.Abs(round.Heading.x) > .8f;
-                inherited &= round.generation == 1 && round.damage == 27 && round.UsesPixelContact;
-                onRim &= Vector2.Distance(round.transform.position, orb.transform.position) > .5f;
-                release.Invoke(round, null);
+                yield return null;
+                warned |= orb.GetComponent<SpriteRenderer>().color.r > 1.1f;
+                scratch.Clear();
+                foreach (var round in CombatRound.Live) if (round != orb) scratch.Add(round);
+                if (scratch.Count == 0) continue;
+                timings.Add(frame); single &= scratch.Count == 1;
+                foreach (var round in scratch)
+                {
+                    int flank = Vector2.Dot(side, round.Heading) < 0 ? -1 : 1;
+                    if (flank < 0) left++; else right++;
+                    sameSide |= lastSide == flank; lastSide = flank;
+                    float lean = Vector2.SignedAngle(side * flank, round.Heading);
+                    float velocity = round.speed / (3.2f * GameRules.enemyBulletSpeed * LevelRun.EnemyShotSpeedScale);
+                    lowAngle = Mathf.Min(lowAngle, lean); highAngle = Mathf.Max(highAngle, lean);
+                    lowSpeed = Mathf.Min(lowSpeed, velocity); highSpeed = Mathf.Max(highSpeed, velocity);
+                    inherited &= round.generation == 3 && round.damage == 27 && round.UsesPixelContact;
+                    onRim &= Vector2.Distance(round.transform.position, orb.transform.position) > .5f;
+                    release.Invoke(round, null);
+                }
             }
-            mirrored &= left == right && left == Difficulty.Dense(3);
+            rates[difficulty] = timings.Count;
+            int minimum = difficulty == RunDifficulty.Hard ? 40 : difficulty == RunDifficulty.Normal ? 20 : 7;
+            Check(warned && timings.Count >= minimum && timings[0] >= 35, difficulty + ": initial warning, then " + timings.Count + " rapid individual shots in five seconds.");
+            Check(single && left > 0 && right > 0 && sameSide, difficulty + ": random left/right choices, including repeated sides; left=" + left + ", right=" + right + ".");
+            Check(lowAngle >= -9.01f && highAngle <= 9.01f && lowAngle < -1 && highAngle > 1 &&
+                lowSpeed >= .899f && highSpeed <= 1.101f && highSpeed-lowSpeed > .04f,
+                $"{difficulty}: skew {lowAngle:F2}..{highAngle:F2} degrees; speed {lowSpeed:F3}..{highSpeed:F3} of the authored velocity.");
+            Check(timings.Zip(timings.Skip(1), (a, b) => b - a).Distinct().Count() > 1 && inherited && onRim,
+                difficulty + ": irregular cadence, rim origins, inherited damage/generation and exact pixel contacts.");
+            release.Invoke(orb, null);
         }
-        Check(warned && timings.Count >= 3 && timings[0] >= 35, "Each spray has an initial warning; repeat bursts continue while the orb survives.");
-        Check(timings.Zip(timings.Skip(1), (a, b) => b - a).Distinct().Count() > 1, "Side releases occur at irregular intervals.");
-        Check(mirrored && inherited && onRim, "Children leave both rims sideways, retain damage/generation and exact pixel contacts.");
-        release.Invoke(orb, null);
+        Check(rates[RunDifficulty.Hard] > rates[RunDifficulty.Normal] * 1.4f && rates[RunDifficulty.Normal] > rates[RunDifficulty.Easy] * 1.5f,
+            "Difficulty thins the same rapid stream through cadence.");
+        Difficulty.Select(RunDifficulty.Hard);
         var ordinary = CombatRound.Launch<GiantOrb>(new Vector3(0, 2), Vector2.down, 0, .66f);
         Check(ReferenceEquals(orb, ordinary), "The same pooled object is reused as an ordinary orb.");
         for (int frame = 0; frame < 100; frame++) yield return null;
         Check(CombatRound.Live.Count == 1, "An ordinary reused orb never inherits side fire.");
+        Clear();
+        orb = CombatRound.Launch<GiantOrb>(new Vector3(0, 2), Vector2.down, 0, .66f).SideSpray()
+            .Pause(.05f, .7f);
+        for (int frame = 0; frame < 50; frame++) yield return null;
+        Check(CombatRound.Live.Count == 1, "A paused spray waits through the hold and its renewed release warning.");
         Clear();
         orb = CombatRound.Launch<GiantOrb>(new Vector3(0, CombatRound.Border.yMax + .8f), Vector2.down, 0, .66f).SideSpray();
         for (int frame = 0; frame < 90; frame++) yield return null;

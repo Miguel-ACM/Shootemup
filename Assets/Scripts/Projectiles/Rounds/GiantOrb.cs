@@ -6,15 +6,15 @@ public sealed class GiantOrb : CombatRound
 {
     public override float HitboxScale => .25f;
     const float WarningTime = .24f;
-    int sideCount;
-    float sideSpeed, nextRelease;
+    bool sideSpray;
+    float sideSpeed, sideCadence, nextRelease, sideWarning;
     uint sprayRandom;
 
     protected override void Initialize()
     {
         // The ordinary and side-spraying variants share the warmed giant-orb pool.
-        sideCount = 0;
-        sideSpeed = nextRelease = 0;
+        sideSpray = false;
+        sideSpeed = sideCadence = nextRelease = sideWarning = 0;
         sprayRandom = 0;
         // Large glows sit behind the smaller hostile sprites, above the hull.
         visual.sortingOrder = 16;
@@ -22,8 +22,11 @@ public sealed class GiantOrb : CombatRound
 
     internal void EnableSideSpray(float velocity)
     {
-        sideCount = Difficulty.Dense(3);
+        sideSpray = true;
+        // Thin the stream through its cadence, rather than simultaneous fans.
+        sideCadence = Difficulty.Rest(3f / Difficulty.Dense(3));
         sideSpeed = velocity;
+        sideWarning = WarningTime;
         sprayRandom = (uint)Random.Range(1, int.MaxValue);
         nextRelease = age + Difficulty.Rest(Between(.65f, .95f));
     }
@@ -41,7 +44,7 @@ public sealed class GiantOrb : CombatRound
     {
         Advance(dt);
         transform.rotation = Quaternion.Euler(0, 0, age * 40);
-        if (sideCount == 0)
+        if (!sideSpray)
             return;
 
         // Never release unseen side fire, while held, or during a clear/fade.
@@ -49,34 +52,32 @@ public sealed class GiantOrb : CombatRound
         if (!Border.Contains(p) || Paused || fadeAt >= 0 && age >= fadeAt)
         {
             nextRelease = age + WarningTime;
+            sideWarning = WarningTime;
             visual.color = Color.white;
             return;
         }
-        float charge = Mathf.Clamp01(1 - (nextRelease - age) / WarningTime);
+        float charge = Mathf.Clamp01(1 - (nextRelease - age) / sideWarning);
         float glow = 1 + charge * .38f;
         visual.color = new Color(glow, glow, glow, 1);
         if (age < nextRelease)
             return;
 
-        nextRelease = age + Difficulty.Rest(Between(.60f, 1.05f));
+        float interval = Between(.04f, .07f) * sideCadence;
+        nextRelease = age + interval;
+        sideWarning = Mathf.Min(.035f, interval * .6f);
         visual.color = Color.white;
-        // Keep the mirrored burst whole when the arena is already at capacity.
-        if (Live.Count + sideCount * 2 > Limit)
+        if (Live.Count >= Limit)
             return;
         Vector2 side = new Vector2(-heading.y, heading.x);
-        float lean = Between(-22, 22), velocity = sideSpeed * Between(.9f, 1.1f);
+        int flank = Between(0, 1) < .5f ? -1 : 1;
+        float lean = Between(-9, 9), velocity = sideSpeed * Between(.9f, 1.1f);
         float rim = visual.sprite.bounds.extents.x * Mathf.Abs(transform.localScale.x);
-        for (int sign = -1; sign <= 1; sign += 2)
-            for (int i = 0; i < sideCount; i++)
-            {
-                float angle = lean + (i - (sideCount - 1) * .5f) * 10;
-                var direction = CombatVisuals.Rotate(side * sign, angle * sign);
-                var shard = Launch<SimpleRound>(p + (Vector3)direction * (rim + .07f), direction, velocity, .14f);
-                if (shard != null)
-                {
-                    shard.damage = damage;
-                    shard.generation = generation + 1;
-                }
-            }
+        var direction = CombatVisuals.Rotate(side * flank, lean);
+        var shard = Launch<SimpleRound>(p + (Vector3)direction * (rim + .07f), direction, velocity, .14f);
+        if (shard != null)
+        {
+            shard.damage = damage;
+            shard.generation = generation + 1;
+        }
     }
 }

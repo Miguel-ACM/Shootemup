@@ -1,0 +1,40 @@
+PASS Snow Easy miniboss engages.
+PASS Snow Easy: giant peak 6, side-round peak 68.
+PASS Snow Easy uses warmed projectile objects only.
+PASS Snow Normal miniboss engages.
+PASS Snow Normal: giant peak 8, side-round peak 133.
+PASS Snow Normal uses warmed projectile objects only.
+PASS Snow Hard miniboss engages.
+PASS Snow Hard: giant peak 8, side-round peak 220.
+PASS Snow Hard uses warmed projectile objects only.
+PASS Candyland Easy miniboss engages.
+PASS Candyland Easy: giant peak 8, side-round peak 59.
+PASS Candyland Easy uses warmed projectile objects only.
+PASS Candyland Normal miniboss engages.
+PASS Candyland Normal: giant peak 6, side-round peak 106.
+PASS Candyland Normal uses warmed projectile objects only.
+PASS Candyland Hard miniboss engages.
+PASS Candyland Hard: giant peak 6, side-round peak 170.
+PASS Candyland Hard uses warmed projectile objects only.
+PASS Hard: initial warning, then 66 rapid individual shots in five seconds.
+PASS Hard: random left/right choices, including repeated sides; left=24, right=42.
+PASS Hard: skew -8,70..8,77 degrees; speed 0,900..1,099 of the authored velocity.
+PASS Hard: irregular cadence, rim origins, inherited damage/generation and exact pixel contacts.
+PASS Normal: initial warning, then 36 rapid individual shots in five seconds.
+PASS Normal: random left/right choices, including repeated sides; left=18, right=18.
+PASS Normal: skew -8,94..7,86 degrees; speed 0,902..1,098 of the authored velocity.
+PASS Normal: irregular cadence, rim origins, inherited damage/generation and exact pixel contacts.
+PASS Easy: initial warning, then 13 rapid individual shots in five seconds.
+PASS Easy: random left/right choices, including repeated sides; left=6, right=7.
+PASS Easy: skew -8,37..8,51 degrees; speed 0,910..1,095 of the authored velocity.
+PASS Easy: irregular cadence, rim origins, inherited damage/generation and exact pixel contacts.
+PASS Difficulty thins the same rapid stream through cadence.
+PASS The same pooled object is reused as an ordinary orb.
+PASS An ordinary reused orb never inherits side fire.
+PASS A paused spray waits through the hold and its renewed release warning.
+PASS An offscreen orb does not release unseen side shots.
+PASS A full clear leaves no delayed side releases.
+PASS A launch refused by the live cap remains null-safe.
+PASS Dense side-spray stress respects the 3600-round cap; peak=3600.
+PASS Dense stress creates no projectile objects after preparation.
+600 complete editor frames, 128 spraying giants / 800 total giants with 2400 ordinary rounds: CPU p95=9,774ms, max=14,995ms; native physics p95=1,467ms. Rendering excluded.

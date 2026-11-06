@@ -1,0 +1,28 @@
+Rapid giant side-spray - 6 November 2026
+
+The giant now releases one small round at a time, choosing left or right independently
+on every shot. The heading follows the carrier's current direction, with +/-9 degrees
+of skew and +/-10% speed variation. Hard intervals are 0.04-0.07 seconds; Normal and
+Easy scale that cadence through the existing density and rest settings. Preserve the
+initial warning, brief release pulses, small giant hitbox and approved projectile art.
+
+One isolated gameplay batch covered Snow Siege Craft and Taffy Duelist on all three
+difficulties. All six encounters fired the spray and reused warmed projectile objects.
+The subsequent measurement probe initially stopped on an incorrect reflection lookup
+in the review script. Corrected that lookup to use the existing public speed field;
+reran only the outstanding probes and stress case, retaining the encounter results.
+
+Five-second probes, including the initial warning, observed 66 Hard, 36 Normal and
+13 Easy shots. Every release contained one round; each sample included both flanks
+and repeated same-side choices, bounded skew/speed variation and irregular intervals.
+Damage, generation, pixel contacts and rim origins were retained. Ordinary pooled
+reuse, pause, offscreen suppression, full clear and live-cap refusal all passed.
+
+Stress: 128 spraying giants among 800 giants and 2400 ordinary rounds, 600 complete
+editor frames. Peak 3600 live, no new projectile objects. CPU p95 9.774 ms, maximum
+14.995 ms; native physics p95 1.467 ms. Rendering was excluded from this CPU probe;
+these values are not a claim about full rendered gameplay performance.
+
+Side-spray.mp4: six seconds of the Normal Snow variant, rendered offscreen from the
+actual approved sprites and runtime motion at 15 fps (simulation steps at 60 Hz).
+Build.txt records the isolated Windows player build result.
