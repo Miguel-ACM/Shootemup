@@ -20,8 +20,12 @@ public sealed class CityCommandCarrier : DistrictMiniboss
         if (beat == 0)
             Stream(Dense(24), .07f, n =>
             {
+                // Opposite arms share a tone: a bright line and a dark line turning as one cross.
                 for (int arm = 0; arm < 4; arm++)
+                {
+                    UseTone(arm % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
                     Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, arm * 90 + n * 12 * (volley % 2 == 0 ? 1 : -1)), 3.6f, .19f);
+                }
             });
         else if (beat == 1)
         {
@@ -42,7 +46,10 @@ public sealed class CityCommandCarrier : DistrictMiniboss
                 for (int i = 0; i < lanes; i++)
                 {
                     float offset = (i - (lanes - 1) * .5f) * 7;
+                    // The street lattice in front is dark; the rear guard off the ceiling is bright.
+                    UseTone(HostileTone.Dark);
                     Fire<SimpleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, family * 34 + offset), 2.4f, .2f);
+                    UseTone(HostileTone.Bright);
                     Fire<SimpleRound>(transform.position, CombatVisuals.Rotate(Vector2.up, family * 34 + offset), 2.6f, .2f).Bounce(1);
                 }
         }

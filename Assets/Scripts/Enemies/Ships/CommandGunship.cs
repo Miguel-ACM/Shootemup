@@ -24,6 +24,7 @@ public sealed class CommandGunship : DistrictEnemy
             Fan<ChevronRound>(4, 30, 2.9f, .24f);
         else
         {
+            UseTone(HostileTone.Dark);
             int lanes = Dense(4);
             for (int family = -1; family <= 1; family += 2)
                 for (int i = 0; i < lanes; i++)

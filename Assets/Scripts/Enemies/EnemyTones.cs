@@ -30,6 +30,15 @@ public static class EnemyTones
         { typeof(HailLantern), HostileTone.Dark },
         { typeof(IcicleWeaver), HostileTone.Dark },
         { typeof(SnowSiegeCraft), HostileTone.Dark },
+
+        // City: headlights along one aim are bright; lobbed cargo, skids and street
+        // lattices are dark.
+        { typeof(AttackDrone), HostileTone.Bright },
+        { typeof(CommandGunship), HostileTone.Bright },
+        { typeof(CourierDiver), HostileTone.Bright },
+        { typeof(CityCommandCarrier), HostileTone.Bright },
+        { typeof(TerraceGunboat), HostileTone.Dark },
+        { typeof(MetroLancer), HostileTone.Dark },
     };
 
     public static HostileTone Default(Type enemy) => defaults.TryGetValue(enemy, out var tone) ? tone : HostileTone.Bright;

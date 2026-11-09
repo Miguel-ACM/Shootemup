@@ -15,6 +15,8 @@ public sealed class CourierDiver : DistrictEnemy
     {
         var aim = Aim;
         Fire<NeedleRound>(Muzzle(), aim, 4.8f, .18f);
+        // The slow follow-up is dark, so the two dodges read apart.
+        UseTone(HostileTone.Dark);
         Fire<SimpleRound>(Muzzle(), aim, 2.2f, .2f);
     }
 }
