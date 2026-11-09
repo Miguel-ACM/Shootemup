@@ -87,7 +87,7 @@ public sealed partial class SpaceCitadelBoss
         // A comet down the pilot's current line keeps the rotating seam transient.
         Fire<SimpleRound>(Core,CombatVisuals.Aim(Core),2.7f,.24f).Repel(Core,1.2f).LivesFor(10);
         for (int i = 0; i < beads; i++)
-            ScoredShot(i%3==0,Core, CombatVisuals.Rotate(Vector2.down, n * 7.3f + i * 360f / beads), .7f).Repel(Core, 6).LivesFor(9);
+            MoonShot(i%3==0,Core, CombatVisuals.Rotate(Vector2.down, n * 7.3f + i * 360f / beads), .7f).Repel(Core, 6).LivesFor(9);
     }
 
     void ExpelStars(int n, int count)

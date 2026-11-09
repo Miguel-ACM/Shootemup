@@ -29,7 +29,7 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
                 // The upward throw is harmless; only the falling snow hurts.
                 Fire<SimpleRound>(p, CombatVisuals.Rotate(Vector2.up, lane * 4), 9 + (i % 3), .16f).Harmless().FadeAt(.45f);
                 float x = Mathf.Lerp(Camera.LeftLimit + .3f, Camera.RightLimit - .3f, (i + (volley / 3 % 2) * .5f) / flakes);
-                CombatRound.Launch<SimpleRound>(new Vector3(x, CombatRound.Border.yMax + .8f), Vector2.down, 1.5f + (i % 3) * .3f, .19f)
+                CombatRound.Launch<SnowflakeRound>(new Vector3(x, CombatRound.Border.yMax + .8f), Vector2.down, 1.5f + (i % 3) * .3f, .19f)
                     .Pause(.05f, .6f + (i % 4) * .15f, CombatRound.Turn.Down, lane, 1)
                     .Sway(i % 2 == 0 ? .35f : -.35f, .45f);
             }

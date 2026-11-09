@@ -16,7 +16,7 @@ public sealed class JetSquid : DistrictEnemy
     {
         int count = Dense(4);
         for (int i = 0; i < count; i++)
-            Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Aim, (i - (count - 1) * .5f) * 26), 3.4f, .22f)
+            Fire<DropletRound>(Muzzle(), CombatVisuals.Rotate(Aim, (i - (count - 1) * .5f) * 26), 3.4f, .22f)
                 .Pause(.45f, .7f, CombatRound.Turn.Down, (i - (count - 1) * .5f) * 12, .35f)
                 .FadeAt(4.5f);
     }

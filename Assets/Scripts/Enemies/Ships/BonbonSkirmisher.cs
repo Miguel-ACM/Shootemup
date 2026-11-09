@@ -14,7 +14,7 @@ public sealed class BonbonSkirmisher : DistrictEnemy
     // One bonbon that ricochets off a wall.
     protected override void Attack()
     {
-        Fire<SimpleRound>(Muzzle(), Aim, 4.4f, .2f).Bounce(1);
+        Fire<HeartRound>(Muzzle(), Aim, 4.4f, .2f).Bounce(1);
     }
 }
 public static partial class IndustrialMeshFactory

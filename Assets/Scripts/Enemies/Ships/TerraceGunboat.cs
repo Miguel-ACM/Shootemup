@@ -17,7 +17,7 @@ public sealed class TerraceGunboat : DistrictEnemy
     {
         int shards = Dense(3);
         for (int s = -1; s <= 1; s += 2)
-            Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.up, s * (35 + (volley % 2) * 10)), 2.4f, .3f)
+            Fire<GemRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.up, s * (35 + (volley % 2) * 10)), 2.4f, .3f)
                 .Fall(new Vector2(0, -2.8f))
                 .SplitAt(1.6f, shards, 14, 3.2f, .16f, true);
     }

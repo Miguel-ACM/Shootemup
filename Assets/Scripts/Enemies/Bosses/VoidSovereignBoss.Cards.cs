@@ -48,7 +48,7 @@ public sealed partial class VoidSovereignBoss
     {
         if(beat%6==5)return;
         if(beat%5==0)for(int port=0;port<2;port++)
-            Fire<SimpleRound>(Port(port),CombatVisuals.Aim(Port(port)),2.7f,.23f);
+            Fire<CrescentRound>(Port(port),CombatVisuals.Aim(Port(port)),2.7f,.23f);
         int count=Dense(11);bool crown=beat%4==0;
         float fold=30+23*Mathf.Sin(beat*.22f);
         for(int side=-1;side<=1;side+=2)
@@ -83,7 +83,7 @@ public sealed partial class VoidSovereignBoss
                         .Pause(.76f,.48f,CombatRound.Turn.Rotate,side*bank*(beat%2==0?24:-24),.9f).FadeAt(5.8f);
                     // A sparse outer answer leaves the moving crease traversable.
                     if(!crown&&i==rows-1)
-                        Fire<NeedleRound>(Port(side<0?0:1),CombatVisuals.Rotate(axis,side*(18+u*37)),
+                        Fire<KunaiRound>(Port(side<0?0:1),CombatVisuals.Rotate(axis,side*(18+u*37)),
                             1.1f,.17f).Ramp(2.3f,1.1f,1.1f).FadeAt(5.8f);
                 }
     });
@@ -93,7 +93,7 @@ public sealed partial class VoidSovereignBoss
     {
         if(beat%8>=6)return;
         if(beat%10==0)for(int port=0;port<2;port++)
-            Fire<SimpleRound>(Port(port),CombatVisuals.Aim(Port(port)),3.0f,.22f);
+            Fire<CrescentRound>(Port(port),CombatVisuals.Aim(Port(port)),3.0f,.22f);
         int count=Dense(5);bool crown=beat%6==0;
         float stroke=74*Mathf.Sin(beat*.17f);
         for(int side=-1;side<=1;side+=2)
@@ -151,7 +151,7 @@ public sealed partial class VoidSovereignBoss
     IEnumerator FalseStars()=>Every(6.2f,1.5f,beat=>
     {
         for(int port=0;port<2;port++)
-            Fire<SimpleRound>(Port(port),CombatVisuals.Aim(Port(port)),2.8f,.23f);
+            Fire<CrescentRound>(Port(port),CombatVisuals.Aim(Port(port)),2.8f,.23f);
         // Widely separated comets open narrow fans, leaving space between the
         // crowns and between their shrapnel. No second carpet of slow crowns.
         for(int side=-1;side<=1;side+=2)for(int bank=-1;bank<=1;bank+=2)
@@ -243,7 +243,7 @@ public sealed partial class VoidSovereignBoss
             Vector3 p=Port(port);
             Vector2 aim=((Vector2)(target-p)).normalized;
             for(int i=0;i<count;i++)
-                Fire<SimpleRound>(p,CombatVisuals.Rotate(aim,Across(i,count)*8),2.8f,.22f).FadeAt(6);
+                Fire<GemRound>(p,CombatVisuals.Rotate(aim,Across(i,count)*8),2.8f,.22f).FadeAt(6);
         }
     }
 }

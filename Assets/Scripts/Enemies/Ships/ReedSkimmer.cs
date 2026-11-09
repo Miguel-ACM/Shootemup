@@ -16,7 +16,7 @@ public sealed class ReedSkimmer : DistrictEnemy
     protected override void Attack()
     {
         for (int side = -1; side <= 1; side += 2)
-            Fire<SimpleRound>(Muzzle(side < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, side * (volley % 2 == 0 ? 18 : 8)), 2.6f, .24f)
+            Fire<PetalRound>(Muzzle(side < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, side * (volley % 2 == 0 ? 18 : 8)), 2.6f, .24f)
                 .Sway(side * .45f, .6f);
     }
 

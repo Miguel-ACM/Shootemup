@@ -19,7 +19,7 @@ public sealed class HarrowBomber : DistrictEnemy
         for (int i = 0; i < count; i++)
         {
             float lane = i - (count - 1) * .5f;
-            Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, lane * 24 + (volley % 2 == 0 ? 8 : -8)), 2.4f, .27f)
+            Fire<PetalRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, lane * 24 + (volley % 2 == 0 ? 8 : -8)), 2.4f, .27f)
                 .Pause(.5f + Mathf.Abs(lane) * .2f, .3f);
         }
     }

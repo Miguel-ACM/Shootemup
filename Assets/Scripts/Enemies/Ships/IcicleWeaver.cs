@@ -17,7 +17,7 @@ public sealed class IcicleWeaver : DistrictEnemy
     {
         int count = Dense(5);
         for (int i = 0; i < count; i++)
-            Fire<NeedleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 19 + (volley % 2 == 0 ? 8 : -8)), 2.6f, .17f)
+            Fire<CrystalRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 19 + (volley % 2 == 0 ? 8 : -8)), 2.6f, .17f)
                 .Pause(.45f, .5f + i * .12f, CombatRound.Turn.Down, 0, .5f)
                 .Ramp(3, 1.0f, .95f + i * .12f);
     }

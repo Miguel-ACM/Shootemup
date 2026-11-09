@@ -15,7 +15,7 @@ public sealed class GumdropMortar : DistrictEnemy
     // A gumdrop that brakes hard, then pops into a short shotgun aimed at the player.
     protected override void Attack()
     {
-        Fire<SimpleRound>(Muzzle(volley), CombatVisuals.Rotate(Vector2.down, volley % 2 == 0 ? -15 : 15), 2.8f, .4f)
+        Fire<CandyRound>(Muzzle(volley), CombatVisuals.Rotate(Vector2.down, volley % 2 == 0 ? -15 : 15), 2.8f, .3f)
             .Ramp(.15f, .7f)
             .SplitAt(1.0f, Dense(4), 11, 4.2f, .16f, true);
     }

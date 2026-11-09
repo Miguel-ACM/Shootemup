@@ -16,7 +16,7 @@ public sealed class MintSpinner : DistrictEnemy
     {
         int count = Dense(3);
         for (int i = 0; i < count; i++)
-            Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Aim, (i - (count - 1) * .5f) * 40), 3.4f, .23f).Bounce(1);
+            Fire<StarRound>(Muzzle(i), CombatVisuals.Rotate(Aim, (i - (count - 1) * .5f) * 40), 3.4f, .23f).Bounce(1);
     }
 }
 public static partial class IndustrialMeshFactory

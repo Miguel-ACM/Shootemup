@@ -17,7 +17,7 @@ public sealed class NautilusBell : DistrictEnemy
     {
         int n = Dense(5);
         for (int i = 0; i < n; i++)
-            Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.up, (i - (n - 1) * .5f) * 26 + (volley % 2 == 0 ? 9 : -9)), 2.6f, .28f)
+            Fire<DropletRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.up, (i - (n - 1) * .5f) * 26 + (volley % 2 == 0 ? 9 : -9)), 2.6f, .28f)
                 .Fall(new Vector2(0, -2.6f));
     }
 

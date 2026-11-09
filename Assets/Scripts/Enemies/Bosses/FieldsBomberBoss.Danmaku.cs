@@ -77,7 +77,7 @@ public sealed partial class FieldsBomberBoss
             for (int i = 0; i < lanes; i++)
             {
                 float step = 120f / (lanes - 1);
-                Fire<SimpleRound>(Muzzle(4), CombatVisuals.Rotate(Vector2.down, (i - (lanes - 1) * .5f) * step + (layer + n) % 2 * step * .5f), 1.7f + layer * .5f, .26f);
+                Fire<PetalRound>(Muzzle(4), CombatVisuals.Rotate(Vector2.down, (i - (lanes - 1) * .5f) * step + (layer + n) % 2 * step * .5f), 1.7f + layer * .5f, .26f);
             }
     }
 

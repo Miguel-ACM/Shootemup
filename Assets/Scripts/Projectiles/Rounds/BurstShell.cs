@@ -126,7 +126,7 @@ public sealed class BurstShell : CombatRound
                 .Harmless().FadeAt(.45f);
             float x = Mathf.Clamp(transform.position.x + lane * .55f, Camera.LeftLimit + .3f, Camera.RightLimit - .3f);
             // Flakes are born above the visible top edge and drift in, never popping into view.
-            var flake = Launch<SimpleRound>(new Vector3(x, Border.yMax + .5f), Vector2.down, 1.4f + (i % 3) * .25f, .19f);
+            var flake = Launch<SnowflakeRound>(new Vector3(x, Border.yMax + .5f), Vector2.down, 1.4f + (i % 3) * .25f, .19f);
             flake.Pause(.05f, .5f + (i % 4) * .12f, Turn.Down, lane * 2, 1).Sway(i % 2 == 0 ? .35f : -.35f, .45f);
             if (spray != null)
                 spray.generation = 2;

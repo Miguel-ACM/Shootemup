@@ -19,7 +19,7 @@ public sealed class AshCenser : DistrictEnemy
         {
             int count = Dense(5);
             for (int i = 0; i < count; i++)
-                Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.up, (i - (count - 1) * .5f) * 16), 2.8f, .24f)
+                Fire<FlameRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.up, (i - (count - 1) * .5f) * 16), 2.8f, .24f)
                     .Pause(.55f, .3f, CombatRound.Turn.Down, 0, i % 2 == 0 ? .6f : 1.05f);
         }
         else

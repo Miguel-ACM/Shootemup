@@ -16,6 +16,6 @@ public sealed class AttackDrone : DistrictEnemy
         int beads = Dense(4);
         var aim = Aim;
         for (int i = 0; i < beads; i++)
-            Fire<SimpleRound>(Muzzle(i), aim, 5.0f - i * .7f, .17f);
+            Fire<KunaiRound>(Muzzle(i), aim, 5.0f - i * .7f, .17f);
     }
 }

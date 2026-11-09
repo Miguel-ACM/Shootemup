@@ -127,7 +127,7 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
                 // Most feathers enter the lower arena; a lighter upper arch still returns from the ceiling.
                 float speed=2.35f+.85f*(1-u*u)+(CurrentPhase-1)*.12f;
                 var axis=bank>0?Vector2.up:Vector2.down;
-                ScoredShot(i%3==0,Eye(s<0?3:4),CombatVisuals.Rotate(axis,angle),speed,.17f)
+                FeatherShot(i%3==0,Eye(s<0?3:4),CombatVisuals.Rotate(axis,angle),speed,.17f)
                     .Bounce(bank>0?1:0).FadeAt(8);
                 if(pearls&&bank<0&&beat%4==0&&i%3==0)
                     Fire<SimpleRound>(Eye(s<0?1:2),CombatVisuals.Rotate(Vector2.down,s*(48+u*23)),1.55f,.22f).FadeAt(7.8f);
@@ -153,12 +153,16 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
         }
     }
 
+    // The angel's feather banks: arrow-like feathers, with the scored circular beads kept.
+    CombatRound FeatherShot(bool circular, Vector3 port, Vector2 axis, float speed, float radius)
+        => circular ? (CombatRound)Fire<SimpleRound>(port, axis, speed, radius) : Fire<FeatherRound>(port, axis, speed, radius);
+
     void Gaze()
     {
         // The central eye looks through the moving aisle, including above the angel.
         Vector3 p=Eye(0);Vector2 aim=CombatVisuals.Aim(p);int count=Dense(5)|1;
         for(int i=0;i<count;i++)
-            Fire<SimpleRound>(p,CombatVisuals.Rotate(aim,(i-(count-1)*.5f)*11),2.6f,.22f).Ramp(1.2f,1.3f);
+            Fire<StarRound>(p,CombatVisuals.Rotate(aim,(i-(count-1)*.5f)*11),2.6f,.22f).Ramp(1.2f,1.3f);
     }
 
     // The angel may create fire in empty air. Six fixed, charged points draw a

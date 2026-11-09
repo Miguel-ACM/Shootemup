@@ -20,7 +20,7 @@ public sealed class MirageObelisk : DistrictEnemy
         {
             float lane = i - (count - 1) * .5f;
             bool lunges = i % 2 == 0;
-            Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, lane * 26 + (volley % 2 == 0 ? 10 : -10)), 2.5f, .22f)
+            Fire<RiceRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, lane * 26 + (volley % 2 == 0 ? 10 : -10)), 2.5f, .22f)
                 .Pause(.5f, .9f + Mathf.Abs(lane) * .1f, lunges ? CombatRound.Turn.Aim : CombatRound.Turn.Keep, 0, lunges ? .9f : 1.25f);
         }
     }

@@ -35,6 +35,10 @@ public sealed partial class SpaceCitadelBoss : ArmoredHullBoss
         firingCue.Register(CoreVisual, Vector3.back * .25f);
     }
 
+    // The core's flung rings mix spinning crescents with arrows.
+    CombatRound MoonShot(bool moon, Vector3 port, Vector2 axis, float speed)
+        => moon ? (CombatRound)Fire<CrescentRound>(port, axis, speed, .19f) : Fire<NeedleRound>(port, axis, speed, .19f);
+
     protected override void PressureAttack() { }
     protected override void MoveBoss(float dt)
     {
