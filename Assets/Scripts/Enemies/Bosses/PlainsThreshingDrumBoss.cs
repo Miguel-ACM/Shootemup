@@ -24,6 +24,12 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
         return side * Mathf.Max(.5f, CombatRound.Border.xMax - .12f - drum);
     }
 
+    // Tones: windrow arrows in the lead tone with their round beads in the other; the
+    // winnower's pods in the other tone with lead-tone kernels; phase two swaps them.
+    // On the return stroke the left drum's teeth are dark and the right drum's bright.
+    HostileTone Lead => CurrentPhase == 2 ? HostileTone.Dark : HostileTone.Bright;
+    static HostileTone Opposite(HostileTone value) => value == HostileTone.Bright ? HostileTone.Dark : HostileTone.Bright;
+
     protected override IEnumerator Cards()
     {
         int side = -1;
@@ -64,6 +70,7 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
                         // equal row depths. Even the last planted row finishes before
                         // the shared release; no reversals or faster rows catching up.
                         float plant = FirstPlant + row * PlantStep;
+                        UseTone(row % 3 == 0 ? Opposite(Lead) : Lead);
                         ScoredShot(row%3==0,port, Vector2.down, 3.2f, .18f)
                             .Pause(plant, travelLeft + lastPlant + .30f - plant,
                                 CombatRound.Turn.Down, speed: 1.3f);
@@ -77,7 +84,9 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
             for (int pod = 0; pod < pods; pod++)
             {
                 // The chute's kernels cross the old furrow between windrow releases.
+                UseTone(Lead);
                 if(pod%2==0)Fire<SimpleRound>(Muzzle(),CombatVisuals.Aim(Muzzle()),3.1f,.22f);
+                UseTone(Opposite(Lead));
                 for (int mirror = -1; mirror <= 1; mirror += 2)
                     // The chute throws chaff sideways. Alternating pods turn into
                     // ascending and descending diagonal combs rather than another rain.
@@ -99,7 +108,9 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
                     {
                         float offset = (tine - (Dense(5) - 1) * .5f) * 9;
                         // Three side-wall bounces each, rather than one (Miguel).
+                        UseTone(HostileTone.Dark);
                         ScoredShot(tooth%3==0,Muzzle(1), CombatVisuals.Rotate(Vector2.right, spread + offset), 3.3f).Bounce(3, false);
+                        UseTone(HostileTone.Bright);
                         ScoredShot(tooth%3==0,Muzzle(2), CombatVisuals.Rotate(Vector2.left, -spread - offset), 3.3f).Bounce(3, false);
                     }
                     yield return Wait(Rest(.09f));
