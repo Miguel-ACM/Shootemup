@@ -12,6 +12,8 @@ public sealed class PatrolGunship : DistrictEnemy
 
     protected override void Attack()
     {
-        FanFrom<NeedleRound>((3), 12, 4.6f, .18f, ports);
+        // Four arrows on Normal and Hard, three on Easy, over a similar width.
+        int count = Difficulty.Easy ? 3 : 4;
+        FanFrom<NeedleRound>(count, count == 4 ? 9 : 12, 4.6f, .18f, ports);
     }
 }
