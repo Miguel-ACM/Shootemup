@@ -12,17 +12,16 @@ public sealed class MirageObelisk : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
-    // Mines that stop and glint: even ones lunge at the player, odd ones sink into the sand.
+    // Mines that stop and glint: even ones lunge at the player, odd ones carry on faster.
     protected override void Attack()
     {
         int count = Dense(5);
         for (int i = 0; i < count; i++)
         {
             float lane = i - (count - 1) * .5f;
-            var mine = Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, lane * 26 + (volley % 2 == 0 ? 10 : -10)), 2.5f, .22f)
-                .Pause(.5f, .9f + Mathf.Abs(lane) * .1f, CombatRound.Turn.Aim, 0, .9f);
-            if (i % 2 == 1)
-                mine.FadeAt(1.4f + Mathf.Abs(lane) * .1f);
+            bool lunges = i % 2 == 0;
+            Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, lane * 26 + (volley % 2 == 0 ? 10 : -10)), 2.5f, .22f)
+                .Pause(.5f, .9f + Mathf.Abs(lane) * .1f, lunges ? CombatRound.Turn.Aim : CombatRound.Turn.Keep, 0, lunges ? .9f : 1.25f);
         }
     }
 

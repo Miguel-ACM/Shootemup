@@ -25,7 +25,7 @@ public sealed class ScarabDredger : DistrictMiniboss
     }
 
     // Desert scarab dredger: mirrored rows of quicksand mines that stop, then carry on
-    // outward or sink; twin mirrored arrow sandblasts either side of the player; and
+    // outward or lunge at the player; twin mirrored arrow sandblasts either side of the player; and
     // a sand fountain thrown up from its scoop.
     protected override void Attack()
     {
@@ -37,10 +37,9 @@ public sealed class ScarabDredger : DistrictMiniboss
                 for (int i = 0; i < mines; i++)
                 {
                     var axis = CombatVisuals.Rotate(Vector2.right * side, -side * (i * 15 - 30));
-                    var mine = Fire<SimpleRound>(Muzzle(side < 0 ? 0 : 1), axis, 2.4f + (i % 2) * .5f, .22f)
-                        .Pause(.5f, .8f + i * .06f, CombatRound.Turn.Keep, 0, 1.2f);
-                    if (i % 2 == 1)
-                        mine.FadeAt(1.3f + i * .06f);
+                    bool lunges = i % 2 == 1;
+                    Fire<SimpleRound>(Muzzle(side < 0 ? 0 : 1), axis, 2.4f + (i % 2) * .5f, .22f)
+                        .Pause(.5f, .8f + i * .06f, lunges ? CombatRound.Turn.Aim : CombatRound.Turn.Keep, 0, lunges ? 1.35f : 1.2f);
                 }
         }
         else if (beat == 1)

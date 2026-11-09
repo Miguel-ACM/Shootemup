@@ -59,7 +59,7 @@ public sealed partial class DesertWormBoss
         }
     }
 
-    // Two flanking rows that brake and glint; even mines carry on outward, odd ones sink.
+    // Two flanking rows that brake and glint; even mines carry on outward, odd ones lunge at the player.
     void QuicksandMines(int core)
     {
         if (core < 0)
@@ -72,11 +72,9 @@ public sealed partial class DesertWormBoss
             {
                 var axis = CombatVisuals.Rotate(flank * side, (i - (mines - 1) * .5f) * 14);
                 float hold = 1.0f + i * .08f;
-                bool lunges=i==mines/2;
-                var mine = Fire<SimpleRound>(t.position, axis, 2.3f + (i % 2) * .5f, .22f)
-                    .Pause(.5f, hold, lunges?CombatRound.Turn.Aim:CombatRound.Turn.Keep, 0, 1.2f);
-                if (i % 2 == 1&&!lunges)
-                    mine.FadeAt(.5f + hold);
+                bool lunges = i % 2 == 1 || i == mines / 2;
+                Fire<SimpleRound>(t.position, axis, 2.3f + (i % 2) * .5f, .22f)
+                    .Pause(.5f, hold, lunges ? CombatRound.Turn.Aim : CombatRound.Turn.Keep, 0, lunges ? 1.35f : 1.2f);
             }
     }
 
@@ -97,7 +95,7 @@ public sealed partial class DesertWormBoss
         }
     }
 
-    // Heat haze: slow mirrored rounds that shimmer and fade out at staggered depths.
+    // Heat haze: slow mirrored rounds that shimmer, then quicken at staggered depths.
     void Mirage(int parity)
     {
         int count = Dense(3);
@@ -106,7 +104,7 @@ public sealed partial class DesertWormBoss
                 for (int j = 0; j < count; j++)
                     Fire<SimpleRound>(cores[i].transform.position, CombatVisuals.Rotate(Vector2.down, (j - (count - 1) * .5f) * 24), 2.0f, .24f)
                         .Sway((j % 2 == 0 ? 1 : -1) * .5f, .55f)
-                        .FadeAt(2.2f + Mathf.Abs(j - (count - 1) * .5f) * .4f);
+                        .Ramp(1.6f, .6f, 1.8f + Mathf.Abs(j - (count - 1) * .5f) * .4f);
     }
 
     // Arrows straight out of both flanks of every reactor: the body draws ribbons.

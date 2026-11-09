@@ -12,7 +12,7 @@ public sealed class DuneMoth : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
-    // Wing dust: shimmering chevrons fade out at staggered depths.
+    // Wing dust: shimmering chevrons that quicken at staggered depths.
     protected override void Attack()
     {
         int count = Dense(3);
@@ -20,7 +20,7 @@ public sealed class DuneMoth : DistrictEnemy
             for (int j = 0; j < count; j++)
                 Fire<ChevronRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (17 + j * 18)), 2.5f + j * .2f, .23f)
                     .Sway(s * .4f, .6f)
-                    .FadeAt(2.2f + j * .45f);
+                    .Ramp(1.5f, .5f, 1.6f + j * .45f);
     }
 
 }
