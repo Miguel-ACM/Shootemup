@@ -6,9 +6,19 @@ using UnityEngine.UI;
 
 public sealed partial class HangarHub
 {
-    const float GalleryLeft = 6.5f, GalleryRight = 69, GalleryBottom = .2f, GalleryTop = 48, GalleryWing = 22, GalleryVestibuleTop = 12;
+    // The exhibit aisle is exactly one screen wide: three cases per row, all visible
+    // left to right, and the pilot climbs north through the rows (Miguel, 9 November 2026).
+    const int GalleryColumns = 3;
+    const float GalleryLeft = 6.5f, GalleryBottom = .2f, GalleryWing = 22, GalleryVestibuleTop = 12;
+    const float GalleryRight = GalleryWing + 9.72f;
     static readonly Vector2 FilterDesk = new Vector2(11.4f, 4.5f);
-    const float FirstX = 24.8f, FirstY = 14.8f, ColumnStep = 4.15f, RowStep = 3.8f;
+    const float ColumnStep = 3.1f, RowStep = 3.6f, FirstY = 14.8f;
+    const float FirstX = (GalleryWing + GalleryRight) * .5f - ColumnStep;
+    static float RowsTop(int items) => FirstY + (Mathf.Max(1, Mathf.CeilToInt(items / (float)GalleryColumns)) - .5f) * RowStep + 1.6f;
+    // The whole aisle, built once for every exhibit.
+    static float GalleryTop => RowsTop(ItemCatalog.Exhibits.Count);
+    // How far north the pilot may fly: the aisle ends just past the last matching case.
+    float GalleryReach => galleryReady ? RowsTop(shownItems) : GalleryTop;
     static readonly string[] availability = { "EVERY ITEM", "RELEASED", "LOCKED" };
     GalleryShelf.Exhibit[] exhibits;
     MeshRenderer[] pieces;
@@ -30,7 +40,7 @@ public sealed partial class HangarHub
     int hoverIndex = -1, galleryCategory, galleryAvailability;
     bool galleryReady;
     int loadedItems;
-    static Vector2 Case(int i) => new Vector2(FirstX + (i % GalleryShelf.Columns) * ColumnStep, FirstY + (i / GalleryShelf.Columns) * RowStep);
+    static Vector2 Case(int i) => new Vector2(FirstX + (i % GalleryColumns) * ColumnStep, FirstY + (i / GalleryColumns) * RowStep);
     Vector2 Shelf(int exhibit) => Case(shelfSlot[exhibit]);
     bool Released(GalleryShelf.Exhibit e) => !ItemCatalog.Get(e.key).InRewardPool || MetaProgress.IsUnlocked(e.key);
 
@@ -67,6 +77,8 @@ public sealed partial class HangarHub
         Bar(new Vector2((GalleryLeft + GalleryWing) / 2, GalleryVestibuleTop), new Vector2(GalleryWing - GalleryLeft, .21f), edge);
         Bar(new Vector2(GalleryWing, (GalleryTop + GalleryVestibuleTop) / 2), new Vector2(.18f, GalleryTop - GalleryVestibuleTop), edge);
         Bar(new Vector2((GalleryLeft + GalleryRight) / 2, GalleryBottom), new Vector2(GalleryRight - GalleryLeft, .25f), edge);
+        Bar(new Vector2(GalleryRight, (GalleryBottom + GalleryTop) / 2), new Vector2(.18f, GalleryTop - GalleryBottom), edge);
+        Bar(new Vector2((GalleryWing + GalleryRight) / 2, GalleryTop), new Vector2(GalleryRight - GalleryWing, .21f), edge);
         for (int i = 0; i < exhibits.Length; i++)
         {
             caseVertices[i] = colors.Count;
@@ -269,10 +281,10 @@ public sealed partial class HangarHub
             LightCase(slot, slot < count);
         hoverIndex = -1;
         cardPanel.gameObject.SetActive(false);
-        for (int column = 0; column < GalleryShelf.Columns; column++)
+        for (int column = 0; column < GalleryColumns; column++)
         {
             float highest = FilterDesk.y;
-            for (int slot = column; slot < count; slot += GalleryShelf.Columns)
+            for (int slot = column; slot < count; slot += GalleryColumns)
             {
                 var at = Case(slot);
                 if (band == 0 && galleryAvailability == 0)
@@ -302,9 +314,9 @@ public sealed partial class HangarHub
     {
         int col = Mathf.RoundToInt((p.x - center.x - FirstX) / ColumnStep);
         int row = Mathf.RoundToInt((p.y - center.y - FirstY) / RowStep);
-        int slot = row * GalleryShelf.Columns + col;
+        int slot = row * GalleryColumns + col;
         int i = -1;
-        if (!operating && col >= 0 && col < GalleryShelf.Columns && slot >= 0 && slot < shownItems && slotExhibit[slot] < loadedItems &&
+        if (!operating && col >= 0 && col < GalleryColumns && slot >= 0 && slot < shownItems && slotExhibit[slot] < loadedItems &&
            Vector2.Distance(p, Spot(Case(slot), 0)) <= 1.05f)
             i = slotExhibit[slot];
         if (i == hoverIndex)
@@ -323,7 +335,10 @@ public sealed partial class HangarHub
         cardText.text = known ? e.description : "???";
         cardSource.text = known ? DecisionOverlay.Category(e.category).ToUpperInvariant() : achievement != null ? achievement.Requirement :
             trial != null ? trial.Requirement : "Buy from the outfitter for " + MetaProgress.Price(ItemPool.RarityOf(e.key)) + " coins.";
-        readouts.Aim(cardPanel, Spot(Shelf(i) + Vector2.up * 1.03f, 0));
+        // The card is wider than a case; keep it inside the one-screen aisle.
+        Vector2 cardAt = Shelf(i) + Vector2.up * 1.03f;
+        cardAt.x = Mathf.Clamp(cardAt.x, GalleryWing + 3.45f, GalleryRight - 3.45f);
+        readouts.Aim(cardPanel, Spot(cardAt, 0));
         readouts.Reveal(cardPanel);
     }
     void BuildDirectory()

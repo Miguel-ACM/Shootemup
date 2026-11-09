@@ -65,6 +65,8 @@ public sealed partial class HangarHub
     const float RoomThreshold = 6.5f;
     const float PassageEnd = 12.2f;
     static float FarWall(int dock) => dock == (int)Dock.Fleet ? 28.5f : 20.5f;
+    // How much of the closing bulkhead the camera shows past the far wall.
+    const float EndWallView = 1.6f;
     static float DoorAlignment(int portal, float y) => portal < 0 ? 0 :
         1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(1.05f, 2.25f, Mathf.Abs(y - berths[portal].y)));
 
@@ -84,7 +86,7 @@ public sealed partial class HangarHub
             desired.x = center.x + side * Mathf.Clamp(next, minX, gallery ? GalleryRight : FarWall(portal));
             float height = next < RoomThreshold ? .95f : 6.5f;
             desired.y = center.y + (gallery && next >= RoomThreshold ?
-                Mathf.Clamp(desired.y - center.y, GalleryBottom, desired.x - center.x < GalleryWing ? GalleryVestibuleTop : GalleryTop) : Mathf.Clamp(desired.y - center.y, roomY - height, roomY + height));
+                Mathf.Clamp(desired.y - center.y, GalleryBottom, desired.x - center.x < GalleryWing ? GalleryVestibuleTop : GalleryReach) : Mathf.Clamp(desired.y - center.y, roomY - height, roomY + height));
         }
         else
         {
@@ -149,11 +151,11 @@ public sealed partial class HangarHub
                 target.y = (target.y + 3.8f * MonitorScale(portal) + StationAt(portal).y - 3.1f) * .5f;
             }
             else if (portal == (int)Dock.Armory)
-                target = new Vector2(Mathf.Clamp(p.x - center.x, 11.6f, GalleryRight - 2.6f), Mathf.Clamp(p.y - center.y, FilterDesk.y + 1.7f, GalleryTop - 3));
+                target = new Vector2(Mathf.Clamp(p.x - center.x, 11.6f, GalleryRight - halfView), Mathf.Clamp(p.y - center.y, FilterDesk.y + 1.7f, Mathf.Max(FilterDesk.y + 1.7f, GalleryReach - halfView)));
             else
             {
                 // Pan along the room, including the separate berthing apron beyond the fleet desk.
-                target.x = Mathf.Sign(target.x) * Mathf.Clamp(lateral, Mathf.Max(RoomThreshold + halfView, Mathf.Abs(MonitorAt(portal).x) - .65f), FarWall(portal) - halfView);
+                target.x = Mathf.Sign(target.x) * Mathf.Clamp(lateral, Mathf.Max(RoomThreshold + halfView, Mathf.Abs(MonitorAt(portal).x) - .65f), FarWall(portal) + EndWallView - halfView);
                 target.y += Mathf.Clamp((p.y - center.y - target.y) * .18f, -.5f, .5f);
             }
             roomFocusX = portal == focusPortal
@@ -330,6 +332,56 @@ public sealed partial class HangarHub
         GallerySurface(title, v, c, t, -15);
     }
 
+    static readonly Color WallFace = new Color(.050f, .066f, .074f), WallRib = new Color(.034f, .046f, .054f),
+        WallLip = new Color(.17f, .22f, .23f), WallShadow = new Color(.018f, .028f, .034f);
+
+    // A room ends in a solid bulkhead: a thick far wall with a sealed blast door and
+    // walls along the top and bottom, each with a lit lip, ribs and a hazard band, so
+    // the floor visibly stops instead of running off the edge of the screen.
+    void RoomBulkheads(int index)
+    {
+        Vector2 b = berths[index];
+        float side = Mathf.Sign(b.x);
+        float far = FarWall(index), start = RoomThreshold - .45f;
+        const float Reach = 10.8f, Face = 6.75f, Thick = 4.6f;
+        var v = new List<Vector3>();
+        var c = new List<Color>();
+        var t = new List<int>();
+        // Shadows the walls cast onto the deck.
+        GalleryQuad(v, c, t, new Vector2(side * (far + .1f), b.y), new Vector2(.5f, Face * 2), WallShadow);
+        for (int edge = -1; edge <= 1; edge += 2)
+            GalleryQuad(v, c, t, new Vector2(side * (start + far) * .5f, b.y + edge * (Face - .2f)), new Vector2(far - start, .4f), WallShadow);
+        // Far wall body and top/bottom walls.
+        GalleryQuad(v, c, t, new Vector2(side * (far + .35f + Thick * .5f), b.y), new Vector2(Thick, Reach * 2), WallFace);
+        for (int edge = -1; edge <= 1; edge += 2)
+            GalleryQuad(v, c, t, new Vector2(side * (start + far + .35f) * .5f, b.y + edge * (Face + Reach) * .5f),
+                new Vector2(far + .35f - start, Reach - Face), WallFace);
+        // Ribs: vertical on the far wall, horizontal pitch along the side walls.
+        for (float y = -Reach + .8f; y < Reach; y += 1.6f)
+            GalleryQuad(v, c, t, new Vector2(side * (far + .35f + Thick * .5f), b.y + y), new Vector2(Thick, .16f), WallRib);
+        for (float x = start + 1; x < far; x += 2)
+            for (int edge = -1; edge <= 1; edge += 2)
+                GalleryQuad(v, c, t, new Vector2(side * x, b.y + edge * (Face + Reach) * .5f), new Vector2(.16f, Reach - Face), WallRib);
+        // Lit lips along every inner face, then a hazard band just behind them.
+        GalleryQuad(v, c, t, new Vector2(side * (far + .41f), b.y), new Vector2(.12f, Face * 2 + .12f), WallLip);
+        for (int edge = -1; edge <= 1; edge += 2)
+            GalleryQuad(v, c, t, new Vector2(side * (start + far + .47f) * .5f, b.y + edge * (Face + .06f)), new Vector2(far + .47f - start, .12f), WallLip);
+        var hazard = Color.Lerp(DockInstrument.Brass, WallFace, .45f);
+        for (float y = -Face + .2f; y < Face - .2f; y += .5f)
+            GalleryQuad(v, c, t, new Vector2(side * (far + .72f), b.y + y), new Vector2(.32f, .25f), hazard);
+        for (float x = start + .3f; x < far + .2f; x += .5f)
+            for (int edge = -1; edge <= 1; edge += 2)
+                GalleryQuad(v, c, t, new Vector2(side * x, b.y + edge * (Face + .38f)), new Vector2(.25f, .32f), hazard);
+        // A sealed blast door in the far wall, lit with the room's own lamp colour.
+        float door = far + 1.35f;
+        GalleryQuad(v, c, t, new Vector2(side * door, b.y), new Vector2(1.1f, 4.2f), Metal * .55f);
+        for (int leaf = -1; leaf <= 1; leaf += 2)
+            GalleryQuad(v, c, t, new Vector2(side * door, b.y + leaf * 1.02f), new Vector2(.82f, 1.9f), Metal * .8f);
+        GalleryQuad(v, c, t, new Vector2(side * door, b.y), new Vector2(.86f, .08f), WallShadow);
+        GalleryQuad(v, c, t, new Vector2(side * door, b.y + 2.35f), new Vector2(.5f, .14f), lamps[index]);
+        GallerySurface(signs[index] + " bulkheads", v, c, t, -12);
+    }
+
     void BuildRoom(int index)
     {
         Vector2 b = berths[index];
@@ -337,6 +389,7 @@ public sealed partial class HangarHub
         float side = Mathf.Sign(b.x);
         var mid = new Vector2(side * (RoomThreshold + FarWall(index)) * .5f, b.y);
         RoomDeck(signs[index] + " deck", mid, new Vector2(width, 13.8f), index == (int)Dock.Fleet ? side : 0);
+        RoomBulkheads(index);
         MountReceiver(index);
         BuildControlDesk(index);
         if (index != (int)Dock.Fleet)
