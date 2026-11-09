@@ -64,8 +64,11 @@ public sealed class VolcanicVent : MonoBehaviour
         Eruptions++;
         var axis = CombatVisuals.Rotate(Vector2.down, Mathf.Sign(p.x) * -24);
         int count = 5;
+        // Pooled volcanic rock: dark rounds with a glowing rim.
+        CombatRound.LaunchTone = HostileTone.Dark;
         for (int i = 0; i < count; i++)
             CombatRound.Launch<SimpleRound>(p, CombatVisuals.Rotate(axis, (i - (count - 1) * .5f) * 25), 2.5f, .24f);
+        CombatRound.LaunchTone = HostileTone.Bright;
         SoundManager.PlaySound("enemyExplosion1", .055f);
     }
 }

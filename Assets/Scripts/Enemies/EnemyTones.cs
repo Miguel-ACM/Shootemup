@@ -92,6 +92,15 @@ public static class EnemyTones
         { typeof(JetSquid), HostileTone.Dark },
         { typeof(NautilusBell), HostileTone.Dark },
         { typeof(ReefLeviathan), HostileTone.Dark },
+
+        // Hell: souls that stare and dart, imp helixes and censer plasma are bright;
+        // broadsides, scissors, embers and needle fans are dark.
+        { typeof(CinderImp), HostileTone.Bright },
+        { typeof(InfernalFerryman), HostileTone.Bright },
+        { typeof(SkullRevenant), HostileTone.Dark },
+        { typeof(GhostGalleon), HostileTone.Dark },
+        { typeof(BoneHarrier), HostileTone.Dark },
+        { typeof(AshCenser), HostileTone.Dark },
     };
 
     public static HostileTone Default(Type enemy) => defaults.TryGetValue(enemy, out var tone) ? tone : HostileTone.Bright;

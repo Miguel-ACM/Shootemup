@@ -29,9 +29,12 @@ public sealed class GhostGalleon : InfernalEnemy
                 Fire<SimpleRound>(port, CombatVisuals.Rotate(Vector2.down, side * (35 + i * 17 + (volley % 2) * 7)), 2.9f + i * .16f, .25f);
             }
         if (volley % 2 == 0)
-            // Lantern souls: they stop, stare, then dart at the player one after another.
+        {
+            // Bright lantern souls: they stop, stare, then dart at the player one after another.
+            UseTone(HostileTone.Bright);
             for (int side = -1; side <= 1; side += 2)
                 Fire<SimpleRound>(Hull.TransformPoint(new Vector3(side * .61f, .43f, -.22f)), CombatVisuals.Rotate(Vector2.down, side * 20), 1.6f, .3f)
                     .Pause(.7f, side < 0 ? .4f : .7f, CombatRound.Turn.Aim, 0, 2.6f);
+        }
     }
 }

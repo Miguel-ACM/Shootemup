@@ -38,6 +38,7 @@ public sealed class InfernalFerryman : DistrictMiniboss
                 float t = n / 9f;
                 for (int side = -1; side <= 1; side += 2)
                 {
+                    UseTone(Bank(side));
                     var p = Hull.TransformPoint(new Vector3(side * .88f, -.1f, -.3f));
                     Fire<NeedleRound>(p, CombatVisuals.Rotate(CombatVisuals.Aim(p), side * Mathf.Lerp(24, -24, t)), 4.4f, .19f);
                 }
@@ -47,6 +48,7 @@ public sealed class InfernalFerryman : DistrictMiniboss
             int souls = Dense(Enraged ? 8 : 6);
             for (int i = 0; i < souls; i++)
             {
+                UseTone(Bank(i % 2 == 0 ? -1 : 1));
                 var p = Hull.TransformPoint(new Vector3((i % 2 == 0 ? -1 : 1) * .88f, -.65f, -.3f));
                 Fire<SimpleRound>(p, CombatVisuals.Rotate(Vector2.down, (i - (souls - 1) * .5f) * 22), 1.7f, .33f)
                     .Pause(.7f, .35f + i * .18f, CombatRound.Turn.Aim, 0, 2.6f);
@@ -57,7 +59,13 @@ public sealed class InfernalFerryman : DistrictMiniboss
             int count = Dense(8);
             for (int i = 0; i < count; i++)
                 for (int mirror = -1; mirror <= 1; mirror += 2)
+                {
+                    UseTone(Bank(mirror));
                     Fire<NeedleRound>(transform.position, CombatVisuals.Rotate(Vector2.up, mirror * (6 + i * 10)), 3.6f, .19f).Bounce(1);
+                }
         }
     }
+
+    // Every move splits by oar bank: the left bank fires bright, the right bank dark.
+    static HostileTone Bank(int side) => side < 0 ? HostileTone.Bright : HostileTone.Dark;
 }

@@ -23,8 +23,11 @@ public sealed class AshCenser : DistrictEnemy
                     .Pause(.55f, .3f, CombatRound.Turn.Down, 0, i % 2 == 0 ? .6f : 1.05f);
         }
         else
+        {
+            UseTone(HostileTone.Bright);
             for (int s = -1; s <= 1; s += 2)
                 Fire<PlasmaOrb>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * (volley % 4 == 1 ? 32 : 15)), 1.7f, .38f);
+        }
     }
 
 }
