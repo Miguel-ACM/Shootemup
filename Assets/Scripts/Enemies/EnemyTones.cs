@@ -64,6 +64,15 @@ public static class EnemyTones
         { typeof(DuneMoth), HostileTone.Dark },
         { typeof(MirageObelisk), HostileTone.Dark },
         { typeof(ScarabDredger), HostileTone.Dark },
+
+        // Candyland: aimed bonbons, wafers and popping gumdrops are bright; the spread of
+        // ricocheting mints is dark, and ribbon gliders trail one ribbon of each.
+        { typeof(BonbonSkirmisher), HostileTone.Bright },
+        { typeof(WaferDart), HostileTone.Bright },
+        { typeof(GumdropMortar), HostileTone.Bright },
+        { typeof(RibbonGlider), HostileTone.Bright },
+        { typeof(TaffyDuelist), HostileTone.Bright },
+        { typeof(MintSpinner), HostileTone.Dark },
     };
 
     public static HostileTone Default(Type enemy) => defaults.TryGetValue(enemy, out var tone) ? tone : HostileTone.Bright;
