@@ -1,14 +1,16 @@
 Shader "Shootemup/Sculpted Heaven"
 {
- Properties { _Tint("Tint",Color)=(1,1,1,1) _HitFlash("Hit",Range(0,1))=0 }
+ Properties { _Tint("Tint",Color)=(1,1,1,1) _HitFlash("Hit",Range(0,1))=0 [HideInInspector] _HullStatus("Hull afflictions",Float)=0 }
  SubShader { Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" }
  Pass { Tags { "LightMode"="Universal2D" } Cull Off ZWrite On
  HLSLPROGRAM
  #pragma vertex Vert
  #pragma fragment Frag
+ #pragma multi_compile_local _ HULL_AFFLICTED
  #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+ #include "../Shaders/HullAffliction.hlsl"
  CBUFFER_START(UnityPerMaterial)
- float4 _Tint;float _HitFlash;
+ float4 _Tint;float _HitFlash,_HullStatus;
  CBUFFER_END
  struct I {float4 vertex:POSITION;float3 normal:NORMAL;float2 uv:TEXCOORD0;};
  struct O {float4 vertex:SV_POSITION;float3 normal:TEXCOORD0;float2 uv:TEXCOORD1;float3 p:TEXCOORD2;};
@@ -26,6 +28,9 @@ Shader "Shootemup/Sculpted Heaven"
  float grain=sin(i.p.x*91+i.p.y*13)*sin(i.p.y*97+i.p.z*19)*.012;
  float3 color=base*(.38+.65*diffuse+grain)+spec*(gold>0?.55:.32)+rim*float3(.08,.095,.12);
  if(tile==8)color=float3(1,.80,.35)*(.88+.12*diffuse);
+ #if defined(HULL_AFFLICTED)
+ color=HullAffliction(color,HullSurfacePosition(i.p),_HullStatus);
+ #endif
  return half4(lerp(color*_Tint.rgb,float3(1,1,1),saturate(_HitFlash)),1);
  }
  ENDHLSL } }

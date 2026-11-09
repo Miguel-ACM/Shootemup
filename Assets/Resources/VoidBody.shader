@@ -1,6 +1,6 @@
 Shader "Shootemup/Void Body"
 {
-    Properties { _Tint("Tint",Color)=(1,1,1,1) _HitFlash("Hit",Range(0,1))=0 _Rift("Rift",Range(0,1))=0 }
+    Properties { _Tint("Tint",Color)=(1,1,1,1) _HitFlash("Hit",Range(0,1))=0 _Rift("Rift",Range(0,1))=0 [HideInInspector] _HullStatus("Hull afflictions",Float)=0 }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" }
@@ -11,9 +11,11 @@ Shader "Shootemup/Void Body"
             HLSLPROGRAM
             #pragma vertex Vert
             #pragma fragment Frag
+            #pragma multi_compile_local _ HULL_AFFLICTED
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "../Shaders/HullAffliction.hlsl"
             CBUFFER_START(UnityPerMaterial)
-            float4 _Tint;float _HitFlash,_Rift;
+            float4 _Tint;float _HitFlash,_Rift,_HullStatus;
             CBUFFER_END
             struct I{float4 positionOS:POSITION;float3 normalOS:NORMAL;float2 uv:TEXCOORD0;};
             struct O{float4 positionCS:SV_POSITION;float3 n:TEXCOORD0;float2 uv:TEXCOORD1;float3 p:TEXCOORD2;};
@@ -37,6 +39,9 @@ Shader "Shootemup/Void Body"
                 float3 iris=lerp(float3(.35,.09,.54),float3(.88,.58,1),pow(light,.45));
                 iris=iris*(.94+.06*sin(_Time.y*1.8+i.p.y*2))+spec*.22;
                 c=lerp(c,iris,eye);
+                #if defined(HULL_AFFLICTED)
+                c=HullAffliction(c,HullSurfacePosition(i.p),_HullStatus);
+                #endif
                 c+=float3(.54,.15,.9)*saturate(1-abs(cut-_Rift)*12)*_Rift*2;
                 return half4(lerp(c*_Tint.rgb,1,saturate(_HitFlash)),1);
             }

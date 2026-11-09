@@ -1,6 +1,6 @@
 Shader "Shootemup/Heaven Angel"
 {
-    Properties { _Tint("Tint",Color)=(1,1,1,1) _HitFlash("Hit",Range(0,1))=0 }
+    Properties { _Tint("Tint",Color)=(1,1,1,1) _HitFlash("Hit",Range(0,1))=0 [HideInInspector] _HullStatus("Hull afflictions",Float)=0 }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" }
@@ -11,13 +11,15 @@ Shader "Shootemup/Heaven Angel"
             HLSLPROGRAM
             #pragma vertex Vert
             #pragma fragment Frag
+            #pragma multi_compile_local _ HULL_AFFLICTED
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "../Shaders/HullAffliction.hlsl"
             CBUFFER_START(UnityPerMaterial)
-            float4 _Tint;float _HitFlash;
+            float4 _Tint;float _HitFlash,_HullStatus;
             CBUFFER_END
             struct I{float4 positionOS:POSITION;float3 normalOS:NORMAL;float2 uv:TEXCOORD0;};
-            struct O{float4 positionCS:SV_POSITION;float3 n:TEXCOORD0;float2 uv:TEXCOORD1;};
-            O Vert(I i){O o;o.positionCS=TransformObjectToHClip(i.positionOS.xyz);o.n=TransformObjectToWorldNormal(i.normalOS);o.uv=i.uv;return o;}
+            struct O{float4 positionCS:SV_POSITION;float3 n:TEXCOORD0;float2 uv:TEXCOORD1;float2 hull:TEXCOORD2;};
+            O Vert(I i){O o;o.positionCS=TransformObjectToHClip(i.positionOS.xyz);o.n=TransformObjectToWorldNormal(i.normalOS);o.uv=i.uv;o.hull=HullSurfacePosition(i.positionOS.xyz);return o;}
             half4 Frag(O i):SV_Target
             {
                 float tile=floor(i.uv.x*4)+4*floor(i.uv.y*4);
@@ -34,6 +36,9 @@ Shader "Shootemup/Heaven Angel"
                 float3 color=base*diffuse+spec*(tile==11?.08:.30);
                 if(tile==8)color+=base*.22;
                 if(tile==15)color+=base*.12;
+                #if defined(HULL_AFFLICTED)
+                color=HullAffliction(color,i.hull,_HullStatus);
+                #endif
                 return half4(lerp(color*_Tint.rgb,1,saturate(_HitFlash)),1);
             }
             ENDHLSL
