@@ -191,6 +191,9 @@ public static class EverydayItemMaterials
             case "InkPot":
                 color = new Color(.22f, .3f, .72f);
                 return true;
+            case "Grudge":
+                color = new Color(.62f, .2f, .16f);
+                return true;
             case "CursedCoin":
                 color = new Color(.5f, .9f, .42f);
                 return true;

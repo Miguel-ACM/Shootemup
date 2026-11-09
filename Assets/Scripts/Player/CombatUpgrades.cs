@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public enum UpgradeKind
 {
-    Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink
+    Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -117,7 +117,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         if (enemy == null || !enemy.CanReceiveDamage)
             return 0;
         // A poisoned hull is weakened against every hit, so poison sets up burn and guns.
-        damage *= PoisonedHull.Weakness(enemy);
+        damage *= PoisonedHull.Weakness(enemy) * RuleDamage();
         if (companion)
             damage *= 1 + Count(UpgradeKind.Drone) * .2f + Count(UpgradeKind.Squad) * .5f;
         if (Count(UpgradeKind.Focus) > 0 && generation == 0)
@@ -189,6 +189,16 @@ public sealed class CombatUpgrades : MonoBehaviour
             }
         }
         return FinishHit(enemy, damage);
+    }
+
+    // Damage rules that scale every direct hit, from guns, companions and actives alike.
+    float RuleDamage()
+    {
+        float scale = 1;
+        float grudge = GrudgeTally.Bonus;
+        if (grudge > 0)
+            scale *= 1 + grudge / Mathf.Max(.5f, GameRules.playerShootDamage);
+        return scale;
     }
 
     float FinishHit(AEnemy enemy, float damage) => Count(UpgradeKind.ChewingGum) > 0 ? StickyGum.Stick(enemy, damage) : damage;
