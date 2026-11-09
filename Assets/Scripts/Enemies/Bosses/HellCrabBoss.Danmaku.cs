@@ -14,6 +14,12 @@ using UnityEngine;
 //   Pincer Inferno: scissors from both pincers more often, alternating with the canopy.
 //   Inferno Lace: a three-arm mirrored lace pours from the two pincers themselves,
 //     following them as they sweep, while the eyes' souls stare.
+// Tones (Miguel, 9 November 2026), the dominant tone flipping card to card:
+//   Pincer Scissors: dark scissor streams, bright mouth chevrons.
+//   Soul Procession: bright souls under a dark brimstone canopy.
+//   Pincer Inferno: bright scissors alternating with a dark canopy.
+//   Inferno Lace: a dark pincer lace while bright souls stare.
+//   Inferno (Hard): a bright lace crossed by dark scissors and dark souls.
 public sealed partial class HellCrabBoss
 {
     static readonly Vector3 Pincer = new Vector3(0, -.32f, -.4f);
@@ -42,16 +48,16 @@ public sealed partial class HellCrabBoss
                 yield return Every(8, 1.6f, n =>
                 {
                     if (n % 2 == 0)
-                        Phrase(Scissors(n % 4 == 0 ? 1 : -1));
+                        Phrase(Scissors(n % 4 == 0 ? 1 : -1, HostileTone.Dark));
                     else
-                        Phrase(Chevrons(Hull, Mouth, Dense(6), 4.4f, .11f));
+                        Phrase(Toned(HostileTone.Bright, Chevrons(Hull, Mouth, Dense(6), 4.4f, .11f)));
                 });
                 yield return Wait(.8f);
                 yield return Every(8, 1.6f, n =>
                 {
                     if (n % 2 == 0)
                         for (int e = 0; e < 2; e++)
-                            SoulSnipe(e);
+                            SoulSnipe(e, HostileTone.Bright);
                     else
                         Canopy(n);
                 });
@@ -62,21 +68,36 @@ public sealed partial class HellCrabBoss
                 yield return Every(7, 1.1f, n =>
                 {
                     if (n % 3 != 2)
-                        Phrase(Scissors(n % 2 == 0 ? 1 : -1));
+                        Phrase(Scissors(n % 2 == 0 ? 1 : -1, HostileTone.Bright));
                     else
                         Canopy(n);
                 });
                 yield return Wait(.8f);
-                Phrase(Every(8, 2.6f, n => SoulSnipe(BurningEye())));
-                yield return MirrorLace(claws[0], Pincer, claws[1], Pincer, Dense(90), 3, 75, 18, 3.6f, .07f);
+                Phrase(Every(8, 2.6f, n => SoulSnipe(BurningEye(), HostileTone.Bright)));
+                yield return Toned(HostileTone.Dark, MirrorLace(claws[0], Pincer, claws[1], Pincer, Dense(90), 3, 75, 18, 3.6f, .07f));
                 yield return Wait(.8f);
             }
         }
     }
 
+    // Runs a shared helper phrase in one tone, re-applied before every step because
+    // concurrent phrases share the tone field.
+    IEnumerator Toned(HostileTone shade, IEnumerator phrase)
+    {
+        while (true)
+        {
+            UseTone(shade);
+            if (!phrase.MoveNext())
+                yield break;
+            yield return phrase.Current;
+        }
+    }
+
     // Brimstone canopy: arrows thrown up from the mouth that rebound off the ceiling.
+    // Always dark.
     void Canopy(int n)
     {
+        UseTone(HostileTone.Dark);
         int count = Dense(9);
         var mouth = Hull.TransformPoint(Mouth);
         for (int i = 0; i < count; i++)
@@ -85,12 +106,13 @@ public sealed partial class HellCrabBoss
     }
 
     // Each pincer sweeps its stream across the player's position, so the two lines cross and close.
-    IEnumerator Scissors(int sign)
+    IEnumerator Scissors(int sign, HostileTone shade)
     {
         int shots = Dense(phaseTwo ? 15 : 12)|1;
         for (int i = 0; i < shots; i++)
         {
             float t = i / (shots - 1f);
+            UseTone(shade);
             for (int side = 0; side < 2; side++)
             {
                 if (claws[side] == null)
@@ -106,10 +128,11 @@ public sealed partial class HellCrabBoss
     }
 
     // Slow souls that stop, stare, then dart at the player one after another.
-    void SoulSnipe(int eye)
+    void SoulSnipe(int eye, HostileTone shade)
     {
         if (eye < 0 || eyes[eye] == null || health <= 0)
             return;
+        UseTone(shade);
         int souls = Dense(phaseTwo ? 9 : 7);
         var port = eyes[eye].position;
         for (int i = 0; i < souls; i++)
@@ -127,11 +150,11 @@ public sealed partial class HellCrabBoss
         Phrase(Every(9, 1.4f, n =>
         {
             if (n % 2 == 0)
-                Phrase(Scissors(n % 4 == 0 ? 1 : -1));
+                Phrase(Scissors(n % 4 == 0 ? 1 : -1, HostileTone.Dark));
             else
-                SoulSnipe(BurningEye());
+                SoulSnipe(BurningEye(), HostileTone.Dark);
         }));
-        yield return MirrorLace(claws[0], Pincer, claws[1], Pincer, Dense(110), 3, 80, 18, 3.8f, .065f);
+        yield return Toned(HostileTone.Bright, MirrorLace(claws[0], Pincer, claws[1], Pincer, Dense(110), 3, 80, 18, 3.8f, .065f));
         yield return Wait(.8f);
     }
 }
