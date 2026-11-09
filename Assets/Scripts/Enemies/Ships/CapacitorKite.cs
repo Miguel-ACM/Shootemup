@@ -15,8 +15,10 @@ public sealed class CapacitorKite : DistrictEnemy
     // Destructible plasma pair with a zigzag lightning needle between them.
     protected override void Attack()
     {
+        UseTone(HostileTone.Dark);
         for (int s = -1; s <= 1; s += 2)
             Fire<PlasmaOrb>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * 24), 2.0f, .34f);
+        UseTone(HostileTone.Bright);
         Fire<RiceRound>(Muzzle(volley), Aim, 3.9f, .17f).Zigzag(.18f, 26);
     }
 

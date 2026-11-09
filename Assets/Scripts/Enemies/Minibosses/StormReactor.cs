@@ -18,6 +18,8 @@ public sealed class StormReactor : DistrictMiniboss
         if (beat == 0)
             Stream(Dense(8), .12f, n =>
             {
+                // The curtains alternate bright and dark bands of lightning.
+                UseTone(n % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
                 for (int side = -1; side <= 1; side += 2)
                     Fire<NeedleRound>(transform.position + Vector3.right * side * .8f, CombatVisuals.Rotate(Vector2.down, side * (10 + n * 8)), 3.6f, .19f).Zigzag(.2f, 24);
             });
@@ -25,8 +27,12 @@ public sealed class StormReactor : DistrictMiniboss
         {
             int bolts = Dense(Enraged ? 11 : 9);
             var aim = Aim;
+            // Neighbouring bolts of the aimed fan alternate tone.
             for (int i = 0; i < bolts; i++)
+            {
+                UseTone(i % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
                 Fire<NeedleRound>(Muzzle(i), CombatVisuals.Rotate(aim, (i - (bolts - 1) * .5f) * 13), 3.8f, .19f).Zigzag(.2f, 24);
+            }
         }
         else
         {
@@ -37,6 +43,8 @@ public sealed class StormReactor : DistrictMiniboss
                 laser.warning = 1.0f;
                 laser.activeTime = .7f;
             }
+            // The flanking fans are dark beside the bright, unabsorbable laser.
+            UseTone(HostileTone.Dark);
             for (int side = -1; side <= 1; side += 2)
                 MirrorFan(transform.position, CombatVisuals.Rotate(Vector2.down, side * 50), Dense(5), 12, 3.4f);
         }

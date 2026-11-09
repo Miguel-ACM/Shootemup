@@ -48,6 +48,13 @@ public static class EnemyTones
         { typeof(RivetMantis), HostileTone.Bright },
         { typeof(TunnelDefensePlatform), HostileTone.Bright },
         { typeof(BaffleSpinner), HostileTone.Dark },
+
+        // Thunder: lightning is bright like its lasers; heavy ordnance (homing missiles,
+        // plasma) is dark.
+        { typeof(RelayDrone), HostileTone.Bright },
+        { typeof(CapacitorKite), HostileTone.Bright },
+        { typeof(StormReactor), HostileTone.Bright },
+        { typeof(StormSkimmer), HostileTone.Dark },
     };
 
     public static HostileTone Default(Type enemy) => defaults.TryGetValue(enemy, out var tone) ? tone : HostileTone.Bright;
