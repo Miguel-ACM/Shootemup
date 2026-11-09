@@ -12,6 +12,10 @@ using UnityEngine;
 // cell and back while firing, the wall drones sweep up and down, and the open lanes
 // move on every few seconds, so no column of the screen stays safe.
 // The boss fires mirrored arrow lace and chevrons, and in phase two zigzag lightning.
+// Tones (beams always stay bright): phase one's lace is dark against bright aimed
+// chevrons, and its wavefront's three arcs alternate bright, dark, bright. From phase
+// two the lightning is bright with a dark capacitor bead, the chevrons turn dark,
+// and Superstorm's zigzag rings are dark.
 public sealed partial class ThunderLanceBoss
 {
     readonly List<ThunderLaserBot> drones = new List<ThunderLaserBot>();
@@ -48,14 +52,14 @@ public sealed partial class ThunderLanceBoss
             if (beat == 0 || beat == 6)
                 Phrase(Lace(beat == 0 ? 1 : -1));
             else if (beat == 3 || beat == 9)
-                Phrase(Chevrons());
+                Phrase(Chevrons(HostileTone.Bright));
             else if (beat == 11)
                 Wavefront();
         }
         else if (beat % 3 == 0)
             Lightning(beat / 3);
         else if (beat == 4 || beat == 10)
-            Phrase(Chevrons());
+            Phrase(Chevrons(HostileTone.Dark));
     }
 
     void DeployStar()
@@ -185,6 +189,7 @@ public sealed partial class ThunderLanceBoss
     // A full ring of zigzag bolts from the front emitter.
     void StormRing(int n)
     {
+        UseTone(HostileTone.Dark);
         int bolts = Dense(24);
         for (int i = 0; i < bolts; i++)
             ScoredShot(i%3==0,Muzzle(2), CombatVisuals.Rotate(Vector2.down, (i + (n % 2) * .5f) * 360f / bolts), 3.2f).Zigzag(.22f, 22);
@@ -200,7 +205,9 @@ public sealed partial class ThunderLanceBoss
     void Lightning(int n)
     {
         // A straight capacitor bead interrupts the stationary cells between zigzags.
+        UseTone(HostileTone.Dark);
         Fire<SimpleRound>(Muzzle(2),CombatVisuals.Aim(Muzzle(2)),3.0f,.22f).Ramp(1.2f,1);
+        UseTone(HostileTone.Bright);
         int bolts = Dense(7);
         for (int port = 0; port < 3; port++)
         {
@@ -218,6 +225,7 @@ public sealed partial class ThunderLanceBoss
         int steps = Dense(phaseTwo ? 30 : 26), arms = phaseTwo ? 3 : 2;
         for (int i = 0; i < steps; i++)
         {
+            UseTone(HostileTone.Dark);
             float swing = sign * 62 * Mathf.Sin(i / (float)steps * Mathf.PI * 2);
             for (int arm = 0; arm < arms; arm++)
             {
@@ -230,13 +238,14 @@ public sealed partial class ThunderLanceBoss
     }
 
     // Five rows of arrow chevrons aimed at the player, each row a wider V.
-    IEnumerator Chevrons()
+    IEnumerator Chevrons(HostileTone chevrons)
     {
         var aim = CombatVisuals.Aim(Muzzle(2));
         int rows = Dense(phaseTwo ? 6 : 5);
         for (int row = 0; row < rows; row++)
         {
             int wing = 2 + row;
+            UseTone(chevrons);
             Fire<SimpleRound>(Muzzle(2), aim, 4.4f, .21f);
             for (int k = 1; k <= wing; k++)
                 for (int mirror = -1; mirror <= 1; mirror += 2)
@@ -252,6 +261,7 @@ public sealed partial class ThunderLanceBoss
         for (int layer = 0; layer < 3; layer++)
             for (int i = 0; i < lanes; i++)
             {
+                UseTone(layer == 1 ? HostileTone.Dark : HostileTone.Bright);
                 float lane = i - (lanes - 1) * .5f;
                 ScoredShot(layer==0,Muzzle(2), CombatVisuals.Rotate(Vector2.down, lane * 150f / (lanes - 1) + (layer % 2) * 150f / (lanes - 1) * .5f),
                     2.5f + layer * .7f, .19f);
