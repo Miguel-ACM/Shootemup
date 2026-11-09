@@ -3,7 +3,7 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class VotiveSpear : DistrictEnemy
 {
-    protected override void Configure(){hullScale=.43f;health=24;attackInterval=1.6f;nextAttack=.8f;Mover<Slalom>();}
+    protected override void Configure(){hullScale=.43f;health=32;attackInterval=1.6f;nextAttack=.8f;Mover<Slalom>();}
     protected override void Attack()
     {
         int count=Dense(5);

@@ -4,7 +4,7 @@ using UnityEngine;
 public sealed class PrismCantor : DistrictEnemy
 {
     protected override Vector2 CueAxis=>Vector2.down;
-    protected override void Configure(){hullScale=.56f;health=45;attackInterval=3.8f;nextAttack=1.4f;Mover<Slalom>();}
+    protected override void Configure(){hullScale=.56f;health=58;attackInterval=3.8f;nextAttack=1.4f;Mover<Slalom>();}
     protected override void Attack()
     {
         // Outward prismatic forks leave a navigable aisle under the central crystal.

@@ -17,7 +17,7 @@ public sealed partial class VoidSovereignBoss
                 if(InterludeElapsed>=beatAt&&InterludeElapsed<13.8f)
                 {
                     PerimeterBarrage(chapter,beat++);
-                    beatAt+=Difficulty.Rest(chapter==1?.58f:chapter==2?.56f:.54f);
+                    beatAt+=Rest(chapter==1?.58f:chapter==2?.56f:.54f);
                 }
             }
             yield return null;

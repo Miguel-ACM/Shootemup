@@ -8,7 +8,7 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
     public int CardIndex { get; private set; }
     bool anchored;
     readonly SpriteRenderer[] apparitions=new SpriteRenderer[6];
-    protected override void Configure(){health=2850;hullScale=1.05f;attackInterval=.7f;}
+    protected override void Configure(){health=3200;hullScale=1.05f;attackInterval=.7f;}
     protected override void Start()
     {
         base.Start();

@@ -17,7 +17,7 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
     VoidAnatomyVisual body;
     Collider2D contact;
     readonly LineRenderer[] edgeTell=new LineRenderer[4];
-    protected override void Configure(){health=3900;hullScale=1.1f;attackInterval=.5f;nextAttack=1;}
+    protected override void Configure(){health=4300;hullScale=1.1f;attackInterval=.5f;nextAttack=1;}
     protected override void Start()
     {
         base.Start();mesh=Hull.GetComponent<MeshFilter>();contact=GetComponent<PolygonCollider2D>();

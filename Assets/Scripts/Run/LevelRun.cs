@@ -17,7 +17,41 @@ public static class LevelRun
     public static LevelId? AutomaticNext => Tier(Current) == 5 ? LevelId.Void : (LevelId?)null;
     // Health keeps growing after the speed caps preserve readable patterns.
     public static float EnemyHealthScale => (1 + (Tier(Current) - 1) * .16f + (Loop - 1) * .48f) * Difficulty.Health;
-    public static float EnemyTempoScale => Mathf.Min(1.3f, 1 + (Tier(Current) - 1) * .025f + (Loop - 1) * .05f) * Difficulty.Tempo;
+    public static float EnemyTempoScale => Mathf.Min(1.3f, 1 + (Tier(Current) - 1) * .04f + (Loop - 1) * .05f) * Difficulty.Tempo;
+    // Fuller volleys and shorter rests where a district measured lighter than the tier before it
+    // (MeasureDifficultyCurve, ArtSource/DifficultyCurveReview). Geometry and identity stay authored.
+    public static float WavePressure => DistrictPressure(Current, false) * (1 + (Loop - 1) * .1f);
+    public static float BossPressure => DistrictPressure(Current, true) * (1 + (Loop - 1) * .1f);
+    static float DistrictPressure(LevelId level, bool boss)
+    {
+        switch (level)
+        {
+            case LevelId.Snow:
+                return boss ? 1.15f : 1;
+            case LevelId.City:
+                return boss ? 1 : 1.1f;
+            case LevelId.Thunder:
+                return boss ? 1.35f : 1.4f;
+            case LevelId.Tunnel:
+                return boss ? 1.3f : 1.35f;
+            case LevelId.Desert:
+                return boss ? 1.45f : 1.2f;
+            case LevelId.Candyland:
+                return boss ? 1.15f : 1.25f;
+            case LevelId.Space:
+                return boss ? 1 : 1.1f;
+            case LevelId.Underwater:
+                return boss ? 1.15f : 1.35f;
+            case LevelId.Hell:
+                return 1.3f;
+            case LevelId.Heaven:
+                return boss ? 1.15f : 1.5f;
+            case LevelId.Void:
+                return boss ? 1.65f : 1;
+            default:
+                return 1;
+        }
+    }
     public static float EnemyShotSpeedScale => Mathf.Min(1.18f, 1 + (Loop - 1) * .035f) * Difficulty.ShotSpeed;
     public static int Tier(LevelId level)
     {

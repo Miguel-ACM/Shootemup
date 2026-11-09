@@ -4,7 +4,7 @@ using UnityEngine;
 public sealed class ThroneBarge : DistrictEnemy
 {
     protected override Vector2 CueAxis=>Vector2.down;
-    protected override void Configure(){hullScale=.79f;health=110;attackInterval=4.7f;nextAttack=1.7f;Mover<Slalom>();}
+    protected override void Configure(){hullScale=.79f;health=140;attackInterval=4.7f;nextAttack=1.7f;Mover<Slalom>();}
     protected override void Attack()
     {
         HeavenArmory.Lance(Hull,EnemyWeaponLayout.Ports(hull)[0],Vector2.down,1.6f,1.1f,1.65f);

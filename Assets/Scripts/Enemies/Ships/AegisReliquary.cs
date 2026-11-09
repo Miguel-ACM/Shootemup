@@ -4,7 +4,7 @@ using UnityEngine;
 public sealed class AegisReliquary : DistrictEnemy
 {
     protected override Vector2 CueAxis=>Vector2.down;
-    protected override void Configure(){hullScale=.66f;health=74;attackInterval=3.7f;nextAttack=1.5f;Mover<Slalom>();}
+    protected override void Configure(){hullScale=.66f;health=95;attackInterval=3.7f;nextAttack=1.5f;Mover<Slalom>();}
     protected override void Attack()
     {
         var ports=EnemyWeaponLayout.Ports(hull);int side=volley%2;

@@ -297,8 +297,9 @@ public abstract class DistrictEnemy : AEnemy
         firingCue?.PointAll(CueAxis);
     }
     // One geometry on all three tiers. Normal retains the former Easy score.
-    protected static int Dense(int count) => Difficulty.Dense(count);
-    protected static float Rest(float seconds) => Difficulty.Rest(seconds);
+    protected virtual float Pressure => LevelRun.WavePressure;
+    protected int Dense(int count) => Difficulty.Dense(count, Pressure);
+    protected float Rest(float seconds) => Difficulty.Rest(seconds, Pressure);
     // The launch speed that travels a given number of world units per second here.
     protected float WorldSpeed(float units) => units / Mathf.Max(.01f, ProjectileSpeedScale * (IsMiniboss ? 1.14f : 1) * GameRules.enemyBulletSpeed * LevelRun.EnemyShotSpeedScale);
     protected void Cue(Vector3 world, float seconds) => firingCue?.WarnAt(world, seconds);

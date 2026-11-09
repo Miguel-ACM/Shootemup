@@ -86,6 +86,9 @@ public sealed class DifficultyCurveRuntime : MonoBehaviour
         string difficulty = Environment.GetCommandLineArgs().SkipWhile(a => a != "-curveDifficulty").Skip(1).FirstOrDefault() ?? "Normal";
         watcher.SelectDifficulty((RunDifficulty)Enum.Parse(typeof(RunDifficulty), difficulty));
         yield return Ready();
+        // One composition for every measurement, so before and after runs compare like for like.
+        watcher.SetSeed(17381);
+        yield return Ready();
         foreach (var level in Campaign)
         {
             watcher.SelectLevel(level);

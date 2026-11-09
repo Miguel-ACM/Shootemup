@@ -63,6 +63,7 @@ public abstract class DistrictBoss : DistrictEnemy
     protected virtual bool PhaseThreeReady => HasThirdPhase && HealthFraction <= PhaseEnd(2);
     protected virtual bool NextPhaseReady => CurrentPhase == 1 ? PhaseTwoReady : CurrentPhase == 2 && PhaseThreeReady;
     protected virtual float PhaseBreakSeconds => 1.5f;
+    protected override float Pressure => LevelRun.BossPressure;
     protected override void Start()
     {
         base.Start();
