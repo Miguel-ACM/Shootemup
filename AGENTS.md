@@ -152,6 +152,14 @@ These are the player's instructions. Preserve them across sessions and apply the
 - The gallery displays only the filtered items.
 - The hangar side rooms, gallery, cross passages and doorways share the hangar lane's floor plates and colours.
 
+## Latest tuning pass (9 November 2026, second list)
+
+- Plains: Patrol Gunship fires four arrows on Normal and Hard (three on Easy). Meadow Tank fires aimed bursts of circular rounds with slight random spread (five on Hard, scaled down on Normal/Easy).
+- Plains bomber: phase one's lace has two arms per wing (one animated fan fewer) and all three wingtip streams are arrows. Phase two's falling curtain hangs above the visible top edge; the wings throw sweeping, unaimed arrow fans instead of single aimed arrows. Hard phase three drops two 360 bombs per side instead of three.
+- Red Kite never throws bouncing rounds up toward the ceiling. Threshing Drum traverses faster, carries its outer drum to the visible edge and plants windrow columns at a fixed spacing on every difficulty, leaving only the furrow; its return-stroke teeth bounce three times.
+- Snow: Siege Gunship fires every volley across all three cannons. Shield Transport fires even counts on every difficulty. The upward sprays that make snow (shells and the siege craft) are harmless; only the falling snow hurts. The Snow fortress fires only arrows from its sides, and phase one's comb adds loosely aimed rounds between the rain beats.
+- Heaven: the angel's feather banks send far fewer rounds up to bounce along the ceiling. Space phase one: inward fronts start from a single circle beyond the whole screen and close on the core (no nested inner circles or orbit tells); the black hole keeps its phase-two upper station. Thunder phases two and three hang the top laser bank on the visible top edge. The submarine boss fires a little fewer rounds (boss pressure 1.0).
+
 ## Items and decisions
 
 - Preserve Miguel's original item names and identities. Another arm and Twerp are deliberately named and are fine. Make an item's behavior recognizable through its effects and sound; do not rename or redesign original items to explain their mechanics.
