@@ -5,12 +5,12 @@ using UnityEngine;
 // Phase one
 //   Wingtip Crossfire: both wingtips stream triple arrows at the player while the
 //     bays drop mirrored bombs that travel the same distance, stop and explode 360.
-//   Harvest Lace: a three-arm mirrored lace folds open and shut from the wings,
+//   Harvest Lace: a two-arm mirrored lace folds open and shut from the wings,
 //     with slow orb wavefronts from the nose rolling under it.
 // Phase two
-//   Contrail Curtain: fences of rounds slid in along the very top of the screen,
-//     across its whole width, hang and then fall at alternating speeds; wing streams
-//     keep the player moving between them.
+//   Contrail Curtain: fences of rounds hang just above the visible top edge,
+//     across its whole width, then fall in at alternating speeds; sweeping unaimed
+//     arrow fans from both wings keep the player moving between them.
 //   Bomb Run: rows of mirrored 360 bombs under a two-arm lace.
 public sealed partial class FieldsBomberBoss
 {
@@ -52,8 +52,9 @@ public sealed partial class FieldsBomberBoss
             {
                 var port = Muzzle(side);
                 var axis = CombatVisuals.Aim(port);
+                // All three streams are arrows, the middle one included (Miguel).
                 foreach (float spread in new[] { -10f, 0f, 10f })
-                    ScoredShot(spread==0,port, CombatVisuals.Rotate(axis, spread), 4.6f);
+                    Fire<NeedleRound>(port, CombatVisuals.Rotate(axis, spread), 4.6f, .19f);
             }
             if (n % 12 == 6)
                 CarpetBombs(2);
@@ -63,7 +64,8 @@ public sealed partial class FieldsBomberBoss
     IEnumerator HarvestLace()
     {
         Phrase(Every(7, 1.4f, n => OrbWave(n)));
-        yield return MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(96), 3, 70, 20, 3.4f, .07f, 1);
+        // Two arms per wing; the third was one animated fan too many (Miguel).
+        yield return MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(96), 2, 70, 24, 3.4f, .07f, 1);
     }
 
     // Two layers of slow orbs from the nose: an arc that rolls under the lace.
@@ -102,11 +104,21 @@ public sealed partial class FieldsBomberBoss
         {
             yield return Charge(Hull, WeaponPort(0), .4f);
             Phrase(ContrailCurtain());
+            // Unaimed arrow fans sweep in and out from both wings, mirrored, instead
+            // of single aimed arrows: many more needles, none of them tracking.
+            int arrows = Dense(5);
             yield return Every(2.6f, .13f, n =>
             {
-                if (n % 2 == 0)
-                    for (int side = 0; side < 2; side++)
-                        ScoredShot(n%6==0,Muzzle(side), CombatVisuals.Aim(Muzzle(side)), 4.8f);
+                if (n % 2 != 0)
+                    return;
+                float sweep = Mathf.Sin(n * .42f + curtain) * 40;
+                for (int side = 0; side < 2; side++)
+                {
+                    int mirror = side == 0 ? -1 : 1;
+                    for (int i = 0; i < arrows; i++)
+                        Fire<NeedleRound>(Muzzle(side), CombatVisuals.Rotate(Vector2.down,
+                            mirror * (20 + sweep) + (i - (arrows - 1) * .5f) * 14), 4.2f, .19f);
+                }
             });
         }
     }
@@ -117,13 +129,13 @@ public sealed partial class FieldsBomberBoss
         yield return Every(7, 1.1f, n => CarpetBombs(n % 2 == 0 ? 2 : 3));
     }
 
-    // A line strung along the very top of the screen across its whole width. Each
-    // round slides in from just above the top edge, hangs as a fence, then drops
+    // A line strung just above the visible top edge across the whole width. Each
+    // round slides down out of sight, hangs there as a hidden fence, then drops in
     // with alternating speeds, so the gaps open as it falls.
     IEnumerator ContrailCurtain()
     {
         int lanes = Dense(24);
-        float y = Camera.UpLimit + .35f;
+        float y = CombatRound.Border.yMax + 1.2f;
         for (int i = 0; i < lanes; i++)
         {
             float x = Mathf.Lerp(Camera.LeftLimit + .25f, Camera.RightLimit - .25f, i / (lanes - 1f));
@@ -143,7 +155,7 @@ public sealed partial class FieldsBomberBoss
         nextAttack = age + 1;
     }
 
-    // Hard final phase, Firestorm Sortie: a curtain along the top, a three-arm wing
+    // Hard final phase, Firestorm Sortie: a curtain above the top, a three-arm wing
     // lace and rows of 360 bombs all at once, with a second curtain halfway through.
     IEnumerator FinalSpell()
     {
@@ -151,7 +163,8 @@ public sealed partial class FieldsBomberBoss
         Phrase(MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(110), 3, 70, 20, 3.6f, .07f));
         yield return Every(8, 1.0f, n =>
         {
-            CarpetBombs(3);
+            // One exploding bomb fewer per side than before (Miguel).
+            CarpetBombs(2);
             if (n == 4)
                 Phrase(ContrailCurtain());
         });
