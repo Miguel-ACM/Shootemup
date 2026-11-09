@@ -182,6 +182,9 @@ public static class EverydayItemMaterials
             case "Hunger":
                 color = new Color(.55f, .12f, .22f);
                 return true;
+            case "Corkscrew":
+                color = new Color(.66f, .14f, .27f);
+                return true;
             case "CursedCoin":
                 color = new Color(.5f, .9f, .42f);
                 return true;

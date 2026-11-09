@@ -51,7 +51,7 @@ public sealed class PlayerRound : ABullet
     public bool companion;
     public int pierces;
     public bool returns;
-    float age;
+    float age, flight, weave, weaveSign;
     Vector3 origin;
     Vector2 heading;
     bool detonated, returning, rebounded, rubberReturned;
@@ -134,6 +134,8 @@ public sealed class PlayerRound : ABullet
         sr.enabled = true;
         collider.enabled = true;
         age = 0;
+        flight = weave = 0;
+        weaveSign = ShotTraits.NextWeaveSign();
         lifetimeAge = 0;
         lifetime = float.PositiveInfinity;
         chargeLevel = 0;
@@ -189,6 +191,7 @@ public sealed class PlayerRound : ABullet
         if (WorldTimeStop.Frozen || Time.deltaTime <= 0)
             return;
         age += Time.deltaTime;
+        flight += Time.deltaTime;
         lifetimeAge += Time.deltaTime;
         if (chargeLevel > 0 && age >= .6f)
         {
@@ -232,13 +235,17 @@ public sealed class PlayerRound : ABullet
         }
         float brake = delivery == PlayerDelivery.Shell ? Mathf.Clamp01(1 - age / .7f) : 1;
         Vector3 wallFrom = transform.position;
-        transform.position += (Vector3)heading * speed * brake * Time.deltaTime;
+        Vector2 step = heading * speed * brake * Time.deltaTime;
+        float lateral = ShotTraits.Weave(flight, weaveSign);
+        step += new Vector2(heading.y, -heading.x) * (lateral - weave);
+        weave = lateral;
+        transform.position += (Vector3)step;
         if (CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _))
         {
             Despawn();
             return;
         }
-        transform.rotation = Quaternion.FromToRotation(Vector3.up, heading);
+        transform.rotation = Quaternion.FromToRotation(Vector3.up, step.sqrMagnitude > .0000001f ? step : heading);
         if (delivery == PlayerDelivery.Disc)
             transform.Rotate(0, 0, age * 540);
         if (delivery == PlayerDelivery.Flame)

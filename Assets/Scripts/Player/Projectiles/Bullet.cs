@@ -8,6 +8,7 @@ public class Bullet : ABullet
     bool rubberReturned;
     bool hitResolved;
     Vector2 wallFrom;
+    float flight, weaveSign;
     // Shared by all bullets so the scene is searched once, not on every trigger contact.
     static Shipcontroller player;
 
@@ -17,6 +18,7 @@ public class Bullet : ABullet
         direction.z = transform.position.z;
         rigidBody = GetComponent<Rigidbody2D>();
         wallFrom = transform.position;
+        weaveSign = ShotTraits.NextWeaveSign();
         Move();
     }
 
@@ -25,6 +27,7 @@ public class Bullet : ABullet
     {
         if (Time.deltaTime <= 0 || WorldTimeStop.Frozen)
             return;
+        flight += Time.deltaTime;
         if (CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _))
         {
             Despawn();
@@ -63,7 +66,8 @@ public class Bullet : ABullet
             }
 
         }
-        rigidBody.linearVelocity = transform.up.normalized * speed;
+        Vector2 forward = transform.up.normalized;
+        rigidBody.linearVelocity = forward * speed + new Vector2(forward.y, -forward.x) * ShotTraits.WeaveRate(flight, weaveSign);
     }
 
 
