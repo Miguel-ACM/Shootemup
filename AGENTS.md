@@ -181,6 +181,10 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Poison is slow and creeping: one dose a second for six seconds after the last hit, growing from half to 1.8 times its potency while it stays applied. A poisoned hull takes 15% more damage from every source, burn included, so the two coatings combine. It seeps rising bubbles and falling drips and swells with each dose.
 - Damage ticks never play the hit spark, hit sound or hull flash.
 
+## Icebreaker rework (9 November 2026)
+
+- Snow's second boss, the Icebreaker, has a full score. Phase one is pack ice: Ramming Speed (rams to mid-arena firing mirrored fracture fans, with shoulder spray that freezes and re-aims over the top) and Fracture Sheet (whole-width frozen sheets whose visible crack opens under the bow or shoulders). Phase two is open water: Cut Channel (a Z run lined with frozen walls that zip shut behind it) and Calving Bergs (arcing bergs that rebound and split at their apex over swinging pressure ridges). Hard's Icequake combines rams, sheets and a zipped cut. Base health stays 2100; fire leaves only the prow and shoulders.
+
 ## Items and decisions
 
 - Preserve Miguel's original item names and identities. Another arm and Twerp are deliberately named and are fine. Make an item's behavior recognizable through its effects and sound; do not rename or redesign original items to explain their mechanics.
