@@ -1,10 +1,11 @@
 using UnityEngine;
 
-// One hostile hue per district; silhouettes and timing still identify the different attacks.
+// One hostile hue per district, in two tones: bright rounds and dark rounds (a deep body
+// with a glowing outline in the same hue). Each attack is authored in one tone, so the
+// tone tells the attack families apart, and the Polarity Engine's poles are the two tones.
 public static class LevelProjectilePalette
 {
-    static readonly Material[,] shared = new Material[System.Enum.GetValues(typeof(LevelId)).Length, 2];
-    static readonly Material[] light = new Material[2];
+    static readonly Material[,] shared = new Material[System.Enum.GetValues(typeof(LevelId)).Length, 4];
     public static Color Accent(LevelId level)
     {
         switch (level)
@@ -38,30 +39,17 @@ public static class LevelProjectilePalette
         }
     }
 
-    public static Material Material(bool neutral = false)
+    public static Material Material(bool neutral = false, HostileTone tone = HostileTone.Bright)
     {
-        int level = (int)LevelRun.Current, variant = neutral ? 1 : 0;
+        int level = (int)LevelRun.Current, variant = (neutral ? 1 : 0) + (tone == HostileTone.Dark ? 2 : 0);
         if (shared[level, variant] != null)
             return shared[level, variant];
-        var material = new Material(CombatVisuals.ProjectileMaterial) { name = LevelRun.Current + " shared hostile ink" };
+        var material = new Material(CombatVisuals.ProjectileMaterial) { name = LevelRun.Current + " shared hostile ink " + tone };
         material.SetColor("_SpriteTint", Accent(LevelRun.Current));
         material.SetFloat("_Neutralize", neutral ? 1 : 0);
+        material.SetFloat("_Dark", tone == HostileTone.Dark ? 1 : 0);
         material.SetFloat("_Burn", 0);
         material.SetFloat("_Poison", 0);
         return shared[level, variant] = material;
-    }
-
-    /// <summary>The Polarity Engine's light rounds: one pale shared material for every district.</summary>
-    public static Material LightMaterial(bool neutral = false)
-    {
-        int variant = neutral ? 1 : 0;
-        if (light[variant] != null)
-            return light[variant];
-        var material = new Material(CombatVisuals.ProjectileMaterial) { name = "Polarity light hostile ink" };
-        material.SetColor("_SpriteTint", PolarityEngine.LightColor);
-        material.SetFloat("_Neutralize", neutral ? 1 : 0);
-        material.SetFloat("_Burn", 0);
-        material.SetFloat("_Poison", 0);
-        return light[variant] = material;
     }
 }

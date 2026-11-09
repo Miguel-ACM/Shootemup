@@ -160,6 +160,7 @@ public abstract class DistrictEnemy : AEnemy
     protected override void Start()
     {
         base.Start();
+        tone = DefaultTone;
         var p = GameObject.FindGameObjectWithTag("Player");
         player = p != null ? p.transform : null;
     }
@@ -269,12 +270,14 @@ public abstract class DistrictEnemy : AEnemy
             if (flight.TakeFireBeat())
             {
                 volley++;
+                tone = DefaultTone;
                 Attack();
             }
         }
         else if (age >= nextAttack)
         {
             volley++;
+            tone = DefaultTone;
             Attack();
             nextAttack = age + attackInterval / Mathf.Max(.5f, GameRules.enemyShootSpeed);
         }
@@ -311,6 +314,11 @@ public abstract class DistrictEnemy : AEnemy
     }
 
     protected virtual bool CanEmit => true;
+    // Each enemy's attacks are authored bright or dark (Miguel, 9 November 2026). Attack()
+    // starts in DefaultTone; an attack or boss card switches with UseTone before firing.
+    protected HostileTone tone;
+    protected virtual HostileTone DefaultTone => EnemyTones.Default(GetType());
+    protected void UseTone(HostileTone value) => tone = value;
     protected T Fire<T>(Vector3 position, Vector2 direction, float velocity, float radius = .18f) where T : CombatRound
     {
         if (!CanEmit)
@@ -320,7 +328,9 @@ public abstract class DistrictEnemy : AEnemy
             position = Muzzle(volley);
         lastRelease = age;
         firingCue?.Flash(position, direction);
+        CombatRound.LaunchTone = tone;
         var shot = CombatRound.Launch<T>(position, direction, velocity * ProjectileSpeedScale * (IsMiniboss ? 1.14f : 1), radius);
+        CombatRound.LaunchTone = HostileTone.Bright;
         if (shot != null)
             shot.damage *= ProjectileDamageScale;
         if (shot is BurstShell shell)

@@ -4,8 +4,21 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
+// Every hostile round is bright or dark. The tone is authored per attack, never random.
+public enum HostileTone
+{
+    Bright, Dark
+}
+
 public abstract class CombatRound : AEnemyBullet
 {
+    // The tone of the next launch. Enemies set it around their own fire; a round sets
+    // it to its own tone while it updates, so splits, shards and sprays inherit it.
+    public static HostileTone LaunchTone;
+    public HostileTone Tone
+    {
+        get; private set;
+    }
     static readonly Unity.Profiling.ProfilerMarker launchMarker = new Unity.Profiling.ProfilerMarker("CombatRound.Launch");
     static readonly Unity.Profiling.ProfilerMarker createMarker = new Unity.Profiling.ProfilerMarker("CombatRound.Create");
     // Dense late-phase cards (bomb shards, laces and curtains together) outgrew 420
@@ -83,6 +96,7 @@ public abstract class CombatRound : AEnemyBullet
         pools.Clear();
         Live.Clear();
         pooled = CreatedCount = launchSequence = 0;
+        LaunchTone = HostileTone.Bright;
         SceneManager.sceneUnloaded -= PrunePools;
         SceneManager.sceneUnloaded += PrunePools;
     }
@@ -121,10 +135,9 @@ public abstract class CombatRound : AEnemyBullet
         // Never insert a whole newborn pixel-fixture crown into the contact tree.
         // Arm each body's exact collider only when it approaches a valid target.
         shot.body.simulated = false;
-        shot.tint.SetHostile();
-        // Beams are not rounds and never take a polarity.
-        if (!(shot is PulseLaser))
-            PolarityEngine.Assign(shot.tint);
+        // Beams are not rounds: they stay bright and are never absorbed.
+        shot.Tone = shot is PulseLaser ? HostileTone.Bright : LaunchTone;
+        shot.tint.SetTone(shot.Tone);
         shot.needsOrientation = true;
         if (Live.Count == 0 || launchSequence >= DepthSlots)
             launchSequence = 0;
@@ -410,6 +423,14 @@ public abstract class CombatRound : AEnemyBullet
             return;
         float dt = Time.deltaTime * ClockRate * (this is PulseLaser ? 1 : CombatUpgrades.HostileSpeedAt(transform.position));
         age += dt;
+        var ambient = LaunchTone;
+        LaunchTone = Tone;
+        UpdateRound(dt);
+        LaunchTone = ambient;
+    }
+
+    void UpdateRound(float dt)
+    {
         if (age > lifetime || transform.position.y < Camera.DownLimit - 2 || transform.position.y > Camera.UpLimit + 5 ||
             transform.position.x < Camera.LeftLimit - 3 || transform.position.x > Camera.RightLimit + 3)
         {

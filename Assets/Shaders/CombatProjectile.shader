@@ -12,6 +12,7 @@ Shader "Shootemup/Combat Projectile"
         _PoisonTint ("Poison jade",Color)=(.42,.70,.58,1)
         _Gloss ("Enamel highlights",Range(0,1))=.7
         _Emission ("Colored radiance",Range(0,4))=2.6
+        _Dark ("Dark tone",Float)=0
     }
     SubShader
     {
@@ -32,7 +33,7 @@ Shader "Shootemup/Combat Projectile"
                 float4 _Color;
                 float4 _SpriteTint;
                 float4 _PoisonTint;
-                float _Neutralize,_Burn,_Poison,_Gloss,_Emission;
+                float _Neutralize,_Burn,_Poison,_Gloss,_Emission,_Dark;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION;float2 uv:TEXCOORD0;float4 color:COLOR; };
             struct Varyings { float4 positionCS:SV_POSITION;float2 uv:TEXCOORD0;float4 color:COLOR; };
@@ -46,7 +47,13 @@ Shader "Shootemup/Combat Projectile"
                 half brightness=max(color.r,max(color.g,color.b));
                 // Shade only existing bright ink: alpha, the dark rim and the collider stay intact.
                 half enamel=smoothstep(.22,.8,brightness);
-                color.rgb=lerp(color.rgb,brightness.xxx,_Neutralize)*_SpriteTint.rgb;
+                // Dark tone (Ikaruga-like): the artwork's dark outline glows in the district hue,
+                // its body turns deep and its brightest highlight stays as a pale glint.
+                half outline=1-smoothstep(.12,.26,brightness);
+                half3 hue=_SpriteTint.rgb;
+                half3 deep=lerp(hue*(.16+.14*(1-brightness)),hue*1.1+.1,outline);
+                deep=lerp(deep,.55+hue*.35,smoothstep(.97,1,brightness));
+                color.rgb=lerp(lerp(color.rgb,brightness.xxx,_Neutralize)*hue,deep,_Dark);
                 color*=v.color;
                 brightness=max(color.r,max(color.g,color.b));
                 color.rgb=lerp(color.rgb,half3(1,.15,.07)*brightness,_Burn);
@@ -57,11 +64,11 @@ Shader "Shootemup/Combat Projectile"
                 float facet=saturate(1-abs(dot(v.uv,float2(.85,.45))-.49)*11);
                 float2 light=(v.uv-float2(.34,.69))*float2(5,4.5);
                 float glint=saturate(1-dot(light,light));
-                half shine=enamel*_Gloss*(facet*facet*.25+glint*glint*.65);
+                half shine=enamel*_Gloss*(facet*facet*.25+glint*glint*.65)*(1-_Dark*.7);
                 color.rgb=lerp(color.rgb,half3(1,1,1),shine);
                 // HDR energy is collected by one shared bloom, never a light or halo per round.
                 // Keep the original silhouette and dark ink out of the emissive core.
-                color.rgb+=radiance*enamel*_Emission;
+                color.rgb+=lerp(radiance*enamel*_Emission,radiance*outline*1.2,_Dark);
                 clip(color.a-.005);return color;
             }
             ENDHLSL

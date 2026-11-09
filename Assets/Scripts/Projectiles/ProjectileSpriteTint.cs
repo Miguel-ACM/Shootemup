@@ -14,7 +14,7 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
         get; private set;
     }
 
-    // Polarity Engine pole of a hostile round, or -1 when the engine is not held.
+    // A hostile round's tone, which is also its Polarity Engine pole; -1 for player fire.
     public int Polarity
     {
         get; private set;
@@ -48,32 +48,22 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
             effect.SetHostile();
     }
 
-    public void SetHostile()
+    public void SetHostile() => SetTone(HostileTone.Bright);
+
+    // Both tones share their district's materials, so dense patterns still batch.
+    public void SetTone(HostileTone tone)
     {
-        Polarity = -1;
+        Polarity = (int)tone;
         Tint = LevelProjectilePalette.Accent(LevelRun.Current);
-        var shared = LevelProjectilePalette.Material(neutral);
+        var shared = LevelProjectilePalette.Material(neutral, tone);
         if (visual.sharedMaterial != shared)
             visual.sharedMaterial = shared;
         visual.SetPropertyBlock(null);
     }
 
-    // Light rounds share one pale material; shade rounds keep the district's shared ink.
-    public void SetPolarity(int pole)
-    {
-        SetHostile();
-        Polarity = pole;
-        if (pole != PolarityEngine.Light)
-            return;
-        Tint = PolarityEngine.LightColor;
-        visual.sharedMaterial = LevelProjectilePalette.LightMaterial(neutral);
-    }
-
+    // A special hue (Plains' orange carriers) keeps the round's tone and its pole.
     public void SetAccent(Color color)
     {
-        // A polarised round must always show the colour that decides whether it hurts.
-        if (Polarity >= 0)
-            return;
         Tint = color;
         properties.SetColor("_SpriteTint", color);
         properties.SetFloat("_Burn", 0);
