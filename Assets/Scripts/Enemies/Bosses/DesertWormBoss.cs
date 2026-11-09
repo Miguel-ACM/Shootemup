@@ -9,7 +9,6 @@ public sealed partial class DesertWormBoss : DistrictBoss
     protected override bool AtOpeningStation => sections[BodyCount - 1].position.y <= Camera.UpLimit - .5f;
     SandSpine spine;
     Vector3 previous;
-    float routeWidth;
     public Transform[] Cores => cores;
     PolygonCollider2D bodyContact;
     readonly Vector2[] bodyOutline = new Vector2[(BodyCount + 1) * 2 + 2];
@@ -34,9 +33,9 @@ public sealed partial class DesertWormBoss : DistrictBoss
         bodyContact = gameObject.AddComponent<PolygonCollider2D>();
         bodyContact.isTrigger = true;
         GetComponent<CombatHullVisual>().enabled = false;
-        previous = transform.position;
-        var camera = UnityEngine.Camera.main;
-        routeWidth = Mathf.Max(.6f, camera.orthographicSize * 405f / 720f - 1.25f);
+        BuildCircuit(Mathf.Max(1.85f, UnityEngine.Camera.main.orthographicSize * 405f / 720f));
+        transform.position = circuit[0];
+        previous = transform.position + Vector3.up * .1f;
         Hull.GetComponent<MeshRenderer>().sharedMaterial = IndustrialMeshFactory.WhiteWormMaterial;
         cores[0] = Reactor(Hull, true, 0, new Vector3(0, .05f, -.44f));
         firingCue.Register(cores[0].transform, Vector3.zero);
@@ -52,47 +51,76 @@ public sealed partial class DesertWormBoss : DistrictBoss
         PartHitFeedback.Bind(transform, false);
     }
 
-    // A predictable route: after one dive down through the arena, the worm keeps rising
-    // from below the bottom edge to above the top in a gentle S, each pass in the next
-    // lane, its body laid out offscreen before every new pass.
-    static readonly float[] Lanes = { 0, -.55f, .55f, -.25f, .3f };
-    int pass = -1;
-    float passTravel;
+    // A predictable closed circuit: a dive down the middle, a rise up the left lane, a sweep
+    // in from the left side, a low sweep in from the right across both lower corners and a
+    // diagonal rise back to the top. The head turns just outside the border, so most of the
+    // body stays in the arena and the route never jumps.
+    Vector3[] circuit;
+    float[] circuitDistance;
+    float travel;
+    int circuitIndex;
+    void BuildCircuit(float w)
+    {
+        float top = Camera.UpLimit, bottom = Camera.DownLimit, mid = (top + bottom) / 2, o = 1.1f;
+        Vector2[] keys =
+        {
+            new Vector2(0, top + o + .6f), new Vector2(.05f * w, top - 5), new Vector2(-.1f * w, bottom + 4),
+            new Vector2(-.25f * w, bottom - o), new Vector2(-.45f * w, bottom - o - .6f), new Vector2(-.65f * w, bottom - o),
+            new Vector2(-.5f * w, bottom + 5), new Vector2(-.65f * w, top - 5), new Vector2(-.6f * w, top + o - .2f),
+            new Vector2(-.95f * w, top + o + .3f), new Vector2(-w - o, top - 1.6f),
+            new Vector2(-.55f * w, top - 3.2f), new Vector2(0, top - 6), new Vector2(.6f * w, mid - 1.5f), new Vector2(w + o - .3f, mid - 2.4f),
+            new Vector2(w + o + .5f, bottom + 3.4f),
+            new Vector2(.62f * w, bottom + 2.3f), new Vector2(0, bottom + 3.2f), new Vector2(-.6f * w, bottom + 2.4f), new Vector2(-w - o, bottom + 1.9f),
+            new Vector2(-w - o - .2f, bottom), new Vector2(-.75f * w, bottom - o - .2f),
+            new Vector2(-.4f * w, bottom + 3), new Vector2(.1f * w, mid), new Vector2(.5f * w, top - 4), new Vector2(.55f * w, top + o),
+            new Vector2(.3f * w, top + o + 1.1f),
+        };
+        const int steps = 24;
+        circuit = new Vector3[keys.Length * steps + 1];
+        circuitDistance = new float[circuit.Length];
+        for (int i = 0; i < keys.Length; i++)
+            for (int k = 0; k < steps; k++)
+            {
+                int n = keys.Length;
+                Vector2 p = CentripetalSpline(keys[(i + n - 1) % n], keys[i], keys[(i + 1) % n], keys[(i + 2) % n], k / (float)steps);
+                circuit[i * steps + k] = new Vector3(p.x, p.y, 1);
+            }
+        circuit[circuit.Length - 1] = circuit[0];
+        for (int i = 1; i < circuit.Length; i++)
+            circuitDistance[i] = circuitDistance[i - 1] + Vector3.Distance(circuit[i - 1], circuit[i]);
+    }
+
+    static Vector2 CentripetalSpline(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float t)
+    {
+        float t1 = Mathf.Sqrt(Mathf.Max(1e-4f, Vector2.Distance(p0, p1)));
+        float t2 = t1 + Mathf.Sqrt(Mathf.Max(1e-4f, Vector2.Distance(p1, p2)));
+        float t3 = t2 + Mathf.Sqrt(Mathf.Max(1e-4f, Vector2.Distance(p2, p3)));
+        float u = Mathf.Lerp(t1, t2, t);
+        Vector2 a1 = Vector2.LerpUnclamped(p0, p1, u / t1);
+        Vector2 a2 = Vector2.LerpUnclamped(p1, p2, (u - t1) / (t2 - t1));
+        Vector2 a3 = Vector2.LerpUnclamped(p2, p3, (u - t2) / (t3 - t2));
+        Vector2 b1 = Vector2.LerpUnclamped(a1, a2, u / t2);
+        Vector2 b2 = Vector2.LerpUnclamped(a2, a3, (u - t1) / (t3 - t1));
+        return Vector2.LerpUnclamped(b1, b2, (u - t1) / (t2 - t1));
+    }
+
     protected override void MoveBoss(float dt)
     {
-        float body = BodyCount * 1.04f + 1.5f;
-        float speed = phaseTwo ? 4.3f : 3.3f;
-        if (pass < 0)
+        float length = circuitDistance[circuitDistance.Length - 1];
+        travel += dt * (phaseTwo ? 4.3f : 3.3f);
+        if (travel >= length)
         {
-            // Opening dive: straight down the middle and out of the bottom.
-            transform.position += Vector3.down * dt * speed * 1.3f;
-            if (transform.position.y < Camera.DownLimit - body)
-                BeginPass();
+            travel -= length;
+            circuitIndex = 0;
         }
-        else
-        {
-            passTravel += dt * speed;
-            float lane = Lanes[pass % Lanes.Length] * routeWidth;
-            float y = Camera.DownLimit - 1.2f + passTravel;
-            float x = lane + Mathf.Sin(passTravel * .5f + pass) * routeWidth * .35f;
-            transform.position = new Vector3(Mathf.Clamp(x, -routeWidth, routeWidth), y, 1);
-            if (y > Camera.UpLimit + body)
-                BeginPass();
-        }
+        while (circuitIndex < circuit.Length - 2 && circuitDistance[circuitIndex + 1] < travel)
+            circuitIndex++;
+        float span = circuitDistance[circuitIndex + 1] - circuitDistance[circuitIndex];
+        transform.position = Vector3.Lerp(circuit[circuitIndex], circuit[circuitIndex + 1], span > 0 ? (travel - circuitDistance[circuitIndex]) / span : 0);
         Vector2 tangent = transform.position - previous;
         previous = transform.position;
         if (tangent.sqrMagnitude > .00001f)
             Hull.rotation = Quaternion.FromToRotation(Vector3.down, tangent);
-        spine?.Follow(transform.position, sections);
-    }
-
-    void BeginPass()
-    {
-        pass++;
-        passTravel = 0;
-        transform.position = new Vector3(Lanes[pass % Lanes.Length] * routeWidth, Camera.DownLimit - 1.2f, 1);
-        previous = transform.position + Vector3.down * .1f;
-        spine?.Reset(transform.position, Vector3.down);
         spine?.Follow(transform.position, sections);
     }
 

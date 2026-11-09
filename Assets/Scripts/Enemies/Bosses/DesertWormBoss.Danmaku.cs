@@ -1,17 +1,17 @@
 using System.Collections;
 using UnityEngine;
 
-// Desert worm: after one dive it keeps rising from the bottom edge to the top in a
-// steady S, lane by lane, attacking on the way up. Everything comes off its body.
+// Desert worm: it winds a fixed circuit of dives, rises and side sweeps, turning just
+// outside the border, attacking all the way. Everything comes off its body.
 // Phase one
 //   Quicksand Field: reactor after reactor, tail to head, sows mirrored rows of mines
-//     on both flanks; they brake and glint, odd mines sink away, even mines carry on
-//     outward, so the field spreads across the arena instead of piling on the player.
+//     on both flanks; they brake and glint, odd mines lunge at the player, even mines
+//     carry on outward, so the field spreads across the arena.
 //   Sandblast: twin mirrored arrow streams fan either side of the player from the
 //     jaw, with a little ordered heat haze from the body.
 // Phase two
 //   Sidewinder: every surviving reactor fires arrows straight out of both flanks as
-//     the body rises, drawing ribbons of arrows along its whole path.
+//     the body winds, drawing ribbons of arrows along its whole path.
 //   Dune Collapse: reactors in turn, tail to head, throw small geysers of arrows
 //     that fall back.
 public sealed partial class DesertWormBoss
