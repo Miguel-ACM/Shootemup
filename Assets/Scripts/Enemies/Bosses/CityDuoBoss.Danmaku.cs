@@ -14,6 +14,12 @@ using UnityEngine;
 //     rear-guard fans and headlights.
 //   Interceptor: Junction, a four-arm arrow spiral turning round itself in every
 //     direction, with headlights between.
+// Tones: in phase one each ship owns one, the hauler's street grids and rear-guard
+// fans dark and the interceptor's spiral bright. Headlights are bright chevrons
+// with dark beads. The enraged survivor alternates the dominant tone: the hauler's
+// bright cargo over dark fans, then dark-chevron headlights; the interceptor's
+// dark Junction arms with bright knots, then bright headlights. Six-Way Junction
+// has bright arms with dark knots and dark-chevron headlights.
 public sealed partial class CityDuoBoss
 {
     protected override void Attack()
@@ -52,12 +58,12 @@ public sealed partial class CityDuoBoss
                     RearGuard(n);
                 });
                 yield return Wait(.5f);
-                yield return Every(6, .7f, n => Headlights(Muzzle(1)));
+                yield return Every(6, .7f, n => Headlights(Muzzle(1), HostileTone.Dark));
                 yield return Wait(.5f);
             }
             else
             {
-                yield return Junction(7);
+                yield return Junction(7, HostileTone.Dark);
                 yield return Wait(.5f);
                 yield return Every(5, .7f, n => Headlights(Muzzle()));
                 yield return Wait(.5f);
@@ -75,6 +81,7 @@ public sealed partial class CityDuoBoss
             Vector2 outward = ((Vector2)transform.position - hub).normalized;
             if (outward.sqrMagnitude < .01f)
                 outward = Vector2.down;
+            UseTone(HostileTone.Bright);
             foreach (float spread in new[] { -9f, 9f })
                 ScoredShot(i%9<3,Muzzle(), CombatVisuals.Rotate(outward, spread), 3.6f);
             if(i%24==0)Headlights(Muzzle());
@@ -83,11 +90,13 @@ public sealed partial class CityDuoBoss
     }
 
     // Four arrow arms turning round the ship in every direction.
-    IEnumerator Junction(float seconds)
+    // Arms in one tone, their round knots in the other.
+    IEnumerator Junction(float seconds, HostileTone arms)
     {
         int steps = Mathf.RoundToInt(seconds / .07f);
         for (int i = 0; i < steps; i++)
         {
+            UseTone(i % 9 < 3 ? Opposite(arms) : arms);
             for (int arm = 0; arm < 4; arm++)
                 ScoredShot(i%9<3,transform.position, CombatVisuals.Rotate(Vector2.down, arm * 90 + i * 11), 3.4f);
             yield return Wait(Rest(.07f));
@@ -99,21 +108,26 @@ public sealed partial class CityDuoBoss
     void RearGuard(int n)
     {
         if(n%3==0)Headlights(Muzzle(1));
+        UseTone(HostileTone.Dark);
         int lanes = Dense(7);
         foreach (int mirror in new[] { -1, 1 })
             for (int i = 0; i < lanes; i++)
                 Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.up, mirror * (66 + i * 8 + (n % 2) * 4)), 3.0f, .2f).Bounce(2, false);
     }
 
-    // Three mirrored headlight rays: chevrons and round beads at falling speeds.
-    void Headlights(Vector3 port)
+    // Three mirrored headlight rays: chevrons and round beads at falling speeds,
+    // the beads in the opposite tone to the chevrons.
+    void Headlights(Vector3 port, HostileTone chevrons = HostileTone.Bright)
     {
         int beads = Dense(enraged ? 9 : 7);
         var aim = CombatVisuals.Aim(port);
         foreach (float ray in new[] { -22f, 0f, 22f })
             for (int b = 0; b < beads; b++)
+            {
+                UseTone(b % 3 == 0 ? Opposite(chevrons) : chevrons);
                 if(b%3==0)Fire<SimpleRound>(port,CombatVisuals.Rotate(aim,ray),5.4f-b*.45f,.18f);
                 else Fire<ChevronRound>(port,CombatVisuals.Rotate(aim,ray),5.4f-b*.45f,.18f);
+            }
     }
 
     // Two mirrored diagonal families in front, and the same grid behind that
@@ -122,6 +136,7 @@ public sealed partial class CityDuoBoss
     void Gridlock(int row)
     {
         if(row%4==2)Headlights(Muzzle(1));
+        UseTone(HostileTone.Dark);
         int lanes = Dense(enraged ? 11 : 9);
         foreach (int family in new[] { -1, 1 })
         {
@@ -140,6 +155,7 @@ public sealed partial class CityDuoBoss
     // Mirrored crates lobbed high, falling under gravity, exploding all round.
     void CargoLob()
     {
+        UseTone(HostileTone.Bright);
         int shards = Dense(14);
         foreach (float lob in new[] { -60f, -30f, 30f, 60f })
             Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.up, lob), 2.7f, .42f)
@@ -163,11 +179,14 @@ public sealed partial class CityDuoBoss
         else
             yield return Every(8, .07f, n =>
             {
+                UseTone(n % 9 < 3 ? HostileTone.Dark : HostileTone.Bright);
                 for (int arm = 0; arm < 6; arm++)
                     ScoredShot(n%9<3,transform.position, CombatVisuals.Rotate(Vector2.down, arm * 60 + n * 9), 3.5f);
                 if (n % 17 == 8)
-                    Headlights(Muzzle());
+                    Headlights(Muzzle(), HostileTone.Dark);
             });
         yield return Wait(.5f);
     }
+
+    static HostileTone Opposite(HostileTone value) => value == HostileTone.Bright ? HostileTone.Dark : HostileTone.Bright;
 }
