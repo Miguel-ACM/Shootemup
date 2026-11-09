@@ -174,6 +174,7 @@ public abstract class AItem : MonoBehaviour
         if (waveOrchestrer != null && !waveOrchestrer.CommitItem(this))
             return;
         collected = true;
+        ItemPool.Collected(GetType().Name);
         PSXImpactEffects.ItemGet(transform.position, GetRarityColor(rarity));
         SoundManager.PlaySound("itemGet", .1f);
         // Show the collected item in the side panel next to the playfield.
