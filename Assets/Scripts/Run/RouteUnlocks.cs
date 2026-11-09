@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 
-// A fresh save flies Plains > Snow > Thunder > Space > Hell. Beating a boss opens the district beside it;
-// Snow also opens Tunnel with City so the City branch never reaches two sealed doors.
-// New districts open from the next run; the campaign ends at Hell until Void opens.
+// A fresh save flies Plains > Snow > Thunder. Beating a boss opens what lies beside or beyond it:
+// Snow also opens Tunnel with City so the City branch never reaches two sealed doors, and Underwater
+// opens only from the side districts. New districts open from the next run; a run ends as a victory
+// at the first boss whose way on is still sealed.
 public static class RouteUnlocks
 {
-    static readonly LevelId[] firstRoute = { LevelId.Fields, LevelId.Snow, LevelId.Thunder, LevelId.Space, LevelId.Hell };
+    static readonly LevelId[] firstRoute = { LevelId.Fields, LevelId.Snow, LevelId.Thunder };
 
     public static bool OnFirstRoute(LevelId level) => System.Array.IndexOf(firstRoute, level) >= 0;
 
@@ -22,9 +23,15 @@ public static class RouteUnlocks
                 break;
             case LevelId.Thunder:
                 yield return LevelId.Desert;
+                yield return LevelId.Space;
+                break;
+            case LevelId.Desert:
+            case LevelId.Tunnel:
+            case LevelId.Candyland:
+                yield return LevelId.Underwater;
                 break;
             case LevelId.Space:
-                yield return LevelId.Underwater;
+                yield return LevelId.Hell;
                 break;
             case LevelId.Hell:
                 yield return LevelId.Void;
@@ -38,6 +45,8 @@ public static class RouteUnlocks
     public static string Name(LevelId level) => level == LevelId.Fields ? "Plains" : level.ToString();
     public static string Key(LevelId level) => "Route." + level;
     public static bool IsRoute(string key) => key != null && key.StartsWith("Route.", System.StringComparison.Ordinal);
+    // Ships are commissioned only by a campaign that ends at Hell or beyond.
+    public static bool CommissionsHull(LevelId final) => LevelRun.Tier(final) >= 5;
     public static string Requirement(LevelId cleared) => "Beat the " + Name(cleared) + " boss.";
 }
 

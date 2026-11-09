@@ -207,7 +207,8 @@ public static partial class MetaProgress
             if (outcome == "Victory")
             {
                 r.victories++;
-                if ((int)flight.frame == Data.lastFrame && Data.lastFrame + 1 < ShipFrames.Count)
+                if ((int)flight.frame == Data.lastFrame && Data.lastFrame + 1 < ShipFrames.Count &&
+                    RouteUnlocks.CommissionsHull(LevelRun.Current))
                 {
                     Data.lastFrame++;
                     flight.awards.Insert(0, "Hull released  /  " + (ShipFrame)Data.lastFrame);

@@ -195,6 +195,19 @@ public static class VerifyItemUnlocks
         Begin(LevelId.Snow, RunDifficulty.Normal);
         MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
         Check(MetaProgress.LastFlight.unlocks.All(n => !RouteUnlocks.IsRoute(n.key)), "A district is announced once");
+        Fresh(); Begin(LevelId.Thunder, RunDifficulty.Normal);
+        MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Victory");
+        Check(MetaProgress.RouteOpen(LevelId.Space) && MetaProgress.RouteOpen(LevelId.Desert) &&
+            !MetaProgress.RouteOpen(LevelId.Underwater) && !MetaProgress.RouteOpen(LevelId.Hell), "Thunder opens Space and Desert only");
+        Check(!MetaProgress.CanFly(ShipFrame.Lancer), "A campaign ending before Hell commissions no ship");
+        Begin(LevelId.Space, RunDifficulty.Normal);
+        MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
+        Check(MetaProgress.RouteOpen(LevelId.Hell) && !MetaProgress.RouteOpen(LevelId.Underwater), "Space opens Hell, not Underwater");
+        foreach (var side in new[] { LevelId.Desert, LevelId.Tunnel, LevelId.Candyland })
+            Check(RouteUnlocks.OpenedBy(side).Contains(LevelId.Underwater), side + " opens Underwater");
+        Begin(LevelId.Hell, RunDifficulty.Easy);
+        MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Victory");
+        Check(MetaProgress.CanFly(ShipFrame.Lancer), "A campaign ending at Hell commissions the next ship");
         foreach (LevelId area in Enum.GetValues(typeof(LevelId)))
             if (!RouteUnlocks.OnFirstRoute(area))
                 Check(Enum.GetValues(typeof(LevelId)).Cast<LevelId>().Any(from => RouteUnlocks.OpenedBy(from).Contains(area)), "Every district can be opened: " + area);
