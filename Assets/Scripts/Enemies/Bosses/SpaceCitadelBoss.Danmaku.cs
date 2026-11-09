@@ -20,6 +20,13 @@ using System.Collections;
 // Phase three (Hard)
 //   Big Crunch: the core breathes, swallowing fronts that close in from the circle
 //     beyond the screen and flinging spiral arms back out, trading dominance.
+// Tones (Miguel, 9 November 2026); dark stars and comets are always dark.
+//   Accretion: bright inward fronts.
+//   Supernova: dark ring arrows with bright circular beads; Binary Collapse pairs a
+//     dark outer ring with a bright inner ring.
+//   Expulsion: bright spiral arms with dark rings flung between them.
+//   Big Crunch: bright inward fronts, dark outward arms and bright rings, so the
+//     dominant tone flips with the dominant direction.
 public sealed partial class SpaceCitadelBoss
 {
     Vector3 Core => CoreVisual != null ? CoreVisual.position : transform.position;
@@ -71,8 +78,9 @@ public sealed partial class SpaceCitadelBoss
     }
 
     // Mirrored spiral arms flung from the core; they accelerate out and straighten.
-    void Expel(int n, int arms, float twist)
+    void Expel(int n, int arms, float twist, HostileTone shade)
     {
+        UseTone(shade);
         for (int arm = 0; arm < arms; arm++)
             for(int mirror=-1;mirror<=1;mirror+=2)
             {
@@ -82,16 +90,19 @@ public sealed partial class SpaceCitadelBoss
     }
 
     // A full ring flung out between the arms, offset every time.
-    void ExpelRing(int n, int beads)
+    void ExpelRing(int n, int beads, HostileTone shade)
     {
+        UseTone(HostileTone.Dark);
         // A comet down the pilot's current line keeps the rotating seam transient.
         Fire<SimpleRound>(Core,CombatVisuals.Aim(Core),2.7f,.24f).Repel(Core,1.2f).LivesFor(10);
+        UseTone(shade);
         for (int i = 0; i < beads; i++)
             MoonShot(i%3==0,Core, CombatVisuals.Rotate(Vector2.down, n * 7.3f + i * 360f / beads), .7f).Repel(Core, 6).LivesFor(9);
     }
 
     void ExpelStars(int n, int count)
     {
+        UseTone(HostileTone.Dark);
         for (int i = 0; i < count; i++)
             Fire<GiantOrb>(Core, CombatVisuals.Rotate(Vector2.down, n * 11 + i * 360f / count), .4f, .75f).Repel(Core, 3).LivesFor(13);
     }
@@ -103,10 +114,11 @@ public sealed partial class SpaceCitadelBoss
         yield return Wait(.6f);
         yield return Every(5.5f, .38f, n =>
         {
-            Phrase(OuterFront<NeedleRound>(n, Dense(44), 2.6f, .19f, n % 2 == 0 ? 23 : -23, 8, 5.2f, .6f));
+            Phrase(OuterFront<NeedleRound>(n, Dense(44), 2.6f, .19f, n % 2 == 0 ? 23 : -23, 8, 5.2f, .6f, HostileTone.Bright));
             if (n % 2 == 1)
-                Phrase(OuterFront<GiantOrb>(n, Dense(10), 1.5f, .62f, n % 4 == 1 ? -18 : 18, 15, 3.4f, 1));
+                Phrase(OuterFront<GiantOrb>(n, Dense(10), 1.5f, .62f, n % 4 == 1 ? -18 : 18, 15, 3.4f, 1, HostileTone.Dark));
             // A comet down the pilot's line keeps a still pilot from waiting out the fronts.
+            UseTone(HostileTone.Dark);
             if (n % 3 == 2)
                 Fire<SimpleRound>(Core, CombatVisuals.Aim(Core), 2.7f, .24f).LivesFor(10);
         });
@@ -121,7 +133,7 @@ public sealed partial class SpaceCitadelBoss
     // One circular front centered on the core, beginning just outside the screen corner
     // farthest from it. Each round is released on the edge at the moment its point of
     // the shrinking circle would arrive there, so the whole front stays circular.
-    IEnumerator OuterFront<T>(int n, int count, float velocity, float radius, float tilt, float seam, float pull, float reach) where T : CombatRound
+    IEnumerator OuterFront<T>(int n, int count, float velocity, float radius, float tilt, float seam, float pull, float reach, HostileTone shade) where T : CombatRound
     {
         emerging++;
         Vector3 center = Core;
@@ -154,6 +166,7 @@ public sealed partial class SpaceCitadelBoss
         {
             if (!Holding)
                 clock += Time.deltaTime;
+            UseTone(shade);
             for (; k < front.Count && front[k].delay <= clock; k++)
                 Fire<T>(front[k].point, front[k].heading, velocity, radius).Absorb(CoreBody, pull, reach).LivesFor(14);
             yield return null;
@@ -184,14 +197,19 @@ public sealed partial class SpaceCitadelBoss
     }
 
     // Rings thrown out that stop, hold, then fall back through the core and burst out beyond it.
-    void SupernovaRing(int beads, float radius, float offset)
+    // A single ring is dark arrows with bright circular beads; a uniform shade
+    // colours the whole ring (Binary Collapse).
+    void SupernovaRing(int beads, float radius, float offset, HostileTone? shade = null)
     {
         float travel = .9f;
         float speed = radius / (travel - .175f);
         for (int i = 0; i < beads; i++)
+        {
+            UseTone(shade ?? (i % 3 == 0 ? HostileTone.Bright : HostileTone.Dark));
             ScoredShot(i%3==0,Core, CombatVisuals.Rotate(Vector2.down, offset + i * 360f / beads), WorldSpeed(speed))
                 .Pause(travel, .7f, CombatRound.Turn.Rotate, 180, 2.6f / speed)
                 .LivesFor(9);
+        }
     }
 
     IEnumerator Supernova(bool binary)
@@ -200,9 +218,9 @@ public sealed partial class SpaceCitadelBoss
         for (int n = 0; n < 5; n++)
         {
             yield return Charge(Hull, WeaponPort(), .35f);
-            SupernovaRing(beads, 3.4f + (n % 2) * .8f, n * 6);
+            SupernovaRing(beads, 3.4f + (n % 2) * .8f, n * 6, binary ? HostileTone.Dark : (HostileTone?)null);
             if (binary)
-                SupernovaRing(beads, 2.2f, -n * 6 + 180f / beads);
+                SupernovaRing(beads, 2.2f, -n * 6 + 180f / beads, HostileTone.Bright);
             yield return Wait(Rest(1.1f));
         }
         Laser();
@@ -215,9 +233,9 @@ public sealed partial class SpaceCitadelBoss
         yield return Charge(Hull, WeaponPort(), .5f);
         yield return Every(8, Rest(.09f), n =>
         {
-            Expel(n, 4, 55);
+            Expel(n, 4, 55, HostileTone.Bright);
             if (n % 13 == 0)
-                ExpelRing(n, Dense(20));
+                ExpelRing(n, Dense(20), HostileTone.Dark);
             // Dark stars every 0.36 s, alternating between a big and a small ring.
             if (n % 4 == 1)
                 ExpelStars(n, Dense(n % 8 == 1 ? 12 : 8));
@@ -248,14 +266,14 @@ public sealed partial class SpaceCitadelBoss
         {
             bool inward = n / 25 % 2 == 0;
             if (n % (inward ? 3 : 6) == 0)
-                Phrase(OuterFront<NeedleRound>(n / 3, Dense(inward ? 44 : 30), 2.6f, .19f, n / 3 % 2 == 0 ? 23 : -23, 8, 5.2f, .6f));
+                Phrase(OuterFront<NeedleRound>(n / 3, Dense(inward ? 44 : 30), 2.6f, .19f, n / 3 % 2 == 0 ? 23 : -23, 8, 5.2f, .6f, HostileTone.Bright));
             if (!inward || n % 3 == 0)
-                Expel(n, inward ? 4 : 6, 55);
+                Expel(n, inward ? 4 : 6, 55, HostileTone.Dark);
             if (!inward && n % 15 == 5)
-                ExpelRing(n, Dense(30));
+                ExpelRing(n, Dense(30), HostileTone.Bright);
             if (n % 8 == 4)
             {
-                Phrase(OuterFront<GiantOrb>(n, Dense(inward ? 10 : 7), 1.5f, .62f, n % 16 == 4 ? -18 : 18, 15, 3.4f, 1));
+                Phrase(OuterFront<GiantOrb>(n, Dense(inward ? 10 : 7), 1.5f, .62f, n % 16 == 4 ? -18 : 18, 15, 3.4f, 1, HostileTone.Dark));
                 ExpelStars(n, Dense(inward ? 6 : 9));
             }
         });
