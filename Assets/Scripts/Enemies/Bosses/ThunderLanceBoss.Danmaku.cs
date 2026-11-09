@@ -82,7 +82,7 @@ public sealed partial class ThunderLanceBoss
     void DeployGrid()
     {
         for (int i = 0; i < Columns; i++)
-            drones.Add(ThunderLaserBot.Deploy(Muzzle(2), GridColumn(i, 0), Vector2.down, 20, .19f).OwnedBy(this).ArmAt(1.6f));
+            drones.Add(ThunderLaserBot.Deploy(Muzzle(2), GridColumn(i, 0), Vector2.down, 22, .19f).OwnedBy(this).ArmAt(1.6f));
         for (int j = 0; j < Rows; j++)
             drones.Add(ThunderLaserBot.Deploy(Muzzle(2), GridRow(j, 0), Vector2.right, 10.5f, .18f).OwnedBy(this).ArmAt(1.6f));
         foreach (var drone in drones) drone.Powered = false;
@@ -92,8 +92,10 @@ public sealed partial class ThunderLanceBoss
     static float ColumnSpacing => (Camera.RightLimit - Camera.LeftLimit) / Columns;
     static float RowTop => Camera.UpLimit - 1.8f;
     static float RowSpacing => (RowTop - (Camera.DownLimit + 1.2f)) / (Rows - .5f);
+    // The top bank hangs on the visible top edge of the screen in phases two and three (Miguel).
+    static float TopBank => CombatRound.Border.yMax - .45f;
     static Vector2 GridColumn(int i, float shift) =>
-        new Vector2(Camera.LeftLimit + Mathf.Repeat((i + .5f) * ColumnSpacing + shift, ColumnSpacing * Columns), Camera.UpLimit - .9f);
+        new Vector2(Camera.LeftLimit + Mathf.Repeat((i + .5f) * ColumnSpacing + shift, ColumnSpacing * Columns), TopBank);
     static Vector2 GridRow(int j, float shift) =>
         new Vector2(Camera.LeftLimit + .35f, RowTop - Mathf.Repeat(j * RowSpacing + shift, RowSpacing * Rows));
 
@@ -177,7 +179,7 @@ public sealed partial class ThunderLanceBoss
         }
     }
 
-    static Vector2 SweepColumn(int i, float shift) => new Vector2(Camera.LeftLimit + (i + .5f) * ColumnSpacing + shift, Camera.UpLimit - .9f);
+    static Vector2 SweepColumn(int i, float shift) => new Vector2(Camera.LeftLimit + (i + .5f) * ColumnSpacing + shift, TopBank);
     static Vector2 SweepRow(int j, float shift) => new Vector2(Camera.LeftLimit + .35f, RowTop - .25f - j * RowSpacing - shift);
 
     // A full ring of zigzag bolts from the front emitter.
