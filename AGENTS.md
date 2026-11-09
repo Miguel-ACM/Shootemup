@@ -160,6 +160,14 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Snow: Siege Gunship fires every volley across all three cannons. Shield Transport fires even counts on every difficulty. The upward sprays that make snow (shells and the siege craft) are harmless; only the falling snow hurts. The Snow fortress fires only arrows from its sides, and phase one's comb adds loosely aimed rounds between the rain beats.
 - Heaven: the angel's feather banks send far fewer rounds up to bounce along the ceiling. Space phase one: inward fronts start from a single circle beyond the whole screen and close on the core (no nested inner circles or orbit tells); the black hole keeps its phase-two upper station. Thunder phases two and three hang the top laser bank on the visible top edge. The submarine boss fires a little fewer rounds (boss pressure 1.0).
 
+## Latest request (9 November 2026, third list)
+
+- Space phase three closes its inward fronts from the same single circle beyond the screen as phase one; no nested inner circles, orbit tells or inward dive.
+- GR-07 has five hits and Lancer four. Base movement is 7.2 instead of 8, with the other hulls scaled about 10% (Lancer 6.1, Ember 8.3); focus runs at 0.85 of its multiplier, which items still scale.
+- Item pool: draw fresh items first; once every fresh item has been offered, recycle the passed-over (offered but uncollected) items; once those are gone too, offer repeatable filler stat items (Whetstone +0.15 damage, Oil Can +0.4 shots per second, Tail Fin +1.2 shot speed, Horseshoe +0.03 luck). Fillers use `ItemRarity.Filler` and stay out of the gallery through `ItemCatalog.Exhibits`.
+- Void teleport: the body is pulled into a vertical rift with inward shards and a shrinking ring, a jagged bolt races to the new perch, and the arrival rift throws a shockwave and shards while the body unfolds. It has no dedicated sound yet.
+- Bullet variety: thirteen candidate silhouettes (rice, kunai, crystal, droplet, star, snowflake, heart, candy, petal, flame, feather, crescent, gem) wait in `ArtSource/BulletVarietyReview` for Miguel's choice; drawn by `Tools/draw_bullet_variety.py`. Add none to the game until he approves.
+
 ## Items and decisions
 
 - Preserve Miguel's original item names and identities. Another arm and Twerp are deliberately named and are fine. Make an item's behavior recognizable through its effects and sound; do not rename or redesign original items to explain their mechanics.
