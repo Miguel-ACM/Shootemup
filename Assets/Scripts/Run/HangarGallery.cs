@@ -16,11 +16,12 @@ public sealed partial class HangarHub
     Mesh guideMesh;
     Mesh floorLights;
     MeshRenderer[] platforms;
+    // Matching exhibits fill the cases in catalogue order; the rest are put away.
+    int[] shelfSlot, slotExhibit;
+    int shownItems;
     int[] caseVertices;
     Color[] litFloorColors;
     List<Color> floorColors;
-    MaterialPropertyBlock dimItem;
-    static readonly int ItemTint = Shader.PropertyToID("_Tint");
     static readonly Color GalleryDeck = new Color(.075f, .11f, .13f);
     RectTransform cardPanel;
     TextMeshProUGUI cardTitle, cardText, cardSource, categoryReadout, availabilityReadout, directoryControls;
@@ -29,6 +30,7 @@ public sealed partial class HangarHub
     bool galleryReady;
     int loadedItems;
     static Vector2 Case(int i) => new Vector2(FirstX + (i % GalleryShelf.Columns) * ColumnStep, FirstY + (i / GalleryShelf.Columns) * RowStep);
+    Vector2 Shelf(int exhibit) => Case(shelfSlot[exhibit]);
     bool Released(GalleryShelf.Exhibit e) => !ItemCatalog.Get(e.key).InRewardPool || MetaProgress.IsUnlocked(e.key);
 
     void BuildGallery()
@@ -37,7 +39,11 @@ public sealed partial class HangarHub
         pieces = new MeshRenderer[exhibits.Length];
         platforms = new MeshRenderer[exhibits.Length];
         caseVertices = new int[exhibits.Length + 1];
-        dimItem = new MaterialPropertyBlock();
+        shelfSlot = new int[exhibits.Length];
+        slotExhibit = new int[exhibits.Length];
+        for (int i = 0; i < exhibits.Length; i++)
+            shelfSlot[i] = slotExhibit[i] = i;
+        shownItems = exhibits.Length;
         var floor = new List<Vector3>();
         var colors = new List<Color>();
         var indices = new List<int>();
@@ -203,7 +209,9 @@ public sealed partial class HangarHub
         float halfWidth = halfHeight * (405f / 720f);
         for (int i = 0; i < loadedItems; i++)
         {
-            Vector2 at = Case(i);
+            if (shelfSlot[i] < 0)
+                continue;
+            Vector2 at = Shelf(i);
             if (Mathf.Abs(at.x - focus.x) > halfWidth + 1.5f || Mathf.Abs(at.y - focus.y) > halfHeight + 2)
                 continue;
             // Move the hull and its cargo together. The selection point, lights and labels stay steady.
@@ -222,30 +230,16 @@ public sealed partial class HangarHub
         bool released = Released(e);
         return (galleryCategory == 0 || (int)e.category == galleryCategory - 1) && (galleryAvailability == 0 || (galleryAvailability == 1) == released);
     }
-    void LightCase(int i, bool match)
+    // An empty case keeps no footlight, shadow or route lamp: its floor reads as plain deck.
+    void LightCase(int slot, bool occupied)
     {
-        const float dim = .22f;
-        for (int v = caseVertices[i]; v < caseVertices[i + 1]; v++)
+        for (int v = caseVertices[slot]; v < caseVertices[slot + 1]; v++)
         {
             Color lit = litFloorColors[v];
-            Color faded = Color.Lerp(GalleryDeck, lit, dim);
-            faded.a = lit.a;
-            floorColors[v] = match ? lit : faded;
+            Color bare = GalleryDeck;
+            bare.a = lit.a;
+            floorColors[v] = occupied ? lit : bare;
         }
-        TintExhibit(platforms[i], match, dim);
-        TintExhibit(pieces[i], match, dim);
-    }
-    void TintExhibit(MeshRenderer model, bool match, float dim)
-    {
-        var paint = model.sharedMaterial;
-        if (match || paint == silhouette)
-        {
-            model.SetPropertyBlock(null);
-            return;
-        }
-        var tint = paint.GetColor(ItemTint);
-        dimItem.SetColor(ItemTint, new Color(tint.r * dim, tint.g * dim, tint.b * dim, tint.a));
-        model.SetPropertyBlock(dimItem);
     }
     void ApplyGalleryFilter()
     {
@@ -257,18 +251,29 @@ public sealed partial class HangarHub
         var t = new List<int>();
         var blue = GalleryLampMatrix.RouteBlue;
         int count = 0;
+        for (int i = 0; i < exhibits.Length; i++)
+        {
+            bool match = Matches(exhibits[i]);
+            caseLeds.matches[i] = match;
+            shelfSlot[i] = match ? count : -1;
+            if (match)
+                slotExhibit[count++] = i;
+            var rig = platforms[i].transform.parent;
+            rig.gameObject.SetActive(match);
+            if (match)
+                rig.position = Spot(Shelf(i) + Vector2.up * PlatformLift(i), 0);
+        }
+        shownItems = count;
+        for (int slot = 0; slot < exhibits.Length; slot++)
+            LightCase(slot, slot < count);
+        hoverIndex = -1;
+        cardPanel.gameObject.SetActive(false);
         for (int column = 0; column < GalleryShelf.Columns; column++)
         {
             float highest = FilterDesk.y;
-            for (int i = column; i < exhibits.Length; i += GalleryShelf.Columns)
+            for (int slot = column; slot < count; slot += GalleryShelf.Columns)
             {
-                bool match = Matches(exhibits[i]);
-                caseLeds.matches[i] = match;
-                LightCase(i, match);
-                if (!match)
-                    continue;
-                count++;
-                var at = Case(i);
+                var at = Case(slot);
                 if (band == 0 && galleryAvailability == 0)
                     continue;
                 highest = at.y;
@@ -296,10 +301,11 @@ public sealed partial class HangarHub
     {
         int col = Mathf.RoundToInt((p.x - center.x - FirstX) / ColumnStep);
         int row = Mathf.RoundToInt((p.y - center.y - FirstY) / RowStep);
-        int i = row * GalleryShelf.Columns + col;
-        if (operating || col < 0 || col >= GalleryShelf.Columns || i < 0 || i >= loadedItems ||
-           Vector2.Distance(p, Spot(Case(i), 0)) > 1.05f)
-            i = -1;
+        int slot = row * GalleryShelf.Columns + col;
+        int i = -1;
+        if (!operating && col >= 0 && col < GalleryShelf.Columns && slot >= 0 && slot < shownItems && slotExhibit[slot] < loadedItems &&
+           Vector2.Distance(p, Spot(Case(slot), 0)) <= 1.05f)
+            i = slotExhibit[slot];
         if (i == hoverIndex)
             return;
         hoverIndex = i;
@@ -316,7 +322,7 @@ public sealed partial class HangarHub
         cardText.text = known ? e.description : "???";
         cardSource.text = known ? DecisionOverlay.Category(e.category).ToUpperInvariant() : achievement != null ? achievement.Requirement :
             trial != null ? trial.Requirement : "Buy from the outfitter for " + MetaProgress.Price(ItemPool.RarityOf(e.key)) + " coins.";
-        readouts.Aim(cardPanel, Spot(Case(i) + Vector2.up * 1.03f, 0));
+        readouts.Aim(cardPanel, Spot(Shelf(i) + Vector2.up * 1.03f, 0));
         readouts.Reveal(cardPanel);
     }
     void BuildDirectory()
