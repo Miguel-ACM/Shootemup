@@ -12,6 +12,8 @@ using UnityEngine;
 //     across its whole width, then fall in at alternating speeds; sweeping unaimed
 //     arrow fans from both wings keep the player moving between them.
 //   Bomb Run: rows of mirrored 360 bombs under a two-arm lace.
+// Tones: the bombs are always dark. The dominant tone alternates card by card:
+// bright crossfire, dark lace, bright fans over dark curtains, bright lace over dark bombs.
 public sealed partial class FieldsBomberBoss
 {
     protected override void Attack()
@@ -42,12 +44,14 @@ public sealed partial class FieldsBomberBoss
         }
     }
 
+    // Bright aimed wingtip arrows; dark bombs and tracer.
     IEnumerator WingtipCrossfire()
     {
         yield return Charge(Hull, WeaponPort(0), .5f);
         // The triple streams run for 3.5 s (was 7), so the card does not drag.
         yield return Every(3.5f, .1f, n =>
         {
+            UseTone(HostileTone.Bright);
             for (int side = 0; side < 2; side++)
             {
                 var port = Muzzle(side);
@@ -61,16 +65,18 @@ public sealed partial class FieldsBomberBoss
         });
     }
 
+    // Dark lace; bright orb arcs and nose tracer rolling under it.
     IEnumerator HarvestLace()
     {
         Phrase(Every(7, 1.4f, n => OrbWave(n)));
         // Two arms per wing; the third was one animated fan too many (Miguel).
-        yield return MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(96), 2, 70, 24, 3.4f, .07f, 1);
+        yield return InTone(HostileTone.Dark, MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(96), 2, 70, 24, 3.4f, .07f, 1));
     }
 
     // Two layers of slow orbs from the nose: an arc that rolls under the lace.
     void OrbWave(int n)
     {
+        UseTone(HostileTone.Bright);
         Fire<SimpleRound>(Muzzle(4),CombatVisuals.Aim(Muzzle(4)),2.8f,.23f);
         int lanes = Dense(15);
         for (int layer = 0; layer < 2; layer++)
@@ -84,6 +90,7 @@ public sealed partial class FieldsBomberBoss
     // Mirrored bombs brake at matching distances, glint, then explode in a full ring.
     void CarpetBombs(int pairs)
     {
+        UseTone(HostileTone.Dark);
         // A nose tracer punctuates each payload release, including above the wings.
         Fire<SimpleRound>(Muzzle(4),CombatVisuals.Aim(Muzzle(4)),2.9f,.22f);
         int shards = Dense(16);
@@ -98,6 +105,7 @@ public sealed partial class FieldsBomberBoss
             }
     }
 
+    // Bright sweeping wing fans between dark falling curtains.
     IEnumerator Curtains()
     {
         for (int curtain = 0; curtain < 3; curtain++)
@@ -111,6 +119,7 @@ public sealed partial class FieldsBomberBoss
             {
                 if (n % 2 != 0)
                     return;
+                UseTone(HostileTone.Bright);
                 float sweep = Mathf.Sin(n * .42f + curtain) * 40;
                 for (int side = 0; side < 2; side++)
                 {
@@ -123,9 +132,10 @@ public sealed partial class FieldsBomberBoss
         }
     }
 
+    // Bright lace over dark bombs.
     IEnumerator BombRun()
     {
-        Phrase(MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(80), 2, 55, 24, 3.2f, .085f, -1));
+        Phrase(InTone(HostileTone.Bright, MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(80), 2, 55, 24, 3.2f, .085f, -1)));
         yield return Every(7, 1.1f, n => CarpetBombs(n % 2 == 0 ? 2 : 3));
     }
 
@@ -138,6 +148,7 @@ public sealed partial class FieldsBomberBoss
         float y = CombatRound.Border.yMax + 1.2f;
         for (int i = 0; i < lanes; i++)
         {
+            UseTone(HostileTone.Dark);
             float x = Mathf.Lerp(Camera.LeftLimit + .25f, Camera.RightLimit - .25f, i / (lanes - 1f));
             // Braking over the last .35 s covers half that time's distance: about .5 units in.
             float arrive = .5f, launch = 1.6f;
@@ -157,10 +168,11 @@ public sealed partial class FieldsBomberBoss
 
     // Hard final phase, Firestorm Sortie: a curtain above the top, a three-arm wing
     // lace and rows of 360 bombs all at once, with a second curtain halfway through.
+    // A bright lace weaves between the dark curtains and bombs.
     IEnumerator FinalSpell()
     {
         Phrase(ContrailCurtain());
-        Phrase(MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(110), 3, 70, 20, 3.6f, .07f));
+        Phrase(InTone(HostileTone.Bright, MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(110), 3, 70, 20, 3.6f, .07f)));
         yield return Every(8, 1.0f, n =>
         {
             // One exploding bomb fewer per side than before (Miguel).
@@ -169,5 +181,18 @@ public sealed partial class FieldsBomberBoss
                 Phrase(ContrailCurtain());
         });
         yield return Wait(.6f);
+    }
+
+    // Runs a shared phrase in one tone: concurrent cards change the tone between its
+    // steps, so it is set again before every step fires.
+    IEnumerator InTone(HostileTone value, IEnumerator phrase)
+    {
+        while (true)
+        {
+            UseTone(value);
+            if (!phrase.MoveNext())
+                yield break;
+            yield return phrase.Current;
+        }
     }
 }
