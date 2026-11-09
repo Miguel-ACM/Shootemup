@@ -194,6 +194,9 @@ public static class EverydayItemMaterials
             case "Grudge":
                 color = new Color(.62f, .2f, .16f);
                 return true;
+            case "BallOfYarn":
+                color = new Color(.82f, .2f, .36f);
+                return true;
             case "CursedCoin":
                 color = new Color(.5f, .9f, .42f);
                 return true;

@@ -11,6 +11,7 @@ public static partial class IndustrialMeshFactory
             case "SlingshotBand": SlingshotBandModel(b); break;
             case "InkPot": InkPotModel(b); break;
             case "Grudge": GrudgeModel(b); break;
+            case "BallOfYarn": BallOfYarnModel(b); break;
             default: return false;
         }
         return true;
