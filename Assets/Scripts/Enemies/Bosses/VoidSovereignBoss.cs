@@ -58,15 +58,15 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
     protected override void OnPhaseEntered(int phase){CancelTeleport();StartCoroutine(Interlude(phase-1));}
     protected override void Die(){foreach(var line in edgeTell)if(line!=null)line.enabled=false;base.Die();}
 
-    // Ports move with the currently visible anatomy: eyes, mantis blades, jaw lips, then star points.
+    // Ports are the living eyes of the visible anatomy: mask eyes, scythe eyes, mandible eyes, then star-point eyes.
     Vector3 Port(int index)=>body.Port(index,LocalPort(index));
     Vector3 LocalPort(int index)
     {
         Vector3 local;
         if(Form==1)local=new Vector3(index%2==0?-.32f:.32f,-.18f,-.44f);
-        else if(Form==2)local=new Vector3(index%2==0?-1.65f:1.65f,-.46f,-.22f);
-        else if(Form==3)local=new Vector3(index%2==0?-.75f:.75f,-.85f,-.32f);
-        else local=index%4==0?new Vector3(-1.65f,0,-.22f):index%4==1?new Vector3(1.65f,0,-.22f):index%4==2?new Vector3(0,1.65f,-.22f):new Vector3(0,-1.65f,-.22f);
+        else if(Form==2)local=new Vector3(index%2==0?-1.66f:1.66f,.40f,-.30f);
+        else if(Form==3)local=new Vector3(index%2==0?-1.36f:1.36f,-.96f,-.34f);
+        else local=index%4==0?new Vector3(-1.65f,0,-.30f):index%4==1?new Vector3(1.65f,0,-.30f):index%4==2?new Vector3(0,1.65f,-.30f):new Vector3(0,-1.65f,-.30f);
         return local;
     }
     IEnumerator Prime(float seconds)
