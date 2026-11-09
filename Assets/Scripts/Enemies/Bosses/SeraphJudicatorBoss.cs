@@ -109,6 +109,10 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
         int upper=Mathf.Max(1,Mathf.RoundToInt(count*.55f));
         return bank>0?upper:2*count-upper;
     }
+    // The feather banks that return from the ceiling keep their lower rows but send
+    // far fewer upward: not so many bounces along the top (Miguel).
+    static int CeilingBankCount(int count,int bank)
+        =>bank>0?Mathf.Max(1,Mathf.RoundToInt(count*.3f)):BankCount(count,bank);
     void Vault(int beat,int count,float opening,bool pearls)
     {
         if(beat%4==0)Gaze();
@@ -116,7 +120,7 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
         float breath=Mathf.Sin(beat*.18f)*18;
         for(int s=-1;s<=1;s+=2)for(int bank=-1;bank<=1;bank+=2)
         {
-            int rows=BankCount(n,bank);
+            int rows=CeilingBankCount(n,bank);
             for(int i=0;i<rows;i++)
             {
                 float u=Across(i,rows),angle=s*(bank>0?opening+breath+u*38:opening*.6f+breath*.6f+u*32);
@@ -136,7 +140,7 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
         int n=Dense(count);
         for(int s=-1;s<=1;s+=2)for(int bank=-1;bank<=1;bank+=2)
         {
-            int rows=BankCount(n,bank);
+            int rows=CeilingBankCount(n,bank);
             for(int i=0;i<rows;i++)
             {
                 float u=Across(i,rows);
