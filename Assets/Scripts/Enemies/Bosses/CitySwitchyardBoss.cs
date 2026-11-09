@@ -17,6 +17,13 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
         transform.position = Vector3.MoveTowards(transform.position, station, dt * Mathf.Clamp(distance * 2.6f, .8f, 6.6f));
     }
 
+    // Tones: Red Signal's two banks of traffic take opposite tones (the bank on the
+    // engine's next platform side in the other tone, the one phase two holds longer).
+    // Express Service's trains run lead-tone headlights and signal fans with
+    // carriages in the other tone. Phase two swaps the lead.
+    HostileTone Lead => CurrentPhase == 2 ? HostileTone.Dark : HostileTone.Bright;
+    static HostileTone Opposite(HostileTone value) => value == HostileTone.Bright ? HostileTone.Dark : HostileTone.Bright;
+
     protected override IEnumerator Cards()
     {
         int side = -1;
@@ -34,6 +41,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
                 for (int sign = -1; sign <= 1; sign += 2)
                 {
                     float hold = .42f + .10f * (cars - pair) + (phaseTwo && sign == side ? .36f : 0);
+                    UseTone(sign == side ? Opposite(Lead) : Lead);
                     for (int track = 0; track < tracks; track++)
                     {
                         var car = ScoredShot(track%3==0,Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.up, sign * turnout),
@@ -62,6 +70,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
                 // release so the central headlight still crosses the pilot's line.
                 if (express) track = CombatVisuals.Aim(Muzzle());
                 int rails = Dense(5) | 1;
+                UseTone(Lead);
                 for (int rail = 0; rail < rails; rail++)
                 {
                     var headlight = Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(track, (rail - (rails - 1) * .5f) * 17), 4.8f, .28f);
@@ -70,6 +79,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
                 for (int car = 0; car < Dense(10); car++)
                 {
                     yield return Wait(Rest(.105f));
+                    UseTone(Opposite(Lead));
                     for (int rail = 0; rail < rails; rail++)
                     {
                         var carriage = ScoredShot(car%3==0,Muzzle(), CombatVisuals.Rotate(track, (rail - (rails - 1) * .5f) * 17), 3.65f - car * .12f, .17f);
@@ -80,6 +90,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
                 }
                 // Rebounding signal fans cross the vertical tracks, forcing a planned
                 // junction crossing instead of letting the pilot park beside the engine.
+                UseTone(Lead);
                 for (int sign = -1; sign <= 1; sign += 2)
                 {
                     int signals = Dense(phaseThree ? 15 : phaseTwo ? 13 : 11);
