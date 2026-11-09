@@ -13,6 +13,14 @@ using UnityEngine;
 //   Sugar Rush: a two-arm mirrored lace folds open and shut.
 //   Candy Worms: wiggling streams in antiphase from both hatches.
 //   Gumdrop Barrage: steady volleys of three gumdrops popping at the player.
+// Tones (Miguel, 9 November 2026), the dominant tone flipping card to card:
+//   Taffy Pull: bright taffy ribbons under a dark canopy.
+//   Pinball Parlour: dark sprinkles, bright gumdrops and a bright canopy.
+//   The phase-one hatch sprays alternate bright and dark rows.
+//   Sugar Rush: a dark lace over bright taffy pulls.
+//   Candy Worms: bright worms with dark aimed bonbons.
+//   Gumdrop Barrage: dark gumdrops.
+//   Sugar Crash: a bright lace over dark worms; bright gumdrops alternate with them.
 public sealed partial class CandyRegentBoss
 {
     protected override void Attack()
@@ -33,29 +41,42 @@ public sealed partial class CandyRegentBoss
                 {
                     TaffyPull(n % 2 == 0 ? 1 : -1);
                     if (n % 2 == 1)
-                        Canopy();
+                        Canopy(HostileTone.Dark);
                 });
                 yield return Wait(.7f);
                 yield return Every(6, .8f, n =>
                 {
                     Sprinkles();
                     if (n % 3 == 2)
-                        Gumdrops(3);
+                        Gumdrops(3, HostileTone.Bright);
                     else if (n % 3 == 0)
-                        Canopy();
+                        Canopy(HostileTone.Bright);
                 });
                 yield return Wait(.7f);
             }
             else
             {
                 Phrase(Every(5,1.4f,n=>TaffyPull(n%2==0?1:-1)));
-                yield return MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(64), 2, 66, 22, 3.4f, .07f);
+                yield return Toned(HostileTone.Dark, MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(64), 2, 66, 22, 3.4f, .07f));
                 yield return Wait(.7f);
-                yield return CandyWorms(56);
+                yield return CandyWorms(56, HostileTone.Bright);
                 yield return Wait(.7f);
-                yield return Every(6, 1.0f, n => Gumdrops(3));
+                yield return Every(6, 1.0f, n => Gumdrops(3, HostileTone.Dark));
                 yield return Wait(.7f);
             }
+        }
+    }
+
+    // Runs a shared helper phrase in one tone, re-applied before every step because
+    // concurrent phrases share the tone field.
+    IEnumerator Toned(HostileTone shade, IEnumerator phrase)
+    {
+        while (true)
+        {
+            UseTone(shade);
+            if (!phrase.MoveNext())
+                yield break;
+            yield return phrase.Current;
         }
     }
 
@@ -67,6 +88,7 @@ public sealed partial class CandyRegentBoss
         if (!Clear)
             return;
         int beads = Dense(phaseTwo ? 16 : 13);
+        UseTone(HostileTone.Bright);
         for (int hatch = 0; hatch < 2; hatch++)
         {
             var port = Muzzle(hatch);
@@ -83,9 +105,10 @@ public sealed partial class CandyRegentBoss
 
     // Candy canopy: arrows thrown sideways and upward from both hatches that ricochet
     // between the walls and the ceiling, so the top of the arena is never a safe spot.
-    void Canopy()
+    void Canopy(HostileTone shade)
     {
         int count = Dense(7);
+        UseTone(shade);
         for (int i = 0; i < count; i++)
             for (int mirror = -1; mirror <= 1; mirror += 2)
                 ScoredShot(i%3==0,Muzzle(mirror < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.right * mirror, mirror * (-15 + i * 9)), 3.4f).Bounce(3);
@@ -97,6 +120,7 @@ public sealed partial class CandyRegentBoss
         if (!Clear)
             return;
         int count = Dense(phaseTwo ? 13 : 10);
+        UseTone(HostileTone.Dark);
         for (int i = 0; i < count; i++)
         {
             float angle = 12 + i * 88f / Mathf.Max(1, count - 1);
@@ -106,12 +130,13 @@ public sealed partial class CandyRegentBoss
     }
 
     // Gumdrops brake hard, then pop into a narrow fast fan of arrows at the player.
-    void Gumdrops(int drops)
+    void Gumdrops(int drops, HostileTone shade)
     {
         if (!Clear)
             return;
         int shards = Dense(phaseTwo ? 9 : 7);
         var aim = Aim;
+        UseTone(shade);
         for (int i = 0; i < drops; i++)
             Fire<SimpleRound>(Muzzle(i % 2), CombatVisuals.Rotate(aim, (i - (drops - 1) * .5f) * 34), 3.2f, .4f)
                 .Ramp(.15f, .7f)
@@ -119,13 +144,16 @@ public sealed partial class CandyRegentBoss
     }
 
     // Wiggling streams in antiphase from both hatches, following the regent's path.
-    IEnumerator CandyWorms(int length)
+    // The aimed bonbons take the tone opposite the worms.
+    IEnumerator CandyWorms(int length, HostileTone shade)
     {
         length = Dense(length);
         for (int i = 0; i < length; i++)
         {
+            UseTone(shade == HostileTone.Bright ? HostileTone.Dark : HostileTone.Bright);
             if(i%12==0&&Clear)
                 Fire<SimpleRound>(Muzzle(i%2),CombatVisuals.Aim(Muzzle(i%2)),2.9f,.23f);
+            UseTone(shade);
             for (int hatch = 0; hatch < 2; hatch++)
                 Fire<SimpleRound>(Muzzle(hatch), CombatVisuals.Rotate(Vector2.down, (hatch == 0 ? -1 : 1) * 18), 2.9f, .19f)
                     .Sway(hatch == 0 ? .45f : -.45f, .8f);
@@ -137,15 +165,15 @@ public sealed partial class CandyRegentBoss
     // candy worms; then gumdrop volleys alternate with the worms on a steady beat.
     IEnumerator FinalSpell()
     {
-        Phrase(CandyWorms(60));
-        yield return MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(84), 3, 70, 20, 3.5f, .07f);
+        Phrase(CandyWorms(60, HostileTone.Dark));
+        yield return Toned(HostileTone.Bright, MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(84), 3, 70, 20, 3.5f, .07f));
         yield return Wait(.6f);
         yield return Every(6, 1.2f, n =>
         {
             if (n % 2 == 0)
-                Gumdrops(3);
+                Gumdrops(3, HostileTone.Bright);
             else
-                Phrase(CandyWorms(12));
+                Phrase(CandyWorms(12, HostileTone.Dark));
         });
         yield return Wait(.6f);
     }

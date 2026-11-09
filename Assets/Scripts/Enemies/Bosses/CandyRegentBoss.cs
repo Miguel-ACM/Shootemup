@@ -109,6 +109,7 @@ public sealed partial class CandyRegentBoss : DistrictBoss
     {
         // Hatch expansion is the warning. Each hatch then sprays rows of wiggling
         // bonbons out and down, mirrored, sweeping a little further every row.
+        // Rows alternate bright and dark.
         for (float t = 0; t < .6f; t += Time.deltaTime)
         {
             foreach (var door in doors)
@@ -119,6 +120,7 @@ public sealed partial class CandyRegentBoss : DistrictBoss
         int bonbons = Dense(7);
         for (int row = 0; row < 4; row++)
         {
+            UseTone(row % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
             foreach (int side in new[] { -1, 1 })
             {
                 var p = Hull.TransformPoint(new Vector3(side * .82f, -.35f, -.2f));
