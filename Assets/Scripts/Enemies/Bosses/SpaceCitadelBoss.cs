@@ -33,7 +33,6 @@ public sealed partial class SpaceCitadelBoss : ArmoredHullBoss
         CoreVisual = core.transform;
         PartHitFeedback.Bind(transform, false);
         firingCue.Register(CoreVisual, Vector3.back * .25f);
-        BuildOrbitTell();
     }
 
     protected override void PressureAttack() { }
@@ -41,16 +40,7 @@ public sealed partial class SpaceCitadelBoss : ArmoredHullBoss
     {
         station = new Vector3(centralLaser != null && centralLaser.IsAttachedTo(Hull) ? transform.position.x : Mathf.Sin(motionAge * .43f) * .82f,
             Camera.UpLimit - 3 + Mathf.Sin(motionAge * .31f) * .32f, 1);
-        if (drawingIn)
-        {
-            // Carry the orbit through the dodge lanes and return to the upper firing station.
-            float t = Mathf.Clamp01((motionAge - orbitStarted) / Rest(phaseThree ? 10 : 8));
-            float dive = Mathf.Sin(t * Mathf.PI);
-            station.y = Mathf.Lerp(station.y, CombatRound.Border.yMin + 4.1f, dive * dive);
-        }
         transform.position = Vector3.MoveTowards(transform.position, station, dt * 3.2f);
-        if (drawingIn)
-            UpdateOrbitTell();
     }
 
     protected override void OnPhaseTwo()

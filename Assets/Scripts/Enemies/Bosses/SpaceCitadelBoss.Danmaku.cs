@@ -18,16 +18,12 @@ using System.Collections;
 //   Binary Collapse: two supernova rings at once, counter-rotating offsets, with the
 //     laser between them.
 // Phase three (Hard)
-//   Big Crunch: the core breathes, swallowing accretion rings from its orbit and
-//     flinging spiral arms back out, both always running and trading dominance.
+//   Big Crunch: the core breathes, swallowing fronts that close in from the circle
+//     beyond the screen and flinging spiral arms back out, trading dominance.
 public sealed partial class SpaceCitadelBoss
 {
     Vector3 Core => CoreVisual != null ? CoreVisual.position : transform.position;
     MaterialPropertyBlock wellInk;
-    bool drawingIn;
-    readonly LineRenderer[] orbitArcs=new LineRenderer[28];
-    float orbitStarted;
-    const float OrbitStep=2.6f;
     protected override void Attack()
     {
         if (CoreVisual != null)
@@ -60,23 +56,10 @@ public sealed partial class SpaceCitadelBoss
     Transform CoreBody => CoreVisual != null ? CoreVisual : transform;
 
     // Accretion brightens the disk itself; the singularity stays dark.
-    void OpenWell(bool inward)
-    {
-        if (inward)
-        {
-            drawingIn=true;
-            orbitStarted = motionAge;
-            UpdateOrbitTell();
-        }
-        SetAccretion(1);
-    }
+    void OpenWell() => SetAccretion(1);
 
-    void CloseWell()
-    {
-        drawingIn=false;
-        foreach(var arc in orbitArcs)if(arc!=null)arc.enabled=false;
-        SetAccretion(0);
-    }
+    void CloseWell() => SetAccretion(0);
+
     void SetAccretion(float strength)
     {
         if (Hull == null) return;
@@ -85,89 +68,6 @@ public sealed partial class SpaceCitadelBoss
         renderer.GetPropertyBlock(wellInk);
         wellInk.SetFloat("_Feeding", strength);
         renderer.SetPropertyBlock(wellInk);
-    }
-
-    void BuildOrbitTell()
-    {
-        var tint=LevelProjectilePalette.Accent(LevelId.Space);tint.a=.19f;
-        for(int i=0;i<orbitArcs.Length;i++)
-        {
-            var arc=CombatVisuals.Line(transform,tint,.018f);arc.useWorldSpace=true;
-            arc.sortingLayerName="Enemy";arc.enabled=false;orbitArcs[i]=arc;
-        }
-    }
-
-    void UpdateOrbitTell()
-    {
-        var center=Core;Rect r=CombatRound.Border;
-        // Each monotone quadrant clips to the flight rectangle. Never draw the
-        // offscreen part of a large circle across the HUD margins.
-        for(int ring=0;ring<7;ring++)for(int quadrant=0;quadrant<4;quadrant++)
-        {
-            var line=orbitArcs[ring*4+quadrant];int count=0;
-            float radius=OrbitStep*(ring+1);
-            for(int i=0;i<=40;i++)
-            {
-                var p=center+(Vector3)CombatVisuals.Rotate(Vector2.up,quadrant*90+i*2.25f)*radius;
-                if(!r.Contains(p))continue;
-                count++;
-            }
-            line.positionCount=count;line.enabled=count>1;int index=0;
-            for(int i=0;i<=40;i++)
-            {
-                var p=center+(Vector3)CombatVisuals.Rotate(Vector2.up,quadrant*90+i*2.25f)*radius;
-                if(r.Contains(p)){p.z=.1f;line.SetPosition(index++,p);}
-            }
-        }
-    }
-
-    bool SafeAccretionPoint(Vector3 point,float inset)
-    {
-        Rect r=CombatRound.Border;
-        return point.x>r.xMin+inset&&point.x<r.xMax-inset&&point.y>r.yMin+inset&&point.y<r.yMax-inset&&
-            (player==null||Vector2.Distance(point,player.position)>1.6f+inset);
-    }
-
-    void AccretionRing(int n, int density)
-    {
-        var center=Core;
-        for(int ring=0;ring<7;ring++)
-        {
-            float radius=OrbitStep*(ring+1);
-            int count=Mathf.Max(8,Mathf.RoundToInt(density*2*radius/3.6f));
-            for(int i=0;i<count;i++)
-            {
-                float angle=(i+.5f)*360f/count+n*7*(ring%2==0?1:-1);
-                // All fronts share one slowly turning radial escape seam.
-                if(Mathf.Abs(Mathf.DeltaAngle(angle,180+24*Mathf.Sin(n*.22f)))<8)continue;
-                var radial=CombatVisuals.Rotate(Vector2.up,angle);
-                var point=center+(Vector3)radial*radius;
-                if(!SafeAccretionPoint(point,.25f))continue;
-                var heading=CombatVisuals.Rotate(-radial,ring%2==0?23:-23);
-                ScoredShot(ring%3==0,point,heading,1.05f+radius*.055f)
-                    .Absorb(CoreBody,5.2f,.6f).LivesFor(14);
-            }
-        }
-    }
-
-    void AccretionStars(int n, int pairs)
-    {
-        var center = Core;
-        for(int ring=1;ring<7;ring+=2)
-        {
-            float radius=OrbitStep*(ring+1);
-            int count=Mathf.Max(8,Mathf.RoundToInt(pairs*2*radius/3.6f));
-            for (int i=0;i<count;i++)
-            {
-                float angle=(i+.5f)*360f/count-n*11;
-                if(Mathf.Abs(Mathf.DeltaAngle(angle,180+24*Mathf.Sin(n*.22f)))<15)continue;
-                var radial=CombatVisuals.Rotate(Vector2.up,angle);
-                var point=center+(Vector3)radial*radius;
-                if(!SafeAccretionPoint(point,.7f))continue;
-                Fire<GiantOrb>(point,CombatVisuals.Rotate(-radial,ring%4==1?-18:18),.75f,.62f)
-                    .Absorb(CoreBody,3.4f,1).LivesFor(14);
-            }
-        }
     }
 
     // Mirrored spiral arms flung from the core; they accelerate out and straighten.
@@ -199,7 +99,7 @@ public sealed partial class SpaceCitadelBoss
     IEnumerator Accretion()
     {
         // Brighten the disk without the inward dive or the nested orbit tells.
-        OpenWell(inward: false);
+        OpenWell();
         yield return Wait(.6f);
         yield return Every(5.5f, .38f, n =>
         {
@@ -311,7 +211,7 @@ public sealed partial class SpaceCitadelBoss
 
     IEnumerator Expulsion()
     {
-        OpenWell(inward: false);
+        OpenWell();
         yield return Charge(Hull, WeaponPort(), .5f);
         yield return Every(8, Rest(.09f), n =>
         {
@@ -337,27 +237,30 @@ public sealed partial class SpaceCitadelBoss
     }
 
     // Hard final phase, Big Crunch: absorbing and expelling at once. Every 2.5 s the
-    // dominant side flips: full accretion rings with a thin pair of arms, then full
-    // spiral arms with sparse rings, dark stars travelling both ways.
+    // dominant side flips: full inward fronts closing from the circle beyond the screen
+    // with a thin pair of arms, then full spiral arms with sparse fronts, dark stars
+    // travelling both ways. Like phase one, nothing is born on inner circles.
     IEnumerator FinalSpell()
     {
-        OpenWell(inward: true);
+        OpenWell();
         yield return Wait(.5f);
         yield return Every(10, .1f, n =>
         {
             bool inward = n / 25 % 2 == 0;
             if (n % (inward ? 3 : 6) == 0)
-                AccretionRing(n / 3, Dense(inward ? 30 : 20));
+                Phrase(OuterFront<NeedleRound>(n / 3, Dense(inward ? 44 : 30), 2.6f, .19f, n / 3 % 2 == 0 ? 23 : -23, 8, 5.2f, .6f));
             if (!inward || n % 3 == 0)
                 Expel(n, inward ? 4 : 6, 55);
             if (!inward && n % 15 == 5)
                 ExpelRing(n, Dense(30));
             if (n % 8 == 4)
             {
-                AccretionStars(n, Dense(inward ? 6 : 4));
+                Phrase(OuterFront<GiantOrb>(n, Dense(inward ? 10 : 7), 1.5f, .62f, n % 16 == 4 ? -18 : 18, 15, 3.4f, 1));
                 ExpelStars(n, Dense(inward ? 6 : 9));
             }
         });
+        while (emerging > 0)
+            yield return null;
         CloseWell();
         yield return Wait(.6f);
     }
