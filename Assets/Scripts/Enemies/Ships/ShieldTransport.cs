@@ -13,11 +13,13 @@ public sealed class ShieldTransport : DistrictEnemy
     // Destructible plasma, then a gust thrown sideways that halts and turns downward.
     protected override void Attack()
     {
+        // Even counts on every difficulty, so no round sits on the aim line: Fan adds
+        // one plasma orb on Hard (three becomes four); Normal fires four, Easy two.
         if (volley % 2 == 0)
-            Fan<PlasmaOrb>(3, 37, 2.2f, .48f);
+            Fan<PlasmaOrb>(Difficulty.Hard ? 3 : Difficulty.Easy ? 2 : 4, Difficulty.Hard ? 37 : Difficulty.Easy ? 37 : 74f / 3, 2.2f, .48f);
         else
         {
-            int count = Dense(4);
+            int count = Mathf.Max(2, (Dense(4) + 1) / 2 * 2);
             for (int i = 0; i < count; i++)
             {
                 int side = i % 2 == 0 ? -1 : 1;
