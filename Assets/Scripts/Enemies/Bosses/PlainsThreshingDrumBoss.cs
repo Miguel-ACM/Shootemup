@@ -10,14 +10,26 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
     protected override Vector2[] Outline => shape;
     protected override void Configure() { health = 1320; hullScale = 1.04f; attackInterval = 1.1f; }
 
-    protected override void MoveBoss(float dt) => transform.position = Vector3.MoveTowards(transform.position, station, dt * 3.5f);
+    // Faster traverses than the original 3.5 (Miguel).
+    const float DrumSpeed = 5.2f;
+    // Windrow column spacing on every difficulty: too narrow to slip between.
+    const float ColumnStep = .27f;
+    protected override void MoveBoss(float dt) => transform.position = Vector3.MoveTowards(transform.position, station, dt * DrumSpeed);
+
+    // The traverse carries the outer drum right to the visible edge, so no column
+    // of open air is left along either side of the windrows.
+    float Reach(int side)
+    {
+        float drum = Mathf.Abs(Muzzle(2).x - Muzzle(1).x) * .5f;
+        return side * Mathf.Max(.5f, CombatRound.Border.xMax - .12f - drum);
+    }
 
     protected override IEnumerator Cards()
     {
         int side = -1;
         while (true)
         {
-            station.x = Lane(side);
+            station.x = Reach(side);
             station.y = Camera.UpLimit - 2.25f;
             while (Vector2.Distance(transform.position, station) > .08f) yield return null;
             yield return PrimePair(.52f);
@@ -25,8 +37,9 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
             // teeth in a row release on the same beat, with a broad unplanted furrow.
             float start = station.x;
             side = -side;
-            station.x = Lane(side);
-            int marks = Mathf.Max(5, Dense(phaseThree ? 30 : phaseTwo ? 26 : 22));
+            station.x = Reach(side);
+            // Density changes the depth of the rows, never the spacing between columns.
+            int marks = Mathf.Max(5, Mathf.CeilToInt(Mathf.Abs(station.x - start) / ColumnStep) + 1);
             int rows = Dense(phaseThree ? 12 : 10);
             const float PlantStep = .24f, FirstPlant = .35f;
             float lastPlant = FirstPlant + (rows - 1) * PlantStep;
@@ -36,7 +49,7 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
                 float fraction = mark / (marks - 1f);
                 float x = Mathf.Lerp(start, station.x, fraction);
                 while (side * (x - transform.position.x) > .09f) yield return null;
-                float travelLeft = Mathf.Abs(station.x - transform.position.x) / (3.5f * MovementScale * LevelRun.EnemyTempoScale);
+                float travelLeft = Mathf.Abs(station.x - transform.position.x) / (DrumSpeed * MovementScale * LevelRun.EnemyTempoScale);
                 // The motion program runs in scaled game time independently of the card clock.
                 for (int drum = 1; drum <= 2; drum++)
                 {
@@ -53,11 +66,11 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
                         float plant = FirstPlant + row * PlantStep;
                         ScoredShot(row%3==0,port, Vector2.down, 3.2f, .18f)
                             .Pause(plant, travelLeft + lastPlant + .30f - plant,
-                                CombatRound.Turn.Down, speed: 1.05f);
+                                CombatRound.Turn.Down, speed: 1.3f);
                     }
                 }
             }
-            yield return Wait(Rest(.38f));
+            yield return Wait(Rest(.26f));
             // Winnower: pods from the middle chute open sideways over the advancing rows.
             yield return Charge(Hull, WeaponPort(), .44f);
             int pods = Dense(phaseThree ? 7 : phaseTwo ? 6 : 5);
@@ -72,7 +85,7 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
                         .Pause(.62f, .24f, CombatRound.Turn.Rotate,
                             mirror * (pod % 2 == 0 ? -55 : 55), .85f)
                         .SplitAt(.92f, Dense(17), 10, 2.5f, .16f);
-                yield return Wait(Rest(.26f));
+                yield return Wait(Rest(.2f));
             }
             if (phaseTwo)
             {
@@ -85,13 +98,14 @@ public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
                     for (int tine = 0; tine < Dense(5); tine++)
                     {
                         float offset = (tine - (Dense(5) - 1) * .5f) * 9;
-                        ScoredShot(tooth%3==0,Muzzle(1), CombatVisuals.Rotate(Vector2.right, spread + offset), 3.3f).Bounce(1, false);
-                        ScoredShot(tooth%3==0,Muzzle(2), CombatVisuals.Rotate(Vector2.left, -spread - offset), 3.3f).Bounce(1, false);
+                        // Three side-wall bounces each, rather than one (Miguel).
+                        ScoredShot(tooth%3==0,Muzzle(1), CombatVisuals.Rotate(Vector2.right, spread + offset), 3.3f).Bounce(3, false);
+                        ScoredShot(tooth%3==0,Muzzle(2), CombatVisuals.Rotate(Vector2.left, -spread - offset), 3.3f).Bounce(3, false);
                     }
-                    yield return Wait(Rest(.11f));
+                    yield return Wait(Rest(.09f));
                 }
             }
-            yield return Wait(Rest(.50f));
+            yield return Wait(Rest(.34f));
         }
     }
 }
