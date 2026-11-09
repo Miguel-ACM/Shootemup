@@ -19,16 +19,19 @@ public sealed class MeadowTank : GroundVehicle
             StartCoroutine(Burst());
     }
 
+    // An aimed burst of circular rounds, each loosely scattered around the committed
+    // aim: five on Hard, fewer on Normal and Easy.
     IEnumerator Burst()
     {
         bursting = true;
         Vector2 aim = CombatVisuals.Aim(Weapon.position);
-        for (int i = 0; i < (2); i++)
+        int rounds = Dense(5);
+        for (int i = 0; i < rounds; i++)
         {
             var muzzle = Weapon.TransformPoint(new Vector3(0, -.96f, -.22f));
             if (player != null && Vector2.Distance(player.position, muzzle) > 2.2f)
-                Fire<NeedleRound>(muzzle, CombatVisuals.Rotate(aim, i == 0 ? -3 : 3), 4.9f, .18f);
-            yield return new WaitForSeconds((.16f) / LevelRun.EnemyTempoScale);
+                Fire<SimpleRound>(muzzle, CombatVisuals.Rotate(aim, Random.Range(-7f, 7f)), 4.6f * Random.Range(.94f, 1.06f), .2f);
+            yield return new WaitForSeconds(.12f / LevelRun.EnemyTempoScale);
         }
         bursting = false;
     }
