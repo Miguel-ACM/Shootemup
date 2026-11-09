@@ -175,6 +175,12 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Tones are hand-picked per enemy and per boss attack, never random. Some enemies fire one tone, some the other, some both, so a tone identifies an attack family. Bosses vary the dominant tone between cards and use the other tone for accents. Child rounds inherit their parent's tone; beams stay bright and are never absorbed. `EnemyTones` holds defaults; attacks switch with `UseTone`.
 - The Polarity Engine's poles are the two tones of the current district: rounds of the ship's tone are absorbed harmlessly and each refills a little energy.
 
+## Burn and poison (9 November 2026)
+
+- Burn is fast and fierce: ten quiet ticks a second from stacking heat (damage per second equals the heat, capped at 12). It holds while hits keep feeding it and burns out within about a second after. Flames flicker taller with more heat.
+- Poison is slow and creeping: one dose a second for six seconds after the last hit, growing from half to 1.8 times its potency while it stays applied. A poisoned hull takes 15% more damage from every source, burn included, so the two coatings combine. It seeps rising bubbles and falling drips and swells with each dose.
+- Damage ticks never play the hit spark, hit sound or hull flash.
+
 ## Items and decisions
 
 - Preserve Miguel's original item names and identities. Another arm and Twerp are deliberately named and are fine. Make an item's behavior recognizable through its effects and sound; do not rename or redesign original items to explain their mechanics.
