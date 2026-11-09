@@ -32,7 +32,7 @@ public static partial class IndustrialMeshFactory
         if (kind == "CarbonPaper") { CarbonPaperModel(b); return expansionItems[kind] = b.Finish(kind + " equipment"); }
         if (kind == "Thunderhead") { ThunderheadModel(b); return expansionItems[kind] = b.Finish(kind + " equipment"); }
         if (kind == "DemolitionPlunger") { DemolitionPlungerModel(b); return expansionItems[kind] = b.Finish(kind + " equipment"); }
-        if (TrySecondaryItem(b, kind))
+        if (TrySecondaryItem(b, kind) || TryFillerItem(b, kind))
             return expansionItems[kind] = b.Finish(kind + " equipment");
         if (DistinctEquipment(b, kind))
             return expansionItems[kind] = b.Finish(kind + " equipment");

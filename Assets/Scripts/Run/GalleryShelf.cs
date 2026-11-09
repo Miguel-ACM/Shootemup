@@ -19,7 +19,7 @@ public sealed class GalleryShelf : ScriptableObject
     public static ResourceRequest Request(int row)
     {
         if (requests == null)
-            requests = new ResourceRequest[(ItemCatalog.All.Count + Columns - 1) / Columns];
+            requests = new ResourceRequest[(ItemCatalog.Exhibits.Count + Columns - 1) / Columns];
         if (requests[row] == null)
         {
             requests[row] = Resources.LoadAsync<GalleryShelf>("Gallery/Shelf" + row);
@@ -29,7 +29,7 @@ public sealed class GalleryShelf : ScriptableObject
     }
     public static IEnumerator Warm()
     {
-        for (int first = 0; first < ItemCatalog.All.Count; first += Columns)
+        for (int first = 0; first < ItemCatalog.Exhibits.Count; first += Columns)
         {
             var request = Request(first / Columns);
             yield return request;

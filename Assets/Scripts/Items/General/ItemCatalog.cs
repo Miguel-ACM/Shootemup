@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ItemRarity { Common, Rare, Epic, Legendary, Pact, Special }
+// Filler: repeatable small stat items offered only once every other item is gone.
+public enum ItemRarity { Common, Rare, Epic, Legendary, Pact, Special, Filler }
 public enum ItemId
 {
-    Popcorn, PocketFan, RubberBand, HotSauce, BulletDroneItem, FocusTime, BarrelRoll, BadGlasses, ScatterCannonItem, BallBearing, ReserveCell, SalvageConverter, FocusingLens, ReboundCoil, RabbitsFoot, BlankBullet, EarlyRise, TwerpItem, Magnet, AK45Item, SparePlating, Icicle, WindUpCannonItem, DecoyProjector, StaticSweater, MagnifyingGlass, ChewingGum, LaserDroneItem, HealthPacks, EnergyCore, BouncingBall, Poison, GasolineLeak, QualityGlasses, ShrinkerJuice, Overdrive, GravityWell, MirrorBurst, BeamEmitterItem, FlameProjectorItem, BackdraftItem, DrillItem, ThrowableShield, FillableFlask, DepthChargeItem, SwarmRackItem, DiscThrowerItem, BurstLauncherItem, NeedleCannonItem, Lighter, ReturnModule, DroneLink, RecoveryCoil, Capacitor, ProximityFuse, SplitterCore, Caffeine, ProteinSupplement, AMoonItem, BabyYouItem, ElectricityItem, DoubleHull, SquadWhistle, BulletTime, DoubleTrouble, EmpPulse, RailDriverItem, ChainReactor, SpareBattery, AnotherArm, AngryMoonItem, EnergyShield, SpellCard, Kusabimaru, Telekinesis, ThreeMoonsItem, PolarityEngine, WarpCore, BloodPrice, CursedCoin, DevilImp, ExplodingShield, GlassHull, Hunger, LargeHealthKit, MirrorOath, SteelWashers, ClockworkSpring, RollerBearings, Thermos, HeatSink, LuckyPenny, PaperclipBox, FireflyJar, SaltShaker, PocketMortar, WindUpTeeth, RibbonSpool, SewingKit, RocketBouquet, Redline, NailBomb, CanOpener, FirecrackerBelt, CarbonPaper, Thunderhead, DemolitionPlunger
+    Popcorn, PocketFan, RubberBand, HotSauce, BulletDroneItem, FocusTime, BarrelRoll, BadGlasses, ScatterCannonItem, BallBearing, ReserveCell, SalvageConverter, FocusingLens, ReboundCoil, RabbitsFoot, BlankBullet, EarlyRise, TwerpItem, Magnet, AK45Item, SparePlating, Icicle, WindUpCannonItem, DecoyProjector, StaticSweater, MagnifyingGlass, ChewingGum, LaserDroneItem, HealthPacks, EnergyCore, BouncingBall, Poison, GasolineLeak, QualityGlasses, ShrinkerJuice, Overdrive, GravityWell, MirrorBurst, BeamEmitterItem, FlameProjectorItem, BackdraftItem, DrillItem, ThrowableShield, FillableFlask, DepthChargeItem, SwarmRackItem, DiscThrowerItem, BurstLauncherItem, NeedleCannonItem, Lighter, ReturnModule, DroneLink, RecoveryCoil, Capacitor, ProximityFuse, SplitterCore, Caffeine, ProteinSupplement, AMoonItem, BabyYouItem, ElectricityItem, DoubleHull, SquadWhistle, BulletTime, DoubleTrouble, EmpPulse, RailDriverItem, ChainReactor, SpareBattery, AnotherArm, AngryMoonItem, EnergyShield, SpellCard, Kusabimaru, Telekinesis, ThreeMoonsItem, PolarityEngine, WarpCore, BloodPrice, CursedCoin, DevilImp, ExplodingShield, GlassHull, Hunger, LargeHealthKit, MirrorOath, SteelWashers, ClockworkSpring, RollerBearings, Thermos, HeatSink, LuckyPenny, PaperclipBox, FireflyJar, SaltShaker, PocketMortar, WindUpTeeth, RibbonSpool, SewingKit, RocketBouquet, Redline, NailBomb, CanOpener, FirecrackerBelt, CarbonPaper, Thunderhead, DemolitionPlunger, Whetstone, OilCan, TailFin, Horseshoe
 }
 public sealed class ItemDefinition
 {
@@ -13,8 +14,9 @@ public sealed class ItemDefinition
     public readonly Type ComponentType;
     public readonly ItemRarity Rarity;
     public string Key => Id.ToString();
-    public string RarityKey => Rarity == ItemRarity.Special ? "common" : Rarity.ToString().ToLowerInvariant();
+    public string RarityKey => Rarity >= ItemRarity.Special ? "common" : Rarity.ToString().ToLowerInvariant();
     public bool InRewardPool => Rarity <= ItemRarity.Legendary;
+    public bool IsFiller => Rarity == ItemRarity.Filler;
     public ItemDefinition(ItemId id, Type type, ItemRarity rarity) { Id = id; ComponentType = type; Rarity = rarity; }
     public AItem Attach(GameObject target) => (AItem)target.AddComponent(ComponentType);
 }
@@ -128,9 +130,16 @@ public static class ItemCatalog
         new ItemDefinition(ItemId.CarbonPaper, typeof(CarbonPaper), ItemRarity.Epic),
         new ItemDefinition(ItemId.Thunderhead, typeof(Thunderhead), ItemRarity.Epic),
         new ItemDefinition(ItemId.DemolitionPlunger, typeof(DemolitionPlunger), ItemRarity.Rare),
+        new ItemDefinition(ItemId.Whetstone, typeof(Whetstone), ItemRarity.Filler),
+        new ItemDefinition(ItemId.OilCan, typeof(OilCan), ItemRarity.Filler),
+        new ItemDefinition(ItemId.TailFin, typeof(TailFin), ItemRarity.Filler),
+        new ItemDefinition(ItemId.Horseshoe, typeof(Horseshoe), ItemRarity.Filler),
     };
     static readonly Dictionary<string, ItemDefinition> byKey = new Dictionary<string, ItemDefinition>(StringComparer.Ordinal);
     public static IReadOnlyList<ItemDefinition> All => definitions;
+    // The gallery and its baked shelves show every item except the repeatable fillers.
+    static ItemDefinition[] exhibits;
+    public static IReadOnlyList<ItemDefinition> Exhibits => exhibits ??= Array.FindAll(definitions, item => !item.IsFiller);
     static ItemCatalog()
     {
         foreach (var item in definitions)

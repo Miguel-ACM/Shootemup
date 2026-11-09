@@ -15,7 +15,7 @@ public static class BakeHangarGallery
         const string folder = "Assets/Resources/Gallery";
         Directory.CreateDirectory(folder);
         AssetDatabase.Refresh();
-        var definitions = ItemCatalog.All.OrderBy(e => e.Key, StringComparer.Ordinal).ToArray();
+        var definitions = ItemCatalog.Exhibits.OrderBy(e => e.Key, StringComparer.Ordinal).ToArray();
         for (int first = 0; first < definitions.Length; first += GalleryShelf.Columns)
         {
             var path = folder + "/Shelf" + (first / GalleryShelf.Columns) + ".asset";

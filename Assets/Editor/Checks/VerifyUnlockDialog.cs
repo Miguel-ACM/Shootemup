@@ -29,7 +29,7 @@ public static class VerifyUnlockDialog
         try
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            for (int row = 0; row < (ItemCatalog.All.Count + GalleryShelf.Columns - 1) / GalleryShelf.Columns; row++)
+            for (int row = 0; row < (ItemCatalog.Exhibits.Count + GalleryShelf.Columns - 1) / GalleryShelf.Columns; row++)
                 Resources.Load<GalleryShelf>("Gallery/Shelf" + row).Register();
             var queue = (List<ItemUnlockNotice>)MetaProgress.PendingUnlocks;
             queue.AddRange(ItemUnlocks.All.Select(r => new ItemUnlockNotice {

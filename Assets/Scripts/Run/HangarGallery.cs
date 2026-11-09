@@ -36,7 +36,7 @@ public sealed partial class HangarHub
 
     void BuildGallery()
     {
-        exhibits = new GalleryShelf.Exhibit[ItemCatalog.All.Count];
+        exhibits = new GalleryShelf.Exhibit[ItemCatalog.Exhibits.Count];
         pieces = new MeshRenderer[exhibits.Length];
         platforms = new MeshRenderer[exhibits.Length];
         caseVertices = new int[exhibits.Length + 1];

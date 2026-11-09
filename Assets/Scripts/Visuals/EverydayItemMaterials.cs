@@ -32,6 +32,18 @@ public static class EverydayItemMaterials
             case "SewingKit":
                 color = new Color(.67f, .42f, .72f);
                 return true;
+            case "Whetstone":
+                color = new Color(.47f, .62f, .66f);
+                return true;
+            case "OilCan":
+                color = new Color(.86f, .31f, .24f);
+                return true;
+            case "TailFin":
+                color = new Color(.96f, .79f, .27f);
+                return true;
+            case "Horseshoe":
+                color = new Color(.32f, .74f, .44f);
+                return true;
             case "WindUpTeeth":
                 color = new Color(.93f, .48f, .51f);
                 return true;

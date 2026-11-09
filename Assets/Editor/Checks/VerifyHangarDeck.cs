@@ -698,7 +698,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         T Field<T>(string name) => (T)typeof(HangarHub).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(hub);
         while (!Field<bool>("galleryReady"))
             yield return null;
-        Check(Field<int>("loadedItems") == ItemCatalog.All.Count, "every catalog entry installed");
+        Check(Field<int>("loadedItems") == ItemCatalog.Exhibits.Count, "every catalog entry installed");
         string[] roomSigns = { "FLEET", "ARMORY", "SIMULATOR", "RECORDER", "FLIGHT CONTROL" };
         void CheckInteriors(int entered)
         {
