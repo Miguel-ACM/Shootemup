@@ -96,7 +96,9 @@ public sealed class HullAfflictionVfx
         return family[nextState];
     }
 
-    public void Tick()
+    // Burn flickers: quick, tall licks of flame that grow with the heat. Poison seeps:
+    // slow jade bubbles rising and drops falling away, with a swell on every dose.
+    public void Tick(float intensity)
     {
         if (enemy == null || enemy.health <= 0)
         {
@@ -106,20 +108,61 @@ public sealed class HullAfflictionVfx
         var particles = poison ? bubbles : flames;
         if (particles == null || Time.deltaTime <= 0 || Time.time < next)
             return;
-        next = Time.time + .08f;
         float radius = Mathf.Clamp(enemy.size * .65f, .2f, .85f);
-        for (int i = 0; i < 3; i++)
+        if (poison)
+        {
+            next = Time.time + .16f;
+            for (int i = 0; i < 2; i++)
+            {
+                bool drip = i == 1;
+                var offset = Random.insideUnitCircle * radius;
+                var e = new ParticleSystem.EmitParams();
+                e.position = enemy.transform.position + new Vector3(offset.x, drip ? -Mathf.Abs(offset.y) : offset.y, -2);
+                var toxic = PlayerShotPalette.Poison;
+                toxic.a = .8f;
+                e.startColor = toxic;
+                e.startSize3D = drip ? new Vector3(.07f, .13f, .07f) : Vector3.one * Random.Range(.08f, .15f);
+                e.velocity = new Vector3(Random.Range(-.08f, .08f), drip ? -.55f : .25f, 0);
+                e.startLifetime = drip ? .55f : .8f;
+                particles.Emit(e, 1);
+            }
+            return;
+        }
+        next = Time.time + .05f;
+        int licks = 1 + Mathf.RoundToInt(Mathf.Clamp01(intensity) * 3);
+        float tall = Mathf.Lerp(.7f, 1.35f, Mathf.Clamp01(intensity));
+        for (int i = 0; i < licks; i++)
         {
             var offset = Random.insideUnitCircle * radius;
             var e = new ParticleSystem.EmitParams();
             e.position = enemy.transform.position + new Vector3(offset.x, offset.y, -2);
-            var toxic = PlayerShotPalette.Poison;
-            toxic.a = .8f;
-            e.startColor = poison ? toxic : Color.Lerp(new Color(.85f, .08f, .02f), new Color(1, .55f, .08f), Random.value);
-            e.startSize3D = poison ? Vector3.one * Random.Range(.08f, .15f) : new Vector3(.08f, .23f, .08f);
-            e.velocity = new Vector3(Random.Range(-.15f, .15f), poison ? .35f : .9f, 0);
-            e.startLifetime = poison ? .65f : .38f;
+            e.startColor = Color.Lerp(new Color(.85f, .08f, .02f), new Color(1, .62f, .1f), Random.value);
+            e.startSize3D = new Vector3(.07f, .22f * tall, .07f);
+            e.velocity = new Vector3(Random.Range(-.2f, .2f), 1.3f * tall, 0);
+            e.startLifetime = .24f;
             particles.Emit(e, 1);
+        }
+    }
+
+    // A poison dose: a ring of bubbles swelling out of the hull, larger as the dose grows.
+    public void Pulse(float strength)
+    {
+        if (!poison || bubbles == null || enemy == null)
+            return;
+        float radius = Mathf.Clamp(enemy.size * .5f, .2f, .7f);
+        int count = 6 + Mathf.RoundToInt(Mathf.Clamp01(strength) * 6);
+        var toxic = PlayerShotPalette.Poison;
+        for (int i = 0; i < count; i++)
+        {
+            float a = i * Mathf.PI * 2 / count;
+            var radial = new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0);
+            var e = new ParticleSystem.EmitParams();
+            e.position = enemy.transform.position + radial * radius + Vector3.back * 2;
+            e.startColor = Color.Lerp(toxic, Color.white, .15f);
+            e.startSize3D = Vector3.one * Mathf.Lerp(.1f, .2f, strength);
+            e.velocity = radial * Mathf.Lerp(.6f, 1.2f, strength);
+            e.startLifetime = .45f;
+            bubbles.Emit(e, 1);
         }
     }
 

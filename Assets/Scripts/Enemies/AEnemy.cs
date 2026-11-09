@@ -55,6 +55,8 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
     [EnemyTunable("Base health", 1, 50000)] public float health = 20f;
     public virtual bool CanBeTargeted => health > 0;
     public virtual bool CanReceiveDamage => CanBeTargeted && !dying;
+    // Set by CombatHit.Affliction around a burn or poison tick: no impact, sound or flash.
+    [System.NonSerialized] public bool QuietDamage;
     public virtual DamageResult ReceiveDamage(float amount)
     {
         if (!CanReceiveDamage || amount <= 0 || !float.IsFinite(amount))
@@ -253,12 +255,13 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
     {
         if (dying || health <= 0)
             return;
-        if (!impactProvided)
+        if (!impactProvided && !QuietDamage)
             HitAt(transform.position);
         impactProvided = false;
         health = health - damage * GameRules.enemyDamageReceived;
-        blinkTimeout = Time.time + blinkSeconds;
-        if (localFeedback == null && !isBlinking)
+        if (!QuietDamage)
+            blinkTimeout = Time.time + blinkSeconds;
+        if (localFeedback == null && !isBlinking && !QuietDamage)
         {
             isBlinking = true;
             StartCoroutine("Blink");

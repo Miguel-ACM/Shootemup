@@ -116,6 +116,8 @@ public sealed class CombatUpgrades : MonoBehaviour
     {
         if (enemy == null || !enemy.CanReceiveDamage)
             return 0;
+        // A poisoned hull is weakened against every hit, so poison sets up burn and guns.
+        damage *= PoisonedHull.Weakness(enemy);
         if (companion)
             damage *= 1 + Count(UpgradeKind.Drone) * .2f + Count(UpgradeKind.Squad) * .5f;
         if (Count(UpgradeKind.Focus) > 0 && generation == 0)
