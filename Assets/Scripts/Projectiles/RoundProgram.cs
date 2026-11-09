@@ -36,6 +36,14 @@ public static class RoundProgram
         return shot;
     }
 
+    // Visual only: the round never touches the pilot (snow-throwing sprays).
+    public static T Harmless<T>(this T shot) where T : CombatRound
+    {
+        if (shot != null)
+            shot.MakeHarmless();
+        return shot;
+    }
+
     // Shrink away at a fixed age, wherever the round happens to be.
     public static T FadeAt<T>(this T shot, float at) where T : CombatRound
     {

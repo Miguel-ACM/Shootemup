@@ -121,8 +121,9 @@ public sealed class BurstShell : CombatRound
         {
             float lane = i - (flakes - 1) * .5f;
             // The upward throw is the animation: fast, short-lived and gone off the top.
-            var spray = Launch<SimpleRound>(transform.position, CombatVisuals.Rotate(Vector2.up, lane * 6), 9 + (i % 3), .16f);
-            spray.FadeAt(.45f);
+            // It cannot hurt the pilot; only the flakes that fall back can.
+            var spray = Launch<SimpleRound>(transform.position, CombatVisuals.Rotate(Vector2.up, lane * 6), 9 + (i % 3), .16f)
+                .Harmless().FadeAt(.45f);
             float x = Mathf.Clamp(transform.position.x + lane * .55f, Camera.LeftLimit + .3f, Camera.RightLimit - .3f);
             // Flakes are born above the visible top edge and drift in, never popping into view.
             var flake = Launch<SimpleRound>(new Vector3(x, Border.yMax + .5f), Vector2.down, 1.4f + (i % 3) * .25f, .19f);

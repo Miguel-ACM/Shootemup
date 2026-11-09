@@ -412,6 +412,9 @@ public abstract class CombatRound : AEnemyBullet
     Vector3 baseScale;
     Vector2 travel;
     public bool Paused => pauseAt >= 0 && age >= pauseAt && age < pauseAt + pauseHold;
+    // A purely visual round, such as the spray thrown up to make snow: no contact at all.
+    // Launch re-enables the collider for the next use of the pooled round.
+    internal void MakeHarmless() => collision.enabled = false;
     public bool RunningWall => wallSide >= 0;
 
     void ResetProgram()
