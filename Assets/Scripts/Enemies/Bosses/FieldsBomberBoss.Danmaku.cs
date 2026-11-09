@@ -70,7 +70,7 @@ public sealed partial class FieldsBomberBoss
     {
         Phrase(Every(7, 1.4f, n => OrbWave(n)));
         // Two arms per wing; the third was one animated fan too many (Miguel).
-        yield return InTone(HostileTone.Dark, MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(96), 2, 70, 24, 3.4f, .07f, 1));
+        yield return Toned(HostileTone.Dark, MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(96), 2, 70, 24, 3.4f, .07f, 1));
     }
 
     // Two layers of slow orbs from the nose: an arc that rolls under the lace.
@@ -135,7 +135,7 @@ public sealed partial class FieldsBomberBoss
     // Bright lace over dark bombs.
     IEnumerator BombRun()
     {
-        Phrase(InTone(HostileTone.Bright, MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(80), 2, 55, 24, 3.2f, .085f, -1)));
+        Phrase(Toned(HostileTone.Bright, MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(80), 2, 55, 24, 3.2f, .085f, -1)));
         yield return Every(7, 1.1f, n => CarpetBombs(n % 2 == 0 ? 2 : 3));
     }
 
@@ -172,7 +172,7 @@ public sealed partial class FieldsBomberBoss
     IEnumerator FinalSpell()
     {
         Phrase(ContrailCurtain());
-        Phrase(InTone(HostileTone.Bright, MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(110), 3, 70, 20, 3.6f, .07f)));
+        Phrase(Toned(HostileTone.Bright, MirrorLace(Hull, WeaponPort(0), WeaponPort(1), Dense(110), 3, 70, 20, 3.6f, .07f)));
         yield return Every(8, 1.0f, n =>
         {
             // One exploding bomb fewer per side than before (Miguel).
@@ -183,16 +183,4 @@ public sealed partial class FieldsBomberBoss
         yield return Wait(.6f);
     }
 
-    // Runs a shared phrase in one tone: concurrent cards change the tone between its
-    // steps, so it is set again before every step fires.
-    IEnumerator InTone(HostileTone value, IEnumerator phrase)
-    {
-        while (true)
-        {
-            UseTone(value);
-            if (!phrase.MoveNext())
-                yield break;
-            yield return phrase.Current;
-        }
-    }
 }

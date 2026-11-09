@@ -67,18 +67,6 @@ public sealed partial class CandyRegentBoss
         }
     }
 
-    // Runs a shared helper phrase in one tone, re-applied before every step because
-    // concurrent phrases share the tone field.
-    IEnumerator Toned(HostileTone shade, IEnumerator phrase)
-    {
-        while (true)
-        {
-            UseTone(shade);
-            if (!phrase.MoveNext())
-                yield break;
-            yield return phrase.Current;
-        }
-    }
 
     bool Clear => player == null || Vector2.Distance(player.position, transform.position) > 2.5f;
 

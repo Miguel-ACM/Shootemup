@@ -80,18 +80,6 @@ public sealed partial class HellCrabBoss
         }
     }
 
-    // Runs a shared helper phrase in one tone, re-applied before every step because
-    // concurrent phrases share the tone field.
-    IEnumerator Toned(HostileTone shade, IEnumerator phrase)
-    {
-        while (true)
-        {
-            UseTone(shade);
-            if (!phrase.MoveNext())
-                yield break;
-            yield return phrase.Current;
-        }
-    }
 
     // Brimstone canopy: arrows thrown up from the mouth that rebound off the ceiling.
     // Always dark.

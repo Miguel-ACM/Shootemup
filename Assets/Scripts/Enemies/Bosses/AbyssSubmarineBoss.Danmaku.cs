@@ -62,18 +62,6 @@ public sealed partial class AbyssSubmarineBoss
         }
     }
 
-    // Runs a shared helper phrase in one tone, re-applied before every step because
-    // concurrent phrases share the tone field.
-    IEnumerator Toned(HostileTone shade, IEnumerator phrase)
-    {
-        while (true)
-        {
-            UseTone(shade);
-            if (!phrase.MoveNext())
-                yield break;
-            yield return phrase.Current;
-        }
-    }
 
     // Big slow torpedoes that wind up to full speed along their aim.
     void Torpedoes()

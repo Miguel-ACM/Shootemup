@@ -262,6 +262,19 @@ public abstract class DistrictBoss : DistrictEnemy
         return true;
     }
 
+    // Keeps a multi-step phrase (MirrorLace, Chevrons...) in one tone. Phrases run as
+    // concurrent coroutines, so the tone is applied again before each of its steps.
+    protected IEnumerator Toned(HostileTone shade, IEnumerator phrase)
+    {
+        while (true)
+        {
+            UseTone(shade);
+            if (!phrase.MoveNext())
+                yield break;
+            yield return phrase.Current;
+        }
+    }
+
     // Repeats a volley at a fixed cadence for the length of a card.
     protected IEnumerator Every(float seconds, float interval, Action<int> volley)
     {
