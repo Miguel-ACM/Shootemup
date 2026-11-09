@@ -3,8 +3,11 @@ using System.Collections;
 
 // The black hole draws circular fronts across the whole arena into its moving core.
 // Phase one (central reactor open)
-//   Accretion: arrows appear around the disk and spiral in until the core swallows
-//     them. Dark stars (giant orbs) curl in from the same orbit on alternate beats.
+//   Accretion: every front is born on one circle beyond the visible screen and closes
+//     in on the core, which swallows it; each round appears at the edge just as the
+//     circle reaches it. Dark stars (giant orbs) close in from the same circle on
+//     alternate beats. No nested inner circles, and the black hole keeps its upper
+//     station as in phase two (Miguel).
 //   Supernova: the core throws rings of arrows outward; each ring stops, holds, then
 //     collapses back through the core and bursts out the other side. The centre
 //     laser cuts the middle at the end.
@@ -195,19 +198,89 @@ public sealed partial class SpaceCitadelBoss
 
     IEnumerator Accretion()
     {
-        OpenWell(inward: true);
+        // Brighten the disk without the inward dive or the nested orbit tells.
+        OpenWell(inward: false);
         yield return Wait(.6f);
-        yield return Every(8, .38f, n =>
+        yield return Every(5.5f, .38f, n =>
         {
-            AccretionRing(n, Dense(30));
+            Phrase(OuterFront<NeedleRound>(n, Dense(44), 2.6f, .19f, n % 2 == 0 ? 23 : -23, 8, 5.2f, .6f));
             if (n % 2 == 1)
-                AccretionStars(n, Dense(6));
-            // The core answers the inward fronts, so camping below their birth
-            // line is not a permanent refuge. These rings cross the returning arcs.
-            if(n%3==2)ExpelRing(n,Dense(32));
+                Phrase(OuterFront<GiantOrb>(n, Dense(10), 1.5f, .62f, n % 4 == 1 ? -18 : 18, 15, 3.4f, 1));
+            // A comet down the pilot's line keeps a still pilot from waiting out the fronts.
+            if (n % 3 == 2)
+                Fire<SimpleRound>(Core, CombatVisuals.Aim(Core), 2.7f, .24f).LivesFor(10);
         });
-        yield return Wait(1.2f);
+        // Let the last fronts close in before the disk dims.
+        while (emerging > 0)
+            yield return null;
+        yield return Wait(.6f);
         CloseWell();
+    }
+
+    int emerging;
+    // One circular front centered on the core, beginning just outside the screen corner
+    // farthest from it. Each round is released on the edge at the moment its point of
+    // the shrinking circle would arrive there, so the whole front stays circular.
+    IEnumerator OuterFront<T>(int n, int count, float velocity, float radius, float tilt, float seam, float pull, float reach) where T : CombatRound
+    {
+        emerging++;
+        Vector3 center = Core;
+        Rect r = CombatRound.Border;
+        const float Margin = .45f;
+        Rect outside = Rect.MinMaxRect(r.xMin - Margin, r.yMin - Margin, r.xMax + Margin, r.yMax + Margin);
+        float circle = 0;
+        foreach (var corner in new[] { new Vector2(outside.xMin, outside.yMin), new Vector2(outside.xMin, outside.yMax),
+            new Vector2(outside.xMax, outside.yMin), new Vector2(outside.xMax, outside.yMax) })
+            circle = Mathf.Max(circle, Vector2.Distance(corner, center));
+        float world = velocity / WorldSpeed(1);
+        var front = new System.Collections.Generic.List<(float delay, Vector3 point, Vector2 heading)>(count);
+        for (int i = 0; i < count; i++)
+        {
+            float angle = (i + .5f) * 360f / count + n * 7 * (n % 2 == 0 ? 1 : -1);
+            // All fronts share one slowly turning radial escape seam.
+            if (Mathf.Abs(Mathf.DeltaAngle(angle, 180 + 24 * Mathf.Sin(n * .22f))) < seam)
+                continue;
+            var radial = CombatVisuals.Rotate(Vector2.up, angle);
+            var heading = CombatVisuals.Rotate(-radial, tilt);
+            Vector2 start = (Vector2)center + radial * circle;
+            if (!Entry(start, heading * world, outside, out float delay))
+                continue;
+            var point = start + heading * world * delay;
+            front.Add((delay, new Vector3(point.x, point.y, center.z), heading));
+        }
+        front.Sort((a, b) => a.delay.CompareTo(b.delay));
+        float clock = 0;
+        for (int k = 0; k < front.Count;)
+        {
+            if (!Holding)
+                clock += Time.deltaTime;
+            for (; k < front.Count && front[k].delay <= clock; k++)
+                Fire<T>(front[k].point, front[k].heading, velocity, radius).Absorb(CoreBody, pull, reach).LivesFor(14);
+            yield return null;
+        }
+        emerging = Mathf.Max(0, emerging - 1);
+    }
+
+    // When a straight path from outside first crosses into the rectangle.
+    static bool Entry(Vector2 start, Vector2 velocity, Rect box, out float time)
+    {
+        float enter = 0, exit = float.MaxValue;
+        time = 0;
+        for (int axis = 0; axis < 2; axis++)
+        {
+            float p = start[axis], v = velocity[axis], lo = axis == 0 ? box.xMin : box.yMin, hi = axis == 0 ? box.xMax : box.yMax;
+            if (Mathf.Abs(v) < 1e-5f)
+            {
+                if (p < lo || p > hi)
+                    return false;
+                continue;
+            }
+            float a = (lo - p) / v, b = (hi - p) / v;
+            enter = Mathf.Max(enter, Mathf.Min(a, b));
+            exit = Mathf.Min(exit, Mathf.Max(a, b));
+        }
+        time = enter;
+        return enter <= exit;
     }
 
     // Rings thrown out that stop, hold, then fall back through the core and burst out beyond it.

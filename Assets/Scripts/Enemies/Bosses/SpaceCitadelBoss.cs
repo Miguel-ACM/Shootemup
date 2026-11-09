@@ -55,6 +55,8 @@ public sealed partial class SpaceCitadelBoss : ArmoredHullBoss
 
     protected override void OnPhaseTwo()
     {
+        // The phase break stops every front still closing in.
+        emerging = 0;
         CloseWell();
         volley = 0;
         nextAttack = age + 1.2f;
