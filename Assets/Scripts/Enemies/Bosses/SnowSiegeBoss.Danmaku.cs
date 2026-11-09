@@ -7,7 +7,9 @@ using UnityEngine;
 //   Frozen Petals: mirrored arrow fans fly out, stop dead and glint, then re-aim at
 //     the player, crawl and accelerate.
 //   Icicle Comb: the comb lines the whole top edge, a column on each screen edge,
-//     and rains arrows straight down in a woven lattice.
+//     and rains arrows straight down in a woven lattice, with loosely aimed rounds
+//     from the mouth between the rain beats.
+// Every round thrown out of the hull's sides is an arrow (Miguel).
 // Phase two (snow)
 //   Whiteout: mirrored gusts thrown sideways halt and turn down and inward, with
 //     frozen petals cutting across them and snow shells bursting overhead.
@@ -68,7 +70,7 @@ public sealed partial class SnowSiegeBoss
             for (int i = 0; i < count; i++)
             {
                 float lane = i - (count - 1) * .5f;
-                ScoredShot(i%3==count/2%3,port, CombatVisuals.Rotate(Vector2.down, mirror * (35 + sign * 6 + lane * spread * .5f)), 4.4f - Mathf.Abs(lane) * .06f)
+                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.down, mirror * (35 + sign * 6 + lane * spread * .5f)), 4.4f - Mathf.Abs(lane) * .06f, .19f)
                     .Pause(.7f, .7f + Mathf.Abs(lane) * .03f, CombatRound.Turn.Aim, mirror * lane * 3.5f, .22f)
                     .Ramp(4.5f, 1.4f, 1.45f);
             }
@@ -99,6 +101,15 @@ public sealed partial class SnowSiegeBoss
                 if(k==0||k==5)
                     Fire<SimpleRound>(Mouth,CombatVisuals.Aim(Mouth),1.3f,.23f)
                         .Pause(.35f,.45f,CombatRound.Turn.Aim,0,2.2f);
+                else if (k % 2 == 1)
+                {
+                    // Semi-aimed: a loose spray around the pilot between the rain beats.
+                    int loose = Dense(3);
+                    Vector2 aim = CombatVisuals.Aim(Mouth);
+                    for (int j = 0; j < loose; j++)
+                        Fire<SimpleRound>(Mouth, CombatVisuals.Rotate(aim, (j - (loose - 1) * .5f) * 11 + Random.Range(-9f, 9f)),
+                            2.7f * Random.Range(.92f, 1.08f), .21f);
+                }
                 for (int i = 0; i < combCount; i++)
                 {
                     if (i % 2 != k % 2 || !Difficulty.Hard && i % 3 == 2 || Difficulty.Easy && i % 3 == 1)
@@ -146,7 +157,7 @@ public sealed partial class SnowSiegeBoss
             for (int side = -1; side <= 1; side += 2)
             {
                 var port = Hull.TransformPoint(new Vector3(side * .9f, -.3f, -.25f));
-                ScoredShot(g%3==0,port, CombatVisuals.Rotate(Vector2.right * side, -side * lift), 3.0f + (g % 3) * .3f)
+                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.right * side, -side * lift), 3.0f + (g % 3) * .3f, .19f)
                     .Pause(.6f, .35f, CombatRound.Turn.Rotate, -side * (100 + (g % 3) * 10), .8f);
             }
             yield return Wait(Rest(Difficulty.Normal ? .16f : .11f));
