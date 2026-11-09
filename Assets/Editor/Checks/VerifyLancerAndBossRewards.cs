@@ -196,6 +196,7 @@ public static class VerifyLancerAndBossRewards
         }).ToList();
         foreach (var trial in FlightTrials.All)
             notices.Add(new ItemUnlockNotice { key = trial.reward, title = trial.title, source = trial.Requirement });
+        notices.Add(new ItemUnlockNotice { key = RouteUnlocks.Key(LevelId.Void), title = "Void", area = LevelId.Void, source = RouteUnlocks.Requirement(LevelId.Hell) });
         var root = new GameObject("Receipt check", typeof(RectTransform), typeof(Canvas));
         root.GetComponent<RectTransform>().sizeDelta = new Vector2(405, 720);
         UnlockReceipt.Show(root.transform, notices, font);

@@ -75,14 +75,12 @@ public sealed class BossClearBanner : MonoBehaviour
         if (notice.Unlocks.Count == 0) return;
         float itemOffset = marks == 0 ? 25 : 0;
         UnlockReceipt.Label(content, "UNLOCKED", new Vector2(0, 29 + itemOffset), new Vector2(330, 20), 13, DockInstrument.Brass, font);
-        var keys = new List<string>();
-        foreach (var unlock in notice.Unlocks) keys.Add(unlock.key);
-        studio = ItemPortraitStudio.Create(keys, 128);
+        studio = ItemPortraitStudio.Create(UnlockReceipt.ItemKeys(notice.Unlocks), 128);
         float spacing = Mathf.Min(116, 348f / notice.Unlocks.Count);
         for (int i = 0; i < notice.Unlocks.Count; i++)
         {
             float x = (i - (notice.Unlocks.Count - 1) * .5f) * spacing;
-            UnlockReceipt.Picture(content, studio, i, new Vector2(x, -24 + itemOffset), 76);
+            UnlockReceipt.Portrait(content, studio, notice.Unlocks, i, new Vector2(x, -24 + itemOffset), 76);
             UnlockReceipt.Label(content, notice.Unlocks[i].title, new Vector2(x, -82 + itemOffset), new Vector2(spacing - 6, 40), 14, DockInstrument.Paper, font);
         }
     }

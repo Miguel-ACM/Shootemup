@@ -13,7 +13,9 @@ public sealed class UnlockReveal : MonoBehaviour
     public static bool BlocksInput => instance != null || closedFrame == Time.frameCount;
     ItemPortraitStudio studio;
     RawImage portrait;
-    Image stamp;
+    Image stamp, districtStamp;
+    // Portrait cell per queued tag; district tags have none.
+    readonly List<int> cells = new List<int>();
     TextMeshProUGUI title, category, description, source, counter, footer;
     RectTransform card;
     CanvasGroup fade;
@@ -51,11 +53,14 @@ public sealed class UnlockReveal : MonoBehaviour
         fade.blocksRaycasts = false;
         UnlockReceipt.Label(face, "UNLOCKED", new Vector2(0, 254), new Vector2(240, 30), 17, DockInstrument.Brass, font);
         counter = UnlockReceipt.Label(face, "", new Vector2(135, 254), new Vector2(56, 20), 11, DockInstrument.Muted, font);
-        var keys = new List<string>();
-        foreach (var notice in MetaProgress.PendingUnlocks) keys.Add(notice.key);
-        total = keys.Count;
+        var keys = UnlockReceipt.ItemKeys(MetaProgress.PendingUnlocks);
+        total = MetaProgress.PendingUnlocks.Count;
+        int cell = 0;
+        foreach (var notice in MetaProgress.PendingUnlocks)
+            cells.Add(RouteUnlocks.IsRoute(notice.key) ? -1 : cell++);
         studio = ItemPortraitStudio.Create(keys, 192);
         portrait = UnlockReceipt.Picture(face, studio, 0, new Vector2(0, 140), 192);
+        districtStamp = UnlockReceipt.DistrictStamp(face, MetaProgress.PendingUnlocks[0], new Vector2(0, 140), 128);
         stamp = UnlockReceipt.Stamp(face, MetaProgress.PendingUnlocks[0], new Vector2(-136, 202), 35);
         title = UnlockReceipt.Label(face, "", new Vector2(0, 13), new Vector2(330, 54), 26, DockInstrument.Paper, font);
         category = UnlockReceipt.Label(face, "", new Vector2(0, -31), new Vector2(324, 20), 13, DockInstrument.Sea, font);
@@ -71,15 +76,20 @@ public sealed class UnlockReveal : MonoBehaviour
         var notice = MetaProgress.PendingUnlocks[0];
         currentKey = notice.key;
         title.text = notice.title;
+        bool district = RouteUnlocks.IsRoute(notice.key);
         bool known = GalleryShelf.TryGet(notice.key, out var item);
-        category.text = known ? DecisionOverlay.Category(item.category).ToUpperInvariant() : "";
-        description.text = known ? item.description : "";
+        category.text = district ? "DISTRICT" : known ? DecisionOverlay.Category(item.category).ToUpperInvariant() : "";
+        description.text = district ? LevelRun.Description(notice.area) : known ? item.description : "";
         source.text = notice.Requirement;
         counter.text = (index + 1) + " / " + total;
         footer.text = DockInstrument.MenuKey();
-        portrait.uvRect = studio.Cell(index);
-        stamp.sprite = Resources.Load<Sprite>("DockArt/Stamp" + notice.area);
-        stamp.enabled = stamp.sprite != null;
+        int at = index < cells.Count ? cells[index] : -1;
+        portrait.enabled = at >= 0;
+        if (at >= 0) portrait.uvRect = studio.Cell(at);
+        stamp.sprite = districtStamp.sprite = Resources.Load<Sprite>("DockArt/Stamp" + notice.area);
+        stamp.enabled = !district && stamp.sprite != null;
+        districtStamp.enabled = district && districtStamp.sprite != null;
+        districtStamp.color = LevelRun.Accent(notice.area);
         age = 0;
         closing = false;
         shownFrame = Time.frameCount;
