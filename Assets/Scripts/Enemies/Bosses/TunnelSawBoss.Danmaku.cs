@@ -15,6 +15,10 @@ using UnityEngine;
 //   Overdrive: it ricochets faster, and every impact drives a glowing tooth into the
 //     wall. The embedded teeth keep spitting straight fans back across the arena for a
 //     few seconds, so the walls it has struck stay live while it hunts the next one.
+// Tones: Frogger's rings alternate bright and dark with their direction, starting on
+// the other tone at each new station, and each aimed tracer takes the tone its ring
+// does not. From phase two the saw's arrows are bright and its round teeth dark:
+// fast rays bright, slow and bouncing teeth, wall runners and embedded teeth dark.
 public sealed partial class TunnelSawBoss
 {
     CombatHullVisual spinner;
@@ -56,7 +60,9 @@ public sealed partial class TunnelSawBoss
         for (int i = 0; i < rays; i++)
         {
             var axis = CombatVisuals.Rotate(inward, i * step + impacts * 7);
+            UseTone(Shape(i % 3 == 0));
             ScoredShot(i%3==0,transform.position, axis, 4.8f);
+            UseTone(HostileTone.Dark);
             var tooth = Fire<SimpleRound>(transform.position, CombatVisuals.Rotate(axis, step * .5f), 1.6f, .3f);
             if (i % 2 == 0)
                 tooth.Bounce(2);
@@ -67,10 +73,14 @@ public sealed partial class TunnelSawBoss
             var aim = CombatVisuals.Aim(transform.position);
             int aimedLanes = Dense(5) | 1;
             for (int i = 0; i < aimedLanes; i++)
+            {
+                UseTone(Shape(i == aimedLanes / 2));
                 ScoredShot(i == aimedLanes / 2, transform.position, CombatVisuals.Rotate(aim, (i - (aimedLanes - 1) * .5f) * 9), 5.0f);
+            }
         }
         if (!runners)
             return;
+        UseTone(HostileTone.Dark);
         int count = Dense(6);
         for (int i = 0; i < count; i++)
         {
@@ -111,12 +121,16 @@ public sealed partial class TunnelSawBoss
         yield return Centre(Stations[nextStation++ % Stations.Length]);
         yield return Charge(Hull, Vector3.zero, .5f);
         int teeth = Dense(36);
+        bool firstBright = nextStation % 2 == 1;
         for (int ring = 0; ring < 6; ring++)
         {
+            var ringTone = (ring % 2 == 0) == firstBright ? HostileTone.Bright : HostileTone.Dark;
+            UseTone(ringTone == HostileTone.Bright ? HostileTone.Dark : HostileTone.Bright);
             if(ring%2==0)
                 Fire<SimpleRound>(transform.position,CombatVisuals.Aim(transform.position),2.8f,.23f);
             int sign = ring % 2 == 0 ? 1 : -1;
             int gap = (ring * 9) % teeth;
+            UseTone(ringTone);
             for (int i = 0; i < teeth; i++)
             {
                 if ((i - gap + teeth) % teeth < 4)
@@ -161,10 +175,15 @@ public sealed partial class TunnelSawBoss
         embeddedAt[slot] = transform.position - (Vector3)inward * Radius * .7f;
         embeddedFacing[slot] = inward;
         embeddedUntil[slot] = age + 4.2f;
+        UseTone(HostileTone.Dark);
         Fire<GiantOrb>(embeddedAt[slot], inward, 0, .6f).LivesFor(4.2f);
         int rays = Dense(16);
         for (int i = 0; i < rays; i++)
+        {
+            UseTone(Shape(i % 3 == 0));
             ScoredShot(i%3==0,transform.position, CombatVisuals.Rotate(inward, i * 360f / rays + impacts * 11), 4.4f);
+        }
+        UseTone(HostileTone.Dark);
         // Only the impact may release this aimed tooth; travel remains silent.
         Fire<SimpleRound>(transform.position,CombatVisuals.Aim(transform.position),3.0f,.23f);
     }
@@ -176,6 +195,7 @@ public sealed partial class TunnelSawBoss
             ResumeBouncing();
         yield return Every(12, Rest(.3f), n =>
         {
+            UseTone(Shape(n % 3 == 0));
             for (int slot = 0; slot < EmbeddedTeeth; slot++)
             {
                 if (age >= embeddedUntil[slot])
@@ -191,4 +211,7 @@ public sealed partial class TunnelSawBoss
         for (int slot = 0; slot < EmbeddedTeeth; slot++)
             embeddedUntil[slot] = 0;
     }
+
+    // Round teeth are dark and arrows bright.
+    static HostileTone Shape(bool circular) => circular ? HostileTone.Dark : HostileTone.Bright;
 }
