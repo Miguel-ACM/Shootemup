@@ -238,6 +238,13 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Lancer's cockpit glass is orange with warm amber highlights, including its hangar portrait. Keep the blue hull and violet laser lens.
 - The Snow miniboss's falling snow starts above the actual visible top edge, not inside the screen at the gameplay boundary. Preserve its upward muzzle spray and falling pattern.
 
+## Route unlocks (9 November 2026)
+
+- Slower campaign progression: a fresh save flies only Plains > Snow > Thunder > Space > Hell. Beating a boss on any difficulty opens its neighbour from the next run: Snow opens City together with Tunnel (so the City branch never meets two sealed doors), City opens Candyland, Thunder Desert, Space Underwater, Hell Void and Void Heaven. The simulator never opens districts.
+- Until Void opens, Hell's boss reward ends the campaign as a victory and commissions the next hull; once Void opens, the campaign continues into it.
+- Sealed routes stay in the route choice as a dark panel with a Python-drawn pixel padlock instead of the name; steering into it rattles the padlock and never charges. New districts are announced through the unlock receipt, boss-clear banner and hangar tag with their tinted district stamp.
+- Every existing save restarted on the first route (save version 4), by Miguel's choice.
+
 ## Heaven and Void expansion (4 November 2026)
 
 - Heaven is Hell's alternative after Space or Underwater. Both Hell and Heaven continue into Void; Void's mandatory boss reward precedes campaign victory. Preserve run equipment, wallet, score and seed throughout.
