@@ -26,7 +26,9 @@ public sealed class WallTurret : DistrictEnemy
         for (int i = 0; i < n; i++)
         {
             var ray = CombatVisuals.Rotate(axis, (i - (n - 1) * .5f) * 23);
+            UseTone(HostileTone.Bright);
             Fire<RicochetBolt>(port, ray, 3.8f, .22f);
+            UseTone(HostileTone.Dark);
             Fire<SimpleRound>(port, CombatVisuals.Rotate(ray, 11), 1.5f, .26f).Bounce(1);
         }
     }

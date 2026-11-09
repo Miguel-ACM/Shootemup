@@ -20,9 +20,15 @@ public sealed class RivetMantis : DistrictEnemy
         {
             var axis = CombatVisuals.Rotate(aim, (i - (count - 1) * .5f) * 25);
             if (i % 2 == 0)
+            {
+                UseTone(HostileTone.Bright);
                 Fire<RicochetBolt>(Muzzle(i), axis, 3.6f, .21f);
+            }
             else
+            {
+                UseTone(HostileTone.Dark);
                 Fire<SimpleRound>(Muzzle(i), axis, 1.7f, .27f).Bounce(1);
+            }
         }
     }
 

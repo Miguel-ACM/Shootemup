@@ -39,6 +39,15 @@ public static class EnemyTones
         { typeof(CityCommandCarrier), HostileTone.Bright },
         { typeof(TerraceGunboat), HostileTone.Dark },
         { typeof(MetroLancer), HostileTone.Dark },
+
+        // Tunnel pairs fast with slow: fast ricochets and arrows are bright, the slow
+        // bouncing rounds, mines and wall runners threaded between them are dark.
+        { typeof(WallTurret), HostileTone.Bright },
+        { typeof(MaintenanceDrone), HostileTone.Bright },
+        { typeof(ArmoredCarrier), HostileTone.Bright },
+        { typeof(RivetMantis), HostileTone.Bright },
+        { typeof(TunnelDefensePlatform), HostileTone.Bright },
+        { typeof(BaffleSpinner), HostileTone.Dark },
     };
 
     public static HostileTone Default(Type enemy) => defaults.TryGetValue(enemy, out var tone) ? tone : HostileTone.Bright;

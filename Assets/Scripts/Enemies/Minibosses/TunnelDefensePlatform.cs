@@ -21,16 +21,22 @@ public sealed class TunnelDefensePlatform : DistrictMiniboss
             for (int i = 0; i < rays; i++)
             {
                 var axis = CombatVisuals.Rotate(Vector2.down, (i + (volley % 2) * .5f) * 360f / rays);
+                UseTone(HostileTone.Bright);
                 Fire<NeedleRound>(transform.position, axis, 4.4f, .19f);
+                UseTone(HostileTone.Dark);
                 Fire<SimpleRound>(transform.position, CombatVisuals.Rotate(axis, 180f / rays), 1.6f, .28f).Bounce(2);
             }
         }
         else
         {
             int runners = Dense(8);
+            // Runners turning one way along the walls are bright, the other way dark.
             for (int i = 0; i < runners; i++)
+            {
+                UseTone(i % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
                 Fire<SimpleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, i * 360f / runners), 4.2f, .23f)
                     .RunWalls(6, i % 2 == 0 ? 1 : -1);
+            }
         }
     }
     // The bays are exposed during firing and reload; armor still accepts every weapon.

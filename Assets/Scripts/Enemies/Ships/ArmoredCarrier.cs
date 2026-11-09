@@ -21,7 +21,10 @@ public sealed class ArmoredCarrier : DistrictEnemy
     protected override void Attack()
     {
         if (volley % 2 == 0)
+        {
+            UseTone(HostileTone.Dark);
             Fan<ProximityMine>(2, 62, 2.4f, .3f);
+        }
         else
         {
             int count = Dense(5);
@@ -29,7 +32,9 @@ public sealed class ArmoredCarrier : DistrictEnemy
             for (int i = 0; i < count; i++)
             {
                 var axis = CombatVisuals.Rotate(aim, (i - (count - 1) * .5f) * 17);
+                UseTone(HostileTone.Bright);
                 Fire<NeedleRound>(Muzzle(i), axis, 4.2f, .18f);
+                UseTone(HostileTone.Dark);
                 Fire<SimpleRound>(Muzzle(i), axis, 1.6f, .27f);
             }
         }
