@@ -200,6 +200,9 @@ public static class EverydayItemMaterials
             case "PaperPlane":
                 color = new Color(.35f, .62f, .95f);
                 return true;
+            case "GlassMarbles":
+                color = new Color(.3f, .85f, .95f);
+                return true;
             case "CursedCoin":
                 color = new Color(.5f, .9f, .42f);
                 return true;

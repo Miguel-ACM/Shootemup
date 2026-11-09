@@ -43,4 +43,7 @@ public static class ShotTraits
 
     // A slung round stretches as it gathers power, up to 30% longer.
     public static float Stretch(float travelled) => Slung ? Mathf.Lerp(.9f, 1.3f, travelled / SlingshotReach) : 1;
+
+    // Glass Marbles: shot size follows the ship's current speed.
+    public static float SizeScale => MarbleGauge.Scale;
 }

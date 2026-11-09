@@ -162,7 +162,7 @@ public sealed class PlayerRound : ABullet
         Vector2 span = mode == PlayerDelivery.Needle ? new Vector2(.2f, .88f) : mode == PlayerDelivery.Shell ? Vector2.one * .44f :
             mode == PlayerDelivery.Disc ? Vector2.one * .4f : mode == PlayerDelivery.Flame ? new Vector2(.26f, .5f) : new Vector2(.23f, .43f);
         var bounds = sr.sprite.bounds.size;
-        float size = Mathf.Sqrt(GameRules.playerShootSize) * (generation > 0 ? .85f : 1);
+        float size = Mathf.Sqrt(GameRules.playerShootSize) * (generation > 0 ? .85f : 1) * ShotTraits.SizeScale;
         go.transform.localScale = new Vector3(span.x / Mathf.Max(.01f, bounds.x), span.y / Mathf.Max(.01f, bounds.y), 1) * size;
         collider.size = new Vector2(bounds.x * .65f, bounds.y * .78f);
         ProjectileSpriteTint.Friendly(go);

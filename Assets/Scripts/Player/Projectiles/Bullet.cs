@@ -15,6 +15,7 @@ public class Bullet : ABullet
     void Start()
     {
         ProjectileSpriteTint.Friendly(gameObject);
+        transform.localScale *= ShotTraits.SizeScale;
         direction.z = transform.position.z;
         rigidBody = GetComponent<Rigidbody2D>();
         wallFrom = transform.position;
