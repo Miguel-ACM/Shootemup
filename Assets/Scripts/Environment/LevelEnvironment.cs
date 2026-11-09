@@ -21,6 +21,246 @@ public sealed class LevelEnvironment : MonoBehaviour
         public string name; public float[] vertices, colors; public int[] triangles;
     }
 
+    // Reads LevelKit.json without any Unity API, so the 17 MB parse can stay off the
+    // main thread. JsonUtility on a thread-pool worker allocated from the player's
+    // native mimalloc heap alongside the main thread and corrupted it: the 9 November
+    // build crashed inside mi_page_malloc_zero on the next Mesh.SetVertices.
+    static class KitReader
+    {
+        public static Kit Parse(string json)
+        {
+            int i = 0;
+            var kit = new Kit { meshes = Array.Empty<MeshData>() };
+            Expect(json, ref i, '{');
+            while (NextMember(json, ref i, out string key))
+            {
+                if (key == "meshes")
+                    kit.meshes = ReadMeshes(json, ref i);
+                else
+                    Skip(json, ref i);
+            }
+            return kit;
+        }
+
+        static MeshData[] ReadMeshes(string json, ref int i)
+        {
+            var meshes = new List<MeshData>();
+            Expect(json, ref i, '[');
+            while (NextElement(json, ref i))
+            {
+                var mesh = new MeshData();
+                Expect(json, ref i, '{');
+                while (NextMember(json, ref i, out string key))
+                {
+                    switch (key)
+                    {
+                        case "name":
+                            mesh.name = ReadString(json, ref i);
+                            break;
+                        case "vertices":
+                            mesh.vertices = ReadFloats(json, ref i);
+                            break;
+                        case "colors":
+                            mesh.colors = ReadFloats(json, ref i);
+                            break;
+                        case "triangles":
+                            mesh.triangles = ReadInts(json, ref i);
+                            break;
+                        default:
+                            Skip(json, ref i);
+                            break;
+                    }
+                }
+                meshes.Add(mesh);
+            }
+            return meshes.ToArray();
+        }
+
+        static float[] ReadFloats(string json, ref int i)
+        {
+            var values = new List<float>(1024);
+            Expect(json, ref i, '[');
+            while (NextElement(json, ref i))
+                values.Add((float)ReadNumber(json, ref i));
+            return values.ToArray();
+        }
+
+        static int[] ReadInts(string json, ref int i)
+        {
+            var values = new List<int>(1024);
+            Expect(json, ref i, '[');
+            while (NextElement(json, ref i))
+                values.Add((int)Math.Round(ReadNumber(json, ref i)));
+            return values.ToArray();
+        }
+
+        // Inside an object: true with the next key read (and its colon consumed), false at '}'.
+        static bool NextMember(string json, ref int i, out string key)
+        {
+            key = null;
+            SkipSpace(json, ref i);
+            if (json[i] == ',')
+            {
+                i++;
+                SkipSpace(json, ref i);
+            }
+            if (json[i] == '}')
+            {
+                i++;
+                return false;
+            }
+            key = ReadString(json, ref i);
+            Expect(json, ref i, ':');
+            return true;
+        }
+
+        // Inside an array: true when another element follows, false at ']'.
+        static bool NextElement(string json, ref int i)
+        {
+            SkipSpace(json, ref i);
+            if (json[i] == ',')
+            {
+                i++;
+                SkipSpace(json, ref i);
+            }
+            if (json[i] == ']')
+            {
+                i++;
+                return false;
+            }
+            return true;
+        }
+
+        static void Expect(string json, ref int i, char c)
+        {
+            SkipSpace(json, ref i);
+            if (json[i] != c)
+                throw new FormatException("LevelKit: expected '" + c + "' at " + i);
+            i++;
+        }
+
+        static void SkipSpace(string json, ref int i)
+        {
+            while (i < json.Length && char.IsWhiteSpace(json[i]))
+                i++;
+        }
+
+        static string ReadString(string json, ref int i)
+        {
+            Expect(json, ref i, '"');
+            var text = new System.Text.StringBuilder();
+            while (json[i] != '"')
+            {
+                char c = json[i++];
+                if (c == '\\')
+                {
+                    char e = json[i++];
+                    switch (e)
+                    {
+                        case 'n': text.Append('\n'); break;
+                        case 't': text.Append('\t'); break;
+                        case 'r': text.Append('\r'); break;
+                        case 'b': text.Append('\b'); break;
+                        case 'f': text.Append('\f'); break;
+                        case 'u':
+                            text.Append((char)Convert.ToInt32(json.Substring(i, 4), 16));
+                            i += 4;
+                            break;
+                        default: text.Append(e); break;
+                    }
+                }
+                else
+                    text.Append(c);
+            }
+            i++;
+            return text.ToString();
+        }
+
+        // Decimal mantissa and exponent, no substring allocation per number.
+        static double ReadNumber(string json, ref int i)
+        {
+            SkipSpace(json, ref i);
+            bool negative = json[i] == '-';
+            if (negative || json[i] == '+')
+                i++;
+            long mantissa = 0;
+            int exponent = 0, digits = 0;
+            for (; i < json.Length && json[i] >= '0' && json[i] <= '9'; i++)
+                Digit(json[i], ref mantissa, ref exponent, ref digits, false);
+            if (i < json.Length && json[i] == '.')
+                for (i++; i < json.Length && json[i] >= '0' && json[i] <= '9'; i++)
+                    Digit(json[i], ref mantissa, ref exponent, ref digits, true);
+            if (i < json.Length && (json[i] == 'e' || json[i] == 'E'))
+            {
+                i++;
+                bool down = json[i] == '-';
+                if (down || json[i] == '+')
+                    i++;
+                int power = 0;
+                for (; i < json.Length && json[i] >= '0' && json[i] <= '9'; i++)
+                    power = power * 10 + (json[i] - '0');
+                exponent += down ? -power : power;
+            }
+            double value = exponent == 0 ? mantissa : mantissa * Math.Pow(10, exponent);
+            return negative ? -value : value;
+        }
+
+        // Keeps the first 18 significant digits; later ones only move the decimal point.
+        static void Digit(char c, ref long mantissa, ref int exponent, ref int digits, bool fraction)
+        {
+            if (digits < 18)
+            {
+                mantissa = mantissa * 10 + (c - '0');
+                if (mantissa != 0)
+                    digits++;
+                if (fraction)
+                    exponent--;
+            }
+            else if (!fraction)
+                exponent++;
+        }
+
+        // Skips any JSON value of a member this reader does not use.
+        static void Skip(string json, ref int i)
+        {
+            SkipSpace(json, ref i);
+            char c = json[i];
+            if (c == '"')
+            {
+                ReadString(json, ref i);
+                return;
+            }
+            if (c == '{' || c == '[')
+            {
+                int depth = 0;
+                bool quoted = false;
+                for (; i < json.Length; i++)
+                {
+                    char k = json[i];
+                    if (quoted)
+                    {
+                        if (k == '\\')
+                            i++;
+                        else if (k == '"')
+                            quoted = false;
+                    }
+                    else if (k == '"')
+                        quoted = true;
+                    else if (k == '{' || k == '[')
+                        depth++;
+                    else if ((k == '}' || k == ']') && --depth == 0)
+                    {
+                        i++;
+                        return;
+                    }
+                }
+                return;
+            }
+            while (i < json.Length && json[i] != ',' && json[i] != '}' && json[i] != ']')
+                i++;
+        }
+    }
+
     sealed class Atmosphere
     {
         public Transform transform; public Material material; public float parallax, speed;
@@ -304,7 +544,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     {
         if (kit != null)
             return;
-        var data = JsonUtility.FromJson<Kit>(Resources.Load<TextAsset>("LevelKit").text);
+        var data = KitReader.Parse(Resources.Load<TextAsset>("LevelKit").text);
         var loaded = new Dictionary<string, Mesh>();
         foreach (var item in data.meshes)
             loaded.Add(item.name, CreateMesh(item));
@@ -331,8 +571,9 @@ public sealed class LevelEnvironment : MonoBehaviour
             string json = ((TextAsset)request.asset).text;
             // Finish the resource request before parking a scene load at allowSceneActivation=false.
             sourceReady = true;
-            // Unity permits JsonUtility.FromJson(string) on a worker; native Mesh APIs stay on main.
-            var parsing = Task.Run(() => JsonUtility.FromJson<Kit>(json));
+            // Pure managed parse on a worker. No Unity API may run there: JsonUtility shared
+            // the native heap with the main thread and corrupted it. Mesh APIs stay on main.
+            var parsing = Task.Run(() => KitReader.Parse(json));
             while (!parsing.IsCompleted)
                 yield return null;
             var budget = Stopwatch.StartNew();
