@@ -11,6 +11,12 @@ public sealed class SnowIcebreakerBoss : ArmoredHullBoss
 
     protected override void MoveBoss(float dt) => transform.position = Vector3.MoveTowards(transform.position, station, dt * 4.1f);
 
+    // Tones: Sounding Line's floes take the lead tone with re-aimed mouth rounds in
+    // the other; Cut Channel's bow wave the other tone with lead-tone shoulder drops;
+    // Hard's Calving Front the lead tone again. Phase two swaps them.
+    HostileTone Lead => CurrentPhase == 2 ? HostileTone.Dark : HostileTone.Bright;
+    static HostileTone Opposite(HostileTone value) => value == HostileTone.Bright ? HostileTone.Dark : HostileTone.Bright;
+
     protected override IEnumerator Cards()
     {
         int side = 1;
@@ -25,11 +31,13 @@ public sealed class SnowIcebreakerBoss : ArmoredHullBoss
             int floes = Mathf.Max(2, Dense(phaseThree ? 11 : phaseTwo ? 9 : 8));
             for (int i = 0; i < floes; i++)
             {
+                UseTone(Opposite(Lead));
                 if(i%3==0)
                     Fire<SimpleRound>(Muzzle(),CombatVisuals.Aim(Muzzle()),1.2f,.24f)
                         .Pause(.4f,.45f,CombatRound.Turn.Aim,0,2.4f);
                 float heading = Mathf.Lerp(8, 52, i / (floes - 1f));
                 float stop = .38f + .10f * i;
+                UseTone(Lead);
                 for (int mirror = -1; mirror <= 1; mirror += 2)
                     Fire<SimpleRound>(Muzzle(mirror < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.up, mirror * heading), 3.7f, .37f)
                         .Pause(stop, .64f, CombatRound.Turn.Rotate, mirror * (90 - heading), .72f)
@@ -46,6 +54,7 @@ public sealed class SnowIcebreakerBoss : ArmoredHullBoss
             {
                 for (int sign = -1; sign <= 1; sign += 2)
                 {
+                    UseTone(Opposite(Lead));
                     float cant = 24 + 20 * Mathf.Sin(i * .38f);
                     for (int shard = 0; shard < shards; shard++)
                         // Outward upthrust describes a breaking bow wave. Gravity
@@ -53,6 +62,7 @@ public sealed class SnowIcebreakerBoss : ArmoredHullBoss
                         ScoredShot(i%3==0,Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.right * sign,
                             sign * (cant + (shard - (shards - 1) * .5f) * 9)), 2.9f, .18f)
                             .Ramp(.38f, .38f).Fall(new Vector2(0,-.95f));
+                    UseTone(Lead);
                     if (phaseTwo && i % 3 == 0)
                         for (int shard = 0; shard < Dense(7); shard++)
                             Fire<SimpleRound>(Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.up, sign * (24 + shard * 13)), 2.6f, .22f)
@@ -67,6 +77,7 @@ public sealed class SnowIcebreakerBoss : ArmoredHullBoss
                 yield return Charge(Hull, WeaponPort(), .42f);
                 for (int i = 0; i < floes; i++)
                 {
+                    UseTone(Lead);
                     for (int mirror = -1; mirror <= 1; mirror += 2)
                         Fire<SimpleRound>(Muzzle(mirror < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.up, mirror * (8 + i * 8)), 2.9f, .27f)
                             .Pause(.35f, .30f, CombatRound.Turn.Rotate, -mirror * 120, .85f)
