@@ -12,17 +12,30 @@ public static partial class MetaProgress
     public const int ShopSize = 3;
     // The hangar counter shows four digits.
     public const int MaxCoins = 9999;
-    // A small first pool; the rest comes from achievements, simulator blueprints or the outfitter.
+    // Fifty easy-to-read items for variety from the first run (Miguel, 9 November 2026):
+    // weapons, secondary fire, companions, actives and plain passives. Achievement rewards
+    // and simulator blueprints stay locked; the rest comes from the outfitter.
     static readonly string[] startingPool =
     {
+        // The original first pool.
         "Popcorn", "PocketFan", "HotSauce", "BulletDroneItem", "BadGlasses", "ScatterCannonItem", "Magnet", "SparePlating",
         "LaserDroneItem", "Poison", "BouncingBall", "WindUpCannonItem", "AnotherArm", "BlankBullet",
+        // Weapons and secondary fire.
+        "NeedleCannonItem", "AK45Item", "PaperclipBox", "SaltShaker", "SewingKit", "FireflyJar",
+        // Companions.
+        "TwerpItem", "BabyYouItem",
+        // Actives.
+        "BarrelRoll", "FirecrackerBelt", "NailBomb", "Overdrive", "HealthPacks", "Redline", "DecoyProjector", "FillableFlask",
+        // Plain passives.
+        "ClockworkSpring", "SteelWashers", "RollerBearings", "LuckyPenny", "ProteinSupplement", "QualityGlasses", "Lighter",
+        "GasolineLeak", "FocusingLens", "BallBearing", "RubberBand", "EarlyRise", "EnergyCore", "ReserveCell", "Capacitor",
+        "MagnifyingGlass", "SalvageConverter", "RabbitsFoot", "FocusTime", "EmpPulse",
     };
 
     [Serializable]
     sealed class SaveData
     {
-        public int version = 4;
+        public int version = 5;
         public int lastFrame;
         public RunDifficulty difficulty = RunDifficulty.Normal;
         public string pin;
@@ -219,6 +232,15 @@ public static partial class MetaProgress
             // Route locks arrive for every save (Miguel's choice): all pilots restart on the first route.
             data.version = 4;
             data.routes.Clear();
+            Save();
+        }
+        if (data.version < 5)
+        {
+            // The starting pool grew to fifty; existing saves receive the new starters too.
+            data.version = 5;
+            foreach (var key in startingPool)
+                if (!data.unlocked.Contains(key))
+                    data.unlocked.Add(key);
             Save();
         }
         // A run that never reached its end (the game was closed) still earns a fresh shop.
