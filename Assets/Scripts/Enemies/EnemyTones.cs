@@ -73,6 +73,15 @@ public static class EnemyTones
         { typeof(RibbonGlider), HostileTone.Bright },
         { typeof(TaffyDuelist), HostileTone.Bright },
         { typeof(MintSpinner), HostileTone.Dark },
+
+        // Space: aimed needles are bright; ricochets and towed comets are dark; the
+        // binary stars and eclipsing moons pair one bead of each tone.
+        { typeof(OrbitalScout), HostileTone.Bright },
+        { typeof(OrbitalMoonlet), HostileTone.Bright },
+        { typeof(EclipseSail), HostileTone.Bright },
+        { typeof(OrbitalWarden), HostileTone.Bright },
+        { typeof(OrbitalCarrier), HostileTone.Dark },
+        { typeof(CometTug), HostileTone.Dark },
     };
 
     public static HostileTone Default(Type enemy) => defaults.TryGetValue(enemy, out var tone) ? tone : HostileTone.Bright;

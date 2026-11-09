@@ -20,6 +20,8 @@ public sealed class EclipseSail : DistrictEnemy
         else
             for (int s = 0; s < 2; s++)
             {
+                // An eclipse: a bright moon and a dark moon orbiting each other.
+                UseTone(s == 0 ? HostileTone.Bright : HostileTone.Dark);
                 var moon = Fire<SimpleRound>(Muzzle(s), Vector2.down, 1.7f, .33f);
                 if (moon != null)
                     moon.Orbit(.7f, s * 180, 110, 12, 0, 0, 0, .4f);

@@ -17,6 +17,7 @@ public sealed class OrbitalMoonlet : SpaceSatellite
         var aim = Aim;
         for (int i = 0; i < 2; i++)
         {
+            UseTone(i == 0 ? HostileTone.Bright : HostileTone.Dark);
             var bead = Fire<SimpleRound>(Muzzle(), aim, 2.6f, .18f);
             if (bead != null)
                 bead.Orbit(.4f, i * 180, volley % 2 == 0 ? 220 : -220, 9, 0, 0, 0, .25f);
