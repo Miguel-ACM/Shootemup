@@ -35,8 +35,10 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
                         ScoredShot(i%3==0,Muzzle(wing), CombatVisuals.Rotate(sight, spread), 4.1f + .18f * (i % 4), .17f);
                     }
                 if(i%3==0)Fire<SimpleRound>(Muzzle(),CombatVisuals.Aim(Muzzle()),3.4f,.21f);
+                // Phase two's nose kernels angle down and off one side wall; nothing is
+                // thrown up to bounce back off the ceiling (Miguel).
                 if (phaseTwo && i % 2 == 0)
-                    Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Vector2.up, side * (24 + i * 3)), 2.6f, .25f).Bounce(1);
+                    Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Vector2.down, side * (40 + i * 3)), 2.6f, .25f).Bounce(1, false);
                 yield return Wait(Rest(.15f));
             }
             yield return Wait(Rest(.22f));
