@@ -27,15 +27,21 @@ public sealed class FieldsHeavyWing : DistrictMiniboss
         if (beat == 0)
         {
             int shards = Dense(16);
+            // Inner bombs burst dark, outer bombs bright: the two rings interleave.
             for (int i = 0; i < 2; i++)
+            {
+                UseTone(i == 0 ? HostileTone.Dark : HostileTone.Bright);
                 for (int mirror = -1; mirror <= 1; mirror += 2)
                     Fire<SimpleRound>(Hull.TransformPoint(ports[mirror < 0 ? 0 : 1]), CombatVisuals.Rotate(Vector2.down, mirror * (10 + i * 22)), 2.6f, .4f)
                         .Pause(.9f, .4f)
                         .SplitAt(1.3f, shards, 360f / shards, 2.6f, .18f);
+            }
         }
         else if (beat == 1)
             Stream(Dense(10), .09f, n =>
             {
+                // Aimed arrow streams alternate bright and dark volleys.
+                UseTone(n % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
                 foreach (var port in ports)
                 {
                     var p = Hull.TransformPoint(port);
@@ -43,8 +49,14 @@ public sealed class FieldsHeavyWing : DistrictMiniboss
                 }
             });
         else
-            foreach (var port in ports)
-                MirrorFan(Hull.TransformPoint(port), Vector2.down, Dense(Enraged ? 11 : 9), 11, 3.9f);
+        {
+            // One bay fans dark, the other bright; the bays swap every rotation.
+            for (int bay = 0; bay < ports.Length; bay++)
+            {
+                UseTone((bay + volley / 3) % 2 == 0 ? HostileTone.Dark : HostileTone.Bright);
+                MirrorFan(Hull.TransformPoint(ports[bay]), Vector2.down, Dense(Enraged ? 11 : 9), 11, 3.9f);
+            }
+        }
     }
     // The bays are exposed during firing and reload; armor still accepts every weapon.
     public override void damage(float amount)

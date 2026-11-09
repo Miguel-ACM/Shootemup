@@ -23,6 +23,8 @@ public sealed class HeavyBomber : DistrictEnemy
     {
         if (volley % 2 == 1)
         {
+            // The bombs and their flat bursts are dark; the needles between drops stay bright.
+            UseTone(HostileTone.Dark);
             int shards = Dense(5);
             for (int i = 0; i < 2; i++)
                 Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, i == 0 ? -10 : 10), 2.4f, .38f)
