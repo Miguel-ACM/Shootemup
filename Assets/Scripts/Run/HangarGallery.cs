@@ -22,7 +22,8 @@ public sealed partial class HangarHub
     int[] caseVertices;
     Color[] litFloorColors;
     List<Color> floorColors;
-    static readonly Color GalleryDeck = new Color(.075f, .11f, .13f);
+    // The same plate tone as the hangar lane and the other workshops.
+    static readonly Color GalleryDeck = new Color(.075f, .100f, .109f);
     RectTransform cardPanel;
     TextMeshProUGUI cardTitle, cardText, cardSource, categoryReadout, availabilityReadout, directoryControls;
     GalleryLampMatrix caseLeds;
@@ -54,7 +55,7 @@ public sealed partial class HangarHub
         Bar(new Vector2((GalleryWing + GalleryRight) / 2, (GalleryVestibuleTop + GalleryTop) / 2),
             new Vector2(GalleryRight - GalleryWing, GalleryTop - GalleryVestibuleTop), decking);
         // The locking seams and cable gutters continue around the corner into the display aisles.
-        var seam = new Color(.052f, .079f, .089f);
+        var seam = new Color(.043f, .060f, .069f);
         var edge = new Color(.20f, .26f, .26f);
         for (float x = GalleryLeft + 2; x < GalleryRight; x += 3)
             Bar(new Vector2(x, (GalleryBottom + GalleryVestibuleTop) / 2), new Vector2(.05f, GalleryVestibuleTop - GalleryBottom), seam);

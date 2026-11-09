@@ -21,7 +21,10 @@ public sealed partial class HangarHub
         new Color(.55f,.77f,.94f), new Color(.96f,.59f,.39f) };
     static readonly RunDifficulty[] modes = { RunDifficulty.Easy, RunDifficulty.Normal, RunDifficulty.Hard };
     static readonly string[] factors = { "0.5×", "1×", "2×" };
-    static readonly Color Metal = new Color(.19f, .28f, .30f), Deck = new Color(.07f, .13f, .15f);
+    static readonly Color Metal = new Color(.19f, .28f, .30f);
+    // The lane's own floor tones from the Tunnel level kit: two plate shades over dark seams and gutters.
+    static readonly Color Deck = new Color(.075f, .100f, .109f), DeckPlate = new Color(.087f, .112f, .120f),
+        DeckSeam = new Color(.043f, .060f, .069f), DeckGutter = new Color(.025f, .040f, .049f);
     static HangarHub current;
     readonly List<Transform> doorLights = new List<Transform>();
     readonly List<Transform> parkedShips = new List<Transform>();
@@ -297,20 +300,43 @@ public sealed partial class HangarHub
         stockScreen.gameObject.SetActive(false);
     }
 
+    // Workshop floors continue the hangar lane's plates, so every room shares its colour.
+    void RoomDeck(string title, Vector2 mid, Vector2 size, float tramline)
+    {
+        var v = new List<Vector3>();
+        var c = new List<Color>();
+        var t = new List<int>();
+        GalleryQuad(v, c, t, mid, size, DeckSeam);
+        const float pitchX = 2, pitchY = 2.5f;
+        int columns = Mathf.CeilToInt(size.x / pitchX), rows = Mathf.CeilToInt(size.y / pitchY);
+        for (int row = 0; row < rows; row++)
+            for (int col = 0; col < columns; col++)
+            {
+                // Clip the outer plates to the room instead of letting them spill past the walls.
+                float x0 = mid.x - size.x / 2 + col * pitchX + .03f, x1 = Mathf.Min(x0 + pitchX - .06f, mid.x + size.x / 2 - .03f);
+                float y0 = mid.y - size.y / 2 + row * pitchY + .04f, y1 = Mathf.Min(y0 + pitchY - .08f, mid.y + size.y / 2 - .04f);
+                if (x1 - x0 < .1f || y1 - y0 < .1f)
+                    continue;
+                GalleryQuad(v, c, t, new Vector2(x0 + x1, y0 + y1) / 2, new Vector2(x1 - x0, y1 - y0), (row + col) % 3 == 0 ? DeckPlate : Deck);
+            }
+        for (int edge = -1; edge <= 1; edge += 2)
+        {
+            GalleryQuad(v, c, t, mid + Vector2.up * edge * (size.y / 2 - .12f), new Vector2(size.x, .24f), DeckGutter);
+            GalleryQuad(v, c, t, mid + Vector2.right * edge * (size.x / 2 - .12f), new Vector2(.24f, size.y), DeckGutter);
+        }
+        // Fleet's yellow tramline joins the parking apron to the flight desk.
+        if (tramline != 0)
+            GalleryQuad(v, c, t, mid + Vector2.right * tramline * size.x * .23f, new Vector2(size.x * .46f, .07f), new Color(.42f, .40f, .32f));
+        GallerySurface(title, v, c, t, -15);
+    }
+
     void BuildRoom(int index)
     {
         Vector2 b = berths[index];
         float width = FarWall(index) - RoomThreshold + .9f;
         float side = Mathf.Sign(b.x);
         var mid = new Vector2(side * (RoomThreshold + FarWall(index)) * .5f, b.y);
-        var floor = new GameObject(signs[index] + " deck").AddComponent<SpriteRenderer>();
-        floor.transform.SetParent(FixtureParent, false);
-        floor.transform.position = Spot(mid, 80);
-        floor.sprite = Resources.Load<Sprite>(index == (int)Dock.Fleet ? "DockArt/RoomDeckFleet" : "DockArt/RoomDeck");
-        floor.flipX = side > 0;
-        floor.transform.localScale = new Vector3(width / floor.sprite.bounds.size.x, 13.8f / floor.sprite.bounds.size.y, 1);
-        floor.sortingLayerName = "Background";
-        floor.sortingOrder = -15;
+        RoomDeck(signs[index] + " deck", mid, new Vector2(width, 13.8f), index == (int)Dock.Fleet ? side : 0);
         MountReceiver(index);
         BuildControlDesk(index);
         if (index != (int)Dock.Fleet)
