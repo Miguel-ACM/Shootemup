@@ -166,10 +166,10 @@ public static class VerifyLancerAndBossRewards
                     bool eligible = difficulty != RunDifficulty.Easy;
                     Check(events[0].NoHitLevel == (eligible && hit == 0), "Full-level no-hit qualification");
                     Check(events[0].NoHitBoss == (eligible && hit != 2), "Boss-only no-hit qualification");
-                    // The first Hell clear also opens Void.
+                    // The first Hell clear also opens Heaven.
                     int expected = (!eligible || hit == 2 ? 1 : hit == 1 ? 2 : 3) + 1;
                     Check(events[0].Unlocks.Count == expected, "Exact newly earned items in centre notice");
-                    Check(events[0].Unlocks.Count(n => n.key == RouteUnlocks.Key(LevelId.Void)) == 1, "Hell opens Void");
+                    Check(events[0].Unlocks.Count(n => n.key == RouteUnlocks.Key(LevelId.Heaven)) == 1, "Hell opens Heaven");
                     Check(MetaProgress.PendingUnlocks.Count == expected, "Victory leaves hangar reveal queue intact");
                     MetaProgress.EndRun("Lost");
                     Check(MetaProgress.LastFlight.unlocks.Count == expected, "End screen keeps all awarded items");
@@ -196,7 +196,7 @@ public static class VerifyLancerAndBossRewards
         }).ToList();
         foreach (var trial in FlightTrials.All)
             notices.Add(new ItemUnlockNotice { key = trial.reward, title = trial.title, source = trial.Requirement });
-        notices.Add(new ItemUnlockNotice { key = RouteUnlocks.Key(LevelId.Void), title = "Void", area = LevelId.Void, source = RouteUnlocks.Requirement(LevelId.Hell) });
+        notices.Add(new ItemUnlockNotice { key = RouteUnlocks.Key(LevelId.Void), title = "Void", area = LevelId.Void, source = RouteUnlocks.Requirement(LevelId.Heaven) });
         var root = new GameObject("Receipt check", typeof(RectTransform), typeof(Canvas));
         root.GetComponent<RectTransform>().sizeDelta = new Vector2(405, 720);
         UnlockReceipt.Show(root.transform, notices, font);

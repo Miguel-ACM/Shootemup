@@ -34,10 +34,10 @@ public static class RouteUnlocks
                 yield return LevelId.Hell;
                 break;
             case LevelId.Hell:
-                yield return LevelId.Void;
-                break;
-            case LevelId.Void:
                 yield return LevelId.Heaven;
+                break;
+            case LevelId.Heaven:
+                yield return LevelId.Void;
                 break;
         }
     }
