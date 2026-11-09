@@ -197,6 +197,9 @@ public static class EverydayItemMaterials
             case "BallOfYarn":
                 color = new Color(.82f, .2f, .36f);
                 return true;
+            case "PaperPlane":
+                color = new Color(.35f, .62f, .95f);
+                return true;
             case "CursedCoin":
                 color = new Color(.5f, .9f, .42f);
                 return true;

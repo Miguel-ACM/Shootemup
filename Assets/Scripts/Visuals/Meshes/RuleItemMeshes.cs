@@ -12,6 +12,7 @@ public static partial class IndustrialMeshFactory
             case "InkPot": InkPotModel(b); break;
             case "Grudge": GrudgeModel(b); break;
             case "BallOfYarn": BallOfYarnModel(b); break;
+            case "PaperPlane": PaperPlaneModel(b); break;
             default: return false;
         }
         return true;
