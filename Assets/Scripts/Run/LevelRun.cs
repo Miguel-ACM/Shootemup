@@ -41,7 +41,8 @@ public static class LevelRun
             case LevelId.Space:
                 return boss ? 1 : 1.1f;
             case LevelId.Underwater:
-                return boss ? 1.15f : 1.35f;
+                // The submarine fires a little fewer rounds than before (Miguel, 9 November 2026).
+                return boss ? 1.0f : 1.35f;
             case LevelId.Hell:
                 return 1.3f;
             case LevelId.Heaven:
