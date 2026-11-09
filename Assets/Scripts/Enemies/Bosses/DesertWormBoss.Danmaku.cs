@@ -14,6 +14,12 @@ using UnityEngine;
 //     the body winds, drawing ribbons of arrows along its whole path.
 //   Dune Collapse: reactors in turn, tail to head, throw small geysers of arrows
 //     that fall back.
+// Tones (Miguel, 9 November 2026): the dominant tone flips card to card.
+//   Quicksand Field: dark mines that carry on, bright mines that lunge at the pilot.
+//   Sandblast: bright arrow streams, dark aimed jaw rounds and dark heat haze.
+//   Sidewinder: dark flank ribbons; its sown mines keep their bright lungers.
+//   Dune Collapse: bright geyser arrows with dark circular beads.
+//   Dune Sea mixes all three.
 public sealed partial class DesertWormBoss
 {
     // Sequences run tail to head: step 0 is the tail reactor, later steps climb the
@@ -73,6 +79,7 @@ public sealed partial class DesertWormBoss
                 var axis = CombatVisuals.Rotate(flank * side, (i - (mines - 1) * .5f) * 14);
                 float hold = 1.0f + i * .08f;
                 bool lunges = i % 2 == 1 || i == mines / 2;
+                UseTone(lunges ? HostileTone.Bright : HostileTone.Dark);
                 Fire<SimpleRound>(t.position, axis, 2.3f + (i % 2) * .5f, .22f)
                     .Pause(.5f, hold, lunges ? CombatRound.Turn.Aim : CombatRound.Turn.Keep, 0, lunges ? 1.35f : 1.2f);
             }
@@ -86,8 +93,10 @@ public sealed partial class DesertWormBoss
         for (int i = 0; i < shots && CanShoot(cores[0]); i++)
         {
             Vector2 heading = CombatVisuals.Aim(Muzzle());
+            UseTone(HostileTone.Dark);
             if(i%8==0)Fire<SimpleRound>(Muzzle(),heading,3.0f,.22f);
             float open = 12 + Mathf.Abs(Mathf.Sin(i / 30f * Mathf.PI * 2)) * 34;
+            UseTone(HostileTone.Bright);
             foreach (int mirror in new[] { -1, 1 })
                 foreach (float arm in new[] { 0f, 14f })
                     ScoredShot(i%9<3,Muzzle(), CombatVisuals.Rotate(heading, mirror * (open + arm)), 3.4f);
@@ -99,6 +108,7 @@ public sealed partial class DesertWormBoss
     void Mirage(int parity)
     {
         int count = Dense(3);
+        UseTone(HostileTone.Dark);
         for (int i = 1; i < cores.Length; i++)
             if (i % 2 == parity && CanShoot(cores[i]))
                 for (int j = 0; j < count; j++)
@@ -116,6 +126,7 @@ public sealed partial class DesertWormBoss
             if (!CanShoot(cores[i]))
                 continue;
             var t = cores[i].transform;
+            UseTone(HostileTone.Dark);
             for (int side = -1; side <= 1; side += 2)
                 ScoredShot(n%3==0,t.position, (Vector2)t.right * side, 2.6f);
         }
@@ -132,6 +143,7 @@ public sealed partial class DesertWormBoss
             for (int i = 0; i < lanes; i++)
             {
                 float lane = i - (lanes - 1) * .5f;
+                UseTone(i % 3 == 0 ? HostileTone.Dark : HostileTone.Bright);
                 ScoredShot(i%3==0,p, CombatVisuals.Rotate(Vector2.up, lane * 100f / (lanes - 1)), 3.6f + layer * 1.1f)
                     .Fall(new Vector2(0, -2.8f));
             }
