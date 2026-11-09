@@ -30,12 +30,18 @@ public static class EncounterChoice
     }
     public static int SalvageCoins(int tier, float luck) => 12 + Mathf.Max(0, tier - 1) * 4 + Mathf.FloorToInt(Mathf.Clamp(luck, 0, 2) * 12);
 
+    const double ExtraShotChance = .25;
+
     public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false,
         float luck = 0, bool canTrade = false, bool canReforge = false, bool cargoAvailable = true, bool canGrowHull = true)
     {
         // Shops are no longer offered mid-run; the hangar shop between runs replaces them.
         var bag = new List<EncounterKind> { EncounterKind.Item, EncounterKind.Salvage,
-            EncounterKind.AttackSpeed, EncounterKind.AttackDamage, EncounterKind.ExtraShot };
+            EncounterKind.AttackSpeed, EncounterKind.AttackDamage };
+        // SHOTS +1 is the strongest stat hexagon, so it is eligible in only a quarter of draws
+        // (Miguel, 9 November 2026). Its own roll leaves the rest of the seeded draw unchanged.
+        if (new System.Random(seed ^ 0x5bd1e995).NextDouble() < ExtraShotChance)
+            bag.Add(EncounterKind.ExtraShot);
         if (canGrowHull)
             bag.Add(EncounterKind.MaxHealth);
         // Integer factors keep the exact 70/100 boundary inclusive on Unity's runtime.
