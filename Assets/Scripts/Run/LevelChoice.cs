@@ -32,6 +32,9 @@ public sealed class LevelChoice : MonoBehaviour
     Sprite[] icons;
     // Routes the save has not opened yet: shown, never chargeable.
     bool[] sealedRoutes;
+    float[] rattle;
+    int pressedSealed = -1;
+    const float RattleSeconds = .35f;
     CanvasGroup group;
     RectTransform frame;
     RectTransform[] fills, contents, panels;
@@ -90,6 +93,7 @@ public sealed class LevelChoice : MonoBehaviour
         panels = new RectTransform[captions.Length];
         panelGroups = new CanvasGroup[captions.Length];
         displayed = new float[captions.Length];
+        rattle = new float[captions.Length];
     }
 
     void Build()
@@ -123,7 +127,8 @@ public sealed class LevelChoice : MonoBehaviour
             var half = Rect(frame, captions[i], new Vector2(panelWidth, 720), new Vector2(-202.5f + panelWidth * (i + .5f), 0));
             panels[i] = half;
             panelGroups[i] = half.gameObject.AddComponent<CanvasGroup>();
-            Paint(half, new Color(.025f, .045f, .07f, .43f));
+            bool sealedRoute = Sealed(i);
+            Paint(half, sealedRoute ? new Color(.006f, .01f, .016f, .84f) : new Color(.025f, .045f, .07f, .43f));
             fills[i] = Rect(half, "Bottom-up route charge", new Vector2(panelWidth, 0), Vector2.zero);
             fills[i].anchorMin = fills[i].anchorMax = new Vector2(.5f, 0);
             fills[i].pivot = new Vector2(.5f, 0);
@@ -137,6 +142,15 @@ public sealed class LevelChoice : MonoBehaviour
                 var image = contents[i].gameObject.AddComponent<Image>();
                 image.sprite = icons[i];
                 image.preserveAspect = true;
+                image.raycastTarget = false;
+            }
+            else if (sealedRoute)
+            {
+                // A sealed district keeps its secret: a padlock instead of its name.
+                contents[i] = Rect(half, "Sealed route", new Vector2(40, 40), Vector2.zero);
+                var image = contents[i].gameObject.AddComponent<Image>();
+                image.sprite = Resources.Load<Sprite>("DockArt/RoutePadlock");
+                image.color = new Color(.8f, .86f, .9f, .8f);
                 image.raycastTarget = false;
             }
             else
@@ -178,7 +192,13 @@ public sealed class LevelChoice : MonoBehaviour
             if (captions.Length == 2)
             {
                 int side = RouteCharge.SideOf(x);
-                Charge.StepSelection(side != 0 && Sealed(side < 0 ? 0 : 1) ? 0 : side, Time.deltaTime);
+                int pressed = side == 0 ? -1 : side < 0 ? 0 : 1;
+                bool refused = pressed >= 0 && Sealed(pressed);
+                // Pushing into a sealed side rattles its padlock once; it never charges.
+                if (refused && pressed != pressedSealed)
+                    rattle[pressed] = RattleSeconds;
+                pressedSealed = refused ? pressed : -1;
+                Charge.StepSelection(refused ? 0 : side, Time.deltaTime);
             }
             else
             {
@@ -197,6 +217,12 @@ public sealed class LevelChoice : MonoBehaviour
                 displayed[i] = 1;
             fills[i].sizeDelta = new Vector2(panelWidth, 720 * displayed[i]);
             contents[i].localScale = Vector3.one * (1 + (selected ? .035f * Mathf.Sin(Charge.Progress * Mathf.PI) : 0));
+            if (rattle[i] > 0)
+            {
+                rattle[i] = Mathf.Max(0, rattle[i] - Time.deltaTime);
+                float shake = rattle[i] / RattleSeconds;
+                contents[i].localRotation = Quaternion.Euler(0, 0, Mathf.Sin(rattle[i] * 55) * 9 * shake);
+            }
         }
         if (Charge.Complete)
         {
