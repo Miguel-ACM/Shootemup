@@ -56,9 +56,11 @@ public abstract class DistrictBoss : DistrictEnemy
     }
     // Multipart encounters can measure the objectives of this phase rather than total hull health.
     protected virtual float PhaseMeterValue => DisplayFraction;
-    protected virtual float PhaseEnd(int phase) => phase == 1 ? .5f : phase == 2 && HasThirdPhase ? .25f : 0;
+    // Every phase holds the same share of the boss's health.
+    protected virtual float PhaseEnd(int phase) => Mathf.Max(0, (PhaseCount - phase) / (float)PhaseCount);
+    public float PhaseThreshold(int phase) => PhaseEnd(phase);
     public float PhaseFraction => encounter.Fraction(PhaseMeterValue, PhaseEnd(CurrentPhase));
-    protected virtual bool PhaseThreeReady => HasThirdPhase && HealthFraction <= .25f;
+    protected virtual bool PhaseThreeReady => HasThirdPhase && HealthFraction <= PhaseEnd(2);
     protected virtual bool NextPhaseReady => CurrentPhase == 1 ? PhaseTwoReady : CurrentPhase == 2 && PhaseThreeReady;
     protected virtual float PhaseBreakSeconds => 1.5f;
     protected override void Start()
@@ -137,7 +139,7 @@ public abstract class DistrictBoss : DistrictEnemy
         transform.position = Vector3.MoveTowards(transform.position, station, dt * 2);
     }
 
-    protected virtual bool PhaseTwoReady => HealthFraction <= .5f;
+    protected virtual bool PhaseTwoReady => HealthFraction <= PhaseEnd(1);
     protected void EnterPhase(int phase)
     {
         encounter.Phase = phase;

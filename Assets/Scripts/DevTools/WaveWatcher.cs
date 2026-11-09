@@ -669,14 +669,11 @@ public sealed partial class WaveWatcher : MonoBehaviour
                     victim.damage(1000000);
                 }
             }
-            else if (boss is ThunderLanceBoss thunder)
-                ThinHull(boss, thunder.phaseTwoThreshold * .95f);
             else
-                ThinHull(boss, .49f);
+                ThinHull(boss, boss.PhaseThreshold(1) * .98f);
             return;
         }
-        float goal = boss is CityDuoBoss ? .43f : .23f;
-        ThinHull(boss, goal);
+        ThinHull(boss, boss.PhaseThreshold(2) * .98f);
     }
 
     static void ThinHull(DistrictBoss boss, float fraction)

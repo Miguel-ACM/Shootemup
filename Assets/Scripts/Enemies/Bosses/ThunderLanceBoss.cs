@@ -5,7 +5,6 @@ public sealed partial class ThunderLanceBoss : DistrictBoss
 {
     static readonly Vector3[] BeamPorts = { new Vector3(-.71f, .435f, -.3f), new Vector3(.71f, .435f, -.3f), new Vector3(0, -1.98f, -.2f) };
     readonly PulseLaser[] beams = new PulseLaser[3];
-    [EnemyTunable("Phase 2 / Health threshold", .1f, .9f)] public float phaseTwoThreshold = .5f;
     [EnemyTunable("Laser / Charge", .8f, 3)] public float beamCharge = 1.2f;
     [EnemyTunable("Laser / Width", .1f, .4f)] public float beamWidth = .24f;
     public bool Centred => enteredFight;
@@ -29,8 +28,6 @@ public sealed partial class ThunderLanceBoss : DistrictBoss
         nextAttack = 1.8f;
     }
 
-    protected override bool PhaseTwoReady => HealthFraction <= phaseTwoThreshold;
-    protected override float PhaseEnd(int phase) => phase == 1 ? phaseTwoThreshold : base.PhaseEnd(phase);
     protected override float AttackPace => 1;
     protected override Vector2 CueAxis => Vector2.down;
     protected override void MoveBoss(float dt)

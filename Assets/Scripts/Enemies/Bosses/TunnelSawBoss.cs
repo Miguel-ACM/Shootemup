@@ -78,5 +78,5 @@ public sealed partial class TunnelSawBoss : DistrictBoss
             player.SendMessage("ReceiveHazardDamage", 14f, SendMessageOptions.DontRequireReceiver);
     }
 
-    protected override bool PhaseTwoReady => !miniature && HealthFraction <= .5f;
+    protected override bool PhaseTwoReady => !miniature && base.PhaseTwoReady;
 }

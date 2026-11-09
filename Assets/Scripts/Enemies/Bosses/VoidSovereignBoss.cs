@@ -7,7 +7,6 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
     static Material bodyMaterial;
     public static Material Body=>bodyMaterial!=null?bodyMaterial:bodyMaterial=new Material(Resources.Load<Shader>("VoidBody"));
     public override int PhaseCount=>Difficulty.Easy?3:4;
-    protected override float PhaseEnd(int phase)=>Mathf.Max(0,(PhaseCount-phase)/(float)PhaseCount);
     protected override bool NextPhaseReady=>HealthFraction<=PhaseEnd(CurrentPhase)+.000001f;
     protected override float PhaseBreakSeconds=>16.1f;
     protected override bool RepositionsOnPhase=>false;
