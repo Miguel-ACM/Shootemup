@@ -38,8 +38,22 @@ public static class HostileProjectileArt
     }
 
     public static Sprite Sprite(Type type, bool large = false) => ProjectileSprites.Load(Name(type));
+    // Decorative silhouettes Miguel approved on 9 November 2026; behaviour is ordinary.
+    static readonly System.Collections.Generic.Dictionary<Type, string> styled = new System.Collections.Generic.Dictionary<Type, string>
+    {
+        { typeof(RiceRound), "rice" }, { typeof(KunaiRound), "kunai" }, { typeof(CrystalRound), "crystal" },
+        { typeof(DropletRound), "droplet" }, { typeof(StarRound), "star" }, { typeof(SnowflakeRound), "snowflake" },
+        { typeof(HeartRound), "heart" }, { typeof(CandyRound), "candy" }, { typeof(PetalRound), "petal" },
+        { typeof(FlameRound), "flame" }, { typeof(FeatherRound), "feather" }, { typeof(CrescentRound), "crescent" },
+        { typeof(GemRound), "gem" }
+    };
+    // Long silhouettes share the needle's launch voice; the rest share the round one.
+    public static bool Slender(Type type) => type == typeof(RiceRound) || type == typeof(KunaiRound) ||
+        type == typeof(CrystalRound) || type == typeof(PetalRound) || type == typeof(FeatherRound);
     public static string Name(Type type)
     {
+        if (styled.TryGetValue(type, out var silhouette))
+            return silhouette;
         if (type == typeof(SimpleRound))
             return "standard";
         if (type == typeof(GiantOrb))

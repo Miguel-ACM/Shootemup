@@ -214,16 +214,17 @@ public abstract class CombatRound : AEnemyBullet
             // Counts are multiplied by ReserveScale inside both helpers: 1850 base slots.
             // Fracture lattice needs ricochets; scythe ribbons and one-side
             // interludes share warmed chevrons without changing total capacity.
-            TrimReserve<SimpleRound>(800);TrimReserve<NeedleRound>(352);
+            TrimReserve<SimpleRound>(800);TrimReserve<NeedleRound>(352-StyledReserveTotal(LevelId.Void));
             TrimReserve<RicochetBolt>(304);TrimReserve<BurstShell>(8);TrimReserve<ChevronRound>(112);
             TrimReserve<GuidedMissile>(8);TrimReserve<ScatterCarrier>(4);TrimReserve<HelixRound>(20);
             TrimReserve<PlasmaOrb>(20);TrimReserve<ProximityMine>(6);
             TrimReserve<PulseLaser>(12);TrimReserve<LaserSideRound>(4);TrimReserve<GiantOrb>(200);
-            yield return Warm<SimpleRound>(800);yield return Warm<NeedleRound>(352);
+            yield return Warm<SimpleRound>(800);yield return Warm<NeedleRound>(352-StyledReserveTotal(LevelId.Void));
             yield return Warm<RicochetBolt>(304);yield return Warm<BurstShell>(8);yield return Warm<ChevronRound>(112);
             yield return Warm<GuidedMissile>(8);yield return Warm<ScatterCarrier>(4);yield return Warm<HelixRound>(20);
             yield return Warm<PlasmaOrb>(20);yield return Warm<ProximityMine>(6);
             yield return Warm<PulseLaser>(12);yield return Warm<LaserSideRound>(4);yield return Warm<GiantOrb>(200);
+            yield return WarmStyled(LevelId.Void);
             yield break;
         }
         // These districts now sustain arrow-heavy boss scores. Give their unused
@@ -235,6 +236,10 @@ public abstract class CombatRound : AEnemyBullet
         // Celestial scores trade unused specialist deliveries for prepared needles.
         // Space retains its ordinary carriers' ricochets; total reserve stays below 7400.
         int needles = LevelRun.Current == LevelId.Space ? 560 : arrowDistrict ? 700 : 300;
+        // Arrow districts pay for their styled silhouettes from the needles they replace;
+        // the other districts have spare room in the non-standard reserve.
+        if (arrowDistrict)
+            needles -= StyledReserveTotal(LevelRun.Current);
         int ricochets = LevelRun.Current == LevelId.Space ? 96 : arrowDistrict ? 8 : 96;
         int shells = arrowDistrict ? (LevelRun.Current == LevelId.Snow ? 40 : 8) : 40;
         // Chevron volleys reuse the retired disc reserve and a small share of
@@ -277,6 +282,71 @@ public abstract class CombatRound : AEnemyBullet
         yield return Warm<ProximityMine>(mines);
         yield return Warm<LaserSideRound>(sideRounds);
         yield return Warm<PulseLaser>(lasers);
+        yield return WarmStyled(LevelRun.Current);
+    }
+
+    // The silhouettes each district actually fires (Miguel's approved set, 9 November 2026).
+    static int StyledReserve(LevelId district, Type type)
+    {
+        switch (district)
+        {
+            case LevelId.Fields: return type == typeof(PetalRound) ? 48 : 0;
+            case LevelId.Snow: return type == typeof(CrystalRound) ? 40 : type == typeof(SnowflakeRound) ? 64 : 0;
+            case LevelId.City: return type == typeof(KunaiRound) ? 48 : type == typeof(GemRound) ? 32 : 0;
+            case LevelId.Tunnel: return type == typeof(RiceRound) ? 64 : 0;
+            case LevelId.Thunder:
+            case LevelId.Desert: return type == typeof(RiceRound) ? 48 : 0;
+            case LevelId.Candyland: return type == typeof(HeartRound) || type == typeof(CandyRound) || type == typeof(StarRound) ? 40 : 0;
+            case LevelId.Space: return type == typeof(CrescentRound) ? 48 : 0;
+            case LevelId.Underwater: return type == typeof(DropletRound) ? 64 : 0;
+            case LevelId.Hell: return type == typeof(FlameRound) ? 64 : 0;
+            case LevelId.Heaven: return type == typeof(FeatherRound) ? 64 : type == typeof(StarRound) ? 32 : 0;
+            case LevelId.Void: return type == typeof(KunaiRound) ? 40 : type == typeof(CrescentRound) ? 32 : type == typeof(GemRound) ? 24 : 0;
+            default: return 0;
+        }
+    }
+
+    static readonly Type[] StyledTypes = { typeof(RiceRound), typeof(KunaiRound), typeof(CrystalRound), typeof(DropletRound),
+        typeof(StarRound), typeof(SnowflakeRound), typeof(HeartRound), typeof(CandyRound), typeof(PetalRound),
+        typeof(FlameRound), typeof(FeatherRound), typeof(CrescentRound), typeof(GemRound) };
+
+    static int StyledReserveTotal(LevelId district)
+    {
+        int total = 0;
+        foreach (var type in StyledTypes)
+            total += StyledReserve(district, type);
+        return total;
+    }
+
+    // Return unused styled reserves to the budget first, then warm this district's.
+    static IEnumerator WarmStyled(LevelId district)
+    {
+        TrimReserve<RiceRound>(StyledReserve(district, typeof(RiceRound)));
+        TrimReserve<KunaiRound>(StyledReserve(district, typeof(KunaiRound)));
+        TrimReserve<CrystalRound>(StyledReserve(district, typeof(CrystalRound)));
+        TrimReserve<DropletRound>(StyledReserve(district, typeof(DropletRound)));
+        TrimReserve<StarRound>(StyledReserve(district, typeof(StarRound)));
+        TrimReserve<SnowflakeRound>(StyledReserve(district, typeof(SnowflakeRound)));
+        TrimReserve<HeartRound>(StyledReserve(district, typeof(HeartRound)));
+        TrimReserve<CandyRound>(StyledReserve(district, typeof(CandyRound)));
+        TrimReserve<PetalRound>(StyledReserve(district, typeof(PetalRound)));
+        TrimReserve<FlameRound>(StyledReserve(district, typeof(FlameRound)));
+        TrimReserve<FeatherRound>(StyledReserve(district, typeof(FeatherRound)));
+        TrimReserve<CrescentRound>(StyledReserve(district, typeof(CrescentRound)));
+        TrimReserve<GemRound>(StyledReserve(district, typeof(GemRound)));
+        yield return Warm<RiceRound>(StyledReserve(district, typeof(RiceRound)));
+        yield return Warm<KunaiRound>(StyledReserve(district, typeof(KunaiRound)));
+        yield return Warm<CrystalRound>(StyledReserve(district, typeof(CrystalRound)));
+        yield return Warm<DropletRound>(StyledReserve(district, typeof(DropletRound)));
+        yield return Warm<StarRound>(StyledReserve(district, typeof(StarRound)));
+        yield return Warm<SnowflakeRound>(StyledReserve(district, typeof(SnowflakeRound)));
+        yield return Warm<HeartRound>(StyledReserve(district, typeof(HeartRound)));
+        yield return Warm<CandyRound>(StyledReserve(district, typeof(CandyRound)));
+        yield return Warm<PetalRound>(StyledReserve(district, typeof(PetalRound)));
+        yield return Warm<FlameRound>(StyledReserve(district, typeof(FlameRound)));
+        yield return Warm<FeatherRound>(StyledReserve(district, typeof(FeatherRound)));
+        yield return Warm<CrescentRound>(StyledReserve(district, typeof(CrescentRound)));
+        yield return Warm<GemRound>(StyledReserve(district, typeof(GemRound)));
     }
 
     static void TrimReserve<T>(int count) where T : CombatRound
@@ -644,8 +714,25 @@ public abstract class CombatRound : AEnemyBullet
         }
     }
 
+    // Symmetric silhouettes either keep still (hearts, gems) or turn at their own rate
+    // (stars, flakes, sweets, moons) instead of pointing along their heading.
+    protected virtual bool Upright => false;
+    protected virtual float Spin => 0;
+
     protected void Orient()
     {
+        if (Spin != 0)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, age * Spin * (heading.x < 0 ? -1 : 1));
+            return;
+        }
+        if (Upright)
+        {
+            if (needsOrientation)
+                transform.rotation = Quaternion.identity;
+            needsOrientation = false;
+            return;
+        }
         // Arrows under gravity or sway point along their actual path, not their launch heading.
         Vector2 facing = gravity != Vector2.zero || pull != 0 || swayAmplitude != 0 ? travel : heading;
         if (!needsOrientation && facing == orientedHeading)

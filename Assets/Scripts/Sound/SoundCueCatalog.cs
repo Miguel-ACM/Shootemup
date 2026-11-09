@@ -95,7 +95,7 @@ public static class SoundCueCatalog
     public static string Projectile(Type type)
     {
         if (type == typeof(PulseLaser)) return null; // Attached beams already own charge, ignition and sustain.
-        if (type == typeof(NeedleRound)) return "enemyNeedle";
+        if (type == typeof(NeedleRound) || HostileProjectileArt.Slender(type)) return "enemyNeedle";
         if (type == typeof(PlasmaOrb)) return "enemyPlasma";
         if (type == typeof(GuidedMissile)) return "enemyMissile";
         if (type == typeof(BurstShell)) return "enemyBurst";
