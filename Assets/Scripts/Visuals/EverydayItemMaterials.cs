@@ -206,6 +206,9 @@ public static class EverydayItemMaterials
             case "Hourglass":
                 color = new Color(.6f, .3f, .18f);
                 return true;
+            case "LoadedDice":
+                color = new Color(.88f, .16f, .22f);
+                return true;
             case "CursedCoin":
                 color = new Color(.5f, .9f, .42f);
                 return true;

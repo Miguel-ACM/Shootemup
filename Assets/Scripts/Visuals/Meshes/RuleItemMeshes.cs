@@ -15,6 +15,7 @@ public static partial class IndustrialMeshFactory
             case "PaperPlane": PaperPlaneModel(b); break;
             case "GlassMarbles": GlassMarblesModel(b); break;
             case "Hourglass": HourglassModel(b); break;
+            case "LoadedDice": LoadedDiceModel(b); break;
             default: return false;
         }
         return true;

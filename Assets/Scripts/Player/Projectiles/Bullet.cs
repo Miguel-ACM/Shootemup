@@ -96,17 +96,23 @@ public class Bullet : ABullet
             player.PlayHitSound("hit1");
             CombatHit.Apply(en, damage * ShotTraits.ReachDamage(travelled), collision.ClosestPoint(transform.position),
                 rigidBody != null ? rigidBody.linearVelocity : (Vector2)transform.up, companion: companionShot);
-            if (CombatUpgrades.Current != null && (CombatUpgrades.Current.Count(UpgradeKind.BouncingBall) > 0 || CombatUpgrades.Current.TryRebound()))
+            bool ball = CombatUpgrades.Current != null && CombatUpgrades.Current.Count(UpgradeKind.BouncingBall) > 0;
+            int bounces = CombatUpgrades.Current == null ? 0 : ball ? 1 : CombatUpgrades.Current.TryRebound(transform.position);
+            if (bounces > 0)
             {
                 var next = CombatUpgrades.Nearest(transform.position, new HashSet<AEnemy> { en }, 12);
                 if (next != null)
                 {
-                    float power = CombatUpgrades.Current.Count(UpgradeKind.BouncingBall) > 0 ? damage : damage * .7f;
-                    var bounce = PlayerRound.Spawn(transform.position, (next.transform.position - transform.position).normalized, power, speed, PlayerDelivery.Pulse, 1);
-                    if (bounce != null)
+                    float power = ball ? damage : damage * .7f;
+                    for (int i = 0; i < bounces; i++)
                     {
-                        bounce.companion = companionShot;
-                        bounce.ExcludePreviousHit(en);
+                        var aim = CombatVisuals.Rotate((next.transform.position - transform.position).normalized, i * 30);
+                        var bounce = PlayerRound.Spawn(transform.position, aim, power, speed, PlayerDelivery.Pulse, 1);
+                        if (bounce != null)
+                        {
+                            bounce.companion = companionShot;
+                            bounce.ExcludePreviousHit(en);
+                        }
                     }
                 }
             }

@@ -35,9 +35,10 @@ public sealed class PopcornHits : MonoBehaviour
         next = Time.time + .12f;
         ItemSound.Play("popcorn", .08f, 1, .1f);
         ItemSpark.Emit(enemy.transform.position, new Color(.95f, .77f, .4f), 5, .13f);
-        for (int i = 0; i < 3; i++)
+        int pops = CombatUpgrades.Current != null ? CombatUpgrades.Current.Rolls(enemy.transform.position) : 1;
+        for (int i = 0; i < 3 * pops; i++)
         {
-            var shot = PlayerRound.Spawn(enemy.transform.position, CombatVisuals.Rotate(Vector2.up, (i - 1) * 65), damage * .35f, 8, PlayerDelivery.Pulse, 1);
+            var shot = PlayerRound.Spawn(enemy.transform.position, CombatVisuals.Rotate(Vector2.up, (i % 3 - 1) * 65 + i / 3 * 32), damage * .35f, 8, PlayerDelivery.Pulse, 1);
             if (shot == null)
                 continue;
             shot.ExcludePreviousHit(enemy);

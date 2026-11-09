@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public enum UpgradeKind
 {
-    Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass
+    Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -110,8 +110,22 @@ public sealed class CombatUpgrades : MonoBehaviour
     }
 
     public bool ProximityReady => Count(UpgradeKind.Proximity) > 0 && (!gates.TryGetValue("fuse", out float t) || Time.time >= t);
-    public bool SpendProximity() => Count(UpgradeKind.Proximity) > 0 && Ready("fuse", .75f);
-    public bool TryRebound() => Count(UpgradeKind.Rebound) > 0 && Ready("rebound", .18f);
+    // Loaded Dice: any chance-gated proc may land twice (30% per copy, compounding).
+    static readonly Color DicePip = new Color(.96f, .93f, .84f);
+    public int Rolls(Vector3 at)
+    {
+        int dice = Count(UpgradeKind.LoadedDice);
+        if (dice == 0 || Random.value >= 1 - Mathf.Pow(.7f, dice))
+            return 1;
+        ItemSpark.Emit(at, DicePip, 2, .07f);
+        ItemSound.Cue("itemRicochet", volume: .04f, pitch: 1.6f, cooldown: .15f);
+        return 2;
+    }
+
+    // How many times a chance-gated proc fires now: 0 while its gate is closed.
+    int Proc(string key, float cooldown, Vector3 at) => Ready(key, cooldown) ? Rolls(at) : 0;
+    public int SpendProximity(Vector3 at) => Count(UpgradeKind.Proximity) > 0 ? Proc("fuse", .75f, at) : 0;
+    public int TryRebound(Vector3 at) => Count(UpgradeKind.Rebound) > 0 ? Proc("rebound", .18f, at) : 0;
     public float DirectHit(AEnemy enemy, float damage, int generation = 0, bool companion = false, bool fire = false)
     {
         if (enemy == null || !enemy.CanReceiveDamage)
@@ -140,12 +154,15 @@ public sealed class CombatUpgrades : MonoBehaviour
             focusUntil = Time.time + 1.1f;
             damage *= 1 + focus * .045f;
         }
-        if (fire || Count(UpgradeKind.Gasoline) > 0 || (Count(UpgradeKind.Burn) > 0 && Ready("burn", companion ? .4f : .18f)))
+        int ignitions = fire || Count(UpgradeKind.Gasoline) > 0 ? 1
+            : Count(UpgradeKind.Burn) > 0 ? Proc("burn", companion ? .4f : .18f, enemy.transform.position) : 0;
+        if (ignitions > 0)
         {
             var burn = enemy.GetComponent<BurningHull>();
             if (burn == null)
                 burn = enemy.gameObject.AddComponent<BurningHull>();
-            burn.Ignite(Mathf.Max(1, damage * .4f) * (companion ? .5f : 1));
+            for (int i = 0; i < ignitions; i++)
+                burn.Ignite(Mathf.Max(1, damage * .4f) * (companion ? .5f : 1));
         }
         if (Count(UpgradeKind.Poison) > 0)
         {
@@ -162,15 +179,19 @@ public sealed class CombatUpgrades : MonoBehaviour
             GetComponent<PopcornHits>()?.Hit(enemy, damage);
         if (!companion)
             GetComponent<StaticCharge>()?.Discharge(enemy, damage);
-        if (Count(UpgradeKind.Splitter) > 0 && Ready("split", .45f))
+        int splits = Count(UpgradeKind.Splitter) > 0 ? Proc("split", .45f, enemy.transform.position) : 0;
+        if (splits > 0)
         {
-            Fragments(enemy.transform.position, damage, 2, 25);
+            for (int i = 0; i < splits; i++)
+                Fragments(enemy.transform.position, damage, 2, 25, i * 50);
             ItemProcVfx.Emit(ItemProcShape.Fork, enemy.transform.position, new Color(.3f, .75f, .82f));
             ItemSound.Cue("itemSplit", volume: .08f, cooldown: .18f);
         }
-        if (Count(UpgradeKind.Bearing) > 0 && Ready("bearing", .65f))
+        int sprays = Count(UpgradeKind.Bearing) > 0 ? Proc("bearing", .65f, enemy.transform.position) : 0;
+        if (sprays > 0)
         {
-            Fragments(enemy.transform.position, damage * .55f, 3, 60);
+            for (int i = 0; i < sprays; i++)
+                Fragments(enemy.transform.position, damage * .55f, 3, 60, i * 30);
             ItemProcVfx.Emit(ItemProcShape.Detonate, enemy.transform.position, new Color(.7f, .65f, .42f), .35f);
             ItemSound.Cue("itemBearing", volume: .07f, cooldown: .2f);
         }
@@ -203,10 +224,10 @@ public sealed class CombatUpgrades : MonoBehaviour
     }
 
     float FinishHit(AEnemy enemy, float damage) => Count(UpgradeKind.ChewingGum) > 0 ? StickyGum.Stick(enemy, damage) : damage;
-    void Fragments(Vector3 p, float damage, int count, float angle)
+    void Fragments(Vector3 p, float damage, int count, float angle, float offset = 0)
     {
         for (int i = 0; i < count; i++)
-            PlayerRound.Spawn(p, CombatVisuals.Rotate(Vector2.up, (i - (count - 1) * .5f) * angle), damage * .45f, 11, PlayerDelivery.Pulse, 1);
+            PlayerRound.Spawn(p, CombatVisuals.Rotate(Vector2.up, (i - (count - 1) * .5f) * angle + offset), damage * .45f, 11, PlayerDelivery.Pulse, 1);
     }
 
     public void Coin()
@@ -260,9 +281,11 @@ public sealed class CombatUpgrades : MonoBehaviour
     {
         if (Count(UpgradeKind.Ink) > 0)
             InkPuddle.Spill(enemy.transform.position, Count(UpgradeKind.Ink));
-        if (Count(UpgradeKind.ChainReactor) > 0 && enemy.GetComponent<BurningHull>() != null && Ready("chain", .3f))
+        int chains = Count(UpgradeKind.ChainReactor) > 0 && enemy.GetComponent<BurningHull>() != null ? Proc("chain", .3f, enemy.transform.position) : 0;
+        if (chains > 0)
         {
-            Fragments(enemy.transform.position, 8, 6, 60);
+            for (int i = 0; i < chains; i++)
+                Fragments(enemy.transform.position, 8, 6, 60, i * 30);
             ItemProcVfx.Emit(ItemProcShape.Detonate, enemy.transform.position, PlayerShotPalette.Fire, Mathf.Max(.55f, enemy.size));
             ItemSound.Cue("itemChain", volume: .13f, cooldown: .25f);
         }

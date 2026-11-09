@@ -267,8 +267,9 @@ public sealed class PlayerRound : ABullet
         if (generation == 0 && CombatUpgrades.Current != null && CombatUpgrades.Current.ProximityReady && age > .1f)
         {
             var e = CombatUpgrades.Nearest(transform.position, null, .8f);
-            if (e != null && CombatUpgrades.Current.SpendProximity())
-                Detonate(true);
+            int bursts = e != null ? CombatUpgrades.Current.SpendProximity(transform.position) : 0;
+            if (bursts > 0)
+                Detonate(true, bursts);
         }
         if (transform.position.y > Camera.UpLimit + 3 && !returns && delivery != PlayerDelivery.Disc)
             Despawn();
@@ -311,12 +312,15 @@ public sealed class PlayerRound : ABullet
         }
         if (pierces-- > 0 || delivery == PlayerDelivery.Disc)
             return;
-        if (!rebounded && CombatUpgrades.Current != null && CombatUpgrades.Current.TryRebound())
+        int rebounds = !rebounded && CombatUpgrades.Current != null ? CombatUpgrades.Current.TryRebound(transform.position) : 0;
+        if (rebounds > 0)
         {
             rebounded = true;
             var next = CombatUpgrades.Nearest(transform.position, hit, 5);
             if (next != null)
             {
+                if (rebounds > 1)
+                    SplitRebound(enemy, next);
                 heading = ((Vector2)(next.transform.position - transform.position)).normalized;
                 damage *= .75f;
                 generation = 1;
@@ -341,6 +345,21 @@ public sealed class PlayerRound : ABullet
         transform.localScale = new Vector3(restScale.x, restScale.y * stretch, restScale.z);
     }
 
+    // A doubled ricochet sends a second round to another nearby enemy, or angled off the first.
+    void SplitRebound(AEnemy struck, AEnemy first)
+    {
+        hit.Add(first);
+        var second = CombatUpgrades.Nearest(transform.position, hit, 5);
+        hit.Remove(first);
+        Vector2 toFirst = ((Vector2)(first.transform.position - transform.position)).normalized;
+        Vector2 direction = second != null ? ((Vector2)(second.transform.position - transform.position)).normalized : CombatVisuals.Rotate(toFirst, 35);
+        var twin = Spawn(transform.position, direction, damage * .75f, speed, PlayerDelivery.Pulse, 1);
+        if (twin == null)
+            return;
+        twin.companion = companion;
+        twin.ExcludePreviousHit(struck);
+    }
+
     void TurnAccent()
     {
         ItemProcVfx.Emit(ItemProcShape.Rebound, transform.position, new Color(.65f, .7f, .58f), .4f, heading);
@@ -356,7 +375,7 @@ public sealed class PlayerRound : ABullet
         Despawn();
     }
 
-    void Detonate(bool proximity = false)
+    void Detonate(bool proximity = false, int rings = 1)
     {
         if (detonated)
             return;
@@ -364,8 +383,9 @@ public sealed class PlayerRound : ABullet
         ItemProcVfx.Emit(proximity ? ItemProcShape.Lock : ItemProcShape.Detonate, transform.position,
             proximity ? new Color(.75f, .63f, .35f) : new Color(.3f, .65f, .75f), proximity ? .6f : .7f, heading);
         ItemSound.Cue(proximity ? "itemProximity" : "itemDepthBurst", volume: .11f, cooldown: .16f);
-        for (int i = 0; i < 7; i++)
-            Spawn(transform.position, CombatVisuals.Rotate(heading, (i - 3) * 24), damage * .45f, 10, PlayerDelivery.Pulse, 1);
+        for (int ring = 0; ring < rings; ring++)
+            for (int i = 0; i < 7; i++)
+                Spawn(transform.position, CombatVisuals.Rotate(heading, (i - 3) * 24 + ring * 12), damage * .45f, 10, PlayerDelivery.Pulse, 1);
         Despawn();
     }
 }
