@@ -203,6 +203,9 @@ public static class EverydayItemMaterials
             case "GlassMarbles":
                 color = new Color(.3f, .85f, .95f);
                 return true;
+            case "Hourglass":
+                color = new Color(.6f, .3f, .18f);
+                return true;
             case "CursedCoin":
                 color = new Color(.5f, .9f, .42f);
                 return true;
