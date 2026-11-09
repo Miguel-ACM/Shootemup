@@ -82,6 +82,16 @@ public static class EnemyTones
         { typeof(OrbitalWarden), HostileTone.Bright },
         { typeof(OrbitalCarrier), HostileTone.Dark },
         { typeof(CometTug), HostileTone.Dark },
+
+        // Underwater: aimed darts and torpedoes are bright; currents, ink clouds and
+        // plumes are dark.
+        { typeof(ReefDart), HostileTone.Bright },
+        { typeof(Bathysphere), HostileTone.Bright },
+        { typeof(DepthMine), HostileTone.Bright },
+        { typeof(MantaRay), HostileTone.Dark },
+        { typeof(JetSquid), HostileTone.Dark },
+        { typeof(NautilusBell), HostileTone.Dark },
+        { typeof(ReefLeviathan), HostileTone.Dark },
     };
 
     public static HostileTone Default(Type enemy) => defaults.TryGetValue(enemy, out var tone) ? tone : HostileTone.Bright;

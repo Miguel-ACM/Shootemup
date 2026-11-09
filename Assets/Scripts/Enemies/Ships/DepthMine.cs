@@ -68,6 +68,8 @@ public sealed class DepthMine : OceanEnemy
         for (int i = 0; i < count; i++)
         {
             var axis = CombatVisuals.Rotate(Vector2.up, (i + .5f) * 360f / count);
+            // The burst's slow rounds are dark and its fast ones bright.
+            UseTone(i % 2 == 0 ? HostileTone.Dark : HostileTone.Bright);
             Fire<SimpleRound>(transform.position + (Vector3)axis * .24f, axis, i % 2 == 0 ? 2.2f : 2.9f, .21f)
                 .Ramp(1.2f, 1.3f, .5f);
         }
