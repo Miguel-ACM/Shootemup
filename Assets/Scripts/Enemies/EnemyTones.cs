@@ -101,6 +101,14 @@ public static class EnemyTones
         { typeof(GhostGalleon), HostileTone.Dark },
         { typeof(BoneHarrier), HostileTone.Dark },
         { typeof(AshCenser), HostileTone.Dark },
+
+        // Heaven: its lances are bright, so most of its rounds are dark against them; only
+        // the votive spears' aimed stacks are bright.
+        { typeof(VotiveSpear), HostileTone.Bright },
+        { typeof(ThroneBarge), HostileTone.Dark },
+        { typeof(PrismCantor), HostileTone.Dark },
+        { typeof(AegisReliquary), HostileTone.Dark },
+        { typeof(DawnGatekeeper), HostileTone.Dark },
     };
 
     public static HostileTone Default(Type enemy) => defaults.TryGetValue(enemy, out var tone) ? tone : HostileTone.Bright;

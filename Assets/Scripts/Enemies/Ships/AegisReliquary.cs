@@ -10,6 +10,8 @@ public sealed class AegisReliquary : DistrictEnemy
         var ports=EnemyWeaponLayout.Ports(hull);int side=volley%2;
         HeavenArmory.Lance(Hull,ports[side],CombatVisuals.Rotate(Vector2.down,side==0?-12:12),1.0f,.85f,1.4f);
         int count=Dense(7);
+        // The fan's tone alternates with the lance's side, so consecutive volleys differ.
+        UseTone(side==0?HostileTone.Dark:HostileTone.Bright);
         for(int i=0;i<count;i++)Fire<NeedleRound>(Muzzle(1-side),CombatVisuals.Rotate(Vector2.down,(i-(count-1)*.5f)*12),1.7f,.18f).Ramp(1.8f,.8f,.8f);
     }
 }
