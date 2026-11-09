@@ -47,6 +47,13 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
         foreach(var glow in apparitions)glow.enabled=false;
     }
     protected override void Attack() { if(openingComplete)OpenCards(); }
+    // Tones (Miguel, 9 November 2026): each card's feathers or windows take one tone
+    // and the unbodied choir, the central eye's gaze and the eye pearls take the other.
+    // The body tone flips card to card and phase to phase:
+    //   Dawn Liturgy bright, Cathedral of Eyes dark; Sevenfold Procession dark,
+    //   Judgment Pendulum bright; Last Trumpet bright, Covenant dark. Lances stay bright.
+    HostileTone Body(int card)=>(CurrentPhase+card)%2==1?HostileTone.Bright:HostileTone.Dark;
+    HostileTone Accent(int card)=>Body(card)==HostileTone.Bright?HostileTone.Dark:HostileTone.Bright;
     protected override IEnumerator Cards()
     {
         while(true)
@@ -127,8 +134,10 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
                 // Most feathers enter the lower arena; a lighter upper arch still returns from the ceiling.
                 float speed=2.35f+.85f*(1-u*u)+(CurrentPhase-1)*.12f;
                 var axis=bank>0?Vector2.up:Vector2.down;
+                UseTone(Body(0));
                 FeatherShot(i%3==0,Eye(s<0?3:4),CombatVisuals.Rotate(axis,angle),speed,.17f)
                     .Bounce(bank>0?1:0).FadeAt(8);
+                UseTone(Accent(0));
                 if(pearls&&bank<0&&beat%4==0&&i%3==0)
                     Fire<SimpleRound>(Eye(s<0?1:2),CombatVisuals.Rotate(Vector2.down,s*(48+u*23)),1.55f,.22f).FadeAt(7.8f);
             }
@@ -145,8 +154,10 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
             {
                 float u=Across(i,rows);
                 float a=s*(bank>0?45+u*43+Mathf.Sin(beat*.43f)*14:35+u*32+Mathf.Sin(beat*.43f)*9);
+                UseTone(Body(1));
                 ScoredShot(beat%3==0,Eye(s<0?3:4),CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,a),speed+.85f*(1-u*u),.18f)
                     .Bounce(bank>0?1:0).Ramp(1.25f,1.4f,2).FadeAt(8);
+                UseTone(Accent(1));
                 if(CurrentPhase==3&&bank<0&&i%3==0)
                     Fire<SimpleRound>(Eye(s<0?1:2),CombatVisuals.Rotate(Vector2.down,s*(54+u*26)),1.6f+.3f*u*u,.22f).FadeAt(8);
             }
@@ -161,6 +172,7 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
     {
         // The central eye looks through the moving aisle, including above the angel.
         Vector3 p=Eye(0);Vector2 aim=CombatVisuals.Aim(p);int count=Dense(5)|1;
+        UseTone(Accent(CardIndex));
         for(int i=0;i<count;i++)
             Fire<StarRound>(p,CombatVisuals.Rotate(aim,(i-(count-1)*.5f)*11),2.6f,.22f).Ramp(1.2f,1.3f);
     }
@@ -192,6 +204,7 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
                 yield return null;
             }
             int count=Dense(9+CurrentPhase*2);
+            UseTone(Accent(card));
             for(int i=0;i<apparitions.Length;i++)
             {
                 var p=apparitions[i].transform.position;apparitions[i].enabled=false;
