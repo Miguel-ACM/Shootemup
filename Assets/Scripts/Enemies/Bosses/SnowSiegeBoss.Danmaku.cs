@@ -16,6 +16,9 @@ using UnityEngine;
 //   Snowdrift: fans of snow shells spread across the whole width; their shards fly
 //     up out of sight and fall back as snow from the top, while the mouth fires slow
 //     orb arcs that stop and resume.
+// Tones: what falls from the sky (the comb's rain and the shells' snow) is dark, and
+// what the hull throws (petals, gusts, mouth rounds) is bright. Frozen Petals
+// alternates its blooms, so the cards run mixed, dark, bright, dark.
 public sealed partial class SnowSiegeBoss
 {
     Vector3 Mouth => Hull.TransformPoint(MouthLocal);
@@ -53,15 +56,17 @@ public sealed partial class SnowSiegeBoss
         for (int bloom = 0; bloom < 4; bloom++)
         {
             yield return Charge(Hull, MouthLocal, .45f);
-            FreezeFrame(bloom % 2 == 0 ? 1 : -1);
+            // Each bloom flips its mirror and its tone together.
+            FreezeFrame(bloom % 2 == 0 ? 1 : -1, bloom % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
             yield return Wait(1.5f);
         }
     }
 
     // Two mirrored arrow fans fly out, stop dead and glint, then every arrow re-aims
     // at the player and crawls before accelerating. The re-aimed fans keep their spacing.
-    void FreezeFrame(int sign)
+    void FreezeFrame(int sign, HostileTone petals = HostileTone.Bright)
     {
+        UseTone(petals);
         int count = Dense(phaseTwo ? (Difficulty.Normal ? 15 : 21) : 17) | 1;
         float spread = 130f / (count - 1);
         for (int mirror = -1; mirror <= 1; mirror += 2)
@@ -79,6 +84,7 @@ public sealed partial class SnowSiegeBoss
 
     void CrystalShells(int count, float spread)
     {
+        UseTone(HostileTone.Dark);
         for (int i = 0; i < count; i++)
         {
             float lane = i - (count - 1) * .5f;
@@ -98,6 +104,7 @@ public sealed partial class SnowSiegeBoss
         {
             for (int k = 0; k < 10; k++)
             {
+                UseTone(HostileTone.Bright);
                 if(k==0||k==5)
                     Fire<SimpleRound>(Mouth,CombatVisuals.Aim(Mouth),1.3f,.23f)
                         .Pause(.35f,.45f,CombatRound.Turn.Aim,0,2.2f);
@@ -110,6 +117,7 @@ public sealed partial class SnowSiegeBoss
                         Fire<SimpleRound>(Mouth, CombatVisuals.Rotate(aim, (j - (loose - 1) * .5f) * 11 + Random.Range(-9f, 9f)),
                             2.7f * Random.Range(.92f, 1.08f), .21f);
                 }
+                UseTone(HostileTone.Dark);
                 for (int i = 0; i < combCount; i++)
                 {
                     if (i % 2 != k % 2 || !Difficulty.Hard && i % 3 == 2 || Difficulty.Easy && i % 3 == 1)
@@ -153,6 +161,7 @@ public sealed partial class SnowSiegeBoss
         int gusts = Dense(Difficulty.Normal ? 42 : 60);
         for (int g = 0; g < gusts; g++)
         {
+            UseTone(HostileTone.Bright);
             float lift = 8 + (g % 4) * 7;
             for (int side = -1; side <= 1; side += 2)
             {
@@ -169,6 +178,7 @@ public sealed partial class SnowSiegeBoss
         yield return Every(7, Difficulty.Normal ? 1.35f : 1f, n =>
         {
             // A wide fan of shells, offset every beat, so the snow covers the whole top.
+            UseTone(HostileTone.Dark);
             int shells = Difficulty.Normal ? 3 : Dense(6);
             for (int i = 0; i < shells; i++)
             {
@@ -179,6 +189,7 @@ public sealed partial class SnowSiegeBoss
             }
             if (n % 2 == 1)
             {
+                UseTone(HostileTone.Bright);
                 int lanes = Dense(13);
                 for (int i = 0; i < lanes; i++)
                 {
@@ -192,7 +203,8 @@ public sealed partial class SnowSiegeBoss
 
     // Hard final phase, Absolute Zero: rain only. The comb alternates every three
     // seconds between the woven lattice and fast and slow pairs from every column,
-    // while mirrored petals freeze and re-aim.
+    // while mirrored petals freeze and re-aim. Dark woven rain; in the pairs the fast
+    // arrow is dark and the slow orb bright; bright petals.
     IEnumerator FinalSpell()
     {
         DeployComb();
@@ -205,6 +217,7 @@ public sealed partial class SnowSiegeBoss
                 if (!Difficulty.Hard && i % 3 == 2 || Difficulty.Easy && i % 3 == 1)
                     continue;
                 var p = comb[i].TransformPoint(new Vector3(0, -.26f, -.55f));
+                UseTone(HostileTone.Dark);
                 if (woven && i % 2 == n % 2)
                 {
                     Fire<NeedleRound>(p, Vector2.down, 3.6f, .19f);
@@ -213,6 +226,7 @@ public sealed partial class SnowSiegeBoss
                 else if (!woven && n % 2 == 0)
                 {
                     Fire<NeedleRound>(p, Vector2.down, 3.6f, .19f);
+                    UseTone(HostileTone.Bright);
                     Fire<SimpleRound>(p, Vector2.down, 2.4f, .21f);
                     releases[i] = .1f;
                 }
