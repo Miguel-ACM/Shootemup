@@ -8,6 +8,7 @@ public static partial class IndustrialMeshFactory
         switch (kind)
         {
             case "Corkscrew": CorkscrewModel(b); break;
+            case "SlingshotBand": SlingshotBandModel(b); break;
             default: return false;
         }
         return true;

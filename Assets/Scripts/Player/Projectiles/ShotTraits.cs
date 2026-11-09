@@ -27,4 +27,20 @@ public static class ShotTraits
 
     // The weave's lateral velocity, for rounds moved by a rigidbody.
     public static float WeaveRate(float flight, float sign) => sign * WeaveAmplitude * WeaveFrequency * Mathf.Cos(flight * WeaveFrequency);
+
+    // Slingshot Band: rounds leave slowly, accelerate over .6 s, and hit harder the farther they flew.
+    public const float SlingshotReach = 12;
+
+    public static bool Slung => Count(UpgradeKind.Slingshot) > 0;
+
+    public static float SpeedScale(float flight) => Slung ? Mathf.Lerp(.55f, 1.3f, Mathf.SmoothStep(0, 1, flight / .6f)) : 1;
+
+    public static float ReachDamage(float travelled)
+    {
+        int copies = Count(UpgradeKind.Slingshot);
+        return copies > 0 ? Mathf.Lerp(.7f, 1.5f + .3f * (copies - 1), travelled / SlingshotReach) : 1;
+    }
+
+    // A slung round stretches as it gathers power, up to 30% longer.
+    public static float Stretch(float travelled) => Slung ? Mathf.Lerp(.9f, 1.3f, travelled / SlingshotReach) : 1;
 }

@@ -185,6 +185,9 @@ public static class EverydayItemMaterials
             case "Corkscrew":
                 color = new Color(.66f, .14f, .27f);
                 return true;
+            case "SlingshotBand":
+                color = new Color(.36f, .78f, .3f);
+                return true;
             case "CursedCoin":
                 color = new Color(.5f, .9f, .42f);
                 return true;

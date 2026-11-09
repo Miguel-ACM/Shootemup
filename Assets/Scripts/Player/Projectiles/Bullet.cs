@@ -8,7 +8,7 @@ public class Bullet : ABullet
     bool rubberReturned;
     bool hitResolved;
     Vector2 wallFrom;
-    float flight, weaveSign;
+    float flight, weaveSign, travelled;
     // Shared by all bullets so the scene is searched once, not on every trigger contact.
     static Shipcontroller player;
 
@@ -67,7 +67,9 @@ public class Bullet : ABullet
 
         }
         Vector2 forward = transform.up.normalized;
-        rigidBody.linearVelocity = forward * speed + new Vector2(forward.y, -forward.x) * ShotTraits.WeaveRate(flight, weaveSign);
+        float pace = speed * ShotTraits.SpeedScale(flight);
+        travelled += pace * Time.deltaTime;
+        rigidBody.linearVelocity = forward * pace + new Vector2(forward.y, -forward.x) * ShotTraits.WeaveRate(flight, weaveSign);
     }
 
 
@@ -91,7 +93,7 @@ public class Bullet : ABullet
             if (player == null)
                 player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
             player.PlayHitSound("hit1");
-            CombatHit.Apply(en, damage, collision.ClosestPoint(transform.position),
+            CombatHit.Apply(en, damage * ShotTraits.ReachDamage(travelled), collision.ClosestPoint(transform.position),
                 rigidBody != null ? rigidBody.linearVelocity : (Vector2)transform.up, companion: companionShot);
             if (CombatUpgrades.Current != null && (CombatUpgrades.Current.Count(UpgradeKind.BouncingBall) > 0 || CombatUpgrades.Current.TryRebound()))
             {

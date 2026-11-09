@@ -51,7 +51,9 @@ public sealed class PlayerRound : ABullet
     public bool companion;
     public int pierces;
     public bool returns;
-    float age, flight, weave, weaveSign;
+    float age, flight, weave, weaveSign, travelled;
+    Vector3 restScale;
+    bool shaped;
     Vector3 origin;
     Vector2 heading;
     bool detonated, returning, rebounded, rubberReturned;
@@ -134,7 +136,8 @@ public sealed class PlayerRound : ABullet
         sr.enabled = true;
         collider.enabled = true;
         age = 0;
-        flight = weave = 0;
+        flight = weave = travelled = 0;
+        shaped = false;
         weaveSign = ShotTraits.NextWeaveSign();
         lifetimeAge = 0;
         lifetime = float.PositiveInfinity;
@@ -235,7 +238,8 @@ public sealed class PlayerRound : ABullet
         }
         float brake = delivery == PlayerDelivery.Shell ? Mathf.Clamp01(1 - age / .7f) : 1;
         Vector3 wallFrom = transform.position;
-        Vector2 step = heading * speed * brake * Time.deltaTime;
+        Vector2 step = heading * speed * brake * ShotTraits.SpeedScale(flight) * Time.deltaTime;
+        travelled += step.magnitude;
         float lateral = ShotTraits.Weave(flight, weaveSign);
         step += new Vector2(heading.y, -heading.x) * (lateral - weave);
         weave = lateral;
@@ -246,6 +250,7 @@ public sealed class PlayerRound : ABullet
             return;
         }
         transform.rotation = Quaternion.FromToRotation(Vector3.up, step.sqrMagnitude > .0000001f ? step : heading);
+        Reshape();
         if (delivery == PlayerDelivery.Disc)
             transform.Rotate(0, 0, age * 540);
         if (delivery == PlayerDelivery.Flame)
@@ -276,7 +281,7 @@ public sealed class PlayerRound : ABullet
         var enemy = collision.GetComponent<AEnemy>();
         if (enemy == null || !enemy.CanReceiveDamage || !hit.Add(enemy))
             return;
-        CombatHit.Apply(enemy, damage, collision.ClosestPoint(transform.position), heading,
+        CombatHit.Apply(enemy, damage * ShotTraits.ReachDamage(travelled), collision.ClosestPoint(transform.position), heading,
             generation, companion, delivery == PlayerDelivery.Flame);
         if (chargeLevel > 0)
         {
@@ -320,6 +325,20 @@ public sealed class PlayerRound : ABullet
             }
         }
         Despawn();
+    }
+
+    // Spawners may rescale a round after Spawn, so its resting scale is read on its first move.
+    void Reshape()
+    {
+        if (!shaped)
+        {
+            restScale = transform.localScale;
+            shaped = true;
+        }
+        if (!ShotTraits.Slung)
+            return;
+        float stretch = ShotTraits.Stretch(travelled);
+        transform.localScale = new Vector3(restScale.x, restScale.y * stretch, restScale.z);
     }
 
     void TurnAccent()
