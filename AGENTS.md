@@ -169,6 +169,12 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Void forms (9 November 2026): massive layered obsidian anatomy with glowing vein seams. Form one is a horned mask with sweeping ringed horns; form two a mantis with spined scythe arms and wings; form three an octagonal maw closed by crescent mandibles; form four a crystal star with ridged points. Firing ports sit on the visible eyes.
 - Bullet variety: Miguel approved all thirteen new silhouettes (drawn by `Tools/draw_bullet_variety.py`): rice, kunai, crystal, droplet, star, snowflake, heart, candy, petal, flame, feather, crescent and gem. Each is a pooled round type that reuses the ordinary round programs; symmetric ones stay upright (heart, gem) or spin (star, snowflake, candy, crescent), and the droplet and flame trail their points. District use: Plains petals; Snow crystals and snowflakes (falling snow); City kunai and gems; rice in Tunnel, Thunder and Desert; Candyland hearts, sweets and stars; Space crescents; Underwater droplets; Hell flames; Heaven feathers and stars; Void kunai, crescents and gems. Each district warms only its own shapes, paid from the needle reserve in arrow districts, within the 7400 budget.
 
+## Two-tone hostile fire (9 November 2026)
+
+- Every district's hostile fire has two tones of its one hue: bright (the established look) and dark, a deep body with a glowing outline in the hue (Miguel chose this inverted Ikaruga-like treatment over a plainly darker colour, which vanished on dark scenery). See `ArtSource/TwoToneBulletReview`.
+- Tones are hand-picked per enemy and per boss attack, never random. Some enemies fire one tone, some the other, some both, so a tone identifies an attack family. Bosses vary the dominant tone between cards and use the other tone for accents. Child rounds inherit their parent's tone; beams stay bright and are never absorbed. `EnemyTones` holds defaults; attacks switch with `UseTone`.
+- The Polarity Engine's poles are the two tones of the current district: rounds of the ship's tone are absorbed harmlessly and each refills a little energy.
+
 ## Items and decisions
 
 - Preserve Miguel's original item names and identities. Another arm and Twerp are deliberately named and are fine. Make an item's behavior recognizable through its effects and sound; do not rename or redesign original items to explain their mechanics.
