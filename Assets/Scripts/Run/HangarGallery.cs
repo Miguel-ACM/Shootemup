@@ -168,42 +168,25 @@ public sealed partial class HangarHub
     IEnumerator InstallShelves()
     {
         yield return null;
-        for (int first = 0; first < exhibits.Length; first += GalleryShelf.Columns)
+        // Baked shelves fill the cases in order. Items added since the last bake (or a
+        // missing shelf) are built at runtime below, so the gallery never stalls; re-bake
+        // with Tools > Shootemup > Bake hangar gallery before shipping.
+        int next = 0;
+        var installed = new HashSet<string>();
+        for (int row = 0; next < exhibits.Length && row * GalleryShelf.Columns < exhibits.Length; row++)
         {
-            var request = GalleryShelf.Request(first / GalleryShelf.Columns);
+            var request = GalleryShelf.Request(row);
             yield return request;
             var shelf = request.asset as GalleryShelf;
             if (shelf == null)
-            {
-                Debug.LogError("Missing baked gallery shelf " + first);
-                yield break;
-            }
+                break;
             shelf.Register();
             double start = Time.realtimeSinceStartupAsDouble;
-            for (int j = 0; j < shelf.exhibits.Length; j++)
+            foreach (var e in shelf.exhibits)
             {
-                int i = first + j;
-                var e = exhibits[i] = shelf.exhibits[j];
-                var rig = new GameObject("Floating exhibit " + i).transform;
-                rig.SetParent(interiors[(int)Dock.Armory].fixtures.transform, false);
-                rig.position = Spot(Case(i), 0);
-                var platform = MountModel("HangarShopPlinth", rig.position + new Vector3(0, -.24f, 2.4f), -4, "Background", rig);
-                platform.localScale = Vector3.one * 2.18f;
-                platform.localRotation = PlatformTilt;
-                platforms[i] = platform.GetComponent<MeshRenderer>();
-                var go = new GameObject("Museum exhibit " + i);
-                go.transform.SetParent(rig, false);
-                var bounds = e.mesh.bounds;
-                var rotation = Quaternion.Euler(-18, 28, -9);
-                float scale = 1.24f / Mathf.Max(.01f, bounds.size.x, bounds.size.y, bounds.size.z);
-                go.transform.SetPositionAndRotation(rig.position + new Vector3(0, .15f, 1) - rotation * (bounds.center * scale), rotation);
-                go.transform.localScale = Vector3.one * scale;
-                go.AddComponent<MeshFilter>().sharedMesh = e.mesh;
-                var r = pieces[i] = go.AddComponent<MeshRenderer>();
-                r.sharedMaterial = Released(e) ? e.paint : silhouette;
-                r.sortingLayerName = "Background";
-                r.sortingOrder = -2;
-                loadedItems++;
+                if (e == null || next >= exhibits.Length || !ItemCatalog.TryGet(e.key, out _) || !installed.Add(e.key))
+                    continue;
+                InstallExhibit(next++, e);
                 if (Time.realtimeSinceStartupAsDouble - start > .0015)
                 {
                     yield return null;
@@ -212,8 +195,68 @@ public sealed partial class HangarHub
             }
             yield return null;
         }
+        foreach (var definition in ItemCatalog.Exhibits)
+        {
+            if (next >= exhibits.Length)
+                break;
+            if (installed.Contains(definition.Key))
+                continue;
+            installed.Add(definition.Key);
+            var e = RuntimeExhibit(definition);
+            if (e != null)
+            {
+                InstallExhibit(next++, e);
+                yield return null;
+            }
+        }
         galleryReady = true;
         ApplyGalleryFilter();
+    }
+
+    // The same metadata, mesh and paint the bake would store, read from the live item.
+    static GalleryShelf.Exhibit RuntimeExhibit(ItemDefinition definition)
+    {
+        var probe = new GameObject("Read gallery metadata");
+        probe.SetActive(false);
+        var item = definition.Attach(probe);
+        if (string.IsNullOrEmpty(item.GetData()[0]))
+            item.GetType().GetMethod("Awake", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)?.Invoke(item, null);
+        var data = item.GetData();
+        var mesh = IndustrialMeshFactory.ExpansionItem(definition.Key);
+        var paint = EverydayItemMaterials.For(definition.Key);
+        var kind = item.Kind;
+        Destroy(probe);
+        if (mesh == null || paint == null)
+        {
+            Debug.LogWarning("Gallery could not build exhibit " + definition.Key);
+            return null;
+        }
+        return new GalleryShelf.Exhibit { key = definition.Key, title = data[0], description = data[2], category = kind, mesh = mesh, paint = paint };
+    }
+
+    void InstallExhibit(int i, GalleryShelf.Exhibit e)
+    {
+        exhibits[i] = e;
+        var rig = new GameObject("Floating exhibit " + i).transform;
+        rig.SetParent(interiors[(int)Dock.Armory].fixtures.transform, false);
+        rig.position = Spot(Case(i), 0);
+        var platform = MountModel("HangarShopPlinth", rig.position + new Vector3(0, -.24f, 2.4f), -4, "Background", rig);
+        platform.localScale = Vector3.one * 2.18f;
+        platform.localRotation = PlatformTilt;
+        platforms[i] = platform.GetComponent<MeshRenderer>();
+        var go = new GameObject("Museum exhibit " + i);
+        go.transform.SetParent(rig, false);
+        var bounds = e.mesh.bounds;
+        var rotation = Quaternion.Euler(-18, 28, -9);
+        float scale = 1.24f / Mathf.Max(.01f, bounds.size.x, bounds.size.y, bounds.size.z);
+        go.transform.SetPositionAndRotation(rig.position + new Vector3(0, .15f, 1) - rotation * (bounds.center * scale), rotation);
+        go.transform.localScale = Vector3.one * scale;
+        go.AddComponent<MeshFilter>().sharedMesh = e.mesh;
+        var r = pieces[i] = go.AddComponent<MeshRenderer>();
+        r.sharedMaterial = Released(e) ? e.paint : silhouette;
+        r.sortingLayerName = "Background";
+        r.sortingOrder = -2;
+        loadedItems++;
     }
     void FloatGalleryPlatforms()
     {
@@ -266,6 +309,13 @@ public sealed partial class HangarHub
         int count = 0;
         for (int i = 0; i < exhibits.Length; i++)
         {
+            // An exhibit that could not be built leaves its case empty.
+            if (exhibits[i] == null)
+            {
+                caseLeds.matches[i] = false;
+                shelfSlot[i] = -1;
+                continue;
+            }
             bool match = Matches(exhibits[i]);
             caseLeds.matches[i] = match;
             shelfSlot[i] = match ? count : -1;
