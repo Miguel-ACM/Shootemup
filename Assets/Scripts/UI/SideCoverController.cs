@@ -1,65 +1,51 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Black side bars around the 9:16 playfield on wider screens, with the side item
+/// columns moved in beside them. Every layout is computed from the original anchored
+/// positions and the canvas's actual size, so switching between windowed, borderless
+/// and fullscreen (or resizing) never accumulates offsets or uses a stale size.
+/// </summary>
 public class SideCoverController : MonoBehaviour
 {
     [SerializeField] private GameObject blackRectLeft;
     [SerializeField] private GameObject blackRectRight;
     [SerializeField] private GameObject itemsLeft;
     [SerializeField] private GameObject itemsRight;
-    private float latestWidth = -1f;
-    private float latestHeight = -1f;
-    private Vector2 originalAnchorLeft;
-    private Vector2 originalAnchorRight;
-    //[SerializeField] private GameObject blackRectRight;
+    RectTransform canvasRect;
+    Vector2 originalLeft, originalRight;
+    Vector2 appliedSize = new Vector2(-1, -1);
 
-    private void Start()
+    void Awake()
     {
-        UpdateAspectRatio();
-        latestWidth = Screen.width;
-        latestHeight = Screen.height;
-        originalAnchorLeft = (itemsLeft.transform as RectTransform).anchoredPosition;
-        originalAnchorRight = (itemsRight.transform as RectTransform).anchoredPosition;
+        var canvas = GetComponentInParent<Canvas>();
+        canvasRect = canvas != null ? canvas.rootCanvas.transform as RectTransform : null;
+        originalLeft = ((RectTransform)itemsLeft.transform).anchoredPosition;
+        originalRight = ((RectTransform)itemsRight.transform).anchoredPosition;
     }
 
-    private void Update()
+    // The canvas scaler resizes the canvas after a resolution change; follow the canvas,
+    // not Screen, so the bars are laid out against the size that will actually be drawn.
+    void LateUpdate()
     {
-        UpdateAspectRatio();
-    }
-
-    private void UpdateAspectRatio()
-    {
-        if (Screen.height != latestHeight || Screen.width != latestWidth)
+        if (canvasRect == null)
+            return;
+        Vector2 size = canvasRect.rect.size;
+        if (size.x < 1 || size.y < 1 || size == appliedSize)
+            return;
+        appliedSize = size;
+        var left = (RectTransform)itemsLeft.transform;
+        var right = (RectTransform)itemsRight.transform;
+        bool wide = size.x / size.y > 9f / 16f;
+        float padding = wide ? (size.x - size.y * 9 / 16) / 2 : 0;
+        left.anchoredPosition = originalLeft + new Vector2(padding, 0);
+        right.anchoredPosition = originalRight - new Vector2(padding, 0);
+        blackRectLeft.SetActive(wide);
+        blackRectRight.SetActive(wide);
+        if (wide)
         {
-            float currentAspect = (float)Screen.width / Screen.height;
-
-            if (currentAspect > 0.5625)  // 16:9 aspect ratio
-            {
-                RectTransform blackRectLeftTransform = blackRectLeft.transform as RectTransform;
-                RectTransform blackRectRightTransform = blackRectRight.transform as RectTransform;
-                RectTransform itemsLeftTransform = itemsLeft.transform as RectTransform;
-                RectTransform itemsRightTransform = itemsRight.transform as RectTransform;
-
-                Vector2 parentSize = ((transform.GetComponentInParent<Canvas>()).transform as RectTransform).sizeDelta;
-                Vector2 newSize = new Vector2((parentSize[0] - parentSize[1] * 9 / 16) / 2, parentSize[1]);
-                float sidePadding = newSize.x;
-
-                itemsLeftTransform.anchoredPosition = new Vector2(sidePadding + itemsLeftTransform.anchoredPosition.x, itemsLeftTransform.anchoredPosition.y);
-                itemsRightTransform.anchoredPosition = new Vector2(-sidePadding + itemsRightTransform.anchoredPosition.x, itemsRightTransform.anchoredPosition.y);
-
-                blackRectLeftTransform.sizeDelta = newSize;
-                blackRectRightTransform.sizeDelta = newSize;
-                blackRectLeft.SetActive(true);
-                blackRectRight.SetActive(true);
-            }
-            else
-            {
-                blackRectLeft.SetActive(false);
-                blackRectRight.SetActive(false);
-            }
-            latestWidth = Screen.width;
-            latestHeight = Screen.height;
+            ((RectTransform)blackRectLeft.transform).sizeDelta = new Vector2(padding, size.y);
+            ((RectTransform)blackRectRight.transform).sizeDelta = new Vector2(padding, size.y);
         }
     }
 }
