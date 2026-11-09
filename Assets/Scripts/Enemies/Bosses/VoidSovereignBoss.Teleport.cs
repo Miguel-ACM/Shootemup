@@ -9,6 +9,7 @@ public sealed partial class VoidSovereignBoss
     Vector3 perch;
     MaterialPropertyBlock riftInk;
     MeshRenderer[] anatomy;
+    Vector3 restingScale;
     public bool Teleporting => teleporting;
     protected override bool PatternEmissionAllowed => !Hidden && !teleporting;
     public override bool CanBeTargeted => !Hidden && !teleporting && base.CanBeTargeted;
@@ -27,6 +28,7 @@ public sealed partial class VoidSovereignBoss
         departure = VoidRiftVisual.Create(transform);
         arrival = VoidRiftVisual.Create(transform);
         anatomy = Hull.GetComponentsInChildren<MeshRenderer>(true);
+        restingScale = Hull.localScale;
         perch = station;
     }
 
@@ -54,6 +56,9 @@ public sealed partial class VoidSovereignBoss
         }
     }
 
+    // The body is pulled sideways into a vertical tear while shards and a shrinking
+    // ring rush in after it; a bolt races to the new perch, where a second tear
+    // throws out a shockwave and shards and the body unfolds with a small overshoot.
     IEnumerator Teleport()
     {
         teleporting = true;
@@ -61,33 +66,58 @@ public sealed partial class VoidSovereignBoss
         firingCue.ClearWarning();
         var from = transform.position;
         var to = NextPerch();
+        bool drawnIn = false, thrownOut = false;
         // Both ends are visible before the body moves. The arrival gets a complete
         // breathing beat before any projectile or physical contact can resume.
-        for (float t=0;t<1.65f;)
+        for (float t = 0; t < 1.65f;)
         {
-            if (!GameRules.playerDisabled && !WorldTimeStop.Frozen) t+=Time.deltaTime;
-            float leave=Mathf.SmoothStep(0,1,Mathf.Clamp01(t/.55f));
-            float enter=Mathf.SmoothStep(0,1,Mathf.Clamp01((t-.72f)/.48f));
-            if(t<.66f) Dissolve(leave);
+            if (!GameRules.playerDisabled && !WorldTimeStop.Frozen)
+                t += Time.deltaTime;
+            float leave = Mathf.SmoothStep(0, 1, Mathf.Clamp01(t / .55f));
+            float enter = Mathf.SmoothStep(0, 1, Mathf.Clamp01((t - .72f) / .48f));
+            if (!drawnIn && t > .04f)
+            {
+                drawnIn = true;
+                departure.Burst(from, true);
+            }
+            if (t < .66f)
+            {
+                Dissolve(leave);
+                Hull.localScale = Vector3.Scale(restingScale, new Vector3(Mathf.Lerp(1, .06f, leave), Mathf.Lerp(1, 1.35f, leave), 1));
+            }
             else
             {
-                transform.position=to;
-                Dissolve(1-enter);
+                transform.position = to;
+                if (!thrownOut)
+                {
+                    thrownOut = true;
+                    arrival.Burst(to, false);
+                }
+                Dissolve(1 - enter);
+                float overshoot = 1 + .14f * Mathf.Sin(enter * Mathf.PI);
+                Hull.localScale = Vector3.Scale(restingScale, new Vector3(Mathf.Lerp(.06f, 1, enter) * overshoot, Mathf.Lerp(1.35f, 1, enter), 1));
             }
-            departure.Pose(from,Mathf.Sin(Mathf.Clamp01(t/.88f)*Mathf.PI),t,false);
-            arrival.Pose(to,Mathf.Sin(Mathf.Clamp01((t-.14f)/1.51f)*Mathf.PI),t,true);
+            float pull = Mathf.Clamp01(t / .62f);
+            departure.Shock(from, Mathf.Lerp(3.1f, .15f, Mathf.SmoothStep(0, 1, pull)), Mathf.Sin(pull * Mathf.PI) * .9f);
+            float push = Mathf.Clamp01((t - .7f) / .6f);
+            arrival.Shock(to, Mathf.Lerp(.2f, 3.6f, 1 - (1 - push) * (1 - push)), push > 0 ? 1 - push : 0);
+            departure.Bolt(from, to, (t - .42f) / .42f, t);
+            departure.Pose(from, Mathf.Sin(Mathf.Clamp01(t / .88f) * Mathf.PI), t, false);
+            arrival.Pose(to, Mathf.Sin(Mathf.Clamp01((t - .14f) / 1.51f) * Mathf.PI), t, true);
             yield return null;
         }
-        perch=to;
+        perch = to;
         Dissolve(0);
-        departure.Hide();arrival.Hide();
-        contact.enabled=true;
-        teleporting=false;
+        Hull.localScale = restingScale;
+        departure.Hide();
+        arrival.Hide();
+        contact.enabled = true;
+        teleporting = false;
     }
 
     void CancelTeleport()
     {
         teleporting=false;
-        if(departure!=null){departure.Hide();arrival.Hide();Dissolve(0);}
+        if(departure!=null){departure.Hide();arrival.Hide();Dissolve(0);Hull.localScale=restingScale;}
     }
 }
