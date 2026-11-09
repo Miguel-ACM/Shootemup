@@ -1,0 +1,13 @@
+rice: Touhou rice grain: dense streams that read as 'many'.
+kunai: Dagger with ring pommel: sharp aimed volleys.
+crystal: Faceted ice shard: Snow.
+droplet: Teardrop: Underwater plumes and rain.
+star: Five-point star: Heaven / Candyland sparkle.
+snowflake: Six-arm flake: Snow's falling snow.
+heart: Heart: Candyland.
+candy: Wrapped sweet: Candyland gumdrop wakes.
+petal: Leaning leaf: Plains drifting fire.
+flame: Flame tongue: Hell embers.
+feather: Feather: Heaven's angel.
+crescent: Crescent: Void / Space moons.
+gem: Cut gem: City / Void accents.
