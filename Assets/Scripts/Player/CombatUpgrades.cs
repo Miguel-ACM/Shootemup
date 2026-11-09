@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public enum UpgradeKind
 {
-    Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot
+    Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -51,11 +51,11 @@ public sealed class CombatUpgrades : MonoBehaviour
     public static float HostileSpeedAt(Vector3 position)
     {
         if (Current == null)
-            return Drill.SlowAt(position);
+            return Drill.SlowAt(position) * InkPuddle.SlowAt(position);
         float rate = Current.Count(UpgradeKind.QualityGlasses) > 0 ? .9f : 1;
         if (Current.Count(UpgradeKind.BadGlasses) > 0 && ((Vector2)(position - Current.transform.position)).sqrMagnitude <= 9)
             rate *= .75f;
-        return rate * Drill.SlowAt(position);
+        return rate * Drill.SlowAt(position) * InkPuddle.SlowAt(position);
     }
 
     public void Add(UpgradeKind kind)
@@ -247,6 +247,8 @@ public sealed class CombatUpgrades : MonoBehaviour
 
     public void Killed(AEnemy enemy)
     {
+        if (Count(UpgradeKind.Ink) > 0)
+            InkPuddle.Spill(enemy.transform.position, Count(UpgradeKind.Ink));
         if (Count(UpgradeKind.ChainReactor) > 0 && enemy.GetComponent<BurningHull>() != null && Ready("chain", .3f))
         {
             Fragments(enemy.transform.position, 8, 6, 60);

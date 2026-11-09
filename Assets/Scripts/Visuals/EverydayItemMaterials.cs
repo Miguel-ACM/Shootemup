@@ -188,6 +188,9 @@ public static class EverydayItemMaterials
             case "SlingshotBand":
                 color = new Color(.36f, .78f, .3f);
                 return true;
+            case "InkPot":
+                color = new Color(.22f, .3f, .72f);
+                return true;
             case "CursedCoin":
                 color = new Color(.5f, .9f, .42f);
                 return true;

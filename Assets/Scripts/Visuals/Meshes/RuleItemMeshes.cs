@@ -9,6 +9,7 @@ public static partial class IndustrialMeshFactory
         {
             case "Corkscrew": CorkscrewModel(b); break;
             case "SlingshotBand": SlingshotBandModel(b); break;
+            case "InkPot": InkPotModel(b); break;
             default: return false;
         }
         return true;
