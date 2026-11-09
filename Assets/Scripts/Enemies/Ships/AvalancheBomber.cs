@@ -25,6 +25,8 @@ public sealed class AvalancheBomber : DistrictEnemy
             Fan<BurstShell>(2, 37, 3.2f, .46f);
         else
         {
+            // The aimed shells are bright; the slow pillars that accelerate are dark.
+            UseTone(HostileTone.Dark);
             int count = Dense(4);
             for (int i = 0; i < count; i++)
                 Fire<SimpleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 22), .3f, .22f)

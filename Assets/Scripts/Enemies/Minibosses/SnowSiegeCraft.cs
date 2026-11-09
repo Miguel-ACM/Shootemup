@@ -26,18 +26,26 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
             for (int i = 0; i < flakes; i++)
             {
                 float lane = i - (flakes - 1) * .5f;
+                // Neighbouring flakes alternate tone, so the snowfall is a two-tone weave.
+                var shade = i % 2 == 0 ? HostileTone.Dark : HostileTone.Bright;
+                UseTone(shade);
                 // The upward throw is harmless; only the falling snow hurts.
                 Fire<SimpleRound>(p, CombatVisuals.Rotate(Vector2.up, lane * 4), 9 + (i % 3), .16f).Harmless().FadeAt(.45f);
                 float x = Mathf.Lerp(Camera.LeftLimit + .3f, Camera.RightLimit - .3f, (i + (volley / 3 % 2) * .5f) / flakes);
+                CombatRound.LaunchTone = shade;
                 CombatRound.Launch<SnowflakeRound>(new Vector3(x, CombatRound.Border.yMax + .8f), Vector2.down, 1.5f + (i % 3) * .3f, .19f)
                     .Pause(.05f, .6f + (i % 4) * .15f, CombatRound.Turn.Down, lane, 1)
                     .Sway(i % 2 == 0 ? .35f : -.35f, .45f);
+                CombatRound.LaunchTone = HostileTone.Bright;
             }
         }
         else if (beat == 1)
         {
             int count = Dense(Enraged ? 13 : 11);
+            // The re-aiming arrow fans split by wing: one bright, one dark, swapping each rotation.
             for (int mirror = -1; mirror <= 1; mirror += 2)
+            {
+                UseTone(Wing(mirror));
                 for (int i = 0; i < count; i++)
                 {
                     float lane = i - (count - 1) * .5f;
@@ -45,12 +53,20 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
                         .Pause(.6f, .6f + Mathf.Abs(lane) * .04f, CombatRound.Turn.Aim, mirror * lane * 3, .25f)
                         .Ramp(4.5f, 1.2f, 1.25f);
                 }
+            }
         }
         else
+            // One dark and one bright snowball; each sheds sprays of its own tone.
             for (int mirror = -1; mirror <= 1; mirror += 2)
+            {
+                UseTone(Wing(-mirror));
                 Fire<GiantOrb>(Hull.TransformPoint(ports[0]), CombatVisuals.Rotate(Vector2.down, mirror * 16), 1.65f, Enraged ? .72f : .66f)
                     .SideSpray(1.2f);
+            }
     }
+    // The bright wing: left on even rotations, right on odd ones.
+    HostileTone Wing(int mirror) => (mirror < 0) == (volley / 3 % 2 == 0) ? HostileTone.Bright : HostileTone.Dark;
+
     // The bays are exposed during firing and reload; armor still accepts every weapon.
     public override void damage(float amount)
     {

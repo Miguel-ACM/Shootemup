@@ -19,6 +19,8 @@ public sealed class ShieldTransport : DistrictEnemy
             Fan<PlasmaOrb>(Difficulty.Hard ? 3 : Difficulty.Easy ? 2 : 4, Difficulty.Hard ? 37 : Difficulty.Easy ? 37 : 74f / 3, 2.2f, .48f);
         else
         {
+            // The gust halts and turns into falling sheets: dark against the bright plasma.
+            UseTone(HostileTone.Dark);
             int count = Mathf.Max(2, (Dense(4) + 1) / 2 * 2);
             for (int i = 0; i < count; i++)
             {

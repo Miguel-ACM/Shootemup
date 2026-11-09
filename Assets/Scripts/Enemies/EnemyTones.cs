@@ -19,6 +19,17 @@ public static class EnemyTones
         { typeof(HarrowBomber), HostileTone.Dark },
         { typeof(ReedSkimmer), HostileTone.Dark },
         { typeof(FieldsHeavyWing), HostileTone.Dark },
+
+        // Snow: re-aimed chevrons and aimed shells are bright; sliding sheets, hanging
+        // icicles and falling snow are dark.
+        { typeof(ColdWeatherFighter), HostileTone.Bright },
+        { typeof(FrostAuger), HostileTone.Bright },
+        { typeof(ShieldTransport), HostileTone.Bright },
+        { typeof(AvalancheBomber), HostileTone.Bright },
+        { typeof(SiegeGunship), HostileTone.Dark },
+        { typeof(HailLantern), HostileTone.Dark },
+        { typeof(IcicleWeaver), HostileTone.Dark },
+        { typeof(SnowSiegeCraft), HostileTone.Dark },
     };
 
     public static HostileTone Default(Type enemy) => defaults.TryGetValue(enemy, out var tone) ? tone : HostileTone.Bright;
