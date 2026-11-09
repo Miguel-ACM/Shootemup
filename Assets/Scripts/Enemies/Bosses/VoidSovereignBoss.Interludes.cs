@@ -58,9 +58,23 @@ public sealed partial class VoidSovereignBoss
             line.SetPosition(1,p+(Vector3)inward*(.2f+charge*.45f));
         }
     }
+    // Tones (Miguel, 9 November 2026), a different split for each disappearance:
+    //   Funeral fans: the left mouth fans bright, the right mouth dark.
+    //   Scissor brocade: whole waves alternate bright and dark.
+    //   Unmaking: fast crests bright, slow troughs dark, so the scallops read.
+    // Giant crowns and aimed or slow replies take the tone opposite their wave.
+    static HostileTone WaveTone(int chapter,int beat,int side,float speed)
+        =>chapter==1?(side<0?HostileTone.Bright:HostileTone.Dark):
+          chapter==2?(beat%2==0?HostileTone.Bright:HostileTone.Dark):
+          speed>=3.0f?HostileTone.Bright:HostileTone.Dark;
     void PerimeterBarrage(int chapter,int beat)
     {
         if(beat%6==5)return;
+        Weave(chapter,beat);
+        CombatRound.LaunchTone=HostileTone.Bright;
+    }
+    void Weave(int chapter,int beat)
+    {
         int edge=SourceEdge(chapter),count=Dense(chapter==3?15:13);
         bool crown=beat%4==0;
         Vector2 inward=Inward(edge);
@@ -68,6 +82,8 @@ public sealed partial class VoidSovereignBoss
         {
             Vector3 p=Source(edge,side);
             if(CombatVisuals.Player!=null&&Vector2.Distance(p,CombatVisuals.Player.position)<1.6f)continue;
+            // Unmaking's crests carry both tones, so its aimed reply is dark.
+            CombatRound.LaunchTone=chapter==3?HostileTone.Dark:Other(WaveTone(chapter,beat,side,0));
             if(beat%7==0)
                 CombatRound.Launch<SimpleRound>(p,CombatVisuals.Aim(p),2.8f,.22f).LivesFor(12);
             for(int i=0;i<count;i++)
@@ -80,6 +96,8 @@ public sealed partial class VoidSovereignBoss
                 {
                     // Funeral fans: mirrored peacock feathers open as one moving wavefront.
                     float angle=side*(u*57+Mathf.Sin(beat*.16f)*22);
+                    var shade=WaveTone(chapter,beat,side,0);
+                    CombatRound.LaunchTone=crown&&i==count-1?Other(shade):shade;
                     WovenShot(i,crown&&i==count-1,chapter,p,CombatVisuals.Rotate(inward,angle),
                         3.0f+.9f*(1-u*u)).Ramp(1.25f,1.1f,1).FadeAt(crown&&i==count-1?5.8f:9);
                 }
@@ -87,9 +105,12 @@ public sealed partial class VoidSovereignBoss
                 {
                     // Scissor brocade: all strands hinge together, preserving the ordered comb.
                     float angle=side*(u*51+24*Mathf.Sin(beat*.21f));
+                    var shade=WaveTone(chapter,beat,side,0);
+                    CombatRound.LaunchTone=crown&&i==count-1?Other(shade):shade;
                     WovenShot(i,crown&&i==count-1,chapter,p,CombatVisuals.Rotate(inward,angle),
                         2.7f+.6f*(1-u*u))
                         .Pause(.85f,.20f,CombatRound.Turn.Rotate,-side*26,1.2f).FadeAt(crown&&i==count-1?5.8f:9);
+                    CombatRound.LaunchTone=Other(shade);
                     if(!crown&&beat%3==0&&i==count-1)
                         CombatRound.Launch<SimpleRound>(p,CombatVisuals.Rotate(inward,angle),1.65f,.22f).FadeAt(8);
                 }
@@ -98,6 +119,8 @@ public sealed partial class VoidSovereignBoss
                     // Unmaking: opposed, scalloped fronts interleave fast crests and slow troughs.
                     float angle=side*(u*64+18*Mathf.Sin(beat*.2f));
                     float speed=3.0f+.75f*Mathf.Cos(u*Mathf.PI*2+beat*.22f);
+                    var shade=WaveTone(chapter,beat,side,speed);
+                    CombatRound.LaunchTone=crown&&i==count-1?Other(shade):shade;
                     WovenShot(i,crown&&i==count-1,chapter,p,CombatVisuals.Rotate(inward,angle),speed)
                         .Sway(.16f,.5f).Ramp(1.3f,1,1).FadeAt(crown&&i==count-1?5.8f:9);
                 }
