@@ -47,12 +47,13 @@ Shader "Shootemup/Combat Projectile"
                 half brightness=max(color.r,max(color.g,color.b));
                 // Shade only existing bright ink: alpha, the dark rim and the collider stay intact.
                 half enamel=smoothstep(.22,.8,brightness);
-                // Dark tone (Ikaruga-like): the artwork's dark outline glows in the district hue,
-                // its body turns deep and its brightest highlight stays as a pale glint.
+                // Dark tone (Ikaruga-like): the artwork's dark outline glows in the district hue
+                // and its body turns deep. The highlight is only a slightly lighter body shade;
+                // a pale glint or gloss on the dark body read as a stray blob (Miguel).
                 half outline=1-smoothstep(.12,.26,brightness);
                 half3 hue=_SpriteTint.rgb;
                 half3 deep=lerp(hue*(.16+.14*(1-brightness)),hue*1.1+.1,outline);
-                deep=lerp(deep,.55+hue*.35,smoothstep(.97,1,brightness));
+                deep=lerp(deep,hue*.34,smoothstep(.97,1,brightness));
                 color.rgb=lerp(lerp(color.rgb,brightness.xxx,_Neutralize)*hue,deep,_Dark);
                 color*=v.color;
                 brightness=max(color.r,max(color.g,color.b));
@@ -64,7 +65,7 @@ Shader "Shootemup/Combat Projectile"
                 float facet=saturate(1-abs(dot(v.uv,float2(.85,.45))-.49)*11);
                 float2 light=(v.uv-float2(.34,.69))*float2(5,4.5);
                 float glint=saturate(1-dot(light,light));
-                half shine=enamel*_Gloss*(facet*facet*.25+glint*glint*.65)*(1-_Dark*.7);
+                half shine=enamel*_Gloss*(facet*facet*.25+glint*glint*.65)*(1-_Dark);
                 color.rgb=lerp(color.rgb,half3(1,1,1),shine);
                 // HDR energy is collected by one shared bloom, never a light or halo per round.
                 // Keep the original silhouette and dark ink out of the emissive core.

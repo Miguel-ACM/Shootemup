@@ -59,7 +59,7 @@ def tone(sprite, accent, mode):
                 emit = [c * l * enamel * EMISSION * .35 for c in accent]
             else:
                 # Inverted: the outline glows in the hue, the body is deep and dark,
-                # the original highlight survives as a pale glint.
+                # and the highlight is only a slightly lighter body shade.
                 if l < .22:
                     base = [min(1, c * 1.1 + .1) for c in accent]
                     emit = [c * .9 for c in accent]
@@ -67,7 +67,7 @@ def tone(sprite, accent, mode):
                     body = .16 + .14 * (1 - l)
                     base = [c * body for c in accent]
                     if l > .99:
-                        base = [.55 + c * .35 for c in accent]
+                        base = [c * .34 for c in accent]
                     emit = [0, 0, 0]
             final = [min(1, b_ + e) for b_, e in zip(base, emit)]
             cp[x, y] = tuple(int(255 * c) for c in final) + (a,)
