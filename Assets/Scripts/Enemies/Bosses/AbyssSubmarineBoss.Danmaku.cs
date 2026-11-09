@@ -12,6 +12,14 @@ using UnityEngine;
 //   Charge: it rams straight down the arena, shedding a dense wake of arrows sideways
 //     the whole way, never stopping or aiming; foam marks the hull, which hurts on
 //     contact. In phase two it also drops depth charges that explode 360.
+// Tones (Miguel, 9 November 2026), flipping between surfaced beats and phases:
+//   Phase one surfaced: bright rain, dark torpedoes, then bright current arrows with
+//     dark circular beads.
+//   Phase two surfaced: dark rain, a bright pressure lace, dark aimed wavefronts.
+//   Crush Depth: bright rain, dark torpedoes under a bright lace, dark wavefronts.
+//   Emergence: a dark circular ring with a bright arrow ring (a third dark ring on
+//     Hard), and bright rising bubbles.
+//   Charge: a dark arrow wake with bright circular ticks and bright depth charges.
 public sealed partial class AbyssSubmarineBoss
 {
     int plumes, emergences;
@@ -26,32 +34,52 @@ public sealed partial class AbyssSubmarineBoss
             // Hard final phase, Crush Depth: rain, torpedo racks and the pressure lace all
             // fire on every surfacing, the dive cycle runs faster and the wake is thicker.
             if (beat == 0)
-                Rain();
+                Rain(HostileTone.Bright);
             else if (beat == 1)
             {
                 Torpedoes();
-                Phrase(MirrorLace(Hull, new Vector3(-1.02f, .3f, -.3f), new Vector3(1.02f, .3f, -.3f), Dense(30), 3, 60, 18, 3.4f, .06f, volley % 2 == 0 ? 1 : -1));
+                Phrase(Toned(HostileTone.Bright, MirrorLace(Hull, new Vector3(-1.02f, .3f, -.3f), new Vector3(1.02f, .3f, -.3f), Dense(30), 3, 60, 18, 3.4f, .06f, volley % 2 == 0 ? 1 : -1)));
             }
             else
+            {
+                UseTone(HostileTone.Dark);
                 ArrowWavefront(Muzzle(), Aim, Dense(21)|1, 100, 3, 2.8f, .8f);
+            }
             return;
         }
         if (beat == 0)
-            Rain();
+            Rain(phaseTwo ? HostileTone.Dark : HostileTone.Bright);
         else if (!phaseTwo && beat == 1)
             Torpedoes();
         else if (!phaseTwo)
             Phrase(Current(volley / 3 % 2 == 0 ? 1 : -1));
         else if (beat == 1)
-            Phrase(MirrorLace(Hull, new Vector3(-1.02f, .3f, -.3f), new Vector3(1.02f, .3f, -.3f), Dense(30), 3, 60, 18, 3.4f, .06f, volley % 2 == 0 ? 1 : -1));
+            Phrase(Toned(HostileTone.Bright, MirrorLace(Hull, new Vector3(-1.02f, .3f, -.3f), new Vector3(1.02f, .3f, -.3f), Dense(30), 3, 60, 18, 3.4f, .06f, volley % 2 == 0 ? 1 : -1)));
         else
+        {
+            UseTone(HostileTone.Dark);
             ArrowWavefront(Muzzle(), Aim, Dense(19)|1, 90, 3, 2.8f, .8f);
+        }
+    }
+
+    // Runs a shared helper phrase in one tone, re-applied before every step because
+    // concurrent phrases share the tone field.
+    IEnumerator Toned(HostileTone shade, IEnumerator phrase)
+    {
+        while (true)
+        {
+            UseTone(shade);
+            if (!phrase.MoveNext())
+                yield break;
+            yield return phrase.Current;
+        }
     }
 
     // Big slow torpedoes that wind up to full speed along their aim.
     void Torpedoes()
     {
         int tubes = Dense(7);
+        UseTone(HostileTone.Dark);
         for (int side = 1; side <= 2; side++)
         {
             var port = Muzzle(side);
@@ -69,6 +97,7 @@ public sealed partial class AbyssSubmarineBoss
         for (int i = 0; i < shots; i++)
         {
             float lane = i / (shots - 1f) * 2 - 1;
+            UseTone(i % 3 == 0 ? HostileTone.Dark : HostileTone.Bright);
             for (int mirror = -1; mirror <= 1; mirror += 2)
                 ScoredShot(i%3==0,Muzzle(mirror < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.down, mirror * sign * (12 + lane * 20)), 2.8f)
                     .Fall(new Vector2(-mirror * sign * 1.5f, 0));
@@ -81,9 +110,10 @@ public sealed partial class AbyssSubmarineBoss
 
     // Rain from the surface: a mirrored plume of arrows thrown up in three speed
     // layers, falling back under gravity as nested arcs spreading over the arena.
-    void Rain()
+    void Rain(HostileTone shade)
     {
         plumes++;
+        UseTone(shade);
         int lanes = Dense(19) | 1;
         float tilt = plumes % 3 == 1 ? -12 : plumes % 3 == 2 ? 12 : 0;
         for (int layer = 0; layer < 3; layer++)
@@ -106,16 +136,20 @@ public sealed partial class AbyssSubmarineBoss
         int beads = Dense(phaseTwo ? 32 : 28);
         int rings = phaseThree ? 3 : 2;
         for (int ring = 0; ring < rings; ring++)
+        {
+            UseTone(ring == 1 ? HostileTone.Bright : HostileTone.Dark);
             for (int i = 0; i < beads; i++)
             {
                 var axis = CombatVisuals.Rotate(Vector2.down, offset * beads + (i + ring * .5f) * 360f / beads + emergences * 5);
                 ScoredShot(ring==0,transform.position + (Vector3)axis * .8f, axis, speed + .6f + ring * .8f);
             }
+        }
         if (!phaseTwo)
             return;
         // Bubbles: big slow rounds pushed out all round, then buoyancy lifts them in
         // wobbling arcs back up past the hull.
         int bubbles = Dense(14);
+        UseTone(HostileTone.Bright);
         for (int i = 0; i < bubbles; i++)
         {
             var axis = CombatVisuals.Rotate(Vector2.down, (i + .5f) * 360f / bubbles + emergences * 9);
@@ -130,6 +164,7 @@ public sealed partial class AbyssSubmarineBoss
     void ChargeWake(int tick)
     {
         var foam = new Color(.42f, .83f, .94f);
+        UseTone(tick % 3 == 0 ? HostileTone.Bright : HostileTone.Dark);
         for (int side = -1; side <= 1; side += 2)
         {
             var flank = Hull.TransformPoint(new Vector3(side * 1.02f, .3f, -.3f));
@@ -149,6 +184,7 @@ public sealed partial class AbyssSubmarineBoss
         {
             // Depth charges left in the path, exploding all round a moment later.
             int shards = Dense(14);
+            UseTone(HostileTone.Bright);
             Fire<SimpleRound>(transform.position + Vector3.up * 1.5f, Vector2.up, .3f, .4f)
                 .SplitAt(1.1f, shards, 360f / shards, 2.6f, .19f);
         }
