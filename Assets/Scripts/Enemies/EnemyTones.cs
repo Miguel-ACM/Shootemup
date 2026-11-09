@@ -55,6 +55,15 @@ public static class EnemyTones
         { typeof(CapacitorKite), HostileTone.Bright },
         { typeof(StormReactor), HostileTone.Bright },
         { typeof(StormSkimmer), HostileTone.Dark },
+
+        // Desert: rounds that lunge or burst at the pilot are bright; sand puffs, wing dust
+        // and mines that carry on are dark.
+        { typeof(SandStriker), HostileTone.Bright },
+        { typeof(SandWorm), HostileTone.Bright },
+        { typeof(SandEmitter), HostileTone.Dark },
+        { typeof(DuneMoth), HostileTone.Dark },
+        { typeof(MirageObelisk), HostileTone.Dark },
+        { typeof(ScarabDredger), HostileTone.Dark },
     };
 
     public static HostileTone Default(Type enemy) => defaults.TryGetValue(enemy, out var tone) ? tone : HostileTone.Bright;

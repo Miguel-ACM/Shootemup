@@ -38,6 +38,7 @@ public sealed class ScarabDredger : DistrictMiniboss
                 {
                     var axis = CombatVisuals.Rotate(Vector2.right * side, -side * (i * 15 - 30));
                     bool lunges = i % 2 == 1;
+                    UseTone(lunges ? HostileTone.Bright : HostileTone.Dark);
                     Fire<SimpleRound>(Muzzle(side < 0 ? 0 : 1), axis, 2.4f + (i % 2) * .5f, .22f)
                         .Pause(.5f, .8f + i * .06f, lunges ? CombatRound.Turn.Aim : CombatRound.Turn.Keep, 0, lunges ? 1.35f : 1.2f);
                 }
@@ -47,14 +48,22 @@ public sealed class ScarabDredger : DistrictMiniboss
             {
                 var aim = CombatVisuals.Aim(Muzzle(2));
                 float open = 10 + Mathf.Abs(Mathf.Sin(n * .45f)) * 30;
+                // A bright blast on one side of the pilot, a dark one on the other.
                 foreach (int mirror in new[] { -1, 1 })
+                {
+                    UseTone(mirror < 0 ? HostileTone.Bright : HostileTone.Dark);
                     Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(aim, mirror * open), 3.8f, .19f);
+                }
             });
         else
         {
             int lanes = Dense(11);
+            // The fountain's lanes fall back in alternating tones.
             for (int i = 0; i < lanes; i++)
+            {
+                UseTone(i % 2 == 0 ? HostileTone.Dark : HostileTone.Bright);
                 Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(Vector2.up, (i - (lanes - 1) * .5f) * 12), 4.2f, .19f).Fall(new Vector2(0, -3f));
+            }
         }
     }
 }

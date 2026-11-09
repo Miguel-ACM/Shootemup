@@ -64,6 +64,8 @@ public sealed class SandWorm : DistrictEnemy
             return;
         // Alternating body ports create a travelling accent; the rounds shimmer like heat haze.
         int count = Dense(3);
+        // The two port sets fire opposite tones, so the travelling accent alternates.
+        UseTone(volley % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
         for (int i = volley % 2; i < segments.Length; i += 2)
         {
             Vector3 port = segments[i].TransformPoint(new Vector3(0, 0, -.32f));
