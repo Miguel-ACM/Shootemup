@@ -62,7 +62,7 @@ public class GameRules : MonoBehaviour
         playerShootTravelSpeed = 16f;
         playerShootSize = 1.5f;
         playerShootFollowness = 0f;
-        playerMoveSpeed = 8f;
+        playerMoveSpeed = 7.2f;
         activeEnergyCost = 1f;
 
         luck = 0f;

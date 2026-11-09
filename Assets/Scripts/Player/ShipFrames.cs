@@ -14,7 +14,8 @@ public static class ShipFrames
         public ShipFrame frame;
         public string model;            // Terra model name; null keeps the GR-07 hull
         public int hits;
-        public float moveSpeed = 8, shootDamage = 2;
+        // Base handling is about 10% slower than the original 8 (Miguel, 9 November 2026).
+        public float moveSpeed = 7.2f, shootDamage = 2;
         public int shootNumber = 2;
         public string primary = "BaseWeapon"; // null: no gun of its own
         public string[] starters = new string[0];
@@ -26,9 +27,9 @@ public static class ShipFrames
     {
         new Definition { frame = ShipFrame.GR07, hits = 5 },
         // A slower laser hull with a stronger beam and a barrel roll.
-        new Definition { frame = ShipFrame.Lancer, model = "ShipLancer", hits = 4, moveSpeed = 6.8f, shootDamage = 4, shootNumber = 1, primary = "BeamEmitter", starters = new[] { "BarrelRoll" }, exhaust = new Vector2(.11f, -.40f), exhaustScale = .32f },
+        new Definition { frame = ShipFrame.Lancer, model = "ShipLancer", hits = 4, moveSpeed = 6.1f, shootDamage = 4, shootNumber = 1, primary = "BeamEmitter", starters = new[] { "BarrelRoll" }, exhaust = new Vector2(.11f, -.40f), exhaustScale = .32f },
         // Glass cannon: three harder-hitting rounds that ignite, three hits.
-        new Definition { frame = ShipFrame.Ember, model = "ShipEmber", hits = 3, moveSpeed = 9.2f, shootNumber = 3, shootDamage = 2.4f, starters = new[] { "Lighter" }, exhaust = new Vector2(.15f, -.30f), exhaustScale = .34f },
+        new Definition { frame = ShipFrame.Ember, model = "ShipEmber", hits = 3, moveSpeed = 8.3f, shootNumber = 3, shootDamage = 2.4f, starters = new[] { "Lighter" }, exhaust = new Vector2(.15f, -.30f), exhaustScale = .34f },
         // Unarmed carrier: two laser drones do the fighting.
         new Definition { frame = ShipFrame.Warden, model = "ShipWarden", hits = 6, primary = null, starters = new[] { "LaserDroneItem", "LaserDroneItem" }, exhaust = new Vector2(.17f, -.28f), exhaustScale = .36f },
     };

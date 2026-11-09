@@ -40,6 +40,8 @@ public class Shipcontroller : MonoBehaviour
     //private int currBulletOutIdx = 0;
 
     public float slowMultiplier = 0.5f;
+    // Focus runs a little slower than the serialized multiplier, which items still scale.
+    const float FocusPace = .85f;
     private float speedMultiplier = 1f;
 
     Collider2D circleCollider;   // hexagonal PolygonCollider2D since the PSXv2 hitbox
@@ -314,7 +316,7 @@ public class Shipcontroller : MonoBehaviour
         // Debug: K repairs the hull to full during a run (in the hangar K unlocks every item).
         if (!HangarHub.Active && health > 0 && Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
             Repair(Mathf.CeilToInt(maxHealth));
-        float focusSpeed = HangarHub.Active ? 2f : slowMultiplier;
+        float focusSpeed = HangarHub.Active ? 2f : slowMultiplier * FocusPace;
         speedMultiplier = GameInput.Snapshot.Focus ? focusSpeed : 1;
         horizontalMove = move.x * GameRules.playerMoveSpeed * GameClock.PlayerDelta * speedMultiplier;
         verticalMove = move.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * GameClock.PlayerDelta * speedMultiplier;
