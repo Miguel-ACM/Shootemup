@@ -246,8 +246,8 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 ## Route unlocks (9 November 2026)
 
-- Slower campaign progression: a fresh save flies only Plains > Snow > Thunder > Space > Hell. Beating a boss on any difficulty opens its neighbour from the next run: Snow opens City together with Tunnel (so the City branch never meets two sealed doors), City opens Candyland, Thunder Desert, Space Underwater, Hell Void and Void Heaven. The simulator never opens districts.
-- Until Void opens, Hell's boss reward ends the campaign as a victory and commissions the next hull; once Void opens, the campaign continues into it.
+- Slower campaign progression (latest, 9 November 2026): a fresh save flies only Plains > Snow > Thunder. Beating a boss on any difficulty opens districts from the next run: Snow opens City together with Tunnel (so the City branch never meets two sealed doors), City opens Candyland, Thunder opens Desert and Space, Space opens Hell, Desert, Tunnel or Candyland opens Underwater (only the side districts do), Hell opens Void and Void opens Heaven. The simulator never opens districts.
+- A run ends as a victory after the reward of the first boss whose way on is still sealed. Only a campaign that ends at Hell or beyond commissions the next hull; once Void opens, Hell continues into it.
 - Sealed routes stay in the route choice as a dark panel with a Python-drawn pixel padlock instead of the name; steering into it rattles the padlock and never charges. New districts are announced through the unlock receipt, boss-clear banner and hangar tag with their tinted district stamp.
 - Every existing save restarted on the first route (save version 4), by Miguel's choice.
 
