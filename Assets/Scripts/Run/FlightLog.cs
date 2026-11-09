@@ -154,6 +154,7 @@ public static partial class MetaProgress
             record.flawless |= mark;
         int previousUnlocks = flight.unlocks.Count;
         AwardDistrictItems(clean);
+        AwardRoutes();
         Save();
         bool noHitEligible = ItemUnlocks.AllowsNoHit(flight.difficulty);
         BossCleared?.Invoke(new BossClearNotice(noHitEligible && flight.hits == districtHits,
@@ -177,6 +178,7 @@ public static partial class MetaProgress
             contract = FlightTrials.Active?.title
         };
         LastFlight = null;
+        runRoutes = new List<string>(Data.routes);
         bossHits = districtHits = 0;
         engagedBoss = null;
         districtDefeated = false;

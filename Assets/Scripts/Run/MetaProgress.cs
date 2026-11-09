@@ -22,7 +22,7 @@ public static partial class MetaProgress
     [Serializable]
     sealed class SaveData
     {
-        public int version = 3;
+        public int version = 4;
         public int lastFrame;
         public RunDifficulty difficulty = RunDifficulty.Normal;
         public string pin;
@@ -34,6 +34,8 @@ public static partial class MetaProgress
         public string ship = nameof(ShipFrame.GR07);
         public bool runActive;
         public List<string> unlocked = new List<string>();
+        // Districts opened beyond the first route (LevelId names).
+        public List<string> routes = new List<string>();
         public List<ItemUnlockNotice> pendingUnlocks = new List<ItemUnlockNotice>();
         public List<string> stock = new List<string>();
         // Bought in the hangar: equipped at the start of the next run, then gone.
@@ -115,12 +117,13 @@ public static partial class MetaProgress
         return items;
     }
 
-    /// <summary>Debug: the whole item pool becomes available. The shop keeps its stock.</summary>
+    /// <summary>Debug: the whole item pool and every district become available. The shop keeps its stock.</summary>
     public static void UnlockAll()
     {
         foreach (var item in ItemPool.AllItems)
             if (!IsUnlocked(item))
                 Data.unlocked.Add(item);
+        OpenAllRoutes();
         Save();
     }
 
@@ -193,6 +196,7 @@ public static partial class MetaProgress
         data.completed ??= new List<string>();
         data.bossRotations ??= new List<BossRotation>();
         data.pendingUnlocks ??= new List<ItemUnlockNotice>();
+        data.routes ??= new List<string>();
         foreach (var log in data.history) log.unlocks ??= new List<ItemUnlockNotice>();
         if (data.version < 2)
         {
@@ -208,6 +212,13 @@ public static partial class MetaProgress
             data.version = 3;
             if (!CanStock(Pin)) data.pin = null;
             if (data.stock.Exists(k => !CanStock(k))) Restock();
+            Save();
+        }
+        if (data.version < 4)
+        {
+            // Route locks arrive for every save (Miguel's choice): all pilots restart on the first route.
+            data.version = 4;
+            data.routes.Clear();
             Save();
         }
         // A run that never reached its end (the game was closed) still earns a fresh shop.

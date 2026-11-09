@@ -43,9 +43,10 @@ public static class VerifyItemUnlocks
             CheckPersistence();
             CheckMigration();
             CheckSimulators();
+            CheckRoutes();
             CheckModels();
             File.WriteAllText(Folder + "/Verification.txt", "PASS\n" + checks + " checks. All 12 areas / 16 bosses / 3 difficulties.\n" +
-                "Verified hit windows, duplicate completions, Warp-Core retry semantics, travel, loss, interrupted run, queue acknowledgement, old saves, shop gates, simulator isolation and model coverage.\n" +
+                "Verified hit windows, duplicate completions, Warp-Core retry semantics, travel, loss, interrupted run, queue acknowledgement, old saves, shop gates, simulator isolation, route locks and model coverage.\n" +
                 "No gameplay or visual review was started.\n");
             if (Environment.GetCommandLineArgs().Contains("--unlock-build")) Build();
             VerifyCleanCompilation.Run();
@@ -97,7 +98,7 @@ public static class VerifyItemUnlocks
             MetaProgress.DefeatBoss();
             MetaProgress.EndRun("Lost");
             Check(MetaProgress.LastFlight.bosses == 1, "One completion for a whole encounter");
-            Check(MetaProgress.PendingUnlocks.Select(n => n.key).ToHashSet().SetEquals(expected), "Exact earned set " + area + " / " + mode);
+            Check(MetaProgress.PendingUnlocks.Select(n => n.key).Where(k => !RouteUnlocks.IsRoute(k)).ToHashSet().SetEquals(expected), "Exact earned set " + area + " / " + mode);
             foreach (var reward in ItemUnlocks.All.Where(r => r.Area == area))
                 Check(MetaProgress.IsUnlocked(reward.Key) == expected.Contains(reward.Key), "Eligibility " + reward.Key);
             Check(MetaProgress.Stock.All(MetaProgress.CanStock), "Restock respects earned set");
@@ -117,14 +118,14 @@ public static class VerifyItemUnlocks
         Check(MetaProgress.IsUnlocked("Thunderhead") && !MetaProgress.IsUnlocked("PolarityEngine"), "Pre-boss hit only breaks area no-hit");
         Fresh(); Begin(LevelId.Thunder, RunDifficulty.Hard);
         MetaProgress.EngageBoss(); MetaProgress.TookHit(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
-        Check(MetaProgress.LastFlight.unlocks.Count == 1 && MetaProgress.IsUnlocked("ElectricityItem"), "Boss hit breaks both no-hit rewards");
+        Check(Items(MetaProgress.LastFlight.unlocks) == 1 && MetaProgress.IsUnlocked("ElectricityItem"), "Boss hit breaks both no-hit rewards");
         Fresh(); Begin(LevelId.Fields, RunDifficulty.Normal);
         Type before = MetaProgress.EngageBoss(); MetaProgress.TookHit();
         Type retry = MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
-        Check(before == retry && MetaProgress.LastFlight.unlocks.Count == 2 && !MetaProgress.IsUnlocked("SquadWhistle"), "Retry keeps boss draw and cannot erase area hit");
+        Check(before == retry && Items(MetaProgress.LastFlight.unlocks) == 2 && !MetaProgress.IsUnlocked("SquadWhistle"), "Retry keeps boss draw and cannot erase area hit");
         Fresh(); Begin(LevelId.Void, RunDifficulty.Normal);
         MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Victory");
-        Check(MetaProgress.LastFlight.unlocks.Count == 3, "Void earns both no-hit rewards together");
+        Check(Items(MetaProgress.LastFlight.unlocks) == 3, "Void earns both no-hit rewards together");
     }
     static void CheckTravel()
     {
@@ -133,7 +134,7 @@ public static class VerifyItemUnlocks
         LevelRun.Advance(LevelId.Snow); MetaProgress.EnterDistrict();
         MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
         Check(MetaProgress.IsUnlocked("BulletTime") && !MetaProgress.IsUnlocked("SquadWhistle"), "Full-area hit window resets on travel");
-        Check(MetaProgress.LastFlight.unlocks.Count == 4, "Earlier unlocks retained across districts");
+        Check(Items(MetaProgress.LastFlight.unlocks) == 4, "Earlier unlocks retained across districts");
     }
     static void CheckPersistence()
     {
@@ -141,18 +142,18 @@ public static class VerifyItemUnlocks
         MetaProgress.EngageBoss(); MetaProgress.DefeatBoss();
         // Simulate a process closing before the result screen. The actual saved queue is authoritative.
         Reload();
-        Check(MetaProgress.PendingUnlocks.Count == 3 && MetaProgress.IsUnlocked("PolarityEngine"), "Earned immediately before run end");
+        Check(Items(MetaProgress.PendingUnlocks) == 3 && MetaProgress.IsUnlocked("PolarityEngine"), "Earned immediately before run end");
         string first = MetaProgress.PendingUnlocks[0].key;
         MetaProgress.DismissUnlock("not-the-front");
-        Check(MetaProgress.PendingUnlocks.Count == 3, "Only the visible tag can be acknowledged");
+        Check(Items(MetaProgress.PendingUnlocks) == 3, "Only the visible tag can be acknowledged");
         MetaProgress.DismissUnlock(first); Reload();
-        Check(MetaProgress.PendingUnlocks.Count == 2 && MetaProgress.PendingUnlocks[0].key != first, "Acknowledgement persists");
+        Check(Items(MetaProgress.PendingUnlocks) == 2 && MetaProgress.PendingUnlocks[0].key != first, "Acknowledgement persists");
         Begin(LevelId.Thunder, RunDifficulty.Hard);
         MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
-        Check(MetaProgress.LastFlight.unlocks.Count == 0 && MetaProgress.PendingUnlocks.Count == 2, "No duplicate celebrations across difficulties");
+        Check(Items(MetaProgress.LastFlight.unlocks) == 0 && Items(MetaProgress.PendingUnlocks) == 2, "No duplicate celebrations across difficulties");
         Fresh(); Begin(LevelId.Thunder, RunDifficulty.Normal);
         MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost"); Reload();
-        Check(MetaProgress.History[0].unlocks.Count == 3 && MetaProgress.PendingUnlocks.Count == 3, "Loss receipt and queue survive reload");
+        Check(Items(MetaProgress.History[0].unlocks) == 3 && Items(MetaProgress.PendingUnlocks) == 3, "Loss receipt and queue survive reload");
     }
     static void CheckMigration()
     {
@@ -162,7 +163,7 @@ public static class VerifyItemUnlocks
         Check(MetaProgress.IsUnlocked("Icicle") && MetaProgress.IsUnlocked("ThreeMoonsItem") && MetaProgress.Coins == 321, "Preserve prior unlocks and bank");
         Check(MetaProgress.Ship == ShipFrame.Warden && MetaProgress.Outbound.Contains("Icicle"), "Preserve ship and purchased loadout");
         Check(MetaProgress.Pin == null && MetaProgress.Stock.All(MetaProgress.CanStock) && !MetaProgress.TryBuy("BeamEmitterItem"), "Remove unearned pinned offer");
-        Check(MetaProgress.PendingUnlocks.Count == 0, "Migration never re-celebrates owned items");
+        Check(Items(MetaProgress.PendingUnlocks) == 0, "Migration never re-celebrates owned items");
         Begin(LevelId.Snow, RunDifficulty.Normal); MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
         Check(MetaProgress.LastFlight.unlocks.All(n => n.key != "Icicle") && MetaProgress.IsUnlocked("BulletTime"), "Grandfathered clear, new achievement on another hull");
     }
@@ -172,11 +173,42 @@ public static class VerifyItemUnlocks
         {
             Fresh(); FlightTrials.Active = trial; Begin(trial.district, trial.difficulty);
             MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Certified");
-            Check(MetaProgress.LastFlight.unlocks.Count == 1 && MetaProgress.LastFlight.unlocks[0].key == trial.reward, "Only simulator blueprint earned");
+            Check(Items(MetaProgress.LastFlight.unlocks) == 1 && MetaProgress.LastFlight.unlocks[0].key == trial.reward, "Only simulator blueprint earned");
             Check(ItemUnlocks.All.All(r => !MetaProgress.IsUnlocked(r.Key)), "Simulator cannot award campaign items");
             Check(MetaProgress.CanStock(trial.reward), "Certified blueprint can be stocked");
         }
         FlightTrials.Active = null;
+    }
+    // Item counts ignore district tags, which share the unlock queue.
+    static int Items(IEnumerable<ItemUnlockNotice> notices) => notices.Count(n => !RouteUnlocks.IsRoute(n.key));
+    static void CheckRoutes()
+    {
+        Fresh();
+        foreach (LevelId area in Enum.GetValues(typeof(LevelId)))
+            Check(MetaProgress.RouteOpen(area) == RouteUnlocks.OnFirstRoute(area), "Fresh save flies only the first route: " + area);
+        Begin(LevelId.Snow, RunDifficulty.Easy);
+        MetaProgress.EngageBoss(); MetaProgress.DefeatBoss();
+        Check(!MetaProgress.RouteOpen(LevelId.City) && !MetaProgress.RouteOpen(LevelId.Tunnel), "Districts opened mid-run wait for the next flight");
+        MetaProgress.EndRun("Lost");
+        Check(MetaProgress.RouteOpen(LevelId.City) && MetaProgress.RouteOpen(LevelId.Tunnel) && !MetaProgress.RouteOpen(LevelId.Candyland), "Snow boss opens City with Tunnel on any difficulty");
+        Check(MetaProgress.PendingUnlocks.Any(n => n.key == RouteUnlocks.Key(LevelId.City) && n.area == LevelId.City), "District tag queued with its own stamp");
+        Begin(LevelId.Snow, RunDifficulty.Normal);
+        MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
+        Check(MetaProgress.LastFlight.unlocks.All(n => !RouteUnlocks.IsRoute(n.key)), "A district is announced once");
+        foreach (LevelId area in Enum.GetValues(typeof(LevelId)))
+            if (!RouteUnlocks.OnFirstRoute(area))
+                Check(Enum.GetValues(typeof(LevelId)).Cast<LevelId>().Any(from => RouteUnlocks.OpenedBy(from).Contains(area)), "Every district can be opened: " + area);
+        foreach (var trial in FlightTrials.All)
+        {
+            Fresh(); FlightTrials.Active = trial; Begin(trial.district, trial.difficulty);
+            MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Certified");
+            Check(Enum.GetValues(typeof(LevelId)).Cast<LevelId>().All(a => MetaProgress.RouteOpen(a) == RouteUnlocks.OnFirstRoute(a)), "Simulator never opens districts");
+        }
+        FlightTrials.Active = null;
+        Fresh();
+        File.WriteAllText(Path.Combine(saveDirectory, "hangar.json"), "{\"version\":3,\"coins\":5,\"routes\":[\"City\",\"Void\"],\"unlocked\":[\"Popcorn\"],\"stock\":[],\"loadout\":[]}");
+        Reload();
+        Check(!MetaProgress.RouteOpen(LevelId.City) && !MetaProgress.RouteOpen(LevelId.Void) && MetaProgress.Coins == 5, "Older saves restart on the first route");
     }
     static void CheckModels()
     {

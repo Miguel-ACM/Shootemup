@@ -576,7 +576,9 @@ public class WaveOrchestrer : MonoBehaviour
             Destroy(enemy.gameObject);
         EraseAllBullets();
         CombatDecision.Begin(); // Freeze multiplier and fire while steering to the next route.
-        if (LevelRun.FinalDistrict || FlightTrials.Active != null)
+        // Until Void opens, Hell's boss reward ends the campaign.
+        if (LevelRun.FinalDistrict || FlightTrials.Active != null ||
+            LevelRun.AutomaticNext.HasValue && !MetaProgress.RouteOpen(LevelRun.AutomaticNext.Value))
         {
             GameOverState.Show(true);
             yield break;

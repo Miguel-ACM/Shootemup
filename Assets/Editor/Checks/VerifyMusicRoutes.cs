@@ -119,6 +119,7 @@ public sealed class MusicRouteProbe : MonoBehaviour
     IEnumerator Run()
     {
         GameRules.StartNewRun();
+        MetaProgress.ReviewOpensAllRoutes = true; // Heaven and Void are locked on a fresh save.
         LevelRun.Reset(LevelId.Space, 17381);
         yield return SceneManager.LoadSceneAsync("L1");
         while ((flow = FindAnyObjectByType<WaveOrchestrer>()) == null) yield return null;

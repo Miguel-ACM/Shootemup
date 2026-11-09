@@ -30,6 +30,8 @@ public sealed class LevelChoice : MonoBehaviour
     string[] captions;
     Color[] accents;
     Sprite[] icons;
+    // Routes the save has not opened yet: shown, never chargeable.
+    bool[] sealedRoutes;
     CanvasGroup group;
     RectTransform frame;
     RectTransform[] fills, contents, panels;
@@ -59,8 +61,9 @@ public sealed class LevelChoice : MonoBehaviour
         choice.Options = LevelRun.GetOptions();
         choice.captions = Array.ConvertAll(choice.Options, level => level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant());
         choice.accents = Array.ConvertAll(choice.Options, LevelRun.Accent);
+        choice.sealedRoutes = Array.ConvertAll(choice.Options, level => !MetaProgress.RouteOpen(level));
         choice.Allocate();
-        CloudTransition.PrepareRoutes(choice.Options);
+        CloudTransition.PrepareRoutes(Array.FindAll(choice.Options, MetaProgress.RouteOpen));
         choice.Build();
         Active = true;
         return choice;
@@ -173,7 +176,10 @@ public sealed class LevelChoice : MonoBehaviour
         {
             float x = player.position.x / (player.position.x < 0 ? -Camera.LeftLimit : Camera.RightLimit);
             if (captions.Length == 2)
-                Charge.Step(x, Time.deltaTime);
+            {
+                int side = RouteCharge.SideOf(x);
+                Charge.StepSelection(side != 0 && Sealed(side < 0 ? 0 : 1) ? 0 : side, Time.deltaTime);
+            }
             else
             {
                 float column = (x + 1) * 1.5f;
@@ -198,6 +204,8 @@ public sealed class LevelChoice : MonoBehaviour
             StartCoroutine(Commit());
         }
     }
+
+    bool Sealed(int index) => sealedRoutes != null && sealedRoutes[index];
 
     IEnumerator Commit()
     {

@@ -16,11 +16,9 @@ public sealed class RouteCharge
     }
 
     public bool Complete => Progress >= 1;
-    public void Step(float normalizedX, float deltaTime)
-    {
-        int next = normalizedX < -NeutralWidth ? -1 : normalizedX > NeutralWidth ? 1 : 0;
-        StepSelection(next, deltaTime);
-    }
+    public static int SideOf(float normalizedX) => normalizedX < -NeutralWidth ? -1 : normalizedX > NeutralWidth ? 1 : 0;
+
+    public void Step(float normalizedX, float deltaTime) => StepSelection(SideOf(normalizedX), deltaTime);
 
     public void StepSelection(int next, float deltaTime)
     {
