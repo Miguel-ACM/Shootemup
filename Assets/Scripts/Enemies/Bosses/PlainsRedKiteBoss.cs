@@ -14,6 +14,12 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
         if (!openingComplete) base.MoveBoss(dt * 2);
     }
 
+    // Tones: the sightline ribbons are bright and the crossing wake dark, each with
+    // accents in the other tone; phase two swaps both. Hard's reversal pass flies
+    // the opposite wake to the crossing before it.
+    HostileTone Lead => CurrentPhase == 2 ? HostileTone.Dark : HostileTone.Bright;
+    static HostileTone Opposite(HostileTone value) => value == HostileTone.Bright ? HostileTone.Dark : HostileTone.Bright;
+
     protected override IEnumerator Cards()
     {
         int side = transform.position.x > 0 ? -1 : 1;
@@ -26,6 +32,7 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
             int feathers = Dense(7);
             for (int i = 0; i < bursts; i++)
             {
+                UseTone(Lead);
                 // Two gun ribbons bracket the committed sightline. The pilot must leave
                 // that line rather than sidestep one isolated needle and stop moving.
                 for (int wing = 1; wing <= 2; wing++)
@@ -34,6 +41,7 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
                         float spread = (feather - (feathers - 1) * .5f) * 8;
                         ScoredShot(i%3==0,Muzzle(wing), CombatVisuals.Rotate(sight, spread), 4.1f + .18f * (i % 4), .17f);
                     }
+                UseTone(Opposite(Lead));
                 if(i%3==0)Fire<SimpleRound>(Muzzle(),CombatVisuals.Aim(Muzzle()),3.4f,.21f);
                 // Phase two's nose kernels angle down and off one side wall; nothing is
                 // thrown up to bounce back off the ceiling (Miguel).
@@ -43,20 +51,20 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
             }
             yield return Wait(Rest(.22f));
             // Scissor pass: the two wing guns leave a diverging wake along a low, banked cut.
-            yield return Crossing(side, phaseThree ? 4.1f : phaseTwo ? 3.35f : 2.4f);
+            yield return Crossing(side, phaseThree ? 4.1f : phaseTwo ? 3.35f : 2.4f, Opposite(Lead));
             side = -side;
             if (phaseThree)
             {
                 // Reversal: double back high through the wake before lining up the next sightline.
                 yield return Wait(Rest(.24f));
-                yield return Crossing(side, 1.1f);
+                yield return Crossing(side, 1.1f, Lead);
                 side = -side;
             }
             yield return Wait(Rest(.48f));
         }
     }
 
-    IEnumerator Crossing(int side, float depth)
+    IEnumerator Crossing(int side, float depth, HostileTone wake)
     {
         yield return PrimePair(.32f);
         Vector3 start = transform.position, end = new Vector3(Lane(side), Camera.UpLimit - 2.4f, start.z);
@@ -76,6 +84,7 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
                     // its old flight lane after a visible braking interval.
                     Vector2 tangent = new Vector2((end.x - start.x) * 6 * t * (1 - t),
                         -Mathf.Cos(t * Mathf.PI) * Mathf.PI * depth).normalized;
+                    UseTone(wake);
                     for (int wing = 0; wing < 2; wing++)
                     {
                         int mirror = wing == 0 ? -1 : 1;
@@ -87,6 +96,7 @@ public sealed class PlainsRedKiteBoss : ArmoredHullBoss
                                     -mirror * side * (phaseThree ? 110 : 75), .85f)
                                 .Ramp(1.35f, .9f, 1.1f);
                     }
+                    UseTone(Opposite(wake));
                     if (emitted % (phaseThree ? 4 : 6) == 0)
                         // Nose payloads open flat across the wake, never into circles.
                         Fire<SimpleRound>(Muzzle(), -tangent, 2.6f, .32f)
