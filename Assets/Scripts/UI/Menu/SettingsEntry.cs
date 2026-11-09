@@ -13,7 +13,7 @@ public sealed class SettingsEntry : AMenuElement
     {
         var entry = MenuLayout.Row(parent, "SETTINGS", font).gameObject.AddComponent<SettingsEntry>();
         entry.centre = centre;
-        var kinds = new[] { OptionRow.Kind.Music, OptionRow.Kind.Sound, OptionRow.Kind.PsxFilter };
+        var kinds = new[] { OptionRow.Kind.Music, OptionRow.Kind.Sound, OptionRow.Kind.PsxFilter, OptionRow.Kind.ScreenMode };
         entry.page = new AMenuElement[kinds.Length + 2];
         for (int i = 0; i < kinds.Length; i++)
             entry.page[i] = OptionRow.Create(parent, kinds[i], font);

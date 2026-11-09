@@ -9,7 +9,8 @@ public sealed class OptionRow : AMenuElement
     {
         Music,
         Sound,
-        PsxFilter
+        PsxFilter,
+        ScreenMode
     }
 
     const float RepeatDelay = .35f, RepeatRate = .1f;
@@ -23,13 +24,14 @@ public sealed class OptionRow : AMenuElement
 
     public static OptionRow Create(Transform parent, Kind kind, TMP_FontAsset font)
     {
-        var go = new GameObject(kind == Kind.PsxFilter ? "PSX FILTER" : kind.ToString().ToUpperInvariant(), typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        string name = kind == Kind.PsxFilter ? "PSX FILTER" : kind == Kind.ScreenMode ? "SCREEN" : kind.ToString().ToUpperInvariant();
+        var go = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         go.transform.SetParent(parent, false);
         var label = Text(go.transform, go.name, font, TextAlignmentOptions.Left);
         label.rectTransform.offsetMin = new Vector2(40, 0);
         var row = go.AddComponent<OptionRow>();
         row.kind = kind;
-        if (kind == Kind.PsxFilter)
+        if (kind == Kind.PsxFilter || kind == Kind.ScreenMode)
         {
             row.state = Text(go.transform, "", font, TextAlignmentOptions.Right);
             row.state.rectTransform.offsetMax = new Vector2(-40, 0);
@@ -95,7 +97,7 @@ public sealed class OptionRow : AMenuElement
             nextRepeat = Time.unscaledTime + RepeatDelay;
             Step(direction, false);
         }
-        else if (kind != Kind.PsxFilter && Time.unscaledTime >= nextRepeat)
+        else if ((kind == Kind.Music || kind == Kind.Sound) && Time.unscaledTime >= nextRepeat)
         {
             nextRepeat = Time.unscaledTime + RepeatRate;
             Step(direction, false);
@@ -112,6 +114,10 @@ public sealed class OptionRow : AMenuElement
                 break;
             case Kind.Sound:
                 GameOptions.SetSound(Next(GameOptions.Sound, direction, wrap));
+                break;
+            case Kind.ScreenMode:
+                // Cycles in both directions: windowed, fullscreen, borderless.
+                GameOptions.SetScreenMode((GameOptions.WindowMode)(((int)GameOptions.ScreenMode + direction + 3) % 3));
                 break;
             default:
                 GameOptions.SetPsxFilter(!GameOptions.PsxFilter);
@@ -135,7 +141,7 @@ public sealed class OptionRow : AMenuElement
         float focus = Focus;
         if (state != null)
         {
-            state.text = GameOptions.PsxFilter ? "ON" : "OFF";
+            state.text = kind == Kind.ScreenMode ? GameOptions.ScreenMode.ToString().ToUpperInvariant() : GameOptions.PsxFilter ? "ON" : "OFF";
             state.color = textElement.color;
             return;
         }
