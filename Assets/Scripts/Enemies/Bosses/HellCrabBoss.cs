@@ -49,6 +49,18 @@ public sealed partial class HellCrabBoss : DistrictBoss
         return go.transform;
     }
 
+    // The claw stroke (Miguel, 10 November 2026): a physical wind-up, then each pincer
+    // traces one figure around a point beside the body, mirrored by the other, and eases
+    // back to rest. Stroke by stroke the pair draws a heart (crescent sweeps), a vertical
+    // figure eight, then two loops turning opposite ways. The pincers turn along their
+    // path, so streams and laces fired from them draw the same figures, and while they
+    // draw they leave a trail of flames (ClawTrail).
+    const float StrokeStart = 1;
+    const float StrokeEnd = 4.6f;
+    readonly float[] clawTurn = new float[2];
+    float nextTrail;
+    int Figure => Mathf.FloorToInt(clawClock / clawPeriod) % 3;
+
     protected override void MoveBoss(float dt)
     {
         station = new Vector3(Mathf.Sin(motionAge * .58f) * .70f, Camera.UpLimit - 2.55f, 1);
@@ -62,27 +74,33 @@ public sealed partial class HellCrabBoss : DistrictBoss
         if (before == 0 || t < Mathf.Repeat(before, clawPeriod))
             lockedY = Mathf.Clamp(player != null ? player.position.y : shoulderY - 2, shoulderY - 2.7f, shoulderY - .8f);
         lockedY = Mathf.Clamp(lockedY, shoulderY - 2.7f, shoulderY - .8f);
-        float reach = Mathf.Min(Camera.RightLimit - 1.5f, 2.9f), sweep = 0, y = shoulderY - .75f;
-        if (t < 1.1f)
-            y = Mathf.Lerp(y, y + .45f, Mathf.Sin(t / 1.1f * Mathf.PI));
-        else if (t < 2.4f)
-            y = Mathf.Lerp(y, lockedY, Mathf.SmoothStep(0, 1, (t - 1.1f) / 1.3f));
-        else if (t < 3.4f)
-        {
-            y = lockedY;
-            sweep = Mathf.Sin((t - 2.4f) * Mathf.PI) * .32f;
-        }
-        else if (t < 4.6f)
-            y = Mathf.Lerp(lockedY, y, Mathf.SmoothStep(0, 1, (t - 3.4f) / 1.2f));
+        // The wind-up lifts and opens the claws; the figure fades in and out of the rest pose.
+        float windUp = t < StrokeStart ? Mathf.Sin(t / StrokeStart * Mathf.PI) : 0;
+        float draw = Mathf.SmoothStep(0, 1, (t - StrokeStart) / .6f) * (1 - Mathf.SmoothStep(0, 1, (t - (StrokeEnd - .6f)) / .6f));
+        float u = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(StrokeStart, StrokeEnd, t));
+        // The figure sits beside the body, a little toward the pilot's height.
+        float centreY = Mathf.Clamp(lockedY + .9f, shoulderY - 1.9f, shoulderY - 1.2f);
+        var figure = FigurePoint(Figure, u);
+        bool drawing = t > StrokeStart && t < StrokeEnd;
+        bool trail = drawing && draw > .6f && enteredFight && openingComplete && age >= nextTrail;
+        if (trail)
+            nextTrail = age + .16f;
         for (int i = 0; i < 2; i++)
         {
             int side = i == 0 ? -1 : 1;
-            var p = new Vector3(side * reach * (1 - sweep), y, 0);
+            var rest = new Vector3(side * (2.9f + windUp * .3f), shoulderY - .75f + windUp * .45f, 0);
+            var drawn = new Vector3(side * (2.2f + figure.x), centreY + figure.y, 0);
+            var p = Vector3.Lerp(rest, drawn, draw);
+            // The pincer's tip follows its path, never turning past sideways.
+            var motion = (Vector2)(p - claws[i].position);
+            float heading = motion.sqrMagnitude > dt * dt * .16f ? Mathf.Clamp(Vector2.SignedAngle(Vector2.down, motion), -100, 100) : -side * 12;
+            float target = Mathf.LerpAngle(-side * 12, heading, draw);
+            clawTurn[i] = Mathf.LerpAngle(clawTurn[i], target, 1 - Mathf.Exp(-7 * dt));
             claws[i].position = p;
-            claws[i].rotation = Quaternion.Euler(0, 0, -side * (12 + sweep * 50));
+            claws[i].rotation = Quaternion.Euler(0, 0, clawTurn[i]);
             var shoulder = Hull.TransformPoint(new Vector3(side * 1.55f, .25f, 0));
             var elbow = (shoulder + p) * .5f + new Vector3(side * .45f, .25f, .15f);
-            Vector3 Point(float u) => Vector3.Lerp(Vector3.Lerp(shoulder, elbow, u), Vector3.Lerp(elbow, p, u), u);
+            Vector3 Point(float k) => Vector3.Lerp(Vector3.Lerp(shoulder, elbow, k), Vector3.Lerp(elbow, p, k), k);
             for (int segment = 0; segment < ArmSections; segment++)
             {
                 var a = Point(segment / (float)ArmSections);
@@ -92,11 +110,35 @@ public sealed partial class HellCrabBoss : DistrictBoss
                 bone.rotation = Quaternion.FromToRotation(Vector3.up, b - a);
                 bone.localScale = new Vector3(1.05f - segment * .025f, Mathf.Max(.42f, Vector3.Distance(a, b) / .95f), 1);
             }
-            if (t > 1.1f && t < 4.6f && player != null && Vector2.Distance(player.position, claws[i].TransformPoint(new Vector3(0, -.45f, 0))) < 1.25f)
+            if (trail)
+                ClawTrail(i);
+            if (drawing && player != null && Vector2.Distance(player.position, claws[i].TransformPoint(new Vector3(0, -.45f, 0))) < 1.25f)
                 player.SendMessage("ReceiveHazardDamage", 18f, SendMessageOptions.DontRequireReceiver);
         }
         if (player != null && Vector2.Distance(player.position, transform.position) < 1.55f)
             player.SendMessage("ReceiveHazardDamage", 18f, SendMessageOptions.DontRequireReceiver);
+    }
+
+    // One pincer's figure, in outward/up units around its centre, for stroke progress u.
+    static Vector2 FigurePoint(int figure, float u)
+    {
+        const float across = .95f;
+        const float tall = .85f;
+        if (figure == 0)
+        {
+            // Crescent: out, down, in and up again; the pair draws a heart.
+            float a = Mathf.Lerp(70, -250, u) * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Cos(a) * across, Mathf.Sin(a) * tall);
+        }
+        if (figure == 1)
+        {
+            // A vertical figure eight.
+            float a = u * Mathf.PI * 2;
+            return new Vector2(Mathf.Sin(2 * a) * across * .7f, Mathf.Sin(a) * tall * 1.1f);
+        }
+        // A full loop from the top; mirrored, the two pincers turn opposite ways.
+        float b = (90 - 360 * u) * Mathf.Deg2Rad;
+        return new Vector2(Mathf.Cos(b) * across, Mathf.Sin(b) * tall);
     }
 
     protected override void OnPhaseTwo()

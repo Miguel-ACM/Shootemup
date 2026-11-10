@@ -20,6 +20,11 @@ using UnityEngine;
 //   Pincer Inferno: bright scissors alternating with a dark canopy.
 //   Inferno Lace: a dark pincer lace while bright souls stare.
 //   Inferno (Hard): a bright lace crossed by dark scissors and dark souls.
+// Ember Cage (Miguel, 10 November 2026): after the two cards of each phase, and as an
+//   accent in Inferno, flames stop as a box around the pilot, open on one side, then
+//   close; the open side turns cage by cage (floor, both sides, left, right). Dark, with a
+//   bright outer frame in phase two. The claws' figure trail (ClawTrail) is bright in
+//   phase one and dark from phase two.
 public sealed partial class HellCrabBoss
 {
     static readonly Vector3 Pincer = new Vector3(0, -.32f, -.4f);
@@ -62,6 +67,8 @@ public sealed partial class HellCrabBoss
                         Canopy(n);
                 });
                 yield return Wait(.8f);
+                yield return Every(7.5f, 2.5f, n => Phrase(EmberCage(n, 1)));
+                yield return Wait(.8f);
             }
             else
             {
@@ -75,6 +82,8 @@ public sealed partial class HellCrabBoss
                 yield return Wait(.8f);
                 Phrase(Every(8, 2.6f, n => SoulSnipe(BurningEye(), HostileTone.Bright)));
                 yield return Toned(HostileTone.Dark, MirrorLace(claws[0], Pincer, claws[1], Pincer, Dense(90), 3, 75, 18, 3.6f, .07f));
+                yield return Wait(.8f);
+                yield return Every(6.6f, 2.2f, n => Phrase(EmberCage(n + 1, 2)));
                 yield return Wait(.8f);
             }
         }
@@ -137,12 +146,153 @@ public sealed partial class HellCrabBoss
     {
         Phrase(Every(9, 1.4f, n =>
         {
-            if (n % 2 == 0)
+            if (n % 4 == 3)
+                Phrase(EmberCage(n / 4 + 2, 1));
+            else if (n % 2 == 0)
                 Phrase(Scissors(n % 4 == 0 ? 1 : -1, HostileTone.Dark));
             else
                 SoulSnipe(BurningEye(), HostileTone.Dark);
         }));
         yield return Toned(HostileTone.Bright, MirrorLace(claws[0], Pincer, claws[1], Pincer, Dense(110), 3, 80, 18, 3.8f, .065f));
         yield return Wait(.8f);
+    }
+
+    // The claws draw: while a pincer traces its figure it leaves a flame that hangs on the
+    // path, stares, then darts at the pilot, so the figure burns out in the order drawn.
+    void ClawTrail(int side)
+    {
+        var port = claws[side].TransformPoint(Pincer);
+        if (player != null && Vector2.Distance(port, player.position) < 1.6f)
+            return;
+        var was = tone;
+        UseTone(phaseTwo ? HostileTone.Dark : HostileTone.Bright);
+        Fire<FlameRound>(port, Vector2.down, .3f, .22f)
+            .Pause(.25f, 1.0f, CombatRound.Turn.Aim, 0, 8.5f);
+        tone = was;
+    }
+
+    // Ember Cage: a charge on the pincers and eyes, then one box (two frames in phase two)
+    // around the pilot. Every flame arrives at once and stares; then the walls close.
+    //   0, open floor: the bars slide in and the lid falls.
+    //   1, open sides: the lid falls while the floor slides in from both sides.
+    //   2, open left: the lid falls, the right bar and the floor close from the right.
+    //   3, open right: the mirror.
+    IEnumerator EmberCage(int n, int frames)
+    {
+        yield return CageGlow(.45f);
+        var centre = CagePoint();
+        int open = n % 4;
+        int bar = Dense(10);
+        int lid = Dense(11);
+        int floor = Dense(8);
+        var edge = CombatRound.Border;
+        for (int frame = 0; frame < frames; frame++)
+        {
+            UseTone(frame == 0 ? HostileTone.Dark : HostileTone.Bright);
+            float width = 1.45f + frame * .5f;
+            float top = 1.35f + frame * .5f;
+            float low = 1.25f + frame * .5f;
+            float hold = .5f + frame * .35f;
+            for (int k = 0; k < lid; k++)
+            {
+                float x = centre.x + Mathf.Lerp(-width + .3f, width - .3f, (k + .5f) / lid);
+                CageEmber(centre, new Vector2(x, centre.y + top), hold, Vector2.down);
+            }
+            for (int side = -1; side <= 1; side += 2)
+            {
+                bool far = open == 2 && side > 0 || open == 3 && side < 0;
+                if (open == 0 || far)
+                {
+                    for (int k = 0; k < bar; k++)
+                    {
+                        float y = centre.y + Mathf.Lerp(-low, top - .25f, (k + .5f + frame * .5f) / bar);
+                        CageEmber(centre, new Vector2(centre.x + side * width, y), hold, Vector2.right * -side);
+                    }
+                }
+                // The floor waits beside the box, beyond the bar, and slides in under it.
+                if (open == 1 || far)
+                {
+                    for (int k = 0; k < floor; k++)
+                    {
+                        float x = centre.x + side * (width + .25f + k * 2 * width / floor);
+                        if (x > edge.xMin + .2f && x < edge.xMax - .2f)
+                            CageEmber(centre, new Vector2(x, centre.y - low), hold + .2f, Vector2.right * -side);
+                    }
+                }
+            }
+        }
+    }
+
+    // The cage's centre: the pilot, kept inside the walls and clear below the crab.
+    Vector2 CagePoint()
+    {
+        var at = player != null ? (Vector2)player.position : new Vector2(0, -3);
+        float side = Camera.RightLimit - 2.1f;
+        float under = transform.position.y - 3.4f;
+        return new Vector2(Mathf.Clamp(at.x, -side, side), Mathf.Clamp(at.y, Camera.DownLimit + 1.6f, under));
+    }
+
+    // Each flame leaves whichever part (a pincer, an eye or the mouth) keeps its throw
+    // farthest from the pilot, so no wall is thrown through the box it closes.
+    void CageEmber(Vector2 centre, Vector2 point, float hold, Vector2 then)
+    {
+        Vector3 port = transform.position;
+        float clearest = -1;
+        for (int k = 0; k < 5; k++)
+        {
+            var part = k < 2 ? claws[k] : k < 4 ? eyes[k - 2] : Hull;
+            if (part == null)
+                continue;
+            var candidate = k < 2 ? part.TransformPoint(Pincer) : k < 4 ? part.position : part.TransformPoint(Mouth);
+            float clearance = Clearance(centre, candidate, point);
+            if (clearance > clearest)
+            {
+                clearest = clearance;
+                port = candidate;
+            }
+        }
+        if (clearest < .9f)
+            return;
+        Hang<FlameRound>(port, point, 1.1f, hold, then, 1.5f, .24f)
+            .FadeAt(6);
+    }
+
+    // Distance from a point to the segment from a to b.
+    static float Clearance(Vector2 point, Vector2 a, Vector2 b)
+    {
+        var ab = b - a;
+        float along = Mathf.Clamp01(Vector2.Dot(point - a, ab) / Mathf.Max(.0001f, ab.sqrMagnitude));
+        return Vector2.Distance(point, a + ab * along);
+    }
+
+    // The cage's anticipation: every pincer and eye glows for the whole wait.
+    IEnumerator CageGlow(float seconds)
+    {
+        for (float t = 0; t < seconds;)
+        {
+            if (!Holding)
+                t += Time.deltaTime * LevelRun.EnemyTempoScale;
+            for (int i = 0; i < 2; i++)
+            {
+                if (claws[i] != null)
+                    Cue(claws[i].TransformPoint(Pincer), seconds - t);
+                if (eyes[i] != null)
+                    Cue(eyes[i].position, seconds - t);
+            }
+            yield return null;
+        }
+    }
+
+    // A round that brakes to a stop at a chosen point after `arrive` seconds of its own
+    // clock, hangs for `hold`, then leaves along `then` at an authored speed.
+    T Hang<T>(Vector3 port, Vector2 point, float arrive, float hold, Vector2 then, float speed, float radius) where T : CombatRound
+    {
+        Vector2 path = point - (Vector2)port;
+        float distance = Mathf.Max(.05f, path.magnitude);
+        Vector2 axis = path.sqrMagnitude > .0001f ? path / distance : Vector2.down;
+        // The brake eases over the last .35 s, so the path takes arrive - .175 s of travel.
+        float travel = distance / (arrive - .175f);
+        return Fire<T>(port, axis, WorldSpeed(travel), radius)
+            .Pause(arrive, hold, CombatRound.Turn.Rotate, Vector2.SignedAngle(axis, then), speed / WorldSpeed(1) / travel);
     }
 }
