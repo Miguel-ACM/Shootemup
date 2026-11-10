@@ -1,39 +1,52 @@
-# Plains bomber: proposed cards
+# Plains bomber: proposed phases
 
-Code: `Assets/Scripts/Enemies/Bosses/FieldsBomberBoss.Proposed.cs`. The bomber fires from its wingtips (0-1), lower guns (2-3) and six bomb bays only. Every bomb travels the same distance, stops and bursts 360. It throws no carriers. Petals are the only Plains shape it adds. Movement is unchanged.
+Code: `Assets/Scripts/Enemies/Bosses/FieldsBomberBoss.Proposed.cs`. Each phase is one concept that develops over the phase (Miguel, 10 November 2026). The bomber fires from its wingtips (0-1), lower guns (2-3) and six bays only. Every bomb travels the same distance, stops and bursts 360. It throws no carriers. Petals are the only Plains shape it adds. Movement is unchanged.
 
-**Pressure (Hard, rounds per second including the rests between cards; current → proposed):** phase one 74 → 74, phase two 68 → 65, phase three 147 → 150. Normal and Easy scale through `Dense` and `Rest` as before. Seed Drill rings have 20 shards, the talons have five arrows, and the canopy has nine petals per wing. Skywriting contrails have 20 arrows, and its tracers carry two flanking pairs. Last Harvest's wheat streams have four lanes.
+**Pressure (Hard, rounds per second averaged over the concept's cycle; current → proposed):** phase one 74 → 74, phase two 68 → 63, phase three 147 → 154.
 
-## Phase one
+## Phase one: Seed Drill
 
-**Current:** Wingtip Crossfire (aimed triple arrow streams from both wingtips over mirrored carpet bombs) and Harvest Lace (a two-arm mirrored lace over slow orb and petal arcs from the nose).
+**Current:** Wingtip Crossfire (aimed triple arrow streams from the wingtips over carpet bombs) alternating with Harvest Lace (a mirrored two-arm lace over orb and petal arcs).
 
-- **Seed Drill.** All six bays fire at once, fanned across 80 degrees at one speed and one braking time. The dark bombs settle on a smile-shaped arc under the bomber. A fuse then runs along the arc and each bomb bursts 360 in turn, like a string of firecrackers. The next drill lights the fuse from the other end. Alternate rings travel at two speeds, so the gaps between rings keep moving. Bright petals tossed up from the wingtips brake into a canopy over the wings, hang, then flutter down swaying. Bright aimed arrow brackets from the lower guns keep the pilot moving. Tones: dark bombs, bright petals and arrows. It replaces the crossfire's straight streams with a slow, readable chain reaction.
-- **Wind Through Wheat.** The lower guns wave two mirrored bright arrow streams. Each stream swings like a pendulum from 24 degrees outward to 36 degrees inward, and every arrow sways. The ribbons wave like wheat and cross into drifting diamonds under the bomber. Slow dark seed rows fall between them, aimed at the pilot. The wingtips flick arrows into the top corners, where they brake and drop down the sides. Tones: bright streams, dark seeds. Flowing curves replace the lace's rigid fan.
+**Proposed:** the six bays sow an arc of dark bombs. Every bomb flies the same distance, so they settle on a smile under the bomber. Then they burst 360 along a fuse, like a string of firecrackers. The concept develops over an eight-drill cycle of about 21 s:
+1. Left to right.
+2. Right to left.
+3. Both ends inward, in mirrored pairs.
+4. The centre outward.
+5. and 6. Two leaning sweeps.
+7. A double arc: the lower guns take up the drill and sow a wider arc that burns after the bays' arc.
+8. A crown that bursts all at once.
 
-Further ideas (not implemented):
-- *Crop Rotation*: bays sow two arcs at once, one smile and one frown, and the fuses run in opposite directions.
-- *Dandelion Clock*: the nose lofts a slow petal cluster that hangs, then scatters on a fixed fan as the wind changes.
-- *Hedgerow*: wingtip arrows hang in two converging hedge lines that release as a closing V.
+Alternate rings run at two speeds, so the gaps keep moving. Bright petals tossed from the wingtips brake into a canopy over the wings, hang and flutter down. Bright aimed arrow brackets from the lower guns keep the pilot moving while the fuse burns. Tones: dark bombs, bright petals and arrows.
 
-## Phase two
+Alternative single concepts (not implemented):
+- *Wind Through Wheat*: the lower guns wave mirrored, swaying arrow streams like wheat. The wind develops from a breeze, to crossing gusts, to a squall that adds the wingtip streams.
+- *Crop Rotation*: bays sow a smile and the wingtips sow a frown above. The fuses run in opposite directions, and their rotation shifts every drill.
+- *Hedgerow*: wingtip arrows planted in two converging hedges that release as a closing V. The hedges grow longer and lean each pass.
 
-**Current:** Contrail Curtain (fences hung above the top edge drop in at alternating speeds, under sweeping wing fans) and Bomb Run (rows of mirrored 360 bombs under a two-arm lace).
+## Phase two: Skywriting
 
-- **Skywriting.** Each wingtip writes two curling contrails of dark arrows: one short and one long. Each curls from below the wing out and over it, and the long one reaches above the top edge. The arrows brake where they are written and hang like ram's horns. Then each contrail falls inward as a curved sheet, and the sheets from both wings cross under the bomber. Alternate arrows fall faster, so each sheet splits in two. Bright aimed tracers from the lower guns keep a stationary pilot moving. Tones: dark contrails, bright tracers.
-- **Harvest Fireworks.** The wingtips loft three bright shells each over the top of the arena. All of them brake at the same distance and burst 360 along the skyline. A beat later the bays drop a mirrored pair of dark bombs, working outer, middle and inner. These burst lower, so the high rings rain through the low ones. Alternate salvos lean farther out, so the bursts move along the skyline. Tones: bright shells, dark bombs. It keeps Miguel's 360 bombs but adds a second layer that covers the top.
+**Current:** Contrail Curtain (fences above the top edge drop in at alternating speeds under sweeping wing fans) alternating with Bomb Run (rows of 360 bombs under a lace).
 
-Further ideas (not implemented):
-- *Banner Tow*: the bomber tows a long hanging banner of arrows behind its sine path that drops as one sheet.
-- *Flak Ladder*: lofted shells stop at rising heights and burst from the bottom rung up.
-- *Pinwheel Bays*: inner and outer bays alternate, so each pair of rings interleaves at a half-step phase.
+**Proposed:** each wingtip writes a short and a long curling contrail of dark arrows. The arrows brake where they are written and hang over the upper arena like ram's horns, then fall together. Alternate arrows fall faster, so each sheet splits in two. Dark full-stop bombs from the inner bays punctuate each pass, bursting 360 just after the writing falls. Bright aimed tracers from the lower guns keep the pilot moving. Over a six-pass cycle of about 18 s, the writing develops:
+- It curls out, then curls in.
+- It falls inward (the sheets cross under the bomber), then out toward the walls, then peels round tangentially.
+- On passes four and six the lower guns join, writing the opposite curl, so eight contrails hang at once.
+- The last pass doubles the full stops.
 
-## Phase three (Hard)
+Tones: dark contrails and stops, bright tracers.
 
-**Current:** Firestorm Sortie (a top-edge curtain, a three-arm lace and two 360 bombs per side, with a second curtain).
+Alternative single concepts (not implemented):
+- *Contrail Curtain, developed*: the existing top-edge fence, its gaps opening in a different pattern each drop.
+- *Banner Tow*: the bomber tows a hanging banner of arrows along its sine path. Each banner drops as one sheet, longer and more folded each time.
+- *Flak Ladder*: lofted shells stop at rising heights and burst from the bottom rung up, the ladder leaning each time.
 
-- **Last Harvest.** The wheat streams wave for the whole spell. Twice per pass, the wingtips write curling contrails over the streams, and a seed drill burns its fuse along the arc between them. Tones: bright streams, dark contrails and bombs. All three phase motifs return in one spell.
+## Phase three (Hard): Harvest Fireworks
 
-Further ideas (not implemented):
-- *Scorched Field*: a burst seed arc leaves its centres as hanging embers that burst again after the next drill.
-- *Last Light*: contrails written in both directions at once, crossing into a lattice of falling arcs.
+**Current:** Firestorm Sortie (a top-edge curtain, a three-arm lace and 360 bombs together).
+
+**Proposed:** a continuous fireworks show. Each salvo, the wingtips loft three bright shells apiece. They all brake at the same distance and burst 360 along the skyline, which sweeps out and back over twelve salvos (about 14 s). The bays drop two dark pairs below, rotating outer, middle and inner. Every fourth salvo is a grand crown: all six bays burst at once. The high rings rain through the low ones, and the whole top of the arena is covered. Tones: bright shells, dark bombs.
+
+Alternative single concepts (not implemented):
+- *Scorched Field*: seed arcs whose burst centres hang as embers and burst again after the next drill.
+- *Last Light*: contrails written in both directions at once, crossing into a falling lattice of arcs.

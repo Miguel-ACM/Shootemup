@@ -3,60 +3,35 @@ using System.Collections;
 using UnityEngine;
 
 // Proposed card book for the Red Kite (ArtSource/BossPhaseProposals). It flies only while
-// DistrictBoss.ProposedCards is set, so it can be recorded beside Cards().
-// Phase one
-//   Kite Tail: the kite sweeps across the upper arena trailing a tail from both wing guns,
-//     five strands of dark beads per gun with a bright petal bow every few beads. The tail hangs
-//     along the flight path, then lets go while the kite writes the next one: the strands
-//     fan outward at their own speeds and sway, unfurling like a kite's streamers. A bright
-//     kite string of arrows runs from the nose to the pilot all the while.
-//   Stoop: the kite takes station over the pilot's column with a visible charge, then
-//     drops in a hooked dive. Both wing guns shed bright feathers outward the whole way
-//     down and back up, so the dive leaves a widening wake, and the nose snaps a dark
-//     forked chevron volley at the bottom.
-// Phase two
-//   Sky Lane: the kite holds high and swings a lane of open air like a searchlight. Each
-//     wing gun throws a dark fringe of arrows on its own side of the lane, which swings as
-//     a pendulum while the kite drifts; bright beads roll down its middle and an aimed
-//     talon answers pilots who leave it for a corner.
-//   Scissor Kite: two crossing dives plant an X of hanging bright arrows from both wing
-//     guns. When the X is complete it opens like shears: every arrow leaves its line square
-//     to it, the two wings' blades peel apart in opposite directions and each splits into
-//     three ranks by speed. Dark nose payloads open flat along each dive.
-// Phase three (Hard)
-//   Red Sky: a tail is written high and keeps hanging through a stoop, then lets go as
-//     the kite climbs back out.
-// Tones: dark tail, bright stoop, dark lane, bright scissors; accents in the other tone.
+// DistrictBoss.ProposedCards is set, so it can be recorded beside Cards(). One idea per
+// phase, developing over the phase rather than alternating with another card.
+// Phase one, Kite Tail: the kite sweeps across the upper arena trailing a tail from both
+//   wing guns, five strands of dark beads per gun with a bright petal bow every few beads.
+//   The tail hangs along the flight path and lets go while the next one is written. Pass by
+//   pass the letting-go changes: all at once fanning out, a whip that follows the kite,
+//   all at once crossing inward, a crossing whip; the second half of the cycle flies arched
+//   passes. A bright kite string runs from the nose to the pilot, with a forked talon at
+//   every release.
+// Phase two, Scissor Kite: dives plant hanging bright arrows from both wing guns along the
+//   kite's path; when the figure is complete it opens like shears, every arrow leaving square
+//   to its line in three ranks by speed. The figure develops: an X that opens, a V, an X that
+//   closes through itself, a W. Dark nose payloads open flat along every dive.
+// Phase three (Hard), Hunting Stoop: the kite hunts the pilot's column in stoop after stoop,
+//   hooking left and right, shedding a bright feather wake that thickens over the first dives;
+//   every third stoop doubles back for a second dive. Dark chevrons at each bottom.
+// Tones: dark tail and payloads, bright string, blades and feathers.
 public sealed partial class PlainsRedKiteBoss
 {
     protected override IEnumerator Proposed()
     {
-        int side = transform.position.x > 0 ? -1 : 1;
-        int dive = 0;
         while (true)
         {
             if (phaseThree)
-            {
-                yield return RedSky(side, dive++);
-                side = -side;
-            }
+                yield return HuntingStoop();
             else if (!phaseTwo)
-            {
-                yield return KiteTail(side);
-                side = transform.position.x > 0 ? -1 : 1;
-                yield return Wait(Rest(.6f));
-                yield return Stoop();
-                yield return Wait(Rest(.6f));
-            }
+                yield return KiteTail(transform.position.x > 0 ? -1 : 1);
             else
-            {
-                yield return SkyLane(side);
-                side = -side;
-                yield return Wait(Rest(.3f));
                 yield return ScissorKite();
-                side = transform.position.x > 0 ? -1 : 1;
-                yield return Wait(Rest(.3f));
-            }
         }
     }
 
@@ -85,31 +60,42 @@ public sealed partial class PlainsRedKiteBoss
         }
     }
 
-    // Kite Tail: three passes, high and low in turn; each tail falls during the next pass.
+    // How a tail lets go: all together or as a whip, its strands fanning out or crossing in.
+    enum TailRelease
+    {
+        Together, Whip, TogetherInward, WhipInward
+    }
+
+    // Kite Tail: eight passes, high and low in turn, each letting go a different way;
+    // passes five to eight arch upward instead of dipping.
     IEnumerator KiteTail(int side)
     {
-        for (int pass = 0; pass < 3; pass++)
+        for (int pass = 0; pass < 8; pass++)
         {
             yield return PrimePair(.25f);
             float height = Camera.UpLimit - (pass % 2 == 0 ? 2.1f : 1.4f);
             Phrase(KiteString(2.0f));
-            yield return TailPass(new Vector3(Lane(side), height, 0), 2.0f, .55f, Mathf.Max(3, Dense(5)));
+            yield return TailPass(new Vector3(Lane(side), height, 0), 2.0f, pass < 4 ? .7f : -.35f, .55f,
+                Mathf.Max(3, Dense(5)), (TailRelease)(pass % 4));
             side = -side;
         }
     }
 
-    // One pass of the tail. Each beat both wing guns leave a few beads that peel back and
-    // up from the flight line and brake almost at once, so the tail hangs where the kite
-    // flew. All of it lets go `linger` seconds after the pass: each strand falls outward at
-    // its own angle and speed and sways, and the bright forked talon strikes at the pilot.
-    IEnumerator TailPass(Vector3 end, float duration, float linger, int strands)
+    // One pass of the tail. Each beat both wing guns leave a few beads that peel back and up
+    // from the flight line and brake almost at once, so the tail hangs where the kite flew.
+    // Together, it all lets go `linger` after the pass; as a whip, each bead lets go a fixed
+    // time after it was written. Every strand falls at its own angle and speed and sways.
+    IEnumerator TailPass(Vector3 end, float duration, float depth, float linger, int strands, TailRelease release)
     {
         int beats = Mathf.Max(5, Dense(18));
-        float release = duration / MovementScale + linger;
-        Phrase(TalonAfter(release));
-        yield return Glide(end, duration, .7f, beats, (t, tangent, beat) =>
+        bool whip = release == TailRelease.Whip || release == TailRelease.WhipInward;
+        bool inward = release == TailRelease.TogetherInward || release == TailRelease.WhipInward;
+        float together = duration / MovementScale + linger;
+        Phrase(TalonAfter(whip ? together + .5f : together));
+        yield return Glide(end, duration, depth, beats, (t, tangent, beat) =>
         {
             float written = t * duration / MovementScale;
+            float letGo = whip ? written + linger + .5f : together;
             for (int wing = 1; wing <= 2; wing++)
             {
                 int mirror = wing == 1 ? -1 : 1;
@@ -120,10 +106,11 @@ public sealed partial class PlainsRedKiteBoss
                     Vector2 back = CombatVisuals.Rotate((-tangent + Vector2.up * .8f).normalized, mirror * strand * 9);
                     float speed = 1.0f + strand * .35f;
                     float fall = 1.7f + strand * .45f;
+                    float lean = inward ? -mirror * (4 + strand * 7) : mirror * (6 + strand * 10);
                     var bead = bow
                         ? (CombatRound)Fire<PetalRound>(Muzzle(wing), back, speed, .26f)
                         : Fire<SimpleRound>(Muzzle(wing), back, speed, .21f);
-                    bead.Pause(.35f, Mathf.Max(.1f, release - written - .35f), CombatRound.Turn.Down, mirror * (6 + strand * 10), fall / speed)
+                    bead.Pause(.35f, Mathf.Max(.1f, letGo - written - .35f), CombatRound.Turn.Down, lean, fall / speed)
                         .Sway(.3f, .45f)
                         .LivesFor(12);
                 }
@@ -157,119 +144,92 @@ public sealed partial class PlainsRedKiteBoss
             Fire<NeedleRound>(Muzzle(), CombatVisuals.Rotate(aim, k * 8), 4.6f - Mathf.Abs(k) * .35f, .19f);
     }
 
-    // Stoop: three dives, the hook alternating sides.
-    IEnumerator Stoop()
-    {
-        for (int dive = 0; dive < 3; dive++)
-        {
-            yield return StoopDive(dive, Dense(24), 4, Dense(5));
-            yield return Wait(Rest(.15f));
-        }
-    }
-
-    // Take station over the pilot, charge the nose, then a U-shaped dive that hooks off to
-    // one side. Each beat both wing guns shed four bright feathers fanned from down-outward
-    // to up-outward at layered speeds, all quickening; the dark chevrons leave at the bottom.
-    IEnumerator StoopDive(int dive, int beats, int feathers, int chevronRows)
-    {
-        var pilot = CombatVisuals.Player;
-        float x = Mathf.Clamp(pilot != null ? pilot.position.x : 0, Lane(-1), Lane(1));
-        float high = Camera.UpLimit - 2.0f;
-        yield return Glide(new Vector3(x, high, 0), .55f, 0, 0, null);
-        yield return Charge(Hull, WeaponPort(0), .45f);
-        float pilotY = pilot != null ? pilot.position.y : Camera.DownLimit;
-        float bottom = Mathf.Clamp(pilotY + 3.4f, Camera.UpLimit - 7.5f, high - 1f);
-        float hook = Mathf.Clamp(x + (dive % 2 == 0 ? 1.8f : -1.8f), Lane(-1), Lane(1));
-        beats = Mathf.Max(6, beats);
-        yield return Glide(new Vector3(hook, high, 0), 1.3f, high - bottom, beats, (t, tangent, beat) =>
-        {
-            UseTone(HostileTone.Bright);
-            for (int wing = 1; wing <= 2; wing++)
-            {
-                int mirror = wing == 1 ? -1 : 1;
-                for (int k = 0; k < feathers; k++)
-                    Fire<NeedleRound>(Muzzle(wing), CombatVisuals.Rotate(Vector2.down, mirror * (64 + k * 20)), 1.5f + k * .45f, .17f)
-                        .Ramp(1.9f, .8f, .35f);
-            }
-            if (beat == beats / 2)
-                Phrase(Toned(HostileTone.Dark, Chevrons(Hull, WeaponPort(0), chevronRows, 3.6f, .12f)));
-        });
-    }
-
-    // Sky Lane: take a high station on one side, then drift across while the lane swings.
-    IEnumerator SkyLane(int side)
-    {
-        float high = Camera.UpLimit - 1.9f;
-        yield return Glide(new Vector3(Lane(-side * .4f), high, 0), .6f, 0, 0, null);
-        yield return PrimePair(.5f);
-        Phrase(Glide(new Vector3(Lane(side * .4f), high, 0), 6.2f, .45f, 0, null));
-        int fringe = Mathf.Max(3, Dense(8));
-        yield return Every(6f, .13f, n =>
-        {
-            // The lane's heading, in degrees from straight down: a slow pendulum.
-            float axis = 38 * Mathf.Sin(n * .13f * 1.15f);
-            UseTone(HostileTone.Dark);
-            for (int wing = 1; wing <= 2; wing++)
-            {
-                int mirror = wing == 1 ? -1 : 1;
-                for (int k = 0; k < fringe; k++)
-                    Fire<NeedleRound>(Muzzle(wing), CombatVisuals.Rotate(Vector2.down, axis + mirror * k * 13), 3.8f - k * .2f, .17f);
-            }
-            UseTone(HostileTone.Bright);
-            if (n % 2 == 0)
-                Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(Vector2.down, axis), 2.2f, .24f);
-            if (n % 6 == 4)
-            {
-                var aim = CombatVisuals.Aim(Muzzle());
-                for (int k = -1; k <= 1; k++)
-                    Fire<NeedleRound>(Muzzle(), CombatVisuals.Rotate(aim, k * 7), 4.2f, .17f);
-            }
-        });
-    }
-
-    // Scissor Kite: climb to a top corner, dive across to the far low point planting the
-    // first blade, climb straight up, dive back planting the second, climb, and open both.
+    // Scissor Kite: the four figures in turn.
     IEnumerator ScissorKite()
+    {
+        for (int figure = 0; figure < 4; figure++)
+            yield return Shears(figure);
+    }
+
+    // One figure. The kite climbs to its first point and charges, then flies the route,
+    // planting along the legs marked to plant; climbs between legs plant nothing. When the
+    // route is done every planted arrow lets go together.
+    IEnumerator Shears(int figure)
     {
         int side = transform.position.x > 0 ? 1 : -1;
         float high = Camera.UpLimit - 2.0f, low = Camera.UpLimit - 7.0f;
-        yield return Glide(new Vector3(Lane(side), high, 0), .6f, 0, 0, null);
-        yield return PrimePair(.4f);
-        const float DiveTime = 1.1f, ClimbTime = .6f;
-        float scale = 1 / MovementScale;
-        float release = (DiveTime * 2 + ClimbTime * 2) * scale + .35f;
-        float clock = 0;
-        Phrase(KiteString(release - .35f));
-        for (int blade = 0; blade < 2; blade++)
+        Vector2[] route;
+        bool[] plants;
+        switch (figure % 4)
         {
-            int from = blade == 0 ? side : -side;
-            Vector2 path = new Vector2(Lane(-from) - Lane(from), low - high).normalized;
-            float bladeStart = clock;
-            int beats = Mathf.Max(6, Dense(14));
-            yield return Glide(new Vector3(Lane(-from), low, 0), DiveTime, 0, beats, (t, tangent, beat) =>
+            case 1:
+                // V: down to the centre and straight back up the other diagonal.
+                route = new[] { new Vector2(Lane(side), high), new Vector2(0, low), new Vector2(Lane(-side), high) };
+                plants = new[] { true, true };
+                break;
+            case 3:
+                // W: down, up, down; the last climb plants nothing.
+                route = new[] { new Vector2(Lane(side), high), new Vector2(Lane(side / 3f), low), new Vector2(Lane(-side / 3f), high),
+                    new Vector2(Lane(-side), low), new Vector2(Lane(-side), high) };
+                plants = new[] { true, true, true, false };
+                break;
+            default:
+                // X: two crossing dives with a straight climb after each.
+                route = new[] { new Vector2(Lane(side), high), new Vector2(Lane(-side), low), new Vector2(Lane(-side), high),
+                    new Vector2(Lane(side), low), new Vector2(Lane(side), high) };
+                plants = new[] { true, false, true, false };
+                break;
+        }
+        // The second X closes: its blades cross back through each other.
+        bool closing = figure % 4 == 2;
+        yield return Glide(route[0], .6f, 0, 0, null);
+        yield return PrimePair(.4f);
+        float scale = 1 / MovementScale;
+        float flight = 0;
+        for (int leg = 0; leg < plants.Length; leg++)
+            flight += LegTime(route[leg], route[leg + 1]);
+        float release = flight * scale + .35f;
+        Phrase(KiteString(flight * scale));
+        float clock = 0;
+        for (int leg = 0; leg < plants.Length; leg++)
+        {
+            Vector2 from = route[leg], to = route[leg + 1];
+            float time = LegTime(from, to);
+            if (plants[leg])
             {
-                float written = bladeStart + t * DiveTime * scale;
-                PlantBlade(path, release - written);
-                if (beat % 2 == 1)
-                    FlatPayload();
-            });
-            clock += DiveTime * scale;
-            Phrase(TalonAfter(.2f));
-            yield return Glide(new Vector3(Lane(-from), high, 0), ClimbTime, 0, 0, null);
-            clock += ClimbTime * scale;
+                Vector2 path = (to - from).normalized;
+                float legStart = clock;
+                int beats = Mathf.Max(4, Mathf.RoundToInt(Dense(14) * Vector2.Distance(from, to) / 7.8f));
+                yield return Glide(to, time, 0, beats, (t, tangent, beat) =>
+                {
+                    PlantBlade(path, release - legStart - t * time * scale, closing);
+                    if (beat % 2 == 1)
+                        FlatPayload();
+                });
+                Phrase(TalonAfter(.2f));
+            }
+            else
+                yield return Glide(to, time, 0, 0, null);
+            clock += time * scale;
         }
         yield return Wait(.35f);
     }
 
-    // Each wing gun plants three bright arrows on one spot, aimed square off the dive line on
-    // its own side; they brake at once and wait. On release they leave at three speeds.
-    void PlantBlade(Vector2 path, float wait)
+    // Diving legs run at about seven units a second; straight climbs a little slower.
+    static float LegTime(Vector2 from, Vector2 to) => Mathf.Abs(from.x - to.x) < .1f ? .6f : .14f * Vector2.Distance(from, to);
+
+    // Each wing gun plants three bright arrows on one spot, aimed square off the line on its
+    // own side (or, closing, toward the other side); they brake at once and wait. On release
+    // they leave at three speeds.
+    void PlantBlade(Vector2 path, float wait, bool closing)
     {
         Vector2 across = new Vector2(-path.y, path.x);
         UseTone(HostileTone.Bright);
         for (int wing = 1; wing <= 2; wing++)
         {
             Vector2 outward = (wing == 1) == (across.x < 0) ? across : -across;
+            if (closing)
+                outward = -outward;
             for (int rank = 0; rank < 3; rank++)
                 Fire<NeedleRound>(Muzzle(wing), outward, 2.0f, .18f)
                     .Pause(.08f, Mathf.Max(.1f, wait - .08f), CombatRound.Turn.Keep, 0, .85f + rank * .35f);
@@ -285,13 +245,49 @@ public sealed partial class PlainsRedKiteBoss
             .SplitAt(.72f, Dense(15), 10, 2.6f, .16f);
     }
 
-    // Red Sky: a high tail hangs through a full stoop and lets go as the kite climbs out.
-    IEnumerator RedSky(int side, int dive)
+    // Hunting Stoop: nine stoops. The wake grows from four feathers a gun to six over the
+    // first three; every third stoop doubles back for a second dive. The string never stops.
+    IEnumerator HuntingStoop()
     {
-        yield return PrimePair(.3f);
-        Phrase(KiteString(4.3f));
-        yield return TailPass(new Vector3(Lane(side), Camera.UpLimit - 1.5f, 0), 1.8f, 2.1f, Mathf.Max(3, Dense(6)));
-        yield return StoopDive(dive, Dense(28), 6, Dense(6));
-        yield return Wait(Rest(.1f));
+        for (int dive = 0; dive < 9; dive++)
+        {
+            bool twice = dive % 3 == 2;
+            Phrase(KiteString(twice ? 3.6f : 2.3f));
+            yield return StoopDive(dive, Dense(24), Mathf.Min(6, 4 + dive), Dense(6), twice);
+            yield return Wait(Rest(.1f));
+        }
+    }
+
+    // Take station over the pilot, charge the nose, then a U-shaped dive that hooks off to
+    // one side (and, twice, back again). Each beat both wing guns shed bright feathers fanned
+    // from down-outward to up-outward at layered speeds, all quickening; dark chevrons leave
+    // at every bottom.
+    IEnumerator StoopDive(int dive, int beats, int feathers, int chevronRows, bool twice)
+    {
+        var pilot = CombatVisuals.Player;
+        float x = Mathf.Clamp(pilot != null ? pilot.position.x : 0, Lane(-1), Lane(1));
+        float high = Camera.UpLimit - 2.0f;
+        yield return Glide(new Vector3(x, high, 0), .55f, 0, 0, null);
+        yield return Charge(Hull, WeaponPort(0), .45f);
+        float pilotY = pilot != null ? pilot.position.y : Camera.DownLimit;
+        float bottom = Mathf.Clamp(pilotY + 3.4f, Camera.UpLimit - 7.5f, high - 1f);
+        float hook = Mathf.Clamp(x + (dive % 2 == 0 ? 1.8f : -1.8f), Lane(-1), Lane(1));
+        beats = Mathf.Max(6, beats);
+        Action<float, Vector2, int> shed = (t, tangent, beat) =>
+        {
+            UseTone(HostileTone.Bright);
+            for (int wing = 1; wing <= 2; wing++)
+            {
+                int mirror = wing == 1 ? -1 : 1;
+                for (int k = 0; k < feathers; k++)
+                    Fire<NeedleRound>(Muzzle(wing), CombatVisuals.Rotate(Vector2.down, mirror * (64 + k * 20)), 1.5f + k * .45f, .17f)
+                        .Ramp(1.9f, .8f, .35f);
+            }
+            if (beat == beats / 2)
+                Phrase(Toned(HostileTone.Dark, Chevrons(Hull, WeaponPort(0), chevronRows, 3.6f, .12f)));
+        };
+        yield return Glide(new Vector3(hook, high, 0), 1.3f, high - bottom, beats, shed);
+        if (twice)
+            yield return Glide(new Vector3(x, high, 0), 1.3f, high - bottom, beats, shed);
     }
 }

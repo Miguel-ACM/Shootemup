@@ -1,39 +1,52 @@
-# Red Kite: proposed cards
+# Red Kite: proposed phases
 
-Code: `Assets/Scripts/Enemies/Bosses/PlainsRedKiteBoss.Proposed.cs`. The kite fires from its nose (0) and two wing guns (1-2). It moves only through its cards, as before. Nothing bounces, and nothing goes up to the ceiling. Payloads open flat.
+Code: `Assets/Scripts/Enemies/Bosses/PlainsRedKiteBoss.Proposed.cs`. Each phase is one concept that develops over the phase (Miguel, 10 November 2026). The kite fires from its nose (0) and two wing guns (1-2). It moves only through its cards, as before. Nothing bounces, and nothing goes up to the ceiling. Payloads open flat.
 
-**Pressure (Hard, rounds per second including rests; current → proposed):** phase one 100 → 93, phase two 114 → 104, phase three 177 → 161. Kite Tail uses 18 beats with five strands per gun. Stoop uses 24 beats and five chevron rows. Sky Lane uses eight-arrow fringes. Scissor Kite blades are thinned on Hard to 14 plants per dive (about 0.56 units apart, no longer a solid wall). That pressure moves to a flat 15-round payload every other beat and the kite string running through the whole card. Red Sky uses six strands, a 28-beat stoop with six feathers per gun, and the string throughout.
+**Pressure (Hard, rounds per second averaged over the concept's cycle; current → proposed):** phase one 100 → 105, phase two 114 → 109, phase three 177 → 183.
 
-## Phase one
+## Phase one: Kite Tail
 
-**Current:** a single loop of Sightline (a charged, aimed two-ribbon burst bracketing the pilot) and Crossing (a low banked pass whose wake brakes and turns across the old lane, plus flat nose payloads).
+**Current:** one loop of Sightline (a charged aimed burst bracketing the pilot) and Crossing (a banked pass whose wake brakes and turns).
 
-- **Kite Tail.** The kite sweeps across the upper arena, alternating high and low passes. Both wing guns trail a tail of four dark bead strands each, with a bright petal "bow" every few beads. The tail hangs along the flight path. It lets go while the next pass is being written. Each strand falls outward at its own angle and speed and sways, so the tail unfurls into streamers. A bright "kite string" of arrows runs from the nose to the pilot during each pass, and a forked talon strikes at every release. Tones: dark beads, bright bows, string and talon.
-- **Stoop.** The kite takes station over the pilot's column and charges its nose. Then it drops in a U-shaped dive that hooks off to alternating sides. All the way down and back up, both wing guns shed four bright feathers per beat. The feathers fan from down-outward to up-outward at layered speeds and all quicken, leaving a widening wake. At the bottom, the nose snaps dark forked chevrons at the pilot. Tones: bright feathers, dark chevrons. It turns the kite into a bird of prey instead of a gunship.
+**Proposed:** the kite sweeps across the upper arena trailing a tail from both wing guns. Each gun trails five strands of dark beads, with a bright petal bow every few beads. The tail hangs along the flight path and lets go while the next one is written. Each strand falls at its own angle and speed and sways, unfurling like a kite's streamers. A bright kite string of arrows runs from the nose to the pilot, and a forked talon strikes at every release.
 
-Further ideas (not implemented):
-- *Thermal*: the kite circles high while the tail strands hang in a rising helix.
-- *Mobbed*: small dark bead pairs dart at the kite's flanks and are deflected outward as feather fans.
-- *Hover Watch*: the kite holds still with wing guns mirroring the pilot's sideways movement.
+The concept develops over an eight-pass cycle of about 18 s:
+- Passes alternate high and low.
+- The letting-go changes every pass: all at once fanning out, a whip that follows the kite, all at once crossing inward, then a crossing whip.
+- The second half of the cycle flies arched passes instead of dipping ones.
 
-## Phase two
+Tones: dark beads, bright bows, string and talon.
 
-**Current:** the same loop with longer, deeper passes, phase two's angled nose kernels and swapped tones.
+Alternative single concepts (not implemented):
+- *Stoop*: repeated charged dives at the pilot's column with a feather wake. It became phase three.
+- *Thermal*: the kite circles higher each lap while its tail strands hang in a rising helix that releases strand by strand.
+- *Sightline, developed*: the committed aimed burst, narrowing and splitting into more ribbons each time.
 
-- **Sky Lane.** The kite holds high and drifts across. A lane of open air swings under it like a searchlight on a slow pendulum. Each wing gun throws a dark six-arrow fringe on its own side of the lane, so the pilot flies with the swinging lane. Bright beads roll down its middle, and an aimed talon punishes pilots who leave it for a corner. Tones: dark fringe, bright beads and talons.
-- **Scissor Kite.** The kite makes two crossing diagonal dives, climbing straight back up after each. Both wing guns plant hanging bright arrows along the dive, three to a spot. When the X is complete it opens like shears. Every arrow leaves square to its line, the wings' blades peel apart in four diagonal directions (two of them over the top), and each blade splits into three ranks by speed. Dark nose payloads drop along each dive and open in flat fans. Tones: bright blades, dark payloads.
+## Phase two: Scissor Kite
 
-Further ideas (not implemented):
-- *Kite Fight*: two tails written in opposite directions hang crossed and release in turn.
-- *Forked Tail*: inverted V formations from the nose split into two diverging lines at a glint.
-- *Windhover*: the lane narrows each swing; beads become petals that hang in the lane briefly.
+**Current:** the same loop, deeper, with angled nose kernels and swapped tones.
 
-## Phase three (Hard)
+**Proposed:** dives plant hanging bright arrows from both wing guns along the kite's path, three to a spot. When the figure is complete it opens like shears: every arrow leaves square to its line, and each blade splits into three ranks by speed. Blades are planted about 0.56 units apart on Hard, so they don't read as a solid wall. Dark nose payloads open in flat fans every other beat, and the kite string runs throughout.
 
-**Current:** the same loop again, deeper, with a reversal pass that doubles back through the wake.
+The figure develops over a cycle of about 17 s:
+1. An X that opens.
+2. A V written down and back up through the centre.
+3. An X that closes, its blades crossing back through each other.
+4. A W of three planted legs.
 
-- **Red Sky.** A high tail is written with the kite string running. It keeps hanging through a full stoop on the pilot's column, then lets go as the kite climbs back out. Feathers and falling streamers overlap. The tail's side and the stoop's hook alternate each time. Tones: dark tail, bright feathers and string, dark chevrons.
+Tones: bright blades and string, dark payloads.
 
-Further ideas (not implemented):
-- *Red Sky at Night*: stoops planted as half-X blades that open on the next stoop's bottom.
-- *Last Glide*: a whole-width tail across the top edge, released in sequence from one end as the kite stoops at the other.
+Alternative single concepts (not implemented):
+- *Sky Lane*: a lane of open air that swings like a searchlight between dark fringes. It narrows, speeds up and doubles over the phase.
+- *Kite Fight*: two tails written in opposite directions hang crossed and release in turn, the crossings moving each time.
+- *Forked Tail*: inverted V formations from the nose split into diverging lines, opening wider each volley.
+
+## Phase three (Hard): Hunting Stoop
+
+**Current:** the same loop again with a reversal pass.
+
+**Proposed:** the kite hunts the pilot's column. In stoop after stoop, it takes station overhead, charges the nose and drops in a hooked U-dive, alternating hooks. Both wing guns shed bright feathers fanned from down-outward to up-outward at layered speeds, all quickening. Dark chevrons snap at every bottom, and the kite string never stops. Over a nine-stoop cycle (about 25 s), the wake thickens from four feathers per gun to six. Every third stoop doubles back for a second dive without re-stationing. Tones: bright feathers and string, dark chevrons.
+
+Alternative single concepts (not implemented):
+- *Red Sky*: a high tail that hangs through each stoop and lets go as the kite climbs out.
+- *Last Glide*: a whole-width tail across the top edge, released from one end as the kite stoops at the other.
