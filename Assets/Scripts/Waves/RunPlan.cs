@@ -49,6 +49,13 @@ public sealed class RunPlan
             index++;
         return this[index];
     }
+    public int IndexOf(RunSlotKind kind, int from)
+    {
+        for (int i = Math.Max(0, from); i < slots.Count; i++)
+            if (slots[i].Kind == kind)
+                return i;
+        return -1;
+    }
     public int RemainingCombat(int index)
     {
         int count = 0;

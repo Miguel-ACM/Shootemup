@@ -5,7 +5,7 @@ using UnityEngine;
 public enum EncounterKind
 {
     Shop, MultShop, Item, Health, Challenge, Pact, Salvage, HealthTrade, Reforge, Cargo,
-    AttackSpeed, AttackDamage, MaxHealth, ExtraShot
+    AttackSpeed, AttackDamage, MaxHealth, ExtraShot, Skip
 }
 public static class EncounterChoice
 {
@@ -31,9 +31,11 @@ public static class EncounterChoice
     public static int SalvageCoins(int tier, float luck) => 12 + Mathf.Max(0, tier - 1) * 4 + Mathf.FloorToInt(Mathf.Clamp(luck, 0, 2) * 12);
 
     const double ExtraShotChance = .25;
+    public const int MaxOptions = 5;
 
     public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false,
-        float luck = 0, bool canTrade = false, bool canReforge = false, bool cargoAvailable = true, bool canGrowHull = true)
+        float luck = 0, bool canTrade = false, bool canReforge = false, bool cargoAvailable = true, bool canGrowHull = true,
+        bool offerSkip = false)
     {
         // Shops are no longer offered mid-run; the hangar shop between runs replaces them.
         var bag = new List<EncounterKind> { EncounterKind.Item, EncounterKind.Salvage,
@@ -77,6 +79,9 @@ public static class EncounterChoice
             else
                 picked.Add(EncounterKind.Pact);
         }
+        // A district's first offer always adds SKIP on top of its usual draw (Miguel, 10 November 2026).
+        if (offerSkip && picked.Count < MaxOptions)
+            picked.Add(EncounterKind.Skip);
         return picked.ToArray();
     }
 
@@ -158,6 +163,8 @@ public static class EncounterChoice
                 return new Color(.96f, .46f, .58f);
             case EncounterKind.ExtraShot:
                 return new Color(.76f, .63f, 1);
+            case EncounterKind.Skip:
+                return new Color(.93f, .94f, .98f);
             default:
                 return new Color(.76f, .48f, .95f);
         }

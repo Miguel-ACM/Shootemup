@@ -30,6 +30,8 @@ public static partial class MetaProgress
     static FlightLog flight;
     static float departed;
     static int bossHits, districtHits;
+    // A SKIP hexagon flies past the district's waves, so it cannot count as a no-hit area.
+    static bool districtSkipped;
     static Type engagedBoss;
     static bool districtDefeated;
     public static event Action<BossClearNotice> BossCleared;
@@ -62,6 +64,7 @@ public static partial class MetaProgress
         Data.pin = Pin == key ? null : key;
         Save();
     }
+    public static void SkipDistrict() => districtSkipped = true;
     public static void TookHit()
     {
         if (flight != null)
@@ -78,6 +81,7 @@ public static partial class MetaProgress
         {
             flight.route += " / " + LevelRun.CurrentName;
             districtHits = flight.hits;
+            districtSkipped = false;
             engagedBoss = null;
             districtDefeated = false;
         }
@@ -157,7 +161,7 @@ public static partial class MetaProgress
         AwardRoutes();
         Save();
         bool noHitEligible = ItemUnlocks.AllowsNoHit(flight.difficulty);
-        BossCleared?.Invoke(new BossClearNotice(noHitEligible && flight.hits == districtHits,
+        BossCleared?.Invoke(new BossClearNotice(noHitEligible && flight.hits == districtHits && !districtSkipped,
             noHitEligible && clean, flight.unlocks.GetRange(previousUnlocks, flight.unlocks.Count - previousUnlocks)));
     }
     static ServiceRecord StoredRecord()

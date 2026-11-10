@@ -74,6 +74,8 @@ public sealed class RewardHexes : MonoBehaviour
             case EncounterKind.Item:
             case EncounterKind.Pact:
                 return 1;
+            case EncounterKind.Skip:
+                return .9f;
             case EncounterKind.Challenge:
             case EncounterKind.Cargo:
                 return .75f;
@@ -97,17 +99,24 @@ public sealed class RewardHexes : MonoBehaviour
         // Kept in the lower half of the arena, within easy reach of the ship.
         float low = Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, .14f), high = Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, .55f);
         var spots = new Vector2[options.Length];
-        if (options.Length == 3 || options.Length == 4)
+        if (options.Length >= 3 && options.Length <= 5)
         {
-            // Triangles for three; a grid or diamond for four. All leave flight corridors.
+            // Triangles for three; a grid or diamond for four; a quincunx or pentagon for five.
+            // All leave flight corridors.
             // Choose the orientation furthest from the pilot before assigning the reward heights.
             float x = Mathf.Min(-left, right) * .8f, bottom = low + .4f, top = high - .4f;
+            float middle = (bottom + top) * .5f;
             var upright = options.Length == 3
                 ? new[] { new Vector2(-x, bottom), new Vector2(x, bottom), new Vector2(0, top) }
-                : new[] { new Vector2(-x, bottom), new Vector2(x, bottom), new Vector2(-x, top), new Vector2(x, top) };
+                : options.Length == 4
+                ? new[] { new Vector2(-x, bottom), new Vector2(x, bottom), new Vector2(-x, top), new Vector2(x, top) }
+                : new[] { new Vector2(-x, bottom), new Vector2(x, bottom), new Vector2(0, middle), new Vector2(-x, top), new Vector2(x, top) };
+            float lean = Mathf.Lerp(bottom, top, .4f);
             var inverted = options.Length == 3
                 ? new[] { new Vector2(0, bottom), new Vector2(-x, top), new Vector2(x, top) }
-                : new[] { new Vector2(0, bottom), new Vector2(-x, (bottom + top) * .5f), new Vector2(x, (bottom + top) * .5f), new Vector2(0, top) };
+                : options.Length == 4
+                ? new[] { new Vector2(0, bottom), new Vector2(-x, middle), new Vector2(x, middle), new Vector2(0, top) }
+                : new[] { new Vector2(0, bottom), new Vector2(-x, lean), new Vector2(x, lean), new Vector2(-x * .66f, top), new Vector2(x * .66f, top) };
             float Distance(Vector2[] points)
             {
                 float nearest = float.MaxValue;

@@ -379,10 +379,32 @@ public sealed class DecisionExpansionReview : MonoBehaviour
                         throw new Exception("Overlapping three-zone offer: " + seed);
             }
         }
+        int fives = 0;
+        for (int seed = 0; seed < 512; seed++)
+        {
+            var first = EncounterChoice.Draw(seed, true, 3, 6, true, 2, true, true, true, true, true);
+            if (!first.Contains(EncounterKind.Skip) || first.Length < 3 || first.Length > EncounterChoice.MaxOptions || first.Distinct().Count() != first.Length)
+                throw new Exception("Invalid first offer with SKIP: " + seed);
+            if (EncounterChoice.Draw(seed, true, 3, 6, true, 2, true, true, true, true).Contains(EncounterKind.Skip))
+                throw new Exception("SKIP drawn outside a first offer: " + seed);
+            if (first.Length != 5)
+                continue;
+            fives++;
+            var spots = (Vector2[])place.Invoke(null, new object[] { first, seed, new Vector2(0, Camera.DownLimit + 1) });
+            for (int i = 0; i < spots.Length; i++)
+            {
+                if (spots[i].x - RewardHexes.Radius <= Camera.LeftLimit || spots[i].x + RewardHexes.Radius >= Camera.RightLimit)
+                    throw new Exception("Clipped five-zone offer: " + seed);
+                for (int j = 0; j < i; j++)
+                    if (Vector2.Distance(spots[i], spots[j]) <= RewardHexes.Radius * 2 + .5f)
+                        throw new Exception("Five-zone offer without a flight corridor: " + seed);
+            }
+        }
+        Check(fives > 0, "first offers add SKIP on top of their draw, up to five separated hexagons (" + fives + " five-zone seeds)");
         Check(luckyTriples > baseTriples && baseTriples > 0, "512 seeds: healthy offers have 2-4 compatible hexagons; luck raises three-zone frequency from " + baseTriples + " to " + luckyTriples);
         Check(DistrictWaves.Sequence().Count(key => key == "encounterChoice") == 2 && DistrictWaves.Sequence().Count(key => int.TryParse(key, out _)) == 10 &&
             DistrictWaves.Sequence().Contains("minibossChoice"), "two unconditional selections preserve ten combat waves and a separate earned miniboss reward");
-        foreach (var kind in new[] { EncounterKind.Salvage, EncounterKind.HealthTrade, EncounterKind.Reforge, EncounterKind.Cargo })
+        foreach (var kind in new[] { EncounterKind.Salvage, EncounterKind.HealthTrade, EncounterKind.Reforge, EncounterKind.Cargo, EncounterKind.Skip })
         {
             var sprite = EncounterChoice.Icon(kind);
             if (sprite.texture.width != 32 || sprite.texture.height != 32 || sprite.texture.filterMode != FilterMode.Point || sprite.texture.mipmapCount != 1)

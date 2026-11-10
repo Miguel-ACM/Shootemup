@@ -122,7 +122,7 @@ public static partial class MetaProgress
         {
             if (reward.Area != LevelRun.Current) continue;
             bool earned = reward.Condition == ItemUnlockCondition.Clear || normal &&
-                (reward.Condition == ItemUnlockCondition.NoHitBoss ? cleanBoss && reward.Boss == engagedBoss : flight.hits == districtHits);
+                (reward.Condition == ItemUnlockCondition.NoHitBoss ? cleanBoss && reward.Boss == engagedBoss : flight.hits == districtHits && !districtSkipped);
             if (earned) UnlockItem(reward.Key, reward.Title, reward.Requirement, reward.Area, reward.Condition);
         }
     }

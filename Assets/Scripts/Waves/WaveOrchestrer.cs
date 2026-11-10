@@ -44,6 +44,8 @@ public class WaveOrchestrer : MonoBehaviour
     // Encounter slots are offered half-way through the following combat wave, without pausing it.
     bool offerPending;
     float offerAt;
+    // The first hexagon offer of each district also carries SKIP, straight to the boss.
+    bool skipOffered;
     RewardHexes rewardOffer;
     public RewardHexes RewardOffer => rewardOffer;
     CargoEscort cargo;
@@ -346,9 +348,11 @@ public class WaveOrchestrer : MonoBehaviour
         bool pactAvailable = PactPool.Due && PactPool.HexStage != LevelRun.Stage && PactPool.HasEligible(player);
         var tradeable = RunInventory.For(player).Tradeable();
         bool canReforge = tradeable.Exists(entry => ItemPool.ReforgeAlternatives(entry.key, entry.rarity).Count >= 2);
+        bool offerSkip = !skipOffered && FlightTrials.Active == null && plan.IndexOf(RunSlotKind.Boss, currentWaveNumber) >= 0;
+        skipOffered = true;
         var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth,
             pactAvailable, GameRules.luck, tradeable.Count > 0, canReforge,
-            cargo == null && cargoRewardKey == null && remaining >= CargoEscort.MinimumOfferWaves, !PactPool.GlassHull);
+            cargo == null && cargoRewardKey == null && remaining >= CargoEscort.MinimumOfferWaves, !PactPool.GlassHull, offerSkip);
         if (Array.IndexOf(options, EncounterKind.Pact) >= 0)
             PactPool.HexStage = LevelRun.Stage;
         EncounterOptions = options;
@@ -376,8 +380,13 @@ public class WaveOrchestrer : MonoBehaviour
         if (GameOverState.Active)
             return;
         DismissOffer();
-        encounterExpiry[(int)kind] = kind == EncounterKind.Health || kind == EncounterKind.Salvage || EncounterChoice.IsStatReward(kind)
-            ? Time.time + 5 : float.PositiveInfinity;
+        encounterExpiry[(int)kind] = kind == EncounterKind.Health || kind == EncounterKind.Salvage || kind == EncounterKind.Skip ||
+            EncounterChoice.IsStatReward(kind) ? Time.time + 5 : float.PositiveInfinity;
+        if (kind == EncounterKind.Skip)
+        {
+            SkipToBoss();
+            return;
+        }
         if (EncounterChoice.IsStatReward(kind))
         {
             EncounterChoice.ApplyStatReward(kind, ship.GetComponent<Shipcontroller>());
@@ -421,6 +430,38 @@ public class WaveOrchestrer : MonoBehaviour
         }
         else
             HealthRecovery.Begin(ship.GetComponent<Shipcontroller>(), .5f);
+    }
+
+    // SKIP abandons the district's remaining waves, minibosses and decisions; only a
+    // claimed cargo item still opens before the boss, so an earned reward is never lost.
+    void SkipToBoss()
+    {
+        int boss = plan.IndexOf(RunSlotKind.Boss, currentWaveNumber);
+        if (boss < 0)
+            return;
+        bool cargoPending = false;
+        for (int i = currentWaveNumber; i < boss; i++)
+            cargoPending |= plan[i].Kind == RunSlotKind.CargoReward;
+        MetaProgress.SkipDistrict();
+        foreach (var enemy in new List<AEnemy>(AEnemy.Live))
+            if (enemy != null)
+                Destroy(enemy.gameObject);
+        EraseAllBullets();
+        TunnelPassage.Clear();
+        isWaveComingOut = false;
+        stopingWave = false;
+        currentUnit = null;
+        activeMiniboss = null;
+        minibossDeadline = -1;
+        minibossVictory = false;
+        challenge.Reset();
+        killLedger.Clear();
+        ItemSound.Play("ready", .18f);
+        PSXImpactEffects.Burst(ship.transform.position, EncounterChoice.Accent(EncounterKind.Skip));
+        currentWaveNumber = boss;
+        if (cargoPending)
+            plan.Insert(boss, RunSlotKind.CargoReward);
+        GenerateWave();
     }
 
     void OpenDecision(RunSlotKind kind)
@@ -639,6 +680,7 @@ public class WaveOrchestrer : MonoBehaviour
         currentWaveKilledEnemies = 0;
         challenge.Reset();
         Array.Clear(encounterExpiry, 0, encounterExpiry.Length);
+        skipOffered = false;
         // Unopened cargo follows the pilot across districts until claimed or destroyed.
         if (cargo != null)
             encounterExpiry[(int)EncounterKind.Cargo] = float.PositiveInfinity;
