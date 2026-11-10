@@ -72,6 +72,9 @@ public sealed class BossPhaseProposalRecording : MonoBehaviour
         var watcher = WaveWatcher.Current;
         watcher.SelectDifficulty(RunDifficulty.Normal);
         while (!WavePreparation.Ready) yield return null;
+        // REPEAT would respawn the boss every 24 s, before late phases and mid-capture.
+        if (watcher.Looping)
+            watcher.ToggleLoop();
         Time.captureDeltaTime = 1f / 30;
         foreach (LevelId level in Enum.GetValues(typeof(LevelId)))
         {
