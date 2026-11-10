@@ -1,14 +1,34 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
+// City switchyard: an engine whose three signal heads control its own traffic. Each head
+// sits above a gun (nose, left shoulder, right shoulder) and shows its tone. Before danger it
+// blinks; at danger it stays lit and stops the cars it sent out; when it clears it flashes
+// and the stopped cars set off on the route the signal sets. Every stopped car is a long
+// round that turns to face its next heading while it waits, so the pilot can read it.
+// Phase one, Red Signal: a head at danger freezes its rails where they are and sends
+//   nothing more; the cars turn onto the pilot and leave in a ripple from the head.
+// Phase two, Stop Line: a head at danger draws a stop line across the yard while its gun
+//   keeps running; its cars queue along the line and leave as a row on the head's route,
+//   across the yard from a shoulder or split down the middle from the nose.
+// Hard final, Interlocking: the shoulder heads freeze and re-aim their cars while the nose
+//   head runs its stop line, and each aspect clears as the other goes to danger.
+// Tones: phase one's nose is dark and its shoulders bright; phase two swaps them; the
+// interlocking shoulders are bright and the nose dark. A head's lens shows its tone.
 [UnityEngine.Scripting.Preserve]
-public sealed partial class CitySwitchyardBoss : ArmoredHullBoss
+public sealed class CitySwitchyardBoss : ArmoredHullBoss
 {
     static readonly Vector2[] shape = { new(-1,.86f),new(-.88f,1.2f),new(.84f,1.2f),new(1,.88f),new(1.55f,.68f),new(1.55f,.32f),
         new(1.26f,.27f),new(1.26f,-.46f),new(1,-.46f),new(1.05f,-1.2f),new(.66f,-1.30f),new(-.66f,-1.30f),new(-1.05f,-1.20f),
         new(-1,-.46f),new(-1.26f,-.46f),new(-1.26f,.29f),new(-1.32f,.33f),new(-1.32f,.66f) };
     protected override Vector2[] Outline => shape;
     protected override void Configure() { health = 2600; hullScale = 1.12f; attackInterval = .9f; }
+
+    // Signal heads in hull space, one above each gun: nose, left shoulder, right shoulder.
+    // The hull mesh carries their housings; the lenses are lit at runtime.
+    public static readonly Vector3[] SignalHeads = { new Vector3(0, -.84f, -.42f), new Vector3(-1.12f, -.02f, -.42f), new Vector3(1.12f, -.02f, -.42f) };
+    const int Nose = 0, Left = 1, Right = 2;
 
     protected override void MoveBoss(float dt)
     {
@@ -17,92 +37,403 @@ public sealed partial class CitySwitchyardBoss : ArmoredHullBoss
         transform.position = Vector3.MoveTowards(transform.position, station, dt * Mathf.Clamp(distance * 2.6f, .8f, 6.6f));
     }
 
-    // Tones: Red Signal's two banks of traffic take opposite tones (the bank on the
-    // engine's next platform side in the other tone, the one phase two holds longer).
-    // Express Service's trains run lead-tone headlights and signal fans with
-    // carriages in the other tone. Phase two swaps the lead.
-    HostileTone Lead => CurrentPhase == 2 ? HostileTone.Dark : HostileTone.Bright;
-    static HostileTone Opposite(HostileTone value) => value == HostileTone.Bright ? HostileTone.Dark : HostileTone.Bright;
+    struct Car
+    {
+        public CombatRound round;
+        public int serial;
+        public bool Running => round != null && round.isActiveAndEnabled && round.Serial == serial;
+        public static readonly System.Predicate<Car> Gone = car => !car.Running;
+    }
+
+    sealed class Signal
+    {
+        public int port;
+        public HostileTone tone;
+        public SpriteRenderer lens, glow;
+        public LineRenderer line;
+        public bool danger, warning, holdFire;
+        public float flash;
+        // Stop line height while at danger in the Stop Line aspect; NaN when there is none.
+        public float stopLine = float.NaN, route;
+        public bool splitRoute;
+        public readonly List<Car> cars = new List<Car>();
+        public readonly List<Car> held = new List<Car>();
+    }
+
+    readonly Signal[] signals = new Signal[3];
+
+    protected override void Start()
+    {
+        base.Start();
+        var accent = LevelProjectilePalette.Accent(LevelRun.Current);
+        for (int i = 0; i < signals.Length; i++)
+        {
+            var s = new Signal { port = i };
+            s.glow = ItemSpark.Sprite(Hull, "Signal glow", "standard", accent, .9f);
+            s.glow.transform.localPosition = SignalHeads[i] + new Vector3(0, 0, -.05f);
+            s.lens = new GameObject("Signal lens").AddComponent<SpriteRenderer>();
+            s.lens.transform.SetParent(Hull, false);
+            s.lens.transform.localPosition = SignalHeads[i] + new Vector3(0, 0, -.1f);
+            s.lens.transform.localScale = Vector3.one * .44f;
+            s.lens.sprite = ProjectileSprites.Load("standard");
+            s.lens.sortingLayerName = "Bullet";
+            s.lens.sortingOrder = 24;
+            s.line = CombatVisuals.Line(transform, accent, .06f);
+            s.line.enabled = false;
+            signals[i] = s;
+            SetTone(s, i == Nose ? HostileTone.Dark : HostileTone.Bright);
+        }
+    }
+
+    static void SetTone(Signal s, HostileTone tone)
+    {
+        s.tone = tone;
+        s.lens.sharedMaterial = LevelProjectilePalette.Material(false, tone);
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        foreach (var s in signals)
+            if (s != null)
+            {
+                WatchStopLine(s);
+                Paint(s);
+            }
+    }
+
+    // The lens dims when clear, blinks before danger, stays lit at danger and flashes on clearing.
+    void Paint(Signal s)
+    {
+        s.flash = Mathf.Max(0, s.flash - Time.deltaTime * 3);
+        float pulse = .5f + .5f * Mathf.Sin(Time.time * 9);
+        float lit = s.warning ? (Mathf.Repeat(Time.time * 8, 1) < .5f ? 1 : .15f) : s.danger ? 1 : .15f;
+        float shine = Mathf.Min(1, lit + s.flash);
+        s.lens.color = new Color(shine, shine, shine, 1);
+        s.glow.color = new Color(1, 1, 1, Mathf.Clamp01(lit * (.35f + .25f * pulse) + s.flash * .8f - .05f));
+        s.glow.transform.localScale = Vector3.one * (.75f + .25f * lit + .4f * s.flash);
+        bool line = s.danger && !float.IsNaN(s.stopLine);
+        s.line.enabled = line;
+        if (line)
+        {
+            var c = LevelProjectilePalette.Accent(LevelRun.Current);
+            c.a = (s.tone == HostileTone.Dark ? .22f : .32f) + .18f * pulse;
+            s.line.startColor = s.line.endColor = c;
+            s.line.SetPosition(0, new Vector3(CombatRound.Border.xMin, s.stopLine, -.3f));
+            s.line.SetPosition(1, new Vector3(CombatRound.Border.xMax, s.stopLine, -.3f));
+        }
+    }
+
+    // A head at danger with a stop line halts each of its cars as it reaches the line.
+    void WatchStopLine(Signal s)
+    {
+        if (!s.danger || float.IsNaN(s.stopLine))
+            return;
+        for (int i = s.cars.Count - 1; i >= 0; i--)
+        {
+            var car = s.cars[i];
+            if (!car.Running)
+            {
+                s.cars.RemoveAt(i);
+                continue;
+            }
+            if (car.round.transform.position.y > s.stopLine)
+                continue;
+            float route = s.splitRoute && s.held.Count % 2 == 1 ? -s.route : s.route;
+            car.round.Halt(.05f, CombatRound.Turn.Down, route, 1.05f);
+            s.held.Add(car);
+            s.cars.RemoveAt(i);
+        }
+    }
 
     protected override IEnumerator Cards()
     {
-        int side = -1;
-        while (true)
+        ResetSignals();
+        if (phaseThree)
+            return Interlocking();
+        if (phaseTwo)
+            return StopLines();
+        return RedSignals();
+    }
+
+    void ResetSignals()
+    {
+        foreach (var s in signals)
+            if (s != null)
+            {
+                s.danger = s.warning = s.holdFire = false;
+                s.stopLine = float.NaN;
+                s.cars.Clear();
+                s.held.Clear();
+            }
+    }
+
+    // Each gun runs its rails on a steady beat; a head holding fire sends nothing.
+    IEnumerator Rails(float interval, float[] nose, float[] shoulder, float speed, bool ceiling)
+    {
+        for (int beat = 0; ; beat++)
         {
-            // Red Signal: traffic climbs toward the ceiling and parks. Green lights
-            // turn both banks inward onto horizontal tracks; phase three switches
-            // alternating banks through a vertical junction instead.
-            yield return PrimePair(.52f);
-            int cars = Mathf.Max(3, Dense(phaseThree ? 24 : phaseTwo ? 21 : 18));
-            int tracks = Dense(phaseThree ? 7 : 5);
-            for (int pair = 0; pair < cars; pair++)
+            float sway = 8 * Mathf.Sin(beat * interval * .7f);
+            foreach (var s in signals)
             {
-                float turnout = Mathf.Lerp(12, 66, pair / (cars - 1f));
-                for (int sign = -1; sign <= 1; sign += 2)
+                s.cars.RemoveAll(Car.Gone);
+                if (s.holdFire)
+                    continue;
+                UseTone(s.tone);
+                var port = Muzzle(s.port);
+                var angles = s.port == Nose ? nose : shoulder;
+                int sign = s.port == Left ? -1 : 1;
+                for (int i = 0; i < angles.Length; i++)
                 {
-                    float hold = .42f + .10f * (cars - pair) + (phaseTwo && sign == side ? .36f : 0);
-                    UseTone(sign == side ? Opposite(Lead) : Lead);
-                    for (int track = 0; track < tracks; track++)
-                    {
-                        var car = ScoredShot(track%3==0,Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.up, sign * turnout),
-                            2.8f + track * .7f, .18f);
-                        if (phaseThree && pair % 2 == 0)
-                            car.Pause(.62f, hold + track * .10f, CombatRound.Turn.Rotate, sign * (180 - turnout), 1.05f);
-                        else
-                            car.Pause(.62f, hold + track * .10f, CombatRound.Turn.Rotate, sign * (90 - turnout), .94f);
-                    }
-                }
-                yield return Wait(Rest(.10f));
-            }
-            // Express Service: short trains follow a locked heading while the engine
-            // changes platforms. Each train has a faster headlight and slower carriages.
-            station.x = Lane(side);
-            station.y = Camera.UpLimit - (side > 0 ? 2.2f : 3.55f);
-            int trains = Dense(phaseThree ? 8 : phaseTwo ? 7 : 5);
-            for (int train = 0; train < trains; train++)
-            {
-                bool express = train % 3 == 0;
-                Vector2 track = express ? CombatVisuals.Aim(Muzzle()) :
-                    CombatVisuals.Rotate(Vector2.right * side, (train % 2 == 0 ? 1 : -1) * (phaseTwo ? 35 : 22));
-                PointWeapon(Muzzle(), track);
-                yield return Charge(Hull, WeaponPort(), .28f);
-                // The engine moves during its charge. Lock the express heading at
-                // release so the central headlight still crosses the pilot's line.
-                if (express) track = CombatVisuals.Aim(Muzzle());
-                int rails = Dense(5) | 1;
-                UseTone(Lead);
-                for (int rail = 0; rail < rails; rail++)
-                {
-                    var headlight = Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(track, (rail - (rails - 1) * .5f) * 17), 4.8f, .28f);
-                    if (!express) headlight.Bounce(1);
-                }
-                for (int car = 0; car < Dense(10); car++)
-                {
-                    yield return Wait(Rest(.105f));
-                    UseTone(Opposite(Lead));
-                    for (int rail = 0; rail < rails; rail++)
-                    {
-                        var carriage = ScoredShot(car%3==0,Muzzle(), CombatVisuals.Rotate(track, (rail - (rails - 1) * .5f) * 17), 3.65f - car * .12f, .17f);
-                        if (!express && phaseThree && car % 3 == 0)
-                            carriage.RunWalls(2.4f, side);
-                        else if (!express) carriage.Bounce(1);
-                    }
-                }
-                // Rebounding signal fans cross the vertical tracks, forcing a planned
-                // junction crossing instead of letting the pilot park beside the engine.
-                UseTone(Lead);
-                for (int sign = -1; sign <= 1; sign += 2)
-                {
-                    int signals = Dense(phaseThree ? 15 : phaseTwo ? 13 : 11);
-                    for (int signal = 0; signal < signals; signal++)
-                    {
-                        float angle = Mathf.Lerp(48, 112, signal / Mathf.Max(1f, signals - 1));
-                        Fire<SimpleRound>(Muzzle(sign < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.down, sign * angle), 2.6f, .20f).Bounce(1);
-                    }
+                    float angle = s.port == Nose ? angles[i] + sway : sign * angles[i];
+                    var direction = CombatVisuals.Rotate(Vector2.down, angle);
+                    // Every sixth beat the first car of each rail is a kunai locomotive.
+                    var car = beat % 6 == 0 && i == 0 ? Fire<KunaiRound>(port, direction, speed + .5f, .2f) : (CombatRound)Fire<NeedleRound>(port, direction, speed, .19f);
+                    if (car == null)
+                        continue;
+                    car.Bounce(1, ceiling);
+                    s.cars.Add(new Car { round = car, serial = car.Serial });
                 }
             }
-            side = -side;
-            yield return Wait(Rest(.48f));
+            yield return Wait(Rest(interval));
         }
+    }
+
+    static float[] Spread(int count, float span)
+    {
+        var angles = new float[count];
+        for (int i = 0; i < count; i++)
+            angles[i] = count == 1 ? 0 : (i / (count - 1f) - .5f) * span;
+        return angles;
+    }
+
+    static float[] Range(int count, float from, float to)
+    {
+        var angles = new float[count];
+        for (int i = 0; i < count; i++)
+            angles[i] = count == 1 ? from : Mathf.Lerp(from, to, i / (count - 1f));
+        return angles;
+    }
+
+    // The head blinks before it goes to danger.
+    IEnumerator Warn(params Signal[] heads)
+    {
+        foreach (var s in heads)
+            s.warning = true;
+        for (float t = 0; t < .45f;)
+        {
+            if (!Holding)
+                t += Time.deltaTime * LevelRun.EnemyTempoScale;
+            foreach (var s in heads)
+                Cue(Muzzle(s.port), .45f - t);
+            yield return null;
+        }
+        foreach (var s in heads)
+            s.warning = false;
+    }
+
+    // Red Signal: every running car of the head that is still in the arena brakes where it
+    // is and turns to face its resume heading.
+    void Freeze(Signal s, CombatRound.Turn turn, float angle, float speed)
+    {
+        foreach (var car in s.cars)
+            if (car.Running && InArena(car.round.transform.position))
+            {
+                car.round.Halt(.3f, turn, angle, speed);
+                s.held.Add(car);
+            }
+        s.cars.Clear();
+    }
+
+    static bool InArena(Vector3 p) => p.y > Camera.DownLimit + 1.2f && p.y < Camera.UpLimit && p.x > Camera.LeftLimit && p.x < Camera.RightLimit;
+
+    // The head clears with a flash, and its stopped cars set off in a ripple spreading from it.
+    IEnumerator Clear(Signal s, float ripple)
+    {
+        s.danger = false;
+        s.stopLine = float.NaN;
+        s.flash = 1;
+        var head = (Vector2)Hull.TransformPoint(SignalHeads[s.port]);
+        var queue = new List<Car>(s.held);
+        s.held.Clear();
+        queue.Sort((a, b) => Distance(a, head).CompareTo(Distance(b, head)));
+        int released = 0;
+        for (float t = 0; released < queue.Count;)
+        {
+            if (!Holding)
+                t += Time.deltaTime * LevelRun.EnemyTempoScale;
+            int upTo = Mathf.Min(queue.Count, Mathf.CeilToInt(queue.Count * t / ripple));
+            for (; released < upTo; released++)
+                if (queue[released].Running)
+                    queue[released].round.Proceed();
+            yield return null;
+        }
+    }
+
+    static float Distance(Car car, Vector2 point) => car.round != null ? ((Vector2)car.round.transform.position - point).sqrMagnitude : 0;
+
+    // A head at danger: blink, hold its gun, freeze its cars onto the pilot, wait, then clear.
+    IEnumerator RedAspect(float hold, float aimOffset, params Signal[] heads)
+    {
+        yield return Warn(heads);
+        for (int i = 0; i < heads.Length; i++)
+        {
+            heads[i].danger = heads[i].holdFire = true;
+            Freeze(heads[i], CombatRound.Turn.Aim, i % 2 == 0 ? aimOffset : -aimOffset, 1.15f);
+        }
+        yield return Wait(hold);
+        foreach (var s in heads)
+        {
+            s.holdFire = false;
+            Phrase(Clear(s, .55f));
+        }
+    }
+
+    // Red Signal (phase one), in four movements of four steps each: one head at a time, the
+    // shoulders together before the nose, aimed pairs opening a V, and a quick chase.
+    IEnumerator RedSignals()
+    {
+        SetTone(signals[Nose], HostileTone.Dark);
+        SetTone(signals[Left], HostileTone.Bright);
+        SetTone(signals[Right], HostileTone.Bright);
+        yield return PrimePair(.5f);
+        Phrase(Rails(.12f, Spread(Dense(4), 48), Range(Dense(3), 30, 70), 3.0f, true));
+        for (int step = 0; ; step++)
+        {
+            int movement = step / 4 % 4;
+            station.x = Lane(step % 2 == 0 ? -.45f : .45f);
+            station.y = Camera.UpLimit - 2.4f;
+            var l = signals[Left];
+            var n = signals[Nose];
+            var r = signals[Right];
+            switch (movement)
+            {
+                case 0:
+                    yield return RedAspect(1.0f, 0, step % 3 == 0 ? l : step % 3 == 1 ? n : r);
+                    break;
+                case 1:
+                    yield return RedAspect(1.1f, 0, step % 2 == 0 ? new[] { l, r } : new[] { n });
+                    break;
+                case 2:
+                    yield return RedAspect(1.0f, 10, step % 2 == 0 ? r : l);
+                    break;
+                default:
+                    yield return RedAspect(.7f, 0, step % 3 == 0 ? l : step % 3 == 1 ? n : r);
+                    break;
+            }
+            yield return Wait(Rest(movement == 3 ? .3f : .55f));
+        }
+    }
+
+    // A head at danger draws its stop line; its gun keeps running and the queue builds on the
+    // line, then leaves as a row on the head's route when it clears.
+    IEnumerator StopAspect(Signal s, float height, float route, bool split, float hold)
+    {
+        yield return Warn(s);
+        s.route = route;
+        s.splitRoute = split;
+        s.stopLine = height;
+        s.danger = true;
+        yield return Wait(hold);
+        yield return Clear(s, .45f);
+    }
+
+    // Stop Line (phase two), in four movements of four steps each: single heads at changing
+    // heights, both shoulders as crossing rows, the nose splitting its row under a shoulder
+    // row, and lines that step lower each time.
+    IEnumerator StopLines()
+    {
+        SetTone(signals[Nose], HostileTone.Bright);
+        SetTone(signals[Left], HostileTone.Dark);
+        SetTone(signals[Right], HostileTone.Dark);
+        yield return PrimePair(.5f);
+        Phrase(Rails(.15f, Spread(Dense(4), 60), Range(Dense(3), 12, 48), 3.0f, false));
+        float middle = (Camera.UpLimit + Camera.DownLimit) * .5f;
+        float[] heights = { middle + 2.6f, middle + 1.0f, middle + 1.8f, middle - .2f };
+        for (int step = 0; ; step++)
+        {
+            int movement = step / 4 % 4;
+            station.x = Lane(step % 2 == 0 ? .45f : -.45f);
+            station.y = Camera.UpLimit - 2.3f;
+            float height = heights[step % heights.Length];
+            var l = signals[Left];
+            var n = signals[Nose];
+            var r = signals[Right];
+            switch (movement)
+            {
+                case 0:
+                    var head = step % 3 == 0 ? l : step % 3 == 1 ? r : n;
+                    yield return StopAspect(head, height, head == l ? 62 : head == r ? -62 : 28, head == n, 1.5f);
+                    break;
+                case 1:
+                    Phrase(StopAspect(l, height, 62, false, 1.5f));
+                    yield return StopAspect(r, height - .8f, -62, false, 1.5f);
+                    break;
+                case 2:
+                    Phrase(StopAspect(step % 2 == 0 ? l : r, height + .6f, step % 2 == 0 ? 62 : -62, false, 1.6f));
+                    yield return StopAspect(n, height - 1.0f, 28, true, 1.6f);
+                    break;
+                default:
+                    yield return StopAspect(step % 2 == 0 ? r : l, middle + 2.4f - (step % 4) * .9f, step % 2 == 0 ? -62 : 62, false, 1.2f);
+                    break;
+            }
+            yield return Wait(Rest(.45f));
+        }
+    }
+
+    // Interlocking (Hard final): the shoulder heads go to danger together, freezing their cars
+    // onto the pilot, while the nose clears its queue; then the nose draws its stop line as
+    // the shoulders clear. The stop line steps through four heights and the shoulder release
+    // alternates straight and opened aims.
+    IEnumerator Interlocking()
+    {
+        SetTone(signals[Nose], HostileTone.Dark);
+        SetTone(signals[Left], HostileTone.Bright);
+        SetTone(signals[Right], HostileTone.Bright);
+        yield return PrimePair(.5f);
+        Phrase(Rails(.13f, Spread(Dense(5), 60), Range(Dense(4), 25, 70), 3.1f, true));
+        float middle = (Camera.UpLimit + Camera.DownLimit) * .5f;
+        float[] heights = { middle + 2.2f, middle + .8f, middle + 1.6f, middle + .2f };
+        var l = signals[Left];
+        var n = signals[Nose];
+        var r = signals[Right];
+        for (int step = 0; ; step++)
+        {
+            station.x = Lane((step % 3 - 1) * .5f);
+            station.y = Camera.UpLimit - 2.4f;
+            Phrase(StopAspect(n, heights[step % heights.Length], 26, true, 1.3f));
+            yield return Wait(.6f);
+            yield return RedAspect(1.0f, step % 2 == 0 ? 0 : 9, l, r);
+            yield return Wait(Rest(.35f));
+        }
+    }
+}
+
+public static partial class IndustrialMeshFactory
+{
+    static Mesh switchyardHull, switchyardBody;
+
+    // The Switchyard engine's baked hull with three large hooded signal heads, one above each
+    // gun: a dark backplate, a bright bezel, a dark lens recess and a visor, on a bracket.
+    public static Mesh SwitchyardSignalHull(Mesh body)
+    {
+        if (switchyardHull != null && switchyardBody == body)
+            return switchyardHull;
+        var b = new Builder();
+        foreach (var head in CitySwitchyardBoss.SignalHeads)
+        {
+            b.Drum(head + new Vector3(0, 0, .08f), .36f, .1f, 11, 10);
+            b.Drum(head, .3f, .07f, 10, 10);
+            b.Drum(head + new Vector3(0, 0, -.04f), .23f, .05f, 9, 10);
+            b.Box(head + new Vector3(0, .32f, -.1f), new Vector3(.66f, .09f, .22f), 11);
+            foreach (int side in new[] { -1, 1 })
+                b.Box(head + new Vector3(side * .33f, .17f, -.08f), new Vector3(.07f, .3f, .16f), 11);
+            b.Box(head + new Vector3(0, .5f, .06f), new Vector3(.14f, .2f, .12f), 6);
+        }
+        var heads = b.Finish("Switchyard signal heads");
+        var combined = new Mesh { name = "Switchyard engine with signal heads", indexFormat = body.indexFormat };
+        combined.CombineMeshes(new[] { new CombineInstance { mesh = body }, new CombineInstance { mesh = heads } }, true, false);
+        switchyardBody = body;
+        return switchyardHull = combined;
     }
 }

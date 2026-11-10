@@ -99,7 +99,7 @@ public static partial class IndustrialMeshFactory
         if (kind == 38) return CandyRegentHeart();
         var authored = TerraModel("Hull" + kind);
         if (authored != null)
-            return authored;
+            return kind == (int)CombatHullId.CitySwitchyardBoss ? SwitchyardSignalHull(authored) : authored;
         if (kind >= 61)
             return EnemyExpansion.Mesh(kind);
         // Unity can unload a generated mesh that nothing references (for example on a scene load); rebuild it then.
