@@ -8,7 +8,7 @@ public sealed partial class SnowSiegeBoss : DistrictBoss
     readonly float[] releases = new float[13];
     float deployment;
     int combCount;
-    bool deployed, returning;
+    bool deployed;
 
     protected override void Start()
     {
@@ -36,22 +36,18 @@ public sealed partial class SnowSiegeBoss : DistrictBoss
         if (!deployed || GameRules.playerDisabled)
             return;
         deployment += Time.deltaTime * LevelRun.EnemyTempoScale;
+        // The comb stays on the top edge for the whole phase; a slide re-runs this glide.
         float t = Mathf.SmoothStep(0, 1, Mathf.Clamp01(deployment / .32f));
-        Vector3 muzzle = Hull.TransformPoint(new Vector3(0, -.65f, -.25f));
         for (int i = 0; i < combCount; i++)
         {
             releases[i] = Mathf.Max(0, releases[i] - Time.deltaTime);
-            comb[i].position = returning ? Vector3.Lerp(launch[i], muzzle, t) : Vector3.Lerp(launch[i], lanes[i], t);
+            comb[i].position = Vector3.Lerp(launch[i], lanes[i], t);
             comb[i].rotation = Quaternion.identity;
             var color = LevelProjectilePalette.Accent(LevelRun.Current);
-            color.a = returning ? 1 - t : .3f + .7f * t;
+            color.a = .3f + .7f * t;
             apertures[i].color = color;
             apertures[i].transform.localScale = Vector3.one * (.35f + .3f * releases[i] / .1f);
-            if (returning && t >= 1)
-                comb[i].gameObject.SetActive(false);
         }
-        if (returning && t >= 1)
-            deployed = false;
     }
 
     void DeployComb()
@@ -61,7 +57,6 @@ public sealed partial class SnowSiegeBoss : DistrictBoss
         combCount = (phaseTwo ? 13 : 11);
         deployment = 0;
         deployed = true;
-        returning = false;
         for (int i = 0; i < combCount; i++)
         {
             launch[i] = Hull.TransformPoint(new Vector3((i % 2 == 0 ? -1 : 1) * .38f, -.65f, -.25f));

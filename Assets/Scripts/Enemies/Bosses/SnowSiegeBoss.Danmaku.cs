@@ -1,28 +1,40 @@
 using System.Collections;
 using UnityEngine;
 
-// Snow fortress: time freezes around it. It flies its attacks as spell cards.
-// Each phase owns one sky: phase one and the Hard phase three rain, phase two snows.
-// Phase one (rain)
-//   Frozen Petals: mirrored arrow fans fly out, stop dead and glint, then re-aim at
-//     the player, crawl and accelerate.
-//   Icicle Comb: the comb lines the whole top edge, a column on each screen edge,
-//     and rains arrows straight down in a woven lattice, with loosely aimed rounds
-//     from the mouth between the rain beats.
-// Every round thrown out of the hull's sides is an arrow (Miguel).
-// Phase two (snow)
-//   Whiteout: mirrored gusts thrown sideways halt and turn down and inward, with
-//     frozen petals cutting across them and snow shells bursting overhead.
-//   Snowdrift: fans of snow shells spread across the whole width; their shards fly
-//     up out of sight and fall back as snow from the top, while the mouth fires slow
-//     orb arcs that stop and resume.
-// Tones: what falls from the sky (the comb's rain and the shells' snow) is dark, and
-// what the hull throws (petals, gusts, mouth rounds) is bright. Frozen Petals
-// alternates its blooms, so the cards run mixed, dark, bright, dark.
+// Snow fortress: one concept per phase, developed in movements separated by rests that
+// belong to it. Each phase owns one sky: phase one snows from the comb, phase two
+// avalanches, and the Hard phase three rains from the comb as a harp.
+// Phase one, Sleet Lattice: the comb lines the top edge and lets fall two crossing
+//   families of slanted snowflakes, so the snow falls as a diamond lattice. Movement by
+//   movement the lattice is still, then swung by a crosswind (its holes drift), then
+//   breathes (the diamonds stretch and squash), then gusts: the families swap every few
+//   beats and the comb slides half a column. Later rounds fall a little faster. Loosely
+//   aimed mouth rounds fall between the beats.
+// Phase two, Avalanche: shell fans stop along a line and burst in order, so the snow
+//   sweeps across the arena; beneath it the gust ports pour layered arrows downhill with
+//   the slide, starting slow and accelerating. The avalanche runs from the left, from the
+//   right, closes in from both sides, then bursts out from the centre; later rounds add
+//   mouth fans that freeze and re-aim.
+// Phase three (Hard), Diamond Dust: the comb becomes a harp. Each strung column drops a
+//   fast arrow and a slower echo, so a strum falls as two separating diagonal slashes
+//   with two muted strings for a gap. Arpeggio (single strums and mouth fans), crossing
+//   strums from both ends with dendrites from the sides, then a fast glissando; later
+//   rounds strum tighter and the comb shifts between movements.
+// Every round thrown out of the hull's sides is an arrow; shell snow is thrown up
+// harmlessly and falls from the top. Tones: dark lattice snow with bright mouth rounds;
+// bright shells and snow over dark slides; dark and bright strums crossing, with bright
+// fans and dendrites.
+// Snowflake reserve (256 warmed): the lattice keeps under 200 flakes alive on Hard and
+// the avalanche about 220; both stay inside it.
 public sealed partial class SnowSiegeBoss
 {
     Vector3 Mouth => Hull.TransformPoint(MouthLocal);
     static readonly Vector3 MouthLocal = new Vector3(0, -.65f, -.25f);
+    static Vector3 SideLocal(int mirror) => new Vector3(mirror * .55f, -.55f, -.25f);
+    static Vector3 GustLocal(int mirror) => new Vector3(mirror * .9f, -.3f, -.25f);
+    static readonly Vector3 ApertureLocal = new Vector3(0, -.26f, -.55f);
+    Vector3 CombPort(int i) => comb[i].TransformPoint(ApertureLocal);
+
     protected override void Attack()
     {
         OpenCards();
@@ -33,208 +45,273 @@ public sealed partial class SnowSiegeBoss
         while (true)
         {
             if (phaseThree)
-                yield return FinalSpell();
+                yield return DiamondDust();
             else if (!phaseTwo)
-            {
-                yield return FrozenPetals();
-                yield return Wait(1);
-                yield return IcicleComb();
-                yield return Wait(1);
-            }
+                yield return SleetLattice();
             else
-            {
-                yield return Whiteout();
-                yield return Wait(.9f);
-                yield return Snowdrift();
-                yield return Wait(.9f);
-            }
+                yield return Avalanche();
         }
     }
 
-    IEnumerator FrozenPetals()
+    // ---- Phase one: Sleet Lattice ----
+
+    IEnumerator SleetLattice()
     {
-        for (int bloom = 0; bloom < 4; bloom++)
+        DeployComb();
+        for (int movement = 0; !phaseTwo; movement++)
         {
+            // The rest belongs to the comb: every aperture gathers before the next movement.
+            yield return ChargeComb(movement == 0 ? .6f : Rest(.85f));
+            int kind = movement % 4;
+            float fall = movement >= 4 ? 2.9f : 2.6f;
+            const int Beats = 18;
+            for (int k = 0; k < Beats; k++)
+            {
+                // Still air, then a swinging crosswind, then a breathing lattice, then gusts.
+                float wind = kind == 0 ? 0 : 13 * Mathf.Sin((k + movement * 5) * .26f);
+                float lean = kind == 2 ? 21 + 9 * Mathf.Sin(k * .55f) : 21;
+                bool swapped = kind == 3 ? k / 6 % 2 == 1 : movement % 2 == 1;
+                UseTone(HostileTone.Dark);
+                for (int i = 0; i < combCount; i++)
+                {
+                    // Lighter difficulties drop a diagonal of strings, never a whole column.
+                    if (!Difficulty.Hard && (i + k) % 4 == 0 || Difficulty.Easy && (i + k) % 4 == 2)
+                        continue;
+                    int family = (i % 2 == 0) != swapped ? 1 : -1;
+                    // A gentle shared sway keeps each line of the lattice whole.
+                    Fire<SnowflakeRound>(CombPort(i), CombatVisuals.Rotate(Vector2.down, wind + family * lean), fall, .19f)
+                        .Sway(.18f, .4f);
+                    releases[i] = .1f;
+                }
+                if (k % 2 == 1)
+                {
+                    // Between the beats: a loose spray around the pilot from the mouth.
+                    UseTone(HostileTone.Bright);
+                    int loose = Dense(3);
+                    var aim = CombatVisuals.Aim(Mouth);
+                    for (int j = 0; j < loose; j++)
+                        Fire<SimpleRound>(Mouth, CombatVisuals.Rotate(aim, (j - (loose - 1) * .5f) * 12 + Random.Range(-8f, 8f)), 1.3f, .21f)
+                            .Ramp(2.2f, 1.0f, .2f);
+                }
+                yield return Wait(Rest(.55f));
+            }
+            if (kind == 3)
+                SlideComb();
+        }
+    }
+
+    // ---- Phase two: Avalanche ----
+
+    IEnumerator Avalanche()
+    {
+        for (int movement = 0; !phaseThree; movement++)
+        {
+            // 0 from the left, 1 from the right, 2 closing in from both sides, 3 out from the centre.
+            int kind = movement % 4;
             yield return Charge(Hull, MouthLocal, .45f);
-            // Each bloom flips its mirror and its tone together.
-            FreezeFrame(bloom % 2 == 0 ? 1 : -1, bloom % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
-            yield return Wait(1.5f);
+            Phrase(Toned(HostileTone.Dark, Slides(kind, Rest(2.0f) + .6f)));
+            yield return Cascade(kind);
+            if (movement >= 4 && kind % 2 == 1)
+                FrostFan();
+            // The slope settles after the centre bursts out: a longer rest.
+            yield return Wait(Rest(kind == 3 ? 2.6f : 2.0f));
         }
     }
 
-    // Two mirrored arrow fans fly out, stop dead and glint, then every arrow re-aims
-    // at the player and crawls before accelerating. The re-aimed fans keep their spacing.
-    void FreezeFrame(int sign, HostileTone petals = HostileTone.Bright)
+    // Shells lobbed onto a line, the first to burst landing near and high, the last far
+    // and low. Each bursts as it settles, so the snow sweeps in the avalanche's order.
+    // At most four shells, so the falling snow stays within the warmed flake reserve.
+    IEnumerator Cascade(int kind)
     {
-        UseTone(petals);
-        int count = Dense(phaseTwo ? (Difficulty.Normal ? 15 : 21) : 17) | 1;
-        float spread = 130f / (count - 1);
-        for (int mirror = -1; mirror <= 1; mirror += 2)
+        int shells = Mathf.Min(4, Dense(5));
+        float width = CombatRound.Border.xMax - 1.3f;
+        for (int c = 0; c < shells; c++)
         {
-            var port = Hull.TransformPoint(new Vector3(mirror * .55f, -.55f, -.25f));
-            for (int i = 0; i < count; i++)
-            {
-                float lane = i - (count - 1) * .5f;
-                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.down, mirror * (35 + sign * 6 + lane * spread * .5f)), 4.4f - Mathf.Abs(lane) * .06f, .19f)
-                    .Pause(.7f, .7f + Mathf.Abs(lane) * .03f, CombatRound.Turn.Aim, mirror * lane * 3.5f, .22f)
-                    .Ramp(4.5f, 1.4f, 1.45f);
-            }
+            float across = shells > 1 ? c / (shells - 1f) : .5f;
+            float fromEdge = 1 - Mathf.Abs(across * 2 - 1);
+            float order = kind == 0 ? across : kind == 1 ? 1 - across : kind == 2 ? fromEdge : 1 - fromEdge;
+            var target = new Vector2(Mathf.Lerp(-width, width, across), Mouth.y - Mathf.Lerp(2.8f, 5.8f, order));
+            var path = target - (Vector2)Mouth;
+            UseTone(HostileTone.Bright);
+            var shell = Fire<BurstShell>(Mouth, path.normalized, 2.7f, .5f);
+            if (shell != null)
+                shell.SetTravelDistance(path.magnitude);
+            yield return Wait(.1f);
         }
     }
 
-    void CrystalShells(int count, float spread)
+    // Layered arrows poured downhill from the gust ports with the avalanche: both down
+    // one side, converging (closing in) or diverging (bursting out). The slope ripples,
+    // and every arrow starts slow and accelerates.
+    IEnumerator Slides(int kind, float seconds)
     {
-        UseTone(HostileTone.Dark);
+        float interval = Rest(.09f);
+        int layers = Difficulty.Hard ? Dense(3) : 1;
+        for (float t = 0; t < seconds; t += interval)
+        {
+            float slope = 18 + 40 * (.5f + .5f * Mathf.Sin(t * 2.4f));
+            for (int mirror = -1; mirror <= 1; mirror += 2)
+            {
+                int downhill = kind == 0 ? 1 : kind == 1 ? -1 : kind == 2 ? -mirror : mirror;
+                var port = Hull.TransformPoint(GustLocal(mirror));
+                for (int layer = 0; layer < layers; layer++)
+                    Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.down, downhill * (slope + layer * 6)), 1.0f + layer * .35f, .19f)
+                        .Ramp(3.2f, 1.2f, .3f);
+            }
+            yield return Wait(interval);
+        }
+    }
+
+    // A bright fan from the mouth: it flies out, stops dead, re-aims at the pilot,
+    // crawls and accelerates.
+    void FrostFan()
+    {
+        UseTone(HostileTone.Bright);
+        int count = Dense(7);
         for (int i = 0; i < count; i++)
         {
             float lane = i - (count - 1) * .5f;
-            var shell = Fire<BurstShell>(Mouth, CombatVisuals.Rotate(Vector2.down, lane * spread), 2.7f, .5f);
-            if (shell != null)
-                shell.SetTravelDistance(Mathf.Abs(lane) < 1 ? 6.2f : 4.6f);
+            Fire<SimpleRound>(Mouth, CombatVisuals.Rotate(Vector2.down, lane * 12), 2.6f, .22f)
+                .Pause(.6f, .35f + Mathf.Abs(lane) * .04f, CombatRound.Turn.Aim, lane * 6, .45f)
+                .Ramp(3.0f, 1.1f, 1.0f);
         }
     }
 
-    // The comb lines the top edge and rains arrows straight down, alternate columns
-    // half a beat apart so the rain forms a woven lattice; snow shells burst between.
-    IEnumerator IcicleComb()
+    // ---- Phase three (Hard): Diamond Dust ----
+
+    IEnumerator DiamondDust()
     {
         DeployComb();
-        yield return Wait(.6f);
-        for (int wave = 0; wave < 3; wave++)
+        yield return ChargeComb(.5f);
+        for (int movement = 0; ; movement++)
         {
-            for (int k = 0; k < 10; k++)
+            int kind = movement % 3;
+            // Later rounds strum tighter, so the slashes fall flatter and faster.
+            float pluck = movement >= 3 ? .075f : .09f;
+            if (kind == 0)
             {
-                UseTone(HostileTone.Bright);
-                if(k==0||k==5)
-                    Fire<SimpleRound>(Mouth,CombatVisuals.Aim(Mouth),1.3f,.23f)
-                        .Pause(.35f,.45f,CombatRound.Turn.Aim,0,2.2f);
-                else if (k % 2 == 1)
+                // Arpeggio: single strums, alternating direction, the gap walking; the mouth
+                // answers every other strum with a fan that freezes and re-aims.
+                for (int s = 0; s < 10; s++)
                 {
-                    // Semi-aimed: a loose spray around the pilot between the rain beats.
-                    int loose = Dense(3);
-                    Vector2 aim = CombatVisuals.Aim(Mouth);
-                    for (int j = 0; j < loose; j++)
-                        Fire<SimpleRound>(Mouth, CombatVisuals.Rotate(aim, (j - (loose - 1) * .5f) * 11 + Random.Range(-9f, 9f)),
-                            2.7f * Random.Range(.92f, 1.08f), .21f);
-                }
-                UseTone(HostileTone.Dark);
-                for (int i = 0; i < combCount; i++)
-                {
-                    if (i % 2 != k % 2 || !Difficulty.Hard && i % 3 == 2 || Difficulty.Easy && i % 3 == 1)
-                        continue;
-                    Fire<NeedleRound>(comb[i].TransformPoint(new Vector3(0, -.26f, -.55f)), Vector2.down, 3.4f, .19f);
-                    releases[i] = .1f;
-                }
-                yield return Wait(Rest(.2f));
-            }
-            yield return Wait(.7f);
-            if (wave == 1)
-            {
-                // Slide the comb half a column; the column pushed off one edge reappears on the other.
-                deployment = 0;
-                float width = Camera.RightLimit - Camera.LeftLimit - .4f;
-                for (int i = 0; i < combCount; i++)
-                {
-                    launch[i] = comb[i].position;
-                    lanes[i].x = Camera.LeftLimit + .2f + Mathf.Repeat(lanes[i].x - Camera.LeftLimit - .2f + width / (combCount - 1) * .5f, width + .001f);
+                    Phrase(Toned(HostileTone.Dark, Strum(s % 2 == 0 ? 1 : -1, Gap(s), pluck)));
+                    if (s % 2 == 1)
+                        FrostFan();
+                    yield return Wait(Rest(.45f));
                 }
             }
+            else if (kind == 1)
+            {
+                // Crossing: a dark strum and a bright one from both ends at once fall as an X
+                // with a gap in each arm; the side ports grow dendrites between them.
+                for (int s = 0; s < 7; s++)
+                {
+                    Phrase(Toned(HostileTone.Dark, Strum(1, Gap(s), pluck)));
+                    Phrase(Toned(HostileTone.Bright, Strum(-1, combCount - 2 - Gap(s), pluck)));
+                    if (s % 2 == 1)
+                    {
+                        yield return ChargeSides(Rest(.65f));
+                        UseTone(HostileTone.Bright);
+                        float reach = s % 4 == 1 ? 70 : 38;
+                        for (int mirror = -1; mirror <= 1; mirror += 2)
+                            Dendrite(Hull.TransformPoint(SideLocal(mirror)), CombatVisuals.Rotate(Vector2.down, mirror * reach));
+                    }
+                    else
+                        yield return Wait(Rest(.65f));
+                }
+            }
+            else
+            {
+                // Glissando: quick strums back and forth, alternating tone.
+                for (int s = 0; s < 13; s++)
+                {
+                    var shade = s % 2 == 0 ? HostileTone.Dark : HostileTone.Bright;
+                    Phrase(Toned(shade, Strum(s % 2 == 0 ? 1 : -1, Gap(s + movement), pluck)));
+                    yield return Wait(Rest(.34f));
+                }
+            }
+            // The harp is retuned: the last strum finishes, then the comb gathers again.
+            yield return Wait(.9f);
+            if (movement >= 3)
+                SlideComb();
+            yield return ChargeComb(Rest(.8f));
         }
-        RecallComb();
     }
 
-    void RecallComb()
+    // Two muted strings walk across the comb, strum by strum.
+    int Gap(int strum) => 1 + strum * 4 % (combCount - 3);
+
+    // Strings released one after another along the comb. Each drops a fast arrow and a
+    // slower echo, so the strum falls as two diagonal slashes that draw apart.
+    IEnumerator Strum(int direction, int gap, float pluck)
+    {
+        for (int n = 0; n < combCount; n++)
+        {
+            int i = direction > 0 ? n : combCount - 1 - n;
+            if (i < gap || i >= gap + 2)
+            {
+                var port = CombPort(i);
+                Fire<NeedleRound>(port, Vector2.down, 3.4f, .19f);
+                if (Difficulty.Hard || !Difficulty.Easy && i % 3 == 0)
+                    Fire<NeedleRound>(port, Vector2.down, 2.0f, .19f);
+                releases[i] = .1f;
+            }
+            yield return Wait(pluck);
+        }
+    }
+
+    // One snow-crystal arm. The stem's arrows leave together at rising speeds; a pair
+    // of barbs rides beside each link, freezes, then branches off at sixty degrees.
+    void Dendrite(Vector3 port, Vector2 axis)
+    {
+        int links = Mathf.Max(3, Dense(5));
+        for (int link = 0; link < links; link++)
+        {
+            float speed = 1.0f + .42f * link;
+            Fire<NeedleRound>(port, axis, speed, .19f)
+                .Ramp(2.2f, 1.0f, .9f);
+            if (link == 0)
+                continue;
+            float hold = .22f + link * .05f;
+            for (int branch = -1; branch <= 1; branch += 2)
+                Fire<NeedleRound>(port, CombatVisuals.Rotate(axis, branch * 9), speed, .19f)
+                    .Pause(.65f, hold, CombatRound.Turn.Rotate, branch * 51, 1.5f / speed)
+                    .Ramp(2.0f, 1.0f, .65f + hold);
+        }
+    }
+
+    // ---- Helpers ----
+
+    // Slide the comb half a column; the column pushed off one edge reappears on the other.
+    void SlideComb()
     {
         deployment = 0;
-        returning = true;
+        float width = Camera.RightLimit - Camera.LeftLimit - .4f;
         for (int i = 0; i < combCount; i++)
+        {
             launch[i] = comb[i].position;
-    }
-
-    IEnumerator Whiteout()
-    {
-        Phrase(Every(7, 2.2f, n =>
-        {
-            FreezeFrame(n % 2 == 0 ? 1 : -1);
-            CrystalShells(Difficulty.Normal ? 2 : Dense(4), 34);
-        }));
-        int gusts = Dense(Difficulty.Normal ? 42 : 60);
-        for (int g = 0; g < gusts; g++)
-        {
-            UseTone(HostileTone.Bright);
-            float lift = 8 + (g % 4) * 7;
-            for (int side = -1; side <= 1; side += 2)
-            {
-                var port = Hull.TransformPoint(new Vector3(side * .9f, -.3f, -.25f));
-                Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.right * side, -side * lift), 3.0f + (g % 3) * .3f, .19f)
-                    .Pause(.6f, .35f, CombatRound.Turn.Rotate, -side * (100 + (g % 3) * 10), .8f);
-            }
-            yield return Wait(Rest(Difficulty.Normal ? .16f : .11f));
+            lanes[i].x = Camera.LeftLimit + .2f + Mathf.Repeat(lanes[i].x - Camera.LeftLimit - .2f + width / (combCount - 1) * .5f, width + .001f);
         }
     }
 
-    IEnumerator Snowdrift()
+    IEnumerator ChargeSides(float seconds)
     {
-        yield return Every(7, Difficulty.Normal ? 1.35f : 1f, n =>
+        for (float t = 0; t < seconds; t += Holding ? 0 : Time.deltaTime * LevelRun.EnemyTempoScale)
         {
-            // A wide fan of shells, offset every beat, so the snow covers the whole top.
-            UseTone(HostileTone.Dark);
-            int shells = Difficulty.Normal ? 3 : Dense(6);
-            for (int i = 0; i < shells; i++)
-            {
-                float lane = i - (shells - 1) * .5f + (n % 2 == 0 ? -.25f : .25f);
-                var shell = Fire<BurstShell>(Mouth, CombatVisuals.Rotate(Vector2.down, lane * 26), 2.7f, .5f);
-                if (shell != null)
-                    shell.SetTravelDistance(Mathf.Abs(lane) < 1.5f ? 6.2f : 4.4f);
-            }
-            if (n % 2 == 1)
-            {
-                UseTone(HostileTone.Bright);
-                int lanes = Dense(13);
-                for (int i = 0; i < lanes; i++)
-                {
-                    float lane = i - (lanes - 1) * .5f;
-                    Fire<SimpleRound>(Mouth, CombatVisuals.Rotate(Vector2.down, lane * 11), 3.0f, .24f)
-                        .Pause(.8f, .6f + Mathf.Abs(lane) * .05f, CombatRound.Turn.Keep, 0, .8f);
-                }
-            }
-        });
+            Cue(Hull.TransformPoint(SideLocal(-1)), seconds - t);
+            Cue(Hull.TransformPoint(SideLocal(1)), seconds - t);
+            yield return null;
+        }
     }
 
-    // Hard final phase, Absolute Zero: rain only. The comb alternates every three
-    // seconds between the woven lattice and fast and slow pairs from every column,
-    // while mirrored petals freeze and re-aim. Dark woven rain; in the pairs the fast
-    // arrow is dark and the slow orb bright; bright petals.
-    IEnumerator FinalSpell()
+    // Every aperture on the comb glows while it settles on the top edge.
+    IEnumerator ChargeComb(float seconds)
     {
-        DeployComb();
-        yield return Wait(.5f);
-        yield return Every(9, .3f, n =>
+        for (float t = 0; t < seconds; t += Holding ? 0 : Time.deltaTime * LevelRun.EnemyTempoScale)
         {
-            bool woven = n / 10 % 2 == 0;
             for (int i = 0; i < combCount; i++)
-            {
-                if (!Difficulty.Hard && i % 3 == 2 || Difficulty.Easy && i % 3 == 1)
-                    continue;
-                var p = comb[i].TransformPoint(new Vector3(0, -.26f, -.55f));
-                UseTone(HostileTone.Dark);
-                if (woven && i % 2 == n % 2)
-                {
-                    Fire<NeedleRound>(p, Vector2.down, 3.6f, .19f);
-                    releases[i] = .1f;
-                }
-                else if (!woven && n % 2 == 0)
-                {
-                    Fire<NeedleRound>(p, Vector2.down, 3.6f, .19f);
-                    UseTone(HostileTone.Bright);
-                    Fire<SimpleRound>(p, Vector2.down, 2.4f, .21f);
-                    releases[i] = .1f;
-                }
-            }
-            if (n % 6 == 0)
-                FreezeFrame(n % 12 == 0 ? 1 : -1);
-        });
-        RecallComb();
-        yield return Wait(.6f);
+                Cue(CombPort(i), seconds - t);
+            yield return null;
+        }
     }
 }
