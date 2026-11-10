@@ -1,9 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// Proposed icebreaker card book (ArtSource/BossPhaseProposals), flown only while
-// DistrictBoss.ProposedCards is set. One concept per phase, developed in movements;
-// every round still leaves the prow or one of the two shoulder ports.
+// Snow icebreaker spell cards: one concept per phase, developed in movements.
 // Phase one, Bow Wave (pack ice): wherever the ship surges, its prow throws both arms of
 //   a bow wave, so a V-shaped wake trails behind it; each crest freezes, then slides off
 //   down its own side, starting slow and accelerating, and the shoulders now and then
@@ -11,35 +9,23 @@ using UnityEngine;
 //   pilot (the wake laid on the dive and again backing astern), breakers across the
 //   middle and back along the top, and a figure eight. From the second round of
 //   movements alternate courses freeze their crests and re-aim them at the pilot.
-// Phase two, Closing Pack (open water): the shoulders throw ice along the side walls, a
-//   column the full height of the arena with one opening; the columns break off and close
-//   in across the arena. Staggered pairs, then sheared columns that break off from the
-//   top down and lean as they close, then a tide of single walls from one side with a
-//   stepping opening, then a nip: both walls at once with their openings aligned. Prow
+// Phase two, Closing Pack (open water): the shoulders throw snow along the side walls, a
+//   column the full height of the arena with one opening; the columns break off and
+//   fall inward across the arena as drifting snow. Staggered pairs, then sheared columns
+//   that break off from the top down, then a tide of single columns from one side with a
+//   stepping opening, then a nip: both columns at once with their openings level. Prow
 //   pellets with every throw and a freezing, re-aiming fan in the slack water between.
-// Hard phase three, Shattered Icicles: lances of paired arrows freeze and shatter into
+// Phase three (Hard), Shattered Icicles: lances of paired arrows freeze and shatter into
 //   trees of chevrons, their crystal tips re-aiming at the pilot. A volley of parallel
 //   lances, a fan of five from the prow, crossfire from both shoulders while the ship
 //   slides, then a ram whose impact drives a fan of lances; later rounds splay wider.
-// Tones: phase one a bright wake with dark darts; phase two dark walls with bright
-// pellets and fans; phase three alternates dark and bright lances with opposite tips.
+//   Between volleys the shoulders hang a crown of icicles under the top edge that break
+//   off as falling chevrons, so hiding high is never safe.
+// Tones: phase one a bright wake with dark darts; phase two dark snow with bright pellets
+// and fans; phase three alternates dark and bright lances with opposite tips and crowns.
+// Snowflake reserve (256 warmed): Closing Pack keeps about 180 flakes alive on Hard.
 public sealed partial class SnowIcebreakerBoss
 {
-    protected override IEnumerator Proposed()
-    {
-        drifting = false;
-        cruise = Cruise;
-        while (true)
-        {
-            if (phaseThree)
-                yield return ShatteredIcicles();
-            else if (!phaseTwo)
-                yield return BowWave();
-            else
-                yield return ClosingPack();
-        }
-    }
-
     // ---- Phase one: Bow Wave ----
 
     bool reaimCrests;
@@ -162,17 +148,17 @@ public sealed partial class SnowIcebreakerBoss
         for (int movement = 0; !phaseThree; movement++)
         {
             int kind = movement % 4;
-            // Later rounds close faster.
-            float closing = movement >= 4 ? 2.0f : 1.7f;
+            // Later rounds drift in faster.
+            float closing = movement >= 4 ? 1.8f : 1.5f;
             cruise = 3.0f;
             if (kind == 2)
             {
-                // Tide: single walls from one side in quick succession, the opening stepping.
+                // Tide: single columns from one side in quick succession, the opening stepping.
                 station = new Vector3(side * 1.6f, Camera.UpLimit - 2.3f, 1);
                 yield return PrimePair(.45f);
                 for (int wave = 0; wave < 6; wave++)
                 {
-                    PackWall(side, Opening(wave * 1.8f, span), HostileTone.Dark, closing);
+                    SnowWall(side, Opening(wave * 1.8f, span), closing);
                     Pellets(wave % 2 == 0 ? 2 : 3);
                     yield return Wait(Rest(.6f));
                 }
@@ -188,24 +174,24 @@ public sealed partial class SnowIcebreakerBoss
                     {
                         // Staggered: the right column breaks off half a throw later, so the
                         // two cross off the centre line; its opening trails the left one's.
-                        PackWall(-1, Opening(walk, span), HostileTone.Dark, closing);
-                        PackWall(1, Opening(walk + 3.0f, span), HostileTone.Dark, closing, 3.05f);
+                        SnowWall(-1, Opening(walk, span), closing);
+                        SnowWall(1, Opening(walk + 3.0f, span), closing, 3.05f);
                     }
                     else if (kind == 1)
                     {
-                        // Shear: each column breaks off from the top down and leans as it closes.
-                        PackWall(-1, Opening(walk, span), HostileTone.Dark, closing, 2.0f, .07f);
-                        PackWall(1, Opening(walk + 3.0f, span), HostileTone.Dark, closing, 2.85f, .07f);
+                        // Shear: each column breaks off from the top down and leans as it falls in.
+                        SnowWall(-1, Opening(walk, span), closing, 2.0f, .07f);
+                        SnowWall(1, Opening(walk + 3.0f, span), closing, 2.85f, .07f);
                     }
                     else
                     {
                         // Nip: both columns at once, their openings level, meeting mid-arena.
                         float opening = Opening(walk * 1.4f, span);
-                        PackWall(-1, opening, HostileTone.Dark, closing);
-                        PackWall(1, opening, HostileTone.Dark, closing);
+                        SnowWall(-1, opening, closing);
+                        SnowWall(1, opening, closing);
                     }
                     Pellets(3);
-                    yield return Wait(Rest(.95f));
+                    yield return Wait(Rest(.9f));
                 }
             }
             // Slack water: the prow charges and fans out frost that freezes and re-aims.
@@ -241,16 +227,15 @@ public sealed partial class SnowIcebreakerBoss
         }
     }
 
-    // A column of ice along one side wall, the full height of the arena, with one
-    // opening. Each piece is thrown from that side's shoulder and settles on the wall;
-    // the column breaks off (all at once, or from the top down with shear) and closes in
-    // across the arena, slowly at first. Every third piece is round, the rest are shards
-    // pointing inward.
-    void PackWall(int wall, float gapAt, HostileTone shade, float closing, float release = 2.2f, float shear = 0)
+    // A column of snow along one side wall, the full height of the arena, with one
+    // opening. Each flake is thrown from that side's shoulder and settles on the wall; the
+    // column breaks off (all at once, or from the top down with shear) and falls inward
+    // across the arena as drifting snow, slowly at first.
+    void SnowWall(int wall, float gapAt, float closing, float release = 2.2f, float shear = 0)
     {
-        UseTone(shade);
+        UseTone(HostileTone.Dark);
         var edge = CombatRound.Border;
-        int rows = Mathf.Max(10, Dense(22));
+        int rows = Mathf.Max(9, Dense(18));
         float x = wall < 0 ? edge.xMin + .35f : edge.xMax - .35f;
         var port = Muzzle(wall < 0 ? 1 : 2);
         for (int row = 0; row < rows; row++)
@@ -259,19 +244,17 @@ public sealed partial class SnowIcebreakerBoss
             if (Mathf.Abs(y - gapAt) < 1.0f)
                 continue;
             var point = new Vector2(x, y);
-            // Far pieces take longer to settle, so the column forms from the top down.
+            // Far flakes take longer to settle, so the column forms from the top down.
             float at = .6f + Vector2.Distance(port, point) * .09f;
             float hold = Mathf.Max(.1f, release + shear * row - at);
-            float launch;
-            CombatRound ice = row % 3 == 1
-                ? (CombatRound)Place<SimpleRound>(port, point, at, .22f, out launch)
-                : Place<NeedleRound>(port, point, at, .19f, out launch);
-            ice.Pause(at, hold, CombatRound.Turn.Down, -wall * 90, 1.25f / launch)
+            Place<SnowflakeRound>(port, point, at, .19f, out float launch)
+                .Pause(at, hold, CombatRound.Turn.Down, -wall * 62, 1.3f / launch)
+                .Sway(row % 2 == 0 ? .2f : -.2f, .5f)
                 .Ramp(closing, 1.2f, at + hold + .6f);
         }
     }
 
-    // The height of a pack wall's opening, a given distance along this pass's walk
+    // The height of a column's opening, a given distance along this pass's walk
     // (down the arena on one pass, up it on the next).
     float Opening(float walk, float span)
     {
@@ -280,7 +263,7 @@ public sealed partial class SnowIcebreakerBoss
         return side > 0 ? edge.yMax - 1.5f - along : edge.yMin + 1.5f + along;
     }
 
-    // ---- Hard phase three: Shattered Icicles ----
+    // ---- Phase three (Hard): Shattered Icicles ----
 
     IEnumerator ShatteredIcicles()
     {
@@ -289,6 +272,7 @@ public sealed partial class SnowIcebreakerBoss
             // Later rounds splay wider.
             float splay = movement >= 4 ? 1.25f : 1;
             var shade = movement % 2 == 0 ? HostileTone.Dark : HostileTone.Bright;
+            var other = shade == HostileTone.Dark ? HostileTone.Bright : HostileTone.Dark;
             switch (movement % 4)
             {
                 case 0:
@@ -299,6 +283,8 @@ public sealed partial class SnowIcebreakerBoss
                         var aim = CombatVisuals.Aim(Muzzle());
                         for (int port = 0; port < 3; port++)
                             Lance(Muzzle(port), aim, shade, splay);
+                        if (salvo % 2 == 1)
+                            IcicleCrown(other);
                         yield return Wait(Rest(.4f));
                     }
                     break;
@@ -310,13 +296,14 @@ public sealed partial class SnowIcebreakerBoss
                         var aim = CombatVisuals.Aim(Muzzle());
                         for (int lane = -2; lane <= 2; lane++)
                             Lance(Muzzle(), CombatVisuals.Rotate(aim, lane * 24), shade, splay);
+                        if (salvo == 1)
+                            IcicleCrown(other);
                         yield return Wait(Rest(1.0f));
                     }
                     break;
                 case 2:
                     // Crossfire: the ship slides across the top and both shoulders lance at the
                     // pilot from either side, the prow answering in the other tone.
-                    var other = shade == HostileTone.Dark ? HostileTone.Bright : HostileTone.Dark;
                     for (int salvo = 0; salvo < 4; salvo++)
                     {
                         yield return Sail(new Vector3(Lane((salvo % 2 == 0 ? -.7f : .7f) * side), Camera.UpLimit - 2.3f, 1), 5.5f);
@@ -324,17 +311,22 @@ public sealed partial class SnowIcebreakerBoss
                         for (int shoulder = 1; shoulder <= 2; shoulder++)
                             Lance(Muzzle(shoulder), CombatVisuals.Aim(Muzzle(shoulder)), shade, splay);
                         Lance(Muzzle(), CombatVisuals.Aim(Muzzle()), other, splay);
+                        if (salvo % 2 == 1)
+                            IcicleCrown(shade);
                         yield return Wait(Rest(.3f));
                     }
                     break;
                 default:
-                    // Ram: the impact drives a fan of lances straight down from the prow.
+                    // Ram: the impact drives a fan of lances straight down from the prow while
+                    // the shoulders hang a crown under the top edge behind the ship.
                     for (int ram = 0; ram < 3; ram++)
                     {
                         yield return LineUp(.55f);
                         yield return Ram(Camera.UpLimit - 5.6f);
                         for (int lane = -2; lane <= 2; lane++)
                             Lance(Muzzle(), CombatVisuals.Rotate(Vector2.down, lane * 30), shade, splay);
+                        if (ram == 1)
+                            IcicleCrown(other);
                         yield return Wait(Rest(.6f));
                         station.y = Camera.UpLimit - 2.2f;
                         cruise = 4.6f;
@@ -370,5 +362,28 @@ public sealed partial class SnowIcebreakerBoss
         Fire<CrystalRound>(port, axis, tip, .2f)
             .Pause(At, .35f + links * .06f + .15f, CombatRound.Turn.Aim, 0, 1.2f / tip)
             .Ramp(2.6f, 1.0f, At + .5f + links * .06f);
+    }
+
+    // Icicles thrown up from both shoulders hang in a row just under the top edge, across
+    // the whole width. They all break off together, each pair falling apart as a downward
+    // chevron, so the top of the arena and its corners are never a refuge.
+    void IcicleCrown(HostileTone shade)
+    {
+        UseTone(shade);
+        var edge = CombatRound.Border;
+        int icicles = Dense(8);
+        const float BreakAt = 1.25f;
+        for (int i = 0; i < icicles; i++)
+        {
+            float x = Mathf.Lerp(edge.xMin + .5f, edge.xMax - .5f, (i + .5f) / icicles);
+            var point = new Vector2(x, edge.yMax - .6f);
+            var port = Muzzle(x < transform.position.x ? 1 : 2);
+            float at = .55f + Vector2.Distance(port, point) * .06f;
+            float hold = Mathf.Max(.1f, BreakAt - at);
+            for (int mirror = -1; mirror <= 1; mirror += 2)
+                Place<NeedleRound>(port, point, at, .19f, out float launch)
+                    .Pause(at, hold, CombatRound.Turn.Down, mirror * 28, 1.4f / launch)
+                    .Ramp(2.2f, 1.0f, at + hold + .2f);
+        }
     }
 }
