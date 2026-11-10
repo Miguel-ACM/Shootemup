@@ -1,29 +1,65 @@
 # City duo: proposed cards
 
-Code: `Assets/Scripts/Enemies/Bosses/CityDuoBoss.Proposed.cs`. The roles stay the same. In phase one the interceptor still circles the hauler, and both ships fly each card together for the same length. The enraged survivor flies its own pair of cards, and Hard adds a final spell. Both ships still cover behind themselves: arrows rebound off the ceiling, and crates hang on the top edge. Neither fires a full circle; crates burst into downward cones. Pressure matches the current cards to within about 10%, measured in rounds per second on Hard: Green Wave about 71 (current 70), Zebra Crossing about 78 (83), Container Drop about 61 (62), Jackknife about 39 (39), Hairpin Bends about 55 (57), Skid Marks about 40 (39), Total Gridlock about 73 (75) and Spaghetti Junction about 89 (86). Parked rows also stand as obstacles.
+Code: `Assets/Scripts/Enemies/Bosses/CityDuoBoss.Proposed.cs`. Each phase has **one concept** that runs for the whole phase. It develops through four movements of about fifteen seconds (seven cycles of about 2.2 s, or 35–40 fans), so a 60-second recording shows every variation.
 
-## Phase one (both ships)
+The roles stay the same: in phase one the interceptor circles the hauler and both ships play parts of one concept. Each survivor then has one concept per later phase. Both ships still cover behind themselves: the overpass and the crates sit on the top edge, and arrows rebound off the ceiling. Nothing fires a full circle; crates burst into downward cones.
 
-**Current:** Ring Road (the interceptor's outward spiral arms, and the hauler's side fans that rebound off the walls), then Rush Hour (the hauler's two-family street grid and the interceptor's headlights).
+Pressure is measured in rounds per second on Hard (current figure in brackets): phase one about 65 (70), Container Drop about 61 (62), Hairpin Bends about 55 (57), Total Gridlock about 78 (75), Spaghetti Junction about 83 (86).
 
-- **Green Wave.** One burst from the hauler's nose brakes into six level rows of parked cars. Each row has a two-car crossing marked by two gem lamps in the other tone, and the crossings snake from row to row. The lights turn green from the bottom row up. Alternate rows skid off down-left and down-right at one street speed and rebound once off the side walls. The crossings slide apart, and rows passing through the rebounded cars weave together near the walls. Meanwhile the interceptor covers the roof: mirrored arrow fans thrown up behind it rebound off the ceiling and rain across the top. Every other volley it also fires a chevron headlight train. Tones: dark street with bright lamps, and bright roof cover.
-- **Zebra Crossing.** Every round in a stripe shares one descent speed, so the hauler's stripes stay level while they widen. They alternate between dark arrows and bright circles, like a zebra crossing. A two-round crossing snakes from stripe to stripe. The interceptor fires three headlight trains (dark chevrons, bright beads) that brake together, glint and skid 40 degrees sideways. The skid direction alternates.
+## Phase one (both ships): Green Wave
 
-## Phase two (enraged survivor)
+**Current:** Ring Road (spiral arms and side ricochet fans) alternating with Rush Hour (street grid and headlights).
 
-**Current:** the hauler's Cargo Storm (360-degree crates, a rear guard and headlights) and Headlights. The interceptor's Junction (a four-arm spiral) and Headlights.
+Every round is a car that brakes onto a street, waits for its light and skids off. The hauler parks seven dark rows of cars below the pair, each row with a two-car crossing lit by bright gem lamps and snaking from row to row. The circling interceptor throws two bright overpass rows onto the top edge above the pair. Both go green together, and both flash aimed headlights (high beams and nose trains) while they wait.
 
-- **Hauler: Container Drop.** Ten crates are hoisted from both wings and brake onto mirrored stations along the visible top edge. They hang there, then drop in a ripple from the outside in. Each crate bursts into a nine-round downward cone. Dark high beams (a kunai followed by slowing cars) are aimed from both wings while the crates hang. The tone is bright.
-- **Hauler: Jackknife.** From each wing, a bright gem cab runs outward and down ahead of a dark trailer on the same line. The trailer brakes and folds 95 degrees toward the middle, so the mirrored trailers slide through each other as a moving X. The truck's lean changes from volley to volley, and a kunai horn sounds every third truck. The tone is dark.
-- **Interceptor: Hairpin Bends.** Two nested fans (dark arrows outside, bright circles inside) brake into arcs. Every round then turns back on a hairpin, crossing its mirror twin on the way up, and rebounds off the ceiling. Every other fan is centred on the pilot. The tone is dark.
-- **Interceptor: Skid Marks.** Both wings lay stalled beads along the interceptor's weaving path. After a wait, each bead launches at the pilot in the order it was laid: arrows fast, circles slow. A kunai fan also freezes and snaps onto the pilot from time to time. The tone is bright.
+The movements:
+- **Weave:** alternate rows skid opposite ways from the bottom up, and the overpass skids against the top row.
+- **Shear:** everything skids one way from the top down, alternating each cycle.
+- **Avenue:** rows run straight down, with a faster-snaking crossing.
+- **Gridlock:** alternate cars within each row split apart into a lattice, and the overpass snaps onto the pilot.
+
+Alternative single concepts:
+- *Zebra Crossing*: level, widening stripes in alternating tones with a snaking gap. The interceptor's headlight trains skid across them.
+- *Ring Road*: the interceptor lays a moving stream on its orbit and the hauler's lights release it in sections.
+- *Traffic Lights*: rows that stop and go twice (first sideways, then down), changing tone with each aspect.
+
+## Phase two, hauler: Container Drop
+
+**Current:** Cargo Storm (360-degree crates with a rear guard) alternating with Headlights.
+
+Ten bright crates are hoisted from both wings onto the visible top edge, hang, then drop and burst into ten-round shrapnel cones. Dark high beams are aimed twice while they hang.
+
+The movements:
+- **Outside In:** downward cones.
+- **Inside Out:** the cones are aimed at the pilot.
+- **Two Tiers:** alternate crates hang lower and the tiers fall in turn.
+- **Swinging Loads:** crates fall on crossing diagonals.
+
+Alternative single concepts:
+- *Jackknife*: mirrored trucks whose trailers fold in and slide through each other.
+- *Conveyor*: crates that travel along the top edge before dropping.
+- *Stacker*: crates that land on earlier crates and topple sideways.
+
+## Phase two, interceptor: Hairpin Bends
+
+**Current:** Junction (a four-arm spiral) alternating with Headlights.
+
+Nested fans (dark arrows outside, bright circles inside) brake into arcs. Every round then turns back through the bend, crossing its mirror twin, and rebounds once off the ceiling.
+
+The movements:
+- **Hairpins:** 155-degree turns, with fans alternately straight down and on the pilot.
+- **Switchbacks:** later brakes and 125-degree turns.
+- **Slalom:** the fan centre swings from side to side.
+- **U-Turns:** every round reverses up its own line and rains back off the ceiling.
+
+Alternative single concepts:
+- *Skid Marks*: stalled beads along the weaving path launch at the pilot in the order they were laid.
+- *Drift*: fans that slide sideways through long skids.
+- *Slip Road*: streams that peel off a main line one by one.
 
 ## Hard final
 
-- **Total Gridlock (hauler).** A parked street with crates hanging above it. The street skids off as the crates drop through it.
-- **Spaghetti Junction (interceptor).** Hairpin fans whose centre swings further each volley, laid over the skid-mark trail.
+- **Total Gridlock (hauler).** Each cycle parks a five-row street with eight containers hanging above it. The street skids by the Green Wave movements and the crates drop through it by the Container Drop movements.
+- **Spaghetti Junction (interceptor).** Hairpin fans from an ever-swinging centre, with a kunai layer on alternate fans. The bend changes every forty fans (155, 125, 180, 140 degrees).
 
-## Further ideas (not implemented)
-- *Traffic Lights*: rows that stop and go twice, first sideways, then down, with a tone change on each aspect.
-- *Tow Truck*: the interceptor tows a short chain of rounds behind its orbit that it releases on the turn.
-- *Bus Lane*: one wide, empty lane that the hauler keeps open and moves, while everything else fills.
+Alternatives: *Ring Road Jam* (Green Wave rows laid by both survivors' last breath), *Interchange* (four hairpin fans turning in a pinwheel), *Night Freight* (very long, slow dark trains with bright windows).

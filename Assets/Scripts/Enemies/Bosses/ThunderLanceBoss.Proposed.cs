@@ -2,57 +2,33 @@ using System.Collections;
 using UnityEngine;
 
 // Proposed Thunder lance book (ArtSource/BossPhaseProposals), flown only with ProposedCards.
-// Attack() hands the fight to this book before its own pylon deployment, so every card
-// deploys and dismisses its own Tesla pylons; beams always stay bright.
-// Phase one
-//   Pendulum Pylons: four pylons hang on the visible top edge and swing their beams
-//     together, fifteen degrees either side of straight down, so the corridors between them
-//     sway across the arena as one. The lance fires bright zigzag rice bolts down the
-//     pilot's corridor, the shoulders crackle with dark arrows that stall and re-aim, and a
-//     dark thunder roll of slow rice suddenly quickens.
-//   Lightning Lance: the boss fires its own attached beams. The lance holds one wide beam
-//     straight down while both shoulders throw dark zigzag rice to the sides; then the
-//     scissors: both shoulder beams start out toward the walls and close to fifteen
-//     degrees either side of straight down and back, while the lance pours bolts into the
-//     open middle. The boss moves to a new lane between releases.
-// Phase two
-//   Squall Line: six pylons on the top edge, alternate ones leaning their beams twenty-four
-//     degrees right or left. The two sets take turns: one fires slanted parallel beams while
-//     gliding downwind, then shuts down as the other charges leaning the other way. The
-//     lance throws bright forked lightning, zigzag bolts that split into three beads.
-//   Faraday Cage: four wall pylons fire short horizontal beams inward, two bars with a door
-//     each, right and left of centre. The bars glide up and down the arena out of phase, so
-//     the pilot slips through one door, then the other. The shoulders shed dark zigzag
-//     arrows; bright rice triplets are aimed through the doors.
-// Hard final
-//   Supercell: the squall gusts faster and further, with forked lightning and zigzag arrow
-//     fans from the shoulders on alternate gusts.
+// Attack() hands the fight to this book before its own pylon deployment, so the book
+// deploys and dismisses its own Tesla pylons. Beams always stay bright. One concept per
+// phase, developed through four movements of about fifteen seconds.
+// Phase one: Pendulum Pylons. Tesla pylons hang on the visible top edge and swing their
+//   beams like pendulums; the pilot rides the corridors between them under zigzag rice.
+//   Movements: In Step, Breathing, Six Pendulums, Lance.
+// Phase two: Squall Line. Six top-edge pylons lean their beams alternately right and left
+//   like slanting rain, under forked lightning. Movements: Gusts, Gale, Crosswind, Squall.
+// Hard final: Faraday Cage. Wall pylons fire short horizontal bars with doors that climb
+//   and fall through the arena like ladder rungs. Movements: Ladder, Swapped Doors,
+//   Three Rungs, Storm Cage.
 public sealed partial class ThunderLanceBoss
 {
     protected override IEnumerator Proposed()
     {
-        // Phase three keeps the phase-two drones alive; every card brings its own.
+        // Phase three keeps the phase-two pylons alive; every phase brings its own.
         DismissDrones();
         StopBeams();
         Phrase(QuietShippingCues());
         while (true)
         {
             if (phaseThree)
-                yield return Supercell();
+                yield return FaradayCage();
             else if (phaseTwo)
-            {
-                yield return SquallLine(10);
-                yield return Wait(.6f);
-                yield return FaradayCage(9);
-                yield return Wait(.6f);
-            }
+                yield return SquallLine();
             else
-            {
-                yield return PendulumPylons(9);
-                yield return Wait(.6f);
-                yield return LightningLance();
-                yield return Wait(.6f);
-            }
+                yield return PendulumPylons();
         }
     }
 
@@ -68,29 +44,82 @@ public sealed partial class ThunderLanceBoss
         }
     }
 
-    // Pendulum Pylons (phase one).
-    IEnumerator PendulumPylons(float seconds)
+    // A card's pylons are still deployed until the book dismisses them.
+    bool Deployed(ThunderLaserBot[] pylons) => pylons.Length > 0 && drones.Contains(pylons[0]);
+
+    // Waits until these pylons have reached their stations.
+    IEnumerator Arrive(ThunderLaserBot[] pylons)
     {
-        foreach (float x in new[] { -3.3f, -1.1f, 1.1f, 3.3f })
-            drones.Add(ThunderLaserBot.Deploy(Muzzle(2), new Vector2(x, TopBank), CombatVisuals.Rotate(Vector2.down, -15), 22, .2f)
+        foreach (var pylon in pylons)
+            while (pylon != null && !pylon.Arrived)
+                yield return null;
+    }
+
+    // Pendulum Pylons (phase one). Each movement recalls the pylons and deploys a new set
+    // from the lance; the lull while they climb belongs to the card.
+    IEnumerator PendulumPylons()
+    {
+        for (int movement = 0; ; movement = (movement + 1) % 4)
+        {
+            DismissDrones();
+            DeployPendulums(movement);
+            yield return Wait(1.2f);
+            yield return PendulumVolleys(movement, 13.5f);
+        }
+    }
+
+    //   0 In Step: four pylons swing together, fifteen degrees either side of straight down,
+    //     so the corridors sway across the arena as one.
+    //   1 Breathing: the right pair mirrors the left, so the middle corridor opens and closes.
+    //   2 Six Pendulums: six pylons with a smaller, slower swing and narrower corridors.
+    //   3 Lance: In Step again, while the boss drives its own attached lance down the middle.
+    void DeployPendulums(int movement)
+    {
+        bool six = movement == 2;
+        float[] stations = six ? new[] { -4.0f, -2.4f, -.8f, .8f, 2.4f, 4.0f } : new[] { -3.3f, -1.1f, 1.1f, 3.3f };
+        float arc = six ? 24 : 30, rate = six ? 10 : 12;
+        foreach (float x in stations)
+        {
+            bool mirrored = movement == 1 && x > 0;
+            var aim = CombatVisuals.Rotate(Vector2.down, mirrored ? arc * .5f : -arc * .5f);
+            drones.Add(ThunderLaserBot.Deploy(Muzzle(2), new Vector2(x, TopBank), aim, 22, .2f)
                 .OwnedBy(this)
-                .Swing(30, 12)
+                .Swing(arc, mirrored ? -rate : rate)
                 .ArmAt(1.8f));
-        yield return Wait(1.2f);
+        }
+    }
+
+    // The boss's fire under the pendulums: bright zigzag rice down the pilot's corridor,
+    // dark arrows that stall and re-aim, shoulder sparks and a dark thunder roll. In the Lance
+    // movement the lance fires its beam every eight beats, and the shoulders take over its bolts.
+    IEnumerator PendulumVolleys(int movement, float seconds)
+    {
         int n = 0;
         for (float t = 0; t < seconds; t += .6f, n++)
         {
+            if (movement == 3 && n % 8 == 2)
+                Phrase(LanceBurst());
+            bool lance = beams[2] != null && beams[2].IsAttachedTo(Hull);
             UseTone(HostileTone.Bright);
-            Bolts(Muzzle(2), CombatVisuals.Aim(Muzzle(2)), Dense(9), 9, 3.3f);
+            if (lance)
+                ShoulderSparks();
+            else
+                Bolts(Muzzle(2), CombatVisuals.Aim(Muzzle(2)), Dense(9), 9, 3.3f);
             if (n % 2 == 1)
                 StallingArrows();
             if (n % 3 == 2)
                 ShoulderSparks();
-            if (n % 4 == 3)
+            if (n % 4 == 3 && !lance)
                 ThunderRoll();
             yield return Wait(Rest(.6f));
         }
-        DismissDrones();
+    }
+
+    // The lance charges, then holds one wide attached beam straight down; the boss stays put.
+    IEnumerator LanceBurst()
+    {
+        yield return Charge(Hull, WeaponPort(2), .5f);
+        LanceBeam(2, Vector2.down, 0, 0, 2.0f);
     }
 
     // A fan of zigzag bolts: rice, or arrows where a long phrase would outrun the rice reserve.
@@ -138,58 +167,6 @@ public sealed partial class ThunderLanceBoss
                 .Ramp(3, .5f, .9f);
     }
 
-    // Lightning Lance (phase one).
-    IEnumerator LightningLance()
-    {
-        // The lance: one wide beam straight down, zigzag rice to both sides. The shoulders
-        // crackle while the lance charges.
-        yield return Charge(Hull, WeaponPort(2), .5f);
-        LanceBeam(2, Vector2.down, 0, 0, 2.0f);
-        StallingArrows();
-        yield return Wait(beamCharge * .5f);
-        ShoulderSparks();
-        yield return Wait(beamCharge * .5f);
-        int shot = 0;
-        for (float t = 0; t < 2.0f; t += .2f, shot++)
-        {
-            UseTone(HostileTone.Dark);
-            for (int sign = -1; sign <= 1; sign += 2)
-                Bolts(Muzzle(sign < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, sign * 50), Dense(6), 10, 3.0f, shot % 2 == 0);
-            yield return Wait(Rest(.2f));
-        }
-        yield return Wait(.35f);
-        ThunderRoll();
-        StallingArrows();
-        yield return Wait(Rest(.6f));
-        // The scissors: shoulder beams close from the walls toward straight down and back.
-        Phrase(Charge(Hull, WeaponPort(1), .4f));
-        yield return Charge(Hull, WeaponPort(0), .4f);
-        const float scissors = 2.6f, arc = 60;
-        float sweep = arc * .5f * Mathf.PI * 2 / scissors;
-        LanceBeam(0, CombatVisuals.Rotate(Vector2.down, -75), sweep, arc, scissors);
-        LanceBeam(1, CombatVisuals.Rotate(Vector2.down, 75), -sweep, arc, scissors);
-        // The lance keeps firing into the middle through the scissors' charge.
-        for (float t = 0; t < beamCharge; t += .3f)
-        {
-            UseTone(HostileTone.Bright);
-            Bolts(Muzzle(2), CombatVisuals.Aim(Muzzle(2)), Dense(5), 10, 3.3f, false);
-            yield return Wait(.3f);
-        }
-        int beat = 0;
-        for (float t = 0; t < scissors; t += .18f, beat++)
-        {
-            UseTone(HostileTone.Bright);
-            Bolts(Muzzle(2), CombatVisuals.Aim(Muzzle(2)), Dense(7), 8, 3.4f, beat % 2 == 0);
-            if (beat == 7)
-                ThunderRoll();
-            yield return Wait(Rest(.18f));
-        }
-        yield return Wait(.35f);
-        ThunderRoll();
-        StallingArrows();
-        yield return Wait(Rest(.6f));
-    }
-
     // One of the boss's own attached beams, aimed and optionally swinging out and back.
     void LanceBeam(int index, Vector2 direction, float sweep, float arc, float active)
     {
@@ -208,21 +185,20 @@ public sealed partial class ThunderLanceBoss
         beam.reversalArc = arc;
     }
 
-    // Squall Line (phase two).
-    IEnumerator SquallLine(float seconds)
+    // Squall Line (phase two): one set of pylons for the whole phase, worked through its
+    // movements while the lance throws forked lightning.
+    IEnumerator SquallLine()
     {
         DeploySquall();
         yield return Settle();
-        Phrase(Gusts(drones.ToArray(), 2.4f, .8f));
-        int n = 0;
-        for (float t = 0; t < seconds; t += .85f, n++)
+        Phrase(SquallBeams(drones.ToArray()));
+        for (int n = 0; ; n++)
         {
             ForkedLightning(Dense(5));
             if (n % 3 == 2)
                 CapacitorBeads();
-            yield return Wait(Rest(.85f));
+            yield return Wait(Rest(1.0f));
         }
-        DismissDrones();
     }
 
     // Six pylons evenly along the visible top edge; even ones lean right, odd ones left.
@@ -242,44 +218,80 @@ public sealed partial class ThunderLanceBoss
     static Vector2 SquallStation(int i, float drift) =>
         new Vector2(Mathf.Lerp(Camera.LeftLimit + .55f, Camera.RightLimit - .55f, i / 5f) + drift, TopBank);
 
-    // A card's pylons are still deployed until the card dismisses them.
-    bool Deployed(ThunderLaserBot[] pylons) => pylons.Length > 0 && drones.Contains(pylons[0]);
-
-    // The two sets take turns: hold still through the visible charge, glide downwind while
-    // firing, then shut down and glide home while the other set charges. Ends when the
-    // card dismisses these pylons.
-    IEnumerator Gusts(ThunderLaserBot[] pylons, float gust, float drift)
+    //   0 Gusts: the two sets take turns, each gliding a little downwind while it fires.
+    //   1 Gale: shorter gusts that glide further.
+    //   2 Crosswind: both sets fire together as a diamond lattice, shut down, step half a
+    //     spacing and fire again.
+    //   3 Squall: each set crosses a third of the arena while it fires.
+    IEnumerator SquallBeams(ThunderLaserBot[] pylons)
     {
-        for (int turn = 0; Deployed(pylons); turn++)
+        for (int movement = 0; Deployed(pylons); movement = (movement + 1) % 4)
         {
-            int set = turn % 2;
-            float wind = set == 0 ? 1 : -1;
-            for (int i = 0; i < pylons.Length; i++)
-                if (pylons[i] != null)
-                {
-                    pylons[i].Powered = i % 2 == set;
-                    pylons[i].FiresWhileMoving = i % 2 == set;
-                    pylons[i].MoveTo(SquallStation(i, 0));
-                }
-            yield return Wait(.85f);
-            for (float g = 0; g < gust && Deployed(pylons);)
+            if (movement == 2)
             {
-                if (!Holding)
-                    g += Time.deltaTime * LevelRun.EnemyTempoScale;
-                float glide = wind * drift * Mathf.SmoothStep(0, 1, g / gust);
-                for (int i = set; i < pylons.Length; i += 2)
-                    if (pylons[i] != null)
-                        pylons[i].MoveTo(SquallStation(i, glide));
-                yield return null;
+                for (int step = 0; step < 4 && Deployed(pylons); step++)
+                    yield return Crosswind(pylons, step % 2 == 0 ? .86f : 0);
+                continue;
             }
-            foreach (var pylon in pylons)
-                if (pylon != null)
-                {
-                    pylon.Powered = false;
-                    pylon.FiresWhileMoving = false;
-                }
-            yield return Wait(.3f);
+            int gusts = movement == 1 ? 6 : movement == 3 ? 4 : 5;
+            float gust = movement == 1 ? 1.7f : movement == 3 ? 2.8f : 2.4f;
+            float drift = movement == 1 ? 1.2f : movement == 3 ? 1.6f : .8f;
+            for (int turn = 0; turn < gusts && Deployed(pylons); turn++)
+                yield return Gust(pylons, turn % 2, gust, drift);
         }
+    }
+
+    // One set holds still through its visible charge, glides downwind while firing, then
+    // shuts down and glides home while the other set takes over.
+    IEnumerator Gust(ThunderLaserBot[] pylons, int set, float gust, float drift)
+    {
+        float wind = set == 0 ? 1 : -1;
+        for (int i = 0; i < pylons.Length; i++)
+            if (pylons[i] != null)
+            {
+                pylons[i].Powered = i % 2 == set;
+                pylons[i].FiresWhileMoving = i % 2 == set;
+                pylons[i].MoveTo(SquallStation(i, 0));
+            }
+        yield return Wait(.85f);
+        for (float g = 0; g < gust && Deployed(pylons);)
+        {
+            if (!Holding)
+                g += Time.deltaTime * LevelRun.EnemyTempoScale;
+            float glide = wind * drift * Mathf.SmoothStep(0, 1, g / gust);
+            for (int i = set; i < pylons.Length; i += 2)
+                if (pylons[i] != null)
+                    pylons[i].MoveTo(SquallStation(i, glide));
+            yield return null;
+        }
+        PowerDown(pylons);
+        yield return Wait(.3f);
+    }
+
+    // Both sets fire together from stations shifted by the given amount.
+    IEnumerator Crosswind(ThunderLaserBot[] pylons, float shift)
+    {
+        PowerDown(pylons);
+        for (int i = 0; i < pylons.Length; i++)
+            if (pylons[i] != null)
+                pylons[i].MoveTo(SquallStation(i, shift));
+        yield return Arrive(pylons);
+        foreach (var pylon in pylons)
+            if (pylon != null)
+                pylon.Powered = true;
+        yield return Wait(.85f + 2.2f);
+        PowerDown(pylons);
+        yield return Wait(.3f);
+    }
+
+    static void PowerDown(ThunderLaserBot[] pylons)
+    {
+        foreach (var pylon in pylons)
+            if (pylon != null)
+            {
+                pylon.Powered = false;
+                pylon.FiresWhileMoving = false;
+            }
     }
 
     // Forked lightning: an aimed fan of bright zigzag bolts, each splitting into three beads.
@@ -302,55 +314,57 @@ public sealed partial class ThunderLanceBoss
             Fire<SimpleRound>(Muzzle(port), CombatVisuals.Aim(Muzzle(port)), 2.2f, .22f).Ramp(2, 1);
     }
 
-    // Faraday Cage (phase two).
-    IEnumerator FaradayCage(float seconds)
+    // Faraday Cage (Hard final). Each movement recalls the pylons and deploys a new cage.
+    IEnumerator FaradayCage()
     {
-        DismissDrones();
-        const float door = 1.7f;
-        float span = Camera.RightLimit - Camera.LeftLimit - .7f;
-        float longArm = (span - door) * .62f, shortArm = span - door - longArm;
-        // Upper bar: long arm from the left, door right of centre. Lower bar: mirrored.
-        AddCagePylon(0, -1, longArm);
-        AddCagePylon(0, 1, shortArm);
-        AddCagePylon(1, -1, shortArm);
-        AddCagePylon(1, 1, longArm);
-        yield return Settle();
-        foreach (var drone in drones)
-            if (drone != null)
-                drone.FiresWhileMoving = true;
-        Phrase(GlideCage(drones.ToArray()));
-        int n = 0;
-        for (float t = 0; t < seconds; t += .9f, n++)
+        for (int movement = 0; ; movement = (movement + 1) % 4)
         {
-            StaticLace();
-            if (n % 2 == 1)
+            DismissDrones();
+            const float door = 1.7f;
+            float span = Camera.RightLimit - Camera.LeftLimit - .7f;
+            float longArm = (span - door) * .62f, shortArm = span - door - longArm;
+            int bars = movement == 2 ? 3 : 2;
+            for (int bar = 0; bar < bars; bar++)
             {
-                UseTone(HostileTone.Bright);
-                Bolts(Muzzle(2), CombatVisuals.Aim(Muzzle(2)), 3, 6, 3.6f);
+                // Doors alternate sides from bar to bar; Swapped Doors flips them all.
+                bool doorRight = (bar % 2 == 0) != (movement == 1);
+                AddCagePylon(bar, -1, doorRight ? longArm : shortArm, movement);
+                AddCagePylon(bar, 1, doorRight ? shortArm : longArm, movement);
             }
-            yield return Wait(Rest(.9f));
+            var pylons = drones.ToArray();
+            yield return Arrive(pylons);
+            foreach (var pylon in pylons)
+                if (pylon != null)
+                    pylon.FiresWhileMoving = true;
+            Phrase(GlideCage(pylons, movement));
+            yield return CageVolleys(movement, 13);
         }
-        DismissDrones();
     }
 
-    // The two bars move together like rungs of a ladder 5.4 apart: the lower one reaches the
-    // bottom of the arena and the upper one rises above the middle, and their ranges overlap,
-    // so no level stays clear and the bars never cross.
-    static float CageHeight(int bar, float clock) =>
-        Camera.DownLimit + 3.7f + (bar == 0 ? 5.4f : 0) + 3.4f * Mathf.Sin(clock * .7f);
-
-    static Vector2 CageStation(int bar, int wall, float clock) =>
-        new Vector2(wall < 0 ? Camera.LeftLimit + .35f : Camera.RightLimit - .35f, CageHeight(bar, clock));
-
-    void AddCagePylon(int bar, int wall, float reach)
+    //   0 Ladder: two bars 5.4 apart move together; the lower reaches the bottom of the arena,
+    //     their ranges overlap, so no level stays clear and the bars never cross.
+    //   1 Swapped Doors: the doors change sides and the ladder climbs faster.
+    //   2 Three Rungs: three bars 3.6 apart with a shorter stroke, doors alternating.
+    //   3 Storm Cage: the ladder again, with forked lightning thrown through the doors.
+    static float CageHeight(int bar, float clock, int movement)
     {
-        drones.Add(ThunderLaserBot.Deploy(Muzzle(2), CageStation(bar, wall, 0), wall < 0 ? Vector2.right : Vector2.left, reach, .18f)
+        bool three = movement == 2;
+        float stroke = three ? 2.4f : 3.4f, spacing = three ? 3.6f : 5.4f, rate = movement == 1 ? .9f : .7f;
+        return Camera.DownLimit + .3f + stroke + bar * spacing + stroke * Mathf.Sin(clock * rate);
+    }
+
+    static Vector2 CageStation(int bar, int wall, float clock, int movement) =>
+        new Vector2(wall < 0 ? Camera.LeftLimit + .35f : Camera.RightLimit - .35f, CageHeight(bar, clock, movement));
+
+    void AddCagePylon(int bar, int wall, float reach, int movement)
+    {
+        drones.Add(ThunderLaserBot.Deploy(Muzzle(2), CageStation(bar, wall, 0, movement), wall < 0 ? Vector2.right : Vector2.left, reach, .18f)
             .OwnedBy(this)
             .ArmAt(1.6f));
     }
 
-    // Pylons are added in pairs per bar, left wall first. Ends when the card dismisses them.
-    IEnumerator GlideCage(ThunderLaserBot[] pylons)
+    // Pylons are added in pairs per bar, left wall first. Ends when the book recalls them.
+    IEnumerator GlideCage(ThunderLaserBot[] pylons, int movement)
     {
         float clock = 0;
         while (Deployed(pylons))
@@ -359,8 +373,26 @@ public sealed partial class ThunderLanceBoss
                 clock += Time.deltaTime * LevelRun.EnemyTempoScale;
             for (int i = 0; i < pylons.Length; i++)
                 if (pylons[i] != null)
-                    pylons[i].MoveTo(CageStation(i / 2, i % 2 == 0 ? -1 : 1, clock));
+                    pylons[i].MoveTo(CageStation(i / 2, i % 2 == 0 ? -1 : 1, clock, movement));
             yield return null;
+        }
+    }
+
+    // The boss's fire through the cage: dark zigzag arrows shed from the shoulders, and
+    // bright rice triplets aimed through the doors (forked lightning in the Storm Cage).
+    IEnumerator CageVolleys(int movement, float seconds)
+    {
+        for (float t = 0; t < seconds; t += .9f)
+        {
+            StaticLace();
+            if (movement == 3)
+                ForkedLightning(Dense(3));
+            else
+            {
+                UseTone(HostileTone.Bright);
+                Bolts(Muzzle(2), CombatVisuals.Aim(Muzzle(2)), 3, 6, 3.6f);
+            }
+            yield return Wait(Rest(.9f));
         }
     }
 
@@ -375,26 +407,5 @@ public sealed partial class ThunderLanceBoss
                 float angle = Mathf.Lerp(15, 60, i / Mathf.Max(1f, count - 1));
                 Fire<NeedleRound>(Muzzle(sign < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, sign * angle), 2.6f, .19f).Zigzag(.3f, 14);
             }
-    }
-
-    // Supercell (Hard final): the squall never ends, gusting faster and further.
-    IEnumerator Supercell()
-    {
-        DeploySquall();
-        yield return Settle();
-        Phrase(Gusts(drones.ToArray(), 1.7f, 1.2f));
-        int arrows = Dense(6);
-        for (int n = 0; ; n++)
-        {
-            ForkedLightning(Dense(5));
-            if (n % 2 == 1)
-            {
-                UseTone(HostileTone.Dark);
-                for (int sign = -1; sign <= 1; sign += 2)
-                    for (int i = 0; i < arrows; i++)
-                        Fire<NeedleRound>(Muzzle(sign < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, sign * (35 + i * 9)), 3.0f, .19f).Zigzag(.25f, 18);
-            }
-            yield return Wait(Rest(1.0f));
-        }
     }
 }

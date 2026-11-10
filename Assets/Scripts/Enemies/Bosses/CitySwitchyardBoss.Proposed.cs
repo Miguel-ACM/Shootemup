@@ -2,62 +2,43 @@ using System.Collections;
 using UnityEngine;
 
 // Proposed Switchyard book (ArtSource/BossPhaseProposals), flown only with ProposedCards.
-// The engine still brakes into a signal box for each card and changes platform between them.
-// Phase one
-//   Signal Gantry: a bloom of lamps from both shoulders brakes into a row along the top
-//     edge, alternate lamps in the two tones. The bright aspect drops first in a V from
-//     the middle out, the dark aspect follows from the edges in; each lamp falls as a short
-//     train, an arrow leading round cars. Express headlights and rebounding ground signals
-//     keep the pilot moving between the aspects.
-//   Points Change: rails of cars run from the nose. At every throw all cars on the rails
-//     brake together, glint and resume kinked onto the new heading while the nose swings
-//     the same way, folding the tracks into zigzags; bright switch lamps are aimed from the
-//     shoulders at each throw.
-// Phase two
-//   Level Crossing: mirrored barrier arms of bright arrows, each tipped by a dark gem lamp,
-//     sweep from beside the engine down across the middle and lift again; side rounds
-//     rebound off the walls.
-//   Shunting: the nose pushes fans of wagons out at four speeds; they brake, back up toward
-//     the engine still facing out, stop with a glint and run down the yard as level arcs.
-// Hard final
-//   Grand Junction: the gantry hangs over the yard while the crossing arms sweep beneath it.
-// Tones: the gantry alternates its lamps; Points Change is dark rails with bright lamps;
-// Level Crossing is bright arms with dark lamps; Shunting is dark wagons led by bright ones.
+// One concept per phase, developed through four movements of about fifteen seconds. The
+// engine still brakes into a signal box, changing platform between cycles or movements.
+// Phase one: Signal Gantry. A bloom of lamps from both shoulders brakes into a two-tone
+//   row along the top edge, and each aspect falls as short trains when it clears.
+//   Movements: Clear, Wave, Double Block, Flashing.
+// Phase two: Level Crossing. Mirrored barrier arms of arrows tipped by gem lamps lower
+//   across the yard and lift again. Movements: Barriers, Scissors, Boom Gates, Three Gates.
+// Hard final: Grand Junction. The level crossing works beneath the signal gantry, both
+//   stepping through their movements together.
+// Tones: the gantry alternates its aspects with bright expresses; the crossing arms are
+// bright arrows with dark gem lamps.
 public sealed partial class CitySwitchyardBoss
 {
     protected override IEnumerator Proposed()
     {
-        int side = -1;
         while (true)
         {
             if (phaseThree)
-                yield return GrandJunction(side);
+                yield return GrandJunction();
             else if (phaseTwo)
-            {
-                yield return LevelCrossing(side, 7);
-                yield return Wait(Rest(.5f));
-                yield return Shunting(-side, 6);
-            }
+                yield return LevelCrossing();
             else
-            {
-                yield return SignalGantry(side, 3);
-                yield return Wait(Rest(.5f));
-                yield return PointsChange(-side, 7);
-            }
-            side = -side;
-            yield return Wait(Rest(.5f));
+                yield return SignalGantry();
         }
     }
 
-    // Signal Gantry (phase one).
-    IEnumerator SignalGantry(int side, int cycles)
+    // Signal Gantry (phase one): a gantry every 3 s from a new box, five gantries per movement.
+    IEnumerator SignalGantry()
     {
-        for (int cycle = 0; cycle < cycles; cycle++)
+        for (int cycle = 0; ; cycle++)
         {
+            int movement = cycle / 5 % 4;
+            int side = movement % 2 == 0 ? -1 : 1;
             station.x = Lane(side * (cycle % 2 == 0 ? .5f : -.5f));
             station.y = Camera.UpLimit - 2.6f;
             yield return PrimePair(.45f);
-            HangGantry(Rest(.55f), Rest(1.2f));
+            HangGantry(movement, cycle, Rest(.55f), Rest(movement == 2 ? .9f : 1.2f));
             yield return Wait(Rest(.65f));
             yield return Express(HostileTone.Bright);
             yield return Wait(Rest(.35f));
@@ -71,10 +52,14 @@ public sealed partial class CitySwitchyardBoss
     }
 
     // One row of lamps braked onto the visible top edge, alternate lamps bright and dark.
-    // Each lamp is a short stack of cars that falls as one train when its aspect clears:
-    // bright from the middle out, dark from the edges in after the aspect gap. Fourteen
-    // lamps leave about one unit of visible clearance between same-tone columns on Hard.
-    void HangGantry(float firstDrop, float aspectGap)
+    // Each lamp is a short stack of cars that falls as one train when its aspect clears.
+    // Fourteen lamps leave about one unit of visible clearance between same-tone columns on
+    // Hard, and the dark aspect clears before the next row parks.
+    //   0 Clear: bright falls in a V from the middle out, dark from the edges in.
+    //   1 Wave: the aspects sweep across the row, the direction alternating every gantry.
+    //   2 Double Block: lamps pair up by tone, opening wider columns, with a quicker change.
+    //   3 Flashing: the dark aspect launches its trains at the pilot instead of straight down.
+    void HangGantry(int movement, int cycle, float firstDrop, float aspectGap)
     {
         const float lift = .85f;
         int lamps = Mathf.Max(6, Dense(14));
@@ -84,9 +69,14 @@ public sealed partial class CitySwitchyardBoss
         for (int i = 0; i < lamps; i++)
         {
             float x = Mathf.Lerp(left, right, i / (lamps - 1f));
-            bool bright = i % 2 == 0;
+            bool bright = movement == 2 ? i / 2 % 2 == 0 : i % 2 == 0;
             float across = Mathf.Abs(x) / Camera.RightLimit;
-            float drop = bright ? firstDrop + across * .35f : firstDrop + aspectGap + (1 - across) * .35f;
+            float sweep = Mathf.InverseLerp(left, right, x);
+            if (cycle % 2 == 1)
+                sweep = 1 - sweep;
+            float delay = movement == 1 ? (bright ? sweep : 1 - sweep) * .6f : (bright ? across : 1 - across) * .35f;
+            float drop = bright ? firstDrop + delay : firstDrop + aspectGap + delay;
+            var turn = movement == 3 && !bright ? CombatRound.Turn.Aim : CombatRound.Turn.Down;
             var port = Muzzle(x < transform.position.x ? 1 : 2);
             UseTone(bright ? HostileTone.Bright : HostileTone.Dark);
             for (int car = 0; car < cars; car++)
@@ -94,7 +84,7 @@ public sealed partial class CitySwitchyardBoss
                 var delta = new Vector2(x, top + car * .22f) - (Vector2)port;
                 float launch = WorldSpeed(delta.magnitude / (lift - .175f));
                 ScoredShot(car > 0, port, delta, launch, car == 0 ? .19f : .2f)
-                    .Pause(lift, drop, CombatRound.Turn.Down, 0, (3.4f - car * .1f) / launch);
+                    .Pause(lift, drop, turn, 0, (3.4f - car * .1f) / launch);
             }
         }
     }
@@ -131,134 +121,82 @@ public sealed partial class CitySwitchyardBoss
             }
     }
 
-    // Points Change (phase one).
-    IEnumerator PointsChange(int side, float seconds)
+    // Level Crossing (phase two): each movement opens with a prime at a new signal box.
+    IEnumerator LevelCrossing()
     {
-        station.x = Lane(side * .4f);
-        station.y = Camera.UpLimit - 2.3f;
-        yield return Charge(Hull, WeaponPort(0), .4f);
-        const int perPeriod = 7;
-        const float carGap = .11f;
-        const float throwAngle = 26;
-        float heading = -side * throwAngle * .5f;
-        int rails = Dense(5) | 1;
-        int periods = Mathf.Max(1, Mathf.RoundToInt(seconds / (perPeriod * carGap)));
-        for (int period = 0; period < periods; period++)
+        int side = -1;
+        for (int movement = 0; ; movement = (movement + 1) % 4)
         {
-            int kink = period % 2 == 0 ? side : -side;
-            for (int car = 0; car < perPeriod; car++)
-            {
-                // Every car on the rails brakes at the next throw, however long it has run.
-                float untilThrow = Mathf.Max(.05f, (perPeriod - car) * Rest(carGap));
-                UseTone(HostileTone.Dark);
-                for (int rail = 0; rail < rails; rail++)
-                {
-                    var direction = CombatVisuals.Rotate(Vector2.down, heading + (rail - (rails - 1) * .5f) * 16);
-                    ScoredShot(car % 3 == 0, Muzzle(0), direction, 3.4f, .18f)
-                        .Pause(untilThrow, .22f, CombatRound.Turn.Rotate, kink * throwAngle, 1);
-                }
-                yield return Wait(Rest(carGap));
-            }
-            heading += kink * throwAngle;
-            SwitchLamps();
-            if (period % 3 == 2)
-                station.x = Lane(-Mathf.Sign(station.x) * .4f);
+            station.x = Lane(side * .4f);
+            station.y = Camera.UpLimit - 2.2f;
+            side = -side;
+            yield return PrimePair(.5f);
+            yield return CrossingArms(14, movement);
         }
     }
 
-    // Bright switch lamps: five gems aimed from each shoulder.
-    void SwitchLamps()
+    // How far a barrier has lowered at a point in its swing. Boom gates dwell fully lowered
+    // and fully raised.
+    static float Lowered(float t, bool dwell)
     {
-        UseTone(HostileTone.Bright);
-        int lamps = Dense(5);
-        for (int port = 1; port <= 2; port++)
-        {
-            var origin = Muzzle(port);
-            var aim = CombatVisuals.Aim(origin);
-            for (int i = 0; i < lamps; i++)
-                Fire<GemRound>(origin, CombatVisuals.Rotate(aim, (i - (lamps - 1) * .5f) * 7), 3.8f, .22f);
-        }
+        float x = Mathf.PingPong(t, 1);
+        if (dwell)
+            x = Mathf.Clamp01((x - .2f) / .6f);
+        return Mathf.SmoothStep(0, 1, x);
     }
 
-    // Level Crossing (phase two).
-    IEnumerator LevelCrossing(int side, float seconds)
+    // Each step releases one arm from each shoulder: a line of bright arrows at rising speeds
+    // tipped by a dark gem lamp, from slightly above level down past straight down and back,
+    // rebounding off the walls.
+    //   0 Barriers: both arms lower and lift together.
+    //   1 Scissors: one arm lowers while the other lifts.
+    //   2 Boom Gates: the arms dwell fully lowered and fully raised, standing as walls.
+    //   3 Three Gates: quicker sweeps, with a third arm from the nose swinging across the middle.
+    IEnumerator CrossingArms(float seconds, int movement)
     {
-        station.x = Lane(side * .3f);
-        station.y = Camera.UpLimit - 2.2f;
-        yield return PrimePair(.5f);
-        yield return CrossingArms(seconds, 2.4f);
-    }
-
-    // Mirrored barrier arms: each step releases one arm from each shoulder, a line of arrows
-    // at rising speeds tipped by a gem lamp. The arms lower from beside the engine across
-    // the middle (past straight down) and lift again, rebounding off the walls.
-    IEnumerator CrossingArms(float seconds, float lowerSeconds)
-    {
-        const float step = .16f;
-        int arm = Dense(4);
+        float step = movement == 3 ? .2f : .16f;
+        float lowerSeconds = movement == 3 ? 1.6f : 2.4f;
+        int arm = Dense(movement == 3 ? 3 : 4);
         int steps = Mathf.RoundToInt(seconds / step);
         for (int i = 0; i < steps; i++)
         {
-            float lowered = Mathf.SmoothStep(0, 1, Mathf.PingPong(i * step / lowerSeconds, 1));
-            float angle = Mathf.Lerp(110, -25, lowered);
+            float t = i * step / lowerSeconds;
             for (int mirror = -1; mirror <= 1; mirror += 2)
             {
-                var port = Muzzle(mirror < 0 ? 1 : 2);
-                var direction = CombatVisuals.Rotate(Vector2.down, mirror * angle);
-                UseTone(HostileTone.Bright);
-                for (int k = 0; k < arm; k++)
-                    Fire<NeedleRound>(port, direction, 1.6f + k * .65f, .19f).Bounce(1);
-                UseTone(HostileTone.Dark);
-                Fire<GemRound>(port, direction, 1.6f + arm * .65f, .22f).Bounce(1);
+                float lowered = Lowered(movement == 1 && mirror > 0 ? t + 1 : t, movement == 2);
+                BarrierArm(Muzzle(mirror < 0 ? 1 : 2), CombatVisuals.Rotate(Vector2.down, mirror * Mathf.Lerp(110, -25, lowered)), arm);
             }
+            if (movement == 3)
+                BarrierArm(Muzzle(0), CombatVisuals.Rotate(Vector2.down, Mathf.Lerp(-60, 60, Lowered(t * .5f, false))), arm);
             yield return Wait(Rest(step));
         }
     }
 
-    // Shunting (phase two): fans of wagons at four speeds brake, back up toward the engine
-    // with their arrows still facing out, stop with a glint and run down the yard as level
-    // arcs at one speed. Alternate fans are centred on the pilot.
-    IEnumerator Shunting(int side, float seconds)
+    void BarrierArm(Vector3 port, Vector2 direction, int arrows)
     {
-        station.x = Lane(side * .5f);
-        station.y = Camera.UpLimit - 2.5f;
-        const float backing = -.6f;
-        int n = 0;
-        for (float t = 0; t < seconds; t += .75f, n++)
-        {
-            yield return Charge(Hull, WeaponPort(0), .25f);
-            var port = Muzzle(0);
-            Vector2 centre = n % 2 == 0 ? Vector2.down : CombatVisuals.Aim(port);
-            int lanes = Dense(11);
-            float spread = 130f / Mathf.Max(1, lanes - 1);
-            for (int i = 0; i < lanes; i++)
-            {
-                var direction = CombatVisuals.Rotate(centre, (i - (lanes - 1) * .5f) * spread + (n % 2) * 4);
-                for (int k = 0; k < 4; k++)
-                {
-                    float speed = 2.4f + k;
-                    UseTone(k == 3 ? HostileTone.Bright : HostileTone.Dark);
-                    // A negative resume speed undoes the reversed ramp: the arcs run downward.
-                    ScoredShot(k == 0, port, direction, speed, .19f)
-                        .Ramp(backing, 1.2f, .5f)
-                        .Pause(1.9f, .25f, CombatRound.Turn.Down, 0, 2.6f / (backing * speed));
-                }
-            }
-            yield return Wait(Mathf.Max(0, Rest(.75f) - .25f));
-        }
+        UseTone(HostileTone.Bright);
+        for (int k = 0; k < arrows; k++)
+            Fire<NeedleRound>(port, direction, 1.6f + k * .65f, .19f).Bounce(1);
+        UseTone(HostileTone.Dark);
+        Fire<GemRound>(port, direction, 1.6f + arrows * .65f, .22f).Bounce(1);
     }
 
-    // Grand Junction (Hard final): the gantry hangs over the yard while the crossing arms
-    // sweep beneath it; the engine changes platform every cycle.
-    IEnumerator GrandJunction(int side)
+    // Grand Junction (Hard final): every cycle hangs a gantry and works the crossing beneath
+    // it. Both step through their movements together, three cycles each, and the engine
+    // changes platform every cycle.
+    IEnumerator GrandJunction()
     {
-        for (int cycle = 0; cycle < 3; cycle++)
+        int side = -1;
+        for (int cycle = 0; ; cycle++)
         {
-            station.x = Lane(side * (cycle - 1) * .6f);
+            int movement = cycle / 3 % 4;
+            station.x = Lane(side * (cycle % 3 - 1) * .6f);
             station.y = Camera.UpLimit - 2.4f;
+            if (cycle % 3 == 2)
+                side = -side;
             yield return PrimePair(.45f);
-            HangGantry(Rest(.75f), Rest(1.4f));
-            yield return CrossingArms(3.2f, 1.6f);
+            HangGantry(movement, cycle, Rest(.75f), Rest(1.4f));
+            yield return CrossingArms(3.2f, movement);
             yield return Express(HostileTone.Dark);
             yield return Wait(Rest(.3f));
         }
