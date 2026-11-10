@@ -23,6 +23,7 @@ public sealed partial class ThunderLanceBoss
     static float Middle => (Camera.UpLimit + Camera.DownLimit) * .5f;
     protected override void Attack()
     {
+        if (ProposedCards && OpenCards()) return;
         if (!deployed)
         {
             deployed = true;
