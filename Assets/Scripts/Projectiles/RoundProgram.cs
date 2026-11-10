@@ -36,6 +36,15 @@ public static class RoundProgram
         return shot;
     }
 
+    // While a Pause holds it, a long round turns to face the heading it will resume on,
+    // so a stopped arrow shows where it goes next.
+    public static T ShowTurn<T>(this T shot) where T : CombatRound
+    {
+        if (shot != null)
+            shot.showTurn = true;
+        return shot;
+    }
+
     // Visual only: the round never touches the pilot (snow-throwing sprays).
     public static T Harmless<T>(this T shot) where T : CombatRound
     {

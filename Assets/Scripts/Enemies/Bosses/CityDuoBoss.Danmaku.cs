@@ -1,27 +1,29 @@
 using System.Collections;
 using UnityEngine;
 
-// City duo: rush hour around a hub, flown as spell cards by both ships together.
-// Phase one (both ships)
-//   Ring Road: the light interceptor circles the heavy hauler and fires arrows
-//     straight out from the hub, winding spiral arms all round it; the hauler covers
-//     its back with mirrored fans fired out sideways that ricochet off the side walls.
-//   Rush Hour: the hauler lays a two-family street grid in front and a second grid
-//     thrown at the side walls that rebounds back across; the interceptor fires
-//     headlight rays. Nothing bounces off the top of the screen.
-// Phase two (the survivor, enraged)
-//   Hauler: Cargo Storm, mirrored crates lobbed high that explode all round, with
-//     rear-guard fans and headlights.
-//   Interceptor: Junction, a four-arm arrow spiral turning round itself in every
-//     direction, with headlights between.
-// Tones: in phase one each ship owns one, the hauler's street grids and rear-guard
-// fans dark and the interceptor's spiral bright. Headlights are bright chevrons
-// with dark beads. The enraged survivor alternates the dominant tone: the hauler's
-// bright cargo over dark fans, then dark-chevron headlights; the interceptor's
-// dark Junction arms with bright knots, then bright headlights. Six-Way Junction
-// has bright arms with dark knots and dark-chevron headlights.
+// City duo: one concept per phase, developed through four movements of about fifteen seconds.
+// Every round that stops and moves on again is a long round (arrow or kunai) that turns to
+// face its next heading while it waits, so a stopped car shows where it will go.
+// Phase one, both ships: Green Wave. Every round is a car that brakes onto a street, waits
+//   for its light and skids off. The hauler parks the street below the pair; the circling
+//   interceptor parks the overpass along the top edge above it, and both go green together.
+//   Movements: Weave, Shear, Avenue, Gridlock.
+// Phase two, the enraged survivor:
+//   Hauler: Container Drop. Crates hoisted to the top edge hang, fall and burst into cones.
+//     Movements: Outside In, Inside Out, Two Tiers, Swinging Loads.
+//   Interceptor: Hairpin Bends. Nested fans brake into arcs and turn back on themselves.
+//     Movements: Hairpins, Switchbacks, Slalom, U-Turns.
+// Hard final:
+//   Hauler: Total Gridlock, the parked street under hanging containers.
+//   Interceptor: Spaghetti Junction, three-layer hairpins from a swinging centre.
+// Tones: phase one's street is dark with bright crossing lamps and the overpass bright with
+// dark lamps; the survivor's crates are bright under dark high beams, and its hairpins are
+// dark fast arrows over bright slow ones.
 public sealed partial class CityDuoBoss
 {
+    // Each movement lasts seven cycles of about 2.2 s.
+    const int CyclesPerMovement = 7;
+
     protected override void Attack()
     {
         OpenCards();
@@ -32,160 +34,303 @@ public sealed partial class CityDuoBoss
         while (true)
         {
             if (phaseThree)
-                yield return FinalSpell();
+                yield return heavy ? TotalGridlock() : SpaghettiJunction();
             else if (!enraged)
-            {
-                if (heavy)
-                {
-                    yield return Every(8, 1.1f, n => RearGuard(n));
-                    yield return Wait(.6f);
-                    yield return Every(8, .45f, n => Gridlock(n));
-                    yield return Wait(.6f);
-                }
-                else
-                {
-                    yield return SpiralArm(8);
-                    yield return Wait(.6f);
-                    yield return Every(8, .9f, n => Headlights(Muzzle()));
-                    yield return Wait(.6f);
-                }
-            }
-            else if (heavy)
-            {
-                yield return Every(7, 1.2f, n =>
-                {
-                    CargoLob();
-                    RearGuard(n);
-                });
-                yield return Wait(.5f);
-                yield return Every(6, .7f, n => Headlights(Muzzle(1), HostileTone.Dark));
-                yield return Wait(.5f);
-            }
+                yield return heavy ? GreenWaveStreet() : GreenWaveOverpass();
             else
+                yield return heavy ? ContainerDrop() : HairpinBends();
+        }
+    }
+
+    // The rest of a beat that already spent part of its length charging.
+    IEnumerator RestAfter(float interval, float spent)
+    {
+        return Wait(Mathf.Max(0, Rest(interval) - spent));
+    }
+
+    // Both wing guns charge together.
+    IEnumerator ChargeWings(float seconds)
+    {
+        Phrase(Charge(Hull, WeaponPort(2), seconds));
+        yield return Charge(Hull, WeaponPort(0), seconds);
+    }
+
+    // Green Wave, the hauler's part: one street per cycle, flashing its high beams twice
+    // while it waits for green.
+    IEnumerator GreenWaveStreet()
+    {
+        for (int cycle = 0; ; cycle++)
+        {
+            int movement = cycle / CyclesPerMovement % 4;
+            yield return Charge(Hull, WeaponPort(1), .35f);
+            ParkStreet(Muzzle(1), 7, cycle, movement, HostileTone.Dark, Rest(1.1f));
+            yield return Wait(Rest(.6f));
+            HighBeams(HostileTone.Bright);
+            yield return Wait(Rest(.6f));
+            HighBeams(HostileTone.Bright);
+            yield return RestAfter(1.0f, .35f);
+        }
+    }
+
+    // Green Wave, the interceptor's part: the overpass above the pair, on the same cycle,
+    // with a headlight train either side of the pilot while it waits.
+    IEnumerator GreenWaveOverpass()
+    {
+        for (int cycle = 0; ; cycle++)
+        {
+            int movement = cycle / CyclesPerMovement % 4;
+            Phrase(Charge(Hull, WeaponPort(2), .35f));
+            yield return Charge(Hull, WeaponPort(1), .35f);
+            ParkOverpass(cycle, movement, Rest(1.1f));
+            yield return Wait(Rest(.6f));
+            NoseTrain(HostileTone.Bright, -8);
+            yield return Wait(Rest(.6f));
+            NoseTrain(HostileTone.Bright, 8);
+            yield return RestAfter(1.0f, .35f);
+        }
+    }
+
+    // How the street skids off on green:
+    //   0 Weave: alternate rows skid opposite ways, green from the bottom row up.
+    //   1 Shear: every row skids the same way (alternating each cycle), green from the top.
+    //   2 Avenue: rows run straight down; the crossing snakes faster from row to row.
+    //   3 Gridlock: alternate cars within each row skid opposite ways, splitting it into a lattice.
+    static float StreetSkid(int movement, int row, int car, int cycle)
+    {
+        switch (movement)
+        {
+            case 0: return row % 2 == 0 ? 32 : -32;
+            case 1: return cycle % 2 == 0 ? 32 : -32;
+            case 2: return 0;
+            default: return car % 2 == 0 ? 32 : -32;
+        }
+    }
+
+    // Rows of arrow cars brake onto level rows below the port at the same moment, turn to
+    // face their skid, wait for their light, then skid off at one street speed and rebound
+    // once off the side walls. Each row's two-car crossing is lit by kunai lamps in the other
+    // tone and snakes from row to row.
+    void ParkStreet(Vector3 port, int rows, int cycle, int movement, HostileTone tone, float green)
+    {
+        const float park = .8f;
+        int cars = Mathf.Max(5, Dense(14));
+        float left = Camera.LeftLimit + .45f, right = Camera.RightLimit - .45f;
+        float snake = movement == 2 ? 2.0f : 1.3f;
+        for (int row = 0; row < rows; row++)
+        {
+            float y = port.y - 1.5f - row * 1.2f;
+            int gap = Mathf.RoundToInt((cars - 2) * (.5f + .42f * Mathf.Sin(row * snake + cycle * 2.1f)));
+            // Shear goes green from the top, after the overpass; the others from the bottom.
+            int order = movement == 1 ? row + 2 : rows - 1 - row;
+            float hold = green + order * .16f;
+            for (int car = 0; car < cars; car++)
             {
-                yield return Junction(7, HostileTone.Dark);
-                yield return Wait(.5f);
-                yield return Every(5, .7f, n => Headlights(Muzzle()));
-                yield return Wait(.5f);
+                if (car == gap || car == gap + 1)
+                    continue;
+                var delta = new Vector2(Mathf.Lerp(left, right, car / (cars - 1f)), y) - (Vector2)port;
+                float launch = WorldSpeed(delta.magnitude / (park - .175f));
+                bool lamp = car == gap - 1 || car == gap + 2;
+                UseTone(lamp ? Opposite(tone) : tone);
+                var round = lamp ? Fire<KunaiRound>(port, delta, launch, .2f) : (CombatRound)Fire<NeedleRound>(port, delta, launch, .19f);
+                round.Pause(park, hold, CombatRound.Turn.Down, StreetSkid(movement, row, car, cycle), 2.3f / launch).ShowTurn().Bounce(1, false);
             }
         }
     }
 
-    // Arrows fired straight out from the hub while circling it: winding spiral arms.
-    IEnumerator SpiralArm(float seconds)
+    // The overpass: two rows of bright arrow cars braked along the visible top edge, thrown
+    // from the interceptor's wings, with dark kunai lamps at a crossing. They skid down against the
+    // street's top row (Weave), with the shear (Shear), straight down (Avenue) or onto the
+    // pilot (Gridlock).
+    void ParkOverpass(int cycle, int movement, float green)
     {
-        int shots = Mathf.RoundToInt(seconds / .055f);
-        for (int i = 0; i < shots; i++)
+        const float park = .8f;
+        int cars = Mathf.Max(5, Dense(15));
+        float top = CombatRound.Border.yMax - .5f;
+        float left = Camera.LeftLimit + .4f, right = Camera.RightLimit - .4f;
+        for (int row = 0; row < 2; row++)
         {
-            Vector2 hub = partner != null ? partner.transform.position : transform.position + Vector3.up;
-            Vector2 outward = ((Vector2)transform.position - hub).normalized;
-            if (outward.sqrMagnitude < .01f)
-                outward = Vector2.down;
+            float y = top - row * .75f;
+            int gap = Mathf.RoundToInt((cars - 2) * (.5f + .42f * Mathf.Sin(row * 1.7f + cycle * 1.6f + 1)));
+            // Bottom-up greens reach the overpass last, top-down greens first.
+            float hold = green + (movement == 1 ? row : 8 - row) * .16f;
+            float skid = movement == 0 ? (row == 0 ? -20 : 20) : movement == 1 ? (cycle % 2 == 0 ? 32 : -32) : 0;
+            var turn = movement == 3 ? CombatRound.Turn.Aim : CombatRound.Turn.Down;
+            for (int car = 0; car < cars; car++)
+            {
+                if (car == gap || car == gap + 1)
+                    continue;
+                float x = Mathf.Lerp(left, right, car / (cars - 1f));
+                var port = Muzzle(x < transform.position.x ? 1 : 2);
+                var delta = new Vector2(x, y) - (Vector2)port;
+                float launch = WorldSpeed(delta.magnitude / (park - .175f));
+                bool lamp = car == gap - 1 || car == gap + 2;
+                UseTone(lamp ? HostileTone.Dark : HostileTone.Bright);
+                var round = lamp ? Fire<KunaiRound>(port, delta, launch, .2f) : (CombatRound)Fire<NeedleRound>(port, delta, launch, .19f);
+                round.Pause(park, hold, turn, skid, (movement == 3 ? 2.8f : 2.4f) / launch).ShowTurn();
+            }
+        }
+    }
+
+    // High beams: one aimed train from each wing of the hauler, a fast kunai headlight
+    // ahead of round cars slowing along the same line.
+    void HighBeams(HostileTone tone)
+    {
+        UseTone(tone);
+        foreach (int port in new[] { 0, 2 })
+        {
+            var origin = Muzzle(port);
+            var aim = CombatVisuals.Aim(origin);
+            Fire<KunaiRound>(origin, aim, 5.2f, .2f);
+            int cars = Dense(6);
+            for (int car = 1; car < cars; car++)
+                Fire<SimpleRound>(origin, aim, 5.0f - car * .45f, .18f);
+        }
+    }
+
+    // A headlight train from the interceptor's nose: a fast chevron, then round cars
+    // slowing along the same aim.
+    void NoseTrain(HostileTone tone, float skew)
+    {
+        var port = Muzzle(0);
+        var aim = CombatVisuals.Rotate(CombatVisuals.Aim(port), skew);
+        UseTone(tone);
+        Fire<ChevronRound>(port, aim, 5.4f, .19f);
+        int cars = Dense(5);
+        for (int car = 1; car < cars; car++)
+            Fire<SimpleRound>(port, aim, 5.0f - car * .55f, .18f);
+    }
+
+    // Container Drop (hauler survivor), one crane cycle after another.
+    IEnumerator ContainerDrop()
+    {
+        for (int cycle = 0; ; cycle++)
+        {
+            int movement = cycle / CyclesPerMovement % 4;
+            yield return ChargeWings(.3f);
+            HoistCrates(5, movement, HostileTone.Bright, Rest(.35f));
+            yield return Wait(Rest(.9f));
+            HighBeams(HostileTone.Dark);
+            yield return Wait(Rest(.6f));
+            HighBeams(HostileTone.Dark);
+            yield return RestAfter(.7f, .3f);
+        }
+    }
+
+    // Crates (large kunai) brake onto mirrored stations along the visible top edge, turn to
+    // face their drop, hold, drop and burst into a forward shrapnel cone:
+    //   0 Outside In: the outer crates fall first, cones straight down.
+    //   1 Inside Out: the middle crates fall first, cones aimed at the pilot.
+    //   2 Two Tiers: alternate crates hang lower and the two tiers fall in turn.
+    //   3 Swinging Loads: crates fall on alternate diagonals, crossing before they burst.
+    void HoistCrates(int perSide, int movement, HostileTone tone, float hold)
+    {
+        const float lift = .9f;
+        float top = CombatRound.Border.yMax - .8f;
+        float reach = Camera.RightLimit - 1.1f;
+        int shards = Dense(10);
+        bool aimed = movement == 1;
+        UseTone(tone);
+        for (int mirror = -1; mirror <= 1; mirror += 2)
+        {
+            var port = Muzzle(mirror < 0 ? 0 : 2);
+            for (int k = 0; k < perSide; k++)
+            {
+                bool lower = movement == 2 && k % 2 == 1;
+                var target = new Vector2(mirror * (.7f + k * reach / Mathf.Max(1, perSide - 1)), lower ? top - 1.3f : top);
+                var delta = target - (Vector2)port;
+                float launch = WorldSpeed(delta.magnitude / (lift - .175f));
+                float order = movement == 1 ? k : movement == 2 ? (k % 2) * 3 : perSide - 1 - k;
+                float wait = hold + order * .2f;
+                float lean = movement == 3 ? (k % 2 == 0 ? 22 : -22) * mirror : 0;
+                Fire<KunaiRound>(port, delta, launch, .34f)
+                    .Pause(lift, wait, CombatRound.Turn.Down, lean, 2.6f / launch)
+                    .ShowTurn()
+                    .SplitAt(lift + wait + .7f, shards, aimed ? 6 : 8, 3.0f, .17f, aimed);
+            }
+        }
+    }
+
+    // Hairpin Bends (interceptor survivor), a fan every 0.4 s:
+    //   0 Hairpins: fans alternately straight down and on the pilot, bending back 155 degrees.
+    //   1 Switchbacks: later brakes and sharper 125-degree turns that throw wider loops.
+    //   2 Slalom: the fan centre swings from side to side.
+    //   3 U-Turns: every round reverses up its own line and rebounds off the ceiling.
+    IEnumerator HairpinBends()
+    {
+        for (int n = 0; ; n++)
+        {
+            int movement = n / 35 % 4;
+            var port = Muzzle(0);
+            Vector2 centre = movement == 2 ? CombatVisuals.Rotate(Vector2.down, 35 * Mathf.Sin(n * .5f))
+                : n % 2 == 0 ? Vector2.down : CombatVisuals.Aim(port);
+            float bend = movement == 1 ? 125 : movement == 3 ? 180 : 155;
+            HairpinFan(port, centre, bend, movement == 1 ? .9f : .7f, false);
+            yield return Wait(Rest(.4f));
+        }
+    }
+
+    // Nested fans open below the interceptor: dark fast arrows outside, bright slow arrows
+    // inside and, when asked, bright kunai beyond. They brake into arcs, turn to face the
+    // bend, then run back through it, crossing their mirror twins on the way up, and rebound
+    // once off the ceiling.
+    void HairpinFan(Vector3 port, Vector2 centre, float bend, float brake, bool kunai)
+    {
+        const float hold = .3f;
+        int lanes = Dense(11);
+        float step = 100f / Mathf.Max(1, lanes - 1);
+        for (int i = 0; i < lanes; i++)
+        {
+            float angle = (i - (lanes - 1) * .5f) * step;
+            float turn = angle > .01f ? bend : angle < -.01f ? -bend : 180;
+            UseTone(HostileTone.Dark);
+            Fire<NeedleRound>(port, CombatVisuals.Rotate(centre, angle), 3.6f, .19f)
+                .Pause(brake, hold, CombatRound.Turn.Rotate, turn, 1.15f)
+                .ShowTurn()
+                .Bounce(1);
             UseTone(HostileTone.Bright);
-            foreach (float spread in new[] { -9f, 9f })
-                ScoredShot(i%9<3,Muzzle(), CombatVisuals.Rotate(outward, spread), 3.6f);
-            if(i%24==0)Headlights(Muzzle());
-            yield return Wait(Rest(.055f));
+            Fire<NeedleRound>(port, CombatVisuals.Rotate(centre, angle * .9f), 2.5f, .17f)
+                .Pause(brake, hold, CombatRound.Turn.Rotate, turn, 1.15f)
+                .ShowTurn()
+                .Bounce(1);
+            if (kunai)
+                Fire<KunaiRound>(port, CombatVisuals.Rotate(centre, angle * 1.08f), 4.6f, .19f)
+                    .Pause(brake, hold, CombatRound.Turn.Rotate, turn, 1.15f)
+                    .ShowTurn()
+                    .Bounce(1);
         }
     }
 
-    // Four arrow arms turning round the ship in every direction.
-    // Arms in one tone, their round knots in the other.
-    IEnumerator Junction(float seconds, HostileTone arms)
+    // Total Gridlock (hauler, Hard final): every cycle parks a street with containers hanging
+    // above it. The street skids off by the same movements as Green Wave, and the crates
+    // drop through it by the Container Drop movements.
+    IEnumerator TotalGridlock()
     {
-        int steps = Mathf.RoundToInt(seconds / .07f);
-        for (int i = 0; i < steps; i++)
+        for (int cycle = 0; ; cycle++)
         {
-            UseTone(i % 9 < 3 ? Opposite(arms) : arms);
-            for (int arm = 0; arm < 4; arm++)
-                ScoredShot(i%9<3,transform.position, CombatVisuals.Rotate(Vector2.down, arm * 90 + i * 11), 3.4f);
-            yield return Wait(Rest(.07f));
+            int movement = cycle / CyclesPerMovement % 4;
+            yield return ChargeWings(.3f);
+            ParkStreet(Muzzle(1), 5, cycle, movement, HostileTone.Dark, Rest(1.1f));
+            HoistCrates(4, movement, HostileTone.Bright, Rest(.6f));
+            yield return Wait(Rest(.8f));
+            HighBeams(HostileTone.Bright);
+            yield return Wait(Rest(.6f));
+            HighBeams(HostileTone.Bright);
+            yield return RestAfter(.8f, .3f);
         }
     }
 
-    // The hauler covers its flanks: mirrored fans fired out sideways that ricochet off
-    // the side walls and cross back behind and below it.
-    void RearGuard(int n)
+    // Spaghetti Junction (interceptor, Hard final): hairpin fans from an ever-swinging centre,
+    // with a kunai layer on alternate fans. The bend changes every forty fans.
+    IEnumerator SpaghettiJunction()
     {
-        if(n%3==0)Headlights(Muzzle(1));
-        UseTone(HostileTone.Dark);
-        int lanes = Dense(7);
-        foreach (int mirror in new[] { -1, 1 })
-            for (int i = 0; i < lanes; i++)
-                Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.up, mirror * (66 + i * 8 + (n % 2) * 4)), 3.0f, .2f).Bounce(2, false);
-    }
-
-    // Three mirrored headlight rays: chevrons and round beads at falling speeds,
-    // the beads in the opposite tone to the chevrons.
-    void Headlights(Vector3 port, HostileTone chevrons = HostileTone.Bright)
-    {
-        int beads = Dense(enraged ? 9 : 7);
-        var aim = CombatVisuals.Aim(port);
-        foreach (float ray in new[] { -22f, 0f, 22f })
-            for (int b = 0; b < beads; b++)
-            {
-                UseTone(b % 3 == 0 ? Opposite(chevrons) : chevrons);
-                if(b%3==0)Fire<SimpleRound>(port,CombatVisuals.Rotate(aim,ray),5.4f-b*.45f,.18f);
-                else Fire<ChevronRound>(port,CombatVisuals.Rotate(aim,ray),5.4f-b*.45f,.18f);
-            }
-    }
-
-    // Two mirrored diagonal families in front, and the same grid behind that
-    // is thrown at the side walls and rebounds back across: the diamonds between them
-    // are the streets.
-    void Gridlock(int row)
-    {
-        if(row%4==2)Headlights(Muzzle(1));
-        UseTone(HostileTone.Dark);
-        int lanes = Dense(enraged ? 11 : 9);
-        foreach (int family in new[] { -1, 1 })
+        float[] bends = { 155, 125, 180, 140 };
+        for (int n = 0; ; n++)
         {
-            var front = CombatVisuals.Rotate(Vector2.down, family * 36);
-            var back = CombatVisuals.Rotate(Vector2.down, family * 74);
-            for (int i = 0; i < lanes; i++)
-            {
-                float offset = (i - (lanes - 1) * .5f) * 6.5f + (row % 2) * 3.25f;
-                Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(front, offset), 2.2f, .2f);
-                if (i % 2 == row % 2)
-                    Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(back, offset * .5f), 2.2f, .2f).Bounce(1, false);
-            }
+            int movement = n / 40 % 4;
+            var centre = CombatVisuals.Rotate(Vector2.down, 35 * Mathf.Sin(n * .6f));
+            HairpinFan(Muzzle(0), centre, bends[movement], movement == 1 ? .85f : .7f, n % 2 == 0);
+            yield return Wait(Rest(.33f));
         }
-    }
-
-    // Mirrored crates lobbed high, falling under gravity, exploding all round.
-    void CargoLob()
-    {
-        UseTone(HostileTone.Bright);
-        int shards = Dense(14);
-        foreach (float lob in new[] { -60f, -30f, 30f, 60f })
-            Fire<SimpleRound>(Muzzle(1), CombatVisuals.Rotate(Vector2.up, lob), 2.7f, .42f)
-                .Fall(new Vector2(0, -2.7f))
-                .SplitAt(1.8f, shards, 360f / shards, 3.0f, .19f);
-    }
-
-    // Hard final phase for the survivor. Hauler: Gridlock Storm, cargo, rear guard and
-    // street grid together. Interceptor: Six-Way Junction with headlights.
-    IEnumerator FinalSpell()
-    {
-        if (heavy)
-            yield return Every(8, .8f, n =>
-            {
-                Gridlock(n);
-                if (n % 2 == 0)
-                    RearGuard(n);
-                if (n % 3 == 1)
-                    CargoLob();
-            });
-        else
-            yield return Every(8, .07f, n =>
-            {
-                UseTone(n % 9 < 3 ? HostileTone.Dark : HostileTone.Bright);
-                for (int arm = 0; arm < 6; arm++)
-                    ScoredShot(n%9<3,transform.position, CombatVisuals.Rotate(Vector2.down, arm * 60 + n * 9), 3.5f);
-                if (n % 17 == 8)
-                    Headlights(Muzzle(), HostileTone.Dark);
-            });
-        yield return Wait(.5f);
     }
 
     static HostileTone Opposite(HostileTone value) => value == HostileTone.Bright ? HostileTone.Dark : HostileTone.Bright;

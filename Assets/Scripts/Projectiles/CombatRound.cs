@@ -36,6 +36,7 @@ public abstract class CombatRound : AEnemyBullet
     const int DepthSlots = 16384;
     const float DepthStep = .000004f;
     static int launchSequence;
+    static int launches;
     static Rect border;
     static int borderFrame = -1;
 
@@ -88,6 +89,12 @@ public abstract class CombatRound : AEnemyBullet
     internal void SetLifetime(float seconds) => lifetime = seconds;
     protected bool ended;
     public int generation;
+    // Identifies one launch of this pooled object, so an owner holding a reference can tell
+    // whether the round it fired is still the one flying.
+    public int Serial
+    {
+        get; private set;
+    }
     public Vector2 Heading => heading;
     public Color Accent => HostileProjectileArt.Accent(GetType());
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -154,6 +161,7 @@ public abstract class CombatRound : AEnemyBullet
         shot.damage = 10 * GameRules.enemyDamage;
         shot.age = 0;
         shot.generation = 0;
+        shot.Serial = ++launches;
         // Large slow geometry must still reach the bottom of the arena on Easy.
         // Offscreen culling and each delivery's own lifetime keep residency bounded.
         shot.lifetime = Mathf.Clamp((Camera.UpLimit - Camera.DownLimit + 2) / Mathf.Max(.75f, shot.speed), 9, 18);
@@ -485,6 +493,10 @@ public abstract class CombatRound : AEnemyBullet
     internal float pauseAt, pauseHold, resumeAngle, resumeSpeed;
     internal Turn resumeTurn;
     internal bool resumed;
+    // While held, the round turns to face the heading it will resume on.
+    internal bool showTurn;
+    float scatterAngle;
+    bool scattered;
     internal float fadeAt;
     internal int bounces;
     internal bool bounceCeiling;
@@ -517,6 +529,7 @@ public abstract class CombatRound : AEnemyBullet
         resumeSpeed = 1;
         resumeTurn = Turn.Keep;
         resumed = false;
+        showTurn = scattered = false;
         bounces = 0;
         bounceCeiling = true;
         gravity = drift = travel = well = Vector2.zero;
@@ -554,22 +567,70 @@ public abstract class CombatRound : AEnemyBullet
 
     void Redirect()
     {
+        heading = ResumeHeading();
+        needsOrientation = true;
+    }
+
+    // The heading a held round will resume on. An aimed round keeps tracking the pilot.
+    Vector2 ResumeHeading()
+    {
         switch (resumeTurn)
         {
             case Turn.Aim:
-                heading = CombatVisuals.Rotate(CombatVisuals.Aim(transform.position), resumeAngle);
-                break;
+                return CombatVisuals.Rotate(CombatVisuals.Aim(transform.position), resumeAngle);
             case Turn.Rotate:
-                heading = CombatVisuals.Rotate(heading, resumeAngle);
-                break;
+                return CombatVisuals.Rotate(heading, resumeAngle);
             case Turn.Scatter:
-                heading = CombatVisuals.Rotate(heading, UnityEngine.Random.Range(-resumeAngle, resumeAngle));
-                break;
+                if (!scattered)
+                {
+                    scatterAngle = UnityEngine.Random.Range(-resumeAngle, resumeAngle);
+                    scattered = true;
+                }
+                return CombatVisuals.Rotate(heading, scatterAngle);
             case Turn.Down:
-                heading = CombatVisuals.Rotate(Vector2.down, resumeAngle);
-                break;
+                return CombatVisuals.Rotate(Vector2.down, resumeAngle);
+            default:
+                return heading;
         }
-        needsOrientation = true;
+    }
+
+    // Signal control: brake to a stop now and hold until Proceed(), then resume on the
+    // given turn. The round faces its next heading while it waits.
+    public void Halt(float brake, Turn turn, float angle, float speed)
+    {
+        if (ended)
+            return;
+        pauseAt = age + Mathf.Max(.02f, brake);
+        pauseHold = float.PositiveInfinity;
+        resumeTurn = turn;
+        resumeAngle = angle;
+        resumeSpeed = speed;
+        resumed = scattered = false;
+        showTurn = true;
+    }
+
+    // Releases a Halt(): the round sets off on its turn from where it stands.
+    public void Proceed()
+    {
+        if (ended || resumed || pauseAt < 0)
+            return;
+        if (age < pauseAt)
+            pauseAt = age;
+        pauseHold = age - pauseAt;
+    }
+
+    public bool Halted => pauseAt >= 0 && !resumed;
+
+    // Turns the sprite toward the resume heading during a hold, finishing as the hold ends.
+    void FaceResume()
+    {
+        Vector2 current = orientedHeading.sqrMagnitude > .001f ? orientedHeading : heading;
+        float angle = Vector2.SignedAngle(current, ResumeHeading());
+        float left = pauseAt + pauseHold - age, dt = Time.deltaTime;
+        float step = left > dt ? Mathf.Max(540 * dt, Mathf.Abs(angle) * dt / left) : Mathf.Abs(angle);
+        var facing = CombatVisuals.Rotate(current, Mathf.Sign(angle) * Mathf.Min(Mathf.Abs(angle), step));
+        transform.rotation = Quaternion.FromToRotation(Vector3.up, facing);
+        orientedHeading = facing;
     }
 
     protected void Advance(float dt)
@@ -752,6 +813,11 @@ public abstract class CombatRound : AEnemyBullet
             if (needsOrientation)
                 transform.rotation = Quaternion.identity;
             needsOrientation = false;
+            return;
+        }
+        if (showTurn && Paused)
+        {
+            FaceResume();
             return;
         }
         // Arrows under gravity or sway point along their actual path, not their launch heading.
