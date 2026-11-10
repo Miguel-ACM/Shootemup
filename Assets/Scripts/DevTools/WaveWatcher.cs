@@ -568,8 +568,10 @@ public sealed partial class WaveWatcher : MonoBehaviour
                 Elapsed += Time.deltaTime;
                 // Later phases are reached like a real fight, once the boss is in the arena, so
                 // each spell break plays on screen instead of above it during the entrance.
+                // A high station such as the Plains bomber's sits above UpLimit - 1, so the hull
+                // only has to be inside the visible arena.
                 if (survivor != null && survivor.CurrentPhase < targetPhase && !survivor.Invulnerable && Elapsed >= nextPush &&
-                    survivor.transform.position.y < Camera.UpLimit - 1 && survivor.transform.position.y > Camera.DownLimit + .5f)
+                    survivor.transform.position.y < Camera.UpLimit - .25f && survivor.transform.position.y > Camera.DownLimit + .5f)
                 {
                     PushToPhase(survivor, victim, survivor.CurrentPhase + 1);
                     nextPush = Elapsed + .5f;
