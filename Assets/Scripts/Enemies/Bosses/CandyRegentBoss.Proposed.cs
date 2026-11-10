@@ -3,221 +3,236 @@ using UnityEngine;
 
 // Proposed Candy regent book (ArtSource/BossPhaseProposals), flown only while
 // DistrictBoss.ProposedCards is set so it can be recorded beside the shipping cards.
-// The regent keeps darting through the upper arena with no minions. Every card keeps a
-// ricocheting canopy over the top: folded ribbons, or stars thrown up from the crown.
-// Ports: the two prongs at the keel, the two mint hatches on the wings and the sugar
-// crown on top.
-// Phase one
-//   Ribbon Candy: both hatches pull two strands of taffy, fast and slow, along one aim
-//     that sweeps from down-and-out to up-and-out; the walls and ceiling fold them into
-//     ribbon candy draped over the top. Hearts are threaded through the fast strand and
-//     the prongs flick an aimed sweet now and then.
-//   Gumdrop Garden: the hatches swell and plant a mirrored bed of gumdrops across the
-//     arena. They brake, glint, start to sink and pop into small downward cones, the
-//     outer drops first and the innermost pair popping at the pilot. Crown stars ricochet
-//     off the ceiling between beds.
-// Phase two
-//   Candy Cane: each hatch lays diagonal stripes of arrows and circles, alternating
-//     bright and dark like a cane, that rebound off the side walls into a crossing
-//     lattice. One bead is missing from every stripe and the opening walks along it.
-//   Sweetheart: after a charge both prongs release an outline of a heart, leaning apart,
-//     that grows as it sinks, so every point of the arena is crossed once by a widening
-//     line with room between its beads. Crown stars keep the ceiling busy.
-// Phase three (Hard)
-//   Heartbreak: a large heart grows from the prongs, stops, and breaks down the middle,
-//     both halves swinging apart, over candy-cane stripes and crown stars.
-// Tones: the dominant tone flips card to card.
-//   Ribbon Candy: bright ribbons with dark hearts and dark sweets.
-//   Gumdrop Garden: dark gumdrops (their pops inherit it), bright crown stars.
-//   Candy Cane: stripes alternate bright and dark; dark crown stars.
-//   Sweetheart: dark hearts, bright crown stars.
-//   Heartbreak: a bright heart over dark-led stripes.
+// One concept per phase (Miguel, 10 November 2026). The concept develops verse by verse,
+// passing between the regent's own parts: the two prongs at the keel, the two mint
+// hatches on the wings and the sugar crown on top. The regent keeps darting through the
+// upper arena with no minions, and a ricocheting canopy covers the top. Every shape is a
+// line with open lanes, never a scatter.
+// Phase one, Ribbon Candy: mirrored taffy ribbons, two strands (fast and slow) along one
+//   sweeping aim, dashed five beats on and two off so each fold has open gaps. The walls
+//   and ceiling fold them into ribbon candy. The folds tighten pass by pass.
+//   1. Hatch ribbons sweep from below the horizon to above it, folding over the top.
+//   2. Crown ribbons are thrown up and draped off the ceiling: the canopy.
+//   3. Prong ribbons fold down and out off the side walls into the lower arena.
+//   4. Braid: hatches and prongs alternate beats in antiphase, two ribbons interleaving.
+// Phase two, Candy Cane: mirrored diagonal stripes alternating bright and dark, each with
+//   one bead missing; the opening walks along the stripe (back the other way each pass)
+//   and the walls rebound stripes across each other. Every fourth stripe is a crown
+//   stripe thrown up off the ceiling.
+//   1. Hatch stripes down and out.  2. Prong stripes crossing beneath the regent.
+//   3. Crown stripes only: the whole canopy.  4. Hatches and crown alternate.
+// Phase three (Hard), Heartbreak: heart outlines grow from the regent, sink, stop and
+//   break down the middle, the halves swinging apart and leaving a lane that follows
+//   the regent's dashes.
+//   1. A large heart with a smaller one nested inside.  2. Twin hearts from the hatches.
+//   3. The large heart between two hatch hearts.  4. A ripple of three hearts in quick
+//   succession, each larger than the last.
+// Tones: Ribbon Candy bright ribbons with dark hearts; Candy Cane alternating stripes;
+//   Heartbreak bright outer hearts over dark inner and hatch hearts.
 public sealed partial class CandyRegentBoss
 {
     protected override IEnumerator Proposed()
     {
+        int verse = 0;
         while (true)
         {
             if (phaseThree)
-                yield return Heartbreak();
+                yield return Heartbreak(verse++);
             else if (!phaseTwo)
-            {
-                yield return RibbonCandy();
-                yield return Wait(.7f);
-                yield return GumdropGarden();
-                yield return Wait(.7f);
-            }
+                yield return RibbonCandy(verse++);
             else
-            {
-                yield return CandyCane();
-                yield return Wait(.7f);
-                yield return Sweetheart();
-                yield return Wait(.7f);
-            }
+                yield return CandyCane(verse++);
         }
     }
 
     const int LeftProng = 0, RightProng = 1, LeftHatch = 2, RightHatch = 3;
 
-    // A visible charge at a mirrored pair of ports.
-    IEnumerator ChargePair(int left, int right, float seconds)
+    Vector3 Crown(int side) => Hull.TransformPoint(new Vector3(side * .31f, .95f, -.31f));
+
+    Vector3 Port(int part, int side)
+    {
+        if (part == 0)
+            return Muzzle(side < 0 ? LeftProng : RightProng);
+        if (part == 1)
+            return Muzzle(side < 0 ? LeftHatch : RightHatch);
+        return Crown(side);
+    }
+
+    // A visible charge at the mirrored pair of one part: 0 prongs, 1 hatches, 2 crown.
+    IEnumerator ChargePart(int part, float seconds)
     {
         for (float t = 0; t < seconds;)
         {
             if (!Holding)
                 t += Time.deltaTime * LevelRun.EnemyTempoScale;
-            Cue(Muzzle(left), seconds - t);
-            Cue(Muzzle(right), seconds - t);
+            Cue(Port(part, -1), seconds - t);
+            Cue(Port(part, 1), seconds - t);
             yield return null;
         }
     }
 
-    // Ribbon Candy: one aim per hatch sweeping up and down, folded by the walls.
-    IEnumerator RibbonCandy()
+    // ---------------------------------------------------------------- Ribbon Candy
+
+    IEnumerator RibbonCandy(int verse)
     {
-        yield return ChargePair(LeftHatch, RightHatch, .45f);
-        yield return Every(6.3f, .09f, n =>
+        int movement = verse % 4;
+        int pass = verse / 4;
+        // The folds tighten pass by pass.
+        float fold = Mathf.Max(16, 26 - pass * 4);
+        int lead = movement == 0 ? 1 : movement == 1 ? 2 : 0;
+        yield return ChargePart(lead, .45f);
+        if (movement == 3)
+            Phrase(ChargePart(1, .45f));
+        yield return Every(4.5f, .08f, n =>
         {
-            Ribbon(n);
-            if (n % 14 == 7)
-                Sweets();
+            // Dashed: five beats on, two off.
+            if (n % 7 >= 5)
+                return;
+            float wave = Mathf.Sin(n / fold * Mathf.PI * 2);
+            if (movement == 0)
+                Ribbon(Port(1, -1), Port(1, 1), Vector2.right, 15 + 40 * wave, 3, true, n);
+            else if (movement == 1)
+                Ribbon(Crown(-1), Crown(1), Vector2.up, -(35 + 25 * wave), 2, true, n);
+            else if (movement == 2)
+                Ribbon(Port(0, -1), Port(0, 1), Vector2.down, 40 + 30 * wave, 1, false, n);
+            else if (n / 7 % 2 == 0)
+                Ribbon(Port(1, -1), Port(1, 1), Vector2.right, 15 + 40 * wave, 3, true, n);
+            else
+                Ribbon(Port(0, -1), Port(0, 1), Vector2.down, 40 - 30 * wave, 1, false, n);
         });
+        yield return Wait(Rest(.6f));
     }
 
-    void Ribbon(int n)
+    // Two strands from a mirrored pair of ports along one aim: the fast strand threaded
+    // with hearts, the slow one plain. The right-hand aim is the base direction turned
+    // by the angle (counterclockwise); the left-hand aim is its mirror image.
+    void Ribbon(Vector3 left, Vector3 right, Vector2 rightBase, float angle, int bounces, bool ceiling, int n)
     {
-        // From 25 degrees below the horizon to 55 above, one fold every 26 beats.
-        float lift = 15 + 40 * Mathf.Sin(n / 26f * Mathf.PI * 2);
-        bool heart = n % 5 == 0;
+        bool heart = n % 6 == 0;
         for (int mirror = -1; mirror <= 1; mirror += 2)
         {
-            var port = Muzzle(mirror < 0 ? LeftHatch : RightHatch);
-            var axis = CombatVisuals.Rotate(Vector2.right * mirror, mirror * lift);
+            var port = mirror < 0 ? left : right;
+            var baseAxis = new Vector2(rightBase.x * mirror, rightBase.y);
+            var axis = CombatVisuals.Rotate(baseAxis, mirror * angle);
             if (heart)
             {
                 UseTone(HostileTone.Dark);
-                Fire<HeartRound>(port, axis, 3.2f, .19f).Bounce(3);
+                Fire<HeartRound>(port, axis, 3.2f, .19f).Bounce(bounces, ceiling);
             }
             else
             {
                 UseTone(HostileTone.Bright);
-                Fire<NeedleRound>(port, axis, 3.4f, .19f).Bounce(3);
+                Fire<NeedleRound>(port, axis, 3.4f, .19f).Bounce(bounces, ceiling);
             }
             UseTone(HostileTone.Bright);
-            Fire<NeedleRound>(port, axis, 2.3f, .19f).Bounce(3);
+            Fire<NeedleRound>(port, axis, 2.3f, .19f).Bounce(bounces, ceiling);
         }
     }
 
-    // A wrapped sweet flicked at the pilot from each prong, so the open floor never rests.
-    void Sweets()
-    {
-        if (!Clear)
-            return;
-        UseTone(HostileTone.Dark);
-        foreach (int prong in new[] { LeftProng, RightProng })
-            Fire<CandyRound>(Muzzle(prong), CombatVisuals.Aim(Muzzle(prong)), 2.7f, .2f);
-    }
+    // ---------------------------------------------------------------- Candy Cane
 
-    // Gumdrop Garden: three beds, crown stars ricocheting between them.
-    IEnumerator GumdropGarden()
+    IEnumerator CandyCane(int verse)
     {
-        for (int bed = 0; bed < 3; bed++)
+        int movement = verse % 4;
+        int walk = verse / 4 % 2 == 0 ? 1 : -1;
+        int lead = movement == 0 ? 1 : movement == 1 ? 0 : 2;
+        yield return ChargePart(lead, .4f);
+        if (movement == 3)
+            Phrase(ChargePart(1, .4f));
+        yield return Every(5.5f, .3f, n =>
         {
-            yield return ChargePair(LeftHatch, RightHatch, .45f);
-            Plant(bed);
-            yield return Every(1.9f, .55f, n => CrownStars(bed * 4 + n, HostileTone.Bright));
-        }
-    }
-
-    // A mirrored bed: gumdrops thrown out at widening angles brake to a glinting stop at
-    // staggered distances, start to sink, and pop into small downward cones. The outer
-    // drops pop first; the innermost pair pops at the pilot.
-    void Plant(int bed)
-    {
-        int drops = Dense(5);
-        int shards = Dense(5);
-        UseTone(HostileTone.Dark);
-        for (int i = 0; i < drops; i++)
-        {
-            float u = drops == 1 ? .5f : i / (drops - 1f);
-            float angle = Mathf.Lerp(18, 78, u) + (bed % 2) * 6;
-            float pauseAt = .6f + u * .4f;
-            float hold = .45f + (drops - 1 - i) * .12f;
-            for (int mirror = -1; mirror <= 1; mirror += 2)
-                Fire<SimpleRound>(Muzzle(mirror < 0 ? LeftHatch : RightHatch), CombatVisuals.Rotate(Vector2.down, mirror * angle), 3.4f + u * 1.8f, .36f)
-                    .Pause(pauseAt, hold, CombatRound.Turn.Down, 0, .45f)
-                    .SplitAt(pauseAt + hold + .2f, shards, 15, 3.3f, .17f, i == 0);
-        }
-    }
-
-    // Stars thrown up and out from the crown; they ricochet along the ceiling and walls.
-    void CrownStars(int n, HostileTone shade)
-    {
-        int count = Dense(3);
-        UseTone(shade);
-        for (int i = 0; i < count; i++)
-            for (int mirror = -1; mirror <= 1; mirror += 2)
-            {
-                var port = Hull.TransformPoint(new Vector3(mirror * .31f, .95f, -.31f));
-                var axis = CombatVisuals.Rotate(Vector2.up, -mirror * (20 + i * 22 + (n % 2) * 11));
-                Fire<StarRound>(port, axis, 3.0f, .19f).Bounce(3);
-            }
-    }
-
-    // Candy Cane: stripes from both hatches after a charge, crown stars between them.
-    IEnumerator CandyCane()
-    {
-        yield return ChargePair(LeftHatch, RightHatch, .4f);
-        yield return Every(6.5f, .34f, n =>
-        {
-            CaneStripe(n);
-            if (n % 3 == 1)
-                CrownStars(n, HostileTone.Dark);
+            int part = movement == 2 || n % 4 == 3 ? 2 : movement == 3 ? (n % 2 == 0 ? 1 : 2) : lead;
+            CaneStripe(n, part, walk);
         });
+        yield return Wait(Rest(.6f));
     }
 
-    // One diagonal stripe from each hatch, mirrored, its tone alternating
-    // stripe by stripe. The missing bead walks along the stripe; the side walls turn
-    // each stripe back across the other hatch's.
-    void CaneStripe(int n)
+    // One mirrored stripe from a pair of ports. Hatch stripes run down and out, prong
+    // stripes cross beneath the regent, crown stripes go up off the ceiling. The tone
+    // alternates stripe by stripe and the missing bead walks along the stripe.
+    void CaneStripe(int n, int part, int walk)
     {
         int beads = Dense(8);
-        int gap = n % beads;
+        int gap = ((n * walk) % beads + beads) % beads;
+        float centre = part == 0 ? -14 : 32;
+        float arc = part == 0 ? 40 : 56;
+        Vector2 baseAxis = part == 2 ? Vector2.up : Vector2.down;
+        if (part == 2)
+            centre = -40;
         UseTone(n % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
         for (int i = 0; i < beads; i++)
         {
             if (i == gap)
                 continue;
-            float across = (i - (beads - 1) * .5f) * 56f / Mathf.Max(1, beads - 1);
+            float across = (i - (beads - 1) * .5f) * arc / Mathf.Max(1, beads - 1);
             for (int mirror = -1; mirror <= 1; mirror += 2)
-                ScoredShot(i % 2 == 0, Muzzle(mirror < 0 ? LeftHatch : RightHatch), CombatVisuals.Rotate(Vector2.down, mirror * (32 + across)), 2.7f)
-                    .Bounce(1, false);
+            {
+                var shot = ScoredShot(i % 2 == 0, Port(part, mirror), CombatVisuals.Rotate(baseAxis, mirror * (centre + across)), 2.7f);
+                if (part == 2)
+                    shot.Bounce(2);
+                else
+                    shot.Bounce(1, false);
+            }
         }
     }
 
-    // Sweetheart: four pairs of growing hearts, each after a charge at the prongs.
-    IEnumerator Sweetheart()
+    // ---------------------------------------------------------------- Heartbreak
+
+    IEnumerator Heartbreak(int verse)
     {
-        for (int k = 0; k < 4; k++)
+        int movement = verse % 4;
+        for (int k = 0; k < 3; k++)
         {
-            yield return ChargePair(LeftProng, RightProng, .45f);
+            yield return ChargePart(movement == 1 ? 1 : 0, .4f);
             if (Clear)
             {
-                UseTone(HostileTone.Dark);
-                HeartOutline(Muzzle(LeftProng), 14, Dense(24), 2.4f, .9f, 0);
-                HeartOutline(Muzzle(RightProng), -14, Dense(24), 2.4f, .9f, 0);
+                var keel = (Port(0, -1) + Port(0, 1)) * .5f;
+                if (movement == 0)
+                {
+                    UseTone(HostileTone.Bright);
+                    HeartOutline(keel, 0, Dense(46), 2.8f, .6f, 40, .85f);
+                    UseTone(HostileTone.Dark);
+                    HeartOutline(keel, 0, Dense(32), 1.7f, .6f, 40, .85f);
+                }
+                else if (movement == 1)
+                {
+                    UseTone(HostileTone.Dark);
+                    HeartOutline(Port(1, -1), 16, Dense(36), 2.3f, .7f, 35, .8f);
+                    HeartOutline(Port(1, 1), -16, Dense(36), 2.3f, .7f, 35, .8f);
+                }
+                else if (movement == 2)
+                {
+                    UseTone(HostileTone.Bright);
+                    HeartOutline(keel, 0, Dense(44), 2.8f, .6f, 40, .85f);
+                    UseTone(HostileTone.Dark);
+                    HeartOutline(Port(1, -1), 20, Dense(26), 1.9f, .8f, 30, .75f);
+                    HeartOutline(Port(1, 1), -20, Dense(26), 1.9f, .8f, 30, .75f);
+                }
+                else
+                    Phrase(HeartRipple(keel));
             }
-            if (k % 2 == 1)
-                CrownStars(k, HostileTone.Bright);
-            yield return Wait(Rest(1.05f));
+            yield return Wait(Rest(.8f));
+        }
+        yield return Wait(Rest(.5f));
+    }
+
+    // Three hearts in quick succession, each larger, all breaking on the same beat.
+    IEnumerator HeartRipple(Vector3 keel)
+    {
+        for (int r = 0; r < 3; r++)
+        {
+            UseTone(r == 1 ? HostileTone.Dark : HostileTone.Bright);
+            HeartOutline(keel, 0, Dense(28), 1.8f + r * .5f, .6f, 40, .95f - r * .15f);
+            yield return Wait(.15f);
         }
     }
 
     // The outline of a heart grows from one port as it sinks: each bead's velocity is its
-    // point on the curve plus a shared downward drift. Upright hearts alternate with
-    // circles. A break swings the two halves apart after a stop.
-    void HeartOutline(Vector3 port, float tilt, int beads, float growth, float sink, float breakAngle)
+    // point on the curve plus a shared downward drift. Arrows draw the line, with an
+    // upright heart at every fourth bead. After a stop the two halves swing apart.
+    void HeartOutline(Vector3 port, float tilt, int beads, float growth, float sink, float breakAngle, float breakAt)
     {
+        var shade = tone;
         for (int i = 0; i < beads; i++)
         {
             float a = (i + .5f) / beads * Mathf.PI * 2;
@@ -225,34 +240,11 @@ public sealed partial class CandyRegentBoss
             var shape = new Vector2(16 * s * s * s,
                 13 * Mathf.Cos(a) - 5 * Mathf.Cos(2 * a) - 2 * Mathf.Cos(3 * a) - Mathf.Cos(4 * a)) / 17f;
             Vector2 velocity = CombatVisuals.Rotate(shape, tilt) * growth + Vector2.down * sink;
-            CombatRound bead = i % 2 == 0
+            UseTone(shade);
+            CombatRound bead = i % 4 == 0
                 ? (CombatRound)Fire<HeartRound>(port, velocity, velocity.magnitude, .19f)
-                : Fire<SimpleRound>(port, velocity, velocity.magnitude, .17f);
-            if (breakAngle != 0)
-                bead.Pause(.85f, .4f, CombatRound.Turn.Rotate, shape.x < 0 ? breakAngle : -breakAngle, 1.3f);
+                : Fire<NeedleRound>(port, velocity, velocity.magnitude, .18f);
+            bead.Pause(breakAt, .4f, CombatRound.Turn.Rotate, shape.x < 0 ? breakAngle : -breakAngle, 1.3f);
         }
-    }
-
-    // Hard final phase, Heartbreak: a large heart that stops and breaks in two over
-    // candy-cane stripes and crown stars.
-    IEnumerator Heartbreak()
-    {
-        Phrase(Every(9, .38f, n =>
-        {
-            CaneStripe(n);
-            if (n % 3 == 0)
-                CrownStars(n, HostileTone.Bright);
-        }));
-        for (int k = 0; k < 6; k++)
-        {
-            yield return ChargePair(LeftProng, RightProng, .4f);
-            if (Clear)
-            {
-                UseTone(HostileTone.Bright);
-                HeartOutline((Muzzle(LeftProng) + Muzzle(RightProng)) * .5f, 0, Dense(36), 2.8f, .6f, 40);
-            }
-            yield return Wait(Rest(1.0f));
-        }
-        yield return Wait(.6f);
     }
 }

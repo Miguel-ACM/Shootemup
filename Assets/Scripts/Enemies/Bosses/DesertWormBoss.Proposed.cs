@@ -3,109 +3,133 @@ using UnityEngine;
 
 // Proposed Desert worm book (ArtSource/BossPhaseProposals), flown only while
 // DistrictBoss.ProposedCards is set so it can be recorded beside the shipping cards.
+// One concept per phase (Miguel, 10 November 2026). The concept develops verse by verse:
+// variations of the same idea, different reactors taking it up and rests of its own.
 // Desert grammar throughout: fire spreads out from the body, mines stop then lunge or
 // carry on, heat haze quickens, nothing fades and very little falls.
-// Phase one
-//   Desert Lotus: the head charges and blooms a mirrored lotus around its own line of
-//     travel. Each petal is an arrow tip over a pair of circles; the petals brake, hang
-//     like heat haze, then swing open away from the worm and quicken. The back of the
-//     bloom is left to the body, whose reactors breathe a little rice haze.
-//   Mine Caravan: head and tail sow a staggered double zipper of mines along both sides
-//     of the worm's own track while the middle of the body breathes rice haze. After a
-//     visible charge at the head the whole track wakes on one beat: mines carry on
-//     outward and every fifth lunges at the pilot.
-// Phase two
-//   Simoom: a sandstorm. Two gust waves run along the body, tail to head and head to
-//     tail, each reactor puffing a pair of arrows downwind; the bands sway like dunes
-//     and quicken. After a charge the wind swings to the other side. Mines dropped in
-//     the lee stop, then carry on with the wind or lunge.
-//   Mirage Lattice: alternate reactors cross slow diagonal streams from both flanks,
-//     so the worm weaves a diamond net along its path that quickens outward. The head
-//     drops a few mines between the strands.
-// Phase three (Hard)
-//   Fata Morgana: the simoom blows while the head keeps blooming lotuses and the tail
-//     sows mines that wake in turn.
-// Tones: the dominant tone flips card to card.
-//   Desert Lotus: bright petals, dark circle hearts and dark haze.
-//   Mine Caravan: dark mines that carry on, bright lungers and bright haze.
-//   Simoom: bright gusts, dark lee mines (bright lungers).
-//   Mirage Lattice: a dark net with bright head mines.
-//   Fata Morgana: bright gusts and petals, dark mines.
+// Phase one, Mine Caravan: the worm sows its own track with mines while the body
+//   breathes rice haze, and the track wakes. Four verses, then again with the turns
+//   reversed and lunges more frequent:
+//   1. Shared beat: head and tail sow; after a charge at the head every mine wakes at
+//      once, carrying on outward, one in five lunging.
+//   2. Caravan: each mine wakes soon after it is sown and turns to march along the
+//      track, so the trail behind the worm becomes a moving caravan.
+//   3. Three sowers: the middle of the body joins; a shared beat again, quickening.
+//   4. Undertow: the newest mines wake first, the wake running back down the trail.
+// Phase two, Simoom: a sandstorm blowing in a world direction, the wind swinging to the
+//   other side after a charge every verse. Puffs of arrows leave the reactors in a wave
+//   along the body; the bands sway like dune lines and quicken; mines in the lee stop,
+//   then carry on with the wind or lunge.
+//   1. Gust: one wave, tail to head.  2. Crossing gusts: a second wave head to tail.
+//   3. Squall: wider puffs of three and more lee mines.  4. Crosswind: each puff blows
+//   both ways at once.
+// Phase three (Hard), Lotus Mirage: lotuses bloom and pass along the body.
+//   1. Head lotus: charged mirrored blooms around the head's line that hang and open.
+//   2. Flank buds: alternate reactors charge and open half-lotuses on both flanks.
+//   3. Chain bloom: buds open reactor by reactor, tail to head, ending in a head lotus.
+//   4. Closing lotus: head blooms whose petals swing inward and cross before spreading.
+// Tones: Mine Caravan dark mines with bright lungers and bright haze; Simoom bright
+//   gusts with dark lee mines; Lotus Mirage bright arrow petals over dark circles.
 public sealed partial class DesertWormBoss
 {
     protected override IEnumerator Proposed()
     {
+        int verse = 0;
         while (true)
         {
             if (phaseThree)
-                yield return FataMorgana();
+                yield return LotusMirage(verse++);
             else if (!phaseTwo)
-            {
-                yield return DesertLotus(7);
-                yield return Wait(.8f);
-                yield return MineCaravan();
-                yield return Wait(.8f);
-            }
+                yield return MineCaravan(verse++);
             else
-            {
-                yield return Simoom();
-                yield return Wait(.8f);
-                yield return MirageLattice();
-                yield return Wait(.8f);
-            }
+                yield return Simoom(verse++);
         }
     }
 
     // The head's hull points down the worm's own path.
     Vector2 HeadForward => -(Vector2)Hull.up;
 
-    // Desert Lotus: bloom after bloom from the head, each one charged.
-    IEnumerator DesertLotus(float seconds)
+    // A charge at several reactors at once.
+    IEnumerator ChargeReactors(int first, int step, float seconds)
     {
         for (float t = 0; t < seconds;)
         {
-            yield return Charge(cores[0], Vector3.zero, .35f);
-            Bloom();
-            float rest = Rest(.65f);
-            yield return Wait(rest);
-            t += .35f + rest;
+            if (!Holding)
+                t += Time.deltaTime * LevelRun.EnemyTempoScale;
+            for (int i = first; i < cores.Length; i += step)
+                if (CanShoot(cores[i]))
+                    Cue(cores[i].position, seconds - t);
+            yield return null;
         }
     }
 
-    IEnumerator ChargedBloom()
-    {
-        yield return Charge(cores[0], Vector3.zero, .35f);
-        Bloom();
-    }
+    // ---------------------------------------------------------------- Mine Caravan
 
-    // Mirrored petals across 300 degrees around the head's line; each half swings open
-    // away from that line after the hang, so the bloom spreads instead of converging.
-    void Bloom()
+    IEnumerator MineCaravan(int verse)
     {
-        if (!CanShoot(cores[0]))
-            return;
-        Vector3 p = cores[0].position;
-        Vector2 forward = HeadForward;
-        int petals = Dense(12);
-        if (petals % 2 == 1)
-            petals++;
-        float step = 300f / petals;
-        for (int k = 0; k < petals; k++)
+        const int steps = 15;
+        const float charge = .5f;
+        int movement = verse % 4;
+        int pass = verse / 4;
+        bool sharedBeat = movement == 0 || movement == 2;
+        float interval = Rest(.15f);
+        float tempo = Mathf.Max(.01f, LevelRun.EnemyTempoScale);
+        int lungeEvery = pass % 2 == 0 ? 5 : 4;
+        // The caravan marches back along the trail, or forward on later passes.
+        int march = pass % 2 == 0 ? 1 : -1;
+        if (!sharedBeat)
+            yield return Charge(cores[0], Vector3.zero, charge);
+        for (int step = 0; step < steps; step++)
         {
-            float angle = (k - (petals - 1) * .5f) * step;
-            int side = angle < 0 ? -1 : 1;
-            UseTone(HostileTone.Bright);
-            for (int lane = -1; lane <= 1; lane++)
-                Fire<NeedleRound>(p, CombatVisuals.Rotate(forward, angle + lane * 5), lane == 0 ? 3.1f : 2.7f, .19f)
-                    .Pause(.55f, .45f, CombatRound.Turn.Rotate, side * 38, 1)
-                    .Ramp(1.6f, .9f, 1.1f);
-            UseTone(HostileTone.Dark);
-            for (int lane = -1; lane <= 1; lane += 2)
-                Fire<SimpleRound>(p, CombatVisuals.Rotate(forward, angle + lane * 3), 2.0f, .2f)
-                    .Pause(.55f, .6f, CombatRound.Turn.Rotate, side * 38, 1)
-                    .Ramp(1.6f, .9f, 1.25f);
+            // Real seconds until this mine wakes.
+            float release;
+            if (sharedBeat)
+                release = ((steps - step) * interval + charge) / tempo;
+            else if (movement == 1)
+                release = 1.3f / tempo;
+            else
+                release = ((steps - step) * interval + (steps - 1 - step) * interval * .6f + .3f) / tempo;
+            var carry = movement == 1 ? CombatRound.Turn.Rotate : CombatRound.Turn.Keep;
+            SowMine(0, step, release, carry, march * 90, lungeEvery);
+            int tail = TailToHead(0, false);
+            if (tail > 0)
+                SowMine(tail, step + 1, release, carry, march * 90, lungeEvery);
+            if (movement == 2)
+                SowMine(MiddleReactor(), step + 2, release, carry, 0, lungeEvery);
+            BodyHaze(step, HostileTone.Bright);
+            yield return Wait(interval);
         }
-        BodyHaze(volley, HostileTone.Dark);
+        if (sharedBeat)
+            yield return Charge(cores[0], Vector3.zero, charge);
+        yield return Wait(Rest(.7f));
+    }
+
+    int MiddleReactor()
+    {
+        for (int n = 0; n < 3; n++)
+            foreach (int i in new[] { 4 - n, 4 + n })
+                if (i > 0 && i < cores.Length && CanShoot(cores[i]))
+                    return i;
+        return -1;
+    }
+
+    // One mine to each flank, a near one and a far one swapping sides every step, so the
+    // two rows on either side of the track stagger like a zipper. A turning mine swings
+    // by the same angle on both flanks, so both rows march the same way along the track.
+    void SowMine(int core, int step, float release, CombatRound.Turn carry, float turn, int lungeEvery)
+    {
+        if (core < 0 || !CanShoot(cores[core]))
+            return;
+        var t = cores[core];
+        for (int side = -1; side <= 1; side += 2)
+        {
+            bool far = (step + (side > 0 ? 1 : 0)) % 2 == 0;
+            bool lunges = (step * 2 + (side > 0 ? 1 : 0)) % lungeEvery == 0;
+            float speed = far ? 3.6f : 2.2f;
+            UseTone(lunges ? HostileTone.Bright : HostileTone.Dark);
+            Fire<SimpleRound>(t.position, (Vector2)t.right * side, speed, .22f)
+                .Pause(.5f, Mathf.Max(.1f, release - .5f), lunges ? CombatRound.Turn.Aim : carry, lunges ? 0 : side * turn, (lunges ? 2.7f : 2.1f) / speed);
+        }
     }
 
     // Heat haze: alternate body reactors breathe slow rice to both flanks that shimmers,
@@ -125,86 +149,47 @@ public sealed partial class DesertWormBoss
         }
     }
 
-    // Mine Caravan: two passes of sowing, each released on one charged beat.
-    IEnumerator MineCaravan()
+    // ---------------------------------------------------------------- Simoom
+
+    IEnumerator Simoom(int verse)
     {
-        const int steps = 15;
-        const float charge = .5f;
-        for (int pass = 0; pass < 2; pass++)
+        int movement = verse % 4;
+        // The wind blows away from the side the head starts on, then swings every verse.
+        int wind = (transform.position.x > 0 ? -1 : 1) * (verse % 2 == 0 ? 1 : -1);
+        yield return Charge(cores[0], Vector3.zero, .45f);
+        yield return Every(3.4f, .08f, n =>
         {
-            float interval = Rest(.15f);
-            float tempo = Mathf.Max(.01f, LevelRun.EnemyTempoScale);
-            for (int step = 0; step < steps; step++)
-            {
-                // Real seconds until the shared wake-up beat.
-                float release = ((steps - step) * interval + charge) / tempo;
-                SowMine(0, step, release);
-                int tail = TailToHead(0, false);
-                if (tail > 0)
-                    SowMine(tail, step + 1, release);
-                if (step % 2 == 0)
-                    BodyHaze(step / 2, HostileTone.Bright);
-                yield return Wait(interval);
-            }
-            yield return Charge(cores[0], Vector3.zero, charge);
-            yield return Wait(Rest(.7f));
-        }
+            int up = cores.Length - 1 - n % cores.Length;
+            Puff(up, wind, movement);
+            int down = n % cores.Length;
+            if (movement == 1 && down != up)
+                Puff(down, wind, movement);
+            if (n % (movement == 2 ? 6 : 10) == 5)
+                LeeMines(TailToHead(n / 6, false), wind, n / 6);
+        });
+        yield return Wait(Rest(.6f));
     }
 
-    // One mine to each flank: a near one and a far one, swapping sides every step, so the
-    // two rows on either side of the track stagger like a zipper.
-    void SowMine(int core, int step, float release)
-    {
-        if (core < 0 || !CanShoot(cores[core]))
-            return;
-        var t = cores[core];
-        for (int side = -1; side <= 1; side += 2)
-        {
-            bool far = (step + (side > 0 ? 1 : 0)) % 2 == 0;
-            bool lunges = (step * 2 + (side > 0 ? 1 : 0)) % 5 == 0;
-            float speed = far ? 3.6f : 2.2f;
-            UseTone(lunges ? HostileTone.Bright : HostileTone.Dark);
-            Fire<SimpleRound>(t.position, (Vector2)t.right * side, speed, .22f)
-                .Pause(.5f, Mathf.Max(.1f, release - .5f), lunges ? CombatRound.Turn.Aim : CombatRound.Turn.Keep, 0, (lunges ? 2.7f : 2.1f) / speed);
-        }
-    }
-
-    // Simoom: two gusts, the wind swinging to the other side after a charge.
-    IEnumerator Simoom()
-    {
-        int wind = transform.position.x > 0 ? -1 : 1;
-        for (int gust = 0; gust < 2; gust++)
-        {
-            yield return Charge(cores[0], Vector3.zero, .45f);
-            int blowing = wind;
-            yield return Every(3.4f, .1f, n => Gust(n, blowing, true));
-            wind = -wind;
-        }
-    }
-
-    // Two waves along the body, tail to head and head to tail, crossing in the middle.
-    void Gust(int n, int wind, bool bothWaves)
-    {
-        int up = cores.Length - 1 - n % cores.Length;
-        Puff(up, wind);
-        int down = n % cores.Length;
-        if (bothWaves && down != up)
-            Puff(down, wind);
-        if (n % 8 == 4)
-            LeeMines(TailToHead(n / 8, false), wind, n / 8);
-    }
-
-    // A pair of arrows (circles from every third reactor) downwind, swaying like a dune
-    // line and quickening.
-    void Puff(int core, int wind)
+    // Arrows (circles from every third reactor) downwind, swaying like a dune line and
+    // quickening. A squall puffs three; a crosswind sends one each way.
+    void Puff(int core, int wind, int movement)
     {
         if (core < 0 || !CanShoot(cores[core]))
             return;
         Vector3 p = cores[core].position;
         Vector2 downwind = CombatVisuals.Rotate(Vector2.right * wind, -wind * 14);
         UseTone(HostileTone.Bright);
-        for (int mirror = -1; mirror <= 1; mirror += 2)
-            ScoredShot(core % 3 == 0, p, CombatVisuals.Rotate(downwind, mirror * 6), 2.1f)
+        if (movement == 3)
+        {
+            for (int way = -1; way <= 1; way += 2)
+                ScoredShot(core % 3 == 0, p, CombatVisuals.Rotate(Vector2.right * wind * way, -wind * way * 14), 2.1f)
+                    .Sway(wind * way * .3f, .5f)
+                    .Ramp(1.6f, 1, .9f);
+            return;
+        }
+        int lanes = movement == 2 ? 3 : 2;
+        for (int lane = 0; lane < lanes; lane++)
+            ScoredShot(core % 3 == 0, p, CombatVisuals.Rotate(downwind, (lane - (lanes - 1) * .5f) * (lanes == 3 ? 8 : 12)), 2.1f)
                 .Sway(wind * .3f, .5f)
                 .Ramp(1.6f, 1, .9f);
     }
@@ -224,63 +209,102 @@ public sealed partial class DesertWormBoss
         }
     }
 
-    // Mirage Lattice: each reactor alternates its diagonal every time it fires, so the
-    // strands of neighbouring reactors cross into a travelling diamond net.
-    IEnumerator MirageLattice()
+    // ---------------------------------------------------------------- Lotus Mirage
+
+    IEnumerator LotusMirage(int verse)
     {
-        yield return Charge(cores[0], Vector3.zero, .4f);
-        yield return Every(6.5f, .35f, n =>
+        int movement = verse % 4;
+        if (movement == 0 || movement == 3)
         {
-            int sign = (n / 2) % 2 == 0 ? 1 : -1;
-            UseTone(HostileTone.Dark);
-            for (int i = 1 + n % 2; i < cores.Length; i += 2)
+            // Head lotus, or the closing lotus whose petals swing inward first.
+            for (int k = 0; k < 3; k++)
             {
-                if (!CanShoot(cores[i]))
-                    continue;
-                var t = cores[i];
-                for (int side = -1; side <= 1; side += 2)
-                    ScoredShot(i % 3 == 0, t.position, CombatVisuals.Rotate((Vector2)t.right * side, side * sign * 35), 1.6f)
-                        .Ramp(1.8f, .8f, 1.1f);
+                yield return Charge(cores[0], Vector3.zero, .35f);
+                Bloom(movement == 3 ? -38 : 38);
+                BodyHaze(k, HostileTone.Dark);
+                yield return Wait(Rest(.65f));
             }
-            if (n % 4 == 2)
-                HeadMines(n / 4);
-        });
+        }
+        else if (movement == 1)
+        {
+            // Flank buds on alternate reactors.
+            for (int k = 0; k < 3; k++)
+            {
+                int first = 1 + k % 2;
+                yield return ChargeReactors(first, 2, .4f);
+                for (int i = first; i < cores.Length; i += 2)
+                    Bud(i);
+                yield return Wait(Rest(.6f));
+            }
+        }
+        else
+        {
+            // Chain bloom: buds open reactor by reactor up the body, then the head blooms.
+            for (int i = cores.Length - 1; i > 0; i--)
+            {
+                yield return Charge(cores[i], Vector3.zero, .25f);
+                Bud(i);
+            }
+            yield return Charge(cores[0], Vector3.zero, .35f);
+            Bloom(38);
+        }
+        yield return Wait(Rest(.8f));
     }
 
-    // Four bright mines from the head: the near pair carries on, the far pair lunges.
-    void HeadMines(int n)
+    // Mirrored petals across 300 degrees around the head's line; after the hang each half
+    // swings away from (or across) that line and quickens. Each petal is a tip of three
+    // arrows over two circles. The back of the bloom is left to the body.
+    void Bloom(float swing)
     {
         if (!CanShoot(cores[0]))
             return;
-        var t = cores[0];
-        UseTone(HostileTone.Bright);
-        for (int side = -1; side <= 1; side += 2)
-            for (int far = 0; far < 2; far++)
-            {
-                float speed = far == 1 ? 3.4f : 2.2f;
-                Fire<SimpleRound>(t.position, CombatVisuals.Rotate((Vector2)t.right * side, side * (n % 2 == 0 ? 20 : -20)), speed, .22f)
-                    .Pause(.5f, .55f + far * .25f, far == 1 ? CombatRound.Turn.Aim : CombatRound.Turn.Keep, 0, 2.6f / speed);
-            }
+        Vector3 p = cores[0].position;
+        Vector2 forward = HeadForward;
+        int petals = Dense(10);
+        if (petals % 2 == 1)
+            petals++;
+        float step = 300f / petals;
+        for (int k = 0; k < petals; k++)
+        {
+            float angle = (k - (petals - 1) * .5f) * step;
+            int side = angle < 0 ? -1 : 1;
+            UseTone(HostileTone.Bright);
+            for (int lane = -1; lane <= 1; lane++)
+                Fire<NeedleRound>(p, CombatVisuals.Rotate(forward, angle + lane * 5), lane == 0 ? 3.1f : 2.7f, .19f)
+                    .Pause(.55f, .45f, CombatRound.Turn.Rotate, side * swing, 1)
+                    .Ramp(1.6f, .9f, 1.1f);
+            UseTone(HostileTone.Dark);
+            for (int lane = -1; lane <= 1; lane += 2)
+                Fire<SimpleRound>(p, CombatVisuals.Rotate(forward, angle + lane * 3), 2.0f, .2f)
+                    .Pause(.55f, .6f, CombatRound.Turn.Rotate, side * swing, 1)
+                    .Ramp(1.6f, .9f, 1.25f);
+        }
     }
 
-    // Hard final phase, Fata Morgana: the simoom over lotus blooms and a sown mine trail.
-    IEnumerator FataMorgana()
+    // A half-lotus on each flank of one reactor: three petals that hang, then open.
+    void Bud(int core)
     {
-        int wind = transform.position.x > 0 ? -1 : 1;
-        for (int gust = 0; gust < 2; gust++)
+        if (core < 0 || !CanShoot(cores[core]))
+            return;
+        var t = cores[core];
+        int petals = Dense(3);
+        for (int side = -1; side <= 1; side += 2)
         {
-            yield return Charge(cores[0], Vector3.zero, .4f);
-            int blowing = wind;
-            yield return Every(4.5f, .2f, n =>
+            Vector2 flank = (Vector2)t.right * side;
+            for (int k = 0; k < petals; k++)
             {
-                Gust(n, blowing, true);
-                if (n % 10 == 3)
-                    Phrase(ChargedBloom());
-                if (n % 3 == 0)
-                    SowMine(TailToHead(0, false), n / 3, Rest(1.6f) / Mathf.Max(.01f, LevelRun.EnemyTempoScale));
-            });
-            wind = -wind;
+                float angle = (k - (petals - 1) * .5f) * 24;
+                float open = Mathf.Abs(angle) < 1 ? 0 : Mathf.Sign(angle) * 30;
+                UseTone(HostileTone.Bright);
+                Fire<NeedleRound>(t.position, CombatVisuals.Rotate(flank, angle), 2.9f, .19f)
+                    .Pause(.5f, .4f, CombatRound.Turn.Rotate, open, 1)
+                    .Ramp(1.6f, .9f, 1.0f);
+                UseTone(HostileTone.Dark);
+                for (int lane = -1; lane <= 1; lane += 2)
+                    Fire<SimpleRound>(t.position, CombatVisuals.Rotate(flank, angle + lane * 4), 2.0f, .2f)
+                        .Pause(.5f, .55f, CombatRound.Turn.Rotate, open, 1)
+                        .Ramp(1.6f, .9f, 1.15f);
+            }
         }
-        yield return Wait(.6f);
     }
 }

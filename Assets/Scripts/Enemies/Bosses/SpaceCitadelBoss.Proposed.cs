@@ -4,37 +4,32 @@ using UnityEngine;
 
 // Proposed black-hole book (ArtSource/BossPhaseProposals), flown only while
 // DistrictBoss.ProposedCards is set so it can be recorded beside the shipping cards.
+// One concept per phase (Miguel, 10 November 2026), developing verse by verse.
 // Everything leaves the singularity or the two eyes inside its event horizon, except the
 // inward fronts, which (as in the shipping book) are born on one circle beyond the whole
 // screen and close on the core. Circles always move.
-// Phase one
-//   Accretion Weave: every circular front is woven from two strands: arrows tilted one
-//     way and circles tilted the other. As a front closes, the strands swirl against
-//     each other, so successive fronts cross into a shrinking lattice that the core
-//     swallows. A slowly turning seam stays open. The eyes throw dark stars up over the
-//     top of the arena; gravity bends them round and the core swallows them.
-//   Eclipse: after a charge each eye throws a ring whose centre drifts outward as it
-//     opens, so the two rings stop overlapping like an eclipse. They hold, fall back
-//     through the black hole and open again inverted on the other side, crossing.
-//     A comet with a bead tail leaves an eye at the pilot between eclipses.
-// Phase two
-//   Orrery: the core flings planets: small spinning rings of circles that travel out on
-//     six mirrored headings, left planets turning one way and right planets the other,
-//     then sling their moons off on the tangent all at once. Comets from the eyes deny
-//     a still pilot.
-//   Pulsar: star-shaped shells (five and six points, alternately tip down and tip up)
-//     open, hold, then collapse through the core and open inverted. Mirrored pulsing
-//     beams of arrows and crescents sweep round from the eyes; the centre laser cuts the
-//     middle at the end.
-// Phase three (Hard)
-//   Galaxy Collision: woven fronts close in from the circle beyond the screen while the
-//     core keeps flinging planets out through them and the eyes throw dark stars.
-// Tones: the dominant tone flips card to card; dark stars are always dark.
-//   Accretion Weave: bright arrow strand, dark circle strand.
-//   Eclipse: dark rings with bright crescents, bright comets.
-//   Orrery: bright planets, dark comets.
-//   Pulsar: dark shells with bright beads, bright beams.
-//   Galaxy Collision: bright fronts, dark planets.
+// Phase one, Accretion Weave: every circular front is woven from two strands, arrows
+//   tilted one way and circles tilted the other, so successive fronts cross into a
+//   shrinking lattice that the core swallows. A slowly turning seam stays open. On the
+//   second pass the strands and the seam turn the other way.
+//   1. Weave.  2. Tightening weave: the tilt grows through the verse.
+//   3. Tidal weave: arrows outrun circles, so each front splits into two crossing rings.
+//   4. Fountain: the eyes throw dark stars up over the top that gravity bends back into
+//      the core.
+// Phase two, Orrery: the core flings planets, small spinning rings of circles that travel
+//   out on six mirrored headings (left planets turning one way, right planets the other)
+//   and sling their moons off on the tangent together. Comets from the eyes deny a
+//   still pilot. Each pass reverses the spins.
+//   1. Planets.  2. Epicycles: every moon carries a satellite, drawing spirograph loops.
+//   3. Swelling worlds: the planets grow as they travel and sling late.
+//   4. Slingshot galaxy: planets on the in-between headings sling early, close to the core.
+// Phase three (Hard), Crunch and Rebound: woven fronts close from the circle beyond the
+//   screen, and every front the core swallows comes back out on the beat it arrives.
+//   1. Bounce: a ring of arrows thrown out.  2. Spin: a spinning ring of circles that
+//   grows outward.  3. Echo: a ring that stops and falls back through the core.
+//   4. Swirl: a woven ring of arrows and crescents leaving in two directions of tilt.
+// Tones: Accretion Weave bright arrows, dark circles and stars; Orrery bright planets,
+//   dark comets; Crunch and Rebound bright fronts, dark rebounds.
 public sealed partial class SpaceCitadelBoss
 {
     int weaving;
@@ -43,24 +38,15 @@ public sealed partial class SpaceCitadelBoss
     {
         // A phase break stops the fronts still closing in.
         weaving = 0;
+        int verse = 0;
         while (true)
         {
             if (phaseThree)
-                yield return GalaxyCollision();
+                yield return CrunchAndRebound(verse++);
             else if (!phaseTwo)
-            {
-                yield return AccretionWeave();
-                yield return Wait(.8f);
-                yield return Eclipse();
-                yield return Wait(.8f);
-            }
+                yield return AccretionWeave(verse++);
             else
-            {
-                yield return Orrery();
-                yield return Wait(.7f);
-                yield return Pulsar();
-                yield return Wait(.7f);
-            }
+                yield return Orrery(verse++);
         }
     }
 
@@ -79,41 +65,50 @@ public sealed partial class SpaceCitadelBoss
         }
     }
 
-    // Accretion Weave: woven fronts on a steady beat, dark stars thrown over the top.
-    IEnumerator AccretionWeave()
+    // ---------------------------------------------------------------- Accretion Weave
+
+    IEnumerator AccretionWeave(int verse)
     {
+        int movement = verse % 4;
+        int hand = verse / 4 % 2 == 0 ? 1 : -1;
         OpenWell();
-        yield return Wait(.6f);
-        yield return Every(5.5f, .45f, n =>
+        yield return ChargeEyes(.45f);
+        yield return Every(6, .8f, n =>
         {
-            Phrase(WovenFront(n, Dense(40), 2.5f));
-            if (n % 4 == 1)
-                Phrase(DarkFountain(n / 4));
+            float tilt = movement == 1 ? 12 + 4 * Mathf.Min(7, n) : 26;
+            float arrows = movement == 2 ? 2.9f : 2.5f;
+            float circles = movement == 2 ? 2.1f : 2.5f;
+            Phrase(WovenFront(verse * 8 + n, Dense(40), arrows, circles, hand * tilt, hand, HostileTone.Bright, HostileTone.Dark));
+            if (movement == 3 && n % 2 == 0)
+                Phrase(DarkFountain(n / 2));
         });
-        while (weaving > 0)
-            yield return null;
-        yield return Wait(.6f);
-        CloseWell();
+        yield return Wait(Rest(.6f));
+    }
+
+    // The radius of the circle beyond the screen, centred on the core.
+    static float FrontCircle(Vector3 center, out Rect outside)
+    {
+        Rect r = CombatRound.Border;
+        const float Margin = .45f;
+        outside = Rect.MinMaxRect(r.xMin - Margin, r.yMin - Margin, r.xMax + Margin, r.yMax + Margin);
+        float circle = 0;
+        foreach (var corner in new[] { new Vector2(outside.xMin, outside.yMin), new Vector2(outside.xMin, outside.yMax),
+            new Vector2(outside.xMax, outside.yMin), new Vector2(outside.xMax, outside.yMax) })
+            circle = Mathf.Max(circle, Vector2.Distance(corner, center));
+        return circle;
     }
 
     // One circular front born on the circle beyond the screen, like OuterFront, but woven:
     // even beads are arrows tilted one way, odd beads circles tilted the other. Each round
     // appears on the edge when its point of the shrinking circle arrives there.
-    IEnumerator WovenFront(int n, int count, float velocity)
+    IEnumerator WovenFront(int n, int count, float arrowSpeed, float circleSpeed, float tilt, int seamTurn, HostileTone arrowTone, HostileTone circleTone)
     {
         weaving++;
         if (count % 2 == 1)
             count++;
         Vector3 center = Core;
-        Rect r = CombatRound.Border;
-        const float Margin = .45f;
-        Rect outside = Rect.MinMaxRect(r.xMin - Margin, r.yMin - Margin, r.xMax + Margin, r.yMax + Margin);
-        float circle = 0;
-        foreach (var corner in new[] { new Vector2(outside.xMin, outside.yMin), new Vector2(outside.xMin, outside.yMax),
-            new Vector2(outside.xMax, outside.yMin), new Vector2(outside.xMax, outside.yMax) })
-            circle = Mathf.Max(circle, Vector2.Distance(corner, center));
-        float world = velocity / WorldSpeed(1);
-        float seam = 180 + 30 * Mathf.Sin(n * .27f);
+        float circle = FrontCircle(center, out Rect outside);
+        float seam = 180 + seamTurn * 30 * Mathf.Sin(n * .27f);
         var front = new List<(float delay, Vector3 point, Vector2 heading, bool arrow)>(count);
         for (int i = 0; i < count; i++)
         {
@@ -121,8 +116,9 @@ public sealed partial class SpaceCitadelBoss
             if (Mathf.Abs(Mathf.DeltaAngle(angle, seam)) < 9)
                 continue;
             bool arrow = i % 2 == 0;
+            float world = (arrow ? arrowSpeed : circleSpeed) / WorldSpeed(1);
             var radial = CombatVisuals.Rotate(Vector2.up, angle);
-            var heading = CombatVisuals.Rotate(-radial, arrow ? 26 : -26);
+            var heading = CombatVisuals.Rotate(-radial, arrow ? tilt : -tilt);
             Vector2 start = (Vector2)center + radial * circle;
             if (!Entry(start, heading * world, outside, out float delay))
                 continue;
@@ -139,13 +135,13 @@ public sealed partial class SpaceCitadelBoss
             {
                 if (front[k].arrow)
                 {
-                    UseTone(HostileTone.Bright);
-                    Fire<NeedleRound>(front[k].point, front[k].heading, velocity, .19f).Absorb(CoreBody, 5.2f, .6f).LivesFor(14);
+                    UseTone(arrowTone);
+                    Fire<NeedleRound>(front[k].point, front[k].heading, arrowSpeed, .19f).Absorb(CoreBody, 5.2f, .6f).LivesFor(14);
                 }
                 else
                 {
-                    UseTone(HostileTone.Dark);
-                    Fire<SimpleRound>(front[k].point, front[k].heading, velocity, .19f).Absorb(CoreBody, 5.2f, .6f).LivesFor(14);
+                    UseTone(circleTone);
+                    Fire<SimpleRound>(front[k].point, front[k].heading, circleSpeed, .19f).Absorb(CoreBody, 5.2f, .6f).LivesFor(14);
                 }
             }
             yield return null;
@@ -165,43 +161,56 @@ public sealed partial class SpaceCitadelBoss
                 .LivesFor(12);
     }
 
-    // Eclipse: four charged pairs of eye rings, then time for the last to cross.
-    IEnumerator Eclipse()
+    // ---------------------------------------------------------------- Orrery
+
+    IEnumerator Orrery(int verse)
     {
-        for (int k = 0; k < 4; k++)
+        int movement = verse % 4;
+        int spin = verse / 4 % 2 == 0 ? 1 : -1;
+        OpenWell();
+        yield return Charge(Hull, WeaponPort(), .5f);
+        yield return Every(6, .85f, n =>
         {
-            yield return ChargeEyes(.45f);
-            EclipseRings(k);
-            yield return Wait(Rest(.7f));
-            Comet(k % 2 == 0 ? -1 : 1, HostileTone.Bright);
-            yield return Wait(Rest(.8f));
-        }
-        yield return Wait(1.2f);
+            Planets(n, movement, spin, HostileTone.Bright);
+            if (n % 2 == 1)
+            {
+                Comet(-1, HostileTone.Dark);
+                Comet(1, HostileTone.Dark);
+            }
+        });
+        yield return Wait(Rest(.6f));
+        CloseWell();
     }
 
-    // Each eye throws a ring whose centre drifts out to its own side while it opens. The
-    // rings stop overlapping, hold, then retrace their paths through the black hole and
-    // open inverted beyond it, so the two rings cross.
-    void EclipseRings(int k)
+    // Six mirrored planets: rings of circles that bloom from the core, spin as they
+    // travel out (left ones one way, right ones the other) and sling their moons off on
+    // the tangent together.
+    void Planets(int n, int movement, int spin, HostileTone shade)
     {
-        int beads = Dense(20);
-        const float travel = .9f;
-        float radius = 2.6f + (k % 2) * .5f;
-        for (int mirror = -1; mirror <= 1; mirror += 2)
-        {
-            var eye = Eye(mirror);
-            var drift = new Vector2(mirror * 1.3f, -.3f);
-            for (int i = 0; i < beads; i++)
+        int moons = Dense(10);
+        UseTone(shade);
+        float offset = movement == 3 ? 30 : 0;
+        foreach (float course in new[] { 30f, 90f, 150f })
+            for (int mirror = -1; mirror <= 1; mirror += 2)
             {
-                var radial = CombatVisuals.Rotate(Vector2.down, mirror * (k * 7 + i * 360f / beads));
-                Vector2 velocity = (radial * radius + drift) / (travel - .175f);
-                bool moon = i % 4 == 0;
-                UseTone(moon ? HostileTone.Bright : HostileTone.Dark);
-                MoonShot(moon, eye, velocity, WorldSpeed(velocity.magnitude))
-                    .Pause(travel, .6f, CombatRound.Turn.Rotate, 180, 1.1f)
-                    .LivesFor(9);
+                var heading = CombatVisuals.Rotate(Vector2.down, mirror * (course + offset + (n % 3) * 8));
+                for (int i = 0; i < moons; i++)
+                {
+                    var moon = Fire<SimpleRound>(Core, heading, movement == 3 ? 1.6f : 1.35f, .19f);
+                    if (moon == null)
+                        continue;
+                    float phase = i * 360f / moons;
+                    float rate = spin * mirror * 110;
+                    if (movement == 1)
+                        moon.Orbit(.8f, phase, rate, 12, .32f, phase * 2, -rate * 3, .7f).Sling(2.6f, .9f);
+                    else if (movement == 2)
+                        moon.Orbit(.5f, phase, rate, 12, 0, 0, 0, .7f).Expand(.35f, 2.4f).Sling(3.0f, .9f);
+                    else if (movement == 3)
+                        moon.Orbit(.8f, phase, rate, 12, 0, 0, 0, .6f).Sling(1.5f, 1.15f);
+                    else
+                        moon.Orbit(.8f, phase, rate, 12, 0, 0, 0, .7f).Sling(2.6f, .9f);
+                }
             }
-        }
     }
 
     // A comet from one eye at the pilot, shedding a short tail of beads.
@@ -214,109 +223,54 @@ public sealed partial class SpaceCitadelBoss
             comet.LeaveTrail(.4f, 2.5f);
     }
 
-    // Orrery: planets flung on a steady beat after one charge.
-    IEnumerator Orrery()
+    // ---------------------------------------------------------------- Crunch and Rebound
+
+    IEnumerator CrunchAndRebound(int verse)
     {
+        int movement = verse % 4;
+        int hand = verse / 4 % 2 == 0 ? 1 : -1;
         OpenWell();
-        yield return Charge(Hull, WeaponPort(), .5f);
-        yield return Every(7.5f, .7f, n =>
+        yield return ChargeEyes(.4f);
+        yield return Every(7, .55f, n =>
         {
-            Planets(n, HostileTone.Bright);
-            if (n % 2 == 1)
-            {
-                Comet(-1, HostileTone.Dark);
-                Comet(1, HostileTone.Dark);
-            }
+            int count = Dense(48);
+            float circle = FrontCircle(Core, out _);
+            Phrase(WovenFront(verse * 13 + n, count, 2.5f, 2.5f, hand * 24, hand, HostileTone.Bright, HostileTone.Bright));
+            // The front reaches the core one radius later; it comes straight back out.
+            Phrase(Rebound(verse * 13 + n, movement, count, circle / (2.5f / WorldSpeed(1))));
         });
-        CloseWell();
+        yield return Wait(Rest(.5f));
     }
 
-    // Six mirrored planets: rings of circles that bloom from the core, spin as they
-    // travel out (left ones one way, right ones the other) and sling their moons off
-    // on the tangent together.
-    void Planets(int n, HostileTone shade)
+    IEnumerator Rebound(int n, int movement, int count, float delay)
     {
-        int moons = Dense(9);
-        UseTone(shade);
-        foreach (float course in new[] { 30f, 90f, 150f })
-            for (int mirror = -1; mirror <= 1; mirror += 2)
-            {
-                var heading = CombatVisuals.Rotate(Vector2.down, mirror * (course + (n % 3) * 8));
-                for (int i = 0; i < moons; i++)
-                {
-                    var moon = Fire<SimpleRound>(Core, heading, 1.35f, .19f);
-                    if (moon != null)
-                        moon.Orbit(.8f, i * 360f / moons, mirror * 110, 12, 0, 0, 0, .7f).Sling(2.6f, .9f);
-                }
-            }
-    }
-
-    // Pulsar: five charged star shells under sweeping beams, then the centre laser.
-    IEnumerator Pulsar()
-    {
-        Phrase(PulsarBeams(7.4f));
-        for (int k = 0; k < 5; k++)
+        for (float clock = 0; clock < delay;)
         {
-            yield return Charge(Hull, WeaponPort(), .35f);
-            StarShell(k);
-            yield return Wait(Rest(1.0f));
-        }
-        Laser();
-        yield return Wait(2.2f);
-    }
-
-    // A shell whose radius follows a star: five points tip down, then six points tip up.
-    // It holds, then shrinks through the core at a speed proportional to its reach, so it
-    // opens again as the same star turned over.
-    void StarShell(int k)
-    {
-        int beads = Dense(30);
-        int points = k % 2 == 0 ? 5 : 6;
-        float turn = k % 2 == 0 ? 0 : 180f / points;
-        const float travel = .95f;
-        for (int i = 0; i < beads; i++)
-        {
-            float angle = i * 360f / beads;
-            float reach = 3.4f * (.62f + .38f * Mathf.Cos(points * (angle - turn) * Mathf.Deg2Rad));
-            bool bead = i % 3 == 0;
-            UseTone(bead ? HostileTone.Bright : HostileTone.Dark);
-            ScoredShot(bead, Core, CombatVisuals.Rotate(Vector2.down, angle), WorldSpeed(reach / (travel - .175f)))
-                .Pause(travel, .55f, CombatRound.Turn.Rotate, 180, 1.15f)
-                .LivesFor(9);
-        }
-    }
-
-    // Mirrored beams from the two eyes sweeping round in opposite directions, pulsing
-    // four rounds on and two off.
-    IEnumerator PulsarBeams(float seconds)
-    {
-        yield return Every(seconds, .09f, n =>
-        {
-            if (n % 6 >= 4)
-                return;
-            float sweep = n * 6f;
-            UseTone(HostileTone.Bright);
-            for (int mirror = -1; mirror <= 1; mirror += 2)
-                MoonShot(n % 6 == 0, Eye(mirror), CombatVisuals.Rotate(Vector2.down, mirror * sweep), 2.8f);
-        });
-    }
-
-    // Hard final phase, Galaxy Collision: woven fronts closing in through planets flung out.
-    IEnumerator GalaxyCollision()
-    {
-        OpenWell();
-        yield return Wait(.5f);
-        yield return Every(10, .5f, n =>
-        {
-            Phrase(WovenFront(n, Dense(40), 2.5f));
-            if (n % 2 == 1)
-                Planets(n, HostileTone.Dark);
-            if (n % 6 == 3)
-                Phrase(DarkFountain(n / 6));
-        });
-        while (weaving > 0)
+            if (!Holding)
+                clock += Time.deltaTime;
+            if (clock > delay - .35f)
+                Cue(Core, delay - clock);
             yield return null;
-        CloseWell();
-        yield return Wait(.6f);
+        }
+        UseTone(HostileTone.Dark);
+        float turn = n * 7.5f;
+        for (int i = 0; i < count; i++)
+        {
+            var radial = CombatVisuals.Rotate(Vector2.down, turn + i * 360f / count);
+            if (movement == 0)
+                Fire<NeedleRound>(Core, radial, .8f, .19f).Repel(Core, 3).LivesFor(9);
+            else if (movement == 1)
+            {
+                var moon = Fire<SimpleRound>(Core, Vector2.down, 0, .19f);
+                if (moon != null)
+                    moon.Orbit(.3f, turn + i * 360f / count, (n % 2 == 0 ? 1 : -1) * 50, 9, 0, 0, 0, .3f).Expand(1.9f, 2.6f);
+            }
+            else if (movement == 2)
+                ScoredShot(i % 3 == 0, Core, radial, WorldSpeed(2.6f / .725f))
+                    .Pause(.9f, .5f, CombatRound.Turn.Rotate, 180, .6f)
+                    .LivesFor(9);
+            else
+                MoonShot(i % 4 == 0, Core, CombatVisuals.Rotate(radial, i % 2 == 0 ? 30 : -30), 2.2f).LivesFor(9);
+        }
     }
 }

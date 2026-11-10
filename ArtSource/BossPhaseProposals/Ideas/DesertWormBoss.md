@@ -1,35 +1,56 @@
-# Desert worm: proposed cards
+# Desert worm: proposed phases
 
-Code: `Assets/Scripts/Enemies/Bosses/DesertWormBoss.Proposed.cs`. Everything leaves the head or a body reactor. Fire spreads outward from the body, mines stop then lunge or carry on, heat haze quickens, and nothing fades. Pressure is at or slightly above the current cards.
+Code: `Assets/Scripts/Enemies/Bosses/DesertWormBoss.Proposed.cs`. One concept per phase (Miguel, 10 November 2026). Each concept develops through four verses, then repeats them with variations, so a 60-second recording shows it evolve. Everything leaves the head or a body reactor. Fire spreads outward, mines stop then lunge or carry on, haze quickens, and nothing fades.
 
-## Phase one
+## Phase one: Mine Caravan
 
-**Current:** Quicksand Field (mirrored rows of mines on both flanks, sown tail to head) and Sandblast (twin arrow streams either side of the pilot, with heat haze).
+**Current:** Quicksand Field and Sandblast alternate (about 43 rounds per second on average).
 
-- **Desert Lotus.** The head charges and blooms a mirrored lotus across 300 degrees around its own line of travel. The back of the bloom is left to the body. Each petal is a tip of three arrows over two circles. The petals brake and hang like heat haze, then each half swings 38 degrees away from the worm's line and quickens. Alternate body reactors breathe a little rice haze. Tones: bright petals, dark circle hearts and haze. It replaces the converging Sandblast with a symmetric bloom that spreads outward and keeps moving with the circuit.
-- **Mine Caravan.** Head and tail sow a staggered double zipper of mines (near and far rows) along both sides of the worm's own track, while the mid-body breathes rice haze. After a visible charge at the head, the whole track wakes on one beat: mines carry on outward and every fifth lunges at the pilot. Tones: dark mines, bright lungers and haze. The worm draws its own circuit in mines, and the release turns that curve into an expanding double line.
+The worm sows its own track with mines while the body breathes rice haze, and then the track wakes. Each verse sows a staggered double zipper (near and far rows) along both sides of the trail:
+1. **Shared beat.** Head and tail sow. After a charge at the head, every mine wakes at once: most carry on outward and one in five lunges.
+2. **Caravan.** Each mine wakes 1.3 seconds after it is sown and turns to march along the track, so the trail behind the worm becomes a moving column.
+3. **Three sowers.** A mid-body reactor joins in, and the mines wake on a shared beat again.
+4. **Undertow.** The newest mines wake first, so the wake runs back down the trail.
 
-Further ideas (not implemented):
-- *Sun Dial*: the head drags one long rice stream whose angle follows the worm's heading, drawing a sweeping shadow line. Mines along the line wake in order.
-- *Oasis*: two reactors hold a ring of hanging haze around an empty pocket that drifts and closes.
-- *Buried Ribs*: mines sown in a grid that wake row by row from the tail, like ribs surfacing.
+On the second pass the caravan marches the other way and one mine in four lunges.
 
-## Phase two
+Tones: dark mines, bright lungers and bright haze. Density: about 42 rounds per second.
 
-**Current:** Sidewinder (flank arrows from every reactor draw ribbons along the path) and Dune Collapse (small geysers of arrows that fall back).
+Alternative single concepts:
+- *Desert Lotus*: head blooms that hang and swing open. Later verses pass the bloom along the body.
+- *Sun Dial*: one long rice stream follows the head's heading like a shadow, and mines along it wake in order.
+- *Buried Ribs*: mines sown in rows across the arena that surface and wake row by row from the tail.
 
-- **Simoom.** A sandstorm. Two gust waves run along the body (tail to head and head to tail) and cross in the middle. Each reactor puffs a pair of arrows, or circles from every third reactor, downwind in a fixed world direction. The bands sway like dune lines and quicken. After a charge the wind swings to the other side. Mines dropped in the lee stop, then carry on with the wind; one in three lunges. Tones: bright gusts, dark lee mines with bright lungers. This is horizontal weather across the whole arena, top included, rather than fire tied to the body's flanks.
-- **Mirage Lattice.** Alternate body reactors fire slow diagonal streams (35 degrees off each flank) and switch diagonal each time they fire. Neighbouring strands cross into a diamond net that travels outward and quickens. The head drops four mines between strands: two carry on and two lunge. Tones: a dark net with bright head mines. It replaces the falling geysers (Miguel asked for little falling fire) with woven, readable cells.
+## Phase two: Simoom
 
-Further ideas (not implemented):
-- *Dust Devil Chain*: reactors in turn release short swaying rice columns that quicken as they lean downwind.
-- *Quicksand Spiral*: the tail lays mines in the closed loop it is about to cross, and the head wakes them as it passes.
-- *Mirage Echo*: the body fires its current silhouette as a row of hanging rounds, which then lunges as a whole.
+**Current:** Sidewinder and Dune Collapse alternate (about 27 rounds per second on average).
 
-## Phase three (Hard)
+A sandstorm blows in a world direction, and the wind swings to the other side after a charge every verse. Puffs of arrows (circles from every third reactor) leave the reactors in a wave along the body. The bands sway like dune lines and quicken. Mines dropped in the lee stop, then carry on with the wind or lunge.
+1. **Gust.** One wave runs tail to head.
+2. **Crossing gusts.** A second wave runs head to tail.
+3. **Squall.** Puffs widen to three rounds and more lee mines drop.
+4. **Crosswind.** Each puff blows both ways at once.
 
-**Current:** Dune Sea (Sidewinder ribbons with mines and geysers).
+Tones: bright gusts, dark lee mines with bright lungers. Density: about 28 rounds per second.
 
-- **Fata Morgana.** The simoom blows (both waves, with lee mines) while the head blooms a charged lotus about every two seconds. The tail keeps sowing mines that wake 1.6 seconds later. Tones: bright gusts and petals, dark mines. It is about 20% denser than Dune Sea.
+Alternative single concepts:
+- *Mirage Lattice*: alternating diagonal flank streams weave a travelling diamond net. Verses change the angle and which reactors take it up.
+- *Dust Devils*: reactors in turn release swaying rice columns that lean downwind and quicken.
+- *Sidewinder Wake*: the body's S-curve is copied as rows of hanging rounds that later lunge as a whole.
 
-Further idea: *Sandstorm Eye*: gusts from both directions at once, leaving a calm band that rides with the head.
+## Phase three (Hard): Lotus Mirage
+
+**Current:** Dune Sea (about 47 rounds per second).
+
+Lotuses bloom and travel along the body. A lotus is a set of mirrored petals, each an arrow tip over two circles, that hang like heat haze and then open and quicken.
+1. **Head lotus.** Three charged blooms across 300 degrees around the head's line of travel.
+2. **Flank buds.** Alternate reactors charge and open half-lotuses on both flanks.
+3. **Chain bloom.** Buds open reactor by reactor from tail to head, ending in a head lotus.
+4. **Closing lotus.** Head blooms whose petals swing inward and cross before spreading.
+
+Tones: bright arrow petals over dark circles. Density: about 51 rounds per second, roughly 8% above Dune Sea.
+
+Alternative single concepts:
+- *Fata Morgana*: a mirage double. Each volley is fired twice, the copy delayed and mirrored across the head's line.
+- *Sandstorm Eye*: gusts from both directions leave a calm band that rides with the head.
+- *Glass Sea*: mines that harden into a lattice and shatter outward in rows.
