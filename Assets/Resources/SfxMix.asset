@@ -12,4 +12,339 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9aada5f192c770b45ad68640cdae410e, type: 3}
   m_Name: SfxMix
   m_EditorClassIdentifier: Assembly-CSharp::SfxMix
-  entries: []
+  entries:
+  - cue: cannon
+    clip: {fileID: 0}
+    gain: 0.56200004
+    muted: 0
+    choice: 
+  - cue: decoy
+    clip: {fileID: 8300000, guid: 0d0df2d8ecf8592fa877b0e133e71b08, type: 3}
+    gain: 0.527
+    muted: 0
+    choice: psx1
+  - cue: enemyHit
+    clip: {fileID: 8300000, guid: 3d93786c2069539ba18c46f48cddfd0e, type: 3}
+    gain: 1.281
+    muted: 0
+    choice: psx2
+  - cue: heal
+    clip: {fileID: 8300000, guid: f7c7ebfb325c538caca64061e0a5ad0f, type: 3}
+    gain: 0.473
+    muted: 0
+    choice: psx1
+  - cue: popcorn
+    clip: {fileID: 8300000, guid: 42e675e848fe53e9b745f79796d4f1bd, type: 3}
+    gain: 0.705
+    muted: 0
+    choice: psx1
+  - cue: beamCharge
+    clip: {fileID: 8300000, guid: 17b1115b91ba5be89649b4a2bbfaf6af, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: blankbullet
+    clip: {fileID: 8300000, guid: e917d61a259b5514a2737324d1e06494, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx4
+  - cue: bossHit
+    clip: {fileID: 8300000, guid: fb21d516ed83579e98fa48dc242fb73b, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: capacitor
+    clip: {fileID: 8300000, guid: 9e471dc538d8577487125df957c37fb7, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx4
+  - cue: coin
+    clip: {fileID: 8300000, guid: 63c34e9ddfad5591ad24f6b3310da76a, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: enemyBurst
+    clip: {fileID: 8300000, guid: 5ace5c03e53554f3ac36d462924ce836, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: enemyExplosion1
+    clip: {fileID: 8300000, guid: d267ed9ca57358baa52debcc14068b0c, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx4
+  - cue: enemyHelix
+    clip: {fileID: 8300000, guid: 6ce65520d859507bb5c96b3c11210e6e, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: enemyMine
+    clip: {fileID: 8300000, guid: 29cbcb81279a534585510b26544fd3fb, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx3
+  - cue: enemyMissile
+    clip: {fileID: 8300000, guid: 9953b0a4b6655c0a84f3789e22ad571a, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx4
+  - cue: enemyNeedle
+    clip: {fileID: 8300000, guid: 195b0da4212a5381a14b384ff25485bd, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: enemyPlasma
+    clip: {fileID: 8300000, guid: dfb6c6a488ae5b00a3b35b85abc6719e, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: enemyScatter
+    clip: {fileID: 8300000, guid: 7eb2bca6f9735cefacfb44c6a0cf9d69, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: enemySimple
+    clip: {fileID: 8300000, guid: ff39b20b87e6537e84723e0ab35b682b, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx3
+  - cue: enemySuspended
+    clip: {fileID: 8300000, guid: 4540a5311db857c7b7c14f23be1761fb, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: enemyWave
+    clip: {fileID: 8300000, guid: fcd48bee4b2e5dd59fdd0c30a31b65fd, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: explosionLarge
+    clip: {fileID: 8300000, guid: be0329df36d0507784d5928b9a8d260a, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx2
+  - cue: frost
+    clip: {fileID: 8300000, guid: 3648b6bfa0505ca29635807f8850742f, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx2
+  - cue: hit1
+    clip: {fileID: 8300000, guid: 30fa902e9fe659a6b8882b19aec570a0, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: hitElectric
+    clip: {fileID: 8300000, guid: 3c0d8184957a585ca1d0e494b3f2f50c, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: hurt1
+    clip: {fileID: 8300000, guid: b862560fef26547ca848536e7860648c, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx4
+  - cue: itemBearing
+    clip: {fileID: 8300000, guid: db7bb21120a65976870308fce2524eae, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemBurn
+    clip: {fileID: 8300000, guid: 6e564805d7b35e39841bb0998982a3a4, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemCapReady
+    clip: {fileID: 8300000, guid: fe328d584bec5ca3835982f70b0f6c34, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx3
+  - cue: itemChain
+    clip: {fileID: 8300000, guid: 3e3fea0bd9765c099b4ef9a20b7f0267, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemChargeBlast
+    clip: {fileID: 8300000, guid: e3d189a7c642540f80c41a3fbbc045ce, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemChargeRelease
+    clip: {fileID: 8300000, guid: 846595dcc34f5c33b34b825062a9eff7, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx2
+  - cue: itemCounter
+    clip: {fileID: 8300000, guid: 93ddd8986c305c8eaf23f628ab9e4881, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemDepthBurst
+    clip: {fileID: 8300000, guid: 018697827101520ca5efbbe7a8f29289, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemDepthLaunch
+    clip: {fileID: 8300000, guid: e7b399058440512dbdf63415a824e33f, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemFlameIgnite
+    clip: {fileID: 8300000, guid: f096acc7d66b5751895aa724012ac6ff, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx2
+  - cue: itemFlameRelease
+    clip: {fileID: 8300000, guid: ab27ca9db414595fbd84731cef363219, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemFlameSustain
+    clip: {fileID: 8300000, guid: 0ce0cfdf5b44508ebccc7810df179fe9, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemFocus
+    clip: {fileID: 8300000, guid: 7019f06701965ea68c326df3ec0e2814, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx3
+  - cue: itemGet
+    clip: {fileID: 8300000, guid: 2a766bea47b258a69792aeae3461072b, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx2
+  - cue: itemGum
+    clip: {fileID: 8300000, guid: 77f8cf787d4354c4be1398fc6f320b2c, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx3
+  - cue: itemPoison
+    clip: {fileID: 8300000, guid: e2079ae44a8b5dcebacb1f4849815247, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemProximity
+    clip: {fileID: 8300000, guid: d20ec55cd167569fb29f169ae605528d, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemReserve
+    clip: {fileID: 8300000, guid: 3c177b8a1e555e6ab84fefd2409f6548, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemReturn
+    clip: {fileID: 8300000, guid: 6546983f5656594bb87c1113f64dd6a5, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemSalvage
+    clip: {fileID: 8300000, guid: 7691b05caef7521da7ce1613c5b3a79e, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: itemSplit
+    clip: {fileID: 8300000, guid: ee20484e03925cc7b17b558230fb2c03, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx4
+  - cue: mana
+    clip: {fileID: 8300000, guid: 8c6e2953878a534789abbb170e75b66a, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx3
+  - cue: overdrive
+    clip: {fileID: 8300000, guid: d5c96e363a1a5b898ac865560ef8bbb3, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: playerDead
+    clip: {fileID: 8300000, guid: b8b2517bbc185ec1ba1d7e793859a499, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx2
+  - cue: powerdown
+    clip: {fileID: 8300000, guid: bd21ee5b69205716ba3bae12171dbfdf, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx2
+  - cue: ready
+    clip: {fileID: 8300000, guid: 64f95cc00b475d518a587017337d2a89, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx4
+  - cue: ricochetHit
+    clip: {fileID: 8300000, guid: e0a328128ba95456a702c5fa52aec12c, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: roll
+    clip: {fileID: 8300000, guid: c426336218565183a6caf90b53e0b388, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: shatter
+    clip: {fileID: 8300000, guid: 0ac176d1f3b253f8bfc66a55e0fe462e, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: shellBurst
+    clip: {fileID: 8300000, guid: 28a00850946759668acb53b7cd4f0bb2, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx3
+  - cue: shotAK45
+    clip: {fileID: 8300000, guid: 81144e405188549b8b7863c5f1d66efe, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx3
+  - cue: shotBeam
+    clip: {fileID: 8300000, guid: 6d468d343f4e5a1e8551c509913bc191, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx3
+  - cue: shotElectric
+    clip: {fileID: 8300000, guid: b13d5cdccc0954a3b8a6dc764617aa5e, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx4
+  - cue: shotNeedle
+    clip: {fileID: 8300000, guid: 266c9a59aa045a0daf3c907accabea9d, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx4
+  - cue: shotRail
+    clip: {fileID: 8300000, guid: c79c92d336335da99aebe23df5b5f8f1, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx2
+  - cue: shotScatter
+    clip: {fileID: 8300000, guid: f57b78c215c15860b9d64e2d1b0a8be4, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx1
+  - cue: shotShell
+    clip: {fileID: 8300000, guid: bb37b093545d5033b7053e698992b99d, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx3
+  - cue: static
+    clip: {fileID: 8300000, guid: eeb79d88f2e6532798cad9f0a3d8228c, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx3
+  - cue: timeStop
+    clip: {fileID: 8300000, guid: 0fd712ac65bb5effa8a87141c78b9756, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx2
+  - cue: uiConfirm
+    clip: {fileID: 8300000, guid: 0f6ae938509d5323b3179ccefd661884, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx2
+  - cue: uiSkip
+    clip: {fileID: 8300000, guid: 6f71e3a80bab5e11b2ba2d84efcee565, type: 3}
+    gain: 1
+    muted: 0
+    choice: psx4
