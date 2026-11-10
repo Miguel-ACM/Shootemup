@@ -1,18 +1,32 @@
 using UnityEngine;
 public static partial class PlayerProjectileArt
 {
-    static Sprite Missile() => Make("Friendly guided dart", 16, 32, (x, y) =>
-         {
-             float side = Mathf.Abs(x - 7.5f);
-             float edge = y < 10 ? 7.5f - y * .32f : y > 23 ? Mathf.Lerp(4.5f, .5f, (y - 23) / 8f) : 4.5f;
-             if (side > edge || y < 2)
-                 return Color.clear;
-             if (side > edge - 1.5f)
-                 return Ink;
-             if (y < 7 && side < 2)
-                 return new Color(.26f, .67f, .76f);
-             if (y > 20 && x < 8)
-                 return Highlight;
-             return x < 8 ? Teal : Blue;
-         });
+    // Miguel's arrowhead dart (option D, 10 November 2026): four frames of a flickering,
+    // swaying exhaust drawn by Tools/draw_player_missile.py. Every frame shares the same
+    // size, so the round's scale and collider never change while it animates.
+    public const float MissileFramesPerSecond = 14;
+    const int MissileFrames = 4;
+    static Sprite[] missileFrames;
+
+    static Sprite Missile() => MissileFrame(0);
+
+    public static Sprite MissileFrame(int frame)
+    {
+        if (missileFrames == null)
+        {
+            var texture = Resources.Load<Texture2D>("ProjectileSprites/player_missile");
+            if (texture == null)
+                throw new System.InvalidOperationException("Missing player missile strip");
+            texture.filterMode = FilterMode.Point;
+            int width = texture.width / MissileFrames;
+            missileFrames = new Sprite[MissileFrames];
+            for (int i = 0; i < MissileFrames; i++)
+            {
+                missileFrames[i] = Sprite.Create(texture, new Rect(i * width, 0, width, texture.height), new Vector2(.5f, .5f),
+                    Mathf.Max(width, texture.height), 0, SpriteMeshType.FullRect);
+                missileFrames[i].name = "Friendly arrowhead dart " + i;
+            }
+        }
+        return missileFrames[(frame % MissileFrames + MissileFrames) % MissileFrames];
+    }
 }

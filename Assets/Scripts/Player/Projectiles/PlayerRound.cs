@@ -253,6 +253,8 @@ public sealed class PlayerRound : ABullet
         Reshape();
         if (delivery == PlayerDelivery.Disc)
             transform.Rotate(0, 0, age * 540);
+        if (delivery == PlayerDelivery.Missile)
+            visual.sprite = PlayerProjectileArt.MissileFrame(Mathf.FloorToInt(age * PlayerProjectileArt.MissileFramesPerSecond));
         if (delivery == PlayerDelivery.Flame)
         {
             visual.color = new Color(1, 1, 1, 1 - Mathf.Clamp01(age / .55f));
