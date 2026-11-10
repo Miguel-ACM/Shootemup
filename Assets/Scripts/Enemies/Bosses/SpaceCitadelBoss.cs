@@ -9,7 +9,6 @@ public sealed partial class SpaceCitadelBoss : ArmoredHullBoss
         new(0,-1.12f), new(-.65f,-.96f), new(-.96f,-.60f), new(-2.65f,-.34f), new(-2.8f,0),
         new(-2.65f,.34f), new(-.96f,.60f), new(-.65f,.96f) };
     protected override Vector2[] Outline => outline;
-    PulseLaser centralLaser;
     public Transform CoreVisual { get; private set; }
     protected override void Configure()
     {
@@ -42,18 +41,27 @@ public sealed partial class SpaceCitadelBoss : ArmoredHullBoss
     protected override void PressureAttack() { }
     protected override void MoveBoss(float dt)
     {
-        station = new Vector3(centralLaser != null && centralLaser.IsAttachedTo(Hull) ? transform.position.x : Mathf.Sin(motionAge * .43f) * .82f,
-            Camera.UpLimit - 3 + Mathf.Sin(motionAge * .31f) * .32f, 1);
+        // Inward fronts are circles centred on the black hole: it holds still while one closes.
+        if (closing > 0)
+            return;
+        station = new Vector3(Mathf.Sin(motionAge * .43f) * .82f, Camera.UpLimit - 3 + Mathf.Sin(motionAge * .31f) * .32f, 1);
         transform.position = Vector3.MoveTowards(transform.position, station, dt * 3.2f);
     }
 
     protected override void OnPhaseTwo()
     {
         // The phase break stops every front still closing in.
-        emerging = 0;
+        closing = 0;
         CloseWell();
         volley = 0;
         nextAttack = age + 1.2f;
+    }
+
+    protected override void OnPhaseThree()
+    {
+        // The phase break stops every front still closing in.
+        closing = 0;
+        CloseWell();
     }
 
     protected override void Die()
