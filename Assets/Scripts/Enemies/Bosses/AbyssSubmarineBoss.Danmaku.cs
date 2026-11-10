@@ -26,6 +26,7 @@ public sealed partial class AbyssSubmarineBoss
     protected override bool PatternEmissionAllowed => !Submerged && Mathf.Repeat(cycleClock, cycleSeconds) < 3.5f;
     protected override void Attack()
     {
+        if (ProposedCards && OpenCards()) return;
         if (Submerged || Mathf.Repeat(cycleClock, cycleSeconds) >= 3.5f)
             return;
         int beat = volley % 3;
