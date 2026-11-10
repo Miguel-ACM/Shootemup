@@ -24,10 +24,10 @@ MonoBehaviour:
     muted: 0
     choice: psx1
   - cue: enemyHit
-    clip: {fileID: 8300000, guid: 3d93786c2069539ba18c46f48cddfd0e, type: 3}
+    clip: {fileID: 0}
     gain: 1.281
     muted: 0
-    choice: psx2
+    choice: 
   - cue: heal
     clip: {fileID: 8300000, guid: f7c7ebfb325c538caca64061e0a5ad0f, type: 3}
     gain: 0.473
@@ -48,11 +48,6 @@ MonoBehaviour:
     gain: 1
     muted: 0
     choice: psx4
-  - cue: bossHit
-    clip: {fileID: 8300000, guid: fb21d516ed83579e98fa48dc242fb73b, type: 3}
-    gain: 1
-    muted: 0
-    choice: psx1
   - cue: capacitor
     clip: {fileID: 8300000, guid: 9e471dc538d8577487125df957c37fb7, type: 3}
     gain: 1
@@ -123,11 +118,6 @@ MonoBehaviour:
     gain: 1
     muted: 0
     choice: psx2
-  - cue: hit1
-    clip: {fileID: 8300000, guid: 30fa902e9fe659a6b8882b19aec570a0, type: 3}
-    gain: 1
-    muted: 0
-    choice: psx1
   - cue: hitElectric
     clip: {fileID: 8300000, guid: 3c0d8184957a585ca1d0e494b3f2f50c, type: 3}
     gain: 1
@@ -344,7 +334,7 @@ MonoBehaviour:
     muted: 0
     choice: psx4
   - cue: shot1
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: dc6052e9a4cbdf7499cadb379b3aecdb, type: 3}
     gain: 0.6
     muted: 0
-    choice: 
+    choice: original
