@@ -12,6 +12,7 @@ using UnityEngine;
 //   Unity.exe -projectPath <copy> -executeMethod RecordBossPhaseProposals.Current
 //   Unity.exe -projectPath <copy> -executeMethod RecordBossPhaseProposals.Proposed
 // Optional: -bossFilter <substring of the clip name> records only matching phases.
+// Clips already encoded are skipped, so a stopped run resumes where it left off.
 // Each clip is encoded to ArtSource/BossPhaseProposals/Clips/<set>/<clip>.mp4 (play field only);
 // Tools/compose_boss_proposals.py puts the two sets side by side.
 [InitializeOnLoad]
@@ -25,15 +26,54 @@ public static class RecordBossPhaseProposals
             if (state == PlayModeStateChange.EnteredPlayMode && SessionState.GetString(Key, "") != "")
                 new GameObject("Boss phase proposal recording").AddComponent<BossPhaseProposalRecording>().Set = SessionState.GetString(Key, "");
         };
+        if (SessionState.GetString(Key, "") != "")
+        {
+            KeepAwake();
+            // Keep the player loop and game view ticking while the editor is in the background.
+            EditorApplication.update += () =>
+            {
+                if (!EditorApplication.isPlaying)
+                    return;
+                EditorApplication.QueuePlayerLoopUpdate();
+                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+            };
+        }
     }
 
     public static void Current() => Run("current");
     public static void Proposed() => Run("proposed");
+    // The chosen cards once they ship, recorded against the earlier "current" set.
+    public static void Final() => Run("final");
+
+    // Windows 11 throttles background processes (EcoQoS); opt this editor out so the
+    // recording keeps its pace while Miguel works in other windows.
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    struct PowerThrottling
+    {
+        public uint Version, ControlMask, StateMask;
+    }
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+    static extern bool SetProcessInformation(IntPtr process, int informationClass, ref PowerThrottling information, int size);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+    static extern IntPtr GetCurrentProcess();
+
+    static void KeepAwake()
+    {
+        var state = new PowerThrottling { Version = 1, ControlMask = 1 | 4, StateMask = 0 };
+        SetProcessInformation(GetCurrentProcess(), 4, ref state, System.Runtime.InteropServices.Marshal.SizeOf(state));
+        System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.AboveNormal;
+        EditorPrefs.SetInt("InteractionMode", 1); // No throttling.
+        Application.runInBackground = true;
+    }
 
     static void Run(string set)
     {
         PlayerSettings.companyName = "ShootemupReview";
         PlayerSettings.productName = "BossPhaseProposals";
+        PlayerSettings.runInBackground = true;
+        KeepAwake();
         typeof(VerifySecondaryItems).GetMethod("NativeGameView", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null);
         SessionState.SetString(Key, set);
         EditorSceneManager.OpenScene("Assets/Scenes/Title.unity");
@@ -95,6 +135,9 @@ public sealed class BossPhaseProposalRecording : MonoBehaviour
                 var type = entry.Enemy ?? DistrictWaves.Bosses(level)[0];
                 string clip = level + "-" + type.Name.Replace("Boss", "") + "-" + phase;
                 if (filter != null && clip.IndexOf(filter, StringComparison.OrdinalIgnoreCase) < 0)
+                    continue;
+                // Resume: a clip already encoded for this set is kept.
+                if (File.Exists(root + "/Clips/" + Set + "/" + clip + ".mp4"))
                     continue;
                 watcher.SelectEntry(index);
                 // Wait until the boss has reached the phase and finished its spell break.

@@ -3,7 +3,7 @@
 Clips come from RecordBossPhaseProposals (Assets/Editor/Reviews) in the isolated review
 checkout, already cropped to the play field. Each pair is labelled and written to
 ArtSource/BossPhaseProposals/Videos/<clip>.mp4, with an index.html beside them.
-Usage: python Tools/compose_boss_proposals.py [clip-filter]
+Usage: python Tools/compose_boss_proposals.py [clip-filter] [right-set]   (right-set: proposed or final)
 """
 import html
 import subprocess
@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CLIPS = ROOT / "Build/ReviewCache/Temp/DecisionHoverReview/ArtSource/BossPhaseProposals/Clips"
 OUT = ROOT / "ArtSource/BossPhaseProposals"
 VIDEOS = OUT / "Videos"
+RIGHT = "proposed"
 FFMPEG = r"C:\Program Files\ffmpeg\bin\ffmpeg.exe"
 NAMES = {
     "FieldsBomber": "Plains bomber", "PlainsRedKite": "Plains Red Kite", "PlainsThreshingDrum": "Plains Threshing Drum",
@@ -45,14 +46,14 @@ def header(clip, width, half):
     draw = ImageDraw.Draw(image)
     draw.text((width // 2, 6), title(clip), font=font(24), fill=(240, 236, 220), anchor="mt")
     draw.text((half // 2, 38), "CURRENT", font=font(20), fill=(170, 176, 190), anchor="mt")
-    draw.text((half + half // 2, 38), "PROPOSED", font=font(20), fill=(255, 206, 110), anchor="mt")
+    draw.text((half + half // 2, 38), RIGHT.upper(), font=font(20), fill=(255, 206, 110), anchor="mt")
     path = VIDEOS / f".{clip}-header.png"
     image.save(path)
     return path
 
 
 def compose(clip):
-    current, proposed = CLIPS / "current" / f"{clip}.mp4", CLIPS / "proposed" / f"{clip}.mp4"
+    current, proposed = CLIPS / "current" / f"{clip}.mp4", CLIPS / RIGHT / f"{clip}.mp4"
     probe = subprocess.run([FFMPEG.replace("ffmpeg.exe", "ffprobe.exe"), "-v", "error", "-select_streams", "v:0",
                             "-show_entries", "stream=width", "-of", "csv=p=0", str(current)],
                            capture_output=True, text=True, check=True)
@@ -72,21 +73,25 @@ def index(clips):
     rows = []
     for clip in clips:
         rows.append(f'<section><h2>{html.escape(title(clip))}</h2>'
-                    f'<video src="Videos/{clip}.mp4" controls loop muted preload="metadata"></video></section>')
+                    f'<video src="{VIDEOS.name}/{clip}.mp4" controls loop muted preload="metadata"></video></section>')
     notes = "".join(f'<li><a href="Ideas/{p.name}">{html.escape(p.stem)}</a></li>' for p in sorted(ideas.glob("*.md")))
     page = f"""<!doctype html><meta charset="utf-8"><title>Boss phase proposals</title>
 <style>body{{background:#101218;color:#ece8da;font:15px system-ui;margin:24px}}section{{margin:0 0 32px}}
 video{{width:min(100%,1080px)}}h2{{font-weight:600;margin:0 0 8px}}a{{color:#ffce6e}}</style>
-<h1>Boss phase proposals</h1><p>Left: current cards. Right: proposed cards. Normal difficulty; phase 3 is Hard's, previewed.</p>
+<h1>Boss phase proposals</h1><p>Left: current cards. Right: {RIGHT} cards. Normal difficulty; phase 3 is Hard's, previewed.</p>
 <p>Design notes per boss:</p><ul>{notes}</ul>{''.join(rows)}"""
-    (OUT / "index.html").write_text(page, encoding="utf-8")
+    (OUT / ("index.html" if RIGHT == "proposed" else f"index-{RIGHT}.html")).write_text(page, encoding="utf-8")
 
 
 def main():
-    VIDEOS.mkdir(parents=True, exist_ok=True)
+    global RIGHT, VIDEOS
     wanted = sys.argv[1] if len(sys.argv) > 1 else ""
+    RIGHT = sys.argv[2] if len(sys.argv) > 2 else "proposed"
+    if RIGHT != "proposed":
+        VIDEOS = OUT / ("Videos-" + RIGHT)
+    VIDEOS.mkdir(parents=True, exist_ok=True)
     clips = [p.stem for p in sorted((CLIPS / "current").glob("*.mp4"))
-             if (CLIPS / "proposed" / p.name).exists() and wanted.lower() in p.stem.lower()]
+             if (CLIPS / RIGHT / p.name).exists() and wanted.lower() in p.stem.lower()]
     order = {level: i for i, level in enumerate(["Fields", "Tunnel", "Snow", "Thunder", "City", "Desert", "Candyland",
                                                   "Space", "Underwater", "Hell", "Heaven", "Void"])}
     clips.sort(key=lambda c: (order.get(c.split("-")[0], 99), c))
