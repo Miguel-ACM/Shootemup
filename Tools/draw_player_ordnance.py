@@ -336,6 +336,213 @@ def flame_billow():
     return sprite(24, 32, inside, tone)
 
 
+# ------------------------------------------------- second round of options (D-F)
+def missile_arrowhead():
+    """D: arrowhead dart. A broad chevron warhead on a thin shaft, with a bright
+    exhaust bead and two fading puffs behind it, so a volley reads as a streak."""
+    def head(x, y):
+        # Chevron: a triangle from y=4 to the tip at 15.5, notched at the back.
+        return 3.5 < y < 15.5 and abs(x) < (15.5 - y) * .62 and y > 4 + abs(x) * .55
+
+    def shaft(x, y):
+        return -8 < y <= 6 and abs(x) <= 1.9
+
+    def tail(x, y):
+        return swept_fin(x, y, 1.9, 4.2, -4.5, -8, -7.5, -9)
+
+    def puff(x, y):
+        return (x * x + (y + 10.6) ** 2 <= 1.9 ** 2 or x * x + (y + 13.6) ** 2 <= 1.3 ** 2
+                or x * x + (y + 15.4) ** 2 <= .6 ** 2)
+
+    def inside(x, y):
+        return head(x, y) or shaft(x, y) or tail(x, y) or puff(x, y)
+
+    def tone(x, y, edge):
+        if puff(x, y) and not shaft(x, y):
+            return .92 if y > -12 else .6 if y > -14.6 else .42
+        if edge:
+            return RIM
+        if head(x, y):
+            return .86 if x < -.4 else .62
+        if tail(x, y) and abs(x) > 1.9:
+            return .46
+        return .72 if x < .2 else .56
+
+    return sprite(16, 32, inside, tone)
+
+
+def missile_torpedo():
+    """E: guided torpedo. A round-nosed capsule with a dark seeker window ring,
+    stubby mid fins and a short, wide nozzle flare."""
+    def half(y):
+        if y > 9:
+            return 3.2 * math.sqrt(max(0, 1 - ((y - 9) / 6.5) ** 2))
+        if y > -9:
+            return 3.2
+        if y > -11:
+            return 2.4
+        return -1
+
+    def fins(x, y):
+        return swept_fin(x, y, 3.2, 6.4, 1, -4, -2.5, -5)
+
+    def flare(x, y):
+        return -15.8 < y <= -11 and abs(x) < 2.6 * (1 - (-11 - y) / 4.8) + .2
+
+    def inside(x, y):
+        return abs(x) <= half(y) or fins(x, y) or flare(x, y)
+
+    def tone(x, y, edge):
+        body = abs(x) <= half(y)
+        if flare(x, y) and not body:
+            return .94 if abs(x) < 1.2 and y > -13.5 else .62
+        if edge:
+            return RIM
+        if fins(x, y) and not body:
+            return .5 if x < 0 else .38
+        if 7.5 < y < 9.2:
+            return .3  # seeker window ring
+        if y > 11 and x < 0:
+            return .9
+        if -9 < y < -7.4:
+            return .4
+        if x < -1.2:
+            return .84
+        return .68 if x < 1 else .54
+
+    return sprite(16, 32, inside, tone)
+
+
+def missile_bolt():
+    """F: rocket bolt. A short body (two thirds of the sprite) with an angled
+    nose, two long rear fins that splay outward, and a round smoke ring behind
+    it, so the missile stays compact and a homing turn reads clearly."""
+    def half(y):
+        if y > 7:
+            return 2.8 * (15.5 - y) / 8.5
+        if y > -4:
+            return 2.8
+        return -1
+
+    def fins(x, y):
+        return swept_fin(x, y, 2.6, 6.8, -.5, -4, -6.5, -8.5)
+
+    def ring(x, y):
+        d = math.hypot(x, (y + 10.5) * 1.15)
+        return 1.6 < d < 3.6
+
+    def inside(x, y):
+        return abs(x) <= half(y) or fins(x, y) or ring(x, y)
+
+    def tone(x, y, edge):
+        body = abs(x) <= half(y)
+        if ring(x, y) and not body and not fins(x, y):
+            return .8 if y > -10.5 else .54
+        if edge:
+            return RIM
+        if fins(x, y) and not body:
+            return .58 if x < 0 else .44
+        if y > 7:
+            return .88 if x < 0 else .64
+        if 1.5 < y < 3:
+            return .36
+        return .78 if x < 0 else .6
+
+    return sprite(16, 32, inside, tone)
+
+
+def flame_layered():
+    """D: classic two-layer pixel fire. A rounded front with three tapered
+    tongues trailing behind (the middle one longest), and a separate hot inner
+    flame of the same shape offset toward the front, like hand-drawn sprite fire."""
+    def shape(x, y, scale, dy):
+        y = y - dy
+        top = 6 * scale
+        if y > top:
+            return x * x + (y - top) ** 2 <= (6.8 * scale) ** 2
+        for cx, length, width in ((0, 22, 4.2), (-4.2, 15, 3), (4.2, 13, 2.8)):
+            cx *= scale
+            t = (top - y) / (length * scale)
+            if 0 <= t <= 1:
+                bend = math.sin(t * 2.6) * 1.2 * scale * (1 if cx >= 0 else -1)
+                if abs(x - cx - bend) < width * scale * (1 - t) ** .9 + .25:
+                    return True
+        return False
+
+    def inside(x, y):
+        return shape(x, y, 1, 3)
+
+    def tone(x, y, edge):
+        if edge:
+            return (.36, .85)
+        if shape(x, y, .42, 6.5):
+            return .97
+        if shape(x, y, .7, 5):
+            return .82
+        return .62
+
+    return sprite(24, 32, inside, tone)
+
+
+def flame_curl():
+    """E: ember curl. A comma of fire: a hot head with a tail that hooks to one
+    side. Alternate rounds are mirrored, so a stream churns left and right."""
+    def head(x, y):
+        return (x + .5) ** 2 + (y - 7.5) ** 2 <= 6.6 ** 2
+
+    def tail(x, y):
+        if y > 7 or y < -15.5:
+            return False
+        t = (7 - y) / 22.5
+        cx = -.5 + 6 * t * t
+        return abs(x - cx) < 6 * (1 - t) ** 1.1 + .2
+
+    def inside(x, y):
+        return head(x, y) or tail(x, y)
+
+    def tone(x, y, edge):
+        if edge:
+            return (.34, .85)
+        d = math.hypot(x + 1.5, y - 9)
+        if d < 3.2:
+            return .97
+        if head(x, y) and d < 5.6:
+            return .84
+        if head(x, y):
+            return .7
+        t = (7 - y) / 22.5
+        return .66 - t * .16
+
+    return sprite(24, 32, inside, tone)
+
+
+def flame_jet():
+    """F: plasma jet. A narrow lance of fire with wavy flanks and a long hot
+    core, closer to a flamethrower jet than a fireball; the stream overlaps into
+    a continuous tongue."""
+    def half(y):
+        if y > 15.5 or y < -15.5:
+            return -1
+        t = (15.5 - y) / 31
+        wave = math.sin(y * .7) * .7 + math.sin(y * 1.6 + 1) * .35
+        return 7 * math.sin(min(1, t * 2.4) * math.pi * .5) * (1 - t) ** .6 + wave * t
+
+    def inside(x, y):
+        return abs(x) <= half(y)
+
+    def tone(x, y, edge):
+        if edge:
+            return (.36, .82)
+        h = half(y)
+        if abs(x) < h * .35 and 0 < y < 13:
+            return .97
+        if abs(x) < h * .65:
+            return .82
+        return .62
+
+    return sprite(24, 32, inside, tone)
+
+
 # -------------------------------------------------------------------- preview sheet
 def shade(image, hue, emission=EMISSION):
     """Approximate CombatProjectile.shader: neutralize, tint, add emission."""
@@ -446,6 +653,16 @@ def main():
         tile.save(OUT / ("%s_%s.png" % ("missile" if (name, tile) in missiles else "flame", name.split()[0])))
     sheet("Player missile (blue friendly hue) - pick one", missiles, MISSILE_HUE, False, OUT / "Missile.png")
     sheet("Flamethrower round (orange friendly hue, fades over 0.55 s) - pick one", flames, FLAME_HUE, True, OUT / "Flame.png")
+    more_missiles = [("current", current_missile()), ("D arrowhead dart", missile_arrowhead()),
+                     ("E guided torpedo", missile_torpedo()), ("F rocket bolt", missile_bolt())]
+    more_flames = [("current", current_flame()), ("D layered fire", flame_layered()),
+                   ("E ember curl", flame_curl()), ("F plasma jet", flame_jet())]
+    for name, tile in more_missiles[1:]:
+        tile.save(OUT / ("missile_%s.png" % name.split()[0]))
+    for name, tile in more_flames[1:]:
+        tile.save(OUT / ("flame_%s.png" % name.split()[0]))
+    sheet("Player missile, more options - pick one", more_missiles, MISSILE_HUE, False, OUT / "MissileMore.png")
+    sheet("Flamethrower round, more options - pick one", more_flames, FLAME_HUE, True, OUT / "FlameMore.png")
 
 
 if __name__ == "__main__":
