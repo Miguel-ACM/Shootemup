@@ -171,7 +171,7 @@ async function combat() {
   try {
     const resolved=await Promise.all(events.map(async e=>{
       const c=manifest.cues.find(v=>v.id===e.id), p=state.picks[e.id];
-      const candidate=p&&['a','b','c','d','e'].includes(p.choice)?c.choices.find(v=>v.id===p.choice):c.original;
+      const candidate=(p&&c.choices.find(v=>v.id===p.choice))||c.original;
       return candidate?{...e,b:await buffer(candidate.file),gain:c.gameGain*(p?.gain??1)}:null;
     }));
     if(token!==generation)return;
@@ -190,7 +190,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){stop();return;}
   if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
   if(e.key==='ArrowRight')navigate(activeIndex+1);if(e.key==='ArrowLeft')navigate(activeIndex-1);
-  if(/^[1-5]$/.test(e.key))preview(String.fromCharCode(96+Number(e.key)),false);
+  if(/^[1-9]$/.test(e.key)&&cue().choices.some(v=>v.id===String.fromCharCode(96+Number(e.key))))preview(String.fromCharCode(96+Number(e.key)),false);
 });
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
 window.addEventListener('pagehide',stop);

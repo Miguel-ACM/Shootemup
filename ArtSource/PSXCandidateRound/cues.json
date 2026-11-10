@@ -1,0 +1,521 @@
+{
+  "schemaVersion": 1,
+  "engine": "psx",
+  "source": "local-sa3-psx-lora-v1",
+  "lora": "C:/Users/Miguel/Tools/local-sounds/finetune/psx/checkpoints/psx-sfx-lora.safetensors (step 1000)",
+  "strengths": [
+    1.0,
+    0.75
+  ],
+  "takesPerStrength": 4,
+  "maxExtraRounds": 2,
+  "publishPerCue": 4,
+  "similarityLimit": 0.9,
+  "minRawPeakDbfs": -24,
+  "human_approved": false,
+  "note": "Prompts describe the game event; they avoid the LoRA training captions' wording. The psx engine prefixes the trigger phrase 'PS1-style game sound effect'.",
+  "cues": [
+    {
+      "id": "shot1",
+      "duration": 0.25,
+      "prompt": "the player ship's main pulse gun firing one round, tight punchy energy blip with a hard attack that stops at once, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "shotElectric",
+      "duration": 0.25,
+      "prompt": "player weapon discharging one crackling electric arc, snappy spark burst, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "shotAK45",
+      "duration": 0.2,
+      "prompt": "player assault gun firing a single round, sharp mechanical crack with a touch of metal, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "shotCompanion",
+      "duration": 0.15,
+      "prompt": "a small companion drone's gun firing one light pellet, tiny ticking pop, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "shotNeedle",
+      "duration": 0.15,
+      "prompt": "player needle cannon launching one thin needle, very fast high flick, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "shotRail",
+      "duration": 0.4,
+      "prompt": "player rail driver firing a magnetic slug, hard crack with a brief metallic ring, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "shotScatter",
+      "duration": 0.25,
+      "prompt": "player scatter cannon firing a spread of pellets, chunky shotgun-like burst, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "shotShell",
+      "duration": 0.3,
+      "prompt": "player burst launcher lobbing one explosive shell, hollow thunk, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "shotDisc",
+      "duration": 0.3,
+      "prompt": "player throwing a spinning metal disc, quick whirring fling, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "shotMissile",
+      "duration": 0.4,
+      "prompt": "player missile rack releasing one small rocket, short ignition whoosh, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "shotFlame",
+      "duration": 0.2,
+      "prompt": "player flame projector spitting one short gout of fire, breathy burst, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "shotBeam",
+      "duration": 0.6,
+      "prompt": "player beam emitter switching on, energy beam ignition with a bright rising surge, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemySimple",
+      "duration": 0.15,
+      "prompt": "an enemy ship firing one round bullet, soft low blip, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemyNeedle",
+      "duration": 0.12,
+      "prompt": "an enemy firing one needle bullet, thin high tick, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemyPlasma",
+      "duration": 0.3,
+      "prompt": "an enemy launching a slow plasma orb, wobbly electric bloop, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemyMissile",
+      "duration": 0.4,
+      "prompt": "an enemy launching a guided missile, hissing launch, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemyBurst",
+      "duration": 0.25,
+      "prompt": "an enemy cannon launching a shell that will burst later, deep thump, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemyDisc",
+      "duration": 0.25,
+      "prompt": "an enemy throwing a returning disc, whirring spin launch, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemyRicochet",
+      "duration": 0.2,
+      "prompt": "an enemy firing a bouncing bolt, springy metallic twang, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemyHelix",
+      "duration": 0.25,
+      "prompt": "an enemy firing a spiralling helix round, wavering warble, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemySuspended",
+      "duration": 0.3,
+      "prompt": "an enemy launching a round that hangs in the air, short hum that stops dead, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemyScatter",
+      "duration": 0.2,
+      "prompt": "an enemy carrier releasing a cluster of small bullets, rattling burst of pops, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemyMine",
+      "duration": 0.25,
+      "prompt": "an enemy dropping a proximity mine, mechanical clunk and a single arming beep, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemyWave",
+      "duration": 0.4,
+      "prompt": "an enemy releasing an expanding energy ring, widening whoosh pulse, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "beamCharge",
+      "duration": 0.6,
+      "prompt": "an enemy laser charging up, rising electric whine as a warning, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "beamFire",
+      "duration": 0.5,
+      "prompt": "an enemy laser beam opening fire, harsh buzzing blast, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "hit1",
+      "duration": 0.1,
+      "prompt": "a player bullet striking an enemy hull, tiny metallic tick, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "hitElectric",
+      "duration": 0.15,
+      "prompt": "an electric shot striking an enemy, small sizzling snap, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "ricochetHit",
+      "duration": 0.15,
+      "prompt": "a bullet bouncing off a wall, short bright ping, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemyExplosion1",
+      "duration": 0.6,
+      "prompt": "a small enemy craft blowing up, crunchy popping blast with scattered debris, low-bitrate console sample, mono, small dark room tail",
+      "mode": "oneshot"
+    },
+    {
+      "id": "explosionHeavy",
+      "duration": 1.2,
+      "prompt": "a big armoured ship exploding, heavy boom with crumbling metal, low-bitrate console sample, mono, small dark room tail",
+      "mode": "oneshot"
+    },
+    {
+      "id": "shellBurst",
+      "duration": 0.35,
+      "prompt": "an enemy shell detonating in mid-air into shrapnel, compact cracking burst, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "hurt1",
+      "duration": 0.35,
+      "prompt": "the player's ship taking a hit, harsh crunchy jolt with a short downward glitch, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "playerDead",
+      "duration": 2.0,
+      "prompt": "the player's ship destroyed, big blast collapsing into a falling electronic whine, low-bitrate console sample, mono, small dark room tail",
+      "mode": "oneshot"
+    },
+    {
+      "id": "blankbullet",
+      "duration": 0.8,
+      "prompt": "a screen-clearing shield pulse wiping out every bullet, swelling whoosh with a sparkly wash, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "bossWarning",
+      "duration": 1.5,
+      "prompt": "warning that a boss is approaching, two-tone alarm blare, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemChargeRelease",
+      "duration": 0.3,
+      "prompt": "a wind-up cannon releasing its stored charge, firm low punch with a brief electric crack, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemChargeBlast",
+      "duration": 0.55,
+      "prompt": "a small plasma blast that lingers, low thump with a grainy electric fade, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemFlameSustain",
+      "duration": 1.2,
+      "prompt": "a small gas flamethrower burning steadily, breathy combustion hiss with light crackle, low-bitrate console sample, mono, no room sound",
+      "mode": "loop"
+    },
+    {
+      "id": "itemDepthLaunch",
+      "duration": 0.25,
+      "prompt": "a small bomb rack releasing one charge, latch clunk and a short hollow thud, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemDepthBurst",
+      "duration": 0.4,
+      "prompt": "a small fragmentation charge bursting, tight low thump with a spray of tiny metal bits, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemBearing",
+      "duration": 0.2,
+      "prompt": "a handful of steel ball bearings scattering off a plate, crisp brief rattle, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemProximity",
+      "duration": 0.28,
+      "prompt": "a proximity fuse setting off a small charge, muted electric snap and tight pop, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemSalvage",
+      "duration": 0.3,
+      "prompt": "a small machine turning scrap into coins, light brass clink and a latch click, short and low-key, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemCounter",
+      "duration": 0.25,
+      "prompt": "a small energy shield deflecting a hit back, muted metal catch with an electric snap, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemReserve",
+      "duration": 0.2,
+      "prompt": "a spare power cell taking in charge, soft rounded blip that rises a little, short and low-key, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemBurn",
+      "duration": 0.24,
+      "prompt": "fuel catching fire on a steel hull, soft breathy ignition crackle, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemPoison",
+      "duration": 0.3,
+      "prompt": "a small bubble of toxic goo bursting, low wet gurgling pop, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemChain",
+      "duration": 0.4,
+      "prompt": "a small powder charge going off in a chain, crunchy low thump with a hot crackle, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemReturn",
+      "duration": 0.2,
+      "prompt": "a shot curving back like a boomerang, compact swish that falls in pitch, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemFlameIgnite",
+      "duration": 0.22,
+      "prompt": "a gas torch igniting, small igniter click and a breathy flame catch, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemFlameRelease",
+      "duration": 0.2,
+      "prompt": "a gas torch valve shutting off, short soft puff of released pressure, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemSplit",
+      "duration": 0.18,
+      "prompt": "a shot splitting in two, sharp paired metallic click with almost no tail, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemRicochet",
+      "duration": 0.18,
+      "prompt": "a small steel round glancing off at an angle, bright ping that drops in pitch, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemBattery",
+      "duration": 0.24,
+      "prompt": "a small guided rocket igniting, short pressurised motor kick with an electric snap, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemFocus",
+      "duration": 0.2,
+      "prompt": "a targeting lens locking on, small electronic chirp rising a little, short and low-key, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemGum",
+      "duration": 0.18,
+      "prompt": "a sticky gum bubble popping, soft elastic wet snap, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "itemCapReady",
+      "duration": 0.25,
+      "prompt": "a capacitor reaching full charge, soft electric tick with a short rising chirp, short and low-key, low-bitrate console sample, mono, no room sound",
+      "mode": "oneshot"
+    },
+    {
+      "id": "enemyHit",
+      "duration": 0.15,
+      "prompt": "a player bullet striking a small enemy craft, tiny dry metallic tick, very short, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "bossHit",
+      "duration": 0.2,
+      "prompt": "a player bullet striking a huge armored boss hull, short heavy metal clank with a dull thud, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "explosionLarge",
+      "duration": 1.5,
+      "prompt": "a giant boss ship blasting apart one armor stage, big bright burst with crackling debris, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "bossDeath",
+      "duration": 3,
+      "prompt": "a massive warship breaking apart in a chain of explosions ending in one huge final blast and rumbling debris, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "coin",
+      "duration": 0.3,
+      "prompt": "collecting a single small gold coin, bright short metallic ting, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "mana",
+      "duration": 0.3,
+      "prompt": "absorbing a small energy orb, soft rising glassy blip, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "itemGet",
+      "duration": 0.6,
+      "prompt": "picking up a new upgrade, two short soft rising synth notes, modest and brief, no fanfare, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "uiConfirm",
+      "duration": 0.3,
+      "prompt": "menu purchase confirmed, crisp two-tone click chime, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "uiSkip",
+      "duration": 0.3,
+      "prompt": "menu choice dismissed, short soft falling blip, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "heal",
+      "duration": 0.8,
+      "prompt": "ship hull repaired, gentle rising shimmer with a warm tone, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "timeStop",
+      "duration": 1.2,
+      "prompt": "time freezing, a deep reversed whoosh collapsing into a low clock-like thunk, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "powerdown",
+      "duration": 0.8,
+      "prompt": "a ship system shutting off, descending electrical whine fading out, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "overdrive",
+      "duration": 1.0,
+      "prompt": "engines kicking into overdrive, aggressive rising electric surge with a revving buzz, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "roll",
+      "duration": 0.4,
+      "prompt": "a small starfighter barrel-rolling sideways, quick airy whoosh, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "ready",
+      "duration": 0.4,
+      "prompt": "an active ability fully recharged, short bright ping, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "shatter",
+      "duration": 0.7,
+      "prompt": "an energy crystal shattering into fragments, glassy crash with tinkling shards, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "capacitor",
+      "duration": 0.8,
+      "prompt": "a capacitor discharging all at once, electric crack and zap, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "fan",
+      "duration": 0.8,
+      "prompt": "a spinning fan blade spraying rounds, whirring motor rising quickly, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "frost",
+      "duration": 0.8,
+      "prompt": "a burst of freezing cold, crackling ice forming with a chilly hiss, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "decoy",
+      "duration": 0.6,
+      "prompt": "a holographic decoy ship flickering into existence, warbling digital blip, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "popcorn",
+      "duration": 0.2,
+      "prompt": "a small kernel popping, tiny soft pop, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    },
+    {
+      "id": "static",
+      "duration": 0.6,
+      "prompt": "a static charge field crackling around the ship, short buzzing electrical crackle, low-bitrate console sample, mono",
+      "mode": "oneshot",
+      "target": "soundPicksArtifact"
+    }
+  ]
+}

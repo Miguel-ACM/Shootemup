@@ -49,7 +49,7 @@ are included as a level-matched reference. Cues without existing audio explicitl
 show **Currently silent**; **Keep current** preserves that silence.
 
 Play once, compare A through E, or repeat at 1–20 shots per second for 3, 8, 20
-or 60 seconds. Escape stops everything. Keys 1–5 audition A–E; arrow keys navigate.
+or 60 seconds. Escape stops everything. Keys 1–5 audition A–E (1–9 when a cue has more takes); arrow keys navigate.
 Playback stops when the page is hidden. The combat preview uses your picks and
 falls back to current behavior for unpicked or rejected effects. Rapid-repeat
 playback reserves headroom for overlapping tails; it is an audition aid, not an
@@ -176,3 +176,22 @@ are. Hashes are verified before writing, previous imported takes are backed up a
 existing Unity GUIDs are preserved. This importer never changes the selection files,
 original item names, original bank takes or older Unity audio. Absent approvals,
 new runtime cue hooks retain their previous sound or silence.
+
+## PSX LoRA round
+
+Opt-in PSX-style takes come from the generator's `psx` engine (Small-SFX plus the local LoRA in
+`Tools/local-sounds/finetune/psx`). Prompts describe each game event and live in
+`ArtSource/PSXCandidateRound/cues.json`; each cue is generated at LoRA strength 1.0 and 0.75.
+
+```powershell
+$taskSfxPython = "$env:USERPROFILE/Tools/local-sounds/.venv/Scripts/python.exe"
+& $taskSfxPython Tools/psx_sfx_round.py --dry-run
+& $taskSfxPython Tools/psx_sfx_round.py --start
+& $taskSfxPython Tools/psx_sfx_round.py --publish
+```
+
+Takes at least 0.90 similar to a LoRA training clip, near-silent raw output, hard-clipped output
+and takes the generator's checks failed are never published. Publishing appends letters F-I after
+a cue's existing choices, level-matched to them; existing letters, `selections.json` and its backup
+stay unchanged, and a cue that already has PSX takes is skipped. Each PSX choice records its LoRA
+strength and closest training clip. Keys 1-9 audition the letters a cue has.

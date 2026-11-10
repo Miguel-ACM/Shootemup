@@ -15,6 +15,7 @@ import urllib.request
 import wave
 
 import server
+PSX='local-sa3-psx-lora-v1'
 
 
 class SelectionTests(unittest.TestCase):
@@ -39,9 +40,10 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual(len({cue['id'] for cue in self.manifest['cues']}),len(self.manifest['cues']))
         count=0
         for cue in original:
-            self.assertEqual([c['id'] for c in cue['choices']],list('abcde'))
-            self.assertEqual(len({c['sha256'] for c in cue['choices']}),5)
-            for choice in cue['choices']:
+            first=[c for c in cue['choices'] if c.get('source')!=PSX]
+            self.assertEqual([c['id'] for c in first],list('abcde'))
+            self.assertEqual(len({c['sha256'] for c in first}),5)
+            for choice in first:
                 path=server.PUBLIC/choice['file']
                 self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),choice['sha256'])
                 with wave.open(str(path),'rb') as f:
@@ -56,9 +58,10 @@ class SelectionTests(unittest.TestCase):
         for cue in self.manifest['cues']:
             if cue.get('source')!='local-sa3-item-effects-v1': continue
             self.assertEqual(cue['id'],cue['unityCue'])
-            self.assertTrue(1<=len(cue['choices'])<=5)
-            self.assertEqual([choice['id'] for choice in cue['choices']],list('abcde')[:len(cue['choices'])])
-            for choice in cue['choices']:
+            first=[c for c in cue['choices'] if c.get('source')!=PSX]
+            self.assertTrue(1<=len(first)<=5)
+            self.assertEqual([choice['id'] for choice in first],list('abcde')[:len(first)])
+            for choice in first:
                 path=server.PUBLIC/choice['file']
                 self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),choice['sha256'])
                 self.assertFalse(choice['human_approved'])
@@ -66,6 +69,17 @@ class SelectionTests(unittest.TestCase):
                 with wave.open(str(path),'rb') as audio:
                     self.assertEqual((audio.getsampwidth(),audio.getframerate()),(3,48000))
                     self.assertIn(audio.getnchannels(),(1,2))
+    def test_psx_takes_are_appended_after_existing_letters(self):
+        for cue in self.manifest['cues']:
+            ids=[c['id'] for c in cue['choices']]
+            psx=[c for c in cue['choices'] if c.get('source')==PSX]
+            self.assertEqual(ids,list('abcdefghi')[:len(ids)])
+            self.assertEqual(cue['choices'][len(cue['choices'])-len(psx):],psx)
+            for choice in psx:
+                path=server.PUBLIC/choice['file']
+                self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),choice['sha256'])
+                self.assertFalse(choice['human_approved'])
+                self.assertLess(choice['maxTrainingSimilarity'],.9)
     def test_round_trip_and_backup(self):
         payload=server.empty();payload['picks']={'shot1':{'choice':'c','gain':.85,'note':'Bite, less tail. "Steel" ✓'}}
         self.assertEqual(self.request('/api/selections',payload)[0],200)
