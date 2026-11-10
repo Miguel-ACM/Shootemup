@@ -1,5 +1,11 @@
 # Seraph Judicator (Heaven): proposed phases
 
+**Final choice (Miguel, November 2026).** The shipping `Cards()` in `SeraphJudicatorBoss.cs` now flies one concept per phase. The `.Proposed.cs` file is gone.
+
+- **Phase one:** Wheel Within a Wheel, as proposed.
+- **Phase two:** Six Wings with about 40% fewer rounds. Stars bead every wing, the skirt has a star layer, and the Holy eyes drop star chords.
+- **Phase three (Hard):** Last Trumpet. The former phase three's lance frames (the trumpet column with lancets, and the covenant's two scythes) alternate movement by movement. Its bullets are bunched knots (a star at the heart of feathers) from the wheels' lower rims around a moving aisle, with sparse single stars and pearls and a light rain from the upper rim. Nothing in phase three is aimed. The older proposal text below is kept for reference.
+
 Code: `Assets/Scripts/Enemies/Bosses/SeraphJudicatorBoss.Proposed.cs`. The only shipping edit is the `partial` keyword on the class.
 
 Each phase is one concept that runs for the whole phase. It develops in movements of about 5.5 s. Each movement opens with a prayer and a charge at the core eye and ends with a short rest, plus a longer breath after every fourth. The movement number picks one of four variations, and each completed cycle of four escalates. Over a 60 s recording that is about ten movements, so every variation plays twice and the second cycle is visibly faster.
