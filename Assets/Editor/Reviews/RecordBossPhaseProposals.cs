@@ -12,8 +12,8 @@ using UnityEngine;
 //   Unity.exe -projectPath <copy> -executeMethod RecordBossPhaseProposals.Current
 //   Unity.exe -projectPath <copy> -executeMethod RecordBossPhaseProposals.Proposed
 // Optional: -bossFilter <substring of the clip name> records only matching phases.
-// Frames land in ArtSource/BossPhaseProposals/Frames/<set>/<clip>; Tools/compose_boss_proposals.py
-// turns them into side-by-side videos.
+// Each clip is encoded to ArtSource/BossPhaseProposals/Clips/<set>/<clip>.mp4 (play field only);
+// Tools/compose_boss_proposals.py puts the two sets side by side.
 [InitializeOnLoad]
 public static class RecordBossPhaseProposals
 {
@@ -45,7 +45,10 @@ public static class RecordBossPhaseProposals
 public sealed class BossPhaseProposalRecording : MonoBehaviour
 {
     public string Set;
-    const int Frames = 600; // 20 seconds at 30 fps once the phase is under way.
+    const int Frames = 1800; // 60 seconds at 30 fps once the phase is under way.
+    const string Ffmpeg = @"C:\Program Files\ffmpeg\bin\ffmpeg.exe";
+    // The Wave Watcher frames the 9:16 play field between its two side panels.
+    const string Crop = "crop=trunc(iw*270/640/2)*2:ih:trunc(iw*185/640/2)*2:0";
     static readonly MethodInfo PushToPhase = typeof(WaveWatcher).GetMethod("PushToPhase", BindingFlags.Static | BindingFlags.NonPublic);
 
     static string Filter()
@@ -122,12 +125,39 @@ public sealed class BossPhaseProposalRecording : MonoBehaviour
                     File.WriteAllBytes(folder + "/" + f.ToString("D4") + ".jpg", texture.EncodeToJPG(88));
                     Destroy(texture);
                 }
+                Encode(folder, root + "/Clips/" + Set + "/" + clip + ".mp4");
                 File.AppendAllText(progress, clip + (boss != null && boss.CurrentPhase >= phase ? "" : " (phase not reached)") + "\n");
             }
         }
         Time.captureDeltaTime = 0;
-        File.AppendAllText(progress, "Complete: Normal, third phase previewed, 30 fps, observer without player fire, silent.\n");
+        foreach (var encoder in encoders)
+            encoder.WaitForExit();
+        File.AppendAllText(progress, "Complete: Normal, third phase previewed, 60 s at 30 fps, observer without player fire, silent.\n");
         EditorApplication.Exit(0);
+    }
+
+    // A minute of 2x frames is about 400 MB, so each clip is cropped and encoded in the
+    // background while the next one records, and its frames are deleted once encoded.
+    static readonly System.Collections.Generic.List<System.Diagnostics.Process> encoders = new System.Collections.Generic.List<System.Diagnostics.Process>();
+
+    static void Encode(string frames, string target)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(target));
+        var start = new System.Diagnostics.ProcessStartInfo(Ffmpeg,
+            "-y -loglevel error -framerate 30 -i \"" + frames + "/%04d.jpg\" -vf " + Crop +
+            ",format=yuv420p -c:v libx264 -crf 21 -preset fast \"" + target + "\"")
+        {
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        var process = new System.Diagnostics.Process { StartInfo = start, EnableRaisingEvents = true };
+        encoders.Add(process);
+        process.Exited += (sender, args) =>
+        {
+            if (process.ExitCode == 0 && File.Exists(target))
+                Directory.Delete(frames, true);
+        };
+        process.Start();
     }
 
     static DistrictBoss FindLeadBoss(int phase)
