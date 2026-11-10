@@ -187,6 +187,20 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 - Snow's second boss, the Icebreaker, has a full score. Phase one is pack ice: Ramming Speed (rams to mid-arena firing mirrored fracture fans, with shoulder spray that freezes and re-aims over the top) and Fracture Sheet (whole-width frozen sheets whose visible crack opens under the bow or shoulders). Phase two is open water: Cut Channel (a Z run lined with frozen walls that zip shut behind it) and Calving Bergs (arcing bergs that rebound and split at their apex over swinging pressure ridges). Hard's Icequake combines rams, sheets and a zipped cut. Base health stays 2100; fire leaves only the prow and shoulders.
 
+## Boss phase decisions (10 November 2026)
+
+Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chose per phase. These supersede earlier per-boss card notes where they conflict.
+- Plains bomber: old phase 1; new Skywriting (2) and Harvest Fireworks (3). Red Kite: old phase 1; new Scissor Kite and Hunting Stoop with less clutter. Threshing Drum: Winnowing (1) with more rounds and no aimed ones; the old furrow phase (2) without bouncing, with more circles and obstacles inside the furrow; Scything (3).
+- Tunnel: old phase 1; Buzzsaw Bloom (2) without bouncing rounds; old phase 3 where the giant round fires only bright long rounds and wall hits fire only dark circles.
+- Icebreaker: Bow Wave; Closing Pack with snow for the side rounds; Shattered Icicles that also pressures the top. Snow fortress: Sleet Lattice made of falling snow instead of long rounds; Avalanche; Diamond Dust.
+- Thunder keeps its old phases. The Faraday Cage idea (horizontal bars with doors to pass through) becomes an ordinary Thunder wave enemy. All Thunder boss minions explode when it dies.
+- City duo: rounds that stop and move again are long bullets already pointing where they will move. Switchyard: reworked around its lights stopping and redirecting rounds, with a model whose lamps read clearly.
+- Desert: the new Mine Caravan, Simoom and Lotus Mirage; swaying rounds travel as worm-like lines so they stay predictable.
+- Candyland: rethought completely with a new model and calmer movement, keeping a bit of erratic, attention-switching character and its hearts.
+- Space: old cards; phase one's fronts close as a true circle around the black hole from beyond the screen; no lasers, no aimed rounds; its orbiting-circle attack is more threatening.
+- Underwater: old cards with less clutter and no bouncing. Hell crab: old cards plus the ember cage closing from multiple directions; claws and their animation reworked so their motion draws beautiful patterns.
+- Heaven: Wheel Within a Wheel (1); Six Wings (2) with far fewer rounds and more stars; old phase-3 lasers with clustered and sparse unaimed rounds. Void: old cards without aimed rounds, with more crescents (moons), kunai and separated giant orbs.
+
 ## Items and decisions
 
 - Preserve Miguel's original item names and identities. Another arm and Twerp are deliberately named and are fine. Make an item's behavior recognizable through its effects and sound; do not rename or redesign original items to explain their mechanics.
