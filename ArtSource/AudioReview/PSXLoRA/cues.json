@@ -1,0 +1,2064 @@
+[
+ {
+  "id": "shot1",
+  "label": "Base gun",
+  "group": "Shots",
+  "repeat": 0.075,
+  "current": "game_shot1.wav",
+  "options": {
+   "1": {
+    "file": "shot1_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.71
+   },
+   "2": {
+    "file": "shot1_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.8
+   }
+  }
+ },
+ {
+  "id": "enemyHit",
+  "label": "Hit on enemy",
+  "group": "Hits",
+  "repeat": 0.06,
+  "current": "game_enemyHit.wav",
+  "options": {
+   "1": {
+    "file": "enemyHit_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.78
+   },
+   "2": {
+    "file": "enemyHit_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.79
+   }
+  }
+ },
+ {
+  "id": "bossHit",
+  "label": "Hit on boss",
+  "group": "Hits",
+  "repeat": 0.08,
+  "current": "game_bossHit.wav",
+  "options": {
+   "1": {
+    "file": "bossHit_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.79
+   },
+   "2": {
+    "file": "bossHit_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.77
+   },
+   "3": {
+    "file": "bossHit_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.86
+   }
+  }
+ },
+ {
+  "id": "hurt1",
+  "label": "Player hurt",
+  "group": "Hits",
+  "repeat": null,
+  "current": "game_hurt1.wav",
+  "options": {
+   "1": {
+    "file": "hurt1_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.75
+   },
+   "2": {
+    "file": "hurt1_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.85
+   },
+   "3": {
+    "file": "hurt1_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.78
+   },
+   "4": {
+    "file": "hurt1_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.73
+   }
+  }
+ },
+ {
+  "id": "enemyExplosion1",
+  "label": "Enemy explosion",
+  "group": "Explosions",
+  "repeat": 0.22,
+  "current": "game_enemyExplosion1.wav",
+  "options": {
+   "1": {
+    "file": "enemyExplosion1_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.86
+   },
+   "2": {
+    "file": "enemyExplosion1_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.82
+   },
+   "3": {
+    "file": "enemyExplosion1_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.84
+   },
+   "4": {
+    "file": "enemyExplosion1_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.84
+   }
+  }
+ },
+ {
+  "id": "explosionLarge",
+  "label": "Boss phase change",
+  "group": "Explosions",
+  "repeat": null,
+  "current": "game_explosionLarge.wav",
+  "options": {
+   "1": {
+    "file": "explosionLarge_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.89
+   },
+   "2": {
+    "file": "explosionLarge_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.89
+   }
+  }
+ },
+ {
+  "id": "playerDead",
+  "label": "Player death",
+  "group": "Explosions",
+  "repeat": null,
+  "current": "game_playerDead.wav",
+  "options": {
+   "1": {
+    "file": "playerDead_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.88
+   },
+   "2": {
+    "file": "playerDead_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.89
+   }
+  }
+ },
+ {
+  "id": "bossDeath",
+  "label": "Boss death",
+  "group": "Bosses",
+  "repeat": null,
+  "current": "game_bossDeath.wav",
+  "options": {}
+ },
+ {
+  "id": "bossWarning",
+  "label": "Boss warning",
+  "group": "Bosses",
+  "repeat": null,
+  "current": "game_bossWarning.wav",
+  "options": {
+   "1": {
+    "file": "bossWarning_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.79
+   },
+   "2": {
+    "file": "bossWarning_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.83
+   },
+   "3": {
+    "file": "bossWarning_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.78
+   },
+   "4": {
+    "file": "bossWarning_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.82
+   }
+  }
+ },
+ {
+  "id": "coin",
+  "label": "Coin",
+  "group": "Pickups",
+  "repeat": 0.09,
+  "current": "game_coin.wav",
+  "options": {
+   "1": {
+    "file": "coin_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.8
+   },
+   "2": {
+    "file": "coin_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.67
+   },
+   "3": {
+    "file": "coin_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.71
+   },
+   "4": {
+    "file": "coin_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.77
+   }
+  }
+ },
+ {
+  "id": "mana",
+  "label": "Energy",
+  "group": "Pickups",
+  "repeat": 0.15,
+  "current": "game_mana.wav",
+  "options": {
+   "1": {
+    "file": "mana_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.75
+   },
+   "2": {
+    "file": "mana_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.77
+   },
+   "3": {
+    "file": "mana_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.77
+   },
+   "4": {
+    "file": "mana_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.75
+   }
+  }
+ },
+ {
+  "id": "itemGet",
+  "label": "Item chosen",
+  "group": "Pickups",
+  "repeat": null,
+  "current": "game_itemGet.wav",
+  "options": {
+   "1": {
+    "file": "itemGet_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.76
+   },
+   "2": {
+    "file": "itemGet_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.76
+   },
+   "3": {
+    "file": "itemGet_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.76
+   },
+   "4": {
+    "file": "itemGet_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.76
+   }
+  }
+ },
+ {
+  "id": "uiConfirm",
+  "label": "Purchase / confirm",
+  "group": "UI",
+  "repeat": null,
+  "current": "game_uiConfirm.wav",
+  "options": {
+   "1": {
+    "file": "uiConfirm_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.72
+   },
+   "2": {
+    "file": "uiConfirm_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.73
+   },
+   "3": {
+    "file": "uiConfirm_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.67
+   },
+   "4": {
+    "file": "uiConfirm_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.74
+   }
+  }
+ },
+ {
+  "id": "uiSkip",
+  "label": "Skip",
+  "group": "UI",
+  "repeat": null,
+  "current": "game_uiSkip.wav",
+  "options": {
+   "1": {
+    "file": "uiSkip_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.79
+   },
+   "2": {
+    "file": "uiSkip_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.78
+   },
+   "3": {
+    "file": "uiSkip_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.88
+   },
+   "4": {
+    "file": "uiSkip_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.79
+   }
+  }
+ },
+ {
+  "id": "blankbullet",
+  "label": "Screen clear / shield",
+  "group": "Items",
+  "repeat": null,
+  "current": "game_blankbullet.wav",
+  "options": {
+   "1": {
+    "file": "blankbullet_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.82
+   },
+   "2": {
+    "file": "blankbullet_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.76
+   },
+   "3": {
+    "file": "blankbullet_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.81
+   },
+   "4": {
+    "file": "blankbullet_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.84
+   }
+  }
+ },
+ {
+  "id": "heal",
+  "label": "Heal",
+  "group": "Items",
+  "repeat": null,
+  "current": "game_heal.wav",
+  "options": {
+   "1": {
+    "file": "heal_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.68
+   },
+   "2": {
+    "file": "heal_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.64
+   },
+   "3": {
+    "file": "heal_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.73
+   },
+   "4": {
+    "file": "heal_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.78
+   }
+  }
+ },
+ {
+  "id": "timeStop",
+  "label": "Time stop",
+  "group": "Items",
+  "repeat": null,
+  "current": "game_timeStop.wav",
+  "options": {
+   "1": {
+    "file": "timeStop_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.74
+   },
+   "2": {
+    "file": "timeStop_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.76
+   },
+   "3": {
+    "file": "timeStop_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.79
+   },
+   "4": {
+    "file": "timeStop_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.76
+   }
+  }
+ },
+ {
+  "id": "powerdown",
+  "label": "Power down",
+  "group": "Items",
+  "repeat": null,
+  "current": "game_powerdown.wav",
+  "options": {
+   "1": {
+    "file": "powerdown_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.84
+   },
+   "2": {
+    "file": "powerdown_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.85
+   },
+   "3": {
+    "file": "powerdown_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.82
+   }
+  }
+ },
+ {
+  "id": "overdrive",
+  "label": "Overdrive",
+  "group": "Items",
+  "repeat": null,
+  "current": "game_overdrive.wav",
+  "options": {
+   "1": {
+    "file": "overdrive_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.78
+   },
+   "2": {
+    "file": "overdrive_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.74
+   }
+  }
+ },
+ {
+  "id": "roll",
+  "label": "Roll / dash",
+  "group": "Items",
+  "repeat": null,
+  "current": "game_roll.wav",
+  "options": {
+   "1": {
+    "file": "roll_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.8
+   },
+   "2": {
+    "file": "roll_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.79
+   }
+  }
+ },
+ {
+  "id": "ready",
+  "label": "Ready",
+  "group": "Items",
+  "repeat": null,
+  "current": "game_ready.wav",
+  "options": {
+   "1": {
+    "file": "ready_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.82
+   },
+   "2": {
+    "file": "ready_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.83
+   },
+   "3": {
+    "file": "ready_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.8
+   },
+   "4": {
+    "file": "ready_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.85
+   }
+  }
+ },
+ {
+  "id": "shatter",
+  "label": "Shatter",
+  "group": "Items",
+  "repeat": null,
+  "current": "game_shatter.wav",
+  "options": {
+   "1": {
+    "file": "shatter_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.75
+   },
+   "2": {
+    "file": "shatter_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.66
+   },
+   "3": {
+    "file": "shatter_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.75
+   },
+   "4": {
+    "file": "shatter_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.77
+   }
+  }
+ },
+ {
+  "id": "capacitor",
+  "label": "Capacitor",
+  "group": "Items",
+  "repeat": null,
+  "current": "game_capacitor.wav",
+  "options": {
+   "1": {
+    "file": "capacitor_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.66
+   },
+   "2": {
+    "file": "capacitor_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.76
+   },
+   "3": {
+    "file": "capacitor_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.48
+   },
+   "4": {
+    "file": "capacitor_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.66
+   }
+  }
+ },
+ {
+  "id": "fan",
+  "label": "Fan",
+  "group": "Items",
+  "repeat": null,
+  "current": "game_fan.wav",
+  "options": {
+   "1": {
+    "file": "fan_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.5
+   },
+   "2": {
+    "file": "fan_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.37
+   },
+   "3": {
+    "file": "fan_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.31
+   },
+   "4": {
+    "file": "fan_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.42
+   }
+  }
+ },
+ {
+  "id": "frost",
+  "label": "Frost",
+  "group": "Items",
+  "repeat": null,
+  "current": "game_frost.wav",
+  "options": {
+   "1": {
+    "file": "frost_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.87
+   },
+   "2": {
+    "file": "frost_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.88
+   },
+   "3": {
+    "file": "frost_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.84
+   },
+   "4": {
+    "file": "frost_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.89
+   }
+  }
+ },
+ {
+  "id": "decoy",
+  "label": "Decoy",
+  "group": "Items",
+  "repeat": null,
+  "current": "game_decoy.wav",
+  "options": {
+   "1": {
+    "file": "decoy_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.83
+   },
+   "2": {
+    "file": "decoy_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.71
+   },
+   "3": {
+    "file": "decoy_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.8
+   },
+   "4": {
+    "file": "decoy_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.78
+   }
+  }
+ },
+ {
+  "id": "popcorn",
+  "label": "Popcorn",
+  "group": "Items",
+  "repeat": 0.12,
+  "current": "game_popcorn.wav",
+  "options": {
+   "1": {
+    "file": "popcorn_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.88
+   },
+   "2": {
+    "file": "popcorn_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.89
+   },
+   "3": {
+    "file": "popcorn_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.89
+   },
+   "4": {
+    "file": "popcorn_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.82
+   }
+  }
+ },
+ {
+  "id": "static",
+  "label": "Static",
+  "group": "Items",
+  "repeat": null,
+  "current": "game_static.wav",
+  "options": {
+   "1": {
+    "file": "static_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.73
+   },
+   "2": {
+    "file": "static_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.7
+   },
+   "3": {
+    "file": "static_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.75
+   },
+   "4": {
+    "file": "static_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.71
+   }
+  }
+ },
+ {
+  "id": "shotElectric",
+  "label": "Electricity",
+  "group": "Player weapons",
+  "repeat": null,
+  "current": "lab_shotElectric.wav",
+  "options": {
+   "1": {
+    "file": "shotElectric_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.73
+   },
+   "2": {
+    "file": "shotElectric_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.74
+   },
+   "3": {
+    "file": "shotElectric_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.83
+   },
+   "4": {
+    "file": "shotElectric_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.71
+   }
+  }
+ },
+ {
+  "id": "shotAK45",
+  "label": "AK45 / diagonal fire",
+  "group": "Player weapons",
+  "repeat": null,
+  "current": "lab_shotAK45.wav",
+  "options": {
+   "1": {
+    "file": "shotAK45_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.81
+   },
+   "2": {
+    "file": "shotAK45_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.77
+   },
+   "3": {
+    "file": "shotAK45_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.78
+   },
+   "4": {
+    "file": "shotAK45_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.84
+   }
+  }
+ },
+ {
+  "id": "shotCompanion",
+  "label": "Companion gun",
+  "group": "Player weapons",
+  "repeat": null,
+  "current": "lab_shotCompanion.wav",
+  "options": {
+   "1": {
+    "file": "shotCompanion_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.78
+   },
+   "2": {
+    "file": "shotCompanion_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.79
+   },
+   "3": {
+    "file": "shotCompanion_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.82
+   },
+   "4": {
+    "file": "shotCompanion_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.74
+   }
+  }
+ },
+ {
+  "id": "shotNeedle",
+  "label": "Needle cannon",
+  "group": "Player weapons",
+  "repeat": null,
+  "current": "lab_shotNeedle.wav",
+  "options": {
+   "1": {
+    "file": "shotNeedle_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.89
+   },
+   "2": {
+    "file": "shotNeedle_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.85
+   },
+   "3": {
+    "file": "shotNeedle_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.85
+   },
+   "4": {
+    "file": "shotNeedle_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.85
+   }
+  }
+ },
+ {
+  "id": "shotRail",
+  "label": "Rail driver",
+  "group": "Player weapons",
+  "repeat": null,
+  "current": "lab_shotRail.wav",
+  "options": {
+   "1": {
+    "file": "shotRail_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.85
+   },
+   "2": {
+    "file": "shotRail_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.84
+   },
+   "3": {
+    "file": "shotRail_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.86
+   },
+   "4": {
+    "file": "shotRail_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.83
+   }
+  }
+ },
+ {
+  "id": "shotScatter",
+  "label": "Scatter cannon",
+  "group": "Player weapons",
+  "repeat": null,
+  "current": "lab_shotScatter.wav",
+  "options": {
+   "1": {
+    "file": "shotScatter_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.85
+   },
+   "2": {
+    "file": "shotScatter_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.86
+   }
+  }
+ },
+ {
+  "id": "shotShell",
+  "label": "Burst launcher",
+  "group": "Player weapons",
+  "repeat": null,
+  "current": "lab_shotShell.wav",
+  "options": {
+   "1": {
+    "file": "shotShell_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.88
+   },
+   "2": {
+    "file": "shotShell_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.86
+   },
+   "3": {
+    "file": "shotShell_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.88
+   },
+   "4": {
+    "file": "shotShell_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.84
+   }
+  }
+ },
+ {
+  "id": "shotDisc",
+  "label": "Disc thrower",
+  "group": "Player weapons",
+  "repeat": null,
+  "current": "lab_shotDisc.wav",
+  "options": {
+   "1": {
+    "file": "shotDisc_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.78
+   },
+   "2": {
+    "file": "shotDisc_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.79
+   },
+   "3": {
+    "file": "shotDisc_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.73
+   },
+   "4": {
+    "file": "shotDisc_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.73
+   }
+  }
+ },
+ {
+  "id": "shotMissile",
+  "label": "Swarm rack / missile",
+  "group": "Player weapons",
+  "repeat": null,
+  "current": "lab_shotMissile.wav",
+  "options": {
+   "1": {
+    "file": "shotMissile_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.75
+   },
+   "2": {
+    "file": "shotMissile_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.77
+   },
+   "3": {
+    "file": "shotMissile_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.65
+   },
+   "4": {
+    "file": "shotMissile_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.82
+   }
+  }
+ },
+ {
+  "id": "shotFlame",
+  "label": "Flame projector",
+  "group": "Player weapons",
+  "repeat": null,
+  "current": "lab_shotFlame.wav",
+  "options": {
+   "1": {
+    "file": "shotFlame_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.8
+   },
+   "2": {
+    "file": "shotFlame_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.78
+   }
+  }
+ },
+ {
+  "id": "shotBeam",
+  "label": "Beam emitter \u00b7 fire",
+  "group": "Player weapons",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "shotBeam_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.74
+   },
+   "2": {
+    "file": "shotBeam_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.73
+   },
+   "3": {
+    "file": "shotBeam_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.76
+   },
+   "4": {
+    "file": "shotBeam_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.8
+   }
+  }
+ },
+ {
+  "id": "enemySimple",
+  "label": "Standard round",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "enemySimple_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.86
+   },
+   "2": {
+    "file": "enemySimple_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.89
+   },
+   "3": {
+    "file": "enemySimple_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.79
+   }
+  }
+ },
+ {
+  "id": "enemyNeedle",
+  "label": "Needle round",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "enemyNeedle_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.86
+   },
+   "2": {
+    "file": "enemyNeedle_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.82
+   },
+   "3": {
+    "file": "enemyNeedle_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.87
+   }
+  }
+ },
+ {
+  "id": "enemyPlasma",
+  "label": "Plasma orb",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "enemyPlasma_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.84
+   },
+   "2": {
+    "file": "enemyPlasma_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.83
+   },
+   "3": {
+    "file": "enemyPlasma_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.86
+   },
+   "4": {
+    "file": "enemyPlasma_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.84
+   }
+  }
+ },
+ {
+  "id": "enemyMissile",
+  "label": "Guided missile",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "enemyMissile_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.79
+   },
+   "2": {
+    "file": "enemyMissile_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.74
+   },
+   "3": {
+    "file": "enemyMissile_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.82
+   },
+   "4": {
+    "file": "enemyMissile_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.82
+   }
+  }
+ },
+ {
+  "id": "enemyBurst",
+  "label": "Burst shell \u00b7 launch",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "enemyBurst_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.89
+   },
+   "2": {
+    "file": "enemyBurst_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.85
+   }
+  }
+ },
+ {
+  "id": "enemyDisc",
+  "label": "Returning disc",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "enemyDisc_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.78
+   },
+   "2": {
+    "file": "enemyDisc_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.8
+   },
+   "3": {
+    "file": "enemyDisc_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.74
+   },
+   "4": {
+    "file": "enemyDisc_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.81
+   }
+  }
+ },
+ {
+  "id": "enemyRicochet",
+  "label": "Ricochet bolt",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "enemyRicochet_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.82
+   },
+   "2": {
+    "file": "enemyRicochet_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.81
+   }
+  }
+ },
+ {
+  "id": "enemyHelix",
+  "label": "Helix round",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "enemyHelix_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.89
+   },
+   "2": {
+    "file": "enemyHelix_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.88
+   },
+   "3": {
+    "file": "enemyHelix_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.8
+   },
+   "4": {
+    "file": "enemyHelix_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.9
+   }
+  }
+ },
+ {
+  "id": "enemySuspended",
+  "label": "Suspended round",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "enemySuspended_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.81
+   },
+   "2": {
+    "file": "enemySuspended_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.81
+   },
+   "3": {
+    "file": "enemySuspended_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.8
+   },
+   "4": {
+    "file": "enemySuspended_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.75
+   }
+  }
+ },
+ {
+  "id": "enemyScatter",
+  "label": "Scatter carrier",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "enemyScatter_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.84
+   },
+   "2": {
+    "file": "enemyScatter_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.84
+   },
+   "3": {
+    "file": "enemyScatter_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.69
+   },
+   "4": {
+    "file": "enemyScatter_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.74
+   }
+  }
+ },
+ {
+  "id": "enemyMine",
+  "label": "Proximity mine \u00b7 deploy",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "enemyMine_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.82
+   },
+   "2": {
+    "file": "enemyMine_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.87
+   },
+   "3": {
+    "file": "enemyMine_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.83
+   },
+   "4": {
+    "file": "enemyMine_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.88
+   }
+  }
+ },
+ {
+  "id": "enemyWave",
+  "label": "Expanding wave",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "enemyWave_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.77
+   },
+   "2": {
+    "file": "enemyWave_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.82
+   },
+   "3": {
+    "file": "enemyWave_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.75
+   }
+  }
+ },
+ {
+  "id": "beamCharge",
+  "label": "Beam \u00b7 charge warning",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "beamCharge_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.82
+   },
+   "2": {
+    "file": "beamCharge_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.85
+   },
+   "3": {
+    "file": "beamCharge_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.86
+   },
+   "4": {
+    "file": "beamCharge_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.85
+   }
+  }
+ },
+ {
+  "id": "beamFire",
+  "label": "Enemy beam \u00b7 fire",
+  "group": "Enemy projectiles",
+  "repeat": null,
+  "current": null,
+  "options": {}
+ },
+ {
+  "id": "hit1",
+  "label": "Hull impact",
+  "group": "Hits & feedback",
+  "repeat": 0.06,
+  "current": "lab_hit1.wav",
+  "options": {
+   "1": {
+    "file": "hit1_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.81
+   },
+   "2": {
+    "file": "hit1_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.81
+   },
+   "3": {
+    "file": "hit1_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.76
+   },
+   "4": {
+    "file": "hit1_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.79
+   }
+  }
+ },
+ {
+  "id": "hitElectric",
+  "label": "Electric impact",
+  "group": "Hits & feedback",
+  "repeat": 0.08,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "hitElectric_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.83
+   },
+   "2": {
+    "file": "hitElectric_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.83
+   }
+  }
+ },
+ {
+  "id": "ricochetHit",
+  "label": "Wall / rebound ping",
+  "group": "Hits & feedback",
+  "repeat": 0.1,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "ricochetHit_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.87
+   },
+   "2": {
+    "file": "ricochetHit_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.89
+   },
+   "3": {
+    "file": "ricochetHit_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.83
+   }
+  }
+ },
+ {
+  "id": "explosionHeavy",
+  "label": "Heavy hull explosion",
+  "group": "Explosions",
+  "repeat": null,
+  "current": "lab_explosionHeavy.wav",
+  "options": {}
+ },
+ {
+  "id": "shellBurst",
+  "label": "Shell / mine detonation",
+  "group": "Explosions",
+  "repeat": 0.25,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "shellBurst_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.89
+   },
+   "2": {
+    "file": "shellBurst_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.83
+   },
+   "3": {
+    "file": "shellBurst_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.86
+   },
+   "4": {
+    "file": "shellBurst_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.87
+   }
+  }
+ },
+ {
+  "id": "itemChargeRelease",
+  "label": "Wind-up cannon - release",
+  "group": "Item effects",
+  "repeat": null,
+  "current": "lab_itemChargeRelease.wav",
+  "options": {
+   "1": {
+    "file": "itemChargeRelease_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.79
+   },
+   "2": {
+    "file": "itemChargeRelease_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.83
+   },
+   "3": {
+    "file": "itemChargeRelease_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.75
+   },
+   "4": {
+    "file": "itemChargeRelease_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.75
+   }
+  }
+ },
+ {
+  "id": "itemChargeBlast",
+  "label": "Wind-up cannon - lingering blast",
+  "group": "Item effects",
+  "repeat": null,
+  "current": "lab_itemChargeBlast.wav",
+  "options": {
+   "1": {
+    "file": "itemChargeBlast_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.83
+   },
+   "2": {
+    "file": "itemChargeBlast_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.81
+   },
+   "3": {
+    "file": "itemChargeBlast_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.85
+   },
+   "4": {
+    "file": "itemChargeBlast_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.82
+   }
+  }
+ },
+ {
+  "id": "itemFlameSustain",
+  "label": "Flamethrowers - sustained flame",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemFlameSustain_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.9
+   },
+   "2": {
+    "file": "itemFlameSustain_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.87
+   },
+   "3": {
+    "file": "itemFlameSustain_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.88
+   },
+   "4": {
+    "file": "itemFlameSustain_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.89
+   }
+  }
+ },
+ {
+  "id": "itemDepthLaunch",
+  "label": "Depth Charge - rack release",
+  "group": "Item effects",
+  "repeat": null,
+  "current": "lab_itemDepthLaunch.wav",
+  "options": {
+   "1": {
+    "file": "itemDepthLaunch_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.86
+   },
+   "2": {
+    "file": "itemDepthLaunch_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.84
+   },
+   "3": {
+    "file": "itemDepthLaunch_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.8
+   }
+  }
+ },
+ {
+  "id": "itemDepthBurst",
+  "label": "Shell weapons - fragmentation",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemDepthBurst_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.87
+   },
+   "2": {
+    "file": "itemDepthBurst_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.8
+   },
+   "3": {
+    "file": "itemDepthBurst_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.88
+   },
+   "4": {
+    "file": "itemDepthBurst_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.86
+   }
+  }
+ },
+ {
+  "id": "itemBearing",
+  "label": "Ball Bearing - fragments",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemBearing_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.77
+   },
+   "2": {
+    "file": "itemBearing_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.65
+   },
+   "3": {
+    "file": "itemBearing_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.67
+   },
+   "4": {
+    "file": "itemBearing_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.77
+   }
+  }
+ },
+ {
+  "id": "itemProximity",
+  "label": "Proximity Fuse - detonation",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemProximity_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.74
+   },
+   "2": {
+    "file": "itemProximity_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.74
+   },
+   "3": {
+    "file": "itemProximity_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.76
+   },
+   "4": {
+    "file": "itemProximity_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.63
+   }
+  }
+ },
+ {
+  "id": "itemSalvage",
+  "label": "Salvage Converter - conversion",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemSalvage_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.79
+   },
+   "2": {
+    "file": "itemSalvage_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.79
+   },
+   "3": {
+    "file": "itemSalvage_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.71
+   },
+   "4": {
+    "file": "itemSalvage_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.84
+   }
+  }
+ },
+ {
+  "id": "itemCounter",
+  "label": "Recovery Coil - countershot",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemCounter_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.86
+   },
+   "2": {
+    "file": "itemCounter_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.84
+   }
+  }
+ },
+ {
+  "id": "itemReserve",
+  "label": "Reserve Cell - storage",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemReserve_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.76
+   },
+   "2": {
+    "file": "itemReserve_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.83
+   },
+   "3": {
+    "file": "itemReserve_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.81
+   },
+   "4": {
+    "file": "itemReserve_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.82
+   }
+  }
+ },
+ {
+  "id": "itemBurn",
+  "label": "Burn - ignition",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemBurn_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.83
+   },
+   "2": {
+    "file": "itemBurn_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.81
+   }
+  }
+ },
+ {
+  "id": "itemPoison",
+  "label": "Poison - application",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemPoison_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.8
+   },
+   "2": {
+    "file": "itemPoison_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.76
+   },
+   "3": {
+    "file": "itemPoison_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.72
+   },
+   "4": {
+    "file": "itemPoison_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.73
+   }
+  }
+ },
+ {
+  "id": "itemChain",
+  "label": "Chain Reactor - detonation",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemChain_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.82
+   },
+   "2": {
+    "file": "itemChain_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.82
+   },
+   "3": {
+    "file": "itemChain_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.8
+   },
+   "4": {
+    "file": "itemChain_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.79
+   }
+  }
+ },
+ {
+  "id": "itemReturn",
+  "label": "Returning shots - turnaround",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemReturn_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.79
+   },
+   "2": {
+    "file": "itemReturn_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.77
+   }
+  }
+ },
+ {
+  "id": "itemFlameIgnite",
+  "label": "Flamethrowers - ignition",
+  "group": "Item effects",
+  "repeat": null,
+  "current": "lab_itemFlameIgnite.wav",
+  "options": {
+   "1": {
+    "file": "itemFlameIgnite_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.72
+   },
+   "2": {
+    "file": "itemFlameIgnite_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.72
+   },
+   "3": {
+    "file": "itemFlameIgnite_psx3.wav",
+    "strength": 0.75,
+    "similarity": 0.68
+   },
+   "4": {
+    "file": "itemFlameIgnite_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.67
+   }
+  }
+ },
+ {
+  "id": "itemFlameRelease",
+  "label": "Flamethrowers - shutoff",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemFlameRelease_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.84
+   },
+   "2": {
+    "file": "itemFlameRelease_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.87
+   },
+   "3": {
+    "file": "itemFlameRelease_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.85
+   }
+  }
+ },
+ {
+  "id": "itemSplit",
+  "label": "Splitter Core - split",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemSplit_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.74
+   },
+   "2": {
+    "file": "itemSplit_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.79
+   },
+   "3": {
+    "file": "itemSplit_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.8
+   },
+   "4": {
+    "file": "itemSplit_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.82
+   }
+  }
+ },
+ {
+  "id": "itemRicochet",
+  "label": "Ricochet - committed turn",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemRicochet_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.87
+   },
+   "2": {
+    "file": "itemRicochet_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.85
+   }
+  }
+ },
+ {
+  "id": "itemBattery",
+  "label": "Spare Battery - rocket",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemBattery_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.76
+   },
+   "2": {
+    "file": "itemBattery_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.76
+   },
+   "3": {
+    "file": "itemBattery_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.83
+   }
+  }
+ },
+ {
+  "id": "itemFocus",
+  "label": "Focusing Lens - lock",
+  "group": "Item effects",
+  "repeat": null,
+  "current": null,
+  "options": {
+   "1": {
+    "file": "itemFocus_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.73
+   },
+   "2": {
+    "file": "itemFocus_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.72
+   },
+   "3": {
+    "file": "itemFocus_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.75
+   },
+   "4": {
+    "file": "itemFocus_psx4.wav",
+    "strength": 1.0,
+    "similarity": 0.73
+   }
+  }
+ },
+ {
+  "id": "itemGum",
+  "label": "Chewing gum - pop",
+  "group": "Item effects",
+  "repeat": null,
+  "current": "lab_itemGum.wav",
+  "options": {
+   "1": {
+    "file": "itemGum_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.76
+   },
+   "2": {
+    "file": "itemGum_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.72
+   },
+   "3": {
+    "file": "itemGum_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.79
+   },
+   "4": {
+    "file": "itemGum_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.67
+   }
+  }
+ },
+ {
+  "id": "itemCapReady",
+  "label": "Capacitor - ready",
+  "group": "Item effects",
+  "repeat": null,
+  "current": "lab_itemCapReady.wav",
+  "options": {
+   "1": {
+    "file": "itemCapReady_psx1.wav",
+    "strength": 1.0,
+    "similarity": 0.74
+   },
+   "2": {
+    "file": "itemCapReady_psx2.wav",
+    "strength": 0.75,
+    "similarity": 0.74
+   },
+   "3": {
+    "file": "itemCapReady_psx3.wav",
+    "strength": 1.0,
+    "similarity": 0.71
+   },
+   "4": {
+    "file": "itemCapReady_psx4.wav",
+    "strength": 0.75,
+    "similarity": 0.76
+   }
+  }
+ }
+]
