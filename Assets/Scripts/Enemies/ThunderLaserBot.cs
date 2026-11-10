@@ -33,6 +33,7 @@ public sealed class ThunderLaserBot : MonoBehaviour
     SpriteRenderer glow, tip;
     LineRenderer coil;
     float facing, nextSpark;
+    float fuse = -1;
 
     public static ThunderLaserBot Deploy(Vector3 from, Vector2 home, Vector2 aim, float length, float width)
     {
@@ -84,6 +85,16 @@ public sealed class ThunderLaserBot : MonoBehaviour
 
     void Update()
     {
+        if (fuse >= 0)
+        {
+            fuse -= Time.deltaTime;
+            if (fuse <= 0)
+            {
+                PSXImpactEffects.Explosion(gameObject);
+                Destroy(gameObject);
+            }
+            return;
+        }
         if (GameRules.playerDisabled || WorldTimeStop.Frozen)
             return;
         float dt = Time.deltaTime * LevelRun.EnemyTempoScale;
@@ -158,6 +169,16 @@ public sealed class ThunderLaserBot : MonoBehaviour
             beam.sweep = swingRate;
             beam.reversalArc = swing;
         }
+    }
+
+    // Destroyed with its boss: the beam ceases at once and the pylon bursts after a short fuse.
+    public void Explode(float delay)
+    {
+        if (fuse >= 0)
+            return;
+        fuse = Mathf.Max(.01f, delay);
+        if (beam != null && beam.IsAttachedTo(transform))
+            beam.Cease();
     }
 
     public void Dismiss()

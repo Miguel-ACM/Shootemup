@@ -23,7 +23,6 @@ public sealed partial class ThunderLanceBoss
     static float Middle => (Camera.UpLimit + Camera.DownLimit) * .5f;
     protected override void Attack()
     {
-        if (ProposedCards && OpenCards()) return;
         if (!deployed)
         {
             deployed = true;
@@ -307,7 +306,11 @@ public sealed partial class ThunderLanceBoss
     protected override void Die()
     {
         StopBeams();
-        DismissDrones();
+        // Every pylon explodes with its boss, in a quick ripple.
+        for (int i = 0; i < drones.Count; i++)
+            if (drones[i] != null)
+                drones[i].Explode(.08f + i * .1f);
+        drones.Clear();
         base.Die();
     }
 
