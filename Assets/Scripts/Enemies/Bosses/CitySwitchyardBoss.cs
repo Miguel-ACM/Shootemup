@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 [UnityEngine.Scripting.Preserve]
-public sealed class CitySwitchyardBoss : ArmoredHullBoss
+public sealed partial class CitySwitchyardBoss : ArmoredHullBoss
 {
     static readonly Vector2[] shape = { new(-1,.86f),new(-.88f,1.2f),new(.84f,1.2f),new(1,.88f),new(1.55f,.68f),new(1.55f,.32f),
         new(1.26f,.27f),new(1.26f,-.46f),new(1,-.46f),new(1.05f,-1.2f),new(.66f,-1.30f),new(-.66f,-1.30f),new(-1.05f,-1.20f),
