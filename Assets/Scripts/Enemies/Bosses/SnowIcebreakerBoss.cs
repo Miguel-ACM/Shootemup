@@ -29,7 +29,7 @@ using UnityEngine;
 // spray; a dark sheet with bright pellets; bright channel walls with dark pellets; dark
 // ridges under bright bergs. Icequake mixes bright fractures and walls with a dark sheet.
 [UnityEngine.Scripting.Preserve]
-public sealed class SnowIcebreakerBoss : ArmoredHullBoss
+public sealed partial class SnowIcebreakerBoss : ArmoredHullBoss
 {
     static readonly Vector2[] shape = { new(0,-1.53f),new(-.78f,-1.05f),new(-1.14f,-.55f),new(-1.02f,.65f),new(-.79f,1.08f),
         new(.79f,1.08f),new(1.02f,.65f),new(1.14f,-.55f),new(.78f,-1.05f) };
