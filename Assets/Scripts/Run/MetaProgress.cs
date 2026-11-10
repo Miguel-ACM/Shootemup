@@ -94,13 +94,13 @@ public static partial class MetaProgress
         switch (rarity)
         {
             case "legendary":
-                return 500;
+                return 1000;
             case "epic":
-                return 300;
+                return 500;
             case "rare":
-                return 150;
+                return 300;
             default:
-                return 75;
+                return 150;
         }
     }
 
