@@ -68,11 +68,6 @@ MonoBehaviour:
     gain: 1
     muted: 0
     choice: psx1
-  - cue: enemyExplosion1
-    clip: {fileID: 8300000, guid: d267ed9ca57358baa52debcc14068b0c, type: 3}
-    gain: 1
-    muted: 0
-    choice: psx4
   - cue: enemyHelix
     clip: {fileID: 8300000, guid: 6ce65520d859507bb5c96b3c11210e6e, type: 3}
     gain: 1
@@ -295,37 +290,37 @@ MonoBehaviour:
     choice: psx3
   - cue: shotAK45
     clip: {fileID: 8300000, guid: 81144e405188549b8b7863c5f1d66efe, type: 3}
-    gain: 1
+    gain: 0.6
     muted: 0
     choice: psx3
   - cue: shotBeam
     clip: {fileID: 8300000, guid: 6d468d343f4e5a1e8551c509913bc191, type: 3}
-    gain: 1
+    gain: 0.6
     muted: 0
     choice: psx3
   - cue: shotElectric
     clip: {fileID: 8300000, guid: b13d5cdccc0954a3b8a6dc764617aa5e, type: 3}
-    gain: 1
+    gain: 0.6
     muted: 0
     choice: psx4
   - cue: shotNeedle
     clip: {fileID: 8300000, guid: 266c9a59aa045a0daf3c907accabea9d, type: 3}
-    gain: 1
+    gain: 0.6
     muted: 0
     choice: psx4
   - cue: shotRail
     clip: {fileID: 8300000, guid: c79c92d336335da99aebe23df5b5f8f1, type: 3}
-    gain: 1
+    gain: 0.6
     muted: 0
     choice: psx2
   - cue: shotScatter
     clip: {fileID: 8300000, guid: f57b78c215c15860b9d64e2d1b0a8be4, type: 3}
-    gain: 1
+    gain: 0.6
     muted: 0
     choice: psx1
   - cue: shotShell
     clip: {fileID: 8300000, guid: bb37b093545d5033b7053e698992b99d, type: 3}
-    gain: 1
+    gain: 0.6
     muted: 0
     choice: psx3
   - cue: static
@@ -348,3 +343,8 @@ MonoBehaviour:
     gain: 1
     muted: 0
     choice: psx4
+  - cue: shot1
+    clip: {fileID: 0}
+    gain: 0.6
+    muted: 0
+    choice: 
