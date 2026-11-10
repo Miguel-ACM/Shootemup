@@ -4,31 +4,19 @@ using UnityEngine;
 // Proposed card book for the abyss submarine (review only, DistrictBoss.ProposedCards).
 // Ideas and comparisons: ArtSource/BossPhaseProposals/Ideas/AbyssSubmarineBoss.md
 // The dive cycle stays the spell sequence. MoveBoss still dives, marks the emergence,
-// erupts with its crowns, charges with its wake and keeps the hull safe while submerged;
-// this book only fills the surfaced stretch of each cycle, one verse per surfacing,
-// taking the phase's two cards in turn. Wait() already holds through every dive, and a
-// verse that a dive interrupts is abandoned rather than finished on the next surfacing.
-// Phase one
-//   Torpedo Herringbone: dark torpedoes from three, four, then five tubes, each trailed by a
-//     bright line of droplets that hang where it passed and peel away to alternate sides,
-//     the farthest first, so every track opens into a widening V.
-//   Caustic Net: each shoulder channel pours two dark arrow strands swaying in opposite
-//     phase, braiding chains of lens cells that ripple as the hull drifts, with bright
-//     pearls down each chain and two-beat gaps to slip through; a bright spout hangs along
-//     the top edge and sinks as a swaying curtain.
-// Phase two
-//   Countercurrent: level fans from both shoulders, every round caught by a current back
-//     toward the centre and down. Each fan loops out just short of its wall and returns
-//     across the middle, so both sides' loops cross into a sinking lattice; bright arrows
-//     loop wide around dark beads, and a dark jet from the prow answers a still pilot.
-//   Kelp Forest: the launch banks plant dark droplet stalks down into the arena and the
-//     upper channels plant them out along the top; each stalk hangs, then sinks swaying,
-//     every droplet a little out of step, so it ripples like kelp. Bright arrow shoals
-//     dart at the pilot between plantings.
-// Crush Depth (Hard)
-//   Hadal Trench: dark circular cliffs hang along both walls, then slide down and inward so
-//     the open water narrows into a sinking trench; torpedo herringbones run down it and a
-//     bright curtain closes the surface.
+// erupts with its crowns, charges with its wake and keeps the hull safe while submerged.
+// This book fills only the surfaced stretch of each cycle with one concept per phase,
+// flying a new variation of it on each surfacing. Wait() already holds through every
+// dive, and a verse that a dive interrupts is abandoned rather than finished later.
+// Phase one, Torpedo Herringbone: dark torpedoes trailed by bright droplet wakes that hang
+//   where the torpedo passed and peel away to alternate sides, so each track opens into a V.
+//   Surfacings vary the tracks: a spread, crossing tracks, then wakes peeling forward.
+// Phase two, Countercurrent: level fans from both shoulders caught by a current back toward
+//   the centre and down, looping out just short of the walls and crossing into a sinking
+//   lattice. Surfacings vary the loops: wide, a climbing fountain, then tight and fast.
+// Crush Depth (Hard), Hadal Trench: dark cliffs hang along both walls and slide inward so
+//   the open water narrows into a sinking trench; herringbones run down it under a bright
+//   curtain. Surfacings alternate a diagonal and a level closing.
 public sealed partial class AbyssSubmarineBoss
 {
     static readonly Vector3 ProposedProw = new Vector3(0, -1.65f, -.5f);
@@ -42,7 +30,6 @@ public sealed partial class AbyssSubmarineBoss
     static readonly Vector3[] ProposedTubes = { ProposedProw, ProposedBankLeft, ProposedBankRight };
     static readonly Vector3[] ProposedAllTubes = { ProposedProw, ProposedBankLeft, ProposedBankRight, ProposedChannelLeft, ProposedChannelRight };
     static readonly Vector3[] ProposedChannels = { ProposedChannelLeft, ProposedChannelRight };
-    static readonly Vector3[] ProposedPlanters = { ProposedBankLeft, ProposedBankRight, ProposedHighLeft, ProposedHighRight };
 
     // World units per authored speed unit, so curves and hanging points follow real travel.
     float Pace => 1 / WorldSpeed(1);
@@ -61,53 +48,80 @@ public sealed partial class AbyssSubmarineBoss
                 continue;
             played = lastCycle;
             if (phaseThree)
-                yield return HadalTrench(played);
+                yield return HadalTrench(played, verse);
             else if (phaseTwo)
-                yield return verse % 2 == 0 ? Countercurrent(played) : KelpForest(played);
+                yield return Countercurrent(played, verse);
             else
-                yield return verse % 2 == 0 ? TorpedoHerringbone(played) : CausticNet(played);
+                yield return TorpedoHerringbone(played, verse);
             verse++;
         }
     }
 
-    // Torpedo Herringbone: three salvos, from three, four, then five tubes.
-    IEnumerator TorpedoHerringbone(int cycle)
+    // Torpedo Herringbone: three salvos per surfacing, twelve torpedoes in all.
+    //   Spread: three tubes aimed, four unaimed and mirrored, then all five aimed.
+    //   Crossing: the shoulder tracks cut inward under the bank tracks, an X of wakes.
+    //   Arrowheads: the wakes peel forward, so every track trails a chevron.
+    IEnumerator TorpedoHerringbone(int cycle, int verse)
     {
+        int variant = verse % 3;
         int wake = Dense(12);
+        float peel = variant == 2 ? 64 : 112;
         for (int salvo = 0; salvo < 3; salvo++)
         {
-            yield return ChargeAt(salvo == 0 ? .45f : .3f, salvo == 1 ? ProposedChannels : salvo == 0 ? ProposedTubes : ProposedAllTubes);
+            bool aimed = variant == 2 ? salvo == 1 : salvo != 1;
+            yield return ChargeAt(salvo == 0 ? .45f : .3f, ProposedAllTubes);
             if (Dived(cycle))
                 yield break;
-            var aim = CombatVisuals.Aim(Hull.TransformPoint(ProposedProw));
-            if (salvo == 0)
-            {
-                HerringboneTorpedo(ProposedProw, aim, wake);
-                HerringboneTorpedo(ProposedBankLeft, CombatVisuals.Rotate(aim, -22), wake);
-                HerringboneTorpedo(ProposedBankRight, CombatVisuals.Rotate(aim, 22), wake);
-            }
-            else if (salvo == 1)
-            {
-                // Unaimed: two inner tracks and two wide ones, mirrored about straight down.
-                HerringboneTorpedo(ProposedBankLeft, CombatVisuals.Rotate(Vector2.down, -10), wake);
-                HerringboneTorpedo(ProposedBankRight, CombatVisuals.Rotate(Vector2.down, 10), wake);
-                HerringboneTorpedo(ProposedChannelLeft, CombatVisuals.Rotate(Vector2.down, -38), wake);
-                HerringboneTorpedo(ProposedChannelRight, CombatVisuals.Rotate(Vector2.down, 38), wake);
-            }
+            var aim = aimed ? CombatVisuals.Aim(Hull.TransformPoint(ProposedProw)) : Vector2.down;
+            if (variant == 0)
+                SpreadSalvo(salvo, aim, wake, peel);
+            else if (variant == 1)
+                CrossingSalvo(salvo, aim, wake, peel);
             else
-            {
-                HerringboneTorpedo(ProposedProw, aim, wake);
-                HerringboneTorpedo(ProposedBankLeft, CombatVisuals.Rotate(aim, -18), wake);
-                HerringboneTorpedo(ProposedBankRight, CombatVisuals.Rotate(aim, 18), wake);
-                HerringboneTorpedo(ProposedChannelLeft, CombatVisuals.Rotate(aim, -42), wake);
-                HerringboneTorpedo(ProposedChannelRight, CombatVisuals.Rotate(aim, 42), wake);
-            }
+                SpreadSalvo(2 - salvo, aim, wake, peel);
             yield return Wait(Rest(.62f));
         }
     }
 
+    // A fan of three, four or five tracks, mirrored about the aim.
+    void SpreadSalvo(int size, Vector2 aim, int wake, float peel)
+    {
+        if (size == 1)
+        {
+            HerringboneTorpedo(ProposedBankLeft, CombatVisuals.Rotate(aim, -10), wake, peel);
+            HerringboneTorpedo(ProposedBankRight, CombatVisuals.Rotate(aim, 10), wake, peel);
+            HerringboneTorpedo(ProposedChannelLeft, CombatVisuals.Rotate(aim, -38), wake, peel);
+            HerringboneTorpedo(ProposedChannelRight, CombatVisuals.Rotate(aim, 38), wake, peel);
+            return;
+        }
+        float bank = size == 0 ? 22 : 18;
+        HerringboneTorpedo(ProposedProw, aim, wake, peel);
+        HerringboneTorpedo(ProposedBankLeft, CombatVisuals.Rotate(aim, -bank), wake, peel);
+        HerringboneTorpedo(ProposedBankRight, CombatVisuals.Rotate(aim, bank), wake, peel);
+        if (size == 2)
+        {
+            HerringboneTorpedo(ProposedChannelLeft, CombatVisuals.Rotate(aim, -42), wake, peel);
+            HerringboneTorpedo(ProposedChannelRight, CombatVisuals.Rotate(aim, 42), wake, peel);
+        }
+    }
+
+    // The shoulder tracks turn inward and cross under the outward bank tracks.
+    void CrossingSalvo(int size, Vector2 aim, int wake, float peel)
+    {
+        float cross = 26 + size * 6;
+        HerringboneTorpedo(ProposedChannelLeft, CombatVisuals.Rotate(aim, cross), wake, peel);
+        HerringboneTorpedo(ProposedChannelRight, CombatVisuals.Rotate(aim, -cross), wake, peel);
+        if (size != 0)
+        {
+            HerringboneTorpedo(ProposedBankLeft, CombatVisuals.Rotate(aim, -16), wake, peel);
+            HerringboneTorpedo(ProposedBankRight, CombatVisuals.Rotate(aim, 16), wake, peel);
+        }
+        if (size != 1)
+            HerringboneTorpedo(ProposedProw, aim, wake, peel);
+    }
+
     // One dark torpedo and its bright droplet wake, launched together at graded speeds.
-    void HerringboneTorpedo(Vector3 local, Vector2 axis, int wake)
+    void HerringboneTorpedo(Vector3 local, Vector2 axis, int wake, float peel)
     {
         var port = Hull.TransformPoint(local);
         UseTone(HostileTone.Dark);
@@ -122,46 +136,8 @@ public sealed partial class AbyssSubmarineBoss
             float hold = .2f + (1 - u) * .5f;
             int side = j % 2 == 0 ? 1 : -1;
             Fire<DropletRound>(port, axis, speed, .22f)
-                .Pause(1.0f, hold, CombatRound.Turn.Rotate, side * 112, .85f / speed)
+                .Pause(1.0f, hold, CombatRound.Turn.Rotate, side * peel, .85f / speed)
                 .FadeAt(4.4f + hold);
-        }
-    }
-
-    // Caustic Net: two counter-swaying strands per shoulder, pearls on each chain's axis.
-    IEnumerator CausticNet(int cycle)
-    {
-        yield return ChargeAt(.45f, ProposedChannels);
-        if (Dived(cycle))
-            yield break;
-        Spout(HostileTone.Bright);
-        int steps = Dense(32);
-        float interval = Rest(.07f) * 32f / steps;
-        for (int i = 0; i < steps; i++)
-        {
-            // Every chain breaks for two beats in eight: a moving gap to slip through.
-            if (i % 8 < 6)
-            {
-                float splay = 9 + 9 * Mathf.Sin(i * .3f);
-                for (int side = -1; side <= 1; side += 2)
-                {
-                    var port = Hull.TransformPoint(side < 0 ? ProposedChannelLeft : ProposedChannelRight);
-                    var axis = CombatVisuals.Rotate(Vector2.down, side * splay);
-                    UseTone(HostileTone.Dark);
-                    for (int strand = -1; strand <= 1; strand += 2)
-                        Fire<NeedleRound>(port, axis, 3.0f, .19f)
-                            .Sway(strand * .5f, .55f);
-                    if (i % 4 == 0)
-                    {
-                        UseTone(HostileTone.Bright);
-                        Fire<SimpleRound>(port, axis, 3.0f, .2f);
-                    }
-                }
-            }
-            if (i == steps / 2)
-                Spout(HostileTone.Bright);
-            yield return Wait(interval);
-            if (Dived(cycle))
-                yield break;
         }
     }
 
@@ -188,9 +164,17 @@ public sealed partial class AbyssSubmarineBoss
         }
     }
 
-    // Countercurrent: looping fans from both shoulders, offset by half a lane each fan.
-    IEnumerator Countercurrent(int cycle)
+    // Countercurrent: eleven looping fans per surfacing, offset by half a lane each fan.
+    //   Wide: level fans whose loops turn just short of the walls and cross mid-arena.
+    //   Fountain: raised fans; the steep lanes climb to the top edge and fall back.
+    //   Tight: low fans in a stronger current, small loops crossing close under the hull.
+    IEnumerator Countercurrent(int cycle, int verse)
     {
+        int variant = verse % 3;
+        float low = variant == 1 ? 5 : variant == 2 ? -40 : -28;
+        float high = variant == 1 ? 55 : variant == 2 ? 20 : 38;
+        float sink = variant == 1 ? .9f : .5f;
+        float span = variant == 2 ? .5f : 1;
         yield return ChargeAt(.45f, ProposedChannels);
         int lanes = Dense(10);
         for (int fan = 0; fan < 11; fan++)
@@ -201,17 +185,17 @@ public sealed partial class AbyssSubmarineBoss
             for (int side = -1; side <= 1; side += 2)
             {
                 var port = Hull.TransformPoint(side < 0 ? ProposedChannelLeft : ProposedChannelRight);
-                // Each loop turns back just short of its own wall, wherever the hull drifts.
-                float reach = Mathf.Max(1.2f, (side < 0 ? port.x - edge.xMin : edge.xMax - port.x) - .45f);
+                // Each loop turns back short of its own wall, wherever the hull drifts.
+                float reach = Mathf.Max(1.2f, ((side < 0 ? port.x - edge.xMin : edge.xMax - port.x) - .45f) * span);
                 for (int lane = 0; lane < lanes; lane++)
                 {
-                    float rise = Mathf.Lerp(-28, 38, (lane + (fan % 2) * .5f) / lanes);
+                    float rise = Mathf.Lerp(low, high, (lane + (fan % 2) * .5f) / lanes);
                     var axis = CombatVisuals.Rotate(Vector2.right * side, side * rise);
                     for (int layer = 0; layer < 2; layer++)
                     {
                         float speed = layer == 0 ? 2.5f : 1.9f;
                         float outward = speed * Pace * Mathf.Cos(rise * Mathf.Deg2Rad);
-                        var current = new Vector2(-side * outward * outward / (2 * reach), -.5f);
+                        var current = new Vector2(-side * outward * outward / (2 * reach), -sink);
                         UseTone(layer == 0 ? HostileTone.Bright : HostileTone.Dark);
                         ScoredShot(layer == 1, port, axis, speed, layer == 0 ? .19f : .2f)
                             .Fall(current);
@@ -234,64 +218,9 @@ public sealed partial class AbyssSubmarineBoss
             Fire<DropletRound>(port, aim, 3.6f - j * .3f, .22f);
     }
 
-    // Kelp Forest: six plantings, each four stalks, with mirrored shoals on both half-beats.
-    IEnumerator KelpForest(int cycle)
-    {
-        yield return ChargeAt(.4f, ProposedPlanters);
-        for (int planting = 0; planting < 6; planting++)
-        {
-            if (Dived(cycle))
-                yield break;
-            // The stalks lean alternately narrow and wide, so the clearings move.
-            float lean = planting % 2 == 0 ? 10 + planting * 6 : 30 + planting * 6;
-            UseTone(HostileTone.Dark);
-            for (int side = -1; side <= 1; side += 2)
-            {
-                Stalk(side < 0 ? ProposedBankLeft : ProposedBankRight, CombatVisuals.Rotate(Vector2.down, side * lean), Dense(12), 1.0f, .3f);
-                Stalk(side < 0 ? ProposedHighLeft : ProposedHighRight, CombatVisuals.Rotate(Vector2.up, -side * (62 + planting * 4)), Dense(9), .8f, .2f);
-            }
-            for (int beat = 0; beat < 2; beat++)
-            {
-                yield return Wait(Rest(.22f));
-                if (Dived(cycle))
-                    yield break;
-                Shoal(ProposedChannelLeft);
-                Shoal(ProposedChannelRight);
-            }
-        }
-    }
-
-    // A stalk: droplets along one lane at graded speeds hang as a line, then sink, each
-    // swaying at a slightly different rate so the line ripples.
-    void Stalk(Vector3 local, Vector2 lane, int drops, float slowest, float step)
-    {
-        var port = Hull.TransformPoint(local);
-        for (int j = 0; j < drops; j++)
-        {
-            float speed = slowest + j / Mathf.Max(1f, drops - 1) * step * 11;
-            Fire<DropletRound>(port, lane, speed, .22f)
-                .Pause(.9f, .45f, CombatRound.Turn.Down, 0, 1.1f / speed)
-                .Sway(.3f, .4f + j * .165f / Mathf.Max(1f, drops - 1))
-                .FadeAt(7.5f);
-        }
-    }
-
-    // A shoal: a diamond school of bright arrows, rows by speed and width by angle, aimed.
-    void Shoal(Vector3 local)
-    {
-        var port = Hull.TransformPoint(local);
-        var aim = CombatVisuals.Aim(port);
-        UseTone(HostileTone.Bright);
-        for (int row = 0; row < 5; row++)
-        {
-            int width = row < 3 ? row : 4 - row;
-            for (int k = -width; k <= width; k += 2)
-                Fire<NeedleRound>(port, CombatVisuals.Rotate(aim, k * 3.5f), 4.4f - row * .18f, .19f);
-        }
-    }
-
-    // Hadal Trench (Hard): cliffs along both walls closing inward, herringbones down the middle.
-    IEnumerator HadalTrench(int cycle)
+    // Hadal Trench (Hard): cliffs along both walls closing inward, herringbones down the
+    // middle. Alternate surfacings close the cliffs diagonally or almost level.
+    IEnumerator HadalTrench(int cycle, int verse)
     {
         yield return ChargeAt(.4f, ProposedChannels);
         if (Dived(cycle))
@@ -299,6 +228,7 @@ public sealed partial class AbyssSubmarineBoss
         Spout(HostileTone.Bright);
         int rows = Dense(13);
         int wake = Dense(10);
+        float slope = verse % 2 == 0 ? 38 : 72;
         for (int wall = 0; wall < 11; wall++)
         {
             if (Dived(cycle))
@@ -309,10 +239,10 @@ public sealed partial class AbyssSubmarineBoss
             {
                 var port = Hull.TransformPoint(side < 0 ? ProposedChannelLeft : ProposedChannelRight);
                 float x = side < 0 ? edge.xMin + .5f : edge.xMax - .5f;
-                var inward = CombatVisuals.Rotate(Vector2.down, -side * 38);
+                var inward = CombatVisuals.Rotate(Vector2.down, -side * slope);
                 for (int k = 0; k < rows; k++)
                 {
-                    float y = port.y + .9f - (k + (wall % 2) * .5f) * 5.6f / rows;
+                    float y = port.y + .9f - (k + ((wall + verse) % 2) * .5f) * 5.6f / rows;
                     Hang<SimpleRound>(port, new Vector2(x, y), .6f, .2f, inward, 1.0f, .2f)
                         .FadeAt(8);
                 }
@@ -320,9 +250,9 @@ public sealed partial class AbyssSubmarineBoss
             if (wall % 3 == 1)
             {
                 var aim = CombatVisuals.Aim(Hull.TransformPoint(ProposedProw));
-                HerringboneTorpedo(ProposedProw, aim, wake);
-                HerringboneTorpedo(ProposedBankLeft, CombatVisuals.Rotate(aim, -16), wake);
-                HerringboneTorpedo(ProposedBankRight, CombatVisuals.Rotate(aim, 16), wake);
+                HerringboneTorpedo(ProposedProw, aim, wake, 112);
+                HerringboneTorpedo(ProposedBankLeft, CombatVisuals.Rotate(aim, -16), wake, 112);
+                HerringboneTorpedo(ProposedBankRight, CombatVisuals.Rotate(aim, 16), wake, 112);
             }
             // The tubes glow through the beat before each herringbone salvo.
             if (wall % 3 == 0)
