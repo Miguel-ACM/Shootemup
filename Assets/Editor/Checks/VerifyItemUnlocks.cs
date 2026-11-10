@@ -162,7 +162,7 @@ public static class VerifyItemUnlocks
         Reload();
         Check(MetaProgress.IsUnlocked("Icicle") && MetaProgress.IsUnlocked("ThreeMoonsItem") && MetaProgress.Coins == 321, "Preserve prior unlocks and bank");
         Check(MetaProgress.Ship == ShipFrame.Warden && MetaProgress.Outbound.Contains("Icicle"), "Preserve ship and purchased loadout");
-        Check(MetaProgress.Pin == null && MetaProgress.Stock.All(MetaProgress.CanStock) && !MetaProgress.TryBuy("BeamEmitterItem"), "Remove unearned pinned offer");
+        Check(MetaProgress.Pin == null && MetaProgress.Stock.All(MetaProgress.CanStock) && !MetaProgress.TryBuy("BeamEmitterItem", out _), "Remove unearned pinned offer");
         Check(Items(MetaProgress.PendingUnlocks) == 0, "Migration never re-celebrates owned items");
         Begin(LevelId.Snow, RunDifficulty.Normal); MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
         Check(MetaProgress.LastFlight.unlocks.All(n => n.key != "Icicle") && MetaProgress.IsUnlocked("BulletTime"), "Grandfathered clear, new achievement on another hull");

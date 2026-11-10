@@ -104,16 +104,23 @@ public static partial class MetaProgress
         }
     }
 
-    public static bool TryBuy(string item)
+    /// <summary>Buys a stocked item; a fresh item takes its place on the same platform (null when none is left).</summary>
+    public static bool TryBuy(string item, out string replacement)
     {
-        if (!Data.stock.Contains(item) || !CanStock(item))
+        replacement = null;
+        int slot = Data.stock.IndexOf(item);
+        if (slot < 0 || !CanStock(item))
             return false;
         int price = Price(ItemPool.RarityOf(item));
         if (Data.coins < price)
             return false;
         Data.coins -= price;
-        Data.stock.Remove(item);
         if (Pin == item) Data.pin = null;
+        replacement = DrawStock(item);
+        if (replacement != null)
+            Data.stock[slot] = replacement;
+        else
+            Data.stock.RemoveAt(slot);
         if (!IsUnlocked(item))
             Data.unlocked.Add(item);
         Data.loadout.Add(item);
@@ -158,6 +165,18 @@ public static partial class MetaProgress
                 Data.stock.Add(pool[pick]);
                 pool.RemoveAt(pick);
             }
+    }
+
+    // One fresh offer, by the same preference as a restock: a locked item if any remain, else an owned one.
+    static string DrawStock(string sold)
+    {
+        var locked = new List<string>();
+        var owned = new List<string>();
+        foreach (var item in ItemPool.AllItems)
+            if (item != sold && !Data.stock.Contains(item) && CanStock(item))
+                (IsUnlocked(item) ? owned : locked).Add(item);
+        var pool = locked.Count > 0 ? locked : owned;
+        return pool.Count > 0 ? pool[UnityEngine.Random.Range(0, pool.Count)] : null;
     }
 
     public static bool DeleteProgress()

@@ -28,9 +28,16 @@ public sealed partial class HangarHub : MonoBehaviour
     {
         public string kind;
         public AItem item;
+        public Vector2 slot;
         public Vector3 spot;
         public Transform carrier, disc, shadow;
+        // Each platform loads from the bay on its own side of the lane.
+        public float bayX;
         public float arrivalProgress = -1;
+        // A sold platform withdraws to its bay and returns carrying this item.
+        public string restock;
+        public bool departing;
+        public float soldAt;
         public TextMeshProUGUI price;
         public RectTransform plaque, category;
         public int lastBank = -1;
@@ -241,14 +248,11 @@ public sealed partial class HangarHub : MonoBehaviour
             ItemCatalog.TryGet(stock[i], out var definition);
             if (definition == null)
                 continue;
-            var plinth = new Plinth { kind = stock[i], spot = Spot(plinthSpots[i], 1) };
+            var plinth = new Plinth { slot = plinthSpots[i], spot = Spot(plinthSpots[i], 1) };
+            plinth.bayX = center.x + (plinthSpots[i].x < 0 ? LoadingBayX : -LoadingBayX);
             plinth.carrier = new GameObject("Loaded outfitter platform").transform;
             plinth.carrier.SetParent(transform, false);
             plinth.carrier.position = plinth.spot;
-            var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.spot, Quaternion.identity, plinth.carrier);
-            plinth.item = definition.Attach(go);
-
-            plinth.item.SetRarity(ItemPool.RarityOf(stock[i]));
             plinth.disc = MountModel("HangarShopPlinth", plinth.spot + new Vector3(0, -.27f, 1.3f), -4, parent: plinth.carrier);
             plinth.disc.localScale = Vector3.one * 1.72f;
             plinth.disc.localRotation = PlatformTilt;
@@ -261,20 +265,37 @@ public sealed partial class HangarHub : MonoBehaviour
             GalleryWell(glowVertices, glowColors, glowTriangles, plinthSpots[i], 1.22f,
                 new Color(1, .82f, .055f, .88f), new Color(.78f, .57f, .035f, 0));
             GallerySurface("Outfitter yellow footlight", glowVertices, glowColors, glowTriangles, -6, plinth.carrier);
-            var plaque = plinth.plaque = MountedPanel("Stock placard", plinthSpots[i] + Vector2.up * PlacardHeight, new Vector2(3.62f, 1.94f), fadeOnReveal: true);
-            plaque.GetComponent<Image>().color = Color.black;
-            DockInstrument.Block(plaque, "Rarity edge", new Vector2(0, 94), new Vector2(362, 5), AItem.GetRarityColor(plinth.item.rarity));
-            WorldLabel(plaque, plinth.item.GetData()[0], new Vector2(0, 38), new Vector2(338, 91), 34, DockInstrument.Paper);
-            plinth.price = CoinRow(plaque, -49, 330);
-            plinth.category = MountedPanel("Equipment class", plinthSpots[i] + Vector2.down * ClassDrop, new Vector2(3.4f, .50f), fadeOnReveal: true);
-            plinth.category.GetComponent<Image>().enabled = false;
-            WorldLabel(plinth.category, DecisionOverlay.Category(plinth.item), Vector2.zero, new Vector2(334, 50), 32, DockInstrument.Paper);
-            plaque.gameObject.SetActive(false);
-            plinth.category.gameObject.SetActive(false);
-            plinth.carrier.position = new Vector3(center.x + LoadingBayX, plinth.spot.y, plinth.spot.z);
+            Load(plinth, stock[i], definition);
+            plinth.carrier.position = new Vector3(plinth.bayX, plinth.spot.y, plinth.spot.z);
             plinth.carrier.gameObject.SetActive(false);
             yield return null;
         }
+    }
+
+    // Puts an item and its placards on a platform, replacing whatever it carried before.
+    void Load(Plinth plinth, string kind, ItemDefinition definition)
+    {
+        if (plinth.item != null)
+            Destroy(plinth.item.gameObject);
+        if (plinth.plaque != null)
+            Destroy(plinth.plaque.gameObject);
+        if (plinth.category != null)
+            Destroy(plinth.category.gameObject);
+        plinth.kind = kind;
+        plinth.lastBank = -1;
+        var go = Instantiate(Resources.Load<GameObject>("Items/Item"), plinth.carrier.position, Quaternion.identity, plinth.carrier);
+        plinth.item = definition.Attach(go);
+        plinth.item.SetRarity(ItemPool.RarityOf(kind));
+        var plaque = plinth.plaque = MountedPanel("Stock placard", plinth.slot + Vector2.up * PlacardHeight, new Vector2(3.62f, 1.94f), fadeOnReveal: true);
+        plaque.GetComponent<Image>().color = Color.black;
+        DockInstrument.Block(plaque, "Rarity edge", new Vector2(0, 94), new Vector2(362, 5), AItem.GetRarityColor(plinth.item.rarity));
+        WorldLabel(plaque, plinth.item.GetData()[0], new Vector2(0, 38), new Vector2(338, 91), 34, DockInstrument.Paper);
+        plinth.price = CoinRow(plaque, -49, 330);
+        plinth.category = MountedPanel("Equipment class", plinth.slot + Vector2.down * ClassDrop, new Vector2(3.4f, .50f), fadeOnReveal: true);
+        plinth.category.GetComponent<Image>().enabled = false;
+        WorldLabel(plinth.category, DecisionOverlay.Category(plinth.item), Vector2.zero, new Vector2(334, 50), 32, DockInstrument.Paper);
+        plaque.gameObject.SetActive(false);
+        plinth.category.gameObject.SetActive(false);
     }
 
     TextMeshProUGUI CoinRow(RectTransform face, float y, float width)
@@ -470,11 +491,33 @@ public sealed partial class HangarHub : MonoBehaviour
                 offer.arrivalProgress = 0;
                 offer.carrier.gameObject.SetActive(true);
             }
-            if (offer.arrivalProgress < 1)
+            if (offer.departing && Time.time - offer.soldAt >= .5f)
+            {
+                // Once the sold item has vanished, the empty platform withdraws to its bay and reloads there.
+                offer.arrivalProgress = Mathf.Max(0, offer.arrivalProgress - Time.deltaTime);
+                if (offer.arrivalProgress <= 0)
+                {
+                    offer.departing = false;
+                    if (inspectedStock == i)
+                        inspectedStock = -1;
+                    if (offer.restock != null && ItemCatalog.TryGet(offer.restock, out var definition) && definition != null)
+                        Load(offer, offer.restock, definition);
+                    else
+                    {
+                        offer.carrier.gameObject.SetActive(false);
+                        offer.item = null;
+                    }
+                    offer.restock = null;
+                }
+                var at = offer.spot;
+                at.x = Mathf.SmoothStep(offer.bayX, at.x, offer.arrivalProgress);
+                offer.carrier.position = at;
+            }
+            else if (offer.arrivalProgress < 1 && offer.item != null)
             {
                 offer.arrivalProgress = Mathf.Min(1, offer.arrivalProgress + Time.deltaTime / 1.5f);
                 var at = offer.spot;
-                at.x = Mathf.SmoothStep(center.x + LoadingBayX, at.x, offer.arrivalProgress);
+                at.x = Mathf.SmoothStep(offer.bayX, at.x, offer.arrivalProgress);
                 offer.carrier.position = at;
             }
             float lift = PlatformLift(i);
@@ -600,7 +643,7 @@ public sealed partial class HangarHub : MonoBehaviour
 
     void Buy(Plinth plinth)
     {
-        if (!MetaProgress.TryBuy(plinth.kind))
+        if (!MetaProgress.TryBuy(plinth.kind, out string replacement))
         {
             ItemSound.Play("powerdown", .1f);
             return;
@@ -608,6 +651,9 @@ public sealed partial class HangarHub : MonoBehaviour
         PSXImpactEffects.ItemGet(plinth.item.transform.position, AItem.GetRarityColor(plinth.item.rarity));
         ItemSound.Play("itemSalvage", .16f);
         plinth.item.Dismiss();
+        plinth.restock = replacement;
+        plinth.departing = true;
+        plinth.soldAt = Time.time;
         RefreshGalleryAccess();
     }
 
