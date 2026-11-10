@@ -53,6 +53,7 @@ public static class EnemyTones
         // plasma) is dark.
         { typeof(RelayDrone), HostileTone.Bright },
         { typeof(CapacitorKite), HostileTone.Bright },
+        { typeof(FaradayPylon), HostileTone.Bright },
         { typeof(StormReactor), HostileTone.Bright },
         { typeof(StormSkimmer), HostileTone.Dark },
 
