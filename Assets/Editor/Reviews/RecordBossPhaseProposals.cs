@@ -46,6 +46,7 @@ public sealed class BossPhaseProposalRecording : MonoBehaviour
 {
     public string Set;
     const int Frames = 600; // 20 seconds at 30 fps once the phase is under way.
+    static readonly MethodInfo PushToPhase = typeof(WaveWatcher).GetMethod("PushToPhase", BindingFlags.Static | BindingFlags.NonPublic);
 
     static string Filter()
     {
@@ -92,11 +93,19 @@ public sealed class BossPhaseProposalRecording : MonoBehaviour
                 watcher.SelectEntry(index);
                 // Wait until the boss has reached the phase and finished its spell break.
                 DistrictBoss boss = null;
+                float nextPush = 10;
                 for (float waited = 0; waited < 30; waited += Time.deltaTime)
                 {
                     boss = FindLeadBoss(phase);
                     if (boss != null && boss.CurrentPhase >= phase && !boss.Invulnerable)
                         break;
+                    // Fallback for a boss the watcher does not push in time (never the City duo,
+                    // whose survivor phases need the watcher's victim handling).
+                    if (waited >= nextPush && boss != null && !(boss is CityDuoBoss) && !boss.Invulnerable)
+                    {
+                        PushToPhase.Invoke(null, new object[] { boss, null, boss.CurrentPhase + 1 });
+                        nextPush = waited + 2;
+                    }
                     yield return null;
                 }
                 string folder = output + "/" + clip;
@@ -106,7 +115,7 @@ public sealed class BossPhaseProposalRecording : MonoBehaviour
                 for (int f = 0; f < Frames; f++)
                 {
                     yield return new WaitForEndOfFrame();
-                    var texture = ScreenCapture.CaptureScreenshotAsTexture();
+                    var texture = ScreenCapture.CaptureScreenshotAsTexture(2);
                     File.WriteAllBytes(folder + "/" + f.ToString("D4") + ".jpg", texture.EncodeToJPG(88));
                     Destroy(texture);
                 }
