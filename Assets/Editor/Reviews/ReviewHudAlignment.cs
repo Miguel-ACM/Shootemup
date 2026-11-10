@@ -128,7 +128,7 @@ public static class ReviewHudAlignment
 
     static void CheckMeters(IndustrialHUD hud)
     {
-        foreach (string name in new[] { "healthCells", "manaCells", "bossCells" })
+        foreach (string name in new[] { "healthCells", "bossCells" })
         {
             var cells = Get<Image[]>(hud, name);
             var box = (RectTransform)cells[0].transform.parent;

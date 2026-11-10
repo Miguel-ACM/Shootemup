@@ -23,6 +23,8 @@ public sealed class LoadoutHUD : MonoBehaviour
     Dialog dialog;
     Image[] badgeKeys = new Image[2];
     static readonly Color Amber = new Color(1, .71f, .29f), Cyan = new Color(.4f, .82f, .86f), Steel = new Color(.48f, .59f, .61f);
+    /// <summary>Per active slot: its octagon seam and its cost line on the energy column.</summary>
+    public static readonly Color[] ActiveColors = { new Color(1, .74f, .3f), new Color(1, .42f, .7f) };
     public RectTransform[] Panels => panels;
     void Start()
     {
@@ -50,7 +52,9 @@ public sealed class LoadoutHUD : MonoBehaviour
             // A recessed face, lit from above, gives each instrument a little depth.
             var face = Plate(p, "Recessed face", size - 13, new Color(.085f, .12f, .135f));
             face.GetComponent<OctagonGraphic>().shade = -.35f;
-            Plate(p, "Inset seam", size - 13, new Color(.19f, .27f, .29f), 1);
+            var seam = Plate(p, "Inset seam", size - 13, new Color(.19f, .27f, .29f), 1);
+            if (active)
+                seam.GetComponent<OctagonGraphic>().color = ActiveColors[i - 2];
             Plate(p, "Top bevel", size - 6, new Color(.62f, .72f, .72f, .22f), 1).GetComponent<OctagonGraphic>().shade = 1;
             if (active)
             {
@@ -58,7 +62,8 @@ public sealed class LoadoutHUD : MonoBehaviour
                 dial.transform.SetParent(p, false);
                 dials[i] = dial.GetComponent<CooldownDial>();
                 dials[i].raycastTarget = false;
-                ((RectTransform)dial.transform).sizeDelta = Vector2.one * (size - 20);
+                // Exactly inside the machined rim, so the sweep covers the whole face.
+                ((RectTransform)dial.transform).sizeDelta = Vector2.one * (size - 8);
             }
             var picture = new GameObject("Equipment model", typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
             picture.transform.SetParent(p, false);

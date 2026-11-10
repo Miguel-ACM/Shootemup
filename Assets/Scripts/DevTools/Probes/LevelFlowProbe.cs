@@ -143,7 +143,7 @@ public sealed class LevelFlowProbe : MonoBehaviour
         var instruments = FindAnyObjectByType<IndustrialHUD>();
         Check(instruments != null && !instruments.EntranceComplete, "HUD skipped its first entrance");
         Check(instruments.GetComponentsInChildren<FluorescentStartup>(true).Length >= 3, "Score, resources and boss instruments are missing their shared power-on");
-        Check(LitCells(instruments, "healthCells") == 0 && LitCells(instruments, "manaCells") == 0, "HUD filled before its casing entered");
+        Check(LitCells(instruments, "healthCells") == 0 && Energy(instruments) == 0, "HUD filled before its casing entered");
         while (instruments.EntranceAge < .24f)
             yield return null;
         float initialPower = ((CanvasGroup)Get(instruments, "sideGroup")).alpha;
@@ -170,11 +170,11 @@ public sealed class LevelFlowProbe : MonoBehaviour
         Check(banks[3].anchoredPosition.y + extensions[3] < banks[0].anchoredPosition.y + extensions[0], "Cloud exit did not peel away the front layer first");
         while ((float)Get(instruments, "entranceAge") < 1.15f)
             yield return null;
-        Check(LitCells(instruments, "healthCells") > 0 && LitCells(instruments, "healthCells") < 24 && LitCells(instruments, "manaCells") == 0, "Health did not charge segment by segment before energy");
+        Check(LitCells(instruments, "healthCells") > 0 && LitCells(instruments, "healthCells") < 24 && Energy(instruments) == 0, "Health did not charge segment by segment before energy");
         Capture("02-hud-health-charging");
         while ((float)Get(instruments, "entranceAge") < 2.1f)
             yield return null;
-        Check(LitCells(instruments, "healthCells") == 24 && LitCells(instruments, "manaCells") > 0 && LitCells(instruments, "manaCells") < 24, "Energy did not charge after health");
+        Check(LitCells(instruments, "healthCells") == 24 && Energy(instruments) > 0 && Energy(instruments) < 1, "Energy did not charge after health");
         Capture("02-hud-energy-charging");
         while (CloudTransition.Busy && Time.realtimeSinceStartup < until)
             yield return null;
@@ -392,6 +392,8 @@ public sealed class LevelFlowProbe : MonoBehaviour
         }
         finally { while (stack.Count > 0) (stack.Pop() as IDisposable)?.Dispose(); }
     }
+
+    static float Energy(IndustrialHUD hud) => ((RectTransform)Get(hud, "energyFill")).anchorMax.y;
 
     static int LitCells(IndustrialHUD hud, string field)
     {

@@ -14,7 +14,11 @@ public sealed class IndustrialHUD : MonoBehaviour
     readonly RectTransform[] encounterRows = new RectTransform[System.Enum.GetValues(typeof(EncounterKind)).Length];
     Image cargoControl;
     RectTransform cargoCharge;
-    Image[] healthCells, manaCells, bossCells;
+    Image[] healthCells, bossCells;
+    RectTransform energyFill;
+    Image energyLevel, energyImage;
+    ShipLoadout loadout;
+    readonly Image[] costLines = new Image[2];
     Image[] meterCasing;
     OctagonGraphic shieldGlow, shieldRing;
     static readonly Color ShieldBlue = new Color(.45f, .85f, 1f);
@@ -138,9 +142,8 @@ public sealed class IndustrialHUD : MonoBehaviour
         Place(Panel(sidePanel, "Health cross stem", Steel), 11, 12, 3, 11);
         Place(Panel(sidePanel, "Reactor indicator", Cyan), 25, 13, 7, 8);
         BuildHealthCells(Shipcontroller.StartingHits);
-        manaCells = VerticalCells(sidePanel, 25, 34, 24, 7, 7, Cyan);
+        BuildEnergyColumn();
         Fill(healthCells, 0, Steel);
-        Fill(manaCells, 0, Cyan);
         // The inventory occupies the first 40 pixels of the right margin.
         bossPanel = Panel(frame.transform, "Boss hull", Dark);
         Place(bossPanel, 455, 12, 28, 248);
@@ -216,14 +219,14 @@ public sealed class IndustrialHUD : MonoBehaviour
             if (hits != healthCells.Length)
                 BuildHealthCells(hits);
             int healthLimit = Mathf.FloorToInt(Mathf.Clamp01((entranceAge - .75f) / .84f) * hits);
-            int energyLimit = Mathf.FloorToInt(Mathf.Clamp01((entranceAge - 1.72f) / .84f) * 24);
+            float energyLimit = Mathf.Clamp01((entranceAge - 1.72f) / .84f);
             float health = player.health / Mathf.Max(1, player.maxHealth);
             Fill(healthCells, health, HealthRecovery.Tint(health <= .25f ? Color.Lerp(Steel, Alarm, .55f) : Steel), healthLimit);
             UpdateMeterWarning(player.health / Mathf.Max(1, player.maxHealth), Time.unscaledTime);
             UpdateEnergyShield(healthLimit > 0, Time.unscaledTime);
             bool recharging = player.GetComponent<PassiveEnergyCore>() != null && !GameRules.playerDisabled && player.mana < player.maxMana;
             var energyColor = recharging ? Color.Lerp(Cyan, new Color(.55f, .95f, .82f), .3f + .3f * Mathf.Sin(Time.time * 4)) : Cyan;
-            Fill(manaCells, player.mana / Mathf.Max(1, player.maxMana), energyColor, energyLimit);
+            UpdateEnergyColumn(energyColor, energyLimit);
         }
         if (player == null || Time.unscaledTime < nextUpdate)
             return;
@@ -272,6 +275,62 @@ public sealed class IndustrialHUD : MonoBehaviour
         }
         if (boss != null)
             Fill(bossCells, boss.HealthFraction, Amber);
+    }
+
+    // A continuous column: the fill rises from the bottom, and each equipped active marks its price with a line.
+    const float EnergyX = 25, EnergyTop = 34, EnergyWidth = 7;
+    void BuildEnergyColumn()
+    {
+        var track = Panel(sidePanel, "Energy column", Unlit);
+        Place(track, EnergyX, EnergyTop, EnergyWidth, sidePanel.rect.height - EnergyTop - 12);
+        energyFill = Panel(track, "Energy", Cyan);
+        energyFill.anchorMin = Vector2.zero;
+        energyFill.anchorMax = new Vector2(1, 0);
+        energyFill.offsetMin = energyFill.offsetMax = Vector2.zero;
+        energyImage = energyFill.GetComponent<Image>();
+        // A brighter rim on the surface of the charge.
+        var level = Panel(energyFill, "Energy level", Color.white);
+        level.anchorMin = new Vector2(0, 1);
+        level.anchorMax = Vector2.one;
+        level.pivot = new Vector2(.5f, 1);
+        level.offsetMin = new Vector2(0, -1);
+        level.offsetMax = Vector2.zero;
+        energyLevel = level.GetComponent<Image>();
+        for (int i = 0; i < costLines.Length; i++)
+        {
+            // Each line overhangs the column on its own side, so equal prices still show both colours.
+            var line = Panel(track, "Active " + (i + 1) + " cost", LoadoutHUD.ActiveColors[i]);
+            line.anchorMin = line.anchorMax = Vector2.zero;
+            line.pivot = new Vector2(0, .5f);
+            line.sizeDelta = new Vector2(EnergyWidth + 4, 2);
+            costLines[i] = line.GetComponent<Image>();
+        }
+    }
+
+    void UpdateEnergyColumn(Color color, float limit)
+    {
+        float max = Mathf.Max(1, player.maxMana);
+        float shown = Mathf.Min(limit, Mathf.Clamp01(player.mana / max));
+        energyFill.anchorMax = new Vector2(1, shown);
+        energyImage.color = color;
+        energyLevel.color = shown > 0 ? Color.Lerp(color, Color.white, .45f) : Color.clear;
+        if (loadout == null)
+            loadout = player.GetComponent<ShipLoadout>();
+        float height = ((RectTransform)energyFill.parent).rect.height;
+        for (int i = 0; i < costLines.Length; i++)
+        {
+            var active = loadout != null ? loadout.Actives[i] : null;
+            float cost = active != null ? active.cost * GameRules.activeEnergyCost : 0;
+            var line = costLines[i];
+            line.enabled = limit >= 1 && cost > 0;
+            if (!line.enabled)
+                continue;
+            line.rectTransform.anchoredPosition = new Vector2(i == 0 ? -4 : 0, Mathf.Min(1, cost / max) * height);
+            // Unaffordable prices sit dimmer above the charge.
+            var tint = LoadoutHUD.ActiveColors[i];
+            tint.a = player.mana >= cost ? 1 : .45f;
+            line.color = tint;
+        }
     }
 
     static Color PhaseColor(int phase) => phase == 1 ? Amber : phase == 2 ? new Color(1, .45f, .18f) : phase == 3 ? Alarm : new Color(.72f, .35f, 1);
