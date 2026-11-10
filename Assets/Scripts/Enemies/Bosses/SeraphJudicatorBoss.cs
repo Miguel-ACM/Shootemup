@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 [UnityEngine.Scripting.Preserve]
-public sealed class SeraphJudicatorBoss : DistrictBoss
+public sealed partial class SeraphJudicatorBoss : DistrictBoss
 {
     public HeavenAngelVisual Angel { get; private set; }
     public int CardIndex { get; private set; }
