@@ -250,11 +250,16 @@ public abstract class DistrictBoss : DistrictEnemy
     // the book and the next attack opens the phase-two cards.
     bool cardsRunning;
     protected virtual IEnumerator Cards() => null;
+    // Review switch (ArtSource/BossPhaseProposals): bosses fly their proposed card books
+    // instead of the shipping ones, so both can be recorded side by side for Miguel to
+    // choose phase by phase. Never set during ordinary play.
+    public static bool ProposedCards;
+    protected virtual IEnumerator Proposed() => null;
     protected bool OpenCards()
     {
         if (cardsRunning)
             return true;
-        var book = Cards();
+        var book = ProposedCards ? Proposed() ?? Cards() : Cards();
         if (book == null)
             return false;
         cardsRunning = true;
