@@ -24,17 +24,27 @@ public sealed partial class PlainsThreshingDrumBoss : ArmoredHullBoss
         return side * Mathf.Max(.5f, CombatRound.Border.xMax - .12f - drum);
     }
 
-    // Tones: windrow arrows in the lead tone with their round beads in the other; the
-    // winnower's pods in the other tone with lead-tone kernels; phase two swaps them.
-    // On the return stroke the left drum's teeth are dark and the right drum's bright.
-    HostileTone Lead => CurrentPhase == 2 ? HostileTone.Dark : HostileTone.Bright;
-    static HostileTone Opposite(HostileTone value) => value == HostileTone.Bright ? HostileTone.Dark : HostileTone.Bright;
-
+    // Phase one: Winnowing. Phase two: Windrows, Winnower and the Return stroke, with chaff
+    // weaving down the furrow. Phase three (Hard): Scything (PlainsThreshingDrumBoss.Cards.cs).
+    // Phase two tones: dark windrow arrows with bright round beads; bright winnower pods with
+    // dark kernels; bright furrow chaff. On the return stroke the left drum's teeth are dark
+    // and the right drum's bright.
     protected override IEnumerator Cards()
     {
+        station.y = Camera.UpLimit - 2.25f;
         int side = -1;
         while (true)
         {
+            if (phaseThree)
+            {
+                yield return Scything();
+                continue;
+            }
+            if (!phaseTwo)
+            {
+                yield return Winnowing();
+                continue;
+            }
             station.x = Reach(side);
             station.y = Camera.UpLimit - 2.25f;
             while (Vector2.Distance(transform.position, station) > .08f) yield return null;
@@ -46,16 +56,18 @@ public sealed partial class PlainsThreshingDrumBoss : ArmoredHullBoss
             station.x = Reach(side);
             // Density changes the depth of the rows, never the spacing between columns.
             int marks = Mathf.Max(5, Mathf.CeilToInt(Mathf.Abs(station.x - start) / ColumnStep) + 1);
-            int rows = Dense(phaseThree ? 12 : 10);
+            int rows = Dense(12);
             const float PlantStep = .24f, FirstPlant = .35f;
             float lastPlant = FirstPlant + (rows - 1) * PlantStep;
             float gapX = Lane(-side * .38f);
+            bool furrowSown = false;
             for (int mark = 0; mark < marks; mark++)
             {
                 float fraction = mark / (marks - 1f);
                 float x = Mathf.Lerp(start, station.x, fraction);
                 while (side * (x - transform.position.x) > .09f) yield return null;
                 float travelLeft = Mathf.Abs(station.x - transform.position.x) / (DrumSpeed * MovementScale * LevelRun.EnemyTempoScale);
+                float release = travelLeft + lastPlant + .30f;
                 // The motion program runs in scaled game time independently of the card clock.
                 for (int drum = 1; drum <= 2; drum++)
                 {
@@ -70,23 +82,28 @@ public sealed partial class PlainsThreshingDrumBoss : ArmoredHullBoss
                         // equal row depths. Even the last planted row finishes before
                         // the shared release; no reversals or faster rows catching up.
                         float plant = FirstPlant + row * PlantStep;
-                        UseTone(row % 3 == 0 ? Opposite(Lead) : Lead);
-                        ScoredShot(row%3==0,port, Vector2.down, 3.2f, .18f)
-                            .Pause(plant, travelLeft + lastPlant + .30f - plant,
-                                CombatRound.Turn.Down, speed: 1.3f);
+                        UseTone(row % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
+                        ScoredShot(row % 2 == 0, port, Vector2.down, 3.2f, .18f)
+                            .Pause(plant, release - plant, CombatRound.Turn.Down, speed: 1.3f);
                     }
+                }
+                // Over the furrow, the chute sows chaff that hangs down the whole lane.
+                if (!furrowSown && Mathf.Abs(Muzzle().x - gapX) < ColumnStep)
+                {
+                    furrowSown = true;
+                    FurrowChaff(release);
                 }
             }
             yield return Wait(Rest(.26f));
             // Winnower: pods from the middle chute open sideways over the advancing rows.
             yield return Charge(Hull, WeaponPort(), .44f);
-            int pods = Dense(phaseThree ? 7 : phaseTwo ? 6 : 5);
+            int pods = Dense(7);
             for (int pod = 0; pod < pods; pod++)
             {
                 // The chute's kernels cross the old furrow between windrow releases.
-                UseTone(Lead);
+                UseTone(HostileTone.Dark);
                 if(pod%2==0)Fire<SimpleRound>(Muzzle(),CombatVisuals.Aim(Muzzle()),3.1f,.22f);
-                UseTone(Opposite(Lead));
+                UseTone(HostileTone.Bright);
                 for (int mirror = -1; mirror <= 1; mirror += 2)
                     // The chute throws chaff sideways. Alternating pods turn into
                     // ascending and descending diagonal combs rather than another rain.
@@ -96,27 +113,43 @@ public sealed partial class PlainsThreshingDrumBoss : ArmoredHullBoss
                         .SplitAt(.92f, Dense(17), 10, 2.5f, .16f);
                 yield return Wait(Rest(.2f));
             }
-            if (phaseTwo)
+            // Return stroke: the two drums counter-turn, combing the open furrow from opposite
+            // edges. The teeth cross the field once and leave; nothing bounces.
+            yield return PrimePair(.35f);
+            int teeth = Dense(24);
+            int tines = Dense(5);
+            for (int tooth = 0; tooth < teeth; tooth++)
             {
-                // Return stroke: the two drums counter-turn, combing the open furrow from opposite edges.
-                yield return PrimePair(.35f);
-                int teeth = Dense(phaseThree ? 24 : 18);
-                for (int tooth = 0; tooth < teeth; tooth++)
+                float spread = Mathf.Lerp(58, -30, tooth / Mathf.Max(1f, teeth - 1));
+                for (int tine = 0; tine < tines; tine++)
                 {
-                    float spread = Mathf.Lerp(58, -30, tooth / Mathf.Max(1f, teeth - 1));
-                    for (int tine = 0; tine < Dense(5); tine++)
-                    {
-                        float offset = (tine - (Dense(5) - 1) * .5f) * 9;
-                        // Three side-wall bounces each, rather than one (Miguel).
-                        UseTone(HostileTone.Dark);
-                        ScoredShot(tooth%3==0,Muzzle(1), CombatVisuals.Rotate(Vector2.right, spread + offset), 3.3f).Bounce(3, false);
-                        UseTone(HostileTone.Bright);
-                        ScoredShot(tooth%3==0,Muzzle(2), CombatVisuals.Rotate(Vector2.left, -spread - offset), 3.3f).Bounce(3, false);
-                    }
-                    yield return Wait(Rest(.09f));
+                    float offset = (tine - (tines - 1) * .5f) * 9;
+                    UseTone(HostileTone.Dark);
+                    ScoredShot(tooth%3==0,Muzzle(1), CombatVisuals.Rotate(Vector2.right, spread + offset), 3.3f);
+                    UseTone(HostileTone.Bright);
+                    ScoredShot(tooth%3==0,Muzzle(2), CombatVisuals.Rotate(Vector2.left, -spread - offset), 3.3f);
                 }
+                yield return Wait(Rest(.09f));
             }
             yield return Wait(Rest(.34f));
+        }
+    }
+
+    // Furrow chaff: large bright rounds dropped from the chute into the furrow at staggered
+    // depths, so the whole lane is studded. They hang until the windrows let go, then drift
+    // down slowly, weaving from side to side in alternate directions: the lane stays open,
+    // but threading it means steering round them.
+    void FurrowChaff(float release)
+    {
+        UseTone(HostileTone.Bright);
+        int count = Mathf.Max(4, Dense(8));
+        for (int i = 0; i < count; i++)
+        {
+            float at = .45f + i * (2.1f / (count - 1));
+            Fire<SimpleRound>(Muzzle(), Vector2.down, 3.0f, .3f)
+                .Pause(at, Mathf.Max(.1f, release - at), CombatRound.Turn.Down, 0, .4f)
+                .Sway(i % 2 == 0 ? .38f : -.38f, .38f)
+                .LivesFor(14);
         }
     }
 }
