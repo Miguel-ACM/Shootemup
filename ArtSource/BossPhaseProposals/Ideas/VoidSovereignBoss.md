@@ -1,5 +1,15 @@
 # Void Sovereign: proposed forms
 
+**Final choice (Miguel, November 2026).** Void keeps its shipping cards, teleports and interludes, and the `.Proposed.cs` file is gone. In `VoidSovereignBoss.Cards.cs`:
+
+- **No aimed rounds.** Each aimed reply is now a mirrored moon fan from both eyes (`SweepingReply`). The fans cross beneath the body on a heading that sweeps slowly with the beat, and are larger than the replies they replace, so the pressure does not drop.
+  - Funeral Psalm's aimed pearls now halt and resume down crossing diagonals.
+  - Cut the Firmament's middle lane turns straight down.
+  - The final form's crossfire (`CrossedGaze`) charges both side tips, then crosses kunai, with a moon at the heart of each chord, through a fixed point above the star that steps left, centre and right in turn.
+- **More moons, kunai and giant circles.** Circular lanes are now moons and arrow lanes kunai (chevrons where a card asks for them). Crowns come more often: Witnesses and World Without Edges every third beat, Severing every fourth. They remain lone giants with their neighbouring lanes left empty.
+
+The proposal text below is kept for reference.
+
 Code: `Assets/Scripts/Enemies/Bosses/VoidSovereignBoss.Proposed.cs`. No shipping file changed.
 
 Each form is one concept that runs for the whole form. It develops in movements:

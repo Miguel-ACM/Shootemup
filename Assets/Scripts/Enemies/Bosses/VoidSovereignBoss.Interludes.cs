@@ -82,10 +82,11 @@ public sealed partial class VoidSovereignBoss
         {
             Vector3 p=Source(edge,side);
             if(CombatVisuals.Player!=null&&Vector2.Distance(p,CombatVisuals.Player.position)<1.6f)continue;
-            // Unmaking's crests carry both tones, so its aimed reply is dark.
+            // Unmaking's crests carry both tones, so its punctuating moon is dark.
+            // Void fires nothing aimed (Miguel, 10 November 2026): a straight inward moon.
             CombatRound.LaunchTone=chapter==3?HostileTone.Dark:Other(WaveTone(chapter,beat,side,0));
             if(beat%7==0)
-                CombatRound.Launch<SimpleRound>(p,CombatVisuals.Aim(p),2.8f,.22f).LivesFor(12);
+                CombatRound.Launch<CrescentRound>(p,inward,2.8f,.22f).LivesFor(12);
             for(int i=0;i<count;i++)
             {
                 float u=Across(i,count);

@@ -11,17 +11,35 @@ public sealed partial class VoidSovereignBoss
         return beam;
     }
     static float Across(int i,int count)=>count<=1?0:i/(count-1f)*2-1;
-    // Tones (Miguel, 9 November 2026). Each card's body takes one tone; its aimed
-    // replies and giant crowns take the other, and the body flips card to card:
+    // Tones (Miguel, 9 November 2026). Each card's body takes one tone; its replies
+    // and giant crowns take the other, and the body flips card to card:
     //   Witnesses bright, Funeral Psalm dark; Severing bright, Cut the Firmament dark;
     //   Hunger bright, False Stars dark (its comets and their shrapnel).
     //   The final form mixes densely: its opposed pairs alternate tones beat by beat,
     //   diagonal banks dark and vertical banks bright in World Without Edges, the
     //   reverse in Last Equation. Rays stay bright.
     static HostileTone Other(HostileTone shade)=>shade==HostileTone.Bright?HostileTone.Dark:HostileTone.Bright;
+    // Void's mix (Miguel, November 2026: more moons, kunai and giant circles): the
+    // circular lanes are moons, the arrow lanes kunai or chevrons, and lone giant orbs
+    // take the crowns.
     CombatRound CrownedShot(bool giant,bool circular,Vector3 port,Vector2 axis,float speed,float radius=.17f,float crown=.60f,bool chevron=false)
         =>giant?(CombatRound)Fire<GiantOrb>(port,axis,speed*.9f,crown):
-            chevron&&!circular?Fire<ChevronRound>(port,axis,speed,radius):ScoredShot(circular,port,axis,speed,radius);
+            circular?(CombatRound)Fire<CrescentRound>(port,axis,speed,radius+.03f):
+            chevron?Fire<ChevronRound>(port,axis,speed,radius):Fire<KunaiRound>(port,axis,speed,radius);
+    // No Void round is aimed (Miguel, November 2026). A reply is a mirrored moon fan from
+    // both eyes that crosses beneath the body on a heading sweeping slowly with the beat,
+    // so a resting pilot is crossed on a schedule rather than tracked.
+    void SweepingReply(int beat,int count,float speed,float radius)
+    {
+        float angle=10+22*Mathf.Abs(Mathf.Sin(beat*.37f));
+        for(int port=0;port<2;port++)
+        {
+            int side=port==0?-1:1;
+            var axis=CombatVisuals.Rotate(Vector2.down,-side*angle);
+            for(int i=0;i<count;i++)
+                Fire<CrescentRound>(Port(port),CombatVisuals.Rotate(axis,Across(i,count)*6),speed,radius);
+        }
+    }
     // A crown replaces the outer tip, with two neighbouring lanes left empty.
     // Large artwork needs physical space even when its damaging core is small.
     static bool CrownSpacer(int lane,int count,bool crown)=>crown&&lane<count-1&&lane>=count-3;
@@ -56,9 +74,8 @@ public sealed partial class VoidSovereignBoss
     {
         if(beat%6==5)return;
         UseTone(HostileTone.Dark);
-        if(beat%5==0)for(int port=0;port<2;port++)
-            Fire<CrescentRound>(Port(port),CombatVisuals.Aim(Port(port)),2.7f,.23f);
-        int count=Dense(11);bool crown=beat%4==0;
+        if(beat%5==0)SweepingReply(beat,3,2.7f,.23f);
+        int count=Dense(11);bool crown=beat%3==0;
         float fold=30+23*Mathf.Sin(beat*.22f);
         for(int side=-1;side<=1;side+=2)
             for(int bank=-1;bank<=1;bank+=2)
@@ -78,9 +95,14 @@ public sealed partial class VoidSovereignBoss
     IEnumerator FuneralPsalm()=>Every(6.2f,1.28f,beat=>
     {
         UseTone(HostileTone.Bright);
+        // Pearl pairs halt beneath the eyes, then cross down diagonals that alternate by beat.
         for(int port=0;port<2;port++)
-            Fire<SimpleRound>(Port(port),CombatVisuals.Aim(Port(port)),1.5f,.23f)
-                .Pause(.4f,.35f,CombatRound.Turn.Aim,0,1.8f);
+        {
+            int side=port==0?-1:1;
+            for(int pearl=0;pearl<2;pearl++)
+                Fire<SimpleRound>(Port(port),CombatVisuals.Rotate(Vector2.down,-side*(8+14*pearl)),1.5f,.23f)
+                    .Pause(.4f,.35f,CombatRound.Turn.Down,-side*(beat%2==0?24:10)+pearl*side*6,1.8f);
+        }
         int count=Dense(13);bool crown=beat%2==0;
         for(int side=-1;side<=1;side+=2)
             for(int bank=-1;bank<=1;bank+=2)
@@ -106,9 +128,8 @@ public sealed partial class VoidSovereignBoss
     {
         if(beat%8>=6)return;
         UseTone(HostileTone.Dark);
-        if(beat%10==0)for(int port=0;port<2;port++)
-            Fire<CrescentRound>(Port(port),CombatVisuals.Aim(Port(port)),3.0f,.22f);
-        int count=Dense(5);bool crown=beat%6==0;
+        if(beat%10==0)SweepingReply(beat,3,3.0f,.22f);
+        int count=Dense(5);bool crown=beat%4==0;
         float stroke=74*Mathf.Sin(beat*.17f);
         for(int side=-1;side<=1;side+=2)
             for(int i=0;i<count;i++)
@@ -136,11 +157,11 @@ public sealed partial class VoidSovereignBoss
             {
                 float u=Across(i,count),pleat=9*Mathf.Sin(beat*.35f);
                 if(OpenSeam(u,beat)||CrownSpacer(i,count,crown))continue;
-                // The aimed middle lane and the crowns answer the dark pleats in bright.
+                // The middle lane (turning straight down) and the crowns answer the dark pleats in bright.
                 UseTone(crown&&i==count-1||i==count/2?HostileTone.Bright:HostileTone.Dark);
                 CrownedShot(crown&&i==count-1,i%3==0,Port(side<0?0:1),CombatVisuals.Rotate(Vector2.down,side*(38+u*27+pleat)),
                     2.1f+.35f*(1-u*u),.17f,.60f,true)
-                    .Pause(1.2f,.22f,i==count/2?CombatRound.Turn.Aim:CombatRound.Turn.Rotate,i==count/2?0:-side*24,1.25f).FadeAt(5.8f);
+                    .Pause(1.2f,.22f,i==count/2?CombatRound.Turn.Down:CombatRound.Turn.Rotate,i==count/2?0:-side*24,1.25f).FadeAt(5.8f);
             }
         });
         yield return Wait(Rest(.9f));
@@ -151,8 +172,7 @@ public sealed partial class VoidSovereignBoss
     {
         if(beat%5==4)return;
         UseTone(HostileTone.Dark);
-        if(beat%4==0)for(int port=0;port<2;port++)
-            Fire<SimpleRound>(Port(port),CombatVisuals.Aim(Port(port)),2.6f,.25f).Ramp(1.2f,1.2f);
+        if(beat%4==0)SweepingReply(beat,3,2.6f,.24f);
         int count=Dense(11);bool crown=beat%3==0;
         for(int side=-1;side<=1;side+=2)for(int bank=-1;bank<=1;bank+=2)
             for(int i=0;i<BankCount(count,bank);i++)
@@ -172,8 +192,7 @@ public sealed partial class VoidSovereignBoss
     IEnumerator FalseStars()=>Every(6.2f,1.5f,beat=>
     {
         UseTone(HostileTone.Bright);
-        for(int port=0;port<2;port++)
-            Fire<CrescentRound>(Port(port),CombatVisuals.Aim(Port(port)),2.8f,.23f);
+        SweepingReply(beat,3,2.8f,.23f);
         // Widely separated comets open narrow fans, leaving space between the
         // crowns and between their shrapnel. No second carpet of slow crowns.
         for(int side=-1;side<=1;side+=2)for(int bank=-1;bank<=1;bank+=2)
@@ -203,7 +222,7 @@ public sealed partial class VoidSovereignBoss
     {
         if(beat%6==5)return;
         if(beat%5==0)Phrase(CrossedGaze(HostileTone.Bright));
-        int count=Dense(9);bool crown=beat%4==0;
+        int count=Dense(9);bool crown=beat%3==0;
         for(int port=0;port<4;port++)
         {
             if((port<2?0:1)!=beat%2)continue;
@@ -253,26 +272,34 @@ public sealed partial class VoidSovereignBoss
     static Vector2 FractureAxis(int port)=>port==0?CombatVisuals.Rotate(Vector2.down,-42):
         port==1?CombatVisuals.Rotate(Vector2.down,42):port==2?Vector2.up:Vector2.down;
 
+    // Fixed crossfire for the final form (no aiming): the side tips charge visibly, then
+    // cross kunai, a moon at the heart of each chord, through a fixed point above the
+    // star that steps left, centre and right in turn. It closes the space above and on
+    // the body on a schedule, never by tracking the pilot.
+    int crossings;
     IEnumerator CrossedGaze(HostileTone shade)
     {
-        // Outward-facing star tips left the space inside/above the star untouched.
-        // The opposite side tips visibly charge, then cross through the pilot's
-        // recorded position. Moving after the charge opens a clear escape.
-        Vector3 target=player!=null?player.position:transform.position+Vector3.down*5;
+        int step=crossings++%3;
         for(float t=0;t<.45f;)
         {
             if(!Holding)t+=Time.deltaTime*LevelRun.EnemyTempoScale;
             Cue(Port(0),.45f-t);Cue(Port(1),.45f-t);
             yield return null;
         }
+        Vector3 cross=transform.position+new Vector3((step-1)*1.6f,step==1?2.6f:1.7f,0);
         int count=Dense(3)|1;
         UseTone(shade);
         for(int port=0;port<2;port++)
         {
             Vector3 p=Port(port);
-            Vector2 aim=((Vector2)(target-p)).normalized;
+            Vector2 line=((Vector2)(cross-p)).normalized;
             for(int i=0;i<count;i++)
-                Fire<GemRound>(p,CombatVisuals.Rotate(aim,Across(i,count)*8),2.8f,.22f).FadeAt(6);
+            {
+                if(i==count/2)
+                    Fire<CrescentRound>(p,line,2.6f,.22f).FadeAt(6);
+                else
+                    Fire<KunaiRound>(p,CombatVisuals.Rotate(line,Across(i,count)*8),2.8f,.19f).FadeAt(6);
+            }
         }
     }
 }
