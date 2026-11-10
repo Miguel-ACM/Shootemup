@@ -2,29 +2,29 @@ using System.Collections;
 using UnityEngine;
 
 // Proposed Tunnel saw card book (ArtSource/BossPhaseProposals), flown only while
-// DistrictBoss.ProposedCards is set. Every round still leaves the centre of the blade.
-// Phase one (stations, no bouncing)
-//   Gear Train: at each new station the saw throws pairs of widening cogs. The bright
-//     cog wears its teeth outward and turns one way; the dark cog wears them inward,
-//     turns the other way and widens more slowly, so the two openings sweep past each
-//     other like meshing gears. A fast rice tracer flies at the pilot with each pair.
-//   Spiral Stair: a fast ring of small beads and a slow ring of large teeth leave
-//     together with one shared opening; each pair's opening turns a step further round,
-//     so the openings climb a spiral staircase around the saw. The first faces the pilot.
-// Phase two (ricochet; it fires only when it strikes a wall)
-//   Buzzsaw Bloom: each impact opens a full turn of hooked blades, rice grains launched
-//     together at rising speeds, each lagging further behind the spin, with slow round
-//     teeth between the blades; some blade tips rebound once. A fast trio flies at the
-//     pilot, so an impact near the pilot is a threat.
-//   Spark Fountain: each impact throws a fountain of fast and slow rice sparks that
-//     arc back down under gravity, a full turn of slow teeth (half of them rebound once)
-//     and runners that grind away along the struck wall in both directions.
-// Hard phase three, Chain Reaction: a faster ricochet. Impacts alternate blades and
-//   fountains, and every impact adds a crown of slow shrapnel teeth that crack into
-//   small fast fans as they widen.
-// Tones: Gear Train bright outer cogs, dark inner cogs and tracers; Spiral Stair dark
-// slow teeth with bright fast beads; Buzzsaw Bloom bright blades with dark teeth; Spark
-// Fountain dark sparks with bright teeth and runners; Chain Reaction adds dark shrapnel.
+// DistrictBoss.ProposedCards is set. One concept per phase; every round still leaves
+// the centre of the blade.
+// Phase one, Gearbox (stations, no bouncing): at each new station the saw throws widening
+//   cogs, rings with six raised teeth and one opening, turning at most 26 degrees a
+//   second. Station by station the gearbox shifts: a drive gear (single cogs turning in
+//   alternate directions), a meshing pair (a bright cog with teeth out and a dark cog
+//   with teeth in, counter-rotating), a ratchet (still cogs, fast and slow alternately,
+//   whose opening steps round from the pilot like a spiral stair), and an idler pair (a
+//   fast and a slow cog turning together). Later rounds raise the teeth and the fast
+//   tracer becomes a trio.
+// Phase two, Buzzsaw Bloom (ricochet; it fires only when it strikes a wall): every
+//   impact opens a full turn of hooked blades, rice grains launched together at rising
+//   speeds, each lagging further behind the spin, with slow round teeth between the
+//   blades and two sparks grinding along the struck wall. Impacts cycle through a
+//   ripsaw (every blade hooked with the spin), a crosscut (alternate blades hooked
+//   against it) and a rebound (near-straight spokes whose tips ricochet); the hook
+//   deepens as the saw wears down. A fast trio flies at the pilot from every impact.
+// Hard phase three, Chain Reaction: a faster ricochet; every impact throws two crowns of
+//   slow shrapnel teeth that crack into small fast fans: a forward cone, wide petals,
+//   then teeth that rebound before cracking and pairs that crack toward the pilot. The
+//   cracks come sooner as the saw wears down.
+// Tones: phase one bright outer cogs over dark inner cogs and tracers; phase two bright
+// blades over dark teeth and sparks; phase three dark large teeth, bright small ones.
 public sealed partial class TunnelSawBoss
 {
     bool patrolling;
@@ -35,17 +35,11 @@ public sealed partial class TunnelSawBoss
         while (true)
         {
             if (phaseThree)
-                yield return Patrol(12, ChainReaction, 1.15f);
+                yield return Patrol(30, ChainReaction, 1.15f);
             else if (!phaseTwo)
-            {
-                yield return GearTrain();
-                yield return SpiralStair();
-            }
+                yield return Gearbox();
             else
-            {
-                yield return Patrol(9, BuzzsawBloom);
-                yield return Patrol(9, SparkFountain);
-            }
+                yield return Patrol(30, BuzzsawBloom);
         }
     }
 
@@ -58,82 +52,106 @@ public sealed partial class TunnelSawBoss
             haltUntil = float.MaxValue;
     }
 
-    // ---- Phase one ----
+    // ---- Phase one: Gearbox ----
 
-    IEnumerator GearTrain()
+    IEnumerator Gearbox()
     {
-        spinner.spin = 720;
-        yield return Centre(Stations[nextStation++ % Stations.Length]);
-        yield return Charge(Hull, Vector3.zero, .5f);
-        int outer = Dense(36), inner = Dense(30);
-        int turn = nextStation % 2 == 0 ? 1 : -1;
-        for (int pair = 0; pair < 3; pair++)
+        for (int movement = 0; !phaseTwo; movement++)
         {
-            UseTone(HostileTone.Bright);
-            Cog(outer, pair * 11, turn, .42f, 1.3f, .24f, .19f);
-            UseTone(HostileTone.Dark);
-            Cog(inner, pair * 7 + inner / 2, -turn, -.3f, 1.0f, .26f, .2f);
-            Fire<RiceRound>(transform.position, CombatVisuals.Aim(transform.position), 4.2f, .19f);
-            yield return Wait(Rest(1.1f));
+            spinner.spin = 720;
+            yield return Centre(Stations[nextStation++ % Stations.Length]);
+            yield return Charge(Hull, Vector3.zero, .5f);
+            int turn = movement / 4 % 2 == 0 ? 1 : -1;
+            float tooth = movement >= 4 ? .6f : .42f;
+            int positions = Dense(36);
+            float opening = Vector2.SignedAngle(Vector2.down, CombatVisuals.Aim(transform.position));
+            switch (movement % 4)
+            {
+                case 0:
+                    // Drive gear: single cogs turning in alternate directions, the opening sliding.
+                    for (int ring = 0; ring < 6; ring++)
+                    {
+                        UseTone(ring % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
+                        Cog(positions, opening + ring * 75, (ring % 2 == 0 ? 1 : -1) * turn * 26, tooth, 1.3f, .24f, .19f);
+                        if (ring % 2 == 0)
+                            Tracer(movement);
+                        yield return Wait(Rest(.55f));
+                    }
+                    break;
+                case 1:
+                    // Meshing pair: teeth out and teeth in, counter-rotating, the inner cog slower.
+                    for (int pair = 0; pair < 3; pair++)
+                    {
+                        UseTone(HostileTone.Bright);
+                        Cog(positions, opening + pair * 100, turn * 26, tooth, 1.3f, .24f, .19f);
+                        UseTone(HostileTone.Dark);
+                        Cog(Dense(30), opening + 180 + pair * 60, -turn * 26, -tooth * .7f, 1.0f, .26f, .2f);
+                        Tracer(movement);
+                        yield return Wait(Rest(1.1f));
+                    }
+                    break;
+                case 2:
+                    // Ratchet: still cogs, fast and slow alternately, the opening stepping round.
+                    for (int ring = 0; ring < 6; ring++)
+                    {
+                        bool fast = ring % 2 == 0;
+                        UseTone(fast ? HostileTone.Bright : HostileTone.Dark);
+                        Cog(positions, opening + ring * 16 * turn, 0, tooth, fast ? 2.0f : 1.05f, fast ? .2f : .27f, fast ? .17f : .22f);
+                        yield return Wait(Rest(.55f));
+                    }
+                    Tracer(movement);
+                    break;
+                default:
+                    // Idler pair: a fast and a slow cog turning together, the fast one first.
+                    for (int pair = 0; pair < 3; pair++)
+                    {
+                        float at = opening + pair * 120;
+                        UseTone(HostileTone.Bright);
+                        Cog(positions, at, turn * 22, tooth, 2.0f, .2f, .17f);
+                        UseTone(HostileTone.Dark);
+                        Cog(positions, at, turn * 22, tooth, 1.05f, .27f, .22f);
+                        Tracer(movement);
+                        yield return Wait(Rest(1.1f));
+                    }
+                    break;
+            }
+            // The gearbox idles before it shifts to the next station.
+            yield return Wait(.6f);
         }
-        yield return Wait(.6f);
     }
 
-    // A widening ring with six raised teeth (or six notches, for a negative tooth) and
-    // one four-bead opening. It turns at 26 degrees a second and its rim never travels
-    // faster than 2.8 units a second as it widens.
-    void Cog(int positions, int gap, int sign, float tooth, float expand, float crownRadius, float rootRadius)
+    // A widening ring with six raised teeth (or notches, for a negative tooth) and one
+    // four-bead opening centred on a heading. Its rim never travels faster than 2.8 units
+    // a second as it widens.
+    void Cog(int positions, float opening, float rate, float tooth, float expand, float crownRadius, float rootRadius)
     {
-        for (int i = 0; i < positions; i++)
+        const int Missing = 4;
+        float step = 360f / positions;
+        for (int i = 0; i < positions - Missing; i++)
         {
-            if ((i - gap % positions + positions) % positions < 4)
-                continue;
             bool crown = i * 12 / positions % 2 == 0;
             var bead = Fire<SimpleRound>(transform.position, Vector2.down, 0, crown ? crownRadius : rootRadius);
             if (bead != null)
-                bead.Orbit(Radius * .9f + (crown ? tooth : 0), i * 360f / positions, sign * 26, 10, 0, 0, 0, .05f)
+                bead.Orbit(Radius * .9f + (crown ? tooth : 0), opening + (i + Missing * .5f + .5f) * step, rate, 10, 0, 0, 0, .05f)
                     .Expand(expand, 2.8f);
         }
     }
 
-    IEnumerator SpiralStair()
+    // A fast rice tracer at the pilot; from the second round of stations, a trio.
+    void Tracer(int movement)
     {
-        spinner.spin = 720;
-        yield return Centre(Stations[nextStation++ % Stations.Length]);
-        yield return Charge(Hull, Vector3.zero, .5f);
-        int slow = Dense(28), fast = Dense(16);
-        float turn = nextStation % 2 == 0 ? 16 : -16;
-        float opening = Vector2.SignedAngle(Vector2.down, CombatVisuals.Aim(transform.position));
-        for (int step = 0; step < 5; step++)
-        {
-            UseTone(HostileTone.Bright);
-            OpenRing(fast, 2, opening, 2.1f, .17f);
-            UseTone(HostileTone.Dark);
-            OpenRing(slow, 4, opening, 1.05f, .27f);
-            opening += turn;
-            yield return Wait(Rest(.75f));
-        }
-        yield return Wait(.6f);
+        UseTone(HostileTone.Dark);
+        var aim = CombatVisuals.Aim(transform.position);
+        int lanes = movement >= 4 ? 1 : 0;
+        for (int i = -lanes; i <= lanes; i++)
+            Fire<RiceRound>(transform.position, CombatVisuals.Rotate(aim, i * 9), 4.2f, .19f);
     }
 
-    // A ring that only widens, with its opening centred on a heading.
-    void OpenRing(int count, int missing, float opening, float expand, float radius)
-    {
-        float step = 360f / count;
-        for (int i = 0; i < count - missing; i++)
-        {
-            var bead = Fire<SimpleRound>(transform.position, Vector2.down, 0, radius);
-            if (bead != null)
-                bead.Orbit(Radius * .9f, opening + (i + missing * .5f + .5f) * step, 0, 10, 0, 0, 0, .05f)
-                    .Expand(expand);
-        }
-    }
+    // ---- Phase two and three: the ricochet ----
 
-    // ---- Phase two and three ----
-
-    // The saw's own ricochet, driven here so each impact releases the proposed card's
-    // burst: the same speed, walls, impact warning and contact damage as the shipping
-    // patrol, which stands down (haltUntil) meanwhile. Silent between impacts.
+    // The saw's own ricochet, driven here so each impact releases the proposed burst:
+    // the same speed, walls, impact warning and contact damage as the shipping patrol,
+    // which stands down (haltUntil) meanwhile. Silent between impacts.
     IEnumerator Patrol(float seconds, System.Action<Vector2> burst, float pace = 1)
     {
         if (!patrolling)
@@ -187,72 +205,65 @@ public sealed partial class TunnelSawBoss
             player.SendMessage("ReceiveHazardDamage", 14f, SendMessageOptions.DontRequireReceiver);
     }
 
-    // A full turn of hooked blades. Each blade is three rice grains launched together at
-    // rising speeds, each lagging further behind the spin, so the burst opens as a
-    // turning saw; slow round teeth sit between the blades.
+    // How far the saw has worn through the current phase, 0 at its start and 1 at its end.
+    float Wear => Mathf.InverseLerp(PhaseEnd(CurrentPhase - 1), PhaseEnd(CurrentPhase), HealthFraction);
+
+    // A full turn of hooked blades: four rice grains per blade launched together at rising
+    // speeds, each lagging further behind the spin, with a slow round tooth between blades.
     void BuzzsawBloom(Vector2 inward)
     {
         var centre = transform.position;
         int blades = Dense(12);
-        int spin = impacts % 2 == 0 ? 1 : -1;
+        int kind = impacts % 3;
+        int spin = impacts / 3 % 2 == 0 ? 1 : -1;
+        float hook = Mathf.Lerp(5, 12, Wear);
         float step = 360f / blades;
         for (int b = 0; b < blades; b++)
         {
             float root = b * step + impacts * 9;
+            // Ripsaw hooks every blade with the spin; crosscut alternates; rebound runs
+            // nearly straight and its tips ricochet.
+            float lag = kind == 0 ? spin * hook : kind == 1 ? (b % 2 == 0 ? spin : -spin) * hook : spin * hook * .3f;
             UseTone(HostileTone.Bright);
-            for (int k = 0; k < 3; k++)
+            for (int k = 0; k < 4; k++)
             {
-                var grain = Fire<RiceRound>(centre, CombatVisuals.Rotate(inward, root - spin * k * 8), 1.8f + 1.3f * k, .19f);
-                if (k == 2 && b % 3 == 0)
+                var grain = Fire<RiceRound>(centre, CombatVisuals.Rotate(inward, root - lag * k), 1.6f + 1.1f * k, .19f);
+                if (k == 3 && (kind == 2 || b % 4 == 0))
                     grain.Bounce(1);
             }
             UseTone(HostileTone.Dark);
             Fire<SimpleRound>(centre, CombatVisuals.Rotate(inward, root + step * .5f), 1.2f, .3f);
         }
+        // Two sparks grind away along the struck wall, one each way.
+        UseTone(HostileTone.Dark);
+        for (int direction = -1; direction <= 1; direction += 2)
+            Fire<SimpleRound>(centre, -inward, 4.4f, .22f)
+                .RunWalls(5, direction);
         AimedTrio(centre, HostileTone.Bright);
     }
 
-    // A fountain of rice sparks thrown into the arena that arc back down under gravity,
-    // fast and slow alternately; a full turn of slow teeth; runners grinding both ways
-    // along the struck wall.
-    void SparkFountain(Vector2 inward)
-    {
-        var centre = transform.position;
-        int sparks = Dense(24);
-        UseTone(HostileTone.Dark);
-        for (int i = 0; i < sparks; i++)
-        {
-            float lane = i - (sparks - 1) * .5f;
-            Fire<RiceRound>(centre, CombatVisuals.Rotate(inward, lane * 150f / Mathf.Max(1, sparks - 1)), i % 2 == 0 ? 4.4f : 3.0f, .19f)
-                .Fall(Vector2.down * 1.6f);
-        }
-        int teeth = Dense(20);
-        UseTone(HostileTone.Bright);
-        for (int i = 0; i < teeth; i++)
-        {
-            var tooth = Fire<SimpleRound>(centre, CombatVisuals.Rotate(inward, (i + .5f) * 360f / teeth + impacts * 7), 1.4f, .3f);
-            if (i % 2 == 0)
-                tooth.Bounce(1);
-        }
-        for (int direction = -1; direction <= 1; direction += 2)
-            for (int k = 0; k < 2; k++)
-                Fire<SimpleRound>(centre, -inward, 4.0f + k * 1.2f, .22f)
-                    .RunWalls(5, direction);
-    }
-
-    // Hard: impacts alternate blades and fountains; each adds a crown of slow shrapnel
-    // teeth that crack into small fast fans as they widen.
+    // Two crowns of shrapnel teeth that crack into small fast fans as they widen. The
+    // large dark crown cracks forward, into wide petals, or after a rebound; the small
+    // bright crown cracks into pairs, aimed at the pilot on every third impact.
     void ChainReaction(Vector2 inward)
     {
-        if (impacts % 2 == 0)
-            BuzzsawBloom(inward);
-        else
-            SparkFountain(inward);
-        int shrapnel = Dense(8);
+        var centre = transform.position;
+        int kind = impacts % 3;
+        float crack = Mathf.Lerp(1.7f, 1.1f, Wear);
+        int large = Dense(12), small = Dense(12);
         UseTone(HostileTone.Dark);
-        for (int i = 0; i < shrapnel; i++)
-            Fire<SimpleRound>(transform.position, CombatVisuals.Rotate(inward, (i + .5f) * 360f / shrapnel), 1.0f, .34f)
-                .SplitAt(1.6f, 3, 22, 3.4f, .16f);
+        for (int i = 0; i < large; i++)
+        {
+            var tooth = Fire<SimpleRound>(centre, CombatVisuals.Rotate(inward, (i + .5f) * 360f / large + impacts * 7), 1.0f, .34f)
+                .SplitAt(kind == 2 ? crack + .6f : crack, 3, kind == 1 ? 60 : 24, 3.4f, .16f);
+            if (kind == 2)
+                tooth.Bounce(1);
+        }
+        UseTone(HostileTone.Bright);
+        for (int i = 0; i < small; i++)
+            Fire<SimpleRound>(centre, CombatVisuals.Rotate(inward, i * 360f / small + impacts * 7), 1.7f, .24f)
+                .SplitAt(crack * .6f, 2, kind == 2 ? 14 : 90, 3.0f, .15f, kind == 2);
+        AimedTrio(centre, HostileTone.Bright);
     }
 
     void AimedTrio(Vector3 centre, HostileTone shade)

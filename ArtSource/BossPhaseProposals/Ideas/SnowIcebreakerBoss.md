@@ -1,35 +1,54 @@
-# Snow icebreaker: proposed cards
+# Snow icebreaker: proposed phases
 
-Code: `Assets/Scripts/Enemies/Bosses/SnowIcebreakerBoss.Proposed.cs` (the class is now `partial`; nothing else in `SnowIcebreakerBoss.cs` changed). Every round leaves the prow or a shoulder. The cards reuse the ship's existing movement helpers (Sail, LineUp, PrimeAll, Place). Pressure is within about 25% of the current cards.
+Code: `Assets/Scripts/Enemies/Bosses/SnowIcebreakerBoss.Proposed.cs` (the class is now `partial`; nothing else in `SnowIcebreakerBoss.cs` changed). Each phase is one concept that runs for the whole phase and develops in movements. Every round leaves the prow or a shoulder. The ship's existing movement helpers (Sail, LineUp, Ram, PrimeAll, Place) are reused. Rounds per second are estimated within about 10% of the current phase.
 
-## Phase one (pack ice)
+## Phase one (pack ice): Bow Wave
 
-**Current:** Ramming Speed (rams down; mirrored fracture fans and bow spray that freezes and re-aims) and Fracture Sheet (two-course whole-width sheets crack open under the bow or shoulders).
+**Current:** Ramming Speed (rams with fracture fans and re-aiming bow spray) alternating with Fracture Sheet (two-course whole-width sheets that crack under the bow).
 
-- **Bow Wave.** The ship surges through the arena on a W, down and up twice. Its prow throws both arms of a bow wave as it goes, so a V-shaped wake trails behind it. Each crest freezes, then slides off down its own side, slow at first and accelerating. Diving legs leave the wake over the top of the arena, and rising legs leave it below. Every fourth crest is round. Both shoulders now and then throw a crystal dart that crawls at the pilot and accelerates. Tones: bright wake, dark darts. The ship's movement draws the pattern, which fits an icebreaker better than a fixed fan.
-- **Shattered Icicles.** Lined up over the pilot after a charge, all three ports drive parallel lances along the prow's aim. Each lance is a string of paired arrows at rising speeds. The lances freeze, then shatter: each pair splits mirror-wise, the deeper links splaying wider, so each lance opens into a tree of chevrons. The crystal tip re-aims at the pilot after the shatter. Tones: dark lances, bright tips.
+Wherever the ship surges, its prow throws both arms of a bow wave, so a V-shaped wake trails behind it. Each crest freezes, then slides off down its own side, slow at first and accelerating. Every fourth crest is round, and the shoulders now and then throw a crystal dart. The course changes with each movement:
+1. A W through the arena.
+2. Three rams at the pilot: a long wake on the dive, a short one backing astern.
+3. Breakers across the middle, then back along the top.
+4. A figure eight crossing itself in the upper arena.
 
-Further ideas (not implemented):
-- *Pressure Crack*: one long crack of hanging arrows runs zigzag down from the prow, then each segment slides off perpendicular to itself.
-- *Ice Floe Mosaic*: the shoulders place small floes (clusters of five) in a staggered grid, which drift apart from the ship's track as it passes.
-- *Keel Ripples*: each ram sends three mirrored ripple arcs outward that freeze at different radii and fall.
+From the second round, alternate courses freeze their crests and re-aim them at the pilot instead. The water settles (a short rest) between courses. Tones: bright wake, dark darts.
 
-## Phase two (open water)
+Alternative single concepts:
+- *Fracture Field*: every ram cracks the pack. First single fracture fans, then sheets that open under the bow, then cracks that branch, then a sheet-and-fan quake.
+- *Pressure Crack*: one long zigzag crack of hanging arrows runs from the prow. Its segments slide off perpendicular to themselves, and the crack lengthens and forks over the phase.
+- *Keel Ripples*: each surge sends mirrored ripple arcs that freeze at different radii and fall. The arcs multiply and interleave as the ship speeds up.
 
-**Current:** Cut Channel (a Z run lined with frozen walls that zip shut) and Calving Bergs (gravity bergs rebound and split at their apex, over swinging pressure ridges).
+## Phase two (open water): Closing Pack
 
-- **Aurora Curtain.** Drifting broadside, each shoulder lets down a braided ribbon of arrows, two strands swaying against each other. The ribbons are dashed: the right curtain's gaps fall half a beat after the left one's. The curtains ripple and sweep as the ship drifts. The prow charges and fires fans that freeze and re-aim, so standing between curtains is not safe. Tones: bright curtains, dark prow fans.
-- **Closing Pack.** The shoulders throw ice along both side walls: a column the full height of the arena on each side, with one opening. The column forms from the top down. The left column breaks off and closes in across the arena. The right one follows half a throw later, so they cross off centre. Both openings walk along the walls throw by throw, the right one a little behind. The direction alternates between passes. The prow fires slow, accelerating pellets. Tones: dark walls, bright pellets. It is a horizontal frogger that covers the top and bottom of the arena alike.
+**Current:** Cut Channel (a Z run lined with frozen walls that zip shut) alternating with Calving Bergs (gravity bergs that rebound and split over swinging pressure ridges).
 
-Further ideas (not implemented):
-- *Lead Ice*: the ship cuts straight leads across the arena that stay open as moving corridors in an otherwise frozen sheet.
-- *Growler Field*: large round "growlers" bob down with Sway and split into short arrow fans when they pass the ship's depth.
-- *Whirlpool Wake*: the ship circles; its wake freezes and slides toward the centre of the loop before falling.
+The shoulders throw ice along the side walls: a column the full height of the arena with one opening, forming from the top down. The columns break off and close in across the arena. The movements are:
+1. Staggered pairs: the right column follows half a throw later, so they cross off centre.
+2. Sheared columns that break off from the top down and lean as they close.
+3. A tide of single walls from one side with a stepping opening.
+4. A nip: both walls at once with their openings level, meeting mid-arena.
 
-## Phase three (Hard)
+The openings walk down the arena on one pass and up it on the next. Each throw brings slow prow pellets, and each movement ends in slack water: a charged prow fan that freezes and re-aims. From the second round the walls close faster. Tones: dark walls, bright pellets and fans.
+
+Alternative single concepts:
+- *Aurora Curtain*: drifting broadside, the shoulders let down braided, dashed ribbons that sway against each other. Over the phase the braid widens, the dashes shift and the prow joins with a third ribbon.
+- *Calving Bergs*: bergs thrown on arcs that rebound and calve. They calve into fans, then into hanging floes, then into bergs that calve twice.
+- *Cut Channel*: the ship cuts leads lined with frozen walls that zip shut. The courses become a Z, then an S, then crossing leads.
+
+## Phase three (Hard): Shattered Icicles
 
 **Current:** Icequake (rams that crack a fracture fan and a fresh sheet together, then a zipped channel back up).
 
-- **Glacial Breach.** The bow-wave W again. A fresh pair of staggered pack walls is thrown at the foot of each dive, and a lance is driven at the pilot from each crest. Pressure is similar to Icequake.
+Lances of paired arrows at rising speeds freeze and shatter: every pair splits mirror-wise, the deeper links splaying wider, so each lance opens into a tree of chevrons. The crystal tip, in the other tone, re-aims at the pilot. The movements are:
+1. A volley of three parallel lances.
+2. A fan of five from the prow.
+3. Crossfire from both shoulders while the ship slides across the top.
+4. A ram whose impact drives a fan of lances straight down.
 
-Further idea: *Polar Convoy*: Aurora Curtains dropped while the ship rams the pack walls apart.
+The dominant tone alternates by movement, and from the second round the lances splay wider.
+
+Alternative single concepts:
+- *Glacial Breach*: the bow-wave W with pack walls thrown at the foot of every dive. The walls multiply as the ship speeds up.
+- *Icequake*: rams whose impacts lay a sheet, then fracture fans, then both, with the sheet's crack following the pilot.
+- *Frozen Armada*: the ship's wake hardens into pack walls behind it, so its own course draws the maze.
