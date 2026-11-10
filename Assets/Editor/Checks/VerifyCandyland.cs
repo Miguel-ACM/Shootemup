@@ -227,9 +227,8 @@ public sealed class CandylandReview : MonoBehaviour
         float hp = boss.health;
         Check(hp < 1440 * GameRules.enemyHealth * LevelRun.EnemyHealthScale, "regent has less health than the Plains boss");
         Vector3 lastPosition = boss.transform.position;
-        Vector2 previousVelocity = Vector2.zero;
-        float maxSpeed = 0, minX = 100, maxX = -100, minY = 100, maxY = -100;
-        int peakBossRounds = 0, turns = 0;
+        float maxSpeed = 0, minX = 100, maxX = -100, minY = 100;
+        int peakBossRounds = 0;
         var minionTypes = new HashSet<System.Type>();
         for (int phase = 0; phase < 2; phase++)
         {
@@ -240,17 +239,13 @@ public sealed class CandylandReview : MonoBehaviour
                 float start = Time.time;
                 yield return new WaitForSeconds(.25f);
                 Vector2 velocity = (boss.transform.position - lastPosition) / (Time.time - start);
-                maxSpeed = Mathf.Max(maxSpeed, velocity.magnitude);
                 lastPosition = boss.transform.position;
-                if (velocity.magnitude > 3 && previousVelocity.magnitude > 3 && Vector2.Angle(velocity, previousVelocity) > 65)
-                    turns++;
-                previousVelocity = velocity;
                 minX = Mathf.Min(minX, lastPosition.x);
                 maxX = Mathf.Max(maxX, lastPosition.x);
                 if (frame > 8)
                 {
+                    maxSpeed = Mathf.Max(maxSpeed, velocity.magnitude);
                     minY = Mathf.Min(minY, lastPosition.y);
-                    maxY = Mathf.Max(maxY, lastPosition.y);
                 }
                 peakBossRounds = Mathf.Max(peakBossRounds, CombatRound.Live.Count);
                 foreach (var minion in AEnemy.Live)
@@ -260,9 +255,9 @@ public sealed class CandylandReview : MonoBehaviour
             }
             Capture("BossPhase" + (phase + 1));
         }
-        Check(maxSpeed > 10 && maxX - minX > 3 && maxY - minY > 4 && turns >= 8, "boss makes fast multi-height dashes and repeated sharp direction changes");
+        Check(maxSpeed < 7 && maxX - minX > 1.5f && minY >= (Camera.UpLimit + Camera.DownLimit) * .5f + 1, "boss drifts calmly through the upper arena");
         Check(peakBossRounds >= 45, "harder boss sustains pressure: peak " + peakBossRounds + " projectiles");
-        Check(minionTypes.Count == 0 && boss.HatchSprays > 0, "boss has no minions; its hatches spray bonbons instead");
+        Check(minionTypes.Count == 0 && boss.AttentionShifts > 0, "boss has no minions; its attention shifts drive its attacks");
         float before = boss.health;
         for (int i = 0; i < 16; i++)
         {

@@ -65,11 +65,6 @@ public sealed class BossMechanismRig : MonoBehaviour
         }
         else if(boss is TunnelSawBoss)
             Add(hull,"Counterrotating saw bearing",1,new Vector3(0,0,-.52f),Vector3.forward,-390,0,0,0,true,1.2f);
-        else if(boss is CandyRegentBoss)
-        {
-            Pair(hull,"Folded candy ribbon",4,.54f,.30f,-.48f,.65f,17,22);
-            Add(hull,"Regent sugar spindle",1,new Vector3(0,.2f,-.58f),Vector3.forward,55,0,0,0,true,.62f);
-        }
         else if(boss is AbyssSubmarineBoss)
             Pair(hull,"Pressure tube ventilation",0,.69f,.35f,-.62f,.27f,6,35);
         else if(boss is HellCrabBoss crab)

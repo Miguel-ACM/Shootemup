@@ -104,7 +104,8 @@ public static class EnemyWeaponLayout
             case 37:
                 return new[] { P(0, -.73f, -.08f) };
             case 38:
-                return new[] { P(-.27f, -1.07f), P(.27f, -1.07f), P(-.82f, -.35f), P(.82f, -.35f) };
+                // Candy regent: both lollipop wands at rest, the eye and the crown.
+                return new[] { P(-1.5f, -.88f, -.28f), P(1.5f, -.88f, -.28f), P(0, .02f, -.6f), P(0, 1.0f, -.2f) };
             case 41:
                 return new[] { P(-.19f, -.68f, -.15f), P(.19f, -.68f, -.15f) };
             case 42:

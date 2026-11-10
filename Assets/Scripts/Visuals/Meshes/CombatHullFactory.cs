@@ -96,6 +96,7 @@ public static partial class IndustrialMeshFactory
         if (kind == 91) return SeraphJudicatorBossMesh();
         if (kind == 90) return DawnGatekeeperMesh();
         if (kind == 45) return CitadelRefit();
+        if (kind == 38) return CandyRegentHeart();
         var authored = TerraModel("Hull" + kind);
         if (authored != null)
             return authored;
@@ -211,11 +212,6 @@ public static partial class IndustrialMeshFactory
         {
             BuildMintSpinner(b);
             return combatHulls[kind] = b.Finish("Peppermint spindle");
-        }
-        if (kind == 38)
-        {
-            BuildCandyRegent(b);
-            return combatHulls[kind] = b.Finish("Candy regent launch wings");
         }
         if (kind == 30)
         {
