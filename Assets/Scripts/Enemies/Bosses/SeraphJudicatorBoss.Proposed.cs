@@ -3,11 +3,13 @@ using UnityEngine;
 
 // Proposed card book (ArtSource/BossPhaseProposals/Ideas/SeraphJudicatorBoss.md),
 // flown only while DistrictBoss.ProposedCards is set so it can be recorded beside
-// the shipping Cards(). The angel's own anatomy draws every card: the tumbling
-// wheels shape the fans, the eyes carry the lances, and unbodied eyes open in
-// empty air. Tones follow Body/Accent: Wheel Within a Wheel bright, Six Wings
-// dark; Feather Fall dark, Many Eyes bright; Wheels of Fire bright, Sea of Glass
-// dark. Lances stay bright.
+// the shipping Cards(). One concept per phase, developed in movements: the movement
+// number chooses the variation, and every completed cycle of variations escalates.
+//   Phase one: Wheel Within a Wheel. Phase two: Six Wings. Phase three: Sea of Glass.
+// Tones: the movement's body takes Body(CardIndex), its accents Accent(CardIndex), and
+// CardIndex alternates movement by movement, so the dominant tone flips with each
+// variation (phase one opens bright, phase two dark, phase three bright). Lances
+// stay bright.
 public sealed partial class SeraphJudicatorBoss
 {
     readonly Vector3[] sites = new Vector3[6];
@@ -15,267 +17,153 @@ public sealed partial class SeraphJudicatorBoss
 
     protected override IEnumerator Proposed()
     {
-        while (true)
+        // The book restarts with each phase, so every concept opens on its first movement.
+        for (int movement = 0; ; movement++)
         {
-            CardIndex = 0;
+            CardIndex = movement % 2;
             Pray(true);
-            yield return Charge(Angel.Emitter(0), Vector3.zero, .65f);
+            yield return Charge(Angel.Emitter(0), Vector3.zero, .55f);
             if (CurrentPhase == 1)
-                yield return WheelWithinAWheel();
+                yield return WheelWithinAWheel(movement);
             else if (CurrentPhase == 2)
-                yield return FeatherFall();
+                yield return SixWings(movement);
             else
-                yield return WheelsOfFire();
+                yield return SeaOfGlass(movement);
             Pray(false);
-            yield return Wait(Rest(1.25f));
-            CardIndex = 1;
-            Pray(true);
-            yield return Charge(Angel.Emitter(0), Vector3.zero, .65f);
-            if (CurrentPhase == 1)
-                yield return SixWings();
-            else if (CurrentPhase == 2)
-                yield return ManyEyes();
-            else
-                yield return SeaOfGlass();
-            Pray(false);
-            yield return Wait(Rest(1.45f));
+            // A longer breath closes each full cycle of variations.
+            yield return Wait(Rest(movement % 4 == 3 ? 1.3f : .7f));
         }
     }
 
-    // Wheel Within a Wheel: the middle wheel's lower eyes cast feather lashes along
-    // the wheel's own tumbling outline, so every fan is drawn anew by the wheel, with
-    // one moving aisle. The outer wheel's side eyes open mirrored rim fans on the off
-    // beats, the inner wheel answers with slow pearls, the core eye lays a wide glance
-    // along the pilot's line twice, and watchers open in the corners.
-    IEnumerator WheelWithinAWheel()
+    // Wheel Within a Wheel (phase one): the eyes of the tumbling wheels are the weapon.
+    // Each lash leaves an eye along the wheel's own projected outline, so the fans are
+    // redrawn by the tumble, and one aisle sways through them. Movements: the middle
+    // wheel lashes while the outer side eyes answer; the outer wheel takes it up, wider
+    // and slower, over weeping pearls; the middle and inner wheels trade beats with
+    // mirrored aisles; then every eye opens, the upper rims hanging rain along the top
+    // edge and watchers closing the corners. Mid-movement the core eye lays a wide
+    // glance along the pilot's line. Each later cycle sways the aisle faster and widens
+    // the lashes.
+    IEnumerator WheelWithinAWheel(int movement)
     {
-        Phrase(CornerWatchers(0, 4));
-        yield return Every(4.6f, .22f, beat =>
+        int verse = movement % 4;
+        int cycle = Mathf.Min(movement / 4, 2);
+        float sway = .17f * (1 + .25f * cycle);
+        if (verse == 3)
+            Phrase(CornerWatchers(CardIndex, 3));
+        yield return Every(4.4f, .2f, beat =>
         {
-            if (beat % 10 == 0)
-                Glance(1.0f, 2.0f, 1.3f);
+            float aisle = 46 * Mathf.Sin(beat * sway + movement * 1.3f);
+            if (beat == 9)
+                Glance(1.0f, 1.8f, 1.3f);
             if (beat % 4 == 2)
                 Gaze();
-            UseTone(Body(0));
-            WheelLash(1, Dense(9), 3, 1.35f, beat % 4 == 0, 46 * Mathf.Sin(beat * .17f));
-            if (beat % 2 == 1)
+            UseTone(Body(CardIndex));
+            if (verse == 0)
             {
-                RimFans(3, Dense(9), 30, 50, 2.0f, beat, false);
-                UseTone(Accent(0));
-                WheelPearls(2, 1.2f);
+                WheelLash(1, Dense(8 + cycle), 3, 1.35f, false, aisle);
+                if (beat % 2 == 1)
+                    RimFans(3, Dense(9), 30, 50, 2.0f, beat);
+            }
+            else if (verse == 1)
+            {
+                WheelLash(0, Dense(8 + cycle), 2.6f, 1.2f, false, aisle);
+                UseTone(Accent(CardIndex));
+                if (beat % 2 == 1)
+                    WheelPearls(2, 1.2f);
+            }
+            else if (verse == 2)
+            {
+                bool middle = beat % 2 == 0;
+                WheelLash(middle ? 1 : 2, Dense(10 + cycle), 3.5f, 1.4f, false, middle ? aisle : -aisle);
+            }
+            else
+            {
+                WheelLash(1, Dense(8 + cycle), 3, 1.35f, false, aisle);
+                UseTone(Accent(CardIndex));
+                if (beat % 3 == 0)
+                    UpperRain(0, Dense(2));
             }
         });
     }
 
-    // Six Wings (Isaiah's seraph): the upper pair are lances held out to the walls
-    // from the riding side eyes, beating down and back; the middle pair are feathers
-    // thrown sideways that halt as drawn wings and then shed downward; the lower pair
-    // sweep beneath the body. Three pairs of unbodied eyes along the top edge cry Holy
-    // and stare, and the side eyes stare back at a pilot who stays still.
-    IEnumerator SixWings()
+    // Six Wings (phase two): Isaiah's seraph, "with twain he covered his face, and with
+    // twain he covered his feet, and with twain he did fly". Each movement opens one
+    // pair of wings, and the fourth opens all six under the Holy chorus. Flight draws two
+    // layered wings sideways that shed curtains down the sides, with a beat of rest in
+    // every four as a passage; the feet are a two-layer skirt beneath the body that opens
+    // and folds while the side eyes stare; the face is two lances held out to the walls
+    // that beat, with raised wings hanging along the top edge. Each later cycle beats the
+    // wings faster.
+    IEnumerator SixWings(int movement)
     {
-        for (int s = -1; s <= 1; s += 2)
+        int verse = movement % 4;
+        float tempo = 1 + .2f * Mathf.Min(movement / 4, 3);
+        if (verse == 0 || verse == 3)
+            Phrase(Holy(CardIndex));
+        if (verse >= 2)
+            WingLances(tempo);
+        yield return Every(4.4f, .2f, beat =>
         {
-            var beam = Beam(s < 0 ? 3 : 4, s * 88, .8f, 3.6f, 1.6f);
-            if (beam != null)
-            {
-                beam.sweep = -s * 22;
-                beam.reversalArc = 36;
-            }
-        }
-        Phrase(Holy(1));
-        yield return Every(4.8f, .36f, beat =>
-        {
-            if (beat % 3 == 0)
+            float stroke = 7 * Mathf.Sin(beat * .45f * tempo);
+            if (beat % 5 == 2)
                 Gaze();
-            if (beat % 2 == 1)
-                Stare(3, 5);
-            UseTone(Body(1));
-            float stroke = 7 * Mathf.Sin(beat * .9f);
-            int wing = Dense(14);
-            int under = Dense(9);
-            for (int s = -1; s <= 1; s += 2)
+            UseTone(Body(CardIndex));
+            if (verse == 0)
             {
-                var port = Eye(s < 0 ? 1 : 2);
-                for (int i = 0; i < wing; i++)
-                {
-                    float u = wing <= 1 ? 1 : i / (wing - 1f);
-                    // Tips fly farther and higher, so the halt draws the wing's curve.
-                    float speed = 2.0f + 2.6f * u;
-                    Fire<FeatherRound>(port, CombatVisuals.Rotate(Vector2.down, s * (62 + 46 * u + stroke)), speed, .17f)
-                        .Pause(.75f, .35f, CombatRound.Turn.Down, s * (6 + 20 * u), (1.9f + .4f * (1 - u)) / speed)
-                        .FadeAt(8.5f);
-                }
-                for (int i = 0; i < under; i++)
-                {
-                    float u = Across(i, under);
-                    ScoredShot(i % 3 == 0, port, CombatVisuals.Rotate(Vector2.down, s * (10 + 18 * u - stroke)), 2.5f + .3f * u, .17f)
-                        .FadeAt(8);
-                }
+                if (beat % 4 != 3)
+                    MiddleWings(stroke, Dense(16), 2);
+            }
+            else if (verse == 1)
+            {
+                LowerWings(stroke, Dense(12), 2);
+                if (beat % 2 == 1)
+                    Stare(3, 5);
+            }
+            else if (verse == 2)
+            {
+                RaisedWings(stroke, Dense(14));
+                LowerWings(stroke, Dense(6), 1);
+            }
+            else
+            {
+                if (beat % 4 != 3)
+                    MiddleWings(stroke, Dense(16), 1);
+                LowerWings(stroke, Dense(8), 1);
+                if (beat % 3 == 0)
+                    RaisedWings(stroke, Dense(10));
             }
         });
     }
 
-    // Feather Fall: two gate lances cross beneath the angel from the riding side eyes
-    // and breathe apart and back (the cherubim and the turning sword). Along the whole
-    // top edge unbodied plumes shed swaying feathers, offset by half a plume each verse
-    // so the gaps drift. Below, the middle wheel lashes around one moving aisle, the
-    // gate eyes open mirrored fans into the side aisles outside the X, the inner wheel
-    // throws stars that halt and stare, and the gate eyes stare at a resting pilot.
-    IEnumerator FeatherFall()
+    // Sea of Glass (phase three, Hard): "a sea of glass like unto crystal". Unbodied eyes
+    // draw panes of pearls; every pearl flies to its exact place, the pane hangs, then
+    // moves as one: sheets fall as a woven lattice whose channels shift half a step each
+    // pane, columns slide sideways, and every pane keeps one open seam. Beneath, the
+    // outer wheel's lashes stand for the waves around a moving aisle. Movements: a still
+    // sea of falling sheets; sheets with the many eyes laying thin aimed lances through
+    // them; the sea standing up as sliding columns; sheets and columns crossed with the
+    // lances. Each later cycle moves the aisle faster.
+    IEnumerator SeaOfGlass(int movement)
     {
-        for (int s = -1; s <= 1; s += 2)
-        {
-            var beam = Beam(s < 0 ? 3 : 4, -s * 22, .85f, 3.4f, 1.6f);
-            if (beam != null)
-            {
-                // Outward only: the lower aisle widens; the crossing never sinks onto the floor.
-                beam.sweep = -s * 9;
-                beam.reversalArc = 10;
-            }
-        }
-        Phrase(Plumes(0, 5));
-        yield return Every(5.0f, .22f, beat =>
-        {
-            if (beat % 5 == 1)
-                Gaze();
-            if (beat % 3 == 2)
-                Stare(3, 5);
-            UseTone(Body(0));
-            WheelLash(1, Dense(9), 3, 1.3f, false, -40 * Mathf.Sin(beat * .21f));
-            RimFans(3, Dense(6), 18, 40, 1.9f, beat, false);
-            UseTone(Accent(0));
-            StaringStars(2, Dense(3));
-        });
-    }
-
-    // Many Eyes: pairs of eyes on the outer wheel's lower rim open in turn and lay
-    // thin lances that cross on the pilot; every lancing eye opens two layered
-    // feather lids along its line of sight, never on it. The inner wheel weeps
-    // pearls and the upper rim sends a few feathers toward the top edge.
-    IEnumerator ManyEyes()
-    {
-        yield return Every(5.4f, .52f, beat =>
-        {
-            if (beat % 3 == 2)
-                Gaze();
-            float reach = 34 + 14 * Mathf.Sin(beat * .8f);
-            for (int s = -1; s <= 1; s += 2)
-            {
-                var eye = EyeFacing(0, CombatVisuals.Rotate(Vector2.down, s * reach));
-                Vector2 sight = CombatVisuals.Aim(eye.position);
-                // Aimed lances stay where the eye opened: a riding origin would slide the
-                // thin beam sideways onto a pilot who has already stepped clear of it.
-                PinnedLance(eye.position, sight, .46f, .7f, .85f);
-                UseTone(Body(1));
-                EyeLids(eye.position, sight, Dense(12));
-            }
-            UseTone(Body(1));
-            WheelLash(1, 0, 0, 1.2f, beat % 2 == 0, 0);
-            UseTone(Accent(1));
-            WheelPearls(2, 1.1f);
-        });
-    }
-
-    // Wheels of Fire (Hard): two wheels cast their own lashes at a time, outer
-    // feathers, middle feathers and stars, inner pearls, sharing one moving aisle.
-    // The middle wheel's side eyes add mirrored rim fans, the outer side eyes stare.
-    // A lance pair through the core eye turns like a slow propeller, one arm across
-    // the lower arena and the other over the top; watchers close the corners.
-    IEnumerator WheelsOfFire()
-    {
-        for (int arm = 0; arm < 2; arm++)
-        {
-            var beam = Beam(0, arm == 0 ? -62 : 118, 1.0f, 3.4f, 1.7f);
-            if (beam != null)
-                beam.sweep = 16;
-        }
-        Phrase(CornerWatchers(0, 4));
-        yield return Every(5.2f, .2f, beat =>
+        int verse = movement % 4;
+        float drift = .2f + .04f * Mathf.Min(movement / 4, 3);
+        bool eyes = verse == 1 || verse == 3;
+        Phrase(Glass(verse, 5));
+        yield return Every(4.4f, .2f, beat =>
         {
             if (beat % 5 == 0)
                 Gaze();
-            if (beat % 4 == 3)
-                Stare(3, 5);
-            float aisle = 50 * Mathf.Sin(beat * .15f);
-            int first = beat % 3;
-            for (int k = 0; k < 2; k++)
-            {
-                int ring = (first + k) % 3;
-                UseTone(ring == 2 ? Accent(0) : Body(0));
-                WheelLash(ring, Dense(8), 3.5f, 1.4f - .1f * ring, k == 0 && beat % 6 == 3, aisle);
-            }
+            UseTone(Body(CardIndex));
+            WheelLash(0, Dense(10), 2.4f, 1.5f, false, 40 * Mathf.Sin(beat * drift + movement));
+            if (eyes && beat % 5 == 1)
+                ManyEyes(Dense(10), beat);
+            UseTone(Accent(CardIndex));
             if (beat % 2 == 0)
-            {
-                UseTone(Body(0));
-                RimFans(1, Dense(8), 34, 46, 2.1f, beat, false);
-            }
-        });
-    }
-
-    // Sea of Glass (Hard): six unbodied eyes draw three glass sheets at a time across
-    // the arena; every feather flies to its exact place, the sheet hangs, then falls
-    // as a woven lattice of opposed diagonals with one open seam per sheet. The outer
-    // wheel keeps lashing around an aisle, the middle side eyes throw refracted rim
-    // fans that halt and turn down, and the core eye and side eyes answer a still pilot.
-    IEnumerator SeaOfGlass()
-    {
-        Phrase(GlassSheets(1, 5));
-        yield return Every(5.4f, .3f, beat =>
-        {
-            if (beat % 4 == 0)
-                Gaze();
-            if (beat % 7 == 3)
-                Glance(.5f, .9f, .9f);
-            if (beat % 3 == 1)
+                WheelPearls(2, 1.15f);
+            if (!eyes && beat % 4 == 3)
                 Stare(3, 5);
-            UseTone(Body(1));
-            WheelLash(0, Dense(10), 2.6f, 1.5f, false, 40 * Mathf.Sin(beat * .23f));
-            RimFans(1, Dense(8), 20, 44, 2.0f, beat, true);
-            UseTone(Accent(1));
-            WheelPearls(2, 1.15f);
         });
-    }
-
-    // Mirrored rim fans from a pair of side eyes (1/2 middle wheel, 3/4 outer wheel),
-    // opening outward and down from the inner angle across the arc, with one lane open
-    // that drifts beat by beat. Refracted fans halt briefly and turn straight down.
-    void RimFans(int leftPort, int count, float inner, float arc, float speed, int beat, bool refract)
-    {
-        float lane = .3f * Mathf.Sin(beat * .31f);
-        for (int s = -1; s <= 1; s += 2)
-        {
-            var port = Eye(s < 0 ? leftPort : leftPort + 1);
-            for (int i = 0; i < count; i++)
-            {
-                float u = Across(i, count);
-                if (Mathf.Abs(u - lane) < .2f)
-                    continue;
-                var shot = FeatherShot(i % 3 == 0, port, CombatVisuals.Rotate(Vector2.down, s * (inner + arc * (u + 1) * .5f)), speed + .5f * (1 - u * u), .17f)
-                    .Ramp(1.3f, .8f, .3f)
-                    .FadeAt(8);
-                if (refract)
-                    shot.Pause(.8f, .2f, CombatRound.Turn.Down, s * 8 * u, 1);
-            }
-        }
-    }
-
-    // A stare: both side eyes throw a short aimed chord, a circular bead between
-    // needles, at a pilot who has stopped moving.
-    void Stare(int leftPort, int count)
-    {
-        UseTone(Accent(CardIndex));
-        for (int s = -1; s <= 1; s += 2)
-        {
-            var port = Eye(s < 0 ? leftPort : leftPort + 1);
-            Vector2 aim = CombatVisuals.Aim(port);
-            for (int i = 0; i < count; i++)
-            {
-                float u = Across(i, count);
-                ScoredShot(i == count / 2, port, CombatVisuals.Rotate(aim, u * 7), 2.9f - .25f * Mathf.Abs(u), .19f)
-                    .FadeAt(7);
-            }
-        }
     }
 
     bool Near(Vector3 point) => player != null && Vector2.Distance(point, player.position) < 1.6f;
@@ -313,11 +201,6 @@ public sealed partial class SeraphJudicatorBoss
         }
         return best;
     }
-
-    // A lance pinned to the body where an eye stood at launch, so a turning wheel
-    // cannot drag its aisle closed while the pilot is inside it.
-    PulseLaser PinnedLance(Vector3 eye, Vector2 axis, float width, float hold, float charge)
-        => HeavenArmory.Lance(Angel.transform, Angel.transform.InverseTransformPoint(eye), axis, width, hold, charge);
 
     // The core eye looks: a lance laid along the pilot's line at the charge.
     void Glance(float width, float hold, float charge)
@@ -361,6 +244,26 @@ public sealed partial class SeraphJudicatorBoss
         }
     }
 
+    // The upper rim: each upper eye sends a few feathers toward the top edge that halt
+    // there and fall back as a light rain; nothing bounces along the ceiling.
+    void UpperRain(int ring, int count)
+    {
+        for (int k = 0; k < HeavenAngelVisual.EyeCounts[ring]; k++)
+        {
+            var eye = WheelEye(ring, k);
+            Vector2 axis = Outward(eye);
+            if (axis.y < .35f)
+                continue;
+            for (int i = 0; i < count; i++)
+            {
+                float u = Across(i, count);
+                Fire<FeatherRound>(eye.position, CombatVisuals.Rotate(axis, u * 6), 1.6f, .17f)
+                    .Pause(.9f, .45f, CombatRound.Turn.Down, u * 10 - axis.x * 14, .75f)
+                    .FadeAt(8);
+            }
+        }
+    }
+
     // A wheel's lowest eyes weep pearls in two speeds.
     void WheelPearls(int ring, float speed)
     {
@@ -375,22 +278,131 @@ public sealed partial class SeraphJudicatorBoss
         }
     }
 
-    // A wheel's lower eyes throw small star chords that halt and dart at the pilot.
-    void StaringStars(int ring, int count)
+    // Mirrored rim fans from a pair of side eyes (1/2 middle wheel, 3/4 outer wheel),
+    // opening outward and down from the inner angle across the arc, with one lane open
+    // that drifts beat by beat.
+    void RimFans(int leftPort, int count, float inner, float arc, float speed, int beat)
     {
-        for (int k = 0; k < HeavenAngelVisual.EyeCounts[ring]; k++)
+        float lane = .3f * Mathf.Sin(beat * .31f);
+        for (int s = -1; s <= 1; s += 2)
         {
-            var eye = WheelEye(ring, k);
-            Vector2 axis = Outward(eye);
-            if (axis.y > -.3f)
-                continue;
+            var port = Eye(s < 0 ? leftPort : leftPort + 1);
             for (int i = 0; i < count; i++)
             {
                 float u = Across(i, count);
-                Fire<StarRound>(eye.position, CombatVisuals.Rotate(axis, u * 14), 2.1f, .2f)
-                    .Pause(.7f, .3f, CombatRound.Turn.Aim, u * 6, 1.25f)
+                if (Mathf.Abs(u - lane) < .2f)
+                    continue;
+                FeatherShot(i % 3 == 0, port, CombatVisuals.Rotate(Vector2.down, s * (inner + arc * (u + 1) * .5f)), speed + .5f * (1 - u * u), .17f)
+                    .Ramp(1.3f, .8f, .3f)
                     .FadeAt(8);
             }
+        }
+    }
+
+    // A stare: both side eyes throw a short aimed chord, a circular bead between
+    // needles, at a pilot who has stopped moving.
+    void Stare(int leftPort, int count)
+    {
+        UseTone(Accent(CardIndex));
+        for (int s = -1; s <= 1; s += 2)
+        {
+            var port = Eye(s < 0 ? leftPort : leftPort + 1);
+            Vector2 aim = CombatVisuals.Aim(port);
+            for (int i = 0; i < count; i++)
+            {
+                float u = Across(i, count);
+                ScoredShot(i == count / 2, port, CombatVisuals.Rotate(aim, u * 7), 2.9f - .25f * Mathf.Abs(u), .19f)
+                    .FadeAt(7);
+            }
+        }
+    }
+
+    // Flight: feathers thrown sideways from the middle side eyes, tips fastest, halt as
+    // a drawn wing and shed straight down as curtains beside the walls. A second layer
+    // halts inside the first, so each wing has primaries and coverts.
+    void MiddleWings(float stroke, int count, int layers)
+    {
+        for (int s = -1; s <= 1; s += 2)
+        {
+            var port = Eye(s < 0 ? 1 : 2);
+            for (int layer = 0; layer < layers; layer++)
+                for (int i = 0; i < count; i++)
+                {
+                    float u = count <= 1 ? 1 : i / (count - 1f);
+                    float speed = (2.0f + 2.6f * u) * (layer == 0 ? 1 : .78f);
+                    Fire<FeatherRound>(port, CombatVisuals.Rotate(Vector2.down, s * (62 + 46 * u + stroke - layer * 8)), speed, .17f)
+                        .Pause(.75f, .35f, CombatRound.Turn.Down, s * (6 + 20 * u), (1.9f + .4f * (1 - u)) / speed)
+                        .FadeAt(8.5f);
+                }
+        }
+    }
+
+    // The feet: a skirt of arrows (and a bead layer offset by half a step) beneath the
+    // body from the middle side eyes, opening outward and folding in with the stroke.
+    void LowerWings(float stroke, int count, int layers)
+    {
+        float step = 36f / Mathf.Max(1, count - 1);
+        for (int s = -1; s <= 1; s += 2)
+        {
+            var port = Eye(s < 0 ? 1 : 2);
+            for (int layer = 0; layer < layers; layer++)
+                for (int i = 0; i < count; i++)
+                {
+                    float u = Across(i, count);
+                    float angle = s * (10 + 18 * u - stroke + layer * step * .5f);
+                    ScoredShot(layer == 1, port, CombatVisuals.Rotate(Vector2.down, angle), 2.5f + .3f * u - layer * .35f, .17f)
+                        .FadeAt(8);
+                }
+        }
+    }
+
+    // The face: feathers thrown up and out from the outer side eyes, tips fastest; they
+    // halt as a raised wing near the top edge, then shed down the upper sides.
+    void RaisedWings(float stroke, int count)
+    {
+        for (int s = -1; s <= 1; s += 2)
+        {
+            var port = Eye(s < 0 ? 3 : 4);
+            for (int i = 0; i < count; i++)
+            {
+                float u = count <= 1 ? 1 : i / (count - 1f);
+                float speed = 1.6f + 2.0f * u;
+                Fire<FeatherRound>(port, CombatVisuals.Rotate(Vector2.down, s * (112 + 40 * u + stroke)), speed, .17f)
+                    .Pause(.8f, .4f, CombatRound.Turn.Down, s * (4 + 14 * u), (1.7f + .3f * (1 - u)) / speed)
+                    .FadeAt(8.5f);
+            }
+        }
+    }
+
+    // The face's lances: held out to the walls from the riding outer side eyes, they
+    // beat down and back. A rising eye lifts its beam toward the ceiling, shrinking but
+    // never closing the corner pocket above it; the charge shows the line first.
+    void WingLances(float tempo)
+    {
+        for (int s = -1; s <= 1; s += 2)
+        {
+            var beam = Beam(s < 0 ? 3 : 4, s * 88, .8f, 3.0f, 1.6f);
+            if (beam != null)
+            {
+                beam.sweep = -s * 22 * tempo;
+                beam.reversalArc = 36;
+            }
+        }
+    }
+
+    // The many eyes: a pair on the outer wheel's lower rim lays thin lances that cross on
+    // the pilot, each opening two layered feather lids along its line of sight, never on
+    // it. Aimed lances stay where the eye opened: riding, a thin beam would slide sideways
+    // onto a pilot who had already stepped clear of it.
+    void ManyEyes(int lids, int beat)
+    {
+        float reach = 34 + 14 * Mathf.Sin(beat * .8f);
+        for (int s = -1; s <= 1; s += 2)
+        {
+            var eye = EyeFacing(0, CombatVisuals.Rotate(Vector2.down, s * reach));
+            Vector2 sight = CombatVisuals.Aim(eye.position);
+            HeavenArmory.Lance(Angel.transform, Angel.transform.InverseTransformPoint(eye.position), sight, .46f, .7f, .85f);
+            EyeLids(eye.position, sight, lids);
         }
     }
 
@@ -507,81 +519,97 @@ public sealed partial class SeraphJudicatorBoss
         }
     }
 
-    // Plumes: six unbodied eyes along the top edge shed sparse, swaying feather fans;
-    // the crossing arcs leave diamond gaps, and every verse shifts by half a plume.
-    IEnumerator Plumes(int card, int verses)
+    // Glass panes for the Sea of Glass: two panes per verse, three unbodied eyes each.
+    // Sheets (rows) cycle through the top edge, below the angel and mid-arena; columns
+    // stand left and right of the middle. A verse of the still sea lays two sheets, the
+    // standing sea two columns, the crossed sea one of each.
+    IEnumerator Glass(int verse, int verses)
     {
-        for (int verse = 0; verse < verses; verse++)
+        for (int v = 0; v < verses; v++)
         {
             Rect r = CombatRound.Border;
-            for (int i = 0; i < 6; i++)
+            for (int pane = 0; pane < 2; pane++)
             {
-                float x = Mathf.Lerp(r.xMin + .7f, r.xMax - .7f, (i + (verse % 2) * .5f) / 5.5f);
-                sites[i] = new Vector3(x, r.yMax - .55f - (i % 2) * .35f, -.8f);
+                bool column = verse == 2 || verse == 3 && pane == 1;
+                for (int c = 0; c < 3; c++)
+                {
+                    if (column)
+                    {
+                        float x = r.center.x + (pane == 0 ? -1 : 1) * (r.width * .26f + (v % 2) * .45f);
+                        float y = Mathf.Lerp(r.yMax - .8f, r.yMin + 2.5f, (c * 2 + 1) / 6f);
+                        sites[pane * 3 + c] = new Vector3(x, y, -.8f);
+                    }
+                    else
+                        sites[pane * 3 + c] = new Vector3(Mathf.Lerp(r.xMin, r.xMax, (c * 2 + 1) / 6f), SheetHeight(r, (v + pane) % 3), -.8f);
+                }
             }
             yield return Apparition(6, .45f);
-            int count = Dense(9);
-            UseTone(Body(card));
-            for (int i = 0; i < 6; i++)
+            UseTone(Body(CardIndex));
+            for (int pane = 0; pane < 2; pane++)
             {
-                if (Near(sites[i]))
-                    continue;
-                for (int k = 0; k < count; k++)
-                {
-                    float u = Across(k, count);
-                    // The middle of each plume falls first; the sway rate differs plume to plume.
-                    Fire<FeatherRound>(sites[i], CombatVisuals.Rotate(Vector2.down, u * 40), 1.5f + .55f * (1 - u * u), .17f)
-                        .Sway(.26f, .42f + .06f * (i % 3))
-                        .Ramp(1.35f, 1.4f, .8f)
-                        .FadeAt(9);
-                }
+                bool column = verse == 2 || verse == 3 && pane == 1;
+                if (column)
+                    Column(r, pane, v);
+                else
+                    Sheet(r, pane, v);
             }
             yield return Wait(Rest(.3f));
         }
     }
 
-    // Glass sheets: three rows of two unbodied eyes, at the top edge, below the angel
-    // and mid-arena. Each eye flings feathers to exact places along its half of the
-    // row; every feather of a sheet halts together, hangs, then falls on alternating
-    // diagonals. The rows trade heights each verse.
-    IEnumerator GlassSheets(int card, int verses)
+    static float SheetHeight(Rect r, int level) => level == 0 ? r.yMax - .8f : level == 1 ? r.yMax - 6.0f : r.yMax - 8.6f;
+
+    // One pane's pearl, flung to its exact place: it brakes to a stop there, hangs,
+    // then leaves along an absolute heading (degrees from straight down) at a speed.
+    void Place(Vector3 site, Vector3 target, float hang, float leave, float speed)
     {
-        for (int verse = 0; verse < verses; verse++)
+        Vector2 path = target - site;
+        float raw = Mathf.Max(.3f, path.magnitude / (GlassFlight - .175f));
+        float launch = WorldSpeed(raw);
+        Vector2 heading = path.sqrMagnitude > .0001f ? path.normalized : Vector2.down;
+        Fire<SimpleRound>(site, heading, launch, .19f)
+            .Pause(GlassFlight, hang, CombatRound.Turn.Down, leave, speed / launch)
+            .FadeAt(9);
+    }
+
+    // A sheet falls on alternating diagonals. The woven channels between diverging
+    // pairs move half a step every verse, and one seam drifts along the row.
+    void Sheet(Rect r, int pane, int verse)
+    {
+        int count = Dense(26);
+        float seam = r.center.x + (r.width * .5f - 1.2f) * Mathf.Sin(verse * 1.7f + pane * 2.4f);
+        for (int j = 0; j < count; j++)
         {
-            Rect r = CombatRound.Border;
-            for (int row = 0; row < 3; row++)
-            {
-                float y = r.yMax - .8f - row * 2.6f - (verse % 2) * .9f;
-                if (row > 0)
-                    y -= 2.6f;
-                for (int c = 0; c < 2; c++)
-                    sites[row * 2 + c] = new Vector3(Mathf.Lerp(r.xMin, r.xMax, c * .5f + .25f), y, -.8f);
-            }
-            yield return Apparition(6, .5f);
-            int count = Dense(26);
-            UseTone(Body(card));
-            for (int row = 0; row < 3; row++)
-            {
-                float seam = r.center.x + (r.width * .5f - 1.2f) * Mathf.Sin(verse * 1.7f + row * 2.4f);
-                for (int j = 0; j < count; j++)
-                {
-                    float x = Mathf.Lerp(r.xMin + .35f, r.xMax - .35f, count <= 1 ? .5f : j / (count - 1f));
-                    if (Mathf.Abs(x - seam) < .6f)
-                        continue;
-                    var site = sites[row * 2 + (x < r.center.x ? 0 : 1)];
-                    if (Near(site))
-                        continue;
-                    Vector2 path = new Vector2(x - site.x, 0);
-                    // Launch speed in world units that brakes to a stop exactly on the place.
-                    float raw = Mathf.Max(.3f, path.magnitude / (GlassFlight - .175f));
-                    float launch = WorldSpeed(raw);
-                    Vector2 heading = path.sqrMagnitude > .0001f ? path.normalized : Vector2.down;
-                    Fire<FeatherRound>(site, heading, launch, .17f)
-                        .Pause(GlassFlight, .45f, CombatRound.Turn.Down, j % 2 == 0 ? 18 : -18, 1.9f / launch)
-                        .FadeAt(9);
-                }
-            }
-            yield return Wait(Rest(.3f));
+            float x = Mathf.Lerp(r.xMin + .35f, r.xMax - .35f, count <= 1 ? .5f : j / (count - 1f));
+            if (Mathf.Abs(x - seam) < .6f)
+                continue;
+            var site = sites[pane * 3 + Mathf.Clamp(Mathf.FloorToInt((x - r.xMin) / r.width * 3), 0, 2)];
+            if (Near(site))
+                continue;
+            Place(site, new Vector3(x, site.y, site.z), .45f, (j + verse) % 2 == 0 ? 18 : -18, 1.9f);
+        }
+    }
+
+    // A column slides sideways as one wall, outward on even verses and inward on odd
+    // ones, with a seam that climbs or sinks verse by verse.
+    void Column(Rect r, int pane, int verse)
+    {
+        int count = Dense(18);
+        float top = r.yMax - .8f;
+        float bottom = r.yMin + 2.5f;
+        float seam = Mathf.Lerp(bottom + 1, top - 1, .5f + .45f * Mathf.Sin(verse * 1.3f + pane * 2.0f));
+        int side = pane == 0 ? -1 : 1;
+        float leave = (verse % 2 == 0 ? side : -side) * 90;
+        for (int j = 0; j < count; j++)
+        {
+            float y = Mathf.Lerp(top, bottom, count <= 1 ? .5f : j / (count - 1f));
+            if (Mathf.Abs(y - seam) < .75f)
+                continue;
+            var site = sites[pane * 3 + Mathf.Clamp(Mathf.FloorToInt((top - y) / (top - bottom) * 3), 0, 2)];
+            var target = new Vector3(site.x, y, site.z);
+            if (Near(target))
+                continue;
+            Place(site, target, .5f, leave, 1.4f);
         }
     }
 }

@@ -1,84 +1,103 @@
-# Void Sovereign: proposed cards
+# Void Sovereign: proposed forms
 
 Code: `Assets/Scripts/Enemies/Bosses/VoidSovereignBoss.Proposed.cs`. No shipping file changed.
 
-The book keeps the shipping structure: teleport, prime, card A, rest, teleport, prime, card B, rest. The fifteen-second one-sided interludes and the phase breaks are untouched; only the form cards are new.
+Each form is one concept that runs for the whole form. It develops in movements:
 
-- **Ports.** Every round leaves the form's visible eyes: mask eyes, scythe eyes, mandible eyes, star points.
-- **The top.** Every card deliberately reaches the top edge.
-- **Giant orbs.** Giants are lone accents. They take the end lane of a blade, row or bar with its neighbouring lanes left empty (`CrownSpacer`), or travel down an otherwise empty lane.
-- **Rests.** Every card has rest beats and at least one passage that moves.
-- **Rounds.** The cards use kunai, crescents, gems, chevrons, needles, ricochets, pearls and giants, plus Void rays.
+- **Movement.** Teleport, prime, one movement of about 4.5 s, then a rest. The teleports and the fifteen-second one-sided interludes are unchanged: they are the form's built-in structure.
+- **Variation and escalation.** The movement number picks the variation, and each completed cycle escalates. Later cycles run up to 15% faster and have narrower slits or fewer rests.
+- **Over 60 s.** A recording holds about eight movements, so each variation plays twice.
 
-Tones flip card to card and form to form. In each form, the first card has the dark body and the second the bright body:
+`CardIndex` alternates by movement for the review tools. Each form leads with one tone (mask dark, mantis bright, maw dark, star bright) and flips it each movement. Giants and aimed replies take the other tone.
 
-| Form | Dark body | Bright body |
-| --- | --- | --- |
-| One | Weeping Mask | Ringed Horns |
-| Two | Praying Mantis | Mantis Strike |
-| Three | Mandible Bite | Gnashing Rows |
-| Four | Shattered Lattice | Prism Cross |
+Every round leaves the form's visible eyes, and every concept reaches the top edge. Giant orbs are lone accents with their neighbouring lanes left empty. Rounds used: kunai, crescents, gems, chevrons, needles, ricochets, pearls, giants and Void rays.
 
-Each card's giants and aimed replies take the other tone.
+Rough average pressure on Hard, in rounds per second over a whole loop including teleports and rests:
 
-Rough pressure on Hard, in rounds per second:
+| Form | Proposed | Shipping form | Difference |
+| --- | --- | --- | --- |
+| One | ~48 | ~46 | +4% |
+| Two | ~24 | ~26 | -8% |
+| Three | ~43 | ~49 | -12% |
+| Four | ~17, plus rays | ~19 | -10% |
 
-| Card | Proposed | Shipping counterpart |
-| --- | --- | --- |
-| Weeping Mask | ~76 | Witnesses ~94 |
-| Ringed Horns | ~49 | Funeral Psalm ~54 |
-| Mantis Strike | ~55 | Severing ~59 |
-| Praying Mantis | ~35, plus rays | Cut the Firmament ~35, plus rays |
-| Mandible Bite | ~52 | Hunger ~60 |
-| Gnashing Rows | ~66 | False Stars ~84 |
-| Prism Cross | ~38, plus four rays | World Without Edges ~32 |
-| Shattered Lattice | ~17, plus crossfire | Last Equation ~22 |
+## Form one (horned mask): Weeping Mask
 
-## Form one: horned mask
+**Current:** Witnesses (butterfly seams) and Funeral Psalm (a pearl pall that folds) alternate.
 
-**Current:** Witnesses opens butterfly seams up and down. Funeral Psalm lays a pearl pall that hangs, then folds into diagonal aisles.
+**Weeping Mask:** both eyes weep fountains of kunai that rise toward the top edge and arc down under gravity. Inner lanes cross over the mask, and outer lanes fold once off the side walls. A slit moves through every fountain, and gem pairs answer a resting pilot.
 
-- **Weeping Mask** (dark kunai, bright gems and tears). Each eye wells a fountain of kunai that rises toward the top edge and arcs down under gravity. Inner lanes cross over the mask; outer lanes fold off the side walls once, so the corners are covered. A slit moves through each fountain and the fountains breathe. Lone slow giant tears fall down the empty middle. Gem pairs answer a pilot who stays still.
-- **Ringed Horns** (bright arrows, dark crescents and tips). Each eye draws a horn: one stream sweeps from straight up, over the outside, to straight down and back. Upper lanes are fast and lower lanes slow, so the line curls. Every fifth step a crescent pair rings it. Down-strokes end in a single giant tip with its lane cleared. Up-strokes end in an aimed gem reply.
+| Movement | Development |
+| --- | --- |
+| 1 (welling) | Inner lanes only, crossing over the mask. |
+| 2 (weeping) | Full fountains, with lone giant tears down the empty middle. |
+| 3 (sobbing) | The eyes take turns in doubled pulses: a fast layer and a slow, counter-breathing layer. |
 
-Further ideas:
-- *Mask's Smile*: a slow crescent arc hung beneath the mask that tilts and drops in pieces.
-- *Horn Echo*: chevrons that run the ceiling and drop at the horn tips.
+Each later cycle swings the breath wider and narrows the slit.
 
-## Form two: mantis
+Other single concepts:
+- *Ringed Horns*: one stream per eye sweeps from straight up, over the outside, to straight down and curls into a horn ringed with crescents. More rings each cycle.
+- *Mask's Smile*: a crescent arc hung beneath the mask tilts and drops in pieces, and each movement hangs a wider smile.
 
-**Current:** Severing cuts six-beat ribbons with ricochets. Cut the Firmament holds ±38° rays over pleats that pause and turn.
+## Form two (mantis): Praying Mantis
 
-- **Mantis Strike** (bright kunai and ricochets, dark crescents and giants). The scythe eyes throw curved blades of kunai, bowed forward because each blade's middle flies fastest. A blade halts, swings through 40°, and carries on as the same curve: a hooked cut. The arms alternate and cross the arena. Every third strike, both arms hurl ricochet blades up off the ceiling.
-- **Praying Mantis** (dark chevrons, needles and pearls, bright crescents). The forelegs are two rays held almost straight down that open outward 22° and fold back; they never close the central aisle. The wings open upward as fans that reach the ceiling or walls, then run along them into the corners and down the sides. Pearls drip and sway between the forelegs.
+**Current:** Severing (cutting ribbons with ricochets) and Cut the Firmament (rays over pleats that pause and turn) alternate.
 
-Further ideas:
-- *Compound Eye*: a hexagonal gem grid that stops in place and blinks out lane by lane.
-- *Molting*: a blade that splits into a forward shrapnel cone when it halts.
+**Praying Mantis:** the mantis hunts. It stalks with its forelegs held down as rays, then strikes with hooked kunai blades that halt, swing 40° and carry on as the same curve. Crescents answer a rest.
 
-## Form three: octagonal maw
+| Movement | Development |
+| --- | --- |
+| 1 (stalk) | Forelegs open and fold without closing the aisle between them. The wings run the ceiling into the corners and down the walls, and pearls drip between the forelegs. |
+| 2 (strike) | Alternate arms strike across the arena. |
+| 3 (strike from above) | Ricochet blades thrown off the ceiling between the low cuts. |
+| 4 (feed) | Forelegs, blades crossed from both arms, and the wings together. |
 
-**Current:** Hunger flares nested parabolic teeth with plasma. False Stars sends comets that split into narrow fans.
+Each later cycle cuts faster.
 
-- **Mandible Bite** (dark kunai, bright crescents and giants). Each mandible eye throws a sideways jaw of kunai that halts and snaps inward, so the two jaws close across each other below the maw. Alternate bites open upward above the maw and snap down. A lone giant leaves outside the jaw, and its mandible drops the outer tooth for it.
-- **Gnashing Rows** (bright gems and pearls, dark crescents and giant end teeth). The mandibles fling teeth to exact places and build three straight rows across the upper arena. Each row hangs, then falls with alternating fast and slow teeth. The rows open as jagged double edges, and each row's gap sits at its own moving seam. Teeth never land on the pilot.
+Other single concepts:
+- *Compound Eye*: a hexagonal grid of gems stops in place and blinks out lane by lane, with a wider grid each movement.
+- *Molting*: blades that split into forward shrapnel cones when they halt, shedding more skin each cycle.
 
-Further ideas:
-- *Swallow*: ricochets thrown out that curve back into the maw with `Absorb` (it borrows Space's gravity grammar, so this one is held back).
-- *Overbite*: two rows that slide sideways in opposite directions before they fall.
+## Form three (octagonal maw): Gnashing Maw
 
-## Form four: crystal star
+**Current:** Hunger (nested parabolic teeth with plasma) and False Stars (splitting comets) alternate.
 
-**Current:** World Without Edges stitches a lattice from opposed fracture pairs. Last Equation sends ricochets with giant tips. Both have charged crossfire.
+**Gnashing Maw:** the mandibles bite and set teeth. A jaw of kunai is thrown out, halts, and snaps back inward across the other jaw. Rows of teeth are flung to exact places, hang, and fall jagged, each row with its own moving gap. Crescents answer a rest.
 
-- **Prism Cross** (bright gems, dark giants and crossfire). The four star points hold rays along their own axes: a cross that turns slowly, so every quadrant drifts and nothing stays still. Each point refracts a gem fan into the quadrant next to it, anticlockwise. The gems halt and bend 20° with the turn. A lone giant sometimes replaces the lower point's fan. The side tips cross charged aims through the pilot, which closes the safe spot above and on the body.
-- **Shattered Lattice** (dark kunai, bright giants and crossfire). The side points lay horizontal bars of kunai out to the walls. The top and bottom points lay vertical bars to the ceiling and floor. Each bar hangs as a crystal seam, then shatters: alternate teeth turn 90° each way, and the bar opens into two dotted walls that travel apart. Every bar keeps an open slit. Charged crossfire closes the body's shadow.
+| Movement | Development |
+| --- | --- |
+| 1 | Low bites below the maw. |
+| 2 | High bites that open over the maw and snap down from near the top. |
+| 3 | Three rows of teeth across the upper arena. |
+| 4 (gnashing) | Rows and bites in turn. |
 
-Further ideas:
-- *Snowblind Facets*: the star's points throw crescents that halt on a ring and leave on the tangent (a moving circle, but in Space's grammar, so held back).
-- *Refraction Chain*: one aimed gem that splits into a three-way fan at each pause, twice.
+Each later cycle rests less.
+
+Other single concepts:
+- *Overbite*: two rows of teeth slide sideways in opposite directions before they fall, faster each movement.
+- *Swallow*: thrown ricochets curve back into the maw. This borrows Space's gravity grammar, so it is held back.
+
+## Form four (crystal star): Prism Lattice
+
+**Current:** World Without Edges (opposed fracture pairs stitching a lattice) and Last Equation (ricochets with giant tips) alternate, both with charged crossfire.
+
+**Prism Lattice:** the crystal star refracts and shatters. Four rays turn as a slow cross. Crystal bars of kunai hang along the axes, then shatter: alternate teeth turn 90° each way, and each bar opens into two dotted walls that travel apart. Charged crossfire from the side tips closes the body's shadow throughout.
+
+| Movement | Development |
+| --- | --- |
+| 1 | The cross turns while the points refract gem fans into the quadrants, bending them with the turn. |
+| 2 | The points lay bars that shatter. |
+| 3 | The cross turns back and sheds bars from beneath its own rays. |
+| 4 | The whole star shatters at once into an expanding square of walls. |
+
+Each later cycle quickens.
+
+Other single concepts:
+- *Refraction Chain*: one aimed gem splits into a three-way fan at each pause, twice; each movement adds a generation.
+- *Snowblind Facets*: crescents halt on a ring and leave on the tangent. That is a moving circle, which is Space's grammar, so it is held back.
 
 ## Concerns
 
-- Weeping Mask kunai keep accelerating under gravity, reaching about 5 to 6 units/s near the floor before they fade. Check that the speed reads well in the recording.
-- Gnashing Rows and Shattered Lattice compute their launch speed with `WorldSpeed` so the teeth stop on exact places. The far teeth launch fast (up to about 8 units/s) before braking, but always outward from the body.
+- Weeping Mask kunai keep accelerating under gravity, reaching about 5 to 6 units/s near the floor before they fade.
+- Gnashing Maw rows and Prism Lattice bars use `WorldSpeed` so the teeth stop on exact places. The far teeth launch at up to about 8 units/s before braking, always outward from the body.
+- Form four is the lightest in rounds, as it is in shipping. Its pressure comes from the rays, the walls and the crossfire.
