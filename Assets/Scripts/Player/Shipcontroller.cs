@@ -306,8 +306,13 @@ public class Shipcontroller : MonoBehaviour
     }
 
     // Update is called once per frame
+    // Energy refills by itself at 1% of the maximum per second of active play.
+    const float EnergyRechargePerSecond = .01f;
+
     void Update()
     {
+        if (health > 0 && mana < maxMana && GameClock.ActivePlay)
+            mana = Mathf.Min(maxMana, mana + maxMana * EnergyRechargePerSecond * GameClock.ActivePlayDelta);
         move = GameInput.Snapshot.Move;
         Firing = !GameRules.playerDisabled && (GameInput.Snapshot.Primary || GameInput.Snapshot.Secondary);
         // The hangar flies the ship in from below the screen; clamping it into the arena would show it early.
