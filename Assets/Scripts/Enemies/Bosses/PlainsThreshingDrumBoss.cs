@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 [UnityEngine.Scripting.Preserve]
-public sealed class PlainsThreshingDrumBoss : ArmoredHullBoss
+public sealed partial class PlainsThreshingDrumBoss : ArmoredHullBoss
 {
     static readonly Vector2[] shape = { new(0,-1.10f),new(-.76f,-1.08f),new(-1.21f,-1.03f),new(-1.67f,-.75f),new(-1.78f,-.57f),
         new(-1.61f,-.40f),new(-1.75f,-.28f),new(-1.69f,.25f),new(-1.53f,.71f),new(-1.32f,1.02f),new(1.32f,1.02f),new(1.53f,.71f),
