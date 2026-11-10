@@ -6,23 +6,26 @@ using UnityEngine;
 //   Frogger Crossing, over and over: it glides to a new station, brakes, spins up and
 //     throws six widening rings that turn in alternate directions; each ring has a
 //     gap and the gaps slide, so crossing them is a timing puzzle.
-// Phase two (no minions)
-//   Ricochet Storm: it ricochets round the whole arena and fires only when it hits a
-//     wall. Every impact throws a full 360-degree burst of fast arrows and slow teeth,
-//     some of which bounce off the walls, an aimed shotgun of arrows, and teeth that
-//     cling to the walls and run round the rim. Between impacts it is silent.
+// Phase two, Buzzsaw Bloom (no minions): it ricochets round the whole arena and fires
+//   only when it hits a wall. Every impact opens a full turn of hooked blades, rice
+//   grains launched together at rising speeds, each lagging further behind the spin,
+//   with slow round teeth between the blades and two sparks grinding away along the
+//   struck wall. Impacts cycle through a ripsaw (every blade hooked with the spin), a
+//   crosscut (alternate blades hooked against it) and spokes (nearly straight blades,
+//   fast and slow alternately); the hook deepens as the saw wears down. A fast trio
+//   flies at the pilot from every impact. No round bounces off the walls.
 // Phase three (Hard)
 //   Overdrive: it ricochets faster, and every impact drives a glowing tooth into the
-//     wall. The embedded teeth keep spitting straight fans back across the arena for a
-//     few seconds, so the walls it has struck stay live while it hunts the next one.
+//     wall. The embedded teeth keep spitting straight fans of arrows back across the
+//     arena for a few seconds, so the walls it has struck stay live while it hunts the
+//     next one; the impact itself throws only round teeth.
 // Tones: Frogger's rings alternate bright and dark with their direction, starting on
 // the other tone at each new station, and each aimed tracer takes the tone its ring
-// does not. From phase two the saw's arrows are bright and its round teeth dark:
-// fast rays bright, slow and bouncing teeth, wall runners and embedded teeth dark.
+// does not. Buzzsaw blades and the aimed trio are bright, teeth and sparks dark. In
+// Overdrive the embedded teeth fire only bright arrows and the impacts only dark rounds.
 public sealed partial class TunnelSawBoss
 {
     CombatHullVisual spinner;
-    bool runners;
     protected override void Attack()
     {
         if (!miniature && entered)
@@ -39,10 +42,7 @@ public sealed partial class TunnelSawBoss
             else if (!phaseTwo)
                 yield return FroggerCrossing();
             else
-            {
-                runners = true;
                 yield return RicochetStorm(10);
-            }
         }
     }
 
@@ -50,43 +50,29 @@ public sealed partial class TunnelSawBoss
     {
         using var sample = burstMarker.Auto();
         impacts++;
-        if (overdrive)
-        {
+        if (phaseThree)
             Embed(inward);
-            return;
-        }
-        int rays = Dense(phaseTwo ? 28 : 20);
+        else if (phaseTwo)
+            BuzzsawBloom(inward);
+        else
+            OpeningBurst(inward);
+    }
+
+    // Before the first station the saw crosses the arena once; each impact throws a full
+    // 360-degree burst of fast rays and slow teeth.
+    void OpeningBurst(Vector2 inward)
+    {
+        int rays = Dense(20);
         float step = 360f / rays;
         for (int i = 0; i < rays; i++)
         {
             var axis = CombatVisuals.Rotate(inward, i * step + impacts * 7);
             UseTone(Shape(i % 3 == 0));
-            ScoredShot(i%3==0,transform.position, axis, 4.8f);
+            ScoredShot(i % 3 == 0, transform.position, axis, 4.8f);
             UseTone(HostileTone.Dark);
             var tooth = Fire<SimpleRound>(transform.position, CombatVisuals.Rotate(axis, step * .5f), 1.6f, .3f);
             if (i % 2 == 0)
                 tooth.Bounce(2);
-        }
-        if (phaseTwo)
-        {
-            // An aimed shotgun out of every impact, so a bounce near the player is a threat.
-            var aim = CombatVisuals.Aim(transform.position);
-            int aimedLanes = Dense(5) | 1;
-            for (int i = 0; i < aimedLanes; i++)
-            {
-                UseTone(Shape(i == aimedLanes / 2));
-                ScoredShot(i == aimedLanes / 2, transform.position, CombatVisuals.Rotate(aim, (i - (aimedLanes - 1) * .5f) * 9), 5.0f);
-            }
-        }
-        if (!runners)
-            return;
-        UseTone(HostileTone.Dark);
-        int count = Dense(6);
-        for (int i = 0; i < count; i++)
-        {
-            var axis = CombatVisuals.Rotate(inward, (i - (count - 1) * .5f) * 26);
-            Fire<SimpleRound>(transform.position, axis, 4.4f, .24f)
-                .RunWalls(8, impacts % 2 == 0 ? 1 : -1);
         }
     }
 
@@ -126,8 +112,8 @@ public sealed partial class TunnelSawBoss
         {
             var ringTone = (ring % 2 == 0) == firstBright ? HostileTone.Bright : HostileTone.Dark;
             UseTone(ringTone == HostileTone.Bright ? HostileTone.Dark : HostileTone.Bright);
-            if(ring%2==0)
-                Fire<SimpleRound>(transform.position,CombatVisuals.Aim(transform.position),2.8f,.23f);
+            if (ring % 2 == 0)
+                Fire<SimpleRound>(transform.position, CombatVisuals.Aim(transform.position), 2.8f, .23f);
             int sign = ring % 2 == 0 ? 1 : -1;
             int gap = (ring * 9) % teeth;
             UseTone(ringTone);
@@ -156,18 +142,55 @@ public sealed partial class TunnelSawBoss
     {
         if (miniature)
             return;
-        // No minions: the saw instead starts throwing teeth that run along the walls.
+        // No minions: a brief pause and a shockwave, then the blade starts blooming.
         haltUntil = age + 1.8f;
         GetComponent<CombatHullVisual>().spin = 720;
         PSXFireballs.Shockwave(transform.position, 2, 1.8f, Color.yellow, 2, .1f);
     }
 
+    // How far the saw has worn through the current phase, 0 at its start and 1 at its end.
+    float Wear => Mathf.InverseLerp(PhaseEnd(CurrentPhase - 1), PhaseEnd(CurrentPhase), HealthFraction);
+
+    // Buzzsaw Bloom: a full turn of blades, four rice grains each launched together at
+    // rising speeds and lagging further behind the spin with each grain, with a slow round
+    // tooth between neighbouring blades.
+    void BuzzsawBloom(Vector2 inward)
+    {
+        var centre = transform.position;
+        int blades = Dense(12);
+        int kind = impacts % 3;
+        int spin = impacts / 3 % 2 == 0 ? 1 : -1;
+        float hook = Mathf.Lerp(5, 12, Wear);
+        float step = 360f / blades;
+        for (int b = 0; b < blades; b++)
+        {
+            float root = b * step + impacts * 9;
+            // Ripsaw hooks every blade with the spin; crosscut alternates; spokes run nearly
+            // straight, alternate blades fast and slow.
+            float lag = kind == 0 ? spin * hook : kind == 1 ? (b % 2 == 0 ? spin : -spin) * hook : spin * hook * .3f;
+            float pace = kind == 2 && b % 2 == 1 ? .75f : 1;
+            UseTone(HostileTone.Bright);
+            for (int k = 0; k < 4; k++)
+                Fire<RiceRound>(centre, CombatVisuals.Rotate(inward, root - lag * k), (1.6f + 1.1f * k) * pace, .19f);
+            UseTone(HostileTone.Dark);
+            Fire<SimpleRound>(centre, CombatVisuals.Rotate(inward, root + step * .5f), 1.2f, .3f);
+        }
+        // Two sparks grind away along the struck wall, one each way.
+        for (int direction = -1; direction <= 1; direction += 2)
+            Fire<SimpleRound>(centre, -inward, 4.4f, .22f)
+                .RunWalls(5, direction);
+        // A fast trio at the pilot: an impact nearby is a threat.
+        UseTone(HostileTone.Bright);
+        var aim = CombatVisuals.Aim(centre);
+        for (int i = -1; i <= 1; i++)
+            Fire<RiceRound>(centre, CombatVisuals.Rotate(aim, i * 10), 4.6f, .19f);
+    }
+
     // Hard final phase, Overdrive. Each impact drives a tooth into the wall: a giant
-    // round that stays where it struck, with a light ring thrown off the hit.
+    // round that stays where it struck, with a ring of dark round teeth thrown off the hit.
     const int EmbeddedTeeth = 4;
     readonly Vector2[] embeddedAt = new Vector2[EmbeddedTeeth], embeddedFacing = new Vector2[EmbeddedTeeth];
     readonly float[] embeddedUntil = new float[EmbeddedTeeth];
-    bool overdrive;
 
     void Embed(Vector2 inward)
     {
@@ -179,23 +202,18 @@ public sealed partial class TunnelSawBoss
         Fire<GiantOrb>(embeddedAt[slot], inward, 0, .6f).LivesFor(4.2f);
         int rays = Dense(16);
         for (int i = 0; i < rays; i++)
-        {
-            UseTone(Shape(i % 3 == 0));
-            ScoredShot(i%3==0,transform.position, CombatVisuals.Rotate(inward, i * 360f / rays + impacts * 11), 4.4f);
-        }
-        UseTone(HostileTone.Dark);
+            Fire<SimpleRound>(transform.position, CombatVisuals.Rotate(inward, i * 360f / rays + impacts * 11), 4.4f, .21f);
         // Only the impact may release this aimed tooth; travel remains silent.
-        Fire<SimpleRound>(transform.position,CombatVisuals.Aim(transform.position),3.0f,.23f);
+        Fire<SimpleRound>(transform.position, CombatVisuals.Aim(transform.position), 3.0f, .23f);
     }
 
     IEnumerator FinalSpell()
     {
-        overdrive = true;
         if (haltUntil > age)
             ResumeBouncing();
         yield return Every(12, Rest(.3f), n =>
         {
-            UseTone(Shape(n % 3 == 0));
+            UseTone(HostileTone.Bright);
             for (int slot = 0; slot < EmbeddedTeeth; slot++)
             {
                 if (age >= embeddedUntil[slot])
@@ -204,12 +222,9 @@ public sealed partial class TunnelSawBoss
                 var axis = CombatVisuals.Rotate(embeddedFacing[slot], Mathf.Sin(n * .45f + slot * 1.7f) * 40);
                 int fan = Dense(5);
                 for (int i = 0; i < fan; i++)
-                    ScoredShot(n%3==0,embeddedAt[slot], CombatVisuals.Rotate(axis, (i - (fan - 1) * .5f) * 13), 3.1f);
+                    Fire<NeedleRound>(embeddedAt[slot], CombatVisuals.Rotate(axis, (i - (fan - 1) * .5f) * 13), 3.1f, .19f);
             }
         });
-        overdrive = false;
-        for (int slot = 0; slot < EmbeddedTeeth; slot++)
-            embeddedUntil[slot] = 0;
     }
 
     // Round teeth are dark and arrows bright.
