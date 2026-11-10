@@ -20,13 +20,14 @@ using UnityEngine;
 //   Emergence: a dark circular ring with a bright arrow ring (a third dark ring on
 //     Hard), and bright rising bubbles.
 //   Charge: a dark arrow wake with bright circular ticks and bright depth charges.
+// Less clutter (Miguel, 10 November 2026): every volley, crown, lace and wake carries
+//   about 17% fewer rounds than before with the same shapes, and nothing bounces.
 public sealed partial class AbyssSubmarineBoss
 {
     int plumes, emergences;
     protected override bool PatternEmissionAllowed => !Submerged && Mathf.Repeat(cycleClock, cycleSeconds) < 3.5f;
     protected override void Attack()
     {
-        if (ProposedCards && OpenCards()) return;
         if (Submerged || Mathf.Repeat(cycleClock, cycleSeconds) >= 3.5f)
             return;
         int beat = volley % 3;
@@ -39,12 +40,12 @@ public sealed partial class AbyssSubmarineBoss
             else if (beat == 1)
             {
                 Torpedoes();
-                Phrase(Toned(HostileTone.Bright, MirrorLace(Hull, new Vector3(-1.02f, .3f, -.3f), new Vector3(1.02f, .3f, -.3f), Dense(30), 3, 60, 18, 3.4f, .06f, volley % 2 == 0 ? 1 : -1)));
+                Phrase(Toned(HostileTone.Bright, MirrorLace(Hull, new Vector3(-1.02f, .3f, -.3f), new Vector3(1.02f, .3f, -.3f), Dense(25), 3, 60, 18, 3.4f, .072f, volley % 2 == 0 ? 1 : -1)));
             }
             else
             {
                 UseTone(HostileTone.Dark);
-                ArrowWavefront(Muzzle(), Aim, Dense(21)|1, 100, 3, 2.8f, .8f);
+                ArrowWavefront(Muzzle(), Aim, Dense(17) | 1, 100, 3, 2.8f, .8f);
             }
             return;
         }
@@ -55,11 +56,11 @@ public sealed partial class AbyssSubmarineBoss
         else if (!phaseTwo)
             Phrase(Current(volley / 3 % 2 == 0 ? 1 : -1));
         else if (beat == 1)
-            Phrase(Toned(HostileTone.Bright, MirrorLace(Hull, new Vector3(-1.02f, .3f, -.3f), new Vector3(1.02f, .3f, -.3f), Dense(30), 3, 60, 18, 3.4f, .06f, volley % 2 == 0 ? 1 : -1)));
+            Phrase(Toned(HostileTone.Bright, MirrorLace(Hull, new Vector3(-1.02f, .3f, -.3f), new Vector3(1.02f, .3f, -.3f), Dense(25), 3, 60, 18, 3.4f, .072f, volley % 2 == 0 ? 1 : -1)));
         else
         {
             UseTone(HostileTone.Dark);
-            ArrowWavefront(Muzzle(), Aim, Dense(19)|1, 90, 3, 2.8f, .8f);
+            ArrowWavefront(Muzzle(), Aim, Dense(15) | 1, 90, 3, 2.8f, .8f);
         }
     }
 
@@ -67,7 +68,7 @@ public sealed partial class AbyssSubmarineBoss
     // Big slow torpedoes that wind up to full speed along their aim.
     void Torpedoes()
     {
-        int tubes = Dense(7);
+        int tubes = Dense(6);
         UseTone(HostileTone.Dark);
         for (int side = 1; side <= 2; side++)
         {
@@ -82,7 +83,7 @@ public sealed partial class AbyssSubmarineBoss
     // Mirrored arrow volleys caught by opposite currents, curling outward in arcs.
     IEnumerator Current(int sign)
     {
-        int shots = Dense(16), cycle = lastCycle;
+        int shots = Dense(13), cycle = lastCycle;
         for (int i = 0; i < shots; i++)
         {
             float lane = i / (shots - 1f) * 2 - 1;
@@ -103,7 +104,7 @@ public sealed partial class AbyssSubmarineBoss
     {
         plumes++;
         UseTone(shade);
-        int lanes = Dense(19) | 1;
+        int lanes = Dense(15) | 1;
         float tilt = plumes % 3 == 1 ? -12 : plumes % 3 == 2 ? 12 : 0;
         for (int layer = 0; layer < 3; layer++)
             for (int i = 0; i < lanes; i++)
@@ -122,7 +123,7 @@ public sealed partial class AbyssSubmarineBoss
         EmergenceBursts++;
         emergences++;
         PSXImpactEffects.Burst(transform.position, new Color(.42f, .83f, .94f), true);
-        int beads = Dense(phaseTwo ? 32 : 28);
+        int beads = Dense(phaseTwo ? 26 : 23);
         int rings = phaseThree ? 3 : 2;
         for (int ring = 0; ring < rings; ring++)
         {
@@ -137,7 +138,7 @@ public sealed partial class AbyssSubmarineBoss
             return;
         // Bubbles: big slow rounds pushed out all round, then buoyancy lifts them in
         // wobbling arcs back up past the hull.
-        int bubbles = Dense(14);
+        int bubbles = Dense(12);
         UseTone(HostileTone.Bright);
         for (int i = 0; i < bubbles; i++)
         {
@@ -172,7 +173,7 @@ public sealed partial class AbyssSubmarineBoss
         if (phaseTwo && tick % (phaseThree ? 3 : 5) == 0)
         {
             // Depth charges left in the path, exploding all round a moment later.
-            int shards = Dense(14);
+            int shards = Dense(12);
             UseTone(HostileTone.Bright);
             Fire<SimpleRound>(transform.position + Vector3.up * 1.5f, Vector2.up, .3f, .4f)
                 .SplitAt(1.1f, shards, 360f / shards, 2.6f, .19f);

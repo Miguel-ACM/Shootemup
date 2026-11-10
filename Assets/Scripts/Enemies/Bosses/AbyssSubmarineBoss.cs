@@ -144,7 +144,7 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
             transform.position = descent + Vector3.down * ((t - ChargeStart) * 14);
             if (age >= nextWake)
             {
-                nextWake = age + (phaseTwo ? .08f : .1f);
+                nextWake = age + (phaseTwo ? .095f : .12f);
                 ChargeTrails++;
                 ChargeWake(ChargeTrails);
             }
