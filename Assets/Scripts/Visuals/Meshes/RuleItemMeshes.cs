@@ -20,6 +20,7 @@ public static partial class IndustrialMeshFactory
             case nameof(Tripod): TripodModel(b); break;
             case nameof(RelaySwitch): RelaySwitchModel(b); break;
             case nameof(SignalFlare): SignalFlareModel(b); break;
+            case nameof(LiveWire): LiveWireModel(b); break;
             default: return false;
         }
         return true;
@@ -81,5 +82,20 @@ public static partial class IndustrialMeshFactory
         b.Drum(new Vector3(.21f, .4f, -.07f), .056f, .06f, 11, 8);
         b.Prism(new[] { new Vector2(-.07f, .42f), new Vector2(.07f, .42f), new Vector2(.055f, .58f),
             new Vector2(-.02f, .65f), new Vector2(-.05f, .56f) }, .13f, 3, Vector3.zero, 10);
+    }
+
+    static void LiveWireModel(Builder b)
+    {
+        b.Prism(new[] { new Vector2(-.34f, -.31f), new Vector2(.27f, -.31f), new Vector2(.39f, -.16f),
+            new Vector2(.26f, -.025f), new Vector2(-.16f, -.025f), new Vector2(-.25f, .08f),
+            new Vector2(-.16f, .19f), new Vector2(.26f, .19f), new Vector2(.26f, .32f),
+            new Vector2(-.22f, .32f), new Vector2(-.41f, .08f), new Vector2(-.22f, -.16f),
+            new Vector2(.18f, -.16f), new Vector2(.18f, -.18f), new Vector2(-.34f, -.18f) }, .135f, 6, Vector3.zero, 11);
+        b.Box(new Vector3(-.34f, -.245f, 0), new Vector3(.23f, .23f, .24f), 11, 6);
+        b.Box(new Vector3(.26f, .255f, 0), new Vector3(.22f, .24f, .25f), 11, 6);
+        b.Box(new Vector3(-.48f, -.245f, 0), new Vector3(.12f, .10f, .11f), 3, 11);
+        b.Box(new Vector3(.4f, .255f, 0), new Vector3(.12f, .10f, .11f), 9, 11);
+        b.Prism(new[] { new Vector2(.13f, .54f), new Vector2(.04f, .34f), new Vector2(-.03f, .43f),
+            new Vector2(-.15f, .26f), new Vector2(-.09f, .56f), new Vector2(-.015f, .48f) }, .045f, 9, new Vector3(0, 0, -.16f), 3);
     }
 }

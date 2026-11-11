@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class OffensiveActiveItem : AActiveItem
 {
     public OffensiveCast Cast { get; private set; }
+    protected override bool StartsPaidActivation => Cast == null;
     protected virtual bool Repress() => false;
     protected abstract OffensiveCast Launch();
     protected bool HasWeapons

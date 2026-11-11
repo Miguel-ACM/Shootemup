@@ -148,6 +148,8 @@ public sealed class LoadoutHUD : MonoBehaviour
             if (active)
             {
                 var item = loadout.Actives[i - 2];
+                if (!selected && item != null && item.EffectivePressCost > 0 && upgrades != null && upgrades.Count(UpgradeKind.LiveWire) > 0)
+                    rims[i].color = Score.CurrentMultiplier > LiveWire.Price ? Amber : new Color(.55f, .21f, .2f);
                 dials[i].Show(item != null && item.cd > 0 ? 1 - item.lastCD / item.cd : 0);
             }
             if (models[i] != null)

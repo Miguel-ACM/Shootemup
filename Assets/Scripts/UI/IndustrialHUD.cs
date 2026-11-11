@@ -316,11 +316,12 @@ public sealed class IndustrialHUD : MonoBehaviour
         energyLevel.color = shown > 0 ? Color.Lerp(color, Color.white, .45f) : Color.clear;
         if (loadout == null)
             loadout = player.GetComponent<ShipLoadout>();
+        bool liveWire = player.GetComponent<CombatUpgrades>()?.Count(UpgradeKind.LiveWire) > 0;
         float height = ((RectTransform)energyFill.parent).rect.height;
         for (int i = 0; i < costLines.Length; i++)
         {
             var active = loadout != null ? loadout.Actives[i] : null;
-            float cost = active != null ? active.cost * GameRules.activeEnergyCost : 0;
+            float cost = active != null && !liveWire ? active.EffectivePressCost : 0;
             var line = costLines[i];
             line.enabled = limit >= 1 && cost > 0;
             if (!line.enabled)

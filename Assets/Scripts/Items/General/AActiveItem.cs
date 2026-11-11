@@ -7,6 +7,8 @@ public abstract class AActiveItem : AItem
     public float cost = 20f;
     public float cd = 2f;
     public float lastCD = 1000f;
+    protected virtual bool StartsPaidActivation => true;
+    public float EffectivePressCost => StartsPaidActivation ? cost * GameRules.activeEnergyCost : 0;
 
 
     public override void OnPickup()
