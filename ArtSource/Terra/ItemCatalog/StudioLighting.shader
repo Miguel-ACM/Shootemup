@@ -4,6 +4,7 @@ Shader "Shootemup Review/Item Studio"
     {
         _MainTex ("Palette atlas", 2D) = "white" {}
         _Normals ("Show face normals", Float) = 0
+        _Translucent ("Use palette opacity", Float) = 0
     }
     SubShader
     {
@@ -13,6 +14,7 @@ Shader "Shootemup Review/Item Studio"
             Tags { "LightMode"="Universal2D" }
             Cull Back
             ZWrite On
+            Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
 
             HLSLPROGRAM
             #pragma vertex Vert
@@ -22,6 +24,7 @@ Shader "Shootemup Review/Item Studio"
             SAMPLER(sampler_MainTex);
             CBUFFER_START(UnityPerMaterial)
                 float _Normals;
+                float _Translucent;
             CBUFFER_END
 
             struct Attributes
@@ -61,16 +64,16 @@ Shader "Shootemup Review/Item Studio"
                 float fillLight = saturate(dot(n, fill));
                 float rimLight = saturate(dot(n, rim));
                 float2 swatch = (floor(input.uv * 4) + .5) * .25;
-                float3 paint = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, swatch).rgb;
+                half4 paint = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, swatch);
                 float3 trim = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv).rgb;
-                float3 base = lerp(paint, trim, .20);
+                float3 base = lerp(paint.rgb, trim, .20);
                 float3 illumination = float3(.57, .60, .66)
                     + keyLight * float3(.54, .49, .42)
                     + fillLight * float3(.17, .22, .30)
                     + rimLight * float3(.22, .25, .28);
                 float specular = pow(saturate(dot(n, normalize(key + float3(0, 0, -1)))), 15);
                 float3 color = base * illumination + specular * float3(.045, .040, .034);
-                return half4(saturate(color), 1);
+                return half4(saturate(color), lerp(1, paint.a, _Translucent));
             }
             ENDHLSL
         }

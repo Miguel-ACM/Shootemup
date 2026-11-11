@@ -150,30 +150,57 @@ def fuse():
     return m
 
 def splitter():
-    m = model('bb681d', 'f4c047')
-    m.ring((0, -0.21, 0), 0.21, 0.12, 0.16, 8, sides=8)
-    for s in [-1, 1]:
-        bar(m, (s * 0.08, -0.12, 0), (s * 0.36, 0.4, 0), 0.11, 0)
-        bar(m, (s * 0.3, 0.28, 0), (s * 0.4, 0.47, 0), 0.13, 8)
-    dot(m, 0, -0.2, -0.12, 0.1, 3)
+    m=model('ea8b21','ffe175')
+    m.paint(12,'642c20')
+    m.paint(13,'f5c45d')
+    m.lathe([(-.47,.13),(-.37,.18),(-.19,.18)],12,sides=8)
+    m.ring((0,-.2,-.08),.2,.13,.13,8,sides=10)
+    m.gem((0,-.2,-.17),(.095,.095,.045),7)
+    for side in [-1,1]:
+        bar(m,(side*.04,-.12,0),(side*.31,.29,0),.105,0)
+        bar(m,(side*.27,.21,0),(side*.37,.38,0),.13,8)
+        bar(m,(side*.33,.32,-.02),(side*.41,.45,-.02),.075,13,end_radius=.025)
+        bar(m,(side*.08,-.09,-.105),(side*.25,.18,-.105),.025,3)
     return m
 
 def caffeine():
-    m = model('e0d9c7', 'a67a43')
-    m.paint(12, '4d3026')
-    m.lathe([(-0.43, 0.28), (-0.38, 0.34), (0.26, 0.34), (0.32, 0.32), (0.32, 0.28), (0.235, 0.272), (0.235, 0)], 0, sides=10, bands=(2, 0, 0, 5, 2, 12))
-    m.ring((0.34, -0.03, 0), 0.23, 0.15, 0.1, 5, sides=10)
-    bar(m, (-0.11, 0.31, 0), (-0.15, 0.58, 0), 0.02, 6)
-    bar(m, (0.09, 0.31, 0), (0.13, 0.53, 0), 0.02, 6)
+    m = model('f4ead4', 'cf9860')
+    m.paint(12, '593623')
+    m.lathe([(-.43,.28),(-.38,.34),(.26,.34),(.32,.32),(.32,.28),(.235,.272),(.235,0)],0,sides=10,bands=(2,0,0,5,2,12))
+    m.ring((.34,-.03,0),.23,.15,.1,5,sides=10)
+    bar(m,(-.11,.31,0),(-.15,.58,0),.02,6)
     return m
 
 def protein():
-    m = model('e5e1d0', '2450ba')
-    m.lathe([(-0.47, 0.32), (-0.4, 0.36), (0.31, 0.36), (0.38, 0.32)], 0, sides=10)
-    m.lathe([(0.38, 0.38), (0.49, 0.38)], 3, sides=10)
-    m.box((0, -0.03, -0.36), (0.43, 0.44, 0.025), 5, bevel=0.02)
-    m.box((-0.09, -0.03, -0.39), (0.07, 0.29, 0.03), 3)
-    m.ring((-0.015, 0.05, -0.4), 0.12, 0.065, 0.03, 3, sides=8, start=270, sweep=180)
+    m = model('e5e9e0', '277ab5')
+    m.paint(12, '174054')
+    m.paint(13, 'ffe373')
+    m.lathe([(-.46, .28), (-.42, .34), (-.35, .36), (.25, .36),
+             (.31, .30), (.36, .30)], 0, sides=12, bands=(1, 0, 12, 0, 1))
+    m.lathe([(.351, .355), (.46, .355), (.49, .33)], 3, sides=12)
+    for y in (.375, .414, .453):
+        m.ring((0, y, 0), .362, .35, .014, 12, sides=12, axis='y')
+    m.box((0, -.052, -.335), (.50, .49, .062), 12, bevel=.024)
+
+    # The dumbbell and condensed lettering are part of the tub's printed label.
+    dumbbell = [(-.19, .119), (-.125, .119), (-.125, .078), (.125, .078),
+                (.125, .119), (.19, .119), (.19, -.005), (.125, -.005),
+                (.125, .036), (-.125, .036), (-.125, -.005), (-.19, -.005)]
+    m.face(13, [(x, y, -.369) for x, y in dumbbell])
+    lettering = (
+        "101 101 111 101",
+        "101 101 100 101",
+        "101 111 110 010",
+        "111 101 100 010",
+        "101 101 111 010",
+    )
+    for row, pixels in enumerate(lettering):
+        y = -.063 - row * .032
+        for column, pixel in enumerate(pixels):
+            if pixel == "1":
+                x = (column - 7) * .028
+                m.face(5, [(x - .014, y - .016, -.369), (x - .014, y + .016, -.369),
+                           (x + .014, y + .016, -.369), (x + .014, y - .016, -.369)])
     return m
 
 def hull():
@@ -274,13 +301,22 @@ def telekinesis():
     return m
 
 def warp():
-    m = model('527d85', '8d65bc')
-    for y in [-0.42, 0.42]:
-        m.lathe([(y - 0.06, 0.35), (y + 0.06, 0.35)], 6, sides=10)
-    for x in [-0.25, 0.25]:
-        bar(m, (x, -0.4, 0), (x, 0.4, 0), 0.035, 6)
-    m.gem((0, 0, 0), (0.18, 0.32, 0.16), 7)
-    m.ring((0, 0, 0), 0.4, 0.35, 0.04, 3, sides=12, axis='y')
+    m = model('527d85', 'a06cf4')
+    m.paint(12, '72e9f5')
+    m.paint(13, '1b1c26')
+    m.paint(14, 'f3ffff')
+    for y in (-.43, .43):
+        m.lathe([(y - .055, .32), (y - .035, .35), (y + .035, .35), (y + .055, .32)],
+                6, sides=10, bands=(1, 0, 1))
+    for x in (-.26, .26):
+        bar(m, (x, -.39, 0), (x, .39, 0), .03, 6)
+    m.ring((0, 0, 0), .40, .35, .045, 3, sides=12, axis='y')
+    sphere = [(-.094, 0), (-.0814, .047), (-.047, .0814), (0, .094),
+              (.047, .0814), (.0814, .047), (.094, 0)]
+    for y, tile in ((.272, 13), (-.272, 14)):
+        m.lathe(sphere, tile, center=(0, y, 0), sides=10)
+    m.translucent(12, .45)
+    m.gem((0, 0, 0), (.19, .29, .17), 12, sides=8)
     return m
 
 def exploding():
@@ -308,29 +344,35 @@ def health():
     return m
 
 def washers():
-    m = model('778998', 'bdcad0')
+    m = model('91bacd', 'f0cd78')
     for x, y, z in [(-0.14, -0.13, 0.08), (0.14, 0.12, -0.08)]:
         m.ring((x, y, z), 0.36, 0.19, 0.1, 6, sides=10)
     return m
 
 def spring():
-    m = model('b88b4e', 'eac77e')
+    m=model('e0a83a','ffe28c')
+    m.paint(12,'ffd15d')
+    m.paint(13,'28252a')
     for i in range(36):
-        a = i * math.pi * 3.3 / 36
-        b = (i + 1) * math.pi * 3.3 / 36
-        r = 0.05 + 0.42 * i / 36
-        r2 = 0.05 + 0.42 * (i + 1) / 36
-        bar(m, (r * math.cos(a), r * math.sin(a), 0), (r2 * math.cos(b), r2 * math.sin(b), 0), 0.026, 8)
-    m.lathe([(-0.09, 0.1), (0.09, 0.1)], 4, axis='z')
+        a=i*math.pi*3.3/36
+        b=(i+1)*math.pi*3.3/36
+        r=.05+.42*i/36
+        r2=.05+.42*(i+1)/36
+        bar(m,(r*math.cos(a),r*math.sin(a),0),(r2*math.cos(b),r2*math.sin(b),0),.029,12)
+    m.lathe([(-.09,.1),(.09,.1)],13,axis='z')
+    m.ring((0,0,-.1),.1,.055,.025,8,sides=10)
     return m
 
 def bearings():
-    m = model('677d8e', 'cad7df')
-    m.ring((0, 0, 0), 0.46, 0.34, 0.16, 6, sides=12)
-    m.ring((0, 0, -0.01), 0.23, 0.14, 0.17, 6, sides=12)
+    m=model('b3d5e3','ffffff')
+    m.paint(12,'9fc5d5')
+    m.paint(13,'344f63')
+    m.ring((0,0,0),.46,.34,.16,12,sides=12)
+    m.ring((0,0,-.01),.23,.14,.17,12,sides=12)
+    m.ring((0,0,.025),.34,.23,.035,13,sides=12)
     for i in range(9):
-        a = 2 * math.pi * i / 9
-        m.gem((0.285 * math.cos(a), 0.285 * math.sin(a), -0.04), (0.065, 0.065, 0.065), 5)
+        a=2*math.pi*i/9
+        m.gem((.285*math.cos(a),.285*math.sin(a),-.05),(.065,.065,.065),5)
     return m
 
 def thermos():
@@ -342,7 +384,7 @@ def thermos():
     return m
 
 def heatsink():
-    m = model('68839a', 'a6c4d1')
+    m = model('80a9c4', 'f2b75d')
     m.box((0, -0.43, 0.02), (0.91, 0.09, 0.48), 8, bevel=0.025)
     m.box((0, -0.35, 0.02), (0.86, 0.1, 0.44), 4, bevel=0.025)
     for i, x in enumerate([-0.34, -0.17, 0, 0.17, 0.34]):
@@ -366,7 +408,7 @@ def penny():
     return m
 
 def whetstone():
-    m = model('799093', 'afc5ba')
+    m = model('84a7a3', 'e7cd82')
     m.box((0, 0, 0), (0.88, 0.34, 0.31), 0, bevel=0.08, angle=12)
     m.box((0, -0.09, -0.17), (0.7, 0.09, 0.02), 2, angle=12)
     for x in [-0.22, 0, 0.22]:
@@ -392,7 +434,7 @@ def tailfin():
     return m
 
 def horseshoe():
-    m = model('628f5c', 'a9c6a1')
+    m = model('5da873', 'dded91')
     m.ring((0, 0, 0), 0.45, 0.29, 0.17, 0, sides=10, start=40, sweep=280)
     for a in [55, 95, 135, 175, 215, 255, 295, 325]:
         r = math.radians(a)
@@ -450,14 +492,17 @@ def marbles():
     return m
 
 def hourglass():
-    m = model('935e40', 'e0ba67')
-    for y in [-0.46, 0.46]:
-        m.box((0, y, 0), (0.58, 0.1, 0.3), 0, bevel=0.04)
-    for x in [-0.25, 0.25]:
-        bar(m, (x, -0.4, 0), (x, 0.4, 0), 0.025, 8)
-    m.lathe([(-0.4, 0.2), (-0.34, 0.22), (-0.08, 0.06), (0, 0.025), (0.08, 0.06), (0.34, 0.22), (0.4, 0.2)], 9, sides=10)
-    m.lathe([(-0.37, 0.16), (-0.31, 0.19), (-0.15, 0.05)], 3, sides=10)
-    bar(m, (0, 0.04, -0.02), (0, -0.23, -0.02), 0.012, 3)
+    m=model('a9633c','f6bf46')
+    m.paint(12,'eab146')
+    m.paint(13,'bfe9ee')
+    for y in [-.46,.46]:
+        m.box((0,y,0),(.58,.1,.3),0,bevel=.04)
+    for x in [-.25,.25]:
+        bar(m,(x,-.4,0),(x,.4,0),.025,8)
+    m.lathe([(-.37,.15),(-.32,.18),(-.16,.035)],12,sides=10)
+    bar(m,(0,.04,0),(0,-.19,0),.012,12)
+    m.translucent(13,.35)
+    m.lathe([(-.4,.20),(-.34,.22),(-.08,.06),(0,.025),(.08,.06),(.34,.22),(.4,.20)],13,sides=10)
     return m
 
 def dice():
@@ -470,7 +515,7 @@ def dice():
     return m
 
 def relay():
-    m = model('3c617e', 'd78943')
+    m = model('517ea0', 'ffab44')
     m.box((0, -0.03, 0.04), (0.77, 0.76, 0.18), 4, bevel=0.055)
     m.box((0, -0.03, -0.07), (0.66, 0.64, 0.07), 0, bevel=0.035)
     for x in [-0.28, 0.28]:
@@ -489,20 +534,29 @@ def relay():
     return m
 
 def shrapnel_bearing():
-    m = model('71889a', 'c2d9df')
-    m.ring((0, 0, 0), 0.37, 0.26, 0.14, 6, sides=12, start=16, sweep=290)
-    m.ring((0, 0, -0.02), 0.2, 0.12, 0.16, 4, sides=10)
-    for i in range(7):
-        a = math.radians(32 + i * 42)
-        m.gem((0.29 * math.cos(a), 0.29 * math.sin(a), -0.08), (0.055, 0.055, 0.055), 5, sides=6)
-    for a in [10, 112, 205, 278]:
-        a = math.radians(a)
-        c = math.cos(a)
-        q = math.sin(a)
-        pts = [(0.32 * c - 0.055 * q, 0.32 * q + 0.055 * c), (0.55 * c, 0.55 * q), (0.32 * c + 0.055 * q, 0.32 * q - 0.055 * c)]
-        poly(m, pts, 0.11, 1, z=-0.01)
+    m=bearings()
+    m.paint(14,'e3f7ff')
+    for a in [0,60,120,180,240,300]:
+        a=math.radians(a)
+        c=math.cos(a)
+        q=math.sin(a)
+        poly(m,[(.39*c-.065*q,.39*q+.065*c),(.58*c,.58*q),(.39*c+.065*q,.39*q-.065*c)],.14,14,z=0)
     return m
 
+def early_rise():
+    m=model('ed8d20','ffe35e')
+    m.paint(12,'fff0a0')
+    m.paint(13,'7f431e')
+    m.lathe([(-.09,.27),(.09,.27)],3,axis='z',sides=12)
+    m.lathe([(-.115,.21),(-.09,.21)],12,axis='z',sides=12)
+    for i in range(10):
+        a=2*math.pi*i/10
+        c=math.cos(a)
+        q=math.sin(a)
+        poly(m,[(.28*c-.05*q,.28*q+.05*c),(.48*c,.48*q),(.28*c+.05*q,.28*q-.05*c)],.11,3)
+    m.box((0,-.4,0),(.85,.09,.22),13,bevel=.02)
+    m.box((0,-.35,-.12),(.72,.045,.025),3)
+    return m
 
 BUILDERS = {
     'BallBearing': shrapnel_bearing,

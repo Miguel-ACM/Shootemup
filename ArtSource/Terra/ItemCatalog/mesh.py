@@ -71,9 +71,15 @@ class Model:
             colour("aab7b9"), colour("974849"), colour("577470"), colour("fcdbc5"),
         ]
         self.faces = []
+        self.opacity = {}
 
     def paint(self, tile, hex_value):
         self.palette[tile] = colour(hex_value)
+
+    def translucent(self, tile, alpha):
+        if not 0 <= tile < len(self.palette) or not 0 < alpha < 1:
+            raise ValueError("Translucent palette tiles need an opacity between zero and one")
+        self.opacity[tile] = alpha
 
     def face(self, tile, points_xyz):
         points = tuple(dict.fromkeys(tuple(round(v, 5) for v in p) for p in points_xyz))
@@ -194,7 +200,9 @@ class Model:
     def bake(self):
         self.validate()
         lines = ["palette " + " ".join(f"{value:.5f}" for rgb in self.palette for value in rgb)]
-        for tile, points in self.faces:
+        lines.extend(f"alpha {tile} {value:.5f}" for tile, value in sorted(self.opacity.items()))
+        # Keep glass after opaque components so the casing and contents are behind it.
+        for tile, points in sorted(self.faces, key=lambda face: face[0] in self.opacity):
             corners = [
                 point for i, point in enumerate(points)
                 if dot((turn := cross(sub(point, points[i - 1]), sub(points[(i + 1) % len(points)], point))), turn) > 1e-14

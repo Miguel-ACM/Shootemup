@@ -17,7 +17,7 @@ public static class TerraItemStudioCapture
 
     public static void Run()
     {
-        if (!Application.isBatchMode || !Application.dataPath.Replace('\\', '/').Contains("/Temp/ItemCatalogReview/"))
+        if (!Application.isBatchMode || !Application.dataPath.Replace('\\', '/').Contains("/ItemCatalogReview/"))
             throw new InvalidOperationException("Use the isolated item catalog review project.");
         var args = Environment.GetCommandLineArgs();
         int outputIndex = Array.IndexOf(args, "-item-render-output") + 1;
@@ -26,6 +26,8 @@ public static class TerraItemStudioCapture
         string folder = args[outputIndex];
         int keyIndex = Array.IndexOf(args, "-item-render-keys") + 1;
         string[] keys = keyIndex > 0 && keyIndex < args.Length ? args[keyIndex].Split(',') : Array.Empty<string>();
+        int auditIndex = Array.IndexOf(args, "-item-audit-keys") + 1;
+        string[] auditKeys = auditIndex > 0 && auditIndex < args.Length ? args[auditIndex].Split(',') : null;
         Directory.CreateDirectory(folder);
         string normals = Directory.CreateDirectory(Path.Combine(folder, "Normals")).FullName;
         var records = new StringBuilder();
@@ -85,20 +87,28 @@ public static class TerraItemStudioCapture
             var source = Resources.Load<TextAsset>(resource);
             var mesh = IndustrialMeshFactory.ExpansionItem(key);
             var palette = EverydayItemMaterials.For(key);
-            if (source == null || mesh == null || palette == null || !mesh.name.StartsWith("Terra Item"))
-                throw new InvalidOperationException("The revised mesh or palette is missing for " + key);
-            int expected = 0;
-            foreach (string line in source.text.Split('\n'))
-                if (line.Length > 0 && char.IsDigit(line[0]))
-                    expected += (line.Split(' ').Length - 1) / 3 - 2;
-            VerifyMesh(key, mesh, expected, audit);
+            if (mesh == null || mesh.vertexCount == 0 || palette == null)
+                throw new InvalidOperationException("The mesh or palette is missing for " + key);
+            if (auditKeys == null || Array.IndexOf(auditKeys, key) >= 0)
+            {
+                if (source == null || !mesh.name.StartsWith("Terra Item"))
+                    throw new InvalidOperationException("The revised mesh is missing for " + key);
+                int expected = 0;
+                foreach (string line in source.text.Split('\n'))
+                    if (line.Length > 0 && char.IsDigit(line[0]))
+                        expected += (line.Split(' ').Length - 1) / 3 - 2;
+                VerifyMesh(key, mesh, expected, audit);
+            }
+            bool translucent = source != null && source.text.Contains("\nalpha ");
             var model = new GameObject(key);
             SceneManager.MoveGameObjectToScene(model, scene);
             var material = new Material(shader) { mainTexture = palette.mainTexture };
+            material.SetFloat("_Translucent", translucent ? 1 : 0);
             try
             {
                 model.AddComponent<MeshFilter>().sharedMesh = mesh;
                 model.AddComponent<MeshRenderer>().sharedMaterial = material;
+                IndustrialMeshFactory.AttachTerraParts("Item" + key, model.transform, material);
                 Capture(Hero, Path.Combine(folder, key + ".png"));
                 Capture(Vector3.zero, Path.Combine(folder, key + "-Front.png"));
                 Capture(Rear, Path.Combine(folder, key + "-Rear.png"));
@@ -117,7 +127,10 @@ public static class TerraItemStudioCapture
             {
                 model.transform.SetPositionAndRotation(Vector3.zero, Quaternion.Euler(euler));
                 model.transform.localScale = Vector3.one;
-                var bounds = model.GetComponent<MeshRenderer>().bounds;
+                var renderers = model.GetComponentsInChildren<MeshRenderer>();
+                var bounds = renderers[0].bounds;
+                foreach (var renderer in renderers)
+                    bounds.Encapsulate(renderer.bounds);
                 float scale = 1.62f / Mathf.Max(bounds.size.x, bounds.size.y);
                 model.transform.localScale = Vector3.one * scale;
                 model.transform.position = -bounds.center * scale;
@@ -128,6 +141,8 @@ public static class TerraItemStudioCapture
                 {
                     RenderTexture.active = target;
                     pixels.ReadPixels(new Rect(0, 0, Size, Size), 0, 0);
+                    if (translucent && material.GetFloat("_Normals") < .5f)
+                        Unpremultiply(pixels);
                     pixels.Apply();
                     File.WriteAllBytes(path, pixels.EncodeToPNG());
                 }
@@ -138,6 +153,22 @@ public static class TerraItemStudioCapture
                 }
             }
         }
+    }
+
+    static void Unpremultiply(Texture2D image)
+    {
+        var colours = image.GetPixels32();
+        for (int i = 0; i < colours.Length; i++)
+        {
+            var p = colours[i];
+            if (p.a == 0 || p.a == 255)
+                continue;
+            colours[i] = new Color32(
+                (byte)Mathf.Min(255, p.r * 255 / p.a),
+                (byte)Mathf.Min(255, p.g * 255 / p.a),
+                (byte)Mathf.Min(255, p.b * 255 / p.a), p.a);
+        }
+        image.SetPixels32(colours);
     }
 
     static void VerifyMesh(string key, Mesh mesh, int expected, StringBuilder audit)

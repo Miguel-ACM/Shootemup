@@ -6,6 +6,7 @@ using UnityEngine;
 /// Models authored in Blender (ArtSource/Terra) and baked by obj_to_hull.py into Resources/TerraModels.
 /// Each line is one polygon: its palette tile, then x y z per corner, already in hull space.
 /// An optional first "palette" line gives the model its own sixteen tile colours (items use this).
+/// An "alpha" line after the palette makes one tile translucent.
 /// A "part" line starts an animated part (rotor, fin, impeller): its polygons follow until the next part line.
 /// A "glass" line gives the next panes a center and half extents in hull space. "paint" ends the glazing.
 /// A baked model replaces the procedural model of the same name; muzzles, sockets and colliders stay in code.
@@ -64,6 +65,13 @@ public static partial class IndustrialMeshFactory
                 for (int i = 0; i < 16; i++)
                     palette[i] = new Color(Float(fields[1 + i * 3]), Float(fields[2 + i * 3]), Float(fields[3 + i * 3]));
                 terraPalettes[name] = palette;
+                continue;
+            }
+            if (fields.Length == 3 && fields[0] == "alpha")
+            {
+                int index = int.Parse(fields[1], CultureInfo.InvariantCulture);
+                if (terraPalettes.TryGetValue(name, out var palette) && (uint)index < palette.Length)
+                    palette[index].a = Mathf.Clamp01(Float(fields[2]));
                 continue;
             }
             // part <name> <spin|swing> ax ay az px py pz <speed> <amplitude>
@@ -140,7 +148,7 @@ public static partial class IndustrialMeshFactory
                     bool edge = x < 5 || x > 58 || y < 5 || y > 58;
                     float shade = edge ? .62f : x < 7 || y > 56 ? 1.18f : x > 56 || y < 7 ? .8f : 1;
                     var c = palette[tile] * shade;
-                    c.a = 1;
+                    c.a = palette[tile].a;
                     pixels[(tile / 4 * 64 + y) * 256 + tile % 4 * 64 + x] = c;
                 }
         texture.SetPixels(pixels);

@@ -101,7 +101,7 @@ def comparison(folder, previous, items):
     page.save(folder / "Before-and-after.png", optimize=True)
 
 
-def audited_items(folder):
+def audited_items(folder, audit_keys=None):
     items = []
     for line in (folder / "items.tsv").read_text(encoding="utf-8-sig").splitlines():
         key, name, kind, rarity, status, *_ = line.split("\t")
@@ -114,9 +114,13 @@ def audited_items(folder):
         if path.exists():
             for line in path.read_text(encoding="utf-8-sig").splitlines():
                 reports[line.split("\t")[0]] = line
-    if len(items) != len(reports) or any(not reports[item["key"]].endswith("\tok") for item in items):
-        raise ValueError("Unity triangle/normal checks did not pass for the entire catalog")
-    (folder / "mesh-audit.tsv").write_text("\n".join(reports[item["key"]] for item in items) + "\n", encoding="utf-8")
+    catalog_keys = {item["key"] for item in items}
+    expected = catalog_keys if audit_keys is None else set(audit_keys)
+    if (not expected <= catalog_keys or set(reports) != expected
+            or any(not record.endswith("\tok") for record in reports.values())):
+        raise ValueError("Unity triangle/normal checks are missing or failed")
+    ordered_reports = [reports[item["key"]] for item in items if item["key"] in expected]
+    (folder / "mesh-audit.tsv").write_text("\n".join(ordered_reports) + "\n", encoding="utf-8")
     for item in items:
         key = item["key"]
         paths = [folder / f"{key}{suffix}.png" for suffix in ("", "-Front", "-Rear")]
@@ -133,8 +137,10 @@ def audited_items(folder):
     return items
 
 
-def compose(folder, previous):
-    items = audited_items(folder)
+def compose(folder, previous, audit_keys=None):
+    items = audited_items(folder, audit_keys)
+    studio = "Terra studio" if audit_keys is None else "Final game art"
+    summary = "revised low-poly models" if audit_keys is None else "low-poly models"
     ordered = []
     for kind, heading_text in GROUPS:
         group = sorted((row for row in items if row["kind"] == kind), key=lambda row: row["name"].casefold())
@@ -143,27 +149,31 @@ def compose(folder, previous):
             page_number = start // 20 + 1
             page = group[start:start + 20]
             key = heading_text.lower().replace(" ", "-")
-            line = f"{len(page)} models · Terra studio"
+            line = f"{len(page)} models · {studio}"
             sheet(folder, page, heading_text, line, f"{key}-{page_number}.png", 4, 290)
             sheet(folder, page, heading_text + " · Rear", line, f"{key}-{page_number}-Rear.png", 4, 290, "-Rear")
     if len(ordered) != len(items):
         raise ValueError("One or more items are absent from the sheets.")
     count = len(ordered)
-    sheet(folder, ordered, "Shootemup item catalog", f"{count} revised low-poly models",
+    sheet(folder, ordered, "Shootemup item catalog", f"{count} {summary}",
           "All-items.png", 10, 230)
-    sheet(folder, ordered, "Rear views", f"{count} revised low-poly models",
+    sheet(folder, ordered, "Rear views", f"{count} {summary}",
           "All-items-Rear.png", 10, 230, "-Rear")
     sheet(folder, ordered, "Surface normals", f"{count} models · Front three-quarter diagnostic",
           "Normals-Front.png", 10, 155, model_folder=folder / "Normals")
     sheet(folder, ordered, "Surface normals", f"{count} models · Rear three-quarter diagnostic",
           "Normals-Rear.png", 10, 155, "-Rear", folder / "Normals")
-    comparison(folder, previous, items)
-    print(f"Verified {count} meshes and {count * 5} images.")
+    if audit_keys is None:
+        comparison(folder, previous, items)
+    audited = count if audit_keys is None else len(audit_keys)
+    print(f"Verified {audited} meshes and {count * 5} images.")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("render_folder", type=Path)
     parser.add_argument("previous_folder", type=Path)
+    parser.add_argument("--audit-keys", type=Path, help="File with one revised model key per line for a mixed catalog")
     args = parser.parse_args()
-    compose(args.render_folder, args.previous_folder)
+    audit_keys = args.audit_keys.read_text(encoding="utf-8-sig").splitlines() if args.audit_keys else None
+    compose(args.render_folder, args.previous_folder, audit_keys)
