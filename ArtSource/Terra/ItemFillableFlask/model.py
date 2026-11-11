@@ -91,7 +91,7 @@ lathe('Shoulder rim', [(.025, .282), (.045, .27), (.08, .242), (.095, .225)],
       [0, 1, 0], 16, math.pi / 16)
 # Thick green vertical ribs give the impression of reinforced glass and make
 # the amber belly read as broad inset windows as the item rotates.
-for i in range(8):
+for i in (0, 1, 3, 4, 5, 7):
     a = 2 * math.pi * i / 8
     bpy.ops.mesh.primitive_cube_add(size=1, location=(.300 * math.cos(a), -.175, .300 * math.sin(a)))
     rib = bpy.context.object
