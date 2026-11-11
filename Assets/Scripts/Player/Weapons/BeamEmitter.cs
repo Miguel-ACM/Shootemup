@@ -186,7 +186,9 @@ public sealed class BeamEmitter : AWeaponAutomatic
             }
             float power = releasing ? Mathf.Pow(1 - releasedFor / .18f, 2) : active ? Mathf.Clamp01((t - warning) / .055f) : 0;
             sound.Drive(power, active);
-            var target = GameRules.playerShootFollowness > 0 ? CombatUpgrades.Nearest(transform.position + Vector3.up, null, 20) : null;
+            var aimOrigin = transform.position + Vector3.up;
+            var target = GameRules.playerShootFollowness > 0
+                ? CombatTargets.MarkedInRange(aimOrigin, 20) ?? CombatUpgrades.Nearest(aimOrigin, null, 20) : null;
             if (target != null)
             {
                 attraction = hasAttraction ? Vector3.Lerp(attraction, target.transform.position, 1 - Mathf.Exp(-12 * dt)) : target.transform.position;

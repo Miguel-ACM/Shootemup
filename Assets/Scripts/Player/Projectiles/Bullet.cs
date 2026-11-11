@@ -42,7 +42,8 @@ public class Bullet : ABullet
         }
         if (followness != 0 && !rubberReturned)
         {
-            var e = CombatUpgrades.Nearest(transform.position, null, Mathf.Sqrt(Mathf.Abs(followness) * 10));
+            var marked = CombatTargets.MarkedInRange(transform.position, 18);
+            var e = marked ?? CombatUpgrades.Nearest(transform.position, null, Mathf.Sqrt(Mathf.Abs(followness) * 10));
             if (e != null)
             {
                 float sqrDistance = ((Vector2)(e.transform.position - transform.position)).sqrMagnitude;
@@ -50,7 +51,7 @@ public class Bullet : ABullet
                 if (followness < 0)
                     factor = -1;
 
-                if (sqrDistance < Mathf.Abs(followness) * 10)
+                if (e == marked || sqrDistance < Mathf.Abs(followness) * 10)
                 {
                     Vector3 d = (e.transform.position - transform.position).normalized;
                     //d.x = Mathf.Cos(d.x);

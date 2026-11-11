@@ -123,7 +123,7 @@ public sealed class TrailDrone : ACompanion
         clock += Time.deltaTime;
         if (clock < 0 || !Shipcontroller.Firing)
             return;
-        var target = CombatUpgrades.Nearest(Muzzle, null, 18);
+        var target = CombatTargets.MarkedInRange(Muzzle, 18) ?? CombatUpgrades.Nearest(Muzzle, null, 18);
         clock = -.55f;
         effects?.Shot();
         SoundManager.PlaySound("shotCompanion", .045f);
@@ -145,7 +145,6 @@ public sealed class TrailDrone : ACompanion
     void FireLaser()
     {
         var origin = Muzzle;
-        var plasma = PlasmaOrb.FirstOnBeam(origin, origin + Vector3.up * BeamReach, .06f, out var plasmaPoint);
         bool wanted = Shipcontroller.Firing;
         beamPower = Mathf.MoveTowards(beamPower, wanted ? 1 : 0, Time.deltaTime * (wanted ? 3 : 5));
         if (beamPower <= 0)
@@ -162,7 +161,10 @@ public sealed class TrailDrone : ACompanion
             beam.gameObject.SetActive(true);
             sound.Charge(.25f, true);
         }
-        float length = CombatWalls.BeamLength(origin, Vector2.up, BeamReach, .06f);
+        var marked = CombatTargets.MarkedInRange(origin, BeamReach);
+        var axis = CombatTargets.MarkedDirection(origin, marked);
+        var plasma = PlasmaOrb.FirstOnBeam(origin, (Vector2)origin + axis * BeamReach, .06f, out var plasmaPoint);
+        float length = CombatWalls.BeamLength(origin, axis, BeamReach, .06f);
         AEnemy struck = null;
         foreach (var enemy in AEnemy.Live)
         {
@@ -173,28 +175,40 @@ public sealed class TrailDrone : ACompanion
             {
                 var collider = shapes[shape];
                 if (collider == null || !collider.enabled) continue;
-                var bounds = collider.bounds;
-                if (Mathf.Abs(bounds.center.x - origin.x) > bounds.extents.x + .06f) continue;
-                float along = bounds.min.y - origin.y;
-                if (along < length && bounds.max.y > origin.y)
+                float along;
+                if (marked != null)
+                {
+                    if (!BeamContact.Touches(collider, origin, (Vector2)origin + axis * length, .06f, out var contact))
+                        continue;
+                    along = Vector2.Dot(contact - (Vector2)origin, axis);
+                }
+                else
+                {
+                    var bounds = collider.bounds;
+                    if (Mathf.Abs(bounds.center.x - origin.x) > bounds.extents.x + .06f || bounds.max.y <= origin.y)
+                        continue;
+                    along = bounds.min.y - origin.y;
+                }
+                if (along < length)
                 {
                     length = Mathf.Max(0, along);
                     struck = enemy;
                 }
             }
         }
-        if (plasma != null && plasmaPoint.y - origin.y <= length)
+        float plasmaDistance = Vector2.Dot(plasmaPoint - (Vector2)origin, axis);
+        if (plasma != null && plasmaDistance <= length)
         {
-            length = Mathf.Max(0, plasmaPoint.y - origin.y);
+            length = Mathf.Max(0, plasmaDistance);
             struck = null;
         }
         else
             plasma = null;
-        beam.Draw(origin, Vector2.up, length, .12f, 1, beamPower, 0);
+        beam.Draw(origin, axis, length, .12f, 1, beamPower, 0);
         sound.Drive(beamPower, true);
         if (struck == null && plasma == null || beamPower < .9f)
             return;
-        var point = (Vector2)origin + Vector2.up * length;
+        var point = (Vector2)origin + axis * length;
         if (Time.time >= nextSpark)
         {
             // Irregular bursts: varied timing, spread, size and tint so the contact crackles instead of pulsing.
@@ -210,7 +224,7 @@ public sealed class TrailDrone : ACompanion
         if (plasma != null)
             plasma.Hit(damage);
         else
-            CombatHit.Apply(struck, damage, point, Vector2.up, companion: true, score: false);
+            CombatHit.Apply(struck, damage, point, axis, companion: true, score: false);
     }
     void OnDisable()
     {

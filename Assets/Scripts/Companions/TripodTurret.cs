@@ -60,7 +60,8 @@ public sealed class TripodTurret : ACompanion
             return;
         shotClock = ShotInterval;
         Vector3 muzzle = transform.position + Vector3.up * .3f;
-        var shot = PlayerRound.Spawn(muzzle, Vector2.up, GameRules.playerShootDamage * .7f,
+        var direction = CombatTargets.MarkedDirection(muzzle, CombatTargets.MarkedInRange(muzzle, 16));
+        var shot = PlayerRound.Spawn(muzzle, direction, GameRules.playerShootDamage * .7f,
             GameRules.playerShootTravelSpeed, PlayerDelivery.Pulse);
         if (shot != null)
             shot.companion = true;

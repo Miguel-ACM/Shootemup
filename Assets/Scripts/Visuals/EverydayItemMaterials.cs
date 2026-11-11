@@ -218,6 +218,9 @@ public static class EverydayItemMaterials
             case nameof(RelaySwitch):
                 color = new Color(.29f, .49f, .71f);
                 return true;
+            case nameof(SignalFlare):
+                color = new Color(.91f, .30f, .14f);
+                return true;
             case "CursedCoin":
                 color = new Color(.5f, .9f, .42f);
                 return true;

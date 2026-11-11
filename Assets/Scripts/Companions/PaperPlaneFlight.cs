@@ -118,7 +118,8 @@ public sealed class PaperPlaneFlight : ACompanion
 
     void Launch()
     {
-        target = CombatTargets.Nearest(owner.transform.position, null, Range);
+        target = CombatTargets.MarkedInRange(owner.transform.position, Range) ??
+            CombatTargets.Nearest(owner.transform.position, null, Range);
         if (target == null)
         {
             nextSortie = Time.time + .2f;

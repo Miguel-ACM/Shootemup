@@ -53,6 +53,7 @@ public class AShootingCompanion : ACompanion
         {
             Bullet b = Instantiate(bullet, spawnPoints[i] + transform.position, Quaternion.identity).GetComponent<Bullet>();
             b.setProperties(new Dictionary<string, float> { { "companion", 1f }, { "speed", shootTravelSpeed }, { "damage", shootDamage }, { "size", shootSize }, { "followness", shootFollowness } });
+            b.direction = CombatTargets.MarkedDirection(b.transform.position, CombatTargets.MarkedInRange(b.transform.position, 16));
         }
         //Bullet b = Instantiate(bulletPrimary, spawnPoints[currBulletOutIdx] + transform.position, Quaternion.identity).GetComponent<Bullet>();
         //b.setProperties(new Dictionary<string, float> { { "companion", 1f }, { "speed", shootTravelSpeed }, { "damage", shootDamage }, { "size", shootSize }, { "followness", shootFollowness } });

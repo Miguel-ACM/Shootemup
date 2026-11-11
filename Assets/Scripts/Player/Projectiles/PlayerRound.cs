@@ -230,10 +230,13 @@ public sealed class PlayerRound : ABullet
         }
         else if (!headingLocked && !rubberReturned && age >= guidanceDelay && (delivery == PlayerDelivery.Missile || GameRules.playerShootFollowness > 0))
         {
-            var target = guidedTarget != null && guidedTarget.CanBeTargeted && guidedTarget.CanReceiveDamage && !hit.Contains(guidedTarget)
-                ? guidedTarget : CombatUpgrades.Nearest(transform.position, hit, 7);
+            var marked = CombatTargets.MarkedInRange(transform.position, 18);
+            var target = marked != null && !hit.Contains(marked) ? marked :
+                guidedTarget != null && guidedTarget.CanBeTargeted && guidedTarget.CanReceiveDamage && !hit.Contains(guidedTarget)
+                    ? guidedTarget : CombatUpgrades.Nearest(transform.position, hit, 7);
             if (target != null)
-                heading = Vector3.RotateTowards(heading, ((Vector2)(target.transform.position - transform.position)).normalized,
+                heading = Vector3.RotateTowards(heading, target == marked ? CombatTargets.MarkedDirection(transform.position, marked) :
+                    ((Vector2)(target.transform.position - transform.position)).normalized,
     Time.deltaTime * (delivery == PlayerDelivery.Missile ? 3 : Mathf.Min(3, GameRules.playerShootFollowness)), 0);
         }
         float brake = delivery == PlayerDelivery.Shell ? Mathf.Clamp01(1 - age / .7f) : 1;
