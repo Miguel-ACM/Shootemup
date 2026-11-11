@@ -307,5 +307,6 @@ MonoBehaviour:
   modelRenderers: []
   sourceSprite: {fileID: 5637667765757986920}
   spin: 1
-  chooseItem: 0
+  chooseItem: 1
+  itemKindOverride: AngryMoonItem
   accent: {r: 1, g: 1, b: 1, a: 1}
