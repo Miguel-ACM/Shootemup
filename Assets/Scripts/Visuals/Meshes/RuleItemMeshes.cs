@@ -95,7 +95,8 @@ public static partial class IndustrialMeshFactory
         b.Box(new Vector3(.26f, .255f, 0), new Vector3(.22f, .24f, .25f), 11, 6);
         b.Box(new Vector3(-.48f, -.245f, 0), new Vector3(.12f, .10f, .11f), 3, 11);
         b.Box(new Vector3(.4f, .255f, 0), new Vector3(.12f, .10f, .11f), 9, 11);
-        b.Prism(new[] { new Vector2(.13f, .54f), new Vector2(.04f, .34f), new Vector2(-.03f, .43f),
-            new Vector2(-.15f, .26f), new Vector2(-.09f, .56f), new Vector2(-.015f, .48f) }, .045f, 9, new Vector3(0, 0, -.16f), 3);
+        b.Prism(new[] { new Vector2(.06f, .48f), new Vector2(-.14f, .16f), new Vector2(-.015f, .185f),
+            new Vector2(-.065f, -.045f), new Vector2(.17f, .27f), new Vector2(.04f, .25f) },
+            .055f, 10, new Vector3(.005f, 0, -.12f), 13);
     }
 }
