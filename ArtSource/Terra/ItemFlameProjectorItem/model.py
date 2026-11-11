@@ -2,6 +2,7 @@
 import math
 import os
 import sys
+import bmesh
 from mathutils import Vector
 
 # Output lives beside this script, including when launched with Blender's -- option.
@@ -88,7 +89,7 @@ def ring_y(cx, cy, cz, outer, inner, depth, mat, n=12):
 # Faceted pressurised fuel cylinder, shoulder and foot, all upright on Y.
 cylinder((-.235, -.105, 0), .175, .49, 0)
 cylinder((-.235, .155, 0), .175, .07, 1, radius2=.125)
-cylinder((-.235, -.365, 0), .175, .055, 6)
+cylinder((-.235, -.365, 0), .179, .055, 6)
 cylinder((-.235, .22, 0), .092, .07, 3)
 cylinder((-.235, .265, 0), .065, .035, 2)
 # Wide bright hoops remain legible on all sides.
@@ -134,6 +135,12 @@ bpy.ops.object.join()
 model = bpy.context.object
 model.name = 'Model'
 bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+surface = bmesh.new()
+surface.from_mesh(model.data)
+bmesh.ops.recalc_face_normals(surface, faces=surface.faces)
+surface.to_mesh(model.data)
+surface.free()
+model.data.update()
 tri = model.modifiers.new('Triangulate', 'TRIANGULATE')
 bpy.ops.object.modifier_apply(modifier=tri.name)
 for poly in model.data.polygons:
