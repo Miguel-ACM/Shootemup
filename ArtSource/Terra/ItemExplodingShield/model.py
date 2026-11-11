@@ -2,6 +2,7 @@
 import math
 import os
 import sys
+import bmesh
 from mathutils import Vector
 
 # Exploding Shield: a forged heater shield with a raised blast on each face.
@@ -126,6 +127,12 @@ bpy.ops.object.join()
 model = bpy.context.object
 model.name = 'Model'
 bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+surface = bmesh.new()
+surface.from_mesh(model.data)
+bmesh.ops.recalc_face_normals(surface, faces=surface.faces)
+surface.to_mesh(model.data)
+surface.free()
+model.data.update()
 tri = model.modifiers.new('Triangulate', 'TRIANGULATE')
 bpy.ops.object.modifier_apply(modifier=tri.name)
 for p in model.data.polygons:
