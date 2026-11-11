@@ -207,7 +207,8 @@ MonoBehaviour:
   modelRenderers: []
   sourceSprite: {fileID: 5637667765757986920}
   spin: 1
-  chooseItem: 0
+  chooseItem: 1
+  itemKindOverride: BabyYouItem
   accent: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &9009117739691021950
 GameObject:
