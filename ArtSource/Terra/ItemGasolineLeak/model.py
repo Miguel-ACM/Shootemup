@@ -2,6 +2,7 @@
 import math
 import os
 import sys
+import bmesh
 from mathutils import Vector
 
 # The pickup uses Y as its vertical axis and +Z as its front.
@@ -24,7 +25,7 @@ palette = [
     (0.92, 0.27, 0.075, 1),  # enamel orange
     (0.66, 0.16, 0.075, 1),  # deeper orange edging
     (1.00, 0.43, 0.12, 1),   # raised panel
-    (0.93, 0.67, 0.24, 1),  # ochre cross and fuel
+    (1.00, 0.79, 0.20, 1),  # yellow flame and fuel
     (0.64, 0.72, 0.71, 1),  # steel handle
     (0.25, 0.32, 0.33, 1),  # cap and recesses
     (1.00, 0.78, 0.36, 1),  # fuel highlight
@@ -89,12 +90,28 @@ cylinder_y('Filler collar', (-0.185, 0.274, 0), 0.085, 0.075, 3)
 cylinder_y('Filler cap', (-0.185, 0.329, 0), 0.083, 0.055, 5)
 cylinder_y('Cap top', (-0.185, 0.359, 0), 0.064, 0.012, 4)
 
-# Embossed inset faces and a bold golden plus mark on both sides of the can.
+# Embossed inset faces and a raised flame on both sides of the can.
+def flame_badge(side):
+    outline = [(-.12, -.15), (-.137, -.072), (-.079, .014), (-.055, -.044),
+               (.015, .102), (.104, .023), (.139, -.063), (.106, -.147),
+               (.046, -.19), (-.055, -.19)]
+    vertices = [(x, y, side * z) for z in (.199, .218) for x, y in outline]
+    count = len(outline)
+    faces = [tuple(reversed(range(count))), tuple(range(count, count * 2))]
+    for i in range(count):
+        next_index = (i + 1) % count
+        faces.append((i, next_index, next_index + count, i + count))
+    mesh = bpy.data.meshes.new('Raised flame')
+    mesh.from_pydata(vertices, [], faces)
+    mesh.update()
+    badge = bpy.data.objects.new('Raised flame', mesh)
+    bpy.context.collection.objects.link(badge)
+    finish(badge, 3)
+
 for side in (-1, 1):
     box('Stamped face', (0, -0.052, side*0.174), (0.48, 0.44, 0.028), 1, 0.035)
     box('Face center', (0, -0.052, side*0.191), (0.425, 0.385, 0.022), 2, 0.027)
-    box('Cross vertical', (0, -0.052, side*0.207), (0.071, 0.31, 0.018), 3, 0.009)
-    box('Cross horizontal', (0, -0.052, side*0.208), (0.31, 0.071, 0.020), 3, 0.009)
+    flame_badge(side)
 
 # A single large faceted drop, connected to the bottom edge so the leak survives rotation.
 rod('Leak neck', (-0.235, -0.326, 0), (-0.255, -0.365, 0), 0.055, 0.07, 3)
@@ -114,6 +131,13 @@ bpy.ops.object.join()
 model = bpy.context.object
 model.name = 'Model'
 bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+surface = bmesh.new()
+surface.from_mesh(model.data)
+bmesh.ops.dissolve_degenerate(surface, dist=0.00015, edges=list(surface.edges))
+bmesh.ops.recalc_face_normals(surface, faces=surface.faces)
+surface.to_mesh(model.data)
+surface.free()
+model.data.update()
 tri = model.modifiers.new('Export triangles', 'TRIANGULATE')
 bpy.ops.object.modifier_apply(modifier=tri.name)
 for face in model.data.polygons:
