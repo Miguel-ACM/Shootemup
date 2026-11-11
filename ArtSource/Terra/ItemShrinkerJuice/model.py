@@ -2,6 +2,7 @@
 import math
 import os
 import sys
+import bmesh
 from mathutils import Vector
 
 # Blender's background runner may omit __file__; the argument after -- is the script path.
@@ -122,10 +123,6 @@ for x in (-.083, -.042, 0, .042, .083):
 for z in (-.083, -.042, 0, .042, .083):
     box('Cap flute side', (.129, .383, z), (.012, .075, .015), 4, .003)
     box('Cap flute side', (-.129, .383, z), (.012, .075, .015), 4, .003)
-# A pair of chunky highlights echo the original bottle's vertical glint.
-for z in (-.174, .174):
-    box('Glass glint', (-.15, .105, z), (.032, .125, .012), 7, .006)
-
 bpy.ops.object.select_all(action='DESELECT')
 for ob in parts:
     ob.select_set(True)
@@ -134,6 +131,12 @@ bpy.ops.object.join()
 model = bpy.context.object
 model.name = 'Model'
 bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+surface = bmesh.new()
+surface.from_mesh(model.data)
+bmesh.ops.recalc_face_normals(surface, faces=surface.faces)
+surface.to_mesh(model.data)
+surface.free()
+model.data.update()
 # Triangulate the exported object so its faceted appearance is deterministic.
 tri = model.modifiers.new('Triangulate', 'TRIANGULATE')
 bpy.ops.object.modifier_apply(modifier=tri.name)
