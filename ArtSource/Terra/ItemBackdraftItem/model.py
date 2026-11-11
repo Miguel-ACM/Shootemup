@@ -2,6 +2,7 @@
 import math
 import os
 import sys
+import bmesh
 from mathutils import Vector
 
 # Unity pickup axes: X right, Y up, Z front.
@@ -132,6 +133,14 @@ bpy.ops.object.join()
 model = bpy.context.object
 model.name = 'Model'
 bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+surface = bmesh.new()
+surface.from_mesh(model.data)
+bmesh.ops.dissolve_degenerate(surface, dist=0.00015, edges=list(surface.edges))
+bmesh.ops.recalc_face_normals(surface, faces=surface.faces)
+bmesh.ops.triangulate(surface, faces=list(surface.faces))
+surface.to_mesh(model.data)
+surface.free()
+model.data.update()
 for poly in model.data.polygons:
     poly.use_smooth = False
 bpy.ops.object.select_all(action='DESELECT')
