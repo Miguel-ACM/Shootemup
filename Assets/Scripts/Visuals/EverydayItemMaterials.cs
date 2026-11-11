@@ -212,6 +212,9 @@ public static class EverydayItemMaterials
             case nameof(Bookmark):
                 color = new Color(.18f, .52f, .56f);
                 return true;
+            case nameof(Tripod):
+                color = new Color(.56f, .65f, .29f);
+                return true;
             case "CursedCoin":
                 color = new Color(.5f, .9f, .42f);
                 return true;
