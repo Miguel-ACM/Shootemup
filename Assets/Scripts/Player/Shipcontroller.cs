@@ -267,6 +267,18 @@ public class Shipcontroller : MonoBehaviour
             GetDamaged(amount);
     }
 
+    public bool TryReturnTo(Vector2 point)
+    {
+        if (point.x < Camera.LeftLimit || point.x > Camera.RightLimit ||
+            point.y < Camera.DownLimit || point.y > Camera.UpLimit ||
+            CombatWalls.Overlaps(point, CombatWalls.HullRadius))
+            return false;
+        transform.position = new Vector3(point.x, point.y, transform.position.z);
+        waterVelocity = Vector2.zero;
+        Physics2D.SyncTransforms();
+        return true;
+    }
+
     void ActiveRightReleased(InputAction.CallbackContext ctx)
     {
         isActiveRightPressed = false;

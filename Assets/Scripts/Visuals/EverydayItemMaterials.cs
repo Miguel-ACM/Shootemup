@@ -209,6 +209,9 @@ public static class EverydayItemMaterials
             case "LoadedDice":
                 color = new Color(.88f, .16f, .22f);
                 return true;
+            case nameof(Bookmark):
+                color = new Color(.18f, .52f, .56f);
+                return true;
             case "CursedCoin":
                 color = new Color(.5f, .9f, .42f);
                 return true;
