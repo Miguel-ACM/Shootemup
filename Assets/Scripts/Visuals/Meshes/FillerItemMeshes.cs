@@ -33,10 +33,11 @@ public static partial class IndustrialMeshFactory
         b.Drum(new Vector3(0, .05f, 0), .15f, .16f, 6, 12, 11);
         EquipmentRod(b, new Vector3(.08f, .10f, 0), new Vector3(.30f, .30f, 0), .045f, 11);
         EquipmentRod(b, new Vector3(.30f, .30f, 0), new Vector3(.42f, .40f, 0), .025f, 9);
-        EquipmentRod(b, new Vector3(-.20f, -.02f, 0), new Vector3(-.34f, .04f, 0), .03f, 11);
-        EquipmentRod(b, new Vector3(-.34f, .04f, 0), new Vector3(-.34f, -.22f, 0), .03f, 11);
-        EquipmentRod(b, new Vector3(-.34f, -.22f, 0), new Vector3(-.20f, -.20f, 0), .03f, 11);
+        EquipmentRod(b, new Vector3(-.20f, -.02f, 0), new Vector3(-.34f, .04f, 0), .03f, 6);
+        EquipmentRod(b, new Vector3(-.34f, .04f, 0), new Vector3(-.34f, -.22f, 0), .03f, 6);
+        EquipmentRod(b, new Vector3(-.34f, -.22f, 0), new Vector3(-.20f, -.20f, 0), .03f, 6);
         Ring(b, new Vector3(0, -.10f, -.11f), .14f, .2f, .02f, 9, 12);
+        Ring(b, new Vector3(0, -.10f, .113f), .14f, .2f, .02f, 9, 12);
     }
 
     // Three swept fletching fins around a short shaft.
