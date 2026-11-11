@@ -1,4 +1,5 @@
 ﻿import bpy, math, os, sys
+import bmesh
 from mathutils import Vector
 
 # Burst launcher: a flared mortar cup over a transverse ammunition drum.
@@ -88,7 +89,7 @@ def cup():
     parts.append(obj)
 
 # Body and axial drum: round faces are visible front and back.
-box('Drum cradle', (0, -0.22, 0), (0.51, 0.34, 0.32), 2, 0.045)
+box('Drum cradle', (0, -0.22, 0), (0.51, 0.34, 0.306), 2, 0.045)
 cylinder('Orange ammunition drum', (0, -0.20, 0), 0.245, 0.32, 0, vertices=12)
 for s in (-1, 1):
     cylinder('Steel drum rim', (0, -0.20, s*0.17), 0.251, 0.055, 4, vertices=12)
@@ -115,6 +116,12 @@ bpy.ops.object.join()
 model = bpy.context.object
 model.name = 'Model'
 bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+surface = bmesh.new()
+surface.from_mesh(model.data)
+bmesh.ops.recalc_face_normals(surface, faces=surface.faces)
+surface.to_mesh(model.data)
+surface.free()
+model.data.update()
 tri = model.modifiers.new('Triangulate', 'TRIANGULATE')
 bpy.ops.object.modifier_apply(modifier=tri.name)
 
