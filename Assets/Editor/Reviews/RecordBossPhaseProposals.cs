@@ -206,7 +206,7 @@ public sealed class BossPhaseProposalRecording : MonoBehaviour
     static DistrictBoss FindLeadBoss(int phase)
     {
         DistrictBoss best = null;
-        foreach (var boss in FindObjectsByType<DistrictBoss>(FindObjectsSortMode.None))
+        foreach (var boss in FindObjectsByType<DistrictBoss>())
             if (boss.health > 0 && (best == null || boss.CurrentPhase > best.CurrentPhase))
                 best = boss;
         return best;
