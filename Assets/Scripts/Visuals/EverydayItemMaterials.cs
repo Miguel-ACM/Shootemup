@@ -215,6 +215,9 @@ public static class EverydayItemMaterials
             case nameof(Tripod):
                 color = new Color(.56f, .65f, .29f);
                 return true;
+            case nameof(RelaySwitch):
+                color = new Color(.29f, .49f, .71f);
+                return true;
             case "CursedCoin":
                 color = new Color(.5f, .9f, .42f);
                 return true;

@@ -14,6 +14,8 @@ public sealed class LoadoutHUD : MonoBehaviour
     Transform studio;
     RectTransform[] panels = new RectTransform[4];
     OctagonGraphic[] rims = new OctagonGraphic[4];
+    OctagonGraphic[] weaponSeams = new OctagonGraphic[2];
+    CombatUpgrades upgrades;
     Text[] names = new Text[4];
     Image[] keys = new Image[4];
     CooldownDial[] dials = new CooldownDial[4];
@@ -29,6 +31,7 @@ public sealed class LoadoutHUD : MonoBehaviour
     void Start()
     {
         loadout = GetComponent<ShipLoadout>();
+        upgrades = GetComponent<CombatUpgrades>();
         font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         var root = new GameObject("Octagonal loadout instruments", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
         canvas = root.GetComponent<Canvas>();
@@ -55,6 +58,8 @@ public sealed class LoadoutHUD : MonoBehaviour
             var seam = Plate(p, "Inset seam", size - 13, new Color(.19f, .27f, .29f), 1);
             if (active)
                 seam.GetComponent<OctagonGraphic>().color = ActiveColors[i - 2];
+            else
+                weaponSeams[i] = seam.GetComponent<OctagonGraphic>();
             Plate(p, "Top bevel", size - 6, new Color(.62f, .72f, .72f, .22f), 1).GetComponent<OctagonGraphic>().shade = 1;
             if (active)
             {
@@ -137,6 +142,8 @@ public sealed class LoadoutHUD : MonoBehaviour
                 rims[i].color = Color.Lerp(Amber, Steel, .2f + .2f * Mathf.Sin(Time.time * 10));
             if (!selected && !active && loadout.Weapons[i] is WindUpCannon cannon && cannon.Charging)
                 rims[i].color = Color.Lerp(Steel, Cyan, Mathf.Clamp01(cannon.Charge / 1.2f));
+            if (!active)
+                weaponSeams[i].color = upgrades != null && upgrades.RelayReady(i) ? Cyan : new Color(.19f, .27f, .29f);
             names[i].enabled = false;
             if (active)
             {

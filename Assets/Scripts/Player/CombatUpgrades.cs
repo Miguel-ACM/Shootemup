@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public enum UpgradeKind
 {
-    Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice
+    Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice, RelaySwitch
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -15,6 +15,8 @@ public sealed class CombatUpgrades : MonoBehaviour
     readonly Dictionary<UpgradeKind, int> stacks = new Dictionary<UpgradeKind, int>();
     readonly Dictionary<string, float> gates = new Dictionary<string, float>();
     Shipcontroller ship;
+    ShipLoadout loadout;
+    readonly float[] relayCharge = new float[2], relayBurst = new float[2];
     float capacitor, battery, reserve, focusUntil;
     int volleys, focus, coins, blocks;
     AEnemy focused;
@@ -32,6 +34,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         gameObject.AddComponent<UpgradeMeters>();
         Current = this;
         ship = GetComponent<Shipcontroller>();
+        loadout = GetComponent<ShipLoadout>();
         _ = GameInput.Actions;
     }
 
@@ -47,6 +50,11 @@ public sealed class CombatUpgrades : MonoBehaviour
         stacks[kind] = Mathf.Max(0, Count(kind) - 1);
         if (kind == UpgradeKind.Reserve)
             reserve = Count(kind) > 0 ? reserve : 0;
+        if (kind == UpgradeKind.RelaySwitch && Count(kind) == 0)
+        {
+            ResetRelaySlot(0);
+            ResetRelaySlot(1);
+        }
     }
     public static float HostileSpeedAt(Vector3 position)
     {
@@ -73,6 +81,8 @@ public sealed class CombatUpgrades : MonoBehaviour
     {
         if (GameRules.playerDisabled)
             return;
+        if (loadout != null && Count(UpgradeKind.RelaySwitch) > 0 && GameClock.ActivePlay)
+            UpdateRelay();
         if (Count(UpgradeKind.Capacitor) > 0 && !GameInput.Snapshot.Primary && !GameInput.Snapshot.Secondary)
         {
             float previous = capacitor;
@@ -84,6 +94,39 @@ public sealed class CombatUpgrades : MonoBehaviour
                 ItemSpark.Emit(transform.position + Vector3.up * .7f, new Color(.5f, .9f, .7f), 4, .1f);
             }
         }
+    }
+
+    void UpdateRelay()
+    {
+        var input = GameInput.Snapshot;
+        if (input.Primary == input.Secondary || loadout.Weapons[0] == null || loadout.Weapons[1] == null)
+            return;
+        int firing = input.Primary ? 0 : 1;
+        int idle = 1 - firing;
+        float dt = GameClock.PlayerDelta;
+        relayBurst[firing] = Mathf.Max(0, relayBurst[firing] - dt);
+        if (relayCharge[firing] >= 1)
+        {
+            relayCharge[firing] = 0;
+            relayBurst[firing] = .6f;
+            ItemSound.Cue("itemCapReady", "ready", .07f, 1.25f);
+        }
+        if (!loadout.Weapons[idle].FiresOnEitherTrigger && relayBurst[idle] <= 0)
+            relayCharge[idle] = Mathf.Min(1, relayCharge[idle] + dt * Count(UpgradeKind.RelaySwitch) / 1.25f);
+    }
+
+    public bool RelayReady(int slot) => relayCharge[slot] >= 1;
+    public void ResetRelaySlot(int slot) => relayCharge[slot] = relayBurst[slot] = 0;
+
+    public float RelayRate(AWeapon weapon)
+    {
+        if (loadout == null || Count(UpgradeKind.RelaySwitch) == 0 || loadout.Weapons[0] == null || loadout.Weapons[1] == null)
+            return 1;
+        int slot = weapon == loadout.Weapons[0] ? 0 : weapon == loadout.Weapons[1] ? 1 : -1;
+        if (slot < 0 || relayBurst[slot] <= 0)
+            return 1;
+        var input = GameInput.Snapshot;
+        return (slot == 0 ? input.Primary && !input.Secondary : input.Secondary && !input.Primary) ? 2 : 1;
     }
 
     bool Ready(string key, float cooldown)

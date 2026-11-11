@@ -18,6 +18,7 @@ public static partial class IndustrialMeshFactory
             case "LoadedDice": LoadedDiceModel(b); break;
             case nameof(Bookmark): BookmarkModel(b); break;
             case nameof(Tripod): TripodModel(b); break;
+            case nameof(RelaySwitch): RelaySwitchModel(b); break;
             default: return false;
         }
         return true;
@@ -50,5 +51,21 @@ public static partial class IndustrialMeshFactory
         b.Box(new Vector3(0, .31f, -.04f), new Vector3(.13f, .36f, .13f), 11);
         b.Box(new Vector3(0, .49f, -.04f), new Vector3(.18f, .085f, .18f), 6);
         b.Box(new Vector3(0, .1f, -.183f), new Vector3(.145f, .075f, .036f), 9);
+    }
+
+    static void RelaySwitchModel(Builder b)
+    {
+        b.Box(new Vector3(0, -.15f, .035f), new Vector3(.68f, .46f, .27f), 11, 6);
+        b.Box(new Vector3(0, -.12f, -.12f), new Vector3(.57f, .35f, .085f), 6, 11);
+        for (int side = -1; side <= 1; side += 2)
+        {
+            b.Box(new Vector3(side * .25f, .15f, -.015f), new Vector3(.13f, .25f, .17f), 11);
+            b.Box(new Vector3(side * .25f, .27f, -.014f), new Vector3(.18f, .085f, .2f), 9);
+            b.Box(new Vector3(side * .22f, -.2f, -.169f), new Vector3(.06f, .08f, .02f), side < 0 ? 7 : 3);
+        }
+        b.Drum(new Vector3(0, -.055f, -.17f), .11f, .08f, 9, 8, 11);
+        b.Prism(new[] { new Vector2(-.055f, -.01f), new Vector2(.06f, -.04f), new Vector2(.22f, .39f),
+            new Vector2(.105f, .41f) }, .12f, 6, new Vector3(0, 0, -.245f), 11);
+        b.Box(new Vector3(.16f, .39f, -.243f), new Vector3(.24f, .11f, .17f), 3, 11);
     }
 }

@@ -28,10 +28,11 @@ public abstract class AWeapon : MonoBehaviour
 
     protected WeaponInput weaponInput;
     protected bool Coupled => RedlineDrive.Drives(this) || (CombatUpgrades.Current != null && CombatUpgrades.Current.Count(UpgradeKind.DoubleTrouble) > 0);
-    protected float ActiveRate => RedlineDrive.Drives(this) ? 1.75f : 1;
+    protected float ActiveRate => (RedlineDrive.Drives(this) ? 1.75f : 1) * (CombatUpgrades.Current?.RelayRate(this) ?? 1);
     public bool IsCarbonCopy { get; set; }
     protected WeaponInput EffectiveInput => Coupled ? WeaponInput.both : weaponInput;
     public WeaponInput Slot => weaponInput;
+    internal bool FiresOnEitherTrigger => EffectiveInput == WeaponInput.both;
     public virtual void StopFiring()
     {
         CancelInvoke();

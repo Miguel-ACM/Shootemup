@@ -123,6 +123,7 @@ public sealed class ShipLoadout : MonoBehaviour
     void RemoveWeapon(int slot)
     {
         GetComponent<RunInventory>()?.ForgetEquipment(AItem.ItemType.weapon, slot);
+        GetComponent<CombatUpgrades>()?.ResetRelaySlot(slot);
         var old = Weapons[slot];
         Weapons[slot] = null;
         if (old == null)
