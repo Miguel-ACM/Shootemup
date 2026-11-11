@@ -30,8 +30,8 @@ def material(index, color):
 
 ivory = material(0, (0.78, 0.84, 0.79))
 light = material(1, (0.91, 0.94, 0.87))
-orange = material(2, (0.96, 0.32, 0.10))
-orange_light = material(3, (1.0, 0.47, 0.16))
+yellow = material(2, (0.94, 0.68, 0.10))
+yellow_light = material(3, (1.0, 0.82, 0.25))
 slate = material(4, (0.25, 0.35, 0.37))
 metal = material(5, (0.53, 0.64, 0.63))
 parts = []
@@ -73,8 +73,8 @@ def cross(name, z, depth, mat):
 box('Case body', (0,-0.045,0), (0.76,0.58,0.30), ivory, 0.055)
 box('Front panel', (0,-0.045,0.151), (0.66,0.48,0.045), light, 0.038)
 box('Back panel', (0,-0.045,-0.151), (0.66,0.48,0.045), light, 0.038)
-cross('Front medical cross', 0.186, 0.030, orange)
-cross('Back medical cross', -0.186, 0.030, orange)
+cross('Front medical cross', 0.186, 0.030, yellow)
+cross('Back medical cross', -0.186, 0.030, yellow)
 # Chunky protective corner caps make the profile unmistakably a case.
 for x in (-0.335, 0.335):
     for y in (-0.275, 0.185):
@@ -87,8 +87,8 @@ box('Handle grip', (0,0.378,0), (0.36,0.075,0.13), slate, 0.018)
 box('Grip inset', (0,0.392,0), (0.22,0.055,0.135), metal, 0.01)
 # Large, simple side markings read while the pickup spins.
 for side in (-1,1):
-    box('Side badge', (side*0.383,-0.045,0), (0.035,0.24,0.18), orange, 0.012)
-    box('Side badge stripe', (side*0.402,-0.045,0), (0.012,0.075,0.16), orange_light, 0.004)
+    box('Side badge', (side*0.383,-0.045,0), (0.035,0.24,0.18), yellow, 0.012)
+    box('Side badge stripe', (side*0.402,-0.045,0), (0.012,0.075,0.16), yellow_light, 0.004)
 
 bpy.ops.object.select_all(action='DESELECT')
 for ob in parts:

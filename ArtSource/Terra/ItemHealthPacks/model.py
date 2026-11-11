@@ -28,7 +28,7 @@ def material(index, color):
 
 ivory = material(0, (0.78, 0.84, 0.78))
 light = material(1, (0.92, 0.94, 0.84))
-orange = material(2, (0.96, 0.31, 0.075))
+yellow = material(2, (0.94, 0.68, 0.10))
 slate = material(3, (0.37, 0.48, 0.48))
 cap = material(4, (0.58, 0.68, 0.66))
 
@@ -55,13 +55,13 @@ def block(name, loc, size, mat, bevel=0.0):
 for side in (-1, 1):
     x, y, z = side * 0.205, side * 0.075, side * 0.055
     block('Pack shell', (x, y, z), (0.36, 0.50, 0.25), ivory, 0.035)
-    # Raised light face panels provide a clean field for the bold orange cross.
+    # Raised light face panels frame the yellow cross.
     for face in (-1, 1):
         fz = z + face * 0.132
         block('Face panel', (x, y, fz), (0.292, 0.410, 0.026), light, 0.018)
         cross_z = z + face * 0.151
-        block('Cross vertical', (x, y, cross_z), (0.075, 0.245, 0.023), orange, 0.006)
-        block('Cross horizontal', (x, y, cross_z), (0.225, 0.075, 0.023), orange, 0.006)
+        block('Cross vertical', (x, y, cross_z), (0.075, 0.245, 0.023), yellow, 0.006)
+        block('Cross horizontal', (x, y, cross_z), (0.225, 0.075, 0.023), yellow, 0.006)
     # A broad neck and cap give the packs their original bottle-like outline.
     block('Neck', (x, y + 0.259, z), (0.15, 0.050, 0.145), slate, 0.010)
     block('Cap', (x, y + 0.290, z), (0.18, 0.055, 0.17), cap, 0.012)

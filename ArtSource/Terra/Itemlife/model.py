@@ -24,11 +24,11 @@ def material(name, color):
     bsdf.inputs['Roughness'].default_value = 0.76
     return mat
 
-# The shipped atlas uses an off-white face with a red cross, red sides,
+# The shipped atlas uses an off-white face with a yellow cross, red sides,
 # and a black plastic handle.
 red = material('tile_00', (0.70, 0.035, 0.035))
 white = material('tile_01', (0.88, 0.86, 0.81))
-cross_red = material('tile_02', (0.78, 0.045, 0.045))
+cross_yellow = material('tile_02', (0.94, 0.68, 0.10))
 handle = material('tile_03', (0.085, 0.09, 0.10))
 parts = []
 
@@ -53,7 +53,7 @@ bevel_box('Case', (0, -0.06, 0), (0.92, 0.66, 0.40), red, 0.045)
 # The light-colored face replaces the original atlas tile with real geometry.
 bevel_box('Face', (0, -0.06, 0.198), (0.872, 0.612, 0.018), white, 0.018)
 
-# A single raised, bevelled plus, matching the red cross on the shipped tile.
+# A single raised, bevelled plus, matching the yellow cross on the shipped tile.
 def make_cross():
     a, x, y = 0.075, 0.325, 0.235
     outline = [(-a,-y),(a,-y),(a,-a),(x,-a),(x,a),(a,a),
@@ -68,7 +68,7 @@ def make_cross():
     mesh.update()
     obj = bpy.data.objects.new('Cross', mesh)
     bpy.context.collection.objects.link(obj)
-    obj.data.materials.append(cross_red)
+    obj.data.materials.append(cross_yellow)
     bpy.ops.object.select_all(action='DESELECT')
     obj.select_set(True)
     bpy.context.view_layer.objects.active = obj

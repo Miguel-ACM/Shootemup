@@ -295,7 +295,7 @@ def exploding():
     return m
 
 def health():
-    m = model('e3e2d3', 'd55331')
+    m = model('e3e2d3', 'f0ad1a')
     m.box((0, 0, 0), (0.8, 0.62, 0.27), 0, bevel=0.07)
     m.box((0, 0, -0.15), (0.65, 0.48, 0.03), 5, bevel=0.025)
     m.box((0, 0, -0.18), (0.16, 0.39, 0.04), 3)

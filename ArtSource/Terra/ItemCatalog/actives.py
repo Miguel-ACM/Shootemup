@@ -67,7 +67,7 @@ def DecoyProjector():
     return m
 
 def HealthPacks():
-    m = Model('d9e2d5', 'd65a38')
+    m = Model('d9e2d5', 'f0ad1a')
     for x, y in [(-0.16, -0.04), (0.16, 0.06)]:
         m.box((x, y, 0), (0.32, 0.51, 0.2), 0, bevel=0.05)
         m.box((x, y + 0.28, 0), (0.18, 0.07, 0.16), 6, bevel=0.02)
@@ -340,7 +340,7 @@ def LiveWire():
     return m
 
 def life():
-    m = Model('b83337', 'f0eee2')
+    m = Model('b83337', 'f0ad1a')
     m.box((0, -0.02, 0), (0.62, 0.45, 0.25), 0, bevel=0.07)
     m.box((0, -0.02, -0.14), (0.51, 0.35, 0.035), 5, bevel=0.035)
     cross(m, 0, -0.02, -0.17, 0.25, 3)
