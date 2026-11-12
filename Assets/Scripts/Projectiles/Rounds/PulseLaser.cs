@@ -142,10 +142,10 @@ public class PulseLaser : CombatRound
         var player = CombatVisuals.Player;
         if (Active && power > .15f && player != null)
         {
-            Vector2 delta = player.position - transform.position;
-            float along = Vector2.Dot(delta, heading), across = Mathf.Abs(delta.x * heading.y - delta.y * heading.x);
-            // Like the rounds, a beam hurts only within the inner part of its glow.
-            if (along >= 0 && along <= visibleLength && across < width * power * .5f * ProjectilePixelContact.HitboxScale + .1f)
+            // Use the actual cockpit collider, including its offset and Shrinker, with no extra halo.
+            float radius = width * power * .5f * ProjectilePixelContact.HitboxScale;
+            if (BeamContact.Touches(player.GetComponent<Collider2D>(), transform.position,
+                transform.position + (Vector3)heading * visibleLength, radius, out _))
                 player.SendMessage("ReceiveHazardDamage", damage, SendMessageOptions.DontRequireReceiver);
         }
         if (sideShots)

@@ -4,7 +4,7 @@ using UnityEngine;
 // behaviour of an ordinary round and slowly turns so the spikes read as alive.
 public sealed class GiantOrb : CombatRound
 {
-    public override float HitboxScale => .25f;
+    public override float HitboxScale => .125f;
     const float WarningTime = .24f;
     bool sideSpray;
     float sideSpeed, sideCadence, nextRelease, sideWarning;

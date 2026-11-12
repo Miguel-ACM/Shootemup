@@ -74,7 +74,7 @@ public sealed partial class TunnelSawBoss : DistrictBoss
         transform.position = p;
         if (inward.sqrMagnitude > 0)
             ImpactBurst(inward.normalized);
-        if (player != null && Vector2.Distance(player.position, p) < r)
+        if (player != null && Vector2.Distance(CombatVisuals.PlayerHitPoint, p) < r)
             player.SendMessage("ReceiveHazardDamage", 14f, SendMessageOptions.DontRequireReceiver);
     }
 

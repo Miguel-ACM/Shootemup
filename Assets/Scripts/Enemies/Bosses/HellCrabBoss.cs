@@ -112,10 +112,10 @@ public sealed partial class HellCrabBoss : DistrictBoss
             }
             if (trail)
                 ClawTrail(i);
-            if (drawing && player != null && Vector2.Distance(player.position, claws[i].TransformPoint(new Vector3(0, -.45f, 0))) < 1.25f)
+            if (drawing && player != null && Vector2.Distance(CombatVisuals.PlayerHitPoint, claws[i].TransformPoint(new Vector3(0, -.45f, 0))) < 1.25f)
                 player.SendMessage("ReceiveHazardDamage", 18f, SendMessageOptions.DontRequireReceiver);
         }
-        if (player != null && Vector2.Distance(player.position, transform.position) < 1.55f)
+        if (player != null && Vector2.Distance(CombatVisuals.PlayerHitPoint, transform.position) < 1.55f)
             player.SendMessage("ReceiveHazardDamage", 18f, SendMessageOptions.DontRequireReceiver);
     }
 

@@ -218,8 +218,9 @@ public abstract class CombatRound : AEnemyBullet
             contact.isTrigger = true;
             contact.radius = shot.localCollisionRadius;
             shot.collision = contact;
-            shot.UsesPixelContact = true;
         }
+        // Plasma keeps its full shootable shell, but only its reduced core hurts the pilot.
+        shot.UsesPixelContact = true;
         ProjectileSpriteTint.Apply(go, shot.Accent);
         shot.tint = go.GetComponent<ProjectileSpriteTint>();
         CreatedCount++;

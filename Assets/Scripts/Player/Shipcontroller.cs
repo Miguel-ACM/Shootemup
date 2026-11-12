@@ -18,7 +18,7 @@ public class Shipcontroller : MonoBehaviour
     [SerializeField] private ResourceBar manaBar;
     // Health counts whole hits: every hit removes one segment, whatever fired it.
     public const int StartingHits = 5;
-    public const float HitboxScale = .5f;
+    public const float HitboxScale = .25f;
     public float maxHealth = StartingHits;
     public float health = StartingHits;
     public float maxMana = 100f;

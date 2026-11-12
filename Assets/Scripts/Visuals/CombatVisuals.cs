@@ -8,6 +8,17 @@ public static class CombatVisuals
     static Material lineMaterial;
     static Material projectileMaterial;
     static Transform player;
+    static Collider2D playerContact;
+    public static Vector2 PlayerHitPoint
+    {
+        get
+        {
+            var pilot = Player;
+            if (pilot == null) return Vector2.zero;
+            if (playerContact == null) playerContact = pilot.GetComponent<Collider2D>();
+            return playerContact != null ? (Vector2)playerContact.bounds.center : (Vector2)pilot.position;
+        }
+    }
     public static Transform Player
     {
         get
@@ -26,6 +37,7 @@ public static class CombatVisuals
     static void ResetTarget()
     {
         player = null;
+        playerContact = null;
         projectileMaterial = null;
     }
 

@@ -149,7 +149,7 @@ public sealed partial class AbyssSubmarineBoss : DistrictBoss
                 ChargeWake(ChargeTrails);
             }
             // The whole pressure hull rams: contact anywhere on it hurts.
-            if (player != null && Mathf.Abs(player.position.x - transform.position.x) < 1.0f * hullScale && Mathf.Abs(player.position.y - transform.position.y) < 2.0f * hullScale)
+            if (player != null && Mathf.Abs(CombatVisuals.PlayerHitPoint.x - transform.position.x) < 1.0f * hullScale && Mathf.Abs(CombatVisuals.PlayerHitPoint.y - transform.position.y) < 2.0f * hullScale)
                 player.SendMessage("ReceiveHazardDamage", 18f, SendMessageOptions.DontRequireReceiver);
         }
         else

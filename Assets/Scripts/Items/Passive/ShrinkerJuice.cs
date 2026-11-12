@@ -39,6 +39,7 @@ public sealed class ShrunkShip : MonoBehaviour
         GetComponent<PSXShipVisual>()?.ScaleHull(factor);
         var polygon = GetComponent<PolygonCollider2D>();
         if (polygon != null)
+        {
             for (int i = 0; i < polygon.pathCount; i++)
             {
                 var points = polygon.GetPath(i);
@@ -46,6 +47,8 @@ public sealed class ShrunkShip : MonoBehaviour
                     points[j] *= factor;
                 polygon.SetPath(i, points);
             }
+            ProjectilePixelContact.Invalidate(polygon);
+        }
         var circle = GetComponent<CircleCollider2D>();
         if (circle != null)
             circle.radius *= factor;

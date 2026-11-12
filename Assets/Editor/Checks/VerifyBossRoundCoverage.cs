@@ -181,9 +181,9 @@ public sealed class BossRoundCoverageRuntime : MonoBehaviour
             Vector2 delta = target - shot.transform.position;
             if (shot is PulseLaser beam)
             {
-                float along = Vector2.Dot(delta, beam.Heading), across = Mathf.Abs(delta.x * beam.Heading.y - delta.y * beam.Heading.x);
-                if (beam.IsFiring && beam.Power > .15f && along >= 0 && along <= beam.length &&
-                    across < beam.width * beam.Power * .5f * ProjectilePixelContact.HitboxScale + .1f) return "beam";
+                if (beam.IsFiring && beam.Power > .15f && BeamContact.Touches(probe, beam.transform.position,
+                    beam.transform.position + (Vector3)beam.Heading * beam.length,
+                    beam.width * beam.Power * .5f * ProjectilePixelContact.HitboxScale, out _)) return "beam";
             }
             else if (shot.UsesPixelContact && delta.sqrMagnitude < 9 && shot.PixelOverlaps(probe)) return shot.GetType().Name;
         }

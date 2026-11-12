@@ -8,15 +8,16 @@ public static class ProjectilePixelContact
 {
     // Box2D's polygon skin is present even when the authored box radius is zero.
     public const float PolygonSkin = .01f;
-    // Hostile rounds hurt only within the inner 60% of their opaque pixels, measured from the round's centre,
+    // Hostile rounds hurt only within the inner 30% of their opaque pixels, measured from the round's centre,
     // so the coloured rim of a bullet can graze the ship, Touhou style.
-    public const float HitboxScale = .6f;
+    public const float HitboxScale = .3f;
     sealed class Shape
     {
         public Vector2[] local, projected;
     }
 
     static readonly Dictionary<Collider2D, Shape> shapes = new Dictionary<Collider2D, Shape>();
+    public static void Invalidate(Collider2D target) => shapes.Remove(target);
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void Reset()
     {
@@ -28,11 +29,13 @@ public static class ProjectilePixelContact
         if (target == null || !target.enabled || !target.gameObject.activeInHierarchy)
             return false;
         float bulletScale = Mathf.Max(.00001f, Mathf.Abs(bullet.lossyScale.x)) * hitboxScale;
+        // Native polygon padding is useful for blockers, but must not enlarge the pilot's core.
+        float contactSkin = target.CompareTag("Player") ? 0 : PolygonSkin;
         if (target is CircleCollider2D circle)
         {
             Vector2 centre = (Vector2)bullet.InverseTransformPoint(circle.transform.TransformPoint(circle.offset)) / hitboxScale;
             var scale = circle.transform.lossyScale;
-            float radius = (circle.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y)) + PolygonSkin) / bulletScale;
+            float radius = (circle.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y)) + contactSkin) / bulletScale;
             foreach (var box in boxes)
             {
                 float x = Mathf.Clamp(centre.x, box.xMin, box.xMax), y = Mathf.Clamp(centre.y, box.yMin, box.yMax);
@@ -57,7 +60,7 @@ public static class ProjectilePixelContact
             shapes[target] = shape;
         }
         Matrix4x4 matrix = Matrix4x4.Scale(Vector3.one / hitboxScale) * bullet.worldToLocalMatrix * target.transform.localToWorldMatrix;
-        float skin = 2 * PolygonSkin / bulletScale;
+        float skin = 2 * contactSkin / bulletScale;
         float minX = float.MaxValue, minY = float.MaxValue, maxX = float.MinValue, maxY = float.MinValue;
         for (int i = 0; i < shape.local.Length; i++)
         {

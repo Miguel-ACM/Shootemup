@@ -164,7 +164,7 @@ public sealed class VoidGiantsReviewRuntime : MonoBehaviour
     {
         var giant = CombatRound.Launch<GiantOrb>(Vector3.zero, Vector2.down, 0, .7f);
         var ordinary = CombatRound.Launch<SimpleRound>(new Vector3(9, 9), Vector2.down, 0);
-        Check(giant.HitboxScale == .25f && ordinary.HitboxScale == .6f, "Giant hitboxes use 25% of artwork size; ordinary rounds retain 60%.");
+        Check(giant.HitboxScale == .125f && ordinary.HitboxScale == .3f, "Giant hitboxes use 12.5% of artwork size; ordinary rounds use 30%.");
         Check(giant.GetComponent<SpriteRenderer>().sortingOrder < ordinary.GetComponent<SpriteRenderer>().sortingOrder &&
             giant.GetComponent<SpriteRenderer>().sortingLayerName == "Bullet", "Giant artwork sits behind smaller hostile rounds, still above the player hull.");
         var native = new GameObject("Scaled authored giant pixel reference");
@@ -203,7 +203,7 @@ public sealed class VoidGiantsReviewRuntime : MonoBehaviour
         Destroy(native); Destroy(circleObject); Destroy(polygonObject); Destroy(boxObject);
         release.Invoke(giant, null);
         var reused = CombatRound.Launch<GiantOrb>(Vector3.zero, Vector2.down, 0, .7f);
-        Check(ReferenceEquals(giant,reused) && reused.HitboxScale == .25f && reused.GetComponent<CircleCollider2D>().radius < .19f,
+        Check(ReferenceEquals(giant,reused) && reused.HitboxScale == .125f && reused.GetComponent<CircleCollider2D>().radius < .1f,
             "Pooled giants retain the compact native broad phase and exact small hitbox.");
     }
 }
