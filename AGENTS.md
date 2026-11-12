@@ -242,6 +242,7 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - Death shows huge GAME OVER letters with the coins the run banked, switches the instruments off with the startup flicker in reverse, then returns to the hangar (30 October 2026; previously the title).
 - The title's first row reads PLAY and opens three independent save files (12 November 2026). Keep existing progress in File 1. Show completion and compact progress details on each card. Put its deletion bin at the top right and require a confirmation dialog, initially focused on Cancel.
 - Save cards use a tall portrait layout, with a drawing and clearly grouped completion, collection and flight records.
+- Render the level's opening title beneath the pause menu UI.
 
 ## Hangar and campaign completion (2 November 2026)
 

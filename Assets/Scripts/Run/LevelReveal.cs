@@ -30,7 +30,8 @@ public sealed class LevelReveal : MonoBehaviour
 
         var canvas = gameObject.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 32000;
+        // Gameplay overlays sit below the pause menu's canvas at order 20.
+        canvas.sortingOrder = 19;
         var scaler = gameObject.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1280, 720);
