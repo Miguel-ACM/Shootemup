@@ -53,9 +53,6 @@ public sealed partial class HangarHub
     int focusPortal = -1;
     int room = -1, selection, band;
     bool operating;
-    const float SimulatorInputDelay = .45f;
-    float simulatorInputAt;
-    bool simulatorInputArmed;
     DockInstrument instrument;
 
     public static Vector3 ConstrainTravel(Vector3 previous, Vector3 desired)
@@ -482,9 +479,6 @@ public sealed partial class HangarHub
             if (operating && !Menu.GameplayPaused)
             {
                 var move = GameInput.Snapshot.Move;
-                if (room == (int)Dock.Simulator && !ReadySimulatorInput(Time.unscaledTime,
-                    input.PlayerControls.Accept.IsPressed(), input.PlayerControls.Back.IsPressed(), move))
-                    move = Vector2.zero;
                 RefreshConsoleFooter();
                 var seat = Spot(Desk() + Vector2.down * 2.17f, p.z);
                 player.transform.position = Vector3.Lerp(p, seat, 1 - Mathf.Exp(-9 * Time.deltaTime));
@@ -505,22 +499,13 @@ public sealed partial class HangarHub
         return room >= 0;
     }
 
-    bool ReadySimulatorInput(float now, bool confirmHeld, bool backHeld, Vector2 move)
-    {
-        // A press during the settling interval is consumed, even if held past it.
-        // Flight steering must also return to neutral before it can browse tapes.
-        if (!simulatorInputArmed && now >= simulatorInputAt && !confirmHeld && !backHeld && move.sqrMagnitude < .24f)
-            simulatorInputArmed = true;
-        return simulatorInputArmed;
-    }
-
     bool UseDock(InputAction.CallbackContext ctx, Vector3 p)
     {
         if (room < 0)
             return false;
         bool primary = ctx.action == input.PlayerControls.Accept;
         bool secondary = ctx.action == input.PlayerControls.Back;
-        if (operating && room == (int)Dock.Simulator && !simulatorInputArmed)
+        if ((primary || secondary) && !Menu.ConsumePress(ctx))
             return true;
         if (secondary && operating)
         {
@@ -546,11 +531,6 @@ public sealed partial class HangarHub
                 ItemSound.Play("ready", .12f);
                 operating = true;
                 HoldingShip = true;
-                if (room == (int)Dock.Simulator)
-                {
-                    simulatorInputArmed = false;
-                    simulatorInputAt = Time.unscaledTime + SimulatorInputDelay;
-                }
                 repeatAt = Time.unscaledTime + .3f;
                 RenderPage();
             }

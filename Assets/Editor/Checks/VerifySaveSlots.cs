@@ -7,6 +7,7 @@ using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using Object = UnityEngine.Object;
@@ -29,10 +30,11 @@ public static class VerifySaveSlots
         try
         {
             Persistence();
+            PressEdges();
             Presentation();
             Departure();
             File.WriteAllText("ReviewOutput/SaveSlots.txt", "PASS\n" + checks +
-                " checks covering original saves, independent slots, summaries, recovery, deletion, menu input locks, confirmation and departure fade state.\n");
+                " checks covering saves, deletion, per-press menu dispatch, immediate fresh input, confirmation and departure fade state.\n");
             VerifyCleanCompilation.Run();
         }
         catch (Exception e)
@@ -115,16 +117,15 @@ public static class VerifySaveSlots
         Invoke(menu, "Start");
         Invoke(entry, "Start");
         Check(entry.GetComponentInChildren<TextMeshProUGUI>().text == "PLAY", "Title uses PLAY");
+        var doubleClick = new PointerEventData(EventSystem.current) { button = PointerEventData.InputButton.Left, clickCount = 2 };
+        entry.OnPointerClick(doubleClick);
+        Check(!menu.Suspended, "The second click of a mouse double-click does not activate a title row");
         menu.TryAccept(entry);
-        Check(Object.FindAnyObjectByType<SaveSelectMenu>() == null, "Title entry lock ignores an immediate press");
-        InputLock(menu);
-        menu.TryAccept(entry);
-        var selector = Object.FindAnyObjectByType<SaveSelectMenu>();
-        Check(selector != null && menu.Suspended, "PLAY opens a modal save submenu");
-        typeof(SaveSelectMenu).GetField("openedFrame", Instance).SetValue(selector, -1);
-        selector.Activate(0, true);
+        var selector = menu.SavePicker;
+        Check(selector != null && menu.Suspended, "PLAY responds immediately and gives its save page ownership of input");
+        selector.GetComponentsInChildren<SaveSlotButton>().First(b => b.Bin && b.Index == 0).OnPointerClick(doubleClick);
         Check(selector.GetComponentsInChildren<TextMeshProUGUI>().All(t => t.text != "DELETE FILE 1?"),
-            "A rapid second activation cannot carry into the save page");
+            "The second click of a mouse double-click does not open a delete dialog");
         Check(selector.GetComponentsInChildren<SaveSlotButton>().Count(b => !b.Bin && b.Index < 3) == 3, "Exactly three selectable files");
         Check(selector.GetComponentsInChildren<SaveSlotButton>().Count(b => b.Bin) == 2, "Occupied files have their own bin");
         var cards = selector.GetComponentsInChildren<SaveSlotButton>().Where(b => !b.Bin && b.Index < 3).OrderBy(b => b.Index).ToArray();
@@ -173,40 +174,79 @@ public static class VerifySaveSlots
             InputSystem.RemoveDevice(pad);
             InputSystem.settings.SetInternalFeatureFlag("RUN_PLAYER_UPDATES_IN_EDIT_MODE", false);
         }
-        Ready(selector);
         selector.Activate(0, true);
         Check(selector.GetComponentsInChildren<TextMeshProUGUI>().Any(t => t.text == "DELETE FILE 1?"), "Confirmation identifies the file");
         Check(!(bool)typeof(SaveSelectMenu).GetField("confirmErase", Instance).GetValue(selector), "Cancel receives default focus");
         Layout(selector);
-        Ready(selector);
         selector.Activate(4, false);
         Check(File.ReadAllText(PathFor(1)) == before, "Cancel preserves progress");
-        Ready(selector);
         selector.Activate(0, true);
-        Ready(selector);
         selector.Activate(5, false);
         Check(!MetaProgress.InspectSlot(1).Exists && MetaProgress.InspectSlot(2).Readable, "Confirmed bin deletes only its file");
-        Ready(selector);
         selector.Activate(3, false);
         Check(!menu.Suspended && menu.CurrentElement == entry, "Back restores title navigation");
-        Check(!menu.InputReady, "Back locks the restored title against a second press");
         menu.TryAccept(entry);
-        Check(!menu.Suspended, "A rapid confirm cannot reopen the save picker after Back");
+        Check(menu.Suspended && menu.SavePicker != null, "A fresh click can immediately reopen the save picker after Back");
+        menu.SavePicker.Back();
+        Check(!menu.Suspended && menu.SavePicker == null, "Back immediately returns ownership to the title");
     }
 
-    static void InputLock(Menu menu)
+    static void PressEdges()
     {
-        menu.LockInput();
-        float deadline = (float)typeof(Menu).GetField("inputReadyAt", Instance).GetValue(menu);
-        var release = typeof(Menu).GetMethod("ReleaseInputLock", Instance);
-        release.Invoke(menu, new object[] { deadline - .01f, false, Vector2.zero });
-        Check(!menu.InputReady, "Releasing early does not bypass the settling delay");
-        release.Invoke(menu, new object[] { deadline + .1f, true, Vector2.zero });
-        Check(!menu.InputReady, "A held or newly repeated press stays blocked after the delay");
-        release.Invoke(menu, new object[] { deadline + .2f, false, Vector2.up });
-        Check(!menu.InputReady, "Carried navigation must return to neutral");
-        release.Invoke(menu, new object[] { deadline + .3f, false, Vector2.zero });
-        Check(menu.InputReady, "Released controls arm the next deliberate action");
+        var pad = InputSystem.AddDevice<Gamepad>();
+        var keyboard = InputSystem.AddDevice<Keyboard>();
+        using var first = new InputAction("First page", InputActionType.Button, "<Gamepad>/buttonWest");
+        using var second = new InputAction("Second page", InputActionType.Button, "<Gamepad>/buttonWest");
+        first.AddBinding("<Keyboard>/escape");
+        second.AddBinding("<Keyboard>/escape");
+        int accepted = 0, deliveries = 0;
+        bool duplicatesIgnored = true;
+        void Receive(UnityEngine.InputSystem.InputAction.CallbackContext context)
+        {
+            deliveries++;
+            if (Menu.ConsumePress(context)) accepted++;
+            duplicatesIgnored &= !Menu.ConsumePress(context);
+        }
+        first.performed += Receive;
+        second.performed += Receive;
+        try
+        {
+            InputSystem.settings.SetInternalFeatureFlag("RUN_PLAYER_UPDATES_IN_EDIT_MODE", true);
+            first.Enable();
+            second.Enable();
+            double time = InputState.currentTime;
+            void Pad(GamepadState state, double after)
+            {
+                InputSystem.QueueStateEvent(pad, state, time + after);
+                InputSystem.Update();
+            }
+            var heldStick = new GamepadState { leftStick = Vector2.up };
+            Pad(heldStick.WithButton(GamepadButton.West), 0);
+            Check(accepted == 1 && deliveries == 2, "Shared bindings consume one controller press only once");
+            Pad(heldStick.WithButton(GamepadButton.West), .005);
+            Check(accepted == 1, "Holding confirm never repeats on the next page");
+            Pad(heldStick.WithButton(GamepadButton.West, false), .01);
+            Pad(heldStick.WithButton(GamepadButton.West), .02);
+            Check(accepted == 2 && deliveries == 4, "A fresh press 20 ms later works while the stick is still held");
+            Pad(heldStick.WithButton(GamepadButton.West, false), .025);
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Escape), time + .03);
+            InputSystem.Update();
+            Check(accepted == 3 && deliveries == 6, "Shared keyboard Back/Start binding cannot act twice");
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(), time + .04);
+            InputSystem.Update();
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Escape), time + .05);
+            InputSystem.Update();
+            Check(accepted == 4 && deliveries == 8, "A fresh keyboard press is accepted without a cooldown");
+            Check(duplicatesIgnored, "Repeated delivery of each physical press was ignored");
+        }
+        finally
+        {
+            first.Disable();
+            second.Disable();
+            InputSystem.RemoveDevice(pad);
+            InputSystem.RemoveDevice(keyboard);
+            InputSystem.settings.SetInternalFeatureFlag("RUN_PLAYER_UPDATES_IN_EDIT_MODE", false);
+        }
     }
 
     static void Departure()
@@ -235,17 +275,10 @@ public static class VerifySaveSlots
         Object.DestroyImmediate(selector.gameObject);
     }
 
-    static void Ready(SaveSelectMenu selector)
-    {
-        typeof(SaveSelectMenu).GetField("openedFrame", Instance).SetValue(selector, -1);
-        var menu = (Menu)typeof(SaveSelectMenu).GetField("menu", Instance).GetValue(selector);
-        typeof(Menu).GetMethod("ReleaseInputLock", Instance).Invoke(menu, new object[] { float.MaxValue, false, Vector2.zero });
-    }
     static void Move(SaveSelectMenu menu, Gamepad pad, GamepadState state)
     {
         InputSystem.QueueStateEvent(pad, state);
         InputSystem.Update();
-        Ready(menu);
         Invoke(menu, "Update");
     }
     static void Invoke(object target, string method) => target.GetType().GetMethod(method, Instance).Invoke(target, null);

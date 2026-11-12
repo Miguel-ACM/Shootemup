@@ -80,7 +80,7 @@ public abstract class AMenuElement : MonoBehaviour, IPointerEnterHandler, IPoint
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Left)
+        if (eventData.button == PointerEventData.InputButton.Left && eventData.clickCount <= 1)
             menu.TryAccept(this);
     }
 }

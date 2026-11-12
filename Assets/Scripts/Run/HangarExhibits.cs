@@ -72,7 +72,6 @@ public sealed partial class HangarHub
     void RefreshConsoleFooter()
     {
         if (!operating) { consoleFooter.text = ""; return; }
-        consoleFooter.color = room == (int)Dock.Simulator && !simulatorInputArmed ? DockInstrument.Muted : DockInstrument.Paper;
         string back = DockInstrument.MenuKey(true);
         consoleFooter.text = (Dock)room switch
         {

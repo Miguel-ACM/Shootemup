@@ -17,7 +17,7 @@ public sealed class SaveSelectMenu : MonoBehaviour
     RectTransform page, dialog;
     TextMeshProUGUI status;
     Image back, cancel, erase;
-    int selected, deleteSlot, openedFrame;
+    int selected, deleteSlot;
     bool binSelected, confirmErase, heldMove, closing;
     float age;
     CanvasGroup fade;
@@ -30,6 +30,7 @@ public sealed class SaveSelectMenu : MonoBehaviour
         selector.menu = menu;
         selector.font = font;
         selector.selected = MetaProgress.CurrentSlot - 1;
+        menu.SavePicker = selector;
         menu.Suspended = true;
         selector.titleGroup = menu.GetComponent<CanvasGroup>();
         selector.titleGroup.alpha = 0;
@@ -62,9 +63,7 @@ public sealed class SaveSelectMenu : MonoBehaviour
         back = Target(page, "Back", new Vector2(0, -320), new Vector2(220, 44), 3, false);
         Label(back.transform, "BACK", Vector2.zero, new Vector2(210, 34), 17, DockInstrument.Paper);
         RefreshCards();
-        menu.LockInput();
-        openedFrame = Time.frameCount;
-        heldMove = true;
+        heldMove = GameInput.Actions.PlayerControls.Move.ReadValue<Vector2>().sqrMagnitude > .3f;
     }
 
     void RefreshCards()
@@ -124,7 +123,7 @@ public sealed class SaveSelectMenu : MonoBehaviour
         if (closing) return;
         age += Time.unscaledDeltaTime;
         fade.alpha = Mathf.SmoothStep(0, 1, age / .18f);
-        if (!menu.InputReady || Time.frameCount <= openedFrame || CloudTransition.Busy) return;
+        if (CloudTransition.Busy) return;
         var controls = GameInput.Actions.PlayerControls;
         var move = controls.Move.ReadValue<Vector2>();
         bool moving = move.sqrMagnitude > .3f;
@@ -151,16 +150,22 @@ public sealed class SaveSelectMenu : MonoBehaviour
             }
             PaintFocus();
         }
-        if (controls.Back.WasPressedThisFrame())
-        {
-            if (dialog != null) CancelDelete();
-            else Close();
-        }
-        else if (controls.Accept.WasPressedThisFrame())
-        {
-            if (dialog != null) ChooseDelete(confirmErase);
-            else Activate(selected, binSelected);
-        }
+    }
+
+    // Menu dispatches the original event to exactly one page. Polling
+    // WasPressedThisFrame here used to replay the press that opened this page.
+    public void Accept()
+    {
+        if (closing || CloudTransition.Busy) return;
+        if (dialog != null) ChooseDelete(confirmErase);
+        else Activate(selected, binSelected);
+    }
+
+    public void Back()
+    {
+        if (closing || CloudTransition.Busy) return;
+        if (dialog != null) CancelDelete();
+        else Close();
     }
 
     public void FocusTarget(int index, bool bin)
@@ -181,7 +186,7 @@ public sealed class SaveSelectMenu : MonoBehaviour
 
     public void Activate(int index, bool bin)
     {
-        if (closing || !menu.InputReady || Time.frameCount <= openedFrame || CloudTransition.Busy) return;
+        if (closing || CloudTransition.Busy) return;
         if (dialog != null)
         {
             if (index >= 4) ChooseDelete(index == 5);
@@ -194,7 +199,6 @@ public sealed class SaveSelectMenu : MonoBehaviour
         if (bin) OpenDelete(index + 1);
         else
         {
-            menu.LockInput();
             if (MetaProgress.SelectSlot(index + 1))
                 entry.PlaySelectedSlot();
             else status.text = "COULD NOT OPEN FILE " + (index + 1);
@@ -204,7 +208,6 @@ public sealed class SaveSelectMenu : MonoBehaviour
     void OpenDelete(int slot)
     {
         if (!slots[slot - 1].Exists) return;
-        menu.LockInput();
         deleteSlot = slot;
         confirmErase = false;
         page.gameObject.SetActive(false);
@@ -216,13 +219,11 @@ public sealed class SaveSelectMenu : MonoBehaviour
         erase = Target(face, "Delete", new Vector2(145, -69), new Vector2(250, 46), 5, false);
         Label(cancel.transform, "CANCEL", Vector2.zero, new Vector2(240, 36), 17, DockInstrument.Paper);
         Label(erase.transform, "DELETE", Vector2.zero, new Vector2(240, 36), 17, DockInstrument.Paper);
-        openedFrame = Time.frameCount;
         PaintFocus();
     }
 
     void ChooseDelete(bool confirmed)
     {
-        if (!menu.InputReady || Time.frameCount <= openedFrame) return;
         if (confirmed)
         {
             bool deleted = MetaProgress.DeleteSlot(deleteSlot);
@@ -234,13 +235,11 @@ public sealed class SaveSelectMenu : MonoBehaviour
 
     void CancelDelete()
     {
-        menu.LockInput();
         dialog.gameObject.SetActive(false);
         Destroy(dialog.gameObject);
         dialog = null;
         page.gameObject.SetActive(true);
         binSelected = false;
-        openedFrame = Time.frameCount;
         PaintFocus();
     }
 
@@ -263,7 +262,7 @@ public sealed class SaveSelectMenu : MonoBehaviour
     void Close()
     {
         closing = true;
-        menu.LockInput();
+        menu.SavePicker = null;
         menu.Suspended = false;
         titleGroup.alpha = 1;
         titleGroup.blocksRaycasts = true;
@@ -279,6 +278,12 @@ public sealed class SaveSelectMenu : MonoBehaviour
         titleGroup.interactable = titleGroup.blocksRaycasts = false;
         fade.interactable = fade.blocksRaycasts = false;
         StartCoroutine(FadeForDeparture());
+    }
+
+    void OnDestroy()
+    {
+        if (menu != null && menu.SavePicker == this)
+            menu.SavePicker = null;
     }
 
     System.Collections.IEnumerator FadeForDeparture()
@@ -346,6 +351,6 @@ public sealed class SaveSlotButton : MonoBehaviour, IPointerEnterHandler, IPoint
     public void OnPointerEnter(PointerEventData eventData) => Owner.FocusTarget(Index, Bin);
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Left) Owner.Activate(Index, Bin);
+        if (eventData.button == PointerEventData.InputButton.Left && eventData.clickCount <= 1) Owner.Activate(Index, Bin);
     }
 }

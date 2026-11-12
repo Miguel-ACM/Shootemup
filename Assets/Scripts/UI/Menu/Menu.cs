@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 public class Menu : MonoBehaviour
 {
     static int handledFrame = -1;
+    static readonly Dictionary<InputControl, double> consumedPresses = new Dictionary<InputControl, double>();
     public static bool HandledInputThisFrame => handledFrame == Time.frameCount;
     SettingsEntry settings;
     public static bool GameplayPaused
@@ -19,6 +21,7 @@ public class Menu : MonoBehaviour
     {
         GameplayPaused = false;
         handledFrame = -1;
+        consumedPresses.Clear();
     }
 
     private AMenuElement[] menuElements;
@@ -34,9 +37,7 @@ public class Menu : MonoBehaviour
     private bool inputProcessed = false;
     private bool menuOpen = false;
     private CanvasGroup canvasGroup;
-    const float InputDelay = .45f;
-    float inputReadyAt;
-    public bool InputReady { get; private set; }
+    public SaveSelectMenu SavePicker { get; set; }
     public bool Suspended
     {
         get; set;
@@ -45,21 +46,15 @@ public class Menu : MonoBehaviour
     public bool IsOpen => menuOpen;
     public void RefreshElements() => menuElements = GetComponentsInChildren<AMenuElement>();
 
-    // Shared with modal pages, so one press cannot carry across a page change.
-    public void LockInput()
+    // Identify the physical press, not a cooldown. Shared bindings (such as
+    // Escape's Back/Start) and repeated delivery can only use that press once.
+    public static bool ConsumePress(InputAction.CallbackContext context)
     {
-        InputReady = false;
-        inputReadyAt = Time.unscaledTime + InputDelay;
-        inputProcessed = true;
-    }
-
-    void ReleaseInputLock(float now, bool pressed, Vector2 steering)
-    {
-        if (!InputReady && now >= inputReadyAt && !pressed && steering.sqrMagnitude < .24f)
-        {
-            InputReady = true;
-            inputProcessed = false;
-        }
+        if (context.control == null) return false;
+        if (consumedPresses.TryGetValue(context.control, out double started) && started == context.startTime)
+            return false;
+        consumedPresses[context.control] = context.startTime;
+        return true;
     }
 
     [SerializeField] private bool alwaysOpen = false;
@@ -114,17 +109,16 @@ public class Menu : MonoBehaviour
 
     void ToggleMenu(InputAction.CallbackContext context)
     {
-        if (!isActiveAndEnabled || !InputReady || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput) return;
+        if (!isActiveAndEnabled || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput || !ConsumePress(context)) return;
         handledFrame = Time.frameCount;
-        LockInput();
         if (menuOpen && context.control.device is Keyboard && settings != null && settings.TryBack()) return;
         setMenuOpen(!menuOpen);
     }
     void OnBack(InputAction.CallbackContext context)
     {
-        if (!isActiveAndEnabled || !menuOpen || !InputReady || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput) return;
+        if (!isActiveAndEnabled || !menuOpen || Suspended && SavePicker == null || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput || !ConsumePress(context)) return;
         handledFrame = Time.frameCount;
-        LockInput();
+        if (SavePicker != null) { SavePicker.Back(); return; }
         if (settings != null && settings.TryBack()) return;
         if (!alwaysOpen)
             setMenuOpen(false);
@@ -136,18 +130,7 @@ public class Menu : MonoBehaviour
 
     void Update()
     {
-        // Keep polling while a modal page owns the menu. A short tap wholly
-        // inside this frame must not arm the next page either.
-        if (!InputReady)
-        {
-            var controls = input.PlayerControls;
-            bool pressed = controls.Accept.IsPressed() || controls.Accept.WasPressedThisFrame() ||
-                controls.Back.IsPressed() || controls.Back.WasPressedThisFrame() ||
-                controls.Start.IsPressed() || controls.Start.WasPressedThisFrame() ||
-                Mouse.current != null && (Mouse.current.leftButton.isPressed || Mouse.current.leftButton.wasPressedThisFrame);
-            ReleaseInputLock(Time.unscaledTime, pressed, controls.Move.ReadValue<Vector2>());
-        }
-        if (menuOpen && !Suspended && InputReady)
+        if (menuOpen && !Suspended)
         {
             if (move.y != 0 && !inputProcessed)
             {
@@ -181,7 +164,6 @@ public class Menu : MonoBehaviour
 
     public void setMenuOpen(bool open)
     {
-        LockInput();
         if (!alwaysOpen)
             GameplayPaused = open;
         menuOpen = open;
@@ -206,15 +188,17 @@ public class Menu : MonoBehaviour
 
     void OnAccept(InputAction.CallbackContext context)
     {
+        if (!isActiveAndEnabled || !menuOpen || Suspended && SavePicker == null || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput || !ConsumePress(context)) return;
+        handledFrame = Time.frameCount;
+        if (SavePicker != null) { SavePicker.Accept(); return; }
         TryAccept(CurrentElement);
     }
 
     public void TryAccept(AMenuElement element)
     {
-        if (!isActiveAndEnabled || !menuOpen || !InputReady || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput || element == null || Array.IndexOf(menuElements, element) < 0)
+        if (!isActiveAndEnabled || !menuOpen || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput || element == null || Array.IndexOf(menuElements, element) < 0)
             return;
         handledFrame = Time.frameCount;
-        LockInput();
         setCurrentElement(element);
         element.OnAccept();
     }
