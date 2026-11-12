@@ -28,6 +28,8 @@ public sealed class ThunderLaserBot : MonoBehaviour
     }
     float age, length, width, armAt = 1.5f;
     PulseLaser beam;
+    public Vector2 BeamHeading => beam != null && beam.IsAttachedTo(transform) ? beam.Heading : aim;
+    public Vector2 BeamOrigin => beam != null && beam.IsAttachedTo(transform) ? (Vector2)beam.transform.position : home;
     Transform model;
     bool leaving, open;
     SpriteRenderer glow, tip;

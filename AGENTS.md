@@ -243,6 +243,7 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - The title's first row reads PLAY and opens three independent save files (12 November 2026). Keep existing progress in File 1. Show completion and compact progress details on each card. Put its deletion bin at the top right and require a confirmation dialog, initially focused on Cancel.
 - Save cards use a tall portrait layout, with a drawing and clearly grouped completion, collection and flight records.
 - Render the level's opening title beneath the pause menu UI.
+- Thunder's first-phase boss follows the moving opening between its lasers so the player can keep shooting it without crossing a live beam. Preserve the laser swing and later phases.
 
 ## Hangar and campaign completion (2 November 2026)
 

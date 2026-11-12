@@ -32,10 +32,33 @@ public sealed partial class ThunderLanceBoss : DistrictBoss
     protected override Vector2 CueAxis => Vector2.down;
     protected override void MoveBoss(float dt)
     {
-        // A laser owns a stationary lane through its entire charge and release.
-        station.x = RotorCount > 0 ? transform.position.x : Mathf.Sin(motionAge * .55f) * 1.9f;
+        // Follow the live star's lower opening, including its slow reversals and recharge.
+        // Later phases retain their independent patrol above the marching lattice.
+        station.x = !phaseTwo ? StarFiringLane() : RotorCount > 0 ? transform.position.x : Mathf.Sin(motionAge * .55f) * 1.9f;
         station.y = Camera.UpLimit - 2.4f;
         transform.position = Vector3.MoveTowards(transform.position, station, dt * 3.3f);
+    }
+
+    float StarFiringLane()
+    {
+        var hub = new Vector2(0, Middle + .8f);
+        // Intersect the two bordering beams with the lower flight area. Clipping the
+        // opening to the screen keeps the hull reachable at either end of the swing.
+        float row = Camera.DownLimit + 2;
+        float Boundary(int index)
+        {
+            var heading = CombatVisuals.Rotate(Vector2.down, index * 60);
+            var origin = hub + heading;
+            if (drones.Count == 6 && drones[index] != null)
+            {
+                heading = drones[index].BeamHeading;
+                origin = drones[index].BeamOrigin;
+            }
+            return origin.x + (row - origin.y) * heading.x / Mathf.Min(-.01f, heading.y);
+        }
+        float left = Mathf.Max(Camera.LeftLimit + .4f, Boundary(5) + .4f);
+        float right = Mathf.Min(Camera.RightLimit - .4f, Boundary(0) - .4f);
+        return Mathf.Clamp((left + right) * .5f, -1.9f, 1.9f);
     }
 
     void Beam(int index)
