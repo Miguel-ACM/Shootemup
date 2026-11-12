@@ -143,6 +143,9 @@ public static class VerifyItemUnlocks
         // Simulate a process closing before the result screen. The actual saved queue is authoritative.
         Reload();
         Check(Items(MetaProgress.PendingUnlocks) == 3 && MetaProgress.IsUnlocked("PolarityEngine"), "Earned immediately before run end");
+        Check(MetaProgress.PendingUnlocks[0].key == RouteUnlocks.Key(LevelId.Space), "The route is revealed before items");
+        MetaProgress.DismissUnlock(RouteUnlocks.Key(LevelId.Space)); Reload();
+        Check(MetaProgress.RouteOpen(LevelId.Space), "Dismissing the route notice keeps it open");
         string first = MetaProgress.PendingUnlocks[0].key;
         MetaProgress.DismissUnlock("not-the-front");
         Check(Items(MetaProgress.PendingUnlocks) == 3, "Only the visible tag can be acknowledged");
@@ -183,45 +186,50 @@ public static class VerifyItemUnlocks
     static int Items(IEnumerable<ItemUnlockNotice> notices) => notices.Count(n => !RouteUnlocks.IsRoute(n.key));
     static void CheckRoutes()
     {
+        VerifyRunProgression.Run();
         Fresh();
+        var starting = new[] { LevelId.Fields, LevelId.Snow, LevelId.Thunder, LevelId.City, LevelId.Tunnel };
         foreach (LevelId area in Enum.GetValues(typeof(LevelId)))
-            Check(MetaProgress.RouteOpen(area) == RouteUnlocks.OnFirstRoute(area), "Fresh save flies only the first route: " + area);
-        Begin(LevelId.Snow, RunDifficulty.Easy);
-        MetaProgress.EngageBoss(); MetaProgress.DefeatBoss();
-        Check(!MetaProgress.RouteOpen(LevelId.City) && !MetaProgress.RouteOpen(LevelId.Tunnel), "Districts opened mid-run wait for the next flight");
-        MetaProgress.EndRun("Lost");
-        Check(MetaProgress.RouteOpen(LevelId.City) && MetaProgress.RouteOpen(LevelId.Tunnel) && !MetaProgress.RouteOpen(LevelId.Candyland), "Snow boss opens City with Tunnel on any difficulty");
-        Check(MetaProgress.PendingUnlocks.Any(n => n.key == RouteUnlocks.Key(LevelId.City) && n.area == LevelId.City), "District tag queued with its own stamp");
-        Begin(LevelId.Snow, RunDifficulty.Normal);
-        MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
-        Check(MetaProgress.LastFlight.unlocks.All(n => !RouteUnlocks.IsRoute(n.key)), "A district is announced once");
-        Fresh(); Begin(LevelId.Thunder, RunDifficulty.Normal);
-        MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Victory");
-        Check(MetaProgress.RouteOpen(LevelId.Space) && MetaProgress.RouteOpen(LevelId.Desert) &&
-            !MetaProgress.RouteOpen(LevelId.Underwater) && !MetaProgress.RouteOpen(LevelId.Hell), "Thunder opens Space and Desert only");
-        Check(!MetaProgress.CanFly(ShipFrame.Lancer), "A campaign ending before Hell commissions no ship");
-        Begin(LevelId.Space, RunDifficulty.Normal);
-        MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
-        Check(MetaProgress.RouteOpen(LevelId.Hell) && !MetaProgress.RouteOpen(LevelId.Underwater), "Space opens Hell, not Underwater");
-        foreach (var side in new[] { LevelId.Desert, LevelId.Tunnel, LevelId.Candyland })
-            Check(RouteUnlocks.OpenedBy(side).Contains(LevelId.Underwater), side + " opens Underwater");
-        Begin(LevelId.Hell, RunDifficulty.Easy);
-        MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Victory");
-        Check(MetaProgress.CanFly(ShipFrame.Lancer), "A campaign ending at Hell commissions the next ship");
-        foreach (LevelId area in Enum.GetValues(typeof(LevelId)))
-            if (!RouteUnlocks.OnFirstRoute(area))
-                Check(Enum.GetValues(typeof(LevelId)).Cast<LevelId>().Any(from => RouteUnlocks.OpenedBy(from).Contains(area)), "Every district can be opened: " + area);
+            Check(MetaProgress.RouteOpen(area) == starting.Contains(area), "Fresh save has both starting branches: " + area);
+        var unlocks = new[]
+        {
+            (LevelId.Snow, LevelId.Desert), (LevelId.City, LevelId.Candyland),
+            (LevelId.Thunder, LevelId.Space), (LevelId.Desert, LevelId.Space),
+            (LevelId.Tunnel, LevelId.Underwater), (LevelId.Candyland, LevelId.Underwater),
+            (LevelId.Space, LevelId.Heaven), (LevelId.Underwater, LevelId.Hell),
+            (LevelId.Heaven, LevelId.Void), (LevelId.Hell, LevelId.Void)
+        };
+        foreach (var (from, next) in unlocks)
+        {
+            Fresh(); Begin(from, RunDifficulty.Easy);
+            MetaProgress.EngageBoss(); MetaProgress.DefeatBoss();
+            Check(!MetaProgress.RouteOpen(next) && MetaProgress.RouteOpensNextFlight(next), "New route waits for the next flight: " + next);
+            MetaProgress.EndRun("Victory");
+            foreach (LevelId area in Enum.GetValues(typeof(LevelId)))
+                Check(MetaProgress.RouteOpen(area) == (starting.Contains(area) || area == next), from + " opens only " + next);
+            var tags = MetaProgress.LastFlight.unlocks.Where(n => RouteUnlocks.IsRoute(n.key)).ToArray();
+            Check(tags.Length == 1 && tags[0].key == RouteUnlocks.Key(next) && tags[0].area == next &&
+                tags[0].Requirement == RouteUnlocks.Requirement(from), "One route tag with the correct destination and source");
+            Check(MetaProgress.CanFly(ShipFrame.Lancer) == (next == LevelId.Void), "Either fifth-tier victory can commission the next ship");
+            Begin(from, RunDifficulty.Normal);
+            Check(MetaProgress.RouteOpen(next) && !MetaProgress.RouteOpensNextFlight(next), "Opened route is flyable on the next flight");
+            MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
+            Check(MetaProgress.LastFlight.unlocks.All(n => !RouteUnlocks.IsRoute(n.key)), "A district is announced once");
+        }
         foreach (var trial in FlightTrials.All)
         {
             Fresh(); FlightTrials.Active = trial; Begin(trial.district, trial.difficulty);
             MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Certified");
-            Check(Enum.GetValues(typeof(LevelId)).Cast<LevelId>().All(a => MetaProgress.RouteOpen(a) == RouteUnlocks.OnFirstRoute(a)), "Simulator never opens districts");
+            Check(Enum.GetValues(typeof(LevelId)).Cast<LevelId>().All(a => MetaProgress.RouteOpen(a) == starting.Contains(a)), "Simulator never opens districts");
         }
         FlightTrials.Active = null;
         Fresh();
-        File.WriteAllText(Path.Combine(saveDirectory, "hangar.json"), "{\"version\":3,\"coins\":5,\"routes\":[\"City\",\"Void\"],\"unlocked\":[\"Popcorn\"],\"stock\":[],\"loadout\":[]}");
+        File.WriteAllText(Path.Combine(saveDirectory, "hangar.json"), "{\"version\":3,\"coins\":5,\"routes\":[\"Desert\",\"Void\"],\"unlocked\":[\"Popcorn\"],\"stock\":[],\"loadout\":[]}");
         Reload();
-        Check(!MetaProgress.RouteOpen(LevelId.City) && !MetaProgress.RouteOpen(LevelId.Void) && MetaProgress.Coins == 5, "Older saves restart on the first route");
+        Check(!MetaProgress.RouteOpen(LevelId.Desert) && !MetaProgress.RouteOpen(LevelId.Void) && MetaProgress.Coins == 5, "Pre-route saves use the starting branches");
+        File.WriteAllText(Path.Combine(saveDirectory, "hangar.json"), "{\"version\":5,\"coins\":5,\"routes\":[\"Desert\",\"Void\"],\"unlocked\":[\"Popcorn\"],\"stock\":[],\"loadout\":[]}");
+        Reload();
+        Check(MetaProgress.RouteOpen(LevelId.Desert) && MetaProgress.RouteOpen(LevelId.Void) && MetaProgress.Coins == 5, "Current saves keep earned routes and coins");
     }
     static void CheckModels()
     {

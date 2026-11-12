@@ -152,6 +152,12 @@ public sealed class LevelChoice : MonoBehaviour
                 image.sprite = Resources.Load<Sprite>("DockArt/RoutePadlock");
                 image.color = new Color(.8f, .86f, .9f, .8f);
                 image.raycastTarget = false;
+                if (MetaProgress.RouteOpensNextFlight(Options[i]))
+                {
+                    contents[i].anchoredPosition = Vector2.up * 13;
+                    image.color = Color.Lerp(accent, Color.white, .35f);
+                    Text(half, "NEXT FLIGHT", 12, Vector2.down * 24, image.color);
+                }
             }
             else
             {

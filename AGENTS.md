@@ -56,7 +56,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 
 ## District and boss identities
 
-- Miguel's route diagram is authoritative: Plains -> Snow or City. Snow -> Desert or Thunder; City -> Tunnel or Candyland. Each of those four third-tier districts -> Space or Underwater. Space and Underwater -> Hell. Hell -> harder Plains after its boss item. Preserve equipment, coins, score and seed. Adjacent districts share tier scaling; early districts are easier and Hell is the hardest.
+- Miguel's latest route diagram is authoritative (see Route unlocks below). Preserve equipment, coins, score and seed through district travel. Adjacent districts share tier scaling.
 
 - Snow: many large shells that explode into smaller bullets; a very round boss with several patterns and a harder second phase.
 - Latest Snow feedback: reduce the boss's health; its base health is now 2100 rather than 3200, with the same phase patterns and run scaling.
@@ -267,16 +267,16 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - Lancer's cockpit glass is orange with warm amber highlights, including its hangar portrait. Keep the blue hull and violet laser lens.
 - The Snow miniboss's falling snow starts above the actual visible top edge, not inside the screen at the gameplay boundary. Preserve its upward muzzle spray and falling pattern.
 
-## Route unlocks (9 November 2026)
+## Route unlocks (12 November 2026)
 
-- Slower campaign progression (latest, 9 November 2026): a fresh save flies only Plains > Snow > Thunder. Beating a boss on any difficulty opens districts from the next run: Snow opens City together with Tunnel (so the City branch never meets two sealed doors), City opens Candyland, Thunder opens Desert and Space, Space opens Hell, Desert, Tunnel or Candyland opens Underwater (only the side districts do), Hell opens Heaven and Heaven opens Void. The simulator never opens districts.
-- A run ends as a victory after the reward of the first boss whose way on is still sealed. Only a campaign that ends at Hell or beyond commissions the next hull; once Void opens, Hell and Heaven continue into it.
-- Sealed routes stay in the route choice as a dark panel with a Python-drawn pixel padlock instead of the name; steering into it rattles the padlock and never charges. New districts are announced through the unlock receipt, boss-clear banner and hangar tag with their tinted district stamp.
-- Every existing save restarted on the first route (save version 4), by Miguel's choice.
+- Plains branches to Snow or City. Snow leads through Thunder or Desert to Space, then Heaven and Void. City leads through Tunnel or Candyland to Underwater, then Hell and Void.
+- Fresh saves can fly Plains, Snow, City, Thunder and Tunnel. Each campaign boss clear on any difficulty opens its sealed exits for the next flight. Previously opened districts stay open. The simulator never opens districts.
+- A single open exit is automatic one second after picking up or skipping the boss item. A run ends as a victory after the reward of the first boss whose way on is still sealed. Heaven, Hell and Void victories can commission the next hull.
+- Sealed choices keep their pixel padlock and rattle. Newly earned routes show NEXT FLIGHT on the choice, get a dedicated stamped banner at the boss clear, and lead the unlock receipt and hangar tags.
 
 ## Heaven and Void expansion (4 November 2026)
 
-- Heaven is Hell's alternative after Space or Underwater. Both Hell and Heaven continue into Void; Void's mandatory boss reward precedes campaign victory. Preserve run equipment, wallet, score and seed throughout.
+- Space leads to Heaven and Underwater leads to Hell. Both Hell and Heaven continue into Void. Preserve run equipment, wallet, score and seed throughout.
 - Heaven has white clouds, yellow and golden details, fences and planted lances evoking a war in Heaven. Give it its own enemies, formations, miniboss and boss. Its defining weapons are giant attached lasers with visible anticipation, graceful widening, beautiful VFX and SFX.
 - Latest Heaven boss direction (4 November 2026): make it a biblical angel with eye-covered rings rotating around its core. Use interlocking golden wheels and a living central eye, with attacks attached to the eyes; replace the winged spacecraft model.
 - Latest Heaven/Void polish direction (4 November 2026): improve all of their models and Heaven's background substantially. Favor sculpted volume, distinctive silhouettes and convincing materials over flat plates and repeated buttons. Make Void's forms especially striking, use a wide variety of existing bullet types and distinct attacks, and deliberately attack the top of the screen in every phase. Preserve approved projectile artwork and purple Void fire.

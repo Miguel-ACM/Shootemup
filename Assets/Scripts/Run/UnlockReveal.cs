@@ -13,10 +13,10 @@ public sealed class UnlockReveal : MonoBehaviour
     public static bool BlocksInput => instance != null || closedFrame == Time.frameCount;
     ItemPortraitStudio studio;
     RawImage portrait;
-    Image stamp, districtStamp;
+    Image stamp, districtStamp, rim;
     // Portrait cell per queued tag; district tags have none.
     readonly List<int> cells = new List<int>();
-    TextMeshProUGUI title, category, description, source, counter, footer;
+    TextMeshProUGUI heading, title, category, description, source, counter, footer;
     RectTransform card;
     CanvasGroup fade;
     int index, total, shownFrame;
@@ -47,11 +47,12 @@ public sealed class UnlockReveal : MonoBehaviour
         var aperture = DockInstrument.Block(transform, "Hangar aperture", Vector2.zero, new Vector2(405, 720), new Color(.01f, .025f, .03f, .48f));
         aperture.gameObject.AddComponent<RectMask2D>();
         card = DockInstrument.Block(aperture, "Unlock tag", Vector2.zero, new Vector2(364, 592), DockInstrument.Brass);
+        rim = card.GetComponent<Image>();
         var face = DockInstrument.Block(card, "Enamel", Vector2.zero, new Vector2(358, 586), DockInstrument.Ink);
         DockInstrument.Block(face, "Tag slot", new Vector2(0, 280), new Vector2(35, 5), new Color(.01f, .02f, .025f));
         fade = aperture.gameObject.AddComponent<CanvasGroup>();
         fade.blocksRaycasts = false;
-        UnlockReceipt.Label(face, "UNLOCKED", new Vector2(0, 254), new Vector2(240, 30), 17, DockInstrument.Brass, font);
+        heading = UnlockReceipt.Label(face, "", new Vector2(0, 254), new Vector2(240, 30), 17, DockInstrument.Brass, font);
         counter = UnlockReceipt.Label(face, "", new Vector2(135, 254), new Vector2(56, 20), 11, DockInstrument.Muted, font);
         var keys = UnlockReceipt.ItemKeys(MetaProgress.PendingUnlocks);
         total = MetaProgress.PendingUnlocks.Count;
@@ -77,8 +78,11 @@ public sealed class UnlockReveal : MonoBehaviour
         currentKey = notice.key;
         title.text = notice.title;
         bool district = RouteUnlocks.IsRoute(notice.key);
+        var accent = LevelRun.Accent(notice.area);
+        heading.text = district ? "ROUTE OPEN" : "UNLOCKED";
+        rim.color = district ? accent : DockInstrument.Brass;
         bool known = GalleryShelf.TryGet(notice.key, out var item);
-        category.text = district ? "DISTRICT" : known ? DecisionOverlay.Category(item.category).ToUpperInvariant() : "";
+        category.text = district ? "NEXT FLIGHT" : known ? DecisionOverlay.Category(item.category).ToUpperInvariant() : "";
         description.text = district ? LevelRun.Description(notice.area) : known ? item.description : "";
         source.text = notice.Requirement;
         counter.text = (index + 1) + " / " + total;
@@ -89,7 +93,7 @@ public sealed class UnlockReveal : MonoBehaviour
         stamp.sprite = districtStamp.sprite = Resources.Load<Sprite>("DockArt/Stamp" + notice.area);
         stamp.enabled = !district && stamp.sprite != null;
         districtStamp.enabled = district && districtStamp.sprite != null;
-        districtStamp.color = LevelRun.Accent(notice.area);
+        districtStamp.color = accent;
         age = 0;
         closing = false;
         shownFrame = Time.frameCount;

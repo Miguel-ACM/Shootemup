@@ -193,9 +193,9 @@ public sealed class HeavenVoidReview:MonoBehaviour
         {
             yield return Fixes();yield break;
         }
-        foreach(var from in new[]{LevelId.Space,LevelId.Underwater})foreach(var next in new[]{LevelId.Hell,LevelId.Heaven})
+        foreach(var (from,next) in new[]{(LevelId.Space,LevelId.Heaven),(LevelId.Underwater,LevelId.Hell)})
         {
-            LevelRun.Reset(from,17381);Check(LevelRun.GetOptions().SequenceEqual(new[]{LevelId.Hell,LevelId.Heaven}),from+" offers Hell / Heaven");
+            LevelRun.Reset(from,17381);Check(LevelRun.AutomaticNext==next,from+" automatically continues to "+next);
             LevelRun.Advance(next);Check(LevelRun.AutomaticNext==LevelId.Void,next+" automatically continues to Void");LevelRun.Advance(LevelId.Void);
             Check(LevelRun.FinalDistrict&&LevelRun.Seed==17381&&DistrictWaves.Sequence().SequenceEqual(new[]{"boss"}),"Void preserves seed and contains only boss");
         }

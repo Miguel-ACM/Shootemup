@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,7 +20,7 @@ public sealed class UnlockReceipt : MonoBehaviour
         if (notices == null || notices.Count == 0) return;
         var go = new GameObject("Unlocked items", typeof(RectTransform));
         go.transform.SetParent(parent, false);
-        go.AddComponent<UnlockReceipt>().Build(notices, font, hullRelease);
+        go.AddComponent<UnlockReceipt>().Build(notices.OrderByDescending(n => RouteUnlocks.IsRoute(n.key)).ToArray(), font, hullRelease);
     }
 
     void Build(IReadOnlyList<ItemUnlockNotice> notices, TMP_FontAsset font, string hullRelease)
@@ -31,17 +32,25 @@ public sealed class UnlockReceipt : MonoBehaviour
         pages = Mathf.CeilToInt(notices.Count / (float)PageSize);
         for (int i = 0; i < notices.Count; i++)
         {
+            var notice = notices[i];
+            bool route = RouteUnlocks.IsRoute(notice.key);
             int slot = i % PageSize;
-            var tile = DockInstrument.Block(transform, notices[i].title,
+            var tile = DockInstrument.Block(transform, notice.title,
                 new Vector2(0, -166 - slot * 57), new Vector2(360, 54), DockInstrument.Ink);
             Portrait(tile, studio, notices, i, new Vector2(-151, 0), 44);
-            Label(tile, notices[i].title, new Vector2(26, 15), new Vector2(292, 18), 13, DockInstrument.Paper, font)
+            Label(tile, notice.title, new Vector2(route ? -24 : 26, 15), new Vector2(route ? 192 : 292, 18),
+                13, route ? LevelRun.Accent(notice.area) : DockInstrument.Paper, font)
                 .alignment = TextAlignmentOptions.MidlineLeft;
-            var reason = Label(tile, notices[i].Requirement, new Vector2(26, -9), new Vector2(292, 30), 12, DockInstrument.Muted, font);
+            var reason = Label(tile, notice.Requirement, new Vector2(26, -9), new Vector2(292, 30), 12, DockInstrument.Muted, font);
             reason.name = "Unlock reason";
             reason.alignment = TextAlignmentOptions.MidlineLeft;
             reason.textWrappingMode = TextWrappingModes.Normal;
-            if (!RouteUnlocks.IsRoute(notices[i].key)) Stamp(tile, notices[i], new Vector2(-170, 19), 12);
+            if (route)
+            {
+                DockInstrument.Block(tile, "Route marker", new Vector2(-178, 0), new Vector2(4, 54), LevelRun.Accent(notice.area));
+                Label(tile, "NEW ROUTE", new Vector2(123, 15), new Vector2(103, 18), 11, DockInstrument.Brass, font);
+            }
+            else Stamp(tile, notice, new Vector2(-170, 19), 12);
             tiles.Add(tile.gameObject);
         }
         pagination = Label(transform, "", new Vector2(0, -317), new Vector2(340, 12), 10, DockInstrument.Muted, font);

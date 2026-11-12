@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,7 @@ public static class VerifyLancerAndBossRewards
             CheckLaser();
             CheckSnow();
             CheckRewards();
+            CheckMandatoryHandoff();
             CheckPresentation();
             File.WriteAllText(Folder + "/Verification.txt", "PASS\n" + checks + " checks.\n" +
                 "Actual laser hits, overlapping beams, plasma, damage guards and firing-rate upgrades; Snow miniboss launch positions; boss-clear events and saved unlocks; end-screen reason layout and stacked no-hit labels.\n" +
@@ -166,10 +168,10 @@ public static class VerifyLancerAndBossRewards
                     bool eligible = difficulty != RunDifficulty.Easy;
                     Check(events[0].NoHitLevel == (eligible && hit == 0), "Full-level no-hit qualification");
                     Check(events[0].NoHitBoss == (eligible && hit != 2), "Boss-only no-hit qualification");
-                    // The first Hell clear also opens Heaven.
+                    // The first Hell clear also opens Void.
                     int expected = (!eligible || hit == 2 ? 1 : hit == 1 ? 2 : 3) + 1;
-                    Check(events[0].Unlocks.Count == expected, "Exact newly earned items in centre notice");
-                    Check(events[0].Unlocks.Count(n => n.key == RouteUnlocks.Key(LevelId.Heaven)) == 1, "Hell opens Heaven");
+                    Check(events[0].Unlocks.Count == expected, "Exact newly earned rewards in boss clear notice");
+                    Check(events[0].Unlocks.Count(n => n.key == RouteUnlocks.Key(LevelId.Void)) == 1, "Hell opens Void");
                     Check(MetaProgress.PendingUnlocks.Count == expected, "Victory leaves hangar reveal queue intact");
                     MetaProgress.EndRun("Lost");
                     Check(MetaProgress.LastFlight.unlocks.Count == expected, "End screen keeps all awarded items");
@@ -188,6 +190,31 @@ public static class VerifyLancerAndBossRewards
         finally { MetaProgress.BossCleared -= events.Add; }
     }
 
+    static void CheckMandatoryHandoff()
+    {
+        var go = new GameObject("Route handoff check");
+        var waves = go.AddComponent<WaveOrchestrer>();
+        try
+        {
+            foreach (var from in new[] { LevelId.Thunder, LevelId.Desert, LevelId.Tunnel, LevelId.Candyland,
+                LevelId.Space, LevelId.Underwater, LevelId.Heaven, LevelId.Hell, LevelId.Snow })
+            {
+                LevelRun.Reset(from, 17381);
+                var handoff = (IEnumerator)typeof(WaveOrchestrer).GetMethod("ChooseNextRoute", Instance).Invoke(waves, null);
+                Check(handoff.MoveNext() && handoff.Current is WaitForSeconds && waves.Phase == RunPhase.Routing && CombatDecision.Active,
+                    "Boss reward enters a protected route handoff before travel");
+                float seconds = (float)typeof(WaitForSeconds).GetField("m_Seconds", Instance).GetValue(handoff.Current);
+                Near(seconds, from == LevelId.Snow ? .2f : 1f, "Post-reward handoff from " + from);
+            }
+        }
+        finally
+        {
+            CombatDecision.End();
+            LevelRun.Reset();
+            Object.DestroyImmediate(go);
+        }
+    }
+
     static void CheckPresentation()
     {
         var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/prstartk.asset");
@@ -196,11 +223,13 @@ public static class VerifyLancerAndBossRewards
         }).ToList();
         foreach (var trial in FlightTrials.All)
             notices.Add(new ItemUnlockNotice { key = trial.reward, title = trial.title, source = trial.Requirement });
-        notices.Add(new ItemUnlockNotice { key = RouteUnlocks.Key(LevelId.Void), title = "Void", area = LevelId.Void, source = RouteUnlocks.Requirement(LevelId.Heaven) });
+        var route = new ItemUnlockNotice { key = RouteUnlocks.Key(LevelId.Underwater), title = "Underwater", area = LevelId.Underwater, source = RouteUnlocks.Requirement(LevelId.Tunnel) };
+        notices.Add(route);
         var root = new GameObject("Receipt check", typeof(RectTransform), typeof(Canvas));
         root.GetComponent<RectTransform>().sizeDelta = new Vector2(405, 720);
         UnlockReceipt.Show(root.transform, notices, font);
         var receipt = root.GetComponentInChildren<UnlockReceipt>();
+        Check(receipt.GetComponentsInChildren<TextMeshProUGUI>().Any(l => l.text == "NEW ROUTE"), "New routes take priority on the first receipt page");
         var reasons = root.GetComponentsInChildren<TextMeshProUGUI>(true).Where(t => t.name == "Unlock reason").ToArray();
         Check(reasons.Length == notices.Count, "Every earned item has a reason");
         for (int page = 0; page < Mathf.CeilToInt(notices.Count / 3f); page++)
@@ -222,8 +251,12 @@ public static class VerifyLancerAndBossRewards
         foreach (int marks in new[] { 0, 1, 2 })
         {
             var banner = new GameObject("Banner check", typeof(RectTransform)).AddComponent<BossClearBanner>();
-            Invoke(banner, "Build", new BossClearNotice(marks == 2, marks >= 1, notices.Where(n => n.area == LevelId.Hell).Take(marks + 1).ToList()), font);
+            var unlocked = notices.Where(n => n.area == LevelId.Hell).Take(marks).Prepend(route).ToList();
+            Invoke(banner, "Build", new BossClearNotice(marks == 2, marks >= 1, unlocked), font);
             var labels = banner.GetComponentsInChildren<TextMeshProUGUI>();
+            var routeCard = (RectTransform)banner.transform.Find("Flight area/New route");
+            Check(routeCard != null && routeCard.GetComponentsInChildren<TextMeshProUGUI>().Any(l => l.text == "NEXT FLIGHT"),
+                "New route has a dedicated stamped announcement and clear availability");
             Check(labels.Count(l => l.text.StartsWith("No-hit")) == marks, "Only earned no-hit labels appear");
             if (marks == 2)
                 Check(labels.Single(l => l.text == "No-hit level").rectTransform.anchoredPosition.y >
@@ -233,7 +266,7 @@ public static class VerifyLancerAndBossRewards
             foreach (var label in labels)
             {
                 label.SendMessage("Awake"); label.ForceMeshUpdate(true, true);
-                Check(!label.isTextOverflowing, "Victory text fits: " + label.text);
+                Check(!label.isTextOverflowing && label.textBounds.size.x <= label.rectTransform.rect.width + .1f, "Victory text fits: " + label.text);
             }
             DisposeStudio(banner);
             Object.DestroyImmediate(banner.gameObject);

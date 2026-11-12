@@ -12,9 +12,15 @@ public static class LevelRun
     public static int Seed { get; private set; } = 17381;
     public static int Stage { get; private set; } = 1;
     public static int Loop { get; private set; } = 1;
-    public static bool ReturnsToPlains => false;
     public static bool FinalDistrict => Current == LevelId.Void;
-    public static LevelId? AutomaticNext => Tier(Current) == 5 ? LevelId.Void : (LevelId?)null;
+    public static LevelId? AutomaticNext
+    {
+        get
+        {
+            var options = GetOptions();
+            return options.Length == 1 ? options[0] : (LevelId?)null;
+        }
+    }
     // Health keeps growing after the speed caps preserve readable patterns.
     public static float EnemyHealthScale => (1 + (Tier(Current) - 1) * .16f + (Loop - 1) * .48f) * Difficulty.Health;
     public static float EnemyTempoScale => Mathf.Min(1.3f, 1 + (Tier(Current) - 1) * .04f + (Loop - 1) * .05f) * Difficulty.Tempo;
@@ -122,21 +128,36 @@ public static class LevelRun
         Stage = Tier(level) + (Loop - 1) * 6;
     }
 
-    public static LevelId[] GetOptions()
+    public static LevelId[] GetOptions() => GetOptions(Current);
+
+    public static LevelId[] GetOptions(LevelId from)
     {
-        if (FinalDistrict)
-            return System.Array.Empty<LevelId>();
-        if (Tier(Current) == 5)
-            return new[] { LevelId.Void };
-        if (Tier(Current) == 4)
-            return new[] { LevelId.Hell, LevelId.Heaven };
-        if (Tier(Current) == 3)
-            return new[] { LevelId.Space, LevelId.Underwater };
-        if (Current == LevelId.Snow)
-            return new[] { LevelId.Desert, LevelId.Thunder };
-        if (Current == LevelId.City)
-            return new[] { LevelId.Tunnel, LevelId.Candyland };
-        return new[] { LevelId.Snow, LevelId.City };
+        switch (from)
+        {
+            case LevelId.Fields:
+                return new[] { LevelId.Snow, LevelId.City };
+            case LevelId.Snow:
+                return new[] { LevelId.Thunder, LevelId.Desert };
+            case LevelId.City:
+                return new[] { LevelId.Tunnel, LevelId.Candyland };
+            case LevelId.Thunder:
+            case LevelId.Desert:
+                return new[] { LevelId.Space };
+            case LevelId.Tunnel:
+            case LevelId.Candyland:
+                return new[] { LevelId.Underwater };
+            case LevelId.Space:
+                return new[] { LevelId.Heaven };
+            case LevelId.Underwater:
+                return new[] { LevelId.Hell };
+            case LevelId.Heaven:
+            case LevelId.Hell:
+                return new[] { LevelId.Void };
+            case LevelId.Void:
+                return System.Array.Empty<LevelId>();
+            default:
+                throw new System.ArgumentOutOfRangeException(nameof(from));
+        }
     }
 
     public static Color Accent(LevelId level)

@@ -279,9 +279,9 @@ public sealed class DesertReview : MonoBehaviour
         worm.damage(1000000);
         yield return new WaitForSeconds(5);
         Check(worm == null, "shared hull depletion completes the boss finale");
-        LevelRun.Reset(LevelId.Thunder, 17381);
+        LevelRun.Reset(LevelId.Snow, 17381);
         LevelRun.GetChoices(out var routeLeft, out var routeRight);
-        Check(routeLeft == LevelId.Desert && routeRight == LevelId.Candyland, "third district offers Desert or Candyland");
+        Check(routeLeft == LevelId.Thunder && routeRight == LevelId.Desert, "Snow offers Thunder or Desert");
         var choice = LevelChoice.Open(ship.transform, _ => { });
         yield return new WaitForSeconds(.5f);
         Capture("RouteChoice");
