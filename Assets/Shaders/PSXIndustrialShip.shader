@@ -82,6 +82,7 @@ Shader "Shootemup/PSX Industrial Ship"
             half4 Frag(Varyings input) : SV_Target
             {
                 half4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
+                half3 pigment = color.rgb;
                 if (input.reflection.z > .5) color.rgb = CockpitGlass(color.rgb, input.reflection);
                 #if defined(HULL_AFFLICTED)
                 color.rgb = HullAffliction(color.rgb, input.hullPosition, _HullStatus);
@@ -92,6 +93,11 @@ Shader "Shootemup/PSX Industrial Ship"
                 color.rgb=lerp(color.rgb,half3(1,.88,.63),saturate(_HitFlash)*.88);
                 if(_CockpitBlue>0.5 && input.uv.x<0.25 && input.uv.y>=0.25 && input.uv.y<0.5)
                     color.rgb=lerp(float3(0.01,0.38,1.0),float3(0.36,0.93,1.0),saturate(color.r*2));
+                if (_PlayerDepth > .5 && input.reflection.z > .5)
+                {
+                    color.rgb = PilotCockpitGlass(pigment, input.reflection);
+                    if (_Tint.a > .001) color.a = max(color.a, .95);
+                }
                 // Five bits per channel evokes the original console's colour precision.
                 color.rgb = floor(saturate(color.rgb) * 31.0 + 0.5) / 31.0;
                 return color;

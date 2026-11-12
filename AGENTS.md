@@ -48,6 +48,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 - Iterate models and rendered views. There is no hurry; visual inspection and quality matter.
 - Bring the whole HUD on gradually with an irregular fluorescent-light startup flicker, then leave it steady and readable.
 - Keep player rounds readable without glaring white columns. The latest feedback is that they are too bright.
+- Keep the player's cockpit shiny and steadily readable, including through damage blinking. Use the existing glass shaders, retain each hull's cockpit colour and keep hostile bullets visible above the hull.
 - Choreograph firing as well as movement: shared accents, deliberate rests and coordinated releases within each wave.
 - Remove the segmented laser completely. Thunder drones must not make arbitrary laser links between ships. Beams need visible charge, continuous energy, an attached emitter, a smooth release and appropriate sound.
 - Preserve the snake enemy's flowing character; Miguel likes it.

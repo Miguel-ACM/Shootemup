@@ -24,4 +24,14 @@ half3 CockpitGlass(half3 pigment, float3 reflection)
     glass += half3(.035,.067,.076) * rim;
     return lerp(glass,half3(.93,.98,1),glint * .78);
 }
+
+// The pilot's pane keeps a lit body between reflections, with a dark glass edge.
+// This is unlit colour in the existing pass: no extra light, bloom or geometry.
+half3 PilotCockpitGlass(half3 pigment, float3 reflection)
+{
+    half3 lit = lerp(pigment, half3(1,.98,.90), .38) * .92;
+    half3 glass = max(lit, CockpitGlass(pigment, reflection));
+    half edge = smoothstep(.82,1.08,reflection.y);
+    return lerp(glass, pigment * .38 + half3(.06,.07,.08), edge * .55);
+}
 #endif

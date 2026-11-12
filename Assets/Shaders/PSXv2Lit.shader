@@ -94,6 +94,7 @@ Shader "Shootemup/PSXv2 Lit"
             {
                 float2 uv = lerp(i.uvPersp, i.uvw.xy / i.uvw.z, _Affine);
                 half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
+                half3 pigment = c.rgb;
                 float glow = step(0.625, i.uvPersp.y) * step(i.uvPersp.y, 0.75) * _GlowRow;
                 c.rgb *= lerp(i.light * i.ao * 1.15, 1.0, glow);
                 if (i.reflection.z > .5) c.rgb = CockpitGlass(c.rgb, i.reflection);
@@ -101,6 +102,12 @@ Shader "Shootemup/PSXv2 Lit"
                 c.rgb = HullAffliction(c.rgb, i.hullPosition, _HullStatus);
                 #endif
                 c *= _Tint;
+                if (i.reflection.z > .5 && _PilotCanopy > .5)
+                {
+                    c.rgb = PilotCockpitGlass(pigment, i.reflection);
+                    // Keep the cockpit readable through the hull's hurt flicker.
+                    if (_Tint.a > .001) c.a = max(c.a, .95);
+                }
                 uint2 p = (uint2)i.positionCS.xy & 3;
                 const float bayer[16] = {0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5};
                 float dth = ((bayer[p.y * 4 + p.x] + 0.5) / 16.0 - 0.5) * _Dither / 31.0;
