@@ -246,7 +246,7 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - Save cards use a tall portrait layout, with a drawing and clearly grouped completion, collection and flight records.
 - Render the level's opening title beneath the pause menu UI.
 - Thunder's first-phase boss follows the moving opening between its lasers so the player can keep shooting it without crossing a live beam. Preserve the laser swing and later phases.
-- Faraday side-laser gates in Thunder use two wall-mounted pylons with one sustained beam each and a narrow doorway between them. Ordinary wave two introduces two successive pairs, and waves five, eight and ten use three pairs in the same wave. Charge the next pair before the handoff and keep only one pair's beams damaging at a time. Reserve and count both hulls. Preserve the falling, rising and returning routes and Thunder's boss patterns.
+- Faraday side-laser gates in Thunder use two wall-mounted pylons with one sustained beam each and a narrow doorway between them. The run seed varies which ordinary waves feature chains of two or three pairs, their falling, rising or returning routes, their spacing and their door positions. Spread the chains through the district. Charge the next pair before the handoff and keep only one pair's beams damaging at a time. Reserve and count both hulls. Preserve Thunder's boss patterns.
 
 ## Hangar and campaign completion (2 November 2026)
 

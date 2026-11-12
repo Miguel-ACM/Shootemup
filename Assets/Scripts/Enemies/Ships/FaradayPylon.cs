@@ -197,41 +197,47 @@ public static partial class WavePartLibrary
     static readonly FlightCurve FaradayDescent = Route("Thunder / Faraday descent", Vector2.right, -.93f, 1.18f, -.93f, .9f, -.93f, .62f, -.93f, .34f, -.93f, .06f, -.93f, -.22f);
     static readonly FlightCurve FaradayClimb = Route("Thunder / Faraday climb", Vector2.right, -.93f, -.22f, -.93f, .06f, -.93f, .34f, -.93f, .62f, -.93f, .9f, -.93f, 1.18f);
     static readonly FlightCurve FaradayReturn = Route("Thunder / Faraday return", Vector2.right, -.93f, 1.18f, -.93f, .82f, -.93f, .43f, -.93f, .18f, -.93f, .43f, -.93f, .82f, -.93f, 1.18f);
-    static readonly float[] FaradayDoors = { -.26f, .02f, .28f, .11f, -.15f, -.37f };
+    static readonly float[][] FaradayDoors =
+    {
+        new[] { -.35f, -.08f, .23f },
+        new[] { .29f, .02f, -.26f },
+        new[] { -.22f, .08f, -.12f },
+        new[] { .08f, .34f, .12f },
+        new[] { 0f, -.27f, -.08f },
+        new[] { .10f, -.11f, .18f },
+    };
+    static readonly WavePart FaradayRebound = new WavePart("Faraday rebound", nameof(FaradayPylon), FaradayDescent, WaveShape.Train, 2, 5.4f);
+    static readonly WavePart FaradayTurningTrain = new WavePart("Faraday return", nameof(FaradayPylon), FaradayDescent, WaveShape.Train, 3, 5.4f, 6);
 
     public static readonly WavePart[] FaradayPylonParts =
     {
-        new WavePart("Faraday gate", nameof(FaradayPylon), FaradayDescent, WaveShape.Train, 2, 5.2f, 3),
-        new WavePart("Faraday ladder", nameof(FaradayPylon), FaradayClimb, WaveShape.Train, 3, 5.35f, 8),
-        new WavePart("Faraday downstroke", nameof(FaradayPylon), FaradayDescent, WaveShape.Train, 3, 5.2f, 14),
+        new WavePart("Faraday gate", nameof(FaradayPylon), FaradayDescent, WaveShape.Train, 2, 5.2f),
+        new WavePart("Faraday climb", nameof(FaradayPylon), FaradayClimb, WaveShape.Train, 2, 5.25f),
+        FaradayRebound,
+        new WavePart("Faraday ladder", nameof(FaradayPylon), FaradayClimb, WaveShape.Train, 3, 5.35f, 6),
+        new WavePart("Faraday downstroke", nameof(FaradayPylon), FaradayDescent, WaveShape.Train, 3, 5.2f, 6),
+        FaradayTurningTrain,
         new WavePart("Faraday updraft", nameof(FaradayPylon), FaradayClimb, WaveShape.Solo, 1, 5.2f, 4),
-        new WavePart("Faraday return", nameof(FaradayPylon), FaradayDescent, WaveShape.Train, 3, 5.4f, 20),
-    };
-
-    internal static WavePart FaradayForBudget(int budget) => budget switch
-    {
-        3 => FaradayPylonParts[0],
-        8 => FaradayPylonParts[1],
-        14 => FaradayPylonParts[2],
-        20 => FaradayPylonParts[4],
-        _ => null
     };
 
     internal static List<WaveUnit> GenerateFaraday(WavePart part, int variant, float side)
     {
         var units = new List<WaveUnit>(part.Count);
-        int firstDoor = variant / 2 % FaradayDoors.Length;
+        var doors = FaradayDoors[variant % FaradayDoors.Length];
+        bool returnAtEnd = part == FaradayRebound || part == FaradayTurningTrain;
+        float arrival = 0;
         for (int i = 0; i < part.Count; i++)
         {
-            units.Add(new WaveUnit(part.Enemy, i * part.Seconds * .53f, Vector3.zero)
+            units.Add(new WaveUnit(part.Enemy, arrival, Vector3.zero)
             {
                 part = part.Name,
                 phrase = FlightPhrase.Flow,
-                curve = part == FaradayPylonParts[4] && i == part.Count - 1 ? FaradayReturn : part.Route,
+                curve = returnAtEnd && i == part.Count - 1 ? FaradayReturn : part.Route,
                 side = side,
                 flightDuration = part.Seconds,
-                faradayDoor = FaradayDoors[(firstDoor + i) % FaradayDoors.Length] * side
+                faradayDoor = doors[i] * side
             });
+            arrival += part.Seconds * (.51f + .01f * ((variant + i * 2) % 3));
         }
         float[] unusedAccents = Array.Empty<float>();
         EnemyTuning.TuneFormation(part.Enemy, units, part.Seconds, ref unusedAccents);

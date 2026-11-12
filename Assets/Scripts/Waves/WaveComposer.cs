@@ -31,6 +31,7 @@ public static class WaveComposer
     static readonly Dictionary<int, Wave> waves = new Dictionary<int, Wave>();
     static readonly Dictionary<string, int> uses = new Dictionary<string, int>();
     static readonly Dictionary<(WavePart, int, int), Motion> patterns = new Dictionary<(WavePart, int, int), Motion>();
+    static readonly Dictionary<int, WavePart> thunderGates = new Dictionary<int, WavePart>();
     static int seed = -1, stage = -1, tuningRevision = -1; static LevelId level; static float width, height, tempo;
     static RunDifficulty difficulty;
     public static float Tempo => Mathf.Max(.01f, PatternMover.DistrictFlightTempo * GameRules.enemySpeed * LevelRun.EnemyTempoScale);
@@ -40,6 +41,7 @@ public static class WaveComposer
         waves.Clear();
         uses.Clear();
         patterns.Clear();
+        thunderGates.Clear();
         seed = -1;
         stage = -1;
     }
@@ -54,6 +56,53 @@ public static class WaveComposer
             x ^= x >> 15;
             x *= 0x846ca68bu;
             return (int)((x ^ (x >> 16)) & 0x7fffffffu);
+        }
+    }
+
+    static void PlanThunderGates()
+    {
+        thunderGates.Clear();
+        var budgets = new List<int>();
+        foreach (string key in DistrictWaves.Sequence())
+        {
+            var slot = RunSlot.Parse(key);
+            if (slot.Kind == RunSlotKind.Combat)
+                budgets.Add(slot.Budget);
+        }
+
+        // Draw chains across the whole district so one lucky clump cannot leave
+        // the rest of Thunder without its gate formation.
+        var random = new System.Random(Hash(seed, stage * 971 + 16249));
+        var pairCounts = new int[budgets.Count];
+        int middle = budgets.Count / 3, late = budgets.Count * 2 / 3;
+        pairCounts[random.Next(middle)] = 2;
+        pairCounts[random.Next(middle, late)] = 3;
+        pairCounts[random.Next(late, budgets.Count)] = 3;
+        var remaining = new List<int>();
+        for (int i = 0; i < pairCounts.Length; i++)
+            if (pairCounts[i] == 0)
+                remaining.Add(i);
+        int extra = random.Next(1, 3);
+        for (int i = 0; i < extra; i++)
+        {
+            int pick = random.Next(remaining.Count);
+            int index = remaining[pick];
+            remaining.RemoveAt(pick);
+            pairCounts[index] = budgets[index] < 6 ? 2 : random.Next(2, 4);
+        }
+
+        var parts = WavePartLibrary.FaradayPylonParts;
+        var used = new HashSet<WavePart>();
+        for (int i = 0; i < budgets.Count; i++)
+        {
+            if (pairCounts[i] == 0)
+                continue;
+            var options = Array.FindAll(parts, part => part.Count == pairCounts[i] && !used.Contains(part));
+            if (options.Length == 0)
+                options = Array.FindAll(parts, part => part.Count == pairCounts[i]);
+            var chosen = options[random.Next(options.Length)];
+            thunderGates.Add(budgets[i], chosen);
+            used.Add(chosen);
         }
     }
 
@@ -80,6 +129,10 @@ public static class WaveComposer
             width = Camera.RightLimit;
             height = Camera.UpLimit - Camera.DownLimit;
             tempo = Tempo;
+            if (level == LevelId.Thunder)
+                PlanThunderGates();
+            else
+                thunderGates.Clear();
         }
     }
 
@@ -144,7 +197,7 @@ public static class WaveComposer
         var occupied = Array.Empty<ulong>();
         int count = budget < 5 || compact ? 2 : 3;
         bool heavy = false, groundUsed = false;
-        var featuredGate = level == LevelId.Thunder ? WavePartLibrary.FaradayForBudget(budget) : null;
+        thunderGates.TryGetValue(budget, out var featuredGate);
         bool gateUsed = false, beamUsed = false;
         if (level == LevelId.Candyland)
             count = budget < 5 || compact ? 3 : 4;
@@ -169,13 +222,14 @@ public static class WaveComposer
                 if (featuredGate != null && slot == 0 && part != featuredGate)
                     continue;
                 bool gate = part.Enemy == nameof(FaradayPylon);
-                if (gate && part != featuredGate && (part.Count > 1 || gateUsed || beamUsed))
+                if (gate && (gateUsed || beamUsed || (part != featuredGate && part.Count > 1)))
                     continue;
                 if (gateUsed && IsThunderBeam(part.Enemy))
                     continue;
                 if (level == LevelId.Space && slot == count - 1 && !units.Exists(u => u.enemy == nameof(LaserSatellite) || u.enemy == nameof(OrbitalCarrier)) && part.Enemy != nameof(LaserSatellite) && part.Enemy != nameof(OrbitalCarrier))
                     continue;
-                if (part.Unlock > budget || chosen.Contains(part.Name) || previous.Contains(part.Name) || (heavy && part.Shape == WaveShape.Solo) || (groundUsed && part.Ground))
+                if (part.Unlock > budget || chosen.Contains(part.Name) || (part != featuredGate && previous.Contains(part.Name)) ||
+                    (heavy && part.Shape == WaveShape.Solo) || (groundUsed && part.Ground))
                     continue;
                 uses.TryGetValue(part.Name, out int used);
                 options.Add((part, used * 24 + random.Next(24)));
