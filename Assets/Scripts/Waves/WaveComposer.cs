@@ -144,8 +144,8 @@ public static class WaveComposer
         var occupied = Array.Empty<ulong>();
         int count = budget < 5 || compact ? 2 : 3;
         bool heavy = false, groundUsed = false;
-        // Four of Thunder's ten ordinary waves feature a side-laser formation.
-        bool sideLasers = level == LevelId.Thunder && (budget == 3 || budget == 8 || budget == 14 || budget == 20);
+        var featuredGate = level == LevelId.Thunder ? WavePartLibrary.FaradayForBudget(budget) : null;
+        bool gateUsed = false, beamUsed = false;
         if (level == LevelId.Candyland)
             count = budget < 5 || compact ? 3 : 4;
         if (level == LevelId.Space)
@@ -166,9 +166,12 @@ public static class WaveComposer
             var options = new List<(WavePart part, int score)>();
             foreach (var part in WavePartLibrary.For(level))
             {
-                if (sideLasers && slot == 0 && part.Enemy != nameof(FaradayPylon))
+                if (featuredGate != null && slot == 0 && part != featuredGate)
                     continue;
-                if (part.Enemy == nameof(FaradayPylon) && units.Exists(u => u.enemy == nameof(FaradayPylon)))
+                bool gate = part.Enemy == nameof(FaradayPylon);
+                if (gate && part != featuredGate && (part.Count > 1 || gateUsed || beamUsed))
+                    continue;
+                if (gateUsed && IsThunderBeam(part.Enemy))
                     continue;
                 if (level == LevelId.Space && slot == count - 1 && !units.Exists(u => u.enemy == nameof(LaserSatellite) || u.enemy == nameof(OrbitalCarrier)) && part.Enemy != nameof(LaserSatellite) && part.Enemy != nameof(OrbitalCarrier))
                     continue;
@@ -192,7 +195,7 @@ public static class WaveComposer
                     var motion = Make(option.part, variant + variation, variation == 0 ? side : -side);
                     if (motion == null)
                         continue;
-                    if (motion.Span > window || (compact && motion.Span > (level == LevelId.Heaven ? 9.5f : 6.2f) / slowest))
+                    if (motion.Span > window || (compact && option.part != featuredGate && motion.Span > (level == LevelId.Heaven ? 9.5f : 6.2f) / slowest))
                         continue;
                     if (slot == 0)
                     {
@@ -221,6 +224,8 @@ public static class WaveComposer
             names.Add(best.Part.Name);
             heavy |= best.Part.Shape == WaveShape.Solo;
             groundUsed |= best.Part.Ground;
+            gateUsed |= best.Part.Enemy == nameof(FaradayPylon);
+            beamUsed |= IsThunderBeam(best.Part.Enemy);
             all.AddRange(best.Tracks);
             WaveGeometry.Reserve(best.Occupancy, best.At, ref occupied);
             foreach (var original in best.Units)
@@ -245,6 +250,8 @@ public static class WaveComposer
         // The next wave cannot occupy the departing formation's space. Kills still permit early handoff.
         return new Wave(budget, duration, 1, ConflictGroup.cg.center, units) { parts = names.ToArray() };
     }
+
+    static bool IsThunderBeam(string enemy) => enemy == nameof(BeamDrone) || enemy == nameof(ArcLancer) || enemy == nameof(StormOrgan);
     // The watcher uses the same spacing retries and tempo as live compositions.
     public static Wave PreviewPart(WavePart part, int variant, int side, out int resolvedVariant)
     {

@@ -18,8 +18,10 @@ public class WaveUnit : ICloneable
     public float[] fireTimes;
     public float formationDepth;
     public bool fixedDepth;
+    public float faradayDoor;
     public string part;
     public float side = 1, lane, flightDuration = 6, fireEvery = .8f;
+    public int HullCount => enemy == nameof(FaradayPylon) ? 2 : 1;
 
     public WaveUnit(string _enemy, float _time, Vector3 _position)
     {
@@ -30,7 +32,7 @@ public class WaveUnit : ICloneable
 
     public object Clone()
     {
-        return new WaveUnit(enemy, time, position) { phrase = phrase, curve = curve, syncFire = syncFire, miniboss = miniboss, passage = passage, passageRoute = passageRoute, firePhase = firePhase, fireTimes = fireTimes, formationDepth = formationDepth, fixedDepth = fixedDepth, part = part, side = side, lane = lane, flightDuration = flightDuration, fireEvery = fireEvery };
+        return new WaveUnit(enemy, time, position) { phrase = phrase, curve = curve, syncFire = syncFire, miniboss = miniboss, passage = passage, passageRoute = passageRoute, firePhase = firePhase, fireTimes = fireTimes, formationDepth = formationDepth, fixedDepth = fixedDepth, faradayDoor = faradayDoor, part = part, side = side, lane = lane, flightDuration = flightDuration, fireEvery = fireEvery };
     }
 
     override public string ToString()

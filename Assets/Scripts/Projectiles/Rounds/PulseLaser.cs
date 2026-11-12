@@ -10,6 +10,7 @@ public class PulseLaser : CombatRound
     bool attached;
     bool startedSound;
     bool sustained;
+    bool waitingToFire;
     AEnemy owner;
     public float warning = .9f, activeTime = .65f, length = 22, width = .25f, sweep;
     public bool sideShots;
@@ -25,7 +26,7 @@ public class PulseLaser : CombatRound
     public bool IsSustained => sustained;
     public float reversalArc;
     float Expansion => celestial ? Mathf.SmoothStep(0, 1, Mathf.Clamp01((age - warning) / Mathf.Max(.01f, widthRise))) : Mathf.Clamp01((age-warning)/.07f);
-    public float Power => Active ? Mathf.Min(Expansion, sustained ? 1 : Mathf.Lerp(.4f, 1, Mathf.Clamp01((warning + activeTime - age) / (celestial ? .16f : .09f)))) :
+    public float Power => waitingToFire ? 0 : Active ? Mathf.Min(Expansion, sustained ? 1 : Mathf.Lerp(.4f, 1, Mathf.Clamp01((warning + activeTime - age) / (celestial ? .16f : .09f)))) :
         age >= warning + activeTime ? Mathf.Pow(Mathf.Clamp01(1 - (age - warning - activeTime) / Cooldown), 2) * .4f : 0;
     protected override void Initialize()
     {
@@ -43,6 +44,7 @@ public class PulseLaser : CombatRound
         attached = false;
         startedSound = false;
         sustained = false;
+        waitingToFire = false;
         clockRate = 1;
         reversalArc = 0;
         transform.localScale = Vector3.one;
@@ -83,9 +85,24 @@ public class PulseLaser : CombatRound
         return this;
     }
 
+    public void HoldForRelease(float chargeSeconds)
+    {
+        warning = chargeSeconds * clockRate;
+        waitingToFire = true;
+    }
+
+    public bool ChargeReady => age >= warning;
+
+    public void ReleaseHold()
+    {
+        waitingToFire = false;
+        age = warning;
+    }
+
     public void Cease()
     {
         sustained = false;
+        waitingToFire = false;
         activeTime = Mathf.Max(0, age - warning);
         age = Mathf.Max(age, warning);
         lifetime = age + Cooldown + .1f;
@@ -99,7 +116,7 @@ public class PulseLaser : CombatRound
         sideShots = false;
     }
 
-    protected virtual bool Active => age >= warning && (sustained || age < warning + activeTime);
+    protected virtual bool Active => !waitingToFire && age >= warning && (sustained || age < warning + activeTime);
     protected override void Tick(float dt)
     {
         if (!startedSound)
@@ -138,7 +155,9 @@ public class PulseLaser : CombatRound
         sound.Drive(power, Active);
         ribbon.Siege = celestial;
         float visibleLength = CombatWalls.BeamLength(transform.position, heading, length, width * power * .5f);
-        ribbon.Draw(transform.position, heading, visibleLength, width, Charge, power, Mathf.Max(0, age - warning - activeTime) / Cooldown);
+        float displayedCharge = waitingToFire ? Mathf.Min(.99f, Charge) : Charge;
+        float release = sustained ? 0 : Mathf.Max(0, age - warning - activeTime) / Cooldown;
+        ribbon.Draw(transform.position, heading, visibleLength, width, displayedCharge, power, release);
         var player = CombatVisuals.Player;
         if (Active && power > .15f && player != null)
         {

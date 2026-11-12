@@ -312,7 +312,9 @@ public class WaveOrchestrer : MonoBehaviour
             var following = plan.Following(currentWaveNumber + 1);
             handoffAt = following.Kind == RunSlotKind.Combat ? WaveHandoff.At(currentWave, wavePool.getWave(following.Key)) : currentWave.duration;
             offerAt = handoffAt * .5f;
-            currentWaveEnemies = currentWave.units.Count;
+            currentWaveEnemies = 0;
+            foreach (var unit in currentWave.units)
+                currentWaveEnemies += unit.HullCount;
             currentWaveKilledEnemies = 0;
             if (!currentWave.units.Exists(unit => unit.miniboss))
                 killLedger.Begin(currentWaveNumber + 1, currentWaveEnemies);

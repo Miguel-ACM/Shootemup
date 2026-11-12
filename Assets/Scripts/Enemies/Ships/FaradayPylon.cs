@@ -1,40 +1,114 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-// Faraday Pylon: a double-ended Tesla pylon that rides a side wall, with a mirrored twin on
-// the other wall. On each accent both charge and fire a horizontal bar inward. The bars stop
-// short of each other and leave a door, and the pair keeps sliding along the walls, so the
-// bars sweep through the arena and the pilot has to pass through the door. The door steps to
-// a new place on every accent and is narrower on harder difficulties. Destroying either
-// pylon opens its half of the bar.
+// Opposite-wall emitters leave a narrow doorway in a single sweeping horizontal bar.
 [UnityEngine.Scripting.Preserve]
 public sealed class FaradayPylon : DistrictEnemy
 {
-    // Door centres, as fractions of the half-width, stepping a few units on each accent.
-    static readonly float[] Doors = { -.35f, .1f, .5f, .15f, -.25f, -.6f };
-    FaradayPylon twin;
-    bool follower;
-    int doorPhase, accents;
+    sealed class Pair
+    {
+        readonly FaradayPylon leader, follower;
+        readonly int order;
+        readonly float door, chargeSeconds;
+        bool charging, opened, retired;
+
+        public Pair(FaradayPylon leader, FaradayPylon follower)
+        {
+            this.leader = leader;
+            this.follower = follower;
+            order = ++nextOrder;
+            door = leader.door * Camera.RightLimit;
+            chargeSeconds = (Difficulty.Easy ? .75f : .62f) / (WaveComposer.Tempo * leader.MovementScale);
+        }
+
+        public void Tick(FaradayPylon caller)
+        {
+            if (retired || caller != (Live(leader) ? leader : follower))
+                return;
+            float y = caller.transform.position.y;
+            if (!charging)
+            {
+                // Start the tell only after both wall emitters have entered the visible arena.
+                if (y > Camera.UpLimit - .65f || y < Camera.DownLimit + .65f)
+                    return;
+                charging = true;
+                if (Live(leader)) leader.ChargeBar(door, chargeSeconds);
+                if (Live(follower)) follower.ChargeBar(door, chargeSeconds);
+                return;
+            }
+            if (y > Camera.UpLimit + .1f || y < Camera.DownLimit - .1f)
+            {
+                Retire();
+                return;
+            }
+            if (opened)
+                return;
+            if (order <= lastOpened || (!leader.HasBar && !follower.HasBar))
+            {
+                Retire();
+                return;
+            }
+            if (!leader.BarReady || !follower.BarReady || !SimulatorFlight.EnemyReleaseOpen)
+                return;
+
+            // The incoming warning can overlap the old bar. Its damage starts only
+            // after both halves of the outgoing bar have been turned off.
+            activePair?.Retire();
+            activePair = this;
+            lastOpened = order;
+            opened = true;
+            if (leader.HasBar) leader.bar.ReleaseHold();
+            if (follower.HasBar) follower.bar.ReleaseHold();
+        }
+
+        void Retire()
+        {
+            retired = true;
+            if (leader.HasBar) leader.bar.Cease();
+            if (follower.HasBar) follower.bar.Cease();
+            if (activePair == this) activePair = null;
+        }
+
+        public void LostMember()
+        {
+            if (!Live(leader) && !Live(follower) && activePair == this)
+                activePair = null;
+        }
+
+        static bool Live(FaradayPylon pylon) => pylon != null && pylon.isActiveAndEnabled && pylon.CanReceiveDamage;
+    }
+
+    static Pair activePair;
+    static int nextOrder, lastOpened;
+    Pair pair;
+    float door;
     PulseLaser bar;
     SpriteRenderer glow;
-
+    bool HasBar => this != null && bar != null && bar.IsAttachedTo(Hull);
+    bool BarReady => !HasBar || bar.ChargeReady;
     float Inward => transform.position.x < 0 ? 1 : -1;
     protected override Vector2 CueAxis => new Vector2(Inward, 0);
-    static float DoorWidth => Difficulty.Easy ? 2.4f : Difficulty.Hard ? 1.7f : 2.0f;
+    static float DoorWidth => Difficulty.Easy ? 2.25f : Difficulty.Hard ? 1.55f : 1.85f;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetPairs()
+    {
+        activePair = null;
+        nextOrder = lastOpened = 0;
+    }
 
     protected override void Configure()
     {
         hullScale = .55f;
         health = 40;
-        attackInterval = 3.2f;
-        nextAttack = 1.4f;
         Mover<DriftDownPattern>();
     }
 
     public override void FlyPhrase(WaveUnit unit)
     {
         base.FlyPhrase(unit);
-        // Each rung of a ladder, and each side, starts on its own door.
-        doorPhase = Mathf.RoundToInt(unit.firePhase * 1.45f) + (unit.side < 0 ? 3 : 0);
+        door = unit.faradayDoor;
     }
 
     protected override void Start()
@@ -42,115 +116,127 @@ public sealed class FaradayPylon : DistrictEnemy
         base.Start();
         glow = ItemSpark.Sprite(Hull, "Capacitor glow", "standard", LevelProjectilePalette.Accent(LevelRun.Current), .3f);
         glow.transform.localPosition = new Vector3(0, .06f, -.42f);
-        if (follower)
-        {
-            nextAttack = float.PositiveInfinity;
+        if (pair != null)
             return;
-        }
-        // The twin mirrors this pylon on the opposite wall and fires only on its accents.
-        twin = (FaradayPylon)Spawn(typeof(FaradayPylon), new Vector3(-transform.position.x, transform.position.y, transform.position.z));
-        twin.follower = true;
-        twin.twin = this;
-        twin.doorPhase = doorPhase;
+
+        var twin = (FaradayPylon)Spawn(typeof(FaradayPylon), new Vector3(-transform.position.x, transform.position.y, transform.position.z));
+        pair = twin.pair = new Pair(this, twin);
         ShareEncounterWith(twin);
         var mirror = twin.gameObject.AddComponent<PylonMirror>();
         mirror.Leader = transform;
         twin.UseMovement(mirror);
     }
 
-    // The leader calls the accent for both pylons; the door is shared.
-    protected override void Attack()
+    protected override void Update()
     {
-        // A denser score must never put two different doors on the same live bar.
-        if (bar != null && bar.IsAttachedTo(Hull))
-            return;
-        float door = Doors[(doorPhase + accents++) % Doors.Length] * Camera.RightLimit;
-        FireBar(door);
-        if (twin != null)
-            twin.FireBar(door);
+        if (CanReceiveDamage && Time.deltaTime > 0 && GameClock.ActivePlay && !FrozenHull.Holds(gameObject))
+            pair?.Tick(this);
     }
 
-    // A charged horizontal bar from the inward emitter, ending at the near edge of the door.
-    void FireBar(float door)
+    protected override void OnDisable()
     {
-        var local = InwardPort;
+        if (HasBar) bar.Cease();
+        pair?.LostMember();
+        base.OnDisable();
+    }
+
+    protected override void Attack() { }
+
+    void ChargeBar(float center, float chargeSeconds)
+    {
+        var local = EnemyWeaponLayout.Ports(hull)[Inward > 0 ? 1 : 0];
         var origin = Hull.TransformPoint(local);
-        float edge = door - Inward * DoorWidth * .5f;
-        var beam = Fire<PulseLaser>(origin, new Vector2(Inward, 0), 0);
-        if (beam == null)
+        float edge = center - Inward * DoorWidth * .5f;
+        bar = Fire<PulseLaser>(origin, new Vector2(Inward, 0), 0);
+        if (bar == null)
             return;
-        beam.Bind(Hull, local);
-        beam.warning = Difficulty.Easy ? 1.25f : 1.05f;
-        beam.activeTime = 1.3f;
-        beam.width = .2f;
-        beam.length = Mathf.Max(.5f, Mathf.Abs(edge - origin.x));
-        bar = beam;
+        bar.Bind(Hull, local).Sustain();
+        bar.HoldForRelease(chargeSeconds);
+        bar.width = .2f;
+        bar.length = Mathf.Max(.5f, (edge - origin.x) * Inward);
     }
 
-    Vector3 InwardPort => EnemyWeaponLayout.Ports(hull)[Inward > 0 ? 1 : 0];
-
-    // Both pylons show the coming accent at their inward emitters.
-    protected override void PrepareFire(float seconds)
-    {
-        base.PrepareFire(seconds);
-        if (follower)
-            return;
-        firingCue.ClearWarning();
-        Cue(Hull.TransformPoint(InwardPort), seconds);
-        if (twin != null && twin.Hull != null)
-            twin.Cue(twin.Hull.TransformPoint(twin.InwardPort), seconds);
-    }
-
-    // The capacitor dome glows up while a bar charges and flickers while it fires.
     void LateUpdate()
     {
         if (glow == null)
             return;
-        bool live = bar != null && bar.IsAttachedTo(Hull);
+        bool live = HasBar;
         float flicker = .5f + .5f * Mathf.Sin(Time.time * 31) * Mathf.Sin(Time.time * 17);
         float charge = live ? bar.Charge : 0, power = live ? bar.Power : 0;
         glow.transform.localScale = Vector3.one * (.24f + .08f * flicker + .16f * charge + .1f * power * flicker);
     }
 }
 
-// Keeps a follower pylon on the opposite wall, level with its leader. Without a leader it
-// carries on the way the pair was travelling and leaves the arena.
+// Hold the same height as the other emitter, including when the route changes direction.
+// A surviving follower keeps travelling after the opposite hull is destroyed.
 public sealed class PylonMirror : PatternMover
 {
     public Transform Leader;
     Vector3 travel;
     protected override void StepPattern(float dt)
     {
+        if (GameRules.playerDisabled)
+            return;
         if (Leader == null)
         {
-            SetFiring(false);
+            if (travel.sqrMagnitude < 1) travel = Vector3.down * 4;
             transform.position += travel * dt;
             if (transform.position.y > Camera.UpLimit + 1.5f || transform.position.y < Camera.DownLimit - 1.5f)
                 GetComponent<AEnemy>().Depart();
             return;
         }
         var target = new Vector3(-Leader.position.x, Leader.position.y, transform.position.z);
-        if (dt > 0)
-            travel = (target - transform.position) / dt;
+        if (dt > 0 && Mathf.Abs(target.y - transform.position.y) > .0001f)
+            travel = new Vector3(0, (target.y - transform.position.y) / dt, 0);
         transform.position = target;
-        SetFiring(true);
     }
 }
 
 public static partial class WavePartLibrary
 {
-    static readonly FlightCurve FaradayDescent = Route("Thunder / Faraday descent", Vector2.right, -0.93f, 1.18f, -0.93f, 0.9f, -0.93f, 0.62f, -0.93f, 0.34f, -0.93f, 0.06f, -0.93f, -0.22f);
-    static readonly FlightCurve FaradayClimb = Route("Thunder / Faraday climb", Vector2.right, -0.93f, -0.22f, -0.93f, 0.06f, -0.93f, 0.34f, -0.93f, 0.62f, -0.93f, 0.9f, -0.93f, 1.18f);
+    static readonly FlightCurve FaradayDescent = Route("Thunder / Faraday descent", Vector2.right, -.93f, 1.18f, -.93f, .9f, -.93f, .62f, -.93f, .34f, -.93f, .06f, -.93f, -.22f);
+    static readonly FlightCurve FaradayClimb = Route("Thunder / Faraday climb", Vector2.right, -.93f, -.22f, -.93f, .06f, -.93f, .34f, -.93f, .62f, -.93f, .9f, -.93f, 1.18f);
     static readonly FlightCurve FaradayReturn = Route("Thunder / Faraday return", Vector2.right, -.93f, 1.18f, -.93f, .82f, -.93f, .43f, -.93f, .18f, -.93f, .43f, -.93f, .82f, -.93f, 1.18f);
-    // Falling and rising doors, a staggered ladder, and a gate that sweeps back upward.
+    static readonly float[] FaradayDoors = { -.26f, .02f, .28f, .11f, -.15f, -.37f };
+
     public static readonly WavePart[] FaradayPylonParts =
     {
-        new WavePart("Faraday gate", nameof(FaradayPylon), FaradayDescent, WaveShape.Solo, 1, 8.0f, 3, new[] { 0.25f, 0.58f }),
-        new WavePart("Faraday ladder", nameof(FaradayPylon), FaradayClimb, WaveShape.Train, 2, 8.5f, 5, new[] { 0.3f, 0.62f }),
-        new WavePart("Faraday downstroke", nameof(FaradayPylon), FaradayDescent, WaveShape.Solo, 1, 6.0f, 3, new[] { .24f, .68f }),
-        new WavePart("Faraday updraft", nameof(FaradayPylon), FaradayClimb, WaveShape.Solo, 1, 6.0f, 4, new[] { .24f, .68f }),
-        new WavePart("Faraday return", nameof(FaradayPylon), FaradayReturn, WaveShape.Solo, 1, 7.6f, 6, new[] { .22f, .62f }),
+        new WavePart("Faraday gate", nameof(FaradayPylon), FaradayDescent, WaveShape.Train, 2, 5.2f, 3),
+        new WavePart("Faraday ladder", nameof(FaradayPylon), FaradayClimb, WaveShape.Train, 3, 5.35f, 8),
+        new WavePart("Faraday downstroke", nameof(FaradayPylon), FaradayDescent, WaveShape.Train, 3, 5.2f, 14),
+        new WavePart("Faraday updraft", nameof(FaradayPylon), FaradayClimb, WaveShape.Solo, 1, 5.2f, 4),
+        new WavePart("Faraday return", nameof(FaradayPylon), FaradayDescent, WaveShape.Train, 3, 5.4f, 20),
     };
+
+    internal static WavePart FaradayForBudget(int budget) => budget switch
+    {
+        3 => FaradayPylonParts[0],
+        8 => FaradayPylonParts[1],
+        14 => FaradayPylonParts[2],
+        20 => FaradayPylonParts[4],
+        _ => null
+    };
+
+    internal static List<WaveUnit> GenerateFaraday(WavePart part, int variant, float side)
+    {
+        var units = new List<WaveUnit>(part.Count);
+        int firstDoor = variant / 2 % FaradayDoors.Length;
+        for (int i = 0; i < part.Count; i++)
+        {
+            units.Add(new WaveUnit(part.Enemy, i * part.Seconds * .53f, Vector3.zero)
+            {
+                part = part.Name,
+                phrase = FlightPhrase.Flow,
+                curve = part == FaradayPylonParts[4] && i == part.Count - 1 ? FaradayReturn : part.Route,
+                side = side,
+                flightDuration = part.Seconds,
+                faradayDoor = FaradayDoors[(firstDoor + i) % FaradayDoors.Length] * side
+            });
+        }
+        float[] unusedAccents = Array.Empty<float>();
+        EnemyTuning.TuneFormation(part.Enemy, units, part.Seconds, ref unusedAccents);
+        return units;
+    }
 }
 
 public static partial class IndustrialMeshFactory
