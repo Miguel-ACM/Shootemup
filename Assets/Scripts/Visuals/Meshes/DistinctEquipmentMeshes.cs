@@ -56,6 +56,19 @@ public static partial class IndustrialMeshFactory
     {
         switch (kind)
         {
+            case "CarouselItem":
+                b.Drum(Vector3.zero, .39f, .3f, 9, 10, 6);
+                b.Drum(new Vector3(0, 0, -.18f), .13f, .12f, 11, 8);
+                for (int i = 0; i < 4; i++)
+                {
+                    float angle = i * Mathf.PI * .5f;
+                    var outward = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+                    var across = new Vector2(-outward.y, outward.x);
+                    b.Prism(new[] { outward * .2f + across * .08f, outward * .2f - across * .08f,
+                        outward * (.57f - i * .04f) - across * .07f, outward * (.57f - i * .04f) + across * .07f },
+                        .16f, 11, Vector3.zero, 6);
+                }
+                break;
             case "BeamEmitterItem":
                 // Open tuning fork around a recessed optical channel.
                 foreach (int side in new[] { -1, 1 })

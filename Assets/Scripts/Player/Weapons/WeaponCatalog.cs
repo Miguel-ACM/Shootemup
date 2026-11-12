@@ -17,6 +17,7 @@ public static class WeaponCatalog
         { nameof(FlameProjector), typeof(FlameProjector) },
         { nameof(RailDriver), typeof(RailDriver) },
         { nameof(Drill), typeof(Drill) },
+        { nameof(Carousel), typeof(Carousel) },
     };
     public static AWeapon Create(string key, Transform parent)
     {

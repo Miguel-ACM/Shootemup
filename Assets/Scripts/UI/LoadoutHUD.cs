@@ -133,6 +133,8 @@ public sealed class LoadoutHUD : MonoBehaviour
             float join = .77f * (124 + 74) * .5f;
             panels[i].anchoredPosition = new Vector2(side * (202.5f + 52 + (62 + (active ? join : 0)) * scale), (90 + (active ? join : 0)) * scale);
             string type = active ? (loadout.Actives[i - 2] != null ? loadout.Actives[i - 2].GetType().Name : "") : (loadout.Weapons[i] != null ? loadout.Weapons[i].GetType().Name : "");
+            if (!active && loadout.Weapons[i] is Carousel changing)
+                type = changing.Form;
             if (displayed[i] != type)
                 SetModel(i, type);
             keys[i].sprite = InputPrompts.For(InputPrompts.Equipment(i));
@@ -153,7 +155,10 @@ public sealed class LoadoutHUD : MonoBehaviour
                 dials[i].Show(item != null && item.cd > 0 ? 1 - item.lastCD / item.cd : 0);
             }
             if (models[i] != null)
-                models[i].localRotation = Quaternion.Euler(-16, Mathf.Sin(Time.unscaledTime * .65f + i) * 24, i < 2 ? -30 : 0);
+            {
+                float swap = i < 2 && loadout.Weapons[i] is Carousel carousel ? carousel.SwapTurn : 0;
+                models[i].localRotation = Quaternion.Euler(-16, Mathf.Sin(Time.unscaledTime * .65f + i) * 24 + swap, i < 2 ? -30 : 0);
+            }
         }
         if (dialog == null)
             dialog = FindAnyObjectByType<Dialog>();

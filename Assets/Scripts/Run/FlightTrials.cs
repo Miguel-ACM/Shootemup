@@ -82,6 +82,8 @@ public sealed class FlightTrials
 
         new FlightTrials("Triple Harvest", new[] { Boss<FieldsBomberBoss>(Fields), Boss<PlainsRedKiteBoss>(Fields), Boss<PlainsThreshingDrumBoss>(Fields) },
             Kit("NeedleCannonItem", "ScatterCannonItem", "RelaySwitch")),
+        new FlightTrials("Change of Plans", new[] { Boss<CitySwitchyardBoss>(City, "2", "6", "10", "14") },
+            Kit("CarouselItem", "BarrelRoll"), "CarouselItem"),
         new FlightTrials("Kitchen Fire", new[] { Boss<HellCrabBoss>(Hell, "4", "8", "12") },
             Kit("FlameProjectorItem", "Popcorn", "ChainReactor")),
         new FlightTrials("Side Hustle", new[] { Waves(City, "4", "8"), Boss<DesertWormBoss>(Desert, "4", "8") },

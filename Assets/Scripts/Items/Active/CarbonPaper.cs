@@ -81,6 +81,7 @@ public sealed class CarbonCopies : OffensiveCast
                 else copy = WeaponCatalog.Create(source.GetType().Name, copies[side]);
                 if (copy == null) continue;
                 copy.IsCarbonCopy = true;
+                if (copy is Carousel carousel && source is Carousel original) carousel.MatchForm(original);
                 copy.SetWeaponInput(slot == 0 ? AWeapon.WeaponInput.primary : AWeapon.WeaponInput.secondary);
                 copy.updateSpawnPoints();
                 guns[side, slot] = copy;
