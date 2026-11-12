@@ -241,6 +241,7 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - Latest decision polish: one second to fill route/encounter holds and skips. The skip zone spans the full combat width and roughly the bottom fifth of its height, including boss items. Offer plates are compact, fade in only once the item settles, and show a small passive/active/weapon category beneath. Keep immediate equipment replacement controls and multiple shop purchases.
 - Death shows huge GAME OVER letters with the coins the run banked, switches the instruments off with the startup flicker in reverse, then returns to the hangar (30 October 2026; previously the title).
 - The title's first row reads PLAY and opens three independent save files (12 November 2026). Keep existing progress in File 1. Show completion and compact progress details on each card. Put its deletion bin at the top right and require a confirmation dialog, initially focused on Cancel.
+- Save cards use a tall portrait layout, with a drawing and clearly grouped completion, collection and flight records.
 
 ## Hangar and campaign completion (2 November 2026)
 

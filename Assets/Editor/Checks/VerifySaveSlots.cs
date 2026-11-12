@@ -116,10 +116,22 @@ public static class VerifySaveSlots
         Check(selector != null && menu.Suspended, "PLAY opens a modal save submenu");
         Check(selector.GetComponentsInChildren<SaveSlotButton>().Count(b => !b.Bin && b.Index < 3) == 3, "Exactly three selectable files");
         Check(selector.GetComponentsInChildren<SaveSlotButton>().Count(b => b.Bin) == 2, "Occupied files have their own bin");
+        var cards = selector.GetComponentsInChildren<SaveSlotButton>().Where(b => !b.Bin && b.Index < 3).OrderBy(b => b.Index).ToArray();
+        for (int i = 0; i < cards.Length; i++)
+        {
+            var card = (RectTransform)cards[i].transform;
+            Check(card.rect.height > card.rect.width && card.anchoredPosition.y == 0 &&
+                (i == 0 || card.anchoredPosition.x > ((RectTransform)cards[i - 1].transform).anchoredPosition.x + card.rect.width),
+                "Portrait cards sit side by side with a clear gap");
+            var artwork = cards[i].GetComponentsInChildren<UnityEngine.UI.RawImage>();
+            Check(artwork.Any(image => image.name == "SaveHangar" && image.texture != null), "Each file has a drawn berth");
+            Check(artwork.Any(image => image.name.StartsWith("Portrait") && image.texture != null) == (i < 2),
+                "Occupied berths show the saved hull; the empty berth is vacant");
+        }
         foreach (var bin in selector.GetComponentsInChildren<SaveSlotButton>().Where(b => b.Bin))
         {
             var at = ((RectTransform)bin.transform).anchoredPosition;
-            Check(at.x > 280 && at.y > 40, "Bin sits at the card's top right");
+            Check(at.x > 90 && at.y > 220, "Bin sits at the card's top right");
         }
         Layout(selector);
         string before = File.ReadAllText(PathFor(1));
@@ -130,6 +142,11 @@ public static class VerifySaveSlots
             selector.FocusTarget(0, false);
             Move(selector, pad, new GamepadState());
             Move(selector, pad, new GamepadState { leftStick = Vector2.right });
+            Check((int)typeof(SaveSelectMenu).GetField("selected", Instance).GetValue(selector) == 1, "Right moves to the neighbouring portrait card");
+            Move(selector, pad, new GamepadState());
+            Move(selector, pad, new GamepadState { leftStick = Vector2.left });
+            Move(selector, pad, new GamepadState());
+            Move(selector, pad, new GamepadState { leftStick = Vector2.up });
             Check((bool)typeof(SaveSelectMenu).GetField("binSelected", Instance).GetValue(selector), "Controller reaches the bin");
             Move(selector, pad, new GamepadState().WithButton(GamepadButton.South));
             Check(selector.GetComponentsInChildren<TextMeshProUGUI>().Any(t => t.text == "DELETE FILE 1?"), "Controller opens confirmation");

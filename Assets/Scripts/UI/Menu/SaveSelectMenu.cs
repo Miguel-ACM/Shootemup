@@ -44,7 +44,7 @@ public sealed class SaveSelectMenu : MonoBehaviour
         canvas.sortingOrder = 100;
         var scaler = gameObject.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(900, 720);
+        scaler.referenceResolution = new Vector2(940, 720);
         scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
         gameObject.AddComponent<GraphicRaycaster>();
         fade = gameObject.AddComponent<CanvasGroup>();
@@ -56,9 +56,9 @@ public sealed class SaveSelectMenu : MonoBehaviour
         shade.GetComponent<Image>().raycastTarget = true;
         page = new GameObject("Save list", typeof(RectTransform)).GetComponent<RectTransform>();
         page.SetParent(transform, false);
-        page.sizeDelta = new Vector2(720, 720);
+        page.sizeDelta = new Vector2(920, 720);
         Label(page, "PLAY", new Vector2(0, 313), new Vector2(500, 40), 30, DockInstrument.Paper);
-        status = Label(page, "", new Vector2(0, -277), new Vector2(680, 24), 12, Danger);
+        status = Label(page, "", new Vector2(0, -285), new Vector2(880, 24), 12, Danger);
         back = Target(page, "Back", new Vector2(0, -320), new Vector2(220, 44), 3, false);
         Label(back.transform, "BACK", Vector2.zero, new Vector2(210, 34), 17, DockInstrument.Paper);
         RefreshCards();
@@ -77,33 +77,43 @@ public sealed class SaveSelectMenu : MonoBehaviour
             }
             slots[i] = MetaProgress.InspectSlot(i + 1);
             var save = slots[i];
-            cards[i] = Target(page, "File " + save.Slot, new Vector2(0, 180 - i * 180), new Vector2(680, 162), i, false);
-            var face = Block(cards[i].transform, "Face", Vector2.zero, new Vector2(674, 156), DockInstrument.Ink);
-            Label(face, "FILE " + save.Slot, new Vector2(-205, 53), new Vector2(220, 30), 21, DockInstrument.Paper);
+            cards[i] = Target(page, "File " + save.Slot, new Vector2((i - 1) * 300, 0), new Vector2(280, 536), i, false);
+            var face = Block(cards[i].transform, "Face", Vector2.zero, new Vector2(274, 530), DockInstrument.Ink);
+            Label(face, "FILE " + save.Slot, new Vector2(-45, 236), new Vector2(150, 30), 18, DockInstrument.Paper)
+                .alignment = TextAlignmentOptions.MidlineLeft;
+            Picture(face, "SaveHangar", new Vector2(0, 120), new Vector2(256, 176));
             bins[i] = null;
             if (save.Exists)
             {
-                bins[i] = Target(cards[i].transform, "Delete File " + save.Slot, new Vector2(306, 52), new Vector2(44, 44), i, true);
+                bins[i] = Target(cards[i].transform, "Delete File " + save.Slot, new Vector2(110, 236), new Vector2(36, 36), i, true);
                 DrawBin(bins[i].transform);
             }
             if (!save.Readable)
             {
-                Label(face, save.Exists ? "UNREADABLE SAVE" : "NEW SAVE", new Vector2(0, -8),
-                    new Vector2(580, 36), 22, save.Exists ? Danger : DockInstrument.Muted);
+                Label(face, save.Exists ? "UNREADABLE SAVE" : "NEW FILE", new Vector2(0, -24),
+                    new Vector2(240, 42), 20, save.Exists ? Danger : DockInstrument.Paper);
                 continue;
             }
-            Label(face, save.Completion + "%", new Vector2(211, 51), new Vector2(130, 34), 25, DockInstrument.Brass);
-            var track = Block(face, "Completion", new Vector2(-13, 23), new Vector2(604, 4), new Color(.16f, .23f, .25f));
-            var fill = Block(track, "Progress", Vector2.zero, new Vector2(604 * save.Completion / 100f, 4), DockInstrument.Brass);
+            Picture(face, "Portrait" + save.Ship, new Vector2(0, 101), new Vector2(96, 120));
+            Label(face, save.Ship + " / " + save.Difficulty.ToUpperInvariant(), new Vector2(0, 14),
+                new Vector2(236, 22), 13, DockInstrument.Paper);
+            Label(face, save.Completion + "%", new Vector2(0, -26), new Vector2(220, 40), 32, DockInstrument.Brass);
+            Label(face, "COMPLETE", new Vector2(0, -54), new Vector2(220, 16), 10, DockInstrument.Muted);
+            var track = Block(face, "Completion", new Vector2(0, -68), new Vector2(236, 4), new Color(.16f, .23f, .25f));
+            var fill = Block(track, "Progress", Vector2.zero, new Vector2(236 * save.Completion / 100f, 4), DockInstrument.Brass);
             fill.anchorMin = fill.anchorMax = fill.pivot = new Vector2(0, .5f);
-            Label(face, save.Ship + "  /  " + save.Difficulty.ToUpperInvariant(), new Vector2(-140, 0),
-                new Vector2(350, 22), 14, DockInstrument.Paper);
-            Label(face, save.Coins + " COINS", new Vector2(197, 0), new Vector2(230, 22), 14, DockInstrument.Brass);
-            Label(face, "AREAS " + save.Districts + "/12   ITEMS " + save.Items + "/" + save.TotalItems +
-                "   HULLS " + save.Hulls + "/" + ShipFrames.Count + "   SIM " + save.Trials + "/" + FlightTrials.All.Length,
-                new Vector2(0, -27), new Vector2(630, 22), 11, DockInstrument.Muted);
-            Label(face, save.Flights + " FLIGHTS   " + save.Victories + " WINS   BEST " + save.Best + "   " + save.PlayTime,
-                new Vector2(0, -54), new Vector2(630, 22), 11, DockInstrument.Muted);
+            Stat(face, "AREAS", save.Districts + "/12", new Vector2(-62, -96));
+            Stat(face, "ITEMS", save.Items + "/" + save.TotalItems, new Vector2(62, -96));
+            Stat(face, "HULLS", save.Hulls + "/" + ShipFrames.Count, new Vector2(-62, -144));
+            Stat(face, "SIMULATOR", save.Trials + "/" + FlightTrials.All.Length, new Vector2(62, -144));
+            Block(face, "Record divider", new Vector2(0, -180), new Vector2(236, 1), new Color(.18f, .26f, .27f));
+            Picture(face, "DockCoin", new Vector2(-106, -199), new Vector2(16, 16));
+            Label(face, save.Coins.ToString(), new Vector2(-60, -199), new Vector2(70, 22), 13, DockInstrument.Brass)
+                .alignment = TextAlignmentOptions.MidlineLeft;
+            Label(face, save.PlayTime, new Vector2(62, -199), new Vector2(114, 22), 12, DockInstrument.Paper);
+            Label(face, save.Flights + " FLIGHTS / " + save.Victories + " WINS", new Vector2(0, -225),
+                new Vector2(240, 20), 10, DockInstrument.Muted);
+            Label(face, "BEST " + save.Best, new Vector2(0, -247), new Vector2(240, 20), 12, DockInstrument.Paper);
         }
         PaintFocus();
     }
@@ -122,12 +132,21 @@ public sealed class SaveSelectMenu : MonoBehaviour
             heldMove = true;
             if (dialog != null)
                 confirmErase = Mathf.Abs(move.x) > Mathf.Abs(move.y) ? move.x > 0 : move.y < 0;
-            else if (Mathf.Abs(move.y) >= Mathf.Abs(move.x))
+            else if (Mathf.Abs(move.x) > Mathf.Abs(move.y))
             {
-                selected = (selected + (move.y > 0 ? 3 : 1)) % 4;
+                selected = selected == 3 ? 1 : (selected + (move.x > 0 ? 1 : 2)) % 3;
+                binSelected &= slots[selected].Exists;
+            }
+            else if (move.y > 0)
+            {
+                if (selected == 3) selected = 1;
+                else binSelected = slots[selected].Exists;
+            }
+            else
+            {
+                if (!binSelected) selected = 3;
                 binSelected = false;
             }
-            else binSelected = move.x > 0 && selected < 3 && slots[selected].Exists;
             PaintFocus();
         }
         if (controls.Back.WasPressedThisFrame())
@@ -266,6 +285,22 @@ public sealed class SaveSelectMenu : MonoBehaviour
 
     TextMeshProUGUI Label(Transform parent, string text, Vector2 at, Vector2 size, float points, Color color)
         => UnlockReceipt.Label(parent, text, at, size, points, color, font);
+
+    void Stat(Transform parent, string caption, string value, Vector2 at)
+    {
+        Label(parent, value, at, new Vector2(114, 24), 17, DockInstrument.Paper);
+        Label(parent, caption, at + Vector2.down * 20, new Vector2(114, 16), 10, DockInstrument.Muted);
+    }
+
+    static void Picture(Transform parent, string resource, Vector2 at, Vector2 size)
+    {
+        var image = new GameObject(resource, typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
+        image.transform.SetParent(parent, false);
+        image.texture = Resources.Load<Texture2D>("DockArt/" + resource);
+        image.rectTransform.anchoredPosition = at;
+        image.rectTransform.sizeDelta = size;
+        image.raycastTarget = false;
+    }
 
     static RectTransform Block(Transform parent, string name, Vector2 at, Vector2 size, Color color)
         => DockInstrument.Block(parent, name, at, size, color);
