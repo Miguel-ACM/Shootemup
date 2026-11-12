@@ -610,13 +610,15 @@ public class WaveOrchestrer : MonoBehaviour
     IEnumerator ChooseNextRoute()
     {
         Phase = RunPhase.Routing;
+        // Pickup and skip both complete through DecisionShop.Close.
         CombatDecision.Begin();
-        // Non-final districts continue after collecting or skipping their boss reward.
-        yield return new WaitForSeconds(.2f);
+        var next = LevelRun.AutomaticNext;
+        yield return new WaitForSeconds(next.HasValue ? 1f : .2f);
+        if (GameOverState.Active)
+            yield break;
         foreach (var enemy in FindObjectsByType<AEnemy>())
             Destroy(enemy.gameObject);
         EraseAllBullets();
-        CombatDecision.Begin(); // Freeze multiplier and fire while steering to the next route.
         // A boss whose way on is still sealed ends the campaign after its reward.
         if (LevelRun.FinalDistrict || FlightTrials.Active != null ||
             !Array.Exists(LevelRun.GetOptions(), MetaProgress.RouteOpen))
@@ -624,10 +626,10 @@ public class WaveOrchestrer : MonoBehaviour
             GameOverState.Show(true);
             yield break;
         }
-        if (LevelRun.AutomaticNext.HasValue)
+        if (next.HasValue)
         {
-            BGMManager.PlayLevelMusic(LevelRun.AutomaticNext.Value);
-            TravelToLevel(LevelRun.AutomaticNext.Value);
+            BGMManager.PlayLevelMusic(next.Value);
+            TravelToLevel(next.Value);
             yield break;
         }
         routeChoice = LevelChoice.Open(ship.transform, TravelToLevel, BGMManager.PlayLevelMusic);
