@@ -223,7 +223,7 @@ public sealed class IndustrialHUD : MonoBehaviour
             float health = player.health / Mathf.Max(1, player.maxHealth);
             Fill(healthCells, health, HealthRecovery.Tint(health <= .25f ? Color.Lerp(Steel, Alarm, .55f) : Steel), healthLimit);
             UpdateMeterWarning(player.health / Mathf.Max(1, player.maxHealth), Time.unscaledTime);
-            UpdateEnergyShield(healthLimit > 0, Time.unscaledTime);
+            UpdateEnergyShield(healthLimit, Time.unscaledTime);
             bool recharging = player.GetComponent<PassiveEnergyCore>() != null && !GameRules.playerDisabled && player.mana < player.maxMana;
             var energyColor = recharging ? Color.Lerp(Cyan, new Color(.55f, .95f, .82f), .3f + .3f * Mathf.Sin(Time.time * 4)) : Cyan;
             UpdateEnergyColumn(energyColor, energyLimit);
@@ -410,16 +410,13 @@ public sealed class IndustrialHUD : MonoBehaviour
             healthCells[i] = cell.GetComponent<Image>();
         }
         Fill(healthCells, 0, Steel);
-        // The Energy Shield wraps the last hit: a soft glow behind the bottom cell and a ring over its edge.
+        // The shield follows the next cell to be lost; keep its glow behind the health column.
         if (shieldGlow == null)
         {
             shieldGlow = ShieldPart("Energy shield glow", 0);
             shieldRing = ShieldPart("Energy shield ring", 1.5f);
         }
-        var bottom = healthCells[0].rectTransform;
-        foreach (var part in new[] { shieldGlow, shieldRing })
-            Place(part.rectTransform, bottom.anchoredPosition.x - 3, -bottom.anchoredPosition.y - 3, bottom.sizeDelta.x + 6, bottom.sizeDelta.y + 6);
-        shieldGlow.transform.SetSiblingIndex(bottom.GetSiblingIndex());
+        shieldGlow.transform.SetSiblingIndex(healthCells[0].transform.GetSiblingIndex());
         shieldRing.transform.SetAsLastSibling();
     }
 
@@ -435,12 +432,16 @@ public sealed class IndustrialHUD : MonoBehaviour
         return graphic;
     }
 
-    void UpdateEnergyShield(bool lit, float time)
+    void UpdateEnergyShield(int healthLimit, float time)
     {
         var cell = player.GetComponent<EnergyShieldCell>();
-        shieldGlow.enabled = shieldRing.enabled = lit && cell != null;
+        int count = Mathf.Min(healthLimit, Mathf.CeilToInt(Mathf.Clamp01(player.health / Mathf.Max(1, player.maxHealth)) * healthCells.Length));
+        shieldGlow.enabled = shieldRing.enabled = count > 0 && cell != null;
         if (!shieldRing.enabled)
             return;
+        var first = healthCells[count - 1].rectTransform;
+        Place(shieldGlow.rectTransform, first.anchoredPosition.x - 3, -first.anchoredPosition.y - 3, first.sizeDelta.x + 6, first.sizeDelta.y + 6);
+        Place(shieldRing.rectTransform, first.anchoredPosition.x - 3, -first.anchoredPosition.y - 3, first.sizeDelta.x + 6, first.sizeDelta.y + 6);
         // Ready: a steady breathing glow. Recharging: a faint ring that strengthens toward full.
         float pulse = .8f + .2f * Mathf.Sin(time * 3);
         var flash = Color.Lerp(ShieldBlue, Color.white, cell.Flash);

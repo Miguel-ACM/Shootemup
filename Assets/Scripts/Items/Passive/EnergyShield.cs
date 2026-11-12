@@ -1,12 +1,12 @@
 using UnityEngine;
 
-// A shield around the last hit: it absorbs the hit that would end the run, then recharges over a minute of combat.
+// Protects the next health cell to be lost, then recharges over a minute of combat.
 [UnityEngine.Scripting.Preserve]
 public sealed class EnergyShield : AItem
 {
     void Awake()
     {
-        SetData("Energy Shield", "Last line", "Shields your last hit. Recharges in 1 minute.", ItemType.passive);
+        SetData("Energy Shield", "First line", "Absorbs the next hit. Recharges in 1 minute.", ItemType.passive);
     }
 
     public override void OnBegin()
