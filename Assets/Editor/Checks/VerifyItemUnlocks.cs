@@ -175,7 +175,15 @@ public static class VerifyItemUnlocks
     {
         foreach (var trial in FlightTrials.All.Where(tape => !tape.Advanced))
         {
-            Fresh(); Check(trial.TrySelect(), "Legacy tape available on a fresh save"); Begin(trial.district, trial.difficulty);
+            Fresh();
+            if (trial.frame != ShipFrame.GR07)
+            {
+                SetCommissionedHull((ShipFrame)((int)trial.frame - 1));
+                Check(!trial.Available && !trial.TrySelect() && FlightTrials.Active == null, trial.title + " requires " + trial.frame);
+            }
+            SetCommissionedHull(trial.frame);
+            Check(trial.TrySelect(), trial.title + " opens with its hull");
+            Begin(trial.district, trial.difficulty);
             MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Certified");
             Check(Items(MetaProgress.LastFlight.unlocks) == 1 && MetaProgress.LastFlight.unlocks[0].key == trial.reward, "Only simulator blueprint earned");
             Check(ItemUnlocks.All.All(r => !MetaProgress.IsUnlocked(r.Key)), "Simulator cannot award campaign items");
@@ -183,6 +191,13 @@ public static class VerifyItemUnlocks
         }
         FlightTrials.Reset();
     }
+
+    internal static void SetCommissionedHull(ShipFrame frame)
+    {
+        var saved = typeof(MetaProgress).GetProperty("Data", Private).GetValue(null);
+        saved.GetType().GetField("lastFrame").SetValue(saved, (int)frame);
+    }
+
     static void CheckAdvancedTapes()
     {
         Fresh();
@@ -254,7 +269,10 @@ public static class VerifyItemUnlocks
         }
         foreach (var trial in FlightTrials.All.Where(tape => !tape.Advanced))
         {
-            Fresh(); Check(trial.TrySelect(), "Legacy tape available on a fresh save"); Begin(trial.district, trial.difficulty);
+            Fresh();
+            SetCommissionedHull(trial.frame);
+            Check(trial.TrySelect(), trial.title + " opens with its hull");
+            Begin(trial.district, trial.difficulty);
             MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Certified");
             Check(Enum.GetValues(typeof(LevelId)).Cast<LevelId>().All(a => MetaProgress.RouteOpen(a) == starting.Contains(a)), "Simulator never opens districts");
         }

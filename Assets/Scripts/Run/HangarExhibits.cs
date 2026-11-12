@@ -167,7 +167,8 @@ public sealed partial class HangarHub
     bool TrialPage()
     {
         var trial = FlightTrials.All[selection];
-        bool available = trial.Available;
+        string lockReason = trial.LockReason;
+        bool available = lockReason == null;
         var mode = trial.DifficultyFor(difficulty);
         bool completed = TrialCompleted(trial);
         Color accent = completed ? DockInstrument.Brass : lamps[room];
@@ -190,7 +191,7 @@ public sealed partial class HangarHub
         Legend(trial.objective, 0, operating ? 16 : -20, 558, 57, 25, DockInstrument.Paper);
         if (operating)
             TrialEquipment(trial, completed);
-        if (completed)
+        if (completed && available)
         {
             Tile(0, -143, 558, 38, DockInstrument.Brass);
             TrialCheck(new Vector2(-251, -143), .85f, DockInstrument.Ink);
@@ -198,8 +199,7 @@ public sealed partial class HangarHub
         }
         else
         {
-            string status = !available ? FlightTrials.AccessRequirement :
-                trial.approach != SimulatorApproach.Standard ? SimulatorFlight.Label(trial.approach) : "";
+            string status = lockReason ?? SimulatorFlight.Label(trial.approach);
             Legend(status, 0, -143, 558, 38, 19, available ? accent : DockInstrument.Brass, true);
         }
         TrialMarks();

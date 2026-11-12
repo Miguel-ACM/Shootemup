@@ -184,7 +184,17 @@ public sealed class FlightTrials
         return true;
     }
 
-    public bool Available => !Advanced || HasAccess(MetaProgress.IsUnlocked, MetaProgress.CanFly, MetaProgress.HasUnlockedRoute);
+    public string LockReason
+    {
+        get
+        {
+            if (Advanced)
+                return HasAccess(MetaProgress.IsUnlocked, MetaProgress.CanFly, MetaProgress.HasUnlockedRoute) ? null : AccessRequirement;
+            return MetaProgress.CanFly(frame) ? null : "Commission " + frame + " in the campaign.";
+        }
+    }
+
+    public bool Available => LockReason == null;
 
     public bool TrySelect()
     {

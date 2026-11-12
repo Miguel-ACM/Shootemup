@@ -129,7 +129,8 @@ public static class VerifyWarningCargoPrompts
         Check(!cargo.TryClaim(), "Cannot claim during a decision");
         CombatDecision.End();
         Object.DestroyImmediate(cargo.gameObject);
-        if (!FlightTrials.All[1].TrySelect()) throw new System.InvalidOperationException("Cold Delivery must be available");
+        VerifyItemUnlocks.SetCommissionedHull(ShipFrame.Warden);
+        Check(FlightTrials.All[1].TrySelect(), "Cold Delivery opens with Warden");
         cargo = CargoEscort.Create(ship);
         Check(cargo.OpenControl == null && !cargo.FinishWave() && cargo.FinishWave(), "Cold Delivery retains its two-wave objective");
         Object.DestroyImmediate(cargo.gameObject);

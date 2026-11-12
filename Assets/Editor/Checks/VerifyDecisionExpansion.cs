@@ -632,7 +632,8 @@ public sealed class DecisionExpansionReview : MonoBehaviour
         int lostWallet = RunCoins.Count;
         Call(flow, "FinishCargoWave");
         Check(flow.Cargo == null && RunCoins.Count == lostWallet && !flow.waves.Contains("cargoreward"), "a destroyed crate grants no coins or item reward");
-        if (!FlightTrials.All[1].TrySelect()) throw new System.InvalidOperationException("Cold Delivery must be available");
+        VerifyItemUnlocks.SetCommissionedHull(ShipFrame.Warden);
+        Check(FlightTrials.All[1].TrySelect(), "Cold Delivery opens with Warden");
         var trial = CargoEscort.Create(ship);
         Check(!trial.TryClaim() && !trial.FinishWave() && trial.FinishWave(), "Cold Delivery still requires two complete waves and cannot be cashed early");
         trial.Deliver();
