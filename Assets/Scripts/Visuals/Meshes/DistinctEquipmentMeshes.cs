@@ -69,6 +69,13 @@ public static partial class IndustrialMeshFactory
                         .16f, 11, Vector3.zero, 6);
                 }
                 break;
+            case "CounterweightItem":
+                b.Can(new Vector3(0, .15f, 0), .085f, .74f, 11, 6);
+                b.Drum(new Vector3(0, -.06f, -.02f), .17f, .18f, 3, 8);
+                b.Box(new Vector3(-.2f, -.24f, 0), new Vector3(.11f, .37f, .17f), 6);
+                b.Box(new Vector3(.2f, -.24f, 0), new Vector3(.11f, .37f, .17f), 6);
+                b.Drum(new Vector3(0, -.43f, 0), .28f, .26f, 4, 8);
+                break;
             case "BeamEmitterItem":
                 // Open tuning fork around a recessed optical channel.
                 foreach (int side in new[] { -1, 1 })

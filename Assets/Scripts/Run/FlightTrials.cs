@@ -84,6 +84,8 @@ public sealed class FlightTrials
             Kit("NeedleCannonItem", "ScatterCannonItem", "RelaySwitch")),
         new FlightTrials("Change of Plans", new[] { Boss<CitySwitchyardBoss>(City, "2", "6", "10", "14") },
             Kit("CarouselItem", "BarrelRoll"), "CarouselItem"),
+        new FlightTrials("Switchback", new[] { Waves(Candyland, "4", "8"), Boss<AbyssSubmarineBoss>(Underwater) },
+            Kit("CounterweightItem", "BarrelRoll"), "CounterweightItem"),
         new FlightTrials("Kitchen Fire", new[] { Boss<HellCrabBoss>(Hell, "4", "8", "12") },
             Kit("FlameProjectorItem", "Popcorn", "ChainReactor")),
         new FlightTrials("Side Hustle", new[] { Waves(City, "4", "8"), Boss<DesertWormBoss>(Desert, "4", "8") },
