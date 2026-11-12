@@ -43,6 +43,7 @@ public static class VerifyItemUnlocks
             CheckPersistence();
             CheckMigration();
             CheckSimulators();
+            CheckAdvancedTapes();
             CheckRoutes();
             CheckModels();
             File.WriteAllText(Folder + "/Verification.txt", "PASS\n" + checks + " checks. All 12 areas / 16 bosses / 3 difficulties.\n" +
@@ -182,6 +183,41 @@ public static class VerifyItemUnlocks
         }
         FlightTrials.Reset();
     }
+    static void CheckAdvancedTapes()
+    {
+        Fresh();
+        var tapes = FlightTrials.All.Where(tape => tape.Advanced).ToArray();
+        Check(tapes.Length == 30 && tapes.All(tape => tape.legs.Last().boss != null), "Thirty advanced tapes end with a full boss");
+        Check(tapes.All(tape => !tape.TrySelect()) && FlightTrials.Active == null, "Fresh save cannot launch advanced tapes");
+        var saved = typeof(MetaProgress).GetProperty("Data", Private).GetValue(null);
+        saved.GetType().GetField("lastFrame").SetValue(saved, ShipFrames.Count - 1);
+        MetaProgress.UnlockAll();
+        var rewards = tapes.Where(tape => tape.reward != null).ToArray();
+        Check(rewards.Length == 5 && rewards.All(tape => !MetaProgress.CanStock(tape.reward)), "Tape prizes are excluded from the access gate and outfitter");
+        Check(tapes.All(tape => tape.Available), "Every standard item, hull and route opens the advanced tapes");
+        var owned = (List<string>)saved.GetType().GetField("unlocked").GetValue(saved);
+        owned.Remove("BeamEmitterItem");
+        Check(tapes.All(tape => !tape.TrySelect()), "One missing item keeps advanced tapes locked");
+        owned.Add("BeamEmitterItem");
+
+        var harvest = FlightTrials.Find("Triple Harvest");
+        Check(harvest.TrySelect() && harvest.kit.All(key => key != "CarouselItem"), "Triple Harvest has its own kit");
+        Begin(harvest.district, RunDifficulty.Hard);
+        Check(MetaProgress.EngageBoss() == typeof(FieldsBomberBoss), "Triple Harvest begins with the Bomber");
+        MetaProgress.DefeatBoss();
+        MetaProgress.EndRun("Certified");
+        Check(!MetaProgress.ContractClear(harvest.title), "The first boss cannot certify a gauntlet");
+
+        var carousel = FlightTrials.Find("Change of Plans");
+        Check(carousel.TrySelect() && carousel.kit.Contains(carousel.reward), "The Carousel tape loans its own prize");
+        Begin(carousel.district, carousel.difficulty);
+        Check(MetaProgress.EngageBoss() == typeof(CitySwitchyardBoss), "Carousel tape ends at Switchyard");
+        MetaProgress.DefeatBoss();
+        MetaProgress.EndRun("Certified");
+        Check(MetaProgress.CanStock(carousel.reward) && MetaProgress.LastFlight.unlocks.Single().key == carousel.reward, "Final boss certifies the tape and releases its prize");
+        FlightTrials.Reset();
+    }
+
     // Item counts ignore district tags, which share the unlock queue.
     static int Items(IEnumerable<ItemUnlockNotice> notices) => notices.Count(n => !RouteUnlocks.IsRoute(n.key));
     static void CheckRoutes()
