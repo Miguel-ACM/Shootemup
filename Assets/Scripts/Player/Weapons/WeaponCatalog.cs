@@ -20,6 +20,7 @@ public static class WeaponCatalog
         { nameof(Carousel), typeof(Carousel) },
         { nameof(Counterweight), typeof(Counterweight) },
         { nameof(DeadLetter), typeof(DeadLetter) },
+        { nameof(BankShot), typeof(BankShot) },
     };
     public static AWeapon Create(string key, Transform parent)
     {

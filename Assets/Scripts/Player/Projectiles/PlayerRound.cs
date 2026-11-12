@@ -62,8 +62,15 @@ public sealed class PlayerRound : ABullet
     AEnemy guidedTarget;
     float guidanceDelay;
     bool headingLocked;
+    bool bankShot, armedBank, vendingCoin;
     public void GuideTo(AEnemy target, float delay) { guidedTarget = target; guidanceDelay = Mathf.Max(0, delay); }
     public void LockHeading() { headingLocked = true; }
+    public void RequireBank()
+    {
+        bankShot = headingLocked = true;
+        returns = false;
+    }
+    public void AwardVendingCoin() => vendingCoin = true;
     readonly HashSet<AEnemy> hit = new HashSet<AEnemy>();
     SpriteRenderer visual;
     public void ArmChargeBlast(int level)
@@ -146,6 +153,7 @@ public sealed class PlayerRound : ABullet
         guidedTarget = null;
         guidanceDelay = 0;
         headingLocked = false;
+        bankShot = armedBank = vendingCoin = false;
         detonated = returning = rebounded = rubberReturned = false;
         companion = companionShot = false;
         this.size = 1;
@@ -201,7 +209,7 @@ public sealed class PlayerRound : ABullet
             ExplodeCharge();
             return;
         }
-        if (!rubberReturned && hit.Count == 0 && !returns && delivery != PlayerDelivery.Disc && heading.y > 0 && RubberReturn.AtTop(transform.position))
+        if (!bankShot && !rubberReturned && hit.Count == 0 && !returns && delivery != PlayerDelivery.Disc && heading.y > 0 && RubberReturn.AtTop(transform.position))
         {
             rubberReturned = true;
             heading = new Vector2(heading.x, -Mathf.Abs(heading.y));
@@ -246,12 +254,22 @@ public sealed class PlayerRound : ABullet
         float lateral = ShotTraits.Weave(flight, weaveSign);
         step += new Vector2(heading.y, -heading.x) * (lateral - weave);
         weave = lateral;
-        transform.position += (Vector3)step;
-        if (CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _))
+        var end = wallFrom + (Vector3)step;
+        bool solidWall = CombatWalls.Sweep(wallFrom, end, .04f, out var wallPoint, out var wallNormal);
+        if (bankShot && !armedBank)
+        {
+            if (TryBank(wallFrom, step, solidWall, wallPoint, wallNormal, out var point))
+            {
+                end = new Vector3(point.x, point.y, wallFrom.z);
+                step = heading;
+            }
+        }
+        else if (solidWall)
         {
             Despawn();
             return;
         }
+        transform.position = end;
         transform.rotation = Quaternion.FromToRotation(Vector3.up, step.sqrMagnitude > .0000001f ? step : heading);
         Reshape();
         if (delivery == PlayerDelivery.Disc)
@@ -269,7 +287,7 @@ public sealed class PlayerRound : ABullet
         }
         if (delivery == PlayerDelivery.Shell && age > 1.05f)
             Detonate();
-        if (generation == 0 && CombatUpgrades.Current != null && CombatUpgrades.Current.ProximityReady && age > .1f)
+        if ((!bankShot || armedBank) && generation == 0 && CombatUpgrades.Current != null && CombatUpgrades.Current.ProximityReady && age > .1f)
         {
             var e = CombatUpgrades.Nearest(transform.position, null, .8f);
             int bursts = e != null ? CombatUpgrades.Current.SpendProximity(transform.position) : 0;
@@ -280,15 +298,53 @@ public sealed class PlayerRound : ABullet
             Despawn();
     }
 
+    bool TryBank(Vector2 from, Vector2 step, bool hitWall, Vector2 wallPoint, Vector2 normal, out Vector2 point)
+    {
+        point = wallPoint;
+        float fraction = hitWall ? (wallPoint - from).sqrMagnitude / Mathf.Max(.000001f, step.sqrMagnitude) : float.PositiveInfinity;
+        float first = Mathf.Sqrt(fraction);
+        Vector2 end = from + step;
+        if (step.x != 0)
+        {
+            float edge = step.x < 0 ? Camera.LeftLimit : Camera.RightLimit;
+            float t = (edge - from.x) / step.x;
+            if ((step.x < 0 ? end.x <= edge : end.x >= edge) && t >= 0 && t < first)
+            {
+                first = t;
+                normal = step.x < 0 ? Vector2.right : Vector2.left;
+                point = from + step * t;
+            }
+        }
+        if (step.y != 0)
+        {
+            float edge = step.y < 0 ? Camera.DownLimit : Camera.UpLimit;
+            float t = (edge - from.y) / step.y;
+            if ((step.y < 0 ? end.y <= edge : end.y >= edge) && t >= 0 && t < first)
+            {
+                first = t;
+                normal = step.y < 0 ? Vector2.up : Vector2.down;
+                point = from + step * t;
+            }
+        }
+        if (float.IsPositiveInfinity(first)) return false;
+        armedBank = true;
+        heading = Vector2.Reflect(heading, normal);
+        point += normal * .065f;
+        TurnAccent();
+        return true;
+    }
+
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (detonated)
+        if (detonated || bankShot && !armedBank)
             return;
         var enemy = collision.GetComponent<AEnemy>();
         if (enemy == null || !enemy.CanReceiveDamage || !hit.Add(enemy))
             return;
         CombatHit.Apply(enemy, damage * ShotTraits.ReachDamage(travelled), collision.ClosestPoint(transform.position), heading,
             generation, companion, delivery == PlayerDelivery.Flame);
+        if (vendingCoin && enemy.health <= 0)
+            enemy.DropVendingCoin();
         if (chargeLevel > 0)
         {
             ExplodeCharge();

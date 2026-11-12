@@ -133,6 +133,15 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
         }
     }
 
+    internal void DropVendingCoin()
+    {
+        var position = transform.position;
+        position.x = Mathf.Clamp(position.x, Camera.LeftLimit + .25f, Camera.RightLimit - .25f);
+        position.y = Mathf.Clamp(position.y, Camera.DownLimit + .25f, Camera.UpLimit - .25f);
+        var coin = Instantiate(Resources.Load<GameObject>("Pickables/money"), position, Quaternion.identity).GetComponent<Money>();
+        coin.Launch(Vector2.down * 1.3f, .15f);
+    }
+
     int DropItems()
     {
         int numDrops = 0;

@@ -84,6 +84,13 @@ public static partial class IndustrialMeshFactory
                 foreach (float x in new[] { -.19f, .19f })
                     b.Box(new Vector3(x, .35f, 0), new Vector3(.13f, .48f, .15f), 11, 6);
                 break;
+            case "BankShotItem":
+                foreach (int side in new[] { -1, 1 })
+                    b.Prism(new[] { new Vector2(side * .08f, -.28f), new Vector2(side * .2f, -.21f),
+                        new Vector2(side * .5f, .36f), new Vector2(side * .38f, .43f) }, .2f, 11, Vector3.zero, 6);
+                b.Drum(new Vector3(0, -.22f, 0), .23f, .22f, 6, 8);
+                b.Drum(new Vector3(0, -.22f, -.15f), .13f, .09f, 3, 8);
+                break;
             case "BeamEmitterItem":
                 // Open tuning fork around a recessed optical channel.
                 foreach (int side in new[] { -1, 1 })
