@@ -164,22 +164,105 @@ public sealed partial class HangarHub
     {
         var trial = FlightTrials.All[selection];
         bool available = trial.Available;
-        Photo(Resources.Load<Texture2D>("DockArt/Portrait" + trial.frame), new Rect(0, 0, 1, 1), -198, 113, 153, Color.white);
-        Legend("TAPE " + (selection + 1).ToString("00") + " / " + FlightTrials.All.Length.ToString("00") + (available ? "" : "  LOCKED"),
-            80, 196, 354, 29, 16, lamps[room], true);
-        Legend(trial.title, 80, 145, 354, 76, 35, DockInstrument.Paper, true);
         var mode = trial.DifficultyFor(difficulty);
+        bool completed = TrialCompleted(trial);
+        Color accent = completed ? DockInstrument.Brass : lamps[room];
+        if (completed)
+        {
+            Tile(-198, 113, 161, 161, accent);
+            Tile(-198, 113, 155, 155, DockInstrument.Ink);
+        }
+        Photo(Resources.Load<Texture2D>("DockArt/Portrait" + trial.frame), new Rect(0, 0, 1, 1), -198, 113, 153, Color.white);
+        if (completed)
+        {
+            Tile(-141, 56, 44, 44, accent);
+            TrialCheck(new Vector2(-141, 56), 1.2f, DockInstrument.Ink);
+        }
+        Legend("TAPE " + (selection + 1).ToString("00") + " / " + FlightTrials.All.Length.ToString("00") + (available ? "" : "  LOCKED"),
+            80, 196, 354, 29, 16, accent, true);
+        Legend(trial.title, 80, 145, 354, 76, 35, completed ? accent : DockInstrument.Paper, true);
         Legend(trial.frame + "    /    " + mode, 80, 78, 354, 34, 21, DockInstrument.Muted);
-        Legend(trial.objective, 0, operating ? 16 : -49, 558, 57, 25, DockInstrument.Paper);
-        if (!operating)
-            return;
-        Legend(trial.kit.Length == 0 ? "Twin cannon" : string.Join(" + ", trial.kit.Select(FlightTrials.Display)), 0, -49, 558, 53, 19, DockInstrument.Muted);
-        string status = !available ? FlightTrials.AccessRequirement :
-            MetaProgress.ContractClear(trial.CompletionKey(mode)) ? "CERTIFIED" :
-            trial.reward != null ? "REWARD  " + FlightTrials.Display(trial.reward) :
-            trial.approach != SimulatorApproach.Standard ? SimulatorFlight.Label(trial.approach) : "READY";
-        Legend(status, 0, -129, 558, 54, 21, available ? lamps[room] : DockInstrument.Brass, true);
-        Legend("< >  CONTRACT", 0, -189, 558, 33, 15, DockInstrument.Muted);
+        Legend(trial.objective, 0, operating ? 16 : -20, 558, 57, 25, DockInstrument.Paper);
+        if (operating)
+            TrialEquipment(trial, completed);
+        if (completed)
+        {
+            Tile(0, -143, 558, 38, DockInstrument.Brass);
+            TrialCheck(new Vector2(-251, -143), .85f, DockInstrument.Ink);
+            Legend("CERTIFIED", 18, -143, 490, 32, 24, DockInstrument.Ink, true);
+        }
+        else
+        {
+            string status = !available ? FlightTrials.AccessRequirement :
+                trial.approach != SimulatorApproach.Standard ? SimulatorFlight.Label(trial.approach) : "";
+            Legend(status, 0, -143, 558, 38, 19, available ? accent : DockInstrument.Brass, true);
+        }
+        TrialMarks();
+        if (operating)
+            Legend(InputPrompts.Navigation(false) + " CONTRACT", 0, -201, 558, 25, 15, DockInstrument.Muted);
+    }
+
+    static bool TrialCompleted(FlightTrials trial) => MetaProgress.ContractClear(trial.CompletionKey(trial.DifficultyFor(difficulty)));
+
+    void TrialEquipment(FlightTrials trial, bool completed)
+    {
+        var kinds = trial.kit.Length == 0 ? new List<string> { "BaseWeaponItem" } : new List<string>(trial.kit);
+        int kitCount = kinds.Count;
+        bool reward = !string.IsNullOrEmpty(trial.reward);
+        if (reward)
+            kinds.Add(trial.reward);
+        var studio = ItemPortraitStudio.Create(kinds, 128);
+        // The page owns the camera as well as its pictures: replacing/closing the
+        // page disables it immediately, then releases its atlas with the old nodes.
+        studio.transform.SetParent(transform, true);
+        pageNodes.Add(studio.gameObject);
+        float width = reward ? 414 : 558;
+        float middle = reward ? -72 : 0;
+        float pitch = Mathf.Min(106, width / kitCount);
+        float size = Mathf.Min(76, pitch - 10);
+        Legend("KIT", middle, -27, width, 17, 13, DockInstrument.Muted);
+        for (int i = 0; i < kitCount; i++)
+        {
+            float x = middle + (i - (kitCount - 1) * .5f) * pitch;
+            Tile(x, -111, size * .7f, 3, lamps[room]);
+            Photo(studio.Atlas, studio.Cell(i), x, -76, size, Color.white);
+        }
+        if (reward)
+        {
+            Tile(154, -72, 2, 87, Metal);
+            Legend(completed ? "EARNED" : "REWARD", 225, -27, 108, 17, 13, DockInstrument.Brass).alignment = TextAlignmentOptions.Center;
+            Tile(225, -111, 58, 3, DockInstrument.Brass);
+            Photo(studio.Atlas, studio.Cell(kitCount), 225, -76, 76, Color.white);
+        }
+    }
+
+    void TrialMarks()
+    {
+        // A filled brass tape is cleared; the underline is the current selection.
+        float pitch = Mathf.Min(23, 558f / FlightTrials.All.Length);
+        for (int i = 0; i < FlightTrials.All.Length; i++)
+        {
+            float x = (i - (FlightTrials.All.Length - 1) * .5f) * pitch;
+            bool completed = TrialCompleted(FlightTrials.All[i]);
+            Tile(x, -178, pitch - 4, 9, completed ? DockInstrument.Brass : Metal);
+            if (!completed)
+                Tile(x, -178, pitch - 7, 5, DockInstrument.Ink);
+            if (i == selection)
+                Tile(x, -187, pitch - 4, 3, DockInstrument.Paper);
+        }
+    }
+
+    void TrialCheck(Vector2 center, float scale, Color color)
+    {
+        TrialStroke(center + new Vector2(-9, 0) * scale, center + new Vector2(-2, -7) * scale, 3.5f * scale, color);
+        TrialStroke(center + new Vector2(-2, -7) * scale, center + new Vector2(12, 9) * scale, 3.5f * scale, color);
+    }
+
+    void TrialStroke(Vector2 from, Vector2 to, float width, Color color)
+    {
+        var line = DockInstrument.Block(instrument.face, "Certification check", (from + to) * .5f, new Vector2(Vector2.Distance(from, to), width), color);
+        line.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(to.y - from.y, to.x - from.x) * Mathf.Rad2Deg);
+        pageNodes.Add(line.gameObject);
     }
     void HistoryPage()
     {
