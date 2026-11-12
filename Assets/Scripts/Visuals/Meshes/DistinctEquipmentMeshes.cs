@@ -76,6 +76,14 @@ public static partial class IndustrialMeshFactory
                 b.Box(new Vector3(.2f, -.24f, 0), new Vector3(.11f, .37f, .17f), 6);
                 b.Drum(new Vector3(0, -.43f, 0), .28f, .26f, 4, 8);
                 break;
+            case "DeadLetterItem":
+                b.Box(new Vector3(0, -.1f, .04f), new Vector3(.64f, .53f, .25f), 12, 6);
+                b.Prism(new[] { new Vector2(-.32f, .17f), new Vector2(.32f, .17f), new Vector2(0, -.11f) },
+                    .07f, 11, new Vector3(0, 0, -.13f), 6);
+                b.Drum(new Vector3(0, -.1f, -.2f), .11f, .07f, 2, 8);
+                foreach (float x in new[] { -.19f, .19f })
+                    b.Box(new Vector3(x, .35f, 0), new Vector3(.13f, .48f, .15f), 11, 6);
+                break;
             case "BeamEmitterItem":
                 // Open tuning fork around a recessed optical channel.
                 foreach (int side in new[] { -1, 1 })
