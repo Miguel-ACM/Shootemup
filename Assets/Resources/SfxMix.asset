@@ -290,9 +290,14 @@ MonoBehaviour:
     choice: psx3
   - cue: shotAK45
     clip: {fileID: 8300000, guid: 81144e405188549b8b7863c5f1d66efe, type: 3}
-    gain: 0.6
+    gain: 0.3
     muted: 0
     choice: psx3
+  - cue: shotSecondary
+    clip: {fileID: 0}
+    gain: 0.6
+    muted: 0
+    choice:
   - cue: shotBeam
     clip: {fileID: 8300000, guid: 6d468d343f4e5a1e8551c509913bc191, type: 3}
     gain: 0.6
