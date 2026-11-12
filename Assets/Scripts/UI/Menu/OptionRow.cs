@@ -82,7 +82,7 @@ public sealed class OptionRow : AMenuElement
 
     void Update()
     {
-        if (menu == null || !menu.IsOpen || menu.Suspended || menu.CurrentElement != this)
+        if (menu == null || !menu.IsOpen || !menu.InputReady || menu.Suspended || menu.CurrentElement != this)
         {
             held = 0;
             return;

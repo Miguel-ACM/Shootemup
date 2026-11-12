@@ -114,9 +114,16 @@ public static class VerifySaveSlots
         Invoke(menu, "Start");
         Invoke(entry, "Start");
         Check(entry.GetComponentInChildren<TextMeshProUGUI>().text == "PLAY", "Title uses PLAY");
-        entry.OnAccept();
+        menu.TryAccept(entry);
+        Check(Object.FindAnyObjectByType<SaveSelectMenu>() == null, "Title entry lock ignores an immediate press");
+        InputLock(menu);
+        menu.TryAccept(entry);
         var selector = Object.FindAnyObjectByType<SaveSelectMenu>();
         Check(selector != null && menu.Suspended, "PLAY opens a modal save submenu");
+        typeof(SaveSelectMenu).GetField("openedFrame", Instance).SetValue(selector, -1);
+        selector.Activate(0, true);
+        Check(selector.GetComponentsInChildren<TextMeshProUGUI>().All(t => t.text != "DELETE FILE 1?"),
+            "A rapid second activation cannot carry into the save page");
         Check(selector.GetComponentsInChildren<SaveSlotButton>().Count(b => !b.Bin && b.Index < 3) == 3, "Exactly three selectable files");
         Check(selector.GetComponentsInChildren<SaveSlotButton>().Count(b => b.Bin) == 2, "Occupied files have their own bin");
         var cards = selector.GetComponentsInChildren<SaveSlotButton>().Where(b => !b.Bin && b.Index < 3).OrderBy(b => b.Index).ToArray();
@@ -181,9 +188,32 @@ public static class VerifySaveSlots
         Ready(selector);
         selector.Activate(3, false);
         Check(!menu.Suspended && menu.CurrentElement == entry, "Back restores title navigation");
+        Check(!menu.InputReady, "Back locks the restored title against a second press");
+        menu.TryAccept(entry);
+        Check(!menu.Suspended, "A rapid confirm cannot reopen the save picker after Back");
     }
 
-    static void Ready(SaveSelectMenu menu) => typeof(SaveSelectMenu).GetField("openedFrame", Instance).SetValue(menu, -1);
+    static void InputLock(Menu menu)
+    {
+        menu.LockInput();
+        float deadline = (float)typeof(Menu).GetField("inputReadyAt", Instance).GetValue(menu);
+        var release = typeof(Menu).GetMethod("ReleaseInputLock", Instance);
+        release.Invoke(menu, new object[] { deadline - .01f, false, Vector2.zero });
+        Check(!menu.InputReady, "Releasing early does not bypass the settling delay");
+        release.Invoke(menu, new object[] { deadline + .1f, true, Vector2.zero });
+        Check(!menu.InputReady, "A held or newly repeated press stays blocked after the delay");
+        release.Invoke(menu, new object[] { deadline + .2f, false, Vector2.up });
+        Check(!menu.InputReady, "Carried navigation must return to neutral");
+        release.Invoke(menu, new object[] { deadline + .3f, false, Vector2.zero });
+        Check(menu.InputReady, "Released controls arm the next deliberate action");
+    }
+
+    static void Ready(SaveSelectMenu selector)
+    {
+        typeof(SaveSelectMenu).GetField("openedFrame", Instance).SetValue(selector, -1);
+        var menu = (Menu)typeof(SaveSelectMenu).GetField("menu", Instance).GetValue(selector);
+        typeof(Menu).GetMethod("ReleaseInputLock", Instance).Invoke(menu, new object[] { float.MaxValue, false, Vector2.zero });
+    }
     static void Move(SaveSelectMenu menu, Gamepad pad, GamepadState state)
     {
         InputSystem.QueueStateEvent(pad, state);

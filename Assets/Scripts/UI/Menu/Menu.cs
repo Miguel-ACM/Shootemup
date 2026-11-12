@@ -34,6 +34,9 @@ public class Menu : MonoBehaviour
     private bool inputProcessed = false;
     private bool menuOpen = false;
     private CanvasGroup canvasGroup;
+    const float InputDelay = .45f;
+    float inputReadyAt;
+    public bool InputReady { get; private set; }
     public bool Suspended
     {
         get; set;
@@ -41,6 +44,23 @@ public class Menu : MonoBehaviour
 
     public bool IsOpen => menuOpen;
     public void RefreshElements() => menuElements = GetComponentsInChildren<AMenuElement>();
+
+    // Shared with modal pages, so one press cannot carry across a page change.
+    public void LockInput()
+    {
+        InputReady = false;
+        inputReadyAt = Time.unscaledTime + InputDelay;
+        inputProcessed = true;
+    }
+
+    void ReleaseInputLock(float now, bool pressed, Vector2 steering)
+    {
+        if (!InputReady && now >= inputReadyAt && !pressed && steering.sqrMagnitude < .24f)
+        {
+            InputReady = true;
+            inputProcessed = false;
+        }
+    }
 
     [SerializeField] private bool alwaysOpen = false;
 
@@ -94,15 +114,17 @@ public class Menu : MonoBehaviour
 
     void ToggleMenu(InputAction.CallbackContext context)
     {
-        if (!isActiveAndEnabled || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput) return;
+        if (!isActiveAndEnabled || !InputReady || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput) return;
         handledFrame = Time.frameCount;
+        LockInput();
         if (menuOpen && context.control.device is Keyboard && settings != null && settings.TryBack()) return;
         setMenuOpen(!menuOpen);
     }
     void OnBack(InputAction.CallbackContext context)
     {
-        if (!isActiveAndEnabled || !menuOpen || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput) return;
+        if (!isActiveAndEnabled || !menuOpen || !InputReady || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput) return;
         handledFrame = Time.frameCount;
+        LockInput();
         if (settings != null && settings.TryBack()) return;
         if (!alwaysOpen)
             setMenuOpen(false);
@@ -114,7 +136,18 @@ public class Menu : MonoBehaviour
 
     void Update()
     {
-        if (menuOpen && !Suspended)
+        // Keep polling while a modal page owns the menu. A short tap wholly
+        // inside this frame must not arm the next page either.
+        if (!InputReady)
+        {
+            var controls = input.PlayerControls;
+            bool pressed = controls.Accept.IsPressed() || controls.Accept.WasPressedThisFrame() ||
+                controls.Back.IsPressed() || controls.Back.WasPressedThisFrame() ||
+                controls.Start.IsPressed() || controls.Start.WasPressedThisFrame() ||
+                Mouse.current != null && (Mouse.current.leftButton.isPressed || Mouse.current.leftButton.wasPressedThisFrame);
+            ReleaseInputLock(Time.unscaledTime, pressed, controls.Move.ReadValue<Vector2>());
+        }
+        if (menuOpen && !Suspended && InputReady)
         {
             if (move.y != 0 && !inputProcessed)
             {
@@ -148,6 +181,7 @@ public class Menu : MonoBehaviour
 
     public void setMenuOpen(bool open)
     {
+        LockInput();
         if (!alwaysOpen)
             GameplayPaused = open;
         menuOpen = open;
@@ -177,9 +211,10 @@ public class Menu : MonoBehaviour
 
     public void TryAccept(AMenuElement element)
     {
-        if (!isActiveAndEnabled || !menuOpen || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput || element == null || Array.IndexOf(menuElements, element) < 0)
+        if (!isActiveAndEnabled || !menuOpen || !InputReady || Suspended || CloudTransition.Busy || GameOverState.Active || UnlockReveal.BlocksInput || element == null || Array.IndexOf(menuElements, element) < 0)
             return;
         handledFrame = Time.frameCount;
+        LockInput();
         setCurrentElement(element);
         element.OnAccept();
     }
