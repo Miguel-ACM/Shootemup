@@ -4,18 +4,19 @@ using UnityEngine.UI;
 public class NewGame : AMenuElement
 {
     bool starting;
-    // Progress lives in the hangar save, so the first row continues it rather than starting over.
     protected override void Start()
     {
         base.Start();
         if (textElement != null)
-            textElement.text = "CONTINUE";
+            textElement.text = "PLAY";
     }
 
     public override void OnAccept()
     {
-        Depart(MetaProgress.FlightSetting);
+        SaveSelectMenu.Show(this, menu, textElement.font);
     }
+
+    public void PlaySelectedSlot() => Depart(MetaProgress.FlightSetting);
 
     public void Choose(int option)
     {
@@ -27,6 +28,8 @@ public class NewGame : AMenuElement
     {
         if (starting) return;
         starting = true;
+        var files = FindAnyObjectByType<SaveSelectMenu>();
+        if (files != null) files.DismissForDeparture();
         menu.StartCoroutine(IntoHangar(difficulty));
     }
 

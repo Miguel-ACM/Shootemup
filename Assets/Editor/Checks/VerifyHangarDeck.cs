@@ -217,21 +217,24 @@ public sealed class HangarDeckReview : MonoBehaviour
             StartCoroutine(MeasurePopulation());
         if (SessionState.GetBool("InspectPhysicalRooms", false) && !SessionState.GetBool("StationArtOnly", false))
         {
-            var entry = FindAnyObjectByType<SettingsEntry>();
+            var entry = FindAnyObjectByType<NewGame>();
             var menu = entry.GetComponentInParent<Menu>();
             MetaProgress.FlightSetting = RunDifficulty.Hard;
             menu.TryAccept(entry);
             yield return null;
-            var erase = FindObjectsByType<SettingsErase>().Single(row => row.choice == 0);
-            menu.TryAccept(erase);
+            var files = FindAnyObjectByType<SaveSelectMenu>();
+            files.Activate(0, true);
             yield return null;
-            Check(menu.CurrentElement.name == "KEEP SAVE", "erasure defaults to keeping the save");
-            menu.TryAccept(menu.CurrentElement);
+            files.Activate(4, false);
             Check(MetaProgress.FlightSetting == RunDifficulty.Hard, "cancelling keeps progress");
-            menu.TryAccept(erase);
             yield return null;
-            menu.TryAccept(FindObjectsByType<SettingsErase>().Single(row => row.choice == 2));
+            files.Activate(0, true);
+            yield return null;
+            files.Activate(5, false);
             Check(MetaProgress.FlightSetting == RunDifficulty.Normal && MetaProgress.Stock.Count == 3, "confirmed erase resets the isolated pilot");
+            yield return null;
+            files.Activate(3, false);
+            yield return null;
         }
         if (SessionState.GetBool("InspectFlightEndings", false))
         {
@@ -239,18 +242,14 @@ public sealed class HangarDeckReview : MonoBehaviour
             var menu = entry.GetComponentInParent<Menu>();
             menu.setCurrentElement(entry);
             yield return TapMenuButton(GamepadButton.South);
-            var erase = FindObjectsByType<SettingsErase>().Single(row => row.choice == 0);
-            menu.setCurrentElement(erase);
-            yield return TapMenuButton(GamepadButton.South);
-            menu.setCurrentElement(FindObjectsByType<SettingsErase>().Single(row => row.choice == 2));
-            yield return TapMenuButton(GamepadButton.East);
-            Check(menu.CurrentElement == erase, "Circle cancels erase even when the destructive row is selected");
             yield return TapMenuButton(GamepadButton.East);
             Check(menu.CurrentElement == entry && menu.IsOpen, "Circle leaves Settings one level at a time");
             menu.setCurrentElement(FindAnyObjectByType<NewGame>());
             yield return TapMenuButton(GamepadButton.South);
         }
         else FindAnyObjectByType<NewGame>().OnAccept();
+        yield return null;
+        FindAnyObjectByType<SaveSelectMenu>().Activate(0, false);
         if(SessionState.GetBool("InspectPhysicalRooms",false) || SessionState.GetBool("InspectPressureDoor",false))
         {
             while (!HangarHub.Approaching) yield return null;
@@ -472,6 +471,8 @@ public sealed class HangarDeckReview : MonoBehaviour
         bool tunnelStopped = false;
         bool boarded = false;
         FindAnyObjectByType<NewGame>().OnAccept();
+        yield return null;
+        FindAnyObjectByType<SaveSelectMenu>().Activate(0, false);
         do
         {
             yield return end;

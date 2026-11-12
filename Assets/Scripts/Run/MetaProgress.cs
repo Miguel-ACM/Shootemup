@@ -59,10 +59,11 @@ public static partial class MetaProgress
 #if UNITY_EDITOR
     // Play-mode reviews can route all reads, recovery and writes to their disposable checkout.
     public static string ReviewSaveDirectory { private get; set; }
-    static string FilePath => Path.Combine(ReviewSaveDirectory ?? Application.persistentDataPath, "hangar.json");
+    static string SaveDirectory => ReviewSaveDirectory ?? Application.persistentDataPath;
 #else
-    static string FilePath => Path.Combine(Application.persistentDataPath, "hangar.json");
+    static string SaveDirectory => Application.persistentDataPath;
 #endif
+    static string FilePath => SlotPath(CurrentSlot);
     static SaveData Data
     {
         get
@@ -179,37 +180,13 @@ public static partial class MetaProgress
         return pool.Count > 0 ? pool[UnityEngine.Random.Range(0, pool.Count)] : null;
     }
 
-    public static bool DeleteProgress()
-    {
-        try
-        {
-            // If erasure is interrupted, the committed save is the last file touched.
-            File.Delete(FilePath + ".tmp");
-            File.Delete(FilePath + ".bak");
-            File.Delete(FilePath);
-        }
-        catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
-        {
-            Debug.LogWarning("Could not erase flight data. " + e.Message);
-            return false;
-        }
-        data = null;
-        flight = LastFlight = null;
-        return true;
-    }
+    public static bool DeleteProgress() => DeleteSlot(CurrentSlot);
 
     static void Load()
     {
         try
         {
-            string saved = AtomicSaveFile.Read(FilePath, contents =>
-            {
-                var candidate = JsonUtility.FromJson<SaveData>(contents);
-                return candidate != null && candidate.unlocked != null && candidate.unlocked.Count > 0 &&
-                    candidate.stock != null && candidate.loadout != null;
-            });
-            if (saved != null)
-                data = JsonUtility.FromJson<SaveData>(saved);
+            data = ReadSlotData(FilePath);
         }
         catch (Exception exception)
         {
@@ -271,15 +248,18 @@ public static partial class MetaProgress
         }
     }
 
-    static void Save()
+    static bool Save()
     {
         try
         {
+            Directory.CreateDirectory(SaveDirectory);
             AtomicSaveFile.Write(FilePath, JsonUtility.ToJson(data, true));
+            return true;
         }
         catch (Exception exception)
         {
             Debug.LogWarning("Hangar save could not be written: " + exception.Message);
+            return false;
         }
     }
 }
