@@ -544,7 +544,12 @@ public sealed partial class HangarHub
         }
         if (primary && room == (int)Dock.Simulator)
         {
-            FlightTrials.Active = FlightTrials.All[selection];
+            if (!FlightTrials.All[selection].TrySelect())
+            {
+                ItemSound.Play("powerdown", .1f);
+                RenderPage();
+                return true;
+            }
             operating = false;
             HoldingShip = true;
             StartCoroutine(Launch());

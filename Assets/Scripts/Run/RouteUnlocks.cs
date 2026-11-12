@@ -37,6 +37,8 @@ public static partial class MetaProgress
     public static bool RouteOpen(LevelId level) =>
         ReviewOpensAllRoutes || RouteUnlocks.OpenAtStart(level) || (flight != null && runRoutes != null ? runRoutes : Data.routes).Contains(level.ToString());
 
+    internal static bool HasUnlockedRoute(LevelId level) => RouteUnlocks.OpenAtStart(level) || Data.routes.Contains(level.ToString());
+
     public static bool RouteOpensNextFlight(LevelId level) => !RouteOpen(level) && Data.routes.Contains(level.ToString());
 
     static void AwardRoutes()

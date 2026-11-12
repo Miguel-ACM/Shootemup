@@ -111,7 +111,7 @@ public static class VerifyWarningCargoPrompts
         var shipObject = new GameObject("Cargo check ship");
         var ship = shipObject.AddComponent<Shipcontroller>();
         shipObject.AddComponent<ShipLoadout>();
-        FlightTrials.Active = null;
+        FlightTrials.Reset();
         CombatDecision.End();
         var cargo = CargoEscort.Create(ship, _ => { });
         Check(cargo.Hits == 3 && cargo.Quality == ItemRarity.Common, "Cargo begins intact and common");
@@ -129,11 +129,11 @@ public static class VerifyWarningCargoPrompts
         Check(!cargo.TryClaim(), "Cannot claim during a decision");
         CombatDecision.End();
         Object.DestroyImmediate(cargo.gameObject);
-        FlightTrials.Active = FlightTrials.All[1];
+        if (!FlightTrials.All[1].TrySelect()) throw new System.InvalidOperationException("Cold Delivery must be available");
         cargo = CargoEscort.Create(ship);
         Check(cargo.OpenControl == null && !cargo.FinishWave() && cargo.FinishWave(), "Cold Delivery retains its two-wave objective");
         Object.DestroyImmediate(cargo.gameObject);
-        FlightTrials.Active = null;
+        FlightTrials.Reset();
 
         var plan = new RunPlan();
         plan.Load(new[] { "2", "encounterChoice", "2", "boss" });

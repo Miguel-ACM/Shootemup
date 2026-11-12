@@ -141,7 +141,7 @@ public static class VerifyLancerAndBossRewards
         MetaProgress.ReviewSaveDirectory = save;
         typeof(MetaProgress).GetField("data", Static).SetValue(null, null);
         typeof(MetaProgress).GetField("flight", Static).SetValue(null, null);
-        FlightTrials.Active = null;
+        FlightTrials.Reset();
     }
     static void Begin(RunDifficulty difficulty)
     {
@@ -182,10 +182,10 @@ public static class VerifyLancerAndBossRewards
             Check(events.Count == 1 && events[0].Unlocks.Count == 0 && events[0].NoHitBoss && events[0].NoHitLevel,
                 "Repeat clean victories celebrate no-hit without duplicate unlocks");
             Check(MetaProgress.PendingUnlocks.Count == 4, "Existing hangar queue survives repeat victory");
-            Fresh(); FlightTrials.Active = FlightTrials.All[0]; Begin(FlightTrials.Active.difficulty);
+            Fresh(); Check(FlightTrials.All[0].TrySelect(), "Crossfire is available"); Begin(FlightTrials.Active.difficulty);
             events.Clear(); MetaProgress.EngageBoss(); MetaProgress.DefeatBoss();
             Check(events.Count == 0, "Simulator cannot emit campaign unlock banner");
-            FlightTrials.Active = null;
+            FlightTrials.Reset();
         }
         finally { MetaProgress.BossCleared -= events.Add; }
     }
@@ -221,7 +221,7 @@ public static class VerifyLancerAndBossRewards
         var notices = ItemUnlocks.All.Select(r => new ItemUnlockNotice {
             key = r.Key, title = r.Title, area = r.Area, condition = r.Condition, source = r.Requirement
         }).ToList();
-        foreach (var trial in FlightTrials.All)
+        foreach (var trial in FlightTrials.All.Where(tape => tape.reward != null))
             notices.Add(new ItemUnlockNotice { key = trial.reward, title = trial.title, source = trial.Requirement });
         var route = new ItemUnlockNotice { key = RouteUnlocks.Key(LevelId.Underwater), title = "Underwater", area = LevelId.Underwater, source = RouteUnlocks.Requirement(LevelId.Tunnel) };
         notices.Add(route);

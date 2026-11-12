@@ -265,9 +265,11 @@ public abstract class DistrictEnemy : AEnemy
             return;
         if (player != null && Vector2.Distance(player.position, transform.position) < 2)
             return;
+        if (!SimulatorFlight.EnemyReleaseOpen)
+            return;
         if (movement is FormationFlight flight)
         {
-            if (flight.TakeFireBeat())
+            if (flight.TakeFireBeat(SimulatorFlight.DownbeatActive ? .36f : .16f))
             {
                 volley++;
                 tone = DefaultTone;

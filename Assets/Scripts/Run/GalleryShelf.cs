@@ -44,5 +44,28 @@ public sealed class GalleryShelf : ScriptableObject
             prepared[exhibit.key] = exhibit;
     }
     public static bool TryGet(string key, out Exhibit exhibit) => prepared.TryGetValue(key, out exhibit);
+
+    internal static bool Resolve(string key, out Exhibit exhibit)
+    {
+        if (TryGet(key, out exhibit)) return true;
+        if (!ItemCatalog.TryGet(key, out var definition)) return false;
+        var probe = new GameObject("Read gallery metadata");
+        probe.SetActive(false);
+        var item = definition.Attach(probe);
+        if (string.IsNullOrEmpty(item.GetData()[0]))
+            item.GetType().GetMethod("Awake", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Public)?.Invoke(item, null);
+        var data = item.GetData();
+        var mesh = IndustrialMeshFactory.ExpansionItem(key);
+        var paint = EverydayItemMaterials.For(key);
+        var kind = item.Kind;
+        if (Application.isPlaying) Destroy(probe);
+        else DestroyImmediate(probe);
+        if (mesh == null || paint == null) return false;
+        exhibit = new Exhibit { key = key, title = data[0], description = data[2], category = kind, mesh = mesh, paint = paint };
+        prepared[key] = exhibit;
+        return true;
+    }
+
     public Exhibit[] exhibits;
 }

@@ -81,6 +81,9 @@ public static class VerifySaveSlots
         saved.GetType().GetField("records").SetValue(saved, new System.Collections.Generic.List<ServiceRecord>
             { new ServiceRecord { clears = (1 << Enum.GetValues(typeof(LevelId)).Length) - 1 } });
         MetaProgress.UnlockAll();
+        var unlocked = (System.Collections.Generic.List<string>)saved.GetType().GetField("unlocked").GetValue(saved);
+        unlocked.AddRange(FlightTrials.All.Where(tape => tape.Advanced && tape.reward != null).Select(tape => tape.reward));
+        MetaProgress.FlightSetting = RunDifficulty.Normal;
         Check(MetaProgress.InspectSlot(3).Completion == 100, "All milestones give exactly 100 percent");
         string second = File.ReadAllText(PathFor(2));
         File.Copy(PathFor(2), PathFor(2) + ".bak", true);

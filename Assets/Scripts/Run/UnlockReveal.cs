@@ -81,7 +81,8 @@ public sealed class UnlockReveal : MonoBehaviour
         var accent = LevelRun.Accent(notice.area);
         heading.text = district ? "ROUTE OPEN" : "UNLOCKED";
         rim.color = district ? accent : DockInstrument.Brass;
-        bool known = GalleryShelf.TryGet(notice.key, out var item);
+        GalleryShelf.Exhibit item = null;
+        bool known = !district && GalleryShelf.Resolve(notice.key, out item);
         category.text = district ? "NEXT FLIGHT" : known ? DecisionOverlay.Category(item.category).ToUpperInvariant() : "";
         description.text = district ? LevelRun.Description(notice.area) : known ? item.description : "";
         source.text = notice.Requirement;

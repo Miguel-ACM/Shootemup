@@ -202,8 +202,7 @@ public sealed partial class HangarHub
             if (installed.Contains(definition.Key))
                 continue;
             installed.Add(definition.Key);
-            var e = RuntimeExhibit(definition);
-            if (e != null)
+            if (GalleryShelf.Resolve(definition.Key, out var e))
             {
                 InstallExhibit(next++, e);
                 yield return null;
@@ -211,27 +210,6 @@ public sealed partial class HangarHub
         }
         galleryReady = true;
         ApplyGalleryFilter();
-    }
-
-    // The same metadata, mesh and paint the bake would store, read from the live item.
-    static GalleryShelf.Exhibit RuntimeExhibit(ItemDefinition definition)
-    {
-        var probe = new GameObject("Read gallery metadata");
-        probe.SetActive(false);
-        var item = definition.Attach(probe);
-        if (string.IsNullOrEmpty(item.GetData()[0]))
-            item.GetType().GetMethod("Awake", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)?.Invoke(item, null);
-        var data = item.GetData();
-        var mesh = IndustrialMeshFactory.ExpansionItem(definition.Key);
-        var paint = EverydayItemMaterials.For(definition.Key);
-        var kind = item.Kind;
-        Destroy(probe);
-        if (mesh == null || paint == null)
-        {
-            Debug.LogWarning("Gallery could not build exhibit " + definition.Key);
-            return null;
-        }
-        return new GalleryShelf.Exhibit { key = definition.Key, title = data[0], description = data[2], category = kind, mesh = mesh, paint = paint };
     }
 
     void InstallExhibit(int i, GalleryShelf.Exhibit e)

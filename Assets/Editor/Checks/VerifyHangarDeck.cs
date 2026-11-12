@@ -358,7 +358,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         Call("OpenDock", 2);
         Call("Navigate", true, 1);
         // Review uses the same launch coroutine as the room's confirmation.
-        FlightTrials.Active = FlightTrials.All[1];
+        if (!FlightTrials.All[1].TrySelect()) throw new System.InvalidOperationException("Cold Delivery must be available");
         Call("CloseDock");
         hub.StartCoroutine((IEnumerator)typeof(HangarHub).GetMethod("Launch", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(hub, null));
         WaveOrchestrer flow;

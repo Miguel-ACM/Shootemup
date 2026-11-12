@@ -122,7 +122,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
 
     void DamageTick(float width, float charge)
     {
-        float damage = GameRules.playerShootDamage * 1.2f * charge * MagnifyingLens.Power;
+        float damage = GameRules.playerShootDamage * 1.2f * charge * MagnifyingLens.Power * DamageMultiplier;
         targets.Clear();
         targets.AddRange(AEnemy.Live);
         foreach (var enemy in targets)
@@ -178,7 +178,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
                 releasedFor += dt;
             if (releasedFor >= .18f)
                 break;
-            bool active = t >= warning && !releasing;
+            bool active = t >= warning && !releasing && SimulatorFlight.CanFire(transform.position);
             if (active && t >= nextVolley)
             {
                 charge = CombatUpgrades.Current != null ? CombatUpgrades.Current.Volley() : 1;

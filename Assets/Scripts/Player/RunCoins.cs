@@ -13,6 +13,8 @@ public static class RunCoins
         Count = Earned = 0;
     }
 
+    internal static void Seed(int amount) => Count = amount;
+
     public static void Add(int amount)
     {
         if (amount > 0)

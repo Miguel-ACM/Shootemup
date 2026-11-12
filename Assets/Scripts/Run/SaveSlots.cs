@@ -95,7 +95,7 @@ public static partial class MetaProgress
         engagedBoss = null;
         districtDefeated = districtSkipped = false;
         bossHits = districtHits = 0;
-        FlightTrials.Active = null;
+        FlightTrials.Reset();
         return true;
     }
 

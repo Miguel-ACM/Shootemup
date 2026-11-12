@@ -10,6 +10,8 @@ public abstract class AWeaponAutomatic : AWeapon
     {
         if (GameRules.playerDisabled || Menu.GameplayPaused || (Time.timeScale <= 0 && !WorldTimeStop.PlayerCanAct))
             return;
+        OnWeaponFrame();
+        if (!SimulatorFlight.CanFire(transform.position)) return;
         if (!isShootingPrimary && !isShootingSecondary)
             return;
         if (!KeepFiring())
@@ -19,8 +21,12 @@ public abstract class AWeaponAutomatic : AWeapon
         {
             shotClock = Mathf.Max(0, shotClock + 1);
             Shoot();
+            if (this is BurstLauncher && SimulatorFlight.DownbeatActive)
+                StopFiring();
         }
     }
+
+    protected virtual void OnWeaponFrame() { }
 
     public override void StopFiring()
     {

@@ -111,6 +111,12 @@ public static class LevelRun
         Stage++;
     }
 
+    internal static void AdvanceSimulator(LevelId next)
+    {
+        Current = next;
+        Stage++;
+    }
+
     public static void GetChoices(out LevelId left, out LevelId right)
     {
         if (FinalDistrict)

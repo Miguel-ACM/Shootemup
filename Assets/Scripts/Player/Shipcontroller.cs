@@ -226,6 +226,11 @@ public class Shipcontroller : MonoBehaviour
 
     float UseActive(AActiveItem active)
     {
+        if (SimulatorFlight.FreeEnergy)
+        {
+            float attempt = active.PressWithEnergyEfficiency(Mathf.Max(mana, active.EffectivePressCost));
+            return attempt < 0 ? attempt : mana;
+        }
         var upgrades = GetComponent<CombatUpgrades>();
         float price = active.EffectivePressCost;
         if (price > 0 && upgrades != null && upgrades.Count(UpgradeKind.LiveWire) > 0)
@@ -338,7 +343,7 @@ public class Shipcontroller : MonoBehaviour
         if (health > 0 && mana < maxMana && GameClock.ActivePlay)
             mana = Mathf.Min(maxMana, mana + maxMana * EnergyRechargePerSecond * GameClock.ActivePlayDelta);
         move = GameInput.Snapshot.Move;
-        Firing = !GameRules.playerDisabled && (GameInput.Snapshot.Primary || GameInput.Snapshot.Secondary);
+        Firing = !GameRules.playerDisabled && !SimulatorFlight.GunsLocked && (GameInput.Snapshot.Primary || GameInput.Snapshot.Secondary);
         // The hangar flies the ship in from below the screen; clamping it into the arena would show it early.
         if (HangarHub.HoldingShip)
             return;
@@ -346,13 +351,14 @@ public class Shipcontroller : MonoBehaviour
         if (!HangarHub.Active && health > 0 && Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
             Repair(Mathf.CeilToInt(maxHealth));
         float focusSpeed = HangarHub.Active ? 2f : slowMultiplier * FocusPace;
-        speedMultiplier = GameInput.Snapshot.Focus ? focusSpeed : 1;
-        horizontalMove = move.x * GameRules.playerMoveSpeed * GameClock.PlayerDelta * speedMultiplier;
-        verticalMove = move.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * GameClock.PlayerDelta * speedMultiplier;
-        if (LevelRun.Current == LevelId.Underwater && !CombatDecision.Active && !CloudTransition.Busy)
+        speedMultiplier = GameInput.Snapshot.Focus && !SimulatorFlight.Autopilot || SimulatorFlight.Slow ? focusSpeed : 1;
+        var steering = SimulatorFlight.Steering(move, transform.position);
+        horizontalMove = steering.x * GameRules.playerMoveSpeed * GameClock.PlayerDelta * speedMultiplier;
+        verticalMove = steering.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * GameClock.PlayerDelta * speedMultiplier;
+        if ((LevelRun.Current == LevelId.Underwater || SimulatorFlight.WaterHandling) && !CombatDecision.Active && !CloudTransition.Busy)
         {
-            var desired = new Vector2(move.x, move.y * verticalMoveMultiplier) * GameRules.playerMoveSpeed * speedMultiplier * .79f;
-            float response = move.sqrMagnitude < .01f ? 5.5f : speedMultiplier < 1 ? 11 : 7;
+            var desired = new Vector2(steering.x, steering.y * verticalMoveMultiplier) * GameRules.playerMoveSpeed * speedMultiplier * .79f;
+            float response = steering.sqrMagnitude < .01f ? 5.5f : speedMultiplier < 1 ? 11 : 7;
             waterVelocity = Vector2.Lerp(waterVelocity, desired, 1 - Mathf.Exp(-GameClock.PlayerDelta * response));
             horizontalMove = waterVelocity.x * GameClock.PlayerDelta;
             verticalMove = waterVelocity.y * GameClock.PlayerDelta;

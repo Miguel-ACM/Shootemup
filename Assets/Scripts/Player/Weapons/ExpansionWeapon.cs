@@ -11,6 +11,7 @@ public abstract class ExpansionWeapon : AWeaponAutomatic
     protected virtual int Pellets => 1;
     protected virtual float PelletSpacing => 13;
     protected virtual Vector2 FireDirection => Vector2.up;
+    protected virtual Vector3 MuzzleOffset(Vector3 offset, Vector2 aim) => new Vector3(offset.x, offset.y * aim.y);
     protected virtual void ShotFeedback()
     {
         string cue = this is RailDriver ? "shotRail" : this is ScatterCannon ? "shotScatter" :
@@ -34,9 +35,10 @@ public abstract class ExpansionWeapon : AWeaponAutomatic
         if (effects != null)
             effects.Shot();
         ShotFeedback();
+        var aim = FireDirection;
         for (int muzzle = 0; muzzle < spawnPoints.Length; muzzle++)
             for (int p = 0; p < Pellets; p++)
-                MagnifyingLens.Enlarge(ChargedShotCue.Apply(PlayerRound.Spawn(transform.position + new Vector3(spawnPoints[muzzle].x, spawnPoints[muzzle].y * FireDirection.y), CombatVisuals.Rotate(FireDirection, (p - (Pellets - 1) * .5f) * PelletSpacing),
-                    GameRules.playerShootDamage * Power * charge, GameRules.playerShootTravelSpeed * Velocity, Delivery), charge));
+                MagnifyingLens.Enlarge(ChargedShotCue.Apply(PlayerRound.Spawn(transform.position + MuzzleOffset(spawnPoints[muzzle], aim), CombatVisuals.Rotate(aim, (p - (Pellets - 1) * .5f) * PelletSpacing),
+                    GameRules.playerShootDamage * Power * charge * DamageMultiplier, GameRules.playerShootTravelSpeed * Velocity, Delivery), charge));
     }
 }

@@ -17,8 +17,8 @@ public sealed class GameOverState : MonoBehaviour
         if (Active)
             return;
         instance = new GameObject("Game over", typeof(RectTransform)).AddComponent<GameOverState>();
-        instance.won = victory;
         MetaProgress.EndRun(victory ? (FlightTrials.Active == null ? "Victory" : "Certified") : "Lost");
+        instance.won = victory && MetaProgress.LastFlight?.outcome != "Lost";
         IndustrialHUD.ShutDown();
         CombatDecision.End();
         GameRules.playerDisabled = true;

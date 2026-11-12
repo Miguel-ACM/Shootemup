@@ -27,8 +27,10 @@ public abstract class AWeapon : MonoBehaviour
     public bool stillShooting = false;
 
     protected WeaponInput weaponInput;
-    protected bool Coupled => RedlineDrive.Drives(this) || (CombatUpgrades.Current != null && CombatUpgrades.Current.Count(UpgradeKind.DoubleTrouble) > 0);
-    protected float ActiveRate => (RedlineDrive.Drives(this) ? 1.75f : 1) * (CombatUpgrades.Current?.RelayRate(this) ?? 1);
+    internal AWeapon EquipmentOwner { get; set; }
+    internal float DamageMultiplier { get; set; } = 1;
+    protected bool Coupled => RedlineDrive.Drives(EquipmentOwner ?? this) || (CombatUpgrades.Current != null && CombatUpgrades.Current.Count(UpgradeKind.DoubleTrouble) > 0);
+    protected float ActiveRate => (RedlineDrive.Drives(EquipmentOwner ?? this) ? 1.75f : 1) * (CombatUpgrades.Current?.RelayRate(EquipmentOwner ?? this) ?? 1);
     public bool IsCarbonCopy { get; set; }
     protected WeaponInput EffectiveInput => Coupled ? WeaponInput.both : weaponInput;
     public WeaponInput Slot => weaponInput;
@@ -76,7 +78,7 @@ public abstract class AWeapon : MonoBehaviour
     }
 
     // Reconcile held controls after a temporary driver starts or releases the guns.
-    public void SyncHeldInput(bool primary, bool secondary)
+    public virtual void SyncHeldInput(bool primary, bool secondary)
     {
         if (!isActiveAndEnabled || !GameClock.ActivePlay) { StopFiring(); return; }
         bool releasedPrimary = !isStopingPrimary && !primary;

@@ -65,7 +65,7 @@ public static class VerifyItemUnlocks
         Directory.CreateDirectory(saveDirectory);
         MetaProgress.ReviewSaveDirectory = saveDirectory;
         Reload();
-        FlightTrials.Active = null;
+        FlightTrials.Reset();
         Check(ItemUnlocks.All.All(r => !MetaProgress.IsUnlocked(r.Key)), "New profile keeps all achievement items locked");
         Check(MetaProgress.Stock.All(MetaProgress.CanStock), "New shop respects gates");
     }
@@ -172,15 +172,15 @@ public static class VerifyItemUnlocks
     }
     static void CheckSimulators()
     {
-        foreach (var trial in FlightTrials.All)
+        foreach (var trial in FlightTrials.All.Where(tape => !tape.Advanced))
         {
-            Fresh(); FlightTrials.Active = trial; Begin(trial.district, trial.difficulty);
+            Fresh(); Check(trial.TrySelect(), "Legacy tape available on a fresh save"); Begin(trial.district, trial.difficulty);
             MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Certified");
             Check(Items(MetaProgress.LastFlight.unlocks) == 1 && MetaProgress.LastFlight.unlocks[0].key == trial.reward, "Only simulator blueprint earned");
             Check(ItemUnlocks.All.All(r => !MetaProgress.IsUnlocked(r.Key)), "Simulator cannot award campaign items");
             Check(MetaProgress.CanStock(trial.reward), "Certified blueprint can be stocked");
         }
-        FlightTrials.Active = null;
+        FlightTrials.Reset();
     }
     // Item counts ignore district tags, which share the unlock queue.
     static int Items(IEnumerable<ItemUnlockNotice> notices) => notices.Count(n => !RouteUnlocks.IsRoute(n.key));
@@ -216,13 +216,13 @@ public static class VerifyItemUnlocks
             MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
             Check(MetaProgress.LastFlight.unlocks.All(n => !RouteUnlocks.IsRoute(n.key)), "A district is announced once");
         }
-        foreach (var trial in FlightTrials.All)
+        foreach (var trial in FlightTrials.All.Where(tape => !tape.Advanced))
         {
-            Fresh(); FlightTrials.Active = trial; Begin(trial.district, trial.difficulty);
+            Fresh(); Check(trial.TrySelect(), "Legacy tape available on a fresh save"); Begin(trial.district, trial.difficulty);
             MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Certified");
             Check(Enum.GetValues(typeof(LevelId)).Cast<LevelId>().All(a => MetaProgress.RouteOpen(a) == starting.Contains(a)), "Simulator never opens districts");
         }
-        FlightTrials.Active = null;
+        FlightTrials.Reset();
         Fresh();
         File.WriteAllText(Path.Combine(saveDirectory, "hangar.json"), "{\"version\":3,\"coins\":5,\"routes\":[\"Desert\",\"Void\"],\"unlocked\":[\"Popcorn\"],\"stock\":[],\"loadout\":[]}");
         Reload();

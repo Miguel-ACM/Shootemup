@@ -104,6 +104,8 @@ public static partial class MetaProgress
     static Type SelectBoss()
     {
         var roster = DistrictWaves.Bosses(LevelRun.Current);
+        if (FlightTrials.CurrentLeg?.boss is Type selected)
+            return selected;
         if (roster.Count == 1 || FlightTrials.Active != null)
             return roster[0];
         var random = new System.Random(unchecked(LevelRun.Seed + 397 * LevelRun.Stage + 7919 * (int)LevelRun.Current));
@@ -193,11 +195,15 @@ public static partial class MetaProgress
     {
         if (!Data.runActive || flight == null)
             return;
+        var simulator = FlightTrials.Find(flight.contract);
+        if (outcome == "Certified" && simulator?.Advanced == true &&
+            (FlightTrials.NextLeg != null || flight.bosses != simulator.bossCount))
+            outcome = "Lost";
         flight.outcome = outcome;
         flight.seconds = Mathf.RoundToInt(Time.time - departed);
         flight.score = Score.CurrentScore;
         flight.earned = RunCoins.Earned;
-        flight.banked = Mathf.Min(MaxCoins - Data.coins, RunCoins.Count);
+        flight.banked = Mathf.Min(MaxCoins - Data.coins, Mathf.Min(RunCoins.Count, RunCoins.Earned));
         Data.coins += flight.banked;
         if (flight.contract == null)
         {
@@ -219,13 +225,24 @@ public static partial class MetaProgress
                 }
             }
         }
-        else if (outcome == "Certified" && !ContractClear(flight.contract))
+        else if (outcome == "Certified" && simulator != null)
         {
-            Data.completed.Add(flight.contract);
-            string key = FlightTrials.Active.reward;
-            UnlockItem(key, GalleryShelf.TryGet(key, out var exhibit) ? exhibit.title : FlightTrials.Display(key),
-                FlightTrials.Active.Requirement, FlightTrials.Active.district);
-            flight.awards.Add("Blueprint  /  " + FlightTrials.Display(key));
+            var trial = simulator;
+            string completion = trial.CompletionKey(flight.difficulty);
+            if (!ContractClear(completion))
+            {
+                Data.completed.Add(completion);
+                if (!ContractClear(trial.title)) Data.completed.Add(trial.title);
+                string key = trial.reward;
+                if (key != null)
+                {
+                    string title = GalleryShelf.TryGet(key, out var exhibit) ? exhibit.title : FlightTrials.Display(key);
+                    UnlockItem(key, title, trial.Requirement, trial.district);
+                    flight.awards.Add("Blueprint  /  " + title);
+                }
+                else if (trial.Advanced)
+                    flight.awards.Add((flight.difficulty == RunDifficulty.Hard ? "Gold stamp  /  " : "Tape stamp  /  ") + trial.title);
+            }
         }
         Data.history.Insert(0, flight);
         if (Data.history.Count > 64)

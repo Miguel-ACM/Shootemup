@@ -138,11 +138,11 @@ public static partial class MetaProgress
         return items;
     }
 
-    /// <summary>Debug: the whole item pool and every district become available. The shop keeps its stock.</summary>
+    /// <summary>Debug: open the standard item pool and districts. Advanced blueprints are earned on tape.</summary>
     public static void UnlockAll()
     {
         foreach (var item in ItemPool.AllItems)
-            if (!IsUnlocked(item))
+            if (!IsUnlocked(item) && FlightTrials.Blueprint(item)?.Advanced != true)
                 Data.unlocked.Add(item);
         OpenAllRoutes();
         Save();

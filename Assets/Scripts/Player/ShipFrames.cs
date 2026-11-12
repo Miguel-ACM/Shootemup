@@ -74,6 +74,35 @@ public static class ShipFrames
         var kinds = new System.Collections.Generic.List<string>(frame.starters);
         if (FlightTrials.Active != null) kinds.AddRange(FlightTrials.Active.kit);
         else kinds.AddRange(MetaProgress.TakeLoadout());
+        return GrantItems(ship, kinds);
+    }
+
+    internal static bool HasLoanedGun(string[] kit) =>
+        System.Array.Exists(kit, key => ItemCatalog.TryGet(key, out var item) && typeof(AWeaponItem).IsAssignableFrom(item.ComponentType));
+
+    internal static void SwapSimulatorKit(Shipcontroller ship, string[] previous, string[] next)
+    {
+        if (next == null) return;
+        var inventory = RunInventory.For(ship);
+        foreach (var key in previous)
+        {
+            var entry = System.Linq.Enumerable.LastOrDefault(inventory.Entries, item => item.key == key);
+            if (entry == null || entry.kind == AItem.ItemType.weapon || entry.kind == AItem.ItemType.active) continue;
+            inventory.Remove(entry);
+        }
+        var loadout = ship.GetComponent<ShipLoadout>();
+        for (int slot = 0; slot < 2; slot++)
+        {
+            loadout.ClearWeapon(slot);
+            loadout.EquipActive(null, slot);
+        }
+        if (!HasLoanedGun(next))
+            loadout.SetPrimary(Current.primary);
+        ship.StartCoroutine(GrantItems(ship, next));
+    }
+
+    static IEnumerator GrantItems(Shipcontroller ship, System.Collections.Generic.IEnumerable<string> kinds)
+    {
         yield return null;
         yield return null;
         foreach (var kind in kinds)

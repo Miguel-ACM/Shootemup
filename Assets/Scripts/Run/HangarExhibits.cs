@@ -162,15 +162,22 @@ public sealed partial class HangarHub
     void TrialPage()
     {
         var trial = FlightTrials.All[selection];
+        bool available = trial.Available;
         Photo(Resources.Load<Texture2D>("DockArt/Portrait" + trial.frame), new Rect(0, 0, 1, 1), -198, 113, 153, Color.white);
-        Legend("TAPE " + (selection + 1).ToString("00") + " / " + FlightTrials.All.Length.ToString("00"), 80, 196, 354, 29, 16, lamps[room], true);
+        Legend("TAPE " + (selection + 1).ToString("00") + " / " + FlightTrials.All.Length.ToString("00") + (available ? "" : "  LOCKED"),
+            80, 196, 354, 29, 16, lamps[room], true);
         Legend(trial.title, 80, 145, 354, 76, 35, DockInstrument.Paper, true);
-        Legend(trial.frame + "    /    " + trial.difficulty, 80, 78, 354, 34, 21, DockInstrument.Muted);
+        var mode = trial.DifficultyFor(difficulty);
+        Legend(trial.frame + "    /    " + mode, 80, 78, 354, 34, 21, DockInstrument.Muted);
         Legend(trial.objective, 0, operating ? 16 : -49, 558, 57, 25, DockInstrument.Paper);
         if (!operating)
             return;
-        Legend("KIT  " + string.Join(" + ", trial.kit.Select(FlightTrials.Display)), 0, -54, 558, 58, 19, DockInstrument.Muted);
-        Legend((MetaProgress.ContractClear(trial.title) ? "CERTIFIED" : "REWARD") + "  " + FlightTrials.Display(trial.reward), 0, -129, 558, 54, 21, lamps[room], true);
+        Legend(trial.kit.Length == 0 ? "Twin cannon" : string.Join(" + ", trial.kit.Select(FlightTrials.Display)), 0, -49, 558, 53, 19, DockInstrument.Muted);
+        string status = !available ? FlightTrials.AccessRequirement :
+            MetaProgress.ContractClear(trial.CompletionKey(mode)) ? "CERTIFIED" :
+            trial.reward != null ? "REWARD  " + FlightTrials.Display(trial.reward) :
+            trial.approach != SimulatorApproach.Standard ? SimulatorFlight.Label(trial.approach) : "READY";
+        Legend(status, 0, -129, 558, 54, 21, available ? lamps[room] : DockInstrument.Brass, true);
         Legend("< >  CONTRACT", 0, -189, 558, 33, 15, DockInstrument.Muted);
     }
     void HistoryPage()
@@ -203,7 +210,8 @@ public sealed partial class HangarHub
                 return;
             Legend(f.bosses + " bosses    " + f.clean + " no-hit    " + f.hits + " hits    +" + f.earned + " coins", 0, -27, 558, 46, 20, DockInstrument.Paper);
             var r = MetaProgress.Record(f.frame, f.difficulty);
-            string details = sim ? "Blueprint   /   " + FlightTrials.Display(FlightTrials.All.First(t => t.title == f.contract).reward) :
+            var blueprint = sim ? FlightTrials.Find(f.contract)?.reward : null;
+            string details = sim ? blueprint == null ? "" : "Blueprint   /   " + FlightTrials.Display(blueprint) :
                 "HULL TOTAL    /    " + r.deaths + " losses    " + r.coins + " coins    " + TimeSpan.FromSeconds(r.seconds).TotalHours.ToString("0.0") + " h";
             Legend(details, 0, -91, 558, 42, 17, DockInstrument.Muted);
             if (f.awards != null && f.awards.Count > 0)

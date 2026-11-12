@@ -58,7 +58,7 @@ public sealed partial class HangarHub : MonoBehaviour
     /// <summary>A new game opens the hangar first; the run itself starts from its doors.</summary>
     public static void Enter(RunDifficulty chosen)
     {
-        FlightTrials.Active = null;
+        FlightTrials.Reset();
         difficulty = chosen;
         Active = true;
         GameRules.StartNewRun(chosen);
@@ -69,7 +69,7 @@ public sealed partial class HangarHub : MonoBehaviour
     /// <summary>After a lost run the ship returns to the hangar, with the same difficulty.</summary>
     public static void Return()
     {
-        FlightTrials.Active = null;
+        FlightTrials.Reset();
         Active = true;
         GameRules.StartNewRun(difficulty);
         LevelRun.Reset();
@@ -77,7 +77,7 @@ public sealed partial class HangarHub : MonoBehaviour
 
     public static void Leave()
     {
-        FlightTrials.Active = null;
+        FlightTrials.Reset();
         Active = false;
         HoldingShip = false;
         LevelEnvironment.ReleaseTitle();
@@ -708,8 +708,15 @@ public sealed partial class HangarHub : MonoBehaviour
             yield return null;
         ResetDeckCamera();
         Active = false;
-        GameRules.StartNewRun(FlightTrials.Active?.difficulty ?? difficulty);
-        LevelRun.Reset(FlightTrials.Active?.district ?? LevelId.Fields);
+        var trial = FlightTrials.Active;
+        GameRules.StartNewRun(trial?.DifficultyFor(difficulty) ?? difficulty);
+        if (trial?.Advanced == true)
+        {
+            LevelRun.Reset(trial.district, trial.Seed);
+            RunCoins.Seed(trial.startingCoins);
+        }
+        else
+            LevelRun.Reset(trial?.district ?? LevelId.Fields);
         MetaProgress.BeginRun();
         BGMManager.PlayLevelMusic(LevelRun.Current);
         runLoad.allowSceneActivation = true;
@@ -729,7 +736,7 @@ public sealed partial class HangarHub : MonoBehaviour
         ShipFrames.ApplyHull(player, frame);
         var loadout = player.GetComponent<ShipLoadout>();
         ShipFrames.ApplyWeapons(loadout, frame);
-        if (FlightTrials.SecondaryFireOnly)
+        if (FlightTrials.SecondaryFireOnly || trial?.Advanced == true && ShipFrames.HasLoanedGun(trial.kit))
             loadout.SetPrimary(null);
         player.SetMaxHits(frame.hits);
         player.Repair(frame.hits);

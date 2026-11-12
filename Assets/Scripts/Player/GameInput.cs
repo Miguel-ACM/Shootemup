@@ -62,6 +62,7 @@ public static class GameInput
         }
         else
         {
+            if (!SimulatorFlight.AcceptGunPress()) return;
             if (slot == 0) PrimaryPressed?.Invoke(context); else SecondaryPressed?.Invoke(context);
         }
     }

@@ -50,6 +50,8 @@ public sealed class CombatUpgrades : MonoBehaviour
         stacks[kind] = Mathf.Max(0, Count(kind) - 1);
         if (kind == UpgradeKind.Reserve)
             reserve = Count(kind) > 0 ? reserve : 0;
+        if (kind == UpgradeKind.Capacitor && Count(kind) == 0)
+            capacitor = 0;
         if (kind == UpgradeKind.RelaySwitch && Count(kind) == 0)
         {
             ResetRelaySlot(0);

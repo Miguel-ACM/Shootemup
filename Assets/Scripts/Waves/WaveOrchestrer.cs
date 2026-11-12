@@ -62,6 +62,7 @@ public class WaveOrchestrer : MonoBehaviour
     DistrictMiniboss activeMiniboss;
     float minibossDeadline = -1;
     bool minibossVictory;
+    SimulatorFlight simulatorFlight;
     /// <summary>Every enemy of an ordinary wave resolved, in wave order: (total, destroyed).</summary>
     public static event Action<int, int> CombatWaveFinished;
     public float MinibossRemaining => minibossDeadline < 0 ? 20 : Mathf.Max(0, minibossDeadline - Time.time);
@@ -78,6 +79,8 @@ public class WaveOrchestrer : MonoBehaviour
         limits = Camera.getLimits();
         ship = GameObject.FindGameObjectWithTag("Player");
         wavePool = GetComponent<WavePool>();
+        if (FlightTrials.Approach != SimulatorApproach.Standard)
+            simulatorFlight = gameObject.AddComponent<SimulatorFlight>();
         waves = FlightTrials.Active?.Sequence() ?? DistrictWaves.Sequence();
         BeginWaves();
     }
@@ -278,6 +281,11 @@ public class WaveOrchestrer : MonoBehaviour
             GenerateWave();
             return;
         }
+        if (kind == RunSlotKind.End && FlightTrials.Active?.Advanced == true)
+        {
+            StartCoroutine(SimulatorHandoff(false));
+            return;
+        }
         if (kind != RunSlotKind.Combat)
             DismissOffer();
         if (slot.IsDecision)
@@ -289,6 +297,8 @@ public class WaveOrchestrer : MonoBehaviour
         else if (kind == RunSlotKind.Boss)
         {
             // Hold the wave timer while the boss is up; the next wave starts when it dies.
+            FlightTrials.BeginBoss();
+            simulatorFlight?.End();
             isWaveComingOut = false;
             Phase = RunPhase.BossWarning;
             StartCoroutine(BossEntrance());
@@ -296,6 +306,7 @@ public class WaveOrchestrer : MonoBehaviour
         else
         {
             isWaveComingOut = true;
+            simulatorFlight?.Begin(ship.GetComponent<Shipcontroller>());
             challenge.BeginWave(kind == RunSlotKind.Combat);
             currentWave = wavePool.getWave(slot.Key);
             var following = plan.Following(currentWaveNumber + 1);
@@ -546,13 +557,21 @@ public class WaveOrchestrer : MonoBehaviour
             DismissOffer();
             if (choosingRoute || GameOverState.Active)
                 return;
+            if (!defeated && FlightTrials.Active?.Advanced == true)
+            {
+                GameOverState.Show();
+                return;
+            }
             MetaProgress.DefeatBoss();
             choosingRoute = true;
             isWaveComingOut = false;
             EraseAllBullets();
             if (FlightTrials.Active != null)
             {
-                GameOverState.Show(true);
+                if (FlightTrials.Active.Advanced)
+                    StartCoroutine(SimulatorHandoff(true));
+                else
+                    GameOverState.Show(true);
                 return;
             }
             StartCoroutine(BossReward(bossPosition ?? new Vector3(0, Camera.UpLimit * .5f, 1)));
@@ -564,6 +583,29 @@ public class WaveOrchestrer : MonoBehaviour
             killLedger.Resolve(waveNumber, defeated);
             killLedger.Drain(CombatWaveFinished);
         }
+    }
+
+    IEnumerator SimulatorHandoff(bool bossDefeated)
+    {
+        Phase = RunPhase.Routing;
+        simulatorFlight?.End();
+        CombatDecision.Begin();
+        EraseAllBullets();
+        // The next tape leg is fixed. Give the normal shatter and payout their beat.
+        if (bossDefeated)
+        {
+            yield return new WaitForSeconds(1.25f);
+            if (GameOverState.Active) yield break;
+            foreach (var coin in FindObjectsByType<Money>()) coin.Collect();
+        }
+        var next = FlightTrials.NextLeg;
+        if (next == null)
+        {
+            GameOverState.Show(bossDefeated);
+            yield break;
+        }
+        BGMManager.PlayLevelMusic(next.district);
+        CloudTransition.Change(() => ResetDistrict(next.district, true));
     }
 
     IEnumerator BossReward(Vector3 position)
@@ -649,7 +691,7 @@ public class WaveOrchestrer : MonoBehaviour
         CloudTransition.Change(() => ResetDistrict(null));
     }
 
-    void ResetDistrict(LevelId? next)
+    void ResetDistrict(LevelId? next, bool simulator = false)
     {
         if (GameOverState.Active)
             return;
@@ -660,7 +702,15 @@ public class WaveOrchestrer : MonoBehaviour
         routeChoice = null;
         if (next.HasValue)
         {
-            LevelRun.Advance(next.Value);
+            if (simulator)
+            {
+                var previous = FlightTrials.CurrentLeg.kit ?? FlightTrials.Active.kit;
+                FlightTrials.AdvanceLeg();
+                LevelRun.AdvanceSimulator(next.Value);
+                ShipFrames.SwapSimulatorKit(ship.GetComponent<Shipcontroller>(), previous, FlightTrials.CurrentLeg.kit);
+            }
+            else
+                LevelRun.Advance(next.Value);
             MetaProgress.EnterDistrict();
         }
         LevelEnvironment.Apply();

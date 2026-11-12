@@ -30,12 +30,12 @@ public static class VerifyUnlockDialog
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             for (int row = 0; row < (ItemCatalog.Exhibits.Count + GalleryShelf.Columns - 1) / GalleryShelf.Columns; row++)
-                Resources.Load<GalleryShelf>("Gallery/Shelf" + row).Register();
+                Resources.Load<GalleryShelf>("Gallery/Shelf" + row)?.Register();
             var queue = (List<ItemUnlockNotice>)MetaProgress.PendingUnlocks;
             queue.AddRange(ItemUnlocks.All.Select(r => new ItemUnlockNotice {
                 key = r.Key, title = r.Title, area = r.Area, condition = r.Condition, source = r.Requirement
             }));
-            foreach (var trial in FlightTrials.All)
+            foreach (var trial in FlightTrials.All.Where(tape => tape.reward != null))
                 queue.Add(new ItemUnlockNotice { key = trial.reward, title = ItemCatalog.Get(trial.reward).Key, source = trial.Requirement });
             var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/prstartk.asset");
             var root = new GameObject("Unlock dialog check", typeof(RectTransform));
