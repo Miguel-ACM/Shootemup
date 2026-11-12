@@ -30,8 +30,9 @@ public static class VerifySaveSlots
         {
             Persistence();
             Presentation();
+            Departure();
             File.WriteAllText("ReviewOutput/SaveSlots.txt", "PASS\n" + checks +
-                " checks covering original saves, independent slots, summaries, recovery, deletion, menu and confirmation.\n");
+                " checks covering original saves, independent slots, summaries, recovery, deletion, menu input locks, confirmation and departure fade state.\n");
             VerifyCleanCompilation.Run();
         }
         catch (Exception e)
@@ -206,6 +207,32 @@ public static class VerifySaveSlots
         Check(!menu.InputReady, "Carried navigation must return to neutral");
         release.Invoke(menu, new object[] { deadline + .3f, false, Vector2.zero });
         Check(menu.InputReady, "Released controls arm the next deliberate action");
+    }
+
+    static void Departure()
+    {
+        foreach (var old in Object.FindObjectsByType<SaveSelectMenu>())
+            Object.DestroyImmediate(old.gameObject);
+        var entry = Object.FindAnyObjectByType<NewGame>();
+        var menu = entry.GetComponentInParent<Menu>();
+        entry.OnAccept();
+        var selector = Object.FindAnyObjectByType<SaveSelectMenu>();
+        var title = menu.GetComponent<CanvasGroup>();
+        var files = selector.GetComponent<CanvasGroup>();
+        files.alpha = 1;
+        selector.DismissForDeparture();
+        Check(title.alpha == 0 && !title.interactable && !title.blocksRaycasts && menu.Suspended,
+            "Departure keeps the main menu hidden and noninteractive");
+        Check(!files.interactable && !files.blocksRaycasts, "Departing save cards cannot accept input");
+        files.alpha = .37f;
+        Invoke(selector, "Update");
+        Check(files.alpha == .37f, "Entry animation cannot overwrite the departure fade");
+        var flight = (System.Collections.IEnumerator)typeof(NewGame).GetMethod("IntoHangar", Instance)
+            .Invoke(entry, new object[] { RunDifficulty.Normal });
+        Check(flight.MoveNext(), "Departure begins its fade before scenery readiness");
+        Check(flight.MoveNext() && title.alpha == 0, "Fading a hidden title never flashes its rows back on");
+        selector.StopAllCoroutines();
+        Object.DestroyImmediate(selector.gameObject);
     }
 
     static void Ready(SaveSelectMenu selector)

@@ -121,9 +121,10 @@ public sealed class SaveSelectMenu : MonoBehaviour
 
     void Update()
     {
+        if (closing) return;
         age += Time.unscaledDeltaTime;
         fade.alpha = Mathf.SmoothStep(0, 1, age / .18f);
-        if (closing || !menu.InputReady || Time.frameCount <= openedFrame || CloudTransition.Busy) return;
+        if (!menu.InputReady || Time.frameCount <= openedFrame || CloudTransition.Busy) return;
         var controls = GameInput.Actions.PlayerControls;
         var move = controls.Move.ReadValue<Vector2>();
         bool moving = move.sqrMagnitude > .3f;
@@ -272,8 +273,23 @@ public sealed class SaveSelectMenu : MonoBehaviour
 
     public void DismissForDeparture()
     {
+        if (closing) return;
         closing = true;
-        titleGroup.alpha = 1;
+        titleGroup.alpha = 0;
+        titleGroup.interactable = titleGroup.blocksRaycasts = false;
+        fade.interactable = fade.blocksRaycasts = false;
+        StartCoroutine(FadeForDeparture());
+    }
+
+    System.Collections.IEnumerator FadeForDeparture()
+    {
+        float startAlpha = fade.alpha;
+        for (float elapsed = 0; elapsed < .4f;)
+        {
+            yield return null;
+            elapsed += Time.unscaledDeltaTime;
+            fade.alpha = Mathf.SmoothStep(startAlpha, 0, elapsed / .4f);
+        }
         Destroy(gameObject);
     }
 

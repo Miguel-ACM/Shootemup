@@ -38,9 +38,10 @@ public class NewGame : AMenuElement
     {
         const float Seconds = .65f;
         menu.Suspended = true;
-        while (!LevelEnvironment.TitleReady)
-            yield return null;
         var group = menu.GetComponent<CanvasGroup>();
+        float startAlpha = group != null ? group.alpha : 0;
+        if (group != null)
+            group.interactable = group.blocksRaycasts = false;
         var panel = menu.transform.parent.GetComponent<Image>();
         var shade = panel != null ? panel.color : Color.clear;
         for (float elapsed = 0; elapsed < Seconds;)
@@ -48,10 +49,12 @@ public class NewGame : AMenuElement
             yield return null;
             elapsed += Time.unscaledDeltaTime;
             if (group != null)
-                group.alpha = Mathf.SmoothStep(1, 0, elapsed / .4f);
+                group.alpha = Mathf.SmoothStep(startAlpha, 0, elapsed / .4f);
             if (panel != null)
                 panel.color = new Color(shade.r, shade.g, shade.b, Mathf.SmoothStep(shade.a, 0, elapsed / Seconds));
         }
+        while (!LevelEnvironment.TitleReady)
+            yield return null;
         LevelEnvironment.CarryTitle();
         HangarHub.Enter(difficulty);
     }
