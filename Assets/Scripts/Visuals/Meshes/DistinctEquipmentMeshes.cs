@@ -91,6 +91,15 @@ public static partial class IndustrialMeshFactory
                 b.Drum(new Vector3(0, -.22f, 0), .23f, .22f, 6, 8);
                 b.Drum(new Vector3(0, -.22f, -.15f), .13f, .09f, 3, 8);
                 break;
+            case "VendingGunItem":
+                b.Box(Vector3.zero, new Vector3(.51f, .62f, .31f), 2, 6);
+                b.Box(new Vector3(0, .35f, 0), new Vector3(.62f, .17f, .3f), 11, 6);
+                for (int i = -2; i <= 2; i++)
+                    b.Box(new Vector3(i * .11f, .48f, 0), new Vector3(.075f, .21f, .13f), 6, 11);
+                b.Drum(new Vector3(.11f, .03f, -.18f), .12f, .07f, 4, 10);
+                b.Box(new Vector3(.11f, .03f, -.23f), new Vector3(.12f, .027f, .035f), 6);
+                b.Box(new Vector3(-.09f, -.24f, -.19f), new Vector3(.25f, .1f, .08f), 6, 11);
+                break;
             case "BeamEmitterItem":
                 // Open tuning fork around a recessed optical channel.
                 foreach (int side in new[] { -1, 1 })

@@ -21,6 +21,7 @@ public static class WeaponCatalog
         { nameof(Counterweight), typeof(Counterweight) },
         { nameof(DeadLetter), typeof(DeadLetter) },
         { nameof(BankShot), typeof(BankShot) },
+        { nameof(VendingGun), typeof(VendingGun) },
     };
     public static AWeapon Create(string key, Transform parent)
     {

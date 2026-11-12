@@ -90,6 +90,8 @@ public sealed class FlightTrials
             Kit("DeadLetterItem", "DecoyProjector"), "DeadLetterItem"),
         new FlightTrials("Bank Job", new[] { Boss<TunnelSawBoss>(Tunnel, "4", "8", "12") },
             Kit("BankShotItem", "PocketFan"), "BankShotItem"),
+        new FlightTrials("Exact Change", new[] { Waves(City, "2", "6"), Boss<CandyRegentBoss>(Candyland, "4", "8") },
+            Kit("VendingGunItem", "NeedleCannonItem"), "VendingGunItem", coins: 12),
         new FlightTrials("Kitchen Fire", new[] { Boss<HellCrabBoss>(Hell, "4", "8", "12") },
             Kit("FlameProjectorItem", "Popcorn", "ChainReactor")),
         new FlightTrials("Side Hustle", new[] { Waves(City, "4", "8"), Boss<DesertWormBoss>(Desert, "4", "8") },
