@@ -97,6 +97,7 @@ public sealed partial class HangarHub
                 Destroy(node);
             }
         pageNodes.Clear();
+        bool dimScreen = false;
         Color accent = lamps[room];
         Legend((room + 1).ToString("00") + "  /  " + signs[room], -41, 255, 476, 34, 17, accent, true);
         switch ((Dock)room)
@@ -105,7 +106,7 @@ public sealed partial class HangarHub
                 FleetPage();
                 break;
             case Dock.Simulator:
-                TrialPage();
+                dimScreen = !TrialPage();
                 break;
             case Dock.Recorder:
                 HistoryPage();
@@ -116,6 +117,9 @@ public sealed partial class HangarHub
         }
         consoleFooter = Legend("", 0, -254, 558, 32, 17, DockInstrument.Paper);
         RefreshConsoleFooter();
+        if (dimScreen)
+            pageNodes.Add(DockInstrument.Block(instrument.face, "Locked tape dimmer", Vector2.zero, DockInstrument.TubeSize,
+                new Color(0, 0, 0, .46f)).gameObject);
     }
     void FleetPage()
     {
@@ -160,7 +164,7 @@ public sealed partial class HangarHub
         string status = !open ? "Clear Void in " + (ShipFrame)(selection - 1) : MetaProgress.Ship == hull.frame ? "IN FLIGHT" : "READY TO FLY";
         Legend(status, 0, -197, 558, 28, 18, DockInstrument.Brass);
     }
-    void TrialPage()
+    bool TrialPage()
     {
         var trial = FlightTrials.All[selection];
         bool available = trial.Available;
@@ -172,7 +176,8 @@ public sealed partial class HangarHub
             Tile(-198, 113, 161, 161, accent);
             Tile(-198, 113, 155, 155, DockInstrument.Ink);
         }
-        Photo(Resources.Load<Texture2D>("DockArt/Portrait" + trial.frame), new Rect(0, 0, 1, 1), -198, 113, 153, Color.white);
+        Photo(Resources.Load<Texture2D>("DockArt/Portrait" + trial.frame), new Rect(0, 0, 1, 1), -198, 113, 153,
+            MetaProgress.CanFly(trial.frame) ? Color.white : Color.black);
         if (completed)
         {
             Tile(-141, 56, 44, 44, accent);
@@ -200,9 +205,13 @@ public sealed partial class HangarHub
         TrialMarks();
         if (operating)
             Legend(InputPrompts.Navigation(false) + " CONTRACT", 0, -201, 558, 25, 15, DockInstrument.Muted);
+        return available;
     }
 
     static bool TrialCompleted(FlightTrials trial) => MetaProgress.ContractClear(trial.CompletionKey(trial.DifficultyFor(difficulty)));
+
+    static Color TrialItemTint(string key) =>
+        ItemCatalog.TryGet(key, out var item) && item.InRewardPool && !MetaProgress.IsUnlocked(key) ? Color.black : Color.white;
 
     void TrialEquipment(FlightTrials trial, bool completed)
     {
@@ -225,14 +234,14 @@ public sealed partial class HangarHub
         {
             float x = middle + (i - (kitCount - 1) * .5f) * pitch;
             Tile(x, -111, size * .7f, 3, lamps[room]);
-            Photo(studio.Atlas, studio.Cell(i), x, -76, size, Color.white);
+            Photo(studio.Atlas, studio.Cell(i), x, -76, size, TrialItemTint(kinds[i]));
         }
         if (reward)
         {
             Tile(154, -72, 2, 87, Metal);
             Legend(completed ? "EARNED" : "REWARD", 225, -27, 108, 17, 13, DockInstrument.Brass).alignment = TextAlignmentOptions.Center;
             Tile(225, -111, 58, 3, DockInstrument.Brass);
-            Photo(studio.Atlas, studio.Cell(kitCount), 225, -76, 76, Color.white);
+            Photo(studio.Atlas, studio.Cell(kitCount), 225, -76, 76, TrialItemTint(trial.reward));
         }
     }
 

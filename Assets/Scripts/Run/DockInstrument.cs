@@ -8,6 +8,7 @@ public sealed class DockInstrument
     public readonly RectTransform face;
     public readonly CanvasGroup group;
     readonly TMP_FontAsset font;
+    internal static readonly Vector2 TubeSize = new Vector2(607, 557);
     public static readonly Color Ink = new Color(.035f, .073f, .09f), Sea = new Color(.50f, .88f, .83f),
         Paper = new Color(.90f, .94f, .89f), Brass = new Color(.98f, .74f, .38f), Muted = new Color(.59f, .70f, .72f);
     public DockInstrument(GameObject root, TMP_FontAsset typeface, Color accent)
@@ -19,7 +20,7 @@ public sealed class DockInstrument
         Block(face, "Recessed gasket", Vector2.zero, new Vector2(614, 565), new Color(.01f, .014f, .016f));
         var glass = new GameObject("Convex phosphor tube", typeof(RectTransform), typeof(CanvasRenderer), typeof(DockTubeGlass)).GetComponent<DockTubeGlass>();
         glass.transform.SetParent(face, false);
-        glass.rectTransform.sizeDelta = new Vector2(607, 557);
+        glass.rectTransform.sizeDelta = TubeSize;
         glass.raycastTarget = false;
         Block(face, "Top rail", new Vector2(0, 229), new Vector2(560, 2), accent);
         Block(face, "Foot rail", new Vector2(0, -219), new Vector2(560, 2), new Color(.20f, .32f, .34f));
