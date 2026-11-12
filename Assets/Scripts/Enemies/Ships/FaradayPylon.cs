@@ -61,6 +61,9 @@ public sealed class FaradayPylon : DistrictEnemy
     // The leader calls the accent for both pylons; the door is shared.
     protected override void Attack()
     {
+        // A denser score must never put two different doors on the same live bar.
+        if (bar != null && bar.IsAttachedTo(Hull))
+            return;
         float door = Doors[(doorPhase + accents++) % Doors.Length] * Camera.RightLimit;
         FireBar(door);
         if (twin != null)
@@ -138,11 +141,15 @@ public static partial class WavePartLibrary
 {
     static readonly FlightCurve FaradayDescent = Route("Thunder / Faraday descent", Vector2.right, -0.93f, 1.18f, -0.93f, 0.9f, -0.93f, 0.62f, -0.93f, 0.34f, -0.93f, 0.06f, -0.93f, -0.22f);
     static readonly FlightCurve FaradayClimb = Route("Thunder / Faraday climb", Vector2.right, -0.93f, -0.22f, -0.93f, 0.06f, -0.93f, 0.34f, -0.93f, 0.62f, -0.93f, 0.9f, -0.93f, 1.18f);
-    // A single gate sweeps down the arena; later, a ladder of gates climbs up it.
+    static readonly FlightCurve FaradayReturn = Route("Thunder / Faraday return", Vector2.right, -.93f, 1.18f, -.93f, .82f, -.93f, .43f, -.93f, .18f, -.93f, .43f, -.93f, .82f, -.93f, 1.18f);
+    // Falling and rising doors, a staggered ladder, and a gate that sweeps back upward.
     public static readonly WavePart[] FaradayPylonParts =
     {
         new WavePart("Faraday gate", nameof(FaradayPylon), FaradayDescent, WaveShape.Solo, 1, 8.0f, 3, new[] { 0.25f, 0.58f }),
         new WavePart("Faraday ladder", nameof(FaradayPylon), FaradayClimb, WaveShape.Train, 2, 8.5f, 5, new[] { 0.3f, 0.62f }),
+        new WavePart("Faraday downstroke", nameof(FaradayPylon), FaradayDescent, WaveShape.Solo, 1, 6.0f, 3, new[] { .24f, .68f }),
+        new WavePart("Faraday updraft", nameof(FaradayPylon), FaradayClimb, WaveShape.Solo, 1, 6.0f, 4, new[] { .24f, .68f }),
+        new WavePart("Faraday return", nameof(FaradayPylon), FaradayReturn, WaveShape.Solo, 1, 7.6f, 6, new[] { .22f, .62f }),
     };
 }
 

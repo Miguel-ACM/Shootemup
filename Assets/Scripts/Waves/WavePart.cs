@@ -38,18 +38,24 @@ public sealed class WavePart
         int count = Shape == WaveShape.Solo ? 1 : Mathf.Max(Count == 2 ? 2 : 3, Count + variant % 3 - 1 + Mathf.Min(1, (LevelRun.Stage - 1) / 3));
 
         WaveShape shape = Shape;
+        bool wallGate = Enemy == nameof(FaradayPylon);
+        if (wallGate)
+        {
+            count = Mathf.Min(count, 2);
+            interval = Mathf.Max(interval, 1.35f);
+        }
         if (Ground)
         {
             count = Mathf.Min(4, Count + variant % 2);
             interval = Mathf.Max(interval, .80f);
         }
         // Two authored arrangements for each motif, with shared routes and score.
-        if ((variant & 1) != 0 && !Ground)
+        if ((variant & 1) != 0 && !Ground && !wallGate)
             shape = Shape == WaveShape.Train ? WaveShape.Rake : Shape == WaveShape.Rake ? WaveShape.Train : Shape == WaveShape.Chevron ? WaveShape.Diamond : Shape == WaveShape.Diamond ? WaveShape.Chevron : Shape;
         if (!Route.HorizontalLanes && (shape == WaveShape.Chevron || shape == WaveShape.Diamond))
             shape = WaveShape.Rake;
         var units = new List<WaveUnit>();
-        float lane = Ground ? 0 : (variant / 3 % 3 - 1) * .045f;
+        float lane = Ground || wallGate ? 0 : (variant / 3 % 3 - 1) * .045f;
         void Add(float at, float offset, float z = 0)
         {
             units.Add(new WaveUnit(Enemy, at, Vector3.zero)
@@ -388,7 +394,16 @@ public static class WaveGeometry
     {
         var tracks = new List<Track>();
         foreach (var unit in units)
+        {
             tracks.Add(new Track(unit));
+            // The pylon creates its partner at runtime; reserve that opposite wall too.
+            if (unit.enemy == nameof(FaradayPylon))
+            {
+                var twin = (WaveUnit)unit.Clone();
+                twin.side = -unit.side;
+                tracks.Add(new Track(twin));
+            }
+        }
         return tracks;
     }
 

@@ -144,6 +144,8 @@ public static class WaveComposer
         var occupied = Array.Empty<ulong>();
         int count = budget < 5 || compact ? 2 : 3;
         bool heavy = false, groundUsed = false;
+        // Four of Thunder's ten ordinary waves feature a side-laser formation.
+        bool sideLasers = level == LevelId.Thunder && (budget == 3 || budget == 8 || budget == 14 || budget == 20);
         if (level == LevelId.Candyland)
             count = budget < 5 || compact ? 3 : 4;
         if (level == LevelId.Space)
@@ -164,6 +166,10 @@ public static class WaveComposer
             var options = new List<(WavePart part, int score)>();
             foreach (var part in WavePartLibrary.For(level))
             {
+                if (sideLasers && slot == 0 && part.Enemy != nameof(FaradayPylon))
+                    continue;
+                if (part.Enemy == nameof(FaradayPylon) && units.Exists(u => u.enemy == nameof(FaradayPylon)))
+                    continue;
                 if (level == LevelId.Space && slot == count - 1 && !units.Exists(u => u.enemy == nameof(LaserSatellite) || u.enemy == nameof(OrbitalCarrier)) && part.Enemy != nameof(LaserSatellite) && part.Enemy != nameof(OrbitalCarrier))
                     continue;
                 if (part.Unlock > budget || chosen.Contains(part.Name) || previous.Contains(part.Name) || (heavy && part.Shape == WaveShape.Solo) || (groundUsed && part.Ground))
