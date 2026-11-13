@@ -6,6 +6,7 @@ Shader "Shootemup/Combat Projectile"
         [PerRendererData] _MainTex ("Projectile artwork",2D)="white" {}
         _Color ("Tint",Color)=(1,1,1,1)
         _SpriteTint ("Code tint",Color)=(1,1,1,1)
+        _Opacity ("Code opacity",Range(0,1))=1
         _Neutralize ("Legacy grayscale",Float)=0
         _Burn ("Burn coating",Float)=0
         _Poison ("Poison coating",Float)=0
@@ -33,7 +34,7 @@ Shader "Shootemup/Combat Projectile"
                 float4 _Color;
                 float4 _SpriteTint;
                 float4 _PoisonTint;
-                float _Neutralize,_Burn,_Poison,_Gloss,_Emission,_Dark;
+                float _Neutralize,_Burn,_Poison,_Gloss,_Emission,_Dark,_Opacity;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION;float2 uv:TEXCOORD0;float4 color:COLOR; };
             struct Varyings { float4 positionCS:SV_POSITION;float2 uv:TEXCOORD0;float4 color:COLOR; };
@@ -70,6 +71,7 @@ Shader "Shootemup/Combat Projectile"
                 // HDR energy is collected by one shared bloom, never a light or halo per round.
                 // Keep the original silhouette and dark ink out of the emissive core.
                 color.rgb+=lerp(radiance*enamel*_Emission,radiance*outline*1.2,_Dark);
+                color.a*=_Opacity;
                 clip(color.a-.005);return color;
             }
             ENDHLSL

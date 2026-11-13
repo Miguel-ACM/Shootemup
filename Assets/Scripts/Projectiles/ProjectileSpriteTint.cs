@@ -34,6 +34,7 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
         if (effect.properties == null)
             effect.properties = new MaterialPropertyBlock();
         effect.properties.SetColor("_SpriteTint", tint);
+        effect.properties.SetFloat("_Opacity", friendly ? tint.a : 1);
         effect.properties.SetFloat("_Neutralize", neutralize ? 1 : 0);
         effect.properties.SetFloat("_Emission", 1.15f);
         effect.properties.SetColor("_PoisonTint", PlayerShotPalette.Poison);
@@ -74,7 +75,7 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
     public static void Friendly(GameObject go)
     {
         var round = go.GetComponent<PlayerRound>();
-        Apply(go, round != null && round.delivery == PlayerDelivery.Flame ? new Color(1, .45f, .12f) : new Color(.32f, .72f, .85f), true, true);
+        Apply(go, round != null && round.delivery == PlayerDelivery.Flame ? new Color(1, .45f, .12f) : new Color(.48f, .70f, .76f, .82f), true, true);
     }
 
     public static void LegacyEnemy(GameObject go)
