@@ -36,6 +36,7 @@ public sealed partial class HellCrabBoss : DistrictBoss
             for (int segment = 0; segment < ArmSections; segment++)
                 arms[i, segment] = Model("Articulated pincer vertebra " + segment, IndustrialMeshFactory.CrabArm(), Hull);
         }
+        PrepareSideWarnings();
     }
 
     static Transform Model(string name, Mesh mesh, Transform parent)
@@ -68,7 +69,8 @@ public sealed partial class HellCrabBoss : DistrictBoss
         if (claws[0] == null)
             return;
         float before = clawClock;
-        clawClock += dt * (phaseTwo ? 1.18f : 1);
+        // Phase one belongs entirely to the slow side flames; the pincers stay at rest.
+        if (phaseTwo) clawClock += dt * 1.18f;
         float t = Mathf.Repeat(clawClock, clawPeriod);
         float shoulderY = transform.position.y;
         if (before == 0 || t < Mathf.Repeat(before, clawPeriod))
@@ -143,9 +145,16 @@ public sealed partial class HellCrabBoss : DistrictBoss
 
     protected override void OnPhaseTwo()
     {
+        HideSideWarnings();
         volley = 0;
         clawClock = 0;
         nextAttack = age + 1.5f;
+    }
+
+    protected override void Die()
+    {
+        HideSideWarnings();
+        base.Die();
     }
 
 }

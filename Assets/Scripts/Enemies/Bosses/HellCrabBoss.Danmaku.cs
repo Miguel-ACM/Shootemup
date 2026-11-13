@@ -1,30 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
-// Hell crab: the final exam, flown as spell cards. Every round leaves a pincer, an
-// eye or the mouth, and the top of the arena is never safe.
-// The claws already sweep in from the sides, so every card layers at most two ideas.
-// Phase one
-//   Pincer Scissors: both pincers stream arrows whose aim lines cross over the
-//     player and close, answered by widening arrow chevrons from the mouth.
-//   Soul Procession: the eyes loose mirrored arcs of slow souls that stop, stare and
-//     dart at the player one by one, under a brimstone canopy: mouth arrows thrown
-//     up that rebound off the ceiling.
-// Phase two (half the shared head health speeds up the claws)
-//   Pincer Inferno: scissors from both pincers more often, alternating with the canopy.
-//   Inferno Lace: a three-arm mirrored lace pours from the two pincers themselves,
-//     following them as they sweep, while the eyes' souls stare.
-// Tones (Miguel, 9 November 2026), the dominant tone flipping card to card:
-//   Pincer Scissors: dark scissor streams, bright mouth chevrons.
-//   Soul Procession: bright souls under a dark brimstone canopy.
-//   Pincer Inferno: bright scissors alternating with a dark canopy.
-//   Inferno Lace: a dark pincer lace while bright souls stare.
-//   Inferno (Hard): a bright lace crossed by dark scissors and dark souls.
-// Ember Cage (Miguel, 10 November 2026): after the two cards of each phase, and as an
-//   accent in Inferno, flames stop as a box around the pilot, open on one side, then
-//   close; the open side turns cage by cage (floor, both sides, left, right). Dark, with a
-//   bright outer frame in phase two. The claws' figure trail (ClawTrail) is bright in
-//   phase one and dark from phase two.
+// Phase one (Miguel, 13 November): only slow flames crossing from both screen edges.
+// Later phases keep the pincer, eye and mouth scores below.
 public sealed partial class HellCrabBoss
 {
     static readonly Vector3 Pincer = new Vector3(0, -.32f, -.4f);
@@ -50,25 +28,7 @@ public sealed partial class HellCrabBoss
                 yield return FinalSpell();
             else if (!phaseTwo)
             {
-                yield return Every(8, 1.6f, n =>
-                {
-                    if (n % 2 == 0)
-                        Phrase(Scissors(n % 4 == 0 ? 1 : -1, HostileTone.Dark));
-                    else
-                        Phrase(Toned(HostileTone.Bright, Chevrons(Hull, Mouth, Dense(6), 4.4f, .11f)));
-                });
-                yield return Wait(.8f);
-                yield return Every(8, 1.6f, n =>
-                {
-                    if (n % 2 == 0)
-                        for (int e = 0; e < 2; e++)
-                            SoulSnipe(e, HostileTone.Bright);
-                    else
-                        Canopy(n);
-                });
-                yield return Wait(.8f);
-                yield return Every(7.5f, 2.5f, n => Phrase(EmberCage(n, 1)));
-                yield return Wait(.8f);
+                yield return Crosswinds();
             }
             else
             {
@@ -85,6 +45,83 @@ public sealed partial class HellCrabBoss
                 yield return Wait(.8f);
                 yield return Every(6.6f, 2.2f, n => Phrase(EmberCage(n + 1, 2)));
                 yield return Wait(.8f);
+            }
+        }
+    }
+
+    // One evolving horizontal score, never aimed. Opposed banks leave a broad shared
+    // passage which walks up and down between releases; the old banks keep crossing.
+    IEnumerator Crosswinds()
+    {
+        for (int beat = 0; ; beat++)
+        {
+            int lanes = Mathf.Clamp(Dense(17), 8, 24);
+            int gap = 2 + Mathf.RoundToInt((lanes - 6) * (.5f + .5f * Mathf.Sin(beat * .73f)));
+            yield return WarnCrosswinds(lanes, gap, .7f);
+            ReleaseCrosswinds(lanes, gap);
+            yield return Wait(.12f);
+            HideSideWarnings();
+            yield return Wait(Rest(2.15f) - .12f);
+        }
+    }
+
+    static Vector3 FlameEdge(int side, int lane, int lanes)
+    {
+        var edge = CombatRound.Border;
+        return new Vector3(side < 0 ? edge.xMin - .35f : edge.xMax + .35f,
+            Mathf.Lerp(edge.yMin + .45f, edge.yMax - .45f, (lane + .5f) / lanes), -.5f);
+    }
+
+    // Reuse two small cue sprites per lane for the whole fight, with no lights or colliders.
+    SpriteRenderer[] sideWarnings;
+    void PrepareSideWarnings()
+    {
+        if (sideWarnings != null) return;
+        sideWarnings = new SpriteRenderer[48];
+        for (int i = 0; i < sideWarnings.Length; i++)
+        {
+            sideWarnings[i] = ItemSpark.Sprite(transform, "Crosswind edge charge", "flame", LevelProjectilePalette.Accent(LevelId.Hell), .13f);
+            sideWarnings[i].enabled = false;
+        }
+    }
+
+    void HideSideWarnings()
+    {
+        if (sideWarnings == null) return;
+        foreach (var cue in sideWarnings) cue.enabled = false;
+    }
+
+    IEnumerator WarnCrosswinds(int lanes, int gap, float seconds)
+    {
+        PrepareSideWarnings();
+        for (float t = 0; t < seconds;)
+        {
+            if (!Holding) t += Time.deltaTime * LevelRun.EnemyTempoScale;
+            for (int lane = 0; lane < lanes; lane++)
+                for (int bank = 0; bank < 2; bank++)
+                {
+                    int side = bank == 0 ? -1 : 1;
+                    var cue = sideWarnings[lane * 2 + bank];
+                    cue.enabled = !Holding && (lane < gap || lane > gap + 2);
+                    cue.transform.position = FlameEdge(side, lane, lanes) + Vector3.left * side * .48f;
+                    cue.transform.rotation = Quaternion.FromToRotation(Vector3.up, Vector3.left * side);
+                    cue.color = new Color(1, 1, 1, Mathf.Lerp(.1f, .75f, t / seconds));
+                }
+            yield return null;
+        }
+    }
+
+    void ReleaseCrosswinds(int lanes, int gap)
+    {
+        for (int lane = 0; lane < lanes; lane++)
+        {
+            if (lane >= gap && lane <= gap + 2) continue;
+            for (int side = -1; side <= 1; side += 2)
+            {
+                UseTone(HostileTone.Bright);
+                // Both banks have the same slow speed and horizontal heading.
+                Fire<FlameRound>(FlameEdge(side, lane, lanes), Vector2.left * side, WorldSpeed(1.15f), .22f, flashMuzzle: false)
+                    .LivesFor((CombatRound.Border.width + 7) / 1.15f);
             }
         }
     }

@@ -321,7 +321,7 @@ public abstract class DistrictEnemy : AEnemy
     protected HostileTone tone;
     protected virtual HostileTone DefaultTone => EnemyTones.Default(GetType());
     protected void UseTone(HostileTone value) => tone = value;
-    protected T Fire<T>(Vector3 position, Vector2 direction, float velocity, float radius = .18f) where T : CombatRound
+    protected T Fire<T>(Vector3 position, Vector2 direction, float velocity, float radius = .18f, bool flashMuzzle = true) where T : CombatRound
     {
         if (!CanEmit)
             return null;
@@ -329,7 +329,7 @@ public abstract class DistrictEnemy : AEnemy
         if (!(this is TunnelSawBoss) && (position - transform.position).sqrMagnitude < .00001f)
             position = Muzzle(volley);
         lastRelease = age;
-        firingCue?.Flash(position, direction);
+        if (flashMuzzle) firingCue?.Flash(position, direction);
         CombatRound.LaunchTone = tone;
         var shot = CombatRound.Launch<T>(position, direction, velocity * ProjectileSpeedScale * (IsMiniboss ? 1.14f : 1), radius);
         CombatRound.LaunchTone = HostileTone.Bright;
