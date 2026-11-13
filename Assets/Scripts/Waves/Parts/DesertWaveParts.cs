@@ -13,6 +13,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve SaltPan = Route("Desert / Salt pan sickle", Vector2.up, -1.65f, .45f, -.71f, .48f, -.21f, .70f, .18f, .85f, .71f, .89f, 1.65f, .77f);
     static readonly FlightCurve BuriedSpiral = Route("Desert / Buried spiral", Vector2.right, .57f, 1.4f, .26f, .91f, -.32f, .77f, -.47f, .52f, -.15f, .31f, .29f, .17f, .59f, -.4f);
     public static readonly WavePart[] Desert ={
+        new WavePart("Heat shimmer watch", "DuneMoth", FlightCurve.Stations("Desert / Mirage watch", Vector2.right, new[]{0f,.24f,.67f,1f}, .2f,1.5f, .2f,.72f, .2f,.72f, -1.8f,.78f).WithTracking(.20f,.08f), WaveShape.Solo, 1, 5.9f, 6, new[]{.33f,.49f,.63f}, WaveMotion.Pursuit),
+        new WavePart("Silo to silo moth", "DuneMoth", FlightCurve.Stations("Desert / Silo relay", Vector2.right, new[]{0f,.17f,.32f,.52f,.68f,1f}, -1.8f,.84f, -.62f,.84f, -.62f,.84f, .37f,.63f, .37f,.63f, 1.8f,.73f), WaveShape.Solo, 1, 5.7f, 4, new[]{.25f,.60f}, WaveMotion.Relay),
+        new WavePart("Salt road interceptors", "SandStriker", Route("Desert / Salt road", Vector2.up, -1.8f,.62f, 1.8f,.62f), WaveShape.Train, 4, 3.9f, 2, new[]{.38f,.61f}, WaveMotion.Straight),
         new WavePart("Crest runners","SandStriker",DuneCrest,WaveShape.Train,5,4.0f),
         new WavePart("Slipface arrows","SandStriker",DuneSlip,WaveShape.Chevron,3,4.3f),
         new WavePart("Outpost ribbon","SandStriker",OutpostWeave,WaveShape.Train,5,4.2f),
