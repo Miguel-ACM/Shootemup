@@ -75,6 +75,7 @@ public sealed partial class HangarHub
         string back = DockInstrument.MenuKey(true);
         consoleFooter.text = (Dock)room switch
         {
+            Dock.Armory => searchingGallery ? "ENTER  /  DONE" : DockInstrument.MenuKey() + " SEARCH   " + back + " EXIT",
             Dock.Fleet => InputPrompts.Navigation(false) + " HULL   " + InputPrompts.Navigation(true) + " MODE   " + back + " EXIT",
             Dock.Simulator => DockInstrument.MenuKey() + "  LAUNCH SIM   " + back + " RELEASE",
             Dock.Flight => DockInstrument.MenuKey() + "  SET   " + back + " RELEASE",

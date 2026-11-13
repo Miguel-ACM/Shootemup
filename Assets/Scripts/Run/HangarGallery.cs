@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public sealed partial class HangarHub
 {
@@ -11,6 +12,7 @@ public sealed partial class HangarHub
     const int GalleryColumns = 3;
     const float GalleryLeft = 6.5f, GalleryBottom = .2f, GalleryWing = 22, GalleryVestibuleTop = 12;
     const float GalleryRight = GalleryWing + 9.72f;
+    const float GalleryCenterX = (GalleryWing + GalleryRight) * .5f;
     static readonly Vector2 FilterDesk = new Vector2(11.4f, 4.5f);
     const float ColumnStep = 3.1f, RowStep = 3.6f, FirstY = 14.8f;
     const float FirstX = (GalleryWing + GalleryRight) * .5f - ColumnStep;
@@ -40,6 +42,11 @@ public sealed partial class HangarHub
     int hoverIndex = -1, galleryCategory, galleryAvailability;
     bool galleryReady;
     int loadedItems;
+    string galleryQuery = "";
+    bool searchingGallery, gallerySearchDirty;
+    Keyboard searchKeyboard;
+    int searchStartedFrame;
+    TextMeshProUGUI searchReadout;
     static Vector2 Case(int i) => new Vector2(FirstX + (i % GalleryColumns) * ColumnStep, FirstY + (i / GalleryColumns) * RowStep);
     Vector2 Shelf(int exhibit) => Case(shelfSlot[exhibit]);
     bool Released(GalleryShelf.Exhibit e) => !ItemCatalog.Get(e.key).InRewardPool || MetaProgress.IsUnlocked(e.key);
@@ -262,7 +269,47 @@ public sealed partial class HangarHub
     bool Matches(GalleryShelf.Exhibit e)
     {
         bool released = Released(e);
-        return (galleryCategory == 0 || (int)e.category == galleryCategory - 1) && (galleryAvailability == 0 || (galleryAvailability == 1) == released);
+        return (galleryCategory == 0 || (int)e.category == galleryCategory - 1) && (galleryAvailability == 0 || (galleryAvailability == 1) == released)
+            && MatchesGalleryName(e.title, galleryQuery);
+    }
+    internal static bool MatchesGalleryName(string title, string query) => string.IsNullOrWhiteSpace(query) ||
+        title.IndexOf(query.Trim(), System.StringComparison.OrdinalIgnoreCase) >= 0;
+
+    void SetGallerySearch(bool editing)
+    {
+        if (searchKeyboard != null) searchKeyboard.onTextInput -= TypeGalleryName;
+        searchKeyboard = null;
+        searchingGallery = editing;
+        if (editing) searchStartedFrame = Time.frameCount;
+        if (editing && Keyboard.current != null)
+        {
+            searchKeyboard = Keyboard.current;
+            searchKeyboard.onTextInput += TypeGalleryName;
+        }
+        UpdateGallerySearch();
+    }
+
+    void TypeGalleryName(char character)
+    {
+        if (!searchingGallery || Menu.GameplayPaused || searchStartedFrame == Time.frameCount) return;
+        if (character == '\b')
+            galleryQuery = galleryQuery.Length > 0 ? galleryQuery.Substring(0, galleryQuery.Length - 1) : "";
+        else if (!char.IsControl(character) && galleryQuery.Length < 36)
+            galleryQuery += character;
+        else return;
+        gallerySearchDirty = true;
+    }
+
+    void UpdateGallerySearch()
+    {
+        if (searchReadout == null) return;
+        if (gallerySearchDirty)
+        {
+            gallerySearchDirty = false;
+            ApplyGalleryFilter();
+        }
+        searchReadout.text = galleryQuery.Length == 0 && !searchingGallery ? "NAME  /  ALL" : galleryQuery +
+            (searchingGallery && Mathf.Repeat(Time.unscaledTime, 1) < .5f ? "_" : "");
     }
     // An empty case keeps no footlight, shadow or route lamp: its floor reads as plain deck.
     void LightCase(int slot, bool occupied)
@@ -315,7 +362,7 @@ public sealed partial class HangarHub
             for (int slot = column; slot < count; slot += GalleryColumns)
             {
                 var at = Case(slot);
-                if (band == 0 && galleryAvailability == 0)
+                if (band == 0 && galleryAvailability == 0 && string.IsNullOrWhiteSpace(galleryQuery))
                     continue;
                 highest = at.y;
                 GalleryQuad(v, c, t, at + Vector2.left * .94f, new Vector2(.45f, .055f), blue);
@@ -386,6 +433,9 @@ public sealed partial class HangarHub
         caseLeds.rectTransform.anchoredPosition = new Vector2(-153, -88);
         display.Label("< > TYPE", 119, -59, 269, 42, 22, DockInstrument.Muted);
         display.Label("^ v ACCESS", 119, -107, 269, 42, 22, DockInstrument.Muted);
+        DockInstrument.Block(display.face, "Name search recess", new Vector2(0, -189), new Vector2(550, 42), DockInstrument.Ink);
+        searchReadout = display.Label("NAME  /  ALL", 0, -189, 526, 36, 22, DockInstrument.Paper);
+        searchReadout.richText = false;
         directoryControls = display.Label("", 0, -254, 550, 36, 18, DockInstrument.Paper);
     }
 }

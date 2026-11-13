@@ -756,6 +756,7 @@ public sealed partial class HangarHub : MonoBehaviour
 
     void OnDestroy()
     {
+        SetGallerySearch(false);
         if (input != null)
         {
             input.PlayerControls.Accept.performed -= Interact;

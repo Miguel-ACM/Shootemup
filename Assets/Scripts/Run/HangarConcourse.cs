@@ -123,8 +123,14 @@ public sealed partial class HangarHub
     {
         if (baseViewSize <= 0)
             baseViewSize = view.orthographicSize;
+        bool gallery = !operating && Portal(p) == (int)Dock.Armory;
+        bool inCases = gallery && p.y - center.y >= GalleryVestibuleTop;
         float zoom = operating ? 7.5f * MonitorScale(room) + .15f : baseViewSize;
+        if (gallery)
+            zoom = Mathf.Lerp(zoom, Mathf.Max(zoom, (GalleryRight - GalleryWing + 1.2f) * .5f / (405f / 720f)),
+                Mathf.SmoothStep(0, 1, Mathf.InverseLerp(GalleryWing - 5, GalleryWing, p.x - center.x)));
         view.orthographicSize = Mathf.Lerp(view.orthographicSize, zoom, 1 - Mathf.Exp(-6 * Time.deltaTime));
+        if (inCases) view.orthographicSize = Mathf.Max(view.orthographicSize, zoom);
         float lateral = Mathf.Abs(p.x - center.x);
         float halfView = view.orthographicSize * (405f / 720f);
         int portal = Portal(p);
@@ -151,7 +157,12 @@ public sealed partial class HangarHub
                 target.y = (target.y + 3.8f * MonitorScale(portal) + StationAt(portal).y - 3.1f) * .5f;
             }
             else if (portal == (int)Dock.Armory)
-                target = new Vector2(Mathf.Clamp(p.x - center.x, 11.6f, GalleryRight - halfView), Mathf.Clamp(p.y - center.y, FilterDesk.y + 1.7f, Mathf.Max(FilterDesk.y + 1.7f, GalleryReach - halfView)));
+            {
+                float aisle = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(GalleryWing - 5, GalleryWing, p.x - center.x));
+                float follow = Mathf.Clamp(p.x - center.x, 11.6f, GalleryRight - halfView);
+                target = new Vector2(Mathf.Lerp(follow, GalleryCenterX, aisle), Mathf.Clamp(p.y - center.y,
+                    FilterDesk.y + 1.7f, Mathf.Max(FilterDesk.y + 1.7f, GalleryReach - view.orthographicSize + 1.6f)));
+            }
             else
             {
                 // Pan along the room, including the separate berthing apron beyond the fleet desk.
@@ -173,6 +184,13 @@ public sealed partial class HangarHub
                 panProgress = Mathf.Max(panProgress, minPan * alignment);
             }
             across = roomFocusX * panProgress;
+            if (inCases)
+            {
+                // Once in the exhibit aisle all three columns stay framed, even at either wall.
+                roomFocusX = across = GalleryCenterX;
+                panProgress = 1;
+                panVelocity = 0;
+            }
             along = Mathf.Lerp(along, target.y, enter);
         }
         SetCameraTravel(Mathf.Lerp(cameraTravel, along, 1 - Mathf.Exp(-7 * Time.deltaTime)));
@@ -478,11 +496,12 @@ public sealed partial class HangarHub
             }
             if (operating && !Menu.GameplayPaused)
             {
+                UpdateGallerySearch();
                 var move = GameInput.Snapshot.Move;
                 RefreshConsoleFooter();
                 var seat = Spot(Desk() + Vector2.down * 2.17f, p.z);
                 player.transform.position = Vector3.Lerp(p, seat, 1 - Mathf.Exp(-9 * Time.deltaTime));
-                if (move.sqrMagnitude < .24f)
+                if (searchingGallery || move.sqrMagnitude < .24f)
                     repeatAt = 0;
                 else if (Time.unscaledTime >= repeatAt)
                 {
@@ -505,8 +524,20 @@ public sealed partial class HangarHub
             return false;
         bool primary = ctx.action == input.PlayerControls.Accept;
         bool secondary = ctx.action == input.PlayerControls.Back;
+        if (searchingGallery && ctx.control.device is Keyboard)
+        {
+            // Z and X are letters while typing, even though they also confirm/back in menus.
+            if (ctx.control == Keyboard.current.enterKey && Menu.ConsumePress(ctx))
+                SetGallerySearch(false);
+            return true;
+        }
         if ((primary || secondary) && !Menu.ConsumePress(ctx))
             return true;
+        if (searchingGallery && (primary || secondary))
+        {
+            SetGallerySearch(false);
+            return true;
+        }
         if (secondary && operating)
         {
             operating = false;
@@ -544,6 +575,8 @@ public sealed partial class HangarHub
             HoldingShip = false;
             RenderPage();
         }
+        if (primary && room == (int)Dock.Armory)
+            SetGallerySearch(true);
         if (primary && room == (int)Dock.Simulator)
         {
             if (!FlightTrials.All[selection].TrySelect())
@@ -580,6 +613,7 @@ public sealed partial class HangarHub
     {
         if (room < 0)
             return;
+        SetGallerySearch(false);
         savedSelection[room] = selection;
         savedBand[room] = band;
         hoverIndex = -1;
