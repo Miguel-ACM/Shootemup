@@ -1,0 +1,112 @@
+PASS
+Headless edit-mode checks. No visual or player approval implied.
+PASS City models, footprints and unchanged health classes
+PASS No lifetime/fade endpoint removes, shrinks or disables a visible round; pooled reuse
+PASS Easy City phase-two hairpins finish braking, return and bounce before leaving
+PASS Easy Hell phase one: only opposed slow flame banks, clear gap and no claw stroke
+PASS Easy Fields authored route variants
+PASS Easy Fields ten-wave composition / 41971
+PASS Easy Fields ten-wave composition / 78013
+PASS Easy Tunnel authored route variants
+PASS Easy Tunnel ten-wave composition / 41971
+PASS Easy Tunnel ten-wave composition / 78013
+PASS Easy Snow authored route variants
+PASS Easy Snow ten-wave composition / 41971
+PASS Easy Snow ten-wave composition / 78013
+PASS Easy Thunder authored route variants
+PASS Easy Thunder ten-wave composition / 41971
+PASS Easy Thunder ten-wave composition / 78013
+PASS Easy City authored route variants
+PASS Easy City ten-wave composition / 41971
+PASS Easy City ten-wave composition / 78013
+PASS Easy Desert authored route variants
+PASS Easy Desert ten-wave composition / 41971
+PASS Easy Desert ten-wave composition / 78013
+PASS Easy Candyland authored route variants
+PASS Easy Candyland ten-wave composition / 41971
+PASS Easy Candyland ten-wave composition / 78013
+PASS Easy Space authored route variants
+PASS Easy Space ten-wave composition / 41971
+PASS Easy Space ten-wave composition / 78013
+PASS Easy Underwater authored route variants
+PASS Easy Underwater ten-wave composition / 41971
+PASS Easy Underwater ten-wave composition / 78013
+PASS Easy Hell authored route variants
+PASS Easy Hell ten-wave composition / 41971
+PASS Easy Hell ten-wave composition / 78013
+PASS Easy Heaven authored route variants
+PASS Easy Heaven ten-wave composition / 41971
+PASS Easy Heaven ten-wave composition / 78013
+PASS Hard City phase-two hairpins finish braking, return and bounce before leaving
+PASS Hard Hell phase one: only opposed slow flame banks, clear gap and no claw stroke
+PASS Hard Fields authored route variants
+PASS Hard Fields ten-wave composition / 41971
+PASS Hard Fields ten-wave composition / 78013
+PASS Hard Tunnel authored route variants
+PASS Hard Tunnel ten-wave composition / 41971
+PASS Hard Tunnel ten-wave composition / 78013
+PASS Hard Snow authored route variants
+PASS Hard Snow ten-wave composition / 41971
+PASS Hard Snow ten-wave composition / 78013
+PASS Hard Thunder authored route variants
+PASS Hard Thunder ten-wave composition / 41971
+PASS Hard Thunder ten-wave composition / 78013
+PASS Hard City authored route variants
+PASS Hard City ten-wave composition / 41971
+PASS Hard City ten-wave composition / 78013
+PASS Hard Desert authored route variants
+PASS Hard Desert ten-wave composition / 41971
+PASS Hard Desert ten-wave composition / 78013
+PASS Hard Candyland authored route variants
+PASS Hard Candyland ten-wave composition / 41971
+PASS Hard Candyland ten-wave composition / 78013
+PASS Hard Space authored route variants
+PASS Hard Space ten-wave composition / 41971
+PASS Hard Space ten-wave composition / 78013
+PASS Hard Underwater authored route variants
+PASS Hard Underwater ten-wave composition / 41971
+PASS Hard Underwater ten-wave composition / 78013
+PASS Hard Hell authored route variants
+PASS Hard Hell ten-wave composition / 41971
+PASS Hard Hell ten-wave composition / 78013
+PASS Hard Heaven authored route variants
+PASS Hard Heaven ten-wave composition / 41971
+PASS Hard Heaven ten-wave composition / 78013
+PASS Normal City phase-two hairpins finish braking, return and bounce before leaving
+PASS Normal Hell phase one: only opposed slow flame banks, clear gap and no claw stroke
+PASS Normal Fields authored route variants
+PASS Normal Fields ten-wave composition / 41971
+PASS Normal Fields ten-wave composition / 78013
+PASS Normal Tunnel authored route variants
+PASS Normal Tunnel ten-wave composition / 41971
+PASS Normal Tunnel ten-wave composition / 78013
+PASS Normal Snow authored route variants
+PASS Normal Snow ten-wave composition / 41971
+PASS Normal Snow ten-wave composition / 78013
+PASS Normal Thunder authored route variants
+PASS Normal Thunder ten-wave composition / 41971
+PASS Normal Thunder ten-wave composition / 78013
+PASS Normal City authored route variants
+PASS Normal City ten-wave composition / 41971
+PASS Normal City ten-wave composition / 78013
+PASS Normal Desert authored route variants
+PASS Normal Desert ten-wave composition / 41971
+PASS Normal Desert ten-wave composition / 78013
+PASS Normal Candyland authored route variants
+PASS Normal Candyland ten-wave composition / 41971
+PASS Normal Candyland ten-wave composition / 78013
+PASS Normal Space authored route variants
+PASS Normal Space ten-wave composition / 41971
+PASS Normal Space ten-wave composition / 78013
+PASS Normal Underwater authored route variants
+PASS Normal Underwater ten-wave composition / 41971
+PASS Normal Underwater ten-wave composition / 78013
+PASS Normal Hell authored route variants
+PASS Normal Hell ten-wave composition / 41971
+PASS Normal Hell ten-wave composition / 78013
+PASS Normal Heaven authored route variants
+PASS Normal Heaven ten-wave composition / 41971
+PASS Normal Heaven ten-wave composition / 78013
+PASS Tunnel's six narrow passage layouts retain their eleven corridor-following actors
+PASS Void remains boss-only
+PASS Watcher-only budgets cannot change later campaign compositions

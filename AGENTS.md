@@ -335,3 +335,10 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - Shooting companions keep firing while the player fires, including when no enemies remain. Aiming companions use forward fire without a target, and laser drones retain their full beam into empty space; preserve decision and disabled-player guards.
 - If Computer Use is stopped with Escape, stop interacting with the app for that turn.
 - Do not declare the visual work finished based only on compilation or scripted checks. Review the actual models, HUD and moving formations.
+
+## Latest combat direction (13 November 2026)
+
+- Hell's first boss phase uses only slow flames crossing horizontally from both screen edges. Keep the pincers at rest, anticipate the side releases and let the shared opening move between banks. Later phases retain their own attacks.
+- Never dissolve or abruptly remove ordinary bullets when a flight timer ends. Let them finish their brake/return/bounce paths and leave the scene, fully visible and collidable. Spent orbits leave on their tangent; old fade endpoints now launch a departure instead. Preserve intentional hits, shell splits, absorption and player/phase clears.
+- City's ordinary enemy models are 25% larger, with matching firing ports, contacts and formation footprints; this must not increase their health classification.
+- New formation behaviours belong in every district with ordinary waves: stationary firing, relocations between posts, bottom entrances, straight files and bounded pursuit, authored for each district. Choose varied behaviours across the actual ten campaign waves. Keep flowing escorts and Tunnel's corridor constraints; Void stays boss-only.

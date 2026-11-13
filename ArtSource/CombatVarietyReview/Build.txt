@@ -1,0 +1,3 @@
+Succeeded
+Errors=0; warnings=0
+C:/Users/Miguel/Shootemup/Build/CombatVariety/Shootemup.exe
