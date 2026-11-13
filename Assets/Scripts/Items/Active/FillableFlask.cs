@@ -14,8 +14,8 @@ public sealed class FillableFlask : AActiveItem
 
     void Awake()
     {
-        SetData("Fillable Flask", "Rest at a bonfire", "Two heals. Refills every level.", ItemType.active);
-        cost = 0;
+        SetData("Fillable Flask", "Rest at a bonfire", "Two heals. 75 energy per sip. Refills every level.", ItemType.active);
+        cost = 75;
         cd = 1;
     }
 
@@ -42,6 +42,6 @@ public sealed class FillableFlask : AActiveItem
         PSXFireballs.Shockwave(s.transform.position, 1.1f, .5f, Ember, 2, .08f);
         PSXImpactEffects.ItemGet(s.transform.position, Ember);
         ItemSound.Play("heal", .22f, .85f);
-        return mana;
+        return mana - cost;
     }
 }
