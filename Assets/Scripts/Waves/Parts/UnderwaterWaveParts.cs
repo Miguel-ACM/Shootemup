@@ -13,8 +13,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve Moorings = FlightCurve.Stations("Ocean / Two moorings", Vector2.right,
         new[] { 0f, .22f, .38f, .54f, .70f, 1f }, -.5f, 1.33f, -.5f, .73f, -.5f, .73f, .41f, .65f, .41f, .65f, 1.55f, .79f);
     public static readonly WavePart[] Underwater ={
-        new WavePart("Seabed rising school", "ReefDart", SeabedRise, WaveShape.Train, 3, 5.0f, 4, new[] { .46f, .66f }),
-        new WavePart("Mooring bell relay", "Bathysphere", Moorings, WaveShape.Solo, 1, 6.2f, 6, new[] { .30f, .62f }),
+        new WavePart("Manta shadow", "MantaRay", FlightCurve.Stations("Ocean / Manta shadow", Vector2.right, new[]{0f,.24f,.66f,1f}, .19f,1.5f, .19f,.71f, .19f,.71f, 1.8f,.78f).WithTracking(.20f,.09f), WaveShape.Solo, 1, 6.0f, 8, new[]{.33f,.49f,.62f}, WaveMotion.Pursuit),
+        new WavePart("Seabed rising school", "ReefDart", SeabedRise, WaveShape.Train, 3, 5.0f, 4, new[] { .46f, .66f }, motion: WaveMotion.Rising),
+        new WavePart("Mooring bell relay", "Bathysphere", Moorings, WaveShape.Solo, 1, 6.2f, 6, new[] { .30f, .62f }, motion: WaveMotion.Relay),
         new WavePart("Thermocline school","ReefDart",Thermocline,WaveShape.Train,4,4.3f),
         new WavePart("Reef shelf rays","MantaRay",ReefShelf,WaveShape.Train,3,4.7f),
         new WavePart("Brass upwelling","Bathysphere",Upwelling,WaveShape.Train,2,5.2f),
