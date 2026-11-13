@@ -86,7 +86,14 @@ public abstract class CombatRound : AEnemyBullet
     public virtual float HitboxScale => ProjectilePixelContact.HitboxScale;
     public bool PixelOverlaps(Collider2D target) => !UsesPixelContact || ProjectilePixelContact.Overlap(transform, pixelBoxes, target, HitboxScale);
     protected float lifetime = 9;
-    internal void SetLifetime(float seconds) => lifetime = seconds;
+    bool explicitLifetime, programBudgeted;
+    bool leaving;
+    Vector2 lastVelocity, exitVelocity;
+    internal void SetLifetime(float seconds)
+    {
+        lifetime = seconds;
+        explicitLifetime = true;
+    }
     protected bool ended;
     public int generation;
     // Identifies one launch of this pooled object, so an owner holding a reference can tell
@@ -171,7 +178,6 @@ public abstract class CombatRound : AEnemyBullet
         Live.Add(shot);
         shot.ResetProgram();
         shot.Initialize();
-        shot.baseScale = shot.transform.localScale;
         shot.collisionReach = shot.localCollisionRadius * Mathf.Max(Mathf.Abs(shot.transform.localScale.x), Mathf.Abs(shot.transform.localScale.y));
         if (shot.UsesPixelContact && shot.collision is CircleCollider2D proxy)
             proxy.radius = shot.localCollisionRadius + ProjectilePixelContact.PolygonSkin / Mathf.Max(.00001f, Mathf.Abs(shot.transform.localScale.x));
@@ -440,15 +446,26 @@ public abstract class CombatRound : AEnemyBullet
 
     void UpdateRound(float dt)
     {
-        if (age > lifetime || transform.position.y < Camera.DownLimit - 2 || transform.position.y > Camera.UpLimit + 5 ||
+        BudgetProgramFlight();
+        if (transform.position.y < Camera.DownLimit - 2 || transform.position.y > Camera.UpLimit + 5 ||
             transform.position.x < Camera.LeftLimit - 3 || transform.position.x > Camera.RightLimit + 3)
         {
             Release();
             return;
         }
+        if (age > lifetime && !(this is PulseLaser)) LeaveScene();
         Vector3 wallFrom = transform.position;
-        Tick(dt);
-        if (!ended)
+        if (leaving)
+        {
+            // Very slow spent beads ease into their departure instead of lingering
+            // for a minute and consuming the live budget of the next phrase.
+            exitVelocity = Vector2.MoveTowards(exitVelocity, exitVelocity.normalized * Mathf.Max(1.2f, exitVelocity.magnitude), dt * .75f);
+            transform.position += (Vector3)exitVelocity * dt;
+        }
+        else
+            Tick(dt);
+        if (dt > 0) lastVelocity = (transform.position - wallFrom) / dt;
+        if (!ended && !leaving)
             Program();
         if (!ended && !(this is PulseLaser) && PocketWind.Current != null)
             transform.position += PocketWind.Velocity(transform.position) * Time.deltaTime;
@@ -461,6 +478,35 @@ public abstract class CombatRound : AEnemyBullet
             UpdateSimulation();
         if (!ended && Erratic && visual.enabled)
             RoundTrails.Follow(ref trailFrom, transform.position, tint != null ? tint.Tint : Accent, Mathf.Abs(transform.localScale.x) * .5f);
+    }
+
+    // Finishing a score never erases a visible round. Keep its current travel (the
+    // tangent for an orbit), cease further turns/releases, and cull only offscreen.
+    void LeaveScene()
+    {
+        if (leaving) return;
+        leaving = true;
+        exitVelocity = lastVelocity.sqrMagnitude > .04f ? lastVelocity :
+            (heading.sqrMagnitude > .001f ? heading : Vector2.down) * Mathf.Max(.8f, speed);
+        heading = exitVelocity.normalized;
+        showTurn = false;
+        needsOrientation = true;
+        Orient();
+    }
+
+    // A launch-time straight-flight estimate cannot cover a brake, hold, turn and return
+    // across the screen. Budget the configured journey once, using the slowest travel leg.
+    void BudgetProgramFlight()
+    {
+        if (programBudgeted) return;
+        programBudgeted = true;
+        if (explicitLifetime || (pauseAt < 0 && bounces <= 0 && rampTo >= 1 && wallRunFor <= 0)) return;
+        var edge = Border;
+        float across = Mathf.Sqrt(edge.width * edge.width + edge.height * edge.height) + 4;
+        float slowest = Mathf.Max(.25f, speed * Mathf.Min(1, Mathf.Min(rampTo, pauseAt >= 0 ? resumeSpeed : 1)));
+        float hold = pauseAt >= 0 && float.IsFinite(pauseHold) ? Mathf.Max(0, pauseAt + pauseHold - age) : 0;
+        float journey = hold + .5f + across * (1 + Mathf.Min(bounces, 3)) / slowest + wallRunFor;
+        lifetime = Mathf.Max(lifetime, Mathf.Min(60, age + journey));
     }
 
     // Rounds whose path wanders leave a short trail in their colour.
@@ -513,7 +559,6 @@ public abstract class CombatRound : AEnemyBullet
     internal bool splitAimed;
     internal float wallRunFor, wallRunStart;
     internal int wallDirection, wallSide;
-    Vector3 baseScale;
     Vector2 travel;
     public bool Paused => pauseAt >= 0 && age >= pauseAt && age < pauseAt + pauseHold;
     // A purely visual round, such as the spray thrown up to make snow: no contact at all.
@@ -523,6 +568,9 @@ public abstract class CombatRound : AEnemyBullet
 
     void ResetProgram()
     {
+        explicitLifetime = programBudgeted = false;
+        leaving = false;
+        lastVelocity = exitVelocity = Vector2.zero;
         rampAt = rampOver = 0;
         rampTo = 1;
         pauseAt = fadeAt = splitAt = -1;
@@ -608,6 +656,7 @@ public abstract class CombatRound : AEnemyBullet
         resumeSpeed = speed;
         resumed = scattered = false;
         showTurn = true;
+        programBudgeted = false;
     }
 
     // Releases a Halt(): the round sets off on its turn from where it stands.
@@ -618,6 +667,7 @@ public abstract class CombatRound : AEnemyBullet
         if (age < pauseAt)
             pauseAt = age;
         pauseHold = age - pauseAt;
+        programBudgeted = false;
     }
 
     public bool Halted => pauseAt >= 0 && !resumed;
@@ -752,8 +802,8 @@ public abstract class CombatRound : AEnemyBullet
         }
         transform.position = new Vector3(p.x, p.y, transform.position.z);
         needsOrientation = true;
-        if (age - wallRunStart > wallRunFor && fadeAt < 0)
-            fadeAt = age;
+        if (age - wallRunStart > wallRunFor)
+            LeaveScene();
     }
 
     void Program()
@@ -786,15 +836,7 @@ public abstract class CombatRound : AEnemyBullet
             return;
         }
         if (fadeAt >= 0 && age >= fadeAt)
-        {
-            float t = (age - fadeAt) / .3f;
-            if (t >= 1)
-            {
-                Release();
-                return;
-            }
-            transform.localScale = baseScale * (1 - t * t);
-        }
+            LeaveScene();
     }
 
     // Symmetric silhouettes either keep still (hearts, gems) or turn at their own rate
@@ -838,6 +880,7 @@ public abstract class CombatRound : AEnemyBullet
         if (ended)
             return;
         ended = true;
+        Live.Remove(this);
         body.linearVelocity = Vector2.zero;
         gameObject.SetActive(false);
         if (!pools.TryGetValue(GetType(), out var pool))

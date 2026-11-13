@@ -53,7 +53,8 @@ public static class RoundProgram
         return shot;
     }
 
-    // Shrink away at a fixed age, wherever the round happens to be.
+    // Legacy score endpoint: coast out of the scene at this age, without shrinking
+    // or fading. Keep the name for existing authored scores and tuning data.
     public static T FadeAt<T>(this T shot, float at) where T : CombatRound
     {
         if (shot != null)
