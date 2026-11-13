@@ -10,6 +10,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve EmberScissors = Route("Hell / Ember scissors", Vector2.up, -1.55f, .54f, -.85f, .48f, -.30f, .71f, .24f, .88f, .87f, .77f, 1.55f, .67f);
     static readonly FlightCurve JawSpiral = Route("Hell / Jaw spiral", Vector2.right, -.75f, 1.34f, -.60f, .95f, -.11f, .63f, .48f, .65f, .60f, .90f, .19f, 1.34f);
     public static readonly WavePart[] Hell ={
+        new WavePart("Censer at the gate", "AshCenser", FlightCurve.Stations("Hell / Hanging censer", Vector2.right, new[]{0f,.22f,.65f,1f}, .53f,1.4f, .53f,.78f, .53f,.78f, 1.8f,.66f), WaveShape.Solo, 1, 5.2f, 4, new[]{.30f,.46f,.60f}, WaveMotion.Station),
+        new WavePart("Pit-born imp ladder", "CinderImp", Route("Hell / Pit-born ladder", Vector2.right, -.82f,-.4f, -.84f,.16f, -.67f,.42f, -.30f,.68f, -.12f,1.4f), WaveShape.Train, 4, 3.9f, 2, new[]{.47f,.67f}, WaveMotion.Rising),
+        new WavePart("Revenant stalk", "SkullRevenant", FlightCurve.Stations("Hell / Revenant stalk", Vector2.right, new[]{0f,.23f,.67f,1f}, -.2f,1.5f, -.2f,.68f, -.2f,.68f, -.8f,1.5f).WithTracking(.22f,.08f), WaveShape.Solo, 1, 5.5f, 6, new[]{.32f,.47f,.63f}, WaveMotion.Pursuit),
         new WavePart("Gate revenants","SkullRevenant",InfernalGate,WaveShape.Train,4,3.9f),
         new WavePart("Styx galleons","GhostGalleon",Styx,WaveShape.Train,2,4.8f),
         new WavePart("Cinder hooks","CinderImp",CinderHook,WaveShape.Chevron,5,3.2f),
