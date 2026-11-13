@@ -131,8 +131,7 @@ public sealed partial class HangarHub
         Photo(Resources.Load<Texture2D>("DockArt/Portrait" + hull.frame), new Rect(0, 0, 1, 1), -193, 117, 165, open ? Color.white : Color.black);
         Legend(hull.frame.ToString().ToUpperInvariant(), 76, 179, 350, 56, 41, DockInstrument.Paper, true);
         Legend(hull.hits + " HP  " + hull.moveSpeed.ToString("0.#") + " SPD", 76, 126, 350, 38, 21, lamps[room]);
-        string gun = hull.primary == "BaseWeapon" ? "Twin cannon" : hull.primary == null ? "Unarmed" : FlightTrials.Display(hull.primary);
-        Legend(gun + (hull.starters.Length > 0 ? "   /   " + string.Join(", ", hull.starters.Select(FlightTrials.Display)) : ""), 76, 80, 350, 60, 18, DockInstrument.Muted);
+        FleetEquipment(hull, open);
         if (!operating)
         {
             Legend(modes[band].ToString().ToUpperInvariant(), 0, -30, 558, 42, 24, lamps[room]);
@@ -163,6 +162,21 @@ public sealed partial class HangarHub
         }
         string status = !open ? "Clear Void in " + (ShipFrame)(selection - 1) : MetaProgress.Ship == hull.frame ? "IN FLIGHT" : "READY TO FLY";
         Legend(status, 0, -197, 558, 28, 18, DockInstrument.Brass);
+    }
+    void FleetEquipment(ShipFrames.Definition hull, bool open)
+    {
+        var kinds = new List<string>();
+        if (hull.primary != null) kinds.Add(hull.primary + "Item");
+        kinds.AddRange(hull.starters);
+        var studio = ItemPortraitStudio.Create(kinds, 128);
+        studio.transform.SetParent(interiors[(int)Dock.Fleet].fixtures.transform, true);
+        pageNodes.Add(studio.gameObject);
+        float pitch = Mathf.Min(92, 350f / Mathf.Max(1, kinds.Count));
+        for (int i = 0; i < kinds.Count; i++)
+        {
+            float x = 76 + (i - (kinds.Count - 1) * .5f) * pitch;
+            Photo(studio.Atlas, studio.Cell(i), x, 73, 64, open ? Color.white : Color.black);
+        }
     }
     bool TrialPage()
     {
@@ -223,7 +237,7 @@ public sealed partial class HangarHub
         var studio = ItemPortraitStudio.Create(kinds, 128);
         // The page owns the camera as well as its pictures: replacing/closing the
         // page disables it immediately, then releases its atlas with the old nodes.
-        studio.transform.SetParent(transform, true);
+        studio.transform.SetParent(interiors[(int)Dock.Simulator].fixtures.transform, true);
         pageNodes.Add(studio.gameObject);
         float width = reward ? 414 : 558;
         float middle = reward ? -72 : 0;
