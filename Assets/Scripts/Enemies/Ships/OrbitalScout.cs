@@ -7,12 +7,12 @@ public sealed class OrbitalScout : SpaceSatellite
     {
         hullScale = .46f;
         health = 35;
-        attackInterval = (1.6f);
+        attackInterval = 2.1f;
         Mover<Slalom>();
     }
 
     protected override void Attack()
     {
-        Fan<NeedleRound>((5), 16, 4.7f, .18f);
+        Fan<NeedleRound>(3, 16, 4.7f, .18f);
     }
 }

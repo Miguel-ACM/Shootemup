@@ -110,7 +110,7 @@ public sealed class WavePart
         if (Enemy == "BonbonSkirmisher" || Enemy == "WaferDart" || Enemy == "MintSpinner")
             score = new[] { Seconds * .36f, Seconds * .65f, last + Seconds * .48f };
         if (Enemy == "OrbitalScout")
-            score = new[] { Seconds * .24f, Seconds * .34f, Seconds * .48f, Seconds * .61f, Seconds * .72f };
+            score = new[] { Seconds * .29f, Seconds * .51f, Seconds * .72f };
         if (Enemy == "OrbitalCarrier")
             score = new[] { Seconds * .25f, Seconds * .39f, Seconds * .58f, Seconds * .72f };
         if (Enemy == "LaserSatellite")
