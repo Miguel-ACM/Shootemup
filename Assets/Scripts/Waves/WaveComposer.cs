@@ -162,9 +162,20 @@ public static class WaveComposer
         EnsureContext();
         budget = Mathf.Clamp(budget, 2, 20);
         // Building in run order keeps previews independent of which button was clicked first.
-        for (int i = 2; i <= budget; i++)
+        foreach (int i in CampaignBudgets)
+        {
+            if (i > budget) break;
             if (!waves.ContainsKey(i))
                 waves[i] = Build(i);
+        }
+        // Watcher-only budgets must not consume motifs or alter later campaign waves.
+        if (!waves.ContainsKey(budget))
+        {
+            var savedUses = new Dictionary<string, int>(uses);
+            waves[budget] = Build(budget);
+            uses.Clear();
+            foreach (var pair in savedUses) uses[pair.Key] = pair.Value;
+        }
         return (Wave)waves[budget].Clone();
     }
 
@@ -189,7 +200,9 @@ public static class WaveComposer
     static Wave TryBuild(int budget, int attempt, bool compact)
     {
         var random = new System.Random(Hash(seed, stage * 971 + (int)level * 137 + budget * 7919 + attempt * 104729));
-        var previous = budget > 2 ? new HashSet<string>(waves[budget - 1].parts) : new HashSet<string>();
+        int previousBudget = 0;
+        foreach (int value in CampaignBudgets) if (value < budget) previousBudget = value;
+        var previous = previousBudget > 0 ? new HashSet<string>(waves[previousBudget].parts) : new HashSet<string>();
         var chosen = new HashSet<string>();
         var all = new List<WaveGeometry.Track>();
         var units = new List<WaveUnit>();
@@ -214,6 +227,7 @@ public static class WaveComposer
         foreach (var part in WavePartLibrary.For(level))
             slowest = Mathf.Min(slowest, EnemyTuning.MovementFor(part.Enemy));
         window /= slowest;
+        var preferredMotion = PreferredMotion(budget, attempt);
         for (int slot = 0; slot < count; slot++)
         {
             var options = new List<(WavePart part, int score)>();
@@ -229,10 +243,10 @@ public static class WaveComposer
                 if (level == LevelId.Space && slot == count - 1 && !units.Exists(u => u.enemy == nameof(LaserSatellite) || u.enemy == nameof(OrbitalCarrier)) && part.Enemy != nameof(LaserSatellite) && part.Enemy != nameof(OrbitalCarrier))
                     continue;
                 if (part.Unlock > budget || chosen.Contains(part.Name) || (part != featuredGate && previous.Contains(part.Name)) ||
-                    (heavy && part.Shape == WaveShape.Solo) || (groundUsed && part.Ground))
+                    (heavy && part.Shape == WaveShape.Solo && !(level == LevelId.Space && part.Enemy == nameof(LaserSatellite))) || (groundUsed && part.Ground))
                     continue;
                 uses.TryGetValue(part.Name, out int used);
-                options.Add((part, used * 24 + random.Next(24)));
+                options.Add((part, used * 24 + random.Next(24) - (slot == 0 && part.Motion == preferredMotion ? 240 : 0)));
             }
             options.Sort((a, b) => a.score.CompareTo(b.score));
             Motion best = null;
@@ -306,6 +320,27 @@ public static class WaveComposer
     }
 
     static bool IsThunderBeam(string enemy) => enemy == nameof(BeamDrone) || enemy == nameof(ArcLancer) || enemy == nameof(StormOrgan);
+
+    // Rotate behaviour as well as hull/route. The remaining slots still choose flowing,
+    // compatible escorts, so a sentry never turns the whole encounter into a wait.
+    static readonly int[] CampaignBudgets = { 2, 3, 4, 6, 8, 10, 12, 14, 16, 20 };
+    static WaveMotion PreferredMotion(int budget, int attempt)
+    {
+        var available = new List<WaveMotion> { WaveMotion.Flow };
+        foreach (var part in WavePartLibrary.For(level))
+            if (part.Unlock <= budget && !available.Contains(part.Motion)) available.Add(part.Motion);
+        var appearances = new int[6];
+        foreach (int waveBudget in CampaignBudgets)
+            if (waveBudget < budget && waves.TryGetValue(waveBudget, out var wave))
+                foreach (var part in WavePartLibrary.For(level))
+                    if (Array.IndexOf(wave.parts, part.Name) >= 0) appearances[(int)part.Motion]++;
+        available.Sort((a,b) => {
+            int order = appearances[(int)a].CompareTo(appearances[(int)b]);
+            return order != 0 ? order : (((int)a + (seed & 7)) % 6).CompareTo(((int)b + (seed & 7)) % 6);
+        });
+        // If a featured route cannot interleave, try the next least-seen behaviour.
+        return available[Mathf.Min(attempt / 8, available.Count - 1)];
+    }
     // The watcher uses the same spacing retries and tempo as live compositions.
     public static Wave PreviewPart(WavePart part, int variant, int side, out int resolvedVariant)
     {
@@ -336,7 +371,9 @@ public static class WaveComposer
             var tracks = WaveGeometry.Tracks(units);
             bool offscreen = true;
             foreach (var track in tracks)
-                if (WaveGeometry.Visible(track.At(track.Start), track.Radius) || WaveGeometry.Visible(track.At(track.End), track.Radius))
+                // Pursuit fades in after entrance and out before departure. Only the
+                // hull must be offscreen here; occupancy still reserves its full reach.
+                if (WaveGeometry.Visible(track.At(track.Start), WaveGeometry.Radius(track.Unit.enemy)) || WaveGeometry.Visible(track.At(track.End), WaveGeometry.Radius(track.Unit.enemy)))
                 {
                     offscreen = false;
                     break;

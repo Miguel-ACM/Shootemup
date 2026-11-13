@@ -7,22 +7,26 @@ public enum WaveShape
     Train, Rank, Rake, Chevron, Diamond, Solo
 }
 
+public enum WaveMotion { Flow, Station, Relay, Rising, Straight, Pursuit }
+
 // A whole scored formation. Variation changes the group; never independent wandering ships.
 public sealed class WavePart
 {
     public readonly string Name, Enemy;
     public readonly FlightCurve Route;
     public readonly WaveShape Shape;
+    public readonly WaveMotion Motion;
     public readonly int Count, Unlock;
     public readonly float Seconds;
     public readonly float[] Score;
     public bool Ground => Enemy == "MeadowTank" || Enemy == "FrostAuger";
-    public WavePart(string name, string enemy, FlightCurve route, WaveShape shape, int count, float seconds, int unlock = 2, float[] score = null)
+    public WavePart(string name, string enemy, FlightCurve route, WaveShape shape, int count, float seconds, int unlock = 2, float[] score = null, WaveMotion motion = WaveMotion.Flow)
     {
         Name = name;
         Enemy = enemy;
         Route = route;
         Shape = shape;
+        Motion = motion;
         Count = count;
         Seconds = seconds;
         Unlock = unlock;
