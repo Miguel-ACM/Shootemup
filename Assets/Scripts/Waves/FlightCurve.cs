@@ -11,6 +11,9 @@ public sealed class FlightCurve
     readonly Vector2[] knots;
     readonly Vector2 laneAxis;
     readonly float bloom;
+    float[] stationTimes;
+    public Vector2 TrackingRange { get; private set; }
+    public float TrackingRadius => Vector2.Scale(TrackingRange, new Vector2(Camera.RightLimit, Camera.UpLimit - Camera.DownLimit)).magnitude;
     const int Samples = 1024;
     public float LaneScale => Vector2.Scale(laneAxis, new Vector2(Camera.RightLimit, Camera.UpLimit - Camera.DownLimit)).magnitude;
     public bool HorizontalLanes => Mathf.Abs(laneAxis.x) > .5f;
@@ -44,6 +47,8 @@ public sealed class FlightCurve
 
     public float TravelParameter(float progress)
     {
+        // Station phrases own their timing, including stops; arc-length remapping would erase them.
+        if (stationTimes != null) return Mathf.Clamp01(progress);
         Measure();
         float target = Mathf.Clamp01(progress) * distances[Samples];
         int low = 1, high = Samples;
@@ -56,6 +61,23 @@ public sealed class FlightCurve
                 high = mid;
         }
         return (low - 1 + Mathf.InverseLerp(distances[low - 1], distances[low], target)) / Samples;
+    }
+
+    public static FlightCurve Stations(string name, Vector2 axis, float[] times, params float[] xy)
+    {
+        var route = new FlightCurve(name, axis, 0, xy);
+        if (times.Length != route.knots.Length || times[0] != 0 || times[times.Length - 1] != 1)
+            throw new System.ArgumentException("Station times must cover the route from zero to one");
+        for (int i = 1; i < times.Length; i++)
+            if (times[i] <= times[i - 1]) throw new System.ArgumentException("Station times must increase");
+        route.stationTimes = (float[])times.Clone();
+        return route;
+    }
+
+    public FlightCurve WithTracking(float width, float height)
+    {
+        TrackingRange = new Vector2(Mathf.Max(0, width), Mathf.Max(0, height));
+        return this;
     }
 
     public FlightCurve(string name, Vector2 laneAxis, float bloom, params float[] xy)
@@ -72,6 +94,17 @@ public sealed class FlightCurve
 
     public Vector2 Sample(float progress, float side = 1, float lane = 0)
     {
+        if (stationTimes != null)
+        {
+            int station = 1;
+            while (station < stationTimes.Length - 1 && progress > stationTimes[station]) station++;
+            float phase = Mathf.InverseLerp(stationTimes[station - 1], stationTimes[station], progress);
+            // Quintic easing: zero velocity and acceleration at every firing station.
+            float ease = phase * phase * phase * (phase * (phase * 6 - 15) + 10);
+            var at = Vector2.Lerp(knots[station - 1], knots[station], ease) + laneAxis * lane;
+            at.x *= side;
+            return at;
+        }
         float index = Mathf.Clamp01(progress) * (knots.Length - 1);
         int i = Mathf.Min(knots.Length - 2, Mathf.FloorToInt(index));
         float t = index - i;

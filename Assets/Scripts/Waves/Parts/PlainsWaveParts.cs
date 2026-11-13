@@ -8,7 +8,12 @@ public static partial class WavePartLibrary
     static readonly FlightCurve Crescent = Route("Plains / Meadow crescent", Vector2.right, -.66f, 1.24f, -.77f, .83f, -.66f, .5f, -.20f, .36f, .34f, .45f, .82f, .66f, 1.36f, .85f);
     static readonly FlightCurve RiverBraid = Route("Plains / River braid", Vector2.right, -.34f, 1.24f, .12f, .87f, .43f, .64f, .13f, .42f, -.39f, .26f, -.38f, -.24f);
     static readonly FlightCurve OrchardTurn = Route("Plains / Orchard return", Vector2.right, .60f, 1.24f, .58f, .89f, .40f, .71f, .1f, .64f, -.10f, .77f, -.12f, 1.24f);
+    static readonly FlightCurve Hayloft = FlightCurve.Stations("Plains / Hayloft sentry", Vector2.right,
+        new[] { 0f, .22f, .66f, 1f }, -.38f, 1.24f, -.38f, .76f, -.38f, .76f, -1.38f, .86f);
+    static readonly FlightCurve Hedgerow = Route("Plains / Hedgerow straight", Vector2.up, -1.4f, .73f, 1.4f, .73f);
     public static readonly WavePart[] Plains ={
+        new WavePart("Hayloft sentry", "PatrolGunship", Hayloft, WaveShape.Solo, 1, 5.6f, 5, new[] { .30f, .46f, .62f }),
+        new WavePart("Hedgerow file", "ScoutInterceptor", Hedgerow, WaveShape.Train, 4, 4.8f, 2),
         new WavePart("Orchard flight","ScoutInterceptor",Orchard,WaveShape.Train,4,5.1f),
         new WavePart("River arrow","ScoutInterceptor",PlainsChoreography.Fan,WaveShape.Chevron,3,4.8f),
         new WavePart("River procession","ScoutInterceptor",PlainsChoreography.Stream,WaveShape.Train,4,5.2f),

@@ -8,7 +8,10 @@ public static partial class WavePartLibrary
     static readonly FlightCurve Terminator = Route("Space / Terminator pass", Vector2.up, -1.35f, .96f, -.69f, .83f, -.16f, .87f, .39f, .70f, .82f, .80f, 1.35f, .93f);
     static readonly FlightCurve Halo = Route("Space / Halo carrier", Vector2.right, -.44f, 1.26f, -.52f, .90f, -.24f, .77f, .29f, .78f, .55f, .93f, .49f, 1.26f);
     static readonly FlightCurve Perigee = Route("Space / Perigee scissors", Vector2.right, .69f, 1.24f, .74f, .89f, .31f, .60f, -.22f, .73f, -.45f, 1.0f, -.47f, 1.24f);
+    static readonly FlightCurve Observation = FlightCurve.Stations("Space / Observation stations", Vector2.right,
+        new[] { 0f, .20f, .37f, .53f, .72f, 1f }, -.55f, 1.26f, -.55f, .83f, -.55f, .83f, .52f, .78f, .52f, .78f, .8f, 1.26f);
     public static readonly WavePart[] Space ={
+        new WavePart("Observation dish", "LaserSatellite", Observation, WaveShape.Solo, 1, 6.8f, 5, new[] { .24f, .57f }),
         new WavePart("Apogee scouts","OrbitalScout",Apogee,WaveShape.Train,4,4.0f),
         new WavePart("Transfer scouts","OrbitalScout",Transfer,WaveShape.Rank,4,3.9f),
         new WavePart("Solar slingshot","OrbitalScout",Slingshot,WaveShape.Chevron,5,4.1f),

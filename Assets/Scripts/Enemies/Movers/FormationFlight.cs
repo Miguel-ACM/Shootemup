@@ -24,6 +24,7 @@ public sealed class FormationFlight : PatternMover
     float nextSharedBeat = -1;
     int nextStrike;
     bool challenged;
+    Vector2 trackingOffset;
 
     public void MakeChallenging()
     {
@@ -118,6 +119,16 @@ public sealed class FormationFlight : PatternMover
         var next = new Vector3(p.x * Camera.RightLimit, Mathf.LerpUnclamped(Camera.DownLimit, Camera.UpLimit, p.y), origin.z);
         if (passageRoute)
             next.x += TunnelPassage.CenterAt(next.y);
+        if (curve != null && curve.TrackingRange != Vector2.zero && player != null)
+        {
+            var range = Vector2.Scale(curve.TrackingRange, new Vector2(Camera.RightLimit, Camera.UpLimit - Camera.DownLimit));
+            float window = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.18f, .30f, t)) *
+                (1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.66f, .82f, t)));
+            var desired = new Vector2(Mathf.Clamp(player.position.x - next.x, -range.x, range.x),
+                Mathf.Clamp(player.position.y + 3.5f - next.y, 0, range.y)) * window;
+            trackingOffset = Vector2.MoveTowards(trackingOffset, desired, dt * 1.25f);
+            next += (Vector3)(trackingOffset * window);
+        }
         if (ground != null)
         {
             next = ground.TransformPoint(groundPoint);

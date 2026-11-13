@@ -358,7 +358,8 @@ public static class WaveGeometry
         {
             Unit = unit;
             Start = unit.time;
-            Radius = WaveGeometry.Radius(unit.enemy);
+            // Reserve the whole pursuit envelope, not just its unsteered centreline.
+            Radius = WaveGeometry.Radius(unit.enemy) + unit.curve.TrackingRadius;
             int count = Mathf.CeilToInt(unit.flightDuration / Step);
             points = new Vector2[count + 1];
             float minX = float.MaxValue, minY = float.MaxValue, maxX = float.MinValue, maxY = float.MinValue;
