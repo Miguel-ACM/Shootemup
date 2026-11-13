@@ -8,6 +8,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve Crystal = Route("Snow / Crystal turn", Vector2.right, 0, 1.24f, -.40f, .96f, -.62f, .74f, -.45f, .56f, -.06f, .53f, .29f, .65f, .40f, .92f, .36f, 1.24f);
     static readonly FlightCurve AvalancheArc = Route("Snow / Avalanche bow", Vector2.right, -.70f, 1.24f, -.55f, .88f, -.19f, .66f, .33f, .62f, .65f, .87f, .70f, 1.24f);
     public static readonly WavePart[] Snow ={
+        new WavePart("Lantern on the shelf", "HailLantern", FlightCurve.Stations("Snow / Suspended lantern", Vector2.right, new[]{0f,.24f,.67f,1f}, -.53f,1.4f, -.53f,.77f, -.53f,.77f, -1.7f,.86f), WaveShape.Solo, 1, 5.8f, 4, new[]{.32f,.48f,.62f}, WaveMotion.Station),
+        new WavePart("Ice shelf stepping battery", "SiegeGunship", FlightCurve.Stations("Snow / Stepped battery", Vector2.right, new[]{0f,.20f,.35f,.52f,.71f,1f}, .61f,1.4f, .61f,.81f, .61f,.81f, .13f,.57f, .13f,.57f, 1.7f,.51f), WaveShape.Solo, 1, 6.3f, 6, new[]{.29f,.60f}, WaveMotion.Relay),
+        new WavePart("Glacial updraft", "ColdWeatherFighter", Route("Snow / Glacial updraft", Vector2.right, .78f,-.4f, .80f,.14f, .58f,.38f, .36f,.68f, .42f,1.4f), WaveShape.Train, 3, 4.9f, 2, new[]{.44f,.65f}, WaveMotion.Rising),
         new WavePart("Glacier flight","ColdWeatherFighter",GlacierCrown,WaveShape.Train,4,5.4f),
         new WavePart("White curl","ColdWeatherFighter",WhiteCurl,WaveShape.Rank,3,5.2f),
         new WavePart("Petal procession","ColdWeatherFighter",SnowChoreography.Petal,WaveShape.Train,4,5),
