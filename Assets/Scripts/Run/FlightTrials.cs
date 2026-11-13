@@ -150,7 +150,6 @@ public sealed class FlightTrials
             Kit("Bookmark", "MirrorBurst"), difficulty: RunDifficulty.Hard)
     };
 
-    public const string AccessRequirement = "Unlock every standard item, hull and district.";
     public static FlightTrials Active { get; private set; }
     static int legIndex;
     static bool firstBossStarted;
@@ -173,14 +172,28 @@ public sealed class FlightTrials
         firstBossStarted = false;
     }
 
-    public static bool HasAccess(Func<string, bool> ownsItem, Func<ShipFrame, bool> ownsHull, Func<LevelId, bool> ownsDistrict)
+    public IEnumerable<string> RequiredItems
     {
-        foreach (var hull in (ShipFrame[])Enum.GetValues(typeof(ShipFrame)))
-            if (!ownsHull(hull)) return false;
-        foreach (var level in (LevelId[])Enum.GetValues(typeof(LevelId)))
-            if (!ownsDistrict(level)) return false;
-        foreach (var item in ItemCatalog.All)
-            if (item.InRewardPool && Blueprint(item.Key)?.Advanced != true && !ownsItem(item.Key)) return false;
+        get
+        {
+            var seen = new HashSet<string>();
+            foreach (string key in kit)
+                if (seen.Add(key) && NeedsUnlock(key)) yield return key;
+            if (legs == null) yield break;
+            foreach (var leg in legs)
+                if (leg.kit != null)
+                    foreach (string key in leg.kit)
+                        if (seen.Add(key) && NeedsUnlock(key)) yield return key;
+        }
+    }
+
+    static bool NeedsUnlock(string key) => Blueprint(key) == null && ItemCatalog.TryGet(key, out var item) && item.InRewardPool;
+
+    public bool HasAccess(Func<string, bool> ownsItem, Func<ShipFrame, bool> ownsHull)
+    {
+        if (!ownsHull(frame)) return false;
+        foreach (string key in RequiredItems)
+            if (!ownsItem(key)) return false;
         return true;
     }
 
@@ -188,9 +201,10 @@ public sealed class FlightTrials
     {
         get
         {
-            if (Advanced)
-                return HasAccess(MetaProgress.IsUnlocked, MetaProgress.CanFly, MetaProgress.HasUnlockedRoute) ? null : AccessRequirement;
-            return MetaProgress.CanFly(frame) ? null : "Commission " + frame + " in the campaign.";
+            if (!MetaProgress.CanFly(frame)) return "Commission " + frame + " in the campaign.";
+            foreach (string key in RequiredItems)
+                if (!MetaProgress.IsUnlocked(key)) return "Unlock " + Display(key) + ".";
+            return null;
         }
     }
 

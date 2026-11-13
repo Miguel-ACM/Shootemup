@@ -203,16 +203,19 @@ public static class VerifyItemUnlocks
         Fresh();
         var tapes = FlightTrials.All.Where(tape => tape.Advanced).ToArray();
         Check(tapes.Length == 30 && tapes.All(tape => tape.legs.Last().boss != null), "Thirty advanced tapes end with a full boss");
-        Check(tapes.All(tape => !tape.TrySelect()) && FlightTrials.Active == null, "Fresh save cannot launch advanced tapes");
+        Check(FlightTrials.Find("Change of Plans").TrySelect(), "Fresh save can launch a tape whose only locked item is its own loaned blueprint");
+        FlightTrials.Reset();
+        Check(!FlightTrials.Find("Power Exchange").Available, "Fresh save still needs the tape's campaign equipment");
         var saved = typeof(MetaProgress).GetProperty("Data", Private).GetValue(null);
         saved.GetType().GetField("lastFrame").SetValue(saved, ShipFrames.Count - 1);
         MetaProgress.UnlockAll();
         var rewards = tapes.Where(tape => tape.reward != null).ToArray();
         Check(rewards.Length == 5 && rewards.All(tape => !MetaProgress.CanStock(tape.reward)), "Tape prizes are excluded from the access gate and outfitter");
-        Check(tapes.All(tape => tape.Available), "Every standard item, hull and route opens the advanced tapes");
+        Check(tapes.All(tape => tape.Available), "Every tape opens once its own campaign kit and hull are unlocked");
         var owned = (List<string>)saved.GetType().GetField("unlocked").GetValue(saved);
         owned.Remove("BeamEmitterItem");
-        Check(tapes.All(tape => !tape.TrySelect()), "One missing item keeps advanced tapes locked");
+        Check(!FlightTrials.Find("Power Exchange").TrySelect() && FlightTrials.Find("Change of Plans").Available,
+            "A missing beam emitter locks only tapes using it");
         owned.Add("BeamEmitterItem");
 
         var harvest = FlightTrials.Find("Triple Harvest");
