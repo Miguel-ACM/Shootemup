@@ -8,6 +8,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve UpperRail = Route("Tunnel / Upper rail", Vector2.up, 1.36f, .96f, .76f, .86f, .09f, .8f, -.6f, .88f, -1.36f, .98f);
     static readonly FlightCurve ServiceGate = Route("Tunnel / Service gate", Vector2.right, 0, 1.24f, -.35f, 1.0f, -.55f, .78f, -.36f, .64f, .02f, .60f, .43f, .74f, .58f, .98f, .60f, 1.24f);
     public static readonly WavePart[] Tunnel ={
+        new WavePart("Maintenance elevator", "MaintenanceDrone", Route("Tunnel / Elevator return", Vector2.right, -.73f,-.4f, -.73f,1.4f), WaveShape.Train, 3, 5.0f, 2, new[]{.45f,.65f}, WaveMotion.Rising),
+        new WavePart("Switchbox battery", "WallTurret", FlightCurve.Stations("Tunnel / Switchbox", Vector2.right, new[]{0f,.22f,.66f,1f}, -.65f,1.4f, -.65f,.68f, -.65f,.68f, -1.7f,.55f), WaveShape.Solo, 1, 5.8f, 4, new[]{.31f,.47f,.61f}, WaveMotion.Station),
+        new WavePart("Rivet inspection stops", "RivetMantis", FlightCurve.Stations("Tunnel / Inspection rail", Vector2.right, new[]{0f,.19f,.34f,.51f,.70f,1f}, .57f,1.4f, .57f,.83f, .57f,.83f, .57f,.49f, .57f,.49f, .57f,-.4f), WaveShape.Solo, 1, 6.1f, 6, new[]{.29f,.60f}, WaveMotion.Relay),
         new WavePart("Shaft procession","MaintenanceDrone",ShaftScrew,WaveShape.Train,4,5.1f),
         new WavePart("Service crown","MaintenanceDrone",ServiceLoop,WaveShape.Chevron,3,5.1f),
         new WavePart("Low rail","MaintenanceDrone",LowRail,WaveShape.Rank,3,4.5f),
