@@ -21,6 +21,10 @@ public abstract class DistrictEnemy : AEnemy
     public float VisualHeading => NoseAimed && (IsPreparing || age - lastRelease < .24f) ? Vector2.SignedAngle(Vector2.down, committedAim) : 0;
     public float hullScale = .7f;
     public int hull;
+    public const float CityModelScale = 1.25f;
+    public static float PresentationScale(Type type) => type == typeof(CourierDiver) || type == typeof(AttackDrone) ||
+        type == typeof(PursuitFighter) || type == typeof(CommandGunship) || type == typeof(MetroLancer) ||
+        type == typeof(TerraceGunboat) ? CityModelScale : 1;
     [Min(.1f), EnemyTunable("Firing / Shell travel distance", .1f, 16)] public float shellTravelDistance = 3.8f;
     [EnemyTunable("Firing / Attack interval", .05f, 20)] protected float attackInterval = 2;
     public float MovementScale { get; private set; } = 1;
@@ -120,6 +124,8 @@ public abstract class DistrictEnemy : AEnemy
             enemy.health *= enemy.hullScale < .8f ? .84f : 1.35f;
             enemy.attackInterval *= .78f;
         }
+        // Visual size must not change the light/heavy health classification above.
+        enemy.hullScale *= PresentationScale(type);
         enemy.size = enemy.hullScale;
         go.GetComponent<CircleCollider2D>().radius = enemy.hullScale * .8f;
         var model = new GameObject("Armored hull");

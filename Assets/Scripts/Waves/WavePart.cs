@@ -325,6 +325,7 @@ public static class WaveGeometry
                 scale = entry.scale;
                 break;
         }
+        scale *= DistrictEnemy.PresentationScale(DistrictWaves.EnemyType(enemy));
         foreach (var vertex in IndustrialMeshFactory.CombatHull(hull).vertices)
             value = Mathf.Max(value, vertex.magnitude * scale);
         return radii[enemy] = value + .035f;

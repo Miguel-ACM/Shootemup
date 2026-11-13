@@ -14,9 +14,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve SwitchPosts = FlightCurve.Stations("City / Two rooftop posts", Vector2.right,
         new[] { 0f, .18f, .34f, .50f, .68f, 1f }, -.62f, 1.25f, -.62f, .76f, -.62f, .76f, .55f, .69f, .55f, .69f, 1.4f, .9f);
     public static readonly WavePart[] City ={
-        new WavePart("Rooftop shadow", "PursuitFighter", RoofWatch, WaveShape.Solo, 1, 5.5f, 6, new[] { .31f, .47f, .64f }),
-        new WavePart("Service lift couriers", "CourierDiver", ServiceLift, WaveShape.Train, 3, 4.3f, 4, new[] { .46f, .65f }),
-        new WavePart("Rooftop relay", "CommandGunship", SwitchPosts, WaveShape.Solo, 1, 6.2f, 8, new[] { .25f, .57f, .66f }),
+        new WavePart("Rooftop shadow", "PursuitFighter", RoofWatch, WaveShape.Solo, 1, 5.5f, 6, new[] { .31f, .47f, .64f }, motion: WaveMotion.Pursuit),
+        new WavePart("Service lift couriers", "CourierDiver", ServiceLift, WaveShape.Train, 3, 4.3f, 4, new[] { .46f, .65f }, motion: WaveMotion.Rising),
+        new WavePart("Rooftop relay", "CommandGunship", SwitchPosts, WaveShape.Solo, 1, 6.2f, 8, new[] { .25f, .57f, .66f }, motion: WaveMotion.Relay),
         new WavePart("Elevated traffic","CourierDiver",CityRamp,WaveShape.Train,5,3.8f),
         new WavePart("Canyon couriers","CourierDiver",CityCanyon,WaveShape.Train,5,3.6f),
         new WavePart("Skybridge traffic","CourierDiver",Skybridge,WaveShape.Rank,3,3.1f),
