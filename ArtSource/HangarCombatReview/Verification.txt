@@ -1,0 +1,200 @@
+PASS
+Headless edit-mode checks; visual/gameplay approval remains separate.
+Gallery name search: case-insensitive partial matches, trimmed spaces, clear and no-result queries.
+Gallery keeps all three cases framed at pilot X=22
+Gallery keeps all three cases framed at pilot X=26,86
+Gallery keeps all three cases framed at pilot X=31,72
+Gallery keeps all three cases framed at pilot X=22
+GR07 starting model: BaseWeaponItem
+Lancer starting model: BarrelRoll
+Lancer starting model: BeamEmitterItem
+Ember starting model: Lighter
+Ember starting model: BaseWeaponItem
+Warden starting model: LaserDroneItem
+Warden starting model: LaserDroneItem
+Crossfire: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Crossfire: missing assigned hull locks the tape.
+Crossfire: requires AK45Item
+Cold Delivery: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Cold Delivery: missing assigned hull locks the tape.
+Cold Delivery: requires Magnet
+Cold Delivery: requires SparePlating
+Line Discipline: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Line Discipline: missing assigned hull locks the tape.
+Line Discipline: requires PocketFan
+Last Light: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Last Light: missing assigned hull locks the tape.
+Triple Harvest: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Triple Harvest: missing assigned hull locks the tape.
+Triple Harvest: requires NeedleCannonItem
+Triple Harvest: requires ScatterCannonItem
+Triple Harvest: requires RelaySwitch
+Change of Plans: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Change of Plans: missing assigned hull locks the tape.
+Change of Plans: requires BarrelRoll
+Switchback: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Switchback: missing assigned hull locks the tape.
+Switchback: requires BarrelRoll
+Postmarked: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Postmarked: missing assigned hull locks the tape.
+Postmarked: requires DecoyProjector
+Bank Job: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Bank Job: missing assigned hull locks the tape.
+Bank Job: requires PocketFan
+Exact Change: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Exact Change: missing assigned hull locks the tape.
+Exact Change: requires NeedleCannonItem
+Kitchen Fire: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Kitchen Fire: missing assigned hull locks the tape.
+Kitchen Fire: requires FlameProjectorItem
+Kitchen Fire: requires Popcorn
+Kitchen Fire: requires ChainReactor
+Side Hustle: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Side Hustle: missing assigned hull locks the tape.
+Side Hustle: requires AK45Item
+Side Hustle: requires BackdraftItem
+Jade Spark: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Jade Spark: missing assigned hull locks the tape.
+Jade Spark: requires ElectricityItem
+Jade Spark: requires Poison
+Jade Spark: requires GasolineLeak
+Moon Tax: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Moon Tax: missing assigned hull locks the tape.
+Moon Tax: requires NeedleCannonItem
+Moon Tax: requires ThreeMoonsItem
+Moon Tax: requires RecoveryCoil
+Blank Check: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Blank Check: missing assigned hull locks the tape.
+Blank Check: requires NeedleCannonItem
+Blank Check: requires MirrorBurst
+Blank Check: requires RocketBouquet
+Dead Stick: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Dead Stick: missing assigned hull locks the tape.
+Dead Stick: requires NeedleCannonItem
+Dead Stick: requires BarrelRoll
+Drift School: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Drift School: missing assigned hull locks the tape.
+Drift School: requires DiscThrowerItem
+Drift School: requires FocusTime
+Black Box: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Black Box: missing assigned hull locks the tape.
+Black Box: requires RailDriverItem
+Black Box: requires ScatterCannonItem
+Black Box: requires BlankBullet
+On the Beat: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+On the Beat: missing assigned hull locks the tape.
+On the Beat: requires BurstLauncherItem
+Red Zone: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Red Zone: missing assigned hull locks the tape.
+Red Zone: requires ScatterCannonItem
+Red Zone: requires Bookmark
+Silent Approach: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Silent Approach: missing assigned hull locks the tape.
+Silent Approach: requires BeamEmitterItem
+Silent Approach: requires BarrelRoll
+Silent Approach: requires PocketFan
+Window Seat: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Window Seat: missing assigned hull locks the tape.
+Window Seat: requires BeamEmitterItem
+Window Seat: requires Telekinesis
+Slow Lane: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Slow Lane: missing assigned hull locks the tape.
+Slow Lane: requires SwarmRackItem
+Slow Lane: requires Bookmark
+Second Shift: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Second Shift: missing assigned hull locks the tape.
+Second Shift: requires RailDriverItem
+Second Shift: requires Capacitor
+Second Shift: requires ScatterCannonItem
+Second Shift: requires BarrelRoll
+Second Shift: requires BeamEmitterItem
+Second Shift: requires Telekinesis
+Three Gun Salute: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Three Gun Salute: missing assigned hull locks the tape.
+Three Gun Salute: requires RailDriverItem
+Three Gun Salute: requires Capacitor
+Three Gun Salute: requires ScatterCannonItem
+Three Gun Salute: requires BarrelRoll
+Three Gun Salute: requires DiscThrowerItem
+Three Gun Salute: requires PocketFan
+Cold Snap: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Cold Snap: missing assigned hull locks the tape.
+Cold Snap: requires ScatterCannonItem
+Cold Snap: requires BulletTime
+Cold Snap: requires Overdrive
+Power Exchange: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Power Exchange: missing assigned hull locks the tape.
+Power Exchange: requires BeamEmitterItem
+Power Exchange: requires PolarityEngine
+Power Exchange: requires MirrorBurst
+Split Verdict: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Split Verdict: missing assigned hull locks the tape.
+Split Verdict: requires RailDriverItem
+Split Verdict: requires ScatterCannonItem
+Split Verdict: requires RelaySwitch
+Rear Guard: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Rear Guard: missing assigned hull locks the tape.
+Rear Guard: requires SwarmRackItem
+Rear Guard: requires LaserDroneItem
+Rear Guard: requires ThrowableShield
+Three Fronts: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Three Fronts: missing assigned hull locks the tape.
+Three Fronts: requires WindUpCannonItem
+Three Fronts: requires SwarmRackItem
+Three Fronts: requires Overdrive
+In Reverse: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+In Reverse: missing assigned hull locks the tape.
+In Reverse: requires ScatterCannonItem
+In Reverse: requires SwarmRackItem
+In Reverse: requires Overdrive
+Pressure Test: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Pressure Test: missing assigned hull locks the tape.
+Pressure Test: requires BeamEmitterItem
+Pressure Test: requires Bookmark
+Pressure Test: requires PocketFan
+After the Dive: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+After the Dive: missing assigned hull locks the tape.
+After the Dive: requires DepthChargeItem
+After the Dive: requires NeedleCannonItem
+After the Dive: requires BarrelRoll
+Final Exam: own kit and hull suffice; unrelated items/hulls and simulator blueprints are excluded.
+Final Exam: missing assigned hull locks the tape.
+Final Exam: requires Bookmark
+Final Exam: requires MirrorBurst
+Later-leg equipment is included in each tape's requirements.
+FillableFlask exact affordability boundary at 75 energy.
+FillableFlask efficiency applies to affordability and restores the base cost.
+Overdrive exact affordability boundary at 60 energy.
+Overdrive efficiency applies to affordability and restores the base cost.
+Eight authored motifs are connected to four district libraries.
+Hayloft sentry: continuous mirrored route, bounded holds and exit.
+Hayloft sentry: scheduled firing and reserved hull/pursuit envelope.
+Hedgerow file: continuous mirrored route, bounded holds and exit.
+Hedgerow file: scheduled firing and reserved hull/pursuit envelope.
+Hedgerow file: scheduled firing and reserved hull/pursuit envelope.
+Hedgerow file: scheduled firing and reserved hull/pursuit envelope.
+Rooftop shadow: continuous mirrored route, bounded holds and exit.
+Rooftop shadow: scheduled firing and reserved hull/pursuit envelope.
+Service lift couriers: continuous mirrored route, bounded holds and exit.
+Service lift couriers: scheduled firing and reserved hull/pursuit envelope.
+Service lift couriers: scheduled firing and reserved hull/pursuit envelope.
+Service lift couriers: scheduled firing and reserved hull/pursuit envelope.
+Rooftop relay: continuous mirrored route, bounded holds and exit.
+Rooftop relay: scheduled firing and reserved hull/pursuit envelope.
+Seabed rising school: continuous mirrored route, bounded holds and exit.
+Seabed rising school: scheduled firing and reserved hull/pursuit envelope.
+Seabed rising school: scheduled firing and reserved hull/pursuit envelope.
+Seabed rising school: scheduled firing and reserved hull/pursuit envelope.
+Mooring bell relay: continuous mirrored route, bounded holds and exit.
+Mooring bell relay: scheduled firing and reserved hull/pursuit envelope.
+Observation dish: continuous mirrored route, bounded holds and exit.
+Observation dish: scheduled firing and reserved hull/pursuit envelope.
+Arc-length conversion preserves the firing hold.
+Service lift couriers enters below and exits above the arena.
+Seabed rising school enters below and exits above the arena.
+Apogee scouts scout score has at most three accents plus one Hard reply.
+Transfer scouts scout score has at most three accents plus one Hard reply.
+Solar slingshot scout score has at most three accents plus one Hard reply.
+Perigee twins scout score has at most three accents plus one Hard reply.
+Opposed relay scouts scout score has at most three accents plus one Hard reply.
+Projectile material exposes opacity separately from source pixels and colliders.

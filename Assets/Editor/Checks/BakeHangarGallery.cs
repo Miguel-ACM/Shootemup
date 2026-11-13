@@ -9,6 +9,36 @@ using UnityEngine;
 // asynchronously and installs it across frames, without parsing model text or building atlases.
 public static class BakeHangarGallery
 {
+    // Balance/copy changes need fresh labels without rebuilding approved meshes and textures.
+    public static void RefreshDescriptions()
+    {
+        foreach (var shelf in Resources.LoadAll<GalleryShelf>("Gallery"))
+        {
+            bool changed = false;
+            foreach (var exhibit in shelf.exhibits)
+            {
+                if (!ItemCatalog.TryGet(exhibit.key, out var definition)) continue;
+                var probe = new GameObject("Read gallery copy");
+                probe.SetActive(false);
+                try
+                {
+                    var item = definition.Attach(probe);
+                    item.GetType().GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)?.Invoke(item, null);
+                    var data = item.GetData();
+                    if (string.IsNullOrEmpty(data[0]) || (exhibit.title == data[0] && exhibit.description == data[2])) continue;
+                    exhibit.title = data[0];
+                    exhibit.description = data[2];
+                    changed = true;
+                }
+                finally { UnityEngine.Object.DestroyImmediate(probe); }
+            }
+            if (!changed) continue;
+            EditorUtility.SetDirty(shelf);
+            Debug.Log("Refreshed gallery copy: " + AssetDatabase.GetAssetPath(shelf));
+        }
+        AssetDatabase.SaveAssets();
+    }
+
     [MenuItem("Tools/Shootemup/Bake hangar gallery")]
     public static void Run()
     {
