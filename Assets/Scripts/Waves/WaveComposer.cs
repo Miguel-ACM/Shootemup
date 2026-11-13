@@ -407,6 +407,7 @@ public static partial class WavePartLibrary
         switch (level)
         {
             case LevelId.Heaven:
+                return Heaven;
             case LevelId.Void:
                 return Array.Empty<WavePart>();
             case LevelId.Fields:
