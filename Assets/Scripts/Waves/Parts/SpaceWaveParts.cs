@@ -11,7 +11,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve Observation = FlightCurve.Stations("Space / Observation stations", Vector2.right,
         new[] { 0f, .20f, .37f, .53f, .72f, 1f }, -.55f, 1.26f, -.55f, .83f, -.55f, .83f, .52f, .78f, .52f, .78f, .8f, 1.26f);
     public static readonly WavePart[] Space ={
-        new WavePart("Observation dish", "LaserSatellite", Observation, WaveShape.Solo, 1, 6.8f, 5, new[] { .24f, .57f }),
+        new WavePart("Lagrange shadow", "OrbitalScout", FlightCurve.Stations("Space / Lagrange shadow", Vector2.right, new[]{0f,.25f,.66f,1f}, -.27f,1.5f, -.27f,.75f, -.27f,.75f, .75f,1.5f).WithTracking(.18f,.10f), WaveShape.Solo, 1, 5.7f, 6, new[]{.34f,.48f,.62f}, WaveMotion.Pursuit),
+        new WavePart("Solar escape train", "OrbitalScout", Route("Space / Solar escape", Vector2.right, -.82f,-.4f, -.74f,.15f, -.38f,.43f, .18f,.57f, .63f,.88f, .81f,1.4f), WaveShape.Train, 4, 4.4f, 2, new[]{.44f,.65f}, WaveMotion.Rising),
+        new WavePart("Observation dish", "LaserSatellite", Observation, WaveShape.Solo, 1, 6.8f, 5, new[] { .24f, .57f }, motion: WaveMotion.Relay),
         new WavePart("Apogee scouts","OrbitalScout",Apogee,WaveShape.Train,4,4.0f),
         new WavePart("Transfer scouts","OrbitalScout",Transfer,WaveShape.Rank,4,3.9f),
         new WavePart("Solar slingshot","OrbitalScout",Slingshot,WaveShape.Chevron,5,4.1f),
