@@ -12,6 +12,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve WrapperSweep = Route("Candyland / Wrapper sweep", Vector2.up, -1.6f, .39f, -.75f, .37f, -.28f, .56f, .3f, .80f, .83f, .83f, 1.6f, .72f);
     static readonly FlightCurve LicoriceKnot = Route("Candyland / Licorice knot", Vector2.right, .38f, 1.4f, .56f, .92f, .25f, .72f, -.42f, .66f, -.52f, .40f, .12f, .20f, .55f, -.4f);
     public static readonly WavePart[] Candyland ={
+        new WavePart("Gumdrop shelf", "GumdropMortar", FlightCurve.Stations("Candyland / Gumdrop perch", Vector2.right, new[]{0f,.20f,.62f,1f}, -.57f,1.4f, -.57f,.78f, -.57f,.78f, -1.7f,.60f), WaveShape.Solo, 1, 4.6f, 4, new[]{.28f,.46f,.58f}, WaveMotion.Station),
+        new WavePart("Popping candy elevator", "BonbonSkirmisher", Route("Candyland / Popping elevator", Vector2.right, .83f,-.4f, .81f,.18f, .59f,.42f, .66f,.79f, .38f,1.4f), WaveShape.Train, 5, 3.4f, 2, new[]{.45f,.67f}, WaveMotion.Rising),
+        new WavePart("Ribbon skipping stones", "RibbonGlider", FlightCurve.Stations("Candyland / Ribbon skip", Vector2.right, new[]{0f,.16f,.27f,.43f,.54f,.70f,.79f,1f}, -1.7f,.88f, -.58f,.85f, -.58f,.85f, .17f,.64f, .17f,.64f, .60f,.80f, .60f,.80f, 1.7f,.94f), WaveShape.Solo, 1, 5.0f, 6, new[]{.22f,.49f,.74f}, WaveMotion.Relay),
         new WavePart("Sugar ribbon rush","BonbonSkirmisher",SugarSpiral,WaveShape.Train,8,3.0f),
         new WavePart("Taffy bow","BonbonSkirmisher",TaffyLoop,WaveShape.Train,7,2.9f),
         new WavePart("Wafer zipper","WaferDart",CandyZipper,WaveShape.Train,7,2.5f),
