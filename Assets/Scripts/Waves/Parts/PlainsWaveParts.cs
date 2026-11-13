@@ -12,8 +12,9 @@ public static partial class WavePartLibrary
         new[] { 0f, .22f, .66f, 1f }, -.38f, 1.24f, -.38f, .76f, -.38f, .76f, -1.38f, .86f);
     static readonly FlightCurve Hedgerow = Route("Plains / Hedgerow straight", Vector2.up, -1.4f, .73f, 1.4f, .73f);
     public static readonly WavePart[] Plains ={
-        new WavePart("Hayloft sentry", "PatrolGunship", Hayloft, WaveShape.Solo, 1, 5.6f, 5, new[] { .30f, .46f, .62f }),
-        new WavePart("Hedgerow file", "ScoutInterceptor", Hedgerow, WaveShape.Train, 4, 4.8f, 2),
+        new WavePart("Reedbank climb", "ReedSkimmer", Route("Plains / Reedbank climb", Vector2.right, -.82f,-.4f, -.85f,.18f, -.69f,.48f, -.38f,.69f, -.45f,1.4f), WaveShape.Train, 3, 4.9f, 4, new[]{.44f,.66f}, WaveMotion.Rising),
+        new WavePart("Hayloft sentry", "PatrolGunship", Hayloft, WaveShape.Solo, 1, 5.6f, 5, new[] { .30f, .46f, .62f }, motion: WaveMotion.Station),
+        new WavePart("Hedgerow file", "ScoutInterceptor", Hedgerow, WaveShape.Train, 4, 4.8f, 2, motion: WaveMotion.Straight),
         new WavePart("Orchard flight","ScoutInterceptor",Orchard,WaveShape.Train,4,5.1f),
         new WavePart("River arrow","ScoutInterceptor",PlainsChoreography.Fan,WaveShape.Chevron,3,4.8f),
         new WavePart("River procession","ScoutInterceptor",PlainsChoreography.Stream,WaveShape.Train,4,5.2f),
