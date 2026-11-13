@@ -25,6 +25,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     RectTransform chainFill;
     RectTransform bossPanel;
     RectTransform scorePanel;
+    RectTransform simulatorPanel;
     RectTransform sidePanel;
     CanvasGroup sideGroup;
     float entranceAge;
@@ -167,6 +168,31 @@ public sealed class IndustrialHUD : MonoBehaviour
         minibossClock = TextAt(bossPanel, "", 2, 250, 12, Amber);
         minibossClock.rectTransform.sizeDelta = new Vector2(24, 20);
         minibossClock.alignment = TextAnchor.MiddleCenter;
+        BuildSimulatorReadout(frame.transform);
+    }
+
+    void BuildSimulatorReadout(Transform frame)
+    {
+        var trial = FlightTrials.Active;
+        if (trial == null) return;
+        simulatorPanel = Panel(frame, "Simulator objective", Dark);
+        Place(simulatorPanel, 495, 12, 172, 180);
+        Dress(simulatorPanel, .1f);
+        FluorescentStartup.Attach(simulatorPanel.gameObject, .22f);
+        var accent = new Color(.70f, .65f, .98f);
+        var heading = TextAt(simulatorPanel, "SIMULATOR", 10, 9, 14, accent);
+        heading.rectTransform.sizeDelta = new Vector2(152, 20);
+        float y = 35;
+        foreach (var line in new[] { trial.title, trial.objective })
+        {
+            var label = TextAt(simulatorPanel, line, 10, y, 12, Steel);
+            label.horizontalOverflow = HorizontalWrapMode.Wrap;
+            label.rectTransform.sizeDelta = new Vector2(152, 20);
+            float height = Mathf.Max(20, label.preferredHeight);
+            label.rectTransform.sizeDelta = new Vector2(152, height);
+            y += height + 10;
+        }
+        simulatorPanel.sizeDelta = new Vector2(172, y + 3);
     }
 
     void LateUpdate()
@@ -181,6 +207,11 @@ public sealed class IndustrialHUD : MonoBehaviour
         }
         if (bossPanel != null)
             bossPanel.localScale = Vector3.one * Mathf.Min(1, Mathf.Max(0, margin - 58) / 28);
+        if (simulatorPanel != null)
+        {
+            simulatorPanel.localScale = Vector3.one * Mathf.Min(1, Mathf.Max(0, margin - 102) / 172);
+            simulatorPanel.gameObject.SetActive(FlightTrials.Active != null && !HangarHub.Active && !GameOverState.Active);
+        }
         if (sidePanel != null)
         {
             sidePanel.anchoredPosition = new Vector2((float)Screen.width / Screen.height > .72f ? -44 : 6, 6);
