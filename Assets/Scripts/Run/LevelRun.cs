@@ -22,7 +22,10 @@ public static class LevelRun
         }
     }
     // Health keeps growing after the speed caps preserve readable patterns.
-    public static float EnemyHealthScale => (1 + (Tier(Current) - 1) * .16f + (Loop - 1) * .48f) * Difficulty.Health;
+    public static float EnemyHealthScale => (1 + (Tier(Current) - 1) * TierHealthGrowth + (Loop - 1) * .48f) * Difficulty.Health;
+    // Simulator tapes fly fixed loaner kits that never collect upgrades, so their districts toughen
+    // far less per tier; the campaign keeps its full growth (Miguel, 14 November 2026).
+    static float TierHealthGrowth => FlightTrials.Active != null ? .05f : .16f;
     public static float EnemyTempoScale => Mathf.Min(1.3f, 1 + (Tier(Current) - 1) * .04f + (Loop - 1) * .05f) * Difficulty.Tempo;
     // Fuller volleys and shorter rests where a district measured lighter than the tier before it
     // (MeasureDifficultyCurve, ArtSource/DifficultyCurveReview). Geometry and identity stay authored.
