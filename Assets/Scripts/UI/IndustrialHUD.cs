@@ -12,6 +12,7 @@ public sealed class IndustrialHUD : MonoBehaviour
     WaveOrchestrer waves;
     Image[] challengeCells;
     readonly RectTransform[] encounterRows = new RectTransform[System.Enum.GetValues(typeof(EncounterKind)).Length];
+    int encounterRowsShown;
     Image cargoControl;
     RectTransform cargoCharge;
     Image[] healthCells, bossCells;
@@ -175,8 +176,10 @@ public sealed class IndustrialHUD : MonoBehaviour
     {
         var trial = FlightTrials.Active;
         if (trial == null) return;
+        // Left margin, under the score panel and its encounter rows: the right margin belongs to
+        // the collected items and the boss meter (Miguel, 14 November 2026).
         simulatorPanel = Panel(frame, "Simulator objective", Dark);
-        Place(simulatorPanel, 495, 12, 172, 180);
+        Place(simulatorPanel, -184, 108, 172, 180);
         Dress(simulatorPanel, .1f);
         FluorescentStartup.Attach(simulatorPanel.gameObject, .22f);
         var accent = new Color(.70f, .65f, .98f);
@@ -209,7 +212,11 @@ public sealed class IndustrialHUD : MonoBehaviour
             bossPanel.localScale = Vector3.one * Mathf.Min(1, Mathf.Max(0, margin - 58) / 28);
         if (simulatorPanel != null)
         {
-            simulatorPanel.localScale = Vector3.one * Mathf.Min(1, Mathf.Max(0, margin - 102) / 172);
+            float scoreScale = scorePanel != null ? scorePanel.localScale.x : 1;
+            float rows = encounterRowsShown > 0 ? 88 + encounterRowsShown * 32 : 84;
+            float scale = Mathf.Min(1, Mathf.Max(0, margin - 24) / 172);
+            simulatorPanel.localScale = Vector3.one * scale;
+            simulatorPanel.anchoredPosition = new Vector2(-12 - 172 * scale, -(12 + rows * scoreScale + 10));
             simulatorPanel.gameObject.SetActive(FlightTrials.Active != null && !HangarHub.Active && !GameOverState.Active);
         }
         if (sidePanel != null)
@@ -559,6 +566,7 @@ public sealed class IndustrialHUD : MonoBehaviour
             Place(row, 0, 88 + visible++ * 32, 132, 30);
             if (!row.gameObject.activeSelf) row.gameObject.SetActive(true);
         }
+        encounterRowsShown = visible;
     }
 
     RectTransform Panel(Transform parent, string name, Color color)
