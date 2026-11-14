@@ -313,6 +313,12 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - During simulator flights, show SIMULATOR and the objective in the right margin. Each trial unlocks from its own ship and non-simulator equipment, including later-leg kits; never require unrelated items, other ships, all districts or simulator blueprints.
 - Add district-authored movement variety: bounded firing holds, multiple stations, bottom entrances, straight passes and pursuit at a distance. Reduce Space satellite scout volley density and firing accents.
 
+## Weapons and simulator tapes (14 November 2026)
+
+- Balance weapon DPS against the stock gun (40 single-target DPS on GR-07). Each gun favours its own shot stats through `WeaponAffinity`: rate guns (Needle, Flame, Backdraft), damage guns (Rail, Burst, Depth Charge, Disc, Wind-up, Bank Shot, beam) and count guns (Scatter, Swarm Rack, Electricity).
+- Rockets are bigger, ignite to speed after launch, seek harder and burst with splash damage on impact. Swarm Rack fires faster salvos.
+- Simulator legs are whole districts (ten waves and the miniboss before their own boss) or lone bosses in boss rushes; never wave snippets before another district's boss. Multi-district tapes follow real routes. Tapes are ordered Plains to Void. Approach rules last until the miniboss. Simulator districts grow 5% health per tier instead of 16% because loaner kits never upgrade.
+
 ## Workflow
 
 - Latest scenery request (5 November 2026): add solid Tunnel walls that block the player's movement and bullets. The walls are anchored to the tunnel and scroll downward with it, forming passages to fly through; coordinate the enemy waves with those passages.
