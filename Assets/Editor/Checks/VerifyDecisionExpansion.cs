@@ -633,7 +633,7 @@ public sealed class DecisionExpansionReview : MonoBehaviour
         Call(flow, "FinishCargoWave");
         Check(flow.Cargo == null && RunCoins.Count == lostWallet && !flow.waves.Contains("cargoreward"), "a destroyed crate grants no coins or item reward");
         VerifyItemUnlocks.SetCommissionedHull(ShipFrame.Warden);
-        Check(FlightTrials.All[1].TrySelect(), "Cold Delivery opens with Warden");
+        Check(FlightTrials.Find("Cold Delivery").TrySelect(), "Cold Delivery opens with Warden");
         var trial = CargoEscort.Create(ship);
         Check(!trial.TryClaim() && !trial.FinishWave() && trial.FinishWave(), "Cold Delivery still requires two complete waves and cannot be cashed early");
         trial.Deliver();

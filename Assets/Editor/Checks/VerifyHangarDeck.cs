@@ -359,7 +359,7 @@ public sealed class HangarDeckReview : MonoBehaviour
         Call("Navigate", true, 1);
         // Review uses the same launch coroutine as the room's confirmation.
         VerifyItemUnlocks.SetCommissionedHull(ShipFrame.Warden);
-        Check(FlightTrials.All[1].TrySelect(), "Cold Delivery opens with Warden");
+        Check(FlightTrials.Find("Cold Delivery").TrySelect(), "Cold Delivery opens with Warden");
         Call("CloseDock");
         hub.StartCoroutine((IEnumerator)typeof(HangarHub).GetMethod("Launch", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(hub, null));
         WaveOrchestrer flow;

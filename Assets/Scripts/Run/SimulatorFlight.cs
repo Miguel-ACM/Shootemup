@@ -61,7 +61,15 @@ public sealed class SimulatorFlight : MonoBehaviour
     public void End()
     {
         if (current != this) return;
+        // Guns held through a locked or rhythmic approach pick up again without a fresh press.
+        bool resync = GunsLocked || DownbeatActive;
         current = null;
+        if (resync && ship != null)
+        {
+            var input = GameInput.Snapshot;
+            foreach (var gun in ship.GetComponentsInChildren<AWeapon>())
+                gun.SyncHeldInput(input.Primary, input.Secondary);
+        }
         if (first != null) Destroy(first.gameObject);
         if (second != null) Destroy(second.gameObject);
         if (pulse != null) Destroy(pulse.gameObject);

@@ -203,6 +203,12 @@ public static class VerifyItemUnlocks
         Fresh();
         var tapes = FlightTrials.All.Where(tape => tape.Advanced).ToArray();
         Check(tapes.Length == 30 && tapes.All(tape => tape.legs.Last().boss != null), "Thirty advanced tapes end with a full boss");
+        int fullLevel = DistrictWaves.CampaignSequence.Count(key => int.TryParse(key, out _) || key == "miniboss") + 1;
+        Check(tapes.All(tape => tape.legs.All(leg => leg.boss != null && leg.sequence.Length == (leg.fullLevel ? fullLevel : 1))),
+            "Every simulator leg is a whole district or a lone boss, never a wave snippet");
+        Check(tapes.Where(tape => tape.legs.Any(leg => leg.fullLevel)).All(tape => Enumerable.Range(1, tape.legs.Length - 1)
+            .All(i => tape.legs[i].district == tape.legs[i - 1].district || LevelRun.GetOptions(tape.legs[i - 1].district).Contains(tape.legs[i].district))),
+            "Tapes that fly whole districts follow real routes");
         Check(FlightTrials.Find("Change of Plans").TrySelect(), "Fresh save can launch a tape whose only locked item is its own loaned blueprint");
         FlightTrials.Reset();
         Check(!FlightTrials.Find("Power Exchange").Available, "Fresh save still needs the tape's campaign equipment");
@@ -229,7 +235,7 @@ public static class VerifyItemUnlocks
         var carousel = FlightTrials.Find("Change of Plans");
         Check(carousel.TrySelect() && carousel.kit.Contains(carousel.reward), "The Carousel tape loans its own prize");
         Begin(carousel.district, carousel.difficulty);
-        Check(MetaProgress.EngageBoss() == typeof(CitySwitchyardBoss), "Carousel tape ends at Switchyard");
+        Check(MetaProgress.EngageBoss() == typeof(PlainsRedKiteBoss), "Carousel tape ends at the Red Kite");
         MetaProgress.DefeatBoss();
         MetaProgress.EndRun("Certified");
         Check(MetaProgress.CanStock(carousel.reward) && MetaProgress.LastFlight.unlocks.Single().key == carousel.reward, "Final boss certifies the tape and releases its prize");

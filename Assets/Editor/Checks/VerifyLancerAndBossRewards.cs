@@ -182,7 +182,7 @@ public static class VerifyLancerAndBossRewards
             Check(events.Count == 1 && events[0].Unlocks.Count == 0 && events[0].NoHitBoss && events[0].NoHitLevel,
                 "Repeat clean victories celebrate no-hit without duplicate unlocks");
             Check(MetaProgress.PendingUnlocks.Count == 4, "Existing hangar queue survives repeat victory");
-            Fresh(); Check(FlightTrials.All[0].TrySelect(), "Crossfire is available"); Begin(FlightTrials.Active.difficulty);
+            Fresh(); Check(FlightTrials.Find("Crossfire").TrySelect(), "Crossfire is available"); Begin(FlightTrials.Active.difficulty);
             events.Clear(); MetaProgress.EngageBoss(); MetaProgress.DefeatBoss();
             Check(events.Count == 0, "Simulator cannot emit campaign unlock banner");
             FlightTrials.Reset();

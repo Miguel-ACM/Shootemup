@@ -130,7 +130,7 @@ public static class VerifyWarningCargoPrompts
         CombatDecision.End();
         Object.DestroyImmediate(cargo.gameObject);
         VerifyItemUnlocks.SetCommissionedHull(ShipFrame.Warden);
-        Check(FlightTrials.All[1].TrySelect(), "Cold Delivery opens with Warden");
+        Check(FlightTrials.Find("Cold Delivery").TrySelect(), "Cold Delivery opens with Warden");
         cargo = CargoEscort.Create(ship);
         Check(cargo.OpenControl == null && !cargo.FinishWave() && cargo.FinishWave(), "Cold Delivery retains its two-wave objective");
         Object.DestroyImmediate(cargo.gameObject);

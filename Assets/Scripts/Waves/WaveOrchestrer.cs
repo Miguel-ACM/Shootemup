@@ -306,7 +306,14 @@ public class WaveOrchestrer : MonoBehaviour
         else
         {
             isWaveComingOut = true;
-            simulatorFlight?.Begin(ship.GetComponent<Shipcontroller>());
+            // A simulator approach rule covers the run-up; the miniboss and the rest fly normally.
+            if (kind == RunSlotKind.Miniboss)
+            {
+                simulatorFlight?.End();
+                FlightTrials.EndApproach();
+            }
+            else
+                simulatorFlight?.Begin(ship.GetComponent<Shipcontroller>());
             challenge.BeginWave(kind == RunSlotKind.Combat);
             currentWave = wavePool.getWave(slot.Key);
             var following = plan.Following(currentWaveNumber + 1);
