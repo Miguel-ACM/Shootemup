@@ -1,0 +1,306 @@
+{
+"beamCharge": {
+"choice": "2",
+"pitch": 0
+},
+"beamFire": {
+"choice": "2",
+"pitch": 0
+},
+"blankbullet": {
+"choice": "6",
+"pitch": 0
+},
+"bossDeath": {
+"choice": "1",
+"pitch": 0
+},
+"bossHit": {
+"choice": "current",
+"pitch": -8
+},
+"bossWarning": {
+"choice": "current",
+"pitch": 0
+},
+"capacitor": {
+"choice": "5",
+"pitch": 0
+},
+"decoy": {
+"choice": "6",
+"pitch": 0
+},
+"enemyBurst": {
+"choice": "2",
+"pitch": 0
+},
+"enemyDisc": {
+"choice": "1",
+"pitch": 0
+},
+"enemyExplosion1": {
+"choice": "current",
+"pitch": -1
+},
+"enemyHelix": {
+"choice": "1",
+"pitch": 0
+},
+"enemyHit": {
+"choice": "2",
+"pitch": 0
+},
+"enemyMine": {
+"choice": "1",
+"pitch": 0
+},
+"enemyMissile": {
+"choice": "3",
+"pitch": 0
+},
+"enemyNeedle": {
+"choice": "1",
+"pitch": 0
+},
+"enemyPlasma": {
+"choice": "4",
+"pitch": 0
+},
+"enemyRicochet": {
+"choice": "3",
+"pitch": 0
+},
+"enemyScatter": {
+"choice": "1",
+"pitch": 0
+},
+"enemySimple": {
+"choice": "1",
+"pitch": 0
+},
+"enemySuspended": {
+"choice": "1",
+"pitch": 0
+},
+"enemyWave": {
+"choice": "2",
+"pitch": 0
+},
+"explosionHeavy": {
+"choice": "1",
+"pitch": 0
+},
+"explosionLarge": {
+"choice": "3",
+"pitch": 0
+},
+"fan": {
+"choice": "3",
+"pitch": 0
+},
+"frost": {
+"choice": "3",
+"pitch": 0
+},
+"heal": {
+"choice": "4",
+"pitch": 0
+},
+"hit1": {
+"choice": "4",
+"pitch": 0
+},
+"hitElectric": {
+"choice": "5",
+"pitch": 0
+},
+"hurt1": {
+"choice": "5",
+"pitch": -5
+},
+"itemBattery": {
+"choice": "1",
+"pitch": 0
+},
+"itemBearing": {
+"choice": "1",
+"pitch": 0
+},
+"itemBurn": {
+"choice": "1",
+"pitch": 0
+},
+"itemCapReady": {
+"choice": "1",
+"pitch": 0
+},
+"itemChain": {
+"choice": "6",
+"pitch": 0
+},
+"itemChargeBlast": {
+"choice": "2",
+"pitch": 0
+},
+"itemChargeRelease": {
+"choice": "2",
+"pitch": 0
+},
+"itemCounter": {
+"choice": "3",
+"pitch": 0
+},
+"itemDepthBurst": {
+"choice": "5",
+"pitch": 0
+},
+"itemDepthLaunch": {
+"choice": "1",
+"pitch": 0
+},
+"itemFlameIgnite": {
+"choice": "3",
+"pitch": 0
+},
+"itemFlameRelease": {
+"choice": "3",
+"pitch": 0
+},
+"itemFlameSustain": {
+"choice": "2",
+"pitch": -3
+},
+"itemFocus": {
+"choice": "4",
+"pitch": 0
+},
+"itemGet": {
+"choice": "3",
+"pitch": 0
+},
+"itemGum": {
+"choice": "5",
+"pitch": 0
+},
+"itemPoison": {
+"choice": "2",
+"pitch": 0
+},
+"itemProximity": {
+"choice": "1",
+"pitch": 0
+},
+"itemReturn": {
+"choice": "3",
+"pitch": 0
+},
+"itemRicochet": {
+"choice": "2",
+"pitch": 0
+},
+"itemSalvage": {
+"choice": "1",
+"pitch": 0
+},
+"itemSplit": {
+"choice": "2",
+"pitch": 0
+},
+"mana": {
+"choice": "2",
+"pitch": 0
+},
+"overdrive": {
+"choice": "4",
+"pitch": 0
+},
+"playerDead": {
+"choice": "1",
+"pitch": 0
+},
+"popcorn": {
+"choice": "1",
+"pitch": 0
+},
+"powerdown": {
+"choice": "1",
+"pitch": 0
+},
+"ready": {
+"choice": "2",
+"pitch": 0
+},
+"ricochetHit": {
+"choice": "3",
+"pitch": 0
+},
+"roll": {
+"choice": "3",
+"pitch": 0
+},
+"shatter": {
+"choice": "2",
+"pitch": 0
+},
+"shellBurst": {
+"choice": "1",
+"pitch": 0
+},
+"shot1": {
+"choice": "2",
+"pitch": -7
+},
+"shotAK45": {
+"choice": "3",
+"pitch": 0
+},
+"shotBeam": {
+"choice": "current",
+"pitch": 0
+},
+"shotCompanion": {
+"choice": "1",
+"pitch": 0
+},
+"shotElectric": {
+"choice": "2",
+"pitch": 0
+},
+"shotFlame": {
+"choice": "1",
+"pitch": 0
+},
+"shotMissile": {
+"choice": "1",
+"pitch": 0
+},
+"shotNeedle": {
+"choice": "4",
+"pitch": 0
+},
+"shotRail": {
+"choice": "current",
+"pitch": 0
+},
+"shotScatter": {
+"choice": "1",
+"pitch": 0
+},
+"shotShell": {
+"choice": "1",
+"pitch": 0
+},
+"static": {
+"choice": "1",
+"pitch": 0
+},
+"uiConfirm": {
+"choice": "4",
+"pitch": 0
+},
+"uiSkip": {
+"choice": "2",
+"pitch": 0
+}
+}
