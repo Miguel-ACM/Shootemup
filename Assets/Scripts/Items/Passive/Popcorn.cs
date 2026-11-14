@@ -33,6 +33,7 @@ public sealed class PopcornHits : MonoBehaviour
             return;
         hits = 0;
         next = Time.time + .12f;
+        RunInventory.Ping(this);
         ItemSound.Play("popcorn", .08f, 1, .1f);
         ItemSpark.Emit(enemy.transform.position, new Color(.95f, .77f, .4f), 5, .13f);
         int pops = CombatUpgrades.Current != null ? CombatUpgrades.Current.Rolls(enemy.transform.position) : 1;

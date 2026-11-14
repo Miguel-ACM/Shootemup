@@ -295,7 +295,10 @@ public sealed class PlayerRound : ABullet
             var e = CombatUpgrades.Nearest(transform.position, null, .8f);
             int bursts = e != null ? CombatUpgrades.Current.SpendProximity(transform.position) : 0;
             if (bursts > 0)
+            {
+                RunInventory.Ping(UpgradeKind.Proximity);
                 Detonate(true, bursts);
+            }
         }
         if (transform.position.y > Camera.UpLimit + 3 && !returns && delivery != PlayerDelivery.Disc)
             Despawn();
@@ -361,6 +364,7 @@ public sealed class PlayerRound : ABullet
             var next = CombatUpgrades.Nearest(transform.position, hit, 12);
             if (next != null)
             {
+                RunInventory.Ping(UpgradeKind.BouncingBall);
                 rebounded = true;
                 heading = ((Vector2)(next.transform.position - transform.position)).normalized;
                 generation = 1;
@@ -386,6 +390,7 @@ public sealed class PlayerRound : ABullet
             var next = CombatUpgrades.Nearest(transform.position, hit, 5);
             if (next != null)
             {
+                RunInventory.Ping(UpgradeKind.Rebound);
                 if (rebounds > 1)
                     SplitRebound(enemy, next);
                 heading = ((Vector2)(next.transform.position - transform.position)).normalized;

@@ -42,6 +42,7 @@ public sealed class EnergyShieldCell : MonoBehaviour
             return false;
         Charge = 0;
         Flash = 1;
+        RunInventory.Ping(this);
         PSXFireballs.Shockwave(transform.position, 1.8f, .45f, Field, 2, .5f);
         PSXImpactEffects.Burst(transform.position, Field);
         ItemSound.Play("shatter", .22f);
@@ -60,6 +61,7 @@ public sealed class EnergyShieldCell : MonoBehaviour
         if (Ready)
         {
             Flash = 1;
+            RunInventory.Ping(this);
             PSXFireballs.Shockwave(transform.position, 1.2f, .35f, Field, 1, .6f);
             ItemSound.Play("ready", .18f);
         }

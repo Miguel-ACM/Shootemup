@@ -67,6 +67,7 @@ public sealed class GrudgeTally : MonoBehaviour
     void Remember()
     {
         hits = Hits + 1;
+        RunInventory.Ping(this);
         ItemProcVfx.Emit(ItemProcShape.Charge, transform.position, Ember, Mathf.Min(.9f, .35f + hits * .05f));
         ItemSpark.Emit(transform.position, Ember, 4, .1f);
         ItemSound.Cue("itemFocus", volume: .08f, pitch: Mathf.Max(.55f, .8f - hits * .03f), cooldown: .3f);

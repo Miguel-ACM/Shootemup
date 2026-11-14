@@ -28,6 +28,7 @@ public sealed class FrozenHull : MonoBehaviour
         {
             Clear();
             next = Time.time + .6f;
+            RunInventory.Ping(UpgradeKind.Icicle);
             ItemSound.Play("shatter", .1f);
             ItemSpark.Emit(transform.position, new Color(.5f, .8f, .95f), 7, .22f, false, "needle");
             for (int i = 0; i < 5; i++)

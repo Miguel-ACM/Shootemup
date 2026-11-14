@@ -91,6 +91,7 @@ public sealed class CombatUpgrades : MonoBehaviour
             capacitor = Mathf.Min(1, capacitor + Time.deltaTime * .45f * (GameRules.playerShootSpeed / 10));
             if (previous < 1 && capacitor >= 1)
             {
+                RunInventory.Ping(UpgradeKind.Capacitor);
                 ItemSound.Cue("itemCapReady", "ready", .12f, .85f);
                 ItemProcVfx.Emit(ItemProcShape.Charge, transform.position + Vector3.up * .5f, new Color(.45f, .75f, .7f), .5f);
                 ItemSpark.Emit(transform.position + Vector3.up * .7f, new Color(.5f, .9f, .7f), 4, .1f);
@@ -111,6 +112,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         {
             relayCharge[firing] = 0;
             relayBurst[firing] = .6f;
+            RunInventory.Ping(UpgradeKind.RelaySwitch);
             ItemSound.Cue("itemCapReady", "ready", .07f, 1.25f);
         }
         if (!loadout.Weapons[idle].FiresOnEitherTrigger && relayBurst[idle] <= 0)
@@ -143,9 +145,12 @@ public sealed class CombatUpgrades : MonoBehaviour
     {
         volleys++;
         ReturnThisVolley = Count(UpgradeKind.Return) > 0 && volleys % 4 == 0;
+        if (ReturnThisVolley)
+            RunInventory.Ping(UpgradeKind.Return);
         float multiplier = 1 + capacitor * 2;
         if (capacitor > .175f)
         {
+            RunInventory.Ping(UpgradeKind.Capacitor);
             ItemSound.Play("capacitor", .12f + capacitor * .08f);
             ItemProcVfx.Emit(ItemProcShape.Charge, transform.position + Vector3.up * .8f, new Color(.45f, .75f, .7f), .55f);
             ItemSpark.Emit(transform.position + Vector3.up * .8f, new Color(.5f, .9f, .7f), 4, .16f, true);
@@ -162,6 +167,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         int dice = Count(UpgradeKind.LoadedDice);
         if (dice == 0 || Random.value >= 1 - Mathf.Pow(.7f, dice))
             return 1;
+        RunInventory.Ping(UpgradeKind.LoadedDice);
         ItemSpark.Emit(at, DicePip, 2, .07f);
         ItemSound.Cue("itemRicochet", volume: .04f, pitch: 1.6f, cooldown: .15f);
         return 2;
@@ -192,6 +198,7 @@ public sealed class CombatUpgrades : MonoBehaviour
                 focus = Mathf.Min(10, focus + 1);
                 if (previous != focus && (focus == 1 || focus == 5 || focus == 10))
                 {
+                    RunInventory.Ping(UpgradeKind.Focus);
                     ItemProcVfx.Emit(ItemProcShape.Lock, enemy.transform.position, new Color(.35f, .72f, .8f), enemy.size + .2f);
                     ItemSound.Cue("itemFocus", volume: .065f, pitch: .85f + focus * .035f, cooldown: .3f);
                 }
@@ -203,6 +210,9 @@ public sealed class CombatUpgrades : MonoBehaviour
             : Count(UpgradeKind.Burn) > 0 ? Proc("burn", companion ? .4f : .18f, enemy.transform.position) : 0;
         if (ignitions > 0)
         {
+            // Only a Lighter's chance ignition is an activation; flames and gasoline ignite every hit.
+            if (!fire && Count(UpgradeKind.Gasoline) == 0)
+                RunInventory.Ping(UpgradeKind.Burn);
             var burn = enemy.GetComponent<BurningHull>();
             if (burn == null)
                 burn = enemy.gameObject.AddComponent<BurningHull>();
@@ -229,6 +239,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         {
             for (int i = 0; i < splits; i++)
                 Fragments(enemy.transform.position, damage, 2, 25, i * 50);
+            RunInventory.Ping(UpgradeKind.Splitter);
             ItemProcVfx.Emit(ItemProcShape.Fork, enemy.transform.position, new Color(.3f, .75f, .82f));
             ItemSound.Cue("itemSplit", volume: .08f, cooldown: .18f);
         }
@@ -237,6 +248,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         {
             for (int i = 0; i < sprays; i++)
                 Fragments(enemy.transform.position, damage * .55f, 3, 60, i * 30);
+            RunInventory.Ping(UpgradeKind.Bearing);
             ItemProcVfx.Emit(ItemProcShape.Detonate, enemy.transform.position, new Color(.7f, .65f, .42f), .35f);
             ItemSound.Cue("itemBearing", volume: .07f, cooldown: .2f);
         }
@@ -249,6 +261,7 @@ public sealed class CombatUpgrades : MonoBehaviour
             if (battery >= 35 && Ready("battery", .7f))
             {
                 battery -= 35;
+                RunInventory.Ping(UpgradeKind.Battery);
                 PlayerRound.Spawn(transform.position, Vector2.up, 28, 12, PlayerDelivery.Missile, 1);
                 ItemProcVfx.Emit(ItemProcShape.Counter, transform.position, new Color(.82f, .65f, .3f), .5f);
                 ItemSound.Cue("itemBattery", volume: .12f, cooldown: .18f);
@@ -282,6 +295,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         if (++coins >= 5)
         {
             coins -= 5;
+            RunInventory.Ping(UpgradeKind.Salvage);
             PlayerRound.Spawn(transform.position, Vector2.up, 12, 10, PlayerDelivery.Missile, 1);
             ItemProcVfx.Emit(ItemProcShape.Convert, transform.position, new Color(.88f, .68f, .28f), .55f);
             ItemSound.Cue("itemSalvage", volume: .12f);
@@ -295,6 +309,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         if (++blocks >= 8)
         {
             blocks = 0;
+            RunInventory.Ping(UpgradeKind.Recovery);
             PlayerRound.Spawn(transform.position, Vector2.up, 14, 12, PlayerDelivery.Missile, 1);
             ItemProcVfx.Emit(ItemProcShape.Counter, transform.position, new Color(.6f, .65f, .9f), .65f);
             ItemSound.Cue("itemCounter", volume: .12f);
@@ -309,6 +324,7 @@ public sealed class CombatUpgrades : MonoBehaviour
             reserve = Mathf.Min(12, reserve + amount * .5f);
             if (reserve > previous)
             {
+                RunInventory.Ping(UpgradeKind.Reserve);
                 ItemProcVfx.Emit(ItemProcShape.Convert, transform.position, new Color(.45f, .65f, .86f), .35f);
                 ItemSound.Cue("itemReserve", volume: .08f, cooldown: .3f);
             }
@@ -325,7 +341,10 @@ public sealed class CombatUpgrades : MonoBehaviour
     public void Killed(AEnemy enemy)
     {
         if (Count(UpgradeKind.Ink) > 0)
+        {
             InkPuddle.Spill(enemy.transform.position, Count(UpgradeKind.Ink));
+            RunInventory.Ping(UpgradeKind.Ink);
+        }
         int chains = Count(UpgradeKind.ChainReactor) > 0 && enemy.GetComponent<BurningHull>() != null ? Proc("chain", .3f, enemy.transform.position) : 0;
         if (chains > 0)
         {
@@ -333,6 +352,7 @@ public sealed class CombatUpgrades : MonoBehaviour
                 Fragments(enemy.transform.position, 8, 6, 60, i * 30);
             ItemProcVfx.Emit(ItemProcShape.Detonate, enemy.transform.position, PlayerShotPalette.Fire, Mathf.Max(.55f, enemy.size));
             ItemSound.Cue("itemChain", volume: .13f, cooldown: .25f);
+            RunInventory.Ping(UpgradeKind.ChainReactor);
         }
     }
 

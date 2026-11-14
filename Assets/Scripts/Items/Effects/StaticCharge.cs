@@ -68,6 +68,7 @@ public sealed class StaticCharge : MonoBehaviour
         }
         ItemSpark.Emit(first.transform.position, new Color(.7f, .5f, .95f), 5, .12f);
         ItemSound.Play("static", .2f);
+        RunInventory.Ping(this);
     }
 
     void OnDestroy()

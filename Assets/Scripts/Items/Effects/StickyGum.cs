@@ -52,6 +52,7 @@ public sealed class StickyGum : MonoBehaviour
             if (blob.age < .65f)
                 continue;
             GumSpritePop.Spawn(blob.model.position);
+            RunInventory.Ping(UpgradeKind.ChewingGum);
             if (enemy != null && enemy.CanReceiveDamage)
             {
                 CombatHit.Tick(enemy, blob.damage, score: true);

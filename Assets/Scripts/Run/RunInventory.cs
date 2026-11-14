@@ -13,6 +13,7 @@ public sealed class RunInventory : MonoBehaviour
         public bool tradeable, multiply;
         public AItem.ItemType kind;
         public int slot;
+        internal AItem item;
         internal float[] changes;
         internal readonly List<ACompanion> companions = new List<ACompanion>();
         internal readonly List<ImpCompanion> imps = new List<ImpCompanion>();
@@ -41,8 +42,45 @@ public sealed class RunInventory : MonoBehaviour
         if (inventory == null)
             inventory = ship.gameObject.AddComponent<RunInventory>();
         inventory.ship = ship;
+        current = inventory;
         return inventory;
     }
+
+    // Item pings (Miguel, 14 November 2026): whatever activates an item lights that item's icon in
+    // the collected column. Each entry already knows the upgrades and ship effects its pickup added.
+    static RunInventory current;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetCurrent() => current = null;
+
+    public static void Ping(AItem item)
+    {
+        if (current == null || item == null)
+            return;
+        foreach (var entry in current.entries)
+            if (entry.item == item)
+                Light(entry);
+    }
+
+    public static void Ping(UpgradeKind kind)
+    {
+        if (current == null)
+            return;
+        foreach (var entry in current.entries)
+            if (entry.upgrades.Contains(kind))
+                Light(entry);
+    }
+
+    public static void Ping(MonoBehaviour effect)
+    {
+        if (current == null || effect == null)
+            return;
+        foreach (var entry in current.entries)
+            if (entry.effects.Contains(effect))
+                Light(entry);
+    }
+
+    static void Light(Entry entry) => PSXInventoryDisplay.Ping(entry.display, AItem.GetRarityColor(entry.rarity));
 
     float DamageScale => ship.GetComponent<OverdriveBoost>() != null ? 2 : 1;
     float[] ReadStats() => new[] { GameRules.playerShootDamage / DamageScale, GameRules.playerShootSpeed,
@@ -93,7 +131,7 @@ public sealed class RunInventory : MonoBehaviour
         if (before == null || !ItemCatalog.TryGet(item.GetType().Name, out _))
             return;
         var data = item.GetData();
-        var entry = new Entry { key = item.GetType().Name, name = data[0], rarity = item.rarity, display = display,
+        var entry = new Entry { key = item.GetType().Name, item = item, name = data[0], rarity = item.rarity, display = display,
             kind = item.Kind, slot = item.ReplacementSlot,
             multiply = item is APactItem || item is EarlyRise || item is FocusTime || item is HeatSink,
             tradeable = (item.Kind == AItem.ItemType.passive || item.Kind == AItem.ItemType.passiveWeapon) &&

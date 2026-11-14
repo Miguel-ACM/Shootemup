@@ -88,7 +88,10 @@ public sealed class HourglassSand : MonoBehaviour
         {
             ItemSpark.Emit(transform.position + Vector3.down * ArcRadius, Sand, filled == Steps ? 5 : 2, .07f);
             if (filled == Steps)
+            {
                 ItemSound.Cue("ready", volume: .05f, pitch: 1.2f, cooldown: .5f);
+                RunInventory.Ping(this);
+            }
         }
         if (filled != shown)
             Draw(filled);

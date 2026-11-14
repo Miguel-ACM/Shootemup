@@ -54,6 +54,7 @@ public sealed class ShieldDetonation : MonoBehaviour
     void Detonate()
     {
         clearing = ClearTime;
+        RunInventory.Ping(this);
         var p = transform.position;
         PSXImpactEffects.Explosion(p, 1.1f);
         ClearEffects.ScreenClear(Blast);

@@ -20,6 +20,7 @@ public sealed class OathMirror : MonoBehaviour
         if (!Ready || !BulletReflection.Reflect(round, 1.5f))
             return false;
         charge = 0;
+        RunInventory.Ping(this);
         PSXFireballs.Shockwave(transform.position, 1.4f, .3f, Silver, 1, .5f);
         ItemSound.Play("shatter", .16f, 1.5f);
         return true;

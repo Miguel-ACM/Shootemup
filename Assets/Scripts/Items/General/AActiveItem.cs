@@ -38,7 +38,13 @@ public abstract class AActiveItem : AItem
     {
         float originalCost = cost;
         cost *= GameRules.activeEnergyCost;
-        try { return OnPress(mana); }
+        try
+        {
+            float result = OnPress(mana);
+            if (result >= 0)
+                RunInventory.Ping(this);
+            return result;
+        }
         finally { cost = originalCost; }
     }
 

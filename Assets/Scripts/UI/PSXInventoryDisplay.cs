@@ -22,6 +22,12 @@ public sealed class PSXInventoryDisplay : MonoBehaviour
     static PSXInventoryDisplay instance;
     readonly List<Transform> items = new List<Transform>();
     readonly List<float> itemSizes = new List<float>();
+    // Item pings (Miguel, 14 November 2026): an item that activates glows in its slot and pops.
+    const float PingSeconds = .65f, PingRetrigger = .2f;
+    readonly List<float> pingedAt = new List<float>();
+    readonly List<Color> pingColors = new List<Color>();
+    readonly List<Image> glows = new List<Image>();
+    static Sprite glowSprite;
     readonly Vector3[] corners = new Vector3[4];
     Canvas canvas;
     RectTransform panel;
@@ -53,8 +59,31 @@ public sealed class PSXInventoryDisplay : MonoBehaviour
             return;
         instance.items.RemoveAt(index);
         instance.itemSizes.RemoveAt(index);
+        instance.pingedAt.RemoveAt(index);
+        instance.pingColors.RemoveAt(index);
+        if (instance.glows[index] != null)
+            Destroy(instance.glows[index].gameObject);
+        instance.glows.RemoveAt(index);
         Destroy(display.gameObject);
     }
+
+    /// <summary>Lights the slot of an item that just activated: a halo behind it and a short pop.</summary>
+    public static void Ping(Transform display, Color color)
+    {
+        if (instance == null || display == null)
+            return;
+        int index = instance.items.IndexOf(display);
+        if (index < 0)
+            return;
+        float now = Time.unscaledTime;
+        // Rapid procs hold the glow lit instead of restarting it every hit.
+        if (now - instance.pingedAt[index] < PingRetrigger)
+            return;
+        instance.pingedAt[index] = now;
+        instance.pingColors[index] = color;
+    }
+
+    float Pulse(int index) => Mathf.Clamp01(1 - (Time.unscaledTime - pingedAt[index]) / PingSeconds);
 
     void Awake()
     {
@@ -113,6 +142,9 @@ public sealed class PSXInventoryDisplay : MonoBehaviour
         renderer.receiveShadows = false;
         itemSizes.Add(Mathf.Max(mesh.bounds.size.x, mesh.bounds.size.y, mesh.bounds.size.z, .01f));
         items.Add(slot);
+        pingedAt.Add(float.NegativeInfinity);
+        pingColors.Add(Color.white);
+        glows.Add(null);
         // New arrivals appear at their slot and grow in from nothing.
         float width = AvailableWidth(BossShift()), cell = CellSize(items.Count, width);
         Arrange(items.Count - 1, cell, Columns(width, cell), 1);
@@ -170,8 +202,60 @@ public sealed class PSXInventoryDisplay : MonoBehaviour
         float u = (index % columns + .5f) * cell, v = (index / columns + .5f) * cell;
         var target = new Vector3((u - AreaWidth * .5f) * WorldPerUnit, (AreaHeight * .5f - v) * WorldPerUnit, 0);
         var slot = items[index];
+        float pop = 1 + .28f * Pulse(index);
         slot.localPosition = Vector3.Lerp(slot.localPosition, target, blend);
-        slot.localScale = Vector3.Lerp(slot.localScale, Vector3.one * (.78f * cell * WorldPerUnit / itemSizes[index]), blend);
+        slot.localScale = Vector3.Lerp(slot.localScale, Vector3.one * (.78f * cell * pop * WorldPerUnit / itemSizes[index]), blend);
+    }
+
+    // The halo sits behind the transparent render texture, centred on the item's cell.
+    void Glow(int index, float cell, int columns)
+    {
+        float pulse = Pulse(index);
+        var glow = glows[index];
+        if (pulse <= 0)
+        {
+            if (glow != null && glow.enabled)
+                glow.enabled = false;
+            return;
+        }
+        if (glow == null)
+        {
+            var go = new GameObject("Item ping", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            go.transform.SetParent(canvas.transform, false);
+            go.transform.SetSiblingIndex(0);
+            glows[index] = glow = go.GetComponent<Image>();
+            glow.sprite = GlowSprite();
+            glow.raycastTarget = false;
+            var rect = glow.rectTransform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(.5f, .5f);
+        }
+        glow.enabled = true;
+        float u = (index % columns + .5f) * cell, v = (index / columns + .5f) * cell;
+        glow.rectTransform.anchoredPosition = new Vector2(Left + shift + u, Top - v);
+        glow.rectTransform.sizeDelta = Vector2.one * cell * (1.05f + .3f * (1 - pulse));
+        var color = Color.Lerp(pingColors[index], Color.white, .35f);
+        color.a = .9f * pulse * pulse;
+        glow.color = color;
+    }
+
+    // A chunky soft disc with a brighter rim, point-filtered like the rest of the instruments.
+    static Sprite GlowSprite()
+    {
+        if (glowSprite != null)
+            return glowSprite;
+        const int size = 32;
+        var texture = new Texture2D(size, size, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp, name = "Item ping glow" };
+        for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+            {
+                float r = Vector2.Distance(new Vector2(x + .5f, y + .5f), Vector2.one * size * .5f) / (size * .5f);
+                float body = Mathf.Clamp01(1 - r) * .55f;
+                float rim = Mathf.Clamp01(1 - Mathf.Abs(r - .78f) / .14f);
+                texture.SetPixel(x, y, new Color(1, 1, 1, Mathf.Clamp01(body + rim * .8f)));
+            }
+        texture.Apply();
+        glowSprite = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(.5f, .5f), size);
+        return glowSprite;
     }
 
     void LateUpdate()
@@ -188,6 +272,7 @@ public sealed class PSXInventoryDisplay : MonoBehaviour
         for (int i = 0; i < items.Count; i++)
         {
             Arrange(i, cell, columns, blend);
+            Glow(i, cell, columns);
             items[i].localRotation = Quaternion.Euler(-18, t * 60 + i * 40, 8);
         }
     }
