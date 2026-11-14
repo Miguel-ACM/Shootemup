@@ -167,8 +167,10 @@ public sealed class PlayerRound : ABullet
         b.origin = p;
         b.heading = d.normalized;
         b.pierces = mode == PlayerDelivery.Needle ? 1 : 0;
+        // Rockets read as real ordnance: about 1.45 times a pulse round, keeping the dart's proportions.
         Vector2 span = mode == PlayerDelivery.Needle ? new Vector2(.2f, .88f) : mode == PlayerDelivery.Shell ? Vector2.one * .44f :
-            mode == PlayerDelivery.Disc ? Vector2.one * .4f : mode == PlayerDelivery.Flame ? new Vector2(.26f, .5f) : new Vector2(.23f, .43f);
+            mode == PlayerDelivery.Disc ? Vector2.one * .4f : mode == PlayerDelivery.Flame ? new Vector2(.26f, .5f) :
+            mode == PlayerDelivery.Missile ? new Vector2(.33f, .62f) : new Vector2(.23f, .43f);
         var bounds = sr.sprite.bounds.size;
         float size = Mathf.Sqrt(GameRules.playerShootSize) * (generation > 0 ? .85f : 1) * ShotTraits.SizeScale;
         go.transform.localScale = new Vector3(span.x / Mathf.Max(.01f, bounds.x), span.y / Mathf.Max(.01f, bounds.y), 1) * size;
@@ -245,9 +247,10 @@ public sealed class PlayerRound : ABullet
             if (target != null)
                 heading = Vector3.RotateTowards(heading, target == marked ? CombatTargets.MarkedDirection(transform.position, marked) :
                     ((Vector2)(target.transform.position - transform.position)).normalized,
-    Time.deltaTime * (delivery == PlayerDelivery.Missile ? 3 : Mathf.Min(3, GameRules.playerShootFollowness)), 0);
+    Time.deltaTime * (delivery == PlayerDelivery.Missile ? 4.5f : Mathf.Min(3, GameRules.playerShootFollowness)), 0);
         }
-        float brake = delivery == PlayerDelivery.Shell ? Mathf.Clamp01(1 - age / .7f) : 1;
+        float brake = delivery == PlayerDelivery.Shell ? Mathf.Clamp01(1 - age / .7f) :
+            delivery == PlayerDelivery.Missile ? Ignition(flight) : 1;
         Vector3 wallFrom = transform.position;
         Vector2 step = heading * speed * brake * ShotTraits.SpeedScale(flight) * Time.deltaTime;
         travelled += step.magnitude;
@@ -341,8 +344,11 @@ public sealed class PlayerRound : ABullet
         var enemy = collision.GetComponent<AEnemy>();
         if (enemy == null || !enemy.CanReceiveDamage || !hit.Add(enemy))
             return;
-        CombatHit.Apply(enemy, damage * ShotTraits.ReachDamage(travelled), collision.ClosestPoint(transform.position), heading,
+        Vector2 impact = collision.ClosestPoint(transform.position);
+        CombatHit.Apply(enemy, damage * ShotTraits.ReachDamage(travelled), impact, heading,
             generation, companion, delivery == PlayerDelivery.Flame);
+        if (delivery == PlayerDelivery.Missile)
+            RocketBurst(enemy, impact);
         if (vendingCoin && enemy.health <= 0)
             enemy.DropVendingCoin();
         if (chargeLevel > 0)
@@ -390,6 +396,34 @@ public sealed class PlayerRound : ABullet
             }
         }
         Despawn();
+    }
+
+    // Rockets leave the rack slowly, then their motor catches and they streak to cruise speed.
+    float Ignition(float time)
+    {
+        float cruise = Mathf.Min(1.5f, Mathf.Max(1, RocketTopSpeed / Mathf.Max(.01f, speed)));
+        return Mathf.Lerp(.6f, cruise, Mathf.SmoothStep(0, 1, time / .3f));
+    }
+
+    const float RocketTopSpeed = 24, RocketSplashRadius = .9f, RocketSplashShare = .4f;
+    static readonly List<AEnemy> splashTargets = new List<AEnemy>();
+
+    // Every rocket bursts where it lands: a small fireball and splash damage to the hulls around it.
+    void RocketBurst(AEnemy struck, Vector2 point)
+    {
+        PSXFireballs.Spawn(point, generation > 0 ? .26f : .36f, 2, .12f, .05f, new Color(1f, .8f, .5f));
+        ItemSound.Cue("itemDepthBurst", volume: .05f, pitch: 1.3f + Random.value * .2f, cooldown: .07f);
+        float splash = damage * RocketSplashShare;
+        splashTargets.Clear();
+        splashTargets.AddRange(AEnemy.Live);
+        foreach (var other in splashTargets)
+        {
+            if (other == null || other == struck || !other.CanReceiveDamage || hit.Contains(other))
+                continue;
+            if (!other.ClosestDamagePoint(point, out var near) || (near - point).sqrMagnitude > RocketSplashRadius * RocketSplashRadius)
+                continue;
+            CombatHit.Apply(other, splash, near, heading, 1, companion);
+        }
     }
 
     // Spawners may rescale a round after Spawn, so its resting scale is read on its first move.
