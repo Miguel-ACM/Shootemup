@@ -107,7 +107,9 @@ Shader "Shootemup/PSXv2 Lit"
                 if (pane)
                 {
                     // Kept readable through the hull's hurt flicker, and left out of the 15-bit steps.
-                    c.rgb = PilotCockpitGlass(pigment, i.reflection);
+                    // saturate also turns a degenerate reflection's NaN into black: an HDR NaN would
+                    // spread through the projectile glow and black out the whole screen.
+                    c.rgb = saturate(PilotCockpitGlass(pigment, i.reflection));
                     c.a = _Tint.a > .001 ? PILOT_PANE_MARK : c.a;
                     return c;
                 }

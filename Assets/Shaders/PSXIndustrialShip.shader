@@ -98,7 +98,9 @@ Shader "Shootemup/PSX Industrial Ship"
                 if (pane)
                 {
                     // Kept readable through the hull's hurt flicker, and left out of the 15-bit steps.
-                    color.rgb = PilotCockpitGlass(pigment, input.reflection);
+                    // saturate also turns a degenerate reflection's NaN into black: an HDR NaN would
+                    // spread through the projectile glow and black out the whole screen.
+                    color.rgb = saturate(PilotCockpitGlass(pigment, input.reflection));
                     color.a = _Tint.a > .001 ? PILOT_PANE_MARK : color.a;
                     return color;
                 }
