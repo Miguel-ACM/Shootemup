@@ -321,13 +321,45 @@ public sealed partial class HangarHub : MonoBehaviour
         return amount;
     }
 
+    // The bank reader sits in the left margin at the bottom, outside the hangar view.
+    // Its own canvas draws it above the instruments' black margin masks.
+    const float WalletWidth = 150, WalletGap = 12;
+    void BuildMarginWallet()
+    {
+        var go = new GameObject("Coin reader", typeof(RectTransform), typeof(Canvas), typeof(CanvasGroup), typeof(Image));
+        walletPanel = go.GetComponent<RectTransform>();
+        walletPanel.SetParent(readouts.transform, false);
+        var canvas = go.GetComponent<Canvas>();
+        canvas.overrideSorting = true;
+        canvas.sortingOrder = 6;
+        walletPanel.anchorMin = walletPanel.anchorMax = new Vector2(.5f, 0);
+        walletPanel.pivot = new Vector2(1, 0);
+        walletPanel.anchoredPosition = new Vector2(-202.5f - WalletGap, WalletGap);
+        walletPanel.sizeDelta = new Vector2(WalletWidth, 38);
+        var plate = go.GetComponent<Image>();
+        plate.color = new Color(.018f, .034f, .043f);
+        plate.raycastTarget = false;
+        walletFade = go.GetComponent<CanvasGroup>();
+        walletFade.alpha = 0;
+        var face = new GameObject("Coin face", typeof(RectTransform)).GetComponent<RectTransform>();
+        face.SetParent(walletPanel, false);
+        face.sizeDelta = new Vector2(296, 62);
+        face.localScale = Vector3.one * .5f;
+        walletText = CoinRow(face, 0, 296);
+        go.SetActive(false);
+    }
+
     void UpdateShopReadouts(Vector3 p)
     {
         float y = p.y - center.y;
         bool inShopLane = room < 0 && y >= berths[(int)Dock.Fleet].y && y <= berths[(int)Dock.Simulator].y;
+        // Shrink into narrow margins rather than overlapping the lane.
+        float margin = Mathf.Max(0, (Screen.width * 720f / Mathf.Max(1, Screen.height) - 405) * .5f);
+        walletPanel.localScale = Vector3.one * Mathf.Min(1, Mathf.Max(0, margin - WalletGap) / WalletWidth);
         walletFade.alpha = Mathf.MoveTowards(walletFade.alpha, inShopLane ? 1 : 0, Time.unscaledDeltaTime / Dialog.RevealSeconds);
         walletPanel.gameObject.SetActive(walletFade.alpha > 0);
-        if (inShopLane) walletText.SetText("{0}", MetaProgress.Coins);
+        if (inShopLane)
+            walletText.SetText("{0}", MetaProgress.Coins);
         int hovered = room < 0 ? NearestPlinth(p) : -1;
         if (hovered != inspectedStock)
         {
@@ -341,8 +373,10 @@ public sealed partial class HangarHub : MonoBehaviour
             {
                 var offer = plinths[hovered];
                 stockInfo.text = offer.item.GetData()[2];
-                float displayY = offer.spot.y > center.y + plinthSpots[1].y ? 18.95f : 10.55f;
-                readouts.Aim(stockScreen, Spot(new Vector2(2.35f, displayY), 1));
+                // Read out across the lane: the right-hand middle platform on the left, the left ones on the right.
+                var display = offer.slot.x > 0 ? new Vector2(-2.35f, offer.slot.y)
+                    : new Vector2(2.35f, offer.slot.y > plinthSpots[1].y ? 18.95f : 10.55f);
+                readouts.Aim(stockScreen, Spot(display, 1));
                 readouts.Reveal(offer.plaque);
                 readouts.Reveal(offer.category);
                 readouts.Reveal(stockScreen);
@@ -454,7 +488,10 @@ public sealed partial class HangarHub : MonoBehaviour
     const float ArrivalSeconds = 1.8f, LightSeconds = 2.6f;
     Vector3 parkedAt;
     float introTime;
-    bool Arriving { get; set; }
+    bool Arriving
+    {
+        get; set;
+    }
     Mesh mist;
     readonly Color[] mistColors = new Color[8];
 

@@ -130,7 +130,8 @@ public sealed partial class HangarHub
             zoom = Mathf.Lerp(zoom, Mathf.Max(zoom, (GalleryRight - GalleryWing + 1.2f) * .5f / (405f / 720f)),
                 Mathf.SmoothStep(0, 1, Mathf.InverseLerp(GalleryWing - 5, GalleryWing, p.x - center.x)));
         view.orthographicSize = Mathf.Lerp(view.orthographicSize, zoom, 1 - Mathf.Exp(-6 * Time.deltaTime));
-        if (inCases) view.orthographicSize = Mathf.Max(view.orthographicSize, zoom);
+        if (inCases)
+            view.orthographicSize = Mathf.Max(view.orthographicSize, zoom);
         float lateral = Mathf.Abs(p.x - center.x);
         float halfView = view.orthographicSize * (405f / 720f);
         int portal = Portal(p);
@@ -310,11 +311,7 @@ public sealed partial class HangarHub
             HoverSign(signs[i], new Vector2(side * 2.95f, y + 2.25f), lamps[i]);
             PortalLight(new Vector2(side * 5.25f, y));
         }
-        walletPanel = MountedPanel("Coin reader", new Vector2(-2.55f, 14.45f), new Vector2(3.1f, .88f));
-        walletFade = walletPanel.gameObject.AddComponent<CanvasGroup>();
-        walletFade.alpha = 0;
-        walletText = CoinRow(walletPanel, 0, 296);
-        walletPanel.gameObject.SetActive(false);
+        BuildMarginWallet();
         stockScreen = MountedPanel("Outfitter display", Vector2.zero, new Vector2(4.35f, 3.08f), fadeOnReveal: true);
         stockInfo = WorldLabel(stockScreen, "", new Vector2(0, 35), new Vector2(395, 195), 28, DockInstrument.Paper);
         stockScreen.gameObject.SetActive(false);
