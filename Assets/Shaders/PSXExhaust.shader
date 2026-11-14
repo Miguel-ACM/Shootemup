@@ -7,7 +7,8 @@ Shader "Shootemup/PSX Exhaust"
         Pass
         {
             Tags { "LightMode"="Universal2D" }
-            Blend SrcAlpha One
+            // Alpha adds up so exhaust over the player's pane clears PSXComposite's sharp-pane mark.
+            Blend SrcAlpha One, One One
             ZWrite Off
             ZTest [_ZTest]
             Cull Off

@@ -29,6 +29,12 @@ public sealed class PSXPresentation : MonoBehaviour
     Canvas shipCanvas;
     RawImage shipImage;
     Material shipComposite;
+    // The player's cockpit pane skips the filter: this camera draws only the pane (player hulls clip
+    // everything else while _CockpitPass is set) at full screen resolution, and the composite swaps
+    // it in wherever the low-resolution scene still shows the pane.
+    UnityEngine.Camera cockpitCamera;
+    RenderTexture cockpitPixels;
+    static readonly int CockpitPass = Shader.PropertyToID("_CockpitPass");
     public RenderTexture SceneTexture => pixels;
     public Material CompositeMaterial => composite;
 
@@ -102,22 +108,33 @@ public sealed class PSXPresentation : MonoBehaviour
         shipCanvas.sortingOrder = 18;
         var scaler = shipCanvasObject.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1280,720);
+        scaler.referenceResolution = new Vector2(1280, 720);
         scaler.matchWidthOrHeight = 1;
-        var aperture = new GameObject("Ship portrait aperture",typeof(RectTransform),typeof(RectMask2D)).GetComponent<RectTransform>();
-        aperture.SetParent(shipCanvasObject.transform,false);
-        aperture.anchorMin = new Vector2(.5f,0);
-        aperture.anchorMax = new Vector2(.5f,1);
-        aperture.sizeDelta = new Vector2(405,0);
+        var aperture = new GameObject("Ship portrait aperture", typeof(RectTransform), typeof(RectMask2D)).GetComponent<RectTransform>();
+        aperture.SetParent(shipCanvasObject.transform, false);
+        aperture.anchorMin = new Vector2(.5f, 0);
+        aperture.anchorMax = new Vector2(.5f, 1);
+        aperture.sizeDelta = new Vector2(405, 0);
         var shipDisplay = new GameObject("Ships", typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
         shipDisplay.transform.SetParent(aperture, false);
         shipImage = shipDisplay.GetComponent<RawImage>();
         shipImage.raycastTarget = false;
         shipImage.material = shipComposite;
         shipImage.enabled = false;
-        shipImage.rectTransform.anchorMin = shipImage.rectTransform.anchorMax = new Vector2(.5f,.5f);
+        shipImage.rectTransform.anchorMin = shipImage.rectTransform.anchorMax = new Vector2(.5f, .5f);
+        var cockpitCameraObject = new GameObject("PSX sharp player cockpit");
+        cockpitCameraObject.transform.SetParent(transform, false);
+        cockpitCamera = cockpitCameraObject.AddComponent<UnityEngine.Camera>();
+        cockpitCamera.CopyFrom(source);
+        cockpitCamera.cullingMask = LayerMask.GetMask("Player");
+        cockpitCamera.clearFlags = CameraClearFlags.SolidColor;
+        cockpitCamera.backgroundColor = Color.clear;
+        cockpitCamera.depth = source.depth + .5f;
+        cockpitCamera.allowHDR = false;
+        cockpitCamera.GetUniversalAdditionalCameraData().renderPostProcessing = false;
         initialized = true;
         Resize();
+        RenderPipelineManager.beginCameraRendering += BeforeCamera;
         RenderPipelineManager.endCameraRendering += AfterCamera;
     }
 
@@ -149,8 +166,9 @@ public sealed class PSXPresentation : MonoBehaviour
         shipPixels.Create();
         shipCamera.targetTexture = shipPixels;
         shipImage.texture = shipPixels;
-        shipImage.rectTransform.sizeDelta = new Vector2(width * 720f / height,720);
+        shipImage.rectTransform.sizeDelta = new Vector2(width * 720f / height, 720);
         shipComposite.SetFloat("_FilterEnabled", filterEnabled ? 1 : 0);
+        ResizeCockpit();
         glow = new ProjectileGlow(w, h);
         composite.SetTexture("_GlowTex", glow.Texture);
         composite.SetFloat("_FilterEnabled", filterEnabled ? 1 : 0);
@@ -159,8 +177,39 @@ public sealed class PSXPresentation : MonoBehaviour
         Shader.SetGlobalVector("_PSXSnapResolution", new Vector4(w, h, 0, 0));
     }
 
+    void ResizeCockpit()
+    {
+        cockpitCamera.targetTexture = null;
+        if (cockpitPixels != null)
+        {
+            cockpitPixels.Release();
+            Destroy(cockpitPixels);
+            cockpitPixels = null;
+        }
+        // Without the filter the whole scene is already sharp.
+        cockpitCamera.enabled = filterEnabled;
+        if (filterEnabled)
+        {
+            cockpitPixels = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32) { filterMode = FilterMode.Point, name = "PSX sharp player cockpit", antiAliasing = 1 };
+            cockpitPixels.Create();
+            cockpitCamera.targetTexture = cockpitPixels;
+        }
+        foreach (var material in new[] { composite, shipComposite })
+        {
+            material.SetTexture("_CockpitTex", cockpitPixels);
+            material.SetFloat("_CockpitOn", filterEnabled ? 1 : 0);
+        }
+    }
+
+    void BeforeCamera(ScriptableRenderContext context, UnityEngine.Camera camera)
+    {
+        Shader.SetGlobalFloat(CockpitPass, camera == cockpitCamera ? 1 : 0);
+    }
+
     void AfterCamera(ScriptableRenderContext context, UnityEngine.Camera camera)
     {
+        if (camera == cockpitCamera)
+            Shader.SetGlobalFloat(CockpitPass, 0);
         if (camera == source && pixels != null)
             glow.Render(pixels);
     }
@@ -180,6 +229,14 @@ public sealed class PSXPresentation : MonoBehaviour
             GameOptions.SetPsxFilter(!filterEnabled);
         if (width != Screen.width || height != Screen.height)
             Resize();
+        if (cockpitCamera.enabled)
+        {
+            cockpitCamera.orthographic = source.orthographic;
+            cockpitCamera.orthographicSize = source.orthographicSize;
+            cockpitCamera.fieldOfView = source.fieldOfView;
+            cockpitCamera.nearClipPlane = source.nearClipPlane;
+            cockpitCamera.farClipPlane = source.farClipPlane;
+        }
         bool ships = LabelsShown > 0 || HangarHub.Active;
         shipCanvas.sortingOrder = HangarHub.Active ? 4 : 18;
         shipCamera.enabled = shipImage.enabled = ships;
@@ -204,7 +261,9 @@ public sealed class PSXPresentation : MonoBehaviour
 
     void OnDestroy()
     {
+        RenderPipelineManager.beginCameraRendering -= BeforeCamera;
         RenderPipelineManager.endCameraRendering -= AfterCamera;
+        Shader.SetGlobalFloat(CockpitPass, 0);
         if (source != null)
         {
             source.targetTexture = previousTarget;
@@ -220,6 +279,11 @@ public sealed class PSXPresentation : MonoBehaviour
         {
             shipPixels.Release();
             Destroy(shipPixels);
+        }
+        if (cockpitPixels != null)
+        {
+            cockpitPixels.Release();
+            Destroy(cockpitPixels);
         }
         if (composite != null)
             Destroy(composite);

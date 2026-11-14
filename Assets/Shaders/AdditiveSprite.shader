@@ -23,7 +23,8 @@ Shader "Sprites/Additive"
 		Cull Off
 		Lighting Off
 		ZWrite Off
-		Blend One OneMinusSrcAlpha
+		// Alpha adds up so a glow over the player's pane clears PSXComposite's sharp-pane mark.
+		Blend One OneMinusSrcAlpha, One One
 
 		Pass
 		{

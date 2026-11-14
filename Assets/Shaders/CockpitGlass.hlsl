@@ -25,13 +25,25 @@ half3 CockpitGlass(half3 pigment, float3 reflection)
     return lerp(glass,half3(.93,.98,1),glint * .78);
 }
 
-// The pilot's pane keeps a lit body between reflections, with a dark glass edge.
+// The pilot's pane keeps a bright lit body between reflections, with a wide sheen and a hot
+// specular core that slide across it as the ship banks, and a dark glass edge.
 // This is unlit colour in the existing pass: no extra light, bloom or geometry.
 half3 PilotCockpitGlass(half3 pigment, float3 reflection)
 {
-    half3 lit = lerp(pigment, half3(1,.98,.90), .38) * .92;
+    half3 lit = lerp(pigment, half3(1,.98,.92), .46);
     half3 glass = max(lit, CockpitGlass(pigment, reflection));
-    half edge = smoothstep(.82,1.08,reflection.y);
-    return lerp(glass, pigment * .38 + half3(.06,.07,.08), edge * .55);
+    float band = reflection.x;
+    half sheen = smoothstep(.06,.26,band) * (1 - smoothstep(.44,.70,band));
+    half core = smoothstep(.19,.26,band) * (1 - smoothstep(.30,.39,band));
+    glass = lerp(glass, half3(.96,.99,1), saturate(sheen * .35 + core * .9));
+    half edge = smoothstep(.84,1.08,reflection.y);
+    return lerp(glass, pigment * .45 + half3(.07,.08,.09), edge * .5);
 }
+
+// The player's pane bypasses the PSX filter. Its fragments leave this alpha in the scene, which
+// a later round or effect over the pane overwrites, so PSXComposite only swaps in the sharp,
+// full-resolution pane (PSXPresentation's cockpit camera) where nothing was drawn over it.
+#define PILOT_PANE_MARK .996
+// Set only while the cockpit camera renders: player hulls then draw nothing but the pane.
+float _CockpitPass;
 #endif

@@ -102,11 +102,14 @@ Shader "Shootemup/PSXv2 Lit"
                 c.rgb = HullAffliction(c.rgb, i.hullPosition, _HullStatus);
                 #endif
                 c *= _Tint;
-                if (i.reflection.z > .5 && _PilotCanopy > .5)
+                bool pane = i.reflection.z > .5 && _PilotCanopy > .5;
+                clip(pane || _CockpitPass < .5 ? 1 : -1);
+                if (pane)
                 {
+                    // Kept readable through the hull's hurt flicker, and left out of the 15-bit steps.
                     c.rgb = PilotCockpitGlass(pigment, i.reflection);
-                    // Keep the cockpit readable through the hull's hurt flicker.
-                    if (_Tint.a > .001) c.a = max(c.a, .95);
+                    c.a = _Tint.a > .001 ? PILOT_PANE_MARK : c.a;
+                    return c;
                 }
                 uint2 p = (uint2)i.positionCS.xy & 3;
                 const float bayer[16] = {0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5};

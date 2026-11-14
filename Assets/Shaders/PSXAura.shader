@@ -6,7 +6,8 @@ Shader "Shootemup/PSX Aura"
         Pass
         {
             Tags { "LightMode"="Universal2D" }
-            Blend SrcAlpha One
+            // Alpha adds up so an aura over the player's pane clears PSXComposite's sharp-pane mark.
+            Blend SrcAlpha One, One One
             ZWrite Off
             Cull Off
             HLSLPROGRAM

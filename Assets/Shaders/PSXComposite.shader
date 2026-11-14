@@ -5,6 +5,8 @@
 //    a 5-bit step, matrix as in the DuckStation emulator) added before truncating to 15-bit colour
 //  * an optional, mild horizontal blend imitates composite/CRT softness and hides the dither grid
 //  * no vignette or colour grading
+//  * the player's cockpit pane skips all of it: where the scene still shows the pane (CockpitGlass.hlsl's
+//    mark in alpha), the full-resolution pane from PSXPresentation's cockpit camera replaces it
 Shader "Shootemup/PSX Composite"
 {
     Properties
@@ -24,6 +26,8 @@ Shader "Shootemup/PSX Composite"
         _ClearSweep("Full clear sweep height",Float)=-1
         _ClearTint("Full clear tint",Color)=(1,1,1,1)
         _Cutout("Keep the scene's alpha (ships redrawn over labels)",Float)=0
+        _CockpitTex("Full-resolution player pane",2D)="black"{}
+        _CockpitOn("Sharp player pane",Float)=0
     }
     SubShader
     {
@@ -37,9 +41,9 @@ Shader "Shootemup/PSX Composite"
             #pragma fragment frag
             #pragma target 3.0
             #include "UnityCG.cginc"
-            sampler2D _MainTex,_GlowTex;
+            sampler2D _MainTex,_GlowTex,_CockpitTex;
             float4 _MainTex_TexelSize, _Color, _ClearTint;
-            float _Dither, _ColorSteps, _Soften,_GlowStrength,_FilterEnabled,_Underwater,_TimeStop,_ClearFlash,_ClearSweep,_Cutout;
+            float _Dither, _ColorSteps, _Soften,_GlowStrength,_FilterEnabled,_Underwater,_TimeStop,_ClearFlash,_ClearSweep,_Cutout,_CockpitOn;
             struct Input { float4 vertex:POSITION; float2 uv:TEXCOORD0; float4 color:COLOR; };
             struct Output { float4 position:SV_POSITION; float2 uv:TEXCOORD0; float4 color:COLOR; };
             Output vert(Input i) { Output o; o.position=UnityObjectToClipPos(i.vertex); o.uv=i.uv; o.color=i.color*_Color; return o; }
@@ -69,6 +73,11 @@ Shader "Shootemup/PSX Composite"
                 float3 c8=saturate(color)*255+Offset(pixel)*_Dither;
                 float3 quantized=floor(clamp(c8,0,255)/255*_ColorSteps+0.0001)/_ColorSteps;
                 color=lerp(saturate(color),quantized,_FilterEnabled);
+                // The player's pane, sharp and unfiltered wherever nothing has been drawn over it.
+                float sceneAlpha=tex2D(_MainTex,uv).a;
+                float4 pane=tex2D(_CockpitTex,i.uv);
+                float marked=step(.989,sceneAlpha)*step(sceneAlpha,.9985)*step(.5,pane.a)*_CockpitOn;
+                color=lerp(color,saturate(pane.rgb/max(pane.a,.001)),marked);
                 // Add the soft colored spill after quantization to preserve its smooth falloff.
                 color+=tex2D(_GlowTex,i.uv).rgb*_GlowStrength;
                 color=lerp(color,color*float3(.69,.89,1.04)+float3(.008,.021,.042),_Underwater);
