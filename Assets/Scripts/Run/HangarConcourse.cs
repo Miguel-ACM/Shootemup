@@ -124,7 +124,9 @@ public sealed partial class HangarHub
         if (baseViewSize <= 0)
             baseViewSize = view.orthographicSize;
         bool gallery = !operating && Portal(p) == (int)Dock.Armory;
-        bool inCases = gallery && p.y - center.y >= GalleryVestibuleTop;
+        // Portal() also answers Armory for the lane's right half near its door, so the aisle
+        // framing needs the pilot actually inside the gallery, not just level with the cases.
+        bool inCases = gallery && p.x - center.x >= GalleryLeft && p.y - center.y >= GalleryVestibuleTop;
         float zoom = operating ? 7.5f * MonitorScale(room) + .15f : baseViewSize;
         if (gallery)
             zoom = Mathf.Lerp(zoom, Mathf.Max(zoom, (GalleryRight - GalleryWing + 1.2f) * .5f / (405f / 720f)),
