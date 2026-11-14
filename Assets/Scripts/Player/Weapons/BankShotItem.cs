@@ -13,6 +13,8 @@ public sealed class BankShotItem : AWeaponItem
 
 public sealed class BankShot : AWeaponAutomatic
 {
+    // Two banked rounds whatever the shot count; damage makes each bounce count.
+    protected override WeaponAffinity Affinity => new WeaponAffinity(1, 1.3f, .6f);
     void Awake() => shootSpeedModifier = .34f;
 
     public override void Shoot()
@@ -28,7 +30,7 @@ public sealed class BankShot : AWeaponAutomatic
 
     void Fire(Vector3 start, int side, float charge)
     {
-        var shot = PlayerRound.Spawn(start, new Vector2(side * .82f, .57f), GameRules.playerShootDamage * 6f * charge,
+        var shot = PlayerRound.Spawn(start, new Vector2(side * .82f, .57f), GameRules.playerShootDamage * 6f * charge * Affinity.DamageFactor(0),
             GameRules.playerShootTravelSpeed * 1.15f, PlayerDelivery.Needle);
         shot?.RequireBank();
         MagnifyingLens.Enlarge(ChargedShotCue.Apply(shot, charge));

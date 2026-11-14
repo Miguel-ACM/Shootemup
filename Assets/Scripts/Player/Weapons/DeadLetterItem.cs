@@ -15,6 +15,8 @@ public sealed class DeadLetter : AWeaponAutomatic
 {
     readonly SpriteRenderer[] marks = new SpriteRenderer[6];
     int queued;
+    // Six letters whatever the shot count: it posts them faster with fire rate.
+    protected override WeaponAffinity Affinity => new WeaponAffinity(1.25f, 1.1f, .6f);
     void Awake() => shootSpeedModifier = .54f;
 
     public override void Shoot()
@@ -37,9 +39,10 @@ public sealed class DeadLetter : AWeaponAutomatic
         if (GameClock.ActivePlay)
         {
             float charge = CombatUpgrades.Current?.Volley() ?? 1;
+            float damage = GameRules.playerShootDamage * 4.5f * charge * Affinity.DamageFactor(0);
             for (int i = 0; i < queued; i++)
                 MagnifyingLens.Enlarge(ChargedShotCue.Apply(PlayerRound.Spawn(marks[i].transform.position, Vector2.up,
-                    GameRules.playerShootDamage * 4.5f * charge, GameRules.playerShootTravelSpeed, PlayerDelivery.Needle), charge));
+                    damage, GameRules.playerShootTravelSpeed, PlayerDelivery.Needle), charge));
             SoundManager.PlaySound("shotNeedle", .1f);
             GetComponentInParent<PSXShipEffects>()?.Shot();
         }

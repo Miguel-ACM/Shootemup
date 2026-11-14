@@ -10,7 +10,9 @@ public sealed class WindUpCannon : AWeapon
 
     public int Level => Charge >= 1.2f ? 3 : Charge >= .45f ? 2 : 1;
     public bool Charging => isShootingPrimary || isShootingSecondary;
-    public float SecondsToFullCharge => 1.2f / Mathf.Max(.01f, MagnifyingLens.Rate * GameRules.playerShootSpeed / 10f * ActiveRate);
+    public float SecondsToFullCharge => 1.2f / Mathf.Max(.01f, MagnifyingLens.Rate * GameRules.playerShootSpeed / 10f * Affinity.RateFactor * ActiveRate);
+    // The charged slug is a damage gun.
+    protected override WeaponAffinity Affinity => new WeaponAffinity(1, 1.35f, 1);
     int previousLevel;
     SpriteRenderer core;
     AudioSource winding;
@@ -97,6 +99,7 @@ public sealed class WindUpCannon : AWeapon
         int level = Level;
         float power = level == 3 ? 16 : level == 2 ? 7 : 2;
         float capacitor = CombatUpgrades.Current != null ? CombatUpgrades.Current.Volley() : 1;
+        power *= Affinity.DamageFactor();
         foreach (var muzzle in spawnPoints)
         {
             var shot = PlayerRound.Spawn(transform.position + muzzle, Vector2.up, GameRules.playerShootDamage * power * capacitor, GameRules.playerShootTravelSpeed * 1.7f, PlayerDelivery.Needle);

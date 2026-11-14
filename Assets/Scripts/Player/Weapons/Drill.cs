@@ -18,6 +18,9 @@ public sealed class Drill : AWeaponAutomatic
     float dealt, extension, spin, scale = 1, shownScale = 1;
     int stage;
 
+    // One lance whatever the shot count; it grinds harder with damage and spins faster with fire rate.
+    protected override WeaponAffinity Affinity => new WeaponAffinity(1.25f, 1.25f, .5f);
+
     void Awake()
     {
         // Damage ticks; the drill itself spins continuously while held.
@@ -53,7 +56,7 @@ public sealed class Drill : AWeaponAutomatic
         {
             if (enemy == null || !enemy.CanBeTargeted || !Touches(enemy, start, tip, out var point))
                 continue;
-            float amount = GameRules.playerShootDamage * 1.6f * scale * MagnifyingLens.Power;
+            float amount = GameRules.playerShootDamage * 2f * scale * MagnifyingLens.Power * Affinity.DamageFactor(0);
             float damage = CombatHit.Apply(enemy, amount, point, Vector2.up);
             if (damage <= 0)
                 continue;

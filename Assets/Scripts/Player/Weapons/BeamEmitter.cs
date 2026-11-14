@@ -15,7 +15,9 @@ public sealed class BeamEmitter : AWeaponAutomatic
     bool releasing;
     Vector3 attraction;
     bool hasAttraction;
-    float TickInterval => .12f / Mathf.Max(.1f, GameRules.playerShootSpeed / 10f * MagnifyingLens.Rate * ActiveRate);
+    float TickInterval => .12f / Mathf.Max(.1f, GameRules.playerShootSpeed / 10f * Affinity.RateFactor * MagnifyingLens.Rate * ActiveRate);
+    // Damage carries the beam; at most six beams, so extra shots help a little less.
+    protected override WeaponAffinity Affinity => new WeaponAffinity(1.15f, 1.25f, .8f);
 
     void Awake()
     {
@@ -122,7 +124,8 @@ public sealed class BeamEmitter : AWeaponAutomatic
 
     void DamageTick(float width, float charge)
     {
-        float damage = GameRules.playerShootDamage * 1.2f * charge * MagnifyingLens.Power * DamageMultiplier;
+        float damage = GameRules.playerShootDamage * 1.35f * charge * MagnifyingLens.Power * DamageMultiplier *
+            Affinity.DamageFactor(GameRules.playerShootNumber <= 6 ? 1 : 0);
         targets.Clear();
         targets.AddRange(AEnemy.Live);
         foreach (var enemy in targets)

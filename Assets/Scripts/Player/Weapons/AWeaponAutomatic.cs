@@ -16,7 +16,7 @@ public abstract class AWeaponAutomatic : AWeapon
             return;
         if (!KeepFiring())
             return;
-        shotClock -= GameClock.PlayerDelta * GameRules.playerShootSpeed * shootSpeedModifier * MagnifyingLens.Rate * ActiveRate;
+        shotClock -= GameClock.PlayerDelta * GameRules.playerShootSpeed * shootSpeedModifier * Affinity.RateFactor * MagnifyingLens.Rate * ActiveRate;
         if (shotClock <= 0)
         {
             shotClock = Mathf.Max(0, shotClock + 1);

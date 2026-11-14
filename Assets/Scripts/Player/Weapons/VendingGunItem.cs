@@ -13,6 +13,8 @@ public sealed class VendingGunItem : AWeaponItem
 
 public sealed class VendingGun : AWeaponAutomatic
 {
+    // Every volley costs a coin, so cadence helps least and damage most.
+    protected override WeaponAffinity Affinity => new WeaponAffinity(.8f, 1.2f, .7f);
     void Awake() => shootSpeedModifier = .17f;
 
     public override void Shoot()
@@ -24,10 +26,11 @@ public sealed class VendingGun : AWeaponAutomatic
             return;
         }
         float charge = CombatUpgrades.Current?.Volley() ?? 1;
+        float damage = GameRules.playerShootDamage * 5f * charge * Affinity.DamageFactor(0);
         for (int i = -2; i <= 2; i++)
         {
             var shot = PlayerRound.Spawn(transform.position + Vector3.up * .7f, CombatVisuals.Rotate(Vector2.up, i * 8),
-                GameRules.playerShootDamage * 5f * charge, GameRules.playerShootTravelSpeed, PlayerDelivery.Needle);
+                damage, GameRules.playerShootTravelSpeed, PlayerDelivery.Needle);
             shot?.AwardVendingCoin();
             MagnifyingLens.Enlarge(ChargedShotCue.Apply(shot, charge));
         }

@@ -16,6 +16,7 @@ public sealed class Counterweight : ExpansionWeapon
     Vector2 aim = Vector2.up;
     protected override PlayerDelivery Delivery => PlayerDelivery.Needle;
     protected override Vector2 FireDirection => aim;
+    protected override WeaponAffinity Affinity => new WeaponAffinity(1.1f, 1.1f, 1);
     protected override float Power => 2.6f;
     protected override int Pellets => 2;
     protected override float PelletSpacing => 7;

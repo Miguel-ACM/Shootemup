@@ -29,6 +29,8 @@ public abstract class AWeapon : MonoBehaviour
     protected WeaponInput weaponInput;
     internal AWeapon EquipmentOwner { get; set; }
     internal float DamageMultiplier { get; set; } = 1;
+    // Which shot stats this gun favours; see WeaponAffinity.
+    protected virtual WeaponAffinity Affinity => WeaponAffinity.Neutral;
     protected bool Coupled => RedlineDrive.Drives(EquipmentOwner ?? this) || (CombatUpgrades.Current != null && CombatUpgrades.Current.Count(UpgradeKind.DoubleTrouble) > 0);
     protected float ActiveRate => (RedlineDrive.Drives(EquipmentOwner ?? this) ? 1.75f : 1) * (CombatUpgrades.Current?.RelayRate(EquipmentOwner ?? this) ?? 1);
     public bool IsCarbonCopy { get; set; }

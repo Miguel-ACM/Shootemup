@@ -5,6 +5,7 @@ public sealed class Backdraft : ExpansionWeapon
     FlameWeaponFeedback feedback;
     protected override PlayerDelivery Delivery => PlayerDelivery.Flame;
     protected override Vector2 FireDirection => Vector2.down;
+    protected override WeaponAffinity Affinity => new WeaponAffinity(1.3f, .85f, 1.05f);
     protected override float Power => .5f;
     protected override float Velocity => .7f;
     protected override int Pellets => 3;

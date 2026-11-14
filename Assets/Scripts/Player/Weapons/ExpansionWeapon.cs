@@ -36,9 +36,17 @@ public abstract class ExpansionWeapon : AWeaponAutomatic
             effects.Shot();
         ShotFeedback();
         var aim = FireDirection;
+        float damage = GameRules.playerShootDamage * Power * charge * DamageMultiplier * Affinity.DamageFactor();
         for (int muzzle = 0; muzzle < spawnPoints.Length; muzzle++)
             for (int p = 0; p < Pellets; p++)
-                MagnifyingLens.Enlarge(ChargedShotCue.Apply(PlayerRound.Spawn(transform.position + MuzzleOffset(spawnPoints[muzzle], aim), CombatVisuals.Rotate(aim, (p - (Pellets - 1) * .5f) * PelletSpacing),
-                    GameRules.playerShootDamage * Power * charge * DamageMultiplier, GameRules.playerShootTravelSpeed * Velocity, Delivery), charge));
+            {
+                var round = PlayerRound.Spawn(transform.position + MuzzleOffset(spawnPoints[muzzle], aim), CombatVisuals.Rotate(aim, (p - (Pellets - 1) * .5f) * PelletSpacing),
+                    damage, GameRules.playerShootTravelSpeed * Velocity, Delivery);
+                Launched(round, muzzle, p);
+                MagnifyingLens.Enlarge(ChargedShotCue.Apply(round, charge));
+            }
     }
+
+    // Lets a gun dress its own rounds (rockets ignite and splash) before the shared cues apply.
+    protected virtual void Launched(PlayerRound round, int muzzle, int pellet) { }
 }
