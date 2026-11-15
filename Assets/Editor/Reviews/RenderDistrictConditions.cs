@@ -398,6 +398,71 @@ public static class RenderDistrictConditions
             EditorApplication.Exit(code);
     }
 
+    // Batch: -executeMethod RenderDistrictConditions.Asteroids
+    // Space asteroids from the great boulder down to the smallest piece over the Space backdrop,
+    // with the pilot for scale, and the four rock variants close up.
+    public static void Asteroids()
+    {
+        int code = 0;
+        try
+        {
+            Directory.CreateDirectory(Folder);
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Shader.SetGlobalVector("_PSXSnapResolution", new Vector4(Width, Height, 0, 0));
+            var cells = new Texture2D[1, 2];
+            DistrictConditions.Forced = DistrictCondition.Ordinary;
+            LevelRun.Reset(LevelId.Space, 424242);
+            var space = Environment(LevelId.Space);
+            foreach (var behaviour in space.GetComponentsInChildren<MonoBehaviour>())
+            {
+                if (behaviour is LevelEnvironment)
+                    continue;
+                var start = behaviour.GetType().GetMethod("Start", Hidden);
+                if (start != null && start.GetParameters().Length == 0)
+                    start.Invoke(behaviour, null);
+            }
+            var combat = Combatants(LevelProjectilePalette.Accent(LevelId.Space), -.6f);
+            var camera = Camera(-.6f, 8.85f);
+            var rocks = new GameObject("Asteroids");
+            var spots = new[] { new Vector2(-1.9f, 5.2f), new Vector2(1.9f, 3.6f), new Vector2(-2.2f, 1.2f), new Vector2(2.3f, -.6f), new Vector2(-2.4f, -3.2f), new Vector2(1.2f, -5.4f) };
+            for (int i = 0; i < spots.Length; i++)
+                Rock(rocks.transform, i % IndustrialMeshFactory.AsteroidVariants, spots[i], SpaceAsteroid.ScaleFor(SpaceAsteroid.MaxGeneration - i), i * 47);
+            cells[0, 0] = Capture(camera);
+            rocks.SetActive(false);
+            combat.SetActive(false);
+            space.SetActive(false);
+            var close = new GameObject("Asteroid variants");
+            for (int v = 0; v < IndustrialMeshFactory.AsteroidVariants; v++)
+                Rock(close.transform, v, new Vector2(v % 2 == 0 ? -1.15f : 1.15f, v < 2 ? 1.2f : -1.2f), 1, v * 61);
+            camera.transform.position = new Vector3(0, 0, -20);
+            camera.orthographicSize = 2.7f;
+            camera.backgroundColor = new Color(.03f, .035f, .07f);
+            cells[0, 1] = Capture(camera);
+            Save("Asteroids.png", cells);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+            code = 1;
+        }
+        DistrictConditions.Forced = null;
+        if (Application.isBatchMode)
+            EditorApplication.Exit(code);
+    }
+
+    static void Rock(Transform parent, int variant, Vector2 at, float scale, float tilt)
+    {
+        var rock = new GameObject("Rock " + variant);
+        rock.transform.SetParent(parent, false);
+        rock.transform.localPosition = new Vector3(at.x, at.y, 1);
+        rock.transform.localRotation = Quaternion.Euler(tilt * .7f - 20, tilt, tilt * .4f);
+        rock.transform.localScale = Vector3.one * scale;
+        rock.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.AsteroidRock(variant);
+        var renderer = rock.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = AsteroidMaterials.Rock;
+        renderer.sortingLayerName = "Enemy";
+    }
+
     // Edit mode never runs Update: replay the eruption's fireballs up to this age and freeze each
     // one partway through its life, so the still shows what play mode would.
     static void PoseFlare(SolarFlare flare, float age)

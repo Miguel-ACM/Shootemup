@@ -92,6 +92,8 @@ public static partial class IndustrialMeshFactory
 
     public static Mesh CombatHull(int kind)
     {
+        if (kind == 97) return AsteroidRock(1);
+        if (kind == 96) return AsteroidRock(0);
         if (kind == 95) return ThicketLurkerMesh();
         if (kind == 92) return VoidSovereignBossMesh();
         if (kind == 91) return SeraphJudicatorBossMesh();

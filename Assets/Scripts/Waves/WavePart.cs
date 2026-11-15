@@ -246,6 +246,14 @@ public static class WaveGeometry
                 hull = 44;
                 scale = .28f;
                 break;
+            case "SpaceAsteroid":
+                hull = 96;
+                scale = SpaceAsteroid.ScaleFor(3);
+                break;
+            case "SpaceBoulder":
+                hull = 97;
+                scale = SpaceAsteroid.ScaleFor(SpaceAsteroid.MaxGeneration);
+                break;
             case "OrbitalCarrier":
                 return radii[enemy] = 1.46f; // Includes both orbiting, destroyable escorts.
             case "MeadowTank":

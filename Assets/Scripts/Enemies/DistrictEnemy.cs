@@ -159,7 +159,7 @@ public abstract class DistrictEnemy : AEnemy
         if (enemy is SpaceCitadelBoss)
             renderer.sharedMaterial = SpaceBlackHoleVisual.Body;
         if (enemy.hull >= 61)
-            renderer.sharedMaterial = EnemyExpansion.Material(enemy.hull);
+            renderer.sharedMaterial = enemy is SpaceAsteroid ? AsteroidMaterials.Rock : EnemyExpansion.Material(enemy.hull);
         if (enemy.hull == 90)
             renderer.sharedMaterial = HeavenMaterials.Ivory;
         if (enemy.hull == 91)

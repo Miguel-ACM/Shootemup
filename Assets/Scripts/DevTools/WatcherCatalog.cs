@@ -37,7 +37,7 @@ public static class WatcherCatalog
             case LevelId.Underwater:
                 return new[] { typeof(ReefDart), typeof(MantaRay), typeof(Bathysphere), typeof(ReefLeviathan) };
             case LevelId.Space:
-                return new[] { typeof(OrbitalScout), typeof(LaserSatellite), typeof(OrbitalCarrier), typeof(OrbitalMoonlet), typeof(OrbitalWarden) };
+                return new[] { typeof(OrbitalScout), typeof(LaserSatellite), typeof(OrbitalCarrier), typeof(OrbitalMoonlet), typeof(OrbitalWarden), typeof(SpaceAsteroid), typeof(SpaceBoulder) };
             case LevelId.Candyland:
                 return new[] { typeof(BonbonSkirmisher), typeof(WaferDart), typeof(MintSpinner), typeof(TaffyDuelist) };
             case LevelId.Desert:

@@ -13,6 +13,11 @@ public static partial class WavePartLibrary
     static readonly FlightCurve Retrograde = Route("Space / Retrograde pass", Vector2.right, .70f, 1.50f, .56f, .90f, .10f, .70f, -.36f, .76f, -.62f, .52f, -.70f, -.40f);
     static readonly FlightCurve Ecliptic = Route("Space / Ecliptic", Vector2.up, -1.40f, .74f, -.70f, .62f, 0, .74f, .70f, .86f, 1.40f, .74f);
     static readonly FlightCurve Precession = Route("Space / Precession", Vector2.right, -.20f, 1.50f, -.55f, .90f, -.30f, .60f, .20f, .58f, .50f, .82f, .30f, 1.50f);
+    // Asteroids drift through in formation and never fire; each kill splits a rock in two.
+    static readonly FlightCurve BoulderDrift = Route("Space / Boulder drift", Vector2.right, -.42f, 1.32f, -.22f, .86f, .08f, .4f, .3f, -.36f);
+    static readonly FlightCurve RubbleBelt = Route("Space / Rubble belt", Vector2.right, .02f, 1.32f, .12f, .78f, -.04f, .3f, .06f, -.36f);
+    static readonly FlightCurve MeteorStream = Route("Space / Meteor stream", Vector2.right, .72f, 1.32f, .46f, .9f, -.08f, .42f, -.5f, -.36f);
+    static readonly FlightCurve AsteroidCrossing = Route("Space / Asteroid crossing", Vector2.up, -1.42f, .9f, -.5f, .74f, .45f, .62f, 1.42f, .46f);
     public static readonly WavePart[] Space ={
         new WavePart("Lagrange shadow", "OrbitalScout", FlightCurve.Stations("Space / Lagrange shadow", Vector2.right, new[]{0f,.25f,.66f,1f}, -.27f,1.5f, -.27f,.75f, -.27f,.75f, .75f,1.5f).WithTracking(.18f,.10f), WaveShape.Solo, 1, 5.7f, 6, new[]{.34f,.48f,.62f}, WaveMotion.Pursuit),
         new WavePart("Solar escape train", "OrbitalScout", Route("Space / Solar escape", Vector2.right, -.82f,-.4f, -.74f,.15f, -.38f,.43f, .18f,.57f, .63f,.88f, .81f,1.4f), WaveShape.Train, 4, 4.4f, 2, new[]{.44f,.65f}, WaveMotion.Rising),
@@ -31,6 +36,10 @@ public static partial class WavePartLibrary
         new WavePart("Retrograde scouts", "OrbitalScout", Retrograde, WaveShape.Train, 4, 4.0f, 3),
         new WavePart("Ecliptic rank", "OrbitalScout", Ecliptic, WaveShape.Rank, 4, 4.0f, 4),
         new WavePart("Precession emitters", "LaserSatellite", Precession, WaveShape.Train, 2, 4.8f, 6),
-        new WavePart("Retrograde carrier", "OrbitalCarrier", Retrograde, WaveShape.Solo, 1, 5.1f, 9)
+        new WavePart("Retrograde carrier", "OrbitalCarrier", Retrograde, WaveShape.Solo, 1, 5.1f, 9),
+        new WavePart("Boulder drift", "SpaceBoulder", BoulderDrift, WaveShape.Solo, 1, 7.6f, 3, new float[0]),
+        new WavePart("Rubble belt", "SpaceAsteroid", RubbleBelt, WaveShape.Rank, 3, 6.8f, 2, new float[0]),
+        new WavePart("Meteor stream", "SpaceAsteroid", MeteorStream, WaveShape.Train, 3, 6.2f, 4, new float[0]),
+        new WavePart("Asteroid crossing", "SpaceAsteroid", AsteroidCrossing, WaveShape.Rank, 2, 7.4f, 5, new float[0])
     };
 }

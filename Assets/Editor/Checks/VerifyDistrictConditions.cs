@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,6 +28,7 @@ public static class VerifyDistrictConditions
             Elites();
             Modifiers();
             Events();
+            Asteroids();
         }
         catch (Exception ex)
         {
@@ -357,6 +359,62 @@ public static class VerifyDistrictConditions
         foreach (var leftover in UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include))
             if (leftover is LightningStrike || leftover is SpearStrike || leftover is CandyDrop || leftover is DepthMine)
                 UnityEngine.Object.DestroyImmediate(leftover.gameObject);
+    }
+
+    // Space asteroids: registered, never armed, smaller and faster each generation; a kill splits a
+    // rock into two pieces one generation down that fly apart and keep falling; Space waves fly them.
+    static void Asteroids()
+    {
+        Check(EnemyCatalog.Resolve(nameof(SpaceAsteroid)) == typeof(SpaceAsteroid) && EnemyCatalog.Resolve(nameof(SpaceBoulder)) == typeof(SpaceBoulder), "Asteroids are not registered");
+        Check(DistrictWaves.EnemyTypes.Contains(typeof(SpaceAsteroid)) && DistrictWaves.EnemyTypes.Contains(typeof(SpaceBoulder)) &&
+            WatcherCatalog.Enemies(LevelId.Space).Contains(typeof(SpaceAsteroid)) && WatcherCatalog.Enemies(LevelId.Space).Contains(typeof(SpaceBoulder)), "Asteroids are missing from the wave and watcher lists");
+        foreach (int hull in new[] { (int)CombatHullId.SpaceAsteroid, (int)CombatHullId.SpaceBoulder })
+        {
+            var mesh = IndustrialMeshFactory.CombatHull(hull);
+            Check(mesh != null && mesh.bounds.size.z > .5f && mesh.bounds.extents.magnitude < 2 && EnemyWeaponLayout.Ports(hull).Length == 0 && IndustrialMeshFactory.CombatEngineSockets(hull).Length == 0,
+                "Asteroid hull " + hull + " should be a solid rock with no guns or thrusters");
+        }
+        for (int g = 1; g <= SpaceAsteroid.MaxGeneration; g++)
+            Check(SpaceAsteroid.ScaleFor(g) > SpaceAsteroid.ScaleFor(g - 1) && SpaceAsteroid.SpeedFor(g) < SpaceAsteroid.SpeedFor(g - 1), "Smaller asteroids should be smaller and faster");
+        LevelRun.Reset(LevelId.Space, 3);
+        var boulder = (SpaceAsteroid)DistrictEnemy.Spawn(typeof(SpaceBoulder), new Vector3(0, 2, 1));
+        var asteroid = (SpaceAsteroid)DistrictEnemy.Spawn(typeof(SpaceAsteroid), new Vector3(0, 2, 1));
+        Check(boulder.Generation == SpaceAsteroid.MaxGeneration && asteroid.Generation == 3 && boulder.health > asteroid.health && boulder.hullScale > asteroid.hullScale,
+            "Boulders should split five times and ordinary asteroids three");
+        Check(!boulder.Fragment && !asteroid.Fragment && boulder.HoldsWave, "Wave asteroids fly their formation and hold the wave");
+        typeof(SpaceAsteroid).GetField("velocity", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boulder, new Vector2(.4f, -2.2f));
+        typeof(SpaceAsteroid).GetMethod("Split", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(boulder, null);
+        var pieces = UnityEngine.Object.FindObjectsByType<SpaceAsteroid>().Where(rock => rock.Fragment).ToArray();
+        Check(pieces.Length == 2 && pieces.All(piece => piece.Generation == SpaceAsteroid.MaxGeneration - 1 && piece.Velocity.y < -.3f && piece.HoldsWave),
+            "A split should leave two falling pieces one generation smaller");
+        if (pieces.Length == 2)
+        {
+            Check(Vector2.Angle(pieces[0].Velocity, pieces[1].Velocity) > 40 && Vector2.Distance(pieces[0].transform.position, pieces[1].transform.position) > .3f, "Split pieces should fly apart");
+            report.Add("Asteroid split: pieces " + Vector2.Angle(pieces[0].Velocity, pieces[1].Velocity).ToString("0") + " degrees apart at " + pieces[0].Velocity.magnitude.ToString("0.0") + " units/s");
+        }
+        foreach (var rock in UnityEngine.Object.FindObjectsByType<SpaceAsteroid>())
+            UnityEngine.Object.DestroyImmediate(rock.gameObject);
+        int family = (1 << (SpaceAsteroid.MaxGeneration + 1)) - 1;
+        report.Add("Asteroids: a boulder breaks into up to " + family + " rocks, an asteroid into " + ((1 << 4) - 1));
+        // Space flies asteroid formations in a fair share of its waves.
+        var rockParts = new HashSet<string>(WavePartLibrary.All(LevelId.Space).Where(part => part.Enemy == nameof(SpaceAsteroid) || part.Enemy == nameof(SpaceBoulder)).Select(part => part.Name));
+        Check(rockParts.Count >= 4, "Space should have asteroid formations: " + rockParts.Count);
+        int waves = 0, rocky = 0;
+        DistrictConditions.Forced = DistrictCondition.Ordinary;
+        foreach (int seed in new[] { 17381, 4417, 90210, 31337, 2718, 1618 })
+        {
+            LevelRun.Reset(LevelId.Space, seed);
+            foreach (int budget in Budgets)
+            {
+                var wave = DistrictWaves.Create(budget);
+                waves++;
+                if (wave.parts.Any(rockParts.Contains))
+                    rocky++;
+            }
+        }
+        DistrictConditions.Forced = null;
+        Check(rocky * 8 >= waves && rocky * 2 <= waves, "Space waves with asteroids off: " + rocky + " of " + waves);
+        report.Add("Space waves with asteroids: " + rocky + " of " + waves);
     }
 
     // The seed spreads conditions roughly as authored.

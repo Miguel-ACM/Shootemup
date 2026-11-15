@@ -11,7 +11,7 @@ Desert: 36 parts, 216 placements
 Candyland: 31 parts, 186 placements
 Note: Space / Comet trailing orbit skips variant 5 on side -1
 Note: Space / Comet trailing orbit skips variant 5 on side 1
-Space: 24 parts, 142 placements
+Space: 28 parts, 166 placements
 Underwater: 32 parts, 192 placements
 Hell: 25 parts, 150 placements
 Heaven: 18 parts, 108 placements
@@ -57,4 +57,7 @@ Event SolarFlare: 341 of 1000 seeds
 City ships, ordinary vs rush hour: 523 vs 1024
 Deep passage layouts: 9, 2, 7, 6, 10, 5, 1, 8, 4, 3
 Forest: 477 plants; tank routes -0,55 to 0,55, 3 crossings
+Asteroid split: pieces 64 degrees apart at 1,9 units/s
+Asteroids: a boulder breaks into up to 63 rocks, an asteroid into 15
+Space waves with asteroids: 17 of 60
 PASS
