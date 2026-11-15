@@ -23,7 +23,7 @@ public sealed class SimulatorFlight : MonoBehaviour
     {
         SimulatorApproach.UnlimitedEnergy => "INFINITE ENERGY  /  APPROACH",
         SimulatorApproach.VerticalSteering => "VERTICAL STEERING  /  APPROACH",
-        SimulatorApproach.WaterHandling => "WATER HANDLING  /  APPROACH",
+        SimulatorApproach.WaterHandling => "UNDERWATER HANDLING",
         SimulatorApproach.Autopilot => "AUTOPILOT  /  APPROACH",
         SimulatorApproach.Downbeat => "FIRE ON THE BEAT  /  APPROACH",
         SimulatorApproach.HotFloor => "HOT FLOOR  /  APPROACH",
@@ -58,9 +58,11 @@ public sealed class SimulatorFlight : MonoBehaviour
         }
     }
 
-    public void End()
+    // final: the tape is leaving this district. A rule that lasts the whole flight ignores the
+    // miniboss and boss teardowns and ends only then.
+    public void End(bool final = false)
     {
-        if (current != this) return;
+        if (current != this || !final && FlightTrials.ApproachLastsWholeFlight) return;
         // Guns held through a locked or rhythmic approach pick up again without a fresh press.
         bool resync = GunsLocked || DownbeatActive;
         current = null;

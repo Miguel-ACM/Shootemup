@@ -695,7 +695,7 @@ public class WaveOrchestrer : MonoBehaviour
     IEnumerator SimulatorHandoff(bool bossDefeated)
     {
         Phase = RunPhase.Routing;
-        simulatorFlight?.End();
+        simulatorFlight?.End(true);
         CombatDecision.Begin();
         EraseAllBullets();
         // The next tape leg is fixed. Give the normal shatter and payout their beat.

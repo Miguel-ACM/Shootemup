@@ -195,7 +195,9 @@ public sealed class IndustrialHUD : MonoBehaviour
         var heading = TextAt(simulatorPanel, "SIMULATOR", 10, 9, 14, accent);
         heading.rectTransform.sizeDelta = new Vector2(152, 20);
         float y = 35;
-        foreach (var line in new[] { trial.title, trial.objective })
+        // The tape's flight rule (underwater handling, guns offline...) is named under its objective.
+        string rule = SimulatorFlight.Label(trial.approach);
+        foreach (var line in string.IsNullOrEmpty(rule) ? new[] { trial.title, trial.objective } : new[] { trial.title, trial.objective, rule })
         {
             var label = TextAt(simulatorPanel, line, 10, y, 12, Steel);
             label.horizontalOverflow = HorizontalWrapMode.Wrap;

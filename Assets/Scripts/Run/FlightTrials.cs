@@ -268,9 +268,12 @@ public sealed class FlightTrials
         return true;
     }
 
-    // The approach rule covers the run-up: it ends at the first miniboss or boss.
-    public static void BeginBoss() => approachOver = true;
-    public static void EndApproach() => approachOver = true;
+    // The approach rule covers the run-up: it ends at the first miniboss or boss. Underwater
+    // handling is the exception: it is the tape's whole condition and lasts through the boss
+    // (Miguel, 15 November 2026).
+    public static bool ApproachLastsWholeFlight => Active?.approach == SimulatorApproach.WaterHandling;
+    public static void BeginBoss() => approachOver = !ApproachLastsWholeFlight;
+    public static void EndApproach() => approachOver = !ApproachLastsWholeFlight;
     public static void AdvanceLeg() => legIndex++;
 
     public static FlightTrials Blueprint(string item) => string.IsNullOrEmpty(item) ? null : Array.Find(All, t => t.reward == item);
