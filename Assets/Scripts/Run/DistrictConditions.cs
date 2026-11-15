@@ -6,7 +6,9 @@ public enum DistrictCondition
 {
     Ordinary, Dusk, Night, Blizzard, Sandstorm,
     // District events (15 November 2026): each has its own hazard or wave rule.
-    Thunderstorm, Minefield, DeepPassages, CandyRain, Eruption, SpearRain, RushHour
+    Thunderstorm, Minefield, DeepPassages, CandyRain, Eruption, SpearRain, RushHour,
+    // Plains forest variety and Space's solar flare (15 November 2026).
+    Forest, SolarFlare
 }
 
 public static class DistrictConditions
@@ -27,7 +29,7 @@ public static class DistrictConditions
         switch (level)
         {
             case LevelId.Fields:
-                return roll < 34 ? DistrictCondition.Ordinary : roll < 67 ? DistrictCondition.Dusk : DistrictCondition.Night;
+                return roll < 30 ? DistrictCondition.Ordinary : roll < 53 ? DistrictCondition.Dusk : roll < 75 ? DistrictCondition.Night : DistrictCondition.Forest;
             case LevelId.Snow:
                 return roll < 50 ? DistrictCondition.Ordinary : DistrictCondition.Blizzard;
             case LevelId.Desert:
@@ -46,6 +48,8 @@ public static class DistrictConditions
                 return roll < EventOdds ? DistrictCondition.SpearRain : DistrictCondition.Ordinary;
             case LevelId.City:
                 return roll < EventOdds ? DistrictCondition.RushHour : DistrictCondition.Ordinary;
+            case LevelId.Space:
+                return roll < EventOdds ? DistrictCondition.SolarFlare : DistrictCondition.Ordinary;
             default:
                 return DistrictCondition.Ordinary;
         }
@@ -60,7 +64,10 @@ public static class DistrictConditions
         {
             case DistrictCondition.Dusk:
             case DistrictCondition.Night:
+            case DistrictCondition.Forest:
                 return LevelId.Fields;
+            case DistrictCondition.SolarFlare:
+                return LevelId.Space;
             case DistrictCondition.Blizzard:
                 return LevelId.Snow;
             case DistrictCondition.Sandstorm:
@@ -96,6 +103,8 @@ public static class DistrictConditions
                 return "SPEAR RAIN";
             case DistrictCondition.RushHour:
                 return "RUSH HOUR";
+            case DistrictCondition.SolarFlare:
+                return "SOLAR FLARE";
             default:
                 return condition.ToString().ToUpperInvariant();
         }

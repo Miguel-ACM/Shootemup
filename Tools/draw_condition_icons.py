@@ -221,6 +221,37 @@ def rush_hour():
     return image
 
 
+def forest():
+    image, d = canvas()
+    # A dirt trail winding between dense round canopies.
+    d.polygon([(13,31),(19,31),(17,24),(20,17),(17,10),(15,10),(17,17),(14,24)], fill="#8a6a44")
+    d.line([(16,30),(15,24),(18,17),(16,11)], fill="#5e4630")
+    for x, y, r, colour in ((7,9,7,"#3e6a2e"),(25,7,6,"#4f7d35"),(6,23,6,"#4f7d35"),(26,22,7,"#3e6a2e"),(16,3,4,"#5c8c3c")):
+        d.ellipse((x-r,y-r,x+r,y+r), fill=INK)
+        d.ellipse((x-r+1,y-r+1,x+r-1,y+r-1), fill=colour)
+        d.ellipse((x-r+2,y-r+1,x+1,y), fill="#7fae52")
+    d.point((5,6), fill=PALE)
+    return image
+
+
+def solar_flare():
+    image, d = canvas()
+    # The sun burning at the left edge, a light band crossing, and an asteroid with its shadow lane.
+    d.pieslice((-12,4,10,26), 270, 450, fill=INK)
+    d.pieslice((-11,5,9,25), 270, 450, fill="#ffb84a")
+    d.pieslice((-9,8,6,22), 270, 450, fill="#fff0b0")
+    for y in (3,9,15,21,27):
+        d.line([(10,y),(13,y)], fill="#ffd06a")
+    d.rectangle((19,1,31,30), fill="#9a7e44")
+    d.rectangle((15,0,18,31), fill=(255,236,170,255))
+    d.rectangle((19,12,31,21), fill="#141a28")
+    d.ellipse((17,10,27,22), fill=INK)
+    d.ellipse((18,11,26,21), fill="#7a7e8a")
+    d.ellipse((19,12,23,16), fill="#a3a7b3")
+    d.point((24,18), fill="#4a4e5a")
+    return image
+
+
 ICONS = {
     "Dusk": (dusk, "DUSK"),
     "Night": (night, "NIGHT"),
@@ -233,6 +264,8 @@ ICONS = {
     "Eruption": (eruption, "ERUPTION"),
     "SpearRain": (spear_rain, "SPEAR RAIN"),
     "RushHour": (rush_hour, "RUSH HOUR"),
+    "Forest": (forest, "FOREST"),
+    "SolarFlare": (solar_flare, "SOLAR FLARE"),
 }
 
 
