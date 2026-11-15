@@ -81,12 +81,12 @@ public static class FlightSmoothnessAudit
         var done = new HashSet<FlightCurve>();
         float before = 0, after = 0, worst = 0;
         foreach (LevelId level in Enum.GetValues(typeof(LevelId)))
-            foreach (var part in WavePartLibrary.For(level))
+            foreach (var part in WavePartLibrary.All(level))
             {
                 var route = part.Route;
                 if (!done.Add(route))
                     continue;
-                float seconds = WavePartLibrary.For(level).Where(x => x.Route == route).Min(x => x.Seconds) / PatternMover.FlightTempo;
+                float seconds = WavePartLibrary.All(level).Where(x => x.Route == route).Min(x => x.Seconds) / PatternMover.FlightTempo;
                 var old = new Legacy(route);
                 Measures legacy = default, current = default;
                 foreach (int fps in new[] { 30, 60, 144 })

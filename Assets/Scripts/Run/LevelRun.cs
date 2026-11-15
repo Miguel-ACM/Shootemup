@@ -92,6 +92,8 @@ public static class LevelRun
     // Explicit starts are used by environment/boss previews; new games use Plains.
     public static void Reset(LevelId first = LevelId.Fields)
     {
+        // A fresh run follows its seed; only a debug run pins a district condition afterwards.
+        DistrictConditions.Forced = null;
         Reset(first, Random.Range(1, 10000000));
     }
 

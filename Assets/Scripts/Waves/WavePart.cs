@@ -20,6 +20,37 @@ public sealed class WavePart
     public readonly float Seconds;
     public readonly float[] Score;
     public bool Ground => Enemy == "MeadowTank" || Enemy == "FrostAuger";
+    // A part flown only under one district condition (dusk, night, blizzard, sandstorm).
+    public DistrictCondition? Only
+    {
+        get; private set;
+    }
+
+    // Condition parts can come out of the low sun or ride the wind: they always enter
+    // from the condition's side. Such routes are authored entering from the left.
+    public bool FromConditionSide
+    {
+        get; private set;
+    }
+
+    int hiddenUnder;
+    public bool Flies(DistrictCondition condition) => Only.HasValue ? Only.Value == condition : (hiddenUnder & 1 << (int)condition) == 0;
+
+    public WavePart Under(DistrictCondition condition, bool fromConditionSide = false)
+    {
+        Only = condition;
+        FromConditionSide = fromConditionSide;
+        return this;
+    }
+
+    // Ordinary parts that a condition replaces with its own.
+    public WavePart HiddenUnder(params DistrictCondition[] conditions)
+    {
+        foreach (var condition in conditions)
+            hiddenUnder |= 1 << (int)condition;
+        return this;
+    }
+
     public WavePart(string name, string enemy, FlightCurve route, WaveShape shape, int count, float seconds, int unlock = 2, float[] score = null, WaveMotion motion = WaveMotion.Flow)
     {
         Name = name;

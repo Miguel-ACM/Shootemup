@@ -95,7 +95,10 @@ public static class EnemyExpansion
 public static partial class WavePartLibrary
 {
     static readonly Dictionary<LevelId, WavePart[]> expanded = new Dictionary<LevelId, WavePart[]>();
-    public static WavePart[] For(LevelId level)
+    static readonly Dictionary<(LevelId, DistrictCondition), WavePart[]> conditioned = new Dictionary<(LevelId, DistrictCondition), WavePart[]>();
+
+    // Every authored part of a district, including those flown only under a condition.
+    public static WavePart[] All(LevelId level)
     {
         if (expanded.TryGetValue(level, out var cached))
             return cached;
@@ -104,5 +107,15 @@ public static partial class WavePartLibrary
             if (entry.level == level)
                 parts.AddRange(entry.parts);
         return expanded[level] = parts.ToArray();
+    }
+
+    // The parts this run flies in the district, under the condition its seed drew.
+    public static WavePart[] For(LevelId level) => For(level, DistrictConditions.For(level, LevelRun.Seed));
+
+    public static WavePart[] For(LevelId level, DistrictCondition condition)
+    {
+        if (conditioned.TryGetValue((level, condition), out var cached))
+            return cached;
+        return conditioned[(level, condition)] = Array.FindAll(All(level), part => part.Flies(condition));
     }
 }

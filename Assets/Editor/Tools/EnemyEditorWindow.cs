@@ -271,7 +271,7 @@ public sealed class EnemyEditorWindow : EditorWindow
                             }
                         }
                     }
-                    bool formations = !info.boss && WavePartLibrary.For(info.level).Any(p => p.Enemy == selected);
+                    bool formations = !info.boss && WavePartLibrary.All(info.level).Any(p => p.Enemy == selected);
                     if (formations)
                     {
                         GUILayout.Space(9);

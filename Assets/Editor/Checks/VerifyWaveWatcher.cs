@@ -226,7 +226,7 @@ public sealed class WaveWatcherReview : MonoBehaviour
             yield return null;
             Check(watcher.GetComponentsInChildren<Button>().Any(x => x.name == "20"), level + " last catalog page exposes wave 20");
             watcher.SelectView(WatcherView.Formations);
-            foreach (var part in WavePartLibrary.For(level))
+            foreach (var part in WavePartLibrary.All(level))
             {
                 foreach (int side in new[] { -1, 1 })
                 {

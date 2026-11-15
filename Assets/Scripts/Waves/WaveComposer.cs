@@ -34,6 +34,7 @@ public static class WaveComposer
     static readonly Dictionary<int, WavePart> thunderGates = new Dictionary<int, WavePart>();
     static int seed = -1, stage = -1, tuningRevision = -1; static LevelId level; static float width, height, tempo;
     static RunDifficulty difficulty;
+    static DistrictCondition condition;
     public static float Tempo => Mathf.Max(.01f, PatternMover.DistrictFlightTempo * GameRules.enemySpeed * LevelRun.EnemyTempoScale);
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void Reset()
@@ -119,7 +120,7 @@ public static class WaveComposer
         bool geometry = stage != LevelRun.Stage || level != LevelRun.Current || !Mathf.Approximately(width, Camera.RightLimit) || !Mathf.Approximately(height, Camera.UpLimit - Camera.DownLimit);
         if (geometry)
             patterns.Clear();
-        if (seed != LevelRun.Seed || stage != LevelRun.Stage || level != LevelRun.Current || !Mathf.Approximately(width, Camera.RightLimit) || !Mathf.Approximately(height, Camera.UpLimit - Camera.DownLimit) || !Mathf.Approximately(tempo, Tempo))
+        if (seed != LevelRun.Seed || stage != LevelRun.Stage || level != LevelRun.Current || condition != DistrictConditions.Current || !Mathf.Approximately(width, Camera.RightLimit) || !Mathf.Approximately(height, Camera.UpLimit - Camera.DownLimit) || !Mathf.Approximately(tempo, Tempo))
         {
             waves.Clear();
             uses.Clear();
@@ -129,6 +130,7 @@ public static class WaveComposer
             width = Camera.RightLimit;
             height = Camera.UpLimit - Camera.DownLimit;
             tempo = Tempo;
+            condition = DistrictConditions.Current;
             if (level == LevelId.Thunder)
                 PlanThunderGates();
             else
@@ -246,7 +248,9 @@ public static class WaveComposer
                     (heavy && part.Shape == WaveShape.Solo && !(level == LevelId.Space && part.Enemy == nameof(LaserSatellite))) || (groundUsed && part.Ground))
                     continue;
                 uses.TryGetValue(part.Name, out int used);
-                options.Add((part, used * 24 + random.Next(24) - (slot == 0 && part.Motion == preferredMotion ? 240 : 0)));
+                // A condition's own parts lead often, so dusk, night and storms fly differently.
+                int conditionLead = part.Only.HasValue ? 22 : 0;
+                options.Add((part, used * 24 + random.Next(24) - conditionLead - (slot == 0 && part.Motion == preferredMotion ? 240 : 0)));
             }
             options.Sort((a, b) => a.score.CompareTo(b.score));
             Motion best = null;
@@ -258,9 +262,12 @@ public static class WaveComposer
                     break;
                 int variant = random.Next(12);
                 float side = random.Next(2) == 0 ? 1 : -1;
+                bool fixedSide = option.part.FromConditionSide;
+                if (fixedSide)
+                    side = -DistrictConditions.Side(level, seed);
                 for (int variation = 0; variation < 2; variation++)
                 {
-                    var motion = Make(option.part, variant + variation, variation == 0 ? side : -side);
+                    var motion = Make(option.part, variant + variation, variation == 0 || fixedSide ? side : -side);
                     if (motion == null)
                         continue;
                     if (motion.Span > window || (compact && option.part != featuredGate && motion.Span > (level == LevelId.Heaven ? 9.5f : 6.2f) / slowest))
@@ -411,9 +418,9 @@ public static partial class WavePartLibrary
             case LevelId.Void:
                 return Array.Empty<WavePart>();
             case LevelId.Fields:
-                return plainsWithGround ?? (plainsWithGround = WithGround(Plains, PlainsGround));
+                return plainsWithGround ?? (plainsWithGround = WithGround(Plains, PlainsGround, PlainsDusk, PlainsNight));
             case LevelId.Snow:
-                return snowWithGround ?? (snowWithGround = WithGround(Snow, SnowGround));
+                return snowWithGround ?? (snowWithGround = WithGround(Snow, SnowGround, SnowBlizzard));
             case LevelId.City:
                 return City;
             case LevelId.Thunder:
@@ -421,7 +428,7 @@ public static partial class WavePartLibrary
             case LevelId.Tunnel:
                 return Tunnel;
             case LevelId.Desert:
-                return Desert;
+                return desertWithStorm ?? (desertWithStorm = WithGround(Desert, DesertSandstorm));
             case LevelId.Candyland:
                 return Candyland;
             case LevelId.Space:

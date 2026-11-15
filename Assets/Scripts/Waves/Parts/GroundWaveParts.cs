@@ -24,12 +24,12 @@ public static partial class WavePartLibrary
         new WavePart("Glacier mortar train","FrostAuger",FrostSickle,WaveShape.Train,4,4.8f,9),
         new WavePart("White furrow relay","FrostAuger",FrostSwitch,WaveShape.Train,4,4.6f,12)
     };
-    static WavePart[] plainsWithGround, snowWithGround;
-    static WavePart[] WithGround(WavePart[] air, WavePart[] ground)
+    static WavePart[] plainsWithGround, snowWithGround, desertWithStorm;
+    static WavePart[] WithGround(params WavePart[][] groups)
     {
-        var parts = new WavePart[air.Length + ground.Length];
-        air.CopyTo(parts, 0);
-        ground.CopyTo(parts, air.Length);
-        return parts;
+        var parts = new System.Collections.Generic.List<WavePart>();
+        foreach (var group in groups)
+            parts.AddRange(group);
+        return parts.ToArray();
     }
 }

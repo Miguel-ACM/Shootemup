@@ -70,7 +70,7 @@ public static class WatcherCatalog
                 }
                 break;
             case WatcherView.Formations:
-                foreach (var part in WavePartLibrary.For(level))
+                foreach (var part in WavePartLibrary.All(level))
                     entries.Add(new Entry { Id = "formation/" + part.Name, Name = part.Name, Part = part });
                 break;
             case WatcherView.Enemies:
