@@ -428,8 +428,8 @@ public sealed class PlayerRound : ABullet
 
     // Disc Thrower (Miguel, 15 November 2026): a disc brakes to a stop a set distance ahead,
     // whatever its shot speed, holds there spinning and keeps cutting every hull it touches,
-    // then fades. Its first pass still strikes like any round.
-    const float DiscReach = 3.2f, DiscOut = .4f, DiscHold = 1.5f, DiscTick = .12f, DiscTickShare = .25f;
+    // then fades. Its first pass still strikes like any round. It flies 5 units out (was 3.2).
+    const float DiscReach = 5f, DiscOut = .5f, DiscHold = 1.5f, DiscTick = .12f, DiscTickShare = .25f;
     float grindTimer;
 
     // Linear braking that covers exactly DiscReach before the hold.
