@@ -901,7 +901,9 @@ public sealed class LevelEnvironment : MonoBehaviour
             return;
         float fade = Mathf.SmoothStep(0, 1, Mathf.Clamp01(clock / StormFadeSeconds));
         float swell = Blizzard ? .55f + .45f * Gust : .55f + .45f * (dustStorm != null ? dustStorm.Strength : 1);
-        windAudio.volume = Mathf.MoveTowards(windAudio.volume, .30f * fade * swell, Time.deltaTime * .4f);
+        // The blizzard's howl sits well under the combat mix; the sandstorm's hiss a little louder.
+        float level = Blizzard ? .13f : .2f;
+        windAudio.volume = Mathf.MoveTowards(windAudio.volume, level * fade * swell, Time.deltaTime * .4f);
     }
 
     IEnumerator BuildTrafficSteps()

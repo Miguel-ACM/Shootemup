@@ -61,7 +61,8 @@ public sealed class LaserSound : MonoBehaviour
         lastCharge = Time.time;
         transient.clip = SfxMix.Resolve(ChargeCue, celestial && heavenCharge != null ? heavenCharge : chargeClip);
         transient.pitch = Mathf.Clamp((celestial && heavenCharge != null ? heavenCharge.length : .8f) / Mathf.Max(.1f, seconds), .5f, 2f);
-        transient.volume = (player ? .16f : .20f) * SfxMix.Gain(ChargeCue);
+        // Enemy laser charge and ignition sit about half as loud as before (Miguel, 15 November 2026).
+        transient.volume = (player ? .16f : .10f) * SfxMix.Gain(ChargeCue);
         transient.Play();
     }
 
@@ -77,7 +78,7 @@ public sealed class LaserSound : MonoBehaviour
             {
                 lastIgnition = Time.time;
                 transient.pitch = celestial ? .78f : 1;
-                transient.volume = (friendly ? .18f : .24f) * SfxMix.Gain(FireCue);
+                transient.volume = (friendly ? .18f : .13f) * SfxMix.Gain(FireCue);
                 var ignition = SfxMix.Resolve(FireCue, celestial && heavenIgnition != null ? heavenIgnition : friendly && playerIgnitionClip != null ? playerIgnitionClip : ignitionClip);
                 if (ignition != null) transient.PlayOneShot(ignition);
             }

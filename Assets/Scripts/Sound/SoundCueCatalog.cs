@@ -53,15 +53,15 @@ public static class SoundCueCatalog
         new Cue("shotMissile", "Missile rack", Player, "Sounds/shot1", .07f),
         new Cue("shotFlame", "Flame shots", Player, "Sounds/shot1", .07f),
         new Cue("shotSecondary", "Secondary fire", Player, "Sounds/shot1", .025f),
-        new Cue("beamCharge", "Enemy laser charge", Beam, "Sounds/Beam/charge", .2f),
-        new Cue("beamFire", "Enemy laser ignition", Beam, "Sounds/Beam/ignite", .24f),
+        new Cue("beamCharge", "Enemy laser charge", Beam, "Sounds/Beam/charge", .1f),
+        new Cue("beamFire", "Enemy laser ignition", Beam, "Sounds/Beam/ignite", .13f),
         new Cue("beamSustain", "Enemy laser sustain", Beam, "Sounds/Beam/sustain", .15f, .7f, loop: true),
         new Cue("beamRelease", "Laser release", Beam, "Sounds/Beam/release", .14f),
         new Cue("playerBeamCharge", "Player laser charge", Beam, "Sounds/Beam/charge", .16f),
         new Cue("shotBeam", "Player laser ignition", Beam, "Sounds/Beam/player_ignite", .18f),
         new Cue("playerBeamSustain", "Player laser sustain", Beam, "Sounds/Beam/player_sustain", .11f, .7f, loop: true),
-        new Cue("heavenBeamCharge", "Heaven laser charge", Beam, "Sounds/Beam/charge", .2f),
-        new Cue("heavenBeamFire", "Heaven laser ignition", Beam, "Sounds/Beam/ignite", .24f, .78f),
+        new Cue("heavenBeamCharge", "Heaven laser charge", Beam, "Sounds/Beam/charge", .1f),
+        new Cue("heavenBeamFire", "Heaven laser ignition", Beam, "Sounds/Beam/ignite", .13f, .78f),
         new Cue("heavenBeamSustain", "Heaven laser sustain", Beam, "Sounds/Beam/sustain", .15f, .55f, loop: true),
         // District events and the boss spell break (local SFX generator, ArtSource/AudioReview/Events).
         new Cue("eventLightning", "Lightning strike", Events, "Sounds/Events/LightningStrike", .2f, 1, .2f),
@@ -70,7 +70,7 @@ public static class SoundCueCatalog
         new Cue("eventEruption", "Volcano eruption", Events, "Sounds/Events/VolcanoBlast", .14f, 1, .25f),
         new Cue("eventCandy", "Candy bounce", Events, "Sounds/Events/CandyBounce", .07f, 1, .05f),
         new Cue("eventMineArm", "Mine arming", Events, "Sounds/Events/MineArm", .09f, 1, .15f),
-        new Cue("bossPhaseBreak", "Boss phase break", Events, "Sounds/Events/PhaseBreak", .3f, 1, .5f)
+        new Cue("bossPhaseBreak", "Boss phase break", Events, "Sounds/Events/PhaseBreak", .11f, 1, .5f)
     };
 
     static readonly Dictionary<string, Cue> lookup = Build();
