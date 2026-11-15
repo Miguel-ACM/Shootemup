@@ -2,7 +2,8 @@ using UnityEngine;
 
 // District events that act on their own during ordinary combat waves: lightning in a THUNDERSTORM,
 // mines rising from the depths in a MINEFIELD, falling sweets in CANDY RAIN, spears in SPEAR RAIN,
-// half the arena on fire in a SOLAR FLARE and Thicket Lurkers in the Plains trees.
+// half the arena on fire in a SOLAR FLARE, Thicket Lurkers in the Plains trees and a steady light
+// snowfall in a BLIZZARD.
 // Every hazard is telegraphed first and pauses with the waves: never during decisions, minibosses
 // or bosses. Wave-based events (rush hour, deep passages, eruptions) live with their own systems.
 public sealed class DistrictHazards : MonoBehaviour
@@ -73,6 +74,11 @@ public sealed class DistrictHazards : MonoBehaviour
                     CandyDrop.Drop(R(Camera.LeftLimit + .6f, Camera.RightLimit - .6f), random.Next(5));
                 next = now + R(2.4f, 3.6f) * rest;
                 break;
+            // A blizzard keeps a light snowfall coming between the shells' own snow.
+            case DistrictCondition.Blizzard:
+                Snowflake();
+                next = now + R(.32f, .5f) * rest;
+                break;
             case DistrictCondition.SolarFlare:
                 SolarFlares();
                 next = now + R(13, 18) * rest;
@@ -88,6 +94,20 @@ public sealed class DistrictHazards : MonoBehaviour
     }
 
     float R(float a, float b) => Mathf.Lerp(a, b, (float)random.NextDouble());
+
+    // One hostile snowflake born above the visible top edge, swaying as it falls and carried
+    // downwind; it starts a little upwind so the drift spreads the fall over the whole arena.
+    void Snowflake()
+    {
+        var wind = DistrictConditions.BlizzardWind;
+        float x = R(Camera.LeftLimit + .3f, Camera.RightLimit - .3f) - Mathf.Sign(wind.x) * R(0, 1.2f);
+        CombatRound.LaunchTone = HostileTone.Bright;
+        var flake = CombatRound.Launch<SnowflakeRound>(new Vector3(x, CombatRound.Border.yMax + .5f), Vector2.down, R(1.4f, 1.9f), .19f);
+        if (flake == null)
+            return;
+        flake.Sway(random.NextDouble() < .5 ? .3f : -.3f, .45f).Drift(wind * R(.85f, 1.15f));
+        flake.generation = 1;
+    }
 
     // SOLAR FLARE: one half of the arena burns, usually the half the pilot is in.
     void SolarFlares()

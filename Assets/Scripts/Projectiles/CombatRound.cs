@@ -319,7 +319,8 @@ public abstract class CombatRound : AEnemyBullet
         switch (district)
         {
             case LevelId.Fields: return type == typeof(PetalRound) ? 48 : 0;
-            case LevelId.Snow: return type == typeof(CrystalRound) ? 40 : type == typeof(SnowflakeRound) ? 64 : 0;
+            // Snowflakes also fall steadily in a blizzard.
+            case LevelId.Snow: return type == typeof(CrystalRound) ? 40 : type == typeof(SnowflakeRound) ? 96 : 0;
             case LevelId.City: return type == typeof(KunaiRound) ? 48 : type == typeof(GemRound) ? 32 : 0;
             case LevelId.Tunnel: return type == typeof(RiceRound) ? 64 : 0;
             case LevelId.Thunder:
