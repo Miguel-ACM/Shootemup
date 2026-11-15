@@ -54,7 +54,9 @@ public class WaveOrchestrer : MonoBehaviour
     public RewardHexes RewardOffer => rewardOffer;
     CargoEscort cargo;
     CargoEscort cargoDelivery;
-    string cargoRewardKey, cargoRewardRarity;
+    // Cargo items already earned, waiting for a clear moment: each opens its own pickup in turn,
+    // so an item decision or a boss reward on the same boundary can never swallow one.
+    readonly Queue<(string key, string rarity)> pendingCargo = new Queue<(string key, string rarity)>();
     public CargoEscort Cargo => cargo;
     readonly float[] encounterExpiry = new float[Enum.GetValues(typeof(EncounterKind)).Length];
     public bool ShowingEncounter(EncounterKind kind) => encounterExpiry[(int)kind] > Time.time &&
@@ -224,6 +226,11 @@ public class WaveOrchestrer : MonoBehaviour
             return;
         var quality = delivery.Quality;
         string key = ItemPool.GetCargoReward(out var rarity, quality);
+        // An exhausted rarity falls back to the nearest one that still has items: lower first.
+        for (int step = 1; key == null && step <= 3; step++)
+            foreach (int tier in new[] { (int)quality - step, (int)quality + step })
+                if (key == null && tier >= 0 && tier <= 3)
+                    key = ItemPool.GetCargoReward(out rarity, (ItemRarity)tier);
         if (!delivery.Deliver(key)) return;
         cargo = null;
         RunCoins.Add(EncounterChoice.SalvageCoins(LevelRun.Tier(LevelRun.Current), GameRules.luck) * 2);
@@ -235,8 +242,7 @@ public class WaveOrchestrer : MonoBehaviour
             return;
         }
         cargoDelivery = delivery;
-        cargoRewardKey = key;
-        cargoRewardRarity = rarity;
+        pendingCargo.Enqueue((key, rarity));
         // The item rises immediately. Like an ITEM encounter, its pickup screen waits for
         // a clear phrase boundary; no live enemies or unfinished score are discarded.
         // A claim during a boss is paid before that boss's mandatory reward instead.
@@ -390,7 +396,7 @@ public class WaveOrchestrer : MonoBehaviour
         skipOffered = true;
         var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth,
             pactAvailable, GameRules.luck, tradeable.Count > 0, canReforge,
-            cargo == null && cargoRewardKey == null && remaining >= CargoEscort.MinimumOfferWaves, !PactPool.GlassHull, offerSkip);
+            cargo == null && pendingCargo.Count == 0 && remaining >= CargoEscort.MinimumOfferWaves, !PactPool.GlassHull, offerSkip);
         if (Array.IndexOf(options, EncounterKind.Pact) >= 0)
             PactPool.HexStage = LevelRun.Stage;
         EncounterOptions = options;
@@ -505,12 +511,18 @@ public class WaveOrchestrer : MonoBehaviour
 
     void OpenDecision(RunSlotKind kind)
     {
+        // A cargo slot whose item was already handed out (at a boss, say) simply passes.
+        if (kind == RunSlotKind.CargoReward && pendingCargo.Count == 0)
+        {
+            GenerateWave();
+            return;
+        }
         Phase = RunPhase.Decision;
         DismissOffer();
         foreach (var enemy in new List<AEnemy>(AEnemy.Live))
             if (enemy != null)
                 Destroy(enemy.gameObject);
-        if (kind == RunSlotKind.CargoReward && cargoRewardKey != null)
+        if (kind == RunSlotKind.CargoReward)
         {
             StartCoroutine(OpenCargoReward(GenerateWave));
             return;
@@ -541,19 +553,22 @@ public class WaveOrchestrer : MonoBehaviour
         EraseAllBullets();
         while (cargoDelivery != null && !GameOverState.Active) yield return null;
         if (GameOverState.Active) yield break;
-        var key = cargoRewardKey;
-        var rarity = cargoRewardRarity;
         cargoDelivery = null;
-        cargoRewardKey = cargoRewardRarity = null;
-        bool picked = false;
-        decision = gameObject.AddComponent<DecisionShop>();
-        decision.Open(this, ship.GetComponent<Shipcontroller>(), RunSlotKind.CargoReward, () =>
+        // Every earned cargo item opens in turn, each saying where it came from.
+        while (pendingCargo.Count > 0 && !GameOverState.Active)
         {
-            decision = null;
-            picked = true;
+            var (key, rarity) = pendingCargo.Dequeue();
+            bool picked = false;
+            decision = gameObject.AddComponent<DecisionShop>();
+            decision.Open(this, ship.GetComponent<Shipcontroller>(), RunSlotKind.CargoReward, () =>
+            {
+                decision = null;
+                picked = true;
+            }, reservedKey: key, reservedRarity: rarity, reason: "CARGO DELIVERY · " + rarity.ToUpperInvariant());
+            while (!picked && !GameOverState.Active) yield return null;
+        }
+        if (!GameOverState.Active)
             completed?.Invoke();
-        }, reservedKey: key, reservedRarity: rarity);
-        while (!picked && !GameOverState.Active) yield return null;
     }
 
     private void EraseAllBullets()
@@ -656,7 +671,7 @@ public class WaveOrchestrer : MonoBehaviour
             GameOverState.Show(true);
             yield break;
         }
-        if (cargoRewardKey != null)
+        if (pendingCargo.Count > 0)
         {
             yield return OpenCargoReward(null);
             if (GameOverState.Active) yield break;
@@ -774,7 +789,7 @@ public class WaveOrchestrer : MonoBehaviour
         waves = FlightTrials.Active?.Sequence() ?? DistrictWaves.Sequence();
         activeMiniboss = null;
         minibossDeadline = -1;
-        if (cargoRewardKey != null)
+        if (pendingCargo.Count > 0)
             plan.Insert(0, RunSlotKind.CargoReward);
         BeginWaves();
     }

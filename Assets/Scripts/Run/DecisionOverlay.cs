@@ -187,6 +187,20 @@ public sealed class DecisionOverlay : MonoBehaviour
         skip.gameObject.SetActive(allowSkip);
     }
 
+    // Why this reward is being given: a dark banner at the top in the reward's colour.
+    public void SetReason(string reason, Color colour)
+    {
+        var plate = Plate("Reward reason", new Vector2(380, 34));
+        plate.anchorMin = plate.anchorMax = new Vector2(.5f, 1);
+        plate.anchoredPosition = new Vector2(0, -64);
+        plate.GetComponent<Image>().color = new Color(.02f, .03f, .04f, .9f);
+        var rim = Plate("Reward reason rim", new Vector2(380, 2), plate);
+        rim.anchoredPosition = new Vector2(0, -16);
+        rim.GetComponent<Image>().color = colour;
+        var label = Text(plate, reason, 17);
+        label.color = Color.Lerp(colour, Color.white, .25f);
+    }
+
     public void SetSkip(float progress)
     {
         skipFill.sizeDelta = new Vector2(SkipWidth, SkipHeight * Mathf.SmoothStep(0, 1, Mathf.Clamp01(progress)));

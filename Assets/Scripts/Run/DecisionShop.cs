@@ -38,7 +38,7 @@ public sealed class DecisionShop : MonoBehaviour
         => Open(orchestrer, ship, RunSlot.Parse(kind).Kind, completed, dropPosition);
 
     public void Open(WaveOrchestrer orchestrer, Shipcontroller ship, RunSlotKind kind, Action completed, Vector3? dropPosition = null,
-        string reservedKey = null, string reservedRarity = null)
+        string reservedKey = null, string reservedRarity = null, string reason = null)
     {
         mandatory = kind == RunSlotKind.BossReward;
         bool singleReward = mandatory || kind == RunSlotKind.ChallengeReward || kind == RunSlotKind.CargoReward;
@@ -57,6 +57,10 @@ public sealed class DecisionShop : MonoBehaviour
         dialog = GameObject.FindGameObjectWithTag("Dialog").GetComponent<Dialog>();
         overlay = new GameObject("Shop decision overlay", typeof(RectTransform)).AddComponent<DecisionOverlay>();
         overlay.Build(dialog.font);
+        // Single rewards say where they came from.
+        reason = reason ?? (kind == RunSlotKind.ChallengeReward ? "CHALLENGE COMPLETE" : kind == RunSlotKind.BossReward ? "BOSS REWARD" : null);
+        if (reason != null)
+            overlay.SetReason(reason, reservedRarity != null ? AItem.GetRarityColor(reservedRarity) : new Color(.95f, .76f, .42f));
         if (exchange)
         {
             inventory = RunInventory.For(player);
