@@ -188,16 +188,38 @@ public sealed class DecisionOverlay : MonoBehaviour
     }
 
     // Why this reward is being given: a dark banner at the top in the reward's colour.
+    // Why this item is offered (BOSS REWARD, CARGO DELIVERY, ELITE HUNT COMPLETE), in the empty
+    // left margin beside the flight area rather than over the offers (Miguel, 15 November 2026).
+    // The plate spans the margin's width, whatever the screen's aspect.
     public void SetReason(string reason, Color colour)
     {
-        var plate = Plate("Reward reason", new Vector2(380, 34));
-        plate.anchorMin = plate.anchorMax = new Vector2(.5f, 1);
-        plate.anchoredPosition = new Vector2(0, -64);
+        var margin = new GameObject("Left margin", typeof(RectTransform)).GetComponent<RectTransform>();
+        margin.SetParent(transform, false);
+        margin.anchorMin = Vector2.zero;
+        margin.anchorMax = new Vector2(.5f, 1);
+        margin.offsetMin = Vector2.zero;
+        margin.offsetMax = new Vector2(-202.5f, 0);
+        var plate = Plate("Reward reason", Vector2.zero, margin);
+        plate.anchorMin = new Vector2(0, .5f);
+        plate.anchorMax = new Vector2(1, .5f);
+        plate.sizeDelta = new Vector2(-40, 38);
+        plate.anchoredPosition = new Vector2(0, 60);
         plate.GetComponent<Image>().color = new Color(.02f, .03f, .04f, .9f);
-        var rim = Plate("Reward reason rim", new Vector2(380, 2), plate);
-        rim.anchoredPosition = new Vector2(0, -16);
+        var rim = Plate("Reward reason rim", Vector2.zero, plate);
+        rim.anchorMin = Vector2.zero;
+        rim.anchorMax = new Vector2(1, 0);
+        rim.pivot = new Vector2(.5f, 0);
+        rim.sizeDelta = new Vector2(0, 2);
         rim.GetComponent<Image>().color = colour;
         var label = Text(plate, reason, 17);
+        label.rectTransform.anchorMin = Vector2.zero;
+        label.rectTransform.anchorMax = Vector2.one;
+        label.rectTransform.offsetMin = new Vector2(8, 2);
+        label.rectTransform.offsetMax = new Vector2(-8, 0);
+        label.enableAutoSizing = true;
+        label.fontSizeMin = 10;
+        label.fontSizeMax = 17;
+        label.textWrappingMode = TextWrappingModes.NoWrap;
         label.color = Color.Lerp(colour, Color.white, .25f);
     }
 
