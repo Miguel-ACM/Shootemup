@@ -215,15 +215,15 @@ public static class PSXImpactEffects
     public static void SpellBreak(Vector3 position, Color colour)
     {
         Burst(position, colour, true);
-        for (int ray = 0; ray < 48; ray++)
+        for (int ray = 0; ray < 32; ray++)
         {
-            float angle = ray * 7.5f + (ray % 3) * 2.1f;
+            float angle = ray * 11.25f + (ray % 3) * 2.1f;
             Vector3 direction = CombatVisuals.Rotate(Vector2.right, angle);
             int length = ray % 3;
             var spark = new ParticleSystem.EmitParams
             {
                 position = position + direction * .2f,
-                velocity = direction * (length == 0 ? 15 : length == 1 ? 10.5f : 7),
+                velocity = direction * (length == 0 ? 12 : length == 1 ? 8.5f : 6),
                 rotation3D = Vector3.forward * angle,
                 startSize3D = new Vector3(length == 0 ? 1.1f : length == 1 ? .66f : .38f, length == 0 ? .1f : .075f, .075f),
                 startColor = length == 2 ? Color.Lerp(colour, Color.white, .5f) : colour,

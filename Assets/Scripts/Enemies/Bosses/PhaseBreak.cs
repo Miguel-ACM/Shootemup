@@ -1,13 +1,13 @@
 using UnityEngine;
 
-// The spell break between boss phases, deliberately overblown: a short implosion in which the
-// arena dims and a ring collapses into the boss as it shrinks, then a rupture with a screen-wide
-// white wash, five pressure fronts (the late ones in the district colour), rotating rays, two waves
-// of sparks, a heavy shake, a deep boom and the boss punching out before it settles.
+// The spell break between boss phases: a short implosion in which the arena dims and a ring
+// collapses into the boss as it shrinks, then a rupture with a white wash, pressure fronts (the
+// last in the district colour), rotating rays, a spark wave, a shake, a boom and a small punch.
+// Toned down from the first overblown version (Miguel, 15 November 2026).
 // One shared quad and one pass, with no per-ray objects or lights.
 public sealed class PhaseBreak : MonoBehaviour
 {
-    public const float Implosion = .3f, Duration = 2.2f;
+    public const float Implosion = .3f, Duration = 1.8f;
     static Mesh quad;
     static Material surface;
     MaterialPropertyBlock ink;
@@ -16,7 +16,7 @@ public sealed class PhaseBreak : MonoBehaviour
     Vector3 hullScale;
     Color accent;
     float age;
-    bool ruptured, echoed;
+    bool ruptured;
 
     public static void Warm()
     {
@@ -65,13 +65,12 @@ public sealed class PhaseBreak : MonoBehaviour
     {
         ruptured = true;
         var at = transform.position;
-        PSXImpactEffects.SpellBreak(at);
-        ClearEffects.ScreenClear(Color.white);
+        PSXImpactEffects.SpellBreak(at, accent);
         var boom = SoundCueCatalog.Find("bossPhaseBreak");
         if (boom != null)
             SoundManager.PlaySoundPitch(boom.Id, boom.Volume, boom.Pitch);
         if (EZCameraShake.CameraShaker.Instance != null)
-            EZCameraShake.CameraShaker.Instance.ShakeOnce(9.5f, 9, .03f, 1.4f);
+            EZCameraShake.CameraShaker.Instance.ShakeOnce(5, 9, .03f, 1);
     }
 
     void Update()
@@ -81,12 +80,6 @@ public sealed class PhaseBreak : MonoBehaviour
         age += Time.deltaTime;
         if (!ruptured && age >= Implosion)
             Rupture();
-        if (!echoed && age >= Implosion + .14f)
-        {
-            // A second, coloured spark wave chases the first.
-            echoed = true;
-            PSXImpactEffects.SpellBreak(transform.position, accent);
-        }
         PunchHull();
         if (age >= Duration)
         {
@@ -105,11 +98,11 @@ public sealed class PhaseBreak : MonoBehaviour
             return;
         float factor;
         if (age < Implosion)
-            factor = Mathf.Lerp(1, .84f, Mathf.SmoothStep(0, 1, age / Implosion));
+            factor = Mathf.Lerp(1, .9f, Mathf.SmoothStep(0, 1, age / Implosion));
         else
         {
             float e = age - Implosion;
-            factor = 1 + .3f * Mathf.Exp(-e * 4.2f) * Mathf.Cos(e * 15);
+            factor = 1 + .16f * Mathf.Exp(-e * 5) * Mathf.Cos(e * 15);
         }
         hull.localScale = hullScale * factor;
     }
