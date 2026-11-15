@@ -28,7 +28,7 @@ public sealed class ThicketLurker : DistrictEnemy
 
     protected override void Configure()
     {
-        hullScale = .52f;
+        hullScale = .46f;
         health = 24;
         attackInterval = float.PositiveInfinity;
         nextAttack = float.PositiveInfinity;
@@ -218,39 +218,97 @@ public static partial class IndustrialMeshFactory
 {
     static Mesh cachedThicketLurker;
 
-    // A squat leaf-camouflaged hopper: an olive shell under layered leaf plates, four folded
-    // spring legs for the jump, a red sensor eye and a twin arrow launcher under its chin.
+    // A mechanical band-winged locust. Leaf-green armour hides it in the canopy; in flight it
+    // flashes fanned orange hind wings with a black band. Big folded jumping legs with orange
+    // spring pistons, gold compound eyes, swept antennae and a twin arrow launcher under the jaw.
     public static Mesh ThicketLurkerMesh()
     {
         if (cachedThicketLurker != null)
             return cachedThicketLurker;
         var b = new Builder();
-        BevelArmor(b, new[] { V(0, -.62f), V(-.42f, -.38f), V(-.5f, .18f), V(-.24f, .55f), V(.24f, .55f), V(.5f, .18f), V(.42f, -.38f) }, .34f, 2);
-        // Layered leaf plates over the back.
-        var leaves = new[] { new Vector3(-.22f, .22f, 20), new Vector3(.22f, .24f, -24), new Vector3(0, .42f, 0), new Vector3(-.3f, -.02f, 40), new Vector3(.3f, -.04f, -40) };
-        foreach (var leaf in leaves)
-        {
-            float a = leaf.z * Mathf.Deg2Rad;
-            Vector2 P(float x, float y) => new Vector2(leaf.x + x * Mathf.Cos(a) - y * Mathf.Sin(a), leaf.y + x * Mathf.Sin(a) + y * Mathf.Cos(a));
-            b.Prism(new[] { P(0, -.2f), P(.12f, -.02f), P(.07f, .16f), P(0, .22f), P(-.07f, .16f), P(-.12f, -.02f) }, .06f, leaf.z > 0 ? 14 : 2, new Vector3(0, 0, -.22f), 11);
-        }
-        // Four folded spring legs, knees out.
-        foreach (int sx in new[] { -1, 1 })
-            foreach (int sy in new[] { -1, 1 })
-            {
-                var hip = new Vector3(sx * .4f, sy * .26f, .02f);
-                var knee = new Vector3(sx * .72f, sy * .42f, -.08f);
-                var foot = new Vector3(sx * .62f, sy * .62f, .1f);
-                EquipmentRod(b, hip, knee, .055f, 11);
-                EquipmentRod(b, knee, foot, .045f, 6);
-                b.Ball(foot, new Vector3(.07f, .07f, .05f), 11);
-            }
-        Glass(b, 0, -.3f, .3f, .22f, -.28f, 5);
         foreach (int s in new[] { -1, 1 })
         {
-            b.Box(new Vector3(s * .16f, -.6f, -.16f), new Vector3(.09f, .3f, .09f), 11, 6);
-            b.Box(new Vector3(s * .16f, -.76f, -.16f), new Vector3(.12f, .05f, .11f), 6, 6);
+            // Hind wing: a scalloped fan spread sideways from the shoulder, orange with a dark band.
+            var root = new Vector2(s * .13f, -.2f);
+            float[] reach = { .72f, .86f, .9f, .84f, .7f, .56f };
+            Vector2 Fan(int i, float scale)
+            {
+                float a = Mathf.Lerp(-18, 58, i / 5f) * Mathf.Deg2Rad;
+                return root + new Vector2(s * Mathf.Cos(a), Mathf.Sin(a)) * reach[i] * scale;
+            }
+            var membrane = new Vector2[7];
+            membrane[0] = root;
+            for (int i = 0; i < 6; i++)
+                membrane[i + 1] = Fan(i, 1);
+            b.Prism(membrane, .03f, 3, new Vector3(0, 0, .02f), 12, 11);
+            var band = new Vector2[12];
+            for (int i = 0; i < 6; i++)
+            {
+                band[i] = Fan(i, .86f);
+                band[11 - i] = Fan(i, .7f);
+            }
+            b.Prism(band, .02f, 11, new Vector3(0, 0, -.005f), 11, 11);
+            // Dark veins radiating across the membrane.
+            for (int i = 1; i < 5; i++)
+            {
+                var tip = Fan(i, .97f);
+                EquipmentRod(b, new Vector3(root.x, root.y, -.01f), new Vector3(tip.x, tip.y, -.01f), .012f, 11);
+            }
+            // Fore wing: a narrow olive leaf along the fan's leading edge, with a tan midrib.
+            float lean = -14 * Mathf.Deg2Rad;
+            var axis = new Vector2(s * Mathf.Cos(lean), Mathf.Sin(lean));
+            var normal = new Vector2(-axis.y, axis.x) * s;
+            var start = new Vector2(s * .1f, -.27f);
+            Vector2 L(float along, float across) => start + axis * along + normal * across;
+            BevelArmor(b, new[] { L(0, -.06f), L(.22f, -.15f), L(.58f, -.13f), L(.84f, 0), L(.58f, .1f), L(.22f, .13f), L(0, .06f) }, .08f, 14, -.07f, .2f);
+            var mid0 = L(.04f, 0);
+            var mid1 = L(.72f, 0);
+            EquipmentRod(b, new Vector3(mid0.x, mid0.y, -.1f), new Vector3(mid1.x, mid1.y, -.1f), .014f, 13);
+
+            // Jumping leg: a thick femur sweeping back to a high knee, the tibia folded under it,
+            // an orange spring piston along the thigh.
+            BevelArmor(b, new[] { V(s * .14f, -.02f), V(s * .27f, -.06f), V(s * .5f, .62f), V(s * .5f, .8f), V(s * .42f, .78f), V(s * .19f, .2f) }, .16f, 14, .02f, .2f);
+            b.Prism(new[] { V(s * .27f, .1f), V(s * .32f, .1f), V(s * .47f, .6f), V(s * .43f, .62f) }, .02f, 13, new Vector3(0, 0, -.07f), 13, 13);
+            EquipmentRod(b, new Vector3(s * .24f, .16f, -.12f), new Vector3(s * .42f, .66f, -.12f), .03f, 3);
+            b.Ball(new Vector3(s * .47f, .8f, -.02f), new Vector3(.075f, .075f, .07f), 11);
+            EquipmentRod(b, new Vector3(s * .47f, .8f, .06f), new Vector3(s * .36f, .14f, .06f), .028f, 6);
+            for (int spine = 0; spine < 3; spine++)
+            {
+                var at = Vector3.Lerp(new Vector3(s * .47f, .8f, .06f), new Vector3(s * .36f, .14f, .06f), .25f + spine * .22f);
+                b.Box(at + new Vector3(s * .035f, 0, 0), new Vector3(.05f, .018f, .018f), 11, 11);
+            }
+            b.Box(new Vector3(s * .35f, .1f, .06f), new Vector3(.08f, .07f, .05f), 11, 11);
+            // Two pairs of small walking legs folded under the thorax.
+            foreach (var (hip, knee, foot) in new[]
+            {
+                (new Vector3(s * .16f, -.42f, .04f), new Vector3(s * .33f, -.52f, .04f), new Vector3(s * .3f, -.7f, .04f)),
+                (new Vector3(s * .17f, -.3f, .04f), new Vector3(s * .36f, -.36f, .04f), new Vector3(s * .42f, -.5f, .04f))
+            })
+            {
+                EquipmentRod(b, hip, knee, .025f, 11);
+                EquipmentRod(b, knee, foot, .02f, 6);
+            }
+            // Gold compound eye and a swept antenna.
+            b.Ball(new Vector3(s * .17f, -.66f, -.13f), new Vector3(.085f, .1f, .08f), 10);
+            EquipmentRod(b, new Vector3(s * .08f, -.78f, -.12f), new Vector3(s * .2f, -.98f, -.12f), .016f, 11);
+            EquipmentRod(b, new Vector3(s * .2f, -.98f, -.12f), new Vector3(s * .38f, -1.08f, -.12f), .013f, 11);
+            // Twin arrow launcher under the jaw.
+            b.Box(new Vector3(s * .08f, -.88f, -.06f), new Vector3(.07f, .2f, .07f), 11, 6);
+            b.Box(new Vector3(s * .08f, -.98f, -.06f), new Vector3(.095f, .04f, .095f), 6, 6);
         }
-        return cachedThicketLurker = b.Finish("Thicket lurker hull and arrow launcher");
+        // Segmented tan abdomen behind the wings.
+        BevelArmor(b, new[] { V(-.15f, -.12f), V(.15f, -.12f), V(.17f, .36f), V(.11f, .78f), V(0, .9f), V(-.11f, .78f), V(-.17f, .36f) }, .2f, 13, .03f, .18f);
+        for (int ring = 0; ring < 4; ring++)
+        {
+            float y = .12f + ring * .17f, w = Mathf.Lerp(.3f, .17f, ring / 3f);
+            b.Box(new Vector3(0, y, -.075f), new Vector3(w, .03f, .02f), 11, 11);
+        }
+        // Saddle-shaped thorax shield with tan side stripes, and the blunt head.
+        BevelArmor(b, new[] { V(-.24f, -.5f), V(.24f, -.5f), V(.29f, -.32f), V(.25f, -.1f), V(0, -.04f), V(-.25f, -.1f), V(-.29f, -.32f) }, .26f, 2, -.04f, .2f);
+        foreach (int s in new[] { -1, 1 })
+            b.Prism(new[] { V(s * .2f, -.46f), V(s * .25f, -.32f), V(s * .22f, -.13f), V(s * .18f, -.14f), V(s * .2f, -.32f), V(s * .16f, -.45f) }, .02f, 13, new Vector3(0, 0, -.18f), 13, 13);
+        BevelArmor(b, new[] { V(-.15f, -.83f), V(.15f, -.83f), V(.21f, -.68f), V(.18f, -.5f), V(-.18f, -.5f), V(-.21f, -.68f) }, .24f, 2, -.06f, .22f);
+        b.Box(new Vector3(0, -.84f, -.1f), new Vector3(.14f, .05f, .06f), 11, 11);
+        return cachedThicketLurker = b.Finish("Thicket lurker locust hull and arrow launcher");
     }
 }

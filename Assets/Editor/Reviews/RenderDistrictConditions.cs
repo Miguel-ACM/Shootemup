@@ -259,7 +259,7 @@ public static class RenderDistrictConditions
             hull.sortingLayerName = "Enemy";
             lurker.transform.rotation = Quaternion.Euler(-20, 0, 0);
             camera.transform.position = new Vector3(0, 0, -20);
-            camera.orthographicSize = 1.1f;
+            camera.orthographicSize = 1.75f;
             camera.backgroundColor = new Color(.25f, .33f, .19f);
             cells[0, 2] = Capture(camera);
             lurker.SetActive(false);
