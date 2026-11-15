@@ -297,7 +297,7 @@ public static class WaveComposer
                 uses.TryGetValue(part.Name, out int used);
                 // A condition's own parts lead often, so dusk, night and storms fly differently.
                 // A minefield leans harder on its mines: they are its whole character.
-                int conditionLead = part.Only.HasValue ? part.Only == DistrictCondition.Minefield ? 56 : 22 : 0;
+                int conditionLead = part.Only.HasValue ? part.Only == DistrictCondition.Minefield ? 66 : 22 : 0;
                 options.Add((part, used * 24 + random.Next(24) - conditionLead - (slot == 0 && part.Motion == preferredMotion ? 240 : 0)));
             }
             options.Sort((a, b) => a.score.CompareTo(b.score));

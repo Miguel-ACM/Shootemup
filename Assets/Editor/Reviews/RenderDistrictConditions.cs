@@ -540,6 +540,63 @@ public static class RenderDistrictConditions
             EditorApplication.Exit(code);
     }
 
+    // Batch: -executeMethod RenderDistrictConditions.Mines
+    // The moored contact mine over the Underwater backdrop at play scale, and close up.
+    public static void Mines()
+    {
+        int code = 0;
+        try
+        {
+            Directory.CreateDirectory(Folder);
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Shader.SetGlobalVector("_PSXSnapResolution", new Vector4(Width, Height, 0, 0));
+            DistrictConditions.Forced = DistrictCondition.Ordinary;
+            LevelRun.Reset(LevelId.Underwater, 424242);
+            var sea = Environment(LevelId.Underwater);
+            var combat = Combatants(LevelProjectilePalette.Accent(LevelId.Underwater), 0);
+            var mesh = IndustrialMeshFactory.CombatHull((int)CombatHullId.DepthMine);
+            var material = EnemyExpansion.Material((int)CombatHullId.DepthMine);
+            var cells = new Texture2D[1, 2];
+            var mines = new GameObject("Mines");
+            var spots = new[] { new Vector3(-2.2f, 4.6f, 12), new Vector3(1.8f, 2.4f, -20), new Vector3(-1.4f, -1.8f, 30), new Vector3(2.4f, -4.4f, 5) };
+            foreach (var spot in spots)
+            {
+                var mine = new GameObject("Mine");
+                mine.transform.SetParent(mines.transform, false);
+                mine.transform.localPosition = new Vector3(spot.x, spot.y, 1);
+                mine.transform.localRotation = Quaternion.Euler(8 * Mathf.Sin(spot.z), 12 * Mathf.Cos(spot.z), spot.z);
+                mine.transform.localScale = Vector3.one * .62f * DistrictEnemy.PresentationScale(typeof(DepthMine));
+                mine.AddComponent<MeshFilter>().sharedMesh = mesh;
+                var renderer = mine.AddComponent<MeshRenderer>();
+                renderer.sharedMaterial = material;
+                renderer.sortingLayerName = "Enemy";
+            }
+            cells[0, 0] = Capture(Camera(0, 8.85f));
+            sea.SetActive(false);
+            combat.SetActive(false);
+            mines.SetActive(false);
+            var close = new GameObject("Mine close up");
+            close.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var closeRenderer = close.AddComponent<MeshRenderer>();
+            closeRenderer.sharedMaterial = material;
+            closeRenderer.sortingLayerName = "Enemy";
+            close.transform.rotation = Quaternion.Euler(-25, 10, 0);
+            var view = Camera(0, 1.1f);
+            view.transform.position = new Vector3(0, -.2f, -20);
+            view.backgroundColor = new Color(.04f, .16f, .3f);
+            cells[0, 1] = Capture(view);
+            Save("Mines.png", cells);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+            code = 1;
+        }
+        DistrictConditions.Forced = null;
+        if (Application.isBatchMode)
+            EditorApplication.Exit(code);
+    }
+
     // Batch: -executeMethod RenderDistrictConditions.PoisonCloud
     // Compost's gas clouds over the valley: a fresh small heap, a rotten heap and one fading out.
     public static void PoisonCloud()

@@ -1,16 +1,17 @@
 using System.Collections;
 using UnityEngine;
 
-// A shootable naval mine. Damage primes the fuse, and so does the pilot flying too close
-// (a beeping arm and a short fuse first). Its burst is a double ring with aimed shrapnel.
-// In a MINEFIELD some mines rise from the depths mid-screen instead of drifting in from above.
+// A moored contact mine. It sinks past with the seabed at the background's own speed, takes a
+// real beating before it blows (no proximity fuse: the pilot can fly close), and its burst is a
+// double ring with aimed shrapnel. In a MINEFIELD some mines rise from the depths mid-screen
+// first (Miguel, 15 November 2026: fewer, sturdier mines that move with the ground).
 [UnityEngine.Scripting.Preserve]
 public sealed class DepthMine : OceanEnemy
 {
     bool primed;
     SpriteRenderer lamp;
     public bool Primed => primed;
-    const float RiseSeconds = 1.7f, ArmingRange = 1.25f;
+    const float RiseSeconds = 1.7f;
     // Mines that rose from the depths are district hazards: they never hold a wave open.
     public bool FromDepths { get; private set; }
     bool rising;
@@ -33,7 +34,7 @@ public sealed class DepthMine : OceanEnemy
     protected override void Configure()
     {
         hullScale = .62f;
-        health = 1;
+        health = 16;
         attackInterval = float.PositiveInfinity;
         nextAttack = float.PositiveInfinity;
         Mover<DriftDownPattern>();
@@ -47,14 +48,11 @@ public sealed class DepthMine : OceanEnemy
         PartHitFeedback.Bind(Hull);
         lamp = ItemSpark.Sprite(Hull, "Pressure fuse", "standard", LevelProjectilePalette.Accent(LevelId.Underwater), .14f);
         lamp.transform.localPosition = new Vector3(0, 0, -.58f);
+        // Moored to the seabed: the mine ignores its formation route and sinks with the ground.
+        if (movement != null)
+            movement.enabled = false;
     }
     protected override void Attack() { }
-    public override void damage(float amount)
-    {
-        // This is a fuse, not a health check: even a weak shot primes it on later loops.
-        if (amount > 0 && float.IsFinite(amount) && GameRules.enemyDamageReceived > 0)
-            base.damage(Mathf.Max(amount, health / GameRules.enemyDamageReceived + 1));
-    }
     protected override void Update()
     {
         if (primed || WorldTimeStop.Frozen || GameRules.playerDisabled) return;
@@ -75,8 +73,6 @@ public sealed class DepthMine : OceanEnemy
             {
                 rising = false;
                 GetComponent<Collider2D>().enabled = true;
-                if (movement != null)
-                    movement.enabled = true;
             }
             return;
         }
@@ -85,13 +81,7 @@ public sealed class DepthMine : OceanEnemy
             Depart();
             return;
         }
-        var pilot = CombatVisuals.Player;
-        if (pilot != null && Vector2.Distance(pilot.position, transform.position) < ArmingRange)
-        {
-            DistrictHazards.Play("eventMineArm");
-            Die();
-            return;
-        }
+        transform.position += Vector3.down * LevelEnvironment.ScrollSpeed(LevelId.Underwater) * Time.deltaTime;
         if (age > (FromDepths ? 16 : 28) || transform.position.y < Camera.DownLimit - 2) Depart();
     }
     protected override void Die()
@@ -151,11 +141,11 @@ public static partial class WavePartLibrary
     public static readonly WavePart[] DepthMineParts = {
         new WavePart("Moored mine pairs", nameof(DepthMine), MineMoorings, WaveShape.Train, 2, 7.2f, 2, new float[0]),
         new WavePart("Mine channel", nameof(DepthMine), MineChannel, WaveShape.Rake, 2, 7.4f, 4, new float[0]),
-        new WavePart("Drifting mine row", nameof(DepthMine), MineDrift, WaveShape.Rank, 3, 7.1f, 7, new float[0]),
+        new WavePart("Drifting mine row", nameof(DepthMine), MineDrift, WaveShape.Rank, 2, 7.1f, 7, new float[0]),
         // MINEFIELD: whole curtains and weaving lines of mines between the ordinary waves.
-        new WavePart("Mine curtain", nameof(DepthMine), MineCurtain, WaveShape.Rank, 4, 7.4f, 2, new float[0]).Under(DistrictCondition.Minefield),
-        new WavePart("Mine slalom", nameof(DepthMine), MineSlalom, WaveShape.Train, 4, 7.6f, 3, new float[0]).Under(DistrictCondition.Minefield),
-        new WavePart("Crossed mine lines", nameof(DepthMine), MineChannel, WaveShape.Rake, 3, 7.2f, 4, new float[0]).Under(DistrictCondition.Minefield),
+        new WavePart("Mine curtain", nameof(DepthMine), MineCurtain, WaveShape.Rank, 3, 7.4f, 2, new float[0]).Under(DistrictCondition.Minefield),
+        new WavePart("Mine slalom", nameof(DepthMine), MineSlalom, WaveShape.Train, 3, 7.6f, 3, new float[0]).Under(DistrictCondition.Minefield),
+        new WavePart("Crossed mine lines", nameof(DepthMine), MineChannel, WaveShape.Rake, 2, 7.2f, 4, new float[0]).Under(DistrictCondition.Minefield),
         new WavePart("Sunken mine pairs", nameof(DepthMine), MineMoorings, WaveShape.Rank, 2, 7.0f, 5, new float[0]).Under(DistrictCondition.Minefield)
     };
 }

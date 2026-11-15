@@ -423,6 +423,8 @@ public sealed class LevelEnvironment : MonoBehaviour
     }
 
     public const float TunnelSpeed = 10.2f;
+    // How fast a district's ground scrolls past (world units per second at the normal rate).
+    public static float ScrollSpeed(LevelId level) => level == LevelId.Tunnel ? TunnelSpeed : level == LevelId.City ? 1.8f : 4.4f;
 
     // Pin the live tile phase only when the dock camera is ready to move.
     public static float MoorTitle(float approach)
@@ -1000,7 +1002,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     {
         float dt = titleBackdrop ? Time.unscaledDeltaTime : Time.deltaTime;
         clock += dt;
-        travel = Mathf.Repeat(travel + dt * travelRate * (level == LevelId.Tunnel ? TunnelSpeed : level == LevelId.City ? 1.8f : 4.4f), LoopLength);
+        travel = Mathf.Repeat(travel + dt * travelRate * ScrollSpeed(level), LoopLength);
         for (int i = 0; i < sections.Count; i++)
         {
             float y = SectionY(i, travel);

@@ -63,14 +63,15 @@ public sealed class DistrictHazards : MonoBehaviour
                 next = now + R(4.8f, 7.2f) * rest;
                 break;
             case DistrictCondition.Minefield:
-                if (CountRising() < 2)
+                if (CountRising() < 1)
                     DepthMine.Rise(new Vector3(R(Camera.LeftLimit + .8f, Camera.RightLimit - .8f), Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, R(.42f, .74f)), 1));
-                next = now + R(4.6f, 6.8f) * rest;
+                next = now + R(7.5f, 10.5f) * rest;
                 break;
             case DistrictCondition.CandyRain:
-                if (CandyDrop.Count < 3)
+                // More candy (Miguel, 15 November 2026): up to six sweets, twice as often.
+                if (CandyDrop.Count < 6)
                     CandyDrop.Drop(R(Camera.LeftLimit + .6f, Camera.RightLimit - .6f), random.Next(5));
-                next = now + R(5.2f, 7.6f) * rest;
+                next = now + R(2.4f, 3.6f) * rest;
                 break;
             case DistrictCondition.SolarFlare:
                 SolarFlares();
