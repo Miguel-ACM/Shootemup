@@ -7,7 +7,8 @@ using UnityEngine;
 public sealed class DistrictHazards : MonoBehaviour
 {
     WaveOrchestrer waves;
-    float next = -1;
+    PSXGrassField valley;
+    float next = -1, nextRock = -1;
     System.Random random;
     int seed = -1;
 
@@ -31,6 +32,7 @@ public sealed class DistrictHazards : MonoBehaviour
         {
             // Each combat wave opens with a short breather before the first hazard.
             next = -1;
+            nextRock = -1;
             return;
         }
         if (seed != LevelRun.Seed)
@@ -45,9 +47,20 @@ public sealed class DistrictHazards : MonoBehaviour
             next = now + 3.5f;
             return;
         }
+        float rest = Difficulty.Easy ? 1.35f : Difficulty.Hard ? .8f : 1;
+        // These keep their own clocks: asteroids drift in between flares.
+        if (condition == DistrictCondition.SolarFlare)
+        {
+            SolarFlares(now, rest);
+            return;
+        }
+        if (LevelRun.Current == LevelId.Fields)
+        {
+            Lurkers(now, rest, condition == DistrictCondition.Forest);
+            return;
+        }
         if (now < next)
             return;
-        float rest = Difficulty.Easy ? 1.35f : Difficulty.Hard ? .8f : 1;
         switch (condition)
         {
             // Spaced well apart (Miguel found the first pass far too busy, 15 November 2026).
@@ -76,6 +89,47 @@ public sealed class DistrictHazards : MonoBehaviour
     }
 
     float R(float a, float b) => Mathf.Lerp(a, b, (float)random.NextDouble());
+
+    // SOLAR FLARE: keep two asteroids drifting through; flare only when one is fully in view,
+    // from the side that gives its shadow the most room.
+    void SolarFlares(float now, float rest)
+    {
+        if (nextRock < 0 || now >= nextRock)
+        {
+            nextRock = now + R(3.5f, 5.5f);
+            if (SpaceAsteroid.Live.Count < 2)
+                SpaceAsteroid.Spawn(R(Camera.LeftLimit + 1.4f, Camera.RightLimit - 1.4f), R(.75f, 1.15f), random.Next());
+        }
+        if (now < next || SolarFlare.Active)
+            return;
+        foreach (var rock in SpaceAsteroid.Live)
+        {
+            var p = rock.transform.position;
+            if (p.y > Camera.DownLimit + 2.5f && p.y < Camera.UpLimit - 1.5f)
+            {
+                SolarFlare.Begin(p.x > 0 ? 1 : -1);
+                next = now + R(11, 15) * rest;
+                return;
+            }
+        }
+    }
+
+    // Thicket Lurkers ambush from the trees: now and then in the open valley, often in the forest.
+    void Lurkers(float now, float rest, bool forest)
+    {
+        if (now < next)
+            return;
+        next = now + (forest ? R(6, 9) : R(16, 24)) * rest;
+        int alive = 0;
+        foreach (var enemy in AEnemy.Live)
+            if (enemy is ThicketLurker)
+                alive++;
+        if (alive >= (forest ? 2 : 1))
+            return;
+        if (valley == null)
+            valley = FindAnyObjectByType<PSXGrassField>();
+        ThicketLurker.Ambush(valley, random);
+    }
 
     static int CountRising()
     {
