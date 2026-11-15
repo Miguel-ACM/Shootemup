@@ -6,7 +6,7 @@ public sealed class SkimfireTitle : MonoBehaviour
     [SerializeField] Texture2D wordmark = null;
 
     const float FadeSeconds = .24f;
-    const float PixelScale = 4f;
+    const float WordmarkWidth = 728f;
 
     RawImage artwork;
     RectTransform canvas;
@@ -41,7 +41,7 @@ public sealed class SkimfireTitle : MonoBehaviour
         if (nextFit > 0 && nextFit != fit)
         {
             fit = nextFit;
-            artwork.rectTransform.sizeDelta = new Vector2(wordmark.width, wordmark.height) * (PixelScale * fit);
+            artwork.rectTransform.sizeDelta = new Vector2(WordmarkWidth, WordmarkWidth * wordmark.height / wordmark.width) * fit;
         }
 
         if (artwork.color.a >= 1 || CloudTransition.Busy)
