@@ -28,6 +28,9 @@ public sealed class CargoEscort : MonoBehaviour
         new Vector3(.34f, .33f, -.36f), new Vector3(.34f, -.33f, -.36f) };
     static readonly string[] rarityNames = { "common", "rare", "epic", "legendary" };
     Vector3 velocity;
+    // Campaign cargo cannot be shot: it shatters the moment the pilot takes a hit.
+    // The Cold Delivery simulator trial keeps its three-hit crate that bullets wear down.
+    float pilotHealth = -1;
     float grace, claimCharge, qualityFlash;
     bool finished, trial, claimArmed;
 
@@ -102,6 +105,8 @@ public sealed class CargoEscort : MonoBehaviour
             seal.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CargoSeal();
             seal.AddComponent<MeshRenderer>().sharedMaterial = CombatMaterials.Fleet;
             seals[i] = seal.transform;
+            // Only the trial's crate counts hits; campaign cargo has no seals to lose.
+            seal.SetActive(trial);
         }
         outline = Border("Cargo rarity outline", .045f);
         outline.loop = true;
@@ -149,6 +154,15 @@ public sealed class CargoEscort : MonoBehaviour
             return;
         }
         grace = Mathf.Max(0, grace - dt);
+        if (!trial)
+        {
+            if (pilotHealth >= 0 && ship.health < pilotHealth)
+            {
+                Shatter();
+                return;
+            }
+            pilotHealth = ship.health;
+        }
         var target = FollowTarget(ship.transform.position);
         transform.position = Vector3.SmoothDamp(transform.position, target, ref velocity, FollowSmoothing, GameRules.playerMoveSpeed * FollowSpeed, dt);
         hull.localRotation = Quaternion.Euler(-14, Mathf.Sin(Time.time * 2) * 10, Mathf.Clamp(-velocity.x * 3, -18, 18));
@@ -167,7 +181,7 @@ public sealed class CargoEscort : MonoBehaviour
     void OnTriggerStay2D(Collider2D other) => Touch(other);
     void Touch(Collider2D other)
     {
-        if (finished || grace > 0 || !GameClock.ActivePlay)
+        if (finished || grace > 0 || !GameClock.ActivePlay || !trial)
             return;
         var bullet = other.GetComponent<AEnemyBullet>();
         if (bullet == null || bullet is PulseLaser)
@@ -196,6 +210,20 @@ public sealed class CargoEscort : MonoBehaviour
             Destroy(gameObject);
             if (FlightTrials.EscortsCargo) GameOverState.Show();
         }
+    }
+
+    // The pilot was hit: the crate breaks open and its cargo is lost.
+    void Shatter()
+    {
+        if (finished)
+            return;
+        finished = true;
+        contact.enabled = false;
+        collect?.Disable();
+        PSXImpactEffects.Burst(transform.position, new Color(.95f, .62f, .3f));
+        PSXImpactEffects.Explosion(transform.position, .65f);
+        ItemSound.Play("shatter", .15f);
+        Destroy(gameObject);
     }
 
     public bool FinishWave()
