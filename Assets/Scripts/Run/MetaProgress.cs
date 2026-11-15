@@ -13,8 +13,9 @@ public static partial class MetaProgress
     // The hangar counter shows four digits.
     public const int MaxCoins = 9999;
     // Fifty easy-to-read items for variety from the first run (Miguel, 9 November 2026):
-    // weapons, secondary fire, companions, actives and plain passives. Achievement rewards
-    // and simulator blueprints stay locked; the rest comes from the outfitter.
+    // weapons, secondary fire, companions, actives and plain passives, plus three legendaries
+    // (15 November 2026) so legendary cargo and rewards can deliver one from the first run.
+    // Achievement rewards and simulator blueprints stay locked; the rest comes from the outfitter.
     static readonly string[] startingPool =
     {
         // The original first pool.
@@ -30,12 +31,14 @@ public static partial class MetaProgress
         "ClockworkSpring", "SteelWashers", "RollerBearings", "LuckyPenny", "ProteinSupplement", "QualityGlasses", "Lighter",
         "GasolineLeak", "FocusingLens", "BallBearing", "RubberBand", "EarlyRise", "EnergyCore", "ReserveCell", "Capacitor",
         "MagnifyingGlass", "SalvageConverter", "RabbitsFoot", "FocusTime", "EmpPulse",
+        // Legendaries that read at a glance.
+        "Lighthouse", "Hive", "Doppelganger",
     };
 
     [Serializable]
     sealed class SaveData
     {
-        public int version = 5;
+        public int version = 6;
         public int lastFrame;
         public RunDifficulty difficulty = RunDifficulty.Normal;
         public string pin;
@@ -234,6 +237,15 @@ public static partial class MetaProgress
         {
             // The starting pool grew to fifty; existing saves receive the new starters too.
             data.version = 5;
+            foreach (var key in startingPool)
+                if (!data.unlocked.Contains(key))
+                    data.unlocked.Add(key);
+            Save();
+        }
+        if (data.version < 6)
+        {
+            // Three starting legendaries (15 November 2026) reach existing saves too.
+            data.version = 6;
             foreach (var key in startingPool)
                 if (!data.unlocked.Contains(key))
                     data.unlocked.Add(key);
