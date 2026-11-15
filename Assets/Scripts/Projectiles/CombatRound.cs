@@ -469,6 +469,8 @@ public abstract class CombatRound : AEnemyBullet
             Program();
         if (!ended && !(this is PulseLaser) && PocketWind.Current != null)
             transform.position += PocketWind.Velocity(transform.position) * Time.deltaTime;
+        if (!ended && !(this is PulseLaser) && EventHorizon.Active)
+            transform.position += EventHorizon.Bend(transform.position, lastVelocity, Serial) * Time.deltaTime;
         if (!ended && !(this is PulseLaser) && collision.enabled && CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _))
         {
             Release();
