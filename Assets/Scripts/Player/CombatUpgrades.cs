@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public enum UpgradeKind
 {
     Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice, RelaySwitch, LiveWire,
-    TapeMeasure, BrassKnuckles, Matchbox, Compost
+    TapeMeasure, BrassKnuckles, Matchbox, Compost, PiggyBank
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -19,7 +19,7 @@ public sealed class CombatUpgrades : MonoBehaviour
     ShipLoadout loadout;
     readonly float[] relayCharge = new float[2], relayBurst = new float[2];
     float capacitor, battery, reserve, focusUntil;
-    int volleys, focus, coins, blocks;
+    int volleys, focus, coins, blocks, arrivedStage;
     AEnemy focused;
     public bool ReturnThisVolley
     {
@@ -36,6 +36,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         Current = this;
         ship = GetComponent<Shipcontroller>();
         loadout = GetComponent<ShipLoadout>();
+        arrivedStage = LevelRun.Stage;
         _ = GameInput.Actions;
     }
 
@@ -84,6 +85,12 @@ public sealed class CombatUpgrades : MonoBehaviour
     {
         if (GameRules.playerDisabled)
             return;
+        // A new district has opened once its clouds have cleared and flight resumes.
+        if (LevelRun.Stage != arrivedStage && GameClock.ActivePlay)
+        {
+            arrivedStage = LevelRun.Stage;
+            PiggyBank.Pay(ship, Count(UpgradeKind.PiggyBank));
+        }
         if (loadout != null && Count(UpgradeKind.RelaySwitch) > 0 && GameClock.ActivePlay)
             UpdateRelay();
         if (Count(UpgradeKind.Capacitor) > 0 && !GameInput.Snapshot.Primary && !GameInput.Snapshot.Secondary)
