@@ -70,6 +70,9 @@ public static class SoundCueCatalog
         new Cue("eventEruption", "Volcano eruption", Events, "Sounds/Events/VolcanoBlast", .14f, 1, .25f),
         new Cue("eventCandy", "Candy bounce", Events, "Sounds/Events/CandyBounce", .07f, 1, .05f),
         new Cue("eventMineArm", "Mine arming", Events, "Sounds/Events/MineArm", .09f, 1, .15f),
+        // The simulator transition reuses the laser charge and release, pitched up, until it has its own sounds.
+        new Cue("simJackIn", "Simulator jack-in", Events, "Sounds/Beam/charge", .06f, 1.7f, .5f),
+        new Cue("simRezIn", "Simulator rez-in", Events, "Sounds/Beam/release", .07f, 1.35f, .5f),
         new Cue("bossPhaseBreak", "Boss phase break", Events, "Sounds/Events/PhaseBreak", .11f, 1, .5f)
     };
 

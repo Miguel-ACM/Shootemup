@@ -73,7 +73,41 @@ public sealed class CloudTransition : MonoBehaviour
             graphic.Configure(artwork, i);
         }
         cloudLayer = viewport;
+        // The simulator's curtain shares the playfield mask and the same trip timing.
+        var sim = new GameObject("Simulator curtain", typeof(RectTransform), typeof(CanvasRenderer), typeof(SimulatorCurtainGraphic));
+        sim.transform.SetParent(clip, false);
+        var simRect = sim.GetComponent<RectTransform>();
+        simRect.anchorMin = Vector2.zero;
+        simRect.anchorMax = Vector2.one;
+        simRect.offsetMin = simRect.offsetMax = Vector2.zero;
+        cyber = new Material(Resources.Load<Shader>("SimulatorCurtain")) { name = "Simulator curtain" };
+        cyber.SetFloat("_Aspect", 405f / 720f);
+        var simGraphic = sim.GetComponent<SimulatorCurtainGraphic>();
+        simGraphic.material = cyber;
+        simGraphic.raycastTarget = false;
+        simulatorLayer = sim;
+        sim.SetActive(false);
         canvas.enabled = false;
+    }
+
+    // SIMULATOR trips (Miguel, 15 November 2026): the playfield is jacked into a simulation instead
+    // of passing through clouds. Same cover, hold and 2.1 s reveal as the clouds.
+    GameObject simulatorLayer;
+    Material cyber;
+    bool simulated;
+    const float JackSeconds = .9f;
+
+    IEnumerator Jack(bool cover)
+    {
+        cyber.SetFloat("_Mode", cover ? 0 : 1);
+        float duration = cover ? JackSeconds : RevealSeconds;
+        for (float t = 0; t < duration; t += Mathf.Min(Time.unscaledDeltaTime, MaxFlowStep))
+        {
+            float k = t / duration;
+            cyber.SetFloat("_Cover", cover ? Mathf.SmoothStep(0, 1, k) : 1 - k);
+            yield return null;
+        }
+        cyber.SetFloat("_Cover", cover ? 1 : 0);
     }
 
     // Some trips (the title into the hangar, which shows the same tunnel) cut straight across without the clouds.
@@ -238,6 +272,13 @@ public sealed class CloudTransition : MonoBehaviour
         Time.timeScale = 1;
         PositionClouds();
         cloudLayer.SetActive(clouds);
+        simulated = clouds && FlightTrials.Active != null;
+        foreach (var bank in banks)
+            bank.gameObject.SetActive(!simulated);
+        simulatorLayer.SetActive(simulated);
+        cyber.SetFloat("_Cover", 0);
+        if (simulated)
+            DistrictHazards.Play("simJackIn");
         canvas.enabled = true;
         var previousPriority = Application.backgroundLoadingPriority;
         Application.backgroundLoadingPriority = ThreadPriority.Low;
@@ -247,7 +288,7 @@ public sealed class CloudTransition : MonoBehaviour
             if (scene != null && scenePreparation == null)
                 scenePreparation = StartCoroutine(PreloadScene(scene));
             if (clouds)
-                yield return Move(true);
+                yield return simulated ? Jack(true) : Move(true);
             yield return preparing;
             if (scene != null)
             {
@@ -306,12 +347,18 @@ public sealed class CloudTransition : MonoBehaviour
                 if (!HangarHub.Active)
                     LevelReveal.Show();
             }
+            if (simulated)
+                DistrictHazards.Play("simRezIn");
             if (clouds)
-                yield return Move(false);
+                yield return simulated ? Jack(false) : Move(false);
         }
         finally
         {
             cloudLayer.SetActive(true);
+            foreach (var bank in banks)
+                bank.gameObject.SetActive(true);
+            simulatorLayer.SetActive(false);
+            simulated = false;
             clouds = true;
             Application.backgroundLoadingPriority = previousPriority;
             canvas.enabled = false;
@@ -362,6 +409,8 @@ public sealed class CloudTransition : MonoBehaviour
             return;
         flowElapsed += Mathf.Min(Time.unscaledDeltaTime, MaxFlowStep);
         PositionClouds();
+        if (simulated)
+            cyber.SetFloat("_Clock", flowElapsed);
     }
 
     void PositionClouds()
@@ -405,6 +454,24 @@ public sealed class CloudTransition : MonoBehaviour
         SceneManager.sceneLoaded -= SceneLoaded;
         if (instance == this)
             instance = null;
+    }
+}
+
+/// <summary>One quad over the playfield; the Simulator Curtain shader draws the whole effect.</summary>
+[ExecuteAlways]
+public sealed class SimulatorCurtainGraphic : MaskableGraphic
+{
+    protected override void OnPopulateMesh(VertexHelper vh)
+    {
+        vh.Clear();
+        var r = rectTransform.rect;
+        var tint = (Color32)color;
+        vh.AddVert(new Vector3(r.xMin, r.yMin), tint, new Vector2(0, 0));
+        vh.AddVert(new Vector3(r.xMin, r.yMax), tint, new Vector2(0, 1));
+        vh.AddVert(new Vector3(r.xMax, r.yMax), tint, new Vector2(1, 1));
+        vh.AddVert(new Vector3(r.xMax, r.yMin), tint, new Vector2(1, 0));
+        vh.AddTriangle(0, 1, 2);
+        vh.AddTriangle(0, 2, 3);
     }
 }
 

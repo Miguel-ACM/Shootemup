@@ -445,6 +445,119 @@ public static class RenderDistrictConditions
             EditorApplication.Exit(code);
     }
 
+    // Batch: -executeMethod RenderDistrictConditions.SimulatorCurtain
+    // The simulator's cybernetic transition over the Plains valley: jacking in, fully covered,
+    // dissolving and the lingering wireframe.
+    public static void SimulatorCurtain()
+    {
+        int code = 0;
+        try
+        {
+            Directory.CreateDirectory(Folder);
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Shader.SetGlobalVector("_PSXSnapResolution", new Vector4(Width, Height, 0, 0));
+            DistrictConditions.Forced = DistrictCondition.Ordinary;
+            LevelRun.Reset(LevelId.Fields, 424242);
+            var layout = new PSXValleyLayout(424242);
+            var landscape = Resources.Load<Material>("PSXValley");
+            var foliage = new Material(Resources.Load<Shader>("PSXValleyFoliage")) { mainTexture = PSXValleyFoliage.CreateAtlas() };
+            var section = new GameObject("Valley").transform;
+            section.localPosition = new Vector3(0, -12, 88);
+            Layer(section, PSXValleyGeometry.Build(-12, 24, 1, layout, 424242), landscape);
+            Layer(section, PSXValleyFoliage.Build(-12, 24, layout), foliage);
+            var combat = Combatants(LevelProjectilePalette.Accent(LevelId.Fields), 0);
+            var camera = Camera(0, 8.85f);
+            var canvas = new GameObject("Curtain canvas").AddComponent<Canvas>();
+            var curtain = new GameObject("Simulator curtain", typeof(RectTransform), typeof(CanvasRenderer), typeof(SimulatorCurtainGraphic));
+            curtain.transform.SetParent(canvas.transform, false);
+            // A fixed size in canvas units: a stretched rect is laid out before the batch-mode
+            // canvas root has its size, which leaves an empty quad.
+            var rect = curtain.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(720f * Width / Height, 720);
+            var material = new Material(Resources.Load<Shader>("SimulatorCurtain"));
+            material.SetFloat("_Aspect", Width / (float)Height);
+            curtain.GetComponent<SimulatorCurtainGraphic>().material = material;
+            var poses = new[] { (0f, .45f, .8f), (0f, 1f, 2.3f), (1f, .62f, 3.4f), (1f, .12f, 4.4f) };
+            var cells = new Texture2D[1, poses.Length];
+            for (int i = 0; i < poses.Length; i++)
+            {
+                material.SetFloat("_Mode", poses[i].Item1);
+                material.SetFloat("_Cover", poses[i].Item2);
+                material.SetFloat("_Clock", poses[i].Item3);
+                cells[0, i] = CaptureOverlay(camera, canvas);
+            }
+            Save("SimulatorCurtain.png", cells);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+            code = 1;
+        }
+        DistrictConditions.Forced = null;
+        if (Application.isBatchMode)
+            EditorApplication.Exit(code);
+    }
+
+    // Batch: -executeMethod RenderDistrictConditions.PoisonCloud
+    // Compost's gas clouds over the valley: a fresh small heap, a rotten heap and one fading out.
+    public static void PoisonCloud()
+    {
+        int code = 0;
+        try
+        {
+            Directory.CreateDirectory(Folder);
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Shader.SetGlobalVector("_PSXSnapResolution", new Vector4(Width, Height, 0, 0));
+            DistrictConditions.Forced = DistrictCondition.Ordinary;
+            LevelRun.Reset(LevelId.Fields, 424242);
+            var layout = new PSXValleyLayout(424242);
+            var section = new GameObject("Valley").transform;
+            section.localPosition = new Vector3(0, -12, 88);
+            Layer(section, PSXValleyGeometry.Build(-12, 24, 1, layout, 424242), Resources.Load<Material>("PSXValley"));
+            var combat = Combatants(LevelProjectilePalette.Accent(LevelId.Fields), 0);
+            var camera = Camera(0, 8.85f);
+            var material = new Material(Resources.Load<Shader>("ToxicCloud"));
+            var quad = new Mesh();
+            quad.vertices = new[] { new Vector3(-.5f, -.5f), new Vector3(-.5f, .5f), new Vector3(.5f, .5f), new Vector3(.5f, -.5f) };
+            quad.triangles = new[] { 0, 1, 2, 0, 2, 3 };
+            quad.RecalculateBounds();
+            var cells = new Texture2D[1, 2];
+            for (int frame = 0; frame < 2; frame++)
+            {
+                var clouds = new GameObject("Clouds");
+                foreach (var (at, radius, life, strength, seed) in new[] { (new Vector2(-1.8f, 4.2f), .6f, 1f, .9f, 3f), (new Vector2(1.4f, 1.2f), .95f, 1f, .7f, 11f), (new Vector2(-1.2f, -3.2f), .95f, .45f, .15f, 23f) })
+                {
+                    var cloud = new GameObject("Cloud");
+                    cloud.transform.SetParent(clouds.transform, false);
+                    cloud.transform.localPosition = new Vector3(at.x, at.y, 0);
+                    cloud.transform.localScale = Vector3.one * radius * 2.6f;
+                    cloud.AddComponent<MeshFilter>().sharedMesh = quad;
+                    var renderer = cloud.AddComponent<MeshRenderer>();
+                    renderer.sharedMaterial = material;
+                    renderer.sortingLayerName = "Enemy";
+                    renderer.sortingOrder = -6;
+                    var look = new MaterialPropertyBlock();
+                    look.SetFloat("_Life", life);
+                    look.SetFloat("_Strength", strength);
+                    look.SetFloat("_Seed", seed);
+                    look.SetFloat("_Clock", 2 + frame * 1.7f);
+                    renderer.SetPropertyBlock(look);
+                }
+                cells[0, frame] = Capture(camera);
+                UnityEngine.Object.DestroyImmediate(clouds);
+            }
+            Save("PoisonCloud.png", cells);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+            code = 1;
+        }
+        DistrictConditions.Forced = null;
+        if (Application.isBatchMode)
+            EditorApplication.Exit(code);
+    }
+
     // Overlay canvases never reach a camera: draw this one through the review camera instead.
     static Texture2D CaptureOverlay(UnityEngine.Camera camera, Canvas canvas)
     {
@@ -455,10 +568,16 @@ public static class RenderDistrictConditions
         canvas.worldCamera = camera;
         canvas.planeDistance = 5;
         canvas.scaleFactor = Height / 720f;
+        // In front of the scenery and every ship, as the real overlay is.
+        canvas.sortingLayerName = "Bullet";
+        canvas.sortingOrder = 500;
         camera.backgroundColor = new Color(.05f, .09f, .12f);
         // Lay the canvas out at the still's size before drawing it.
         var sizing = new RenderTexture(Width, Height, 24);
         camera.targetTexture = sizing;
+        Canvas.ForceUpdateCanvases();
+        foreach (var graphic in canvas.GetComponentsInChildren<UnityEngine.UI.Graphic>())
+            graphic.SetAllDirty();
         Canvas.ForceUpdateCanvases();
         var image = Capture(camera);
         sizing.Release();
