@@ -196,8 +196,9 @@ public static class VerifyDistrictConditions
         }
         report.Add("No modifier: " + none + " of 2000 districts");
         Check(LevelModifiers.For(LevelId.Void, 5, 6) == LevelModifier.None, "Void takes modifiers");
+        Check(LevelModifiers.For(LevelId.Fields, 3, 1) == LevelModifier.None, "Plains takes no level modifiers");
         LevelModifiers.Forced = LevelModifier.FastFire;
-        LevelRun.Reset(LevelId.Fields, 3);
+        LevelRun.Reset(LevelId.Snow, 3);
         float fast = LevelRun.EnemyShotSpeedScale;
         LevelModifiers.Forced = LevelModifier.None;
         Check(Mathf.Approximately(fast, LevelRun.EnemyShotSpeedScale * 1.2f), "FAST FIRE is not +20%");
@@ -220,7 +221,7 @@ public static class VerifyDistrictConditions
                 if (DistrictConditions.For(DistrictConditions.Home(condition), seed) == condition)
                     hits++;
             report.Add("Event " + condition + ": " + hits + " of 1000 seeds");
-            Check(hits > 250 && hits < 700, "Event share off: " + condition);
+            Check(hits > 180 && hits < 700, "Event share off: " + condition);
         }
 
         int ordinaryShips = 0, rushShips = 0;
@@ -304,6 +305,24 @@ public static class VerifyDistrictConditions
         Check(EncounterChoice.Accent(EncounterKind.Challenge) == AItem.GetRarityColor("epic"), "The hunt hexagon should wear its promised rarity");
         EncounterChoice.ChallengeRarity = null;
 
+        // FOREST: no plant blocks either trail, and both trails stay apart and on screen.
+        var forest = new PSXValleyLayout(424242, true);
+        Check(forest.Forest && forest.Plants.Count > 300, "Forest should be dense: " + forest.Plants.Count + " plants");
+        foreach (var plant in forest.Plants)
+            for (int trail = 0; trail < PSXValleyLayout.Trails; trail++)
+                Check(Mathf.Abs(plant.x - forest.TrailX(trail, plant.y)) >= plant.radius + .6f, "A tree stands on a forest trail");
+        for (float y = -24; y < 72; y += .5f)
+            Check(forest.TrailX(1, y) - forest.TrailX(0, y) > 2 && Mathf.Abs(forest.TrailX(0, y)) < 4.4f && Mathf.Abs(forest.TrailX(1, y)) < 4.4f, "Forest trails cross or leave the screen at " + y);
+        report.Add("Forest: " + forest.Plants.Count + " plants");
+        Check(EnemyCatalog.Resolve(nameof(ThicketLurker)) == typeof(ThicketLurker) && IndustrialMeshFactory.CombatHull((int)CombatHullId.ThicketLurker) != null, "Thicket Lurker is not registered");
+
+        // SOLAR FLARE: an asteroid shades the lane away from the sun, and only that lane.
+        var rock = SpaceAsteroid.Spawn(0, 1, 7);
+        rock.transform.position = new Vector3(0, 0, 2);
+        Check(rock.Shades(new Vector3(2, .3f, 0), -1) && !rock.Shades(new Vector3(-2, .3f, 0), -1) && !rock.Shades(new Vector3(2, 1.5f, 0), -1), "Asteroid shadow falls the wrong way");
+        Check(rock.Shades(new Vector3(-2, 0, 0), 1) && !rock.Shades(new Vector3(2, 0, 0), 1), "Asteroid shadow ignores the sun's side");
+        UnityEngine.Object.DestroyImmediate(rock.gameObject);
+
         LevelRun.Reset(LevelId.Thunder, 3);
         LightningStrike.Begin(0, 7);
         SpearStrike.Begin(1);
@@ -330,8 +349,10 @@ public static class VerifyDistrictConditions
             }
         foreach (var pair in counts.OrderBy(p => p.Key))
             report.Add("Seeds 1-3000: " + pair.Key + " " + pair.Value);
-        Check(counts.TryGetValue(DistrictCondition.Dusk, out int dusk) && dusk > 800 && dusk < 1200, "Dusk share off: " + dusk);
-        Check(counts.TryGetValue(DistrictCondition.Night, out int night) && night > 800 && night < 1200, "Night share off: " + night);
+        // Plains: about 30% day, 23% dusk, 22% night and 25% forest.
+        Check(counts.TryGetValue(DistrictCondition.Dusk, out int dusk) && dusk > 550 && dusk < 850, "Dusk share off: " + dusk);
+        Check(counts.TryGetValue(DistrictCondition.Night, out int night) && night > 520 && night < 820, "Night share off: " + night);
+        Check(counts.TryGetValue(DistrictCondition.Forest, out int woods) && woods > 600 && woods < 900, "Forest share off: " + woods);
         Check(counts.TryGetValue(DistrictCondition.Blizzard, out int blizzard) && blizzard > 1300 && blizzard < 1700, "Blizzard share off: " + blizzard);
         Check(counts.TryGetValue(DistrictCondition.Sandstorm, out int sand) && sand > 1300 && sand < 1700, "Sandstorm share off: " + sand);
     }

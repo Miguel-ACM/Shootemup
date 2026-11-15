@@ -1,4 +1,4 @@
-Fields: 50 parts, 300 placements
+Fields: 53 parts, 318 placements
 Tunnel: 29 parts, 174 placements
 Snow: 43 parts, 258 placements
 Note: Thunder / Kite cloud shoulder skips variant 5 on side -1
@@ -24,24 +24,25 @@ Desert/Ordinary: 25 distinct parts, 0 of 108 its own
 Desert/Sandstorm: 26 distinct parts, 40 of 108 its own
 Underwater/Ordinary: 26 distinct parts, 0 of 108 its own
 Underwater/Minefield: 30 distinct parts, 39 of 148 its own
-Seeds 1-3000: Ordinary 4017
-Seeds 1-3000: Dusk 1012
-Seeds 1-3000: Night 943
+Seeds 1-3000: Ordinary 3894
+Seeds 1-3000: Dusk 712
+Seeds 1-3000: Night 649
 Seeds 1-3000: Blizzard 1500
 Seeds 1-3000: Sandstorm 1528
+Seeds 1-3000: Forest 717
 Elites per wave Easy / None: 0,11
-Elites per wave Easy / Elites: 0,40
+Elites per wave Easy / Elites: 0,31
 Elites per wave Normal / None: 0,18
-Elites per wave Normal / Elites: 0,58
+Elites per wave Normal / Elites: 0,47
 Elites per wave Hard / None: 0,24
-Elites per wave Hard / Elites: 0,79
+Elites per wave Hard / Elites: 0,64
 Modifier Elites: 405 of 2000 districts
 Modifier Coins: 436 of 2000 districts
 Modifier FastFire: 475 of 2000 districts
 No modifier: 957 of 2000 districts
 Salvage rain coins by stage: 16, 23, 30, 37, 44, 51, 58
-Event Dusk: 339 of 1000 seeds
-Event Night: 300 of 1000 seeds
+Event Dusk: 236 of 1000 seeds
+Event Night: 208 of 1000 seeds
 Event Blizzard: 523 of 1000 seeds
 Event Sandstorm: 528 of 1000 seeds
 Event Thunderstorm: 317 of 1000 seeds
@@ -51,6 +52,9 @@ Event CandyRain: 355 of 1000 seeds
 Event Eruption: 360 of 1000 seeds
 Event SpearRain: 355 of 1000 seeds
 Event RushHour: 381 of 1000 seeds
+Event Forest: 233 of 1000 seeds
+Event SolarFlare: 341 of 1000 seeds
 City ships, ordinary vs rush hour: 523 vs 1024
 Deep passage layouts: 9, 2, 7, 6, 10, 5, 1, 8, 4, 3
+Forest: 367 plants
 PASS

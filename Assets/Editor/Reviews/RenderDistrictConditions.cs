@@ -213,6 +213,114 @@ public static class RenderDistrictConditions
             EditorApplication.Exit(code);
     }
 
+    // Batch: -executeMethod RenderDistrictConditions.ForestAndFlare
+    // Two stretches of the FOREST valley, the Thicket Lurker close up, and a SOLAR FLARE posed
+    // in its warning (shadows up) and mid-sweep.
+    public static void ForestAndFlare()
+    {
+        int code = 0;
+        try
+        {
+            Directory.CreateDirectory(Folder);
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Shader.SetGlobalVector("_PSXSnapResolution", new Vector4(Width, Height, 0, 0));
+            const int Seed = 424242;
+            var cells = new Texture2D[1, 5];
+            DistrictConditions.Forced = DistrictCondition.Forest;
+            LevelRun.Reset(LevelId.Fields, Seed);
+            var layout = new PSXValleyLayout(Seed, true);
+            var root = new GameObject("Forest review");
+            var landscape = Resources.Load<Material>("PSXValley");
+            var foliage = new Material(Resources.Load<Shader>("PSXValleyFoliage")) { mainTexture = PSXValleyFoliage.CreateAtlas() };
+            for (int i = 0; i < 4; i++)
+            {
+                float origin = (i - 1) * 24;
+                var section = new GameObject("Forest section " + i).transform;
+                section.SetParent(root.transform, false);
+                section.localPosition = new Vector3(0, origin, 88);
+                Layer(section, PSXValleyGeometry.BuildForest(origin, 24, 1, layout, Seed), landscape);
+                Layer(section, PSXValleyFoliage.Build(origin, 24, layout), foliage);
+            }
+            var combat = Combatants(LevelProjectilePalette.Accent(LevelId.Fields), 0);
+            var camera = Camera(0, 8.85f);
+            foreach (var (y, column) in new[] { (6f, 0), (40f, 1) })
+            {
+                camera.transform.position = new Vector3(0, y, -20);
+                combat.transform.position = new Vector3(0, y, 0);
+                cells[0, column] = Capture(camera);
+            }
+            root.SetActive(false);
+            combat.SetActive(false);
+
+            var lurker = new GameObject("Thicket lurker");
+            lurker.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.ThicketLurkerMesh();
+            var hull = lurker.AddComponent<MeshRenderer>();
+            hull.sharedMaterial = CombatMaterials.Fleet;
+            hull.sortingLayerName = "Enemy";
+            lurker.transform.rotation = Quaternion.Euler(-20, 0, 0);
+            camera.transform.position = new Vector3(0, 0, -20);
+            camera.orthographicSize = 1.1f;
+            camera.backgroundColor = new Color(.25f, .33f, .19f);
+            cells[0, 2] = Capture(camera);
+            lurker.SetActive(false);
+            camera.gameObject.SetActive(false);
+
+            DistrictConditions.Forced = DistrictCondition.SolarFlare;
+            LevelRun.Reset(LevelId.Space, Seed);
+            var space = Environment(LevelId.Space);
+            foreach (var behaviour in space.GetComponentsInChildren<MonoBehaviour>())
+            {
+                if (behaviour is LevelEnvironment)
+                    continue;
+                var start = behaviour.GetType().GetMethod("Start", Hidden);
+                if (start != null && start.GetParameters().Length == 0)
+                    start.Invoke(behaviour, null);
+            }
+            var rocks = new[] { SpaceAsteroid.Spawn(-1.6f, 1, 3), SpaceAsteroid.Spawn(1.2f, .8f, 4) };
+            rocks[0].transform.position = new Vector3(-1.6f, 2.2f, 2);
+            rocks[1].transform.position = new Vector3(1.2f, -3.5f, 2);
+            // Edit mode never calls OnEnable, so register the rocks the way play mode does.
+            foreach (var rock in rocks)
+                if (!SpaceAsteroid.Live.Contains(rock))
+                    SpaceAsteroid.Live.Add(rock);
+            var spaceCombat = Combatants(LevelProjectilePalette.Accent(LevelId.Space), -.6f);
+            var spaceCamera = Camera(-.6f, 8.85f);
+            foreach (var (age, column) in new[] { (1.7f, 3), (2.45f, 4) })
+            {
+                SolarFlare.Begin(-1);
+                var flare = UnityEngine.Object.FindAnyObjectByType<SolarFlare>();
+                typeof(SolarFlare).GetField("age", Hidden).SetValue(flare, age - .02f);
+                typeof(SolarFlare).GetField("struck", Hidden).SetValue(flare, true);
+                // Pose the flare at that moment without the hazard window: draw its lines directly.
+                float warm = Mathf.Clamp01(age / 2f);
+                var lines = flare.GetComponentsInChildren<LineRenderer>();
+                float bandX = age < 2 ? global::Camera.LeftLimit : Mathf.Lerp(global::Camera.LeftLimit, global::Camera.RightLimit, (age - 2) / 1.05f);
+                foreach (var (line, x, colour) in new[] { (lines[0], global::Camera.LeftLimit, new Color(1, .88f, .58f, .9f * warm)), (lines[1], bandX, new Color(1, .95f, .8f, age < 2 ? 0 : 1)) })
+                {
+                    line.SetPosition(0, new Vector3(x, 9, -1));
+                    line.SetPosition(1, new Vector3(x, -10, -1));
+                    line.startColor = line.endColor = colour;
+                }
+                typeof(SolarFlare).GetMethod("UpdateShadows", Hidden).Invoke(flare, new object[] { global::Camera.RightLimit, .7f });
+                var sunlight = (SpriteRenderer)typeof(SolarFlare).GetField("wash", Hidden).GetValue(flare);
+                sunlight.transform.position = new Vector3(0, -.6f, 3);
+                sunlight.transform.localScale = new Vector3(12, 20, 1);
+                sunlight.color = new Color(1, .82f, .5f, age < 2 ? .18f : .32f);
+                cells[0, column] = Capture(spaceCamera);
+                UnityEngine.Object.DestroyImmediate(flare.gameObject);
+            }
+            Save("ForestAndFlare.png", cells);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+            code = 1;
+        }
+        DistrictConditions.Forced = null;
+        if (Application.isBatchMode)
+            EditorApplication.Exit(code);
+    }
+
     // Batch: -executeMethod RenderDistrictConditions.Elites
     public static void Elites()
     {
