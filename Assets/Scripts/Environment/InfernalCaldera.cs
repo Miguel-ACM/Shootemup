@@ -38,8 +38,8 @@ public sealed class InfernalCaldera : MonoBehaviour
             {
                 hazard.Eruption = true;
                 Glow(vent);
-                // Two more volcanoes rise from the far side of every shelf.
-                for (int extra = 0; extra < 2; extra++)
+                // One more volcano rises from the far side of every shelf.
+                for (int extra = 0; extra < 1; extra++)
                 {
                     var site = new Vector3(-side * (2.1f + extra * 1.2f), (extra == 0 ? -5.5f : 5f) + craterSite.y * .2f, craterSite.z - .015f);
                     var added = Add("Erupting crater", IndustrialMeshFactory.Volcano(), basalt, root, site, -39);

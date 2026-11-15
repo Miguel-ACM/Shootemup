@@ -112,8 +112,8 @@ public static class PlainsConditionScenery
             }
         }
 
-        // Glints on the water: cold moonlight at night, the low sun's gold at dusk.
-        int glints = night ? 46 : 64;
+        // Moonlight glints on the water at night only; Miguel did not want the river sparkling at dusk.
+        int glints = night ? 46 : 0;
         for (int i = 0; i < glints; i++)
         {
             float y = R(origin, origin + length);

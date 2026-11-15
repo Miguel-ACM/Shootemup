@@ -42,7 +42,7 @@ public sealed class DistrictHazards : MonoBehaviour
         float now = Time.time;
         if (next < 0)
         {
-            next = now + 2.2f;
+            next = now + 3.5f;
             return;
         }
         if (now < next)
@@ -50,23 +50,24 @@ public sealed class DistrictHazards : MonoBehaviour
         float rest = Difficulty.Easy ? 1.35f : Difficulty.Hard ? .8f : 1;
         switch (condition)
         {
+            // Spaced well apart (Miguel found the first pass far too busy, 15 November 2026).
             case DistrictCondition.Thunderstorm:
                 Lightning();
-                next = now + R(2.6f, 4.2f) * rest;
+                next = now + R(4.8f, 7.2f) * rest;
                 break;
             case DistrictCondition.Minefield:
-                if (CountRising() < 4)
+                if (CountRising() < 2)
                     DepthMine.Rise(new Vector3(R(Camera.LeftLimit + .8f, Camera.RightLimit - .8f), Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, R(.42f, .74f)), 1));
-                next = now + R(2.4f, 3.8f) * rest;
+                next = now + R(4.6f, 6.8f) * rest;
                 break;
             case DistrictCondition.CandyRain:
-                if (CandyDrop.Count < 5)
+                if (CandyDrop.Count < 3)
                     CandyDrop.Drop(R(Camera.LeftLimit + .6f, Camera.RightLimit - .6f), random.Next(5));
-                next = now + R(2.8f, 4.4f) * rest;
+                next = now + R(5.2f, 7.6f) * rest;
                 break;
             case DistrictCondition.SpearRain:
                 Spears();
-                next = now + R(3.0f, 4.6f) * rest;
+                next = now + R(5.8f, 8.4f) * rest;
                 break;
             default:
                 next = now + 5;
@@ -91,7 +92,7 @@ public sealed class DistrictHazards : MonoBehaviour
         var pilot = CombatVisuals.Player;
         float x = pilot != null && random.NextDouble() < .6 ? pilot.position.x + R(-.6f, .6f) : R(Camera.LeftLimit + .5f, Camera.RightLimit - .5f);
         LightningStrike.Begin(Mathf.Clamp(x, Camera.LeftLimit + .4f, Camera.RightLimit - .4f), random.Next());
-        if (!Difficulty.Easy && random.NextDouble() < .45)
+        if (Difficulty.Hard && random.NextDouble() < .3)
         {
             float other = x + (random.Next(2) == 0 ? -1 : 1) * R(1.8f, 3.2f);
             if (other > Camera.LeftLimit + .4f && other < Camera.RightLimit - .4f)
@@ -102,7 +103,7 @@ public sealed class DistrictHazards : MonoBehaviour
     // A volley of spears in spaced columns, one column over the pilot.
     void Spears()
     {
-        int count = Difficulty.Easy ? 2 : Difficulty.Hard ? 5 : 3 + random.Next(2);
+        int count = Difficulty.Easy ? 1 : Difficulty.Hard ? 3 : 2;
         var pilot = CombatVisuals.Player;
         float width = Camera.RightLimit - Camera.LeftLimit - 1;
         float offset = R(0, 1);

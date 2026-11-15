@@ -51,7 +51,8 @@ public static class DistrictConditions
         }
     }
 
-    const int EventOdds = 45;
+    // Events are a sometimes treat, not the usual district (lowered from 45%).
+    const int EventOdds = 35;
 
     public static LevelId Home(DistrictCondition condition)
     {

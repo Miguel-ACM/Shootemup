@@ -110,7 +110,7 @@ public sealed class VolcanicVent : MonoBehaviour
         }
         if (Time.time < next || Time.time < readyAt)
             return;
-        next = Time.time + (Eruption ? 6.4f + phase * .5f + ChargeSeconds : 9.5f + phase);
+        next = Time.time + (Eruption ? 9.5f + phase * .5f + ChargeSeconds : 9.5f + phase);
         rumbled = false;
         Eruptions++;
         var axis = Axis(p);
