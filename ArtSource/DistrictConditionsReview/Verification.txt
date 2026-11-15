@@ -1,4 +1,4 @@
-Fields: 53 parts, 318 placements
+Fields: 54 parts, 324 placements
 Tunnel: 29 parts, 174 placements
 Snow: 43 parts, 258 placements
 Note: Thunder / Kite cloud shoulder skips variant 5 on side -1
@@ -56,5 +56,5 @@ Event Forest: 233 of 1000 seeds
 Event SolarFlare: 341 of 1000 seeds
 City ships, ordinary vs rush hour: 523 vs 1024
 Deep passage layouts: 9, 2, 7, 6, 10, 5, 1, 8, 4, 3
-Forest: 367 plants
+Forest: 477 plants; tank routes -0,55 to 0,55, 3 crossings
 PASS

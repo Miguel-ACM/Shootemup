@@ -1,83 +1,72 @@
-using System.Collections.Generic;
 using UnityEngine;
 
-// SOLAR FLARE (Space): slow tumbling asteroids drift through the arena. Now and then the sun flares
-// from one edge: the edge glows for two seconds while each asteroid's shadow appears as a dark lane
-// stretching away from the sun, then a band of light sweeps across the screen. Being in the band
-// outside every shadow costs a hit. Hiding is the answer, not dodging.
+// SOLAR FLARE (Space): the sun sets one half of the arena on fire. First the outer edge of the
+// doomed half glows and breathes, embers rise there and the dividing line flickers down the middle;
+// then the fire erupts in a rolling chain of fireballs, fills that half up to the line, burns for a
+// moment and recedes. Anywhere in the burning half costs a hit; the other half is safe.
 public sealed class SolarFlare : MonoBehaviour
 {
-    const float Warning = 2f, Sweep = 1.05f, Afterglow = .45f, BandWidth = 1.9f;
-    static readonly Color Sun = new Color(1, .88f, .58f);
-    static Material light;
-    static Sprite square;
+    public const float Warning = 1.7f, Erupt = .35f, Burn = 2.1f, Recede = .55f;
+    static readonly Color Hot = new Color(1, .62f, .18f), Fireball = new Color(1, .8f, .55f);
+    static Material fireTemplate;
     int side;
-    float age;
-    bool struck;
-    LineRenderer edge, band;
-    SpriteRenderer wash;
-    readonly List<SpriteRenderer> shadows = new List<SpriteRenderer>();
-    readonly List<LineRenderer> lanes = new List<LineRenderer>();
+    float age, emberTimer, fireballAt;
+    bool erupted;
+    Material fire;
+    Mesh sheet;
+    LineRenderer divide;
 
-    public static bool Active { get; private set; }
+    static SolarFlare current;
+    // Unity's null check also covers a destroyed flare, in edit mode as well as play mode.
+    public static bool Active => current != null;
+    public int Side => side;
+    static float Line => (Camera.LeftLimit + Camera.RightLimit) * .5f;
+    static float Boundary => (Camera.RightLimit - Camera.LeftLimit) * .5f + 1;
+    float Outer => side < 0 ? Camera.LeftLimit : Camera.RightLimit;
+    bool Burning => age >= Warning && age < Warning + Erupt + Burn;
 
-    // side: -1 the sun is on the left, +1 on the right.
-    public static void Begin(int side)
+    // side: -1 the left half burns, +1 the right half.
+    public static SolarFlare Begin(int side)
     {
         var flare = new GameObject("Solar flare").AddComponent<SolarFlare>();
-        flare.side = side;
+        flare.side = side < 0 ? -1 : 1;
         flare.Build();
-        Active = true;
+        current = flare;
+        return flare;
     }
+
+    // True while the fire covers this point: past the line, on the burning side.
+    public bool Burns(Vector3 point) => age >= Warning + Erupt * .8f && Burning && (point.x - Line) * side > .1f;
 
     void Build()
     {
-        if (light == null)
-            light = new Material(Resources.Load<Shader>("HazardLine")) { name = "Solar flare light" };
-        if (square == null)
-            square = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), new Vector2(.5f, .5f), 4);
-        edge = Line(2.6f);
-        band = Line(BandWidth);
-        // Sunlight washes the arena warm, so the shadow lanes read dark even against black space.
-        wash = new GameObject("Flare sunlight").AddComponent<SpriteRenderer>();
-        wash.transform.SetParent(transform, false);
-        wash.sprite = square;
-        wash.sortingLayerName = "Enemy";
-        wash.sortingOrder = -8;
-        wash.color = Color.clear;
-        foreach (var asteroid in SpaceAsteroid.Live)
-        {
-            var shadow = new GameObject("Asteroid shadow").AddComponent<SpriteRenderer>();
-            shadow.transform.SetParent(transform, false);
-            shadow.sprite = square;
-            shadow.sortingLayerName = "Enemy";
-            shadow.sortingOrder = -6;
-            shadow.color = Color.clear;
-            shadows.Add(shadow);
-            // Pale edges mark each safe lane.
-            for (int edgeLine = 0; edgeLine < 2; edgeLine++)
-            {
-                var lane = CombatVisuals.Line(transform, Color.clear, .04f);
-                lane.useWorldSpace = true;
-                lane.sortingLayerName = "Enemy";
-                lane.sortingOrder = -5;
-                lane.positionCount = 2;
-                lanes.Add(lane);
-            }
-        }
+        if (fireTemplate == null)
+            fireTemplate = new Material(Resources.Load<Shader>("SolarFire")) { name = "Solar fire" };
+        fire = new Material(fireTemplate);
+        fire.SetFloat("_Boundary", Boundary);
+        // One sheet from beyond the outer edge to the dividing line, mirrored for the right half.
+        float top = Camera.UpLimit + 3, bottom = Camera.DownLimit - 3;
+        sheet = new Mesh { name = "Solar fire sheet" };
+        sheet.vertices = new[] { new Vector3(-.5f, bottom), new Vector3(Boundary + .5f, bottom), new Vector3(Boundary + .5f, top), new Vector3(-.5f, top) };
+        sheet.triangles = new[] { 0, 2, 1, 0, 3, 2 };
+        sheet.RecalculateBounds();
+        var wall = new GameObject("Fire wall").transform;
+        wall.SetParent(transform, false);
+        wall.position = new Vector3(Outer + side, 0, 1.5f);
+        wall.localScale = new Vector3(-side, 1, 1);
+        wall.gameObject.AddComponent<MeshFilter>().sharedMesh = sheet;
+        var renderer = wall.gameObject.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = fire;
+        // Under every ship and round: enemies in the fire stay readable.
+        renderer.sortingLayerName = "Enemy";
+        renderer.sortingOrder = -5;
+        divide = CombatVisuals.Line(transform, Color.clear, .08f);
+        divide.useWorldSpace = true;
+        divide.positionCount = 2;
+        divide.sortingLayerName = "Enemy";
+        divide.sortingOrder = -4;
         DistrictHazards.Play("eventRumble");
-    }
-
-    LineRenderer Line(float width)
-    {
-        var line = CombatVisuals.Line(transform, Color.clear, width);
-        line.useWorldSpace = true;
-        line.sharedMaterial = light;
-        line.sortingLayerName = "Enemy";
-        // Under the shadow lanes, so the band visibly stops at each one.
-        line.sortingOrder = -7;
-        line.positionCount = 2;
-        return line;
+        Pose();
     }
 
     void Update()
@@ -85,185 +74,106 @@ public sealed class SolarFlare : MonoBehaviour
         if (WorldTimeStop.Frozen || !GameClock.ActivePlay)
             return;
         age += Time.deltaTime;
-        if (!DistrictHazards.Open && age < Warning + Sweep)
+        if (!DistrictHazards.Open && age < Warning + Erupt + Burn)
+            age = Warning + Erupt + Burn; // The wave ended: recede without harm.
+        Pose();
+        if (age < Warning)
+            Embers(age / Warning);
+        else if (!erupted && Burning)
+            Eruption();
+        if (Burning)
         {
-            // The wave ended mid-flare: let it fade without harm.
-            age = Mathf.Max(age, Warning + Sweep);
-            struck = true;
+            RollingFire();
+            Hurt();
         }
-        float left = Camera.LeftLimit, right = Camera.RightLimit;
-        float sunX = side < 0 ? left : right, farX = side < 0 ? right : left;
-        float top = Camera.UpLimit + 1, bottom = Camera.DownLimit - 1;
-        float warm = Mathf.Clamp01(age / Warning);
-        float fade = age < Warning + Sweep ? 1 : 1 - Mathf.Clamp01((age - Warning - Sweep) / Afterglow);
-        // The sun's edge glows ever brighter, flickering faster toward the release.
-        float flicker = .8f + .2f * Mathf.Sin(age * Mathf.Lerp(8, 30, warm));
-        SetLine(edge, sunX, top, bottom, new Color(Sun.r, Sun.g, Sun.b, Mathf.Lerp(.15f, .9f, warm) * flicker * fade));
-        var bandColor = new Color(1, .95f, .8f, 0);
-        float bandX = sunX;
-        if (age >= Warning)
-        {
-            float t = Mathf.Clamp01((age - Warning) / Sweep);
-            bandX = Mathf.Lerp(sunX, farX, t * t * (3 - 2 * t));
-            bandColor.a = fade;
-            if (!struck && t > 0)
-                SweepFirst();
-        }
-        SetLine(band, bandX, top, bottom, bandColor);
-        var view = UnityEngine.Camera.main;
-        var centre = view != null ? view.transform.position : Vector3.zero;
-        wash.transform.position = new Vector3(centre.x, centre.y, 3);
-        wash.transform.localScale = new Vector3(Camera.RightLimit - Camera.LeftLimit + 2, Camera.UpLimit - Camera.DownLimit + 4, 1);
-        float lit = age < Warning ? Mathf.Lerp(.04f, .2f, warm) : .32f;
-        wash.color = new Color(1, .82f, .5f, lit * fade);
-        UpdateShadows(farX, Mathf.Lerp(.35f, .8f, warm) * fade);
-        if (age >= Warning && age < Warning + Sweep && DistrictHazards.Open)
-            Hurt(bandX);
-        if (age >= Warning + Sweep + Afterglow)
+        if (age >= Warning + Erupt + Burn + Recede)
             Destroy(gameObject);
     }
 
-    void SweepFirst()
+    // Exposed for the review renders: pose the flare at any moment of its life.
+    public void PoseAt(float seconds)
     {
-        struck = true;
-        DistrictHazards.Play("eventSpear");
+        age = seconds;
+        Pose();
+    }
+
+    void Pose()
+    {
+        float heat = Mathf.Clamp01(age / Warning);
+        float ending = Mathf.Clamp01((age - Warning - Erupt - Burn) / Recede);
+        // While it warns, flames lick in from the outer edge (harmless); then the front erupts.
+        float licking = (1 + 1.05f * heat) / (Boundary + 1);
+        float fill = age < Warning ? licking * heat : age < Warning + Erupt ? Mathf.Lerp(licking, 1, Mathf.SmoothStep(0, 1, (age - Warning) / Erupt)) : 1 - ending;
+        float fade = 1 - ending;
+        fire.SetFloat("_Clock", age);
+        fire.SetFloat("_Heat", heat * fade);
+        fire.SetFloat("_Warn", age < Warning ? heat : 0);
+        fire.SetFloat("_Fill", fill);
+        fire.SetFloat("_Fade", fade);
+        // The dividing line flickers faster as the eruption nears, then holds while it burns.
+        float flicker = age < Warning ? (Mathf.Sin(age * Mathf.Lerp(8, 34, heat)) > 0 ? 1 : .35f) : 1;
+        divide.SetPosition(0, new Vector3(Line, Camera.UpLimit + 2, -1));
+        divide.SetPosition(1, new Vector3(Line, Camera.DownLimit - 2, -1));
+        var colour = Color.Lerp(new Color(1, .8f, .5f), Hot, heat);
+        colour.a = Mathf.Lerp(.25f, .9f, heat) * flicker * fade;
+        divide.startColor = divide.endColor = colour;
+    }
+
+    // Embers drift up out of the doomed half, thicker as the eruption nears.
+    void Embers(float heat)
+    {
+        emberTimer -= Time.deltaTime;
+        if (emberTimer > 0)
+            return;
+        emberTimer = Mathf.Lerp(.16f, .05f, heat);
+        float x = Mathf.Lerp(Outer, Line, Random.Range(0f, .85f));
+        PSXImpactEffects.Burst(new Vector3(x, Random.Range(Camera.DownLimit, Camera.UpLimit), -1), Hot, false, Vector2.up);
+    }
+
+    // The flare bursts out of the outer edge in a column of fireballs.
+    void Eruption()
+    {
+        erupted = true;
+        DistrictHazards.Play("eventEruption");
         if (EZCameraShake.CameraShaker.Instance != null)
-            EZCameraShake.CameraShaker.Instance.ShakeOnce(1.2f, 10, .05f, .5f);
+            EZCameraShake.CameraShaker.Instance.ShakeOnce(3.2f, 12, .05f, .7f);
+        for (int i = 0; i < 5; i++)
+            PSXFireballs.Spawn(new Vector3(Outer - side * .3f, Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, (i + .5f) / 5), -1), 1.5f, 3, .6f, .12f, Fireball);
     }
 
-    static void SetLine(LineRenderer line, float x, float top, float bottom, Color color)
+    // A chain of fireballs rides the advancing front, then the burning half keeps flaring.
+    void RollingFire()
     {
-        line.SetPosition(0, new Vector3(x, top, -1));
-        line.SetPosition(1, new Vector3(x, bottom, -1));
-        line.startColor = line.endColor = color;
+        if (age < fireballAt)
+            return;
+        bool advancing = age < Warning + Erupt;
+        fireballAt = age + (advancing ? .06f : .4f);
+        float progress = advancing ? Mathf.SmoothStep(0, 1, (age - Warning) / Erupt) : Random.Range(.15f, .8f);
+        float x = Mathf.Lerp(Outer, Line + side * .9f, progress);
+        float y = Random.Range(Camera.DownLimit + .5f, Camera.UpLimit - .5f);
+        PSXFireballs.Spawn(new Vector3(x, y, -1), advancing ? 1.25f : .8f, advancing ? 2 : 1, .5f, .08f, Fireball);
     }
 
-    // Each shadow runs from the asteroid to the far edge, slightly narrower than the rock.
-    void UpdateShadows(float farX, float alpha)
-    {
-        int i = 0;
-        foreach (var asteroid in SpaceAsteroid.Live)
-        {
-            if (i >= shadows.Count)
-                break;
-            var shadow = shadows[i];
-            var top = lanes[i * 2];
-            var bottom = lanes[i * 2 + 1];
-            i++;
-            if (asteroid == null)
-            {
-                shadow.color = Color.clear;
-                top.startColor = top.endColor = bottom.startColor = bottom.endColor = Color.clear;
-                continue;
-            }
-            var p = asteroid.transform.position;
-            float width = Mathf.Abs(farX - p.x) + .2f, height = asteroid.Radius * 1.7f;
-            shadow.transform.position = new Vector3((p.x + farX) * .5f, p.y, 1.5f);
-            shadow.transform.localScale = new Vector3(width, height, 1);
-            shadow.color = new Color(.01f, .015f, .04f, alpha);
-            var edgeColour = new Color(1, .9f, .65f, alpha * .9f);
-            foreach (var (lane, y) in new[] { (top, p.y + height * .5f), (bottom, p.y - height * .5f) })
-            {
-                lane.SetPosition(0, new Vector3(p.x, y, 1.2f));
-                lane.SetPosition(1, new Vector3(farX, y, 1.2f));
-                lane.startColor = edgeColour;
-                lane.endColor = new Color(edgeColour.r, edgeColour.g, edgeColour.b, edgeColour.a * .3f);
-            }
-        }
-    }
-
-    void Hurt(float bandX)
+    void Hurt()
     {
         var pilot = CombatVisuals.Player;
-        if (pilot == null)
+        if (pilot != null && Burns(pilot.position))
+            pilot.SendMessage("ReceiveHazardDamage", 1f, SendMessageOptions.DontRequireReceiver);
+    }
+
+    static void Release(Object asset)
+    {
+        if (asset == null)
             return;
-        var p = pilot.position;
-        if (Mathf.Abs(p.x - bandX) > BandWidth * .45f)
-            return;
-        foreach (var asteroid in SpaceAsteroid.Live)
-            if (asteroid != null && asteroid.Shades(p, side))
-                return;
-        pilot.SendMessage("ReceiveHazardDamage", 1f, SendMessageOptions.DontRequireReceiver);
+        if (Application.isPlaying)
+            Destroy(asset);
+        else
+            DestroyImmediate(asset);
     }
 
     void OnDestroy()
     {
-        Active = false;
-    }
-}
-
-// A slow tumbling asteroid that casts a SOLAR FLARE shadow. Scenery on the arena layer:
-// it has no collider and never blocks fire.
-public sealed class SpaceAsteroid : MonoBehaviour
-{
-    public static readonly List<SpaceAsteroid> Live = new List<SpaceAsteroid>();
-    public float Radius { get; private set; }
-    Vector3 drift, spin;
-
-    public static SpaceAsteroid Spawn(float x, float radius, int seed)
-    {
-        var go = new GameObject("Drifting asteroid");
-        var view = UnityEngine.Camera.main;
-        float top = view != null ? view.transform.position.y + view.orthographicSize : Camera.UpLimit;
-        go.transform.position = new Vector3(x, Mathf.Max(top, Camera.UpLimit) + radius + .6f, 2);
-        go.transform.localScale = Vector3.one * radius;
-        go.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.Asteroid(seed % 3);
-        var renderer = go.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = CombatMaterials.Fleet;
-        renderer.sortingLayerName = "Enemy";
-        renderer.sortingOrder = -4;
-        var rock = go.AddComponent<SpaceAsteroid>();
-        var random = new System.Random(seed);
-        rock.Radius = radius;
-        rock.drift = new Vector3((float)(random.NextDouble() - .5) * .35f, -.75f - (float)random.NextDouble() * .3f, 0);
-        rock.spin = new Vector3((float)random.NextDouble() * 30, (float)random.NextDouble() * 40, (float)(random.NextDouble() - .5) * 50);
-        return rock;
-    }
-
-    // In the shadow when downstream of the rock (away from the sun) and within its height.
-    public bool Shades(Vector3 point, int sunSide)
-    {
-        var p = transform.position;
-        bool downstream = sunSide < 0 ? point.x > p.x - Radius * .3f : point.x < p.x + Radius * .3f;
-        return downstream && Mathf.Abs(point.y - p.y) < Radius * .85f;
-    }
-
-    void OnEnable() => Live.Add(this);
-    void OnDisable() => Live.Remove(this);
-
-    void Update()
-    {
-        if (WorldTimeStop.Frozen || !GameClock.ActivePlay)
-            return;
-        transform.position += drift * Time.deltaTime;
-        transform.Rotate(spin * Time.deltaTime, Space.Self);
-        if (transform.position.y < Camera.DownLimit - Radius - 1.5f || LevelRun.Current != LevelId.Space)
-            Destroy(gameObject);
-    }
-}
-
-public static partial class IndustrialMeshFactory
-{
-    static readonly Mesh[] asteroids = new Mesh[3];
-
-    // A lumpy faceted rock of overlapping boulders, unit radius.
-    public static Mesh Asteroid(int variant)
-    {
-        if (asteroids[variant] != null)
-            return asteroids[variant];
-        var b = new Builder();
-        var random = new System.Random(4111 + variant * 977);
-        float R(float a, float c) => Mathf.Lerp(a, c, (float)random.NextDouble());
-        // Pale grey-brown rock with darker craters, bright enough to read against space.
-        b.Ball(Vector3.zero, new Vector3(R(.82f, .95f), R(.72f, .88f), .7f), 6);
-        for (int i = 0; i < 6; i++)
-        {
-            float a = i * Mathf.PI / 3 + R(-.3f, .3f);
-            var at = new Vector3(Mathf.Cos(a) * R(.35f, .55f), Mathf.Sin(a) * R(.3f, .5f), R(-.25f, .1f));
-            b.Ball(at, Vector3.one * R(.28f, .42f), i % 3 == 0 ? 13 : i % 3 == 1 ? 6 : 14);
-        }
-        for (int i = 0; i < 3; i++)
-            b.Ball(new Vector3(R(-.4f, .4f), R(-.35f, .35f), -.55f), new Vector3(.16f, .14f, .05f), 11);
-        return asteroids[variant] = b.Finish("Drifting asteroid " + variant);
+        Release(fire);
+        Release(sheet);
     }
 }

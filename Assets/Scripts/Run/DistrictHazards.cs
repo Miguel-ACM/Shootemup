@@ -1,14 +1,15 @@
 using UnityEngine;
 
 // District events that act on their own during ordinary combat waves: lightning in a THUNDERSTORM,
-// mines rising from the depths in a MINEFIELD, falling sweets in CANDY RAIN and spears in SPEAR RAIN.
+// mines rising from the depths in a MINEFIELD, falling sweets in CANDY RAIN, spears in SPEAR RAIN,
+// half the arena on fire in a SOLAR FLARE and Thicket Lurkers in the Plains trees.
 // Every hazard is telegraphed first and pauses with the waves: never during decisions, minibosses
 // or bosses. Wave-based events (rush hour, deep passages, eruptions) live with their own systems.
 public sealed class DistrictHazards : MonoBehaviour
 {
     WaveOrchestrer waves;
     PSXGrassField valley;
-    float next = -1, nextRock = -1;
+    float next = -1;
     System.Random random;
     int seed = -1;
 
@@ -32,7 +33,6 @@ public sealed class DistrictHazards : MonoBehaviour
         {
             // Each combat wave opens with a short breather before the first hazard.
             next = -1;
-            nextRock = -1;
             return;
         }
         if (seed != LevelRun.Seed)
@@ -48,12 +48,6 @@ public sealed class DistrictHazards : MonoBehaviour
             return;
         }
         float rest = Difficulty.Easy ? 1.35f : Difficulty.Hard ? .8f : 1;
-        // These keep their own clocks: asteroids drift in between flares.
-        if (condition == DistrictCondition.SolarFlare)
-        {
-            SolarFlares(now, rest);
-            return;
-        }
         if (LevelRun.Current == LevelId.Fields)
         {
             Lurkers(now, rest, condition == DistrictCondition.Forest);
@@ -78,6 +72,10 @@ public sealed class DistrictHazards : MonoBehaviour
                     CandyDrop.Drop(R(Camera.LeftLimit + .6f, Camera.RightLimit - .6f), random.Next(5));
                 next = now + R(5.2f, 7.6f) * rest;
                 break;
+            case DistrictCondition.SolarFlare:
+                SolarFlares();
+                next = now + R(13, 18) * rest;
+                break;
             case DistrictCondition.SpearRain:
                 Spears();
                 next = now + R(5.8f, 8.4f) * rest;
@@ -90,31 +88,18 @@ public sealed class DistrictHazards : MonoBehaviour
 
     float R(float a, float b) => Mathf.Lerp(a, b, (float)random.NextDouble());
 
-    // SOLAR FLARE: keep two asteroids drifting through; flare only when one is fully in view,
-    // from the side that gives its shadow the most room.
-    void SolarFlares(float now, float rest)
+    // SOLAR FLARE: one half of the arena burns, usually the half the pilot is in.
+    void SolarFlares()
     {
-        if (nextRock < 0 || now >= nextRock)
-        {
-            nextRock = now + R(3.5f, 5.5f);
-            if (SpaceAsteroid.Live.Count < 2)
-                SpaceAsteroid.Spawn(R(Camera.LeftLimit + 1.4f, Camera.RightLimit - 1.4f), R(.75f, 1.15f), random.Next());
-        }
-        if (now < next || SolarFlare.Active)
+        if (SolarFlare.Active)
             return;
-        foreach (var rock in SpaceAsteroid.Live)
-        {
-            var p = rock.transform.position;
-            if (p.y > Camera.DownLimit + 2.5f && p.y < Camera.UpLimit - 1.5f)
-            {
-                SolarFlare.Begin(p.x > 0 ? 1 : -1);
-                next = now + R(11, 15) * rest;
-                return;
-            }
-        }
+        var pilot = CombatVisuals.Player;
+        int side = random.NextDouble() < .5 ? -1 : 1;
+        if (pilot != null && random.NextDouble() < .6)
+            side = pilot.position.x < (Camera.LeftLimit + Camera.RightLimit) * .5f ? -1 : 1;
+        SolarFlare.Begin(side);
     }
 
-    // Thicket Lurkers ambush from the trees: now and then in the open valley, often in the forest.
     void Lurkers(float now, float rest, bool forest)
     {
         if (now < next)

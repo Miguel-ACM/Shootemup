@@ -214,8 +214,8 @@ public static class RenderDistrictConditions
     }
 
     // Batch: -executeMethod RenderDistrictConditions.ForestAndFlare
-    // Two stretches of the FOREST valley, the Thicket Lurker close up, and a SOLAR FLARE posed
-    // in its warning (shadows up) and mid-sweep.
+    // Two stretches of the FOREST valley with tanks ploughing through the canopy, the Thicket
+    // Lurker close up, and a SOLAR FLARE in its warning, its eruption and its full burn.
     public static void ForestAndFlare()
     {
         int code = 0;
@@ -225,7 +225,7 @@ public static class RenderDistrictConditions
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             Shader.SetGlobalVector("_PSXSnapResolution", new Vector4(Width, Height, 0, 0));
             const int Seed = 424242;
-            var cells = new Texture2D[1, 5];
+            var cells = new Texture2D[1, 6];
             DistrictConditions.Forced = DistrictCondition.Forest;
             LevelRun.Reset(LevelId.Fields, Seed);
             var layout = new PSXValleyLayout(Seed, true);
@@ -299,38 +299,17 @@ public static class RenderDistrictConditions
                 if (start != null && start.GetParameters().Length == 0)
                     start.Invoke(behaviour, null);
             }
-            var rocks = new[] { SpaceAsteroid.Spawn(-1.6f, 1, 3), SpaceAsteroid.Spawn(1.2f, .8f, 4) };
-            rocks[0].transform.position = new Vector3(-1.6f, 2.2f, 2);
-            rocks[1].transform.position = new Vector3(1.2f, -3.5f, 2);
-            // Edit mode never calls OnEnable, so register the rocks the way play mode does.
-            foreach (var rock in rocks)
-                if (!SpaceAsteroid.Live.Contains(rock))
-                    SpaceAsteroid.Live.Add(rock);
             var spaceCombat = Combatants(LevelProjectilePalette.Accent(LevelId.Space), -.6f);
             var spaceCamera = Camera(-.6f, 8.85f);
-            foreach (var (age, column) in new[] { (1.7f, 3), (2.45f, 4) })
+            foreach (var (age, column) in new[] { (1.2f, 3), (SolarFlare.Warning + .2f, 4), (SolarFlare.Warning + SolarFlare.Erupt + .9f, 5) })
             {
-                SolarFlare.Begin(-1);
-                var flare = UnityEngine.Object.FindAnyObjectByType<SolarFlare>();
-                typeof(SolarFlare).GetField("age", Hidden).SetValue(flare, age - .02f);
-                typeof(SolarFlare).GetField("struck", Hidden).SetValue(flare, true);
-                // Pose the flare at that moment without the hazard window: draw its lines directly.
-                float warm = Mathf.Clamp01(age / 2f);
-                var lines = flare.GetComponentsInChildren<LineRenderer>();
-                float bandX = age < 2 ? global::Camera.LeftLimit : Mathf.Lerp(global::Camera.LeftLimit, global::Camera.RightLimit, (age - 2) / 1.05f);
-                foreach (var (line, x, colour) in new[] { (lines[0], global::Camera.LeftLimit, new Color(1, .88f, .58f, .9f * warm)), (lines[1], bandX, new Color(1, .95f, .8f, age < 2 ? 0 : 1)) })
-                {
-                    line.SetPosition(0, new Vector3(x, 9, -1));
-                    line.SetPosition(1, new Vector3(x, -10, -1));
-                    line.startColor = line.endColor = colour;
-                }
-                typeof(SolarFlare).GetMethod("UpdateShadows", Hidden).Invoke(flare, new object[] { global::Camera.RightLimit, .7f });
-                var sunlight = (SpriteRenderer)typeof(SolarFlare).GetField("wash", Hidden).GetValue(flare);
-                sunlight.transform.position = new Vector3(0, -.6f, 3);
-                sunlight.transform.localScale = new Vector3(12, 20, 1);
-                sunlight.color = new Color(1, .82f, .5f, age < 2 ? .18f : .32f);
+                var flare = SolarFlare.Begin(-1);
+                PoseFlare(flare, age);
                 cells[0, column] = Capture(spaceCamera);
                 UnityEngine.Object.DestroyImmediate(flare.gameObject);
+                var fireballs = UnityEngine.Object.FindAnyObjectByType<PSXFireballs>();
+                if (fireballs != null)
+                    UnityEngine.Object.DestroyImmediate(fireballs.gameObject);
             }
             Save("ForestAndFlare.png", cells);
         }
@@ -417,6 +396,36 @@ public static class RenderDistrictConditions
         }
         if (Application.isBatchMode)
             EditorApplication.Exit(code);
+    }
+
+    // Edit mode never runs Update: replay the eruption's fireballs up to this age and freeze each
+    // one partway through its life, so the still shows what play mode would.
+    static void PoseFlare(SolarFlare flare, float age)
+    {
+        var type = typeof(SolarFlare);
+        if (age >= SolarFlare.Warning)
+        {
+            type.GetMethod("Eruption", Hidden).Invoke(flare, null);
+            for (float at = SolarFlare.Warning; at <= age; at += .03f)
+            {
+                type.GetField("age", Hidden).SetValue(flare, at);
+                type.GetMethod("RollingFire", Hidden).Invoke(flare, null);
+            }
+            var pool = UnityEngine.Object.FindAnyObjectByType<PSXFireballs>();
+            if (pool != null)
+            {
+                var active = (System.Collections.IList)typeof(PSXFireballs).GetField("active", Hidden).GetValue(pool);
+                var random = new System.Random(7);
+                foreach (var ball in active)
+                {
+                    var fields = ball.GetType();
+                    float life = (float)fields.GetField("life").GetValue(ball);
+                    fields.GetField("start").SetValue(ball, Time.time - life * (.12f + .4f * (float)random.NextDouble()));
+                }
+                typeof(PSXFireballs).GetMethod("Update", Hidden).Invoke(pool, null);
+            }
+        }
+        flare.PoseAt(age);
     }
 
     static UnityEngine.Camera Camera(float y, float size)

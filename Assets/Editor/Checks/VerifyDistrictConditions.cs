@@ -328,12 +328,22 @@ public static class VerifyDistrictConditions
         report.Add("Forest: " + forest.Plants.Count + " plants; tank routes " + westmost.ToString("0.00") + " to " + eastmost.ToString("0.00") + ", " + crossings + " crossings");
         Check(EnemyCatalog.Resolve(nameof(ThicketLurker)) == typeof(ThicketLurker) && IndustrialMeshFactory.CombatHull((int)CombatHullId.ThicketLurker) != null, "Thicket Lurker is not registered");
 
-        // SOLAR FLARE: an asteroid shades the lane away from the sun, and only that lane.
-        var rock = SpaceAsteroid.Spawn(0, 1, 7);
-        rock.transform.position = new Vector3(0, 0, 2);
-        Check(rock.Shades(new Vector3(2, .3f, 0), -1) && !rock.Shades(new Vector3(-2, .3f, 0), -1) && !rock.Shades(new Vector3(2, 1.5f, 0), -1), "Asteroid shadow falls the wrong way");
-        Check(rock.Shades(new Vector3(-2, 0, 0), 1) && !rock.Shades(new Vector3(2, 0, 0), 1), "Asteroid shadow ignores the sun's side");
-        UnityEngine.Object.DestroyImmediate(rock.gameObject);
+        // SOLAR FLARE: harmless while it warns, then exactly one half burns until it recedes.
+        foreach (int side in new[] { -1, 1 })
+        {
+            var flare = SolarFlare.Begin(side);
+            var inside = new Vector3(side * 2.5f, 1, 0);
+            var outside = new Vector3(-side * 2.5f, 1, 0);
+            var onLine = new Vector3(side * .05f, 1, 0);
+            flare.PoseAt(1);
+            Check(!flare.Burns(inside), "Solar flare burns during its warning");
+            flare.PoseAt(SolarFlare.Warning + SolarFlare.Erupt + .5f);
+            Check(flare.Burns(inside) && !flare.Burns(outside) && !flare.Burns(onLine), "Solar flare should burn exactly its half (side " + side + ")");
+            flare.PoseAt(SolarFlare.Warning + SolarFlare.Erupt + SolarFlare.Burn + .1f);
+            Check(!flare.Burns(inside), "Solar flare still burns while receding");
+            UnityEngine.Object.DestroyImmediate(flare.gameObject);
+        }
+        Check(!SolarFlare.Active, "Solar flare stays active after it ends");
 
         LevelRun.Reset(LevelId.Thunder, 3);
         LightningStrike.Begin(0, 7);
