@@ -1,0 +1,53 @@
+{
+  "request": "20261115-095530-62f8",
+  "ref": "20261115-095530-62f8:508645245",
+  "text": "volcano rumbling, deep earth rumble building up",
+  "prompt": "volcano rumbling, deep earth rumble building up, single clear sound event, clean start and end, close-mic, dry, no reverb",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "misc",
+  "seed": 508645245,
+  "rank": 2,
+  "rank_score": 0.7403,
+  "clap": 0.9996,
+  "clap_cos": 0.4901,
+  "clap_top": null,
+  "aes": {
+    "CE": 2.79,
+    "CU": 5.04,
+    "PC": 2.12,
+    "PQ": 5.38
+  },
+  "fails": [],
+  "warnings": [
+    "so-so production quality (Audiobox PQ 5.4)"
+  ],
+  "post": {
+    "gain_db": 1.28,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 2.0,
+    "length_frames": 48.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -17.5
+  },
+  "signal": {
+    "duration_s": 3.0,
+    "peak_dbfs": -2.04,
+    "true_peak_dbtp": -2.04,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00011,
+    "active_s": 1.975,
+    "noise_floor_db": -88.6,
+    "onset_s": 0.2125,
+    "tail_db": -84.8,
+    "stereo_correlation": 1.0,
+    "lufs": -16.0,
+    "fails": [],
+    "warnings": []
+  }
+}

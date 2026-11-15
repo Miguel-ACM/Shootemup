@@ -23,7 +23,7 @@ public static class SoundCueCatalog
         }
     }
 
-    const string Enemy = "Enemy projectiles", Player = "Player weapons", Beam = "Lasers", Hit = "Hits & feedback";
+    const string Enemy = "Enemy projectiles", Player = "Player weapons", Beam = "Lasers", Hit = "Hits & feedback", Events = "District events";
     public static readonly Cue[] All =
     {
         new Cue("enemySimple", "Round bullet launch", Enemy, "Sounds/shot1", .035f, .85f),
@@ -62,7 +62,15 @@ public static class SoundCueCatalog
         new Cue("playerBeamSustain", "Player laser sustain", Beam, "Sounds/Beam/player_sustain", .11f, .7f, loop: true),
         new Cue("heavenBeamCharge", "Heaven laser charge", Beam, "Sounds/Beam/charge", .2f),
         new Cue("heavenBeamFire", "Heaven laser ignition", Beam, "Sounds/Beam/ignite", .24f, .78f),
-        new Cue("heavenBeamSustain", "Heaven laser sustain", Beam, "Sounds/Beam/sustain", .15f, .55f, loop: true)
+        new Cue("heavenBeamSustain", "Heaven laser sustain", Beam, "Sounds/Beam/sustain", .15f, .55f, loop: true),
+        // District events and the boss spell break (local SFX generator, ArtSource/AudioReview/Events).
+        new Cue("eventLightning", "Lightning strike", Events, "Sounds/Events/LightningStrike", .2f, 1, .2f),
+        new Cue("eventSpear", "Heaven spear launch", Events, "Sounds/Events/SpearLaunch", .11f, 1, .06f),
+        new Cue("eventRumble", "Volcano charge rumble", Events, "Sounds/Events/VolcanoRumble", .12f, 1, .4f),
+        new Cue("eventEruption", "Volcano eruption", Events, "Sounds/Events/VolcanoBlast", .14f, 1, .25f),
+        new Cue("eventCandy", "Candy bounce", Events, "Sounds/Events/CandyBounce", .07f, 1, .05f),
+        new Cue("eventMineArm", "Mine arming", Events, "Sounds/Events/MineArm", .09f, 1, .15f),
+        new Cue("bossPhaseBreak", "Boss phase break", Events, "Sounds/Events/PhaseBreak", .3f, 1, .5f)
     };
 
     static readonly Dictionary<string, Cue> lookup = Build();

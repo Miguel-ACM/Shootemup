@@ -1,0 +1,59 @@
+{
+  "defaults": {
+    "n": 6,
+    "best": 2,
+    "png": true
+  },
+  "cues": [
+    {
+      "id": "lightning",
+      "text": "lightning strike crack, electric snap followed by rolling thunder, recorded at a distance",
+      "duration": 3.0,
+      "name": "LightningStrike",
+      "cat": "WTHRThun",
+      "n": 8
+    },
+    {
+      "id": "spear",
+      "text": "fast heavy spear thrown, sharp air whoosh with metallic ring",
+      "duration": 1.0,
+      "name": "SpearLaunch",
+      "cat": "WHSH"
+    },
+    {
+      "id": "rumble",
+      "text": "volcano rumbling, deep earth rumble building up",
+      "duration": 2.0,
+      "name": "VolcanoRumble",
+      "cat": "EXPLReal"
+    },
+    {
+      "id": "eruption",
+      "text": "volcano eruption blast, rocks thrown, fiery explosion",
+      "duration": 2.0,
+      "name": "VolcanoBlast",
+      "cat": "EXPLReal"
+    },
+    {
+      "id": "candy",
+      "text": "cartoon hard candy bounce, bright plastic tock",
+      "duration": 0.5,
+      "name": "CandyBounce",
+      "cat": "TOONBoing"
+    },
+    {
+      "id": "phase",
+      "text": "huge magical energy explosion, deep boom with shimmering shockwave",
+      "duration": 3.0,
+      "name": "PhaseBreak",
+      "cat": "MAGSpel"
+    },
+    {
+      "id": "minebeep",
+      "text": "naval mine arming, rapid electronic warning beeps",
+      "duration": 0.8,
+      "name": "MineArm",
+      "cat": "UIClick"
+    }
+  ]
+}

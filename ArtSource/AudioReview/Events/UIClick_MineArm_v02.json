@@ -1,0 +1,51 @@
+{
+  "request": "20261115-095607-e3de",
+  "ref": "20261115-095607-e3de:1910284551",
+  "text": "naval mine arming, rapid electronic warning beeps",
+  "prompt": "naval mine arming, rapid electronic warning beeps, single short clean electronic interface sound, instant attack, very short decay",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "ui",
+  "seed": 1910284551,
+  "rank": 2,
+  "rank_score": 0.9064,
+  "clap": 0.9545,
+  "clap_cos": 0.4035,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.64,
+    "CU": 7.3,
+    "PC": 2.05,
+    "PQ": 7.46
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 6.1,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.625,
+    "length_frames": 15.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -19.6
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -7.17,
+    "true_peak_dbtp": -7.17,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00127,
+    "active_s": 0.375,
+    "noise_floor_db": -80.1,
+    "onset_s": 0.0,
+    "tail_db": -78.2,
+    "stereo_correlation": 1.0,
+    "lufs": -22.8,
+    "fails": [],
+    "warnings": []
+  }
+}

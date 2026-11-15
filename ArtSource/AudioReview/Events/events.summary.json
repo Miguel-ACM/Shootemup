@@ -1,0 +1,782 @@
+{
+  "cues": {
+    "lightning": {
+      "status": "delivered",
+      "spec": {
+        "n": 8,
+        "best": 2,
+        "png": true,
+        "out": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events",
+        "text": "lightning strike crack, electric snap followed by rolling thunder, recorded at a distance",
+        "duration": 3.0,
+        "name": "LightningStrike",
+        "cat": "WTHRThun"
+      },
+      "text": "lightning strike crack, electric snap followed by rolling thunder, recorded at a distance",
+      "at": "2026-11-15 09:57:50",
+      "request": "20261115-095750-3492",
+      "engine": "sa3",
+      "category": "misc",
+      "prompt": "lightning strike crack, electric snap followed by rolling thunder, recorded at a distance, single clear sound event, clean start and end, close-mic, dry, no reverb",
+      "best_ref": "20261115-095750-3492:19849732",
+      "delivered": [
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\WTHRThun_LightningStrike_v01.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\WTHRThun_LightningStrike_v01.png",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\WTHRThun_LightningStrike_v02.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\WTHRThun_LightningStrike_v02.png"
+      ],
+      "takes": [
+        {
+          "ref": "20261115-095750-3492:19849732",
+          "seed": 19849732,
+          "rank": 1,
+          "score": 0.7225,
+          "clap_cos": 0.4586,
+          "pq": 5.16,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.2)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095750-3492\\19849732.png"
+        },
+        {
+          "ref": "20261115-095750-3492:19849726",
+          "seed": 19849726,
+          "rank": 2,
+          "score": 0.671,
+          "clap_cos": 0.4654,
+          "pq": 5.14,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "a few clipped samples (0.014%)",
+            "so-so production quality (Audiobox PQ 5.1)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095750-3492\\19849726.png"
+        },
+        {
+          "ref": "20261115-095750-3492:19849729",
+          "seed": 19849729,
+          "rank": 3,
+          "score": 0.6701,
+          "clap_cos": 0.3468,
+          "pq": 5.67,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "a few clipped samples (0.022%)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095750-3492\\19849729.png"
+        },
+        {
+          "ref": "20261115-095750-3492:19849725",
+          "seed": 19849725,
+          "rank": 4,
+          "score": 0.6687,
+          "clap_cos": 0.4401,
+          "pq": 5.23,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "a few clipped samples (0.013%)",
+            "so-so production quality (Audiobox PQ 5.2)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095750-3492\\19849725.png"
+        },
+        {
+          "ref": "20261115-095750-3492:19849728",
+          "seed": 19849728,
+          "rank": 5,
+          "score": 0.6607,
+          "clap_cos": 0.3458,
+          "pq": 5.58,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "a few clipped samples (0.002%)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095750-3492\\19849728.png"
+        },
+        {
+          "ref": "20261115-095750-3492:19849727",
+          "seed": 19849727,
+          "rank": 6,
+          "score": 0.626,
+          "clap_cos": 0.375,
+          "pq": 5.42,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "a few clipped samples (0.017%)",
+            "so-so production quality (Audiobox PQ 5.4)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095750-3492\\19849727.png"
+        },
+        {
+          "ref": "20261115-095750-3492:19849731",
+          "seed": 19849731,
+          "rank": 7,
+          "score": 0.6004,
+          "clap_cos": 0.38,
+          "pq": 5.08,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "a few clipped samples (0.016%)",
+            "so-so production quality (Audiobox PQ 5.1)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095750-3492\\19849731.png"
+        },
+        {
+          "ref": "20261115-095750-3492:19849730",
+          "seed": 19849730,
+          "rank": 8,
+          "score": 0.5701,
+          "clap_cos": 0.3243,
+          "pq": 5.33,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "a few clipped samples (0.008%)",
+            "so-so production quality (Audiobox PQ 5.3)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095750-3492\\19849730.png"
+        }
+      ],
+      "warnings": []
+    },
+    "spear": {
+      "status": "delivered",
+      "spec": {
+        "n": 6,
+        "best": 2,
+        "png": true,
+        "out": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events",
+        "text": "fast heavy spear thrown, sharp air whoosh with metallic ring",
+        "duration": 1.0,
+        "name": "SpearLaunch",
+        "cat": "WHSH"
+      },
+      "text": "fast heavy spear thrown, sharp air whoosh with metallic ring",
+      "at": "2026-11-15 09:55:21",
+      "request": "20261115-095521-7c55",
+      "engine": "sa3",
+      "category": "whoosh",
+      "prompt": "fast heavy spear thrown, sharp air whoosh with metallic ring, single fast air whoosh passing by, swells in and fades out quickly, close-mic, dry, no reverb",
+      "best_ref": "20261115-095521-7c55:1939769274",
+      "delivered": [
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\WHSH_SpearLaunch_v01.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\WHSH_SpearLaunch_v01.png",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\WHSH_SpearLaunch_v02.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\WHSH_SpearLaunch_v02.png"
+      ],
+      "takes": [
+        {
+          "ref": "20261115-095521-7c55:1939769274",
+          "seed": 1939769274,
+          "rank": 1,
+          "score": 0.7923,
+          "clap_cos": 0.3408,
+          "pq": 6.62,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095521-7c55\\1939769274.png"
+        },
+        {
+          "ref": "20261115-095521-7c55:1939769275",
+          "seed": 1939769275,
+          "rank": 2,
+          "score": 0.7138,
+          "clap_cos": 0.3284,
+          "pq": 5.78,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095521-7c55\\1939769275.png"
+        },
+        {
+          "ref": "20261115-095521-7c55:1939769273",
+          "seed": 1939769273,
+          "rank": 3,
+          "score": 0.6776,
+          "clap_cos": 0.2708,
+          "pq": 5.97,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095521-7c55\\1939769273.png"
+        },
+        {
+          "ref": "20261115-095521-7c55:1939769277",
+          "seed": 1939769277,
+          "rank": 4,
+          "score": 0.6677,
+          "clap_cos": 0.2705,
+          "pq": 5.85,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095521-7c55\\1939769277.png"
+        },
+        {
+          "ref": "20261115-095521-7c55:1939769276",
+          "seed": 1939769276,
+          "rank": 5,
+          "score": 0.6615,
+          "clap_cos": 0.2621,
+          "pq": 5.87,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095521-7c55\\1939769276.png"
+        },
+        {
+          "ref": "20261115-095521-7c55:1939769272",
+          "seed": 1939769272,
+          "rank": 6,
+          "score": 0.6093,
+          "clap_cos": 0.296,
+          "pq": 5.46,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.5)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095521-7c55\\1939769272.png"
+        }
+      ],
+      "warnings": []
+    },
+    "rumble": {
+      "status": "delivered",
+      "spec": {
+        "n": 6,
+        "best": 2,
+        "png": true,
+        "out": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events",
+        "text": "volcano rumbling, deep earth rumble building up",
+        "duration": 2.0,
+        "name": "VolcanoRumble",
+        "cat": "EXPLReal"
+      },
+      "text": "volcano rumbling, deep earth rumble building up",
+      "at": "2026-11-15 09:55:30",
+      "request": "20261115-095530-62f8",
+      "engine": "sa3",
+      "category": "misc",
+      "prompt": "volcano rumbling, deep earth rumble building up, single clear sound event, clean start and end, close-mic, dry, no reverb",
+      "best_ref": "20261115-095530-62f8:508645242",
+      "delivered": [
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\EXPLReal_VolcanoRumble_v01.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\EXPLReal_VolcanoRumble_v01.png",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\EXPLReal_VolcanoRumble_v02.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\EXPLReal_VolcanoRumble_v02.png"
+      ],
+      "takes": [
+        {
+          "ref": "20261115-095530-62f8:508645242",
+          "seed": 508645242,
+          "rank": 1,
+          "score": 0.7561,
+          "clap_cos": 0.3919,
+          "pq": 5.61,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095530-62f8\\508645242.png"
+        },
+        {
+          "ref": "20261115-095530-62f8:508645245",
+          "seed": 508645245,
+          "rank": 2,
+          "score": 0.7403,
+          "clap_cos": 0.4901,
+          "pq": 5.38,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.4)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095530-62f8\\508645245.png"
+        },
+        {
+          "ref": "20261115-095530-62f8:508645243",
+          "seed": 508645243,
+          "rank": 3,
+          "score": 0.7324,
+          "clap_cos": 0.4483,
+          "pq": 5.3,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.3)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095530-62f8\\508645243.png"
+        },
+        {
+          "ref": "20261115-095530-62f8:508645246",
+          "seed": 508645246,
+          "rank": 4,
+          "score": 0.7219,
+          "clap_cos": 0.4798,
+          "pq": 5.15,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.2)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095530-62f8\\508645246.png"
+        },
+        {
+          "ref": "20261115-095530-62f8:508645244",
+          "seed": 508645244,
+          "rank": 5,
+          "score": 0.7107,
+          "clap_cos": 0.4651,
+          "pq": 5.01,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.0)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095530-62f8\\508645244.png"
+        },
+        {
+          "ref": "20261115-095530-62f8:508645247",
+          "seed": 508645247,
+          "rank": 6,
+          "score": 0.71,
+          "clap_cos": 0.4341,
+          "pq": 5.18,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.2)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095530-62f8\\508645247.png"
+        }
+      ],
+      "warnings": []
+    },
+    "eruption": {
+      "status": "delivered",
+      "spec": {
+        "n": 6,
+        "best": 2,
+        "png": true,
+        "out": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events",
+        "text": "volcano eruption blast, rocks thrown, fiery explosion",
+        "duration": 2.0,
+        "name": "VolcanoBlast",
+        "cat": "EXPLReal"
+      },
+      "text": "volcano eruption blast, rocks thrown, fiery explosion",
+      "at": "2026-11-15 09:55:39",
+      "request": "20261115-095539-670a",
+      "engine": "sa3",
+      "category": "explosion",
+      "prompt": "volcano eruption blast, rocks thrown, fiery explosion, single powerful explosion, sudden blast, deep low-end rumble, debris tail, close-mic, dry, no reverb",
+      "best_ref": "20261115-095539-670a:2103013099",
+      "delivered": [
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\EXPLReal_VolcanoBlast_v01.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\EXPLReal_VolcanoBlast_v01.png",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\EXPLReal_VolcanoBlast_v02.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\EXPLReal_VolcanoBlast_v02.png"
+      ],
+      "takes": [
+        {
+          "ref": "20261115-095539-670a:2103013099",
+          "seed": 2103013099,
+          "rank": 1,
+          "score": 0.7453,
+          "clap_cos": 0.3476,
+          "pq": 6.13,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095539-670a\\2103013099.png"
+        },
+        {
+          "ref": "20261115-095539-670a:2103013097",
+          "seed": 2103013097,
+          "rank": 2,
+          "score": 0.7402,
+          "clap_cos": 0.3555,
+          "pq": 5.85,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095539-670a\\2103013097.png"
+        },
+        {
+          "ref": "20261115-095539-670a:2103013102",
+          "seed": 2103013102,
+          "rank": 3,
+          "score": 0.7003,
+          "clap_cos": 0.3665,
+          "pq": 5.86,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "a few clipped samples (0.005%)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095539-670a\\2103013102.png"
+        },
+        {
+          "ref": "20261115-095539-670a:2103013098",
+          "seed": 2103013098,
+          "rank": 4,
+          "score": 0.6785,
+          "clap_cos": 0.3371,
+          "pq": 6.05,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "high noise floor: -38 dB below the peak"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095539-670a\\2103013098.png"
+        },
+        {
+          "ref": "20261115-095539-670a:2103013101",
+          "seed": 2103013101,
+          "rank": 5,
+          "score": 0.6393,
+          "clap_cos": 0.3422,
+          "pq": 5.48,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.5)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095539-670a\\2103013101.png"
+        },
+        {
+          "ref": "20261115-095539-670a:2103013100",
+          "seed": 2103013100,
+          "rank": 6,
+          "score": 0.6168,
+          "clap_cos": 0.3318,
+          "pq": 5.52,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "a few clipped samples (0.003%)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095539-670a\\2103013100.png"
+        }
+      ],
+      "warnings": []
+    },
+    "candy": {
+      "status": "delivered",
+      "spec": {
+        "n": 6,
+        "best": 2,
+        "png": true,
+        "out": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events",
+        "text": "cartoon hard candy bounce, bright plastic tock",
+        "duration": 0.5,
+        "name": "CandyBounce",
+        "cat": "TOONBoing"
+      },
+      "text": "cartoon hard candy bounce, bright plastic tock",
+      "at": "2026-11-15 09:55:49",
+      "request": "20261115-095549-6638",
+      "engine": "sa3",
+      "category": "cartoon-boing",
+      "prompt": "cartoon hard candy bounce, bright plastic tock, single cartoon boing, springy wobbling pitch, short decay, close-mic, dry, no reverb",
+      "best_ref": "20261115-095549-6638:1528144062",
+      "delivered": [
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\TOONBoing_CandyBounce_v01.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\TOONBoing_CandyBounce_v01.png",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\TOONBoing_CandyBounce_v02.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\TOONBoing_CandyBounce_v02.png"
+      ],
+      "takes": [
+        {
+          "ref": "20261115-095549-6638:1528144062",
+          "seed": 1528144062,
+          "rank": 1,
+          "score": 0.7525,
+          "clap_cos": 0.2964,
+          "pq": 6.69,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095549-6638\\1528144062.png"
+        },
+        {
+          "ref": "20261115-095549-6638:1528144061",
+          "seed": 1528144061,
+          "rank": 2,
+          "score": 0.7324,
+          "clap_cos": 0.295,
+          "pq": 6.42,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095549-6638\\1528144061.png"
+        },
+        {
+          "ref": "20261115-095549-6638:1528144058",
+          "seed": 1528144058,
+          "rank": 3,
+          "score": 0.7006,
+          "clap_cos": 0.2184,
+          "pq": 7.08,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095549-6638\\1528144058.png"
+        },
+        {
+          "ref": "20261115-095549-6638:1528144060",
+          "seed": 1528144060,
+          "rank": 4,
+          "score": 0.661,
+          "clap_cos": 0.2008,
+          "pq": 6.7,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095549-6638\\1528144060.png"
+        },
+        {
+          "ref": "20261115-095549-6638:1528144059",
+          "seed": 1528144059,
+          "rank": 5,
+          "score": 0.6137,
+          "clap_cos": 0.1644,
+          "pq": 6.72,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095549-6638\\1528144059.png"
+        },
+        {
+          "ref": "20261115-095549-6638:1528144063",
+          "seed": 1528144063,
+          "rank": 6,
+          "score": 0.5445,
+          "clap_cos": 0.1382,
+          "pq": 6.42,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095549-6638\\1528144063.png"
+        }
+      ],
+      "warnings": []
+    },
+    "phase": {
+      "status": "delivered",
+      "spec": {
+        "n": 6,
+        "best": 2,
+        "png": true,
+        "out": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events",
+        "text": "huge magical energy explosion, deep boom with shimmering shockwave",
+        "duration": 3.0,
+        "name": "PhaseBreak",
+        "cat": "MAGSpel"
+      },
+      "text": "huge magical energy explosion, deep boom with shimmering shockwave",
+      "at": "2026-11-15 09:55:57",
+      "request": "20261115-095557-45b1",
+      "engine": "sa3",
+      "category": "explosion",
+      "prompt": "huge magical energy explosion, deep boom with shimmering shockwave, single powerful explosion, sudden blast, deep low-end rumble, debris tail, close-mic, dry, no reverb",
+      "best_ref": "20261115-095557-45b1:1457706179",
+      "delivered": [
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\MAGSpel_PhaseBreak_v01.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\MAGSpel_PhaseBreak_v01.png",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\MAGSpel_PhaseBreak_v02.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\MAGSpel_PhaseBreak_v02.png"
+      ],
+      "takes": [
+        {
+          "ref": "20261115-095557-45b1:1457706179",
+          "seed": 1457706179,
+          "rank": 1,
+          "score": 0.8665,
+          "clap_cos": 0.4089,
+          "pq": 6.8,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095557-45b1\\1457706179.png"
+        },
+        {
+          "ref": "20261115-095557-45b1:1457706177",
+          "seed": 1457706177,
+          "rank": 2,
+          "score": 0.8331,
+          "clap_cos": 0.4048,
+          "pq": 6.43,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095557-45b1\\1457706177.png"
+        },
+        {
+          "ref": "20261115-095557-45b1:1457706176",
+          "seed": 1457706176,
+          "rank": 3,
+          "score": 0.8288,
+          "clap_cos": 0.3743,
+          "pq": 6.73,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095557-45b1\\1457706176.png"
+        },
+        {
+          "ref": "20261115-095557-45b1:1457706178",
+          "seed": 1457706178,
+          "rank": 4,
+          "score": 0.8098,
+          "clap_cos": 0.3966,
+          "pq": 6.24,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095557-45b1\\1457706178.png"
+        },
+        {
+          "ref": "20261115-095557-45b1:1457706175",
+          "seed": 1457706175,
+          "rank": 5,
+          "score": 0.7694,
+          "clap_cos": 0.386,
+          "pq": 6.48,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "a few clipped samples (0.011%)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095557-45b1\\1457706175.png"
+        },
+        {
+          "ref": "20261115-095557-45b1:1457706180",
+          "seed": 1457706180,
+          "rank": 6,
+          "score": 0.7633,
+          "clap_cos": 0.4304,
+          "pq": 5.9,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "a few clipped samples (0.026%)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095557-45b1\\1457706180.png"
+        }
+      ],
+      "warnings": []
+    },
+    "minebeep": {
+      "status": "delivered",
+      "spec": {
+        "n": 6,
+        "best": 2,
+        "png": true,
+        "out": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events",
+        "text": "naval mine arming, rapid electronic warning beeps",
+        "duration": 0.8,
+        "name": "MineArm",
+        "cat": "UIClick"
+      },
+      "text": "naval mine arming, rapid electronic warning beeps",
+      "at": "2026-11-15 09:56:07",
+      "request": "20261115-095607-e3de",
+      "engine": "sa3",
+      "category": "ui",
+      "prompt": "naval mine arming, rapid electronic warning beeps, single short clean electronic interface sound, instant attack, very short decay",
+      "best_ref": "20261115-095607-e3de:1910284552",
+      "delivered": [
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\UIClick_MineArm_v01.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\UIClick_MineArm_v01.png",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\UIClick_MineArm_v02.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\UIClick_MineArm_v02.png"
+      ],
+      "takes": [
+        {
+          "ref": "20261115-095607-e3de:1910284552",
+          "seed": 1910284552,
+          "rank": 1,
+          "score": 0.9098,
+          "clap_cos": 0.352,
+          "pq": 8.23,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095607-e3de\\1910284552.png"
+        },
+        {
+          "ref": "20261115-095607-e3de:1910284551",
+          "seed": 1910284551,
+          "rank": 2,
+          "score": 0.9064,
+          "clap_cos": 0.4035,
+          "pq": 7.46,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095607-e3de\\1910284551.png"
+        },
+        {
+          "ref": "20261115-095607-e3de:1910284554",
+          "seed": 1910284554,
+          "rank": 3,
+          "score": 0.9006,
+          "clap_cos": 0.3589,
+          "pq": 7.86,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095607-e3de\\1910284554.png"
+        },
+        {
+          "ref": "20261115-095607-e3de:1910284555",
+          "seed": 1910284555,
+          "rank": 4,
+          "score": 0.8301,
+          "clap_cos": 0.2742,
+          "pq": 7.92,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095607-e3de\\1910284555.png"
+        },
+        {
+          "ref": "20261115-095607-e3de:1910284553",
+          "seed": 1910284553,
+          "rank": 5,
+          "score": 0.8204,
+          "clap_cos": 0.2566,
+          "pq": 8.0,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095607-e3de\\1910284553.png"
+        },
+        {
+          "ref": "20261115-095607-e3de:1910284556",
+          "seed": 1910284556,
+          "rank": 6,
+          "score": 0.7558,
+          "clap_cos": 0.3561,
+          "pq": 6.4,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-095607-e3de\\1910284556.png"
+        }
+      ],
+      "warnings": []
+    }
+  },
+  "cue_sheet": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Events\\events.json",
+  "updated": "2026-11-15 09:58:03"
+}

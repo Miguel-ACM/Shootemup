@@ -1,0 +1,51 @@
+{
+  "request": "20261115-095549-6638",
+  "ref": "20261115-095549-6638:1528144062",
+  "text": "cartoon hard candy bounce, bright plastic tock",
+  "prompt": "cartoon hard candy bounce, bright plastic tock, single cartoon boing, springy wobbling pitch, short decay, close-mic, dry, no reverb",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "cartoon-boing",
+  "seed": 1528144062,
+  "rank": 1,
+  "rank_score": 0.7525,
+  "clap": 0.9694,
+  "clap_cos": 0.2964,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.15,
+    "CU": 6.4,
+    "PC": 2.01,
+    "PQ": 6.69
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 4.68,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.5,
+    "length_frames": 12.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -23.6
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -5.8,
+    "true_peak_dbtp": -5.69,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00034,
+    "active_s": 0.89,
+    "noise_floor_db": -80.8,
+    "onset_s": 0.016,
+    "tail_db": -78.7,
+    "stereo_correlation": 1.0,
+    "lufs": -28.0,
+    "fails": [],
+    "warnings": []
+  }
+}

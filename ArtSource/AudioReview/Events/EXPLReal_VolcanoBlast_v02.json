@@ -1,0 +1,51 @@
+{
+  "request": "20261115-095539-670a",
+  "ref": "20261115-095539-670a:2103013097",
+  "text": "volcano eruption blast, rocks thrown, fiery explosion",
+  "prompt": "volcano eruption blast, rocks thrown, fiery explosion, single powerful explosion, sudden blast, deep low-end rumble, debris tail, close-mic, dry, no reverb",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "explosion",
+  "seed": 2103013097,
+  "rank": 2,
+  "rank_score": 0.7402,
+  "clap": 0.9812,
+  "clap_cos": 0.3555,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.21,
+    "CU": 5.9,
+    "PC": 2.47,
+    "PQ": 5.85
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": -1.26,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 2.0417,
+    "length_frames": 49.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -21.2
+  },
+  "signal": {
+    "duration_s": 3.0,
+    "peak_dbfs": 0.0,
+    "true_peak_dbtp": 0.05,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00061,
+    "active_s": 2.52,
+    "noise_floor_db": -40.4,
+    "onset_s": 0.0,
+    "tail_db": -87.4,
+    "stereo_correlation": 1.0,
+    "lufs": -17.3,
+    "fails": [],
+    "warnings": []
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "request": "20261115-095750-3492",
+  "ref": "20261115-095750-3492:19849726",
+  "text": "lightning strike crack, electric snap followed by rolling thunder, recorded at a distance",
+  "prompt": "lightning strike crack, electric snap followed by rolling thunder, recorded at a distance, single clear sound event, clean start and end, close-mic, dry, no reverb",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "misc",
+  "seed": 19849726,
+  "rank": 2,
+  "rank_score": 0.671,
+  "clap": 0.999,
+  "clap_cos": 0.4654,
+  "clap_top": null,
+  "aes": {
+    "CE": 2.79,
+    "CU": 5.22,
+    "PC": 2.33,
+    "PQ": 5.14
+  },
+  "fails": [],
+  "warnings": [
+    "a few clipped samples (0.014%)",
+    "so-so production quality (Audiobox PQ 5.1)"
+  ],
+  "post": {
+    "gain_db": -1.11,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 3.0,
+    "length_frames": 72.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -19.6
+  },
+  "signal": {
+    "duration_s": 4.0,
+    "peak_dbfs": 0.0,
+    "true_peak_dbtp": 0.04,
+    "clipped_fraction": 0.000139,
+    "dc_offset": 0.00018,
+    "active_s": 2.57,
+    "noise_floor_db": -53.0,
+    "onset_s": 0.1886,
+    "tail_db": -56.9,
+    "stereo_correlation": 1.0,
+    "lufs": -16.3,
+    "fails": [],
+    "warnings": [
+      "a few clipped samples (0.014%)"
+    ]
+  }
+}

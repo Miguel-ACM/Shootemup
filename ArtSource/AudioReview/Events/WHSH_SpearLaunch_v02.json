@@ -1,0 +1,51 @@
+{
+  "request": "20261115-095521-7c55",
+  "ref": "20261115-095521-7c55:1939769275",
+  "text": "fast heavy spear thrown, sharp air whoosh with metallic ring",
+  "prompt": "fast heavy spear thrown, sharp air whoosh with metallic ring, single fast air whoosh passing by, swells in and fades out quickly, close-mic, dry, no reverb",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "whoosh",
+  "seed": 1939769275,
+  "rank": 2,
+  "rank_score": 0.7138,
+  "clap": 0.9973,
+  "clap_cos": 0.3284,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.4,
+    "CU": 5.8,
+    "PC": 2.3,
+    "PQ": 5.78
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": 1.65,
+    "onset_s": 0.003,
+    "onset_frame": 0.072,
+    "length_s": 0.875,
+    "length_frames": 21.0,
+    "channels": 1
+  },
+  "final": {
+    "true_peak_dbtp": -1.0,
+    "lufs": -17.3
+  },
+  "signal": {
+    "duration_s": 2.0,
+    "peak_dbfs": -3.11,
+    "true_peak_dbtp": -3.11,
+    "clipped_fraction": 0.0,
+    "dc_offset": 8e-05,
+    "active_s": 0.7,
+    "noise_floor_db": -85.1,
+    "onset_s": 0.4061,
+    "tail_db": -81.8,
+    "stereo_correlation": 1.0,
+    "lufs": -17.2,
+    "fails": [],
+    "warnings": []
+  }
+}
