@@ -30,7 +30,10 @@ public sealed class CoinRain : MonoBehaviour
         for (int i = 0; i < due && remaining > 0; i++, remaining--)
         {
             float x = Random.Range(Camera.LeftLimit + .35f, Camera.RightLimit - .35f);
-            var coin = Instantiate(prefab, new Vector3(x, Camera.UpLimit + Random.Range(.4f, 1.4f), 1), Quaternion.identity).GetComponent<APickable>();
+            // Born well above the visible top edge, so no coin is ever seen appearing.
+            var view = UnityEngine.Camera.main;
+            float top = view != null ? view.transform.position.y + view.orthographicSize : Camera.UpLimit + 1;
+            var coin = Instantiate(prefab, new Vector3(x, Mathf.Max(top, Camera.UpLimit) + Random.Range(1.2f, 2.6f), 1), Quaternion.identity).GetComponent<APickable>();
             coin.Rain(Random.Range(2.6f, 4.2f));
         }
         if (remaining <= 0)
