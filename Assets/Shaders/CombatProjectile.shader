@@ -58,7 +58,9 @@ Shader "Shootemup/Combat Projectile"
                 color.rgb=lerp(lerp(color.rgb,brightness.xxx,_Neutralize)*hue,deep,_Dark);
                 color*=v.color;
                 brightness=max(color.r,max(color.g,color.b));
-                color.rgb=lerp(color.rgb,half3(1,.15,.07)*brightness,_Burn);
+                // Fire coating: a soft ember orange that keeps some of the round's own colour.
+                // Saturated full-strength red over every round was too loud (Miguel, 15 November 2026).
+                color.rgb=lerp(color.rgb,half3(.95,.46,.22)*brightness*.85,_Burn*.72);
                 // UVs stay local to the artwork when Unity batches sprite vertices in world space.
                 float toxic=_Poison*(1-_Burn*step(.5,v.uv.y));
                 color.rgb=lerp(color.rgb,_PoisonTint.rgb*brightness,toxic);
@@ -70,7 +72,8 @@ Shader "Shootemup/Combat Projectile"
                 color.rgb=lerp(color.rgb,half3(1,1,1),shine);
                 // HDR energy is collected by one shared bloom, never a light or halo per round.
                 // Keep the original silhouette and dark ink out of the emissive core.
-                color.rgb+=lerp(radiance*enamel*_Emission,radiance*outline*1.2,_Dark);
+                // Coated player rounds glow less, so a screen of burning shots does not flood the bloom.
+                color.rgb+=lerp(radiance*enamel*_Emission*(1-.5*_Burn),radiance*outline*1.2,_Dark);
                 color.a*=_Opacity;
                 clip(color.a-.005);return color;
             }

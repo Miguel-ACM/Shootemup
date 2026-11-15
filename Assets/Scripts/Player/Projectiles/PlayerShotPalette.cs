@@ -3,7 +3,8 @@ using UnityEngine;
 public static class PlayerShotPalette
 {
     public static readonly Color Poison = new Color(.42f, .70f, .58f);
-    public static readonly Color Fire = new Color(1, .15f, .07f);
+    // Ember orange, matching the softened fire coating on player rounds (15 November 2026).
+    public static readonly Color Fire = new Color(.95f, .4f, .18f);
     static readonly Gradient[] bodies = new Gradient[4], cores = new Gradient[4];
     public static bool Burning => CombatUpgrades.Current != null && CombatUpgrades.Current.Count(UpgradeKind.Gasoline) > 0;
     public static bool Toxic => CombatUpgrades.Current != null && CombatUpgrades.Current.Count(UpgradeKind.Poison) > 0;
