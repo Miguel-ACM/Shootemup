@@ -160,6 +160,7 @@ public sealed class PlayerRound : ABullet
         followness = .01f;
         direction = new Vector3(0, 1, -10);
         hit.Clear();
+        b.grindTimer = 0;
         b.damage = damage;
         b.speed = speed;
         b.delivery = mode;
@@ -222,7 +223,13 @@ public sealed class PlayerRound : ABullet
             Despawn();
             return;
         }
-        if ((delivery == PlayerDelivery.Disc || returns) && age > .75f && !returning)
+        // Discs hold and grind instead of returning (see Grind).
+        if (delivery == PlayerDelivery.Disc && age >= DiscOut + DiscHold)
+        {
+            Despawn();
+            return;
+        }
+        if (returns && delivery != PlayerDelivery.Disc && age > .75f && !returning)
         {
             returning = true;
             hit.Clear();
@@ -250,7 +257,7 @@ public sealed class PlayerRound : ABullet
     Time.deltaTime * (delivery == PlayerDelivery.Missile ? 4.5f : Mathf.Min(3, GameRules.playerShootFollowness)), 0);
         }
         float brake = delivery == PlayerDelivery.Shell ? Mathf.Clamp01(1 - age / .7f) :
-            delivery == PlayerDelivery.Missile ? Ignition(flight) : 1;
+            delivery == PlayerDelivery.Missile ? Ignition(flight) : delivery == PlayerDelivery.Disc ? DiscBrake() : 1;
         Vector3 wallFrom = transform.position;
         Vector2 step = heading * speed * brake * ShotTraits.SpeedScale(flight) * Time.deltaTime;
         travelled += step.magnitude;
@@ -276,7 +283,13 @@ public sealed class PlayerRound : ABullet
         transform.rotation = Quaternion.FromToRotation(Vector3.up, step.sqrMagnitude > .0000001f ? step : heading);
         Reshape();
         if (delivery == PlayerDelivery.Disc)
-            transform.Rotate(0, 0, age * 540);
+        {
+            bool holding = age >= DiscOut;
+            transform.Rotate(0, 0, age * (holding ? 1080 : 540));
+            visual.color = new Color(1, 1, 1, Mathf.Clamp01((DiscOut + DiscHold - age) / .2f));
+            if (holding)
+                Grind();
+        }
         if (delivery == PlayerDelivery.Missile)
             visual.sprite = PlayerProjectileArt.MissileFrame(Mathf.FloorToInt(age * PlayerProjectileArt.MissileFramesPerSecond));
         if (delivery == PlayerDelivery.Flame)
@@ -412,6 +425,41 @@ public sealed class PlayerRound : ABullet
 
     const float RocketTopSpeed = 24, RocketSplashRadius = .9f, RocketSplashShare = .4f;
     static readonly List<AEnemy> splashTargets = new List<AEnemy>();
+
+    // Disc Thrower (Miguel, 15 November 2026): a disc brakes to a stop a set distance ahead,
+    // whatever its shot speed, holds there spinning and keeps cutting every hull it touches,
+    // then fades. Its first pass still strikes like any round.
+    const float DiscReach = 3.2f, DiscOut = .4f, DiscHold = 1.5f, DiscTick = .12f, DiscTickShare = .25f;
+    float grindTimer;
+
+    // Linear braking that covers exactly DiscReach before the hold.
+    float DiscBrake()
+    {
+        if (age >= DiscOut)
+            return 0;
+        float scale = Mathf.Clamp(2 * DiscReach / Mathf.Max(.01f, speed * DiscOut), .3f, 4f);
+        return (1 - age / DiscOut) * scale;
+    }
+
+    void Grind()
+    {
+        grindTimer -= Time.deltaTime;
+        if (grindTimer > 0)
+            return;
+        grindTimer = DiscTick;
+        float radius = .3f * Mathf.Sqrt(GameRules.playerShootSize) * ShotTraits.SizeScale * (generation > 0 ? .85f : 1);
+        Vector2 at = transform.position;
+        splashTargets.Clear();
+        splashTargets.AddRange(AEnemy.Live);
+        foreach (var enemy in splashTargets)
+        {
+            if (enemy == null || !enemy.CanReceiveDamage)
+                continue;
+            if (!enemy.ClosestDamagePoint(at, out var near) || (near - at).sqrMagnitude > radius * radius)
+                continue;
+            CombatHit.Apply(enemy, damage * DiscTickShare, near, heading, generation, companion);
+        }
+    }
 
     // Every rocket bursts where it lands: a small fireball and splash damage to the hulls around it.
     void RocketBurst(AEnemy struck, Vector2 point)
