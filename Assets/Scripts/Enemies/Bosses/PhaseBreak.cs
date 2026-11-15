@@ -18,6 +18,12 @@ public sealed class PhaseBreak : MonoBehaviour
     float age;
     bool ruptured;
 
+    /// <summary>Raised at every boss phase break, with the boss position.</summary>
+    public static event System.Action<Vector3> Played;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetObservers() => Played = null;
+
     public static void Warm()
     {
         if (quad == null)
@@ -52,6 +58,7 @@ public sealed class PhaseBreak : MonoBehaviour
         effect.Pose(0);
         if (EZCameraShake.CameraShaker.Instance != null)
             EZCameraShake.CameraShaker.Instance.ShakeOnce(1.6f, 18, Implosion * .8f, .2f);
+        Played?.Invoke(at);
     }
 
     public void Pose(float seconds)

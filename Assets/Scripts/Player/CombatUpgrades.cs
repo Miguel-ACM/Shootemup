@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public enum UpgradeKind
 {
     Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice, RelaySwitch, LiveWire,
-    TapeMeasure, BrassKnuckles, Matchbox, Compost, PiggyBank, LoanShark
+    TapeMeasure, BrassKnuckles, Matchbox, Compost, PiggyBank, LoanShark, SecondWind
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -37,11 +37,13 @@ public sealed class CombatUpgrades : MonoBehaviour
         ship = GetComponent<Shipcontroller>();
         loadout = GetComponent<ShipLoadout>();
         arrivedStage = LevelRun.Stage;
+        PhaseBreak.Played += PhaseBroken;
         _ = GameInput.Actions;
     }
 
     void OnDestroy()
     {
+        PhaseBreak.Played -= PhaseBroken;
         if (Current == this)
             Current = null;
     }
@@ -144,6 +146,12 @@ public sealed class CombatUpgrades : MonoBehaviour
 
     /// <summary>Shared feedback throttle for item effects outside this class.</summary>
     public bool Gate(string key, float cooldown) => Ready(key, cooldown);
+
+    void PhaseBroken(Vector3 at)
+    {
+        if (Count(UpgradeKind.SecondWind) > 0 && ship != null && ship.health > 0)
+            SecondWind.Breathe(ship);
+    }
 
     bool Ready(string key, float cooldown)
     {

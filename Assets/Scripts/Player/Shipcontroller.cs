@@ -635,6 +635,12 @@ public class Shipcontroller : MonoBehaviour
         manaBar.Set(mana);
     }
 
+    public void RefillEnergy()
+    {
+        mana = maxMana;
+        manaBar.Set(mana);
+    }
+
     public void HealManaFlat(float heal)
     {
         var upgrades = GetComponent<CombatUpgrades>();
