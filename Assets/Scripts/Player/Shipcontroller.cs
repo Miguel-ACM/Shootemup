@@ -75,7 +75,7 @@ public class Shipcontroller : MonoBehaviour
     {
         get; private set;
     }
-    public bool IsInvulnerable => invulnerable || (GetComponent<ShipBarrelRoll>()?.Active ?? false) || GetComponent<SpellCardCast>() != null;
+    public bool IsInvulnerable => invulnerable || (GetComponent<ShipBarrelRoll>()?.Active ?? false) || GetComponent<SpellCardCast>() != null || GetComponent<ChronoShift>() != null;
 
     void Awake()
     {
