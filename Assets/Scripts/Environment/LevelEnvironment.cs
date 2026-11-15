@@ -270,11 +270,6 @@ public sealed class LevelEnvironment : MonoBehaviour
         public float gustAlpha;
     }
 
-    sealed class Traffic
-    {
-        public Transform transform; public float x, y, speed, direction; public bool horizontal;
-    }
-
     struct Flake
     {
         public Vector2 position; public float speed, size, phase, depth;
@@ -384,7 +379,6 @@ public sealed class LevelEnvironment : MonoBehaviour
     readonly List<Transform> sections = new List<Transform>();
     readonly List<Transform> foreground = new List<Transform>();
     readonly List<Atmosphere> atmosphere = new List<Atmosphere>();
-    readonly List<Traffic> traffic = new List<Traffic>();
     readonly List<Mesh> ownedMeshes = new List<Mesh>();
     readonly List<AudioClip> ownedAudio = new List<AudioClip>();
     Mesh weather;
@@ -742,16 +736,23 @@ public sealed class LevelEnvironment : MonoBehaviour
                     // Leaf builder uses a section-start origin; the terrain uses its centre.
                     Add(leaves, section, new Vector3(0, -10, 0), -39).GetComponent<MeshRenderer>().sharedMaterial = snowFoliageMaterial;
                 }
+                else if (level == LevelId.City)
+                {
+                    // A destroyed city, rebuilt from the seed (Miguel, 15 November 2026): no street grid.
+                    var ruinedGround = CityRuinsGeometry.Ground(LevelRun.Seed, i);
+                    ownedMeshes.Add(ruinedGround);
+                    Add(ruinedGround, section, Vector3.zero, -50);
+                }
                 else
                     Add(kit[level + "Ground" + i], section, Vector3.zero, -50);
                 if (level == LevelId.City)
                 {
-                    var buildings = CityDistrictGeometry.Build(LevelRun.Seed, i, out var shadows);
+                    var buildings = CityRuinsGeometry.Build(LevelRun.Seed, i, out var shadows);
                     ownedMeshes.Add(buildings);
                     ownedMeshes.Add(shadows);
                     Add(buildings, section, Vector3.zero, -40);
-                    // Drawn after the buildings without writing depth: shadows land on streets,
-                    // squares and parks but never on the rooftops above them.
+                    // Drawn after the ruins without writing depth: shadows land on the ground and
+                    // rubble but never on the broken walls above them.
                     if (cityShadowMaterial == null)
                     {
                         cityShadowMaterial = new Material(material) { name = "City sun shadows" };
@@ -762,8 +763,9 @@ public sealed class LevelEnvironment : MonoBehaviour
                 else if (level != LevelId.Desert && level != LevelId.Snow)
                     Add(kit[level + "Detail" + i], section, Vector3.zero, -40);
                 sections.Add(section);
-                var nearMesh = level == LevelId.Desert ? DesertGeometry.Near(i, LevelRun.Seed) : level == LevelId.Snow ? SnowLandscapeGeometry.Detail(i, snowLandscape, true) : kit[level + "Near" + i];
-                if (level == LevelId.Desert || level == LevelId.Snow)
+                var nearMesh = level == LevelId.Desert ? DesertGeometry.Near(i, LevelRun.Seed) : level == LevelId.Snow ? SnowLandscapeGeometry.Detail(i, snowLandscape, true) :
+                    level == LevelId.City ? CityRuinsGeometry.Near(LevelRun.Seed, i) : kit[level + "Near" + i];
+                if (level == LevelId.Desert || level == LevelId.Snow || level == LevelId.City)
                     ownedMeshes.Add(nearMesh);
                 var near = Add(nearMesh, transform, new Vector3(0, (i - 1) * SectionLength, 76), -25);
                 near.localScale = new Vector3(.8f, 1, 1);
@@ -802,10 +804,8 @@ public sealed class LevelEnvironment : MonoBehaviour
             }
             if (level == LevelId.City)
             {
-                AddAtmosphere("Wisps above the distant city", 0, 35, new Color(.72f, .80f, .84f, .05f), 2.6f, .32f);
-                var cars = BuildTrafficSteps();
-                while (cars.MoveNext())
-                    yield return cars.Current;
+                // Smoke drifts over the ruins; no traffic runs through them.
+                AddAtmosphere("Smoke over the ruins", 0, 35, new Color(.30f, .28f, .27f, .16f), 2.6f, .32f);
             }
         }
         if (level == LevelId.Snow || level == LevelId.Thunder)
@@ -904,27 +904,6 @@ public sealed class LevelEnvironment : MonoBehaviour
         // The blizzard's howl sits well under the combat mix; the sandstorm's hiss a little louder.
         float level = Blizzard ? .13f : .2f;
         windAudio.volume = Mathf.MoveTowards(windAudio.volume, level * fade * swell, Time.deltaTime * .4f);
-    }
-
-    IEnumerator BuildTrafficSteps()
-    {
-        // RUSH HOUR packs the avenues below with far more cars.
-        bool rush = condition == DistrictCondition.RushHour;
-        int cars = rush ? 64 : 24, avenues = rush ? 44 : 16;
-        for (int i = 0; i < cars; i++)
-        {
-            bool horizontal = i >= avenues;
-            float direction = i % 2 == 0 ? -1 : 1;
-            // Avenue pitch 2.6 is scaled by .8; cross streets repeat every 2.5 units.
-            float x = horizontal ? Range(-8, 8) : (i % 5 - 2) * 2.08f + direction * .08f;
-            float y = horizontal ? (((i - avenues) % 8) * 3 + 2) * 2.5f - direction * .07f : Range(-20, 40);
-            var car = Add(kit[i % 3 == 0 ? "CityTaxi" : "CitySedan"], transform, new Vector3(x, y, 88), -34);
-            float angle = horizontal ? (direction > 0 ? 90 : 270) : direction < 0 ? 0 : 180;
-            car.localRotation = Quaternion.Euler(0, 0, angle);
-            car.localScale = new Vector3(.18f, .23f, .23f);
-            traffic.Add(new Traffic { transform = car, x = x, y = y, speed = Range(.45f, .75f), direction = direction, horizontal = horizontal });
-            yield return null;
-        }
     }
 
     IEnumerator BuildStormSteps(bool background)
@@ -1028,15 +1007,6 @@ public sealed class LevelEnvironment : MonoBehaviour
             sections[i].localPosition = new Vector3(HorizontalOffset, y, 90);
             foreground[i].localPosition = new Vector3(HorizontalOffset * 1.65f, y, 76);
         }
-        foreach (var car in traffic)
-        {
-            if (car.horizontal)
-                car.x = Mathf.Repeat(car.x + dt * car.speed * car.direction + 11, 22) - 11;
-            else
-                car.y = Mathf.Repeat(car.y + dt * car.speed * car.direction + 30, LoopLength) - 30;
-            float y = Mathf.Repeat(car.y - travel + 30, LoopLength) - 30;
-            car.transform.localPosition = new Vector3(car.x + HorizontalOffset, y, 88);
-        }
         if (flakes != null)
             UpdateWeather(dt);
         if (snowFoliageMaterial != null)
@@ -1089,12 +1059,6 @@ public sealed class LevelEnvironment : MonoBehaviour
         }
         foreach (var layer in atmosphere)
             layer.transform.localPosition = new Vector3(HorizontalOffset * layer.parallax, 0, layer.transform.localPosition.z);
-        foreach (var car in traffic)
-        {
-            var p = car.transform.localPosition;
-            p.x = car.x + HorizontalOffset;
-            car.transform.localPosition = p;
-        }
         if (weatherTransform != null)
             weatherTransform.localPosition = new Vector3(HorizontalOffset * 2.2f, 0, 32);
         if (lightningRoot != null)

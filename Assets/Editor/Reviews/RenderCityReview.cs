@@ -138,7 +138,8 @@ public static class RenderCityReview
             var blocks = new GameObject("Seeded architecture");
             SceneManager.MoveGameObjectToScene(blocks, scene);
             blocks.transform.localScale = new Vector3(.8f, 1, 1);
-            architecture = CityDistrictGeometry.Build(seed, section);
+            architecture = CityRuinsGeometry.Build(seed, section, out var ruinShadows);
+            UnityEngine.Object.DestroyImmediate(ruinShadows);
             blocks.AddComponent<MeshFilter>().sharedMesh = architecture;
             var renderer = blocks.AddComponent<MeshRenderer>();
             renderer.sharedMaterial = material;

@@ -488,11 +488,13 @@ public sealed class CombatExpansionProbe : MonoBehaviour
         yield return null;
         Check(DecisionShop.RewardCount(0, .9f) == 2 && DecisionShop.RewardCount(0, .04f) == 3 && DecisionShop.RewardCount(0, .001f) == 4, "reward count is two by default with rare third and fourth choices");
         Check(DecisionShop.RewardCount(.5f, .15f) > DecisionShop.RewardCount(0, .15f), "luck increases the chance of extra reward choices");
-        var a = CityDistrictGeometry.Build(170, 0);
-        var b = CityDistrictGeometry.Build(171, 0);
-        Check(a.vertexCount != b.vertexCount, "city seeds produce different building layouts");
+        var a = CityRuinsGeometry.Build(170, 0, out var shadowA);
+        var b = CityRuinsGeometry.Build(171, 0, out var shadowB);
+        Check(a.vertexCount != b.vertexCount, "city seeds produce different ruins");
         Destroy(a);
         Destroy(b);
+        Destroy(shadowA);
+        Destroy(shadowB);
         // Real shop purchase, affordability, close-range claim and bottom skip.
         foreach (string kind in new[] { "scoreShop", "multiplierShop", "reward" })
         {

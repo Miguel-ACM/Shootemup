@@ -498,6 +498,48 @@ public static class RenderDistrictConditions
             EditorApplication.Exit(code);
     }
 
+    // Batch: -executeMethod RenderDistrictConditions.CityRuins
+    // The destroyed City through the real environment build, two seeds, two stretches each,
+    // with combatants for scale.
+    public static void CityRuins()
+    {
+        int code = 0;
+        try
+        {
+            Directory.CreateDirectory(Folder);
+            int[] seeds = { 170, 9826 };
+            var cells = new Texture2D[seeds.Length, 2];
+            // The first environment build in a fresh editor warms the shared level assets.
+            LevelRun.Reset(LevelId.City, seeds[0]);
+            UnityEngine.Object.DestroyImmediate(Environment(LevelId.City));
+            for (int row = 0; row < seeds.Length; row++)
+            {
+                EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                Shader.SetGlobalVector("_PSXSnapResolution", new Vector4(Width, Height, 0, 0));
+                DistrictConditions.Forced = DistrictCondition.Ordinary;
+                LevelRun.Reset(LevelId.City, seeds[row]);
+                var city = Environment(LevelId.City);
+                var combat = Combatants(LevelProjectilePalette.Accent(LevelId.City), 0);
+                for (int column = 0; column < 2; column++)
+                {
+                    typeof(LevelEnvironment).GetField("travel", Hidden).SetValue(city.GetComponent<LevelEnvironment>(), column * 23f);
+                    typeof(LevelEnvironment).GetMethod("Update", Hidden).Invoke(city.GetComponent<LevelEnvironment>(), null);
+                    cells[row, column] = Capture(Camera(0, 8.85f));
+                }
+                UnityEngine.Object.DestroyImmediate(combat);
+            }
+            Save("CityRuins.png", cells);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+            code = 1;
+        }
+        DistrictConditions.Forced = null;
+        if (Application.isBatchMode)
+            EditorApplication.Exit(code);
+    }
+
     // Batch: -executeMethod RenderDistrictConditions.PoisonCloud
     // Compost's gas clouds over the valley: a fresh small heap, a rotten heap and one fading out.
     public static void PoisonCloud()
