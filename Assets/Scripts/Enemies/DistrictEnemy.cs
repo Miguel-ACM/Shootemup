@@ -25,6 +25,12 @@ public abstract class DistrictEnemy : AEnemy
     public static float PresentationScale(Type type) => type == typeof(CourierDiver) || type == typeof(AttackDrone) ||
         type == typeof(PursuitFighter) || type == typeof(CommandGunship) || type == typeof(MetroLancer) ||
         type == typeof(TerraceGunboat) ? CityModelScale : 1;
+    // City's slender hulls were too thin to read (Miguel, 15 November 2026): their models are
+    // widened and deepened, never lengthened, so the design stays and the silhouette thickens.
+    // Ports and thrusters ride the hull; contacts and health classification do not change.
+    public static Vector3 Girth(Type type) => type == typeof(CourierDiver) ? new Vector3(1.45f, 1, 1.3f) :
+        type == typeof(MetroLancer) ? new Vector3(1.35f, 1, 1.25f) :
+        type == typeof(PursuitFighter) || type == typeof(AttackDrone) ? new Vector3(1.2f, 1, 1.15f) : Vector3.one;
     [Min(.1f), EnemyTunable("Firing / Shell travel distance", .1f, 16)] public float shellTravelDistance = 3.8f;
     [EnemyTunable("Firing / Attack interval", .05f, 20)] protected float attackInterval = 2;
     public float MovementScale { get; private set; } = 1;
@@ -151,7 +157,7 @@ public abstract class DistrictEnemy : AEnemy
         go.GetComponent<CircleCollider2D>().radius = enemy.hullScale * .8f;
         var model = new GameObject("Armored hull");
         model.transform.SetParent(go.transform, false);
-        model.transform.localScale = Vector3.one * enemy.hullScale;
+        model.transform.localScale = Girth(type) * enemy.hullScale;
         model.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CombatHull(enemy.hull);
         var renderer = model.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = enemy is SpaceSatellite || enemy is SpaceCitadelBoss || enemy.hull == 60 ? SpaceMaterials.Fleet : enemy.hull >= 35 && enemy.hull <= 38 || enemy.hull == 57 ? CandyMaterials.Glaze : enemy is FieldsBomberBoss ? CombatMaterials.Fortress : CombatMaterials.Fleet;
