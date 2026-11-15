@@ -15,6 +15,8 @@ public sealed class CargoEscort : MonoBehaviour
     public ItemRarity Quality => (ItemRarity)Mathf.Min(3, CompletedWaves);
     public string Rarity => rarityNames[(int)Quality];
     public bool Finished => finished;
+    // The simulator's Cold Delivery crate, which counts only its two ordinary waves.
+    public bool Trial => trial;
     public float ClaimProgress => claimCharge / ClaimSeconds;
     public InputAction OpenControl => collect;
     Shipcontroller ship;

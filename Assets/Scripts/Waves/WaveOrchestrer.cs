@@ -197,6 +197,10 @@ public class WaveOrchestrer : MonoBehaviour
             minibossVictory = currentWaveKilledEnemies >= currentWaveEnemies;
             activeMiniboss = null;
             minibossDeadline = -1;
+            // A miniboss fight carried through also improves campaign cargo by one rarity
+            // (Miguel, 15 November 2026); the simulator's Cold Delivery still counts ordinary waves.
+            if (cargo != null && !cargo.Trial)
+                FinishCargoWave();
         }
         else
         {
