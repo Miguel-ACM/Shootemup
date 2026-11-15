@@ -167,6 +167,39 @@ public sealed class FlightTrials
     // Classic tapes with their own rules, named so the list can be reordered freely.
     static readonly FlightTrials secondaryFireTape = Find("Crossfire"), cargoTape = Find("Cold Delivery"), noRepairTape = Find("Last Light");
 
+    // Tapes fly authored district conditions, chosen for variety across the simulator instead of
+    // the seed's roll (Miguel, 15 November 2026). The first tape is always the clear daytime river
+    // valley; anything not listed flies the ordinary district.
+    static readonly Dictionary<string, (LevelId district, DistrictCondition condition)[]> tapeConditions = new Dictionary<string, (LevelId, DistrictCondition)[]>
+    {
+        { "Crossfire", new[] { (Fields, DistrictCondition.Ordinary) } },
+        { "On the Beat", new[] { (Fields, DistrictCondition.Dusk) } },
+        { "Change of Plans", new[] { (Fields, DistrictCondition.Forest) } },
+        { "Triple Harvest", new[] { (Fields, DistrictCondition.Night) } },
+        { "Blank Check", new[] { (Snow, DistrictCondition.Blizzard) } },
+        { "Cold Snap", new[] { (Snow, DistrictCondition.Blizzard) } },
+        { "Drift School", new[] { (City, DistrictCondition.RushHour) } },
+        { "Dead Stick", new[] { (Thunder, DistrictCondition.Thunderstorm) } },
+        { "Bank Job", new[] { (Tunnel, DistrictCondition.DeepPassages) } },
+        { "Side Hustle", new[] { (Desert, DistrictCondition.Sandstorm) } },
+        { "Exact Change", new[] { (Candyland, DistrictCondition.CandyRain) } },
+        { "Switchback", new[] { (Underwater, DistrictCondition.Minefield) } },
+        { "Moon Tax", new[] { (Space, DistrictCondition.SolarFlare) } },
+        { "Three Fronts", new[] { (Desert, DistrictCondition.Sandstorm) } },
+        { "Kitchen Fire", new[] { (Hell, DistrictCondition.Eruption) } },
+        { "Silent Approach", new[] { (Heaven, DistrictCondition.SpearRain) } },
+        { "Second Shift", new[] { (City, DistrictCondition.RushHour) } },
+    };
+
+    public DistrictCondition ConditionFor(LevelId level)
+    {
+        if (tapeConditions.TryGetValue(title, out var conditions))
+            foreach (var (place, condition) in conditions)
+                if (place == level)
+                    return condition;
+        return DistrictCondition.Ordinary;
+    }
+
     public static FlightTrials Active { get; private set; }
     static int legIndex;
     static bool approachOver;

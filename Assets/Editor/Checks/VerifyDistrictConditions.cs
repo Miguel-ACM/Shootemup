@@ -30,6 +30,7 @@ public static class VerifyDistrictConditions
             Events();
             Asteroids();
             TunnelMix();
+            SimulatorConditions();
         }
         catch (Exception ex)
         {
@@ -361,6 +362,26 @@ public static class VerifyDistrictConditions
         foreach (var leftover in UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include))
             if (leftover is LightningStrike || leftover is SpearStrike || leftover is CandyDrop || leftover is DepthMine)
                 UnityEngine.Object.DestroyImmediate(leftover.gameObject);
+    }
+
+    // Simulator tapes fly authored conditions: each fits its district, the first tape is the clear
+    // daytime river valley, and the tapes between them show a wide variety.
+    static void SimulatorConditions()
+    {
+        var shown = new HashSet<DistrictCondition>();
+        foreach (var tape in FlightTrials.All)
+        {
+            var districts = tape.legs != null ? tape.legs.Select(leg => leg.district) : new[] { tape.district };
+            foreach (var district in districts)
+            {
+                var condition = tape.ConditionFor(district);
+                Check(DistrictConditions.Allowed(district, condition), tape.title + " flies " + condition + " in " + district);
+                shown.Add(condition);
+            }
+        }
+        Check(FlightTrials.All[0].ConditionFor(LevelId.Fields) == DistrictCondition.Ordinary, "The first tape must fly the daytime river valley");
+        Check(shown.Count >= 12, "Simulator tapes show too few conditions: " + shown.Count);
+        report.Add("Simulator conditions: " + string.Join(", ", shown));
     }
 
     // Tunnel waves mix their ships: ordinary waves never repeat an enemy type, and neither ordinary

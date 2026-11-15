@@ -25,6 +25,12 @@ public static class DistrictConditions
     {
         if (Forced.HasValue)
             return Allowed(level, Forced.Value) ? Forced.Value : DistrictCondition.Ordinary;
+        // Simulator tapes fly the conditions authored for them.
+        if (FlightTrials.Active != null)
+        {
+            var authored = FlightTrials.Active.ConditionFor(level);
+            return Allowed(level, authored) ? authored : DistrictCondition.Ordinary;
+        }
         int roll = Hash(seed, (int)level * 7349 + 811) % 100;
         switch (level)
         {
