@@ -11,6 +11,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve Hayloft = FlightCurve.Stations("Plains / Hayloft sentry", Vector2.right,
         new[] { 0f, .22f, .66f, 1f }, -.38f, 1.24f, -.38f, .76f, -.38f, .76f, -1.38f, .86f);
     static readonly FlightCurve Hedgerow = Route("Plains / Hedgerow straight", Vector2.up, -1.4f, .73f, 1.4f, .73f);
+    static readonly FlightCurve Windmill = Route("Plains / Windmill turn", Vector2.right, -.40f, 1.24f, -.62f, .86f, -.48f, .58f, -.05f, .50f, .30f, .66f, .18f, .92f, -.12f, 1.24f);
+    static readonly FlightCurve Furrow = Route("Plains / Furrow sweep", Vector2.up, -1.38f, .70f, -.66f, .60f, .02f, .66f, .64f, .80f, 1.38f, .90f);
+    static readonly FlightCurve Haystack = FlightCurve.Stations("Plains / Haystack posts", Vector2.right, new[] { 0f, .17f, .33f, .50f, .67f, 1f }, .58f, 1.26f, .58f, .80f, .58f, .80f, -.20f, .70f, -.20f, .70f, -1.38f, .82f);
     public static readonly WavePart[] Plains ={
         new WavePart("Reedbank climb", "ReedSkimmer", Route("Plains / Reedbank climb", Vector2.right, -.82f,-.4f, -.85f,.18f, -.69f,.48f, -.38f,.69f, -.45f,1.4f), WaveShape.Train, 3, 4.9f, 4, new[]{.44f,.66f}, WaveMotion.Rising),
         new WavePart("Hayloft sentry", "PatrolGunship", Hayloft, WaveShape.Solo, 1, 5.6f, 5, new[] { .30f, .46f, .62f }, motion: WaveMotion.Station),
@@ -30,6 +33,10 @@ public static partial class WavePartLibrary
         new WavePart("Bomber crescent","HeavyBomber",Crescent,WaveShape.Solo,1,5.4f,7),
         new WavePart("Ridge patrol","PatrolGunship",Ridge,WaveShape.Train,2,5.4f,6),
         new WavePart("Bomber bank","HeavyBomber",Orchard,WaveShape.Solo,1,5.4f,9),
-        new WavePart("Orchard guard","PatrolGunship",Orchard,WaveShape.Rank,2,5.5f,8)
+        new WavePart("Orchard guard","PatrolGunship",Orchard,WaveShape.Rank,2,5.5f,8),
+        new WavePart("Windmill turn", "ScoutInterceptor", Windmill, WaveShape.Train, 5, 5.2f, 3),
+        new WavePart("Furrow sweep", "ScoutInterceptor", Furrow, WaveShape.Rank, 3, 4.7f, 4),
+        new WavePart("Haystack relay", "PatrolGunship", Haystack, WaveShape.Solo, 1, 6.0f, 6, new[] { .24f, .42f, .60f }, WaveMotion.Relay),
+        new WavePart("Windmill harrows", nameof(HarrowBomber), Windmill, WaveShape.Rank, 2, 5.6f, 8, new[] { .33f, .64f })
     };
 }

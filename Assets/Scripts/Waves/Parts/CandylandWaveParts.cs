@@ -11,6 +11,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve SugarFountain = Route("Candyland / Sugar fountain", Vector2.right, -.3f, 1.4f, -.11f, .85f, .34f, .60f, .66f, .62f, .78f, .92f, .9f, 1.4f);
     static readonly FlightCurve WrapperSweep = Route("Candyland / Wrapper sweep", Vector2.up, -1.6f, .39f, -.75f, .37f, -.28f, .56f, .3f, .80f, .83f, .83f, 1.6f, .72f);
     static readonly FlightCurve LicoriceKnot = Route("Candyland / Licorice knot", Vector2.right, .38f, 1.4f, .56f, .92f, .25f, .72f, -.42f, .66f, -.52f, .40f, .12f, .20f, .55f, -.4f);
+    static readonly FlightCurve Lollipop = Route("Candyland / Lollipop swirl", Vector2.right, .20f, 1.40f, -.30f, .88f, -.50f, .62f, -.20f, .44f, .30f, .56f, .40f, .86f, .10f, 1.40f);
+    static readonly FlightCurve Gumball = Route("Candyland / Gumball chute", Vector2.up, 1.60f, .80f, .70f, .62f, 0, .74f, -.70f, .56f, -1.60f, .70f);
+    static readonly FlightCurve SprinkleRise = Route("Candyland / Sprinkle rise", Vector2.right, -.80f, -.40f, -.70f, .20f, -.30f, .44f, .10f, .76f, -.05f, 1.40f);
     public static readonly WavePart[] Candyland ={
         new WavePart("Gumdrop shelf", "GumdropMortar", FlightCurve.Stations("Candyland / Gumdrop perch", Vector2.right, new[]{0f,.20f,.62f,1f}, -.57f,1.4f, -.57f,.78f, -.57f,.78f, -1.7f,.60f), WaveShape.Solo, 1, 4.6f, 4, new[]{.28f,.46f,.58f}, WaveMotion.Station),
         new WavePart("Popping candy elevator", "BonbonSkirmisher", Route("Candyland / Popping elevator", Vector2.right, .83f,-.4f, .81f,.18f, .59f,.42f, .66f,.79f, .38f,1.4f), WaveShape.Train, 5, 3.4f, 2, new[]{.45f,.67f}, WaveMotion.Rising),
@@ -32,6 +35,10 @@ public static partial class WavePartLibrary
         new WavePart("Sugar needlework","WaferDart",SugarSpiral,WaveShape.Train,8,2.7f,10),
         new WavePart("Confection crown","BonbonSkirmisher",TaffyLoop,WaveShape.Chevron,5,2.6f,11),
         new WavePart("Whirling mint staff","MintSpinner",MintWheel,WaveShape.Rank,4,2.7f,12),
-        new WavePart("Last wrapper rush","BonbonSkirmisher",LicoriceKnot,WaveShape.Train,9,2.8f,14)
+        new WavePart("Last wrapper rush","BonbonSkirmisher",LicoriceKnot,WaveShape.Train,9,2.8f,14),
+        new WavePart("Lollipop swirl", "BonbonSkirmisher", Lollipop, WaveShape.Train, 8, 3.0f, 3),
+        new WavePart("Gumball chute", "WaferDart", Gumball, WaveShape.Train, 7, 2.8f, 4),
+        new WavePart("Sprinkle rise", "MintSpinner", SprinkleRise, WaveShape.Train, 5, 3.1f, 5, new[] { .44f, .66f }, WaveMotion.Rising),
+        new WavePart("Lollipop wafers", "WaferDart", Lollipop, WaveShape.Chevron, 5, 2.8f, 9)
     };
 }

@@ -13,6 +13,9 @@ public static partial class WavePartLibrary
         -.78f, -.25f, -.79f, .13f, -.63f, .46f, -.31f, .74f, .18f, 1.24f);
     static readonly FlightCurve SwitchPosts = FlightCurve.Stations("City / Two rooftop posts", Vector2.right,
         new[] { 0f, .18f, .34f, .50f, .68f, 1f }, -.62f, 1.25f, -.62f, .76f, -.62f, .76f, .55f, .69f, .55f, .69f, 1.4f, .9f);
+    static readonly FlightCurve Boulevard = Route("City / Boulevard straight", Vector2.up, 1.38f, .78f, -1.38f, .78f);
+    static readonly FlightCurve Cloverleaf = Route("City / Cloverleaf", Vector2.right, -.30f, 1.24f, -.62f, .88f, -.40f, .58f, .10f, .62f, .42f, .40f, .20f, .12f, -.10f, -.24f);
+    static readonly FlightCurve Overpass = Route("City / Overpass hop", Vector2.up, -1.38f, .52f, -.62f, .70f, 0, .52f, .62f, .72f, 1.38f, .56f);
     public static readonly WavePart[] City ={
         new WavePart("Rooftop shadow", "PursuitFighter", RoofWatch, WaveShape.Solo, 1, 5.5f, 6, new[] { .31f, .47f, .64f }, motion: WaveMotion.Pursuit),
         new WavePart("Service lift couriers", "CourierDiver", ServiceLift, WaveShape.Train, 3, 4.3f, 4, new[] { .46f, .65f }, motion: WaveMotion.Rising),
@@ -32,6 +35,10 @@ public static partial class WavePartLibrary
         new WavePart("Rooftop pursuit","PursuitFighter",CityLoop,WaveShape.Solo,1,4.5f,6),
         new WavePart("Junction pursuit","PursuitFighter",Junction,WaveShape.Solo,1,4.5f,7),
         new WavePart("Command ramp","CommandGunship",CityRamp,WaveShape.Solo,1,5,8),
-        new WavePart("Command interchange","CommandGunship",CityChoreography.Interchange,WaveShape.Solo,1,5,10)
+        new WavePart("Command interchange","CommandGunship",CityChoreography.Interchange,WaveShape.Solo,1,5,10),
+        new WavePart("Boulevard file", "CourierDiver", Boulevard, WaveShape.Train, 5, 3.2f, 3, null, WaveMotion.Straight),
+        new WavePart("Cloverleaf couriers", "CourierDiver", Cloverleaf, WaveShape.Train, 5, 3.7f, 4),
+        new WavePart("Overpass drones", "AttackDrone", Overpass, WaveShape.Rank, 3, 4.0f, 5),
+        new WavePart("Cloverleaf pursuit", "PursuitFighter", Cloverleaf, WaveShape.Solo, 1, 4.6f, 8)
     };
 }

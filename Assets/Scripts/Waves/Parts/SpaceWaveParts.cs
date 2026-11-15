@@ -10,6 +10,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve Perigee = Route("Space / Perigee scissors", Vector2.right, .69f, 1.24f, .74f, .89f, .31f, .60f, -.22f, .73f, -.45f, 1.0f, -.47f, 1.24f);
     static readonly FlightCurve Observation = FlightCurve.Stations("Space / Observation stations", Vector2.right,
         new[] { 0f, .20f, .37f, .53f, .72f, 1f }, -.55f, 1.26f, -.55f, .83f, -.55f, .83f, .52f, .78f, .52f, .78f, .8f, 1.26f);
+    static readonly FlightCurve Retrograde = Route("Space / Retrograde pass", Vector2.right, .70f, 1.50f, .56f, .90f, .10f, .70f, -.36f, .76f, -.62f, .52f, -.70f, -.40f);
+    static readonly FlightCurve Ecliptic = Route("Space / Ecliptic", Vector2.up, -1.40f, .74f, -.70f, .62f, 0, .74f, .70f, .86f, 1.40f, .74f);
+    static readonly FlightCurve Precession = Route("Space / Precession", Vector2.right, -.20f, 1.50f, -.55f, .90f, -.30f, .60f, .20f, .58f, .50f, .82f, .30f, 1.50f);
     public static readonly WavePart[] Space ={
         new WavePart("Lagrange shadow", "OrbitalScout", FlightCurve.Stations("Space / Lagrange shadow", Vector2.right, new[]{0f,.25f,.66f,1f}, -.27f,1.5f, -.27f,.75f, -.27f,.75f, .75f,1.5f).WithTracking(.18f,.10f), WaveShape.Solo, 1, 5.7f, 6, new[]{.34f,.48f,.62f}, WaveMotion.Pursuit),
         new WavePart("Solar escape train", "OrbitalScout", Route("Space / Solar escape", Vector2.right, -.82f,-.4f, -.74f,.15f, -.38f,.43f, .18f,.57f, .63f,.88f, .81f,1.4f), WaveShape.Train, 4, 4.4f, 2, new[]{.44f,.65f}, WaveMotion.Rising),
@@ -24,6 +27,10 @@ public static partial class WavePartLibrary
         new WavePart("Slingshot dish escort","LaserSatellite",Slingshot,WaveShape.Solo,1,4.9f),
         new WavePart("Opposed relay scouts","OrbitalScout",Terminator,WaveShape.Rake,4,4.0f),
         new WavePart("Wide apogee carrier","OrbitalCarrier",Apogee,WaveShape.Solo,1,5.1f,8),
-        new WavePart("Perigee laser rake","LaserSatellite",Perigee,WaveShape.Rake,2,4.8f,10)
+        new WavePart("Perigee laser rake","LaserSatellite",Perigee,WaveShape.Rake,2,4.8f,10),
+        new WavePart("Retrograde scouts", "OrbitalScout", Retrograde, WaveShape.Train, 4, 4.0f, 3),
+        new WavePart("Ecliptic rank", "OrbitalScout", Ecliptic, WaveShape.Rank, 4, 4.0f, 4),
+        new WavePart("Precession emitters", "LaserSatellite", Precession, WaveShape.Train, 2, 4.8f, 6),
+        new WavePart("Retrograde carrier", "OrbitalCarrier", Retrograde, WaveShape.Solo, 1, 5.1f, 9)
     };
 }

@@ -7,6 +7,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve PipeBank = Route("Tunnel / Pipe bank", Vector2.right, .66f, 1.24f, .77f, .94f, .71f, .70f, .55f, .56f, .15f, .52f, -.20f, .66f, -.25f, .95f, -.25f, 1.24f);
     static readonly FlightCurve UpperRail = Route("Tunnel / Upper rail", Vector2.up, 1.36f, .96f, .76f, .86f, .09f, .8f, -.6f, .88f, -1.36f, .98f);
     static readonly FlightCurve ServiceGate = Route("Tunnel / Service gate", Vector2.right, 0, 1.24f, -.35f, 1.0f, -.55f, .78f, -.36f, .64f, .02f, .60f, .43f, .74f, .58f, .98f, .60f, 1.24f);
+    static readonly FlightCurve Conduit = Route("Tunnel / Conduit hop", Vector2.right, .64f, 1.24f, .70f, .86f, .40f, .64f, -.10f, .70f, -.45f, .52f, -.60f, -.30f);
+    static readonly FlightCurve Crawlway = Route("Tunnel / Crawlway", Vector2.up, 1.36f, .80f, .60f, .72f, -.10f, .82f, -.70f, .70f, -1.36f, .78f);
+    static readonly FlightCurve Sump = Route("Tunnel / Sump climb", Vector2.right, .70f, -.40f, .72f, .14f, .46f, .40f, .58f, .74f, .40f, 1.40f);
     public static readonly WavePart[] Tunnel ={
         new WavePart("Maintenance elevator", "MaintenanceDrone", Route("Tunnel / Elevator return", Vector2.right, -.73f,-.4f, -.73f,1.4f), WaveShape.Train, 3, 5.0f, 2, new[]{.45f,.65f}, WaveMotion.Rising),
         new WavePart("Switchbox battery", "WallTurret", FlightCurve.Stations("Tunnel / Switchbox", Vector2.right, new[]{0f,.22f,.66f,1f}, -.65f,1.4f, -.65f,.68f, -.65f,.68f, -1.7f,.55f), WaveShape.Solo, 1, 5.8f, 4, new[]{.31f,.47f,.61f}, WaveMotion.Station),
@@ -26,6 +29,10 @@ public static partial class WavePartLibrary
         new WavePart("Gate battery","WallTurret",ServiceGate,WaveShape.Rank,2,5.5f,7),
         new WavePart("Upper battery","WallTurret",UpperRail,WaveShape.Rank,2,5.4f,8),
         new WavePart("Carrier passage","ArmoredCarrier",ServiceGate,WaveShape.Solo,1,5.8f,9),
-        new WavePart("Carrier bank","ArmoredCarrier",PipeBank,WaveShape.Solo,1,5.8f,10)
+        new WavePart("Carrier bank","ArmoredCarrier",PipeBank,WaveShape.Solo,1,5.8f,10),
+        new WavePart("Conduit hop", "MaintenanceDrone", Conduit, WaveShape.Train, 4, 5.0f, 3),
+        new WavePart("Crawlway rank", "MaintenanceDrone", Crawlway, WaveShape.Rank, 3, 4.7f, 4),
+        new WavePart("Sump climb", "MaintenanceDrone", Sump, WaveShape.Train, 3, 5.0f, 5, new[] { .45f, .65f }, WaveMotion.Rising),
+        new WavePart("Conduit battery", "WallTurret", Conduit, WaveShape.Rank, 2, 5.5f, 9)
     };
 }

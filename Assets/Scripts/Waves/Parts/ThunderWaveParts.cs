@@ -7,6 +7,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve ThunderPeel = Route("Thunder / Ion peel", Vector2.right, .58f, 1.24f, .65f, .89f, .45f, .57f, .05f, .40f, -.32f, .59f, -.41f, .97f, -.42f, 1.24f);
     static readonly FlightCurve StaticFold = Route("Thunder / Static fold", Vector2.right, -.66f, 1.24f, -.72f, .93f, -.55f, .72f, -.28f, .59f, .04f, .76f, .08f, 1.24f);
     static readonly FlightCurve FlashLane = Route("Thunder / Flash lane", Vector2.up, 1.36f, .75f, .73f, .71f, .13f, .55f, -.45f, .38f, -1.36f, .42f);
+    static readonly FlightCurve Arcing = Route("Thunder / Arcing jump", Vector2.right, .60f, 1.24f, .48f, .82f, .02f, .70f, -.40f, .48f, -.10f, .30f, .30f, -.24f);
+    static readonly FlightCurve Squall = Route("Thunder / Squall line", Vector2.up, -1.36f, .66f, -.70f, .80f, -.05f, .70f, .60f, .86f, 1.36f, .78f);
+    static readonly FlightCurve Updraft = Route("Thunder / Updraft", Vector2.right, .72f, -.40f, .78f, .12f, .48f, .44f, .62f, .80f, .40f, 1.40f);
     public static readonly WavePart[] Thunder ={
         new WavePart("Suspended capacitor", "CapacitorKite", FlightCurve.Stations("Thunder / Charged perch", Vector2.right, new[]{0f,.23f,.64f,1f}, .45f,1.4f, .45f,.80f, .45f,.80f, 1.7f,.67f), WaveShape.Solo, 1, 5.4f, 4, new[]{.31f,.47f,.60f}, WaveMotion.Station),
         new WavePart("Two busbar lances", "ArcLancer", FlightCurve.Stations("Thunder / Busbar switch", Vector2.right, new[]{0f,.18f,.34f,.52f,.70f,1f}, -.64f,1.4f, -.64f,.84f, -.64f,.84f, .48f,.84f, .48f,.84f, .48f,1.4f), WaveShape.Solo, 1, 6.6f, 6, new[]{.23f,.57f}, WaveMotion.Relay),
@@ -26,6 +29,10 @@ public static partial class WavePartLibrary
         new WavePart("Pendulum beam","BeamDrone",ThunderChoreography.Pendulum,WaveShape.Solo,1,5.5f,6),
         new WavePart("Ion beam","BeamDrone",IonBow,WaveShape.Solo,1,5.5f,7),
         new WavePart("Sweeping lance","ArcLancer",ThunderChoreography.Pendulum,WaveShape.Solo,1,5.5f,8),
-        new WavePart("Hooking lance","ArcLancer",ThunderChoreography.Sickle,WaveShape.Solo,1,5.3f,10)
+        new WavePart("Hooking lance","ArcLancer",ThunderChoreography.Sickle,WaveShape.Solo,1,5.3f,10),
+        new WavePart("Arcing jump", "StormSkimmer", Arcing, WaveShape.Train, 4, 4.3f, 3),
+        new WavePart("Squall line", "StormSkimmer", Squall, WaveShape.Rank, 3, 4.2f, 4),
+        new WavePart("Updraft skimmers", "StormSkimmer", Updraft, WaveShape.Train, 3, 4.6f, 5, new[] { .44f, .66f }, WaveMotion.Rising),
+        new WavePart("Squall relays", "RelayDrone", Squall, WaveShape.Rank, 2, 5.2f, 7)
     };
 }

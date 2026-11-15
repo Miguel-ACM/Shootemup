@@ -12,6 +12,9 @@ public static partial class WavePartLibrary
     static readonly FlightCurve WormCross = Route("Desert / Worm dune traverse", Vector2.up, -1.85f, .85f, -.83f, .83f, -.29f, .62f, .34f, .68f, .89f, .87f, 1.85f, .92f);
     static readonly FlightCurve SaltPan = Route("Desert / Salt pan sickle", Vector2.up, -1.65f, .45f, -.71f, .48f, -.21f, .70f, .18f, .85f, .71f, .89f, 1.65f, .77f);
     static readonly FlightCurve BuriedSpiral = Route("Desert / Buried spiral", Vector2.right, .57f, 1.4f, .26f, .91f, -.32f, .77f, -.47f, .52f, -.15f, .31f, .29f, .17f, .59f, -.4f);
+    static readonly FlightCurve Caravan = Route("Desert / Caravan trail", Vector2.up, 1.65f, .66f, .80f, .74f, .10f, .64f, -.62f, .78f, -1.65f, .70f);
+    static readonly FlightCurve Oasis = Route("Desert / Oasis loop", Vector2.right, .30f, 1.40f, .62f, .90f, .42f, .60f, -.05f, .56f, -.30f, .80f, -.20f, 1.40f);
+    static readonly FlightCurve Scarp = Route("Desert / Scarp drop", Vector2.right, -.25f, 1.40f, -.05f, .88f, -.40f, .62f, -.62f, .30f, -.30f, -.40f);
     public static readonly WavePart[] Desert ={
         new WavePart("Heat shimmer watch", "DuneMoth", FlightCurve.Stations("Desert / Mirage watch", Vector2.right, new[]{0f,.24f,.67f,1f}, .2f,1.5f, .2f,.72f, .2f,.72f, -1.8f,.78f).WithTracking(.20f,.08f), WaveShape.Solo, 1, 5.9f, 6, new[]{.33f,.49f,.63f}, WaveMotion.Pursuit),
         new WavePart("Silo to silo moth", "DuneMoth", FlightCurve.Stations("Desert / Silo relay", Vector2.right, new[]{0f,.17f,.32f,.52f,.68f,1f}, -1.8f,.84f, -.62f,.84f, -.62f,.84f, .37f,.63f, .37f,.63f, 1.8f,.73f), WaveShape.Solo, 1, 5.7f, 4, new[]{.25f,.60f}, WaveMotion.Relay),
@@ -31,6 +34,10 @@ public static partial class WavePartLibrary
         new WavePart("Crest ambush","SandEmitter",DuneCrest,WaveShape.Rank,3,4.5f,9),
         new WavePart("Deep outpost serpent","SandWorm",OutpostWeave,WaveShape.Solo,1,5.8f,10),
         new WavePart("Dune diving squadron","SandStriker",DuneSlip,WaveShape.Train,6,3.8f,12),
-        new WavePart("Buried diamond","SandEmitter",SandRidge,WaveShape.Diamond,4,4.8f,14)
+        new WavePart("Buried diamond","SandEmitter",SandRidge,WaveShape.Diamond,4,4.8f,14),
+        new WavePart("Caravan raiders", "SandStriker", Caravan, WaveShape.Train, 5, 4.0f, 3),
+        new WavePart("Oasis loop", "SandStriker", Oasis, WaveShape.Diamond, 4, 4.4f, 4),
+        new WavePart("Scarp emitters", "SandEmitter", Scarp, WaveShape.Train, 3, 4.6f, 5),
+        new WavePart("Caravan sandworm", "SandWorm", Caravan, WaveShape.Solo, 1, 5.6f, 9)
     };
 }
