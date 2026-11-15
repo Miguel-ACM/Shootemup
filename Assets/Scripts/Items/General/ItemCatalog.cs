@@ -8,7 +8,8 @@ public enum ItemId
 {
     Popcorn, PocketFan, RubberBand, HotSauce, BulletDroneItem, FocusTime, BarrelRoll, BadGlasses, ScatterCannonItem, BallBearing, ReserveCell, SalvageConverter, FocusingLens, ReboundCoil, RabbitsFoot, BlankBullet, EarlyRise, TwerpItem, Magnet, AK45Item, SparePlating, Icicle, WindUpCannonItem, DecoyProjector, StaticSweater, MagnifyingGlass, ChewingGum, LaserDroneItem, HealthPacks, EnergyCore, BouncingBall, Poison, GasolineLeak, QualityGlasses, ShrinkerJuice, Overdrive, GravityWell, MirrorBurst, BeamEmitterItem, FlameProjectorItem, BackdraftItem, DrillItem, ThrowableShield, FillableFlask, DepthChargeItem, SwarmRackItem, DiscThrowerItem, BurstLauncherItem, NeedleCannonItem, Lighter, ReturnModule, DroneLink, RecoveryCoil, Capacitor, ProximityFuse, SplitterCore, Caffeine, ProteinSupplement, AMoonItem, BabyYouItem, ElectricityItem, DoubleHull, SquadWhistle, BulletTime, DoubleTrouble, EmpPulse, RailDriverItem, ChainReactor, SpareBattery, AnotherArm, AngryMoonItem, EnergyShield, SpellCard, Kusabimaru, Telekinesis, ThreeMoonsItem, PolarityEngine, WarpCore, BloodPrice, CursedCoin, DevilImp, ExplodingShield, GlassHull, Hunger, LargeHealthKit, MirrorOath, SteelWashers, ClockworkSpring, RollerBearings, Thermos, HeatSink, LuckyPenny, PaperclipBox, FireflyJar, SaltShaker, PocketMortar, WindUpTeeth, RibbonSpool, SewingKit, RocketBouquet, Redline, NailBomb, CanOpener, FirecrackerBelt, CarbonPaper, Thunderhead, DemolitionPlunger, Whetstone, OilCan, TailFin, Horseshoe, Corkscrew, SlingshotBand, InkPot, Grudge, BallOfYarn, PaperPlane, GlassMarbles, Hourglass, LoadedDice,
     Bookmark, Tripod, RelaySwitch, SignalFlare, LiveWire,
-    CarouselItem, CounterweightItem, DeadLetterItem, BankShotItem, VendingGunItem
+    CarouselItem, CounterweightItem, DeadLetterItem, BankShotItem, VendingGunItem,
+    Hector
 }
 public sealed class ItemDefinition
 {
@@ -155,6 +156,7 @@ public static class ItemCatalog
         new ItemDefinition(ItemId.DeadLetterItem, typeof(DeadLetterItem), ItemRarity.Rare),
         new ItemDefinition(ItemId.BankShotItem, typeof(BankShotItem), ItemRarity.Rare),
         new ItemDefinition(ItemId.VendingGunItem, typeof(VendingGunItem), ItemRarity.Rare),
+        new ItemDefinition(ItemId.Hector, typeof(Hector), ItemRarity.Common),
     };
     static readonly Dictionary<string, ItemDefinition> byKey = new Dictionary<string, ItemDefinition>(StringComparer.Ordinal);
     public static IReadOnlyList<ItemDefinition> All => definitions;

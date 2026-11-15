@@ -76,7 +76,7 @@ public sealed class RunInventory : MonoBehaviour
         if (current == null || effect == null)
             return;
         foreach (var entry in current.entries)
-            if (entry.effects.Contains(effect))
+            if (entry.effects.Contains(effect) || effect is ACompanion companion && entry.companions.Contains(companion))
                 Light(entry);
     }
 
