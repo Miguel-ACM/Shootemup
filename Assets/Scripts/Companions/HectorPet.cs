@@ -1,10 +1,12 @@
 using UnityEngine;
 
-// Hector trails beside the ship with little hops. The first hostile round to reach him is
-// stopped dead; he flips over as toast (dimmed, upside down) and rights himself after a rest.
+// Hector rides just above the ship, following it with a short lag and little hops, so he sits
+// in the path of fire coming at the pilot (Miguel, 15 November 2026: off the wing he was useless).
+// The first hostile round to reach him is stopped dead; he flips over as toast (dimmed, upside
+// down) and rights himself after a rest.
 public sealed class HectorPet : ACompanion
 {
-    const float Width = .46f, Reach = .27f, Rest = 5, Follow = 7, HopHeight = .07f;
+    const float Width = .46f, Reach = .27f, Rest = 5, Follow = 5.5f, HopHeight = .07f;
     static readonly Color Stone = new Color(.8f, .8f, .84f);
     static readonly Color Rim = new Color(.63f, .22f, .86f);
     static readonly Color Toasted = new Color(.42f, .4f, .47f);
@@ -46,12 +48,12 @@ public sealed class HectorPet : ACompanion
         tint = new MaterialPropertyBlock();
     }
 
-    // First Hector sits off the left wing, the second off the right, later ones a step lower.
+    // The first Hector rides centred above the ship; more fan out beside him, a little lower.
     Vector3 Home()
     {
         float side = index % 2 == 0 ? -1 : 1;
-        float row = index / 2;
-        return owner.transform.position + new Vector3(side * (.62f + row * .2f), -.42f - row * .34f, -.06f);
+        int step = (index + 1) / 2;
+        return owner.transform.position + new Vector3(side * step * .36f, .74f - step * .1f, -.06f);
     }
 
     void LateUpdate()
