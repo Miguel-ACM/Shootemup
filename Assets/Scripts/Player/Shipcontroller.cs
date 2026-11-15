@@ -365,6 +365,9 @@ public class Shipcontroller : MonoBehaviour
         }
         else
             waterVelocity = Vector2.zero;
+        // BLIZZARD: the wind nudges the ship gently downwind; steering easily holds against it.
+        if (!HangarHub.Active && !CombatDecision.Active && !CloudTransition.Busy && health > 0)
+            horizontalMove += LevelEnvironment.BlizzardPush * GameClock.PlayerDelta;
 
         float upperLimit = limits[0];
         var destination = transform.position + new Vector3(horizontalMove, verticalMove);

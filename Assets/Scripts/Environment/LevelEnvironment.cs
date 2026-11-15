@@ -1111,6 +1111,10 @@ public sealed class LevelEnvironment : MonoBehaviour
         material.SetFloat("_Flash", flash > .65f ? flash * .45f : flash > .4f ? .02f : flash * .5f);
     }
 
+    // A blizzard's push on the pilot (Miguel, 15 November 2026): slight, always downwind, swelling
+    // with the same gusts as the driving snow. Zero outside a blizzard.
+    public static float BlizzardPush => active != null && active.Blizzard ? active.Downwind * (.25f + .35f * active.Gust) : 0;
+
     // 0 calm to 1 at a blizzard gust's peak: a slow swell with a few sharp gusts.
     float Gust => Mathf.Clamp01(.45f + .30f * Mathf.Sin(clock * .41f) + .25f * Mathf.Sin(clock * 1.07f + 2) * Mathf.Sin(clock * .23f));
 
