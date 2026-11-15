@@ -13,6 +13,8 @@ public sealed class IndustrialHUD : MonoBehaviour
     Image[] challengeCells;
     readonly RectTransform[] encounterRows = new RectTransform[System.Enum.GetValues(typeof(EncounterKind)).Length];
     int encounterRowsShown;
+    // The district's seeded modifiers sit beneath the picked hexagons, in the same style.
+    readonly RectTransform[] modifierRows = new RectTransform[LevelModifiers.All.Length];
     Image cargoControl;
     RectTransform cargoCharge;
     Image[] healthCells, bossCells;
@@ -562,6 +564,35 @@ public sealed class IndustrialHUD : MonoBehaviour
                 cargoControl.enabled = action != null && GameClock.ActivePlay;
                 cargoControl.sprite = InputPrompts.For(action);
                 cargoCharge.sizeDelta = new Vector2(22 * Mathf.Clamp01(waves.Cargo.ClaimProgress), 2);
+            }
+            Place(row, 0, 88 + visible++ * 32, 132, 30);
+            if (!row.gameObject.activeSelf) row.gameObject.SetActive(true);
+        }
+        var modifiers = waves != null && !GameOverState.Active && !HangarHub.Active ? LevelModifiers.Current : LevelModifier.None;
+        for (int i = 0; i < modifierRows.Length; i++)
+        {
+            var modifier = LevelModifiers.All[i];
+            var row = modifierRows[i];
+            if ((modifiers & modifier) == 0)
+            {
+                if (row != null && row.gameObject.activeSelf) row.gameObject.SetActive(false);
+                continue;
+            }
+            if (row == null)
+            {
+                string caption = LevelModifiers.Label(modifier);
+                modifierRows[i] = row = Panel(scorePanel, caption, Dark);
+                var icon = Panel(row, "District modifier", Color.white);
+                Place(icon, 3, 2, 26, 26);
+                icon.GetComponent<Image>().sprite = LevelModifiers.Icon(modifier);
+                icon.GetComponent<Image>().preserveAspect = true;
+                var label = TextAt(row, caption, 33, 3, 12, Steel);
+                label.rectTransform.sizeDelta = new Vector2(96, 24);
+                label.alignment = TextAnchor.MiddleLeft;
+                label.horizontalOverflow = HorizontalWrapMode.Wrap;
+                label.resizeTextForBestFit = true;
+                label.resizeTextMinSize = 8;
+                label.resizeTextMaxSize = 12;
             }
             Place(row, 0, 88 + visible++ * 32, 132, 30);
             if (!row.gameObject.activeSelf) row.gameObject.SetActive(true);

@@ -62,7 +62,8 @@ public static class LevelRun
                 return 1;
         }
     }
-    public static float EnemyShotSpeedScale => Mathf.Min(1.18f, 1 + (Loop - 1) * .035f) * Difficulty.ShotSpeed;
+    // A FAST FIRE district speeds every hostile round by 20% (LevelModifiers).
+    public static float EnemyShotSpeedScale => Mathf.Min(1.18f, 1 + (Loop - 1) * .035f) * Difficulty.ShotSpeed * LevelModifiers.ShotSpeed;
     public static int Tier(LevelId level)
     {
         switch (level)
@@ -94,6 +95,7 @@ public static class LevelRun
     {
         // A fresh run follows its seed; only a debug run pins a district condition afterwards.
         DistrictConditions.Forced = null;
+        LevelModifiers.Forced = null;
         Reset(first, Random.Range(1, 10000000));
     }
 

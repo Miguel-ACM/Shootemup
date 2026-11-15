@@ -39,6 +39,10 @@ public sealed partial class DebugRunMenu : AMenuElement
     TextMeshProUGUI weatherLabel;
     // Null follows the run seed; otherwise the debug run flies this district condition.
     DistrictCondition? weather;
+    TextMeshProUGUI modifierLabel;
+    // Null follows the seed; otherwise every district of the debug run takes this set.
+    LevelModifier? modifiers;
+    static readonly LevelModifier?[] ModifierCycle = { null, LevelModifier.None, LevelModifier.Elites, LevelModifier.Coins, LevelModifier.FastFire, LevelModifier.Elites | LevelModifier.Coins | LevelModifier.FastFire };
     readonly List<Entry> entries = new List<Entry>();
     readonly Entry[] weapons = new Entry[2], actives = new Entry[2];
     readonly List<Button> buttons = new List<Button>();
@@ -135,7 +139,8 @@ public sealed partial class DebugRunMenu : AMenuElement
         if (!InRun)
         {
             pactButton = ButtonAt(panel, "PACT", new Vector2(258, 300), new Vector2(150, 38), () => { forcePact = !forcePact; Refresh(); }).GetComponent<Image>();
-            weatherLabel = ButtonAt(panel, "SEEDED SKY", new Vector2(78, 300), new Vector2(190, 38), CycleWeather, 16).GetComponentInChildren<TextMeshProUGUI>();
+            weatherLabel = ButtonAt(panel, "SEEDED SKY", new Vector2(100, 300), new Vector2(160, 38), CycleWeather, 16).GetComponentInChildren<TextMeshProUGUI>();
+            modifierLabel = ButtonAt(panel, "SEEDED MODS", new Vector2(-80, 300), new Vector2(160, 38), CycleModifiers, 16).GetComponentInChildren<TextMeshProUGUI>();
             var levels = new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Thunder, LevelId.Tunnel, LevelId.Desert, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell, LevelId.Heaven, LevelId.Void };
             for (int i = 0; i < levels.Length; i++)
             {
@@ -267,6 +272,8 @@ public sealed partial class DebugRunMenu : AMenuElement
         foreach (var level in levelButtons)
             level.Value.color = level.Key == first ? ChosenCard : CardColor;
         if (pactButton != null) pactButton.color = forcePact ? ChosenCard : CardColor;
+        if (modifierLabel != null) modifierLabel.text = !modifiers.HasValue ? "SEEDED MODS" : modifiers.Value == LevelModifier.None ? "NO MODS" :
+            modifiers.Value == (LevelModifier.Elites | LevelModifier.Coins | LevelModifier.FastFire) ? "ALL MODS" : modifiers.Value.ToString().ToUpperInvariant();
         if (weatherLabel != null) weatherLabel.text = weather.HasValue ? weather.Value.ToString().ToUpperInvariant() : "SEEDED SKY";
         for (int i = 0; i < 2; i++)
         {
@@ -305,6 +312,13 @@ public sealed partial class DebugRunMenu : AMenuElement
         Refresh();
     }
 
+    void CycleModifiers()
+    {
+        int index = Array.IndexOf(ModifierCycle, modifiers);
+        modifiers = ModifierCycle[(index + 1) % ModifierCycle.Length];
+        Refresh();
+    }
+
     void StartRun()
     {
         if (starting || CloudTransition.Busy)
@@ -324,6 +338,7 @@ public sealed partial class DebugRunMenu : AMenuElement
         GameRules.StartNewRun();
         LevelRun.Reset(first);
         DistrictConditions.Forced = weather;
+        LevelModifiers.Forced = modifiers;
         BGMManager.PlayLevelMusic(first);
         CloudTransition.Load("L1");
     }

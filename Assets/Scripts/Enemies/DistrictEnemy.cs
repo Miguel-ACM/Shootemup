@@ -88,6 +88,27 @@ public abstract class DistrictEnemy : AEnemy
         get; private set;
     }
 
+    public bool Elite
+    {
+        get; private set;
+    }
+
+    // A rare tougher ship inside an ordinary formation: a ring marks it, it answers its
+    // formation's accents once more, and it bursts into coins when destroyed.
+    public void MakeElite()
+    {
+        if (Elite || IsMiniboss || this is DistrictBoss)
+            return;
+        Elite = true;
+        health *= 2.4f;
+        eliteCoins = 6 + 2 * LevelRun.Tier(LevelRun.Current);
+        if (Hull != null)
+            Hull.localScale *= 1.12f;
+        if (TryGetComponent<CircleCollider2D>(out var circle))
+            circle.radius *= 1.12f;
+        gameObject.AddComponent<EliteMark>().Radius = hullScale * 1.3f;
+    }
+
     protected EnemyFiringCue firingCue;
     protected abstract void Configure();
     protected abstract void Attack();
@@ -205,6 +226,24 @@ public abstract class DistrictEnemy : AEnemy
             Array.Copy(unit.fireTimes, 1, score, 2, unit.fireTimes.Length - 1);
             Array.Sort(score);
             flight.fireTimes = score;
+        }
+        if (Elite && flight.fireTimes != null && flight.fireTimes.Length > 0)
+        {
+            // One extra answer in the formation's longest rest, or after its last accent.
+            var score = flight.fireTimes;
+            float answer = score[score.Length - 1] + .6f;
+            float widest = 0;
+            for (int i = 0; i < score.Length - 1; i++)
+                if (score[i + 1] - score[i] > widest && score[i + 1] - score[i] > .7f)
+                {
+                    widest = score[i + 1] - score[i];
+                    answer = (score[i] + score[i + 1]) * .5f;
+                }
+            var extended = new float[score.Length + 1];
+            Array.Copy(score, extended, score.Length);
+            extended[score.Length] = answer;
+            Array.Sort(extended);
+            flight.fireTimes = extended;
         }
         flight.formationDepth = unit.formationDepth;
         flight.fixedDepth = unit.fixedDepth;

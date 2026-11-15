@@ -2,7 +2,8 @@ using UnityEngine;
 
 public static class BossCoinBurst
 {
-    public static void Spawn(Vector3 origin, int count)
+    // speed scales the spray: a boss throws coins wide, an elite pops a small fountain.
+    public static void Spawn(Vector3 origin, int count, float speed = 1)
     {
         var prefab = Resources.Load<GameObject>("Pickables/money");
         origin.x = Mathf.Clamp(origin.x, Camera.LeftLimit + .5f, Camera.RightLimit - .5f);
@@ -15,8 +16,8 @@ public static class BossCoinBurst
             angle += .24f * Mathf.Sin(angle * 3 + gust);
             var outward = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
             var coin = Object.Instantiate(prefab, origin + (Vector3)(Random.insideUnitCircle * .32f), Quaternion.identity).GetComponent<Money>();
-            float speed = Random.Range(4.2f, 11.5f) + 1.6f * Mathf.Cos(angle * 3 + gust);
-            coin.Launch(outward * speed + Vector2.down * .7f, Random.Range(.9f, 1.32f));
+            float launch = (Random.Range(4.2f, 11.5f) + 1.6f * Mathf.Cos(angle * 3 + gust)) * speed;
+            coin.Launch(outward * launch + Vector2.down * .7f, Random.Range(.9f, 1.32f) * Mathf.Lerp(.5f, 1, speed));
         }
     }
 }

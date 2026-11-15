@@ -75,6 +75,8 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
     // Minibosses also drop health, and coins that grow with the run's stage like a boss's.
     protected bool dropsLife;
     protected int coinsPerStage;
+    // Elites burst into this many coins when destroyed.
+    protected int eliteCoins;
     public float manaDropChance = 0.1f;
     public float moneyDropChance = 0.1f;
     public int[] minmaxLife = new int[] { 1, 3 };
@@ -162,14 +164,14 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
             numDrops += GameRules.morePickables;
             InstantitatePickables("mana", numDrops);
         }
-        if (Random.Range(0f, 1f) < (GameRules.itemLuck * moneyDropChance))
+        if (Random.Range(0f, 1f) < (GameRules.itemLuck * moneyDropChance * LevelModifiers.CoinChance))
         {
             numDrops = minmaxMoney[0];
             if (minmaxMoney[0] != minmaxMoney[1])
             {
                 numDrops = Random.Range(minmaxMoney[0], minmaxMoney[1] + 1);
             }
-            numDrops += GameRules.morePickables;
+            numDrops += GameRules.morePickables + LevelModifiers.ExtraCoins;
             if (isBoss)
                 bossCoins = numDrops;
             else
@@ -209,9 +211,11 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
         int bonusCoins = DropItems();
         // Each boss of the run pays more: 40 coins for the first, 80 for the second, and so on.
         if (isBoss)
-            BossCoinBurst.Spawn(bossPosition ?? transform.position, 40 * LevelRun.Stage + bonusCoins);
+            BossCoinBurst.Spawn(bossPosition ?? transform.position, Mathf.RoundToInt((40 * LevelRun.Stage + bonusCoins) * LevelModifiers.CoinBurst));
         else if (coinsPerStage > 0)
-            InstantitatePickables("money", coinsPerStage * LevelRun.Stage);
+            InstantitatePickables("money", Mathf.RoundToInt(coinsPerStage * LevelRun.Stage * LevelModifiers.CoinBurst));
+        if (eliteCoins > 0 && !isBoss)
+            BossCoinBurst.Spawn(transform.position, Mathf.RoundToInt(eliteCoins * LevelModifiers.CoinBurst), .45f);
         if (orchestrer != null)
             orchestrer.NotifyEnemyKilled(orchesterWaveNumber, isBoss: isBoss, bossPosition: bossPosition);
         Destroy(gameObject);

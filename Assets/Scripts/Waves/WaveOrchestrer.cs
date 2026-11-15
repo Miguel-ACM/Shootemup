@@ -120,6 +120,8 @@ public class WaveOrchestrer : MonoBehaviour
                     var districtEnemy = enemy.GetComponent<DistrictEnemy>();
                     if (challengeWave)
                         districtEnemy.MakeChallenging();
+                    if (currentUnit.elite)
+                        districtEnemy.MakeElite();
                     districtEnemy.FlyPhrase(currentUnit);
                 }
                 if (enemy.TryGetComponent<DistrictMiniboss>(out var mini))

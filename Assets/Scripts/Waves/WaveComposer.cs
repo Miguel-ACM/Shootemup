@@ -35,6 +35,7 @@ public static class WaveComposer
     static int seed = -1, stage = -1, tuningRevision = -1; static LevelId level; static float width, height, tempo;
     static RunDifficulty difficulty;
     static DistrictCondition condition;
+    static LevelModifier modifiers;
     public static float Tempo => Mathf.Max(.01f, PatternMover.DistrictFlightTempo * GameRules.enemySpeed * LevelRun.EnemyTempoScale);
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void Reset()
@@ -120,7 +121,7 @@ public static class WaveComposer
         bool geometry = stage != LevelRun.Stage || level != LevelRun.Current || !Mathf.Approximately(width, Camera.RightLimit) || !Mathf.Approximately(height, Camera.UpLimit - Camera.DownLimit);
         if (geometry)
             patterns.Clear();
-        if (seed != LevelRun.Seed || stage != LevelRun.Stage || level != LevelRun.Current || condition != DistrictConditions.Current || !Mathf.Approximately(width, Camera.RightLimit) || !Mathf.Approximately(height, Camera.UpLimit - Camera.DownLimit) || !Mathf.Approximately(tempo, Tempo))
+        if (seed != LevelRun.Seed || stage != LevelRun.Stage || level != LevelRun.Current || condition != DistrictConditions.Current || modifiers != LevelModifiers.Current || !Mathf.Approximately(width, Camera.RightLimit) || !Mathf.Approximately(height, Camera.UpLimit - Camera.DownLimit) || !Mathf.Approximately(tempo, Tempo))
         {
             waves.Clear();
             uses.Clear();
@@ -131,6 +132,7 @@ public static class WaveComposer
             height = Camera.UpLimit - Camera.DownLimit;
             tempo = Tempo;
             condition = DistrictConditions.Current;
+            modifiers = LevelModifiers.Current;
             if (level == LevelId.Thunder)
                 PlanThunderGates();
             else
@@ -182,6 +184,35 @@ public static class WaveComposer
     }
 
     static Wave Build(int budget)
+    {
+        var wave = Compose(budget);
+        MarkElites(wave, budget);
+        return wave;
+    }
+
+    // Elites are rare accents, more common on harder difficulties and in an ELITES district.
+    static void MarkElites(Wave wave, int budget)
+    {
+        if (budget < 3)
+            return;
+        var random = new System.Random(Hash(seed, stage * 313 + budget * 97 + 7));
+        bool more = (modifiers & LevelModifier.Elites) != 0;
+        float first = Difficulty.Easy ? more ? .45f : .12f : Difficulty.Hard ? more ? .75f : .28f : more ? .60f : .20f;
+        float second = !more || budget < 8 ? 0 : Difficulty.Hard ? .30f : Difficulty.Easy ? 0 : .15f;
+        int count = random.NextDouble() < first ? random.NextDouble() < second ? 2 : 1 : 0;
+        var eligible = wave.units.FindAll(unit => !unit.miniboss && unit.enemy != nameof(FaradayPylon) &&
+            unit.enemy != nameof(DepthMine) && unit.enemy != "OrbitalMoonlet");
+        for (int i = 0; i < count && eligible.Count > 0; i++)
+        {
+            int pick = random.Next(eligible.Count);
+            var chosen = eligible[pick];
+            chosen.elite = true;
+            // Never two elites in the same formation.
+            eligible.RemoveAll(unit => unit.part == chosen.part);
+        }
+    }
+
+    static Wave Compose(int budget)
     {
         if (level == LevelId.Tunnel && TunnelPassageWaves.HasPassage(budget)) return TunnelPassageWaves.Create(budget);
         for (int attempt = 0; attempt < 8; attempt++)

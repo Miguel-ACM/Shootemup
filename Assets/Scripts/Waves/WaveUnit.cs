@@ -12,6 +12,8 @@ public class WaveUnit : ICloneable
     public FlightCurve curve;
     public bool syncFire;
     public bool miniboss;
+    // A tougher, ringed ship with an extra accent and a coin burst (WaveComposer.MarkElites).
+    public bool elite;
     public int passage;
     public bool passageRoute;
     public float firePhase;
@@ -32,7 +34,7 @@ public class WaveUnit : ICloneable
 
     public object Clone()
     {
-        return new WaveUnit(enemy, time, position) { phrase = phrase, curve = curve, syncFire = syncFire, miniboss = miniboss, passage = passage, passageRoute = passageRoute, firePhase = firePhase, fireTimes = fireTimes, formationDepth = formationDepth, fixedDepth = fixedDepth, faradayDoor = faradayDoor, part = part, side = side, lane = lane, flightDuration = flightDuration, fireEvery = fireEvery };
+        return new WaveUnit(enemy, time, position) { phrase = phrase, curve = curve, syncFire = syncFire, miniboss = miniboss, elite = elite, passage = passage, passageRoute = passageRoute, firePhase = firePhase, fireTimes = fireTimes, formationDepth = formationDepth, fixedDepth = fixedDepth, faradayDoor = faradayDoor, part = part, side = side, lane = lane, flightDuration = flightDuration, fireEvery = fireEvery };
     }
 
     override public string ToString()
