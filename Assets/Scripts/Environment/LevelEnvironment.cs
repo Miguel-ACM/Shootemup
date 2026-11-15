@@ -377,7 +377,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     }
 
     Material material;
-    Material snowFoliageMaterial, snowTerrainMaterial;
+    Material snowFoliageMaterial, snowTerrainMaterial, cityShadowMaterial;
     Texture2D snowFoliageAtlas;
     SnowLandscape snowLandscape;
     Transform player, weatherTransform, lightningRoot;
@@ -651,7 +651,7 @@ public sealed class LevelEnvironment : MonoBehaviour
             snowFoliageMaterial = new Material(Resources.Load<Shader>("PSXValleyFoliage")) { mainTexture = snowFoliageAtlas };
         }
         if (level == LevelId.City)
-            material.SetFloat("_Haze", .17f);
+            material.SetFloat("_Haze", .08f);
         var go = GameObject.FindGameObjectWithTag("Player");
         if (go != null)
             player = go.transform;
@@ -736,9 +736,18 @@ public sealed class LevelEnvironment : MonoBehaviour
                     Add(kit[level + "Ground" + i], section, Vector3.zero, -50);
                 if (level == LevelId.City)
                 {
-                    var buildings = CityDistrictGeometry.Build(LevelRun.Seed, i);
+                    var buildings = CityDistrictGeometry.Build(LevelRun.Seed, i, out var shadows);
                     ownedMeshes.Add(buildings);
+                    ownedMeshes.Add(shadows);
                     Add(buildings, section, Vector3.zero, -40);
+                    // Drawn after the buildings without writing depth: shadows land on streets,
+                    // squares and parks but never on the rooftops above them.
+                    if (cityShadowMaterial == null)
+                    {
+                        cityShadowMaterial = new Material(material) { name = "City sun shadows" };
+                        cityShadowMaterial.SetFloat("_ZWrite", 0);
+                    }
+                    Add(shadows, section, Vector3.zero, -39).GetComponent<MeshRenderer>().sharedMaterial = cityShadowMaterial;
                 }
                 else if (level != LevelId.Desert && level != LevelId.Snow)
                     Add(kit[level + "Detail" + i], section, Vector3.zero, -40);
@@ -1171,6 +1180,8 @@ public sealed class LevelEnvironment : MonoBehaviour
             Destroy(snowFoliageMaterial);
         if (snowTerrainMaterial != null)
             Destroy(snowTerrainMaterial);
+        if (cityShadowMaterial != null)
+            Destroy(cityShadowMaterial);
         if (snowFoliageAtlas != null)
             Destroy(snowFoliageAtlas);
         foreach (var layer in atmosphere)

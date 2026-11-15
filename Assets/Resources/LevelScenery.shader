@@ -1,6 +1,6 @@
 Shader "Shootemup/Level Scenery"
 {
-    Properties { _Flash("Storm illumination",Range(0,1))=0 _Haze("Aerial distance haze",Range(0,1))=0 }
+    Properties { _Flash("Storm illumination",Range(0,1))=0 _Haze("Aerial distance haze",Range(0,1))=0 [HideInInspector] _ZWrite("Depth write",Float)=1 }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Transparent" "Queue"="Transparent" }
@@ -8,7 +8,7 @@ Shader "Shootemup/Level Scenery"
         {
             Tags { "LightMode"="Universal2D" }
             Blend SrcAlpha OneMinusSrcAlpha
-            ZWrite On Cull Off
+            ZWrite [_ZWrite] Cull Off
             HLSLPROGRAM
             #pragma vertex Vert
             #pragma fragment Frag
