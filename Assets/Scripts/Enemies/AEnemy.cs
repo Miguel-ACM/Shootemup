@@ -36,6 +36,20 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
     }
 
     public static readonly HashSet<AEnemy> Live = new HashSet<AEnemy>();
+    // District hazards (rising mines, falling candy) never hold a wave open.
+    public virtual bool HoldsWave => true;
+    public static int HoldingCount
+    {
+        get
+        {
+            int count = 0;
+            foreach (var enemy in Live)
+                if (enemy != null && enemy.HoldsWave)
+                    count++;
+            return count;
+        }
+    }
+
     protected virtual void OnEnable()
     {
         Live.Add(this);

@@ -8,6 +8,10 @@ public class WaveOrchestrer : MonoBehaviour
 
     WavePool wavePool;
     public RunPhase Phase { get; private set; }
+    public static WaveOrchestrer Current { get; private set; }
+    // District event hazards run only while an ordinary combat wave is in play.
+    public bool HazardWindow => Phase == RunPhase.Combat && currentWave != null && !currentWave.units.Exists(unit => unit.miniboss) &&
+        rewardOffer == null && GameClock.ActivePlay && WavePreparation.Ready && !GameOverState.Active;
     bool isWaveComingOut { get => Phase == RunPhase.Combat; set => Phase = value ? RunPhase.Combat : RunPhase.Idle; }
     readonly RunPlan plan = new RunPlan();
     // Stable textual keys remain at the authoring/debug boundary.
@@ -70,8 +74,16 @@ public class WaveOrchestrer : MonoBehaviour
 
 
     // Start is called before the first frame update
+    void OnDestroy()
+    {
+        if (Current == this)
+            Current = null;
+    }
+
     void Start()
     {
+        Current = this;
+        gameObject.AddComponent<DistrictHazards>();
         dialog = GameObject.FindGameObjectWithTag("Dialog").GetComponent<Dialog>();
         // This orchestrator lives in the additive Run scene; the warning banner belongs to the core's UI.
         if (warning == null)
@@ -129,14 +141,14 @@ public class WaveOrchestrer : MonoBehaviour
                 enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
                 currentUnit = currentWave.getNext();
             }
-            if (offerPending && !TunnelPassage.Active && (waveTime >= offerAt || currentUnit == null && AEnemy.Live.Count == 0))
+            if (offerPending && !TunnelPassage.Active && (waveTime >= offerAt || currentUnit == null && AEnemy.HoldingCount == 0))
                 OpenEncounterChoice();
             // Consecutive phrases overlap their exits: old bullets are part of the rhythm.
             // Decisions and bosses wait for enemies to finish, then explicitly clear hazards.
             var next = plan.Following(currentWaveNumber);
             bool nextCombat = next.Kind == RunSlotKind.Combat && !(challengeWave && challengeWavesRemaining == 1) &&
                 !(FlightTrials.EscortsCargo && cargo != null && cargo.WavesRemaining == 1);
-            bool empty = currentUnit == null && AEnemy.Live.Count == 0 && !TunnelPassage.Active;
+            bool empty = currentUnit == null && AEnemy.HoldingCount == 0 && !TunnelPassage.Active;
             clearTime = empty ? clearTime + Time.deltaTime : 0;
             bool miniboss = currentWave.units.Exists(unit => unit.miniboss);
             if (miniboss && activeMiniboss != null && activeMiniboss.Engaged && !activeMiniboss.Retreating)
@@ -147,7 +159,11 @@ public class WaveOrchestrer : MonoBehaviour
                 if (MinibossRemaining <= 0)
                     activeMiniboss.Retreat();
             }
-            bool phraseComplete = currentUnit == null && !miniboss && waveTime >= handoffAt && AEnemy.Live.Count < 22 && !TunnelPassage.Active;
+            // DEEP PASSAGES chain one walled wave straight into the next: the next passage
+            // joins the current walls just before they end.
+            bool chainPassage = TunnelPassage.EndingSoon && next.Kind == RunSlotKind.Combat && LevelRun.Current == LevelId.Tunnel &&
+                TunnelPassageWaves.HasPassage(next.Budget) && TunnelPassageWaves.Chained;
+            bool phraseComplete = currentUnit == null && !miniboss && waveTime >= handoffAt && (AEnemy.HoldingCount < 22 || chainPassage) && (!TunnelPassage.Active || chainPassage);
             if (currentUnit == null && ((nextCombat && phraseComplete) || clearTime >= .12f) && (nextCombat || rewardOffer == null))
             {
 

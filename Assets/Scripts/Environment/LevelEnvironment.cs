@@ -532,6 +532,13 @@ public sealed class LevelEnvironment : MonoBehaviour
         WavePreparation.Begin();
     }
 
+    // A THUNDERSTORM strike lights the storm clouds behind the arena.
+    public static void StrikeFlash()
+    {
+        if (active != null && active.level == LevelId.Thunder)
+            active.flash = Mathf.Max(active.flash, .62f);
+    }
+
     public static void FadeOutStorm()
     {
         if (active == null || active.stormAudioRoot == null || active.stormAudioReleased)
