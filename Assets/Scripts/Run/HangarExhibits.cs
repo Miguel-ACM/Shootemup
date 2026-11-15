@@ -193,16 +193,17 @@ public sealed partial class HangarHub
         }
         Photo(Resources.Load<Texture2D>("DockArt/Portrait" + trial.frame), new Rect(0, 0, 1, 1), -198, 113, 153,
             MetaProgress.CanFly(trial.frame) ? Color.white : Color.black);
+        // The certification stamp sits inside the portrait's corner, clear of the objective below.
         if (completed)
         {
-            Tile(-141, 56, 44, 44, accent);
-            TrialCheck(new Vector2(-141, 56), 1.2f, DockInstrument.Ink);
+            Tile(-141, 70, 44, 44, accent);
+            TrialCheck(new Vector2(-141, 70), 1.2f, DockInstrument.Ink);
         }
         Legend("TAPE " + (selection + 1).ToString("00") + " / " + FlightTrials.All.Length.ToString("00") + (available ? "" : "  LOCKED"),
             80, 196, 354, 29, 16, accent, true);
         Legend(trial.title, 80, 145, 354, 76, 35, completed ? accent : DockInstrument.Paper, true);
         Legend(trial.frame + "    /    " + mode, 80, 78, 354, 34, 21, DockInstrument.Muted);
-        Legend(trial.objective, 0, operating ? 16 : -20, 558, 57, 25, DockInstrument.Paper);
+        Legend(trial.objective, 0, operating ? 8 : -20, 558, 50, 23, DockInstrument.Paper);
         if (operating)
             TrialEquipment(trial, completed);
         if (completed && available)
@@ -259,16 +260,20 @@ public sealed partial class HangarHub
         }
     }
 
+    static readonly Color OpenTape = new Color(.42f, .86f, .5f);
+
     void TrialMarks()
     {
-        // A filled brass tape is cleared; the underline is the current selection.
+        // Brass tapes are cleared, green ones are open to fly, dark ones are still locked; the
+        // underline is the current selection (Miguel, 15 November 2026).
         float pitch = Mathf.Min(23, 558f / FlightTrials.All.Length);
         for (int i = 0; i < FlightTrials.All.Length; i++)
         {
             float x = (i - (FlightTrials.All.Length - 1) * .5f) * pitch;
             bool completed = TrialCompleted(FlightTrials.All[i]);
-            Tile(x, -178, pitch - 4, 9, completed ? DockInstrument.Brass : Metal);
-            if (!completed)
+            bool open = !completed && FlightTrials.All[i].LockReason == null;
+            Tile(x, -178, pitch - 4, 9, completed ? DockInstrument.Brass : open ? OpenTape : Metal);
+            if (!completed && !open)
                 Tile(x, -178, pitch - 7, 5, DockInstrument.Ink);
             if (i == selection)
                 Tile(x, -187, pitch - 4, 3, DockInstrument.Paper);
