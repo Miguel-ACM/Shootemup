@@ -1545,8 +1545,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35e9bcac12e548da86ef74bbc6e98d22, type: 3}
   m_Name:
   m_EditorClassIdentifier:
-  skim: {fileID: 2800000, guid: 290bcececb47422bbcec38518f1fe663, type: 3}
-  fire: {fileID: 2800000, guid: 4ebc6063bc16433694c95151b3c28a90, type: 3}
+  wordmark: {fileID: 2800000, guid: 290bcececb47422bbcec38518f1fe663, type: 3}
 --- !u!114 &1639510222
 MonoBehaviour:
   m_ObjectHideFlags: 0
