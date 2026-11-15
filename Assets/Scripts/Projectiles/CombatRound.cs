@@ -324,7 +324,8 @@ public abstract class CombatRound : AEnemyBullet
             case LevelId.Tunnel: return type == typeof(RiceRound) ? 64 : 0;
             case LevelId.Thunder:
             case LevelId.Desert: return type == typeof(RiceRound) ? 48 : 0;
-            case LevelId.Candyland: return type == typeof(HeartRound) || type == typeof(CandyRound) || type == typeof(StarRound) ? 40 : 0;
+            // The regent's lollipop swirls and candy roses fly many candies and stars at once.
+            case LevelId.Candyland: return type == typeof(CandyRound) || type == typeof(StarRound) ? 96 : type == typeof(HeartRound) ? 64 : 0;
             case LevelId.Space: return type == typeof(CrescentRound) ? 48 : 0;
             case LevelId.Underwater: return type == typeof(DropletRound) ? 64 : 0;
             case LevelId.Hell: return type == typeof(FlameRound) ? 64 : 0;

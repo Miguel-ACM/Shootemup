@@ -25,6 +25,11 @@ using UnityEngine;
 // Tones: Crush alternates bright and dark ribbons fixation by fixation with a bright crown
 //   burst; Heartbeat is a bright lub and a dark dub; Sugar Crash is a dark web and a
 //   bright recovery heart.
+// Harder and prettier (Miguel, 15 November 2026): while a ribbon pours, a lollipop swirl
+//   turns out of the eye, two counter-rotating sets of spiral arms (candies one way, stars
+//   the other) weaving a moving lattice; after each lub-dub a rose of candies blooms from the
+//   eye, eight petals with stars at their tips, turned by the glance. Fuller crown fans,
+//   denser hearts and shorter rests.
 public sealed partial class CandyRegentBoss
 {
     protected override void Attack()
@@ -125,6 +130,8 @@ public sealed partial class CandyRegentBoss
                 else
                     Ribboned(Fire<SimpleRound>(port, CombatVisuals.Rotate(axis, -side * 7), 3.3f, .16f), rebound, -1, 0);
             }
+            if (n % 4 == 0)
+                LollipopSwirl(Opposite(shade));
             yield return Wait(Rest(.07f));
         }
     }
@@ -150,12 +157,12 @@ public sealed partial class CandyRegentBoss
     void CrownBurst(int n)
     {
         Thrill();
-        int count = Dense(3);
+        int count = Dense(5);
         UseTone(HostileTone.Bright);
         for (int i = 0; i < count; i++)
             for (int mirror = -1; mirror <= 1; mirror += 2)
             {
-                var axis = CombatVisuals.Rotate(Vector2.up, -mirror * (18 + i * 20 + (n % 2) * 10));
+                var axis = CombatVisuals.Rotate(Vector2.up, -mirror * (14 + i * 14 + (n % 2) * 7));
                 if (i % 2 == 0)
                     Fire<StarRound>(CrownPort(mirror), axis, 3.0f, .19f).Bounce(2);
                 else
@@ -192,13 +199,48 @@ public sealed partial class CandyRegentBoss
         yield return Charge(pupil, Vector3.zero, .35f);
         Beat();
         UseTone(HostileTone.Bright);
-        HeartWave(EyePort, Dense(40), 2.5f, .8f, glance, 22);
+        HeartWave(EyePort, Dense(48), 2.5f, .8f, glance, 22);
         yield return Wait(.3f);
         Beat();
         UseTone(HostileTone.Dark);
-        HeartWave(EyePort, Dense(28), 3.1f, 1.0f, glance, 26);
+        HeartWave(EyePort, Dense(34), 3.1f, 1.0f, glance, 26);
+        yield return Wait(Rest(.3f));
+        UseTone(k % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
+        RoseBloom(EyePort, Dense(48), 2.3f, glance + k * 11);
         LookAway();
-        yield return Wait(Rest(.9f));
+        yield return Wait(Rest(.65f));
+    }
+
+    // The lollipop swirl: arms of candies turning one way and arms of stars turning the other,
+    // fired from the eye so the two weave a lattice that rotates as it spreads.
+    void LollipopSwirl(HostileTone shade)
+    {
+        int arms = Dense(4);
+        float turn = age * 95;
+        UseTone(shade);
+        for (int i = 0; i < arms; i++)
+        {
+            float spoke = i * 360f / arms;
+            Fire<CandyRound>(EyePort, CombatVisuals.Rotate(Vector2.down, turn + spoke), 2.2f, .17f);
+            Fire<StarRound>(EyePort, CombatVisuals.Rotate(Vector2.down, -turn + spoke + 180f / arms), 2.0f, .17f);
+        }
+    }
+
+    // A rose of candies: beads around the eye whose speed follows an eight-petal rose curve,
+    // so the ring blooms into a flower; the petal tips are stars.
+    void RoseBloom(Vector3 port, int beads, float speed, float turn)
+    {
+        for (int i = 0; i < beads; i++)
+        {
+            float a = i * 360f / beads;
+            float petal = Mathf.Abs(Mathf.Cos(a * Mathf.Deg2Rad * 4));
+            var axis = CombatVisuals.Rotate(Vector2.down, a + turn);
+            float velocity = speed * (.4f + .6f * petal);
+            if (petal > .92f)
+                Fire<StarRound>(port, axis, velocity, .19f);
+            else
+                Fire<CandyRound>(port, axis, velocity, .16f);
+        }
     }
 
     // The outline of a heart grows from the eye as it sinks: each bead's velocity is its
