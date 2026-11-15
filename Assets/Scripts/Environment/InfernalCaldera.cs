@@ -6,7 +6,7 @@ public sealed class InfernalCaldera : MonoBehaviour
 {
     readonly List<Transform> tiles = new List<Transform>();
     readonly List<Mesh> meshes = new List<Mesh>();
-    Material lava, basalt;
+    Material lava, basalt, glow;
     float clock;
     void Start()
     {
@@ -32,8 +32,53 @@ public sealed class InfernalCaldera : MonoBehaviour
             Add("Layered volcanic rock", mesh, basalt, root, Vector3.zero, -45);
             var vent = Add("Terraced basalt crater", IndustrialMeshFactory.Volcano(), basalt, root, craterSite + Vector3.back * .015f, -39);
             vent.localScale = new Vector3(1, .85f, 1);
-            vent.gameObject.AddComponent<VolcanicVent>().phase = i * .55f;
+            var hazard = vent.gameObject.AddComponent<VolcanicVent>();
+            hazard.phase = i * .55f;
+            if (Erupting)
+            {
+                hazard.Eruption = true;
+                Glow(vent);
+                // Two more volcanoes rise from the far side of every shelf.
+                for (int extra = 0; extra < 2; extra++)
+                {
+                    var site = new Vector3(-side * (2.1f + extra * 1.2f), (extra == 0 ? -5.5f : 5f) + craterSite.y * .2f, craterSite.z - .015f);
+                    var added = Add("Erupting crater", IndustrialMeshFactory.Volcano(), basalt, root, site, -39);
+                    added.localScale = new Vector3(.9f, .78f, .9f);
+                    var addedVent = added.gameObject.AddComponent<VolcanicVent>();
+                    addedVent.phase = i * .55f + (extra + 1) * 1.7f;
+                    addedVent.Eruption = true;
+                    Glow(added);
+                }
+            }
         }
+        if (Erupting)
+        {
+            // Lift the caldera's darks so the shelves and volcanoes read clearly.
+            SceneryGrade.Create(transform, "Eruption light", -36)
+                .Multiply(Color.white, Color.white, 1)
+                .Glow(new Color(.13f, .055f, .018f), new Color(.09f, .035f, .012f), 1, 1);
+        }
+    }
+
+    bool Erupting => DistrictConditions.For(LevelId.Hell, LevelRun.Seed) == DistrictCondition.Eruption;
+
+    // A molten pool of light around each erupting crater, flickering with the fire.
+    void Glow(Transform vent)
+    {
+        if (glow == null)
+            glow = SceneryLights.CreateMaterial();
+        var lights = new SceneryLights();
+        lights.Add(new Vector3(0, 0, -2), 1.9f, 1.7f, new Color(1, .42f, .12f, .55f), Random.value, SceneryLights.Kind.Fire);
+        lights.Add(new Vector3(0, 0, -2.1f), .45f, .45f, new Color(1, .8f, .4f, .9f), Random.value, SceneryLights.Kind.Fire);
+        var mesh = lights.Finish("Crater glow");
+        meshes.Add(mesh);
+        var go = new GameObject("Crater glow");
+        go.transform.SetParent(vent, false);
+        go.AddComponent<MeshFilter>().sharedMesh = mesh;
+        var renderer = go.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = glow;
+        renderer.sortingLayerName = "Background";
+        renderer.sortingOrder = -35;
     }
 
     static Transform Add(string label, Mesh mesh, Material material, Transform parent, Vector3 p, int order)
@@ -157,6 +202,7 @@ public sealed class InfernalCaldera : MonoBehaviour
         }
         Release(lava);
         Release(basalt);
+        Release(glow);
         foreach (var mesh in meshes)
             Release(mesh);
     }
