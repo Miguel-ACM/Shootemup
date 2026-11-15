@@ -8,15 +8,16 @@ public sealed class SkimfireTitle : MonoBehaviour
     const float SlideSeconds = .28f;
     const float FireStart = .30f;
     const float Impact = FireStart + SlideSeconds;
-    const float SlashSeconds = .19f;
+    const float SlashSeconds = .29f;
     const float Duration = Impact + SlashSeconds;
     const float WordmarkWidth = 728f;
     const float TileHeight = 1f / 3f;
+    const float SlashPixelsWide = 84f;
 
     static readonly Vector2 RestPosition = new Vector2(0, 430);
     static readonly Vector2 Diagonal = new Vector2(330, 232);
     static readonly Vector2 Seam = new Vector2(23, 6);
-    static readonly Vector2 SlashDrift = new Vector2(24, 17);
+    static readonly Vector2 SlashDrift = new Vector2(64, 44);
 
     RawImage skim, fire, slash;
     RectTransform canvas;
@@ -43,8 +44,7 @@ public sealed class SkimfireTitle : MonoBehaviour
         // The first two rows use the same wordmark coordinates so the lettering lines up at rest.
         skim = CreateArtwork(root, "SKIM", new Rect(0, TileHeight * 2, 1, TileHeight));
         fire = CreateArtwork(root, "FIRE", new Rect(0, TileHeight, 1, TileHeight));
-        float squareWidth = (wordmark.height / 3f) / wordmark.width;
-        slash = CreateArtwork(root, "White slash", new Rect(0, 0, squareWidth, TileHeight));
+        slash = CreateArtwork(root, "White slash", new Rect(0, 0, SlashPixelsWide / wordmark.width, TileHeight));
     }
 
     void LateUpdate()
@@ -79,10 +79,12 @@ public sealed class SkimfireTitle : MonoBehaviour
         PlacePart(fire, (age - FireStart) / SlideSeconds, Diagonal);
 
         float flash = Mathf.Clamp01((age - Impact) / SlashSeconds);
-        float light = 1 - flash;
+        float sweep = Mathf.SmoothStep(0, 1, flash * 3);
+        float light = 1 - Mathf.SmoothStep(0, 1, flash);
+        float slashWidth = fit * Mathf.Lerp(300, 500, sweep);
         slash.rectTransform.anchoredPosition = (Seam + SlashDrift * flash) * fit;
-        slash.rectTransform.sizeDelta = Vector2.one * (fit * Mathf.Lerp(152, 208, flash));
-        slash.color = new Color(1, 1, 1, age >= Impact ? light * light : 0);
+        slash.rectTransform.sizeDelta = new Vector2(slashWidth, slashWidth * .67f);
+        slash.color = new Color(1, 1, 1, age >= Impact ? light : 0);
     }
 
     void PlacePart(RawImage part, float progress, Vector2 entry)
@@ -90,7 +92,7 @@ public sealed class SkimfireTitle : MonoBehaviour
         progress = Mathf.Clamp01(progress);
         float travel = progress * (.35f + .65f * progress);
         part.rectTransform.anchoredPosition = entry * ((1 - travel) * fit);
-        part.color = new Color(1, 1, 1, Mathf.SmoothStep(0, 1, progress * 3));
+        part.color = new Color(1, 1, 1, Mathf.SmoothStep(0, 1, progress));
     }
 
     RawImage CreateArtwork(Transform parent, string label, Rect uv)

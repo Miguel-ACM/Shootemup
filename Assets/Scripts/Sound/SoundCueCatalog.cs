@@ -42,7 +42,7 @@ public static class SoundCueCatalog
         new Cue("ricochetHit", "Bullet wall bounce", Hit, "Sounds/hit1", .025f, 1.6f, .1f),
         new Cue("plasmaBreak", "Plasma destroyed", Hit, "Sounds/Items/shatter", .05f, 1.3f, .12f),
         new Cue("hitElectric", "Electricity impact", Hit, "Sounds/Items/static", .025f, 1, .1f),
-        new Cue("titleLand", "Title landing", Hit, "Sounds/Selected/ricochetHit_psx", .3f),
+        new Cue("titleLand", "Title landing", Hit, "Sounds/Events/TitleSheen", .23f),
         new Cue("shotElectric", "Electricity", Player, "Sounds/shot1", .1f),
         new Cue("shotAK45", "AK45", Player, "Sounds/shot1", .1f),
         new Cue("shotCompanion", "Companion fire", Player, "Sounds/shot1", .065f),
