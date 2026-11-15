@@ -92,6 +92,7 @@ public static partial class IndustrialMeshFactory
 
     public static Mesh CombatHull(int kind)
     {
+        if (kind == 95) return ThicketLurkerMesh();
         if (kind == 92) return VoidSovereignBossMesh();
         if (kind == 91) return SeraphJudicatorBossMesh();
         if (kind == 90) return DawnGatekeeperMesh();

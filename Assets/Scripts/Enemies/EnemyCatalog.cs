@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 
-public enum EnemyId { ScoutInterceptor, PatrolGunship, HeavyBomber, WallTurret, MaintenanceDrone, ArmoredCarrier, ColdWeatherFighter, SiegeGunship, ShieldTransport, BeamDrone, RelayDrone, StormSkimmer, PursuitFighter, AttackDrone, CommandGunship, CourierDiver, AvalancheBomber, ArcLancer, FieldsHeavyWing, TunnelDefensePlatform, SnowSiegeCraft, StormReactor, CityCommandCarrier, SandEmitter, SandStriker, SandWorm, BonbonSkirmisher, WaferDart, MintSpinner, MeadowTank, FrostAuger, OrbitalScout, LaserSatellite, OrbitalCarrier, OrbitalMoonlet, SkullRevenant, GhostGalleon, CinderImp, ReefDart, MantaRay, Bathysphere, ScarabDredger, TaffyDuelist, OrbitalWarden, ReefLeviathan, InfernalFerryman, BoneHarrier, AshCenser, JetSquid, NautilusBell, CometTug, EclipseSail, GumdropMortar, RibbonGlider, MirageObelisk, DuneMoth, StormOrgan, CapacitorKite, RivetMantis, BaffleSpinner, TerraceGunboat, MetroLancer, HailLantern, IcicleWeaver, HarrowBomber, ReedSkimmer, HellCrabBoss, AbyssSubmarineBoss, SpaceCitadelBoss, CandyRegentBoss, DesertWormBoss, TunnelSawBoss, SnowSiegeBoss, ThunderLanceBoss, CityDuoBoss, FieldsBomberBoss, PlainsRedKiteBoss, PlainsThreshingDrumBoss, CitySwitchyardBoss, SnowIcebreakerBoss, ChoirLancer, AegisReliquary, PrismCantor, VotiveSpear, ThroneBarge, DawnGatekeeper, SeraphJudicatorBoss, VoidSovereignBoss, DepthMine, FaradayPylon }
+public enum EnemyId { ScoutInterceptor, PatrolGunship, HeavyBomber, WallTurret, MaintenanceDrone, ArmoredCarrier, ColdWeatherFighter, SiegeGunship, ShieldTransport, BeamDrone, RelayDrone, StormSkimmer, PursuitFighter, AttackDrone, CommandGunship, CourierDiver, AvalancheBomber, ArcLancer, FieldsHeavyWing, TunnelDefensePlatform, SnowSiegeCraft, StormReactor, CityCommandCarrier, SandEmitter, SandStriker, SandWorm, BonbonSkirmisher, WaferDart, MintSpinner, MeadowTank, FrostAuger, OrbitalScout, LaserSatellite, OrbitalCarrier, OrbitalMoonlet, SkullRevenant, GhostGalleon, CinderImp, ReefDart, MantaRay, Bathysphere, ScarabDredger, TaffyDuelist, OrbitalWarden, ReefLeviathan, InfernalFerryman, BoneHarrier, AshCenser, JetSquid, NautilusBell, CometTug, EclipseSail, GumdropMortar, RibbonGlider, MirageObelisk, DuneMoth, StormOrgan, CapacitorKite, RivetMantis, BaffleSpinner, TerraceGunboat, MetroLancer, HailLantern, IcicleWeaver, HarrowBomber, ReedSkimmer, HellCrabBoss, AbyssSubmarineBoss, SpaceCitadelBoss, CandyRegentBoss, DesertWormBoss, TunnelSawBoss, SnowSiegeBoss, ThunderLanceBoss, CityDuoBoss, FieldsBomberBoss, PlainsRedKiteBoss, PlainsThreshingDrumBoss, CitySwitchyardBoss, SnowIcebreakerBoss, ChoirLancer, AegisReliquary, PrismCantor, VotiveSpear, ThroneBarge, DawnGatekeeper, SeraphJudicatorBoss, VoidSovereignBoss, DepthMine, FaradayPylon, ThicketLurker }
 public enum CombatHullId
 {
+    ThicketLurker = 95,
     FaradayPylon = 94,
     DepthMine = 93,
     VoidSovereignBoss = 92,
@@ -183,6 +184,7 @@ public static class EnemyCatalog
         new EnemyDefinition(EnemyId.IcicleWeaver, typeof(IcicleWeaver), CombatHullId.IcicleWeaver),
         new EnemyDefinition(EnemyId.HarrowBomber, typeof(HarrowBomber), CombatHullId.HarrowBomber),
         new EnemyDefinition(EnemyId.ReedSkimmer, typeof(ReedSkimmer), CombatHullId.ReedSkimmer),
+        new EnemyDefinition(EnemyId.ThicketLurker, typeof(ThicketLurker), CombatHullId.ThicketLurker),
         new EnemyDefinition(EnemyId.HellCrabBoss, typeof(HellCrabBoss), CombatHullId.HellCrabBoss, true),
         new EnemyDefinition(EnemyId.AbyssSubmarineBoss, typeof(AbyssSubmarineBoss), CombatHullId.AbyssSubmarineBoss, true),
         new EnemyDefinition(EnemyId.SpaceCitadelBoss, typeof(SpaceCitadelBoss), CombatHullId.SpaceCitadelBoss, true),
