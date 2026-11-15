@@ -782,6 +782,63 @@ public static class RenderDistrictConditions
         flare.PoseAt(age);
     }
 
+    // Clean, burning, poisoned and doubly afflicted hulls side by side, zoomed in, over the Plains ground.
+    public static void AfflictedHulls()
+    {
+        int code = 0;
+        try
+        {
+            Directory.CreateDirectory(Folder);
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Shader.SetGlobalVector("_PSXSnapResolution", new Vector4(Width, Height, 0, 0));
+            DistrictConditions.Forced = DistrictCondition.Ordinary;
+            LevelRun.Reset(LevelId.Fields, 424242);
+            var layout = new PSXValleyLayout(424242);
+            var section = new GameObject("Valley").transform;
+            section.localPosition = new Vector3(0, -12, 88);
+            Layer(section, PSXValleyGeometry.Build(-12, 24, 1, layout, 424242), Resources.Load<Material>("PSXValley"));
+            var camera = Camera(0, 3.2f);
+            var cells = new Texture2D[1, 5];
+            int[] kinds = { 12, 14, 3 };
+            for (int status = 0; status < 5; status++)
+            {
+                var root = new GameObject("Hulls");
+                var material = new Material(CombatMaterials.Fleet);
+                // Columns: clean, a throwaway poisoned capture (the batch editor compiles the variant on
+                // first use and draws it clean), burning (1), poisoned (2), both (3).
+                int bits = new[] { 0, 2, 1, 2, 3 }[status];
+                if (bits != 0)
+                {
+                    material.SetFloat("_HullStatus", bits);
+                    material.EnableKeyword("HULL_AFFLICTED");
+                }
+                for (int i = 0; i < kinds.Length; i++)
+                {
+                    var ship = new GameObject("Hull");
+                    ship.transform.SetParent(root.transform, false);
+                    ship.transform.position = new Vector3(0, 2 - i * 2, -8);
+                    ship.transform.localScale = Vector3.one * (i == 1 ? 1.1f : .8f);
+                    ship.transform.rotation = Quaternion.Euler(0, 0, 180);
+                    ship.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CombatHull(kinds[i]);
+                    var hull = ship.AddComponent<MeshRenderer>();
+                    hull.sharedMaterial = material;
+                    hull.sortingLayerName = "Enemy";
+                }
+                cells[0, status] = Capture(camera);
+                UnityEngine.Object.DestroyImmediate(root);
+            }
+            Save("AfflictedHulls.png", cells);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+            code = 1;
+        }
+        DistrictConditions.Forced = null;
+        if (Application.isBatchMode)
+            EditorApplication.Exit(code);
+    }
+
     static UnityEngine.Camera Camera(float y, float size)
     {
         var go = new GameObject("Review camera");

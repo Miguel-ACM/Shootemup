@@ -183,6 +183,7 @@ These are the player's instructions. Preserve them across sessions and apply the
 ## Burn and poison (9 November 2026)
 
 - Burn is fast and fierce: ten quiet ticks a second from stacking heat (damage per second equals the heat, capped at 12). It holds while hits keep feeding it and burns out within about a second after. Flames flicker taller with more heat.
+- Poisoned hulls (15 November 2026; the jade blister grid was rejected) keep their own paint under a slight sickly tint while dark corrosion stains creep across them, swelling and ebbing, each edged with a glowing jade lip, with faint pulsing veins between (`HullAffliction.hlsl`; status bits 1 burn, 2 poison).
 - Poison is slow and creeping: one dose a second for six seconds after the last hit, growing from half to 1.8 times its potency while it stays applied. A poisoned hull takes 15% more damage from every source, burn included, so the two coatings combine. It seeps rising bubbles and falling drips and swells with each dose.
 - Damage ticks never play the hit spark, hit sound or hull flash.
 
