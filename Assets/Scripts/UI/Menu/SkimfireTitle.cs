@@ -13,11 +13,12 @@ public sealed class SkimfireTitle : MonoBehaviour
     const float WordmarkWidth = 728f;
     const float TileHeight = 1f / 3f;
     const float SlashPixelsWide = 84f;
+    const float SlashRotation = 39f;
 
     static readonly Vector2 RestPosition = new Vector2(0, 430);
     static readonly Vector2 Diagonal = new Vector2(330, 232);
     static readonly Vector2 Seam = new Vector2(23, 6);
-    static readonly Vector2 SlashDrift = new Vector2(64, 44);
+    static readonly Vector2 SlashDrift = new Vector2(24, 72);
 
     RawImage skim, fire, slash;
     RectTransform canvas;
@@ -45,6 +46,8 @@ public sealed class SkimfireTitle : MonoBehaviour
         skim = CreateArtwork(root, "SKIM", new Rect(0, TileHeight * 2, 1, TileHeight));
         fire = CreateArtwork(root, "FIRE", new Rect(0, TileHeight, 1, TileHeight));
         slash = CreateArtwork(root, "White slash", new Rect(0, 0, SlashPixelsWide / wordmark.width, TileHeight));
+        // The drawn streak already rises about 33 degrees. Match the letters' 1:3 forward lean.
+        slash.rectTransform.localRotation = Quaternion.Euler(0, 0, SlashRotation);
     }
 
     void LateUpdate()
