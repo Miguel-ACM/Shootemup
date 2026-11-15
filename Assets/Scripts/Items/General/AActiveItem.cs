@@ -42,7 +42,10 @@ public abstract class AActiveItem : AItem
         {
             float result = OnPress(mana);
             if (result >= 0)
+            {
                 RunInventory.Ping(this);
+                ActiveEcho.Heard(this);
+            }
             return result;
         }
         finally { cost = originalCost; }
