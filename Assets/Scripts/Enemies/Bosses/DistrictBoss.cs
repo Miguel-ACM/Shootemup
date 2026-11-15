@@ -170,7 +170,7 @@ public abstract class DistrictBoss : DistrictEnemy
                 if (round != null)round.Vanish();
         }
         finally { PSXImpactEffects.WhiteSpellClear=false; }
-        PhaseBreak.Play(transform.position);
+        PhaseBreak.Play(transform.position, Hull);
     }
 
     public override void damage(float amount)

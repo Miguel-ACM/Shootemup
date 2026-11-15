@@ -209,22 +209,25 @@ public static class PSXImpactEffects
         }
     }
 
-    public static void SpellBreak(Vector3 position)
+    public static void SpellBreak(Vector3 position) => SpellBreak(position, Color.white);
+
+    // A spell break's spark wave: forty-eight streaks in three lengths, thrown far across the arena.
+    public static void SpellBreak(Vector3 position, Color colour)
     {
-        Burst(position, Color.white, true);
-        for (int ray = 0; ray < 16; ray++)
+        Burst(position, colour, true);
+        for (int ray = 0; ray < 48; ray++)
         {
-            float angle = ray * 22.5f;
+            float angle = ray * 7.5f + (ray % 3) * 2.1f;
             Vector3 direction = CombatVisuals.Rotate(Vector2.right, angle);
-            bool longRay = ray % 2 == 0;
+            int length = ray % 3;
             var spark = new ParticleSystem.EmitParams
             {
-                position = position + direction * .16f,
-                velocity = direction * (longRay ? 9 : 6),
+                position = position + direction * .2f,
+                velocity = direction * (length == 0 ? 15 : length == 1 ? 10.5f : 7),
                 rotation3D = Vector3.forward * angle,
-                startSize3D = new Vector3(longRay ? .64f : .32f, .065f, .065f),
-                startColor = Color.white,
-                startLifetime = longRay ? .42f : .28f
+                startSize3D = new Vector3(length == 0 ? 1.1f : length == 1 ? .66f : .38f, length == 0 ? .1f : .075f, .075f),
+                startColor = length == 2 ? Color.Lerp(colour, Color.white, .5f) : colour,
+                startLifetime = length == 0 ? .62f : length == 1 ? .46f : .32f
             };
             buffer.Emit(spark, 1);
         }
