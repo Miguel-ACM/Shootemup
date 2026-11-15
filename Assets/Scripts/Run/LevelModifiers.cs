@@ -25,7 +25,8 @@ public static class LevelModifiers
 
     public static LevelModifier For(LevelId level, int seed, int stage)
     {
-        if (level == LevelId.Void)
+        // Plains stays plain: no MORE ELITES, MORE COINS or FAST FIRE (Miguel, 15 November 2026).
+        if (level == LevelId.Void || level == LevelId.Fields)
             return LevelModifier.None;
         if (Forced.HasValue)
             return Forced.Value;
