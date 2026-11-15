@@ -130,16 +130,36 @@ public sealed class GalleryLampMatrix : MaskableGraphic
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         vh.Clear();
-        if (matches == null) return;
+        if (matches == null || matches.Length == 0) return;
+        // Every exhibit must fit on the screen however large the catalogue grows: choose the
+        // column count that gives the largest cells, then centre the block (Miguel, 15 November 2026).
+        var size = rectTransform.rect.size;
+        int count = matches.Length, columns = 1;
+        float pitch = 0;
+        for (int c = 1; c <= count; c++)
+        {
+            int r = (count + c - 1) / c;
+            float p = Mathf.Min(size.x / c, size.y / r);
+            if (p > pitch)
+            {
+                pitch = p;
+                columns = c;
+            }
+        }
+        pitch = Mathf.Min(pitch, 19);
+        int rows = (count + columns - 1) / columns;
+        var origin = new Vector2((size.x - columns * pitch) * .5f, (size.y - rows * pitch) * .5f) - size * .5f;
+        var half = new Vector2(pitch * .32f, pitch * .27f);
         for (int i = 0; i < matches.Length; i++)
         {
             var color = matches[i] ? RouteBlue : new Color(.17f, .20f, .20f);
-            var at = new Vector2(6 + i % GalleryShelf.Columns * 19, 5 + i / GalleryShelf.Columns * 18) - rectTransform.rect.size * .5f;
+            // Row 0 at the bottom, like the first cases at the aisle's south end.
+            var at = origin + new Vector2((i % columns + .5f) * pitch, (i / columns + .5f) * pitch);
             int first = vh.currentVertCount;
-            vh.AddVert(at + new Vector2(-6, -5), color, Vector2.zero);
-            vh.AddVert(at + new Vector2(-6, 5), color, Vector2.zero);
-            vh.AddVert(at + new Vector2(6, 5), color, Vector2.zero);
-            vh.AddVert(at + new Vector2(6, -5), color, Vector2.zero);
+            vh.AddVert(at + new Vector2(-half.x, -half.y), color, Vector2.zero);
+            vh.AddVert(at + new Vector2(-half.x, half.y), color, Vector2.zero);
+            vh.AddVert(at + new Vector2(half.x, half.y), color, Vector2.zero);
+            vh.AddVert(at + new Vector2(half.x, -half.y), color, Vector2.zero);
             vh.AddTriangle(first, first + 1, first + 2);
             vh.AddTriangle(first, first + 2, first + 3);
         }
