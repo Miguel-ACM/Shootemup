@@ -36,6 +36,9 @@ public sealed partial class DebugRunMenu : AMenuElement
     // Opens a pact offer before the run's first wave.
     static bool forcePact;
     Image pactButton;
+    TextMeshProUGUI weatherLabel;
+    // Null follows the run seed; otherwise the debug run flies this district condition.
+    DistrictCondition? weather;
     readonly List<Entry> entries = new List<Entry>();
     readonly Entry[] weapons = new Entry[2], actives = new Entry[2];
     readonly List<Button> buttons = new List<Button>();
@@ -132,6 +135,7 @@ public sealed partial class DebugRunMenu : AMenuElement
         if (!InRun)
         {
             pactButton = ButtonAt(panel, "PACT", new Vector2(258, 300), new Vector2(150, 38), () => { forcePact = !forcePact; Refresh(); }).GetComponent<Image>();
+            weatherLabel = ButtonAt(panel, "SEEDED SKY", new Vector2(78, 300), new Vector2(190, 38), CycleWeather, 16).GetComponentInChildren<TextMeshProUGUI>();
             var levels = new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Thunder, LevelId.Tunnel, LevelId.Desert, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell, LevelId.Heaven, LevelId.Void };
             for (int i = 0; i < levels.Length; i++)
             {
@@ -263,6 +267,7 @@ public sealed partial class DebugRunMenu : AMenuElement
         foreach (var level in levelButtons)
             level.Value.color = level.Key == first ? ChosenCard : CardColor;
         if (pactButton != null) pactButton.color = forcePact ? ChosenCard : CardColor;
+        if (weatherLabel != null) weatherLabel.text = weather.HasValue ? weather.Value.ToString().ToUpperInvariant() : "SEEDED SKY";
         for (int i = 0; i < 2; i++)
         {
             slots[i].card.color = i == slot ? ChosenCard : CardColor;
@@ -293,6 +298,13 @@ public sealed partial class DebugRunMenu : AMenuElement
         label.text = entry?.name ?? fallback;
     }
 
+    // Seeded sky, then each condition in turn; conditions outside their district fly ordinary.
+    void CycleWeather()
+    {
+        weather = !weather.HasValue ? DistrictCondition.Ordinary : (int)weather.Value + 1 < Enum.GetValues(typeof(DistrictCondition)).Length ? weather.Value + 1 : (DistrictCondition?)null;
+        Refresh();
+    }
+
     void StartRun()
     {
         if (starting || CloudTransition.Busy)
@@ -311,6 +323,7 @@ public sealed partial class DebugRunMenu : AMenuElement
         }
         GameRules.StartNewRun();
         LevelRun.Reset(first);
+        DistrictConditions.Forced = weather;
         BGMManager.PlayLevelMusic(first);
         CloudTransition.Load("L1");
     }
