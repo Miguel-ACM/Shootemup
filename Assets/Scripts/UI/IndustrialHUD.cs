@@ -13,6 +13,8 @@ public sealed class IndustrialHUD : MonoBehaviour
     Image[] challengeCells;
     readonly RectTransform[] encounterRows = new RectTransform[System.Enum.GetValues(typeof(EncounterKind)).Length];
     int encounterRowsShown;
+    // ELITE HUNT pips: waiting, caught (gold) or escaped (red), one per hunt wave.
+    readonly Image[] huntPips = new Image[ChallengeProgress.Waves];
     // The district's seeded modifiers sit beneath the picked hexagons, in the same style.
     readonly RectTransform[] modifierRows = new RectTransform[LevelModifiers.All.Length];
     // The district's seeded condition or event (dusk, blizzard, rush hour...) leads the margin rows.
@@ -282,10 +284,10 @@ public sealed class IndustrialHUD : MonoBehaviour
         // The orchestrator arrives with the additive Run scene, possibly after these instruments.
         if (waves == null)
             waves = FindAnyObjectByType<WaveOrchestrer>();
-        int challenge = waves != null ? waves.ChallengeWavesRemaining : 0;
         UpdateEncounterRows();
+        // The ELITE HUNT row's pips replace the old remaining-wave cells.
         for (int i = 0; i < challengeCells.Length; i++)
-            challengeCells[i].gameObject.SetActive(i < challenge);
+            challengeCells[i].gameObject.SetActive(false);
         chainFill.sizeDelta = new Vector2(72 * Mathf.Clamp01(Score.GetPercentageNextMultiplier()), 3);
         if (Time.unscaledTime > nextScan)
         {
@@ -547,12 +549,19 @@ public sealed class IndustrialHUD : MonoBehaviour
                 icon.GetComponent<Image>().sprite = EncounterChoice.Icon(kind);
                 icon.GetComponent<Image>().preserveAspect = true;
                 var label = TextAt(row, caption, 33, 3, 12, Steel);
-                label.rectTransform.sizeDelta = new Vector2(kind == EncounterKind.Cargo ? 65 : 96, 24);
+                label.rectTransform.sizeDelta = new Vector2(kind == EncounterKind.Cargo ? 65 : kind == EncounterKind.Challenge ? 58 : 96, 24);
                 label.alignment = TextAnchor.MiddleLeft;
                 label.horizontalOverflow = HorizontalWrapMode.Wrap;
                 label.resizeTextForBestFit = true;
                 label.resizeTextMinSize = 8;
                 label.resizeTextMaxSize = 12;
+                if (kind == EncounterKind.Challenge)
+                    for (int pip = 0; pip < huntPips.Length; pip++)
+                    {
+                        var cell = Panel(row, "Hunt pip " + pip, Steel);
+                        Place(cell, 94 + pip * 12, 10, 9, 10);
+                        huntPips[pip] = cell.GetComponent<Image>();
+                    }
                 if (kind == EncounterKind.Cargo)
                 {
                     var control = Panel(row, "Open cargo control", Color.white);
@@ -563,6 +572,12 @@ public sealed class IndustrialHUD : MonoBehaviour
                     Place(cargoCharge, 105, 27, 0, 2);
                 }
             }
+            if (kind == EncounterKind.Challenge && huntPips[0] != null)
+                for (int pip = 0; pip < huntPips.Length; pip++)
+                {
+                    int state = waves.HuntPip(pip);
+                    huntPips[pip].color = state == 1 ? new Color(1, .82f, .3f) : state == 2 ? Alarm : new Color(.22f, .27f, .27f);
+                }
             if (kind == EncounterKind.Cargo && cargoControl != null)
             {
                 var action = waves.Cargo.OpenControl;

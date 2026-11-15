@@ -279,6 +279,31 @@ public static class VerifyDistrictConditions
             Check(IndustrialMeshFactory.TunnelPassageMesh(layout) != null, "Missing mesh for layout " + layout);
         }
 
+        // ELITE HUNT rules: three catches pay out; one escape ends the hunt without a reward.
+        var hunt = new ChallengeProgress();
+        hunt.Start(false);
+        bool paid = false;
+        for (int wave = 0; wave < 3; wave++)
+        {
+            hunt.BeginWave(true);
+            hunt.Catch();
+            paid = hunt.FinishWave();
+        }
+        Check(paid && hunt.Pips.All(p => p == 1) && !hunt.Active, "Three caught elites should complete the hunt");
+        hunt.Start(false);
+        hunt.BeginWave(true);
+        hunt.Catch();
+        hunt.FinishWave();
+        hunt.BeginWave(true);
+        hunt.Escape();
+        Check(!hunt.FinishWave() && hunt.Pips[1] == 2 && hunt.Failed && hunt.Remaining == 0, "An escaped elite should end the hunt");
+        hunt.BeginWave(true);
+        Check(!hunt.CurrentWave, "A failed hunt must not count later waves");
+        Check(EncounterChoice.Label(EncounterKind.Challenge) == "ELITE HUNT", "Challenge should read ELITE HUNT");
+        EncounterChoice.ChallengeRarity = "epic";
+        Check(EncounterChoice.Accent(EncounterKind.Challenge) == AItem.GetRarityColor("epic"), "The hunt hexagon should wear its promised rarity");
+        EncounterChoice.ChallengeRarity = null;
+
         LevelRun.Reset(LevelId.Thunder, 3);
         LightningStrike.Begin(0, 7);
         SpearStrike.Begin(1);

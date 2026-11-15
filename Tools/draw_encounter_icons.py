@@ -101,21 +101,27 @@ def health():
 
 
 def challenge():
+    """ELITE HUNT: red lock brackets on a gold-ringed elite fighter, with three catch pips."""
     im,d = canvas()
-    d.polygon([(16,2),(29,7),(28,21),(23,27),(16,31),(9,27),(4,21),(3,7)], fill=INK)
-    d.polygon([(16,4),(27,8),(26,20),(22,25),(16,29),(10,25),(6,20),(5,8)], fill="#604775")
-    d.line([(7,10),(7,18),(11,24)], fill=PURPLE, width=1)
-    d.line([(25,10),(25,18),(21,24)], fill="#d8b1ef", width=1)
-    # An angular skull and three small wave marks make a danger/reward crest.
-    d.polygon([(12,7),(20,7),(24,11),(24,18),(21,21),(21,24),(11,24),(11,21),(8,18),(8,11)], fill=INK)
-    d.polygon([(12,9),(20,9),(22,12),(22,17),(19,19),(19,22),(13,22),(13,19),(10,17),(10,12)], fill=LIGHT)
-    d.rectangle((12,9,19,10), fill="#fff0d7")
-    d.polygon([(11,13),(15,14),(15,17),(11,16)], fill=INK)
-    d.polygon([(17,14),(21,13),(21,16),(17,17)], fill=INK)
-    d.polygon([(16,17),(18,20),(14,20)], fill=INK)
-    d.rectangle((15,21,16,22), fill="#8d8388")
-    for x,y in ((10,26),(16,28),(22,26)):
-        d.rectangle((x-1,y-1,x+1,y), fill=PURPLE)
+    red, red_light, gold, gold_dark = "#e2423a", "#ff8a7a", "#f5c84a", "#b8862a"
+    # Gold elite ring, drawn as four short arcs.
+    for start_angle in (20, 110, 200, 290):
+        d.arc((5,3,27,25), start_angle, start_angle + 50, fill=INK, width=3)
+        d.arc((6,4,26,24), start_angle + 4, start_angle + 46, fill=gold, width=1)
+    # The elite: a small downward fighter.
+    d.polygon([(16,22),(19,16),(24,13),(23,10),(18,11),(17,7),(15,7),(14,11),(9,10),(8,13),(13,16)], fill=INK)
+    d.polygon([(16,20),(18,15),(22,12),(18,12),(17,9),(15,9),(14,12),(10,12),(14,15)], fill="#9aa6bb")
+    d.polygon([(16,20),(14,15),(10,12),(14,12),(15,9),(16,9)], fill="#c3cddb")
+    d.rectangle((15,13,16,14), fill=red)
+    # Red lock brackets at the four corners.
+    for x, y, sx, sy in ((2,0,1,1),(29,0,-1,1),(2,27,1,-1),(29,27,-1,-1)):
+        d.line([(x, y + sy*4), (x, y), (x + sx*4, y)], fill=INK, width=3)
+        d.line([(x, y + sy*3), (x, y), (x + sx*3, y)], fill=red, width=1)
+    d.point((3,1), fill=red_light)
+    # Three catch pips.
+    for i, x in enumerate((10,16,22)):
+        d.rectangle((x-2,27,x+1,30), fill=INK)
+        d.rectangle((x-1,28,x,29), fill=gold if i < 2 else gold_dark)
     return im
 
 

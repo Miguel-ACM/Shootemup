@@ -417,32 +417,36 @@ public sealed class RunChoicesReview : MonoBehaviour
         Set(flow, "currentWaveNumber", 0);
         Set(flow, "openingWavePending", false);
         Set(flow, "stopingWave", false);
+        // ELITE HUNT: each of three waves carries one marked elite; catching all three pays out.
         Call(flow, "ResolveEncounter", EncounterKind.Challenge);
         flow.CancelInvoke();
         Call(flow, "GenerateWave");
-        Check(flow.ChallengeWavesRemaining == 3, "challenge starts with exactly three waves remaining");
+        Check(flow.ChallengeWavesRemaining == 3, "the hunt starts with exactly three waves remaining");
         for (int wave = 0; wave < 3; wave++)
         {
-            flow.enabled = true;
-            yield return null;
-            flow.enabled = false;
-            var challenged = AEnemy.Live.OfType<DistrictEnemy>().FirstOrDefault();
-            Check(challenged != null && challenged.Challenged && challenged.GetComponent<PatternMover>().TempoMultiplier > 1, "challenge wave " + (wave + 1) + " spawns faster, stronger enemies");
-            var normal = DistrictEnemy.Spawn(challenged.GetType(), new Vector3(30, 30, 1));
-            Check(Mathf.Abs(challenged.health - normal.health * 1.2f) < .1f, "challenge enemy health increases without changing global run stats");
-            Destroy(normal.gameObject);
+            // Release the whole wave at once so its marked elite is on the field.
+            Set(flow, "waveTime", 999f);
+            Call(flow, "Update");
+            var target = FindAnyObjectByType<HuntMark>();
+            var marked = target != null ? target.GetComponent<DistrictEnemy>() : null;
+            Check(marked != null && marked.Elite, "hunt wave " + (wave + 1) + " marks one elite");
+            Check(FindObjectsByType<HuntMark>().Length == 1, "exactly one marked elite per hunt wave");
             if (wave == 0)
             {
-                yield return new WaitForSeconds(2);
+                yield return new WaitForSeconds(1);
                 Capture("Challenge-Active");
             }
+            marked?.damage(float.PositiveInfinity);
+            yield return null;
+            yield return null;
+            Check(flow.HuntPip(wave) == 1, "catching the marked elite fills pip " + (wave + 1));
             Clear();
             yield return null;
             Set(flow, "currentUnit", null);
             Set(flow, "waveTime", ((Wave)Get(flow, "currentWave")).duration + 1);
             Set(flow, "clearTime", .2f);
             Call(flow, "Update");
-            Check(flow.ChallengeWavesRemaining == 2 - wave, "challenge counts down once for completed wave " + (wave + 1));
+            Check(flow.ChallengeWavesRemaining == 2 - wave, "the hunt counts down once for completed wave " + (wave + 1));
         }
         var prize = FindAnyObjectByType<DecisionShop>();
         Check(prize != null && !prize.paid, "clearing the third challenge wave opens its free item reward before later combat");
@@ -457,7 +461,21 @@ public sealed class RunChoicesReview : MonoBehaviour
         while (AEnemy.Live.Count == 0 && Time.time < nextSpawn)
             yield return null;
         flow.enabled = false;
-        Check(AEnemy.Live.OfType<DistrictEnemy>().Any(e => !e.Challenged) && flow.ChallengeWavesRemaining == 0, "normal difficulty returns after the three-wave challenge");
+        Check(!flow.Hunting && FindAnyObjectByType<HuntMark>() == null, "ordinary waves return after the hunt");
+        Clear();
+        yield return null;
+        // An escaped target ends the hunt at once, with no reward.
+        flow.waves = new[] { "8", "10", "12", "2", "boss" };
+        Set(flow, "currentWaveNumber", 0);
+        Call(flow, "ResolveEncounter", EncounterKind.Challenge);
+        Call(flow, "GenerateWave");
+        Set(flow, "waveTime", 999f);
+        Call(flow, "Update");
+        var fleeing = FindAnyObjectByType<HuntMark>()?.GetComponent<DistrictEnemy>();
+        fleeing?.Depart();
+        yield return null;
+        yield return null;
+        Check(flow.HuntPip(0) == 2 && flow.ChallengeWavesRemaining == 0, "an escaped target cracks its pip and ends the hunt");
         Clear();
         yield return null;
         LevelRun.Reset(LevelId.City, 17381);

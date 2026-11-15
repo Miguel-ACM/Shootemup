@@ -66,18 +66,57 @@ public sealed class RunPlan
     }
 }
 
+// ELITE HUNT: each of the next three ordinary waves carries one marked elite. Catch all three
+// for the reward; one escape ends the hunt. Pips: 0 waiting, 1 caught, 2 escaped.
 public sealed class ChallengeProgress
 {
+    public const int Waves = 3;
     public int Remaining { get; set; }
     public bool CurrentWave { get; set; }
-    public void BeginWave(bool ordinary) => CurrentWave = ordinary && Remaining > 0;
-    public void Start(bool currentOrdinary) { Remaining = 3; CurrentWave = currentOrdinary; }
+    public readonly int[] Pips = new int[Waves];
+    public bool Failed { get; private set; }
+    public int Caught { get; private set; }
+    public bool Active => Remaining > 0 || Failed;
+    public void BeginWave(bool ordinary) => CurrentWave = ordinary && Remaining > 0 && !Failed;
+    public void Start(bool currentOrdinary)
+    {
+        Remaining = Waves;
+        CurrentWave = currentOrdinary;
+        Failed = false;
+        Caught = 0;
+        Array.Clear(Pips, 0, Pips.Length);
+    }
+    // A wave with no ship that can carry the mark does not count toward the three.
+    public void SkipWave() => CurrentWave = false;
+    public void Catch()
+    {
+        if (Remaining <= 0 || Failed)
+            return;
+        Pips[Waves - Remaining] = 1;
+        Caught++;
+    }
+    public void Escape()
+    {
+        if (Remaining <= 0 || Failed)
+            return;
+        Pips[Waves - Remaining] = 2;
+        Failed = true;
+        Remaining = 0;
+        CurrentWave = false;
+    }
     public bool FinishWave()
     {
         if (!CurrentWave)
             return false;
         CurrentWave = false;
-        return --Remaining == 0;
+        return --Remaining == 0 && !Failed && Caught >= Waves;
     }
-    public void Reset() { Remaining = 0; CurrentWave = false; }
+    public void Reset()
+    {
+        Remaining = 0;
+        CurrentWave = false;
+        Failed = false;
+        Caught = 0;
+        Array.Clear(Pips, 0, Pips.Length);
+    }
 }

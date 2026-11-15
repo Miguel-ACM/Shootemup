@@ -120,10 +120,14 @@ public static class EncounterChoice
         inventory.RecordStatBonus(before);
     }
 
+    // ELITE HUNT's promised reward rarity while it is on offer or underway; its colour is the offer's.
+    public static string ChallengeRarity;
+
     public static string Label(EncounterKind kind)
     {
         switch (kind)
         {
+            case EncounterKind.Challenge: return "ELITE HUNT";
             case EncounterKind.MultShop: return "MULT SHOP";
             case EncounterKind.HealthTrade: return "HEALTH TRADE";
             case EncounterKind.AttackSpeed: return "FIRE RATE +0.8";
@@ -135,6 +139,8 @@ public static class EncounterChoice
     }
     public static Color Accent(EncounterKind kind)
     {
+        if (kind == EncounterKind.Challenge && ChallengeRarity != null)
+            return AItem.GetRarityColor(ChallengeRarity);
         switch (kind)
         {
             case EncounterKind.Shop:

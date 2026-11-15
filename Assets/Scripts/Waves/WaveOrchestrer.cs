@@ -40,6 +40,12 @@ public class WaveOrchestrer : MonoBehaviour
     int challengeWavesRemaining { get => challenge.Remaining; set => challenge.Remaining = value; }
     bool challengeWave { get => challenge.CurrentWave; set => challenge.CurrentWave = value; }
     public int ChallengeWavesRemaining => challengeWavesRemaining;
+    // ELITE HUNT: the marked elite of the current hunt wave, the pips for the margin row, and
+    // the reward rarity promised by the hexagon when it was offered.
+    HuntMark huntTarget;
+    string challengeRarity;
+    public int HuntPip(int index) => challenge.Pips[index];
+    public bool Hunting => challenge.Active;
     public EncounterKind[] EncounterOptions
     {
         get; private set;
@@ -132,10 +138,10 @@ public class WaveOrchestrer : MonoBehaviour
                 if (type != null)
                 {
                     var districtEnemy = enemy.GetComponent<DistrictEnemy>();
-                    if (challengeWave)
-                        districtEnemy.MakeChallenging();
-                    if (currentUnit.elite)
+                    if (currentUnit.elite || currentUnit.huntTarget)
                         districtEnemy.MakeElite();
+                    if (currentUnit.huntTarget)
+                        huntTarget = HuntMark.Attach(districtEnemy, this);
                     districtEnemy.FlyPhrase(currentUnit);
                 }
                 if (enemy.TryGetComponent<DistrictMiniboss>(out var mini))
@@ -165,7 +171,8 @@ public class WaveOrchestrer : MonoBehaviour
             // joins the current walls just before they end.
             bool chainPassage = TunnelPassage.EndingSoon && next.Kind == RunSlotKind.Combat && LevelRun.Current == LevelId.Tunnel &&
                 TunnelPassageWaves.HasPassage(next.Budget) && TunnelPassageWaves.Chained;
-            bool phraseComplete = currentUnit == null && !miniboss && waveTime >= handoffAt && (AEnemy.HoldingCount < 22 || chainPassage) && (!TunnelPassage.Active || chainPassage);
+            // A hunt wave holds its handoff until the marked elite is caught or escapes.
+            bool phraseComplete = currentUnit == null && !miniboss && huntTarget == null && waveTime >= handoffAt && (AEnemy.HoldingCount < 22 || chainPassage) && (!TunnelPassage.Active || chainPassage);
             if (currentUnit == null && ((nextCombat && phraseComplete) || clearTime >= .12f) && (nextCombat || rewardOffer == null))
             {
 
@@ -207,6 +214,43 @@ public class WaveOrchestrer : MonoBehaviour
             return;
         }
         GenerateWave();
+    }
+
+    // One ship a little way into the wave carries the hunt's mark. Gates, mines and moonlets cannot.
+    void MarkHuntTarget()
+    {
+        var eligible = currentWave.units.FindAll(unit => !unit.miniboss && unit.enemy != nameof(FaradayPylon) &&
+            unit.enemy != nameof(DepthMine) && unit.enemy != "OrbitalMoonlet");
+        if (eligible.Count == 0)
+        {
+            challenge.SkipWave();
+            return;
+        }
+        var random = new System.Random(unchecked(LevelRun.Seed + LevelRun.Stage * 313 + currentWaveNumber * 7919));
+        int index = Mathf.Clamp(Mathf.FloorToInt(eligible.Count * (.25f + .3f * (float)random.NextDouble())), 0, eligible.Count - 1);
+        eligible[index].huntTarget = true;
+    }
+
+    public void HuntResolved(HuntMark mark, bool caught)
+    {
+        if (mark != huntTarget)
+            return;
+        huntTarget = null;
+        if (caught)
+        {
+            challenge.Catch();
+            ItemSound.Play("ready", .14f);
+            PSXImpactEffects.Burst(mark.transform.position, EncounterChoice.Accent(EncounterKind.Challenge), true);
+        }
+        else
+        {
+            challenge.Escape();
+            ItemSound.Play("shatter", .14f);
+            // The cracked pip stays up a moment, then the hunt leaves the margin.
+            encounterExpiry[(int)EncounterKind.Challenge] = Time.time + 3;
+            challengeRarity = null;
+            EncounterChoice.ChallengeRarity = null;
+        }
     }
 
     void FinishCargoWave()
@@ -340,6 +384,8 @@ public class WaveOrchestrer : MonoBehaviour
                 simulatorFlight?.Begin(ship.GetComponent<Shipcontroller>());
             challenge.BeginWave(kind == RunSlotKind.Combat);
             currentWave = wavePool.getWave(slot.Key);
+            if (challengeWave)
+                MarkHuntTarget();
             var following = plan.Following(currentWaveNumber + 1);
             handoffAt = following.Kind == RunSlotKind.Combat ? WaveHandoff.At(currentWave, wavePool.getWave(following.Key)) : currentWave.duration;
             offerAt = handoffAt * .5f;
@@ -394,12 +440,20 @@ public class WaveOrchestrer : MonoBehaviour
         bool canReforge = tradeable.Exists(entry => ItemPool.ReforgeAlternatives(entry.key, entry.rarity).Count >= 2);
         bool offerSkip = !skipOffered && FlightTrials.Active == null && plan.IndexOf(RunSlotKind.Boss, currentWaveNumber) >= 0;
         skipOffered = true;
-        var options = EncounterChoice.Draw(seed, remaining >= 3 && challengeWavesRemaining == 0, player.health, player.maxHealth,
+        // The hunt needs three full waves after the one in progress.
+        var options = EncounterChoice.Draw(seed, remaining >= 4 && !challenge.Active, player.health, player.maxHealth,
             pactAvailable, GameRules.luck, tradeable.Count > 0, canReforge,
             cargo == null && pendingCargo.Count == 0 && remaining >= CargoEscort.MinimumOfferWaves, !PactPool.GlassHull, offerSkip);
         if (Array.IndexOf(options, EncounterKind.Pact) >= 0)
             PactPool.HexStage = LevelRun.Stage;
         EncounterOptions = options;
+        // The hunt's reward rarity is promised up front: the hexagon wears its colour.
+        if (Array.IndexOf(options, EncounterKind.Challenge) >= 0)
+        {
+            double roll = new System.Random(seed ^ 0x4f1bbcdd).NextDouble() - Mathf.Clamp(GameRules.luck, 0, 2) * .08f;
+            challengeRarity = roll < .1f ? "legendary" : roll < .45f ? "epic" : "rare";
+            EncounterChoice.ChallengeRarity = challengeRarity;
+        }
         rewardOffer = RewardHexes.Open(options, ship.transform, unchecked(seed * 31 + 17), index =>
         {
             rewardOffer = null;
@@ -466,12 +520,8 @@ public class WaveOrchestrer : MonoBehaviour
         }
         if (kind == EncounterKind.Challenge)
         {
-            // The wave in progress is the first of the three.
-            challenge.Start(isWaveComingOut && currentWave != null && !currentWave.units.Exists(unit => unit.miniboss));
-            if (challengeWave)
-                foreach (var enemy in AEnemy.Live)
-                    if (enemy is DistrictEnemy districtEnemy && !(enemy is DistrictMiniboss))
-                        districtEnemy.MakeChallenging();
+            // The hunt begins with the next wave, so every target arrives from its start.
+            challenge.Start(false);
         }
         else
             HealthRecovery.Begin(ship.GetComponent<Shipcontroller>(), .5f);
@@ -500,6 +550,7 @@ public class WaveOrchestrer : MonoBehaviour
         minibossDeadline = -1;
         minibossVictory = false;
         challenge.Reset();
+        huntTarget = null;
         killLedger.Clear();
         ItemSound.Play("ready", .18f);
         PSXImpactEffects.Burst(ship.transform.position, EncounterChoice.Accent(EncounterKind.Skip));
@@ -527,6 +578,18 @@ public class WaveOrchestrer : MonoBehaviour
             StartCoroutine(OpenCargoReward(GenerateWave));
             return;
         }
+        string reservedKey = null, reservedRarity = null;
+        if (kind == RunSlotKind.ChallengeReward && challengeRarity != null)
+        {
+            // Deliver exactly the promised rarity, or the nearest one that still has items.
+            int promised = challengeRarity == "legendary" ? 3 : challengeRarity == "epic" ? 2 : 1;
+            for (int step = 0; reservedKey == null && step <= 3; step++)
+                foreach (int tier in new[] { promised - step, promised + step })
+                    if (reservedKey == null && tier >= 0 && tier <= 3)
+                        reservedKey = ItemPool.GetCargoReward(out reservedRarity, (ItemRarity)tier);
+            challengeRarity = null;
+            EncounterChoice.ChallengeRarity = null;
+        }
         decision = gameObject.AddComponent<DecisionShop>();
         decision.Open(this, ship.GetComponent<Shipcontroller>(), kind, () =>
         {
@@ -542,7 +605,8 @@ public class WaveOrchestrer : MonoBehaviour
                 case RunSlotKind.ChallengeReward: Clear(EncounterKind.Challenge); break;
             }
             GenerateWave();
-        });
+        }, reservedKey: reservedKey, reservedRarity: reservedKey != null ? reservedRarity : null,
+            reason: kind == RunSlotKind.ChallengeReward ? "ELITE HUNT COMPLETE" : null);
         void Clear(EncounterKind encounter) => encounterExpiry[(int)encounter] = 0;
     }
 
@@ -774,6 +838,7 @@ public class WaveOrchestrer : MonoBehaviour
         currentWaveEnemies = 0;
         currentWaveKilledEnemies = 0;
         challenge.Reset();
+        huntTarget = null;
         Array.Clear(encounterExpiry, 0, encounterExpiry.Length);
         skipOffered = false;
         // Unopened cargo follows the pilot across districts until claimed or destroyed.
