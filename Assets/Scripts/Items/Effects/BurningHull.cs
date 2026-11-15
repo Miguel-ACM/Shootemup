@@ -53,7 +53,7 @@ public sealed class BurningHull : MonoBehaviour
         {
             nextTick = Time.time + TickRate;
             // The same damage per second as the heat value, delivered in quick quiet licks.
-            CombatHit.Affliction(enemy, heat * TickRate * PoisonedHull.Weakness(enemy));
+            CombatHit.Affliction(enemy, heat * TickRate * PoisonedHull.Weakness(enemy) * MatchStrike.BurnScale);
         }
     }
 

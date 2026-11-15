@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public enum UpgradeKind
 {
     Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice, RelaySwitch, LiveWire,
-    TapeMeasure, BrassKnuckles
+    TapeMeasure, BrassKnuckles, Matchbox
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -214,10 +214,13 @@ public sealed class CombatUpgrades : MonoBehaviour
         }
         int ignitions = fire || Count(UpgradeKind.Gasoline) > 0 ? 1
             : Count(UpgradeKind.Burn) > 0 ? Proc("burn", companion ? .4f : .18f, enemy.transform.position) : 0;
+        bool struck = ignitions == 0 && generation == 0 && !companion && MatchStrike.Strike(enemy);
+        if (struck)
+            ignitions = 1;
         if (ignitions > 0)
         {
             // Only a Lighter's chance ignition is an activation; flames and gasoline ignite every hit.
-            if (!fire && Count(UpgradeKind.Gasoline) == 0)
+            if (!fire && !struck && Count(UpgradeKind.Gasoline) == 0)
                 RunInventory.Ping(UpgradeKind.Burn);
             var burn = enemy.GetComponent<BurningHull>();
             if (burn == null)
@@ -346,6 +349,7 @@ public sealed class CombatUpgrades : MonoBehaviour
 
     public void Killed(AEnemy enemy)
     {
+        MatchStrike.Spread(enemy);
         if (Count(UpgradeKind.Ink) > 0)
         {
             InkPuddle.Spill(enemy.transform.position, Count(UpgradeKind.Ink));
