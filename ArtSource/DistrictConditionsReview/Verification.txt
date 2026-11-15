@@ -12,7 +12,7 @@ Candyland: 31 parts, 186 placements
 Note: Space / Comet trailing orbit skips variant 5 on side -1
 Note: Space / Comet trailing orbit skips variant 5 on side 1
 Space: 24 parts, 142 placements
-Underwater: 28 parts, 168 placements
+Underwater: 32 parts, 192 placements
 Hell: 25 parts, 150 placements
 Heaven: 18 parts, 108 placements
 Fields/Ordinary: 31 distinct parts, 0 of 108 its own
@@ -22,6 +22,8 @@ Snow/Ordinary: 32 distinct parts, 0 of 108 its own
 Snow/Blizzard: 29 distinct parts, 47 of 108 its own
 Desert/Ordinary: 25 distinct parts, 0 of 108 its own
 Desert/Sandstorm: 26 distinct parts, 40 of 108 its own
+Underwater/Ordinary: 26 distinct parts, 0 of 108 its own
+Underwater/Minefield: 30 distinct parts, 39 of 148 its own
 Seeds 1-3000: Ordinary 4017
 Seeds 1-3000: Dusk 1012
 Seeds 1-3000: Night 943
@@ -38,4 +40,17 @@ Modifier Coins: 436 of 2000 districts
 Modifier FastFire: 475 of 2000 districts
 No modifier: 957 of 2000 districts
 Salvage rain coins by stage: 16, 23, 30, 37, 44, 51, 58
+Event Dusk: 339 of 1000 seeds
+Event Night: 300 of 1000 seeds
+Event Blizzard: 523 of 1000 seeds
+Event Sandstorm: 528 of 1000 seeds
+Event Thunderstorm: 419 of 1000 seeds
+Event Minefield: 464 of 1000 seeds
+Event DeepPassages: 443 of 1000 seeds
+Event CandyRain: 468 of 1000 seeds
+Event Eruption: 457 of 1000 seeds
+Event SpearRain: 445 of 1000 seeds
+Event RushHour: 471 of 1000 seeds
+City ships, ordinary vs rush hour: 523 vs 1024
+Deep passage layouts: 9, 2, 7, 6, 10, 5, 1, 8, 4, 3
 PASS

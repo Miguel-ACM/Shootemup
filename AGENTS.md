@@ -364,3 +364,17 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - Elite ships: an occasional ordinary-wave ship with 2.4x health, a slightly larger hull, a turning gold ring, one extra firing accent and a small coin fountain on death. Never two in one formation. Miguel asked for fewer than one wave in three and a difficulty dependence: about 11% of waves on Easy, 18% on Normal, 24% on Hard.
 - District modifiers (`LevelModifiers`), each with its own seeded chance per district (Void excluded): MORE ELITES (roughly triple the elite rate), MORE COINS (double drop chance, extra coins and larger bursts) and FAST FIRE (+20% hostile round speed, bosses included). Each shows a Python-drawn pixel icon and its name in the left margin beneath the picked hexagons (`Tools/draw_level_modifier_icons.py`).
 - SALVAGE rains its coins across the arena over a few seconds instead of paying instantly; the shower grows with the run's stage (16 coins in the first district, +7 per district).
+
+## District events and the phase break (15 November 2026)
+
+- Every district condition and event shows a Python-drawn pixel icon and its name in the left margin, above any level modifiers (`Tools/draw_condition_icons.py`). Each event has its own seeded chance (about 45%) in its district.
+- THUNDERSTORM (Thunder): lightning strikes. A faint jagged path flickers ever faster for 1.15 s, then the bolt lands on exactly that path; only the live bolt (about a third of a second) hurts. A new kind of enemy attack.
+- MINEFIELD (Underwater): extra mine formations and mines that rise from the depths mid-screen (small and dim, swelling to the surface before they can be shot). Every exploding mine is now far more dangerous: a double ring with aimed shrapnel, and a proximity fuse with an arming beep.
+- DEEP PASSAGES (Tunnel): every layout starts and ends on the same centred opening, so any layout joins any other. Five walled waves, two joined layouts each, chained wall to wall where the run allows, with heavier mixed crews; twelve layouts in all (slalom, narrows, chambers, long drift, double chicane, baffles added).
+- CANDY RAIN (Candyland): ringed sweets fall; player rounds knock them back up and they rebound off the ceiling. Landing on the pilot hurts; reaching the bottom smashes them into a small upward spray of candy rounds. Homing ignores them.
+- ERUPTION (Hell): three volcanoes per shelf, glowing craters and a lighter caldera. A 2.4 s warning (rumble, tightening ring and aim lines along every rock's path), then a wider fan plus rocks lobbed high that fall back.
+- SPEAR RAIN (Heaven): volleys of spears at very high speed, each announced like a laser by a gold column narrowing to a line with an entry chevron; one column always sits over the pilot.
+- RUSH HOUR (City): one more formation per wave and two more ships per formation (about twice the ships), with far more traffic below.
+- Hazards run only during ordinary combat waves, never during decisions, minibosses or bosses, and never hold a wave open.
+- Boss phase changes are deliberately exaggerated: a short implosion (the arena dims, a ring collapses into the shrinking boss) then a rupture with a screen-wide flash, five pressure fronts partly in the district colour, rotating rays, two spark waves, a heavy shake, a deep boom and the boss punching out to 1.3x before it settles. No frame holds.
+- New event sounds come from the local SFX generator (ArtSource/AudioReview/Events) and await a listen.

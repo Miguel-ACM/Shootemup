@@ -17,6 +17,164 @@ public static class RenderDistrictConditions
     const BindingFlags Hidden = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
     static Texture2D bulletTexture;
 
+    // Batch: -executeMethod RenderDistrictConditions.Events
+    // Stills of each district event's hazard over its scenery, the twelve tunnel layouts and
+    // the phase break's implosion and rupture. Hazards are posed by hand (no play mode).
+    public static void Events()
+    {
+        int code = 0;
+        try
+        {
+            Directory.CreateDirectory(Folder);
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Shader.SetGlobalVector("_PSXSnapResolution", new Vector4(Width, Height, 0, 0));
+            var cells = new Texture2D[2, 4];
+            cells[0, 0] = EventStill(LevelId.Thunder, DistrictCondition.Thunderstorm, () =>
+            {
+                LightningStrike.Begin(-1.6f, 11);
+                LightningStrike.Begin(1.4f, 12);
+                var strikes = UnityEngine.Object.FindObjectsByType<LightningStrike>(FindObjectsInactive.Exclude);
+                // One flickering warning and one live bolt.
+                PoseLines(strikes[0], new[] { new Color(1, .86f, .55f, .7f), Color.clear, Color.clear });
+                PoseLines(strikes[1], new[] { Color.clear, new Color(1, .62f, .18f, .5f), Color.white });
+            });
+            cells[0, 1] = EventStill(LevelId.Heaven, DistrictCondition.SpearRain, () =>
+            {
+                for (int i = 0; i < 4; i++)
+                    SpearStrike.Begin(-3 + i * 2);
+                float t = 0;
+                var gold = LevelProjectilePalette.Accent(LevelId.Heaven);
+                foreach (var spear in UnityEngine.Object.FindObjectsByType<SpearStrike>(FindObjectsInactive.Exclude))
+                {
+                    t += .3f;
+                    PoseLines(spear, new[] { new Color(gold.r, gold.g, gold.b, .12f), new Color(gold.r, gold.g, gold.b, .4f + t * .4f), Color.white });
+                }
+            });
+            cells[0, 2] = EventStill(LevelId.Candyland, DistrictCondition.CandyRain, () =>
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    var candy = CandyDrop.Drop(-3 + i * 2, i);
+                    candy.transform.position = new Vector3(-3 + i * 2, 4 - i * 2.2f, 1);
+                }
+            });
+            cells[0, 3] = EventStill(LevelId.Underwater, DistrictCondition.Minefield, () =>
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    var mine = DepthMine.Rise(new Vector3(-2.5f + i * 2.5f, 1.5f - i, 1));
+                    mine.Hull.localScale = Vector3.one * mine.hullScale * (.35f + i * .32f);
+                }
+                DistrictEnemy.Spawn(typeof(DepthMine), new Vector3(0, 5, 1));
+            });
+            cells[1, 0] = EventStill(LevelId.Hell, DistrictCondition.Eruption, () =>
+            {
+                foreach (var vent in UnityEngine.Object.FindObjectsByType<VolcanicVent>(FindObjectsInactive.Exclude))
+                {
+                    if (!vent.Eruption)
+                        continue;
+                    typeof(VolcanicVent).GetMethod("Start", Hidden).Invoke(vent, null);
+                    typeof(VolcanicVent).GetMethod("ShowWarning", Hidden).Invoke(vent, new object[] { vent.transform.position, .75f });
+                }
+            });
+            cells[1, 1] = EventStill(LevelId.City, DistrictCondition.RushHour, () => { });
+            cells[1, 2] = PhaseBreakStill(.18f);
+            cells[1, 3] = PhaseBreakStill(.45f);
+            Save("Events.png", cells);
+            Tunnels();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+            code = 1;
+        }
+        DistrictConditions.Forced = null;
+        if (Application.isBatchMode)
+            EditorApplication.Exit(code);
+    }
+
+    static void PoseLines(Component owner, Color[] colours)
+    {
+        var lines = owner.GetComponentsInChildren<LineRenderer>();
+        for (int i = 0; i < lines.Length && i < colours.Length; i++)
+            lines[i].startColor = lines[i].endColor = colours[i];
+    }
+
+    static Texture2D EventStill(LevelId level, DistrictCondition condition, Action stage)
+    {
+        DistrictConditions.Forced = condition;
+        LevelRun.Reset(level, 5150);
+        var root = Environment(level);
+        foreach (var behaviour in root.GetComponentsInChildren<MonoBehaviour>())
+        {
+            if (behaviour is LevelEnvironment || behaviour is DesertDustStorm || behaviour is VolcanicVent)
+                continue;
+            var start = behaviour.GetType().GetMethod("Start", Hidden);
+            if (start != null && start.GetParameters().Length == 0)
+            {
+                var result = start.Invoke(behaviour, null);
+                if (result is System.Collections.IEnumerator steps)
+                    while (steps.MoveNext())
+                    {
+                    }
+            }
+        }
+        stage();
+        var camera = Camera(-.6f, 8.85f);
+        var image = Capture(camera);
+        foreach (var leftover in UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include))
+            if (leftover is LightningStrike || leftover is SpearStrike || leftover is CandyDrop || leftover is DistrictEnemy)
+                leftover.gameObject.SetActive(false);
+        foreach (var line in UnityEngine.Object.FindObjectsByType<LineRenderer>(FindObjectsInactive.Exclude))
+            line.gameObject.SetActive(false);
+        root.SetActive(false);
+        camera.gameObject.SetActive(false);
+        return image;
+    }
+
+    static Texture2D PhaseBreakStill(float age)
+    {
+        LevelRun.Reset(LevelId.Snow, 5150);
+        var root = Environment(LevelId.Snow);
+        var boss = DistrictEnemy.Spawn(typeof(SnowSiegeBoss), new Vector3(0, 2.5f, 1));
+        PhaseBreak.Play(boss.transform.position, boss.Hull);
+        var effect = UnityEngine.Object.FindAnyObjectByType<PhaseBreak>();
+        typeof(PhaseBreak).GetField("age", Hidden).SetValue(effect, age);
+        typeof(PhaseBreak).GetMethod("PunchHull", Hidden).Invoke(effect, null);
+        effect.Pose(age);
+        var combat = Combatants(LevelProjectilePalette.Accent(LevelId.Snow), -.6f);
+        var camera = Camera(-.6f, 8.85f);
+        var image = Capture(camera);
+        effect.gameObject.SetActive(false);
+        boss.gameObject.SetActive(false);
+        combat.SetActive(false);
+        root.SetActive(false);
+        camera.gameObject.SetActive(false);
+        return image;
+    }
+
+    // All twelve tunnel layouts side by side.
+    static void Tunnels()
+    {
+        var cells = new Texture2D[2, 6];
+        for (int layout = 1; layout <= 12; layout++)
+        {
+            var go = new GameObject("Layout " + layout);
+            go.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.TunnelPassageMesh(layout);
+            var renderer = go.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = CombatMaterials.Fleet;
+            renderer.sortingLayerName = "Enemy";
+            float length = TunnelPassage.Length(layout);
+            var camera = Camera(0, length * .5f + 1);
+            camera.transform.position = new Vector3(0, global::Camera.UpLimit + 2 + length * .5f, -20);
+            camera.backgroundColor = new Color(.12f, .1f, .09f);
+            cells[(layout - 1) / 6, (layout - 1) % 6] = Capture(camera);
+            go.SetActive(false);
+            camera.gameObject.SetActive(false);
+        }
+        Save("TunnelLayouts.png", cells);
+    }
+
     // Batch: -executeMethod RenderDistrictConditions.Elites
     public static void Elites()
     {

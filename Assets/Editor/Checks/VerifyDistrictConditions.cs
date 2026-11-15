@@ -26,6 +26,7 @@ public static class VerifyDistrictConditions
             Seeds();
             Elites();
             Modifiers();
+            Events();
         }
         catch (Exception ex)
         {
@@ -91,7 +92,8 @@ public static class VerifyDistrictConditions
         {
             (LevelId.Fields, DistrictCondition.Ordinary), (LevelId.Fields, DistrictCondition.Dusk), (LevelId.Fields, DistrictCondition.Night),
             (LevelId.Snow, DistrictCondition.Ordinary), (LevelId.Snow, DistrictCondition.Blizzard),
-            (LevelId.Desert, DistrictCondition.Ordinary), (LevelId.Desert, DistrictCondition.Sandstorm)
+            (LevelId.Desert, DistrictCondition.Ordinary), (LevelId.Desert, DistrictCondition.Sandstorm),
+            (LevelId.Underwater, DistrictCondition.Ordinary), (LevelId.Underwater, DistrictCondition.Minefield)
         };
         foreach (var (level, condition) in cases)
         {
@@ -201,6 +203,94 @@ public static class VerifyDistrictConditions
         Check(Mathf.Approximately(fast, LevelRun.EnemyShotSpeedScale * 1.2f), "FAST FIRE is not +20%");
         LevelModifiers.Forced = null;
         report.Add("Salvage rain coins by stage: " + string.Join(", ", Enumerable.Range(1, 7).Select(stage => CoinRain.Coins(stage, 0))));
+    }
+
+    // District events: every one has an icon and label, rush hour is denser, deep passages chain
+    // distinct layouts, every tunnel layout leaves room to fly, and each hazard builds cleanly.
+    static void Events()
+    {
+        foreach (DistrictCondition condition in Enum.GetValues(typeof(DistrictCondition)))
+        {
+            if (condition == DistrictCondition.Ordinary)
+                continue;
+            Check(DistrictConditions.Icon(condition) != null && DistrictConditions.Label(condition).Length > 0, "Missing icon or label: " + condition);
+            Check(DistrictConditions.Allowed(DistrictConditions.Home(condition), condition), "Event has no home district: " + condition);
+            int hits = 0;
+            for (int seed = 1; seed <= 1000; seed++)
+                if (DistrictConditions.For(DistrictConditions.Home(condition), seed) == condition)
+                    hits++;
+            report.Add("Event " + condition + ": " + hits + " of 1000 seeds");
+            Check(hits > 250 && hits < 700, "Event share off: " + condition);
+        }
+
+        int ordinaryShips = 0, rushShips = 0;
+        foreach (var forced in new[] { DistrictCondition.Ordinary, DistrictCondition.RushHour })
+            for (int seed = 1; seed <= 6; seed++)
+            {
+                DistrictConditions.Forced = forced;
+                LevelRun.Reset(LevelId.City, seed * 4241);
+                foreach (int budget in Budgets)
+                {
+                    int ships = DistrictWaves.Create(budget).units.Count;
+                    if (forced == DistrictCondition.RushHour)
+                        rushShips += ships;
+                    else
+                        ordinaryShips += ships;
+                }
+            }
+        report.Add("City ships, ordinary vs rush hour: " + ordinaryShips + " vs " + rushShips);
+        Check(rushShips > ordinaryShips * 1.35f, "Rush hour is not much denser");
+
+        DistrictConditions.Forced = DistrictCondition.DeepPassages;
+        LevelRun.Reset(LevelId.Tunnel, 61211);
+        var layouts = new List<int>();
+        int passages = 0;
+        foreach (int budget in Budgets)
+        {
+            if (!TunnelPassageWaves.HasPassage(budget))
+                continue;
+            passages++;
+            var wave = DistrictWaves.Create(budget);
+            Check(wave.units.All(u => u.passageRoute), "Deep passage ship off the walls");
+            Check(wave.units.Count >= 20, "Deep passage crew too light: " + wave.units.Count);
+            for (int i = 1; i < wave.units.Count; i++)
+                Check(wave.units[i].time >= wave.units[i - 1].time, "Deep passage units out of order");
+            layouts.AddRange(wave.units.Where(u => u.passage != 0).Select(u => u.passage));
+        }
+        Check(passages == 5, "Deep passages should wall five waves, got " + passages);
+        Check(layouts.Count == 10 && layouts.Distinct().Count() == 10, "Deep passages should chain ten distinct layouts");
+        report.Add("Deep passage layouts: " + string.Join(", ", layouts));
+        DistrictConditions.Forced = null;
+
+        for (int layout = 1; layout <= TunnelPassage.LayoutCount; layout++)
+        {
+            var walls = TunnelPassage.Sections(layout);
+            float top = walls.Max(w => w.Top), bottom = walls.Min(w => w.Bottom);
+            for (float y = bottom + .1f; y < top; y += .5f)
+            {
+                // A pilot must fit somewhere across every row of every layout.
+                bool open = false;
+                for (float x = Camera.LeftLimit + .4f; x <= Camera.RightLimit - .4f && !open; x += .1f)
+                    open = !walls.Any(w => w.Contains(new Vector2(x, y), CombatWalls.HullRadius + .25f));
+                Check(open, "Tunnel layout " + layout + " closes at height " + y.ToString("0.0"));
+                if (!open)
+                    break;
+            }
+            Check(IndustrialMeshFactory.TunnelPassageMesh(layout) != null, "Missing mesh for layout " + layout);
+        }
+
+        LevelRun.Reset(LevelId.Thunder, 3);
+        LightningStrike.Begin(0, 7);
+        SpearStrike.Begin(1);
+        LevelRun.Reset(LevelId.Candyland, 3);
+        var candy = CandyDrop.Drop(0, 2);
+        Check(candy != null && !candy.HoldsWave && !candy.CanBeTargeted && candy.CanReceiveDamage, "Candy is not a juggled hazard");
+        LevelRun.Reset(LevelId.Underwater, 3);
+        var mine = DepthMine.Rise(new Vector3(0, 1, 1));
+        Check(mine.FromDepths && !mine.HoldsWave && !mine.CanBeTargeted, "Rising mine is targetable or holds the wave while rising");
+        foreach (var leftover in UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include))
+            if (leftover is LightningStrike || leftover is SpearStrike || leftover is CandyDrop || leftover is DepthMine)
+                UnityEngine.Object.DestroyImmediate(leftover.gameObject);
     }
 
     // The seed spreads conditions roughly as authored.
