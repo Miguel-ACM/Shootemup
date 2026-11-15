@@ -16,6 +16,14 @@ public static partial class WavePartLibrary
         new WavePart("Tread pursuit","MeadowTank",RoadDescent,WaveShape.Train,4,4.2f,9),
         new WavePart("Last road patrol","MeadowTank",RoadRelief,WaveShape.Train,4,4.6f,12)
     };
+    // FOREST variety: columns on the right-hand trail as well; the ordinary columns take the left.
+    static readonly FlightCurve TrailEast = Route("Plains forest / East trail column", Vector2.right, .53f, 1.3f, .50f, .90f, .44f, .55f, .56f, .18f, .55f, -.3f);
+    static readonly FlightCurve TrailEastRush = Route("Plains forest / East trail rush", Vector2.right, .49f, 1.3f, .59f, .9f, .60f, .5f, .47f, .1f, .45f, -.3f);
+    public static readonly WavePart[] PlainsForestGround ={
+        new WavePart("East trail column","MeadowTank",TrailEast,WaveShape.Train,3,4.8f).Under(DistrictCondition.Forest),
+        new WavePart("East trail rush","MeadowTank",TrailEastRush,WaveShape.Train,3,4.2f,4).Under(DistrictCondition.Forest),
+        new WavePart("Forest convoy","MeadowTank",TrailEast,WaveShape.Train,4,4.6f,7).Under(DistrictCondition.Forest)
+    };
     public static readonly WavePart[] SnowGround ={
         new WavePart("Powder auger column","FrostAuger",FrostConvoy,WaveShape.Train,3,5.1f),
         new WavePart("Ice sickle battery","FrostAuger",FrostSickle,WaveShape.Train,3,5.2f,4),

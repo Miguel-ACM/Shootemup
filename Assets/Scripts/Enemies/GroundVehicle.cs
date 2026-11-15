@@ -9,6 +9,8 @@ public abstract class GroundVehicle : DistrictEnemy
     bool hasPrevious;
     float roadY;
     bool drivingRoad;
+    // In the FOREST variety a tank keeps to the dirt trail on its route's side.
+    int trail = -1;
     GroundTreadMarks marks;
     MeshRenderer[] parts;
     MeshRenderer headlights;
@@ -88,6 +90,7 @@ public abstract class GroundVehicle : DistrictEnemy
             {
                 drivingRoad = true;
                 roadY = position.y;
+                trail = field.TrailAt(position.x, position.y);
             }
             var flight = movement as FormationFlight;
             float drive = 1.45f + Mathf.Clamp((5.1f - (flight != null ? flight.duration : 4.8f)) * .8f, 0, .9f);
@@ -107,7 +110,7 @@ public abstract class GroundVehicle : DistrictEnemy
         if (Snow)
             LevelEnvironment.TrySnowGround(position, out tile, out local);
         else if (field != null)
-            field.SampleRoad(position.y, out tile, out local);
+            field.SampleRoad(position.y, out tile, out local, trail);
     }
 
     protected override void Update()
@@ -133,7 +136,7 @@ public abstract class GroundVehicle : DistrictEnemy
         float scroll = Snow ? 4.4f : field.GroundScrollSpeed;
         Vector2 driving = hasPrevious ? (Vector2)(p - previous) + Vector2.up * scroll * Time.deltaTime : Vector2.up;
         if (!Snow)
-            driving = field.RoadDownDirection(p.y) * Mathf.Max(.001f, driving.magnitude);
+            driving = field.RoadDownDirection(p.y, trail) * Mathf.Max(.001f, driving.magnitude);
         if (driving.sqrMagnitude > .00001f)
         {
             var target = Quaternion.FromToRotation(Vector3.down, driving.normalized);

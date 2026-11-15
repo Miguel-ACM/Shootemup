@@ -463,7 +463,7 @@ public static partial class WavePartLibrary
             case LevelId.Void:
                 return Array.Empty<WavePart>();
             case LevelId.Fields:
-                return plainsWithGround ?? (plainsWithGround = WithGround(Plains, PlainsGround, PlainsDusk, PlainsNight));
+                return plainsWithGround ?? (plainsWithGround = WithGround(Plains, PlainsGround, PlainsForestGround, PlainsDusk, PlainsNight));
             case LevelId.Snow:
                 return snowWithGround ?? (snowWithGround = WithGround(Snow, SnowGround, SnowBlizzard));
             case LevelId.City:
