@@ -72,10 +72,12 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
         visual.SetPropertyBlock(properties);
     }
 
+    // Player fire is a little see-through so it never masks hostile rounds (Miguel, 15 November
+    // 2026: ordinary rounds 68% opaque, flames 85%).
     public static void Friendly(GameObject go)
     {
         var round = go.GetComponent<PlayerRound>();
-        Apply(go, round != null && round.delivery == PlayerDelivery.Flame ? new Color(1, .45f, .12f) : new Color(.48f, .70f, .76f, .82f), true, true);
+        Apply(go, round != null && round.delivery == PlayerDelivery.Flame ? new Color(1, .45f, .12f, .85f) : new Color(.48f, .70f, .76f, .68f), true, true);
     }
 
     public static void LegacyEnemy(GameObject go)
