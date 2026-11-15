@@ -11,6 +11,8 @@ public abstract class GroundVehicle : DistrictEnemy
     bool drivingRoad;
     GroundTreadMarks marks;
     MeshRenderer[] parts;
+    MeshRenderer headlights;
+    static Material headlightMaterial;
     MaterialPropertyBlock tint;
     public bool Grounded => tile != null;
     public Transform GroundSection => tile;
@@ -59,6 +61,14 @@ public abstract class GroundVehicle : DistrictEnemy
             part.sortingLayerName = "Background";
             part.sortingOrder = -32;
             part.enabled = false;
+        }
+        // Plains convoys drive the dark road with their headlights on.
+        if (!Snow && DistrictConditions.Is(DistrictCondition.Night))
+        {
+            if (headlightMaterial == null)
+                headlightMaterial = SceneryLights.CreateMaterial();
+            headlights = PlainsConditionScenery.Headlights(Hull, headlightMaterial);
+            headlights.enabled = false;
         }
         tint = new MaterialPropertyBlock();
         marks = gameObject.AddComponent<GroundTreadMarks>();
@@ -113,6 +123,8 @@ public abstract class GroundVehicle : DistrictEnemy
             return;
         foreach (var part in parts)
             part.enabled = Grounded;
+        if (headlights != null)
+            headlights.enabled = Grounded && health > 0;
         if (!Grounded)
             return;
         var p = tile.TransformPoint(local);

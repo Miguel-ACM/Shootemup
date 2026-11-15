@@ -19,7 +19,7 @@ public sealed class PSXGrassField : MonoBehaviour
     readonly List<Transform> clouds = new List<Transform>();
     Transform player;
     float travel;
-    Material riverMaterial, foliageMaterial;
+    Material riverMaterial, foliageMaterial, conditionLights;
     Texture2D foliageAtlas;
     PSXValleyLayout layout;
     public float GroundScrollSpeed => scrollSpeed;
@@ -70,6 +70,8 @@ public sealed class PSXGrassField : MonoBehaviour
         foliageMaterial = new Material(Resources.Load<Shader>("PSXValleyFoliage"));
         foliageMaterial.mainTexture = foliageAtlas;
         foliageMaterial.SetFloat("_Brightness", brightness / .62f);
+        // Dusk or night, drawn from the run seed: a scenery-only grade, lights and birds.
+        PlainsConditionScenery.Begin(transform, LevelRun.Seed);
         for (int i = 0; i < 4; i++)
         {
             yield return null;
@@ -89,6 +91,14 @@ public sealed class PSXGrassField : MonoBehaviour
             var riverMesh = PSXValleyRiver.Build(origin, SectionLength, layout);
             AddLayer("River current", go.transform, riverMesh, riverMaterial);
             AddLayer("Textured leaf clusters", go.transform, PSXValleyFoliage.Build(origin, SectionLength, layout), foliageMaterial);
+            var lights = PlainsConditionScenery.Lights(origin, SectionLength, layout, LevelRun.Seed);
+            if (lights != null)
+            {
+                ownedMeshes.Add(lights);
+                if (conditionLights == null)
+                    conditionLights = SceneryLights.CreateMaterial();
+                PlainsConditionScenery.AddLights(go.transform, lights, conditionLights);
+            }
             sections.Add(go.transform);
         }
         if (cloudMaterial != null)
@@ -105,7 +115,7 @@ public sealed class PSXGrassField : MonoBehaviour
                 renderer.sortingLayerName = "Background";
                 renderer.sortingOrder = -20;
                 var tint = new MaterialPropertyBlock();
-                tint.SetColor("_Tint", new Color(.7f, .78f, .79f, .17f));
+                tint.SetColor("_Tint", PlainsConditionScenery.CloudTint(LevelRun.Seed, new Color(.7f, .78f, .79f, .17f)));
                 renderer.SetPropertyBlock(tint);
                 clouds.Add(go.transform);
             }
@@ -180,5 +190,7 @@ public sealed class PSXGrassField : MonoBehaviour
             Destroy(foliageMaterial);
         if (foliageAtlas != null)
             Destroy(foliageAtlas);
+        if (conditionLights != null)
+            Destroy(conditionLights);
     }
 }
