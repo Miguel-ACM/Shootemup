@@ -22,8 +22,11 @@ public sealed class SkimfireTitle : MonoBehaviour
 
     RawImage skim, fire, slash;
     RectTransform canvas;
-    Menu menu;
+    bool entranceRequested;
     float age, fit;
+
+    public bool EntranceComplete => !isActiveAndEnabled || age >= Duration;
+    public void Reveal() => entranceRequested = true;
 
     void Start()
     {
@@ -33,7 +36,6 @@ public sealed class SkimfireTitle : MonoBehaviour
             return;
         }
 
-        menu = GetComponent<Menu>();
         canvas = (RectTransform)GetComponentInParent<Canvas>().rootCanvas.transform;
 
         var root = new GameObject("SKIMFIRE", typeof(RectTransform)).GetComponent<RectTransform>();
@@ -62,9 +64,9 @@ public sealed class SkimfireTitle : MonoBehaviour
             skim.rectTransform.sizeDelta = fire.rectTransform.sizeDelta = partSize;
         }
 
-        // The title pauses scaled time. Wait for the curtain and for a visible menu.
+        // The title menu pauses scaled time.
         float previousAge = age;
-        if (age < Duration && !CloudTransition.Busy && !menu.Suspended)
+        if (entranceRequested && age < Duration && !CloudTransition.Busy)
             age = Mathf.Min(age + Time.unscaledDeltaTime, Duration);
         if (resized || age != previousAge)
             Draw();

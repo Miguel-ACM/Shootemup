@@ -403,6 +403,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     static LevelEnvironment title;
     float travelRate = 1;
     public static bool TitleReady => title != null && title.sections.Count == 4;
+    static readonly int TitleLampBanks = Shader.PropertyToID("_TitleLampBanks");
     static LevelEnvironment carried;
     public static bool CarriesTitle => carried != null;
 
@@ -459,6 +460,44 @@ public sealed class LevelEnvironment : MonoBehaviour
         var build = environment.BuildSteps(true);
         while (build.MoveNext())
             yield return build.Current;
+    }
+
+    public static IEnumerator LightTitleTunnel(Action uncover)
+    {
+        if (!TitleReady)
+        {
+            uncover();
+            yield break;
+        }
+
+        const string LightingKeyword = "TITLE_LAMP_STARTUP";
+        var scenery = title.material;
+        var haze = title.atmosphere[0].material;
+        Color tint = haze.GetColor("_Tint");
+        scenery.SetVector(TitleLampBanks, Vector4.zero);
+        scenery.EnableKeyword(LightingKeyword);
+        haze.SetColor("_Tint", new Color(tint.r, tint.g, tint.b, 0));
+        uncover();
+
+        const float Seconds = .56f;
+        for (float age = 0; age < Seconds; age += Mathf.Min(Time.unscaledDeltaTime, .045f))
+        {
+            scenery.SetVector(TitleLampBanks, new Vector4(LampAt(age), LampAt(age - .16f), LampAt(age - .36f), 0));
+            float hazeAlpha = tint.a * Mathf.SmoothStep(0, 1, (age - .32f) / (Seconds - .32f));
+            haze.SetColor("_Tint", new Color(tint.r, tint.g, tint.b, hazeAlpha));
+            yield return null;
+        }
+
+        scenery.DisableKeyword(LightingKeyword);
+        haze.SetColor("_Tint", tint);
+    }
+
+    static float LampAt(float age)
+    {
+        float ignition = Mathf.SmoothStep(0, 1, age / .035f);
+        float flare = .18f * Mathf.Sin(Mathf.PI * Mathf.Clamp01(age / .08f));
+        float flutter = .38f * Mathf.Sin(Mathf.PI * Mathf.Clamp01((age - .06f) / .095f));
+        return ignition * (1 + flare - flutter);
     }
 
     /// <summary>Build an offered route while the player is still flying in the current level.</summary>
