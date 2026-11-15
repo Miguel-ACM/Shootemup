@@ -53,12 +53,14 @@ public sealed class TaffyDuelist : DistrictMiniboss
         }
         else if (beat == 2)
         {
-            // A dark and a bright gumdrop, each shedding sprinkles of its own tone.
+            // A dark and a bright gumdrop, each shedding sprinkles of its own tone. The pair
+            // stays mirrored, but each throw opens at its own angle.
+            float spread = Random.Range(12f, 30f);
             for (int mirror = -1; mirror <= 1; mirror += 2)
             {
                 UseTone(mirror < 0 ? HostileTone.Dark : HostileTone.Bright);
-                Fire<GiantOrb>(Muzzle(mirror < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, mirror * 20), 2.2f, .59f)
-                    .SideSpray(1.3f);
+                Fire<GiantOrb>(Muzzle(mirror < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, mirror * spread), 2.6f, .59f)
+                    .SideSpray(2.8f);
             }
         }
         else

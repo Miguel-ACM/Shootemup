@@ -56,13 +56,17 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
             }
         }
         else
-            // One dark and one bright snowball; each sheds sprays of its own tone.
+        {
+            // One dark and one bright snowball; each sheds sprays of its own tone. The pair
+            // stays mirrored, but each throw opens at its own angle.
+            float spread = Random.Range(10f, 26f);
             for (int mirror = -1; mirror <= 1; mirror += 2)
             {
                 UseTone(Wing(-mirror));
-                Fire<GiantOrb>(Hull.TransformPoint(ports[0]), CombatVisuals.Rotate(Vector2.down, mirror * 16), 1.65f, Enraged ? .72f : .66f)
-                    .SideSpray(1.2f);
+                Fire<GiantOrb>(Hull.TransformPoint(ports[0]), CombatVisuals.Rotate(Vector2.down, mirror * spread), 2.1f, Enraged ? .72f : .66f)
+                    .SideSpray(2.6f);
             }
+        }
     }
     // The bright wing: left on even rotations, right on odd ones.
     HostileTone Wing(int mirror) => (mirror < 0) == (volley / 3 % 2 == 0) ? HostileTone.Bright : HostileTone.Dark;
