@@ -16,9 +16,10 @@ public sealed class SkimfireTitle : MonoBehaviour
     const float SlashRotation = 39f;
 
     static readonly Vector2 RestPosition = new Vector2(0, 430);
-    static readonly Vector2 Diagonal = new Vector2(330, 232);
+    static readonly Vector2 LetterLean = new Vector2(1, 3);
+    static readonly Vector2 EntryOffset = LetterLean * 128;
     static readonly Vector2 Seam = new Vector2(23, 6);
-    static readonly Vector2 SlashDrift = new Vector2(24, 72);
+    static readonly Vector2 SlashDrift = LetterLean * 24;
 
     RawImage skim, fire, slash;
     RectTransform canvas;
@@ -80,8 +81,8 @@ public sealed class SkimfireTitle : MonoBehaviour
 
     void Draw()
     {
-        PlacePart(skim, age / SlideSeconds, -Diagonal);
-        PlacePart(fire, (age - FireStart) / SlideSeconds, Diagonal);
+        PlacePart(skim, age / SlideSeconds, -EntryOffset);
+        PlacePart(fire, (age - FireStart) / SlideSeconds, EntryOffset);
 
         float flash = Mathf.Clamp01((age - Impact) / SlashSeconds);
         float sweep = Mathf.SmoothStep(0, 1, flash * 3);
