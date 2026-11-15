@@ -26,7 +26,8 @@ public sealed class Lighthouse : AItem
 
 public sealed class LighthouseBeam : MonoBehaviour
 {
-    const float Length = 3.4f, BaseWidth = .08f, TipWidth = .62f, TurnSpeed = 120, TickRate = .1f, TickPower = .8f;
+    // The beam reaches 70% farther than its first 3.4 units (Miguel, 15 November 2026).
+    const float Length = 5.8f, BaseWidth = .08f, TipWidth = .62f, TurnSpeed = 120, TickRate = .1f, TickPower = .8f;
     static readonly Color Light = new Color(1, .93f, .68f);
     readonly LineRenderer[] beams = new LineRenderer[2];
     readonly System.Collections.Generic.List<CombatRound> caught = new System.Collections.Generic.List<CombatRound>();
