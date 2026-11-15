@@ -5,7 +5,7 @@ public enum UpgradeKind
 {
     Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice, RelaySwitch, LiveWire,
     TapeMeasure, BrassKnuckles, Matchbox, Compost, PiggyBank, LoanShark, SecondWind,
-    Lighthouse, GoldenCrown
+    Lighthouse, GoldenCrown, Midas
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -370,6 +370,7 @@ public sealed class CombatUpgrades : MonoBehaviour
         MatchStrike.Spread(enemy);
         if (Count(UpgradeKind.Compost) > 0)
             CompostHeap.Leave(enemy, Count(UpgradeKind.Compost));
+        MidasTouch.Touch(enemy, Count(UpgradeKind.Midas));
         if (Count(UpgradeKind.Ink) > 0)
         {
             InkPuddle.Spill(enemy.transform.position, Count(UpgradeKind.Ink));
