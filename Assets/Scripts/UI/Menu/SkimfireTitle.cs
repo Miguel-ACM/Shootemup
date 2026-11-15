@@ -5,13 +5,17 @@ public sealed class SkimfireTitle : MonoBehaviour
 {
     [SerializeField] Texture2D wordmark = null;
 
-    const float FadeSeconds = .24f;
+    const float DropSeconds = .24f;
+    const float ReboundSeconds = .14f;
+    const float DropHeight = 78f;
+    const float ReboundHeight = 9f;
     const float WordmarkWidth = 728f;
+    static readonly Vector2 RestPosition = new Vector2(0, 430);
 
     RawImage artwork;
     RectTransform canvas;
-    float fadeStarted = -1;
-    float fit;
+    Menu menu;
+    float age, fit;
 
     void Start()
     {
@@ -21,6 +25,7 @@ public sealed class SkimfireTitle : MonoBehaviour
             return;
         }
 
+        menu = GetComponent<Menu>();
         canvas = (RectTransform)GetComponentInParent<Canvas>().rootCanvas.transform;
         artwork = new GameObject("SKIMFIRE", typeof(RectTransform)).AddComponent<RawImage>();
         artwork.texture = wordmark;
@@ -31,7 +36,7 @@ public sealed class SkimfireTitle : MonoBehaviour
         rect.SetParent(transform, false);
         rect.SetAsFirstSibling();
         rect.anchorMin = rect.anchorMax = new Vector2(.5f, .5f);
-        rect.anchoredPosition = new Vector2(0, 430);
+        rect.anchoredPosition = RestPosition + Vector2.up * DropHeight;
     }
 
     void LateUpdate()
@@ -44,14 +49,23 @@ public sealed class SkimfireTitle : MonoBehaviour
             artwork.rectTransform.sizeDelta = new Vector2(WordmarkWidth, WordmarkWidth * wordmark.height / wordmark.width) * fit;
         }
 
-        if (artwork.color.a >= 1 || CloudTransition.Busy)
+        const float Duration = DropSeconds + ReboundSeconds;
+        if (age >= Duration || CloudTransition.Busy || menu.Suspended)
             return;
 
-        // The menu pauses scaled time, and the return curtain can cover its first frames.
-        if (fadeStarted < 0)
-            fadeStarted = Time.unscaledTime;
+        // The title pauses scaled time. Wait for the curtain and for a visible menu.
+        float previousAge = age;
+        age = Mathf.Min(age + Time.unscaledDeltaTime, Duration);
+        float drop = Mathf.Clamp01(age / DropSeconds);
+        float rebound = Mathf.Clamp01((age - DropSeconds) / ReboundSeconds);
+        float height = DropHeight * (1 - drop * drop) + ReboundHeight * 4 * rebound * (1 - rebound);
+        artwork.rectTransform.anchoredPosition = RestPosition + Vector2.up * height;
+        artwork.color = new Color(1, 1, 1, Mathf.SmoothStep(0, 1, drop * 2));
 
-        float alpha = Mathf.SmoothStep(0, 1, (Time.unscaledTime - fadeStarted) / FadeSeconds);
-        artwork.color = new Color(1, 1, 1, alpha);
+        if (previousAge < DropSeconds && age >= DropSeconds)
+        {
+            var cue = SoundCueCatalog.Find("titleLand");
+            SoundManager.PlaySound(cue.Id, cue.Volume);
+        }
     }
 }
