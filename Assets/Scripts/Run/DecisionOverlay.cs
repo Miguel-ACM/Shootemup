@@ -97,6 +97,8 @@ public sealed class DecisionOverlay : MonoBehaviour
 
     void LateUpdate()
     {
+        if (reasonPlate != null)
+            PlaceReason();
         if (dismissing)
         {
             dismissAge += Mathf.Min(Time.unscaledDeltaTime, .05f);
@@ -187,40 +189,48 @@ public sealed class DecisionOverlay : MonoBehaviour
         skip.gameObject.SetActive(allowSkip);
     }
 
-    // Why this reward is being given: a dark banner at the top in the reward's colour.
     // Why this item is offered (BOSS REWARD, CARGO DELIVERY, ELITE HUNT COMPLETE), in the empty
     // left margin beside the flight area rather than over the offers (Miguel, 15 November 2026).
-    // The plate spans the margin's width, whatever the screen's aspect.
+    // It is a compact row like the margin's other rows (132 x 30, 12-point type, the same dark
+    // plate), in their column, marked by a bar in the reward's rarity colour.
+    RectTransform reasonPlate;
+
     public void SetReason(string reason, Color colour)
     {
-        var margin = new GameObject("Left margin", typeof(RectTransform)).GetComponent<RectTransform>();
-        margin.SetParent(transform, false);
-        margin.anchorMin = Vector2.zero;
-        margin.anchorMax = new Vector2(.5f, 1);
-        margin.offsetMin = Vector2.zero;
-        margin.offsetMax = new Vector2(-202.5f, 0);
-        var plate = Plate("Reward reason", Vector2.zero, margin);
-        plate.anchorMin = new Vector2(0, .5f);
-        plate.anchorMax = new Vector2(1, .5f);
-        plate.sizeDelta = new Vector2(-40, 38);
-        plate.anchoredPosition = new Vector2(0, 60);
-        plate.GetComponent<Image>().color = new Color(.02f, .03f, .04f, .9f);
-        var rim = Plate("Reward reason rim", Vector2.zero, plate);
-        rim.anchorMin = Vector2.zero;
-        rim.anchorMax = new Vector2(1, 0);
-        rim.pivot = new Vector2(.5f, 0);
-        rim.sizeDelta = new Vector2(0, 2);
-        rim.GetComponent<Image>().color = colour;
-        var label = Text(plate, reason, 17);
+        var playfield = new GameObject("405 x 720 playfield", typeof(RectTransform)).GetComponent<RectTransform>();
+        playfield.SetParent(transform, false);
+        playfield.anchorMin = playfield.anchorMax = new Vector2(.5f, .5f);
+        playfield.sizeDelta = new Vector2(405, 720);
+        reasonPlate = Plate("Reward reason", new Vector2(132, 30), playfield);
+        reasonPlate.anchorMin = reasonPlate.anchorMax = reasonPlate.pivot = new Vector2(0, .5f);
+        reasonPlate.GetComponent<Image>().color = new Color(.07f, .09f, .09f, .94f);
+        var bar = Plate("Reward rarity", Vector2.zero, reasonPlate);
+        bar.anchorMin = Vector2.zero;
+        bar.anchorMax = new Vector2(0, 1);
+        bar.pivot = new Vector2(0, .5f);
+        bar.sizeDelta = new Vector2(3, 0);
+        bar.GetComponent<Image>().color = colour;
+        var label = Text(reasonPlate, reason, 12);
         label.rectTransform.anchorMin = Vector2.zero;
         label.rectTransform.anchorMax = Vector2.one;
-        label.rectTransform.offsetMin = new Vector2(8, 2);
-        label.rectTransform.offsetMax = new Vector2(-8, 0);
+        label.rectTransform.offsetMin = new Vector2(9, 2);
+        label.rectTransform.offsetMax = new Vector2(-4, -2);
+        label.alignment = TextAlignmentOptions.Left;
         label.enableAutoSizing = true;
-        label.fontSizeMin = 10;
-        label.fontSizeMax = 17;
-        label.textWrappingMode = TextWrappingModes.NoWrap;
-        label.color = Color.Lerp(colour, Color.white, .25f);
+        label.fontSizeMin = 8;
+        label.fontSizeMax = 12;
+        label.textWrappingMode = TextWrappingModes.Normal;
+        label.color = Color.Lerp(colour, Color.white, .35f);
+        PlaceReason();
+    }
+
+    // Shrinks into narrow margins exactly like the instrument column beside it.
+    void PlaceReason()
+    {
+        float margin = Mathf.Max(0, (Screen.width * 720f / Mathf.Max(1, Screen.height) - 405) * .5f);
+        float scale = Mathf.Min(1, Mathf.Max(0, margin - 12) / 132);
+        reasonPlate.localScale = Vector3.one * scale;
+        reasonPlate.anchoredPosition = new Vector2(-12 - 132 * scale, 60);
     }
 
     public void SetSkip(float progress)
