@@ -17,6 +17,48 @@ public static class RenderDistrictConditions
     const BindingFlags Hidden = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
     static Texture2D bulletTexture;
 
+    // Batch: -executeMethod RenderDistrictConditions.Elites
+    public static void Elites()
+    {
+        int code = 0;
+        try
+        {
+            Directory.CreateDirectory(Folder);
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Shader.SetGlobalVector("_PSXSnapResolution", new Vector4(Width, Height, 0, 0));
+            var types = new[] { typeof(ScoutInterceptor), typeof(PatrolGunship), typeof(CourierDiver), typeof(SkullRevenant) };
+            var levels = new[] { LevelId.Fields, LevelId.Fields, LevelId.City, LevelId.Hell };
+            var cells = new Texture2D[1, types.Length];
+            for (int i = 0; i < types.Length; i++)
+            {
+                LevelRun.Reset(levels[i], 17381);
+                var camera = Camera(0, 2.2f);
+                camera.backgroundColor = new Color(.18f, .22f, .2f);
+                var plain = DistrictEnemy.Spawn(types[i], new Vector3(-.9f, 0, 1));
+                var elite = DistrictEnemy.Spawn(types[i], new Vector3(.9f, 0, 1));
+                elite.MakeElite();
+                var mark = elite.GetComponent<EliteMark>();
+                typeof(EliteMark).GetMethod("Start", Hidden).Invoke(mark, null);
+                typeof(EliteMark).GetMethod("LateUpdate", Hidden).Invoke(mark, null);
+                foreach (var enemy in new[] { plain, elite })
+                    foreach (var behaviour in enemy.GetComponents<MonoBehaviour>())
+                        behaviour.enabled = false;
+                cells[0, i] = Capture(camera);
+                plain.gameObject.SetActive(false);
+                elite.gameObject.SetActive(false);
+                camera.gameObject.SetActive(false);
+            }
+            Save("Elites.png", cells);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+            code = 1;
+        }
+        if (Application.isBatchMode)
+            EditorApplication.Exit(code);
+    }
+
     public static void Run()
     {
         int code = 0;

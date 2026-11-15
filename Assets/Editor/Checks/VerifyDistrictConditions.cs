@@ -24,6 +24,8 @@ public static class VerifyDistrictConditions
             Placement();
             Compositions();
             Seeds();
+            Elites();
+            Modifiers();
         }
         catch (Exception ex)
         {
@@ -32,6 +34,8 @@ public static class VerifyDistrictConditions
         finally
         {
             DistrictConditions.Forced = null;
+            LevelModifiers.Forced = null;
+            Difficulty.Select(RunDifficulty.Normal);
         }
         report.Add(failures.Count == 0 ? "PASS" : "FAIL " + failures.Count);
         report.AddRange(failures);
@@ -123,6 +127,80 @@ public static class VerifyDistrictConditions
             report.Add(level + "/" + condition + ": " + names.Count + " distinct parts, " + own + " of " + total + " its own");
         }
         DistrictConditions.Forced = null;
+    }
+
+    // Elites stay occasional and grow with difficulty and in an ELITES district.
+    static void Elites()
+    {
+        var rates = new Dictionary<string, float>();
+        foreach (var difficulty in new[] { RunDifficulty.Easy, RunDifficulty.Normal, RunDifficulty.Hard })
+            foreach (var forced in new[] { LevelModifier.None, LevelModifier.Elites })
+            {
+                Difficulty.Select(difficulty);
+                LevelModifiers.Forced = forced;
+                int waves = 0, elites = 0;
+                foreach (var level in new[] { LevelId.Fields, LevelId.City, LevelId.Space, LevelId.Hell })
+                    for (int seed = 1; seed <= 12; seed++)
+                    {
+                        LevelRun.Reset(level, seed * 7717);
+                        foreach (int budget in Budgets)
+                        {
+                            var wave = DistrictWaves.Create(budget);
+                            waves++;
+                            elites += wave.units.Count(u => u.elite);
+                            Check(wave.units.Where(u => u.elite).Select(u => u.part).Distinct().Count() == wave.units.Count(u => u.elite), "Two elites in one formation");
+                        }
+                    }
+                float rate = elites / (float)waves;
+                rates[difficulty + "/" + forced] = rate;
+                report.Add("Elites per wave " + difficulty + " / " + forced + ": " + rate.ToString("0.00"));
+            }
+        Check(rates["Easy/None"] < rates["Normal/None"] && rates["Normal/None"] < rates["Hard/None"], "Elite rate does not grow with difficulty");
+        Check(rates["Normal/None"] < .25f, "Ordinary elites too common on Normal");
+        Check(rates["Normal/Elites"] > rates["Normal/None"] * 2, "ELITES district does not add enough elites");
+        LevelModifiers.Forced = null;
+        Difficulty.Select(RunDifficulty.Normal);
+
+        LevelRun.Reset(LevelId.Fields, 17381);
+        var enemy = DistrictEnemy.Spawn(typeof(ScoutInterceptor), Vector3.zero, true, true, false);
+        try
+        {
+            float health = enemy.health;
+            enemy.MakeElite();
+            Check(enemy.Elite && Mathf.Approximately(enemy.health, health * 2.4f) && enemy.GetComponent<EliteMark>() != null, "MakeElite did not toughen and mark the ship");
+        }
+        finally { UnityEngine.Object.DestroyImmediate(enemy.gameObject); }
+    }
+
+    static void Modifiers()
+    {
+        var counts = new Dictionary<LevelModifier, int>();
+        int none = 0;
+        for (int seed = 1; seed <= 2000; seed++)
+        {
+            var set = LevelModifiers.For(LevelId.Snow, seed, 2);
+            if (set == LevelModifier.None)
+                none++;
+            foreach (var modifier in LevelModifiers.All)
+                if ((set & modifier) != 0)
+                    counts[modifier] = counts.TryGetValue(modifier, out int n) ? n + 1 : 1;
+        }
+        foreach (var modifier in LevelModifiers.All)
+        {
+            counts.TryGetValue(modifier, out int n);
+            report.Add("Modifier " + modifier + ": " + n + " of 2000 districts");
+            Check(n > 300 && n < 600, "Modifier share off: " + modifier);
+            Check(LevelModifiers.Icon(modifier) != null, "Missing icon: " + modifier);
+        }
+        report.Add("No modifier: " + none + " of 2000 districts");
+        Check(LevelModifiers.For(LevelId.Void, 5, 6) == LevelModifier.None, "Void takes modifiers");
+        LevelModifiers.Forced = LevelModifier.FastFire;
+        LevelRun.Reset(LevelId.Fields, 3);
+        float fast = LevelRun.EnemyShotSpeedScale;
+        LevelModifiers.Forced = LevelModifier.None;
+        Check(Mathf.Approximately(fast, LevelRun.EnemyShotSpeedScale * 1.2f), "FAST FIRE is not +20%");
+        LevelModifiers.Forced = null;
+        report.Add("Salvage rain coins by stage: " + string.Join(", ", Enumerable.Range(1, 7).Select(stage => CoinRain.Coins(stage, 0))));
     }
 
     // The seed spreads conditions roughly as authored.

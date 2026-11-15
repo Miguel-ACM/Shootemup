@@ -27,4 +27,15 @@ Seeds 1-3000: Dusk 1012
 Seeds 1-3000: Night 943
 Seeds 1-3000: Blizzard 1500
 Seeds 1-3000: Sandstorm 1528
+Elites per wave Easy / None: 0,11
+Elites per wave Easy / Elites: 0,40
+Elites per wave Normal / None: 0,18
+Elites per wave Normal / Elites: 0,58
+Elites per wave Hard / None: 0,24
+Elites per wave Hard / Elites: 0,79
+Modifier Elites: 405 of 2000 districts
+Modifier Coins: 436 of 2000 districts
+Modifier FastFire: 475 of 2000 districts
+No modifier: 957 of 2000 districts
+Salvage rain coins by stage: 16, 23, 30, 37, 44, 51, 58
 PASS

@@ -357,3 +357,10 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - Conditions grade only the scenery (`SceneryGrade`, between the ground and every ship and bullet). Night lights road lamps, bridge lanterns, the lookout fire, fireflies and moonlit water; tanks drive with headlights. Dusk adds a warm low sun, gold glints on the river, a few early lamps and birds. Keep combat readable: never grade ships or bullets.
 - The City backdrop was rejected as flat and grey. Its sections are now seeded neighbourhoods (downtown towers, midtown, leafy terraces, industry) with sun shadows, street trees, varied roofs, and occasional two-block parks, stadiums and rail stations that never cover a traffic street. Keep the haze light.
 - Every district with ordinary waves gained new authored parts; keep adding district-specific routes rather than reskinned copies.
+- Storms have sound: blizzard and sandstorm wind loops generated with the local SFX tool (ArtSource/AudioReview/Storms, `Resources/Sounds/Ambience`), swelling with the gusts and fading out with the district. Treat them as awaiting Miguel's listening approval.
+
+## Elites, district modifiers and salvage rain (15 November 2026)
+
+- Elite ships: an occasional ordinary-wave ship with 2.4x health, a slightly larger hull, a turning gold ring, one extra firing accent and a small coin fountain on death. Never two in one formation. Miguel asked for fewer than one wave in three and a difficulty dependence: about 11% of waves on Easy, 18% on Normal, 24% on Hard.
+- District modifiers (`LevelModifiers`), each with its own seeded chance per district (Void excluded): MORE ELITES (roughly triple the elite rate), MORE COINS (double drop chance, extra coins and larger bursts) and FAST FIRE (+20% hostile round speed, bosses included). Each shows a Python-drawn pixel icon and its name in the left margin beneath the picked hexagons (`Tools/draw_level_modifier_icons.py`).
+- SALVAGE rains its coins across the arena over a few seconds instead of paying instantly; the shower grows with the run's stage (16 coins in the first district, +7 per district).
