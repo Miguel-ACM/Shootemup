@@ -196,15 +196,23 @@ public static class WaveComposer
             if (wave != null)
                 return wave;
         }
+        // Rare seeds cannot satisfy every variety rule at once. Rather than fail the run,
+        // allow a repeat of the previous wave's motifs and drop Space's laser-last rule.
+        for (int attempt = 32; attempt < 64; attempt++)
+        {
+            var wave = TryBuild(budget, attempt, true, true);
+            if (wave != null)
+                return wave;
+        }
         throw new InvalidOperationException("No paced composition for " + level + " / " + seed + " / " + budget);
     }
 
-    static Wave TryBuild(int budget, int attempt, bool compact)
+    static Wave TryBuild(int budget, int attempt, bool compact, bool relaxed = false)
     {
         var random = new System.Random(Hash(seed, stage * 971 + (int)level * 137 + budget * 7919 + attempt * 104729));
         int previousBudget = 0;
         foreach (int value in CampaignBudgets) if (value < budget) previousBudget = value;
-        var previous = previousBudget > 0 ? new HashSet<string>(waves[previousBudget].parts) : new HashSet<string>();
+        var previous = previousBudget > 0 && !relaxed ? new HashSet<string>(waves[previousBudget].parts) : new HashSet<string>();
         var chosen = new HashSet<string>();
         var all = new List<WaveGeometry.Track>();
         var units = new List<WaveUnit>();
@@ -242,7 +250,7 @@ public static class WaveComposer
                     continue;
                 if (gateUsed && IsThunderBeam(part.Enemy))
                     continue;
-                if (level == LevelId.Space && slot == count - 1 && !units.Exists(u => u.enemy == nameof(LaserSatellite) || u.enemy == nameof(OrbitalCarrier)) && part.Enemy != nameof(LaserSatellite) && part.Enemy != nameof(OrbitalCarrier))
+                if (level == LevelId.Space && !relaxed && slot == count - 1 && !units.Exists(u => u.enemy == nameof(LaserSatellite) || u.enemy == nameof(OrbitalCarrier)) && part.Enemy != nameof(LaserSatellite) && part.Enemy != nameof(OrbitalCarrier))
                     continue;
                 if (part.Unlock > budget || chosen.Contains(part.Name) || (part != featuredGate && previous.Contains(part.Name)) ||
                     (heavy && part.Shape == WaveShape.Solo && !(level == LevelId.Space && part.Enemy == nameof(LaserSatellite))) || (groundUsed && part.Ground))
