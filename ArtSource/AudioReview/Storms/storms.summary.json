@@ -1,0 +1,261 @@
+{
+  "cues": {
+    "blizzard": {
+      "status": "delivered",
+      "spec": {
+        "loop": true,
+        "duration": 12,
+        "n": 6,
+        "best": 2,
+        "png": true,
+        "out": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Storms",
+        "text": "howling blizzard wind, gusting snowstorm gale whistling, blowing snow, cold and harsh",
+        "name": "BlizzardWind",
+        "cat": "WINDTurb",
+        "stack": 3
+      },
+      "text": "howling blizzard wind, gusting snowstorm gale whistling, blowing snow, cold and harsh",
+      "at": "2026-11-15 09:33:45",
+      "request": "20261115-093345-8d79",
+      "engine": "sa3",
+      "category": "ambience",
+      "prompt": "howling blizzard wind, gusting snowstorm gale whistling, blowing snow, cold and harsh, continuous steady ambience, constant texture, no sudden events, wide stereo field recording",
+      "best_ref": "20261115-093345-8d79:982728775",
+      "delivered": [
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Storms\\WINDTurb_BlizzardWind_v01.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Storms\\WINDTurb_BlizzardWind_v01.png",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Storms\\WINDTurb_BlizzardWind_v02.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Storms\\WINDTurb_BlizzardWind_v02.png"
+      ],
+      "takes": [
+        {
+          "ref": "20261115-093345-8d79:982728775",
+          "seed": 982728775,
+          "rank": 1,
+          "score": 0.7262,
+          "clap_cos": 0.4691,
+          "pq": 5.24,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.2); normal for noise-like ambiences (rain, wind)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093345-8d79\\982728775.png"
+        },
+        {
+          "ref": "20261115-093345-8d79:982728774",
+          "seed": 982728774,
+          "rank": 2,
+          "score": 0.7234,
+          "clap_cos": 0.4621,
+          "pq": 5.24,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.2); normal for noise-like ambiences (rain, wind)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093345-8d79\\982728774.png"
+        },
+        {
+          "ref": "20261115-093345-8d79:982728773",
+          "seed": 982728773,
+          "rank": 3,
+          "score": 0.7075,
+          "clap_cos": 0.4725,
+          "pq": 5.06,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.1); normal for noise-like ambiences (rain, wind)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093345-8d79\\982728773.png"
+        },
+        {
+          "ref": "20261115-093345-8d79:982728778",
+          "seed": 982728778,
+          "rank": 4,
+          "score": 0.6605,
+          "clap_cos": 0.3573,
+          "pq": 5.52,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093345-8d79\\982728778.png"
+        },
+        {
+          "ref": "20261115-093345-8d79:982728776",
+          "seed": 982728776,
+          "rank": 5,
+          "score": 0.6104,
+          "clap_cos": 0.3737,
+          "pq": 5.12,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.1); normal for noise-like ambiences (rain, wind)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093345-8d79\\982728776.png"
+        },
+        {
+          "ref": "20261115-093345-8d79:982728777",
+          "seed": 982728777,
+          "rank": 6,
+          "score": 0.5825,
+          "clap_cos": 0.3768,
+          "pq": 4.65,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 4.7); normal for noise-like ambiences (rain, wind)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093345-8d79\\982728777.png"
+        }
+      ],
+      "warnings": [],
+      "stack": {
+        "ref": "20261115-093357-994e:0",
+        "compare": {
+          "mix": 0.686,
+          "best_layer": 0.7262,
+          "best_layer_take": "20261115-093345-8d79:982728775"
+        },
+        "score": 0.686,
+        "clap_cos": 0.4558,
+        "pq": 5.39,
+        "warnings": [
+          "not much dynamic range: floor -10 dB below the peak",
+          "so-so production quality (Audiobox PQ 5.4); normal for noise-like ambiences (rain, wind)"
+        ],
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093357-994e\\0.png"
+      }
+    },
+    "sandstorm": {
+      "status": "delivered",
+      "spec": {
+        "loop": true,
+        "duration": 12,
+        "n": 6,
+        "best": 2,
+        "png": true,
+        "out": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Storms",
+        "text": "desert sandstorm, roaring dry wind gusts, blowing sand hissing over dunes",
+        "name": "SandstormWind",
+        "cat": "WINDTurb",
+        "stack": 3
+      },
+      "text": "desert sandstorm, roaring dry wind gusts, blowing sand hissing over dunes",
+      "at": "2026-11-15 09:33:58",
+      "request": "20261115-093358-5cde",
+      "engine": "sa3",
+      "category": "ambience",
+      "prompt": "desert sandstorm, roaring dry wind gusts, blowing sand hissing over dunes, continuous steady ambience, constant texture, no sudden events, wide stereo field recording",
+      "best_ref": "20261115-093358-5cde:122555441",
+      "delivered": [
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Storms\\WINDTurb_SandstormWind_v01.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Storms\\WINDTurb_SandstormWind_v01.png",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Storms\\WINDTurb_SandstormWind_v02.wav",
+        "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Storms\\WINDTurb_SandstormWind_v02.png"
+      ],
+      "takes": [
+        {
+          "ref": "20261115-093358-5cde:122555441",
+          "seed": 122555441,
+          "rank": 1,
+          "score": 0.8037,
+          "clap_cos": 0.4253,
+          "pq": 5.97,
+          "rejected": false,
+          "fails": [],
+          "warnings": [],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093358-5cde\\122555441.png"
+        },
+        {
+          "ref": "20261115-093358-5cde:122555439",
+          "seed": 122555439,
+          "rank": 2,
+          "score": 0.739,
+          "clap_cos": 0.4932,
+          "pq": 5.41,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.4); normal for noise-like ambiences (rain, wind)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093358-5cde\\122555439.png"
+        },
+        {
+          "ref": "20261115-093358-5cde:122555438",
+          "seed": 122555438,
+          "rank": 3,
+          "score": 0.7367,
+          "clap_cos": 0.5236,
+          "pq": 5.35,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.3); normal for noise-like ambiences (rain, wind)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093358-5cde\\122555438.png"
+        },
+        {
+          "ref": "20261115-093358-5cde:122555436",
+          "seed": 122555436,
+          "rank": 4,
+          "score": 0.7263,
+          "clap_cos": 0.4822,
+          "pq": 5.22,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.2); normal for noise-like ambiences (rain, wind)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093358-5cde\\122555436.png"
+        },
+        {
+          "ref": "20261115-093358-5cde:122555437",
+          "seed": 122555437,
+          "rank": 5,
+          "score": 0.725,
+          "clap_cos": 0.4655,
+          "pq": 5.24,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.2); normal for noise-like ambiences (rain, wind)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093358-5cde\\122555437.png"
+        },
+        {
+          "ref": "20261115-093358-5cde:122555440",
+          "seed": 122555440,
+          "rank": 6,
+          "score": 0.6427,
+          "clap_cos": 0.4144,
+          "pq": 5.03,
+          "rejected": false,
+          "fails": [],
+          "warnings": [
+            "so-so production quality (Audiobox PQ 5.0); normal for noise-like ambiences (rain, wind)"
+          ],
+          "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093358-5cde\\122555440.png"
+        }
+      ],
+      "warnings": [],
+      "stack": {
+        "ref": "20261115-093409-b6e6:0",
+        "compare": {
+          "mix": 0.8089,
+          "best_layer": 0.8037,
+          "best_layer_take": "20261115-093358-5cde:122555441"
+        },
+        "score": 0.8089,
+        "clap_cos": 0.4942,
+        "pq": 5.65,
+        "warnings": [],
+        "png": "C:\\Users\\Miguel\\Tools\\local-sounds\\output\\20261115-093409-b6e6\\0.png"
+      }
+    }
+  },
+  "cue_sheet": "C:\\Users\\Miguel\\Shootemup\\ArtSource\\AudioReview\\Storms\\storms.json",
+  "updated": "2026-11-15 09:34:10"
+}

@@ -1,0 +1,7 @@
+{
+  "defaults": {"loop": true, "duration": 12, "n": 6, "best": 2, "png": true},
+  "cues": [
+    {"id": "blizzard", "text": "howling blizzard wind, gusting snowstorm gale whistling, blowing snow, cold and harsh", "name": "BlizzardWind", "cat": "WINDTurb", "stack": 3},
+    {"id": "sandstorm", "text": "desert sandstorm, roaring dry wind gusts, blowing sand hissing over dunes", "name": "SandstormWind", "cat": "WINDTurb", "stack": 3}
+  ]
+}

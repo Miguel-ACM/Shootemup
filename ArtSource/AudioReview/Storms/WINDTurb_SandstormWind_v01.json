@@ -1,0 +1,51 @@
+{
+  "request": "20261115-093409-b6e6",
+  "ref": "20261115-093409-b6e6:0",
+  "text": "desert sandstorm, roaring dry wind gusts, blowing sand hissing over dunes",
+  "prompt": "desert sandstorm, roaring dry wind gusts, blowing sand hissing over dunes, continuous steady ambience, constant texture, no sudden events, wide stereo field recording",
+  "engine": "layer",
+  "model": "layer",
+  "steps": null,
+  "category": "ambience",
+  "seed": 0,
+  "rank": 1,
+  "rank_score": 0.8089,
+  "clap": 0.9843,
+  "clap_cos": 0.4942,
+  "clap_top": null,
+  "aes": {
+    "CE": 3.96,
+    "CU": 5.45,
+    "PC": 2.37,
+    "PQ": 5.65
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "gain_db": -4.77,
+    "onset_s": 0.0,
+    "onset_frame": 0.0,
+    "length_s": 12.0,
+    "length_frames": 288.0,
+    "channels": 2,
+    "seam_ok": true,
+    "seam_jump_ratio": 0.5,
+    "seam_flux_ratio": 0.64,
+    "seam_level_ratio": 0.84
+  },
+  "signal": {
+    "duration_s": 12.0,
+    "peak_dbfs": -10.5,
+    "true_peak_dbtp": -10.45,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.0,
+    "active_s": 7.08,
+    "noise_floor_db": -13.7,
+    "onset_s": 0.058,
+    "tail_db": -11.8,
+    "stereo_correlation": 1.0,
+    "lufs": -23.0,
+    "fails": [],
+    "warnings": []
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "request": "20261115-093345-8d79",
+  "ref": "20261115-093345-8d79:982728775",
+  "text": "howling blizzard wind, gusting snowstorm gale whistling, blowing snow, cold and harsh",
+  "prompt": "howling blizzard wind, gusting snowstorm gale whistling, blowing snow, cold and harsh, continuous steady ambience, constant texture, no sudden events, wide stereo field recording",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "ambience",
+  "seed": 982728775,
+  "rank": 1,
+  "rank_score": 0.7262,
+  "clap": 0.9851,
+  "clap_cos": 0.4691,
+  "clap_top": null,
+  "aes": {
+    "CE": 2.75,
+    "CU": 4.6,
+    "PC": 2.34,
+    "PQ": 5.24
+  },
+  "fails": [],
+  "warnings": [
+    "so-so production quality (Audiobox PQ 5.2); normal for noise-like ambiences (rain, wind)"
+  ],
+  "post": {
+    "loop_start_s": 9.72,
+    "crossfade_s": 1.0,
+    "gain_db": -0.69,
+    "onset_s": 0.0,
+    "onset_frame": 0.0,
+    "length_s": 12.0,
+    "length_frames": 288.0,
+    "channels": 2,
+    "seam_ok": true,
+    "seam_jump_ratio": 0.33,
+    "seam_flux_ratio": 0.84,
+    "seam_level_ratio": 0.38
+  },
+  "final": {
+    "true_peak_dbtp": -10.1,
+    "lufs": -23.0
+  },
+  "signal": {
+    "duration_s": 26.0,
+    "peak_dbfs": -9.16,
+    "true_peak_dbtp": -9.14,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00053,
+    "active_s": 9.29,
+    "noise_floor_db": -15.1,
+    "onset_s": 0.0,
+    "tail_db": -79.5,
+    "stereo_correlation": 1.0,
+    "lufs": -23.8,
+    "fails": [],
+    "warnings": []
+  }
+}

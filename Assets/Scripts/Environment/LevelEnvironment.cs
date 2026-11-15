@@ -399,6 +399,9 @@ public sealed class LevelEnvironment : MonoBehaviour
     float travel, clock, stormAt, flash;
     AudioSource thunder;
     AudioSource rainAudio;
+    // Blizzard and sandstorm wind, swelling with the gusts.
+    AudioSource windAudio;
+    DesertDustStorm dustStorm;
     Transform stormAudioRoot;
     bool stormAudioReleased;
     bool titleBackdrop;
@@ -773,7 +776,10 @@ public sealed class LevelEnvironment : MonoBehaviour
                 AddAtmosphere("Snowdust over the drifts", 3, 42, new Color(.83f, .90f, .92f, .38f), 1.5f, 1.1f);
                 AddAtmosphere("Near windblown powder", 3, 35, new Color(.89f, .94f, .95f, .21f), 2.5f, 1.8f);
                 if (Blizzard)
+                {
                     BuildBlizzard();
+                    BuildWind("BlizzardWind");
+                }
                 yield return null;
             }
             if (level == LevelId.Desert)
@@ -783,6 +789,9 @@ public sealed class LevelEnvironment : MonoBehaviour
                 var storm = dust.AddComponent<DesertDustStorm>();
                 storm.Sandstorm = condition == DistrictCondition.Sandstorm;
                 storm.Downwind = Downwind;
+                dustStorm = storm;
+                if (storm.Sandstorm)
+                    BuildWind("SandstormWind");
             }
             if (level == LevelId.City)
             {
@@ -855,6 +864,37 @@ public sealed class LevelEnvironment : MonoBehaviour
         SceneryGrade.Create(transform, "Blizzard light", -22)
             .Multiply(new Color(.74f, .82f, .94f), new Color(.82f, .88f, .96f), windSide, 1, .10f)
             .Glow(new Color(.15f, .16f, .18f), new Color(.08f, .09f, .10f), windSide, .7f);
+    }
+
+    // A looping storm bed from the generated wind recordings (ArtSource/AudioReview/Storms).
+    void BuildWind(string clip)
+    {
+        if (stormAudioRoot == null)
+        {
+            stormAudioRoot = new GameObject("Storm ambience").transform;
+            stormAudioRoot.SetParent(transform, false);
+        }
+        var wind = new GameObject(clip);
+        wind.transform.SetParent(stormAudioRoot, false);
+        windAudio = wind.AddComponent<AudioSource>();
+        windAudio.clip = Resources.Load<AudioClip>("Sounds/Ambience/" + clip);
+        windAudio.playOnAwake = false;
+        windAudio.loop = true;
+        windAudio.spatialBlend = 0;
+        windAudio.priority = 40;
+        windAudio.volume = 0;
+        var manager = FindAnyObjectByType<SoundManager>();
+        if (manager != null)
+            windAudio.outputAudioMixerGroup = manager.GetComponent<AudioSource>().outputAudioMixerGroup;
+    }
+
+    void UpdateWind()
+    {
+        if (windAudio == null || stormAudioReleased)
+            return;
+        float fade = Mathf.SmoothStep(0, 1, Mathf.Clamp01(clock / StormFadeSeconds));
+        float swell = Blizzard ? .55f + .45f * Gust : .55f + .45f * (dustStorm != null ? dustStorm.Strength : 1);
+        windAudio.volume = Mathf.MoveTowards(windAudio.volume, .30f * fade * swell, Time.deltaTime * .4f);
     }
 
     IEnumerator BuildTrafficSteps()
@@ -991,6 +1031,7 @@ public sealed class LevelEnvironment : MonoBehaviour
             snowFoliageMaterial.SetFloat("_FlowTime", clock);
         if (level == LevelId.Thunder)
             UpdateStorm(dt);
+        UpdateWind();
         float gust = Blizzard ? Gust : 0;
         foreach (var layer in atmosphere)
         {

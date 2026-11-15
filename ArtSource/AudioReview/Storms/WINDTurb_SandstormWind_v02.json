@@ -1,0 +1,57 @@
+{
+  "request": "20261115-093358-5cde",
+  "ref": "20261115-093358-5cde:122555441",
+  "text": "desert sandstorm, roaring dry wind gusts, blowing sand hissing over dunes",
+  "prompt": "desert sandstorm, roaring dry wind gusts, blowing sand hissing over dunes, continuous steady ambience, constant texture, no sudden events, wide stereo field recording",
+  "engine": "sa3",
+  "model": "stable-audio-3-small-sfx",
+  "steps": 8,
+  "category": "ambience",
+  "seed": 122555441,
+  "rank": 1,
+  "rank_score": 0.8037,
+  "clap": 0.9405,
+  "clap_cos": 0.4253,
+  "clap_top": null,
+  "aes": {
+    "CE": 4.54,
+    "CU": 6.6,
+    "PC": 2.45,
+    "PQ": 5.97
+  },
+  "fails": [],
+  "warnings": [],
+  "post": {
+    "loop_start_s": 6.97,
+    "crossfade_s": 1.0,
+    "gain_db": 9.21,
+    "onset_s": 0.0,
+    "onset_frame": 0.0,
+    "length_s": 12.0,
+    "length_frames": 288.0,
+    "channels": 2,
+    "seam_ok": true,
+    "seam_jump_ratio": 0.18,
+    "seam_flux_ratio": 0.58,
+    "seam_level_ratio": 0.38
+  },
+  "final": {
+    "true_peak_dbtp": -9.69,
+    "lufs": -23.0
+  },
+  "signal": {
+    "duration_s": 26.0,
+    "peak_dbfs": -18.99,
+    "true_peak_dbtp": -18.96,
+    "clipped_fraction": 0.0,
+    "dc_offset": 0.00011,
+    "active_s": 12.375,
+    "noise_floor_db": -19.2,
+    "onset_s": 1.1983,
+    "tail_db": -69.0,
+    "stereo_correlation": 1.0,
+    "lufs": -34.6,
+    "fails": [],
+    "warnings": []
+  }
+}
