@@ -76,7 +76,6 @@ public abstract class DistrictBoss : DistrictEnemy
         isBoss = true;
         scoreOnKill = 1600;
         lifeDropChance = manaDropChance = moneyDropChance = 1;
-        minmaxLife = new[] { 1, 3 };
         minmaxMana = new[] { 6, 9 };
         minmaxMoney = new[] { 10, 15 };
         var ui = GameObject.Find("UI/ItemsRight/BossHealth");

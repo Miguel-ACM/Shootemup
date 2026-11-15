@@ -93,7 +93,6 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
     protected int eliteCoins;
     public float manaDropChance = 0.1f;
     public float moneyDropChance = 0.1f;
-    public int[] minmaxLife = new int[] { 1, 3 };
     public int[] minmaxMoney = new int[] { 1, 1 };
     public int[] minmaxMana = new int[] { 1, 1 };
     protected bool isBoss = false;
@@ -158,14 +157,25 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
         coin.Launch(Vector2.down * 1.3f, .15f);
     }
 
+    // lost: 0 with the hull whole, 1 down to the last hit.
+    float HealthDropChance(out float lost)
+    {
+        lost = s != null && s.maxHealth > 1 ? Mathf.Clamp01((s.maxHealth - s.health) / (s.maxHealth - 1)) : 0;
+        return Mathf.Lerp(.1f, .75f, lost);
+    }
+
     int DropItems()
     {
         int numDrops = 0;
         int bossCoins = 0;
-        // Health is precious now: only boss and miniboss kills drop it, always, whatever the ship's health.
-        if ((isBoss || dropsLife) && Random.Range(0f, 1f) < lifeDropChance)
+        // Health is precious: only boss and miniboss kills can drop it, and the chance follows the
+        // pilot's lost hits (Miguel, 15 November 2026): 10% when whole, rising to 75% on the last hit.
+        // A boss can rarely add a second pickup.
+        if ((isBoss || dropsLife) && lifeDropChance > 0 && Random.value < HealthDropChance(out float lost))
         {
-            numDrops = Random.Range(minmaxLife[0], minmaxLife[1] + 1) + GameRules.morePickables;
+            numDrops = 1 + GameRules.morePickables;
+            if (isBoss && Random.value < .1f * lost)
+                numDrops++;
             InstantitatePickables("life", numDrops);
         }
         if (Random.Range(0f, 1f) < (GameRules.itemLuck * manaDropChance * s.GetManaChanceMultiplier()))
