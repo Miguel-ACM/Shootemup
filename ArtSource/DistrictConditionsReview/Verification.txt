@@ -1,0 +1,30 @@
+Fields: 50 parts, 300 placements
+Tunnel: 29 parts, 174 placements
+Snow: 43 parts, 258 placements
+Note: Thunder / Kite cloud shoulder skips variant 5 on side -1
+Note: Thunder / Kite cloud shoulder skips variant 5 on side 1
+Thunder: 36 parts, 214 placements
+Note: City / Terrace balcony sweep skips variant 5 on side -1
+Note: City / Terrace balcony sweep skips variant 5 on side 1
+City: 29 parts, 172 placements
+Desert: 36 parts, 216 placements
+Candyland: 31 parts, 186 placements
+Note: Space / Comet trailing orbit skips variant 5 on side -1
+Note: Space / Comet trailing orbit skips variant 5 on side 1
+Space: 24 parts, 142 placements
+Underwater: 28 parts, 168 placements
+Hell: 25 parts, 150 placements
+Heaven: 18 parts, 108 placements
+Fields/Ordinary: 31 distinct parts, 0 of 108 its own
+Fields/Dusk: 33 distinct parts, 28 of 108 its own
+Fields/Night: 32 distinct parts, 43 of 108 its own
+Snow/Ordinary: 32 distinct parts, 0 of 108 its own
+Snow/Blizzard: 29 distinct parts, 47 of 108 its own
+Desert/Ordinary: 25 distinct parts, 0 of 108 its own
+Desert/Sandstorm: 26 distinct parts, 40 of 108 its own
+Seeds 1-3000: Ordinary 4017
+Seeds 1-3000: Dusk 1012
+Seeds 1-3000: Night 943
+Seeds 1-3000: Blizzard 1500
+Seeds 1-3000: Sandstorm 1528
+PASS
