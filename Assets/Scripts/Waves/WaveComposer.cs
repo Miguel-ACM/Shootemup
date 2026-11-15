@@ -118,7 +118,7 @@ public static class WaveComposer
             tuningRevision = EnemyTuning.Revision;
             difficulty = Difficulty.Current;
         }
-        bool geometry = stage != LevelRun.Stage || level != LevelRun.Current || !Mathf.Approximately(width, Camera.RightLimit) || !Mathf.Approximately(height, Camera.UpLimit - Camera.DownLimit);
+        bool geometry = stage != LevelRun.Stage || level != LevelRun.Current || condition != DistrictConditions.Current || !Mathf.Approximately(width, Camera.RightLimit) || !Mathf.Approximately(height, Camera.UpLimit - Camera.DownLimit);
         if (geometry)
             patterns.Clear();
         if (seed != LevelRun.Seed || stage != LevelRun.Stage || level != LevelRun.Current || condition != DistrictConditions.Current || modifiers != LevelModifiers.Current || !Mathf.Approximately(width, Camera.RightLimit) || !Mathf.Approximately(height, Camera.UpLimit - Camera.DownLimit) || !Mathf.Approximately(tempo, Tempo))
@@ -259,7 +259,12 @@ public static class WaveComposer
             count = budget < 5 || compact ? 3 : 4;
         if (level == LevelId.Heaven)
             count = compact ? 2 : 3;
-        float window = compact ? 12.5f : budget < 5 ? 8.6f : 11.5f;
+        // RUSH HOUR: a fuller street of formations in every City wave.
+        bool rush = condition == DistrictCondition.RushHour;
+        // MINEFIELD: one more formation in every wave, usually a line of mines.
+        if (rush || condition == DistrictCondition.Minefield)
+            count++;
+        float window = (compact ? 12.5f : budget < 5 ? 8.6f : 11.5f) * (rush ? 1.12f : 1);
         // Siege formations need time for their full charge and smooth exit. Start with
         // three interleaved motifs rather than excluding every long laser formation.
         if (level == LevelId.Heaven)
@@ -288,7 +293,8 @@ public static class WaveComposer
                     continue;
                 uses.TryGetValue(part.Name, out int used);
                 // A condition's own parts lead often, so dusk, night and storms fly differently.
-                int conditionLead = part.Only.HasValue ? 22 : 0;
+                // A minefield leans harder on its mines: they are its whole character.
+                int conditionLead = part.Only.HasValue ? part.Only == DistrictCondition.Minefield ? 56 : 22 : 0;
                 options.Add((part, used * 24 + random.Next(24) - conditionLead - (slot == 0 && part.Motion == preferredMotion ? 240 : 0)));
             }
             options.Sort((a, b) => a.score.CompareTo(b.score));

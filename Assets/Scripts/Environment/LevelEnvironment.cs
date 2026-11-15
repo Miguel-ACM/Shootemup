@@ -906,13 +906,16 @@ public sealed class LevelEnvironment : MonoBehaviour
 
     IEnumerator BuildTrafficSteps()
     {
-        for (int i = 0; i < 24; i++)
+        // RUSH HOUR packs the avenues below with far more cars.
+        bool rush = condition == DistrictCondition.RushHour;
+        int cars = rush ? 64 : 24, avenues = rush ? 44 : 16;
+        for (int i = 0; i < cars; i++)
         {
-            bool horizontal = i >= 16;
+            bool horizontal = i >= avenues;
             float direction = i % 2 == 0 ? -1 : 1;
             // Avenue pitch 2.6 is scaled by .8; cross streets repeat every 2.5 units.
             float x = horizontal ? Range(-8, 8) : (i % 5 - 2) * 2.08f + direction * .08f;
-            float y = horizontal ? ((i - 16) * 3 + 2) * 2.5f - direction * .07f : Range(-20, 40);
+            float y = horizontal ? (((i - avenues) % 8) * 3 + 2) * 2.5f - direction * .07f : Range(-20, 40);
             var car = Add(kit[i % 3 == 0 ? "CityTaxi" : "CitySedan"], transform, new Vector3(x, y, 88), -34);
             float angle = horizontal ? (direction > 0 ? 90 : 270) : direction < 0 ? 0 : 180;
             car.localRotation = Quaternion.Euler(0, 0, angle);
