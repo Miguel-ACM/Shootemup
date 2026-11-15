@@ -6,7 +6,7 @@ using UnityEngine;
 public static class PactPool
 {
     public const string Rarity = "pact";
-    static readonly string[] all = { "GlassHull", "BloodPrice", "DevilImp", "MirrorOath", "Hunger", "CursedCoin", nameof(LiveWire) };
+    static readonly string[] all = { "GlassHull", "BloodPrice", "DevilImp", "MirrorOath", "Hunger", "CursedCoin", nameof(LiveWire), nameof(LoanShark) };
     static List<string> remaining = new List<string>(all);
 
     // Run-wide curse state, applied outside the ship so it survives district changes.
