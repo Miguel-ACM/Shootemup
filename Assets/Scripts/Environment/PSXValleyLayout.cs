@@ -13,13 +13,25 @@ public sealed class PSXValleyLayout
     public readonly List<Plant> Plants = new List<Plant>();
     public readonly float BridgeY, LookoutY;
     readonly float phase, phase2;
-    public PSXValleyLayout(int seed)
+    // FOREST variety: no river, road, bridge or lookout; dense groves with seeded glades and two
+    // winding dirt trails (left and right of centre) that the tanks drive.
+    public readonly bool Forest;
+    readonly List<Vector3> glades = new List<Vector3>();
+    public const int Trails = 2;
+
+    public PSXValleyLayout(int seed, bool forest = false)
     {
         var rng = new System.Random(seed ^ 0x51a7);
         phase = Range(rng, -.65f, .65f);
         phase2 = Range(rng, 0, 6.28f);
         BridgeY = Range(rng, 3, 10);
         LookoutY = Range(rng, 43, 58);
+        Forest = forest;
+        if (forest)
+        {
+            PlantForest(rng);
+            return;
+        }
         // Independent grove centres, sizes and gaps: never rows or mirrored pairs.
         for (int group = 0; group < 37; group++)
         {
@@ -44,6 +56,34 @@ public sealed class PSXValleyLayout
         }
     }
 
+    // The two logging trails never cross: one swings left of centre, the other right.
+    public float TrailX(int trail, float y) => trail == 0
+        ? -2.5f + 1.05f * Mathf.Sin(y * Mathf.PI * 4 / Period + phase) + .45f * Mathf.Sin(y * Mathf.PI * 10 / Period + phase2)
+        : 2.5f + .95f * Mathf.Sin(y * Mathf.PI * 6 / Period + phase2) + .4f * Mathf.Sin(y * Mathf.PI * 8 / Period + phase);
+
+    public int NearestTrail(float x, float y) => Mathf.Abs(x - TrailX(0, y)) <= Mathf.Abs(x - TrailX(1, y)) ? 0 : 1;
+
+    void PlantForest(System.Random rng)
+    {
+        // Glades: open clearings of grass and fallen logs between the groves.
+        for (int i = 0; i < 7; i++)
+            glades.Add(new Vector3(Range(rng, -5.5f, 5.5f), Range(rng, -24, 72), Range(rng, 1.0f, 1.8f)));
+        for (int group = 0; group < 230; group++)
+        {
+            float y = Range(rng, -24, 72), x = Range(rng, -6.6f, 6.6f);
+            int count = rng.Next(3, 8);
+            float spread = Range(rng, .8f, 1.8f);
+            for (int i = 0; i < count; i++)
+            {
+                float a = Range(rng, 0, Mathf.PI * 2), r = Mathf.Sqrt(Range(rng, 0, 1)) * spread;
+                TryPlant(x + Mathf.Cos(a) * r, Wrap(y + Mathf.Sin(a) * r), Range(rng, .6f, 1.15f), rng.NextDouble() < .28 ? 1 : 0, rng);
+            }
+        }
+        // Undergrowth fills the floor between the trunks.
+        for (int i = 0; i < 480; i++)
+            TryPlant(Range(rng, -6.6f, 6.6f), Range(rng, -24, 72), Range(rng, .12f, .26f), 2, rng);
+    }
+
     public float Centre(float y) => 1.3f * Mathf.Sin(y * Mathf.PI * 4 / Period + phase) + .44f * Mathf.Sin(y * Mathf.PI * 6 / Period + phase2);
     public float HalfWidth(float y) => 1.42f + .31f * Mathf.Sin(y * Mathf.PI * 4 / Period + phase2) + .13f * Mathf.Sin(y * Mathf.PI * 10 / Period + phase);
     public float BankWidth(float y, int side) => .30f + .17f * (1 + Mathf.Sin(y * Mathf.PI * 8 / Period + side + phase2));
@@ -60,6 +100,21 @@ public sealed class PSXValleyLayout
     public static float DistanceY(float a, float b) => Mathf.Abs(Mathf.Repeat(a - b + Period / 2, Period) - Period / 2);
     public bool Clear(float x, float y, float radius)
     {
+        if (Forest)
+        {
+            if (Mathf.Abs(x) + radius > 6.8f)
+                return false;
+            for (int trail = 0; trail < Trails; trail++)
+                if (Mathf.Abs(x - TrailX(trail, y)) < radius + .62f)
+                    return false;
+            foreach (var glade in glades)
+            {
+                float dx = x - glade.x, dy = DistanceY(y, glade.y);
+                if (dx * dx + dy * dy < (glade.z + radius) * (glade.z + radius))
+                    return false;
+            }
+            return true;
+        }
         if (Mathf.Abs(x) + radius > 6.8f || Mathf.Abs(x - Centre(y)) < HalfWidth(y) + radius + .12f)
             return false;
         float road = Centre(y) - HalfWidth(y) - 1.15f;

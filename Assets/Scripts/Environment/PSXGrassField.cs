@@ -23,14 +23,60 @@ public sealed class PSXGrassField : MonoBehaviour
     Texture2D foliageAtlas;
     PSXValleyLayout layout;
     public float GroundScrollSpeed => scrollSpeed;
-    public Vector2 RoadDownDirection(float worldY)
+    public Material FoliageMaterial => foliageMaterial;
+
+    // A large crown in the upper part of the view, for a Thicket Lurker to hide in.
+    public bool TryPickTree(System.Random random, out Transform section, out PSXValleyLayout.Plant plant, out float origin)
     {
-        if (!SampleRoad(worldY + .12f, out var upper, out var a) || !SampleRoad(worldY - .12f, out var lower, out var b))
+        section = null;
+        plant = default;
+        origin = 0;
+        if (layout == null)
+            return false;
+        var candidates = new System.Collections.Generic.List<(Transform, PSXValleyLayout.Plant, float)>();
+        for (int i = 0; i < sections.Count; i++)
+        {
+            float start = (i - 1) * SectionLength;
+            foreach (var tree in layout.Plants)
+            {
+                if (tree.kind > 1 || tree.radius < .45f || tree.y < start || tree.y >= start + SectionLength)
+                    continue;
+                var world = sections[i].TransformPoint(new Vector3(tree.x, tree.y - start, 0));
+                if (world.y > Camera.DownLimit + 6.5f && world.y < Camera.UpLimit - 1.2f && Mathf.Abs(world.x) < Camera.RightLimit - .8f)
+                    candidates.Add((sections[i], tree, start));
+            }
+        }
+        if (candidates.Count == 0)
+            return false;
+        (section, plant, origin) = candidates[random.Next(candidates.Count)];
+        return true;
+    }
+
+    // FOREST variety: no road; tanks follow one of two dirt trails instead.
+    public bool Forest => layout != null && layout.Forest;
+
+    public Vector2 RoadDownDirection(float worldY, int trail = -1)
+    {
+        if (!SampleRoad(worldY + .12f, out var upper, out var a, trail) || !SampleRoad(worldY - .12f, out var lower, out var b, trail))
             return Vector2.down;
         return ((Vector2)(lower.TransformPoint(b) - upper.TransformPoint(a))).normalized;
     }
 
-    public bool SampleRoad(float worldY, out Transform tile, out Vector3 local)
+    // The trail nearest a screen x at a screen height (forest only).
+    public int TrailAt(float worldX, float worldY)
+    {
+        if (!Forest)
+            return -1;
+        for (int i = 0; i < sections.Count; i++)
+        {
+            float y = worldY - sections[i].position.y;
+            if (y >= 0 && y < SectionLength)
+                return layout.NearestTrail(worldX - sections[i].position.x, (i - 1) * SectionLength + y);
+        }
+        return worldX < 0 ? 0 : 1;
+    }
+
+    public bool SampleRoad(float worldY, out Transform tile, out Vector3 local, int trail = -1)
     {
         tile = null;
         local = default;
@@ -43,7 +89,7 @@ public sealed class PSXGrassField : MonoBehaviour
             if (y < 0 || y >= SectionLength)
                 continue;
             float terrainY = (i - 1) * SectionLength + y;
-            float road = layout.Centre(terrainY) - layout.HalfWidth(terrainY) - 1.15f;
+            float road = layout.Forest ? layout.TrailX(Mathf.Max(0, trail), terrainY) : layout.Centre(terrainY) - layout.HalfWidth(terrainY) - 1.15f;
             tile = section;
             local = new Vector3(road, y, -.115f);
             return true;
@@ -60,7 +106,8 @@ public sealed class PSXGrassField : MonoBehaviour
             Debug.LogError("PSX Valley material is missing", this);
             yield break;
         }
-        layout = new PSXValleyLayout(LevelRun.Seed);
+        bool forest = DistrictConditions.For(LevelId.Fields, LevelRun.Seed) == DistrictCondition.Forest;
+        layout = new PSXValleyLayout(LevelRun.Seed, forest);
         riverMaterial = new Material(Resources.Load<Shader>("PSXValleyRiver"));
         riverMaterial.SetFloat("_BridgeY", layout.BridgeY);
         float bridgeWidth = layout.HalfWidth(layout.BridgeY);
@@ -79,7 +126,8 @@ public sealed class PSXGrassField : MonoBehaviour
             var go = new GameObject("Valley section " + i);
             go.transform.SetParent(transform, false);
             go.transform.localPosition = new Vector3(0, origin, 88);
-            var mesh = PSXValleyGeometry.Build(origin, SectionLength, brightness / .62f, layout, LevelRun.Seed);
+            var mesh = forest ? PSXValleyGeometry.BuildForest(origin, SectionLength, brightness / .62f, layout, LevelRun.Seed) :
+                PSXValleyGeometry.Build(origin, SectionLength, brightness / .62f, layout, LevelRun.Seed);
             ownedMeshes.Add(mesh);
             go.AddComponent<MeshFilter>().sharedMesh = mesh;
             var renderer = go.AddComponent<MeshRenderer>();
@@ -88,8 +136,11 @@ public sealed class PSXGrassField : MonoBehaviour
             renderer.sortingOrder = -40;
             renderer.shadowCastingMode = ShadowCastingMode.Off;
             renderer.receiveShadows = false;
-            var riverMesh = PSXValleyRiver.Build(origin, SectionLength, layout);
-            AddLayer("River current", go.transform, riverMesh, riverMaterial);
+            if (!forest)
+            {
+                var riverMesh = PSXValleyRiver.Build(origin, SectionLength, layout);
+                AddLayer("River current", go.transform, riverMesh, riverMaterial);
+            }
             AddLayer("Textured leaf clusters", go.transform, PSXValleyFoliage.Build(origin, SectionLength, layout), foliageMaterial);
             var lights = PlainsConditionScenery.Lights(origin, SectionLength, layout, LevelRun.Seed);
             if (lights != null)

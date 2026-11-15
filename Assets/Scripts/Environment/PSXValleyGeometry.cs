@@ -122,6 +122,82 @@ public static class PSXValleyGeometry
         return b.Finish();
     }
 
+    // FOREST variety: a continuous forest floor with two dirt logging trails, groves, glades,
+    // rocks and fallen logs. No river, banks, road, bridge or lookout.
+    public static Mesh BuildForest(float origin, float length, float brightness, PSXValleyLayout layout, int seed)
+    {
+        var b = new Builder(origin, brightness);
+        var floor = new Color(.25f, .33f, .19f);
+        var dirt = new Color(.36f, .30f, .21f);
+        var rut = new Color(.27f, .22f, .16f);
+        for (float y = 0; y < length - .01f; y += .5f)
+        {
+            float next = Mathf.Min(length, y + .5f), a = origin + y, c = origin + next;
+            Color ground = floor * (.97f + .03f * Mathf.Sin(a * Mathf.PI * 2 / Period));
+            ground.a = 1;
+            b.Meadow = true;
+            b.Strip(-Width, -Width, Width, Width, y, next, 0, ground);
+            b.Meadow = false;
+            for (int trail = 0; trail < PSXValleyLayout.Trails; trail++)
+            {
+                float t0 = layout.TrailX(trail, a), t1 = layout.TrailX(trail, c);
+                // Trodden verge, packed dirt and two wheel ruts.
+                b.Strip(t0 - .62f, t1 - .62f, t0 + .62f, t1 + .62f, y, next, -.01f, Color.Lerp(ground, dirt, .45f));
+                b.Strip(t0 - .48f, t1 - .48f, t0 + .48f, t1 + .48f, y, next, -.02f, dirt);
+                foreach (float lane in new[] { -.22f, .22f })
+                    b.Strip(t0 + lane - .06f, t1 + lane - .06f, t0 + lane + .06f, t1 + lane + .06f, y, next, -.03f, rut);
+            }
+        }
+        var rng = new System.Random(unchecked(seed * 397 + (int)origin + 77));
+        bool OffTrail(float x, float worldY, float margin)
+        {
+            for (int trail = 0; trail < PSXValleyLayout.Trails; trail++)
+                if (Mathf.Abs(x - layout.TrailX(trail, worldY)) < .62f + margin)
+                    return false;
+            return true;
+        }
+        // Moss and leaf-litter patches break up the floor.
+        b.Meadow = true;
+        for (int i = 0; i < 26; i++)
+        {
+            float y = Range(rng, .7f, length - .7f), x = Range(rng, -6.4f, 6.4f);
+            if (!OffTrail(x, origin + y, .4f))
+                continue;
+            b.Patch(x, y, Range(rng, .5f, 1.4f), Range(rng, .35f, .9f), -.015f,
+                i % 3 == 0 ? new Color(.30f, .38f, .20f) : i % 3 == 1 ? new Color(.33f, .29f, .18f) : new Color(.22f, .30f, .17f), rng);
+        }
+        b.Meadow = false;
+        for (int tuft = 0; tuft < 140; tuft++)
+        {
+            float x = Range(rng, -6.7f, 6.7f), y = Range(rng, .25f, length - .25f);
+            if (OffTrail(x, origin + y, .1f))
+                b.GrassTuft(x, y, Range(rng, .12f, .22f), rng);
+        }
+        foreach (var plant in layout.Plants)
+        {
+            if (plant.y < origin || plant.y >= origin + length)
+                continue;
+            if (plant.kind < 2)
+                b.Tree(plant.x, plant.y - origin, plant.radius, plant.kind, new System.Random(plant.seed));
+        }
+        for (int i = 0; i < 18; i++)
+        {
+            float y = Range(rng, .5f, length - .5f), x = Range(rng, -6.5f, 6.5f), radius = Range(rng, .12f, .34f);
+            if (OffTrail(x, origin + y, radius))
+                b.Rock(x, y, radius, rng);
+        }
+        // A few fallen logs lie across the glades.
+        for (int i = 0; i < 5; i++)
+        {
+            float y = Range(rng, .8f, length - .8f), x = Range(rng, -5.8f, 5.8f);
+            if (!OffTrail(x, origin + y, .9f))
+                continue;
+            b.Block(x, y, Range(rng, .9f, 1.5f), .2f, -.05f, .16f, new Color(.36f, .26f, .17f));
+            b.Block(x - .3f, y + .02f, .16f, .26f, -.2f, .05f, new Color(.55f, .43f, .28f));
+        }
+        return b.Finish();
+    }
+
     static float Range(System.Random rng, float lo, float hi) => Mathf.Lerp(lo, hi, (float)rng.NextDouble());
 
     sealed class Builder
