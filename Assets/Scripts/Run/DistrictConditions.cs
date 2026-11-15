@@ -4,7 +4,9 @@ using UnityEngine;
 // brings its own wave parts; the district's identity, enemies and bullet palette stay intact.
 public enum DistrictCondition
 {
-    Ordinary, Dusk, Night, Blizzard, Sandstorm
+    Ordinary, Dusk, Night, Blizzard, Sandstorm,
+    // District events (15 November 2026): each has its own hazard or wave rule.
+    Thunderstorm, Minefield, DeepPassages, CandyRain, Eruption, SpearRain, RushHour
 }
 
 public static class DistrictConditions
@@ -30,27 +32,89 @@ public static class DistrictConditions
                 return roll < 50 ? DistrictCondition.Ordinary : DistrictCondition.Blizzard;
             case LevelId.Desert:
                 return roll < 50 ? DistrictCondition.Ordinary : DistrictCondition.Sandstorm;
+            case LevelId.Thunder:
+                return roll < EventOdds ? DistrictCondition.Thunderstorm : DistrictCondition.Ordinary;
+            case LevelId.Underwater:
+                return roll < EventOdds ? DistrictCondition.Minefield : DistrictCondition.Ordinary;
+            case LevelId.Tunnel:
+                return roll < EventOdds ? DistrictCondition.DeepPassages : DistrictCondition.Ordinary;
+            case LevelId.Candyland:
+                return roll < EventOdds ? DistrictCondition.CandyRain : DistrictCondition.Ordinary;
+            case LevelId.Hell:
+                return roll < EventOdds ? DistrictCondition.Eruption : DistrictCondition.Ordinary;
+            case LevelId.Heaven:
+                return roll < EventOdds ? DistrictCondition.SpearRain : DistrictCondition.Ordinary;
+            case LevelId.City:
+                return roll < EventOdds ? DistrictCondition.RushHour : DistrictCondition.Ordinary;
             default:
                 return DistrictCondition.Ordinary;
         }
     }
 
-    public static bool Allowed(LevelId level, DistrictCondition condition)
+    const int EventOdds = 45;
+
+    public static LevelId Home(DistrictCondition condition)
     {
         switch (condition)
         {
-            case DistrictCondition.Ordinary:
-                return true;
             case DistrictCondition.Dusk:
             case DistrictCondition.Night:
-                return level == LevelId.Fields;
+                return LevelId.Fields;
             case DistrictCondition.Blizzard:
-                return level == LevelId.Snow;
+                return LevelId.Snow;
             case DistrictCondition.Sandstorm:
-                return level == LevelId.Desert;
+                return LevelId.Desert;
+            case DistrictCondition.Thunderstorm:
+                return LevelId.Thunder;
+            case DistrictCondition.Minefield:
+                return LevelId.Underwater;
+            case DistrictCondition.DeepPassages:
+                return LevelId.Tunnel;
+            case DistrictCondition.CandyRain:
+                return LevelId.Candyland;
+            case DistrictCondition.Eruption:
+                return LevelId.Hell;
+            case DistrictCondition.SpearRain:
+                return LevelId.Heaven;
+            case DistrictCondition.RushHour:
+                return LevelId.City;
             default:
-                return false;
+                return LevelId.Void;
         }
+    }
+
+    public static string Label(DistrictCondition condition)
+    {
+        switch (condition)
+        {
+            case DistrictCondition.DeepPassages:
+                return "DEEP PASSAGES";
+            case DistrictCondition.CandyRain:
+                return "CANDY RAIN";
+            case DistrictCondition.SpearRain:
+                return "SPEAR RAIN";
+            case DistrictCondition.RushHour:
+                return "RUSH HOUR";
+            default:
+                return condition.ToString().ToUpperInvariant();
+        }
+    }
+
+    static readonly Sprite[] icons = new Sprite[System.Enum.GetValues(typeof(DistrictCondition)).Length];
+    public static Sprite Icon(DistrictCondition condition)
+    {
+        int index = (int)condition;
+        if (icons[index] != null)
+            return icons[index];
+        var texture = Resources.Load<Texture2D>("EncounterIcons/Condition" + condition);
+        if (texture == null)
+            throw new System.InvalidOperationException("Missing district condition icon: " + condition);
+        return icons[index] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 32, 0, SpriteMeshType.FullRect);
+    }
+
+    public static bool Allowed(LevelId level, DistrictCondition condition)
+    {
+        return condition == DistrictCondition.Ordinary || Home(condition) == level;
     }
 
     // The low sun's side at dusk, or the side the wind blows from: -1 left, +1 right.

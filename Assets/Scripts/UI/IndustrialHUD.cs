@@ -15,6 +15,11 @@ public sealed class IndustrialHUD : MonoBehaviour
     int encounterRowsShown;
     // The district's seeded modifiers sit beneath the picked hexagons, in the same style.
     readonly RectTransform[] modifierRows = new RectTransform[LevelModifiers.All.Length];
+    // The district's seeded condition or event (dusk, blizzard, rush hour...) leads the margin rows.
+    RectTransform conditionRow;
+    Image conditionIcon;
+    Text conditionLabel;
+    DistrictCondition conditionShown = DistrictCondition.Ordinary;
     Image cargoControl;
     RectTransform cargoCharge;
     Image[] healthCells, bossCells;
@@ -567,6 +572,37 @@ public sealed class IndustrialHUD : MonoBehaviour
             }
             Place(row, 0, 88 + visible++ * 32, 132, 30);
             if (!row.gameObject.activeSelf) row.gameObject.SetActive(true);
+        }
+        var condition = waves != null && !GameOverState.Active && !HangarHub.Active ? DistrictConditions.Current : DistrictCondition.Ordinary;
+        if (condition == DistrictCondition.Ordinary)
+        {
+            if (conditionRow != null && conditionRow.gameObject.activeSelf) conditionRow.gameObject.SetActive(false);
+        }
+        else
+        {
+            if (conditionRow == null)
+            {
+                conditionRow = Panel(scorePanel, "District condition", Dark);
+                var icon = Panel(conditionRow, "District condition icon", Color.white);
+                Place(icon, 3, 2, 26, 26);
+                conditionIcon = icon.GetComponent<Image>();
+                conditionIcon.preserveAspect = true;
+                conditionLabel = TextAt(conditionRow, "", 33, 3, 12, Steel);
+                conditionLabel.rectTransform.sizeDelta = new Vector2(96, 24);
+                conditionLabel.alignment = TextAnchor.MiddleLeft;
+                conditionLabel.horizontalOverflow = HorizontalWrapMode.Wrap;
+                conditionLabel.resizeTextForBestFit = true;
+                conditionLabel.resizeTextMinSize = 8;
+                conditionLabel.resizeTextMaxSize = 12;
+            }
+            if (conditionShown != condition)
+            {
+                conditionShown = condition;
+                conditionIcon.sprite = DistrictConditions.Icon(condition);
+                conditionLabel.text = DistrictConditions.Label(condition);
+            }
+            Place(conditionRow, 0, 88 + visible++ * 32, 132, 30);
+            if (!conditionRow.gameObject.activeSelf) conditionRow.gameObject.SetActive(true);
         }
         var modifiers = waves != null && !GameOverState.Active && !HangarHub.Active ? LevelModifiers.Current : LevelModifier.None;
         for (int i = 0; i < modifierRows.Length; i++)
