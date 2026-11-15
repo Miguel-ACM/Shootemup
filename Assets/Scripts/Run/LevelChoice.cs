@@ -171,6 +171,8 @@ public sealed class LevelChoice : MonoBehaviour
                 {
                     label.color = Color.Lerp(accent, Color.white, .5f);
                 }
+                if (Options != null)
+                    EventBadge(contents[i], Options[i], accent, captions.Length == 3);
             }
         }
         var centre = Rect(frame, "Neutral flight corridor", captions.Length == 3 ? new Vector2(405, 180) : new Vector2(405 * RouteCharge.NeutralWidth, 720), captions.Length == 3 ? new Vector2(0, -270) : Vector2.zero);
@@ -300,6 +302,26 @@ public sealed class LevelChoice : MonoBehaviour
         label.raycastTarget = false;
         label.textWrappingMode = TextWrappingModes.NoWrap;
         return label;
+    }
+
+    // The district's event this run (blizzard, solar flare...), shown under its name so the pilot
+    // can weigh it while choosing. It rides the caption's selection pulse.
+    void EventBadge(RectTransform caption, LevelId level, Color accent, bool narrow)
+    {
+        var condition = DistrictConditions.For(level, LevelRun.Seed);
+        if (condition == DistrictCondition.Ordinary)
+            return;
+        float icon = narrow ? 28 : 32;
+        var badge = Rect(caption, "District event", new Vector2(icon, icon), new Vector2(0, narrow ? -32 : -40));
+        var image = badge.gameObject.AddComponent<Image>();
+        image.sprite = DistrictConditions.Icon(condition);
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+        var name = Text(caption, DistrictConditions.Label(condition), narrow ? 9 : 11, new Vector2(0, narrow ? -54 : -66), Color.Lerp(accent, Color.white, .55f));
+        name.rectTransform.sizeDelta = new Vector2(panelWidth - 10, 20);
+        name.enableAutoSizing = true;
+        name.fontSizeMin = 7;
+        name.fontSizeMax = narrow ? 9 : 11;
     }
 
     void OnDestroy()

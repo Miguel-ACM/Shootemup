@@ -45,6 +45,21 @@ public sealed class LevelReveal : MonoBehaviour
         content.sizeDelta = new Vector2(405, 120);
         Label("Level " + LevelRun.Stage, 11, new Vector2(0, 40), new Color(.73f, .77f, .72f));
         Label(LevelRun.CurrentName.ToUpperInvariant(), 40, new Vector2(0, -3), new Color(.9f, .92f, .87f));
+        // This run's district event sits under the name: its icon, then its name.
+        var condition = DistrictConditions.Current;
+        if (condition != DistrictCondition.Ordinary)
+        {
+            var icon = new GameObject("District event", typeof(RectTransform), typeof(Image));
+            icon.transform.SetParent(content, false);
+            var rect = icon.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(32, 32);
+            rect.anchoredPosition = new Vector2(0, -46);
+            var image = icon.GetComponent<Image>();
+            image.sprite = DistrictConditions.Icon(condition);
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+            Label(DistrictConditions.Label(condition), 13, new Vector2(0, -74), new Color(.86f, .8f, .64f));
+        }
         float duration = CloudTransition.RevealSeconds + 1.3f;
         var instruments = FindAnyObjectByType<IndustrialHUD>();
         for (float t = 0; t < duration; t += Time.deltaTime)

@@ -398,6 +398,74 @@ public static class RenderDistrictConditions
             EditorApplication.Exit(code);
     }
 
+    // Batch: -executeMethod RenderDistrictConditions.RouteEvents
+    // The route choice out of Plains with each district's event under its name, and the opening
+    // title of a district with its event beneath it.
+    public static void RouteEvents()
+    {
+        int code = 0;
+        try
+        {
+            Directory.CreateDirectory(Folder);
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Shader.SetGlobalVector("_PSXSnapResolution", new Vector4(Width, Height, 0, 0));
+            int seed = 1;
+            while (seed < 5000 && (DistrictConditions.For(LevelId.Snow, seed) != DistrictCondition.Blizzard || DistrictConditions.For(LevelId.City, seed) != DistrictCondition.RushHour))
+                seed++;
+            LevelRun.Reset(LevelId.Fields, seed);
+            var cells = new Texture2D[1, 2];
+            var camera = Camera(0, 8.85f);
+            var choice = new GameObject("Route choice").AddComponent<LevelChoice>();
+            var type = typeof(LevelChoice);
+            var options = new[] { LevelId.Snow, LevelId.City };
+            type.GetProperty("Options").SetValue(choice, options);
+            type.GetField("captions", Hidden).SetValue(choice, new[] { "SNOW", "CITY" });
+            type.GetField("accents", Hidden).SetValue(choice, Array.ConvertAll(options, LevelRun.Accent));
+            type.GetField("sealedRoutes", Hidden).SetValue(choice, new[] { false, false });
+            type.GetMethod("Allocate", Hidden).Invoke(choice, null);
+            type.GetMethod("Build", Hidden).Invoke(choice, null);
+            choice.GetComponent<CanvasGroup>().alpha = 1;
+            cells[0, 0] = CaptureOverlay(camera, choice.GetComponent<Canvas>());
+            UnityEngine.Object.DestroyImmediate(choice.gameObject);
+
+            LevelRun.Reset(LevelId.Snow, seed);
+            var reveal = new GameObject("Level reveal").AddComponent<LevelReveal>();
+            var steps = (System.Collections.IEnumerator)typeof(LevelReveal).GetMethod("Start", Hidden).Invoke(reveal, null);
+            steps.MoveNext();
+            reveal.GetComponent<CanvasGroup>().alpha = 1;
+            cells[0, 1] = CaptureOverlay(camera, reveal.GetComponent<Canvas>());
+            Save("RouteEvents.png", cells);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+            code = 1;
+        }
+        if (Application.isBatchMode)
+            EditorApplication.Exit(code);
+    }
+
+    // Overlay canvases never reach a camera: draw this one through the review camera instead.
+    static Texture2D CaptureOverlay(UnityEngine.Camera camera, Canvas canvas)
+    {
+        var scaler = canvas.GetComponent<UnityEngine.UI.CanvasScaler>();
+        if (scaler != null)
+            scaler.enabled = false;
+        canvas.renderMode = RenderMode.ScreenSpaceCamera;
+        canvas.worldCamera = camera;
+        canvas.planeDistance = 5;
+        canvas.scaleFactor = Height / 720f;
+        camera.backgroundColor = new Color(.05f, .09f, .12f);
+        // Lay the canvas out at the still's size before drawing it.
+        var sizing = new RenderTexture(Width, Height, 24);
+        camera.targetTexture = sizing;
+        Canvas.ForceUpdateCanvases();
+        var image = Capture(camera);
+        sizing.Release();
+        UnityEngine.Object.DestroyImmediate(sizing);
+        return image;
+    }
+
     // Batch: -executeMethod RenderDistrictConditions.Asteroids
     // Space asteroids from the great boulder down to the smallest piece over the Space backdrop,
     // with the pilot for scale, and the four rock variants close up.
