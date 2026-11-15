@@ -1,9 +1,10 @@
 using UnityEngine;
 
 // SOLAR FLARE (Space): the sun sets one half of the arena on fire. First the outer edge of the
-// doomed half glows and breathes, embers rise there and the dividing line flickers down the middle;
-// then the fire erupts in a rolling chain of fireballs, fills that half up to the line, burns for a
-// moment and recedes. Anywhere in the burning half costs a hit; the other half is safe.
+// doomed half glows and breathes, flames lick in and embers rise while the half pulses a warm tint
+// (Miguel wants no line drawn down the middle); then the fire erupts in a rolling chain of
+// fireballs, fills that half up to the centre, burns for a moment and recedes. Anywhere in the
+// burning half costs a hit; the other half is safe.
 public sealed class SolarFlare : MonoBehaviour
 {
     public const float Warning = 1.7f, Erupt = .35f, Burn = 2.1f, Recede = .55f;
@@ -14,7 +15,6 @@ public sealed class SolarFlare : MonoBehaviour
     bool erupted;
     Material fire;
     Mesh sheet;
-    LineRenderer divide;
 
     static SolarFlare current;
     // Unity's null check also covers a destroyed flare, in edit mode as well as play mode.
@@ -60,11 +60,6 @@ public sealed class SolarFlare : MonoBehaviour
         // Under every ship and round: enemies in the fire stay readable.
         renderer.sortingLayerName = "Enemy";
         renderer.sortingOrder = -5;
-        divide = CombatVisuals.Line(transform, Color.clear, .08f);
-        divide.useWorldSpace = true;
-        divide.positionCount = 2;
-        divide.sortingLayerName = "Enemy";
-        divide.sortingOrder = -4;
         DistrictHazards.Play("eventRumble");
         Pose();
     }
@@ -110,13 +105,6 @@ public sealed class SolarFlare : MonoBehaviour
         fire.SetFloat("_Warn", age < Warning ? heat : 0);
         fire.SetFloat("_Fill", fill);
         fire.SetFloat("_Fade", fade);
-        // The dividing line flickers faster as the eruption nears, then holds while it burns.
-        float flicker = age < Warning ? (Mathf.Sin(age * Mathf.Lerp(8, 34, heat)) > 0 ? 1 : .35f) : 1;
-        divide.SetPosition(0, new Vector3(Line, Camera.UpLimit + 2, -1));
-        divide.SetPosition(1, new Vector3(Line, Camera.DownLimit - 2, -1));
-        var colour = Color.Lerp(new Color(1, .8f, .5f), Hot, heat);
-        colour.a = Mathf.Lerp(.25f, .9f, heat) * flicker * fade;
-        divide.startColor = divide.endColor = colour;
     }
 
     // Embers drift up out of the doomed half, thicker as the eruption nears.

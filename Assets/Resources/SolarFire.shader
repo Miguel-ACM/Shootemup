@@ -68,7 +68,7 @@ Shader "Shootemup/Solar Fire"
                 colour=lerp(colour,float3(1,.95,.7),spark);
                 float fire=saturate(max(body*(.8+.2*lick),glow*.8)+seam*.4+spark);
                 // While it warns, the whole doomed half pulses a warm tint.
-                float tint=_Warn*.2*(.7+.3*sin(t*14))*edge;
+                float tint=_Warn*.25*(.7+.3*sin(t*14))*edge;
                 float alpha=fire+tint*(1-fire);
                 float3 premultiplied=colour*fire+float3(1,.32,.08)*tint*(1-fire);
                 return half4(premultiplied*_Fade,alpha*_Fade);
