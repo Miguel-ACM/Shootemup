@@ -120,6 +120,23 @@ public sealed class DistrictScore : MonoBehaviour
     }
     public int Generation { get; private set; }
 
+    /// <summary>Seconds from now to the nearest analysed beat of the playing section (negative
+    /// once it has passed), or NaN when no beat map is playing.</summary>
+    public float BeatOffset()
+    {
+        var beats = track?.cues?.beats;
+        if (!IsPlaying || beats == null || beats.Length == 0)
+            return float.NaN;
+        var deck = decks[index];
+        float now = (float)(deck.Offset + (AudioSettings.dspTime - deck.StartAt));
+        int next = Array.BinarySearch(beats, now);
+        if (next < 0)
+            next = ~next;
+        float after = next < beats.Length ? beats[next] - now : float.PositiveInfinity;
+        float before = next > 0 ? beats[next - 1] - now : float.NegativeInfinity;
+        return after < -before ? after : before;
+    }
+
     void Awake()
     {
         var kick = BossKick.Load();

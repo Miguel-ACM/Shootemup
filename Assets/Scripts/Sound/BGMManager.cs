@@ -69,6 +69,8 @@ public class BGMManager : MonoBehaviour
         if (score != null) score.Boss(warningSeconds);
     }
     public static float BossLead => score != null ? score.BossLead : 0;
+    /// <summary>Seconds to the nearest beat of the playing music, or NaN without a beat map.</summary>
+    public static float BeatOffset => score != null ? score.BeatOffset() : float.NaN;
     public static void QueueOutro()
     {
         if (score != null) score.Outro();
