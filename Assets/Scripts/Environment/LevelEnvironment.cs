@@ -264,6 +264,10 @@ public sealed class LevelEnvironment : MonoBehaviour
     sealed class Atmosphere
     {
         public Transform transform; public Material material; public float parallax, speed;
+        // +1 drifts right; ordinary layers keep their original rightward travel.
+        public float downwind = 1;
+        // Blizzard whiteout banks breathe with the gusts.
+        public float gustAlpha;
     }
 
     sealed class Traffic
@@ -387,6 +391,11 @@ public sealed class LevelEnvironment : MonoBehaviour
     Vector3[] weatherVertices;
     Flake[] flakes;
     LevelId level;
+    // The district's seeded condition and the side its wind blows from (-1 left, +1 right).
+    DistrictCondition condition;
+    int windSide;
+    bool Blizzard => condition == DistrictCondition.Blizzard;
+    float Downwind => -windSide;
     float travel, clock, stormAt, flash;
     AudioSource thunder;
     AudioSource rainAudio;
@@ -630,6 +639,9 @@ public sealed class LevelEnvironment : MonoBehaviour
     {
         LoadKit();
         random = new System.Random(LevelRun.Seed + 810 + (int)level);
+        // Routes are prepared while the previous district is still flying: ask for this one's.
+        condition = DistrictConditions.For(level, LevelRun.Seed);
+        windSide = DistrictConditions.Side(level, LevelRun.Seed);
         material = new Material(Resources.Load<Shader>("LevelScenery"));
         if (level == LevelId.Snow)
         {
@@ -745,23 +757,27 @@ public sealed class LevelEnvironment : MonoBehaviour
                 }
                 yield return null;
             }
-            Color tint = level == LevelId.Snow ? new Color(.74f, .85f, .89f, .22f) : level == LevelId.City ? new Color(.46f, .54f, .59f, .16f) : new Color(.10f, .16f, .19f, .10f);
+            Color tint = level == LevelId.Snow ? new Color(.74f, .85f, .89f, .22f) : level == LevelId.City ? new Color(.52f, .60f, .66f, .08f) : new Color(.10f, .16f, .19f, .10f);
             AddAtmosphere("Low drifting haze", 0, 44, tint, 1.9f, level == LevelId.Snow ? .55f : .20f);
             if (level == LevelId.Snow)
             {
                 AddAtmosphere("Snowdust over the drifts", 3, 42, new Color(.83f, .90f, .92f, .38f), 1.5f, 1.1f);
                 AddAtmosphere("Near windblown powder", 3, 35, new Color(.89f, .94f, .95f, .21f), 2.5f, 1.8f);
+                if (Blizzard)
+                    BuildBlizzard();
                 yield return null;
             }
             if (level == LevelId.Desert)
             {
                 var dust = new GameObject("Desert dust storms");
                 dust.transform.SetParent(transform, false);
-                dust.AddComponent<DesertDustStorm>();
+                var storm = dust.AddComponent<DesertDustStorm>();
+                storm.Sandstorm = condition == DistrictCondition.Sandstorm;
+                storm.Downwind = Downwind;
             }
             if (level == LevelId.City)
             {
-                AddAtmosphere("Wisps above the distant city", 0, 35, new Color(.66f, .75f, .79f, .08f), 2.6f, .32f);
+                AddAtmosphere("Wisps above the distant city", 0, 35, new Color(.72f, .80f, .84f, .05f), 2.6f, .32f);
                 var cars = BuildTrafficSteps();
                 while (cars.MoveNext())
                     yield return cars.Current;
@@ -809,6 +825,27 @@ public sealed class LevelEnvironment : MonoBehaviour
         mat.SetColor("_Tint", tint);
         plane.GetComponent<MeshRenderer>().sharedMaterial = mat;
         atmosphere.Add(new Atmosphere { transform = plane, material = mat, parallax = parallax, speed = speed });
+    }
+
+    // A whiteout: the ground pales under cold light, banks of driven snow race downwind and
+    // gust over the drifts, and the falling snow turns into a slanting storm.
+    void BuildBlizzard()
+    {
+        foreach (var layer in atmosphere)
+        {
+            layer.downwind = Downwind;
+            layer.speed *= 2.2f;
+        }
+        AddAtmosphere("Whiteout banks", 3, 38, new Color(.93f, .96f, .98f, .55f), 2.0f, 3.2f);
+        var whiteout = atmosphere[atmosphere.Count - 1];
+        whiteout.downwind = Downwind;
+        whiteout.gustAlpha = .55f;
+        AddAtmosphere("Driven spindrift", 3, 33, new Color(.96f, .98f, 1, .34f), 2.8f, 4.4f);
+        atmosphere[atmosphere.Count - 1].downwind = Downwind;
+        // Above the near drifts (-24), below the storm's own atmosphere layers (-9).
+        SceneryGrade.Create(transform, "Blizzard light", -22)
+            .Multiply(new Color(.74f, .82f, .94f), new Color(.82f, .88f, .96f), windSide, 1, .10f)
+            .Glow(new Color(.15f, .16f, .18f), new Color(.08f, .09f, .10f), windSide, .7f);
     }
 
     IEnumerator BuildTrafficSteps()
@@ -886,7 +923,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     IEnumerator BuildWeatherSteps()
     {
         bool snow = level == LevelId.Snow;
-        flakes = new Flake[snow ? 1600 : 1150];
+        flakes = new Flake[snow ? Blizzard ? 2600 : 1600 : 1150];
         weatherVertices = new Vector3[flakes.Length * 4];
         var colors = new Color[weatherVertices.Length];
         var triangles = new int[flakes.Length * 6];
@@ -945,9 +982,16 @@ public sealed class LevelEnvironment : MonoBehaviour
             snowFoliageMaterial.SetFloat("_FlowTime", clock);
         if (level == LevelId.Thunder)
             UpdateStorm(dt);
+        float gust = Blizzard ? Gust : 0;
         foreach (var layer in atmosphere)
         {
-            layer.material.SetVector("_Drift", new Vector4(-clock * layer.speed * .11f, clock * layer.speed * .18f, 0, 0));
+            layer.material.SetVector("_Drift", new Vector4(-clock * layer.speed * .11f * layer.downwind, clock * layer.speed * .18f, 0, 0));
+            if (layer.gustAlpha > 0)
+            {
+                var tint = layer.material.GetColor("_Tint");
+                tint.a = layer.gustAlpha * (.45f + .55f * gust);
+                layer.material.SetColor("_Tint", tint);
+            }
             layer.material.SetFloat("_Flash", flash > .65f ? flash * .62f : flash > .4f ? .02f : flash * .7f);
         }
     }
@@ -1039,15 +1083,20 @@ public sealed class LevelEnvironment : MonoBehaviour
         material.SetFloat("_Flash", flash > .65f ? flash * .45f : flash > .4f ? .02f : flash * .5f);
     }
 
+    // 0 calm to 1 at a blizzard gust's peak: a slow swell with a few sharp gusts.
+    float Gust => Mathf.Clamp01(.45f + .30f * Mathf.Sin(clock * .41f) + .25f * Mathf.Sin(clock * 1.07f + 2) * Mathf.Sin(clock * .23f));
+
     void UpdateWeather(float dt)
     {
         bool snow = level == LevelId.Snow;
         float gust = Mathf.Sin(clock * .53f) * .5f + Mathf.Sin(clock * .21f + 1) * .5f;
         float wind = snow ? -2.6f + gust * 2.6f : -4.0f + gust * 1.8f;
+        if (Blizzard)
+            wind = Downwind * (4.2f + 3.6f * Gust);
         for (int i = 0; i < flakes.Length; i++)
         {
             var f = flakes[i];
-            f.position.y -= dt * f.speed * (snow ? 5.5f : 24);
+            f.position.y -= dt * f.speed * (snow ? Blizzard ? 7.5f : 5.5f : 24);
             f.position.x += dt * (wind + (snow ? Mathf.Sin(clock * 1.5f + f.phase) * f.depth : 0)) * f.depth;
             f.position.y = Mathf.Repeat(f.position.y + 16, 34) - 16;
             f.position.x = Mathf.Repeat(f.position.x + 12, 24) - 12;
@@ -1055,6 +1104,13 @@ public sealed class LevelEnvironment : MonoBehaviour
             float w = snow ? f.size : .009f * f.depth;
             float h = snow ? f.size * .72f : .4f * f.speed * f.depth;
             float slant = snow ? Mathf.Sin(clock + f.phase) * w * .6f : -wind / 24 * h;
+            if (Blizzard)
+            {
+                // Driven snow streaks along the wind instead of tumbling.
+                w *= 1 + Mathf.Abs(wind) * .32f;
+                h *= 1.3f;
+                slant = 0;
+            }
             int k = i * 4;
             var p = (Vector3)f.position;
             weatherVertices[k] = p + new Vector3(-w, -h);

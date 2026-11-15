@@ -128,6 +128,9 @@ public sealed class BurstShell : CombatRound
             // Flakes are born above the visible top edge and drift in, never popping into view.
             var flake = Launch<SnowflakeRound>(new Vector3(x, Border.yMax + .5f), Vector2.down, 1.4f + (i % 3) * .25f, .19f);
             flake.Pause(.05f, .5f + (i % 4) * .12f, Turn.Down, lane * 2, 1).Sway(i % 2 == 0 ? .35f : -.35f, .45f);
+            // A blizzard carries ordinary snowfall downwind; boss scores keep their authored fall.
+            if (DistrictConditions.Is(DistrictCondition.Blizzard) && !BossAtmosphere.Present)
+                flake.Drift(DistrictConditions.BlizzardWind * (.85f + (i % 3) * .15f));
             if (spray != null)
                 spray.generation = 2;
             if (flake != null)

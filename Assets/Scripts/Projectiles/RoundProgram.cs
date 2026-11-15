@@ -82,6 +82,14 @@ public static class RoundProgram
         return shot;
     }
 
+    // A steady world-space push on top of the heading, such as a blizzard's crosswind.
+    public static T Drift<T>(this T shot, Vector2 velocity) where T : CombatRound
+    {
+        if (shot != null)
+            shot.drift = velocity;
+        return shot;
+    }
+
     // Override the launch lifetime, for rounds that loop back through the arena.
     public static T LivesFor<T>(this T shot, float seconds) where T : CombatRound
     {

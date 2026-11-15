@@ -1,6 +1,6 @@
 Shader "Shootemup/Desert Dust"
 {
-    Properties { _Clock("Wind time",Float)=0 _Strength("Gust strength",Range(0,1))=0 _Seed("Seed",Float)=0 _Layer("Layer",Float)=0 }
+    Properties { _Clock("Wind time",Float)=0 _Strength("Gust strength",Range(0,1))=0 _Seed("Seed",Float)=0 _Layer("Layer",Float)=0 _Wind("Wind direction",Float)=1 }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Transparent" "Queue"="Transparent" }
@@ -14,7 +14,7 @@ Shader "Shootemup/Desert Dust"
             #pragma fragment Frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             CBUFFER_START(UnityPerMaterial)
-            float _Clock,_Strength,_Seed,_Layer;
+            float _Clock,_Strength,_Seed,_Layer,_Wind;
             CBUFFER_END
             struct Input { float4 positionOS:POSITION; };
             struct Output { float4 positionCS:SV_POSITION;float2 p:TEXCOORD0; };
@@ -28,7 +28,7 @@ Shader "Shootemup/Desert Dust"
             float Cloud(float2 p){return .58*Noise(p)+.28*Noise(p*2.07+17)+.14*Noise(p*4.13+31);}
             half4 Frag(Output i):SV_Target
             {
-                float2 wind=float2(i.p.x-_Clock*(2.2+_Layer*1.7),i.p.y+_Clock*.42);
+                float2 wind=float2(i.p.x-_Clock*(2.2+_Layer*1.7)*_Wind,i.p.y+_Clock*.42);
                 wind+=float2(_Seed,_Seed*.71);
                 float2 p=wind*float2(.18,.35);
                 p.y+=.42*sin(p.x*.7+_Clock*.19);

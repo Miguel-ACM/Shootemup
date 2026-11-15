@@ -7,6 +7,8 @@ public sealed class BossAtmosphere : MonoBehaviour
 {
     const int Banks = 14;
     static BossAtmosphere current;
+    // True from a boss's entrance until its scenery veil has cleared.
+    public static bool Present => current != null;
     static Sprite square, puff;
     SpriteRenderer veil;
     readonly SpriteRenderer[] mist = new SpriteRenderer[Banks];
