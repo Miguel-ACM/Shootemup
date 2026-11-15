@@ -310,7 +310,7 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 
 - Keep the gallery camera horizontally centred throughout the exhibit aisle so all three cases stay visible. The directory supports case-insensitive item-name search alongside type and release filters.
 - Fleet's ship selection screen shows the actual rotating 3D starting equipment instead of an equipment-name list.
-- Fillable Flask costs 75 energy per sip, retaining two heals per district. Overdrive costs 60 energy and visibly animates the ship throughout its boost. Keep ordinary player bullets less blue and slightly more transparent without replacing their approved pixels (15 November 2026: ordinary rounds 68% opaque, flames 85%).
+- Fillable Flask costs 75 energy per sip, retaining two heals per district. Overdrive costs 60 energy and visibly animates the ship throughout its boost. Keep ordinary player bullets less blue and slightly more transparent without replacing their approved pixels (15 November 2026: ordinary rounds and flames alike are 68% opaque).
 - During simulator flights, show SIMULATOR and the objective in the right margin. Each trial unlocks from its own ship and non-simulator equipment, including later-leg kits; never require unrelated items, other ships, all districts or simulator blueprints.
 - Add district-authored movement variety: bounded firing holds, multiple stations, bottom entrances, straight passes and pursuit at a distance. Reduce Space satellite scout volley density and firing accents.
 
