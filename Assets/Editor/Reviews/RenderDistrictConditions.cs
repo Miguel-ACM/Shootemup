@@ -530,7 +530,7 @@ public static class RenderDistrictConditions
                     var cloud = new GameObject("Cloud");
                     cloud.transform.SetParent(clouds.transform, false);
                     cloud.transform.localPosition = new Vector3(at.x, at.y, 0);
-                    cloud.transform.localScale = Vector3.one * radius * 2.6f;
+                    cloud.transform.localScale = Vector3.one * radius * 2.9f;
                     cloud.AddComponent<MeshFilter>().sharedMesh = quad;
                     var renderer = cloud.AddComponent<MeshRenderer>();
                     renderer.sharedMaterial = material;
