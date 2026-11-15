@@ -43,7 +43,7 @@ public sealed class PSXFireballs : MonoBehaviour
         Spawn(position, size, count, radius, stagger, Color.white);
     }
 
-    public static void Spawn(Vector3 position, float size, int count, float radius, float stagger, Color tint)
+    public static void Spawn(Vector3 position, float size, int count, float radius, float stagger, Color tint, bool silent = false)
     {
         if (!Ready())
             return;
@@ -55,6 +55,8 @@ public sealed class PSXFireballs : MonoBehaviour
             float s = size * (i == 0 ? 1f : Random.Range(.45f, .85f));
             var ball = instance.Add(position + (Vector3)offset, s, i == 0 ? 0 : Random.Range(0, stagger), Random.Range(.42f, .6f) + s * .04f);
             ball.tint = tint;
+            // A silent ball counts as already sounded: the caller plays its own cue.
+            ball.sounded = silent;
             if (LevelRun.Current == LevelId.Underwater)
             {
                 ball.life *= 1.35f;

@@ -18,7 +18,8 @@ public abstract class ExpansionWeapon : AWeaponAutomatic
             Delivery == PlayerDelivery.Needle ? "shotNeedle" : Delivery == PlayerDelivery.Shell ? "shotShell" :
             Delivery == PlayerDelivery.Disc ? "shotDisc" : Delivery == PlayerDelivery.Missile ? "shotMissile" :
             Delivery == PlayerDelivery.Flame ? "shotFlame" : "shot1";
-        SoundManager.PlaySound(cue, .07f);
+        // Rocket salvos fire often: their launch sits lower in the mix (Miguel, 15 November 2026).
+        SoundManager.PlaySound(cue, Delivery == PlayerDelivery.Missile ? .04f : .07f);
     }
 
     protected virtual void Awake()

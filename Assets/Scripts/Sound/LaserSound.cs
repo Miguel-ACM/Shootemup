@@ -62,7 +62,7 @@ public sealed class LaserSound : MonoBehaviour
         transient.clip = SfxMix.Resolve(ChargeCue, celestial && heavenCharge != null ? heavenCharge : chargeClip);
         transient.pitch = Mathf.Clamp((celestial && heavenCharge != null ? heavenCharge.length : .8f) / Mathf.Max(.1f, seconds), .5f, 2f);
         // Enemy laser charge and ignition sit about half as loud as before (Miguel, 15 November 2026).
-        transient.volume = (player ? .16f : .10f) * SfxMix.Gain(ChargeCue);
+        transient.volume = (player ? .09f : .10f) * SfxMix.Gain(ChargeCue);
         transient.Play();
     }
 
@@ -78,7 +78,7 @@ public sealed class LaserSound : MonoBehaviour
             {
                 lastIgnition = Time.time;
                 transient.pitch = celestial ? .78f : 1;
-                transient.volume = (friendly ? .18f : .13f) * SfxMix.Gain(FireCue);
+                transient.volume = (friendly ? .10f : .13f) * SfxMix.Gain(FireCue);
                 var ignition = SfxMix.Resolve(FireCue, celestial && heavenIgnition != null ? heavenIgnition : friendly && playerIgnitionClip != null ? playerIgnitionClip : ignitionClip);
                 if (ignition != null) transient.PlayOneShot(ignition);
             }
@@ -99,7 +99,7 @@ public sealed class LaserSound : MonoBehaviour
             {
                 lastRelease = Time.time;
                 transient.pitch = 1;
-                transient.volume = .14f * SfxMix.Gain("beamRelease");
+                transient.volume = (friendly ? .08f : .14f) * SfxMix.Gain("beamRelease");
                 var release = SfxMix.Resolve("beamRelease", releaseClip);
                 if (release != null) transient.PlayOneShot(release);
             }
@@ -107,8 +107,8 @@ public sealed class LaserSound : MonoBehaviour
         // The emitter can cool faster on later loops. Fade the release with that
         // same envelope so pooling never cuts an audible sample in mid-waveform.
         if (cooling)
-            transient.volume = .14f * SfxMix.Gain("beamRelease") * Mathf.Clamp01(power / .4f);
-        bed.volume = (friendly ? .11f : .15f) * SfxMix.Gain(SustainCue) * Mathf.Clamp01(power) / Mathf.Sqrt(Mathf.Max(1, sustaining));
+            transient.volume = (friendly ? .08f : .14f) * SfxMix.Gain("beamRelease") * Mathf.Clamp01(power / .4f);
+        bed.volume = (friendly ? .065f : .15f) * SfxMix.Gain(SustainCue) * Mathf.Clamp01(power) / Mathf.Sqrt(Mathf.Max(1, sustaining));
         if (cooling && power <= .005f)
             StopBed();
     }

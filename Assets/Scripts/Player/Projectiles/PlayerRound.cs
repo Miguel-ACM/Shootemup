@@ -416,8 +416,9 @@ public sealed class PlayerRound : ABullet
     // Every rocket bursts where it lands: a small fireball and splash damage to the hulls around it.
     void RocketBurst(AEnemy struck, Vector2 point)
     {
-        PSXFireballs.Spawn(point, generation > 0 ? .26f : .36f, 2, .12f, .05f, new Color(1f, .8f, .5f));
-        ItemSound.Cue("itemDepthBurst", volume: .05f, pitch: 1.3f + Random.value * .2f, cooldown: .07f);
+        // One quiet burst per impact; the fireballs themselves stay silent so a salvo never stacks pops.
+        PSXFireballs.Spawn(point, generation > 0 ? .26f : .36f, 2, .12f, .05f, new Color(1f, .8f, .5f), silent: true);
+        ItemSound.Cue("itemDepthBurst", volume: .028f, pitch: 1.3f + Random.value * .2f, cooldown: .09f);
         float splash = damage * RocketSplashShare;
         splashTargets.Clear();
         splashTargets.AddRange(AEnemy.Live);
