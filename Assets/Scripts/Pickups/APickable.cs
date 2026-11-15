@@ -15,6 +15,9 @@ public abstract class APickable : MonoBehaviour
     float destroyingTime = 0f;
     bool launched;
     float scatterTime;
+    // Salvage rain: a steady fall with a gentle sway until the pickup range takes over.
+    bool raining;
+    float rainSpeed, rainPhase;
     public bool IsScattering => scatterTime > 0;
 
     public void Launch(Vector2 velocity, float seconds = 1)
@@ -25,11 +28,22 @@ public abstract class APickable : MonoBehaviour
         rb.linearVelocity = velocity;
     }
 
+    public void Rain(float speed)
+    {
+        raining = true;
+        rainSpeed = speed;
+        rainPhase = Random.Range(0, Mathf.PI * 2);
+        rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0;
+        rb.linearDamping = 0;
+        rb.linearVelocity = Vector2.down * speed;
+    }
+
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         rb = GetComponent<Rigidbody2D>();
-        if (!launched)
+        if (!launched && !raining)
             rb.AddForce(Vector3.up * 100f);
     }
 
@@ -60,6 +74,15 @@ public abstract class APickable : MonoBehaviour
         Vector2 thisPosition = transform.position;
         Vector2 playerPosition = player.transform.position;
         float distance = Vector3.Distance(thisPosition, playerPosition);
+        if (raining)
+        {
+            rb.linearVelocity = new Vector2(Mathf.Sin(Time.time * 1.7f + rainPhase) * .35f, -rainSpeed);
+            if (thisPosition.y < Camera.DownLimit - 1)
+            {
+                Destroy(gameObject);
+                return;
+            }
+        }
         if (distance <= minDist * GameRules.pickDistance)
         {
             Vector3 direction = Utils.GetVelocityBetweenVectors(transform.position, player.transform.position);

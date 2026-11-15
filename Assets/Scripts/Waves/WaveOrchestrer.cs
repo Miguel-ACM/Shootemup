@@ -418,7 +418,8 @@ public class WaveOrchestrer : MonoBehaviour
         }
         if (kind == EncounterKind.Salvage)
         {
-            RunCoins.Add(EncounterChoice.SalvageCoins(LevelRun.Tier(LevelRun.Current), GameRules.luck));
+            // Salvage rains its coins over the arena; later districts rain more.
+            CoinRain.Begin(CoinRain.Coins(LevelRun.Stage, GameRules.luck));
             ItemSound.Play("ready", .18f);
             PSXImpactEffects.Burst(ship.transform.position, EncounterChoice.Accent(kind));
             return;

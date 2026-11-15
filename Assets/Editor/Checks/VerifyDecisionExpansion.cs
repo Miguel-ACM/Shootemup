@@ -217,8 +217,12 @@ public sealed class DecisionExpansionReview : MonoBehaviour
             int wallet = RunCoins.Count;
             float score = Score.CurrentScore;
             Call(flow, "ResolveEncounter", EncounterKind.Salvage);
-            Check(RunCoins.Count == wallet + EncounterChoice.SalvageCoins(1, 0) && Score.CurrentScore == score,
-                "Salvage credits only the run wallet, never score");
+            // Salvage now rains its coins: nothing is credited until they are collected.
+            var rain = UnityEngine.Object.FindAnyObjectByType<CoinRain>();
+            Check(RunCoins.Count == wallet && Score.CurrentScore == score && rain != null,
+                "Salvage starts a coin rain and credits neither wallet nor score up front");
+            if (rain != null)
+                UnityEngine.Object.Destroy(rain.gameObject);
             yield return InventoryChecks();
             File.WriteAllText(VerifyDecisionExpansion.Folder + "/InventoryVerification.txt", "PASS\n" + string.Join("\n", checks));
         }
