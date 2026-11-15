@@ -355,7 +355,9 @@ public class Shipcontroller : MonoBehaviour
         var steering = SimulatorFlight.Steering(move, transform.position);
         horizontalMove = steering.x * GameRules.playerMoveSpeed * GameClock.PlayerDelta * speedMultiplier;
         verticalMove = steering.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * GameClock.PlayerDelta * speedMultiplier;
-        if ((LevelRun.Current == LevelId.Underwater || SimulatorFlight.WaterHandling) && !CombatDecision.Active && !CloudTransition.Busy)
+        // Underwater handling holds everywhere in the district (Miguel, 15 November 2026):
+        // waves, minibosses, the boss, decisions, shops and transitions alike. Only the hangar flies dry.
+        if ((LevelRun.Current == LevelId.Underwater || SimulatorFlight.WaterHandling) && !HangarHub.Active)
         {
             var desired = new Vector2(steering.x, steering.y * verticalMoveMultiplier) * GameRules.playerMoveSpeed * speedMultiplier * .79f;
             float response = steering.sqrMagnitude < .01f ? 5.5f : speedMultiplier < 1 ? 11 : 7;
