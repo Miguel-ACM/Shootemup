@@ -305,15 +305,27 @@ public static class VerifyDistrictConditions
         Check(EncounterChoice.Accent(EncounterKind.Challenge) == AItem.GetRarityColor("epic"), "The hunt hexagon should wear its promised rarity");
         EncounterChoice.ChallengeRarity = null;
 
-        // FOREST: no plant blocks either trail, and both trails stay apart and on screen.
+        // FOREST: dense, with no trail; forest tanks drive routes across the whole screen.
         var forest = new PSXValleyLayout(424242, true);
         Check(forest.Forest && forest.Plants.Count > 300, "Forest should be dense: " + forest.Plants.Count + " plants");
-        foreach (var plant in forest.Plants)
-            for (int trail = 0; trail < PSXValleyLayout.Trails; trail++)
-                Check(Mathf.Abs(plant.x - forest.TrailX(trail, plant.y)) >= plant.radius + .6f, "A tree stands on a forest trail");
-        for (float y = -24; y < 72; y += .5f)
-            Check(forest.TrailX(1, y) - forest.TrailX(0, y) > 2 && Mathf.Abs(forest.TrailX(0, y)) < 4.4f && Mathf.Abs(forest.TrailX(1, y)) < 4.4f, "Forest trails cross or leave the screen at " + y);
-        report.Add("Forest: " + forest.Plants.Count + " plants");
+        float westmost = 0, eastmost = 0;
+        int crossings = 0;
+        foreach (var part in WavePartLibrary.PlainsForestGround)
+        {
+            Check(part.Enemy == "MeadowTank" && part.Only == DistrictCondition.Forest, part.Name + " should be a forest tank part");
+            float first = part.Route.Sample(0).x, last = part.Route.Sample(1).x;
+            for (float t = 0; t <= 1; t += .05f)
+            {
+                float x = part.Route.Sample(t).x;
+                westmost = Mathf.Min(westmost, x);
+                eastmost = Mathf.Max(eastmost, x);
+            }
+            if (Mathf.Sign(first) != Mathf.Sign(last))
+                crossings++;
+        }
+        // Route x is in half-widths of the arena.
+        Check(westmost < -.4f && eastmost > .4f && crossings >= 2, "Forest tanks should drive across the screen: " + westmost + " to " + eastmost + ", " + crossings + " crossings");
+        report.Add("Forest: " + forest.Plants.Count + " plants; tank routes " + westmost.ToString("0.00") + " to " + eastmost.ToString("0.00") + ", " + crossings + " crossings");
         Check(EnemyCatalog.Resolve(nameof(ThicketLurker)) == typeof(ThicketLurker) && IndustrialMeshFactory.CombatHull((int)CombatHullId.ThicketLurker) != null, "Thicket Lurker is not registered");
 
         // SOLAR FLARE: an asteroid shades the lane away from the sun, and only that lane.

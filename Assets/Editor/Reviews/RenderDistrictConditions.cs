@@ -243,14 +243,37 @@ public static class RenderDistrictConditions
             }
             var combat = Combatants(LevelProjectilePalette.Accent(LevelId.Fields), 0);
             var camera = Camera(0, 8.85f);
+            var tankMesh = IndustrialMeshFactory.CombatHull((int)CombatHullId.MeadowTank);
+            var tanks = new GameObject("Forest tanks");
+            var spots = new[] { new Vector2(-2.1f, 2.6f), new Vector2(1.7f, -1.2f), new Vector2(.4f, 5.4f) };
+            foreach (var spot in spots)
+            {
+                var tank = new GameObject("Tank");
+                tank.transform.SetParent(tanks.transform, false);
+                tank.transform.localPosition = new Vector3(spot.x, spot.y, 87.8f);
+                tank.transform.localRotation = Quaternion.Euler(0, 0, spot.x * 9);
+                tank.transform.localScale = Vector3.one * .55f;
+                tank.AddComponent<MeshFilter>().sharedMesh = tankMesh;
+                var part = tank.AddComponent<MeshRenderer>();
+                part.sharedMaterial = CombatMaterials.Fleet;
+                part.sortingLayerName = "Background";
+                part.sortingOrder = -32;
+            }
             foreach (var (y, column) in new[] { (6f, 0), (40f, 1) })
             {
                 camera.transform.position = new Vector3(0, y, -20);
                 combat.transform.position = new Vector3(0, y, 0);
+                tanks.transform.position = new Vector3(0, y, 0);
+                var push = new Vector4[4];
+                for (int i = 0; i < spots.Length; i++)
+                    push[i] = new Vector4(spots[i].x, y + spots[i].y, .95f, 0);
+                Shader.SetGlobalVectorArray("_CanopyPush", push);
                 cells[0, column] = Capture(camera);
             }
+            Shader.SetGlobalVectorArray("_CanopyPush", new Vector4[4]);
             root.SetActive(false);
             combat.SetActive(false);
+            tanks.SetActive(false);
 
             var lurker = new GameObject("Thicket lurker");
             lurker.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.ThicketLurkerMesh();

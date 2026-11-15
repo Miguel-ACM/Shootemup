@@ -9,8 +9,8 @@ public abstract class GroundVehicle : DistrictEnemy
     bool hasPrevious;
     float roadY;
     bool drivingRoad;
-    // In the FOREST variety a tank keeps to the dirt trail on its route's side.
-    int trail = -1;
+    // In the FOREST variety there is no road: a tank drives its own route across the floor.
+    bool forest;
     GroundTreadMarks marks;
     MeshRenderer[] parts;
     MeshRenderer headlights;
@@ -39,6 +39,7 @@ public abstract class GroundVehicle : DistrictEnemy
         base.Start();
         GetComponent<CombatHullVisual>().enabled = false;
         field = FindAnyObjectByType<PSXGrassField>();
+        forest = !Snow && field != null && field.Forest;
         if (movement == null)
         {
             var part = Snow ? WavePartLibrary.SnowGround[0] : WavePartLibrary.PlainsGround[0];
@@ -90,7 +91,6 @@ public abstract class GroundVehicle : DistrictEnemy
             {
                 drivingRoad = true;
                 roadY = position.y;
-                trail = field.TrailAt(position.x, position.y);
             }
             var flight = movement as FormationFlight;
             float drive = 1.45f + Mathf.Clamp((5.1f - (flight != null ? flight.duration : 4.8f)) * .8f, 0, .9f);
@@ -109,8 +109,10 @@ public abstract class GroundVehicle : DistrictEnemy
     {
         if (Snow)
             LevelEnvironment.TrySnowGround(position, out tile, out local);
+        else if (field != null && forest)
+            field.SampleGround(position.x, position.y, out tile, out local);
         else if (field != null)
-            field.SampleRoad(position.y, out tile, out local, trail);
+            field.SampleRoad(position.y, out tile, out local);
     }
 
     protected override void Update()
@@ -135,12 +137,12 @@ public abstract class GroundVehicle : DistrictEnemy
         Hull.position = p + Vector3.back * .075f;
         float scroll = Snow ? 4.4f : field.GroundScrollSpeed;
         Vector2 driving = hasPrevious ? (Vector2)(p - previous) + Vector2.up * scroll * Time.deltaTime : Vector2.up;
-        if (!Snow)
-            driving = field.RoadDownDirection(p.y, trail) * Mathf.Max(.001f, driving.magnitude);
+        if (!Snow && !forest)
+            driving = field.RoadDownDirection(p.y) * Mathf.Max(.001f, driving.magnitude);
         if (driving.sqrMagnitude > .00001f)
         {
             var target = Quaternion.FromToRotation(Vector3.down, driving.normalized);
-            Hull.rotation = !hasPrevious && !Snow ? target : Quaternion.RotateTowards(Hull.rotation, target, Time.deltaTime * 360);
+            Hull.rotation = !hasPrevious && !Snow && !forest ? target : Quaternion.RotateTowards(Hull.rotation, target, Time.deltaTime * 360);
         }
         if (player != null)
         {

@@ -223,14 +223,14 @@ def rush_hour():
 
 def forest():
     image, d = canvas()
-    # A dirt trail winding between dense round canopies.
-    d.polygon([(13,31),(19,31),(17,24),(20,17),(17,10),(15,10),(17,17),(14,24)], fill="#8a6a44")
-    d.line([(16,30),(15,24),(18,17),(16,11)], fill="#5e4630")
-    for x, y, r, colour in ((7,9,7,"#3e6a2e"),(25,7,6,"#4f7d35"),(6,23,6,"#4f7d35"),(26,22,7,"#3e6a2e"),(16,3,4,"#5c8c3c")):
+    # Dense overlapping round canopies, no road or trail.
+    crowns = ((16,27,6,"#3e6a2e"),(6,25,6,"#4f7d35"),(26,24,6,"#4f7d35"),(15,15,7,"#3e6a2e"),
+              (5,12,6,"#5c8c3c"),(27,11,6,"#3e6a2e"),(17,4,5,"#4f7d35"),(6,2,4,"#3e6a2e"),(28,1,4,"#5c8c3c"))
+    for x, y, r, colour in crowns:
         d.ellipse((x-r,y-r,x+r,y+r), fill=INK)
         d.ellipse((x-r+1,y-r+1,x+r-1,y+r-1), fill=colour)
         d.ellipse((x-r+2,y-r+1,x+1,y), fill="#7fae52")
-    d.point((5,6), fill=PALE)
+    d.point((13,10), fill=PALE)
     return image
 
 

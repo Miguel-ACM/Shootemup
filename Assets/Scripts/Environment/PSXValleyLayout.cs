@@ -13,11 +13,10 @@ public sealed class PSXValleyLayout
     public readonly List<Plant> Plants = new List<Plant>();
     public readonly float BridgeY, LookoutY;
     readonly float phase, phase2;
-    // FOREST variety: no river, road, bridge or lookout; dense groves with seeded glades and two
-    // winding dirt trails (left and right of centre) that the tanks drive.
+    // FOREST variety: no river, road, bridge or lookout; dense groves with seeded glades. Tanks
+    // drive wherever their routes take them and the canopies part around them.
     public readonly bool Forest;
     readonly List<Vector3> glades = new List<Vector3>();
-    public const int Trails = 2;
 
     public PSXValleyLayout(int seed, bool forest = false)
     {
@@ -55,13 +54,6 @@ public sealed class PSXValleyLayout
             TryPlant(x, y, Range(rng, .12f, .24f), 2, rng);
         }
     }
-
-    // The two logging trails never cross: one swings left of centre, the other right.
-    public float TrailX(int trail, float y) => trail == 0
-        ? -2.5f + 1.05f * Mathf.Sin(y * Mathf.PI * 4 / Period + phase) + .45f * Mathf.Sin(y * Mathf.PI * 10 / Period + phase2)
-        : 2.5f + .95f * Mathf.Sin(y * Mathf.PI * 6 / Period + phase2) + .4f * Mathf.Sin(y * Mathf.PI * 8 / Period + phase);
-
-    public int NearestTrail(float x, float y) => Mathf.Abs(x - TrailX(0, y)) <= Mathf.Abs(x - TrailX(1, y)) ? 0 : 1;
 
     void PlantForest(System.Random rng)
     {
@@ -104,9 +96,6 @@ public sealed class PSXValleyLayout
         {
             if (Mathf.Abs(x) + radius > 6.8f)
                 return false;
-            for (int trail = 0; trail < Trails; trail++)
-                if (Mathf.Abs(x - TrailX(trail, y)) < radius + .62f)
-                    return false;
             foreach (var glade in glades)
             {
                 float dx = x - glade.x, dy = DistanceY(y, glade.y);

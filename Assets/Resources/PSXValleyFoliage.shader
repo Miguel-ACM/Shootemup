@@ -19,6 +19,8 @@ Shader "Shootemup/PSX Valley Foliage"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             TEXTURE2D(_MainTex);SAMPLER(sampler_MainTex);
             float4 _PSXSnapResolution;
+            // FOREST: up to four tanks (xy, z = reach) whose surroundings bend the crowns aside.
+            float4 _CanopyPush[4];
             CBUFFER_START(UnityPerMaterial)
             float _FlowTime,_Brightness;
             CBUFFER_END
@@ -29,7 +31,15 @@ Shader "Shootemup/PSX Valley Foliage"
                 Output o;
                 i.positionOS.x+=sin(_FlowTime*1.4+i.motion.x)*.022*i.motion.y;
                 i.positionOS.y+=cos(_FlowTime*1.1+i.motion.x)*.011*i.motion.y;
-                o.positionCS=TransformObjectToHClip(i.positionOS.xyz);
+                float3 world=TransformObjectToWorld(i.positionOS.xyz);
+                [unroll] for(int k=0;k<4;k++)
+                {
+                    float2 away=world.xy-_CanopyPush[k].xy;
+                    float d=length(away),reach=_CanopyPush[k].z;
+                    float push=reach>0?saturate(1-d/reach):0;
+                    world.xy+=away/max(d,.001)*push*push*reach*.8;
+                }
+                o.positionCS=TransformWorldToHClip(world);
                 float2 grid=max(_PSXSnapResolution.xy*.5,1);
                 o.positionCS.xy=floor(o.positionCS.xy/o.positionCS.w*grid+.5)/grid*o.positionCS.w;
                 o.uv=i.uv;o.color=i.color;return o;

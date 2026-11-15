@@ -52,31 +52,34 @@ public sealed class PSXGrassField : MonoBehaviour
         return true;
     }
 
-    // FOREST variety: no road; tanks follow one of two dirt trails instead.
+    // FOREST variety: no road; tanks drive their own routes across the forest floor.
     public bool Forest => layout != null && layout.Forest;
 
-    public Vector2 RoadDownDirection(float worldY, int trail = -1)
+    public Vector2 RoadDownDirection(float worldY)
     {
-        if (!SampleRoad(worldY + .12f, out var upper, out var a, trail) || !SampleRoad(worldY - .12f, out var lower, out var b, trail))
+        if (!SampleRoad(worldY + .12f, out var upper, out var a) || !SampleRoad(worldY - .12f, out var lower, out var b))
             return Vector2.down;
         return ((Vector2)(lower.TransformPoint(b) - upper.TransformPoint(a))).normalized;
     }
 
-    // The trail nearest a screen x at a screen height (forest only).
-    public int TrailAt(float worldX, float worldY)
+    // Any point of the forest floor, attached to the section beneath it.
+    public bool SampleGround(float worldX, float worldY, out Transform tile, out Vector3 local)
     {
-        if (!Forest)
-            return -1;
-        for (int i = 0; i < sections.Count; i++)
+        tile = null;
+        local = default;
+        foreach (var section in sections)
         {
-            float y = worldY - sections[i].position.y;
-            if (y >= 0 && y < SectionLength)
-                return layout.NearestTrail(worldX - sections[i].position.x, (i - 1) * SectionLength + y);
+            float y = worldY - section.position.y;
+            if (y < 0 || y >= SectionLength)
+                continue;
+            tile = section;
+            local = new Vector3(worldX - section.position.x, y, -.115f);
+            return true;
         }
-        return worldX < 0 ? 0 : 1;
+        return false;
     }
 
-    public bool SampleRoad(float worldY, out Transform tile, out Vector3 local, int trail = -1)
+    public bool SampleRoad(float worldY, out Transform tile, out Vector3 local)
     {
         tile = null;
         local = default;
@@ -89,7 +92,7 @@ public sealed class PSXGrassField : MonoBehaviour
             if (y < 0 || y >= SectionLength)
                 continue;
             float terrainY = (i - 1) * SectionLength + y;
-            float road = layout.Forest ? layout.TrailX(Mathf.Max(0, trail), terrainY) : layout.Centre(terrainY) - layout.HalfWidth(terrainY) - 1.15f;
+            float road = layout.Centre(terrainY) - layout.HalfWidth(terrainY) - 1.15f;
             tile = section;
             local = new Vector3(road, y, -.115f);
             return true;
@@ -211,6 +214,7 @@ public sealed class PSXGrassField : MonoBehaviour
             riverMaterial.SetFloat("_FlowTime", Time.time);
         if (foliageMaterial != null)
             foliageMaterial.SetFloat("_FlowTime", Time.time);
+        PartCanopies();
         travel = Mathf.Repeat(travel + scrollSpeed * Time.deltaTime, LoopLength);
         for (int i = 0; i < sections.Count; i++)
         {
@@ -230,8 +234,29 @@ public sealed class PSXGrassField : MonoBehaviour
         }
     }
 
+    // FOREST: the crowns bend aside around every tank on the ground (up to four), so a convoy
+    // ploughs through the trees instead of driving across the treetops.
+    static readonly Vector4[] canopyPush = new Vector4[4];
+    static readonly int CanopyPushId = Shader.PropertyToID("_CanopyPush");
+
+    void PartCanopies()
+    {
+        int count = 0;
+        if (Forest)
+            foreach (var enemy in AEnemy.Live)
+                if (count < canopyPush.Length && enemy is GroundVehicle tank && tank.Grounded)
+                {
+                    var p = tank.Hull.position;
+                    canopyPush[count++] = new Vector4(p.x, p.y, .95f, 0);
+                }
+        for (int i = count; i < canopyPush.Length; i++)
+            canopyPush[i] = Vector4.zero;
+        Shader.SetGlobalVectorArray(CanopyPushId, canopyPush);
+    }
+
     void OnDestroy()
     {
+        Shader.SetGlobalVectorArray(CanopyPushId, new Vector4[4]);
         foreach (var mesh in ownedMeshes)
             if (mesh != null)
                 Destroy(mesh);
