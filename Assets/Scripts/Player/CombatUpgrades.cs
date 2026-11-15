@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 public enum UpgradeKind
 {
-    Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice, RelaySwitch, LiveWire
+    Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice, RelaySwitch, LiveWire,
+    TapeMeasure
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -133,6 +134,9 @@ public sealed class CombatUpgrades : MonoBehaviour
         return (slot == 0 ? input.Primary && !input.Secondary : input.Secondary && !input.Primary) ? 2 : 1;
     }
 
+    /// <summary>Shared feedback throttle for item effects outside this class.</summary>
+    public bool Gate(string key, float cooldown) => Ready(key, cooldown);
+
     bool Ready(string key, float cooldown)
     {
         if (gates.TryGetValue(key, out float until) && Time.time < until)
@@ -185,6 +189,8 @@ public sealed class CombatUpgrades : MonoBehaviour
         damage *= PoisonedHull.Weakness(enemy) * RuleDamage();
         if (companion)
             damage *= 1 + Count(UpgradeKind.Drone) * .2f + Count(UpgradeKind.Squad) * .5f;
+        if (generation == 0 && !companion)
+            damage *= ReachDamage.Scale(this, enemy, transform.position);
         if (Count(UpgradeKind.Focus) > 0 && generation == 0)
         {
             if (focused != enemy || Time.time > focusUntil)
