@@ -263,6 +263,9 @@ public static class EverydayItemMaterials
 
     public static Material For(string kind)
     {
+        // Built in code on the fleet atlas instead of its authored model (ExpansionItem).
+        if (kind == "SalvageConverter")
+            return CombatMaterials.Fleet;
         var authored = IndustrialMeshFactory.TerraMaterial("Item" + kind);
         if (authored != null)
             return authored;

@@ -7,6 +7,10 @@ public static partial class IndustrialMeshFactory
     {
         if (expansionItems.TryGetValue(kind, out var mesh) && mesh != null)
             return mesh;
+        // The remodelled Coin Launcher read as a handbag (Miguel, 15 November 2026): keep its
+        // original hopper-and-chute design, made clearer, instead of the authored model.
+        if (kind == "SalvageConverter")
+            return expansionItems[kind] = CoinLauncherModel();
         var authored = TerraModel("Item" + kind);
         if (authored != null)
             return expansionItems[kind] = authored;
@@ -181,5 +185,27 @@ public static partial class IndustrialMeshFactory
             }
         }
         return expansionItems[kind] = b.Finish(kind + " equipment");
+    }
+
+    // A coin hopper feeding a short launcher: coins drop through a window in the feed tube into
+    // the breech, and a gold-tipped homing dart leaves the angled barrel.
+    static Mesh CoinLauncherModel()
+    {
+        var b = new Builder();
+        b.Box(new Vector3(0, -.42f, 0), new Vector3(.66f, .06f, .38f), 11, 6);
+        b.Box(new Vector3(.02f, -.26f, 0), new Vector3(.52f, .24f, .32f), 6, 6);
+        b.Prism(new[] { new Vector2(-.48f, .40f), new Vector2(.02f, .40f), new Vector2(-.1f, .1f), new Vector2(-.36f, .1f) }, .3f, 6, Vector3.zero, 11);
+        b.Box(new Vector3(-.23f, .41f, -.02f), new Vector3(.52f, .04f, .34f), 10, 10);
+        for (int i = 0; i < 3; i++)
+            b.Drum(new Vector3(-.36f + i * .13f, .5f + (i % 2) * .06f, -.04f), .085f, .045f, 10, 10, 6);
+        b.Box(new Vector3(-.23f, -.04f, 0), new Vector3(.15f, .3f, .2f), 6, 11);
+        b.Drum(new Vector3(-.23f, -.03f, -.11f), .06f, .03f, 10, 10, 6);
+        EquipmentRod(b, new Vector3(.14f, -.2f, 0), new Vector3(.48f, .16f, 0), .1f, 6);
+        EquipmentRod(b, new Vector3(.44f, .12f, 0), new Vector3(.54f, .22f, 0), .135f, 10);
+        EquipmentRod(b, new Vector3(.6f, .28f, 0), new Vector3(.72f, .4f, 0), .045f, 3);
+        b.Ball(new Vector3(.75f, .43f, 0), new Vector3(.06f, .06f, .06f), 10);
+        foreach (int side in new[] { -1, 1 })
+            b.Prism(new[] { new Vector2(.6f, .28f), new Vector2(.6f + side * .05f, .2f + (side > 0 ? .08f : 0)), new Vector2(.64f, .3f) }, .04f, 3, Vector3.zero);
+        return b.Finish("Coin launcher equipment");
     }
 }
