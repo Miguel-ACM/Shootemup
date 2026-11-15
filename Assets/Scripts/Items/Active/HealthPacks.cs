@@ -4,8 +4,9 @@ public sealed class HealthPacks : AActiveItem
 {
     void Awake()
     {
-        SetData("Health packs", "Field medicine", "Spend 30 energy to repair one hit.", ItemType.active);
-        cost = 30;
+        SetData("Health packs", "Field medicine", "Spend 100 energy to repair one hit.", ItemType.active);
+        // A full bar per repair (Miguel, 15 November 2026).
+        cost = 100;
         cd = 3;
     }
 

@@ -100,7 +100,7 @@ public abstract class DistrictEnemy : AEnemy
         if (Elite || IsMiniboss || this is DistrictBoss)
             return;
         Elite = true;
-        health *= 2.4f;
+        health *= 3;
         eliteCoins = 6 + 2 * LevelRun.Tier(LevelRun.Current);
         if (Hull != null)
             Hull.localScale *= 1.12f;
