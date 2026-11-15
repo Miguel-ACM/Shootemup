@@ -306,22 +306,35 @@ public sealed class LevelChoice : MonoBehaviour
 
     // The district's event this run (blizzard, solar flare...), shown under its name so the pilot
     // can weigh it while choosing. It rides the caption's selection pulse.
+    // Its level modifiers (MORE ELITES, MORE COINS, FAST FIRE) stack beneath the event.
     void EventBadge(RectTransform caption, LevelId level, Color accent, bool narrow)
     {
+        float y = narrow ? -32 : -40;
+        var ink = Color.Lerp(accent, Color.white, .55f);
         var condition = DistrictConditions.For(level, LevelRun.Seed);
-        if (condition == DistrictCondition.Ordinary)
-            return;
+        if (condition != DistrictCondition.Ordinary)
+            y = Badge(caption, DistrictConditions.Icon(condition), DistrictConditions.Label(condition), y, ink, narrow);
+        var modifiers = LevelModifiers.Next(level);
+        foreach (var modifier in LevelModifiers.All)
+            if ((modifiers & modifier) != 0)
+                y = Badge(caption, LevelModifiers.Icon(modifier), LevelModifiers.Label(modifier), y, ink, narrow);
+    }
+
+    // One badge, its icon over its name; returns where the next badge starts.
+    float Badge(RectTransform caption, Sprite sprite, string text, float y, Color color, bool narrow)
+    {
         float icon = narrow ? 28 : 32;
-        var badge = Rect(caption, "District event", new Vector2(icon, icon), new Vector2(0, narrow ? -32 : -40));
+        var badge = Rect(caption, text + " icon", new Vector2(icon, icon), new Vector2(0, y));
         var image = badge.gameObject.AddComponent<Image>();
-        image.sprite = DistrictConditions.Icon(condition);
+        image.sprite = sprite;
         image.preserveAspect = true;
         image.raycastTarget = false;
-        var name = Text(caption, DistrictConditions.Label(condition), narrow ? 9 : 11, new Vector2(0, narrow ? -54 : -66), Color.Lerp(accent, Color.white, .55f));
+        var name = Text(caption, text, narrow ? 9 : 11, new Vector2(0, y - (narrow ? 22 : 26)), color);
         name.rectTransform.sizeDelta = new Vector2(panelWidth - 10, 20);
         name.enableAutoSizing = true;
         name.fontSizeMin = 7;
         name.fontSizeMax = narrow ? 9 : 11;
+        return y - (narrow ? 50 : 58);
     }
 
     void OnDestroy()

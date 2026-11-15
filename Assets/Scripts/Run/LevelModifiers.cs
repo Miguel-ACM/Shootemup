@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
 
-// Seeded per-district twists, shown with their icon in the left margin: more elite ships,
-// more coins, or hostile rounds 20% faster. Each has its own chance, so a district can have
+// Seeded per-district twists, shown with their icon on the route choice, under the level's
+// opening title and in the left margin: more elite ships, more coins, or hostile rounds 20% faster. Each has its own chance, so a district can have
 // none, one or several. Void, a lone boss, never takes them.
 [Flags]
 public enum LevelModifier
@@ -22,6 +22,9 @@ public static class LevelModifiers
     }
 
     public static LevelModifier Current => For(LevelRun.Current, LevelRun.Seed, LevelRun.Stage);
+
+    // A route choice previews the district it leads to; travelling there moves the run one stage on.
+    public static LevelModifier Next(LevelId level) => For(level, LevelRun.Seed, LevelRun.Stage + 1);
 
     public static LevelModifier For(LevelId level, int seed, int stage)
     {

@@ -409,8 +409,11 @@ public static class RenderDistrictConditions
             Directory.CreateDirectory(Folder);
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             Shader.SetGlobalVector("_PSXSnapResolution", new Vector4(Width, Height, 0, 0));
+            // A seed with both events and level modifiers on both routes: two or more on Snow.
+            int Count(LevelModifier m) => ((int)m & 1) + ((int)m >> 1 & 1) + ((int)m >> 2 & 1);
             int seed = 1;
-            while (seed < 5000 && (DistrictConditions.For(LevelId.Snow, seed) != DistrictCondition.Blizzard || DistrictConditions.For(LevelId.City, seed) != DistrictCondition.RushHour))
+            while (seed < 100000 && (DistrictConditions.For(LevelId.Snow, seed) != DistrictCondition.Blizzard || DistrictConditions.For(LevelId.City, seed) != DistrictCondition.RushHour
+                || Count(LevelModifiers.For(LevelId.Snow, seed, 2)) < 2 || Count(LevelModifiers.For(LevelId.City, seed, 2)) < 1))
                 seed++;
             LevelRun.Reset(LevelId.Fields, seed);
             var cells = new Texture2D[1, 2];

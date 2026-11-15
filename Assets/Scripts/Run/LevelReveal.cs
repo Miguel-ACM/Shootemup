@@ -45,20 +45,34 @@ public sealed class LevelReveal : MonoBehaviour
         content.sizeDelta = new Vector2(405, 120);
         Label("Level " + LevelRun.Stage, 11, new Vector2(0, 40), new Color(.73f, .77f, .72f));
         Label(LevelRun.CurrentName.ToUpperInvariant(), 40, new Vector2(0, -3), new Color(.9f, .92f, .87f));
-        // This run's district event sits under the name: its icon, then its name.
+        // This run's district event and level modifiers sit in a row under the name, each its
+        // icon over its name.
+        var badges = new System.Collections.Generic.List<(Sprite icon, string name)>();
         var condition = DistrictConditions.Current;
         if (condition != DistrictCondition.Ordinary)
+            badges.Add((DistrictConditions.Icon(condition), DistrictConditions.Label(condition)));
+        var modifiers = LevelModifiers.Current;
+        foreach (var modifier in LevelModifiers.All)
+            if ((modifiers & modifier) != 0)
+                badges.Add((LevelModifiers.Icon(modifier), LevelModifiers.Label(modifier)));
+        float spacing = badges.Count > 0 ? Mathf.Min(132, 400f / badges.Count) : 0;
+        for (int i = 0; i < badges.Count; i++)
         {
-            var icon = new GameObject("District event", typeof(RectTransform), typeof(Image));
+            float x = (i - (badges.Count - 1) * .5f) * spacing;
+            var icon = new GameObject(badges[i].name + " icon", typeof(RectTransform), typeof(Image));
             icon.transform.SetParent(content, false);
             var rect = icon.GetComponent<RectTransform>();
             rect.sizeDelta = new Vector2(32, 32);
-            rect.anchoredPosition = new Vector2(0, -46);
+            rect.anchoredPosition = new Vector2(x, -46);
             var image = icon.GetComponent<Image>();
-            image.sprite = DistrictConditions.Icon(condition);
+            image.sprite = badges[i].icon;
             image.preserveAspect = true;
             image.raycastTarget = false;
-            Label(DistrictConditions.Label(condition), 13, new Vector2(0, -74), new Color(.86f, .8f, .64f));
+            var label = Label(badges[i].name, 13, new Vector2(x, -74), new Color(.86f, .8f, .64f));
+            label.rectTransform.sizeDelta = new Vector2(spacing - 6, 24);
+            label.enableAutoSizing = true;
+            label.fontSizeMin = 8;
+            label.fontSizeMax = 13;
         }
         float duration = CloudTransition.RevealSeconds + 1.3f;
         var instruments = FindAnyObjectByType<IndustrialHUD>();
@@ -74,7 +88,7 @@ public sealed class LevelReveal : MonoBehaviour
         Destroy(gameObject);
     }
 
-    void Label(string text, float size, Vector2 position, Color color)
+    TextMeshProUGUI Label(string text, float size, Vector2 position, Color color)
     {
         var go = new GameObject(text, typeof(RectTransform), typeof(TextMeshProUGUI));
         go.transform.SetParent(content, false);
@@ -89,5 +103,6 @@ public sealed class LevelReveal : MonoBehaviour
         label.color = color;
         label.raycastTarget = false;
         label.textWrappingMode = TextWrappingModes.NoWrap;
+        return label;
     }
 }
