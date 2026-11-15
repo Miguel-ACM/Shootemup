@@ -10,7 +10,8 @@ public sealed class OptionRow : AMenuElement
         Music,
         Sound,
         PsxFilter,
-        ScreenMode
+        ScreenMode,
+        DamageNumbers
     }
 
     const float RepeatDelay = .35f, RepeatRate = .1f;
@@ -24,14 +25,14 @@ public sealed class OptionRow : AMenuElement
 
     public static OptionRow Create(Transform parent, Kind kind, TMP_FontAsset font)
     {
-        string name = kind == Kind.PsxFilter ? "PSX FILTER" : kind == Kind.ScreenMode ? "SCREEN" : kind.ToString().ToUpperInvariant();
+        string name = kind == Kind.PsxFilter ? "PSX FILTER" : kind == Kind.ScreenMode ? "SCREEN" : kind == Kind.DamageNumbers ? "DAMAGE NUMBERS" : kind.ToString().ToUpperInvariant();
         var go = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         go.transform.SetParent(parent, false);
         var label = Text(go.transform, go.name, font, TextAlignmentOptions.Left);
         label.rectTransform.offsetMin = new Vector2(40, 0);
         var row = go.AddComponent<OptionRow>();
         row.kind = kind;
-        if (kind == Kind.PsxFilter || kind == Kind.ScreenMode)
+        if (kind == Kind.PsxFilter || kind == Kind.ScreenMode || kind == Kind.DamageNumbers)
         {
             row.state = Text(go.transform, "", font, TextAlignmentOptions.Right);
             row.state.rectTransform.offsetMax = new Vector2(-40, 0);
@@ -119,6 +120,9 @@ public sealed class OptionRow : AMenuElement
                 // Cycles in both directions: windowed, fullscreen, borderless.
                 GameOptions.SetScreenMode((GameOptions.WindowMode)(((int)GameOptions.ScreenMode + direction + 3) % 3));
                 break;
+            case Kind.DamageNumbers:
+                GameOptions.SetDamageNumbers(!GameOptions.DamageNumbers);
+                break;
             default:
                 GameOptions.SetPsxFilter(!GameOptions.PsxFilter);
                 break;
@@ -141,7 +145,8 @@ public sealed class OptionRow : AMenuElement
         float focus = Focus;
         if (state != null)
         {
-            state.text = kind == Kind.ScreenMode ? GameOptions.ScreenMode.ToString().ToUpperInvariant() : GameOptions.PsxFilter ? "ON" : "OFF";
+            bool on = kind == Kind.DamageNumbers ? GameOptions.DamageNumbers : GameOptions.PsxFilter;
+            state.text = kind == Kind.ScreenMode ? GameOptions.ScreenMode.ToString().ToUpperInvariant() : on ? "ON" : "OFF";
             state.color = textElement.color;
             return;
         }

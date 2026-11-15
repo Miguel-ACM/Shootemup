@@ -273,10 +273,12 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
 
     float nextImpact;
     bool impactProvided;
+    Vector3 impactPoint;
     PartHitFeedback localFeedback;
     public void HitAt(Vector3 point, Vector2 incoming = default)
     {
         impactProvided = true;
+        impactPoint = point;
         if (localFeedback == null)
             localFeedback = GetComponentInChildren<PartHitFeedback>();
         if (localFeedback != null)
@@ -294,8 +296,11 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
             return;
         if (!impactProvided && !QuietDamage)
             HitAt(transform.position);
+        var point = impactProvided ? impactPoint : transform.position;
         impactProvided = false;
+        float before = health;
         health = health - damage * GameRules.enemyDamageReceived;
+        DamageNumbers.Report(this, before - Mathf.Max(0, health), point, QuietDamage ? DamageNumbers.TickKind : DamageKind.Direct);
         if (!QuietDamage)
             blinkTimeout = Time.time + blinkSeconds;
         if (localFeedback == null && !isBlinking && !QuietDamage)

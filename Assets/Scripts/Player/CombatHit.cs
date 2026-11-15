@@ -33,10 +33,11 @@ public static class CombatHit
 
     // Burn and poison ticks: real damage without the impact spark, hit sound or hull flash,
     // so ten burn ticks a second read through their own flames instead of as constant hits.
-    public static DamageResult Affliction(AEnemy target, float amount)
+    public static DamageResult Affliction(AEnemy target, float amount, DamageKind kind = DamageKind.Burn)
     {
         if (target == null || !target.CanReceiveDamage)
             return default;
+        DamageNumbers.TickKind = kind;
         target.QuietDamage = true;
         var result = target.ReceiveDamage(amount);
         target.QuietDamage = false;

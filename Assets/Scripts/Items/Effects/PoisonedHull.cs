@@ -52,7 +52,7 @@ public sealed class PoisonedHull : MonoBehaviour
             // Each dose is heavier than the last while the poison is kept topped up.
             doses++;
             float dose = potency * Mathf.Min(MaxDose, FirstDose + DoseGrowth * doses);
-            CombatHit.Affliction(enemy, dose);
+            CombatHit.Affliction(enemy, dose, DamageKind.Poison);
             effect?.Pulse(dose / (potency * MaxDose));
             ItemSound.Cue("itemPoison", volume: .03f, pitch: .8f + .05f * Mathf.Min(doses, 8), cooldown: .45f);
         }

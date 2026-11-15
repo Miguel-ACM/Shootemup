@@ -10,11 +10,13 @@ public static class GameOptions
         Borderless
     }
 
-    const string MusicKey = "MusicVolume", SoundKey = "SoundVolume", FilterKey = "PsxFilter", ScreenKey = "ScreenMode";
+    const string MusicKey = "MusicVolume", SoundKey = "SoundVolume", FilterKey = "PsxFilter", ScreenKey = "ScreenMode", DamageKey = "DamageNumbers";
     public const int Steps = 10;
     public static int Music { get; private set; } = Steps;
     public static int Sound { get; private set; } = Steps;
     public static bool PsxFilter { get; private set; } = true;
+    // Damage numbers over struck enemies; on unless the player turns them off.
+    public static bool DamageNumbers { get; private set; } = true;
     public static WindowMode ScreenMode { get; private set; } = WindowMode.Borderless;
     public static float MusicVolume => Music / (float)Steps;
 
@@ -24,6 +26,7 @@ public static class GameOptions
         Music = Mathf.Clamp(PlayerPrefs.GetInt(MusicKey, Steps), 0, Steps);
         Sound = Mathf.Clamp(PlayerPrefs.GetInt(SoundKey, Steps), 0, Steps);
         PsxFilter = PlayerPrefs.GetInt(FilterKey, 1) == 1;
+        DamageNumbers = PlayerPrefs.GetInt(DamageKey, 1) == 1;
         // Without a saved choice, keep whatever mode the player started in.
         if (PlayerPrefs.HasKey(ScreenKey))
             ApplyScreen((WindowMode)Mathf.Clamp(PlayerPrefs.GetInt(ScreenKey), 0, 2));
@@ -75,6 +78,12 @@ public static class GameOptions
                 Screen.SetResolution(width, height, FullScreenMode.FullScreenWindow);
                 break;
         }
+    }
+
+    public static void SetDamageNumbers(bool enabled)
+    {
+        DamageNumbers = enabled;
+        PlayerPrefs.SetInt(DamageKey, enabled ? 1 : 0);
     }
 
     public static void SetPsxFilter(bool enabled)
