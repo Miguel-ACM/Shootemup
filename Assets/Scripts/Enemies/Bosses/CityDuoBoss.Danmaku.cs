@@ -19,6 +19,8 @@ using UnityEngine;
 // Tones: phase one's street is dark with bright crossing lamps and the overpass bright with
 // dark lamps; the survivor's crates are bright under dark high beams, and its hairpins are
 // dark fast arrows over bright slow ones.
+// The hauler throws only kunai, and a little less than before (Miguel, 15 November 2026): its
+// street cars, high beams and crate shrapnel are all kunai; the interceptor keeps its arrows.
 public sealed partial class CityDuoBoss
 {
     // Each movement lasts seven cycles of about 2.2 s.
@@ -63,7 +65,7 @@ public sealed partial class CityDuoBoss
         {
             int movement = cycle / CyclesPerMovement % 4;
             yield return Charge(Hull, WeaponPort(1), .35f);
-            ParkStreet(Muzzle(1), 7, cycle, movement, HostileTone.Dark, Rest(1.1f));
+            ParkStreet(Muzzle(1), 6, cycle, movement, HostileTone.Dark, Rest(1.1f));
             yield return Wait(Rest(.6f));
             HighBeams(HostileTone.Bright);
             yield return Wait(Rest(.6f));
@@ -113,7 +115,7 @@ public sealed partial class CityDuoBoss
     void ParkStreet(Vector3 port, int rows, int cycle, int movement, HostileTone tone, float green)
     {
         const float park = .8f;
-        int cars = Mathf.Max(5, Dense(14));
+        int cars = Mathf.Max(5, Dense(12));
         float left = Camera.LeftLimit + .45f, right = Camera.RightLimit - .45f;
         float snake = movement == 2 ? 2.0f : 1.3f;
         for (int row = 0; row < rows; row++)
@@ -131,8 +133,8 @@ public sealed partial class CityDuoBoss
                 float launch = WorldSpeed(delta.magnitude / (park - .175f));
                 bool lamp = car == gap - 1 || car == gap + 2;
                 UseTone(lamp ? Opposite(tone) : tone);
-                var round = lamp ? Fire<KunaiRound>(port, delta, launch, .2f) : (CombatRound)Fire<NeedleRound>(port, delta, launch, .19f);
-                round.Pause(park, hold, CombatRound.Turn.Down, StreetSkid(movement, row, car, cycle), 2.3f / launch).ShowTurn().Bounce(1, false);
+                Fire<KunaiRound>(port, delta, launch, .2f)
+                    .Pause(park, hold, CombatRound.Turn.Down, StreetSkid(movement, row, car, cycle), 2.3f / launch).ShowTurn().Bounce(1, false);
             }
         }
     }
@@ -181,9 +183,9 @@ public sealed partial class CityDuoBoss
             var origin = Muzzle(port);
             var aim = CombatVisuals.Aim(origin);
             Fire<KunaiRound>(origin, aim, 5.2f, .2f);
-            int cars = Dense(6);
+            int cars = Dense(5);
             for (int car = 1; car < cars; car++)
-                Fire<SimpleRound>(origin, aim, 5.0f - car * .45f, .18f);
+                Fire<KunaiRound>(origin, aim, 5.0f - car * .5f, .18f);
         }
     }
 
@@ -207,7 +209,7 @@ public sealed partial class CityDuoBoss
         {
             int movement = cycle / CyclesPerMovement % 4;
             yield return ChargeWings(.3f);
-            HoistCrates(5, movement, HostileTone.Bright, Rest(.35f));
+            HoistCrates(4, movement, HostileTone.Bright, Rest(.35f));
             yield return Wait(Rest(.9f));
             HighBeams(HostileTone.Dark);
             yield return Wait(Rest(.6f));
@@ -227,7 +229,7 @@ public sealed partial class CityDuoBoss
         const float lift = .9f;
         float top = CombatRound.Border.yMax - .8f;
         float reach = Camera.RightLimit - 1.1f;
-        int shards = Dense(10);
+        int shards = Dense(8);
         bool aimed = movement == 1;
         UseTone(tone);
         for (int mirror = -1; mirror <= 1; mirror += 2)
@@ -245,7 +247,7 @@ public sealed partial class CityDuoBoss
                 Fire<KunaiRound>(port, delta, launch, .34f)
                     .Pause(lift, wait, CombatRound.Turn.Down, lean, 2.6f / launch)
                     .ShowTurn()
-                    .SplitAt(lift + wait + .7f, shards, aimed ? 6 : 8, 3.0f, .17f, aimed);
+                    .SplitAt(lift + wait + .7f, shards, aimed ? 7 : 9, 3.0f, .17f, aimed, kunai: true);
             }
         }
     }
@@ -309,7 +311,7 @@ public sealed partial class CityDuoBoss
         {
             int movement = cycle / CyclesPerMovement % 4;
             yield return ChargeWings(.3f);
-            ParkStreet(Muzzle(1), 5, cycle, movement, HostileTone.Dark, Rest(1.1f));
+            ParkStreet(Muzzle(1), 4, cycle, movement, HostileTone.Dark, Rest(1.1f));
             HoistCrates(4, movement, HostileTone.Bright, Rest(.6f));
             yield return Wait(Rest(.8f));
             HighBeams(HostileTone.Bright);

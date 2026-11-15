@@ -558,7 +558,7 @@ public abstract class CombatRound : AEnemyBullet
     internal int zigSign;
     internal float splitAt, splitSpread, splitSpeed, splitRadius;
     internal int splitCount;
-    internal bool splitAimed;
+    internal bool splitAimed, splitKunai;
     internal float wallRunFor, wallRunStart;
     internal int wallDirection, wallSide;
     Vector2 travel;
@@ -591,7 +591,7 @@ public abstract class CombatRound : AEnemyBullet
         zigEvery = zigAngle = nextZig = 0;
         zigSign = 1;
         splitCount = 0;
-        splitAimed = false;
+        splitAimed = splitKunai = false;
         splitSpread = splitSpeed = splitRadius = 0;
         wallRunFor = wallRunStart = 0;
         wallDirection = 0;
@@ -830,7 +830,8 @@ public abstract class CombatRound : AEnemyBullet
             for (int i = 0; i < splitCount; i++)
             {
                 float lane = splitCount <= 1 ? 0 : i - (splitCount - 1) * .5f;
-                var shard = Launch<SimpleRound>(transform.position, CombatVisuals.Rotate(heading, lane * splitSpread), splitSpeed, splitRadius);
+                var direction = CombatVisuals.Rotate(heading, lane * splitSpread);
+                var shard = splitKunai ? (CombatRound)Launch<KunaiRound>(transform.position, direction, splitSpeed, splitRadius) : Launch<SimpleRound>(transform.position, direction, splitSpeed, splitRadius);
                 if (shard != null)
                     shard.generation = generation + 1;
             }

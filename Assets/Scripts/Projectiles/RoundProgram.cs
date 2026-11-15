@@ -153,10 +153,12 @@ public static class RoundProgram
     }
 
     // Break into a fan of small rounds around the current heading, or toward the player.
-    public static T SplitAt<T>(this T shot, float at, int count, float spread, float speed, float radius = .14f, bool aimed = false) where T : CombatRound
+    // kunai: the shards are kunai instead of round shots (the City hauler fires only kunai).
+    public static T SplitAt<T>(this T shot, float at, int count, float spread, float speed, float radius = .14f, bool aimed = false, bool kunai = false) where T : CombatRound
     {
         if (shot == null)
             return null;
+        shot.splitKunai = kunai;
         shot.splitAt = at;
         shot.splitCount = count;
         shot.splitSpread = spread;
