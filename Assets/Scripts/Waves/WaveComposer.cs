@@ -288,6 +288,9 @@ public static class WaveComposer
                     continue;
                 if (level == LevelId.Space && !relaxed && slot == count - 1 && !units.Exists(u => u.enemy == nameof(LaserSatellite) || u.enemy == nameof(OrbitalCarrier)) && part.Enemy != nameof(LaserSatellite) && part.Enemy != nameof(OrbitalCarrier))
                     continue;
+                // Tunnel mixes its ships: never two formations of the same enemy in one wave.
+                if (level == LevelId.Tunnel && !relaxed && units.Exists(u => u.enemy == part.Enemy))
+                    continue;
                 if (part.Unlock > budget || chosen.Contains(part.Name) || (part != featuredGate && previous.Contains(part.Name)) ||
                     (heavy && part.Shape == WaveShape.Solo && !(level == LevelId.Space && part.Enemy == nameof(LaserSatellite))) || (groundUsed && part.Ground))
                     continue;

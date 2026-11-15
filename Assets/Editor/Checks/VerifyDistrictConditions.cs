@@ -29,6 +29,7 @@ public static class VerifyDistrictConditions
             Modifiers();
             Events();
             Asteroids();
+            TunnelMix();
         }
         catch (Exception ex)
         {
@@ -255,7 +256,8 @@ public static class VerifyDistrictConditions
             passages++;
             var wave = DistrictWaves.Create(budget);
             Check(wave.units.All(u => u.passageRoute), "Deep passage ship off the walls");
-            Check(wave.units.Count >= 20, "Deep passage crew too light: " + wave.units.Count);
+            // Lighter since Miguel found the tunnels crowded (15 November 2026), still a full crew.
+            Check(wave.units.Count >= 9 && wave.units.Count <= 13, "Deep passage crew off: " + wave.units.Count);
             for (int i = 1; i < wave.units.Count; i++)
                 Check(wave.units[i].time >= wave.units[i - 1].time, "Deep passage units out of order");
             layouts.AddRange(wave.units.Where(u => u.passage != 0).Select(u => u.passage));
@@ -359,6 +361,45 @@ public static class VerifyDistrictConditions
         foreach (var leftover in UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include))
             if (leftover is LightningStrike || leftover is SpearStrike || leftover is CandyDrop || leftover is DepthMine)
                 UnityEngine.Object.DestroyImmediate(leftover.gameObject);
+    }
+
+    // Tunnel waves mix their ships: ordinary waves never repeat an enemy type, and neither ordinary
+    // waves nor walled passages are crowded (Miguel, 15 November 2026).
+    static void TunnelMix()
+    {
+        foreach (var condition in new[] { DistrictCondition.Ordinary, DistrictCondition.DeepPassages })
+        {
+            int waves = 0, ships = 0, types = 0, drones = 0, passages = 0, passageShips = 0, most = 0;
+            DistrictConditions.Forced = condition;
+            foreach (int seed in new[] { 17381, 4417, 90210, 31337 })
+            {
+                LevelRun.Reset(LevelId.Tunnel, seed);
+                foreach (int budget in Budgets)
+                {
+                    var wave = DistrictWaves.Create(budget);
+                    var enemies = wave.units.Select(unit => unit.enemy).ToList();
+                    drones += enemies.Count(enemy => enemy == nameof(MaintenanceDrone));
+                    if (TunnelPassageWaves.HasPassage(budget))
+                    {
+                        passages++;
+                        passageShips += enemies.Count;
+                        continue;
+                    }
+                    waves++;
+                    ships += enemies.Count;
+                    most = Mathf.Max(most, enemies.Count);
+                    types += enemies.Distinct().Count();
+                    var formations = wave.units.GroupBy(unit => unit.part).Select(group => group.First().enemy).ToList();
+                    Check(formations.Count == formations.Distinct().Count(), "Tunnel wave " + budget + " (seed " + seed + ") repeats an enemy type: " + string.Join(", ", formations));
+                }
+            }
+            float average = ships / (float)Mathf.Max(1, waves), passageAverage = passageShips / (float)Mathf.Max(1, passages);
+            Check(average <= 9 && passageAverage <= 12, "Tunnel/" + condition + " is crowded: " + average.ToString("0.0") + " ships a wave, " + passageAverage.ToString("0.0") + " a passage");
+            Check(types >= waves * 2, "Tunnel/" + condition + " waves should mix enemy types");
+            report.Add("Tunnel/" + condition + ": " + average.ToString("0.0") + " ships a wave (most " + most + "), " + (types / (float)Mathf.Max(1, waves)).ToString("0.0") + " types a wave, " +
+                passageAverage.ToString("0.0") + " ships a passage, drones " + drones + " of " + (ships + passageShips));
+        }
+        DistrictConditions.Forced = null;
     }
 
     // Space asteroids: registered, never armed, smaller and faster each generation; a kill splits a

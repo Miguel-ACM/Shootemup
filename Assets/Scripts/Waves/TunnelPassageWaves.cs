@@ -19,12 +19,13 @@ public static class TunnelPassageWaves
         if (previewLayout > 0)
             layout = previewLayout;
         var units = new List<WaveUnit>();
-        string[] actors = { nameof(MaintenanceDrone), budget == 6 ? nameof(BaffleSpinner) : nameof(RivetMantis), nameof(WallTurret), nameof(BaffleSpinner) };
+        // Each passage of the district flies a different crew order through its bends.
+        var actors = crews[(budget == 6 ? 0 : budget == 10 ? 2 : 3) % crews.Length];
         float tempo = WaveComposer.Tempo;
         for (int phrase = 0; phrase < 4; phrase++)
         {
             var curve = Lane(phrase, (phrase == 1 ? -1 : phrase == 2 ? 1 : 0) * .55f);
-            int count = phrase == 2 ? 2 : 3;
+            int count = CrewSize(actors[phrase], false);
             float start = phrase * 2.5f;
             for (int i = 0; i < count; i++)
                 units.Add(new WaveUnit(actors[phrase], (start + i * .72f) / tempo, Vector3.zero)
@@ -59,6 +60,10 @@ public static class TunnelPassageWaves
         return order.ToArray();
     }
 
+    // Ships per phrase: lighter than before (Miguel found the tunnels too crowded, 15 November
+    // 2026). Deep passages fly one more drone and turret than an ordinary passage.
+    static int CrewSize(string actor, bool deep) => actor == nameof(MaintenanceDrone) ? (deep ? 3 : 2) : actor == nameof(WallTurret) ? (deep ? 2 : 1) : 2;
+
     // Crew sets: each wave of the run mixes different tunnel ships along its bends.
     static readonly string[][] crews =
     {
@@ -82,15 +87,14 @@ public static class TunnelPassageWaves
         var crew = crews[index % crews.Length];
         var units = new List<WaveUnit>();
         var parts = new List<string> { "Deep passage" };
-        int phrases = 6;
+        int phrases = 5;
         float spacing = Mathf.Max(1.6f, (duration - 4) / phrases);
         for (int phrase = 0; phrase < phrases; phrase++)
         {
             float lane = (phrase % 3 == 1 ? -1 : phrase % 3 == 2 ? 1 : 0) * (.4f + .2f * (index % 2));
             var curve = Lane(phrase, lane);
             string actor = crew[phrase];
-            // Heavier crews than an ordinary passage: four ships a phrase, three for turrets.
-            int count = actor == nameof(WallTurret) ? 3 : 4;
+            int count = CrewSize(actor, true);
             float start = phrase * spacing;
             for (int i = 0; i < count; i++)
                 units.Add(new WaveUnit(actor, start + i * .62f, Vector3.zero)
