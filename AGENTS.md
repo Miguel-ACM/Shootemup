@@ -378,3 +378,17 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - Hazards run only during ordinary combat waves, never during decisions, minibosses or bosses, and never hold a wave open.
 - Boss phase changes are deliberately exaggerated: a short implosion (the arena dims, a ring collapses into the shrinking boss) then a rupture with a screen-wide flash, five pressure fronts partly in the district colour, rotating rays, two spark waves, a heavy shake, a deep boom and the boss punching out to 1.3x before it settles. No frame holds.
 - New event sounds come from the local SFX generator (ArtSource/AudioReview/Events) and await a listen.
+
+## Corrections after the events pass (15 November 2026)
+
+- Too many hazards: hazard intervals roughly doubled, smaller caps and volleys (two rising mines, three candies, two spears on Normal, double lightning on Hard only), one extra volcano per Hell shelf instead of two, and events roll 35% instead of 45%.
+- The phase break went too far: keep the implosion and rupture, but softer (lighter wash and dimming, three fronts, one spark wave, half the shake, a 1.16x punch, no extra full-screen flash) and a much quieter boom.
+- Sounds: the blizzard howl, the phase-break boom and the enemy laser charge/ignition were too loud; all lowered.
+- No river glints at dusk; only moonlight on the water at night.
+- Elites have 3x health.
+- Health packs cost 100 energy (a full bar) per repaired hit.
+- Salvage coins are born well above the visible top edge, never seen appearing.
+- Campaign cargo cannot be shot; it shatters as soon as the pilot takes a hit. The Cold Delivery simulator crate keeps its three hits.
+- Earned cargo items queue: each opens its own pickup in turn with a CARGO DELIVERY banner (challenge and boss rewards say so too), and an exhausted rarity falls back to the nearest rarity with items.
+- Thruster fire and muzzle flashes share the ship's GameObject layer so the sharp ship pass draws them with the hull.
+- The Terra Coin Launcher read as a handbag; it uses a procedural coin-hopper launcher instead.

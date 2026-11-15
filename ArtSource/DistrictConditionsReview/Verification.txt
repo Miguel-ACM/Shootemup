@@ -44,13 +44,13 @@ Event Dusk: 339 of 1000 seeds
 Event Night: 300 of 1000 seeds
 Event Blizzard: 523 of 1000 seeds
 Event Sandstorm: 528 of 1000 seeds
-Event Thunderstorm: 419 of 1000 seeds
-Event Minefield: 464 of 1000 seeds
-Event DeepPassages: 443 of 1000 seeds
-Event CandyRain: 468 of 1000 seeds
-Event Eruption: 457 of 1000 seeds
-Event SpearRain: 445 of 1000 seeds
-Event RushHour: 471 of 1000 seeds
+Event Thunderstorm: 317 of 1000 seeds
+Event Minefield: 372 of 1000 seeds
+Event DeepPassages: 362 of 1000 seeds
+Event CandyRain: 355 of 1000 seeds
+Event Eruption: 360 of 1000 seeds
+Event SpearRain: 355 of 1000 seeds
+Event RushHour: 381 of 1000 seeds
 City ships, ordinary vs rush hour: 523 vs 1024
 Deep passage layouts: 9, 2, 7, 6, 10, 5, 1, 8, 4, 3
 PASS

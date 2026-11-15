@@ -175,6 +175,44 @@ public static class RenderDistrictConditions
         Save("TunnelLayouts.png", cells);
     }
 
+    // Batch: -executeMethod RenderDistrictConditions.CoinLauncher
+    // The rebuilt Coin Launcher pickup from three angles.
+    public static void CoinLauncher()
+    {
+        int code = 0;
+        try
+        {
+            Directory.CreateDirectory(Folder);
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            var mesh = IndustrialMeshFactory.ExpansionItem("SalvageConverter");
+            var cells = new Texture2D[1, 3];
+            var angles = new[] { new Vector3(-18, 30, -12), new Vector3(-10, 0, 0), new Vector3(-25, -40, 8) };
+            for (int i = 0; i < angles.Length; i++)
+            {
+                var go = new GameObject("Coin launcher");
+                go.AddComponent<MeshFilter>().sharedMesh = mesh;
+                var renderer = go.AddComponent<MeshRenderer>();
+                renderer.sharedMaterial = EverydayItemMaterials.For("SalvageConverter");
+                renderer.sortingLayerName = "Enemy";
+                go.transform.rotation = Quaternion.Euler(angles[i]);
+                go.transform.position = new Vector3(-mesh.bounds.center.x, -mesh.bounds.center.y, 0);
+                var camera = Camera(0, 1.05f);
+                camera.backgroundColor = new Color(.86f, .87f, .88f);
+                cells[0, i] = Capture(camera);
+                go.SetActive(false);
+                camera.gameObject.SetActive(false);
+            }
+            Save("CoinLauncher.png", cells);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+            code = 1;
+        }
+        if (Application.isBatchMode)
+            EditorApplication.Exit(code);
+    }
+
     // Batch: -executeMethod RenderDistrictConditions.Elites
     public static void Elites()
     {

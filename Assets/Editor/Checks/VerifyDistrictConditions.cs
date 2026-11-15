@@ -169,7 +169,7 @@ public static class VerifyDistrictConditions
         {
             float health = enemy.health;
             enemy.MakeElite();
-            Check(enemy.Elite && Mathf.Approximately(enemy.health, health * 2.4f) && enemy.GetComponent<EliteMark>() != null, "MakeElite did not toughen and mark the ship");
+            Check(enemy.Elite && Mathf.Approximately(enemy.health, health * 3) && enemy.GetComponent<EliteMark>() != null, "MakeElite did not toughen and mark the ship");
         }
         finally { UnityEngine.Object.DestroyImmediate(enemy.gameObject); }
     }
