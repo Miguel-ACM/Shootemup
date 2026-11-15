@@ -142,10 +142,10 @@ public sealed partial class TunnelSawBoss
     {
         if (miniature)
             return;
-        // No minions: a brief pause and a shockwave, then the blade starts blooming.
+        // No minions: a brief pause, then the blade starts blooming. The shared phase break is
+        // the only effect; its own yellow shockwave ring was an extra no other boss shows.
         haltUntil = age + 1.8f;
         GetComponent<CombatHullVisual>().spin = 720;
-        PSXFireballs.Shockwave(transform.position, 2, 1.8f, Color.yellow, 2, .1f);
     }
 
     // How far the saw has worn through the current phase, 0 at its start and 1 at its end.
