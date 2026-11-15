@@ -37,6 +37,7 @@ public sealed class EnemyThrusters : MonoBehaviour
         for (int i = 0; i < sockets.Length; i++)
         {
             var go = new GameObject("Animated engine exhaust " + i);
+            go.layer = (visualRoot != null ? visualRoot : transform).gameObject.layer;
             go.transform.SetParent(visualRoot != null ? visualRoot : transform, false);
             go.transform.localPosition = sockets[i];
             go.transform.localRotation = Quaternion.Euler(0, 0, 180);

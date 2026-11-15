@@ -37,6 +37,8 @@ public sealed class PSXShipEffects : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             var flame = new GameObject(i == 0 ? "Port exhaust" : "Starboard exhaust");
+            // Same GameObject layer as the hull, so the sharp ship pass draws the fire with it.
+            flame.layer = gameObject.layer;
             flame.transform.SetParent(transform, false);
             flame.transform.localPosition = new Vector3(i == 0 ? -exhaustOffset.x : exhaustOffset.x, exhaustOffset.y, -.08f);
             flame.AddComponent<MeshFilter>().sharedMesh = flameMesh;
@@ -48,6 +50,7 @@ public sealed class PSXShipEffects : MonoBehaviour
             flames[i] = flame.transform;
             renderers[i] = renderer;
             var muzzle = new GameObject("Cannon flash");
+            muzzle.layer = gameObject.layer;
             muzzle.transform.SetParent(transform, false);
             muzzle.transform.localPosition = new Vector3(i == 0 ? -.1134f : .1134f, .30f, -.08f);
             muzzle.transform.localRotation = Quaternion.Euler(0, 0, 180);
