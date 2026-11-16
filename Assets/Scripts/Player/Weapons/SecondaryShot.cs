@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum SecondaryPattern { Paperclip, Firefly, Salt, Mortar, Teeth, Ribbon, Sewing }
+public enum SecondaryPattern { Paperclip, Firefly, Salt, Mortar, Teeth, Ribbon, Sewing, Flash }
 
 // Slotless option fire. Every pickup owns one removable battery; neither weapon
 // slot, the primary gun's volley counter nor active energy is consumed.
@@ -17,7 +17,11 @@ public sealed class SecondaryShot : AWeapon
     Transform option;
     ShipLoadout loadout;
     void OnEnable() { batteries.Add(this); }
-    void OnDisable() { batteries.Remove(this); }
+    void OnDisable()
+    {
+        batteries.Remove(this);
+        ClearFlash();
+    }
     public float ReleasesPerSecond => Pattern switch {
         SecondaryPattern.Paperclip => 1.65f,
         SecondaryPattern.Firefly => 1.2f,
@@ -25,6 +29,7 @@ public sealed class SecondaryShot : AWeapon
         SecondaryPattern.Mortar => .65f,
         SecondaryPattern.Teeth => 7f,
         SecondaryPattern.Ribbon => 5f,
+        SecondaryPattern.Flash => 2.4f,
         _ => 7f
     };
 
@@ -46,13 +51,28 @@ public sealed class SecondaryShot : AWeapon
         renderer.sharedMaterial = EverydayItemMaterials.For(item);
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         renderer.receiveShadows = false;
+        if (pattern == SecondaryPattern.Flash)
+        {
+            var pulse = new GameObject("Flash tube laser");
+            pulse.transform.SetParent(root.transform, false);
+            battery.flash = pulse.AddComponent<BeamRibbon>();
+            battery.flash.Build(true);
+            pulse.SetActive(false);
+        }
         return battery;
     }
 
     void Update()
     {
-        if (!GameClock.ActivePlay || (Time.timeScale <= 0 && !WorldTimeStop.PlayerCanAct))
+        if (!GameClock.ActivePlay)
+        {
+            if (!Menu.GameplayPaused) ClearFlash();
             return;
+        }
+        if (Time.timeScale <= 0 && !WorldTimeStop.PlayerCanAct)
+            return;
+        if (flashRemaining > 0)
+            UpdateFlash();
         var input = GameInput.Snapshot;
         if (!input.Primary && !input.Secondary)
             return;
@@ -77,7 +97,7 @@ public sealed class SecondaryShot : AWeapon
             if (battery.Pattern == Pattern) first = false;
             else if (!battery.NoseMounted) mask |= 1 << (int)battery.Pattern;
         }
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i <= (int)SecondaryPattern.Flash; i++)
             if ((mask & 1 << i) != 0) rank++;
         option.gameObject.SetActive(first);
         bool focus = GameInput.Snapshot.Focus;
@@ -125,6 +145,9 @@ public sealed class SecondaryShot : AWeapon
             case SecondaryPattern.Sewing:
                 Fire(origin, CombatVisuals.Rotate(forward, side * (focus ? 1 : 7)), .16f, 1.3f, PlayerDelivery.Needle);
                 break;
+            case SecondaryPattern.Flash:
+                StartFlash(origin);
+                return;
         }
         // Reuse the approved, quiet shot cue, shared throttle for many batteries.
         if (Time.unscaledTime >= nextSound)
@@ -132,6 +155,58 @@ public sealed class SecondaryShot : AWeapon
             nextSound = Time.unscaledTime + .15f;
             SoundManager.PlaySound("shotSecondary", .025f);
         }
+    }
+
+    const float FlashDuration = .14f, FlashReach = 6.2f;
+    BeamRibbon flash;
+    Vector3 flashOrigin;
+    float flashRemaining, flashLength, flashWidth;
+
+    void StartFlash(Vector3 origin)
+    {
+        flashOrigin = origin;
+        flashWidth = .11f * Mathf.Sqrt(Mathf.Max(.01f, GameRules.playerShootSize));
+        flashLength = CombatWalls.BeamLength(origin, Vector2.up, FlashReach, flashWidth * .5f);
+        Vector2 end = (Vector2)origin + Vector2.up * flashLength;
+        var plasma = PlasmaOrb.FirstOnBeam(origin, end, flashWidth * .5f, out var impact);
+        flashLength = Mathf.Clamp(impact.y - origin.y, 0, flashLength);
+        AEnemy hit = null;
+        foreach (var enemy in AEnemy.Live)
+        {
+            if (enemy == null || !enemy.CanBeTargeted ||
+                !BeamContact.Touches(enemy, origin, (Vector2)origin + Vector2.up * flashLength, flashWidth * .5f, out var point))
+                continue;
+            hit = enemy;
+            impact = point;
+            flashLength = Mathf.Max(0, point.y - origin.y);
+        }
+        float damage = .92f * GameRules.playerShootDamage * MagnifyingLens.Power;
+        if (hit != null)
+            CombatHit.Apply(hit, damage, impact, Vector2.up, generation: 1, energy: true);
+        else if (plasma != null)
+            plasma.Hit(damage);
+        flashRemaining = FlashDuration;
+        flash.gameObject.SetActive(true);
+        flash.Draw(flashOrigin, Vector2.up, flashLength, flashWidth, 1, .81f);
+        ItemSound.Cue("shotSecondary", volume: .023f, pitch: 1.7f, cooldown: .13f);
+    }
+
+    void UpdateFlash()
+    {
+        flashRemaining -= GameClock.PlayerDelta;
+        if (flashRemaining <= 0)
+        {
+            ClearFlash();
+            return;
+        }
+        float progress = flashRemaining / FlashDuration;
+        flash.Draw(flashOrigin, Vector2.up, flashLength, flashWidth, 1, .81f * progress, 1 - progress);
+    }
+
+    void ClearFlash()
+    {
+        flashRemaining = 0;
+        if (flash != null) flash.gameObject.SetActive(false);
     }
 
     static void Fire(Vector3 origin, Vector2 direction, float power, float speed, PlayerDelivery delivery)
