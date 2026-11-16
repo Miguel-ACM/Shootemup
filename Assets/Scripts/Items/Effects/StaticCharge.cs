@@ -61,12 +61,15 @@ public sealed class StaticCharge : MonoBehaviour
             if (CombatWalls.Sweep(point, next.transform.position, .04f, out _, out _))
                 break;
             used.Add(next);
-            StaticArc.Draw(point, next.transform.position, .22f);
-            CombatHit.Apply(next, damage * .7f * Mathf.Pow(.8f, i), next.transform.position,
-                ((Vector2)(next.transform.position - point)).normalized, generation: 1);
-            point = next.transform.position;
+            var at = next.transform.position;
+            StaticArc.Draw(point, at, .22f);
+            SparkPlug.ArcContact(next);
+            CombatHit.Apply(next, damage * .7f * Mathf.Pow(.8f, i), at, ((Vector2)(at - point)).normalized, generation: 1);
+            point = at;
         }
-        ItemSpark.Emit(first.transform.position, new Color(.7f, .5f, .95f), 5, .12f);
+        SparkPlug.ExtraHop(point, used, damage, score: true);
+        if (first != null)
+            ItemSpark.Emit(first.transform.position, new Color(.7f, .5f, .95f), 5, .12f);
         ItemSound.Play("static", .2f);
         RunInventory.Ping(this);
     }

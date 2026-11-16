@@ -12,6 +12,25 @@ public sealed class StickyGum : MonoBehaviour
     readonly List<Blob> blobs = new List<Blob>();
     AEnemy enemy;
     public int Count => blobs.Count;
+    public static bool TryPop(AEnemy enemy)
+    {
+        if (enemy == null || !enemy.CanReceiveDamage || !enemy.TryGetComponent<StickyGum>(out var gum) || gum.Count == 0)
+            return false;
+        gum.Pop(0);
+        return true;
+    }
+
+    void Pop(int index)
+    {
+        var blob = blobs[index];
+        blobs.RemoveAt(index);
+        GumSpritePop.Spawn(blob.model.position);
+        Destroy(blob.model.gameObject);
+        RunInventory.Ping(UpgradeKind.ChewingGum);
+        if (enemy != null && enemy.CanReceiveDamage)
+            CombatHit.Tick(enemy, blob.damage, score: true);
+    }
+
     public static float Stick(AEnemy enemy, float damage)
     {
         if (damage <= 0)
@@ -51,14 +70,7 @@ public sealed class StickyGum : MonoBehaviour
             blob.model.rotation = Quaternion.identity;
             if (blob.age < .65f)
                 continue;
-            GumSpritePop.Spawn(blob.model.position);
-            RunInventory.Ping(UpgradeKind.ChewingGum);
-            if (enemy != null && enemy.CanReceiveDamage)
-            {
-                CombatHit.Tick(enemy, blob.damage, score: true);
-            }
-            Destroy(blob.model.gameObject);
-            blobs.RemoveAt(i);
+            Pop(i);
         }
         if (blobs.Count == 0)
             Destroy(this);

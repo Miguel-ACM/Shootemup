@@ -27,15 +27,21 @@ public class ElectricityBullet : ABullet
             lineDrawer.SetCoatings(PlayerShotPalette.Burning, PlayerShotPalette.Toxic);
             List<Vector2> path = GetPoints(transform.position, out hitEnemies);
             lineDrawer.DrawLine(path.ToArray(), transform.position.z, .09f, true);
+            Vector3? lastContact = null;
             foreach (AEnemy enemy in hitEnemies)
             {
                 if (enemy == null || !enemy.CanBeTargeted)
                     continue;
-                int point = path.IndexOf((Vector2)enemy.transform.position);
+                Vector3 at = enemy.transform.position;
+                lastContact = at;
+                int point = path.IndexOf((Vector2)at);
                 Vector2 incoming = point > 0 ? path[point] - path[point - 1] : Vector2.up;
-                if (CombatHit.Apply(enemy, damage, enemy.transform.position, incoming, score: false) > 0)
+                SparkPlug.ArcContact(enemy);
+                if (CombatHit.Apply(enemy, damage, at, incoming, score: false) > 0)
                     SoundManager.PlayGated("hitElectric", .025f, .1f);
             }
+            if (lastContact.HasValue)
+                SparkPlug.ExtraHop(lastContact.Value, hitEnemies, damage, score: false);
             shoot = true;
             Invoke("Delete", 0.1f);
         }

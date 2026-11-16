@@ -28,6 +28,21 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(SparkPlug))
+        {
+            b.Box(new Vector3(0, -.22f, 0), new Vector3(.19f, .32f, .18f), 11);
+            for (int i = 0; i < 5; i++)
+                b.Box(new Vector3(0, -.1f - i * .051f, 0), new Vector3(.245f, .023f, .225f), 6);
+            b.Prism(new[] { new Vector2(-.18f, -.09f), new Vector2(.18f, -.09f), new Vector2(.22f, -.015f),
+                new Vector2(.15f, .07f), new Vector2(-.15f, .07f), new Vector2(-.22f, -.015f) }, .27f, 11, Vector3.zero, 6);
+            b.Box(new Vector3(0, .17f, 0), new Vector3(.2f, .23f, .2f), 3, 11);
+            for (int i = 0; i < 3; i++)
+                b.Box(new Vector3(0, .11f + i * .072f, 0), new Vector3(.25f, .03f, .23f), 3, 11);
+            b.Box(new Vector3(0, .31f, 0), new Vector3(.12f, .1f, .12f), 11);
+            b.Box(new Vector3(.07f, -.393f, 0), new Vector3(.045f, .11f, .07f), 11);
+            b.Box(new Vector3(.041f, -.44f, 0), new Vector3(.1f, .032f, .07f), 11);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(DeflectorPlate))
         {
             var panel = new[] { new Vector2(-.39f, -.22f), new Vector2(.39f, -.22f), new Vector2(.32f, .04f),
