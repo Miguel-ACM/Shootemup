@@ -28,6 +28,23 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(DivingGear))
+        {
+            foreach (int side in new[] { -1, 1 })
+            {
+                float x = side * .166f;
+                b.Can(new Vector3(x, -.035f, .06f), .114f, .59f, 9, 11);
+                b.Can(new Vector3(x, .255f, .06f), .068f, .093f, 11, 6);
+                b.Can(new Vector3(x, -.30f, .06f), .125f, .073f, 6, 11);
+                b.Box(new Vector3(x, -.049f, .06f), new Vector3(.244f, .085f, .245f), 6, 11);
+                EquipmentRod(b, new Vector3(x, .27f, .039f), new Vector3(x * 1.25f, .195f, -.148f), .035f, 6);
+                b.Drum(new Vector3(x * .62f, .106f, -.186f), .103f, .078f, 11, 10, 6);
+                b.Drum(new Vector3(x * .62f, .106f, -.239f), .073f, .038f, 9, 10, 7);
+            }
+            b.Box(new Vector3(0, .106f, -.21f), new Vector3(.12f, .062f, .055f), 11, 6);
+            b.Box(new Vector3(0, .008f, -.15f), new Vector3(.105f, .097f, .10f), 7, 6);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(TrafficCone))
         {
             b.Box(new Vector3(0, -.293f, 0), new Vector3(.60f, .095f, .49f), 6, 11);

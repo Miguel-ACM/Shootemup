@@ -71,13 +71,15 @@ public class Shipcontroller : MonoBehaviour
     Vector2 waterVelocity;
     Vector2 stillnessSample;
     public bool IsStandingStill { get; private set; }
+    internal ShipDepthDive DepthDive { get; set; }
     public Vector2 MoveInput => move;
     /// <summary>True while the player holds either fire button; companions only shoot with the ship.</summary>
     public static bool Firing
     {
         get; private set;
     }
-    public bool IsInvulnerable => invulnerable || (GetComponent<ShipBarrelRoll>()?.Active ?? false) || GetComponent<SpellCardCast>() != null || GetComponent<ChronoShift>() != null;
+    public bool IsInvulnerable => invulnerable || DepthDive != null || (GetComponent<ShipBarrelRoll>()?.Active ?? false) ||
+        GetComponent<SpellCardCast>() != null || GetComponent<ChronoShift>() != null;
 
     void Awake()
     {
@@ -424,6 +426,7 @@ public class Shipcontroller : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        if (DepthDive != null) return;
         if (other.tag == "EnemyBullet")
         {
             var round = other.GetComponent<CombatRound>();

@@ -7,6 +7,7 @@ Shader "Shootemup/PSX Industrial Ship"
         _HitFlash ("Local hit flash", Range(0,1)) = 0
         [HideInInspector] _HullStatus ("Hull afflictions", Float) = 0
         [HideInInspector] _PlayerDepth ("Player foreground depth", Float) = 0
+        [HideInInspector] _PilotDiveDepth ("Pilot dive depth", Float) = 0
         _CockpitBlue ("Blue player cockpit", Float) = 0
         _VertexSnap ("Vertex snap amount", Range(0,1)) = 0.35
         _SnapResolution ("Virtual screen resolution", Vector) = (320,240,0,0)
@@ -36,7 +37,7 @@ Shader "Shootemup/PSX Industrial Ship"
                 float4 _SnapResolution;
                 float _VertexSnap;
                 float _CockpitBlue;
-                float _PlayerDepth;
+                float _PlayerDepth, _PilotDiveDepth;
                 float _HitFlash, _HullStatus;
             CBUFFER_END
             struct Attributes
@@ -66,7 +67,7 @@ Shader "Shootemup/PSX Industrial Ship"
                 output.positionCS.xy = lerp(screen, snapped, _VertexSnap) * output.positionCS.w;
                 // Keep the legacy player in the foreground while preserving its own surface depth.
                 if (_PlayerDepth > 0.5)
-                    output.positionCS.z = lerp(UNITY_NEAR_CLIP_VALUE * output.positionCS.w, output.positionCS.z, 0.001);
+                    output.positionCS.z = lerp(UNITY_NEAR_CLIP_VALUE * output.positionCS.w, output.positionCS.z, lerp(.001, 1, saturate(_PilotDiveDepth)));
                 output.uv = TRANSFORM_TEX(input.uv, _MainTex);
                 #if defined(HULL_AFFLICTED)
                 output.hullPosition = HullSurfacePosition(input.positionOS.xyz);

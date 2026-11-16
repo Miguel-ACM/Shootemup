@@ -18,6 +18,7 @@ public sealed class PSXShipEffects : MonoBehaviour
     float muzzleUntil;
     public float HullScale = 1;
     public float OverdriveIntensity { get; set; }
+    public float DiveDepth { get; set; }
     public Vector3 MuzzlePosition(int index) => transform.TransformPoint(new Vector3(index == 0 ? -.1134f : .1134f, .30f, -.03f) * HullScale);
     public void Shot()
     {
@@ -78,7 +79,14 @@ public sealed class PSXShipEffects : MonoBehaviour
             flames[i].localPosition = new Vector3(i == 0 ? -exhaustOffset.x : exhaustOffset.x, exhaustOffset.y, -.08f) * HullScale;
             flames[i].localScale = new Vector3(exhaustScale * (1 + .2f * OverdriveIntensity), pulse * exhaustScale * (1 + .65f * OverdriveIntensity), 1f) * HullScale;
             muzzleRenderers[i].transform.position = MuzzlePosition(i);
+            if (DiveDepth > 0)
+            {
+                var depthOffset = Vector3.forward * (ShipDepthDive.WorldDepth * DiveDepth);
+                flames[i].position += depthOffset;
+                muzzleRenderers[i].transform.position += depthOffset;
+            }
             var engineTint = Color.Lerp(Color.white, new Color(1, .68f, .38f), OverdriveIntensity);
+            engineTint = Color.Lerp(engineTint, new Color(.62f, .8f, 1), DiveDepth);
             engineTint.a = source == null ? 1 : source.color.a;
             properties.SetColor("_Tint", engineTint);
             renderers[i].SetPropertyBlock(properties);

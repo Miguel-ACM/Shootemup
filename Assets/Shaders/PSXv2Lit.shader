@@ -14,6 +14,7 @@ Shader "Shootemup/PSXv2 Lit"
         _MainTex ("Atlas (Point filtered)", 2D) = "white" {}
         _Tint ("Damage flash tint", Color) = (1,1,1,1)
         [HideInInspector] _PlayerDepth ("Player foreground depth", Float) = 0
+        [HideInInspector] _PilotDiveDepth ("Pilot dive depth", Float) = 0
         [HideInInspector] _PilotCanopy ("GR-07 canopy finish", Float) = 0
         [HideInInspector] _HullStatus ("Hull afflictions", Float) = 0
         _SnapResolution ("Fallback virtual resolution", Vector) = (569,320,0,0)
@@ -45,7 +46,7 @@ Shader "Shootemup/PSXv2 Lit"
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST, _Tint, _SnapResolution;
                 float _VertexSnap, _Affine, _Dither, _LightBands, _GlowRow;
-                float _PlayerDepth, _PilotCanopy, _HullStatus;
+                float _PlayerDepth, _PilotDiveDepth, _PilotCanopy, _HullStatus;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; float4 color:COLOR; };
             struct Varyings
@@ -71,7 +72,7 @@ Shader "Shootemup/PSXv2 Lit"
                 // Reserve the nearest depth band for the player, retaining depth between its parts.
                 // Sorting order alone cannot beat another ship's depth writes.
                 if (_PlayerDepth > 0.5)
-                    cs.z = lerp(UNITY_NEAR_CLIP_VALUE * cs.w, cs.z, 0.001);
+                    cs.z = lerp(UNITY_NEAR_CLIP_VALUE * cs.w, cs.z, lerp(.001, 1, saturate(_PilotDiveDepth)));
                 o.positionCS = cs;
                 #if defined(HULL_AFFLICTED)
                 o.hullPosition = HullSurfacePosition(i.positionOS.xyz);

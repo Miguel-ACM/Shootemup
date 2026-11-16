@@ -6,6 +6,8 @@ using UnityEngine;
 public sealed class PSXShipVisual : MonoBehaviour
 {
     public Transform Model => model;
+    public float DiveDepth { get; set; }
+    static readonly Color DiveTint = new Color(.65f, .83f, 1);
     [SerializeField] SpriteRenderer sourceSprite;
     [SerializeField] Transform model;
     [SerializeField] MeshRenderer modelRenderer;
@@ -131,6 +133,7 @@ public sealed class PSXShipVisual : MonoBehaviour
 
     static readonly int Tint = Shader.PropertyToID("_Tint");
     static readonly int PlayerDepth = Shader.PropertyToID("_PlayerDepth");
+    static readonly int PilotDiveDepth = Shader.PropertyToID("_PilotDiveDepth");
     static readonly int PilotCanopy = Shader.PropertyToID("_PilotCanopy");
 
     public void Configure(SpriteRenderer sprite, Transform visual, MeshRenderer meshRenderer)
@@ -173,6 +176,8 @@ public sealed class PSXShipVisual : MonoBehaviour
             ? Quaternion.AngleAxis(bank + (GetComponent<ShipBarrelRoll>()?.Angle ?? 0) + PolarityEngine.SpinAngle, Vector3.up) * baseRotation
             // Face the imported nose toward +Y while keeping the dorsal side toward -Z.
             : Quaternion.Euler(-75f, 0f, 0f) * Quaternion.Euler(0f, 180f, 0f) * Quaternion.AngleAxis(bank + PolarityEngine.SpinAngle, Vector3.forward);
+        if (DiveDepth > 0)
+            model.localRotation = Quaternion.AngleAxis(12 * DiveDepth, Vector3.right) * model.localRotation;
         Apply();
     }
 
@@ -188,8 +193,9 @@ public sealed class PSXShipVisual : MonoBehaviour
         if (properties == null)
             properties = new MaterialPropertyBlock();
         modelRenderer.GetPropertyBlock(properties);
-        properties.SetColor(Tint, sourceSprite.color * PolarityEngine.ShipTint);
+        properties.SetColor(Tint, sourceSprite.color * PolarityEngine.ShipTint * Color.Lerp(Color.white, DiveTint, DiveDepth));
         properties.SetFloat(PlayerDepth, 1f);
+        properties.SetFloat(PilotDiveDepth, DiveDepth);
         properties.SetFloat(PilotCanopy, alternateHull == null ? 1f : 0f);
         modelRenderer.SetPropertyBlock(properties);
         modelRenderer.enabled = sourceSprite.color.a > 0.001f;

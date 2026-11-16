@@ -21,17 +21,24 @@ public sealed class SteelToeContact : MonoBehaviour
     HashSet<AEnemy> previous = new HashSet<AEnemy>(), touching = new HashSet<AEnemy>();
     Collider2D core;
     CombatUpgrades upgrades;
+    Shipcontroller ship;
 
     void Awake()
     {
         core = GetComponent<Collider2D>();
         upgrades = GetComponent<CombatUpgrades>();
+        ship = GetComponent<Shipcontroller>();
     }
 
     void FixedUpdate()
     {
         if (!GameClock.ActivePlay || core == null || !core.enabled || upgrades == null)
             return;
+        if (ship != null && ship.DepthDive != null)
+        {
+            previous.Clear();
+            return;
+        }
         int copies = upgrades.Count(UpgradeKind.SteelToe);
         if (copies == 0) return;
         var bounds = core.bounds;
