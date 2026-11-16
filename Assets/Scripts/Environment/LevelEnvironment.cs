@@ -734,10 +734,15 @@ public sealed class LevelEnvironment : MonoBehaviour
         else if (level == LevelId.Candyland)
         {
             var village = new CandylandBackdrop(LevelRun.Seed);
+            // The flight camera is orthographic. Scale the whole ground layer to keep
+            // the roads, scenery, scroll speed and parallax in the same perspective.
+            var farGround = new GameObject("Candyland far ground").transform;
+            farGround.SetParent(transform, false);
+            farGround.localScale = new Vector3(.72f, .72f, 1);
             for (int i = 0; i < 4; i++)
             {
                 var section = new GameObject("Candyland village " + i).transform;
-                section.SetParent(transform, false);
+                section.SetParent(farGround, false);
                 section.localPosition = new Vector3(0, SectionY(i, travel), 90);
                 village.BuildSection(i, SectionLength, out var ground, out var buildings);
                 ownedMeshes.Add(ground);
@@ -747,6 +752,7 @@ public sealed class LevelEnvironment : MonoBehaviour
                 sections.Add(section);
                 yield return null;
             }
+            AddAtmosphere("Drifting rose mist", 0, 44, new Color(.58f, .37f, .52f, .68f), 1.45f, .62f);
         }
         else if (level == LevelId.Thunder)
         {

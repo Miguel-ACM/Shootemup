@@ -15,6 +15,7 @@ public sealed class CandylandBackdrop
     static readonly Color Cocoa = new Color(.28f, .105f, .088f);
     static readonly Color MilkChocolate = new Color(.45f, .22f, .16f);
     static readonly Color BerryGlass = new Color(.29f, .07f, .17f);
+    static readonly Color DistanceTint = new Color(.43f, .25f, .38f);
     static readonly Color[] Gumdrops =
     {
         new Color(.76f, .22f, .40f), new Color(.62f, .34f, .67f),
@@ -22,6 +23,13 @@ public sealed class CandylandBackdrop
     };
 
     static Color Shade(Color color, float light) => new Color(color.r * light, color.g * light, color.b * light, color.a);
+
+    static Color Distant(Color color)
+    {
+        var softened = Color.Lerp(Shade(color, .70f), DistanceTint, .22f);
+        softened.a = color.a;
+        return softened;
+    }
 
     readonly int seed;
     readonly float phase;
@@ -153,7 +161,7 @@ public sealed class CandylandBackdrop
                 }
                 int index = row * stride + col;
                 points[index] = new Vector3(x, y, 0);
-                colors[index] = color;
+                colors[index] = Distant(color);
                 if (row == rows || col == stride - 1)
                     continue;
                 int t = (row * (stride - 1) + col) * 6;
@@ -306,13 +314,14 @@ public sealed class CandylandBackdrop
         public void Face(Color color, params Vector3[] shape)
         {
             int first = points.Count;
+            Color distant = Distant(color);
             foreach (var p in shape)
             {
                 // The game looks down Z. Shear the model height up the screen to show
                 // the facades while retaining depth for roofs, trim and overlapping props.
                 points.Add(new Vector3(origin.x + (p.x * cos - p.y * sin + p.z * .28f) * scale,
                     origin.y + (p.x * sin + p.y * cos + p.z * .61f) * scale, -p.z * scale));
-                colors.Add(color);
+                colors.Add(distant);
             }
             for (int i = 1; i < shape.Length - 1; i++)
             {
