@@ -62,7 +62,7 @@ public sealed class PlayerRound : ABullet
     AEnemy guidedTarget;
     float guidanceDelay;
     bool headingLocked;
-    bool bankShot, armedBank, vendingCoin;
+    bool bankShot, armedBank, vendingCoin, plateDeflected;
     public void GuideTo(AEnemy target, float delay) { guidedTarget = target; guidanceDelay = Mathf.Max(0, delay); }
     public void LockHeading() { headingLocked = true; }
     public void RequireBank()
@@ -153,7 +153,7 @@ public sealed class PlayerRound : ABullet
         guidedTarget = null;
         guidanceDelay = 0;
         headingLocked = false;
-        bankShot = armedBank = vendingCoin = false;
+        bankShot = armedBank = vendingCoin = plateDeflected = false;
         detonated = returning = rebounded = rubberReturned = false;
         companion = companionShot = false;
         this.size = 1;
@@ -278,6 +278,21 @@ public sealed class PlayerRound : ABullet
         {
             Despawn();
             return;
+        }
+        var upgrades = CombatUpgrades.Current;
+        if (!plateDeflected && !bankShot && !returning && !companion && heading.y < .985f &&
+            upgrades != null && upgrades.Count(UpgradeKind.DeflectorPlate) > 0 &&
+            ProjectileCollisionWindow.TryDeflector(wallFrom, end, .075f * Mathf.Max(.2f, size), out var plate))
+        {
+            plateDeflected = headingLocked = true;
+            heading = step = Vector2.up;
+            end = new Vector3(plate.x, plate.y + Vector2.Distance(plate, end), end.z);
+            if (CombatWalls.Sweep(plate, end, .04f, out _, out _))
+            {
+                Despawn();
+                return;
+            }
+            upgrades.Deflect(plate);
         }
         transform.position = end;
         transform.rotation = Quaternion.FromToRotation(Vector3.up, step.sqrMagnitude > .0000001f ? step : heading);

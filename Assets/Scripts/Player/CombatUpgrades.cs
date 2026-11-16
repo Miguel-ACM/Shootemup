@@ -6,7 +6,7 @@ public enum UpgradeKind
     Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice, RelaySwitch, LiveWire,
     TapeMeasure, BrassKnuckles, Matchbox, Compost, PiggyBank, LoanShark, SecondWind,
     Lighthouse, GoldenCrown, Midas, EchoChamber, Metronome, EventHorizon, Hive, TrophyCase,
-    EnergyShield, RechargingShield
+    EnergyShield, RechargingShield, DeflectorPlate
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -342,6 +342,13 @@ public sealed class CombatUpgrades : MonoBehaviour
             ItemProcVfx.Emit(ItemProcShape.Counter, transform.position, new Color(.6f, .65f, .9f), .65f);
             ItemSound.Cue("itemCounter", volume: .12f);
         }
+    }
+
+    public void Deflect(Vector2 point)
+    {
+        if (!Ready("deflector plate", .1f)) return;
+        RunInventory.Ping(UpgradeKind.DeflectorPlate);
+        ItemSpark.Emit(new Vector3(point.x, point.y, -2), new Color(.66f, .79f, .9f), 3, .08f);
     }
 
     public void StoreOverflow(float amount)

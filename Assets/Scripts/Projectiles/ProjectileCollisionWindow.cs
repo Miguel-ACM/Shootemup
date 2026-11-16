@@ -69,4 +69,23 @@ public static class ProjectileCollisionWindow
         if (collider != null && collider.enabled && collider.gameObject.activeInHierarchy)
             targets.Add(collider.bounds);
     }
+
+    public static bool TryDeflector(Vector2 from, Vector2 to, float radius, out Vector2 point)
+    {
+        point = from;
+        float nearest = float.PositiveInfinity;
+        var area = new Bounds((from + to) * .5f,
+            new Vector3(Mathf.Abs(to.x - from.x) + radius * 2, Mathf.Abs(to.y - from.y) + radius * 2, 100));
+        foreach (var collider in blockers)
+        {
+            if (collider == null || !area.Intersects(collider.bounds) || !collider.TryGetComponent<BlockerOrbital>(out _) ||
+                !BeamContact.Touches(collider, from, to, radius, out var contact))
+                continue;
+            float distance = (contact - from).sqrMagnitude;
+            if (distance >= nearest) continue;
+            nearest = distance;
+            point = contact;
+        }
+        return !float.IsPositiveInfinity(nearest);
+    }
 }

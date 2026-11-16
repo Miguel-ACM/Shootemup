@@ -28,6 +28,22 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(DeflectorPlate))
+        {
+            var panel = new[] { new Vector2(-.39f, -.22f), new Vector2(.39f, -.22f), new Vector2(.32f, .04f),
+                new Vector2(.14f, .3f), new Vector2(-.14f, .3f), new Vector2(-.32f, .04f) };
+            b.Prism(panel, .15f, 11, Vector3.zero, 6);
+            foreach (int side in new[] { -1, 1 })
+            {
+                var rail = new[] { new Vector2(side * .31f, -.13f), new Vector2(side * .25f, -.13f),
+                    new Vector2(side * .07f, .19f), new Vector2(side * .13f, .19f) };
+                if (side < 0) System.Array.Reverse(rail);
+                b.Prism(rail, .08f, 9, Vector3.back * .09f, 6);
+                b.Drum(new Vector3(side * .27f, -.13f, -.115f), .048f, .025f, 3, 6);
+            }
+            b.Box(new Vector3(0, -.12f, .115f), new Vector3(.26f, .23f, .13f), 6);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(RechargingShield))
         {
             var plate = new[] { new Vector2(-.34f, .27f), new Vector2(0, .38f), new Vector2(.34f, .27f),
