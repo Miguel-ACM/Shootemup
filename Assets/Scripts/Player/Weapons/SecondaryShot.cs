@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum SecondaryPattern { Paperclip, Firefly, Salt, Mortar, Teeth, Ribbon, Sewing, Flash }
+public enum SecondaryPattern { Paperclip, Firefly, Salt, Mortar, Teeth, Ribbon, Sewing, Flash, Vents }
 
 // Slotless option fire. Every pickup owns one removable battery; neither weapon
 // slot, the primary gun's volley counter nor active energy is consumed.
@@ -30,6 +30,7 @@ public sealed class SecondaryShot : AWeapon
         SecondaryPattern.Teeth => 7f,
         SecondaryPattern.Ribbon => 5f,
         SecondaryPattern.Flash => 2.4f,
+        SecondaryPattern.Vents => 2.6f,
         _ => 7f
     };
 
@@ -97,7 +98,7 @@ public sealed class SecondaryShot : AWeapon
             if (battery.Pattern == Pattern) first = false;
             else if (!battery.NoseMounted) mask |= 1 << (int)battery.Pattern;
         }
-        for (int i = 0; i <= (int)SecondaryPattern.Flash; i++)
+        for (int i = 0; i <= (int)SecondaryPattern.Vents; i++)
             if ((mask & 1 << i) != 0) rank++;
         option.gameObject.SetActive(first);
         bool focus = GameInput.Snapshot.Focus;
@@ -148,6 +149,13 @@ public sealed class SecondaryShot : AWeapon
             case SecondaryPattern.Flash:
                 StartFlash(origin);
                 return;
+            case SecondaryPattern.Vents:
+                for (int flank = -1; flank <= 1; flank += 2)
+                {
+                    Vector3 port = transform.position + new Vector3(flank * .42f, .12f);
+                    Fire(port, Vector2.right * flank, .48f, .9f, PlayerDelivery.Pulse, lockHeading: true);
+                }
+                break;
         }
         // Reuse the approved, quiet shot cue, shared throttle for many batteries.
         if (Time.unscaledTime >= nextSound)
@@ -209,7 +217,7 @@ public sealed class SecondaryShot : AWeapon
         if (flash != null) flash.gameObject.SetActive(false);
     }
 
-    static void Fire(Vector3 origin, Vector2 direction, float power, float speed, PlayerDelivery delivery)
+    static void Fire(Vector3 origin, Vector2 direction, float power, float speed, PlayerDelivery delivery, bool lockHeading = false)
     {
         // Leave ample native pool capacity for main weapons, companions and procs.
         if (PlayerRound.LiveCount >= PlayerRound.Limit - 50) return;
@@ -217,6 +225,7 @@ public sealed class SecondaryShot : AWeapon
             GameRules.playerShootTravelSpeed * speed, delivery, 1);
         if (round == null) return;
         round.returns = false;
+        if (lockHeading) round.LockHeading();
         round.LimitLifetime(delivery == PlayerDelivery.Shell ? 1.1f : 2.4f);
         MagnifyingLens.Enlarge(round);
     }
