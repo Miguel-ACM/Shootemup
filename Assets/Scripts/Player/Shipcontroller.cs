@@ -69,6 +69,8 @@ public class Shipcontroller : MonoBehaviour
 
     Vector2 move;
     Vector2 waterVelocity;
+    Vector2 stillnessSample;
+    public bool IsStandingStill { get; private set; }
     public Vector2 MoveInput => move;
     /// <summary>True while the player holds either fire button; companions only shoot with the ship.</summary>
     public static bool Firing
@@ -179,6 +181,7 @@ public class Shipcontroller : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        stillnessSample = transform.position;
         limits = Camera.getLimits();
         circleCollider = GetComponent<Collider2D>();
         // The hitbox is the hexagon of GR-07's canopy, kept small: radius .02, centred on the cockpit.
@@ -385,6 +388,15 @@ public class Shipcontroller : MonoBehaviour
             waterVelocity.x = 0;
         if (transform.position.y == limits[1] || transform.position.y == upperLimit)
             waterVelocity.y = 0;
+
+        float dt = GameClock.PlayerDelta;
+        if (dt > 0)
+        {
+            Vector2 current = transform.position;
+            float tolerance = .1f * dt;
+            IsStandingStill = (current - stillnessSample).sqrMagnitude <= tolerance * tolerance;
+            stillnessSample = current;
+        }
 
     }
 
