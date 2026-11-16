@@ -6,7 +6,7 @@ public enum UpgradeKind
     Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice, RelaySwitch, LiveWire,
     TapeMeasure, BrassKnuckles, Matchbox, Compost, PiggyBank, LoanShark, SecondWind,
     Lighthouse, GoldenCrown, Midas, EchoChamber, Metronome, EventHorizon, Hive, TrophyCase,
-    EnergyShield, RechargingShield, DeflectorPlate, SparkPlug, ColdCoil, AirPump, RubberMallet, PaddedSeat
+    EnergyShield, RechargingShield, DeflectorPlate, SparkPlug, ColdCoil, AirPump, RubberMallet, PaddedSeat, Flyswatter
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -205,6 +205,12 @@ public sealed class CombatUpgrades : MonoBehaviour
             return 0;
         // A poisoned hull is weakened against every hit, so poison sets up burn and guns.
         damage *= PoisonedHull.Weakness(enemy) * RuleDamage();
+        int swatters = enemy.IsSmallTarget ? Count(UpgradeKind.Flyswatter) : 0;
+        if (swatters > 0)
+        {
+            damage *= 1 + .25f * swatters;
+            if (Ready("flyswatter", .3f)) RunInventory.Ping(UpgradeKind.Flyswatter);
+        }
         if (companion)
             damage *= 1 + Count(UpgradeKind.Drone) * .2f + Count(UpgradeKind.Squad) * .5f;
         bool primaryHit = generation == 0 && !companion;
