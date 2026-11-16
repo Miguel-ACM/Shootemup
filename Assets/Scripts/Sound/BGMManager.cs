@@ -7,6 +7,7 @@ public class BGMManager : MonoBehaviour
 {
     const float BaseVolume = .1f;
     public const string HangarTrack = "hangar";
+    const float HangarTitleChord = .868f; // The first full chord attack in the hangar recording.
     static DistrictScore score;
     static readonly Dictionary<string, DistrictScore.Cues> maps = new Dictionary<string, DistrictScore.Cues>();
     static float fade = 1;
@@ -28,7 +29,9 @@ public class BGMManager : MonoBehaviour
 
     void Start()
     {
-        if (SceneManager.GetActiveScene().name == "Title" || HangarHub.Active)
+        if (SceneManager.GetActiveScene().name == "Title")
+            return; // The title director cues the music after the tunnel is ready.
+        if (HangarHub.Active)
             PlayHangarMusic();
         else if (!score.Active)
             PlayLevelMusic(LevelRun.Current);
@@ -42,6 +45,30 @@ public class BGMManager : MonoBehaviour
         if (score != null && score.TrackName != HangarTrack) Play(HangarTrack, false);
     }
 
+    public static AudioClip PrepareTitleMusic()
+    {
+        StopBGM();
+        var clip = Resources.Load<AudioClip>("Music/" + HangarTrack);
+        if (clip != null && clip.loadState == AudioDataLoadState.Unloaded)
+            clip.LoadAudioData();
+        return clip;
+    }
+
+    public static double PlayTitleMusic(AudioClip clip, float secondsToJoin)
+    {
+        if (score == null || clip == null || clip.loadState != AudioDataLoadState.Loaded)
+            return double.NaN;
+        fade = 1;
+        ApplyVolume();
+        var cues = LoadCues(HangarTrack);
+        if (AudioListener.pause || AudioSettings.dspTime <= 0)
+        {
+            score.Play(clip, cues, false);
+            return double.NaN;
+        }
+        return score.PlayLinearAccent(clip, cues, HangarTitleChord, secondsToJoin);
+    }
+
     static void Play(string id, bool district)
     {
         if (score == null) return;
@@ -52,6 +79,13 @@ public class BGMManager : MonoBehaviour
             if (id == "heaven" || id == "void") { score.Stop(); return; }
             Debug.LogWarning("Missing music track: " + id); return;
         }
+        fade = 1;
+        ApplyVolume();
+        score.Play(clip, LoadCues(id), district);
+    }
+
+    static DistrictScore.Cues LoadCues(string id)
+    {
         if (!maps.TryGetValue(id, out var cues))
         {
             var data = Resources.Load<TextAsset>("MusicAnalysis/" + id);
@@ -59,9 +93,7 @@ public class BGMManager : MonoBehaviour
             if (cues == null) Debug.LogWarning("Missing music cue sheet: " + id);
             maps[id] = cues;
         }
-        fade = 1;
-        ApplyVolume();
-        score.Play(clip, cues, district);
+        return cues;
     }
 
     public static void QueueBoss(float warningSeconds)

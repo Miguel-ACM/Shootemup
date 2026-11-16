@@ -26,7 +26,7 @@ public sealed class DistrictScore : MonoBehaviour
         public float Start(Part section) => Range(section)?.start ?? 0;
         // Some importers retain the MP3 priming samples. A gapless clip already
         // matches the analyzed duration (rounded to milliseconds).
-        public float ClipLead => adaptive && cues.mp3Lead > 0 && cues.duration > 0 &&
+        public float ClipLead => cues != null && cues.mp3Lead > 0 && cues.duration > 0 &&
             clip.length >= cues.duration + cues.mp3Lead - .001f ? cues.mp3Lead : 0;
         public float Length => clip.length - ClipLead;
         public float End(Part section) => Mathf.Min(Range(section)?.end ?? Length, Length);
@@ -168,6 +168,20 @@ public sealed class DistrictScore : MonoBehaviour
         TryStart();
     }
 
+    public double PlayLinearAccent(AudioClip clip, Cues cues, float accent, float secondsToAccent)
+    {
+        Stop();
+        track = new Track { clip = clip, cues = cues, adaptive = false };
+        wanted = Part.Linear;
+        double now = AudioSettings.dspTime;
+        double accentAt = now + Math.Max(Lead, secondsToAccent);
+        double startAt = Math.Max(now + Lead, accentAt - accent);
+        // When there isn't room for the whole lead-in, seek past its silent samples.
+        float position = Mathf.Max(0, accent - (float)(accentAt - startAt));
+        StartFirstCue(startAt, position);
+        return accentAt;
+    }
+
     public void Stop()
     {
         Generation++;
@@ -187,9 +201,14 @@ public sealed class DistrictScore : MonoBehaviour
     {
         if (track.clip.loadState == AudioDataLoadState.Failed) { Stop(); return; }
         if (track.clip.loadState != AudioDataLoadState.Loaded) return;
+        StartFirstCue(AudioSettings.dspTime + Lead, track.Start(track.First));
+    }
+
+    void StartFirstCue(double startAt, float position)
+    {
         part = track.First;
         started = true;
-        decks[index].StartCue(track.clip, AudioSettings.dspTime + Lead, track.Start(part), 0, 0, 0, .04,
+        decks[index].StartCue(track.clip, startAt, position, 0, 0, 0, .04,
             clipLead: track.ClipLead);
         Plan();
     }

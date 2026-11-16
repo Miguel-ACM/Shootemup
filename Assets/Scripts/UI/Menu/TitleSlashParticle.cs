@@ -20,7 +20,7 @@ public sealed class TitleSlashParticle : MaskableGraphic
 
         var main = emitter.main;
         main.playOnAwake = false;
-        main.loop = false;
+        main.loop = true;
         main.useUnscaledTime = true;
         main.cullingMode = ParticleSystemCullingMode.AlwaysSimulate;
         main.simulationSpace = ParticleSystemSimulationSpace.Local;
@@ -50,11 +50,14 @@ public sealed class TitleSlashParticle : MaskableGraphic
 
         // The screen-space overlay draws the particle's untextured mesh above the letters.
         GetComponent<ParticleSystemRenderer>().enabled = false;
+        // Make the native emitter allocate its particle while the title is still black.
+        emitter.Play(false);
+        emitter.Emit(1);
+        emitter.Clear(false);
     }
 
     public void Emit(Vector2 position, Vector2 travel)
     {
-        emitter.Play(false);
         emitter.Emit(new ParticleSystem.EmitParams { position = position, velocity = travel / Lifetime }, 1);
         drawing = true;
         SetVerticesDirty();
@@ -65,6 +68,8 @@ public sealed class TitleSlashParticle : MaskableGraphic
         if (!drawing)
             return;
         drawing = HasParticle;
+        if (!drawing)
+            emitter.Stop(false);
         SetVerticesDirty();
     }
 

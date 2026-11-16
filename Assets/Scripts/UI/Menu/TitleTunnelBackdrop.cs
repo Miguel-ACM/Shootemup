@@ -26,6 +26,7 @@ public sealed class TitleTunnelBackdrop : MonoBehaviour
     IEnumerator Start()
     {
         var blackout = CreateBlackout();
+        var music = BGMManager.PrepareTitleMusic();
         var menu = FindAnyObjectByType<NewGame>()?.GetComponentInParent<Menu>();
         CanvasGroup rows = null;
         if (menu != null)
@@ -47,16 +48,17 @@ public sealed class TitleTunnelBackdrop : MonoBehaviour
             presentation.Configure(Resources.Load<Material>("PSXScreenComposite"));
         }
         yield return LevelEnvironment.CreateTitleBackdrop();
-        while (CloudTransition.Busy)
+        while (CloudTransition.Busy || music != null && music.loadState == AudioDataLoadState.Loading)
             yield return null;
         yield return LevelEnvironment.LightTitleTunnel(() => Destroy(blackout));
+        double joinAt = BGMManager.PlayTitleMusic(music, SkimfireTitle.JoinSeconds);
 
         if (menu == null)
             yield break;
         var title = menu.GetComponent<SkimfireTitle>();
         if (title != null)
         {
-            title.Reveal();
+            title.Reveal(joinAt);
             while (!title.EntranceComplete)
                 yield return null;
         }

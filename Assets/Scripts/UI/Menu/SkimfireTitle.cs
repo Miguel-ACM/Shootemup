@@ -7,7 +7,7 @@ public sealed class SkimfireTitle : MonoBehaviour
 
     const float SlideSeconds = .28f;
     const float FireStart = .30f;
-    const float Impact = FireStart + SlideSeconds;
+    public const float JoinSeconds = FireStart + SlideSeconds;
     const float WordmarkWidth = 728f;
     const float TileHeight = .5f;
 
@@ -20,11 +20,18 @@ public sealed class SkimfireTitle : MonoBehaviour
     RawImage skim, fire;
     TitleSlashParticle slash;
     RectTransform canvas;
-    bool entranceRequested;
+    bool entranceRequested, landSoundScheduled;
     float age, fit;
+    double startDsp;
 
-    public bool EntranceComplete => !isActiveAndEnabled || age >= Impact && !slash.HasParticle;
-    public void Reveal() => entranceRequested = true;
+    public bool EntranceComplete => !isActiveAndEnabled || age >= JoinSeconds && !slash.HasParticle;
+    public void Reveal(double joinAt)
+    {
+        startDsp = joinAt - JoinSeconds;
+        var cue = SoundCueCatalog.Find("titleLand");
+        landSoundScheduled = !double.IsNaN(joinAt) && SoundManager.TryScheduleSound(cue.Id, cue.Volume, joinAt);
+        entranceRequested = true;
+    }
 
     void Start()
     {
@@ -63,18 +70,24 @@ public sealed class SkimfireTitle : MonoBehaviour
             slash.rectTransform.localScale = new Vector3(fit, fit, 1);
         }
 
-        // The title menu pauses scaled time.
+        // Use the same clock as the music cue. Silent playback still works in real time.
         float previousAge = age;
-        if (entranceRequested && age < Impact && !CloudTransition.Busy)
-            age = Mathf.Min(age + Time.unscaledDeltaTime, Impact);
+        if (entranceRequested && age < JoinSeconds && !CloudTransition.Busy)
+        {
+            float nextAge = double.IsNaN(startDsp) ? age + Time.unscaledDeltaTime : (float)(AudioSettings.dspTime - startDsp);
+            age = Mathf.Clamp(nextAge, age, JoinSeconds);
+        }
         if (resized || age != previousAge)
             Draw();
 
-        if (previousAge < Impact && age >= Impact)
+        if (previousAge < JoinSeconds && age >= JoinSeconds)
         {
             slash.Emit(Seam, SlashDrift);
-            var cue = SoundCueCatalog.Find("titleLand");
-            SoundManager.PlaySound(cue.Id, cue.Volume);
+            if (!landSoundScheduled)
+            {
+                var cue = SoundCueCatalog.Find("titleLand");
+                SoundManager.PlaySound(cue.Id, cue.Volume);
+            }
         }
     }
 

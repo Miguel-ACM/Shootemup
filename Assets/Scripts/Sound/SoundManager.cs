@@ -7,7 +7,7 @@ public class SoundManager : MonoBehaviour
 {
     public static AudioClip hit1, shot1, enemyExplosion1, hurt1, playerDead, bossWarning;
     public static AudioClip blankbullet;
-    static AudioSource audioSource;
+    static AudioSource audioSource, scheduledSource;
     // Pitch is per AudioSource and also bends one-shots that are still playing, so pitched sounds
     // get their own sources instead of retuning the shared one under every other sound.
     static AudioSource[] pitchedSources;
@@ -31,7 +31,7 @@ public class SoundManager : MonoBehaviour
         synth.Clear();
         lastVariant.Clear();
         gates.Clear();
-        audioSource = null;
+        audioSource = scheduledSource = null;
         pitchedSources = enemySources = null;
         nextPitchedSource = nextEnemySource = 0;
         nextEnemyEvent = nextEnemyImpact = 0;
@@ -226,6 +226,31 @@ public class SoundManager : MonoBehaviour
     public static void PlaySound(string clip, float volume)
     {
         PlaySoundPitch(clip, volume, 1f);
+    }
+
+    public static bool TryScheduleSound(string cue, float volume, double at)
+    {
+        if (audioSource == null)
+            return false;
+        volume *= SfxMix.Gain(cue);
+        if (volume <= 0)
+            return true;
+        var clip = GetClip(cue);
+        if (clip == null)
+            return false;
+
+        if (scheduledSource == null)
+        {
+            scheduledSource = audioSource.gameObject.AddComponent<AudioSource>();
+            scheduledSource.playOnAwake = false;
+            scheduledSource.outputAudioMixerGroup = audioSource.outputAudioMixerGroup;
+            scheduledSource.spatialBlend = audioSource.spatialBlend;
+        }
+        scheduledSource.Stop();
+        scheduledSource.clip = clip;
+        scheduledSource.volume = volume;
+        scheduledSource.PlayScheduled(at);
+        return true;
     }
 
     // Frequent event cues (hits, pickups) share a per-cue gate so dense combat doesn't stack them.
