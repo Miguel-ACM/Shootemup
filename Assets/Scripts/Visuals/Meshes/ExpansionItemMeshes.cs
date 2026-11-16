@@ -28,6 +28,25 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(Crab))
+        {
+            b.Ball(new Vector3(0, -.065f, 0), new Vector3(.59f, .395f, .28f), 1);
+            b.Ball(new Vector3(0, -.074f, -.11f), new Vector3(.48f, .28f, .11f), 10);
+            foreach (int side in new[] { -1, 1 })
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    float y = -.083f - i * .088f;
+                    EquipmentRod(b, new Vector3(side * .215f, y, .016f), new Vector3(side * (.373f - i * .027f), y - .092f, .04f), .032f, 1);
+                }
+                EquipmentRod(b, new Vector3(side * .225f, .045f, -.008f), new Vector3(side * .339f, .177f, -.018f), .047f, 1);
+                b.Ball(new Vector3(side * .346f, .205f, -.039f), new Vector3(.21f, .17f, .14f), 10);
+                b.Box(new Vector3(side * .403f, .27f, -.042f), new Vector3(.082f, .119f, .095f), 1);
+                b.Ball(new Vector3(side * .122f, .124f, -.132f), Vector3.one * .064f, 6);
+            }
+            b.Box(new Vector3(0, .166f, -.035f), new Vector3(.094f, .146f, .105f), 11, 6);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(Moth))
         {
             foreach (int side in new[] { -1, 1 })
