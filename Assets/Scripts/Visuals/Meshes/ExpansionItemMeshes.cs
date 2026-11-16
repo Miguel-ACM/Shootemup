@@ -28,6 +28,17 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(PaddedSeat))
+        {
+            b.Box(new Vector3(0, -.18f, 0), new Vector3(.59f, .30f, .30f), 6, 11);
+            b.Box(new Vector3(0, -.12f, -.09f), new Vector3(.51f, .25f, .21f), 8, 6);
+            b.Box(new Vector3(0, .135f, .065f), new Vector3(.50f, .44f, .22f), 6, 11);
+            b.Box(new Vector3(0, .115f, -.075f), new Vector3(.43f, .34f, .16f), 8, 6);
+            foreach (int side in new[] { -1, 1 })
+                b.Box(new Vector3(side * .255f, -.12f, -.12f), new Vector3(.095f, .30f, .24f), 6, 8);
+            b.Box(new Vector3(0, .38f, .04f), new Vector3(.28f, .105f, .2f), 6, 11);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(RubberMallet))
         {
             b.Can(new Vector3(0, -.15f, 0), .073f, .53f, 11, 6);

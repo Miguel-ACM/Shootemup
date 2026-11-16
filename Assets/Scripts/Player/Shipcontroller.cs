@@ -536,7 +536,9 @@ public class Shipcontroller : MonoBehaviour
         }
         else
         {
-            StartCoroutine("Invulnerability", invulnerabilitySeconds);
+            int padding = lost > 0 && CombatUpgrades.Current != null ? CombatUpgrades.Current.Count(UpgradeKind.PaddedSeat) : 0;
+            if (padding > 0) RunInventory.Ping(UpgradeKind.PaddedSeat);
+            StartCoroutine("Invulnerability", invulnerabilitySeconds + Mathf.Min(1.2f, .6f * padding));
         }
     }
 
