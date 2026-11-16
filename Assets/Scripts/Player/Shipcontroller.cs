@@ -289,11 +289,15 @@ public class Shipcontroller : MonoBehaviour
             GetDamaged(amount);
     }
 
+    float sewerDrag;
+    public void ApplySewerDrag(float seconds) => sewerDrag = Mathf.Max(sewerDrag, seconds);
+
     public bool TryReturnTo(Vector2 point)
     {
         if (point.x < Camera.LeftLimit || point.x > Camera.RightLimit ||
             point.y < Camera.DownLimit || point.y > Camera.UpLimit ||
-            CombatWalls.Overlaps(point, CombatWalls.HullRadius))
+            CombatWalls.Overlaps(point, CombatWalls.HullRadius) ||
+            LevelRun.Current == LevelId.Core && CoreCube.Occupies(point))
             return false;
         transform.position = new Vector3(point.x, point.y, transform.position.z);
         waterVelocity = Vector2.zero;
@@ -357,6 +361,9 @@ public class Shipcontroller : MonoBehaviour
             Repair(Mathf.CeilToInt(maxHealth));
         float focusSpeed = HangarHub.Active ? 2f : slowMultiplier * FocusPace;
         speedMultiplier = GameInput.Snapshot.Focus && !SimulatorFlight.Autopilot || SimulatorFlight.Slow ? focusSpeed : 1;
+        sewerDrag = LevelRun.Current == LevelId.Sewers ? Mathf.Max(0, sewerDrag - GameClock.PlayerDelta) : 0;
+        if (sewerDrag > 0 && !HangarHub.Active)
+            speedMultiplier *= .56f;
         var steering = SimulatorFlight.Steering(move, transform.position);
         horizontalMove = steering.x * GameRules.playerMoveSpeed * GameClock.PlayerDelta * speedMultiplier;
         verticalMove = steering.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * GameClock.PlayerDelta * speedMultiplier;
@@ -382,8 +389,11 @@ public class Shipcontroller : MonoBehaviour
             transform.position = HangarHub.ConstrainTravel(transform.position, destination);
         else
         {
-            transform.position = CombatWalls.Constrain(transform.position,
-                new Vector3(Mathf.Clamp(destination.x, limits[2], limits[3]), Mathf.Clamp(destination.y, limits[1], upperLimit), transform.position.z), out bool wallHit);
+            var bounded = new Vector3(Mathf.Clamp(destination.x, limits[2], limits[3]), Mathf.Clamp(destination.y, limits[1], upperLimit), transform.position.z);
+            bool wallHit = false;
+            transform.position = LevelRun.Current == LevelId.Core
+                ? CoreCube.Constrain(transform.position, bounded)
+                : CombatWalls.Constrain(transform.position, bounded, out wallHit);
             if (wallHit) ReceiveHazardDamage(1);
         }
         if (transform.position.x == limits[2] || transform.position.x == limits[3])

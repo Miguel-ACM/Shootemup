@@ -224,7 +224,8 @@ public class WaveOrchestrer : MonoBehaviour
     void MarkHuntTarget()
     {
         var eligible = currentWave.units.FindAll(unit => !unit.miniboss && unit.enemy != nameof(FaradayPylon) &&
-            unit.enemy != nameof(DepthMine) && unit.enemy != "OrbitalMoonlet");
+            unit.enemy != nameof(DepthMine) && unit.enemy != nameof(PlagueMote) &&
+            unit.enemy != nameof(TransitCube) && unit.enemy != "OrbitalMoonlet");
         if (eligible.Count == 0)
         {
             challenge.SkipWave();

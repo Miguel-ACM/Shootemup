@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum LevelId
 {
-    Fields, Tunnel, Snow, Thunder, City, Desert, Candyland, Space, Underwater, Hell, Heaven, Void
+    Fields, Tunnel, Snow, Thunder, City, Desert, Candyland, Space, Underwater, Hell, Heaven, Void, Sewers, Core
 }
 
 public static class LevelRun
@@ -52,6 +52,10 @@ public static class LevelRun
             case LevelId.Underwater:
                 // The submarine fires a little fewer rounds than before (Miguel, 9 November 2026).
                 return boss ? 1.0f : 1.35f;
+            case LevelId.Sewers:
+                return boss ? 1.10f : 1.25f;
+            case LevelId.Core:
+                return boss ? 1.25f : 1.35f;
             case LevelId.Hell:
                 return 1.3f;
             case LevelId.Heaven:
@@ -80,9 +84,11 @@ public static class LevelRun
                 return 3;
             case LevelId.Space:
             case LevelId.Underwater:
+            case LevelId.Sewers:
                 return 4;
             case LevelId.Hell:
             case LevelId.Heaven:
+            case LevelId.Core:
                 return 5;
             case LevelId.Void:
                 return 6;
@@ -154,8 +160,11 @@ public static class LevelRun
             case LevelId.City:
                 return new[] { LevelId.Tunnel, LevelId.Candyland };
             case LevelId.Thunder:
-            case LevelId.Desert:
                 return new[] { LevelId.Space };
+            case LevelId.Desert:
+                return new[] { LevelId.Sewers };
+            case LevelId.Sewers:
+                return new[] { LevelId.Core };
             case LevelId.Tunnel:
             case LevelId.Candyland:
                 return new[] { LevelId.Underwater };
@@ -165,6 +174,7 @@ public static class LevelRun
                 return new[] { LevelId.Hell };
             case LevelId.Heaven:
             case LevelId.Hell:
+            case LevelId.Core:
                 return new[] { LevelId.Void };
             case LevelId.Void:
                 return System.Array.Empty<LevelId>();
@@ -197,6 +207,10 @@ public static class LevelRun
                 return new Color(.96f, .28f, .17f);
             case LevelId.Heaven:
                 return new Color(1, .79f, .29f);
+            case LevelId.Sewers:
+                return new Color(.58f, .83f, .28f);
+            case LevelId.Core:
+                return new Color(.87f, .25f, .23f);
             case LevelId.Void:
                 return new Color(.66f, .32f, .97f);
             default:
@@ -228,6 +242,10 @@ public static class LevelRun
                 return "THE LAST DESCENT";
             case LevelId.Heaven:
                 return "THE SHATTERED FIRMAMENT";
+            case LevelId.Sewers:
+                return "THE FLOOD CHAMBERS";
+            case LevelId.Core:
+                return "THE CRUSHING ENGINE";
             case LevelId.Void:
                 return "BEYOND THE LAST LIGHT";
             default:

@@ -1,0 +1,173 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public static class DeepDistrictScenery
+{
+    static readonly Color Concrete = new Color(.18f, .20f, .21f);
+    static readonly Color Seam = new Color(.105f, .12f, .13f);
+    static readonly Color Steel = new Color(.31f, .34f, .35f);
+    static readonly Color Iron = new Color(.21f, .25f, .25f);
+    static readonly Color Brick = new Color(.27f, .26f, .22f);
+    static readonly Color Water = new Color(.095f, .18f, .165f);
+    static readonly Color WaterDark = new Color(.053f, .107f, .12f);
+    static readonly Color Copper = new Color(.32f, .184f, .105f);
+
+    public static Mesh Section(LevelId level, int seed, int index, float length)
+    {
+        var b = new SolidMesh();
+        float end = length * .5f;
+        var random = new System.Random(unchecked(seed * 47 + index * 8609));
+        b.Rect(-19, -end, 19, end, 0, level == LevelId.Core ? Seam : Brick * new Color(.66f, .73f, .79f, 1));
+        if (level == LevelId.Core)
+            Core(b, end, random);
+        else
+            Sewer(b, end, index);
+        return b.Finish(level == LevelId.Core ? "Core service tunnel" : "Sewer culverts and flood channels");
+    }
+
+    static void Core(SolidMesh b, float edge, System.Random random)
+    {
+        for (int row = 0; row < 10; row++)
+        {
+            float y = -edge + row * 2f;
+            for (int bay = -2; bay <= 2; bay++)
+            {
+                float x = bay * 1.6f;
+                Color panel = Color.Lerp(Seam, Concrete, .57f + (float)random.NextDouble() * .31f);
+                b.Rect(x - .77f, y + .035f, x + .77f, y + 1.961f, .018f, panel);
+                if ((row + Mathf.Abs(bay)) % 3 == 1)
+                    b.Rect(x - .62f, y + .16f, x - .25f, y + .20f, .031f, Steel * new Color(.62f, .64f, .65f, 1));
+            }
+        }
+        for (int side = -1; side <= 1; side += 2)
+        {
+            float rail = side * 4.20f;
+            b.Rect(rail - .22f, -edge, rail + .22f, edge, .095f, Seam);
+            b.Rect(rail - .14f, -edge, rail - .027f, edge, .23f, Steel);
+            b.Rect(rail + .035f, -edge, rail + .13f, edge, .23f, Steel);
+            b.Rect(rail - .035f, -edge, rail + .035f, edge, .26f, Copper);
+            for (int i = 0; i < 10; i++)
+            {
+                float y = -edge + 1 + i * 2;
+                b.Block(rail, y, .68f, .42f, .28f, Concrete, .04f);
+                float x = side * (i % 2 == 0 ? 4.97f : 5.23f);
+                b.Block(x, y - .04f, 1.18f, 1.76f, .81f + (float)random.NextDouble() * .28f, Concrete);
+                b.Block(side * 4.87f, y + .35f, .25f, .22f, .9f, i % 3 == 0 ? Copper : Iron);
+                for (int rib = -1; rib <= 1; rib++)
+                    b.Block(side * 5.42f, y + rib * .28f, .52f, .081f, .95f, Steel);
+            }
+        }
+    }
+
+    static void Sewer(SolidMesh b, float edge, int index)
+    {
+        for (int side = -1; side <= 1; side += 2)
+        {
+            b.Rect(side * 3.83f - .27f, -edge, side * 3.83f + .27f, edge, .06f, WaterDark);
+            b.Rect(side * 4.04f - .16f, -edge, side * 4.04f + .16f, edge, .25f, Iron);
+            for (int i = 0; i < 10; i++)
+            {
+                float y = -edge + 1 + 2 * i;
+                b.Block(side * 4.42f, y, .63f, 1.92f, .43f, i % 3 == 0 ? Iron : Brick);
+                b.Block(side * 5.18f, y + .13f, .84f, 1.27f, .84f, Concrete);
+                b.Block(side * 5.04f, y - .37f, .74f, .20f, .88f, Copper);
+                if ((i + index) % 3 == 1)
+                {
+                    b.Block(side * 4.02f, y - .3f, .81f, .59f, .58f, Iron);
+                    for (int slat = -1; slat <= 1; slat++)
+                        b.Block(side * 3.81f, y - .3f + slat * .14f, .60f, .055f, .63f, Steel);
+                }
+            }
+        }
+        float walk = index % 2 == 0 ? -5.1f : 3.9f;
+        b.Block(0, walk, 8.28f, .54f, .38f, Copper);
+        for (int x = -6; x <= 6; x++)
+            b.Block(x * .63f, walk, .19f, .72f, .47f, Iron);
+    }
+
+    public static Mesh Channel(float length)
+    {
+        var b = new SolidMesh();
+        const float bank = 3.91f;
+        float edge = length * .5f;
+        b.Rect(-bank, -edge, -2.78f, edge, .014f, WaterDark);
+        b.Rect(2.78f, -edge, bank, edge, .014f, WaterDark);
+        b.Gradient(-2.78f, -edge, 2.78f, edge, .014f, WaterDark, Water);
+        return b.Finish("Flowing sewer channel");
+    }
+
+    public static Mesh Lake()
+    {
+        var b = new SolidMesh();
+        const int sides = 64;
+        var bank = Iron;
+        bank.a = 0;
+        var seam = Brick;
+        seam.a = 0;
+        Vector2 Radii(float angle, Vector2 radius) =>
+            Vector2.Scale(new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)), radius);
+        for (int i = 0; i < sides; i++)
+        {
+            float a = i * Mathf.PI * 2 / sides, c = (i + 1) * Mathf.PI * 2 / sides;
+            Vector2 wide = new Vector2(4.91f, 4.2f), water = new Vector2(4.42f, 3.85f);
+            Vector2 outerA = Radii(a, wide), outerC = Radii(c, wide);
+            Vector2 innerA = Radii(a, water), innerC = Radii(c, water);
+            b.Face(i % 4 == 0 ? seam : bank, innerA, outerA, outerC, innerC);
+            b.Face(WaterDark, Vector2.zero, innerA, innerC);
+        }
+        return b.Finish("Cistern circular lake");
+    }
+
+    sealed class SolidMesh
+    {
+        readonly List<Vector3> vertices = new List<Vector3>();
+        readonly List<Color> colors = new List<Color>();
+        readonly List<int> indices = new List<int>();
+        public void Face(Color ink, params Vector2[] points) => Face(ink, 0, points);
+        void Face(Color ink, float height, params Vector2[] points)
+        {
+            int start = vertices.Count;
+            foreach (var point in points)
+            {
+                vertices.Add(new Vector3(point.x, point.y, -height));
+                colors.Add(ink);
+            }
+            for (int i = 1; i < points.Length - 1; i++)
+            {
+                indices.Add(start);
+                indices.Add(start + i);
+                indices.Add(start + i + 1);
+            }
+        }
+        public void Rect(float left, float bottom, float right, float top, float height, Color ink)
+            => Face(ink, height, new Vector2(left, bottom), new Vector2(right, bottom), new Vector2(right, top), new Vector2(left, top));
+
+        public void Gradient(float left, float bottom, float right, float top, float height, Color bank, Color centre)
+        {
+            float middle = (left + right) * .5f;
+            Rect(left, bottom, middle, top, height, bank);
+            colors[colors.Count - 1] = colors[colors.Count - 2] = centre;
+            Rect(middle, bottom, right, top, height, bank);
+            colors[colors.Count - 4] = colors[colors.Count - 3] = centre;
+        }
+
+        public void Block(float x, float y, float width, float length, float height, Color top, float baseHeight = 0)
+        {
+            float left = x - width * .5f, right = x + width * .5f, front = y - length * .5f, back = y + length * .5f;
+            float dx = height * .17f, dy = height * .36f;
+            Face(top * new Color(.64f, .69f, .73f, 1), baseHeight,
+                new Vector2(left, front), new Vector2(right, front), new Vector2(right + dx, front + dy), new Vector2(left + dx, front + dy));
+            Face(top * new Color(.72f, .76f, .76f, 1), baseHeight,
+                new Vector2(left, front), new Vector2(left + dx, front + dy), new Vector2(left + dx, back + dy), new Vector2(left, back));
+            Rect(left + dx, front + dy, right + dx, back + dy, height, top);
+        }
+        public Mesh Finish(string name)
+        {
+            var mesh = new Mesh { name = name };
+            mesh.SetVertices(vertices);
+            mesh.SetColors(colors);
+            mesh.SetTriangles(indices, 0);
+            return mesh;
+        }
+    }
+}

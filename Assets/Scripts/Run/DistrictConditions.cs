@@ -8,7 +8,7 @@ public enum DistrictCondition
     // District events (15 November 2026): each has its own hazard or wave rule.
     Thunderstorm, Minefield, DeepPassages, CandyRain, Eruption, SpearRain, RushHour,
     // Plains forest variety and Space's solar flare (15 November 2026).
-    Forest, SolarFlare
+    Forest, SolarFlare, Plague
 }
 
 public static class DistrictConditions
@@ -56,6 +56,8 @@ public static class DistrictConditions
                 return roll < EventOdds ? DistrictCondition.RushHour : DistrictCondition.Ordinary;
             case LevelId.Space:
                 return roll < EventOdds ? DistrictCondition.SolarFlare : DistrictCondition.Ordinary;
+            case LevelId.Sewers:
+                return roll < EventOdds ? DistrictCondition.Plague : DistrictCondition.Ordinary;
             default:
                 return DistrictCondition.Ordinary;
         }
@@ -74,6 +76,8 @@ public static class DistrictConditions
                 return LevelId.Fields;
             case DistrictCondition.SolarFlare:
                 return LevelId.Space;
+            case DistrictCondition.Plague:
+                return LevelId.Sewers;
             case DistrictCondition.Blizzard:
                 return LevelId.Snow;
             case DistrictCondition.Sandstorm:

@@ -56,11 +56,15 @@ public static class CombatWalls
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void Reset() => Solid.Clear();
     public static bool Overlaps(Vector2 point,float radius)
-    { foreach(var wall in Solid)if(wall.Contains(point,radius))return true;return false; }
+        => Overlaps(Solid, point, radius);
+    internal static bool Overlaps(List<CombatWall> walls,Vector2 point,float radius)
+    { foreach(var wall in walls)if(wall.Contains(point,radius))return true;return false; }
     public static bool Sweep(Vector2 from,Vector2 to,float radius,out Vector2 point,out Vector2 normal)
+        => Sweep(Solid, from, to, radius, out point, out normal);
+    static bool Sweep(List<CombatWall> walls,Vector2 from,Vector2 to,float radius,out Vector2 point,out Vector2 normal)
     {
         float nearest=2;normal=Vector2.zero;
-        foreach(var wall in Solid)
+        foreach(var wall in walls)
             if(wall.Sweep(from,to,radius,out float t,out var face)&&t<nearest){nearest=t;normal=face;}
         point=Vector2.LerpUnclamped(from,to,Mathf.Clamp01(nearest));return nearest<=1;
     }
@@ -78,19 +82,21 @@ public static class CombatWalls
     }
     public static Vector3 Constrain(Vector3 from,Vector3 desired) => Constrain(from,desired,out _);
     public static Vector3 Constrain(Vector3 from,Vector3 desired,out bool struck)
+        => Constrain(from, desired, Solid, out struck);
+    internal static Vector3 Constrain(Vector3 from,Vector3 desired,List<CombatWall> walls,out bool struck)
     {
-        struck=false;if(!Active)return desired;
+        struck=false;if(walls.Count==0)return desired;
         Vector2 p=from;
-        if(Overlaps(p,HullRadius))
+        if(Overlaps(walls,p,HullRadius))
         {
             struck=true;Vector2 best=p;float nearest=float.PositiveInfinity;
             void Candidate(Vector2 q)
             {
-                if(q.x<Camera.LeftLimit||q.x>Camera.RightLimit||q.y<Camera.DownLimit||q.y>Camera.UpLimit||Overlaps(q,HullRadius+.0005f))return;
+                if(q.x<Camera.LeftLimit||q.x>Camera.RightLimit||q.y<Camera.DownLimit||q.y>Camera.UpLimit||Overlaps(walls,q,HullRadius+.0005f))return;
                 float d=(q-p).sqrMagnitude;if(d<nearest){nearest=d;best=q;}
             }
             // Only exposed faces can release the pilot, never internal panel seams.
-            foreach(var wall in Solid)for(int edge=0;edge<4;edge++)
+            foreach(var wall in walls)for(int edge=0;edge<4;edge++)
             {
                 wall.Plane(edge,out var n,out float distance);distance+=HullRadius+.003f;
                 Candidate(p+n*(distance-Vector2.Dot(n,p)));
@@ -102,7 +108,7 @@ public static class CombatWalls
         Vector2 remaining=(Vector2)(desired-from);
         for(int i=0;i<4&&remaining.sqrMagnitude>.0000001f;i++)
         {
-            if(!Sweep(p,p+remaining,HullRadius,out var contact,out var normal)){p+=remaining;break;}
+            if(!Sweep(walls,p,p+remaining,HullRadius,out var contact,out var normal)){p+=remaining;break;}
             struck=true;Vector2 rest=p+remaining-contact;p=contact+normal*.003f;
             remaining=rest-normal*Mathf.Min(0,Vector2.Dot(rest,normal));
         }

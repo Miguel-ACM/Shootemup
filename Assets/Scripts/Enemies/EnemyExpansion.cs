@@ -30,7 +30,25 @@ public static class EnemyExpansion
         }
     }
 
+    static Entry DeepEntry(LevelId level, Type type, CombatHullId id, float scale, bool nose, WavePart[] parts, params Vector3[] ports)
+        => new Entry(level, type, (int)id, scale, nose, () => IndustrialMeshFactory.DeepHull(id), ports, Array.Empty<Vector3>(), parts);
+
     public static readonly Entry[] All = {
+        DeepEntry(LevelId.Sewers, typeof(PlagueMote), CombatHullId.PlagueMote, .24f, false, WavePartLibrary.PlagueMoteParts),
+        DeepEntry(LevelId.Sewers, typeof(SiltLeech), CombatHullId.SiltLeech, .51f, false, WavePartLibrary.SiltLeechParts),
+        DeepEntry(LevelId.Sewers, typeof(SluiceBarge), CombatHullId.SluiceBarge, .81f, false, WavePartLibrary.SluiceBargeParts, new Vector3(-.46f, -.84f, -.43f), new Vector3(0f, -.84f, -.43f), new Vector3(.46f, -.84f, -.43f)),
+        DeepEntry(LevelId.Sewers, typeof(OverflowBell), CombatHullId.OverflowBell, .64f, false, WavePartLibrary.OverflowBellParts, new Vector3(-.77f, .21f, -.35f), new Vector3(.77f, .21f, -.35f)),
+        DeepEntry(LevelId.Sewers, typeof(PipeSkater), CombatHullId.PipeSkater, .46f, true, WavePartLibrary.PipeSkaterParts, new Vector3(0f, -1.05f, -.23f)),
+        DeepEntry(LevelId.Sewers, typeof(GrateKeeper), CombatHullId.GrateKeeper, .92f, false, Array.Empty<WavePart>(), new Vector3(-.64f, -.6f, -.56f), new Vector3(.64f, -.6f, -.56f)),
+        DeepEntry(LevelId.Sewers, typeof(CisternHeart), CombatHullId.CisternHeart, 1.02f, false, Array.Empty<WavePart>(), new Vector3(-1.4f, -.47f, -.5f), new Vector3(-1.61f, .19f, -.46f), new Vector3(-1.13f, .8f, -.41f), new Vector3(1.4f, -.47f, -.5f), new Vector3(1.61f, .19f, -.46f), new Vector3(1.13f, .8f, -.41f), new Vector3(0f, 1.11f, -.49f)),
+        DeepEntry(LevelId.Core, typeof(TransitCube), CombatHullId.TransitCube, .59f, false, WavePartLibrary.TransitCubeParts),
+        DeepEntry(LevelId.Core, typeof(FuseCube), CombatHullId.FuseCube, .59f, false, WavePartLibrary.FuseCubeParts),
+        DeepEntry(LevelId.Core, typeof(SentryCube), CombatHullId.SentryCube, .58f, false, WavePartLibrary.SentryCubeParts, new Vector3(0f, -.43f, -.64f)),
+        DeepEntry(LevelId.Core, typeof(RamCube), CombatHullId.RamCube, .76f, false, WavePartLibrary.RamCubeParts, new Vector3(-.57f, -.13f, -.62f), new Vector3(.57f, -.13f, -.62f)),
+        DeepEntry(LevelId.Core, typeof(RelayCarrier), CombatHullId.RelayCarrier, .78f, false, WavePartLibrary.RelayCarrierParts, new Vector3(-.69f, -.81f, -.24f), new Vector3(.69f, -.81f, -.24f)),
+        DeepEntry(LevelId.Core, typeof(RivetCutter), CombatHullId.RivetCutter, .51f, true, WavePartLibrary.RivetCutterParts, new Vector3(0f, -1.03f, -.25f)),
+        DeepEntry(LevelId.Core, typeof(PressWarden), CombatHullId.PressWarden, .98f, false, Array.Empty<WavePart>(), new Vector3(-.77f, -.65f, -.5f), new Vector3(.77f, -.65f, -.5f)),
+        DeepEntry(LevelId.Core, typeof(CoreGantry), CombatHullId.CoreGantry, 1f, false, Array.Empty<WavePart>(), new Vector3(-3.78f, -.53f, -.55f), new Vector3(3.78f, -.53f, -.55f)),
         new Entry(LevelId.Underwater, typeof(DepthMine), (int)CombatHullId.DepthMine, .62f, false, IndustrialMeshFactory.DepthMineMesh, new[] { new Vector3(0, 0, -.5f) }, Array.Empty<Vector3>(), WavePartLibrary.DepthMineParts),
         new Entry(LevelId.Heaven, typeof(ThroneBarge), 89, .79f, false, IndustrialMeshFactory.ThroneBargeMesh, new[] { new Vector3(0,-1.03f,-.23f), new Vector3(-.9f,-.87f,-.27f), new Vector3(.9f,-.87f,-.27f) }, new[] { new Vector3(-.7f,.8f,0), new Vector3(.7f,.8f,0) }, WavePartLibrary.ThroneBargeParts),
         new Entry(LevelId.Heaven, typeof(VotiveSpear), 88, .43f, true, IndustrialMeshFactory.VotiveSpearMesh, new[] { new Vector3(-.24f,-.835f,-.17f), new Vector3(.24f,-.835f,-.17f) }, new[] { new Vector3(0,.84f,0) }, WavePartLibrary.VotiveSpearParts),

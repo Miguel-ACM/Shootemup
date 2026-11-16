@@ -68,6 +68,12 @@ public sealed class DistrictHazards : MonoBehaviour
                     DepthMine.Rise(new Vector3(R(Camera.LeftLimit + .8f, Camera.RightLimit - .8f), Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, R(.42f, .74f)), 1));
                 next = now + R(7.5f, 10.5f) * rest;
                 break;
+            case DistrictCondition.Plague:
+                int swarm = Difficulty.Easy ? 7 : Difficulty.Hard ? 14 : 10;
+                int side = random.Next(2) == 0 ? -1 : 1;
+                PlagueMote.Spill(new Vector2(side * R(1.25f, 3.45f), Camera.UpLimit + .65f), swarm);
+                next = now + R(3.8f, 5.6f) * rest;
+                break;
             case DistrictCondition.CandyRain:
                 // More candy (Miguel, 15 November 2026): up to six sweets, twice as often.
                 if (CandyDrop.Count < 6)

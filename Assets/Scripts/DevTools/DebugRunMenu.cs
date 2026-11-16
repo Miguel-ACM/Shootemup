@@ -141,7 +141,7 @@ public sealed partial class DebugRunMenu : AMenuElement
             pactButton = ButtonAt(panel, "PACT", new Vector2(258, 300), new Vector2(150, 38), () => { forcePact = !forcePact; Refresh(); }).GetComponent<Image>();
             weatherLabel = ButtonAt(panel, "SEEDED SKY", new Vector2(100, 300), new Vector2(160, 38), CycleWeather, 16).GetComponentInChildren<TextMeshProUGUI>();
             modifierLabel = ButtonAt(panel, "SEEDED MODS", new Vector2(-80, 300), new Vector2(160, 38), CycleModifiers, 16).GetComponentInChildren<TextMeshProUGUI>();
-            var levels = new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Thunder, LevelId.Tunnel, LevelId.Desert, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell, LevelId.Heaven, LevelId.Void };
+            var levels = new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Thunder, LevelId.Tunnel, LevelId.Desert, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Sewers, LevelId.Hell, LevelId.Heaven, LevelId.Core, LevelId.Void };
             for (int i = 0; i < levels.Length; i++)
             {
                 var level = levels[i];

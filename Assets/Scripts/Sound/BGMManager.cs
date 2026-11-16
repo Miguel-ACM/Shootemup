@@ -76,7 +76,7 @@ public class BGMManager : MonoBehaviour
         if (clip == null)
         {
             // New districts await Miguel's tracks; never carry the previous district's song into them.
-            if (id == "heaven" || id == "void") { score.Stop(); return; }
+            if (id == "heaven" || id == "void" || id == "sewers" || id == "core") { score.Stop(); return; }
             Debug.LogWarning("Missing music track: " + id); return;
         }
         fade = 1;

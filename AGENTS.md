@@ -278,7 +278,9 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 
 ## Route unlocks (12 November 2026)
 
-- Plains branches to Snow or City. Snow leads through Thunder or Desert to Space, then Heaven and Void. City leads through Tunnel or Candyland to Underwater, then Hell and Void.
+- Plains branches to Snow or City. Snow leads through Thunder → Space → Heaven or Desert → Sewers → Core. City leads through Tunnel or Candyland → Underwater → Hell. All three branches converge on Void.
+- Sewers uses luminous green giant rounds, low-health tailed plague flocks with separation, alignment and cohesion, and leeches that only slow the pilot. PLAGUE adds more bounded swarms during ordinary combat. The Cistern Heart stays anchored in the middle of its lake and floods the arena with huge rounds.
+- Core is a gray service tunnel with red fire. Moving cubes physically obstruct the pilot. Transit cubes are armored, fuse cubes can be cleared, and sentry and ram cubes fire from their faces. A short lane tell marks their transfer. The gantry boss remains joined to both side rails while it slides vertically and tracks its reactor carriage independently.
 - Fresh saves can fly Plains, Snow, City, Thunder and Tunnel. Each campaign boss clear on any difficulty opens its sealed exits for the next flight. Previously opened districts stay open. The simulator never opens districts.
 - A single open exit is automatic one second after picking up or skipping the boss item. A run ends as a victory after the reward of the first boss whose way on is still sealed. Heaven, Hell and Void victories can commission the next hull.
 - Sealed choices keep their pixel padlock and rattle. Newly earned routes show NEXT FLIGHT on the choice, get a dedicated stamped banner at the boss clear, and lead the unlock receipt and hangar tags.

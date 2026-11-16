@@ -254,7 +254,7 @@ public static class VerifyItemUnlocks
         var unlocks = new[]
         {
             (LevelId.Snow, LevelId.Desert), (LevelId.City, LevelId.Candyland),
-            (LevelId.Thunder, LevelId.Space), (LevelId.Desert, LevelId.Space),
+            (LevelId.Thunder, LevelId.Space), (LevelId.Desert, LevelId.Sewers), (LevelId.Sewers, LevelId.Core), (LevelId.Core, LevelId.Void),
             (LevelId.Tunnel, LevelId.Underwater), (LevelId.Candyland, LevelId.Underwater),
             (LevelId.Space, LevelId.Heaven), (LevelId.Underwater, LevelId.Hell),
             (LevelId.Heaven, LevelId.Void), (LevelId.Hell, LevelId.Void)

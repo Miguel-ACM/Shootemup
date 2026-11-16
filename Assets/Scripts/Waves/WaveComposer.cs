@@ -201,7 +201,7 @@ public static class WaveComposer
         float second = !more || budget < 8 ? 0 : Difficulty.Hard ? .30f : Difficulty.Easy ? 0 : .15f;
         int count = random.NextDouble() < first ? random.NextDouble() < second ? 2 : 1 : 0;
         var eligible = wave.units.FindAll(unit => !unit.miniboss && unit.enemy != nameof(FaradayPylon) &&
-            unit.enemy != nameof(DepthMine) && unit.enemy != "OrbitalMoonlet");
+            unit.enemy != nameof(DepthMine) && unit.enemy != nameof(PlagueMote) && unit.enemy != nameof(TransitCube) && unit.enemy != "OrbitalMoonlet");
         for (int i = 0; i < count && eligible.Count > 0; i++)
         {
             int pick = random.Next(eligible.Count);
@@ -298,6 +298,8 @@ public static class WaveComposer
                 // A condition's own parts lead often, so dusk, night and storms fly differently.
                 // A minefield leans harder on its mines: they are its whole character.
                 int conditionLead = part.Only.HasValue ? part.Only == DistrictCondition.Minefield ? 66 : 22 : 0;
+                if (slot == 0 && budget % 2 == 0 && (part.Enemy == nameof(PlagueMote) || part.Enemy == nameof(TransitCube)))
+                    conditionLead += 42;
                 options.Add((part, used * 24 + random.Next(24) - conditionLead - (slot == 0 && part.Motion == preferredMotion ? 240 : 0)));
             }
             options.Sort((a, b) => a.score.CompareTo(b.score));
@@ -464,6 +466,8 @@ public static partial class WavePartLibrary
             case LevelId.Heaven:
                 return Heaven;
             case LevelId.Void:
+            case LevelId.Sewers:
+            case LevelId.Core:
                 return Array.Empty<WavePart>();
             case LevelId.Fields:
                 return plainsWithGround ?? (plainsWithGround = WithGround(Plains, PlainsGround, PlainsForestGround, PlainsDusk, PlainsNight));

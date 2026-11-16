@@ -553,7 +553,7 @@ public sealed class LevelEnvironment : MonoBehaviour
                 active.level = LevelRun.Current;
                 active.Build();
             }
-            active.sideParallax = parallax;
+            active.sideParallax = LevelRun.Current == LevelId.Core ? 0 : parallax;
             active.gameObject.name = LevelRun.CurrentName + " environment";
             active.gameObject.SetActive(true);
             active.ApplyParallax();
@@ -757,6 +757,31 @@ public sealed class LevelEnvironment : MonoBehaviour
             }
             AddAtmosphere("Drifting rose mist", 0, 44, new Color(.58f, .37f, .52f, .68f), 1.45f, .62f);
         }
+        else if (level == LevelId.Sewers || level == LevelId.Core)
+        {
+            Mesh channel = null;
+            if (level == LevelId.Sewers)
+            {
+                channel = DeepDistrictScenery.Channel(SectionLength);
+                ownedMeshes.Add(channel);
+                sewerWater = new Material(Resources.Load<Shader>("CisternWater"));
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                var tile = new GameObject(level + " section " + i).transform;
+                tile.SetParent(transform, false);
+                tile.localPosition = new Vector3(0, SectionY(i, travel), 90);
+                var mesh = DeepDistrictScenery.Section(level, LevelRun.Seed, i, SectionLength);
+                ownedMeshes.Add(mesh);
+                Add(mesh, tile, Vector3.zero, -50);
+                if (channel != null)
+                    Add(channel, tile, Vector3.zero, -49).GetComponent<MeshRenderer>().sharedMaterial = sewerWater;
+                sections.Add(tile);
+                yield return null;
+            }
+            if (level == LevelId.Sewers)
+                AddAtmosphere("Condensation over the canal", 0, 47, new Color(.23f, .32f, .29f, .23f), 1.15f, .52f);
+        }
         else if (level == LevelId.Thunder)
         {
             var storm = BuildStormSteps(background);
@@ -892,6 +917,20 @@ public sealed class LevelEnvironment : MonoBehaviour
         renderer.receiveShadows = false;
         return go.transform;
     }
+
+    public static void RevealCistern(float y)
+    {
+        if (active == null || active.level != LevelId.Sewers || active.cisternWater != null)
+            return;
+        var lake = DeepDistrictScenery.Lake();
+        active.ownedMeshes.Add(lake);
+        active.cisternWater = new Material(Resources.Load<Shader>("CisternWater"));
+        active.cisternWater.SetFloat("_LakeWake", 1);
+        active.Add(lake, active.transform, new Vector3(0, y, 58), -35)
+            .GetComponent<MeshRenderer>().sharedMaterial = active.cisternWater;
+    }
+
+    Material sewerWater, cisternWater;
 
     Mesh Quad(string name, float width, float height)
     {
@@ -1260,6 +1299,10 @@ public sealed class LevelEnvironment : MonoBehaviour
     {
         if (material != null)
             Destroy(material);
+        if (cisternWater != null)
+            Destroy(cisternWater);
+        if (sewerWater != null)
+            Destroy(sewerWater);
         if (snowFoliageMaterial != null)
             Destroy(snowFoliageMaterial);
         if (snowTerrainMaterial != null)

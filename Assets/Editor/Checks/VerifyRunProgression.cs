@@ -16,8 +16,8 @@ public static class VerifyRunProgression
                 const int seed = 17381;
                 bool upper = third == LevelId.Thunder || third == LevelId.Desert;
                 var middle = upper ? LevelId.Snow : LevelId.City;
-                var fourth = upper ? LevelId.Space : LevelId.Underwater;
-                var fifth = upper ? LevelId.Heaven : LevelId.Hell;
+                var fourth = third == LevelId.Desert ? LevelId.Sewers : upper ? LevelId.Space : LevelId.Underwater;
+                var fifth = third == LevelId.Desert ? LevelId.Core : upper ? LevelId.Heaven : LevelId.Hell;
                 LevelRun.Reset(LevelId.Fields, seed);
                 CheckOptions(LevelId.Snow, LevelId.City);
                 LevelRun.Advance(middle);

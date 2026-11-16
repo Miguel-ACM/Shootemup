@@ -1,9 +1,24 @@
 using System;
 using System.Collections.Generic;
 
-public enum EnemyId { ScoutInterceptor, PatrolGunship, HeavyBomber, WallTurret, MaintenanceDrone, ArmoredCarrier, ColdWeatherFighter, SiegeGunship, ShieldTransport, BeamDrone, RelayDrone, StormSkimmer, PursuitFighter, AttackDrone, CommandGunship, CourierDiver, AvalancheBomber, ArcLancer, FieldsHeavyWing, TunnelDefensePlatform, SnowSiegeCraft, StormReactor, CityCommandCarrier, SandEmitter, SandStriker, SandWorm, BonbonSkirmisher, WaferDart, MintSpinner, MeadowTank, FrostAuger, OrbitalScout, LaserSatellite, OrbitalCarrier, OrbitalMoonlet, SkullRevenant, GhostGalleon, CinderImp, ReefDart, MantaRay, Bathysphere, ScarabDredger, TaffyDuelist, OrbitalWarden, ReefLeviathan, InfernalFerryman, BoneHarrier, AshCenser, JetSquid, NautilusBell, CometTug, EclipseSail, GumdropMortar, RibbonGlider, MirageObelisk, DuneMoth, StormOrgan, CapacitorKite, RivetMantis, BaffleSpinner, TerraceGunboat, MetroLancer, HailLantern, IcicleWeaver, HarrowBomber, ReedSkimmer, HellCrabBoss, AbyssSubmarineBoss, SpaceCitadelBoss, CandyRegentBoss, DesertWormBoss, TunnelSawBoss, SnowSiegeBoss, ThunderLanceBoss, CityDuoBoss, FieldsBomberBoss, PlainsRedKiteBoss, PlainsThreshingDrumBoss, CitySwitchyardBoss, SnowIcebreakerBoss, ChoirLancer, AegisReliquary, PrismCantor, VotiveSpear, ThroneBarge, DawnGatekeeper, SeraphJudicatorBoss, VoidSovereignBoss, DepthMine, FaradayPylon, ThicketLurker, SpaceAsteroid, SpaceBoulder }
+public enum EnemyId { ScoutInterceptor, PatrolGunship, HeavyBomber, WallTurret, MaintenanceDrone, ArmoredCarrier, ColdWeatherFighter, SiegeGunship, ShieldTransport, BeamDrone, RelayDrone, StormSkimmer, PursuitFighter, AttackDrone, CommandGunship, CourierDiver, AvalancheBomber, ArcLancer, FieldsHeavyWing, TunnelDefensePlatform, SnowSiegeCraft, StormReactor, CityCommandCarrier, SandEmitter, SandStriker, SandWorm, BonbonSkirmisher, WaferDart, MintSpinner, MeadowTank, FrostAuger, OrbitalScout, LaserSatellite, OrbitalCarrier, OrbitalMoonlet, SkullRevenant, GhostGalleon, CinderImp, ReefDart, MantaRay, Bathysphere, ScarabDredger, TaffyDuelist, OrbitalWarden, ReefLeviathan, InfernalFerryman, BoneHarrier, AshCenser, JetSquid, NautilusBell, CometTug, EclipseSail, GumdropMortar, RibbonGlider, MirageObelisk, DuneMoth, StormOrgan, CapacitorKite, RivetMantis, BaffleSpinner, TerraceGunboat, MetroLancer, HailLantern, IcicleWeaver, HarrowBomber, ReedSkimmer, HellCrabBoss, AbyssSubmarineBoss, SpaceCitadelBoss, CandyRegentBoss, DesertWormBoss, TunnelSawBoss, SnowSiegeBoss, ThunderLanceBoss, CityDuoBoss, FieldsBomberBoss, PlainsRedKiteBoss, PlainsThreshingDrumBoss, CitySwitchyardBoss, SnowIcebreakerBoss, ChoirLancer, AegisReliquary, PrismCantor, VotiveSpear, ThroneBarge, DawnGatekeeper, SeraphJudicatorBoss, VoidSovereignBoss, DepthMine, FaradayPylon, ThicketLurker, SpaceAsteroid, SpaceBoulder, PlagueMote, SiltLeech, SluiceBarge, OverflowBell, PipeSkater, GrateKeeper, CisternHeart, TransitCube, FuseCube, SentryCube, RamCube, RelayCarrier, RivetCutter, PressWarden, CoreGantry }
 public enum CombatHullId
 {
+    PlagueMote = 98,
+    SiltLeech = 99,
+    SluiceBarge = 100,
+    OverflowBell = 101,
+    PipeSkater = 102,
+    GrateKeeper = 103,
+    CisternHeart = 104,
+    TransitCube = 105,
+    FuseCube = 106,
+    SentryCube = 107,
+    RamCube = 108,
+    RelayCarrier = 109,
+    RivetCutter = 110,
+    PressWarden = 111,
+    CoreGantry = 112,
     SpaceBoulder = 97,
     SpaceAsteroid = 96,
     ThicketLurker = 95,
@@ -110,6 +125,21 @@ public sealed class EnemyDefinition
 public static class EnemyCatalog
 {
     public static readonly EnemyDefinition[] All = {
+        new EnemyDefinition(EnemyId.PlagueMote, typeof(PlagueMote), CombatHullId.PlagueMote),
+        new EnemyDefinition(EnemyId.SiltLeech, typeof(SiltLeech), CombatHullId.SiltLeech),
+        new EnemyDefinition(EnemyId.SluiceBarge, typeof(SluiceBarge), CombatHullId.SluiceBarge),
+        new EnemyDefinition(EnemyId.OverflowBell, typeof(OverflowBell), CombatHullId.OverflowBell),
+        new EnemyDefinition(EnemyId.PipeSkater, typeof(PipeSkater), CombatHullId.PipeSkater),
+        new EnemyDefinition(EnemyId.GrateKeeper, typeof(GrateKeeper), CombatHullId.GrateKeeper),
+        new EnemyDefinition(EnemyId.CisternHeart, typeof(CisternHeart), CombatHullId.CisternHeart, true),
+        new EnemyDefinition(EnemyId.TransitCube, typeof(TransitCube), CombatHullId.TransitCube),
+        new EnemyDefinition(EnemyId.FuseCube, typeof(FuseCube), CombatHullId.FuseCube),
+        new EnemyDefinition(EnemyId.SentryCube, typeof(SentryCube), CombatHullId.SentryCube),
+        new EnemyDefinition(EnemyId.RamCube, typeof(RamCube), CombatHullId.RamCube),
+        new EnemyDefinition(EnemyId.RelayCarrier, typeof(RelayCarrier), CombatHullId.RelayCarrier),
+        new EnemyDefinition(EnemyId.RivetCutter, typeof(RivetCutter), CombatHullId.RivetCutter),
+        new EnemyDefinition(EnemyId.PressWarden, typeof(PressWarden), CombatHullId.PressWarden),
+        new EnemyDefinition(EnemyId.CoreGantry, typeof(CoreGantry), CombatHullId.CoreGantry, true),
         new EnemyDefinition(EnemyId.FaradayPylon, typeof(FaradayPylon), CombatHullId.FaradayPylon),
         new EnemyDefinition(EnemyId.DepthMine, typeof(DepthMine), CombatHullId.DepthMine, false),
         new EnemyDefinition(EnemyId.VoidSovereignBoss, typeof(VoidSovereignBoss), CombatHullId.VoidSovereignBoss, true),
@@ -217,7 +247,7 @@ public static class EnemyCatalog
             byType.Add(actor.ComponentType, actor);
 
         }
-        WaveTypes = new[] { typeof(ScoutInterceptor), typeof(PatrolGunship), typeof(HeavyBomber), typeof(WallTurret), typeof(MaintenanceDrone), typeof(ArmoredCarrier), typeof(ColdWeatherFighter), typeof(SiegeGunship), typeof(ShieldTransport), typeof(BeamDrone), typeof(RelayDrone), typeof(StormSkimmer), typeof(PursuitFighter), typeof(AttackDrone), typeof(CommandGunship), typeof(CourierDiver), typeof(AvalancheBomber), typeof(ArcLancer), typeof(FieldsHeavyWing), typeof(TunnelDefensePlatform), typeof(SnowSiegeCraft), typeof(StormReactor), typeof(CityCommandCarrier), typeof(SandEmitter), typeof(SandStriker), typeof(SandWorm), typeof(BonbonSkirmisher), typeof(WaferDart), typeof(MintSpinner), typeof(MeadowTank), typeof(FrostAuger), typeof(OrbitalScout), typeof(LaserSatellite), typeof(OrbitalCarrier), typeof(OrbitalMoonlet), typeof(BoneHarrier), typeof(AshCenser), typeof(JetSquid), typeof(NautilusBell), typeof(CometTug), typeof(EclipseSail), typeof(GumdropMortar), typeof(RibbonGlider), typeof(MirageObelisk), typeof(DuneMoth), typeof(StormOrgan), typeof(CapacitorKite), typeof(RivetMantis), typeof(BaffleSpinner), typeof(TerraceGunboat), typeof(MetroLancer), typeof(HailLantern), typeof(IcicleWeaver), typeof(HarrowBomber), typeof(ReedSkimmer), typeof(SkullRevenant), typeof(GhostGalleon), typeof(CinderImp), typeof(ReefDart), typeof(MantaRay), typeof(Bathysphere), typeof(ScarabDredger), typeof(TaffyDuelist), typeof(OrbitalWarden), typeof(ReefLeviathan), typeof(InfernalFerryman), typeof(DepthMine), typeof(FaradayPylon), typeof(SpaceAsteroid), typeof(SpaceBoulder) };
+        WaveTypes = new[] { typeof(ScoutInterceptor), typeof(PatrolGunship), typeof(HeavyBomber), typeof(WallTurret), typeof(MaintenanceDrone), typeof(ArmoredCarrier), typeof(ColdWeatherFighter), typeof(SiegeGunship), typeof(ShieldTransport), typeof(BeamDrone), typeof(RelayDrone), typeof(StormSkimmer), typeof(PursuitFighter), typeof(AttackDrone), typeof(CommandGunship), typeof(CourierDiver), typeof(AvalancheBomber), typeof(ArcLancer), typeof(FieldsHeavyWing), typeof(TunnelDefensePlatform), typeof(SnowSiegeCraft), typeof(StormReactor), typeof(CityCommandCarrier), typeof(SandEmitter), typeof(SandStriker), typeof(SandWorm), typeof(BonbonSkirmisher), typeof(WaferDart), typeof(MintSpinner), typeof(MeadowTank), typeof(FrostAuger), typeof(OrbitalScout), typeof(LaserSatellite), typeof(OrbitalCarrier), typeof(OrbitalMoonlet), typeof(BoneHarrier), typeof(AshCenser), typeof(JetSquid), typeof(NautilusBell), typeof(CometTug), typeof(EclipseSail), typeof(GumdropMortar), typeof(RibbonGlider), typeof(MirageObelisk), typeof(DuneMoth), typeof(StormOrgan), typeof(CapacitorKite), typeof(RivetMantis), typeof(BaffleSpinner), typeof(TerraceGunboat), typeof(MetroLancer), typeof(HailLantern), typeof(IcicleWeaver), typeof(HarrowBomber), typeof(ReedSkimmer), typeof(SkullRevenant), typeof(GhostGalleon), typeof(CinderImp), typeof(ReefDart), typeof(MantaRay), typeof(Bathysphere), typeof(ScarabDredger), typeof(TaffyDuelist), typeof(OrbitalWarden), typeof(ReefLeviathan), typeof(InfernalFerryman), typeof(DepthMine), typeof(FaradayPylon), typeof(SpaceAsteroid), typeof(SpaceBoulder), typeof(PlagueMote), typeof(SiltLeech), typeof(SluiceBarge), typeof(OverflowBell), typeof(PipeSkater), typeof(GrateKeeper), typeof(TransitCube), typeof(FuseCube), typeof(SentryCube), typeof(RamCube), typeof(RelayCarrier), typeof(RivetCutter), typeof(PressWarden) };
     }
     public static EnemyDefinition Get(Type type) => byType.TryGetValue(type, out var actor) ? actor : throw new ArgumentException("Unregistered actor: " + type);
     public static EnemyDefinition Get(EnemyId id) => byKey[id.ToString()];

@@ -1,0 +1,184 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public static partial class IndustrialMeshFactory
+{
+    static readonly Dictionary<CombatHullId, Mesh> deepHulls = new Dictionary<CombatHullId, Mesh>();
+    static Mesh plagueTail, gantryCarriage;
+
+    public static Mesh DeepHull(CombatHullId id)
+    {
+        if (deepHulls.TryGetValue(id, out var mesh) && mesh != null)
+            return mesh;
+        var b = new Builder();
+        switch (id)
+        {
+            case CombatHullId.PlagueMote:
+                CutStone(b, new Vector3(0, -.05f, 0), new Vector3(.55f, .78f, .27f), 2, 9);
+                CutStone(b, new Vector3(0, -.54f, -.08f), new Vector3(.23f, .32f, .16f), 14, 6);
+                foreach (int side in new[] { -1, 1 })
+                    CutStone(b, new Vector3(side * .25f, -.37f, -.21f), new Vector3(.12f, .14f, .09f), 10, 5);
+                break;
+            case CombatHullId.SiltLeech:
+                BevelArmor(b, new[] { V(-1, .38f), V(-.7f, -.73f), V(0, -1.02f), V(.7f, -.73f), V(1, .38f), V(.46f, .15f), V(0, .62f), V(-.46f, .15f) }, .38f, 2);
+                CutHalo(b, new Vector3(0, -.31f, -.26f), .36f, .075f, new Vector3(1.35f, .70f, 1), Quaternion.identity, 10, 14);
+                b.Ball(new Vector3(0, -.29f, -.20f), new Vector3(.31f, .28f, .25f), 8);
+                break;
+            case CombatHullId.SluiceBarge:
+                BevelArmor(b, new[] { V(-1.0f, -.38f), V(-.60f, -.98f), V(.60f, -.98f), V(1, -.38f), V(.76f, .83f), V(0, 1.02f), V(-.76f, .83f) }, .48f, 0);
+                b.Box(new Vector3(0, .42f, -.24f), new Vector3(1.15f, .61f, .35f), 2);
+                for (int i = -1; i <= 1; i++)
+                    DeepPort(b, new Vector3(i * .46f, -.84f, -.26f), .21f, 13);
+                break;
+            case CombatHullId.OverflowBell:
+                b.Ball(new Vector3(0, .14f, 0), new Vector3(.78f, .82f, .46f), 13);
+                CutHalo(b, new Vector3(0, 0, -.27f), .65f, .105f, new Vector3(1, .76f, 1), Quaternion.identity, 2, 12);
+                DeepPort(b, new Vector3(-.77f, .21f, -.17f), .26f, 6);
+                DeepPort(b, new Vector3(.77f, .21f, -.17f), .26f, 6);
+                break;
+            case CombatHullId.PipeSkater:
+                BevelArmor(b, new[] { V(0, -1.10f), V(.32f, -.46f), V(.86f, .43f), V(.69f, .9f), V(.23f, .62f), V(0, .88f), V(-.23f, .62f), V(-.69f, .9f), V(-.86f, .43f), V(-.32f, -.46f) }, .24f, 14);
+                CutStone(b, new Vector3(0, .17f, -.21f), new Vector3(.22f, .42f, .12f), 9, 5);
+                Barrel(b, 0, -.42f, .63f, .18f);
+                break;
+            case CombatHullId.GrateKeeper:
+                BevelArmor(b, new[] { V(-1.12f, -.45f), V(-.76f, -.95f), V(.76f, -.95f), V(1.12f, -.45f), V(.91f, .82f), V(0, 1.02f), V(-.91f, .82f) }, .54f, 2);
+                for (int i = -3; i <= 3; i++)
+                    b.Box(new Vector3(i * .21f, .17f, -.39f), new Vector3(.086f, .95f, .16f), 6, 11);
+                DeepPort(b, new Vector3(-.64f, -.60f, -.39f), .34f, 13);
+                DeepPort(b, new Vector3(.64f, -.60f, -.39f), .34f, 13);
+                break;
+            case CombatHullId.TransitCube:
+            case CombatHullId.FuseCube:
+            case CombatHullId.SentryCube:
+            case CombatHullId.RamCube:
+                BuildDeepCube(b, id);
+                break;
+            case CombatHullId.RelayCarrier:
+                BevelArmor(b, new[] { V(-1.12f, -.55f), V(-.62f, -.78f), V(0, -.42f), V(.62f, -.78f), V(1.12f, -.55f), V(.76f, .81f), V(-.76f, .81f) }, .42f, 6);
+                foreach (int side in new[] { -1, 1 })
+                {
+                    b.Box(new Vector3(side * .68f, .15f, -.24f), new Vector3(.47f, .82f, .34f), 11, 6);
+                    Barrel(b, side * .69f, -.32f, .49f, .26f);
+                }
+                b.Box(new Vector3(0, .25f, -.32f), new Vector3(.57f, .46f, .23f), 5, 0);
+                break;
+            case CombatHullId.RivetCutter:
+                BevelArmor(b, new[] { V(0, -1.12f), V(.41f, -.62f), V(1.02f, .52f), V(.73f, .95f), V(.28f, .40f), V(-.27f, .69f), V(-.93f, .68f), V(-.76f, .13f), V(-.34f, -.50f) }, .34f, 6);
+                CutStone(b, new Vector3(-.08f, .12f, -.27f), new Vector3(.39f, .38f, .19f), 5, 4);
+                Barrel(b, 0, -.55f, .48f, .17f);
+                break;
+            case CombatHullId.PressWarden:
+                BevelArmor(b, new[] { V(-1.1f, -.72f), V(-.47f, -.82f), V(-.35f, -.24f), V(.35f, -.24f), V(.47f, -.82f), V(1.1f, -.72f), V(.88f, .65f), V(.52f, 1.02f), V(-.52f, 1.02f), V(-.88f, .65f) }, .47f, 6);
+                foreach (int side in new[] { -1, 1 })
+                {
+                    b.Box(new Vector3(side * .74f, .02f, -.29f), new Vector3(.37f, 1.23f, .35f), 0, 11);
+                    DeepPort(b, new Vector3(side * .77f, -.65f, -.33f), .25f, 5);
+                }
+                CutStone(b, new Vector3(0, .51f, -.35f), new Vector3(.38f, .38f, .16f), 3, 6);
+                break;
+            case CombatHullId.CisternHeart:
+                BuildCisternHeart(b);
+                break;
+            case CombatHullId.CoreGantry:
+                BuildGantry(b);
+                break;
+        }
+        return deepHulls[id] = b.Finish(id.ToString());
+    }
+
+    public static Mesh PlagueTail()
+    {
+        if (plagueTail != null) return plagueTail;
+        var b = new Builder();
+        b.Prism(new[] { V(-.18f, -.09f), V(-.11f, .29f), V(0, .53f), V(.11f, .29f), V(.18f, -.09f) }, .12f, 2, Vector3.zero, 14);
+        return plagueTail = b.Finish("Sinuous plague tail");
+    }
+
+    static void DeepPort(Builder b, Vector3 p, float radius, int paint)
+    {
+        b.Drum(p, radius, .25f, paint, 10, 6);
+        b.Drum(p + Vector3.back * .147f, radius * .70f, .04f, 11, 10, paint);
+        CutHalo(b, p + Vector3.back * .17f, radius * .79f, radius * .09f, Vector3.one, Quaternion.identity, paint, 10);
+    }
+
+    static void BuildDeepCube(Builder b, CombatHullId id)
+    {
+        BevelArmor(b, new[] { V(-.81f, -.81f), V(.81f, -.81f), V(.81f, .81f), V(-.81f, .81f) }, .60f, 6);
+        int panel = id == CombatHullId.TransitCube ? 0 : id == CombatHullId.FuseCube ? 13 : 5;
+        b.Box(new Vector3(0, 0, -.35f), new Vector3(1.30f, 1.30f, .22f), panel, 11);
+        foreach (int corner in new[] { -1, 1 })
+        {
+            b.Box(new Vector3(corner * .59f, 0, -.37f), new Vector3(.14f, 1.23f, .17f), 1, 0);
+            b.Box(new Vector3(0, corner * .59f, -.38f), new Vector3(1.23f, .14f, .17f), 1, 0);
+        }
+        if (id == CombatHullId.TransitCube)
+            b.Box(new Vector3(0, 0, -.49f), new Vector3(.53f, .53f, .10f), 11, 0);
+        else if (id == CombatHullId.FuseCube)
+            CutStone(b, new Vector3(0, 0, -.49f), new Vector3(.40f, .40f, .19f), 10, 4, .79f);
+        else if (id == CombatHullId.SentryCube)
+            DeepPort(b, new Vector3(0, -.43f, -.47f), .28f, 3);
+        else
+        {
+            DeepPort(b, new Vector3(-.57f, -.13f, -.45f), .24f, 3);
+            DeepPort(b, new Vector3(.57f, -.13f, -.45f), .24f, 3);
+            b.Box(new Vector3(0, 0, -.55f), new Vector3(.42f, 1.24f, .22f), 6, 11);
+        }
+    }
+
+    static void BuildCisternHeart(Builder b)
+    {
+        var ring = new Vector2[20];
+        for (int i = 0; i < ring.Length; i++)
+        {
+            float a = i * Mathf.PI * 2 / ring.Length;
+            ring[i] = new Vector2(Mathf.Cos(a) * 1.87f, Mathf.Sin(a) * 1.29f);
+        }
+        BevelArmor(b, ring, .54f, 8, .04f, .26f);
+        b.Ball(new Vector3(0, .04f, -.27f), new Vector3(1.26f, .95f, .42f), 2);
+        CutHalo(b, new Vector3(0, 0, -.64f), .65f, .11f, new Vector3(1.25f, .83f, .9f), Quaternion.identity, 13, 16);
+        for (int i = -2; i <= 2; i++)
+            b.Box(new Vector3(i * .22f, -.04f, -.70f), new Vector3(.095f, .53f - Mathf.Abs(i) * .08f, .19f), 14, 11);
+        foreach (int side in new[] { -1, 1 })
+        {
+            DeepPort(b, new Vector3(side * 1.40f, -.47f, -.33f), .39f, 13);
+            DeepPort(b, new Vector3(side * 1.61f, .19f, -.29f), .33f, 13);
+            DeepPort(b, new Vector3(side * 1.13f, .80f, -.24f), .34f, 6);
+        }
+        DeepPort(b, new Vector3(0, 1.11f, -.32f), .35f, 13);
+    }
+
+    static void BuildGantry(Builder b)
+    {
+        b.Box(new Vector3(0, 0, .14f), new Vector3(7.82f, .51f, .27f), 11, 0);
+        for (int rib = -5; rib <= 5; rib++)
+        {
+            float x = rib * .64f;
+            float incline = rib % 2 == 0 ? 1 : -1;
+            CutBlade(b, new[] { new Vector3(x - .29f, -.31f * incline, -.17f), new Vector3(x + .29f, .31f * incline, -.17f) },
+                .135f, .17f, rib % 4 == 0 ? 13 : 6);
+        }
+        for (int side = -1; side <= 1; side += 2)
+        {
+            b.Box(new Vector3(0, side * .34f, -.29f), new Vector3(8.5f, .19f, .33f), 6, 0);
+            Vector3 end = new Vector3(side * 4.18f, .08f, -.11f);
+            b.Prism(new[] { V(-.45f, -.72f), V(.45f, -.72f), V(.45f, .64f), V(.23f, .87f), V(-.23f, .87f), V(-.45f, .64f) },
+                .65f, 6, end, 0, 11);
+            b.Box(end + new Vector3(0, .24f, -.39f), new Vector3(.65f, .69f, .18f), 0, 11);
+            for (int bearing = -1; bearing <= 1; bearing += 2)
+                CutStone(b, end + new Vector3(0, bearing * .58f, -.43f), new Vector3(.21f, .24f, .13f), 5, 6);
+            DeepPort(b, new Vector3(side * 3.78f, -.53f, -.38f), .26f, 3);
+        }
+    }
+
+    public static Mesh GantryCarriage()
+    {
+        if (gantryCarriage != null) return gantryCarriage;
+        var b = new Builder();
+        BevelArmor(b, new[] { V(-.90f, -.23f), V(-.54f, -.86f), V(.54f, -.86f), V(.90f, -.23f), V(.68f, .63f), V(.30f, .89f), V(-.30f, .89f), V(-.68f, .63f) }, .54f, 6);
+        CutHalo(b, new Vector3(0, .14f, -.44f), .46f, .105f, Vector3.one, Quaternion.identity, 11, 12);
+        CutStone(b, new Vector3(0, .12f, -.55f), new Vector3(.38f, .38f, .24f), 5, 8);
+        DeepPort(b, new Vector3(0, -.69f, -.30f), .27f, 3);
+        return gantryCarriage = b.Finish("Gantry sliding reactor carriage");
+    }
+}

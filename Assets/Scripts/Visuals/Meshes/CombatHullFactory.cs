@@ -619,7 +619,7 @@ public sealed class CombatHullVisual : MonoBehaviour
             target = enemy.NoseAimed ? enemy.VisualHeading : Mathf.Clamp(target, -12, 12);
         if (spin != 0)
             model.Rotate(0, 0, spin * Time.deltaTime, Space.Self);
-        else
+        else if (!(enemy is CoreCube) && !(enemy is CoreGantry) && !(enemy is PlagueMote))
             model.localRotation = attitude.Step(transform.position, target, enemy != null ? Mathf.InverseLerp(.45f, 1.1f, enemy.hullScale) : .4f, Time.deltaTime);
         properties.SetColor("_Tint", source != null ? source.color : Color.white);
         foreach (var part in parts)
