@@ -28,6 +28,27 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(Magpie))
+        {
+            b.Ball(new Vector3(0, -.035f, .04f), new Vector3(.32f, .50f, .27f), 6);
+            b.Ball(new Vector3(0, -.048f, -.09f), new Vector3(.21f, .31f, .15f), 3);
+            b.Ball(new Vector3(0, .22f, -.05f), new Vector3(.23f, .24f, .22f), 6);
+            b.Prism(new[] { new Vector2(-.069f, .25f), new Vector2(.069f, .25f),
+                new Vector2(.022f, .395f), new Vector2(-.022f, .395f) }, .105f, 11, Vector3.back * .084f, 6);
+            foreach (int side in new[] { -1, 1 })
+            {
+                b.Ball(new Vector3(side * .084f, .234f, -.131f), Vector3.one * .046f, 3);
+                var wing = new[] { new Vector2(side * .12f, .11f), new Vector2(side * .39f, -.04f),
+                    new Vector2(side * .245f, -.27f), new Vector2(side * .10f, -.16f) };
+                if (side < 0) System.Array.Reverse(wing);
+                b.Prism(wing, .10f, 11, new Vector3(0, 0, .019f), 6);
+                var tail = new[] { new Vector2(side * .02f, -.19f), new Vector2(side * .117f, -.27f),
+                    new Vector2(side * .078f, -.45f), new Vector2(side * .018f, -.425f) };
+                if (side > 0) System.Array.Reverse(tail);
+                b.Prism(tail, .045f, 7, new Vector3(0, 0, .072f), 6);
+            }
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(DivingGear))
         {
             foreach (int side in new[] { -1, 1 })

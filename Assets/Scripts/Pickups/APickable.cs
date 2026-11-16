@@ -12,6 +12,7 @@ public abstract class APickable : MonoBehaviour
     Rigidbody2D rb;
     bool destroying;
     bool collected;
+    public bool IsCollected => collected;
     float destroyingTime = 0f;
     bool launched;
     float scatterTime;
