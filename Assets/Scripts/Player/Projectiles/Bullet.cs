@@ -8,7 +8,8 @@ public class Bullet : ABullet
     bool rubberReturned;
     bool hitResolved;
     Vector2 wallFrom;
-    float flight, weaveSign, travelled;
+    float flight, weaveSign, travelled, pumpCapacity;
+    Vector3 restScale;
     // Shared by all bullets so the scene is searched once, not on every trigger contact.
     static Shipcontroller player;
 
@@ -16,6 +17,8 @@ public class Bullet : ABullet
     {
         ProjectileSpriteTint.Friendly(gameObject);
         transform.localScale *= ShotTraits.SizeScale;
+        restScale = transform.localScale;
+        pumpCapacity = ShotTraits.PumpCapacity;
         direction.z = transform.position.z;
         rigidBody = GetComponent<Rigidbody2D>();
         wallFrom = transform.position;
@@ -70,6 +73,13 @@ public class Bullet : ABullet
         }
         Vector2 forward = transform.up.normalized;
         float pace = speed * ShotTraits.SpeedScale(flight);
+        if (pumpCapacity > 0)
+        {
+            float progress = ShotTraits.PumpProgress(flight);
+            float scale = 1 + pumpCapacity * progress;
+            transform.localScale = new Vector3(restScale.x * scale, restScale.y * scale, restScale.z);
+            pace *= ShotTraits.PumpSpeed(progress);
+        }
         travelled += pace * Time.deltaTime;
         rigidBody.linearVelocity = forward * pace + new Vector2(forward.y, -forward.x) * ShotTraits.WeaveRate(flight, weaveSign);
     }

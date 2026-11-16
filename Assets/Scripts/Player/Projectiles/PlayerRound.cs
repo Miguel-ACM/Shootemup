@@ -51,7 +51,7 @@ public sealed class PlayerRound : ABullet
     public bool companion;
     public int pierces;
     public bool returns;
-    float age, flight, weave, weaveSign, travelled;
+    float age, flight, weave, weaveSign, travelled, pumpCapacity;
     Vector3 restScale;
     bool shaped;
     Vector3 origin;
@@ -144,6 +144,7 @@ public sealed class PlayerRound : ABullet
         collider.enabled = true;
         age = 0;
         flight = weave = travelled = 0;
+        pumpCapacity = ShotTraits.PumpCapacity;
         shaped = false;
         weaveSign = ShotTraits.NextWeaveSign();
         lifetimeAge = 0;
@@ -259,7 +260,11 @@ public sealed class PlayerRound : ABullet
         float brake = delivery == PlayerDelivery.Shell ? Mathf.Clamp01(1 - age / .7f) :
             delivery == PlayerDelivery.Missile ? Ignition(flight) : delivery == PlayerDelivery.Disc ? DiscBrake() : 1;
         Vector3 wallFrom = transform.position;
-        Vector2 step = heading * speed * brake * ShotTraits.SpeedScale(flight) * Time.deltaTime;
+        float pumpProgress = pumpCapacity > 0 ? ShotTraits.PumpProgress(flight) : 0;
+        float pumpScale = 1 + pumpCapacity * pumpProgress;
+        // A disc keeps its set throw distance and gains grinding width as it inflates.
+        float pumpSpeed = delivery == PlayerDelivery.Disc ? 1 : ShotTraits.PumpSpeed(pumpProgress);
+        Vector2 step = heading * speed * brake * ShotTraits.SpeedScale(flight) * pumpSpeed * Time.deltaTime;
         travelled += step.magnitude;
         float lateral = ShotTraits.Weave(flight, weaveSign);
         step += new Vector2(heading.y, -heading.x) * (lateral - weave);
@@ -282,7 +287,7 @@ public sealed class PlayerRound : ABullet
         var upgrades = CombatUpgrades.Current;
         if (!plateDeflected && !bankShot && !returning && !rubberReturned && !companion && heading.y < .985f &&
             upgrades != null && upgrades.Count(UpgradeKind.DeflectorPlate) > 0 &&
-            ProjectileCollisionWindow.TryDeflector(wallFrom, end, .075f * Mathf.Max(.2f, size), out var plate))
+            ProjectileCollisionWindow.TryDeflector(wallFrom, end, .075f * Mathf.Max(.2f, size) * pumpScale, out var plate))
         {
             plateDeflected = headingLocked = true;
             heading = step = Vector2.up;
@@ -296,14 +301,14 @@ public sealed class PlayerRound : ABullet
         }
         transform.position = end;
         transform.rotation = Quaternion.FromToRotation(Vector3.up, step.sqrMagnitude > .0000001f ? step : heading);
-        Reshape();
+        Reshape(pumpScale);
         if (delivery == PlayerDelivery.Disc)
         {
             bool holding = age >= DiscOut;
             transform.Rotate(0, 0, age * (holding ? 1080 : 540));
             visual.color = new Color(1, 1, 1, Mathf.Clamp01((DiscOut + DiscHold - age) / .2f));
             if (holding)
-                Grind();
+                Grind(pumpScale);
         }
         if (delivery == PlayerDelivery.Missile)
             visual.sprite = PlayerProjectileArt.MissileFrame(Mathf.FloorToInt(age * PlayerProjectileArt.MissileFramesPerSecond));
@@ -456,13 +461,13 @@ public sealed class PlayerRound : ABullet
         return (1 - age / DiscOut) * scale;
     }
 
-    void Grind()
+    void Grind(float pumpScale)
     {
         grindTimer -= Time.deltaTime;
         if (grindTimer > 0)
             return;
         grindTimer = DiscTick;
-        float radius = .3f * Mathf.Sqrt(GameRules.playerShootSize) * ShotTraits.SizeScale * (generation > 0 ? .85f : 1);
+        float radius = .3f * Mathf.Sqrt(GameRules.playerShootSize) * ShotTraits.SizeScale * (generation > 0 ? .85f : 1) * pumpScale;
         Vector2 at = transform.position;
         splashTargets.Clear();
         splashTargets.AddRange(AEnemy.Live);
@@ -496,17 +501,17 @@ public sealed class PlayerRound : ABullet
     }
 
     // Spawners may rescale a round after Spawn, so its resting scale is read on its first move.
-    void Reshape()
+    void Reshape(float pumpScale)
     {
         if (!shaped)
         {
             restScale = transform.localScale;
             shaped = true;
         }
-        if (!ShotTraits.Slung)
+        if (!ShotTraits.Slung && pumpCapacity <= 0)
             return;
         float stretch = ShotTraits.Stretch(travelled);
-        transform.localScale = new Vector3(restScale.x, restScale.y * stretch, restScale.z);
+        transform.localScale = new Vector3(restScale.x * pumpScale, restScale.y * stretch * pumpScale, restScale.z);
     }
 
     // A doubled ricochet sends a second round to another nearby enemy, or angled off the first.

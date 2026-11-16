@@ -28,6 +28,28 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(AirPump))
+        {
+            b.Can(new Vector3(-.09f, -.105f, 0), .132f, .48f, 9, 11);
+            b.Can(new Vector3(-.09f, -.338f, 0), .147f, .075f, 6, 11);
+            b.Can(new Vector3(-.09f, .13f, 0), .147f, .07f, 6, 11);
+            b.Box(new Vector3(-.05f, -.405f, 0), new Vector3(.57f, .075f, .29f), 6, 11);
+            b.Can(new Vector3(-.09f, .257f, 0), .047f, .25f, 11, 6);
+            b.Box(new Vector3(-.09f, .401f, 0), new Vector3(.44f, .075f, .15f), 10, 6);
+            b.Drum(new Vector3(-.09f, .053f, -.14f), .072f, .048f, 6, 10, 11);
+            b.Drum(new Vector3(-.09f, .053f, -.171f), .05f, .022f, 3, 10);
+            b.Box(new Vector3(-.079f, .059f, -.187f), new Vector3(.042f, .013f, .018f), 1);
+            var hose = new[] { new Vector3(.024f, -.36f, -.09f), new Vector3(.2f, -.33f, -.09f),
+                new Vector3(.288f, -.232f, -.09f), new Vector3(.305f, -.105f, -.09f),
+                new Vector3(.284f, .004f, -.09f), new Vector3(.232f, .085f, -.09f) };
+            for (int i = 1; i < hose.Length; i++)
+            {
+                EquipmentRod(b, hose[i - 1], hose[i], .03f, 6);
+                b.Ball(hose[i], Vector3.one * .061f, 6);
+            }
+            EquipmentRod(b, hose[hose.Length - 1], new Vector3(.171f, .141f, -.09f), .045f, 11);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(CryoVent))
         {
             b.Drum(Vector3.zero, .34f, .22f, 6, 8, 11);

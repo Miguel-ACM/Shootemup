@@ -46,4 +46,18 @@ public static class ShotTraits
 
     // Glass Marbles: shot size follows the ship's current speed.
     public static float SizeScale => MarbleGauge.Scale;
+
+    // Air Pump: start at the weapon's normal size and speed. Snapshot capacity at launch.
+    public static float PumpCapacity
+    {
+        get
+        {
+            int copies = Count(UpgradeKind.AirPump);
+            return copies > 0 ? Mathf.Min(.95f, .65f + .20f * (copies - 1)) : 0;
+        }
+    }
+
+    public static float PumpProgress(float flight) => Mathf.SmoothStep(0, 1, (flight - .08f) / .67f);
+
+    public static float PumpSpeed(float progress) => Mathf.Lerp(1, .6f, progress);
 }
