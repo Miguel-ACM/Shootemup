@@ -7,19 +7,21 @@ public static class CombatHit
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetObservers() => PlayerHit = null;
     public static float Apply(AEnemy enemy, float amount, Vector3 point, Vector2 incoming,
-        int generation = 0, bool companion = false, bool fire = false, bool score = true)
+        int generation = 0, bool companion = false, bool fire = false, bool score = true, bool energy = false)
     {
-        var result = Resolve(enemy, amount, point, incoming, generation, companion, fire, score);
+        var result = Resolve(enemy, amount, point, incoming, generation, companion, fire, score, energy);
         return result.Accepted ? result.Requested : 0;
     }
 
     public static DamageResult Resolve(AEnemy enemy, float amount, Vector3 point, Vector2 incoming,
-        int generation = 0, bool companion = false, bool fire = false, bool score = true)
+        int generation = 0, bool companion = false, bool fire = false, bool score = true, bool energy = false)
     {
         if (enemy == null || !enemy.CanReceiveDamage || amount <= 0 || !float.IsFinite(amount))
             return default;
-        float dealt = CombatUpgrades.Current != null
-            ? CombatUpgrades.Current.DirectHit(enemy, amount, generation, companion, fire) : amount;
+        var upgrades = CombatUpgrades.Current;
+        if (energy && upgrades != null && upgrades.Count(UpgradeKind.ColdCoil) > 0)
+            ChilledHull.Apply(enemy, 2.25f);
+        float dealt = upgrades != null ? upgrades.DirectHit(enemy, amount, generation, companion, fire) : amount;
         enemy.HitAt(point, incoming);
         // Gum stores the hit for later. Preserve pre-death coatings and the original scoring payload;
         // Applied separately reports actual health removed after armour and overkill.

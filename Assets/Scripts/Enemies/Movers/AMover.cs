@@ -6,12 +6,15 @@ public abstract class AMover : MonoBehaviour
 {
 
     protected Rigidbody2D rigidBody;
+    AEnemy movementOwner;
+    protected float ChillMovement => movementOwner != null ? movementOwner.ChillMovement : 1;
     protected AShooter shooter;
     protected bool movementEnabled = true;
     // Start is called before the first frame update
     protected virtual void Start()
     {
         rigidBody = GetComponent<Rigidbody2D>();
+        movementOwner = GetComponent<AEnemy>();
         shooter = GetComponent<AShooter>();
     }
 

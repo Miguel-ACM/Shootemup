@@ -79,7 +79,7 @@ public sealed class ThicketLurker : DistrictEnemy
     {
         if (FrozenHull.Holds(gameObject) || WorldTimeStop.Frozen || !GameClock.ActivePlay)
             return;
-        float dt = Time.deltaTime;
+        float dt = Time.deltaTime * ChillMovement;
         timer += dt;
         switch (stage)
         {

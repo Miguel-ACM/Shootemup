@@ -108,6 +108,7 @@ public abstract class DistrictBoss : DistrictEnemy
             transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.UpLimit - 2.5f, transform.position.z), motionDelta * 6);
         else
         {
+            motionDelta *= ChillMovement;
             motionAge += motionDelta;
             MoveBoss(motionDelta);
         }

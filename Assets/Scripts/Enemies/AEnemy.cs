@@ -4,6 +4,10 @@ using System.Collections;
 
 public abstract class AEnemy : MonoBehaviour, ICombatDamageable
 {
+    internal ChilledHull Chill { get; set; }
+    public float ChillMovement => Chill != null ? Chill.Movement : 1;
+    public float ChillProjectiles => Chill != null ? Chill.Projectiles : 1;
+
     readonly List<Collider2D> damageShapes = new List<Collider2D>(1);
     int damageShapesFrame = -1;
     public IReadOnlyList<Collider2D> DamageShapes

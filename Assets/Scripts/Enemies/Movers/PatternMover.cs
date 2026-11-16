@@ -77,7 +77,7 @@ public abstract class PatternMover : AMover
         Initialize();
         if (!movementEnabled || !enabled || deltaTime <= 0 || !float.IsFinite(deltaTime))
             return;
-        float dt = deltaTime * DistrictFlightTempo * Mathf.Max(0, GameRules.enemySpeed) * LevelRun.EnemyTempoScale * TempoMultiplier;
+        float dt = deltaTime * DistrictFlightTempo * Mathf.Max(0, GameRules.enemySpeed) * LevelRun.EnemyTempoScale * TempoMultiplier * ChillMovement;
         if (dt <= 0)
             return;
         age += dt;

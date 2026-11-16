@@ -37,7 +37,7 @@ public class ElectricityBullet : ABullet
                 int point = path.IndexOf((Vector2)at);
                 Vector2 incoming = point > 0 ? path[point] - path[point - 1] : Vector2.up;
                 SparkPlug.ArcContact(enemy);
-                if (CombatHit.Apply(enemy, damage, at, incoming, score: false) > 0)
+                if (CombatHit.Apply(enemy, damage, at, incoming, score: false, energy: true) > 0)
                     SoundManager.PlayGated("hitElectric", .025f, .1f);
             }
             if (lastContact.HasValue)

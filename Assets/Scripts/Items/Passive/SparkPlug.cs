@@ -52,6 +52,6 @@ public sealed class SparkPlug : AItem
         RunInventory.Ping(UpgradeKind.SparkPlug);
         StaticArc.Draw(from, point, .19f);
         ArcContact(target);
-        CombatHit.Apply(target, damage * .45f, point, ((Vector2)(point - from)).normalized, generation: 1, score: score);
+        CombatHit.Apply(target, damage * .45f, point, ((Vector2)(point - from)).normalized, generation: 1, score: score, energy: true);
     }
 }

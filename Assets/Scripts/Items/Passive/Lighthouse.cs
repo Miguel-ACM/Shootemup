@@ -125,6 +125,6 @@ public sealed class LighthouseBeam : MonoBehaviour
                 lit.Add(enemy);
         foreach (var enemy in lit)
             if (enemy != null && BeamContact.Touches(enemy, from, to, .2f, out var point))
-                CombatHit.Apply(enemy, GameRules.playerShootDamage * TickPower, point, (point - from).normalized, generation: 1);
+                CombatHit.Apply(enemy, GameRules.playerShootDamage * TickPower, point, (point - from).normalized, generation: 1, energy: true);
     }
 }

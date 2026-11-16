@@ -15,6 +15,8 @@ public abstract class CombatRound : AEnemyBullet
     // The tone of the next launch. Enemies set it around their own fire; a round sets
     // it to its own tone while it updates, so splits, shards and sprays inherit it.
     public static HostileTone LaunchTone;
+    static float inheritedChill = 1;
+    float chillSpeed = 1;
     public HostileTone Tone
     {
         get; private set;
@@ -131,7 +133,7 @@ public abstract class CombatRound : AEnemyBullet
         }
     }
 
-    public static T Launch<T>(Vector3 p, Vector2 direction, float velocity = 4, float radius = .18f) where T : CombatRound
+    public static T Launch<T>(Vector3 p, Vector2 direction, float velocity = 4, float radius = .18f, float? chillSpeed = null) where T : CombatRound
     {
         using var sample = launchMarker.Auto();
         if (Live.Count >= Limit)
@@ -151,6 +153,7 @@ public abstract class CombatRound : AEnemyBullet
         shot.body.simulated = false;
         // Beams are not rounds: they stay bright and are never absorbed.
         shot.Tone = shot is PulseLaser ? HostileTone.Bright : LaunchTone;
+        shot.chillSpeed = shot is PulseLaser ? 1 : chillSpeed ?? inheritedChill;
         shot.tint.SetTone(shot.Tone);
         shot.needsOrientation = true;
         if (Live.Count == 0 || launchSequence >= DepthSlots)
@@ -438,12 +441,15 @@ public abstract class CombatRound : AEnemyBullet
     {
         if (ended || WorldTimeStop.Frozen || Time.deltaTime <= 0)
             return;
-        float dt = Time.deltaTime * ClockRate * (this is PulseLaser ? 1 : CombatUpgrades.HostileSpeedAt(transform.position));
+        float dt = Time.deltaTime * ClockRate * (this is PulseLaser ? 1 : chillSpeed * CombatUpgrades.HostileSpeedAt(transform.position));
         age += dt;
         var ambient = LaunchTone;
+        float ambientChill = inheritedChill;
         LaunchTone = Tone;
+        inheritedChill = chillSpeed;
         UpdateRound(dt);
         LaunchTone = ambient;
+        inheritedChill = ambientChill;
     }
 
     void UpdateRound(float dt)

@@ -5,7 +5,8 @@ using System.Collections.Generic;
 public sealed class HullAfflictionVfx
 {
     static readonly int HullStatus = Shader.PropertyToID("_HullStatus");
-    // Each base paint and its variants share a table indexed by burn (1) and poison (2).
+    public const int Frost = 4;
+    // Each base paint and its variants share a table indexed by burn, poison and frost.
     // Swapping a shared material leaves the renderer's flash, opacity and tint overrides intact.
     static readonly Dictionary<Material, Material[]> finishes = new Dictionary<Material, Material[]>();
     static ParticleSystem flames, bubbles;
@@ -13,7 +14,8 @@ public sealed class HullAfflictionVfx
     readonly List<MeshRenderer> hulls = new List<MeshRenderer>();
     readonly List<Material> materials = new List<Material>();
     AEnemy enemy;
-    bool poison;
+    int coating;
+    bool poison => coating == 2;
     float next;
     HullAfflictionVfx()
     {
@@ -21,40 +23,41 @@ public sealed class HullAfflictionVfx
 
     public HullAfflictionVfx(AEnemy target, bool toxic)
     {
-        Initialize(target, toxic);
+        Initialize(target, toxic ? 2 : 1);
     }
 
-    public static HullAfflictionVfx Acquire(AEnemy target, bool toxic)
+    public static HullAfflictionVfx Acquire(AEnemy target, bool toxic) => Acquire(target, toxic ? 2 : 1);
+
+    public static HullAfflictionVfx Acquire(AEnemy target, int coating)
     {
         var effect = pool.Count > 0 ? pool.Pop() : new HullAfflictionVfx();
-        effect.Initialize(target, toxic);
+        effect.Initialize(target, coating);
         return effect;
     }
 
-    void Initialize(AEnemy target, bool toxic)
+    void Initialize(AEnemy target, int coating)
     {
         enemy = target;
-        poison = toxic;
+        this.coating = coating;
         next = 0;
         target.GetComponentsInChildren(true, hulls);
         for (int i = hulls.Count - 1; i >= 0; i--)
             if (hulls[i].GetComponentInParent<AEnemy>(true) != target)
                 hulls.RemoveAt(i);
         SetFinish(true);
-        if (toxic && bubbles == null)
+        if (poison && bubbles == null)
         {
             bubbles = PSXImpactEffects.Create(null, "Shared poison bubbles", 384, true);
             var renderer = bubbles.GetComponent<ParticleSystemRenderer>();
             renderer.sortingLayerName = "Bullet";
             renderer.sortingOrder = 29;
         }
-        if (!toxic && flames == null)
+        if (coating == 1 && flames == null)
             flames = PSXImpactEffects.Create(null, "Shared burning hull flames", 384);
     }
 
     void SetFinish(bool active)
     {
-        int bit = poison ? 2 : 1;
         foreach (var hull in hulls)
         {
             if (hull == null) continue;
@@ -62,7 +65,7 @@ public sealed class HullAfflictionVfx
             bool changed = false;
             for (int i = 0; i < materials.Count; i++)
             {
-                var finish = WithCoating(materials[i], bit, active);
+                var finish = WithCoating(materials[i], coating, active);
                 changed |= materials[i] != finish;
                 materials[i] = finish;
             }
@@ -81,7 +84,7 @@ public sealed class HullAfflictionVfx
 
         if (!finishes.TryGetValue(current, out var family))
         {
-            family = new Material[4];
+            family = new Material[8];
             family[0] = current;
             finishes.Add(current, family);
         }

@@ -114,7 +114,7 @@ public sealed class CandyDrop : AEnemy
             Leave();
             return;
         }
-        float dt = Time.deltaTime;
+        float dt = Time.deltaTime * ChillMovement;
         velocity.y -= Gravity * dt;
         var p = (Vector2)transform.position + velocity * dt;
         float left = Camera.LeftLimit + Radius, right = Camera.RightLimit - Radius;
@@ -155,7 +155,7 @@ public sealed class CandyDrop : AEnemy
             for (int i = 0; i < count; i++)
             {
                 float angle = (i - (count - 1) * .5f) * (110f / Mathf.Max(1, count - 1));
-                CombatRound.Launch<CandyRound>(transform.position + Vector3.up * .2f, CombatVisuals.Rotate(Vector2.up, angle), 2.4f, .18f)
+                CombatRound.Launch<CandyRound>(transform.position + Vector3.up * .2f, CombatVisuals.Rotate(Vector2.up, angle), 2.4f, .18f, ChillProjectiles)
                     .Fall(new Vector2(0, -1.4f));
             }
         }

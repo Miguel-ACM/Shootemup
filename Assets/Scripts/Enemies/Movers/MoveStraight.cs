@@ -29,7 +29,7 @@ public class MoveStraight : AMover
 
     public override void Move()
     {
-        rigidBody.linearVelocity = direction * speed * GameRules.enemySpeed;
+        rigidBody.linearVelocity = direction * speed * GameRules.enemySpeed * ChillMovement;
     }
 
 

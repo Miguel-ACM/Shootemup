@@ -42,11 +42,16 @@ public sealed class ThunderheadCoil : OffensiveCast
                 first ??= target;
                 var point = target.transform.position;
                 StaticArc.Draw(from == point ? transform.position : from, point, .18f);
-                CombatHit.Apply(target, GameRules.playerShootDamage * .9f, point, ((Vector2)(point - transform.position)).normalized, generation: 1);
+                SparkPlug.ArcContact(target);
+                CombatHit.Apply(target, GameRules.playerShootDamage * .9f, point, ((Vector2)(point - transform.position)).normalized, generation: 1, energy: true);
                 struck.Add(target);
                 from = point;
             }
-            if (first != null) ItemSound.Cue("static", volume: .14f, pitch: 1.15f, cooldown: .25f);
+            if (struck.Count > 0)
+            {
+                SparkPlug.ExtraHop(from, struck, GameRules.playerShootDamage * .9f, score: true);
+                ItemSound.Cue("static", volume: .14f, pitch: 1.15f, cooldown: .25f);
+            }
         }
         if (Age >= 3.3f) Finish();
     }

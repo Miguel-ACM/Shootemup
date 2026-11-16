@@ -22,8 +22,9 @@ float HullNoise(float2 p)
     return lerp(lerp(HullHash(c), HullHash(c + float2(1, 0)), f.x), lerp(HullHash(c + float2(0, 1)), HullHash(c + 1), f.x), f.y);
 }
 
-// status is a bit set: 1 burning, 2 poisoned. Decoded as integers so one coating never
-// leaks into the other.
+#include "HullFrost.hlsl"
+
+// Independent material bits for burn, poison and frost.
 half3 HullAffliction(half3 armor, float2 position, float status)
 {
     int bits = (int)(status + .5);
@@ -41,7 +42,8 @@ half3 HullAffliction(half3 armor, float2 position, float status)
         half3 heat = lerp(half3(.67,.075,.018), half3(1,.56,.095), crest);
         fire = armor * .27 + heat * (.47 + .51 * value + .28 * crest);
     }
-    if (!toxic) return fire;
+    bool frost = (bits & 4) != 0;
+    if (!toxic) return frost ? HullFrost(fire, p) : fire;
 
     // Poison (Miguel, 15 November 2026: the jade blister grid was rejected). The hull keeps its
     // own paint, turned a little sickly, while dark corrosion stains creep across it and swell
@@ -60,7 +62,7 @@ half3 HullAffliction(half3 armor, float2 position, float status)
     half3 poison = lerp(sick, rot, stain);
     poison = lerp(poison, glow, lip * .85);
     poison = lerp(poison, glow, vein * (1 - stain) * (.25 + .45 * wave));
-    if (!burning) return poison;
-    return lerp(poison, fire, smoothstep(.41, .59, tongue));
+    half3 coated = burning ? lerp(poison, fire, smoothstep(.41, .59, tongue)) : poison;
+    return frost ? HullFrost(coated, p) : coated;
 }
 #endif

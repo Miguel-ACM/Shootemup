@@ -64,7 +64,7 @@ public sealed class StaticCharge : MonoBehaviour
             var at = next.transform.position;
             StaticArc.Draw(point, at, .22f);
             SparkPlug.ArcContact(next);
-            CombatHit.Apply(next, damage * .7f * Mathf.Pow(.8f, i), at, ((Vector2)(at - point)).normalized, generation: 1);
+            CombatHit.Apply(next, damage * .7f * Mathf.Pow(.8f, i), at, ((Vector2)(at - point)).normalized, generation: 1, energy: true);
             point = at;
         }
         SparkPlug.ExtraHop(point, used, damage, score: true);

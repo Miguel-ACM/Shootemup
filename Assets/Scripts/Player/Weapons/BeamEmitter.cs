@@ -132,7 +132,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
         {
             if (enemy == null || !enemy.CanBeTargeted) continue;
             int contacts = CountBeamContacts(enemy.GetComponent<Collider2D>(), width * .5f, out var point, out var direction);
-            if (contacts > 0) CombatHit.Apply(enemy, damage * contacts, point, direction);
+            if (contacts > 0) CombatHit.Apply(enemy, damage * contacts, point, direction, energy: true);
         }
         // Snapshot before damaging: a destroyed orb returns to its pool and leaves Live.
         plasmaTargets.Clear();

@@ -224,7 +224,7 @@ public sealed class TrailDrone : ACompanion
         if (plasma != null)
             plasma.Hit(damage);
         else
-            CombatHit.Apply(struck, damage, point, axis, companion: true, score: false);
+            CombatHit.Apply(struck, damage, point, axis, companion: true, score: false, energy: true);
     }
     void OnDisable()
     {
