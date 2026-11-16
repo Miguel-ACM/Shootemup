@@ -17,60 +17,138 @@ public static class DeepDistrictScenery
         var b = new SolidMesh();
         float end = length * .5f;
         var random = new System.Random(unchecked(seed * 47 + index * 8609));
-        b.Rect(-19, -end, 19, end, 0, level == LevelId.Core ? Seam : Brick * new Color(.66f, .73f, .79f, 1));
+        b.Rect(-19, -end, 19, end, 0, level == LevelId.Core ? new Color(.37f, .40f, .40f) : Brick * new Color(.66f, .73f, .79f, 1));
         if (level == LevelId.Core)
-            Core(b, end, random);
+            Core(b, end, index, random);
         else
             Sewer(b, end, index);
         return b.Finish(level == LevelId.Core ? "Core service tunnel" : "Sewer culverts and flood channels");
     }
 
-    static void Core(SolidMesh b, float edge, System.Random random)
+    static void Core(SolidMesh b, float edge, int index, System.Random random)
     {
-        for (int row = 0; row < 10; row++)
+        Color ivory = new Color(.68f, .70f, .67f), pale = new Color(.80f, .81f, .76f);
+        Color recess = new Color(.29f, .33f, .34f), orange = new Color(.88f, .36f, .09f);
+        // Large floor plates leave the flight lane calm; each section has one distinct room.
+        b.Rect(-3.94f, -edge, 3.94f, edge, .018f, ivory);
+        b.Rect(-.025f, -edge, .025f, edge, .025f, pale);
+        for (int row = 1; row < 4; row++)
         {
-            float y = -edge + row * 2f;
-            for (int bay = -2; bay <= 2; bay++)
+            float y = -edge + row * edge * .5f;
+            b.Rect(-3.94f, y - .025f, 3.94f, y + .025f, .026f, recess);
+        }
+        int room = ((index % 3) + 3) % 3;
+        for (int side = -1; side <= 1; side += 2)
+        {
+            float x = side * 3.18f;
+            if (room == 0)
             {
-                float x = bay * 1.6f;
-                Color panel = Color.Lerp(Seam, Concrete, .57f + (float)random.NextDouble() * .31f);
-                b.Rect(x - .77f, y + .035f, x + .77f, y + 1.961f, .018f, panel);
-                if ((row + Mathf.Abs(bay)) % 3 == 1)
-                    b.Rect(x - .62f, y + .16f, x - .25f, y + .20f, .031f, Steel * new Color(.62f, .64f, .65f, 1));
+                // A recessed service well, crossed by a grille and framed by raised curbs.
+                b.Block(x, 0, 1.23f, 5.2f, .10f, recess);
+                b.Block(x, 0, 1.03f, 4.9f, .13f, new Color(.20f, .23f, .23f), .10f);
+                for (int slat = -7; slat <= 7; slat++)
+                    b.Block(x, slat * .30f, 1.00f, .055f, .20f, pale, .13f);
+                b.Block(x, -2.65f, 1.35f, .18f, .25f, pale);
+                b.Block(x, 2.65f, 1.35f, .18f, .25f, pale);
+            }
+            else if (room == 1)
+            {
+                // Paired power buses run between heavy insulated brackets.
+                for (int pipe = -1; pipe <= 1; pipe++)
+                    b.Rect(x + pipe * .25f - .065f, -edge, x + pipe * .25f + .065f, edge, .10f, pipe == 0 ? orange : recess);
+                for (int bracket = -2; bracket <= 2; bracket++)
+                    b.Block(x, bracket * 2.7f, 1.05f, .28f, .27f, pale);
+            }
+            else
+            {
+                // Braced lock bays sit against the rails, leaving an open centre lane.
+                for (int bay = -1; bay <= 1; bay++)
+                {
+                    float y = bay * 4.1f;
+                    b.Block(x, y, 1.28f, 2.65f, .18f, recess);
+                    b.Block(x, y, 1.02f, 2.35f, .25f, pale, .18f);
+                    b.Block(x, y, .82f, 1.85f, .30f, ivory, .25f);
+                    b.Block(x, y - .85f, 1.05f, .16f, .38f, orange, .30f);
+                    b.Block(x, y + .85f, 1.05f, .16f, .38f, orange, .30f);
+                }
             }
         }
         for (int side = -1; side <= 1; side += 2)
         {
             float rail = side * 4.20f;
-            b.Rect(rail - .22f, -edge, rail + .22f, edge, .095f, Seam);
-            b.Rect(rail - .14f, -edge, rail - .027f, edge, .23f, Steel);
-            b.Rect(rail + .035f, -edge, rail + .13f, edge, .23f, Steel);
-            b.Rect(rail - .035f, -edge, rail + .035f, edge, .26f, Copper);
+            b.Rect(rail - .22f, -edge, rail + .22f, edge, .095f, recess);
+            b.Rect(rail - .14f, -edge, rail - .027f, edge, .23f, pale);
+            b.Rect(rail + .035f, -edge, rail + .13f, edge, .23f, pale);
+            b.Rect(rail - .035f, -edge, rail + .035f, edge, .26f, orange);
+            b.Rect(side * 5.72f - .10f, -edge, side * 5.72f + .10f, edge, .20f, orange);
             for (int i = 0; i < 10; i++)
             {
                 float y = -edge + 1 + i * 2;
-                b.Block(rail, y, .68f, .42f, .28f, Concrete, .04f);
+                b.Block(rail, y, .68f, .42f, .28f, ivory, .04f);
                 float x = side * (i % 2 == 0 ? 4.97f : 5.23f);
-                b.Block(x, y - .04f, 1.18f, 1.76f, .81f + (float)random.NextDouble() * .28f, Concrete);
-                b.Block(side * 4.87f, y + .35f, .25f, .22f, .9f, i % 3 == 0 ? Copper : Iron);
+                b.Block(x, y - .04f, 1.18f, 1.76f, .56f, ivory);
+                b.Block(side * 5.29f, y + .13f, .83f, 1.24f, .91f, pale, .56f);
+                b.Block(side * 5.29f, y + .13f, .57f, .84f, .98f, recess, .91f);
+                b.Block(side * 4.87f, y + .35f, .25f, .22f, .9f, i % 3 == 0 ? orange : recess);
                 for (int rib = -1; rib <= 1; rib++)
-                    b.Block(side * 5.42f, y + rib * .28f, .52f, .081f, .95f, Steel);
+                    b.Block(side * 5.29f, y + rib * .24f, .52f, .081f, 1.03f, pale, .98f);
             }
         }
     }
 
     static void Sewer(SolidMesh b, float edge, int index)
     {
+        Color mortar = new Color(.15f, .16f, .145f);
+        Color stone = new Color(.36f, .34f, .28f);
+        Color wet = new Color(.20f, .23f, .20f);
         for (int side = -1; side <= 1; side += 2)
         {
+            // Continuous bank foundations meet at the scroll seams.
+            b.Rect(side * 4.55f - .38f, -edge, side * 4.55f + .38f, edge, .19f, mortar);
+            b.Rect(side * 5.19f - .55f, -edge, side * 5.19f + .55f, edge, .17f, mortar);
             b.Rect(side * 3.83f - .27f, -edge, side * 3.83f + .27f, edge, .06f, WaterDark);
-            b.Rect(side * 4.04f - .16f, -edge, side * 4.04f + .16f, edge, .25f, Iron);
+            b.Rect(side * 4.04f - .16f, -edge, side * 4.04f + .16f, edge, .25f, wet);
+            int courses = Mathf.CeilToInt(edge * 2 / .48f);
+            for (int row = 0; row < courses; row++)
+            {
+                float y = -edge + row * .48f;
+                for (int col = 0; col < 3; col++)
+                {
+                    float x = side * (4.38f + col * .33f);
+                    float shift = (row + col) % 2 == 0 ? .025f : -.025f;
+                    b.Rect(x - .15f, Mathf.Max(-edge, y + .04f + shift), x + .15f,
+                        Mathf.Min(edge, y + .45f + shift), .24f, (row + col + index) % 5 == 0 ? stone : Brick);
+                }
+            }
             for (int i = 0; i < 10; i++)
             {
                 float y = -edge + 1 + 2 * i;
-                b.Block(side * 4.42f, y, .63f, 1.92f, .43f, i % 3 == 0 ? Iron : Brick);
-                b.Block(side * 5.18f, y + .13f, .84f, 1.27f, .84f, Concrete);
-                b.Block(side * 5.04f, y - .37f, .74f, .20f, .88f, Copper);
+                if ((i + index + (side > 0 ? 1 : 0)) % 3 == 0)
+                {
+                    // Buttresses project into the channel and carry a stepped coping.
+                    b.Block(side * 3.83f, y, .92f, 1.30f, .23f, wet);
+                    b.Block(side * 3.72f, y, .70f, .98f, .39f, Brick, .23f);
+                    b.Block(side * 3.69f, y, .75f, .18f, .48f, stone, .39f);
+                    b.Block(side * 3.69f, y - .39f, .75f, .16f, .48f, stone, .39f);
+                    b.Block(side * 3.69f, y + .39f, .75f, .16f, .48f, stone, .39f);
+                }
+                if (i % 2 == 0)
+                {
+                    // Recessed brick sluice, raised piers and separate arch stones.
+                    b.Block(side * 5.12f, y, 1.05f, 3.25f, .50f, stone, .17f);
+                    b.Block(side * 5.08f, y, .75f, 2.45f, .57f, mortar, .50f);
+                    foreach (int end in new[] { -1, 1 })
+                    {
+                        b.Block(side * 4.72f, y + end * 1.42f, .47f, .36f, .82f, stone, .24f);
+                        b.Block(side * 4.72f, y + end * 1.42f, .55f, .17f, .91f, stone * 1.12f, .82f);
+                    }
+                    for (int k = 0; k < 9; k++)
+                    {
+                        float angle = Mathf.PI * k / 8f;
+                        b.Block(side * 5.12f + Mathf.Cos(angle) * .43f, y + .95f + Mathf.Sin(angle) * .46f,
+                            .22f, .20f, .72f, k == 4 ? stone * 1.16f : stone, .50f);
+                    }
+                }
                 if ((i + index) % 3 == 1)
                 {
                     b.Block(side * 4.02f, y - .3f, .81f, .59f, .58f, Iron);
@@ -79,10 +157,6 @@ public static class DeepDistrictScenery
                 }
             }
         }
-        float walk = index % 2 == 0 ? -5.1f : 3.9f;
-        b.Block(0, walk, 8.28f, .54f, .38f, Copper);
-        for (int x = -6; x <= 6; x++)
-            b.Block(x * .63f, walk, .19f, .72f, .47f, Iron);
     }
 
     public static Mesh Channel(float length)

@@ -1,6 +1,11 @@
 Shader "Shootemup/Cistern Water"
 {
-    Properties { _LakeWake("Wake from the cistern", Float) = 0 }
+    Properties
+    {
+        _LakeWake("Wake from the cistern", Float) = 0
+        [NoScaleOffset] _FlowMap("Current direction and eddies", 2D) = "gray" {}
+        [NoScaleOffset] _SurfaceMap("Surface folds and grain", 2D) = "gray" {}
+    }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "Queue"="Transparent" }
@@ -12,6 +17,8 @@ Shader "Shootemup/Cistern Water"
             #pragma vertex Vert
             #pragma fragment Frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            TEXTURE2D(_FlowMap); SAMPLER(sampler_FlowMap);
+            TEXTURE2D(_SurfaceMap); SAMPLER(sampler_SurfaceMap);
 
             CBUFFER_START(UnityPerMaterial)
             float _LakeWake;
@@ -31,16 +38,31 @@ Shader "Shootemup/Cistern Water"
 
             half4 Frag(Varyings i) : SV_Target
             {
-                float2 p = i.local;
+                if (i.color.a < .01)
+                    return half4(i.color.rgb, 1);
                 float t = _Time.y;
-                float radius = length(p * float2(1, 1.15));
-                float wake = smoothstep(.67, .98, sin(radius * 12 - t * 2.3 + p.x * .34));
-                wake *= smoothstep(.85, 1.55, radius) * (1 - smoothstep(3.35, 4.25, radius)) * _LakeWake;
-                float2 flow = i.world;
-                float surface = sin(flow.y * 13.5 + flow.x * 2.9 + sin(flow.x * 2.1 - t * .39) * .83 + t * 1.1);
-                surface = smoothstep(.70, .98, surface) * (.55 + .45 * sin(flow.x * 5.8 - flow.y * 1.74 + t * .41));
-                float3 reflection = float3(.054, .095, .082) * (wake * .78 + surface * .32);
-                return half4(i.color.rgb + reflection * i.color.a, 1);
+                float2 p = i.world;
+                float2 uv = p * float2(.164, .089) + float2(0, t * .044);
+                float4 flow = SAMPLE_TEXTURE2D(_FlowMap,sampler_FlowMap,p*.075);
+                float2 current = (flow.rg * 2 - 1) * .15;
+                float phase = frac(t * .23 + flow.b), halfPhase = frac(phase + .5);
+                // A current continually stretches and refreshes two overlapping surface phases.
+                float3 a = SAMPLE_TEXTURE2D(_SurfaceMap,sampler_SurfaceMap,uv-current*(phase-.5)).rgb;
+                float3 b = SAMPLE_TEXTURE2D(_SurfaceMap,sampler_SurfaceMap,uv-current*(halfPhase-.5)).rgb;
+                float3 detail = lerp(a,b,abs(phase*2-1));
+                float2 local = i.local * float2(1, 1.13);
+                float radius = length(local);
+                float fold = sin((p.y + sin(p.x * 1.75 + detail.g * 6) * .43 + detail.r * 1.65) * 10 + t * 1.7);
+                float sheen = smoothstep(.58,.96,fold) * smoothstep(.42,.76,detail.g);
+                float reflection = smoothstep(.64,.91,detail.b) * (.35 + sheen);
+                float wake = smoothstep(.63, .98, sin(radius * 11 - t * 3 + detail.g * 2.2));
+                wake *= smoothstep(.95, 1.70, radius) * (1 - smoothstep(3.3, 4.3, radius)) * _LakeWake;
+                float bank = smoothstep(3.1, 3.9, abs(i.local.x)) * (1-_LakeWake);
+                float foam = smoothstep(.70,.92,detail.g + sheen*.15) * bank;
+                float3 color = i.color.rgb * lerp(.79,1.17,detail.g);
+                color += float3(.058,.164,.176) * (reflection*.76 + sheen*.65 + wake*.61);
+                color += float3(.13,.22,.19) * foam * .59;
+                return half4(color, 1);
             }
             ENDHLSL
         }

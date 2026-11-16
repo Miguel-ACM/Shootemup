@@ -764,7 +764,7 @@ public sealed class LevelEnvironment : MonoBehaviour
             {
                 channel = DeepDistrictScenery.Channel(SectionLength);
                 ownedMeshes.Add(channel);
-                sewerWater = new Material(Resources.Load<Shader>("CisternWater"));
+                sewerWater = WaterSurface();
             }
             for (int i = 0; i < 4; i++)
             {
@@ -924,13 +924,21 @@ public sealed class LevelEnvironment : MonoBehaviour
             return;
         var lake = DeepDistrictScenery.Lake();
         active.ownedMeshes.Add(lake);
-        active.cisternWater = new Material(Resources.Load<Shader>("CisternWater"));
+        active.cisternWater = WaterSurface();
         active.cisternWater.SetFloat("_LakeWake", 1);
         active.Add(lake, active.transform, new Vector3(0, y, 58), -35)
             .GetComponent<MeshRenderer>().sharedMaterial = active.cisternWater;
     }
 
     Material sewerWater, cisternWater;
+
+    static Material WaterSurface()
+    {
+        var surface = new Material(Resources.Load<Shader>("CisternWater"));
+        surface.SetTexture("_FlowMap", Resources.Load<Texture2D>("CalderaFlow"));
+        surface.SetTexture("_SurfaceMap", Resources.Load<Texture2D>("CalderaCrust"));
+        return surface;
+    }
 
     Mesh Quad(string name, float width, float height)
     {

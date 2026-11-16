@@ -135,12 +135,20 @@ public static partial class IndustrialMeshFactory
             ring[i] = new Vector2(Mathf.Cos(a) * 1.87f, Mathf.Sin(a) * 1.29f);
         }
         BevelArmor(b, ring, .54f, 8, .04f, .26f);
-        b.Ball(new Vector3(0, .04f, -.27f), new Vector3(1.26f, .95f, .42f), 2);
+        // Stepped intake and structural rim make this a submerged pumping station.
+        CutHalo(b, new Vector3(0, .02f, -.30f), 1.22f, .12f, new Vector3(1.30f, .86f, 1), Quaternion.identity, 6, 10);
+        CutStone(b, new Vector3(0, .01f, -.30f), new Vector3(1.22f, .83f, .24f), 11, 10);
+        CutStone(b, new Vector3(0, .01f, -.54f), new Vector3(.76f, .48f, .12f), 2, 10);
         CutHalo(b, new Vector3(0, 0, -.64f), .65f, .11f, new Vector3(1.25f, .83f, .9f), Quaternion.identity, 13, 16);
         for (int i = -2; i <= 2; i++)
             b.Box(new Vector3(i * .22f, -.04f, -.70f), new Vector3(.095f, .53f - Mathf.Abs(i) * .08f, .19f), 14, 11);
         foreach (int side in new[] { -1, 1 })
         {
+            CutBlade(b, new[] { new Vector3(side * .62f, -.90f, -.40f), new Vector3(side * 1.12f, -.86f, -.38f), new Vector3(side * 1.55f, -.54f, -.34f) }, .13f, .14f, 6);
+            CutBlade(b, new[] { new Vector3(side * .54f, .89f, -.40f), new Vector3(side * .89f, 1.04f, -.35f), new Vector3(side * 1.13f, .80f, -.30f) }, .12f, .13f, 6);
+            b.Box(new Vector3(side * 1.15f, -.02f, -.38f), new Vector3(.20f, .58f, .15f), 6, 11);
+            for (int n = -1; n <= 1; n++)
+                CutStone(b, new Vector3(side * 1.16f, n * .19f, -.48f), new Vector3(.055f, .055f, .04f), 13, 6);
             DeepPort(b, new Vector3(side * 1.40f, -.47f, -.33f), .39f, 13);
             DeepPort(b, new Vector3(side * 1.61f, .19f, -.29f), .33f, 13);
             DeepPort(b, new Vector3(side * 1.13f, .80f, -.24f), .34f, 6);
@@ -175,10 +183,28 @@ public static partial class IndustrialMeshFactory
     {
         if (gantryCarriage != null) return gantryCarriage;
         var b = new Builder();
-        BevelArmor(b, new[] { V(-.90f, -.23f), V(-.54f, -.86f), V(.54f, -.86f), V(.90f, -.23f), V(.68f, .63f), V(.30f, .89f), V(-.30f, .89f), V(-.68f, .63f) }, .54f, 6);
-        CutHalo(b, new Vector3(0, .14f, -.44f), .46f, .105f, Vector3.one, Quaternion.identity, 11, 12);
-        CutStone(b, new Vector3(0, .12f, -.55f), new Vector3(.38f, .38f, .24f), 5, 8);
-        DeepPort(b, new Vector3(0, -.69f, -.30f), .27f, 3);
+        BevelArmor(b, new[] { V(-1.16f, -.23f), V(-.72f, -1.02f), V(.72f, -1.02f), V(1.16f, -.23f), V(.88f, .72f), V(.43f, 1.10f), V(-.43f, 1.10f), V(-.88f, .72f) }, .62f, 6);
+        foreach (int side in new[] { -1, 1 })
+        {
+            b.Box(new Vector3(side * .96f, .20f, -.36f), new Vector3(.30f, 1.15f, .28f), 0, 11);
+            b.Box(new Vector3(side * .98f, .48f, -.52f), new Vector3(.37f, .20f, .20f), 13, 6);
+            b.Box(new Vector3(side * .98f, -.23f, -.52f), new Vector3(.37f, .20f, .20f), 13, 6);
+            CutBlade(b, new[] { new Vector3(side * .44f, .89f, -.38f), new Vector3(side * .75f, .57f, -.43f), new Vector3(side * .83f, -.42f, -.40f) }, .11f, .12f, 0);
+            CutStone(b, new Vector3(side * .72f, -.66f, -.40f), new Vector3(.19f, .24f, .16f), 11, 6);
+        }
+        CutStone(b, new Vector3(0, .15f, -.34f), new Vector3(.80f, .76f, .20f), 11, 10);
+        CutHalo(b, new Vector3(0, .15f, -.57f), .67f, .12f, Vector3.one, Quaternion.identity, 0, 10);
+        CutHalo(b, new Vector3(0, .15f, -.71f), .48f, .075f, Vector3.one, Quaternion.identity, 13, 10);
+        CutStone(b, new Vector3(0, .15f, -.72f), new Vector3(.38f, .38f, .21f), 5, 8, .39f);
+        CutStone(b, new Vector3(0, .15f, -.94f), new Vector3(.19f, .19f, .08f), 3, 8, .39f);
+        for (int i = 0; i < 4; i++)
+        {
+            float angle = (i * 90 + 45) * Mathf.Deg2Rad;
+            Vector3 radial = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
+            CutBlade(b, new[] { new Vector3(0, .15f, -.65f) + radial * .80f, new Vector3(0, .15f, -.77f) + radial * .51f }, .10f, .10f, 6);
+        }
+        // The lip coincides with CoreMuzzle on the independently moving carriage.
+        DeepPort(b, new Vector3(0, -.77f, -.11f), .29f, 3);
         return gantryCarriage = b.Finish("Gantry sliding reactor carriage");
     }
 }
