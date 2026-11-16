@@ -191,8 +191,10 @@ public sealed class CandylandReview : MonoBehaviour
         ship.transform.position = new Vector3(0, Camera.DownLimit + 2, -1);
         yield return new WaitForSeconds(1);
         Capture("Scenery");
-        var backdrop = FindAnyObjectByType<CandylandBackdrop>();
-        Check(backdrop != null && backdrop.CandyCount == 30, "layered cotton-candy clouds and 30 sweets across five modeled types loaded");
+        var scenery = FindAnyObjectByType<LevelEnvironment>();
+        Check(scenery != null && scenery.GetComponentsInChildren<MeshFilter>().Count(m =>
+            m.sharedMesh != null && m.sharedMesh.name == CandylandBackdrop.VillageMeshName) == 4,
+            "four scrolling Candyland village sections loaded");
         foreach (int budget in new[] { 2, 10, 20 })
         {
             Clear();

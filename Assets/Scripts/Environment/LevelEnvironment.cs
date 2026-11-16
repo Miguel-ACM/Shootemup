@@ -733,9 +733,20 @@ public sealed class LevelEnvironment : MonoBehaviour
         }
         else if (level == LevelId.Candyland)
         {
-            var candy = new GameObject("Candyland sky and falling sweets");
-            candy.transform.SetParent(transform, false);
-            candy.AddComponent<CandylandBackdrop>();
+            var village = new CandylandBackdrop(LevelRun.Seed);
+            for (int i = 0; i < 4; i++)
+            {
+                var section = new GameObject("Candyland village " + i).transform;
+                section.SetParent(transform, false);
+                section.localPosition = new Vector3(0, SectionY(i, travel), 90);
+                village.BuildSection(i, SectionLength, out var ground, out var buildings);
+                ownedMeshes.Add(ground);
+                ownedMeshes.Add(buildings);
+                Add(ground, section, Vector3.zero, -50);
+                Add(buildings, section, Vector3.zero, -40);
+                sections.Add(section);
+                yield return null;
+            }
         }
         else if (level == LevelId.Thunder)
         {
@@ -1046,8 +1057,9 @@ public sealed class LevelEnvironment : MonoBehaviour
         {
             float y = SectionY(i, travel);
             sections[i].localPosition = new Vector3(HorizontalOffset, y, 90);
-            foreground[i].localPosition = new Vector3(HorizontalOffset * 1.65f, y, 76);
         }
+        for (int i = 0; i < foreground.Count; i++)
+            foreground[i].localPosition = new Vector3(HorizontalOffset * 1.65f, SectionY(i, travel), 76);
         if (flakes != null)
             UpdateWeather(dt);
         if (snowFoliageMaterial != null)
