@@ -6,7 +6,7 @@ public enum UpgradeKind
     Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice, RelaySwitch, LiveWire,
     TapeMeasure, BrassKnuckles, Matchbox, Compost, PiggyBank, LoanShark, SecondWind,
     Lighthouse, GoldenCrown, Midas, EchoChamber, Metronome, EventHorizon, Hive, TrophyCase,
-    EnergyShield, RechargingShield, DeflectorPlate, SparkPlug, ColdCoil, AirPump, RubberMallet, PaddedSeat, Flyswatter, Crowbar, BenchRest
+    EnergyShield, RechargingShield, DeflectorPlate, SparkPlug, ColdCoil, AirPump, RubberMallet, PaddedSeat, Flyswatter, Crowbar, BenchRest, TicketPunch
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -22,6 +22,7 @@ public sealed class CombatUpgrades : MonoBehaviour
     readonly float[] relayCharge = new float[2], relayBurst = new float[2];
     float capacitor, battery, reserve, focusUntil;
     int volleys, focus, coins, blocks, arrivedStage;
+    int punchedKills;
     AEnemy focused;
     public bool ReturnThisVolley
     {
@@ -58,6 +59,8 @@ public sealed class CombatUpgrades : MonoBehaviour
             reserve = Count(kind) > 0 ? reserve : 0;
         if (kind == UpgradeKind.Capacitor && Count(kind) == 0)
             capacitor = 0;
+        if (kind == UpgradeKind.TicketPunch && Count(kind) == 0)
+            punchedKills = 0;
         if (kind == UpgradeKind.RelaySwitch && Count(kind) == 0)
         {
             ResetRelaySlot(0);
@@ -396,6 +399,14 @@ public sealed class CombatUpgrades : MonoBehaviour
 
     public void Killed(AEnemy enemy)
     {
+        int punches = Count(UpgradeKind.TicketPunch);
+        if (punches > 0 && ++punchedKills >= 5)
+        {
+            punchedKills = 0;
+            for (int i = 0; i < punches; i++)
+                enemy.DropVendingCoin();
+            RunInventory.Ping(UpgradeKind.TicketPunch);
+        }
         MatchStrike.Spread(enemy);
         if (Count(UpgradeKind.Compost) > 0)
             CompostHeap.Leave(enemy, Count(UpgradeKind.Compost));

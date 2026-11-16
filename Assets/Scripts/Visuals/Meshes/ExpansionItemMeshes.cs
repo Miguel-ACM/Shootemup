@@ -28,6 +28,18 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(TicketPunch))
+        {
+            b.Drum(new Vector3(.20f, -.015f, 0), .13f, .18f, 11, 10, 6);
+            b.Drum(new Vector3(.20f, -.015f, -.12f), .05f, .067f, 6, 8);
+            b.Prism(new[] { new Vector2(-.42f, .29f), new Vector2(.19f, .105f), new Vector2(.22f, .012f),
+                new Vector2(.03f, .032f), new Vector2(-.43f, .178f) }, .143f, 11, Vector3.zero, 6);
+            b.Prism(new[] { new Vector2(-.42f, -.29f), new Vector2(-.43f, -.178f), new Vector2(.03f, -.032f),
+                new Vector2(.22f, -.012f), new Vector2(.19f, -.105f) }, .143f, 11, Vector3.zero, 6);
+            b.Box(new Vector3(.302f, -.027f, 0), new Vector3(.18f, .072f, .14f), 11);
+            b.Box(new Vector3(.393f, -.064f, 0), new Vector3(.049f, .073f, .095f), 6);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(BenchRest))
         {
             b.Box(new Vector3(0, -.225f, 0), new Vector3(.63f, .11f, .35f), 6, 11);
