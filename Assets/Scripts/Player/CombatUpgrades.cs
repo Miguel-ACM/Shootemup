@@ -6,7 +6,7 @@ public enum UpgradeKind
     Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice, RelaySwitch, LiveWire,
     TapeMeasure, BrassKnuckles, Matchbox, Compost, PiggyBank, LoanShark, SecondWind,
     Lighthouse, GoldenCrown, Midas, EchoChamber, Metronome, EventHorizon, Hive, TrophyCase,
-    EnergyShield, RechargingShield, DeflectorPlate, SparkPlug, ColdCoil, AirPump, RubberMallet, PaddedSeat, Flyswatter
+    EnergyShield, RechargingShield, DeflectorPlate, SparkPlug, ColdCoil, AirPump, RubberMallet, PaddedSeat, Flyswatter, Crowbar
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -210,6 +210,12 @@ public sealed class CombatUpgrades : MonoBehaviour
         {
             damage *= 1 + .25f * swatters;
             if (Ready("flyswatter", .3f)) RunInventory.Ping(UpgradeKind.Flyswatter);
+        }
+        int crowbars = enemy.IsBossTarget ? Count(UpgradeKind.Crowbar) : 0;
+        if (crowbars > 0)
+        {
+            damage *= 1 + .2f * crowbars;
+            if (Ready("crowbar", .3f)) RunInventory.Ping(UpgradeKind.Crowbar);
         }
         if (companion)
             damage *= 1 + Count(UpgradeKind.Drone) * .2f + Count(UpgradeKind.Squad) * .5f;

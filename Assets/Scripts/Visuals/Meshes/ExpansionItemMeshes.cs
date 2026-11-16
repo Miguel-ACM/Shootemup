@@ -28,6 +28,16 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(Crowbar))
+        {
+            EquipmentRod(b, new Vector3(-.17f, -.40f, 0), new Vector3(.09f, .28f, 0), .054f, 1);
+            EquipmentRod(b, new Vector3(.09f, .28f, 0), new Vector3(.195f, .355f, -.005f), .059f, 1);
+            EquipmentRod(b, new Vector3(.195f, .355f, -.005f), new Vector3(.31f, .32f, -.018f), .062f, 1);
+            b.Box(new Vector3(.311f, .29f, -.05f), new Vector3(.085f, .092f, .037f), 11, 6);
+            b.Box(new Vector3(.311f, .29f, .021f), new Vector3(.085f, .092f, .037f), 11, 6);
+            b.Box(new Vector3(-.184f, -.411f, 0), new Vector3(.117f, .082f, .072f), 11, 6);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(Flyswatter))
         {
             b.Can(new Vector3(0, -.19f, 0), .039f, .49f, 10, 6);
