@@ -28,6 +28,24 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(Pufferfish))
+        {
+            b.Ball(new Vector3(0, -.017f, .04f), new Vector3(.57f, .57f, .33f), 9);
+            b.Ball(new Vector3(0, -.072f, -.091f), new Vector3(.43f, .37f, .16f), 3);
+            for (int n = 0; n < 9; n++)
+            {
+                float angle = (n + .5f) * Mathf.PI * 2 / 9;
+                var axis = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
+                var across = new Vector3(axis.y, -axis.x, 0) * .047f;
+                Vector2 baseA = axis * .24f + across, baseB = axis * .24f - across;
+                b.Prism(new[] { baseA, baseB, (Vector2)(axis * .357f) }, .058f, n % 2 == 0 ? 9 : 11, Vector3.zero, 6);
+            }
+            foreach (int side in new[] { -1, 1 })
+                b.Ball(new Vector3(side * .113f, .095f, -.158f), Vector3.one * .094f, 6);
+            b.Drum(new Vector3(0, .18f, -.145f), .061f, .046f, 10, 8, 6);
+            b.Drum(new Vector3(0, .182f, -.172f), .033f, .019f, 6, 8);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(Wasp))
         {
             b.Ball(new Vector3(0, -.12f, .04f), new Vector3(.26f, .51f, .24f), 10);

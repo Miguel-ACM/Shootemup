@@ -99,6 +99,12 @@ public abstract class CombatRound : AEnemyBullet
     }
     protected bool ended;
     public bool IsInterceptable => !ended && isActiveAndEnabled && collision != null && collision.enabled && !(this is PulseLaser);
+    Vector2 puffVelocity;
+
+    public void PuffAway(Vector2 velocity)
+    {
+        puffVelocity = Vector2.ClampMagnitude(puffVelocity + velocity, 9);
+    }
     public int generation;
     // Identifies one launch of this pooled object, so an owner holding a reference can tell
     // whether the round it fired is still the one flying.
@@ -490,6 +496,13 @@ public abstract class CombatRound : AEnemyBullet
         if (dt > 0) lastVelocity = (transform.position - wallFrom) / dt;
         if (!ended && !leaving)
             Program();
+        if (!ended && puffVelocity != Vector2.zero)
+        {
+            var step = (Vector3)(puffVelocity * Time.deltaTime);
+            transform.position += step;
+            origin += step; // Helix rounds use their launch origin rather than their current position.
+            puffVelocity = Vector2.MoveTowards(puffVelocity, Vector2.zero, 26 * Time.deltaTime);
+        }
         if (!ended && !(this is PulseLaser) && PocketWind.Current != null)
             transform.position += PocketWind.Velocity(transform.position) * Time.deltaTime;
         if (!ended && !(this is PulseLaser) && EventHorizon.Active)
@@ -543,7 +556,8 @@ public abstract class CombatRound : AEnemyBullet
         // Destructible plasma must remain hittable by player fire anywhere.
         // Beams do their own analytic collision; mines keep their arming rules.
         bool simulate = this is PlasmaOrb || (!(this is PulseLaser) && collision.enabled &&
-            ProjectileCollisionWindow.Relevant(transform.position, collisionReach, ContactSpeed));
+            ProjectileCollisionWindow.Relevant(transform.position, collisionReach,
+                ContactSpeed + (puffVelocity == Vector2.zero ? 0 : puffVelocity.magnitude)));
         if (body.simulated != simulate)
             body.simulated = simulate;
     }
@@ -593,6 +607,7 @@ public abstract class CombatRound : AEnemyBullet
 
     void ResetProgram()
     {
+        puffVelocity = Vector2.zero;
         explicitLifetime = programBudgeted = false;
         leaving = false;
         lastVelocity = exitVelocity = Vector2.zero;
