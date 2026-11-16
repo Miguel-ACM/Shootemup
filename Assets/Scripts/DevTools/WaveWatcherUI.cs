@@ -95,12 +95,12 @@ public sealed partial class WaveWatcher
         rightPanel = Box(transform, "Watcher catalog", new Vector2(365, 0), new Vector2(270, 674), Panel);
         Label(leftPanel, "WAVE WATCHER", 22, new Vector2(0, 307), new Vector2(250, 36)).color = Accent;
         Rule(leftPanel, 286);
-        // Districts in route order, two per row: early tiers on top, Hell last.
-        foreach (var level in new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Desert, LevelId.Thunder, LevelId.Tunnel, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell, LevelId.Heaven, LevelId.Void })
+        // Keep two district buttons per row above the difficulty controls.
+        foreach (var level in new[] { LevelId.Fields, LevelId.Snow, LevelId.City, LevelId.Desert, LevelId.Thunder, LevelId.Tunnel, LevelId.Mushroom, LevelId.Candyland, LevelId.Space, LevelId.Underwater, LevelId.Hell, LevelId.Heaven, LevelId.Sewers, LevelId.Core, LevelId.Dream, LevelId.Void })
         {
             int index = levels.Count;
             var chosen = level;
-            levels[level] = Button(leftPanel, level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(), new Vector2(index % 2 == 0 ? -58 : 58, 266 - index / 2 * 25), new Vector2(112, 22), () => SelectLevel(chosen)).GetComponent<Image>();
+            levels[level] = Button(leftPanel, level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(), new Vector2(index % 2 == 0 ? -58 : 58, 269 - index / 2 * 19), new Vector2(112, 18), () => SelectLevel(chosen)).GetComponent<Image>();
         }
         foreach (var difficulty in new[] { RunDifficulty.Easy, RunDifficulty.Normal, RunDifficulty.Hard })
         {

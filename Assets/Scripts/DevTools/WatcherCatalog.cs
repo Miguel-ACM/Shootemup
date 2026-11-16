@@ -31,6 +31,10 @@ public static class WatcherCatalog
             case LevelId.Heaven:
                 return new[] { typeof(DawnGatekeeper) };
             case LevelId.Void:
+            case LevelId.Sewers:
+            case LevelId.Core:
+            case LevelId.Mushroom:
+            case LevelId.Dream:
                 return Array.Empty<Type>();
             case LevelId.Hell:
                 return new[] { typeof(SkullRevenant), typeof(GhostGalleon), typeof(CinderImp), typeof(InfernalFerryman) };

@@ -37,7 +37,8 @@ public sealed class BossHullCollider : MonoBehaviour
     {
         var thrusters = boss.GetComponent<EnemyThrusters>();
         foreach (var filter in boss.Hull.GetComponentsInChildren<MeshFilter>(true))
-            if (thrusters == null || !thrusters.IsExhaust(filter.transform))
+            if ((thrusters == null || !thrusters.IsExhaust(filter.transform)) &&
+                (!(boss is DreamPainter) || filter.transform == boss.Hull))
                 parts.Add(new Part { filter = filter, renderer = filter.GetComponent<MeshRenderer>() });
         if (boss is VoidSovereignBoss)
             for (int form = 0; form < 4; form++)

@@ -36,6 +36,10 @@ public static class LevelProjectilePalette
                 return new Color(.29f, 1, .055f);
             case LevelId.Core:
                 return new Color(1, .085f, .14f);
+            case LevelId.Mushroom:
+                return new Color(1f, .63f, .13f);
+            case LevelId.Dream:
+                return new Color(.47f, .75f, 1f);
             case LevelId.Void:
                 return new Color(.72f, .25f, 1);
             default:

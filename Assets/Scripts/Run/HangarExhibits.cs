@@ -10,8 +10,8 @@ public sealed partial class HangarHub
     List<GameObject> pageNodes => pages[room];
     static readonly string[] categories = { "ALL PARTS", "PASSIVES", "ACTIVES", "PARTNERS", "GUNS", "SECONDARIES" };
     static readonly LevelId[] districts ={LevelId.Fields,LevelId.Snow,LevelId.City,LevelId.Thunder,LevelId.Desert,
-        LevelId.Tunnel,LevelId.Candyland,LevelId.Space,LevelId.Underwater,LevelId.Sewers,LevelId.Hell,LevelId.Heaven,LevelId.Core,LevelId.Void};
-    static readonly string[] districtMarks = { "PL", "SN", "CI", "TH", "DE", "TU", "CA", "SP", "UW", "SE", "HL", "HV", "CO", "VO" };
+        LevelId.Tunnel,LevelId.Mushroom,LevelId.Candyland,LevelId.Space,LevelId.Underwater,LevelId.Sewers,LevelId.Hell,LevelId.Heaven,LevelId.Core,LevelId.Dream,LevelId.Void};
+    static readonly string[] districtMarks = { "PL", "SN", "CI", "TH", "DE", "TU", "MU", "CA", "SP", "UW", "SE", "HL", "HV", "CO", "DR", "VO" };
     static int Cycle(int n, int count) => count == 0 ? 0 : (n % count + count) % count;
     void Navigate(bool horizontal, int step)
     {
@@ -146,8 +146,8 @@ public sealed partial class HangarHub
             float x = -250 + i * (500f / (districts.Length - 1));
             int bit = 1 << (int)districts[i];
             bool clear = (record.clears & bit) != 0, clean = (record.flawless & bit) != 0;
-            Tile(x, -22, 35, 43, DockInstrument.Ink);
-            Photo(Resources.Load<Texture2D>("DockArt/Stamp" + districts[i]), new Rect(0, 0, 1, 1), x, -22, 33,
+            Tile(x, -22, 30, 43, DockInstrument.Ink);
+            Photo(Resources.Load<Texture2D>("DockArt/Stamp" + districts[i]), new Rect(0, 0, 1, 1), x, -22, 28,
                 clean ? DockInstrument.Brass : clear ? DockInstrument.Sea : new Color(.40f, .47f, .48f));
             Legend(districtMarks[i], x, -60, 50, 24, 17, DockInstrument.Paper).alignment = TextAlignmentOptions.Center;
         }

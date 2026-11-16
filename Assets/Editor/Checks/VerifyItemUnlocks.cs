@@ -253,9 +253,9 @@ public static class VerifyItemUnlocks
             Check(MetaProgress.RouteOpen(area) == starting.Contains(area), "Fresh save has both starting branches: " + area);
         var unlocks = new[]
         {
-            (LevelId.Snow, LevelId.Desert), (LevelId.City, LevelId.Candyland),
+            (LevelId.Snow, LevelId.Desert), (LevelId.City, LevelId.Mushroom),
             (LevelId.Thunder, LevelId.Space), (LevelId.Desert, LevelId.Sewers), (LevelId.Sewers, LevelId.Core), (LevelId.Core, LevelId.Void),
-            (LevelId.Tunnel, LevelId.Underwater), (LevelId.Candyland, LevelId.Underwater),
+            (LevelId.Tunnel, LevelId.Underwater), (LevelId.Mushroom, LevelId.Candyland), (LevelId.Candyland, LevelId.Dream), (LevelId.Dream, LevelId.Void),
             (LevelId.Space, LevelId.Heaven), (LevelId.Underwater, LevelId.Hell),
             (LevelId.Heaven, LevelId.Void), (LevelId.Hell, LevelId.Void)
         };

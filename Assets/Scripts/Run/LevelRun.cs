@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum LevelId
 {
-    Fields, Tunnel, Snow, Thunder, City, Desert, Candyland, Space, Underwater, Hell, Heaven, Void, Sewers, Core
+    Fields, Tunnel, Snow, Thunder, City, Desert, Candyland, Space, Underwater, Hell, Heaven, Void, Sewers, Core, Mushroom, Dream
 }
 
 public static class LevelRun
@@ -52,6 +52,10 @@ public static class LevelRun
             case LevelId.Underwater:
                 // The submarine fires a little fewer rounds than before (Miguel, 9 November 2026).
                 return boss ? 1.0f : 1.35f;
+            case LevelId.Mushroom:
+                return boss ? 1.13f : 1.18f;
+            case LevelId.Dream:
+                return boss ? 1.28f : 1.38f;
             case LevelId.Sewers:
                 return boss ? 1.10f : 1.25f;
             case LevelId.Core:
@@ -80,8 +84,9 @@ public static class LevelRun
             case LevelId.Thunder:
             case LevelId.Tunnel:
             case LevelId.Desert:
-            case LevelId.Candyland:
+            case LevelId.Mushroom:
                 return 3;
+            case LevelId.Candyland:
             case LevelId.Space:
             case LevelId.Underwater:
             case LevelId.Sewers:
@@ -89,6 +94,7 @@ public static class LevelRun
             case LevelId.Hell:
             case LevelId.Heaven:
             case LevelId.Core:
+            case LevelId.Dream:
                 return 5;
             case LevelId.Void:
                 return 6;
@@ -158,7 +164,7 @@ public static class LevelRun
             case LevelId.Snow:
                 return new[] { LevelId.Thunder, LevelId.Desert };
             case LevelId.City:
-                return new[] { LevelId.Tunnel, LevelId.Candyland };
+                return new[] { LevelId.Tunnel, LevelId.Mushroom };
             case LevelId.Thunder:
                 return new[] { LevelId.Space };
             case LevelId.Desert:
@@ -166,8 +172,11 @@ public static class LevelRun
             case LevelId.Sewers:
                 return new[] { LevelId.Core };
             case LevelId.Tunnel:
-            case LevelId.Candyland:
                 return new[] { LevelId.Underwater };
+            case LevelId.Mushroom:
+                return new[] { LevelId.Candyland };
+            case LevelId.Candyland:
+                return new[] { LevelId.Dream };
             case LevelId.Space:
                 return new[] { LevelId.Heaven };
             case LevelId.Underwater:
@@ -175,6 +184,7 @@ public static class LevelRun
             case LevelId.Heaven:
             case LevelId.Hell:
             case LevelId.Core:
+            case LevelId.Dream:
                 return new[] { LevelId.Void };
             case LevelId.Void:
                 return System.Array.Empty<LevelId>();
@@ -211,6 +221,10 @@ public static class LevelRun
                 return new Color(.58f, .83f, .28f);
             case LevelId.Core:
                 return new Color(.87f, .25f, .23f);
+            case LevelId.Mushroom:
+                return new Color(.89f, .40f, .26f);
+            case LevelId.Dream:
+                return new Color(.58f, .72f, 1f);
             case LevelId.Void:
                 return new Color(.66f, .32f, .97f);
             default:
@@ -246,6 +260,10 @@ public static class LevelRun
                 return "THE FLOOD CHAMBERS";
             case LevelId.Core:
                 return "THE CRUSHING ENGINE";
+            case LevelId.Mushroom:
+                return "THE SPOREWOOD";
+            case LevelId.Dream:
+                return "A PAINTED SLEEP";
             case LevelId.Void:
                 return "BEYOND THE LAST LIGHT";
             default:

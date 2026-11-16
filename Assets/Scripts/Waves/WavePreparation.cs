@@ -41,6 +41,10 @@ public sealed class WavePreparation : MonoBehaviour
         yield return PlayerRound.Prepare();
         if (LevelRun.Current == LevelId.Space)
             _ = SpaceMaterials.Fleet;
+        if (LevelRun.Current == LevelId.Mushroom)
+            SporeCloud.Warm();
+        if (LevelRun.Current == LevelId.Dream)
+            _ = IndustrialMeshFactory.DreamHandMesh();
         if (LevelRun.Current == LevelId.Tunnel)
             for (int layout = 1; layout <= TunnelPassage.LayoutCount; layout++)
             {

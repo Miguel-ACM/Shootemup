@@ -757,6 +757,27 @@ public sealed class LevelEnvironment : MonoBehaviour
             }
             AddAtmosphere("Drifting rose mist", 0, 44, new Color(.58f, .37f, .52f, .68f), 1.45f, .62f);
         }
+        else if (level == LevelId.Mushroom || level == LevelId.Dream)
+        {
+            if (level == LevelId.Dream)
+            {
+                Destroy(material);
+                material = new Material(Resources.Load<Shader>("DreamCanvas"));
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                var tile = new GameObject(level + " scenery " + i).transform;
+                tile.SetParent(transform, false);
+                tile.localPosition = new Vector3(0, SectionY(i, travel), 90);
+                var mesh = FableDistrictScenery.Section(level, LevelRun.Seed, i, SectionLength);
+                ownedMeshes.Add(mesh);
+                Add(mesh, tile, Vector3.zero, -50);
+                sections.Add(tile);
+                yield return null;
+            }
+            if (level == LevelId.Mushroom)
+                AddAtmosphere("Forest-floor mist", 0, 61, new Color(.20f, .24f, .26f, .23f), 1.14f, .46f);
+        }
         else if (level == LevelId.Sewers || level == LevelId.Core)
         {
             Mesh channel = null;

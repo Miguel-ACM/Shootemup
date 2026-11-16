@@ -45,7 +45,7 @@ public sealed class DistrictHazards : MonoBehaviour
         float now = Time.time;
         if (next < 0)
         {
-            next = now + 3.5f;
+            next = now + (LevelRun.Current == LevelId.Mushroom ? 2.1f : 3.5f);
             return;
         }
         float rest = Difficulty.Easy ? 1.35f : Difficulty.Hard ? .8f : 1;
@@ -56,6 +56,13 @@ public sealed class DistrictHazards : MonoBehaviour
         }
         if (now < next)
             return;
+        if (LevelRun.Current == LevelId.Mushroom)
+        {
+            var entry = new Vector3(R(Camera.LeftLimit + 1.6f, Camera.RightLimit - 1.6f), Camera.UpLimit + 1.28f);
+            SporeCloud.Drop(entry, R(0, 6.28f));
+            next = now + R(5.8f, 7.6f) * rest;
+            return;
+        }
         switch (condition)
         {
             // Spaced well apart (Miguel found the first pass far too busy, 15 November 2026).

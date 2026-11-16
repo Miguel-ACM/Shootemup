@@ -365,6 +365,8 @@ public class Shipcontroller : MonoBehaviour
         if (sewerDrag > 0 && !HangarHub.Active)
             speedMultiplier *= .56f;
         var steering = SimulatorFlight.Steering(move, transform.position);
+        if (SporeCloud.Confuses(CombatVisuals.PlayerHitPoint))
+            steering.x = -steering.x;
         horizontalMove = steering.x * GameRules.playerMoveSpeed * GameClock.PlayerDelta * speedMultiplier;
         verticalMove = steering.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * GameClock.PlayerDelta * speedMultiplier;
         // Underwater handling holds everywhere in the district (Miguel, 15 November 2026):

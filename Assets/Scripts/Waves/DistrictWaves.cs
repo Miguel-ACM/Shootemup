@@ -22,7 +22,9 @@ public static class DistrictWaves
         new[] { typeof(SeraphJudicatorBoss) },
         new[] { typeof(VoidSovereignBoss) },
         new[] { typeof(CisternHeart) },
-        new[] { typeof(CoreGantry) }
+        new[] { typeof(CoreGantry) },
+        new[] { typeof(MushroomWarden) },
+        new[] { typeof(DreamPainter) }
     };
     public static IReadOnlyList<Type> Bosses(LevelId district) => bosses[(int)district];
     public static Type BossType => Bosses(LevelRun.Current)[0];
@@ -32,7 +34,7 @@ public static class DistrictWaves
     public static string[] Sequence() => LevelRun.Current == LevelId.Void ? new[] { "boss" } : (string[])CampaignSequence.Clone();
     public static Wave Miniboss()
     {
-        string[] types = { nameof(FieldsHeavyWing), nameof(TunnelDefensePlatform), nameof(SnowSiegeCraft), nameof(StormReactor), nameof(CityCommandCarrier), nameof(ScarabDredger), nameof(TaffyDuelist), nameof(OrbitalWarden), nameof(ReefLeviathan), nameof(InfernalFerryman), nameof(DawnGatekeeper), null, nameof(GrateKeeper), nameof(PressWarden) };
+        string[] types = { nameof(FieldsHeavyWing), nameof(TunnelDefensePlatform), nameof(SnowSiegeCraft), nameof(StormReactor), nameof(CityCommandCarrier), nameof(ScarabDredger), nameof(TaffyDuelist), nameof(OrbitalWarden), nameof(ReefLeviathan), nameof(InfernalFerryman), nameof(DawnGatekeeper), null, nameof(GrateKeeper), nameof(PressWarden), nameof(MushroomChampion), nameof(DreamChampion) };
         return new Wave(6, 23, 1, ConflictGroup.cg.center, new List<WaveUnit> { new WaveUnit(types[(int)LevelRun.Current], 0, new Vector3(0, 1.2f, 1)) { miniboss = true } }) { parts = new[] { types[(int)LevelRun.Current] } };
     }
 

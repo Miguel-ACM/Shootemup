@@ -35,17 +35,21 @@ public static partial class MetaProgress
 
     /// <summary>Whether the campaign may fly into this district. Simulator contracts never choose routes.</summary>
     public static bool RouteOpen(LevelId level) =>
-        ReviewOpensAllRoutes || RouteUnlocks.OpenAtStart(level) || (flight != null && runRoutes != null ? runRoutes : Data.routes).Contains(level.ToString());
+        ReviewOpensAllRoutes || RouteUnlocks.OpenAtStart(level) || RouteIn(flight != null && runRoutes != null ? runRoutes : Data.routes, level);
 
-    internal static bool HasUnlockedRoute(LevelId level) => RouteUnlocks.OpenAtStart(level) || Data.routes.Contains(level.ToString());
+    internal static bool HasUnlockedRoute(LevelId level) => RouteUnlocks.OpenAtStart(level) || RouteIn(Data.routes, level);
 
-    public static bool RouteOpensNextFlight(LevelId level) => !RouteOpen(level) && Data.routes.Contains(level.ToString());
+    // City used to award Candyland's chart. That chart still opens City's forest branch.
+    static bool RouteIn(List<string> routes, LevelId level) => routes.Contains(level.ToString()) ||
+        level == LevelId.Mushroom && routes.Contains(nameof(LevelId.Candyland));
+
+    public static bool RouteOpensNextFlight(LevelId level) => !RouteOpen(level) && RouteIn(Data.routes, level);
 
     static void AwardRoutes()
     {
         foreach (var level in RouteUnlocks.OpenedBy(LevelRun.Current))
         {
-            if (Data.routes.Contains(level.ToString())) continue;
+            if (RouteIn(Data.routes, level)) continue;
             Data.routes.Add(level.ToString());
             var notice = new ItemUnlockNotice
             {

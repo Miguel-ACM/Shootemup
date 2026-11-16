@@ -34,6 +34,26 @@ public static class EnemyExpansion
         => new Entry(level, type, (int)id, scale, nose, () => IndustrialMeshFactory.DeepHull(id), ports, Array.Empty<Vector3>(), parts);
 
     public static readonly Entry[] All = {
+        new Entry(LevelId.Mushroom, typeof(SporeBell), (int)CombatHullId.SporeBell, .61f, false, IndustrialMeshFactory.SporeBellMesh,
+            new[] { new Vector3(0f, -.59f, -.26f) }, Array.Empty<Vector3>(), WavePartLibrary.SporeBellParts),
+        new Entry(LevelId.Mushroom, typeof(CapRicochet), (int)CombatHullId.CapRicochet, .44f, false, IndustrialMeshFactory.CapRicochetMesh,
+            new[] { new Vector3(0f, -.72f, -.24f) }, Array.Empty<Vector3>(), WavePartLibrary.CapRicochetParts),
+        new Entry(LevelId.Mushroom, typeof(MyceliumLancer), (int)CombatHullId.MyceliumLancer, .56f, false, IndustrialMeshFactory.MyceliumLancerMesh,
+            new[] { new Vector3(0f, -.86f, -.24f) }, Array.Empty<Vector3>(), WavePartLibrary.MyceliumLancerParts),
+        new Entry(LevelId.Mushroom, typeof(MushroomChampion), (int)CombatHullId.MushroomChampion, 1.04f, false, IndustrialMeshFactory.MushroomChampionMesh,
+            new[] { new Vector3(-.48f, -.47f, -.28f), new Vector3(.48f, -.47f, -.28f) }, Array.Empty<Vector3>(), Array.Empty<WavePart>()),
+        new Entry(LevelId.Mushroom, typeof(MushroomWarden), (int)CombatHullId.MushroomWarden, .92f, false, IndustrialMeshFactory.MushroomWardenMesh,
+            new[] { new Vector3(-.9f, -.02f, -.24f), new Vector3(.9f, -.02f, -.24f), new Vector3(0f, -1.13f, -.28f) }, Array.Empty<Vector3>(), Array.Empty<WavePart>()),
+        new Entry(LevelId.Dream, typeof(PaperKite), (int)CombatHullId.PaperKite, .48f, false, IndustrialMeshFactory.PaperKiteMesh,
+            new[] { new Vector3(0f, -.85f, -.22f) }, Array.Empty<Vector3>(), WavePartLibrary.PaperKiteParts),
+        new Entry(LevelId.Dream, typeof(CrescentDancer), (int)CombatHullId.CrescentDancer, .62f, false, IndustrialMeshFactory.CrescentDancerMesh,
+            new[] { new Vector3(-.5f, -.53f, -.22f), new Vector3(.5f, -.53f, -.22f) }, Array.Empty<Vector3>(), WavePartLibrary.CrescentDancerParts),
+        new Entry(LevelId.Dream, typeof(PaintedMask), (int)CombatHullId.PaintedMask, .76f, false, IndustrialMeshFactory.PaintedMaskMesh,
+            new[] { new Vector3(.12f, -.77f, -.24f) }, Array.Empty<Vector3>(), WavePartLibrary.PaintedMaskParts),
+        new Entry(LevelId.Dream, typeof(DreamChampion), (int)CombatHullId.DreamChampion, .96f, false, IndustrialMeshFactory.DreamChampionMesh,
+            new[] { new Vector3(-.76f, -.45f, -.25f), new Vector3(.76f, -.45f, -.25f) }, Array.Empty<Vector3>(), Array.Empty<WavePart>()),
+        new Entry(LevelId.Dream, typeof(DreamPainter), (int)CombatHullId.DreamPainter, .97f, false, IndustrialMeshFactory.DreamPainterMesh,
+            Array.Empty<Vector3>(), Array.Empty<Vector3>(), Array.Empty<WavePart>()),
         DeepEntry(LevelId.Sewers, typeof(PlagueMote), CombatHullId.PlagueMote, .24f, false, WavePartLibrary.PlagueMoteParts),
         DeepEntry(LevelId.Sewers, typeof(SiltLeech), CombatHullId.SiltLeech, .51f, false, WavePartLibrary.SiltLeechParts),
         DeepEntry(LevelId.Sewers, typeof(SluiceBarge), CombatHullId.SluiceBarge, .81f, false, WavePartLibrary.SluiceBargeParts, new Vector3(-.46f, -.84f, -.43f), new Vector3(0f, -.84f, -.43f), new Vector3(.46f, -.84f, -.43f)),
@@ -104,7 +124,7 @@ public static class EnemyExpansion
     {
         var result = new List<Type>(types);
         foreach (var entry in All)
-            if (entry.level == level)
+            if (entry.level == level && !typeof(DistrictBoss).IsAssignableFrom(entry.type))
                 result.Add(entry.type);
         return result.ToArray();
     }

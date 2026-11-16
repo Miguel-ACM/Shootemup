@@ -269,6 +269,8 @@ public static class WaveComposer
         // three interleaved motifs rather than excluding every long laser formation.
         if (level == LevelId.Heaven)
             window = compact ? 14 : 12.5f;
+        if (level == LevelId.Dream)
+            window = compact ? 14f : budget < 5 ? 11.3f : 12.5f;
         float slowest = 1;
         foreach (var part in WavePartLibrary.For(level))
             slowest = Mathf.Min(slowest, EnemyTuning.MovementFor(part.Enemy));
@@ -320,7 +322,8 @@ public static class WaveComposer
                     var motion = Make(option.part, variant + variation, variation == 0 || fixedSide ? side : -side);
                     if (motion == null)
                         continue;
-                    if (motion.Span > window || (compact && option.part != featuredGate && motion.Span > (level == LevelId.Heaven ? 9.5f : 6.2f) / slowest))
+                    if (motion.Span > window || (compact && option.part != featuredGate &&
+                        motion.Span > (level == LevelId.Heaven || level == LevelId.Dream ? 9.5f : 6.2f) / slowest))
                         continue;
                     if (slot == 0)
                     {
@@ -468,6 +471,8 @@ public static partial class WavePartLibrary
             case LevelId.Void:
             case LevelId.Sewers:
             case LevelId.Core:
+            case LevelId.Mushroom:
+            case LevelId.Dream:
                 return Array.Empty<WavePart>();
             case LevelId.Fields:
                 return plainsWithGround ?? (plainsWithGround = WithGround(Plains, PlainsGround, PlainsForestGround, PlainsDusk, PlainsNight));

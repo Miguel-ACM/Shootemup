@@ -11,18 +11,18 @@ public static class VerifyRunProgression
         {
             Check((int)LevelId.Fields == 0 && (int)LevelId.Tunnel == 1 && (int)LevelId.Snow == 2 && (int)LevelId.Thunder == 3 &&
                 (int)LevelId.City == 4 && (int)LevelId.Desert == 5 && (int)LevelId.Candyland == 6 && (int)LevelId.Space == 7, "Serialized district IDs changed");
-            foreach (var third in new[] { LevelId.Thunder, LevelId.Desert, LevelId.Tunnel, LevelId.Candyland })
+            foreach (var third in new[] { LevelId.Thunder, LevelId.Desert, LevelId.Tunnel, LevelId.Mushroom })
             {
                 const int seed = 17381;
                 bool upper = third == LevelId.Thunder || third == LevelId.Desert;
                 var middle = upper ? LevelId.Snow : LevelId.City;
-                var fourth = third == LevelId.Desert ? LevelId.Sewers : upper ? LevelId.Space : LevelId.Underwater;
-                var fifth = third == LevelId.Desert ? LevelId.Core : upper ? LevelId.Heaven : LevelId.Hell;
+                var fourth = third == LevelId.Desert ? LevelId.Sewers : third == LevelId.Mushroom ? LevelId.Candyland : upper ? LevelId.Space : LevelId.Underwater;
+                var fifth = third == LevelId.Desert ? LevelId.Core : third == LevelId.Mushroom ? LevelId.Dream : upper ? LevelId.Heaven : LevelId.Hell;
                 LevelRun.Reset(LevelId.Fields, seed);
                 CheckOptions(LevelId.Snow, LevelId.City);
                 LevelRun.Advance(middle);
                 if (upper) CheckOptions(LevelId.Thunder, LevelId.Desert);
-                else CheckOptions(LevelId.Tunnel, LevelId.Candyland);
+                else CheckOptions(LevelId.Tunnel, LevelId.Mushroom);
                 LevelRun.Advance(third);
                 CheckOptions(fourth);
                 LevelRun.Advance(fourth);

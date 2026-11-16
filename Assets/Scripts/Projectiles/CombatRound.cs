@@ -272,7 +272,7 @@ public abstract class CombatRound : AEnemyBullet
         // Scaled reserves retain 3200 standard rounds, 800 giant orbs and at least
         // thirty-two of every delivery within the 7400-object budget.
         bool arrowDistrict = LevelRun.Current == LevelId.Fields || LevelRun.Current == LevelId.Snow || LevelRun.Current == LevelId.City ||
-            LevelRun.Current == LevelId.Heaven || LevelRun.Current == LevelId.Space;
+            LevelRun.Current == LevelId.Heaven || LevelRun.Current == LevelId.Space || LevelRun.Current == LevelId.Dream;
         // Celestial scores trade unused specialist deliveries for prepared needles.
         // Space retains its ordinary carriers' ricochets; total reserve stays below 7400.
         int needles = LevelRun.Current == LevelId.Space ? 560 : arrowDistrict ? 700 : 300;
@@ -340,6 +340,7 @@ public abstract class CombatRound : AEnemyBullet
             // The regent's lollipop swirls and candy roses fly many candies and stars at once.
             case LevelId.Candyland: return type == typeof(CandyRound) || type == typeof(StarRound) ? 96 : type == typeof(HeartRound) ? 64 : 0;
             case LevelId.Space: return type == typeof(CrescentRound) ? 48 : 0;
+            case LevelId.Dream: return type == typeof(CrescentRound) ? 512 : 0;
             case LevelId.Underwater: return type == typeof(DropletRound) ? 64 : 0;
             case LevelId.Hell: return type == typeof(FlameRound) ? 64 : 0;
             case LevelId.Heaven: return type == typeof(FeatherRound) ? 64 : type == typeof(StarRound) ? 32 : 0;
