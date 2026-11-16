@@ -28,6 +28,20 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(CryoVent))
+        {
+            b.Drum(Vector3.zero, .34f, .22f, 6, 8, 11);
+            b.Drum(Vector3.back * .13f, .27f, .09f, 9, 8, 6);
+            b.Drum(Vector3.back * .19f, .18f, .055f, 6, 8, 11);
+            for (int i = 0; i < 4; i++)
+            {
+                b.Box(new Vector3(0, -.11f + i * .073f, -.23f), new Vector3(.24f + .036f * (i % 2), .034f, .045f), 11, 7);
+                float angle = i * Mathf.PI * .5f + Mathf.PI * .25f;
+                b.Drum(new Vector3(Mathf.Cos(angle) * .28f, Mathf.Sin(angle) * .28f, -.15f), .052f, .06f, 11, 6);
+            }
+            b.Box(new Vector3(0, -.36f, .015f), new Vector3(.24f, .13f, .19f), 11, 6);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(ColdCoil))
         {
             b.Box(Vector3.zero, new Vector3(.37f, .57f, .26f), 6, 11);

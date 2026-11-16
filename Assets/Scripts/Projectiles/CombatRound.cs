@@ -17,6 +17,7 @@ public abstract class CombatRound : AEnemyBullet
     public static HostileTone LaunchTone;
     static float inheritedChill = 1;
     float chillSpeed = 1;
+    float fieldChillUntil;
     public HostileTone Tone
     {
         get; private set;
@@ -154,6 +155,7 @@ public abstract class CombatRound : AEnemyBullet
         // Beams are not rounds: they stay bright and are never absorbed.
         shot.Tone = shot is PulseLaser ? HostileTone.Bright : LaunchTone;
         shot.chillSpeed = shot is PulseLaser ? 1 : chillSpeed ?? inheritedChill;
+        shot.fieldChillUntil = 0;
         shot.tint.SetTone(shot.Tone);
         shot.needsOrientation = true;
         if (Live.Count == 0 || launchSequence >= DepthSlots)
@@ -434,6 +436,12 @@ public abstract class CombatRound : AEnemyBullet
     }
 
     protected virtual float ClockRate => 1;
+    public void ChillInFlight(float seconds)
+    {
+        if (!(this is PulseLaser))
+            fieldChillUntil = Mathf.Max(fieldChillUntil, Time.time + seconds);
+    }
+
     // The three-argument params overload allocated an array for every live round,
     // every frame. Keep the same conservative contact horizon without that churn.
     protected virtual float ContactSpeed => speed * Mathf.Max(1, Mathf.Max(rampTo, resumeSpeed)) + drift.magnitude + Mathf.Abs(swayAmplitude) * swayRate * 6.3f;
@@ -441,7 +449,13 @@ public abstract class CombatRound : AEnemyBullet
     {
         if (ended || WorldTimeStop.Frozen || Time.deltaTime <= 0)
             return;
-        float dt = Time.deltaTime * ClockRate * (this is PulseLaser ? 1 : chillSpeed * CombatUpgrades.HostileSpeedAt(transform.position));
+        float rate = chillSpeed;
+        if (fieldChillUntil > 0)
+        {
+            if (fieldChillUntil > Time.time) rate = Mathf.Min(rate, .55f);
+            else fieldChillUntil = 0;
+        }
+        float dt = Time.deltaTime * ClockRate * (this is PulseLaser ? 1 : rate * CombatUpgrades.HostileSpeedAt(transform.position));
         age += dt;
         var ambient = LaunchTone;
         float ambientChill = inheritedChill;
