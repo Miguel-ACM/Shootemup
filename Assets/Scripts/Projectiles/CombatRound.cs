@@ -98,6 +98,7 @@ public abstract class CombatRound : AEnemyBullet
         explicitLifetime = true;
     }
     protected bool ended;
+    public bool IsInterceptable => !ended && isActiveAndEnabled && collision != null && collision.enabled && !(this is PulseLaser);
     public int generation;
     // Identifies one launch of this pooled object, so an owner holding a reference can tell
     // whether the round it fired is still the one flying.
