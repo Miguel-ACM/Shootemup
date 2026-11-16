@@ -6,7 +6,7 @@ public enum UpgradeKind
     Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice, RelaySwitch, LiveWire,
     TapeMeasure, BrassKnuckles, Matchbox, Compost, PiggyBank, LoanShark, SecondWind,
     Lighthouse, GoldenCrown, Midas, EchoChamber, Metronome, EventHorizon, Hive, TrophyCase,
-    EnergyShield, RechargingShield, DeflectorPlate, SparkPlug, ColdCoil, AirPump
+    EnergyShield, RechargingShield, DeflectorPlate, SparkPlug, ColdCoil, AirPump, RubberMallet
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {

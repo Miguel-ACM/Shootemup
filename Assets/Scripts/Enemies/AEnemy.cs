@@ -100,6 +100,8 @@ public abstract class AEnemy : MonoBehaviour, ICombatDamageable
     public int[] minmaxMoney = new int[] { 1, 1 };
     public int[] minmaxMana = new int[] { 1, 1 };
     protected bool isBoss = false;
+    public bool IsBossTarget => isBoss || this is DistrictBoss;
+    public virtual bool IsSmallTarget => !IsBossTarget && size < .8f;
 
     Shipcontroller s;
 

@@ -99,6 +99,9 @@ public abstract class DistrictEnemy : AEnemy
         get; private set;
     }
 
+    bool lightHull;
+    public override bool IsSmallTarget => lightHull && !IsBossTarget && !(this is DistrictMiniboss);
+
     // A rare tougher ship inside an ordinary formation: a ring marks it, it answers its
     // formation's accents once more, and it bursts into coins when destroyed.
     public void MakeElite()
@@ -145,10 +148,11 @@ public abstract class DistrictEnemy : AEnemy
         // Cursed Coin toughens ordinary enemies and minibosses; boss health stays on district/loop factors.
         if (scaleForRun && !(enemy is DistrictBoss))
             enemy.health *= PactPool.EnemyHealth;
+        enemy.lightHull = enemy.hullScale < .8f;
         // Light wave ships should die during a clean pass with the stock gun.
         if (scaleForRun && !(enemy is DistrictBoss) && !(enemy is DistrictMiniboss))
         {
-            enemy.health *= enemy.hullScale < .8f ? .84f : 1.35f;
+            enemy.health *= enemy.lightHull ? .84f : 1.35f;
             enemy.attackInterval *= .78f;
         }
         // Visual size must not change the light/heavy health classification above.

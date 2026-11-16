@@ -28,6 +28,8 @@ public static class CombatHit
         var result = dealt > 0 ? enemy.ReceiveDamage(dealt) : new DamageResult(true, 0, 0);
         if (score && result.Accepted)
             Score.IncreaseScore(Mathf.RoundToInt(dealt));
+        if (result.Accepted && !energy && generation == 0 && upgrades != null && enemy != null && enemy.CanReceiveDamage)
+            RubberMallet.Nudge(enemy, incoming, upgrades.Count(UpgradeKind.RubberMallet));
         if (result.Accepted && generation == 0 && !companion && enemy != null && enemy.CanReceiveDamage)
             PlayerHit?.Invoke(enemy);
         return result;

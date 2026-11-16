@@ -28,6 +28,15 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(RubberMallet))
+        {
+            b.Can(new Vector3(0, -.15f, 0), .073f, .53f, 11, 6);
+            b.Can(new Vector3(0, -.29f, 0), .095f, .26f, 6, 11);
+            EquipmentRod(b, new Vector3(-.29f, .20f, 0), new Vector3(.29f, .20f, 0), .17f, 6);
+            EquipmentRod(b, new Vector3(-.35f, .20f, 0), new Vector3(-.25f, .20f, 0), .183f, 11);
+            EquipmentRod(b, new Vector3(.25f, .20f, 0), new Vector3(.35f, .20f, 0), .183f, 11);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(AirPump))
         {
             b.Can(new Vector3(-.09f, -.105f, 0), .132f, .48f, 9, 11);
