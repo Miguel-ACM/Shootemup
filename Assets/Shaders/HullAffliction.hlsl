@@ -42,27 +42,28 @@ half3 HullAffliction(half3 armor, float2 position, float status)
         half3 heat = lerp(half3(.67,.075,.018), half3(1,.56,.095), crest);
         fire = armor * .27 + heat * (.47 + .51 * value + .28 * crest);
     }
-    bool frost = (bits & 4) != 0;
-    if (!toxic) return frost ? HullFrost(fire, p) : fire;
-
-    // Poison (Miguel, 15 November 2026: the jade blister grid was rejected). The hull keeps its
-    // own paint, turned a little sickly, while dark corrosion stains creep across it and swell
-    // and ebb, each edged with a glowing jade lip, and faint veins pulse between them.
-    float2 drift = float2(.07, -.11) * t;
-    float n = HullNoise(p * 2.3 + drift) * .65 + HullNoise(p * 5.1 - drift * 1.6 + 3.7) * .35;
-    float creep = .56 + .05 * sin(t * 1.3);
-    half stain = step(creep, n);
-    half lip = step(creep - .045, n) - stain;
-    float vein = 1 - smoothstep(0, .03, abs(HullNoise(p * 3.4 + 9.1 + drift * .5) - .5));
-    float wave = .5 + .5 * sin(p.y * 6 + p.x * 2 + t * 3.2);
-    half grey = dot(armor, half3(.3, .59, .11));
-    half3 sick = lerp(armor, grey * half3(.78, 1.04, .9), .32) * half3(.88, 1, .92);
-    half3 rot = half3(.06, .19, .15) + armor * .22;
-    half3 glow = half3(.47, .87, .66);
-    half3 poison = lerp(sick, rot, stain);
-    poison = lerp(poison, glow, lip * .85);
-    poison = lerp(poison, glow, vein * (1 - stain) * (.25 + .45 * wave));
-    half3 coated = burning ? lerp(poison, fire, smoothstep(.41, .59, tongue)) : poison;
-    return frost ? HullFrost(coated, p) : coated;
+    half3 coated = fire;
+    [branch] if (toxic)
+    {
+        // Corrosion stains creep over the original paint, edged with jade and pulsing veins.
+        float2 drift = float2(.07, -.11) * t;
+        float n = HullNoise(p * 2.3 + drift) * .65 + HullNoise(p * 5.1 - drift * 1.6 + 3.7) * .35;
+        float creep = .56 + .05 * sin(t * 1.3);
+        half stain = step(creep, n);
+        half lip = step(creep - .045, n) - stain;
+        float vein = 1 - smoothstep(0, .03, abs(HullNoise(p * 3.4 + 9.1 + drift * .5) - .5));
+        float wave = .5 + .5 * sin(p.y * 6 + p.x * 2 + t * 3.2);
+        half grey = dot(armor, half3(.3, .59, .11));
+        half3 sick = lerp(armor, grey * half3(.78, 1.04, .9), .32) * half3(.88, 1, .92);
+        half3 rot = half3(.06, .19, .15) + armor * .22;
+        half3 glow = half3(.47, .87, .66);
+        half3 poison = lerp(sick, rot, stain);
+        poison = lerp(poison, glow, lip * .85);
+        poison = lerp(poison, glow, vein * (1 - stain) * (.25 + .45 * wave));
+        coated = burning ? lerp(poison, fire, smoothstep(.41, .59, tongue)) : poison;
+    }
+    [branch] if ((bits & 4) != 0)
+        coated = HullFrost(coated, p);
+    return coated;
 }
 #endif
