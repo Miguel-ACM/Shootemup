@@ -199,7 +199,7 @@ public sealed class CombatUpgrades : MonoBehaviour
     int Proc(string key, float cooldown, Vector3 at) => Ready(key, cooldown) ? Rolls(at) : 0;
     public int SpendProximity(Vector3 at) => Count(UpgradeKind.Proximity) > 0 ? Proc("fuse", .75f, at) : 0;
     public int TryRebound(Vector3 at) => Count(UpgradeKind.Rebound) > 0 ? Proc("rebound", .18f, at) : 0;
-    public float DirectHit(AEnemy enemy, float damage, int generation = 0, bool companion = false, bool fire = false)
+    public float DirectHit(AEnemy enemy, float damage, int generation = 0, bool companion = false, bool fire = false, bool energy = false)
     {
         if (enemy == null || !enemy.CanReceiveDamage)
             return 0;
@@ -207,8 +207,11 @@ public sealed class CombatUpgrades : MonoBehaviour
         damage *= PoisonedHull.Weakness(enemy) * RuleDamage();
         if (companion)
             damage *= 1 + Count(UpgradeKind.Drone) * .2f + Count(UpgradeKind.Squad) * .5f;
-        if (generation == 0 && !companion)
-            damage *= ReachDamage.Scale(this, enemy, transform.position) * Metronome.Scale(this, enemy.transform.position);
+        bool primaryHit = generation == 0 && !companion;
+        if (primaryHit || energy)
+            damage *= ReachDamage.Scale(this, enemy, transform.position);
+        if (primaryHit)
+            damage *= Metronome.Scale(this, enemy.transform.position);
         if (Count(UpgradeKind.Focus) > 0 && generation == 0)
         {
             if (focused != enemy || Time.time > focusUntil)
@@ -253,10 +256,10 @@ public sealed class CombatUpgrades : MonoBehaviour
                 poison = enemy.gameObject.AddComponent<PoisonedHull>();
             poison.Infect(damage * (companion ? .5f : 1));
         }
-        if (generation > 0)
-            return FinishHit(enemy, damage); // Secondary hits never produce more secondary effects or charge.
-        if (!companion && Count(UpgradeKind.Icicle) > 0)
+        if ((primaryHit || energy) && Count(UpgradeKind.Icicle) > 0)
             damage = (enemy.GetComponent<FrozenHull>() ?? enemy.gameObject.AddComponent<FrozenHull>()).Hit(damage);
+        if (generation > 0)
+            return FinishHit(enemy, damage); // Secondary hits stop before general procs and charge.
         if (!companion)
             GetComponent<PopcornHits>()?.Hit(enemy, damage);
         if (!companion)

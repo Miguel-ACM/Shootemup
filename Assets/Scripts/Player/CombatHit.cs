@@ -21,7 +21,7 @@ public static class CombatHit
         var upgrades = CombatUpgrades.Current;
         if (energy && upgrades != null && upgrades.Count(UpgradeKind.ColdCoil) > 0)
             ChilledHull.Apply(enemy, 2.25f);
-        float dealt = upgrades != null ? upgrades.DirectHit(enemy, amount, generation, companion, fire) : amount;
+        float dealt = upgrades != null ? upgrades.DirectHit(enemy, amount, generation, companion, fire, energy) : amount;
         enemy.HitAt(point, incoming);
         // Gum stores the hit for later. Preserve pre-death coatings and the original scoring payload;
         // Applied separately reports actual health removed after armour and overkill.

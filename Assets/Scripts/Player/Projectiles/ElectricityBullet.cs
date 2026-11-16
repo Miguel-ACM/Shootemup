@@ -25,8 +25,10 @@ public class ElectricityBullet : ABullet
 
             List<AEnemy> hitEnemies;
             lineDrawer.SetCoatings(PlayerShotPalette.Burning, PlayerShotPalette.Toxic);
-            List<Vector2> path = GetPoints(transform.position, out hitEnemies);
-            lineDrawer.DrawLine(path.ToArray(), transform.position.z, .09f, true);
+            float scale = Mathf.Sqrt(Mathf.Max(.01f, transform.localScale.x));
+            float width = .09f * Mathf.Clamp(scale, .65f, 1.8f);
+            List<Vector2> path = GetPoints(transform.position, width, Mathf.Clamp(scale, .8f, 1.45f), out hitEnemies);
+            lineDrawer.DrawLine(path.ToArray(), transform.position.z, width, true);
             Vector3? lastContact = null;
             foreach (AEnemy enemy in hitEnemies)
             {
@@ -54,12 +56,12 @@ public class ElectricityBullet : ABullet
         Destroy(gameObject);
     }
 
-    private List<Vector2> GetPoints(Vector2 origPoint, out List<AEnemy> hitEnemies)
+    private List<Vector2> GetPoints(Vector2 origPoint, float width, float reachScale, out List<AEnemy> hitEnemies)
     {
         Vector2 currPoint = origPoint;
         List<Vector2> path = new List<Vector2>();
         hitEnemies = new List<AEnemy>();
-        float radius = 1f + (followness * 2);
+        float radius = (1f + followness * 2) * reachScale;
         float currAngle = 90f;
         float angleLimitLeft = 175f;
         float angleLimitRight = 5f;
@@ -95,7 +97,7 @@ public class ElectricityBullet : ABullet
                     }
                 }
             }
-            if (CombatWalls.Sweep(currPoint, nextPoint, .045f, out var wall, out _))
+            if (CombatWalls.Sweep(currPoint, nextPoint, width * .5f, out var wall, out _))
             {
                 path.Add(wall);
                 break;
