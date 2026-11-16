@@ -52,6 +52,7 @@ public sealed class PlayerRound : ABullet
     public int pierces;
     public bool returns;
     float age, flight, weave, weaveSign, travelled, pumpCapacity;
+    Vector2 pinheads;
     Vector3 restScale;
     bool shaped;
     Vector3 origin;
@@ -145,6 +146,7 @@ public sealed class PlayerRound : ABullet
         age = 0;
         flight = weave = travelled = 0;
         pumpCapacity = ShotTraits.PumpCapacity;
+        pinheads = ShotTraits.PinheadScale;
         shaped = false;
         weaveSign = ShotTraits.NextWeaveSign();
         lifetimeAge = 0;
@@ -174,7 +176,7 @@ public sealed class PlayerRound : ABullet
             mode == PlayerDelivery.Disc ? Vector2.one * .4f : mode == PlayerDelivery.Flame ? new Vector2(.26f, .5f) :
             mode == PlayerDelivery.Missile ? new Vector2(.33f, .62f) : new Vector2(.23f, .43f);
         var bounds = sr.sprite.bounds.size;
-        float size = Mathf.Sqrt(GameRules.playerShootSize) * (generation > 0 ? .85f : 1) * ShotTraits.SizeScale;
+        float size = Mathf.Sqrt(GameRules.playerShootSize) * (generation > 0 ? .85f : 1) * ShotTraits.SizeScale * pinheads.x;
         go.transform.localScale = new Vector3(span.x / Mathf.Max(.01f, bounds.x), span.y / Mathf.Max(.01f, bounds.y), 1) * size;
         collider.size = new Vector2(bounds.x * .65f, bounds.y * .78f);
         ProjectileSpriteTint.Friendly(go);
@@ -263,8 +265,8 @@ public sealed class PlayerRound : ABullet
         float pumpProgress = pumpCapacity > 0 ? ShotTraits.PumpProgress(flight) : 0;
         float pumpScale = 1 + pumpCapacity * pumpProgress;
         // A disc keeps its set throw distance and gains grinding width as it inflates.
-        float pumpSpeed = delivery == PlayerDelivery.Disc ? 1 : ShotTraits.PumpSpeed(pumpProgress);
-        Vector2 step = heading * speed * brake * ShotTraits.SpeedScale(flight) * pumpSpeed * Time.deltaTime;
+        float pace = delivery == PlayerDelivery.Disc ? 1 : ShotTraits.PumpSpeed(pumpProgress) * pinheads.y;
+        Vector2 step = heading * speed * brake * ShotTraits.SpeedScale(flight) * pace * Time.deltaTime;
         travelled += step.magnitude;
         float lateral = ShotTraits.Weave(flight, weaveSign);
         step += new Vector2(heading.y, -heading.x) * (lateral - weave);
@@ -287,7 +289,7 @@ public sealed class PlayerRound : ABullet
         var upgrades = CombatUpgrades.Current;
         if (!plateDeflected && !bankShot && !returning && !rubberReturned && !companion && heading.y < .985f &&
             upgrades != null && upgrades.Count(UpgradeKind.DeflectorPlate) > 0 &&
-            ProjectileCollisionWindow.TryDeflector(wallFrom, end, .075f * Mathf.Max(.2f, size) * pumpScale, out var plate))
+            ProjectileCollisionWindow.TryDeflector(wallFrom, end, .075f * Mathf.Max(.2f, size) * pumpScale * pinheads.x, out var plate))
         {
             plateDeflected = headingLocked = true;
             heading = step = Vector2.up;
@@ -467,7 +469,7 @@ public sealed class PlayerRound : ABullet
         if (grindTimer > 0)
             return;
         grindTimer = DiscTick;
-        float radius = .3f * Mathf.Sqrt(GameRules.playerShootSize) * ShotTraits.SizeScale * (generation > 0 ? .85f : 1) * pumpScale;
+        float radius = .3f * Mathf.Sqrt(GameRules.playerShootSize) * ShotTraits.SizeScale * (generation > 0 ? .85f : 1) * pumpScale * pinheads.x;
         Vector2 at = transform.position;
         splashTargets.Clear();
         splashTargets.AddRange(AEnemy.Live);

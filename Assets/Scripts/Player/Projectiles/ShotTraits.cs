@@ -60,4 +60,13 @@ public static class ShotTraits
     public static float PumpProgress(float flight) => Mathf.SmoothStep(0, 1, (flight - .08f) / .67f);
 
     public static float PumpSpeed(float progress) => Mathf.Lerp(1, .6f, progress);
+
+    public static Vector2 PinheadScale
+    {
+        get
+        {
+            float stacks = Mathf.Min(2, Count(UpgradeKind.Pinheads));
+            return new Vector2(1 - .24f * stacks, 1 + .25f * stacks);
+        }
+    }
 }

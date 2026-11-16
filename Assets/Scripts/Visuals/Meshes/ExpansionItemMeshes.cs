@@ -28,6 +28,19 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(Pinheads))
+        {
+            b.Drum(new Vector3(0, -.265f, 0), .32f, .16f, 8, 14, 6);
+            b.Drum(new Vector3(0, -.25f, -.106f), .275f, .075f, 8, 14);
+            for (int i = 0; i < 5; i++)
+            {
+                var root = new Vector3((i - 2) * .095f, -.16f, i % 2 == 0 ? -.083f : .028f);
+                var head = root + new Vector3((i - 2) * .044f, .50f - .028f * Mathf.Abs(i - 2), -.03f);
+                EquipmentRod(b, root, head, .017f, 11);
+                b.Ball(head, Vector3.one * .105f, i % 2 == 0 ? 3 : 9);
+            }
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(SteelToe))
         {
             var toe = new[] { new Vector2(-.32f, -.23f), new Vector2(.35f, -.23f), new Vector2(.35f, -.09f),

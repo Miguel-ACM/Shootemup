@@ -9,6 +9,7 @@ public class Bullet : ABullet
     bool hitResolved;
     Vector2 wallFrom;
     float flight, weaveSign, travelled, pumpCapacity;
+    float pinheadPace;
     Vector3 restScale;
     // Shared by all bullets so the scene is searched once, not on every trigger contact.
     static Shipcontroller player;
@@ -16,7 +17,9 @@ public class Bullet : ABullet
     void Start()
     {
         ProjectileSpriteTint.Friendly(gameObject);
-        transform.localScale *= ShotTraits.SizeScale;
+        var pinheads = ShotTraits.PinheadScale;
+        transform.localScale *= ShotTraits.SizeScale * pinheads.x;
+        pinheadPace = pinheads.y;
         restScale = transform.localScale;
         pumpCapacity = ShotTraits.PumpCapacity;
         direction.z = transform.position.z;
@@ -72,7 +75,7 @@ public class Bullet : ABullet
 
         }
         Vector2 forward = transform.up.normalized;
-        float pace = speed * ShotTraits.SpeedScale(flight);
+        float pace = speed * ShotTraits.SpeedScale(flight) * pinheadPace;
         if (pumpCapacity > 0)
         {
             float progress = ShotTraits.PumpProgress(flight);
@@ -87,7 +90,7 @@ public class Bullet : ABullet
 
     void Move()
     {
-        rigidBody.linearVelocity = direction.normalized * speed;//new Vector3(direction.x * speed, direction.y * speed, direction.z);
+        rigidBody.linearVelocity = direction.normalized * speed * pinheadPace;
         transform.rotation = Quaternion.LookRotation(Vector3.forward, direction);
     }
 
