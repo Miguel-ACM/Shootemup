@@ -280,7 +280,7 @@ public sealed class PlayerRound : ABullet
             return;
         }
         var upgrades = CombatUpgrades.Current;
-        if (!plateDeflected && !bankShot && !returning && !companion && heading.y < .985f &&
+        if (!plateDeflected && !bankShot && !returning && !rubberReturned && !companion && heading.y < .985f &&
             upgrades != null && upgrades.Count(UpgradeKind.DeflectorPlate) > 0 &&
             ProjectileCollisionWindow.TryDeflector(wallFrom, end, .075f * Mathf.Max(.2f, size), out var plate))
         {

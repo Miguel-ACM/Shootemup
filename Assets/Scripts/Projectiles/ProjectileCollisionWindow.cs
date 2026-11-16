@@ -7,6 +7,7 @@ using UnityEngine;
 public static class ProjectileCollisionWindow
 {
     static readonly List<Collider2D> blockers = new List<Collider2D>();
+    static readonly List<HectorPet> hectors = new List<HectorPet>();
     static readonly List<Bounds> targets = new List<Bounds>(12);
     static Collider2D player;
     static int frame = -1;
@@ -14,6 +15,7 @@ public static class ProjectileCollisionWindow
     static void Reset()
     {
         blockers.Clear();
+        hectors.Clear();
         targets.Clear();
         player = null;
         frame = -1;
@@ -33,6 +35,10 @@ public static class ProjectileCollisionWindow
         blockers.Remove(collider);
         frame = -1;
     }
+
+    public static void Register(HectorPet hector) => hectors.Add(hector);
+
+    public static void Unregister(HectorPet hector) => hectors.Remove(hector);
 
     public static bool Relevant(Vector3 position, float radius, float speed)
     {
@@ -80,6 +86,15 @@ public static class ProjectileCollisionWindow
         {
             if (collider == null || !area.Intersects(collider.bounds) || !collider.TryGetComponent<BlockerOrbital>(out _) ||
                 !BeamContact.Touches(collider, from, to, radius, out var contact))
+                continue;
+            float distance = (contact - from).sqrMagnitude;
+            if (distance >= nearest) continue;
+            nearest = distance;
+            point = contact;
+        }
+        foreach (var hector in hectors)
+        {
+            if (hector == null || !hector.TouchesGuard(from, to, radius, out var contact))
                 continue;
             float distance = (contact - from).sqrMagnitude;
             if (distance >= nearest) continue;

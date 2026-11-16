@@ -20,6 +20,19 @@ public sealed class HectorPet : ACompanion
 
     public bool Ready => toast <= 0;
 
+    void OnEnable() => ProjectileCollisionWindow.Register(this);
+
+    void OnDisable() => ProjectileCollisionWindow.Unregister(this);
+
+    internal bool TouchesGuard(Vector2 from, Vector2 to, float radius, out Vector2 point)
+    {
+        Vector2 span = to - from;
+        Vector2 center = transform.position;
+        point = from + span * Mathf.Clamp01(Vector2.Dot(center - from, span) / Mathf.Max(.000001f, span.sqrMagnitude));
+        float reach = Reach + radius;
+        return Ready && (point - center).sqrMagnitude <= reach * reach;
+    }
+
     public static void Attach(Shipcontroller ship)
     {
         var go = new GameObject("Hector");
