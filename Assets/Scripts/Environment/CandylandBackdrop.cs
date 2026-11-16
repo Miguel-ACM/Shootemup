@@ -85,11 +85,8 @@ public sealed class CandylandBackdrop
                 Cane(b, j % 2 == 0 ? flank : -flank);
             }
 
-            // Gardens on the far side of the lane break up the view between hamlets.
+            // Plant the candy gardens directly in the meadows.
             var garden = new Vector2(Mathf.Clamp(LaneAt(y + .25f) - flank * Range(2.4f, 3.6f), -4.5f, 4.5f), y + .25f);
-            b.Pose(garden, Range(-32, 32), Range(.78f, 1.06f));
-            b.Ball(new Vector3(0, 0, -.07f), new Vector3(1.03f, .71f, .27f), new Color(.74f, .31f, .50f));
-            b.Ball(new Vector3(-.54f, -.34f, -.06f), new Vector3(.59f, .46f, .19f), new Color(.77f, .35f, .54f));
             for (int j = 0; j < 3; j++)
             {
                 b.Pose(garden + new Vector2((j - 1) * .48f, (j % 2) * .50f - .07f),

@@ -402,6 +402,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     // The title's tunnel can be brought to a stop, so the hangar can take over from the very same view.
     static LevelEnvironment title;
     float travelRate = 1;
+    float sectionWrap = 30;
     public static bool TitleReady => title != null && title.sections.Count == 4;
     static readonly int TitleLampBanks = Shader.PropertyToID("_TitleLampBanks");
     static LevelEnvironment carried;
@@ -738,12 +739,14 @@ public sealed class LevelEnvironment : MonoBehaviour
             // the roads, scenery, scroll speed and parallax in the same perspective.
             var farGround = new GameObject("Candyland far ground").transform;
             farGround.SetParent(transform, false);
-            farGround.localScale = new Vector3(.72f, .72f, 1);
+            farGround.localScale = new Vector3(.44f, .44f, 1);
+            // Centre the loop around the camera so the smaller tiles still recycle offscreen.
+            sectionWrap = LoopLength * .5f;
             for (int i = 0; i < 4; i++)
             {
                 var section = new GameObject("Candyland village " + i).transform;
                 section.SetParent(farGround, false);
-                section.localPosition = new Vector3(0, SectionY(i, travel), 90);
+                section.localPosition = new Vector3(0, SectionY(i, travel, sectionWrap), 90);
                 village.BuildSection(i, SectionLength, out var ground, out var buildings);
                 ownedMeshes.Add(ground);
                 ownedMeshes.Add(buildings);
@@ -1061,7 +1064,7 @@ public sealed class LevelEnvironment : MonoBehaviour
         travel = Mathf.Repeat(travel + dt * travelRate * ScrollSpeed(level), LoopLength);
         for (int i = 0; i < sections.Count; i++)
         {
-            float y = SectionY(i, travel);
+            float y = SectionY(i, travel, sectionWrap);
             sections[i].localPosition = new Vector3(HorizontalOffset, y, 90);
         }
         for (int i = 0; i < foreground.Count; i++)
@@ -1087,7 +1090,8 @@ public sealed class LevelEnvironment : MonoBehaviour
         }
     }
 
-    public static float SectionY(int index, float distance) => Mathf.Repeat((index - 1) * SectionLength - distance + 30, LoopLength) - 30;
+    public static float SectionY(int index, float distance, float wrapBelow = 30) =>
+        Mathf.Repeat((index - 1) * SectionLength - distance + wrapBelow, LoopLength) - wrapBelow;
 
     void LateUpdate()
     {
