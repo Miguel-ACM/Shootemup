@@ -28,6 +28,17 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(RechargingShield))
+        {
+            var plate = new[] { new Vector2(-.34f, .27f), new Vector2(0, .38f), new Vector2(.34f, .27f),
+                new Vector2(.27f, -.15f), new Vector2(0, -.37f), new Vector2(-.27f, -.15f) };
+            b.Prism(plate, .17f, 6, Vector3.zero, 11);
+            b.Drum(new Vector3(0, .055f, -.115f), .23f, .08f, 11, 6, 6);
+            b.Drum(new Vector3(0, .055f, -.17f), .165f, .05f, 9, 6);
+            for (int i = 0; i < 3; i++)
+                b.Box(new Vector3(0, .14f - i * .09f, -.21f), new Vector3(.15f - i * .025f, .04f, .04f), 3);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == "RocketBouquet") { RocketBouquetModel(b); return expansionItems[kind] = b.Finish(kind + " equipment"); }
         if (kind == "Redline") { RedlineModel(b); return expansionItems[kind] = b.Finish(kind + " equipment"); }
         if (kind == "NailBomb") { NailBombModel(b); return expansionItems[kind] = b.Finish(kind + " equipment"); }

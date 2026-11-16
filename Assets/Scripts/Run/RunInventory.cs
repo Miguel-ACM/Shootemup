@@ -253,6 +253,8 @@ public sealed class RunInventory : MonoBehaviour
             Entry keeper = successor;
             if (effect is GlassesFieldCue)
                 keeper = entries.Find(other => other != entry && (other.key == nameof(BadGlasses) || other.key == nameof(QualityGlasses)));
+            if (effect is EnergyShieldCell)
+                keeper = entries.Find(other => other != entry && (other.key == nameof(EnergyShield) || other.key == nameof(RechargingShield)));
             if (keeper != null && !(effect is SupportDrone))
                 keeper.effects.Add(effect);
             else

@@ -646,12 +646,20 @@ public class Shipcontroller : MonoBehaviour
         manaBar.Set(mana);
     }
 
-    public void HealManaFlat(float heal)
+    public void HealManaFlat(float heal) => RestoreMana(heal, false);
+
+    public void HealManaPickup(float heal) => RestoreMana(heal, true);
+
+    void RestoreMana(float heal, bool pickup)
     {
         var upgrades = GetComponent<CombatUpgrades>();
+        float amount = heal * GameRules.manaHealMultiplier;
+        float overflow = Mathf.Max(0, mana + amount - maxMana);
+        if (pickup && mana >= maxMana && TryGetComponent<EnergyShieldCell>(out var shield))
+            overflow -= shield.ConsumePickupOverflow(overflow);
         if (upgrades != null)
-            upgrades.StoreOverflow(Mathf.Max(0, mana + heal * GameRules.manaHealMultiplier - maxMana));
-        mana = Mathf.Clamp(mana + heal * GameRules.manaHealMultiplier, 0, maxMana);
+            upgrades.StoreOverflow(overflow);
+        mana = Mathf.Clamp(mana + amount, 0, maxMana);
         manaBar.Set(mana);
     }
 
