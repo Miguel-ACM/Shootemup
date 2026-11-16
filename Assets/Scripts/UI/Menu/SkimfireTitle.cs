@@ -8,12 +8,8 @@ public sealed class SkimfireTitle : MonoBehaviour
     const float SlideSeconds = .28f;
     const float FireStart = .30f;
     const float Impact = FireStart + SlideSeconds;
-    const float SlashSeconds = .29f;
-    const float Duration = Impact + SlashSeconds;
     const float WordmarkWidth = 728f;
-    const float TileHeight = 1f / 3f;
-    const float SlashPixelsWide = 84f;
-    const float SlashRotation = 39f;
+    const float TileHeight = .5f;
 
     static readonly Vector2 RestPosition = new Vector2(0, 430);
     static readonly Vector2 LetterLean = new Vector2(1, 3);
@@ -21,12 +17,13 @@ public sealed class SkimfireTitle : MonoBehaviour
     static readonly Vector2 Seam = new Vector2(23, 6);
     static readonly Vector2 SlashDrift = LetterLean * 24;
 
-    RawImage skim, fire, slash;
+    RawImage skim, fire;
+    TitleSlashParticle slash;
     RectTransform canvas;
     bool entranceRequested;
     float age, fit;
 
-    public bool EntranceComplete => !isActiveAndEnabled || age >= Duration;
+    public bool EntranceComplete => !isActiveAndEnabled || age >= Impact && !slash.HasParticle;
     public void Reveal() => entranceRequested = true;
 
     void Start()
@@ -45,12 +42,12 @@ public sealed class SkimfireTitle : MonoBehaviour
         root.anchorMin = root.anchorMax = new Vector2(.5f, .5f);
         root.anchoredPosition = RestPosition;
 
-        // The first two rows use the same wordmark coordinates so the lettering lines up at rest.
-        skim = CreateArtwork(root, "SKIM", new Rect(0, TileHeight * 2, 1, TileHeight));
-        fire = CreateArtwork(root, "FIRE", new Rect(0, TileHeight, 1, TileHeight));
-        slash = CreateArtwork(root, "White slash", new Rect(0, 0, SlashPixelsWide / wordmark.width, TileHeight));
-        // The drawn streak already rises about 33 degrees. Match the letters' 1:3 forward lean.
-        slash.rectTransform.localRotation = Quaternion.Euler(0, 0, SlashRotation);
+        // Both rows use the same wordmark coordinates so the lettering lines up at rest.
+        skim = CreateArtwork(root, "SKIM", new Rect(0, TileHeight, 1, TileHeight));
+        fire = CreateArtwork(root, "FIRE", new Rect(0, 0, 1, TileHeight));
+        slash = new GameObject("White slash particle", typeof(RectTransform)).AddComponent<TitleSlashParticle>();
+        slash.rectTransform.SetParent(root, false);
+        slash.rectTransform.anchorMin = slash.rectTransform.anchorMax = new Vector2(.5f, .5f);
     }
 
     void LateUpdate()
@@ -63,17 +60,19 @@ public sealed class SkimfireTitle : MonoBehaviour
             fit = nextFit;
             var partSize = new Vector2(WordmarkWidth, WordmarkWidth * wordmark.height * TileHeight / wordmark.width) * fit;
             skim.rectTransform.sizeDelta = fire.rectTransform.sizeDelta = partSize;
+            slash.rectTransform.localScale = new Vector3(fit, fit, 1);
         }
 
         // The title menu pauses scaled time.
         float previousAge = age;
-        if (entranceRequested && age < Duration && !CloudTransition.Busy)
-            age = Mathf.Min(age + Time.unscaledDeltaTime, Duration);
+        if (entranceRequested && age < Impact && !CloudTransition.Busy)
+            age = Mathf.Min(age + Time.unscaledDeltaTime, Impact);
         if (resized || age != previousAge)
             Draw();
 
         if (previousAge < Impact && age >= Impact)
         {
+            slash.Emit(Seam, SlashDrift);
             var cue = SoundCueCatalog.Find("titleLand");
             SoundManager.PlaySound(cue.Id, cue.Volume);
         }
@@ -83,14 +82,6 @@ public sealed class SkimfireTitle : MonoBehaviour
     {
         PlacePart(skim, age / SlideSeconds, -EntryOffset);
         PlacePart(fire, (age - FireStart) / SlideSeconds, EntryOffset);
-
-        float flash = Mathf.Clamp01((age - Impact) / SlashSeconds);
-        float sweep = Mathf.SmoothStep(0, 1, flash * 3);
-        float light = 1 - Mathf.SmoothStep(0, 1, flash);
-        float slashWidth = fit * Mathf.Lerp(300, 500, sweep);
-        slash.rectTransform.anchoredPosition = (Seam + SlashDrift * flash) * fit;
-        slash.rectTransform.sizeDelta = new Vector2(slashWidth, slashWidth * .67f);
-        slash.color = new Color(1, 1, 1, age >= Impact ? light : 0);
     }
 
     void PlacePart(RawImage part, float progress, Vector2 entry)
