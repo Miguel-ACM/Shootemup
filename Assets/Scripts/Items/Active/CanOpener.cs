@@ -65,7 +65,7 @@ public sealed class BurrowingDrill : OffensiveCast
         if (grinding >= nextTick)
         {
             nextTick = grinding + .2f;
-            CombatHit.Apply(lodged, GameRules.playerShootDamage * 1.7f, contactPoint, Vector2.up, generation: 1);
+            CombatHit.Apply(lodged, GameRules.playerShootDamage * 1.1f, contactPoint, Vector2.up, generation: 1);
             ItemSpark.Emit(contactPoint, new Color(.85f, .63f, .3f), 2, .08f);
             ItemSound.Cue("fan", volume: .075f, pitch: 1.6f, cooldown: .18f);
         }
