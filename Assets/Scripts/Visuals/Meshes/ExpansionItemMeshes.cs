@@ -28,6 +28,22 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(TrafficCone))
+        {
+            b.Box(new Vector3(0, -.293f, 0), new Vector3(.60f, .095f, .49f), 6, 11);
+            var profile = new[] { new Vector2(-.237f, -.25f), new Vector2(.237f, -.25f),
+                new Vector2(.057f, .402f), new Vector2(-.057f, .402f) };
+            b.Prism(profile, .26f, 10, Vector3.zero, 10);
+            foreach (float y in new[] { -.04f, .159f })
+            {
+                float wide = .237f - (y + .25f) * .275f;
+                b.Prism(new[] { new Vector2(-wide, y), new Vector2(wide, y),
+                    new Vector2(wide - .022f, y + .078f), new Vector2(-wide + .022f, y + .078f) },
+                    .265f, 3, Vector3.zero, 3);
+            }
+            b.Can(new Vector3(0, .395f, 0), .06f, .03f, 10, 11);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(Pinheads))
         {
             b.Drum(new Vector3(0, -.265f, 0), .32f, .16f, 8, 14, 6);
