@@ -6,7 +6,7 @@ public enum UpgradeKind
     Splitter, Rebound, Proximity, Capacitor, Focus, Recovery, Salvage, Drone, Reserve, Return, Bearing, Burn, Battery, ChainReactor, QualityGlasses, BadGlasses, Gasoline, Poison, BouncingBall, FocusTime, DoubleTrouble, ChewingGum, HotSauce, RubberBand, Icicle, Squad, Corkscrew, Slingshot, Ink, Grudge, Marbles, Hourglass, LoadedDice, RelaySwitch, LiveWire,
     TapeMeasure, BrassKnuckles, Matchbox, Compost, PiggyBank, LoanShark, SecondWind,
     Lighthouse, GoldenCrown, Midas, EchoChamber, Metronome, EventHorizon, Hive, TrophyCase,
-    EnergyShield, RechargingShield, DeflectorPlate, SparkPlug, ColdCoil, AirPump, RubberMallet, PaddedSeat, Flyswatter, Crowbar, BenchRest, TicketPunch
+    EnergyShield, RechargingShield, DeflectorPlate, SparkPlug, ColdCoil, AirPump, RubberMallet, PaddedSeat, Flyswatter, Crowbar, BenchRest, TicketPunch, SteelToe
 }
 public sealed class CombatUpgrades : MonoBehaviour
 {
@@ -86,6 +86,8 @@ public sealed class CombatUpgrades : MonoBehaviour
             ship.AddCompanion("AMoon");
         if (kind == UpgradeKind.Drone)
             gameObject.AddComponent<SupportDrone>();
+        if (kind == UpgradeKind.SteelToe && GetComponent<SteelToeContact>() == null)
+            gameObject.AddComponent<SteelToeContact>();
     }
 
     void Update()
