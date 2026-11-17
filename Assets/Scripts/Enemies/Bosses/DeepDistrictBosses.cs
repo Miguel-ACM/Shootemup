@@ -194,47 +194,161 @@ public sealed class CoreGantry : DistrictBoss
             OpenCards();
     }
 
-    // Cross Travel / Rail Interlock / Runaway Press.
-    // The carriage stamps rows while the two rail shoes throw replies along the walls.
-    protected override IEnumerator Cards()
+    protected override IEnumerator Cards() => phaseThree ? PunchTape() : phaseTwo ? Escapement() : Crosshatch();
+
+    IEnumerator PrimeRails(float seconds)
     {
-        int beat = 0;
-        while (true)
+        for (float t = 0; t < seconds;)
         {
-            yield return Charge(carriage, CoreMuzzle, phaseThree ? .24f : .42f);
-            int strokes = phaseThree ? 6 : phaseTwo ? 4 : 3;
-            for (int row = 0; row < strokes; row++)
+            Cue(Muzzle(0), seconds - t);
+            Cue(Muzzle(1), seconds - t);
+            if (!Holding) t += Time.deltaTime * LevelRun.EnemyTempoScale;
+            yield return null;
+        }
+    }
+
+    // A moving engraving head cuts a herringbone. The rails supply the
+    // registration marks: two spaced diagonals cross behind the passing teeth.
+    IEnumerator Crosshatch()
+    {
+        for (int pass = 0; ; pass++)
+        {
+            yield return Charge(carriage, CoreMuzzle, .46f);
+            int strokes = Mathf.Max(9, Dense(21));
+            for (int i = 0; i < strokes; i++)
             {
-                var port = carriage.TransformPoint(CoreMuzzle);
-                int lanes = Dense(phaseThree ? 13 : phaseTwo ? 11 : 9);
-                int skip = Mathf.Clamp(Mathf.RoundToInt((.5f + .34f * Mathf.Sin(beat * .62f + row * .42f)) * (lanes - 1)), 0, lanes - 1);
-                for (int i = 0; i < lanes; i++)
+                float t = i / (strokes - 1f);
+                Vector3 port = carriage.TransformPoint(CoreMuzzle);
+                for (int h = -1; h <= 1; h += 2)
                 {
-                    if (i == skip || phaseThree && i == Mathf.Min(lanes - 1, skip + 1))
-                        continue;
-                    float angle = Mathf.Lerp(-77, 77, i / Mathf.Max(1f, lanes - 1));
-                    float skew = 13 * Mathf.Sin(beat + row * .72f);
-                    var shot = Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.down, angle + skew), 4.6f, .19f, i == 0);
-                    if (phaseTwo && (i + row) % 3 == 0)
-                        shot.Pause(.54f, .31f, CombatRound.Turn.Down, 0, 5.25f);
-                }
-                if (row % 2 == 0)
-                {
-                    for (int side = -1; side <= 1; side += 2)
+                    UseTone(h < 0 ? HostileTone.Bright : HostileTone.Dark);
+                    for (int tooth = 0; tooth < 3; tooth++)
                     {
-                        int portIndex = side < 0 ? 0 : 1;
-                        for (int i = 0; i < Dense(phaseThree ? 6 : 4); i++)
-                        {
-                            var direction = new Vector2(side * -.65f, (phaseTwo && (beat + row) % 3 == 0 ? .75f : -.75f));
-                            Fire<SimpleRound>(Muzzle(portIndex), CombatVisuals.Rotate(direction, side * (i * 14 - 20)), 4.1f, .24f, i == 0)
-                                .Bounce(phaseThree ? 2 : 1);
-                        }
+                        float angle = h * (10 + 38 * Mathf.Abs(2 * t - 1) + 9 * tooth);
+                        Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.down, angle),
+                            3.5f + tooth * .41f, .17f, tooth == 0 && i % 4 == 0);
                     }
                 }
-                yield return Wait(Rest(phaseThree ? .16f : .23f));
+                yield return Wait(1.56f / strokes);
             }
-            beat++;
-            yield return Wait(Rest(phaseThree ? .37f : .61f));
+            yield return PrimeRails(.28f);
+            for (int h = 0; h < 2; h++)
+            {
+                int side = h * 2 - 1;
+                int teeth = Mathf.Max(3, Dense(8));
+                for (int i = 0; i < teeth; i++)
+                {
+                    float a = Mathf.Lerp(19, 73, i / (teeth - 1f));
+                    Fire<SimpleRound>(Muzzle(h), CombatVisuals.Rotate(Vector2.up, side * a), 3.45f, .22f, i == 0)
+                        .Bounce(1);
+                }
+            }
+            yield return Wait(Rest(.56f));
+        }
+    }
+
+    // The two rail shoes toss racks of bolts across the beam. The rack hangs
+    // horizontally for a beat, turns its teeth down and falls through the other rack.
+    IEnumerator Escapement()
+    {
+        for (int pass = 0; ; pass++)
+        {
+            float door = 1.75f * Mathf.Sin(pass * .95f);
+            yield return PrimeRails(.48f);
+            int teeth = Mathf.Max(8, Dense(20));
+            for (int rack = 0; rack < 3; rack++)
+            {
+                UseTone(rack == 1 ? HostileTone.Dark : HostileTone.Bright);
+                for (int h = 0; h < 2; h++)
+                {
+                    int side = h * 2 - 1;
+                    Vector3 port = Muzzle(h);
+                    for (int i = 0; i < teeth; i++)
+                    {
+                        float t = (i + .5f) / teeth;
+                        float x = Mathf.Lerp(side * (Camera.RightLimit - .18f), door + side * .58f, t);
+                        float y = station.y + .86f - rack * .66f + side * (x - door) * .36f;
+                        Vector2 offset = new Vector2(x, y) - (Vector2)port;
+                        float speed = WorldSpeed(Mathf.Max(.19f, offset.magnitude / .625f));
+                        Fire<NeedleRound>(port, offset, speed, i % 4 == 0 ? .23f : .155f, i == 0)
+                            .Pause(.80f, .43f + .35f * (1 - t), CombatRound.Turn.Down,
+                                4 * Mathf.Cos(pass * .95f), 5.35f / speed).ShowTurn();
+                    }
+                }
+                yield return Wait(.16f);
+            }
+            Vector3 lip = carriage.TransformPoint(CoreMuzzle);
+            Vector2 bearing = CombatVisuals.Aim(lip);
+            PointWeapon(lip, bearing);
+            yield return Charge(carriage, CoreMuzzle, .42f);
+            int rivets = Mathf.Max(3, Dense(6));
+            for (int i = 0; i < rivets; i++)
+            {
+                Fire<SimpleRound>(carriage.TransformPoint(CoreMuzzle), bearing, 4.4f + .21f * i, .21f);
+                yield return Wait(.085f);
+            }
+            yield return Wait(Rest(.72f));
+        }
+    }
+
+    // The press punches an actual strip of perforations while the carriage
+    // traverses. A skipped section moves across successive strips. The rails
+    // fold the selvage back in only after the press has lifted.
+    IEnumerator PunchTape()
+    {
+        for (int strip = 0; ; strip++)
+        {
+            yield return Charge(carriage, CoreMuzzle, .44f);
+            float slot = 1.83f * Mathf.Sin(strip * .81f);
+            Vector2 bearing = CombatVisuals.Aim(carriage.TransformPoint(CoreMuzzle));
+            int punches = Mathf.Max(10, Dense(25));
+            for (int i = 0; i < punches; i++)
+            {
+                float x = Mathf.Lerp(-4.48f, 4.48f, (i + .5f) / punches);
+                if ((strip & 1) != 0) x = -x;
+                if (Mathf.Abs(x - slot) >= .69f)
+                {
+                    Vector3 port = carriage.TransformPoint(CoreMuzzle);
+                    for (int tooth = 0; tooth < 6; tooth++)
+                    {
+                        // Blank alternating punch positions give the tape its checkered edge.
+                        if ((tooth == 1 || tooth == 4) && ((i/3 + strip) & 1) == 0) continue;
+                        float y = station.y + 1.68f - .54f * tooth + .22f * ((i / 3) % 2);
+                        Vector2 offset = new Vector2(x, y) - (Vector2)port;
+                        float speed = WorldSpeed(Mathf.Max(.18f, offset.magnitude / .725f));
+                        UseTone(tooth == 1 || tooth == 2 ? HostileTone.Dark : HostileTone.Bright);
+                        Fire<NeedleRound>(port, offset, speed, tooth == 0 ? .22f : .16f, tooth == 0)
+                            .Pause(.90f, .39f + .79f * (1 - i / (punches - 1f)), CombatRound.Turn.Down,
+                                5 * Mathf.Cos(strip * .81f), 5.15f / speed).ShowTurn();
+                    }
+                }
+                yield return Wait(.86f / punches);
+            }
+            yield return PrimeRails(.32f);
+            int stitches = Mathf.Max(5, Dense(12));
+            for (int i = 0; i < stitches; i++)
+            {
+                float t = i / (stitches - 1f);
+                for (int h = 0; h < 2; h++)
+                {
+                    int side = h * 2 - 1;
+                    UseTone(h == (strip & 1) ? HostileTone.Bright : HostileTone.Dark);
+                    Vector2 axis = new Vector2(side * (.35f + .54f * t), .94f - 1.75f * t);
+                    Fire<SimpleRound>(Muzzle(h), axis, 4.15f + .65f * t, .18f, i % 4 == 0).Bounce(1);
+                }
+                yield return Wait(.052f);
+            }
+            yield return Charge(carriage, CoreMuzzle, .31f);
+            int staples = Mathf.Max(3, Dense(7));
+            for (int i=0; i<staples; i++)
+            {
+                float t=i/(staples-1f);
+                for (int side=-1; side<=1; side+=2)
+                    Fire<SimpleRound>(carriage.TransformPoint(CoreMuzzle),
+                        CombatVisuals.Rotate(bearing,side*(8+19*t)), 4.85f-.77f*t, .19f, side<0);
+                yield return Wait(.047f);
+            }
+            yield return Wait(Rest(.31f));
         }
     }
 }
