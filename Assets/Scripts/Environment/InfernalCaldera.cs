@@ -12,7 +12,9 @@ public sealed class InfernalCaldera : MonoBehaviour
     {
         lava = new Material(Resources.Load<Shader>("CalderaLava"));
         basalt = new Material(Resources.Load<Shader>("CalderaBasalt"));
-        lava.SetTexture("_CrustMap", Resources.Load<Texture2D>("CalderaCrust"));
+        var crust = Resources.Load<Texture2D>("CalderaCrust");
+        basalt.SetTexture("_StoneMap", crust);
+        lava.SetTexture("_CrustMap", crust);
         lava.SetTexture("_FlowMap", Resources.Load<Texture2D>("CalderaFlow"));
         var bed = new Mesh { name = "Continuous molten caldera" };
         bed.vertices = new[] { new Vector3(-16, -25), new Vector3(-16, 25), new Vector3(16, 25), new Vector3(16, -25) };
@@ -27,7 +29,7 @@ public sealed class InfernalCaldera : MonoBehaviour
             root.localPosition = new Vector3(0, (i - 1) * 20, 83);
             tiles.Add(root);
             int side = i % 2 == 0 ? -1 : 1;
-            var mesh = Shelf(LevelRun.Seed + i * 719, side, out var craterSite);
+            var mesh = Shelf(LevelRun.Seed, i, side, Erupting, out var craterSite, out var outerCraterSite);
             meshes.Add(mesh);
             Add("Layered volcanic rock", mesh, basalt, root, Vector3.zero, -45);
             var vent = Add("Terraced basalt crater", IndustrialMeshFactory.Volcano(), basalt, root, craterSite + Vector3.back * .015f, -39);
@@ -38,17 +40,12 @@ public sealed class InfernalCaldera : MonoBehaviour
             {
                 hazard.Eruption = true;
                 Glow(vent);
-                // One more volcano rises from the far side of every shelf.
-                for (int extra = 0; extra < 1; extra++)
-                {
-                    var site = new Vector3(-side * (2.1f + extra * 1.2f), (extra == 0 ? -5.5f : 5f) + craterSite.y * .2f, craterSite.z - .015f);
-                    var added = Add("Erupting crater", IndustrialMeshFactory.Volcano(), basalt, root, site, -39);
-                    added.localScale = new Vector3(.9f, .78f, .9f);
-                    var addedVent = added.gameObject.AddComponent<VolcanicVent>();
-                    addedVent.phase = i * .55f + (extra + 1) * 1.7f;
-                    addedVent.Eruption = true;
-                    Glow(added);
-                }
+                var added = Add("Erupting crater", IndustrialMeshFactory.Volcano(), basalt, root, outerCraterSite, -39);
+                added.localScale = new Vector3(.9f, .78f, .9f);
+                var addedVent = added.gameObject.AddComponent<VolcanicVent>();
+                addedVent.phase = i * .55f + 1.7f;
+                addedVent.Eruption = true;
+                Glow(added);
             }
         }
         if (Erupting)
@@ -113,10 +110,9 @@ public sealed class InfernalCaldera : MonoBehaviour
         }
     }
 
-    static Mesh Shelf(int seed, int craterSide, out Vector3 craterSite)
+    static Mesh Shelf(int seed, int tile, int craterSide, bool eruption, out Vector3 craterSite, out Vector3 outerCraterSite)
     {
-        craterSite = Vector3.zero;
-        var random = new System.Random(seed);
+        var random = new System.Random(unchecked(seed + tile * 719));
         float R(float a, float b) => Mathf.Lerp(a, b, (float)random.NextDouble());
         var points = new List<Vector3>();
         var colors = new List<Color>();
@@ -162,26 +158,74 @@ public sealed class InfernalCaldera : MonoBehaviour
             }
             return middle;
         }
-        for (int side = -1; side <= 1; side += 2)
+        // Both banks are sampled in the same 80-unit periodic river. End rows
+        // meet exactly as the four scroll tiles recycle, including the final join.
+        float phaseOffset = (seed % 4093) * .017f;
+        float BankX(float y, int side)
         {
-            for (int row = 0; row < 3; row++)
+            float t = Mathf.Repeat(tile * 20f + y + 10f, 80f) * (2 * Mathf.PI / 80f);
+            float bend = .92f*Mathf.Sin(t+phaseOffset) + .47f*Mathf.Sin(2*t-phaseOffset);
+            float width = 2.72f + .47f*Mathf.Sin(3*t+.7f) + .38f*Mathf.Cos(2*t+phaseOffset);
+            float fracture = .21f*Mathf.Sin(12*t+side*1.3f) + .16f*Mathf.Cos(19*t+phaseOffset*side);
+            return bend + side*(width+fracture);
+        }
+        Vector3 Bank(float y, int side, int ledge)
+        {
+            float x = BankX(y,side);
+            float t = Mathf.Repeat(tile*20f+y+10f,80f) * (2*Mathf.PI/80f);
+            float lip = .25f*Mathf.Sin(9*t+side*phaseOffset);
+            float spur = Mathf.Pow(.5f+.5f*Mathf.Cos(5*t+side*1.8f+phaseOffset),4);
+            switch (ledge)
             {
-                var p = new Vector3(side * R(4.1f, 5.5f), -6.4f + row * 6.5f + R(-.35f, .35f), 0);
-                var top = Island(p, R(2.4f, 3.1f), R(2.6f, 3.0f), 9);
-                if (side == craterSide && row == 1)
-                    craterSite = top;
-                for (int rock = 0; rock < 3; rock++)
-                    Island(p + new Vector3(R(-.8f, .8f), R(-1.4f, 1.4f), -1.3f), R(.24f, .48f), R(.28f, .55f), 6);
+                case 0: return new Vector3(x-side*(.26f+.43f*spur),y,.31f);
+                case 1: return new Vector3(x-side*.13f,y,-.06f);
+                case 2: return new Vector3(x+side*(.18f+lip*.46f),y,-.42f);
+                case 3: return new Vector3(x+side*(.59f+lip+.33f*spur),y,-.54f);
+                case 4: return new Vector3(x+side*(.91f+lip+.76f*spur),y,-1.21f);
+                case 5: return new Vector3(x+side*(1.94f+lip+.44f*spur),y,-1.32f);
+                default: return new Vector3(side*14,y,-1.32f);
             }
         }
-        for (int row = 0; row < 3; row++)
+        Color[] strata = {
+            new Color(.34f,.145f,.073f), new Color(.23f,.105f,.075f), new Color(.21f,.147f,.133f),
+            new Color(.125f,.095f,.106f), new Color(.187f,.169f,.178f), new Color(.154f,.146f,.161f)
+        };
+        for (int side = -1; side <= 1; side += 2)
         {
-            float x = (row % 2 == 0 ? -1 : 1) * R(.4f, 1.1f);
-            Island(new Vector3(x, -6.3f + row * 6.25f + R(-.4f, .4f), .10f), R(1.9f, 2.45f), R(2.1f, 2.65f), 10);
-            if (row == 1)
-                Island(new Vector3(x + 1, 1.4f, -1.1f), .65f, .90f, 7);
+            for (int row = 0; row < 16; row++)
+            {
+                float y = -10+row*1.25f;
+                for (int ledge=0; ledge<strata.Length; ledge++)
+                {
+                    Vector3 a=Bank(y,side,ledge), b=Bank(y+1.25f,side,ledge);
+                    Vector3 c=Bank(y+1.25f,side,ledge+1), d=Bank(y,side,ledge+1);
+                    float face = Mathf.Clamp(.94f+side*(b.x-a.x)*.13f,.80f,1.08f);
+                    Face(strata[ledge]*face,a,b,c,d);
+                }
+            }
+            // Broken scoria at the foot of the cliffs; a few large plates share a fault.
+            for (int seam=0; seam<2; seam++)
+            {
+                float y=R(-7.2f,6.4f);
+                for (int plate=0; plate<3; plate++)
+                {
+                    float at=y+plate*.57f;
+                    float x=BankX(at,side)-side*(.31f+.23f*plate);
+                    Island(new Vector3(x,at,-.14f),R(.27f,.55f),R(.37f,.72f),7);
+                }
+            }
         }
-        var mesh = new Mesh { name = "Beveled basalt islands and broken shelves" };
+        // Raised vent seats are anchored at their authored shores, including the
+        // second ERUPTION vent. The main channel between them stays mostly exposed.
+        var ventSite = new Vector3(craterSide*R(4.12f,4.47f), R(-.48f,.48f),-1.04f);
+        craterSite=Island(ventSite,1.95f,1.72f,12);
+        outerCraterSite=new Vector3(-craterSide*2.1f,-5.5f+craterSite.y*.2f,-1.02f);
+        if (eruption)
+            outerCraterSite=Island(outerCraterSite,1.48f,1.32f,11)+Vector3.back*.015f;
+        float barY=R(3.2f,5.7f);
+        float barX=BankX(barY,-craterSide)+craterSide*R(.85f,1.26f);
+        Island(new Vector3(barX,barY,.08f),R(.62f,.96f),R(1.55f,2.12f),10);
+        var mesh = new Mesh { name = "Basalt benches and welded scoria" };
         mesh.SetVertices(points);
         mesh.SetColors(colors);
         mesh.SetTriangles(triangles, 0);

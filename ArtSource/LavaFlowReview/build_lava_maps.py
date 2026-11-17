@@ -47,8 +47,26 @@ for dy in range(-2, 3):
         second = np.minimum(second, np.maximum(nearest, distance))
         nearest = np.minimum(nearest, distance)
 gap = second-nearest
-# Pack edge distance, ropy cooling folds, fine grain, and broad temperature.
-save("CalderaCrust.png", [gap, .60*fold+.26*fine+.14*grain, fine*.65+grain*.35, coarse])
+# Twist a few hot sheets into eddies. Keep the subsequent flow bake independent
+# of the extra detail in the crust so existing advection remains reproducible.
+flow_state = rng.bit_generator.state
+u, v = x.copy(), y.copy()
+for cx, cy, radius, strength in [(.27,.32,.18,2.3), (.78,.76,.22,-2.4), (.60,.10,.11,1.7)]:
+    dx, dy = (x-cx+.5) % 1-.5, (y-cy+.5) % 1-.5
+    turn = strength*np.exp(-(dx*dx+dy*dy)/(radius*radius))
+    u += dx*np.cos(turn)-dy*np.sin(turn)-dx
+    v += dx*np.sin(turn)+dy*np.cos(turn)-dy
+warp = noise(u,v,5)
+filament = u*11 + .84*np.sin(2*np.pi*v) + 1.93*warp + .23*noise(u,v,23)
+# One face of each wrinkle catches the heat underneath the sheet. Its other
+# face darkens abruptly. Vary the spacing and break ridges as the skin tears.
+a = 2*np.pi*filament
+rope = .5+.5*np.sin(a+.71*np.sin(a)+.29*np.sin(a*2))
+flare = .5+.5*np.cos(2*np.pi*(u*2+1.17*warp+.32*np.sin(2*np.pi*v)))
+heat = .50*flare + .31*coarse + .19*fold
+clinker = .33*fine+.23*grain+.29*noise(u+.10*fold,v,32)+.15*noise(u,v,83)
+save("CalderaCrust.png", [gap, .74*rope+.26*fold, clinker, heat])
+rng.bit_generator.state = flow_state
 
 size = 128
 y, x = np.mgrid[:size, :size] / size

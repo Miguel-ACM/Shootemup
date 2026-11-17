@@ -1,5 +1,6 @@
 Shader "Shootemup/Caldera basalt"
 {
+    Properties { [NoScaleOffset] _StoneMap("Fractures and mineral grain", 2D)="gray" {} }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry" }
@@ -11,18 +12,22 @@ Shader "Shootemup/Caldera basalt"
             #pragma vertex Vert
             #pragma fragment Frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            TEXTURE2D(_StoneMap); SAMPLER(sampler_StoneMap);
             struct Input {float4 p:POSITION;float4 color:COLOR;};
             struct Output {float4 p:SV_POSITION;float3 local:TEXCOORD0;float4 color:COLOR;};
             Output Vert(Input i){Output o;o.p=TransformObjectToHClip(i.p.xyz);o.local=i.p.xyz;o.color=i.color;return o;}
-            float Hash(float2 p){float3 q=frac(float3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return frac((q.x+q.y)*q.z);}
-            float Noise(float2 p){float2 a=floor(p),f=frac(p);f=f*f*(3-2*f);return lerp(lerp(Hash(a),Hash(a+float2(1,0)),f.x),lerp(Hash(a+float2(0,1)),Hash(a+1),f.x),f.y);}
             half4 Frag(Output i):SV_Target
             {
-                float2 p=i.local.xy;
-                float grain=Noise(p*18.0),mineral=Noise(p*1.7);
-                float crease=1-smoothstep(.013,.039,abs(Noise(p*3.3+19)-.51));
-                float shade=(.84+grain*.23+mineral*.10)*(1-crease*.24);
-                return half4(i.color.rgb*shade,1);
+                float2 p = i.local.xy;
+                // Each 20-unit shelf spans whole repeats in both UV coordinates,
+                // so a mineral seam continues past the join between scroll tiles.
+                float2 uv = float2(p.x*.145+p.y*.05,p.y*.10-p.x*.037);
+                float4 stone = SAMPLE_TEXTURE2D(_StoneMap,sampler_StoneMap,uv);
+                float joint = 1-smoothstep(.015,.11,stone.r+(stone.g-.5)*.05);
+                float bedding = smoothstep(.50,.87,.5+.5*sin(p.x*3.1+p.y*3.14159+stone.g*6));
+                float shade = (.86+stone.b*.22+stone.a*.12)*(1-joint*.18);
+                float3 rock = i.color.rgb * shade + float3(.012,.009,.014)*bedding;
+                return half4(rock,1);
             }
             ENDHLSL
         }

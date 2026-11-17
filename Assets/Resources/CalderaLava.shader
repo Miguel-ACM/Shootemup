@@ -27,25 +27,32 @@ Shader "Shootemup/Caldera molten bed"
             Output Vert(Input i){Output o;o.p=TransformObjectToHClip(i.p.xyz);o.world=i.p.xy;return o;}
             float3 MoltenSurface(float4 surface,float heat)
             {
-                float distance=surface.r-(surface.a-.45)*.32;
-                // Restrained ember seams beneath broad cooling rafts. This remains
-                // scenery: the mint combat layer owns the brightest values.
-                float molten=1-smoothstep(.025,.115,distance+(surface.g-.5)*.07);
-                float core=1-smoothstep(.008,.030,distance);
-                float folds=smoothstep(.45,.72,surface.g);
-                float3 crust=lerp(float3(.027,.024,.028),float3(.065,.039,.029),surface.b);
-                float3 magma=lerp(float3(.065,.018,.009),float3(.15,.041,.014),heat);
-                magma*=.81+surface.g*.25;
-                magma+=float3(.008,.004,.001)*folds;
-                float3 c=lerp(crust,magma,molten);
-                return lerp(c,float3(.25,.077,.023),core*(.22+.16*heat));
+                // Basalt rafts ride on a continuous copper-orange melt. The broad
+                // thermal field opens pools between plates, with narrower seams in cooler rock.
+                float thermal = smoothstep(.23,.76,surface.a*.85+heat*.15);
+                float rope = surface.g-.5;
+                float edge = surface.r+.055*rope;
+                float width = lerp(.028,.23,thermal);
+                float seam = 1-smoothstep(width*.22,width+.045,edge);
+                // Hot open sheets interrupt the network of cooling rafts. Wrinkles
+                // survive in the skin of the sheet before the fragmented rind forms.
+                float sheet = smoothstep(.43,.86,thermal) * (.75+.24*surface.b);
+                float melt = max(seam,sheet);
+                float lip = 1-smoothstep(width+.04,width+.16,edge);
+                float3 rind = lerp(float3(.072,.048,.060),float3(.24,.115,.095),surface.b);
+                rind += float3(.084,.033,.013)*lip;
+                rind += float3(.063,.039,.029)*rope;
+                float3 ember = lerp(float3(.35,.115,.050),float3(.63,.235,.081),thermal);
+                ember += float3(.105,.070,.029)*rope;
+                float core = (1-smoothstep(.003,.062,edge))*(.30+.70*thermal);
+                return lerp(rind,ember,melt)+float3(.080,.075,.026)*core;
             }
             half4 Frag(Output i):SV_Target
             {
                 float2 p=i.world+float2(0,_Flow*3.7);
-                float2 uv=p/11;
-                float4 flow=SAMPLE_TEXTURE2D(_FlowMap,sampler_FlowMap,p/19);
-                float2 velocity=(flow.rg*2-1)*.045;
+                float2 uv=float2(p.x*.111+p.y*.015, p.y*.074);
+                float4 flow=SAMPLE_TEXTURE2D(_FlowMap,sampler_FlowMap,float2(p.x*.064,p.y*.050));
+                float2 velocity=(flow.rg*2-1)*.078;
                 // Same dual-phase principle as PSXValleyRiver: periodically reset the
                 // distortion under the other phase, without a visible pop or long-run stretch.
                 float phase=frac(_Flow/7+flow.b);
@@ -54,7 +61,7 @@ Shader "Shootemup/Caldera molten bed"
                 float4 a=SAMPLE_TEXTURE2D(_CrustMap,sampler_CrustMap,uv+drift-velocity*(phase-.5));
                 float4 b=SAMPLE_TEXTURE2D(_CrustMap,sampler_CrustMap,uv+drift-velocity*(phaseB-.5));
                 // Shade phases separately to retain the narrow hot cracks during blending.
-                float heat=.35+flow.a*.65;
+                float heat=flow.a;
                 float3 c=lerp(MoltenSurface(a,heat),MoltenSurface(b,heat),weight);
                 return half4(c,1);
             }
