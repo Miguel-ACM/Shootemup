@@ -25,9 +25,9 @@ public static partial class IndustrialMeshFactory
                 return center+Vector3.Scale(new Vector3(Mathf.Cos(a)*Mathf.Cos(b),Mathf.Sin(b),Mathf.Sin(a)*Mathf.Cos(b)),radius);
             },tile);
         }
-        public void Sweep(Vector3 a,Vector3 b,Vector3 c,Vector3 d,float width,float depth,int tile,bool taper=true,int rows=24)
+        public void Sweep(Vector3 a,Vector3 b,Vector3 c,Vector3 d,float width,float depth,int tile,bool taper=true,int rows=24,int sides=12)
         {
-            Surface(12,rows,(u,t)=>{
+            Surface(sides,rows,(u,t)=>{
                 float r=1-t;Vector3 p=r*r*r*a+3*r*r*t*b+3*r*t*t*c+t*t*t*d;
                 Vector3 tangent=(3*r*r*(b-a)+6*r*t*(c-b)+3*t*t*(d-c)).normalized;
                 Vector3 side=Vector3.Cross(tangent,Vector3.forward).normalized;
@@ -38,9 +38,9 @@ public static partial class IndustrialMeshFactory
                 return p+side*(Mathf.Cos(angle)*width*envelope)+normal*(Mathf.Sin(angle)*depth*envelope);
             },tile);
         }
-        public void Halo(Vector3 center,float radius,float tube,Vector3 scale,Quaternion rotation,int tile,int sides=64)
+        public void Halo(Vector3 center,float radius,float tube,Vector3 scale,Quaternion rotation,int tile,int sides=64,int tubeSides=10)
         {
-            Surface(sides,10,(u,v)=>{
+            Surface(sides,tubeSides,(u,v)=>{
                 float a=u*Mathf.PI*2,b=-v*Mathf.PI*2;
                 return center+rotation*Vector3.Scale(new Vector3(Mathf.Cos(a)*(radius+Mathf.Cos(b)*tube),Mathf.Sin(a)*(radius+Mathf.Cos(b)*tube),Mathf.Sin(b)*tube),scale);
             },tile);

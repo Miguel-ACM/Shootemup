@@ -49,10 +49,10 @@ public static partial class IndustrialMeshFactory
         foreach (int end in new[] { 0, frames.Length - 1 })
         {
             Vector4 f = frames[end];
-            var cap = new Vector3[12];
+            var cap = new Vector3[8];
             for (int i = 0; i < cap.Length; i++)
             {
-                float a = (end == 0 ? i : -i) * Mathf.PI / 6;
+                float a = (end == 0 ? i : -i) * (2 * Mathf.PI / cap.Length);
                 cap[i] = new Vector3(f.x + f.z * Mathf.Cos(a), f.y, z + f.w * Mathf.Sin(a));
             }
             b.Face(paint, cap);
@@ -60,13 +60,37 @@ public static partial class IndustrialMeshFactory
         for (int i = 1; i < frames.Length; i++)
         {
             Vector4 a = frames[i - 1], d = frames[i];
-            b.Surface(12, 1, (u, t) =>
+            b.Surface(8, 1, (u, t) =>
             {
                 Vector4 f = Vector4.Lerp(a, d, t);
                 float angle = u * Mathf.PI * 2;
                 return new Vector3(f.x + f.z * Mathf.Cos(angle), f.y, z + f.w * Mathf.Sin(angle));
             }, paint);
         }
+    }
+
+    // One jacket and an inset bore keep small barrels readable during flight.
+    static void FieldBarrel(Builder b, Vector3 exit, float radius, float length)
+    {
+        Vector3 Rim(int corner, float y, float r)
+        {
+            float a = corner * Mathf.PI / 3;
+            return exit + new Vector3(Mathf.Cos(a) * radius * r, length * y, Mathf.Sin(a) * radius * r);
+        }
+        for (int i = 0; i < 6; i++)
+        {
+            int j = i + 1;
+            b.Face(11, Rim(i, .12f, .56f), Rim(i, 0, .56f), Rim(j, 0, .56f), Rim(j, .12f, .56f));
+            b.Face(13, Rim(i, 0, .56f), Rim(i, 0, 1), Rim(j, 0, 1), Rim(j, 0, .56f));
+            b.Face(1, Rim(i, 0, 1), Rim(i, .25f, 1), Rim(j, .25f, 1), Rim(j, 0, 1));
+            b.Face(6, Rim(i, .25f, 1), Rim(i, 1, .72f), Rim(j, 1, .72f), Rim(j, .25f, 1));
+        }
+    }
+
+    static void FieldPort(Builder b, Vector3 center, float radius, int paint)
+    {
+        b.Drum(center + Vector3.back * .04f, radius, .20f, paint, 8, 6);
+        b.Drum(center + Vector3.back * .15f, radius * .64f, .025f, 11, 8, paint);
     }
 
     // Four canted facets meet on a raised ridge. The underside closes the fold

@@ -79,19 +79,19 @@ public static partial class IndustrialMeshFactory
             Frame(-.26f,.37f,.24f), Frame(.22f,.46f,.30f), Frame(.48f,.37f,.24f), Frame(.73f,.09f,.08f));
         for (int s = -1; s <= 1; s += 2)
         {
-            b.Pearl(new Vector3(s*.30f,-.23f,-.21f),new Vector3(.20f,.19f,.10f),13,10,5);
-            b.Pearl(new Vector3(s*.32f,-.23f,-.29f),new Vector3(.115f,.12f,.045f),5,8,4);
-            b.Pearl(new Vector3(s*.16f,-.53f,-.15f),new Vector3(.08f,.09f,.07f),10,8,4);
+            CutStone(b,new Vector3(s*.30f,-.23f,-.21f),new Vector3(.20f,.19f,.10f),13,6);
+            CutStone(b,new Vector3(s*.32f,-.23f,-.29f),new Vector3(.115f,.12f,.045f),5,6);
+            CutStone(b,new Vector3(s*.16f,-.53f,-.15f),new Vector3(.08f,.09f,.07f),10,6);
             CutBlade(b,new[]{new Vector3(s*.33f,.14f,.03f),new Vector3(s*.53f,.31f,0),
                 new Vector3(s*.44f,.57f,0),new Vector3(s*.65f,.68f,0)},.105f,.08f,14);
         }
         CutBlade(b,new[]{new Vector3(0,-.15f,-.22f),new Vector3(0,.26f,-.32f),
             new Vector3(0,.70f,-.09f)},.11f,.04f,14);
-        b.Pearl(new Vector3(0,-.76f,-.06f),new Vector3(.106f,.091f,.075f),5,10,5);
+        CutStone(b,new Vector3(0,-.76f,-.06f),new Vector3(.106f,.091f,.075f),5,6);
         for (int side=-1;side<=1;side+=2)
         {
             b.Sweep(new Vector3(side*.14f,-.60f,-.12f),new Vector3(side*.28f,-.63f,-.17f),
-                new Vector3(side*.46f,-.56f,-.12f),new Vector3(side*.58f,-.56f,-.10f),.027f,.026f,15,false,5);
+                new Vector3(side*.46f,-.56f,-.12f),new Vector3(side*.58f,-.56f,-.10f),.027f,.026f,15,false,3,4);
             CutBlade(b,new[]{new Vector3(side*.28f,-.19f,.06f),new Vector3(side*.44f,-.31f,.03f),
                 new Vector3(side*.42f,-.52f,0)},.087f,.055f,2);
         }
@@ -108,11 +108,11 @@ public static partial class IndustrialMeshFactory
             float y=-.40f+k*.19f, x=-.23f*Mathf.Cos((y+.08f)*3.4f)+Mathf.Max(0,y)*.48f;
             float r=.34f-.11f*Mathf.Abs(y);
             b.Sweep(new Vector3(x-r,y,0),new Vector3(x-r*.54f,y+.16f,-.29f),
-                new Vector3(x+r*.54f,y+.16f,-.29f),new Vector3(x+r,y,0),.048f,.045f,14,false,6);
+                new Vector3(x+r*.54f,y+.16f,-.29f),new Vector3(x+r,y,0),.048f,.045f,14,false,3,4);
         }
         var mouth=new Vector3(0,-.63f,-.24f);
-        b.Pearl(mouth,new Vector3(.43f,.38f,.13f),11,16,6);
-        b.Halo(mouth+Vector3.back*.09f,.32f,.075f,new Vector3(1.16f,.91f,1),Quaternion.identity,13,16);
+        CutStone(b,mouth,new Vector3(.43f,.38f,.13f),11,8);
+        b.Halo(mouth+Vector3.back*.09f,.32f,.075f,new Vector3(1.16f,.91f,1),Quaternion.identity,13,12,4);
         for(int k=0;k<9;k++)
         {
             float a=k*Mathf.PI*2/9;
@@ -145,13 +145,13 @@ public static partial class IndustrialMeshFactory
         for(int k=-1;k<=1;k++)
         {
             b.Box(new Vector3(k*.22f,.27f,-.49f),new Vector3(.13f,.12f,.035f),9);
-            MothBarrel(b,new Vector3(k*.46f,-.84f,-.43f),.18f,.65f);
+            FieldBarrel(b,new Vector3(k*.46f,-.84f,-.43f),.18f,.65f);
         }
         for(int side=-1;side<=1;side+=2)
         {
             float x=side*.89f;
             b.Sweep(new Vector3(x,-.55f,-.22f),new Vector3(x,-.48f,-.36f),
-                new Vector3(x,.48f,-.36f),new Vector3(x,.63f,-.22f),.033f,.034f,6,false,6);
+                new Vector3(x,.48f,-.36f),new Vector3(x,.63f,-.22f),.033f,.034f,6,false,3,4);
             Inlet(b,side*.29f,.69f,.32f,.27f,-.26f);
         }
         b.Box(new Vector3(0,.42f,-.47f),new Vector3(.97f,.13f,.065f),6);
@@ -160,18 +160,18 @@ public static partial class IndustrialMeshFactory
     static void ModelOverflowBell(Builder b)
     {
         // A riveted diving bell suspended between two return elbows.
-        b.Pearl(new Vector3(0,.02f,0),new Vector3(.65f,.77f,.44f),13,20,10);
+        b.Pearl(new Vector3(0,.02f,0),new Vector3(.65f,.77f,.44f),13,12,4);
         for(int s=-1;s<=1;s+=2)
         {
             b.Sweep(new Vector3(s*.34f,-.35f,-.17f),new Vector3(s*.72f,-.65f,-.24f),
-                new Vector3(s*1.04f,-.19f,-.17f),new Vector3(s*.77f,.21f,-.18f),.12f,.13f,8,false,10);
-            DeepPort(b,new Vector3(s*.77f,.21f,-.18f),.21f,13);
+                new Vector3(s*1.04f,-.19f,-.17f),new Vector3(s*.77f,.21f,-.18f),.12f,.13f,8,false,5,4);
+            FieldPort(b,new Vector3(s*.77f,.21f,-.18f),.21f,13);
             CutBlade(b,new[]{new Vector3(s*.28f,-.70f,-.12f),new Vector3(s*.40f,-.14f,-.40f),
                 new Vector3(s*.32f,.41f,-.35f),new Vector3(s*.13f,.70f,-.13f)},.066f,.04f,6);
         }
         var hatch=new Vector3(0,.05f,-.39f);
-        b.Halo(hatch,.34f,.065f,Vector3.one,Quaternion.identity,13,20);
-        b.Pearl(hatch,new Vector3(.285f,.285f,.11f),8,14,7);
+        b.Halo(hatch,.34f,.065f,Vector3.one,Quaternion.identity,13,12,4);
+        CutStone(b,hatch,new Vector3(.285f,.285f,.11f),8,8);
         for(int i=-1;i<=1;i++) b.Box(hatch+new Vector3(i*.13f,0,-.12f),new Vector3(.040f,.43f,.04f),6);
     }
 
@@ -187,15 +187,15 @@ public static partial class IndustrialMeshFactory
                 float y=leg==0?-.18f:.28f, end=leg==0?-.60f:.86f;
                 var knee=new Vector3(s*(leg==0?.63f:.56f),y+.25f,-.16f);
                 CutBlade(b,new[]{new Vector3(s*.13f,y,-.11f),knee,new Vector3(s*.94f,end+.05f,0)},.087f,.073f,13);
-                b.Pearl(knee,new Vector3(.10f,.11f,.08f),6,8,5);
-                b.Pearl(new Vector3(s*.94f,end,0),new Vector3(.082f,.22f,.06f),8,8,5);
+                CutStone(b,knee,new Vector3(.10f,.11f,.08f),6,6);
+                CutStone(b,new Vector3(s*.94f,end,0),new Vector3(.082f,.22f,.06f),8,6);
             }
         }
-        b.Pearl(new Vector3(0,-.16f,-.17f),new Vector3(.16f,.30f,.13f),9,12,6);
-        MothBarrel(b,new Vector3(0,-1.05f,-.23f),.095f,.51f);
+        CutStone(b,new Vector3(0,-.16f,-.17f),new Vector3(.16f,.30f,.13f),9,6);
+        FieldBarrel(b,new Vector3(0,-1.05f,-.23f),.095f,.51f);
         for(int side=-1;side<=1;side+=2)
         {
-            b.Pearl(new Vector3(side*.13f,.25f,-.14f),new Vector3(.11f,.29f,.105f),14,12,6);
+            CutStone(b,new Vector3(side*.13f,.25f,-.14f),new Vector3(.11f,.29f,.105f),14,6);
             CutBlade(b,new[]{new Vector3(side*.18f,.34f,-.24f),new Vector3(side*.24f,.18f,-.20f),
                 new Vector3(side*.50f,.21f,-.12f)},.044f,.03f,1);
         }
@@ -208,7 +208,7 @@ public static partial class IndustrialMeshFactory
         for(int s=-1;s<=1;s+=2)
         {
             b.Sweep(new Vector3(s*-.63f,-.62f,-.32f),new Vector3(s*-.25f,-.24f,-.42f),
-                new Vector3(s*.25f,.24f,-.42f),new Vector3(s*.63f,.62f,-.32f),.115f,.06f,6,false,4);
+                new Vector3(s*.25f,.24f,-.42f),new Vector3(s*.63f,.62f,-.32f),.115f,.06f,6,false,2,4);
             for(int j=-1;j<=1;j+=2)
             {
                 b.Box(new Vector3(s*.61f,j*.62f,-.29f),new Vector3(.39f,.36f,.20f),1,0);
@@ -233,7 +233,7 @@ public static partial class IndustrialMeshFactory
         for(int i=-1;i<=1;i++)
         {
             float x=i*.37f;
-            b.Pearl(new Vector3(x,0,-.27f),new Vector3(.14f,.54f,.14f),i==0?10:3,12,8);
+            CutStone(b,new Vector3(x,0,-.27f),new Vector3(.14f,.54f,.14f),i==0?10:3,6);
             for(int end=-1;end<=1;end+=2)
                 b.Box(new Vector3(x,end*.40f,-.28f),new Vector3(.31f,.145f,.28f),13,6);
         }
@@ -243,10 +243,10 @@ public static partial class IndustrialMeshFactory
     {
         // A recessed turret socket flanked by an ammunition belt and a sloping access hatch.
         BevelArmor(b,new[]{V(-.81f,-.81f),V(.81f,-.81f),V(.81f,.65f),V(.65f,.81f),V(-.81f,.81f)},.48f,0);
-        b.Drum(new Vector3(0,.04f,-.28f),.59f,.15f,11,16,6);
+        b.Drum(new Vector3(0,.04f,-.28f),.59f,.15f,11,10,6);
         b.Drum(new Vector3(0,.05f,-.38f),.49f,.15f,6,12,0);
         CutStone(b,new Vector3(0,.12f,-.43f),new Vector3(.38f,.45f,.22f),5,8);
-        MothBarrel(b,new Vector3(0,-.43f,-.64f),.19f,.50f);
+        FieldBarrel(b,new Vector3(0,-.43f,-.64f),.19f,.50f);
         for(int j=-2;j<=2;j++)
             b.Box(new Vector3(-.62f,j*.22f,-.31f),new Vector3(.22f,.13f,.16f),13,0);
         b.Box(new Vector3(.64f,0,-.31f),new Vector3(.23f,1.19f,.18f),1,6);
@@ -261,7 +261,7 @@ public static partial class IndustrialMeshFactory
         {
             BevelArmor(b,new[]{V(s*.40f,-.80f),V(s*.80f,-.80f),V(s*.80f,.80f),V(s*.57f,.80f),V(s*.40f,.56f)},.51f,1,-.13f);
             b.Box(new Vector3(s*.55f,.53f,-.41f),new Vector3(.42f,.23f,.10f),0);
-            DeepPort(b,new Vector3(s*.57f,-.13f,-.45f),.21f,6);
+            FieldPort(b,new Vector3(s*.57f,-.13f,-.45f),.21f,6);
         }
         b.Box(new Vector3(0,.46f,-.28f),new Vector3(.83f,.51f,.39f),5,6);
         KeelSkin(b,-.30f,13,Frame(-.48f,.15f,.14f),Frame(-.43f,.21f,.18f),Frame(.38f,.21f,.18f));
@@ -281,7 +281,7 @@ public static partial class IndustrialMeshFactory
             b.Box(new Vector3(x,.04f,-.21f),new Vector3(.44f,.99f,.15f),11);
             for(int i=-2;i<=2;i++)
                 b.Box(new Vector3(x,i*.17f+.08f,-.35f),new Vector3(.50f,.094f,.17f),i==0?3:1,6);
-            MothBarrel(b,new Vector3(x,-.81f,-.24f),.17f,.48f);
+            FieldBarrel(b,new Vector3(x,-.81f,-.24f),.17f,.48f);
         }
         CutStone(b,new Vector3(0,.62f,-.22f),new Vector3(.41f,.24f,.18f),1,8);
         CutStone(b,new Vector3(0,.55f,-.36f),new Vector3(.24f,.15f,.09f),9,8);
@@ -293,7 +293,7 @@ public static partial class IndustrialMeshFactory
         KeelSkin(b,0,0,Frame(-1.01f,.08f,.10f),Frame(-.58f,.24f,.18f),Frame(.12f,.36f,.24f),
             Frame(.56f,.28f,.21f,.09f),Frame(.90f,.10f,.08f,.15f));
         var hub=new Vector3(-.50f,.14f,-.16f);
-        b.Drum(hub,.43f,.10f,6,18,11);
+        b.Drum(hub,.43f,.10f,6,12,11);
         for(int i=0;i<12;i++)
         {
             float a=i*Mathf.PI/6;
@@ -304,7 +304,7 @@ public static partial class IndustrialMeshFactory
         b.Drum(hub+Vector3.back*.17f,.134f,.12f,13,8);
         FoldedFin(b,new Vector3(.12f,.53f,0),new Vector3(.55f,.79f,.03f),new Vector3(.85f,.93f,.08f),
             new Vector3(.40f,-.35f,-.06f),new Vector3(.40f,.31f,-.23f),1,4);
-        MothBarrel(b,new Vector3(0,-1.03f,-.25f),.12f,.58f);
+        FieldBarrel(b,new Vector3(0,-1.03f,-.25f),.12f,.58f);
     }
 
     public static Mesh PlagueTail()
