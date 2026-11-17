@@ -48,12 +48,23 @@ public static partial class IndustrialMeshFactory
     }
     public static Mesh CapRicochetMesh()
     {
-        if(fableCap!=null)return fableCap;var b=new Builder();
-        BevelArmor(b,new[]{V(0,-.91f),V(.50f,-.56f),V(.88f,.02f),V(.71f,.47f),V(.30f,.66f),V(0,.72f),V(-.30f,.66f),V(-.71f,.47f),V(-.88f,.02f),V(-.50f,-.56f)},.30f,8);
-        CutHalo(b,new Vector3(0,.05f,-.23f),.55f,.08f,new Vector3(1,.72f,1),Quaternion.identity,15,12);
-        CutStone(b,new Vector3(0,.04f,-.28f),new Vector3(.25f,.25f,.11f),5,7);
-        FablePort(b,0,-.72f,.14f,8);
-        return fableCap=b.Finish("Ricochet cap / armoured saucer");
+        if (fableCap != null) return fableCap;
+        var b = new Builder();
+        // A red fly-agaric bonnet with two lateral impact pads and a tucked-under launch shoe.
+        KeelSkin(b,0,15,Frame(-.78f,.06f,.08f),Frame(-.53f,.29f,.20f),
+            Frame(.11f,.32f,.24f),Frame(.49f,.13f,.12f));
+        b.Pearl(new Vector3(0,.15f,-.08f),new Vector3(.83f,.57f,.32f),5,24,10);
+        for(int s=-1;s<=1;s+=2)
+        {
+            b.Pearl(new Vector3(s*.78f,.09f,-.01f),new Vector3(.17f,.31f,.15f),13,12,6);
+            b.Pearl(new Vector3(s*.45f,.28f,-.31f),new Vector3(.14f,.13f,.071f),15,12,6);
+            b.Pearl(new Vector3(s*.26f,-.09f,-.32f),new Vector3(.10f,.075f,.055f),15,10,5);
+            CutBlade(b,new[]{new Vector3(s*.13f,-.54f,-.16f),new Vector3(s*.40f,-.37f,-.20f),
+                new Vector3(s*.77f,-.06f,-.14f)},.086f,.06f,1);
+        }
+        b.Pearl(new Vector3(-.07f,.43f,-.33f),new Vector3(.125f,.085f,.055f),15,10,5);
+        MothBarrel(b,new Vector3(0,-.72f,-.24f),.11f,.30f);
+        return fableCap = b.Finish("CapRicochet");
     }
     public static Mesh MyceliumLancerMesh()
     {
