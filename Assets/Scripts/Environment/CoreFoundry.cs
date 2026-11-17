@@ -111,16 +111,27 @@ public static partial class DeepDistrictScenery
                 Pipe(b,P(strand-s*.65f,4.31f),P(strand,5.18f),.061f,.27f,k==1?Insulator:Gunmetal);
                 Pipe(b,P(strand,5.18f),P(strand,edge),.061f,.27f,k==1?Insulator:Gunmetal);
             }
-            for(int j=-1;j<=1;j+=2)
-            {
-                Vector2 c=P(s*3.32f,j*6.4f);
-                Turbine(b,c,.78f,.78f,.63f);
-            }
         }
         if(room%2==0)
         {
-            // A deep direct-drive generator under a divided ceramic retaining ring.
-            Turbine(b,P(room==0?-.74f:.74f,-.2f),2.32f,2.68f,.64f);
+            // Both return ducts enter the same bolted plenum. The rotor sits on its axis.
+            Vector2[] casing = { P(-1.28f,-3.56f), P(1.28f,-3.56f), P(2.13f,-2.21f),
+                P(2.13f,1.86f), P(1.31f,3.12f), P(-1.31f,3.12f), P(-2.13f,1.86f), P(-2.13f,-2.21f) };
+            Casting(b,P(0,-.16f),casing,.42f,.09f,Alloy);
+            for (int side=-1;side<=1;side+=2)
+            {
+                Vector2 duct=P(side*2.32f,.49f);
+                b.Block(duct.x,duct.y,.89f,1.20f,.44f,Gunmetal);
+                for(int collar=-1;collar<=1;collar++)
+                    b.Block(duct.x+collar*.27f,duct.y,.09f,1.26f,.52f,Alloy);
+                for(int bolt=-1;bolt<=1;bolt+=2)
+                    Band(b,P(side*1.28f,bolt*2.28f),P(.10f,.10f),0,0,Mathf.PI*2,.58f,Socket,6);
+            }
+            Turbine(b,P(0,.11f),1.77f,1.83f,.64f);
+            // Air leaves through the louver bank at the foot of the casing.
+            b.Rect(-1.13f,-3.05f,1.13f,-1.89f,.55f,Socket);
+            for (int row=0;row<5;row++)
+                b.Block(0,-2.98f+row*.22f,2.12f,.095f,.58f,Porcelain);
         }
         else
         {
