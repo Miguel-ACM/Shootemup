@@ -42,6 +42,8 @@ public static partial class IndustrialMeshFactory
                 ModelFuseCube(b);
                 break;
             case CombatHullId.SentryCube:
+                ModelSentryCube(b);
+                break;
             case CombatHullId.RamCube:
                 BuildDeepCube(b, id);
                 break;
@@ -243,6 +245,20 @@ public static partial class IndustrialMeshFactory
             for(int end=-1;end<=1;end+=2)
                 b.Box(new Vector3(x,end*.40f,-.28f),new Vector3(.31f,.145f,.28f),13,6);
         }
+    }
+
+    static void ModelSentryCube(Builder b)
+    {
+        // A recessed turret socket flanked by an ammunition belt and a sloping access hatch.
+        BevelArmor(b,new[]{V(-.81f,-.81f),V(.81f,-.81f),V(.81f,.65f),V(.65f,.81f),V(-.81f,.81f)},.48f,0);
+        b.Drum(new Vector3(0,.04f,-.28f),.59f,.15f,11,16,6);
+        b.Drum(new Vector3(0,.05f,-.38f),.49f,.15f,6,12,0);
+        CutStone(b,new Vector3(0,.12f,-.43f),new Vector3(.38f,.45f,.22f),5,8);
+        MothBarrel(b,new Vector3(0,-.43f,-.64f),.19f,.50f);
+        for(int j=-2;j<=2;j++)
+            b.Box(new Vector3(-.62f,j*.22f,-.31f),new Vector3(.22f,.13f,.16f),13,0);
+        b.Box(new Vector3(.64f,0,-.31f),new Vector3(.23f,1.19f,.18f),1,6);
+        CutStone(b,new Vector3(.31f,.39f,-.49f),new Vector3(.11f,.16f,.09f),9,8);
     }
 
     public static Mesh PlagueTail()
