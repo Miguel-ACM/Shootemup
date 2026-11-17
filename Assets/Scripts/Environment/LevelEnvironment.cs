@@ -766,6 +766,8 @@ public sealed class LevelEnvironment : MonoBehaviour
                 woodlandLeaves = PSXValleyFoliage.CreateAtlas();
                 material.mainTexture = woodlandLeaves;
             }
+            else
+                material.mainTexture = Resources.Load<Texture2D>("DreamProcession");
             for (int i = 0; i < 4; i++)
             {
                 var tile = new GameObject(level + " scenery " + i).transform;
