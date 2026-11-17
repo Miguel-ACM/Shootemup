@@ -39,6 +39,8 @@ public static partial class IndustrialMeshFactory
                 ModelTransitCube(b);
                 break;
             case CombatHullId.FuseCube:
+                ModelFuseCube(b);
+                break;
             case CombatHullId.SentryCube:
             case CombatHullId.RamCube:
                 BuildDeepCube(b, id);
@@ -221,6 +223,26 @@ public static partial class IndustrialMeshFactory
         }
         CutStone(b,new Vector3(0,0,-.41f),new Vector3(.30f,.29f,.085f),0,6);
         b.Box(new Vector3(0,.01f,-.50f),new Vector3(.30f,.075f,.035f),13);
+    }
+
+    static void ModelFuseCube(Builder b)
+    {
+        // The vulnerable cartridge is suspended between two porcelain terminal blocks.
+        b.Box(Vector3.zero,new Vector3(1.60f,1.60f,.39f),11,0);
+        for(int s=-1;s<=1;s+=2)
+        {
+            b.Box(new Vector3(0,s*.62f,-.26f),new Vector3(1.58f,.36f,.32f),1,6);
+            b.Box(new Vector3(s*.72f,0,-.20f),new Vector3(.15f,1.26f,.22f),0);
+            b.Drum(new Vector3(s*.52f,-.63f,-.45f),.09f,.06f,13,8);
+            b.Drum(new Vector3(s*.52f,.63f,-.45f),.09f,.06f,13,8);
+        }
+        for(int i=-1;i<=1;i++)
+        {
+            float x=i*.37f;
+            b.Pearl(new Vector3(x,0,-.27f),new Vector3(.14f,.54f,.14f),i==0?10:3,12,8);
+            for(int end=-1;end<=1;end+=2)
+                b.Box(new Vector3(x,end*.40f,-.28f),new Vector3(.31f,.145f,.28f),13,6);
+        }
     }
 
     public static Mesh PlagueTail()
