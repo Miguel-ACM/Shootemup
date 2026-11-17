@@ -20,10 +20,7 @@ public static partial class IndustrialMeshFactory
                 ModelSiltLeech(b);
                 break;
             case CombatHullId.SluiceBarge:
-                BevelArmor(b, new[] { V(-1.0f, -.38f), V(-.60f, -.98f), V(.60f, -.98f), V(1, -.38f), V(.76f, .83f), V(0, 1.02f), V(-.76f, .83f) }, .48f, 0);
-                b.Box(new Vector3(0, .42f, -.24f), new Vector3(1.15f, .61f, .35f), 2);
-                for (int i = -1; i <= 1; i++)
-                    DeepPort(b, new Vector3(i * .46f, -.84f, -.26f), .21f, 13);
+                ModelSluiceBarge(b);
                 break;
             case CombatHullId.OverflowBell:
                 b.Ball(new Vector3(0, .14f, 0), new Vector3(.78f, .82f, .46f), 13);
@@ -136,6 +133,35 @@ public static partial class IndustrialMeshFactory
                 CutBlade(b,new[]{new Vector3(x+side*.20f,y,-.05f),new Vector3(x+side*.42f,y+.07f,0),
                     new Vector3(x+side*.49f,y+.18f,.04f)},.086f,.044f,2);
             }
+    }
+
+    static void ModelSluiceBarge(Builder b)
+    {
+        // Twin flotation caissons carry a recessed three-tube mortar deck.
+        for(int s=-1;s<=1;s+=2)
+        {
+            float x=s*.73f;
+            KeelSkin(b,.02f,8,Frame(-.91f,.035f,.07f,x),Frame(-.57f,.28f,.24f,x),
+                Frame(.57f,.28f,.24f,x),Frame(.97f,.10f,.14f,x));
+            for(int k=-1;k<=1;k++)
+                b.Box(new Vector3(x,k*.40f,-.21f),new Vector3(.50f,.10f,.095f),13,2);
+        }
+        BevelArmor(b,new[]{V(-.79f,-.49f),V(-.62f,-.75f),V(.62f,-.75f),V(.79f,-.49f),V(.68f,.62f),V(-.68f,.62f)},.36f,2);
+        b.Box(new Vector3(0,.40f,-.26f),new Vector3(.88f,.59f,.35f),13,8);
+        b.Box(new Vector3(0,.29f,-.45f),new Vector3(.72f,.23f,.055f),11);
+        for(int k=-1;k<=1;k++)
+        {
+            b.Box(new Vector3(k*.22f,.27f,-.49f),new Vector3(.13f,.12f,.035f),9);
+            MothBarrel(b,new Vector3(k*.46f,-.84f,-.43f),.18f,.65f);
+        }
+        for(int side=-1;side<=1;side+=2)
+        {
+            float x=side*.89f;
+            b.Sweep(new Vector3(x,-.55f,-.22f),new Vector3(x,-.48f,-.36f),
+                new Vector3(x,.48f,-.36f),new Vector3(x,.63f,-.22f),.033f,.034f,6,false,6);
+            Inlet(b,side*.29f,.69f,.32f,.27f,-.26f);
+        }
+        b.Box(new Vector3(0,.42f,-.47f),new Vector3(.97f,.13f,.065f),6);
     }
 
     public static Mesh PlagueTail()
