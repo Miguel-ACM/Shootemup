@@ -62,6 +62,19 @@ Shader "Shootemup/Cistern Water"
                 float3 color = i.color.rgb * lerp(.79,1.17,detail.g);
                 color += float3(.058,.164,.176) * (reflection*.76 + sheen*.65 + wake*.61);
                 color += float3(.13,.22,.19) * foam * .59;
+                // Ripples start at the two physical outlet lips. Broken reflections pick up the lanterns.
+                float side = i.local.x < 0 ? -1 : 1;
+                float2 outlet = i.local - float2(side*2.47,side*4.85-.46);
+                float dist = length(outlet*float2(1,1.35));
+                float ripple = sin(dist*23-t*3.7+detail.g*.95);
+                float jet = exp(-dist*1.58)*smoothstep(.26,.93,ripple)*(1-_LakeWake);
+                float2 glint = i.local-float2(side*2.86,side*4.85+.89);
+                glint.x += (detail.g-.5)*.62+sin(p.y*9+t)*.13;
+                float amber = exp(-dot(glint*float2(1.85,.65),glint*float2(1.85,.65)));
+                color += float3(.15,.22,.23)*jet + float3(.26,.16,.065)*amber*(.15+.85*sheen)*(1-_LakeWake);
+                float shaft=.5+.5*cos(i.local.y*.6283185+i.local.x*.52);
+                color *= .90+.16*shaft;
+                color += float3(.02,.062,.078)*shaft*(.4+detail.r);
                 return half4(color, 1);
             }
             ENDHLSL

@@ -788,7 +788,7 @@ public sealed class LevelEnvironment : MonoBehaviour
         }
         else if (level == LevelId.Sewers || level == LevelId.Core)
         {
-            if (level == LevelId.Core) UseDistrictSurface(1);
+            UseDistrictSurface(level == LevelId.Core ? 1 : 0);
             Mesh channel = null;
             if (level == LevelId.Sewers)
             {
@@ -803,8 +803,7 @@ public sealed class LevelEnvironment : MonoBehaviour
                 tile.localPosition = new Vector3(0, SectionY(i, travel), 90);
                 var mesh = DeepDistrictScenery.Section(level, LevelRun.Seed, i, SectionLength);
                 ownedMeshes.Add(mesh);
-                if (level == LevelId.Core) SurfaceSection(mesh, tile, -50, i);
-                else Add(mesh, tile, Vector3.zero, -50);
+                SurfaceSection(mesh, tile, -50, i);
                 if (channel != null)
                     Add(channel, tile, Vector3.zero, -49).GetComponent<MeshRenderer>().sharedMaterial = sewerWater;
                 sections.Add(tile);
