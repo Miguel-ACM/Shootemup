@@ -127,8 +127,7 @@ public sealed class LevelChoice : MonoBehaviour
             var half = Rect(frame, captions[i], new Vector2(panelWidth, 720), new Vector2(-202.5f + panelWidth * (i + .5f), 0));
             panels[i] = half;
             panelGroups[i] = half.gameObject.AddComponent<CanvasGroup>();
-            bool sealedRoute = Sealed(i);
-            Paint(half, sealedRoute ? new Color(.006f, .01f, .016f, .84f) : new Color(.025f, .045f, .07f, .43f));
+            Paint(half, PanelTint(i));
             fills[i] = Rect(half, "Bottom-up route charge", new Vector2(panelWidth, 0), Vector2.zero);
             fills[i].anchorMin = fills[i].anchorMax = new Vector2(.5f, 0);
             fills[i].pivot = new Vector2(.5f, 0);
@@ -136,44 +135,7 @@ public sealed class LevelChoice : MonoBehaviour
             var edge = Rect(fills[i], "Leading edge", new Vector2(panelWidth, 1.5f), Vector2.zero);
             edge.anchorMin = edge.anchorMax = new Vector2(.5f, 1);
             Paint(edge, new Color(accent.r, accent.g, accent.b, .65f));
-            if (icons != null)
-            {
-                contents[i] = Rect(half, "Encounter sprite", new Vector2(96, 96), Vector2.zero);
-                var image = contents[i].gameObject.AddComponent<Image>();
-                image.sprite = icons[i];
-                image.preserveAspect = true;
-                image.raycastTarget = false;
-            }
-            else if (sealedRoute)
-            {
-                // A sealed district keeps its secret: a padlock instead of its name.
-                contents[i] = Rect(half, "Sealed route", new Vector2(40, 40), Vector2.zero);
-                var image = contents[i].gameObject.AddComponent<Image>();
-                image.sprite = Resources.Load<Sprite>("DockArt/RoutePadlock");
-                image.color = new Color(.8f, .86f, .9f, .8f);
-                image.raycastTarget = false;
-                if (MetaProgress.RouteOpensNextFlight(Options[i]))
-                {
-                    contents[i].anchoredPosition = Vector2.up * 13;
-                    image.color = Color.Lerp(accent, Color.white, .35f);
-                    Text(half, "NEXT FLIGHT", 12, Vector2.down * 24, image.color);
-                }
-            }
-            else
-            {
-                contents[i] = Text(half, captions[i], captions.Length == 3 ? 17 : 24, Vector2.zero, Color.white).rectTransform;
-                contents[i].sizeDelta = new Vector2(panelWidth - 14, 48);
-                var label = contents[i].GetComponent<TextMeshProUGUI>();
-                label.enableAutoSizing = true;
-                label.fontSizeMin = captions.Length == 3 ? 12 : 16;
-                label.fontSizeMax = captions.Length == 3 ? 17 : 24;
-                if (captions.Length == 3)
-                {
-                    label.color = Color.Lerp(accent, Color.white, .5f);
-                }
-                if (Options != null)
-                    EventBadge(contents[i], Options[i], accent, captions.Length == 3);
-            }
+            contents[i] = BuildChoiceContent(i);
         }
         var centre = Rect(frame, "Neutral flight corridor", captions.Length == 3 ? new Vector2(405, 180) : new Vector2(405 * RouteCharge.NeutralWidth, 720), captions.Length == 3 ? new Vector2(0, -270) : Vector2.zero);
         Paint(centre, new Color(.04f, .07f, .10f, .2f));
@@ -182,6 +144,72 @@ public sealed class LevelChoice : MonoBehaviour
             var rule = Rect(frame, "Route divider", new Vector2(1, 720), new Vector2(-202.5f + i * panelWidth, 0));
             Paint(rule, new Color(.78f, .88f, .95f, .22f));
         }
+    }
+
+    Color PanelTint(int index) => Sealed(index) ? new Color(.006f, .01f, .016f, .84f) : new Color(.025f, .045f, .07f, .43f);
+
+    RectTransform BuildChoiceContent(int index)
+    {
+        var panel = panels[index];
+        var accent = accents[index];
+        if (icons != null)
+        {
+            var icon = Rect(panel, "Encounter sprite", new Vector2(96, 96), Vector2.zero);
+            var image = icon.gameObject.AddComponent<Image>();
+            image.sprite = icons[index];
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+            return icon;
+        }
+        if (Sealed(index))
+        {
+            // A sealed district keeps its secret: a padlock instead of its name.
+            var padlock = Rect(panel, "Sealed route", new Vector2(40, 40), Vector2.zero);
+            var image = padlock.gameObject.AddComponent<Image>();
+            image.sprite = Resources.Load<Sprite>("DockArt/RoutePadlock");
+            image.color = new Color(.8f, .86f, .9f, .8f);
+            image.raycastTarget = false;
+            if (MetaProgress.RouteOpensNextFlight(Options[index]))
+            {
+                padlock.anchoredPosition = Vector2.up * 13;
+                image.color = Color.Lerp(accent, Color.white, .35f);
+                Text(padlock, "NEXT FLIGHT", 12, Vector2.down * 37, image.color);
+            }
+            return padlock;
+        }
+
+        bool narrow = captions.Length == 3;
+        var label = Text(panel, captions[index], narrow ? 17 : 24, Vector2.zero, Color.white);
+        label.rectTransform.sizeDelta = new Vector2(panelWidth - 14, 48);
+        label.enableAutoSizing = true;
+        label.fontSizeMin = narrow ? 12 : 16;
+        label.fontSizeMax = narrow ? 17 : 24;
+        if (narrow)
+            label.color = Color.Lerp(accent, Color.white, .5f);
+        if (Options != null)
+            EventBadge(label.rectTransform, Options[index], accent, narrow);
+        return label.rectTransform;
+    }
+
+    internal void RefreshOpenRoutes()
+    {
+        if (Options == null || committed)
+            return;
+        bool changed = false;
+        for (int i = 0; i < Options.Length; i++)
+        {
+            if (!Sealed(i) || !MetaProgress.RouteOpen(Options[i]))
+                continue;
+            changed = true;
+            sealedRoutes[i] = false;
+            rattle[i] = 0;
+            panels[i].GetComponent<Image>().color = PanelTint(i);
+            contents[i].gameObject.SetActive(false);
+            Destroy(contents[i].gameObject);
+            contents[i] = BuildChoiceContent(i);
+        }
+        if (changed)
+            CloudTransition.PrepareRoutes(Array.FindAll(Options, MetaProgress.RouteOpen));
     }
 
     void Update()

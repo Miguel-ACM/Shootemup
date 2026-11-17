@@ -24,7 +24,7 @@ public static class RouteUnlocks
 
 public static partial class MetaProgress
 {
-    // Fixed at departure: a district opened mid-run waits for the next flight.
+    // Earned routes wait for the next flight. The pause menu can explicitly open them now.
     static List<string> runRoutes;
 #if UNITY_EDITOR
     // Route-flow reviews fly every district without writing anyone's save.
@@ -62,11 +62,30 @@ public static partial class MetaProgress
         }
     }
 
-    /// <summary>Debug: every district opens for the next flight.</summary>
-    static void OpenAllRoutes()
+    /// <summary>Open every campaign route for this flight and save slot.</summary>
+    public static bool UnlockAllRoutes()
+    {
+        var savedRoutes = Data.routes;
+        var openRoutes = new List<string>(savedRoutes);
+        OpenAllRoutes(openRoutes);
+        if (openRoutes.Count != savedRoutes.Count)
+        {
+            Data.routes = openRoutes;
+            if (!Save())
+            {
+                Data.routes = savedRoutes;
+                return false;
+            }
+        }
+        if (flight != null)
+            runRoutes = new List<string>(Data.routes);
+        return true;
+    }
+
+    static void OpenAllRoutes(List<string> routes)
     {
         foreach (LevelId level in System.Enum.GetValues(typeof(LevelId)))
-            if (!RouteUnlocks.OpenAtStart(level) && !Data.routes.Contains(level.ToString()))
-                Data.routes.Add(level.ToString());
+            if (!RouteUnlocks.OpenAtStart(level) && !routes.Contains(level.ToString()))
+                routes.Add(level.ToString());
     }
 }

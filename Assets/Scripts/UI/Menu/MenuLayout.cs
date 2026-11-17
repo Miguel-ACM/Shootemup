@@ -20,11 +20,17 @@ public static class MenuLayout
         var font = first.GetComponentInChildren<TextMeshProUGUI>(true).font;
         float centre = title ? -60 : 0;
         SettingsEntry.Create(first.parent, font, centre).transform.SetSiblingIndex(first.GetSiblingIndex() + 1);
-        if (!title && menu.GetComponentInChildren<DebugRunMenu>(true) == null)
+        if (!title)
         {
-            var debug = Row(first.parent, "DEBUG ITEMS", font).gameObject.AddComponent<DebugRunMenu>();
-            debug.InRun = true;
-            debug.transform.SetSiblingIndex(first.GetSiblingIndex() + 2);
+            var debug = menu.GetComponentInChildren<DebugRunMenu>(true);
+            if (debug == null)
+            {
+                debug = Row(first.parent, "DEBUG ITEMS", font).gameObject.AddComponent<DebugRunMenu>();
+                debug.InRun = true;
+                debug.transform.SetSiblingIndex(first.GetSiblingIndex() + 2);
+            }
+            var unlock = Row(first.parent, "UNLOCK ALL LEVELS", font).gameObject.AddComponent<UnlockLevels>();
+            unlock.transform.SetSiblingIndex(debug.transform.GetSiblingIndex() + 1);
         }
         Arrange(menu, centre);
     }
@@ -62,7 +68,7 @@ public static class MenuLayout
             text.margin = Vector4.zero;
             text.textWrappingMode = TextWrappingModes.NoWrap;
             text.enableAutoSizing = false;
-            text.fontSize = 36;
+            text.fontSize = rows[i] is UnlockLevels ? 30 : 36;
             text.characterSpacing = 6;
             text.alignment = TextAlignmentOptions.Center;
         }

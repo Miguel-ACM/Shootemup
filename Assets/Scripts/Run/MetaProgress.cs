@@ -147,7 +147,7 @@ public static partial class MetaProgress
         foreach (var item in ItemPool.AllItems)
             if (!IsUnlocked(item) && FlightTrials.Blueprint(item)?.Advanced != true)
                 Data.unlocked.Add(item);
-        OpenAllRoutes();
+        OpenAllRoutes(Data.routes);
         Save();
     }
 
