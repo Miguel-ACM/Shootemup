@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class DeepDistrictScenery
+public static partial class DeepDistrictScenery
 {
     static readonly Color Concrete = new Color(.18f, .20f, .21f);
     static readonly Color Seam = new Color(.105f, .12f, .13f);
@@ -19,81 +19,10 @@ public static class DeepDistrictScenery
         var random = new System.Random(unchecked(seed * 47 + index * 8609));
         b.Rect(-19, -end, 19, end, 0, level == LevelId.Core ? new Color(.37f, .40f, .40f) : Brick * new Color(.66f, .73f, .79f, 1));
         if (level == LevelId.Core)
-            Core(b, end, index, random);
+            Core(b, end, (index + (seed & 3)) % 4);
         else
             Sewer(b, end, index);
         return b.Finish(level == LevelId.Core ? "Core service tunnel" : "Sewer culverts and flood channels");
-    }
-
-    static void Core(SolidMesh b, float edge, int index, System.Random random)
-    {
-        Color ivory = new Color(.68f, .70f, .67f), pale = new Color(.80f, .81f, .76f);
-        Color recess = new Color(.29f, .33f, .34f), orange = new Color(.88f, .36f, .09f);
-        // Large floor plates leave the flight lane calm; each section has one distinct room.
-        b.Rect(-3.94f, -edge, 3.94f, edge, .018f, ivory);
-        b.Rect(-.025f, -edge, .025f, edge, .025f, pale);
-        for (int row = 1; row < 4; row++)
-        {
-            float y = -edge + row * edge * .5f;
-            b.Rect(-3.94f, y - .025f, 3.94f, y + .025f, .026f, recess);
-        }
-        int room = ((index % 3) + 3) % 3;
-        for (int side = -1; side <= 1; side += 2)
-        {
-            float x = side * 3.18f;
-            if (room == 0)
-            {
-                // A recessed service well, crossed by a grille and framed by raised curbs.
-                b.Block(x, 0, 1.23f, 5.2f, .10f, recess);
-                b.Block(x, 0, 1.03f, 4.9f, .13f, new Color(.20f, .23f, .23f), .10f);
-                for (int slat = -7; slat <= 7; slat++)
-                    b.Block(x, slat * .30f, 1.00f, .055f, .20f, pale, .13f);
-                b.Block(x, -2.65f, 1.35f, .18f, .25f, pale);
-                b.Block(x, 2.65f, 1.35f, .18f, .25f, pale);
-            }
-            else if (room == 1)
-            {
-                // Paired power buses run between heavy insulated brackets.
-                for (int pipe = -1; pipe <= 1; pipe++)
-                    b.Rect(x + pipe * .25f - .065f, -edge, x + pipe * .25f + .065f, edge, .10f, pipe == 0 ? orange : recess);
-                for (int bracket = -2; bracket <= 2; bracket++)
-                    b.Block(x, bracket * 2.7f, 1.05f, .28f, .27f, pale);
-            }
-            else
-            {
-                // Braced lock bays sit against the rails, leaving an open centre lane.
-                for (int bay = -1; bay <= 1; bay++)
-                {
-                    float y = bay * 4.1f;
-                    b.Block(x, y, 1.28f, 2.65f, .18f, recess);
-                    b.Block(x, y, 1.02f, 2.35f, .25f, pale, .18f);
-                    b.Block(x, y, .82f, 1.85f, .30f, ivory, .25f);
-                    b.Block(x, y - .85f, 1.05f, .16f, .38f, orange, .30f);
-                    b.Block(x, y + .85f, 1.05f, .16f, .38f, orange, .30f);
-                }
-            }
-        }
-        for (int side = -1; side <= 1; side += 2)
-        {
-            float rail = side * 4.20f;
-            b.Rect(rail - .22f, -edge, rail + .22f, edge, .095f, recess);
-            b.Rect(rail - .14f, -edge, rail - .027f, edge, .23f, pale);
-            b.Rect(rail + .035f, -edge, rail + .13f, edge, .23f, pale);
-            b.Rect(rail - .035f, -edge, rail + .035f, edge, .26f, orange);
-            b.Rect(side * 5.72f - .10f, -edge, side * 5.72f + .10f, edge, .20f, orange);
-            for (int i = 0; i < 10; i++)
-            {
-                float y = -edge + 1 + i * 2;
-                b.Block(rail, y, .68f, .42f, .28f, ivory, .04f);
-                float x = side * (i % 2 == 0 ? 4.97f : 5.23f);
-                b.Block(x, y - .04f, 1.18f, 1.76f, .56f, ivory);
-                b.Block(side * 5.29f, y + .13f, .83f, 1.24f, .91f, pale, .56f);
-                b.Block(side * 5.29f, y + .13f, .57f, .84f, .98f, recess, .91f);
-                b.Block(side * 4.87f, y + .35f, .25f, .22f, .9f, i % 3 == 0 ? orange : recess);
-                for (int rib = -1; rib <= 1; rib++)
-                    b.Block(side * 5.29f, y + rib * .24f, .52f, .081f, 1.03f, pale, .98f);
-            }
-        }
     }
 
     static void Sewer(SolidMesh b, float edge, int index)
@@ -197,14 +126,17 @@ public static class DeepDistrictScenery
         readonly List<Vector3> vertices = new List<Vector3>();
         readonly List<Color> colors = new List<Color>();
         readonly List<int> indices = new List<int>();
+        readonly List<Vector4> rotatingParts = new List<Vector4>();
+        public Vector4 Rotor { get; set; }
         public void Face(Color ink, params Vector2[] points) => Face(ink, 0, points);
-        void Face(Color ink, float height, params Vector2[] points)
+        public void Face(Color ink, float height, params Vector2[] points)
         {
             int start = vertices.Count;
             foreach (var point in points)
             {
                 vertices.Add(new Vector3(point.x, point.y, -height));
                 colors.Add(ink);
+                rotatingParts.Add(Rotor);
             }
             for (int i = 1; i < points.Length - 1; i++)
             {
@@ -220,9 +152,9 @@ public static class DeepDistrictScenery
         {
             float middle = (left + right) * .5f;
             Rect(left, bottom, middle, top, height, bank);
-            colors[colors.Count - 1] = colors[colors.Count - 2] = centre;
+            colors[colors.Count - 3] = colors[colors.Count - 2] = centre;
             Rect(middle, bottom, right, top, height, bank);
-            colors[colors.Count - 4] = colors[colors.Count - 3] = centre;
+            colors[colors.Count - 4] = colors[colors.Count - 1] = centre;
         }
 
         public void Block(float x, float y, float width, float length, float height, Color top, float baseHeight = 0)
@@ -240,6 +172,7 @@ public static class DeepDistrictScenery
             var mesh = new Mesh { name = name };
             mesh.SetVertices(vertices);
             mesh.SetColors(colors);
+            mesh.SetUVs(1, rotatingParts);
             mesh.SetTriangles(indices, 0);
             return mesh;
         }

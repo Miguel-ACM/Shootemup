@@ -788,6 +788,7 @@ public sealed class LevelEnvironment : MonoBehaviour
         }
         else if (level == LevelId.Sewers || level == LevelId.Core)
         {
+            if (level == LevelId.Core) UseDistrictSurface(1);
             Mesh channel = null;
             if (level == LevelId.Sewers)
             {
@@ -802,7 +803,8 @@ public sealed class LevelEnvironment : MonoBehaviour
                 tile.localPosition = new Vector3(0, SectionY(i, travel), 90);
                 var mesh = DeepDistrictScenery.Section(level, LevelRun.Seed, i, SectionLength);
                 ownedMeshes.Add(mesh);
-                Add(mesh, tile, Vector3.zero, -50);
+                if (level == LevelId.Core) SurfaceSection(mesh, tile, -50, i);
+                else Add(mesh, tile, Vector3.zero, -50);
                 if (channel != null)
                     Add(channel, tile, Vector3.zero, -49).GetComponent<MeshRenderer>().sharedMaterial = sewerWater;
                 sections.Add(tile);
@@ -961,6 +963,22 @@ public sealed class LevelEnvironment : MonoBehaviour
 
     Material sewerWater, cisternWater;
     Texture2D woodlandLeaves;
+
+    void UseDistrictSurface(float finish)
+    {
+        Destroy(material);
+        material = new Material(Resources.Load<Shader>("DistrictSurfaces"));
+        material.SetTexture("_Grain", Resources.Load<Texture2D>("DistrictPatina"));
+        material.SetFloat("_Finish", finish);
+    }
+
+    void SurfaceSection(Mesh mesh, Transform section, int order, int index)
+    {
+        var surface = Add(mesh, section, Vector3.zero, order);
+        var properties = new MaterialPropertyBlock();
+        properties.SetFloat("_SectionOrigin", index * SectionLength);
+        surface.GetComponent<MeshRenderer>().SetPropertyBlock(properties);
+    }
 
     static Material WaterSurface()
     {
