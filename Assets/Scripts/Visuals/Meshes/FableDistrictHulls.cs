@@ -159,11 +159,36 @@ public static partial class IndustrialMeshFactory
     }
     public static Mesh CrescentDancerMesh()
     {
-        if(fableCrescent!=null)return fableCrescent;var b=new Builder();
-        BevelArmor(b,new[]{V(-.88f,.70f),V(-.67f,.04f),V(-.35f,-.38f),V(0,-.52f),V(.35f,-.38f),V(.67f,.04f),V(.88f,.70f),V(.78f,-.13f),V(.48f,-.75f),V(0,-.98f),V(-.48f,-.75f),V(-.78f,-.13f)},.20f,5);
-        CutStone(b,new Vector3(0,-.61f,-.22f),new Vector3(.22f,.19f,.09f),13,6);
-        foreach(int s in new[]{-1,1}) FablePort(b,s*.50f,-.53f,.11f,8);
-        return fableCrescent=b.Finish("Crescent dancer / swept horns");
+        if (fableCrescent != null) return fableCrescent;
+        var b = new Builder();
+        // A tiny marionette balanced inside a pierced crescent. A pair of bells marks its emitters.
+        const int steps=26;
+        Vector3 Arc(float t,float r,float z)
+        {
+            float a=Mathf.Lerp(151,394,t)*Mathf.Deg2Rad;
+            return new Vector3(Mathf.Cos(a)*r,Mathf.Sin(a)*r+.11f,z);
+        }
+        for(int i=0;i<steps;i++)
+        {
+            float a=i/(float)steps,d=(i+1f)/steps;
+            float Inner(float t)=>.89f-.22f*Mathf.Sin(Mathf.PI*t);
+            b.Face(13,Arc(a,.91f,-.12f),Arc(a,Inner(a),-.13f),Arc(d,Inner(d),-.13f),Arc(d,.91f,-.12f));
+            b.Face(6,Arc(a,.91f,0),Arc(a,.91f,-.12f),Arc(d,.91f,-.12f),Arc(d,.91f,0));
+        }
+        CutStone(b,new Vector3(.10f,.39f,-.24f),new Vector3(.16f,.20f,.12f),15,8);
+        FoldedFin(b,new Vector3(.03f,.23f,-.14f),new Vector3(.27f,-.18f,-.18f),new Vector3(-.24f,-.45f,-.12f),
+            new Vector3(-.34f,-.17f,-.10f),new Vector3(-.07f,-.12f,-.39f),7,15);
+        b.Sweep(new Vector3(.01f,.14f,-.20f),new Vector3(-.22f,.26f,-.22f),new Vector3(-.53f,.17f,-.14f),Arc(0,.90f,-.12f),.066f,.05f,15,false,8);
+        b.Sweep(new Vector3(.14f,.14f,-.2f),new Vector3(.32f,-.06f,-.19f),new Vector3(.49f,.13f,-.18f),Arc(1,.90f,-.12f),.06f,.05f,15,false,8);
+        CutBlade(b,new[]{new Vector3(-.08f,-.30f,-.18f),new Vector3(.03f,-.51f,-.22f),new Vector3(.13f,-.74f,-.12f)},.10f,.06f,15);
+        for(int s=-1;s<=1;s+=2) DeepPort(b,new Vector3(s*.50f,-.53f,-.05f),.137f,13);
+        CutBlade(b,new[]{new Vector3(-.09f,.45f,-.24f),new Vector3(.10f,.55f,-.31f),
+            new Vector3(.27f,.43f,-.24f)},.095f,.059f,5);
+        b.Pearl(new Vector3(.045f,.37f,-.34f),new Vector3(.035f,.044f,.024f),11,8,4);
+        for(int i=-1;i<=1;i++)
+            CutBlade(b,new[]{new Vector3(-.04f,.03f,-.27f),new Vector3(i*.11f-.06f,-.15f,-.35f),
+                new Vector3(i*.17f-.12f,-.34f,-.18f)},.046f,.025f,i==0?13:1);
+        return fableCrescent = b.Finish("CrescentDancer");
     }
     public static Mesh PaintedMaskMesh()
     {
