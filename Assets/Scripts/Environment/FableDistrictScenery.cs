@@ -1,115 +1,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// A single vertex-coloured mesh per scrolling section. All decoration stays inside
-// its section; the uninterrupted ground reaches both seams at exactly the same colour.
 public static class FableDistrictScenery
 {
     public static Mesh Section(LevelId level, int seed, int section, float length)
     {
+        if (level == LevelId.Mushroom)
+            return MushroomGrove.Build(seed, section, length);
         var b = new Builder();
         var random = new System.Random(unchecked(seed * 7919 + section * 104729 + 1927));
         float edge = length * .5f;
-        bool mushroom = level == LevelId.Mushroom;
-        b.Quad(-19, -edge, 19, edge, 0, mushroom ? C(.075f,.105f,.085f) : C(.19f,.20f,.25f));
-        if (mushroom) Forest(b, random, edge);
-        else Dream(b, random, edge);
-        return b.Finish(mushroom ? "Mushroom forest" : "Dream painted landscape");
+        b.Quad(-19, -edge, 19, edge, 0, C(.19f,.20f,.25f));
+        Dream(b, random, edge);
+        return b.Finish("Dream painted landscape");
     }
 
     static Color C(float r, float g, float b) => new Color(r,g,b,1);
     static float R(System.Random r, float a, float b) => a + (float)r.NextDouble() * (b-a);
-
-    static void Forest(Builder b, System.Random r, float edge)
-    {
-        // Broad overlapping moss and humus islands give the glades their own
-        // winding shape. They stop short of the section joins.
-        for (int i=0;i<90;i++)
-        {
-            float x=R(r,-5.5f,5.5f), y=R(r,-edge+1.1f,edge-1.1f);
-            float rx=R(r,.35f,1.45f), ry=R(r,.18f,.75f);
-            Color moss=i%4==0 ? C(.14f,.18f,.11f) : i%4==1 ? C(.105f,.145f,.095f) : i%4==2 ? C(.12f,.15f,.09f) : C(.095f,.13f,.095f);
-            b.Ellipse(x,y,rx,ry,.004f,moss,9);
-        }
-        for (int i=0;i<250;i++)
-        {
-            float x=R(r,-5.5f,5.5f), y=R(r,-edge+.15f,edge-.15f);
-            float w=R(r,.05f,.19f), h=R(r,.025f,.07f);
-            Color ink=i%3==0 ? C(.22f,.24f,.13f) : i%3==1 ? C(.17f,.19f,.12f) : C(.24f,.19f,.12f);
-            b.Poly(.012f,ink,new Vector2(x-w,y),new Vector2(x,y+h),new Vector2(x+w,y+.02f),new Vector2(x,y-h));
-        }
-        // An irregular series of groves alternates across the portrait viewport;
-        // small satellite mushrooms knit each grove into the surrounding floor.
-        for (int grove=0;grove<12;grove++)
-        {
-            float y=Mathf.Lerp(-edge+1.45f,edge-1.45f,(grove+.5f)/12f);
-            float x=2.8f*Mathf.Sin(grove*2.17f+R(r,-.35f,.35f));
-            int count=2+r.Next(4);
-            for(int k=0;k<count;k++)
-            {
-                float xx=Mathf.Clamp(x+R(r,-1.05f,1.05f),-4.8f,4.8f);
-                float yy=Mathf.Clamp(y+R(r,-.53f,.53f),-edge+1.3f,edge-1.3f);
-                Mushroom(b,xx,yy,R(r,.30f,.80f),(grove+k)%5==0,r);
-            }
-        }
-        // Canopies frame and occasionally enter the glades, with trunks, exposed
-        // roots, ferns and fallen wood visible inside the combat viewport.
-        for (int i=0;i<24;i++)
-        {
-            float x=(i%2==0 ? -1 : 1)*R(r,3.5f,5.2f);
-            float y=R(r,-edge+1.6f,edge-1.6f);
-            Tree(b,x,y,R(r,.6f,.96f));
-        }
-        for(int i=0;i<48;i++)
-        {
-            float x=(i%2==0 ? -1 : 1)*R(r,2.7f,5.0f), y=R(r,-edge+.6f,edge-.6f);
-            float w=R(r,.18f,.42f);
-            Color fern=i%2==0 ? C(.20f,.29f,.13f) : C(.15f,.24f,.12f);
-            b.Poly(.11f,fern,new Vector2(x,y-.17f),new Vector2(x-w,y+.13f),new Vector2(x-.08f,y+.04f),new Vector2(x,y+.30f),new Vector2(x+.08f,y+.04f),new Vector2(x+w,y+.13f));
-        }
-        for(int i=0;i<7;i++)
-        {
-            float x=R(r,-4.2f,4.2f), y=R(r,-edge+.5f,edge-.5f), w=R(r,.4f,1.0f);
-            b.Poly(.105f,C(.20f,.16f,.10f),new Vector2(x-w,y-.09f),new Vector2(x+w,y+.15f),new Vector2(x+w,y+.28f),new Vector2(x-w,y+.04f));
-            b.Poly(.11f,C(.32f,.25f,.14f),new Vector2(x-w,y+.04f),new Vector2(x+w,y+.28f),new Vector2(x+w-.12f,y+.32f),new Vector2(x-w,y+.10f));
-        }
-    }
-    static void Tree(Builder b,float x,float y,float s)
-    {
-        Color bark=C(.16f,.14f,.105f), leaf=C(.11f,.21f,.13f), light=C(.18f,.29f,.16f);
-        b.Ellipse(x+.15f*s,y-.13f*s,.85f*s,.25f*s,.075f,C(.035f,.05f,.04f),10);
-        b.Poly(.08f,bark,new Vector2(x-.16f*s,y-.22f*s),new Vector2(x+.17f*s,y-.22f*s),new Vector2(x+.10f*s,y+.85f*s),new Vector2(x-.11f*s,y+.85f*s));
-        b.Poly(.085f,bark,new Vector2(x-.06f*s,y+.40f*s),new Vector2(x-.65f*s,y+.91f*s),new Vector2(x-.52f*s,y+.94f*s),new Vector2(x+.05f*s,y+.57f*s));
-        b.Poly(.085f,bark,new Vector2(x+.04f*s,y+.53f*s),new Vector2(x+.57f*s,y+1.02f*s),new Vector2(x+.68f*s,y+.95f*s),new Vector2(x+.13f*s,y+.38f*s));
-        b.Ellipse(x,y+1.02f*s,.83f*s,.49f*s,.09f,leaf,9);
-        b.Ellipse(x-.43f*s,y+.91f*s,.48f*s,.35f*s,.095f,light,8);
-        b.Ellipse(x+.39f*s,y+1.08f*s,.46f*s,.34f*s,.095f,light,8);
-        b.Ellipse(x-.04f*s,y+1.24f*s,.43f*s,.26f*s,.10f,C(.23f,.33f,.18f),8);
-    }
-
-    static void Mushroom(Builder b,float x,float y,float s,bool purple,System.Random r)
-    {
-        Color shadow=C(.035f,.055f,.045f), stem=C(.56f,.53f,.42f), dark=C(.27f,.27f,.22f);
-        Color cap=purple?C(.39f,.20f,.49f):C(.70f,.105f,.095f);
-        Color light=purple?C(.60f,.34f,.65f):C(.94f,.22f,.15f);
-        Color rim=purple?C(.22f,.12f,.30f):C(.37f,.065f,.06f);
-        b.Ellipse(x+.15f*s,y-.20f*s,1.08f*s,.28f*s,.02f,shadow,10);
-        b.Poly(.035f,dark,new Vector2(x-.24f*s,y-.18f*s),new Vector2(x+.24f*s,y-.18f*s),new Vector2(x+.18f*s,y+.46f*s),new Vector2(x-.16f*s,y+.46f*s));
-        b.Poly(.04f,stem,new Vector2(x-.16f*s,y-.14f*s),new Vector2(x+.11f*s,y-.13f*s),new Vector2(x+.10f*s,y+.43f*s),new Vector2(x-.13f*s,y+.43f*s));
-        // The broad, scalloped underside anchors a domed, faceted cap.
-        b.Ellipse(x,y+.40f*s,.87f*s,.29f*s,.05f,rim,12);
-        b.Poly(.06f,cap,new Vector2(x-.91f*s,y+.43f*s),new Vector2(x-.78f*s,y+.72f*s),new Vector2(x-.48f*s,y+.95f*s),new Vector2(x,y+1.04f*s),new Vector2(x+.47f*s,y+.95f*s),new Vector2(x+.77f*s,y+.72f*s),new Vector2(x+.91f*s,y+.43f*s),new Vector2(x+.48f*s,y+.32f*s),new Vector2(x,y+.29f*s),new Vector2(x-.5f*s,y+.32f*s));
-        b.Poly(.065f,light,new Vector2(x-.74f*s,y+.68f*s),new Vector2(x-.44f*s,y+.91f*s),new Vector2(x,y+1.00f*s),new Vector2(x+.20f*s,y+.92f*s),new Vector2(x-.15f*s,y+.75f*s));
-        if (!purple)
-        {
-            Color spot=C(.91f,.86f,.72f);
-            b.Ellipse(x-.42f*s,y+.63f*s,.13f*s,.075f*s,.07f,spot,6);
-            b.Ellipse(x+.15f*s,y+.77f*s,.15f*s,.08f*s,.07f,spot,6);
-            b.Ellipse(x+.52f*s,y+.54f*s,.10f*s,.06f*s,.07f,spot,6);
-            b.Ellipse(x-.12f*s,y+.43f*s,.09f*s,.045f*s,.07f,spot,6);
-        }
-        else b.Ellipse(x-.29f*s,y+.72f*s,.24f*s,.055f*s,.07f,C(.71f,.49f,.73f),8);
-    }
 
     static void Dream(Builder b,System.Random r,float edge)
     {

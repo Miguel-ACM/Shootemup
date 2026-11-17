@@ -3,7 +3,7 @@ Shader "Shootemup/Level Atmosphere"
     Properties
     {
         _Tint("Atmosphere tint",Color)=(.4,.5,.6,.2)
-        _Kind("0 mist, 1 deep storm, 2 near storm, 3 snowdust",Float)=0
+        _Kind("0 mist, 1 deep storm, 2 near storm, 3 snowdust, 4 forest mist",Float)=0
         _Flash("Lightning",Range(0,1))=0
         _Drift("Cloud travel",Vector)=(0,0,0,0)
     }
@@ -36,6 +36,17 @@ Shader "Shootemup/Level Atmosphere"
             half4 Frag(Output i):SV_Target
             {
                 float2 p=i.local*float2(.22,.18)+_Drift.xy;
+                if (_Kind > 3.5)
+                {
+                    // The air flows diagonally across the flight path. Break the banks
+                    // lengthwise so sunlight and clear patches travel between the trees.
+                    float2 wind = float2(p.x + .36*p.y, p.y - .36*p.x);
+                    float curl = Noise(wind*.76 + 9.3) - .5;
+                    float bank = Clouds(float2(wind.x*.64, wind.y*1.54 + curl*1.8));
+                    float folds = Clouds(float2(wind.x*.83 + 17, wind.y*3.4 + curl*2.9));
+                    float density = smoothstep(.30,.77,bank)*(.28 + .72*folds);
+                    return half4(_Tint.rgb * (.86 + .16*folds), _Tint.a*density);
+                }
                 if(_Kind>2.5)
                 {
                     float2 wind=i.local*float2(.12,.72)+_Drift.xy*float2(2.6,1.3);

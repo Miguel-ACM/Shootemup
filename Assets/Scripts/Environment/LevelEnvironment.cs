@@ -759,10 +759,12 @@ public sealed class LevelEnvironment : MonoBehaviour
         }
         else if (level == LevelId.Mushroom || level == LevelId.Dream)
         {
-            if (level == LevelId.Dream)
+            Destroy(material);
+            material = new Material(Resources.Load<Shader>(level == LevelId.Mushroom ? "MushroomWoodland" : "DreamCanvas"));
+            if (level == LevelId.Mushroom)
             {
-                Destroy(material);
-                material = new Material(Resources.Load<Shader>("DreamCanvas"));
+                woodlandLeaves = PSXValleyFoliage.CreateAtlas();
+                material.mainTexture = woodlandLeaves;
             }
             for (int i = 0; i < 4; i++)
             {
@@ -771,12 +773,18 @@ public sealed class LevelEnvironment : MonoBehaviour
                 tile.localPosition = new Vector3(0, SectionY(i, travel), 90);
                 var mesh = FableDistrictScenery.Section(level, LevelRun.Seed, i, SectionLength);
                 ownedMeshes.Add(mesh);
-                Add(mesh, tile, Vector3.zero, -50);
+                var terrain = Add(mesh, tile, Vector3.zero, -50);
+                if (level == LevelId.Mushroom)
+                {
+                    var lighting = new MaterialPropertyBlock();
+                    lighting.SetFloat("_SectionOrigin", i * SectionLength);
+                    terrain.GetComponent<MeshRenderer>().SetPropertyBlock(lighting);
+                }
                 sections.Add(tile);
                 yield return null;
             }
             if (level == LevelId.Mushroom)
-                AddAtmosphere("Forest-floor mist", 0, 61, new Color(.20f, .24f, .26f, .23f), 1.14f, .46f);
+                AddAtmosphere("Mist crossing the crowns", 4, 61, new Color(.44f, .59f, .60f, .46f), 1.18f, .53f);
         }
         else if (level == LevelId.Sewers || level == LevelId.Core)
         {
@@ -952,6 +960,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     }
 
     Material sewerWater, cisternWater;
+    Texture2D woodlandLeaves;
 
     static Material WaterSurface()
     {
@@ -1141,6 +1150,8 @@ public sealed class LevelEnvironment : MonoBehaviour
             UpdateWeather(dt);
         if (snowFoliageMaterial != null)
             snowFoliageMaterial.SetFloat("_FlowTime", clock);
+        if (woodlandLeaves != null)
+            material.SetFloat("_WindTime", clock);
         if (level == LevelId.Thunder)
             UpdateStorm(dt);
         UpdateWind();
@@ -1340,6 +1351,8 @@ public sealed class LevelEnvironment : MonoBehaviour
             Destroy(cityShadowMaterial);
         if (snowFoliageAtlas != null)
             Destroy(snowFoliageAtlas);
+        if (woodlandLeaves != null)
+            Destroy(woodlandLeaves);
         foreach (var layer in atmosphere)
             if (layer.material != null)
                 Destroy(layer.material);
