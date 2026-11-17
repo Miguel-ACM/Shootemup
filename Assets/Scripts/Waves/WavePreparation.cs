@@ -42,7 +42,12 @@ public sealed class WavePreparation : MonoBehaviour
         if (LevelRun.Current == LevelId.Space)
             _ = SpaceMaterials.Fleet;
         if (LevelRun.Current == LevelId.Mushroom)
+        {
             SporeCloud.Warm();
+            _ = IndustrialMeshFactory.MushroomWardenBodyMesh();
+            _ = IndustrialMeshFactory.MushroomWardenWingMesh(false);
+            _ = IndustrialMeshFactory.MushroomWardenWingMesh(true);
+        }
         if (LevelRun.Current == LevelId.Dream)
             _ = IndustrialMeshFactory.DreamHandMesh();
         if (LevelRun.Current == LevelId.Tunnel)

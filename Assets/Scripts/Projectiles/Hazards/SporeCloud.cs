@@ -17,6 +17,12 @@ public sealed class SporeCloud : MonoBehaviour
     bool fading;
     public static int Count => clouds.Count;
 
+    public static void Dissipate()
+    {
+        foreach (var cloud in clouds)
+            cloud.fading = true;
+    }
+
     internal static void Warm()
     {
         if (quad == null)

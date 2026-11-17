@@ -4,7 +4,7 @@ using UnityEngine;
 // the firing direction is -Y. Palette indices are supplied by the standard hull renderer.
 public static partial class IndustrialMeshFactory
 {
-    static Mesh fableWarden, fablePainter, fableHand, fableBell, fableCap, fableLancer;
+    static Mesh fablePainter, fableHand, fableBell, fableCap, fableLancer;
     static Mesh fableKite, fableCrescent, fableMask, fableMushChampion, fableDreamChampion;
 
     static void FablePort(Builder b, float x, float y, float radius, int colour)
@@ -15,33 +15,6 @@ public static partial class IndustrialMeshFactory
     static void FableVein(Builder b, Vector3[] points, float width, int colour)
     { CutBlade(b, points, width, .055f, colour); }
 
-    public static Mesh MushroomWardenMesh()
-    {
-        if (fableWarden != null) return fableWarden;
-        var b = new Builder();
-        // A broad, shouldered cap with an irregular scalloped underside and a hanging stem.
-        BevelArmor(b, new[]{V(-1.9f,.20f),V(-1.70f,.70f),V(-1.15f,1.12f),V(-.50f,1.35f),V(.20f,1.39f),V(.90f,1.20f),V(1.50f,.85f),V(1.87f,.28f),V(1.58f,.02f),V(1.20f,.15f),V(.85f,-.06f),V(.43f,.08f),V(0,-.13f),V(-.43f,.08f),V(-.87f,-.06f),V(-1.25f,.14f),V(-1.60f,-.02f)}, .38f, 5);
-        BevelArmor(b, new[]{V(-.53f,.15f),V(-.67f,-.41f),V(-.43f,-1.08f),V(0,-1.34f),V(.43f,-1.08f),V(.67f,-.41f),V(.53f,.15f)}, .40f, 15);
-        BevelArmor(b,new[]{V(-1.48f,.30f),V(-1.05f,.84f),V(-.51f,1.14f),V(0,1.27f),V(.51f,1.14f),V(1.05f,.84f),V(1.48f,.30f),V(.92f,.16f),V(.43f,.06f),V(0,-.06f),V(-.43f,.06f),V(-.92f,.16f)},.12f,5,-.29f);
-        for (int i=-3;i<=3;i++)
-        {
-            float x=i*.42f;
-            FableVein(b,new[]{new Vector3(x*.42f,.30f,-.29f),new Vector3(x,.02f,-.28f),new Vector3(x*1.18f,-.02f,-.25f)},.052f,3);
-        }
-        BevelArmor(b,new[]{V(-.34f,-.32f),V(0,-.20f),V(.34f,-.32f),V(.30f,-.80f),V(0,-1.01f),V(-.30f,-.80f)},.15f,13,-.30f);
-
-        foreach (int s in new[]{-1,1})
-        {
-            CutStone(b,new Vector3(s*.91f,.67f,-.29f),new Vector3(.37f,.21f,.10f),15,6);
-            CutStone(b,new Vector3(s*.43f,1.04f,-.30f),new Vector3(.23f,.14f,.08f),15,6);
-            BevelArmor(b,new[]{V(s*1.26f,.30f),V(s*1.70f,.18f),V(s*1.91f,-.25f),V(s*1.70f,-.56f),V(s*1.50f,-.38f),V(s*1.54f,-.13f),V(s*1.20f,-.06f)},.25f,13,-.06f);
-            CutStone(b,new Vector3(s*1.57f,-.12f,-.25f),new Vector3(.18f,.19f,.12f),11,6);
-            FableVein(b,new[]{new Vector3(s*.12f,.58f,-.42f),new Vector3(s*.69f,.66f,-.42f),new Vector3(s*1.28f,.38f,-.38f)},.065f,13);
-            FablePort(b,s*.90f,-.02f,.18f,5);
-        }
-        FablePort(b,0,-1.13f,.19f,8);
-        return fableWarden=b.Finish("Fungal warden / scalloped cap and gills");
-    }
     public static Mesh SporeBellMesh()
     {
         if(fableBell!=null)return fableBell; var b=new Builder();

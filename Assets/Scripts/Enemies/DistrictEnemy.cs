@@ -182,6 +182,8 @@ public abstract class DistrictEnemy : AEnemy
         go.AddComponent<CombatHullVisual>().model = model.transform;
         enemy.firingCue = go.AddComponent<EnemyFiringCue>();
         enemy.firingCue.Build(model.transform);
+        if (enemy is MushroomWarden warden)
+            warden.BindWings();
         if (enemy.hull >= 61 ? IndustrialMeshFactory.CombatEngineSockets(enemy.hull).Length > 0 : !(enemy is TunnelSawBoss) && !(enemy is GroundVehicle) && !(enemy is SpaceSatellite) && !(enemy is SpaceCitadelBoss) && !(enemy is InfernalEnemy) && !(enemy is OceanEnemy) && !(enemy is HellCrabBoss) && !(enemy is AbyssSubmarineBoss) && enemy.hull != 56 && enemy.hull < 58)
         {
             var exhaust = go.AddComponent<EnemyThrusters>();

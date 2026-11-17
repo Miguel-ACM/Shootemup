@@ -43,7 +43,7 @@ public static class EnemyExpansion
         new Entry(LevelId.Mushroom, typeof(MushroomChampion), (int)CombatHullId.MushroomChampion, 1.04f, false, IndustrialMeshFactory.MushroomChampionMesh,
             new[] { new Vector3(-.48f, -.47f, -.28f), new Vector3(.48f, -.47f, -.28f) }, Array.Empty<Vector3>(), Array.Empty<WavePart>()),
         new Entry(LevelId.Mushroom, typeof(MushroomWarden), (int)CombatHullId.MushroomWarden, .92f, false, IndustrialMeshFactory.MushroomWardenMesh,
-            new[] { new Vector3(-.9f, -.02f, -.24f), new Vector3(.9f, -.02f, -.24f), new Vector3(0f, -1.13f, -.28f) }, Array.Empty<Vector3>(), Array.Empty<WavePart>()),
+            new[] { IndustrialMeshFactory.WardenLeftMuzzle, IndustrialMeshFactory.WardenRightMuzzle, IndustrialMeshFactory.WardenNoseMuzzle }, Array.Empty<Vector3>(), Array.Empty<WavePart>()),
         new Entry(LevelId.Dream, typeof(PaperKite), (int)CombatHullId.PaperKite, .48f, false, IndustrialMeshFactory.PaperKiteMesh,
             new[] { new Vector3(0f, -.85f, -.22f) }, Array.Empty<Vector3>(), WavePartLibrary.PaperKiteParts),
         new Entry(LevelId.Dream, typeof(CrescentDancer), (int)CombatHullId.CrescentDancer, .62f, false, IndustrialMeshFactory.CrescentDancerMesh,
@@ -115,6 +115,7 @@ public static class EnemyExpansion
     public static Mesh Mesh(int hull) => Find(hull)?.model() ?? throw new ArgumentException("Missing authored hull " + hull);
     public static Material Material(int hull)
     {
+        if (hull == (int)CombatHullId.MushroomWarden) return IndustrialMeshFactory.MothPaint;
         if(hull==91)return HeavenAngelVisual.Surface;
         var entry = Find(hull);
         return entry != null && entry.level == LevelId.Heaven ? HeavenMaterials.Ivory : entry != null && entry.level == LevelId.Space ? SpaceMaterials.Fleet : entry != null && entry.level == LevelId.Candyland ? CandyMaterials.Glaze : CombatMaterials.Fleet;

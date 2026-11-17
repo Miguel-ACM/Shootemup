@@ -3,17 +3,62 @@ using UnityEngine;
 
 public sealed class MushroomWarden : DistrictBoss
 {
-    protected override void Configure() { health = 1980; hullScale = .92f; attackInterval = .28f; nextAttack = 1.5f; }
+    MushroomMothRig moth;
+    Vector3 glideStart, glideEnd;
+    float glideTime, glideDuration, dip, fold = .72f, wantedFold = .72f;
+
+    protected override void Configure()
+    {
+        health = 1980;
+        hullScale = .92f;
+        attackInterval = .28f;
+        nextAttack = 1.5f;
+    }
+
+    // Bind before the hull, hit feedback and death sequence cache their renderers.
+    internal void BindWings()
+    {
+        moth = MushroomMothRig.Attach(Hull);
+        for (int i = 0; i < 3; i++)
+            firingCue.FollowPort(i, moth.Muzzle(i));
+        moth.Pose(fold);
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+        SporeCloud.Dissipate();
+        station = new Vector3(0, Camera.UpLimit - 2.75f, 1);
+    }
+
+    protected override void OnPhaseEntered(int phase)
+    {
+        glideDuration = 0;
+        wantedFold = .72f;
+    }
+
+    void Glide(float x, float height, float depth, float seconds)
+    {
+        glideStart = transform.position;
+        glideEnd = station + new Vector3(x, height, 0);
+        glideTime = 0;
+        glideDuration = seconds;
+        dip = depth;
+    }
 
     protected override void MoveBoss(float dt)
     {
-        Vector3 p = station;
-        if (openingComplete)
+        if (!openingComplete)
+            transform.position = Vector3.MoveTowards(transform.position, station, dt * 5.3f);
+        else if (glideTime < glideDuration)
         {
-            p.x = Mathf.Sin(motionAge * (phaseThree ? 1.12f : .74f)) * (phaseThree ? 2.17f : 1.6f);
-            p.y += Mathf.Sin(motionAge * 1.53f) * .65f - .55f;
+            glideTime = Mathf.Min(glideTime + dt, glideDuration);
+            float t = Mathf.SmoothStep(0, 1, glideTime / glideDuration);
+            transform.position = Vector3.Lerp(glideStart, glideEnd, t) + Vector3.down * (dip * Mathf.Sin(t * Mathf.PI));
         }
-        transform.position = Vector3.MoveTowards(transform.position, p, dt * (openingComplete ? 4.2f : 5.8f));
+        float idleBeat = .055f * Mathf.Sin(motionAge * 4.1f);
+        fold = Mathf.MoveTowards(fold, Mathf.Clamp01(wantedFold + idleBeat), dt * (wantedFold < fold ? 5.5f : 2.1f));
+        moth.Pose(fold);
     }
 
     protected override void Attack()
@@ -21,44 +66,146 @@ public sealed class MushroomWarden : DistrictBoss
         if (openingComplete) OpenCards();
     }
 
-    // Fungus spreads through tendrils, cap edges and returning volleys.
-    protected override IEnumerator Cards()
+    protected override IEnumerator Cards() => phaseThree ? LanternRun() : phaseTwo ? SporePrint() : Eyespots();
+
+    IEnumerator RaiseWings(float duration)
     {
-        int beat = 0;
-        while (true)
+        wantedFold = .86f;
+        for (float t = 0; t < duration;)
         {
-            float warning = phaseThree ? .33f : .48f;
-            Cue(Muzzle(1), warning);
-            yield return Charge(Hull, WeaponPort(0), warning);
-            int strokes = phaseThree ? 6 : phaseTwo ? 4 : 3;
-            for (int row = 0; row < strokes; row++)
+            Cue(moth.Muzzle(0).position, duration - t);
+            Cue(moth.Muzzle(1).position, duration - t);
+            if (!Holding) t += Time.deltaTime * LevelRun.EnemyTempoScale;
+            yield return null;
+        }
+        wantedFold = 0;
+        // Let the opening stroke carry the guns before the first round departs.
+        yield return Wait(.11f);
+    }
+
+    // Eyespots. A single clap draws two hollow, pointed wing markings in velocity
+    // space. The following clap crosses the first pair, leaving an eye to fly through.
+    IEnumerator Eyespots()
+    {
+        for (int beat = 0; ; beat++)
+        {
+            int sign = (beat & 1) == 0 ? 1 : -1;
+            Glide(sign * 1.38f, -.12f, .72f, Rest(1.75f));
+            yield return RaiseWings(.48f);
+            for (int echo = 0; echo < 2; echo++)
             {
-                float swing = 24 * Mathf.Sin(beat * .73f + row * .41f);
-                for (int side = -1; side <= 1; side += 2)
+                bool cross = echo != 0;
+                UseTone(cross ? HostileTone.Dark : HostileTone.Bright);
+                int beads = Mathf.Max(8, Dense(cross ? 20 : 29));
+                for (int wing = 0; wing < 2; wing++)
                 {
-                    int count = Dense(phaseTwo ? 7 : 6);
-                    for (int i = 0; i < count; i++)
+                    int side = wing * 2 - 1;
+                    var port = moth.Muzzle(wing).position;
+                    for (int i = 0; i < beads; i++)
                     {
-                        var port = Muzzle(side < 0 ? 0 : 1);
-                        float angle = side * (18 + 11 * i + swing);
-                        Vector2 axis = CombatVisuals.Rotate(Vector2.down, angle);
-                        var mark = Fire<SimpleRound>(port, axis, 3.38f + .17f * i, .22f, i == 0)
-                            .Bounce(phaseTwo ? 2 : 1, true);
-                        if (phaseThree && row % 2 == 1)
-                            mark.Pause(.86f, .34f, CombatRound.Turn.Rotate, side * 35, 4.2f);
+                        float loop = 2f * i / beads;
+                        float along = loop <= 1 ? loop : 2 - loop;
+                        float width = Mathf.Sin(along * Mathf.PI) * (.72f + .48f * along);
+                        float rim = loop <= 1 ? width : -width;
+                        float inward = cross ? 1.68f : .30f;
+                        Vector2 velocity = new Vector2(side * (rim - inward + .68f * along),
+                            -Mathf.Lerp(cross ? 3.2f : 2.75f, cross ? 4.9f : 5.4f, along));
+                        Fire<SimpleRound>(port, velocity, velocity.magnitude, cross ? .155f : .18f, i == 0);
                     }
                 }
-                if (phaseTwo && row % 2 == 0)
-                {
-                    int count = Dense(11);
-                    for (int i = 0; i < count; i++)
-                        Fire<NeedleRound>(Muzzle(2), CombatVisuals.Rotate(Vector2.down,
-                            (i - (count - 1) * .5f) * 16 - swing), 4.8f, .18f, i == 0).Ramp(.61f, 1.18f, .27f);
-                }
-                yield return Wait(Rest(.24f));
+                if (!cross) yield return Wait(Rest(.39f));
             }
-            beat++;
-            yield return Wait(Rest(phaseThree ? .40f : .62f));
+            yield return Wait(Rest(.77f));
+        }
+    }
+
+    // Spore Print. The needles plant themselves in three arched gill lines above
+    // the pilot. Their tips turn down while held, showing the fall and its opening.
+    IEnumerator SporePrint()
+    {
+        for (int beat = 0; ; beat++)
+        {
+            float wave = Mathf.Sin(beat * .96f);
+            float gate = wave * 2.35f;
+            Glide(-wave * .98f, .08f, .20f, 1.55f);
+            yield return RaiseWings(.44f);
+            int lanes = Mathf.Max(9, Dense(32));
+            float halfWidth = (Camera.RightLimit - Camera.LeftLimit) * .5f - .15f;
+            for (int row = 0; row < 3; row++)
+            {
+                float slit = gate + (row - 1) * .20f * Mathf.Cos(beat * .96f);
+                UseTone(row == 1 ? HostileTone.Dark : HostileTone.Bright);
+                for (int i = 0; i < lanes; i++)
+                {
+                    float x = Mathf.Lerp(-halfWidth, halfWidth, (i + .5f) / lanes);
+                    if (Mathf.Abs(x - slit) < .69f) continue;
+                    int wing = x < 0 ? 0 : 1;
+                    Vector2 port = moth.Muzzle(wing).position;
+                    float arch = 1 - Mathf.Pow((Mathf.Abs(x) - halfWidth * .52f) / (halfWidth * .52f), 2);
+                    float y = station.y - .55f + arch * 1.85f - row * .76f;
+                    Vector2 offset = new Vector2(x, y) - port;
+                    // Pause brakes linearly during the last .35 s. Give every lane
+                    // the distance it needs before that brake, and one common fall speed.
+                    const float travel = .90f;
+                    float launch = Mathf.Max(.18f, offset.magnitude / (travel - .175f));
+                    float authoredSpeed = WorldSpeed(launch);
+                    Fire<NeedleRound>(moth.Muzzle(wing).position, offset, authoredSpeed, .15f, i == 0 || i == lanes - 1)
+                        .Pause(travel, .45f + .12f * arch, CombatRound.Turn.Down, 0, 4.8f / authoredSpeed)
+                        .ShowTurn();
+                }
+                if (row < 2) yield return Wait(Rest(.20f));
+            }
+            yield return Wait(Rest(1.15f));
+        }
+    }
+
+    // Lantern Run. During each low banking pass the two guns comb a trail of
+    // suspended needles along the curve. A missing stroke leaves a cut in the
+    // wake. The nose locks its answer once, giving the pilot time to change course.
+    IEnumerator LanternRun()
+    {
+        for (int pass = 0; ; pass++)
+        {
+            int sign = (pass & 1) == 0 ? 1 : -1;
+            yield return RaiseWings(.44f);
+            Glide(sign * 2.12f, -.12f, 3.05f, 1.92f);
+            int strokes = Mathf.Max(9, Dense(21));
+            int tines = Mathf.Max(3, Dense(6));
+            float opening = (pass & 1) == 0 ? .38f : .64f;
+            for (int stroke = 0; stroke < strokes; stroke++)
+            {
+                float t = (stroke + .5f) / strokes;
+                while (Holding || glideTime < t * glideDuration) yield return null;
+                if (Mathf.Abs(t - opening) < .09f) continue;
+                for (int wing = 0; wing < 2; wing++)
+                {
+                    int side = wing * 2 - 1;
+                    UseTone(wing == (pass & 1) ? HostileTone.Bright : HostileTone.Dark);
+                    var port = moth.Muzzle(wing).position;
+                    for (int k = 0; k < tines; k++)
+                    {
+                        float tooth = k / (tines - 1f);
+                        Vector2 direction = new Vector2(side * Mathf.Lerp(.16f, 1.08f, tooth), 1);
+                        Fire<NeedleRound>(port, direction, 3.1f + 1.25f * tooth, .14f, k == 0)
+                            .Pause(.49f, .49f + .32f * (1 - t), CombatRound.Turn.Down, -side * (11 + 7 * tooth), 1.2f)
+                            .ShowTurn();
+                    }
+                }
+            }
+            var nose = moth.Muzzle(2);
+            Vector2 lockOn = CombatVisuals.Aim(nose.position);
+            PointWeapon(nose.position, lockOn);
+            wantedFold = .64f;
+            yield return Charge(nose, Vector3.zero, .47f);
+            UseTone(HostileTone.Bright);
+            int darts = Mathf.Max(2, Dense(5));
+            for (int i = 0; i < darts; i++)
+            {
+                for (int side = -1; side <= 1; side += 2)
+                    Fire<SimpleRound>(nose.position, CombatVisuals.Rotate(lockOn, side * (4 + i * 3)), 5.9f, .20f, side < 0);
+                yield return Wait(.075f);
+            }
+            yield return Wait(Rest(.35f));
         }
     }
 }
