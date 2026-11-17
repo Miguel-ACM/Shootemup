@@ -17,7 +17,7 @@ public sealed class CapRicochet : DistrictEnemy
     protected override void Configure() { health = 28; hullScale = .44f; }
     protected override void Attack()
     {
-        int n = Dense(6);
+        int n = Dense(velocity.x > 0 ? 5 : 3);
         Vector2 inward = new Vector2(velocity.x * .13f, -.9f);
         for (int i = 0; i < n; i++)
             Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(inward, (i - (n - 1) * .5f) * 18), 3.05f, .20f, i == 0)
@@ -36,7 +36,7 @@ public sealed class CapRicochet : DistrictEnemy
                 return;
             Vector2 tangent = movement is FormationFlight still ? still.Tangent : Vector2.down;
             float side = Mathf.Abs(tangent.x) > .20f ? Mathf.Sign(tangent.x) : transform.position.x > 0 ? -1 : 1;
-            velocity = new Vector2(side * 5.5f, -1.79f);
+            velocity = new Vector2(side * 5.5f, -2.20f);
             if (movement != null)
                 movement.enabled = false;
             drifting = true;
@@ -69,7 +69,7 @@ public sealed class MyceliumLancer : DistrictEnemy
     protected override void Configure() { health = 40; hullScale = .56f; }
     protected override void Attack()
     {
-        int n = Dense(7);
+        int n = Dense(6);
         for (int i = 0; i < n; i++)
         {
             float lane = i - (n - 1) * .5f;
@@ -84,8 +84,11 @@ public sealed class PaperKite : DistrictEnemy
     protected override void Configure() { health = 42; hullScale = .48f; }
     protected override void Attack()
     {
-        for (int s = -1; s <= 1; s += 2)
-            Fire<CrescentRound>(Muzzle(), CombatVisuals.Rotate(Aim, 17 * s), 4.1f, .23f).Sway(.34f * s, .54f);
+        int folds = Dense(3);
+        for (int side = -1; side <= 1; side += 2)
+            for (int i = 0; i < folds; i++)
+                Fire<CrescentRound>(Muzzle(), CombatVisuals.Rotate(Aim, side * (14 + 12 * i)),
+                    3.45f + i * .22f, .23f, side < 0 && i == 0).Sway(side * .34f, .54f);
     }
 }
 
@@ -94,7 +97,7 @@ public sealed class CrescentDancer : DistrictEnemy
     protected override void Configure() { health = 67; hullScale = .62f; }
     protected override void Attack()
     {
-        int n = Dense(7);
+        int n = Dense(9);
         for (int i = 0; i < n; i++)
         {
             float lane = i - (n - 1) * .5f;
@@ -109,7 +112,7 @@ public sealed class PaintedMask : DistrictEnemy
     protected override void Configure() { health = 108; hullScale = .76f; }
     protected override void Attack()
     {
-        int n = Dense(5);
+        int n = Dense(8);
         for (int i = 0; i < n; i++)
         {
             float angle = (i - (n - 1) * .5f) * 23;

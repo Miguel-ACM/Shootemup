@@ -29,7 +29,7 @@ public static partial class WavePartLibrary
 
     public static readonly WavePart[] SluiceBargeParts =
     {
-        DeepPart("Open the sluice", nameof(SluiceBarge), WaveShape.Solo, 1, 6f, 2, new[] { .38f, .64f },
+        DeepPart("Open the sluice", nameof(SluiceBarge), WaveShape.Solo, 1, 6f, 2, new[] { .31f, .51f, .71f },
             -.2f, 1.23f, -.28f, .97f, -.35f, .77f, -.25f, .61f, .08f, .52f, .61f, -.22f),
         DeepPart("Twin locks", nameof(SluiceBarge), WaveShape.Train, 2, 6.3f, 5, new[] { .31f, .56f, .73f },
             .43f, 1.31f, .40f, .94f, .28f, .74f, -.13f, .61f, -.63f, .56f, -1.38f, .48f),
@@ -39,9 +39,9 @@ public static partial class WavePartLibrary
 
     public static readonly WavePart[] OverflowBellParts =
     {
-        DeepPart("Over the weir", nameof(OverflowBell), WaveShape.Rake, 2, 5.6f, 2, new[] { .33f, .61f },
+        DeepPart("Over the weir", nameof(OverflowBell), WaveShape.Rake, 2, 5.6f, 2, new[] { .29f, .49f, .67f },
             -1.35f, .58f, -.69f, .7f, -.34f, .82f, .3f, .84f, .67f, .73f, 1.34f, .58f),
-        DeepPart("Bell tower runoff", nameof(OverflowBell), WaveShape.Train, 3, 5.8f, 6, new[] { .41f, .68f },
+        DeepPart("Bell tower runoff", nameof(OverflowBell), WaveShape.Train, 3, 5.8f, 6, new[] { .28f, .48f, .68f },
             .66f, 1.29f, .61f, .98f, .38f, .8f, .12f, .77f, -.37f, .81f, -1.36f, .93f),
         DeepPart("Under the arch", nameof(OverflowBell), WaveShape.Rank, 2, 6.4f, 9, new[] { .28f, .54f, .72f },
             .5f, -.26f, .62f, .18f, .55f, .44f, .27f, .67f, -.18f, .74f, -.58f, 1.24f),
@@ -49,7 +49,7 @@ public static partial class WavePartLibrary
 
     public static readonly WavePart[] PipeSkaterParts =
     {
-        DeepPart("Siphon skate", nameof(PipeSkater), WaveShape.Train, 4, 5.2f, 2, new[] { .33f, .62f },
+        DeepPart("Siphon skate", nameof(PipeSkater), WaveShape.Train, 4, 5.2f, 2, new[] { .26f, .47f, .68f },
             -1.37f, .82f, -.7f, .85f, -.08f, .68f, .19f, .46f, .48f, .28f, .76f, -.28f),
         DeepPart("Pipe overtake", nameof(PipeSkater), WaveShape.Chevron, 3, 5.1f, 3, new[] { .28f, .58f },
             .59f, 1.27f, .54f, .94f, .1f, .78f, -.35f, .56f, -.61f, .48f, -1.38f, .4f),
@@ -79,7 +79,7 @@ public static partial class WavePartLibrary
 
     public static readonly WavePart[] SentryCubeParts =
     {
-        DeepPart("Rail sentries", nameof(SentryCube), WaveShape.Rank, 2, 6.6f, 2, new[] { .29f, .56f, .73f },
+        DeepPart("Rail sentries", nameof(SentryCube), WaveShape.Rank, 2, 6.6f, 2, new[] { .23f, .42f, .59f, .76f },
             -1.36f, .72f, -.85f, .72f, -.56f, .76f, -.38f, .71f, -.43f, .55f, -1.36f, .52f),
         DeepPart("Aim ports", nameof(SentryCube), WaveShape.Rake, 3, 6.2f, 5, new[] { .32f, .57f },
             -.63f, 1.28f, -.65f, .96f, -.44f, .77f, -.05f, .65f, .45f, .57f, 1.34f, .47f),
@@ -99,7 +99,7 @@ public static partial class WavePartLibrary
 
     public static readonly WavePart[] RelayCarrierParts =
     {
-        DeepPart("Red bus", nameof(RelayCarrier), WaveShape.Solo, 1, 6f, 2, new[] { .3f, .58f, .77f },
+        DeepPart("Red bus", nameof(RelayCarrier), WaveShape.Solo, 1, 6f, 2, new[] { .25f, .42f, .60f, .76f },
             .42f, 1.26f, .44f, .97f, .26f, .75f, -.04f, .67f, -.48f, .69f, -1.36f, .74f),
         DeepPart("Switching chamber", nameof(RelayCarrier), WaveShape.Train, 2, 7f, 5, new[] { .25f, .55f, .73f },
             -1.34f, .87f, -.68f, .85f, -.22f, .72f, .3f, .72f, .73f, .83f, 1.34f, .87f),
@@ -109,7 +109,7 @@ public static partial class WavePartLibrary
 
     public static readonly WavePart[] RivetCutterParts =
     {
-        DeepPart("Shunt express", nameof(RivetCutter), WaveShape.Train, 4, 5.2f, 2, new[] { .28f, .57f },
+        DeepPart("Shunt express", nameof(RivetCutter), WaveShape.Train, 4, 5.2f, 2, new[] { .28f, .49f, .69f },
             -1.36f, .61f, -.68f, .67f, -.22f, .75f, .28f, .71f, .67f, .57f, 1.36f, .5f),
         DeepPart("Return duct", nameof(RivetCutter), WaveShape.Chevron, 3, 5.4f, 4, new[] { .29f, .62f },
             .78f, -.26f, .77f, .22f, .51f, .42f, .28f, .61f, .03f, .73f, -.27f, 1.27f),

@@ -146,7 +146,7 @@ public sealed class WavePart
         if (Enemy == "MeadowTank")
             score = new[] { .95f, 1.60f, 2.25f, last + .95f };
         if (Enemy == "BonbonSkirmisher" || Enemy == "WaferDart" || Enemy == "MintSpinner")
-            score = new[] { Seconds * .36f, Seconds * .65f, last + Seconds * .48f };
+            score = new[] { Seconds * .32f, Seconds * .49f, Seconds * .67f, Mathf.Max(Seconds * .82f, last + Seconds * .58f) };
         if (Enemy == "OrbitalScout")
             score = new[] { Seconds * .29f, Seconds * .51f, Seconds * .72f };
         if (Enemy == "OrbitalCarrier")

@@ -257,6 +257,8 @@ public static class WaveComposer
             count = budget < 5 || compact ? 3 : 4;
         if (level == LevelId.Space)
             count = budget < 5 || compact ? 3 : 4;
+        if (!compact && (level == LevelId.Core || level == LevelId.Dream))
+            count = budget < 5 ? 3 : 4;
         if (level == LevelId.Heaven)
             count = compact ? 2 : 3;
         // RUSH HOUR: a fuller street of formations in every City wave.
@@ -271,6 +273,12 @@ public static class WaveComposer
             window = compact ? 14 : 12.5f;
         if (level == LevelId.Dream)
             window = compact ? 14f : budget < 5 ? 11.3f : 12.5f;
+        // Some interleaved trains extend past six seconds even though their first ship
+        // enters immediately. Keep these authored routes eligible during spacing retries.
+        bool longFormations = level == LevelId.Heaven || level == LevelId.Dream ||
+            level == LevelId.Mushroom || level == LevelId.Sewers || level == LevelId.Core;
+        if (compact && longFormations)
+            window = Mathf.Max(window, 14f);
         float slowest = 1;
         foreach (var part in WavePartLibrary.For(level))
             slowest = Mathf.Min(slowest, EnemyTuning.MovementFor(part.Enemy));
@@ -290,8 +298,12 @@ public static class WaveComposer
                     continue;
                 if (level == LevelId.Space && !relaxed && slot == count - 1 && !units.Exists(u => u.enemy == nameof(LaserSatellite) || u.enemy == nameof(OrbitalCarrier)) && part.Enemy != nameof(LaserSatellite) && part.Enemy != nameof(OrbitalCarrier))
                     continue;
-                // Tunnel mixes its ships: never two formations of the same enemy in one wave.
-                if (level == LevelId.Tunnel && !relaxed && units.Exists(u => u.enemy == part.Enemy))
+                // Pair routes that obstruct movement with at least one scored gun formation.
+                if (!relaxed && slot == count - 1 && (level == LevelId.Sewers || level == LevelId.Core) &&
+                    !units.Exists(u => !IsContactFormation(u.enemy)) && IsContactFormation(part.Enemy))
+                    continue;
+                // Repeated bounce or cloud formations compound the same obstacle across an entire screen.
+                if ((level == LevelId.Tunnel || (level == LevelId.Mushroom && !compact)) && !relaxed && units.Exists(u => u.enemy == part.Enemy))
                     continue;
                 if (part.Unlock > budget || chosen.Contains(part.Name) || (part != featuredGate && previous.Contains(part.Name)) ||
                     (heavy && part.Shape == WaveShape.Solo && !(level == LevelId.Space && part.Enemy == nameof(LaserSatellite))) || (groundUsed && part.Ground))
@@ -323,7 +335,7 @@ public static class WaveComposer
                     if (motion == null)
                         continue;
                     if (motion.Span > window || (compact && option.part != featuredGate &&
-                        motion.Span > (level == LevelId.Heaven || level == LevelId.Dream ? 9.5f : 6.2f) / slowest))
+                        motion.Span > (longFormations ? 9.5f : 6.2f) / slowest))
                         continue;
                     if (slot == 0)
                     {
@@ -378,6 +390,10 @@ public static class WaveComposer
         // The next wave cannot occupy the departing formation's space. Kills still permit early handoff.
         return new Wave(budget, duration, 1, ConflictGroup.cg.center, units) { parts = names.ToArray() };
     }
+
+    static bool IsContactFormation(string enemy) =>
+        enemy == nameof(PlagueMote) || enemy == nameof(SiltLeech) ||
+        enemy == nameof(TransitCube) || enemy == nameof(FuseCube);
 
     static bool IsThunderBeam(string enemy) => enemy == nameof(BeamDrone) || enemy == nameof(ArcLancer) || enemy == nameof(StormOrgan);
 

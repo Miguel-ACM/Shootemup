@@ -106,11 +106,11 @@ public sealed class SentryCube : CoreCube
     protected override void Configure() { health = 55; hullScale = .58f; }
     protected override void Attack()
     {
-        int count = Dense(7);
+        int count = Dense(9);
         for (int i = 0; i < count; i++)
         {
             float lane = i - (count - 1) * .5f;
-            Fire<NeedleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, lane * 15), 4.0f, .17f)
+            Fire<NeedleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, lane * 13), 4.0f, .17f)
                 .Ramp(1.5f, .9f, .35f);
         }
     }
@@ -134,10 +134,10 @@ public sealed class RelayCarrier : DistrictEnemy
     protected override void Configure() { health = 96; hullScale = .78f; }
     protected override void Attack()
     {
-        int count = Dense(8), gap = 2 + volley % 3;
+        int count = Dense(11), gap = count / 2 - 1 + volley % 3;
         for (int i = 0; i < count; i++)
         {
-            if (i == gap)
+            if (Mathf.Abs(i - gap) < 2)
                 continue;
             Vector2 direction = CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 15);
             Fire<NeedleRound>(Muzzle(i), direction, 2.85f, .17f)
@@ -154,7 +154,10 @@ public sealed class RivetCutter : DistrictEnemy
         for (int i = 0; i < Dense(4); i++)
         {
             var direction = CombatVisuals.Rotate(Aim, volley % 2 == 0 ? -13 : 13);
-            Fire<NeedleRound>(Muzzle(i), direction, 2.8f + i * .78f, .17f);
+            Fire<NeedleRound>(Muzzle(i), direction, 2.8f + i * .62f, .17f);
+            if (i % 2 == 0)
+                Fire<NeedleRound>(Muzzle(i), CombatVisuals.Rotate(direction, volley % 2 == 0 ? 25 : -25),
+                    3.25f + i * .38f, .16f, false);
         }
     }
 }

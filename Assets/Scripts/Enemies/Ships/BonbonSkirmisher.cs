@@ -11,10 +11,13 @@ public sealed class BonbonSkirmisher : DistrictEnemy
         Mover<Slalom>();
     }
 
-    // One bonbon that ricochets off a wall.
+    // The returning beat splits around the aim point.
     protected override void Attack()
     {
-        Fire<HeartRound>(Muzzle(), Aim, 4.4f, .2f).Bounce(1);
+        int count = volley % 2 == 0 ? Dense(2) : 1;
+        for (int i = 0; i < count; i++)
+            Fire<HeartRound>(Muzzle(), CombatVisuals.Rotate(Aim, (i - (count - 1) * .5f) * 25),
+                4.4f, .2f, i == 0).Bounce(1);
     }
 }
 public static partial class IndustrialMeshFactory

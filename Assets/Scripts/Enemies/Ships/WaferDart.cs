@@ -20,7 +20,8 @@ public sealed class WaferDart : DistrictEnemy
 
     protected override void Attack()
     {
-        FanFrom<NeedleRound>((2), 18, 5.3f, .18f, new Vector3(-.27f, -.78f, -.16f), new Vector3(.27f, -.78f, -.16f));
+        int lanes = volley % 2 == 0 ? Mathf.Min(3, Dense(4)) : 2;
+        FanFrom<NeedleRound>(lanes, 18, 5.3f, .18f, new Vector3(-.27f, -.78f, -.16f), new Vector3(.27f, -.78f, -.16f));
     }
 }
 public static partial class IndustrialMeshFactory
