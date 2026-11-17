@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public sealed class CandylandBackdrop
+public sealed partial class CandylandBackdrop
 {
     public const string VillageMeshName = "Candyland cottages and candy groves";
     const float HalfWidth = 22;
     static readonly Color Strawberry = new Color(.79f, .35f, .55f);
     static readonly Color Rose = new Color(.58f, .21f, .39f);
-    static readonly Color SugarLane = new Color(.68f, .40f, .52f);
+    static readonly Color SugarLane = new Color(.78f, .53f, .61f);
     static readonly Color Icing = new Color(.94f, .76f, .75f);
     static readonly Color Peppermint = new Color(.72f, .08f, .23f);
     static readonly Color Biscuit = new Color(.59f, .32f, .19f);
@@ -26,7 +26,7 @@ public sealed class CandylandBackdrop
 
     static Color Distant(Color color)
     {
-        var softened = Color.Lerp(Shade(color, .70f), DistanceTint, .22f);
+        var softened = Color.Lerp(Shade(color, .76f), DistanceTint, .19f);
         softened.a = color.a;
         return softened;
     }
@@ -116,6 +116,7 @@ public sealed class CandylandBackdrop
                 Gumdrop(b, Gumdrops[rng.Next(Gumdrops.Length)]);
         }
 
+        Estate(b, section, length, rng);
         village = b.Mesh(VillageMeshName);
     }
 
