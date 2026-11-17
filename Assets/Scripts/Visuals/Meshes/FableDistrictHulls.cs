@@ -192,14 +192,27 @@ public static partial class IndustrialMeshFactory
     }
     public static Mesh PaintedMaskMesh()
     {
-        if(fableMask!=null)return fableMask;var b=new Builder();
-        BevelArmor(b,new[]{V(-.78f,.56f),V(-.30f,.80f),V(.38f,.73f),V(.81f,.44f),V(.66f,-.47f),V(.12f,-.91f),V(-.53f,-.64f)},.25f,15);
-        b.Prism(new[]{V(-.65f,.49f),V(-.05f,.65f),V(-.02f,-.47f),V(-.46f,-.53f)},.06f,8,new Vector3(0,0,-.20f),8);
-        CutStone(b,new Vector3(-.34f,.18f,-.27f),new Vector3(.19f,.25f,.06f),11,6);
-        CutStone(b,new Vector3(.35f,.18f,-.26f),new Vector3(.24f,.12f,.06f),11,6);
-        FableVein(b,new[]{new Vector3(-.22f,-.43f,-.28f),new Vector3(.12f,-.30f,-.28f),new Vector3(.40f,-.45f,-.28f)},.045f,11);
-        FablePort(b,.12f,-.77f,.11f,13);
-        return fableMask=b.Finish("Painted mask / uneven eyes");
+        if (fableMask != null) return fableMask;
+        var b = new Builder();
+        // Feathered theatre half-mask. One eye laughs and one weeps over a twisted grin.
+        BevelArmor(b,new[]{V(-.84f,.27f),V(-.75f,.70f),V(-.14f,.57f),V(.57f,.75f),V(.81f,.42f),
+            V(.64f,-.28f),V(.17f,-.80f),V(-.25f,-.65f),V(-.67f,-.29f)},.36f,15);
+        FoldedFin(b,new Vector3(-.73f,.49f,-.19f),new Vector3(-.08f,.50f,-.17f),new Vector3(.05f,-.34f,-.39f),
+            new Vector3(-.67f,-.16f,-.18f),new Vector3(-.43f,.10f,-.39f),7,4);
+        FoldedFin(b,new Vector3(.01f,.48f,-.18f),new Vector3(.72f,.49f,-.17f),new Vector3(.62f,-.13f,-.18f),
+            new Vector3(.10f,-.29f,-.36f),new Vector3(.36f,.16f,-.38f),13,15);
+        for(int s=-1;s<=1;s+=2)
+        {
+            float y=s<0?.20f:.11f;
+            CutStone(b,new Vector3(s*.38f,y,-.40f),new Vector3(.22f,s<0?.10f:.14f,.05f),11,4,s*.12f);
+            CutStone(b,new Vector3(s*.36f,y,-.45f),new Vector3(.071f,.062f,.035f),10,6);
+        }
+        CutBlade(b,new[]{new Vector3(-.09f,.38f,-.24f),new Vector3(.03f,-.03f,-.42f),new Vector3(-.10f,-.21f,-.54f)},.12f,.09f,15);
+        for(int k=0;k<3;k++) Feather(b,new Vector3(-.55f,.43f,-.12f),new Vector3(-1.06f+k*.28f,.84f+k*.13f,-.02f),.14f,.08f,k%2==0?5:13);
+        b.Sweep(new Vector3(-.38f,-.30f,-.22f),new Vector3(-.12f,-.61f,-.38f),
+            new Vector3(.20f,-.45f,-.35f),new Vector3(.43f,-.29f,-.20f),.065f,.055f,5,false,8);
+        DeepPort(b,new Vector3(.12f,-.77f,-.07f),.105f,13);
+        return fableMask = b.Finish("PaintedMask");
     }
     public static Mesh MushroomChampionMesh()
     {
