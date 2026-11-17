@@ -50,6 +50,8 @@ public static class EnemyExpansion
             new[] { IndustrialMeshFactory.WardenLeftMuzzle, IndustrialMeshFactory.WardenRightMuzzle, IndustrialMeshFactory.WardenNoseMuzzle }, Array.Empty<Vector3>(), Array.Empty<WavePart>()),
         new Entry(LevelId.Dream, typeof(HourglassWeaver), (int)CombatHullId.HourglassWeaver, .61f, false, IndustrialMeshFactory.BuildHourglassWeaver,
             new[] { new Vector3(-.33f, -.68f, -.16f), new Vector3(.33f, -.68f, -.16f) }, Array.Empty<Vector3>(), WavePartLibrary.HourglassWeaverParts),
+        new Entry(LevelId.Dream, typeof(InkQuill), (int)CombatHullId.InkQuill, .54f, false, IndustrialMeshFactory.BuildInkQuill,
+            new[] { new Vector3(-.26f, -.88f, -.16f) }, Array.Empty<Vector3>(), WavePartLibrary.InkQuillParts),
         new Entry(LevelId.Dream, typeof(PaperKite), (int)CombatHullId.PaperKite, .48f, false, IndustrialMeshFactory.PaperKiteMesh,
             new[] { new Vector3(0f, -.85f, -.22f) }, Array.Empty<Vector3>(), WavePartLibrary.PaperKiteParts),
         new Entry(LevelId.Dream, typeof(CrescentDancer), (int)CombatHullId.CrescentDancer, .62f, false, IndustrialMeshFactory.CrescentDancerMesh,
