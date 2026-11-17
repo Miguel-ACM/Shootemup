@@ -6,6 +6,14 @@ public sealed class SpaceBackdrop : MonoBehaviour
     Mesh plane;
     Material sky;
     float clock;
+    public static Material CreateSky(int seed)
+    {
+        var material = new Material(Resources.Load<Shader>("SpaceSky"));
+        material.SetTexture("_Atmospheres", Resources.Load<Texture2D>("OrbitalAtmospheres"));
+        material.SetFloat("_Seed", seed % 997);
+        return material;
+    }
+
     void Start()
     {
         plane = new Mesh { name = "Distant orbital sky" };
@@ -13,8 +21,7 @@ public sealed class SpaceBackdrop : MonoBehaviour
         plane.triangles = new[] { 0, 1, 2, 0, 2, 3 };
         plane.RecalculateBounds();
         gameObject.AddComponent<MeshFilter>().sharedMesh = plane;
-        sky = new Material(Resources.Load<Shader>("SpaceSky"));
-        sky.SetFloat("_Seed", LevelRun.Seed % 997);
+        sky = CreateSky(LevelRun.Seed);
         var renderer = gameObject.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = sky;
         renderer.sortingLayerName = "Background";

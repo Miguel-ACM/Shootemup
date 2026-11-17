@@ -93,9 +93,8 @@ public static class ReviewSpaceExpansion
             skyMesh.triangles = new[] { 0, 1, 2, 0, 2, 3 };
             skyMesh.RecalculateBounds();
             owned.Add(skyMesh);
-            var sky = new Material(Resources.Load<Shader>("SpaceSky"));
+            var sky = SpaceBackdrop.CreateSky(17381);
             owned.Add(sky);
-            sky.SetFloat("_Seed", 17381 % 997);
             sky.SetVector("_Drift", new Vector4(0, 1, 4, 0));
             Add(skyMesh, sky, Vector3.zero, 1, -80);
             if (boss)
