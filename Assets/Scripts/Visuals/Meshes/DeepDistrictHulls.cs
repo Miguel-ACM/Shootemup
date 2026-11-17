@@ -48,13 +48,7 @@ public static partial class IndustrialMeshFactory
                 ModelRamCube(b);
                 break;
             case CombatHullId.RelayCarrier:
-                BevelArmor(b, new[] { V(-1.12f, -.55f), V(-.62f, -.78f), V(0, -.42f), V(.62f, -.78f), V(1.12f, -.55f), V(.76f, .81f), V(-.76f, .81f) }, .42f, 6);
-                foreach (int side in new[] { -1, 1 })
-                {
-                    b.Box(new Vector3(side * .68f, .15f, -.24f), new Vector3(.47f, .82f, .34f), 11, 6);
-                    Barrel(b, side * .69f, -.32f, .49f, .26f);
-                }
-                b.Box(new Vector3(0, .25f, -.32f), new Vector3(.57f, .46f, .23f), 5, 0);
+                ModelRelayCarrier(b);
                 break;
             case CombatHullId.RivetCutter:
                 BevelArmor(b, new[] { V(0, -1.12f), V(.41f, -.62f), V(1.02f, .52f), V(.73f, .95f), V(.28f, .40f), V(-.27f, .69f), V(-.93f, .68f), V(-.76f, .13f), V(-.34f, -.50f) }, .34f, 6);
@@ -276,6 +270,23 @@ public static partial class IndustrialMeshFactory
         for(int k=0;k<4;k++)
             b.Box(new Vector3(0,-.33f+k*.15f,-.42f),new Vector3(.45f,.074f,.12f),6);
         b.Box(new Vector3(0,-.63f,-.31f),new Vector3(.87f,.32f,.36f),1,0);
+    }
+
+    static void ModelRelayCarrier(Builder b)
+    {
+        // Twin racks are joined only at the back. Ceramic insulators frame the space between.
+        BevelArmor(b,new[]{V(-1.04f,-.53f),V(-.56f,-.68f),V(-.43f,.37f),V(.43f,.37f),
+            V(.56f,-.68f),V(1.04f,-.53f),V(.94f,.63f),V(.60f,.93f),V(-.60f,.93f),V(-.94f,.63f)},.40f,0);
+        for(int s=-1;s<=1;s+=2)
+        {
+            float x=s*.69f;
+            b.Box(new Vector3(x,.04f,-.21f),new Vector3(.44f,.99f,.15f),11);
+            for(int i=-2;i<=2;i++)
+                b.Box(new Vector3(x,i*.17f+.08f,-.35f),new Vector3(.50f,.094f,.17f),i==0?3:1,6);
+            MothBarrel(b,new Vector3(x,-.81f,-.24f),.17f,.48f);
+        }
+        CutStone(b,new Vector3(0,.62f,-.22f),new Vector3(.41f,.24f,.18f),1,8);
+        CutStone(b,new Vector3(0,.55f,-.36f),new Vector3(.24f,.15f,.09f),9,8);
     }
 
     public static Mesh PlagueTail()
