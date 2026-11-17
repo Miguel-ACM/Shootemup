@@ -229,12 +229,10 @@ public sealed class MushroomWarden : DistrictBoss
 public sealed class DreamPainter : DistrictBoss
 {
     readonly Transform[] hands = new Transform[2];
-    static readonly Vector3[] Fingers =
-    {
-        new Vector3(-.72f, -1.08f, -.12f), new Vector3(-.25f, -1.42f, -.12f),
-        new Vector3(.25f, -1.49f, -.12f), new Vector3(.72f, -1.12f, -.12f)
-    };
-    float handAge;
+    static Vector3[] Fingers => IndustrialMeshFactory.DreamNibs;
+    float handAge, turnStart, turnClock;
+    bool turning;
+    const float SwapSeconds = 1.36f;
     protected override bool RepositionsOnPhase => false;
     protected override void Configure() { health = 3060; hullScale = .97f; attackInterval = .24f; nextAttack = 1.5f; }
 
@@ -258,7 +256,11 @@ public sealed class DreamPainter : DistrictBoss
         }
     }
 
-    protected override void OnPhaseEntered(int phase) => handAge = 0;
+    protected override void OnPhaseEntered(int phase)
+    {
+        handAge = turnStart = turnClock = 0;
+        turning = false;
+    }
 
     protected override void MoveBoss(float dt)
     {
@@ -266,18 +268,26 @@ public sealed class DreamPainter : DistrictBoss
         if (!openingComplete)
             return;
         handAge += dt;
+        if (turning)
+        {
+            turnClock += dt;
+            if (turnClock >= SwapSeconds)
+            {
+                turnStart = Mathf.Repeat(turnStart + Mathf.PI, 2 * Mathf.PI);
+                turning = false;
+            }
+        }
         for (int i = 0; i < hands.Length; i++)
         {
             int side = i == 0 ? -1 : 1;
             float x = side * 2.9f, y = -.44f + i * .63f, angle = side * 14;
             if (phaseTwo)
             {
-                float turn = handAge * (phaseThree ? .93f : .73f) + i * Mathf.PI;
+                float turn = handAge * .73f + i * Mathf.PI;
                 if (phaseThree)
                 {
-                    const float cycle = 4.4f;
-                    float t = handAge / cycle;
-                    turn = (Mathf.Floor(t) + Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.36f, .88f, t % 1))) * Mathf.PI + i * Mathf.PI;
+                    float arc = turning ? Mathf.SmoothStep(0, 1, turnClock / SwapSeconds) : 0;
+                    turn = turnStart + (arc + i) * Mathf.PI;
                 }
                 x = 2.98f * Mathf.Cos(turn);
                 y = 1.44f * Mathf.Sin(turn) - 1.09f;
@@ -294,50 +304,183 @@ public sealed class DreamPainter : DistrictBoss
         if (openingComplete) OpenCards();
     }
 
-    // Still Life, Two Moons, and The Hands of Sleep. Every shot begins at a finger.
-    protected override IEnumerator Cards()
+    protected override IEnumerator Cards() => phaseThree ? ShatteredRose() : phaseTwo ? NightLoom() : CompassRose();
+
+    IEnumerator ChargeFingers(float seconds)
     {
-        int beat = 0;
-        while (true)
+        for (float t = 0; t < seconds;)
         {
-            float charge = phaseThree ? .29f : .44f;
-            for (float time = 0; time < charge;)
+            foreach (var hand in hands)
+                foreach (var finger in Fingers)
+                    Cue(hand.TransformPoint(finger), seconds - t);
+            if (!Holding) t += Time.deltaTime * LevelRun.EnemyTempoScale;
+            yield return null;
+        }
+    }
+
+    // The last .35 seconds of a programmed approach brake linearly. Compensating
+    // for that distance lets marks from eight different fingers land on one canvas.
+    void PaintMoon(Vector3 port, Vector2 target, float travel, float hold, float angle,
+        float fallSpeed, float radius, bool flash)
+    {
+        Vector2 offset = target - (Vector2)port;
+        float launch = WorldSpeed(Mathf.Max(.20f, offset.magnitude / (travel - .175f)));
+        Fire<CrescentRound>(port, offset, launch, radius, flash)
+            .Pause(travel, hold, CombatRound.Turn.Down, angle, fallSpeed / launch);
+    }
+
+    // A four-point compass is drawn in velocity space. Each tip belongs to one
+    // finger, so the two roses open from the palms and grow through each other.
+    static Vector2 RosePoint(int vertex, float cant)
+    {
+        float angle = (vertex * 45 + cant) * Mathf.Deg2Rad;
+        float radius = (vertex & 1) == 0 ? 3.72f : 1.25f;
+        return new Vector2(Mathf.Sin(angle) * radius, Mathf.Cos(angle) * radius);
+    }
+
+    IEnumerator CompassRose()
+    {
+        for (int beat = 0; ; beat++)
+        {
+            yield return ChargeFingers(.46f);
+            float cant = 24 * Mathf.Sin(beat * .67f);
+            for (int echo = 0; echo < 2; echo++)
             {
-                if (!Holding) time += Time.deltaTime * LevelRun.EnemyTempoScale;
-                foreach (var hand in hands)
-                    foreach (var finger in Fingers)
-                        Cue(hand.TransformPoint(finger), charge - time);
-                yield return null;
-            }
-            int strokes = phaseThree ? 5 : phaseTwo ? 4 : 3;
-            int n = Dense(phaseThree ? 5 : 4);
-            for (int stroke = 0; stroke < strokes; stroke++)
-            {
-                for (int side = 0; side < hands.Length; side++)
+                int marks = Mathf.Max(4, Dense(echo == 0 ? 8 : 6));
+                for (int h = 0; h < 2; h++)
                 {
-                    int sign = side == 0 ? -1 : 1;
-                    for (int index = 0; index < Fingers.Length; index++)
+                    // One hand signs the echo while the opposite star stays open.
+                    if (echo == 1 && h != (beat & 1)) continue;
+                    UseTone((h + beat + echo) % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
+                    int side = h * 2 - 1;
+                    for (int f = 0; f < 4; f++)
                     {
-                        if (Difficulty.Easy && (index + beat + stroke) % 3 == 0)
-                            continue;
-                        var port = hands[side].TransformPoint(Fingers[index]);
-                        float lean = sign * (17 + index * 17 + 18 * Mathf.Sin(beat * .62f + stroke * .48f));
-                        Vector2 down = phaseTwo && stroke % 3 == 2 ? Vector2.up : Vector2.down;
-                        for (int i = 0; i < n; i++)
+                        Vector3 port = hands[h].TransformPoint(Fingers[f]);
+                        float turn = side * (cant + echo * 18);
+                        Vector2 tip = RosePoint(f * 2, turn);
+                        for (int flank = -1; flank <= 1; flank += 2)
                         {
-                            float lane = i - (n - 1) * .5f;
-                            var moon = Fire<CrescentRound>(port, CombatVisuals.Rotate(down, lean + lane * 8),
-                                3.1f + .40f * i, .20f + (i % 2) * .035f, i == 0);
-                            if (down == Vector2.up) moon.Bounce(2);
-                            else if (phaseThree && (i + index) % 3 == 0)
-                                moon.Pause(.8f, .35f, CombatRound.Turn.Rotate, sign * 36, 4.2f);
+                            Vector2 notch = RosePoint(f * 2 + flank + 8, turn);
+                            for (int i = 0; i < marks; i++)
+                            {
+                                float t = (i + .5f) / marks;
+                                // A break in one flank turns with the rose.
+                                if (f == (beat + h) % 4 && flank == side && t > .28f && t < .64f) continue;
+                                Vector2 v = Vector2.Lerp(tip, notch, t) * (echo == 0 ? 1 : .76f);
+                                v += new Vector2(-side * .57f, -1.46f);
+                                Fire<CrescentRound>(port, v, v.magnitude, echo == 0 ? .176f : .15f, i == 0 && flank == -1)
+                                    .Ramp(1.13f, .78f, .68f);
+                            }
                         }
                     }
                 }
-                yield return Wait(Rest(phaseThree ? .18f : .23f));
+                if (echo == 0) yield return Wait(Rest(.38f));
             }
-            beat++;
-            yield return Wait(Rest(phaseThree ? .44f : .68f));
+            yield return Wait(Rest(1.23f));
+        }
+    }
+
+    // Four brush angles follow each orbiting wrist. The fingers sweep a pleat
+    // into the silk; the next wrist turns the other way through the same space.
+    IEnumerator NightLoom()
+    {
+        for (int pass = 0; ; pass++)
+        {
+            yield return ChargeFingers(.41f);
+            int marks = Mathf.Max(12, Dense(29));
+            for (int i = 0; i < marks; i++)
+            {
+                float t = i / (marks - 1f);
+                float pleat = 46 * Mathf.Sin(Mathf.PI * t) + 14 * Mathf.Sin(2 * Mathf.PI * t);
+                for (int h = 0; h < 2; h++)
+                {
+                    int side = h * 2 - 1;
+                    float orbit = handAge * .73f + h * Mathf.PI;
+                    UseTone(((pass + h) & 1) == 0 ? HostileTone.Bright : HostileTone.Dark);
+                    for (int f = 0; f < 4; f++)
+                    {
+                        float angle = orbit * Mathf.Rad2Deg + f * 90 + side * pleat;
+                        Vector2 radial = CombatVisuals.Rotate(Vector2.down, angle);
+                        Vector2 v = radial * (3.82f + .50f * Mathf.Sin(t * Mathf.PI)) + Vector2.down * .98f;
+                        Vector3 port = hands[h].TransformPoint(Fingers[f]);
+                        Fire<CrescentRound>(port, v, v.magnitude, f % 2 == 0 ? .21f : .165f, i % 6 == 0)
+                            .Fall(new Vector2(-side * radial.y * .46f, -.34f));
+                    }
+                }
+                yield return Wait(Rest(1.92f) / marks);
+            }
+            yield return Wait(Rest(.52f));
+        }
+    }
+
+    // A rose window has eight individually cut lozenges. It assembles from
+    // the fingertips above the player. When the wrists turn, the lead seams
+    // split and the panes peel off in different directions.
+    IEnumerator ShatteredRose()
+    {
+        for (int beat = 0; ; beat++)
+        {
+            while (turning || Holding) yield return null;
+            yield return ChargeFingers(.48f);
+            float twist = Mathf.Sin(beat * .74f) * 18 + 12;
+            Vector2 center = new Vector2(.54f * Mathf.Sin(beat * .89f), station.y - 1.13f);
+            for (int f = 0; f < 4; f++)
+            {
+                float travel = 1.28f - f * .13f;
+                for (int h = 0; h < 2; h++)
+                {
+                    int side = hands[h].position.x < station.x ? -1 : 1;
+                    float a = (side * (22.5f + f * 45f) + twist) * Mathf.Deg2Rad;
+                    Vector2 spoke = new Vector2(Mathf.Sin(a), Mathf.Cos(a));
+                    Vector2 tangent = new Vector2(-spoke.y, spoke.x);
+                    Vector3 nib = hands[h].TransformPoint(Fingers[f]);
+                    for (int edge = 0; edge < 4; edge++)
+                    {
+                        bool outer = edge == 1 || edge == 2;
+                        float flank = edge < 2 ? -1 : 1;
+                        Vector2 end = spoke * (outer ? 1f : .17f);
+                        Vector2 shoulder = spoke * .56f + tangent * (.19f * flank);
+                        int count = Mathf.Max(3, Dense(outer ? 9 : 6));
+                        UseTone(outer ? HostileTone.Bright : HostileTone.Dark);
+                        for (int i = 0; i < count; i++)
+                        {
+                            float t = (i + .5f) / count;
+                            Vector2 glass = Vector2.Lerp(end, shoulder, t);
+                            Vector2 target = center + Vector2.Scale(glass, new Vector2(4.1f, 3.5f));
+                            float direction = spoke.y > .68f ? 157 * Mathf.Sign(spoke.x) :
+                                -spoke.x * 20 + Mathf.Sin(beat * .89f) * 9;
+                            PaintMoon(nib, target, travel, .49f + .32f * (1 - t), direction + flank * 5,
+                                outer ? 4.95f : 4.45f, outer ? .185f : .155f, edge == 0 && i == 0);
+                        }
+                    }
+                }
+                if (f < 3) yield return Wait(.13f);
+            }
+            yield return Wait(.83f);
+            turnClock = 0;
+            turning = true;
+            yield return ChargeFingers(.32f);
+            // The two signing strokes are aimed once. The upper stroke folds
+            // over the ceiling, the lower one parts around the locked bearing.
+            Vector2 aim = CombatVisuals.Aim(center);
+            int marks = Mathf.Max(6, Dense(16));
+            for (int i = 0; i < marks; i++)
+            {
+                float t = i / (marks - 1f);
+                for (int h = 0; h < 2; h++)
+                {
+                    int side = h * 2 - 1;
+                    float flare = side * (7 + 25 * Mathf.Sin(Mathf.PI * t));
+                    UseTone(h == (beat & 1) ? HostileTone.Bright : HostileTone.Dark);
+                    Fire<CrescentRound>(hands[h].TransformPoint(Fingers[(beat + h) % 4]),
+                        CombatVisuals.Rotate(aim, flare), 4.55f - .55f * t, .21f, i % 4 == 0);
+                    Fire<CrescentRound>(hands[h].TransformPoint(Fingers[(beat + h + 2) % 4]),
+                        CombatVisuals.Rotate(Vector2.up, side * (19 + 40 * t)), 3.75f, .16f, i % 4 == 0)
+                        .Bounce(1);
+                }
+                yield return Wait(.99f / marks);
+            }
+            yield return Wait(Rest(.45f));
         }
     }
 }

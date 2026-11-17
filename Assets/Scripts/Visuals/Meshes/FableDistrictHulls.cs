@@ -4,7 +4,7 @@ using UnityEngine;
 // the firing direction is -Y. Palette indices are supplied by the standard hull renderer.
 public static partial class IndustrialMeshFactory
 {
-    static Mesh fablePainter, fableHand, fableBell, fableCap, fableLancer;
+    static Mesh fableBell, fableCap, fableLancer;
     static Mesh fableKite, fableCrescent, fableMask, fableMushChampion, fableDreamChampion;
 
     static void FablePort(Builder b, float x, float y, float radius, int colour)
@@ -95,47 +95,6 @@ public static partial class IndustrialMeshFactory
         }
         CutStone(b,new Vector3(0,-.52f,-.21f),new Vector3(.14f,.17f,.09f),13,6);
         return fableLancer = b.Finish("MyceliumLancer");
-    }
-    public static Mesh DreamPainterMesh()
-    {
-        if(fablePainter!=null)return fablePainter;var b=new Builder();
-        // Projecting, slanted plates form an asymmetric sculptural portrait.
-        BevelArmor(b,new[]{V(-1.45f,-.31f),V(-1.30f,.63f),V(-.94f,.52f),V(-1.03f,1.08f),V(-.53f,1.22f),V(.14f,1.07f),V(.58f,1.34f),V(1.03f,.98f),V(.98f,.65f),V(1.40f,.45f),V(1.30f,-.22f),V(1.14f,-.28f),V(1.12f,-.78f),V(.45f,-1.08f),V(.15f,-1.29f),V(-.62f,-.94f),V(-.92f,-1.02f)},.42f,15);
-        b.Prism(new[]{V(-1.17f,.64f),V(-.35f,1.07f),V(-.08f,.12f),V(-.89f,-.15f)},.10f,8,new Vector3(0,0,-.27f),8);
-        b.Prism(new[]{V(.02f,.93f),V(.91f,.83f),V(1.22f,.04f),V(.43f,-.26f)},.11f,5,new Vector3(0,0,-.30f),5);
-        b.Prism(new[]{V(-.65f,-.24f),V(.30f,-.08f),V(.91f,-.65f),V(.07f,-1.05f),V(-.74f,-.71f)},.12f,13,new Vector3(0,0,-.32f),13);
-        BevelArmor(b,new[]{V(-1.04f,.56f),V(-.38f,.70f),V(-.47f,.22f),V(-.93f,.12f)},.11f,15,-.43f);
-        BevelArmor(b,new[]{V(.30f,.61f),V(.92f,.43f),V(.87f,.14f),V(.27f,.25f)},.11f,15,-.44f);
-        BevelArmor(b,new[]{V(-.25f,.65f),V(.02f,.84f),V(.24f,-.18f),V(-.06f,-.46f),V(-.27f,-.31f)},.16f,15,-.47f);
-        CutStone(b,new Vector3(-.59f,.40f,-.54f),new Vector3(.13f,.20f,.06f),11,6);
-        CutStone(b,new Vector3(.55f,.34f,-.55f),new Vector3(.20f,.09f,.06f),11,6);
-
-
-        FableVein(b,new[]{new Vector3(-.35f,-.56f,-.45f),new Vector3(.08f,-.44f,-.47f),new Vector3(.53f,-.65f,-.45f)},.055f,11);
-        FablePort(b,-.89f,-.60f,.17f,8);FablePort(b,.91f,-.52f,.17f,5);
-        return fablePainter=b.Finish("Dream painter / fractured portrait");
-    }
-    public static Mesh DreamHandMesh()
-    {
-        if(fableHand!=null)return fableHand;var b=new Builder();
-        BevelArmor(b,new[]{V(-.70f,.68f),V(.68f,.68f),V(.79f,.03f),V(.62f,-.38f),V(-.62f,-.38f),V(-.79f,.03f)},.30f,15);
-        // Cuff, articulated hinge and offset palm plates frame the four pointed digits.
-        BevelArmor(b,new[]{V(-.48f,.80f),V(.35f,.88f),V(.43f,.62f),V(-.48f,.53f)},.17f,5,-.24f);
-        BevelArmor(b,new[]{V(-.53f,.40f),V(-.12f,.48f),V(.08f,.02f),V(-.42f,-.19f),V(-.62f,-.04f)},.12f,8,-.25f);
-        BevelArmor(b,new[]{V(-.08f,.46f),V(.48f,.50f),V(.56f,.03f),V(.28f,-.21f),V(.05f,.02f)},.13f,13,-.27f);
-        CutStone(b,new Vector3(-.03f,.58f,-.37f),new Vector3(.22f,.13f,.08f),11,6);
-        // Four distinct tapered digits, no hidden thumb. Tips: (-.72,-1.08), (-.25,-1.42), (.25,-1.49), (.72,-1.12).
-        float[] xs={-.72f,-.25f,.25f,.72f};float[] ys={-1.08f,-1.42f,-1.49f,-1.12f};
-        for(int i=0;i<4;i++)
-        {
-            float x=xs[i], inner=x*.72f;
-            BevelArmor(b,new[]{V(inner-.16f,-.23f),V(inner+.16f,-.23f),V(x+.12f,ys[i]+.26f),V(x,ys[i]),V(x-.12f,ys[i]+.26f)},.22f,15);
-            CutStone(b,new Vector3(inner,-.34f,-.23f),new Vector3(.14f,.11f,.07f),i%2==0?5:8,6);
-            FableVein(b,new[]{new Vector3(inner,-.35f,-.22f),new Vector3(x,ys[i]+.28f,-.19f)},.035f,8);
-        }
-        FableVein(b,new[]{new Vector3(-.42f,.30f,-.23f),new Vector3(-.12f,.02f,-.24f),new Vector3(.22f,.02f,-.24f),new Vector3(.44f,.31f,-.23f)},.045f,5);
-        CutStone(b,new Vector3(0,.27f,-.26f),new Vector3(.22f,.17f,.06f),13,5);
-        return fableHand=b.Finish("Dream hand / four tapered fingers");
     }
     public static Mesh PaperKiteMesh()
     {

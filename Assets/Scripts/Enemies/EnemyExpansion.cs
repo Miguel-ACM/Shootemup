@@ -123,6 +123,7 @@ public static class EnemyExpansion
     public static Mesh Mesh(int hull) => Find(hull)?.model() ?? throw new ArgumentException("Missing authored hull " + hull);
     public static Material Material(int hull)
     {
+        if (hull == (int)CombatHullId.DreamPainter) return IndustrialMeshFactory.DreamPorcelain;
         if (hull == (int)CombatHullId.MushroomWarden) return IndustrialMeshFactory.MothPaint;
         if(hull==91)return HeavenAngelVisual.Surface;
         var entry = Find(hull);
