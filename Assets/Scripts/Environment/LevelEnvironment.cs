@@ -768,7 +768,14 @@ public sealed class LevelEnvironment : MonoBehaviour
                 material.mainTexture = woodlandLeaves;
             }
             else
+            {
                 material.mainTexture = Resources.Load<Texture2D>("DreamProcession");
+                material.SetTexture("_Studies", Resources.Load<Texture2D>("DreamStudies"));
+                dreamSeed = LevelRun.Seed;
+                dreamPanels = new MeshRenderer[4];
+                dreamVisits = new int[4];
+                dreamInk = new MaterialPropertyBlock();
+            }
             for (int i = 0; i < 4; i++)
             {
                 var tile = new GameObject(level + " scenery " + i).transform;
@@ -782,6 +789,11 @@ public sealed class LevelEnvironment : MonoBehaviour
                     var lighting = new MaterialPropertyBlock();
                     lighting.SetFloat("_SectionOrigin", i * SectionLength);
                     terrain.GetComponent<MeshRenderer>().SetPropertyBlock(lighting);
+                }
+                if (level == LevelId.Dream)
+                {
+                    dreamPanels[i] = terrain.GetComponent<MeshRenderer>();
+                    SetDreamStudies(i);
                 }
                 sections.Add(tile);
                 yield return null;
@@ -965,6 +977,28 @@ public sealed class LevelEnvironment : MonoBehaviour
 
     Material sewerWater, cisternWater;
     Texture2D woodlandLeaves;
+    MeshRenderer[] dreamPanels;
+    int[] dreamVisits;
+    MaterialPropertyBlock dreamInk;
+
+    void SetDreamStudies(int section)
+    {
+        // Each circuit consumes twelve different studies from the sixteen-drawing atelier.
+        // Only a recycled offscreen panel changes its ink.
+        var random = new System.Random(unchecked(dreamSeed + dreamVisits[section] * 7919));
+        int[] deck = new int[16];
+        for (int i = 0; i < deck.Length; i++)
+        {
+            int other = random.Next(i + 1);
+            deck[i] = deck[other];
+            deck[other] = i;
+        }
+        int first = section * 3;
+        dreamInk.SetVector("_Drawings", new Vector4(deck[first], deck[first+1], deck[first+2],
+            (deck[15] + .5f * section) / 16f));
+        dreamPanels[section].SetPropertyBlock(dreamInk);
+    }
+    int dreamSeed;
 
     void UseDistrictSurface(float finish)
     {
@@ -1162,6 +1196,11 @@ public sealed class LevelEnvironment : MonoBehaviour
         for (int i = 0; i < sections.Count; i++)
         {
             float y = SectionY(i, travel, sectionWrap);
+            if (dreamPanels != null && y > sections[i].localPosition.y + LoopLength * .5f)
+            {
+                dreamVisits[i]++;
+                SetDreamStudies(i);
+            }
             sections[i].localPosition = new Vector3(HorizontalOffset, y, 90);
         }
         for (int i = 0; i < foreground.Count; i++)

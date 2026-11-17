@@ -15,7 +15,8 @@ jade, chalk = "#78958e", "#cebaa2"
 
 
 class Brush:
-    def __init__(self, x, y, scale=1, flip=1, tilt=0):
+    def __init__(self, x, y, scale=1, flip=1, tilt=0, surface=None):
+        self.surface = draw if surface is None else surface
         self.x, self.y, self.s, self.flip, self.angle = x, y, scale, flip, tilt
 
     def xy(self, pts):
@@ -23,10 +24,10 @@ class Brush:
         return [(self.x+self.s*(x*self.flip*c-y*s), self.y+self.s*(x*self.flip*s+y*c)) for x, y in pts]
 
     def shape(self, color, *pts):
-        draw.polygon(self.xy(pts), fill=color)
+        self.surface.polygon(self.xy(pts), fill=color)
 
     def line(self, color, width, *pts):
-        draw.line(self.xy(pts), fill=color, width=max(1, round(width*self.s)), joint="curve")
+        self.surface.line(self.xy(pts), fill=color, width=max(1, round(width*self.s)), joint="curve")
 
     def oval(self, x, y, a, b, color):
         self.shape(color, *((x+a*cos(k*pi/20), y+b*sin(k*pi/20)) for k in range(40)))
@@ -164,57 +165,58 @@ def bell_tower(b):
     b.line(sand,2,(-16,4),(-4,2))
 
 
-# One continuous landscape behind the figures. Wrap duplicate motifs at the canvas join.
-for n in range(-1,17):
-    y=n*200
-    b=Brush(0,y)
-    k=n%16
-    b.shape(["#495264","#565168","#4c5866","#5b5466"][k%4],(0,-8),(154,35),(298,-9),(512,48),(512,208),(300,173),(82,213),(0,189))
-    b.shape(["#495d66","#545369","#5b5866","#4b5767"][k%4],(0,86),(139,46),(248,73),(126,140),(0,174))
-    b.shape(["#675764","#475763","#655967","#53606b"][k%4],(512,30),(322,95),(251,154),(392,122),(512,185))
-    b.curve("#6c6973",2,(0,139),(143,103),(280,26),(512,81))
-    for j in range(7):
-        b.line("#73737a",1,(23+j*7,90-j*2),(45+j*7,75-j*2))
+if __name__ == "__main__":
+    # One continuous landscape behind the figures. Wrap duplicate motifs at the canvas join.
+    for n in range(-1,17):
+        y=n*200
+        b=Brush(0,y)
+        k=n%16
+        b.shape(["#495264","#565168","#4c5866","#5b5466"][k%4],(0,-8),(154,35),(298,-9),(512,48),(512,208),(300,173),(82,213),(0,189))
+        b.shape(["#495d66","#545369","#5b5866","#4b5767"][k%4],(0,86),(139,46),(248,73),(126,140),(0,174))
+        b.shape(["#675764","#475763","#655967","#53606b"][k%4],(512,30),(322,95),(251,154),(392,122),(512,185))
+        b.curve("#6c6973",2,(0,139),(143,103),(280,26),(512,81))
+        for j in range(7):
+            b.line("#73737a",1,(23+j*7,90-j*2),(45+j*7,75-j*2))
 
-for n in range(4):
-    top=n*800
-    side=1 if n%2==0 else -1
-    def at(x,y,s=1,t=0):
-        return Brush(x if side==1 else W-x,top+y,s,side,t*side)
-    village(at(348,90,1.18,.09))
-    if n in (0,2):
-        bell_tower(at(308,61,.81 if n==0 else .63,.085))
-    else:
-        glasses(at(98,116,.77,-.08))
-    arcade(at(55,665,1.05,-.13))
-    # Broad stepped planes carry the eye between the foreground figures.
-    ground=at(130,460,1)
-    ground.shape("#766270",(-155,69),(3,-83),(140,-110),(85,-44),(-20,0),(35,51),(-63,103))
-    ground.shape("#42606a",(-144,81),(-13,11),(39,53),(155,11),(100,71),(-30,105))
-    for j in range(6):
-        ground.curve("#8e777d",2,(-125,61+j*5),(-55,29+j*6),(-19,1+j*7),(10,13+j*7))
-    if n==0:
-        silk(at(145,413,.94,.20)); sleeper(at(170,297,1.25,-.18)); hand(at(208,404,.72,.04)); dove(at(377,514,.93,-.17))
-    elif n==1:
-        horse(at(163,272,1.35,-.10)); silk(at(370,615,.95,.21)); lute(at(347,581,.91,.16)); hand(at(360,592,.54,-.31))
-    elif n==2:
-        silk(at(114,385,1.3,.29)); lute(at(136,325,1.31,-.18)); hand(at(141,355,.77,-.31)); sleeper(at(366,557,.87,.30))
-    else:
-        glasses(at(280,385,.99,-.18)); dove(at(180,295,1.69,-.2)); horse(at(347,553,.94,.17))
-    # Orb with a thin offset contour, modest value so hostile moons stay luminous.
-    orb=at(356,198)
-    orb.oval(0,0,27,30,"#ad937d")
-    orb.shape("#97817b",(-24,13),(-2,-4),(22,-16),(27,1),(17,23),(0,30),(-17,24))
-    orb.curve("#b19c8c",1,(-35,6),(-42,-35),(0,-47),(19,-32))
+    for n in range(4):
+        top=n*800
+        side=1 if n%2==0 else -1
+        def at(x,y,s=1,t=0):
+            return Brush(x if side==1 else W-x,top+y,s,side,t*side)
+        village(at(348,90,1.18,.09))
+        if n in (0,2):
+            bell_tower(at(308,61,.81 if n==0 else .63,.085))
+        else:
+            glasses(at(98,116,.77,-.08))
+        arcade(at(55,665,1.05,-.13))
+        # Broad stepped planes carry the eye between the foreground figures.
+        ground=at(130,460,1)
+        ground.shape("#766270",(-155,69),(3,-83),(140,-110),(85,-44),(-20,0),(35,51),(-63,103))
+        ground.shape("#42606a",(-144,81),(-13,11),(39,53),(155,11),(100,71),(-30,105))
+        for j in range(6):
+            ground.curve("#8e777d",2,(-125,61+j*5),(-55,29+j*6),(-19,1+j*7),(10,13+j*7))
+        if n==0:
+            silk(at(145,413,.94,.20)); sleeper(at(170,297,1.25,-.18)); hand(at(208,404,.72,.04)); dove(at(377,514,.93,-.17))
+        elif n==1:
+            horse(at(163,272,1.35,-.10)); silk(at(370,615,.95,.21)); lute(at(347,581,.91,.16)); hand(at(360,592,.54,-.31))
+        elif n==2:
+            silk(at(114,385,1.3,.29)); lute(at(136,325,1.31,-.18)); hand(at(141,355,.77,-.31)); sleeper(at(366,557,.87,.30))
+        else:
+            glasses(at(280,385,.99,-.18)); dove(at(180,295,1.69,-.2)); horse(at(347,553,.94,.17))
+        # Orb with a thin offset contour, modest value so hostile moons stay luminous.
+        orb=at(356,198)
+        orb.oval(0,0,27,30,"#ad937d")
+        orb.shape("#97817b",(-24,13),(-2,-4),(22,-16),(27,1),(17,23),(0,30),(-17,24))
+        orb.curve("#b19c8c",1,(-35,6),(-42,-35),(0,-47),(19,-32))
 
-# A dragged, broken brush leaves bristles running through the flat pigments.
-noise=np.random.default_rng(310)
-base=np.asarray(canvas).astype(np.float32)
-def field(w,h):
-    small=Image.fromarray(noise.integers(0,256,(h,w),dtype=np.uint8))
-    return (np.asarray(small.resize((W,H),Image.Resampling.BICUBIC)).astype(np.float32)-127)/127
-yy,xx=np.indices((H,W))
-grain=field(41,670)*3.6+field(151,1240)*2.3+field(18,66)*3.8+noise.normal(0,1.8,(H,W))
-grain+=1.3*np.sin(xx*2.1+np.sin(yy*.092))+1.1*np.cos(yy*2.6)
-art=Image.fromarray(np.uint8(np.clip(base+grain[:,:,None],0,255)))
-art.save(Path(__file__).resolve().parents[1]/"Assets/Resources/DreamProcession.png",optimize=True)
+    # A dragged, broken brush leaves bristles running through the flat pigments.
+    noise=np.random.default_rng(310)
+    base=np.asarray(canvas).astype(np.float32)
+    def field(w,h):
+        small=Image.fromarray(noise.integers(0,256,(h,w),dtype=np.uint8))
+        return (np.asarray(small.resize((W,H),Image.Resampling.BICUBIC)).astype(np.float32)-127)/127
+    yy,xx=np.indices((H,W))
+    grain=field(41,670)*3.6+field(151,1240)*2.3+field(18,66)*3.8+noise.normal(0,1.8,(H,W))
+    grain+=1.3*np.sin(xx*2.1+np.sin(yy*.092))+1.1*np.cos(yy*2.6)
+    art=Image.fromarray(np.uint8(np.clip(base+grain[:,:,None],0,255)))
+    art.save(Path(__file__).resolve().parents[1]/"Assets/Resources/DreamProcession.png",optimize=True)
