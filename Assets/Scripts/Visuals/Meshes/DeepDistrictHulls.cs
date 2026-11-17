@@ -14,10 +14,7 @@ public static partial class IndustrialMeshFactory
         switch (id)
         {
             case CombatHullId.PlagueMote:
-                CutStone(b, new Vector3(0, -.05f, 0), new Vector3(.55f, .78f, .27f), 2, 9);
-                CutStone(b, new Vector3(0, -.54f, -.08f), new Vector3(.23f, .32f, .16f), 14, 6);
-                foreach (int side in new[] { -1, 1 })
-                    CutStone(b, new Vector3(side * .25f, -.37f, -.21f), new Vector3(.12f, .14f, .09f), 10, 5);
+                ModelPlagueMote(b);
                 break;
             case CombatHullId.SiltLeech:
                 BevelArmor(b, new[] { V(-1, .38f), V(-.7f, -.73f), V(0, -1.02f), V(.7f, -.73f), V(1, .38f), V(.46f, .15f), V(0, .62f), V(-.46f, .15f) }, .38f, 2);
@@ -87,11 +84,37 @@ public static partial class IndustrialMeshFactory
         return deepHulls[id] = b.Finish(id.ToString());
     }
 
+    static void ModelPlagueMote(Builder b)
+    {
+        // A swimming rat, with a narrow snout, two cupped ears and tucked hind legs.
+        KeelSkin(b, 0, 2, Frame(-.84f,.025f,.02f), Frame(-.58f,.22f,.16f),
+            Frame(-.26f,.37f,.24f), Frame(.22f,.46f,.30f), Frame(.48f,.37f,.24f), Frame(.73f,.09f,.08f));
+        for (int s = -1; s <= 1; s += 2)
+        {
+            b.Pearl(new Vector3(s*.30f,-.23f,-.21f),new Vector3(.20f,.19f,.10f),13,10,5);
+            b.Pearl(new Vector3(s*.32f,-.23f,-.29f),new Vector3(.115f,.12f,.045f),5,8,4);
+            b.Pearl(new Vector3(s*.16f,-.53f,-.15f),new Vector3(.08f,.09f,.07f),10,8,4);
+            CutBlade(b,new[]{new Vector3(s*.33f,.14f,.03f),new Vector3(s*.53f,.31f,0),
+                new Vector3(s*.44f,.57f,0),new Vector3(s*.65f,.68f,0)},.105f,.08f,14);
+        }
+        CutBlade(b,new[]{new Vector3(0,-.15f,-.22f),new Vector3(0,.26f,-.32f),
+            new Vector3(0,.70f,-.09f)},.11f,.04f,14);
+        b.Pearl(new Vector3(0,-.76f,-.06f),new Vector3(.106f,.091f,.075f),5,10,5);
+        for (int side=-1;side<=1;side+=2)
+        {
+            b.Sweep(new Vector3(side*.14f,-.60f,-.12f),new Vector3(side*.28f,-.63f,-.17f),
+                new Vector3(side*.46f,-.56f,-.12f),new Vector3(side*.58f,-.56f,-.10f),.027f,.026f,15,false,5);
+            CutBlade(b,new[]{new Vector3(side*.28f,-.19f,.06f),new Vector3(side*.44f,-.31f,.03f),
+                new Vector3(side*.42f,-.52f,0)},.087f,.055f,2);
+        }
+    }
+
     public static Mesh PlagueTail()
     {
         if (plagueTail != null) return plagueTail;
         var b = new Builder();
-        b.Prism(new[] { V(-.18f, -.09f), V(-.11f, .29f), V(0, .53f), V(.11f, .29f), V(.18f, -.09f) }, .12f, 2, Vector3.zero, 14);
+        KeelSkin(b, .02f, 14, Frame(-.11f,.125f,.085f), Frame(.04f,.14f,.097f),
+            Frame(.22f,.103f,.073f,.045f), Frame(.46f,.074f,.051f,.065f), Frame(.53f,.045f,.04f,.055f));
         return plagueTail = b.Finish("Sinuous plague tail");
     }
 

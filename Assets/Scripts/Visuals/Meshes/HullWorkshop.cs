@@ -39,6 +39,49 @@ public static partial class IndustrialMeshFactory
         }
     }
 
+    // Sweep elliptical frames along the keel. Each station specifies its own breadth,
+    // depth and lateral offset, so the shoulders can taper independently of the stern.
+    static Vector4 Frame(float y, float width, float depth, float offset = 0)
+        => new Vector4(offset, y, width, depth);
+
+    static void KeelSkin(Builder b, float z, int paint, params Vector4[] frames)
+    {
+        foreach (int end in new[] { 0, frames.Length - 1 })
+        {
+            Vector4 f = frames[end];
+            var cap = new Vector3[12];
+            for (int i = 0; i < cap.Length; i++)
+            {
+                float a = (end == 0 ? i : -i) * Mathf.PI / 6;
+                cap[i] = new Vector3(f.x + f.z * Mathf.Cos(a), f.y, z + f.w * Mathf.Sin(a));
+            }
+            b.Face(paint, cap);
+        }
+        for (int i = 1; i < frames.Length; i++)
+        {
+            Vector4 a = frames[i - 1], d = frames[i];
+            b.Surface(12, 1, (u, t) =>
+            {
+                Vector4 f = Vector4.Lerp(a, d, t);
+                float angle = u * Mathf.PI * 2;
+                return new Vector3(f.x + f.z * Mathf.Cos(angle), f.y, z + f.w * Mathf.Sin(angle));
+            }, paint);
+        }
+    }
+
+    // Four canted facets meet on a raised ridge. The underside closes the fold
+    // when the ship banks. Mirrored fins use the same outward-facing winding.
+    static void FoldedFin(Builder b, Vector3 root, Vector3 shoulder, Vector3 tip,
+        Vector3 heel, Vector3 ridge, int light, int shade)
+    {
+        Vector3[] rim = { root, shoulder, tip, heel };
+        if (Vector3.Cross(shoulder-root, tip-root).z > 0) System.Array.Reverse(rim);
+        for (int i = 0; i < rim.Length; i++)
+            b.Face(i % 2 == 0 ? light : shade, rim[i], rim[(i+1)%4], ridge);
+        System.Array.Reverse(rim);
+        b.Face(11, rim);
+    }
+
     static void Inlet(Builder b, float x, float y, float width, float height, float z, int paint = 6)
     {
         var shape = new[] { V(x - width * .5f, y - height * .3f), V(x - width * .35f, y - height * .5f), V(x + width * .35f, y - height * .5f), V(x + width * .5f, y - height * .3f), V(x + width * .5f, y + height * .5f), V(x - width * .5f, y + height * .5f) };
