@@ -36,6 +36,8 @@ public static class EnemyExpansion
     public static readonly Entry[] All = {
         new Entry(LevelId.Mushroom, typeof(PuffballDrifter), (int)CombatHullId.PuffballDrifter, .53f, false, IndustrialMeshFactory.BuildPuffballDrifter,
             new[] { new Vector3(0, .28f, -.40f) }, Array.Empty<Vector3>(), WavePartLibrary.PuffballDrifterParts),
+        new Entry(LevelId.Mushroom, typeof(BracketFan), (int)CombatHullId.BracketFan, .53f, false, IndustrialMeshFactory.BuildBracketFan,
+            new[] { new Vector3(-.18f, -.60f, -.16f), new Vector3(.20f, -.49f, -.17f) }, Array.Empty<Vector3>(), WavePartLibrary.BracketFanParts),
         new Entry(LevelId.Mushroom, typeof(SporeBell), (int)CombatHullId.SporeBell, .61f, false, IndustrialMeshFactory.SporeBellMesh,
             new[] { new Vector3(0f, -.59f, -.26f) }, Array.Empty<Vector3>(), WavePartLibrary.SporeBellParts),
         new Entry(LevelId.Mushroom, typeof(CapRicochet), (int)CombatHullId.CapRicochet, .44f, false, IndustrialMeshFactory.CapRicochetMesh,
