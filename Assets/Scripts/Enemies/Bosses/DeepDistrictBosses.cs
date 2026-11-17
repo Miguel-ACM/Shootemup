@@ -27,49 +27,129 @@ public sealed class CisternHeart : DistrictBoss
             OpenCards();
     }
 
-    // Sluice Crown / Flood Mark / The Cistern Overflows.
-    // The stationary caisson floods paired shores, then rolls the opening around the lake.
-    protected override IEnumerator Cards()
+    protected override IEnumerator Cards() => phaseThree ? Spillway() : phaseTwo ? Undertow() : PressureFront();
+
+    IEnumerator PrimePair(int pair, float seconds)
     {
-        int beat = 0;
-        while (true)
+        for (float t = 0; t < seconds;)
+        {
+            Cue(Muzzle(pair), seconds - t);
+            Cue(Muzzle(pair + 3), seconds - t);
+            if (!Holding) t += Time.deltaTime * LevelRun.EnemyTempoScale;
+            yield return null;
+        }
+    }
+
+    // The outlet pair punches a scalloped bow wave into the lake. The slower,
+    // darker backwash comes from the same mouths in the opposite direction.
+    IEnumerator PressureFront()
+    {
+        for (int beat = 0; ; beat++)
         {
             int pair = beat % 3;
-            int first = pair, second = pair + 3;
-            float warning = phaseThree ? .31f : .46f;
-            Cue(Muzzle(first), warning);
-            Cue(Muzzle(second), warning);
-            yield return Charge(Hull, WeaponPort(first), warning);
-            int lanes = Dense(phaseThree ? 15 : phaseTwo ? 12 : 9);
-            for (int i = 0; i < lanes; i++)
+            yield return PrimePair(pair, .48f);
+            float cant = 18 * Mathf.Sin(beat * .85f);
+            for (int echo = 0; echo < 2; echo++)
             {
-                float t = i / Mathf.Max(1f, lanes - 1);
-                float sweep = Mathf.Sin(beat * (phaseThree ? .79f : .53f)) * 22;
-                float a = Mathf.Lerp(phaseTwo ? -31 : -12, phaseTwo ? 124 : 104, t) + sweep;
-                float size = i % 4 == 0 ? .76f : .53f;
-                float speed = 2.05f + .72f * Mathf.Abs(t * 2 - 1);
-                for (int side = -1; side <= 1; side += 2)
+                int count = Mathf.Max(5, Dense(echo == 0 ? 15 : 10));
+                UseTone(echo == 0 ? HostileTone.Bright : HostileTone.Dark);
+                for (int h = 0; h < 2; h++)
                 {
-                    var origin = Muzzle(side < 0 ? first : second);
-                    var direction = CombatVisuals.Rotate(Vector2.down, side * a);
-                    var orb = Fire<GiantOrb>(origin, direction, speed, size, i == 0);
-                    if (phaseThree && (i + beat) % 3 == 0)
-                        orb.Pause(.76f, .43f, CombatRound.Turn.Rotate, side * 21, 3.7f);
-                    else if (phaseTwo && i % 2 == 0)
-                        orb.Fall(new Vector2(-side * .47f, -.29f));
+                    int side = h * 2 - 1;
+                    Vector3 port = Muzzle(pair + 3 * h);
+                    for (int i = 0; i < count; i++)
+                    {
+                        float t = (i + .5f) / count;
+                        float angle = side * Mathf.Lerp(-37, 101, t) + cant;
+                        float speed = 2.32f + .81f * Mathf.Sin(t * Mathf.PI) + .29f * Mathf.Cos(t * 4 * Mathf.PI);
+                        var axis = CombatVisuals.Rotate(echo == 0 ? Vector2.down : Vector2.up, angle);
+                        Fire<GiantOrb>(port, axis, speed, i % 4 == 0 ? .63f : .38f, i == 0)
+                            .Ramp(echo == 0 ? 1.32f : .84f, .84f, .53f);
+                    }
+                }
+                if (echo == 0) yield return Wait(Rest(.33f));
+            }
+            yield return Wait(Rest(.89f));
+        }
+    }
+
+    // Two fountains cross overhead. Gravity pulls the strings of bubbles back
+    // through the arena; moving from one side of a falling string to the other is the dodge.
+    IEnumerator Undertow()
+    {
+        for (int beat = 0; ; beat++)
+        {
+            int pair = 1 + beat % 2;
+            yield return PrimePair(pair, .48f);
+            int marks = Mathf.Max(7, Dense(17));
+            float tilt = Mathf.Sin(beat * 1.18f) * .54f;
+            for (int i = 0; i < marks; i++)
+            {
+                float t = i / (marks - 1f);
+                for (int h = 0; h < 2; h++)
+                {
+                    int side = h * 2 - 1;
+                    var port = Muzzle(pair + 3 * h);
+                    for (int stream = 0; stream < 2; stream++)
+                    {
+                        UseTone(stream == 0 ? HostileTone.Bright : HostileTone.Dark);
+                        Vector2 v = new Vector2(side * (-1.6f + 2.08f * t + stream * .68f) + tilt,
+                            2.72f + 1.48f * Mathf.Sin(t * Mathf.PI) - .89f * stream);
+                        Fire<GiantOrb>(port, v, v.magnitude, stream == 0 ? .46f : .34f, stream == 0 && i % 4 == 0)
+                            .Fall(new Vector2(-side * .12f, -1.82f - .23f * stream));
+                    }
+                }
+                yield return Wait(1.12f / marks);
+            }
+            yield return Charge(Hull, WeaponPort(6), .32f);
+            UseTone(HostileTone.Dark);
+            int crests = Mathf.Max(3, Dense(6));
+            for (int i=0; i<crests; i++)
+            {
+                float t=i/(crests-1f);
+                for (int side=-1; side<=1; side+=2)
+                    Fire<GiantOrb>(Muzzle(6), new Vector2(side*(.28f+.57f*t),1),
+                        WorldSpeed(5.3f+.52f*t), .37f, i==0 && side<0)
+                        .Fall(new Vector2(-side*.52f,-1.76f));
+            }
+            yield return Wait(Rest(.52f));
+        }
+    }
+
+    // A lock gate builds up head from both banks. Its teeth stop along a
+    // chevron, then the breach travels out from the gap, row after row.
+    IEnumerator Spillway()
+    {
+        for (int beat = 0; ; beat++)
+        {
+            float gate = 1.93f * Mathf.Sin(beat * .88f);
+            int count = Mathf.Max(8, Dense(20));
+            for (int row = 0; row < 3; row++)
+            {
+                yield return PrimePair(row, row == 0 ? .43f : .16f);
+                UseTone(row == 1 ? HostileTone.Dark : HostileTone.Bright);
+                for (int i = 0; i < count; i++)
+                {
+                    float x = Mathf.Lerp(Camera.LeftLimit + .18f, Camera.RightLimit - .18f, (i + .5f) / count);
+                    if (Mathf.Abs(x - gate) < .83f) continue;
+                    int h = x < gate ? 0 : 1;
+                    Vector3 port = Muzzle(row + h * 3);
+                    float bank = Mathf.Abs(x - gate) / (h == 0 ? gate - Camera.LeftLimit : Camera.RightLimit - gate);
+                    Vector2 aim = new Vector2(x, LakeCenter + 1.36f - .89f * row + 1.16f * bank) - (Vector2)port;
+                    float speed = WorldSpeed(Mathf.Max(.22f, aim.magnitude / .585f));
+                    Fire<GiantOrb>(port, aim, speed, i % 4 == 0 ? .59f : .35f, i == 0 || i == count - 1)
+                        .Pause(.76f, .43f + .42f * bank, CombatRound.Turn.Down, 5 * Mathf.Cos(beat * .88f), 4.65f / speed);
                 }
             }
-            if (phaseThree || phaseTwo && beat % 2 == 1)
+            yield return Charge(Hull, WeaponPort(6), .38f);
+            int spray = Mathf.Max(3, Dense(8));
+            for (int i = 0; i < spray; i++)
             {
-                Cue(Muzzle(6), .23f);
-                yield return Wait(Rest(.23f));
-                int count = Dense(7);
-                for (int i = 0; i < count; i++)
-                    Fire<GiantOrb>(Muzzle(6), CombatVisuals.Rotate(Vector2.up, (i - (count - 1) * .5f) * 25), 3.1f, .42f, i == 0)
-                        .Fall(new Vector2(0, -1.45f));
+                float angle = Mathf.Lerp(-67, 67, i / (spray - 1f));
+                Fire<GiantOrb>(Muzzle(6), CombatVisuals.Rotate(Vector2.up, angle), 3.65f, .43f, i == 0)
+                    .Fall(Vector2.down * 1.39f);
             }
-            beat++;
-            yield return Wait(Rest(phaseThree ? .39f : phaseTwo ? .58f : .79f));
+            yield return Wait(Rest(.86f));
         }
     }
 }
