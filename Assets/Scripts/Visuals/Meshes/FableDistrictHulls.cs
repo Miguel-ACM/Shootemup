@@ -68,13 +68,33 @@ public static partial class IndustrialMeshFactory
     }
     public static Mesh MyceliumLancerMesh()
     {
-        if(fableLancer!=null)return fableLancer;var b=new Builder();
-        BevelArmor(b,new[]{V(0,-1.05f),V(.19f,-.46f),V(.78f,.18f),V(.83f,.61f),V(.28f,.38f),V(0,.73f),V(-.28f,.38f),V(-.83f,.61f),V(-.78f,.18f),V(-.19f,-.46f)},.24f,15);
-        FableVein(b,new[]{new Vector3(0,-.78f,-.19f),new Vector3(0,.35f,-.19f)},.07f,8);
-        foreach(int s in new[]{-1,1}) FableVein(b,new[]{new Vector3(s*.10f,-.20f,-.19f),new Vector3(s*.40f,.18f,-.19f),new Vector3(s*.71f,.43f,-.17f)},.045f,8);
-        CutStone(b,new Vector3(0,.20f,-.24f),new Vector3(.19f,.28f,.12f),5,6);
-        FablePort(b,0,-.86f,.10f,8);
-        return fableLancer=b.Finish("Mycelium lancer / branching spear");
+        if (fableLancer != null) return fableLancer;
+        var b = new Builder();
+        // A long ivory spine forks into branching antlers and amber lanterns.
+        KeelSkin(b,0,14,Frame(-.97f,.04f,.06f),Frame(-.50f,.14f,.13f),Frame(-.12f,.25f,.20f),
+            Frame(.32f,.20f,.17f),Frame(.71f,.07f,.09f));
+        for(int s=-1;s<=1;s+=2)
+        {
+            Vector3 A(float x,float y,float z)=>new Vector3(s*x,y,z);
+            b.Sweep(A(.10f,-.43f,-.06f),A(.22f,-.07f,-.24f),A(.65f,.08f,-.23f),A(.77f,.76f,-.08f),.14f,.11f,15,false,10);
+            b.Sweep(A(.40f,.03f,-.14f),A(.43f,.21f,-.24f),A(.35f,.35f,-.17f),A(.40f,.60f,-.11f),.065f,.066f,14,false,7);
+            b.Sweep(A(.63f,.34f,-.14f),A(.74f,.40f,-.18f),A(.86f,.38f,-.13f),A(.96f,.52f,-.10f),.053f,.062f,13,false,6);
+            b.Pearl(A(.77f,.73f,-.09f),new Vector3(.125f,.19f,.10f),13,12,7);
+            b.Pearl(A(.40f,.60f,-.12f),new Vector3(.075f,.12f,.08f),7,10,6);
+        }
+        CutStone(b,new Vector3(0,.04f,-.19f),new Vector3(.14f,.31f,.12f),8,8);
+        MothBarrel(b,new Vector3(0,-.86f,-.24f),.105f,.51f);
+        for(int s=-1;s<=1;s+=2)
+        {
+            Vector3 A(float x,float y,float z)=>new Vector3(s*x,y,z);
+            FoldedFin(b,A(.07f,-.44f,-.11f),A(.42f,.07f,-.24f),A(.82f,.63f,-.09f),
+                A(.20f,.29f,-.20f),A(.31f,.04f,-.31f),8,2);
+            for(int i=0;i<3;i++)
+                CutBlade(b,new[]{A(.15f,-.24f+i*.10f,-.26f),A(.28f+i*.10f,.04f+i*.14f,-.32f),
+                    A(.36f+i*.15f,.19f+i*.16f,-.24f)},.028f,.024f,13);
+        }
+        CutStone(b,new Vector3(0,-.52f,-.21f),new Vector3(.14f,.17f,.09f),13,6);
+        return fableLancer = b.Finish("MyceliumLancer");
     }
     public static Mesh DreamPainterMesh()
     {
