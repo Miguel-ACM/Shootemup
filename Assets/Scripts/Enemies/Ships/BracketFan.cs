@@ -8,9 +8,22 @@ public sealed class BracketFan : DistrictEnemy
         hullScale = .53f;
     }
 
+    static int GillSide(int beat) => (beat & 1) == 0 ? -1 : 1;
+
+    protected override void PrepareFire(float seconds)
+    {
+        base.PrepareFire(seconds);
+        firingCue.ClearWarning();
+        if (!IsPreparing) return;
+        int side = GillSide(volley + 1);
+        var gill = Muzzle(side < 0 ? 0 : 1);
+        Cue(gill, seconds);
+        PointWeapon(gill, CombatVisuals.Rotate(Vector2.down, side * 34));
+    }
+
     protected override void Attack()
     {
-        int side = (volley & 1) == 0 ? -1 : 1;
+        int side = GillSide(volley);
         Vector3 gill = Muzzle(side < 0 ? 0 : 1);
         int count = Dense(4);
         for (int i = 0; i < count; i++)
@@ -67,7 +80,7 @@ public static partial class WavePartLibrary
             -.78f, 1.32f, -.53f, .89f, .13f, .76f, .46f, .63f, .27f, .42f, -.44f, -.28f),
         DeepPart("Shelves on the bank", nameof(BracketFan), WaveShape.Rake, 3, 6.2f, 5, new[] { .31f, .56f },
             -1.4f, .48f, -.72f, .51f, -.32f, .62f, .12f, .80f, .64f, .83f, 1.4f, .82f),
-        DeepPart("Around the trunk", nameof(BracketFan), WaveShape.Chevron, 3, 6.4f, 8, new[] { .24f, .47f, .70f },
-            .29f, 1.34f, .20f, .93f, .42f, .74f, .52f, .52f, -.08f, .40f, -1.4f, .44f),
+        DeepPart("Around the trunk", nameof(BracketFan), WaveShape.Train, 3, 6.4f, 8, new[] { .24f, .47f, .70f },
+            .23f, 1.40f, .28f, .96f, .45f, .75f, .30f, .54f, -.27f, .43f, -1.48f, .44f),
     };
 }

@@ -8,11 +8,15 @@ public sealed class InkQuill : DistrictEnemy
         hullScale = .54f;
     }
 
+    static float Slant(int beat) => (beat & 1) == 0 ? -.37f : .37f;
+    protected override Vector2 CueAxis => new Vector2(Slant(volley + 1), -1);
+    protected override HostileTone DefaultTone => HostileTone.Dark;
+
     protected override void Attack()
     {
         // A stroke starts with a heavy dot. The lighter marks follow the same slant
         // at different speeds, curling into a short comma as the formation passes.
-        float slant = (volley & 1) == 0 ? -.37f : .37f;
+        float slant = Slant(volley);
         int marks = Dense(5);
         Vector3 nib = Muzzle();
         for (int i = 0; i < marks; i++)
@@ -41,9 +45,11 @@ public static partial class IndustrialMeshFactory
             for (int side = -1; side <= 1; side += 2)
             {
                 Vector3 root = Spine(t);
-                Vector3 reach = new Vector3(side * breadth * (side > 0 ? 1f : .68f), .29f, .11f);
-                FoldedFin(b, root, root + reach * .56f, root + reach + Vector3.up * .12f,
-                    Spine(t + .23f), root + reach * .50f + Vector3.back * .09f, side > 0 ? 7 : 4, i % 2 == 0 ? 15 : 5);
+                Vector3 reach = new Vector3(side * breadth * (side > 0 ? 1.12f : .76f), .23f, .055f);
+                Vector3 heel = root + reach * .84f + Vector3.down * .13f;
+                Vector3 crest = root + reach + Vector3.up * .22f;
+                FoldedFin(b, root, heel, crest, Spine(t + .25f),
+                    root + reach * .55f + Vector3.back * .08f, side > 0 ? 7 : 15, side > 0 ? 5 : 4);
             }
         }
         CutBlade(b, new[] { Spine(0), Spine(.54f), Spine(1) }, .052f, .048f, 15);

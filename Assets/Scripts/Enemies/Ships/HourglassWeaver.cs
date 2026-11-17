@@ -8,6 +8,13 @@ public sealed class HourglassWeaver : DistrictEnemy
         hullScale = .61f;
     }
 
+    protected override void PrepareFire(float seconds)
+    {
+        base.PrepareFire(seconds);
+        PointWeapon(Muzzle(0), new Vector2(-1, -.2f));
+        PointWeapon(Muzzle(1), new Vector2(1, -.2f));
+    }
+
     protected override void Attack()
     {
         // Both shoulders mark the edges of one open lane. The outside grains release last.

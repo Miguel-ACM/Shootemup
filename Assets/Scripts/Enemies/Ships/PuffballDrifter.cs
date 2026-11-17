@@ -8,6 +8,9 @@ public sealed class PuffballDrifter : DistrictEnemy
         hullScale = .53f;
     }
 
+    protected override Vector2 CueAxis => Vector2.up;
+    protected override HostileTone DefaultTone => HostileTone.Dark;
+
     protected override void Attack()
     {
         int pairs = Dense(2);
