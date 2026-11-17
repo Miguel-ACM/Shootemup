@@ -26,9 +26,7 @@ public static partial class IndustrialMeshFactory
                 ModelOverflowBell(b);
                 break;
             case CombatHullId.PipeSkater:
-                BevelArmor(b, new[] { V(0, -1.10f), V(.32f, -.46f), V(.86f, .43f), V(.69f, .9f), V(.23f, .62f), V(0, .88f), V(-.23f, .62f), V(-.69f, .9f), V(-.86f, .43f), V(-.32f, -.46f) }, .24f, 14);
-                CutStone(b, new Vector3(0, .17f, -.21f), new Vector3(.22f, .42f, .12f), 9, 5);
-                Barrel(b, 0, -.42f, .63f, .18f);
+                ModelPipeSkater(b);
                 break;
             case CombatHullId.GrateKeeper:
                 BevelArmor(b, new[] { V(-1.12f, -.45f), V(-.76f, -.95f), V(.76f, -.95f), V(1.12f, -.45f), V(.91f, .82f), V(0, 1.02f), V(-.91f, .82f) }, .54f, 2);
@@ -177,6 +175,32 @@ public static partial class IndustrialMeshFactory
         b.Halo(hatch,.34f,.065f,Vector3.one,Quaternion.identity,13,20);
         b.Pearl(hatch,new Vector3(.285f,.285f,.11f),8,14,7);
         for(int i=-1;i<=1;i++) b.Box(hatch+new Vector3(i*.13f,0,-.12f),new Vector3(.040f,.43f,.04f),6);
+    }
+
+    static void ModelPipeSkater(Builder b)
+    {
+        // Water-strider chassis. Four long articulated skates leave open water between the feet.
+        KeelSkin(b,0,8,Frame(-.88f,.08f,.07f),Frame(-.37f,.22f,.19f),Frame(.02f,.29f,.23f),
+            Frame(.46f,.19f,.14f),Frame(.79f,.03f,.04f));
+        for(int s=-1;s<=1;s+=2)
+        {
+            for(int leg=0;leg<2;leg++)
+            {
+                float y=leg==0?-.18f:.28f, end=leg==0?-.60f:.86f;
+                var knee=new Vector3(s*(leg==0?.63f:.56f),y+.25f,-.16f);
+                CutBlade(b,new[]{new Vector3(s*.13f,y,-.11f),knee,new Vector3(s*.94f,end+.05f,0)},.087f,.073f,13);
+                b.Pearl(knee,new Vector3(.10f,.11f,.08f),6,8,5);
+                b.Pearl(new Vector3(s*.94f,end,0),new Vector3(.082f,.22f,.06f),8,8,5);
+            }
+        }
+        b.Pearl(new Vector3(0,-.16f,-.17f),new Vector3(.16f,.30f,.13f),9,12,6);
+        MothBarrel(b,new Vector3(0,-1.05f,-.23f),.095f,.51f);
+        for(int side=-1;side<=1;side+=2)
+        {
+            b.Pearl(new Vector3(side*.13f,.25f,-.14f),new Vector3(.11f,.29f,.105f),14,12,6);
+            CutBlade(b,new[]{new Vector3(side*.18f,.34f,-.24f),new Vector3(side*.24f,.18f,-.20f),
+                new Vector3(side*.50f,.21f,-.12f)},.044f,.03f,1);
+        }
     }
 
     public static Mesh PlagueTail()
