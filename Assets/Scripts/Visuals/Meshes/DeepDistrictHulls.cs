@@ -45,7 +45,7 @@ public static partial class IndustrialMeshFactory
                 ModelSentryCube(b);
                 break;
             case CombatHullId.RamCube:
-                BuildDeepCube(b, id);
+                ModelRamCube(b);
                 break;
             case CombatHullId.RelayCarrier:
                 BevelArmor(b, new[] { V(-1.12f, -.55f), V(-.62f, -.78f), V(0, -.42f), V(.62f, -.78f), V(1.12f, -.55f), V(.76f, .81f), V(-.76f, .81f) }, .42f, 6);
@@ -261,6 +261,23 @@ public static partial class IndustrialMeshFactory
         CutStone(b,new Vector3(.31f,.39f,-.49f),new Vector3(.11f,.16f,.09f),9,8);
     }
 
+    static void ModelRamCube(Builder b)
+    {
+        // A hydraulic press with two protective jaws and an exposed orange piston.
+        b.Box(Vector3.zero,new Vector3(1.60f,1.52f,.40f),11,6);
+        for(int s=-1;s<=1;s+=2)
+        {
+            BevelArmor(b,new[]{V(s*.40f,-.80f),V(s*.80f,-.80f),V(s*.80f,.80f),V(s*.57f,.80f),V(s*.40f,.56f)},.51f,1,-.13f);
+            b.Box(new Vector3(s*.55f,.53f,-.41f),new Vector3(.42f,.23f,.10f),0);
+            DeepPort(b,new Vector3(s*.57f,-.13f,-.45f),.21f,6);
+        }
+        b.Box(new Vector3(0,.46f,-.28f),new Vector3(.83f,.51f,.39f),5,6);
+        KeelSkin(b,-.30f,13,Frame(-.48f,.15f,.14f),Frame(-.43f,.21f,.18f),Frame(.38f,.21f,.18f));
+        for(int k=0;k<4;k++)
+            b.Box(new Vector3(0,-.33f+k*.15f,-.42f),new Vector3(.45f,.074f,.12f),6);
+        b.Box(new Vector3(0,-.63f,-.31f),new Vector3(.87f,.32f,.36f),1,0);
+    }
+
     public static Mesh PlagueTail()
     {
         if (plagueTail != null) return plagueTail;
@@ -275,30 +292,6 @@ public static partial class IndustrialMeshFactory
         b.Drum(p, radius, .25f, paint, 10, 6);
         b.Drum(p + Vector3.back * .147f, radius * .70f, .04f, 11, 10, paint);
         CutHalo(b, p + Vector3.back * .17f, radius * .79f, radius * .09f, Vector3.one, Quaternion.identity, paint, 10);
-    }
-
-    static void BuildDeepCube(Builder b, CombatHullId id)
-    {
-        BevelArmor(b, new[] { V(-.81f, -.81f), V(.81f, -.81f), V(.81f, .81f), V(-.81f, .81f) }, .60f, 6);
-        int panel = id == CombatHullId.TransitCube ? 0 : id == CombatHullId.FuseCube ? 13 : 5;
-        b.Box(new Vector3(0, 0, -.35f), new Vector3(1.30f, 1.30f, .22f), panel, 11);
-        foreach (int corner in new[] { -1, 1 })
-        {
-            b.Box(new Vector3(corner * .59f, 0, -.37f), new Vector3(.14f, 1.23f, .17f), 1, 0);
-            b.Box(new Vector3(0, corner * .59f, -.38f), new Vector3(1.23f, .14f, .17f), 1, 0);
-        }
-        if (id == CombatHullId.TransitCube)
-            b.Box(new Vector3(0, 0, -.49f), new Vector3(.53f, .53f, .10f), 11, 0);
-        else if (id == CombatHullId.FuseCube)
-            CutStone(b, new Vector3(0, 0, -.49f), new Vector3(.40f, .40f, .19f), 10, 4, .79f);
-        else if (id == CombatHullId.SentryCube)
-            DeepPort(b, new Vector3(0, -.43f, -.47f), .28f, 3);
-        else
-        {
-            DeepPort(b, new Vector3(-.57f, -.13f, -.45f), .24f, 3);
-            DeepPort(b, new Vector3(.57f, -.13f, -.45f), .24f, 3);
-            b.Box(new Vector3(0, 0, -.55f), new Vector3(.42f, 1.24f, .22f), 6, 11);
-        }
     }
 
     static void BuildCisternHeart(Builder b)
