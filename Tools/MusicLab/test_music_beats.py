@@ -9,14 +9,14 @@ from analyze import MUSIC, OUTPUT, SR, score_features
 
 
 class MusicPulseTest(unittest.TestCase):
-    def check_recording(self, name, bpm, beats, downbeats):
+    def check_recording(self, name, bpm, beats, downbeats, sample_rate=44100):
         track = MUSIC / (name + ".mp3")
         pcm = subprocess.check_output(["ffmpeg", "-v", "error", "-i", str(track),
                                        "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"])
         samples = np.frombuffer(pcm, dtype="<f4")
         rebuilt = score_features(track, samples, len(samples) / SR)
         shipped = json.loads((OUTPUT / (name + ".json")).read_text(encoding="utf-8"))
-        self.assertAlmostEqual(shipped["mp3Lead"], 1105 / 44100, places=6)
+        self.assertAlmostEqual(shipped["mp3Lead"], 1105 / sample_rate, places=6)
         for sheet in (rebuilt, shipped):
             self.assertAlmostEqual(sheet["bpm"], bpm, delta=1)
             for key, attacks in (("beats", beats), ("downbeats", downbeats)):
@@ -49,6 +49,11 @@ class MusicPulseTest(unittest.TestCase):
         # include the intervening drum attacks rather than alternating off beat.
         self.check_recording("void", 170, (45.289, 45.642, 46.700, 80.581, 81.994, 120.464, 161.050),
                              (45.289,))
+
+    def test_core(self):
+        # Include quarter-note attacks between the stronger dotted-quarter accents.
+        self.check_recording("core", 175, (45.257, 45.596, 65.142, 65.820, 125.485, 150.169),
+                             (21.940, 43.880, 109.711, 153.601), sample_rate=48000)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,8 @@ import { barGrid, sameSpan, sectionKeys, validSpan } from './dist/markers.mjs';
 const lab = path.dirname(fileURLToPath(import.meta.url));
 const resources = path.resolve(lab, '../../Assets/Resources');
 const files = (await readdir(path.join(resources, 'Music'))).filter(name => name.endsWith('.mp3'));
-const districts = ['fields', 'snow', 'city', 'desert', 'thunder', 'tunnel', 'candyland', 'space', 'underwater', 'hell', 'heaven', 'void'];
+const districts = ['fields', 'snow', 'city', 'desert', 'thunder', 'tunnel', 'mushroom', 'candyland',
+    'space', 'underwater', 'sewers', 'hell', 'heaven', 'core', 'dream', 'void'];
 const names = { fields: 'Plains', stage1bossOST: 'Stage 1 Boss', greenlandsOST: 'Greenlands', stageComplete: 'Stage Complete' };
 const tracks = [...new Set([...districts, ...files.map(file => path.basename(file, '.mp3'))])]
     .filter(id => files.includes(id + '.mp3'))

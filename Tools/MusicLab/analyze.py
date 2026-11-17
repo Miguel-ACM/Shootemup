@@ -354,10 +354,10 @@ def write_meta(path, folder=False):
 
 def score_features(path, samples, duration):
     flux, energies = extract(samples)
-    # Space, Tunnel and Void have a strong dotted-quarter rhythm. Keep their
+    # Space, Tunnel, Core and Void have a strong dotted-quarter rhythm. Keep their
     # quarter-note pulse so the boss kick does not follow the syncopated accents.
     hints = {"fields": 169, "greenlandsOST": 140, "stage1bossOST": 172,
-             "space": 173.5, "tunnel": 170, "void": 170}
+             "space": 173.5, "tunnel": 170, "core": 175, "void": 170}
     beats, pulse_confidence, onset = track_beats(flux, hints.get(path.stem))
     beats = beats[beats < duration]
     pc, low = bar_features(samples, beats, duration)
