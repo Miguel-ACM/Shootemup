@@ -17,12 +17,34 @@ public static partial class IndustrialMeshFactory
 
     public static Mesh SporeBellMesh()
     {
-        if(fableBell!=null)return fableBell; var b=new Builder();
-        BevelArmor(b,new[]{V(-.76f,.12f),V(-.62f,.55f),V(-.31f,.79f),V(0,.86f),V(.31f,.79f),V(.62f,.55f),V(.76f,.12f),V(.48f,-.02f),V(.25f,.07f),V(0,-.10f),V(-.25f,.07f),V(-.48f,-.02f)},.28f,8);
-        CutStone(b,new Vector3(0,-.26f,-.13f),new Vector3(.32f,.40f,.22f),15,8);
-        FablePort(b,0,-.59f,.18f,8);
-        foreach(int s in new[]{-1,1}) CutStone(b,new Vector3(s*.37f,.45f,-.22f),new Vector3(.16f,.11f,.05f),15,6);
-        return fableBell=b.Finish("Spore bell / domed dropper");
+        if (fableBell != null) return fableBell;
+        var b = new Builder();
+        // A pleated inkcap umbrella over a pendant spore sac. The rolled front lip
+        // reveals pale gills from above and leaves the drop valve visible.
+        b.Pearl(new Vector3(0,-.25f,-.05f),new Vector3(.34f,.46f,.25f),7,16,9);
+        b.Surface(48,8,(u,t)=>{
+            float a=-u*Mathf.PI*2, r=.024f+.976f*t;
+            float scallop=1-.075f*r*Mathf.Cos(a*12);
+            return new Vector3(.80f*r*scallop*Mathf.Cos(a),.28f+.60f*r*scallop*Mathf.Sin(a),
+                -.13f-.53f*(1-r*r)+.052f*r*Mathf.Cos(12*a));
+        },7);
+        for(int i=0;i<12;i++)
+        {
+            float a=(i+.5f)*Mathf.PI/6, dx=Mathf.Cos(a), dy=Mathf.Sin(a);
+            CutBlade(b,new[]{new Vector3(dx*.10f,.28f+dy*.08f,-.65f),new Vector3(dx*.51f,.28f+dy*.38f,-.45f),
+                new Vector3(dx*.83f,.28f+dy*.62f,-.16f)},.042f,.035f,i%3==0?15:4);
+            if(dy<0) b.Sweep(new Vector3(dx*.24f,-.17f,-.13f),new Vector3(dx*.49f,-.38f,-.21f),
+                new Vector3(dx*.75f,.23f+dy*.60f,-.19f),new Vector3(dx*.82f,.28f+dy*.60f,-.15f),.046f,.05f,15,false,6);
+        }
+        b.Pearl(new Vector3(0,.28f,-.62f),new Vector3(.17f,.16f,.09f),7,12,6);
+        DeepPort(b,new Vector3(0,-.59f,-.09f),.18f,7);
+        for(int i=0;i<7;i++)
+        {
+            float angle=(i+.34f)*Mathf.PI*2/7;
+            b.Pearl(new Vector3(.49f*Mathf.Cos(angle),.28f+.37f*Mathf.Sin(angle),-.45f),
+                new Vector3(.061f,.060f,.048f),i%3==0?13:14,8,4);
+        }
+        return fableBell = b.Finish("SporeBell");
     }
     public static Mesh CapRicochetMesh()
     {
