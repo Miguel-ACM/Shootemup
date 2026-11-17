@@ -36,6 +36,8 @@ public static partial class IndustrialMeshFactory
                 DeepPort(b, new Vector3(.64f, -.60f, -.39f), .34f, 13);
                 break;
             case CombatHullId.TransitCube:
+                ModelTransitCube(b);
+                break;
             case CombatHullId.FuseCube:
             case CombatHullId.SentryCube:
             case CombatHullId.RamCube:
@@ -201,6 +203,24 @@ public static partial class IndustrialMeshFactory
             CutBlade(b,new[]{new Vector3(side*.18f,.34f,-.24f),new Vector3(side*.24f,.18f,-.20f),
                 new Vector3(side*.50f,.21f,-.12f)},.044f,.03f,1);
         }
+    }
+
+    static void ModelTransitCube(Builder b)
+    {
+        // A sealed freight block. Two diagonal load straps lock into cast corner shoes.
+        BevelArmor(b,new[]{V(-.81f,-.64f),V(-.64f,-.81f),V(.64f,-.81f),V(.81f,-.64f),V(.81f,.64f),V(.64f,.81f),V(-.64f,.81f),V(-.81f,.64f)},.64f,0);
+        for(int s=-1;s<=1;s+=2)
+        {
+            b.Sweep(new Vector3(s*-.63f,-.62f,-.32f),new Vector3(s*-.25f,-.24f,-.42f),
+                new Vector3(s*.25f,.24f,-.42f),new Vector3(s*.63f,.62f,-.32f),.115f,.06f,6,false,4);
+            for(int j=-1;j<=1;j+=2)
+            {
+                b.Box(new Vector3(s*.61f,j*.62f,-.29f),new Vector3(.39f,.36f,.20f),1,0);
+                b.Drum(new Vector3(s*.60f,j*.62f,-.41f),.077f,.04f,11,6);
+            }
+        }
+        CutStone(b,new Vector3(0,0,-.41f),new Vector3(.30f,.29f,.085f),0,6);
+        b.Box(new Vector3(0,.01f,-.50f),new Vector3(.30f,.075f,.035f),13);
     }
 
     public static Mesh PlagueTail()
