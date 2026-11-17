@@ -23,10 +23,7 @@ public static partial class IndustrialMeshFactory
                 ModelSluiceBarge(b);
                 break;
             case CombatHullId.OverflowBell:
-                b.Ball(new Vector3(0, .14f, 0), new Vector3(.78f, .82f, .46f), 13);
-                CutHalo(b, new Vector3(0, 0, -.27f), .65f, .105f, new Vector3(1, .76f, 1), Quaternion.identity, 2, 12);
-                DeepPort(b, new Vector3(-.77f, .21f, -.17f), .26f, 6);
-                DeepPort(b, new Vector3(.77f, .21f, -.17f), .26f, 6);
+                ModelOverflowBell(b);
                 break;
             case CombatHullId.PipeSkater:
                 BevelArmor(b, new[] { V(0, -1.10f), V(.32f, -.46f), V(.86f, .43f), V(.69f, .9f), V(.23f, .62f), V(0, .88f), V(-.23f, .62f), V(-.69f, .9f), V(-.86f, .43f), V(-.32f, -.46f) }, .24f, 14);
@@ -162,6 +159,24 @@ public static partial class IndustrialMeshFactory
             Inlet(b,side*.29f,.69f,.32f,.27f,-.26f);
         }
         b.Box(new Vector3(0,.42f,-.47f),new Vector3(.97f,.13f,.065f),6);
+    }
+
+    static void ModelOverflowBell(Builder b)
+    {
+        // A riveted diving bell suspended between two return elbows.
+        b.Pearl(new Vector3(0,.02f,0),new Vector3(.65f,.77f,.44f),13,20,10);
+        for(int s=-1;s<=1;s+=2)
+        {
+            b.Sweep(new Vector3(s*.34f,-.35f,-.17f),new Vector3(s*.72f,-.65f,-.24f),
+                new Vector3(s*1.04f,-.19f,-.17f),new Vector3(s*.77f,.21f,-.18f),.12f,.13f,8,false,10);
+            DeepPort(b,new Vector3(s*.77f,.21f,-.18f),.21f,13);
+            CutBlade(b,new[]{new Vector3(s*.28f,-.70f,-.12f),new Vector3(s*.40f,-.14f,-.40f),
+                new Vector3(s*.32f,.41f,-.35f),new Vector3(s*.13f,.70f,-.13f)},.066f,.04f,6);
+        }
+        var hatch=new Vector3(0,.05f,-.39f);
+        b.Halo(hatch,.34f,.065f,Vector3.one,Quaternion.identity,13,20);
+        b.Pearl(hatch,new Vector3(.285f,.285f,.11f),8,14,7);
+        for(int i=-1;i<=1;i++) b.Box(hatch+new Vector3(i*.13f,0,-.12f),new Vector3(.040f,.43f,.04f),6);
     }
 
     public static Mesh PlagueTail()
