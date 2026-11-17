@@ -139,13 +139,23 @@ public static partial class IndustrialMeshFactory
     }
     public static Mesh PaperKiteMesh()
     {
-        if(fableKite!=null)return fableKite;var b=new Builder();
-        BevelArmor(b,new[]{V(0,-1.05f),V(.82f,.16f),V(0,.83f),V(-.82f,.16f)},.12f,15);
-        b.Prism(new[]{V(0,-.91f),V(.72f,.16f),V(0,.68f)},.055f,5,new Vector3(0,0,-.10f),5);
-        FableVein(b,new[]{new Vector3(0,-.92f,-.17f),new Vector3(0,.73f,-.17f)},.032f,11);
-        FableVein(b,new[]{new Vector3(-.68f,.16f,-.16f),new Vector3(0,.05f,-.17f),new Vector3(.68f,.16f,-.16f)},.03f,11);
-        FablePort(b,0,-.85f,.10f,13);
-        return fableKite=b.Finish("Paper kite / folded diamond");
+        if (fableKite != null) return fableKite;
+        var b = new Builder();
+        // An origami crane. Broad paper valleys lead into a crooked neck and long beak.
+        for(int s=-1;s<=1;s+=2)
+        {
+            Vector3 A(float x,float y,float z)=>new Vector3(s*x,y,z);
+            FoldedFin(b,A(.06f,-.32f,-.08f),A(.42f,.27f,-.34f),A(1.07f,.83f,-.02f),
+                A(.77f,-.08f,.07f),A(.54f,.15f,-.29f),15,4);
+            FoldedFin(b,A(.12f,-.25f,-.09f),A(.79f,-.09f,.06f),A(.57f,-.40f,-.04f),
+                A(.24f,-.48f,-.09f),A(.37f,-.26f,-.21f),13,1);
+        }
+        FoldedFin(b,new Vector3(-.23f,-.22f,-.14f),new Vector3(-.26f,.31f,-.10f),new Vector3(.13f,.98f,-.17f),
+            new Vector3(.22f,.01f,-.14f),new Vector3(0,.13f,-.39f),15,7);
+        CutBlade(b,new[]{new Vector3(0,.11f,-.20f),new Vector3(-.22f,-.41f,-.37f),new Vector3(-.13f,-.65f,-.43f),new Vector3(0,-.85f,-.22f)},.14f,.09f,15);
+        b.Prism(new[]{V(-.19f,-.59f),V(.02f,-.62f),V(0,-.85f)},.075f,13,new Vector3(0,0,-.24f));
+        b.Drum(new Vector3(-.13f,-.55f,-.46f),.050f,.032f,11,6);
+        return fableKite = b.Finish("PaperKite");
     }
     public static Mesh CrescentDancerMesh()
     {
