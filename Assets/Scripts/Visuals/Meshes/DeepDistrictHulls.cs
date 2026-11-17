@@ -51,9 +51,7 @@ public static partial class IndustrialMeshFactory
                 ModelRelayCarrier(b);
                 break;
             case CombatHullId.RivetCutter:
-                BevelArmor(b, new[] { V(0, -1.12f), V(.41f, -.62f), V(1.02f, .52f), V(.73f, .95f), V(.28f, .40f), V(-.27f, .69f), V(-.93f, .68f), V(-.76f, .13f), V(-.34f, -.50f) }, .34f, 6);
-                CutStone(b, new Vector3(-.08f, .12f, -.27f), new Vector3(.39f, .38f, .19f), 5, 4);
-                Barrel(b, 0, -.55f, .48f, .17f);
+                ModelRivetCutter(b);
                 break;
             case CombatHullId.PressWarden:
                 BevelArmor(b, new[] { V(-1.1f, -.72f), V(-.47f, -.82f), V(-.35f, -.24f), V(.35f, -.24f), V(.47f, -.82f), V(1.1f, -.72f), V(.88f, .65f), V(.52f, 1.02f), V(-.52f, 1.02f), V(-.88f, .65f) }, .47f, 6);
@@ -287,6 +285,26 @@ public static partial class IndustrialMeshFactory
         }
         CutStone(b,new Vector3(0,.62f,-.22f),new Vector3(.41f,.24f,.18f),1,8);
         CutStone(b,new Vector3(0,.55f,-.36f),new Vector3(.24f,.15f,.09f),9,8);
+    }
+
+    static void ModelRivetCutter(Builder b)
+    {
+        // A circular cutting head rides an articulated offset arm beside the nose gun.
+        KeelSkin(b,0,0,Frame(-1.01f,.08f,.10f),Frame(-.58f,.24f,.18f),Frame(.12f,.36f,.24f),
+            Frame(.56f,.28f,.21f,.09f),Frame(.90f,.10f,.08f,.15f));
+        var hub=new Vector3(-.50f,.14f,-.16f);
+        b.Drum(hub,.43f,.10f,6,18,11);
+        for(int i=0;i<12;i++)
+        {
+            float a=i*Mathf.PI/6;
+            Vector2 Tooth(float angle,float r)=>V(hub.x+r*Mathf.Cos(angle),hub.y+r*Mathf.Sin(angle));
+            b.Prism(new[]{Tooth(a,.34f),Tooth(a+.48f,.34f),Tooth(a+.56f,.51f)},.085f,1,new Vector3(0,0,-.16f));
+        }
+        CutBlade(b,new[]{new Vector3(.09f,.51f,-.19f),new Vector3(-.23f,.47f,-.32f),hub+Vector3.back*.17f},.14f,.10f,3);
+        b.Drum(hub+Vector3.back*.17f,.134f,.12f,13,8);
+        FoldedFin(b,new Vector3(.12f,.53f,0),new Vector3(.55f,.79f,.03f),new Vector3(.85f,.93f,.08f),
+            new Vector3(.40f,-.35f,-.06f),new Vector3(.40f,.31f,-.23f),1,4);
+        MothBarrel(b,new Vector3(0,-1.03f,-.25f),.12f,.58f);
     }
 
     public static Mesh PlagueTail()
