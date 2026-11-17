@@ -17,9 +17,7 @@ public static partial class IndustrialMeshFactory
                 ModelPlagueMote(b);
                 break;
             case CombatHullId.SiltLeech:
-                BevelArmor(b, new[] { V(-1, .38f), V(-.7f, -.73f), V(0, -1.02f), V(.7f, -.73f), V(1, .38f), V(.46f, .15f), V(0, .62f), V(-.46f, .15f) }, .38f, 2);
-                CutHalo(b, new Vector3(0, -.31f, -.26f), .36f, .075f, new Vector3(1.35f, .70f, 1), Quaternion.identity, 10, 14);
-                b.Ball(new Vector3(0, -.29f, -.20f), new Vector3(.31f, .28f, .25f), 8);
+                ModelSiltLeech(b);
                 break;
             case CombatHullId.SluiceBarge:
                 BevelArmor(b, new[] { V(-1.0f, -.38f), V(-.60f, -.98f), V(.60f, -.98f), V(1, -.38f), V(.76f, .83f), V(0, 1.02f), V(-.76f, .83f) }, .48f, 0);
@@ -107,6 +105,37 @@ public static partial class IndustrialMeshFactory
             CutBlade(b,new[]{new Vector3(side*.28f,-.19f,.06f),new Vector3(side*.44f,-.31f,.03f),
                 new Vector3(side*.42f,-.52f,0)},.087f,.055f,2);
         }
+    }
+
+    static void ModelSiltLeech(Builder b)
+    {
+        // A ribbon leech with an offset spine curling back from its broad sucker.
+        KeelSkin(b, 0, 8, Frame(-.78f,.25f,.12f), Frame(-.45f,.39f,.24f,-.10f),
+            Frame(-.10f,.33f,.24f,-.24f),Frame(.26f,.36f,.21f,-.11f),
+            Frame(.54f,.27f,.18f,.16f),Frame(.76f,.17f,.13f,.44f),Frame(.91f,.045f,.04f,.58f));
+        for(int k=0;k<6;k++)
+        {
+            float y=-.40f+k*.19f, x=-.23f*Mathf.Cos((y+.08f)*3.4f)+Mathf.Max(0,y)*.48f;
+            float r=.34f-.11f*Mathf.Abs(y);
+            b.Sweep(new Vector3(x-r,y,0),new Vector3(x-r*.54f,y+.16f,-.29f),
+                new Vector3(x+r*.54f,y+.16f,-.29f),new Vector3(x+r,y,0),.048f,.045f,14,false,6);
+        }
+        var mouth=new Vector3(0,-.63f,-.24f);
+        b.Pearl(mouth,new Vector3(.43f,.38f,.13f),11,16,6);
+        b.Halo(mouth+Vector3.back*.09f,.32f,.075f,new Vector3(1.16f,.91f,1),Quaternion.identity,13,16);
+        for(int k=0;k<9;k++)
+        {
+            float a=k*Mathf.PI*2/9;
+            Vector3 lip=new Vector3(Mathf.Cos(a)*.30f,Mathf.Sin(a)*.24f,-.12f);
+            CutBlade(b,new[]{mouth+lip,mouth+lip*.56f+Vector3.back*.10f},.048f,.035f,15);
+        }
+        for(int side=-1;side<=1;side+=2)
+            for(int i=0;i<4;i++)
+            {
+                float y=-.20f+i*.20f, x=-.19f+i*.053f;
+                CutBlade(b,new[]{new Vector3(x+side*.20f,y,-.05f),new Vector3(x+side*.42f,y+.07f,0),
+                    new Vector3(x+side*.49f,y+.18f,.04f)},.086f,.044f,2);
+            }
     }
 
     public static Mesh PlagueTail()
