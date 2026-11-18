@@ -5,7 +5,7 @@ public sealed class TrailDrone : ACompanion
 {
     Shipcontroller owner;
     TrailDrone leader;
-    int index, count;
+    int index, count, laserSlot, laserCount;
     Vector3 worldPosition;
     bool laser;
     float clock = -.8f, nextDamage;
@@ -27,6 +27,14 @@ public sealed class TrailDrone : ACompanion
         drone.count = siblings.Length + 1;
         foreach (var sibling in siblings)
             sibling.count = drone.count;
+        if (laser)
+        {
+            foreach (var sibling in siblings)
+                if (sibling.laser) drone.laserSlot++;
+            drone.laserCount = drone.laserSlot + 1;
+            foreach (var sibling in siblings)
+                if (sibling.laser) sibling.laserCount = drone.laserCount;
+        }
         drone.worldPosition = ship.transform.position;
         drone.type = CompanionType.follower;
         // Scale models only; damage, rounds and spacing stay constant.
@@ -85,24 +93,14 @@ public sealed class TrailDrone : ACompanion
         Vector3 target = (leader != null ? leader.worldPosition : owner.transform.position) + offset;
         target.x = Mathf.Clamp(target.x, center - halfWidth + .35f, center + halfWidth - .35f);
         target.y = Mathf.Max(bottom + .4f, target.y);
-        // Laser drones hold a rigid row straight behind the ship instead of trailing its path:
-        // one sits centred, two sit a little left and right, more spread evenly.
         if (laser)
         {
-            int slot = 0, lasers = 0;
-            foreach (var drone in owner.GetComponentsInChildren<TrailDrone>())
-                if (drone.laser)
-                {
-                    if (drone == this)
-                        slot = lasers;
-                    lasers++;
-                }
-            target = owner.transform.position + new Vector3((slot - (lasers - 1) * .5f) * .55f, -1.05f, -.02f);
+            float x = (laserSlot - (laserCount - 1) * .5f) * .55f;
+            target = owner.transform.position + new Vector3(x, -1.38f, -.02f);
+            target.x = Mathf.Clamp(target.x, center - halfWidth + .35f, center + halfWidth - .35f);
             target.y = Mathf.Max(bottom + .4f, target.y);
-            worldPosition = target;
         }
-        else
-            worldPosition = Vector3.Lerp(worldPosition, target, 1 - Mathf.Exp(-12 * Time.deltaTime));
+        worldPosition = Vector3.Lerp(worldPosition, target, 1 - Mathf.Exp(-(laser ? 8f : 12f) * Time.deltaTime));
         transform.position = worldPosition;
         if (GameRules.playerDisabled)
         {
