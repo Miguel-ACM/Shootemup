@@ -83,12 +83,12 @@ public static partial class IndustrialMeshFactory
         for(int s=-1;s<=1;s+=2)
         {
             CutStone(b,new Vector3(s*.78f,.09f,-.01f),new Vector3(.17f,.31f,.15f),13,6);
-            CutStone(b,new Vector3(s*.45f,.28f,-.31f),new Vector3(.14f,.13f,.071f),15,6);
-            CutStone(b,new Vector3(s*.26f,-.09f,-.32f),new Vector3(.10f,.075f,.055f),15,6);
+            CapSpot(b,new Vector3(s*.45f,.28f,-.31f),new Vector3(.14f,.13f,.071f),15);
+            CapSpot(b,new Vector3(s*.26f,-.09f,-.32f),new Vector3(.10f,.075f,.055f),15);
             CutBlade(b,new[]{new Vector3(s*.13f,-.54f,-.16f),new Vector3(s*.40f,-.37f,-.20f),
                 new Vector3(s*.77f,-.06f,-.14f)},.086f,.06f,1);
         }
-        CutStone(b,new Vector3(-.07f,.43f,-.33f),new Vector3(.125f,.085f,.055f),15,6);
+        CapSpot(b,new Vector3(-.07f,.43f,-.33f),new Vector3(.125f,.085f,.055f),15);
         FieldBarrel(b,new Vector3(0,-.72f,-.24f),.11f,.30f);
         return fableCap = b.Finish("CapRicochet");
     }
