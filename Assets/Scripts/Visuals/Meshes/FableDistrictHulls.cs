@@ -102,13 +102,13 @@ public static partial class IndustrialMeshFactory
         for(int s=-1;s<=1;s+=2)
         {
             Vector3 A(float x,float y,float z)=>new Vector3(s*x,y,z);
-            b.Sweep(A(.10f,-.43f,-.06f),A(.22f,-.07f,-.24f),A(.65f,.08f,-.23f),A(.77f,.76f,-.08f),.14f,.11f,15,false,5,4);
-            b.Sweep(A(.40f,.03f,-.14f),A(.43f,.21f,-.24f),A(.35f,.35f,-.17f),A(.40f,.60f,-.11f),.065f,.066f,14,false,4,4);
-            b.Sweep(A(.63f,.34f,-.14f),A(.74f,.40f,-.18f),A(.86f,.38f,-.13f),A(.96f,.52f,-.10f),.053f,.062f,13,false,3,4);
+            b.Sweep(A(.10f,-.43f,-.06f),A(.22f,-.07f,-.24f),A(.65f,.08f,-.23f),A(.77f,.76f,-.08f),.14f,.11f,15,false,4,4);
+            b.Sweep(A(.40f,.03f,-.14f),A(.43f,.21f,-.24f),A(.35f,.35f,-.17f),A(.40f,.60f,-.11f),.065f,.066f,14,false,3,3);
+            b.Sweep(A(.63f,.34f,-.14f),A(.74f,.40f,-.18f),A(.86f,.38f,-.13f),A(.96f,.52f,-.10f),.053f,.062f,13,false,2,3);
             CutStone(b,A(.77f,.73f,-.09f),new Vector3(.125f,.19f,.10f),13,6);
             CutStone(b,A(.40f,.60f,-.12f),new Vector3(.075f,.12f,.08f),7,6);
         }
-        CutStone(b,new Vector3(0,.04f,-.19f),new Vector3(.14f,.31f,.12f),8,8);
+        CapSpot(b,new Vector3(0,.04f,-.19f),new Vector3(.14f,.31f,.12f),8);
         FieldBarrel(b,new Vector3(0,-.86f,-.24f),.105f,.51f);
         for(int s=-1;s<=1;s+=2)
         {
@@ -119,7 +119,7 @@ public static partial class IndustrialMeshFactory
                 CutBlade(b,new[]{A(.15f,-.24f+i*.10f,-.26f),A(.28f+i*.10f,.04f+i*.14f,-.32f),
                     A(.36f+i*.15f,.19f+i*.16f,-.24f)},.028f,.024f,13);
         }
-        CutStone(b,new Vector3(0,-.52f,-.21f),new Vector3(.14f,.17f,.09f),13,6);
+        CapSpot(b,new Vector3(0,-.52f,-.21f),new Vector3(.14f,.17f,.09f),13);
         return fableLancer = b.Finish("MyceliumLancer");
     }
     public static Mesh PaperKiteMesh()
