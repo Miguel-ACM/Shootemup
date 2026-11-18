@@ -15,6 +15,28 @@ public static partial class IndustrialMeshFactory
     static void FableVein(Builder b, Vector3[] points, float width, int colour)
     { CutBlade(b, points, width, .055f, colour); }
 
+    // Shallow scales sit in the cap. Only their exposed crown needs geometry.
+    static void CapSpot(Builder b, Vector3 center, Vector3 size, int tile)
+    {
+        const int sides = 5;
+        Vector3 Ring(int i, float radius, float z)
+        {
+            float angle = -i * 2 * Mathf.PI / sides;
+            return center + new Vector3(Mathf.Cos(angle) * size.x * radius,
+                Mathf.Sin(angle) * size.y * radius, z * size.z);
+        }
+
+        var crown = new Vector3[sides];
+        for (int i = 0; i < sides; i++)
+            crown[i] = Ring(i, .73f, -1);
+        b.Face(tile, crown);
+        for (int i = 0; i < sides; i++)
+        {
+            int next = (i + 1) % sides;
+            b.Face(tile, crown[i], Ring(i, 1, -.2f), Ring(next, 1, -.2f), crown[next]);
+        }
+    }
+
     public static Mesh SporeBellMesh()
     {
         if (fableBell != null) return fableBell;
@@ -22,7 +44,7 @@ public static partial class IndustrialMeshFactory
         // A pleated inkcap umbrella over a pendant spore sac. The rolled front lip
         // reveals pale gills from above and leaves the drop valve visible.
         CutStone(b,new Vector3(0,-.25f,-.05f),new Vector3(.34f,.46f,.25f),7,8);
-        b.Surface(24,3,(u,t)=>{
+        b.Surface(24,2,(u,t)=>{
             float a=-u*Mathf.PI*2, r=.024f+.976f*t;
             float scallop=1-.075f*r*Mathf.Cos(a*12);
             return new Vector3(.80f*r*scallop*Mathf.Cos(a),.28f+.60f*r*scallop*Mathf.Sin(a),
@@ -31,18 +53,22 @@ public static partial class IndustrialMeshFactory
         for(int i=0;i<12;i++)
         {
             float a=(i+.5f)*Mathf.PI/6, dx=Mathf.Cos(a), dy=Mathf.Sin(a);
-            CutBlade(b,new[]{new Vector3(dx*.10f,.28f+dy*.08f,-.65f),new Vector3(dx*.51f,.28f+dy*.38f,-.45f),
-                new Vector3(dx*.83f,.28f+dy*.62f,-.16f)},.042f,.035f,i%3==0?15:4);
+            Vector3 root=new Vector3(dx*.10f,.28f+dy*.08f,-.65f);
+            Vector3 ridge=new Vector3(dx*.51f,.28f+dy*.38f,-.48f);
+            Vector3 tip=new Vector3(dx*.83f,.28f+dy*.62f,-.16f);
+            Vector3 width=new Vector3(-dy,dx,0)*.035f;
+            b.Face(i%3==0?15:4,root,ridge+width,tip);
+            b.Face(i%3==0?15:4,root,tip,ridge-width);
             if(dy<0) b.Sweep(new Vector3(dx*.24f,-.17f,-.13f),new Vector3(dx*.49f,-.38f,-.21f),
-                new Vector3(dx*.75f,.23f+dy*.60f,-.19f),new Vector3(dx*.82f,.28f+dy*.60f,-.15f),.046f,.05f,15,false,3,4);
+                new Vector3(dx*.75f,.23f+dy*.60f,-.19f),new Vector3(dx*.82f,.28f+dy*.60f,-.15f),.046f,.05f,15,false,2,3);
         }
-        CutStone(b,new Vector3(0,.28f,-.62f),new Vector3(.17f,.16f,.09f),7,6);
+        CapSpot(b,new Vector3(0,.28f,-.62f),new Vector3(.17f,.16f,.09f),7);
         FieldPort(b,new Vector3(0,-.59f,-.09f),.18f,7);
         for(int i=0;i<7;i++)
         {
             float angle=(i+.34f)*Mathf.PI*2/7;
-            CutStone(b,new Vector3(.49f*Mathf.Cos(angle),.28f+.37f*Mathf.Sin(angle),-.45f),
-                new Vector3(.061f,.060f,.048f),i%3==0?13:14,6);
+            CapSpot(b,new Vector3(.49f*Mathf.Cos(angle),.28f+.37f*Mathf.Sin(angle),-.45f),
+                new Vector3(.061f,.060f,.048f),i%3==0?13:14);
         }
         return fableBell = b.Finish("SporeBell");
     }
