@@ -4,7 +4,7 @@ public sealed class BracketFan : DistrictEnemy
 {
     protected override void Configure()
     {
-        health = 38;
+        health = 54;
         hullScale = .53f;
     }
 
@@ -25,7 +25,7 @@ public sealed class BracketFan : DistrictEnemy
     {
         int side = GillSide(volley);
         Vector3 gill = Muzzle(side < 0 ? 0 : 1);
-        int count = Dense(4);
+        int count = Dense(6);
         for (int i = 0; i < count; i++)
         {
             float turn = side * Mathf.Lerp(16, 53, i / (float)Mathf.Max(1, count - 1));
@@ -76,11 +76,11 @@ public static partial class WavePartLibrary
 {
     public static readonly WavePart[] BracketFanParts =
     {
-        DeepPart("Bark switchback", nameof(BracketFan), WaveShape.Train, 3, 5.8f, 2, new[] { .24f, .46f, .68f },
+        DeepPart("Bark switchback", nameof(BracketFan), WaveShape.Train, 3, 4.76f, 2, new[] { .24f, .46f, .68f },
             -.78f, 1.32f, -.53f, .89f, .13f, .76f, .46f, .63f, .27f, .42f, -.44f, -.28f),
-        DeepPart("Shelves on the bank", nameof(BracketFan), WaveShape.Rake, 3, 6.2f, 5, new[] { .31f, .56f },
+        DeepPart("Shelves on the bank", nameof(BracketFan), WaveShape.Rake, 3, 5.08f, 5, new[] { .31f, .56f },
             -1.4f, .48f, -.72f, .51f, -.32f, .62f, .12f, .80f, .64f, .83f, 1.4f, .82f),
-        DeepPart("Around the trunk", nameof(BracketFan), WaveShape.Train, 3, 6.4f, 8, new[] { .24f, .47f, .70f },
+        DeepPart("Around the trunk", nameof(BracketFan), WaveShape.Train, 3, 5.25f, 8, new[] { .24f, .47f, .70f },
             .23f, 1.40f, .28f, .96f, .45f, .75f, .30f, .54f, -.27f, .43f, -1.48f, .44f),
     };
 }

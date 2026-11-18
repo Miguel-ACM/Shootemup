@@ -4,7 +4,7 @@ public sealed class PuffballDrifter : DistrictEnemy
 {
     protected override void Configure()
     {
-        health = 32;
+        health = 47;
         hullScale = .53f;
     }
 
@@ -13,7 +13,7 @@ public sealed class PuffballDrifter : DistrictEnemy
 
     protected override void Attack()
     {
-        int pairs = Dense(2);
+        int pairs = Dense(3);
         Vector3 pore = Muzzle();
         for (int side = -1; side <= 1; side += 2)
             for (int i = 0; i < pairs; i++)
@@ -56,11 +56,11 @@ public static partial class WavePartLibrary
 {
     public static readonly WavePart[] PuffballDrifterParts =
     {
-        DeepPart("Over the nurse log", nameof(PuffballDrifter), WaveShape.Train, 3, 6.1f, 2, new[] { .32f, .64f },
+        DeepPart("Over the nurse log", nameof(PuffballDrifter), WaveShape.Train, 3, 5.00f, 2, new[] { .32f, .64f },
             -1.4f, .58f, -.72f, .64f, -.33f, .82f, .10f, .85f, .54f, .66f, 1.4f, .58f),
-        DeepPart("Updraft in the glade", nameof(PuffballDrifter), WaveShape.Rank, 2, 6.4f, 4, new[] { .30f, .53f, .71f },
+        DeepPart("Updraft in the glade", nameof(PuffballDrifter), WaveShape.Rank, 2, 5.25f, 4, new[] { .30f, .53f, .71f },
             -.62f, 1.33f, -.49f, .91f, -.29f, .58f, .03f, .51f, .39f, .78f, .56f, 1.34f),
-        DeepPart("Windfall", nameof(PuffballDrifter), WaveShape.Rake, 3, 5.8f, 7, new[] { .28f, .49f, .67f },
+        DeepPart("Windfall", nameof(PuffballDrifter), WaveShape.Rake, 3, 4.76f, 7, new[] { .28f, .49f, .67f },
             1.4f, .91f, .66f, .82f, .23f, .59f, -.13f, .58f, -.47f, .72f, -1.4f, .78f),
     };
 }

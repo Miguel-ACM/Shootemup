@@ -2,7 +2,7 @@ using UnityEngine;
 
 public sealed class SporeBell : DistrictEnemy
 {
-    protected override void Configure() { health = 40; hullScale = .61f; }
+    protected override void Configure() { health = 57; hullScale = .61f; }
     protected override void Attack()
     {
         if (transform.position.y > Camera.UpLimit - 3.8f && SporeCloud.Count < 2)
@@ -14,10 +14,10 @@ public sealed class CapRicochet : DistrictEnemy
 {
     Vector2 velocity;
     bool drifting;
-    protected override void Configure() { health = 28; hullScale = .44f; }
+    protected override void Configure() { health = 41; hullScale = .44f; }
     protected override void Attack()
     {
-        int n = Dense(velocity.x > 0 ? 5 : 3);
+        int n = Dense(velocity.x > 0 ? 7 : 5);
         Vector2 inward = new Vector2(velocity.x * .13f, -.9f);
         for (int i = 0; i < n; i++)
             Fire<SimpleRound>(Muzzle(), CombatVisuals.Rotate(inward, (i - (n - 1) * .5f) * 18), 3.05f, .20f, i == 0)
@@ -36,7 +36,7 @@ public sealed class CapRicochet : DistrictEnemy
                 return;
             Vector2 tangent = movement is FormationFlight still ? still.Tangent : Vector2.down;
             float side = Mathf.Abs(tangent.x) > .20f ? Mathf.Sign(tangent.x) : transform.position.x > 0 ? -1 : 1;
-            velocity = new Vector2(side * 5.5f, -2.20f);
+            velocity = new Vector2(side * 7.0f, -2.45f);
             if (movement != null)
                 movement.enabled = false;
             drifting = true;
@@ -66,10 +66,10 @@ public sealed class CapRicochet : DistrictEnemy
 
 public sealed class MyceliumLancer : DistrictEnemy
 {
-    protected override void Configure() { health = 40; hullScale = .56f; }
+    protected override void Configure() { health = 59; hullScale = .56f; }
     protected override void Attack()
     {
-        int n = Dense(6);
+        int n = Dense(8);
         for (int i = 0; i < n; i++)
         {
             float lane = i - (n - 1) * .5f;
@@ -123,7 +123,7 @@ public sealed class PaintedMask : DistrictEnemy
 
 public sealed class MushroomChampion : DistrictMiniboss
 {
-    protected override void Configure() { health = 390; hullScale = 1.04f; attackInterval = 1.38f; nextAttack = 1.1f; }
+    protected override void Configure() { health = 485; hullScale = 1.04f; attackInterval = 1.38f; nextAttack = 1.1f; }
     protected override Vector3 Position(float t) =>
         new Vector3(2.65f * Mathf.Sin(t * 1.48f), Camera.UpLimit - 3.5f + .8f * Mathf.Cos(t * 2.96f), 1);
 

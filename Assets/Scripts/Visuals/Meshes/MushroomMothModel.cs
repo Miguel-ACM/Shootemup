@@ -52,18 +52,33 @@ public static partial class IndustrialMeshFactory
             CutBlade(b, new[] { new Vector3(0, y - .09f, -.373f + i * .024f), new Vector3(0, y + .08f, -.35f + i * .024f), new Vector3(0, y + .21f, -.25f + i * .018f) }, .046f, .024f, 13);
         }
 
-        b.Pearl(new Vector3(0, -.18f, -.17f), new Vector3(.48f, .57f, .32f), 11, 10, 6);
-        b.Pearl(new Vector3(0, -.11f, -.29f), new Vector3(.42f, .47f, .30f), 14, 10, 6);
-        // Raised, swept shoulder scales direct the eye into the narrow canopy.
+        // A scalloped fly-agaric mantle straddles the wing hinges. The lifted rim
+        // exposes alternating ivory gills; the narrow keel remains visible below it.
+        const int pleats = 18;
+        Vector3 Mantle(int i, float radius, float height)
+        {
+            float a = i * (2 * Mathf.PI / pleats);
+            float scallop = (i & 1) == 0 ? 1 : .89f;
+            return new Vector3(.83f * radius * scallop * Mathf.Cos(a),
+                .15f + .61f * radius * scallop * Mathf.Sin(a), height);
+        }
+        Vector3 peak = new Vector3(0,.19f,-.73f);
+        Vector3 throat = new Vector3(0,-.27f,-.32f);
+        for (int i = 0; i < pleats; i++)
+        {
+            int next = i + 1;
+            Vector3 shoulder = Mantle(i,.62f,-.64f), edge = Mantle(i,1,-.47f);
+            Vector3 shoulderNext = Mantle(next,.62f,-.64f), edgeNext = Mantle(next,1,-.47f);
+            b.Face(i % 3 == 0 ? 12 : 5, peak, shoulderNext, shoulder);
+            b.Face(5, shoulder, shoulderNext, edgeNext, edge);
+            b.Face(1, edge, edgeNext, Mantle(next,1,-.37f), Mantle(i,1,-.37f));
+            b.Face((i & 1) == 0 ? 15 : 13, Mantle(i,1,-.37f), Mantle(next,1,-.37f), throat);
+            if (i % 3 == 1)
+                CapSpot(b, Mantle(i,.54f,-.661f),new Vector3(.060f,.049f,.027f),15);
+        }
         for (int s = -1; s <= 1; s += 2)
         {
             Vector3 P(float x, float y, float z) => new Vector3(s * x, y, z);
-            for (int k = 0; k < 4; k++)
-            {
-                float f = k / 3f;
-                CutBlade(b, new[] { P(.10f, -.47f + .15f * f, -.55f), P(.22f, -.32f + .27f * f, -.57f), P(.38f + .09f * f, -.15f + .38f * f, -.43f), P(.51f + .10f * f, -.01f + .38f * f, -.21f) }, .071f, .048f, k == 0 ? 15 : 1);
-            }
-
             // Pectinate antennae: a curved stem with paired tapered combs.
             b.Sweep(P(.20f, -.75f, -.25f), P(.31f, -1.23f, -.39f), P(.70f, -1.51f, -.20f), P(.86f, -1.67f, -.14f), .038f, .034f, 13, false, 5, 5);
             for (int k = 0; k < 7; k++)
@@ -142,8 +157,8 @@ public static partial class IndustrialMeshFactory
         new Vector3(1.10f, -1.01f, .89f),
         new Vector3(1.71f, -.94f, .68f),
         new Vector3(2.22f, -.71f, .29f),
-        new Vector3(2.57f, -.57f, -.19f),
-        new Vector3(2.85f, -.59f, -.56f)
+        new Vector3(2.65f, -.78f, -.24f),
+        new Vector3(2.91f, -1.04f, -1.00f)
     };
     static readonly Vector3[] Hindwing =
     {
@@ -154,8 +169,8 @@ public static partial class IndustrialMeshFactory
         new Vector3(1.54f, .21f, 1.51f),
         new Vector3(1.70f, .26f, 1.72f),
         new Vector3(1.82f, .59f, 1.79f),
-        new Vector3(1.91f, 1.36f, 1.93f),
-        new Vector3(1.87f, 2.17f, 2.20f)
+        new Vector3(1.71f, 1.29f, 2.06f),
+        new Vector3(1.43f, 2.50f, 2.53f)
     };
     static Vector3 WingSkin(bool fore, int side, float span, float chord)
     {

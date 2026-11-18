@@ -19,42 +19,24 @@ def silk(top, bottom, front):
     span = np.clip((X - .004) / .992, 0, 1)
     chord = np.clip((Y - top) / (bottom - top), 0, 1)
     mask = (Y >= top - .008) & (Y <= bottom + .008)
-    # The distal lacquer changes from verdigris through parchment to oxblood.
-    # Narrow veins grow out of the hinge, through the paint and into its fringe.
-    angle = np.arctan2(chord - .18, span + .07)
-    vein = np.sin(angle * (19 if front else 14) + 1.55 * span + .4 * np.sin(5 * chord))
-    patina = .54 + .27*np.sin(3.8*span - 2.2*chord) + .13*np.cos(9*chord + span)
-    color = blend((39, 82, 91), (137, 191, 164), patina)
-    border = span + .21 * np.sin(3.7 * chord + .32) + .035 * np.cos(15 * chord)
-    if front:
-        color = blend(color, (221, 203, 153), (border - .57) / .07)
-        color = blend(color, (57, 43, 60), (border - .71) / .025)
-        color = blend(color, (166, 71, 70), (border - .75) / .065)
-    else:
-        color = blend(color, (52, 48, 72), (border - .34) / .06)
-        color = blend(color, (139, 72, 83), (border - .44) / .06)
-    # Fine growth lines turn with the wing scales.
-    scales = np.sin(90*span + 8*chord + 1.3*np.sin(13*chord))
-    color *= (1 + .029*scales - .20*np.exp(-np.square(vein/.115)))[..., None]
-    color = blend(color, (192, 165, 105), .51*np.exp(-np.square((vein-.18)/.055)))
-    # A pointed vitreous window on each forewing and a half-moon on each hindwing.
-    cx, cy = (.48, .47) if front else (.40, .65)
-    dx = (span-cx) / (.124 if front else .14)
-    dy = (chord-cy + .52*(span-cx)) / (.245 if front else .16)
-    radius = np.sqrt(dx*dx + dy*dy) + .19*dx*dy + .07*dy
-    for limit, ink in [(1.11,(38,47,61)), (1.00,(227,200,140)), (.82,(80,109,106)),
-                       (.70,(26,42,55)), (.48,(24,52,64))]:
-        color = blend(color, ink, (limit-radius)*95)
-    highlight = ((dx+.23)/.46)**2 + ((dy+.12)/.13 + dx*.64)**2
-    color = blend(color, (212,236,206), (1-highlight)*12)
-    # Interrupted crescent marks follow the scalloped hem.
-    scallop = .5+.5*np.cos(span*np.pi*(11 if front else 9))
-    edge = chord - (.83+.071*scallop)
-    color = blend(color, (46,47,60), edge*78)
-    color = blend(color, (218,196,149), ((.027-np.abs(edge-.055))*65)*(.8+.2*scallop))
-    color = blend(color, (125,116,105), (chord-.975)*85)
-    color = blend(color, (51,55,65), (.052-chord)*80)
-    color = blend(color, (220,184,119), (.028-chord)*100)
+    # Velvet amanita wings. Each ivory gill curves around a burgundy fan;
+    # the broad cream islands read as cap scales from across the arena.
+    arc = chord + .24*np.sin(3.9*span+.3) - .26*span
+    field = .52 + .25*np.sin(5.2*span - 2.7*chord) + .14*np.cos(7*arc)
+    color = blend((49,24,56), (191,78,83) if front else (116,62,106), field)
+    rays = np.sin((np.arctan2(chord+.13,span+.12) + .35*span) * (16 if front else 13))
+    color = blend(color, (235,177,133), .70*np.exp(-np.square(rays/.105)))
+    sash = .44 + .19*np.sin(span*4.5) + .12*span
+    color = blend(color, (76,41,77), (.12-np.abs(chord-sash))*40)
+    color = blend(color, (238,209,158), (.020-np.abs(np.abs(chord-sash)-.11))*65)
+    for px,py,rx,ry in [(.30,.30,.060,.083),(.47,.26,.056,.080),(.60,.35,.049,.074),
+                         (.72,.42,.040,.064),(.82,.49,.032,.052),(.59,.71,.045,.057)]:
+        scale=((span-px)/rx)**2 + ((chord-py+.30*(span-px))/ry)**2
+        color=blend(color,(243,223,185),np.clip((1-scale)*9,0,1))
+    hem=.85+.055*np.cos(span*np.pi*(10 if front else 8))
+    color=blend(color,(39,35,59),(chord-hem)*56)
+    color=blend(color,(225,165,122),(.027-np.abs(chord-hem-.047))*70)
+    color=blend(color,(229,210,164),(.032-chord)*95)
     noise = rng.normal(0, 2.2, span.shape)
     image[mask] = (color + noise[..., None])[mask]
 

@@ -4,37 +4,37 @@ public static partial class WavePartLibrary
 {
     public static readonly WavePart[] SporeBellParts =
     {
-        DeepPart("Cap procession", nameof(SporeBell), WaveShape.Train, 3, 6.8f, 2, new[] { .27f, .51f },
+        DeepPart("Cap procession", nameof(SporeBell), WaveShape.Train, 3, 5.58f, 2, new[] { .27f, .51f },
             -.69f, 1.26f, -.71f, 1.01f, -.51f, .89f, -.13f, .88f, .29f, .82f, .62f, 1.27f),
-        DeepPart("Purple galleries", nameof(SporeBell), WaveShape.Rank, 2, 6.3f, 4, new[] { .28f, .57f },
+        DeepPart("Purple galleries", nameof(SporeBell), WaveShape.Rank, 2, 5.17f, 4, new[] { .28f, .57f },
             -1.37f, .85f, -.74f, .88f, -.29f, .85f, .13f, .79f, .64f, .68f, 1.34f, .61f),
-        DeepPart("Crosswind spores", nameof(SporeBell), WaveShape.Rake, 2, 6.6f, 8, new[] { .28f, .47f, .64f },
+        DeepPart("Crosswind spores", nameof(SporeBell), WaveShape.Rake, 2, 5.41f, 8, new[] { .28f, .47f, .64f },
             .51f, 1.29f, .38f, 1.04f, -.02f, .91f, -.37f, .82f, -.68f, .72f, -1.35f, .67f),
-        DeepPart("Canopy drip", nameof(SporeBell), WaveShape.Solo, 1, 7.1f, 6, new[] { .29f, .53f, .71f },
+        DeepPart("Canopy drip", nameof(SporeBell), WaveShape.Solo, 1, 5.82f, 6, new[] { .29f, .53f, .71f },
             -.12f, 1.24f, -.28f, .98f, -.42f, .89f, -.19f, .86f, .25f, .85f, .42f, 1.24f),
     };
 
     public static readonly WavePart[] CapRicochetParts =
     {
-        DeepPart("Red cap pinball", nameof(CapRicochet), WaveShape.Train, 4, 5.6f, 2, new[] { .3f, .62f },
+        DeepPart("Red cap pinball", nameof(CapRicochet), WaveShape.Train, 4, 4.59f, 2, new[] { .3f, .62f },
             -.73f, 1.29f, -.58f, 1.05f, -.29f, .81f, .17f, .66f, .61f, .37f, 1.33f, .1f),
-        DeepPart("From the roots", nameof(CapRicochet), WaveShape.Rake, 3, 6f, 3, new[] { .32f, .64f },
+        DeepPart("From the roots", nameof(CapRicochet), WaveShape.Rake, 3, 4.92f, 3, new[] { .32f, .64f },
             -1.38f, .57f, -.77f, .61f, -.39f, .58f, .18f, .49f, .67f, .31f, 1.37f, .16f),
-        DeepPart("Stem slalom", nameof(CapRicochet), WaveShape.Chevron, 3, 5.8f, 6, new[] { .28f, .58f },
+        DeepPart("Stem slalom", nameof(CapRicochet), WaveShape.Chevron, 3, 4.76f, 6, new[] { .28f, .58f },
             .62f, 1.3f, .6f, 1.02f, .37f, .76f, -.13f, .71f, -.69f, .58f, -1.38f, .49f),
-        DeepPart("Cap relay", nameof(CapRicochet), WaveShape.Train, 4, 6.1f, 10, new[] { .3f, .5f, .71f },
+        DeepPart("Cap relay", nameof(CapRicochet), WaveShape.Train, 4, 5.00f, 10, new[] { .3f, .5f, .71f },
             -1.36f, .91f, -.7f, .84f, -.09f, .76f, .33f, .58f, .69f, .4f, .87f, -.24f),
     };
 
     public static readonly WavePart[] MyceliumLancerParts =
     {
-        DeepPart("White-gill rake", nameof(MyceliumLancer), WaveShape.Rake, 3, 5.8f, 2, new[] { .3f, .61f },
+        DeepPart("White-gill rake", nameof(MyceliumLancer), WaveShape.Rake, 3, 4.76f, 2, new[] { .3f, .61f },
             -1.36f, .74f, -.71f, .81f, -.25f, .75f, .18f, .63f, .64f, .54f, 1.36f, .59f),
-        DeepPart("The tangled path", nameof(MyceliumLancer), WaveShape.Train, 4, 6f, 4, new[] { .28f, .52f, .73f },
+        DeepPart("The tangled path", nameof(MyceliumLancer), WaveShape.Train, 4, 4.92f, 4, new[] { .28f, .52f, .73f },
             -.59f, 1.28f, -.51f, 1.01f, -.33f, .71f, .13f, .53f, .5f, .32f, .57f, -.25f),
-        DeepPart("Shaded clearing", nameof(MyceliumLancer), WaveShape.Rank, 2, 6.5f, 6, new[] { .26f, .54f, .73f },
+        DeepPart("Shaded clearing", nameof(MyceliumLancer), WaveShape.Rank, 2, 5.33f, 6, new[] { .26f, .54f, .73f },
             .46f, 1.28f, .47f, .98f, .28f, .79f, -.31f, .67f, -.61f, .56f, -1.35f, .47f),
-        DeepPart("Twin tendrils", nameof(MyceliumLancer), WaveShape.Chevron, 3, 6f, 9, new[] { .3f, .55f, .74f },
+        DeepPart("Twin tendrils", nameof(MyceliumLancer), WaveShape.Chevron, 3, 4.92f, 9, new[] { .3f, .55f, .74f },
             .34f, 1.31f, .13f, 1.03f, -.23f, .78f, -.52f, .67f, -.53f, .36f, -.18f, -.26f),
     };
 

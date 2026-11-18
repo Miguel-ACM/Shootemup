@@ -9,7 +9,7 @@ public sealed class MushroomWarden : DistrictBoss
 
     protected override void Configure()
     {
-        health = 1980;
+        health = 2350;
         hullScale = .92f;
         attackInterval = .28f;
         nextAttack = 1.5f;
@@ -66,7 +66,7 @@ public sealed class MushroomWarden : DistrictBoss
         if (openingComplete) OpenCards();
     }
 
-    protected override IEnumerator Cards() => phaseThree ? LanternRun() : phaseTwo ? SporePrint() : Eyespots();
+    protected override IEnumerator Cards() => phaseThree ? LastInstar() : phaseTwo ? SilkenShuttle() : AmanitaBloom();
 
     IEnumerator RaiseWings(float duration)
     {
@@ -83,145 +83,115 @@ public sealed class MushroomWarden : DistrictBoss
         yield return Wait(.11f);
     }
 
-    // The bright forewings and dark hindwings share one pinched waist. The entire
-    // silhouette is drawn in velocity space, so it opens as it floats downfield.
-    IEnumerator Eyespots()
+    // Four lobes are traced in speed space. A missing petal turns from bloom to bloom.
+    IEnumerator AmanitaBloom()
     {
-        for (int beat = 0; ; beat++)
+        for (int bloom = 0; ; bloom++)
         {
-            int mirror = (beat & 1) == 0 ? 1 : -1;
-            float lean = 12 * Mathf.Sin(beat * .86f);
-            Glide(mirror * 1.18f, -.12f, .66f, Rest(1.92f));
-            yield return RaiseWings(.52f);
-            for (int wing = 0; wing < 2; wing++)
+            int sign = (bloom & 1) == 0 ? 1 : -1;
+            Glide(sign * 1.65f, -.20f, .58f, 1.6f);
+            yield return RaiseWings(.36f);
+            for (int layer = 0; layer < 3; layer++)
             {
-                int side = wing * 2 - 1;
-                Vector3 port = moth.Muzzle(wing).position;
-                for (int lobe = 0; lobe < 2; lobe++)
-                {
-                    bool upper = lobe == 0;
-                    UseTone(upper ? HostileTone.Bright : HostileTone.Dark);
-                    int count = Mathf.Max(8, Dense(upper ? 29 : 21));
-                    for (int i = 0; i < count; i++)
-                    {
-                        float a = i * (Mathf.PI * 2 / count);
-                        float reach = (1 - Mathf.Cos(a)) * .5f;
-                        float edge = Mathf.Sin(a) * (upper ? .81f : .58f);
-                        var v = new Vector2(side * (-.68f + reach * (upper ? 2.28f : 1.32f)),
-                            -3.63f + reach * (upper ? .94f : -1.14f) + edge);
-                        v = CombatVisuals.Rotate(v, lean);
-                        Fire<SimpleRound>(port, v, v.magnitude, upper ? .17f : .15f, i == 0 && upper);
-                    }
-                }
-            }
-            // An inset pair of pupils hangs inside the outlines on alternate claps.
-            if ((beat & 1) != 0)
-            {
-                yield return Wait(Rest(.18f));
-                UseTone(HostileTone.Bright);
+                int marks = Mathf.Max(18, Dense(36));
                 for (int wing = 0; wing < 2; wing++)
                 {
-                    int side = wing * 2 - 1;
-                    Vector2 axis = CombatVisuals.Rotate(new Vector2(side * .53f, -3.15f), lean);
-                    Fire<SimpleRound>(moth.Muzzle(wing).position, axis, axis.magnitude, .29f);
+                    int side = 2 * wing - 1;
+                    Vector3 lip = moth.Muzzle(wing).position;
+                    UseTone((wing + layer) % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
+                    for (int n = 0; n < marks; n++)
+                    {
+                        float a = (n + .5f) * 360 / marks;
+                        if (Mathf.Abs(Mathf.DeltaAngle(a, 18 + 24 * Mathf.Sin(bloom * .8f))) < 15 ||
+                            (layer == 1 && n % 2 != 0)) continue;
+                        float petal = .5f + .5f * Mathf.Cos((4*a + 24*layer) * Mathf.Deg2Rad);
+                        Vector2 shape = CombatVisuals.Rotate(Vector2.down, side*(a + 8*layer)) *
+                            (1.3f + 2.45f*petal) + new Vector2(-side*.34f, -1.72f);
+                        Fire<SimpleRound>(lip, shape, shape.magnitude, layer == 0 ? .21f : .155f, n == 0);
+                    }
                 }
+                yield return Wait(Rest(.24f));
             }
-            yield return Wait(Rest(1.08f));
+            yield return Wait(Rest(.69f));
         }
     }
 
-    // Four ribs of a spore print. A ripple moves from stem to rim, but all the ribs
-    // share the same falling direction so their missing sections form a traversable slit.
-    IEnumerator SporePrint()
+    // Each bank lays a length of silk ahead of the other. The tips turn and zip across
+    // the screen while the longer inner threads fall diagonally through their wake.
+    IEnumerator SilkenShuttle()
     {
-        for (int beat = 0; ; beat++)
+        for (int pass = 0; ; pass++)
         {
-            float swing = Mathf.Sin(beat * .81f);
-            float slit = 2.0f * swing;
-            float wind = 5f * Mathf.Cos(beat * .81f);
-            Glide(-swing * 1.29f, .12f, .34f, 1.65f);
-            yield return RaiseWings(.50f);
-            int lanes = Mathf.Max(9, Dense(27));
-            float halfWidth = (Camera.RightLimit - Camera.LeftLimit) * .5f - .18f;
-            for (int rib = 0; rib < 4; rib++)
+            int side = (pass & 1) == 0 ? 1 : -1;
+            Glide(side * 2.35f, -.35f, 1.3f, 1.65f);
+            yield return RaiseWings(.34f);
+            int stitches = Mathf.Max(10, Dense(21));
+            for (int i = 0; i < stitches; i++)
             {
-                UseTone((rib & 1) == 0 ? HostileTone.Bright : HostileTone.Dark);
-                for (int i = 0; i < lanes; i++)
+                float t = i / (stitches - 1f);
+                for (int wing = 0; wing < 2; wing++)
                 {
-                    float x = Mathf.Lerp(-halfWidth, halfWidth, (i + .5f) / lanes);
-                    if (Mathf.Abs(x - slit) < .72f) continue;
-                    int wing = x < slit ? 0 : 1;
-                    Vector3 port = moth.Muzzle(wing).position;
-                    float span = wing == 0 ? halfWidth + slit : halfWidth - slit;
-                    float along = Mathf.Abs(x - slit) / span;
-                    float arch = Mathf.Sin(along * Mathf.PI);
-                    float y = station.y + .95f - .31f * rib + arch * (1.22f - .53f * rib) - .9f * along;
-                    Vector2 offset = new Vector2(x, y) - (Vector2)port;
-                    const float travel = .85f;
-                    float speed = WorldSpeed(Mathf.Max(.15f, offset.magnitude / (travel - .175f)));
-                    Fire<NeedleRound>(port, offset, speed, .15f, i == 0 || i == lanes - 1)
-                        .Pause(travel, .43f + .50f * along, CombatRound.Turn.Down, wind, 4.65f / speed)
-                        .ShowTurn();
+                    int hand = wing * 2 - 1;
+                    float knot = Mathf.Sin(2 * Mathf.PI * t);
+                    Vector3 lip = moth.Muzzle(wing).position;
+                    UseTone(wing == (pass & 1) ? HostileTone.Bright : HostileTone.Dark);
+                    for (int j = 0; j < 3; j++)
+                    {
+                        float bearing = hand * (112 - 150*t + 10*j);
+                        Fire<NeedleRound>(lip, CombatVisuals.Rotate(Vector2.down, bearing), 3.8f + j*.28f,
+                            .165f, j == 0).Pause(.53f + .20f*t, .24f + j*.06f,
+                            CombatRound.Turn.Down, hand*(19 + knot*23 + 11*j), 1.28f);
+                    }
+                    if (i % 4 == 0)
+                        Fire<SimpleRound>(lip, new Vector2(-hand * (1.18f-.6f*t), .7f), 3.6f, .22f, false)
+                            .Fall(new Vector2(-hand*.32f,-2.6f));
                 }
-                if (rib < 3) yield return Wait(.13f);
+                yield return Wait(Rest(1.46f) / stitches);
             }
-            yield return Wait(Rest(1.18f));
+            yield return Wait(Rest(.40f));
         }
     }
 
-    // The bank draws two scalloped garlands. Each hanging lantern marks a crest.
-    // The nose locks its aim before the silk opens on either side of that bearing.
-    IEnumerator LanternRun()
+    // The moth banks through a figure eight. Two combs trace the moving wings while
+    // the keel sends a slower scalloped skirt underneath the next pass.
+    IEnumerator LastInstar()
     {
         for (int pass = 0; ; pass++)
         {
             int sign = (pass & 1) == 0 ? 1 : -1;
-            yield return RaiseWings(.48f);
-            Glide(sign * 2.18f, -.14f, 3.22f, 2.16f);
-            int strokes = Mathf.Max(9, Dense(23));
-            int tines = Mathf.Max(3, Dense(5));
-            float opening = .5f + .16f * Mathf.Sin(pass * 1.37f);
-            for (int stroke = 0; stroke < strokes; stroke++)
+            Glide(sign*2.35f, -.35f, (pass & 1) == 0 ? 2.0f : .65f, 2.28f);
+            yield return RaiseWings(.32f);
+            int steps = Mathf.Max(13,Dense(26));
+            for (int i=0;i<steps;i++)
             {
-                float t = (stroke + .5f) / strokes;
-                while (Holding || glideTime < t * glideDuration) yield return null;
-                if (Mathf.Abs(t - opening) < .092f) continue;
-                float scallop = Mathf.Cos(t * Mathf.PI * 4);
-                for (int wing = 0; wing < 2; wing++)
+                float t=i/(steps-1f);
+                for (int wing=0;wing<2;wing++)
                 {
-                    int side = wing * 2 - 1;
-                    UseTone(wing == (pass & 1) ? HostileTone.Bright : HostileTone.Dark);
-                    var port = moth.Muzzle(wing).position;
-                    for (int k = 0; k < tines; k++)
+                    int side=wing*2-1;
+                    float wave=Mathf.Sin(2*Mathf.PI*t + wing*.45f);
+                    Vector3 lip=moth.Muzzle(wing).position;
+                    UseTone(wing==0?HostileTone.Dark:HostileTone.Bright);
+                    for (int comb=0;comb<4;comb++)
                     {
-                        float tooth = k / (tines - 1f);
-                        Vector2 axis = new Vector2(side * (.22f + .85f * tooth + .20f * scallop), 1);
-                        Fire<NeedleRound>(port, axis, 2.9f + tooth + .70f * scallop, .145f, k == 0)
-                            .Pause(.59f, .40f + .31f * (1 - t), CombatRound.Turn.Down,
-                                side * (9 + 12 * scallop + 8 * tooth), 1.32f).ShowTurn();
+                        Vector2 axis=CombatVisuals.Rotate(Vector2.down, side*(27 + 49*wave + 13*comb));
+                        Fire<NeedleRound>(lip,axis,3.45f+.33f*comb,.17f,comb==0);
                     }
-                    if (stroke % 5 == 0)
-                        Fire<SimpleRound>(port, new Vector2(side * .54f, .93f), 2.4f, .30f, false)
-                            .Fall(new Vector2(-side * .19f, -2.12f));
                 }
+                if (i%4==0)
+                {
+                    Vector3 lip=moth.Muzzle(2).position;
+                    int marks=Mathf.Max(10,Dense(20));
+                    for (int n=0;n<marks;n++)
+                    {
+                        float a=(n+.5f)*360/marks;
+                        if (Mathf.Abs(Mathf.DeltaAngle(a,sign*(20+18*Mathf.Sin(t*Mathf.PI))))<16) continue;
+                        Fire<SimpleRound>(lip,CombatVisuals.Rotate(Vector2.down,a),
+                            2.0f+.72f*Mathf.Cos((a*3+pass*23)*Mathf.Deg2Rad),.20f,n==0)
+                            .Fall(new Vector2(sign*.17f,-.71f));
+                    }
+                }
+                yield return Wait(Rest(2.15f)/steps);
             }
-            var nose = moth.Muzzle(2);
-            Vector2 lockOn = CombatVisuals.Aim(nose.position);
-            wantedFold = .73f;
-            PointWeapon(nose.position, lockOn);
-            yield return Charge(nose, Vector3.zero, .53f);
-            UseTone(HostileTone.Bright);
-            int stitches = Mathf.Max(3, Dense(9));
-            for (int i = 0; i < stitches; i++)
-            {
-                float t = i / (stitches - 1f);
-                float flare = 7 + 22 * Mathf.Sin(t * Mathf.PI);
-                for (int side = -1; side <= 1; side += 2)
-                    Fire<SimpleRound>(nose.position, CombatVisuals.Rotate(lockOn, side * flare),
-                        5.45f - .8f * t, .18f, side < 0);
-                yield return Wait(.067f);
-            }
-            yield return Wait(Rest(.38f));
         }
     }
 }
