@@ -340,7 +340,7 @@ public abstract class CombatRound : AEnemyBullet
             // The regent's lollipop swirls and candy roses fly many candies and stars at once.
             case LevelId.Candyland: return type == typeof(CandyRound) || type == typeof(StarRound) ? 96 : type == typeof(HeartRound) ? 64 : 0;
             case LevelId.Space: return type == typeof(CrescentRound) ? 48 : 0;
-            case LevelId.Dream: return type == typeof(CrescentRound) ? 512 : 0;
+            case LevelId.Dream: return type == typeof(CrescentRound) ? 240 : type == typeof(StarRound) ? 96 : 0;
             case LevelId.Underwater: return type == typeof(DropletRound) ? 64 : 0;
             case LevelId.Hell: return type == typeof(FlameRound) ? 64 : 0;
             case LevelId.Heaven: return type == typeof(FeatherRound) ? 64 : type == typeof(StarRound) ? 32 : 0;

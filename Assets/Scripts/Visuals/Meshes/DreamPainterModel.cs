@@ -2,7 +2,8 @@ using UnityEngine;
 
 public static partial class IndustrialMeshFactory
 {
-    static Mesh dreamIcon, dreamPalm;
+    static Mesh dreamIcon, dreamFace, dreamGaze, dreamPalm;
+    static readonly Mesh[] dreamHalos = new Mesh[2];
     static Material dreamPorcelain;
     public static Material DreamPorcelain => dreamPorcelain != null ? dreamPorcelain :
         (dreamPorcelain = new Material(CombatMaterials.Fleet) {
@@ -54,10 +55,40 @@ public static partial class IndustrialMeshFactory
     public static Mesh DreamPainterMesh()
     {
         if (dreamIcon != null) return dreamIcon;
+        var parts = new[]
+        {
+            new CombineInstance { mesh = DreamFaceMesh(), transform = Matrix4x4.identity },
+            new CombineInstance { mesh = DreamHaloMesh(0), transform = Matrix4x4.identity },
+            new CombineInstance { mesh = DreamHaloMesh(1), transform = Matrix4x4.identity },
+            new CombineInstance { mesh = DreamGazeMesh(), transform = Matrix4x4.Translate(DreamEyeSeat) }
+        };
+        dreamIcon = new Mesh { name = "The Oneirist / moon reliquary" };
+        dreamIcon.CombineMeshes(parts);
+        return dreamIcon;
+    }
+
+    public static readonly Vector3 DreamEyeSeat = new Vector3(-.15f,.21f,-.52f);
+    public static Mesh DreamGazeMesh()
+    {
+        if (dreamGaze != null) return dreamGaze;
         var b = new Builder();
-        // A broken aureole frames a double profile. Three wet brush strokes trail the neck.
-        PorcelainArc(b,new Vector3(-.13f,.32f,.11f),new Vector2(1.29f,1.27f),12,298,.12f,9,13);
-        PorcelainArc(b,new Vector3(.12f,.30f,.17f),new Vector2(1.38f,1.39f),-69,75,.080f,13,10);
+        DreamEye(b,Vector3.zero,.69f);
+        return dreamGaze=b.Finish("Porcelain eyelid");
+    }
+
+    public static Mesh DreamHaloMesh(int ring)
+    {
+        if (dreamHalos[ring] != null) return dreamHalos[ring];
+        var b = new Builder();
+        if (ring == 0) PorcelainArc(b,new Vector3(-.13f,.32f,.11f),new Vector2(1.29f,1.27f),12,298,.12f,9,13);
+        else PorcelainArc(b,new Vector3(.12f,.30f,.17f),new Vector2(1.38f,1.39f),-69,75,.080f,13,10);
+        return dreamHalos[ring]=b.Finish("Broken aureole");
+    }
+
+    public static Mesh DreamFaceMesh()
+    {
+        if (dreamFace != null) return dreamFace;
+        var b = new Builder();
         // The broad, upturned collar carries the eye even when the hands cross behind it.
         for (int side=-1;side<=1;side+=2)
         {
@@ -86,7 +117,6 @@ public static partial class IndustrialMeshFactory
             new Vector3(-.12f,-.78f,-.32f),new Vector3(.22f,-.03f,-.54f),9,8);
         b.Sweep(new Vector3(-.67f,.52f,-.37f),new Vector3(-.42f,.85f,-.48f),
             new Vector3(-.03f,.66f,-.47f),new Vector3(.14f,.49f,-.40f),.068f,.051f,11,false,6,5);
-        DreamEye(b,new Vector3(-.15f,.21f,-.52f),.69f);
         CutBlade(b,new[]{new Vector3(-.35f,-.29f,-.43f),new Vector3(-.17f,-.34f,-.48f),
             new Vector3(.07f,-.28f,-.42f)},.052f,.041f,5);
         PorcelainArc(b,new Vector3(.08f,.63f,-.30f),new Vector2(.75f,.55f),15,158,.16f,5,13);
@@ -96,7 +126,7 @@ public static partial class IndustrialMeshFactory
                 new Vector3(side*.28f,1.77f,.02f),new Vector3(side*.17f,1.14f,-.16f),
                 new Vector3(side*.25f,1.18f,-.31f),13,side<0?5:9);
         CutStone(b,new Vector3(0,1.39f,-.22f),new Vector3(.12f,.24f,.08f),10,4);
-        return dreamIcon=b.Finish("The Oneirist / moon reliquary");
+        return dreamFace=b.Finish("The Oneirist / double profile");
     }
 
     static void BrushDigit(Builder b, Vector3 root, Vector3 joint, Vector3 tip, float width)

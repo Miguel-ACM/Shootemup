@@ -25,8 +25,8 @@ public sealed class HourglassWeaver : DistrictEnemy
             for (int i = 0; i < grains; i++)
             {
                 var axis = new Vector2(side, -.12f - .10f * i);
-                Fire<CrescentRound>(lip, axis, 2.7f, .22f, i == 0)
-                    ?.Pause(.26f + .18f * i, .48f + .08f * i, CombatRound.Turn.Down, 0, 4.25f);
+                Fire<NeedleRound>(lip, axis, 2.7f, .22f, i == 0)
+                    ?.Pause(.26f + .18f * i, .48f + .08f * i, CombatRound.Turn.Down, 0, 4.25f).ShowTurn();
             }
         }
     }

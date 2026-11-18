@@ -101,8 +101,8 @@ public sealed class CrescentDancer : DistrictEnemy
         for (int i = 0; i < n; i++)
         {
             float lane = i - (n - 1) * .5f;
-            Fire<CrescentRound>(Muzzle(i % 2), CombatVisuals.Rotate(Vector2.down, lane * 22), 2.66f, .25f, i < 2)
-                .Pause(.65f, .33f, CombatRound.Turn.Rotate, -lane * 10, 4.35f);
+            Fire<NeedleRound>(Muzzle(i % 2), CombatVisuals.Rotate(Vector2.down, lane * 22), 2.66f, .25f, i < 2)
+                .Pause(.65f, .33f, CombatRound.Turn.Rotate, -lane * 10, 4.35f).ShowTurn();
         }
     }
 }
@@ -116,7 +116,7 @@ public sealed class PaintedMask : DistrictEnemy
         for (int i = 0; i < n; i++)
         {
             float angle = (i - (n - 1) * .5f) * 23;
-            Fire<CrescentRound>(Muzzle(), CombatVisuals.Rotate(Vector2.up, angle), 4.7f, .26f, i == 0).Bounce(2);
+            Fire<StarRound>(Muzzle(), CombatVisuals.Rotate(Vector2.up, angle), 4.7f, .26f, i == 0).Bounce(2);
         }
     }
 }
@@ -160,10 +160,15 @@ public sealed class DreamChampion : DistrictMiniboss
             for (int i = 0; i < n; i++)
             {
                 float lane = i - (n - 1) * .5f;
-                var shot = Fire<CrescentRound>(Muzzle(s < 0 ? 0 : 1),
-                    CombatVisuals.Rotate(move == 1 ? Vector2.up : Vector2.down, s * (22 + lane * 17)), 3.65f, .24f, i == 0);
-                if (move == 1) shot.Bounce(2);
-                if (move == 2) shot.Pause(.74f, .42f, CombatRound.Turn.Rotate, s * 33, 4.8f);
+                Vector3 lip = Muzzle(s < 0 ? 0 : 1);
+                Vector2 direction = CombatVisuals.Rotate(move == 1 ? Vector2.up : Vector2.down, s * (22 + lane * 17));
+                if (move == 2)
+                    Fire<NeedleRound>(lip, direction, 3.65f, .24f, i == 0)
+                        .Pause(.74f, .42f, CombatRound.Turn.Rotate, s * 33, 4.8f).ShowTurn();
+                else if (move == 1)
+                    Fire<StarRound>(lip, direction, 3.65f, .24f, i == 0).Bounce(2);
+                else
+                    Fire<CrescentRound>(lip, direction, 3.65f, .24f, i == 0);
             }
     }
 }

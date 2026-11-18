@@ -199,6 +199,8 @@ public sealed class MushroomWarden : DistrictBoss
 public sealed class DreamPainter : DistrictBoss
 {
     readonly Transform[] hands = new Transform[2];
+    readonly Transform[] halos = new Transform[2];
+    Transform gaze;
     static Vector3[] Fingers => IndustrialMeshFactory.DreamNibs;
     float handAge, turnStart, turnClock;
     bool turning;
@@ -210,6 +212,10 @@ public sealed class DreamPainter : DistrictBoss
     {
         base.Start();
         station = new Vector3(0, Camera.UpLimit - 3.45f, 1);
+        Hull.GetComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.DreamFaceMesh();
+        gaze = ArtPart("Watching eye", IndustrialMeshFactory.DreamGazeMesh());
+        gaze.localPosition = IndustrialMeshFactory.DreamEyeSeat;
+        for (int i = 0; i < halos.Length; i++) halos[i] = ArtPart("Turning aureole", IndustrialMeshFactory.DreamHaloMesh(i));
         for (int i = 0; i < hands.Length; i++)
         {
             var hand = new GameObject(i == 0 ? "Left painted hand" : "Right painted hand").transform;
@@ -226,6 +232,17 @@ public sealed class DreamPainter : DistrictBoss
         }
     }
 
+    Transform ArtPart(string label, Mesh mesh)
+    {
+        var part = new GameObject(label).transform;
+        part.SetParent(Hull, false);
+        part.gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;
+        var surface = part.gameObject.AddComponent<MeshRenderer>();
+        surface.sharedMaterial = IndustrialMeshFactory.DreamPorcelain;
+        surface.sortingLayerName = "Enemy";
+        return part;
+    }
+
     protected override void OnPhaseEntered(int phase)
     {
         handAge = turnStart = turnClock = 0;
@@ -234,10 +251,20 @@ public sealed class DreamPainter : DistrictBoss
 
     protected override void MoveBoss(float dt)
     {
-        transform.position = Vector3.MoveTowards(transform.position, station, dt * 6f);
+        Vector3 perch = station;
+        if (openingComplete)
+            perch += new Vector3(.60f * Mathf.Sin(handAge * .78f), .27f * Mathf.Sin(handAge * 1.56f), 0);
+        transform.position = Vector3.MoveTowards(transform.position, perch, dt * 6f);
         if (!openingComplete)
             return;
         handAge += dt;
+        float tilt = 11 * Mathf.Sin(handAge * .81f);
+        float blink = Mathf.Pow(Mathf.Max(0, Mathf.Cos(handAge * 1.45f)), 76);
+        Vector2 look = Hull.InverseTransformPoint(CombatVisuals.PlayerHitPoint);
+        gaze.localPosition = IndustrialMeshFactory.DreamEyeSeat + (Vector3)(look.normalized * .065f);
+        gaze.localScale = new Vector3(1, 1 - .90f * blink, 1);
+        halos[0].localRotation = Quaternion.Euler(tilt, 0, handAge * (phaseThree ? 31 : 16));
+        halos[1].localRotation = Quaternion.Euler(-tilt, tilt, -handAge * (phaseThree ? 42 : 23));
         if (turning)
         {
             turnClock += dt;
@@ -264,8 +291,8 @@ public sealed class DreamPainter : DistrictBoss
                 angle = Mathf.Cos(turn) * -33f;
             }
             var hand = hands[i];
-            hand.localPosition = Vector3.MoveTowards(hand.localPosition, new Vector3(x, y, -.35f), dt * 6f);
-            hand.localRotation = Quaternion.RotateTowards(hand.localRotation, Quaternion.Euler(0, 0, angle), dt * 115);
+            hand.localPosition = Vector3.MoveTowards(hand.localPosition, new Vector3(x, y + .20f * Mathf.Sin(handAge * 2.1f + i), -.35f), dt * 6f);
+            hand.localRotation = Quaternion.RotateTowards(hand.localRotation, Quaternion.Euler(8 * Mathf.Sin(handAge * 2 + i), side * (13 + 16 * firingCue.ChargeLevel), angle + side * (12 * firingCue.ChargeLevel - 9 * firingCue.ReleaseLevel)), dt * 115);
         }
     }
 
@@ -290,13 +317,13 @@ public sealed class DreamPainter : DistrictBoss
 
     // The last .35 seconds of a programmed approach brake linearly. Compensating
     // for that distance lets marks from eight different fingers land on one canvas.
-    void PaintMoon(Vector3 port, Vector2 target, float travel, float hold, float angle,
+    void EtchNeedle(Vector3 port, Vector2 target, float travel, float hold, float angle,
         float fallSpeed, float radius, bool flash)
     {
         Vector2 offset = target - (Vector2)port;
         float launch = WorldSpeed(Mathf.Max(.20f, offset.magnitude / (travel - .175f)));
-        Fire<CrescentRound>(port, offset, launch, radius, flash)
-            .Pause(travel, hold, CombatRound.Turn.Down, angle, fallSpeed / launch);
+        Fire<NeedleRound>(port, offset, launch, radius, flash)
+            .Pause(travel, hold, CombatRound.Turn.Down, angle, fallSpeed / launch).ShowTurn();
     }
 
     // A four-point compass is drawn in velocity space. Each tip belongs to one
@@ -338,7 +365,7 @@ public sealed class DreamPainter : DistrictBoss
                                 if (f == (beat + h) % 4 && flank == side && t > .28f && t < .64f) continue;
                                 Vector2 v = Vector2.Lerp(tip, notch, t) * (echo == 0 ? 1 : .76f);
                                 v += new Vector2(-side * .57f, -1.46f);
-                                Fire<CrescentRound>(port, v, v.magnitude, echo == 0 ? .176f : .15f, i == 0 && flank == -1)
+                                Fire<NeedleRound>(port, v, v.magnitude, echo == 0 ? .176f : .15f, i == 0 && flank == -1)
                                     .Ramp(1.13f, .78f, .68f);
                             }
                         }
@@ -373,8 +400,10 @@ public sealed class DreamPainter : DistrictBoss
                         Vector2 radial = CombatVisuals.Rotate(Vector2.down, angle);
                         Vector2 v = radial * (3.82f + .50f * Mathf.Sin(t * Mathf.PI)) + Vector2.down * .98f;
                         Vector3 port = hands[h].TransformPoint(Fingers[f]);
-                        Fire<CrescentRound>(port, v, v.magnitude, f % 2 == 0 ? .21f : .165f, i % 6 == 0)
-                            .Fall(new Vector2(-side * radial.y * .46f, -.34f));
+                        CombatRound mark = f % 2 == 0
+                            ? (CombatRound)Fire<CrescentRound>(port, v, v.magnitude, .21f, i % 6 == 0)
+                            : Fire<StarRound>(port, v, v.magnitude, .17f, i % 6 == 0);
+                        mark.Fall(new Vector2(-side * radial.y * .46f, -.34f));
                     }
                 }
                 yield return Wait(Rest(1.92f) / marks);
@@ -383,11 +412,39 @@ public sealed class DreamPainter : DistrictBoss
         }
     }
 
+    // Opposed streams keep threading the rose as the hands exchange places.
+    // The inner dot leads each slowly drifting lane; every fourth stitch is a larger star.
+    IEnumerator StarField()
+    {
+        yield return ChargeFingers(.48f);
+        for (int beat = 0; ; beat++)
+        {
+            for (int h = 0; h < 2; h++)
+            {
+                int side = h * 2 - 1;
+                Vector3 lip = hands[h].TransformPoint(Fingers[(beat / 4 + h) % 4]);
+                UseTone(h == 0 ? HostileTone.Dark : HostileTone.Bright);
+                int lanes = Mathf.Max(3, Dense(5));
+                for (int lane = 0; lane < lanes; lane++)
+                {
+                    float angle = side * (23 * Mathf.Sin(beat*.15f) + (lane-(lanes-1)*.5f)*21);
+                    var dir = CombatVisuals.Rotate(Vector2.down, angle);
+                    if ((lane + beat) % 4 == 0)
+                        Fire<StarRound>(lip, dir, 2.7f, .23f, lane == 0);
+                    else
+                        Fire<SimpleRound>(lip, dir, 3.42f, .15f, lane == 0);
+                }
+            }
+            yield return Wait(Rest(.30f));
+        }
+    }
+
     // A rose window has eight individually cut lozenges. It assembles from
     // the fingertips above the player. When the wrists turn, the lead seams
     // split and the panes peel off in different directions.
     IEnumerator ShatteredRose()
     {
+        Phrase(StarField());
         for (int beat = 0; ; beat++)
         {
             while (turning || Holding) yield return null;
@@ -419,7 +476,7 @@ public sealed class DreamPainter : DistrictBoss
                             Vector2 target = center + Vector2.Scale(glass, new Vector2(4.1f, 3.5f));
                             float direction = spoke.y > .68f ? 157 * Mathf.Sign(spoke.x) :
                                 -spoke.x * 20 + Mathf.Sin(beat * .89f) * 9;
-                            PaintMoon(nib, target, travel, .49f + .32f * (1 - t), direction + flank * 5,
+                            EtchNeedle(nib, target, travel, .49f + .32f * (1 - t), direction + flank * 5,
                                 outer ? 4.95f : 4.45f, outer ? .185f : .155f, edge == 0 && i == 0);
                         }
                     }
