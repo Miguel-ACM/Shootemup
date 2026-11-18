@@ -36,6 +36,20 @@ public sealed class SporeCloud : MonoBehaviour
             ink = new Material(Resources.Load<Shader>("SporeCloud"));
     }
 
+    internal static MeshRenderer AttachAfterglow(Transform ship)
+    {
+        Warm();
+        var aura = new GameObject("Spore afterglow");
+        aura.transform.SetParent(ship, false);
+        aura.transform.localScale = Vector3.one * (1.06f / ship.lossyScale.x);
+        aura.AddComponent<MeshFilter>().sharedMesh = quad;
+        var renderer = aura.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = ink;
+        renderer.sortingLayerName = "Player";
+        renderer.sortingOrder = -1;
+        return renderer;
+    }
+
     public static SporeCloud Drop(Vector3 source, float phase)
     {
         if (clouds.Count >= 3 || GameRules.playerDisabled)

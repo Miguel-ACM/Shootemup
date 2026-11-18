@@ -7,6 +7,7 @@ public sealed class PSXShipVisual : MonoBehaviour
 {
     public Transform Model => model;
     public float DiveDepth { get; set; }
+    public float SporeTint { get; set; }
     static readonly Color DiveTint = new Color(.65f, .83f, 1);
     [SerializeField] SpriteRenderer sourceSprite;
     [SerializeField] Transform model;
@@ -193,7 +194,9 @@ public sealed class PSXShipVisual : MonoBehaviour
         if (properties == null)
             properties = new MaterialPropertyBlock();
         modelRenderer.GetPropertyBlock(properties);
-        properties.SetColor(Tint, sourceSprite.color * PolarityEngine.ShipTint * Color.Lerp(Color.white, DiveTint, DiveDepth));
+        var paint = sourceSprite.color * PolarityEngine.ShipTint * Color.Lerp(Color.white, DiveTint, DiveDepth);
+        if (SporeTint > 0) paint *= Color.Lerp(Color.white, new Color(1.28f,.59f,1.65f), SporeTint);
+        properties.SetColor(Tint, paint);
         properties.SetFloat(PlayerDepth, 1f);
         properties.SetFloat(PilotDiveDepth, DiveDepth);
         properties.SetFloat(PilotCanopy, alternateHull == null ? 1f : 0f);

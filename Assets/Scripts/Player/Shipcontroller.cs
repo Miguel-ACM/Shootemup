@@ -347,6 +347,39 @@ public class Shipcontroller : MonoBehaviour
     // Energy refills by itself at 1% of the maximum per second of active play.
     const float EnergyRechargePerSecond = .01f;
 
+    float sporeSeconds;
+    MeshRenderer sporeGlow;
+    MaterialPropertyBlock sporeInk;
+    static readonly int SporeStrength = Shader.PropertyToID("_Strength");
+    PSXShipVisual sporeHull;
+
+    bool SporeSteering()
+    {
+        if (health <= 0 || HangarHub.Active || LevelRun.Current != LevelId.Mushroom || CloudTransition.Busy)
+            sporeSeconds = 0;
+        else if (GameClock.ActivePlay && !WorldTimeStop.Frozen)
+            sporeSeconds = SporeCloud.Confuses(CombatVisuals.PlayerHitPoint) ? 5f :
+                Mathf.Max(0, sporeSeconds - GameClock.ActivePlayDelta);
+        if (sporeSeconds > 0 && sporeGlow == null)
+        {
+            sporeGlow = SporeCloud.AttachAfterglow(transform);
+            sporeInk = new MaterialPropertyBlock();
+            sporeInk.SetFloat("_ShipAura", 1);
+            sporeHull = GetComponent<PSXShipVisual>();
+        }
+        if (sporeGlow != null)
+        {
+            sporeGlow.enabled = sporeSeconds > 0;
+            if (sporeHull != null) sporeHull.SporeTint = Mathf.Clamp01(sporeSeconds * 1.5f);
+            if (sporeGlow.enabled)
+            {
+                sporeInk.SetFloat(SporeStrength, Mathf.Min(1, sporeSeconds * 2) * (.73f + .09f * Mathf.Cos(sporeSeconds * 8)));
+                sporeGlow.SetPropertyBlock(sporeInk);
+            }
+        }
+        return sporeSeconds > 0 && GameClock.ActivePlay;
+    }
+
     void Update()
     {
         if (health > 0 && mana < maxMana && GameClock.ActivePlay)
@@ -365,7 +398,7 @@ public class Shipcontroller : MonoBehaviour
         if (sewerDrag > 0 && !HangarHub.Active)
             speedMultiplier *= .56f;
         var steering = SimulatorFlight.Steering(move, transform.position);
-        if (SporeCloud.Confuses(CombatVisuals.PlayerHitPoint))
+        if (SporeSteering())
             steering.x = -steering.x;
         horizontalMove = steering.x * GameRules.playerMoveSpeed * GameClock.PlayerDelta * speedMultiplier;
         verticalMove = steering.y * GameRules.playerMoveSpeed * verticalMoveMultiplier * GameClock.PlayerDelta * speedMultiplier;

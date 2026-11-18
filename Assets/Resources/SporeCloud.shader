@@ -1,6 +1,6 @@
 Shader "Shootemup/Spore Cloud"
 {
-    Properties { _Clock("Spore time",Float)=0 _Strength("Opacity",Float)=1 }
+    Properties { _Clock("Spore time",Float)=0 _Strength("Opacity",Float)=1 _ShipAura("Ship afterglow",Float)=0 }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "Queue"="Transparent" }
@@ -13,7 +13,7 @@ Shader "Shootemup/Spore Cloud"
             #pragma fragment Frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             CBUFFER_START(UnityPerMaterial)
-            float _Clock,_Strength;
+            float _Clock,_Strength,_ShipAura;
             CBUFFER_END
             struct Varyings { float4 position:SV_POSITION; float2 local:TEXCOORD0; };
             Varyings Vert(float4 vertex:POSITION)
@@ -32,6 +32,13 @@ Shader "Shootemup/Spore Cloud"
             half4 Frag(Varyings v):SV_Target
             {
                 float2 p = v.local;
+                if (_ShipAura>.5)
+                {
+                    float r=length(p*float2(1,.92));
+                    float halo=(1-smoothstep(.19,1,r))*_Strength;
+                    float3 violet=lerp(float3(.29,.045,.57),float3(.66,.20,.85),saturate(1-r));
+                    return half4(violet*halo,halo);
+                }
                 float2 scroll = float2(_Clock*.16,_Clock*.24);
                 float fold = Noise(p*3.7-scroll);
                 float veil = Noise(p*7.5+scroll+fold*1.3);
