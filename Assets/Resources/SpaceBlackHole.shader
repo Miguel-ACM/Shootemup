@@ -7,6 +7,7 @@ Shader "Shootemup/Space black hole"
         _CoreOnly("Horizon only", Float) = 0
         _HitFlash("Hit", Float) = 0
         _Feeding("Accretion", Float) = 0
+        _VoidEcho("Void memory", Float) = 0
         [HideInInspector] _HullStatus("Hull afflictions", Float) = 0
     }
     SubShader
@@ -25,7 +26,7 @@ Shader "Shootemup/Space black hole"
             #include "../Shaders/HullAffliction.hlsl"
             CBUFFER_START(UnityPerMaterial)
             float4 _Tint, _Extent;
-            float _CoreOnly, _HitFlash, _Feeding, _HullStatus;
+            float _CoreOnly, _HitFlash, _Feeding, _HullStatus, _VoidEcho;
             CBUFFER_END
             struct Input { float4 p:POSITION; float2 uv:TEXCOORD0; };
             struct Output { float4 p:SV_POSITION; float2 uv:TEXCOORD0; };
@@ -54,6 +55,7 @@ Shader "Shootemup/Space black hole"
                     float3 gold = lerp(float3(1,.82,.51), float3(.96,.37,.055), 1-smoothstep(.82,1,length(iris)));
                     gold *= lerp(.045, 1, smoothstep(.28,.48,length(iris*float2(1.18,.64))));
                     float glint = 1-smoothstep(.019,.035,length(eye-float2(-.068,.035)));
+                    gold=lerp(gold,float3(.78,.33,1)*max(gold.r,gold.g),_VoidEcho);
                     return half4(lerp(shadow,lerp(gold,float3(1,.96,.8),glint),mask)*_Tint.rgb,horizon*_Tint.a);
                 }
                 float t=_Time.y*.32;
@@ -76,6 +78,7 @@ Shader "Shootemup/Space black hole"
                 float3 warm=lerp(float3(.48,.13,.035),float3(1,.67,.28),saturate(light*1.5));
                 warm=lerp(warm,float3(1,.91,.67),saturate((light-.65)*2.6));
                 float alpha=saturate(disk*.9+arcs+photon+glow);
+                warm=lerp(warm,float3(.64,.28,.94)*(.4+light),_VoidEcho);
                 float3 color=warm*(.75+_Feeding*.12);
                 color=lerp(color,float3(.001,.002,.004),horizon);
                 alpha=max(alpha,horizon);

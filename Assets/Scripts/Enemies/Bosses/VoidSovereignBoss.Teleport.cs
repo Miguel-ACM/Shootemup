@@ -50,6 +50,7 @@ public sealed partial class VoidSovereignBoss
     {
         foreach (var part in anatomy)
         {
+            if (!part.gameObject.activeInHierarchy) continue;
             part.GetPropertyBlock(riftInk);
             riftInk.SetFloat("_Rift",amount);
             part.SetPropertyBlock(riftInk);

@@ -168,11 +168,11 @@ public sealed class IndustrialHUD : MonoBehaviour
         bossCells = VerticalCells(bossPanel, 7, 17, 32, 14, 5, Amber);
         bossPanel.gameObject.SetActive(false);
         // One pip per boss life bar still to come after the current one.
-        phasePips = new Image[3];
+        phasePips = new Image[5];
         for (int i = 0; i < phasePips.Length; i++)
         {
             var pip = Panel(bossPanel, "Phase pip " + i, Amber);
-            Place(pip, 8 + i * 7, 262, 5, 5);
+            Place(pip, 6 + i * 5, 262, 4, 5);
             phasePips[i] = pip.GetComponent<Image>();
         }
         minibossClock = TextAt(bossPanel, "", 2, 250, 12, Amber);
@@ -383,7 +383,15 @@ public sealed class IndustrialHUD : MonoBehaviour
         }
     }
 
-    static Color PhaseColor(int phase) => phase == 1 ? Amber : phase == 2 ? new Color(1, .45f, .18f) : phase == 3 ? Alarm : new Color(.72f, .35f, 1);
+    static Color PhaseColor(int phase) => phase switch
+    {
+        1 => Amber,
+        2 => new Color(1, .45f, .18f),
+        3 => Alarm,
+        4 => new Color(.72f, .35f, 1),
+        5 => new Color(.41f, .57f, 1),
+        _ => new Color(.94f, .67f, 1)
+    };
 
     static void Fill(Image[] cells, float value, Color color, int limit = int.MaxValue) => Fill(cells, value, color, limit, Unlit);
 

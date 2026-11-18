@@ -113,10 +113,37 @@ public static class LevelRun
 
     public static void Reset(LevelId first, int seed)
     {
+        System.Array.Clear(flown, 0, flown.Length);
+        RememberDistrict(first);
         Stage = Tier(first);
         Loop = 1;
         Current = first;
         Seed = Mathf.Max(1, seed & int.MaxValue);
+    }
+
+    // These are the three late districts actually flown. A direct boss preview or
+    // short simulator tape fills missing tiers from the same connected route.
+    static readonly LevelId[][] echoRoutes =
+    {
+        new[] { LevelId.Thunder, LevelId.Space, LevelId.Heaven },
+        new[] { LevelId.Desert, LevelId.Sewers, LevelId.Core },
+        new[] { LevelId.Tunnel, LevelId.Underwater, LevelId.Hell },
+        new[] { LevelId.Mushroom, LevelId.Candyland, LevelId.Dream }
+    };
+    static readonly LevelId?[] flown = new LevelId?[3];
+    static void RememberDistrict(LevelId level)
+    {
+        int slot = Tier(level) - 3;
+        if (slot >= 0 && slot < flown.Length) flown[slot] = level;
+    }
+    public static LevelId VoidMemory(int index)
+    {
+        if (flown[index].HasValue) return flown[index].Value;
+        for (int slot = 2; slot >= 0; slot--)
+            if (flown[slot].HasValue)
+                foreach (var route in echoRoutes)
+                    if (route[slot] == flown[slot].Value) return route[index];
+        return echoRoutes[Seed % echoRoutes.Length][index];
     }
 
     public static void Advance(LevelId next)
@@ -126,12 +153,14 @@ public static class LevelRun
             throw new System.InvalidOperationException("Invalid district progression");
         if (next == LevelId.Fields)
             Loop++;
+        RememberDistrict(next);
         Current = next;
         Stage++;
     }
 
     internal static void AdvanceSimulator(LevelId next)
     {
+        RememberDistrict(next);
         Current = next;
         Stage++;
     }

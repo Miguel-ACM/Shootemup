@@ -17,14 +17,14 @@ public sealed class PartHitFeedback : MonoBehaviour
     }
 
     public float Heat => heat;
-    public static PartHitFeedback Bind(Transform visual, bool recoil = true)
+    public static PartHitFeedback Bind(Transform visual, bool recoil = true, bool includeInactive = false)
     {
         var hit = visual.gameObject.AddComponent<PartHitFeedback>();
         hit.visual = visual;
         hit.recoil = recoil;
         hit.rest = visual.localPosition;
         hit.scale = visual.localScale;
-        hit.meshes = visual.GetComponentsInChildren<MeshRenderer>();
+        hit.meshes = visual.GetComponentsInChildren<MeshRenderer>(includeInactive);
         return hit;
     }
 
@@ -43,7 +43,7 @@ public sealed class PartHitFeedback : MonoBehaviour
             visual.localScale = scale * (1 + Mathf.Sin(heat * Mathf.PI) * .10f);
         }
         foreach (var mesh in meshes)
-            if (mesh != null && mesh.enabled)
+            if (mesh != null && mesh.enabled && mesh.gameObject.activeInHierarchy)
             {
                 mesh.GetPropertyBlock(ink);
                 ink.SetFloat("_HitFlash", heat > .68f ? 1 : heat * .55f);

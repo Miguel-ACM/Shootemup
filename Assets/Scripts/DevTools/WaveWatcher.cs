@@ -10,7 +10,7 @@ using UnityEngine.UI;
 // A build-accessible pattern viewer. Enemies, movement, aim and projectiles are the real combat code.
 public sealed partial class WaveWatcher : MonoBehaviour
 {
-    public const int FirstWave = 2, LastWave = 20, Miniboss = 21, BossOne = 22, BossTwo = 23, BossOther = 24, BossThree = 25, BossFour = 26;
+    public const int FirstWave = 2, LastWave = 20, Miniboss = 21, BossOne = 22, BossTwo = 23, BossOther = 24, BossThree = 25, BossFour = 26, BossFive = 27, BossSix = 28;
     const string DifficultyPreference = "WaveWatcher.Difficulty.v2";
     static bool requested;
     public static WaveWatcher Current
@@ -293,7 +293,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
 
     public void SelectEncounter(int encounter)
     {
-        if (!Ready || encounter < FirstWave || encounter > BossFour)
+        if (!Ready || encounter < FirstWave || encounter > BossSix)
             return;
         var view = encounter <= LastWave ? WatcherView.Waves : WatcherView.Bosses;
         var entries = WatcherCatalog.For(view, Level);
@@ -553,7 +553,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
             Spawned = 1;
             yield return null;
             yield return null; // Both City hulls finish Start before selecting the survivor phase.
-            int targetPhase = Mathf.Min(boss.PhaseCount, Encounter == BossFour ? 4 : Encounter == BossThree ? 3 : Encounter == BossOne ? 1 : 2);
+            int targetPhase = Mathf.Min(boss.PhaseCount, Encounter == BossSix ? 6 : Encounter == BossFive ? 5 : Encounter == BossFour ? 4 : Encounter == BossThree ? 3 : Encounter == BossOne ? 1 : 2);
             DistrictBoss survivor = boss, victim = null;
             if (boss is CityDuoBoss duo && duo.partner != null && targetPhase > 1)
             {

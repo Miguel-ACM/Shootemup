@@ -17,7 +17,7 @@ public sealed partial class VoidSovereignBoss
                 if(InterludeElapsed>=beatAt&&InterludeElapsed<13.8f)
                 {
                     PerimeterBarrage(chapter,beat++);
-                    beatAt+=Rest(chapter==1?.58f:chapter==2?.56f:.54f);
+                    beatAt+=Rest(chapter==1?.49f:chapter==2?.47f:.46f);
                 }
             }
             yield return null;
@@ -75,7 +75,7 @@ public sealed partial class VoidSovereignBoss
     }
     void Weave(int chapter,int beat)
     {
-        int edge=SourceEdge(chapter),count=Dense(chapter==3?15:13);
+        int edge=SourceEdge(chapter),count=Dense(chapter==3?17:15);
         bool crown=beat%4==0;
         Vector2 inward=Inward(edge);
         for(int side=-1;side<=1;side+=2)

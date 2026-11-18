@@ -51,6 +51,12 @@ public sealed partial class VoidSovereignBoss
     }
     protected override IEnumerator Cards()
     {
+        if (Memory != null)
+        {
+            yield return MemoryCard();
+            yield break;
+        }
+        Phrase(ObsidianCounterpoint());
         while(true)
         {
             CardIndex=0;yield return Teleport();yield return Prime(.65f);
@@ -58,13 +64,13 @@ public sealed partial class VoidSovereignBoss
             else if(Form==2)yield return Severing();
             else if(Form==3)yield return Hunger();
             else yield return WorldWithoutEdges();
-            yield return Wait(Rest(1.15f));
+            yield return Wait(Rest(.76f));
             CardIndex=1;yield return Teleport();yield return Prime(.65f);
             if(Form==1)yield return FuneralPsalm();
             else if(Form==2)yield return CutTheFirmament();
             else if(Form==3)yield return FalseStars();
             else yield return LastEquation();
-            yield return Wait(Rest(1.15f));
+            yield return Wait(Rest(.76f));
         }
     }
 

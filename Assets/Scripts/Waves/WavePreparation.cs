@@ -73,6 +73,12 @@ public sealed class WavePreparation : MonoBehaviour
                 IndustrialMeshFactory.VoidForm(form);
                 yield return null;
             }
+            for (int i = 0; i < 3; i++)
+            {
+                var source = DistrictWaves.Bosses(LevelRun.VoidMemory(i))[0];
+                _ = IndustrialMeshFactory.CombatHull((int)EnemyCatalog.Get(source).Hull);
+                yield return null;
+            }
             _ = VoidSovereignBoss.Body;
             job = null;
             yield break;

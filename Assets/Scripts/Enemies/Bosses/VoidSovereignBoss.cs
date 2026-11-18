@@ -6,31 +6,53 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
 {
     static Material bodyMaterial;
     public static Material Body=>bodyMaterial!=null?bodyMaterial:bodyMaterial=new Material(Resources.Load<Shader>("VoidBody"));
-    public override int PhaseCount=>Difficulty.Easy?3:4;
+    public override int PhaseCount => 6;
+    protected override float PhaseEnd(int phase) => phase >= 6 ? 0 : (7-phase)/7f;
+    bool LongBreak => CurrentPhase == 4 || CurrentPhase == 6;
+    readonly VoidEchoVisual[] echoes = new VoidEchoVisual[3];
+    VoidEchoVisual Memory => CurrentPhase <= 3 ? echoes[CurrentPhase-1] : null;
+    public bool EchoTarget(MeshFilter filter)
+    {
+        foreach (var echo in echoes)
+            if (echo != null && filter.transform.IsChildOf(echo.root))
+                return filter.transform == echo.Target;
+        return true;
+    }
     protected override bool NextPhaseReady=>HealthFraction<=PhaseEnd(CurrentPhase)+.000001f;
-    protected override float PhaseBreakSeconds=>16.1f;
+    protected override float PhaseBreakSeconds=>LongBreak ? 16.1f : 1.5f;
     protected override bool RepositionsOnPhase=>false;
     public bool Hidden {get;private set;}
     public float InterludeElapsed {get;private set;}
-    public int Form=>Difficulty.Easy && CurrentPhase==3 ? 4 : CurrentPhase;
-    MeshFilter mesh;
+    public int Form => CurrentPhase <= 3 ? 0 : CurrentPhase - 2;
     VoidAnatomyVisual body;
     Collider2D contact;
     readonly LineRenderer[] edgeTell=new LineRenderer[4];
-    protected override void Configure(){health=4300;hullScale=1.1f;attackInterval=.5f;nextAttack=1;}
+    protected override void Configure(){health=7525;hullScale=1.1f;attackInterval=.5f;nextAttack=1;}
     protected override void Start()
     {
-        base.Start();mesh=Hull.GetComponent<MeshFilter>();contact=GetComponent<PolygonCollider2D>();
+        base.Start();contact=GetComponent<PolygonCollider2D>();
         Hull.GetComponent<MeshRenderer>().sharedMaterial=Body;
         body=Hull.gameObject.AddComponent<VoidAnatomyVisual>();body.Build(this);
         // The source has no engines. Every form has a coherent solid central target.
         GetComponent<CombatHullVisual>().enabled=false;
         for(int i=0;i<4;i++){edgeTell[i]=CombatVisuals.Line(transform,LevelProjectilePalette.Accent(LevelId.Void),.06f);edgeTell[i].positionCount=2;edgeTell[i].enabled=false;}
+        for (int i=0;i<echoes.Length;i++) echoes[i]=new VoidEchoVisual(LevelRun.VoidMemory(i),Hull);
         SetForm();BuildRifts();
     }
     void SetForm()
     {
-        body.SetForm(Form-1);
+        var echo = Memory;
+        foreach (var memory in echoes) memory.root.gameObject.SetActive(memory == echo);
+        Hull.GetComponent<MeshRenderer>().enabled = echo == null;
+        body.enabled = echo == null;
+        body.SetForm(echo == null ? Form-1 : -1);
+        if (echo != null)
+        {
+            memoryAge = dive = 0;
+            echo.Pose(0);
+            for (int i=0;i<4;i++) firingCue.FollowPort(i,echo.Port(i));
+            return;
+        }
         Hull.localRotation=Quaternion.identity;
         for(int i=0;i<4;i++)
         {
@@ -44,6 +66,12 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
         station=new Vector3(0,Camera.UpLimit-3.25f,1);
         if(PhaseTransitioning||teleporting)return;
         if(!openingComplete){base.MoveBoss(dt*2);return;}
+        if (Memory != null)
+        {
+            MoveMemory(dt);
+            Memory.Pose(motionAge);
+            return;
+        }
         float x=Mathf.Sin(motionAge*(Form==2?.68f:.38f))*(Form==2?2.1f:1.35f);
         float y=Mathf.Sin(motionAge*.76f)*(Form==3?.9f:.45f);
         transform.position=Vector3.MoveTowards(transform.position,perch+new Vector3(x*.18f,y*.25f),dt*.7f);
@@ -55,7 +83,17 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
         if(amount>0)base.damage(amount);
     }
     protected override void Attack(){if(openingComplete&&!Hidden)OpenCards();}
-    protected override void OnPhaseEntered(int phase){CancelTeleport();StartCoroutine(Interlude(phase-1));}
+    protected override void OnPhaseEntered(int phase)
+    {
+        CancelTeleport();
+        if (LongBreak) StartCoroutine(Interlude(phase == 4 ? 1 : 2));
+        else
+        {
+            transform.position = perch = station;
+            contact.enabled = true;
+            SetForm();
+        }
+    }
     protected override void Die(){foreach(var line in edgeTell)if(line!=null)line.enabled=false;base.Die();}
 
     // Ports are the living eyes of the visible anatomy: mask eyes, scythe eyes, mandible eyes, then star-point eyes.

@@ -254,13 +254,13 @@ public abstract class CombatRound : AEnemyBullet
             // Counts are multiplied by ReserveScale inside both helpers: 1850 base slots.
             // Fracture lattice needs ricochets; scythe ribbons and one-side
             // interludes share warmed chevrons without changing total capacity.
-            TrimReserve<SimpleRound>(800);TrimReserve<NeedleRound>(352-StyledReserveTotal(LevelId.Void));
-            TrimReserve<RicochetBolt>(304);TrimReserve<BurstShell>(8);TrimReserve<ChevronRound>(112);
+            TrimReserve<SimpleRound>(800);TrimReserve<NeedleRound>(488-StyledReserveTotal(LevelId.Void));
+            TrimReserve<RicochetBolt>(168);TrimReserve<BurstShell>(8);TrimReserve<ChevronRound>(112);
             TrimReserve<GuidedMissile>(8);TrimReserve<ScatterCarrier>(4);TrimReserve<HelixRound>(20);
             TrimReserve<PlasmaOrb>(20);TrimReserve<ProximityMine>(6);
             TrimReserve<PulseLaser>(12);TrimReserve<LaserSideRound>(4);TrimReserve<GiantOrb>(200);
-            yield return Warm<SimpleRound>(800);yield return Warm<NeedleRound>(352-StyledReserveTotal(LevelId.Void));
-            yield return Warm<RicochetBolt>(304);yield return Warm<BurstShell>(8);yield return Warm<ChevronRound>(112);
+            yield return Warm<SimpleRound>(800);yield return Warm<NeedleRound>(488-StyledReserveTotal(LevelId.Void));
+            yield return Warm<RicochetBolt>(168);yield return Warm<BurstShell>(8);yield return Warm<ChevronRound>(112);
             yield return Warm<GuidedMissile>(8);yield return Warm<ScatterCarrier>(4);yield return Warm<HelixRound>(20);
             yield return Warm<PlasmaOrb>(20);yield return Warm<ProximityMine>(6);
             yield return Warm<PulseLaser>(12);yield return Warm<LaserSideRound>(4);yield return Warm<GiantOrb>(200);
@@ -344,7 +344,7 @@ public abstract class CombatRound : AEnemyBullet
             case LevelId.Underwater: return type == typeof(DropletRound) ? 64 : 0;
             case LevelId.Hell: return type == typeof(FlameRound) ? 64 : 0;
             case LevelId.Heaven: return type == typeof(FeatherRound) ? 64 : type == typeof(StarRound) ? 32 : 0;
-            case LevelId.Void: return type == typeof(KunaiRound) ? 40 : type == typeof(CrescentRound) ? 32 : type == typeof(GemRound) ? 24 : 0;
+            case LevelId.Void: return type == typeof(KunaiRound) ? 140 : type == typeof(CrescentRound) ? 140 : type == typeof(GemRound) ? 24 : 0;
             default: return 0;
         }
     }

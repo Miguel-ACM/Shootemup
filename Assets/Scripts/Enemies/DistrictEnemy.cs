@@ -383,7 +383,7 @@ public abstract class DistrictEnemy : AEnemy
         if (!CanEmit)
             return null;
         // Legacy center-fired volleys now leave the existing modeled weapon.
-        if (!(this is TunnelSawBoss) && (position - transform.position).sqrMagnitude < .00001f)
+        if (!(this is TunnelSawBoss) && !(this is VoidSovereignBoss) && (position - transform.position).sqrMagnitude < .00001f)
             position = Muzzle(volley);
         lastRelease = age;
         if (flashMuzzle) firingCue?.Flash(position, direction);

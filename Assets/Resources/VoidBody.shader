@@ -1,6 +1,6 @@
 Shader "Shootemup/Void Body"
 {
-    Properties { _Tint("Tint",Color)=(1,1,1,1) _HitFlash("Hit",Range(0,1))=0 _Rift("Rift",Range(0,1))=0 [HideInInspector] _HullStatus("Hull afflictions",Float)=0 }
+    Properties { _MemorySurface("Remembered obsidian",Float)=0 _MemoryPaint("Memory paint", 2D)="white" {} _Painted("Painted silk",Float)=0  _Tint("Tint",Color)=(1,1,1,1) _HitFlash("Hit",Range(0,1))=0 _Rift("Rift",Range(0,1))=0 [HideInInspector] _HullStatus("Hull afflictions",Float)=0 }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" }
@@ -15,8 +15,9 @@ Shader "Shootemup/Void Body"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "../Shaders/HullAffliction.hlsl"
             CBUFFER_START(UnityPerMaterial)
-            float4 _Tint;float _HitFlash,_Rift,_HullStatus;
+            float4 _Tint;float _HitFlash,_Rift,_HullStatus,_Painted,_MemorySurface;
             CBUFFER_END
+            TEXTURE2D(_MemoryPaint); SAMPLER(sampler_MemoryPaint);
             struct I{float4 positionOS:POSITION;float3 normalOS:NORMAL;float2 uv:TEXCOORD0;};
             struct O{float4 positionCS:SV_POSITION;float3 n:TEXCOORD0;float2 uv:TEXCOORD1;float3 p:TEXCOORD2;};
             O Vert(I i){O o;o.positionCS=TransformObjectToHClip(i.positionOS.xyz);o.n=TransformObjectToWorldNormal(i.normalOS);o.uv=i.uv;o.p=i.positionOS.xyz;return o;}
@@ -39,6 +40,13 @@ Shader "Shootemup/Void Body"
                 float3 iris=lerp(float3(.35,.09,.54),float3(.88,.58,1),pow(light,.45));
                 iris=iris*(.94+.06*sin(_Time.y*1.8+i.p.y*2))+spec*.22;
                 c=lerp(c,iris,eye);
+                float bevel=.15+.60*light+.25*abs(normal.x);
+                c+=_MemorySurface*float3(.32,.18,.43)*bevel*(1-.65*eye);
+                if (_Painted>.5)
+                {
+                    float pigment=dot(SAMPLE_TEXTURE2D(_MemoryPaint,sampler_MemoryPaint,i.uv).rgb,float3(.3,.55,.15));
+                    c=lerp(float3(.062,.027,.104),float3(.82,.56,.98),sqrt(saturate(pigment)))*(.58+.42*light)+spec*.12;
+                }
                 #if defined(HULL_AFFLICTED)
                 c=HullAffliction(c,HullSurfacePosition(i.p),_HullStatus);
                 #endif

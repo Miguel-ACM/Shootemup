@@ -436,3 +436,10 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - Cargo also improves one rarity for each miniboss fight carried through (the simulator's Cold Delivery still counts its two ordinary waves). A legendary crate fell back to epic because no legendary was unlocked: Lighthouse, Hive and Doppelganger now start unlocked on every save (existing saves receive them too).
 - The reward reason (BOSS REWARD, CARGO DELIVERY · EPIC, ELITE HUNT COMPLETE) is a compact margin row like the others: 132 x 30, 12-point type, the same dark plate in the instrument column, with a bar in the rarity colour.
 - The Lighthouse beam reaches 5.8 units, 70% farther than before; its width is unchanged.
+
+## Route combat direction (18 November 2026)
+
+- The laser companion sits a little farther aft and trails the pilot through turns.
+- Mushroom spores reverse horizontal steering through exposure and for five active-play seconds after leaving. A purple hull glow lasts through recovery. Mushroom formations are faster and sturdier. The Warden's three wing-led cards use layered spore blooms, crossing silk and a moving needle comb with a slower skirt of spores.
+- Dream's fast accelerating shots use the long needle silhouette. Stars share its palette with crescents. The Painter's final rose window overlaps a continuous pattern of dots and stars from the moving hands.
+- On every difficulty Void opens with purple-black memories of the three late bosses from the player's route, in order. Each performs a stronger signature attack. A one-sided survival interlude follows the third memory. The scythe mantis and mandible maw follow, then a second interlude and the crystal star. The star has twice a normal form's health. The six forms share one victory.

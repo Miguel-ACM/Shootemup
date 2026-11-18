@@ -23,7 +23,13 @@ public sealed class VoidAnatomyVisual : MonoBehaviour
     }
     public void SetForm(int value)
     {
-        form=value;GetComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.VoidCore(form);
+        form=value;
+        if (form < 0)
+        {
+            foreach (var limb in limbs) limb.gameObject.SetActive(false);
+            return;
+        }
+        GetComponent<MeshFilter>().sharedMesh=IndustrialMeshFactory.VoidCore(form);
         for(int i=0;i<4;i++)
         {
             limbs[i].gameObject.SetActive(i<(form==3?4:2));
