@@ -43,17 +43,17 @@ public static partial class IndustrialMeshFactory
             return mothBody;
         var b = new Builder();
         // Overlapping abdominal tergites diminish towards a long dark tail.
-        b.Pearl(new Vector3(0, .43f, -.08f), new Vector3(.28f, 1.04f, .21f), 11, 16, 10);
+        b.Pearl(new Vector3(0, .43f, -.08f), new Vector3(.28f, 1.04f, .21f), 11, 8, 5);
         for (int i = 0; i < 5; i++)
         {
             float y = .28f + i * .225f;
             float breadth = .29f - i * .037f;
-            b.Pearl(new Vector3(0, y, -.15f), new Vector3(breadth, .245f, .215f - i * .023f), i % 2 == 0 ? 2 : 4, 16, 10);
+            b.Pearl(new Vector3(0, y, -.15f), new Vector3(breadth, .245f, .215f - i * .023f), i % 2 == 0 ? 2 : 4, 8, 4);
             CutBlade(b, new[] { new Vector3(0, y - .09f, -.373f + i * .024f), new Vector3(0, y + .08f, -.35f + i * .024f), new Vector3(0, y + .21f, -.25f + i * .018f) }, .046f, .024f, 13);
         }
 
-        b.Pearl(new Vector3(0, -.18f, -.17f), new Vector3(.48f, .57f, .32f), 11, 20, 12);
-        b.Pearl(new Vector3(0, -.11f, -.29f), new Vector3(.42f, .47f, .30f), 14, 20, 12);
+        b.Pearl(new Vector3(0, -.18f, -.17f), new Vector3(.48f, .57f, .32f), 11, 10, 6);
+        b.Pearl(new Vector3(0, -.11f, -.29f), new Vector3(.42f, .47f, .30f), 14, 10, 6);
         // Raised, swept shoulder scales direct the eye into the narrow canopy.
         for (int s = -1; s <= 1; s += 2)
         {
@@ -65,7 +65,7 @@ public static partial class IndustrialMeshFactory
             }
 
             // Pectinate antennae: a curved stem with paired tapered combs.
-            b.Sweep(P(.20f, -.75f, -.25f), P(.31f, -1.23f, -.39f), P(.70f, -1.51f, -.20f), P(.86f, -1.67f, -.14f), .038f, .034f, 13, false, 14);
+            b.Sweep(P(.20f, -.75f, -.25f), P(.31f, -1.23f, -.39f), P(.70f, -1.51f, -.20f), P(.86f, -1.67f, -.14f), .038f, .034f, 13, false, 5, 5);
             for (int k = 0; k < 7; k++)
             {
                 float t = (k + 1) / 9f;
@@ -75,9 +75,9 @@ public static partial class IndustrialMeshFactory
             }
         }
 
-        b.Pearl(new Vector3(0, -.74f, -.21f), new Vector3(.32f, .38f, .24f), 13, 18, 10);
-        b.Pearl(new Vector3(0, -.71f, -.33f), new Vector3(.255f, .32f, .22f), 11, 18, 10);
-        b.Pearl(new Vector3(0, -.71f, -.40f), new Vector3(.213f, .285f, .16f), 9, 18, 12);
+        b.Pearl(new Vector3(0, -.74f, -.21f), new Vector3(.32f, .38f, .24f), 13, 8, 4);
+        b.Pearl(new Vector3(0, -.71f, -.33f), new Vector3(.255f, .32f, .22f), 11, 8, 4);
+        b.Pearl(new Vector3(0, -.71f, -.40f), new Vector3(.213f, .285f, .16f), 9, 10, 6);
         MothBarrel(b, WardenNoseMuzzle, .105f, .40f);
         b.MothTrimUV();
         return mothBody = b.Finish("Warden / antennae, canopy and segmented abdomen");
@@ -125,7 +125,7 @@ public static partial class IndustrialMeshFactory
         for (int ring = 0; ring < paint.Length; ring++)
         {
             int band = ring;
-            b.Surface(12, 1, (u, v) =>
+            b.Surface(6, 1, (u, v) =>
             {
                 float a = u * Mathf.PI * 2;
                 float r = radius * Mathf.Lerp(bore[band], bore[band + 1], v);
@@ -186,7 +186,7 @@ public static partial class IndustrialMeshFactory
         {
             float t = i == 0 ? .06f : .52f;
             Vector3 from = WingSkin(true, side, t, .07f), to = WingSkin(true, side, t + .41f, .05f);
-            b.Sweep(from, Vector3.Lerp(from, to, .34f) + Vector3.down * .09f, Vector3.Lerp(from, to, .67f) + Vector3.down * .04f, to, .041f, .043f, 13, false, 12);
+            b.Sweep(from, Vector3.Lerp(from, to, .34f) + Vector3.down * .09f, Vector3.Lerp(from, to, .67f) + Vector3.down * .04f, to, .041f, .043f, 13, false, 4, 5);
         }
 
         b.MothTrimUV();
@@ -219,7 +219,9 @@ public static partial class IndustrialMeshFactory
 
         public void MothPanel(bool fore, int side)
         {
-            const int spans = 40, chords = 10;
+            // Sample each authored edge interval two or three times. The atlas carries the eyespots.
+            int spans = fore ? 18 : 16;
+            const int chords = 3;
             int start = vertices.Count;
             for (int face = 0; face < 2; face++)
                 for (int row = 0; row <= chords; row++)
