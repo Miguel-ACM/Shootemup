@@ -1211,6 +1211,8 @@ public sealed class LevelEnvironment : MonoBehaviour
             snowFoliageMaterial.SetFloat("_FlowTime", clock);
         if (woodlandLeaves != null)
             material.SetFloat("_WindTime", clock);
+        if (dreamPanels != null)
+            material.SetFloat("_CanvasTime", clock);
         if (level == LevelId.Thunder)
             UpdateStorm(dt);
         UpdateWind();

@@ -5,6 +5,7 @@ Shader "Shootemup/Dream Canvas"
         _MainTex("Painted procession", 2D) = "white" {}
         _Studies("Sketchbook", 2D) = "black" {}
         _Drawings("Panel studies", Vector) = (0,1,2,0)
+        [HideInInspector] _CanvasTime("Canvas time", Float) = 0
     }
     SubShader
     {
@@ -21,6 +22,7 @@ Shader "Shootemup/Dream Canvas"
             TEXTURE2D(_Studies); SAMPLER(sampler_Studies);
             CBUFFER_START(UnityPerMaterial)
             float4 _Drawings;
+            float _CanvasTime;
             CBUFFER_END
             struct Input { float4 p:POSITION; float2 uv:TEXCOORD0; };
             struct Varyings { float4 p:SV_POSITION; float2 uv:TEXCOORD0; };
@@ -34,8 +36,14 @@ Shader "Shootemup/Dream Canvas"
             half4 Frag(Varyings i):SV_Target
             {
                 float turn = i.uv.y*6.2831853;
-                float drift = sin(turn*8 + _Time.y*.38) + .33*sin(turn*20 - _Time.y*.53);
-                float2 uv = i.uv + float2(drift*.004, .0005*sin(i.uv.x*6 + _Time.y*.32));
+                // Broad folds pass through the drawings. Both waves meet across the scroll loop.
+                float across = (i.uv.x - .5) * 3.14159265;
+                float swell = sin(turn*4 + _CanvasTime*.96 + .72*sin(across*2 - _CanvasTime*.40));
+                float curl = sin(turn*8 - _CanvasTime*.71 + across*1.5);
+                float margin = smoothstep(.08, .58, abs(i.uv.x - .5));
+                float2 bend = float2(.024*swell + .009*curl,
+                    .0048*sin(turn*2)*cos(across*2 + swell - _CanvasTime*.63));
+                float2 uv = i.uv + bend * lerp(.67, 1.25, margin);
                 half3 paint = SAMPLE_TEXTURE2D(_MainTex,sampler_MainTex,uv).rgb;
                 // Paint into three reserved pockets between the large figures. Object-space UVs
                 // move the overpainting with the same folded paper as its original brushwork.
@@ -57,7 +65,7 @@ Shader "Shootemup/Dream Canvas"
                     half4 glyph=SAMPLE_TEXTURE2D(_Studies,sampler_Studies,(cell+paper)*.25);
                     paint=lerp(paint,glyph.rgb,glyph.a*.85);
                 }
-                float grazing = .86 + .045*cos(turn*11 + i.uv.x*4 + drift);
+                float grazing = .86 + .045*cos(uv.y*6.2831853*11 + uv.x*4 + swell);
                 return half4(paint*grazing,1);
             }
             ENDHLSL
