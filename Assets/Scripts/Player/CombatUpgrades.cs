@@ -110,7 +110,6 @@ public sealed class CombatUpgrades : MonoBehaviour
             if (previous < 1 && capacitor >= 1)
             {
                 RunInventory.Ping(UpgradeKind.Capacitor);
-                ItemSound.Cue("itemCapReady", "ready", .12f, .85f);
                 ItemProcVfx.Emit(ItemProcShape.Charge, transform.position + Vector3.up * .5f, new Color(.45f, .75f, .7f), .5f);
                 ItemSpark.Emit(transform.position + Vector3.up * .7f, new Color(.5f, .9f, .7f), 4, .1f);
             }
@@ -178,7 +177,6 @@ public sealed class CombatUpgrades : MonoBehaviour
         if (capacitor > .175f)
         {
             RunInventory.Ping(UpgradeKind.Capacitor);
-            ItemSound.Play("capacitor", .12f + capacitor * .08f);
             ItemProcVfx.Emit(ItemProcShape.Charge, transform.position + Vector3.up * .8f, new Color(.45f, .75f, .7f), .55f);
             ItemSpark.Emit(transform.position + Vector3.up * .8f, new Color(.5f, .9f, .7f), 4, .16f, true);
         }
