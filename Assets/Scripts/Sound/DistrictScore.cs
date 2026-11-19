@@ -220,6 +220,7 @@ public sealed class DistrictScore : MonoBehaviour
     public void Boss(float warningSeconds)
     {
         if (!Active || !track.adaptive || wanted == Part.Boss) return;
+        bossTempo = 1;
         wanted = Part.Boss;
         double now = AudioSettings.dspTime;
         earliestBoss = now + warningSeconds;
