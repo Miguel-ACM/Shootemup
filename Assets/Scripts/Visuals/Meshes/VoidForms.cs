@@ -7,8 +7,8 @@ using UnityEngine;
 // Tiles in VoidBody.shader: 3 glowing vein, 8 living eye, 14 bright plate, 11/6 obsidian.
 public static partial class IndustrialMeshFactory
 {
-    static readonly Mesh[] voidForms = new Mesh[4], voidCores = new Mesh[4];
-    static readonly Mesh[,] voidLimbs = new Mesh[4, 4];
+    static readonly Mesh[] voidForms = new Mesh[4], voidCores = new Mesh[8];
+    static readonly Mesh[,] voidLimbs = new Mesh[8, 4];
     const int VoidVein = 3, VoidIris = 8, VoidPlate = 14, VoidStone = 6, VoidKeel = 11;
 
     public static Mesh VoidSovereignBossMesh() => VoidForm(0);
@@ -143,6 +143,15 @@ public static partial class IndustrialMeshFactory
         if (form == 0) VoidMaskCore(b);
         else if (form == 1) VoidMantisCore(b);
         else if (form == 2) VoidMawCore(b);
+        else if (form == 3) VoidStarCore(b);
+        else if (form == 4) VoidMawCore(b);
+        else if (form == 5)
+        {
+            CutStone(b,Vector3.zero,new Vector3(.89f,1.29f,.39f),VoidPlate,8);
+            for (int k=0;k<3;k++) CutHalo(b,new Vector3(0,.08f,-.34f-k*.09f),.80f-k*.18f,.07f,Vector3.one,Quaternion.identity,VoidVein,8);
+            VoidEye(b,new Vector3(0,.08f,-.68f),new Vector3(.29f,.38f,.12f));
+        }
+        else if (form == 6) VoidMaskCore(b);
         else VoidStarCore(b);
         return voidCores[form] = b.Finish("Void / carved central target " + form);
     }
@@ -155,8 +164,54 @@ public static partial class IndustrialMeshFactory
         if (form == 0) VoidHorn(b, side);
         else if (form == 1) VoidScythe(b, side);
         else if (form == 2) VoidMandible(b, side);
-        else VoidStarPoint(b, index);
+        else if (form == 3) VoidStarPoint(b, index);
+        else VoidFinalLimb(b, form-4,index);
         return voidLimbs[form, index] = b.Finish("Void / articulated fracture " + form + " / " + index);
+    }
+
+    public static Vector3 VoidFinalAperture(int route, int index)
+    {
+        float side=(index&1)==0 ? -1 : 1;
+        bool upper=index<2;
+        return route switch
+        {
+            0 => new Vector3(side*(upper?1.68f:1.13f),upper?.72f:-1.35f,-.36f),
+            1 => new Vector3(side*1.99f,upper?.54f:-.54f,-.30f),
+            2 => new Vector3(side*(upper?1.86f:.92f),upper?1.28f:-1.67f,-.40f),
+            _ => new Vector3(side*(upper?1.17f:1.87f),upper?1.66f:-.54f,-.32f)
+        };
+    }
+
+    static void VoidFinalLimb(Builder b,int route,int index)
+    {
+        Vector3 tip=VoidFinalAperture(route,index);
+        float sign=Mathf.Sign(tip.x);
+        Vector3 root=new Vector3(sign*.32f,tip.y*.16f,0);
+        if(route==0)
+        {
+            // The carapace opens onto four hooked, inward-turning talons.
+            VoidSweep(b,new[]{root,new Vector3(sign*1.48f,tip.y*.38f,-.05f),tip+new Vector3(sign*.36f,.33f,0),tip},
+                new[]{.23f,.39f,.21f,.025f},.73f,VoidPlate);
+        }
+        else if(route==1)
+        {
+            var elbow=new Vector3(sign*.94f,tip.y,0);
+            VoidSweep(b,new[]{root,elbow,tip},new[]{.31f,.28f,.18f},.62f,VoidStone);
+            for(int j=0;j<4;j++) b.Box(Vector3.Lerp(elbow,tip,j/4f)+Vector3.back*.17f,new Vector3(.105f,.54f,.15f),VoidPlate,VoidVein);
+        }
+        else
+        {
+            // The mask trails asymmetric quills; the solar crown opens pleated gold wings.
+            var bend=new Vector3(tip.x*.80f,tip.y*(route==2?.34f:.82f),-.15f);
+            VoidSweep(b,new[]{root,bend,tip},new[]{.22f,route==2?.29f:.43f,.035f},.75f,VoidPlate);
+            for(int j=0;j<3;j++)
+            {
+                var seat=Vector3.Lerp(root,bend,.35f+j*.24f);
+                var barb=seat+new Vector3(sign*(.45f+j*.09f),route==2?-.52f:.61f,-.11f);
+                VoidSweep(b,new[]{seat,barb},new[]{.13f,.012f},.72f,j==1?VoidVein:VoidPlate);
+            }
+        }
+        VoidEye(b,tip,new Vector3(.145f,.17f,.075f));
     }
 
     // Form 0: a horned mask. Brow, cheek and chin plates part around two living eyes.

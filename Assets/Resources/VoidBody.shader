@@ -17,6 +17,7 @@ Shader "Shootemup/Void Body"
             CBUFFER_START(UnityPerMaterial)
             float4 _Tint;float _HitFlash,_Rift,_HullStatus,_Painted,_MemorySurface;
             CBUFFER_END
+            float4 _VoidRouteLight;
             TEXTURE2D(_MemoryPaint); SAMPLER(sampler_MemoryPaint);
             struct I{float4 positionOS:POSITION;float3 normalOS:NORMAL;float2 uv:TEXCOORD0;};
             struct O{float4 positionCS:SV_POSITION;float3 n:TEXCOORD0;float2 uv:TEXCOORD1;float3 p:TEXCOORD2;};
@@ -46,6 +47,11 @@ Shader "Shootemup/Void Body"
                 {
                     float pigment=dot(SAMPLE_TEXTURE2D(_MemoryPaint,sampler_MemoryPaint,i.uv).rgb,float3(.3,.55,.15));
                     c=lerp(float3(.062,.027,.104),float3(.82,.56,.98),sqrt(saturate(pigment)))*(.58+.42*light)+spec*.12;
+                }
+                if (_VoidRouteLight.a > .5)
+                {
+                    float shine = max(c.r,max(c.g,c.b));
+                    c = shine * lerp(_VoidRouteLight.rgb,1,saturate(spec*.52 + eye*.19)) + spec*.04;
                 }
                 #if defined(HULL_AFFLICTED)
                 c=HullAffliction(c,HullSurfacePosition(i.p),_HullStatus);

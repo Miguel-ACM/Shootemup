@@ -30,6 +30,7 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
     protected override void Configure(){health=7525;hullScale=1.1f;attackInterval=.5f;nextAttack=1;}
     protected override void Start()
     {
+        Shader.SetGlobalColor("_VoidRouteLight", LevelProjectilePalette.Accent(LevelId.Void));
         base.Start();contact=GetComponent<PolygonCollider2D>();
         Hull.GetComponent<MeshRenderer>().sharedMaterial=Body;
         body=Hull.gameObject.AddComponent<VoidAnatomyVisual>();body.Build(this);
@@ -45,7 +46,7 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
         foreach (var memory in echoes) memory.root.gameObject.SetActive(memory == echo);
         Hull.GetComponent<MeshRenderer>().enabled = echo == null;
         body.enabled = echo == null;
-        body.SetForm(echo == null ? Form-1 : -1);
+        body.SetForm(echo == null ? (Form==4 ? 4+LevelProjectilePalette.VoidRoute : Form-1) : -1);
         if (echo != null)
         {
             memoryAge = dive = 0;
@@ -104,7 +105,7 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
         if(Form==1)local=new Vector3(index%2==0?-.32f:.32f,-.18f,-.44f);
         else if(Form==2)local=new Vector3(index%2==0?-1.66f:1.66f,.40f,-.30f);
         else if(Form==3)local=new Vector3(index%2==0?-1.36f:1.36f,-.96f,-.34f);
-        else local=index%4==0?new Vector3(-1.65f,0,-.30f):index%4==1?new Vector3(1.65f,0,-.30f):index%4==2?new Vector3(0,1.65f,-.30f):new Vector3(0,-1.65f,-.30f);
+        else local=IndustrialMeshFactory.VoidFinalAperture(LevelProjectilePalette.VoidRoute,index);
         return local;
     }
     IEnumerator Prime(float seconds)

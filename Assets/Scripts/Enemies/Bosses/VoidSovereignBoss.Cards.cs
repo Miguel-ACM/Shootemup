@@ -59,7 +59,11 @@ public sealed partial class VoidSovereignBoss
             yield return Prime(.42f);
             if (Form == 2) yield return ScissorScript(stanza);
             else if (Form == 3) yield return SwallowingSky(stanza);
-            else yield return WorldWithoutEdges();
+            else yield return LevelProjectilePalette.VoidRoute switch
+            {
+                0 => EmberTalons(stanza), 1 => JacquardEngine(stanza),
+                2 => Inkblot(stanza), _ => SolarChoir(stanza)
+            };
             yield return Wait(Rest(.36f));
         }
     }
@@ -115,86 +119,98 @@ public sealed partial class VoidSovereignBoss
         }
     }
 
-    IEnumerator WorldWithoutEdges()=>Every(6.2f,.52f,beat=>
+    // Cinder claws rake past each other. Short hot shots catch the preceding slow fingers.
+    IEnumerator EmberTalons(int stanza)
     {
-        if(beat%6==5)return;
-        if(beat%5==0)Phrase(CrossedGaze(HostileTone.Bright));
-        int count=Dense(9);bool crown=beat%3==0;
-        for(int port=0;port<4;port++)
+        int beats=Mathf.Max(16,Dense(32));
+        for(int k=0;k<beats;k++)
         {
-            if((port<2?0:1)!=beat%2)continue;
-            var bankTone=port<2?HostileTone.Dark:HostileTone.Bright;
-            int rows=FractureCount(count,port);
-            for(int i=0;i<rows;i++)
+            float u=k/(beats-1f);
+            for(int claw=0;claw<4;claw++)
             {
-                Vector2 axis=FractureAxis(port);
-                float u=Across(i,rows),sign=port%2==0?-1:1;
-                UseTone(crown&&i==rows-1?Other(bankTone):bankTone);
-                CrownedShot(crown&&i==rows-1,beat%3==0,Port(port),CombatVisuals.Rotate(axis,u*36+sign*Mathf.Sin(beat*.25f)*19),
-                    2.0f+.48f*(1-u*u),.17f,.64f).Pause(.95f,.22f,CombatRound.Turn.Rotate,-sign*24,1.0f).FadeAt(5.6f);
+                int side=(claw&1)*2-1;
+                UseTone(claw<2 ? HostileTone.Dark : HostileTone.Bright);
+                float cut=side*(30+73*Mathf.Cos(u*Mathf.PI*2+claw/2f))+stanza*11;
+                for(int tine=0;tine<3;tine++)
+                    Fire<KunaiRound>(Port(claw),Down(cut+tine*11+(claw<2?0:160)),
+                        2.6f+tine*.42f,.18f,tine==0).Bounce(1);
             }
+            yield return Wait(3.75f/beats);
         }
-    });
+    }
 
-    IEnumerator LastEquation()=>Every(6.2f,.9f,beat=>
+    // Four shuttles lay down a sheet of fabric. Green stitches flip ninety degrees
+    // on staggered beats, turning the weft into drifting diagonals.
+    IEnumerator JacquardEngine(int stanza)
     {
-        if(beat%5==4)return;
-        if(beat%3==0)Phrase(CrossedGaze(HostileTone.Dark));
-        int count=Dense(11);bool crown=beat%3==0;
-        for(int port=0;port<4;port++)
+        for(int row=0;row<5;row++)
         {
-            if((port<2?0:1)!=beat%2)continue;
-            var bankTone=port<2?HostileTone.Bright:HostileTone.Dark;
-            int rows=FractureCount(count,port);
-            for(int i=0;i<rows;i++)
+            int n=Mathf.Max(8,Dense(18));
+            for(int port=0;port<4;port++)
             {
-                Vector2 axis=FractureAxis(port);
-                float u=Across(i,rows),sign=port%2==0?-1:1;
-                // Ricochets cross the earlier bank after a rest. Giant tips travel
-                // straight out, so they cannot rebound into the next giant front.
-                var direction=CombatVisuals.Rotate(axis,u*33+sign*(beat%2==0?9:-9));
-                float speed=1.8f+.8f*Mathf.Abs(u);
-                UseTone(crown&&i==rows-1?Other(bankTone):bankTone);
-                if(crown&&i==rows-1)
-                    Fire<GiantOrb>(Port(port),direction,speed*.9f,.66f).Ramp(1.3f,1.8f,1.4f).FadeAt(5.6f);
-                else
-                    Fire<RicochetBolt>(Port(port),direction,speed,.18f).Bounce(1).Ramp(1.3f,1.8f,1.4f).FadeAt(5.6f);
+                int side=(port&1)*2-1;
+                UseTone(port<2 ? HostileTone.Bright : HostileTone.Dark);
+                for(int j=0;j<n;j++)
+                {
+                    float u=j/(n-1f);
+                    Vector3 lip=Port(port);
+                    Vector2 mark=new Vector2(Mathf.Lerp(-4.3f,4.3f,u),lip.y+side*(u-.5f)*2.1f+(port<2?.66f:-.66f));
+                    Vector2 delta=mark-(Vector2)lip;
+                    float speed=WorldSpeed(Mathf.Max(.2f,delta.magnitude/.65f));
+                    Fire<NeedleRound>(lip,delta,speed,.17f,j==0).Pause(.8f,.24f+.40f*(side<0?u:1-u),
+                        CombatRound.Turn.Down,side*(18+6*Mathf.Sin(stanza+row)),4.4f/speed).ShowTurn();
+                }
             }
+            yield return Wait(Rest(.63f));
         }
-    });
+    }
 
-    static int FractureCount(int count,int port)=>port<2?count:BankCount(count,port==2?1:-1);
-    static Vector2 FractureAxis(int port)=>port==0?CombatVisuals.Rotate(Vector2.down,-42):
-        port==1?CombatVisuals.Rotate(Vector2.down,42):port==2?Vector2.up:Vector2.down;
-
-    // Fixed crossfire for the final form (no aiming): the side tips charge visibly, then
-    // cross kunai, a moon at the heart of each chord, through a fixed point above the
-    // star that steps left, centre and right in turn. It closes the space above and on
-    // the body on a schedule, never by tracking the pilot.
-    int crossings;
-    IEnumerator CrossedGaze(HostileTone shade)
+    // Two lobes of ink unfold around each nib. Their mirrored outlines exchange
+    // concavities on each impression, leaving smaller comet trails through the centre.
+    IEnumerator Inkblot(int stanza)
     {
-        int step=crossings++%3;
-        for(float t=0;t<.45f;)
+        for(int impression=0;impression<6;impression++)
         {
-            if(!Holding)t+=Time.deltaTime*LevelRun.EnemyTempoScale;
-            Cue(Port(0),.45f-t);Cue(Port(1),.45f-t);
-            yield return null;
-        }
-        Vector3 cross=transform.position+new Vector3((step-1)*1.6f,step==1?2.6f:1.7f,0);
-        int count=Dense(3)|1;
-        UseTone(shade);
-        for(int port=0;port<2;port++)
-        {
-            Vector3 p=Port(port);
-            Vector2 line=((Vector2)(cross-p)).normalized;
-            for(int i=0;i<count;i++)
+            int n=Mathf.Max(18,Dense(38));
+            for(int p=0;p<4;p++)
             {
-                if(i==count/2)
-                    Fire<CrescentRound>(p,line,2.6f,.22f).FadeAt(6);
-                else
-                    Fire<KunaiRound>(p,CombatVisuals.Rotate(line,Across(i,count)*8),2.8f,.19f).FadeAt(6);
+                UseTone(p<2 ? HostileTone.Dark : HostileTone.Bright);
+                int side=(p&1)*2-1;
+                for(int i=0;i<n;i++)
+                {
+                    float a=i*Mathf.PI*2/n;
+                    float r=2+.8f*Mathf.Cos(3*a+impression*.62f);
+                    Vector2 v=CombatVisuals.Rotate(new Vector2(side*Mathf.Sin(a)*r,Mathf.Cos(a)*r*.72f),
+                        side*(stanza*8+p*21))+new Vector2(-side*.45f,-1.55f);
+                    if(p<2) Fire<SimpleRound>(Port(p),v,v.magnitude,.17f,i==0);
+                    else Fire<CrescentRound>(Port(p),v,v.magnitude,.20f,i==0);
+                }
             }
+            yield return Wait(Rest(.65f));
+        }
+    }
+
+    // Bright voice and dark echo. Five rotating bundles sound successively from
+    // the crown, with a faster answer between each pair of sustained notes.
+    IEnumerator SolarChoir(int stanza)
+    {
+        int beats=Mathf.Max(17,Dense(35));
+        for(int k=0;k<beats;k++)
+        {
+            float u=k/(beats-1f);
+            for(int p=0;p<4;p++)
+            {
+                int side=(p&1)*2-1;
+                UseTone(p<2 ? HostileTone.Bright : HostileTone.Dark);
+                for(int ray=0;ray<5;ray++)
+                {
+                    float a=ray*72+side*(u*91+12*Mathf.Sin(u*6))+p*18+stanza*13;
+                    if(p<2) Fire<KunaiRound>(Port(p),Down(a),3.6f,.17f,ray==0);
+                    else Fire<SimpleRound>(Port(p),Down(a),2.2f,.18f,ray==0)
+                        .Ramp(1.55f,.8f,.75f);
+                }
+            }
+            yield return Wait(4.25f/beats);
         }
     }
 }

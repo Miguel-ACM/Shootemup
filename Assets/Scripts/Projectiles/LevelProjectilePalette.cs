@@ -5,7 +5,14 @@ using UnityEngine;
 // tone tells the attack families apart, and the Polarity Engine's poles are the two tones.
 public static class LevelProjectilePalette
 {
-    static readonly Material[,] shared = new Material[System.Enum.GetValues(typeof(LevelId)).Length, 4];
+    static readonly Material[,] shared = new Material[System.Enum.GetValues(typeof(LevelId)).Length + 4, 4];
+    public static int VoidRoute => LevelRun.VoidMemory(2) switch
+    {
+        LevelId.Hell => 0, LevelId.Core => 1, LevelId.Dream => 2, _ => 3
+    };
+    static readonly Color[] voidInk = { new Color(1,.22f,.19f), new Color(.16f,.72f,.34f),
+        new Color(.73f,.31f,1), new Color(1,.83f,.18f) };
+
     public static Color Accent(LevelId level)
     {
         switch (level)
@@ -41,7 +48,7 @@ public static class LevelProjectilePalette
             case LevelId.Dream:
                 return new Color(.47f, .75f, 1f);
             case LevelId.Void:
-                return new Color(.72f, .25f, 1);
+                return voidInk[VoidRoute];
             default:
                 return new Color(1, .28f, .20f);
         }
@@ -50,6 +57,7 @@ public static class LevelProjectilePalette
     public static Material Material(bool neutral = false, HostileTone tone = HostileTone.Bright)
     {
         int level = (int)LevelRun.Current, variant = (neutral ? 1 : 0) + (tone == HostileTone.Dark ? 2 : 0);
+        if (LevelRun.Current == LevelId.Void) level = shared.GetLength(0) - 4 + VoidRoute;
         if (shared[level, variant] != null)
             return shared[level, variant];
         var material = new Material(CombatVisuals.ProjectileMaterial) { name = LevelRun.Current + " shared hostile ink " + tone };
