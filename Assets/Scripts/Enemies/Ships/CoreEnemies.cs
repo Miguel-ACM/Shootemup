@@ -131,12 +131,13 @@ public sealed class SentryCube : CoreCube
     protected override void Configure() { health = 55; hullScale = .58f; }
     protected override void Attack()
     {
-        int count = Dense(9);
+        int count = Mathf.Max(4, Dense(11));
+        float tilt = volley % 2 == 0 ? -14 : 14;
         for (int i = 0; i < count; i++)
         {
-            float lane = i - (count - 1) * .5f;
-            Fire<NeedleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, lane * 13), 4.0f, .17f)
-                .Ramp(1.5f, .9f, .35f);
+            float angle = tilt + Mathf.Lerp(-59, 59, i / (count - 1f));
+            Fire<NeedleRound>(Muzzle(i), CombatVisuals.Rotate(Vector2.down, angle), 3.65f, .17f, i == 0)
+                .Ramp(.65f, .85f, 1.32f);
         }
     }
 }
@@ -146,11 +147,12 @@ public sealed class RamCube : CoreCube
     protected override void Configure() { health = 120; hullScale = .76f; }
     protected override void Attack()
     {
-        int count = Dense(5);
+        int count = Mathf.Max(3, Dense(6));
         for (int side = -1; side <= 1; side += 2)
             for (int i = 0; i < count; i++)
                 Fire<SimpleRound>(Muzzle(side < 0 ? 0 : 1),
-                    CombatVisuals.Rotate(new Vector2(side, -.18f), side * (i * 12 - 12)), 3.15f, .21f).Bounce(1, false);
+                    CombatVisuals.Rotate(Vector2.down, side * Mathf.Lerp(18, 73, i / (count - 1f))),
+                    3.65f, .21f, i == 0).Bounce(1, false);
     }
 }
 
@@ -159,14 +161,17 @@ public sealed class RelayCarrier : DistrictEnemy
     protected override void Configure() { health = 96; hullScale = .78f; }
     protected override void Attack()
     {
-        int count = Dense(11), gap = count / 2 - 1 + volley % 3;
-        for (int i = 0; i < count; i++)
+        // Two stepped racks unfold from the carrier, then sweep back across its lane.
+        int teeth = Mathf.Max(3, Dense(6));
+        for (int side = -1; side <= 1; side += 2)
         {
-            if (Mathf.Abs(i - gap) < 2)
-                continue;
-            Vector2 direction = CombatVisuals.Rotate(Vector2.down, (i - (count - 1) * .5f) * 15);
-            Fire<NeedleRound>(Muzzle(i), direction, 2.85f, .17f)
-                .Pause(.75f, .36f, CombatRound.Turn.Down, 0, 4.85f);
+            for (int i = 0; i < teeth; i++)
+            {
+                float t = i / (teeth - 1f);
+                var axis = CombatVisuals.Rotate(Vector2.down, side * Mathf.Lerp(16, 65, t));
+                Fire<NeedleRound>(Muzzle(side < 0 ? 0 : 1), axis, 3.45f, .17f, i == 0)
+                    .Pause(.53f, .18f + .26f * t, CombatRound.Turn.Down, -side * (12 + 17 * t), 1.48f).ShowTurn();
+            }
         }
     }
 }
@@ -176,13 +181,15 @@ public sealed class RivetCutter : DistrictEnemy
     protected override void Configure() { health = 34; hullScale = .51f; }
     protected override void Attack()
     {
-        for (int i = 0; i < Dense(4); i++)
+        // Keep the fork centred on the committed aim as the cutter crosses the corridor.
+        Vector2 axis = Aim;
+        int pairs = Mathf.Max(2, Dense(4));
+        for (int i = 0; i < pairs; i++)
         {
-            var direction = CombatVisuals.Rotate(Aim, volley % 2 == 0 ? -13 : 13);
-            Fire<NeedleRound>(Muzzle(i), direction, 2.8f + i * .62f, .17f);
-            if (i % 2 == 0)
-                Fire<NeedleRound>(Muzzle(i), CombatVisuals.Rotate(direction, volley % 2 == 0 ? 25 : -25),
-                    3.25f + i * .38f, .16f, false);
+            float spread = Mathf.Lerp(5, 27, i / (pairs - 1f));
+            for (int side = -1; side <= 1; side += 2)
+                Fire<NeedleRound>(Muzzle(side < 0 ? 0 : 1), CombatVisuals.Rotate(axis, side * spread),
+                    4.8f - .20f * i, .16f, i == 0);
         }
     }
 }
