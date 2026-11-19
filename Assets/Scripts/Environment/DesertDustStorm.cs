@@ -1,9 +1,8 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-// Dust sweeps over the scenery. Combat render layers stay in front, including every hostile round.
-// In a sandstorm the dust never settles: the light turns ochre, the windward edge is a wall of
-// sand, and the gusts only vary between thick and thicker.
+// Ordinary dust crosses the dunes. During the sandstorm two nearer banks
+// obscure the sides of the combat area, with the windward bank reaching farther in.
 public sealed class DesertDustStorm : MonoBehaviour
 {
     struct Grain
@@ -11,7 +10,8 @@ public sealed class DesertDustStorm : MonoBehaviour
         public Vector2 p; public float speed, length, alpha;
     }
 
-    readonly Material[] banks = new Material[2];
+    readonly Material[] banks = new Material[3];
+    Transform foreground;
     Mesh plane, grains;
     Material grainMaterial;
     Grain[] particles;
@@ -72,6 +72,10 @@ public sealed class DesertDustStorm : MonoBehaviour
         if (Sandstorm)
         {
             int windward = Downwind > 0 ? -1 : 1;
+            banks[2] = new Material(banks[0]) { name = "Foreground sand banks" };
+            banks[2].SetFloat("_Layer", 2);
+            foreground = Add("Sandstorm visibility", plane, banks[2], -12, 100, "Bullet");
+            FitForeground();
             // Above the near dunes (-25), below the dust itself (-8).
             grade = SceneryGrade.Create(transform, "Sandstorm light", -22)
                 .Multiply(new Color(.86f, .64f, .42f), new Color(.88f, .74f, .58f), windward, 1, .24f)
@@ -79,7 +83,7 @@ public sealed class DesertDustStorm : MonoBehaviour
         }
     }
 
-    void Add(string name, Mesh mesh, Material material, float z, int order)
+    Transform Add(string name, Mesh mesh, Material material, float z, int order, string sortingLayer = "Background")
     {
         var go = new GameObject(name);
         go.transform.SetParent(transform, false);
@@ -87,9 +91,23 @@ public sealed class DesertDustStorm : MonoBehaviour
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var renderer = go.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = material;
-        renderer.sortingLayerName = "Background";
+        renderer.sortingLayerName = sortingLayer;
         renderer.sortingOrder = order;
         renderer.shadowCastingMode = ShadowCastingMode.Off;
+        return go.transform;
+    }
+
+    void FitForeground()
+    {
+        Rect arena = CombatRound.Border;
+        foreground.position = new Vector3(arena.center.x, arena.center.y, -12);
+        foreground.localScale = new Vector3(arena.width / 30f, arena.height / 40f, 1);
+    }
+
+    void LateUpdate()
+    {
+        if (foreground != null)
+            FitForeground();
     }
 
     void Update()
