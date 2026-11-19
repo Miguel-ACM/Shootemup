@@ -39,7 +39,8 @@ public sealed class BossHullCollider : MonoBehaviour
         foreach (var filter in boss.Hull.GetComponentsInChildren<MeshFilter>(true))
             if ((!(boss is VoidSovereignBoss sovereign) || sovereign.EchoTarget(filter)) &&
                 (thrusters == null || !thrusters.IsExhaust(filter.transform)) &&
-                (!(boss is DreamPainter) || filter.transform == boss.Hull))
+                (!(boss is DreamPainter) || filter.transform == boss.Hull) &&
+                (!(boss is CoreGantry gantry) || filter.transform == gantry.Reactor))
                 parts.Add(new Part { filter = filter, renderer = filter.GetComponent<MeshRenderer>() });
         if (boss is VoidSovereignBoss)
             for (int form = 0; form < 4; form++)
@@ -48,7 +49,7 @@ public sealed class BossHullCollider : MonoBehaviour
                 for (int limb = 0; limb < (form == 3 ? 4 : 2); limb++)
                     Outline(IndustrialMeshFactory.VoidLimb(form, limb));
             }
-        PartHitFeedback.Bind(transform, false, boss is VoidSovereignBoss);
+        PartHitFeedback.Bind(boss is CoreGantry core ? core.Reactor : transform, false, boss is VoidSovereignBoss);
         Fit();
     }
 

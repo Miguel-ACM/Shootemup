@@ -156,6 +156,9 @@ public sealed class CoreGantry : DistrictBoss
 {
     static readonly Vector3 CoreMuzzle = new Vector3(0, -.77f, -.28f);
     Transform carriage;
+    public Transform Reactor => carriage;
+    ParticleSystem sparks;
+    float sparkTravel;
     protected override bool RepositionsOnPhase => false;
     protected override void Configure() { health = 3025; hullScale = 1f; attackInterval = .22f; nextAttack = 1.45f; }
 
@@ -165,6 +168,8 @@ public sealed class CoreGantry : DistrictBoss
         station = new Vector3(0, Camera.UpLimit - 3.45f, 1);
         carriage = new GameObject("Sliding reactor carriage").transform;
         carriage.SetParent(Hull, false);
+        carriage.localScale = Vector3.one * 1.34f;
+        sparks = PSXImpactEffects.Create(transform, "Rail shoe sparks", 64);
         carriage.gameObject.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.GantryCarriage();
         var renderer = carriage.gameObject.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = CombatMaterials.Fleet;
@@ -181,7 +186,24 @@ public sealed class CoreGantry : DistrictBoss
         }
         float travel = phaseThree ? 1.63f : phaseTwo ? 1.32f : .95f;
         Vector3 target = station + Vector3.up * Mathf.Sin(motionAge * travel) * (phaseThree ? 1.75f : 1.22f);
+        float oldY = transform.position.y;
         transform.position = Vector3.MoveTowards(transform.position, target, dt * 4.8f);
+        float dy = transform.position.y - oldY;
+        sparkTravel += Mathf.Abs(dy);
+        while (sparkTravel >= .12f)
+        {
+            sparkTravel -= .12f;
+            for (int i = 0; i < 2; i++)
+            {
+                int side = i * 2 - 1;
+                var streak = new ParticleSystem.EmitParams {
+                    position = Muzzle(i), velocity = new Vector3(-side * Random.Range(.4f, 1.5f), -Mathf.Sign(dy) * Random.Range(2f, 4.5f)),
+                    startSize3D = new Vector3(.027f,.14f,.03f), startLifetime = Random.Range(.12f,.25f),
+                    startColor = new Color(1,.59f,.17f)
+                };
+                sparks.Emit(streak, 1);
+            }
+        }
         float x = Mathf.Sin(motionAge * (phaseThree ? 1.94f : phaseTwo ? 1.53f : 1.12f) + .65f) * 2.72f;
         carriage.localPosition = Vector3.MoveTowards(carriage.localPosition, new Vector3(x, 0, -.20f), dt * 8f);
     }

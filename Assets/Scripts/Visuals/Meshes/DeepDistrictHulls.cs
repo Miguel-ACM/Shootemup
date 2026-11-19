@@ -400,6 +400,16 @@ public static partial class IndustrialMeshFactory
             Vector3 radial = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
             CutBlade(b, new[] { new Vector3(0, .15f, -.65f) + radial * .80f, new Vector3(0, .15f, -.77f) + radial * .51f }, .10f, .10f, 6);
         }
+        // Split retaining jaws sit above the outer ring and expose the hot spindle between them.
+        for (int i = 0; i < 6; i++)
+        {
+            float angle = (i * 60 + 30) * Mathf.Deg2Rad;
+            var radial = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
+            var tangent = new Vector3(-radial.y, radial.x, 0);
+            var hub = new Vector3(0,.15f,-.76f);
+            CutBlade(b, new[] { hub + radial * .69f - tangent * .12f,
+                hub + radial * .56f, hub + radial * .47f + tangent * .11f }, .075f,.09f,13);
+        }
         // The lip coincides with CoreMuzzle on the independently moving carriage.
         DeepPort(b, new Vector3(0, -.77f, -.11f), .29f, 3);
         return gantryCarriage = b.Finish("Gantry sliding reactor carriage");
