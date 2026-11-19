@@ -72,7 +72,7 @@ public abstract class DistrictBoss : DistrictEnemy
         initialHealth = health;
         if (!(this is ArmoredHullBoss) && !(this is AbyssSubmarineBoss) && !(this is DesertWormBoss))
             BossHullCollider.Attach(this);
-        if(!(this is SeraphJudicatorBoss)&&!(this is VoidSovereignBoss)&&!(this is SpaceCitadelBoss))
+        if(!(this is SeraphJudicatorBoss)&&!(this is VoidSovereignBoss)&&!(this is SpaceCitadelBoss)&&!(this is WitnessBoss))
             gameObject.AddComponent<BossMechanismRig>();
         isBoss = true;
         scoreOnKill = 1600;
@@ -88,7 +88,7 @@ public abstract class DistrictBoss : DistrictEnemy
         }
         station = new Vector3(0, Camera.UpLimit - 2.3f, 1);
         nextPressure = nextAttack;
-        if (UsesHealthBar)
+        if (UsesHealthBar && !(this is WitnessBoss))
             BossAtmosphere.Begin();
     }
 

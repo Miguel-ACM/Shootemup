@@ -40,6 +40,28 @@ public static partial class MetaProgress
         get; private set;
     }
     public static IReadOnlyList<FlightLog> History => Data.history;
+    static int VoidStamp(LevelId origin) => origin switch
+    {
+        LevelId.Hell => 1, LevelId.Core => 2, LevelId.Dream => 4, LevelId.Heaven => 8, _ => 0
+    };
+    public static bool FinalEncounterReady => flight != null && flight.contract == null &&
+        districtDefeated && engagedBoss == typeof(VoidSovereignBoss) && (Data.voidRouteClears & 15) == 15;
+
+    public static FlightLog PreviewVictory() => new FlightLog {
+        frame = flight.frame, difficulty = flight.difficulty, route = flight.route,
+        score = Score.CurrentScore, earned = RunCoins.Earned,
+        banked = Mathf.Min(MaxCoins - Data.coins, Mathf.Min(RunCoins.Count, RunCoins.Earned)),
+        awards = flight.awards, unlocks = flight.unlocks, hits = flight.hits, bosses = flight.bosses,
+        clean = flight.clean, peak = flight.peak, seconds = Mathf.RoundToInt(Time.time - departed)
+    };
+
+    public static void EngageWitness()
+    {
+        engagedBoss = typeof(WitnessBoss);
+        districtDefeated = false;
+        bossHits = flight.hits;
+        flight.route += " / The Witness";
+    }
     public static string Pin => Data.pin;
     public static RunDifficulty FlightSetting
     {
@@ -149,6 +171,13 @@ public static partial class MetaProgress
             flight.clean++;
         if (flight.contract != null)
             return;
+        if (engagedBoss == typeof(WitnessBoss))
+        {
+            flight.awards.Add("The Witness  /  defeated");
+            return;
+        }
+        if (engagedBoss == typeof(VoidSovereignBoss) && LevelRun.FinalDistrict)
+            Data.voidRouteClears |= VoidStamp(LevelRun.VoidMemory(2));
         var record = StoredRecord();
         int mark = 1 << (int)LevelRun.Current;
         if ((record.clears & mark) == 0)

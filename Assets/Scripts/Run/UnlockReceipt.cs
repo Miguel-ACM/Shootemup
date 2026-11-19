@@ -14,16 +14,16 @@ public sealed class UnlockReceipt : MonoBehaviour
     PromptDevice promptDevice;
     int page, heldDirection;
 
-    public static void Show(Transform parent, FlightLog flight, TMP_FontAsset font)
+    public static void Show(Transform parent, FlightLog flight, TMP_FontAsset font, bool interactive = true)
     {
         var go = new GameObject("Flight receipt", typeof(RectTransform));
         go.transform.SetParent(parent, false);
         var receipt = go.AddComponent<UnlockReceipt>();
         receipt.font = font;
-        receipt.Build(flight);
+        receipt.Build(flight, interactive);
     }
 
-    void Build(FlightLog flight)
+    void Build(FlightLog flight, bool interactive)
     {
         var notices = flight.unlocks?.OrderByDescending(n => RouteUnlocks.IsRoute(n.key)).ToArray() ?? System.Array.Empty<ItemUnlockNotice>();
         var keys = ItemKeys(notices);
@@ -48,7 +48,7 @@ public sealed class UnlockReceipt : MonoBehaviour
         Text(details, flight.hits + (flight.hits == 1 ? " hit" : " hits") + "   /   " + flight.peak + "x peak", -98, 24, 15, DockInstrument.Paper);
         Text(details, flight.Duration + " / " + flight.earned + " coins earned", -150, 32, 13, DockInstrument.Muted);
 
-        if (pages.Count > 1)
+        if (interactive && pages.Count > 1)
             pagination = Label(transform, "", new Vector2(0, -248), new Vector2(240, 38), 16, DockInstrument.Paper, font);
         heldDirection = Direction(GameInput.Actions.PlayerControls.Move.ReadValue<Vector2>().x);
         SetPage(0);

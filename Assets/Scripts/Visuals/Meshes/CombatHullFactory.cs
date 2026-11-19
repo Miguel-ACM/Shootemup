@@ -92,6 +92,7 @@ public static partial class IndustrialMeshFactory
 
     public static Mesh CombatHull(int kind)
     {
+        if (kind == (int)CombatHullId.WitnessBoss) return WitnessSculpture.Body;
         if (kind == 97) return AsteroidRock(1);
         if (kind == 96) return AsteroidRock(0);
         if (kind == 95) return ThicketLurkerMesh();

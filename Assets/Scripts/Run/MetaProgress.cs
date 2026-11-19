@@ -38,7 +38,8 @@ public static partial class MetaProgress
     [Serializable]
     sealed class SaveData
     {
-        public int version = 7;
+        public int version = 8;
+        public int voidRouteClears;
         public int lastFrame;
         public RunDifficulty difficulty = RunDifficulty.Normal;
         public string pin;
@@ -263,6 +264,19 @@ public static partial class MetaProgress
                     if (replacement != null) data.stock[i] = replacement;
                     else data.stock.RemoveAt(i);
                 }
+            Save();
+        }
+        if (data.version < 8)
+        {
+            foreach (var log in data.history)
+            {
+                if (!string.IsNullOrEmpty(log.contract) || log.outcome != "Victory" || log.route == null) continue;
+                var stops = log.route.Split(new[] { " / " }, StringSplitOptions.None);
+                if (stops.Length >= 2 && stops[stops.Length - 1] == "Void" &&
+                    Enum.TryParse(stops[stops.Length - 2], out LevelId origin))
+                    data.voidRouteClears |= VoidStamp(origin);
+            }
+            data.version = 8;
             Save();
         }
         // A run that never reached its end (the game was closed) still earns a fresh shop.

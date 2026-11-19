@@ -42,6 +42,11 @@ public sealed class IndustrialHUD : MonoBehaviour
     public float EntranceAge => entranceAge;
     public bool EntranceComplete => entranceAge >= FluorescentStartup.CompleteAt && !shuttingDown;
     bool shuttingDown;
+    public static void RestorePower()
+    {
+        var hud = FindAnyObjectByType<IndustrialHUD>();
+        if (hud != null) hud.shuttingDown = false;
+    }
 
     /// <summary>Switches every instrument off with the startup flicker played in reverse.</summary>
     public static void ShutDown()

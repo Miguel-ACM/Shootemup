@@ -12,6 +12,22 @@ public sealed class GameOverState : MonoBehaviour
     TMP_FontAsset font;
     float age;
     bool leaving;
+    System.Action afterShatter;
+    public static void ShowFalseVictory(System.Action enterBoss)
+    {
+        if (Active) return;
+        instance = new GameObject("Fractured victory", typeof(RectTransform)).AddComponent<GameOverState>();
+        instance.won = true;
+        instance.afterShatter = enterBoss;
+        instance.log = MetaProgress.PreviewVictory();
+        IndustrialHUD.ShutDown();
+        BGMManager.PrepareFinalMusic();
+        var dialog = FindAnyObjectByType<Dialog>(FindObjectsInactive.Include);
+        if (dialog != null) { dialog.Hide(); instance.font = dialog.font; }
+        CombatDecision.Begin();
+        foreach (var weapon in FindObjectsByType<AWeapon>()) weapon.StopFiring();
+        instance.Build();
+    }
     public static void Show(bool victory = false)
     {
         if (Active)
@@ -53,7 +69,7 @@ public sealed class GameOverState : MonoBehaviour
     Image wings;
     void Build()
     {
-        log = MetaProgress.LastFlight ?? new FlightLog
+        log ??= MetaProgress.LastFlight ?? new FlightLog
         {
             score = Score.CurrentScore,
             earned = RunCoins.Earned,
@@ -97,7 +113,7 @@ public sealed class GameOverState : MonoBehaviour
         Label("COINS BANKED", 193, 20, 12, DockInstrument.Muted, 98, 145);
         coins = Label("", 161, 40, 25, DockInstrument.Brass, 98, 145);
         DockInstrument.Block(playfield, "Tally rule", Vector2.up * 124, new Vector2(334, 2), new Color(.22f, .31f, .32f));
-        UnlockReceipt.Show(playfield, log, font);
+        UnlockReceipt.Show(playfield, log, font, afterShatter == null);
         footer = Label("", -324, 32, 14, DockInstrument.Muted);
         group.alpha = 0;
     }
@@ -139,6 +155,15 @@ public sealed class GameOverState : MonoBehaviour
             coins.text = "+" + Mathf.RoundToInt(log.banked * t).ToString("N0");
             tallied = t >= 1;
         }
+        if (afterShatter != null)
+        {
+            if (age >= 3 && !leaving)
+            {
+                leaving = true;
+                StartCoroutine(Shatter());
+            }
+            return;
+        }
         bool ready = age > 1.6f;
         footer.text = ready ? DockInstrument.MenuKey() + "   HANGAR" : "";
         var controls = GameInput.Actions.PlayerControls;
@@ -147,6 +172,24 @@ public sealed class GameOverState : MonoBehaviour
             leaving = true;
             CloudTransition.Load("L1", HangarHub.Return);
         }
+    }
+
+    System.Collections.IEnumerator Shatter()
+    {
+        var glass = VictoryGlass.Capture(GetComponent<Canvas>(), playfield);
+        playfield.gameObject.SetActive(false);
+        WitnessChamber.Open();
+        IndustrialHUD.RestorePower();
+        ItemSound.Play("shatter", .55f);
+        for (float t = 0; t < VictoryGlass.Duration; t += Time.unscaledDeltaTime)
+        {
+            glass.Animate(t);
+            yield return null;
+        }
+        instance = null;
+        CombatDecision.End();
+        afterShatter();
+        Destroy(gameObject);
     }
 
     void OnDestroy()

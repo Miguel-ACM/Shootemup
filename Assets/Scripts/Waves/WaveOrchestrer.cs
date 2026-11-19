@@ -633,7 +633,7 @@ public class WaveOrchestrer : MonoBehaviour
                 GameOverState.Show();
                 return;
             }
-            MetaProgress.DefeatBoss();
+            if (defeated) MetaProgress.DefeatBoss();
             choosingRoute = true;
             isWaveComingOut = false;
             EraseAllBullets();
@@ -699,7 +699,10 @@ public class WaveOrchestrer : MonoBehaviour
             // Leave a moment for its coin burst to return before banking the run.
             yield return new WaitForSeconds(2);
             foreach (var coin in FindObjectsByType<Money>()) coin.Collect();
-            GameOverState.Show(true);
+            if (MetaProgress.FinalEncounterReady)
+                GameOverState.ShowFalseVictory(BeginWitness);
+            else
+                GameOverState.Show(true);
             yield break;
         }
         if (pendingCargo.Count > 0)
@@ -716,6 +719,18 @@ public class WaveOrchestrer : MonoBehaviour
                decision = null;
                StartCoroutine(ChooseNextRoute());
            }, position, doubleBossReward: doubleReward);
+    }
+
+    void BeginWitness()
+    {
+        MetaProgress.EngageWitness();
+        choosingRoute = false;
+        Phase = RunPhase.Boss;
+        var pilot = ship.GetComponent<Shipcontroller>();
+        pilot.Repair(Mathf.CeilToInt(pilot.maxHealth));
+        BGMManager.PlayFinalMusic();
+        DistrictEnemy.Spawn(typeof(WitnessBoss), new Vector3(0, Camera.UpLimit + 3.8f, 1))
+            .SetOrchestrer(this, currentWaveNumber);
     }
 
     /// <summary>Debug: the next wave break opens a pact offer.</summary>

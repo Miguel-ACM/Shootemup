@@ -18,6 +18,7 @@ public static class EnemyWeaponLayout
             return expansion.ports;
         switch (hull)
         {
+            case (int)CombatHullId.WitnessBoss: return new Vector3[4];
             // Asteroids never fire: they hurt only on contact.
             case 96:
             case 97:
