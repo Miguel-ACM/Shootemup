@@ -12,7 +12,6 @@ public sealed class CisternHeart : DistrictBoss
     {
         base.Start();
         station = new Vector3(0, LakeCenter, 1);
-        LevelEnvironment.RevealCistern(station.y);
     }
 
     protected override void MoveBoss(float dt)
