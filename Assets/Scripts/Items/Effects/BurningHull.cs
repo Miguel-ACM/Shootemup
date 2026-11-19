@@ -14,12 +14,14 @@ public sealed class BurningHull : MonoBehaviour
     Vector3 lastTrail;
 
     public float Heat => heat;
+    public static float Vulnerability(AEnemy target) =>
+        target != null && target.TryGetComponent<BurningHull>(out var fire) && fire.heat >= .05f ? 1.15f : 1f;
 
     public void Ignite(float amount, bool canLeaveTrail = true)
     {
         enemy = GetComponent<AEnemy>();
         trailEligible |= canLeaveTrail;
-        heat = Mathf.Min(MaxHeat, heat + amount * .35f);
+        heat = Mathf.Min(MaxHeat, Mathf.Max(heat, 1.5f) + amount * .55f);
         lastFed = Time.time;
         if (effect == null)
         {
@@ -53,7 +55,7 @@ public sealed class BurningHull : MonoBehaviour
         {
             nextTick = Time.time + TickRate;
             // The same damage per second as the heat value, delivered in quick quiet licks.
-            CombatHit.Affliction(enemy, heat * TickRate * PoisonedHull.Weakness(enemy) * MatchStrike.BurnScale);
+            CombatHit.Affliction(enemy, heat * TickRate * MatchStrike.BurnScale);
         }
     }
 
