@@ -74,8 +74,6 @@ public sealed class RewardHexes : MonoBehaviour
             case EncounterKind.Item:
             case EncounterKind.Pact:
                 return 1;
-            case EncounterKind.Skip:
-                return .9f;
             case EncounterKind.Challenge:
             case EncounterKind.Cargo:
                 return .75f;
