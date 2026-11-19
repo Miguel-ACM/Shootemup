@@ -26,7 +26,7 @@ public abstract class AEnemyBullet : MonoBehaviour
             Destroy(gameObject);
         Move();
         transform.position += PocketWind.Velocity(transform.position) * Time.deltaTime;
-        if (CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _)) Vanish();
+        if (CombatWalls.SweepShot(wallFrom, transform.position, .04f, out _, out _, out _)) Vanish();
         wallFrom = transform.position;
     }
 

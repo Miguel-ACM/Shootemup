@@ -307,7 +307,7 @@ public sealed class PlayerRound : ABullet
         step += new Vector2(heading.y, -heading.x) * (lateral - weave);
         weave = lateral;
         var end = wallFrom + (Vector3)step;
-        bool solidWall = CombatWalls.Sweep(wallFrom, end, .04f, out var wallPoint, out var wallNormal);
+        bool solidWall = CombatWalls.SweepShot(wallFrom, end, .04f, out var wallPoint, out var wallNormal, out var block);
         if (bankShot && !armedBank)
         {
             if (TryBank(wallFrom, step, solidWall, wallPoint, wallNormal, out var point))
@@ -318,7 +318,7 @@ public sealed class PlayerRound : ABullet
         }
         else if (solidWall)
         {
-            Despawn();
+            HitWall(block, wallPoint);
             return;
         }
         var upgrades = CombatUpgrades.Current;
@@ -329,9 +329,9 @@ public sealed class PlayerRound : ABullet
             plateDeflected = headingLocked = true;
             heading = step = Vector2.up;
             end = new Vector3(plate.x, plate.y + Vector2.Distance(plate, end), end.z);
-            if (CombatWalls.Sweep(plate, end, .04f, out _, out _))
+            if (CombatWalls.SweepShot(plate, end, .04f, out wallPoint, out _, out block))
             {
-                Despawn();
+                HitWall(block, wallPoint);
                 return;
             }
             upgrades.Deflect(plate);
@@ -410,14 +410,27 @@ public sealed class PlayerRound : ABullet
         return true;
     }
 
+    void HitWall(CoreCube block, Vector2 point)
+    {
+        transform.position = new Vector3(point.x, point.y, transform.position.z);
+        if (block != null)
+            HitEnemy(block, point);
+        Despawn();
+    }
+
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (detonated || bankShot && !armedBank)
             return;
         var enemy = collision.GetComponent<AEnemy>();
+        if (enemy != null)
+            HitEnemy(enemy, collision.ClosestPoint(transform.position));
+    }
+
+    void HitEnemy(AEnemy enemy, Vector2 impact)
+    {
         if (enemy == null || !enemy.CanReceiveDamage || !hit.Add(enemy))
             return;
-        Vector2 impact = collision.ClosestPoint(transform.position);
         CombatHit.Apply(enemy, damage * ShotTraits.ReachDamage(travelled), impact, heading,
             generation, companion, delivery == PlayerDelivery.Flame);
         if (delivery == PlayerDelivery.Missile)
@@ -427,6 +440,12 @@ public sealed class PlayerRound : ABullet
         if (chargeLevel > 0)
         {
             ExplodeCharge();
+            return;
+        }
+        if (enemy is CoreCube)
+        {
+            if (delivery == PlayerDelivery.Shell) Detonate();
+            else Despawn();
             return;
         }
         if (!rebounded && generation == 0 && CombatUpgrades.Current != null && CombatUpgrades.Current.Count(UpgradeKind.BouncingBall) > 0)

@@ -390,7 +390,7 @@ public abstract class DistrictEnemy : AEnemy
         lastRelease = age;
         if (flashMuzzle) firingCue?.Flash(position, direction);
         CombatRound.LaunchTone = tone;
-        var shot = CombatRound.Launch<T>(position, direction, velocity * ProjectileSpeedScale * (IsMiniboss ? 1.14f : 1), radius, ChillProjectiles);
+        var shot = CombatRound.Launch<T>(position, direction, velocity * ProjectileSpeedScale * (IsMiniboss ? 1.14f : 1), radius, ChillProjectiles, this as CoreCube);
         CombatRound.LaunchTone = HostileTone.Bright;
         if (shot != null)
             shot.damage *= ProjectileDamageScale;

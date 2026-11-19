@@ -141,7 +141,8 @@ public abstract class CombatRound : AEnemyBullet
         }
     }
 
-    public static T Launch<T>(Vector3 p, Vector2 direction, float velocity = 4, float radius = .18f, float? chillSpeed = null) where T : CombatRound
+    CoreCube firingBlock;
+    public static T Launch<T>(Vector3 p, Vector2 direction, float velocity = 4, float radius = .18f, float? chillSpeed = null, CoreCube firingBlock = null) where T : CombatRound
     {
         using var sample = launchMarker.Auto();
         if (Live.Count >= Limit)
@@ -163,6 +164,7 @@ public abstract class CombatRound : AEnemyBullet
         shot.Tone = shot is PulseLaser ? HostileTone.Bright : LaunchTone;
         shot.chillSpeed = shot is PulseLaser ? 1 : chillSpeed ?? inheritedChill;
         shot.fieldChillUntil = 0;
+        shot.firingBlock = firingBlock;
         shot.tint.SetTone(shot.Tone);
         shot.needsOrientation = true;
         if (Live.Count == 0 || launchSequence >= DepthSlots)
@@ -508,7 +510,9 @@ public abstract class CombatRound : AEnemyBullet
             transform.position += PocketWind.Velocity(transform.position) * Time.deltaTime;
         if (!ended && !(this is PulseLaser) && EventHorizon.Active)
             transform.position += EventHorizon.Bend(transform.position, lastVelocity, Serial) * Time.deltaTime;
-        if (!ended && !(this is PulseLaser) && collision.enabled && CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _))
+        if (firingBlock != null && !firingBlock.ContainsShot(wallFrom, .04f))
+            firingBlock = null;
+        if (!ended && !(this is PulseLaser) && collision.enabled && CombatWalls.SweepShot(wallFrom, transform.position, .04f, out _, out _, out _, firingBlock))
         {
             Release();
             return;

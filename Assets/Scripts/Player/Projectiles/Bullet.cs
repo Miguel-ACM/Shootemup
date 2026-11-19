@@ -35,11 +35,7 @@ public class Bullet : ABullet
         if (Time.deltaTime <= 0 || WorldTimeStop.Frozen)
             return;
         flight += Time.deltaTime;
-        if (CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _))
-        {
-            Despawn();
-            return;
-        }
+        if (HitWall()) return;
         wallFrom = transform.position;
         if (!rubberReturned && transform.up.y > 0 && RubberReturn.AtTop(transform.position))
         {
@@ -94,22 +90,39 @@ public class Bullet : ABullet
         transform.rotation = Quaternion.LookRotation(Vector3.forward, direction);
     }
 
+    bool HitWall()
+    {
+        if (!CombatWalls.SweepShot(wallFrom, transform.position, .04f, out var point, out _, out var block))
+            return false;
+        if (!hitResolved && block != null && block.CanReceiveDamage)
+            Strike(block, point);
+        hitResolved = true;
+        Despawn();
+        return true;
+    }
+
+    void Strike(AEnemy enemy, Vector2 impact)
+    {
+        hitResolved = true;
+        if (player == null)
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
+        player.PlayHitSound("hit1");
+        CombatHit.Apply(enemy, damage * ShotTraits.ReachDamage(travelled), impact,
+            rigidBody != null ? rigidBody.linearVelocity : (Vector2)transform.up, companion: companionShot);
+    }
+
     void OnTriggerEnter2D(Collider2D collision)
     {
         // A moving multipart hull can queue several contacts before Destroy runs.
         if (hitResolved) return;
-        if (CombatWalls.Sweep(wallFrom, transform.position, .04f, out _, out _)) { Despawn(); return; }
+        if (HitWall()) return;
         if (collision.CompareTag("Enemy"))
         {
             AEnemy en = collision.gameObject.GetComponent<AEnemy>();
             if (en == null || !en.CanReceiveDamage)
                 return;
-            hitResolved = true;
-            if (player == null)
-                player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
-            player.PlayHitSound("hit1");
-            CombatHit.Apply(en, damage * ShotTraits.ReachDamage(travelled), collision.ClosestPoint(transform.position),
-                rigidBody != null ? rigidBody.linearVelocity : (Vector2)transform.up, companion: companionShot);
+            Strike(en, collision.ClosestPoint(transform.position));
+            if (en is CoreCube) { Despawn(); return; }
             bool ball = CombatUpgrades.Current != null && CombatUpgrades.Current.Count(UpgradeKind.BouncingBall) > 0;
             int bounces = CombatUpgrades.Current == null ? 0 : ball ? 1 : CombatUpgrades.Current.TryRebound(transform.position);
             if (bounces > 0)

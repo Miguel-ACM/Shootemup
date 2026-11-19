@@ -97,9 +97,11 @@ public class ElectricityBullet : ABullet
                     }
                 }
             }
-            if (CombatWalls.Sweep(currPoint, nextPoint, width * .5f, out var wall, out _))
+            if (CombatWalls.SweepShot(currPoint, nextPoint, width * .5f, out var wall, out _, out var block))
             {
                 path.Add(wall);
+                if (block != null && block.CanReceiveDamage)
+                    hitEnemies.Add(block);
                 break;
             }
             if (hitObject != null)

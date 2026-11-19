@@ -1,19 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// These blocks constrain the pilot independently of the projectile wall system.
-// A shot can still hit a destructible face or pass a fixed block's lane.
 public abstract class CoreCube : DistrictEnemy
 {
     static readonly HashSet<CoreCube> active = new HashSet<CoreCube>();
     static readonly List<CombatWall> solid = new List<CombatWall>(64);
+    static readonly List<CoreCube> owners = new List<CoreCube>(64);
+    static int collectedFrame = -1;
     protected virtual bool Breakable => true;
     public override bool CanBeTargeted => Breakable && base.CanBeTargeted;
     protected virtual float HalfWidth => Hull.localScale.x * .81f;
     float HalfHeight => Hull.localScale.y * .81f;
 
-    protected override void OnEnable() { base.OnEnable(); active.Add(this); }
-    protected override void OnDisable() { active.Remove(this); base.OnDisable(); }
+    protected override void OnEnable() { base.OnEnable(); active.Add(this); collectedFrame = -1; }
+    protected override void OnDisable() { active.Remove(this); collectedFrame = -1; base.OnDisable(); }
 
     protected override void Start()
     {
@@ -28,12 +28,17 @@ public abstract class CoreCube : DistrictEnemy
     public override void damage(float amount)
     {
         if (Breakable)
+        {
             base.damage(amount);
+            if (health <= 0) collectedFrame = -1;
+        }
     }
 
     static void Collect()
     {
+        collectedFrame = Time.frameCount;
         solid.Clear();
+        owners.Clear();
         foreach (var cube in active)
         {
             Vector2 center = cube.transform.position;
@@ -42,7 +47,36 @@ public abstract class CoreCube : DistrictEnemy
                 center.x - w > Camera.RightLimit + 1 || center.x + w < Camera.LeftLimit - 1)
                 continue;
             solid.Add(Rect.MinMaxRect(center.x - w, center.y - h, center.x + w, center.y + h));
+            owners.Add(cube);
         }
+    }
+
+    internal bool ContainsShot(Vector2 point, float radius)
+    {
+        Vector2 offset = point - (Vector2)transform.position;
+        return Mathf.Abs(offset.x) <= HalfWidth + radius && Mathf.Abs(offset.y) <= HalfHeight + radius;
+    }
+
+    internal static bool SweepShot(Vector2 from, Vector2 to, float radius, CoreCube emitter,
+        out Vector2 point, out Vector2 normal, out CoreCube block)
+    {
+        point = to;
+        normal = Vector2.zero;
+        block = null;
+        if (active.Count == 0) return false;
+        if (collectedFrame != Time.frameCount) Collect();
+        float nearest = float.PositiveInfinity;
+        for (int i = 0; i < solid.Count; i++)
+        {
+            if (ReferenceEquals(owners[i], emitter) || !solid[i].Sweep(from, to, radius, out float t, out var face) || t >= nearest)
+                continue;
+            nearest = t;
+            normal = face;
+            block = owners[i];
+        }
+        if (block == null) return false;
+        point = Vector2.LerpUnclamped(from, to, nearest);
+        return true;
     }
 
     public static Vector3 Constrain(Vector3 from, Vector3 desired)

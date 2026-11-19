@@ -61,6 +61,20 @@ public static class CombatWalls
     { foreach(var wall in walls)if(wall.Contains(point,radius))return true;return false; }
     public static bool Sweep(Vector2 from,Vector2 to,float radius,out Vector2 point,out Vector2 normal)
         => Sweep(Solid, from, to, radius, out point, out normal);
+    public static bool SweepShot(Vector2 from, Vector2 to, float radius, out Vector2 point,
+        out Vector2 normal, out CoreCube block, CoreCube emitter = null)
+    {
+        bool hitBlock = CoreCube.SweepShot(from, to, radius, emitter, out point, out normal, out block);
+        if (Active && Sweep(from, to, radius, out var wall, out var face) &&
+            (!hitBlock || (wall - from).sqrMagnitude < (point - from).sqrMagnitude))
+        {
+            point = wall;
+            normal = face;
+            block = null;
+            return true;
+        }
+        return hitBlock;
+    }
     static bool Sweep(List<CombatWall> walls,Vector2 from,Vector2 to,float radius,out Vector2 point,out Vector2 normal)
     {
         float nearest=2;normal=Vector2.zero;
