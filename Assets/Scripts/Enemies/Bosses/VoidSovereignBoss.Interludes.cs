@@ -5,7 +5,8 @@ public sealed partial class VoidSovereignBoss
 {
     IEnumerator Interlude(int chapter)
     {
-        Hidden=true;InterludeElapsed=0;Hull.gameObject.SetActive(false);contact.enabled=false;
+        Hidden=true;InterludeElapsed=0;contact.enabled=false;
+        foldBasis=Hull.localRotation;
         float beatAt=.9f;int beat=0;
         // Wall-clock combat seconds, independent of difficulty/tempo. Pause and time stop suspend it.
         while(InterludeElapsed<15)
@@ -13,6 +14,16 @@ public sealed partial class VoidSovereignBoss
             if(!GameRules.playerDisabled&&!WorldTimeStop.Frozen)
             {
                 InterludeElapsed=Mathf.Min(15,InterludeElapsed+Time.deltaTime);
+                if(Hull.gameObject.activeSelf)
+                {
+                    float fold = Mathf.Clamp01(InterludeElapsed/.65f);
+                    Fold(Mathf.SmoothStep(0,1,fold),false);
+                    if(fold>=1)
+                    {
+                        Dissolve(0);
+                        Hull.gameObject.SetActive(false);
+                    }
+                }
                 DrawEdgeTell(chapter,Mathf.Clamp01(InterludeElapsed/.9f));
                 if(InterludeElapsed>=beatAt&&InterludeElapsed<13.8f)
                 {
@@ -24,13 +35,10 @@ public sealed partial class VoidSovereignBoss
         }
         foreach(var tell in edgeTell)tell.enabled=false;
         CombatRound.ClearAll();
-        transform.position=new Vector3(0,Camera.UpLimit-3.25f,1);
-        perch=transform.position;
-        SetForm();Hull.gameObject.SetActive(true);Hidden=false;
-        PhaseBreak.Play(transform.position);
-        float settle=0;
-        while(settle<1.1f){if(!GameRules.playerDisabled&&!WorldTimeStop.Frozen)settle+=Time.deltaTime;yield return null;}
-        contact.enabled=true;
+        UnfoldAt(new Vector3(0,Camera.UpLimit-3.25f,1));
+        Hidden=false;
+        PlayPhaseBreak();
+        yield return Unfold(1.1f);
     }
     // One side owns the entire disappearance. The next disappearance takes the
     // next side clockwise; old rounds are cleared before that new phrase begins.

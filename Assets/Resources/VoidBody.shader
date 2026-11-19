@@ -1,6 +1,6 @@
 Shader "Shootemup/Void Body"
 {
-    Properties { _MemorySurface("Remembered obsidian",Float)=0 _MemoryPaint("Memory paint", 2D)="white" {} _Painted("Painted silk",Float)=0  _Tint("Tint",Color)=(1,1,1,1) _HitFlash("Hit",Range(0,1))=0 _Rift("Rift",Range(0,1))=0 [HideInInspector] _HullStatus("Hull afflictions",Float)=0 }
+    Properties { _Crystal("Exposed crystal",Float)=0 _MemorySurface("Remembered obsidian",Float)=0 _MemoryPaint("Memory paint", 2D)="white" {} _Painted("Painted silk",Float)=0  _Tint("Tint",Color)=(1,1,1,1) _HitFlash("Hit",Range(0,1))=0 _Rift("Rift",Range(0,1))=0 [HideInInspector] _HullStatus("Hull afflictions",Float)=0 }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" }
@@ -15,7 +15,7 @@ Shader "Shootemup/Void Body"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "../Shaders/HullAffliction.hlsl"
             CBUFFER_START(UnityPerMaterial)
-            float4 _Tint;float _HitFlash,_Rift,_HullStatus,_Painted,_MemorySurface;
+            float4 _Tint;float _Crystal,_HitFlash,_Rift,_HullStatus,_Painted,_MemorySurface;
             CBUFFER_END
             float4 _VoidRouteLight;
             TEXTURE2D(_MemoryPaint); SAMPLER(sampler_MemoryPaint);
@@ -24,7 +24,11 @@ Shader "Shootemup/Void Body"
             O Vert(I i){O o;o.positionCS=TransformObjectToHClip(i.positionOS.xyz);o.n=TransformObjectToWorldNormal(i.normalOS);o.uv=i.uv;o.p=i.positionOS.xyz;return o;}
             half4 Frag(O i):SV_Target
             {
-                float cut=frac(sin(dot(floor(i.p.xy*18),float2(37.1,91.7)))*17341.17);
+                // Angular scales peel in diagonal seams. Work in local space so
+                // the same fractures ride the hull through its roll and stretch.
+                float2 facet=floor(float2(i.p.x*.86+i.p.y*.5,i.p.y*.86-i.p.x*.5)*6);
+                float cut=.76*frac(sin(dot(facet,float2(37.1,91.7)))*17341.17)
+                    +.24*frac((facet.x+facet.y)*.137);
                 clip(cut-_Rift*1.01);
                 float tile=floor(i.uv.x*4)+4*floor(i.uv.y*4);
                 float3 normal=normalize(i.n),lamp=normalize(float3(-.4,.65,-1));
@@ -53,10 +57,12 @@ Shader "Shootemup/Void Body"
                     float shine = max(c.r,max(c.g,c.b));
                     c = shine * lerp(_VoidRouteLight.rgb,1,saturate(spec*.52 + eye*.19)) + spec*.04;
                 }
+                float bladeLight=.13+.28*light+.75*vein;
+                c=lerp(c,_VoidRouteLight.rgb*bladeLight+spec*.24+vein*.15,_Crystal);
                 #if defined(HULL_AFFLICTED)
                 c=HullAffliction(c,HullSurfacePosition(i.p),_HullStatus);
                 #endif
-                c+=float3(.54,.15,.9)*saturate(1-abs(cut-_Rift)*12)*_Rift*2;
+                c+=_VoidRouteLight.rgb*saturate(1-abs(cut-_Rift)*12)*_Rift*2;
                 return half4(lerp(c*_Tint.rgb,1,saturate(_HitFlash)),1);
             }
             ENDHLSL

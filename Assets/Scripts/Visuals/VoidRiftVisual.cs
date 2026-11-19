@@ -40,7 +40,7 @@ public sealed class VoidRiftVisual : MonoBehaviour
         rift.ring = Line(parent, RingPoints, .085f);
         rift.halo = Line(parent, RingPoints, .22f);
         rift.bolt = Line(parent, BoltPoints, .16f);
-        rift.shards = PSXImpactEffects.Create(null, "Void rift shards", 160);
+        rift.shards = PSXImpactEffects.Create(parent, "Void rift shards", 160);
         return rift;
     }
 
@@ -76,27 +76,25 @@ public sealed class VoidRiftVisual : MonoBehaviour
         halo.startColor = halo.endColor = new Color(RouteColor.r, RouteColor.g, RouteColor.b, strength * .35f);
     }
 
-    // A jagged bolt racing from the old perch to the new one, so the eye follows the boss.
-    public void Bolt(Vector3 from, Vector3 to, float progress, float clock)
+    internal static Vector3 Crossing(Vector3 from,Vector3 to,Vector3 bend,float u)
+        => Vector3.Lerp(from,to,u) + bend*(4*u*(1-u));
+
+    // Draw only the part of the arc already traversed. The bright end stays on the
+    // moving body, with a thin wake that catches up as it lands.
+    public void Bolt(Vector3 from,Vector3 to,Vector3 bend,float head)
     {
-        bool on = progress > 0 && progress < 1;
-        bolt.enabled = on;
-        if (!on)
-            return;
-        float head = Mathf.SmoothStep(0, 1, Mathf.Clamp01(progress * 1.35f));
-        float tail = Mathf.SmoothStep(0, 1, Mathf.Clamp01(progress * 1.35f - .35f));
-        Vector3 across = Vector3.Cross(to - from, Vector3.forward).normalized;
-        for (int i = 0; i < BoltPoints; i++)
+        bolt.enabled = head>.001f && head<.999f;
+        if (!bolt.enabled) return;
+        float tail = head*head*head;
+        for(int i=0;i<BoltPoints;i++)
         {
-            float u = i / (BoltPoints - 1f);
-            float along = Mathf.Lerp(tail, head, u);
-            float jag = i == 0 || i == BoltPoints - 1 ? 0 : Mathf.Sin(i * 2.3f + clock * 38) * .32f * Mathf.Sin(u * Mathf.PI);
-            bolt.SetPosition(i, Vector3.Lerp(from, to, along) + across * jag + Vector3.back * 2.1f);
+            float u = Mathf.Lerp(tail,head,i/(BoltPoints-1f));
+            bolt.SetPosition(i,Crossing(from,to,bend,u)+Vector3.back*1.15f);
         }
-        float fade = Mathf.Sin(progress * Mathf.PI);
-        bolt.startColor = new Color(RouteColor.r, RouteColor.g, RouteColor.b, 0);
-        bolt.endColor = new Color(Pale.r, Pale.g, Pale.b, fade);
-        bolt.widthMultiplier = .6f + .6f * fade;
+        Color start=RouteColor, end=Pale;
+        start.a=0; end.a=.82f*Mathf.Sin(head*Mathf.PI);
+        bolt.startColor=start;
+        bolt.endColor=end;
     }
 
     // Shards drawn into the departing tear, or flung out of the arriving one.
@@ -123,8 +121,9 @@ public sealed class VoidRiftVisual : MonoBehaviour
         }
     }
 
-    public void Pose(Vector3 position, float opening, float clock, bool arrival)
+    public void Pose(Vector3 position, float opening, float clock, bool arrival, float lean = 0)
     {
+        transform.rotation = Quaternion.Euler(0,0,lean);
         transform.position = position + Vector3.back * 2;
         transform.localScale = new Vector3(2.8f, 3.6f, 1);
         ink.SetFloat("_Open", Mathf.Clamp01(opening));

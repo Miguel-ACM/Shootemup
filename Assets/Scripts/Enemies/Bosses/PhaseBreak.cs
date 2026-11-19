@@ -16,7 +16,7 @@ public sealed class PhaseBreak : MonoBehaviour
     Vector3 hullScale;
     Color accent;
     float age;
-    bool ruptured;
+    bool ruptured, localized;
 
     /// <summary>Raised at every boss phase break, with the boss position.</summary>
     public static event System.Action<Vector3> Played;
@@ -39,7 +39,7 @@ public sealed class PhaseBreak : MonoBehaviour
     }
 
     // hull: the boss model to squeeze and punch; null leaves the model alone (Void's own unfolding).
-    public static void Play(Vector3 at, Transform hull = null)
+    public static void Play(Vector3 at, Transform hull = null, bool local = false)
     {
         Warm();
         var go = new GameObject("White spell rupture");
@@ -48,13 +48,15 @@ public sealed class PhaseBreak : MonoBehaviour
         var effect = go.AddComponent<PhaseBreak>();
         effect.visual = go.AddComponent<MeshRenderer>();
         effect.visual.sharedMaterial = surface;
-        effect.visual.sortingLayerName = "Bullet";
-        effect.visual.sortingOrder = 80;
+        effect.localized = local;
+        effect.visual.sortingLayerName = local ? "Enemy" : "Bullet";
+        effect.visual.sortingOrder = local ? -3 : 80;
         effect.ink = new MaterialPropertyBlock();
         effect.accent = Color.Lerp(LevelProjectilePalette.Accent(LevelRun.Current), Color.white, .2f);
         effect.hull = hull;
         if (hull != null)
             effect.hullScale = hull.localScale;
+        effect.ink.SetFloat("_Local",local ? 1 : 0);
         effect.Pose(0);
         if (EZCameraShake.CameraShaker.Instance != null)
             EZCameraShake.CameraShaker.Instance.ShakeOnce(1.6f, 18, Implosion * .8f, .2f);
@@ -72,12 +74,13 @@ public sealed class PhaseBreak : MonoBehaviour
     {
         ruptured = true;
         var at = transform.position;
-        PSXImpactEffects.SpellBreak(at, accent);
+        if (localized) PSXImpactEffects.Burst(at,accent);
+        else PSXImpactEffects.SpellBreak(at, accent);
         var boom = SoundCueCatalog.Find("bossPhaseBreak");
         if (boom != null)
             SoundManager.PlaySoundPitch(boom.Id, boom.Volume, boom.Pitch);
         if (EZCameraShake.CameraShaker.Instance != null)
-            EZCameraShake.CameraShaker.Instance.ShakeOnce(5, 9, .03f, 1);
+            EZCameraShake.CameraShaker.Instance.ShakeOnce(localized ? 2.6f : 5, 9, .03f, 1);
     }
 
     void Update()

@@ -214,6 +214,18 @@ public static partial class IndustrialMeshFactory
         VoidEye(b,tip,new Vector3(.145f,.17f,.075f));
     }
 
+    static Mesh splinter;
+    public static Mesh VoidSplinter()
+    {
+        if (splinter != null) return splinter;
+        var b = new Builder();
+        var root = new Vector3(-.08f,-.57f,0);
+        var tip = new Vector3(.16f,.83f,0);
+        VoidSweep(b,new[]{root,new Vector3(0,-.14f,-.09f),new Vector3(.08f,.33f,-.06f),tip},
+            new[]{.018f,.21f,.14f,.005f},1.1f,VoidPlate,rightTile:VoidVein);
+        return splinter = b.Finish("Fractured obsidian blade");
+    }
+
     // Form 0: a horned mask. Brow, cheek and chin plates part around two living eyes.
     static void VoidMaskCore(Builder b)
     {

@@ -62,6 +62,7 @@ public abstract class DistrictBoss : DistrictEnemy
     public float PhaseFraction => encounter.Fraction(PhaseMeterValue, PhaseEnd(CurrentPhase));
     protected virtual bool PhaseThreeReady => HasThirdPhase && HealthFraction <= PhaseEnd(2);
     protected virtual bool NextPhaseReady => CurrentPhase == 1 ? PhaseTwoReady : CurrentPhase == 2 && PhaseThreeReady;
+    protected virtual void PlayPhaseBreak() => PhaseBreak.Play(transform.position,Hull);
     protected virtual float PhaseBreakSeconds => 1.5f;
     protected override float Pressure => LevelRun.BossPressure;
     protected override void Start()
@@ -170,7 +171,7 @@ public abstract class DistrictBoss : DistrictEnemy
                 if (round != null)round.Vanish();
         }
         finally { PSXImpactEffects.WhiteSpellClear=false; }
-        PhaseBreak.Play(transform.position, Hull);
+        PlayPhaseBreak();
     }
 
     public override void damage(float amount)

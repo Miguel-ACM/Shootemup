@@ -20,6 +20,7 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
     }
     protected override bool NextPhaseReady=>HealthFraction<=PhaseEnd(CurrentPhase)+.000001f;
     protected override float PhaseBreakSeconds=>LongBreak ? 16.1f : 1.5f;
+    protected override void PlayPhaseBreak() => PhaseBreak.Play(transform.position, local: true);
     protected override bool RepositionsOnPhase=>false;
     public bool Hidden {get;private set;}
     public float InterludeElapsed {get;private set;}
@@ -68,7 +69,7 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
     protected override void MoveBoss(float dt)
     {
         station=new Vector3(0,Camera.UpLimit-3.25f,1);
-        if(PhaseTransitioning||teleporting)return;
+        if(PhaseTransitioning || changingForm || teleporting)return;
         if(!openingComplete){base.MoveBoss(dt*2);return;}
         if (Memory != null)
         {
@@ -76,27 +77,47 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
             Memory.Pose(motionAge);
             return;
         }
-        float x=Mathf.Sin(motionAge*(Form==2?.68f:.38f))*(Form==2?2.1f:1.35f);
-        float y=Mathf.Sin(motionAge*.76f)*(Form==3?.9f:.45f);
-        transform.position=Vector3.MoveTowards(transform.position,perch+new Vector3(x*.18f,y*.25f),dt*.7f);
+        float beat = motionAge - flightStart;
+        // The scythes glide in a figure eight. The heavy jaw rises, hangs, then drops;
+        // the finale circles its perch as its four apertures take turns.
+        Vector2 offset;
+        float bank;
+        if (Form == 2)
+        {
+            offset = new Vector2(1.12f * Mathf.Sin(beat * 1.12f), .38f * Mathf.Sin(beat * 2.24f));
+            bank = -12 * Mathf.Cos(beat * 1.12f);
+        }
+        else if (Form == 3)
+        {
+            float drop = Mathf.Pow(.5f - .5f * Mathf.Cos(beat * 1.7f), 3);
+            offset = new Vector2(.68f * Mathf.Sin(beat * .92f), .28f - .90f * drop);
+            bank = 6 * Mathf.Sin(beat * .92f);
+        }
+        else
+        {
+            offset = new Vector2(.84f * Mathf.Sin(beat * .97f), .54f * Mathf.Cos(beat * .97f));
+            bank = 9 * Mathf.Sin(beat * .97f);
+        }
+        float ease = Mathf.SmoothStep(0,1,beat / .45f);
+        var target = perch + (Vector3)(offset * ease);
+        target.x = Mathf.Clamp(target.x,Camera.LeftLimit+1.95f,Camera.RightLimit-1.95f);
+        target.y = Mathf.Clamp(target.y,Camera.DownLimit+2.7f,Camera.UpLimit-2.05f);
+        transform.position = Vector3.MoveTowards(transform.position,target,dt*3.8f);
+        Hull.localRotation = Quaternion.Euler(0,bank*ease*.75f,bank*ease);
     }
     public override void damage(float amount)
     {
-        if(Hidden||teleporting||submergedMemory)return;
+        if(Hidden||changingForm||teleporting||submergedMemory)return;
         if(CurrentPhase<PhaseCount)amount=Mathf.Min(amount,Mathf.Max(0,health-initialHealth*PhaseEnd(CurrentPhase))/Mathf.Max(.0001f,GameRules.enemyDamageReceived));
         if(amount>0)base.damage(amount);
     }
-    protected override void Attack(){if(openingComplete&&!Hidden)OpenCards();}
+    protected override void Attack(){if(openingComplete && !Hidden && !changingForm) OpenCards();}
     protected override void OnPhaseEntered(int phase)
     {
-        CancelTeleport();
-        if (LongBreak) StartCoroutine(Interlude(phase == 4 ? 1 : 2));
-        else
-        {
-            transform.position = perch = station;
-            contact.enabled = true;
-            SetForm();
-        }
+        if (teleporting) CancelTeleport();
+        changingForm = true;
+        contact.enabled = false;
+        StartCoroutine(LongBreak ? Interlude(phase == 4 ? 1 : 2) : ChangeForm());
     }
     protected override void Die(){foreach(var line in edgeTell)if(line!=null)line.enabled=false;base.Die();}
 
