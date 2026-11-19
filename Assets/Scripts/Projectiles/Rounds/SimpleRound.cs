@@ -188,7 +188,7 @@ public sealed class SimpleRound : CombatRound
             float edge = transform.localScale.x * .5f + .035f;
             for (int sign = -1; sign <= 1; sign += 2)
             {
-                var bead = Launch<SimpleRound>(transform.position + (Vector3)side * sign * edge,
+                var bead = LaunchChild<SimpleRound>(transform.position + (Vector3)side * sign * edge,
                     (side * sign + heading * .2f).normalized, 1.3f, .14f);
                 if (bead != null)
                 {
@@ -206,7 +206,7 @@ public sealed class SimpleRound : CombatRound
             // A visible, braking shell delivers a complete annulus with an authored opening.
             for (int i = seedGap; i < seedCount; i++)
             {
-                var bead = Launch<SimpleRound>(transform.position, Vector2.down, seedDrift, .18f);
+                var bead = LaunchChild<SimpleRound>(transform.position, Vector2.down, seedDrift, .18f);
                 if (bead != null)
                     bead.Orbit(seedRadius, seedPhase + i * 360f / seedCount, seedRate);
             }

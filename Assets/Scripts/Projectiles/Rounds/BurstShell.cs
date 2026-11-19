@@ -106,7 +106,7 @@ public sealed class BurstShell : CombatRound
         for (int i = 0; i < count; i++)
         {
             float lane = i - (count - 1) * .5f;
-            var shard = Launch<SimpleRound>(transform.position, CombatVisuals.Rotate(heading, lane * 200f / (count - 1)), i % 2 == 0 ? 3.3f : 2.1f, .18f);
+            var shard = LaunchChild<SimpleRound>(transform.position, CombatVisuals.Rotate(heading, lane * 200f / (count - 1)), i % 2 == 0 ? 3.3f : 2.1f, .18f);
             if (shard != null)
                 shard.generation = 1;
         }
@@ -122,11 +122,11 @@ public sealed class BurstShell : CombatRound
             float lane = i - (flakes - 1) * .5f;
             // The upward throw is the animation: fast, short-lived and gone off the top.
             // It cannot hurt the pilot; only the flakes that fall back can.
-            var spray = Launch<SimpleRound>(transform.position, CombatVisuals.Rotate(Vector2.up, lane * 6), 9 + (i % 3), .16f)
+            var spray = LaunchChild<SimpleRound>(transform.position, CombatVisuals.Rotate(Vector2.up, lane * 6), 9 + (i % 3), .16f)
                 .Harmless().FadeAt(.45f);
             float x = Mathf.Clamp(transform.position.x + lane * .55f, Camera.LeftLimit + .3f, Camera.RightLimit - .3f);
             // Flakes are born above the visible top edge and drift in, never popping into view.
-            var flake = Launch<SnowflakeRound>(new Vector3(x, Border.yMax + .5f), Vector2.down, 1.4f + (i % 3) * .25f, .19f);
+            var flake = LaunchChild<SnowflakeRound>(new Vector3(x, Border.yMax + .5f), Vector2.down, 1.4f + (i % 3) * .25f, .19f);
             flake.Pause(.05f, .5f + (i % 4) * .12f, Turn.Down, lane * 2, 1).Sway(i % 2 == 0 ? .35f : -.35f, .45f);
             // A blizzard carries ordinary snowfall downwind; boss scores keep their authored fall.
             if (DistrictConditions.Is(DistrictCondition.Blizzard) && !BossAtmosphere.Present)

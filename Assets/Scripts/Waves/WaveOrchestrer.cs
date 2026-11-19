@@ -137,11 +137,9 @@ public class WaveOrchestrer : MonoBehaviour
                 if (type != null)
                 {
                     var districtEnemy = enemy.GetComponent<DistrictEnemy>();
-                    if (currentUnit.elite || currentUnit.huntTarget)
-                        districtEnemy.MakeElite();
+                    districtEnemy.FlyPhrase(currentUnit);
                     if (currentUnit.huntTarget)
                         huntTarget = HuntMark.Attach(districtEnemy, this);
-                    districtEnemy.FlyPhrase(currentUnit);
                 }
                 if (enemy.TryGetComponent<DistrictMiniboss>(out var mini))
                     activeMiniboss = mini;

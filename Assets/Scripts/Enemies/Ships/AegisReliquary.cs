@@ -8,7 +8,7 @@ public sealed class AegisReliquary : DistrictEnemy
     protected override void Attack()
     {
         var ports=EnemyWeaponLayout.Ports(hull);int side=volley%2;
-        HeavenArmory.Lance(Hull,ports[side],CombatVisuals.Rotate(Vector2.down,side==0?-12:12),1.0f,.85f,1.4f);
+        HeavenArmory.Lance(Hull,ports[side],CombatVisuals.Rotate(Vector2.down,side==0?-12:12),1.0f,.85f,1.4f,firingTier: Firing);
         int count=Dense(7);
         // The fan's tone alternates with the lance's side, so consecutive volleys differ.
         UseTone(side==0?HostileTone.Dark:HostileTone.Bright);

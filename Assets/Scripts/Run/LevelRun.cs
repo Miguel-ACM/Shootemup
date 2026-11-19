@@ -71,7 +71,8 @@ public static class LevelRun
         }
     }
     // A FAST FIRE district speeds every hostile round by 20% (LevelModifiers).
-    public static float EnemyShotSpeedScale => Mathf.Min(1.18f, 1 + (Loop - 1) * .035f) * Difficulty.ShotSpeed * LevelModifiers.ShotSpeed;
+    public static float EnemyShotSpeedScale => ShotSpeedScale(Difficulty.Firing);
+    public static float ShotSpeedScale(FiringTier tier) => Mathf.Min(1.18f, 1 + (Loop - 1) * .035f) * tier.SpeedScale() * LevelModifiers.ShotSpeed;
     public static int Tier(LevelId level)
     {
         switch (level)

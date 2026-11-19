@@ -7,7 +7,7 @@ public sealed class ThroneBarge : DistrictEnemy
     protected override void Configure(){hullScale=.79f;health=140;attackInterval=4.7f;nextAttack=1.7f;Mover<Slalom>();}
     protected override void Attack()
     {
-        HeavenArmory.Lance(Hull,EnemyWeaponLayout.Ports(hull)[0],Vector2.down,1.6f,1.1f,1.65f);
+        HeavenArmory.Lance(Hull,EnemyWeaponLayout.Ports(hull)[0],Vector2.down,1.6f,1.1f,1.65f,firingTier: Firing);
         int n=Dense(9);
         for(int s=-1;s<=1;s+=2)for(int i=0;i<n;i++)
             Fire<NeedleRound>(Muzzle(s<0?1:2),CombatVisuals.Rotate(Vector2.down,s*(30+i*10)),2.2f,.19f).Bounce(1).FadeAt(8);

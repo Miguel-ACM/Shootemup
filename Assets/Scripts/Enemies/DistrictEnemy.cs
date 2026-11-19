@@ -100,6 +100,8 @@ public abstract class DistrictEnemy : AEnemy
     }
 
     bool lightHull;
+    public FiringTier Firing => Elite ? Difficulty.EliteFiring : Difficulty.Firing;
+    protected float FiringTempo => LevelRun.EnemyTempoScale * (Firing.TempoScale() / Difficulty.Tempo);
     public override bool IsSmallTarget => lightHull && !IsBossTarget && !(this is DistrictMiniboss);
 
     // A rare tougher ship inside an ordinary formation: a ring marks it, it answers its
@@ -211,6 +213,8 @@ public abstract class DistrictEnemy : AEnemy
         if (unit.passage != 0) TunnelPassage.Begin(unit.passage);
         if (unit.miniboss)
             MakeMiniboss();
+        else if (unit.elite || unit.huntTarget)
+            MakeElite();
         if (unit.phrase == FlightPhrase.None)
             return;
         if (movement != null)
@@ -228,7 +232,7 @@ public abstract class DistrictEnemy : AEnemy
         flight.passageRoute = unit.passageRoute;
         flight.syncFire = unit.syncFire;
         flight.firePhase = unit.firePhase;
-        flight.fireTimes = unit.fireTimes;
+        flight.fireTimes = Elite && unit.authoredFireTimes != null ? WavePart.ScoreFor(unit.authoredFireTimes, Firing) : unit.fireTimes;
         if (Challenged)
             flight.MakeChallenging();
         if (IsMiniboss && unit.fireTimes != null && unit.fireTimes.Length > 0)
@@ -340,7 +344,7 @@ public abstract class DistrictEnemy : AEnemy
             volley++;
             tone = DefaultTone;
             Attack();
-            nextAttack = age + attackInterval / Mathf.Max(.5f, GameRules.enemyShootSpeed);
+            nextAttack = age + attackInterval / Mathf.Max(.5f, GameRules.enemyShootSpeed) * (Difficulty.Tempo / Firing.TempoScale());
         }
     }
 
@@ -360,12 +364,11 @@ public abstract class DistrictEnemy : AEnemy
         firingCue?.Warn(enteredFight ? seconds : -1);
         firingCue?.PointAll(CueAxis);
     }
-    // One geometry on all three tiers. Normal retains the former Easy score.
     protected virtual float Pressure => LevelRun.WavePressure;
-    protected int Dense(int count) => Difficulty.Dense(count, Pressure);
-    protected float Rest(float seconds) => Difficulty.Rest(seconds, Pressure);
+    protected int Dense(int count) => Firing.Dense(count, Pressure);
+    protected float Rest(float seconds) => Firing.Rest(seconds, Pressure);
     // The launch speed that travels a given number of world units per second here.
-    protected float WorldSpeed(float units) => units / Mathf.Max(.01f, ProjectileSpeedScale * (IsMiniboss ? 1.14f : 1) * GameRules.enemyBulletSpeed * LevelRun.EnemyShotSpeedScale);
+    protected float WorldSpeed(float units) => units / Mathf.Max(.01f, ProjectileSpeedScale * (IsMiniboss ? 1.14f : 1) * GameRules.enemyBulletSpeed * LevelRun.ShotSpeedScale(Firing));
     protected void Cue(Vector3 world, float seconds) => firingCue?.WarnAt(world, seconds);
     public void PointWeapon(Vector3 world, Vector2 direction) => firingCue?.PointAt(world, direction);
     protected Vector3 Muzzle(int index = 0)
@@ -390,7 +393,7 @@ public abstract class DistrictEnemy : AEnemy
         lastRelease = age;
         if (flashMuzzle) firingCue?.Flash(position, direction);
         CombatRound.LaunchTone = tone;
-        var shot = CombatRound.Launch<T>(position, direction, velocity * ProjectileSpeedScale * (IsMiniboss ? 1.14f : 1), radius, ChillProjectiles, this as CoreCube);
+        var shot = CombatRound.Launch<T>(position, direction, velocity * ProjectileSpeedScale * (IsMiniboss ? 1.14f : 1), radius, ChillProjectiles, this as CoreCube, Firing);
         CombatRound.LaunchTone = HostileTone.Bright;
         if (shot != null)
             shot.damage *= ProjectileDamageScale;
@@ -401,10 +404,11 @@ public abstract class DistrictEnemy : AEnemy
 
     protected void Fan<T>(int count, float spread, float velocity, float radius = .14f) where T : CombatRound
     {
-        if (Difficulty.Hard && !(this is DistrictBoss) && count > 1)
+        if (Firing >= FiringTier.Hard && !(this is DistrictBoss) && count > 1)
         {
             float width = (count - 1) * spread;
             count += count >= 5 ? 2 : 1;
+            if (Firing == FiringTier.Extreme) count += 2;
             spread = width / (count - 1);
         }
         for (int i = 0; i < count; i++)

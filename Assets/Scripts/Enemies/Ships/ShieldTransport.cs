@@ -16,7 +16,7 @@ public sealed class ShieldTransport : DistrictEnemy
         // Even counts on every difficulty, so no round sits on the aim line: Fan adds
         // one plasma orb on Hard (three becomes four); Normal fires four, Easy two.
         if (volley % 2 == 0)
-            Fan<PlasmaOrb>(Difficulty.Hard ? 3 : Difficulty.Easy ? 2 : 4, Difficulty.Hard ? 37 : Difficulty.Easy ? 37 : 74f / 3, 2.2f, .48f);
+            Fan<PlasmaOrb>(Firing >= FiringTier.Hard ? 3 : Firing == FiringTier.Easy ? 2 : 4, Firing == FiringTier.Normal ? 74f / 3 : 37, 2.2f, .48f);
         else
         {
             // The gust halts and turns into falling sheets: dark against the bright plasma.

@@ -14,7 +14,7 @@ public sealed class ScatterCarrier : CombatRound
 
     void Release(Vector3 at, Vector2 direction)
     {
-        var needle = Launch<NeedleRound>(at, direction, Random.Range(2.4f, 3.4f), .11f);
+        var needle = LaunchChild<NeedleRound>(at, direction, Random.Range(2.4f, 3.4f), .11f);
         if (needle != null && LevelRun.Current == LevelId.Fields)
             needle.GetComponent<ProjectileSpriteTint>().SetAccent(PlainsOrange);
     }

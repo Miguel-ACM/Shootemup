@@ -395,7 +395,7 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - The phase break went too far: keep the implosion and rupture, but softer (lighter wash and dimming, three fronts, one spark wave, half the shake, a 1.16x punch, no extra full-screen flash) and a much quieter boom.
 - Sounds: the blizzard howl, the phase-break boom and the enemy laser charge/ignition were too loud; all lowered.
 - No river glints at dusk; only moonlight on the water at night.
-- Elites have 3x health.
+- Elites have 3x health and fire one difficulty higher. Easy elites fire on Normal, Normal elites on Hard, and Hard elites on Extreme. Extreme is a hidden firing tier for elites. Their formation keeps its route and the elite keeps its extra firing accent.
 - Health packs cost 100 energy (a full bar) per repaired hit.
 - Salvage coins are born well above the visible top edge, never seen appearing.
 - Campaign cargo cannot be shot; it shatters as soon as the pilot takes a hit. The Cold Delivery simulator crate keeps its three hits.

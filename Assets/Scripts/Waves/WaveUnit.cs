@@ -21,6 +21,7 @@ public class WaveUnit : ICloneable
     public bool passageRoute;
     public float firePhase;
     public float[] fireTimes;
+    public float[] authoredFireTimes;
     public float formationDepth;
     public bool fixedDepth;
     public float faradayDoor;
@@ -37,7 +38,7 @@ public class WaveUnit : ICloneable
 
     public object Clone()
     {
-        return new WaveUnit(enemy, time, position) { phrase = phrase, curve = curve, syncFire = syncFire, miniboss = miniboss, elite = elite, huntTarget = huntTarget, coreBankTiles = coreBankTiles, passage = passage, passageRoute = passageRoute, firePhase = firePhase, fireTimes = fireTimes, formationDepth = formationDepth, fixedDepth = fixedDepth, faradayDoor = faradayDoor, part = part, side = side, lane = lane, flightDuration = flightDuration, fireEvery = fireEvery };
+        return new WaveUnit(enemy, time, position) { phrase = phrase, curve = curve, syncFire = syncFire, miniboss = miniboss, elite = elite, huntTarget = huntTarget, coreBankTiles = coreBankTiles, passage = passage, passageRoute = passageRoute, firePhase = firePhase, fireTimes = fireTimes, authoredFireTimes = authoredFireTimes, formationDepth = formationDepth, fixedDepth = fixedDepth, faradayDoor = faradayDoor, part = part, side = side, lane = lane, flightDuration = flightDuration, fireEvery = fireEvery };
     }
 
     override public string ToString()

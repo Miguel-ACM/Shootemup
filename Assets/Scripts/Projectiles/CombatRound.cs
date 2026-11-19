@@ -142,7 +142,11 @@ public abstract class CombatRound : AEnemyBullet
     }
 
     CoreCube firingBlock;
-    public static T Launch<T>(Vector3 p, Vector2 direction, float velocity = 4, float radius = .18f, float? chillSpeed = null, CoreCube firingBlock = null) where T : CombatRound
+    public FiringTier Firing { get; private set; }
+    protected T LaunchChild<T>(Vector3 p, Vector2 direction, float velocity, float radius) where T : CombatRound
+        => Launch<T>(p, direction, velocity, radius, firingTier: Firing);
+
+    public static T Launch<T>(Vector3 p, Vector2 direction, float velocity = 4, float radius = .18f, float? chillSpeed = null, CoreCube firingBlock = null, FiringTier? firingTier = null) where T : CombatRound
     {
         using var sample = launchMarker.Auto();
         if (Live.Count >= Limit)
@@ -178,7 +182,8 @@ public abstract class CombatRound : AEnemyBullet
         shot.collision.enabled = true;
         shot.origin = shot.transform.position;
         shot.heading = direction.sqrMagnitude > .001f ? direction.normalized : Vector2.down;
-        shot.speed = velocity * GameRules.enemyBulletSpeed * LevelRun.EnemyShotSpeedScale;
+        shot.Firing = firingTier ?? Difficulty.Firing;
+        shot.speed = velocity * GameRules.enemyBulletSpeed * LevelRun.ShotSpeedScale(shot.Firing);
         shot.damage = 10 * GameRules.enemyDamage;
         shot.age = 0;
         shot.generation = 0;
@@ -874,7 +879,7 @@ public abstract class CombatRound : AEnemyBullet
             {
                 float lane = splitCount <= 1 ? 0 : i - (splitCount - 1) * .5f;
                 var direction = CombatVisuals.Rotate(heading, lane * splitSpread);
-                var shard = splitKunai ? (CombatRound)Launch<KunaiRound>(transform.position, direction, splitSpeed, splitRadius) : Launch<SimpleRound>(transform.position, direction, splitSpeed, splitRadius);
+                var shard = splitKunai ? (CombatRound)LaunchChild<KunaiRound>(transform.position, direction, splitSpeed, splitRadius) : LaunchChild<SimpleRound>(transform.position, direction, splitSpeed, splitRadius);
                 if (shard != null)
                     shard.generation = generation + 1;
             }
@@ -971,7 +976,7 @@ public abstract class CombatRound : AEnemyBullet
         // instead of losing whichever angles happened to be emitted last.
         for (int i = 0; i < count; i++)
         {
-            var s = Launch<SimpleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, phase + i * 360f / count), velocity, radius);
+            var s = LaunchChild<SimpleRound>(transform.position, CombatVisuals.Rotate(Vector2.down, phase + i * 360f / count), velocity, radius);
             if (s != null)
                 s.generation = 1;
         }

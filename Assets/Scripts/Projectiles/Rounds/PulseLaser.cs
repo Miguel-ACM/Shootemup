@@ -185,7 +185,7 @@ public class PulseLaser : CombatRound
                 var side = new Vector2(-heading.y, heading.x);
                 for (int i = 1; i <= layout.Count; i++)
                     for (int sign = -1; sign <= 1; sign += 2)
-                        Launch<LaserSideRound>(LaserSidePorts.Origin(transform.position, heading, width, layout, i, sign), side * sign, 2.4f, .12f);
+                        LaunchChild<LaserSideRound>(LaserSidePorts.Origin(transform.position, heading, width, layout, i, sign), side * sign, 2.4f, .12f);
             }
         }
     }

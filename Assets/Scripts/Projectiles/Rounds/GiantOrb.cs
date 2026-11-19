@@ -20,9 +20,9 @@ public sealed class GiantOrb : CombatRound
         taffy = LevelRun.Current == LevelId.Candyland;
         sideSpeed = velocity;
         firstFlank = heading.x < 0 ? -1 : 1;
-        strokes = Mathf.Max(2, Difficulty.Dense(taffy ? 7 : 5));
+        strokes = Mathf.Max(2, Firing.Dense(taffy ? 7 : 5));
         phrase = stroke = 0;
-        nextRelease = age + Difficulty.Rest(.78f);
+        nextRelease = age + Firing.Rest(.78f);
     }
 
     protected override void Tick(float dt)
@@ -51,7 +51,7 @@ public sealed class GiantOrb : CombatRound
             // Its next answer peels off the opposite shoulder.
             int flank = reverse ? -firstFlank : firstFlank;
             Vector2 direction = WingDirection(flank, Mathf.Lerp(-28,15,u));
-            var bead = Launch<SimpleRound>(Lip(direction),direction,sideSpeed*(1.25f-.30f*u),.17f);
+            var bead = LaunchChild<SimpleRound>(Lip(direction),direction,sideSpeed*(1.25f-.30f*u),.17f);
             if (bead != null) bead.Curl(-flank*66, .95f);
             Inherit(bead);
         }
@@ -63,7 +63,7 @@ public sealed class GiantOrb : CombatRound
             for (int flank = -1; flank <= 1; flank += 2)
             {
                 Vector2 direction = WingDirection(flank, Mathf.Lerp(-24,38,tooth));
-                var needle = Launch<NeedleRound>(Lip(direction),direction,sideSpeed*(1.26f-.38f*tooth),.15f);
+                var needle = LaunchChild<NeedleRound>(Lip(direction),direction,sideSpeed*(1.26f-.38f*tooth),.15f);
                 Inherit(needle);
             }
         }
@@ -72,7 +72,7 @@ public sealed class GiantOrb : CombatRound
         else
         {
             stroke = 0;
-            nextRelease = age + Difficulty.Rest(taffy ? .82f : 1.02f);
+            nextRelease = age + Firing.Rest(taffy ? .82f : 1.02f);
             if (++phrase == Phrases) strokes = 0;
         }
         visual.color = strokes == 0 ? Color.white : new Color(1.55f,1.55f,1.55f,1);

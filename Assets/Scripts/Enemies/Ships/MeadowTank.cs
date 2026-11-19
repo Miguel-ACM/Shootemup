@@ -31,7 +31,7 @@ public sealed class MeadowTank : GroundVehicle
             var muzzle = Weapon.TransformPoint(new Vector3(0, -.96f, -.22f));
             if (player != null && Vector2.Distance(player.position, muzzle) > 2.2f)
                 Fire<SimpleRound>(muzzle, CombatVisuals.Rotate(aim, Random.Range(-7f, 7f)), 4.6f * Random.Range(.94f, 1.06f), .2f);
-            yield return new WaitForSeconds(.12f / LevelRun.EnemyTempoScale);
+            yield return new WaitForSeconds(.12f / FiringTempo);
         }
         bursting = false;
     }

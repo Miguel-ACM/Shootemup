@@ -30,7 +30,7 @@ public sealed class SandStriker : DistrictEnemy
                 break;
             if (player == null || Vector2.Distance(player.position, transform.position) > 1.8f)
                 Fire<NeedleRound>(Hull.TransformPoint(new Vector3(0, -1.1f, -.13f)), CombatVisuals.Rotate(locked, i % 2 == 0 ? -1.1f : 1.1f), 5.6f, .19f);
-            yield return new WaitForSeconds((.11f) / LevelRun.EnemyTempoScale);
+            yield return new WaitForSeconds((.11f) / FiringTempo);
         }
         bursting = false;
     }

@@ -183,14 +183,25 @@ public sealed class WavePart
                 score[i] = Mathf.Max(last + .65f + i * .48f, authoredScore[i] * Seconds);
         }
         EnemyTuning.TuneFormation(Enemy, units, Seconds, ref score);
-        if (Difficulty.Easy && score.Length > 1)
+        var runScore = ScoreFor(score, Difficulty.Firing);
+        foreach (var unit in units)
+        {
+            unit.authoredFireTimes = score;
+            unit.fireTimes = runScore;
+        }
+        return units;
+    }
+
+    internal static float[] ScoreFor(float[] score, FiringTier tier)
+    {
+        if (tier == FiringTier.Easy && score.Length > 1)
         {
             var reduced = new List<float>();
             for (int i = 0; i < score.Length; i += 2)
                 reduced.Add(score[i]);
             score = reduced.ToArray();
         }
-        if (Difficulty.Hard && score.Length > 1)
+        if (tier >= FiringTier.Hard && score.Length > 1)
         {
             int restIndex = 0;
             for (int i = 1; i < score.Length - 1; i++)
@@ -205,9 +216,7 @@ public sealed class WavePart
                 score = answer;
             }
         }
-        foreach (var unit in units)
-            unit.fireTimes = score;
-        return units;
+        return score;
     }
 }
 
