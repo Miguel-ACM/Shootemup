@@ -155,6 +155,7 @@ public sealed class CisternHeart : DistrictBoss
 public sealed class CoreGantry : DistrictBoss
 {
     static readonly Vector3 CoreMuzzle = new Vector3(0, -.77f, -.28f);
+    static readonly Vector3 Spindle = new Vector3(0, .15f, -.94f);
     Transform carriage;
     public Transform Reactor => carriage;
     ParticleSystem sparks;
@@ -175,6 +176,7 @@ public sealed class CoreGantry : DistrictBoss
         renderer.sharedMaterial = CombatMaterials.Fleet;
         renderer.sortingLayerName = "Enemy";
         firingCue.Register(carriage, CoreMuzzle);
+        firingCue.Register(carriage, Spindle);
     }
 
     protected override void MoveBoss(float dt)
@@ -214,7 +216,41 @@ public sealed class CoreGantry : DistrictBoss
             OpenCards();
     }
 
-    protected override IEnumerator Cards() => phaseThree ? PunchTape() : phaseTwo ? Escapement() : Crosshatch();
+    protected override IEnumerator Cards()
+    {
+        Phrase(SpindleBarrage());
+        yield return phaseThree ? PunchTape() : phaseTwo ? Escapement() : Crosshatch();
+    }
+
+    IEnumerator SpindleBarrage()
+    {
+        int bolts = Mathf.Max(6, Dense(phaseThree ? 14 : phaseTwo ? 12 : 10));
+        float spacing = 360f / bolts;
+        float angle = 0;
+        float turn = spacing * (phaseTwo && !phaseThree ? -.37f : .37f);
+        float interval = Rest(phaseThree ? .35f : phaseTwo ? .41f : .48f);
+        float speed = phaseThree ? 3.65f : phaseTwo ? 3.35f : 3.05f;
+        yield return Charge(carriage, Spindle, .55f);
+        while (true)
+        {
+            if (Holding || CombatRound.Live.Count + bolts > CombatRound.Limit)
+            {
+                yield return null;
+                continue;
+            }
+            Vector3 hub = carriage.TransformPoint(Spindle);
+            var primaryTone = tone;
+            UseTone(HostileTone.Bright);
+            for (int i = 0; i < bolts; i++)
+            {
+                var axis = CombatVisuals.Rotate(Vector2.down, angle + i * spacing);
+                Fire<GiantOrb>(hub, axis, speed, .46f, i == 0);
+            }
+            UseTone(primaryTone);
+            angle = Mathf.Repeat(angle + turn, 360);
+            yield return Charge(carriage, Spindle, interval);
+        }
+    }
 
     IEnumerator PrimeRails(float seconds)
     {
