@@ -407,7 +407,7 @@ public sealed class PlayerRound : ABullet
                 origin = transform.position;
                 returning = false;
                 returns = false;
-                TurnAccent();
+                ItemProcVfx.Emit(ItemProcShape.Rebound, transform.position, new Color(.65f, .7f, .58f), .4f, heading);
                 return;
             }
         }
