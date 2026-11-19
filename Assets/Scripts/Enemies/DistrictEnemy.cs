@@ -186,6 +186,8 @@ public abstract class DistrictEnemy : AEnemy
         enemy.firingCue.Build(model.transform);
         if (enemy is MushroomWarden warden)
             warden.BindWings();
+        if (enemy is MushroomChampion stag)
+            stag.BindShell();
         if (enemy is GrateKeeper keeper)
             keeper.BindCutter();
         if (enemy.hull >= 61 ? IndustrialMeshFactory.CombatEngineSockets(enemy.hull).Length > 0 : !(enemy is TunnelSawBoss) && !(enemy is GroundVehicle) && !(enemy is SpaceSatellite) && !(enemy is SpaceCitadelBoss) && !(enemy is InfernalEnemy) && !(enemy is OceanEnemy) && !(enemy is HellCrabBoss) && !(enemy is AbyssSubmarineBoss) && enemy.hull != 56 && enemy.hull < 58)

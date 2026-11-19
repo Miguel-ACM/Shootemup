@@ -5,7 +5,7 @@ using UnityEngine;
 public static partial class IndustrialMeshFactory
 {
     static Mesh fableBell, fableCap, fableLancer;
-    static Mesh fableKite, fableCrescent, fableMask, fableMushChampion, fableDreamChampion;
+    static Mesh fableKite, fableCrescent, fableMask, fableDreamChampion;
 
     static void FablePort(Builder b, float x, float y, float radius, int colour)
     {
@@ -198,15 +198,6 @@ public static partial class IndustrialMeshFactory
             new Vector3(.20f,-.45f,-.35f),new Vector3(.43f,-.29f,-.20f),.065f,.055f,5,false,4,4);
         FieldPort(b,new Vector3(.12f,-.77f,-.07f),.105f,13);
         return fableMask = b.Finish("PaintedMask");
-    }
-    public static Mesh MushroomChampionMesh()
-    {
-        if(fableMushChampion!=null)return fableMushChampion;var b=new Builder();
-        BevelArmor(b,new[]{V(-1.25f,.05f),V(-1.02f,.63f),V(-.53f,.91f),V(0,1.02f),V(.53f,.91f),V(1.02f,.63f),V(1.25f,.05f),V(.72f,.13f),V(.48f,-.14f),V(0,-.05f),V(-.48f,-.14f),V(-.72f,.13f)},.34f,8);
-        BevelArmor(b,new[]{V(-.44f,.12f),V(-.52f,-.53f),V(0,-1.03f),V(.52f,-.53f),V(.44f,.12f)},.31f,15);
-        foreach(int s in new[]{-1,1}) { CutStone(b,new Vector3(s*.60f,.49f,-.26f),new Vector3(.25f,.14f,.08f),15,6); FablePort(b,s*.48f,-.47f,.15f,8); }
-        CutStone(b,new Vector3(0,-.30f,-.31f),new Vector3(.23f,.28f,.10f),5,6);
-        return fableMushChampion=b.Finish("Mushroom champion / twin spore ports");
     }
     public static Mesh DreamChampionMesh()
     {

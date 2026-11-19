@@ -123,6 +123,43 @@ public sealed class PaintedMask : DistrictEnemy
 
 public sealed class MushroomChampion : DistrictMiniboss
 {
+    readonly Transform[] cases = new Transform[2];
+    float opening;
+
+    internal void BindShell()
+    {
+        Hull.GetComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.StagBody();
+        for (int i = 0; i < cases.Length; i++)
+        {
+            int side = i * 2 - 1;
+            var plate = new GameObject(side < 0 ? "Port wing case" : "Starboard wing case");
+            plate.transform.SetParent(Hull, false);
+            plate.transform.localPosition = IndustrialMeshFactory.StagHinge(side);
+            plate.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.StagCase(side);
+            var skin = plate.AddComponent<MeshRenderer>();
+            skin.sharedMaterial = IndustrialMeshFactory.StagPaint;
+            skin.sortingLayerName = "Enemy";
+            cases[i] = plate.transform;
+            firingCue.PlacePort(i, IndustrialMeshFactory.StagMuzzle(side), true, false);
+        }
+    }
+
+    protected override void Update()
+    {
+        float previous = age;
+        base.Update();
+        float dt = age - previous;
+        if (dt <= 0) return;
+        float charge = Engaged && !Retreating ? Mathf.Clamp01(1 - (nextAttack - age) / .58f) : 0;
+        opening = Mathf.MoveTowards(opening, charge, dt * (charge > opening ? 3 : 4.8f));
+        for (int i = 0; i < cases.Length; i++)
+        {
+            int side = 2 * i - 1;
+            float lift = 2 + 1.6f * Mathf.Sin(age * 4) + 24 * opening;
+            cases[i].localRotation = Quaternion.Euler(0, side * lift, -side * opening * 21);
+        }
+    }
+
     protected override void Configure() { health = 485; hullScale = 1.04f; attackInterval = 1.38f; nextAttack = 1.1f; }
     protected override Vector3 Position(float t) =>
         new Vector3(2.65f * Mathf.Sin(t * 1.48f), Camera.UpLimit - 3.5f + .8f * Mathf.Cos(t * 2.96f), 1);

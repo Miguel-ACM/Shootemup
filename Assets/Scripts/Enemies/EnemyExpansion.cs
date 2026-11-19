@@ -45,7 +45,7 @@ public static class EnemyExpansion
         new Entry(LevelId.Mushroom, typeof(MyceliumLancer), (int)CombatHullId.MyceliumLancer, .56f, false, IndustrialMeshFactory.MyceliumLancerMesh,
             new[] { new Vector3(0f, -.86f, -.24f) }, Array.Empty<Vector3>(), WavePartLibrary.MyceliumLancerParts),
         new Entry(LevelId.Mushroom, typeof(MushroomChampion), (int)CombatHullId.MushroomChampion, 1.04f, false, IndustrialMeshFactory.MushroomChampionMesh,
-            new[] { new Vector3(-.48f, -.47f, -.28f), new Vector3(.48f, -.47f, -.28f) }, Array.Empty<Vector3>(), Array.Empty<WavePart>()),
+            new[] { IndustrialMeshFactory.StagMuzzle(-1), IndustrialMeshFactory.StagMuzzle(1) }, Array.Empty<Vector3>(), Array.Empty<WavePart>()),
         new Entry(LevelId.Mushroom, typeof(MushroomWarden), (int)CombatHullId.MushroomWarden, .92f, false, IndustrialMeshFactory.MushroomWardenMesh,
             new[] { IndustrialMeshFactory.WardenLeftMuzzle, IndustrialMeshFactory.WardenRightMuzzle, IndustrialMeshFactory.WardenNoseMuzzle }, Array.Empty<Vector3>(), Array.Empty<WavePart>()),
         new Entry(LevelId.Dream, typeof(HourglassWeaver), (int)CombatHullId.HourglassWeaver, .61f, false, IndustrialMeshFactory.BuildHourglassWeaver,
@@ -125,6 +125,7 @@ public static class EnemyExpansion
     {
         if (hull == (int)CombatHullId.DreamPainter) return IndustrialMeshFactory.DreamPorcelain;
         if (hull == (int)CombatHullId.MushroomWarden) return IndustrialMeshFactory.MothPaint;
+        if (hull == (int)CombatHullId.MushroomChampion) return IndustrialMeshFactory.StagPaint;
         if(hull==91)return HeavenAngelVisual.Surface;
         var entry = Find(hull);
         return entry != null && entry.level == LevelId.Heaven ? HeavenMaterials.Ivory : entry != null && entry.level == LevelId.Space ? SpaceMaterials.Fleet : entry != null && entry.level == LevelId.Candyland ? CandyMaterials.Glaze : CombatMaterials.Fleet;
