@@ -103,6 +103,7 @@ public sealed class TimewinderRewind : OffensiveCast
     float healthThen, nextAfterimage;
     TimewinderEcho echo;
     LineRenderer dial, longHand, shortHand;
+    readonly LineRenderer[] hourMarks = new LineRenderer[12];
     Vector3 destination, target;
     bool arrived;
 
@@ -123,12 +124,33 @@ public sealed class TimewinderRewind : OffensiveCast
         longHand = CombatVisuals.Line(transform, Pale, .05f);
         shortHand = CombatVisuals.Line(transform, Pale, .065f);
         CombatVisuals.Ring(dial, destination, .85f);
+        for (int i = 0; i < hourMarks.Length; i++)
+        {
+            var mark = hourMarks[i] = CombatVisuals.Line(transform, i % 3 == 0 ? Pale : Teal, i % 3 == 0 ? .065f : .037f);
+            mark.positionCount = 2;
+        }
         ItemSound.Cue("timeStop", volume: .16f, pitch: 1.45f);
         ItemSound.Cue("roll", volume: .1f, pitch: .7f);
     }
 
     protected override void Step(float dt)
     {
+        float burst = Mathf.Clamp01((Age - Travel) / Linger);
+        for (int i = 0; i < hourMarks.Length; i++)
+        {
+            float flight = 1 - (1 - burst) * (1 - burst);
+            float radius = arrived ? .85f + (Radius - .85f) * flight : .85f;
+            float tilt = i % 2 == 0 ? 1 : -1;
+            Vector2 radial = CombatVisuals.Rotate(Vector2.up, i * 30 - flight * 32);
+            Vector3 tail = destination + (Vector3)(radial * radius) + Vector3.back * .16f;
+            var mark = hourMarks[i];
+            mark.SetPosition(0, tail);
+            mark.SetPosition(1, tail + (Vector3)CombatVisuals.Rotate(radial, burst * 108 * tilt) *
+                (i % 3 == 0 ? .25f : .14f) * (1 + burst));
+            var color = i % 3 == 0 ? Pale : Teal;
+            color.a = 1 - burst * burst;
+            mark.startColor = mark.endColor = color;
+        }
         // The hands spin backwards over the destination, a full turn per rewind.
         float wind = -Age / Travel * 360;
         Hand(longHand, wind, .75f);
@@ -204,8 +226,9 @@ public sealed class TimewinderRewind : OffensiveCast
                 erased.Add(round);
         foreach (var round in erased)
             round.Vanish();
-        PSXFireballs.Shockwave(at, Radius * 1.6f, .55f, Teal, 3, .8f);
-        ItemProcVfx.Emit(ItemProcShape.Return, at, Teal, .9f);
+        destination = at;
+        CombatVisuals.Ring(dial, at, .85f);
+        PSXFireballs.Shockwave(at, Radius, .26f, Pale, 1, .45f);
         ItemSpark.Emit(at, Teal, 12, .14f);
         ItemSound.Cue("itemChain", volume: .14f, pitch: .75f);
         if (EZCameraShake.CameraShaker.Instance != null)
