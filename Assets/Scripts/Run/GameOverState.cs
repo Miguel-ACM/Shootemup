@@ -46,10 +46,10 @@ public sealed class GameOverState : MonoBehaviour
     }
 
     RectTransform playfield;
-    TextMeshProUGUI score, coins, stamps, footer;
+    TextMeshProUGUI score, coins, footer;
     FlightLog log;
     bool won;
-    int sounded;
+    bool tallied;
     Image wings;
     void Build()
     {
@@ -73,52 +73,41 @@ public sealed class GameOverState : MonoBehaviour
         group.blocksRaycasts = false;
 
         playfield = DockInstrument.Block(transform, "Flight area", Vector2.zero,
-            new Vector2(405, 720), new Color(.013f, .025f, .035f, .86f));
+            new Vector2(405, 720), new Color(.013f, .025f, .035f, .95f));
         playfield.gameObject.AddComponent<RectMask2D>();
         string title = won ? (log.contract == null ? "VICTORY" : "CERTIFIED") : "GAME OVER";
-        var headline = Label(title, won ? 220 : 245, 82, 44,
+        var headline = Label(title, 251, 60, 43,
             won ? accent : new Color(1, .76f, .58f));
         headline.textWrappingMode = TextWrappingModes.NoWrap;
         lettering = headline.rectTransform;
-        if (!won)
-            DockInstrument.Block(playfield, "Debrief rule", new Vector2(0, 193), new Vector2(330, 3), new Color(.75f, .29f, .17f));
         if (won)
         {
             wings = new GameObject("Pilot wings", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
             wings.transform.SetParent(playfield, false);
             wings.sprite = Resources.Load<Sprite>("DockArt/Wings");
-            wings.rectTransform.sizeDelta = new Vector2(124, 62);
-            wings.rectTransform.anchoredPosition = new Vector2(0, 291);
+            wings.rectTransform.sizeDelta = new Vector2(84, 42);
+            wings.rectTransform.anchoredPosition = new Vector2(0, 310);
             wings.raycastTarget = false;
             ItemSound.Play("ready", .21f);
         }
-        Label((log.contract ?? log.frame.ToString()).ToUpperInvariant() + " / " + log.difficulty.ToString().ToUpperInvariant()
-            + " / " + log.Duration, 151, 35, 15, DockInstrument.Paper).textWrappingMode = TextWrappingModes.NoWrap;
-        Label(log.route, 111, 48, 15, DockInstrument.Muted);
-        Label("SCORE", 48, 22, 13, accent);
-        score = Label("", 9, 52, 34, DockInstrument.Paper);
-        coins = Label("", -39, 38, 16, DockInstrument.Brass);
-        coins.textWrappingMode = TextWrappingModes.NoWrap;
-        Label(log.bosses + (log.bosses == 1 ? " boss" : " bosses") + "   " + log.clean + " no-hit\n"
-            + log.hits + (log.hits == 1 ? " hit" : " hits") + "   " + log.peak + "x peak", -86, 44, 16, DockInstrument.Paper);
-        stamps = Label("", -192, 151, 16, accent);
-        stamps.textWrappingMode = TextWrappingModes.NoWrap;
-        stamps.lineSpacing = 14;
-        if (log.unlocks != null && log.unlocks.Count > 0)
-        {
-            stamps.gameObject.SetActive(false);
-            UnlockReceipt.Show(playfield, log.unlocks, font, log.awards.Find(a => a.StartsWith("Hull released")));
-        }
-        footer = Label("", -340, 24, 14, DockInstrument.Muted);
+        Label("SCORE", 193, 20, 12, DockInstrument.Muted, -77, 184);
+        score = Label("", 161, 40, 27, DockInstrument.Paper, -77, 208);
+        score.fontSizeMin = 14;
+        score.textWrappingMode = TextWrappingModes.NoWrap;
+        Label("COINS BANKED", 193, 20, 12, DockInstrument.Muted, 98, 145);
+        coins = Label("", 161, 40, 25, DockInstrument.Brass, 98, 145);
+        DockInstrument.Block(playfield, "Tally rule", Vector2.up * 124, new Vector2(334, 2), new Color(.22f, .31f, .32f));
+        UnlockReceipt.Show(playfield, log, font);
+        footer = Label("", -324, 32, 14, DockInstrument.Muted);
         group.alpha = 0;
     }
 
-    TextMeshProUGUI Label(string text, float y, float height, float size, Color color)
+    TextMeshProUGUI Label(string text, float y, float height, float size, Color color, float x = 0, float width = 365)
     {
         var label = new GameObject("Result lettering", typeof(RectTransform), typeof(TextMeshProUGUI)).GetComponent<TextMeshProUGUI>();
         label.transform.SetParent(playfield, false);
-        label.rectTransform.sizeDelta = new Vector2(365, height);
-        label.rectTransform.anchoredPosition = new Vector2(0, y);
+        label.rectTransform.sizeDelta = new Vector2(width, height);
+        label.rectTransform.anchoredPosition = new Vector2(x, y);
         if (font != null)
             label.font = font;
         label.spriteAsset = InputPrompts.InlineAsset;
@@ -143,25 +132,15 @@ public sealed class GameOverState : MonoBehaviour
             wings.rectTransform.localScale = Vector3.one * Mathf.Lerp(1.6f, 1, strike);
             wings.color = new Color(1, 1, 1, strike);
         }
-        float t = Mathf.SmoothStep(0, 1, (age - .35f) / 1.1f);
-        score.text = Mathf.RoundToInt(log.score * t).ToString("N0");
-        coins.text = "+" + Mathf.RoundToInt(log.earned * t) + " coins  <size=80%>" + log.banked + " banked</size>";
-        int count = Mathf.Clamp(Mathf.FloorToInt((age - 1.05f) * 3), 0, log.awards.Count);
-        if (count > sounded)
+        if (!tallied)
         {
-            sounded = count;
-            ItemSound.Play("ready", .13f);
+            float t = Mathf.SmoothStep(0, 1, (age - .35f) / 1.1f);
+            score.text = Mathf.RoundToInt(log.score * t).ToString("N0");
+            coins.text = "+" + Mathf.RoundToInt(log.banked * t).ToString("N0");
+            tallied = t >= 1;
         }
-        if (count > 0)
-        {
-            // The complete list stays available on the recorder; cycle four stamps at a time on long receipts.
-            int start = count < log.awards.Count ? (count - 1) / 4 * 4 : (Mathf.FloorToInt(Mathf.Max(0, age - 2 - log.awards.Count / 3f) / 3) % ((count + 3) / 4)) * 4;
-            stamps.text = "NEW RELEASES\n" + string.Join("\n", log.awards.GetRange(start, Mathf.Min(4, count - start)));
-        }
-        else
-            stamps.text = age > 1.2f && log.awards.Count == 0 ? "FLIGHT LOG FILED" : "";
         bool ready = age > 1.6f;
-        footer.text = ready ? DockInstrument.MenuKey() + "   RETURN TO HANGAR" : "";
+        footer.text = ready ? DockInstrument.MenuKey() + "   HANGAR" : "";
         var controls = GameInput.Actions.PlayerControls;
         if (ready && !leaving && !CloudTransition.Busy && (controls.Accept.WasPressedThisFrame() || controls.Back.WasPressedThisFrame()))
         {

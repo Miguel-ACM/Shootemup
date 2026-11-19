@@ -227,15 +227,15 @@ public static class VerifyLancerAndBossRewards
         notices.Add(route);
         var root = new GameObject("Receipt check", typeof(RectTransform), typeof(Canvas));
         root.GetComponent<RectTransform>().sizeDelta = new Vector2(405, 720);
-        UnlockReceipt.Show(root.transform, notices, font);
+        UnlockReceipt.Show(root.transform, new FlightLog { unlocks = notices }, font);
         var receipt = root.GetComponentInChildren<UnlockReceipt>();
         Check(receipt.GetComponentsInChildren<TextMeshProUGUI>().Any(l => l.text == "NEW ROUTE"), "New routes take priority on the first receipt page");
         var reasons = root.GetComponentsInChildren<TextMeshProUGUI>(true).Where(t => t.name == "Unlock reason").ToArray();
         Check(reasons.Length == notices.Count, "Every earned item has a reason");
-        for (int page = 0; page < Mathf.CeilToInt(notices.Count / 3f); page++)
+        for (int page = 0; page < notices.Count; page++)
         {
             Invoke(receipt, "SetPage", page);
-            Check(reasons.Count(r => r.gameObject.activeInHierarchy) == Mathf.Min(3, notices.Count - page * 3), "Receipt pagination");
+            Check(reasons.Count(r => r.gameObject.activeInHierarchy) == 1, "One selected reward per page");
             foreach (var reason in reasons.Where(r => r.gameObject.activeInHierarchy))
             {
                 reason.SendMessage("Awake");
