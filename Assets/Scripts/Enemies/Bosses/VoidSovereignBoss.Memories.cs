@@ -4,6 +4,11 @@ using UnityEngine;
 public sealed partial class VoidSovereignBoss
 {
     Vector2 sawTravel = new Vector2(4.1f, -3.45f);
+    readonly ThunderLaserBot[] echoPylons = new ThunderLaserBot[6];
+    Vector3[] circuit;
+    float[] distances;
+    float circuitTravel;
+    int circuitIndex;
     int bounces;
     float memoryAge, dive;
     Vector3 diveStart, diveEnd;
@@ -32,11 +37,47 @@ public sealed partial class VoidSovereignBoss
             transform.position=Vector3.Lerp(diveStart,diveEnd,Mathf.SmoothStep(0,1,dive));
             return;
         }
-        float xOffset = district == LevelId.Core || district == LevelId.Sewers || district == LevelId.Space ? 0 :
-            Mathf.Sin(t * (district == LevelId.Candyland ? 1.9f : .71f)) * 1.55f;
-        float yOffset = district == LevelId.Sewers ? -1.45f : district == LevelId.Desert ? -2.1f+2.3f*Mathf.Cos(t*.64f) :
-            .55f*Mathf.Sin(t*.93f);
-        transform.position=Vector3.MoveTowards(transform.position, station+new Vector3(xOffset,yOffset,0),dt*4.2f);
+        if (district == LevelId.Desert)
+        {
+            if (circuit == null)
+            {
+                DesertWormBoss.BuildCircuit(Mathf.Max(1.85f,UnityEngine.Camera.main.orthographicSize*405/720),out circuit,out distances);
+                float nearest = float.PositiveInfinity;
+                for (int i=0;i<circuit.Length-1;i++)
+                {
+                    float distance = (circuit[i]-transform.position).sqrMagnitude;
+                    if (distance >= nearest) continue;
+                    nearest = distance; circuitIndex = i; circuitTravel = distances[i];
+                }
+            }
+            Vector3 before = transform.position;
+            transform.position = DesertWormBoss.AdvanceCircuit(circuit,distances,ref circuitTravel,ref circuitIndex,dt*3.3f);
+            Memory.FollowWorm(transform.position, transform.position-before);
+            return;
+        }
+        float top = Camera.UpLimit, middle = (top+Camera.DownLimit)*.5f;
+        float speed = 4.8f;
+        Vector3 perch = new Vector3(0,top-2.4f,1);
+        switch (district)
+        {
+            case LevelId.Thunder: perch.x=ThunderLanceBoss.StarFiringLane(echoPylons); speed=3.3f; break;
+            case LevelId.Space: perch.Set(.82f*Mathf.Sin(t*.43f),top-3+.32f*Mathf.Sin(t*.31f),1); speed=3.2f; break;
+            case LevelId.Heaven: perch.Set(1.35f*Mathf.Sin(t*.4f),top-3.1f+.35f*Mathf.Cos(t*.6f),1); speed=1.2f; break;
+            case LevelId.Sewers: perch.y=CisternHeart.LakeCenter; break;
+            case LevelId.Core: perch.y=top-3.45f+1.22f*Mathf.Sin(t*.95f); break;
+            case LevelId.Dream: perch.Set(.60f*Mathf.Sin(t*.78f),top-3.45f+.27f*Mathf.Sin(t*1.56f),1); speed=6; break;
+            case LevelId.Hell: perch.Set(.70f*Mathf.Sin(t*.58f),top-2.55f,1); speed=3.4f; break;
+            case LevelId.Underwater: perch.Set(2.1f*Mathf.Sin(t*.65f),top-2.65f,1); speed=5; break;
+            case LevelId.Candyland:
+                float width=Mathf.Min(Camera.RightLimit,UnityEngine.Camera.main.orthographicSize*405/720)-1.5f;
+                perch.Set(Mathf.Sin(t*.23f)*width*.6f,Mathf.Lerp(middle+1.6f,top-1.7f,.55f+.45f*Mathf.Sin(t*.31f+1)),1);
+                break;
+            case LevelId.Mushroom:
+                float glide=Mathf.PingPong(t/1.6f,1);
+                perch.Set(Mathf.Lerp(-1.65f,1.65f,Mathf.SmoothStep(0,1,glide)),top-2.95f-.58f*Mathf.Sin(glide*Mathf.PI),1);
+                break;
+        }
+        transform.position=Vector3.MoveTowards(transform.position,perch,dt*speed);
     }
 
     Vector3 InkPort(int port) => Memory.Port(port).position;
@@ -63,6 +104,7 @@ public sealed partial class VoidSovereignBoss
                 Vector2 ray = Down(i*60);
                 var pylon = ThunderLaserBot.Deploy(InkPort(2),hub + ray*1.12f,ray,16,.18f)
                     .OwnedBy(this).Swing(60,Difficulty.Hard ? 27 : 21).ArmAt(1.65f);
+                echoPylons[i] = pylon;
                 pylon.transform.SetParent(Memory.root,true);
                 pylon.GetComponentInChildren<MeshRenderer>().sharedMaterial = VoidEchoVisual.Obsidian;
             }

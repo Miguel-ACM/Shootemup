@@ -33,7 +33,7 @@ public sealed partial class DesertWormBoss : DistrictBoss
         bodyContact = gameObject.AddComponent<PolygonCollider2D>();
         bodyContact.isTrigger = true;
         GetComponent<CombatHullVisual>().enabled = false;
-        BuildCircuit(Mathf.Max(1.85f, UnityEngine.Camera.main.orthographicSize * 405f / 720f));
+        BuildCircuit(Mathf.Max(1.85f, UnityEngine.Camera.main.orthographicSize * 405f / 720f), out circuit, out circuitDistance);
         transform.position = circuit[0];
         previous = transform.position + Vector3.up * .1f;
         Hull.GetComponent<MeshRenderer>().sharedMaterial = IndustrialMeshFactory.WhiteWormMaterial;
@@ -59,7 +59,7 @@ public sealed partial class DesertWormBoss : DistrictBoss
     float[] circuitDistance;
     float travel;
     int circuitIndex;
-    void BuildCircuit(float w)
+    internal static void BuildCircuit(float w, out Vector3[] circuit, out float[] circuitDistance)
     {
         float top = Camera.UpLimit, bottom = Camera.DownLimit, mid = (top + bottom) / 2, o = 1.1f;
         Vector2[] keys =
@@ -104,10 +104,10 @@ public sealed partial class DesertWormBoss : DistrictBoss
         return Vector2.LerpUnclamped(b1, b2, (u - t1) / (t2 - t1));
     }
 
-    protected override void MoveBoss(float dt)
+    internal static Vector3 AdvanceCircuit(Vector3[] circuit, float[] circuitDistance, ref float travel, ref int circuitIndex, float step)
     {
         float length = circuitDistance[circuitDistance.Length - 1];
-        travel += dt * (phaseTwo ? 4.3f : 3.3f);
+        travel += step;
         if (travel >= length)
         {
             travel -= length;
@@ -116,7 +116,12 @@ public sealed partial class DesertWormBoss : DistrictBoss
         while (circuitIndex < circuit.Length - 2 && circuitDistance[circuitIndex + 1] < travel)
             circuitIndex++;
         float span = circuitDistance[circuitIndex + 1] - circuitDistance[circuitIndex];
-        transform.position = Vector3.Lerp(circuit[circuitIndex], circuit[circuitIndex + 1], span > 0 ? (travel - circuitDistance[circuitIndex]) / span : 0);
+        return Vector3.Lerp(circuit[circuitIndex], circuit[circuitIndex + 1], span > 0 ? (travel - circuitDistance[circuitIndex]) / span : 0);
+    }
+
+    protected override void MoveBoss(float dt)
+    {
+        transform.position = AdvanceCircuit(circuit, circuitDistance, ref travel, ref circuitIndex, dt * (phaseTwo ? 4.3f : 3.3f));
         Vector2 tangent = transform.position - previous;
         previous = transform.position;
         if (tangent.sqrMagnitude > .00001f)

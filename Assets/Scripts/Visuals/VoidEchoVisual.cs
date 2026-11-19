@@ -8,6 +8,14 @@ public sealed class VoidEchoVisual
     public Transform Target { get; private set; }
     readonly Transform[] mounts = new Transform[8];
     readonly Transform[] moving = new Transform[8];
+    readonly Transform[] vertebrae = new Transform[DesertWormBoss.BodyCount];
+    SandSpine spine;
+    public void FollowWorm(Vector3 position, Vector3 tangent)
+    {
+        if (tangent.sqrMagnitude > .00001f) hull.rotation = Quaternion.FromToRotation(Vector3.down,tangent);
+        spine ??= new SandSpine(position,1.04f,vertebrae.Length);
+        spine.Follow(position,vertebrae);
+    }
     MushroomMothRig moth;
     HeavenAngelVisual angel;
     static Material holeDisk, holeEye, mothSilk, paintedFace, obsidian;
@@ -118,11 +126,11 @@ public sealed class VoidEchoVisual
                 Mount(0,Target,Vector3.zero);
                 break;
             case LevelId.Desert:
-                for(int i=0;i<6;i++)
+                for(int i=0;i<vertebrae.Length;i++)
                 {
                     var section=Part("Vertebra",IndustrialMeshFactory.WhiteWormSection(),hull,Vector3.up*(i+1)*.88f);
                     section.localScale=Vector3.one*(.91f-i*.035f);
-                    moving[i]=section;
+                    vertebrae[i]=section;
                     var core=Part("Reactor",IndustrialMeshFactory.WhiteWormCore(false),section,Vector3.back*.44f);
                     Mount(i+1,core,Vector3.zero);
                 }
@@ -162,13 +170,7 @@ public sealed class VoidEchoVisual
         moth?.Pose(.45f+.45f*Mathf.Sin(3.4f*t));
         if (angel!=null) angel.Pose(t*1.25f);
         if (district==LevelId.Tunnel) hull.localRotation=Quaternion.Euler(0,0,t*245);
-        if (district==LevelId.Core) moving[0].localPosition=new Vector3(2.65f*Mathf.Sin(t*1.5f),0,-.2f);
-        if (district==LevelId.Desert)
-            for(int i=0;i<6;i++)
-            {
-                moving[i].localPosition=new Vector3(.78f*(Mathf.Sin(t*1.45f-i*.42f)-Mathf.Sin(t*1.45f)),(i+1)*.86f,0);
-                moving[i].localRotation=Quaternion.Euler(0,0,18*Mathf.Cos(t*1.45f-i*.42f));
-            }
+        if (district==LevelId.Core) moving[0].localPosition=new Vector3(2.72f*Mathf.Sin(t*1.12f+.65f),0,-.2f);
         for(int i=0;i<2;i++)
         {
             int side=i*2-1;

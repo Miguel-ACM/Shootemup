@@ -34,12 +34,12 @@ public sealed partial class ThunderLanceBoss : DistrictBoss
     {
         // Follow the live star's lower opening, including its slow reversals and recharge.
         // Later phases retain their independent patrol above the marching lattice.
-        station.x = !phaseTwo ? StarFiringLane() : RotorCount > 0 ? transform.position.x : Mathf.Sin(motionAge * .55f) * 1.9f;
+        station.x = !phaseTwo ? StarFiringLane(drones) : RotorCount > 0 ? transform.position.x : Mathf.Sin(motionAge * .55f) * 1.9f;
         station.y = Camera.UpLimit - 2.4f;
         transform.position = Vector3.MoveTowards(transform.position, station, dt * 3.3f);
     }
 
-    float StarFiringLane()
+    internal static float StarFiringLane(System.Collections.Generic.IReadOnlyList<ThunderLaserBot> drones)
     {
         var hub = new Vector2(0, Middle + .8f);
         // Intersect the two bordering beams with the lower flight area. Clipping the
