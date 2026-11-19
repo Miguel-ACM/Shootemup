@@ -127,28 +127,38 @@ public sealed partial class VoidSovereignBoss
         }
     }
 
-    // Two lobes of ink unfold around each nib. Their mirrored outlines exchange
-    // concavities on each impression, leaving smaller comet trails through the centre.
+    // The upper nibs print mirrored, scalloped outlines. The lower nibs answer
+    // on the next beat with a shallow crescent fan between impressions.
     IEnumerator Inkblot(int stanza)
     {
-        for(int impression=0;impression<6;impression++)
+        for (int beat = 0; beat < 6; beat++)
         {
-            int n=Mathf.Max(18,Dense(38));
-            for(int p=0;p<4;p++)
+            bool outline = (beat & 1) == 0;
+            int count = Dense(outline ? 24 : 10);
+            float tilt = 16 * Mathf.Sin(stanza * .9f + (beat / 2) * .95f);
+            UseTone(outline ? HostileTone.Dark : HostileTone.Bright);
+            for (int nib = 0; nib < 2; nib++)
             {
-                UseTone(p<2 ? HostileTone.Dark : HostileTone.Bright);
-                int side=(p&1)*2-1;
-                for(int i=0;i<n;i++)
+                int side = nib * 2 - 1;
+                Vector3 lip = Port(outline ? nib : nib + 2);
+                for (int i = 0; i < count; i++)
                 {
-                    float a=i*Mathf.PI*2/n;
-                    float r=2+.8f*Mathf.Cos(3*a+impression*.62f);
-                    Vector2 v=CombatVisuals.Rotate(new Vector2(side*Mathf.Sin(a)*r,Mathf.Cos(a)*r*.72f),
-                        side*(stanza*8+p*21))+new Vector2(-side*.45f,-1.55f);
-                    if(p<2) Fire<SimpleRound>(Port(p),v,v.magnitude,.17f,i==0);
-                    else Fire<CrescentRound>(Port(p),v,v.magnitude,.20f,i==0);
+                    if (outline)
+                    {
+                        float a = i * 2 * Mathf.PI / count;
+                        float radius = 1.65f + .34f * Mathf.Cos(3*a);
+                        Vector2 lobe = new Vector2(side * Mathf.Sin(a) * radius, Mathf.Cos(a) * radius * .55f);
+                        Vector2 velocity = CombatVisuals.Rotate(lobe, side * tilt) + new Vector2(-side * .34f,-3.25f);
+                        Fire<SimpleRound>(lip,velocity,velocity.magnitude,.17f,i==0);
+                    }
+                    else
+                    {
+                        float angle = side * (tilt + 58 * Across(i,count));
+                        Fire<CrescentRound>(lip,Down(angle),2.7f,.20f,i==0);
+                    }
                 }
             }
-            yield return Wait(Rest(.65f));
+            yield return Wait(Rest(outline ? .98f : 1.15f));
         }
     }
 
