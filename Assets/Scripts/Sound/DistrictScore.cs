@@ -85,7 +85,9 @@ public sealed class DistrictScore : MonoBehaviour
     public void Phase(int phase)
     {
         if (phase < 2) return;
-        int steps = Difficulty.Hard ? Mathf.Min(phase - 1, 2) : 2;
+        // Phase four begins the first interlude, after Void's third memory falls.
+        int steps = LevelRun.Current == LevelId.Void ? (phase >= 4 ? 1 : 0) :
+            Difficulty.Hard ? Mathf.Min(phase - 1, 2) : 2;
         bossTempo = Mathf.Max(bossTempo, 1 + .02f * steps);
     }
     const double Lead = .1;
