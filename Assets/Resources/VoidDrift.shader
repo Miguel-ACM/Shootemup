@@ -1,6 +1,6 @@
 Shader "Shootemup/Void Drift"
 {
-    Properties { _Clock("Fall time",Float)=0 _Liquid("Liquid beads",Float)=0 }
+    Properties { _Clock("Fall time",Float)=0 _Liquid("Liquid beads",Float)=0 _RouteTint("Route light",Color)=(.73,.31,1,1) }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" }
@@ -14,6 +14,7 @@ Shader "Shootemup/Void Drift"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             CBUFFER_START(UnityPerMaterial)
             float _Clock,_Liquid;
+            float4 _RouteTint;
             CBUFFER_END
             struct I { float4 p:POSITION;float3 n:NORMAL;float4 fall:TEXCOORD0;float4 spin:TEXCOORD1;float4 color:COLOR; };
             struct O { float4 p:SV_POSITION;float3 n:TEXCOORD0;float shade:TEXCOORD1; };
@@ -38,9 +39,10 @@ Shader "Shootemup/Void Drift"
                 float3 normal=normalize(i.n),lamp=normalize(float3(-.5,.7,-1));
                 float light=saturate(dot(normal,lamp));
                 float sheen=pow(saturate(dot(reflect(-lamp,normal),float3(0,0,-1))),_Liquid>.5?22:20);
-                float3 stone=float3(.022,.018,.034)+light*float3(.10,.083,.145)+sheen*float3(.09,.075,.13);
-                float3 ink=float3(.009,.007,.017)+light*float3(.047,.035,.073)+sheen*float3(.32,.25,.42);
-                return half4(lerp(stone,ink,_Liquid)*i.shade,1);
+                float body=lerp(.028+.16*light,.012+.083*light,_Liquid);
+                float gloss=lerp(.14,.39,_Liquid)*sheen;
+                float3 surface=lerp(_RouteTint.rgb,1,.12)*body+lerp(_RouteTint.rgb,1,.38)*gloss;
+                return half4(surface*i.shade,1);
             }
             ENDHLSL
         }

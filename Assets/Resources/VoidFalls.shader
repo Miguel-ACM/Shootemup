@@ -4,6 +4,7 @@ Shader "Shootemup/Void Falls"
     {
         _Clock("Flow time",Float)=0 _Seed("Flow seed",Float)=0 _Curtain("Liquid curtain",Float)=0
         _Edge("Inner shore",Float)=3.4 _Flow("Fall speed",Float)=1 _Shade("Depth shade",Float)=1
+        _RouteTint("Route light",Color)=(.73,.31,1,1)
     }
     SubShader
     {
@@ -18,6 +19,7 @@ Shader "Shootemup/Void Falls"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             CBUFFER_START(UnityPerMaterial)
             float _Clock,_Seed,_Curtain,_Edge,_Flow,_Shade;
+            float4 _RouteTint;
             CBUFFER_END
             struct I {float4 positionOS:POSITION;float2 uv:TEXCOORD0;};
             struct O {float4 positionCS:SV_POSITION;float2 p:TEXCOORD0;float2 uv:TEXCOORD1;};
@@ -57,15 +59,14 @@ Shader "Shootemup/Void Falls"
                     float gloss=pow(saturate(dot(reflect(-lamp,normal),float3(0,0,-1))),20);
                     float ripple=sin(v*2.7+warp*3+u*1.4)*.5+.5;
                     float lip=exp(-i.uv.x*58)*( .58+.42*sin(v*.65+phase)*sin(v*.65+phase));
-                    dark=(float3(.008,.007,.016)+float3(.078,.058,.11)*light*(.65+folds*.25)
-                        +float3(.24,.19,.30)*gloss*(.55+ripple*.45)+float3(.14,.10,.20)*lip)*_Shade;
+                    float body=.020+.17*light*(.65+folds*.25)+.19*lip;
+                    dark=(_RouteTint.rgb*body + lerp(_RouteTint.rgb,1,.38)*.28*gloss*(.55+ripple*.45))*_Shade;
                 }
                 else
                 {
                     float far=N(p*.12+float2(_Seed,_Clock*.012));
-                    dark=lerp(float3(.002,.002,.006),float3(.024,.012,.043),far*far);
-                    float haze=exp(-dot(p*float2(.24,.13),p*float2(.24,.13)))*.025;
-                    dark+=float3(.43,.20,.69)*haze;
+                    float haze=exp(-dot(p*float2(.24,.13),p*float2(.24,.13)));
+                    dark=.004+_RouteTint.rgb*(.017+.074*far*far+.044*haze);
                 }
                 return half4(dark,1);
             }

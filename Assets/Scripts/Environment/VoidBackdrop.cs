@@ -65,7 +65,10 @@ public sealed class VoidBackdrop : MonoBehaviour
     static float Range(System.Random random, float a, float b) => Mathf.Lerp(a,b,(float)random.NextDouble());
     Material Material(string shader)
     {
-        var result = new Material(Resources.Load<Shader>(shader)); materials.Add(result); return result;
+        var result = new Material(Resources.Load<Shader>(shader));
+        result.SetColor("_RouteTint", LevelProjectilePalette.Accent(LevelId.Void));
+        materials.Add(result);
+        return result;
     }
     void Add(string label, Mesh mesh, Material material, float depth, int order)
     {
