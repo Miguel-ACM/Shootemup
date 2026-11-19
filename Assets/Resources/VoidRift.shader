@@ -22,21 +22,34 @@ Shader "Shootemup/Void Rift"
             O Vert(I i){O o;o.p=TransformObjectToHClip(i.p.xyz);o.xy=i.uv*2-1;return o;}
             half4 Frag(O i):SV_Target
             {
-                float2 p=i.xy;float y=abs(p.y)/max(.02,_Open);
-                float lip=.40*_Open*pow(saturate(1-y*y),1.5);
-                float warp=sin(p.y*12-_Clock*7)*.012*_Open;
-                float d=abs(p.x+warp)-lip;
-                float cap=1-smoothstep(.8,1,y);
-                float rim=exp(-abs(d)*115)*cap;
-                float aura=exp(-abs(d)*14)*cap*.55;
-                float inside=(1-smoothstep(-.01,.015,d))*cap;
-                float streak=pow(saturate(.5+.5*cos(atan2(p.y,p.x)*14+_Clock*2)),22);
-                streak*=exp(-length(p)*3)*saturate(d*8)*_Open;
-                float flow=.55+.45*sin(p.y*25-_Clock*13);
-                float3 ink=_VoidRouteLight.a > .5 ? _VoidRouteLight.rgb : float3(.72,.34,1);
-                float3 color=ink*(.065*inside + aura + streak*.7 + .34*aura*_Arrival);
-                color+=lerp(ink,1,.48)*rim*(.9+.25*flow);
-                float alpha=saturate(inside+rim+aura+streak)*smoothstep(0,.13,_Open);
+                // Three offset folds peel apart in sequence. Each visible face is bounded
+                // by straight creases, with empty space between the outer paper edges.
+                float opening = smoothstep(0,1,_Open);
+                float hand = lerp(-1,1,_Arrival);
+                float twist = hand * (.18 + (1-opening)*.68);
+                float sn,cs; sincos(twist,sn,cs);
+                float2 p = mul(float2x2(cs,-sn,sn,cs),i.xy);
+                float3 tint = _VoidRouteLight.a > .5 ? _VoidRouteLight.rgb : float3(.72,.34,1);
+                float3 color = 0;
+                float alpha = 0;
+                [unroll] for (int layer=2;layer>=0;layer--)
+                {
+                    float t = saturate((opening-layer*.10)/(1-layer*.10));
+                    float2 q = p - float2(hand*layer*.090,layer*.055)*t;
+                    float width = (.40-layer*.065)*max(.015,t*t);
+                    float h = (.82-layer*.08)*max(.02,sqrt(t));
+                    float d = abs(q.x+.15*q.y)/width + abs(q.y)/h - 1;
+                    float aa = max(fwidth(d),.012);
+                    float face = 1-smoothstep(-aa,aa,d);
+                    float rim = 1-smoothstep(aa,aa*2.8,abs(d));
+                    float facet = step(q.x+.15*q.y,0);
+                    float crease = 1-smoothstep(.003,.018,abs(q.x+.15*q.y));
+                    float sweep = saturate(1-abs(q.y/h - (t*2-1)*hand)*4);
+                    float3 panel = tint * (.032+facet*.085+layer*.05+crease*.28);
+                    panel += lerp(tint,1,.38)*rim*(.50+.50*sweep);
+                    color = lerp(color,panel,max(face,rim));
+                    alpha = max(alpha,max(face*.92,rim)*smoothstep(0,.15,t));
+                }
                 return half4(color,alpha);
             }
             ENDHLSL

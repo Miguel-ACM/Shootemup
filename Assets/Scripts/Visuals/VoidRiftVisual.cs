@@ -1,7 +1,6 @@
 using UnityEngine;
 
-// The boss keeps two rifts for the whole encounter. A pointed tear, luminous lips,
-// inward streaks and a dark interior remain distinct from the round hostile sprites.
+// The boss keeps two folding apertures for the whole encounter.
 // Each rift also owns a shock ring, a jagged travel bolt and a shard burst, all built
 // once with the boss so a teleport beat never creates objects.
 public sealed class VoidRiftVisual : MonoBehaviour
@@ -38,7 +37,7 @@ public sealed class VoidRiftVisual : MonoBehaviour
         rift.visual.sortingOrder = 20;
         rift.visual.enabled = false;
         rift.ring = Line(parent, RingPoints, .085f);
-        rift.halo = Line(parent, RingPoints, .22f);
+        rift.halo = Line(parent, RingPoints, .054f);
         rift.bolt = Line(parent, BoltPoints, .16f);
         rift.shards = PSXImpactEffects.Create(parent, "Void rift shards", 160);
         return rift;
@@ -55,7 +54,7 @@ public sealed class VoidRiftVisual : MonoBehaviour
         return line;
     }
 
-    // A circle of the given radius; the soft halo underneath doubles as its glow.
+    // A pair of offset angular echoes marks the space folding shut.
     public void Shock(Vector3 center, float radius, float strength)
     {
         bool on = strength > .01f && radius > .02f;
@@ -66,11 +65,11 @@ public sealed class VoidRiftVisual : MonoBehaviour
         for (int i = 0; i < RingPoints; i++)
         {
             float a = i * Mathf.PI * 2 / (RingPoints - 1);
-            // A slightly torn circle: the rim wavers like the slit's lips.
-            float r = radius * (1 + .04f * Mathf.Sin(a * 7 + radius * 5));
-            var p = center + new Vector3(Mathf.Cos(a) * r, Mathf.Sin(a) * r, 0);
-            ring.SetPosition(i, p);
-            halo.SetPosition(i, p);
+            float x = Mathf.Cos(a), y = Mathf.Sin(a);
+            float r = radius / (Mathf.Abs(x) + Mathf.Abs(y));
+            var vertex = new Vector3(x*r*.80f + y*r*.23f,y*r,0);
+            ring.SetPosition(i, center + vertex);
+            halo.SetPosition(i, center + vertex*.81f + Vector3.right*radius*.12f);
         }
         ring.startColor = ring.endColor = new Color(Pale.r, Pale.g, Pale.b, strength);
         halo.startColor = halo.endColor = new Color(RouteColor.r, RouteColor.g, RouteColor.b, strength * .35f);
