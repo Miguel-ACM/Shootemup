@@ -51,7 +51,7 @@ public class Multiphase : AShooter
                 {
                     shoot.Stop();
                 }
-                enemy.NotifyBossPhaseChange(currPhase);
+                enemy.NotifyBossPhaseChange(currPhase + 2); // Announce the incoming phase, numbered from one.
                 changinPhase = true;
             }
             if (currBreak < breakTime)

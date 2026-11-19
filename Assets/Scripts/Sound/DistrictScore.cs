@@ -82,7 +82,12 @@ public sealed class DistrictScore : MonoBehaviour
     bool started, waitingForLoad;
     float bossTempo = 1;
 
-    public void Phase(int phase) => bossTempo = 1 + .10f * Mathf.Clamp(phase - 1, 0, 4);
+    public void Phase(int phase)
+    {
+        if (phase < 2) return;
+        int steps = Difficulty.Hard ? Mathf.Min(phase - 1, 2) : 2;
+        bossTempo = Mathf.Max(bossTempo, 1 + .02f * steps);
+    }
     const double Lead = .1;
     public bool Active => track != null;
     public bool IsPlaying => Active && started && decks[index].Source.isPlaying;
