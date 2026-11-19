@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 // A chiseled robe folded around a single eye. The drapery, hood lining and
 // the eye socket share control vertices. Facets split only for flat shading.
@@ -211,7 +212,8 @@ public sealed class WitnessSculpture : MonoBehaviour
     Mesh skin;
     MeshRenderer aura;
     Material auraMaterial;
-    static readonly int AuraMotion = Shader.PropertyToID("_Motion");
+    RenderTexture silhouette;
+    CommandBuffer drawSilhouette;
     Vector3[] nodes, vertices, normals;
     struct Flex { public float shoulder, tip, hem, hood, iris; }
     Flex[] flex;
@@ -241,14 +243,31 @@ public sealed class WitnessSculpture : MonoBehaviour
 
         var veil = new GameObject("Witness penumbra", typeof(MeshFilter), typeof(MeshRenderer));
         veil.transform.SetParent(transform, false);
-        veil.transform.localPosition = new Vector3(0, -.65f, 1.8f);
-        veil.transform.localScale = new Vector3(8.8f, 11.2f, 1);
+        veil.transform.localPosition = new Vector3(0, -1.1f, .95f);
+        veil.transform.localScale = new Vector3(6.4f, 8f, 1);
         veil.GetComponent<MeshFilter>().sharedMesh = Resources.GetBuiltinResource<Mesh>("Quad.fbx");
         aura = veil.GetComponent<MeshRenderer>();
         aura.sortingLayerID = GetComponent<MeshRenderer>().sortingLayerID;
         aura.sortingOrder = GetComponent<MeshRenderer>().sortingOrder - 1;
         auraMaterial = new Material(Resources.Load<Shader>("WitnessPenumbra"));
         aura.sharedMaterial = auraMaterial;
+
+        silhouette = new RenderTexture(64, 80, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear)
+        {
+            name = "Witness silhouette", useMipMap = true, autoGenerateMips = false,
+            filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp
+        };
+        silhouette.Create();
+        auraMaterial.SetTexture("_Silhouette", silhouette);
+        var frame = veil.transform;
+        auraMaterial.SetVector("_MaskFrame", new Vector4(frame.localPosition.x, frame.localPosition.y,
+            2 / frame.localScale.x, 2 / frame.localScale.y));
+        drawSilhouette = new CommandBuffer { name = "Witness silhouette" };
+        drawSilhouette.SetRenderTarget(silhouette);
+        drawSilhouette.ClearRenderTarget(false, true, Color.clear);
+        drawSilhouette.DrawMesh(skin, Matrix4x4.identity, auraMaterial, 0, auraMaterial.FindPass("Silhouette"));
+        drawSilhouette.GenerateMips(silhouette);
+        Graphics.ExecuteCommandBuffer(drawSilhouette);
     }
     public void Pose(float t, int phase, float strike)
     {
@@ -260,7 +279,6 @@ public sealed class WitnessSculpture : MonoBehaviour
         float tail = .32f*Mathf.Sin(beat-.73f);
         float tailLift = .22f * Mathf.Cos(beat);
         float glance = .068f * Mathf.Sin(t * .92f);
-        auraMaterial.SetVector(AuraMotion, new Vector4(t, shoulder + sweep, tail, strike));
         var rest = Sculpture.Rest;
         for (int i=0; i<rest.Length; i++)
         {
@@ -281,10 +299,13 @@ public sealed class WitnessSculpture : MonoBehaviour
         }
         skin.SetVertices(vertices,0,vertices.Length,UnityEngine.Rendering.MeshUpdateFlags.DontRecalculateBounds);
         skin.SetNormals(normals);
+        Graphics.ExecuteCommandBuffer(drawSilhouette);
     }
     public void ExtinguishAura() => aura.gameObject.SetActive(false);
     void OnDestroy()
     {
+        drawSilhouette?.Release();
+        if (silhouette != null) Destroy(silhouette);
         if (skin != null) Destroy(skin);
         if (auraMaterial != null) Destroy(auraMaterial);
     }
