@@ -194,7 +194,8 @@ public sealed class BeamEmitter : AWeaponAutomatic
                 ? CombatTargets.MarkedInRange(aimOrigin, 20) ?? CombatUpgrades.Nearest(aimOrigin, null, 20) : null;
             if (target != null)
             {
-                attraction = hasAttraction ? Vector3.Lerp(attraction, target.transform.position, 1 - Mathf.Exp(-12 * dt)) : target.transform.position;
+                Vector3 point = CombatTargets.AimPoint(aimOrigin,target);
+                attraction = hasAttraction ? Vector3.Lerp(attraction, point, 1 - Mathf.Exp(-12 * dt)) : point;
                 hasAttraction = true;
             }
             else

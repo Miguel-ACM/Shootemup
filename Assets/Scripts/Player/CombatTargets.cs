@@ -15,6 +15,9 @@ public static class CombatTargets
         return (point - (Vector2)position).sqrMagnitude <= radius * radius ? marked : null;
     }
 
+    public static Vector3 AimPoint(Vector3 from, AEnemy target) => target is CoreGantry gantry && gantry.Reactor != null
+        ? gantry.Reactor.position : target.transform.position;
+
     public static Vector2 MarkedDirection(Vector3 from, AEnemy target)
     {
         if (target == null)

@@ -291,7 +291,7 @@ public sealed class PlayerRound : ABullet
                     ? guidedTarget : CombatUpgrades.Nearest(transform.position, hit, 7);
             if (target != null)
                 heading = Vector3.RotateTowards(heading, target == marked ? CombatTargets.MarkedDirection(transform.position, marked) :
-                    ((Vector2)(target.transform.position - transform.position)).normalized,
+                    ((Vector2)(CombatTargets.AimPoint(transform.position,target) - transform.position)).normalized,
     Time.deltaTime * (delivery == PlayerDelivery.Missile ? 4.5f : Mathf.Min(3, GameRules.playerShootFollowness)), 0);
         }
         float brake = delivery == PlayerDelivery.Shell ? Mathf.Clamp01(1 - age / .7f) :
@@ -436,7 +436,7 @@ public sealed class PlayerRound : ABullet
             {
                 RunInventory.Ping(UpgradeKind.BouncingBall);
                 rebounded = true;
-                heading = ((Vector2)(next.transform.position - transform.position)).normalized;
+                heading = ((Vector2)(CombatTargets.AimPoint(transform.position,next) - transform.position)).normalized;
                 generation = 1;
                 age = 0;
                 origin = transform.position;
@@ -463,7 +463,7 @@ public sealed class PlayerRound : ABullet
                 RunInventory.Ping(UpgradeKind.Rebound);
                 if (rebounds > 1)
                     SplitRebound(enemy, next);
-                heading = ((Vector2)(next.transform.position - transform.position)).normalized;
+                heading = ((Vector2)(CombatTargets.AimPoint(transform.position,next) - transform.position)).normalized;
                 damage *= .75f;
                 generation = 1;
                 TurnAccent();
