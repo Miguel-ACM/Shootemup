@@ -17,11 +17,11 @@ public class Bullet : ABullet
     void Start()
     {
         ProjectileSpriteTint.Friendly(gameObject);
-        var pinheads = ShotTraits.PinheadScale;
-        transform.localScale *= ShotTraits.SizeScale * pinheads.x;
+        var pinheads = UsesPlayerEffects ? ShotTraits.PinheadScale : Vector2.one;
+        if (UsesPlayerEffects) transform.localScale *= ShotTraits.SizeScale * pinheads.x;
         pinheadPace = pinheads.y;
         restScale = transform.localScale;
-        pumpCapacity = ShotTraits.PumpCapacity;
+        pumpCapacity = UsesPlayerEffects ? ShotTraits.PumpCapacity : 0;
         direction.z = transform.position.z;
         rigidBody = GetComponent<Rigidbody2D>();
         wallFrom = transform.position;
@@ -37,7 +37,7 @@ public class Bullet : ABullet
         flight += Time.deltaTime;
         if (HitWall()) return;
         wallFrom = transform.position;
-        if (!rubberReturned && transform.up.y > 0 && RubberReturn.AtTop(transform.position))
+        if (UsesPlayerEffects && !rubberReturned && transform.up.y > 0 && RubberReturn.AtTop(transform.position))
         {
             rubberReturned = true;
             transform.rotation = Quaternion.FromToRotation(Vector3.up, new Vector3(transform.up.x, -Mathf.Abs(transform.up.y), 0));
@@ -71,7 +71,7 @@ public class Bullet : ABullet
 
         }
         Vector2 forward = transform.up.normalized;
-        float pace = speed * ShotTraits.SpeedScale(flight) * pinheadPace;
+        float pace = speed * (UsesPlayerEffects ? ShotTraits.SpeedScale(flight) : 1) * pinheadPace;
         if (pumpCapacity > 0)
         {
             float progress = ShotTraits.PumpProgress(flight);
@@ -80,7 +80,7 @@ public class Bullet : ABullet
             pace *= ShotTraits.PumpSpeed(progress);
         }
         travelled += pace * Time.deltaTime;
-        rigidBody.linearVelocity = forward * pace + new Vector2(forward.y, -forward.x) * ShotTraits.WeaveRate(flight, weaveSign);
+        rigidBody.linearVelocity = forward * pace + new Vector2(forward.y, -forward.x) * (UsesPlayerEffects ? ShotTraits.WeaveRate(flight, weaveSign) : 0);
     }
 
 
@@ -107,8 +107,8 @@ public class Bullet : ABullet
         if (player == null)
             player = GameObject.FindGameObjectWithTag("Player").GetComponent<Shipcontroller>();
         player.PlayHitSound("hit1");
-        CombatHit.Apply(enemy, damage * ShotTraits.ReachDamage(travelled), impact,
-            rigidBody != null ? rigidBody.linearVelocity : (Vector2)transform.up, companion: companionShot);
+        CombatHit.Apply(enemy, damage * (UsesPlayerEffects ? ShotTraits.ReachDamage(travelled) : 1), impact,
+            rigidBody != null ? rigidBody.linearVelocity : (Vector2)transform.up, companion: companionShot, baby: babyShot);
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -124,7 +124,7 @@ public class Bullet : ABullet
             Strike(en, collision.ClosestPoint(transform.position));
             if (en is CoreCube) { Despawn(); return; }
             bool ball = CombatUpgrades.Current != null && CombatUpgrades.Current.Count(UpgradeKind.BouncingBall) > 0;
-            int bounces = CombatUpgrades.Current == null ? 0 : ball ? 1 : CombatUpgrades.Current.TryRebound(transform.position);
+            int bounces = !UsesPlayerEffects || CombatUpgrades.Current == null ? 0 : ball ? 1 : CombatUpgrades.Current.TryRebound(transform.position);
             if (bounces > 0)
             {
                 var next = CombatUpgrades.Nearest(transform.position, new HashSet<AEnemy> { en }, 12);
@@ -134,10 +134,9 @@ public class Bullet : ABullet
                     for (int i = 0; i < bounces; i++)
                     {
                         var aim = CombatVisuals.Rotate((next.transform.position - transform.position).normalized, i * 30);
-                        var bounce = PlayerRound.Spawn(transform.position, aim, power, speed, PlayerDelivery.Pulse, 1);
+                        var bounce = PlayerRound.Spawn(transform.position, aim, power, speed, PlayerDelivery.Pulse, 1, companionShot, babyShot);
                         if (bounce != null)
                         {
-                            bounce.companion = companionShot;
                             bounce.ExcludePreviousHit(en);
                         }
                     }

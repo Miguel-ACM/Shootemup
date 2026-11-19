@@ -133,9 +133,7 @@ public sealed class TrailDrone : ACompanion
         Vector2 direction = target != null ? ((Vector2)(target.transform.position - Muzzle)).normalized : Vector2.up;
         foreach (int side in new[] { -1, 1 })
         {
-            var shot = PlayerRound.Spawn(Muzzle + Vector3.right * side * .09f, direction, GameRules.playerShootDamage * .4f * damageMultiplier, GameRules.playerShootTravelSpeed);
-            if (shot != null)
-                shot.companion = true;
+            PlayerRound.Spawn(Muzzle + Vector3.right * side * .09f, direction, GameRules.playerShootDamage * .4f * damageMultiplier, GameRules.playerShootTravelSpeed, companion: true);
         }
     }
 

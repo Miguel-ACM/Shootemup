@@ -7,6 +7,8 @@ public class ABullet : MonoBehaviour
     public virtual void Despawn() { gameObject.SetActive(false); Destroy(gameObject); }
 
     public bool companionShot;
+    public bool babyShot;
+    public bool UsesPlayerEffects => !companionShot || babyShot;
     public float speed = 0.00002f;
     public Vector3 direction = new Vector3(0f, 1f, -10f);
     public float damage = 1f;
@@ -27,7 +29,7 @@ public class ABullet : MonoBehaviour
         float directionX = Utils.GetValueOrDefault<string, float>(properties, "directionX", 0f);
         float directionY = Utils.GetValueOrDefault<string, float>(properties, "directionY", 1f);
         direction = new Vector3(directionX, directionY, -10f);
-        MagnifyingLens.Enlarge(this);
+        if (UsesPlayerEffects) MagnifyingLens.Enlarge(this);
         MirrorTwin.Reflect(this);
     }
 }

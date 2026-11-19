@@ -12,7 +12,7 @@ public sealed class ChargeBlast : MonoBehaviour
     static Mesh quad;
     MeshRenderer field;
     MaterialPropertyBlock properties;
-    bool fullCharge;
+    bool fullCharge, companion;
     float age, duration, radius, totalDamage, nextTick;
 
     void Awake()
@@ -31,7 +31,7 @@ public sealed class ChargeBlast : MonoBehaviour
         properties = new MaterialPropertyBlock();
     }
 
-    public static void Spawn(Vector3 position, float damage, int level)
+    public static void Spawn(Vector3 position, float damage, int level, bool companion = false)
     {
         live.RemoveAll(blast => blast == null);
         ChargeBlast blast;
@@ -44,6 +44,7 @@ public sealed class ChargeBlast : MonoBehaviour
             blast = new GameObject("Lingering charge detonation").AddComponent<ChargeBlast>();
         blast.transform.position = new Vector3(position.x, position.y, -1);
         blast.age = blast.nextTick = 0;
+        blast.companion = companion;
         blast.fullCharge = level >= 3;
         blast.duration = blast.fullCharge ? 1.4f : .9f;
         blast.radius = (blast.fullCharge ? 1.35f : .85f) * Mathf.Sqrt(GameRules.playerShootSize);
@@ -78,7 +79,7 @@ public sealed class ChargeBlast : MonoBehaviour
                 if (!enemy.ClosestDamagePoint(transform.position, out var point) || (point - (Vector2)transform.position).sqrMagnitude > tickRadius * tickRadius)
                     continue;
                 float amount = totalDamage * slice / duration;
-                CombatHit.Apply(enemy, amount, point, Vector2.up, generation: 1);
+                CombatHit.Apply(enemy, amount, point, Vector2.up, generation: 1, companion: companion);
             }
             nextTick += slice;
         }

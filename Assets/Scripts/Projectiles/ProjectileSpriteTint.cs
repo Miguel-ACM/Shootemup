@@ -9,6 +9,7 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
     MaterialPropertyBlock properties;
     float lastBurn = -1, lastPoison = -1;
     bool neutral;
+    ABullet source;
     public Color Tint
     {
         get; private set;
@@ -42,6 +43,7 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
         effect.enabled = friendly;
         if (friendly)
         {
+            effect.source = go.GetComponent<ABullet>();
             effect.SetCoatings(0, 0);
             effect.LateUpdate();
         }
@@ -104,7 +106,7 @@ public sealed class ProjectileSpriteTint : MonoBehaviour
 
     void LateUpdate()
     {
-        var upgrades = CombatUpgrades.Current;
+        var upgrades = source == null || source.UsesPlayerEffects ? CombatUpgrades.Current : null;
         SetCoatings(upgrades != null && upgrades.Count(UpgradeKind.Gasoline) > 0 ? 1 : 0,
             upgrades != null && upgrades.Count(UpgradeKind.Poison) > 0 ? 1 : 0);
     }

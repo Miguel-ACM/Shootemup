@@ -32,9 +32,7 @@ public sealed class SupportDrone : MonoBehaviour
         int count = Mathf.Min(3, GameRules.playerShootNumber - 1);
         for (int i = 0; i < count; i++)
         {
-            var b = PlayerRound.Spawn(model.position, CombatVisuals.Rotate(direction, (i - (count - 1) * .5f) * 9), GameRules.playerShootDamage * .55f, 12);
-            if (b != null)
-                b.companion = true;
+            PlayerRound.Spawn(model.position, CombatVisuals.Rotate(direction, (i - (count - 1) * .5f) * 9), GameRules.playerShootDamage * .55f, 12, companion: true);
         }
     }
 

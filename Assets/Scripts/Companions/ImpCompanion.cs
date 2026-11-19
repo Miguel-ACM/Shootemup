@@ -37,9 +37,7 @@ public sealed class ImpCompanion : MonoBehaviour
         var target = CombatTargets.MarkedInRange(model.position, Reach) ?? CombatTargets.Nearest(model.position, null, Reach);
         nextShot = Time.time + Interval;
         Vector2 direction = target != null ? ((Vector2)(target.transform.position - model.position)).normalized : Vector2.up;
-        var shot = PlayerRound.Spawn(model.position, direction, GameRules.playerShootDamage * .9f, 14, PlayerDelivery.Needle);
-        if (shot != null)
-            shot.companion = true;
+        PlayerRound.Spawn(model.position, direction, GameRules.playerShootDamage * .9f, 14, PlayerDelivery.Needle, companion: true);
     }
 
     void OnDestroy()

@@ -7,28 +7,28 @@ public static class CombatHit
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetObservers() => PlayerHit = null;
     public static float Apply(AEnemy enemy, float amount, Vector3 point, Vector2 incoming,
-        int generation = 0, bool companion = false, bool fire = false, bool score = true, bool energy = false)
+        int generation = 0, bool companion = false, bool fire = false, bool score = true, bool energy = false, bool baby = false)
     {
-        var result = Resolve(enemy, amount, point, incoming, generation, companion, fire, score, energy);
+        var result = Resolve(enemy, amount, point, incoming, generation, companion, fire, score, energy, baby);
         return result.Accepted ? result.Requested : 0;
     }
 
     public static DamageResult Resolve(AEnemy enemy, float amount, Vector3 point, Vector2 incoming,
-        int generation = 0, bool companion = false, bool fire = false, bool score = true, bool energy = false)
+        int generation = 0, bool companion = false, bool fire = false, bool score = true, bool energy = false, bool baby = false)
     {
         if (enemy == null || !enemy.CanReceiveDamage || amount <= 0 || !float.IsFinite(amount))
             return default;
         var upgrades = CombatUpgrades.Current;
-        if (energy && upgrades != null && upgrades.Count(UpgradeKind.ColdCoil) > 0)
+        if ((!companion || baby) && energy && upgrades != null && upgrades.Count(UpgradeKind.ColdCoil) > 0)
             ChilledHull.Apply(enemy, 2.25f);
-        float dealt = upgrades != null ? upgrades.DirectHit(enemy, amount, generation, companion, fire, energy) : amount;
+        float dealt = upgrades != null ? upgrades.DirectHit(enemy, amount, generation, companion, fire, energy, baby) : amount;
         enemy.HitAt(point, incoming);
         // Gum stores the hit for later. Preserve pre-death coatings and the original scoring payload;
         // Applied separately reports actual health removed after armour and overkill.
         var result = dealt > 0 ? enemy.ReceiveDamage(dealt) : new DamageResult(true, 0, 0);
         if (score && result.Accepted)
             Score.IncreaseScore(Mathf.RoundToInt(dealt));
-        if (result.Accepted && !energy && generation == 0 && upgrades != null && enemy != null && enemy.CanReceiveDamage)
+        if (result.Accepted && (!companion || baby) && !energy && generation == 0 && upgrades != null && enemy != null && enemy.CanReceiveDamage)
             RubberMallet.Nudge(enemy, incoming, upgrades.Count(UpgradeKind.RubberMallet));
         if (result.Accepted && generation == 0 && !companion && enemy != null && enemy.CanReceiveDamage)
             PlayerHit?.Invoke(enemy);

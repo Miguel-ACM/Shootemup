@@ -45,9 +45,8 @@ public sealed class CrabPatrol : RoamingCompanion
         reload = .37f;
         var origin = transform.position + Vector3.up * .23f;
         var shot = PlayerRound.Spawn(origin, Vector2.up, GameRules.playerShootDamage * .45f,
-            GameRules.playerShootTravelSpeed, PlayerDelivery.Pulse, 1);
+            GameRules.playerShootTravelSpeed, PlayerDelivery.Pulse, 1, companion: true);
         if (shot == null) return;
-        shot.companion = true;
         shot.LockHeading();
         ItemSound.Cue("shotCompanion", volume: .035f, cooldown: .16f);
     }
