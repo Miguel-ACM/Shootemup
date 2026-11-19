@@ -52,169 +52,69 @@ public sealed partial class VoidSovereignBoss
             yield return MemoryCard();
             yield break;
         }
-        Phrase(ObsidianCounterpoint());
-        while(true)
+        for (int stanza = 0; ; stanza++)
         {
-            CardIndex=0;yield return Teleport();yield return Prime(.65f);
-            if(Form==1)yield return Witnesses();
-            else if(Form==2)yield return Severing();
-            else if(Form==3)yield return Hunger();
+            CardIndex = stanza & 1;
+            yield return Teleport();
+            yield return Prime(.42f);
+            if (Form == 2) yield return ScissorScript(stanza);
+            else if (Form == 3) yield return SwallowingSky(stanza);
             else yield return WorldWithoutEdges();
-            yield return Wait(Rest(.76f));
-            CardIndex=1;yield return Teleport();yield return Prime(.65f);
-            if(Form==1)yield return FuneralPsalm();
-            else if(Form==2)yield return CutTheFirmament();
-            else if(Form==3)yield return FalseStars();
-            else yield return LastEquation();
-            yield return Wait(Rest(.76f));
+            yield return Wait(Rest(.36f));
         }
     }
 
-    // Veiled Monarch: paired eyelids open into long, symmetric butterfly seams.
-    // Every row shares a travel time.
-    IEnumerator Witnesses()=>Every(6.2f,.48f,beat=>
+    // Two hands write opposite sweeping blades. A blade thickens at its tip,
+    // and the reflected teeth overtake it on the return stroke.
+    IEnumerator ScissorScript(int stanza)
     {
-        if(beat%6==5)return;
-        UseTone(HostileTone.Dark);
-        if(beat%5==0)SweepingReply(beat,3,2.7f,.23f);
-        int count=Dense(11);bool crown=beat%3==0;
-        float fold=30+23*Mathf.Sin(beat*.22f);
-        for(int side=-1;side<=1;side+=2)
-            for(int bank=-1;bank<=1;bank+=2)
-                for(int i=0;i<BankCount(count,bank);i++)
-                {
-                    int rows=BankCount(count,bank);
-                    float u=Across(i,rows),angle=side*(fold+u*25);
-                    Vector2 axis=bank>0?Vector2.up:Vector2.down;
-                    UseTone(crown&&i==rows-1?HostileTone.Dark:HostileTone.Bright);
-                    CrownedShot(crown&&i==rows-1,beat%3==0,Port(side<0?0:1),CombatVisuals.Rotate(axis,angle),
-                        2.0f+.6f*(1-u*u),.17f,.58f).Ramp(1.35f,1.6f,1.2f).FadeAt(5.8f);
-                }
-    });
-
-    // A pearl pall is laid outward, hangs intact, then folds into four diagonal aisles.
-    IEnumerator FuneralPsalm()=>Every(6.2f,1.28f,beat=>
-    {
-        UseTone(HostileTone.Bright);
-        // Pearl pairs halt beneath the eyes, then cross down diagonals that alternate by beat.
-        for(int port=0;port<2;port++)
+        int cuts = Mathf.Max(18, Dense(40));
+        for (int i=0;i<cuts;i++)
         {
-            int side=port==0?-1:1;
-            for(int pearl=0;pearl<2;pearl++)
-                Fire<SimpleRound>(Port(port),CombatVisuals.Rotate(Vector2.down,-side*(8+14*pearl)),1.5f,.23f)
-                    .Pause(.4f,.35f,CombatRound.Turn.Down,-side*(beat%2==0?24:10)+pearl*side*6,1.8f);
+            float u=i/(cuts-1f);
+            for(int hand=0;hand<2;hand++)
+            {
+                int sign=hand*2-1;
+                UseTone(hand==0 ? HostileTone.Bright : HostileTone.Dark);
+                float turn=sign*(stanza*17 + 115*Mathf.Cos(u*Mathf.PI*2));
+                for(int arm=0;arm<3;arm++)
+                {
+                    var axis=Down(turn+arm*120);
+                    Fire<KunaiRound>(Port(hand),axis,2.3f+.7f*u,.18f,arm==0);
+                    if(i%2==0)
+                        Fire<SimpleRound>(Port(hand),CombatVisuals.Rotate(axis,sign*8),3.5f,.16f).Bounce(1);
+                }
+            }
+            yield return Wait(3.8f/cuts);
         }
-        int count=Dense(13);bool crown=beat%2==0;
-        for(int side=-1;side<=1;side+=2)
-            for(int bank=-1;bank<=1;bank+=2)
-                for(int i=0;i<BankCount(count,bank);i++)
-                {
-                    int rows=BankCount(count,bank);float u=Across(i,rows);
-                    Vector2 axis=bank>0?Vector2.up:Vector2.down;
-                    UseTone(crown&&i==rows-1?HostileTone.Bright:HostileTone.Dark);
-                    CrownedShot(crown&&i==rows-1,true,Port(side<0?0:1),CombatVisuals.Rotate(axis,side*(42+u*30)),
-                        2.5f+.7f*(1-u*u),.22f,.64f)
-                        .Pause(.76f,.48f,CombatRound.Turn.Rotate,side*bank*(beat%2==0?24:-24),.9f).FadeAt(5.8f);
-                    // A sparse outer answer leaves the moving crease traversable.
-                    UseTone(HostileTone.Bright);
-                    if(!crown&&i==rows-1)
-                        Fire<KunaiRound>(Port(side<0?0:1),CombatVisuals.Rotate(axis,side*(18+u*37)),
-                            1.1f,.17f).Ramp(2.3f,1.1f,1.1f).FadeAt(5.8f);
-                }
-    });
-
-    // Paired six-beat cuts leave a two-beat crossing window between ribbons.
-    IEnumerator Severing()=>Every(5.6f,.24f,beat=>
-    {
-        if(beat%8>=6)return;
-        UseTone(HostileTone.Dark);
-        if(beat%10==0)SweepingReply(beat,3,3.0f,.22f);
-        int count=Dense(5);bool crown=beat%4==0;
-        float stroke=74*Mathf.Sin(beat*.17f);
-        for(int side=-1;side<=1;side+=2)
-            for(int i=0;i<count;i++)
-            {
-                float u=Across(i,count);
-                var axis=CombatVisuals.Rotate(Vector2.down,side*(stroke+u*14));
-                UseTone(crown&&i==count-1?HostileTone.Dark:HostileTone.Bright);
-                CrownedShot(crown&&i==count-1,beat%3==0,Port(side<0?0:1),axis,2.35f+.42f*u,.17f,.56f).FadeAt(5.4f);
-                UseTone(HostileTone.Dark);
-                if(beat%4==1)Fire<RicochetBolt>(Port(side<0?0:1),-axis,2.15f,.19f).Bounce(1).FadeAt(5.4f);
-            }
-    });
-
-    IEnumerator CutTheFirmament()
-    {
-        // The blades hold their axes for the entire charge; the teleport only follows release.
-        for(int side=-1;side<=1;side+=2)
-            VoidRay(side<0?0:1,CombatVisuals.Rotate(Vector2.down,side*38),.48f,2.8f,-side*5);
-        yield return Every(5.4f,.62f,beat=>
-        {
-            if(beat%5==4)return;
-            int count=Dense(11);bool crown=beat%3==0;
-            for(int side=-1;side<=1;side+=2)for(int i=0;i<count;i++)
-            {
-                float u=Across(i,count),pleat=9*Mathf.Sin(beat*.35f);
-                // The middle lane (turning straight down) and the crowns answer the dark pleats in bright.
-                UseTone(crown&&i==count-1||i==count/2?HostileTone.Bright:HostileTone.Dark);
-                CrownedShot(crown&&i==count-1,i%3==0,Port(side<0?0:1),CombatVisuals.Rotate(Vector2.down,side*(38+u*27+pleat)),
-                    2.1f+.35f*(1-u*u),.17f,.60f,true)
-                    .Pause(1.2f,.22f,i==count/2?CombatRound.Turn.Down:CombatRound.Turn.Rotate,i==count/2?0:-side*24,1.25f).FadeAt(5.8f);
-            }
-        });
-        yield return Wait(Rest(.9f));
     }
 
-    // The jaws open: nested parabolic teeth flare above and below the mouth.
-    IEnumerator Hunger()=>Every(6.2f,.72f,beat=>
+    // Paired jaws throw scalloped fronts with opposing peaks, then close the bite.
+    // The slow dots pivot away while the sharp teeth pass between them.
+    IEnumerator SwallowingSky(int stanza)
     {
-        if(beat%5==4)return;
-        UseTone(HostileTone.Dark);
-        if(beat%4==0)SweepingReply(beat,3,2.6f,.24f);
-        int count=Dense(11);bool crown=beat%3==0;
-        for(int side=-1;side<=1;side+=2)for(int bank=-1;bank<=1;bank+=2)
-            for(int i=0;i<BankCount(count,bank);i++)
-            {
-                int rows=BankCount(count,bank);float u=Across(i,rows);
-                var axis=CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,side*(24+u*32+Mathf.Sin(beat*.3f)*8));
-                UseTone(crown&&i==rows-1?HostileTone.Dark:HostileTone.Bright);
-                CrownedShot(crown&&i==rows-1,beat%3==0,Port(side<0?0:1),axis,1.8f+.95f*(1-u*u),.18f,.70f)
-                    .Ramp(1.4f,1.5f,1.4f).FadeAt(5.8f);
-            }
-        UseTone(HostileTone.Dark);
-        if(beat%3==0)for(int side=-1;side<=1;side+=2)
-            Fire<PlasmaOrb>(Port(side<0?0:1),CombatVisuals.Rotate(Vector2.down,side*58),1.2f,.36f).FadeAt(5.8f);
-    });
-
-    IEnumerator FalseStars()=>Every(6.2f,1.5f,beat=>
-    {
-        UseTone(HostileTone.Bright);
-        SweepingReply(beat,3,2.8f,.23f);
-        // Widely separated comets open narrow fans, leaving space between the
-        // crowns and between their shrapnel. No second carpet of slow crowns.
-        for(int side=-1;side<=1;side+=2)for(int bank=-1;bank<=1;bank+=2)
+        for(int bite=0;bite<6;bite++)
         {
-            var axis=CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,side*(38+beat%2*12));
-            int shards=BankCount(Dense(13),bank);
-            int comets=Dense(2);
-            UseTone(HostileTone.Dark);
-            for(int comet=0;comet<comets;comet++)
+            int marks=Mathf.Max(16,Dense(42));
+            for(int jaw=0;jaw<2;jaw++)
             {
-                int pieces=shards/comets+(comet<shards%comets?1:0);
-                Fire<GiantOrb>(Port(side<0?0:1),CombatVisuals.Rotate(axis,Across(comet,comets)*24),1.8f,.72f)
-                    .Ramp(.8f,.7f).SplitAt(1.9f+comet*.18f,pieces,56f/comets/Mathf.Max(1,pieces-1),2.3f,.16f).FadeAt(5.4f);
+                int sign=jaw*2-1;
+                UseTone(jaw==0 ? HostileTone.Dark : HostileTone.Bright);
+                for(int i=0;i<marks;i++)
+                {
+                    float a=360f*i/marks;
+                    float ripple=Mathf.Cos((5*a + sign*(stanza*19+bite*27))*Mathf.Deg2Rad);
+                    var axis=Down(a + sign*bite*5);
+                    if ((bite&1)==0)
+                        Fire<SimpleRound>(Port(jaw),axis,2.6f+.87f*ripple,.19f,i==0)
+                            .Pause(.78f,.22f,CombatRound.Turn.Rotate,sign*38,1.28f);
+                    else Fire<KunaiRound>(Port(jaw),axis,3.15f+.94f*ripple,.18f,i==0);
+                }
             }
-            int count=BankCount(Dense(7),bank);
-            UseTone(HostileTone.Bright);
-            for(int i=0;i<count;i++)
-            {
-                float u=Across(i,count);
-                Fire<ChevronRound>(Port(side<0?0:1),CombatVisuals.Rotate(axis,u*34),1.6f,.18f).FadeAt(5.4f);
-            }
+            yield return Wait(Rest(.52f));
         }
-    });
+    }
 
-    // Opposed pairs take turns stitching the lattice.
     IEnumerator WorldWithoutEdges()=>Every(6.2f,.52f,beat=>
     {
         if(beat%6==5)return;
