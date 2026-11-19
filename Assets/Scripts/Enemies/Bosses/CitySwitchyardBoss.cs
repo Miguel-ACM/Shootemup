@@ -2,21 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// City switchyard: an engine whose three signal heads control its own traffic. Each head
-// sits above a gun (nose, left shoulder, right shoulder) and shows its signal. Before danger it
-// blinks; at danger it stays lit and stops the cars it sent out; when it clears it flashes
-// and the stopped cars set off on the route the signal sets. Every stopped car is a long
-// round that turns to face its next heading while it waits, so the pilot can read it.
-// Phase one, Red Signal: a head at danger freezes its rails where they are and sends
-//   nothing more; the cars turn onto posted diagonals and leave in a ripple from the head.
-// Phase two, Stop Line: a head at danger draws a stop line across the yard while its gun
-//   keeps running; its cars queue along the line and leave as a row on the head's route,
-//   across the yard from a shoulder or split down the middle from the nose.
-// Final, Interlocking: the shoulder heads freeze and redirect their cars while the nose
-//   head runs its stop line, and each aspect clears as the other goes to danger.
-// Tones: phase one's nose is dark and its shoulders bright; phase two swaps them; the
-// interlocking shoulders are bright and the nose dark. Running cars are green, braking
-// approaches amber, and held cars red. Each turns green on its own departure beat.
+// Three signal heads control the guns beneath them. Red Signal stops moving needles and
+// turns them toward their exits. In Flying Junction the red gun rests, an amber pilot
+// marks a curved route and a green train follows. Interlocking runs both signals together.
 [UnityEngine.Scripting.Preserve]
 public sealed class CitySwitchyardBoss : ArmoredHullBoss
 {
@@ -54,12 +42,8 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
         public int port;
         public HostileTone tone;
         public SpriteRenderer lens, glow;
-        public LineRenderer line;
         public bool danger, warning, holdFire;
         public float flash;
-        // Stop line height while at danger in the Stop Line aspect; NaN when there is none.
-        public float stopLine = float.NaN, route;
-        public bool splitRoute;
         public readonly List<Car> cars = new List<Car>();
         public readonly List<Car> held = new List<Car>();
     }
@@ -77,8 +61,6 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
             s.lens = ItemSpark.Sprite(Hull, "Signal lens", "standard", Color.white, .44f);
             s.lens.transform.localPosition = SignalHeads[i] + new Vector3(0, 0, -.1f);
             s.lens.sortingOrder = 24;
-            s.line = CombatVisuals.Line(transform, Red, .045f);
-            s.line.enabled = false;
             signals[i] = s;
             Paint(s);
         }
@@ -89,10 +71,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
         base.Update();
         foreach (var s in signals)
             if (s != null)
-            {
-                WatchStopLine(s);
                 Paint(s);
-            }
     }
 
     // The lens dims when clear, blinks before danger, stays lit at danger and flashes on clearing.
@@ -107,39 +86,6 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
         s.lens.color = lens;
         s.glow.color = new Color(aspect.r, aspect.g, aspect.b, .18f * lit + s.flash * .32f);
         s.glow.transform.localScale = Vector3.one * (.75f + .25f * lit + .4f * s.flash);
-        bool line = s.danger && !float.IsNaN(s.stopLine);
-        s.line.enabled = line;
-        if (line)
-        {
-            var c = Red;
-            c.a = .23f + .12f * pulse;
-            s.line.startColor = s.line.endColor = c;
-            s.line.SetPosition(0, new Vector3(CombatRound.Border.xMin, s.stopLine, -.3f));
-            s.line.SetPosition(1, new Vector3(CombatRound.Border.xMax, s.stopLine, -.3f));
-        }
-    }
-
-    // A head at danger with a stop line halts each of its cars as it reaches the line.
-    void WatchStopLine(Signal s)
-    {
-        if (!s.danger || float.IsNaN(s.stopLine))
-            return;
-        for (int i = s.cars.Count - 1; i >= 0; i--)
-        {
-            var car = s.cars[i];
-            if (!car.Running)
-            {
-                s.cars.RemoveAt(i);
-                continue;
-            }
-            if (car.round.transform.position.y > s.stopLine)
-                continue;
-            float route = s.splitRoute && s.held.Count % 2 == 1 ? -s.route : s.route;
-            car.round.SetAccent(Red);
-            car.round.Halt(.05f, CombatRound.Turn.Down, route, 1.05f);
-            s.held.Add(car);
-            s.cars.RemoveAt(i);
-        }
     }
 
     protected override IEnumerator Cards()
@@ -148,7 +94,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
         if (phaseThree)
             return Interlocking();
         if (phaseTwo)
-            return StopLines();
+            return FlyingJunction();
         return RedSignals();
     }
 
@@ -158,7 +104,6 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
             if (s != null)
             {
                 s.danger = s.warning = s.holdFire = false;
-                s.stopLine = float.NaN;
                 s.cars.Clear();
                 s.held.Clear();
             }
@@ -173,7 +118,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
             foreach (var s in signals)
             {
                 s.cars.RemoveAll(Car.Gone);
-                if (s.holdFire || (beat % 2 == 0) != (s.port == Nose))
+                if ((s.port == Nose && nose == null) || s.holdFire || (beat % 2 == 0) != (s.port == Nose))
                     continue;
                 UseTone(s.tone);
                 var port = Muzzle(s.port);
@@ -265,7 +210,6 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
     IEnumerator Clear(Signal s, float ripple)
     {
         s.danger = false;
-        s.stopLine = float.NaN;
         s.flash = 1;
         ColorRunning(s, Green);
         var head = (Vector2)Hull.TransformPoint(SignalHeads[s.port]);
@@ -344,91 +288,79 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
         }
     }
 
-    // A head at danger draws its stop line; its gun keeps running and the queue builds on the
-    // line, then leaves as a row on the head's route when it clears.
-    IEnumerator StopAspect(Signal s, float height, float route, bool split, float hold)
+    // An amber locomotive takes the bend first. Green carriages follow from the same
+    // gun on the same two curves. The boss moves between departures.
+    IEnumerator Dispatch(Signal head, float curvature)
     {
-        yield return Warn(s);
-        s.route = route;
-        s.splitRoute = split;
-        // Cars already through the junction keep running when the light changes.
-        for (int i = s.cars.Count - 1; i >= 0; i--)
+        yield return Warn(head);
+        int cars = Dense(4);
+        for (int car = 0; car <= cars; car++)
         {
-            var car = s.cars[i];
-            if (!car.Running || car.round.transform.position.y >= height) continue;
-            car.round.SetAccent(Green);
-            s.cars.RemoveAt(i);
+            bool pilot = car == 0;
+            head.warning = pilot;
+            head.danger = false;
+            head.flash = 1;
+            UseTone(head.tone);
+            var port = Muzzle(head.port);
+            for (int track = 0; track < 2; track++)
+            {
+                // Shoulders bank outward before turning across the yard. The nose parts
+                // in two, then its mirrored trains cross underneath the engine.
+                int side = head.port == Nose ? (track == 0 ? -1 : 1) : (head.port == Left ? -1 : 1);
+                float angle = head.port == Nose ? 31 : (track == 0 ? 6 : 33);
+                Vector2 heading = CombatVisuals.Rotate(Vector2.down, side * angle);
+                CombatRound round = pilot ? Fire<KunaiRound>(port, heading, 3.35f, .20f, track == 0)
+                    : Fire<NeedleRound>(port, heading, 3.35f, .17f, track == 0);
+                if (round == null) continue;
+                round.SetAccent(pilot ? Amber : Green);
+                // Scale acceleration with speed squared so slower difficulties fly the same curve.
+                round.Fall(Vector2.left * (side * curvature * round.speed * round.speed));
+            }
+            yield return Wait(Rest(pilot ? .34f : .20f));
         }
-        s.stopLine = height;
-        s.danger = true;
-        yield return Wait(hold);
-        yield return Clear(s, .65f);
+        head.danger = true;
     }
 
-    // Stop Line (phase two), in four movements of four steps each: single heads at changing
-    // heights, both shoulders as crossing rows, the nose splitting its row under a shoulder
-    // row, and lines that step lower each time.
-    IEnumerator StopLines()
+    IEnumerator FlyingJunction()
     {
-        signals[Nose].tone = HostileTone.Bright;
-        signals[Left].tone = HostileTone.Dark;
-        signals[Right].tone = HostileTone.Dark;
-        yield return PrimePair(.5f);
-        Phrase(Rails(.27f, Spread(Dense(3), 64), Range(Dense(2), 14, 52), 3.0f, false));
-        float middle = (Camera.UpLimit + Camera.DownLimit) * .5f;
-        float[] heights = { middle + 2.6f, middle + 1.0f, middle + 1.8f, middle - .2f };
+        var left = signals[Left];
+        var right = signals[Right];
+        var nose = signals[Nose];
+        left.tone = right.tone = HostileTone.Dark;
+        nose.tone = HostileTone.Bright;
+        left.danger = right.danger = nose.danger = true;
         for (int step = 0; ; step++)
         {
-            int movement = step / 4 % 4;
-            station.x = Lane(step % 2 == 0 ? .45f : -.45f);
+            bool mirror = step % 2 != 0;
+            var first = mirror ? right : left;
+            var second = mirror ? left : right;
+            station.x = Lane(mirror ? -.38f : .38f);
             station.y = Camera.UpLimit - 2.3f;
-            float height = heights[step % heights.Length];
-            var l = signals[Left];
-            var n = signals[Nose];
-            var r = signals[Right];
-            switch (movement)
-            {
-                case 0:
-                    var head = step % 3 == 0 ? l : step % 3 == 1 ? r : n;
-                    yield return StopAspect(head, height, head == l ? 62 : head == r ? -62 : 28, head == n, 1.5f);
-                    break;
-                case 1:
-                    Phrase(StopAspect(l, height, 62, false, 1.5f));
-                    yield return StopAspect(r, height - .8f, -62, false, 1.5f);
-                    break;
-                case 2:
-                    Phrase(StopAspect(step % 2 == 0 ? l : r, height + .6f, step % 2 == 0 ? 62 : -62, false, 1.6f));
-                    yield return StopAspect(n, height - 1.0f, 28, true, 1.6f);
-                    break;
-                default:
-                    yield return StopAspect(step % 2 == 0 ? r : l, middle + 2.4f - (step % 4) * .9f, step % 2 == 0 ? -62 : 62, false, 1.2f);
-                    break;
-            }
-            yield return Wait(Rest(.45f));
+            yield return Wait(Rest(.48f));
+            Phrase(Dispatch(first, .19f));
+            yield return Wait(Rest(.38f));
+            yield return Dispatch(second, .19f);
+            yield return Dispatch(nose, step % 4 < 2 ? .082f : .23f);
         }
     }
 
-    // Interlocking (Hard final): the shoulder heads go to danger together, freezing their cars
-    // onto crossing diagonals, while the nose clears its queue; then the nose draws its stop line as
-    // the shoulders clear. The stop line steps through four heights and the shoulder release
-    // alternates shallow and steep crossings.
+    // The nose sends a forked express through the shoulders' held and redirected rails.
     IEnumerator Interlocking()
     {
         signals[Nose].tone = HostileTone.Dark;
         signals[Left].tone = HostileTone.Bright;
         signals[Right].tone = HostileTone.Bright;
         yield return PrimePair(.5f);
-        Phrase(Rails(.24f, Spread(Dense(4), 66), Range(Dense(3), 21, 67), 3.1f, true));
-        float middle = (Camera.UpLimit + Camera.DownLimit) * .5f;
-        float[] heights = { middle + 2.2f, middle + .8f, middle + 1.6f, middle + .2f };
+        Phrase(Rails(.24f, null, Range(Dense(3), 21, 67), 3.1f, true));
         var l = signals[Left];
         var n = signals[Nose];
         var r = signals[Right];
+        n.danger = true;
         for (int step = 0; ; step++)
         {
             station.x = Lane((step % 3 - 1) * .5f);
             station.y = Camera.UpLimit - 2.4f;
-            Phrase(StopAspect(n, heights[step % heights.Length], 26, true, 1.3f));
+            Phrase(Dispatch(n, step % 2 == 0 ? .082f : .23f));
             yield return Wait(.6f);
             yield return RedAspect(1.0f, step % 2 == 0 ? 29 : 46, l, r);
             yield return Wait(Rest(.35f));
