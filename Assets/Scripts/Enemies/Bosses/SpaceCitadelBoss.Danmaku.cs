@@ -8,18 +8,15 @@ using System.Collections;
 //     the visible screen. Its rounds fall straight in, so the circle stays round as it
 //     shrinks, and the core swallows it. The black hole holds still while a front is
 //     closing, so the circle stays centred on it. Dark stars (giant orbs) close in from
-//     the same circle on alternate beats. A slowly turning seam stays open. No nested
+//     the same circle on alternate beats. No nested
 //     inner circles; the black hole keeps its upper station.
 //   Supernova: the core throws dense rings of arrows outward. Each ring stops, holds,
-//     then collapses back through the core and bursts out the other side. Every ring
-//     carries an opening that jumps round from ring to ring and turns over as the ring
-//     passes through the core, so the safe place keeps moving.
+//     then collapses back through the core and bursts out the other side. The entire ring reverses together.
 // Phase two (reactor overload at half health)
 //   Expulsion: the core flings mirrored spiral arms of arrows that accelerate away
 //     and bend straight as they leave the screen, with full rings and rings of dark
 //     stars flung out between them.
-//   Binary Collapse: two supernova rings at once with counter-rotating offsets and
-//     openings on opposite sides.
+//   Binary Collapse: two supernova rings at once with counter-rotating offsets.
 // Phase three (Hard)
 //   Big Crunch: the core breathes, swallowing fronts that close in from the circle
 //     beyond the screen and flinging spiral arms back out, trading dominance.
@@ -114,9 +111,9 @@ public sealed partial class SpaceCitadelBoss
         yield return Wait(.6f);
         yield return Every(5.5f, .38f, n =>
         {
-            Phrase(OuterFront<NeedleRound>(n, Dense(44), 2.6f, .19f, 8, .6f, HostileTone.Bright));
+            Phrase(OuterFront<NeedleRound>(n, Dense(44), 2.6f, .19f, .6f, HostileTone.Bright));
             if (n % 2 == 1)
-                Phrase(OuterFront<GiantOrb>(n, Dense(10), 1.5f, .62f, 15, 1, HostileTone.Dark));
+                Phrase(OuterFront<GiantOrb>(n, Dense(10), 1.5f, .62f, 1, HostileTone.Dark));
         });
         // Let the last fronts close in before the disk dims.
         while (closing > 0)
@@ -131,7 +128,7 @@ public sealed partial class SpaceCitadelBoss
     // farthest from it. Each round falls straight in and is released on the edge at the
     // moment its point of the shrinking circle arrives there, so the whole front stays a
     // circle centred on the black hole until the core swallows it.
-    IEnumerator OuterFront<T>(int n, int count, float velocity, float radius, float seam, float reach, HostileTone shade) where T : CombatRound
+    IEnumerator OuterFront<T>(int n, int count, float velocity, float radius, float reach, HostileTone shade) where T : CombatRound
     {
         closing++;
         Vector3 center = Core;
@@ -147,9 +144,6 @@ public sealed partial class SpaceCitadelBoss
         for (int i = 0; i < count; i++)
         {
             float angle = (i + .5f) * 360f / count + n * 7 * (n % 2 == 0 ? 1 : -1);
-            // All fronts share one slowly turning radial escape seam.
-            if (Mathf.Abs(Mathf.DeltaAngle(angle, 180 + 24 * Mathf.Sin(n * .22f))) < seam)
-                continue;
             var radial = CombatVisuals.Rotate(Vector2.up, angle);
             var heading = -radial;
             Vector2 start = (Vector2)center + radial * circle;
@@ -197,10 +191,9 @@ public sealed partial class SpaceCitadelBoss
     }
 
     // A dense ring thrown out that stops, holds, then falls back through the core and
-    // bursts out beyond it. An opening of three beads faces the given angle; it turns
-    // over as the ring passes through the core. A single ring is dark arrows with bright
+    // bursts out beyond it. A single ring is dark arrows with bright
     // circular beads; a uniform shade colours the whole ring (Binary Collapse).
-    void SupernovaRing(int beads, float radius, float offset, float opening, HostileTone? shade = null)
+    void SupernovaRing(int beads, float radius, float offset, HostileTone? shade = null)
     {
         const float travel = .75f;
         float speed = radius / (travel - .175f);
@@ -208,8 +201,6 @@ public sealed partial class SpaceCitadelBoss
         for (int i = 0; i < beads; i++)
         {
             float angle = offset + i * step;
-            if (Mathf.Abs(Mathf.DeltaAngle(angle, opening)) < step * 1.5f)
-                continue;
             UseTone(shade ?? (i % 3 == 0 ? HostileTone.Bright : HostileTone.Dark));
             ScoredShot(i % 3 == 0, Core, CombatVisuals.Rotate(Vector2.down, angle), WorldSpeed(speed))
                 .Pause(travel, .5f, CombatRound.Turn.Rotate, 180, 3.2f / speed)
@@ -218,17 +209,16 @@ public sealed partial class SpaceCitadelBoss
     }
 
     // Seven charged rings; their radii alternate so the collapsing rings cross the
-    // opening ones, and the opening jumps round by 137 degrees each ring.
+    // expanding ones.
     IEnumerator Supernova(bool binary)
     {
         int beads = Dense(binary ? 32 : 38);
         for (int n = 0; n < 7; n++)
         {
             yield return Charge(Hull, WeaponPort(), .3f);
-            float opening = n * 137;
-            SupernovaRing(beads, 3.0f + (n % 2) * 1.4f, n * 6, opening, binary ? HostileTone.Dark : (HostileTone?)null);
+            SupernovaRing(beads, 3.0f + (n % 2) * 1.4f, n * 6, binary ? HostileTone.Dark : (HostileTone?)null);
             if (binary)
-                SupernovaRing(beads, 2.2f, -n * 6 + 180f / beads, opening + 180, HostileTone.Bright);
+                SupernovaRing(beads, 2.2f, -n * 6 + 180f / beads, HostileTone.Bright);
             yield return Wait(Rest(.85f));
         }
         yield return Wait(1.2f);
@@ -262,14 +252,14 @@ public sealed partial class SpaceCitadelBoss
         {
             bool inward = n / 25 % 2 == 0;
             if (n % (inward ? 3 : 6) == 0)
-                Phrase(OuterFront<NeedleRound>(n / 3, Dense(inward ? 44 : 30), 2.6f, .19f, 8, .6f, HostileTone.Bright));
+                Phrase(OuterFront<NeedleRound>(n / 3, Dense(inward ? 44 : 30), 2.6f, .19f, .6f, HostileTone.Bright));
             if (!inward || n % 3 == 0)
                 Expel(n, inward ? 4 : 6, 55, HostileTone.Dark);
             if (!inward && n % 15 == 5)
                 ExpelRing(n, Dense(30), HostileTone.Bright);
             if (n % 8 == 4)
             {
-                Phrase(OuterFront<GiantOrb>(n, Dense(inward ? 10 : 7), 1.5f, .62f, 15, 1, HostileTone.Dark));
+                Phrase(OuterFront<GiantOrb>(n, Dense(inward ? 10 : 7), 1.5f, .62f, 1, HostileTone.Dark));
                 ExpelStars(n, Dense(inward ? 6 : 9));
             }
         });

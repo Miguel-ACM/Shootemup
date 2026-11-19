@@ -439,6 +439,7 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 
 ## Route combat direction (18 November 2026)
 
+- Boss volleys draw complete shapes. Keep every angular position in rings and every position in a row or fan. Scale difficulty with evenly distributed shots, motion and timing. This supersedes earlier calls for lanes, missing teeth, or cut-out slices, including Tunnel and Void's route memories.
 - The laser companion sits a little farther aft and trails the pilot through turns.
 - Mushroom spores reverse horizontal steering through exposure and for five active-play seconds after leaving. A purple hull glow lasts through recovery. Mushroom formations are faster and sturdier. The Warden's three wing-led cards use layered spore blooms, crossing silk and a moving needle comb with a slower skirt of spores.
 - Dream's fast accelerating shots use the long needle silhouette. Stars share its palette with crescents. The Painter's final rose window overlaps a continuous pattern of dots and stars from the moving hands.

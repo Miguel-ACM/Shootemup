@@ -50,7 +50,7 @@ public sealed partial class PlainsThreshingDrumBoss : ArmoredHullBoss
             while (Vector2.Distance(transform.position, station) > .08f) yield return null;
             yield return PrimePair(.52f);
             // Windrows: traverse the field, depositing teeth at physical intervals. All the
-            // teeth in a row release on the same beat, with a broad unplanted furrow.
+            // teeth in a row release on the same beat across both banks.
             float start = station.x;
             side = -side;
             station.x = Reach(side);
@@ -59,7 +59,7 @@ public sealed partial class PlainsThreshingDrumBoss : ArmoredHullBoss
             int rows = Dense(12);
             const float PlantStep = .24f, FirstPlant = .35f;
             float lastPlant = FirstPlant + (rows - 1) * PlantStep;
-            float gapX = Lane(-side * .38f);
+            float bankSplit = Lane(-side * .38f);
             bool furrowSown = false;
             for (int mark = 0; mark < marks; mark++)
             {
@@ -72,10 +72,9 @@ public sealed partial class PlainsThreshingDrumBoss : ArmoredHullBoss
                 for (int drum = 1; drum <= 2; drum++)
                 {
                     Vector3 port = Muzzle(drum);
-                    if (Mathf.Abs(port.x - gapX) < .80f) continue;
                     // Both banks share one field. The first bank covers the left
                     // half and the second the right, avoiding superimposed columns.
-                    if (drum == 1 ? port.x > gapX : port.x < gapX) continue;
+                    if (drum == 1 ? port.x > bankSplit : port.x < bankSplit) continue;
                     for (int row = 0; row < rows; row++)
                     {
                         // Equal planting intervals past the fixed braking ramp give
@@ -88,7 +87,7 @@ public sealed partial class PlainsThreshingDrumBoss : ArmoredHullBoss
                     }
                 }
                 // Over the furrow, the chute sows chaff that hangs down the whole lane.
-                if (!furrowSown && Mathf.Abs(Muzzle().x - gapX) < ColumnStep)
+                if (!furrowSown && Mathf.Abs(Muzzle().x - bankSplit) < ColumnStep)
                 {
                     furrowSown = true;
                     FurrowChaff(release);
@@ -113,7 +112,7 @@ public sealed partial class PlainsThreshingDrumBoss : ArmoredHullBoss
                         .SplitAt(.92f, Dense(17), 10, 2.5f, .16f);
                 yield return Wait(Rest(.2f));
             }
-            // Return stroke: the two drums counter-turn, combing the open furrow from opposite
+            // Return stroke: the two drums counter-turn, combing the field from opposite
             // edges. The teeth cross the field once and leave; nothing bounces.
             yield return PrimePair(.35f);
             int teeth = Dense(24);

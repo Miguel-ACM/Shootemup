@@ -5,7 +5,7 @@ using UnityEngine;
 // attention. The eye snaps to one thing at a time and the lollipop wands swing to point
 // at it; bursts of excitement (the crown shivers, the heart races) alternate with calm
 // moments when the eye daydreams. Hearts are its signature. Every shape is a line or an
-// outline with open lanes, never a scatter. No minions; it stays in the upper arena.
+// outline. No minions; it stays in the upper arena.
 // Phase one, Crush: the regent fixates. The eye snaps to a target (the pilot, an upper
 //   corner, a wall, the ceiling, a lower corner, usually followed by its mirror image)
 //   and both wands pour a ribbon at it: an arrow line flanked alternately by hearts and
@@ -14,9 +14,8 @@ using UnityEngine;
 //   for a moment. Its attention span shrinks as the phase goes on, and every fifth
 //   fixation is a double take: a glance at the mirror image and straight back.
 // Phase two, Heartbeat: lub-dub. On each beat the heart throbs and a heart outline grows
-//   from the eye and sinks, followed by a smaller, faster one. Each outline is open where
-//   the eye is looking, so the way through moves with the glance. Every fourth beat is a
-//   flutter: four quick small hearts with the opening spinning round, then a long calm.
+//   from the eye and sinks, followed by a smaller, faster one. Every fourth beat is a
+//   flutter: four quick small hearts with the eye turning between beats, then a long calm.
 // Phase three (Hard), Sugar Crash: a rush, then a crash. The eye flicks between targets
 //   ever faster while the wands spray short ribbons at each one, weaving a web across the
 //   arena. On one shared beat the whole web stops dead and hangs; the regent slumps; then
@@ -180,7 +179,7 @@ public sealed partial class CandyRegentBoss
         float glance = Glances[k % Glances.Length] * (k / Glances.Length % 2 == 0 ? 1 : -1);
         if (k % 4 == 3)
         {
-            // Flutter: four quick small hearts, the opening spinning round, then a long calm.
+            // Flutter: four quick small hearts as the eye turns, then a long calm.
             Thrill();
             for (int i = 0; i < 4; i++)
             {
@@ -188,7 +187,7 @@ public sealed partial class CandyRegentBoss
                 Fixate(EyePort + (Vector3)(CombatVisuals.Rotate(Vector2.down, turn) * 4));
                 Beat();
                 UseTone(i % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
-                HeartWave(EyePort, Dense(20), 2.0f + i * .35f, .9f, turn, 26);
+                HeartWave(EyePort, Dense(20), 2.0f + i * .35f, .9f);
                 yield return Wait(Rest(.18f));
             }
             LookAway();
@@ -199,11 +198,11 @@ public sealed partial class CandyRegentBoss
         yield return Charge(pupil, Vector3.zero, .35f);
         Beat();
         UseTone(HostileTone.Bright);
-        HeartWave(EyePort, Dense(48), 2.5f, .8f, glance, 22);
+        HeartWave(EyePort, Dense(48), 2.5f, .8f);
         yield return Wait(.3f);
         Beat();
         UseTone(HostileTone.Dark);
-        HeartWave(EyePort, Dense(34), 3.1f, 1.0f, glance, 26);
+        HeartWave(EyePort, Dense(34), 3.1f, 1.0f);
         yield return Wait(Rest(.3f));
         UseTone(k % 2 == 0 ? HostileTone.Bright : HostileTone.Dark);
         RoseBloom(EyePort, Dense(48), 2.3f, glance + k * 11);
@@ -245,8 +244,8 @@ public sealed partial class CandyRegentBoss
 
     // The outline of a heart grows from the eye as it sinks: each bead's velocity is its
     // point on the curve plus a shared downward drift. Arrows draw the line with an upright
-    // heart every fourth bead. The beads facing the glance are left out: the opening.
-    void HeartWave(Vector3 port, int beads, float growth, float sink, float glance, float opening)
+    // heart every fourth bead.
+    void HeartWave(Vector3 port, int beads, float growth, float sink)
     {
         var shade = tone;
         for (int i = 0; i < beads; i++)
@@ -255,8 +254,6 @@ public sealed partial class CandyRegentBoss
             float s = Mathf.Sin(a);
             var shape = new Vector2(16 * s * s * s,
                 13 * Mathf.Cos(a) - 5 * Mathf.Cos(2 * a) - 2 * Mathf.Cos(3 * a) - Mathf.Cos(4 * a)) / 17f;
-            if (Mathf.Abs(Mathf.DeltaAngle(Vector2.SignedAngle(Vector2.down, shape), glance)) < opening)
-                continue;
             Vector2 velocity = shape * growth + Vector2.down * sink;
             UseTone(shade);
             if (i % 4 == 0)
@@ -311,7 +308,7 @@ public sealed partial class CandyRegentBoss
         yield return Charge(pupil, Vector3.zero, .3f);
         Beat();
         UseTone(HostileTone.Bright);
-        HeartWave(EyePort, Dense(34), 2.6f, .8f, k * 70 % 360 - 180, 22);
+        HeartWave(EyePort, Dense(34), 2.6f, .8f);
         LookAway();
         yield return Wait(Rest(.4f));
     }

@@ -83,7 +83,7 @@ public sealed class MushroomWarden : DistrictBoss
         yield return Wait(.11f);
     }
 
-    // Four lobes are traced in speed space. A missing petal turns from bloom to bloom.
+    // Four lobes are traced in speed space. Both wings complete every layer.
     IEnumerator AmanitaBloom()
     {
         for (int bloom = 0; ; bloom++)
@@ -93,7 +93,7 @@ public sealed class MushroomWarden : DistrictBoss
             yield return RaiseWings(.36f);
             for (int layer = 0; layer < 3; layer++)
             {
-                int marks = Mathf.Max(18, Dense(36));
+                int marks = Mathf.Max(layer == 1 ? 9 : 18, Dense(layer == 1 ? 18 : 36));
                 for (int wing = 0; wing < 2; wing++)
                 {
                     int side = 2 * wing - 1;
@@ -102,8 +102,6 @@ public sealed class MushroomWarden : DistrictBoss
                     for (int n = 0; n < marks; n++)
                     {
                         float a = (n + .5f) * 360 / marks;
-                        if (Mathf.Abs(Mathf.DeltaAngle(a, 18 + 24 * Mathf.Sin(bloom * .8f))) < 15 ||
-                            (layer == 1 && n % 2 != 0)) continue;
                         float petal = .5f + .5f * Mathf.Cos((4*a + 24*layer) * Mathf.Deg2Rad);
                         Vector2 shape = CombatVisuals.Rotate(Vector2.down, side*(a + 8*layer)) *
                             (1.3f + 2.45f*petal) + new Vector2(-side*.34f, -1.72f);
@@ -184,7 +182,6 @@ public sealed class MushroomWarden : DistrictBoss
                     for (int n=0;n<marks;n++)
                     {
                         float a=(n+.5f)*360/marks;
-                        if (Mathf.Abs(Mathf.DeltaAngle(a,sign*(20+18*Mathf.Sin(t*Mathf.PI))))<16) continue;
                         Fire<SimpleRound>(lip,CombatVisuals.Rotate(Vector2.down,a),
                             2.0f+.72f*Mathf.Cos((a*3+pass*23)*Mathf.Deg2Rad),.20f,n==0)
                             .Fall(new Vector2(sign*.17f,-.71f));
@@ -361,8 +358,6 @@ public sealed class DreamPainter : DistrictBoss
                             for (int i = 0; i < marks; i++)
                             {
                                 float t = (i + .5f) / marks;
-                                // A break in one flank turns with the rose.
-                                if (f == (beat + h) % 4 && flank == side && t > .28f && t < .64f) continue;
                                 Vector2 v = Vector2.Lerp(tip, notch, t) * (echo == 0 ? 1 : .76f);
                                 v += new Vector2(-side * .57f, -1.46f);
                                 Fire<NeedleRound>(port, v, v.magnitude, echo == 0 ? .176f : .15f, i == 0 && flank == -1)

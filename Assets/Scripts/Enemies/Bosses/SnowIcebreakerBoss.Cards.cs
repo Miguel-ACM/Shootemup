@@ -10,10 +10,10 @@ using UnityEngine;
 //   middle and back along the top, and a figure eight. From the second round of
 //   movements alternate courses freeze their crests and re-aim them at the pilot.
 // Phase two, Closing Pack (open water): the shoulders throw snow along the side walls, a
-//   column the full height of the arena with one opening; the columns break off and
+//   column the full height of the arena; the columns break off and
 //   fall inward across the arena as drifting snow. Staggered pairs, then sheared columns
-//   that break off from the top down, then a tide of single columns from one side with a
-//   stepping opening, then a nip: both columns at once with their openings level. Prow
+//   that break off from the top down, then a tide of single columns from one side,
+//   then both columns at once. Prow
 //   pellets with every throw and a freezing, re-aiming fan in the slack water between.
 // Phase three (Hard), Shattered Icicles: lances of paired arrows freeze and shatter into
 //   trees of chevrons, their crystal tips re-aiming at the pilot. A volley of parallel
@@ -143,8 +143,6 @@ public sealed partial class SnowIcebreakerBoss
 
     IEnumerator ClosingPack()
     {
-        var edge = CombatRound.Border;
-        float span = edge.height - 3.0f;
         for (int movement = 0; !phaseThree; movement++)
         {
             int kind = movement % 4;
@@ -153,12 +151,12 @@ public sealed partial class SnowIcebreakerBoss
             cruise = 3.0f;
             if (kind == 2)
             {
-                // Tide: single columns from one side in quick succession, the opening stepping.
+                // Tide: single columns from one side in quick succession.
                 station = new Vector3(side * 1.6f, Camera.UpLimit - 2.3f, 1);
                 yield return PrimePair(.45f);
                 for (int wave = 0; wave < 6; wave++)
                 {
-                    SnowWall(side, Opening(wave * 1.8f, span), closing);
+                    SnowWall(side, closing);
                     Pellets(wave % 2 == 0 ? 2 : 3);
                     yield return Wait(Rest(.6f));
                 }
@@ -169,26 +167,24 @@ public sealed partial class SnowIcebreakerBoss
                 {
                     station = new Vector3(Mathf.Sin((throwIndex + movement) * 1.3f) * 1.4f, Camera.UpLimit - 2.3f, 1);
                     yield return PrimePair(.45f);
-                    float walk = throwIndex * 2.4f;
                     if (kind == 0)
                     {
                         // Staggered: the right column breaks off half a throw later, so the
-                        // two cross off the centre line; its opening trails the left one's.
-                        SnowWall(-1, Opening(walk, span), closing);
-                        SnowWall(1, Opening(walk + 3.0f, span), closing, 3.05f);
+                        // two cross off the centre line.
+                        SnowWall(-1, closing);
+                        SnowWall(1, closing, 3.05f);
                     }
                     else if (kind == 1)
                     {
                         // Shear: each column breaks off from the top down and leans as it falls in.
-                        SnowWall(-1, Opening(walk, span), closing, 2.0f, .07f);
-                        SnowWall(1, Opening(walk + 3.0f, span), closing, 2.85f, .07f);
+                        SnowWall(-1, closing, 2.0f, .07f);
+                        SnowWall(1, closing, 2.85f, .07f);
                     }
                     else
                     {
-                        // Nip: both columns at once, their openings level, meeting mid-arena.
-                        float opening = Opening(walk * 1.4f, span);
-                        SnowWall(-1, opening, closing);
-                        SnowWall(1, opening, closing);
+                        // Nip: both columns at once, meeting mid-arena.
+                        SnowWall(-1, closing);
+                        SnowWall(1, closing);
                     }
                     Pellets(3);
                     yield return Wait(Rest(.9f));
@@ -227,11 +223,10 @@ public sealed partial class SnowIcebreakerBoss
         }
     }
 
-    // A column of snow along one side wall, the full height of the arena, with one
-    // opening. Each flake is thrown from that side's shoulder and settles on the wall; the
+    // A column of snow along one side wall, the full height of the arena. Each flake is thrown from that side's shoulder and settles on the wall; the
     // column breaks off (all at once, or from the top down with shear) and falls inward
     // across the arena as drifting snow, slowly at first.
-    void SnowWall(int wall, float gapAt, float closing, float release = 2.2f, float shear = 0)
+    void SnowWall(int wall, float closing, float release = 2.2f, float shear = 0)
     {
         UseTone(HostileTone.Dark);
         var edge = CombatRound.Border;
@@ -241,8 +236,6 @@ public sealed partial class SnowIcebreakerBoss
         for (int row = 0; row < rows; row++)
         {
             float y = Mathf.Lerp(edge.yMax - .45f, edge.yMin + .9f, row / (rows - 1f));
-            if (Mathf.Abs(y - gapAt) < 1.0f)
-                continue;
             var point = new Vector2(x, y);
             // Far flakes take longer to settle, so the column forms from the top down.
             float at = .6f + Vector2.Distance(port, point) * .09f;
@@ -252,15 +245,6 @@ public sealed partial class SnowIcebreakerBoss
                 .Sway(row % 2 == 0 ? .2f : -.2f, .5f)
                 .Ramp(closing, 1.2f, at + hold + .6f);
         }
-    }
-
-    // The height of a column's opening, a given distance along this pass's walk
-    // (down the arena on one pass, up it on the next).
-    float Opening(float walk, float span)
-    {
-        var edge = CombatRound.Border;
-        float along = Mathf.Repeat(walk, span);
-        return side > 0 ? edge.yMax - 1.5f - along : edge.yMin + 1.5f + along;
     }
 
     // ---- Phase three (Hard): Shattered Icicles ----

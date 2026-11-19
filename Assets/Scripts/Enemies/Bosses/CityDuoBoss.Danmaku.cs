@@ -110,8 +110,7 @@ public sealed partial class CityDuoBoss
 
     // Rows of arrow cars brake onto level rows below the port at the same moment, turn to
     // face their skid, wait for their light, then skid off at one street speed and rebound
-    // once off the side walls. Each row's two-car crossing is lit by kunai lamps in the other
-    // tone and snakes from row to row.
+    // once off the side walls. A pair of lamps in the opposite tone snakes from row to row.
     void ParkStreet(Vector3 port, int rows, int cycle, int movement, HostileTone tone, float green)
     {
         const float park = .8f;
@@ -121,17 +120,15 @@ public sealed partial class CityDuoBoss
         for (int row = 0; row < rows; row++)
         {
             float y = port.y - 1.5f - row * 1.2f;
-            int gap = Mathf.RoundToInt((cars - 2) * (.5f + .42f * Mathf.Sin(row * snake + cycle * 2.1f)));
+            int lampStart = Mathf.RoundToInt((cars - 2) * (.5f + .42f * Mathf.Sin(row * snake + cycle * 2.1f)));
             // Shear goes green from the top, after the overpass; the others from the bottom.
             int order = movement == 1 ? row + 2 : rows - 1 - row;
             float hold = green + order * .16f;
             for (int car = 0; car < cars; car++)
             {
-                if (car == gap || car == gap + 1)
-                    continue;
                 var delta = new Vector2(Mathf.Lerp(left, right, car / (cars - 1f)), y) - (Vector2)port;
                 float launch = WorldSpeed(delta.magnitude / (park - .175f));
-                bool lamp = car == gap - 1 || car == gap + 2;
+                bool lamp = car == lampStart || car == lampStart + 1;
                 UseTone(lamp ? Opposite(tone) : tone);
                 Fire<KunaiRound>(port, delta, launch, .2f)
                     .Pause(park, hold, CombatRound.Turn.Down, StreetSkid(movement, row, car, cycle), 2.3f / launch).ShowTurn().Bounce(1, false);
@@ -152,20 +149,18 @@ public sealed partial class CityDuoBoss
         for (int row = 0; row < 2; row++)
         {
             float y = top - row * .75f;
-            int gap = Mathf.RoundToInt((cars - 2) * (.5f + .42f * Mathf.Sin(row * 1.7f + cycle * 1.6f + 1)));
+            int lampStart = Mathf.RoundToInt((cars - 2) * (.5f + .42f * Mathf.Sin(row * 1.7f + cycle * 1.6f + 1)));
             // Bottom-up greens reach the overpass last, top-down greens first.
             float hold = green + (movement == 1 ? row : 8 - row) * .16f;
             float skid = movement == 0 ? (row == 0 ? -20 : 20) : movement == 1 ? (cycle % 2 == 0 ? 32 : -32) : 0;
             var turn = movement == 3 ? CombatRound.Turn.Aim : CombatRound.Turn.Down;
             for (int car = 0; car < cars; car++)
             {
-                if (car == gap || car == gap + 1)
-                    continue;
                 float x = Mathf.Lerp(left, right, car / (cars - 1f));
                 var port = Muzzle(x < transform.position.x ? 1 : 2);
                 var delta = new Vector2(x, y) - (Vector2)port;
                 float launch = WorldSpeed(delta.magnitude / (park - .175f));
-                bool lamp = car == gap - 1 || car == gap + 2;
+                bool lamp = car == lampStart || car == lampStart + 1;
                 UseTone(lamp ? HostileTone.Dark : HostileTone.Bright);
                 var round = lamp ? Fire<KunaiRound>(port, delta, launch, .2f) : (CombatRound)Fire<NeedleRound>(port, delta, launch, .19f);
                 round.Pause(park, hold, turn, skid, (movement == 3 ? 2.8f : 2.4f) / launch).ShowTurn();

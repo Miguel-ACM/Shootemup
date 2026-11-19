@@ -49,16 +49,14 @@ public sealed partial class HellCrabBoss
         }
     }
 
-    // One evolving horizontal score, never aimed. Opposed banks leave a broad shared
-    // passage which walks up and down between releases; the old banks keep crossing.
+    // One evolving horizontal score, never aimed. Both banks fire every marked row.
     IEnumerator Crosswinds()
     {
-        for (int beat = 0; ; beat++)
+        while (true)
         {
             int lanes = Mathf.Clamp(Dense(17), 8, 24);
-            int gap = 2 + Mathf.RoundToInt((lanes - 6) * (.5f + .5f * Mathf.Sin(beat * .73f)));
-            yield return WarnCrosswinds(lanes, gap, .7f);
-            ReleaseCrosswinds(lanes, gap);
+            yield return WarnCrosswinds(lanes, .7f);
+            ReleaseCrosswinds(lanes);
             yield return Wait(.12f);
             HideSideWarnings();
             yield return Wait(Rest(2.15f) - .12f);
@@ -91,7 +89,7 @@ public sealed partial class HellCrabBoss
         foreach (var cue in sideWarnings) cue.enabled = false;
     }
 
-    IEnumerator WarnCrosswinds(int lanes, int gap, float seconds)
+    IEnumerator WarnCrosswinds(int lanes, float seconds)
     {
         PrepareSideWarnings();
         for (float t = 0; t < seconds;)
@@ -102,7 +100,7 @@ public sealed partial class HellCrabBoss
                 {
                     int side = bank == 0 ? -1 : 1;
                     var cue = sideWarnings[lane * 2 + bank];
-                    cue.enabled = !Holding && (lane < gap || lane > gap + 2);
+                    cue.enabled = !Holding;
                     cue.transform.position = FlameEdge(side, lane, lanes) + Vector3.left * side * .48f;
                     cue.transform.rotation = Quaternion.FromToRotation(Vector3.up, Vector3.left * side);
                     cue.color = new Color(1, 1, 1, Mathf.Lerp(.1f, .75f, t / seconds));
@@ -111,11 +109,10 @@ public sealed partial class HellCrabBoss
         }
     }
 
-    void ReleaseCrosswinds(int lanes, int gap)
+    void ReleaseCrosswinds(int lanes)
     {
         for (int lane = 0; lane < lanes; lane++)
         {
-            if (lane >= gap && lane <= gap + 2) continue;
             for (int side = -1; side <= 1; side += 2)
             {
                 UseTone(HostileTone.Bright);

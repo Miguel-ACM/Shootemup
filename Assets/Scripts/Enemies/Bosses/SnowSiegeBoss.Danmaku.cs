@@ -17,7 +17,7 @@ using UnityEngine;
 //   mouth fans that freeze and re-aim.
 // Phase three (Hard), Diamond Dust: the comb becomes a harp. Each strung column drops a
 //   fast arrow and a slower echo, so a strum falls as two separating diagonal slashes
-//   with two muted strings for a gap. Arpeggio (single strums and mouth fans), crossing
+//   across the comb. Arpeggio (single strums and mouth fans), crossing
 //   strums from both ends with dendrites from the sides, then a fast glissando; later
 //   rounds strum tighter and the comb shifts between movements.
 // Every round thrown out of the hull's sides is an arrow; shell snow is thrown up
@@ -64,8 +64,8 @@ public sealed partial class SnowSiegeBoss
             yield return ChargeComb(movement == 0 ? .6f : Rest(.85f));
             int kind = movement % 4;
             float fall = movement >= 4 ? 2.9f : 2.6f;
-            const int Beats = 18;
-            for (int k = 0; k < Beats; k++)
+            int beats = Difficulty.Hard ? 18 : Difficulty.Easy ? 9 : 14;
+            for (int k = 0; k < beats; k++)
             {
                 // Still air, then a swinging crosswind, then a breathing lattice, then gusts.
                 float wind = kind == 0 ? 0 : 13 * Mathf.Sin((k + movement * 5) * .26f);
@@ -74,9 +74,6 @@ public sealed partial class SnowSiegeBoss
                 UseTone(HostileTone.Dark);
                 for (int i = 0; i < combCount; i++)
                 {
-                    // Lighter difficulties drop a diagonal of strings, never a whole column.
-                    if (!Difficulty.Hard && (i + k) % 4 == 0 || Difficulty.Easy && (i + k) % 4 == 2)
-                        continue;
                     int family = (i % 2 == 0) != swapped ? 1 : -1;
                     // A gentle shared sway keeps each line of the lattice whole.
                     Fire<SnowflakeRound>(CombPort(i), CombatVisuals.Rotate(Vector2.down, wind + family * lean), fall, .19f)
@@ -93,7 +90,7 @@ public sealed partial class SnowSiegeBoss
                         Fire<SimpleRound>(Mouth, CombatVisuals.Rotate(aim, (j - (loose - 1) * .5f) * 12 + Random.Range(-8f, 8f)), 1.3f, .21f)
                             .Ramp(2.2f, 1.0f, .2f);
                 }
-                yield return Wait(Rest(.55f));
+                yield return Wait(Rest(.55f) * 18f / beats);
             }
             if (kind == 3)
                 SlideComb();
@@ -190,11 +187,11 @@ public sealed partial class SnowSiegeBoss
             float pluck = movement >= 3 ? .075f : .09f;
             if (kind == 0)
             {
-                // Arpeggio: single strums, alternating direction, the gap walking; the mouth
+                // Arpeggio: single strums, alternating direction; the mouth
                 // answers every other strum with a fan that freezes and re-aims.
                 for (int s = 0; s < 10; s++)
                 {
-                    Phrase(Toned(HostileTone.Dark, Strum(s % 2 == 0 ? 1 : -1, Gap(s), pluck)));
+                    Phrase(Toned(HostileTone.Dark, Strum(s % 2 == 0 ? 1 : -1, pluck)));
                     if (s % 2 == 1)
                         FrostFan();
                     yield return Wait(Rest(.45f));
@@ -203,11 +200,11 @@ public sealed partial class SnowSiegeBoss
             else if (kind == 1)
             {
                 // Crossing: a dark strum and a bright one from both ends at once fall as an X
-                // with a gap in each arm; the side ports grow dendrites between them.
+                // across the comb; the side ports grow dendrites between them.
                 for (int s = 0; s < 7; s++)
                 {
-                    Phrase(Toned(HostileTone.Dark, Strum(1, Gap(s), pluck)));
-                    Phrase(Toned(HostileTone.Bright, Strum(-1, combCount - 2 - Gap(s), pluck)));
+                    Phrase(Toned(HostileTone.Dark, Strum(1, pluck)));
+                    Phrase(Toned(HostileTone.Bright, Strum(-1, pluck)));
                     if (s % 2 == 1)
                     {
                         yield return ChargeSides(Rest(.65f));
@@ -226,7 +223,7 @@ public sealed partial class SnowSiegeBoss
                 for (int s = 0; s < 13; s++)
                 {
                     var shade = s % 2 == 0 ? HostileTone.Dark : HostileTone.Bright;
-                    Phrase(Toned(shade, Strum(s % 2 == 0 ? 1 : -1, Gap(s + movement), pluck)));
+                    Phrase(Toned(shade, Strum(s % 2 == 0 ? 1 : -1, pluck)));
                     yield return Wait(Rest(.34f));
                 }
             }
@@ -238,24 +235,18 @@ public sealed partial class SnowSiegeBoss
         }
     }
 
-    // Two muted strings walk across the comb, strum by strum.
-    int Gap(int strum) => 1 + strum * 4 % (combCount - 3);
-
     // Strings released one after another along the comb. Each drops a fast arrow and a
     // slower echo, so the strum falls as two diagonal slashes that draw apart.
-    IEnumerator Strum(int direction, int gap, float pluck)
+    IEnumerator Strum(int direction, float pluck)
     {
         for (int n = 0; n < combCount; n++)
         {
             int i = direction > 0 ? n : combCount - 1 - n;
-            if (i < gap || i >= gap + 2)
-            {
-                var port = CombPort(i);
-                Fire<NeedleRound>(port, Vector2.down, 3.4f, .19f);
-                if (Difficulty.Hard || !Difficulty.Easy && i % 3 == 0)
-                    Fire<NeedleRound>(port, Vector2.down, 2.0f, .19f);
-                releases[i] = .1f;
-            }
+            var port = CombPort(i);
+            Fire<NeedleRound>(port, Vector2.down, 3.4f, .19f);
+            if (Difficulty.Hard || !Difficulty.Easy && i % 3 == 0)
+                Fire<NeedleRound>(port, Vector2.down, 2.0f, .19f);
+            releases[i] = .1f;
             yield return Wait(pluck);
         }
     }

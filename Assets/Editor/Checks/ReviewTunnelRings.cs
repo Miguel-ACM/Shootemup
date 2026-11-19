@@ -99,7 +99,7 @@ public sealed class TunnelRingsReviewRuntime : MonoBehaviour
                     worstTurn = Mathf.Max(worstTurn, Mathf.Abs(turn(age + .01f) - turn(age)) / .01f * Mathf.Deg2Rad * radius);
                     widest = Mathf.Max(widest, radius);
                 }
-                if (orbitCount - lastCount >= Difficulty.Dense(36) - 4) releases++;
+                if (orbitCount - lastCount >= Difficulty.Dense(36, LevelRun.BossPressure)) releases++;
                 lastCount = orbitCount; peak = Mathf.Max(peak, CombatRound.Live.Count);
                 if (frame % 60 != 1) samples.Add(frameTimer.LastValue / 1000000.0);
                 physicsPeak = Math.Max(physicsPeak, physicsTimer.LastValue / 1000000.0);
@@ -108,7 +108,7 @@ public sealed class TunnelRingsReviewRuntime : MonoBehaviour
             Check(releases >= 6 && widest > 7 && worstTurn <= 2.81f,
                 $"{difficulty}: {releases} complete ring releases, radius up to {widest:F2}, tangential speed <= {worstTurn:F3}.");
             Check(CombatRound.CreatedCount == created, difficulty + " performs no projectile construction during phase one.");
-            report.Add($"{difficulty}: {Difficulty.Dense(36)-4} teeth per ring (previously {Difficulty.Dense(30)-3}); peak rounds={peak}; full CPU frame p95={samples[(int)(samples.Count*.95)]:F3}ms, max={samples.Last():F3}ms, physics max={physicsPeak:F3}ms. Rendering excluded.");
+            report.Add($"{difficulty}: {Difficulty.Dense(36, LevelRun.BossPressure)} teeth per complete ring; peak rounds={peak}; full CPU frame p95={samples[(int)(samples.Count*.95)]:F3}ms, max={samples.Last():F3}ms, physics max={physicsPeak:F3}ms. Rendering excluded.");
         }
         var probe = CombatRound.Launch<SimpleRound>(Vector3.zero, Vector2.down, 0);
         var release = typeof(CombatRound).GetMethod("Release", Hidden);

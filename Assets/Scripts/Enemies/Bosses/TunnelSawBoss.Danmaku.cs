@@ -4,8 +4,7 @@ using UnityEngine;
 // Tunnel saw. Every round leaves from the centre of the spinning blade.
 // Phase one
 //   Frogger Crossing, over and over: it glides to a new station, brakes, spins up and
-//     throws six widening rings that turn in alternate directions; each ring has a
-//     gap and the gaps slide, so crossing them is a timing puzzle.
+//     throws six widening rings that turn in alternate directions.
 // Phase two, Buzzsaw Bloom (no minions): it ricochets round the whole arena and fires
 //   only when it hits a wall. Every impact opens a full turn of hooked blades, rice
 //   grains launched together at rising speeds, each lagging further behind the spin,
@@ -115,12 +114,9 @@ public sealed partial class TunnelSawBoss
             if (ring % 2 == 0)
                 Fire<SimpleRound>(transform.position, CombatVisuals.Aim(transform.position), 2.8f, .23f);
             int sign = ring % 2 == 0 ? 1 : -1;
-            int gap = (ring * 9) % teeth;
             UseTone(ringTone);
             for (int i = 0; i < teeth; i++)
             {
-                if ((i - gap + teeth) % teeth < 4)
-                    continue;
                 var tooth = Fire<SimpleRound>(transform.position, Vector2.down, 0, ring % 2 == 0 ? .2f : .26f);
                 if (tooth != null)
                     tooth.Orbit(Radius * .9f, i * 360f / teeth, sign * 30, 10, 0, 0, 0, .05f).Expand(1.3f, 2.8f);

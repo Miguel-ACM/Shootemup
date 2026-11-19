@@ -77,7 +77,6 @@ public sealed partial class VoidSovereignBoss
                 int n=Dense(34);
                 for(int i=0;i<n;i++)
                 {
-                    if ((i+previous*3)%n<3) continue;
                     float a=i*360f/n+previous*9;
                     if(i%5==0) Fire<RicochetBolt>(InkPort(0),Down(a),3.85f,.23f,i==0).Bounce(1);
                     else Fire<SimpleRound>(InkPort(0),Down(a),i%2==0?3.22f:2.45f,.17f,i==1);
@@ -96,7 +95,7 @@ public sealed partial class VoidSovereignBoss
                 LevelId.Desert => ReactorProcession(beat),
                 LevelId.Sewers => CisternBowWave(beat),
                 LevelId.Core => GantryCrosshatch(),
-                LevelId.Mushroom => AmanitaEcho(beat),
+                LevelId.Mushroom => AmanitaEcho(),
                 LevelId.Candyland => LollipopSwirl(beat),
                 LevelId.Dream => PorcelainPleats(beat),
                 LevelId.Underwater => PressureWake(beat),
@@ -128,7 +127,6 @@ public sealed partial class VoidSovereignBoss
         for(int i=0;i<stars;i++)
         {
             float angle=i*360f/stars;
-            if (Mathf.Abs(Mathf.DeltaAngle(angle,beat*28))<14)continue;
             Fire<CrescentRound>(InkPort(0),Down(angle),3.65f,.20f,i==0)
                 .Pause(1.8f,.31f,CombatRound.Turn.Rotate,180+sign*10,1.28f);
         }
@@ -203,18 +201,16 @@ public sealed partial class VoidSovereignBoss
         }
     }
 
-    IEnumerator AmanitaEcho(int beat)
+    IEnumerator AmanitaEcho()
     {
-        int sign = (beat & 1) == 0 ? 1 : -1;
         yield return Trace(0,1,.34f);
         for(int layer=0;layer<3;layer++)
         {
-            int marks=Dense(34);
+            int marks=Dense(layer == 1 ? 17 : 34);
             for(int wing=0;wing<2;wing++)
                 for(int i=0;i<marks;i++)
                 {
                     float a=i*360f/marks;
-                    if(Mathf.Abs(Mathf.DeltaAngle(a,sign*(20+layer*6)))<16 || (layer==1 && i%2!=0))continue;
                     Vector2 v=Down((wing*2-1)*(a+layer*8))*(2.6f+1.14f*Mathf.Cos((4*a+layer*27)*Mathf.Deg2Rad))+Vector2.down*1.65f;
                     Fire<SimpleRound>(InkPort(wing),v,v.magnitude,.18f,i==0);
                 }

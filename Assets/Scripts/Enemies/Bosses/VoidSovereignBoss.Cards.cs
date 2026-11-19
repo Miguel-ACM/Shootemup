@@ -40,10 +40,6 @@ public sealed partial class VoidSovereignBoss
                 Fire<CrescentRound>(Port(port),CombatVisuals.Rotate(axis,Across(i,count)*6),speed,radius);
         }
     }
-    // A crown replaces the outer tip, with two neighbouring lanes left empty.
-    // Large artwork needs physical space even when its damaging core is small.
-    static bool CrownSpacer(int lane,int count,bool crown)=>crown&&lane<count-1&&lane>=count-3;
-    static bool OpenSeam(float u,int beat,float width=.24f)=>Mathf.Abs(u-.28f*Mathf.Sin(beat*.31f))<width;
     static int BankCount(int count,int bank)
     {
         int upper=Mathf.Max(1,Mathf.RoundToInt(count*.55f));
@@ -75,7 +71,7 @@ public sealed partial class VoidSovereignBoss
     }
 
     // Veiled Monarch: paired eyelids open into long, symmetric butterfly seams.
-    // Every row has the same travel clock; the gaps breathe as one shape.
+    // Every row shares a travel time.
     IEnumerator Witnesses()=>Every(6.2f,.48f,beat=>
     {
         if(beat%6==5)return;
@@ -89,7 +85,6 @@ public sealed partial class VoidSovereignBoss
                 {
                     int rows=BankCount(count,bank);
                     float u=Across(i,rows),angle=side*(fold+u*25);
-                    if(OpenSeam(u,beat)||CrownSpacer(i,rows,crown))continue;
                     Vector2 axis=bank>0?Vector2.up:Vector2.down;
                     UseTone(crown&&i==rows-1?HostileTone.Dark:HostileTone.Bright);
                     CrownedShot(crown&&i==rows-1,beat%3==0,Port(side<0?0:1),CombatVisuals.Rotate(axis,angle),
@@ -115,7 +110,6 @@ public sealed partial class VoidSovereignBoss
                 for(int i=0;i<BankCount(count,bank);i++)
                 {
                     int rows=BankCount(count,bank);float u=Across(i,rows);
-                    if(OpenSeam(u,beat)||CrownSpacer(i,rows,crown))continue;
                     Vector2 axis=bank>0?Vector2.up:Vector2.down;
                     UseTone(crown&&i==rows-1?HostileTone.Bright:HostileTone.Dark);
                     CrownedShot(crown&&i==rows-1,true,Port(side<0?0:1),CombatVisuals.Rotate(axis,side*(42+u*30)),
@@ -142,7 +136,6 @@ public sealed partial class VoidSovereignBoss
             {
                 float u=Across(i,count);
                 var axis=CombatVisuals.Rotate(Vector2.down,side*(stroke+u*14));
-                if(CrownSpacer(i,count,crown))continue;
                 UseTone(crown&&i==count-1?HostileTone.Dark:HostileTone.Bright);
                 CrownedShot(crown&&i==count-1,beat%3==0,Port(side<0?0:1),axis,2.35f+.42f*u,.17f,.56f).FadeAt(5.4f);
                 UseTone(HostileTone.Dark);
@@ -162,7 +155,6 @@ public sealed partial class VoidSovereignBoss
             for(int side=-1;side<=1;side+=2)for(int i=0;i<count;i++)
             {
                 float u=Across(i,count),pleat=9*Mathf.Sin(beat*.35f);
-                if(OpenSeam(u,beat)||CrownSpacer(i,count,crown))continue;
                 // The middle lane (turning straight down) and the crowns answer the dark pleats in bright.
                 UseTone(crown&&i==count-1||i==count/2?HostileTone.Bright:HostileTone.Dark);
                 CrownedShot(crown&&i==count-1,i%3==0,Port(side<0?0:1),CombatVisuals.Rotate(Vector2.down,side*(38+u*27+pleat)),
@@ -184,7 +176,6 @@ public sealed partial class VoidSovereignBoss
             for(int i=0;i<BankCount(count,bank);i++)
             {
                 int rows=BankCount(count,bank);float u=Across(i,rows);
-                if(OpenSeam(u,beat)||CrownSpacer(i,rows,crown))continue;
                 var axis=CombatVisuals.Rotate(bank>0?Vector2.up:Vector2.down,side*(24+u*32+Mathf.Sin(beat*.3f)*8));
                 UseTone(crown&&i==rows-1?HostileTone.Dark:HostileTone.Bright);
                 CrownedShot(crown&&i==rows-1,beat%3==0,Port(side<0?0:1),axis,1.8f+.95f*(1-u*u),.18f,.70f)
@@ -217,13 +208,13 @@ public sealed partial class VoidSovereignBoss
             UseTone(HostileTone.Bright);
             for(int i=0;i<count;i++)
             {
-                float u=Across(i,count);if(OpenSeam(u,beat))continue;
+                float u=Across(i,count);
                 Fire<ChevronRound>(Port(side<0?0:1),CombatVisuals.Rotate(axis,u*34),1.6f,.18f).FadeAt(5.4f);
             }
         }
     });
 
-    // Opposed pairs take turns stitching the lattice, with a moving open aisle.
+    // Opposed pairs take turns stitching the lattice.
     IEnumerator WorldWithoutEdges()=>Every(6.2f,.52f,beat=>
     {
         if(beat%6==5)return;
@@ -238,7 +229,6 @@ public sealed partial class VoidSovereignBoss
             {
                 Vector2 axis=FractureAxis(port);
                 float u=Across(i,rows),sign=port%2==0?-1:1;
-                if(OpenSeam(u,beat,.28f)||CrownSpacer(i,rows,crown))continue;
                 UseTone(crown&&i==rows-1?Other(bankTone):bankTone);
                 CrownedShot(crown&&i==rows-1,beat%3==0,Port(port),CombatVisuals.Rotate(axis,u*36+sign*Mathf.Sin(beat*.25f)*19),
                     2.0f+.48f*(1-u*u),.17f,.64f).Pause(.95f,.22f,CombatRound.Turn.Rotate,-sign*24,1.0f).FadeAt(5.6f);
@@ -260,7 +250,6 @@ public sealed partial class VoidSovereignBoss
             {
                 Vector2 axis=FractureAxis(port);
                 float u=Across(i,rows),sign=port%2==0?-1:1;
-                if(OpenSeam(u,beat,.30f)||CrownSpacer(i,rows,crown))continue;
                 // Ricochets cross the earlier bank after a rest. Giant tips travel
                 // straight out, so they cannot rebound into the next giant front.
                 var direction=CombatVisuals.Rotate(axis,u*33+sign*(beat%2==0?9:-9));

@@ -90,9 +90,6 @@ public sealed partial class VoidSovereignBoss
             for(int i=0;i<count;i++)
             {
                 float u=Across(i,count);
-                // A continuous slit travels with the fabric, not a random omitted round.
-                float seam=.34f*Mathf.Sin(beat*.19f);
-                if(Mathf.Abs(u-seam)<.24f||CrownSpacer(i,count,crown))continue;
                 if(chapter==1)
                 {
                     // Funeral fans: mirrored peacock feathers open as one moving wavefront.

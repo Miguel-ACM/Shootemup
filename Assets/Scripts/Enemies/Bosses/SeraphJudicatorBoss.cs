@@ -79,23 +79,20 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
 
     // Wheel Within a Wheel (phase one): the eyes of the tumbling wheels are the weapon.
     // Each lash leaves an eye along the wheel's own projected outline, so the fans are
-    // redrawn by the tumble, and one aisle sways through them. Movements: the middle
+    // redrawn by the tumble. Movements: the middle
     // wheel lashes while the outer side eyes answer; the outer wheel takes it up, wider
     // and slower, over weeping pearls; the middle and inner wheels trade beats with
-    // mirrored aisles; then every eye opens, the upper rims hanging rain along the top
+    // mirrored lashes; then every eye opens, the upper rims hanging rain along the top
     // edge and watchers closing the corners. Mid-movement the core eye lays a wide
-    // glance along the pilot's line. Each later cycle sways the aisle faster and widens
-    // the lashes.
+    // glance along the pilot's line. Each later cycle widens the lashes.
     IEnumerator WheelWithinAWheel(int movement)
     {
         int verse = movement % 4;
         int cycle = Mathf.Min(movement / 4, 2);
-        float sway = .17f * (1 + .25f * cycle);
         if (verse == 3)
             Phrase(CornerWatchers(CardIndex, 3));
         yield return Every(4.4f, .2f, beat =>
         {
-            float aisle = 46 * Mathf.Sin(beat * sway + movement * 1.3f);
             if (beat == 9)
                 Glance(1.0f, 1.8f, 1.3f);
             if (beat % 4 == 2)
@@ -103,13 +100,13 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
             UseTone(Body(CardIndex));
             if (verse == 0)
             {
-                WheelLash(1, Dense(8 + cycle), 3, 1.35f, aisle);
+                WheelLash(1, Dense(8 + cycle), 3, 1.35f);
                 if (beat % 2 == 1)
-                    RimFans(3, Dense(9), 30, 50, 2.0f, beat);
+                    RimFans(3, Dense(9), 30, 50, 2.0f);
             }
             else if (verse == 1)
             {
-                WheelLash(0, Dense(8 + cycle), 2.6f, 1.2f, aisle);
+                WheelLash(0, Dense(8 + cycle), 2.6f, 1.2f);
                 UseTone(Accent(CardIndex));
                 if (beat % 2 == 1)
                     WheelPearls(2, 1.2f);
@@ -117,11 +114,11 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
             else if (verse == 2)
             {
                 bool middle = beat % 2 == 0;
-                WheelLash(middle ? 1 : 2, Dense(10 + cycle), 3.5f, 1.4f, middle ? aisle : -aisle);
+                WheelLash(middle ? 1 : 2, Dense(10 + cycle), 3.5f, 1.4f);
             }
             else
             {
-                WheelLash(1, Dense(8 + cycle), 3, 1.35f, aisle);
+                WheelLash(1, Dense(8 + cycle), 3, 1.35f);
                 UseTone(Accent(CardIndex));
                 if (beat % 3 == 0)
                     UpperRain(0, Dense(2));
@@ -182,8 +179,7 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
     // Last Trumpet (phase three, Hard): the lance frames of the former third phase
     // alternate movement by movement, the trumpet (a central column with two lancets) and
     // the covenant (two opposed slow scythes). Between them the wheels throw bunched
-    // knots, a star at the heart of feathers that travel together, around one moving
-    // aisle, with sparse single rounds between the knots and a light rain from the upper
+    // knots, a star at the heart of feathers that travel together, with sparse single rounds between the knots and a light rain from the upper
     // rim. Nothing is aimed: every round leaves an eye along its wheel's outline.
     IEnumerator LastTrumpet(int movement)
     {
@@ -203,13 +199,11 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
             Beam(1, -47, .85f, 2.8f, 1.7f);
             Beam(2, 47, .85f, 2.8f, 1.7f);
         }
-        float drift = .19f + .03f * Mathf.Min(movement / 4, 3);
         yield return Every(covenant ? 5.6f : 5.2f, .2f, beat =>
         {
-            float aisle = 44 * Mathf.Sin(beat * drift + movement);
             UseTone(Body(CardIndex));
-            Knots(0, aisle);
-            Knots(1, -aisle);
+            Knots(0);
+            Knots(1);
             UseTone(Accent(CardIndex));
             if (beat % 2 == 1)
                 Singles(2, beat);
@@ -236,10 +230,6 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
         return offset.sqrMagnitude > .0001f ? offset.normalized : Vector2.down;
     }
 
-    // An eye of the wheel's lower rim, away from the moving aisle (degrees from straight down).
-    static bool LowerRim(Vector2 axis, float aisle)
-        => axis.y < -.15f && Mathf.Abs(Vector2.SignedAngle(Vector2.down, axis) - aisle) >= 15;
-
     // The core eye looks: a lance laid along the pilot's line at the charge.
     void Glance(float width, float hold, float charge)
     {
@@ -247,7 +237,7 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
         Beam(0, Vector2.SignedAngle(Vector2.down, aim), width, hold, charge);
     }
 
-    // The central eye looks through the moving aisle with a small star chord.
+    // The central eye fires a small star chord.
     void Gaze()
     {
         Vector3 p=Eye(0);Vector2 aim=CombatVisuals.Aim(p);int count=Dense(5)|1;
@@ -271,15 +261,14 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
         return Fire<SimpleRound>(port, axis, speed, .21f);
     }
 
-    // Every lower eye of a wheel casts a small lash along its own outward line, except
-    // the eyes facing the moving aisle.
-    void WheelLash(int ring, int lash, float spread, float speed, float aisle)
+    // Every lower eye of a wheel casts a small lash along its own outward line.
+    void WheelLash(int ring, int lash, float spread, float speed)
     {
         for (int k = 0; k < HeavenAngelVisual.EyeCounts[ring]; k++)
         {
             var eye = WheelEye(ring, k);
             Vector2 axis = Outward(eye);
-            if (!LowerRim(axis, aisle))
+            if (axis.y >= -.15f)
                 continue;
             // Eyes deeper below the core throw a little faster, bending each fan into a crescent.
             float pace = speed * (1 - .3f * axis.y);
@@ -290,17 +279,17 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
         }
     }
 
-    // A knot from every lower eye of a wheel, away from the aisle: a star at the heart of
+    // A knot from every lower eye of a wheel: a star at the heart of
     // up to six feathers, bunched by small angle and speed offsets so the cluster travels
     // together and loosens only slowly.
-    void Knots(int ring, float aisle)
+    void Knots(int ring)
     {
         int members = Mathf.Min(6, Dense(5));
         for (int k = 0; k < HeavenAngelVisual.EyeCounts[ring]; k++)
         {
             var eye = WheelEye(ring, k);
             Vector2 axis = Outward(eye);
-            if (!LowerRim(axis, aisle))
+            if (axis.y >= -.15f)
                 continue;
             float pace = (1.45f - .1f * ring) * (1 - .3f * axis.y);
             Fire<StarRound>(eye.position, axis, pace, .2f).Ramp(1.6f, .8f, .4f).FadeAt(8);
@@ -368,19 +357,15 @@ public sealed class SeraphJudicatorBoss : DistrictBoss
     }
 
     // Mirrored rim fans from a pair of side eyes (1/2 middle wheel, 3/4 outer wheel),
-    // opening outward and down from the inner angle across the arc, with one lane open
-    // that drifts beat by beat.
-    void RimFans(int leftPort, int count, float inner, float arc, float speed, int beat)
+    // opening outward and down from the inner angle across the arc.
+    void RimFans(int leftPort, int count, float inner, float arc, float speed)
     {
-        float lane = .3f * Mathf.Sin(beat * .31f);
         for (int s = -1; s <= 1; s += 2)
         {
             var port = Eye(s < 0 ? leftPort : leftPort + 1);
             for (int i = 0; i < count; i++)
             {
                 float u = Across(i, count);
-                if (Mathf.Abs(u - lane) < .2f)
-                    continue;
                 FeatherShot(i % 3 == 0, port, CombatVisuals.Rotate(Vector2.down, s * (inner + arc * (u + 1) * .5f)), speed + .5f * (1 - u * u), .17f)
                     .Ramp(1.3f, .8f, .3f)
                     .FadeAt(8);

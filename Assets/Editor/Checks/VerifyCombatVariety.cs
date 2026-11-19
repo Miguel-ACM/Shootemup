@@ -49,8 +49,10 @@ public static class VerifyCombatVariety
         foreach (RunDifficulty difficulty in Enum.GetValues(typeof(RunDifficulty)))
         {
             Difficulty.Select(difficulty);
+            Case(difficulty + " Mushroom petals and spore rings fire every position", MushroomVolleys);
+            Case(difficulty + " Space supernovas have uniform spacing around the full circle", SupernovaVolleys);
             Case(difficulty + " City phase-two hairpins finish braking, return and bounce before leaving", Hairpins);
-            Case(difficulty + " Hell phase one: only opposed slow flame banks, clear gap and no claw stroke", Hell);
+            Case(difficulty + " Hell phase one: complete opposed slow flame banks", Hell);
             foreach (LevelId level in Enum.GetValues(typeof(LevelId)))
             {
                 if (level == LevelId.Void) continue;
@@ -136,6 +138,54 @@ public static class VerifyCombatVariety
         }
         finally { ReleaseAll(); UnityEngine.Object.DestroyImmediate(boss.gameObject); }
     }
+    static void MushroomVolleys()
+    {
+        LevelRun.Reset(LevelId.Mushroom, 41971);
+        var boss = DistrictEnemy.Spawn(typeof(MushroomWarden), new Vector3(0, 4, 1), false, false, false);
+        try
+        {
+            var bloom = (IEnumerator)typeof(MushroomWarden).GetMethod("AmanitaBloom", Hidden).Invoke(boss, null);
+            bloom.MoveNext(); // Wing charge.
+            for (int layer = 0; layer < 3; layer++)
+            {
+                bloom.MoveNext();
+                int marks = Mathf.Max(layer == 1 ? 9 : 18, Difficulty.Dense(layer == 1 ? 18 : 36, LevelRun.BossPressure));
+                var wings = CombatRound.Live.GroupBy(shot => (Vector2)shot.transform.position).ToArray();
+                Check(wings.Length == 2 && wings.All(wing => wing.Count() == marks), "Incomplete bloom layer " + layer);
+                ReleaseAll();
+            }
+            var instar = (IEnumerator)typeof(MushroomWarden).GetMethod("LastInstar", Hidden).Invoke(boss, null);
+            instar.MoveNext();
+            instar.MoveNext();
+            CheckRing(CombatRound.Live.OfType<SimpleRound>(), Mathf.Max(10, Difficulty.Dense(20, LevelRun.BossPressure)));
+        }
+        finally { ReleaseAll(); UnityEngine.Object.DestroyImmediate(boss.gameObject); }
+    }
+
+    static void SupernovaVolleys()
+    {
+        LevelRun.Reset(LevelId.Space, 41971);
+        var boss = DistrictEnemy.Spawn(typeof(SpaceCitadelBoss), new Vector3(0, 4, 1), false, false, false);
+        try
+        {
+            int beads = Difficulty.Dense(38, LevelRun.BossPressure);
+            typeof(SpaceCitadelBoss).GetMethod("SupernovaRing", Hidden).Invoke(boss, new object[] { beads, 3f, 17f, null });
+            CheckRing(CombatRound.Live, beads);
+        }
+        finally { ReleaseAll(); UnityEngine.Object.DestroyImmediate(boss.gameObject); }
+    }
+
+    static void CheckRing(IEnumerable<CombatRound> rounds, int expected)
+    {
+        var angles = rounds.Select(shot => Vector2.SignedAngle(Vector2.down, shot.Heading)).OrderBy(angle => angle).ToArray();
+        Check(angles.Length == expected, $"Expected {expected} rounds, got {angles.Length}");
+        for (int i = 0; i < expected; i++)
+        {
+            float spacing = Mathf.Repeat(angles[(i + 1) % expected] - angles[i], 360f);
+            Check(Mathf.Abs(spacing - 360f / expected) < .01f, "Uneven spacing around ring");
+        }
+    }
+
     static void Hell()
     {
         LevelRun.Reset(LevelId.Hell, 41971);
@@ -147,9 +197,9 @@ public static class VerifyCombatVariety
             typeof(HellCrabBoss).GetMethod("PrepareSideWarnings",Hidden).Invoke(boss,null);
             var warnings=(SpriteRenderer[])typeof(HellCrabBoss).GetField("sideWarnings",Hidden).GetValue(boss);
             Check(warnings.Length==48 && warnings.All(c=>!c.enabled),"Edge cues must be prepared once and initially hidden");
-            var warning=(IEnumerator)typeof(HellCrabBoss).GetMethod("WarnCrosswinds",Hidden).Invoke(boss,new object[]{17,7,.7f});
+            var warning=(IEnumerator)typeof(HellCrabBoss).GetMethod("WarnCrosswinds",Hidden).Invoke(boss,new object[]{17,.7f});
             warning.MoveNext();
-            Check(warnings.Count(c=>c.enabled)==28 && warnings.Where(c=>c.enabled).All(c=>CombatRound.Border.Contains(c.transform.position)),"Charge cues must be visible along both edges, leaving the opening clear");
+            Check(warnings.Count(c=>c.enabled)==34 && warnings.Where(c=>c.enabled).All(c=>CombatRound.Border.Contains(c.transform.position)),"Every firing position on both edges must show its charge");
             typeof(HellCrabBoss).GetMethod("OnPhaseTwo",Hidden).Invoke(boss,null);
             Check(warnings.All(c=>!c.enabled),"Phase transition leaves stale edge warnings");
             var claws = (Transform[])typeof(HellCrabBoss).GetField("claws", Hidden).GetValue(boss);
@@ -162,8 +212,8 @@ public static class VerifyCombatVariety
             var move = typeof(HellCrabBoss).GetMethod("MoveBoss", Hidden);
             for(int i=0;i<60;i++) move.Invoke(boss, new object[]{1f});
             Check((float)typeof(HellCrabBoss).GetField("clawClock",Hidden).GetValue(boss)==0 && CombatRound.Live.Count==0, "Claw attacks in first phase");
-            typeof(HellCrabBoss).GetMethod("ReleaseCrosswinds", Hidden).Invoke(boss,new object[]{17,7});
-            Check(CombatRound.Live.Count==28 && CombatRound.Live.All(s=>s is FlameRound), "Side-bank count/type");
+            typeof(HellCrabBoss).GetMethod("ReleaseCrosswinds", Hidden).Invoke(boss,new object[]{17});
+            Check(CombatRound.Live.Count==34 && CombatRound.Live.All(s=>s is FlameRound), "Side-bank count/type");
             foreach(var shot in CombatRound.Live.ToArray())
             {
                 var p=shot.transform.position;

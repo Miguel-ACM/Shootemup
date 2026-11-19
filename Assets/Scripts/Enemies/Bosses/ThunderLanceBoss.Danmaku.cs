@@ -8,9 +8,8 @@ using UnityEngine;
 // middle and ride the gap. Phase two: an evenly spaced laser lattice, four drones
 // along the top firing down and six along the wall firing across. Each bank fires
 // a complete comb, withdraws, then moves while the perpendicular bank takes its turn.
-// Hard phase three: the lattice never goes dark. The top drones sweep across a full
-// cell and back while firing, the wall drones sweep up and down, and the open lanes
-// move on every few seconds, so no column of the screen stays safe.
+// Hard phase three: both complete banks sweep together. Their shared release and
+// recharge give the pilot time to cross between cells.
 // The boss fires mirrored arrow lace and chevrons, and in phase two zigzag lightning.
 // Tones (beams always stay bright): phase one's lace is dark against bright aimed
 // chevrons, and its wavefront's three arcs alternate bright, dark, bright. From phase
@@ -147,8 +146,7 @@ public sealed partial class ThunderLanceBoss
     }
 
     // Superstorm's lattice: columns sweep half a cell either side of their places and
-    // rows sweep up and down, all while firing; one column and one row stay open and
-    // move on every 2.2 s, recharging visibly where they come back on.
+    // rows sweep up and down, with a shared release and visible recharge.
     IEnumerator SweepGrid()
     {
         for (int i = 0; i < drones.Count; i++)
@@ -158,26 +156,20 @@ public sealed partial class ThunderLanceBoss
         foreach (var drone in drones)
             if (drone != null)
                 drone.FiresWhileMoving = true;
-        int openColumn = 1, openRow = 2;
-        float clock = 0, nextSwap = 2.2f;
+        float clock = 0;
         while (true)
         {
             if (!Holding)
                 clock += Time.deltaTime * LevelRun.EnemyTempoScale;
             float sx = Mathf.PingPong(clock * .7f, ColumnSpacing) - ColumnSpacing * .5f;
             float sy = Mathf.PingPong(clock * .45f, RowSpacing) - RowSpacing * .5f;
-            if (clock >= nextSwap)
-            {
-                nextSwap += 2.2f;
-                openColumn = (openColumn + 1) % Columns;
-                openRow = (openRow + 2) % Rows;
-            }
+            bool firing = Mathf.Repeat(clock, 5.4f) < 4.7f;
             for (int i = 0; i < drones.Count; i++)
             {
                 if (drones[i] == null)
                     continue;
                 drones[i].MoveTo(i < Columns ? SweepColumn(i, sx) : SweepRow(i - Columns, sy));
-                drones[i].Powered = i < Columns ? i != openColumn : i - Columns != openRow;
+                drones[i].Powered = firing;
             }
             yield return null;
         }

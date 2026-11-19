@@ -117,7 +117,7 @@ public sealed class CisternHeart : DistrictBoss
     }
 
     // A lock gate builds up head from both banks. Its teeth stop along a
-    // chevron, then the breach travels out from the gap, row after row.
+    // chevron, then the breach travels out from the centre, row after row.
     IEnumerator Spillway()
     {
         for (int beat = 0; ; beat++)
@@ -131,7 +131,6 @@ public sealed class CisternHeart : DistrictBoss
                 for (int i = 0; i < count; i++)
                 {
                     float x = Mathf.Lerp(Camera.LeftLimit + .18f, Camera.RightLimit - .18f, (i + .5f) / count);
-                    if (Mathf.Abs(x - gate) < .83f) continue;
                     int h = x < gate ? 0 : 1;
                     Vector3 port = Muzzle(row + h * 3);
                     float bank = Mathf.Abs(x - gate) / (h == 0 ? gate - Camera.LeftLimit : Camera.RightLimit - gate);
@@ -292,35 +291,30 @@ public sealed class CoreGantry : DistrictBoss
     }
 
     // The press punches an actual strip of perforations while the carriage
-    // traverses. A skipped section moves across successive strips. The rails
+    // traverses. The rails
     // fold the selvage back in only after the press has lifted.
     IEnumerator PunchTape()
     {
         for (int strip = 0; ; strip++)
         {
             yield return Charge(carriage, CoreMuzzle, .44f);
-            float slot = 1.83f * Mathf.Sin(strip * .81f);
             Vector2 bearing = CombatVisuals.Aim(carriage.TransformPoint(CoreMuzzle));
             int punches = Mathf.Max(10, Dense(25));
             for (int i = 0; i < punches; i++)
             {
                 float x = Mathf.Lerp(-4.48f, 4.48f, (i + .5f) / punches);
                 if ((strip & 1) != 0) x = -x;
-                if (Mathf.Abs(x - slot) >= .69f)
+                Vector3 port = carriage.TransformPoint(CoreMuzzle);
+                for (int tooth = 0; tooth < 6; tooth++)
                 {
-                    Vector3 port = carriage.TransformPoint(CoreMuzzle);
-                    for (int tooth = 0; tooth < 6; tooth++)
-                    {
-                        // Blank alternating punch positions give the tape its checkered edge.
-                        if ((tooth == 1 || tooth == 4) && ((i/3 + strip) & 1) == 0) continue;
-                        float y = station.y + 1.68f - .54f * tooth + .22f * ((i / 3) % 2);
-                        Vector2 offset = new Vector2(x, y) - (Vector2)port;
-                        float speed = WorldSpeed(Mathf.Max(.18f, offset.magnitude / .725f));
-                        UseTone(tooth == 1 || tooth == 2 ? HostileTone.Dark : HostileTone.Bright);
-                        Fire<NeedleRound>(port, offset, speed, tooth == 0 ? .22f : .16f, tooth == 0)
-                            .Pause(.90f, .39f + .79f * (1 - i / (punches - 1f)), CombatRound.Turn.Down,
-                                5 * Mathf.Cos(strip * .81f), 5.15f / speed).ShowTurn();
-                    }
+                    // Alternate blocks sit higher along the tape.
+                    float y = station.y + 1.68f - .54f * tooth + .22f * ((i / 3) % 2);
+                    Vector2 offset = new Vector2(x, y) - (Vector2)port;
+                    float speed = WorldSpeed(Mathf.Max(.18f, offset.magnitude / .725f));
+                    UseTone(tooth == 1 || tooth == 2 ? HostileTone.Dark : HostileTone.Bright);
+                    Fire<NeedleRound>(port, offset, speed, tooth == 0 ? .22f : .16f, tooth == 0)
+                        .Pause(.90f, .39f + .79f * (1 - i / (punches - 1f)), CombatRound.Turn.Down,
+                            5 * Mathf.Cos(strip * .81f), 5.15f / speed).ShowTurn();
                 }
                 yield return Wait(.86f / punches);
             }
