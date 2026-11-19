@@ -44,15 +44,7 @@ public class BGMManager : MonoBehaviour
         var clip = Resources.Load<AudioClip>("Music/final");
         if (clip != null && clip.loadState == AudioDataLoadState.Unloaded) clip.LoadAudioData();
     }
-    public static void PlayFinalMusic()
-    {
-        if (score == null) return;
-        var clip = Resources.Load<AudioClip>("Music/final");
-        if (clip == null) return;
-        fade = 1;
-        ApplyVolume();
-        score.Play(clip, null, false);
-    }
+    public static void PlayFinalMusic() => Play("final", true);
 
     public static void PlayHangarMusic()
     {
