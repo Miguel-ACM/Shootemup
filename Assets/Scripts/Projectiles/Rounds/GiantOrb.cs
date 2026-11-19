@@ -2,7 +2,7 @@ using UnityEngine;
 
 public sealed class GiantOrb : CombatRound
 {
-    public override float HitboxScale => .125f;
+    public override float HitboxScale => .15f;
     const float WarningTime = .36f;
     const int Phrases = 3;
     float sideSpeed, nextRelease;

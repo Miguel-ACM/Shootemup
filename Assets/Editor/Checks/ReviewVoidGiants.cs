@@ -164,7 +164,7 @@ public sealed class VoidGiantsReviewRuntime : MonoBehaviour
     {
         var giant = CombatRound.Launch<GiantOrb>(Vector3.zero, Vector2.down, 0, .7f);
         var ordinary = CombatRound.Launch<SimpleRound>(new Vector3(9, 9), Vector2.down, 0);
-        Check(giant.HitboxScale == .125f && ordinary.HitboxScale == .3f, "Giant hitboxes use 12.5% of artwork size; ordinary rounds use 30%.");
+        Check(giant.HitboxScale == .15f && ordinary.HitboxScale == .3f, "Giant hitboxes use 15% of artwork size and ordinary rounds use 30%.");
         Check(giant.GetComponent<SpriteRenderer>().sortingOrder < ordinary.GetComponent<SpriteRenderer>().sortingOrder &&
             giant.GetComponent<SpriteRenderer>().sortingLayerName == "Bullet", "Giant artwork sits behind smaller hostile rounds, still above the player hull.");
         var native = new GameObject("Scaled authored giant pixel reference");
@@ -179,7 +179,19 @@ public sealed class VoidGiantsReviewRuntime : MonoBehaviour
         var boxObject = new GameObject("Cargo contact reference"); var box = boxObject.AddComponent<BoxCollider2D>(); box.size = new Vector2(.09f,.11f);
         giant.GetComponent<Rigidbody2D>().simulated = true;
         var proxy = giant.GetComponent<CircleCollider2D>(); var random = new System.Random(61126);
-        int mismatches = 0, misses = 0, checks = 0, newHits = 0, oldHits = 0;
+        var boxes = ProjectileSprites.Boxes(sprite);
+        var edge = boxes.OrderByDescending(rect => rect.xMax).First();
+        var cockpit = new GameObject("Player cockpit reference").AddComponent<CircleCollider2D>();
+        cockpit.tag = "Player";
+        cockpit.radius = .02f;
+        Vector2 rim = giant.transform.TransformPoint(new Vector2(edge.xMax, edge.center.y) * giant.HitboxScale);
+        cockpit.transform.position = rim + Vector2.right * (cockpit.radius - .001f);
+        Check(giant.PixelOverlaps(cockpit) && !ProjectilePixelContact.Overlap(giant.transform, boxes, cockpit, .125f),
+            "A cockpit just inside the enlarged opaque edge registers a new hit.");
+        cockpit.transform.position = rim + Vector2.right * (cockpit.radius + .001f);
+        Check(!giant.PixelOverlaps(cockpit), "A cockpit just outside that edge still grazes.");
+        Destroy(cockpit.gameObject);
+        int mismatches = 0, misses = 0, checks = 0, giantHits = 0, previousHits = 0, ordinaryHits = 0;
         foreach (var target in new Collider2D[] { circle, polygon, box })
             for (int i = 0; i < 600; i++)
             {
@@ -193,17 +205,19 @@ public sealed class VoidGiantsReviewRuntime : MonoBehaviour
                 Physics2D.SyncTransforms();
                 var distance = Physics2D.Distance(exact, target);
                 bool hit = giant.PixelOverlaps(target);
-                if (hit) { newHits++; if (!Physics2D.Distance(proxy,target).isOverlapped) misses++; }
-                if (ProjectilePixelContact.Overlap(giant.transform, ProjectileSprites.Boxes(sprite), target)) oldHits++;
+                if (hit) { giantHits++; if (!Physics2D.Distance(proxy,target).isOverlapped) misses++; }
+                if (ProjectilePixelContact.Overlap(giant.transform, boxes, target, .125f)) previousHits++;
+                if (ProjectilePixelContact.Overlap(giant.transform, boxes, target, ordinary.HitboxScale)) ordinaryHits++;
                 if (hit != distance.isOverlapped && Mathf.Abs(distance.distance) > .0001f) mismatches++;
                 checks++;
             }
         Check(mismatches == 0 && misses == 0, checks + " rotated/scaled giant contacts match native scaled opaque pixels; broad-phase misses=" + misses + ", mismatches=" + mismatches + ".");
-        Check(newHits > 0 && newHits < oldHits * .4f, $"Generous giant graze margin: {newHits} contact poses versus {oldHits} with the old hitbox.");
+        Check(previousHits < giantHits && giantHits < ordinaryHits, $"Contact poses at the previous giant, current giant and ordinary scales: {previousHits}, {giantHits}, {ordinaryHits}.");
         Destroy(native); Destroy(circleObject); Destroy(polygonObject); Destroy(boxObject);
         release.Invoke(giant, null);
         var reused = CombatRound.Launch<GiantOrb>(Vector3.zero, Vector2.down, 0, .7f);
-        Check(ReferenceEquals(giant,reused) && reused.HitboxScale == .125f && reused.GetComponent<CircleCollider2D>().radius < .1f,
+        float expectedRadius = sprite.bounds.extents.magnitude * .15f + ProjectilePixelContact.PolygonSkin / reused.transform.localScale.x;
+        Check(ReferenceEquals(giant,reused) && reused.HitboxScale == .15f && Mathf.Approximately(reused.GetComponent<CircleCollider2D>().radius, expectedRadius),
             "Pooled giants retain the compact native broad phase and exact small hitbox.");
     }
 }
