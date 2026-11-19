@@ -82,8 +82,8 @@ public sealed class WitnessBoss : ArmoredHullBoss
         if (GameRules.playerDisabled)
             return;
         accent = Mathf.MoveTowards(accent, 0, Time.deltaTime * 2.9f);
-        figure.Pose(motionAge, CurrentPhase, accent);
         Hull.localRotation = Quaternion.Euler(3 * Mathf.Sin(motionAge), 8 * Mathf.Sin(motionAge * .64f), -5 * Mathf.Cos(motionAge * .68f));
+        figure.Pose(motionAge, CurrentPhase, accent);
         for (int i = 0; i < 4; i++)
         {
             bool visible = openingComplete && !PhaseTransitioning;

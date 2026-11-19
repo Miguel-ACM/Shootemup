@@ -326,6 +326,7 @@ public sealed class WitnessSculpture : MonoBehaviour
     Material auraMaterial;
     RenderTexture silhouette;
     CommandBuffer drawSilhouette;
+    WitnessAuraTrail trail;
     Vector3[] nodes, vertices, normals;
     struct Flex { public float shoulder, tip, hem, hood, jaw, iris; }
     Flex[] flex;
@@ -381,6 +382,7 @@ public sealed class WitnessSculpture : MonoBehaviour
         drawSilhouette.DrawMesh(skin, Matrix4x4.identity, auraMaterial, 0, auraMaterial.FindPass("Silhouette"));
         drawSilhouette.GenerateMips(silhouette);
         Graphics.ExecuteCommandBuffer(drawSilhouette);
+        trail = new WitnessAuraTrail(aura, silhouette);
     }
     public void Pose(float t, int phase, float strike)
     {
@@ -414,11 +416,17 @@ public sealed class WitnessSculpture : MonoBehaviour
         skin.SetVertices(vertices,0,vertices.Length,UnityEngine.Rendering.MeshUpdateFlags.DontRecalculateBounds);
         skin.SetNormals(normals);
         Graphics.ExecuteCommandBuffer(drawSilhouette);
+        trail.Advance(Time.deltaTime);
     }
-    public void ExtinguishAura() => aura.gameObject.SetActive(false);
+    public void ExtinguishAura()
+    {
+        aura.gameObject.SetActive(false);
+        trail.Hide();
+    }
     void OnDestroy()
     {
         drawSilhouette?.Release();
+        trail?.Release();
         if (silhouette != null) Destroy(silhouette);
         if (skin != null) Destroy(skin);
         if (auraMaterial != null) Destroy(auraMaterial);

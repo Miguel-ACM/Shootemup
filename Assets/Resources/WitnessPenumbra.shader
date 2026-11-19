@@ -4,6 +4,7 @@ Shader "Shootemup/Witness penumbra"
     {
         _Silhouette ("Silhouette", 2D) = "black" {}
         _MaskFrame ("Mask frame", Vector) = (0,0,1,1)
+        _Opacity ("Opacity", Range(0,1)) = 1
     }
     SubShader
     {
@@ -21,6 +22,7 @@ Shader "Shootemup/Witness penumbra"
             TEXTURE2D(_Silhouette);
             SAMPLER(sampler_Silhouette);
             float4 _Silhouette_TexelSize;
+            half _Opacity;
             struct Varyings { float4 position : SV_POSITION; float2 uv : TEXCOORD0; };
             Varyings vert(float4 position : POSITION)
             {
@@ -40,7 +42,7 @@ Shader "Shootemup/Witness penumbra"
                 float centre = mask(i.uv);
                 float edges = mask(i.uv+dx) + mask(i.uv-dx) + mask(i.uv+dy) + mask(i.uv-dy);
                 float corners = mask(i.uv+dx+dy) + mask(i.uv+dx-dy) + mask(i.uv-dx+dy) + mask(i.uv-dx-dy);
-                return half4(0,0,0,(4*centre + 2*edges + corners) * (.78/16));
+                return half4(0,0,0,(4*centre + 2*edges + corners) * (.78/16) * _Opacity);
             }
             ENDHLSL
         }
