@@ -543,6 +543,15 @@ public sealed class IndustrialHUD : MonoBehaviour
         Place(Panel(parent, "Panel seam", color), x, y, width, 1);
     }
 
+    static void FitRewardLabel(Text label)
+    {
+        label.horizontalOverflow = HorizontalWrapMode.Overflow;
+        label.verticalOverflow = VerticalWrapMode.Truncate;
+        // The HUD font is wider than the default UI font. Measure it at the final row width.
+        while (label.fontSize > 7 && label.preferredWidth > label.rectTransform.rect.width)
+            label.fontSize--;
+    }
+
     void UpdateEncounterRows()
     {
         int visible = 0;
@@ -566,10 +575,7 @@ public sealed class IndustrialHUD : MonoBehaviour
                 var label = TextAt(row, caption, 33, 3, 12, Steel);
                 label.rectTransform.sizeDelta = new Vector2(kind == EncounterKind.Cargo ? 65 : kind == EncounterKind.Challenge ? 58 : 96, 24);
                 label.alignment = TextAnchor.MiddleLeft;
-                label.horizontalOverflow = HorizontalWrapMode.Wrap;
-                label.resizeTextForBestFit = true;
-                label.resizeTextMinSize = 8;
-                label.resizeTextMaxSize = 12;
+                FitRewardLabel(label);
                 if (kind == EncounterKind.Challenge)
                     for (int pip = 0; pip < huntPips.Length; pip++)
                     {
