@@ -25,7 +25,7 @@ Shader "Shootemup/Witness penumbra"
                 return o;
             }
             // Negative inside a tapered stroke. Four strokes give the veil
-            // distinct sources on the hem, chest, shoulders and crown.
+            // distinct sources on the hem, chest, mantle and hood.
             float stroke(float2 p, float2 a, float2 b, float wa, float wb)
             {
                 float2 ab = b-a;
@@ -42,13 +42,13 @@ Shader "Shootemup/Witness penumbra"
                 float eddy = sin(5.2*p.x - 2.5*rise + 1.35*curl);
                 float2 q = float2(abs(p.x - _Motion.z*saturate(-p.y/4)),p.y);
                 q.x += .095*curl + .07*eddy;
-                float hem = stroke(q,float2(0,-4.15),float2(0,-2.85),.33,.98);
+                float hem = stroke(q,float2(.38,-4.08),float2(0,-2.85),.86,.93);
                 float chest = stroke(q,float2(0,-2.72),float2(.42,-.47),.76,.80);
-                float wing = stroke(q,float2(.52,-.33),float2(2.38,1.91+_Motion.y),.96,.14);
-                float crown = stroke(q,float2(.40,.29),float2(.39,1.93),.62,.23);
-                float d = min(min(hem,chest),min(wing,crown));
+                float mantle = stroke(q,float2(.43,-.36),float2(1.95,-1.73-.34*side+_Motion.y),.68,.26);
+                float hood = stroke(q,float2(.10,.27),float2(.24,1.77),.71,.28);
+                float d = min(min(hem,chest),min(mantle,hood));
                 // Narrow folds climb through the outer veil. Their ends dissolve
-                // at different heights, especially above the two moving horns.
+                // at different heights around the hood and mantle.
                 float flow = sin(9*q.x - 2.5*rise + 2*curl + .55*side);
                 float fold = smoothstep(.10,.96,flow);
                 float width = .84 + .21*curl + .13*eddy + .25*_Motion.w;
