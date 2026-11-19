@@ -17,7 +17,7 @@ public sealed class SkimfireTitle : MonoBehaviour
     static readonly Vector2 Seam = new Vector2(23, 6);
     static readonly Vector2 SlashDrift = LetterLean * 24;
 
-    RawImage skim, fire;
+    TitleWord skim, fire;
     TitleSlashParticle slash;
     RectTransform canvas;
     bool entranceRequested, landSoundScheduled;
@@ -77,6 +77,11 @@ public sealed class SkimfireTitle : MonoBehaviour
             float nextAge = double.IsNaN(startDsp) ? age + Time.unscaledDeltaTime : (float)(AudioSettings.dspTime - startDsp);
             age = Mathf.Clamp(nextAge, age, JoinSeconds);
         }
+        if (age >= JoinSeconds)
+        {
+            skim.FloatLetters(Time.unscaledTime);
+            fire.FloatLetters(Time.unscaledTime);
+        }
         if (resized || age != previousAge)
             Draw();
 
@@ -105,9 +110,9 @@ public sealed class SkimfireTitle : MonoBehaviour
         part.color = new Color(1, 1, 1, Mathf.SmoothStep(0, 1, progress));
     }
 
-    RawImage CreateArtwork(Transform parent, string label, Rect uv)
+    TitleWord CreateArtwork(Transform parent, string label, Rect uv)
     {
-        var image = new GameObject(label, typeof(RectTransform)).AddComponent<RawImage>();
+        var image = new GameObject(label, typeof(RectTransform)).AddComponent<TitleWord>();
         var rect = image.rectTransform;
         rect.SetParent(parent, false);
         rect.anchorMin = rect.anchorMax = new Vector2(.5f, .5f);
@@ -117,5 +122,38 @@ public sealed class SkimfireTitle : MonoBehaviour
         image.raycastTarget = false;
         image.color = Color.clear;
         return image;
+    }
+}
+
+// Cut along the italic strokes. Each scanline retains its original texels and bevel.
+public sealed class TitleWord : RawImage
+{
+    static readonly float[] silver = { 0, 39, 65.5f, 76.5f, 196 };
+    static readonly float[] gold = { 0, 133.5f, 144.5f, 169.5f, 196 };
+    float clock;
+    public void FloatLetters(float t) { clock = t; SetVerticesDirty(); }
+
+    protected override void OnPopulateMesh(VertexHelper mesh)
+    {
+        mesh.Clear();
+        var rect = GetPixelAdjustedRect();
+        bool first = uvRect.y > 0;
+        var cuts = first ? silver : gold;
+        for (int glyph = 0; glyph < 4; glyph++)
+        {
+            float bob = clock == 0 ? 0 : Mathf.Sin(clock * 1.7f + (glyph + (first ? 0 : 4)) * .82f) * rect.height * .014f;
+            for (int row = 0; row < 43; row++)
+            {
+                float shear = Mathf.Floor((row - 3) * .32f);
+                float left = glyph == 0 ? 0 : Mathf.Round(cuts[glyph] - shear) / 196;
+                float right = glyph == 3 ? 1 : Mathf.Round(cuts[glyph + 1] - shear) / 196;
+                float top = 1 - row / 43f, bottom = 1 - (row + 1) / 43f;
+                int v = mesh.currentVertCount;
+                void Corner(float x, float y) => mesh.AddVert(new Vector3(rect.x + rect.width*x, rect.y + rect.height*y + bob), color,
+                    new Vector2(x, uvRect.y + y * uvRect.height));
+                Corner(left,bottom); Corner(left,top); Corner(right,top); Corner(right,bottom);
+                mesh.AddTriangle(v,v+1,v+2); mesh.AddTriangle(v+2,v+3,v);
+            }
+        }
     }
 }
