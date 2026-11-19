@@ -8,7 +8,8 @@ public sealed class VoidRiftVisual : MonoBehaviour
 {
     static Mesh mesh;
     static Material surface;
-    static readonly Color Violet = new Color(.72f, .34f, 1f), Pale = new Color(.93f, .78f, 1f);
+    static Color RouteColor => LevelProjectilePalette.Accent(LevelId.Void);
+    static Color Pale => Color.Lerp(RouteColor,Color.white,.65f);
     const int RingPoints = 49, BoltPoints = 14;
     MeshRenderer visual;
     MaterialPropertyBlock ink;
@@ -26,7 +27,7 @@ public sealed class VoidRiftVisual : MonoBehaviour
             mesh.RecalculateBounds();
         }
         if (surface == null) surface = new Material(Resources.Load<Shader>("VoidRift"));
-        var go = new GameObject("Purple dimensional tear");
+        var go = new GameObject("Dimensional tear");
         go.transform.SetParent(parent, false);
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var rift = go.AddComponent<VoidRiftVisual>();
@@ -45,7 +46,7 @@ public sealed class VoidRiftVisual : MonoBehaviour
 
     static LineRenderer Line(Transform parent, int points, float width)
     {
-        var line = CombatVisuals.Line(parent, Violet, width);
+        var line = CombatVisuals.Line(parent, RouteColor, width);
         line.useWorldSpace = true;
         line.positionCount = points;
         line.sortingLayerName = "Enemy";
@@ -72,7 +73,7 @@ public sealed class VoidRiftVisual : MonoBehaviour
             halo.SetPosition(i, p);
         }
         ring.startColor = ring.endColor = new Color(Pale.r, Pale.g, Pale.b, strength);
-        halo.startColor = halo.endColor = new Color(Violet.r, Violet.g, Violet.b, strength * .35f);
+        halo.startColor = halo.endColor = new Color(RouteColor.r, RouteColor.g, RouteColor.b, strength * .35f);
     }
 
     // A jagged bolt racing from the old perch to the new one, so the eye follows the boss.
@@ -93,7 +94,7 @@ public sealed class VoidRiftVisual : MonoBehaviour
             bolt.SetPosition(i, Vector3.Lerp(from, to, along) + across * jag + Vector3.back * 2.1f);
         }
         float fade = Mathf.Sin(progress * Mathf.PI);
-        bolt.startColor = new Color(Violet.r, Violet.g, Violet.b, 0);
+        bolt.startColor = new Color(RouteColor.r, RouteColor.g, RouteColor.b, 0);
         bolt.endColor = new Color(Pale.r, Pale.g, Pale.b, fade);
         bolt.widthMultiplier = .6f + .6f * fade;
     }
@@ -112,7 +113,7 @@ public sealed class VoidRiftVisual : MonoBehaviour
             {
                 position = center + Vector3.back * 2.2f + radial * (inward ? reach : .25f),
                 velocity = radial * (inward ? -reach / life : reach / life),
-                startColor = i % 3 == 0 ? Pale : Violet,
+                startColor = i % 3 == 0 ? Pale : RouteColor,
                 startLifetime = life
             };
             float size = Random.Range(.05f, .12f);

@@ -16,6 +16,7 @@ Shader "Shootemup/Void Rift"
             CBUFFER_START(UnityPerMaterial)
             float _Open,_Clock,_Arrival;
             CBUFFER_END
+            float4 _VoidRouteLight;
             struct I{float4 p:POSITION;float2 uv:TEXCOORD0;};
             struct O{float4 p:SV_POSITION;float2 xy:TEXCOORD0;};
             O Vert(I i){O o;o.p=TransformObjectToHClip(i.p.xyz);o.xy=i.uv*2-1;return o;}
@@ -32,8 +33,9 @@ Shader "Shootemup/Void Rift"
                 float streak=pow(saturate(.5+.5*cos(atan2(p.y,p.x)*14+_Clock*2)),22);
                 streak*=exp(-length(p)*3)*saturate(d*8)*_Open;
                 float flow=.55+.45*sin(p.y*25-_Clock*13);
-                float3 color=float3(.025,.005,.065)*inside+float3(.48,.10,.95)*(aura+streak*.7);
-                color+=float3(.87,.55,1)*rim*(.9+.25*flow)+float3(.18,.04,.34)*aura*_Arrival;
+                float3 ink=_VoidRouteLight.a > .5 ? _VoidRouteLight.rgb : float3(.72,.34,1);
+                float3 color=ink*(.065*inside + aura + streak*.7 + .34*aura*_Arrival);
+                color+=lerp(ink,1,.48)*rim*(.9+.25*flow);
                 float alpha=saturate(inside+rim+aura+streak)*smoothstep(0,.13,_Open);
                 return half4(color,alpha);
             }
