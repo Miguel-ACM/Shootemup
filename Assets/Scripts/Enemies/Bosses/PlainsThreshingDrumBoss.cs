@@ -74,6 +74,7 @@ public sealed partial class PlainsThreshingDrumBoss : ArmoredHullBoss
                     Vector3 port = Muzzle(drum);
                     // Both banks share one field. The first bank covers the left
                     // half and the second the right, avoiding superimposed columns.
+                    if (Mathf.Abs(port.x - bankSplit) < .80f) continue;
                     if (drum == 1 ? port.x > bankSplit : port.x < bankSplit) continue;
                     for (int row = 0; row < rows; row++)
                     {
