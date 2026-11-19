@@ -56,7 +56,45 @@ public sealed class MidasTouch : AItem
             touched[i].Vanish();
         }
         RunInventory.Ping(UpgradeKind.Midas);
+        MidasStrike.Show(at);
         PSXFireballs.Shockwave(at, Radius * 1.3f, .45f, Gold, 2, .8f);
         ItemSound.Cue("itemSalvage", volume: .12f, pitch: 1.3f, cooldown: .15f);
+    }
+}
+
+public sealed class MidasStrike : MonoBehaviour
+{
+    Vector3 target;
+    float age, scale;
+
+    public static void Show(Vector2 position)
+    {
+        var hand = new GameObject("Midas strike");
+        var strike = hand.AddComponent<MidasStrike>();
+        strike.target = new Vector3(position.x, position.y, -.65f);
+        bool painted = GalleryShelf.TryGet(nameof(MidasTouch), out var exhibit);
+        var mesh = painted ? exhibit.mesh : IndustrialMeshFactory.ExpansionItem(nameof(MidasTouch));
+        hand.AddComponent<MeshFilter>().sharedMesh = mesh;
+        var renderer = hand.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = painted ? exhibit.paint : EverydayItemMaterials.For(nameof(MidasTouch));
+        renderer.sortingLayerName = "Objects";
+        strike.scale = .88f / Mathf.Max(.01f, mesh.bounds.size.magnitude);
+        strike.Pose(0);
+    }
+
+    void Update()
+    {
+        age += Time.deltaTime;
+        if (age >= .46f) Destroy(gameObject);
+        else Pose(age);
+    }
+
+    void Pose(float t)
+    {
+        float strike = Mathf.SmoothStep(0, 1, t / .13f);
+        float lift = Mathf.Clamp01((t - .18f) / .28f);
+        transform.position = target + new Vector3(.48f, .65f) * (1 - strike + lift * .55f);
+        transform.rotation = Quaternion.Euler(-16, 12, -42 + 38 * strike - 26 * lift);
+        transform.localScale = Vector3.one * (scale * (1 - lift * lift));
     }
 }
