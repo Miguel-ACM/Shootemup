@@ -24,7 +24,7 @@ public sealed class Doppelganger : AItem
 
 public sealed class MirrorTwin : ACompanion
 {
-    const float Power = .6f;
+    internal const float Power = .6f;
     static readonly Color Reflection = new Color(.72f, .66f, 1f);
     readonly List<(Transform source, Transform copy, MeshRenderer renderer)> parts = new List<(Transform, Transform, MeshRenderer)>();
     Shipcontroller owner;
@@ -46,7 +46,7 @@ public sealed class MirrorTwin : ACompanion
     }
 
     // Reflected across the arena's centre line; extra twins sit a little lower each.
-    Vector3 Mirrored(Vector3 p) => new Vector3(-p.x, p.y - index * .45f, p.z);
+    internal Vector3 Mirrored(Vector3 p) => new Vector3(-p.x, p.y - index * .45f, p.z);
 
     // The reflected parts live under their own unscaled root, so world poses copy across exactly.
     void Build()

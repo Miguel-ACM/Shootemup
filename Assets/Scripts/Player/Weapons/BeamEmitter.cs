@@ -93,15 +93,21 @@ public sealed class BeamEmitter : AWeaponAutomatic
         }
     }
 
-    int CountBeamContacts(Collider2D collider, float radius, out Vector2 point, out Vector2 direction)
+    int playerBeams;
+    MirrorTwin[] twins;
+
+    float CountBeamContacts(Collider2D collider, float radius, out Vector2 point, out Vector2 direction)
     {
         point = transform.position;
         direction = Vector2.up;
         if (collider == null || !collider.enabled || paths == null)
             return 0;
         var owner = collider.GetComponent<AEnemy>();
-        int contacts = 0;
-        foreach (var path in paths)
+        float contacts = 0;
+        for (int lane = 0; lane < paths.Length; lane++)
+        {
+            if (!beams[lane].gameObject.activeSelf) continue;
+            var path = paths[lane];
             for (int step = 1; step < path.Length; step++)
             {
                 Vector2 hit;
@@ -115,10 +121,11 @@ public sealed class BeamEmitter : AWeaponAutomatic
                         point = hit;
                         direction = (path[step] - path[step - 1]).normalized;
                     }
-                    contacts++;
+                    contacts += lane < playerBeams ? 1 : MirrorTwin.Power;
                     break; // One hit per beam, regardless of how many sampled segments overlap.
                 }
             }
+        }
         return contacts;
     }
 
@@ -131,7 +138,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
         foreach (var enemy in targets)
         {
             if (enemy == null || !enemy.CanBeTargeted) continue;
-            int contacts = CountBeamContacts(enemy.GetComponent<Collider2D>(), width * .5f, out var point, out var direction);
+            float contacts = CountBeamContacts(enemy.GetComponent<Collider2D>(), width * .5f, out var point, out var direction);
             if (contacts > 0) CombatHit.Apply(enemy, damage * contacts, point, direction, energy: true);
         }
         // Snapshot before damaging: a destroyed orb returns to its pool and leaves Live.
@@ -141,14 +148,17 @@ public sealed class BeamEmitter : AWeaponAutomatic
         foreach (var orb in plasmaTargets)
         {
             if (orb == null) continue;
-            int contacts = CountBeamContacts(orb.GetComponent<Collider2D>(), width * .5f, out _, out _);
+            float contacts = CountBeamContacts(orb.GetComponent<Collider2D>(), width * .5f, out _, out _);
             if (contacts > 0) orb.Hit(damage * contacts);
         }
     }
 
     IEnumerator Fire()
     {
-        int count = Mathf.Min(6, spawnPoints.Length);
+        playerBeams = Mathf.Min(6, spawnPoints.Length);
+        var ship = GetComponentInParent<Shipcontroller>();
+        twins = ship != null ? ship.GetComponentsInChildren<MirrorTwin>() : System.Array.Empty<MirrorTwin>();
+        int count = playerBeams * (1 + twins.Length);
         beams = new BeamRibbon[count];
         paths = new Vector3[count][];
         for (int i = 0; i < count; i++)
@@ -204,7 +214,14 @@ public sealed class BeamEmitter : AWeaponAutomatic
             float width = .14f * Mathf.Sqrt(GameRules.playerShootSize) * lensSize;
             for (int i = 0; i < count; i++)
             {
-                Trace(transform.position + spawnPoints[i], paths[i]);
+                Vector3 origin = transform.position + spawnPoints[i % playerBeams];
+                if (i >= playerBeams)
+                {
+                    var twin = twins[i / playerBeams - 1];
+                    if (twin == null) { beams[i].gameObject.SetActive(false); continue; }
+                    origin = twin.Mirrored(origin);
+                }
+                Trace(origin, paths[i]);
                 CombatWalls.ClipPath(paths[i], width * .5f);
                 beams[i].DrawPath(paths[i], width, Mathf.Clamp01(t / warning), power, releasedFor / .18f);
             }
