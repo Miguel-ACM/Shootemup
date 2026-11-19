@@ -56,7 +56,7 @@ public sealed class Drill : AWeaponAutomatic
         {
             if (enemy == null || !enemy.CanBeTargeted || !Touches(enemy, start, tip, out var point))
                 continue;
-            float amount = GameRules.playerShootDamage * 2f * scale * MagnifyingLens.Power * Affinity.DamageFactor(0);
+            float amount = ShotDamage * 2f * scale * MagnifyingLens.Power * Affinity.DamageFactor(0);
             float damage = CombatHit.Apply(enemy, amount, point, Vector2.up);
             if (damage <= 0)
                 continue;

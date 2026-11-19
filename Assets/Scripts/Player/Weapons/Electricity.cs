@@ -17,7 +17,7 @@ public class Electricity : AWeaponAutomatic
             return;
 
         SoundManager.PlaySound("shotElectric", 0.1f);
-        float damage = GameRules.playerShootDamage * .75f * Affinity.DamageFactor();
+        float damage = ShotDamage * .75f * Affinity.DamageFactor();
         for (int i = 0; i < GameRules.playerShootNumber; i++)
         {
             ABullet b = Instantiate(bullet, spawnPoints[i] + transform.position, Quaternion.identity).GetComponent<ABullet>();

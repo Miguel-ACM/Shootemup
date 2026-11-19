@@ -5,18 +5,21 @@ public sealed class CarbonPaper : OffensiveActiveItem
 {
     void Awake()
     {
-        SetData("Carbon Paper", "In triplicate", "Two copies fire your weapons for five seconds. 50 energy.", ItemType.active);
+        SetData("Carbon Paper", "In triplicate", "Two copies fire at 25% damage for five seconds. Copies trailing drones when unarmed. 50 energy.", ItemType.active);
         cost = 50; cd = 11;
     }
-    protected override OffensiveCast Launch() => HasWeapons && CarbonCopies.Current == null ? CreateCast<CarbonCopies>("Carbon copies") : null;
+    protected override OffensiveCast Launch() => CarbonCopies.Current == null && (HasWeapons || s.GetComponentInChildren<TrailDrone>() != null)
+        ? CreateCast<CarbonCopies>("Carbon copies") : null;
 }
 
 [DefaultExecutionOrder(-60)]
 public sealed class CarbonCopies : OffensiveCast
 {
     public static CarbonCopies Current { get; private set; }
+    internal const float CopyPower = .25f;
     static Material projection;
     readonly Transform[] copies = new Transform[2];
+    readonly GameObject[] droneWings = new GameObject[2];
     readonly AWeapon[,] guns = new AWeapon[2, 2];
     readonly AWeapon[] originals = new AWeapon[2];
     readonly System.Collections.Generic.List<Renderer> renderers = new System.Collections.Generic.List<Renderer>();
@@ -49,17 +52,19 @@ public sealed class CarbonCopies : OffensiveCast
                 renderers.Add(renderer);
             }
         }
-        SyncWeapons();
+        SyncWeapons(true);
         ItemSound.Cue("decoy", volume: .2f, pitch: 1.3f, cooldown: 0);
     }
 
-    void SyncWeapons()
+    void SyncWeapons(bool initial = false)
     {
         if (loadout == null) return;
+        bool changed = initial;
         for (int slot = 0; slot < 2; slot++)
         {
             var source = loadout.Weapons[slot];
             if (ReferenceEquals(source, originals[slot])) continue;
+            changed = true;
             originals[slot] = source;
             for (int side = 0; side < 2; side++)
             {
@@ -78,7 +83,7 @@ public sealed class CarbonCopies : OffensiveCast
                     root.transform.SetParent(copies[side], false);
                     copy = root.AddComponent<BaseWeapon>();
                 }
-                else copy = WeaponCatalog.Create(source.GetType().Name, copies[side]);
+                else copy = WeaponCatalog.Create(source is Electricity ? "ElectricityWeapon" : source.GetType().Name, copies[side]);
                 if (copy == null) continue;
                 copy.IsCarbonCopy = true;
                 if (copy is Carousel carousel && source is Carousel original) carousel.MatchForm(original);
@@ -86,6 +91,28 @@ public sealed class CarbonCopies : OffensiveCast
                 copy.updateSpawnPoints();
                 guns[side, slot] = copy;
                 builtFrame = Time.frameCount;
+            }
+        }
+        if (!changed) return;
+        var drones = originals[0] == null && originals[1] == null ? Owner.GetComponentsInChildren<TrailDrone>() : null;
+        for (int side = 0; side < copies.Length; side++)
+        {
+            if (droneWings[side] != null)
+            {
+                droneWings[side].SetActive(false);
+                Destroy(droneWings[side]);
+                droneWings[side] = null;
+            }
+            if (drones == null || drones.Length == 0) continue;
+            var wing = new GameObject("Carbon drone wing");
+            wing.transform.SetParent(copies[side], false);
+            droneWings[side] = wing;
+            foreach (var drone in drones)
+            {
+                var copy = TrailDrone.Attach(Owner, drone.Laser, wing.transform, CopyPower);
+                var hull = copy.GetComponent<MeshRenderer>();
+                hull.sharedMaterial = projection;
+                renderers.Add(hull);
             }
         }
     }

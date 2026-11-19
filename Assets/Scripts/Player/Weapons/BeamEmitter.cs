@@ -131,7 +131,7 @@ public sealed class BeamEmitter : AWeaponAutomatic
 
     void DamageTick(float width, float charge)
     {
-        float damage = GameRules.playerShootDamage * 1.35f * charge * MagnifyingLens.Power * DamageMultiplier *
+        float damage = ShotDamage * 1.35f * charge * MagnifyingLens.Power *
             Affinity.DamageFactor(GameRules.playerShootNumber <= 6 ? 1 : 0);
         targets.Clear();
         targets.AddRange(AEnemy.Live);

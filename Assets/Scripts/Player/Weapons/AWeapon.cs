@@ -29,6 +29,8 @@ public abstract class AWeapon : MonoBehaviour
     protected WeaponInput weaponInput;
     internal AWeapon EquipmentOwner { get; set; }
     internal float DamageMultiplier { get; set; } = 1;
+    protected float ShotDamage => GameRules.playerShootDamage * DamageMultiplier *
+        (IsCarbonCopy ? CarbonCopies.CopyPower : 1);
     // Which shot stats this gun favours; see WeaponAffinity.
     protected virtual WeaponAffinity Affinity => WeaponAffinity.Neutral;
     protected bool Coupled => RedlineDrive.Drives(EquipmentOwner ?? this) || (CombatUpgrades.Current != null && CombatUpgrades.Current.Count(UpgradeKind.DoubleTrouble) > 0);

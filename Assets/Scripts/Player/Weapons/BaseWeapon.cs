@@ -26,7 +26,7 @@ public class BaseWeapon : AWeaponAutomatic
         {
             Vector3 spawn = effects != null && GameRules.playerShootNumber == 2
                 ? effects.MuzzlePosition(i) : spawnPoints[i] + transform.position;
-            var b = PlayerRound.WeaponShot(spawn, Vector2.up, GameRules.playerShootDamage * charge, GameRules.playerShootTravelSpeed);
+            var b = PlayerRound.WeaponShot(spawn, Vector2.up, ShotDamage * charge, GameRules.playerShootTravelSpeed);
             MagnifyingLens.Enlarge(b);
             ChargedShotCue.Apply(b, charge);
 

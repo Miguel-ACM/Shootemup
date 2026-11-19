@@ -37,7 +37,7 @@ public abstract class ExpansionWeapon : AWeaponAutomatic
             effects.Shot();
         ShotFeedback();
         var aim = FireDirection;
-        float damage = GameRules.playerShootDamage * Power * charge * DamageMultiplier * Affinity.DamageFactor();
+        float damage = ShotDamage * Power * charge * Affinity.DamageFactor();
         for (int muzzle = 0; muzzle < spawnPoints.Length; muzzle++)
             for (int p = 0; p < Pellets; p++)
             {

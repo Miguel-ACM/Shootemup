@@ -30,7 +30,7 @@ public sealed class BankShot : AWeaponAutomatic
 
     void Fire(Vector3 start, int side, float charge)
     {
-        var shot = PlayerRound.WeaponShot(start, new Vector2(side * .82f, .57f), GameRules.playerShootDamage * 6f * charge * Affinity.DamageFactor(0),
+        var shot = PlayerRound.WeaponShot(start, new Vector2(side * .82f, .57f), ShotDamage * 6f * charge * Affinity.DamageFactor(0),
             GameRules.playerShootTravelSpeed * 1.15f, PlayerDelivery.Needle);
         shot?.RequireBank();
         MagnifyingLens.Enlarge(ChargedShotCue.Apply(shot, charge));

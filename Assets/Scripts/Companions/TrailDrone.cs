@@ -4,6 +4,8 @@ using System.Collections.Generic;
 public sealed class TrailDrone : ACompanion
 {
     Shipcontroller owner;
+    Transform formation;
+    float damageMultiplier;
     TrailDrone leader;
     int index, count, laserSlot, laserCount;
     Vector3 worldPosition;
@@ -13,14 +15,17 @@ public sealed class TrailDrone : ACompanion
     LaserSound sound;
     PSXShipEffects effects;
     public bool Laser => laser;
-    public static TrailDrone Attach(Shipcontroller ship, bool laser)
+    public static TrailDrone Attach(Shipcontroller ship, bool laser) => Attach(ship, laser, ship.transform, 1);
+
+    internal static TrailDrone Attach(Shipcontroller ship, bool laser, Transform formation, float damageMultiplier)
     {
-        var siblings = ship.GetComponentsInChildren<TrailDrone>();
+        var siblings = formation.GetComponentsInChildren<TrailDrone>();
         var go = new GameObject(laser ? "Trailing laser drone" : "Trailing gun drone");
-        go.transform.SetParent(ship.transform, false);
-        go.transform.position = ship.transform.position;
+        go.transform.SetParent(formation, false);
         var drone = go.AddComponent<TrailDrone>();
         drone.owner = ship;
+        drone.formation = formation;
+        drone.damageMultiplier = damageMultiplier;
         drone.laser = laser;
         drone.index = siblings.Length;
         drone.leader = siblings.Length > 0 ? siblings[siblings.Length - 1] : null;
@@ -35,11 +40,11 @@ public sealed class TrailDrone : ACompanion
             foreach (var sibling in siblings)
                 if (sibling.laser) sibling.laserCount = drone.laserCount;
         }
-        drone.worldPosition = ship.transform.position;
+        drone.worldPosition = formation.position;
         drone.type = CompanionType.follower;
         // Scale models only; damage, rounds and spacing stay constant.
         float scale = .7f * Mathf.Max(.6f, Mathf.Pow(.9f, drone.index));
-        go.transform.localScale = Vector3.one * (scale / ship.transform.lossyScale.x);
+        go.transform.localScale = Vector3.one * (scale / formation.lossyScale.x);
         go.AddComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.ExpansionItem(laser ? "LaserDroneItem" : "BulletDroneItem");
         var renderer = go.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = CombatMaterials.Fleet;
@@ -86,17 +91,17 @@ public sealed class TrailDrone : ACompanion
         float bottom = camera != null ? camera.transform.position.y - camera.orthographicSize : Camera.DownLimit;
         float halfWidth = camera != null ? camera.orthographicSize * 405f / 720f : Camera.RightLimit;
         float center = camera != null ? camera.transform.position.x : 0;
-        float spacing = Mathf.Min(.65f, Mathf.Max(0, owner.transform.position.y - bottom - .4f) / (count + 1));
-        float inward = owner.transform.position.x > 0 ? -1 : 1;
+        float spacing = Mathf.Min(.65f, Mathf.Max(0, formation.position.y - bottom - .4f) / (count + 1));
+        float inward = formation.position.x > 0 ? -1 : 1;
         // Near the bottom the tail bends inward instead of disappearing below the visible arena.
         var offset = new Vector3(stagger * spacing / .65f + inward * (.65f - spacing) * .8f, -spacing, -.02f);
-        Vector3 target = (leader != null ? leader.worldPosition : owner.transform.position) + offset;
+        Vector3 target = (leader != null ? leader.worldPosition : formation.position) + offset;
         target.x = Mathf.Clamp(target.x, center - halfWidth + .35f, center + halfWidth - .35f);
         target.y = Mathf.Max(bottom + .4f, target.y);
         if (laser)
         {
             float x = (laserSlot - (laserCount - 1) * .5f) * .55f;
-            target = owner.transform.position + new Vector3(x, -1.38f, -.02f);
+            target = formation.position + new Vector3(x, -1.38f, -.02f);
             target.x = Mathf.Clamp(target.x, center - halfWidth + .35f, center + halfWidth - .35f);
             target.y = Mathf.Max(bottom + .4f, target.y);
         }
@@ -128,7 +133,7 @@ public sealed class TrailDrone : ACompanion
         Vector2 direction = target != null ? ((Vector2)(target.transform.position - Muzzle)).normalized : Vector2.up;
         foreach (int side in new[] { -1, 1 })
         {
-            var shot = PlayerRound.Spawn(Muzzle + Vector3.right * side * .09f, direction, GameRules.playerShootDamage * .4f, GameRules.playerShootTravelSpeed);
+            var shot = PlayerRound.Spawn(Muzzle + Vector3.right * side * .09f, direction, GameRules.playerShootDamage * .4f * damageMultiplier, GameRules.playerShootTravelSpeed);
             if (shot != null)
                 shot.companion = true;
         }
@@ -218,7 +223,7 @@ public sealed class TrailDrone : ACompanion
         if (Time.time < nextDamage)
             return;
         nextDamage = Time.time + BeamTick;
-        float damage = GameRules.playerShootDamage;
+        float damage = GameRules.playerShootDamage * damageMultiplier;
         if (plasma != null)
             plasma.Hit(damage);
         else

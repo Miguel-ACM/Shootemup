@@ -39,7 +39,7 @@ public sealed class DeadLetter : AWeaponAutomatic
         if (GameClock.ActivePlay)
         {
             float charge = CombatUpgrades.Current?.Volley() ?? 1;
-            float damage = GameRules.playerShootDamage * 4.5f * charge * Affinity.DamageFactor(0);
+            float damage = ShotDamage * 4.5f * charge * Affinity.DamageFactor(0);
             for (int i = 0; i < queued; i++)
                 MagnifyingLens.Enlarge(ChargedShotCue.Apply(PlayerRound.WeaponShot(marks[i].transform.position, Vector2.up,
                     damage, GameRules.playerShootTravelSpeed, PlayerDelivery.Needle), charge));

@@ -26,7 +26,7 @@ public sealed class VendingGun : AWeaponAutomatic
             return;
         }
         float charge = CombatUpgrades.Current?.Volley() ?? 1;
-        float damage = GameRules.playerShootDamage * 5f * charge * Affinity.DamageFactor(0);
+        float damage = ShotDamage * 5f * charge * Affinity.DamageFactor(0);
         for (int i = -2; i <= 2; i++)
         {
             var shot = PlayerRound.WeaponShot(transform.position + Vector3.up * .7f, CombatVisuals.Rotate(Vector2.up, i * 8),
