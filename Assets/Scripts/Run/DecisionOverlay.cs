@@ -11,6 +11,7 @@ public sealed class DecisionOverlay : MonoBehaviour
     RectTransform skip, skipFill;
     AngledStripGraphic skipGlass;
     CanvasGroup fade;
+    Canvas canvas;
     bool dismissing;
     float age, dismissAge;
     const float EnterSeconds = .3f, DismissSeconds = .3f, Slide = 14;
@@ -97,6 +98,8 @@ public sealed class DecisionOverlay : MonoBehaviour
 
     void LateUpdate()
     {
+        canvas.enabled = !Menu.GameplayPaused;
+        if (!canvas.enabled) return;
         if (reasonPlate != null)
             PlaceReason();
         if (dismissing)
@@ -157,8 +160,9 @@ public sealed class DecisionOverlay : MonoBehaviour
     public void Build(TMP_FontAsset face, bool allowSkip = true)
     {
         font = face;
-        var canvas = gameObject.AddComponent<Canvas>();
+        canvas = gameObject.AddComponent<Canvas>();
         PlaceUnderShips(canvas, 17);
+        canvas.enabled = !Menu.GameplayPaused;
         fade = gameObject.AddComponent<CanvasGroup>();
         fade.alpha = 0;
         fade.interactable = false;

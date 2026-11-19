@@ -14,7 +14,7 @@ public class Dialog : MonoBehaviour
     Image accent;
     GameObject overlay;
     float target;
-    public bool IsVisible => group != null && group.alpha > .001f;
+    public bool IsVisible => canvas != null && canvas.enabled && group.alpha > .001f;
     public RectTransform Panel => panel;
 
     public void Start()
@@ -69,6 +69,11 @@ public class Dialog : MonoBehaviour
     {
         if (group == null)
             return;
+        if (Menu.GameplayPaused)
+        {
+            canvas.enabled = false;
+            return;
+        }
         group.alpha = Mathf.MoveTowards(group.alpha, target, Time.unscaledDeltaTime / (target > 0 ? RevealSeconds : .14f));
         canvas.enabled = target > 0 || group.alpha > 0;
         float width = Mathf.Min(340, Screen.width * 720f / Mathf.Max(1, Screen.height) - 24);
@@ -85,7 +90,7 @@ public class Dialog : MonoBehaviour
         description.text = effect;
         accent.color = AItem.GetRarityColor(rarity);
         target = 1;
-        canvas.enabled = true;
+        canvas.enabled = !Menu.GameplayPaused;
     }
 
     public void Hide()

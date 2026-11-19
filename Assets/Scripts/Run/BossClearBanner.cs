@@ -85,6 +85,7 @@ public sealed class BossClearBanner : MonoBehaviour
         float itemOffset = marks == 0 ? 25 : 0;
         UnlockReceipt.Label(content, "UNLOCKED", new Vector2(0, 29 + itemOffset), new Vector2(330, 20), 13, DockInstrument.Brass, font);
         studio = ItemPortraitStudio.Create(UnlockReceipt.ItemKeys(items), 128);
+        studio.gameObject.SetActive(!Menu.GameplayPaused);
         float spacing = Mathf.Min(116, 348f / items.Count);
         for (int i = 0; i < items.Count; i++)
         {
@@ -113,7 +114,15 @@ public sealed class BossClearBanner : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        if (Menu.GameplayPaused) return;
+        bool paused = Menu.GameplayPaused;
+        // The pause item browser uses the same off-screen portrait stage.
+        if (studio != null && studio.gameObject.activeSelf == paused)
+            studio.gameObject.SetActive(!paused);
+        if (paused)
+        {
+            fade.alpha = 0;
+            return;
+        }
         age += Time.unscaledDeltaTime;
         float enter = Mathf.SmoothStep(0, 1, age / .16f);
         float leave = Mathf.SmoothStep(0, 1, (age - Duration + .35f) / .35f);

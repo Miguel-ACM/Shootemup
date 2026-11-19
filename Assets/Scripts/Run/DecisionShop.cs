@@ -113,7 +113,7 @@ public sealed class DecisionShop : MonoBehaviour
 
     void Update()
     {
-        if (closed || player == null)
+        if (closed || player == null || Menu.GameplayPaused)
             return;
         age += Time.deltaTime;
         // Nothing left to offer (every pact already seen): close on the next frame, never inside Open.
