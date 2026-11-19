@@ -177,7 +177,7 @@ public sealed class DistrictScore : MonoBehaviour
         track = new Track { clip = clip, cues = cues, adaptive = false };
         wanted = Part.Linear;
         double now = AudioSettings.dspTime;
-        double accentAt = now + Math.Max(Lead, secondsToAccent);
+        double accentAt = now + Lead + Math.Max(accent, secondsToAccent);
         double startAt = Math.Max(now + Lead, accentAt - accent);
         // When there isn't room for the whole lead-in, seek past its silent samples.
         float position = Mathf.Max(0, accent - (float)(accentAt - startAt));

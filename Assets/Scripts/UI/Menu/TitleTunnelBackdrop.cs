@@ -50,8 +50,8 @@ public sealed class TitleTunnelBackdrop : MonoBehaviour
         yield return LevelEnvironment.CreateTitleBackdrop();
         while (CloudTransition.Busy || music != null && music.loadState == AudioDataLoadState.Loading)
             yield return null;
-        yield return LevelEnvironment.LightTitleTunnel(() => Destroy(blackout));
         double joinAt = BGMManager.PlayTitleMusic(music, SkimfireTitle.JoinSeconds);
+        yield return LevelEnvironment.LightTitleTunnel(() => Destroy(blackout));
 
         if (menu == null)
             yield break;
