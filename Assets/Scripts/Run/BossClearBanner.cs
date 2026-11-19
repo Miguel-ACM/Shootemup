@@ -49,7 +49,7 @@ public sealed class BossClearBanner : MonoBehaviour
     {
         var canvas = gameObject.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 32005;
+        canvas.sortingOrder = 19; // The reward notice is part of the flight beneath the pause menu.
         var scaler = gameObject.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1280, 720);
