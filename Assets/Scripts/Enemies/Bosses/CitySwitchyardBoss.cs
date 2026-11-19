@@ -259,7 +259,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
         signals[Left].tone = HostileTone.Bright;
         signals[Right].tone = HostileTone.Bright;
         yield return PrimePair(.5f);
-        Phrase(Rails(.28f, Spread(Dense(3), 56), Range(Dense(2), 23, 63), 3.0f, true));
+        Phrase(Rails(.25f, Spread(Dense(5), 74), Range(Dense(3), 19, 73), 3.0f, true));
         yield return Wait(Rest(.7f));
         for (int step = 0; ; step++)
         {
@@ -293,7 +293,8 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
     IEnumerator Dispatch(Signal head, float curvature)
     {
         yield return Warn(head);
-        int cars = Dense(4);
+        int cars = Dense(5);
+        int tracks = Dense(4);
         for (int car = 0; car <= cars; car++)
         {
             bool pilot = car == 0;
@@ -302,12 +303,12 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
             head.flash = 1;
             UseTone(head.tone);
             var port = Muzzle(head.port);
-            for (int track = 0; track < 2; track++)
+            for (int track = 0; track < tracks; track++)
             {
                 // Shoulders bank outward before turning across the yard. The nose parts
                 // in two, then its mirrored trains cross underneath the engine.
-                int side = head.port == Nose ? (track == 0 ? -1 : 1) : (head.port == Left ? -1 : 1);
-                float angle = head.port == Nose ? 31 : (track == 0 ? 6 : 33);
+                int side = head.port == Nose ? (track % 2 == 0 ? -1 : 1) : (head.port == Left ? -1 : 1);
+                float angle = head.port == Nose ? 19 + 19 * (track / 2) : Mathf.Lerp(5, 55, track / (float)Mathf.Max(1, tracks - 1));
                 Vector2 heading = CombatVisuals.Rotate(Vector2.down, side * angle);
                 CombatRound round = pilot ? Fire<KunaiRound>(port, heading, 3.35f, .20f, track == 0)
                     : Fire<NeedleRound>(port, heading, 3.35f, .17f, track == 0);
@@ -351,7 +352,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
         signals[Left].tone = HostileTone.Bright;
         signals[Right].tone = HostileTone.Bright;
         yield return PrimePair(.5f);
-        Phrase(Rails(.24f, null, Range(Dense(3), 21, 67), 3.1f, true));
+        Phrase(Rails(.23f, null, Range(Dense(5), 15, 78), 3.1f, true));
         var l = signals[Left];
         var n = signals[Nose];
         var r = signals[Right];
