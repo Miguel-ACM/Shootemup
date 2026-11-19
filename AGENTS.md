@@ -200,6 +200,7 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - Icebreaker: Bow Wave; Closing Pack with snow for the side rounds; Shattered Icicles that also pressures the top. Snow fortress: Sleet Lattice made of falling snow instead of long rounds; Avalanche; Diamond Dust.
 - Thunder keeps its old phases. The Faraday Cage idea (horizontal bars with doors to pass through) becomes an ordinary Thunder wave enemy. All Thunder boss minions explode when it dies.
 - City duo: rounds that stop and move again are long bullets already pointing where they will move. Switchyard: reworked around its lights stopping and redirecting rounds, with a model whose lamps read clearly.
+- Switchyard is the exception to City's yellow projectile palette. Its traffic runs green, warns amber, stops red and releases green. Alternate the nose and shoulders with space between volleys. Stopped rounds turn toward fixed routes independent of the player's position.
 - Desert: the new Mine Caravan, Simoom and Lotus Mirage; swaying rounds travel as worm-like lines so they stay predictable.
 - Candyland: rethought completely with a new model and calmer movement, keeping a bit of erratic, attention-switching character and its hearts.
 - Space: old cards; phase one's fronts close as a true circle around the black hole from beyond the screen; no lasers, no aimed rounds; its orbiting-circle attack is more threatening.

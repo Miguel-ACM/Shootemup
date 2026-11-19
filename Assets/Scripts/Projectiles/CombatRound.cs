@@ -77,6 +77,7 @@ public abstract class CombatRound : AEnemyBullet
     protected Rigidbody2D body;
     protected Collider2D collision;
     ProjectileSpriteTint tint;
+    public void SetAccent(Color color) => tint.SetAccent(color);
     Vector2 orientedHeading;
     bool needsOrientation;
     float localCollisionRadius, collisionReach;

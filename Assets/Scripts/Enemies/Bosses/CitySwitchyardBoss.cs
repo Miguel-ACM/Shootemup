@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // City switchyard: an engine whose three signal heads control its own traffic. Each head
-// sits above a gun (nose, left shoulder, right shoulder) and shows its tone. Before danger it
+// sits above a gun (nose, left shoulder, right shoulder) and shows its signal. Before danger it
 // blinks; at danger it stays lit and stops the cars it sent out; when it clears it flashes
 // and the stopped cars set off on the route the signal sets. Every stopped car is a long
 // round that turns to face its next heading while it waits, so the pilot can read it.
 // Phase one, Red Signal: a head at danger freezes its rails where they are and sends
-//   nothing more; the cars turn onto the pilot and leave in a ripple from the head.
+//   nothing more; the cars turn onto posted diagonals and leave in a ripple from the head.
 // Phase two, Stop Line: a head at danger draws a stop line across the yard while its gun
 //   keeps running; its cars queue along the line and leave as a row on the head's route,
 //   across the yard from a shoulder or split down the middle from the nose.
-// Hard final, Interlocking: the shoulder heads freeze and re-aim their cars while the nose
+// Final, Interlocking: the shoulder heads freeze and redirect their cars while the nose
 //   head runs its stop line, and each aspect clears as the other goes to danger.
 // Tones: phase one's nose is dark and its shoulders bright; phase two swaps them; the
-// interlocking shoulders are bright and the nose dark. A head's lens shows its tone.
+// interlocking shoulders are bright and the nose dark. Running cars are green, braking
+// approaches amber, and held cars red. Each turns green on its own departure beat.
 [UnityEngine.Scripting.Preserve]
 public sealed class CitySwitchyardBoss : ArmoredHullBoss
 {
@@ -29,6 +30,9 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
     // The hull mesh carries their housings; the lenses are lit at runtime.
     public static readonly Vector3[] SignalHeads = { new Vector3(0, -.84f, -.42f), new Vector3(-1.12f, -.02f, -.42f), new Vector3(1.12f, -.02f, -.42f) };
     const int Nose = 0, Left = 1, Right = 2;
+    static readonly Color Green = new Color(.15f, .94f, .49f);
+    static readonly Color Amber = new Color(1f, .63f, .09f);
+    static readonly Color Red = new Color(1f, .17f, .23f);
 
     protected override void MoveBoss(float dt)
     {
@@ -65,30 +69,19 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
     protected override void Start()
     {
         base.Start();
-        var accent = LevelProjectilePalette.Accent(LevelRun.Current);
         for (int i = 0; i < signals.Length; i++)
         {
             var s = new Signal { port = i };
-            s.glow = ItemSpark.Sprite(Hull, "Signal glow", "standard", accent, .9f);
+            s.glow = ItemSpark.Sprite(Hull, "Signal glow", "standard", Color.white, .9f);
             s.glow.transform.localPosition = SignalHeads[i] + new Vector3(0, 0, -.05f);
-            s.lens = new GameObject("Signal lens").AddComponent<SpriteRenderer>();
-            s.lens.transform.SetParent(Hull, false);
+            s.lens = ItemSpark.Sprite(Hull, "Signal lens", "standard", Color.white, .44f);
             s.lens.transform.localPosition = SignalHeads[i] + new Vector3(0, 0, -.1f);
-            s.lens.transform.localScale = Vector3.one * .44f;
-            s.lens.sprite = ProjectileSprites.Load("standard");
-            s.lens.sortingLayerName = "Bullet";
             s.lens.sortingOrder = 24;
-            s.line = CombatVisuals.Line(transform, accent, .06f);
+            s.line = CombatVisuals.Line(transform, Red, .045f);
             s.line.enabled = false;
             signals[i] = s;
-            SetTone(s, i == Nose ? HostileTone.Dark : HostileTone.Bright);
+            Paint(s);
         }
-    }
-
-    static void SetTone(Signal s, HostileTone tone)
-    {
-        s.tone = tone;
-        s.lens.sharedMaterial = LevelProjectilePalette.Material(false, tone);
     }
 
     protected override void Update()
@@ -107,17 +100,19 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
     {
         s.flash = Mathf.Max(0, s.flash - Time.deltaTime * 3);
         float pulse = .5f + .5f * Mathf.Sin(Time.time * 9);
-        float lit = s.warning ? (Mathf.Repeat(Time.time * 8, 1) < .5f ? 1 : .15f) : s.danger ? 1 : .15f;
-        float shine = Mathf.Min(1, lit + s.flash);
-        s.lens.color = new Color(shine, shine, shine, 1);
-        s.glow.color = new Color(1, 1, 1, Mathf.Clamp01(lit * (.35f + .25f * pulse) + s.flash * .8f - .05f));
+        Color aspect = s.warning ? Amber : s.danger ? Red : Green;
+        float lit = s.warning ? Mathf.Lerp(.45f, 1, pulse) : s.danger ? 1 : .74f;
+        Color lens = aspect * Mathf.Min(1, lit + s.flash);
+        lens.a = 1;
+        s.lens.color = lens;
+        s.glow.color = new Color(aspect.r, aspect.g, aspect.b, .18f * lit + s.flash * .32f);
         s.glow.transform.localScale = Vector3.one * (.75f + .25f * lit + .4f * s.flash);
         bool line = s.danger && !float.IsNaN(s.stopLine);
         s.line.enabled = line;
         if (line)
         {
-            var c = LevelProjectilePalette.Accent(LevelRun.Current);
-            c.a = (s.tone == HostileTone.Dark ? .22f : .32f) + .18f * pulse;
+            var c = Red;
+            c.a = .23f + .12f * pulse;
             s.line.startColor = s.line.endColor = c;
             s.line.SetPosition(0, new Vector3(CombatRound.Border.xMin, s.stopLine, -.3f));
             s.line.SetPosition(1, new Vector3(CombatRound.Border.xMax, s.stopLine, -.3f));
@@ -140,6 +135,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
             if (car.round.transform.position.y > s.stopLine)
                 continue;
             float route = s.splitRoute && s.held.Count % 2 == 1 ? -s.route : s.route;
+            car.round.SetAccent(Red);
             car.round.Halt(.05f, CombatRound.Turn.Down, route, 1.05f);
             s.held.Add(car);
             s.cars.RemoveAt(i);
@@ -177,7 +173,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
             foreach (var s in signals)
             {
                 s.cars.RemoveAll(Car.Gone);
-                if (s.holdFire)
+                if (s.holdFire || (beat % 2 == 0) != (s.port == Nose))
                     continue;
                 UseTone(s.tone);
                 var port = Muzzle(s.port);
@@ -187,10 +183,11 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
                 {
                     float angle = s.port == Nose ? angles[i] + sway : sign * angles[i];
                     var direction = CombatVisuals.Rotate(Vector2.down, angle);
-                    // Every sixth beat the first car of each rail is a kunai locomotive.
+                    // Every sixth beat a kunai leads the nose train.
                     var car = beat % 6 == 0 && i == 0 ? Fire<KunaiRound>(port, direction, speed + .5f, .2f) : (CombatRound)Fire<NeedleRound>(port, direction, speed, .19f);
                     if (car == null)
                         continue;
+                    car.SetAccent(s.warning || s.danger ? Amber : Green);
                     car.Bounce(1, ceiling);
                     s.cars.Add(new Car { round = car, serial = car.Serial });
                 }
@@ -219,7 +216,10 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
     IEnumerator Warn(params Signal[] heads)
     {
         foreach (var s in heads)
+        {
             s.warning = true;
+            ColorRunning(s, Amber);
+        }
         for (float t = 0; t < .45f;)
         {
             if (!Holding)
@@ -232,16 +232,30 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
             s.warning = false;
     }
 
-    // Red Signal: every running car of the head that is still in the arena brakes where it
-    // is and turns to face its resume heading.
-    void Freeze(Signal s, CombatRound.Turn turn, float angle, float speed)
+    static void ColorRunning(Signal s, Color color)
     {
         foreach (var car in s.cars)
-            if (car.Running && InArena(car.round.transform.position))
+            if (car.Running)
+                car.round.SetAccent(color);
+    }
+
+    void Freeze(Signal s, float angle)
+    {
+        int lane = 0;
+        foreach (var car in s.cars)
+        {
+            if (!car.Running) continue;
+            if (!InArena(car.round.transform.position))
             {
-                car.round.Halt(.3f, turn, angle, speed);
-                s.held.Add(car);
+                car.round.SetAccent(Green);
+                continue;
             }
+            // Shoulders cross inward. The nose forks into two opposing diagonals.
+            float route = s.port == Left ? angle : s.port == Right ? -angle : (lane++ % 2 == 0 ? angle : -angle);
+            car.round.SetAccent(Red);
+            car.round.Halt(.3f, CombatRound.Turn.Down, route, 1.08f);
+            s.held.Add(car);
+        }
         s.cars.Clear();
     }
 
@@ -253,6 +267,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
         s.danger = false;
         s.stopLine = float.NaN;
         s.flash = 1;
+        ColorRunning(s, Green);
         var head = (Vector2)Hull.TransformPoint(SignalHeads[s.port]);
         var queue = new List<Car>(s.held);
         s.held.Clear();
@@ -265,39 +280,43 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
             int upTo = Mathf.Min(queue.Count, Mathf.CeilToInt(queue.Count * t / ripple));
             for (; released < upTo; released++)
                 if (queue[released].Running)
+                {
+                    queue[released].round.SetAccent(Green);
                     queue[released].round.Proceed();
+                }
             yield return null;
         }
     }
 
     static float Distance(Car car, Vector2 point) => car.round != null ? ((Vector2)car.round.transform.position - point).sqrMagnitude : 0;
 
-    // A head at danger: blink, hold its gun, freeze its cars onto the pilot, wait, then clear.
-    IEnumerator RedAspect(float hold, float aimOffset, params Signal[] heads)
+    // A head at danger blinks, holds its gun, posts its route, waits and clears.
+    IEnumerator RedAspect(float hold, float routeAngle, params Signal[] heads)
     {
         yield return Warn(heads);
         for (int i = 0; i < heads.Length; i++)
         {
             heads[i].danger = heads[i].holdFire = true;
-            Freeze(heads[i], CombatRound.Turn.Aim, i % 2 == 0 ? aimOffset : -aimOffset, 1.15f);
+            Freeze(heads[i], routeAngle);
         }
         yield return Wait(hold);
         foreach (var s in heads)
         {
             s.holdFire = false;
-            Phrase(Clear(s, .55f));
+            Phrase(Clear(s, .75f));
         }
     }
 
     // Red Signal (phase one), in four movements of four steps each: one head at a time, the
-    // shoulders together before the nose, aimed pairs opening a V, and a quick chase.
+    // shoulders together before the nose, paired diagonals opening a V, and a quick chase.
     IEnumerator RedSignals()
     {
-        SetTone(signals[Nose], HostileTone.Dark);
-        SetTone(signals[Left], HostileTone.Bright);
-        SetTone(signals[Right], HostileTone.Bright);
+        signals[Nose].tone = HostileTone.Dark;
+        signals[Left].tone = HostileTone.Bright;
+        signals[Right].tone = HostileTone.Bright;
         yield return PrimePair(.5f);
-        Phrase(Rails(.12f, Spread(Dense(4), 48), Range(Dense(3), 30, 70), 3.0f, true));
+        Phrase(Rails(.28f, Spread(Dense(3), 56), Range(Dense(2), 23, 63), 3.0f, true));
+        yield return Wait(Rest(.7f));
         for (int step = 0; ; step++)
         {
             int movement = step / 4 % 4;
@@ -309,16 +328,16 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
             switch (movement)
             {
                 case 0:
-                    yield return RedAspect(1.0f, 0, step % 3 == 0 ? l : step % 3 == 1 ? n : r);
+                    yield return RedAspect(1.0f, 32, step % 3 == 0 ? l : step % 3 == 1 ? n : r);
                     break;
                 case 1:
-                    yield return RedAspect(1.1f, 0, step % 2 == 0 ? new[] { l, r } : new[] { n });
+                    yield return RedAspect(1.1f, 43, step % 2 == 0 ? new[] { l, r } : new[] { n });
                     break;
                 case 2:
-                    yield return RedAspect(1.0f, 10, step % 2 == 0 ? r : l);
+                    yield return RedAspect(1.0f, 26, step % 2 == 0 ? r : l);
                     break;
                 default:
-                    yield return RedAspect(.7f, 0, step % 3 == 0 ? l : step % 3 == 1 ? n : r);
+                    yield return RedAspect(.8f, 36, step % 3 == 0 ? l : step % 3 == 1 ? n : r);
                     break;
             }
             yield return Wait(Rest(movement == 3 ? .3f : .55f));
@@ -332,10 +351,18 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
         yield return Warn(s);
         s.route = route;
         s.splitRoute = split;
+        // Cars already through the junction keep running when the light changes.
+        for (int i = s.cars.Count - 1; i >= 0; i--)
+        {
+            var car = s.cars[i];
+            if (!car.Running || car.round.transform.position.y >= height) continue;
+            car.round.SetAccent(Green);
+            s.cars.RemoveAt(i);
+        }
         s.stopLine = height;
         s.danger = true;
         yield return Wait(hold);
-        yield return Clear(s, .45f);
+        yield return Clear(s, .65f);
     }
 
     // Stop Line (phase two), in four movements of four steps each: single heads at changing
@@ -343,11 +370,11 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
     // row, and lines that step lower each time.
     IEnumerator StopLines()
     {
-        SetTone(signals[Nose], HostileTone.Bright);
-        SetTone(signals[Left], HostileTone.Dark);
-        SetTone(signals[Right], HostileTone.Dark);
+        signals[Nose].tone = HostileTone.Bright;
+        signals[Left].tone = HostileTone.Dark;
+        signals[Right].tone = HostileTone.Dark;
         yield return PrimePair(.5f);
-        Phrase(Rails(.15f, Spread(Dense(4), 60), Range(Dense(3), 12, 48), 3.0f, false));
+        Phrase(Rails(.27f, Spread(Dense(3), 64), Range(Dense(2), 14, 52), 3.0f, false));
         float middle = (Camera.UpLimit + Camera.DownLimit) * .5f;
         float[] heights = { middle + 2.6f, middle + 1.0f, middle + 1.8f, middle - .2f };
         for (int step = 0; ; step++)
@@ -382,16 +409,16 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
     }
 
     // Interlocking (Hard final): the shoulder heads go to danger together, freezing their cars
-    // onto the pilot, while the nose clears its queue; then the nose draws its stop line as
+    // onto crossing diagonals, while the nose clears its queue; then the nose draws its stop line as
     // the shoulders clear. The stop line steps through four heights and the shoulder release
-    // alternates straight and opened aims.
+    // alternates shallow and steep crossings.
     IEnumerator Interlocking()
     {
-        SetTone(signals[Nose], HostileTone.Dark);
-        SetTone(signals[Left], HostileTone.Bright);
-        SetTone(signals[Right], HostileTone.Bright);
+        signals[Nose].tone = HostileTone.Dark;
+        signals[Left].tone = HostileTone.Bright;
+        signals[Right].tone = HostileTone.Bright;
         yield return PrimePair(.5f);
-        Phrase(Rails(.13f, Spread(Dense(5), 60), Range(Dense(4), 25, 70), 3.1f, true));
+        Phrase(Rails(.24f, Spread(Dense(4), 66), Range(Dense(3), 21, 67), 3.1f, true));
         float middle = (Camera.UpLimit + Camera.DownLimit) * .5f;
         float[] heights = { middle + 2.2f, middle + .8f, middle + 1.6f, middle + .2f };
         var l = signals[Left];
@@ -403,7 +430,7 @@ public sealed class CitySwitchyardBoss : ArmoredHullBoss
             station.y = Camera.UpLimit - 2.4f;
             Phrase(StopAspect(n, heights[step % heights.Length], 26, true, 1.3f));
             yield return Wait(.6f);
-            yield return RedAspect(1.0f, step % 2 == 0 ? 0 : 9, l, r);
+            yield return RedAspect(1.0f, step % 2 == 0 ? 29 : 46, l, r);
             yield return Wait(Rest(.35f));
         }
     }
