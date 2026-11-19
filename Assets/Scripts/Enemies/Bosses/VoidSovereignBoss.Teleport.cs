@@ -12,8 +12,8 @@ public sealed partial class VoidSovereignBoss
     Vector3 restingScale;
     public bool Teleporting => teleporting;
     protected override bool PatternEmissionAllowed => !Hidden && !teleporting;
-    public override bool CanBeTargeted => !Hidden && !teleporting && base.CanBeTargeted;
-    public override bool CanReceiveDamage => !Hidden && !teleporting && base.CanReceiveDamage;
+    public override bool CanBeTargeted => !Hidden && !teleporting && !submergedMemory && base.CanBeTargeted;
+    public override bool CanReceiveDamage => !Hidden && !teleporting && !submergedMemory && base.CanReceiveDamage;
 
     static readonly Vector2[] Perches = {
         new Vector2(-.78f,.76f), new Vector2(.78f,.64f), new Vector2(-.70f,.32f),

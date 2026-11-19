@@ -42,6 +42,7 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
     }
     void SetForm()
     {
+        holdMemory = submergedMemory = false;
         var echo = Memory;
         foreach (var memory in echoes) memory.root.gameObject.SetActive(memory == echo);
         Hull.GetComponent<MeshRenderer>().enabled = echo == null;
@@ -49,7 +50,9 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
         body.SetForm(echo == null ? (Form==4 ? 4+LevelProjectilePalette.VoidRoute : Form-1) : -1);
         if (echo != null)
         {
-            memoryAge = dive = 0;
+            memoryAge = 0;
+            holdMemory = submergedMemory = false;
+            sawTravel = Vector2.zero;
             echo.Pose(0);
             for (int i=0;i<4;i++) firingCue.FollowPort(i,echo.Port(i));
             return;
@@ -79,7 +82,7 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
     }
     public override void damage(float amount)
     {
-        if(Hidden||teleporting)return;
+        if(Hidden||teleporting||submergedMemory)return;
         if(CurrentPhase<PhaseCount)amount=Mathf.Min(amount,Mathf.Max(0,health-initialHealth*PhaseEnd(CurrentPhase))/Mathf.Max(.0001f,GameRules.enemyDamageReceived));
         if(amount>0)base.damage(amount);
     }

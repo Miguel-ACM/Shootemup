@@ -3,15 +3,15 @@ using UnityEngine;
 
 public sealed partial class VoidSovereignBoss
 {
-    Vector2 sawTravel = new Vector2(4.1f, -3.45f);
+    Vector2 sawTravel;
     readonly ThunderLaserBot[] echoPylons = new ThunderLaserBot[6];
     Vector3[] circuit;
     float[] distances;
     float circuitTravel;
     int circuitIndex;
     int bounces;
-    float memoryAge, dive;
-    Vector3 diveStart, diveEnd;
+    float memoryAge;
+    bool holdMemory, submergedMemory;
 
     void MoveMemory(float dt)
     {
@@ -21,22 +21,20 @@ public sealed partial class VoidSovereignBoss
         if (district == LevelId.Tunnel)
         {
             var r = CombatRound.Border;
-            Vector3 p = transform.position + (Vector3)sawTravel * dt;
-            bool x = p.x < r.xMin+1.28f || p.x > r.xMax-1.28f;
-            bool y = p.y < r.yMin+1.28f || p.y > r.yMax-1.28f;
+            float radius = Memory.hull.GetComponent<MeshFilter>().sharedMesh.bounds.extents.x * Mathf.Abs(Memory.hull.lossyScale.x);
+            if (sawTravel == Vector2.zero)
+                sawTravel = (new Vector2(r.xMax-radius,r.yMin+radius)-(Vector2)transform.position).normalized;
+            Vector3 p = transform.position + (Vector3)sawTravel * ((2.2f+(1-HealthFraction)*1.8f)*1.12f*dt);
+            bool x = p.x < r.xMin+radius && sawTravel.x < 0 || p.x > r.xMax-radius && sawTravel.x > 0;
+            bool y = p.y < r.yMin+radius && sawTravel.y < 0 || p.y > r.yMax-radius && sawTravel.y > 0;
             if (x) sawTravel.x *= -1;
             if (y) sawTravel.y *= -1;
             if (x || y) bounces++;
-            transform.position = new Vector3(Mathf.Clamp(p.x,r.xMin+1.28f,r.xMax-1.28f),
-                Mathf.Clamp(p.y,r.yMin+1.28f,r.yMax-1.28f),1);
+            transform.position = new Vector3(Mathf.Clamp(p.x,r.xMin+radius,r.xMax-radius),
+                Mathf.Clamp(p.y,r.yMin+radius,r.yMax-radius),1);
             return;
         }
-        if (district == LevelId.Underwater && dive > 0)
-        {
-            dive = Mathf.Min(1, dive + dt*.55f);
-            transform.position=Vector3.Lerp(diveStart,diveEnd,Mathf.SmoothStep(0,1,dive));
-            return;
-        }
+        if (holdMemory) return;
         if (district == LevelId.Desert)
         {
             if (circuit == null)
@@ -165,6 +163,7 @@ public sealed partial class VoidSovereignBoss
     {
         int sign = (beat & 1) == 0 ? 1 : -1;
         yield return Trace(0,0,.42f);
+        holdMemory=true;
         int stars=Dense(54);
         for(int i=0;i<stars;i++)
         {
@@ -175,11 +174,13 @@ public sealed partial class VoidSovereignBoss
         for(int i=0;i<12;i++)
             Fire<SimpleRound>(InkPort(0),Vector2.zero,0,.17f,false)?.Orbit(.3f,i*30,sign*27,5).Expand(1.65f,2.6f);
         yield return Wait(Rest(1.42f));
+        holdMemory=false;
     }
 
     IEnumerator TurningWheels(int beat)
     {
         int sign = (beat & 1) == 0 ? 1 : -1;
+        holdMemory=true;
         yield return Trace(1,2,.37f);
         for(int j=0;j<Dense(20);j++)
         {
@@ -192,6 +193,7 @@ public sealed partial class VoidSovereignBoss
             }
             yield return Wait(Rest(.072f));
         }
+        holdMemory=false;
     }
 
     IEnumerator ReactorProcession(int beat)
@@ -294,24 +296,54 @@ public sealed partial class VoidSovereignBoss
 
     IEnumerator PressureWake(int beat)
     {
-        int sign = (beat & 1) == 0 ? 1 : -1;
-        yield return Trace(0,0,.50f);
-        int pearls=Dense(34);
-        for(int i=0;i<pearls;i++)
-            Fire<SimpleRound>(InkPort(0),Down(i*360f/pearls+beat*11),3.15f,.205f,i==0);
-        diveStart=transform.position;
-        diveEnd=new Vector3(sign*1.9f,Camera.DownLimit+1.55f,1);
-        yield return Trace(0,0,.70f);
-        dive=.001f;
-        for(int wake=0;wake<15;wake++)
+        yield return Wait(1.1f);
+        holdMemory = submergedMemory = true;
+        Vector3 start = transform.position;
+        Vector3 emerge = new Vector3(((beat%3)-1)*2.8f,Camera.UpLimit-3.1f,1);
+        yield return Swim(start,start+new Vector3(0,-1.6f,28),.9f);
+        transform.position = emerge + Vector3.forward*28;
+        yield return Wait(1.1f);
+        yield return Swim(transform.position,emerge,.9f);
+        submergedMemory = false;
+        for(int crown=0;crown<3;crown++)
         {
-            for(int h=-1;h<=1;h+=2)
-                for(int row=0;row<3;row++)
-                    Fire<SimpleRound>(InkPort(0),new Vector2(h,.12f+row*.2f),1.85f+row*.55f,.16f,row==0);
-            yield return Wait(.12f);
+            int pearls=Dense(34);
+            for(int i=0;i<pearls;i++)
+                Fire<SimpleRound>(InkPort(0),Down((i+crown*.34f)*360/pearls),2.6f+crown*.43f,.205f,i==0);
+            yield return Wait(.55f);
         }
-        dive=0;
-        yield return Wait(2.75f);
+        Vector3 launch = new Vector3(emerge.x,Camera.UpLimit-2.3f,1);
+        yield return Swim(emerge,launch,.24f);
+        yield return Trace(0,0,.65f);
+        for(float elapsed=0,nextWake=0; elapsed<1.75f;)
+        {
+            if (!Holding)
+            {
+                elapsed += Time.deltaTime*LevelRun.EnemyTempoScale;
+                transform.position = launch + Vector3.down * (elapsed*14);
+                if(elapsed>=nextWake)
+                {
+                    nextWake += .12f;
+                    for(int h=-1;h<=1;h+=2)
+                        for(int row=0;row<3;row++)
+                            Fire<SimpleRound>(InkPort(0),new Vector2(h,.12f+row*.2f),1.85f+row*.55f,.16f,row==0);
+                }
+            }
+            yield return null;
+        }
+        transform.position=new Vector3(-emerge.x,Camera.UpLimit+3.5f,1);
+        holdMemory=false;
+        yield return Wait(1.2f);
+    }
+
+    IEnumerator Swim(Vector3 from,Vector3 to,float seconds)
+    {
+        for(float age=0;age<seconds;)
+        {
+            if(!Holding) age+=Time.deltaTime*LevelRun.EnemyTempoScale;
+            transform.position=Vector3.Lerp(from,to,age/seconds);
+            yield return null;
+        }
     }
 
     IEnumerator PincerLace()
