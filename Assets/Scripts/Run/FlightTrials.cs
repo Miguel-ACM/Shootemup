@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using static LevelId;
 
-public enum SimulatorApproach { Standard, UnlimitedEnergy, VerticalSteering, WaterHandling, Autopilot, Downbeat, HotFloor, Silent, MovingWindow, Slow }
+public enum SimulatorApproach { Standard, UnlimitedEnergy, VerticalSteering, WaterHandling, Downbeat, HotFloor, Silent, MovingWindow, Slow }
 
 public sealed class FlightTrials
 {
@@ -103,8 +103,6 @@ public sealed class FlightTrials
             Kit("ScatterCannonItem", "BulletTime", "Overdrive")),
         new FlightTrials("Drift School", new[] { Level<CityDuoBoss>(City) },
             Kit("DiscThrowerItem", "FocusTime"), approach: SimulatorApproach.WaterHandling),
-        new FlightTrials("Black Box", new[] { Level<CitySwitchyardBoss>(City) },
-            Kit("RailDriverItem", "ScatterCannonItem", "BlankBullet"), approach: SimulatorApproach.Autopilot),
         new FlightTrials("Split Verdict", new[] { Boss<CityDuoBoss>(City), Boss<CitySwitchyardBoss>(City) },
             Kit("RailDriverItem", "ScatterCannonItem", "RelaySwitch")),
 
@@ -212,7 +210,15 @@ public sealed class FlightTrials
     public static SimulatorApproach Approach => HasApproach ? Active.approach : SimulatorApproach.Standard;
     public RunDifficulty DifficultyFor(RunDifficulty preferred) => title == "Triple Harvest" && preferred == RunDifficulty.Hard ? preferred : difficulty;
     public string CompletionKey(RunDifficulty mode) => title == "Triple Harvest" && mode == RunDifficulty.Hard ? title + " / Hard" : title;
-    public int Seed => 17381 + Array.IndexOf(All, this) * 7919;
+    public int Seed
+    {
+        get
+        {
+            int slot = Array.IndexOf(All, this);
+            // Slot 9 belonged to the retired Black Box tape. Keep later flights reproducible.
+            return 17381 + (slot < 9 ? slot : slot + 1) * 7919;
+        }
+    }
 
     [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
     public static void Reset()

@@ -14,7 +14,6 @@ public sealed class SimulatorFlight : MonoBehaviour
     public static bool FreeEnergy => Rule == SimulatorApproach.UnlimitedEnergy;
     public static bool WaterHandling => Rule == SimulatorApproach.WaterHandling;
     public static bool Slow => Rule == SimulatorApproach.Slow;
-    public static bool Autopilot => Rule == SimulatorApproach.Autopilot;
     public static bool DownbeatActive => Rule == SimulatorApproach.Downbeat;
     public static bool EnemyReleaseOpen => !DownbeatActive || !current.BeatLit;
     public static bool GunsLocked => Rule == SimulatorApproach.Silent || Rule == SimulatorApproach.UnlimitedEnergy;
@@ -24,7 +23,6 @@ public sealed class SimulatorFlight : MonoBehaviour
         SimulatorApproach.UnlimitedEnergy => "INFINITE ENERGY  /  APPROACH",
         SimulatorApproach.VerticalSteering => "VERTICAL STEERING  /  APPROACH",
         SimulatorApproach.WaterHandling => "UNDERWATER HANDLING",
-        SimulatorApproach.Autopilot => "AUTOPILOT  /  APPROACH",
         SimulatorApproach.Downbeat => "FIRE ON THE BEAT  /  APPROACH",
         SimulatorApproach.HotFloor => "HOT FLOOR  /  APPROACH",
         SimulatorApproach.Silent => "GUNS OFFLINE  /  APPROACH",
@@ -100,15 +98,8 @@ public sealed class SimulatorFlight : MonoBehaviour
     public static bool CanFire(Vector3 from) => !GunsLocked &&
         (Rule != SimulatorApproach.MovingWindow || Mathf.Abs(from.x - current.WindowCenter) <= WindowHalfWidth);
 
-    public static Vector2 Steering(Vector2 input, Vector3 position)
-    {
-        if (Rule == SimulatorApproach.VerticalSteering) return new Vector2(0, input.y);
-        if (!Autopilot) return input;
-        float height = Camera.UpLimit - Camera.DownLimit;
-        var target = new Vector2(Camera.RightLimit * .62f * Mathf.Sin(current.elapsed * 1.22f),
-            Camera.DownLimit + height * (.18f + .085f * Mathf.Sin(current.elapsed * .83f)));
-        return Vector2.ClampMagnitude((target - (Vector2)position) * 1.4f, 1);
-    }
+    public static Vector2 Steering(Vector2 input) =>
+        Rule == SimulatorApproach.VerticalSteering ? new Vector2(0, input.y) : input;
 
     static void Line(LineRenderer line, Vector2 a, Vector2 b)
     {

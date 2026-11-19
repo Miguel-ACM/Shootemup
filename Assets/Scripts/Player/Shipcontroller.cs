@@ -393,11 +393,11 @@ public class Shipcontroller : MonoBehaviour
         if (!HangarHub.Active && health > 0 && Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
             Repair(Mathf.CeilToInt(maxHealth));
         float focusSpeed = HangarHub.Active ? 2f : slowMultiplier * FocusPace;
-        speedMultiplier = GameInput.Snapshot.Focus && !SimulatorFlight.Autopilot || SimulatorFlight.Slow ? focusSpeed : 1;
+        speedMultiplier = GameInput.Snapshot.Focus || SimulatorFlight.Slow ? focusSpeed : 1;
         sewerDrag = LevelRun.Current == LevelId.Sewers ? Mathf.Max(0, sewerDrag - GameClock.PlayerDelta) : 0;
         if (sewerDrag > 0 && !HangarHub.Active)
             speedMultiplier *= .56f;
-        var steering = SimulatorFlight.Steering(move, transform.position);
+        var steering = SimulatorFlight.Steering(move);
         if (SporeSteering())
             steering.x = -steering.x;
         horizontalMove = steering.x * GameRules.playerMoveSpeed * GameClock.PlayerDelta * speedMultiplier;
