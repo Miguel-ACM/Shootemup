@@ -101,7 +101,8 @@ public sealed partial class VoidSovereignBoss : DistrictBoss
         float ease = Mathf.SmoothStep(0,1,beat / .45f);
         var target = perch + (Vector3)(offset * ease);
         target.x = Mathf.Clamp(target.x,Camera.LeftLimit+1.95f,Camera.RightLimit-1.95f);
-        target.y = Mathf.Clamp(target.y,Camera.DownLimit+2.7f,Camera.UpLimit-2.05f);
+        float floor = RiftFloor(CombatRound.Border);
+        target.y = Mathf.Clamp(target.y,floor,Mathf.Max(floor,Camera.UpLimit-2.05f));
         transform.position = Vector3.MoveTowards(transform.position,target,dt*3.8f);
         Hull.localRotation = Quaternion.Euler(0,bank*ease*.75f,bank*ease);
     }

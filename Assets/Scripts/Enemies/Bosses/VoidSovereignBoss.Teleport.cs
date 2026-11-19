@@ -33,18 +33,31 @@ public sealed partial class VoidSovereignBoss
         perch = station;
     }
 
+    static float RiftFloor(Rect arena) => arena.yMax - arena.height / 3f;
+
     Vector3 NextPerch()
     {
         var r = CombatRound.Border;
+        float floor = RiftFloor(r);
+        float ceiling = Mathf.Max(floor, r.yMax - 2.8f);
+        var player = CombatVisuals.Player;
+        Vector3 fallback = transform.position;
+        float bestClearance = -1;
         for (int attempt = 0; attempt < Perches.Length; attempt++)
         {
             var p = Perches[teleportStep++ % Perches.Length];
             var target = new Vector3(Mathf.Lerp(r.xMin+2.4f,r.xMax-2.4f,(p.x+1)*.5f),
-                Mathf.Lerp(r.yMin+3.2f,r.yMax-2.8f,p.y),1);
-            if ((CombatVisuals.Player == null || Vector2.Distance(target,CombatVisuals.Player.position)>3.4f) &&
-                Vector2.Distance(target,transform.position)>2.2f) return target;
+                Mathf.Lerp(floor,ceiling,p.y),1);
+            float travel = Vector2.Distance(target,transform.position);
+            float clearance = player == null ? travel : Vector2.Distance(target,player.position);
+            if (clearance > 3.4f && travel > 2.2f) return target;
+            if (clearance > bestClearance)
+            {
+                fallback = target;
+                bestClearance = clearance;
+            }
         }
-        return new Vector3(0,r.yMax-3.1f,1);
+        return fallback;
     }
 
     void Dissolve(float amount)
@@ -68,6 +81,7 @@ public sealed partial class VoidSovereignBoss
         float side = heading.x >= 0 ? 1 : -1;
         Vector3 bend = new Vector3(-heading.y,heading.x) * side *
             Mathf.Min(1.45f,Vector2.Distance(from,to)*.25f);
+        bend.y = Mathf.Min(bend.y, Mathf.Max(0, CombatRound.Border.yMax - 1.95f - Mathf.Max(from.y,to.y)));
         Quaternion initial = Hull.localRotation;
         bool released = false;
         departure.Burst(from,true);
@@ -79,8 +93,10 @@ public sealed partial class VoidSovereignBoss
             float land = Mathf.InverseLerp(.87f,1.54f,t);
             float recoil = Mathf.Sin(land*Mathf.PI*2)*Mathf.Exp(-2.8f*land);
             float tuck = wind*(1-Mathf.SmoothStep(0,1,land));
-            transform.position = VoidRiftVisual.Crossing(from,to,bend,dash)
+            Vector3 position = VoidRiftVisual.Crossing(from,to,bend,dash)
                 + (Vector3)heading * (-.38f*wind*(1-dash)+.52f*recoil);
+            position.y = Mathf.Max(position.y, RiftFloor(CombatRound.Border));
+            transform.position = position;
             float streak = Mathf.Sin(dash*Mathf.PI);
             Hull.localRotation = Quaternion.Slerp(initial,Quaternion.identity,wind) *
                 Quaternion.Euler(7*streak,side*(35*tuck-18*recoil),side*(-22*tuck-13*recoil));
