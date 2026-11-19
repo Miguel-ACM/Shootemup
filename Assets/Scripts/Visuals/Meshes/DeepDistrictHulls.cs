@@ -29,12 +29,7 @@ public static partial class IndustrialMeshFactory
                 ModelPipeSkater(b);
                 break;
             case CombatHullId.GrateKeeper:
-                BevelArmor(b, new[] { V(-1.12f, -.45f), V(-.76f, -.95f), V(.76f, -.95f), V(1.12f, -.45f), V(.91f, .82f), V(0, 1.02f), V(-.91f, .82f) }, .54f, 2);
-                for (int i = -3; i <= 3; i++)
-                    b.Box(new Vector3(i * .21f, .17f, -.39f), new Vector3(.086f, .95f, .16f), 6, 11);
-                DeepPort(b, new Vector3(-.64f, -.60f, -.39f), .34f, 13);
-                DeepPort(b, new Vector3(.64f, -.60f, -.39f), .34f, 13);
-                break;
+                return deepHulls[id] = BuildGrateKeeper();
             case CombatHullId.TransitCube:
                 ModelTransitCube(b);
                 break;

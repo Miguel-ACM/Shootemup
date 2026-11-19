@@ -184,6 +184,28 @@ public sealed class PipeSkater : DistrictEnemy
 
 public sealed class GrateKeeper : DistrictMiniboss
 {
+    Transform cutter;
+    internal void BindCutter()
+    {
+        cutter = IndustrialMeshFactory.FitGrateKeeperCutter(Hull);
+        firingCue.PlacePort(0, IndustrialMeshFactory.DredgeMuzzle(-1), true, false);
+        firingCue.PlacePort(1, IndustrialMeshFactory.DredgeMuzzle(1), true, false);
+    }
+
+    protected override void Update()
+    {
+        float previousAge = age;
+        base.Update();
+        float windup = Engaged && !Retreating ? Mathf.Clamp01(1 - (nextAttack - age) / .6f) : 0;
+        cutter.Rotate(0, 0, (age - previousAge) * (92 + 150 * windup));
+    }
+
+    protected override void PrepareFire(float seconds)
+    {
+        firingCue.Warn(seconds);
+        firingCue.PointAll(volley % 3 == 1 ? Vector2.up : Vector2.down);
+    }
+
     protected override void Configure() { health = 470; hullScale = .92f; attackInterval = 1.48f; nextAttack = 1.35f; }
     protected override Vector3 Position(float t) =>
         new Vector3(2.65f * Mathf.Sin(t * 1.3f), Camera.UpLimit - 3.4f + .9f * Mathf.Sin(t * 2.6f), 1);
