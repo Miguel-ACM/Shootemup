@@ -96,10 +96,10 @@ public static class CombatWalls
     }
     public static Vector3 Constrain(Vector3 from,Vector3 desired) => Constrain(from,desired,out _);
     public static Vector3 Constrain(Vector3 from,Vector3 desired,out bool struck)
-        => Constrain(from, desired, Solid, out struck);
-    internal static Vector3 Constrain(Vector3 from,Vector3 desired,List<CombatWall> walls,out bool struck)
+        => Constrain(from, desired, Solid, out struck, out _);
+    internal static Vector3 Constrain(Vector3 from,Vector3 desired,List<CombatWall> walls,out bool struck,out bool repositioned)
     {
-        struck=false;if(walls.Count==0)return desired;
+        struck=false;repositioned=false;if(walls.Count==0)return desired;
         Vector2 p=from;
         if(Overlaps(walls,p,HullRadius))
         {
@@ -117,6 +117,8 @@ public static class CombatWalls
                 if(Mathf.Abs(n.x)>.00001f)Candidate(new Vector2((distance-n.y*p.y)/n.x,p.y));
                 if(Mathf.Abs(n.y)>.00001f)Candidate(new Vector2(p.x,(distance-n.x*p.x)/n.y));
             }
+            // A face can be exactly tangent. Its separation skin alone isn't a crush.
+            repositioned = best != p && Overlaps(walls, p, HullRadius - .0005f);
             p=best;
         }
         Vector2 remaining=(Vector2)(desired-from);

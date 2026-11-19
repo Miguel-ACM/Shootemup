@@ -425,9 +425,9 @@ public class Shipcontroller : MonoBehaviour
         else
         {
             var bounded = new Vector3(Mathf.Clamp(destination.x, limits[2], limits[3]), Mathf.Clamp(destination.y, limits[1], upperLimit), transform.position.z);
-            bool wallHit = false;
+            bool wallHit;
             transform.position = LevelRun.Current == LevelId.Core
-                ? CoreCube.Constrain(transform.position, bounded)
+                ? CoreCube.Constrain(transform.position, bounded, out wallHit)
                 : CombatWalls.Constrain(transform.position, bounded, out wallHit);
             if (wallHit) ReceiveHazardDamage(1);
         }

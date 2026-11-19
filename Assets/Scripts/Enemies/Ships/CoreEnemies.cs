@@ -80,11 +80,15 @@ public abstract class CoreCube : DistrictEnemy
     }
 
     public static Vector3 Constrain(Vector3 from, Vector3 desired)
+        => Constrain(from, desired, out _);
+
+    public static Vector3 Constrain(Vector3 from, Vector3 desired, out bool repositioned)
     {
+        repositioned = false;
         if (active.Count == 0)
             return desired;
         Collect();
-        return CombatWalls.Constrain(from, desired, solid, out _);
+        return CombatWalls.Constrain(from, desired, solid, out _, out repositioned);
     }
 
     public static bool Occupies(Vector2 point)
