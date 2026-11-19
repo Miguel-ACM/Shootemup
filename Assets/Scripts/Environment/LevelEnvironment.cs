@@ -1019,8 +1019,7 @@ public sealed class LevelEnvironment : MonoBehaviour
     static Material WaterSurface()
     {
         var surface = new Material(Resources.Load<Shader>("CisternWater"));
-        surface.SetTexture("_FlowMap", Resources.Load<Texture2D>("CalderaFlow"));
-        surface.SetTexture("_SurfaceMap", Resources.Load<Texture2D>("CalderaCrust"));
+        surface.SetTexture("_SurfaceMap", Resources.Load<Texture2D>("SewerCurrent"));
         return surface;
     }
 
@@ -1209,6 +1208,13 @@ public sealed class LevelEnvironment : MonoBehaviour
             UpdateWeather(dt);
         if (snowFoliageMaterial != null)
             snowFoliageMaterial.SetFloat("_FlowTime", clock);
+        if (sewerWater != null)
+        {
+            sewerWater.SetFloat("_FlowTime", clock);
+            sewerWater.SetFloat("_ScrollDistance", travel);
+        }
+        if (cisternWater != null)
+            cisternWater.SetFloat("_FlowTime", clock);
         if (woodlandLeaves != null)
             material.SetFloat("_WindTime", clock);
         if (dreamPanels != null)
