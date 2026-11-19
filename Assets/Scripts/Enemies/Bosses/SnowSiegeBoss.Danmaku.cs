@@ -61,9 +61,9 @@ public sealed partial class SnowSiegeBoss
         for (int movement = 0; !phaseTwo; movement++)
         {
             // The rest belongs to the comb: every aperture gathers before the next movement.
-            yield return ChargeComb(movement == 0 ? .6f : Rest(.85f));
+            yield return ChargeComb(movement == 0 ? .34f : Rest(.85f));
             int kind = movement % 4;
-            float fall = movement >= 4 ? 2.9f : 2.6f;
+            float fall = movement >= 4 ? 3.65f : 3.4f;
             int beats = Difficulty.Hard ? 18 : Difficulty.Easy ? 9 : 14;
             for (int k = 0; k < beats; k++)
             {
@@ -108,10 +108,9 @@ public sealed partial class SnowSiegeBoss
             yield return Charge(Hull, MouthLocal, .45f);
             Phrase(Toned(HostileTone.Dark, Slides(kind, Rest(2.0f) + .6f)));
             yield return Cascade(kind);
-            if (movement >= 4 && kind % 2 == 1)
-                FrostFan();
+            FrostFan();
             // The slope settles after the centre bursts out: a longer rest.
-            yield return Wait(Rest(kind == 3 ? 2.6f : 2.0f));
+            yield return Wait(Rest(kind == 3 ? 1.65f : 1.28f));
         }
     }
 
@@ -143,7 +142,7 @@ public sealed partial class SnowSiegeBoss
     IEnumerator Slides(int kind, float seconds)
     {
         float interval = Rest(.09f);
-        int layers = Difficulty.Hard ? Dense(3) : 1;
+        int layers = Mathf.Max(1, Dense(3));
         for (float t = 0; t < seconds; t += interval)
         {
             float slope = 18 + 40 * (.5f + .5f * Mathf.Sin(t * 2.4f));
@@ -151,6 +150,12 @@ public sealed partial class SnowSiegeBoss
             {
                 int downhill = kind == 0 ? 1 : kind == 1 ? -1 : kind == 2 ? -mirror : mirror;
                 var port = Hull.TransformPoint(GustLocal(mirror));
+                if (Mathf.RoundToInt(t / interval) % 5 == 0)
+                {
+                    float crosswind = mirror * (32 - 55 * Mathf.Sin(t * 1.7f));
+                    Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.down, crosswind), 3.4f, .19f)
+                        .Ramp(1.3f, .7f, .45f);
+                }
                 for (int layer = 0; layer < layers; layer++)
                     Fire<NeedleRound>(port, CombatVisuals.Rotate(Vector2.down, downhill * (slope + layer * 6)), 1.0f + layer * .35f, .19f)
                         .Ramp(3.2f, 1.2f, .3f);
