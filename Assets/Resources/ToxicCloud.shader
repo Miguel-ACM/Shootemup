@@ -60,7 +60,7 @@ Shader "Shootemup/Toxic Cloud"
                 // A darker teal rim outlines the pool so it reads on grass, sand or snow alike.
                 float rim=smoothstep(edge-.3,edge-.1,r)*(1-smoothstep(edge-.1,edge-.02,r));
                 colour=lerp(colour,rimTone,rim*.55);
-                float alpha=body*(.6+.28*folds)+ring*body*.3+rim*.12;
+                float alpha=(body*(.6+.28*folds)+ring*body*.3+rim*.12)*.72;
                 alpha*=saturate(_Life)*(.45+.55*_Strength);
                 return half4(colour*alpha,alpha);
             }
