@@ -729,7 +729,7 @@ public class WaveOrchestrer : MonoBehaviour
         var pilot = ship.GetComponent<Shipcontroller>();
         pilot.Repair(Mathf.CeilToInt(pilot.maxHealth));
         BGMManager.PlayFinalMusic();
-        DistrictEnemy.Spawn(typeof(WitnessBoss), new Vector3(0, Camera.UpLimit + 3.8f, 1))
+        DistrictEnemy.Spawn(typeof(WitnessBoss), new Vector3(0, Camera.UpLimit + 5.6f, 1))
             .SetOrchestrer(this, currentWaveNumber);
     }
 

@@ -32,7 +32,7 @@ public sealed class WitnessSculpture : MonoBehaviour
         { -.20f, -.12f, -.01f, -.08f, -.17f, -.10f, .02f, .13f, .44f, .80f, 1.86f },
         { -.65f, -.52f, -.33f, -.29f, -.50f, -.38f, -.22f, -.20f, .09f, .66f, 1.84f },
         { -1.18f, -.95f, -.49f, -.53f, -.77f, -.61f, -.42f, -.43f, -.10f, .49f, 1.82f },
-        { -2.05f, -1.54f, -.62f, -.82f, -1.24f, -.77f, -.57f, -.90f, -.35f, .30f, 1.80f }
+        { -1.58f, -1.24f, -.72f, -.82f, -1.24f, -.77f, -.57f, -.90f, -.35f, .30f, 1.80f }
     };
     static readonly float[] Relief = { .08f, .78f, .54f, 1.12f, .94f, 1.17f, .68f, .83f, .07f };
 
@@ -81,7 +81,8 @@ public sealed class WitnessSculpture : MonoBehaviour
             for (int col = -10; col < 10; col++)
             {
                 Edge(col+1,0,col,0);
-                Edge(col,8,col+1,8);
+                if (col < -3 || col >= 3)
+                    Edge(col,8,col+1,8);
             }
             for (int row = 0; row < 8; row++)
             {
@@ -94,6 +95,7 @@ public sealed class WitnessSculpture : MonoBehaviour
                 Window(h * 5, h * 9, 5);
             }
             Eye();
+            Torso();
             Rest = points.ToArray();
             Corners = corners.ToArray();
         }
@@ -142,6 +144,64 @@ public sealed class WitnessSculpture : MonoBehaviour
                 int j = (i + 1) % outer.Length;
                 Quad(outer[i],outer[j],inner[j],inner[i],color);
             }
+        }
+
+        void Torso()
+        {
+            // Open the underside of the collar and carry its front and back
+            // edges down into the shoulders, rib cage and fluted lower armour.
+            const int across = 7;
+            var ring = new int[2 * across];
+            for (int i = 0; i < across; i++)
+            {
+                ring[i] = Node(0, i - 3, 8);
+                ring[ring.Length - 1 - i] = Node(1, i - 3, 8);
+            }
+
+            void Section(float y, float width, float depth, float chevron, float sideDrop, Color tone, bool fluted = false)
+            {
+                var next = new int[ring.Length];
+                for (int i = 0; i < across; i++)
+                {
+                    float u = (i - 3) / 3f, side = Mathf.Abs(u);
+                    float flute = Mathf.Abs(i - 3) == 2 ? 1 : 0;
+                    float height = y - chevron * (1 - side) - sideDrop * flute;
+                    float x = width * u;
+                    // The sternum projects forward. The inner surface of each
+                    // flank folds back before rising into its outer ridge.
+                    float relief = 1 - .62f * side * side + .17f * flute;
+                    if (fluted)
+                        relief += flute * .52f - (Mathf.Abs(i - 3) == 1 ? .34f : 0);
+                    next[i] = Add(new Vector3(x, height, .08f - depth * relief));
+                    next[ring.Length - 1 - i] = Add(new Vector3(x, height + .025f, .12f + depth * (.72f - .50f * side * side)));
+                }
+                for (int i = 0; i < ring.Length; i++)
+                {
+                    int j = (i + 1) % ring.Length;
+                    if (i >= across - 1)
+                        Quad(ring[i],ring[j],next[j],next[i],Basalt);
+                    else if (fluted)
+                        Quad(ring[i],ring[j],next[j],next[i],tone);
+                    else
+                        Facet(ring[i],ring[j],next[j],next[i],tone,.12f,Mathf.Abs(i - 3));
+                }
+                ring = next;
+            }
+
+            Section(-1.13f, 1.10f, .49f, .62f, .02f, Mantle);
+            Section(-1.38f, 1.17f, .68f, .51f, .05f, Ridge);
+            Section(-1.55f, 1.04f, .46f, .47f, .06f, Basalt);
+            Section(-1.72f, .98f, .60f, .43f, .07f, Mantle);
+            Section(-1.87f, .83f, .43f, .42f, .07f, Basalt);
+            Section(-2.08f, .79f, .48f, .36f, .05f, Mantle);
+            Section(-2.37f, .60f, .36f, .23f, .02f, Basalt);
+            Section(-2.60f, .78f, .46f, .24f, .06f, Ridge);
+            Section(-2.80f, .91f, .48f, .21f, .11f, Mantle, true);
+            Section(-3.27f, 1.02f, .39f, .29f, .19f, Mantle, true);
+            Section(-3.57f, 1.04f, .27f, .53f, .44f, Mantle, true);
+            Section(-3.72f, .98f, .08f, .72f, .55f, Basalt, true);
+            for (int i = 0; i < across - 1; i++)
+                Quad(ring[i],ring[i+1],ring[ring.Length-2-i],ring[ring.Length-1-i],Basalt);
         }
         // Extrude the original four-sided socket toward the viewer before it
         // bends. Each change in section carves another plane into the hook.
@@ -281,13 +341,13 @@ public sealed class WitnessSculpture : MonoBehaviour
             flex[i] = new Flex {
                 shoulder = Mathf.SmoothStep(0,1,Mathf.InverseLerp(.4f,1.42f,span)),
                 tip = Mathf.SmoothStep(0,1,Mathf.InverseLerp(1.05f,2.46f,span)),
-                hem = Mathf.SmoothStep(0,1,Mathf.InverseLerp(-.35f,-1.94f,p.y)),
+                hem = Mathf.SmoothStep(0,1,Mathf.InverseLerp(-.72f,-4.44f,p.y)),
                 hood = Mathf.SmoothStep(0,1,Mathf.InverseLerp(.50f,1.32f,p.y)) * Mathf.Clamp01(1-span),
-                jaw = Mathf.InverseLerp(-.45f,-1.5f,p.y) * Mathf.InverseLerp(.34f,.83f,span),
+                jaw = Mathf.InverseLerp(-.45f,-1.5f,p.y) * Mathf.InverseLerp(.34f,.83f,span) * Mathf.InverseLerp(-2.23f,-1.6f,p.y),
                 iris = Mathf.InverseLerp(-.59f,-.73f,p.z) * Mathf.Clamp01(1-span/.28f) * Mathf.Clamp01(1-Mathf.Abs(p.y-.29f)/.26f)
             };
         }
-        skin.bounds = new Bounds(Vector3.zero, new Vector3(6.6f,6.5f,4));
+        skin.bounds = new Bounds(new Vector3(0,-.9f,0), new Vector3(6.6f,7.8f,4));
     }
     public void Pose(float t, int phase, float strike)
     {

@@ -4,7 +4,13 @@ using UnityEngine;
 [UnityEngine.Scripting.Preserve]
 public sealed class WitnessBoss : ArmoredHullBoss
 {
-    static readonly Vector2[] silhouette = { new(0, 1.13f), new(.4f, .74f), new(.78f, .47f), new(.64f, -.20f), new(.37f, -.7f), new(0, -1.64f), new(-.37f, -.7f), new(-.64f, -.2f), new(-.78f, .47f), new(-.4f, .74f) };
+    static readonly Vector2[] silhouette = {
+        new(0,1.13f), new(.4f,.74f), new(.78f,.47f), new(.64f,-.20f), new(.5f,-.78f),
+        new(.96f,-1.34f), new(.72f,-1.96f), new(.42f,-2.45f), new(.69f,-2.98f),
+        new(.52f,-3.57f), new(0,-3.99f), new(-.52f,-3.57f), new(-.69f,-2.98f),
+        new(-.42f,-2.45f), new(-.72f,-1.96f), new(-.96f,-1.34f), new(-.5f,-.78f),
+        new(-.64f,-.20f), new(-.78f,.47f), new(-.4f,.74f)
+    };
     static readonly Color Ink = new Color(.85f, .095f, .25f);
     readonly Transform[] seals = new Transform[4];
     readonly LineRenderer[] rims = new LineRenderer[4];
