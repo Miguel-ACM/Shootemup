@@ -344,8 +344,8 @@ public class Shipcontroller : MonoBehaviour
     }
 
     // Update is called once per frame
-    // Energy refills by itself at 1% of the maximum per second of active play.
-    const float EnergyRechargePerSecond = .01f;
+    // Fraction of maximum energy restored per second of active play.
+    const float EnergyRechargePerSecond = .005f;
 
     float sporeSeconds;
     MeshRenderer sporeGlow;
