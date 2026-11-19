@@ -42,9 +42,11 @@ Shader "Shootemup/Cistern Water"
                     return half4(i.color.rgb, 1);
                 float t = _Time.y;
                 float2 p = i.world;
-                float2 uv = p * float2(.164, .089) + float2(0, t * .044);
-                float4 flow = SAMPLE_TEXTURE2D(_FlowMap,sampler_FlowMap,p*.075);
-                float2 current = (flow.rg * 2 - 1) * .15;
+                float bankDrag = smoothstep(2.4, 3.9, abs(i.local.x));
+                float2 stream = float2(p.x, p.y + t * 1.35);
+                float2 uv = stream * float2(.19, .12);
+                float4 flow = SAMPLE_TEXTURE2D(_FlowMap,sampler_FlowMap,(p+float2(0,t*.24))*.075);
+                float2 current = (flow.rg * 2 - 1) * lerp(.075,.18,bankDrag);
                 float phase = frac(t * .23 + flow.b), halfPhase = frac(phase + .5);
                 // A current continually stretches and refreshes two overlapping surface phases.
                 float3 a = SAMPLE_TEXTURE2D(_SurfaceMap,sampler_SurfaceMap,uv-current*(phase-.5)).rgb;
@@ -52,8 +54,8 @@ Shader "Shootemup/Cistern Water"
                 float3 detail = lerp(a,b,abs(phase*2-1));
                 float2 local = i.local * float2(1, 1.13);
                 float radius = length(local);
-                float fold = sin((p.y + sin(p.x * 1.75 + detail.g * 6) * .43 + detail.r * 1.65) * 10 + t * 1.7);
-                float sheen = smoothstep(.58,.96,fold) * smoothstep(.42,.76,detail.g);
+                float fold = sin(stream.y * 5.2 + detail.r * 10.5 + sin(p.x * 2.4 + detail.g * 4.5));
+                float sheen = smoothstep(.69,.98,fold) * smoothstep(.44,.78,detail.g);
                 float reflection = smoothstep(.64,.91,detail.b) * (.35 + sheen);
                 float wake = smoothstep(.63, .98, sin(radius * 11 - t * 3 + detail.g * 2.2));
                 wake *= smoothstep(.95, 1.70, radius) * (1 - smoothstep(3.3, 4.3, radius)) * _LakeWake;
@@ -69,7 +71,7 @@ Shader "Shootemup/Cistern Water"
                 float ripple = sin(dist*23-t*3.7+detail.g*.95);
                 float jet = exp(-dist*1.58)*smoothstep(.26,.93,ripple)*(1-_LakeWake);
                 float2 glint = i.local-float2(side*2.86,side*4.85+.89);
-                glint.x += (detail.g-.5)*.62+sin(p.y*9+t)*.13;
+                glint.x += (detail.g-.5)*.62+sin(stream.y*5.2)*.13;
                 float amber = exp(-dot(glint*float2(1.85,.65),glint*float2(1.85,.65)));
                 color += float3(.15,.22,.23)*jet + float3(.26,.16,.065)*amber*(.15+.85*sheen)*(1-_LakeWake);
                 float shaft=.5+.5*cos(i.local.y*.6283185+i.local.x*.52);
