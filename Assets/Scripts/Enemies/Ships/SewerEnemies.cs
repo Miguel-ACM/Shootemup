@@ -6,20 +6,21 @@ public sealed class PlagueMote : DistrictEnemy
 {
     static readonly HashSet<PlagueMote> flock = new HashSet<PlagueMote>();
     readonly Transform[] tail = new Transform[3];
-    Vector2 velocity = Vector2.down * 2.5f;
+    Vector2 velocity = Vector2.down * 4.1f;
     Shipcontroller pilot;
     bool eventSpawn;
     public override bool HoldsWave => !eventSpawn;
     public static int Population => flock.Count;
 
-    protected override void Configure() { health = 5; hullScale = .24f; }
+    protected override void Configure() { health = 6; hullScale = .24f; }
     protected override void Attack() { }
 
     public static void Spill(Vector2 entry, int count)
     {
         for (int i = 0; i < count && Population < 56; i++)
         {
-            var offset = new Vector2((i % 4 - 1.5f) * .33f, i / 4 * .40f);
+            int row = i / 5;
+            var offset = new Vector2((i % 5 - 2 + ((row & 1) - .5f) * .55f) * .38f, row * .43f);
             var mote = (PlagueMote)Spawn(typeof(PlagueMote), entry + offset);
             mote.eventSpawn = true;
         }
@@ -65,7 +66,7 @@ public sealed class PlagueMote : DistrictEnemy
             if (age < .58f)
                 return;
             if (entrance.Tangent.sqrMagnitude > .01f)
-                velocity = entrance.Tangent * 2.8f;
+                velocity = entrance.Tangent * 4.4f;
             entrance.enabled = false;
         }
         Vector2 at = transform.position;
@@ -91,7 +92,7 @@ public sealed class PlagueMote : DistrictEnemy
             }
         if (neighbors != 0)
             seek += centre * (.29f / neighbors) + align * (.055f / neighbors) + Vector2.ClampMagnitude(separate * .51f, 1.8f);
-        velocity = Vector2.MoveTowards(velocity, seek.normalized * (hunting ? 5.05f : 6.1f), dt * 11.2f);
+        velocity = Vector2.MoveTowards(velocity, seek.normalized * (hunting ? 6.65f : 7.2f), dt * 14.6f);
         transform.position += (Vector3)(velocity * dt);
         Hull.localRotation = Quaternion.Euler(0, 0, Vector2.SignedAngle(Vector2.down, velocity));
         for (int i = 0; i < tail.Length; i++)

@@ -106,7 +106,21 @@ public sealed class WavePart
                 part = Name
             });
         }
-        switch (shape)
+        // The plague enters in compact flights. Repeating small ranks lets the
+        // whole flock reach the channel without stretching its entrance offscreen.
+        if (Enemy == nameof(PlagueMote))
+        {
+            int width = Shape == WaveShape.Train ? 2 : Shape == WaveShape.Diamond ? 4 : 3;
+            for (int firstMember = 0; firstMember < count; firstMember += width)
+            {
+                int row = firstMember / width;
+                int members = Mathf.Min(width, count - firstMember);
+                float stagger = ((row + variant) % 2 - .5f) * .42f;
+                for (int i = 0; i < members; i++)
+                    Add(row * interval * 1.12f, (i - (members - 1) * .5f + stagger) * gap);
+            }
+        }
+        else switch (shape)
         {
             case WaveShape.Train:
                 for (int i = 0; i < count; i++)
