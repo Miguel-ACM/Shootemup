@@ -828,6 +828,7 @@ public class WaveOrchestrer : MonoBehaviour
 
     public void NotifyBossPhaseChange(int phase)
     {
+        BGMManager.BossPhase(phase);
         SoundManager.PlaySound(SoundManager.HasSynth("explosionLarge") ? "explosionLarge" : "enemyExplosion1", 0.12f);
     }
 }

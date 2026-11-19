@@ -11,6 +11,7 @@ public sealed class MusicDeck : MonoBehaviour
     public AudioSource Source { get; private set; }
     public double StartAt { get; private set; }
     public float Offset => offset;
+    public float Tempo { get; private set; } = 1;
     public BossKick Kick { private get; set; }
     public MusicDeck OtherDeck { private get; set; }
     float[] kickBeats;
@@ -25,7 +26,7 @@ public sealed class MusicDeck : MonoBehaviour
     sealed class Envelope
     {
         public double start, stop, fadeIn, fadeOut, kickCut;
-        public float from, to, duration, offset;
+        public float from, to, duration, offset, tempo;
         public float[] beats;
         public double b0, b1, b2, a1, a2;
     }
@@ -58,10 +59,11 @@ public sealed class MusicDeck : MonoBehaviour
     }
 
     public void StartCue(AudioClip clip, double at, float position, float mixFrom, float mixTo, float ramp, double fade,
-        float[] beats = null, float clipLead = 0)
+        float[] beats = null, float clipLead = 0, float tempo = 1)
     {
         Stop();
         SetBass(BossBassDb(clip.name));
+        Tempo = Source.pitch = tempo;
         StartAt = at;
         offset = position;
         from = mixFrom;
@@ -79,7 +81,7 @@ public sealed class MusicDeck : MonoBehaviour
     void SetEnvelope(double end, double fadeOut, double cut)
     {
         envelope = new Envelope { start = StartAt, stop = end, from = from, to = to, duration = seconds,
-            fadeIn = fadeIn, fadeOut = fadeOut, offset = offset, beats = kickBeats, kickCut = cut,
+            fadeIn = fadeIn, fadeOut = fadeOut, offset = offset, beats = kickBeats, tempo = Tempo, kickCut = cut,
             b0 = b0, b1 = b1, b2 = b2, a1 = a1, a2 = a2 };
     }
 
@@ -90,7 +92,9 @@ public sealed class MusicDeck : MonoBehaviour
     }
 
     public float MixAt(double at) => seconds <= 0 ? to : Mathf.Lerp(from, to, (float)(at - StartAt)/seconds);
-    public double ClockAt(float position) => StartAt + position - offset;
+    public double ClockAt(float position) => StartAt + (position - offset) / Tempo;
+
+    public float PositionAt(double at) => offset + (float)((at - StartAt) * Tempo);
 
     public void Stop()
     {
@@ -136,8 +140,8 @@ public sealed class MusicDeck : MonoBehaviour
         }
         // During a crossfade both recordings feel the same kick. Only its owner adds the drum.
         if (other?.beats != null && kickVolume > 0)
-            Kick?.Mix(samples, channels, sampleRate, blockAt, other.beats, other.start, other.offset, other.kickCut, 0);
+            Kick?.Mix(samples, channels, sampleRate, blockAt, other.beats, other.start, other.offset, other.kickCut, 0, other.tempo);
         if (env.beats != null && kickVolume > 0)
-            Kick?.Mix(samples, channels, sampleRate, blockAt, env.beats, env.start, env.offset, env.kickCut, kickVolume);
+            Kick?.Mix(samples, channels, sampleRate, blockAt, env.beats, env.start, env.offset, env.kickCut, kickVolume, env.tempo);
     }
 }

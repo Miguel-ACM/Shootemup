@@ -80,6 +80,9 @@ public sealed class DistrictScore : MonoBehaviour
     double requestDeadline, travelDeadline;
     const double OutroWait = .35;
     bool started, waitingForLoad;
+    float bossTempo = 1;
+
+    public void Phase(int phase) => bossTempo = 1 + .10f * Mathf.Clamp(phase - 1, 0, 4);
     const double Lead = .1;
     public bool Active => track != null;
     public bool IsPlaying => Active && started && decks[index].Source.isPlaying;
@@ -102,8 +105,8 @@ public sealed class DistrictScore : MonoBehaviour
                 float end = track.End(part);
                 if (after <= active.ClockAt(end))
                 {
-                    float point = track.ExitPoint(active.Offset, end, active.Offset + after - active.StartAt,
-                        active.Offset + requestDeadline - active.StartAt, target);
+                    float point = track.ExitPoint(active.Offset, end, active.PositionAt(after),
+                        active.PositionAt(requestDeadline), target);
                     return (float)Math.Max(0, active.ClockAt(point) - now);
                 }
                 flightAt = active.ClockAt(end);
@@ -128,13 +131,13 @@ public sealed class DistrictScore : MonoBehaviour
         if (!IsPlaying || beats == null || beats.Length == 0)
             return float.NaN;
         var deck = decks[index];
-        float now = (float)(deck.Offset + (AudioSettings.dspTime - deck.StartAt));
+        float now = deck.PositionAt(AudioSettings.dspTime);
         int next = Array.BinarySearch(beats, now);
         if (next < 0)
             next = ~next;
         float after = next < beats.Length ? beats[next] - now : float.PositiveInfinity;
         float before = next > 0 ? beats[next - 1] - now : float.NegativeInfinity;
-        return after < -before ? after : before;
+        return (after < -before ? after : before) / deck.Tempo;
     }
 
     void Awake()
@@ -185,6 +188,7 @@ public sealed class DistrictScore : MonoBehaviour
     public void Stop()
     {
         Generation++;
+        bossTempo = 1;
         foreach (var deck in decks)
         {
             deck.Stop();
@@ -257,15 +261,15 @@ public sealed class DistrictScore : MonoBehaviour
                 pendingTrack = travel ? following : track;
                 pendingPart = travel ? following.First : wanted;
                 double deadline = travel ? travelDeadline : requestDeadline;
-                end = track.ExitPoint(active.Offset, end, active.Offset + after - active.StartAt,
-                    active.Offset + deadline - active.StartAt, pendingTrack.OpeningChord(pendingPart));
+                end = track.ExitPoint(active.Offset, end, active.PositionAt(after),
+                    active.PositionAt(deadline), pendingTrack.OpeningChord(pendingPart));
             }
         }
         cut = active.ClockAt(end);
         bool enteringOutro = pendingPart == Part.Outro && part != Part.Outro;
         double fade = enteringOutro ? .24 : travel || pendingPart == Part.Boss && part != Part.Boss ? .35 : track.adaptive ? Math.Clamp(120 / track.cues.bpm, .48, 1) : .5;
         // Keep playing the outgoing tail behind the incoming downbeat; reclaim its deck after the fade.
-        double overlap = pendingTrack == null ? 0 : Math.Min(fade, Math.Max(0, track.Length - end));
+        double overlap = pendingTrack == null ? 0 : Math.Min(fade, Math.Max(0, (track.Length - end) / active.Tempo));
         if (overlap < .04) overlap = 0;
         tailEnd = cut + overlap;
         active.EndAt(tailEnd, overlap > 0 ? overlap : fade, cut);
@@ -276,7 +280,7 @@ public sealed class DistrictScore : MonoBehaviour
         float beats = enteringOutro || to > from ? 1 : 8;
         float ramp = from == to ? 0 : Mathf.Min(beats * 60/track.cues.bpm, pendingTrack.End(pendingPart) - offset);
         next.StartCue(pendingTrack.clip, cut, offset, from, to, ramp, overlap > 0 ? overlap : fade,
-            pendingPart == Part.Boss ? pendingTrack.cues.beats : null, pendingTrack.ClipLead);
+            pendingPart == Part.Boss ? pendingTrack.cues.beats : null, pendingTrack.ClipLead, pendingPart == Part.Boss ? bossTempo : 1);
     }
 
     void Update()
@@ -306,6 +310,19 @@ public sealed class DistrictScore : MonoBehaviour
             cut = double.PositiveInfinity;
             reuseAt = tailEnd + .015;
             waitingForLoad = false;
+        }
+        if (part == Part.Boss && wanted == Part.Boss && following == null && now >= reuseAt &&
+            !Mathf.Approximately(decks[index].Tempo, bossTempo) && now + Lead + .12 < cut)
+        {
+            var old = decks[index];
+            double at = now + Lead;
+            const double blend = .045;
+            old.EndAt(at + blend, blend, at);
+            index = 1 - index;
+            decks[index].StartCue(track.clip, at, old.PositionAt(at), 1, 1, 0, blend,
+                track.cues.beats, track.ClipLead, bossTempo);
+            cut = double.PositiveInfinity;
+            reuseAt = at + blend + .015;
         }
         if (now >= reuseAt && (double.IsPositiveInfinity(cut) ||
             (waitingForLoad && following.clip.loadState == AudioDataLoadState.Loaded && now + Lead < cut)))

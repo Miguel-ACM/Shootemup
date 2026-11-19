@@ -36,19 +36,19 @@ public sealed class BossKick
     }
 
     public void Mix(float[] output, int channels, int outputRate, double blockAt,
-        float[] beats, double startAt, float offset, double cut, float volume)
+        float[] beats, double startAt, float offset, double cut, float volume, float tempo = 1)
     {
         int frames = output.Length / channels;
         double blockEnd = blockAt + (double)frames/outputRate;
         if (blockEnd <= startAt || blockAt >= cut) return;
-        double fileTime = blockAt - startAt + offset;
-        float earliest = (float)Math.Max(offset, fileTime - (double)pcm.Length/rate);
+        double fileTime = (blockAt - startAt) * tempo + offset;
+        float earliest = (float)Math.Max(offset, fileTime - (double)pcm.Length/rate * tempo);
         int beat = Array.BinarySearch(beats, earliest);
         if (beat < 0) beat = ~beat;
         double step = (double)rate/outputRate;
         for (; beat < beats.Length; beat++)
         {
-            double hit = startAt + ((double)beats[beat] - offset);
+            double hit = startAt + ((double)beats[beat] - offset) / tempo;
             if (hit >= blockEnd || hit >= cut) break;
             int first = Math.Max(0, (int)Math.Ceiling((hit-blockAt)*outputRate));
             int last = frames;
