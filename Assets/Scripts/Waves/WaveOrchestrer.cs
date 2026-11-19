@@ -54,7 +54,7 @@ public class WaveOrchestrer : MonoBehaviour
     // Encounter slots are offered half-way through the following combat wave, without pausing it.
     bool offerPending;
     float offerAt;
-    // The first hexagon offer of each district also carries SKIP, straight to the boss.
+    bool firstHexShown;
     RewardHexes rewardOffer;
     public RewardHexes RewardOffer => rewardOffer;
     CargoEscort cargo;
@@ -524,8 +524,6 @@ public class WaveOrchestrer : MonoBehaviour
         else
             HealthRecovery.Begin(ship.GetComponent<Shipcontroller>(), .5f);
     }
-
-    bool firstHexShown;
 
     void OpenDecision(RunSlotKind kind)
     {

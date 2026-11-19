@@ -318,7 +318,7 @@ public sealed class RunChoicesReview : MonoBehaviour
             Check(!(healthy.Contains(EncounterKind.Item) && healthy.Contains(EncounterKind.Challenge)), "item and challenge stay exclusive above the health threshold");
         }
         Check(all.Count == 3, "item, health and challenge encounters are reachable");
-        Check(DistrictWaves.Sequence()[0] == "reward" && DistrictWaves.Sequence().Count(x => x == "encounterChoice") == 1 && DistrictWaves.Sequence().Count(x => x == "minibossChoice") == 1 && DistrictWaves.Sequence().Count(x => int.TryParse(x, out _)) == 10, "one pre-miniboss fork preserves the opening reward, ten combat waves and the earned miniboss selection");
+        Check(DistrictWaves.Sequence()[0] == "2" && DistrictWaves.Sequence().Count(x => x == "encounterChoice") == 2 && DistrictWaves.Sequence().Count(x => x == "minibossChoice") == 1 && DistrictWaves.Sequence().Count(x => int.TryParse(x, out _)) == 10, "ten combat waves with two offers and the earned miniboss selection");
         // The fork rides along with the next wave: it is offered half-way through without pausing combat.
         flow.waves = DistrictWaves.Sequence();
         Set(flow, "currentWaveNumber", 4);

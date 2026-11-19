@@ -29,7 +29,7 @@ public static class DistrictWaves
     public static IReadOnlyList<Type> Bosses(LevelId district) => bosses[(int)district];
     public static Type BossType => Bosses(LevelRun.Current)[0];
 
-    // A complete district: opening item, ten ordinary waves, two hexagon offers, the miniboss and its earned choice.
+    // A complete district: ten ordinary waves, two hexagon offers, the miniboss and its earned choice.
     public static readonly string[] CampaignSequence = { "2", "3", "4", "encounterChoice", "6", "8", "10", "miniboss", "12", "14", "minibossChoice", "encounterChoice", "16", "20", "boss" };
     public static string[] Sequence() => LevelRun.Current == LevelId.Void ? new[] { "boss" } : (string[])CampaignSequence.Clone();
     public static Wave Miniboss()

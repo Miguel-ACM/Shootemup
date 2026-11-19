@@ -77,7 +77,7 @@ public static class ReviewDistrictPolish
                 if (!typeof(DistrictMiniboss).IsAssignableFrom(type) || !types.Add(type))
                     throw new Exception("Not a unique miniboss: " + level);
                 var mini = DistrictEnemy.Spawn(type, Vector3.zero, true, true, false);
-                notes.Add(level + ": " + type.Name + ", health " + mini.health.ToString("0.0") + ", ten waves plus opening item / two choices / miniboss / one earned choice.");
+                notes.Add(level + ": " + type.Name + ", health " + mini.health.ToString("0.0") + ", ten waves / two choices / miniboss / one earned choice.");
                 UnityEngine.Object.DestroyImmediate(mini.gameObject);
             }
             var window = EnemyEditorWindow.Open();

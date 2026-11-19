@@ -206,7 +206,7 @@ public sealed class CombatUpgrades : MonoBehaviour
     {
         if (enemy == null || !enemy.CanReceiveDamage)
             return 0;
-        // A poisoned hull is weakened against every hit, so poison sets up burn and guns.
+        // Only a hull that was already burning amplifies the incoming hit.
         damage *= BurningHull.Vulnerability(enemy) * RuleDamage();
         int swatters = enemy.IsSmallTarget ? Count(UpgradeKind.Flyswatter) : 0;
         if (swatters > 0)
