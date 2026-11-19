@@ -249,7 +249,10 @@ public static class VerifyItemUnlocks
     {
         Fresh();
         var tapes = FlightTrials.All.Where(tape => tape.Advanced).ToArray();
-        Check(tapes.Length == 30 && tapes.All(tape => tape.legs.Last().boss != null), "Thirty advanced tapes end with a full boss");
+        Check(tapes.Length == 29 && FlightTrials.Find("Black Box") == null && tapes.All(tape => tape.legs.Last().boss != null),
+            "The 29 advanced tapes end with a boss and exclude the retired autopilot tape");
+        Check(tapes.Select(tape => tape.frame).Distinct().Count() == ShipFrames.Count,
+            "Advanced tapes fly all four assigned hulls");
         int fullLevel = DistrictWaves.CampaignSequence.Count(key => int.TryParse(key, out _) || key == "miniboss") + 1;
         Check(tapes.All(tape => tape.legs.All(leg => leg.boss != null && leg.sequence.Length == (leg.fullLevel ? fullLevel : 1))),
             "Every simulator leg is a whole district or a lone boss, never a wave snippet");

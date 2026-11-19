@@ -49,11 +49,11 @@ public sealed class FlightTrials
         kit = items;
     }
 
-    FlightTrials(string name, Leg[] route, string[] items, string blueprint = null,
+    FlightTrials(string name, ShipFrame ship, Leg[] route, string[] items, string blueprint = null,
         SimulatorApproach approach = SimulatorApproach.Standard, RunDifficulty difficulty = RunDifficulty.Normal, int coins = 0)
     {
         title = name;
-        frame = ShipFrame.GR07;
+        frame = ship;
         legs = route;
         district = route[0].district;
         kit = route[0].kit ?? items;
@@ -83,13 +83,13 @@ public sealed class FlightTrials
     public static readonly FlightTrials[] All = {
         // Plains
         new FlightTrials("Crossfire", "Defeat the Plains bomber with secondary fire.", ShipFrame.GR07, Fields, RunDifficulty.Normal, "WindUpTeeth", "AK45Item", "WindUpTeeth"),
-        new FlightTrials("On the Beat", new[] { Level<PlainsThreshingDrumBoss>(Fields) },
+        new FlightTrials("On the Beat", ShipFrame.GR07, new[] { Level<PlainsThreshingDrumBoss>(Fields) },
             Kit("BurstLauncherItem"), approach: SimulatorApproach.Downbeat),
-        new FlightTrials("Change of Plans", new[] { Level<PlainsRedKiteBoss>(Fields) },
+        new FlightTrials("Change of Plans", ShipFrame.GR07, new[] { Level<PlainsRedKiteBoss>(Fields) },
             Kit("CarouselItem", "BarrelRoll"), "CarouselItem"),
-        new FlightTrials("Triple Harvest", new[] { Boss<FieldsBomberBoss>(Fields), Boss<PlainsRedKiteBoss>(Fields), Boss<PlainsThreshingDrumBoss>(Fields) },
+        new FlightTrials("Triple Harvest", ShipFrame.GR07, new[] { Boss<FieldsBomberBoss>(Fields), Boss<PlainsRedKiteBoss>(Fields), Boss<PlainsThreshingDrumBoss>(Fields) },
             Kit("NeedleCannonItem", "ScatterCannonItem", "RelaySwitch")),
-        new FlightTrials("Three Gun Salute", new[] {
+        new FlightTrials("Three Gun Salute", ShipFrame.Ember, new[] {
             Boss<FieldsBomberBoss>(Fields, Kit("RailDriverItem", "Capacitor")),
             Boss<PlainsRedKiteBoss>(Fields, Kit("ScatterCannonItem", "BarrelRoll")),
             Boss<PlainsThreshingDrumBoss>(Fields, Kit("DiscThrowerItem", "PocketFan"))
@@ -97,68 +97,68 @@ public sealed class FlightTrials
 
         // Snow and City
         new FlightTrials("Cold Delivery", "Bring the crate through two Snow waves.", ShipFrame.Warden, Snow, RunDifficulty.Normal, "Thermos", "Magnet", "SparePlating"),
-        new FlightTrials("Blank Check", new[] { Level<SnowSiegeBoss>(Snow) },
+        new FlightTrials("Blank Check", ShipFrame.GR07, new[] { Level<SnowSiegeBoss>(Snow) },
             Kit("NeedleCannonItem", "MirrorBurst", "RocketBouquet"), approach: SimulatorApproach.UnlimitedEnergy),
-        new FlightTrials("Cold Snap", new[] { Boss<SnowIcebreakerBoss>(Snow), Boss<SnowSiegeBoss>(Snow) },
+        new FlightTrials("Cold Snap", ShipFrame.Ember, new[] { Boss<SnowIcebreakerBoss>(Snow), Boss<SnowSiegeBoss>(Snow) },
             Kit("ScatterCannonItem", "BulletTime", "Overdrive")),
-        new FlightTrials("Drift School", new[] { Level<CityDuoBoss>(City) },
+        new FlightTrials("Drift School", ShipFrame.Lancer, new[] { Level<CityDuoBoss>(City) },
             Kit("DiscThrowerItem", "FocusTime"), approach: SimulatorApproach.WaterHandling),
-        new FlightTrials("Split Verdict", new[] { Boss<CityDuoBoss>(City), Boss<CitySwitchyardBoss>(City) },
+        new FlightTrials("Split Verdict", ShipFrame.Lancer, new[] { Boss<CityDuoBoss>(City), Boss<CitySwitchyardBoss>(City) },
             Kit("RailDriverItem", "ScatterCannonItem", "RelaySwitch")),
 
         // Thunder, Tunnel, Desert and Candyland
         new FlightTrials("Line Discipline", "Clear the Thunder boss's beam lanes.", ShipFrame.Lancer, Thunder, RunDifficulty.Hard, "HeatSink", "HeatSink", "PocketFan"),
-        new FlightTrials("Dead Stick", new[] { Level<ThunderLanceBoss>(Thunder) },
+        new FlightTrials("Dead Stick", ShipFrame.GR07, new[] { Level<ThunderLanceBoss>(Thunder) },
             Kit("NeedleCannonItem", "BarrelRoll"), approach: SimulatorApproach.VerticalSteering),
-        new FlightTrials("Jade Spark", new[] { Level<ThunderLanceBoss>(Thunder) },
+        new FlightTrials("Jade Spark", ShipFrame.Ember, new[] { Level<ThunderLanceBoss>(Thunder) },
             Kit("ElectricityItem", "Poison", "GasolineLeak")),
-        new FlightTrials("Bank Job", new[] { Level<TunnelSawBoss>(Tunnel) },
+        new FlightTrials("Bank Job", ShipFrame.Lancer, new[] { Level<TunnelSawBoss>(Tunnel) },
             Kit("BankShotItem", "PocketFan"), "BankShotItem"),
-        new FlightTrials("Rear Guard", new[] { Level<TunnelSawBoss>(Tunnel) },
+        new FlightTrials("Rear Guard", ShipFrame.Warden, new[] { Level<TunnelSawBoss>(Tunnel) },
             Kit("SwarmRackItem", "LaserDroneItem", "ThrowableShield")),
-        new FlightTrials("Side Hustle", new[] { Level<DesertWormBoss>(Desert) },
+        new FlightTrials("Side Hustle", ShipFrame.Warden, new[] { Level<DesertWormBoss>(Desert) },
             Kit("AK45Item", "BackdraftItem", "ProteinSupplement")),
-        new FlightTrials("Slow Lane", new[] { Level<DesertWormBoss>(Desert) },
+        new FlightTrials("Slow Lane", ShipFrame.Warden, new[] { Level<DesertWormBoss>(Desert) },
             Kit("SwarmRackItem", "Bookmark"), approach: SimulatorApproach.Slow),
-        new FlightTrials("Exact Change", new[] { Level<CandyRegentBoss>(Candyland) },
+        new FlightTrials("Exact Change", ShipFrame.GR07, new[] { Level<CandyRegentBoss>(Candyland) },
             Kit("VendingGunItem", "NeedleCannonItem"), "VendingGunItem", coins: 12),
-        new FlightTrials("Switchback", new[] { Level<CandyRegentBoss>(Candyland), Level<AbyssSubmarineBoss>(Underwater) },
+        new FlightTrials("Switchback", ShipFrame.Ember, new[] { Level<CandyRegentBoss>(Candyland), Level<AbyssSubmarineBoss>(Underwater) },
             Kit("CounterweightItem", "BarrelRoll"), "CounterweightItem"),
 
         // Space and Underwater
-        new FlightTrials("Moon Tax", new[] { Level<SpaceCitadelBoss>(Space) },
+        new FlightTrials("Moon Tax", ShipFrame.Warden, new[] { Level<SpaceCitadelBoss>(Space) },
             Kit("NeedleCannonItem", "ThreeMoonsItem", "RecoveryCoil")),
-        new FlightTrials("Window Seat", new[] { Level<SpaceCitadelBoss>(Space) },
+        new FlightTrials("Window Seat", ShipFrame.Lancer, new[] { Level<SpaceCitadelBoss>(Space) },
             Kit("BeamEmitterItem", "Telekinesis"), approach: SimulatorApproach.MovingWindow),
-        new FlightTrials("Postmarked", new[] { Level<AbyssSubmarineBoss>(Underwater) },
+        new FlightTrials("Postmarked", ShipFrame.Lancer, new[] { Level<AbyssSubmarineBoss>(Underwater) },
             Kit("DeadLetterItem", "DecoyProjector"), "DeadLetterItem"),
-        new FlightTrials("Power Exchange", new[] { Boss<SnowSiegeBoss>(Snow), Boss<ThunderLanceBoss>(Thunder), Boss<SpaceCitadelBoss>(Space) },
+        new FlightTrials("Power Exchange", ShipFrame.GR07, new[] { Boss<SnowSiegeBoss>(Snow), Boss<ThunderLanceBoss>(Thunder), Boss<SpaceCitadelBoss>(Space) },
             Kit("BeamEmitterItem", "PolarityEngine", "MirrorBurst")),
-        new FlightTrials("Three Fronts", new[] { Boss<SnowIcebreakerBoss>(Snow), Boss<DesertWormBoss>(Desert), Boss<SpaceCitadelBoss>(Space) },
+        new FlightTrials("Three Fronts", ShipFrame.Lancer, new[] { Boss<SnowIcebreakerBoss>(Snow), Boss<DesertWormBoss>(Desert), Boss<SpaceCitadelBoss>(Space) },
             Kit("WindUpCannonItem", "SwarmRackItem", "Overdrive")),
-        new FlightTrials("After the Dive", new[] { Boss<AbyssSubmarineBoss>(Underwater), Boss<HellCrabBoss>(Hell) },
+        new FlightTrials("After the Dive", ShipFrame.Warden, new[] { Boss<AbyssSubmarineBoss>(Underwater), Boss<HellCrabBoss>(Hell) },
             Kit("DepthChargeItem", "NeedleCannonItem", "BarrelRoll")),
 
         // Hell and Heaven
-        new FlightTrials("Kitchen Fire", new[] { Level<HellCrabBoss>(Hell) },
+        new FlightTrials("Kitchen Fire", ShipFrame.Ember, new[] { Level<HellCrabBoss>(Hell) },
             Kit("FlameProjectorItem", "Popcorn", "ChainReactor")),
-        new FlightTrials("Red Zone", new[] { Level<HellCrabBoss>(Hell) },
+        new FlightTrials("Red Zone", ShipFrame.Warden, new[] { Level<HellCrabBoss>(Hell) },
             Kit("ScatterCannonItem", "Bookmark"), approach: SimulatorApproach.HotFloor),
         new FlightTrials("Last Light", "Defeat the Hell crab. Repairs offline.", ShipFrame.Ember, Hell, RunDifficulty.Hard, "EnergyShield", "EnergyShield"),
-        new FlightTrials("In Reverse", new[] { Boss<HellCrabBoss>(Hell), Boss<AbyssSubmarineBoss>(Underwater), Boss<TunnelSawBoss>(Tunnel) },
+        new FlightTrials("In Reverse", ShipFrame.Warden, new[] { Boss<HellCrabBoss>(Hell), Boss<AbyssSubmarineBoss>(Underwater), Boss<TunnelSawBoss>(Tunnel) },
             Kit("ScatterCannonItem", "SwarmRackItem", "Overdrive")),
-        new FlightTrials("Silent Approach", new[] { Level<SeraphJudicatorBoss>(Heaven) },
+        new FlightTrials("Silent Approach", ShipFrame.GR07, new[] { Level<SeraphJudicatorBoss>(Heaven) },
             Kit("BeamEmitterItem", "BarrelRoll", "PocketFan", "ProteinSupplement"), approach: SimulatorApproach.Silent),
-        new FlightTrials("Pressure Test", new[] { Level<AbyssSubmarineBoss>(Underwater), Level<HellCrabBoss>(Hell) },
+        new FlightTrials("Pressure Test", ShipFrame.Ember, new[] { Level<AbyssSubmarineBoss>(Underwater), Level<HellCrabBoss>(Hell) },
             Kit("BeamEmitterItem", "Bookmark", "PocketFan", "SteelWashers")),
 
         // Marathons
-        new FlightTrials("Second Shift", new[] {
+        new FlightTrials("Second Shift", ShipFrame.Warden, new[] {
             Level<CitySwitchyardBoss>(City, Kit("RailDriverItem", "Capacitor")),
             Level<TunnelSawBoss>(Tunnel, Kit("ScatterCannonItem", "BarrelRoll")),
             Level<AbyssSubmarineBoss>(Underwater, Kit("BeamEmitterItem", "Telekinesis"))
         }, Array.Empty<string>()),
-        new FlightTrials("Final Exam", new[] { Boss<SeraphJudicatorBoss>(Heaven), Boss<VoidSovereignBoss>(LevelId.Void) },
+        new FlightTrials("Final Exam", ShipFrame.Ember, new[] { Boss<SeraphJudicatorBoss>(Heaven), Boss<VoidSovereignBoss>(LevelId.Void) },
             Kit("WindUpCannonItem", "ProteinSupplement", "Bookmark", "MirrorBurst"), difficulty: RunDifficulty.Hard)
     };
 
