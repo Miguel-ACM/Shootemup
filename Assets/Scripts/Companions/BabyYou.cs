@@ -24,6 +24,25 @@ public class BabyYou : ACompanion
         GameInput.PrimaryReleased += PrimaryReleasedCompanion;
     }
 
+    void Start()
+    {
+        var owner = GetComponentInParent<Shipcontroller>();
+        if (owner == null) owner = FindAnyObjectByType<Shipcontroller>();
+        if (owner == null) return;
+        var miniature = ShipFrames.BuildDisplay(owner, ShipFrames.Current);
+        if (miniature == null) return;
+        var original = GetComponent<PSXObjectVisual>();
+        if (original != null) original.Hide();
+        var sprite = GetComponent<SpriteRenderer>();
+        if (sprite != null) sprite.enabled = false;
+        miniature.transform.localScale *= .48f;
+        miniature.transform.SetParent(transform, true);
+        miniature.transform.localPosition = Vector3.zero;
+        miniature.transform.localRotation = Quaternion.identity;
+        foreach (var renderer in miniature.GetComponentsInChildren<MeshRenderer>())
+            renderer.sortingLayerName = "Player";
+    }
+
     void PrimaryPressedCompanion(InputAction.CallbackContext ctx)
     {
         isStopingPrimary = false;
