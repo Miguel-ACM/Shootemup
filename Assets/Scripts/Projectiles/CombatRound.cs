@@ -604,6 +604,7 @@ public abstract class CombatRound : AEnemyBullet
     internal float swayAmplitude, swayRate;
     internal float zigEvery, zigAngle, nextZig;
     internal int zigSign;
+    internal bool signalCargoSplit;
     internal float splitAt, splitSpread, splitSpeed, splitRadius;
     internal int splitCount;
     internal bool splitAimed, splitKunai;
@@ -624,6 +625,7 @@ public abstract class CombatRound : AEnemyBullet
         lastVelocity = exitVelocity = Vector2.zero;
         rampAt = rampOver = 0;
         rampTo = 1;
+        signalCargoSplit = false;
         pauseAt = fadeAt = splitAt = -1;
         pauseHold = resumeAngle = 0;
         resumeSpeed = 1;
@@ -872,8 +874,17 @@ public abstract class CombatRound : AEnemyBullet
         }
         else if (resumed && pauseHold > 0 && age < pauseAt + pauseHold + .1f)
             visual.color = Color.white;
+        if (signalCargoSplit)
+        {
+            float wind = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(splitAt - .65f, splitAt, age));
+            transform.rotation = Quaternion.Euler(0, 0, Mathf.Sign(heading.x) * 180 * wind);
+            float glint = 1 + wind * (.45f + .4f * Mathf.Cos(wind * 4 * Mathf.PI));
+            visual.color = new Color(glint, glint, glint, 1);
+        }
         if (splitAt >= 0 && age >= splitAt && Live.Count + splitCount <= Limit)
         {
+            if (signalCargoSplit)
+                ItemSpark.Emit(transform.position, Accent, 3, .09f);
             if (splitAimed)
                 heading = CombatVisuals.Aim(transform.position);
             for (int i = 0; i < splitCount; i++)
