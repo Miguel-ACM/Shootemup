@@ -34,6 +34,8 @@ public static class EnemyExpansion
         => new Entry(level, type, (int)id, scale, nose, () => IndustrialMeshFactory.DeepHull(id), ports, Array.Empty<Vector3>(), parts);
 
     public static readonly Entry[] All = {
+        new Entry(LevelId.Mushroom, typeof(Earthstar), (int)CombatHullId.Earthstar, .55f, false, IndustrialMeshFactory.EarthstarMesh,
+            new[] { new Vector3(0, 0, -.32f) }, Array.Empty<Vector3>(), WavePartLibrary.EarthstarParts),
         new Entry(LevelId.Mushroom, typeof(PuffballDrifter), (int)CombatHullId.PuffballDrifter, .53f, false, IndustrialMeshFactory.BuildPuffballDrifter,
             new[] { new Vector3(0, .28f, -.40f) }, Array.Empty<Vector3>(), WavePartLibrary.PuffballDrifterParts),
         new Entry(LevelId.Mushroom, typeof(BracketFan), (int)CombatHullId.BracketFan, .53f, false, IndustrialMeshFactory.BuildBracketFan,

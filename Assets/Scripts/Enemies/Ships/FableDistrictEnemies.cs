@@ -74,7 +74,7 @@ public sealed class MyceliumLancer : DistrictEnemy
         {
             float lane = i - (n - 1) * .5f;
             Fire<NeedleRound>(Muzzle(), CombatVisuals.Rotate(Aim, lane * 10), 3.0f + Mathf.Abs(lane) * .35f, .18f, i == 0)
-                .Pause(.78f, .25f, CombatRound.Turn.Down, 0, 4.6f);
+                .Pause(.78f, .25f, CombatRound.Turn.Down, 0, .96f);
         }
     }
 }

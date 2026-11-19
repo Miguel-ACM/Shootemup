@@ -604,7 +604,7 @@ public abstract class CombatRound : AEnemyBullet
     internal float swayAmplitude, swayRate;
     internal float zigEvery, zigAngle, nextZig;
     internal int zigSign;
-    internal bool signalCargoSplit;
+    internal bool signalCargoSplit, settlingSpore;
     internal float splitAt, splitSpread, splitSpeed, splitRadius;
     internal int splitCount;
     internal bool splitAimed, splitKunai;
@@ -625,7 +625,7 @@ public abstract class CombatRound : AEnemyBullet
         lastVelocity = exitVelocity = Vector2.zero;
         rampAt = rampOver = 0;
         rampTo = 1;
-        signalCargoSplit = false;
+        signalCargoSplit = settlingSpore = false;
         pauseAt = fadeAt = splitAt = -1;
         pauseHold = resumeAngle = 0;
         resumeSpeed = 1;
@@ -874,6 +874,13 @@ public abstract class CombatRound : AEnemyBullet
         }
         else if (resumed && pauseHold > 0 && age < pauseAt + pauseHold + .1f)
             visual.color = Color.white;
+        if (settlingSpore && age >= rampOver)
+        {
+            MakeHarmless();
+            float alpha = 1 - Mathf.Clamp01((age - rampOver) / .55f);
+            visual.color = new Color(1, 1, 1, alpha);
+            if (alpha <= 0) { Release(); return; }
+        }
         if (signalCargoSplit)
         {
             float wind = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(splitAt - .65f, splitAt, age));
