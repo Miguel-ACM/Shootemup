@@ -3,142 +3,188 @@ using UnityEngine;
 
 public sealed partial class VoidSovereignBoss
 {
+    const float InterludeLead = .65f, PassageSeconds = 7f;
+    const float ChargeAt = 2.45f, FireAt = 3.4f, MoveAt = 3.65f, ArriveAt = 6.45f, CeaseAt = 6.65f;
+    readonly PulseLaser[] interludeLasers = new PulseLaser[2];
+
     IEnumerator Interlude(int chapter)
     {
-        Hidden=true;InterludeElapsed=0;contact.enabled=false;
-        foldBasis=Hull.localRotation;
-        float beatAt=.9f;int beat=0;
-        // Wall-clock combat seconds, independent of difficulty/tempo. Pause and time stop suspend it.
-        while(InterludeElapsed<15)
+        Hidden = true;
+        InterludeElapsed = 0;
+        contact.enabled = false;
+        foldBasis = Hull.localRotation;
+        int passage = -1, beat = 0;
+        float nextBeat = 0;
+        while (InterludeElapsed < 15)
         {
-            if(!GameRules.playerDisabled&&!WorldTimeStop.Frozen)
+            if (!GameRules.playerDisabled && !WorldTimeStop.Frozen)
             {
-                InterludeElapsed=Mathf.Min(15,InterludeElapsed+Time.deltaTime);
-                if(Hull.gameObject.activeSelf)
+                float previous = InterludeElapsed;
+                InterludeElapsed = Mathf.Min(15, previous + Time.deltaTime);
+                if (Hull.gameObject.activeSelf)
                 {
-                    float fold = Mathf.Clamp01(InterludeElapsed/.65f);
-                    Fold(Mathf.SmoothStep(0,1,fold),false);
-                    if(fold>=1)
+                    float fold = Mathf.Clamp01(InterludeElapsed / InterludeLead);
+                    Fold(Mathf.SmoothStep(0, 1, fold), false);
+                    if (fold >= 1)
                     {
                         Dissolve(0);
                         Hull.gameObject.SetActive(false);
                     }
                 }
-                DrawEdgeTell(chapter,Mathf.Clamp01(InterludeElapsed/.9f));
-                if(InterludeElapsed>=beatAt&&InterludeElapsed<13.8f)
+
+                int half = InterludeElapsed < InterludeLead + PassageSeconds ? 0 : 1;
+                float start = InterludeLead + half * PassageSeconds;
+                float t = InterludeElapsed - start;
+                if (half != passage)
                 {
-                    PerimeterBarrage(chapter,beat++);
-                    beatAt+=Rest(chapter==1?.49f:chapter==2?.47f:.46f);
+                    passage = half;
+                    beat = 0;
+                    nextBeat = .28f;
                 }
+                for (int mouth = 0; mouth < 2; mouth++)
+                    PositionMouth(chapter, half, mouth, t);
+
+                if (t >= nextBeat && t < 2.12f)
+                {
+                    InterludeVolley(chapter, half, beat++);
+                    nextBeat += Rest(chapter == 1 ? .45f : .38f);
+                }
+
+                if (chapter == 1)
+                    SweepBeam(half, true, previous - start, t);
+                else
+                    for (int mouth = 0; mouth < 2; mouth++)
+                        SweepBeam(mouth, false, previous - start, t);
             }
             yield return null;
         }
-        foreach(var tell in edgeTell)tell.enabled=false;
+        foreach (var tell in edgeTell) tell.enabled = false;
         CombatRound.ClearAll();
-        UnfoldAt(new Vector3(0,Camera.UpLimit-3.25f,1));
-        Hidden=false;
+        UnfoldAt(new Vector3(0, Camera.UpLimit - 3.25f, 1));
+        Hidden = false;
         PlayPhaseBreak();
         yield return Unfold(1.1f);
     }
-    // One side owns the entire disappearance. The next disappearance takes the
-    // next side clockwise; old rounds are cleared before that new phrase begins.
-    static int SourceEdge(int chapter)=>(chapter-1)%4;
-    static Vector2 Inward(int edge)=>edge==0?Vector2.down:edge==1?Vector2.left:edge==2?Vector2.up:Vector2.right;
-    static Vector3 Source(int edge,int side)
+
+    void SweepBeam(int mouth, bool top, float previous, float t)
     {
-        Rect r=CombatRound.Border;float u=side<0?.27f:.73f;
-        if(edge==0||edge==2)return new Vector3(Mathf.Lerp(r.xMin,r.xMax,u),edge==0?r.yMax-.3f:r.yMin+.3f,1);
-        return new Vector3(edge==1?r.xMax-.3f:r.xMin+.3f,Mathf.Lerp(r.yMin,r.yMax,u),1);
-    }
-    void DrawEdgeTell(int chapter,float charge)
-    {
-        var ink=LevelProjectilePalette.Accent(LevelId.Void);ink.a=.12f+charge*.62f;
-        int edge=SourceEdge(chapter);Vector2 inward=Inward(edge);
-        Vector3 tangent=new Vector3(-inward.y,inward.x,0);
-        for(int i=0;i<4;i++)
+        var anchor = edgeTell[2 * mouth].transform;
+        if (previous < ChargeAt && t >= ChargeAt)
         {
-            // Two small chevrons identify the exact mouths, rather than lighting
-            // unrelated margins. Both mouths always belong to the same edge.
-            var line=edgeTell[i];line.enabled=true;
-            line.startColor=line.endColor=ink;
-            Vector3 p=Source(edge,i<2?-1:1);p.z=-1.1f;
-            line.SetPosition(0,p+tangent*(i%2==0?-.6f:.6f));
-            line.SetPosition(1,p+(Vector3)inward*(.2f+charge*.45f));
+            var beam = CombatRound.Launch<PulseLaser>(anchor.position, top ? Vector2.down : Vector2.left);
+            if (beam != null)
+            {
+                beam.Bind(anchor, Vector3.zero).Sustain();
+                beam.HoldForRelease(FireAt - ChargeAt);
+                beam.width = .56f;
+                var arena = CombatRound.Border;
+                beam.length = (top ? arena.height : arena.width) + 2;
+            }
+            interludeLasers[mouth] = beam;
+        }
+        var laser = interludeLasers[mouth];
+        if (laser == null || !laser.IsAttachedTo(anchor)) return;
+        if (previous < FireAt && t >= FireAt) laser.ReleaseHold();
+        if (t >= CeaseAt)
+        {
+            laser.Cease();
+            interludeLasers[mouth] = null;
         }
     }
-    // Tones (Miguel, 9 November 2026), a different split for each disappearance:
-    //   Funeral fans: the left mouth fans bright, the right mouth dark.
-    //   Scissor brocade: whole waves alternate bright and dark.
-    //   Unmaking: fast crests bright, slow troughs dark, so the scallops read.
-    // Giant crowns and aimed or slow replies take the tone opposite their wave.
-    static HostileTone WaveTone(int chapter,int beat,int side,float speed)
-        =>chapter==1?(side<0?HostileTone.Bright:HostileTone.Dark):
-          chapter==2?(beat%2==0?HostileTone.Bright:HostileTone.Dark):
-          speed>=3.0f?HostileTone.Bright:HostileTone.Dark;
-    void PerimeterBarrage(int chapter,int beat)
+
+    // The first cut leaves the far half open. After the rest the opposite cut
+    // crosses the first one's endpoint. The side rifts divide that motion into
+    // two parallel shelves, leaving the space between them open throughout.
+    void PositionMouth(int chapter, int half, int mouth, float t)
     {
-        if(beat%6==5)return;
-        Weave(chapter,beat);
-        CombatRound.LaunchTone=HostileTone.Bright;
-    }
-    void Weave(int chapter,int beat)
-    {
-        int edge=SourceEdge(chapter),count=Dense(chapter==3?17:15);
-        bool crown=beat%4==0;
-        Vector2 inward=Inward(edge);
-        for(int side=-1;side<=1;side+=2)
+        bool top = chapter == 1;
+        float home = mouth == 0 ? .26f : .74f;
+        float from = top ? 0 : mouth * .5f;
+        float to = from + (top ? .58f : .29f);
+        if (half == 1)
         {
-            Vector3 p=Source(edge,side);
-            if(CombatVisuals.Player!=null&&Vector2.Distance(p,CombatVisuals.Player.position)<1.6f)continue;
-            // Unmaking's crests carry both tones, so its punctuating moon is dark.
-            // Void fires nothing aimed (Miguel, 10 November 2026): a straight inward moon.
-            CombatRound.LaunchTone=chapter==3?HostileTone.Dark:Other(WaveTone(chapter,beat,side,0));
-            if(beat%7==0)
-                CombatRound.Launch<CrescentRound>(p,inward,2.8f,.22f).LivesFor(12);
-            for(int i=0;i<count;i++)
+            from = 1 - from;
+            to = 1 - to;
+        }
+        float track = home;
+        bool cutting = !top || mouth == half;
+        if (cutting)
+        {
+            float depart = Mathf.SmoothStep(home, from, Mathf.InverseLerp(1.5f, ChargeAt, t));
+            track = Mathf.Lerp(depart, to, Mathf.InverseLerp(MoveAt, ArriveAt, t));
+        }
+
+        var r = CombatRound.Border;
+        Vector3 p = top
+            ? new Vector3(Mathf.Lerp(Camera.LeftLimit, Camera.RightLimit, track), Mathf.Max(Camera.UpLimit + .12f, r.yMax - .14f), -1.1f)
+            : new Vector3(Mathf.Max(Camera.RightLimit + .12f, r.xMax - .14f), Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, track), -1.1f);
+        Vector3 inward = top ? Vector3.down : Vector3.left;
+        Vector3 tangent = top ? Vector3.right : Vector3.up;
+        float charge = Mathf.Clamp01(InterludeElapsed / InterludeLead);
+        var ink = LevelProjectilePalette.Accent(LevelId.Void);
+        ink.a = cutting || t < ChargeAt ? .2f + .56f * charge : .2f;
+        for (int arm = 0; arm < 2; arm++)
+        {
+            var tell = edgeTell[mouth * 2 + arm];
+            tell.transform.position = p;
+            tell.enabled = true;
+            tell.startColor = tell.endColor = ink;
+            tell.SetPosition(0, p + tangent * (arm == 0 ? -.32f : .32f));
+            tell.SetPosition(1, p + inward * (.18f + .24f * charge));
+        }
+    }
+
+    void InterludeVolley(int chapter, int half, int beat)
+    {
+        var previousTone = CombatRound.LaunchTone;
+        for (int mouth = 0; mouth < 2; mouth++)
+        {
+            var p = edgeTell[mouth * 2].transform.position;
+            // Leave reaction time for a ship already beside a projectile mouth.
+            // The following charged cut still visits that edge.
+            if (CombatVisuals.Player != null && Vector2.Distance(p, CombatVisuals.Player.position) < 1.6f) continue;
+            int hand = mouth == 0 ? -1 : 1;
+            CombatRound.LaunchTone = mouth == 0 ? HostileTone.Bright : HostileTone.Dark;
+            if (chapter == 1)
             {
-                float u=Across(i,count);
-                if(chapter==1)
+                // The two plumes open outward on the call and fold inward on the reply.
+                int count = Dense(half == 0 ? 11 : 9);
+                for (int i = 0; i < count; i++)
                 {
-                    // Funeral fans: mirrored peacock feathers open as one moving wavefront.
-                    float angle=side*(u*57+Mathf.Sin(beat*.16f)*22);
-                    var shade=WaveTone(chapter,beat,side,0);
-                    CombatRound.LaunchTone=crown&&i==count-1?Other(shade):shade;
-                    WovenShot(i,crown&&i==count-1,chapter,p,CombatVisuals.Rotate(inward,angle),
-                        3.0f+.9f*(1-u*u)).Ramp(1.25f,1.1f,1).FadeAt(crown&&i==count-1?5.8f:9);
+                    float u = Across(i, count);
+                    float angle = u * (half == 0 ? 49 : 35) + hand * (half == 0 ? 1 : -1) * (beat * 8 - 12);
+                    Vector2 axis = CombatVisuals.Rotate(Vector2.down, angle);
+                    if (half == 0)
+                        CombatRound.Launch<ChevronRound>(p, axis, 3.5f + .8f * (1 - u * u), .18f);
+                    else
+                        CombatRound.Launch<NeedleRound>(p, axis, 2.8f, .17f).Ramp(1.6f, .85f, .55f);
                 }
-                else if(chapter==2)
+                if (beat == 0)
+                    CombatRound.Launch<GiantOrb>(p, CombatVisuals.Rotate(Vector2.down, hand * 75), 2.85f, .57f);
+            }
+            else
+            {
+                // A rack of lances brakes and turns together; the reply threads
+                // faster, straight kunai between slower scallops.
+                int count = Dense(half == 0 ? 9 : 11);
+                for (int i = 0; i < count; i++)
                 {
-                    // Scissor brocade: all strands hinge together, preserving the ordered comb.
-                    float angle=side*(u*51+24*Mathf.Sin(beat*.21f));
-                    var shade=WaveTone(chapter,beat,side,0);
-                    CombatRound.LaunchTone=crown&&i==count-1?Other(shade):shade;
-                    WovenShot(i,crown&&i==count-1,chapter,p,CombatVisuals.Rotate(inward,angle),
-                        2.7f+.6f*(1-u*u))
-                        .Pause(.85f,.20f,CombatRound.Turn.Rotate,-side*26,1.2f).FadeAt(crown&&i==count-1?5.8f:9);
-                    CombatRound.LaunchTone=Other(shade);
-                    if(!crown&&beat%3==0&&i==count-1)
-                        CombatRound.Launch<SimpleRound>(p,CombatVisuals.Rotate(inward,angle),1.65f,.22f).FadeAt(8);
+                    float u = Across(i, count);
+                    var axis = CombatVisuals.Rotate(Vector2.left, u * 37 + hand * (beat % 3 - 1) * 8);
+                    if (half == 0)
+                        CombatRound.Launch<NeedleRound>(p, axis, 3.65f, .17f)
+                            .Pause(.78f, .32f, CombatRound.Turn.Rotate, hand * (beat % 2 == 0 ? 32 : -32), 1.22f).ShowTurn();
+                    else if (i % 2 == 0)
+                        CombatRound.Launch<KunaiRound>(p, axis, 4.1f, .18f);
+                    else if (i % 4 == 1)
+                        CombatRound.Launch<ChevronRound>(p, axis, 2.85f, .19f).Sway(hand * .22f, .65f);
+                    else
+                        CombatRound.Launch<CrescentRound>(p, axis, 2.85f, .20f).Sway(hand * .22f, .65f);
                 }
-                else
-                {
-                    // Unmaking: opposed, scalloped fronts interleave fast crests and slow troughs.
-                    float angle=side*(u*64+18*Mathf.Sin(beat*.2f));
-                    float speed=3.0f+.75f*Mathf.Cos(u*Mathf.PI*2+beat*.22f);
-                    var shade=WaveTone(chapter,beat,side,speed);
-                    CombatRound.LaunchTone=crown&&i==count-1?Other(shade):shade;
-                    WovenShot(i,crown&&i==count-1,chapter,p,CombatVisuals.Rotate(inward,angle),speed)
-                        .Sway(.16f,.5f).Ramp(1.3f,1,1).FadeAt(crown&&i==count-1?5.8f:9);
-                }
+                if (beat == 0)
+                    CombatRound.Launch<GiantOrb>(p, CombatVisuals.Rotate(Vector2.left, -hand * 70), 2.7f, .57f);
             }
         }
-    }
-    static CombatRound WovenShot(int lane,bool giant,int chapter,Vector3 p,Vector2 axis,float speed)
-    {
-        if(giant)
-            return CombatRound.Launch<GiantOrb>(p,axis,speed*.9f,chapter==3?.72f:.62f);
-        if(lane%4==2)
-            return CombatRound.Launch<ChevronRound>(p,axis,speed,.19f);
-        return lane%4==0?(CombatRound)CombatRound.Launch<SimpleRound>(p,axis,speed,.19f):CombatRound.Launch<NeedleRound>(p,axis,speed,.17f);
+        CombatRound.LaunchTone = previousTone;
     }
 }

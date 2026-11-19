@@ -460,6 +460,7 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - The Dream miniboss is a moon barque. Its ivory sun sail and indigo constellation sail sit over a crescent hull. A brass pendulum catches before each volley from the two gunwale lanterns.
 - Dream's fast accelerating shots use the long needle silhouette. Stars share its palette with crescents. The Painter's final rose window overlaps a continuous pattern of dots and stars from the moving hands.
 - On every difficulty Void opens with purple-black memories of the three late bosses from the player's route, in order. Each performs a stronger signature attack. A one-sided survival interlude follows the third memory. The scythe mantis and mandible maw follow, then a second interlude and the crystal star. The star has twice a normal form's health. The six forms share one victory.
+- Void's first survival interlude alternates ceiling plumes with a single lateral beam sweep. The second uses turning lances and paired horizontal sweeps from the right edge. Each return pass reaches the previous refuge after a charge and a rest. Check both complete interludes for stationary blind spots and a traversable moving route on all three difficulties.
 
 ## Route and combat revisions (19 November 2026)
 
