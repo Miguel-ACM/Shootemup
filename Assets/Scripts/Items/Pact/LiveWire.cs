@@ -1,11 +1,11 @@
 [UnityEngine.Scripting.Preserve]
 public sealed class LiveWire : APactItem
 {
-    public const int Price = 1;
+    public const int Price = 3;
 
     void Awake()
     {
-        SetPact("Live Wire", "Paid actives use no energy.", "Each activation costs one multiplier step.");
+        SetPact("Live Wire", "Actives use no energy.", "Every active costs 3 multiplier steps.");
     }
 
     protected override void Seal() => s.GetComponent<CombatUpgrades>().Add(UpgradeKind.LiveWire);

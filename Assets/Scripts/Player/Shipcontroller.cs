@@ -238,15 +238,14 @@ public class Shipcontroller : MonoBehaviour
         }
         var upgrades = GetComponent<CombatUpgrades>();
         float price = active.EffectivePressCost;
-        if (price > 0 && upgrades != null && upgrades.Count(UpgradeKind.LiveWire) > 0)
+        if (active.StartsActivation && upgrades != null && upgrades.Count(UpgradeKind.LiveWire) > 0)
         {
             if (Score.CurrentMultiplier <= LiveWire.Price)
                 return -1;
             float remaining = active.PressWithEnergyEfficiency(price);
             if (remaining < 0)
                 return remaining;
-            if (remaining < price)
-                Score.TrySpendMultiplier(LiveWire.Price);
+            Score.TrySpendMultiplier(LiveWire.Price);
             return mana;
         }
         float stored = upgrades != null ? upgrades.Reserve : 0;

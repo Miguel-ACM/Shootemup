@@ -286,7 +286,7 @@ public sealed class IndustrialHUD : MonoBehaviour
             return;
         nextUpdate = Time.unscaledTime + .1f;
         score.text = DimLeadingZeros(Score.CurrentScore.ToString("000000000"));
-        chain.text = "x" + Score.CurrentMultiplier;
+        chain.text = Score.CurrentMultiplier > 1 ? "x" + Score.CurrentMultiplier : string.Empty;
         coins.text = RunCoins.Count.ToString();
         // The orchestrator arrives with the additive Run scene, possibly after these instruments.
         if (waves == null)

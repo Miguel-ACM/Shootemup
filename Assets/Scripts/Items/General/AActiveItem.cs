@@ -8,6 +8,7 @@ public abstract class AActiveItem : AItem
     public float cd = 2f;
     public float lastCD = 1000f;
     protected virtual bool StartsPaidActivation => true;
+    public bool StartsActivation => StartsPaidActivation;
     public float EffectivePressCost => StartsPaidActivation ? cost * GameRules.activeEnergyCost : 0;
 
 
