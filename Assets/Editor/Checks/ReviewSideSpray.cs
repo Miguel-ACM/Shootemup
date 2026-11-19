@@ -76,7 +76,7 @@ public static class ReviewSideSpray
         var pixels = new Texture2D(405, 720, TextureFormat.RGB24, false);
         Directory.CreateDirectory(Folder + "/Motion");
         UnityEngine.Random.InitState(20261106);
-        CombatRound.Launch<GiantOrb>(new Vector3(0, 6.7f), Vector2.down, 1.65f, .66f).SideSpray(1.2f);
+        CombatRound.Launch<GiantOrb>(new Vector3(0, 6.7f), Vector2.down, 2.1f, .66f).SideSpray(2.6f);
         for (int frame = 0; frame < 90; frame++)
         {
             for (int step = 0; step < 4; step++)
@@ -163,7 +163,7 @@ public sealed class SideSprayReviewRuntime : MonoBehaviour
                     foreach (var round in CombatRound.Live)
                     {
                         if (round is GiantOrb) giants++;
-                        if (round.generation == 1 && round is SimpleRound) children++;
+                        if (round.generation == 1 && (level == LevelId.Snow ? round is NeedleRound : round is SimpleRound bead && bead.Curving)) children++;
                     }
                     giantPeak = Mathf.Max(giantPeak, giants); childPeak = Mathf.Max(childPeak, children);
                 }
@@ -177,53 +177,47 @@ public sealed class SideSprayReviewRuntime : MonoBehaviour
         Clear(); Difficulty.Select(RunDifficulty.Hard);
 
         GiantOrb orb = null;
-        var rates = new Dictionary<RunDifficulty,int>();
+        foreach (var level in new[] { LevelId.Snow, LevelId.Candyland })
         foreach (var difficulty in new[] { RunDifficulty.Hard, RunDifficulty.Normal, RunDifficulty.Easy })
         {
-            Difficulty.Select(difficulty); UnityEngine.Random.InitState(6110603 + (int)difficulty);
-            Vector2 heading = CombatVisuals.Rotate(Vector2.down, difficulty == RunDifficulty.Normal ? 16 : 0);
+            LevelRun.Preview(level, 6110603, 1);
+            Difficulty.Select(difficulty);
+            bool taffy = level == LevelId.Candyland;
+            int strokes = Mathf.Max(2,Difficulty.Dense(taffy ? 7 : 5));
+            Vector2 heading = CombatVisuals.Rotate(Vector2.down, 16);
             Vector2 side = new Vector2(-heading.y, heading.x);
             orb = CombatRound.Launch<GiantOrb>(new Vector3(0, 2), heading, 0, .66f).SideSpray();
             orb.damage = 27; orb.generation = 2;
-            bool warned = false, single = true, inherited = true, onRim = true, sameSide = false;
-            int left = 0, right = 0, lastSide = 0;
-            float lowAngle = 100, highAngle = -100, lowSpeed = 100, highSpeed = 0;
-            var timings = new List<int>();
-            for (int frame = 0; frame < 300; frame++)
+            bool warned = false, geometry = true, inherited = true;
+            int releases = 0, rests = 0, lastFrame = -1;
+            for (int frame = 0; frame < 530; frame++)
             {
                 yield return null;
-                warned |= orb.GetComponent<SpriteRenderer>().color.r > 1.1f;
+                if (releases == 0 && orb.GetComponent<SpriteRenderer>().color.r > 1.1f)
+                    warned = true;
                 scratch.Clear();
                 foreach (var round in CombatRound.Live) if (round != orb) scratch.Add(round);
                 if (scratch.Count == 0) continue;
-                timings.Add(frame); single &= scratch.Count == 1;
+                geometry &= scratch.Count == (taffy ? 1 : 2);
+                if (lastFrame>=0 && frame-lastFrame>35) rests++;
+                lastFrame = frame;
+                int flankSum = 0;
                 foreach (var round in scratch)
                 {
                     int flank = Vector2.Dot(side, round.Heading) < 0 ? -1 : 1;
-                    if (flank < 0) left++; else right++;
-                    sameSide |= lastSide == flank; lastSide = flank;
-                    float lean = Vector2.SignedAngle(side * flank, round.Heading);
-                    float velocity = round.speed / (1.25f * GameRules.enemyBulletSpeed * LevelRun.EnemyShotSpeedScale);
-                    lowAngle = Mathf.Min(lowAngle, lean); highAngle = Mathf.Max(highAngle, lean);
-                    lowSpeed = Mathf.Min(lowSpeed, velocity); highSpeed = Mathf.Max(highSpeed, velocity);
-                    inherited &= round.generation == 3 && round.damage == 27 && round.UsesPixelContact;
-                    onRim &= Vector2.Distance(round.transform.position, orb.transform.position) > .5f;
+                    flankSum += flank;
+                    geometry &= taffy ? round is SimpleRound bead && bead.Curving && flank == ((releases/strokes)%2==0 ? 1 : -1) : round is NeedleRound;
+                    inherited &= round.generation == 3 && round.damage == 27 && round.UsesPixelContact &&
+                        Vector2.Distance(round.transform.position, orb.transform.position) > .5f;
                     release.Invoke(round, null);
                 }
+                geometry &= taffy || flankSum == 0;
+                releases++;
             }
-            rates[difficulty] = timings.Count;
-            int minimum = difficulty == RunDifficulty.Hard ? 40 : difficulty == RunDifficulty.Normal ? 20 : 7;
-            Check(warned && timings.Count >= minimum && timings[0] >= 35, difficulty + ": initial warning, then " + timings.Count + " rapid individual shots in five seconds.");
-            Check(single && left > 0 && right > 0 && sameSide, difficulty + ": random left/right choices, including repeated sides; left=" + left + ", right=" + right + ".");
-            Check(lowAngle >= -9.01f && highAngle <= 9.01f && lowAngle < -1 && highAngle > 1 &&
-                lowSpeed >= .899f && highSpeed <= 1.101f && highSpeed-lowSpeed > .04f,
-                $"{difficulty}: skew {lowAngle:F2}..{highAngle:F2} degrees; speed {lowSpeed:F3}..{highSpeed:F3} of the authored velocity.");
-            Check(timings.Zip(timings.Skip(1), (a, b) => b - a).Distinct().Count() > 1 && inherited && onRim,
-                difficulty + ": irregular cadence, rim origins, inherited damage/generation and exact pixel contacts.");
+            Check(warned && releases == 3*strokes && rests == 2, $"{level} {difficulty}: three warned phrases, {releases} release beats and {rests} rests.");
+            Check(geometry && inherited, $"{level} {difficulty}: flank geometry, rim origins and inherited damage.");
             release.Invoke(orb, null);
         }
-        Check(rates[RunDifficulty.Hard] > rates[RunDifficulty.Normal] * 1.4f && rates[RunDifficulty.Normal] > rates[RunDifficulty.Easy] * 1.5f,
-            "Difficulty thins the same rapid stream through cadence.");
         Difficulty.Select(RunDifficulty.Hard);
         var ordinary = CombatRound.Launch<GiantOrb>(new Vector3(0, 2), Vector2.down, 0, .66f);
         Check(ReferenceEquals(orb, ordinary), "The same pooled object is reused as an ordinary orb.");

@@ -4,7 +4,7 @@ using UnityEngine;
 // live budget returns null, and every step below simply passes that through.
 public static class RoundProgram
 {
-    // A giant carrier that keeps flying while throwing ragged spurts from either flank.
+    // A moving orb with three side releases: paired ice strokes or alternating candy ribbons.
     public static GiantOrb SideSpray(this GiantOrb shot, float velocity = 2.7f)
     {
         if (shot != null)

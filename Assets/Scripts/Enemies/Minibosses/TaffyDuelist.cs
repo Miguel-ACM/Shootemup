@@ -19,7 +19,7 @@ public sealed class TaffyDuelist : DistrictMiniboss
     }
 
     // Candy taffy duelist: taffy pulls that curl in mirror, mirrored ricocheting
-    // sprinkles, giant gumdrops shedding sideways sprinkles, and a ceiling canopy.
+    // sprinkles, giant gumdrops trailing hooked ribbons, and a ceiling canopy.
     protected override void Attack()
     {
         int beat = volley % 4;
@@ -53,7 +53,7 @@ public sealed class TaffyDuelist : DistrictMiniboss
         }
         else if (beat == 2)
         {
-            // A dark and a bright gumdrop, each shedding sprinkles of its own tone. The pair
+            // A dark and a bright gumdrop, each unspooling ribbons of its own tone. The pair
             // stays mirrored, but each throw opens at its own angle.
             float spread = Random.Range(12f, 30f);
             for (int mirror = -1; mirror <= 1; mirror += 2)

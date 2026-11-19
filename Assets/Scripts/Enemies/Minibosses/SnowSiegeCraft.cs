@@ -15,7 +15,7 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
     // Snow siege craft: it hurls a spray of shards straight up and out of sight, then
     // the snow falls back from the top of the screen across the whole width; between
     // storms it fires mirrored arrow fans that freeze and re-aim, then rolls out
-    // giant snowballs that shed irregular sideways sprays as they descend.
+    // giant snowballs that draw feathered wings of ice needles as they descend.
     protected override void Attack()
     {
         int beat = volley % 3;
@@ -57,7 +57,7 @@ public sealed class SnowSiegeCraft : DistrictMiniboss
         }
         else
         {
-            // One dark and one bright snowball; each sheds sprays of its own tone. The pair
+            // One dark and one bright snowball; each sheds needles of its own tone. The pair
             // stays mirrored, but each throw opens at its own angle.
             float spread = Random.Range(10f, 26f);
             for (int mirror = -1; mirror <= 1; mirror += 2)
