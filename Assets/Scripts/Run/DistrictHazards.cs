@@ -76,7 +76,7 @@ public sealed class DistrictHazards : MonoBehaviour
                 next = now + R(7.5f, 10.5f) * rest;
                 break;
             case DistrictCondition.Plague:
-                int swarm = Difficulty.Easy ? 7 : Difficulty.Hard ? 14 : 10;
+                int swarm = Difficulty.Easy ? 10 : Difficulty.Hard ? 20 : 15;
                 int side = random.Next(2) == 0 ? -1 : 1;
                 PlagueMote.Spill(new Vector2(side * R(1.25f, 3.45f), Camera.UpLimit + .65f), swarm);
                 next = now + R(3.8f, 5.6f) * rest;

@@ -7,13 +7,13 @@ public static partial class WavePartLibrary
 
     public static readonly WavePart[] PlagueMoteParts =
     {
-        DeepPart("Drain flock", nameof(PlagueMote), WaveShape.Chevron, 5, 5.3f, 2, System.Array.Empty<float>(),
+        DeepPart("Drain flock", nameof(PlagueMote), WaveShape.Chevron, 7, 5.3f, 2, System.Array.Empty<float>(),
             -.72f, 1.27f, -.57f, 1.05f, -.28f, .8f, .03f, .51f, .12f, .24f, .23f, -.28f),
-        DeepPart("Culvert spill", nameof(PlagueMote), WaveShape.Rake, 5, 5.2f, 3, System.Array.Empty<float>(),
+        DeepPart("Culvert spill", nameof(PlagueMote), WaveShape.Rake, 7, 5.2f, 3, System.Array.Empty<float>(),
             -1.36f, .7f, -.73f, .69f, -.26f, .62f, .31f, .49f, .72f, .29f, 1.29f, .18f),
-        DeepPart("Backwash brood", nameof(PlagueMote), WaveShape.Diamond, 5, 5.6f, 6, System.Array.Empty<float>(),
+        DeepPart("Backwash brood", nameof(PlagueMote), WaveShape.Diamond, 7, 5.6f, 6, System.Array.Empty<float>(),
             -.55f, 1.28f, -.37f, 1.02f, -.16f, .77f, .06f, .48f, .38f, .25f, .65f, -.23f),
-        DeepPart("Infested flues", nameof(PlagueMote), WaveShape.Train, 6, 4.8f, 3, System.Array.Empty<float>(),
+        DeepPart("Infested flues", nameof(PlagueMote), WaveShape.Train, 9, 4.8f, 3, System.Array.Empty<float>(),
             -1.38f, .84f, -.81f, .82f, -.49f, .72f, -.32f, .49f, -.12f, .18f, .05f, -.26f).Under(DistrictCondition.Plague),
     };
 

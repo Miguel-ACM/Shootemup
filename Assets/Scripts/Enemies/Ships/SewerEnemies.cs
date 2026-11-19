@@ -12,12 +12,12 @@ public sealed class PlagueMote : DistrictEnemy
     public override bool HoldsWave => !eventSpawn;
     public static int Population => flock.Count;
 
-    protected override void Configure() { health = 4; hullScale = .24f; }
+    protected override void Configure() { health = 5; hullScale = .24f; }
     protected override void Attack() { }
 
     public static void Spill(Vector2 entry, int count)
     {
-        for (int i = 0; i < count && Population < 42; i++)
+        for (int i = 0; i < count && Population < 56; i++)
         {
             var offset = new Vector2((i % 4 - 1.5f) * .33f, i / 4 * .40f);
             var mote = (PlagueMote)Spawn(typeof(PlagueMote), entry + offset);
@@ -91,7 +91,7 @@ public sealed class PlagueMote : DistrictEnemy
             }
         if (neighbors != 0)
             seek += centre * (.29f / neighbors) + align * (.055f / neighbors) + Vector2.ClampMagnitude(separate * .51f, 1.8f);
-        velocity = Vector2.MoveTowards(velocity, seek.normalized * (hunting ? 3.85f : 5.6f), dt * 8.5f);
+        velocity = Vector2.MoveTowards(velocity, seek.normalized * (hunting ? 5.05f : 6.1f), dt * 11.2f);
         transform.position += (Vector3)(velocity * dt);
         Hull.localRotation = Quaternion.Euler(0, 0, Vector2.SignedAngle(Vector2.down, velocity));
         for (int i = 0; i < tail.Length; i++)
