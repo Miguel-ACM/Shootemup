@@ -30,8 +30,27 @@ public static class EncounterChoice
     }
     public static int SalvageCoins(int tier, float luck) => 12 + Mathf.Max(0, tier - 1) * 4 + Mathf.FloorToInt(Mathf.Clamp(luck, 0, 2) * 12);
 
-    const double ExtraShotChance = .25;
+    const double ExtraShotChance = .05;
     public const int MaxOptions = 5;
+
+    // A regular hex has four tickets for every offensive upgrade's one.
+    static int Tickets(EncounterKind kind) => kind == EncounterKind.AttackSpeed ||
+        kind == EncounterKind.AttackDamage || kind == EncounterKind.ExtraShot ? 1 : 4;
+
+    static EncounterKind DrawWeighted(List<EncounterKind> bag, System.Random rng)
+    {
+        int total = 0;
+        foreach (var kind in bag)
+            total += Tickets(kind);
+        int ticket = rng.Next(total);
+        int index = 0;
+        while (ticket >= Tickets(bag[index]))
+        {
+            ticket -= Tickets(bag[index]);
+            index++;
+        }
+        return bag[index];
+    }
 
     public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false,
         float luck = 0, bool canTrade = false, bool canReforge = false, bool cargoAvailable = true, bool canGrowHull = true, bool opening = false)
@@ -39,8 +58,7 @@ public static class EncounterChoice
         // Shops are no longer offered mid-run; the hangar shop between runs replaces them.
         var bag = new List<EncounterKind> { EncounterKind.Item, EncounterKind.Salvage,
             EncounterKind.AttackSpeed, EncounterKind.AttackDamage };
-        // SHOTS +1 is the strongest stat hexagon, so it is eligible in only a quarter of draws
-        // (Miguel, 9 November 2026). Its own roll leaves the rest of the seeded draw unchanged.
+        // Even before the weighted draw, only one in twenty offers can contain SHOTS +1.
         if (new System.Random(seed ^ 0x5bd1e995).NextDouble() < ExtraShotChance)
             bag.Add(EncounterKind.ExtraShot);
         if (canGrowHull)
@@ -58,26 +76,16 @@ public static class EncounterChoice
             bag.Add(EncounterKind.Challenge);
         var rng = new System.Random(seed);
         int count = OptionCount(luck, (float)rng.NextDouble());
-        for (int i = bag.Count - 1; i > 0; i--)
+        int slotsBeforePact = pactAvailable ? count - 1 : count;
+        var picked = new List<EncounterKind>(count);
+        while (picked.Count < slotsBeforePact && bag.Count > 0)
         {
-            int j = rng.Next(i + 1);
-            var swap = bag[i];
-            bag[i] = bag[j];
-            bag[j] = swap;
+            var kind = opening && picked.Count == 0 ? EncounterKind.Item : DrawWeighted(bag, rng);
+            picked.Add(kind);
+            bag.RemoveAll(other => other == kind || Incompatible(kind, other));
         }
-        // Salvage provides a useful alternative even at full health and without spare items.
-        var picked = new List<EncounterKind> { opening ? EncounterKind.Item : bag[0] };
-        foreach (var kind in bag)
-            if (picked.Count < count && !picked.Contains(kind) && picked.TrueForAll(other => !Incompatible(other, kind)))
-                picked.Add(kind);
-        // A due pact replaces the last zone, so it is never crowded out.
         if (pactAvailable)
-        {
-            if (picked.Count == count)
-                picked[picked.Count - 1] = EncounterKind.Pact;
-            else
-                picked.Add(EncounterKind.Pact);
-        }
+            picked.Add(EncounterKind.Pact);
         return picked.ToArray();
     }
 
