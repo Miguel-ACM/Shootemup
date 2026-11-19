@@ -59,7 +59,7 @@ public static class EnemyExpansion
         new Entry(LevelId.Dream, typeof(PaintedMask), (int)CombatHullId.PaintedMask, .76f, false, IndustrialMeshFactory.PaintedMaskMesh,
             new[] { new Vector3(.12f, -.77f, -.24f) }, Array.Empty<Vector3>(), WavePartLibrary.PaintedMaskParts),
         new Entry(LevelId.Dream, typeof(DreamChampion), (int)CombatHullId.DreamChampion, .96f, false, IndustrialMeshFactory.DreamChampionMesh,
-            new[] { new Vector3(-.76f, -.45f, -.25f), new Vector3(.76f, -.45f, -.25f) }, Array.Empty<Vector3>(), Array.Empty<WavePart>()),
+            new[] { IndustrialMeshFactory.BarqueLantern(-1), IndustrialMeshFactory.BarqueLantern(1) }, Array.Empty<Vector3>(), Array.Empty<WavePart>()),
         new Entry(LevelId.Dream, typeof(DreamPainter), (int)CombatHullId.DreamPainter, .97f, false, IndustrialMeshFactory.DreamPainterMesh,
             Array.Empty<Vector3>(), Array.Empty<Vector3>(), Array.Empty<WavePart>()),
         DeepEntry(LevelId.Sewers, typeof(PlagueMote), CombatHullId.PlagueMote, .24f, false, WavePartLibrary.PlagueMoteParts),
@@ -124,6 +124,7 @@ public static class EnemyExpansion
     public static Material Material(int hull)
     {
         if (hull == (int)CombatHullId.DreamPainter) return IndustrialMeshFactory.DreamPorcelain;
+        if (hull == (int)CombatHullId.DreamChampion) return IndustrialMeshFactory.BarquePaint;
         if (hull == (int)CombatHullId.MushroomWarden) return IndustrialMeshFactory.MothPaint;
         if (hull == (int)CombatHullId.MushroomChampion) return IndustrialMeshFactory.StagPaint;
         if(hull==91)return HeavenAngelVisual.Surface;

@@ -455,6 +455,7 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - The laser companion sits a little farther aft and trails the pilot through turns.
 - Mushroom spores reverse horizontal steering through exposure and for five active-play seconds after leaving. A purple hull glow lasts through recovery. Mushroom formations are faster and sturdier. The Warden's three wing-led cards use layered spore blooms, crossing silk and a moving needle comb with a slower skirt of spores.
 - The Mushroom miniboss is a stag beetle gunship. Its spotted red wing cases lift to expose the gills before each volley. Both guns fire from the forks of its ivory mandibles.
+- The Dream miniboss is a moon barque. Its ivory sun sail and indigo constellation sail sit over a crescent hull. A brass pendulum catches before each volley from the two gunwale lanterns.
 - Dream's fast accelerating shots use the long needle silhouette. Stars share its palette with crescents. The Painter's final rose window overlaps a continuous pattern of dots and stars from the moving hands.
 - On every difficulty Void opens with purple-black memories of the three late bosses from the player's route, in order. Each performs a stronger signature attack. A one-sided survival interlude follows the third memory. The scythe mantis and mandible maw follow, then a second interlude and the crystal star. The star has twice a normal form's health. The six forms share one victory.
 

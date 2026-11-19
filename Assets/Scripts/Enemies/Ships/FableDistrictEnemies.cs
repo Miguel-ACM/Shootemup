@@ -185,6 +185,43 @@ public sealed class MushroomChampion : DistrictMiniboss
 
 public sealed class DreamChampion : DistrictMiniboss
 {
+    Transform sails, pendulum;
+    float swing;
+
+    internal void RigSails()
+    {
+        Hull.GetComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.BarqueHull();
+        Transform Fit(string label, Mesh mesh, Vector3 pivot)
+        {
+            var part = new GameObject(label);
+            part.transform.SetParent(Hull, false);
+            part.transform.localPosition = pivot;
+            part.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var surface = part.AddComponent<MeshRenderer>();
+            surface.sharedMaterial = IndustrialMeshFactory.BarquePaint;
+            surface.sortingLayerName = "Enemy";
+            return part.transform;
+        }
+        sails = Fit("Celestial sails", IndustrialMeshFactory.BarqueSails(), Vector3.zero);
+        pendulum = Fit("Escapement", IndustrialMeshFactory.BarquePendulum(), IndustrialMeshFactory.BarquePivot);
+        for (int i = 0; i < 2; i++)
+            firingCue.PlacePort(i, IndustrialMeshFactory.BarqueLantern(2*i-1), true, false);
+    }
+
+    protected override void Update()
+    {
+        float previous = age;
+        base.Update();
+        float dt = age - previous;
+        if (dt <= 0) return;
+        float windup = Engaged && !Retreating ? Mathf.Clamp01(1 - (nextAttack - age) / .55f) : 0;
+        // The weight catches on alternating sides of the escapement before each release.
+        float target = Mathf.Lerp(22 * Mathf.Sin(age * 4.6f), (volley % 2 == 0 ? 37 : -37), windup);
+        swing = Mathf.MoveTowards(swing, target, 160 * dt);
+        pendulum.localRotation = Quaternion.Euler(0, 0, swing);
+        sails.localRotation = Quaternion.Euler(0, 5 * Mathf.Sin(age * 2.6f) + 9 * windup, 0);
+    }
+
     protected override void Configure() { health = 618; hullScale = .96f; attackInterval = 1.27f; nextAttack = 1.25f; }
     protected override Vector3 Position(float t) =>
         new Vector3(2.8f * Mathf.Sin(t * 1.01f), Camera.UpLimit - 3.75f + .92f * Mathf.Cos(t * 2.02f), 1);

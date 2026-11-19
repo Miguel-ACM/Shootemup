@@ -5,15 +5,7 @@ using UnityEngine;
 public static partial class IndustrialMeshFactory
 {
     static Mesh fableBell, fableCap, fableLancer;
-    static Mesh fableKite, fableCrescent, fableMask, fableDreamChampion;
-
-    static void FablePort(Builder b, float x, float y, float radius, int colour)
-    {
-        b.Drum(new Vector3(x,y,-.30f), radius, .16f, colour, 10, 11);
-        b.Drum(new Vector3(x,y,-.40f), radius*.64f, .045f, 11, 10, colour);
-    }
-    static void FableVein(Builder b, Vector3[] points, float width, int colour)
-    { CutBlade(b, points, width, .055f, colour); }
+    static Mesh fableKite, fableCrescent, fableMask;
 
     // Shallow scales sit in the cap. Only their exposed crown needs geometry.
     static void CapSpot(Builder b, Vector3 center, Vector3 size, int tile)
@@ -198,16 +190,5 @@ public static partial class IndustrialMeshFactory
             new Vector3(.20f,-.45f,-.35f),new Vector3(.43f,-.29f,-.20f),.065f,.055f,5,false,4,4);
         FieldPort(b,new Vector3(.12f,-.77f,-.07f),.105f,13);
         return fableMask = b.Finish("PaintedMask");
-    }
-    public static Mesh DreamChampionMesh()
-    {
-        if(fableDreamChampion!=null)return fableDreamChampion;var b=new Builder();
-        BevelArmor(b,new[]{V(-1.12f,.30f),V(-.78f,.83f),V(-.10f,.98f),V(.44f,.73f),V(1.16f,.34f),V(.91f,-.47f),V(.27f,-.95f),V(-.46f,-.70f),V(-1.03f,-.51f)},.28f,15);
-        b.Prism(new[]{V(-.88f,.28f),V(-.48f,.71f),V(.05f,.73f),V(-.07f,-.55f),V(-.68f,-.43f)},.08f,5,new Vector3(0,0,-.22f),5);
-        CutStone(b,new Vector3(-.43f,.16f,-.31f),new Vector3(.21f,.29f,.07f),11,6);
-        CutStone(b,new Vector3(.43f,.21f,-.31f),new Vector3(.27f,.13f,.07f),11,6);
-        FableVein(b,new[]{new Vector3(-.32f,-.40f,-.33f),new Vector3(.02f,-.26f,-.33f),new Vector3(.45f,-.46f,-.33f)},.055f,13);
-        FablePort(b,-.76f,-.45f,.13f,5);FablePort(b,.76f,-.45f,.13f,8);
-        return fableDreamChampion=b.Finish("Dream champion / fractured mask");
     }
 }
