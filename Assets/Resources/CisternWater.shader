@@ -61,9 +61,9 @@ Shader "Shootemup/Cistern Water"
                 float sheen = smoothstep(.28,.58,crest);
                 float glint = smoothstep(.53,.74,capillary.g) * smoothstep(.14,.41,face);
                 float filament = surface.b * (.34 + .54*margin);
-                float3 color = i.color.rgb * float3(.65,.87,1.05);
-                color += float3(.036,.092,.115) * (.32 + .68*saturate(face+.4));
-                color += float3(.075,.125,.13)*sheen + float3(.085,.145,.15)*glint;
+                float3 color = i.color.rgb * float3(.66,1.00,.85);
+                color += float3(.038,.104,.077) * (.32 + .68*saturate(face+.4));
+                color += float3(.082,.144,.112)*sheen + float3(.085,.145,.15)*glint;
                 color += float3(.15,.20,.16)*filament;
 
                 // The discharge bends downstream into a broken wake at each spout.

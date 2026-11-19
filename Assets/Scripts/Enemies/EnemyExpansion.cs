@@ -70,7 +70,7 @@ public static class EnemyExpansion
         DeepEntry(LevelId.Sewers, typeof(OverflowBell), CombatHullId.OverflowBell, .64f, false, WavePartLibrary.OverflowBellParts, new Vector3(-.77f, .21f, -.35f), new Vector3(.77f, .21f, -.35f)),
         DeepEntry(LevelId.Sewers, typeof(PipeSkater), CombatHullId.PipeSkater, .46f, true, WavePartLibrary.PipeSkaterParts, new Vector3(0f, -1.05f, -.23f)),
         DeepEntry(LevelId.Sewers, typeof(GrateKeeper), CombatHullId.GrateKeeper, .92f, false, Array.Empty<WavePart>(), IndustrialMeshFactory.DredgeMuzzle(-1), IndustrialMeshFactory.DredgeMuzzle(1)),
-        DeepEntry(LevelId.Sewers, typeof(CisternHeart), CombatHullId.CisternHeart, 1.02f, false, Array.Empty<WavePart>(), new Vector3(-1.4f, -.47f, -.5f), new Vector3(-1.61f, .19f, -.46f), new Vector3(-1.13f, .8f, -.41f), new Vector3(1.4f, -.47f, -.5f), new Vector3(1.61f, .19f, -.46f), new Vector3(1.13f, .8f, -.41f), new Vector3(0f, 1.11f, -.49f)),
+        DeepEntry(LevelId.Sewers, typeof(CisternHeart), CombatHullId.CisternHeart, 1.02f, false, Array.Empty<WavePart>(), new Vector3(-1.4f, -.47f, -.5f), new Vector3(-1.61f, .19f, -.46f), new Vector3(-1.13f, .8f, -.41f), new Vector3(1.4f, -.47f, -.5f), new Vector3(1.61f, .19f, -.46f), new Vector3(1.13f, .8f, -.41f), new Vector3(0f, -1.01f, -.49f)),
         DeepEntry(LevelId.Core, typeof(TransitCube), CombatHullId.TransitCube, .59f, false, WavePartLibrary.TransitCubeParts),
         DeepEntry(LevelId.Core, typeof(FuseCube), CombatHullId.FuseCube, .59f, false, WavePartLibrary.FuseCubeParts),
         DeepEntry(LevelId.Core, typeof(SentryCube), CombatHullId.SentryCube, .58f, false, WavePartLibrary.SentryCubeParts, new Vector3(0f, -.72f, -.34f)),

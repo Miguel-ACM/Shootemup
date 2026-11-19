@@ -308,32 +308,43 @@ public static partial class IndustrialMeshFactory
 
     static void BuildCisternHeart(Builder b)
     {
-        var ring = new Vector2[20];
-        for (int i = 0; i < ring.Length; i++)
-        {
-            float a = i * Mathf.PI * 2 / ring.Length;
-            ring[i] = new Vector2(Mathf.Cos(a) * 1.87f, Mathf.Sin(a) * 1.29f);
-        }
-        BevelArmor(b, ring, .54f, 8, .04f, .26f);
-        // Stepped intake and structural rim make this a submerged pumping station.
-        CutHalo(b, new Vector3(0, .02f, -.30f), 1.22f, .12f, new Vector3(1.30f, .86f, 1), Quaternion.identity, 6, 10);
-        CutStone(b, new Vector3(0, .01f, -.30f), new Vector3(1.22f, .83f, .24f), 11, 10);
-        CutStone(b, new Vector3(0, .01f, -.54f), new Vector3(.76f, .48f, .12f), 2, 10);
-        CutHalo(b, new Vector3(0, 0, -.64f), .65f, .11f, new Vector3(1.25f, .83f, .9f), Quaternion.identity, 13, 16);
-        for (int i = -2; i <= 2; i++)
-            b.Box(new Vector3(i * .22f, -.04f, -.70f), new Vector3(.095f, .53f - Mathf.Abs(i) * .08f, .19f), 14, 11);
+        // Squat pelvis rises into a broad, flat snout facing the pilot.
+        KeelSkin(b, 0, 8, Frame(-1.05f,.54f,.14f), Frame(-.84f,1.25f,.32f),
+            Frame(-.43f,1.49f,.51f), Frame(.18f,1.16f,.55f), Frame(.73f,.87f,.42f), Frame(1.22f,.48f,.2f));
+        CutBlade(b, new[] { new Vector3(-1.18f,-.61f,-.35f), new Vector3(-.72f,-.91f,-.38f),
+            new Vector3(0,-.98f,-.34f), new Vector3(.72f,-.91f,-.38f), new Vector3(1.18f,-.61f,-.35f) }, .045f,.055f,11);
         foreach (int side in new[] { -1, 1 })
         {
-            CutBlade(b, new[] { new Vector3(side * .62f, -.90f, -.40f), new Vector3(side * 1.12f, -.86f, -.38f), new Vector3(side * 1.55f, -.54f, -.34f) }, .13f, .14f, 6);
-            CutBlade(b, new[] { new Vector3(side * .54f, .89f, -.40f), new Vector3(side * .89f, 1.04f, -.35f), new Vector3(side * 1.13f, .80f, -.30f) }, .12f, .13f, 6);
-            b.Box(new Vector3(side * 1.15f, -.02f, -.38f), new Vector3(.20f, .58f, .15f), 6, 11);
-            for (int n = -1; n <= 1; n++)
-                CutStone(b, new Vector3(side * 1.16f, n * .19f, -.48f), new Vector3(.055f, .055f, .04f), 13, 6);
-            DeepPort(b, new Vector3(side * 1.40f, -.47f, -.33f), .39f, 13);
-            DeepPort(b, new Vector3(side * 1.61f, .19f, -.29f), .33f, 13);
-            DeepPort(b, new Vector3(side * 1.13f, .80f, -.24f), .34f, 6);
+            Vector3 P(float x,float y,float z) => new Vector3(side*x,y,z);
+            // Folded hind legs, with a raised knee and a tapered ankle returning to the hip.
+            CutStone(b,P(1.27f,.58f,-.05f),new Vector3(.66f,.73f,.32f),8,9);
+            CutBlade(b,new[] { P(1.12f,.75f,-.20f),P(1.82f,.44f,-.16f),P(1.67f,1.12f,-.08f),
+                P(1.27f,1.42f,0) },.16f,.13f,14);
+            CutBlade(b,new[] { P(.98f,-.12f,-.20f),P(1.68f,-.27f,-.18f),P(1.88f,-.85f,-.13f) },.18f,.16f,8);
+            for(int toe=0;toe<3;toe++)
+            {
+                var tip=P(1.60f+toe*.28f,-1.28f+toe*.10f,-.12f);
+                CutBlade(b,new[] { P(1.88f,-.82f,-.14f), tip },.075f,.055f,14);
+                CutStone(b,tip,new Vector3(.10f,.09f,.055f),13,6);
+            }
+            CutStone(b,P(.91f,-.42f,-.43f),new Vector3(.43f,.40f,.33f),8,9);
+            CutStone(b,P(.91f,-.50f,-.69f),new Vector3(.27f,.21f,.13f),13,9);
+            CutStone(b,P(.91f,-.52f,-.80f),new Vector3(.18f,.055f,.04f),11,8);
+            DeepPort(b,P(1.40f,-.47f,-.33f),.18f,14);
+            DeepPort(b,P(1.61f,.19f,-.29f),.17f,14);
+            DeepPort(b,P(1.13f,.80f,-.24f),.19f,14);
         }
-        DeepPort(b, new Vector3(0, 1.11f, -.32f), .35f, 13);
+    }
+
+    static Mesh croakSac;
+    public static Mesh CisternThroat()
+    {
+        if (croakSac != null) return croakSac;
+        var b = new Builder();
+        CutStone(b,Vector3.zero,new Vector3(.71f,.36f,.30f),14,10);
+        for(int i=-2;i<=2;i++)
+            CutBlade(b,new[] { new Vector3(i*.18f,.14f,-.22f),new Vector3(i*.20f,-.12f,-.24f) },.022f,.023f,8);
+        return croakSac=b.Finish("Pleated vocal sac");
     }
 
     static void BuildGantry(Builder b)

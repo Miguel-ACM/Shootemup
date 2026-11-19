@@ -3,6 +3,8 @@ using UnityEngine;
 
 public sealed class CisternHeart : DistrictBoss
 {
+    Transform throat;
+    float breath, croak;
     public static float LakeCenter => Mathf.Lerp(Camera.DownLimit, Camera.UpLimit, .64f);
     protected override bool RepositionsOnPhase => false;
     protected override bool AtOpeningStation => (transform.position - station).sqrMagnitude < .0025f;
@@ -12,10 +14,24 @@ public sealed class CisternHeart : DistrictBoss
     {
         base.Start();
         station = new Vector3(0, LakeCenter, 1);
+        throat = new GameObject("Breathing vocal sac", typeof(MeshFilter), typeof(MeshRenderer)).transform;
+        throat.SetParent(Hull, false);
+        throat.localPosition = new Vector3(0,-.81f,-.37f);
+        throat.GetComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CisternThroat();
+        var skin = throat.GetComponent<MeshRenderer>();
+        skin.sharedMaterial = Hull.GetComponent<MeshRenderer>().sharedMaterial;
+        skin.sortingLayerName = "Enemy";
     }
 
     protected override void MoveBoss(float dt)
     {
+        breath += dt;
+        croak = Mathf.MoveTowards(croak, 0, dt * 2.3f);
+        if (throat != null)
+        {
+            float air = .5f + .5f * Mathf.Sin(breath * 3.6f);
+            throat.localScale = new Vector3(1+.18f*air+.28f*croak, .8f+.46f*air+.62f*croak, 1+.25f*air);
+        }
         if (!openingComplete)
             transform.position = Vector3.MoveTowards(transform.position, station, dt * 5.3f);
     }
@@ -26,12 +42,13 @@ public sealed class CisternHeart : DistrictBoss
             OpenCards();
     }
 
-    protected override IEnumerator Cards() => phaseThree ? Spillway() : phaseTwo ? Undertow() : PressureFront();
+    protected override IEnumerator Cards() => phaseThree ? BullfrogChorus() : phaseTwo ? Undertow() : PressureFront();
 
     IEnumerator PrimePair(int pair, float seconds)
     {
         for (float t = 0; t < seconds;)
         {
+            croak = Mathf.Max(croak,t / seconds);
             Cue(Muzzle(pair), seconds - t);
             Cue(Muzzle(pair + 3), seconds - t);
             if (!Holding) t += Time.deltaTime * LevelRun.EnemyTempoScale;
@@ -115,39 +132,41 @@ public sealed class CisternHeart : DistrictBoss
         }
     }
 
-    // A lock gate builds up head from both banks. Its teeth stop along a
-    // chevron, then the breach travels out from the centre, row after row.
-    IEnumerator Spillway()
+    // The throat sends a scalloped pressure front across the lake. The cheek ports
+    // answer in two curling streams that cross the spaces between successive fronts.
+    IEnumerator BullfrogChorus()
     {
-        for (int beat = 0; ; beat++)
+        for (int phrase = 0; ; phrase++)
         {
-            float gate = 1.93f * Mathf.Sin(beat * .88f);
-            int count = Mathf.Max(8, Dense(20));
-            for (int row = 0; row < 3; row++)
+            yield return Charge(Hull, WeaponPort(6), .40f);
+            croak = 1;
+            int count = Mathf.Max(8, Dense(28));
+            for (int voice = 0; voice < 2; voice++)
             {
-                yield return PrimePair(row, row == 0 ? .43f : .16f);
-                UseTone(row == 1 ? HostileTone.Dark : HostileTone.Bright);
+                UseTone(voice == 0 ? HostileTone.Bright : HostileTone.Dark);
                 for (int i = 0; i < count; i++)
                 {
-                    float x = Mathf.Lerp(Camera.LeftLimit + .18f, Camera.RightLimit - .18f, (i + .5f) / count);
-                    int h = x < gate ? 0 : 1;
-                    Vector3 port = Muzzle(row + h * 3);
-                    float bank = Mathf.Abs(x - gate) / (h == 0 ? gate - Camera.LeftLimit : Camera.RightLimit - gate);
-                    Vector2 aim = new Vector2(x, LakeCenter + 1.36f - .89f * row + 1.16f * bank) - (Vector2)port;
-                    float speed = WorldSpeed(Mathf.Max(.22f, aim.magnitude / .585f));
-                    Fire<GiantOrb>(port, aim, speed, i % 4 == 0 ? .59f : .35f, i == 0 || i == count - 1)
-                        .Pause(.76f, .43f + .42f * bank, CombatRound.Turn.Down, 5 * Mathf.Cos(beat * .88f), 4.65f / speed);
+                    float angle = (i + voice * .5f) * 360f / count + phrase * 13f;
+                    float petal = Mathf.Cos((angle * 4 - phrase * 35) * Mathf.Deg2Rad);
+                    Fire<GiantOrb>(Muzzle(6), CombatVisuals.Rotate(Vector2.down, angle),
+                        2.65f + petal * .48f + .32f * voice, voice == 0 ? .39f : .27f, i == 0);
                 }
+                yield return Wait(Rest(.32f));
             }
-            yield return Charge(Hull, WeaponPort(6), .38f);
-            int spray = Mathf.Max(3, Dense(8));
-            for (int i = 0; i < spray; i++)
+            yield return PrimePair(0,.25f);
+            for (int beat = 0; beat < 8; beat++)
             {
-                float angle = Mathf.Lerp(-67, 67, i / (spray - 1f));
-                Fire<GiantOrb>(Muzzle(6), CombatVisuals.Rotate(Vector2.up, angle), 3.65f, .43f, i == 0)
-                    .Fall(Vector2.down * 1.39f);
+                float u = beat / 7f;
+                for (int side = 0; side < 2; side++)
+                {
+                    float bend = Mathf.Lerp(-22, 79, phrase % 2 == 0 ? u : 1-u);
+                    Vector3 lip = Muzzle(side * 3);
+                    for (int lane = 0; lane < Dense(3); lane++)
+                        Fire<SimpleRound>(lip,CombatVisuals.Rotate(Vector2.down,(side*2-1)*(bend+lane*14)),3.15f,.17f,lane==0);
+                }
+                yield return Wait(Rest(.135f));
             }
-            yield return Wait(Rest(.86f));
+            yield return Wait(Rest(.52f));
         }
     }
 }
