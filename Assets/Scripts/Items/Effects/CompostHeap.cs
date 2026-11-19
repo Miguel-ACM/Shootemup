@@ -22,7 +22,7 @@ public sealed class CompostHeap : MonoBehaviour
     {
         if (live >= Cap || dead == null)
             return;
-        bool rotten = dead.GetComponent<PoisonedHull>() != null;
+        bool rotten = dead.TryGetComponent<PoisonedHull>(out var poison) && poison.isActiveAndEnabled;
         while (pool.Count > 0 && pool.Peek() == null)
             pool.Pop();
         var heap = pool.Count > 0 ? pool.Pop() : Create();

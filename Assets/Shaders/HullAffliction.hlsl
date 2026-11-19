@@ -60,6 +60,7 @@ half3 HullAffliction(half3 armor, float2 position, float status)
         half3 poison = lerp(sick, rot, stain);
         poison = lerp(poison, glow, lip * .85);
         poison = lerp(poison, glow, vein * (1 - stain) * (.25 + .45 * wave));
+        poison = lerp(armor, poison, .68);
         coated = burning ? lerp(poison, fire, smoothstep(.41, .59, tongue)) : poison;
     }
     [branch] if ((bits & 4) != 0)
