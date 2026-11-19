@@ -94,7 +94,7 @@ public sealed class BossAtmosphere : MonoBehaviour
                 if (boss.UsesHealthBar && boss.health > 0)
                 {
                     bossAlive = true;
-                    phase = Mathf.Max(phase, boss.CurrentPhase);
+                    phase = Mathf.Max(phase, Mathf.Min(3, boss.CurrentPhase));
                 }
         }
         float target = bossAlive ? .12f + .14f * (phase - 1) : 0;
