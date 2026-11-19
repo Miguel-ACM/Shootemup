@@ -24,13 +24,12 @@ public sealed class Doppelganger : AItem
 
 public sealed class MirrorTwin : ACompanion
 {
-    const float Power = .6f, Spread = 6;
+    const float Power = .6f;
     static readonly Color Reflection = new Color(.72f, .66f, 1f);
     readonly List<(Transform source, Transform copy, MeshRenderer renderer)> parts = new List<(Transform, Transform, MeshRenderer)>();
     Shipcontroller owner;
     MaterialPropertyBlock tint;
     Transform reflection;
-    float shotClock;
     int index;
 
     public static void Attach(Shipcontroller ship)
@@ -100,7 +99,6 @@ public sealed class MirrorTwin : ACompanion
             var scale = source.lossyScale;
             copy.localScale = new Vector3(-scale.x, scale.y, scale.z);
         }
-        Fire();
     }
 
     void OnDestroy()
@@ -109,22 +107,27 @@ public sealed class MirrorTwin : ACompanion
             Destroy(reflection.gameObject);
     }
 
-    void Fire()
+    static readonly List<MirrorTwin> active = new List<MirrorTwin>();
+
+    void OnEnable() => active.Add(this);
+    void OnDisable() => active.Remove(this);
+
+    public static void Reflect(ABullet source)
     {
-        float dt = GameClock.ActivePlay ? GameClock.PlayerDelta : 0;
-        shotClock -= dt;
-        if (dt <= 0 || shotClock > 0 || !Shipcontroller.Firing)
-            return;
-        shotClock = 1 / Mathf.Max(1, GameRules.playerShootSpeed);
-        int count = Mathf.Max(1, GameRules.playerShootNumber);
-        var muzzle = transform.position + Vector3.up * .35f;
-        for (int i = 0; i < count; i++)
+        if (source.companionShot) return;
+        foreach (var twin in active)
         {
-            var heading = CombatVisuals.Rotate(Vector2.up, (i - (count - 1) * .5f) * Spread);
-            var shot = PlayerRound.Spawn(muzzle, heading, GameRules.playerShootDamage * Power, GameRules.playerShootTravelSpeed, PlayerDelivery.Pulse);
-            if (shot != null)
-                shot.companion = true;
+            if (twin.owner == null) continue;
+            Vector3 origin = twin.Mirrored(source.transform.position);
+            if (source is PlayerRound round)
+                round.ReflectFrom(origin, Power);
+            else
+            {
+                var copy = Instantiate(source, origin, source.transform.rotation);
+                copy.direction.x = -copy.direction.x;
+                copy.damage *= Power;
+                copy.companionShot = true;
+            }
         }
-        ItemSound.Cue("shotCompanion", volume: .035f, cooldown: .1f);
     }
 }

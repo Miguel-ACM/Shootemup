@@ -102,7 +102,7 @@ public sealed class WindUpCannon : AWeapon
         power *= Affinity.DamageFactor();
         foreach (var muzzle in spawnPoints)
         {
-            var shot = PlayerRound.Spawn(transform.position + muzzle, Vector2.up, GameRules.playerShootDamage * power * capacitor, GameRules.playerShootTravelSpeed * 1.7f, PlayerDelivery.Needle);
+            var shot = PlayerRound.WeaponShot(transform.position + muzzle, Vector2.up, GameRules.playerShootDamage * power * capacitor, GameRules.playerShootTravelSpeed * 1.7f, PlayerDelivery.Needle);
             if (shot == null)
                 continue;
             shot.pierces = 0;

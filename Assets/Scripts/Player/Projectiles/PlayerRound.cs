@@ -106,6 +106,35 @@ public sealed class PlayerRound : ABullet
         return b;
     }
 
+    bool mirrorOnLaunch;
+
+    public static PlayerRound WeaponShot(Vector3 origin, Vector2 axis, float damage, float speed,
+        PlayerDelivery mode = PlayerDelivery.Pulse, int generation = 0)
+    {
+        var round = Spawn(origin, axis, damage, speed, mode, generation);
+        if (round != null) round.mirrorOnLaunch = true;
+        return round;
+    }
+
+    public void ReflectFrom(Vector3 muzzle, float power)
+    {
+        var copy = Spawn(muzzle, new Vector2(-heading.x, heading.y), damage * power, speed, delivery, generation);
+        if (copy == null) return;
+        copy.companion = copy.companionShot = true;
+        copy.returns = returns;
+        copy.pierces = pierces;
+        copy.chargeLevel = chargeLevel;
+        copy.blastDamage = blastDamage * power;
+        copy.headingLocked = headingLocked;
+        copy.bankShot = bankShot;
+        copy.guidedTarget = guidedTarget;
+        copy.guidanceDelay = guidanceDelay;
+        copy.lifetime = lifetime;
+        copy.transform.localScale = transform.localScale;
+        copy.visual.sprite = visual.sprite;
+        copy.visual.color = visual.color;
+    }
+
     static PlayerRound Create()
     {
         using var sample = createMarker.Auto();
@@ -143,6 +172,7 @@ public sealed class PlayerRound : ABullet
         sr.color = Color.white;
         sr.enabled = true;
         collider.enabled = true;
+        mirrorOnLaunch = false;
         age = 0;
         flight = weave = travelled = 0;
         pumpCapacity = ShotTraits.PumpCapacity;
@@ -207,6 +237,11 @@ public sealed class PlayerRound : ABullet
     {
         if (WorldTimeStop.Frozen || Time.deltaTime <= 0)
             return;
+        if (mirrorOnLaunch)
+        {
+            mirrorOnLaunch = false;
+            MirrorTwin.Reflect(this);
+        }
         age += Time.deltaTime;
         flight += Time.deltaTime;
         lifetimeAge += Time.deltaTime;

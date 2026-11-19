@@ -41,7 +41,7 @@ public sealed class DeadLetter : AWeaponAutomatic
             float charge = CombatUpgrades.Current?.Volley() ?? 1;
             float damage = GameRules.playerShootDamage * 4.5f * charge * Affinity.DamageFactor(0);
             for (int i = 0; i < queued; i++)
-                MagnifyingLens.Enlarge(ChargedShotCue.Apply(PlayerRound.Spawn(marks[i].transform.position, Vector2.up,
+                MagnifyingLens.Enlarge(ChargedShotCue.Apply(PlayerRound.WeaponShot(marks[i].transform.position, Vector2.up,
                     damage, GameRules.playerShootTravelSpeed, PlayerDelivery.Needle), charge));
             SoundManager.PlaySound("shotNeedle", .1f);
             GetComponentInParent<PSXShipEffects>()?.Shot();

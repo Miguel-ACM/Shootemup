@@ -29,7 +29,7 @@ public sealed class VendingGun : AWeaponAutomatic
         float damage = GameRules.playerShootDamage * 5f * charge * Affinity.DamageFactor(0);
         for (int i = -2; i <= 2; i++)
         {
-            var shot = PlayerRound.Spawn(transform.position + Vector3.up * .7f, CombatVisuals.Rotate(Vector2.up, i * 8),
+            var shot = PlayerRound.WeaponShot(transform.position + Vector3.up * .7f, CombatVisuals.Rotate(Vector2.up, i * 8),
                 damage, GameRules.playerShootTravelSpeed, PlayerDelivery.Needle);
             shot?.AwardVendingCoin();
             MagnifyingLens.Enlarge(ChargedShotCue.Apply(shot, charge));

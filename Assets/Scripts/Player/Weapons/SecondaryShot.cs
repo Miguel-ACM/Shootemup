@@ -226,7 +226,7 @@ public sealed class SecondaryShot : AWeapon
     {
         // Leave ample native pool capacity for main weapons, companions and procs.
         if (PlayerRound.LiveCount >= PlayerRound.Limit - 50) return;
-        var round = PlayerRound.Spawn(origin, direction, GameRules.playerShootDamage * power,
+        var round = PlayerRound.WeaponShot(origin, direction, GameRules.playerShootDamage * power,
             GameRules.playerShootTravelSpeed * speed, delivery, 1);
         if (round == null) return;
         round.returns = false;

@@ -41,7 +41,7 @@ public abstract class ExpansionWeapon : AWeaponAutomatic
         for (int muzzle = 0; muzzle < spawnPoints.Length; muzzle++)
             for (int p = 0; p < Pellets; p++)
             {
-                var round = PlayerRound.Spawn(transform.position + MuzzleOffset(spawnPoints[muzzle], aim), CombatVisuals.Rotate(aim, (p - (Pellets - 1) * .5f) * PelletSpacing),
+                var round = PlayerRound.WeaponShot(transform.position + MuzzleOffset(spawnPoints[muzzle], aim), CombatVisuals.Rotate(aim, (p - (Pellets - 1) * .5f) * PelletSpacing),
                     damage, GameRules.playerShootTravelSpeed * Velocity, Delivery);
                 Launched(round, muzzle, p);
                 MagnifyingLens.Enlarge(ChargedShotCue.Apply(round, charge));
