@@ -4,47 +4,9 @@ using UnityEngine;
 public sealed partial class VoidSovereignBoss
 {
     public int CardIndex { get; private set; }
-    PulseLaser VoidRay(int port,Vector2 axis,float width,float hold,float sweep=0)
-    {
-        var beam=HeavenArmory.Lance(body.Emitter(port),Vector3.zero,axis,width,hold,1.25f);
-        if(beam!=null)beam.sweep=sweep;
-        return beam;
-    }
-    static float Across(int i,int count)=>count<=1?0:i/(count-1f)*2-1;
-    // Tones (Miguel, 9 November 2026). Each card's body takes one tone; its replies
-    // and giant crowns take the other, and the body flips card to card:
-    //   Witnesses bright, Funeral Psalm dark; Severing bright, Cut the Firmament dark;
-    //   Hunger bright, False Stars dark (its comets and their shrapnel).
-    //   The final form mixes densely: its opposed pairs alternate tones beat by beat,
-    //   diagonal banks dark and vertical banks bright in World Without Edges, the
-    //   reverse in Last Equation. Rays stay bright.
-    static HostileTone Other(HostileTone shade)=>shade==HostileTone.Bright?HostileTone.Dark:HostileTone.Bright;
-    // Void's mix (Miguel, November 2026: more moons, kunai and giant circles): the
-    // circular lanes are moons, the arrow lanes kunai or chevrons, and lone giant orbs
-    // take the crowns.
-    CombatRound CrownedShot(bool giant,bool circular,Vector3 port,Vector2 axis,float speed,float radius=.17f,float crown=.60f,bool chevron=false)
-        =>giant?(CombatRound)Fire<GiantOrb>(port,axis,speed*.9f,crown):
-            circular?(CombatRound)Fire<CrescentRound>(port,axis,speed,radius+.03f):
-            chevron?Fire<ChevronRound>(port,axis,speed,radius):Fire<KunaiRound>(port,axis,speed,radius);
-    // No Void round is aimed (Miguel, November 2026). A reply is a mirrored moon fan from
-    // both eyes that crosses beneath the body on a heading sweeping slowly with the beat,
-    // so a resting pilot is crossed on a schedule rather than tracked.
-    void SweepingReply(int beat,int count,float speed,float radius)
-    {
-        float angle=10+22*Mathf.Abs(Mathf.Sin(beat*.37f));
-        for(int port=0;port<2;port++)
-        {
-            int side=port==0?-1:1;
-            var axis=CombatVisuals.Rotate(Vector2.down,-side*angle);
-            for(int i=0;i<count;i++)
-                Fire<CrescentRound>(Port(port),CombatVisuals.Rotate(axis,Across(i,count)*6),speed,radius);
-        }
-    }
-    static int BankCount(int count,int bank)
-    {
-        int upper=Mathf.Max(1,Mathf.RoundToInt(count*.55f));
-        return bank>0?upper:2*count-upper;
-    }
+    static float Across(int i,int count) => count<=1 ? 0 : i/(count-1f)*2-1;
+    static HostileTone Other(HostileTone shade) => shade==HostileTone.Bright ? HostileTone.Dark : HostileTone.Bright;
+
     protected override IEnumerator Cards()
     {
         if (Memory != null)

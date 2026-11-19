@@ -330,24 +330,4 @@ public sealed partial class VoidSovereignBoss
         }
     }
 
-    // Scythes stitch between their cuts, the maw drops a second row of inward teeth,
-    // and the four star tips pass one rotating accent from bank to bank.
-    IEnumerator ObsidianCounterpoint()
-    {
-        for(int beat=0;;beat++)
-        {
-            yield return Wait(Rest(Form==4?.38f:.48f));
-            if (teleporting || (beat%8)>=6) continue;
-            int tips=Form==4?4:2;
-            for(int i=0;i<tips;i++)
-            {
-                int side=i%2==0?-1:1;
-                float a=Form==2?side*(34+18*Mathf.Sin(beat*.32f)):
-                    Form==3?-side*(19+10*Mathf.Cos(beat*.45f)):i*90+beat*12;
-                UseTone((beat+i)%2==0?HostileTone.Bright:HostileTone.Dark);
-                for(int k=-1;k<=1;k++)
-                    Fire<SimpleRound>(Port(i),Down(a+k*12),2.72f+k*.22f,.17f,k==0);
-            }
-        }
-    }
 }
