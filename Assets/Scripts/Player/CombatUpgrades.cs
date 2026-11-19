@@ -61,6 +61,8 @@ public sealed class CombatUpgrades : MonoBehaviour
             capacitor = 0;
         if (kind == UpgradeKind.TicketPunch && Count(kind) == 0)
             punchedKills = 0;
+        if (kind == UpgradeKind.Focus && Count(kind) == 0)
+            focused = null;
         if (kind == UpgradeKind.RelaySwitch && Count(kind) == 0)
         {
             ResetRelaySlot(0);
@@ -235,16 +237,17 @@ public sealed class CombatUpgrades : MonoBehaviour
             damage *= Metronome.Scale(this, enemy.transform.position);
         if (Count(UpgradeKind.Focus) > 0 && generation == 0)
         {
+            const float stepSeconds = .25f;
             if (focused != enemy || Time.time > focusUntil)
             {
                 focus = 0;
                 focused = enemy;
+                gates["focus"] = Time.time + stepSeconds;
             }
-            if (Ready("focus", .08f))
+            else if (focus < 10 && Ready("focus", stepSeconds))
             {
-                int previous = focus;
-                focus = Mathf.Min(10, focus + 1);
-                if (previous != focus && (focus == 1 || focus == 5 || focus == 10))
+                focus++;
+                if (focus == 1 || focus == 5 || focus == 10)
                 {
                     RunInventory.Ping(UpgradeKind.Focus);
                     ItemProcVfx.Emit(ItemProcShape.Lock, enemy.transform.position, new Color(.35f, .72f, .8f), enemy.size + .2f);
@@ -252,7 +255,7 @@ public sealed class CombatUpgrades : MonoBehaviour
                 }
             }
             focusUntil = Time.time + 1.1f;
-            damage *= 1 + focus * .045f;
+            damage *= 1 + focus * .015f;
         }
         int ignitions = fire || Count(UpgradeKind.Gasoline) > 0 ? 1
             : Count(UpgradeKind.Burn) > 0 ? Proc("burn", companion ? .4f : .18f, enemy.transform.position) : 0;

@@ -36,7 +36,7 @@ Some later items have clearer display names for hidden triggers and effects. The
 | Drone Link | Keep | Support drone. +20% companion damage. |
 | EMP Pulse | Keep | Clears all bullets every 20 seconds. |
 | Energy core | Energy Regen | Regenerate 3 energy per second in combat. |
-| Focusing Lens | Combo Lens | Consecutive hits deal up to +45% damage. |
+| Focusing Lens | Combo Lens | Consecutive hits deal up to +15% damage. |
 | Focus time | Focus Brake | Move 40% slower while focusing. |
 | Gasoline leak | Incendiary Rounds | Red bullets set enemies alight. |
 | Hot sauce | Fire Trail | Burning enemies leave fire in their wake. |

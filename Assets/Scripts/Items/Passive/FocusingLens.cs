@@ -3,7 +3,7 @@ public sealed class FocusingLens : AItem
 {
     void Awake()
     {
-        SetData("Combo Lens", "Ship equipment", "Consecutive hits deal up to +45% damage.", ItemType.passive);
+        SetData("Combo Lens", "Ship equipment", "Consecutive hits deal up to +15% damage.", ItemType.passive);
     }
 
     public override void OnBegin()
