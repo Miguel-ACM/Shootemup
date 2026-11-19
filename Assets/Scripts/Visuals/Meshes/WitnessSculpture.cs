@@ -321,6 +321,9 @@ public sealed class WitnessSculpture : MonoBehaviour
     }
 
     Mesh skin;
+    MeshRenderer aura;
+    Material auraMaterial;
+    static readonly int AuraMotion = Shader.PropertyToID("_Motion");
     Vector3[] nodes, vertices, normals;
     struct Flex { public float shoulder, tip, hem, hood, jaw, iris; }
     Flex[] flex;
@@ -348,6 +351,17 @@ public sealed class WitnessSculpture : MonoBehaviour
             };
         }
         skin.bounds = new Bounds(new Vector3(0,-.9f,0), new Vector3(6.6f,7.8f,4));
+
+        var veil = new GameObject("Witness penumbra", typeof(MeshFilter), typeof(MeshRenderer));
+        veil.transform.SetParent(transform, false);
+        veil.transform.localPosition = new Vector3(0, -.65f, 1.8f);
+        veil.transform.localScale = new Vector3(8.8f, 11.2f, 1);
+        veil.GetComponent<MeshFilter>().sharedMesh = Resources.GetBuiltinResource<Mesh>("Quad.fbx");
+        aura = veil.GetComponent<MeshRenderer>();
+        aura.sortingLayerID = GetComponent<MeshRenderer>().sortingLayerID;
+        aura.sortingOrder = GetComponent<MeshRenderer>().sortingOrder - 1;
+        auraMaterial = new Material(Resources.Load<Shader>("WitnessPenumbra"));
+        aura.sharedMaterial = auraMaterial;
     }
     public void Pose(float t, int phase, float strike)
     {
@@ -360,6 +374,7 @@ public sealed class WitnessSculpture : MonoBehaviour
         float tailLift = .22f * Mathf.Cos(beat);
         float gape = .10f * (1 + breath) + .24f * strike;
         float glance = .068f * Mathf.Sin(t * .92f);
+        auraMaterial.SetVector(AuraMotion, new Vector4(t, shoulder + sweep, tail, strike));
         var rest = Sculpture.Rest;
         for (int i=0; i<rest.Length; i++)
         {
@@ -381,5 +396,10 @@ public sealed class WitnessSculpture : MonoBehaviour
         skin.SetVertices(vertices,0,vertices.Length,UnityEngine.Rendering.MeshUpdateFlags.DontRecalculateBounds);
         skin.SetNormals(normals);
     }
-    void OnDestroy() { if (skin != null) Destroy(skin); }
+    public void ExtinguishAura() => aura.gameObject.SetActive(false);
+    void OnDestroy()
+    {
+        if (skin != null) Destroy(skin);
+        if (auraMaterial != null) Destroy(auraMaterial);
+    }
 }

@@ -244,6 +244,7 @@ public sealed class WitnessBoss : ArmoredHullBoss
     }
     protected override void Die()
     {
+        if (figure != null) figure.ExtinguishAura();
         foreach (var seal in seals)
             if (seal != null)
                 seal.gameObject.SetActive(false);
