@@ -105,15 +105,11 @@ public class Score : MonoBehaviour
 
     public static void MultiplierDown()
     {
-        if (multiplier > 1)
-        {
-            SetMultiplier(multiplier - 1);
-            scoreThisMult = multUpThresholds[multiplier - 1] / 2;
-        }
-        else
-        {
-            scoreThisMult = 0;
-        }
+        SetMultiplier(1);
+        scoreThisMult = 0;
+        timeSinceNoScoreUp = 0;
+        if (scoreMultBar != null)
+            scoreMultBar.Set(0);
     }
 
     private static void SetMultiplier(int new_mult)
