@@ -25,10 +25,11 @@ public static class VerifyItemUnlocks
         Directory.CreateDirectory(Folder);
         try
         {
-            Check(ItemUnlocks.All.Count == 40 && ItemUnlocks.All.Select(r => r.Key).Distinct().Count() == 40, "40 unique rewards");
-            Check(ItemUnlocks.All.Count(r => r.Condition == ItemUnlockCondition.Clear) == 12, "12 area clears");
-            Check(ItemUnlocks.All.Count(r => r.Condition == ItemUnlockCondition.NoHitBoss) == 16, "16 separate boss rewards");
-            Check(ItemUnlocks.All.Count(r => r.Condition == ItemUnlockCondition.NoHitArea) == 12, "12 full-area rewards");
+            Check(ItemUnlocks.All.Count == 56 && ItemUnlocks.All.Select(r => r.Key).Distinct().Count() == 56, "56 unique rewards");
+            Check(ItemUnlocks.All.Count(r => r.Condition == ItemUnlockCondition.Clear) == 16, "16 area clears");
+            Check(ItemUnlocks.All.Count(r => r.Condition == ItemUnlockCondition.NoHitBoss) == 20, "20 separate boss rewards");
+            Check(ItemUnlocks.All.Count(r => r.Condition == ItemUnlockCondition.NoHitArea) == 16, "16 full-area rewards");
+            Check(ItemUnlocks.All.Count(r => r.Condition == ItemUnlockCondition.HardNoHitArea) == 4, "Four Hard full-area rewards");
             foreach (var reward in ItemUnlocks.All)
             {
                 Check(ItemCatalog.Get(reward.Key).InRewardPool, "Valid reward " + reward.Key);
@@ -39,6 +40,7 @@ public static class VerifyItemUnlocks
                 foreach (LevelId area in Enum.GetValues(typeof(LevelId)))
                     CheckArea(area, mode);
             CheckHitsAndRetries();
+            CheckNewDistrictRewards();
             CheckTravel();
             CheckPersistence();
             CheckMigration();
@@ -46,7 +48,7 @@ public static class VerifyItemUnlocks
             CheckAdvancedTapes();
             CheckRoutes();
             CheckModels();
-            File.WriteAllText(Folder + "/Verification.txt", "PASS\n" + checks + " checks. All 12 areas / 16 bosses / 3 difficulties.\n" +
+            File.WriteAllText(Folder + "/Verification.txt", "PASS\n" + checks + " checks. All 16 areas / 20 bosses / 3 difficulties.\n" +
                 "Verified hit windows, duplicate completions, Warp-Core retry semantics, travel, loss, interrupted run, queue acknowledgement, old saves, shop gates, simulator isolation, route locks and model coverage.\n" +
                 "No gameplay or visual review was started.\n");
             if (Environment.GetCommandLineArgs().Contains("--unlock-build")) Build();
@@ -93,7 +95,8 @@ public static class VerifyItemUnlocks
             Type boss = MetaProgress.EngageBoss();
             Check(seen.Add(boss), "Alternate boss rotation without repeats");
             foreach (var reward in ItemUnlocks.All.Where(r => r.Area == area))
-                if (reward.Condition == ItemUnlockCondition.Clear || mode != RunDifficulty.Easy && (reward.Boss == null || reward.Boss == boss))
+                if (reward.Condition == ItemUnlockCondition.Clear || mode != RunDifficulty.Easy && (reward.Boss == null || reward.Boss == boss) &&
+                    (reward.Condition != ItemUnlockCondition.HardNoHitArea || mode == RunDifficulty.Hard))
                     expected.Add(reward.Key);
             MetaProgress.DefeatBoss();
             MetaProgress.DefeatBoss();
@@ -137,6 +140,43 @@ public static class VerifyItemUnlocks
         Check(MetaProgress.IsUnlocked("BulletTime") && !MetaProgress.IsUnlocked("SquadWhistle"), "Full-area hit window resets on travel");
         Check(Items(MetaProgress.LastFlight.unlocks) == 4, "Earlier unlocks retained across districts");
     }
+
+    static void CheckNewDistrictRewards()
+    {
+        foreach (var area in new[] { LevelId.Mushroom, LevelId.Sewers, LevelId.Core, LevelId.Dream })
+        {
+            Fresh();
+            void Finish(ItemUnlockCondition? expected)
+            {
+                MetaProgress.DefeatBoss();
+                MetaProgress.EndRun("Lost");
+                var items = MetaProgress.LastFlight.unlocks.Where(n => !RouteUnlocks.IsRoute(n.key)).ToArray();
+                Check(expected.HasValue ? items.Length == 1 && items[0].condition == expected : items.Length == 0,
+                    area + " newly earned " + expected);
+                Reload();
+            }
+
+            Begin(area, RunDifficulty.Hard);
+            MetaProgress.EngageBoss(); MetaProgress.TookHit();
+            Finish(ItemUnlockCondition.Clear);
+            Begin(area, RunDifficulty.Hard);
+            MetaProgress.TookHit(); MetaProgress.EngageBoss();
+            Finish(ItemUnlockCondition.NoHitBoss);
+            Begin(area, RunDifficulty.Hard);
+            MetaProgress.SkipDistrict(); MetaProgress.EngageBoss();
+            Finish(null);
+            Begin(area, RunDifficulty.Normal);
+            MetaProgress.EngageBoss();
+            Finish(ItemUnlockCondition.NoHitArea);
+            Begin(area, RunDifficulty.Hard);
+            MetaProgress.EngageBoss();
+            Finish(ItemUnlockCondition.HardNoHitArea);
+            Begin(area, RunDifficulty.Hard);
+            MetaProgress.EngageBoss();
+            Finish(null);
+            Check(Items(MetaProgress.PendingUnlocks) == 4, area + " saves each unlock once");
+        }
+    }
     static void CheckPersistence()
     {
         Fresh(); Begin(LevelId.Thunder, RunDifficulty.Normal);
@@ -170,6 +210,13 @@ public static class VerifyItemUnlocks
         Check(Items(MetaProgress.PendingUnlocks) == 0, "Migration never re-celebrates owned items");
         Begin(LevelId.Snow, RunDifficulty.Normal); MetaProgress.EngageBoss(); MetaProgress.DefeatBoss(); MetaProgress.EndRun("Lost");
         Check(MetaProgress.LastFlight.unlocks.All(n => n.key != "Icicle") && MetaProgress.IsUnlocked("BulletTime"), "Grandfathered clear, new achievement on another hull");
+        Fresh();
+        File.WriteAllText(Path.Combine(saveDirectory, "hangar.json"), "{\"version\":6,\"coins\":500,\"unlocked\":[\"Popcorn\",\"Moth\"],\"stock\":[\"Popcorn\",\"DivingGear\",\"Moth\"],\"pin\":\"DivingGear\",\"loadout\":[\"Moth\"]}");
+        Reload();
+        Check(MetaProgress.Pin == null && MetaProgress.Stock.Count == 3 && MetaProgress.Stock[0] == "Popcorn" &&
+            MetaProgress.Stock[2] == "Moth" && MetaProgress.Stock.All(MetaProgress.CanStock), "Replace only newly gated stock");
+        Check(MetaProgress.IsUnlocked("Moth") && MetaProgress.Outbound.Contains("Moth") && !MetaProgress.CanStock("DivingGear"),
+            "Preserve a purchased district item and its outbound copy");
     }
     static void CheckSimulators()
     {

@@ -251,7 +251,7 @@ public static class VerifyLancerAndBossRewards
         foreach (int marks in new[] { 0, 1, 2 })
         {
             var banner = new GameObject("Banner check", typeof(RectTransform)).AddComponent<BossClearBanner>();
-            var unlocked = notices.Where(n => n.area == LevelId.Hell).Take(marks).Prepend(route).ToList();
+            var unlocked = notices.Where(n => n.area == LevelId.Core).Take(marks == 2 ? 4 : marks).Prepend(route).ToList();
             Invoke(banner, "Build", new BossClearNotice(marks == 2, marks >= 1, unlocked), font);
             var labels = banner.GetComponentsInChildren<TextMeshProUGUI>();
             var routeCard = (RectTransform)banner.transform.Find("Flight area/New route");

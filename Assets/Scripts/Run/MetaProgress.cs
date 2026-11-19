@@ -38,7 +38,7 @@ public static partial class MetaProgress
     [Serializable]
     sealed class SaveData
     {
-        public int version = 6;
+        public int version = 7;
         public int lastFrame;
         public RunDifficulty difficulty = RunDifficulty.Normal;
         public string pin;
@@ -249,6 +249,20 @@ public static partial class MetaProgress
             foreach (var key in startingPool)
                 if (!data.unlocked.Contains(key))
                     data.unlocked.Add(key);
+            Save();
+        }
+        if (data.version < 7)
+        {
+            // Some outfitter stock now comes from district achievements. Keep purchases and valid offers.
+            data.version = 7;
+            if (!CanStock(Pin)) data.pin = null;
+            for (int i = data.stock.Count - 1; i >= 0; i--)
+                if (!CanStock(data.stock[i]))
+                {
+                    string replacement = DrawStock(data.stock[i]);
+                    if (replacement != null) data.stock[i] = replacement;
+                    else data.stock.RemoveAt(i);
+                }
             Save();
         }
         // A run that never reached its end (the game was closed) still earns a fresh shop.

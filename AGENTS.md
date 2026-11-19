@@ -279,6 +279,8 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 
 ## Route unlocks (12 November 2026)
 
+- Mushroom, Sewers, Core and Dream each have four permanent item rewards: a clear on any difficulty, a no-hit boss on Normal or Hard, a full no-hit district on Normal or Hard, and a full no-hit district on Hard. A single clear earns every applicable reward still locked.
+
 - Plains branches to Snow or City. Snow leads through Thunder → Space → Heaven or Desert → Sewers → Core. City leads through Tunnel → Underwater → Hell or Mushroom → Candyland → Dream. All four branches converge on Void.
 - Sewers uses luminous green giant rounds, low-health tailed plague flocks with separation, alignment and cohesion, and leeches that only slow the pilot. PLAGUE adds more bounded swarms during ordinary combat. The Cistern Heart stays anchored in the middle of its lake and floods the arena with huge rounds.
 - Core is a gray service tunnel with red fire. Ordinary waves form scrolling mazes of simple square blocks, with stepped banks on both sides, sliding blocks in the middle and no path lines. The blocks stop both player and enemy bullets. When a block forces the ship out of an overlap, the ship takes one normal hit. Sliding along a face is safe. Transit cubes are armored, fuse cubes can be cleared, and sentry and ram cubes fire from their faces. The gantry boss remains joined to both side rails while it slides vertically and tracks its reactor carriage independently.

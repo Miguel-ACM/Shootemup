@@ -186,6 +186,7 @@ public static partial class MetaProgress
         LastFlight = null;
         runRoutes = new List<string>(Data.routes);
         bossHits = districtHits = 0;
+        districtSkipped = false;
         engagedBoss = null;
         districtDefeated = false;
         departed = Time.time;

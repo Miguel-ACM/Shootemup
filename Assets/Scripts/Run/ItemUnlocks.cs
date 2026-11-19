@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-public enum ItemUnlockCondition { Clear, NoHitBoss, NoHitArea }
+public enum ItemUnlockCondition { Clear, NoHitBoss, NoHitArea, HardNoHitArea }
 
 // Stable item keys own progression across hulls and difficulties. Boss types distinguish
 // alternate encounters; the City duo is one encounter, completed by its last survivor.
@@ -16,9 +16,14 @@ public sealed class ItemUnlock
     public string AreaName => Area == LevelId.Fields ? "Plains" : Area.ToString();
     string BossName => DistrictWaves.Bosses(Area).Count == 1 ? AreaName + " boss" :
         BossTitle.StartsWith(AreaName, StringComparison.Ordinal) ? BossTitle : BossTitle + " in " + AreaName;
-    public string Requirement => Condition == ItemUnlockCondition.Clear ? "Clear " + AreaName + " on any difficulty." :
-        Condition == ItemUnlockCondition.NoHitBoss ? "No-hit " + BossName + " on Normal+ difficulty." :
-        "No-hit the full " + AreaName + " level on Normal+ difficulty.";
+    public string Requirement => Condition switch
+    {
+        ItemUnlockCondition.Clear => "Clear " + AreaName + " on any difficulty.",
+        ItemUnlockCondition.NoHitBoss => "No-hit " + BossName + " on Normal+ difficulty.",
+        ItemUnlockCondition.NoHitArea => "No-hit the full " + AreaName + " level on Normal+ difficulty.",
+        ItemUnlockCondition.HardNoHitArea => "No-hit the full " + AreaName + " level on Hard difficulty.",
+        _ => throw new ArgumentOutOfRangeException(nameof(Condition))
+    };
 
     public ItemUnlock(LevelId area, ItemId item, string title, ItemUnlockCondition condition = ItemUnlockCondition.Clear,
         Type boss = null, string bossTitle = null)
@@ -43,6 +48,7 @@ public static class ItemUnlocks
     static ItemUnlock Boss<T>(LevelId area, ItemId item, string title, string boss) =>
         new ItemUnlock(area, item, title, ItemUnlockCondition.NoHitBoss, typeof(T), boss);
     static ItemUnlock Area(LevelId area, ItemId item, string title) => new ItemUnlock(area, item, title, ItemUnlockCondition.NoHitArea);
+    static ItemUnlock HardArea(LevelId area, ItemId item, string title) => new ItemUnlock(area, item, title, ItemUnlockCondition.HardNoHitArea);
 
     public static readonly IReadOnlyList<ItemUnlock> All = Array.AsReadOnly(new[] {
         Clear(LevelId.Fields, ItemId.PocketMortar, "Pocket Mortar"),
@@ -84,7 +90,23 @@ public static class ItemUnlocks
         Area(LevelId.Heaven, ItemId.SpellCard, "Spell Card"),
         Clear(LevelId.Void, ItemId.GravityWell, "Stasis Well"),
         Boss<VoidSovereignBoss>(LevelId.Void, ItemId.Telekinesis, "Telekinesis", "Void Sovereign"),
-        Area(LevelId.Void, ItemId.WarpCore, "Warp-Core")
+        Area(LevelId.Void, ItemId.WarpCore, "Warp-Core"),
+        Clear(LevelId.Mushroom, ItemId.Flyswatter, "Flyswatter"),
+        Boss<MushroomWarden>(LevelId.Mushroom, ItemId.Moth, "Moth", "Mushroom Warden"),
+        Area(LevelId.Mushroom, ItemId.Compost, "Compost"),
+        HardArea(LevelId.Mushroom, ItemId.SecondWind, "Second Wind"),
+        Clear(LevelId.Sewers, ItemId.Spitball, "Spitball"),
+        Boss<CisternHeart>(LevelId.Sewers, ItemId.AirPump, "Air Pump", "Cistern Heart"),
+        Area(LevelId.Sewers, ItemId.Pufferfish, "Pufferfish"),
+        HardArea(LevelId.Sewers, ItemId.DivingGear, "Diving Gear"),
+        Clear(LevelId.Core, ItemId.Crowbar, "Crowbar"),
+        Boss<CoreGantry>(LevelId.Core, ItemId.RelaySwitch, "Relay Switch", "Core Gantry"),
+        Area(LevelId.Core, ItemId.RechargingShield, "Recharging Shield"),
+        HardArea(LevelId.Core, ItemId.Metronome, "Metronome"),
+        Clear(LevelId.Dream, ItemId.PaperPlane, "Paper Plane"),
+        Boss<DreamPainter>(LevelId.Dream, ItemId.InkPot, "Ink Pot", "Dream Painter"),
+        Area(LevelId.Dream, ItemId.Timewinder, "Timewinder"),
+        HardArea(LevelId.Dream, ItemId.EchoChamber, "Echo Chamber")
     });
 
     static readonly Dictionary<string, ItemUnlock> byKey = Index();
@@ -117,12 +139,19 @@ public static partial class MetaProgress
 
     static void AwardDistrictItems(bool cleanBoss)
     {
-        bool normal = ItemUnlocks.AllowsNoHit(flight.difficulty);
+        bool allowsNoHit = ItemUnlocks.AllowsNoHit(flight.difficulty);
+        bool cleanArea = flight.hits == districtHits && !districtSkipped;
         foreach (var reward in ItemUnlocks.All)
         {
             if (reward.Area != LevelRun.Current) continue;
-            bool earned = reward.Condition == ItemUnlockCondition.Clear || normal &&
-                (reward.Condition == ItemUnlockCondition.NoHitBoss ? cleanBoss && reward.Boss == engagedBoss : flight.hits == districtHits && !districtSkipped);
+            bool earned = reward.Condition switch
+            {
+                ItemUnlockCondition.Clear => true,
+                ItemUnlockCondition.NoHitBoss => allowsNoHit && cleanBoss && reward.Boss == engagedBoss,
+                ItemUnlockCondition.NoHitArea => allowsNoHit && cleanArea,
+                ItemUnlockCondition.HardNoHitArea => flight.difficulty == RunDifficulty.Hard && cleanArea,
+                _ => false
+            };
             if (earned) UnlockItem(reward.Key, reward.Title, reward.Requirement, reward.Area, reward.Condition);
         }
     }
