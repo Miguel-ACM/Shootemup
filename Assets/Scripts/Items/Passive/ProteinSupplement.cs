@@ -13,7 +13,7 @@ public class ProteinSupplement : AItem
     public override void OnPickup()
     {
         GameRules.playerShootSize += 1;
-        GameRules.playerShootDamage += 1;
+        GameRules.playerShootDamage += .5f;
         base.OnPickup();
     }
 }

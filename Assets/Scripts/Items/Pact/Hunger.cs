@@ -4,13 +4,13 @@ public sealed class Hunger : APactItem
 {
     void Awake()
     {
-        SetPact("Hunger", "+30% speed. +50% damage.", "Every " + HungerPang.Waves + " waves, lose a hit unless you destroyed 2/3 of their enemies.");
+        SetPact("Hunger", "+30% speed. +30% damage.", "Every " + HungerPang.Waves + " waves, lose a hit unless you destroyed 2/3 of their enemies.");
     }
 
     protected override void Seal()
     {
         GameRules.playerMoveSpeed *= 1.3f;
-        GameRules.playerShootDamage *= 1.5f;
+        GameRules.playerShootDamage *= 1.3f;
         if (s.GetComponent<HungerPang>() == null)
             s.gameObject.AddComponent<HungerPang>();
     }
