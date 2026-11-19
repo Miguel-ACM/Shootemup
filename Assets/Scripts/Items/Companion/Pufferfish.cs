@@ -21,7 +21,7 @@ public sealed class PufferfishGuard : RoamingCompanion
 
     protected override void Step(float dt)
     {
-        Fly(Home, 10, dt);
+        Fly(Home + new Vector2(.055f * Mathf.Sin(Age * 4), .07f * Mathf.Sin(Age * 3)), 10, dt);
         breath -= dt;
         if (breath <= 0)
         {
@@ -45,13 +45,19 @@ public sealed class PufferfishGuard : RoamingCompanion
                 ItemSound.Cue("fan", volume: .095f, pitch: 1.15f, cooldown: .18f);
             }
         }
-        Model.localScale = RestScale * (1 + .48f * swell);
+        float inhale = .045f * Mathf.Sin(Age * 5.4f);
+        float recoil = Mathf.Sin((1 - swell) * Mathf.PI * 2) * swell;
+        Model.localScale = Vector3.Scale(RestScale, new Vector3(1 + inhale + swell * .62f,
+            1 - inhale + swell * .30f - recoil * .18f, 1 + swell * .48f));
+        Model.localRotation = Quaternion.Euler(-14 + recoil * 18, 8 * Mathf.Sin(Age * 4), 9 * Mathf.Sin(Age * 3));
+        Model.localPosition = Vector3.down * (.12f * recoil);
         swell = Mathf.MoveTowards(swell, 0, dt * 3.5f);
     }
 
     protected override void Park()
     {
         swell = 0;
+        Model.localPosition = Vector3.zero;
         Model.localScale = RestScale;
     }
 }
