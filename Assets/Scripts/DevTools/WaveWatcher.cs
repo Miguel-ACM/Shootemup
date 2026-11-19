@@ -521,6 +521,17 @@ public sealed partial class WaveWatcher : MonoBehaviour
         // Replay attack randomness as well as the authored composition.
         UnityEngine.Random.InitState(LevelRun.Seed);
         var entry = SelectedEntry;
+        if (Level == LevelId.Void)
+        {
+            if (entry.VoidOrigin.HasValue) LevelRun.PreviewVoidOrigin(entry.VoidOrigin.Value);
+            LevelEnvironment.Apply();
+            if (entry.Enemy == typeof(WitnessBoss))
+            {
+                WitnessChamber.Open();
+                BGMManager.PlayFinalMusic();
+            }
+            else BGMManager.PlayLevelMusic(Level);
+        }
         if (View == WatcherView.Projectiles)
         {
             var emitter = DistrictEnemy.Spawn(typeof(BeamDrone), new Vector3(0, Camera.UpLimit - 2.4f, 1));
@@ -656,7 +667,7 @@ public sealed partial class WaveWatcher : MonoBehaviour
     // Advance the shared hull health; City still advances when its partner dies.
     static void PushToPhase(DistrictBoss boss, DistrictBoss victim, int phase)
     {
-        if (boss is VoidSovereignBoss)
+        if (boss is VoidSovereignBoss || boss is WitnessBoss)
         {
             boss.damage(float.MaxValue / 1024);
             return;

@@ -44,10 +44,13 @@ public static partial class MetaProgress
     {
         LevelId.Hell => 1, LevelId.Core => 2, LevelId.Dream => 4, LevelId.Heaven => 8, _ => 0
     };
-    public static bool FinalEncounterReady => flight != null && flight.contract == null &&
-        districtDefeated && engagedBoss == typeof(VoidSovereignBoss) && (Data.voidRouteClears & 15) == 15;
+    public static bool FinalEncounterReady => engagedBoss == typeof(VoidSovereignBoss) &&
+        (DebugRunMenu.IsDebugRun || flight != null && flight.contract == null && districtDefeated && (Data.voidRouteClears & 15) == 15);
 
-    public static FlightLog PreviewVictory() => new FlightLog {
+    public static FlightLog PreviewVictory() => flight == null ? new FlightLog {
+        frame = ShipFrames.Current.frame, difficulty = Difficulty.Current, route = LevelRun.CurrentName,
+        score = Score.CurrentScore, earned = RunCoins.Earned
+    } : new FlightLog {
         frame = flight.frame, difficulty = flight.difficulty, route = flight.route,
         score = Score.CurrentScore, earned = RunCoins.Earned,
         banked = Mathf.Min(MaxCoins - Data.coins, Mathf.Min(RunCoins.Count, RunCoins.Earned)),
@@ -59,6 +62,7 @@ public static partial class MetaProgress
     {
         engagedBoss = typeof(WitnessBoss);
         districtDefeated = false;
+        if (flight == null) return;
         bossHits = flight.hits;
         flight.route += " / The Witness";
     }

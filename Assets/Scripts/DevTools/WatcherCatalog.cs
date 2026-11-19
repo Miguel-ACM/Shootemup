@@ -14,6 +14,7 @@ public static class WatcherCatalog
     {
         public string Id, Name;
         public int Encounter;
+        public LevelId? VoidOrigin;
         public Type Enemy;
         public WavePart Part;
         public Action<Vector3, Transform> Fire;
@@ -82,13 +83,22 @@ public static class WatcherCatalog
                     entries.Add(new Entry { Id = "enemy/" + enemy.Name, Name = Pretty(enemy.Name), Enemy = enemy });
                 break;
             case WatcherView.Bosses:
-                if (level != LevelId.Void) entries.Add(new Entry { Id = "miniboss", Name = "MINIBOSS", Encounter = WaveWatcher.Miniboss });
+                if (level == LevelId.Void)
+                {
+                    int[] phases = { WaveWatcher.BossOne, WaveWatcher.BossTwo, WaveWatcher.BossThree,
+                        WaveWatcher.BossFour, WaveWatcher.BossFive, WaveWatcher.BossSix };
+                    foreach (var origin in LevelRun.VoidOrigins)
+                        for (int i = 0; i < phases.Length; i++)
+                            entries.Add(new Entry { Id = $"void/{origin}/{i+1}", Name = $"{origin.ToString().ToUpperInvariant()} VOID / {i+1}",
+                                Encounter = phases[i], VoidOrigin = origin, Enemy = typeof(VoidSovereignBoss) });
+                    for (int i = 0; i < 4; i++)
+                        entries.Add(new Entry { Id = $"witness/{i+1}", Name = $"THE WITNESS / {i+1}", Encounter = phases[i], Enemy = typeof(WitnessBoss) });
+                    break;
+                }
+                entries.Add(new Entry { Id = "miniboss", Name = "MINIBOSS", Encounter = WaveWatcher.Miniboss });
                 entries.Add(new Entry { Id = "boss/phase-1", Name = level == LevelId.City ? "BOTH HULLS" : "BOSS / PHASE 1", Encounter = WaveWatcher.BossOne });
                 entries.Add(new Entry { Id = "boss/phase-2", Name = level == LevelId.City ? "HEAVY SURVIVOR" : "BOSS / PHASE 2", Encounter = WaveWatcher.BossTwo });
                 entries.Add(new Entry { Id = "boss/phase-3", Name = level == LevelId.City ? "HEAVY SURVIVOR / PHASE 3" : "BOSS / PHASE 3", Encounter = WaveWatcher.BossThree });
-                if (level == LevelId.Void)
-                    for (int phase = 4; phase <= 6; phase++)
-                        entries.Add(new Entry { Id = $"boss/phase-{phase}", Name = $"BOSS / PHASE {phase}", Encounter = WaveWatcher.BossFour + phase - 4 });
                 if (level == LevelId.City)
                     entries.Add(new Entry { Id = "boss/fast-survivor", Name = "FAST SURVIVOR", Encounter = WaveWatcher.BossOther });
                 var bosses = DistrictWaves.Bosses(level);

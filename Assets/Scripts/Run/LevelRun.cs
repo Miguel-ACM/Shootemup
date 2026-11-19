@@ -137,6 +137,13 @@ public static class LevelRun
         int slot = Tier(level) - 3;
         if (slot >= 0 && slot < flown.Length) flown[slot] = level;
     }
+    internal static readonly LevelId[] VoidOrigins = { LevelId.Heaven, LevelId.Core, LevelId.Hell, LevelId.Dream };
+    internal static void PreviewVoidOrigin(LevelId origin)
+    {
+        foreach (var route in echoRoutes)
+            if (route[2] == origin)
+                foreach (var district in route) RememberDistrict(district);
+    }
     public static LevelId VoidMemory(int index)
     {
         if (flown[index].HasValue) return flown[index].Value;

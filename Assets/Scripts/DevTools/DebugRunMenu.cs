@@ -35,6 +35,11 @@ public sealed partial class DebugRunMenu : AMenuElement
     static readonly List<(Type type, int slot)> pending = new List<(Type, int)>();
     // Opens a pact offer before the run's first wave.
     static bool forcePact;
+    static int debugRun = -1;
+    internal static bool IsDebugRun => debugRun == GameRules.RunSerial;
+    int routeIndex, damageIndex;
+    static readonly int[] damageSteps = { 1, 2, 4, 8, 16 };
+    TextMeshProUGUI routeLabel, damageLabel;
     Image pactButton;
     TextMeshProUGUI weatherLabel;
     // Null follows the run seed; otherwise the debug run flies this district condition.
@@ -70,6 +75,7 @@ public sealed partial class DebugRunMenu : AMenuElement
     {
         pending.Clear();
         browserMemory = null;
+        debugRun = -1;
         forcePact = false;
         SceneManager.sceneLoaded -= SceneReady;
     }
@@ -146,7 +152,7 @@ public sealed partial class DebugRunMenu : AMenuElement
             {
                 var level = levels[i];
                 var button = ButtonAt(panel, level == LevelId.Fields ? "PLAINS" : level.ToString().ToUpperInvariant(),
-                    new Vector2(-427 + i % 8 * 122, 246 - i / 8 * 28), new Vector2(115, 26), () => { first = level; Refresh(); }, 14);
+                    new Vector2(-427 + i % 8 * 122, 246 - i / 8 * 28), new Vector2(115, 26), () => { first = level; if (weather.HasValue && !DistrictConditions.Allowed(level, weather.Value)) weather = null; Refresh(); }, 14);
                 levelButtons[level] = button.GetComponent<Image>();
             }
         }
@@ -189,6 +195,10 @@ public sealed partial class DebugRunMenu : AMenuElement
             BuildBrowser(panel);
         else
         {
+            damageLabel = ButtonAt(panel, "", new Vector2(-376,-250), new Vector2(226,32),
+                () => { damageIndex = (damageIndex+1)%damageSteps.Length; Refresh(); },16).GetComponentInChildren<TextMeshProUGUI>();
+            routeLabel = ButtonAt(panel, "", new Vector2(-108,-250), new Vector2(290,32),
+                () => { routeIndex = (routeIndex+1)%LevelRun.VoidOrigins.Length; Refresh(); },16).GetComponentInChildren<TextMeshProUGUI>();
             ButtonAt(panel, "CLEAR", new Vector2(-390, -294), new Vector2(190, 42), Clear);
             ButtonAt(panel, "START DEBUG RUN", new Vector2(240, -294), new Vector2(490, 42), StartRun);
         }
@@ -275,7 +285,13 @@ public sealed partial class DebugRunMenu : AMenuElement
         if (pactButton != null) pactButton.color = forcePact ? ChosenCard : CardColor;
         if (modifierLabel != null) modifierLabel.text = !modifiers.HasValue ? "SEEDED MODS" : modifiers.Value == LevelModifier.None ? "NO MODS" :
             modifiers.Value == (LevelModifier.Elites | LevelModifier.Coins | LevelModifier.FastFire) ? "ALL MODS" : modifiers.Value.ToString().ToUpperInvariant();
-        if (weatherLabel != null) weatherLabel.text = weather.HasValue ? weather.Value.ToString().ToUpperInvariant() : "SEEDED SKY";
+        if (weatherLabel != null) weatherLabel.text = weather.HasValue ? DistrictConditions.Label(weather.Value) : "SEEDED EVENT";
+        if (damageLabel != null) damageLabel.text = "DAMAGE ×" + damageSteps[damageIndex];
+        if (routeLabel != null)
+        {
+            routeLabel.GetComponentInParent<Button>(true).gameObject.SetActive(first == LevelId.Void);
+            routeLabel.text = "VOID FROM " + LevelRun.VoidOrigins[routeIndex].ToString().ToUpperInvariant();
+        }
         for (int i = 0; i < 2; i++)
         {
             slots[i].card.color = i == slot ? ChosenCard : CardColor;
@@ -309,7 +325,10 @@ public sealed partial class DebugRunMenu : AMenuElement
     // Seeded sky, then each condition in turn; conditions outside their district fly ordinary.
     void CycleWeather()
     {
-        weather = !weather.HasValue ? DistrictCondition.Ordinary : (int)weather.Value + 1 < Enum.GetValues(typeof(DistrictCondition)).Length ? weather.Value + 1 : (DistrictCondition?)null;
+        int next = weather.HasValue ? (int)weather.Value + 1 : 0;
+        int total = Enum.GetValues(typeof(DistrictCondition)).Length;
+        while (next < total && !DistrictConditions.Allowed(first, (DistrictCondition)next)) next++;
+        weather = next < total ? (DistrictCondition?)next : null;
         Refresh();
     }
 
@@ -337,7 +356,10 @@ public sealed partial class DebugRunMenu : AMenuElement
                 pending.Add((actives[i].type, i));
         }
         GameRules.StartNewRun();
+        debugRun = GameRules.RunSerial;
+        GameRules.enemyDamageReceived *= damageSteps[damageIndex];
         LevelRun.Reset(first);
+        if (first == LevelId.Void) LevelRun.PreviewVoidOrigin(LevelRun.VoidOrigins[routeIndex]);
         DistrictConditions.Forced = weather;
         LevelModifiers.Forced = modifiers;
         BGMManager.PlayLevelMusic(first);
