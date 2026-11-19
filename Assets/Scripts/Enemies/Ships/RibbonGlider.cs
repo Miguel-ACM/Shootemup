@@ -12,14 +12,12 @@ public sealed class RibbonGlider : DistrictEnemy
         nextAttack = 1.4f;
         Mover<Slalom>();
     }
-    // Ribbon worms: rounds wiggling in antiphase from each wingtip.
     protected override void Attack()
     {
-        // The antiphase ribbons differ in tone too: bright from the left wingtip, dark from the right.
         for (int s = -1; s <= 1; s += 2)
         {
             UseTone(s < 0 ? HostileTone.Bright : HostileTone.Dark);
-            Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * 22), 2.8f, .2f).Sway(s * .5f, .9f);
+            Fire<SimpleRound>(Muzzle(s < 0 ? 0 : 1), CombatVisuals.Rotate(Vector2.down, s * 22), 2.8f, .2f);
         }
     }
 
