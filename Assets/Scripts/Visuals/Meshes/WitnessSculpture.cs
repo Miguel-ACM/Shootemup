@@ -1,247 +1,325 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Closed faceted sections and ridged blades share meshes between the mirrored
-// joints. The vanes turn around their roots so the wing can fold like a fan.
+// A chiseled shell folded around a single eye. Both skins, the cutout walls and
+// the eye socket share control vertices. Facets split only for flat shading.
 public sealed class WitnessSculpture : MonoBehaviour
 {
-    static readonly Color Black = new Color(.072f, .064f, .098f), Slate = new Color(.15f, .14f, .20f),
-        Edge = new Color(.29f, .28f, .34f), Silver = new Color(.71f, .69f, .76f), Iris = new Color(1, .26f, .33f);
-    static Mesh body, face, pinion, train, crown, arm, gauntlet;
-    static Material obsidian;
-    public static Material Obsidian => obsidian != null ? obsidian : obsidian = new Material(Resources.Load<Shader>("WitnessObsidian"));
-    public static Mesh Body => body != null ? body : body = Torso();
+    static readonly Color Basalt = new Color(.092f, .084f, .122f);
+    static readonly Color Mantle = new Color(.15f, .147f, .19f);
+    static readonly Color Ridge = new Color(.225f, .218f, .27f);
+    static readonly Color Lip = new Color(.32f, .30f, .36f);
+    static readonly Color Garnet = new Color(.56f, .06f, .135f);
+    static Material material;
+    static Carving carving;
+    static Mesh body;
+    public static Material Obsidian => material != null ? material : material = new Material(Resources.Load<Shader>("WitnessObsidian"));
+    static Carving Sculpture => carving ??= new Carving();
+    public static Mesh Body => body != null ? body : body = Sculpture.MakeMesh();
 
-    sealed class Stone
+    // Sections run from the axial keel to the end of each horn. Each column
+    // rakes from its crown position to its hem position. Paired ridges carry
+    // the shape of the eye out across the shoulders.
+    static readonly float[] CrownX = { 0, .18f, .45f, .72f, .96f, 1.18f, 1.44f, 1.70f, 1.99f, 2.24f, 2.46f };
+    static readonly float[] HemX = { 0, .20f, .39f, .62f, .87f, 1.11f, 1.47f, 1.78f, 1.98f, 2.20f, 2.46f };
+    static readonly float[] Depth = { .58f, .54f, .46f, .35f, .27f, .23f, .20f, .17f, .145f, .10f, .032f };
+    static readonly float[,] Height = {
+        { 1.05f, 1.32f, .99f, .81f, .89f, 1.06f, 1.25f, 1.36f, 1.43f, 1.63f, 1.96f },
+        { .81f, .84f, .75f, .64f, .66f, .82f, 1.03f, 1.18f, 1.28f, 1.50f, 1.94f },
+        { .64f, .61f, .57f, .53f, .49f, .61f, .84f, 1.02f, 1.13f, 1.40f, 1.92f },
+        { .51f, .49f, .36f, .32f, .29f, .31f, .45f, .66f, .89f, 1.20f, 1.90f },
+        { .07f, .10f, .24f, .13f, .09f, .10f, .18f, .38f, .69f, .99f, 1.88f },
+        { -.20f, -.12f, -.01f, -.08f, -.17f, -.10f, .02f, .13f, .44f, .80f, 1.86f },
+        { -.65f, -.52f, -.33f, -.29f, -.50f, -.38f, -.22f, -.20f, .09f, .66f, 1.84f },
+        { -1.18f, -.95f, -.49f, -.53f, -.77f, -.61f, -.42f, -.43f, -.10f, .49f, 1.82f },
+        { -2.05f, -1.54f, -.62f, -.82f, -1.24f, -.77f, -.57f, -.90f, -.35f, .30f, 1.80f }
+    };
+    static readonly float[] Relief = { .08f, .78f, .54f, 1.12f, .94f, 1.17f, .68f, .83f, .07f };
+
+    sealed class Carving
     {
-        readonly List<Vector3> verts = new List<Vector3>();
-        readonly List<int> indices = new List<int>();
-        readonly List<Color> paint = new List<Color>();
-        public void Triangle(Vector3 a, Vector3 b, Vector3 c, Color color)
+        readonly List<Vector3> points = new List<Vector3>();
+        readonly List<int> corners = new List<int>();
+        readonly List<Color> colors = new List<Color>();
+        readonly int[,,] grid = new int[2, 21, 9];
+        public readonly Vector3[] Rest;
+        public readonly int[] Corners;
+        public Carving()
         {
-            int n = verts.Count;
-            verts.Add(a);
-            verts.Add(b);
-            verts.Add(c);
-            indices.Add(n);
-            indices.Add(n + 1);
-            indices.Add(n + 2);
-            paint.Add(color);
-            paint.Add(color);
-            paint.Add(color);
-        }
-        // Consecutive elliptical cross sections around a vertical spine.
-        public void Loft(Vector3 centre, float[] y, float[] width, float[] depth, int sides, Color pigment)
-        {
-            Vector3 Point(int row, int side)
-            {
-                float angle = Mathf.PI * 2 * side / sides + (row % 2) * .10f;
-                return centre + new Vector3(width[row] * Mathf.Cos(angle), y[row], depth[row] * Mathf.Sin(angle));
-            }
-            for (int j = 1; j < y.Length; j++)
-                for (int k = 0; k < sides; k++)
+            for (int face = 0; face <= 1; face++)
+                for (int col = -10; col <= 10; col++)
+                    for (int row = 0; row < 9; row++)
+                    {
+                        int i = Mathf.Abs(col);
+                        float v = row / 8f;
+                        float x = Mathf.Lerp(CrownX[i], HemX[i], v) * System.Math.Sign(col);
+                        float sweep = .13f * Mathf.Abs(x) - .11f * v;
+                        float z = face == 0 ? -Relief[row] * Depth[i] : (.20f + .60f * Mathf.Sin(v * Mathf.PI)) * Depth[i];
+                        grid[face, col + 10, row] = Add(new Vector3(x, Height[row, i], sweep + z));
+                    }
+            for (int col = -10; col < 10; col++)
+                for (int row = 0; row < 8; row++)
                 {
-                    var a = Point(j - 1, k);
-                    var b = Point(j - 1, k + 1);
-                    var c = Point(j, k + 1);
-                    var d = Point(j, k);
-                    Triangle(a, b, d, pigment);
-                    Triangle(b, c, d, pigment * ((k % 3 == 0) ? 1.10f : .93f));
+                    int span = col < 0 ? -col - 1 : col;
+                    bool window = (span >= 3 && span < 8 && row == 2) || (span >= 5 && span < 9 && row == 5);
+                    if (window) continue;
+                    int a = Node(0,col,row), b = Node(0,col+1,row), c = Node(0,col+1,row+1), d = Node(0,col,row+1);
+                    bool crownRoot = span == 1 && row == 0;
+                    bool jawRoot = span == 2 && row == 5;
+                    if (crownRoot || jawRoot)
+                        Horn(a,b,c,d,col < 0 ? -1 : 1,crownRoot);
+                    else if (!(span < 2 && row == 3))
+                    {
+                        // Broad planed panels, each with an off-centre crest and sloping sides.
+                        bool arris = row == 0 || row == 4 || row == 6;
+                        Color plane = arris ? Ridge : (row == 2 || row == 5 ? Basalt : Mantle);
+                        if (span < 2 && row >= 5) plane = Mantle;
+                        Facet(a,b,c,d,plane,span < 2 && row >= 5 ? .29f : arris ? .082f : .032f,span);
+                    }
+                    Quad(Node(1,col,row+1), Node(1,col+1,row+1), Node(1,col+1,row), Node(1,col,row), Basalt);
                 }
-        }
-        // A tapered, swept, double-edged blade with a raised middle ridge.
-        public void Blade(Vector3 a, Vector3 bend, Vector3 tip, float width, Color pigment, int cuts = 7)
-        {
-            Vector3 left = a, right = a, ridge = a, back = a;
-            for (int j = 1; j <= cuts; j++)
+            for (int col = -10; col < 10; col++)
             {
-                float t = j / (float)cuts, s = 1 - t;
-                var p = s * s * a + 2 * s * t * bend + t * t * tip;
-                var d = (s * (bend - a) + t * (tip - bend)).normalized;
-                var cross = new Vector3(-d.y, d.x, 0).normalized;
-                float w = j == cuts ? 0 : width * Mathf.Pow(Mathf.Sin(t * Mathf.PI), .70f) * (1.3f - .60f * t);
-                var l = p - cross * w;
-                var r = p + cross * w;
-                var f = p + Vector3.back * (w * .83f);
-                var b = p + Vector3.forward * (w * .43f);
-                Triangle(left, l, ridge, pigment);
-                Triangle(ridge, l, f, pigment * 1.15f);
-                Triangle(ridge, f, r, pigment * .78f);
-                Triangle(ridge, r, right, pigment * .89f);
-                Triangle(left, back, l, pigment * .66f);
-                Triangle(l, back, b, pigment);
-                Triangle(back, right, r, pigment * .82f);
-                Triangle(back, r, b, pigment * .72f);
-                left = l;
-                right = r;
-                ridge = f;
-                back = b;
+                Edge(col+1,0,col,0);
+                Edge(col,8,col+1,8);
+            }
+            for (int row = 0; row < 8; row++)
+            {
+                Edge(-10,row,-10,row+1);
+                Edge(10,row+1,10,row);
+            }
+            for (int h = -1; h <= 1; h += 2)
+            {
+                Window(h * 3, h * 8, 2);
+                Window(h * 5, h * 9, 5);
+            }
+            Eye();
+            Rest = points.ToArray();
+            Corners = corners.ToArray();
+        }
+        int Add(Vector3 p) { points.Add(p); return points.Count - 1; }
+        int Node(int face, int col, int row) => grid[face,col+10,row];
+        void Tri(int a, int b, int c, Color color)
+        {
+            corners.Add(a); corners.Add(b); corners.Add(c);
+            colors.Add(color); colors.Add(color); colors.Add(color);
+        }
+        void Quad(int a, int b, int c, int d, Color color)
+        {
+            Tri(a,b,c,color);
+            Tri(a,c,d,color);
+        }
+        void Edge(int ax, int ay, int bx, int by) =>
+            Quad(Node(0,ax,ay),Node(0,bx,by),Node(1,bx,by),Node(1,ax,ay),Mantle);
+
+        void Facet(int a, int b, int c, int d, Color color, float rise, int span)
+        {
+            bool right = points[b].x > 0;
+            var inner = Vector3.Lerp(points[right ? a : b], points[right ? d : c], .4f);
+            var outer = Vector3.Lerp(points[right ? b : a], points[right ? c : d], .63f);
+            int ridge = Add(Vector3.Lerp(inner, outer, .55f) + Vector3.back * rise * Depth[span]);
+            Tri(a,b,ridge,color * 1.09f);
+            Tri(b,c,ridge,color * (right ? .91f : 1.03f));
+            Tri(c,d,ridge,color * .82f);
+            Tri(d,a,ridge,color * (right ? 1.03f : .91f));
+        }
+
+        int[] Rim(int face, int start, int end, int row)
+        {
+            int count = end - start + 1;
+            var ring = new int[count * 2];
+            for (int i = 0; i < count; i++)
+            {
+                ring[i] = Node(face,start+i,row);
+                ring[ring.Length-1-i] = Node(face,start+i,row+1);
+            }
+            return ring;
+        }
+        void Band(int[] outer, int[] inner, Color color)
+        {
+            for (int i = 0; i < outer.Length; i++)
+            {
+                int j = (i + 1) % outer.Length;
+                Quad(outer[i],outer[j],inner[j],inner[i],color);
             }
         }
-        public Mesh Finish(string name)
+        // Extrude the original four-sided socket toward the viewer before it
+        // bends. Each change in section carves another plane into the hook.
+        void Horn(int a, int b, int c, int d, int side, bool crown)
         {
-            var mesh = new Mesh { name = name };
-            mesh.SetVertices(verts);
-            mesh.SetTriangles(indices, 0);
-            mesh.SetColors(paint);
+            int[] ring = {a,b,c,d};
+            Vector3 root = (points[a]+points[b]+points[c]+points[d])*.25f;
+            Vector3[] path = crown ? CrownHook : JawHook;
+            Vector2[] sizes = crown ? CrownSection : JawSection;
+            for (int j=0; j<path.Length-1; j++)
+            {
+                Vector3 p = path[j];
+                Vector3 centre = root + new Vector3(side*p.x,p.y,p.z);
+                Vector3 axis = (path[j+1] - (j==0 ? Vector3.zero : path[j-1])).normalized;
+                axis.x *= side;
+                Vector3 across = Vector3.Cross(axis, Vector3.back).normalized;
+                Vector3 bevel = Vector3.Cross(axis, across).normalized;
+                float width = sizes[j].x, depth = sizes[j].y;
+                Vector3 u = across * width, v = bevel * depth;
+                var next = new[]{Add(centre+u),Add(centre+v),Add(centre-u),Add(centre-v)};
+                // Match the first cross-section to the nearest socket corners;
+                // later sections inherit that ordering along the swept spine.
+                if (j == 0)
+                {
+                    int start = 0;
+                    float shortest = float.PositiveInfinity;
+                    for (int shift=0; shift<4; shift++)
+                    {
+                        float length=0;
+                        for (int k=0;k<4;k++) length+=(points[ring[(shift+k)%4]]-points[next[k]]).sqrMagnitude;
+                        if (length < shortest) { shortest=length; start=shift; }
+                    }
+                    ring = new[]{ring[start],ring[(start+1)%4],ring[(start+2)%4],ring[(start+3)%4]};
+                }
+                for (int k=0; k<4; k++)
+                    Quad(ring[k],ring[(k+1)%4],next[(k+1)%4],next[k],k==0 ? Ridge : k==3 ? Basalt : Mantle);
+                ring = next;
+            }
+            Vector3 tip = path[path.Length-1];
+            int end = Add(root+new Vector3(side*tip.x,tip.y,tip.z));
+            for (int k=0;k<4;k++) Tri(ring[k],ring[(k+1)%4],end,k==0 ? Lip : Mantle);
+        }
+        static readonly Vector3[] CrownHook = {
+            new(.025f,.055f,-.18f), new(.15f,.22f,-.33f), new(.24f,.48f,-.36f),
+            new(.21f,.69f,-.29f), new(.09f,.86f,-.22f), new(-.15f,.98f,-.13f)
+        };
+        static readonly Vector2[] CrownSection = { new(.14f,.12f),new(.17f,.14f),new(.13f,.11f),new(.097f,.078f),new(.060f,.044f) };
+        static readonly Vector3[] JawHook = {
+            new(.055f,-.04f,-.21f),new(.30f,-.13f,-.34f),new(.57f,-.37f,-.37f),
+            new(.68f,-.74f,-.32f),new(.61f,-1.10f,-.20f),new(.42f,-1.39f,-.12f),new(.15f,-1.60f,-.10f)
+        };
+        static readonly Vector2[] JawSection = {new(.16f,.12f),new(.23f,.18f),new(.24f,.21f),new(.17f,.16f),new(.13f,.09f),new(.075f,.045f)};
+        // The aperture has a beveled reveal and a real back wall around its edge.
+        void Window(int endA, int endB, int row)
+        {
+            int start = Mathf.Min(endA,endB), end = Mathf.Max(endA,endB);
+            var front = Rim(0,start,end,row);
+            var back = Rim(1,start,end,row);
+            var reveal = new int[front.Length];
+            var rear = new int[front.Length];
+            int count = end-start+1;
+            for (int i = 0; i < front.Length; i++)
+            {
+                int j = i < count ? i : front.Length-1-i;
+                float t = j / (float)(count-1);
+                // Pinch the slit to a narrow lancet at either end.
+                float opening = .14f + .63f * Mathf.Sin(t * Mathf.PI);
+                Vector3 centre = (points[front[j]] + points[front[front.Length-1-j]]) * .5f;
+                Vector3 p = Vector3.Lerp(centre, points[front[i]], opening);
+                p.x = Mathf.Lerp(points[front[count/2]].x, p.x, .93f);
+                reveal[i] = Add(p + Vector3.forward * .025f);
+                rear[i] = Add(new Vector3(p.x,p.y, points[back[i]].z-.013f));
+            }
+            Band(front,reveal,Ridge);
+            Band(reveal,rear,Basalt);
+            Band(rear,back,Mantle);
+        }
+        void Eye()
+        {
+            var outline = Rim(0,-2,2,3);
+            int[] ring = outline;
+            var centre = new Vector3(0,.29f,-.56f);
+            // Cut the lid into the brow, recess the vitreous, then raise a long
+            // garnet iris and a polished black pupil from that same opening.
+            void Inset(float x, float y, float z, Color pigment)
+            {
+                var next = new int[ring.Length];
+                for (int i = 0; i < next.Length; i++)
+                {
+                    Vector3 p = points[outline[i]] - centre;
+                    next[i] = Add(new Vector3(p.x * x,centre.y+p.y*y,z + .08f * Mathf.Abs(p.x)));
+                }
+                Band(ring,next,pigment);
+                ring = next;
+            }
+            Inset(.90f,.82f,-.69f,Lip);
+            Inset(.82f,.72f,-.57f,Basalt);
+            Inset(.46f,.72f,-.66f,new Color(.28f,.11f,.17f));
+            Inset(.19f,.68f,-.73f,Garnet);
+            Inset(.072f,.48f,-.75f,new Color(1,.28f,.36f));
+            int pupil = Add(new Vector3(0,.29f,-.77f));
+            for (int i=0; i<ring.Length; i++) Tri(ring[i],ring[(i+1)%ring.Length],pupil,Basalt);
+        }
+        public Mesh MakeMesh()
+        {
+            var mesh = new Mesh { name = "The Witness / carved obsidian mantle" };
+            var verts = new Vector3[Corners.Length];
+            var indices = new int[verts.Length];
+            for (int i=0; i<verts.Length; i++) { verts[i] = Rest[Corners[i]]; indices[i] = i; }
+            mesh.vertices = verts;
+            mesh.SetTriangles(indices,0);
+            mesh.SetColors(colors);
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
             return mesh;
         }
     }
-    static Mesh Torso()
-    {
-        var s = new Stone();
-        s.Loft(Vector3.zero, new[] { -1.3f, -.84f, -.48f, -.05f, .38f, .55f, .76f },
-            new[] { .01f, .31f, .26f, .5f, .69f, .38f, .03f }, new[] { .01f, .19f, .23f, .37f, .30f, .20f, .02f }, 14, Black);
-        for (int hand = -1; hand <= 1; hand += 2)
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                float y = .41f - i * .14f;
-                s.Blade(new Vector3(hand * (.64f - i * .066f), y, -.09f), new Vector3(hand * .27f, y - .25f, -.48f), new Vector3(0, y - .29f, -.38f), .074f, i == 0 ? Edge : Slate);
-            }
-            s.Blade(new Vector3(hand * .23f, .46f, -.06f), new Vector3(hand * .81f, .49f, -.08f), new Vector3(hand * 1.02f, .91f, .16f), .14f, Slate);
-        }
-        return s.Finish("Witness / ribbed carapace");
-    }
-    static Mesh Mask()
-    {
-        var s = new Stone();
-        s.Loft(Vector3.zero, new[] { -.49f, -.22f, .05f, .25f, .40f }, new[] { .015f, .23f, .34f, .29f, .025f }, new[] { .02f, .22f, .28f, .19f, .02f }, 12, Slate);
-        for (int h = -1; h <= 1; h += 2)
-        {
-            s.Blade(new Vector3(h * .015f, -.39f, -.19f), new Vector3(h * .25f, .02f, -.46f), new Vector3(h * .31f, .38f, -.10f), .135f, Black);
-            s.Blade(new Vector3(h * .075f, .11f, -.30f), new Vector3(h * .34f, .42f, -.12f), new Vector3(h * .45f, .78f, .06f), .077f, Edge);
-            s.Blade(new Vector3(h * .16f, .26f, 0), new Vector3(h * .51f, .19f, .08f), new Vector3(h * .69f, .43f, .16f), .08f, Black);
-        }
-        s.Blade(new Vector3(0, -.23f, -.31f), new Vector3(0, .04f, -.39f), new Vector3(0, .24f, -.29f), .027f, Iris);
-        return s.Finish("Witness / split visor");
-    }
-    static Mesh Wing()
-    {
-        var s = new Stone();
-        var root = Vector3.zero;
-        var elbow = new Vector3(.94f, .54f, .12f);
-        s.Blade(root, new Vector3(.36f, .69f, .16f), elbow, .18f, Slate);
-        s.Blade(elbow, new Vector3(1.60f, .85f, .19f), new Vector3(1.93f, 1.35f, .13f), .10f, Edge);
-        for (int j = 0; j < 8; j++)
-        {
-            float t = j / 7f;
-            var start = new Vector3(.23f + 1.34f * t, .23f + .61f * t, .13f * t);
-            var bend = start + new Vector3(.14f + .38f * t, -.50f + .14f * t, -.19f);
-            var tip = start + new Vector3(.39f + .29f * t, -1.15f + .64f * t, .12f);
-            s.Blade(start, bend, tip, .14f - .045f * t, j % 3 == 0 ? Slate : Black);
-        }
-        return s.Finish("Witness / vaulted pinion");
-    }
-    static Mesh Robe()
-    {
-        var s = new Stone();
-        for (int j = -2; j <= 2; j++)
-            s.Blade(new Vector3(j * .105f, 0, 0), new Vector3(j * .24f, -.78f, .23f), new Vector3(j * .31f, -1.55f + Mathf.Abs(j) * .23f, .14f), .19f, j % 2 == 0 ? Black : Slate);
-        return s.Finish("Witness / trailing stole");
-    }
-    static Mesh Halo()
-    {
-        var s = new Stone();
-        for (int i = 0; i < 36; i++)
-        {
-            if (i % 12 == 11)
-                continue;
-            float a = i * 2 * Mathf.PI / 36, b = (i + 1) * 2 * Mathf.PI / 36;
-            Vector3 u = new Vector3(Mathf.Cos(a), Mathf.Sin(a)), v = new Vector3(Mathf.Cos(b), Mathf.Sin(b));
-            s.Triangle(u * .87f, v * .87f, u, Slate);
-            s.Triangle(u, v * .87f, v, Edge);
-            s.Triangle(u, v, u * .976f + Vector3.back * .05f, Silver);
-            if (i % 3 == 0)
-                s.Blade(u * .93f, u * 1.06f, u * (i % 9 == 0 ? 1.30f : 1.15f), .034f, Silver, 3);
-        }
-        return s.Finish("Witness / interrupted nimbus");
-    }
-    static Mesh Forearm(bool hand)
-    {
-        var s = new Stone();
-        if (!hand)
-        {
-            s.Blade(Vector3.zero, new Vector3(.17f, -.29f, -.11f), new Vector3(.45f, -.69f, 0), .14f, Slate);
-            s.Blade(new Vector3(.08f, -.11f, -.08f), new Vector3(.23f, -.22f, -.14f), new Vector3(.47f, -.39f, -.05f), .055f, Edge);
-        }
-        else
-        {
-            s.Blade(Vector3.zero, new Vector3(.33f, -.13f, -.09f), new Vector3(.52f, -.32f, -.12f), .145f, Black);
-            for (int j = 0; j < 4; j++)
-            {
-                var knuckle = new Vector3(.41f + j * .026f, -.20f - j * .045f, -.14f);
-                s.Blade(knuckle, knuckle + new Vector3(.22f, -.05f, 0), knuckle + new Vector3(.28f - j * .04f, -.30f - .024f * j, .06f), .039f, Edge, 5);
-            }
-        }
-        return s.Finish(hand ? "Witness / taloned hand" : "Witness / vambrace");
-    }
-    readonly Transform[] wings = new Transform[4];
-    readonly Transform[] arms = new Transform[2], hands = new Transform[2];
-    Transform mask, halo, robe;
-    Transform Part(string name, Mesh mesh, Vector3 p)
-    {
-        var part = new GameObject(name);
-        part.transform.SetParent(transform, false);
-        part.transform.localPosition = p;
-        part.AddComponent<MeshFilter>().sharedMesh = mesh;
-        var r = part.AddComponent<MeshRenderer>();
-        r.sortingLayerName = "Enemy";
-        r.sharedMaterial = Obsidian;
-        return part.transform;
-    }
+
+    Mesh skin;
+    Vector3[] nodes, vertices, normals;
+    struct Flex { public float shoulder, tip, hem, hood, jaw, iris; }
+    Flex[] flex;
     public void Assemble()
     {
-        if (face == null)
-            face = Mask();
-        if (pinion == null)
-            pinion = Wing();
-        if (train == null)
-            train = Robe();
-        if (crown == null)
-            crown = Halo();
-        if (arm == null)
-            arm = Forearm(false);
-        if (gauntlet == null)
-            gauntlet = Forearm(true);
-        halo = Part("Broken nimbus", crown, new Vector3(0, .92f, .49f));
-        robe = Part("Split train", train, new Vector3(0, -.55f, .12f));
-        mask = Part("Split visor", face, new Vector3(0, .55f, -.25f));
-        for (int i = 0; i < 2; i++)
+        skin = Instantiate(Body);
+        skin.MarkDynamic();
+        GetComponent<MeshFilter>().sharedMesh = skin;
+        var rest = Sculpture.Rest;
+        nodes = new Vector3[rest.Length];
+        vertices = new Vector3[Sculpture.Corners.Length];
+        normals = new Vector3[vertices.Length];
+        flex = new Flex[rest.Length];
+        for (int i=0; i<rest.Length; i++)
         {
-            int h = i * 2 - 1;
-            arms[i] = Part("Raised arm", arm, new Vector3(h * .51f, .26f, -.24f));
-            arms[i].localScale = new Vector3(h, 1, 1);
-            hands[i] = Part("Conducting hand", gauntlet, Vector3.zero);
-            hands[i].SetParent(arms[i], false);
-            hands[i].localPosition = new Vector3(.45f, -.65f, -.03f);
+            var p = rest[i];
+            float span = Mathf.Abs(p.x);
+            flex[i] = new Flex {
+                shoulder = Mathf.SmoothStep(0,1,Mathf.InverseLerp(.4f,1.42f,span)),
+                tip = Mathf.SmoothStep(0,1,Mathf.InverseLerp(1.05f,2.46f,span)),
+                hem = Mathf.SmoothStep(0,1,Mathf.InverseLerp(-.35f,-1.94f,p.y)),
+                hood = Mathf.SmoothStep(0,1,Mathf.InverseLerp(.50f,1.32f,p.y)) * Mathf.Clamp01(1-span),
+                jaw = Mathf.InverseLerp(-.45f,-1.5f,p.y) * Mathf.InverseLerp(.34f,.83f,span),
+                iris = Mathf.InverseLerp(-.59f,-.73f,p.z) * Mathf.Clamp01(1-span/.28f) * Mathf.Clamp01(1-Mathf.Abs(p.y-.29f)/.26f)
+            };
         }
-        for (int i = 0; i < 4; i++)
-        {
-            int h = i % 2 == 0 ? -1 : 1;
-            wings[i] = Part("Mantle pinion", pinion, new Vector3(h * .43f, i < 2 ? .35f : .04f, i < 2 ? .20f : .35f));
-            wings[i].localScale = new Vector3(h, 1, 1) * (i < 2 ? 1 : .79f);
-        }
+        skin.bounds = new Bounds(Vector3.zero, new Vector3(6.6f,6.5f,4));
     }
     public void Pose(float t, int phase, float strike)
     {
-        for (int i = 0; i < 4; i++)
+        float beat = t * (1.16f + .09f * phase);
+        float breath = Mathf.Sin(beat);
+        float shoulder = .23f * breath + (phase-1)*.075f + strike*.23f;
+        float sweep = .42f * Mathf.Sin(beat-.85f) + strike*.38f;
+        float twist = .21f * Mathf.Cos(t*.87f);
+        float tail = .21f*Mathf.Sin(beat-.73f);
+        float tailLift = .22f * Mathf.Cos(beat);
+        float gape = .10f * (1 + breath) + .24f * strike;
+        float glance = .068f * Mathf.Sin(t * .92f);
+        var rest = Sculpture.Rest;
+        for (int i=0; i<rest.Length; i++)
         {
-            int h = i % 2 == 0 ? -1 : 1;
-            float wave = Mathf.Sin(t * 1.42f - i / 2 * .83f);
-            wings[i].localRotation = Quaternion.Euler(9 * wave, h * (18 * wave + 13 * strike), h * ((i < 2 ? 16 : -29) + 11 * wave + (phase - 1) * 3 + 12 * strike));
+            var p = rest[i];
+            var w = flex[i];
+            float h = Mathf.Sign(p.x);
+            p.x += h * (.12f * w.shoulder * breath - .27f * w.tip * (sweep + .32f) + w.jaw*gape) + tail*w.hem + glance*w.iris;
+            p.y += w.shoulder*shoulder + w.tip*sweep + .12f*w.hood*(breath + strike);
+            p.z += w.shoulder*(.28f*breath + h*twist) + w.tip*(.42f*sweep - h*twist) + tailLift*w.hem;
+            nodes[i] = p;
         }
-        mask.localRotation = Quaternion.Euler(5 * Mathf.Cos(t), 15 * Mathf.Sin(t * .91f), 4 * Mathf.Sin(t * .73f));
-        halo.localRotation = Quaternion.Euler(20 + 19 * Mathf.Sin(t * .49f), 14 * Mathf.Cos(t * .47f), t * (8 + 2 * phase));
-        robe.localRotation = Quaternion.Euler(9 * Mathf.Sin(t * 1.4f), 0, 10 * Mathf.Sin(t * 1.2f));
-        for (int i = 0; i < 2; i++)
+        var corners = Sculpture.Corners;
+        for (int i=0; i<corners.Length; i+=3)
         {
-            int h = i * 2 - 1;
-            float gesture = Mathf.Sin(t * (.9f + .11f * phase) + i * 1.8f);
-            arms[i].localRotation = Quaternion.Euler(8 * gesture, 12 * h * gesture, h * (phase * 8 + 18 * gesture + 17 * strike));
-            hands[i].localRotation = Quaternion.Euler(-9 * strike, 14 * gesture, 24 * gesture - 18 * strike);
+            var a = nodes[corners[i]]; var b = nodes[corners[i+1]]; var c = nodes[corners[i+2]];
+            vertices[i] = a; vertices[i+1] = b; vertices[i+2] = c;
+            normals[i] = normals[i+1] = normals[i+2] = Vector3.Cross(b-a,c-a).normalized;
         }
+        skin.SetVertices(vertices,0,vertices.Length,UnityEngine.Rendering.MeshUpdateFlags.DontRecalculateBounds);
+        skin.SetNormals(normals);
     }
+    void OnDestroy() { if (skin != null) Destroy(skin); }
 }
