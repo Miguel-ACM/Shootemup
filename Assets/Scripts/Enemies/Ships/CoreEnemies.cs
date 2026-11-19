@@ -6,11 +6,11 @@ using UnityEngine;
 public abstract class CoreCube : DistrictEnemy
 {
     static readonly HashSet<CoreCube> active = new HashSet<CoreCube>();
-    static readonly List<CombatWall> solid = new List<CombatWall>(24);
+    static readonly List<CombatWall> solid = new List<CombatWall>(64);
     protected virtual bool Breakable => true;
     public override bool CanBeTargeted => Breakable && base.CanBeTargeted;
-    float HalfWidth => hullScale * .81f;
-    LineRenderer routeTell;
+    protected virtual float HalfWidth => Hull.localScale.x * .81f;
+    float HalfHeight => Hull.localScale.y * .81f;
 
     protected override void OnEnable() { base.OnEnable(); active.Add(this); }
     protected override void OnDisable() { active.Remove(this); base.OnDisable(); }
@@ -19,35 +19,10 @@ public abstract class CoreCube : DistrictEnemy
     {
         base.Start();
         GetComponent<CircleCollider2D>().enabled = false;
+        if (!Breakable) return;
         var box = gameObject.AddComponent<BoxCollider2D>();
         box.isTrigger = true;
-        box.size = Vector2.one * (HalfWidth * 2);
-        if (!Breakable)
-            box.enabled = false;
-    }
-
-    public override void FlyPhrase(WaveUnit unit)
-    {
-        base.FlyPhrase(unit);
-        if (!(movement is FormationFlight flight))
-            return;
-        routeTell = CombatVisuals.Line(transform, new Color(.94f, .37f, .17f, .40f), .036f);
-        routeTell.sortingLayerName = "Enemy";
-        routeTell.sortingOrder = -2;
-        routeTell.positionCount = 12;
-        for (int i = 0; i < routeTell.positionCount; i++)
-        {
-            var p = flight.PositionAt(i / 11f * .78f);
-            routeTell.SetPosition(i, new Vector3(p.x * Camera.RightLimit,
-                Mathf.LerpUnclamped(Camera.DownLimit, Camera.UpLimit, p.y), 4));
-        }
-    }
-
-    protected override void Update()
-    {
-        base.Update();
-        if (routeTell != null && age > .85f)
-            routeTell.enabled = false;
+        box.size = new Vector2(HalfWidth, HalfHeight) * 2;
     }
 
     public override void damage(float amount)
@@ -62,11 +37,11 @@ public abstract class CoreCube : DistrictEnemy
         foreach (var cube in active)
         {
             Vector2 center = cube.transform.position;
-            float extent = cube.HalfWidth;
-            if (cube.health <= 0 || center.y - extent > Camera.UpLimit + 1 || center.y + extent < Camera.DownLimit - 1 ||
-                center.x - extent > Camera.RightLimit + 1 || center.x + extent < Camera.LeftLimit - 1)
+            float w = cube.HalfWidth, h = cube.HalfHeight;
+            if (cube.health <= 0 || center.y - h > Camera.UpLimit + 1 || center.y + h < Camera.DownLimit - 1 ||
+                center.x - w > Camera.RightLimit + 1 || center.x + w < Camera.LeftLimit - 1)
                 continue;
-            solid.Add(Rect.MinMaxRect(center.x - extent, center.y - extent, center.x + extent, center.y + extent));
+            solid.Add(Rect.MinMaxRect(center.x - w, center.y - h, center.x + w, center.y + h));
         }
     }
 
@@ -90,7 +65,19 @@ public abstract class CoreCube : DistrictEnemy
 public sealed class TransitCube : CoreCube
 {
     protected override bool Breakable => false;
-    public override bool HoldsWave => false;
+    int bankTiles;
+    public override bool HoldsWave => bankTiles > 0;
+    protected override float HalfWidth => base.HalfWidth + Mathf.Max(0, bankTiles - 1) * IndustrialMeshFactory.CoreTilePitch * Hull.localScale.x * .5f;
+    public override void FlyPhrase(WaveUnit unit)
+    {
+        base.FlyPhrase(unit);
+        bankTiles = unit.coreBankTiles;
+        if (bankTiles == 0) return;
+        var scale = Hull.localScale;
+        scale.x = CoreMazeWaves.CellWidth / IndustrialMeshFactory.CoreTilePitch;
+        Hull.localScale = scale;
+        Hull.GetComponent<MeshFilter>().sharedMesh = IndustrialMeshFactory.CoreBank(bankTiles);
+    }
     protected override void Configure() { health = 1; hullScale = .59f; }
     protected override void Attack() { }
 }

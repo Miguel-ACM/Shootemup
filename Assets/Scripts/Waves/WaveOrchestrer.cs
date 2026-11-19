@@ -145,7 +145,8 @@ public class WaveOrchestrer : MonoBehaviour
                 }
                 if (enemy.TryGetComponent<DistrictMiniboss>(out var mini))
                     activeMiniboss = mini;
-                enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
+                if (currentUnit.HullCount > 0)
+                    enemy.GetComponent<AEnemy>().SetOrchestrer(this, currentWaveNumber);
                 currentUnit = currentWave.getNext();
             }
             if (offerPending && !TunnelPassage.Active && (waveTime >= offerAt || currentUnit == null && AEnemy.HoldingCount == 0))
@@ -171,7 +172,7 @@ public class WaveOrchestrer : MonoBehaviour
             bool chainPassage = TunnelPassage.EndingSoon && next.Kind == RunSlotKind.Combat && LevelRun.Current == LevelId.Tunnel &&
                 TunnelPassageWaves.HasPassage(next.Budget) && TunnelPassageWaves.Chained;
             // A hunt wave holds its handoff until the marked elite is caught or escapes.
-            bool phraseComplete = currentUnit == null && !miniboss && huntTarget == null && waveTime >= handoffAt && (AEnemy.HoldingCount < 22 || chainPassage) && (!TunnelPassage.Active || chainPassage);
+            bool phraseComplete = currentUnit == null && !miniboss && huntTarget == null && waveTime >= handoffAt && (currentWave.continuationAt > 0 || AEnemy.HoldingCount < 22 || chainPassage) && (!TunnelPassage.Active || chainPassage);
             if (currentUnit == null && ((nextCombat && phraseComplete) || clearTime >= .12f) && (nextCombat || rewardOffer == null))
             {
 

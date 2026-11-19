@@ -196,73 +196,61 @@ public static partial class IndustrialMeshFactory
         }
     }
 
-    static void ModelTransitCube(Builder b)
+    static void CoreBlock(Builder b, int face)
     {
-        // A sealed freight block. Two diagonal load straps lock into cast corner shoes.
-        BevelArmor(b,new[]{V(-.81f,-.64f),V(-.64f,-.81f),V(.64f,-.81f),V(.81f,-.64f),V(.81f,.64f),V(.64f,.81f),V(-.64f,.81f),V(-.81f,.64f)},.64f,0);
-        for(int s=-1;s<=1;s+=2)
-        {
-            b.Sweep(new Vector3(s*-.63f,-.62f,-.32f),new Vector3(s*-.25f,-.24f,-.42f),
-                new Vector3(s*.25f,.24f,-.42f),new Vector3(s*.63f,.62f,-.32f),.115f,.06f,6,false,2,4);
-            for(int j=-1;j<=1;j+=2)
-            {
-                b.Box(new Vector3(s*.61f,j*.62f,-.29f),new Vector3(.39f,.36f,.20f),1,0);
-                b.Drum(new Vector3(s*.60f,j*.62f,-.41f),.077f,.04f,11,6);
-            }
-        }
-        CutStone(b,new Vector3(0,0,-.41f),new Vector3(.30f,.29f,.085f),0,6);
-        b.Box(new Vector3(0,.01f,-.50f),new Vector3(.30f,.075f,.035f),13);
+        // One broad face and four bevels. The lit and shadowed edges read at a few pixels.
+        b.Box(Vector3.zero, new Vector3(1.62f,1.62f,.30f), 0, 11);
+        Vector3 Corner(int x, int y, bool lid) =>
+            new Vector3(x * (lid ? .68f : .81f), y * (lid ? .68f : .81f), lid ? -.30f : -.15f);
+        var a = Corner(-1,-1,true); var b1 = Corner(-1,1,true);
+        var c = Corner(1,1,true); var d = Corner(1,-1,true);
+        b.Face(face, a,b1,c,d);
+        b.Face(14, Corner(-1,-1,false), Corner(-1,1,false), b1,a);
+        b.Face(15, Corner(-1,1,false), Corner(1,1,false), c,b1);
+        b.Face(0, Corner(1,1,false), Corner(1,-1,false), d,c);
+        b.Face(6, Corner(1,-1,false), Corner(-1,-1,false), a,d);
     }
+
+    static void ModelTransitCube(Builder b) => CoreBlock(b, 4);
 
     static void ModelFuseCube(Builder b)
     {
-        // The vulnerable cartridge is suspended between two porcelain terminal blocks.
-        b.Box(Vector3.zero,new Vector3(1.60f,1.60f,.39f),11,0);
-        for(int s=-1;s<=1;s+=2)
-        {
-            b.Box(new Vector3(0,s*.62f,-.26f),new Vector3(1.58f,.36f,.32f),1,6);
-            b.Box(new Vector3(s*.72f,0,-.20f),new Vector3(.15f,1.26f,.22f),0);
-            b.Drum(new Vector3(s*.52f,-.63f,-.45f),.09f,.06f,13,8);
-            b.Drum(new Vector3(s*.52f,.63f,-.45f),.09f,.06f,13,8);
-        }
-        for(int i=-1;i<=1;i++)
-        {
-            float x=i*.37f;
-            CutStone(b,new Vector3(x,0,-.27f),new Vector3(.14f,.54f,.14f),i==0?10:3,6);
-            for(int end=-1;end<=1;end+=2)
-                b.Box(new Vector3(x,end*.40f,-.28f),new Vector3(.31f,.145f,.28f),13,6);
-        }
+        CoreBlock(b, 1);
+        // An orange fuse across the porcelain face marks a breakable shortcut.
+        b.Box(new Vector3(0,0,-.31f), new Vector3(.22f,1.36f,.045f), 3);
     }
 
     static void ModelSentryCube(Builder b)
     {
-        // A recessed turret socket flanked by an ammunition belt and a sloping access hatch.
-        BevelArmor(b,new[]{V(-.81f,-.81f),V(.81f,-.81f),V(.81f,.65f),V(.65f,.81f),V(-.81f,.81f)},.48f,0);
-        b.Drum(new Vector3(0,.04f,-.28f),.59f,.15f,11,10,6);
-        b.Drum(new Vector3(0,.05f,-.38f),.49f,.15f,6,12,0);
-        CutStone(b,new Vector3(0,.12f,-.43f),new Vector3(.38f,.45f,.22f),5,8);
-        FieldBarrel(b,new Vector3(0,-.43f,-.64f),.19f,.50f);
-        for(int j=-2;j<=2;j++)
-            b.Box(new Vector3(-.62f,j*.22f,-.31f),new Vector3(.22f,.13f,.16f),13,0);
-        b.Box(new Vector3(.64f,0,-.31f),new Vector3(.23f,1.19f,.18f),1,6);
-        CutStone(b,new Vector3(.31f,.39f,-.49f),new Vector3(.11f,.16f,.09f),9,8);
+        CoreBlock(b, 6);
+        b.Box(new Vector3(0,-.1f,-.31f), new Vector3(.62f,.83f,.06f), 11);
+        FieldBarrel(b, new Vector3(0,-.72f,-.34f), .21f, .72f);
     }
 
     static void ModelRamCube(Builder b)
     {
-        // A hydraulic press with two protective jaws and an exposed orange piston.
-        b.Box(Vector3.zero,new Vector3(1.60f,1.52f,.40f),11,6);
-        for(int s=-1;s<=1;s+=2)
+        CoreBlock(b, 12);
+        foreach (int side in new[] { -1, 1 })
+            FieldPort(b, new Vector3(side*.60f,0,-.26f), .20f, 6);
+    }
+
+    static readonly Dictionary<int, Mesh> coreBanks = new Dictionary<int, Mesh>();
+    public const float CoreTilePitch = 1.64f;
+
+    public static Mesh CoreBank(int tiles)
+    {
+        var tile = DeepHull(CombatHullId.TransitCube);
+        if (tiles == 1) return tile;
+        if (coreBanks.TryGetValue(tiles, out var mesh) && mesh != null) return mesh;
+        var pieces = new CombineInstance[tiles];
+        for (int i = 0; i < tiles; i++)
         {
-            BevelArmor(b,new[]{V(s*.40f,-.80f),V(s*.80f,-.80f),V(s*.80f,.80f),V(s*.57f,.80f),V(s*.40f,.56f)},.51f,1,-.13f);
-            b.Box(new Vector3(s*.55f,.53f,-.41f),new Vector3(.42f,.23f,.10f),0);
-            FieldPort(b,new Vector3(s*.57f,-.13f,-.45f),.21f,6);
+            float x = (i - (tiles - 1) * .5f) * CoreTilePitch;
+            pieces[i] = new CombineInstance { mesh = tile, transform = Matrix4x4.Translate(Vector3.right * x) };
         }
-        b.Box(new Vector3(0,.46f,-.28f),new Vector3(.83f,.51f,.39f),5,6);
-        KeelSkin(b,-.30f,13,Frame(-.48f,.15f,.14f),Frame(-.43f,.21f,.18f),Frame(.38f,.21f,.18f));
-        for(int k=0;k<4;k++)
-            b.Box(new Vector3(0,-.33f+k*.15f,-.42f),new Vector3(.45f,.074f,.12f),6);
-        b.Box(new Vector3(0,-.63f,-.31f),new Vector3(.87f,.32f,.36f),1,0);
+        mesh = new Mesh { name = "Core wall / " + tiles };
+        mesh.CombineMeshes(pieces);
+        return coreBanks[tiles] = mesh;
     }
 
     static void ModelRelayCarrier(Builder b)

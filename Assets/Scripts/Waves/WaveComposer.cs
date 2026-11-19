@@ -144,6 +144,7 @@ public static class WaveComposer
     {
         EnsureContext();
         var district = level;
+        if (district == LevelId.Core) yield break; // Maze rooms use two shared conveyor routes.
         int difficulty = stage;
         var watch = System.Diagnostics.Stopwatch.StartNew();
         foreach (var part in WavePartLibrary.For(district))
@@ -214,6 +215,7 @@ public static class WaveComposer
 
     static Wave Compose(int budget)
     {
+        if (level == LevelId.Core) return CoreMazeWaves.Create(budget, seed);
         if (level == LevelId.Tunnel && TunnelPassageWaves.HasPassage(budget)) return TunnelPassageWaves.Create(budget);
         for (int attempt = 0; attempt < 8; attempt++)
         {
@@ -257,7 +259,7 @@ public static class WaveComposer
             count = budget < 5 || compact ? 3 : 4;
         if (level == LevelId.Space)
             count = budget < 5 || compact ? 3 : 4;
-        if (!compact && (level == LevelId.Core || level == LevelId.Dream))
+        if (!compact && level == LevelId.Dream)
             count = budget < 5 ? 3 : 4;
         if (level == LevelId.Heaven)
             count = compact ? 2 : 3;
@@ -276,7 +278,7 @@ public static class WaveComposer
         // Some interleaved trains extend past six seconds even though their first ship
         // enters immediately. Keep these authored routes eligible during spacing retries.
         bool longFormations = level == LevelId.Heaven || level == LevelId.Dream ||
-            level == LevelId.Mushroom || level == LevelId.Sewers || level == LevelId.Core;
+            level == LevelId.Mushroom || level == LevelId.Sewers;
         if (compact && longFormations)
             window = Mathf.Max(window, 14f);
         float slowest = 1;
@@ -299,7 +301,7 @@ public static class WaveComposer
                 if (level == LevelId.Space && !relaxed && slot == count - 1 && !units.Exists(u => u.enemy == nameof(LaserSatellite) || u.enemy == nameof(OrbitalCarrier)) && part.Enemy != nameof(LaserSatellite) && part.Enemy != nameof(OrbitalCarrier))
                     continue;
                 // Pair routes that obstruct movement with at least one scored gun formation.
-                if (!relaxed && slot == count - 1 && (level == LevelId.Sewers || level == LevelId.Core) &&
+                if (!relaxed && slot == count - 1 && level == LevelId.Sewers &&
                     !units.Exists(u => !IsContactFormation(u.enemy)) && IsContactFormation(part.Enemy))
                     continue;
                 // Repeated bounce or cloud formations compound the same obstacle across an entire screen.
@@ -312,7 +314,7 @@ public static class WaveComposer
                 // A condition's own parts lead often, so dusk, night and storms fly differently.
                 // A minefield leans harder on its mines: they are its whole character.
                 int conditionLead = part.Only.HasValue ? part.Only == DistrictCondition.Minefield ? 66 : 22 : 0;
-                if (slot == 0 && budget % 2 == 0 && (part.Enemy == nameof(PlagueMote) || part.Enemy == nameof(TransitCube)))
+                if (slot == 0 && budget % 2 == 0 && part.Enemy == nameof(PlagueMote))
                     conditionLead += 42;
                 options.Add((part, used * 24 + random.Next(24) - conditionLead - (slot == 0 && part.Motion == preferredMotion ? 240 : 0)));
             }
@@ -392,8 +394,7 @@ public static class WaveComposer
     }
 
     static bool IsContactFormation(string enemy) =>
-        enemy == nameof(PlagueMote) || enemy == nameof(SiltLeech) ||
-        enemy == nameof(TransitCube) || enemy == nameof(FuseCube);
+        enemy == nameof(PlagueMote) || enemy == nameof(SiltLeech);
 
     static bool IsThunderBeam(string enemy) => enemy == nameof(BeamDrone) || enemy == nameof(ArcLancer) || enemy == nameof(StormOrgan);
 

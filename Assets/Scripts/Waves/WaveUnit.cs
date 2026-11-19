@@ -16,6 +16,7 @@ public class WaveUnit : ICloneable
     public bool elite;
     // ELITE HUNT: this ship carries the hunt's mark (chosen when the wave starts).
     public bool huntTarget;
+    public int coreBankTiles;
     public int passage;
     public bool passageRoute;
     public float firePhase;
@@ -25,7 +26,7 @@ public class WaveUnit : ICloneable
     public float faradayDoor;
     public string part;
     public float side = 1, lane, flightDuration = 6, fireEvery = .8f;
-    public int HullCount => enemy == nameof(FaradayPylon) ? 2 : 1;
+    public int HullCount => enemy == nameof(TransitCube) ? 0 : enemy == nameof(FaradayPylon) ? 2 : 1;
 
     public WaveUnit(string _enemy, float _time, Vector3 _position)
     {
@@ -36,7 +37,7 @@ public class WaveUnit : ICloneable
 
     public object Clone()
     {
-        return new WaveUnit(enemy, time, position) { phrase = phrase, curve = curve, syncFire = syncFire, miniboss = miniboss, elite = elite, huntTarget = huntTarget, passage = passage, passageRoute = passageRoute, firePhase = firePhase, fireTimes = fireTimes, formationDepth = formationDepth, fixedDepth = fixedDepth, faradayDoor = faradayDoor, part = part, side = side, lane = lane, flightDuration = flightDuration, fireEvery = fireEvery };
+        return new WaveUnit(enemy, time, position) { phrase = phrase, curve = curve, syncFire = syncFire, miniboss = miniboss, elite = elite, huntTarget = huntTarget, coreBankTiles = coreBankTiles, passage = passage, passageRoute = passageRoute, firePhase = firePhase, fireTimes = fireTimes, formationDepth = formationDepth, fixedDepth = fixedDepth, faradayDoor = faradayDoor, part = part, side = side, lane = lane, flightDuration = flightDuration, fireEvery = fireEvery };
     }
 
     override public string ToString()

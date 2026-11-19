@@ -6,6 +6,7 @@ public static class WaveHandoff
     public const float VisibleOverlap = .35f;
     public static float At(Wave outgoing, Wave incoming)
     {
+        if (outgoing.continuationAt > 0 && incoming.continuationAt > 0) return outgoing.continuationAt;
         if (outgoing.units.Exists(u => u.passage != 0) || incoming.units.Exists(u => u.passage != 0))
             return outgoing.duration;
         float last = Boundary(outgoing, true), first = Boundary(incoming, false), allLaunched = 0;

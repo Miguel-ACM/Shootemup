@@ -13,6 +13,7 @@ public class Wave : ICloneable
     public int weight;
     public ConflictGroup.cg cg;
     public float duration;
+    public float continuationAt; // Start the next maze section one row after this one.
     public string[] parts = Array.Empty<string>();
     int currEnemy = 0;
     static System.Random rng = new System.Random();
@@ -90,6 +91,6 @@ public class Wave : ICloneable
         {
             newUnits.Add((WaveUnit)u.Clone());
         }
-        return new Wave(cost, duration, weight, cg, newUnits) { parts = (string[])parts.Clone() };
+        return new Wave(cost, duration, weight, cg, newUnits) { parts = (string[])parts.Clone(), continuationAt = continuationAt };
     }
 }
