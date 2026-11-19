@@ -94,7 +94,7 @@ public sealed class UnlockReveal : MonoBehaviour
         stamp.sprite = districtStamp.sprite = Resources.Load<Sprite>("DockArt/Stamp" + notice.area);
         stamp.enabled = !district && stamp.sprite != null;
         districtStamp.enabled = district && districtStamp.sprite != null;
-        districtStamp.color = accent;
+        districtStamp.color = Color.white;
         age = 0;
         closing = false;
         shownFrame = Time.frameCount;

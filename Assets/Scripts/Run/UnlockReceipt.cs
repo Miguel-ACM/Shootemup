@@ -172,10 +172,7 @@ public sealed class UnlockReceipt : MonoBehaviour
     }
     public static Image DistrictStamp(Transform parent, ItemUnlockNotice notice, Vector2 at, float size)
     {
-        // Whole-pixel scale keeps the nine-pixel stamp crisp.
-        var image = Stamp(parent, notice, at, Mathf.Max(9, Mathf.Floor(size * .85f / 9) * 9));
-        image.color = LevelRun.Accent(notice.area);
-        return image;
+        return Stamp(parent, notice, at, Mathf.Round(size * .85f));
     }
     public static RawImage Picture(Transform parent, ItemPortraitStudio portraits, int index, Vector2 at, float size)
     {
