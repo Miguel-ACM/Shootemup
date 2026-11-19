@@ -19,7 +19,7 @@ public sealed class DecisionShop : MonoBehaviour
     int preview = -1;
     float age, skipCharge;
     bool closed;
-    bool mandatory;
+    bool collectBoth;
     RunSlotKind exchangeKind;
     RunInventory inventory;
     RunInventory.Entry reforgeSource;
@@ -38,16 +38,16 @@ public sealed class DecisionShop : MonoBehaviour
         => Open(orchestrer, ship, RunSlot.Parse(kind).Kind, completed, dropPosition);
 
     public void Open(WaveOrchestrer orchestrer, Shipcontroller ship, RunSlotKind kind, Action completed, Vector3? dropPosition = null,
-        string reservedKey = null, string reservedRarity = null, string reason = null)
+        string reservedKey = null, string reservedRarity = null, string reason = null, bool doubleBossReward = false)
     {
-        mandatory = kind == RunSlotKind.BossReward;
-        bool singleReward = mandatory || kind == RunSlotKind.ChallengeReward || kind == RunSlotKind.CargoReward;
+        collectBoth = kind == RunSlotKind.BossReward && doubleBossReward;
+        bool earnedReward = kind == RunSlotKind.BossReward || kind == RunSlotKind.ChallengeReward || kind == RunSlotKind.CargoReward;
         bool pact = kind == RunSlotKind.Pact;
         owner = orchestrer;
         player = ship;
         exchangeKind = kind;
         bool exchange = kind == RunSlotKind.HealthTrade || kind == RunSlotKind.Reforge;
-        paid = kind != RunSlotKind.Reward && !singleReward && !pact && !exchange;
+        paid = kind != RunSlotKind.Reward && !earnedReward && !pact && !exchange;
         coinShop = kind == RunSlotKind.CoinShop;
         done = completed;
         CombatDecision.Begin();
@@ -57,7 +57,7 @@ public sealed class DecisionShop : MonoBehaviour
         dialog = GameObject.FindGameObjectWithTag("Dialog").GetComponent<Dialog>();
         overlay = new GameObject("Shop decision overlay", typeof(RectTransform)).AddComponent<DecisionOverlay>();
         overlay.Build(dialog.font);
-        // Single rewards say where they came from.
+        // Earned rewards say where they came from.
         reason = reason ?? (kind == RunSlotKind.ChallengeReward ? "CHALLENGE COMPLETE" : kind == RunSlotKind.BossReward ? "BOSS REWARD" : null);
         if (reason != null)
             overlay.SetReason(reason, reservedRarity != null ? AItem.GetRarityColor(reservedRarity) : new Color(.95f, .76f, .42f));
@@ -72,7 +72,7 @@ public sealed class DecisionShop : MonoBehaviour
         }
         // Pacts always offer two bargains when two remain; declining is the bottom skip.
         var pacts = pact ? PactPool.Draw(player, 2) : null;
-        int count = pact ? pacts.Count : singleReward ? 1 : paid ? (UnityEngine.Random.value < .35f ? 4 : 3) : RewardCount(GameRules.luck, UnityEngine.Random.value);
+        int count = pact ? pacts.Count : earnedReward ? (collectBoth ? 2 : 1) : paid ? (UnityEngine.Random.value < .35f ? 4 : 3) : RewardCount(GameRules.luck, UnityEngine.Random.value);
         bool healthKit = paid && player.health < player.maxHealth * .45f && ItemPool.ReserveHealthKit();
         if (!pact && reservedKey == null)
             count = Mathf.Min(count, ItemPool.RemainingCount + (healthKit ? 1 : 0));
@@ -89,6 +89,12 @@ public sealed class DecisionShop : MonoBehaviour
                 continue;
             }
             var target = dropPosition ?? new Vector3(Mathf.Lerp(Camera.LeftLimit + 1, Camera.RightLimit - 1, count == 1 ? .5f : i / (float)(count - 1)), Camera.UpLimit * .5f, 1);
+            if (collectBoth && count == 2 && dropPosition.HasValue)
+            {
+                const float halfSpacing = 1.25f;
+                float center = Mathf.Clamp(target.x, Camera.LeftLimit + .8f + halfSpacing, Camera.RightLimit - .8f - halfSpacing);
+                target.x = center + (i == 0 ? -halfSpacing : halfSpacing);
+            }
             var entrance = dropPosition.HasValue ? target + Vector3.up * .9f : new Vector3(target.x, Camera.UpLimit + 3, 1);
             var go = Instantiate(Resources.Load<GameObject>("Items/Item"), entrance, Quaternion.identity);
             var item = ItemCatalog.Get(itemKind).Attach(go);
@@ -225,7 +231,8 @@ public sealed class DecisionShop : MonoBehaviour
                 ShowReforge(trade.Entry);
             return;
         }
-        if (!paid)
+        bool anotherReward = collectBoth && items.Exists(item => item != null && item != claimed && !item.Collected && !item.IsDismissing);
+        if (!paid && !anotherReward)
         {
             Close(selected);
             return;

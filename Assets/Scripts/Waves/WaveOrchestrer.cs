@@ -682,6 +682,9 @@ public class WaveOrchestrer : MonoBehaviour
     IEnumerator BossReward(Vector3 position)
     {
         Phase = RunPhase.Decision;
+        // Cargo delivered after the kill cannot double this payout retroactively.
+        var pilot = ship.GetComponent<Shipcontroller>();
+        bool doubleReward = pilot.GetComponent<CombatUpgrades>().Count(UpgradeKind.BountySeal) > 0;
         // Let the breakup's main blast open before the item falls.
         CombatDecision.Begin();
         yield return new WaitForSeconds(.8f);
@@ -707,11 +710,12 @@ public class WaveOrchestrer : MonoBehaviour
         position = new Vector3(Mathf.Clamp(position.x, Camera.LeftLimit + .8f, Camera.RightLimit - .8f),
             Mathf.Clamp(position.y, Camera.DownLimit + 2, Camera.UpLimit - 1.5f), 1);
         decision = gameObject.AddComponent<DecisionShop>();
-        decision.Open(this, ship.GetComponent<Shipcontroller>(), RunSlotKind.BossReward, () =>
+        if (doubleReward) RunInventory.Ping(UpgradeKind.BountySeal);
+        decision.Open(this, pilot, RunSlotKind.BossReward, () =>
            {
                decision = null;
                StartCoroutine(ChooseNextRoute());
-           }, position);
+           }, position, doubleBossReward: doubleReward);
     }
 
     /// <summary>Debug: the next wave break opens a pact offer.</summary>

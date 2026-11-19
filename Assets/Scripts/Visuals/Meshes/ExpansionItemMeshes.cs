@@ -28,6 +28,21 @@ public static partial class IndustrialMeshFactory
         if (kind == "Icicle")
             return expansionItems[kind] = IcicleModel();
         var b = new Builder();
+        if (kind == nameof(BountySeal))
+        {
+            foreach (int side in new[] { -1, 1 })
+            {
+                var ribbon = new[] { new Vector2(side * .16f, -.34f), new Vector2(side * .27f, -.41f),
+                    new Vector2(side * .18f, -.02f), new Vector2(side * .02f, -.05f), new Vector2(side * .10f, -.46f) };
+                b.Prism(ribbon, .055f, 12, new Vector3(0, 0, .05f), 6, 12);
+            }
+            b.Drum(new Vector3(0, .10f, 0), .31f, .12f, 10, 12, 9);
+            b.Drum(new Vector3(0, .10f, -.068f), .239f, .035f, 6, 12, 9);
+            foreach (float face in new[] { -.098f, .07f })
+                foreach (int side in new[] { -1, 1 })
+                    b.Box(new Vector3(side * .072f, .10f, face), new Vector3(.065f, .25f, .028f), 10, 9);
+            return expansionItems[kind] = b.Finish(kind + " equipment");
+        }
         if (kind == nameof(Pufferfish))
         {
             b.Ball(new Vector3(0, -.017f, .04f), new Vector3(.57f, .57f, .33f), 9);

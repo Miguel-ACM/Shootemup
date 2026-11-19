@@ -402,6 +402,7 @@ Miguel reviewed one-minute side-by-sides (ArtSource/BossPhaseProposals) and chos
 - Salvage coins are born well above the visible top edge, never seen appearing.
 - Campaign cargo cannot be shot; it shatters as soon as the pilot takes a hit. The Cold Delivery simulator crate keeps its three hits.
 - Earned cargo items queue: each opens its own pickup in turn with a CARGO DELIVERY banner (challenge and boss rewards say so too), and an exhausted rarity falls back to the nearest rarity with items.
+- Bounty Seal is an Epic passive. Holding it when a boss falls doubles its item reward. Both pickups can be collected in either order, and the usual bottom skip dismisses any left behind.
 - Thruster fire and muzzle flashes share the ship's GameObject layer so the sharp ship pass draws them with the hull.
 - The Terra Coin Launcher read as a handbag; it uses a procedural coin-hopper launcher instead.
 - CHALLENGE is now ELITE HUNT (supersedes the hidden "more firing pressure" challenge above). The next three full ordinary waves each carry one marked elite (red lock brackets on the gold elite ring). A wave cannot hand off while its target lives. Catch all three for one item of the rarity promised when the hexagon was offered (the hexagon wears that rarity's colour; the reward banner reads ELITE HUNT COMPLETE). One escape cracks its pip and ends the hunt with no reward. The margin row shows ELITE HUNT with three pips: gold caught, red escaped. Offered only with three full waves left after the current one, at most once per district.
