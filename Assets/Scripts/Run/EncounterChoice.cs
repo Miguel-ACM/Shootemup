@@ -34,7 +34,7 @@ public static class EncounterChoice
     public const int MaxOptions = 5;
 
     public static EncounterKind[] Draw(int seed, bool challengeAvailable, float health, float maxHealth, bool pactAvailable = false,
-        float luck = 0, bool canTrade = false, bool canReforge = false, bool cargoAvailable = true, bool canGrowHull = true)
+        float luck = 0, bool canTrade = false, bool canReforge = false, bool cargoAvailable = true, bool canGrowHull = true, bool opening = false)
     {
         // Shops are no longer offered mid-run; the hangar shop between runs replaces them.
         var bag = new List<EncounterKind> { EncounterKind.Item, EncounterKind.Salvage,
@@ -66,7 +66,7 @@ public static class EncounterChoice
             bag[j] = swap;
         }
         // Salvage provides a useful alternative even at full health and without spare items.
-        var picked = new List<EncounterKind> { bag[0] };
+        var picked = new List<EncounterKind> { opening ? EncounterKind.Item : bag[0] };
         foreach (var kind in bag)
             if (picked.Count < count && !picked.Contains(kind) && picked.TrueForAll(other => !Incompatible(other, kind)))
                 picked.Add(kind);

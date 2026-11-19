@@ -360,6 +360,9 @@ public sealed class DecisionExpansionReview : MonoBehaviour
         var place = typeof(RewardHexes).GetMethod("Place", BindingFlags.Static | BindingFlags.NonPublic);
         for (int seed = 0; seed < 512; seed++)
         {
+            var opening = EncounterChoice.Draw(seed, true, 3, 6, true, opening: true);
+            if (!opening.Contains(EncounterKind.Item) || !opening.Contains(EncounterKind.Pact) || opening.Contains(EncounterKind.Challenge))
+                throw new Exception("Invalid first district offer " + seed);
             var ordinary = EncounterChoice.Draw(seed, true, 6, 6);
             var lucky = EncounterChoice.Draw(seed, true, 6, 6, false, 1);
             if (ordinary.Length == 3) baseTriples++;

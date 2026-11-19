@@ -445,7 +445,8 @@ public class WaveOrchestrer : MonoBehaviour
         // The hunt needs three full waves after the one in progress.
         var options = EncounterChoice.Draw(seed, remaining >= 4 && !challenge.Active, player.health, player.maxHealth,
             pactAvailable, GameRules.luck, tradeable.Count > 0, canReforge,
-            cargo == null && pendingCargo.Count == 0 && remaining >= CargoEscort.MinimumOfferWaves, !PactPool.GlassHull);
+            cargo == null && pendingCargo.Count == 0 && remaining >= CargoEscort.MinimumOfferWaves, !PactPool.GlassHull, !firstHexShown);
+        firstHexShown = true;
         if (Array.IndexOf(options, EncounterKind.Pact) >= 0)
             PactPool.HexStage = LevelRun.Stage;
         EncounterOptions = options;
@@ -523,6 +524,8 @@ public class WaveOrchestrer : MonoBehaviour
         else
             HealthRecovery.Begin(ship.GetComponent<Shipcontroller>(), .5f);
     }
+
+    bool firstHexShown;
 
     void OpenDecision(RunSlotKind kind)
     {
@@ -797,6 +800,7 @@ public class WaveOrchestrer : MonoBehaviour
                 Destroy(item);
         items.Clear();
         dialog.Hide();
+        firstHexShown = false;
         currentWaveNumber = 0;
         killLedger.Clear();
         currentWaveEnemies = 0;
